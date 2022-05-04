@@ -2,155 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4593151A520
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 18:15:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8596751A515
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 18:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353187AbiEDQTO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 12:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51580 "EHLO
+        id S1353163AbiEDQR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 12:17:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353287AbiEDQTB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 12:19:01 -0400
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19E7C18E18
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 09:15:24 -0700 (PDT)
-Received: by mail-qv1-xf2a.google.com with SMTP id dv4so1150791qvb.13
-        for <netdev@vger.kernel.org>; Wed, 04 May 2022 09:15:24 -0700 (PDT)
+        with ESMTP id S1353141AbiEDQR6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 12:17:58 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0D327B39;
+        Wed,  4 May 2022 09:14:19 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id j6so3801962ejc.13;
+        Wed, 04 May 2022 09:14:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mdaverde-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aRTT3Khcb1rZ/aGFwRbPNDE/jeWlp1F0NgwR7yaPUME=;
-        b=MVEwt4lEQ6odj4JoF+ekWEO601myqPUssVHGiuBUWjYeEk+C9+mjc+l5YmEzVre3wm
-         oPHisIb2b7rw3Vl1n0uzeWrxDQ2jd+MZfaZQ2mO9wbchYzPrHzE5tXh1hEdD0neRiBWs
-         t63roERMr0X3TbTo3+J/O0aWy0hzRNzyEqrrG9pZ1yIKBX0zorrkDwbAFY1IxQO1sZ1k
-         x/LWIhGKSHkg4sKxgV6ZkpA1y4SEiVYAAnCuzTXZmaHUjl8O3dYpodQ50sZKuN4FVz3n
-         vaMmLwN9gXgsCLUZSo8hf0yWnVJLeq7oskBqjm2qTnmEvnXceq8Cl5mERkSrwlWNY9vH
-         mZJA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=EO/exjYIL2Y7doxRAG/8tv0+K4n654l6gAS/q81p8VU=;
+        b=MqhOzlGbNPDmmEkZxrkvlxT8yAsFHCS5fJpOrOc96wYcV7RZliRUshFSrY7sMN8ssE
+         0ifZJBu1ODc9B+x7yzT8DuPqVdxoy3EEmWNQfcoDjW4lKC4L7mQdunYBXLjNKoBLuA5t
+         x+ejzkmyot4gDA6E0riYHZsfTuahHqqC6m7H66ECjJ199S3NO2rg5rH04JCxOUbFMHIJ
+         wMqHdnlRpf0XAaDhBj/6jvNZRxGA0j5DfuHILXTvItX9d88lZgDfE3M5ceuVGjRwIYHB
+         HODrZsf2ceJPTpk8hlUwTAz6qaqG2jpKhhVxAdnwXQpHe6PWpfKOt8Tmil5aTRlwTGDy
+         d+Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aRTT3Khcb1rZ/aGFwRbPNDE/jeWlp1F0NgwR7yaPUME=;
-        b=cxVY/YeQy5kqC1WkF/FsQcpDOsiHvpDGtpOVU+5CRUEY3OvU7y3si/LzEKUB5KIH6j
-         q04Mv2qXrZHK9r2yQVifdNAwAv74fysVDG08qorxDfLTDaWdAxBVDZbzwrw4otnMBNAN
-         ncrbXWSU+bjP0OlZ6a7FcYZ+GGZXLsEhxhfRF8vXnOXzjvyGGr9aa57Bz/H9/nBWDxPi
-         3nDT/E36eO05UoHH/zEvy95OlBHLUQZUxYBY+QP2fNNh1r4G2Z3H4xBqLv9TulnsH5QE
-         uvEQRb03v3KGOYY0yLEW8qCdm4L3NCo7i4V8b7nk4liclRPEPWIgW2Z+URZRkdOT+Br7
-         7MLA==
-X-Gm-Message-State: AOAM531KfKTHIsrx9jYspkMLGv3lpZK/V578/UPrxtnTsqwYrqEeETZk
-        z/S1AwTf6b3gRgvKsu9hmekjRQ==
-X-Google-Smtp-Source: ABdhPJxVYo/IWIg5lLnfnd4q5/JBFnRFyOg9pQqgHLIhnd2mJGMlex3zVNr4pwIGyKX3YYDu+DyO5w==
-X-Received: by 2002:a0c:f1d2:0:b0:45a:8012:1a90 with SMTP id u18-20020a0cf1d2000000b0045a80121a90mr16256965qvl.31.1651680923269;
-        Wed, 04 May 2022 09:15:23 -0700 (PDT)
-Received: from pop-os.attlocal.net ([2600:1700:1d10:5830:4611:5fd6:ef88:7605])
-        by smtp.gmail.com with ESMTPSA id 18-20020ac85652000000b002f39b99f66dsm7594467qtt.7.2022.05.04.09.15.21
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=EO/exjYIL2Y7doxRAG/8tv0+K4n654l6gAS/q81p8VU=;
+        b=T2HZBaQ1s8L4CBXt2hcIvh0YzvQvs0quAPhS6cigVQwDLhS8RUMt+6Uho8hLNn4UoU
+         gjh+LVay58kanMPURMmkLZvvHhRGKcMElaNL1mwUYOjEYYGEYBpTOjKUa/o7Bz/qGVDp
+         TcNzje99HzQePDWDWDfHU+XNlTbHdwiQMPogTL9ihDR5/5/k/LHkfRszrXX2FVfhF8xG
+         Lz8zzRomAEcdth+PNrXzldHDguGKphzgyZtlTI1o1YCKirbzCnqbZ8hbrmEdcNU8TqAC
+         b70/RFMm7+erOeLmsSoTyxFu+uqFSGPzaVDi2velh8iERoOHsdcTRIqkaVR44ZMcjwYi
+         aj/g==
+X-Gm-Message-State: AOAM532XGgjSA1OCf+GhYhuC2v8YDOORvdp8PSNJj1wc2aN9yHuaqOq5
+        Nq3RZH7KKolqCEo6mlmqBfsft8iCSWo=
+X-Google-Smtp-Source: ABdhPJy9c9TpbTPzuMmXBwFXbHfvSuQ6WT98ztnuNFRqTqFEUnA7xkC7oz2tfhV5q0bxgxpXCpwa1w==
+X-Received: by 2002:a17:907:7212:b0:6f4:7d9:5f78 with SMTP id dr18-20020a170907721200b006f407d95f78mr20039274ejc.474.1651680857768;
+        Wed, 04 May 2022 09:14:17 -0700 (PDT)
+Received: from skbuf ([188.25.160.86])
+        by smtp.gmail.com with ESMTPSA id ml11-20020a170906cc0b00b006f3ef214e59sm5916928ejb.191.2022.05.04.09.14.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 09:15:22 -0700 (PDT)
-From:   Milan Landaverde <milan@mdaverde.com>
-Cc:     milan@mdaverde.com, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Paul Chaignon <paul@isovalent.com>,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@corigine.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH bpf-next 2/2] bpftool: output message if no helpers found in feature probing
-Date:   Wed,  4 May 2022 12:13:32 -0400
-Message-Id: <20220504161356.3497972-3-milan@mdaverde.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220504161356.3497972-1-milan@mdaverde.com>
-References: <20220504161356.3497972-1-milan@mdaverde.com>
+        Wed, 04 May 2022 09:14:17 -0700 (PDT)
+Date:   Wed, 4 May 2022 19:14:14 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH net-next v3 06/12] net: dsa: rzn1-a5psw: add Renesas
+ RZ/N1 advanced 5 port switch driver
+Message-ID: <20220504161414.u6riybjcrgachjvh@skbuf>
+References: <20220504093000.132579-1-clement.leger@bootlin.com>
+ <20220504093000.132579-7-clement.leger@bootlin.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220504093000.132579-7-clement.leger@bootlin.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently in libbpf, we have hardcoded program types that are not
-supported for helper function probing (e.g. tracing, ext, lsm).
-Due to this (and other legitimate failures), bpftool feature probe returns
-empty for those program type helper functions.
+On Wed, May 04, 2022 at 11:29:54AM +0200, Clément Léger wrote:
+> Add Renesas RZ/N1 advanced 5 port switch driver. This switch handles 5
+> ports including 1 CPU management port. A MDIO bus is also exposed by
+> this switch and allows to communicate with PHYs connected to the ports.
+> Each switch port (except for the CPU management ports) is connected to
+> the MII converter.
+> 
+> This driver includes basic bridging support, more support will be added
+> later (vlan, etc).
+> 
+> Suggested-by: Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>
+> Suggested-by: Phil Edworthy <phil.edworthy@renesas.com>
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> ---
+> +static void a5psw_port_disable(struct dsa_switch *ds, int port)
+> +{
+> +	struct a5psw *a5psw = ds->priv;
+> +
+> +	a5psw_port_authorize_set(a5psw, port, false);
+> +	a5psw_port_enable_set(a5psw, port, false);
+> +	a5psw_port_fdb_flush(a5psw, port);
 
-Instead of implying to the user that there are no helper functions
-available for a program type, we output a message to the user explaining
-that helper function probing failed for that program type.
+The bridge core takes care of this by setting the port state to
+DISABLED, which makes DSA call dsa_port_fast_age(), no?
 
-Signed-off-by: Milan Landaverde <milan@mdaverde.com>
----
- tools/bpf/bpftool/feature.c | 18 +++++++++++++++---
- 1 file changed, 15 insertions(+), 3 deletions(-)
+Standalone ports shouldn't need fast ageing because they shouldn't have
+address learning enabled in the first place.
 
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index c532c8855c24..d12f46051aac 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -690,7 +690,7 @@ probe_helper_ifindex(enum bpf_func_id id, enum bpf_prog_type prog_type,
- 	return res;
- }
- 
--static void
-+static bool
- probe_helper_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
- 			  const char *define_prefix, unsigned int id,
- 			  const char *ptype_name, __u32 ifindex)
-@@ -723,6 +723,8 @@ probe_helper_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
- 		if (res)
- 			printf("\n\t- %s", helper_name[id]);
- 	}
-+
-+	return res;
- }
- 
- static void
-@@ -732,6 +734,7 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
- 	const char *ptype_name = prog_type_name[prog_type];
- 	char feat_name[128];
- 	unsigned int id;
-+	bool probe_res = false;
- 
- 	if (ifindex)
- 		/* Only test helpers for offload-able program types */
-@@ -764,7 +767,7 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
- 				continue;
- 			/* fallthrough */
- 		default:
--			probe_helper_for_progtype(prog_type, supported_type,
-+			probe_res |= probe_helper_for_progtype(prog_type, supported_type,
- 						  define_prefix, id, ptype_name,
- 						  ifindex);
- 		}
-@@ -772,8 +775,17 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
- 
- 	if (json_output)
- 		jsonw_end_array(json_wtr);
--	else if (!define_prefix)
-+	else if (!define_prefix) {
- 		printf("\n");
-+		if (!probe_res) {
-+			if (!supported_type)
-+				printf("\tProgram type not supported\n");
-+			else
-+				printf("\tCould not determine which helpers are available\n");
-+		}
-+	}
-+
-+
- }
- 
- static void
--- 
-2.32.0
+> +}
+
+> +static int a5psw_port_bridge_join(struct dsa_switch *ds, int port,
+> +				  struct dsa_bridge bridge,
+> +				  bool *tx_fwd_offload,
+> +				  struct netlink_ext_ack *extack)
+> +{
+> +	struct a5psw *a5psw = ds->priv;
+> +
+> +	/* We only support 1 bridge device */
+> +	if (a5psw->br_dev && bridge.dev != a5psw->br_dev)
+> +		return -EINVAL;
+
+return -EOPNOTSUPP, to allow software bridging.
+You might also want to set an extack message here and avoid overwriting
+it in dsa_slave_changeupper() with "Offloading not supported", but say
+something more specific like "Forwarding offload supported for a single
+bridge".
+
+> +
+> +	a5psw->br_dev = bridge.dev;
+> +	a5psw_flooding_set_resolution(a5psw, port, true);
+> +	a5psw_port_mgmtfwd_set(a5psw, port, false);
+> +
+> +	return 0;
+> +}
+> +
+> +static void a5psw_port_bridge_leave(struct dsa_switch *ds, int port,
+> +				    struct dsa_bridge bridge)
+> +{
+> +	struct a5psw *a5psw = ds->priv;
+> +
+> +	a5psw_flooding_set_resolution(a5psw, port, false);
+> +	a5psw_port_mgmtfwd_set(a5psw, port, true);
+> +
+> +	/* No more port bridged */
+
+s/port/ports/
+
+> +	if (a5psw->bridged_ports == BIT(A5PSW_CPU_PORT))
+> +		a5psw->br_dev = NULL;
+> +}
+
+> +static int a5psw_pcs_get(struct a5psw *a5psw)
+> +{
+> +	struct device_node *ports, *port, *pcs_node;
+> +	struct phylink_pcs *pcs;
+> +	int ret;
+> +	u32 reg;
+> +
+> +	ports = of_get_child_by_name(a5psw->dev->of_node, "ports");
+
+Can you please do:
+
+	ports = of_get_child_by_name(a5psw->dev->of_node, "ethernet-ports");
+	if (!ports)
+		ports = of_get_child_by_name(a5psw->dev->of_node, "ports");
+
+> +	if (!ports)
+> +		return -EINVAL;
+> +
+> +	for_each_available_child_of_node(ports, port) {
+> +		pcs_node = of_parse_phandle(port, "pcs-handle", 0);
+> +		if (!pcs_node)
+> +			continue;
+> +
+> +		if (of_property_read_u32(port, "reg", &reg)) {
+> +			ret = -EINVAL;
+> +			goto free_pcs;
+> +		}
+> +
+> +		if (reg >= ARRAY_SIZE(a5psw->pcs)) {
+> +			ret = -ENODEV;
+> +			goto free_pcs;
+> +		}
+> +
+> +		pcs = miic_create(pcs_node);
+> +		if (IS_ERR(pcs)) {
+> +			dev_err(a5psw->dev, "Failed to create PCS for port %d\n",
+> +				reg);
+> +			ret = PTR_ERR(pcs);
+> +			goto free_pcs;
+> +		}
+> +
+> +		a5psw->pcs[reg] = pcs;
+> +	}
+> +	of_node_put(ports);
+> +
+> +	return 0;
+> +
+> +free_pcs:
+> +	a5psw_pcs_free(a5psw);
+> +
+> +	return ret;
+> +}
+
+> +/* Ensure enough space for 2 VLAN tags */
+> +#define A5PSW_EXTRA_MTU_LEN		(A5PSW_TAG_LEN + 8)
+> +#define A5PSW_MAX_MTU			(A5PSW_JUMBO_LEN - A5PSW_EXTRA_MTU_LEN)
+> +#define A5PSW_MGMT_TAG_VALUE		0xE001
+> +
+> +#define A5PSW_PATTERN_MGMTFWD		0
+> +
+> +#define A5PSW_LK_BUSY_USEC_POLL		10
+> +#define A5PSW_CTRL_TIMEOUT		1000
+> +#define A5PSW_TABLE_ENTRIES		8192
+> +
+> +/**
+> + * struct a5psw - switch struct
+> + * @base: Base address of the switch
+> + * @hclk: hclk_switch clock
+> + * @clk: clk_switch clock
+> + * @dev: Device associated to the switch
+> + * @mii_bus: MDIO bus struct
+> + * @mdio_freq: MDIO bus frequency requested
+> + * @pcs: Array of PCS connected to the switch ports (not for the CPU)
+> + * @ds: DSA switch struct
+> + * @lk_lock: Lock for the lookup table
+> + * @reg_lock: Lock for register read-modify-write operation
+> + * @bridged_ports: List of ports that are bridged and should be flooded
+
+s/List/Mask/
+
+> + * @br_dev: Bridge net device
+> + */
+> +struct a5psw {
+> +	void __iomem *base;
+> +	struct clk *hclk;
+> +	struct clk *clk;
+> +	struct device *dev;
+> +	struct mii_bus	*mii_bus;
+> +	struct phylink_pcs *pcs[A5PSW_PORTS_NUM - 1];
+> +	struct dsa_switch ds;
+> +	spinlock_t lk_lock;
+> +	spinlock_t reg_lock;
+> +	u32 bridged_ports;
+> +	struct net_device *br_dev;
+> +};
+> -- 
+> 2.34.1
+> 
 
