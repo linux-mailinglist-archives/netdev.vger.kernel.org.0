@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 19BCE519F1C
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 14:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BC89519F6A
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 14:29:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349363AbiEDMWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 08:22:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
+        id S1349596AbiEDMcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 08:32:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239708AbiEDMWu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 08:22:50 -0400
+        with ESMTP id S1349540AbiEDMb0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 08:31:26 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E7A2CC90;
-        Wed,  4 May 2022 05:19:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755543057C;
+        Wed,  4 May 2022 05:27:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=vSnkOzTamab+eXjxj1X3aPRZXcm8ZuhJALY0cnMErbE=; b=4Gy6bDIGLdTxYCLaZ8leq+C62Q
-        sFHHn1FJKTx7496YU51xQwksTkh/CpXHbQA8q5aeDWPFHVttMqWbiHWDWl/3+1efVp36xua/fuPHt
-        COCYAki9BkfDm2c6If4azhSNFWWphr11IpXEsDHxaGnMpsbcgLkA2LLzQNHzidfp1xJY=;
+        bh=PZuKIQ/6fK2IF1ChGatGwypGtSEXFs4ELDYnkndY5IA=; b=maCXYfqxQcIAeIpSEEUckTK/Gh
+        9RmGwa2dJij1h6xjkyT6dM4vxy/mLyNHyOVKz5dFk7w8WNW5AF2/0Y6MMXgtlkmTkAJrU2uNJwMPL
+        5arS7OpcRx/us5/qh2DOVguB7IzMMvM7mLHngt9e/vVsFy0eVBR/gsaTGkr2WE75p/Is=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1nmDy7-001CsL-FH; Wed, 04 May 2022 14:18:59 +0200
-Date:   Wed, 4 May 2022 14:18:59 +0200
+        id 1nmE6T-001Cvd-OR; Wed, 04 May 2022 14:27:37 +0200
+Date:   Wed, 4 May 2022 14:27:37 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, claudiu.beznea@microchip.com,
-        netdev@vger.kernel.org, o.rempel@pengutronix.de,
-        linux@armlinux.org.uk, Fabio Estevam <festevam@denx.de>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] net: phy: micrel: Do not use kszphy_suspend/resume for
- KSZ8061
-Message-ID: <YnJvM4YaQBR0VZqF@lunn.ch>
-References: <20220504114703.1229615-1-festevam@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2 1/2] net: phy:
+ genphy_c45_baset1_an_config_aneg: do no set unknown configuration
+Message-ID: <YnJxOXcSVGW+g0ZP@lunn.ch>
+References: <20220504110655.1470008-1-o.rempel@pengutronix.de>
+ <20220504110655.1470008-2-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504114703.1229615-1-festevam@gmail.com>
+In-Reply-To: <20220504110655.1470008-2-o.rempel@pengutronix.de>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -49,42 +52,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 04, 2022 at 08:47:03AM -0300, Fabio Estevam wrote:
-> From: Fabio Estevam <festevam@denx.de>
+On Wed, May 04, 2022 at 01:06:54PM +0200, Oleksij Rempel wrote:
+> Do not change default master/slave autoneg configuration if no
+> changes was requested.
 > 
-> Since commit f1131b9c23fb ("net: phy: micrel: use
-> kszphy_suspend()/kszphy_resume for irq aware devices") the following
-> NULL pointer dereference is observed on a board with KSZ8061:
-> 
->  # udhcpc -i eth0
-> udhcpc: started, v1.35.0
-> 8<--- cut here ---
-> Unable to handle kernel NULL pointer dereference at virtual address 00000008
-> pgd = f73cef4e
-> [00000008] *pgd=00000000
-> Internal error: Oops: 5 [#1] SMP ARM
-> Modules linked in:
-> CPU: 0 PID: 196 Comm: ifconfig Not tainted 5.15.37-dirty #94
-> Hardware name: Freescale i.MX6 SoloX (Device Tree)
-> PC is at kszphy_config_reset+0x10/0x114
-> LR is at kszphy_resume+0x24/0x64
-> ...
-> 
-> The KSZ8061 phy_driver structure does not have the .probe/..driver_data
-> fields, which means that priv is not allocated.
-> 
-> This causes the NULL pointer dereference inside kszphy_config_reset().
-> 
-> Fix the problem by using the generic suspend/resume functions as before.
+> Fixes: 3da8ffd8545f ("net: phy: Add 10BASE-T1L support in phy-c45")
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Hi Fabio
+Hi Oleksij
 
-Thanks for the fix. What you fail to mention is why not call
-kszphy_probe() to populate priv? What makes this PHY special that it
-does not need the probe call?
+I'm i right in saying 3da8ffd8545f is only in net-next?
 
-Looking at the ksphy_driver structure, this seems to affect
-PHY_ID_KS8737 and PHY_ID_KSZ8061
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-     Thanks
-	Andrew
+    Andrew
