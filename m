@@ -2,152 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2370251983F
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:31:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50644519883
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:45:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345553AbiEDHeR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 03:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54106 "EHLO
+        id S1345425AbiEDHtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 03:49:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345509AbiEDHeI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:34:08 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345C82647;
-        Wed,  4 May 2022 00:30:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=VhRMkWupHGEpu4hR7M12B8TWP/ZW0H0fx/g6wrBtOIU=;
-        t=1651649432; x=1652859032; b=lT+BoT7kzbehmIS4CE6tmnrNCaaMxC4ZC6lWOapcFoPAPDK
-        ivwD9L+TNY4ukXj7zmgHhbTz3x6Tc3SV0Eclg4IivKdtaoIhIPmv3/kOG1Hs3stt+sZYyGkiO9+6V
-        owmtPBnbKGrLhWnYlDrLZEDw7uo6wXChACSfuAQl/hfOCjl4lXTzOPy4xr/HkQRVd5xeST21zUOg+
-        eagjwkTPt+DkjP546h0kleKkFB8GmTwBSqL/1KvlDT1O2/wVtM3Zp6oqDYk5TVAlYnS1nsm9DdJwT
-        c18ih50SkMX+SiLKowBo4knf4fyHVmT3WXccgI5g7BaPwsULbewodpDd7UmE1G9w==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nm9RJ-001wsH-EM;
-        Wed, 04 May 2022 09:28:49 +0200
-Message-ID: <c31c1752cf6393319f5c7abd178ef43e0fbec5c1.camel@sipsolutions.net>
-Subject: Re: [PATCH 12/32] cfg80211: Use mem_to_flex_dup() with struct
- cfg80211_bss_ies
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Kees Cook <keescook@chromium.org>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S1345582AbiEDHsz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:48:55 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2754310F6;
+        Wed,  4 May 2022 00:45:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1651650277;
+        bh=pfo7l2+6NRg3JzR+9KrIDePEDrqA7zKF11o5LYtwEJg=;
+        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
+         CC:From;
+        b=d3TNyVHaZZCMyyfKbsrQUNviX4v3RF5SfOoweE6vmaR2/JyBWFRWypYDyjp06Z1DB
+         FuBE+0+Udaa3ARZCq5fBT3AykSejo8IhgMbgVSW2VZXyu3xEoIliwkzLa7TWBSMoM2
+         GCDzaQVtRipER38qIXCwauuhna5OWspUz/EXvDDY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from frank-s9 ([80.245.79.168]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MRmfo-1nNQj902p8-00T9ld; Wed, 04
+ May 2022 09:44:37 +0200
+Date:   Wed, 04 May 2022 09:44:29 +0200
+User-Agent: K-9 Mail for Android
+In-Reply-To: <95aea078-3e85-79c3-79c0-430bd7c0fbae@linaro.org>
+References: <20220502153238.85090-1-linux@fw-web.de> <d29637f8-87ff-b5f0-9604-89b51a2ba7c1@linaro.org> <trinity-cda3b94f-8556-4b83-bc34-d2c215f93bcd-1651587032669@3c-app-gmx-bap25> <10770ff5-c9b1-7364-4276-05fa0c393d3b@linaro.org> <trinity-213ab6b1-ccff-4429-b76c-623c529f6f73-1651590197578@3c-app-gmx-bap25> <95aea078-3e85-79c3-79c0-430bd7c0fbae@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: Aw: Re: Re: [RFC v1] dt-bindings: net: dsa: convert binding for mediatek switches
+Reply-to: frank-w@public-files.de
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     Greg Ungerer <gerg@kernel.org>,
+        =?ISO-8859-1?Q?Ren=E9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Frank Wunderlich <linux@fw-web.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        alsa-devel@alsa-project.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Gross <agross@kernel.org>,
-        Andy Lavr <andy.lavr@gmail.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Bradley Grove <linuxdrivers@attotech.com>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        Christian Brauner <brauner@kernel.org>,
-        Christian =?ISO-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Chris Zankel <chris@zankel.net>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Axtens <dja@axtens.net>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Dan Williams <dan.j.williams@intel.com>,
-        David Gow <davidgow@google.com>,
-        David Howells <dhowells@redhat.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hulk Robot <hulkci@huawei.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        James Morris <jmorris@namei.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        John Keeping <john@metanate.com>,
-        Juergen Gross <jgross@suse.com>, Kalle Valo <kvalo@kernel.org>,
-        Keith Packard <keithp@keithp.com>, keyrings@vger.kernel.org,
-        kunit-dev@googlegroups.com,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux1394-devel@lists.sourceforge.net,
-        linux-afs@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-xtensa@linux-xtensa.org,
-        llvm@lists.linux.dev, Loic Poulain <loic.poulain@linaro.org>,
-        Louis Peens <louis.peens@corigine.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Rich Felker <dalias@aerifal.cx>,
         Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        SHA-cyfmac-dev-list@infineon.com,
-        Simon Horman <simon.horman@corigine.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Takashi Iwai <tiwai@suse.com>, Tom Rix <trix@redhat.com>,
-        Udipto Goswami <quic_ugoswami@quicinc.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        wcn36xx@lists.infradead.org, Wei Liu <wei.liu@kernel.org>,
-        xen-devel@lists.xenproject.org,
-        Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Date:   Wed, 04 May 2022 09:28:46 +0200
-In-Reply-To: <20220504014440.3697851-13-keescook@chromium.org>
-References: <20220504014440.3697851-1-keescook@chromium.org>
-         <20220504014440.3697851-13-keescook@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+From:   Frank Wunderlich <frank-w@public-files.de>
+Message-ID: <69290DD3-0179-49C2-8E7D-9F8DBDEBC96F@public-files.de>
+X-Provags-ID: V03:K1:Xi3146xQ+5Emm7jErYnUntzfAYprQLIZghBegsBA0oc7IJk6WZ7
+ EN1yKUXY8pzFBl73tvSapxS4fIHqWMvVrkpzm1Iu+ZHscY3V5cEJqpj7clPSPxeAHNTLZLq
+ kAhiRrTtFdRmz5z1ZElLYt/qGdFj91Z7CWXWfazFNmqpRklgMAB+8wY9CzSuw3JLP2a3Onz
+ ockS0Idi7ssPgd4G6pOAQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:SvD6m1ZZk2w=:nHsMDGmebHyxCWsbOOhqYD
+ tJ0PHMZ3fVxKUH8cbqp2Lpy7oGvya/82ozlXh7WfaupZ7Bf9hftCqF0yN2Yz7/DfIiWhSDQsR
+ xobZopSNltQQHTvmrfFEzYureaXSTUUdS7EgXDzK5tJNCbUaTd7Q7LX/Wup1Mhn6DVJNJpeJZ
+ SAV31HJXlN8WqcveBMYJl1gE1aHv0D1wMOUOzsz2+gDUVdTaumYSHF1mp1BbJR6tr781+Lofa
+ zCPzk+lJiy3MqbuS89FaeKStJPf+f3VC+lYd3N6PUZJ47Hg4Ok2XMCWsRLM6QME43dxuH6Y4+
+ 8NCI5g6u1UbYQOpm+Hp6381ErHpWOJwUcVK3wzSBK/PdYx15STdq6swxGeCXazsniOAbIIK0F
+ 4NmuGLcuDrrtuuX8qPa3L3p+PXmJ7yy8OF5gpcDmIOVORUrHhXrGOJg+99893evc88fcHV7Ia
+ 7Tnp/0iuzRifFFr/kyKVqY+NDsEQnXGplKHXqDfru1luPdpM2BkiflGVhKoayUNX5+5yXCUKR
+ T0rHlxVtu4XT58dMrDjTa2EhdYNNq3AXHjIck/XLkZHYujX1PiEZvF2gRTL/8fL+8GB61sOH8
+ s6d2bCw44Y9AzarEyYbPsSqOoH4t/DCPnszAUTsn8HWyfNbXKRCPy4FtKbWHVpnTxOAJKykH0
+ Yw2BaXd8qqhkDCtNLT1lc2FzOeAt2PgKdD051V71706+pcCMFZ/iQCR4ujdlsFIJoKJRQKnjr
+ Mza88SlwQr5Q9C7knbcvq+sVSpsg1vUDy1Jyv08jjD4LdDmAtgFiGQKxOFOv7hCT/XTia9UnH
+ /gQhZyzMmxiVOdlY9eGfc/aMITeIMWheznW6Lyq2FJ3hLpaGI/9e/NNyCbquv8Sk2aisnaAe4
+ ZDR76Yxs0Y8Z1quc8rQ6EnGzVeo5HJkw13gCK37XxHeAnOwuSZl3+ZD1z2jmGFnN1PFX/23a+
+ Es9UuweDvyE23bhOQc/5nbuT0+YnvsBTfNKuHQqkUOJdy3YVLjnpuGf++pTcmQaWmr32bLkTn
+ hMELGm5Dl56aogpxH2xJlgEKll2vhPUIBQanJnZT3L+moBr6fz7fMGHLHqrBcKmdbsdtOQCAp
+ 6GSaSEtX1hNx+g=
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -155,41 +89,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-05-03 at 18:44 -0700, Kees Cook wrote:
-> 
-> @@ -2277,7 +2274,7 @@ cfg80211_update_notlisted_nontrans(struct wiphy *wiphy,
->  	size_t ielen = len - offsetof(struct ieee80211_mgmt,
->  				      u.probe_resp.variable);
->  	size_t new_ie_len;
-> -	struct cfg80211_bss_ies *new_ies;
-> +	struct cfg80211_bss_ies *new_ies = NULL;
->  	const struct cfg80211_bss_ies *old;
->  	u8 cpy_len;
->  
-> @@ -2314,8 +2311,7 @@ cfg80211_update_notlisted_nontrans(struct wiphy *wiphy,
->  	if (!new_ie)
->  		return;
->  
-> -	new_ies = kzalloc(sizeof(*new_ies) + new_ie_len, GFP_ATOMIC);
-> -	if (!new_ies)
-> +	if (mem_to_flex_dup(&new_ies, new_ie, new_ie_len, GFP_ATOMIC))
->  		goto out_free;
->  
->  	pos = new_ie;
-> @@ -2333,10 +2329,8 @@ cfg80211_update_notlisted_nontrans(struct wiphy *wiphy,
->  	memcpy(pos, mbssid + cpy_len, ((ie + ielen) - (mbssid + cpy_len)));
->  
->  	/* update ie */
-> -	new_ies->len = new_ie_len;
->  	new_ies->tsf = le64_to_cpu(mgmt->u.probe_resp.timestamp);
->  	new_ies->from_beacon = ieee80211_is_beacon(mgmt->frame_control);
-> -	memcpy(new_ies->data, new_ie, new_ie_len);
+m 4=2E Mai 2022 08:51:41 MESZ schrieb Krzysztof Kozlowski <krzysztof=2Ekozl=
+owski@linaro=2Eorg>:
+>On 03/05/2022 17:03, Frank Wunderlich wrote:
+>>=20
+>> have not posted this version as it was failing in dtbs_check, this
+>was how i tried:
+>>=20
+>>
+>https://github=2Ecom/frank-w/BPI-R2-4=2E14/blob/8f2033eb6fcae273580263c3f=
+0b31f0d48821740/Documentation/devicetree/bindings/net/dsa/mediatek=2Eyaml#L=
+177
+>
+>You have mixed up indentation of the second if (and missing -)=2E
 
-This introduces a bug, "new_ie" is modified between the kzalloc() and
-the memcpy(), but you've moved the memcpy() into the allocation. In
-fact, new_ie is completely freshly kzalloc()'ed at this point. So you
-need to change the ordering here, but since new_ie is freed pretty much
-immediately, we can probably just build the stuff directly inside
-new_ies->data, though then of course we cannot use your helper anymore?
+The "compatible if" should be a child of the "if" above,because phy-mode p=
+roperty only exists for cpu-port=2E I can try with additional "-" (but i gu=
+ess this is only needed for allOf)
 
-johannes
+Rob told me that i cannot check compatible in subnode and this check will =
+be always true=2E=2E=2Ejust like my experience=2E
+I can only make the compatible check at top-level and then need to define =
+substructure based on this (so define structure twice)=2E He suggested me a=
+dding this to description for now=2E
+
+Imho this can be added later if really needed=2E=2E=2Edid not found any ex=
+ample checking for compatible in a subnode=2E All were in top level=2E Afai=
+r these properties are handled by dsa-core/phylink and driver only compares=
+ constants set there=2E
+
+>(=2E=2E=2E)
+>
+>>>>
+>>>> basicly this "ports"-property should be required too, right?
+>>>
+>>> Previous binding did not enforce it, I think, but it is reasonable
+>to
+>>> require ports=2E
+>>=20
+>> basicly it is required in dsa=2Eyaml, so it will be redundant here
+>>=20
+>>
+>https://elixir=2Ebootlin=2Ecom/linux/v5=2E18-rc5/source/Documentation/dev=
+icetree/bindings/net/dsa/dsa=2Eyaml#L55
+>>=20
+>> this defines it as pattern "^(ethernet-)?ports$" and should be
+>processed by dsa-core=2E so maybe changing it to same pattern instead of
+>moving up as normal property?
+>
+>Just keep what is already used in existing DTS=2E
+
+Currently only "ports" is used=2E=2E=2Eso i will change it to "normal" pro=
+perty=2E
+
+>>>> for 33 there seem no constant=2E=2Eall other references to pio node a=
+re
+>with numbers too and there seem no binding
+>>>> header defining the gpio pins (only functions in
+>include/dt-bindings/pinctrl/mt7623-pinfunc=2Eh)
+>>>
+>>> ok, then my comment
+>>=20
+>> you mean adding a comment to the example that GPIO-flags/constants
+>should be used instead of magic numbers?
+>
+>I think something was cut from my reply=2E I wanted to say:
+>"ok, then my comment can be skipped"
+
+Ok
+
+>But I think your check was not correct=2E I looked at bpi-r2 DTS
+>(mt7623n)
+>and pio controller uses GPIO flags=2E
+
+I see only same as in the example
+
+https://elixir=2Ebootlin=2Ecom/linux/latest/source/arch/arm/boot/dts/mt762=
+3n-bananapi-bpi-r2=2Edts#L196
+
+>Best regards,
+>Krzysztof
+regards Frank
