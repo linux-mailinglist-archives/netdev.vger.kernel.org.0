@@ -2,65 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FC12519631
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 06:02:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D86E9519694
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 06:29:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344447AbiEDEGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 00:06:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59690 "EHLO
+        id S1344566AbiEDEck (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 00:32:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiEDEGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 00:06:16 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02861A396;
-        Tue,  3 May 2022 21:02:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651636961; x=1683172961;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ckh2B3G/pTVLFtGJOv5T4bNsOnAzGDa8qxR2Bi3Txpc=;
-  b=LvRgUPT/o7Jb8s0R8aWbNmP4fDofN7LhvI8AKOhSFbdLqshyxZklksl5
-   wshoMyCwkbUYGdsL7845wSP9ijWWDFEQMIy0leGVa2GMjj4Mcio2wxtxk
-   sQ7S6/a2pyO7RLhV20WE7zJH/xDXEOUp+MOuSMr7zPxb4LhibDfYFXUMT
-   kMDb47Y9RGu/FrLTPGvJKBrmls6HJc9iCmthACCtA8uJWqpUa0tvwFcTq
-   JFSv4ALY5yEvRDqbCXO35kIHFYSsLwRKPn2Q51OVNU62M7DvRWEZoeyMp
-   geQz2EGQnOMvwvN6eLYdUwjVMMmKbUhiPqTsz9anjK8GD6XI6Whucv7uz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267251979"
-X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="267251979"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 21:02:41 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="693144489"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 03 May 2022 21:02:37 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nm6Dk-000B35-NM;
-        Wed, 04 May 2022 04:02:36 +0000
-Date:   Wed, 4 May 2022 12:01:44 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
-        memxor@gmail.com
-Subject: Re: [PATCH bpf-next] net: netfilter: add kfunc helper to update ct
- timeout
-Message-ID: <202205041143.5PZf1J9F-lkp@intel.com>
-References: <1327f8f5696ff2bc60400e8f3b79047914ccc837.1651595019.git.lorenzo@kernel.org>
+        with ESMTP id S1344563AbiEDEch (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 00:32:37 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9531A26AD5;
+        Tue,  3 May 2022 21:28:57 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id d17so426609plg.0;
+        Tue, 03 May 2022 21:28:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=QZv7jD+5fjk8Vawh6DvHYJ+ahvZutcLwH7fZiiHiZyw=;
+        b=Jso0De5bNwc//lqgdmQqnB+Zh9nQgwCN58RWg43w5Ql33c4zC2QiPrAfbAC9KfP+2d
+         3GALSCV6ukS5IyeHDSZESrC54EvB6uOjA5vjOU7P9HKbJ/XegozUG6Q8ziIPVJgwO8SF
+         dE8E0sPCsXGjNjMGbbKnMOO9NARdh8dSQsKG6InlkTzh9MMu3cSz3QCdBKyDJsEmbOp7
+         6Bef7YduWVgSkkyd/ZoDuhiBD9AJD9iSbTrSLWOilbSe9WJP+VfLkjKvf1kwocC0HL6+
+         S8ZsWXqUOD9UPvXvprS6RW+lJmDvp1Eq31jckdGHvImYs9hgpg3/AkUz/yGAAICSUQmk
+         28ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=QZv7jD+5fjk8Vawh6DvHYJ+ahvZutcLwH7fZiiHiZyw=;
+        b=THqzooi3aTchZTueybjcRDJIwoum7ZI+BFbtvxqTwBu/lmQVimvgfk0Tugtw9Ix7Ha
+         ifK7DsXoVEN7nPSOUrncIsXCisnZRRsfk+9YZflYzUFFsoRt9IBWcabi9mmLk43Clu8d
+         FjQj9na1iKRZglhWxYKaELgjEw8n/Y+hAtQrptriOGC9wL705spDnosdWWALIJEg8HGD
+         cE8UhOgYvZ6cjuE2cpxSXLUe9F9rElNE3xy+9qPF8eP9CFhmJN22G6CSYt4CWP4P0waL
+         jyLmAXAs5+JT0x/WvdziSPmcN6n9qEtvAjTdOnc70SgHNtXrPDl87+wbNu6WuZzOCsxb
+         Obfg==
+X-Gm-Message-State: AOAM530fL93d1rT+Ktwxt6b1kl/91KRQEM6wopoBnB8XWt/VPBfeRxqe
+        uBhK7X4+5N24vE8aBpFbmyo=
+X-Google-Smtp-Source: ABdhPJxBosJjQajdsV74540jZx9QulgrSss19Tu62YIXWGYMzhRhhFToCNoBMcqTNvczd7RKluLEDw==
+X-Received: by 2002:a17:90a:b106:b0:1d9:7cde:7914 with SMTP id z6-20020a17090ab10600b001d97cde7914mr8402344pjq.56.1651638537098;
+        Tue, 03 May 2022 21:28:57 -0700 (PDT)
+Received: from [192.168.43.80] (subs03-180-214-233-30.three.co.id. [180.214.233.30])
+        by smtp.gmail.com with ESMTPSA id j12-20020a62e90c000000b0050dc76281e7sm7157486pfh.193.2022.05.03.21.28.53
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 21:28:56 -0700 (PDT)
+Message-ID: <9d8b436a-5d8d-2a53-a2a1-5fbab987e41b@gmail.com>
+Date:   Wed, 4 May 2022 11:28:51 +0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1327f8f5696ff2bc60400e8f3b79047914ccc837.1651595019.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next] net/core: Remove comment quote for
+ __dev_queue_xmit()
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-doc@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
+        Dave Jones <davej@redhat.com>,
+        Randy Dunlap <randy.dunlap@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220503072949.27336-1-bagasdotme@gmail.com>
+ <20220503180341.36dcbb07@kernel.org>
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+In-Reply-To: <20220503180341.36dcbb07@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -68,36 +79,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lorenzo,
+On 5/4/22 08:03, Jakub Kicinski wrote:
+> On Tue,  3 May 2022 14:29:49 +0700 Bagas Sanjaya wrote:
+>> - * -----------------------------------------------------------------------------------
+>> - *      I notice this method can also return errors from the queue disciplines,
+>> - *      including NET_XMIT_DROP, which is a positive value.  So, errors can also
+>> - *      be positive.
+>> - *
+>> - *      Regardless of the return value, the skb is consumed, so it is currently
+>> - *      difficult to retry a send to this method.  (You can bump the ref count
+>> - *      before sending to hold a reference for retry if you are careful.)
+>> - *
+>> - *      When calling this method, interrupts MUST be enabled.  This is because
+>> - *      the BH enable code must have IRQs enabled so that it will not deadlock.
+>> - *          --BLG
+>> + *	This method can also return positive errno code from the queue
+>> + *	disciplines (including NET_XMIT_DROP).
+>> + *
+>> + *	Note that regardless of the return value, the skb is consumed
+>> + *	anyway, so it is currently difficult to retry sending to this
+>> + *	method.
+> 
+> Why drop almost half of the comment if the problem is just the ----
+> banner?
 
-I love your patch! Perhaps something to improve:
+I can't think of preserving delineation between actual documentation
+and the quote without messing up kernel-doc.
 
-[auto build test WARNING on bpf-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Lorenzo-Bianconi/net-netfilter-add-kfunc-helper-to-update-ct-timeout/20220504-003234
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220504/202205041143.5PZf1J9F-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://github.com/intel-lab-lkp/linux/commit/a184a0a4e28e8af16232b4ccd899f7ae976f7f64
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Lorenzo-Bianconi/net-netfilter-add-kfunc-helper-to-update-ct-timeout/20220504-003234
-        git checkout a184a0a4e28e8af16232b4ccd899f7ae976f7f64
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-
-sparse warnings: (new ones prefixed by >>)
->> net/netfilter/nf_conntrack_bpf.c:230:6: sparse: sparse: symbol 'bpf_ct_refresh_timeout' was not declared. Should it be static?
-
-Please review and possibly fold the followup patch.
+Actually the "--BLG" signature is the culprit.
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+An old man doll... just what I always wanted! - Clara
