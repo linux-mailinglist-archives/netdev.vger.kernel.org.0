@@ -2,171 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50644519883
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:45:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77D3251988B
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:47:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345425AbiEDHtD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 03:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
+        id S1345696AbiEDHud (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 03:50:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345582AbiEDHsz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:48:55 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.15.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2754310F6;
-        Wed,  4 May 2022 00:45:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1651650277;
-        bh=pfo7l2+6NRg3JzR+9KrIDePEDrqA7zKF11o5LYtwEJg=;
-        h=X-UI-Sender-Class:Date:In-Reply-To:References:Subject:Reply-to:To:
-         CC:From;
-        b=d3TNyVHaZZCMyyfKbsrQUNviX4v3RF5SfOoweE6vmaR2/JyBWFRWypYDyjp06Z1DB
-         FuBE+0+Udaa3ARZCq5fBT3AykSejo8IhgMbgVSW2VZXyu3xEoIliwkzLa7TWBSMoM2
-         GCDzaQVtRipER38qIXCwauuhna5OWspUz/EXvDDY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from frank-s9 ([80.245.79.168]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MRmfo-1nNQj902p8-00T9ld; Wed, 04
- May 2022 09:44:37 +0200
-Date:   Wed, 04 May 2022 09:44:29 +0200
-User-Agent: K-9 Mail for Android
-In-Reply-To: <95aea078-3e85-79c3-79c0-430bd7c0fbae@linaro.org>
-References: <20220502153238.85090-1-linux@fw-web.de> <d29637f8-87ff-b5f0-9604-89b51a2ba7c1@linaro.org> <trinity-cda3b94f-8556-4b83-bc34-d2c215f93bcd-1651587032669@3c-app-gmx-bap25> <10770ff5-c9b1-7364-4276-05fa0c393d3b@linaro.org> <trinity-213ab6b1-ccff-4429-b76c-623c529f6f73-1651590197578@3c-app-gmx-bap25> <95aea078-3e85-79c3-79c0-430bd7c0fbae@linaro.org>
+        with ESMTP id S241137AbiEDHuc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:50:32 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C9C213F08
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:46:55 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:1b3c:6996:5378:f253]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nm9il-0004C0-JH; Wed, 04 May 2022 09:46:53 +0200
+Message-ID: <7ca81e6b-85fd-beff-1c2b-62c86c9352e9@leemhuis.info>
+Date:   Wed, 4 May 2022 09:46:49 +0200
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: Aw: Re: Re: [RFC v1] dt-bindings: net: dsa: convert binding for mediatek switches
-Reply-to: frank-w@public-files.de
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-CC:     Greg Ungerer <gerg@kernel.org>,
-        =?ISO-8859-1?Q?Ren=E9_van_Dorst?= <opensource@vdorst.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Frank Wunderlich <linux@fw-web.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-From:   Frank Wunderlich <frank-w@public-files.de>
-Message-ID: <69290DD3-0179-49C2-8E7D-9F8DBDEBC96F@public-files.de>
-X-Provags-ID: V03:K1:Xi3146xQ+5Emm7jErYnUntzfAYprQLIZghBegsBA0oc7IJk6WZ7
- EN1yKUXY8pzFBl73tvSapxS4fIHqWMvVrkpzm1Iu+ZHscY3V5cEJqpj7clPSPxeAHNTLZLq
- kAhiRrTtFdRmz5z1ZElLYt/qGdFj91Z7CWXWfazFNmqpRklgMAB+8wY9CzSuw3JLP2a3Onz
- ockS0Idi7ssPgd4G6pOAQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:SvD6m1ZZk2w=:nHsMDGmebHyxCWsbOOhqYD
- tJ0PHMZ3fVxKUH8cbqp2Lpy7oGvya/82ozlXh7WfaupZ7Bf9hftCqF0yN2Yz7/DfIiWhSDQsR
- xobZopSNltQQHTvmrfFEzYureaXSTUUdS7EgXDzK5tJNCbUaTd7Q7LX/Wup1Mhn6DVJNJpeJZ
- SAV31HJXlN8WqcveBMYJl1gE1aHv0D1wMOUOzsz2+gDUVdTaumYSHF1mp1BbJR6tr781+Lofa
- zCPzk+lJiy3MqbuS89FaeKStJPf+f3VC+lYd3N6PUZJ47Hg4Ok2XMCWsRLM6QME43dxuH6Y4+
- 8NCI5g6u1UbYQOpm+Hp6381ErHpWOJwUcVK3wzSBK/PdYx15STdq6swxGeCXazsniOAbIIK0F
- 4NmuGLcuDrrtuuX8qPa3L3p+PXmJ7yy8OF5gpcDmIOVORUrHhXrGOJg+99893evc88fcHV7Ia
- 7Tnp/0iuzRifFFr/kyKVqY+NDsEQnXGplKHXqDfru1luPdpM2BkiflGVhKoayUNX5+5yXCUKR
- T0rHlxVtu4XT58dMrDjTa2EhdYNNq3AXHjIck/XLkZHYujX1PiEZvF2gRTL/8fL+8GB61sOH8
- s6d2bCw44Y9AzarEyYbPsSqOoH4t/DCPnszAUTsn8HWyfNbXKRCPy4FtKbWHVpnTxOAJKykH0
- Yw2BaXd8qqhkDCtNLT1lc2FzOeAt2PgKdD051V71706+pcCMFZ/iQCR4ujdlsFIJoKJRQKnjr
- Mza88SlwQr5Q9C7knbcvq+sVSpsg1vUDy1Jyv08jjD4LdDmAtgFiGQKxOFOv7hCT/XTia9UnH
- /gQhZyzMmxiVOdlY9eGfc/aMITeIMWheznW6Lyq2FJ3hLpaGI/9e/NNyCbquv8Sk2aisnaAe4
- ZDR76Yxs0Y8Z1quc8rQ6EnGzVeo5HJkw13gCK37XxHeAnOwuSZl3+ZD1z2jmGFnN1PFX/23a+
- Es9UuweDvyE23bhOQc/5nbuT0+YnvsBTfNKuHQqkUOJdy3YVLjnpuGf++pTcmQaWmr32bLkTn
- hMELGm5Dl56aogpxH2xJlgEKll2vhPUIBQanJnZT3L+moBr6fz7fMGHLHqrBcKmdbsdtOQCAp
- 6GSaSEtX1hNx+g=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: [regression] dpaa2: TSO offload on lx2160a causes fatal exception in
+ interrupt
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1651650415;582c049d;
+X-HE-SMSGID: 1nm9il-0004C0-JH
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-m 4=2E Mai 2022 08:51:41 MESZ schrieb Krzysztof Kozlowski <krzysztof=2Ekozl=
-owski@linaro=2Eorg>:
->On 03/05/2022 17:03, Frank Wunderlich wrote:
->>=20
->> have not posted this version as it was failing in dtbs_check, this
->was how i tried:
->>=20
->>
->https://github=2Ecom/frank-w/BPI-R2-4=2E14/blob/8f2033eb6fcae273580263c3f=
-0b31f0d48821740/Documentation/devicetree/bindings/net/dsa/mediatek=2Eyaml#L=
-177
->
->You have mixed up indentation of the second if (and missing -)=2E
+Hi, this is your Linux kernel regression tracker.
 
-The "compatible if" should be a child of the "if" above,because phy-mode p=
-roperty only exists for cpu-port=2E I can try with additional "-" (but i gu=
-ess this is only needed for allOf)
+Ioana, I noticed a regression report in bugzilla.kernel.org that afaics
+nobody acted upon since it was reported about a week ago. The reporter
+*suspects* it's caused by a recent change of yours. That's why I decided
+to forward it to the lists and all people that seemed to be relevant
+here. To quote from https://bugzilla.kernel.org/show_bug.cgi?id=215886 :
 
-Rob told me that i cannot check compatible in subnode and this check will =
-be always true=2E=2E=2Ejust like my experience=2E
-I can only make the compatible check at top-level and then need to define =
-substructure based on this (so define structure twice)=2E He suggested me a=
-dding this to description for now=2E
+>  kernelbugs@63bit.net 2022-04-25 18:15:38 UTC
+> 
+> Network traffic eventually causes a fatal exception in interrupt. Disabling TSO prevents the bug. Likely related to recent changes to enable TSO?
+> 
+> Crash:
+> [  487.231819] Unable to handle kernel paging request at virtual address fffffd9807000008
+> [  487.239780] Mem abort info:
+> [  487.242570]   ESR = 0x96000006
+> [  487.245620]   EC = 0x25: DABT (current EL), IL = 32 bits
+> [  487.250974]   SET = 0, FnV = 0
+> [  487.254025]   EA = 0, S1PTW = 0
+> [  487.257170]   FSC = 0x06: level 2 translation fault
+> [  487.262050] Data abort info:
+> [  487.264921]   ISV = 0, ISS = 0x00000006
+> [  487.268748]   CM = 0, WnR = 0
+> [  487.271747] swapper pgtable: 4k pages, 48-bit VAs, pgdp=00000000830fd000
+> [  487.278449] [fffffd9807000008] pgd=100000277c353003, p4d=100000277c353003, pud=100000277c352003, pmd=0000000000000000
+> [  487.289110] Internal error: Oops: 96000006 [#1] SMP
+> [  487.293985] Modules linked in: rfkill fsl_dpaa2_ptp ltc2978 lm90 pmbus_core at24 ptp_qoriq fsl_dpaa2_eth pcs_lynx at803x phylink xgmac_mdio i2c_mux_pca954x i2c_mux sfp mdio_i2c qoriq_thermal qoriq_cpufreq layerscape_edac_mod vfat fat auth_rpcgss fuse sunrpc dpaa2_caam fsl_mc_dpio caam_jr nvme rtc_pcf2127 caamhash_desc mmc_block xhci_plat_hcd caamalg_desc regmap_spi dpaa2_console crct10dif_ce libdes ghash_ce nvme_core dwc3 caam sdhci_of_esdhc ulpi error sdhci_pltfm rtc_fsl_ftm_alarm udc_core sbsa_gwdt ahci_qoriq i2c_imx sdhci gpio_keys
+> [  487.341467] CPU: 7 PID: 1772 Comm: sshd Tainted: G        W        --------  ---  5.18.0-0.rc3.20220422gitd569e86915b7f2f.31.fc37.aarch64 #1
+> [  487.354061] Hardware name: SolidRun LX2160A Honeycomb (DT)
+> [  487.359535] pstate: a0400005 (NzCv daif +PAN -UAO -TCO -DIT -SSBS BTYPE=--)
+> [  487.366485] pc : kfree+0xac/0x304
+> [  487.369799] lr : kfree+0x204/0x304
+> [  487.373191] sp : ffff80000c4eb120
+> [  487.376493] x29: ffff80000c4eb120 x28: ffff662240c46400 x27: 0000000000000001
+> [  487.383621] x26: 0000000000000001 x25: ffff662246da0cc0 x24: ffff66224af78000
+> [  487.390748] x23: ffffad184f4ce008 x22: ffffad1850185000 x21: ffffad1838d13cec
+> [  487.397874] x20: ffff6601c0000000 x19: fffffd9807000000 x18: 0000000000000000
+> [  487.405000] x17: ffffb910cdc49000 x16: ffffad184d7d9080 x15: 0000000000004000
+> [  487.412126] x14: 0000000000000008 x13: 000000000000ffff x12: 0000000000000000
+> [  487.419252] x11: 0000000000000004 x10: 0000000000000001 x9 : ffffad184d7d927c
+> [  487.426379] x8 : 0000000000000000 x7 : 0000000ffffffd1d x6 : ffff662240a94900
+> [  487.433505] x5 : 0000000000000003 x4 : 0000000000000009 x3 : ffffad184f4ce008
+> [  487.440632] x2 : ffff662243eec000 x1 : 0000000100000100 x0 : fffffc0000000000
+> [  487.447758] Call trace:
+> [  487.450194]  kfree+0xac/0x304
+> [  487.453151]  dpaa2_eth_free_tx_fd.isra.0+0x33c/0x3e0 [fsl_dpaa2_eth]
+> [  487.459507]  dpaa2_eth_tx_conf+0x100/0x2e0 [fsl_dpaa2_eth]
+> [  487.464989]  dpaa2_eth_poll+0xdc/0x380 [fsl_dpaa2_eth]
+> [  487.470122]  __napi_poll.constprop.0+0x40/0x1a0
+> [  487.474645]  net_rx_action+0x310/0x3d4
+> [  487.478384]  __do_softirq+0x23c/0x6b4
+> [  487.482036]  __irq_exit_rcu+0x104/0x214
+> [  487.485862]  irq_exit_rcu+0x1c/0x50
+> [  487.489339]  el1_interrupt+0x38/0x70
+> [  487.492907]  el1h_64_irq_handler+0x18/0x24
+> [  487.496993]  el1h_64_irq+0x68/0x6c
+> [  487.500384]  __ip_finish_output+0x138/0x220
+> [  487.504558]  ip_finish_output+0x40/0xf4
+> [  487.508384]  ip_output+0xfc/0x2fc
+> [  487.511689]  __ip_queue_xmit+0x1c0/0x5e0
+> [  487.515601]  ip_queue_xmit+0x20/0x30
+> [  487.519166]  __tcp_transmit_skb+0x3c0/0x7cc
+> [  487.523339]  tcp_write_xmit+0x310/0x8ac
+> [  487.527164]  __tcp_push_pending_frames+0x48/0x110
+> [  487.531857]  tcp_push+0xbc/0x19c
+> [  487.535075]  tcp_sendmsg_locked+0x2ac/0xad4
+> [  487.539247]  tcp_sendmsg+0x44/0x6c
+> [  487.542639]  inet_sendmsg+0x50/0x7c
+> [  487.546117]  sock_sendmsg+0x60/0x70
+> [  487.549595]  sock_write_iter+0x98/0xe0
+> [  487.553333]  new_sync_write+0x124/0x130
+> [  487.557159]  vfs_write+0x1c8/0x210
+> [  487.560550]  ksys_write+0xd8/0xec
+> [  487.563854]  __arm64_sys_write+0x28/0x34
+> [  487.567766]  invoke_syscall+0x78/0x100
+> [  487.571506]  el0_svc_common.constprop.0+0x68/0x124
+> [  487.576287]  do_el0_svc+0x30/0x90
+> [  487.579592]  el0_svc+0x60/0x1a4
+> [  487.582723]  el0t_64_sync_handler+0x10c/0x140
+> [  487.587070]  el0t_64_sync+0x190/0x194
+> [  487.590723] Code: 8b130293 b25657e0 d34cfe73 8b131813 (f9400660) 
+> [  487.596807] ---[ end trace 0000000000000000 ]---
+> [  487.601413] Kernel panic - not syncing: Oops: Fatal exception in interrupt
+> [  487.608276] SMP: stopping secondary CPUs
+> [  487.612206] Kernel Offset: 0x2d1845400000 from 0xffff800008000000
+> [  487.618287] PHYS_OFFSET: 0xffff99fe40000000
+> [  487.622457] CPU features: 0x100,00004b09,00001086
+> [  487.627150] Memory Limit: none
+> [  487.630196] Rebooting in 1 seconds..
+> 
+> Mitigation:
+> ethtool -K ethX tso off
+> 
+> [reply] [−] Comment 1 kernelbugs@63bit.net 2022-05-02 01:37:06 UTC
+> 
+> I believe this is related to commit 3dc709e0cd47c602a8d1a6747f1a91e9737eeed3
+> 
 
-Imho this can be added later if really needed=2E=2E=2Edid not found any ex=
-ample checking for compatible in a subnode=2E All were in top level=2E Afai=
-r these properties are handled by dsa-core/phylink and driver only compares=
- constants set there=2E
+That commit is "dpaa2-eth: add support for software TSO".
 
->(=2E=2E=2E)
->
->>>>
->>>> basicly this "ports"-property should be required too, right?
->>>
->>> Previous binding did not enforce it, I think, but it is reasonable
->to
->>> require ports=2E
->>=20
->> basicly it is required in dsa=2Eyaml, so it will be redundant here
->>=20
->>
->https://elixir=2Ebootlin=2Ecom/linux/v5=2E18-rc5/source/Documentation/dev=
-icetree/bindings/net/dsa/dsa=2Eyaml#L55
->>=20
->> this defines it as pattern "^(ethernet-)?ports$" and should be
->processed by dsa-core=2E so maybe changing it to same pattern instead of
->moving up as normal property?
->
->Just keep what is already used in existing DTS=2E
+Could somebody take a look into this? Or was this discussed somewhere
+else already? Or even fixed?
 
-Currently only "ports" is used=2E=2E=2Eso i will change it to "normal" pro=
-perty=2E
+Anyway, to get this tracked:
 
->>>> for 33 there seem no constant=2E=2Eall other references to pio node a=
-re
->with numbers too and there seem no binding
->>>> header defining the gpio pins (only functions in
->include/dt-bindings/pinctrl/mt7623-pinfunc=2Eh)
->>>
->>> ok, then my comment
->>=20
->> you mean adding a comment to the example that GPIO-flags/constants
->should be used instead of magic numbers?
->
->I think something was cut from my reply=2E I wanted to say:
->"ok, then my comment can be skipped"
+#regzbot introduced: 3dc709e0cd47c602a8d1a6747f1a91e9737eeed3
+#regzbot from: Unkown <kernelbugs@63bit.net>
+#regzbot title: net: dpaa2: TSO offload on lx2160a causes fatal
+exception in interrupt
+#regzbot link: https://bugzilla.kernel.org/show_bug.cgi?id=215886
 
-Ok
+Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
 
->But I think your check was not correct=2E I looked at bpi-r2 DTS
->(mt7623n)
->and pio controller uses GPIO flags=2E
+P.S.: As the Linux kernel's regression tracker I deal with a lot of
+reports and sometimes miss something important when writing mails like
+this. If that's the case here, don't hesitate to tell me in a public
+reply, it's in everyone's interest to set the public record straight.
 
-I see only same as in the example
+-- 
+Additional information about regzbot:
 
-https://elixir=2Ebootlin=2Ecom/linux/latest/source/arch/arm/boot/dts/mt762=
-3n-bananapi-bpi-r2=2Edts#L196
+If you want to know more about regzbot, check out its web-interface, the
+getting start guide, and the references documentation:
 
->Best regards,
->Krzysztof
-regards Frank
+https://linux-regtracking.leemhuis.info/regzbot/
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/getting_started.md
+https://gitlab.com/knurd42/regzbot/-/blob/main/docs/reference.md
+
+The last two documents will explain how you can interact with regzbot
+yourself if your want to.
+
+Hint for reporters: when reporting a regression it's in your interest to
+CC the regression list and tell regzbot about the issue, as that ensures
+the regression makes it onto the radar of the Linux kernel's regression
+tracker -- that's in your interest, as it ensures your report won't fall
+through the cracks unnoticed.
+
+Hint for developers: you normally don't need to care about regzbot once
+it's involved. Fix the issue as you normally would, just remember to
+include 'Link:' tag in the patch descriptions pointing to all reports
+about the issue. This has been expected from developers even before
+regzbot showed up for reasons explained in
+'Documentation/process/submitting-patches.rst' and
+'Documentation/process/5.Posting.rst'.
+
