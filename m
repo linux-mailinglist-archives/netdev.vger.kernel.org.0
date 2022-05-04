@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 07E4A51A3A6
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:19:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B262551A3A7
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:19:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352209AbiEDPWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 11:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44292 "EHLO
+        id S1352214AbiEDPW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 11:22:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352214AbiEDPWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:22:34 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06B8443EF6;
-        Wed,  4 May 2022 08:18:53 -0700 (PDT)
+        with ESMTP id S1352162AbiEDPW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:22:57 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 966AC4474E;
+        Wed,  4 May 2022 08:19:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651677533; x=1683213533;
+  t=1651677556; x=1683213556;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=B2ngessTxUReTTn8UU2TgzsOGOZ4x2PeHrDfRvo1Gac=;
-  b=XFksDMtLITFXDCPQn82ymUiDEurhFYoIIonwzj0EglSfnB2gYy577qY9
-   hvOhN9lo3Ectq4bCGQesfly6mYHaIr4WzR/Hpv0EH2xxAwlVHYn1RdOp6
-   I1tj3XqAa7tyaWjuqV6zhZRbvrGiVk7T9jdv86CkSWriFlvEQAnqpwj1V
-   XME/LGTTPY7B0HLViwhP7EcfFP4ULpsRdkGrTr+3ZDxZso1k+qF4xa1RI
-   yUYxOpsBOOFhVi3WT+cw0g7nDByejTu7HOdjUsaUahNcKuXFq5ETs77WG
-   ksQZRZdVxC+S4sxe173pOJmYBBTHEuidjplGggq1jTWCtuGbHGTGrWCg+
-   w==;
+  bh=e3GK+WVSDDsX7JUvQx+cj4UWyLA8yQJCFUYDrobggrQ=;
+  b=r2mRkJZVgJtGNN2xSbxY+EfymmOgDAc/+m5MDN3p4uj25MsHRdIPSU6q
+   +Y+KiDYohyQTnT6bncGN3vVIAJMfMiImRbhLT7wu4rgbw6FUEjXgw9jid
+   tHZ/B6t3+nO305ySyl9coaWhMmoJmWg/I13uzJKNF+8k0xEH+cY2J1gjL
+   L1Rv133guo4Aeo38pOkwJAq3lzEFr1JB05sW/i+yXG79DHnccCLblbTsQ
+   ZQeewveXoEYZR032KA6VF0N10qcKmuZjMkicEwwI0VG/ZH8IA9ItNvDyR
+   XyYh9Lf8gYBilA5N2WTXXQaE5eeG41YrqB9uoR/pzHoBYBR04VE6ZfPZk
+   A==;
 X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="171944622"
+   d="scan'208";a="157794883"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2022 08:18:52 -0700
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2022 08:19:15 -0700
 Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
  chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 4 May 2022 08:18:50 -0700
+ 15.1.2375.17; Wed, 4 May 2022 08:19:09 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 4 May 2022 08:18:33 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 4 May 2022 08:18:53 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
@@ -59,10 +59,10 @@ CC:     KP Singh <kpsingh@kernel.org>,
         "Eric Dumazet" <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>, Rob Herring <robh@kernel.org>
-Subject: [Patch net-next v13 02/13] dt-bindings: net: dsa: dt bindings for microchip lan937x
-Date:   Wed, 4 May 2022 20:47:44 +0530
-Message-ID: <20220504151755.11737-3-arun.ramadoss@microchip.com>
+        Rob Herring <robh+dt@kernel.org>
+Subject: [Patch net-next v13 03/13] net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+Date:   Wed, 4 May 2022 20:47:45 +0530
+Message-ID: <20220504151755.11737-4-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220504151755.11737-1-arun.ramadoss@microchip.com>
 References: <20220504151755.11737-1-arun.ramadoss@microchip.com>
@@ -81,236 +81,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 
-Documentation in .yaml format and updates to the MAINTAINERS
-Also 'make dt_binding_check' is passed.
-
-RGMII internal delay values for the mac is retrieved from
-rx-internal-delay-ps & tx-internal-delay-ps as per the feedback from
-v3 patch series.
-https://lore.kernel.org/netdev/20210802121550.gqgbipqdvp5x76ii@skbuf/
-
-It supports only the delay value of 0ns and 2ns.
+mib->cnt_ptr resetting is handled in multiple places as part of
+port_init_cnt(). Hence moved mib->cnt_ptr code to ksz common layer
+and removed from individual product files.
 
 Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- .../bindings/net/dsa/microchip,lan937x.yaml   | 192 ++++++++++++++++++
- MAINTAINERS                                   |   1 +
- 2 files changed, 193 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+ drivers/net/dsa/microchip/ksz8795.c    | 2 --
+ drivers/net/dsa/microchip/ksz9477.c    | 3 ---
+ drivers/net/dsa/microchip/ksz_common.c | 8 +++++++-
+ 3 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
-new file mode 100644
-index 000000000000..630bf0f8294b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
-@@ -0,0 +1,192 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/dsa/microchip,lan937x.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index f91deea9368e..7c12b3518bab 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -468,8 +468,6 @@ static void ksz8_port_init_cnt(struct ksz_device *dev, int port)
+ 					dropped, &mib->counters[mib->cnt_ptr]);
+ 		++mib->cnt_ptr;
+ 	}
+-	mib->cnt_ptr = 0;
+-	memset(mib->counters, 0, dev->mib_cnt * sizeof(u64));
+ }
+ 
+ static void ksz8_r_table(struct ksz_device *dev, int table, u16 addr, u64 *data)
+diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
+index 48c90e4cda30..79f290ad73dc 100644
+--- a/drivers/net/dsa/microchip/ksz9477.c
++++ b/drivers/net/dsa/microchip/ksz9477.c
+@@ -316,9 +316,6 @@ static void ksz9477_port_init_cnt(struct ksz_device *dev, int port)
+ 	ksz_write8(dev, REG_SW_MAC_CTRL_6, SW_MIB_COUNTER_FLUSH);
+ 	ksz_pwrite32(dev, port, REG_PORT_MIB_CTRL_STAT__4, 0);
+ 	mutex_unlock(&mib->cnt_mutex);
+-
+-	mib->cnt_ptr = 0;
+-	memset(mib->counters, 0, dev->mib_cnt * sizeof(u64));
+ }
+ 
+ static enum dsa_tag_protocol ksz9477_get_tag_protocol(struct dsa_switch *ds,
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 10f127b09e58..235842e01e13 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -242,8 +242,14 @@ void ksz_init_mib_timer(struct ksz_device *dev)
+ 
+ 	INIT_DELAYED_WORK(&dev->mib_read, ksz_mib_read_work);
+ 
+-	for (i = 0; i < dev->port_cnt; i++)
++	for (i = 0; i < dev->port_cnt; i++) {
++		struct ksz_port_mib *mib = &dev->ports[i].mib;
 +
-+title: LAN937x Ethernet Switch Series Tree Bindings
+ 		dev->dev_ops->port_init_cnt(dev, i);
 +
-+maintainers:
-+  - UNGLinuxDriver@microchip.com
-+
-+allOf:
-+  - $ref: dsa.yaml#
-+
-+properties:
-+  compatible:
-+    enum:
-+      - microchip,lan9370
-+      - microchip,lan9371
-+      - microchip,lan9372
-+      - microchip,lan9373
-+      - microchip,lan9374
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 50000000
-+
-+  reset-gpios:
-+    description: Optional gpio specifier for a reset line
-+    maxItems: 1
-+
-+  mdio:
-+    $ref: /schemas/net/mdio.yaml#
-+    unevaluatedProperties: false
-+
-+patternProperties:
-+  "^(ethernet-)?ports$":
-+    patternProperties:
-+      "^(ethernet-)?port@[0-9]+$":
-+        allOf:
-+          - if:
-+              properties:
-+                phy-mode:
-+                  contains:
-+                    enum:
-+                      - rgmii
-+                      - rgmii-id
-+                      - rgmii-txid
-+                      - rgmii-rxid
-+            then:
-+              properties:
-+                rx-internal-delay-ps:
-+                  enum: [0, 2000]
-+                  default: 0
-+                tx-internal-delay-ps:
-+                  enum: [0, 2000]
-+                  default: 0
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+
-+    macb0 {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            fixed-link {
-+                    speed = <1000>;
-+                    full-duplex;
-+            };
-+    };
-+
-+    spi {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            lan9374: switch@0 {
-+                    compatible = "microchip,lan9374";
-+                    reg = <0>;
-+                    spi-max-frequency = <44000000>;
-+
-+                    ethernet-ports {
-+                            #address-cells = <1>;
-+                            #size-cells = <0>;
-+
-+                            port@0 {
-+                                    reg = <0>;
-+                                    label = "lan1";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy0>;
-+                            };
-+
-+                            port@1 {
-+                                    reg = <1>;
-+                                    label = "lan2";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy1>;
-+                            };
-+
-+                            port@2 {
-+                                    reg = <2>;
-+                                    label = "lan4";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy2>;
-+                            };
-+
-+                            port@3 {
-+                                    reg = <3>;
-+                                    label = "lan6";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy3>;
-+                            };
-+
-+                            port@4 {
-+                                    reg = <4>;
-+                                    phy-mode = "rgmii";
-+                                    tx-internal-delay-ps = <2000>;
-+                                    rx-internal-delay-ps = <2000>;
-+                                    ethernet = <&macb0>;
-+
-+                                    fixed-link {
-+                                            speed = <1000>;
-+                                            full-duplex;
-+                                    };
-+                            };
-+
-+                            port@5 {
-+                                    reg = <5>;
-+                                    label = "lan7";
-+                                    phy-mode = "rgmii";
-+                                    tx-internal-delay-ps = <2000>;
-+                                    rx-internal-delay-ps = <2000>;
-+
-+                                    fixed-link {
-+                                            speed = <1000>;
-+                                            full-duplex;
-+                                    };
-+                            };
-+
-+                            port@6 {
-+                                    reg = <6>;
-+                                    label = "lan5";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy6>;
-+                            };
-+
-+                            port@7 {
-+                                    reg = <7>;
-+                                    label = "lan3";
-+                                    phy-mode = "internal";
-+                                    phy-handle = <&t1phy7>;
-+                            };
-+                    };
-+
-+                    mdio {
-+                            #address-cells = <1>;
-+                            #size-cells = <0>;
-+
-+                            t1phy0: ethernet-phy@0{
-+                                    reg = <0x0>;
-+                            };
-+
-+                            t1phy1: ethernet-phy@1{
-+                                    reg = <0x1>;
-+                            };
-+
-+                            t1phy2: ethernet-phy@2{
-+                                    reg = <0x2>;
-+                            };
-+
-+                            t1phy3: ethernet-phy@3{
-+                                    reg = <0x3>;
-+                            };
-+
-+                            t1phy6: ethernet-phy@6{
-+                                    reg = <0x6>;
-+                            };
-+
-+                            t1phy7: ethernet-phy@7{
-+                                    reg = <0x7>;
-+                            };
-+                    };
-+            };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fa6896e8b2d8..660f9c603bbc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12909,6 +12909,7 @@ M:	UNGLinuxDriver@microchip.com
- L:	netdev@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/net/dsa/microchip,ksz.yaml
-+F:	Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
- F:	drivers/net/dsa/microchip/*
- F:	include/linux/platform_data/microchip-ksz.h
- F:	net/dsa/tag_ksz.c
++		mib->cnt_ptr = 0;
++		memset(mib->counters, 0, dev->mib_cnt * sizeof(u64));
++	}
+ }
+ EXPORT_SYMBOL_GPL(ksz_init_mib_timer);
+ 
 -- 
 2.33.0
 
