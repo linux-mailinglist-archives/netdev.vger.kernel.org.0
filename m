@@ -2,104 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 58B3851A12E
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 15:43:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97AA551A186
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 15:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350741AbiEDNq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 09:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
+        id S1350899AbiEDN7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 09:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238169AbiEDNq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 09:46:56 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B23615700;
-        Wed,  4 May 2022 06:43:19 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so5231018pju.2;
-        Wed, 04 May 2022 06:43:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:to:cc:references:subject
-         :content-language:from:in-reply-to:content-transfer-encoding;
-        bh=x9+OqVHzvgZAzmQ7FhCUwnOZ5RMklI3ZHl/WECgRlrA=;
-        b=h5GX2Ek2ssMRmIgfObUfXUBvms99jKkg2ji/NF1OP6hQtSdoRpqAKUrAqmOlgoOk1o
-         ef/TFOZXNPcm7g/tCjG9aSyV1a1PBTXnSwODFbuVHc5hPRdCF4OM9iQ2AW/GVGkae8F0
-         nkS80WsCTtNfsAh1qWSQkvPXYb6VcHR+9yiGrExNglUQdK5CiDVnQsfCQHTOZzBaIxto
-         75KQA6/VLNu3SESd3LCjiAzMMxWYRjZWjqE72zt4vP5Ze/HlHqzFUW59ROX4BhRyhns9
-         LWUXmT2ISG8LWT05rTHJ59jXMqVvxf9E2lP9QGnSG3KmulPoSqAd9owS2DWSMowZvZhg
-         s16Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:to:cc
-         :references:subject:content-language:from:in-reply-to
-         :content-transfer-encoding;
-        bh=x9+OqVHzvgZAzmQ7FhCUwnOZ5RMklI3ZHl/WECgRlrA=;
-        b=ePY6617dv/PPiZ87IK5v9K+GdOpGaNlLX+c0lmTVp3m+9Crl+cLRXZVRruLcpkAloD
-         XTj4o6DPtd49JOnJesNzi/f+tnff+awpOo4ubPUi4KPddqRREf9SZ7N5eavtiDGzRmhX
-         fU+ztjf6jfm67lm6Fput1cwNBdUWxPP+//JhRBiANuBQgjPpjmBbtC7oeS5Etny0k0lX
-         qVQUHAG89Xzmxou+rqSJAXFgM00pYXtSchOBsm17977KYwvwJEO1gsZOtJaYtkyquqbC
-         pI6g7vKmdweChdBa1zJ5JnGNMtpXettVoiO+acvcqBkVYfDAzmWPj/TDi/bSHz3WnLG/
-         YsPw==
-X-Gm-Message-State: AOAM531EAjbGmX8T5V3S1N7WHqyVHx/0/MidrOPuaCp002GrfKcuDDde
-        HOHSVJsfoVXkNNNPwtDtcTY=
-X-Google-Smtp-Source: ABdhPJxjFZqQSVkYuA4ff5UwMHa7xUqA2/GDpd9Wy9e+15M7E6oXY0uMd2Is9JGRFZMUQ6uNx7DyeA==
-X-Received: by 2002:a17:90a:c402:b0:1d9:a003:3f8a with SMTP id i2-20020a17090ac40200b001d9a0033f8amr10381617pjt.18.1651671799067;
-        Wed, 04 May 2022 06:43:19 -0700 (PDT)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id k129-20020a632487000000b003c14af5060dsm14679659pgk.37.2022.05.04.06.43.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 06:43:18 -0700 (PDT)
-Message-ID: <c578c9e6-b2a5-3294-d291-2abfda7d1aed@gmail.com>
-Date:   Wed, 4 May 2022 22:43:12 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     Pavel Begunkov <asml.silence@gmail.com>,
-        Dave Jones <davej@redhat.com>,
+        with ESMTP id S1350924AbiEDN7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 09:59:02 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B126B1F610;
+        Wed,  4 May 2022 06:55:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651672526; x=1683208526;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gTnQ3OGhw6j4Yt119Dk2zJnUnlRlTT7JIPHFO5zJ7Fw=;
+  b=TlV5cGDa/a54RMhc+0csFm68XEUKqIF9QXKCp07qo3q+pfRY/LFk/xOu
+   XkQ4xYS2sE0athTlTusuuj3vvaGDtgkBQhecdTwps8Me+0DNIR9TDfu9m
+   4L5XKui82RonqnEBc8mXXjmv+tVsdb2/tGujK2piukkjk7ff4qb69DuZ0
+   nRaXvSQ96yJHRvO5d5T+CtKe+10W2WeKl2u4i2pIAhErLEREsQJ+71/V6
+   Jk0fIJZrMHEcaTrh9JlNBYLhXtsIkCREza7DGeH6ypjTUxGAE/1vRuJyv
+   vWp5VJUq4xC7wi3PXuPSyEHq1HIYDALxOWVpy4dJ2sAlyfFl8tTs/45qr
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="266614327"
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="266614327"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 06:55:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="620814074"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 04 May 2022 06:55:20 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 19FDAD1; Wed,  4 May 2022 16:55:20 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Randy Dunlap <randy.dunlap@oracle.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <9d8b436a-5d8d-2a53-a2a1-5fbab987e41b@gmail.com>
-Subject: Re: [PATCH net-next] net/core: Remove comment quote for
- __dev_queue_xmit()
-Content-Language: en-US
-From:   Akira Yokosawa <akiyks@gmail.com>
-In-Reply-To: <9d8b436a-5d8d-2a53-a2a1-5fbab987e41b@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Anatolij Gustschin <agust@denx.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH v1 1/4] powerpc/52xx: Remove dead code, i.e. mpc52xx_get_xtal_freq()
+Date:   Wed,  4 May 2022 16:44:46 +0300
+Message-Id: <20220504134449.64473-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+It seems mpc52xx_get_xtal_freq() is not used anywhere. Remove dead code.
 
-On Wed, 4 May 2022 11:28:51 +0700,
-Bagas Sanjaya wrote:
-> On 5/4/22 08:03, Jakub Kicinski wrote:
-[...]
->> Why drop almost half of the comment if the problem is just the ----
->> banner?
-> 
-> I can't think of preserving delineation between actual documentation
-> and the quote without messing up kernel-doc.
-Actually, it is possible.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ arch/powerpc/include/asm/mpc52xx.h           |  1 -
+ arch/powerpc/platforms/52xx/mpc52xx_common.c | 37 --------------------
+ 2 files changed, 38 deletions(-)
 
-See "Block Quotes" in ReST documentation at:
-https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#block-quotes
-
-kernel-doc is basically ReST within comment blocks with several kernel-doc
-specific implicit/explicit markers.
-
-        Thanks, Akira
-
-> 
-> Actually the "--BLG" signature is the culprit.
+diff --git a/arch/powerpc/include/asm/mpc52xx.h b/arch/powerpc/include/asm/mpc52xx.h
+index ce1e0aabaa64..ddd80aae1e32 100644
+--- a/arch/powerpc/include/asm/mpc52xx.h
++++ b/arch/powerpc/include/asm/mpc52xx.h
+@@ -274,7 +274,6 @@ extern void mpc52xx_declare_of_platform_devices(void);
+ extern int mpc5200_psc_ac97_gpio_reset(int psc_number);
+ extern void mpc52xx_map_common_devices(void);
+ extern int mpc52xx_set_psc_clkdiv(int psc_id, int clkdiv);
+-extern unsigned int mpc52xx_get_xtal_freq(struct device_node *node);
+ extern void __noreturn mpc52xx_restart(char *cmd);
+ 
+ /* mpc52xx_gpt.c */
+diff --git a/arch/powerpc/platforms/52xx/mpc52xx_common.c b/arch/powerpc/platforms/52xx/mpc52xx_common.c
+index 565e3a83dc9e..4a39e1cb2263 100644
+--- a/arch/powerpc/platforms/52xx/mpc52xx_common.c
++++ b/arch/powerpc/platforms/52xx/mpc52xx_common.c
+@@ -203,43 +203,6 @@ int mpc52xx_set_psc_clkdiv(int psc_id, int clkdiv)
+ }
+ EXPORT_SYMBOL(mpc52xx_set_psc_clkdiv);
+ 
+-/**
+- * mpc52xx_get_xtal_freq - Get SYS_XTAL_IN frequency for a device
+- *
+- * @node: device node
+- *
+- * Returns the frequency of the external oscillator clock connected
+- * to the SYS_XTAL_IN pin, or 0 if it cannot be determined.
+- */
+-unsigned int mpc52xx_get_xtal_freq(struct device_node *node)
+-{
+-	u32 val;
+-	unsigned int freq;
+-
+-	if (!mpc52xx_cdm)
+-		return 0;
+-
+-	freq = mpc5xxx_get_bus_frequency(node);
+-	if (!freq)
+-		return 0;
+-
+-	if (in_8(&mpc52xx_cdm->ipb_clk_sel) & 0x1)
+-		freq *= 2;
+-
+-	val  = in_be32(&mpc52xx_cdm->rstcfg);
+-	if (val & (1 << 5))
+-		freq *= 8;
+-	else
+-		freq *= 4;
+-	if (val & (1 << 6))
+-		freq /= 12;
+-	else
+-		freq /= 16;
+-
+-	return freq;
+-}
+-EXPORT_SYMBOL(mpc52xx_get_xtal_freq);
+-
+ /**
+  * mpc52xx_restart: ppc_md->restart hook for mpc5200 using the watchdog timer
+  */
+-- 
+2.35.1
 
