@@ -2,98 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE5EF51B15A
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 23:49:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B227051B15F
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 23:51:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354511AbiEDVwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 17:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44380 "EHLO
+        id S238522AbiEDVzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 17:55:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230087AbiEDVwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 17:52:49 -0400
-Received: from nautica.notk.org (nautica.notk.org [91.121.71.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 911F250B06;
-        Wed,  4 May 2022 14:49:12 -0700 (PDT)
-Received: by nautica.notk.org (Postfix, from userid 108)
-        id EFC23C020; Wed,  4 May 2022 23:49:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1651700950; bh=u5EzJCGt1bErRRL17AVGrTn+Rx5euZvZx9/3VtmBl/I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xevsfCukgGD/UgrKS0F+HuWDBgHAZPMM1JT5Kqd5ZZfBU81TjAnFttFP42nQ8rIcu
-         ol1P3n6y/ktfAUwolxNj45SZUnCgqhRhkwYWoSCogsMFmDRr4LtRRLliiIAySldQKM
-         IoHrD9132/7D4p634KQRd96dpSwbM3xAHNHfEVbuM603wJxoNDpbj61jrUCIrvE/4d
-         Z+QpML04BV4I2PajkVAcXiUWw8VpODtO9ct9V+piwY0G9wavuYLCoTFQ7NpQyFMfEr
-         J5gs1KkTtSZU3vuJWS+wlX6dV6hWbCJ6uOOiiRFTFwLEuSHHfPRGcmj5cnEyOV+Ml5
-         cOhzSHaZ+MEcw==
+        with ESMTP id S230087AbiEDVzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 17:55:00 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 869F550066;
+        Wed,  4 May 2022 14:51:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=3y9j8dX7DqQtw2AwMUgeK6pQJ/tWlNq2gUboEv9Ir24=; b=TBzPONHsZYX7vfy+FpCnz8t27p
+        Ts5ESA8SCTq65NjpalmkX49HSPxSsecP8gQC3JiWqKbB21DWJnWGNfLPvHsfIu3kMU6tpGQIUYElF
+        4Wjx6t31DRIuj5+D+D+9fJHJLsQ6s9f1FKwX08jd1n5lHJWYg58RuM/6PzzdtXTqsxu0=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nmMtu-001GeY-2D; Wed, 04 May 2022 23:51:14 +0200
+Date:   Wed, 4 May 2022 23:51:14 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, claudiu.beznea@microchip.com,
+        netdev@vger.kernel.org, o.rempel@pengutronix.de,
+        linux@armlinux.org.uk, Fabio Estevam <festevam@denx.de>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net v2 1/2] net: phy: micrel: Do not use
+ kszphy_suspend/resume for KSZ8061
+Message-ID: <YnL1Ugno+jk990ru@lunn.ch>
+References: <20220504143104.1286960-1-festevam@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220504143104.1286960-1-festevam@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-Received: from odin.codewreck.org (localhost [127.0.0.1])
-        by nautica.notk.org (Postfix) with ESMTPS id 1B718C009;
-        Wed,  4 May 2022 23:49:06 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=codewreck.org; s=2;
-        t=1651700950; bh=u5EzJCGt1bErRRL17AVGrTn+Rx5euZvZx9/3VtmBl/I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xevsfCukgGD/UgrKS0F+HuWDBgHAZPMM1JT5Kqd5ZZfBU81TjAnFttFP42nQ8rIcu
-         ol1P3n6y/ktfAUwolxNj45SZUnCgqhRhkwYWoSCogsMFmDRr4LtRRLliiIAySldQKM
-         IoHrD9132/7D4p634KQRd96dpSwbM3xAHNHfEVbuM603wJxoNDpbj61jrUCIrvE/4d
-         Z+QpML04BV4I2PajkVAcXiUWw8VpODtO9ct9V+piwY0G9wavuYLCoTFQ7NpQyFMfEr
-         J5gs1KkTtSZU3vuJWS+wlX6dV6hWbCJ6uOOiiRFTFwLEuSHHfPRGcmj5cnEyOV+Ml5
-         cOhzSHaZ+MEcw==
-Received: from localhost (odin.codewreck.org [local])
-        by odin.codewreck.org (OpenSMTPD) with ESMTPA id 3bcfa5ec;
-        Wed, 4 May 2022 21:49:02 +0000 (UTC)
-Date:   Thu, 5 May 2022 06:48:47 +0900
-From:   asmadeus@codewreck.org
-To:     Christian Schoenebeck <linux_oss@crudebyte.com>
-Cc:     David Howells <dhowells@redhat.com>,
-        David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, Greg Kurz <groug@kaod.org>
-Subject: Re: 9p EBADF with cache enabled (Was: 9p fs-cache tests/benchmark
- (was: 9p fscache Duplicate cookie detected))
-Message-ID: <YnL0vzcdJjgyq8rQ@codewreck.org>
-References: <YmKp68xvZEjBFell@codewreck.org>
- <1817722.O6u07f4CCs@silver>
- <YnECI2+EAzgQExOn@codewreck.org>
- <6688504.ZJKUV3z3ry@silver>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <6688504.ZJKUV3z3ry@silver>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christian Schoenebeck wrote on Wed, May 04, 2022 at 08:33:36PM +0200:
-> On Dienstag, 3. Mai 2022 12:21:23 CEST asmadeus@codewreck.org wrote:
-> >  - add some complex code to track the exact byte range that got updated
-> > in some conditions e.g. WRONLY or read fails?
-> > That'd still be useful depending on how the backend tracks file mode,
-> > qemu as user with security_model=mapped-file keeps files 600 but with
-> > passthrough or none qemu wouldn't be able to read the file regardless of
-> > what we do on client...
-> > Christian, if you still have an old kernel around did that use to work?
+On Wed, May 04, 2022 at 11:31:03AM -0300, Fabio Estevam wrote:
+> From: Fabio Estevam <festevam@denx.de>
 > 
-> Sorry, what was the question, i.e. what should I test / look for precisely? :)
+> Since commit f1131b9c23fb ("net: phy: micrel: use
+> kszphy_suspend()/kszphy_resume for irq aware devices") the following
+> NULL pointer dereference is observed on a board with KSZ8061:
+> 
+>  # udhcpc -i eth0
+> udhcpc: started, v1.35.0
+> 8<--- cut here ---
+> Unable to handle kernel NULL pointer dereference at virtual address 00000008
+> pgd = f73cef4e
+> [00000008] *pgd=00000000
+> Internal error: Oops: 5 [#1] SMP ARM
+> Modules linked in:
+> CPU: 0 PID: 196 Comm: ifconfig Not tainted 5.15.37-dirty #94
+> Hardware name: Freescale i.MX6 SoloX (Device Tree)
+> PC is at kszphy_config_reset+0x10/0x114
+> LR is at kszphy_resume+0x24/0x64
+> ...
+> 
+> The KSZ8061 phy_driver structure does not have the .probe/..driver_data
+> fields, which means that priv is not allocated.
+> 
+> This causes the NULL pointer dereference inside kszphy_config_reset().
+> 
+> Fix the problem by using the generic suspend/resume functions as before.
+> 
+> Another alternative would be to provide the .probe and .driver_data
+> information into the structure, but to be on the safe side, let's
+> just restore Ethernet functionality by using the generic suspend/resume.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: f1131b9c23fb ("net: phy: micrel: use kszphy_suspend()/kszphy_resume for irq aware devices")
+> Signed-off-by: Fabio Estevam <festevam@denx.de>
 
-I was curious if older kernel does not issue read at all, or issues read
-on writeback fid correctly opened as root/RDRW
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-You can try either the append.c I pasted a few mails back or the dd
-commands, as regular user.
-
-$ dd if=/dev/zero of=test bs=1M count=1
-$ chmod 400 test
-# drop cache or remount
-$ dd if=/dev/urandom of=test bs=102 seek=2 count=1 conv=notrunc
-dd: error writing 'test': Bad file descriptor
-
-... But honestly I should just find the time to do it myself, this has
-been dragging on for too long...
--- 
-Dominique
+    Andrew
