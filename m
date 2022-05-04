@@ -2,58 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 36A12519310
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 02:54:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29EB9519318
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 03:00:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244824AbiEDA5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 20:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34798 "EHLO
+        id S244797AbiEDBDz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 21:03:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244828AbiEDA5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 20:57:20 -0400
+        with ESMTP id S244845AbiEDBDt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 21:03:49 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070E541615
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 17:53:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE8DD60
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 18:00:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D025B82299
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:53:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 917E5C385A4;
-        Wed,  4 May 2022 00:53:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0BBA2B822B2
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 01:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 98B99C385B1;
+        Wed,  4 May 2022 01:00:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651625623;
-        bh=/20H7tVNle9lQAuBhxgPJGkVpGc5EVbFcGjppj+ApYc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ORBjyKm3+/OhaYBqqBlmK0mRLQR7MaAyv2e2WGjvIrTSwXIyHNkX215/M/5MGT87E
-         aJp0kU0WJGNZvt19SEWar+8q2veIWRfdRK/SHZDSvmI6SxXe8/hKLE6MKee4rm0537
-         Sht20Jr/GiM9bAlHn6JAwgMkBZ8m73DRhI8NVb9LkQDkHgg9yCrKXwlOxWp13a88aj
-         /CThlg9ESaTodj1/2Z5CE2nMtIFADbtB57dDzUV9jtFpiH4u6hz9JxtJpJL1JADHFP
-         tkGHzNUgQzgB7GQzhKJZzG3CtuJmT3noImcsYbUonoEc2SeXkBBIgwSluppu9C8a5d
-         fEHfDDJeywvUg==
-Date:   Tue, 3 May 2022 17:53:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Colin Foster <colin.foster@in-advantage.com>
-Subject: Re: [PATCH net-next 0/3] Streamline the tc_flower_chains Ocelot
- selftest
-Message-ID: <20220503175341.661d6e4d@kernel.org>
-In-Reply-To: <20220503124332.857499-1-vladimir.oltean@nxp.com>
-References: <20220503124332.857499-1-vladimir.oltean@nxp.com>
+        s=k20201202; t=1651626012;
+        bh=aT203gngjjduk5KH/1sYlMWCHfnVY6FZZgdpz3iLHQ0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kx17TiUr/Za+rpqcdLcTb1Hgm3m6u8UEGrYdOcWoH4f7Z/g8aqtvz9ir2Krv+Qf8k
+         foeeqUff5t+hNjc1ubf/brQmOA+ONrpfFH0HlNQMITohCVBrU74E+/NUBnDLDjTHn3
+         UaAYVbHeFG8WShwKWlI5csMfr8nlw0wtOcauJ+yazeYwFnGyI/L583IEDWOI36E5tg
+         OMyycnqLEr71HkSv7updhJaApqvbjl1vkKNB7NBkDgRnFAshTrTTQs1vhz9Pcg5XS8
+         WlodrLhwSUyQiv1/QVVnvHIwMKUjbqxSIjAZYacqXsnIozBuA1aNAworfJ9m9WejYJ
+         HqesjiwbkQhcg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7A0BAE7399D;
+        Wed,  4 May 2022 01:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/3] bnxt_en: Bug fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165162601249.2155.16006319994410212768.git-patchwork-notify@kernel.org>
+Date:   Wed, 04 May 2022 01:00:12 +0000
+References: <1651540392-2260-1-git-send-email-michael.chan@broadcom.com>
+In-Reply-To: <1651540392-2260-1-git-send-email-michael.chan@broadcom.com>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        gospo@broadcom.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -64,9 +56,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  3 May 2022 15:43:29 +0300 Vladimir Oltean wrote:
-> The forwarding selftest framework has conventions for the test output
-> format, interface names and order. The driver-specific tc_flower_chains.sh
-> follows none of those conventions. This change set addresses that.
+Hello:
 
-Both of the 3-patch series did not apply at the time of posting :(
+This series was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon,  2 May 2022 21:13:09 -0400 you wrote:
+> This patch series includes 3 fixes:
+> 
+> 1. Fix an occasional VF open failure.
+> 2. Fix a PTP spinlock usage before initialization
+> 3. Fix unnecesary RX packet drops under high TX traffic load.
+> 
+> Michael Chan (2):
+>   bnxt_en: Initiallize bp->ptp_lock first before using it
+>   bnxt_en: Fix unnecessary dropping of RX packets
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/3] bnxt_en: Fix possible bnxt_open() failure caused by wrong RFS flag
+    https://git.kernel.org/netdev/net/c/13ba794397e4
+  - [net,2/3] bnxt_en: Initiallize bp->ptp_lock first before using it
+    https://git.kernel.org/netdev/net/c/2b156fb57d8f
+  - [net,3/3] bnxt_en: Fix unnecessary dropping of RX packets
+    https://git.kernel.org/netdev/net/c/195af57914d1
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
