@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34AC151AF02
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 22:26:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEADC51AF01
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 22:26:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377972AbiEDU3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 16:29:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35476 "EHLO
+        id S242655AbiEDU3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 16:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354822AbiEDU3c (ORCPT
+        with ESMTP id S236914AbiEDU3c (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 16:29:32 -0400
 Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B696E4BFD0
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D69A74E3AA
         for <netdev@vger.kernel.org>; Wed,  4 May 2022 13:25:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1651695955; x=1683231955;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=UchaR+pxr8aHHkiPopp6tyvswgeqe4MN/HrFHACDUk0=;
-  b=JlOuIqMNyEw2gTeJlXYge3ORPb21ToW2aGzkrhZsUrEcy3oh4aZ8DuXc
-   xZKOdXG2H1IX6osSZdi3OLsvGGYQTnqduXLF/KoGsua4fCumWsT6V25Yb
-   LKAA7iQQsmPeSLCDZxRBnb2K4ZWaCcJoMfFEi/bEh1e3HZ9z2Ly6JCPFo
-   Xm3uImqXnYqVP1loChxbB+sQ6mlLiSUauuX+4KO0MBwB2LVI18ZXyzgua
-   akmTV8kgmfNNHze3ZuPvPmUM5oc0M8tHWRLl6g8e+oUTwb9RDDwvNSlNc
-   YMzM58Q593cSQIQY1f+TOZB+E4tKktk4Vh3a28TcAw9nPbnRTE9YkpKor
+  bh=XeY4B+OsF8Otw6N+LNtc4MYGMzkpcvlXNvnXu1Dym/4=;
+  b=YuM4yr7pF/wXz7tN+i3X5QCNYzo4rjDkSo1aRV5SBXHiAzte2PCkxVS2
+   XwGSRq3Of7XdMmhYHiBuNZFVRo29WAvR/xNvvb75VaWbSey9zEgPknMrU
+   zVlxUOLHy7rMBdt3FrdF6rMbHG8ETGqkT59Ec0yu0p/aXDfvuOYGTMY4e
+   yAz4FUFmVyc00HsUxlIqIk7sTP7aQ2CioarcGchUKnLzAGZd2zVtrBVki
+   0/yIYWJDbQlvCS4RrMS7LSDwRo7ptidCAUMb9ok5/UBd/T6rTNch+0TF3
+   JsOa83k23jODEpILMwxrB/BMkFldPro7ayNTNY1wyZ9no7SgQ241hVF/b
    w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267774824"
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267774826"
 X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="267774824"
+   d="scan'208";a="267774826"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 13:25:53 -0700
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 13:25:54 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="620968708"
+   d="scan'208";a="620968712"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by fmsmga008.fm.intel.com with ESMTP; 04 May 2022 13:25:53 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Michal Michalik <michal.michalik@intel.com>,
+Cc:     Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        richardcochran@gmail.com, Jacob Keller <jacob.e.keller@intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net 3/4] ice: fix PTP stale Tx timestamps cleanup
-Date:   Wed,  4 May 2022 13:22:51 -0700
-Message-Id: <20220504202252.2001471-4-anthony.l.nguyen@intel.com>
+        richardcochran@gmail.com, Michal Schmidt <mschmidt@redhat.com>,
+        Dave Cain <dcain@redhat.com>
+Subject: [PATCH net 4/4] ice: fix crash when writing timestamp on RX rings
+Date:   Wed,  4 May 2022 13:22:52 -0700
+Message-Id: <20220504202252.2001471-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220504202252.2001471-1-anthony.l.nguyen@intel.com>
 References: <20220504202252.2001471-1-anthony.l.nguyen@intel.com>
@@ -63,73 +62,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Michalik <michal.michalik@intel.com>
+From: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
 
-Read stale PTP Tx timestamps from PHY on cleanup.
+Do not allow to write timestamps on RX rings if PF is being configured.
+When PF is being configured RX rings can be freed or rebuilt. If at the
+same time timestamps are updated, the kernel will crash by dereferencing
+null RX ring pointer.
 
-After running out of Tx timestamps request handlers, hardware (HW) stops
-reporting finished requests. Function ice_ptp_tx_tstamp_cleanup() used
-to only clean up stale handlers in driver and was leaving the hardware
-registers not read. Not reading stale PTP Tx timestamps prevents next
-interrupts from arriving and makes timestamping unusable.
+PID: 1449   TASK: ff187d28ed658040  CPU: 34  COMMAND: "ice-ptp-0000:51"
+ #0 [ff1966a94a713bb0] machine_kexec at ffffffff9d05a0be
+ #1 [ff1966a94a713c08] __crash_kexec at ffffffff9d192e9d
+ #2 [ff1966a94a713cd0] crash_kexec at ffffffff9d1941bd
+ #3 [ff1966a94a713ce8] oops_end at ffffffff9d01bd54
+ #4 [ff1966a94a713d08] no_context at ffffffff9d06bda4
+ #5 [ff1966a94a713d60] __bad_area_nosemaphore at ffffffff9d06c10c
+ #6 [ff1966a94a713da8] do_page_fault at ffffffff9d06cae4
+ #7 [ff1966a94a713de0] page_fault at ffffffff9da0107e
+    [exception RIP: ice_ptp_update_cached_phctime+91]
+    RIP: ffffffffc076db8b  RSP: ff1966a94a713e98  RFLAGS: 00010246
+    RAX: 16e3db9c6b7ccae4  RBX: ff187d269dd3c180  RCX: ff187d269cd4d018
+    RDX: 0000000000000000  RSI: 0000000000000000  RDI: 0000000000000000
+    RBP: ff187d269cfcc644   R8: ff187d339b9641b0   R9: 0000000000000000
+    R10: 0000000000000002  R11: 0000000000000000  R12: ff187d269cfcc648
+    R13: ffffffff9f128784  R14: ffffffff9d101b70  R15: ff187d269cfcc640
+    ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
+ #8 [ff1966a94a713ea0] ice_ptp_periodic_work at ffffffffc076dbef [ice]
+ #9 [ff1966a94a713ee0] kthread_worker_fn at ffffffff9d101c1b
+ #10 [ff1966a94a713f10] kthread at ffffffff9d101b4d
+ #11 [ff1966a94a713f50] ret_from_fork at ffffffff9da0023f
 
-Fixes: ea9b847cda64 ("ice: enable transmit timestamps for E810 devices")
-Signed-off-by: Michal Michalik <michal.michalik@intel.com>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
+Fixes: 77a781155a65 ("ice: enable receive hardware timestamping")
+Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
+Reviewed-by: Michal Schmidt <mschmidt@redhat.com>
+Tested-by: Dave Cain <dcain@redhat.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_ptp.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_ptp.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index a1cd33273ca4..da025c204577 100644
+index da025c204577..cccefa88d8d0 100644
 --- a/drivers/net/ethernet/intel/ice/ice_ptp.c
 +++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -2287,6 +2287,7 @@ ice_ptp_init_tx_e810(struct ice_pf *pf, struct ice_ptp_tx *tx)
+@@ -500,12 +500,19 @@ ice_ptp_read_src_clk_reg(struct ice_pf *pf, struct ptp_system_timestamp *sts)
+  * This function must be called periodically to ensure that the cached value
+  * is never more than 2 seconds old. It must also be called whenever the PHC
+  * time has been changed.
++ *
++ * Return:
++ * * 0 - OK, successfully updated
++ * * -EAGAIN - PF was busy, need to reschedule the update
+  */
+-static void ice_ptp_update_cached_phctime(struct ice_pf *pf)
++static int ice_ptp_update_cached_phctime(struct ice_pf *pf)
+ {
+ 	u64 systime;
+ 	int i;
+ 
++	if (test_and_set_bit(ICE_CFG_BUSY, pf->state))
++		return -EAGAIN;
++
+ 	/* Read the current PHC time */
+ 	systime = ice_ptp_read_src_clk_reg(pf, NULL);
+ 
+@@ -528,6 +535,9 @@ static void ice_ptp_update_cached_phctime(struct ice_pf *pf)
+ 			WRITE_ONCE(vsi->rx_rings[j]->cached_phctime, systime);
+ 		}
+ 	}
++	clear_bit(ICE_CFG_BUSY, pf->state);
++
++	return 0;
+ }
  
  /**
-  * ice_ptp_tx_tstamp_cleanup - Cleanup old timestamp requests that got dropped
-+ * @hw: pointer to the hw struct
-  * @tx: PTP Tx tracker to clean up
-  *
-  * Loop through the Tx timestamp requests and see if any of them have been
-@@ -2295,7 +2296,7 @@ ice_ptp_init_tx_e810(struct ice_pf *pf, struct ice_ptp_tx *tx)
-  * timestamp will never be captured. This might happen if the packet gets
-  * discarded before it reaches the PHY timestamping block.
-  */
--static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
-+static void ice_ptp_tx_tstamp_cleanup(struct ice_hw *hw, struct ice_ptp_tx *tx)
+@@ -2330,17 +2340,18 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
  {
- 	u8 idx;
+ 	struct ice_ptp *ptp = container_of(work, struct ice_ptp, work.work);
+ 	struct ice_pf *pf = container_of(ptp, struct ice_pf, ptp);
++	int err;
  
-@@ -2304,11 +2305,16 @@ static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
+ 	if (!test_bit(ICE_FLAG_PTP, pf->flags))
+ 		return;
  
- 	for_each_set_bit(idx, tx->in_use, tx->len) {
- 		struct sk_buff *skb;
-+		u64 raw_tstamp;
+-	ice_ptp_update_cached_phctime(pf);
++	err = ice_ptp_update_cached_phctime(pf);
  
- 		/* Check if this SKB has been waiting for too long */
- 		if (time_is_after_jiffies(tx->tstamps[idx].start + 2 * HZ))
- 			continue;
+ 	ice_ptp_tx_tstamp_cleanup(&pf->hw, &pf->ptp.port.tx);
  
-+		/* Read tstamp to be able to use this register again */
-+		ice_read_phy_tstamp(hw, tx->quad, idx + tx->quad_offset,
-+				    &raw_tstamp);
-+
- 		spin_lock(&tx->lock);
- 		skb = tx->tstamps[idx].skb;
- 		tx->tstamps[idx].skb = NULL;
-@@ -2330,7 +2336,7 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
- 
- 	ice_ptp_update_cached_phctime(pf);
- 
--	ice_ptp_tx_tstamp_cleanup(&pf->ptp.port.tx);
-+	ice_ptp_tx_tstamp_cleanup(&pf->hw, &pf->ptp.port.tx);
- 
- 	/* Run twice a second */
+-	/* Run twice a second */
++	/* Run twice a second or reschedule if PHC update failed */
  	kthread_queue_delayed_work(ptp->kworker, &ptp->work,
+-				   msecs_to_jiffies(500));
++				   msecs_to_jiffies(err ? 10 : 500));
+ }
+ 
+ /**
 -- 
 2.35.1
 
