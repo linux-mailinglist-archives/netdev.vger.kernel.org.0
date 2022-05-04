@@ -2,86 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CAD651A478
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:50:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E7D551A4A1
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352773AbiEDPyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 11:54:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49322 "EHLO
+        id S1352947AbiEDP7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 11:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352768AbiEDPxp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:53:45 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF43445ADE;
-        Wed,  4 May 2022 08:50:08 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id a1so2186173edt.3;
-        Wed, 04 May 2022 08:50:08 -0700 (PDT)
+        with ESMTP id S1352921AbiEDP7O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:59:14 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0627CB847;
+        Wed,  4 May 2022 08:55:38 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id v12so2615467wrv.10;
+        Wed, 04 May 2022 08:55:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=AQRpkAKdmMVu+dxnCv15cqtIIRdmFX29YU78FmgJGcY=;
-        b=nKalCAdDTn07PS0s6063sjEr9mYVxTH0OajN50A2rG1dHFNwmivIfD8rQIRKcqZQzl
-         XzIWuLPkOR7vwuDjvxJFyAVUP3nyxxNkDXngMaBPKkivrDOG798A3/6Bc9cLqrNKvq22
-         1bjJe9NlBguS6/DJAmhrbdWY+OtisuOEttkpzr+hxLp9aVwxBNmOzn+oQuqoG85zACxl
-         BrJc+TqxWHVWSWEoKrNYkxiCuSdj8ymXZur6d4fgHx//FtFbLN1zOcMYVxcZmq2iziOz
-         X+Nf1uVVCQ6UX8HDDqRpMZG6kxVKNhVqD5v2OHRHqIeADtmGfwASbH4gxoKgHEJ6WvOe
-         kVig==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wtP9hXDTn2yxCxN0X3of+jxBUyJ3pPE1spLSBo0Vj30=;
+        b=qqXa9svwL8NMhVK1Gy+nfEs6AsyyPj8v3ldoTOGdWz6T7rM9N+70zCY8ogsxibCHLh
+         6awoBFNjZXrfw6ZN4DGr71lSRCULT2WjFh+UcVjUjBZcy2SFdaE+R3K3+8ZJVBYVCV9t
+         ESvoJaKYDq/eeFRdics70hAMrc1ri9IPZu2ioz63ukeJGse/F3+2P3urmhmT707I2h1R
+         Fa1J5WZ/Rw7mi4kntJUDjTQBfj9KL79ANJtIOqollDoch0qutO8iKRcdzWlOcJLeMnVJ
+         jzhQC9Xp5jk5rGTnjYdMTQ2sL28rtULpMZd9YbIf7faFF2taVbzUndHYThXOfj6PdvQR
+         aAcg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=AQRpkAKdmMVu+dxnCv15cqtIIRdmFX29YU78FmgJGcY=;
-        b=0att+phr04bCtXhBYPnzQ8dDPIx8CmnKVaSgc/JpsSl9gUMU0vYulUjs0MCehMBsnk
-         /vMCnFe4rWKS9wLPohcyStVZ6JgzhQ9GT9QAMtFmIFNNutOPYnWBVhPAdRpgE/PAT3wV
-         o8PsG5k1DZ2+PPedtwhOi2P2k6xW5EoCZ15vN0U4zXrG6PhuIyZLaa7sSKNczxPcwCpv
-         w35MUSxskHTswSE+AxTJ+NY2Oti+WJDaJPPPFMWHkEVucq/AP7rrtTK0sL1dL+QZc1Nh
-         9qFn9tDRtRrsTrKASVroRXdeiNoM8eNiQf8kiJktwBunsDbJ6K+NmZ/D6mLEWHGFhiXA
-         IyoQ==
-X-Gm-Message-State: AOAM532QIqVxyJyvsaRr0fthSay8nVEWtKtZnxoraNOPe3Q7Kbynr11U
-        6uEQlSt5llAwtLp3onbL2Es=
-X-Google-Smtp-Source: ABdhPJz7SjEh/9cuYXaPkz32A7SwymkAVKIUX89xZAQyFqh2lG8HAWMCwwNtgxbot4j94EFxYP4QJg==
-X-Received: by 2002:a05:6402:1a2a:b0:428:1be3:51bd with SMTP id be10-20020a0564021a2a00b004281be351bdmr2207943edb.267.1651679407269;
-        Wed, 04 May 2022 08:50:07 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id en9-20020a056402528900b00425ff691a32sm9036295edb.0.2022.05.04.08.50.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wtP9hXDTn2yxCxN0X3of+jxBUyJ3pPE1spLSBo0Vj30=;
+        b=JnXf/w9sHgHDUnHMZgA+pvCbLwf7aw0M3pyCjjeAojKG5i/mRisyVwEWmolYPlbQ38
+         q5t2Q4n9bHBrNCwpJyeydVvsxD1MmaiqEnAuP5Kh1Yz7eNsjDt0F2SARmA7+XYWTT6Wy
+         L+MNLgVIdHJc/Lze1JqWrxbGLu7KhBvskdR2YYv5naheLkzPbtWDyAvXSPB4QkdIt60N
+         EYe7TL9ptPTsaWX/ws7U66RUCvQldUUclg4D5clip0tfSmdg/bWFVvivkFPHPSR4O9Lz
+         y7kvxIj+x8jRHrpMeAK8J/ONU/SxBHfLoUhIcK9Fj8BEH9PQtMHc6QnLf8N9fyyhsEMy
+         1Dmg==
+X-Gm-Message-State: AOAM5318eVm7swomehxpuFuq6IZDQgBI0c4uEIHtowwbUVRLdx12xXJy
+        WQerS+X+GjH3mWlfS514C80=
+X-Google-Smtp-Source: ABdhPJyAO2ajDWK9KtBeiYVElkB0jr1JpnrWYOLIIW+ZDM2z1WSjOl3K/EKnkLOcao/sWhat3JyTkA==
+X-Received: by 2002:a5d:6c68:0:b0:20c:7246:a86 with SMTP id r8-20020a5d6c68000000b0020c72460a86mr7360076wrz.283.1651679736508;
+        Wed, 04 May 2022 08:55:36 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id bg3-20020a05600c3c8300b003942a244ed2sm5085334wmb.23.2022.05.04.08.55.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 08:50:06 -0700 (PDT)
-Date:   Wed, 4 May 2022 18:50:04 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 01/12] net: dsa: add support for ethtool
- get_rmon_stats()
-Message-ID: <20220504155004.ftwcmoe77mgvnm75@skbuf>
-References: <20220504093000.132579-1-clement.leger@bootlin.com>
- <20220504093000.132579-2-clement.leger@bootlin.com>
+        Wed, 04 May 2022 08:55:35 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Kees Cook <keescook@chromium.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] selftests/seccomp: Fix spelling mistake "Coud" -> "Could"
+Date:   Wed,  4 May 2022 16:55:35 +0100
+Message-Id: <20220504155535.239180-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220504093000.132579-2-clement.leger@bootlin.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -92,12 +71,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 04, 2022 at 11:29:49AM +0200, Clément Léger wrote:
-> Add support to allow dsa drivers to specify the .get_rmon_stats()
-> operation.
-> 
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> ---
+There is a spelling mistake in an error message. Fix it.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ tools/testing/selftests/seccomp/seccomp_bpf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
+index 29c973f606b2..136df5b76319 100644
+--- a/tools/testing/selftests/seccomp/seccomp_bpf.c
++++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+@@ -4320,7 +4320,7 @@ static ssize_t get_nth(struct __test_metadata *_metadata, const char *path,
+ 
+ 	f = fopen(path, "r");
+ 	ASSERT_NE(f, NULL) {
+-		TH_LOG("Coud not open %s: %s", path, strerror(errno));
++		TH_LOG("Could not open %s: %s", path, strerror(errno));
+ 	}
+ 
+ 	for (i = 0; i < position; i++) {
+-- 
+2.35.1
+
