@@ -2,167 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 746E251A33E
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:08:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F23351A355
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:11:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351936AbiEDPMK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 11:12:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33636 "EHLO
+        id S1351782AbiEDPPL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 11:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351917AbiEDPMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:12:06 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7A4326F9
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 08:08:28 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id i17so1647804pla.10
-        for <netdev@vger.kernel.org>; Wed, 04 May 2022 08:08:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Qb+1GrJs8SRgE6Wq+GlmzxuejfTqdKZ3b89DzJavSQw=;
-        b=QW7CQXai9IiD71Wvf+o2VYxsrI+DMXmN1vsS0b5DV0rtrX+G8r3eGzQnrLgcSNLS6o
-         18VjexLmt9t17aqS0qc4jCF5CPslGIy/SB1vEauI+iOiw3aemKigwzjm7wU//Osg3Pbt
-         9wMF/4HUhAaX0invtmDD41DdrKFbACP1VK8u0=
+        with ESMTP id S243521AbiEDPPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:15:08 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3CDB82898D
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 08:11:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651677091;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BkylOVWAmR6RBBpyZ1dVO9U8LRiKZ5t1MzDmPxwV1VU=;
+        b=jNn6Qmu2JCspCN3QHTaYnxG4c2FCSG84W+CDtOjqn+sgJ74za6KXVNpDMmJDHwv2kgOCv0
+        MX8pXUuVXkwVBbB+a8cIYRHr30HmpoT93ESmknDpJx9GYUG3kiW8sB3PnN0fDz9LScP7ao
+        yyCovebabSj/VfUv4goC2mT+acuoW/I=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-54-0q9JiiaXNEGmP6ztuuTGfw-1; Wed, 04 May 2022 11:11:30 -0400
+X-MC-Unique: 0q9JiiaXNEGmP6ztuuTGfw-1
+Received: by mail-qv1-f72.google.com with SMTP id d13-20020a05621421cd00b0045a99874ae5so1069769qvh.14
+        for <netdev@vger.kernel.org>; Wed, 04 May 2022 08:11:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Qb+1GrJs8SRgE6Wq+GlmzxuejfTqdKZ3b89DzJavSQw=;
-        b=to0UXIhPcVxZnQeqPdPJmcE26A5zkIggjCV/xMlWK9QdWS4Fb/H4cvOtNPH7Gs5WL4
-         oSvgy5TkUzeTUNUVhD9DI5BOAomqqEK2Nr1LUoahMtXZb1T7YUG0aY46zWDqyEMhs7HW
-         3D6nU+XYiBfozBSlXTbtGTbshdkfHxPfe4eTmoah3WMgVRZBcFJnlqXU7SuMwdBJkHwX
-         UG0EioGjZVwU0iTi8pidX56/q7N/dkmwmSUw1jWuwlNpKApPwwl9V0T2bVq3rzJTymrY
-         u4+kmCqaQrK0z94uOW55xQ8a1O0eqtv9mx+CPedd3EpJKj6eGNMkMcYSfhnhYO+7MHjs
-         jfLQ==
-X-Gm-Message-State: AOAM5306J0EQ8oXmxz2P1dXCSmAi+R5IOVdp0eJ8QQ735i2Bl1eucpJJ
-        8aacFn5aPL+1mOFGod/c360swQ==
-X-Google-Smtp-Source: ABdhPJxppSZTl5CKjnq8a5hBmltXmdlckYUA+zJjxmwbiUJP9s+fG0NYe/ezZfchAEYBzvKm6cdN0g==
-X-Received: by 2002:a17:90a:e7d2:b0:1dc:3762:c72d with SMTP id kb18-20020a17090ae7d200b001dc3762c72dmr10809021pjb.243.1651676908004;
-        Wed, 04 May 2022 08:08:28 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q10-20020a170902bd8a00b0015e8d4eb2c8sm8430976pls.274.2022.05.04.08.08.27
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=BkylOVWAmR6RBBpyZ1dVO9U8LRiKZ5t1MzDmPxwV1VU=;
+        b=LbLrtuXE+pjfsXQkehpvHw4RCli9KaUHac2qA8IZWy+Ny+9pCTOEWzdXBqlV+gp3Db
+         VWwlWcaoTFfoQoIpk6LqG77E+rWmz5tc/8CXm+RgJw0S+GK4dytXdWc5/oBIza4x8VmO
+         xBilgvFrWA1Gq8MIhzd4qa2QnpE6ytYx1M0C+yVsd3EcRqk3KVgjZA5mW3ZgnI10Loeu
+         khlAfphdnnPAZOJHlX5MNN7a/8p6wHN3ZNHGqA5JZuAym/CIb7/8/kz64G9xQf55Q0Im
+         vR0X6peWLUQJx16mSVSAugFsSRGDzrPKUCDKybtWcGm7GV+b6oGqKDXDL50kzyLsZ5lw
+         qC/Q==
+X-Gm-Message-State: AOAM532SLlFVgEO2pkjfOQEvErU/EWpo3uapIiZWbkK8KHQCNnwZmzzx
+        rkV1kCVJRHzAzl3AotWZZM8JQYnjjdaupShdS6BfUnpa6utc3AtNW8FHbnAxJmo4zjSqwROyPkx
+        VG/u4U+WLSiqbbT28
+X-Received: by 2002:a05:622a:1213:b0:2f3:a79a:2ccc with SMTP id y19-20020a05622a121300b002f3a79a2cccmr11957456qtx.376.1651677089608;
+        Wed, 04 May 2022 08:11:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxa+DaVJAfFN0UoYefqAkzq7A3HJG0WjmWUFxRfqURf2l+JIcv/x5k5MOkPr/D+KNWQXjvOwQ==
+X-Received: by 2002:a05:622a:1213:b0:2f3:a79a:2ccc with SMTP id y19-20020a05622a121300b002f3a79a2cccmr11957426qtx.376.1651677089333;
+        Wed, 04 May 2022 08:11:29 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-115-66.dyn.eolo.it. [146.241.115.66])
+        by smtp.gmail.com with ESMTPSA id w4-20020a05620a128400b0069fc6484c06sm7080847qki.23.2022.05.04.08.11.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 08:08:27 -0700 (PDT)
-Date:   Wed, 4 May 2022 08:08:26 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, wcn36xx@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        alsa-devel@alsa-project.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Gross <agross@kernel.org>,
-        Andy Lavr <andy.lavr@gmail.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Bradley Grove <linuxdrivers@attotech.com>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        Christian Brauner <brauner@kernel.org>,
-        Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Chris Zankel <chris@zankel.net>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Axtens <dja@axtens.net>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Dan Williams <dan.j.williams@intel.com>,
-        David Gow <davidgow@google.com>,
-        David Howells <dhowells@redhat.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        Eli Cohen <elic@nvidia.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hulk Robot <hulkci@huawei.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        James Morris <jmorris@namei.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        John Keeping <john@metanate.com>,
-        Juergen Gross <jgross@suse.com>,
-        Keith Packard <keithp@keithp.com>, keyrings@vger.kernel.org,
-        kunit-dev@googlegroups.com,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux1394-devel@lists.sourceforge.net,
-        linux-afs@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-xtensa@linux-xtensa.org,
-        llvm@lists.linux.dev, Louis Peens <louis.peens@corigine.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Rich Felker <dalias@aerifal.cx>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        SHA-cyfmac-dev-list@infineon.com,
-        Simon Horman <simon.horman@corigine.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Takashi Iwai <tiwai@suse.com>, Tom Rix <trix@redhat.com>,
-        Udipto Goswami <quic_ugoswami@quicinc.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        Wei Liu <wei.liu@kernel.org>, xen-devel@lists.xenproject.org,
-        Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Subject: Re: [PATCH 10/32] wcn36xx: Use mem_to_flex_dup() with struct
- wcn36xx_hal_ind_msg
-Message-ID: <202205040730.161645EC@keescook>
-References: <20220504014440.3697851-1-keescook@chromium.org>
- <20220504014440.3697851-11-keescook@chromium.org>
- <8735hpc0q1.fsf@kernel.org>
+        Wed, 04 May 2022 08:11:28 -0700 (PDT)
+Message-ID: <a8abc239076eb96ed88680dab1a1abe50a5dac7b.camel@redhat.com>
+Subject: Re: [PATCH net] net/sched: act_pedit: really ensure the skb is
+ writable
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>, netdev@vger.kernel.org,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>
+Date:   Wed, 04 May 2022 17:11:25 +0200
+In-Reply-To: <20220504074718.146a5724@kernel.org>
+References: <6c1230ee0f348230a833f92063ff2f5fbae58b94.1651584976.git.pabeni@redhat.com>
+         <7e4682da-6ed6-17cf-8e5a-dff7925aef1d@mojatatu.com>
+         <cac58f4ead1cac145d5a2005bcd3556851807f86.camel@redhat.com>
+         <20220504074718.146a5724@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8735hpc0q1.fsf@kernel.org>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -170,107 +82,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 04, 2022 at 08:42:46AM +0300, Kalle Valo wrote:
-> Kees Cook <keescook@chromium.org> writes:
+On Wed, 2022-05-04 at 07:47 -0700, Jakub Kicinski wrote:
+> On Wed, 04 May 2022 10:52:59 +0200 Paolo Abeni wrote:
+> > On Tue, 2022-05-03 at 16:10 -0400, Jamal Hadi Salim wrote:
+> > > What was the tc pedit command that triggered this?  
+> > 
+> > From the mptcp self-tests, mptcp_join.sh:
+> > 
+> > tc -n $ns2 filter add dev ns2eth$i egress \
+> > 		protocol ip prio 1000 \
+> > 		handle 42 fw \
+> > 		action pedit munge offset 148 u8 invert \
+> > 		pipe csum tcp \
+> > 		index 100 || exit 1
+> > 
+> > It's used to corrupt a packet so that TCP csum is still correct while
+> > the MPTCP one is not.
+> > 
+> > The relevant part is that the touched offset is outside the skb head.
+> > 
+> > > Can we add it to tdc tests?  
+> > 
+> > What happens in the mptcp self-tests it that an almost simultaneous
+> > mptcp-level reinjection on another device using the same cloned data
+> > get unintentionally corrupted and we catch it - when it sporadically
+> > happens - via the MPTCP mibs.
+> > 
+> > While we could add the above pedit command, but I fear that a
+> > meaningful test for the issue addressed here not fit the tdc
+> > infrastructure easily.
 > 
-> > As part of the work to perform bounds checking on all memcpy() uses,
-> > replace the open-coded a deserialization of bytes out of memory into a
-> > trailing flexible array by using a flex_array.h helper to perform the
-> > allocation, bounds checking, and copying.
-> >
-> > Cc: Loic Poulain <loic.poulain@linaro.org>
-> > Cc: Kalle Valo <kvalo@kernel.org>
-> > Cc: "David S. Miller" <davem@davemloft.net>
-> > Cc: Eric Dumazet <edumazet@google.com>
-> > Cc: Jakub Kicinski <kuba@kernel.org>
-> > Cc: Paolo Abeni <pabeni@redhat.com>
-> > Cc: wcn36xx@lists.infradead.org
-> > Cc: linux-wireless@vger.kernel.org
-> > Cc: netdev@vger.kernel.org
-> > Signed-off-by: Kees Cook <keescook@chromium.org>
-> 
-> [...]
-> 
-> > --- a/drivers/net/wireless/ath/wcn36xx/smd.h
-> > +++ b/drivers/net/wireless/ath/wcn36xx/smd.h
-> > @@ -46,8 +46,8 @@ struct wcn36xx_fw_msg_status_rsp {
-> >  
-> >  struct wcn36xx_hal_ind_msg {
-> >  	struct list_head list;
-> > -	size_t msg_len;
-> > -	u8 msg[];
-> > +	DECLARE_FLEX_ARRAY_ELEMENTS_COUNT(size_t, msg_len);
-> > +	DECLARE_FLEX_ARRAY_ELEMENTS(u8, msg);
-> 
-> This affects readability quite a lot and tbh I don't like it. Isn't
-> there any simpler way to solve this?
+> For testing stuff like this would it be possible to inject packets
+> with no headers pulled and frags in pages we marked read-only?
+> We can teach netdevsim to do it.
 
-Similar to how I plumbed member names into __mem_to_flex(), I could do
-the same for __mem_to_flex_dup(). That way if the struct member aliases
-(DECLARE_FLEX...)  aren't added, the longer form of the helper could
-be used. Instead of:
+We additionally need to ensure that the crafted packets are cloned,
+otherwise the current code is AFAICS fine. And at the point we likely
+want to configure the packet layout (hdrs/address) created by
+netdevsim. 
 
-	if (mem_to_flex_dup(&msg_ind, buf, len, GFP_ATOMIC)) {
+> Obviously not as a pre-requisite for this patch.
 
-it would be:
+I agree it looks a bit out-of-scope here ;)
 
-	if (__mem_to_flex_dup(&msg_ind, /* self */, msg,
-			      msg_len, buf, len, GFP_ATOMIC)) {
+Paolo 
 
-This was how I'd written the helpers in an earlier version, but it
-seemed much cleaner to avoid repeating structure layout details at each
-call site.
-
-I couldn't find any other way to encode the needed information. It'd be
-wonderful if C would let us do:
-
-	struct wcn36xx_hal_ind_msg {
-		struct list_head list;
-		size_t msg_len;
-		u8 msg[msg_len];
-	}
-
-And provide some kind of interrogation:
-
-	__builtin_flex_array_member(msg_ind) -> msg_ind->msg
-	__builtin_flex_array_count(msg_ind)  -> msg_ind->msg_len
-
-My hope would be to actually use the member aliases to teach things like
--fsanitize=array-bounds about flexible arrays. If it encounters a
-structure with the aliases, it could add the instrumentation to do the
-bounds checking of things like:
-
-	msg_ind->msg[42]; /* check that 42 is < msg_ind->msg_len */
-
-I also wish I could find a way to make the proposed macros "forward
-portable" into proposed C syntax above, but this eluded me as well.
-For example:
-
-	struct wcn36xx_hal_ind_msg {
-		size_t msg_len;
-		struct list_head list;
-		BOUNDED_FLEX_ARRAY(u8, msg, msg_len);
-	}
-
-	#ifdef CC_HAS_DYNAMIC_ARRAY_LEN
-	# define BOUNDED_FLEX_ARRAY(type, name, bounds)	type name[bounds]
-	#else
-	# define BOUNDED_FLEX_ARRAY(type, name, bounds)			\
-		magic_alias_of msg_len __flex_array_elements_count;	\
-		union {							\
-			type name[];					\
-			type __flex_array_elements[];			\
-		}
-	#endif
-
-But I couldn't sort out the "magic_alias_of" syntax that wouldn't force
-structures into having the count member immediately before the flex
-array, which would impose more limitations on where this could be
-used...
-
-Anyway, I'm open to ideas on how to improve this!
-
--Kees
-
--- 
-Kees Cook
