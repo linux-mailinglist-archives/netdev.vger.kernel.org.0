@@ -2,109 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4251C51971F
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 08:03:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A426519720
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 08:03:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344776AbiEDGGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 02:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37492 "EHLO
+        id S1344788AbiEDGGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 02:06:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237769AbiEDGGa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 02:06:30 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2081.outbound.protection.outlook.com [40.107.223.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB7281AD9F
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 23:02:55 -0700 (PDT)
+        with ESMTP id S237769AbiEDGGc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 02:06:32 -0400
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2045.outbound.protection.outlook.com [40.107.223.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79911AD9F
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 23:02:57 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Jxo2I3CPBA++hFF+omT1bR2RBhTYL5sFkL50KO5u/XZHOTHkZiwdSPOIFRJv2WTl5E73/CDl0IJSJfdIEFUucDcXcVEkuEK+VBPM099tcWrffk7EgsmTkHaonrwW4VtRdnpSUm2O8pSD3BorlbYp8kTYt224IGnLEl1vQD8BszcS55SJ0TGbMjo0j2hQ1/FEgEbsf5OpYM3lUsibDa66lnecT57XjJZTYkml/oCQCd3gdQNjNnmJ4Mh2RMGFQZmv6rIqodna+/DTpqFuklZ0uWOuZa0cr6Mn+AvhmdncpcSO31xc2m923nkUbHx8tSkjzxUKVQVxfUpZmFzrAU0Oog==
+ b=PGjece50fswNKpBE5kLBXwnBFwqykBLGlgklxS0IAUmNgDmI4p1R3almeikRE29sz5da6QObIKTBZdKVYPFVNbkiwreFVASZWZTowxAjlo/4Q98l3+WpbvtX/NXKKTgCPBmzFRot5pCS0jVocKaSLz27Y8i2w1yzT6kojntAsbiJeohrPWk24o/wejiQhZhT0BCExmah5JZAIoBYpENDIgKpz1USnFt7HYYemgLTKQEelva1dYwGAfJ1MEdqPkc0byCMn+piNloqUNa0ysvQNZkJySgfzGBc10avomZ7HlNBAjBJgHA2SL7lh+mUkoTiz2XndG6fwSK0vNCZesHUJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jeVy8AIJIDSrtXPzwu1Qix+JxXmEQMiCcVKqjsal5iI=;
- b=iHEAxkr++4DNZjGCVD9ngaaZy8Luj495qrffYIYUF2Lh+J4mcUFD7Kwjulbd0dDzAZ1W/i5dYhFhR8eZUpoTqclnSXDgrK/kioUk62u8i2/UpIoNOqoFKBcG5ZRZxw0rQLSrJZQ3g35JWTcKZvbRxfV9LCwPGOMiykBcr24yAfmXb59JuCwEHPFzJXNmL/DXipVzSUVOfPHIfpGhp18ZUwAq+Oq5+RxaJoNQfOJ6GU/j3aHHk6FYwZkyzjarmzVnelTPdeXNX1G3rEbkm9ULOlHcp/zoAJnBkZXH8XrBrY78NAEYVcU74uo6EXRx+YxA4AbmWIpBlFRbEKYBh6SE4Q==
+ bh=Y+9jmTAw/6a/klmUbw5xt52ZTjLcKu4UtZ8HILzOu4c=;
+ b=BEer5xYVBMJLWyQ9XYS9YEYUTYwM85sw6/wGPfFdr9QGJRJqVE+bAmlGeheZ3sf9pMofyy81EvyPHZ2w4EM2Ysr2axfBA6kcpJ5grvpFw6qnGaqHDEI3aSIeZHLpDT9MCeRVA8+yML+Th9Z1JUfJ3/3bjGuwFoIhwbI+pNmHOX9o+TEpPDaWT7jnqkllniOjLFq41NqpMf7x8kxsWeTpAypoP4kuBIYHZiHLWqtaIi8PnLbV5E1rNBa5HFj9hik1E/yMGpeaMmVKWWV7xfwkEZ9ZL78/CJflGQ+vM1TEFvIm9B6XDxIGk++6yaVCgWnkt9vx/zCAIgnEkua23Hb+kw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jeVy8AIJIDSrtXPzwu1Qix+JxXmEQMiCcVKqjsal5iI=;
- b=d0GUtFvMEKqHNTCLD950zA3BDjlFzDaQSwvYVYDav5p3VHMLoahTwNoj+SkTRbqR4Z/vpfDhvmCRULQb0GydbRts0+ZOT0/UFqimjE+e2JTwfbHfdIq/hySoVeiq5kK6h9bKaBvWMpfsL8Wufg6g32vZxye6C5e25RWGVykxyUgmNSOT4Bpg9qJrrQbvOPS191zW8Dy52HPPCZ/NNA/h6TXc9UiO+GDIBWj8Q3QiErxzFeX4zl5CvoN7l1vNwjfm48Z+oRv0cZaP6EBoh9U/XFl89CpqW1lmw8KgBtgjrQdeSL/szIekGSIUquGYz339yZBkXeat/HYh/lie+8DzeQ==
+ bh=Y+9jmTAw/6a/klmUbw5xt52ZTjLcKu4UtZ8HILzOu4c=;
+ b=nz+W4U5lVmC/+ioSAFPIdeMUppecn1ztBx7OiZPk/D1cWjJE41SVWDYeLwOYMktBNoRI82NUWGdjifxmvpc6760AX17WzXXGG2RUAc6Fp0CXGSvt209kjJ/b3JHi3/EOlfypeb2Gn0pPuR1wM0+S/MP1rM0YZy5jEp6pcrFJkue1o9NlX9x6/RBhmblPBjdk58osCFgLNsPNapO65Z0xh5nVGggxVL1xwg+6DRyIUtSRbj6J1Ip2tf4R67mD4SCWwDiPc9w/uNCvb0VT2HfFfGdzKSGmjhA/KU2RYfOHNYTkuYoXjW9cyq8Gty4Bmq8cgt+rhvO0FDVeMgnsfIBn8w==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
  by CY4PR1201MB0006.namprd12.prod.outlook.com (2603:10b6:903:d3::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.20; Wed, 4 May
- 2022 06:02:54 +0000
+ 2022 06:02:56 +0000
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5206.025; Wed, 4 May 2022
- 06:02:54 +0000
+ 06:02:56 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     netdev@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
+        Raed Salem <raeds@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/17] mlx5 updates 2022-05-03
-Date:   Tue,  3 May 2022 23:02:14 -0700
-Message-Id: <20220504060231.668674-1-saeedm@nvidia.com>
+Subject: [net-next 01/17] net/mlx5: Simplify IPsec flow steering init/cleanup functions
+Date:   Tue,  3 May 2022 23:02:15 -0700
+Message-Id: <20220504060231.668674-2-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220504060231.668674-1-saeedm@nvidia.com>
+References: <20220504060231.668674-1-saeedm@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BYAPR01CA0062.prod.exchangelabs.com (2603:10b6:a03:94::39)
- To BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
+X-ClientProxiedBy: BY3PR05CA0053.namprd05.prod.outlook.com
+ (2603:10b6:a03:39b::28) To BY5PR12MB4209.namprd12.prod.outlook.com
+ (2603:10b6:a03:20d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9add3c9a-e3a5-4ea0-fc52-08da2d93baa0
+X-MS-Office365-Filtering-Correlation-Id: 03d1264f-4e4a-4ff4-76a5-08da2d93bbc1
 X-MS-TrafficTypeDiagnostic: CY4PR1201MB0006:EE_
-X-Microsoft-Antispam-PRVS: <CY4PR1201MB000628DEC85A2E440155B173B3C39@CY4PR1201MB0006.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <CY4PR1201MB00066F03D4713CCD1AFC2801B3C39@CY4PR1201MB0006.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 0SI3rp57pWYhm2dlP+OexQAET4/Cc4DLpJ3oBo/Az/w02u5bE7GaUnAC/RAS23MWCdKQ/154E6yqW+qcYHRxhTJSJgwKtYD9YoDakIjValbjQQc8JjwbsTWTTdV78WAF0c8G/mAlllNaEu6VIBcYAlAJNdBKrT4UFC8wjG8movMocDPI0xm9Rf0+xG01pmaDGvqSOfYK+rKVY2JZPnB86ZFZ3AMn7frZatNAPX4RVXEnB0+CTkNwXB5XMbpRQC2yzLTwrIdrraDoyYNrIwqwN3jZ+clcdRwMQt5t37tmbJPznBeRA0JJ4MKMHC9XgV2CMdSS/5R16vBo1nwGP7t8pQ860nabfV2Qp0d5eDMGwCRN0HK8u12kLkwgJt0M3yUXN8h/BRd8MdIY+DGKlX5mYjglycxo9WJDmMX+rtD7DWc0Jh1S3Z0M8iWD0z8xwQ8esWuIGIE0HBe16zhZ8z8leBOfPC0lMi8jpydZKxSnxTITqVfCp9dMO3TYDRH88mxrwROhkN6OAqrXckr+M2gnDoxfTPHJiZWRk2/6dJFWnDoW9g948PAKgt974TI0l9kZGcjk1isAGa7SL/qcvKEqTPvMUc6xRL3NPkc3+c1xdQGATWR4yuBDOrL0zHOtInlnd7NIRjLijpwTFzjLol46X/iKKV/iil1tZVVEJNEPCfbosKvLvvK7XeQ2S6WF4dnD43HrzNdmDFQ2EStH6ei2X/KcaUEVqweRQRxmjsyAeBZsS3oiVyER2MV3KlXproLDQ7Bl5C0ERgsEGWrILBtIfw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(107886003)(2906002)(54906003)(8936002)(110136005)(86362001)(15650500001)(316002)(83380400001)(66946007)(6512007)(6506007)(8676002)(66556008)(66476007)(6666004)(508600001)(4326008)(186003)(1076003)(2616005)(5660300002)(966005)(38100700002)(6486002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: oag62+34GPysyD6bItoEq5/UxKESeXC3sBLOW8rZZshEYFwGdxV2yYuIYur48BnC+gPmklLPwLhxd4mG1uWknDbzMhi93cb0gqFO3zyLJZhiVUf23599/twcU3R7EpdOW0j3FCQ5omOKleKndRcjyaremBJedrcBSVr+44+xLPF7kxnYkj8hUUDbhyOlDsFqG2T6C5eQb0FAgU60tMVHGYWM8sP863SS/2gLIbpMF/BZoFScyRe6Bf/JEcQr6PFZnkPX7+oDmLuIbUOkqQcL4VVqQs+5IIDjRvIXJIKcgv+s0QlhFGbnhTs7u0MZszrykSL7yKyPb3R3bGdjX1eIiCHE0rOwy63NkKtMSTjWKWCBt2pC4HH7rTlfjOeVyCayYa0fuiSjfGpDytGn9yRuqZiIYEu+NOH6n3jqfy/BAU+sDxajA0BZyB52aZD15tztk0YRJnXtpwoFRRukASymixiefgrcN106WECAibMPbitwv8KsjMJQigNijRre8ayLK7vGE9SoGFq1hEOVHTX8PWrFa5C0eJtYnBDplN6iHgm5u0t0pEharBgLkjqY6HJxrnu+OtFP7DluiNmPyki7PvYOebrxNlVcBO0QS2chhvWLY2mTVaAvhwQtef5Vvxd6vtMlgWdJvG94vSDVpHLUcA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(36756003)(107886003)(2906002)(54906003)(8936002)(110136005)(86362001)(316002)(83380400001)(66946007)(6512007)(6506007)(8676002)(66556008)(66476007)(6666004)(508600001)(4326008)(186003)(1076003)(2616005)(5660300002)(38100700002)(6486002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AOYlHohaGogEafKjE6yfBdVCHW71L708/m44UFouLsiI2vtaSMVAzudIPPlZ?=
- =?us-ascii?Q?U5AX+qhUcdp1YtrcqKz2N+0ge7iN6lf8w6BTkjJ7dfV83ngMUxXCqdcA7+Ov?=
- =?us-ascii?Q?tbxlStSnkCQA+4dPRJQ/h19cAeuOrqqMJZhBWtOOJRvTAGCITxh7u6EuYo3P?=
- =?us-ascii?Q?KQDYQI9y8ulFtTienydVGhquKYApigwTRb8eLkJ/R+k7a27ahrhcXT/prshH?=
- =?us-ascii?Q?Jb8EpUNYABJj9BPa1hU6k+Rh+ANbgcuA0d5u9aC2u7P3mT6ycN2W/rm1Rfjy?=
- =?us-ascii?Q?1TNaFourIc8IPGOojY1yNuQPsCpL86gK1Zd5opGelce1pTdLEG7H5nqlbPFI?=
- =?us-ascii?Q?OAgeepQ1iPIhkmeFsrzfZ/YzbfXWCyw3vaETzMZlHDDoxAXzXar7y4gJoCkF?=
- =?us-ascii?Q?cio41WSO4U0q9srkHZfekf9mJAq0//0eeu4fpJW1tQWi96ZmEqQ7oFWBf/4P?=
- =?us-ascii?Q?gcPWBjUUpEPCKT4DID1IM2ApSPi9AxQq7mvOrkVB07Bytys9YFs7LXzXNWAO?=
- =?us-ascii?Q?XylwV5c7MaIQEOYTjzC/MZrzVlVz8Ig+SaHgTqeIvObc051F8Zgi3fQLdzLT?=
- =?us-ascii?Q?mzQXoBu0ZW/siMWpYaCS5KpDh5bX4Wo/4Tq3YWHi1rVlHwQA+w1zW34AV0qp?=
- =?us-ascii?Q?/zLSX1Xrr95zPulOi6bOKgcS0+yrVfiTyXSW5ruOGsMlEgszLRilYgRtutJE?=
- =?us-ascii?Q?OAGMm3Xt/P3qJJSyzYlbuIjYVg9w7Q3P6n8blQ/LyoQtigK5fBBtO2vFjizc?=
- =?us-ascii?Q?4gtDkIEY8CF6nC3Sghw7mu/x2tUFkjfs4AFeDGD+oRmJRE73mUBvPvochPMu?=
- =?us-ascii?Q?B/wDmEgbxaOBDZuihLCsJBu/6WW1USt+TRGqFxqgyWNulGsBdrFyJQLoH6FJ?=
- =?us-ascii?Q?TGPaPJl3amC5QvulazcPjsE0QCWevlfW4EPPoVcaCQgEwmXgLi5N8hW2DzYr?=
- =?us-ascii?Q?oeHfFGpBPEO6l02DUx66VgB0Lev1q7dSLp5+3zPcLmBCg86/9c1LeDWg336A?=
- =?us-ascii?Q?rK4fbZeC2OXtD/iMXUo8HGbtXgYSlpMv/WNRCZKSaVlZkzdmOx6c9UgjqTKe?=
- =?us-ascii?Q?+XO8dWeAk1I52MNN4LHf60JtGAlN6SN8Vw/lB7/HG8fKz3vsN70efl0I+LaW?=
- =?us-ascii?Q?w7j/N/Xub5b8JFvacdns/yGBQpjmvDwKZmnNg2i4eSDOsDNsasBKoYa900BQ?=
- =?us-ascii?Q?i+llRTOEfWCOGH/TmOKy1YlR54FOueDhUkEovnNVzxVPdztW/SlceWb+3WMb?=
- =?us-ascii?Q?jVi/GEGZezcTVXsN+oIDN50Ano+c5bMKLM0OUmrLBkjSuBKDaokHmTvL7bZZ?=
- =?us-ascii?Q?xx5U72s7u4iSjG1uVELlX4BGW+Fvhu0j2+emK9KBwgsQEdu+Z+lw6BSLv6hk?=
- =?us-ascii?Q?T4kEccajEN01Q8F1q5NB03yHRnSkMgGwOw7vMu7ZIZpqZHGBZSxCJI8szQba?=
- =?us-ascii?Q?Xh/cspnScM83A+I0CMhVBXVTjwHjqFN+XG54sLt74ylYw/Jd4mYK0eBFfZHr?=
- =?us-ascii?Q?UV0h2lMUemIB5JJuYByBPJgWbmLc6LMTzBqqIhlVpZ7UYam9ce0gR7hvrtpM?=
- =?us-ascii?Q?u/Bs8FpUQZzNpjftA+J2UPD/lKciCyJ27VVbkQaGefmlVMl7gMzUBTeN3m+d?=
- =?us-ascii?Q?dnePy3rvgcUt0tlLNhW6+BO4wyKYaQEboVzhaOi060+6vvGt0geOXGAmvvK9?=
- =?us-ascii?Q?lIjzGBdztTdVaJyj2NEbOHB2FmeOwc34TwPkcd+71kPnENy3tF0MqYcpSM9E?=
- =?us-ascii?Q?Efjf74H9hbetqAYl4NEPcKtkBT+C/SY=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sANyIYQxRc+FKpJLRWXL49u879xiDrHW5n76mwU+ilB3+TyaIjFD7nDTcRZt?=
+ =?us-ascii?Q?8vpCmihjGokJoQmlK7KEVTDmOr4Vy1nQfFtF2eVNOiUCrwFPgQ60cd+ommn8?=
+ =?us-ascii?Q?c3PN0JyS9a0tf9Npebls1aEALpD6wbgjyjtECNsFS9Why8wHCL/Wzlifot0k?=
+ =?us-ascii?Q?lPl2PRMJwGVbNx3CnHbTTFTA/taWtZnId2NsDpx3VcK4GcdUAjb599Z3N06O?=
+ =?us-ascii?Q?TChVLmH+K31QxRTCVrc9wRuGHn7YxU4EOPzppRR9gYV3/0IP5FhlcaS1MF58?=
+ =?us-ascii?Q?ddExE6iOSWi8b7loUrzbpQduWNUGiNql5KYNOaJIyNXOYyNwLvwpQ5B4oIMb?=
+ =?us-ascii?Q?c5AJsKl4CoThOHwGfuq03ULMwmNMDnvNWsoRhcnGEDMKok5aJ70cr1Uzijab?=
+ =?us-ascii?Q?mrGzgP0nZIZQLSQQ0IJuLizdbPdrqm3u0ku73p/JL3TWuPumrW5KniO8vNRA?=
+ =?us-ascii?Q?yItx+BmSGO1x9J5pQ2roF8R/fn6OvzRYGjlAoXnupOI3ViQrIP3/uPlegy4a?=
+ =?us-ascii?Q?Obv6WM9bJJrJB2oyd5DNoFev5Ql2qYvUvOtin8dpFbYq9OoG2N0Q6dcPzyUN?=
+ =?us-ascii?Q?BAcsJA/hlaqboAdr14L6iFyutY0+mDiArtoOBNRy351OGUSJwB8VgsWXng5L?=
+ =?us-ascii?Q?7W2WS0rbXyIFL2L+7gEeRQBN5eoea4TKGzdmaevRWzFe3tG4KzhRFhfPO4Oa?=
+ =?us-ascii?Q?vhX4Mb+8TA4dBLRM8wrBHjv/bbJWCbUbNQf7yer/Cdg/p3acIKFPKV9AMUtu?=
+ =?us-ascii?Q?9XtSUV6YHCjWzxx1VnBJwWdRQe0v7AR1AreCl9XpCAc7zhXTH3TmUb6UDhu9?=
+ =?us-ascii?Q?or1advVfxKqJFQX61pNiOFlv5FhD4ZMmgbhUpYeUgvISOyt63iisx9wPn9WW?=
+ =?us-ascii?Q?2HzJSG9R9AnZ2/wxDbeJrCAe+R2NOq9IDpK986mmmLQDsvG/FvemTJiij8XE?=
+ =?us-ascii?Q?q/FvA73WowTcZEIo640meIwXYULyFhmU1h5reBlkZnGmiF6LRBEewJ6VYReH?=
+ =?us-ascii?Q?KnjxmxkkaG8PNcE0KyjpzWz4vcRcGGzRMnLHdHNnu3NYBB/CT7kAyGMfhOmh?=
+ =?us-ascii?Q?3PhGlw2QN/M2XzQuPTZYzwdUVjYbWDpc1GtJPi35A6m/MZObgjUcJPEd9nlW?=
+ =?us-ascii?Q?Seg9379jd5EfJxDEOzkTGnuhnb8ehkQojTRmkE5t8d0ArG3C64On6xixnFua?=
+ =?us-ascii?Q?PnvezY7fBKxm/fbWuGXwfsLI/1CmOHi6y98HcwkdCWDRjkoaEAZLH1wEDTQn?=
+ =?us-ascii?Q?iEbWoti9VS+pfwHnGGuNI6/mQRsIueRbfKYPn6FsbyTOUInQn98EmPXsf+NR?=
+ =?us-ascii?Q?d0fARBna67+/8zfj8ndZWnGvBnM9nna2nK2Wfczw3EnFpWuj2ZdWc0UACljL?=
+ =?us-ascii?Q?hcY9vEtIp68SoOiYXYd2JORAhmkAEaSYV7tm3E9fxsA+jPrggqcCyxm165O+?=
+ =?us-ascii?Q?E0VPC1Uotd4ZM8SYOj5avsXchD1FhuEZpat7MsUjoBr934uonSdgrok/Y/6/?=
+ =?us-ascii?Q?soPGdQsT5uPWo7Qomu1Wb62XOzVUYx2HDd/ZNG1k+X/7K99oPKMspLeK/lUe?=
+ =?us-ascii?Q?jSdk1ALvsbzwpXNe+1s3EoEodQDKN+v5FEO5QGhxzz1UkOuJoqacMmpXDbMg?=
+ =?us-ascii?Q?iJQ3V0YcvPWJoS5sAxUNehmppcWe3+uwOpu9Mk2Rp8SUtnA0ErTPt4lpsEo3?=
+ =?us-ascii?Q?nwQKP98/DDROGnERnZNxBl31RhEVScqJdmu2cpxvvmBAr0cDwDukHHyVCFFG?=
+ =?us-ascii?Q?ZTVE0Y0RCbF5lJxQ8zyYbADxp2EKImE=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9add3c9a-e3a5-4ea0-fc52-08da2d93baa0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 03d1264f-4e4a-4ff4-76a5-08da2d93bbc1
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 06:02:54.2619
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 06:02:56.1681
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: VBUCweCE2j31QSc7gGnZhnLfgQteOn7gUf5FfFs0e3K8tM4vdgb4waGVBYZV2rIIlw6vNa4JoayGtj++op+7Qw==
+X-MS-Exchange-CrossTenant-UserPrincipalName: rmwvDe97letgouYRJ7xwTpseOtZeaCmQaBQRy8rL2IGUy4aH0GcRZ2YnmrLbEppTtyNqRiwbINCkK8sP1L+Lyw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0006
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -116,85 +120,166 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-More IPsec cleanups from Leon
+From: Leon Romanovsky <leonro@nvidia.com>
 
-Changelog:
-v2:
- * Improved commit messages
-v1: https://lore.kernel.org/all/cover.1650363043.git.leonro@nvidia.com
- * changed target from mlx5-next to net-next.
- * Improved commit message in patch #1
- * Left function names intact, with _accel_ word in it.
-v0: https://lore.kernel.org/all/cover.1649578827.git.leonro@nvidia.com
+Remove multiple function wrappers to make sure that IPsec FS initialization
+and cleanup functions present in one place to help with code readability.
 
-For more information please see tag log below.
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ .../mellanox/mlx5/core/en_accel/ipsec.c       |  4 +-
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.c    | 73 ++++++-------------
+ .../mellanox/mlx5/core/en_accel/ipsec_fs.h    |  4 +-
+ 3 files changed, 27 insertions(+), 54 deletions(-)
 
-Please pull and let me know if there is any problem.
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+index c280a18ff002..b6e430d53fae 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
+@@ -424,7 +424,7 @@ int mlx5e_ipsec_init(struct mlx5e_priv *priv)
+ 	}
+ 
+ 	priv->ipsec = ipsec;
+-	mlx5e_accel_ipsec_fs_init(priv);
++	mlx5e_accel_ipsec_fs_init(ipsec);
+ 	netdev_dbg(priv->netdev, "IPSec attached to netdevice\n");
+ 	return 0;
+ }
+@@ -436,7 +436,7 @@ void mlx5e_ipsec_cleanup(struct mlx5e_priv *priv)
+ 	if (!ipsec)
+ 		return;
+ 
+-	mlx5e_accel_ipsec_fs_cleanup(priv);
++	mlx5e_accel_ipsec_fs_cleanup(ipsec);
+ 	destroy_workqueue(ipsec->wq);
+ 
+ 	kfree(ipsec);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+index 66b529e36ea1..029a9a70ba0e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.c
+@@ -632,81 +632,54 @@ void mlx5e_accel_ipsec_fs_del_rule(struct mlx5e_priv *priv,
+ 		tx_del_rule(priv, ipsec_rule);
+ }
+ 
+-static void fs_cleanup_tx(struct mlx5e_priv *priv)
+-{
+-	mutex_destroy(&priv->ipsec->tx_fs->mutex);
+-	WARN_ON(priv->ipsec->tx_fs->refcnt);
+-	kfree(priv->ipsec->tx_fs);
+-	priv->ipsec->tx_fs = NULL;
+-}
+-
+-static void fs_cleanup_rx(struct mlx5e_priv *priv)
++void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_ipsec *ipsec)
+ {
+ 	struct mlx5e_accel_fs_esp_prot *fs_prot;
+ 	struct mlx5e_accel_fs_esp *accel_esp;
+ 	enum accel_fs_esp_type i;
+ 
+-	accel_esp = priv->ipsec->rx_fs;
++	if (!ipsec->rx_fs)
++		return;
++
++	mutex_destroy(&ipsec->tx_fs->mutex);
++	WARN_ON(ipsec->tx_fs->refcnt);
++	kfree(ipsec->tx_fs);
++
++	accel_esp = ipsec->rx_fs;
+ 	for (i = 0; i < ACCEL_FS_ESP_NUM_TYPES; i++) {
+ 		fs_prot = &accel_esp->fs_prot[i];
+ 		mutex_destroy(&fs_prot->prot_mutex);
+ 		WARN_ON(fs_prot->refcnt);
+ 	}
+-	kfree(priv->ipsec->rx_fs);
+-	priv->ipsec->rx_fs = NULL;
+-}
+-
+-static int fs_init_tx(struct mlx5e_priv *priv)
+-{
+-	priv->ipsec->tx_fs =
+-		kzalloc(sizeof(struct mlx5e_ipsec_tx), GFP_KERNEL);
+-	if (!priv->ipsec->tx_fs)
+-		return -ENOMEM;
+-
+-	mutex_init(&priv->ipsec->tx_fs->mutex);
+-	return 0;
++	kfree(ipsec->rx_fs);
+ }
+ 
+-static int fs_init_rx(struct mlx5e_priv *priv)
++int mlx5e_accel_ipsec_fs_init(struct mlx5e_ipsec *ipsec)
+ {
+ 	struct mlx5e_accel_fs_esp_prot *fs_prot;
+ 	struct mlx5e_accel_fs_esp *accel_esp;
+ 	enum accel_fs_esp_type i;
++	int err = -ENOMEM;
+ 
+-	priv->ipsec->rx_fs =
+-		kzalloc(sizeof(struct mlx5e_accel_fs_esp), GFP_KERNEL);
+-	if (!priv->ipsec->rx_fs)
++	ipsec->tx_fs = kzalloc(sizeof(*ipsec->tx_fs), GFP_KERNEL);
++	if (!ipsec->tx_fs)
+ 		return -ENOMEM;
+ 
+-	accel_esp = priv->ipsec->rx_fs;
++	ipsec->rx_fs = kzalloc(sizeof(*ipsec->rx_fs), GFP_KERNEL);
++	if (!ipsec->rx_fs)
++		goto err_rx;
++
++	mutex_init(&ipsec->tx_fs->mutex);
++
++	accel_esp = ipsec->rx_fs;
+ 	for (i = 0; i < ACCEL_FS_ESP_NUM_TYPES; i++) {
+ 		fs_prot = &accel_esp->fs_prot[i];
+ 		mutex_init(&fs_prot->prot_mutex);
+ 	}
+ 
+ 	return 0;
+-}
+-
+-void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_priv *priv)
+-{
+-	if (!priv->ipsec->rx_fs)
+-		return;
+-
+-	fs_cleanup_tx(priv);
+-	fs_cleanup_rx(priv);
+-}
+-
+-int mlx5e_accel_ipsec_fs_init(struct mlx5e_priv *priv)
+-{
+-	int err;
+-
+-	err = fs_init_tx(priv);
+-	if (err)
+-		return err;
+-
+-	err = fs_init_rx(priv);
+-	if (err)
+-		fs_cleanup_tx(priv);
+ 
++err_rx:
++	kfree(ipsec->tx_fs);
+ 	return err;
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h
+index b70953979709..e4eeb2ba21c7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_fs.h
+@@ -9,8 +9,8 @@
+ #include "ipsec_offload.h"
+ #include "en/fs.h"
+ 
+-void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_priv *priv);
+-int mlx5e_accel_ipsec_fs_init(struct mlx5e_priv *priv);
++void mlx5e_accel_ipsec_fs_cleanup(struct mlx5e_ipsec *ipsec);
++int mlx5e_accel_ipsec_fs_init(struct mlx5e_ipsec *ipsec);
+ int mlx5e_accel_ipsec_fs_add_rule(struct mlx5e_priv *priv,
+ 				  struct mlx5_accel_esp_xfrm_attrs *attrs,
+ 				  u32 ipsec_obj_id,
+-- 
+2.35.1
 
-Thanks,
-Saeed.
-
-The following changes since commit f43f0cd2d9b07caf38d744701b0b54d4244da8cc:
-
-  Merge tag 'wireless-next-2022-05-03' of git://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next (2022-05-03 17:27:51 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-05-03
-
-for you to fetch changes up to 656d33890732978919f79bdbc96921dfca6f28bb:
-
-  net/mlx5: Allow future addition of IPsec object modifiers (2022-05-03 22:59:18 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2022-05-03
-
-Leon Romanovsky Says:
-=====================
-
-Extra IPsec cleanup
-
-After FPGA IPsec removal, we can go further and make sure that flow
-steering logic is aligned to mlx5_core standard together with deep
-cleaning of whole IPsec path.
-
-=====================
-
-----------------------------------------------------------------
-Leon Romanovsky (17):
-      net/mlx5: Simplify IPsec flow steering init/cleanup functions
-      net/mlx5: Check IPsec TX flow steering namespace in advance
-      net/mlx5: Don't hide fallback to software IPsec in FS code
-      net/mlx5: Reduce useless indirection in IPsec FS add/delete flows
-      net/mlx5: Store IPsec ESN update work in XFRM state
-      net/mlx5: Remove useless validity check
-      net/mlx5: Merge various control path IPsec headers into one file
-      net/mlx5: Remove indirections from esp functions
-      net/mlx5: Simplify HW context interfaces by using SA entry
-      net/mlx5: Clean IPsec FS add/delete rules
-      net/mlx5: Make sure that no dangling IPsec FS pointers exist
-      net/mlx5: Don't advertise IPsec netdev support for non-IPsec device
-      net/mlx5: Simplify IPsec capabilities logic
-      net/mlx5: Remove not-supported ICV length
-      net/mlx5: Cleanup XFRM attributes struct
-      net/mlx5: Don't perform lookup after already known sec_path
-      net/mlx5: Allow future addition of IPsec object modifiers
-
- drivers/net/ethernet/mellanox/mlx5/core/en/fs.h    |   1 -
- .../net/ethernet/mellanox/mlx5/core/en/params.c    |   2 +-
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.c   | 174 +++-------
- .../ethernet/mellanox/mlx5/core/en_accel/ipsec.h   |  85 ++++-
- .../mellanox/mlx5/core/en_accel/ipsec_fs.c         | 362 +++++++--------------
- .../mellanox/mlx5/core/en_accel/ipsec_fs.h         |   4 +-
- .../mellanox/mlx5/core/en_accel/ipsec_offload.c    | 331 ++++---------------
- .../mellanox/mlx5/core/en_accel/ipsec_offload.h    |  14 -
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c       |   6 +-
- .../mellanox/mlx5/core/en_accel/ipsec_stats.c      |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   1 -
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |   2 +-
- include/linux/mlx5/accel.h                         | 153 ---------
- include/linux/mlx5/mlx5_ifc.h                      |   2 -
- 15 files changed, 320 insertions(+), 823 deletions(-)
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec_offload.h
- delete mode 100644 include/linux/mlx5/accel.h
