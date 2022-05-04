@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 13E4B51958B
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 04:39:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98B2651958E
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 04:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344048AbiEDCm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 22:42:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50334 "EHLO
+        id S1344096AbiEDCnB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 22:43:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344058AbiEDCmq (ORCPT
+        with ESMTP id S1344059AbiEDCmq (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 22:42:46 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C151E1902A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001EB1F63C
         for <netdev@vger.kernel.org>; Tue,  3 May 2022 19:39:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1651631952; x=1683167952;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=T5xudkTKsji2a3B8PwGdmyEVMiXPAnvn3ha+3QnNmE0=;
-  b=Ho22lb8xM9gMfrrZHBnXP+rgPSyojkpZ/oj7w6JnzHVqsIiwlzbhxriY
-   gS+LGnXufqphY+GyWczBDPPdH7BnYg9oLkc2PyU8X5GCbw7IrT708cIAN
-   r5bl+PCAnzv407Ryy3gdjHDdNorwrTUK7B8coOK0qZNB7sJ15sPf+Z121
-   Y25jztuItPxeHNZv+f6MdOg51LdVKox68wisXqUmv+VIggFw9mr6AcCIp
-   Tr4yxQz4YmpCwdfsYEkCye9ldrDYdUbXaQAix9VNto/1WOkPCoMSvV960
-   MgnrBkSmLEEk9/H0SIiogsmxyPBJE2LB893cxP/ttUhxxQZ4XV3cnkxDZ
+  bh=2BkymHnE1Mt2kivWlHUEWIz6yV1Ia0s1YJXsf02tjIk=;
+  b=YqWnapAVRKhMRdB4IZkzCfwehe8k8ndJjzVpF33W6GVH80xUsDEnNQVU
+   NHDOiscdSWWO6HY+SOygn/NuMr84uFlW/bOoRt2qzHpcZTbwtBrCqPq9Q
+   Bd92vvS1YfLYtPK3tuWT2MJ0pRS73dG6YhysvS2Lxn0GvGgtceIjTaF1l
+   EyMHow4uxPhHM/Fzj/D+EGXDwxA5zAfRV5tYyu4P8BOqlRqf1BPi6X9GJ
+   WtwL4WRR4ISuu+jxnYEtNtDJw6txctrZYXrPjAnHuxPrH61Q8Oc5zmFnT
+   ra3YkwFGm/JJBTwGeyEVCmg6yixGEplEcYDWd/IxiTFwRcla9Pbb4CsQc
    A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267799850"
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="267799852"
 X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="267799850"
+   d="scan'208";a="267799852"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 19:39:08 -0700
 X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
-   d="scan'208";a="584493394"
+   d="scan'208";a="584493397"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.251.20.240])
   by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 19:39:08 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
@@ -42,9 +42,9 @@ Cc:     Kishen Maloor <kishen.maloor@intel.com>, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
         matthieu.baerts@tessares.net, mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 09/13] selftests: mptcp: support MPTCP_PM_CMD_SUBFLOW_CREATE
-Date:   Tue,  3 May 2022 19:38:57 -0700
-Message-Id: <20220504023901.277012-10-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 10/13] selftests: mptcp: support MPTCP_PM_CMD_SUBFLOW_DESTROY
+Date:   Tue,  3 May 2022 19:38:58 -0700
+Message-Id: <20220504023901.277012-11-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504023901.277012-1-mathew.j.martineau@linux.intel.com>
 References: <20220504023901.277012-1-mathew.j.martineau@linux.intel.com>
@@ -62,65 +62,63 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Kishen Maloor <kishen.maloor@intel.com>
 
-This change updates the "pm_nl_ctl" testing sample with a "csf"
-(create subflow) option to support the newly added netlink interface
-command MPTCP_PM_CMD_SUBFLOW_CREATE over the chosen MPTCP connection.
+This change updates the "pm_nl_ctl" testing sample with a "dsf"
+(destroy subflow) option to support the newly added netlink interface
+command MPTCP_PM_CMD_SUBFLOW_DESTROY over the chosen MPTCP connection.
 
-E.g. ./pm_nl_ctl csf lip 10.0.2.1 lid 23 rip 10.0.2.2 rport 56789
+E.g. ./pm_nl_ctl dsf lip 10.0.2.1 lport 44567 rip 10.0.2.2 rport 56789
 token 823274047
 
 Acked-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Kishen Maloor <kishen.maloor@intel.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- tools/testing/selftests/net/mptcp/pm_nl_ctl.c | 129 ++++++++++++++++++
- 1 file changed, 129 insertions(+)
+ tools/testing/selftests/net/mptcp/pm_nl_ctl.c | 115 ++++++++++++++++++
+ 1 file changed, 115 insertions(+)
 
 diff --git a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
-index 3506b0416c41..e2437bacd133 100644
+index e2437bacd133..8d74fcb04929 100644
 --- a/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
 +++ b/tools/testing/selftests/net/mptcp/pm_nl_ctl.c
-@@ -29,6 +29,7 @@ static void syntax(char *argv[])
- 	fprintf(stderr, "\tadd [flags signal|subflow|backup|fullmesh] [id <nr>] [dev <name>] <ip>\n");
+@@ -30,6 +30,7 @@ static void syntax(char *argv[])
  	fprintf(stderr, "\tann <local-ip> id <local-id> token <token> [port <local-port>] [dev <name>]\n");
  	fprintf(stderr, "\trem id <local-id> token <token>\n");
-+	fprintf(stderr, "\tcsf lip <local-ip> lid <local-id> rip <remote-ip> rport <remote-port> token <token>\n");
+ 	fprintf(stderr, "\tcsf lip <local-ip> lid <local-id> rip <remote-ip> rport <remote-port> token <token>\n");
++	fprintf(stderr, "\tdsf lip <local-ip> lport <local-port> rip <remote-ip> rport <remote-port> token <token>\n");
  	fprintf(stderr, "\tdel <id> [<ip>]\n");
  	fprintf(stderr, "\tget <id>\n");
  	fprintf(stderr, "\tset [<ip>] [id <nr>] flags [no]backup|[no]fullmesh [port <nr>]\n");
-@@ -173,6 +174,132 @@ static int resolve_mptcp_pm_netlink(int fd)
+@@ -174,6 +175,118 @@ static int resolve_mptcp_pm_netlink(int fd)
  	return genl_parse_getfamily((void *)data);
  }
  
-+int csf(int fd, int pm_family, int argc, char *argv[])
++int dsf(int fd, int pm_family, int argc, char *argv[])
 +{
 +	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
 +		  NLMSG_ALIGN(sizeof(struct genlmsghdr)) +
 +		  1024];
-+	const char *params[5];
++	struct rtattr *rta, *addr;
++	u_int16_t family, port;
 +	struct nlmsghdr *nh;
-+	struct rtattr *addr;
-+	struct rtattr *rta;
-+	u_int16_t family;
 +	u_int32_t token;
-+	u_int16_t port;
 +	int addr_start;
-+	u_int8_t id;
 +	int off = 0;
 +	int arg;
++
++	const char *params[5];
 +
 +	memset(params, 0, 5 * sizeof(const char *));
 +
 +	memset(data, 0, sizeof(data));
 +	nh = (void *)data;
-+	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_SUBFLOW_CREATE,
++	off = init_genl_req(data, pm_family, MPTCP_PM_CMD_SUBFLOW_DESTROY,
 +			    MPTCP_PM_VER);
 +
 +	if (argc < 12)
 +		syntax(argv);
 +
 +	/* Params recorded in this order:
-+	 * <local-ip>, <local-id>, <remote-ip>, <remote-port>, <token>
++	 * <local-ip>, <local-port>, <remote-ip>, <remote-port>, <token>
 +	 */
 +	for (arg = 2; arg < argc; arg++) {
 +		if (!strcmp(argv[arg], "lip")) {
@@ -128,14 +126,14 @@ index 3506b0416c41..e2437bacd133 100644
 +				error(1, 0, " missing local IP");
 +
 +			params[0] = argv[arg];
-+		} else if (!strcmp(argv[arg], "lid")) {
++		} else if (!strcmp(argv[arg], "lport")) {
 +			if (++arg >= argc)
-+				error(1, 0, " missing local id");
++				error(1, 0, " missing local port");
 +
 +			params[1] = argv[arg];
 +		} else if (!strcmp(argv[arg], "rip")) {
 +			if (++arg >= argc)
-+				error(1, 0, " missing remote ip");
++				error(1, 0, " missing remote IP");
 +
 +			params[2] = argv[arg];
 +		} else if (!strcmp(argv[arg], "rport")) {
@@ -149,7 +147,7 @@ index 3506b0416c41..e2437bacd133 100644
 +
 +			params[4] = argv[arg];
 +		} else
-+			error(1, 0, "unknown param %s", argv[arg]);
++			error(1, 0, "unknown keyword %s", argv[arg]);
 +	}
 +
 +	for (arg = 0; arg < 4; arg = arg + 2) {
@@ -182,25 +180,13 @@ index 3506b0416c41..e2437bacd133 100644
 +		memcpy(RTA_DATA(rta), &family, 2);
 +		off += NLMSG_ALIGN(rta->rta_len);
 +
-+		if (arg == 2) {
-+			/*  port */
-+			port = atoi(params[arg + 1]);
-+			rta = (void *)(data + off);
-+			rta->rta_type = MPTCP_PM_ADDR_ATTR_PORT;
-+			rta->rta_len = RTA_LENGTH(2);
-+			memcpy(RTA_DATA(rta), &port, 2);
-+			off += NLMSG_ALIGN(rta->rta_len);
-+		}
-+
-+		if (arg == 0) {
-+			/* id */
-+			id = atoi(params[arg + 1]);
-+			rta = (void *)(data + off);
-+			rta->rta_type = MPTCP_PM_ADDR_ATTR_ID;
-+			rta->rta_len = RTA_LENGTH(1);
-+			memcpy(RTA_DATA(rta), &id, 1);
-+			off += NLMSG_ALIGN(rta->rta_len);
-+		}
++		/*  port */
++		port = atoi(params[arg + 1]);
++		rta = (void *)(data + off);
++		rta->rta_type = MPTCP_PM_ADDR_ATTR_PORT;
++		rta->rta_len = RTA_LENGTH(2);
++		memcpy(RTA_DATA(rta), &port, 2);
++		off += NLMSG_ALIGN(rta->rta_len);
 +
 +		addr->rta_len = off - addr_start;
 +	}
@@ -218,15 +204,15 @@ index 3506b0416c41..e2437bacd133 100644
 +	return 0;
 +}
 +
- int remove_addr(int fd, int pm_family, int argc, char *argv[])
+ int csf(int fd, int pm_family, int argc, char *argv[])
  {
  	char data[NLMSG_ALIGN(sizeof(struct nlmsghdr)) +
-@@ -969,6 +1096,8 @@ int main(int argc, char *argv[])
- 		return announce_addr(fd, pm_family, argc, argv);
- 	else if (!strcmp(argv[1], "rem"))
+@@ -1098,6 +1211,8 @@ int main(int argc, char *argv[])
  		return remove_addr(fd, pm_family, argc, argv);
-+	else if (!strcmp(argv[1], "csf"))
-+		return csf(fd, pm_family, argc, argv);
+ 	else if (!strcmp(argv[1], "csf"))
+ 		return csf(fd, pm_family, argc, argv);
++	else if (!strcmp(argv[1], "dsf"))
++		return dsf(fd, pm_family, argc, argv);
  	else if (!strcmp(argv[1], "del"))
  		return del_addr(fd, pm_family, argc, argv);
  	else if (!strcmp(argv[1], "flush"))
