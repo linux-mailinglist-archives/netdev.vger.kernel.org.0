@@ -2,95 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7D551A4A1
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:55:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38C4451A4AA
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:56:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352947AbiEDP7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 11:59:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57064 "EHLO
+        id S1352943AbiEDP7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 11:59:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352921AbiEDP7O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:59:14 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0627CB847;
-        Wed,  4 May 2022 08:55:38 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id v12so2615467wrv.10;
-        Wed, 04 May 2022 08:55:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wtP9hXDTn2yxCxN0X3of+jxBUyJ3pPE1spLSBo0Vj30=;
-        b=qqXa9svwL8NMhVK1Gy+nfEs6AsyyPj8v3ldoTOGdWz6T7rM9N+70zCY8ogsxibCHLh
-         6awoBFNjZXrfw6ZN4DGr71lSRCULT2WjFh+UcVjUjBZcy2SFdaE+R3K3+8ZJVBYVCV9t
-         ESvoJaKYDq/eeFRdics70hAMrc1ri9IPZu2ioz63ukeJGse/F3+2P3urmhmT707I2h1R
-         Fa1J5WZ/Rw7mi4kntJUDjTQBfj9KL79ANJtIOqollDoch0qutO8iKRcdzWlOcJLeMnVJ
-         jzhQC9Xp5jk5rGTnjYdMTQ2sL28rtULpMZd9YbIf7faFF2taVbzUndHYThXOfj6PdvQR
-         aAcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wtP9hXDTn2yxCxN0X3of+jxBUyJ3pPE1spLSBo0Vj30=;
-        b=JnXf/w9sHgHDUnHMZgA+pvCbLwf7aw0M3pyCjjeAojKG5i/mRisyVwEWmolYPlbQ38
-         q5t2Q4n9bHBrNCwpJyeydVvsxD1MmaiqEnAuP5Kh1Yz7eNsjDt0F2SARmA7+XYWTT6Wy
-         L+MNLgVIdHJc/Lze1JqWrxbGLu7KhBvskdR2YYv5naheLkzPbtWDyAvXSPB4QkdIt60N
-         EYe7TL9ptPTsaWX/ws7U66RUCvQldUUclg4D5clip0tfSmdg/bWFVvivkFPHPSR4O9Lz
-         y7kvxIj+x8jRHrpMeAK8J/ONU/SxBHfLoUhIcK9Fj8BEH9PQtMHc6QnLf8N9fyyhsEMy
-         1Dmg==
-X-Gm-Message-State: AOAM5318eVm7swomehxpuFuq6IZDQgBI0c4uEIHtowwbUVRLdx12xXJy
-        WQerS+X+GjH3mWlfS514C80=
-X-Google-Smtp-Source: ABdhPJyAO2ajDWK9KtBeiYVElkB0jr1JpnrWYOLIIW+ZDM2z1WSjOl3K/EKnkLOcao/sWhat3JyTkA==
-X-Received: by 2002:a5d:6c68:0:b0:20c:7246:a86 with SMTP id r8-20020a5d6c68000000b0020c72460a86mr7360076wrz.283.1651679736508;
-        Wed, 04 May 2022 08:55:36 -0700 (PDT)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id bg3-20020a05600c3c8300b003942a244ed2sm5085334wmb.23.2022.05.04.08.55.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 08:55:35 -0700 (PDT)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Kees Cook <keescook@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH][next] selftests/seccomp: Fix spelling mistake "Coud" -> "Could"
-Date:   Wed,  4 May 2022 16:55:35 +0100
-Message-Id: <20220504155535.239180-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1352986AbiEDP7i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:59:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398B31659A
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 08:55:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE88AB82752
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 15:55:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E4B7C385A5;
+        Wed,  4 May 2022 15:55:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651679754;
+        bh=C7uWhIXFmyspPFN/85L75F+rF1xMT5aGQwbMEywRFXk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fKRjVSG8k6C68q3JjClkw02cs/cgMN8cD02cgstl90VkjMhrYTa3URmK0o5PSR31s
+         PL2MW6gsrjMZu80yWpWiaddO2OzwEoJRSlH5NToiON0hO9Z2dl+U7wUE3h1f+/m4MM
+         9eI4oyWBkq8n5DYWHnXBBGdLHWL5Q4eIlFVH48cmeQbfzlCkSh36gpeM4jeGvWzevf
+         3Fc7m9Eke0ESEczoi6GJy1fJ0jnM7a/zyZntm/luoFf1KnYLIkVc/hKQx6nlcI2l0N
+         84STLOL0dbuE+ToZjR2OuCs2SnubVlgYsApFZsPkAxkb1vs4cQcpJ7R1s/Y5NOLpis
+         Dx/azcxCeJzBA==
+Date:   Wed, 4 May 2022 08:55:52 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Gerhard Engleder <gerhard@engleder-embedded.com>
+Cc:     richardcochran@gmail.com, vinicius.gomes@intel.com,
+        yangbo.lu@nxp.com, davem@davemloft.net, mlichvar@redhat.com,
+        netdev@vger.kernel.org, Willem de Bruijn <willemb@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>
+Subject: Re: [PATCH net-next v3 0/6] ptp: Support hardware clocks with
+ additional free running cycle counter
+Message-ID: <20220504085552.3ff84d0c@kernel.org>
+In-Reply-To: <20220501111836.10910-1-gerhard@engleder-embedded.com>
+References: <20220501111836.10910-1-gerhard@engleder-embedded.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a spelling mistake in an error message. Fix it.
+On Sun,  1 May 2022 13:18:30 +0200 Gerhard Engleder wrote:
+> ptp vclocks require a clock with free running time for the timecounter.
+> Currently only a physical clock forced to free running is supported.
+> If vclocks are used, then the physical clock cannot be synchronized
+> anymore. The synchronized time is not available in hardware in this
+> case. As a result, timed transmission with TAPRIO hardware support
+> is not possible anymore.
+> 
+> If hardware would support a free running time additionally to the
+> physical clock, then the physical clock does not need to be forced to
+> free running. Thus, the physical clocks can still be synchronized while
+> vclocks are in use.
+> 
+> The physical clock could be used to synchronize the time domain of the
+> TSN network and trigger TAPRIO. In parallel vclocks can be used to
+> synchronize other time domains.
+> 
+> One year ago I thought for two time domains within a TSN network also
+> two physical clocks are required. This would lead to new kernel
+> interfaces for asking for the second clock, ... . But actually for a
+> time triggered system like TSN there can be only one time domain that
+> controls the system itself. All other time domains belong to other
+> layers, but not to the time triggered system itself. So other time
+> domains can be based on a free running counter if similar mechanisms
+> like 2 step synchroisation are used.
+> 
+> Synchronisation was tested with two time domains between two directly
+> connected hosts. Each host run two ptp4l instances, the first used the
+> physical clock and the second used the virtual clock. I used my FPGA
+> based network controller as network device. ptp4l was used in
+> combination with the virtual clock support patches from Miroslav
+> Lichvar.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- tools/testing/selftests/seccomp/seccomp_bpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The netdev parts looks sane, I think.
 
-diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
-index 29c973f606b2..136df5b76319 100644
---- a/tools/testing/selftests/seccomp/seccomp_bpf.c
-+++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
-@@ -4320,7 +4320,7 @@ static ssize_t get_nth(struct __test_metadata *_metadata, const char *path,
- 
- 	f = fopen(path, "r");
- 	ASSERT_NE(f, NULL) {
--		TH_LOG("Coud not open %s: %s", path, strerror(errno));
-+		TH_LOG("Could not open %s: %s", path, strerror(errno));
- 	}
- 
- 	for (i = 0; i < position; i++) {
--- 
-2.35.1
-
+Richard? Let me also add Willem, Jonathan and Martin.
