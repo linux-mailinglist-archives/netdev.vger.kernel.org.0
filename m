@@ -2,678 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D639651B000
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 23:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 144E551B028
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 23:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357677AbiEDVEn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 17:04:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51744 "EHLO
+        id S1358453AbiEDVOR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 17:14:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378480AbiEDVEk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 17:04:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA9C0517F3;
-        Wed,  4 May 2022 14:01:01 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B667B8293F;
-        Wed,  4 May 2022 21:01:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01857C385A5;
-        Wed,  4 May 2022 21:00:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651698059;
-        bh=JSBiItZ/YX8dqyG7iRP/7GSNfeFVLR6ezjzwa9M7kBU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tMbqSZcB59NTNPhv4Zqu3SeoAtAy+I9vcXzWOBZdHK23BxvMW/xCtTgi5RgeTbKnA
-         CQ8o/fi8jNzBTjoZOwDOqp9Ipi33ChB2hKWh9NKc6M0a1M3+u5xmImKgs7cGqtK6Kr
-         RYvoUngGY6Vx8HVeWo4SJCXybyiX16SJcR5sr/zfde4a7hjtZUUaReBy+vGTE/dvx5
-         V1tu8FofLX7Zyt+w86nAfyhYahMgSdjg1xiTgan0gilbIUUSqjuwYuL9mMYgR9Zczw
-         KSIytdnwnTXomWTT7u6MQrAT+YapRFy9EL+OBchlZQj5iNGBZgtSgryZvtZeo1H1uO
-         CHB2u4KIjjTxQ==
-Date:   Wed, 4 May 2022 22:09:09 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Abel Vesa <abel.vesa@nxp.com>, Stephen Boyd <sboyd@kernel.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        with ESMTP id S1378530AbiEDVOC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 17:14:02 -0400
+Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60085.outbound.protection.outlook.com [40.107.6.85])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0186862E9
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 14:10:24 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=odQLXII+hDwimRV1Apt5SpLfjurG/dj+UiasZ7T+BW6r4XTjARDWlfkmZJUIRnzAXdISgU/6W7nLUVkXNN0q9nbO/83pF8xgYZuPa+hf7d8cZzzuNA+ZqQLzj0z0m7AZvGbgzKRCyxyLyTCwjFx/gdmZ06qh4Rhej5ZaAwrDna8KM+bPcnEndFd1kl018T3cE67FWcZtzgdD7rmcNaRcF/9HCl0Q0Z1e98QMWcJVx9jar7XHCl77ob+frd+F/8Xlkgyz2BGS1C+MEbAMg6YLFe0Ufk465WSaJbLOziH5MWwIvPyROkt0KbgEFdb4EgHUxshU8ZIoXGS+evsDAJKClQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=e5j72fBKlXkPw7n7B/OGLcQ8SPEkeeyj323oC+oSCTg=;
+ b=LxRM8iOx+i3o9vCef/nf8mULMgI7B9RhO0U+rigQ3qmQgan23oH5uNM02cZN5zEtEksEIFV+G0imhHgUYEa5jlyEajR1FXHtUws+9zAbrTMaR7kpfol56qJUzqQBpurVhbSCUUnoANAfWfuL7NYoc48ePqAL5n02v7Vg6BI0Zhush2YMMiM0J2gaxWAfyna1BibMechQgiBdHKKDK+k1R0XkJBVUaqKDV5qWQMwNOIIdPf32QpS8PVGbcKsUk7NxmoJ2tKS68LERyXV8AljsHNjD2IFYvjK1jmIc0JIIZMyuFgqEA9BwwzadCWTELlgTMR2QdDSmR/6/0t5lAr2FxQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e5j72fBKlXkPw7n7B/OGLcQ8SPEkeeyj323oC+oSCTg=;
+ b=jHarlmmpnVSF4XcX0HE5zv89qQyywQY2ffJW0uLP9x7YIs7IF39y8GEebUIUJW0nGWqXtocTWI3CBk+3/9npEo2+IippXoHetSn1hpgrvZXF/teOUfDzXQlLoTpIdkTJtTFBnyCzkKJzVMJ3bavXTk7iVylHa6I2FLdmUOGaF+s=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM6PR04MB5575.eurprd04.prod.outlook.com (2603:10a6:20b:9a::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.25; Wed, 4 May
+ 2022 21:10:21 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::d94f:b885:c587:5cd4]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::d94f:b885:c587:5cd4%6]) with mapi id 15.20.5206.025; Wed, 4 May 2022
+ 21:10:21 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Niklas =?UTF-8?B?U8O2ZGVybHVuZA==?= 
-        <niklas.soderlund@ragnatech.se>, Anson Huang <Anson.Huang@nxp.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Han Xu <han.xu@nxp.com>, Dario Binacchi <dariobin@libero.it>,
+        Eric Dumazet <edumazet@google.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        linux-clk@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-iio@vger.kernel.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-phy@lists.infradead.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Drop redundant 'maxItems/minItems' in
- if/then schemas
-Message-ID: <20220504220909.253d5efa@jic23-huawei>
-In-Reply-To: <20220503162738.3827041-1-robh@kernel.org>
-References: <20220503162738.3827041-1-robh@kernel.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Colin Foster <colin.foster@in-advantage.com>
+Subject: Re: [PATCH net 2/6] net: mscc: ocelot: avoid use after free with
+ deleted tc-trap rules
+Thread-Topic: [PATCH net 2/6] net: mscc: ocelot: avoid use after free with
+ deleted tc-trap rules
+Thread-Index: AQHYXuUEhP0+UFE53kei9Q4RN5j5Yq0POO4A
+Date:   Wed, 4 May 2022 21:10:21 +0000
+Message-ID: <20220504211020.dffltlb5is2rcz4g@skbuf>
+References: <20220503115728.834457-1-vladimir.oltean@nxp.com>
+ <20220503115728.834457-3-vladimir.oltean@nxp.com>
+In-Reply-To: <20220503115728.834457-3-vladimir.oltean@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a45f346c-1c72-4562-7b73-08da2e127ff1
+x-ms-traffictypediagnostic: AM6PR04MB5575:EE_
+x-microsoft-antispam-prvs: <AM6PR04MB55750570496E6ECF8509D5E5E0C39@AM6PR04MB5575.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: gz2pPYXOGSIaSmf/iM1lRKJqr4Rs1YFvGctCA2Sf35KG184nk4FhbAcqbuPtBDVpCTTSD37PK/Q07aYcojv+qiqeVmQYHH+Rg2kd1CqgVtfCaIrqftO0CMEbKfX+NKaoRHwUBzI7iRqVVLFXX3LfvVSOsojJffaSXQPz1EbKMhosxrlsXaGEfmtA4jNKFoSRwjFtyZm9beg6Ml3W0e/oKF5+wgNyf2gX1JwA45lDWo8QsXdDjft7alvm05i+FOH2thuZnRSV0TARR+iiys4DNjZDZcI8AI5G7fEtHCPQC8ucJZAXT6qI32nClJlOTr0k8v9U2boZfTM/E/ItXORA7rdf5dwFBxaIq07s/z1au8TbTyJYkprxYtjJIda0r5U5a8xv7qSRbou4+x3CwJAIRm4zlS6ZJPkMQrOyHXCS9Pvo3ms2WzKt/m4zAe2yNTplyGJw1qvjJDTgRAb4GAwqmEAUHOrwrXIVF7siQ65rbyjiDclUPWvk3D9DkLfZ3OjXOPq5/umV9dRL3hcTRT5tXMztKDaWs0+IgjIFfSmxj2a49Fm+8wgwmMxtNSQb6AGtZtX8dAjV3R0xjwNPuQCBLymUcPolZiPAaYa/CQGAT0iI++iat8CCeCUea8hF2hjkwxk6cHP9Hxp1za2ZsJg6+p6dWCrw3wD/kKUWKsXEIWzUEE0AGlR7RsIG9W4XL5ywVQAivB8TZ0rSCRbKmzSZ6A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(66556008)(86362001)(76116006)(2906002)(6486002)(66446008)(4326008)(66476007)(6916009)(8676002)(122000001)(66946007)(64756008)(83380400001)(54906003)(71200400001)(316002)(508600001)(38070700005)(91956017)(38100700002)(5660300002)(6512007)(33716001)(186003)(26005)(1076003)(9686003)(8936002)(44832011)(6506007)(7416002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?eo0cPaDmDTixlhxFvUjbEibBYOi3BqXHB2DLlrT6rusfcbu3eXnDjHZ8S1cd?=
+ =?us-ascii?Q?5J7oFtQb9ScZAZuUwbQQ8xP4ccqFIk2jdJRFDlXh9VCbCsnbuvMR6e3bh6ac?=
+ =?us-ascii?Q?BRoVZFbMYrn4VZiaUG9sUzYvlUcTlxoI83Ri1l0Pt+mbmmFL0Dgo+oRevgt5?=
+ =?us-ascii?Q?RUWv4cvSrz2GQArB2MQWQ8LvG0CVUMwuGw4hvi02zGpa8OBaszq5YbPA0+sw?=
+ =?us-ascii?Q?Dpz5Sq9n8a/PVjutbtzzjdPYu/TCqyn2M1PwHz4r6bJ8+AogfbOlFb+oMFl+?=
+ =?us-ascii?Q?zk1cJ51LL0ZukLw6IZ0+xJcwx9jBMtAVmaTR24+1LPvDZKoh0+BI5DBvetW4?=
+ =?us-ascii?Q?lmAKE0L57BkAqZKWN7UP9IBqXXnAAs80YGaHQPhCRcEChSWjZFr2OzQsP+We?=
+ =?us-ascii?Q?dzwada9iBc9HX+GPqJESgXjhAcKKBzRgF/3KZq4p55BSX8IR0ZbAMJp2DxrU?=
+ =?us-ascii?Q?AsBu/RN5Hy+JfhERqKZQh3cm6pa27XiHDxiHQX2yNr9T9Xli4KKqpFzNYod5?=
+ =?us-ascii?Q?ommIUhmHYhnoErfrhkcOvlgmW+n5XR1mzJNYZ8XFpHm0Uzxn1WVy9urXhgKb?=
+ =?us-ascii?Q?TjHTGllt8PaJz4eT0Q0fAHCVu2sjN9oOUHrNy10A2jUX75z+nqjRTjWgaoRN?=
+ =?us-ascii?Q?d7vHp7JuvRawJP6zFHP3nHyZ/nINbYU3c25lDYgO5mxTqH3M4i4IRJtHotDk?=
+ =?us-ascii?Q?mS6vDZ98l98p7aJxctfeXF9Y69mOFl5mJQMV+pV130Gxh87NS0X8UP/Qg0Hg?=
+ =?us-ascii?Q?jWPIQCTCQhNx/5naw4uCyLa2mL/hp0gJXjPBrUSI+R1pjVJ1yomvNDvcM2ID?=
+ =?us-ascii?Q?yYor18BGAUac55sqY8gOWHeTelDHiUu/3f5NT0Ym7+q9s2nwzM/jpLBJ/ZeA?=
+ =?us-ascii?Q?Dyit8tW06bM00HW33TJIvodV1Jj4z4Mslpzm3i2ZQYBUDBCHdrl9+NAJLG+v?=
+ =?us-ascii?Q?wpehaZ3fAKXS3MJ1eIMzFNPIv43fPE8dNClG7nbnNMtDOcM37E/fV+w2kiE2?=
+ =?us-ascii?Q?PBClEXigXWBXKBsf/sL3tfjhM57mabV3gfG5cxL76lIKfbOhfZ/Nt05RwmVW?=
+ =?us-ascii?Q?hjqb8LhqurK2EKV1f4JjFQLAEgHh6fgzV2wOTmnqH5DqmFpZbZFujbX3m6SY?=
+ =?us-ascii?Q?PhYegFP+HOFxzp9rmCYTQFGD47ng9SkiGxsnqVZjobLSbCfBKyeKNHbC1RfE?=
+ =?us-ascii?Q?+7VjBjbTJtCZBjwHXIHXEXmyh9Gn4RtHc0MqNLnQSv3uCpvVGZf6mCpG7GYI?=
+ =?us-ascii?Q?b8FBk6/NOkmYMXLj60/LNevSypw0LbZS7DV+66yA2PkIn8AoLHYG5Ro0omLJ?=
+ =?us-ascii?Q?S4C24rZNBk38gWMueheqPr4szHAXwEqeCAofTsxOlkuQhJuBVaV5hsSOTr3M?=
+ =?us-ascii?Q?/cF1HlnqHtePLji8jih9bcSqYiwdaHl85T310VcBwKpwh9+M+z6trM1V5ZB4?=
+ =?us-ascii?Q?jOCi64Kjny297lYBA78AoK0UJw9yqxPneE/y7I0GTXatoG8L58T/SCqOpZ+m?=
+ =?us-ascii?Q?ob73Fgu6c7tT/u4TJAAtsbBQrI5gtGTMR7aeQCsEXlrwPXck/xfs2oGZZ/9W?=
+ =?us-ascii?Q?ycPYD3o+ym/2ebejb3b9e+idDqwRjT4laEtpPxp8m6y7qo63Gaz+9sIwrsHm?=
+ =?us-ascii?Q?IDIZCdCPpOczrGm/oO5y1zmT8r67F6bsB5PtJdF73ahb0djtG+mse57aqL3m?=
+ =?us-ascii?Q?CinO7x3VqBfnG6uYqcOV6zqbTfyZg8+rBvtOL503HLsN2hz63iq5ZZ5sKLu3?=
+ =?us-ascii?Q?OPprF5XvCFhEQx+ybMuFpkp2WmiA8Bg=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4A8B15DE4CAC12408C5377C4F69E20E5@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a45f346c-1c72-4562-7b73-08da2e127ff1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 May 2022 21:10:21.7011
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: y1qY84yHjZOjw9+CrLU7NLnRqHiGVlapgKELKvzQDuHyLrJ+pOUtRFacloknB3evAeNKeWB57OROBR8NS29BFg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5575
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  3 May 2022 11:27:38 -0500
-Rob Herring <robh@kernel.org> wrote:
-
-> Another round of removing redundant minItems/maxItems when 'items' list is
-> specified. This time it is in if/then schemas as the meta-schema was
-> failing to check this case.
+On Tue, May 03, 2022 at 02:57:24PM +0300, Vladimir Oltean wrote:
+> The error path of ocelot_flower_parse() removes a VCAP filter from
+> ocelot->traps, but the main deletion path - ocelot_vcap_filter_del() -
+> does not.
 >=20
-> If a property has an 'items' list, then a 'minItems' or 'maxItems' with t=
-he
-> same size as the list is redundant and can be dropped. Note that is DT
-> schema specific behavior and not standard json-schema behavior. The tooli=
-ng
-> will fixup the final schema adding any unspecified minItems/maxItems.
-
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> #for IIO
+> So functions such as felix_update_trapping_destinations() can still
+> access the freed VCAP filter via ocelot->traps.
 >=20
-> Cc: Abel Vesa <abel.vesa@nxp.com>
-> Cc: Stephen Boyd <sboyd@kernel.org>
-> Cc: Krzysztof Kozlowski <krzk+dt@kernel.org>
-> Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-> Cc: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Thierry Reding <thierry.reding@gmail.com>
-> Cc: Jonathan Hunter <jonathanh@nvidia.com>
-> Cc: Miquel Raynal <miquel.raynal@bootlin.com>
-> Cc: Richard Weinberger <richard@nod.at>
-> Cc: Vignesh Raghavendra <vigneshr@ti.com>
-> Cc: Wolfgang Grandegger <wg@grandegger.com>
-> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> Cc: Vinod Koul <vkoul@kernel.org>
-> Cc: Alessandro Zummo <a.zummo@towertech.it>
-> Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Cc: Chen-Yu Tsai <wens@csie.org>
-> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Cc: Mark Brown <broonie@kernel.org>
-> Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Zhang Rui <rui.zhang@intel.com>
-> Cc: "Niklas S=C3=B6derlund" <niklas.soderlund@ragnatech.se>
-> Cc: Anson Huang <Anson.Huang@nxp.com>
-> Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-> Cc: Han Xu <han.xu@nxp.com>
-> Cc: Dario Binacchi <dariobin@libero.it>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Maxime Ripard <mripard@kernel.org>
-> Cc: Peter Ujfalusi <peter.ujfalusi@ti.com>
-> Cc: linux-clk@vger.kernel.org
-> Cc: dri-devel@lists.freedesktop.org
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-mmc@vger.kernel.org
-> Cc: linux-mtd@lists.infradead.org
-> Cc: linux-can@vger.kernel.org
-> Cc: netdev@vger.kernel.org
-> Cc: linux-phy@lists.infradead.org
-> Cc: linux-rtc@vger.kernel.org
-> Cc: linux-serial@vger.kernel.org
-> Cc: alsa-devel@alsa-project.org
-> Cc: linux-pm@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> Fix this bug by removing the filter from ocelot->traps when it gets
+> deleted.
+>=20
+> Fixes: e42bd4ed09aa ("net: mscc: ocelot: keep traps in a list")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 > ---
->  .../bindings/clock/imx8m-clock.yaml           |  4 ----
->  .../bindings/display/bridge/renesas,lvds.yaml |  4 ----
->  .../bindings/display/renesas,du.yaml          | 23 -------------------
->  .../bindings/iio/adc/st,stm32-adc.yaml        |  2 --
->  .../bindings/mmc/nvidia,tegra20-sdhci.yaml    |  7 +-----
->  .../devicetree/bindings/mtd/gpmi-nand.yaml    |  2 --
->  .../bindings/net/can/bosch,c_can.yaml         |  3 ---
->  .../bindings/phy/brcm,sata-phy.yaml           | 10 ++++----
->  .../bindings/rtc/allwinner,sun6i-a31-rtc.yaml | 10 --------
->  .../bindings/serial/samsung_uart.yaml         |  4 ----
->  .../sound/allwinner,sun4i-a10-i2s.yaml        |  1 -
->  .../bindings/sound/ti,j721e-cpb-audio.yaml    |  2 --
->  .../bindings/thermal/rcar-gen3-thermal.yaml   |  1 -
->  13 files changed, 5 insertions(+), 68 deletions(-)
+>  drivers/net/ethernet/mscc/ocelot_vcap.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >=20
-> diff --git a/Documentation/devicetree/bindings/clock/imx8m-clock.yaml b/D=
-ocumentation/devicetree/bindings/clock/imx8m-clock.yaml
-> index 625f573a7b90..458c7645ee68 100644
-> --- a/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
-> +++ b/Documentation/devicetree/bindings/clock/imx8m-clock.yaml
-> @@ -55,8 +55,6 @@ allOf:
->      then:
->        properties:
->          clocks:
-> -          minItems: 7
-> -          maxItems: 7
->            items:
->              - description: 32k osc
->              - description: 25m osc
-> @@ -66,8 +64,6 @@ allOf:
->              - description: ext3 clock input
->              - description: ext4 clock input
->          clock-names:
-> -          minItems: 7
-> -          maxItems: 7
->            items:
->              - const: ckil
->              - const: osc_25m
-> diff --git a/Documentation/devicetree/bindings/display/bridge/renesas,lvd=
-s.yaml b/Documentation/devicetree/bindings/display/bridge/renesas,lvds.yaml
-> index a51baf8a4c76..bb9dbfb9beaf 100644
-> --- a/Documentation/devicetree/bindings/display/bridge/renesas,lvds.yaml
-> +++ b/Documentation/devicetree/bindings/display/bridge/renesas,lvds.yaml
-> @@ -95,7 +95,6 @@ then:
->    properties:
->      clocks:
->        minItems: 1
-> -      maxItems: 4
->        items:
->          - description: Functional clock
->          - description: EXTAL input clock
-> @@ -104,7 +103,6 @@ then:
-> =20
->      clock-names:
->        minItems: 1
-> -      maxItems: 4
->        items:
->          - const: fck
->          # The LVDS encoder can use the EXTAL or DU_DOTCLKINx clocks.
-> @@ -128,12 +126,10 @@ then:
->  else:
->    properties:
->      clocks:
-> -      maxItems: 1
->        items:
->          - description: Functional clock
-> =20
->      clock-names:
-> -      maxItems: 1
->        items:
->          - const: fck
-> =20
-> diff --git a/Documentation/devicetree/bindings/display/renesas,du.yaml b/=
-Documentation/devicetree/bindings/display/renesas,du.yaml
-> index 56cedcd6d576..b3e588022082 100644
-> --- a/Documentation/devicetree/bindings/display/renesas,du.yaml
-> +++ b/Documentation/devicetree/bindings/display/renesas,du.yaml
-> @@ -109,7 +109,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 1
-> -          maxItems: 3
->            items:
->              - description: Functional clock
->              - description: DU_DOTCLKIN0 input clock
-> @@ -117,7 +116,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 1
-> -          maxItems: 3
->            items:
->              - const: du.0
->              - pattern: '^dclkin\.[01]$'
-> @@ -159,7 +157,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - description: Functional clock for DU0
->              - description: Functional clock for DU1
-> @@ -168,7 +165,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - const: du.0
->              - const: du.1
-> @@ -216,7 +212,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - description: Functional clock for DU0
->              - description: Functional clock for DU1
-> @@ -225,7 +220,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - const: du.0
->              - const: du.1
-> @@ -271,7 +265,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - description: Functional clock for DU0
->              - description: Functional clock for DU1
-> @@ -280,7 +273,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - const: du.0
->              - const: du.1
-> @@ -327,7 +319,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - description: Functional clock for DU0
->              - description: Functional clock for DU1
-> @@ -336,7 +327,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - const: du.0
->              - const: du.1
-> @@ -386,7 +376,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 3
-> -          maxItems: 6
->            items:
->              - description: Functional clock for DU0
->              - description: Functional clock for DU1
-> @@ -397,7 +386,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 3
-> -          maxItems: 6
->            items:
->              - const: du.0
->              - const: du.1
-> @@ -448,7 +436,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 4
-> -          maxItems: 8
->            items:
->              - description: Functional clock for DU0
->              - description: Functional clock for DU1
-> @@ -461,7 +448,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 4
-> -          maxItems: 8
->            items:
->              - const: du.0
->              - const: du.1
-> @@ -525,7 +511,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 3
-> -          maxItems: 6
->            items:
->              - description: Functional clock for DU0
->              - description: Functional clock for DU1
-> @@ -536,7 +521,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 3
-> -          maxItems: 6
->            items:
->              - const: du.0
->              - const: du.1
-> @@ -596,7 +580,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 3
-> -          maxItems: 6
->            items:
->              - description: Functional clock for DU0
->              - description: Functional clock for DU1
-> @@ -607,7 +590,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 3
-> -          maxItems: 6
->            items:
->              - const: du.0
->              - const: du.1
-> @@ -666,14 +648,12 @@ allOf:
->        properties:
->          clocks:
->            minItems: 1
-> -          maxItems: 2
->            items:
->              - description: Functional clock for DU0
->              - description: DU_DOTCLKIN0 input clock
-> =20
->          clock-names:
->            minItems: 1
-> -          maxItems: 2
->            items:
->              - const: du.0
->              - const: dclkin.0
-> @@ -723,7 +703,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - description: Functional clock for DU0
->              - description: Functional clock for DU1
-> @@ -732,7 +711,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 2
-> -          maxItems: 4
->            items:
->              - const: du.0
->              - const: du.1
-> @@ -791,7 +769,6 @@ allOf:
->              - description: Functional clock
-> =20
->          clock-names:
-> -          maxItems: 1
->            items:
->              - const: du.0
-> =20
-> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml =
-b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-> index 4d6074518b5c..fa8da42cb1e6 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
-> @@ -138,7 +138,6 @@ allOf:
->              - const: bus
->              - const: adc
->            minItems: 1
-> -          maxItems: 2
-> =20
->          interrupts:
->            items:
-> @@ -170,7 +169,6 @@ allOf:
->              - const: bus
->              - const: adc
->            minItems: 1
-> -          maxItems: 2
-> =20
->          interrupts:
->            items:
-> diff --git a/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.y=
-aml b/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml
-> index f3f4d5b02744..fe0270207622 100644
-> --- a/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml
-> +++ b/Documentation/devicetree/bindings/mmc/nvidia,tegra20-sdhci.yaml
-> @@ -202,22 +202,17 @@ allOf:
->          clocks:
->            items:
->              - description: module clock
-> -          minItems: 1
-> -          maxItems: 1
->      else:
->        properties:
->          clocks:
->            items:
->              - description: module clock
->              - description: timeout clock
-> -          minItems: 2
-> -          maxItems: 2
-> +
->          clock-names:
->            items:
->              - const: sdhci
->              - const: tmclk
-> -          minItems: 2
-> -          maxItems: 2
->        required:
->          - clock-names
-> =20
-> diff --git a/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml b/Docum=
-entation/devicetree/bindings/mtd/gpmi-nand.yaml
-> index 9d764e654e1d..849aeae319a9 100644
-> --- a/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml
-> +++ b/Documentation/devicetree/bindings/mtd/gpmi-nand.yaml
-> @@ -147,8 +147,6 @@ allOf:
->              - description: SoC gpmi io clock
->              - description: SoC gpmi bch apb clock
->          clock-names:
-> -          minItems: 2
-> -          maxItems: 2
->            items:
->              - const: gpmi_io
->              - const: gpmi_bch_apb
-> diff --git a/Documentation/devicetree/bindings/net/can/bosch,c_can.yaml b=
-/Documentation/devicetree/bindings/net/can/bosch,c_can.yaml
-> index 8bad328b184d..51aa89ac7e85 100644
-> --- a/Documentation/devicetree/bindings/net/can/bosch,c_can.yaml
-> +++ b/Documentation/devicetree/bindings/net/can/bosch,c_can.yaml
-> @@ -80,8 +80,6 @@ if:
->  then:
->    properties:
->      interrupts:
-> -      minItems: 4
-> -      maxItems: 4
->        items:
->          - description: Error and status IRQ
->          - description: Message object IRQ
-> @@ -91,7 +89,6 @@ then:
->  else:
->    properties:
->      interrupts:
-> -      maxItems: 1
->        items:
->          - description: Error and status IRQ
-> =20
-> diff --git a/Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml b/D=
-ocumentation/devicetree/bindings/phy/brcm,sata-phy.yaml
-> index cb1aa325336f..435b971dfd9b 100644
-> --- a/Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml
-> +++ b/Documentation/devicetree/bindings/phy/brcm,sata-phy.yaml
-> @@ -102,19 +102,17 @@ if:
->  then:
->    properties:
->      reg:
-> -      maxItems: 2
-> +      minItems: 2
-> +
->      reg-names:
-> -      items:
-> -        - const: "phy"
-> -        - const: "phy-ctrl"
-> +      minItems: 2
->  else:
->    properties:
->      reg:
->        maxItems: 1
-> +
->      reg-names:
->        maxItems: 1
-> -      items:
-> -        - const: "phy"
-> =20
->  required:
->    - compatible
-> diff --git a/Documentation/devicetree/bindings/rtc/allwinner,sun6i-a31-rt=
-c.yaml b/Documentation/devicetree/bindings/rtc/allwinner,sun6i-a31-rtc.yaml
-> index 0b767fec39d8..6b38bd7eb3b4 100644
-> --- a/Documentation/devicetree/bindings/rtc/allwinner,sun6i-a31-rtc.yaml
-> +++ b/Documentation/devicetree/bindings/rtc/allwinner,sun6i-a31-rtc.yaml
-> @@ -71,7 +71,6 @@ allOf:
->      then:
->        properties:
->          clock-output-names:
-> -          minItems: 1
->            maxItems: 1
-> =20
->    - if:
-> @@ -102,7 +101,6 @@ allOf:
->        properties:
->          clock-output-names:
->            minItems: 3
-> -          maxItems: 3
-> =20
->    - if:
->        properties:
-> @@ -113,16 +111,12 @@ allOf:
->      then:
->        properties:
->          clocks:
-> -          minItems: 3
-> -          maxItems: 3
->            items:
->              - description: Bus clock for register access
->              - description: 24 MHz oscillator
->              - description: 32 kHz clock from the CCU
-> =20
->          clock-names:
-> -          minItems: 3
-> -          maxItems: 3
->            items:
->              - const: bus
->              - const: hosc
-> @@ -142,7 +136,6 @@ allOf:
->        properties:
->          clocks:
->            minItems: 3
-> -          maxItems: 4
->            items:
->              - description: Bus clock for register access
->              - description: 24 MHz oscillator
-> @@ -151,7 +144,6 @@ allOf:
-> =20
->          clock-names:
->            minItems: 3
-> -          maxItems: 4
->            items:
->              - const: bus
->              - const: hosc
-> @@ -174,14 +166,12 @@ allOf:
->      then:
->        properties:
->          interrupts:
-> -          minItems: 1
->            maxItems: 1
-> =20
->      else:
->        properties:
->          interrupts:
->            minItems: 2
-> -          maxItems: 2
-> =20
->  required:
->    - "#clock-cells"
-> diff --git a/Documentation/devicetree/bindings/serial/samsung_uart.yaml b=
-/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> index d4688e317fc5..901c1e2cea28 100644
-> --- a/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> +++ b/Documentation/devicetree/bindings/serial/samsung_uart.yaml
-> @@ -100,7 +100,6 @@ allOf:
->            maxItems: 3
->          clock-names:
->            minItems: 2
-> -          maxItems: 3
->            items:
->              - const: uart
->              - pattern: '^clk_uart_baud[0-1]$'
-> @@ -118,11 +117,8 @@ allOf:
->      then:
->        properties:
->          clocks:
-> -          minItems: 2
->            maxItems: 2
->          clock-names:
-> -          minItems: 2
-> -          maxItems: 2
->            items:
->              - const: uart
->              - const: clk_uart_baud0
-> diff --git a/Documentation/devicetree/bindings/sound/allwinner,sun4i-a10-=
-i2s.yaml b/Documentation/devicetree/bindings/sound/allwinner,sun4i-a10-i2s.=
-yaml
-> index c21c807b667c..34f6ee9de392 100644
-> --- a/Documentation/devicetree/bindings/sound/allwinner,sun4i-a10-i2s.yaml
-> +++ b/Documentation/devicetree/bindings/sound/allwinner,sun4i-a10-i2s.yaml
-> @@ -89,7 +89,6 @@ allOf:
->        properties:
->          dmas:
->            minItems: 1
-> -          maxItems: 2
->            items:
->              - description: RX DMA Channel
->              - description: TX DMA Channel
-> diff --git a/Documentation/devicetree/bindings/sound/ti,j721e-cpb-audio.y=
-aml b/Documentation/devicetree/bindings/sound/ti,j721e-cpb-audio.yaml
-> index 6806f53a4aed..20ea5883b7ff 100644
-> --- a/Documentation/devicetree/bindings/sound/ti,j721e-cpb-audio.yaml
-> +++ b/Documentation/devicetree/bindings/sound/ti,j721e-cpb-audio.yaml
-> @@ -80,7 +80,6 @@ allOf:
->      then:
->        properties:
->          clocks:
-> -          minItems: 6
->            items:
->              - description: AUXCLK clock for McASP used by CPB audio
->              - description: Parent for CPB_McASP auxclk (for 48KHz)
-> @@ -107,7 +106,6 @@ allOf:
->      then:
->        properties:
->          clocks:
-> -          maxItems: 4
->            items:
->              - description: AUXCLK clock for McASP used by CPB audio
->              - description: Parent for CPB_McASP auxclk (for 48KHz)
-> diff --git a/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.=
-yaml b/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml
-> index f963204e0b16..1368d90da0e8 100644
-> --- a/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml
-> +++ b/Documentation/devicetree/bindings/thermal/rcar-gen3-thermal.yaml
-> @@ -67,7 +67,6 @@ then:
->    properties:
->      reg:
->        minItems: 2
-> -      maxItems: 3
->        items:
->          - description: TSC1 registers
->          - description: TSC2 registers
+> diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethern=
+et/mscc/ocelot_vcap.c
+> index 1e74bdb215ec..571d43e59f63 100644
+> --- a/drivers/net/ethernet/mscc/ocelot_vcap.c
+> +++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+> @@ -1232,6 +1232,8 @@ static void ocelot_vcap_block_remove_filter(struct =
+ocelot *ocelot,
+>  		if (ocelot_vcap_filter_equal(filter, tmp)) {
+>  			ocelot_vcap_filter_del_aux_resources(ocelot, tmp);
+>  			list_del(&tmp->list);
+> +			if (!list_empty(&tmp->trap_list))
+> +				list_del(&tmp->trap_list);
+>  			kfree(tmp);
+>  		}
+>  	}
+> --=20
+> 2.25.1
+>
 
+This change introduces other breakage, please drop this patch set and
+allow me to come up with a different solution.=
