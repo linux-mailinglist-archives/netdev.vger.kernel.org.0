@@ -2,134 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CD0C51A1FF
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 16:14:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9366951A1D8
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 16:09:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351203AbiEDOS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 10:18:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34530 "EHLO
+        id S1351074AbiEDONH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 10:13:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351197AbiEDOS1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 10:18:27 -0400
-Received: from esa4.hgst.iphmx.com (esa4.hgst.iphmx.com [216.71.154.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95EE242A1A
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 07:14:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1651673691; x=1683209691;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=3gz1SvToUvc61rP9gSGLK3Q0CP+ks8gO3XkKncVaLcU=;
-  b=fMT45tmFde2XzHg81790fsE6CNTWmrjFAlj8cgBBXEyjV1sSZdP7iKns
-   TVlSubFd3DJo/0nZAWM34pXF88ndgw2ixIERaX1xcBaM7Yggas2GtAd8y
-   p+fjeQFYhejAJUEdd4l7LiZDxQ0/+LBdp0AEKEo2i2oa4EDLxI66A3WpG
-   u+wveCngn4HFypEsh2Jv+TvG8natzwuCgFQB+sD6sGnogP1i6QPIBKUp5
-   Oa2ZcnDh/jKiOctkJ5k/7uNO0psTJ0krjpaeCgWbLRTemSCpDrfei2y9C
-   fAvfvUfNTG9KvGIdRwPvHBtW/0giextkmiKwKW04pmlgzObJiJwqCC7tQ
+        with ESMTP id S1346211AbiEDONG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 10:13:06 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F82E419A9
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 07:09:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651673370; x=1683209370;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=y9vBG3r8gn3h07Ddr/d6O7mDisn8gP2LaIqQJqTouI4=;
+  b=Uv9ELbFI9zKY8bfyMl7Q/simgEyc2FzQTiN8QslPc1MPvPPWgn7nfzmg
+   Ylnmq96Op8Im1TSBAJXN1aHXApY8zxoMCqtieA7hwBKKuOJoZNW9jrbSI
+   Ft41EwhCALc06a/c1PhC8P1mdsFUfyed7Nlt0yWyV5wJlblWRJ7gLH8WY
+   VwsD16YIzoZl+8BBYphQOZfAJTUfY8hEzgjyfYd+rnAeegKLEWqHWZV+C
+   dh+iMQTKaNZm2nx1aLdtrrgBfXQef5N/8Cp3v0gPq+qUX4EabHUV7wWYd
+   +WE9Cnl7EjbRGPW69dKgEyh6OwDW1DE3mtnO+5wRBFPVn62Qvd/MIZE33
    Q==;
-X-IronPort-AV: E=Sophos;i="5.91,198,1647273600"; 
-   d="scan'208";a="198343926"
-Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 04 May 2022 22:14:48 +0800
-IronPort-SDR: V9EA91iSVbwrA0UlYsDgKcQ6weeijMuCrkZRmawr002ZsvrYVUddbaOZZgcKRNKYMqdJuisZY3
- 6rWy9W+h4o+gDnkv1hzxb+Jc781iyUN3hxMRobk9IHs53I3m+M0Q+2+nHxYXY39R0gR+ffnAq6
- rH606Nc00LcN7M7CpAyIKSh8uu2ny3yUOzBB2WdCFf/BXJMU8YMp5aqliySNgrmrts2wqOIuR+
- T4woRrX6IkVpp9PfmF8DzNGOnS3kXsmyYabFkJwCFreVQMjQYgPQomMYvseohOI+ECSl662ULa
- tA9SPb5xC90yhOF4GVaHdv8l
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 04 May 2022 06:45:30 -0700
-IronPort-SDR: XdE0uweV0ufe04WEqBxKwGpgctN8hpwnYxcgT6S0WHIaXpKjpCKOOi3QAGSFlhdIHlq1QSm+p2
- TGhlpi27y7DJEmjr4epxYvHhYHXrKaJakqFjPUyAVzMfOLw6D/9i0NFl0ePwcKd4IOLkxqN5qA
- ZxzlJJkpSF2VpwR7u6YvH21Wf/RYD870EZU1wHNUUbaAh4y1Zl5BYYKBQQH2rtYwuX49GySi4V
- GRfnT1wfY2yIO+jRVTBEsKnYPWQXza1814uw/bCIDqFqMTFlMCgOaUUtfnJexkK18y8eUFr6H+
- QZM=
-WDCIronportException: Internal
-Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
-  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 04 May 2022 07:14:49 -0700
-Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4Ktf3W5Z9Pz1SVp3
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 07:14:47 -0700 (PDT)
-Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
-        reason="pass (just generated, assumed good)"
-        header.d=opensource.wdc.com
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
-        opensource.wdc.com; h=content-transfer-encoding:content-type
-        :in-reply-to:organization:from:references:to:content-language
-        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
-        1651673686; x=1654265687; bh=3gz1SvToUvc61rP9gSGLK3Q0CP+ks8gO3Xk
-        KncVaLcU=; b=Irb3PekokvtqFuHO2x930y5RXWVryj/RHb7TPBz8hyKjQQGiEZS
-        PNlDM4PBOewSd6GF6QqDO6PMCeng/9fFLxdgUo2KnanoesyieOuJq7vgIy5+qpxw
-        37+IgA4VWZihtrROBbzcaUPUO/1emO4SxozHORu/HDrxTdhpZr13EOxk5Ls2EfcV
-        /KiQamg4sm9jTZI9nmoP0HkKDzR49F0X1N8WiDmHBLdwWy+qovjqnq5+A1piy09q
-        sFZWZpyq0sV2yJfo6NNJ7PY1KHDv2FMcro0qaeTbOCc//hkT7yDUI4wcYnREho+7
-        1IyVSmCp4iio3QoJKV7OXxGBhwctFUqKhpQ==
-X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
-Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
-        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id TN5-VmKFktfM for <netdev@vger.kernel.org>;
-        Wed,  4 May 2022 07:14:46 -0700 (PDT)
-Received: from [10.225.81.200] (unknown [10.225.81.200])
-        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4Ktf3S0q49z1Rvlc;
-        Wed,  4 May 2022 07:14:44 -0700 (PDT)
-Message-ID: <a3d58159-292d-70e2-d811-e54c9b49c9c8@opensource.wdc.com>
-Date:   Wed, 4 May 2022 23:14:43 +0900
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="354211894"
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="354211894"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 07:09:13 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
+   d="scan'208";a="694059407"
+Received: from bswcg005.iind.intel.com ([10.224.174.19])
+  by orsmga004.jf.intel.com with ESMTP; 04 May 2022 07:09:10 -0700
+From:   M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        krishna.c.sudi@intel.com, m.chetan.kumar@intel.com,
+        m.chetan.kumar@linux.intel.com, linuxwwan@intel.com
+Subject: [PATCH] net: wwan: fix port open
+Date:   Wed,  4 May 2022 19:50:06 +0530
+Message-Id: <20220504142006.3804-1-m.chetan.kumar@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH v1 2/4] powerpc/mpc5xxx: Switch
- mpc5xxx_get_bus_frequency() to use fwnode
-Content-Language: en-US
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Wolfram Sang <wsa@kernel.org>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-References: <20220504134449.64473-1-andriy.shevchenko@linux.intel.com>
- <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
-From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Organization: Western Digital Research
-In-Reply-To: <20220504134449.64473-2-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/05/04 22:44, Andy Shevchenko wrote:
-> Switch mpc5xxx_get_bus_frequency() to use fwnode in order to help
-> cleaning up other parts of the kernel from OF specific code.
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Wwan device registered port can be opened as many number of times.
+The first port open() call binds dev file to driver wwan port device
+and subsequent open() call references to same wwan port instance.
 
-For the pata bits,
+When dev file is opened multiple times, all contexts still refers to
+same instance of wwan port. So in tx path, the received data will be
+fwd to wwan device but in rx path the wwan port has a single rx queue.
+Depending on which context goes for early read() the rx data gets
+dispatched to it.
 
-Acked-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Since the wwan port is not handling dispatching of rx data to right
+context restrict wwan port open to single context.
 
+Signed-off-by: M Chetan Kumar <m.chetan.kumar@linux.intel.com>
+---
+ drivers/net/wwan/wwan_core.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/net/wwan/wwan_core.c b/drivers/net/wwan/wwan_core.c
+index b8c7843730ed..9ca2d8d76587 100644
+--- a/drivers/net/wwan/wwan_core.c
++++ b/drivers/net/wwan/wwan_core.c
+@@ -33,6 +33,7 @@ static struct dentry *wwan_debugfs_dir;
+ 
+ /* WWAN port flags */
+ #define WWAN_PORT_TX_OFF	0
++#define WWAN_PORT_OPEN		1
+ 
+ /**
+  * struct wwan_device - The structure that defines a WWAN device
+@@ -58,7 +59,6 @@ struct wwan_device {
+ /**
+  * struct wwan_port - The structure that defines a WWAN port
+  * @type: Port type
+- * @start_count: Port start counter
+  * @flags: Store port state and capabilities
+  * @ops: Pointer to WWAN port operations
+  * @ops_lock: Protect port ops
+@@ -70,7 +70,6 @@ struct wwan_device {
+  */
+ struct wwan_port {
+ 	enum wwan_port_type type;
+-	unsigned int start_count;
+ 	unsigned long flags;
+ 	const struct wwan_port_ops *ops;
+ 	struct mutex ops_lock; /* Serialize ops + protect against removal */
+@@ -496,7 +495,7 @@ void wwan_remove_port(struct wwan_port *port)
+ 	struct wwan_device *wwandev = to_wwan_dev(port->dev.parent);
+ 
+ 	mutex_lock(&port->ops_lock);
+-	if (port->start_count)
++	if (test_and_clear_bit(WWAN_PORT_OPEN, &port->flags))
+ 		port->ops->stop(port);
+ 	port->ops = NULL; /* Prevent any new port operations (e.g. from fops) */
+ 	mutex_unlock(&port->ops_lock);
+@@ -549,11 +548,14 @@ static int wwan_port_op_start(struct wwan_port *port)
+ 	}
+ 
+ 	/* If port is already started, don't start again */
+-	if (!port->start_count)
+-		ret = port->ops->start(port);
++	if (test_bit(WWAN_PORT_OPEN, &port->flags)) {
++		ret = -EBUSY;
++		goto out_unlock;
++	}
++	ret = port->ops->start(port);
+ 
+ 	if (!ret)
+-		port->start_count++;
++		set_bit(WWAN_PORT_OPEN, &port->flags);
+ 
+ out_unlock:
+ 	mutex_unlock(&port->ops_lock);
+@@ -564,8 +566,7 @@ static int wwan_port_op_start(struct wwan_port *port)
+ static void wwan_port_op_stop(struct wwan_port *port)
+ {
+ 	mutex_lock(&port->ops_lock);
+-	port->start_count--;
+-	if (!port->start_count) {
++	if (test_and_clear_bit(WWAN_PORT_OPEN, &port->flags)) {
+ 		if (port->ops)
+ 			port->ops->stop(port);
+ 		skb_queue_purge(&port->rxq);
 -- 
-Damien Le Moal
-Western Digital Research
+2.25.1
+
