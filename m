@@ -2,131 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA56151ABF8
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 19:58:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 543D451AC5E
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 20:06:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359578AbiEDSBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 14:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41358 "EHLO
+        id S1376542AbiEDSKP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 14:10:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377452AbiEDSA4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 14:00:56 -0400
-Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D451C12B;
-        Wed,  4 May 2022 10:15:51 -0700 (PDT)
-Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-e5e433d66dso1825981fac.5;
-        Wed, 04 May 2022 10:15:51 -0700 (PDT)
+        with ESMTP id S1376638AbiEDSJk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 14:09:40 -0400
+Received: from mail-qk1-x733.google.com (mail-qk1-x733.google.com [IPv6:2607:f8b0:4864:20::733])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D675D6C970
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 10:25:33 -0700 (PDT)
+Received: by mail-qk1-x733.google.com with SMTP id a76so1421520qkg.12
+        for <netdev@vger.kernel.org>; Wed, 04 May 2022 10:25:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ieee.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=EA5hd+ONeh3r8m7IjwgM/P2KAxM8YbhbRw3CfXKRgQU=;
+        b=cgk57z8pGWzn5zNc7HJYjf3+wPngKOeFGk+syOoimcB9CafI91+QFqY4oT1M1KCjuv
+         YN9cVZzwBn2+xy/G0FsHOpL3cB/LLReBOaoXpS6XlCJMC2iokoxqSqaEFdfPq7N0bnCK
+         Z+uamEJ0L1HVXiYgULxmxyrhk2Gx58SPdmayc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/sZFoGSuVJsC2wZ9dNCc4JLrQrkFZcqEG47d9JqV1Gg=;
-        b=Wr9U25nWL8PG6OO8do93gYbUy0N/ihRqkK/bG7hG7rdAZvds4bbbFujaJWEU5A1wdH
-         mqR5n3zR+FV6pcTyCAMwXPkipvbJXkQyMKX4BRGQXdrkvQnbS5rD72dILnM2Lcc+C4/g
-         UP4u/ZMql1p9cg7qM1vsYvlhxieblw8PXaVIK7UBmegsd/SJpYkfHRohDVqtTWgvG++M
-         aEhmU8Ty17KjYU/nBbylIOBrEYFCjoE02eXMz3nz3+1Il9hKZcY5G5pt4TvulFiuOlQe
-         jN79sSn3V3ZFmk6DC7n+fxK1sIPVekN6c3TOAJrkIr7bLpe7iFyGRY5Qq0fbue7tE7BG
-         U9+A==
-X-Gm-Message-State: AOAM531NQFsr89tMQ6FUmSMRh7QTq34GytN4hDYBDwebMZ1yCHmuxfPM
-        j055A1eAbtZnsdIcJnFvHg==
-X-Google-Smtp-Source: ABdhPJz/D0e0enLqOyhRaOxOcEe96JkZ+yUVLWBCkpaNez82JEr/wX3grMMHjSAk9p5UL5gCadvo6Q==
-X-Received: by 2002:a05:6870:9a05:b0:e6:589e:1ec5 with SMTP id fo5-20020a0568709a0500b000e6589e1ec5mr240831oab.203.1651684550678;
-        Wed, 04 May 2022 10:15:50 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id f6-20020a4ad806000000b0035eb4e5a6c4sm6234126oov.26.2022.05.04.10.15.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 10:15:49 -0700 (PDT)
-Received: (nullmailer pid 1896703 invoked by uid 1000);
-        Wed, 04 May 2022 17:15:48 -0000
-Date:   Wed, 4 May 2022 12:15:48 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
-        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [RFC PATCH v6 11/11] dt-bindings: net: dsa: qca8k: add LEDs
- definition example
-Message-ID: <YnK0xHOkfXI+rgzs@robh.at.kernel.org>
-References: <20220503151633.18760-1-ansuelsmth@gmail.com>
- <20220503151633.18760-12-ansuelsmth@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=EA5hd+ONeh3r8m7IjwgM/P2KAxM8YbhbRw3CfXKRgQU=;
+        b=DPj5/jvL3jkKf3GMn22pAgP4xQSPP8eehGhbepj1yRStcjpBST15xqWhThsvSB3CC6
+         QdHvNUe6xuX5mB+HSw+VnK77yJ3dRXofRWXIQsgiRvw0xJD3wsRJUT4IxSrC0Xac9V4W
+         iG0muyhNoMkL3eKanAg+EJzC7KQejio1lw2fFn/Bmka4yuKpnx/dx+KO64EER3fPC8m6
+         okpUx7wW/X8x+0gq63dFRA2y58u4KLUYalPx8oxXXM81bvORTb2+CzQ0KZC4oNQazZ+r
+         B2KG/S71mCzCfw3HJzZ4CMIExUNVli+aaSqoeiU3h0/D6zaeDJNHdckCqEw4hME465mb
+         SVxw==
+X-Gm-Message-State: AOAM533lQ1AkyiZd9alp9pKtgUjc/UfOy8h/4AwqHKSDyXsnBGtmbv6X
+        S8MVMyULTaofY2oQAXWYNm0CJQ==
+X-Google-Smtp-Source: ABdhPJxf/VDUZ4uuKUAGDgbMcU+01SeQHMvtORrk3T0Ij2PvFi7R/FQojA1MBWgOdsAs8DmrURGQKQ==
+X-Received: by 2002:a37:c84:0:b0:69f:c94a:a8ca with SMTP id 126-20020a370c84000000b0069fc94aa8camr14599503qkm.167.1651685132966;
+        Wed, 04 May 2022 10:25:32 -0700 (PDT)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id n68-20020a37a447000000b0069fc13ce1edsm8034968qke.30.2022.05.04.10.25.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 10:25:32 -0700 (PDT)
+Message-ID: <f11b54bf-a69f-0776-2129-a089c1bd3e63@ieee.org>
+Date:   Wed, 4 May 2022 12:25:29 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503151633.18760-12-ansuelsmth@gmail.com>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net-next 1/2] net: switch to netif_napi_add_tx()
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
+        rafal@milecki.pl, f.fainelli@gmail.com, opendmb@gmail.com,
+        dmichail@fungible.com, hauke@hauke-m.de, tariqt@nvidia.com,
+        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, shshaikh@marvell.com,
+        manishc@marvell.com, jiri@resnulli.us,
+        hayashi.kunihiko@socionext.com, peppe.cavallaro@st.com,
+        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
+        mcoquelin.stm32@gmail.com, grygorii.strashko@ti.com,
+        elder@kernel.org, wintera@linux.ibm.com, wenjia@linux.ibm.com,
+        svens@linux.ibm.com, mathew.j.martineau@linux.intel.com,
+        matthieu.baerts@tessares.net, s-vadapalli@ti.com,
+        chi.minghao@zte.com.cn, linux-rdma@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, mptcp@lists.linux.dev
+References: <20220504163725.550782-1-kuba@kernel.org>
+From:   Alex Elder <elder@ieee.org>
+In-Reply-To: <20220504163725.550782-1-kuba@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 03, 2022 at 05:16:33PM +0200, Ansuel Smith wrote:
-> Add LEDs definition example for qca8k using the offload trigger as the
-> default trigger and add all the supported offload triggers by the
-> switch.
+On 5/4/22 11:37 AM, Jakub Kicinski wrote:
+> Switch net callers to the new API not requiring
+> the NAPI_POLL_WEIGHT argument.
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > ---
->  .../devicetree/bindings/net/dsa/qca8k.yaml    | 20 +++++++++++++++++++
->  1 file changed, 20 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> index f3c88371d76c..9b46ef645a2d 100644
-> --- a/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> +++ b/Documentation/devicetree/bindings/net/dsa/qca8k.yaml
-> @@ -65,6 +65,8 @@ properties:
->                   internal mdio access is used.
->                   With the legacy mapping the reg corresponding to the internal
->                   mdio is the switch reg with an offset of -1.
-> +                 Each phy have at least 3 LEDs connected and can be declared
+> CC: rafal@milecki.pl
+> CC: f.fainelli@gmail.com
+> CC: opendmb@gmail.com
+> CC: dmichail@fungible.com
+> CC: hauke@hauke-m.de
+> CC: tariqt@nvidia.com
+> CC: kys@microsoft.com
+> CC: haiyangz@microsoft.com
+> CC: sthemmin@microsoft.com
+> CC: wei.liu@kernel.org
+> CC: decui@microsoft.com
+> CC: shshaikh@marvell.com
+> CC: manishc@marvell.com
+> CC: jiri@resnulli.us
+> CC: hayashi.kunihiko@socionext.com
+> CC: peppe.cavallaro@st.com
+> CC: alexandre.torgue@foss.st.com
+> CC: joabreu@synopsys.com
+> CC: mcoquelin.stm32@gmail.com
+> CC: grygorii.strashko@ti.com
+> CC: elder@kernel.org
+> CC: wintera@linux.ibm.com
+> CC: wenjia@linux.ibm.com
+> CC: svens@linux.ibm.com
+> CC: mathew.j.martineau@linux.intel.com
+> CC: matthieu.baerts@tessares.net
+> CC: s-vadapalli@ti.com
+> CC: chi.minghao@zte.com.cn
+> CC: linux-rdma@vger.kernel.org
+> CC: linux-hyperv@vger.kernel.org
+> CC: mptcp@lists.linux.dev
+> ---
+>   drivers/net/ethernet/broadcom/bcm4908_enet.c       | 2 +-
+>   drivers/net/ethernet/broadcom/bcmsysport.c         | 2 +-
+>   drivers/net/ethernet/broadcom/genet/bcmgenet.c     | 3 +--
+>   drivers/net/ethernet/fungible/funeth/funeth_main.c | 3 +--
+>   drivers/net/ethernet/lantiq_xrx200.c               | 4 ++--
+>   drivers/net/ethernet/mellanox/mlx4/en_cq.c         | 3 +--
+>   drivers/net/ethernet/microsoft/mana/mana_en.c      | 2 +-
+>   drivers/net/ethernet/qlogic/qlcnic/qlcnic_io.c     | 9 ++++-----
+>   drivers/net/ethernet/rocker/rocker_main.c          | 3 +--
+>   drivers/net/ethernet/socionext/sni_ave.c           | 3 +--
+>   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 5 ++---
+>   drivers/net/ethernet/ti/am65-cpsw-nuss.c           | 4 ++--
+>   drivers/net/ethernet/ti/cpsw.c                     | 5 ++---
+>   drivers/net/ethernet/ti/cpsw_new.c                 | 5 ++---
+>   drivers/net/ethernet/ti/netcp_core.c               | 2 +-
+>   drivers/net/ipa/gsi.c                              | 4 ++--
 
-s/at least/up to/ ?
+For drivers/net/ipa/gsi.c:
 
-Or your example is wrong with only 2.
+Reviewed-by: Alex Elder <elder@linaro.org>
 
-> +                 using the standard LEDs structure.
->  
->  patternProperties:
->    "^(ethernet-)?ports$":
-> @@ -287,6 +289,24 @@ examples:
->  
->                  internal_phy_port1: ethernet-phy@0 {
->                      reg = <0>;
-> +
-> +                    leds {
-> +                        led@0 {
-> +                            reg = <0>;
-> +                            color = <LED_COLOR_ID_WHITE>;
-> +                            function = LED_FUNCTION_LAN;
-> +                            function-enumerator = <1>;
-> +                            linux,default-trigger = "netdev";
-> +                        };
-> +
-> +                        led@1 {
-> +                            reg = <1>;
-> +                            color = <LED_COLOR_ID_AMBER>;
-> +                            function = LED_FUNCTION_LAN;
-> +                            function-enumerator = <1>;
-> +                            linux,default-trigger = "netdev";
-> +                        };
-> +                    };
->                  };
->  
->                  internal_phy_port2: ethernet-phy@1 {
-> -- 
-> 2.34.1
+>   drivers/net/tun.c                                  | 3 +--
+>   drivers/s390/net/qeth_core_main.c                  | 3 +--
+>   net/mptcp/protocol.c                               | 4 ++--
+>   19 files changed, 29 insertions(+), 40 deletions(-)
 > 
-> 
+
+. . .
+
+> diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
+> index bc981043cc80..db4cb2de218c 100644
+> --- a/drivers/net/ipa/gsi.c
+> +++ b/drivers/net/ipa/gsi.c
+> @@ -1614,8 +1614,8 @@ static int gsi_channel_setup_one(struct gsi *gsi, u32 channel_id)
+>   	gsi_channel_program(channel, true);
+>   
+>   	if (channel->toward_ipa)
+> -		netif_tx_napi_add(&gsi->dummy_dev, &channel->napi,
+> -				  gsi_channel_poll, NAPI_POLL_WEIGHT);
+> +		netif_napi_add_tx(&gsi->dummy_dev, &channel->napi,
+> +				  gsi_channel_poll);
+>   	else
+>   		netif_napi_add(&gsi->dummy_dev, &channel->napi,
+>   			       gsi_channel_poll, NAPI_POLL_WEIGHT);
+
+. . .
+
