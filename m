@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74B55519BC2
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 11:31:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FB9F519BC5
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 11:31:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347411AbiEDJfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 05:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41680 "EHLO
+        id S1347346AbiEDJf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 05:35:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347178AbiEDJfK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 05:35:10 -0400
+        with ESMTP id S1347335AbiEDJfM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 05:35:12 -0400
 Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C681F20BF1;
-        Wed,  4 May 2022 02:31:33 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82FC21E15;
+        Wed,  4 May 2022 02:31:35 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 9571D40007;
-        Wed,  4 May 2022 09:31:30 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 86F7F4000E;
+        Wed,  4 May 2022 09:31:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651656692;
+        t=1651656694;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=2rpI4KShQlAkHOnvVthOEro5eEdzA9tc2UKmOvwzoZM=;
-        b=p2qbwWwNH4RfJQ4afcdKExlGNYL/tOmkM9XuwxD5Kw8qhSNJ4cD/etN7XOI3GT8zBNYmq1
-        t004sF7HoInNKHu6tXkpaM28nPc7QqxOiiAQboTCqUxaGJEC9WwWCAJPEklOSOa0LbKzL7
-        QFh/V0rwtmm8r+vnA4idPJHHJYIg1Y78dDih7J8kU/6QqHP/9t8Ydi9EHxjWD2i9o+OSeb
-        QrjWiTJi4UxbbrxVt+mSyuGmwXiXWc1V3PthuIojeRnizSIQgWhBFH4dxYpkvHXaftxucG
-        lT3WWGXs5gNtEauT9Wn/P94BuKRDXGy3S8K1JsP2VsuVAd4+glMbXAKK5ap2og==
+        bh=c/xazgZeuiJMj3jDH8TWS2LvIhrr4aQGNghFLlX1OCE=;
+        b=I6CNMaJMmpcXuqzPos++kHvqe8OeJ/6jLZhKBOBWLg6fPot5HaOuzjsTNQ/ntNOjdxMj8d
+        uP/ggUI3ExP8kKomP+ps+gU3nlhkoebnQ7c/yhhUNPism2t0BoRmH924MSkP6SjscpVFKB
+        a+nLyVIKnt9W/NtIEZlKHADG9xrbHS7IjiD/IgB4KGJ9Y9GJa2nBThyWLI/PrZSl/3pLJU
+        46z7jY1oPVnbfbWuI5YNCDn9kVdjdSm1QTG2bryupjCIsNmIBP0uqt9YlPb85I291YOpOb
+        1s9L/OiohPNIVTKsix118jovBOLY3hCCi12/rHcASxgvfyo4kT2hJ3xDHQ1DCA==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -53,9 +53,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v3 02/12] net: dsa: add Renesas RZ/N1 switch tag driver
-Date:   Wed,  4 May 2022 11:29:50 +0200
-Message-Id: <20220504093000.132579-3-clement.leger@bootlin.com>
+Subject: [PATCH net-next v3 03/12] dt-bindings: net: pcs: add bindings for Renesas RZ/N1 MII converter
+Date:   Wed,  4 May 2022 11:29:51 +0200
+Message-Id: <20220504093000.132579-4-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220504093000.132579-1-clement.leger@bootlin.com>
 References: <20220504093000.132579-1-clement.leger@bootlin.com>
@@ -72,188 +72,225 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The switch that is present on the Renesas RZ/N1 SoC uses a specific
-VLAN value followed by 6 bytes which contains forwarding configuration.
+This MII converter can be found on the RZ/N1 processor family. The MII
+converter ports are declared as subnodes which are then referenced by
+users of the PCS driver such as the switch.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- include/net/dsa.h        |   2 +
- net/dsa/Kconfig          |   7 +++
- net/dsa/Makefile         |   1 +
- net/dsa/tag_rzn1_a5psw.c | 114 +++++++++++++++++++++++++++++++++++++++
- 4 files changed, 124 insertions(+)
- create mode 100644 net/dsa/tag_rzn1_a5psw.c
+ .../bindings/net/pcs/renesas,rzn1-miic.yaml   | 162 ++++++++++++++++++
+ include/dt-bindings/net/pcs-rzn1-miic.h       |  33 ++++
+ 2 files changed, 195 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
+ create mode 100644 include/dt-bindings/net/pcs-rzn1-miic.h
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index d9da32aacbf1..9aaaa7deb102 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -53,6 +53,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_SJA1110_VALUE		23
- #define DSA_TAG_PROTO_RTL8_4_VALUE		24
- #define DSA_TAG_PROTO_RTL8_4T_VALUE		25
-+#define DSA_TAG_PROTO_RZN1_A5PSW_VALUE		26
- 
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -81,6 +82,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_SJA1110		= DSA_TAG_PROTO_SJA1110_VALUE,
- 	DSA_TAG_PROTO_RTL8_4		= DSA_TAG_PROTO_RTL8_4_VALUE,
- 	DSA_TAG_PROTO_RTL8_4T		= DSA_TAG_PROTO_RTL8_4T_VALUE,
-+	DSA_TAG_PROTO_RZN1_A5PSW	= DSA_TAG_PROTO_RZN1_A5PSW_VALUE,
- };
- 
- struct dsa_switch;
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 8cb87b5067ee..e22f33d7cf60 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -132,6 +132,13 @@ config NET_DSA_TAG_RTL8_4
- 	  Say Y or M if you want to enable support for tagging frames for Realtek
- 	  switches with 8 byte protocol 4 tags, such as the Realtek RTL8365MB-VC.
- 
-+config NET_DSA_TAG_RZN1_A5PSW
-+	tristate "Tag driver for Renesas RZ/N1 A5PSW switch"
-+	help
-+	  Say Y or M if you want to enable support for tagging frames for
-+	  Renesas RZ/N1 embedded switch that uses a 8 byte tag located after
-+	  destination MAC address.
-+
- config NET_DSA_TAG_LAN9303
- 	tristate "Tag driver for SMSC/Microchip LAN9303 family of switches"
- 	help
-diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-index 9f75820e7c98..af28c24ead18 100644
---- a/net/dsa/Makefile
-+++ b/net/dsa/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_NET_DSA_TAG_OCELOT_8021Q) += tag_ocelot_8021q.o
- obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
- obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
- obj-$(CONFIG_NET_DSA_TAG_RTL8_4) += tag_rtl8_4.o
-+obj-$(CONFIG_NET_DSA_TAG_RZN1_A5PSW) += tag_rzn1_a5psw.o
- obj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o
- obj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
- obj-$(CONFIG_NET_DSA_TAG_XRS700X) += tag_xrs700x.o
-diff --git a/net/dsa/tag_rzn1_a5psw.c b/net/dsa/tag_rzn1_a5psw.c
+diff --git a/Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml b/Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
 new file mode 100644
-index 000000000000..87177682eb54
+index 000000000000..c3f5f772c885
 --- /dev/null
-+++ b/net/dsa/tag_rzn1_a5psw.c
-@@ -0,0 +1,114 @@
-+// SPDX-License-Identifier: GPL-2.0-only
++++ b/Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
+@@ -0,0 +1,162 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/pcs/renesas,rzn1-miic.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Renesas RZ/N1 MII converter
++
++maintainers:
++  - Clément Léger <clement.leger@bootlin.com>
++
++description: |
++  This MII converter is present on the Renesas RZ/N1 SoC family. It is
++  responsible to do MII passthrough or convert it to RMII/RGMII.
++
++properties:
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  compatible:
++    items:
++      - enum:
++          - renesas,r9a06g032-miic
++      - const: renesas,rzn1-miic
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: MII reference clock
++      - description: RGMII reference clock
++      - description: RMII reference clock
++      - description: AHB clock used for the MII converter register interface
++
++  renesas,miic-switch-portin:
++    description: MII Switch PORTIN configuration. This value should use one of
++      the values defined in dt-bindings/net/pcs-rzn1-miic.h.
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [1, 2]
++
++  power-domains:
++    maxItems: 1
++
++patternProperties:
++  "^mii-conv@[0-9]+$":
++    type: object
++    description: MII converter port
++
++    properties:
++      reg:
++        description: MII Converter port number.
++        enum: [1, 2, 3, 4, 5]
++
++      renesas,miic-input:
++        description: Converter input port configuration. This value should use
++          one of the values defined in dt-bindings/net/pcs-rzn1-miic.h.
++        $ref: /schemas/types.yaml#/definitions/uint32
++
++    required:
++      - reg
++      - renesas,miic-input
++
++    additionalProperties: false
++
++    allOf:
++      - if:
++          properties:
++            reg:
++              const: 1
++        then:
++          properties:
++            renesas,miic-input:
++              enum: [0]
++      - if:
++          properties:
++            reg:
++              const: 2
++        then:
++          properties:
++            renesas,miic-input:
++              enum: [1, 11]
++      - if:
++          properties:
++            reg:
++              const: 3
++        then:
++          properties:
++            renesas,miic-input:
++              enum: [7, 10]
++      - if:
++          properties:
++            reg:
++              const: 4
++        then:
++          properties:
++            renesas,miic-input:
++              enum: [4, 6, 9, 13]
++      - if:
++          properties:
++            reg:
++              const: 5
++        then:
++          properties:
++            renesas,miic-input:
++              enum: [3, 5, 8, 12]
++
++required:
++  - '#address-cells'
++  - '#size-cells'
++  - compatible
++  - reg
++  - clocks
++  - power-domains
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/net/pcs-rzn1-miic.h>
++    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
++
++    eth-miic@44030000 {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
++      reg = <0x44030000 0x10000>;
++      clocks = <&sysctrl R9A06G032_CLK_MII_REF>,
++              <&sysctrl R9A06G032_CLK_RGMII_REF>,
++              <&sysctrl R9A06G032_CLK_RMII_REF>,
++              <&sysctrl R9A06G032_HCLK_SWITCH_RG>;
++      renesas,miic-switch-portin = <MIIC_GMAC2_PORT>;
++      power-domains = <&sysctrl>;
++
++      mii_conv1: mii-conv@1 {
++        renesas,miic-input = <MIIC_GMAC1_PORT>;
++        reg = <1>;
++      };
++
++      mii_conv2: mii-conv@2 {
++        renesas,miic-input = <MIIC_SWITCH_PORTD>;
++        reg = <2>;
++      };
++
++      mii_conv3: mii-conv@3 {
++        renesas,miic-input = <MIIC_SWITCH_PORTC>;
++        reg = <3>;
++      };
++
++      mii_conv4: mii-conv@4 {
++        renesas,miic-input = <MIIC_SWITCH_PORTB>;
++        reg = <4>;
++      };
++
++      mii_conv5: mii-conv@5 {
++        renesas,miic-input = <MIIC_SWITCH_PORTA>;
++        reg = <5>;
++      };
++    };
+diff --git a/include/dt-bindings/net/pcs-rzn1-miic.h b/include/dt-bindings/net/pcs-rzn1-miic.h
+new file mode 100644
+index 000000000000..784782eaec9e
+--- /dev/null
++++ b/include/dt-bindings/net/pcs-rzn1-miic.h
+@@ -0,0 +1,33 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
 +/*
-+ * Copyright (C) 2022 Schneider Electric
++ * Copyright (C) 2022 Schneider-Electric
 + *
 + * Clément Léger <clement.leger@bootlin.com>
 + */
 +
-+#include <linux/bitfield.h>
-+#include <linux/etherdevice.h>
-+#include <net/dsa.h>
++#ifndef _DT_BINDINGS_PCS_RZN1_MIIC
++#define _DT_BINDINGS_PCS_RZN1_MIIC
 +
-+#include "dsa_priv.h"
-+
-+/* To define the outgoing port and to discover the incoming port a TAG is
-+ * inserted after Src MAC :
++/*
++ * Reefer to the datasheet [1] section 8.2.1, Internal Connection of Ethernet
++ * Ports to check the available combination
 + *
-+ *       Dest MAC       Src MAC           TAG         Type
-+ * ...| 1 2 3 4 5 6 | 1 2 3 4 5 6 | 1 2 3 4 5 6 7 8 | 1 2 |...
-+ *                                |<--------------->|
-+ *
-+ * See struct a5psw_tag for layout
++ * [1] REN_r01uh0750ej0140-rzn1-introduction_MAT_20210228.pdf
 + */
 +
-+#define A5PSW_TAG_VALUE			0xE001
-+#define A5PSW_TAG_LEN			8
-+#define A5PSW_CTRL_DATA_FORCE_FORWARD	BIT(0)
-+/* This is both used for xmit tag and rcv tagging */
-+#define A5PSW_CTRL_DATA_PORT		GENMASK(3, 0)
++#define MIIC_GMAC1_PORT			0
++#define MIIC_GMAC2_PORT			1
++#define MIIC_RTOS_PORT			2
++#define MIIC_SERCOS_PORTA		3
++#define MIIC_SERCOS_PORTB		4
++#define MIIC_ETHERCAT_PORTA		5
++#define MIIC_ETHERCAT_PORTB		6
++#define MIIC_ETHERCAT_PORTC		7
++#define MIIC_SWITCH_PORTA		8
++#define MIIC_SWITCH_PORTB		9
++#define MIIC_SWITCH_PORTC		10
++#define MIIC_SWITCH_PORTD		11
++#define MIIC_HSR_PORTA			12
++#define MIIC_HSR_PORTB			13
 +
-+struct a5psw_tag {
-+	__be16 ctrl_tag;
-+	__be16 ctrl_data;
-+	__be16 ctrl_data2_hi;
-+	__be16 ctrl_data2_lo;
-+};
-+
-+static struct sk_buff *a5psw_tag_xmit(struct sk_buff *skb, struct net_device *dev)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct a5psw_tag *ptag;
-+	u32 data2_val;
-+
-+	BUILD_BUG_ON(sizeof(*ptag) != A5PSW_TAG_LEN);
-+
-+	/* The Ethernet switch we are interfaced with needs packets to be at
-+	 * least 64 bytes (including FCS) otherwise they will be discarded when
-+	 * they enter the switch port logic. When tagging is enabled, we need
-+	 * to make sure that packets are at least 70 bytes (including FCS and
-+	 * tag).
-+	 */
-+	if (__skb_put_padto(skb, ETH_ZLEN + ETH_FCS_LEN + A5PSW_TAG_LEN, false))
-+		return NULL;
-+
-+	/* provide 'A5PSW_TAG_LEN' bytes additional space */
-+	skb_push(skb, A5PSW_TAG_LEN);
-+
-+	/* make room between MACs and Ether-Type to insert tag */
-+	dsa_alloc_etype_header(skb, A5PSW_TAG_LEN);
-+
-+	ptag = dsa_etype_header_pos_tx(skb);
-+
-+	data2_val = FIELD_PREP(A5PSW_CTRL_DATA_PORT, BIT(dp->index));
-+	ptag->ctrl_tag = htons(A5PSW_TAG_VALUE);
-+	ptag->ctrl_data = htons(A5PSW_CTRL_DATA_FORCE_FORWARD);
-+	ptag->ctrl_data2_lo = htons(data2_val);
-+	ptag->ctrl_data2_hi = 0;
-+
-+	return skb;
-+}
-+
-+static struct sk_buff *a5psw_tag_rcv(struct sk_buff *skb,
-+				     struct net_device *dev)
-+{
-+	struct a5psw_tag *tag;
-+	int port;
-+
-+	if (unlikely(!pskb_may_pull(skb, A5PSW_TAG_LEN))) {
-+		dev_warn_ratelimited(&dev->dev,
-+				     "Dropping packet, cannot pull\n");
-+		return NULL;
-+	}
-+
-+	tag = dsa_etype_header_pos_rx(skb);
-+
-+	if (tag->ctrl_tag != htons(A5PSW_TAG_VALUE)) {
-+		dev_warn_ratelimited(&dev->dev, "Dropping packet due to invalid TAG marker\n");
-+		return NULL;
-+	}
-+
-+	port = FIELD_GET(A5PSW_CTRL_DATA_PORT, ntohs(tag->ctrl_data));
-+
-+	skb->dev = dsa_master_find_slave(dev, 0, port);
-+	if (!skb->dev)
-+		return NULL;
-+
-+	skb_pull_rcsum(skb, A5PSW_TAG_LEN);
-+	dsa_strip_etype_header(skb, A5PSW_TAG_LEN);
-+
-+	dsa_default_offload_fwd_mark(skb);
-+
-+	return skb;
-+}
-+
-+static const struct dsa_device_ops a5psw_netdev_ops = {
-+	.name	= "a5psw",
-+	.proto	= DSA_TAG_PROTO_RZN1_A5PSW,
-+	.xmit	= a5psw_tag_xmit,
-+	.rcv	= a5psw_tag_rcv,
-+	.needed_headroom = A5PSW_TAG_LEN,
-+};
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_A5PSW);
-+module_dsa_tag_driver(a5psw_netdev_ops);
++#endif
 -- 
 2.34.1
 
