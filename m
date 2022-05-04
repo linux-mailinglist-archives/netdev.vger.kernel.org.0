@@ -2,59 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2147A519320
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 03:05:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4709651936F
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 03:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244871AbiEDBIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 21:08:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
+        id S1343514AbiEDBZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 21:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244837AbiEDBI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 21:08:29 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0D32B257
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 18:04:55 -0700 (PDT)
-Received: from fsav120.sakura.ne.jp (fsav120.sakura.ne.jp [27.133.134.247])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 24414TkX051843;
-        Wed, 4 May 2022 10:04:29 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav120.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav120.sakura.ne.jp);
- Wed, 04 May 2022 10:04:29 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav120.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 24414Tbc051840
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Wed, 4 May 2022 10:04:29 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <f6f9f21d-7cdd-682f-f958-5951aa180ec7@I-love.SAKURA.ne.jp>
-Date:   Wed, 4 May 2022 10:04:29 +0900
+        with ESMTP id S245635AbiEDBZK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 21:25:10 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BD034616F;
+        Tue,  3 May 2022 18:20:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651627235; x=1683163235;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=i4MxkxPDNSGtzMvlquogsvEU8lFtzY2vpeFrQnL7YOU=;
+  b=XM9QFrmZspa71IODuBGPKLe8jAEGqod/CRPLKATvxIqfNM+Bbf0wLYgA
+   ltahLkLodmGS9fp/hikMdbAbFCN6Yw9CSudtzs3AuJlv4MKmKI0SIId09
+   HtxaDbomHcPs6LxteZOHJWszPxnVblmw2kNH0JsBD5KWLVXXMM0bNXCto
+   P6M/FpvrbrQlZeLCVOSioDm+jgOZnNndFWIfFjcP0qw77GLINjYInvKF8
+   EtznMu+aFlJxDvwV9bl9PYdFBsAYIQ9yt8vSPXVOQRewIu3EMJULW++cD
+   h66q6IIEYDgqVeSKP2Sp0GhWz6qnp8Di1MdnRi1K/Nmi3PdTcb+6iUGPh
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10336"; a="354072558"
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="354072558"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 May 2022 18:19:40 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,196,1647327600"; 
+   d="scan'208";a="516817108"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga003.jf.intel.com with ESMTP; 03 May 2022 18:19:33 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nm3fw-000Avv-BI;
+        Wed, 04 May 2022 01:19:32 +0000
+Date:   Wed, 4 May 2022 09:19:08 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guowei Du <duguoweisz@gmail.com>, jack@suse.cz
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, amir73il@gmail.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        viro@zeniv.linux.org.uk, jmorris@namei.org, serge@hallyn.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, paul@paul-moore.com,
+        stephen.smalley.work@gmail.com, eparis@parisplace.org,
+        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
+        tony.luck@intel.com, selinux@vger.kernel.org, duguoweisz@gmail.com,
+        duguowei <duguowei@xiaomi.com>
+Subject: Re: [PATCH] fsnotify: add generic perm check for unlink/rmdir
+Message-ID: <202205040959.SAV6vlzH-lkp@intel.com>
+References: <20220503183750.1977-1-duguoweisz@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2] net: rds: acquire refcount on TCP sockets
-Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>,
-        patchwork-bot+netdevbpf@kernel.org
-Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
- <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
- <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
- <CANn89iJ=LF0KhRXDiFcky7mqpVaiHdbc6RDacAdzseS=iwjr4Q@mail.gmail.com>
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-In-Reply-To: <CANn89iJ=LF0KhRXDiFcky7mqpVaiHdbc6RDacAdzseS=iwjr4Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503183750.1977-1-duguoweisz@gmail.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,55 +73,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/05/04 7:37, Eric Dumazet wrote:
->> I think we merged this patch too soon.
->>
->> My question is : What prevents rds_tcp_conn_path_connect(), and thus
->> rds_tcp_tune() to be called
->> after the netns refcount already reached 0 ?
->>
->> I guess we can wait for next syzbot report, but I think that get_net()
->> should be replaced
->> by maybe_get_net()
-> 
-> Yes, syzbot was fast to trigger this exact issue:
+Hi Guowei,
 
-Does maybe_get_net() help?
+Thank you for the patch! Yet something to improve:
 
-Since rds_conn_net() returns a net namespace without holding a ref, it is theoretically
-possible that the net namespace returned by rds_conn_net() is already kmem_cache_free()d
-if refcount dropped to 0 by the moment sk_alloc() calls sock_net_set().
+[auto build test ERROR on pcmoore-selinux/next]
+[also build test ERROR on linus/master v5.18-rc5]
+[cannot apply to jack-fs/fsnotify next-20220503]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-rds_tcp_conn_path_connect() {
-  sock_create_kern(net = rds_conn_net(conn)) {
-    __sock_create(net = rds_conn_net(conn), kern = 1) {
-      err = pf->create(net = rds_conn_net(conn), kern = 1) {
-        // pf->create is either inet_create or inet6_create
-        sk_alloc(net = rds_conn_net(conn), kern = 1) {
-          sk->sk_net_refcnt = kern ? 0 : 1;
-          if (likely(sk->sk_net_refcnt)) {
-            get_net_track(net, &sk->ns_tracker, priority);
-            sock_inuse_add(net, 1);
-          }
-          sock_net_set(sk, net);
-        }
-      }
-    }
-  }
-  rds_tcp_tune() {
-    if (!sk->sk_net_refcnt) {
-      sk->sk_net_refcnt = 1;
-      get_net_track(net, &sk->ns_tracker, GFP_KERNEL);
-      sock_inuse_add(net, 1);
-    }
-  }
-}
+url:    https://github.com/intel-lab-lkp/linux/commits/Guowei-Du/fsnotify-add-generic-perm-check-for-unlink-rmdir/20220504-024310
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/pcmoore/selinux.git next
+config: hexagon-randconfig-r041-20220501 (https://download.01.org/0day-ci/archive/20220504/202205040959.SAV6vlzH-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 363b3a645a1e30011cc8da624f13dac5fd915628)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/6f635019bbd2ab22a64e03164c8812a46531966e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Guowei-Du/fsnotify-add-generic-perm-check-for-unlink-rmdir/20220504-024310
+        git checkout 6f635019bbd2ab22a64e03164c8812a46531966e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
 
-"struct rds_connection" needs to hold a ref in order to safely allow
-rds_tcp_tune() to call maybe_get_net(), which in turn makes pointless
-to use maybe_get_net() from rds_tcp_tune() because "struct rds_connection"
-must have a ref. Situation where we are protected by maybe_get_net() is
-quite limited if long-lived object is not holding a ref.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Hmm, can we simply use &init_net instead of rds_conn_net(conn) ?
+All errors (new ones prefixed by >>):
 
+>> security/security.c:1169:28: error: passing 'const struct path *' to parameter of type 'struct path *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+           return fsnotify_path_perm(dir, dentry, MAY_RMDIR);
+                                     ^~~
+   include/linux/fsnotify.h:83:51: note: passing argument to parameter 'path' here
+   static inline int fsnotify_path_perm(struct path *path, struct dentry *dentry, __u32 mask)
+                                                     ^
+   security/security.c:1180:28: error: passing 'const struct path *' to parameter of type 'struct path *' discards qualifiers [-Werror,-Wincompatible-pointer-types-discards-qualifiers]
+           return fsnotify_path_perm(dir, dentry, MAY_UNLINK);
+                                     ^~~
+   include/linux/fsnotify.h:83:51: note: passing argument to parameter 'path' here
+   static inline int fsnotify_path_perm(struct path *path, struct dentry *dentry, __u32 mask)
+                                                     ^
+   2 errors generated.
+
+
+vim +1169 security/security.c
+
+  1160	
+  1161	int security_path_rmdir(const struct path *dir, struct dentry *dentry)
+  1162	{
+  1163		int ret;
+  1164		if (unlikely(IS_PRIVATE(d_backing_inode(dir->dentry))))
+  1165			return 0;
+  1166		ret = call_int_hook(path_rmdir, 0, dir, dentry);
+  1167		if (ret)
+  1168			return ret;
+> 1169		return fsnotify_path_perm(dir, dentry, MAY_RMDIR);
+  1170	}
+  1171	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
