@@ -2,132 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D83E5198A3
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:48:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B30C45198AD
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345706AbiEDHvu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 03:51:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49542 "EHLO
+        id S1345745AbiEDHxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 03:53:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345505AbiEDHvt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:51:49 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A74D013F03;
-        Wed,  4 May 2022 00:48:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53726B821D8;
-        Wed,  4 May 2022 07:48:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 15143C385A5;
-        Wed,  4 May 2022 07:48:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651650492;
-        bh=m64RQCqyjvzWxiO7fknKK0SA5V08XscCrerNlOARsp8=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=QJlVydFQ9EKJEIznsNdV8CBg4DU9tA4As27tQIGFCjanNC2wgU3vtgxXZKEePDbmr
-         ChPd9gy5ScO9j41YNrdidOUGpLoeOe5pSpARmg/IPtcaPkzf2ytMqawGVrqK21ovW2
-         fbj3q2xVaW8k03juchaWUT3v/SPVf9uPo8Hz+Eb/EF7Q6FFCdNucVNCFGSR65R4KpO
-         puq0ERGTRPtJoQD8pIoaMn4MDzl02AkC/QKQv5hvxSQPgh3OkBLBxEzSE2PU1WcQDq
-         9aieKNA66bMP4v0sa+kDzUl2LE1wvK97Z9kHqzuyOhIVh13OzWiB6bcV+pgxHIMJuw
-         2JuRoJ75jYbBw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Robert Marko <robimarko@gmail.com>
-Cc:     Thibaut <hacks@slashdirt.org>,
-        Christian Lamparter <chunkeey@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] ath10k: support bus and device specific API 1 BDF selection
-References: <20211009221711.2315352-1-robimarko@gmail.com>
-        <163890036783.24891.8718291787865192280.kvalo@kernel.org>
-        <CAOX2RU5mqUfPRDsQNSpVPdiz6sE_68KN5Ae+2bC_t1cQzdzgTA@mail.gmail.com>
-        <09a27912-9ea4-fe75-df72-41ba0fa5fd4e@gmail.com>
-        <CAOX2RU6qaZ7NkeRe1bukgH6OxXOPvJS=z9PRp=UYAxMfzwD2oQ@mail.gmail.com>
-        <EC2778B3-B957-4F3F-B299-CC18805F8381@slashdirt.org>
-        <CAOX2RU7FOdSuo2Jgo0i=8e-4bJwq7ahvQxLzQv_zNCz2HCTBwA@mail.gmail.com>
-        <CAOX2RU7d9amMseczgp-PRzdOvrgBO4ZFM_+hTRSevCU85qT=kA@mail.gmail.com>
-        <70a8dd7a-851d-686b-3134-50f21af0450c@gmail.com>
-        <7DCB1B9A-D08E-4837-B2FE-6DA476B54B0D@slashdirt.org>
-        <CAOX2RU7kF8Da8p_tHwuE-8YMXr5ZtWU2iL6ZY+UR+1OvGcyn+w@mail.gmail.com>
-Date:   Wed, 04 May 2022 10:48:04 +0300
-In-Reply-To: <CAOX2RU7kF8Da8p_tHwuE-8YMXr5ZtWU2iL6ZY+UR+1OvGcyn+w@mail.gmail.com>
-        (Robert Marko's message of "Tue, 3 May 2022 17:58:03 +0200")
-Message-ID: <87sfppagcr.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S1345644AbiEDHxU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:53:20 -0400
+Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DCB2013E89
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:49:44 -0700 (PDT)
+Received: from palantir17.mph.net (unknown [192.168.0.4])
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 7E2523200C7;
+        Wed,  4 May 2022 08:49:42 +0100 (BST)
+Received: from localhost ([::1] helo=palantir17.mph.net)
+        by palantir17.mph.net with esmtp (Exim 4.89)
+        (envelope-from <habetsm.xilinx@gmail.com>)
+        id 1nm9lV-0003Rb-I6; Wed, 04 May 2022 08:49:41 +0100
+Subject: [PATCH net-next v3 00/13]: Move Siena into a separate subdirectory
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
+Date:   Wed, 04 May 2022 08:49:41 +0100
+Message-ID: <165165052672.13116.6437319692346674708.stgit@palantir17.mph.net>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=4.0 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
+        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL,SPOOFED_FREEMAIL,
+        SPOOF_GMAIL_MID,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Robert Marko <robimarko@gmail.com> writes:
+The Siena NICs (SFN5000 and SFN6000 series) went EOL in November 2021.
+Most of these adapters have been remove from our test labs, and testing
+has been reduced to a minimum.
 
-> On Wed, 16 Feb 2022 at 22:55, Thibaut <hacks@slashdirt.org> wrote:
->>
->> Hi,
->>
->> > Le 16 f=C3=A9vr. 2022 =C3=A0 22:19, Christian Lamparter <chunkeey@gmai=
-l.com> a =C3=A9crit :
->> >
->> > Hi,
->> >
->> > On 16/02/2022 14:38, Robert Marko wrote:
->> >> Silent ping,
->> >> Does anybody have an opinion on this?
->> >
->> > As a fallback, I've cobbled together from the old scripts that
->> > "concat board.bin into a board-2.bin. Do this on the device
->> > in userspace on the fly" idea. This was successfully tested
->> > on one of the affected devices (MikroTik SXTsq 5 ac (RBSXTsqG-5acD))
->> > and should work for all MikroTik.
->> >
->> > "ipq40xx: dynamically build board-2.bin for Mikrotik"
->> > <https://git.openwrt.org/?p=3Dopenwrt/staging/chunkeey.git;a=3Dcommit;=
-h=3D52f3407d94da62b99ba6c09f3663464cccd29b4f>
->> > (though I don't think this link will stay active for
->> > too long.)
->>
->> IMHO Robert=E2=80=99s patch addresses an actual bug in ath10k whereby the
->> driver sends the same devpath for two different devices when
->> requesting board-1 BDF, which doesn=E2=80=99t seem right.
->>
->> Your proposal is less straightforward than using unmodified board-1
->> data (as could be done if the above bug did not occur) and negates
->> the previous efforts not to store this data on flash (using instead
->> the kernel=E2=80=99s documented firmware sysfs loading facility - again
->> possible without the above issue).
->
-> Kalle, any chance of reviewing this? It just brings the board data in
-> line with caldata as far as naming goes.
+This patch series creates a separate kernel module for the Siena architecture,
+analogous to what was done for Falcon some years ago.
+This reduces our maintenance for the sfc.ko module, and allows us to
+enhance the EF10 and EF100 drivers without the risk of breaking Siena NICs.
 
-Sorry for the delay in review. So the original idea was that board.bin
-would be only used by developers for testing purposes only and normal
-users will use the board file automatically from board-2.bin. It's a
-shame if Mikrotik broke this, it's not ideal if there are so many
-different ways to use board files. I need to think a bit about this.
+After this series further enhancements are needed to differentiate the
+new kernel module from sfc.ko, and the Siena code can be removed from sfc.ko.
+Thes will be posted as a small follow-up series.
+The Siena module is not built by default, but can be enabled
+using Kconfig option SFC_SIENA. This will create module sfc-siena.ko.
 
-The patch is now in pending branch for build testing:
+	Patches
 
-https://git.kernel.org/pub/scm/linux/kernel/git/kvalo/ath.git/commit/?h=3Dp=
-ending&id=3Deda838c3941863a486f7fced4b739de6fc80e857
+Patch 1 disables the Siena code in the sfc.ko module.
+Patches 2-6 establish the code base for the Siena driver.
+Patches 7-12 ensure the allyesconfig build succeeds.
+Patch 13 adds the basic Siena module.
 
-I also fixed two checkpatch warnings:
+I do not expect patch 2 through 5 to be reviewed, they are FYI only.
+No checkpatch issues were resolved as part of these, but they
+were fixed in the subsequent patches.
 
-drivers/net/wireless/ath/ath10k/core.c:1252: line length of 93 exceeds 90 c=
-olumns
-drivers/net/wireless/ath/ath10k/core.c:1253: line length of 96 exceeds 90 c=
-olumns
+	Testing
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+Various build tests were done such as allyesconfig, W=1 and sparse.
+The new sfc-siena.ko and sfc.ko modules were tested on a machine with both
+these NICs in them, and several tests were run on both drivers.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+Martin
+---
+
+v3:
+- Fix build errors after rebase.
+
+v2:
+- Split up patch that copies existing files.
+- Only copy a subset of mcdi_pcol.h.
+- Use --find-copies-harder as suggested by Benjamin Poirier.
+- Merge several patches for the allyesconfig build into larger ones.
+
+---
+
+Martin Habets (13):
+      sfc: Disable Siena support
+      sfc: Move Siena specific files
+      sfc: Copy shared files needed for Siena (part 1)
+      sfc: Copy shared files needed for Siena (part 2)
+      sfc: Copy a subset of mcdi_pcol.h to siena
+      sfc/siena: Remove build references to missing functionality
+      sfc/siena: Rename functions in efx headers to avoid conflicts with sfc
+      sfc/siena: Rename RX/TX functions to avoid conflicts with sfc
+      sfc/siena: Rename peripheral functions to avoid conflicts with sfc
+      sfc/siena: Rename functions in mcdi headers to avoid conflicts with sfc
+      sfc/siena: Rename functions in nic_common.h to avoid conflicts with sfc
+      sfc/siena: Inline functions in sriov.h to avoid conflicts with sfc
+      sfc: Add a basic Siena module
+
+
+ drivers/net/ethernet/sfc/Kconfig                  |    9 
+ drivers/net/ethernet/sfc/Makefile                 |    5 
+ drivers/net/ethernet/sfc/efx.c                    |   17 
+ drivers/net/ethernet/sfc/nic.h                    |    4 
+ drivers/net/ethernet/sfc/siena/Kconfig            |   12 
+ drivers/net/ethernet/sfc/siena/Makefile           |   11 
+ drivers/net/ethernet/sfc/siena/bitfield.h         |    0 
+ drivers/net/ethernet/sfc/siena/efx.c              |  231 
+ drivers/net/ethernet/sfc/siena/efx.h              |  218 
+ drivers/net/ethernet/sfc/siena/efx_channels.c     | 1376 ++
+ drivers/net/ethernet/sfc/siena/efx_channels.h     |   45 
+ drivers/net/ethernet/sfc/siena/efx_common.c       | 1408 ++
+ drivers/net/ethernet/sfc/siena/efx_common.h       |  118 
+ drivers/net/ethernet/sfc/siena/enum.h             |  176 
+ drivers/net/ethernet/sfc/siena/ethtool.c          |  282 
+ drivers/net/ethernet/sfc/siena/ethtool_common.c   | 1340 ++
+ drivers/net/ethernet/sfc/siena/ethtool_common.h   |   60 
+ drivers/net/ethernet/sfc/siena/farch.c            |   58 
+ drivers/net/ethernet/sfc/siena/farch_regs.h       |    0 
+ drivers/net/ethernet/sfc/siena/filter.h           |    0 
+ drivers/net/ethernet/sfc/siena/io.h               |    0 
+ drivers/net/ethernet/sfc/siena/mcdi.c             | 2259 +++
+ drivers/net/ethernet/sfc/siena/mcdi.h             |  386 
+ drivers/net/ethernet/sfc/siena/mcdi_mon.c         |  531 +
+ drivers/net/ethernet/sfc/siena/mcdi_pcol.h        |17204 +++++++++++++++++++++
+ drivers/net/ethernet/sfc/siena/mcdi_port.c        |  110 
+ drivers/net/ethernet/sfc/siena/mcdi_port.h        |   17 
+ drivers/net/ethernet/sfc/siena/mcdi_port_common.c | 1282 ++
+ drivers/net/ethernet/sfc/siena/mcdi_port_common.h |   58 
+ drivers/net/ethernet/sfc/siena/mtd.c              |  124 
+ drivers/net/ethernet/sfc/siena/net_driver.h       | 1715 ++
+ drivers/net/ethernet/sfc/siena/nic.c              |  530 +
+ drivers/net/ethernet/sfc/siena/nic.h              |  192 
+ drivers/net/ethernet/sfc/siena/nic_common.h       |  251 
+ drivers/net/ethernet/sfc/siena/ptp.c              | 2200 +++
+ drivers/net/ethernet/sfc/siena/ptp.h              |   45 
+ drivers/net/ethernet/sfc/siena/rx.c               |  400 
+ drivers/net/ethernet/sfc/siena/rx_common.c        | 1094 +
+ drivers/net/ethernet/sfc/siena/rx_common.h        |  110 
+ drivers/net/ethernet/sfc/siena/selftest.c         |  807 +
+ drivers/net/ethernet/sfc/siena/selftest.h         |   52 
+ drivers/net/ethernet/sfc/siena/siena.c            |  158 
+ drivers/net/ethernet/sfc/siena/siena_sriov.c      |   35 
+ drivers/net/ethernet/sfc/siena/siena_sriov.h      |    0 
+ drivers/net/ethernet/sfc/siena/sriov.h            |   83 
+ drivers/net/ethernet/sfc/siena/tx.c               |  399 
+ drivers/net/ethernet/sfc/siena/tx.h               |   40 
+ drivers/net/ethernet/sfc/siena/tx_common.c        |  448 +
+ drivers/net/ethernet/sfc/siena/tx_common.h        |   39 
+ drivers/net/ethernet/sfc/siena/vfdi.h             |    0 
+ drivers/net/ethernet/sfc/siena/workarounds.h      |   28 
+ 51 files changed, 35490 insertions(+), 477 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/siena/Kconfig
+ create mode 100644 drivers/net/ethernet/sfc/siena/Makefile
+ copy drivers/net/ethernet/sfc/{bitfield.h => siena/bitfield.h} (100%)
+ copy drivers/net/ethernet/sfc/{efx.c => siena/efx.c} (84%)
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx_channels.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx_channels.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/efx_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/enum.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/ethtool.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/ethtool_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/ethtool_common.h
+ rename drivers/net/ethernet/sfc/{farch.c => siena/farch.c} (98%)
+ copy drivers/net/ethernet/sfc/{farch_regs.h => siena/farch_regs.h} (100%)
+ copy drivers/net/ethernet/sfc/{filter.h => siena/filter.h} (100%)
+ copy drivers/net/ethernet/sfc/{io.h => siena/io.h} (100%)
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_mon.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_pcol.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_port.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_port.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_port_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/mcdi_port_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/mtd.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/net_driver.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/nic.c
+ copy drivers/net/ethernet/sfc/{nic.h => siena/nic.h} (51%)
+ create mode 100644 drivers/net/ethernet/sfc/siena/nic_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/ptp.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/ptp.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/rx.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/rx_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/rx_common.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/selftest.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/selftest.h
+ rename drivers/net/ethernet/sfc/{siena.c => siena/siena.c} (89%)
+ rename drivers/net/ethernet/sfc/{siena_sriov.c => siena/siena_sriov.c} (98%)
+ rename drivers/net/ethernet/sfc/{siena_sriov.h => siena/siena_sriov.h} (100%)
+ create mode 100644 drivers/net/ethernet/sfc/siena/sriov.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/tx.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/tx.h
+ create mode 100644 drivers/net/ethernet/sfc/siena/tx_common.c
+ create mode 100644 drivers/net/ethernet/sfc/siena/tx_common.h
+ copy drivers/net/ethernet/sfc/{vfdi.h => siena/vfdi.h} (100%)
+ create mode 100644 drivers/net/ethernet/sfc/siena/workarounds.h
+
+--
+Martin Habets <habetsm.xilinx@gmail.com>
+
