@@ -2,166 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20F135197D2
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2F305197FE
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345219AbiEDHHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 03:07:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
+        id S1345323AbiEDHZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 03:25:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345231AbiEDHHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:07:14 -0400
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2053.outbound.protection.outlook.com [40.107.96.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD6C23141
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:03:35 -0700 (PDT)
+        with ESMTP id S1345341AbiEDHZM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:25:12 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2055.outbound.protection.outlook.com [40.107.237.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7587023153;
+        Wed,  4 May 2022 00:21:29 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bic5wTDFfGLOAY88ts45OGEEggdPgZILq1E9CnhpKLJFawrw8RGcXnNvoceEiC1qbbQIywTRUjWeFfk7XDb52KpdEdHo69pkkGZMrPtvtD2k1noDsIwS+sHSoAeulvPZ//Y3RpJbJ3n41dLtiherbMcCKbr5Tbae1Vk19jP/FwWoKSXi+WdLMXwJv++tghavKJoji/QLYSnzVUpu5A1y5/Qy19o/bE/sBeD3lRFNarJQEYO8R7KKz0YyAiPDxY7PndTQ6dRsdGChDMxkjHnkfNpLArndIuoMBGlqLqq7EflQOIGdbmXOR1P6yAC3pxdpY8vygMMGyC/PLq6135ikUQ==
+ b=SzEb43ABQ3ddRTHXyR9mkGSYD3j/thZkYuAjW3DedRosbbvZ/NNF7Bk180txwhxH4NwpJh0LGZViF7OMqMg7KBQLXLvyBlHsxAZGJIw2P+ooQ7alXYQnbkOJTTasOkyQsLARtX6I2kt5S4pBgOm2BMvIWuj/7DjT7+qXM7/rB+gRCsvkWlxPHgfKrVjY6SYjPZmzWQoyOB1nvakheUxxY6w2JyLlM7SELaueiH6/hd8h/+ac0LFNpoZwBYxnEwsfiBhIyLmzHwcGSiy7IV40TrPyMAsbUetF5rob1sAGOGzgi+hlzewuLpPOEQhm/PxfmKaGLinNlq0rwWrLZ8NzVg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=awxK20xa8Fz3hM/bEQv9MKTkWZgH9RWGjMFERIygmrM=;
- b=SuotFO6gUlwGMapsxoQ7XivPcBkeD7MEyGOZYxjHrAlwrt2SKHVdTKXNjgxriJCxbp2JNnkWQSeS/tMgiG1uUZwqxpcWREoOscDYBUc3qDOGriFI9GFzno2wUi29rsF47wkmNn9pT08/okpt2hW5sS7WzWRyKiXHEKlMOTT4TJv1z2dFS6e1nEnKjheyETdnELpwZDB7LvpXMmxkF6sImsi1me9susXYpez1lpio5KLyJPDqKR6TQ9kMD3iNCekoPNz2zYC/2m7sufoQ2QniV7r499xZGlv5QkGVfLHLeqe+XVBXqiCJJOCTjYYPxk2RG5GLTN8/WG3llGDGa2EN8Q==
+ bh=60YjqTa2+342NhJqstej3/N9FKl3FxD9uzekDxGCKik=;
+ b=F73Q/fhkjPQ+ZHbbTvQkiCP1+nOa/dbZsYbDT2viTxxfiy56p00KjARpfGQzb7QEuYaGdQJY/N+Uf4mxSxIqQbiro64fdZu3PGz7k+NvCvA0KbFHFq6FKt/x+ZAAM/160Zj6Exb4bR3YRb1BCv1fEIrLww/jMNo1Vuhk41suGmQ8FUK05vFJSg4xUgxcJ+NiUOSe9LQp1a9Y8ASO1u5mMPkFOzKI+EuaLUh09Wvmot/jvH+mf1y5BLP5XJ2OecoDSW5wPnYo9iDCSLHeSW559CT+6ZU/DcDZrd/k38QVbpTWIL52StuxMQNZJHoz3nR1DprsUUd9iI4O4eVSMSvqOg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+ smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
+ dkim=pass header.d=silabs.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=awxK20xa8Fz3hM/bEQv9MKTkWZgH9RWGjMFERIygmrM=;
- b=TWjqjLX3pi04ofyXizi9Cyh9NUdMr515/F5Q16dn4DYlhsnVMPZtUcmgeilJ3oscvr9wzcdxKztwJAYuT64zU7WzcStgyXRJiFEKMF2KgAPnMvYb/8ubaMxE5Jx5+sVg3CO4zW1jjtAvDLlfncWrcJYrF2hAtQd1CEJvbMGvjo5a6gZuRag8QlVusiG6c7GclOOjnyoc3+h+G0s1+Z+j/pHeUqgzR9YSGweIy+k2Iw0yBliJcAJwXC9hXwfuZKKvYYoIcsLm4A45xfzhiFkOJWFH9fo0o7sodZRoN9DsQGHd8uyAkDmKHojHObLyjVy2z+ZwsTi/8kYdTm2gy0v7ug==
+ bh=60YjqTa2+342NhJqstej3/N9FKl3FxD9uzekDxGCKik=;
+ b=Usv2ePNeNloLLwYt5VFrsnVG3eG5ZAG+QUx4nHOR6mni+G9qgXfn1ctYji0Upe9ziWcRk6Gh7iH4/XS6FcXdm2KpLeJhrLo2EPJFUlRXNjzqk+xp1So84bQcfv1XEwN8JBeby4ay7Qolzfz2ndlEdaUrhcCNZi87bqJRRYBW84c=
 Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
- by MN2PR12MB4503.namprd12.prod.outlook.com (2603:10b6:208:264::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Wed, 4 May
- 2022 07:03:30 +0000
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5206.025; Wed, 4 May 2022
- 07:03:30 +0000
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     "David S. Miller" <davem@davemloft.net>,
+ header.d=none;dmarc=none action=none header.from=silabs.com;
+Received: from CO6PR11MB5650.namprd11.prod.outlook.com (2603:10b6:5:35a::9) by
+ BN6PR11MB1521.namprd11.prod.outlook.com (2603:10b6:405:e::23) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.13; Wed, 4 May 2022 07:21:27 +0000
+Received: from CO6PR11MB5650.namprd11.prod.outlook.com
+ ([fe80::f4a6:5ef8:6a66:3251]) by CO6PR11MB5650.namprd11.prod.outlook.com
+ ([fe80::f4a6:5ef8:6a66:3251%8]) with mapi id 15.20.5206.024; Wed, 4 May 2022
+ 07:21:27 +0000
+From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
+To:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
-        Maor Gottlieb <maorg@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 15/15] net/mlx5: Fix matching on inner TTC
-Date:   Wed,  4 May 2022 00:02:56 -0700
-Message-Id: <20220504070256.694458-16-saeedm@nvidia.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220504070256.694458-1-saeedm@nvidia.com>
-References: <20220504070256.694458-1-saeedm@nvidia.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: BY5PR04CA0010.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::20) To BY5PR12MB4209.namprd12.prod.outlook.com
- (2603:10b6:a03:20d::22)
+        Paolo Abeni <pabeni@redhat.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+        outreachy@lists.linux.dev, Jaehee Park <jhpark1013@gmail.com>,
+        Stefano Brivio <sbrivio@redhat.com>,
+        Jaehee Park <jhpark1013@gmail.com>
+Subject: Re: [PATCH v5] wfx: use container_of() to get vif
+Date:   Wed, 04 May 2022 09:21:21 +0200
+Message-ID: <16415431.geO5KgaWL5@pc-42>
+Organization: Silicon Labs
+In-Reply-To: <20220503182146.GA886740@jaehee-ThinkPad-X1-Extreme>
+References: <20220503182146.GA886740@jaehee-ThinkPad-X1-Extreme>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
+X-ClientProxiedBy: SA1P222CA0027.NAMP222.PROD.OUTLOOK.COM
+ (2603:10b6:806:22c::11) To CO6PR11MB5650.namprd11.prod.outlook.com
+ (2603:10b6:5:35a::9)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9aaa49b6-8ada-4ae3-422e-08da2d9c31b5
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4503:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB450333F31B9D73F575873EADB3C39@MN2PR12MB4503.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 3974d25f-be9c-4daf-9c45-08da2d9eb3c9
+X-MS-TrafficTypeDiagnostic: BN6PR11MB1521:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR11MB1521FE342151F4C5DD97B1B093C39@BN6PR11MB1521.namprd11.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wc6NdLL01FgPBC+x5KdbLrhb0DQh1JTLLF0FpzHpT5wN7Yz+aIndGUFLo/Kznz75f0h87gAovQChil4GNVQvPlhuxwIj/jbIUOlSacBeGvuan/f+MfUge7Xe1NFS3G5ikurCikST4dgAXN8cm5scFj9Bmvgp+ZyrEmtvai/m9Rl9yYbe+ubyKin6+YXGSuD2NlLb80Xu416uRwaln26/eXEwPPA9Q2J5KC3teBNRbwJWR3Q609O1IyvRYEXUXMoEBUXKreTvOx5JMlup8bHK1lF9aGLJOiyyvLnNJen6/sQ74LbkBsenF9MdBEyCw08tYLEIvieAqxBfKARavUvtrqGIE675olC4GO3X4jjBokYJ9RFA3kiNd54bExVRL2kE30IRaO8IF2Kscsd0pxpYZjsS5uT6JvDhJb8Y08GYH5iyJGr8Mdx5PLuIpj+z0npNBAj5ZdeRWnryiDQoUGIax0dogD75pMsb62pZuaKS1DpFf9lCTQdFM9Sl8KU7K2SMFAwZ/ByPYyMAjrm9fbnlN7PCi1uGpII37hzHptpCKAV2q9nT4QILp9qCM/bMNlzdicxfw/InD7a2buMWAT2To/npL84+S8Zne10P0Q+69eTWoqLczFX1+LNLur4FPyVtax3223T+iBn7VtjsdEYmmA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(107886003)(6506007)(2906002)(36756003)(8676002)(508600001)(6486002)(38100700002)(66946007)(4326008)(6512007)(66556008)(66476007)(86362001)(8936002)(316002)(5660300002)(186003)(54906003)(1076003)(110136005)(83380400001)(2616005);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?N32UYqtqKFUtqhKXCrmmEeRsPc3EYuq7cXDzEbaOocVcbDfp0rjs5gzet+WS?=
- =?us-ascii?Q?aUudp1+JTsi73ttX2d3Yo/0rP47YJapOLdAVpDnD0WdHeDuBaeAwBqu1NcXX?=
- =?us-ascii?Q?H8gn/a/Q7vknf+wiIyBVmdUqnxZxtfVrxib5HmQo97hfJNA1sjE34EW97BpM?=
- =?us-ascii?Q?PGBnySKqKkvATcno364xInOv87WwyZxGOxHRHGvZfFlc79op4VnqiCXUMGzy?=
- =?us-ascii?Q?Bj2cSHunVqsYFhc4hd6zLYH7+Ok1aEjrkzHvB25e7irKApaU+8VEFn378NUF?=
- =?us-ascii?Q?JmiOBvsVadROvpqWWRQvd2cli38EdltkHoF53YZD1jiAy+L21N824bLqdkB/?=
- =?us-ascii?Q?ikVcrX7pKdYlorO/IWt618ZJ9VFZo5LX0CCeWDIQBd0n4VD/pcJpX0Ag7+gD?=
- =?us-ascii?Q?vxw+5TE6byokdrbZ5u0s7PJWKk9QL687V2KA8H9E7IRg4VBsVp+KhMU5gN1Z?=
- =?us-ascii?Q?y/aZR2pTwQkQ9ReByoDn0sJjLCV1WXYYXTuJqJrH9Ne0M/W2cVu/LSFrLj7/?=
- =?us-ascii?Q?KAFl8PP+kKXZJQfZg1mQXTu6K/r3YPIJZ4KTxxGyqVo1P9Gm81P3+Mz/RhFf?=
- =?us-ascii?Q?JFun+qQazBLd2KwAnqIsWANFgBtjyT1+rPXCM1K/8kIT7N2KaXlMyMQbiEm1?=
- =?us-ascii?Q?40dUsF5zr2Uc3WNrEV4LCj2hMIslksWJH/CIKmYyYavJUrWsojp6YQPolv47?=
- =?us-ascii?Q?yGoHyK2BKQh1tdeGsyZ6HfX1pJisTcoZGA/PKSNpFMx2hxYcwTfE7jKwhn+r?=
- =?us-ascii?Q?E7+pf2Wo6QJhhSJuStQftB2HN908eev/BJ6Rg0qJLWg4xCE/phtEnMeUjW7p?=
- =?us-ascii?Q?oTepvzdQ44WQbJxjq/VQrrjcd7HiuBbuuZuxHe7RNtx7IuwySKqihKyAGmYw?=
- =?us-ascii?Q?waK5bvjcPqVXgoW4hAfvFL7IsTgJtb7PY4Aw/iWEfn6hmzJW35/VVNEMAhBE?=
- =?us-ascii?Q?UJyNw7hNC1zlKsfDnXJVkOLmIrCCgIl9Susy5w3hO7tMnsyTdKMnADIYnt1S?=
- =?us-ascii?Q?3CMoNMAghMYQcD4wl5GYTwVkOiZp8fCPZfutFYqaNb7t+sGPNiXV9x/XzoxC?=
- =?us-ascii?Q?C65phagNkAgRmK/AtjZ22fP+tevy1kTqTIPboFqClim/G3NKZON5wVma18KG?=
- =?us-ascii?Q?ubKfp7s//rUvgecDBIHz7WbfmE+JP9XHVxQlfmxt+NlmFmCM21et74Q9dXZo?=
- =?us-ascii?Q?rYvYXk9c8qcrE9xauk2OwHuf6e1XGn1i6DMNMkNi6nI+soKiHjbPj5v7xxqs?=
- =?us-ascii?Q?BtJe268EoO2Lw0F4iNrx6lYc7zJuzFbtRDHMReVgw9XXxP2krM257QqDvsKN?=
- =?us-ascii?Q?7UH8fqz/twSvblE3zpv94JJCwI+Sg8O2+VNKBrQ0DXiMlTPnvyoKRlgFzBCL?=
- =?us-ascii?Q?IvczVTQ/qtQfYvL4QjYCuiatHWjvFfQmmQ4rH6lWPtzgFiTy0G7nPfKXzXiS?=
- =?us-ascii?Q?wyPurnyTD6YiS8UsEnd6kyl+0aqC3dZ9PaF2sJ0MHt65RJn/RoQmCE1JDqCk?=
- =?us-ascii?Q?RkrD4qGOiYJddH8W1hMV2KMcG/Tx5NgRAg7PlsVRSBMEZ/4MaI/qgEE5fT8L?=
- =?us-ascii?Q?V2NPiYAzzTFi9Ixpo4rdYHpKZN3Vj+4elE+H9xvD1Ol1V9PRjWxm+J3uhs7E?=
- =?us-ascii?Q?pvtAAyL90587F1UbHRrc9VwBgyS0aybPoVABqruemsu9aLlFY1EXVlNU708Q?=
- =?us-ascii?Q?lQ7fjPRwxBXqKte/w42wOcxaVQSbPHHm8OtAKWnvxsLEBeFx9E7rCLybj91c?=
- =?us-ascii?Q?JMGIktphHg62U3Vdi4vOKQN05+T1XRtBMf0wg4LKkckr0fT13C24?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9aaa49b6-8ada-4ae3-422e-08da2d9c31b5
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: rcQQ9LS8NDiZsar5UtySNh2W2ugFWOQjU3qT8Kpb1VY9sdYfOSI1oxG7gdCT6rVCct1X0LiPCAB2qwpahtkwNaMBkGY7HpaaU36GbP+1QBCBL7FLh89hqwVVRf0rmGjQfdb1hiX1nj1RT3g/Sj7hzSfQ594CCj+K/GAvaPjKh11lt/ukWalYq6zDymZMDY3DKJAjVMV1ZHNNo16BSY6bNljjtzRoG/riue610nzbZefZInOt2b1TLDHhAkRp7IPE048MhKeeTgcvNrqD35um2yhpeBd7Ay2h+cLT7s7mkRj2jqDlmFQi37JIWues+U7b8BOqHmko4wl2pRNSxkZ1pGPMMcEuN2I3WoJiWJH2PebUg9jtwSWjzp6FJh6QKJRZUB/+cmauEdAZ8EaygbTD8FtVHfpJX8dkNaMzBGlXqCDg2zM4D3hQoacqqZ5l9zuxpyV0CjvsaN0YHYZuzuL9VUGVWKx9JLxfXXG2uIQp+4yZ5omh3uSNvMSIyNXG7uAdgQBLeAtG2XxpzyQ8QctDS1RdfoTZLZbiCiFX6/6pkz9FwyGqJd9GgtuurhRVCkA0l051PaIAgxM0imyQZpgHW4ny8jE84sWamZjTQqHwwaBfvymWsqL9xJG1lKpEUQBX6PEsAYVg7qGwskQfV391VHiEhuJ6XC4ozhec4wfFCNcsEOGopQ5KCt7cwFlmQXregsKODlJA0MKbFzjNYurFvQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5650.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(52116002)(5660300002)(33716001)(7416002)(36916002)(66476007)(66946007)(66556008)(508600001)(8936002)(8676002)(921005)(6506007)(316002)(6666004)(38100700002)(2906002)(6486002)(110136005)(83380400001)(6512007)(9686003)(186003)(86362001)(66574015)(39026012);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?QXLNWOu0w3s72ekf2ht//bFtQvb5diDgeWnVJc5FqNnlmEu8eBzcO6r5wl?=
+ =?iso-8859-1?Q?ltIZ1NHGXjIMfsTxO1751Ig+2wHpdjKmjK7bRyqrZfrkEI0nJrpjjK36+S?=
+ =?iso-8859-1?Q?HGBEKGKGERhn5Ev7RFOd6K/HPwp2CwCFgbx0SauVTDefc0n3CTYv9CVhDZ?=
+ =?iso-8859-1?Q?VSazdhBhJ9vzFMhgNlBVVvdVkabjjo4VVpwTa2ACdWBOWenK0fdPcRmcgv?=
+ =?iso-8859-1?Q?EIYVu/e/8R1pk/4cwR0oXGkZlu2j2/0xeB7ByaB5Cijfiur6JbwSFK/2PC?=
+ =?iso-8859-1?Q?/8mIuRjbMH01+PGALI2v8vbujtwbeNDvtFrSXNbNrVmZOGvRUyj4D0OQr4?=
+ =?iso-8859-1?Q?kVR0xCXYVI0SmPWGMQBXqMjqQpa6eJJ6XAtbSo1RJ04RaQmCyu6OfjnWPG?=
+ =?iso-8859-1?Q?DLJCE0L3cMBTcDxAkB2QOk5EOmvO4hlOm0s4tCrqvgPsJeiFQMSFFOOxuo?=
+ =?iso-8859-1?Q?PUYneJYPp91Juv8Kmf+/K69oHCMM4QNGSHnOMy7mvU0xAtiw8F/z7tFEXe?=
+ =?iso-8859-1?Q?Ub6t53MnH+2i7Y+P3NGpi4lLHhsIUpxouKjfdc6snII1MmdbswoAdFk2/P?=
+ =?iso-8859-1?Q?42/79H9UI1zByplhg6ds0fCtO898UkXOnIogAzKsAGSsRgGaQtBFVFMN+T?=
+ =?iso-8859-1?Q?N6jArqXRt/63MxXbpsDa0/OGxgFRdhHkE9p6CXG/fSrHkNivcACApfermK?=
+ =?iso-8859-1?Q?E9ndiKV7nJYWtwo1zIjlSWbDrA/anfRFmba/S6bHpQdlhZ8TFuLDghdgUM?=
+ =?iso-8859-1?Q?yYp+uT+VlPRx/Ngk7mslNZ8OhJMppfrLHwdjS+7edEGzwZiLvwMzcE4XM/?=
+ =?iso-8859-1?Q?UKOEDEBtWTSqZ0ALBqyTrDFWvTXkYEeh1U0y4kgHkx18Ka57pZPzCha2/Q?=
+ =?iso-8859-1?Q?wmJCH+7+xHbdpfoFMdELNyG8qyWPRdR7JQLugfrhBBJrO5p6fEy1Y10lo1?=
+ =?iso-8859-1?Q?mO88lX6M2ykgWjhY5wS7KOzxeU3svGPhMLMuNrKDkpGBdM7PEQmXym+DvH?=
+ =?iso-8859-1?Q?c0LW5BLwYOiw75kyMxo31RLLUsidW4wTi3VDdYAvoItIser13bkgh/A5fo?=
+ =?iso-8859-1?Q?OLKo0NN01rW9901gfWY4/7GwuNtsVigF4PMusTDNGMBGiiWDwjylkCnS4s?=
+ =?iso-8859-1?Q?aD71GR8MIdl95eUQsRGspTrVf/10/NYIzFRWSpSse+XJd4GYzMV6lgWMsE?=
+ =?iso-8859-1?Q?UfdKL35ErWGBf2JQEfOzXIE31cuF+5H0LiQcsJMhen+GAUaS7egEjPTSsc?=
+ =?iso-8859-1?Q?ZSikngGTkWsb9Bkbn9Q7ijT8KNMji4bZSlda15Vun+MpO18vHRDTG7TQw2?=
+ =?iso-8859-1?Q?L2yegZ2X6zTjeWPvihxexStI40jMecqluYtwjZKlfuc88dbB79kKZ8Y7Jb?=
+ =?iso-8859-1?Q?WE5IfSYhg1sGdY3MTYzJJ+1yovmEw1lwJX175R4xuwL+d2ExqiYBcqBDpG?=
+ =?iso-8859-1?Q?8iyrc/fXCKk3I5zhQDzfUM5oj5fiVXqZThIKNwNfS7EwmVDrzR1XR/Vn26?=
+ =?iso-8859-1?Q?1qxG8zTHqP3+3Amp14ITE9RJgAxYVLPLnHDb01WJllayRYlFCS3Rp0Vpcq?=
+ =?iso-8859-1?Q?eEF4wwaq7mf/g2UD1vLspzAlhPGWcttO59Ai1GyFr5v1Y77uJcacngrm0y?=
+ =?iso-8859-1?Q?uYUjlGKZ/lSXWDzcjpe708ZSu/1Yrqz/KGwYCnWagl9hqtRrsQa2KCWnJp?=
+ =?iso-8859-1?Q?Sq3OdTZsxcqLJqwjGnLfkdr4LpEpObyM2J5StZKiug0bLYy39eBhhMONP5?=
+ =?iso-8859-1?Q?wK7mU8dSab1Bl8jw+V779joEND/qiB3ikfQt+znQ0Aced/vf8LVS1c1kAo?=
+ =?iso-8859-1?Q?F3KDE26QlYxnX0aF/FCHndjiwI4zJkqLjZaX++9tnCg3704nxmoCGg/V4O?=
+ =?iso-8859-1?Q?Qy?=
+X-MS-Exchange-AntiSpam-MessageData-1: BqzBol5WKt7J9A==
+X-OriginatorOrg: silabs.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3974d25f-be9c-4daf-9c45-08da2d9eb3c9
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5650.namprd11.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:03:29.9660
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:21:27.3419
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: S9HIkySXXpj0FTH0xqPhv9nnQPotBV+T9J3eGzYCpBLDFRDXumhuSXG6edwPdJMLgOGKhJbI/1YoeSxXTNRlFA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4503
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: Aomd2tuGN2i0z7gdexZj6zBpudofVx3oFGQK7mfRM0MuqFRT6CZSJvV45k1Q7LmSFLFIyzIpy3RXDR3lmDi2iQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1521
+X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mark Bloch <mbloch@nvidia.com>
+On Tuesday 3 May 2022 20:21:46 CEST Jaehee Park wrote:
+> Currently, upon virtual interface creation, wfx_add_interface() stores
+> a reference to the corresponding struct ieee80211_vif in private data,
+> for later usage. This is not needed when using the container_of
+> construct. This construct already has all the info it needs to retrieve
+> the reference to the corresponding struct from the offset that is
+> already available, inherent in container_of(), between its type and
+> member inputs (struct ieee80211_vif and drv_priv, respectively).
+> Remove vif (which was previously storing the reference to the struct
+> ieee80211_vif) from the struct wfx_vif, define a function
+> wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
+> the newly defined container_of construct.
+>=20
+> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
+> ---
+> v2
+> - Sequenced the wfx.h file (with the new defines) to show up first on
+> the diff, which makes the ordering of the diff more logical.
+>=20
+> v3
+> - Made edits to the commit message.
+> - Shortened the macro name from wvif_to_vif to to_vif.
+> - For functions that had more than one instance of vif, defined one
+> reference vif at the beginning of the function and used that instead.
+> - Broke the if-statements that ran long into two lines.
+>=20
+> v4
+> - Changed macro into function and named it back to wvif_to_vif
+> - Fit all lines in patch to 80 columns
+> - Decared a reference to vif at the beginning of all the functions
+> where it's being used
+>=20
+> v5
+> - Placed longest declarations first
+>=20
+>=20
+>  drivers/net/wireless/silabs/wfx/wfx.h     |  6 +-
+>  drivers/net/wireless/silabs/wfx/data_rx.c |  5 +-
+>  drivers/net/wireless/silabs/wfx/data_tx.c |  3 +-
+>  drivers/net/wireless/silabs/wfx/key.c     |  4 +-
+>  drivers/net/wireless/silabs/wfx/queue.c   |  3 +-
+>  drivers/net/wireless/silabs/wfx/scan.c    | 11 ++--
+>  drivers/net/wireless/silabs/wfx/sta.c     | 71 ++++++++++++++---------
+>  7 files changed, 65 insertions(+), 38 deletions(-)
+>=20
+[...]
+> diff --git a/drivers/net/wireless/silabs/wfx/sta.c b/drivers/net/wireless=
+/silabs/wfx/sta.c
+> index 3297d73c327a..040d1f9fb03a 100644
+> --- a/drivers/net/wireless/silabs/wfx/sta.c
+> +++ b/drivers/net/wireless/silabs/wfx/sta.c
+> @@ -101,6 +101,7 @@ void wfx_configure_filter(struct ieee80211_hw *hw, un=
+signed int changed_flags,
+>         struct wfx_vif *wvif =3D NULL;
+>         struct wfx_dev *wdev =3D hw->priv;
+>         bool filter_bssid, filter_prbreq, filter_beacon;
+> +       struct ieee80211_vif *vif =3D wvif_to_vif(wvif);
 
-The cited commits didn't use proper matching on inner TTC
-as a result distribution of encapsulated packets wasn't symmetric
-between the physical ports.
+wvif is modified later in the function, so this one is not correct.
 
-Fixes: 4c71ce50d2fe ("net/mlx5: Support partial TTC rules")
-Fixes: 8e25a2bc6687 ("net/mlx5: Lag, add support to create TTC tables for LAG port selection")
-Signed-off-by: Mark Bloch <mbloch@nvidia.com>
-Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c   | 2 ++
- 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
-index a6592f9c3c05..5be322528279 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
-@@ -505,7 +505,7 @@ static int mlx5_lag_create_inner_ttc_table(struct mlx5_lag *ldev)
- 	struct ttc_params ttc_params = {};
- 
- 	mlx5_lag_set_inner_ttc_params(ldev, &ttc_params);
--	port_sel->inner.ttc = mlx5_create_ttc_table(dev, &ttc_params);
-+	port_sel->inner.ttc = mlx5_create_inner_ttc_table(dev, &ttc_params);
- 	if (IS_ERR(port_sel->inner.ttc))
- 		return PTR_ERR(port_sel->inner.ttc);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
-index b63dec24747a..b78f2ba25c19 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
-@@ -408,6 +408,8 @@ static int mlx5_generate_inner_ttc_table_rules(struct mlx5_core_dev *dev,
- 	for (tt = 0; tt < MLX5_NUM_TT; tt++) {
- 		struct mlx5_ttc_rule *rule = &rules[tt];
- 
-+		if (test_bit(tt, params->ignore_dests))
-+			continue;
- 		rule->rule = mlx5_generate_inner_ttc_rule(dev, ft,
- 							  &params->dests[tt],
- 							  ttc_rules[tt].etype,
--- 
-2.35.1
+--=20
+J=E9r=F4me Pouiller
+
 
