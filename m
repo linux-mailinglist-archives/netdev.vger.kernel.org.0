@@ -2,110 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA335519DB4
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 13:14:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F090D519DBF
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 13:16:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348601AbiEDLRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 07:17:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52072 "EHLO
+        id S1348628AbiEDLUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 07:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348017AbiEDLRa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 07:17:30 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC79E1570A
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 04:13:54 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nmCx5-0007x1-WD; Wed, 04 May 2022 13:13:52 +0200
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nmCx5-0000lH-72; Wed, 04 May 2022 13:13:51 +0200
-Date:   Wed, 4 May 2022 13:13:51 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Fabio Estevam <festevam@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: Re: imx6sx: Regression on FEC with KSZ8061
-Message-ID: <20220504111351.GA2812@pengutronix.de>
-References: <CAOMZO5BwYSgMZYHJcxV9bLcSQ2jjdFL47qr8o8FUj75z8SdhrQ@mail.gmail.com>
- <CAOMZO5AJRTfja47xGG6nzLdC7Bdr=r5K0FVCcgMvN05XSb7LhA@mail.gmail.com>
+        with ESMTP id S236569AbiEDLUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 07:20:04 -0400
+Received: from pegase2.c-s.fr (pegase2.c-s.fr [93.17.235.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A06205FB;
+        Wed,  4 May 2022 04:16:25 -0700 (PDT)
+Received: from localhost (mailhub3.si.c-s.fr [172.26.127.67])
+        by localhost (Postfix) with ESMTP id 4KtZ5h2f9Xz9sT2;
+        Wed,  4 May 2022 13:16:24 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from pegase2.c-s.fr ([172.26.127.65])
+        by localhost (pegase2.c-s.fr [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 3OgEBuh8_rtE; Wed,  4 May 2022 13:16:24 +0200 (CEST)
+Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
+        by pegase2.c-s.fr (Postfix) with ESMTP id 4KtZ5h1rF1z9sSD;
+        Wed,  4 May 2022 13:16:24 +0200 (CEST)
+Received: from localhost (localhost [127.0.0.1])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 2E4EC8B77C;
+        Wed,  4 May 2022 13:16:24 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at c-s.fr
+Received: from messagerie.si.c-s.fr ([127.0.0.1])
+        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
+        with ESMTP id RxcPznheMaGs; Wed,  4 May 2022 13:16:24 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (unknown [172.25.230.108])
+        by messagerie.si.c-s.fr (Postfix) with ESMTP id 172FE8B763;
+        Wed,  4 May 2022 13:16:24 +0200 (CEST)
+Received: from PO20335.IDSI0.si.c-s.fr (localhost [127.0.0.1])
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.16.1) with ESMTPS id 244BGEBg927179
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+        Wed, 4 May 2022 13:16:14 +0200
+Received: (from chleroy@localhost)
+        by PO20335.IDSI0.si.c-s.fr (8.17.1/8.17.1/Submit) id 244BGE35927178;
+        Wed, 4 May 2022 13:16:14 +0200
+X-Authentication-Warning: PO20335.IDSI0.si.c-s.fr: chleroy set sender to christophe.leroy@csgroup.eu using -f
+From:   Christophe Leroy <christophe.leroy@csgroup.eu>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH net-next v3] sungem: Prepare cleanup of powerpc's asm/prom.h
+Date:   Wed,  4 May 2022 13:16:09 +0200
+Message-Id: <f7a7fab3ec5edf803d934fca04df22631c2b449d.1651662885.git.christophe.leroy@csgroup.eu>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <CAOMZO5AJRTfja47xGG6nzLdC7Bdr=r5K0FVCcgMvN05XSb7LhA@mail.gmail.com>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 13:12:32 up 34 days, 23:42, 79 users,  load average: 0.19, 0.23,
- 0.20
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1651662968; l=2008; s=20211009; h=from:subject:message-id; bh=Luxz3CI0X86f0cpDKOj97aRMoq955XBygd8j9a/N7/U=; b=bOB5uLP2V5q2FWHwutM2/z/oRH3RS+IPj0knXAsREp9/X8XPmnfMzI9wYeMbtryOIedU0tSQ+Ko8 AEU3kjtUDFLPvmXUEKpX4OoidOFqAYHXg33/hg0zdbcBj1cU9CUf
+X-Developer-Key: i=christophe.leroy@csgroup.eu; a=ed25519; pk=HIzTzUj91asvincQGOFx6+ZF5AoUuP9GdOtQChs7Mm0=
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 04, 2022 at 07:48:56AM -0300, Fabio Estevam wrote:
-> On Wed, May 4, 2022 at 7:24 AM Fabio Estevam <festevam@gmail.com> wrote:
-> >
-> > Hi,
-> >
-> > On an imx6sx-based board, the Ethernet is functional on 5.10.
-> >
-> > The board has a KSZ8061 Ethernet PHY.
-> >
-> > After moving to kernel 5.15 or 5.17, the Ethernet is no longer functional:
-> >
-> > # udhcpc -i eth0
-> > udhcpc: started, v1.35.0
-> > 8<--- cut here ---
-> > Unable to handle kernel NULL pointer dereference at virtual address 00000008
-> > pgd = f73cef4e
-> > [00000008] *pgd=00000000
-> > Internal error: Oops: 5 [#1] SMP ARM
-> > Modules linked in:
-> > CPU: 0 PID: 196 Comm: ifconfig Not tainted 5.15.37-dirty #94
-> > Hardware name: Freescale i.MX6 SoloX (Device Tree)
-> > PC is at kszphy_config_reset+0x10/0x114
-> 
-> By adding this change, we can see that priv is NULL:
-> 
-> --- a/drivers/net/phy/micrel.c
-> +++ b/drivers/net/phy/micrel.c
-> @@ -508,8 +508,12 @@ static int kszphy_nand_tree_disable(struct phy_device *phyd
-> ev)
->  /* Some config bits need to be set again on resume, handle them here. */
->  static int kszphy_config_reset(struct phy_device *phydev)
->  {
-> -       struct kszphy_priv *priv = phydev->priv;
->         int ret;
-> +       struct kszphy_priv *priv = phydev->priv;
-> +       if (!priv) {
-> +               pr_err("*********** priv is NULL\n");
-> +               return -ENOMEM;
-> +       }
+powerpc's <asm/prom.h> includes some headers that it doesn't
+need itself.
 
-Hm.. KSZ8061 do not calls probe, so priv is not allocated.
+In order to clean powerpc's <asm/prom.h> up in a further step,
+first clean all files that include <asm/prom.h>
 
-Regards,
-Oleksij
+sungem_phy.c doesn't use any object provided by <asm/prom.h>.
+
+But removing inclusion of <asm/prom.h> leads to the following
+errors:
+
+  CC      drivers/net/sungem_phy.o
+drivers/net/sungem_phy.c: In function 'bcm5421_init':
+drivers/net/sungem_phy.c:448:42: error: implicit declaration of function 'of_get_parent'; did you mean 'dget_parent'? [-Werror=implicit-function-declaration]
+  448 |                 struct device_node *np = of_get_parent(phy->platform_data);
+      |                                          ^~~~~~~~~~~~~
+      |                                          dget_parent
+drivers/net/sungem_phy.c:448:42: warning: initialization of 'struct device_node *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+drivers/net/sungem_phy.c:450:35: error: implicit declaration of function 'of_get_property' [-Werror=implicit-function-declaration]
+  450 |                 if (np == NULL || of_get_property(np, "no-autolowpower", NULL))
+      |                                   ^~~~~~~~~~~~~~~
+
+Remove <asm/prom.h> from included headers but add <linux/of.h> to
+handle the above.
+
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+---
+v3: Make a more specific commit message
+
+v2: More detailed commit description
+---
+ drivers/net/sungem_phy.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
+
+diff --git a/drivers/net/sungem_phy.c b/drivers/net/sungem_phy.c
+index 4daac5fda073..ff22b6b1c686 100644
+--- a/drivers/net/sungem_phy.c
++++ b/drivers/net/sungem_phy.c
+@@ -29,11 +29,7 @@
+ #include <linux/mii.h>
+ #include <linux/ethtool.h>
+ #include <linux/delay.h>
+-
+-#ifdef CONFIG_PPC_PMAC
+-#include <asm/prom.h>
+-#endif
+-
++#include <linux/of.h>
+ #include <linux/sungem_phy.h>
+ 
+ /* Link modes of the BCM5400 PHY */
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+2.35.1
+
