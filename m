@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBA8451B16A
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 23:54:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89BE551B16C
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 23:54:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239489AbiEDV6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 17:58:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50568 "EHLO
+        id S1354418AbiEDV6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 17:58:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239641AbiEDV57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 17:57:59 -0400
+        with ESMTP id S1351153AbiEDV6C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 17:58:02 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F9E65007E
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 14:54:22 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8230751596
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 14:54:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651701262; x=1683237262;
+  t=1651701263; x=1683237263;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=1oOaevUEUkpa5jtiPU0dj9G8Vpovcb/v0acu1kMD198=;
-  b=eV5C0prtPP8pLUzAVG0K7N2+paS0yoEIa+Cl4P1Fh3K7BGv36x3Zaw10
-   oi4MGsEDPol55nF0Qsgpkbfeg0MCdGKdzZNTIHMwvbUcgvCnoId1W5IR8
-   8J6IGpBgLd/CzAJqyZXTdjqomFL60mmbk0k/v4OIz9/uJkFnIj3iYYTZ0
-   qYtupn00JOzhf5SvqIEw3CbX5pLxY/9MWT6dY0h3jX8/ula7ky7HJX+WH
-   7jkFPMeWt+OqyYH0+1nkIw58tErtSmgs+0fewZ7X0bpNDMIyBWW8sjdza
-   u+g2Ui6llwL4IzLBYqtqZkAXKpaNx2x3NTf0L7EAHLVOnlrWmYEtJmhsD
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="248445430"
+  bh=rAc1/rLJSR1p6poXeUKLegm8cyFurQp8xHNbpGX67OY=;
+  b=K2qIN26Y6b5m+KssxVfX9nnM9Seztae2GO4AV9VQ5h1UrvwxAJ+FDg3R
+   bz42UVQrZmOyIayE3Qw2pj+N1isI/0r5mzZs4symGdQN/Cozv1qZmUYQK
+   b9HDL74IiqLJzuwoseOTTEBiuYrDS5hZv10i+QC//dpufzF6BYOsA7KRQ
+   iaELtaXWT7Q+NAQbyApnrRTnF7oAp8frwSw/0+dAx3sRdMQA9XJ59Yspl
+   UJJfwlK/pcSBtihWBMCDBakl6uEbL8Nm683HD9IHqQhwl6cii9B/GybZf
+   QHTJCwVp3XxaB4i9K4WSzqeAXHMrxfbvUNfDwNGB0LEg/FaeEfHI9N/ef
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="248445431"
 X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="248445430"
+   d="scan'208";a="248445431"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 14:54:22 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 14:54:23 -0700
 X-IronPort-AV: E=Sophos;i="5.91,199,1647327600"; 
-   d="scan'208";a="621000382"
+   d="scan'208";a="621000387"
 Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.212.251.111])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 14:54:20 -0700
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 14:54:22 -0700
 From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
 Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
         kuba@kernel.org, edumazet@google.com, matthieu.baerts@tessares.net,
         mptcp@lists.linux.dev,
         Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 4/5] mptcp: never shrink offered window
-Date:   Wed,  4 May 2022 14:54:07 -0700
-Message-Id: <20220504215408.349318-5-mathew.j.martineau@linux.intel.com>
+Subject: [PATCH net-next 5/5] mptcp: add more offered MIBs counter
+Date:   Wed,  4 May 2022 14:54:08 -0700
+Message-Id: <20220504215408.349318-6-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220504215408.349318-1-mathew.j.martineau@linux.intel.com>
 References: <20220504215408.349318-1-mathew.j.martineau@linux.intel.com>
@@ -62,155 +62,72 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paolo Abeni <pabeni@redhat.com>
 
-As per RFC, the offered MPTCP-level window should never shrink.
-While we currently track the right edge, we don't enforce the
-above constraint on the wire.
-Additionally, concurrent xmit on different subflows can end-up in
-erroneous right edge update.
-Address the above explicitly updating the announced window and
-protecting the update with an additional atomic operation (sic)
+Track the exceptional handling of MPTCP-level offered window
+with a few more counters for observability.
 
 Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 ---
- net/mptcp/options.c  | 52 ++++++++++++++++++++++++++++++++++++++------
- net/mptcp/protocol.c |  8 +++----
- net/mptcp/protocol.h |  2 +-
- 3 files changed, 50 insertions(+), 12 deletions(-)
+ net/mptcp/mib.c     | 3 +++
+ net/mptcp/mib.h     | 5 +++++
+ net/mptcp/options.c | 6 +++++-
+ 3 files changed, 13 insertions(+), 1 deletion(-)
 
+diff --git a/net/mptcp/mib.c b/net/mptcp/mib.c
+index 6a6f8151375a..0dac2863c6e1 100644
+--- a/net/mptcp/mib.c
++++ b/net/mptcp/mib.c
+@@ -57,6 +57,9 @@ static const struct snmp_mib mptcp_snmp_list[] = {
+ 	SNMP_MIB_ITEM("SubflowStale", MPTCP_MIB_SUBFLOWSTALE),
+ 	SNMP_MIB_ITEM("SubflowRecover", MPTCP_MIB_SUBFLOWRECOVER),
+ 	SNMP_MIB_ITEM("SndWndShared", MPTCP_MIB_SNDWNDSHARED),
++	SNMP_MIB_ITEM("RcvWndShared", MPTCP_MIB_RCVWNDSHARED),
++	SNMP_MIB_ITEM("RcvWndConflictUpdate", MPTCP_MIB_RCVWNDCONFLICTUPDATE),
++	SNMP_MIB_ITEM("RcvWndConflict", MPTCP_MIB_RCVWNDCONFLICT),
+ 	SNMP_MIB_SENTINEL
+ };
+ 
+diff --git a/net/mptcp/mib.h b/net/mptcp/mib.h
+index 2411510bef66..2be3596374f4 100644
+--- a/net/mptcp/mib.h
++++ b/net/mptcp/mib.h
+@@ -50,6 +50,11 @@ enum linux_mptcp_mib_field {
+ 	MPTCP_MIB_SUBFLOWSTALE,		/* Subflows entered 'stale' status */
+ 	MPTCP_MIB_SUBFLOWRECOVER,	/* Subflows returned to active status after being stale */
+ 	MPTCP_MIB_SNDWNDSHARED,		/* Subflow snd wnd is overridden by msk's one */
++	MPTCP_MIB_RCVWNDSHARED,		/* Subflow rcv wnd is overridden by msk's one */
++	MPTCP_MIB_RCVWNDCONFLICTUPDATE,	/* subflow rcv wnd is overridden by msk's one due to
++					 * conflict with another subflow while updating msk rcv wnd
++					 */
++	MPTCP_MIB_RCVWNDCONFLICT,	/* Conflict with while updating msk rcv wnd */
+ 	__MPTCP_MIB_MAX
+ };
+ 
 diff --git a/net/mptcp/options.c b/net/mptcp/options.c
-index 2570911735ab..3e3156cfe813 100644
+index 3e3156cfe813..ac3b7b8a02f6 100644
 --- a/net/mptcp/options.c
 +++ b/net/mptcp/options.c
-@@ -1224,20 +1224,58 @@ bool mptcp_incoming_options(struct sock *sk, struct sk_buff *skb)
- 	return true;
- }
+@@ -1248,8 +1248,11 @@ static void mptcp_set_rwin(struct tcp_sock *tp, struct tcphdr *th)
  
--static void mptcp_set_rwin(const struct tcp_sock *tp)
-+static void mptcp_set_rwin(struct tcp_sock *tp, struct tcphdr *th)
- {
- 	const struct sock *ssk = (const struct sock *)tp;
--	const struct mptcp_subflow_context *subflow;
-+	struct mptcp_subflow_context *subflow;
-+	u64 ack_seq, rcv_wnd_old, rcv_wnd_new;
- 	struct mptcp_sock *msk;
--	u64 ack_seq;
-+	u32 new_win;
-+	u64 win;
- 
- 	subflow = mptcp_subflow_ctx(ssk);
- 	msk = mptcp_sk(subflow->conn);
- 
--	ack_seq = READ_ONCE(msk->ack_seq) + tp->rcv_wnd;
-+	ack_seq = READ_ONCE(msk->ack_seq);
-+	rcv_wnd_new = ack_seq + tp->rcv_wnd;
-+
-+	rcv_wnd_old = atomic64_read(&msk->rcv_wnd_sent);
-+	if (after64(rcv_wnd_new, rcv_wnd_old)) {
-+		u64 rcv_wnd;
- 
--	if (after64(ack_seq, READ_ONCE(msk->rcv_wnd_sent)))
--		WRITE_ONCE(msk->rcv_wnd_sent, ack_seq);
-+		for (;;) {
-+			rcv_wnd = atomic64_cmpxchg(&msk->rcv_wnd_sent, rcv_wnd_old, rcv_wnd_new);
-+
-+			if (rcv_wnd == rcv_wnd_old)
-+				break;
-+			if (before64(rcv_wnd_new, rcv_wnd))
-+				goto raise_win;
-+			rcv_wnd_old = rcv_wnd;
-+		}
-+		return;
-+	}
-+
-+	if (rcv_wnd_new != rcv_wnd_old) {
-+raise_win:
-+		win = rcv_wnd_old - ack_seq;
-+		tp->rcv_wnd = min_t(u64, win, U32_MAX);
-+		new_win = tp->rcv_wnd;
-+
-+		/* Make sure we do not exceed the maximum possible
-+		 * scaled window.
-+		 */
-+		if (unlikely(th->syn))
-+			new_win = min(new_win, 65535U) << tp->rx_opt.rcv_wscale;
-+		if (!tp->rx_opt.rcv_wscale &&
-+		    sock_net(ssk)->ipv4.sysctl_tcp_workaround_signed_windows)
-+			new_win = min(new_win, MAX_TCP_WINDOW);
-+		else
-+			new_win = min(new_win, (65535U << tp->rx_opt.rcv_wscale));
-+
-+		/* RFC1323 scaling applied */
-+		new_win >>= tp->rx_opt.rcv_wscale;
-+		th->window = htons(new_win);
-+	}
- }
- 
- u16 __mptcp_make_csum(u64 data_seq, u32 subflow_seq, u16 data_len, __wsum sum)
-@@ -1554,7 +1592,7 @@ void mptcp_write_options(struct tcphdr *th, __be32 *ptr, struct tcp_sock *tp,
- 	}
- 
- 	if (tp)
--		mptcp_set_rwin(tp);
-+		mptcp_set_rwin(tp, th);
- }
- 
- __be32 mptcp_get_reset_option(const struct sk_buff *skb)
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 6710960b74f3..7339448ecbee 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -216,7 +216,7 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
- 
- 	seq = MPTCP_SKB_CB(skb)->map_seq;
- 	end_seq = MPTCP_SKB_CB(skb)->end_seq;
--	max_seq = READ_ONCE(msk->rcv_wnd_sent);
-+	max_seq = atomic64_read(&msk->rcv_wnd_sent);
- 
- 	pr_debug("msk=%p seq=%llx limit=%llx empty=%d", msk, seq, max_seq,
- 		 RB_EMPTY_ROOT(&msk->out_of_order_queue));
-@@ -225,7 +225,7 @@ static void mptcp_data_queue_ofo(struct mptcp_sock *msk, struct sk_buff *skb)
- 		mptcp_drop(sk, skb);
- 		pr_debug("oow by %lld, rcv_wnd_sent %llu\n",
- 			 (unsigned long long)end_seq - (unsigned long)max_seq,
--			 (unsigned long long)msk->rcv_wnd_sent);
-+			 (unsigned long long)atomic64_read(&msk->rcv_wnd_sent));
- 		MPTCP_INC_STATS(sock_net(sk), MPTCP_MIB_NODSSWINDOW);
+ 			if (rcv_wnd == rcv_wnd_old)
+ 				break;
+-			if (before64(rcv_wnd_new, rcv_wnd))
++			if (before64(rcv_wnd_new, rcv_wnd)) {
++				MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_RCVWNDCONFLICTUPDATE);
+ 				goto raise_win;
++			}
++			MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_RCVWNDCONFLICT);
+ 			rcv_wnd_old = rcv_wnd;
+ 		}
  		return;
+@@ -1275,6 +1278,7 @@ static void mptcp_set_rwin(struct tcp_sock *tp, struct tcphdr *th)
+ 		/* RFC1323 scaling applied */
+ 		new_win >>= tp->rx_opt.rcv_wscale;
+ 		th->window = htons(new_win);
++		MPTCP_INC_STATS(sock_net(ssk), MPTCP_MIB_RCVWNDSHARED);
  	}
-@@ -3004,7 +3004,7 @@ struct sock *mptcp_sk_clone(const struct sock *sk,
- 		mptcp_crypto_key_sha(msk->remote_key, NULL, &ack_seq);
- 		ack_seq++;
- 		WRITE_ONCE(msk->ack_seq, ack_seq);
--		WRITE_ONCE(msk->rcv_wnd_sent, ack_seq);
-+		atomic64_set(&msk->rcv_wnd_sent, ack_seq);
- 	}
+ }
  
- 	sock_reset_flag(nsk, SOCK_RCU_FREE);
-@@ -3297,9 +3297,9 @@ void mptcp_finish_connect(struct sock *ssk)
- 	WRITE_ONCE(msk->write_seq, subflow->idsn + 1);
- 	WRITE_ONCE(msk->snd_nxt, msk->write_seq);
- 	WRITE_ONCE(msk->ack_seq, ack_seq);
--	WRITE_ONCE(msk->rcv_wnd_sent, ack_seq);
- 	WRITE_ONCE(msk->can_ack, 1);
- 	WRITE_ONCE(msk->snd_una, msk->write_seq);
-+	atomic64_set(&msk->rcv_wnd_sent, ack_seq);
- 
- 	mptcp_pm_new_connection(msk, ssk, 0);
- 
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index f542aeaa5b09..4672901d0dfe 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -257,7 +257,7 @@ struct mptcp_sock {
- 	u64		write_seq;
- 	u64		snd_nxt;
- 	u64		ack_seq;
--	u64		rcv_wnd_sent;
-+	atomic64_t	rcv_wnd_sent;
- 	u64		rcv_data_fin_seq;
- 	int		rmem_fwd_alloc;
- 	struct sock	*last_snd;
 -- 
 2.36.0
 
