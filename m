@@ -2,114 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8423D5197D0
+	by mail.lfdr.de (Postfix) with ESMTP id CC9D35197D1
 	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:04:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345183AbiEDHHS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 03:07:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33854 "EHLO
+        id S1345192AbiEDHHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 03:07:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345196AbiEDHHM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:07:12 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2042.outbound.protection.outlook.com [40.107.244.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA4D122B38
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:03:23 -0700 (PDT)
+        with ESMTP id S1345199AbiEDHHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:07:13 -0400
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2081.outbound.protection.outlook.com [40.107.100.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F086222B30
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:03:22 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=c5WSavId0XlZShxraAp7U68TMWTYGXlc5i3ns7XvFYVEiFAKlmnBSATWp6EIrCikTu4aGGLdP/J78hr6Y7Q9/ZzBnI4DSICxIxRPvNq2dag7go38qjH2lLJkO9nx1dyH2fDoo8f4KGw4jWma3sYtUgRyEG3TntX1YljjFYAiMcAzH4+/6TtmgWqV5rTnjRxQw5MM+bKsZbISESaZPf3kWq+es1qbLLIGkZ83lFQIe99yHpGisAFBuvUfsyXBs1WQRJNx733wl654qJ7lCQoOVkfc1psrcB9ad0BXg4bFSTQAWIQ682aMPt5HL0qKhE2fRCVvZpCyNV13+4zO4JTBhg==
+ b=Mm6Y6PCEqeNoa+mc3JhJxWrtRp0uqLAtySIGPp+9B4lBhzRcELdbuw/SkeDYYkpRW/Nw0LA9u+VPKOQxBwLnFCXABt4OYu9hAZZ0loyQ6SJhI2uZexFWIuvcLLdy6f2Q4z5m1/qgOkdgZkCDngasDkJH7ZFrbwDbYUdg1bViRzH9YCemrP3o9jNKuixVJEGmh93lu9/pL3+PnUZY6XvkldfrfuyeLoS+FHMADQJKkIWmTF6amtaDrKzvxmixlVbirCjmTbPoEmcuxnYtMIw6fKsfKYwMl2ZoCNOJWRill50rp/YI7kn2IGXH2SK+iBbybjCGz9QCAIlCOxt+fSOtCQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DI6SUVLleVSOWcOV7yWnd2UKBWNU2/a03LcMBYkZPRk=;
- b=PEPjCPKPEwzag4H2p/Sujd6/8AhVnzbBoFUcO6w2gzpSWxoLIVUKDWiyORLFG4H3kHts/sOkyl3/BDMlOrqgbiGcQ5jat9sDQ8PGA207Y56Ri7Xeal26RxU7l7i4yrWfMBoJOa6+4PvGi9bL73Z1AXbSACJ3Sfhy5GR0H5B1XGSk1TiH90isxDsw4HLErR0X77jXEff2jXS7iILyxcoTRnfwOxS2ySrEt49E7aEgEsGZ9hrfJS5xJWefdNSZ1arLxchiIjs3b90gIokYTvm8MM763Hlkpak5OnNB94aYmc7+f/NzQO+BK+PW+YpIwL2KFBEPK2xrGCQ7xFrOdGTiMg==
+ bh=txD2HR4bLEvfrDFDRzWO27G2EgIdtuZSHMdDKWwTxQA=;
+ b=fFeXuSiC/+kMXyzbQo95gP87IRTgnlhcZdizafqWcb9/ybdxhDnt8nBAGYBuqjjoCuLp+awzUqwcO/BQwd2SRAJcsDoRAY0FuSZaOW/+zdiQx80o2OZtVQiNtilbemgbm/temVv1ODhKbQz8C0IyEPU3bNReqvsUiW7m02HjgtkOmZtfgMtPZxm2Eyl/3FJR+rlmbfrL2zZnzFK8D4LRTiJBCio5bwKJqeXuP32DEmvmmhSK48GTRRXWHPxoZYSOOH+d6Wr5cgovoBNBC1fWbakZmDp4jItHe24cuEDaB2Ug1BxziIr2xEdmWUqsgGXxQ5f02KLiOFgiX5LHA5+KIw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DI6SUVLleVSOWcOV7yWnd2UKBWNU2/a03LcMBYkZPRk=;
- b=qtXU15tjhZ6HgFHyo3rPcZIx8tKoMe7MKj5W1jHep8AZUbnH5yLkgg7Qm0ztVZQKbMFA8w7D+Bf8iJE6+aIJAS1DFz9YwPbSsXuJjVvq7q2pCi08SMVzjnzfbq21PLaYZqPDdfKmt2VIkkTK6Zlvcf1nVvs3XmhJZoZ/oRsGpvoVIV94X3Iu4JHBqlzm4ibDppEpKQpw6SpuJnpx3ZxiDyhwMNGrPXxj+I1WVFGnSawrTmy04HZj6/AwceKsSBryp8FM4D2IYBvW7FGzUL7KrHtTLTdd6s7Af67wLhAB/IPt++JXL1VAhby8NlRoi5AbWSteVAuMu/8kowtSH1sCfg==
+ bh=txD2HR4bLEvfrDFDRzWO27G2EgIdtuZSHMdDKWwTxQA=;
+ b=tG3BQrPJ+AdnMDmtz3Itql07EKRHMjHIew5NU37UGyOfwkNDSAJ/+qZrQmuGLSb2L7pc1iMdoqLzBSf96AfD5q98NizFESwqDQn0EYYfJO2qjLraH2ut2IirJweuylqBAxiwwKOcYU2/yXLYEtWsPZLW1fXdF6k9Uevexj9hfACu3dVUQjWb/Mphn3gBBB9a71fz4aj9dNlLnp3mg4+7VKVkeWJwu4pzKWyVanaJh7gSCq2OoOCqGpTMF6eF1gDGjn739MYBaak8sSS54ydDVIKLnyntQisvmAmc1yEewiO94RAp9cPNkQhIpqD6zGAWX59XSj29AFYSPFk11G3Mkw==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
- by PH7PR12MB6586.namprd12.prod.outlook.com (2603:10b6:510:212::21) with
+ by MN2PR12MB4503.namprd12.prod.outlook.com (2603:10b6:208:264::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5186.28; Wed, 4 May
- 2022 07:03:19 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Wed, 4 May
+ 2022 07:03:21 +0000
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5206.025; Wed, 4 May 2022
- 07:03:19 +0000
+ 07:03:20 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Vlad Buslov <vladbu@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Ariel Levkovich <lariel@nvidia.com>,
+        Paul Blakey <paulb@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Maor Dickman <maord@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 07/15] net/mlx5e: Lag, Don't skip fib events on current dst
-Date:   Wed,  4 May 2022 00:02:48 -0700
-Message-Id: <20220504070256.694458-8-saeedm@nvidia.com>
+Subject: [net 08/15] net/mlx5e: TC, Fix ct_clear overwriting ct action metadata
+Date:   Wed,  4 May 2022 00:02:49 -0700
+Message-Id: <20220504070256.694458-9-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220504070256.694458-1-saeedm@nvidia.com>
 References: <20220504070256.694458-1-saeedm@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BYAPR06CA0012.namprd06.prod.outlook.com
- (2603:10b6:a03:d4::25) To BY5PR12MB4209.namprd12.prod.outlook.com
+X-ClientProxiedBy: SJ0PR13CA0018.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c0::23) To BY5PR12MB4209.namprd12.prod.outlook.com
  (2603:10b6:a03:20d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a54712e2-1175-4dc9-f51c-08da2d9c2baf
-X-MS-TrafficTypeDiagnostic: PH7PR12MB6586:EE_
-X-Microsoft-Antispam-PRVS: <PH7PR12MB65865B49F07ED475B04E9B86B3C39@PH7PR12MB6586.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 008d5fef-bcb0-4cd6-ee26-08da2d9c2c4a
+X-MS-TrafficTypeDiagnostic: MN2PR12MB4503:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB450350FE22E524C7D776ACD9B3C39@MN2PR12MB4503.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1Dnr1dUKY0k08kzzW0Gavmvzwe4Rg+BeYy6NOYjn4tHtOT3HgAkTXebJX/eOqlU4H7EWMoAnFH4DLiKQ2qGA+y+rwinchcTQqBzA8ElCq0JTkAaRObqxv+VDbyROWwtrHLkBdqPvOrmi9y+2D4epMQdFTL//OwRuhour0F9x8S7KdKuNhieAiguwyYCOpoejJEOShNxlUPoeAgC44FX86/SgNG8qIl7MPBR/NMR2ef2/gDKTIcLT56Wm+PHbT8tzgG3DK/N1VqES6fS6l9a8ec5WDvg/f5x1xj5abPG0l1eSwmFqHklnIQcvGo8Pfgf5fYvpgtsxpkQD86OaAcIANBKZJRHAgGJG00WKiWwsuYEwnnPYR+Mf9wHrv0472uCgsXTAaZBB795AnWdCxgWTicBkwI0i9tp9o+ppwFm6+p8TnhXi19wTeuK+C93cdJWjlOgv+fTGniFw/C9SwSqGNuLS1JRCD3lc/VGnE+P724fhzaiZffJWfzynve3BRl81LApKse+Brvyubz7eVYUfgB6vgXJNQj7HNu8lbanW5fJ3oEGTqxX6fMExpzsaw5lWW/Vgo5Y6o9sqJk3dek2RGQLG3FrNgZLxumARpQsiBbF6gkY9FAv9lZpwoaF8inw45i9tQ6C5k/hr75HZiUPL6A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(316002)(86362001)(83380400001)(36756003)(1076003)(107886003)(186003)(66556008)(66946007)(4326008)(66476007)(8676002)(2616005)(2906002)(8936002)(6512007)(6486002)(38100700002)(5660300002)(110136005)(54906003)(6506007)(508600001)(6666004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: o4Zw3McJFvYY09M7JBttNrUrsqTaxo75ZbY6oYnuG4Q0ZBwlE4xlbRoD6c7Owgyb1LcfEvmu+o1b6gC24USmL1p5pMrVlzkNyE7Uxixb76YLFA2ClSkxqYwnxuyXPnb6P3dlpg0JiZ4yJhhOi/eaHRXC4FaLKgoteQwYJMnmKLQVejhjdf5e4wMnukQ7ok+NAqnfjSdQE4HoI4Q88qqhh6XWiAZlwpoT4b8LbIe+kJYif3+GQnYcxynCVaQoFfODjWJqpSvpnrsCcVaMyGJX7j8TVjsbV3xHnGuImf8W01Ctde7P8125wU/2FHgdJjPE28xEVs3DvNNV3vpoCiO6TIDlq3Wjb9+WcEwINgY/ghtigrvIHPFCLTJMYHPLTbPqhsSNTLCc4KL51yglA3vMcaf7zAAK1B+LRIIjQSG5pVlRhF3zZiuzftv1Jm+Bia+BMtsRVGieexKF+3oMKvjR67GYUkRas6gVn7aCSOb/HlSrIinCrgiFN57cAKvmzUi2i+TuzBRyHDefJDtEzJuTZQ/WzkjOJG/kl0GzK7pHuVEKPoWgV3QF15X/D/UutfYUXQgmAnmigXY4xBicmi6RJaAKEgU0DShh0Lqy1qZVjLQKAbd34y8H/AXxCplhoVSuv3cWiWqfF2wsiiVUgxpblQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(107886003)(6506007)(2906002)(36756003)(8676002)(508600001)(6486002)(38100700002)(66946007)(4326008)(6512007)(66556008)(66476007)(86362001)(8936002)(316002)(5660300002)(186003)(54906003)(1076003)(110136005)(83380400001)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Hjii67Mk0XBM+nzESQi0Vea/Y+Zh5HzAc3ntjsFFRW65/d7e1efZqffwscqR?=
- =?us-ascii?Q?/7dd4A55fuKFD4Q8uvGCDR4n9RfPU9AzWAh/BCOSHI++XFK/rulFyx+7Oo2W?=
- =?us-ascii?Q?Ewo027zqh1gat+9O7JHBy5wfiRYKHD0yFs9gS1eKoHI9fax/gqP21iZuvIMU?=
- =?us-ascii?Q?6ve+eZ683tOShe+JaP5NktbHQzsRV/MnDzkPJzAB/lyJQd+fWSyx8o7QiNmX?=
- =?us-ascii?Q?uInvx46BuFtJt0vV91TtAyYkRwMVkQX70tb9DPems0+zThnRB9R2Git68uMo?=
- =?us-ascii?Q?oubwulArTaueCIQO6U3uQuHQ05h8qVsIuvovDuuHAMHicFOCXCABzQfAelvE?=
- =?us-ascii?Q?ZhCMzA16glq8Us9gIOsgADyrGQ37VOcVowZ3Ka7pmBoJtmjYjmda8ionKRG8?=
- =?us-ascii?Q?fl6qKMqV6QbvbWYjryEKlAoNMRMiWblRjNfwWZvpxkSyQgTwFG2rHGYDlRtj?=
- =?us-ascii?Q?0My9F9d80vvlyIjOwCJZQDnJQQUaO2Gjzfqt39edWIn2tinKliRkAeoINgzm?=
- =?us-ascii?Q?ZaGarzJW6XJCK72jF6C7ZHd1yu3T8BhRGq5iqlCX7cC4A4kO6ws09+uwhKDZ?=
- =?us-ascii?Q?Qt57ce1vEEqTAHrF9QdGin6n7MqofzJ7+/kDdwOv/0hVJvvhp5HiixJ+gb4Y?=
- =?us-ascii?Q?lLP/A3lgtllpwo2kVccuGEkvzGUaXFDePAPzW79H9g737iocnRtSxhU3hdkL?=
- =?us-ascii?Q?B9oW1OLwLkJBtLau9bOiyhhrgEaibe3WthPSmrwSOo2vRw3Tfrm8Jo1R6LcK?=
- =?us-ascii?Q?WwZcYli/G8eKseX7oqVb5UP+0lTWILUkLIoGGCUukPNuhRGUt8jAYe0eiOVm?=
- =?us-ascii?Q?MVggzwxYx6G762NANRENMjoupqI9FCuSN9L1BU24kDm4xGFbM5rVNVT9Vlfk?=
- =?us-ascii?Q?X8PH+NNsdAUoJMXLcyaF2erU/Wb4qv9ukWnmnt/v/L6ECf7mJBX7TkWekFs8?=
- =?us-ascii?Q?jYvmZJxygp9NCfvzNWnqRNwbVmIJgouKJd9LTDGH4lVkZNQ2anj1h0ZSaWOe?=
- =?us-ascii?Q?h/5Gy1uFJ7k8Gxa4gPfzaYMoYcZ8/HjqmAuVuiCVWTizOlTyxFVSuE3It193?=
- =?us-ascii?Q?v3dyOFpNO2RdHAbpQNYFi7yWSEUxo24O05rE4sWkuxQ0zVabSVPprTAM9wZF?=
- =?us-ascii?Q?hdPM7PJMqLNjw0YCcYondxMaWCv/Q9o+tvEQztrlxHFCgTbmovPtGIlz33Qr?=
- =?us-ascii?Q?+DWY+Z01liVmFQMLQ0tuyDNnWlKSOffleA/lRD5F8LNxsIWoNgwgYTnEH6xd?=
- =?us-ascii?Q?SF+NjUoqyqFiZxhjYTFM6GDHEwxcZ8P/nW3+zkbkfAnSxWWCRFfrfIrdsmBJ?=
- =?us-ascii?Q?ySgPjBWikZ3nT7ZS4au93BX48itcw2FDTTX257bPIhqhCnybGlWy3S4D4TP0?=
- =?us-ascii?Q?bMSMc0zn1QA7BeS1h1VxO92cfc/u14Zk/aJbHw72d+ZEqH/ALYUher3mjf6d?=
- =?us-ascii?Q?GOOrMzbtUiha58rCdVwFb4qCYAaB+ZBoHssf+IexyS6Q8t1zZdj0HcsO/u2F?=
- =?us-ascii?Q?QhoQZcHMUQCdlG7bObYtKOccbnanjEeiOl6nCKh+pJr/hAXAyus7BAoULXmk?=
- =?us-ascii?Q?j6NcjoG5F0pT04j2t0x/SmQMg4FFiSvUJpQZn5zEuqCkcYU/IYtvnfsFT4IY?=
- =?us-ascii?Q?Qx83zwUsFTMo9YkyjRugF0a0NQIecSpMeAw47jdgKljdhdn3ia4kiJhYVvNH?=
- =?us-ascii?Q?hRyqcK1EvT3dzINXQnC5lrvoxaNhbSmEana/BhzL88+CdXn40PTzidpN2h5m?=
- =?us-ascii?Q?ocxS7f/CQz8jQ1+ye0T/o8Im3StsrkOhh+LzHdYaaT/y3sTCTAzI?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7IKenUf/STFNMavTnwmmt5Mk7qDdWJe/yc2Xw2ZDWS5jdqWov4RM2QDw+hp5?=
+ =?us-ascii?Q?5O5xd7ZDD+KzRr/wGPz5Ppz3111EvlUxjI7gpBWqVAEl2r7c1TJYf+UFHUTC?=
+ =?us-ascii?Q?R4wKY3Kl6bSoorQLNaQQ6CIaSdXto/L/6rgNMuo6b7KfwTrsmYIEcITZOihK?=
+ =?us-ascii?Q?DwKvQ9g/xsl62f9Vr33y3clmo5p5kQlUUDXdZlNulf+0i9iPr33mbXkeaVUv?=
+ =?us-ascii?Q?63qqOCYQe879zZOFvK5fYxGvOSGIaf3pCTJcv70YQlED0HEp3o6mPF4C/xh5?=
+ =?us-ascii?Q?8ggtX1c0yPt7i5OwknpLLrK45IBvsG0rO/8fkiSMwZ5CUJU8eTNnbKFcuiTY?=
+ =?us-ascii?Q?TcMBIhy9YwbCzMsXW/w/Moypj+a/+bBOwiDKvYzQwihc8kjvQmFMrXFcx3IS?=
+ =?us-ascii?Q?CqYP/FZfMiF3bKW7A5dMK5NvXs4aRYCpE8oAePVxeBRexPhiHZzDxJMKJbek?=
+ =?us-ascii?Q?ND8A+G+47oKIr7Q6izB2BXkoDjqd7nHW0GphvLmLE1YLjdwxK32eck4KF+zI?=
+ =?us-ascii?Q?uu0ebNsR2ejimKfWfaMjAqGUNzetapstNl/8ho4qYgMItAXB89df6kry/2Es?=
+ =?us-ascii?Q?B91UurCB5ru2F9phH1rfy+fD3nUmVgpXabgxsKNDypjBqylIM+45bzzEo6Kp?=
+ =?us-ascii?Q?qf3SCimdRmOpvQVXgV5o7mRuNq/F7IZsRMwOwHgeXhJhqnCXB85LsWurHWJ8?=
+ =?us-ascii?Q?IvZNZjj6QwWNEfXW6kjBsK5L4I8I8BhjH+aY7JoOX6GJzkGnDPgogRQ4DuXJ?=
+ =?us-ascii?Q?nZ9J6Vjf9b/7f3OgonjOpvXC5/8oXSX1lNEgnIcuiXR2R/Be3MJDzF3KWduD?=
+ =?us-ascii?Q?Ln3A8uThjrArzTBe9euO7Wp924N06YKJfVhwu0mZbLtqeDcMBzRvXNliLwvf?=
+ =?us-ascii?Q?AJgldFmYpV1QMQe0zsheu0GXB5SV6MpEokDwvzv+oqO70ZVrmpkxNrbKeQ7S?=
+ =?us-ascii?Q?YMWuexGlALkmoPhl0fxrdDautrcP7aDLC6yF1aoQlSGqL6yjYjAhB7OALQmr?=
+ =?us-ascii?Q?/Lq2LlLsyJ0kyN59NxVORmoqFZWBWpZJRcKmioqJG/hxRrPDYTAxKeaJiUUn?=
+ =?us-ascii?Q?IZB/IvMNvOWzQ+RyylL4s+t5Jd+TsN0ZzIz0dGPay1Nr2pw5y4GOmgzDmXci?=
+ =?us-ascii?Q?Rlx4ZUJohxBkfsrum1YcrdbbTznnH2Wt26TLTyFXdjHTWOXMTt8CoQKMMYUK?=
+ =?us-ascii?Q?gRUvGWnrOdbS8v4XfXcELX7q8YqeTUCO3SxN1wB/jwyNVlSqHfyZICwhPkKh?=
+ =?us-ascii?Q?A7MS82oRww8iI5aDR2kFo9vMvNISlm8vjkL1pN2g4tQaF7S1H0pSsVaqsukU?=
+ =?us-ascii?Q?O0KbgjOZ9MQNlNV08Ed8F+5oia7xfi4kl7ekSThBT5NPmDII4XJHjy4dS4ee?=
+ =?us-ascii?Q?P6/hkWanyYHKEeFzgI4uMlaxkA1JPJLaGMJpce1c21E4PUxUwElTAdvzqP37?=
+ =?us-ascii?Q?TJ1xylBOZc56mbbP9q/SkNrxktSixB//pmzT4N5SgyjRBO5yDYR1pEZdliNV?=
+ =?us-ascii?Q?HSjGVNS5CsrJiEEqIiIpNNAYDc/6Mlq9YmCvvwpx/l5er/UTDDOR0W5tYXd1?=
+ =?us-ascii?Q?GtDS0//je39Zv8nzSpgwdEwcKFP5+bYFR9y19Zx9ysn7UZkWJDSGPt3FKUrt?=
+ =?us-ascii?Q?xNHaOWXLjvJdCYUpKQN4mhcXXii/+mKp7cGfxvBmSvIPuoumVqSaFbsAHRdy?=
+ =?us-ascii?Q?L4WnOXSRX6n5PHb1Mei2flhD1YRzmuT0fC2mOoLlNfLIsN91pMQ7SuLjgZCs?=
+ =?us-ascii?Q?BvYCjNzj8ijYdHQt6UFQru+IApf6atrIWBVemH2NtYCg4iFrZFSU?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a54712e2-1175-4dc9-f51c-08da2d9c2baf
+X-MS-Exchange-CrossTenant-Network-Message-Id: 008d5fef-bcb0-4cd6-ee26-08da2d9c2c4a
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:03:19.8685
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:03:20.8852
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UoZOP4yj5ukCqywKkUV6kZMoJlXaXnLDkt4/711ZCnqXl3kk2C6dtb8S9Azqwsvqw4UFx2PLPjgQizCGQN5i8g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB6586
+X-MS-Exchange-CrossTenant-UserPrincipalName: 118RzRYmssqeniFOdikQcyiFV5032bL7hs+FSIs+PqtIrCXZ87p9ODHRtutTgqpHTw4NNscYReJnInUbwnSOrg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4503
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -120,109 +121,170 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@nvidia.com>
+From: Ariel Levkovich <lariel@nvidia.com>
 
-Referenced change added check to skip updating fib when new fib instance
-has same or lower priority. However, new fib instance can be an update on
-same dst address as existing one even though the structure is another
-instance that has different address. Ignoring events on such instances
-causes multipath LAG state to not be correctly updated.
+ct_clear action is translated to clearing reg_c metadata
+which holds ct state and zone information using mod header
+actions.
+These actions are allocated during the actions parsing, as
+part of the flow attributes main mod header action list.
 
-Track 'dst' and 'dst_len' fields of fib event fib_entry_notifier_info
-structure and don't skip events that have the same value of that fields.
+If ct action exists in the rule, the flow's main mod header
+is used only in the post action table rule, after the ct tables
+which set the ct info in the reg_c as part of the ct actions.
 
-Fixes: ad11c4f1d8fd ("net/mlx5e: Lag, Only handle events from highest priority multipath entry")
-Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Therefore, if the original rule has a ct_clear action followed
+by a ct action, the ct action reg_c setting will be done first and
+will be followed by the ct_clear resetting reg_c and overwriting
+the ct info.
+
+Fix this by moving the ct_clear mod header actions allocation from
+the ct action parsing stage to the ct action post parsing stage where
+it is already known if ct_clear is followed by a ct action.
+In such case, we skip the mod header actions allocation for the ct
+clear since the ct action will write to reg_c anyway after clearing it.
+
+Fixes: 806401c20a0f ("net/mlx5e: CT, Fix multiple allocations and memleak of mod acts")
+Signed-off-by: Ariel Levkovich <lariel@nvidia.com>
+Reviewed-by: Paul Blakey <paulb@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Reviewed-by: Maor Dickman <maord@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/lag/mp.c  | 20 +++++++++++--------
- .../net/ethernet/mellanox/mlx5/core/lag/mp.h  |  2 ++
- 2 files changed, 14 insertions(+), 8 deletions(-)
+ .../mellanox/mlx5/core/en/tc/act/ct.c         | 34 +++++++++++++++++--
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.c    | 20 ++++-------
+ .../ethernet/mellanox/mlx5/core/en/tc_ct.h    | 11 ++++++
+ 3 files changed, 49 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-index 9a5884e8a8bf..d6c3e6dfd71f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c
-@@ -100,10 +100,12 @@ static void mlx5_lag_fib_event_flush(struct notifier_block *nb)
- 	flush_workqueue(mp->wq);
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+index b9d38fe807df..a829c94289c1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/act/ct.c
+@@ -45,12 +45,41 @@ tc_act_parse_ct(struct mlx5e_tc_act_parse_state *parse_state,
+ 	if (mlx5e_is_eswitch_flow(parse_state->flow))
+ 		attr->esw_attr->split_count = attr->esw_attr->out_count;
  
--static void mlx5_lag_fib_set(struct lag_mp *mp, struct fib_info *fi)
-+static void mlx5_lag_fib_set(struct lag_mp *mp, struct fib_info *fi, u32 dst, int dst_len)
- {
- 	mp->fib.mfi = fi;
- 	mp->fib.priority = fi->fib_priority;
-+	mp->fib.dst = dst;
-+	mp->fib.dst_len = dst_len;
- }
+-	if (!clear_action) {
++	if (clear_action) {
++		parse_state->ct_clear = true;
++	} else {
+ 		attr->flags |= MLX5_ATTR_FLAG_CT;
+ 		flow_flag_set(parse_state->flow, CT);
+ 		parse_state->ct = true;
+ 	}
+-	parse_state->ct_clear = clear_action;
++
++	return 0;
++}
++
++static int
++tc_act_post_parse_ct(struct mlx5e_tc_act_parse_state *parse_state,
++		     struct mlx5e_priv *priv,
++		     struct mlx5_flow_attr *attr)
++{
++	struct mlx5e_tc_mod_hdr_acts *mod_acts = &attr->parse_attr->mod_hdr_acts;
++	int err;
++
++	/* If ct action exist, we can ignore previous ct_clear actions */
++	if (parse_state->ct)
++		return 0;
++
++	if (parse_state->ct_clear) {
++		err = mlx5_tc_ct_set_ct_clear_regs(parse_state->ct_priv, mod_acts);
++		if (err) {
++			NL_SET_ERR_MSG_MOD(parse_state->extack,
++					   "Failed to set registers for ct clear");
++			return err;
++		}
++		attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
++
++		/* Prevent handling of additional, redundant clear actions */
++		parse_state->ct_clear = false;
++	}
  
- struct mlx5_fib_event_work {
-@@ -116,10 +118,10 @@ struct mlx5_fib_event_work {
- 	};
+ 	return 0;
+ }
+@@ -70,5 +99,6 @@ struct mlx5e_tc_act mlx5e_tc_act_ct = {
+ 	.can_offload = tc_act_can_offload_ct,
+ 	.parse_action = tc_act_parse_ct,
+ 	.is_multi_table_act = tc_act_is_multi_table_act_ct,
++	.post_parse = tc_act_post_parse_ct,
  };
  
--static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
--				     unsigned long event,
--				     struct fib_info *fi)
-+static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev, unsigned long event,
-+				     struct fib_entry_notifier_info *fen_info)
- {
-+	struct fib_info *fi = fen_info->fi;
- 	struct lag_mp *mp = &ldev->lag_mp;
- 	struct fib_nh *fib_nh0, *fib_nh1;
- 	unsigned int nhs;
-@@ -133,7 +135,9 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 	}
- 
- 	/* Handle multipath entry with lower priority value */
--	if (mp->fib.mfi && mp->fib.mfi != fi && fi->fib_priority >= mp->fib.priority)
-+	if (mp->fib.mfi && mp->fib.mfi != fi &&
-+	    (mp->fib.dst != fen_info->dst || mp->fib.dst_len != fen_info->dst_len) &&
-+	    fi->fib_priority >= mp->fib.priority)
- 		return;
- 
- 	/* Handle add/replace event */
-@@ -149,7 +153,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 
- 			i++;
- 			mlx5_lag_set_port_affinity(ldev, i);
--			mlx5_lag_fib_set(mp, fi);
-+			mlx5_lag_fib_set(mp, fi, fen_info->dst, fen_info->dst_len);
- 		}
- 
- 		return;
-@@ -179,7 +183,7 @@ static void mlx5_lag_fib_route_event(struct mlx5_lag *ldev,
- 	}
- 
- 	mlx5_lag_set_port_affinity(ldev, MLX5_LAG_NORMAL_AFFINITY);
--	mlx5_lag_fib_set(mp, fi);
-+	mlx5_lag_fib_set(mp, fi, fen_info->dst, fen_info->dst_len);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+index e49f51124c74..73a1e0a4818d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
+@@ -582,6 +582,12 @@ mlx5_tc_ct_entry_set_registers(struct mlx5_tc_ct_priv *ct_priv,
+ 	return 0;
  }
  
- static void mlx5_lag_fib_nexthop_event(struct mlx5_lag *ldev,
-@@ -220,7 +224,7 @@ static void mlx5_lag_fib_update(struct work_struct *work)
- 	case FIB_EVENT_ENTRY_REPLACE:
- 	case FIB_EVENT_ENTRY_DEL:
- 		mlx5_lag_fib_route_event(ldev, fib_work->event,
--					 fib_work->fen_info.fi);
-+					 &fib_work->fen_info);
- 		fib_info_put(fib_work->fen_info.fi);
- 		break;
- 	case FIB_EVENT_NH_ADD:
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.h b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.h
-index 143226753c3a..056a066da604 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/mp.h
-@@ -18,6 +18,8 @@ struct lag_mp {
- 	struct {
- 		const void        *mfi; /* used in tracking fib events */
- 		u32               priority;
-+		u32               dst;
-+		int               dst_len;
- 	} fib;
- 	struct workqueue_struct   *wq;
- };
++int mlx5_tc_ct_set_ct_clear_regs(struct mlx5_tc_ct_priv *priv,
++				 struct mlx5e_tc_mod_hdr_acts *mod_acts)
++{
++		return mlx5_tc_ct_entry_set_registers(priv, mod_acts, 0, 0, 0, 0);
++}
++
+ static int
+ mlx5_tc_ct_parse_mangle_to_mod_act(struct flow_action_entry *act,
+ 				   char *modact)
+@@ -1410,9 +1416,6 @@ mlx5_tc_ct_parse_action(struct mlx5_tc_ct_priv *priv,
+ 			const struct flow_action_entry *act,
+ 			struct netlink_ext_ack *extack)
+ {
+-	bool clear_action = act->ct.action & TCA_CT_ACT_CLEAR;
+-	int err;
+-
+ 	if (!priv) {
+ 		NL_SET_ERR_MSG_MOD(extack,
+ 				   "offload of ct action isn't available");
+@@ -1423,17 +1426,6 @@ mlx5_tc_ct_parse_action(struct mlx5_tc_ct_priv *priv,
+ 	attr->ct_attr.ct_action = act->ct.action;
+ 	attr->ct_attr.nf_ft = act->ct.flow_table;
+ 
+-	if (!clear_action)
+-		goto out;
+-
+-	err = mlx5_tc_ct_entry_set_registers(priv, mod_acts, 0, 0, 0, 0);
+-	if (err) {
+-		NL_SET_ERR_MSG_MOD(extack, "Failed to set registers for ct clear");
+-		return err;
+-	}
+-	attr->action |= MLX5_FLOW_CONTEXT_ACTION_MOD_HDR;
+-
+-out:
+ 	return 0;
+ }
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+index 36d3652bf829..00a3ba862afb 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.h
+@@ -129,6 +129,10 @@ bool
+ mlx5e_tc_ct_restore_flow(struct mlx5_tc_ct_priv *ct_priv,
+ 			 struct sk_buff *skb, u8 zone_restore_id);
+ 
++int
++mlx5_tc_ct_set_ct_clear_regs(struct mlx5_tc_ct_priv *priv,
++			     struct mlx5e_tc_mod_hdr_acts *mod_acts);
++
+ #else /* CONFIG_MLX5_TC_CT */
+ 
+ static inline struct mlx5_tc_ct_priv *
+@@ -170,6 +174,13 @@ mlx5_tc_ct_add_no_trk_match(struct mlx5_flow_spec *spec)
+ 	return 0;
+ }
+ 
++static inline int
++mlx5_tc_ct_set_ct_clear_regs(struct mlx5_tc_ct_priv *priv,
++			     struct mlx5e_tc_mod_hdr_acts *mod_acts)
++{
++	return -EOPNOTSUPP;
++}
++
+ static inline int
+ mlx5_tc_ct_parse_action(struct mlx5_tc_ct_priv *priv,
+ 			struct mlx5_flow_attr *attr,
 -- 
 2.35.1
 
