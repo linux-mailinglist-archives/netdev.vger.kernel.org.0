@@ -2,83 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6459251A07A
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 15:09:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E356951A082
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 15:15:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234168AbiEDNN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 09:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56520 "EHLO
+        id S1345020AbiEDNSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 09:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232915AbiEDNNZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 09:13:25 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C3402E9DF
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 06:09:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651669788;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rFg6Pcf9hLC/bvNHZtgNSUoCpWVM5fZPOHRggK9KPBY=;
-        b=JAfUtknEfYix2Ejnb+z5N26AN7Nzrq+nYdV27a7XeaC6eYdCOusyDbrx7qjQnA2puHp3ME
-        MiM0hQW22BEk+wM2GyscXyJ7z+NdGP7J7rYodBtWS+p5vyzK8BjoUVLhVzNJ0WfcRziSH1
-        SB1WB46NTYVV3QC0TPu2Ifn82gnemrk=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-324-NYCf7VTGNx2HSeta3e3sAg-1; Wed, 04 May 2022 09:09:47 -0400
-X-MC-Unique: NYCf7VTGNx2HSeta3e3sAg-1
-Received: by mail-wr1-f70.google.com with SMTP id u26-20020adfb21a000000b0020ac48a9aa4so354033wra.5
-        for <netdev@vger.kernel.org>; Wed, 04 May 2022 06:09:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=rFg6Pcf9hLC/bvNHZtgNSUoCpWVM5fZPOHRggK9KPBY=;
-        b=cjvssP1PvCSuF8eGzXvZWWECzb5yM7SOTnPtX3nvFUH49oekEkjYIP8ZqZ6cHp4K8n
-         Cq+vvTiji7GOdIpJN0sO6YdHW61bt3hr9fhxKhH5t+ivz581E2zdPrt/7PKXNVz0zRgi
-         +eZBipqddgW+HfgjNmToAj5rpxr3Ihq4GMqEVNHiW78cnfOD4aCca6uasgL1FQ9eE0/w
-         oEfFp3m6up2+MOMEH48yeW2MFQ31Ggo8ulVbMC7+06Iu6QVjNbzAupt8WRVoitTWoeLQ
-         4MKUV7chkjSddOhnezv/xUcwiHj1vKObPN02tBevKx62TIyeSX1X5/zP/pdsaxfz9mLX
-         S76w==
-X-Gm-Message-State: AOAM533r1y4fO3x7Bn9tGrW8UUbtl5bxlVE2Fbaz+Bn7iP8eeZYuAve9
-        u8qnfz816TQU2qdgP6dhQ03Uxv59RKc9qFF8YyipB4aJuT86b1hjYEVyjbP+aSm/sT5zfVFnYKS
-        4/nsPMOO9xDRk2cyj
-X-Received: by 2002:adf:eacf:0:b0:20a:c8c4:ac51 with SMTP id o15-20020adfeacf000000b0020ac8c4ac51mr16624116wrn.510.1651669785760;
-        Wed, 04 May 2022 06:09:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxfSUbwPLB6puSaYMJt/utbnn7soTRITSSpskar0giAb7st7IVHKLxkG9G6bKW9v7swgHwQwg==
-X-Received: by 2002:adf:eacf:0:b0:20a:c8c4:ac51 with SMTP id o15-20020adfeacf000000b0020ac8c4ac51mr16624102wrn.510.1651669785550;
-        Wed, 04 May 2022 06:09:45 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-115-66.dyn.eolo.it. [146.241.115.66])
-        by smtp.gmail.com with ESMTPSA id c17-20020a7bc011000000b003942a244f40sm3974352wmb.25.2022.05.04.06.09.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 06:09:44 -0700 (PDT)
-Message-ID: <d3d068eda5ef2d1ab818f01d7d07fab901363446.camel@redhat.com>
-Subject: Re: [PATCH v2] net: rds: acquire refcount on TCP sockets
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Eric Dumazet <edumazet@google.com>,
-        patchwork-bot+netdevbpf@kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-Date:   Wed, 04 May 2022 15:09:43 +0200
-In-Reply-To: <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
-References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
-         <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
-         <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S232915AbiEDNSo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 09:18:44 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1811DA79;
+        Wed,  4 May 2022 06:15:06 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nmEqL-0006Bi-QF; Wed, 04 May 2022 15:15:01 +0200
+Message-ID: <96e12c14-eb6d-ae07-916b-7785f9558c67@leemhuis.info>
+Date:   Wed, 4 May 2022 15:14:58 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: Intermittent performance regression related to ipset between 5.10
+ and 5.15
+Content-Language: en-US
+To:     "McLean, Patrick" <Patrick.Mclean@sony.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        netfilter-devel@vger.kernel.org,
+        "U'ren, Aaron" <Aaron.U'ren@sony.com>,
+        "Brown, Russell" <Russell.Brown@sony.com>,
+        "Rueger, Manuel" <manuel.rueger@sony.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>,
+        Florian Westphal <fw@strlen.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+References: <BY5PR13MB3604D24C813A042A114B639DEE109@BY5PR13MB3604.namprd13.prod.outlook.com>
+ <5e56c644-2311-c094-e099-cfe0d574703b@leemhuis.info>
+ <c28ed507-168e-e725-dddd-b81fadaf6aa5@leemhuis.info>
+ <b1bfbc2f-2a91-9d20-434d-395491994de@netfilter.org>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+In-Reply-To: <b1bfbc2f-2a91-9d20-434d-395491994de@netfilter.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1651670107;fcdbf9e4;
+X-HE-SMSGID: 1nmEqL-0006Bi-QF
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,61 +55,161 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-05-03 at 14:17 -0700, Eric Dumazet wrote:
-> On Tue, May 3, 2022 at 4:40 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
-> > 
-> > Hello:
-> > 
-> > This patch was applied to netdev/net.git (master)
-> > by Paolo Abeni <pabeni@redhat.com>:
-> > 
-> > On Mon, 2 May 2022 10:40:18 +0900 you wrote:
-> > > syzbot is reporting use-after-free read in tcp_retransmit_timer() [1],
-> > > for TCP socket used by RDS is accessing sock_net() without acquiring a
-> > > refcount on net namespace. Since TCP's retransmission can happen after
-> > > a process which created net namespace terminated, we need to explicitly
-> > > acquire a refcount.
-> > > 
-> > > Link: https://syzkaller.appspot.com/bug?extid=694120e1002c117747ed [1]
-> > > Reported-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
-> > > Fixes: 26abe14379f8e2fa ("net: Modify sk_alloc to not reference count the netns of kernel sockets.")
-> > > Fixes: 8a68173691f03661 ("net: sk_clone_lock() should only do get_net() if the parent is not a kernel socket")
-> > > Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-> > > Tested-by: syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>
-> > > 
-> > > [...]
-> > 
-> > Here is the summary with links:
-> >   - [v2] net: rds: acquire refcount on TCP sockets
-> >     https://git.kernel.org/netdev/net/c/3a58f13a881e
-> > 
-> > You are awesome, thank you!
-> > --
-> > Deet-doot-dot, I am a bot.
-> > https://korg.docs.kernel.org/patchwork/pwbot.html
-> > 
-> > 
+Hi, this is your Linux kernel regression tracker. Top-posting for once,
+to make this easily accessible to everyone.
+
+Patrick, did you see the comment from Jozsef? Are you having trouble
+providing additional data or what's the status here from your side? Or
+is that something we can forget?
+
+Ciao, Thorsten
+
+#regzbot poke
+
+On 11.04.22 13:47, Jozsef Kadlecsik wrote:
+> Hi,
 > 
-> I think we merged this patch too soon.
-
-My fault.
-
-
-> My question is : What prevents rds_tcp_conn_path_connect(), and thus
-> rds_tcp_tune() to be called
-> after the netns refcount already reached 0 ?
+> On Mon, 11 Apr 2022, Thorsten Leemhuis wrote:
 > 
-> I guess we can wait for next syzbot report, but I think that get_net()
-> should be replaced
-> by maybe_get_net()
+>> On 16.03.22 10:17, Thorsten Leemhuis wrote:
+>>> [TLDR: I'm adding the regression report below to regzbot, the Linux
+>>> kernel regression tracking bot; all text you find below is compiled from
+>>> a few templates paragraphs you might have encountered already already
+>>> from similar mails.]
+>>>
+>>> On 16.03.22 00:15, McLean, Patrick wrote:
+>>
+>>>> When we upgraded from the 5.10 (5.10.61) series to the 5.15 (5.15.16) 
+>>>> series, we encountered an intermittent performance regression that 
+>>>> appears to be related to iptables / ipset. This regression was 
+>>>> noticed on Kubernetes hosts that run kube-router and experience a 
+>>>> high amount of churn to both iptables and ipsets. Specifically, when 
+>>>> we run the nftables (iptables-1.8.7 / nftables-1.0.0) iptables 
+>>>> wrapper xtables-nft-multi on the 5.15 series kernel, we end up 
+>>>> getting extremely laggy response times when iptables attempts to 
+>>>> lookup information on the ipsets that are used in the iptables 
+>>>> definition. This issue isn’t reproducible on all hosts. However, our 
+>>>> experience has been that across a fleet of ~50 hosts we experienced 
+>>>> this issue on ~40% of the hosts. When the problem evidences, the time 
+>>>> that it takes to run unrestricted iptables list commands like 
+>>>> iptables -L or iptables-save gradually increases over the course of 
+>>>> about 1 - 2 hours. Growing from less than a second to run, to takin
+>>  g sometimes over 2 minutes to run. After that 2 hour mark it seems to 
+>>  plateau and not grow any longer. Flushing tables or ipsets doesn’t seem 
+>>  to have any affect on the issue. However, rebooting the host does reset 
+>>  the issue. Occasionally, a machine that was evidencing the problem may 
+>>  no longer evidence it after being rebooted.
+>>>>
+>>>> We did try to debug this to find a root cause, but ultimately ran 
+>>>> short on time. We were not able to perform a set of bisects to 
+>>>> hopefully narrow down the issue as the problem isn’t consistently 
+>>>> reproducible. We were able to get some straces where it appears that 
+>>>> most of the time is spent on getsockopt() operations. It appears that 
+>>>> during iptables operations, it attempts to do some work to resolve 
+>>>> the ipsets that are linked to the iptables definitions (perhaps 
+>>>> getting the names of the ipsets themselves?). Slowly that getsockopt 
+>>>> request takes more and more time on affected hosts. Here is an 
+>>>> example strace of the operation in question:
 > 
-Should we revert this patch before the next pull request, if a suitable
-incremental fix is not available by then?
-
-It looks like the window of opportunity for the race is roughly the
-same?
-
-Thanks!
-
-Paolo
-
+> Yes, iptables list/save have to get the names of the referenced sets and 
+> that is performed via getsockopt() calls.
+> 
+> I went through all of the ipset related patches between 5.10.6 (copy&paste 
+> error but just the range is larger) and 5.15.16 and as far as I see none 
+> of them can be responsible for the regression. More data is required to 
+> locate the source of the slowdown.
+> 
+> Best regards,
+> Jozsef
+> 
+>>>>
+>>>> 0.000074 newfstatat(AT_FDCWD, "/etc/nsswitch.conf", {st_mode=S_IFREG|0644, st_size=539, ...}, 0) = 0 <0.000017>
+>>>> 0.000064 openat(AT_FDCWD, "/var/db/protocols.db", O_RDONLY|O_CLOEXEC) = -1 ENOENT (No such file or directory) <0.000017>
+>>>> 0.000057 openat(AT_FDCWD, "/etc/protocols", O_RDONLY|O_CLOEXEC) = 4 <0.000013>
+>>>> 0.000034 newfstatat(4, "", {st_mode=S_IFREG|0644, st_size=6108, ...}, AT_EMPTY_PATH) = 0 <0.000009>
+>>>> 0.000032 lseek(4, 0, SEEK_SET)     = 0 <0.000008>
+>>>> 0.000025 read(4, "# /etc/protocols\n#\n# Internet (I"..., 4096) = 4096 <0.000010>
+>>>> 0.000036 close(4)                  = 0 <0.000008>
+>>>> 0.000028 write(1, "ANGME7BF25 - [0:0]\n:KUBE-POD-FW-"..., 4096) = 4096 <0.000028>
+>>>> 0.000049 socket(AF_INET, SOCK_RAW, IPPROTO_RAW) = 4 <0.000015>
+>>>> 0.000032 fcntl(4, F_SETFD, FD_CLOEXEC) = 0 <0.000008>
+>>>> 0.000024 getsockopt(4, SOL_IP, 0x53 /* IP_??? */, "\0\1\0\0\7\0\0\0", [8]) = 0 <0.000024>
+>>>> 0.000046 getsockopt(4, SOL_IP, 0x53 /* IP_??? */, "\7\0\0\0\7\0\0\0KUBE-DST-VBH27M7NWLDOZIE"..., [40]) = 0 <0.109384>
+>>>> 0.109456 close(4)                  = 0 <0.000022>
+>>>>
+>>>> On a host that is not evidencing the performance regression we 
+>>>> normally see that operation take ~ 0.00001 as opposed to 
+>>>> 0.109384.Additionally, hosts that were evidencing the problem we also 
+>>>> saw high lock times with `klockstat` (unfortunately at the time we 
+>>>> did not know about or run echo "0" > /proc/sys/kernel/kptr_restrict 
+>>>> to get the callers of the below commands).
+>>>>
+>>>> klockstat -i 5 -n 10 (on a host experiencing the problem)
+>>>> Caller   Avg Hold  Count   Max hold Total hold
+>>>> b'[unknown]'  118490772     83  179899470 9834734132
+>>>> b'[unknown]'  118416941     83  179850047 9828606138
+>>>> # or somewhere later while iptables -vnL was running:
+>>>> Caller   Avg Hold  Count   Max hold Total hold
+>>>> b'[unknown]'  496466236     46 17919955720 22837446860
+>>>> b'[unknown]'  496391064     46 17919893843 22833988950
+>>>>
+>>>> klockstat -i 5 -n 10 (on a host not experiencing the problem)
+>>>> Caller   Avg Hold  Count   Max hold Total hold
+>>>> b'[unknown]'     120316   1510   85537797  181677885
+>>>> b'[unknown]'    7119070     24   85527251  170857690
+>>>
+>>> Hi, this is your Linux kernel regression tracker.
+>>>
+>>> Thanks for the report.
+>>>
+>>> CCing the regression mailing list, as it should be in the loop for all
+>>> regressions, as explained here:
+>>> https://www.kernel.org/doc/html/latest/admin-guide/reporting-issues.html
+>>>
+>>> To be sure below issue doesn't fall through the cracks unnoticed, I'm
+>>> adding it to regzbot, my Linux kernel regression tracking bot:
+>>>
+>>> #regzbot ^introduced v5.10..v5.15
+>>> #regzbot title net: netfilter: Intermittent performance regression
+>>> related to ipset
+>>> #regzbot ignore-activity
+>>>
+>>> If it turns out this isn't a regression, free free to remove it from the
+>>> tracking by sending a reply to this thread containing a paragraph like
+>>> "#regzbot invalid: reason why this is invalid" (without the quotes).
+>>>
+>>> Reminder for developers: when fixing the issue, please add a 'Link:'
+>>> tags pointing to the report (the mail quoted above) using
+>>> lore.kernel.org/r/, as explained in
+>>> 'Documentation/process/submitting-patches.rst' and
+>>> 'Documentation/process/5.Posting.rst'. Regzbot needs them to
+>>> automatically connect reports with fixes, but they are useful in
+>>> general, too.
+>>>
+>>> I'm sending this to everyone that got the initial report, to make
+>>> everyone aware of the tracking. I also hope that messages like this
+>>> motivate people to directly get at least the regression mailing list and
+>>> ideally even regzbot involved when dealing with regressions, as messages
+>>> like this wouldn't be needed then. And don't worry, if I need to send
+>>> other mails regarding this regression only relevant for regzbot I'll
+>>> send them to the regressions lists only (with a tag in the subject so
+>>> people can filter them away). With a bit of luck no such messages will
+>>> be needed anyway.
+>>>
+>>> Ciao, Thorsten (wearing his 'the Linux kernel's regression tracker' hat)
+>>>
+>>> P.S.: As the Linux kernel's regression tracker I'm getting a lot of
+>>> reports on my table. I can only look briefly into most of them and lack
+>>> knowledge about most of the areas they concern. I thus unfortunately
+>>> will sometimes get things wrong or miss something important. I hope
+>>> that's not the case here; if you think it is, don't hesitate to tell me
+>>> in a public reply, it's in everyone's interest to set the public record
+>>> straight.
+>>>
+>>
+> 
+> -
+> E-mail  : kadlec@blackhole.kfki.hu, kadlecsik.jozsef@wigner.hu
+> PGP key : https://wigner.hu/~kadlec/pgp_public_key.txt
+> Address : Wigner Research Centre for Physics
+>           H-1525 Budapest 114, POB. 49, Hungary
