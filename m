@@ -2,102 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63714519CEA
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 12:30:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 01775519D50
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 12:49:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348042AbiEDKdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 06:33:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42388 "EHLO
+        id S1348286AbiEDKwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 06:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239092AbiEDKdu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 06:33:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9899B21
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 03:30:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6382461B04
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 10:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B58C3C385AE;
-        Wed,  4 May 2022 10:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651660213;
-        bh=zN5Gu0EyvxP2xRlolLMdWGPui5Fx7RnCYV6oKwi8cQo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=JtybhzCViMMoql6LzHgUJzOwnFySDQJBvJJuDjvoDmNBD/D35Y+k3+PoSYZ/zYsSn
-         rSOWrxvTv4FgdAXx3vr4b65OeIS2ZSxcrQDKLN+fC0FYHQeI4gVltZOJwBtkab1xo8
-         gSKpYszMUfUfH5aMhFlqtY0uipPI0RIzDhAWeFjqE87GB4piv/0aqYvS7TY6NE+F/n
-         CBS7j4mQ0j2XMQTbEeROy8F4cxNTLzFbI6x1hFLcHmDaSogoHNaEmm5TnGGZn2vaJ/
-         vkQEgqfviXLcCiPciHKzvDrPcqPf1otyLi00ojyl2DNHnumku4vftUAH9cJm71pRk4
-         S8Nu/spGGXYcg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 91D2EE8DD77;
-        Wed,  4 May 2022 10:30:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S235739AbiEDKwm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 06:52:42 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164A620BF1
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 03:49:07 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id bv19so2090482ejb.6
+        for <netdev@vger.kernel.org>; Wed, 04 May 2022 03:49:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nn0IhisrDuZS+6qN6ZcSTLAfNs6wYkQhRvdAbj5Qq2c=;
+        b=jacci/99xqMScveVviuGYqBF9JbzkzkGBRh+IUGBCm2+0/RDBB+IXIcNcF20DKCVM7
+         tPY9zw26ZZD+s7gludbFGJennjEXHBo3TEF1xKQ9YipxK4FPeeYLUge0FzQmpASEku9S
+         ZPHVuaKcpbcM/YzX7Yr507gCBwEkJcSGbZUmB9Z8pXtXiJCkuZoOZfMkNnnQ+g99dpu1
+         mYXcyGdqWbJKWAMDaJxO9+RANkrQYLBCiJssLZccy13cmSEAdw1s9nODjpNoCO8rXPLp
+         mxqjj4WB6+LgDiaizn+Pz4B+YKsfU9l+OBEvWE2AFZNYnCfD+0DXsBlyWgoUDVo9IdwO
+         1aOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nn0IhisrDuZS+6qN6ZcSTLAfNs6wYkQhRvdAbj5Qq2c=;
+        b=A3ETJO9TtPU16xSHrLmHKs1iPnyDbqsQZ76nyAmKSrRoaYt/XhYao/aZAUNsR/M1L5
+         uZA+JQb+F7YhnLY3IcSe8OnLfD7O5lAoZlhKQgTLaQiZoQ6iHIdgcv7bxAoWoRWHF7rJ
+         VSvxaEn81cdKvVirczzO/zOXiIzjTnFiR0pHT/9a2KJsQaCi1combvsdzxFnr8SAejGB
+         AChUOjTvXhtdz7jqc/4SQ/LYn9UtECKbUPM2bG2R1T+jUm9YkF0YMfAnJtpC0OQrZ7k+
+         kcLAXuloEghCT8m1lFA4eReh6w8NGpmPSZ7Nni+5EoAxRPlwXfHrRvfbhBFv7xgzJrRK
+         oaXA==
+X-Gm-Message-State: AOAM531P5ArEorNkSHPr/0sK+psjCp7Rz5dJN5ubqp3Rhj2oduQ+1sZs
+        PakQr57nu7zUEm2a0+4SGqy9J+wxWjSwlgCuTJQ=
+X-Google-Smtp-Source: ABdhPJziNj0PUTU+CpDNK7ynvBhx1JxmqZSOU6YWG+7bX+z/vR0T0EeExyPIO8PKJR0h3Z1ddcIIeRJhR2UJV0gsCHQ=
+X-Received: by 2002:a17:906:2646:b0:6d5:d889:c92b with SMTP id
+ i6-20020a170906264600b006d5d889c92bmr20300706ejc.696.1651661345566; Wed, 04
+ May 2022 03:49:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/8] mlxsw: Various updates
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165166021359.27992.10606056306672238609.git-patchwork-notify@kernel.org>
-Date:   Wed, 04 May 2022 10:30:13 +0000
-References: <20220504062909.536194-1-idosch@nvidia.com>
-In-Reply-To: <20220504062909.536194-1-idosch@nvidia.com>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, petrm@nvidia.com,
-        mlxsw@nvidia.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <CAOMZO5BwYSgMZYHJcxV9bLcSQ2jjdFL47qr8o8FUj75z8SdhrQ@mail.gmail.com>
+In-Reply-To: <CAOMZO5BwYSgMZYHJcxV9bLcSQ2jjdFL47qr8o8FUj75z8SdhrQ@mail.gmail.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Wed, 4 May 2022 07:48:56 -0300
+Message-ID: <CAOMZO5AJRTfja47xGG6nzLdC7Bdr=r5K0FVCcgMvN05XSb7LhA@mail.gmail.com>
+Subject: Re: imx6sx: Regression on FEC with KSZ8061
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        netdev <netdev@vger.kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, May 4, 2022 at 7:24 AM Fabio Estevam <festevam@gmail.com> wrote:
+>
+> Hi,
+>
+> On an imx6sx-based board, the Ethernet is functional on 5.10.
+>
+> The board has a KSZ8061 Ethernet PHY.
+>
+> After moving to kernel 5.15 or 5.17, the Ethernet is no longer functional:
+>
+> # udhcpc -i eth0
+> udhcpc: started, v1.35.0
+> 8<--- cut here ---
+> Unable to handle kernel NULL pointer dereference at virtual address 00000008
+> pgd = f73cef4e
+> [00000008] *pgd=00000000
+> Internal error: Oops: 5 [#1] SMP ARM
+> Modules linked in:
+> CPU: 0 PID: 196 Comm: ifconfig Not tainted 5.15.37-dirty #94
+> Hardware name: Freescale i.MX6 SoloX (Device Tree)
+> PC is at kszphy_config_reset+0x10/0x114
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+By adding this change, we can see that priv is NULL:
 
-On Wed,  4 May 2022 09:29:01 +0300 you wrote:
-> Patches #1-#3 add missing topology diagrams in selftests and perform
-> small cleanups.
-> 
-> Patches #4-#5 make small adjustments in QoS configuration. See detailed
-> description in the commit messages.
-> 
-> Patches #6-#8 reduce the number of background EMAD transactions. The
-> driver periodically queries the device (via EMAD transactions) about
-> updates that cannot happen in certain situations. This can negatively
-> impact the latency of time critical transactions, as the device is busy
-> processing other transactions.
-> 
-> [...]
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -508,8 +508,12 @@ static int kszphy_nand_tree_disable(struct phy_device *phyd
+ev)
+ /* Some config bits need to be set again on resume, handle them here. */
+ static int kszphy_config_reset(struct phy_device *phydev)
+ {
+-       struct kszphy_priv *priv = phydev->priv;
+        int ret;
++       struct kszphy_priv *priv = phydev->priv;
++       if (!priv) {
++               pr_err("*********** priv is NULL\n");
++               return -ENOMEM;
++       }
 
-Here is the summary with links:
-  - [net-next,1/8] selftests: mlxsw: bail_on_lldpad before installing the cleanup trap
-    https://git.kernel.org/netdev/net-next/c/18d2c710e5df
-  - [net-next,2/8] selftests: router_vid_1: Add a diagram, fix coding style
-    https://git.kernel.org/netdev/net-next/c/5ade50e2df2b
-  - [net-next,3/8] selftests: router.sh: Add a diagram
-    https://git.kernel.org/netdev/net-next/c/faa7521add89
-  - [net-next,4/8] mlxsw: spectrum_dcb: Do not warn about priority changes
-    https://git.kernel.org/netdev/net-next/c/b6b584562cbe
-  - [net-next,5/8] mlxsw: Treat LLDP packets as control
-    https://git.kernel.org/netdev/net-next/c/0106668cd2f9
-  - [net-next,6/8] mlxsw: spectrum_acl: Do not report activity for multicast routes
-    https://git.kernel.org/netdev/net-next/c/d1314096fbe9
-  - [net-next,7/8] mlxsw: spectrum_switchdev: Only query FDB notifications when necessary
-    https://git.kernel.org/netdev/net-next/c/b8950003849d
-  - [net-next,8/8] mlxsw: spectrum_router: Only query neighbour activity when necessary
-    https://git.kernel.org/netdev/net-next/c/cff9437605d5
+        if (priv->rmii_ref_clk_sel) {
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+udhcpc: started, v1.35.0
+[   14.754823] *********** priv is NULL
+[   14.754863] Micrel KSZ8061 2188000.ethernet-1:00: attached PHY
+driver (mii_bus:phy_addr=2188000.ethernet-1:00, irq=POLL)
+[   14.757024] *********** priv is NULL
+udhcpc: broadcasting discover
+udhcpc: broadcasting discover
+udhcpc: broadcasting discover
 
+Any ideas?
 
+Thanks
