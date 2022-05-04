@@ -2,55 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B423151931D
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 03:03:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2147A519320
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 03:05:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244859AbiEDBHT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 21:07:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41260 "EHLO
+        id S244871AbiEDBIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 21:08:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244837AbiEDBHS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 21:07:18 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 493A81408A;
-        Tue,  3 May 2022 18:03:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD2A3618AC;
-        Wed,  4 May 2022 01:03:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9307C385A4;
-        Wed,  4 May 2022 01:03:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651626223;
-        bh=hV27jNHam8OizP1col9nfnGlVImzRzfatynwi/Ik78s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=gZVwnvY7N0IjKjFqqyfvl6EGcBP82RpxDtU86xM7L1rskch8S30+yK0+5xeg+9M6s
-         OE3dLViAocFesTCDdg8H8kQiWA9m6iyIy6ympa0wzudVminx8WHqxUhClrz+33TI0A
-         SNIV0dkqPNltgY4HzvFxwSelrmnMVZd3YHSdN3WA4TIHcu18PZGuf7k5hWLUgj7Mrq
-         cCVXTwnpj6qI/9Cb6AjpyyVR9Om67aeAaCCNFZXSkP+wYAM8qucGRsvLpXvzVPKhiL
-         t5Ijs1KSwZAzRDYX3Ykt174fHJEH9bSePSgEktGie3zPdEvy95Gpsjf2IJ9x7KHdoU
-         fJGXN2YBo0maA==
-Date:   Tue, 3 May 2022 18:03:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Bagas Sanjaya <bagasdotme@gmail.com>
-Cc:     linux-doc@vger.kernel.org, Stephen Rothwell <sfr@canb.auug.org.au>,
-        Dave Jones <davej@redhat.com>,
-        Randy Dunlap <randy.dunlap@oracle.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] net/core: Remove comment quote for
- __dev_queue_xmit()
-Message-ID: <20220503180341.36dcbb07@kernel.org>
-In-Reply-To: <20220503072949.27336-1-bagasdotme@gmail.com>
-References: <20220503072949.27336-1-bagasdotme@gmail.com>
+        with ESMTP id S244837AbiEDBI3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 21:08:29 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A0D32B257
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 18:04:55 -0700 (PDT)
+Received: from fsav120.sakura.ne.jp (fsav120.sakura.ne.jp [27.133.134.247])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 24414TkX051843;
+        Wed, 4 May 2022 10:04:29 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav120.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav120.sakura.ne.jp);
+ Wed, 04 May 2022 10:04:29 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav120.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 24414Tbc051840
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Wed, 4 May 2022 10:04:29 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <f6f9f21d-7cdd-682f-f958-5951aa180ec7@I-love.SAKURA.ne.jp>
+Date:   Wed, 4 May 2022 10:04:29 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2] net: rds: acquire refcount on TCP sockets
+Content-Language: en-US
+To:     Eric Dumazet <edumazet@google.com>,
+        patchwork-bot+netdevbpf@kernel.org
+Cc:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>
+References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
+ <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
+ <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
+ <CANn89iJ=LF0KhRXDiFcky7mqpVaiHdbc6RDacAdzseS=iwjr4Q@mail.gmail.com>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+In-Reply-To: <CANn89iJ=LF0KhRXDiFcky7mqpVaiHdbc6RDacAdzseS=iwjr4Q@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,25 +62,55 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  3 May 2022 14:29:49 +0700 Bagas Sanjaya wrote:
-> - * -----------------------------------------------------------------------------------
-> - *      I notice this method can also return errors from the queue disciplines,
-> - *      including NET_XMIT_DROP, which is a positive value.  So, errors can also
-> - *      be positive.
-> - *
-> - *      Regardless of the return value, the skb is consumed, so it is currently
-> - *      difficult to retry a send to this method.  (You can bump the ref count
-> - *      before sending to hold a reference for retry if you are careful.)
-> - *
-> - *      When calling this method, interrupts MUST be enabled.  This is because
-> - *      the BH enable code must have IRQs enabled so that it will not deadlock.
-> - *          --BLG
-> + *	This method can also return positive errno code from the queue
-> + *	disciplines (including NET_XMIT_DROP).
-> + *
-> + *	Note that regardless of the return value, the skb is consumed
-> + *	anyway, so it is currently difficult to retry sending to this
-> + *	method.
+On 2022/05/04 7:37, Eric Dumazet wrote:
+>> I think we merged this patch too soon.
+>>
+>> My question is : What prevents rds_tcp_conn_path_connect(), and thus
+>> rds_tcp_tune() to be called
+>> after the netns refcount already reached 0 ?
+>>
+>> I guess we can wait for next syzbot report, but I think that get_net()
+>> should be replaced
+>> by maybe_get_net()
+> 
+> Yes, syzbot was fast to trigger this exact issue:
 
-Why drop almost half of the comment if the problem is just the ----
-banner?
+Does maybe_get_net() help?
+
+Since rds_conn_net() returns a net namespace without holding a ref, it is theoretically
+possible that the net namespace returned by rds_conn_net() is already kmem_cache_free()d
+if refcount dropped to 0 by the moment sk_alloc() calls sock_net_set().
+
+rds_tcp_conn_path_connect() {
+  sock_create_kern(net = rds_conn_net(conn)) {
+    __sock_create(net = rds_conn_net(conn), kern = 1) {
+      err = pf->create(net = rds_conn_net(conn), kern = 1) {
+        // pf->create is either inet_create or inet6_create
+        sk_alloc(net = rds_conn_net(conn), kern = 1) {
+          sk->sk_net_refcnt = kern ? 0 : 1;
+          if (likely(sk->sk_net_refcnt)) {
+            get_net_track(net, &sk->ns_tracker, priority);
+            sock_inuse_add(net, 1);
+          }
+          sock_net_set(sk, net);
+        }
+      }
+    }
+  }
+  rds_tcp_tune() {
+    if (!sk->sk_net_refcnt) {
+      sk->sk_net_refcnt = 1;
+      get_net_track(net, &sk->ns_tracker, GFP_KERNEL);
+      sock_inuse_add(net, 1);
+    }
+  }
+}
+
+"struct rds_connection" needs to hold a ref in order to safely allow
+rds_tcp_tune() to call maybe_get_net(), which in turn makes pointless
+to use maybe_get_net() from rds_tcp_tune() because "struct rds_connection"
+must have a ref. Situation where we are protected by maybe_get_net() is
+quite limited if long-lived object is not holding a ref.
+
+Hmm, can we simply use &init_net instead of rds_conn_net(conn) ?
+
