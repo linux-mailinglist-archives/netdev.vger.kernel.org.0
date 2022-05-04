@@ -2,81 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF0D51AD8C
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 21:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7E851AD30
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 20:45:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359730AbiEDTLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 15:11:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38098 "EHLO
+        id S1355461AbiEDStN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 14:49:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236470AbiEDTLY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 15:11:24 -0400
-X-Greylist: delayed 2043 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 04 May 2022 12:07:47 PDT
-Received: from lizzy.crudebyte.com (lizzy.crudebyte.com [91.194.90.13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 678543A5F7;
-        Wed,  4 May 2022 12:07:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=crudebyte.com; s=lizzy; h=Content-Type:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
-        Content-ID:Content-Description;
-        bh=rE2gX/bRFMhYFilz9M+Je3TFSv/LnyF6LKyyIeJ5Ek0=; b=T7n6n7snqTZpSmkVObfdZEp33V
-        vz1bLq2kHQp48GpqsKjXZqo15K4ioh/XYm0DyhORvkOSyhdftlzAjw0otsFpoZzA175lmduE397kW
-        zkXMfq4nIbe8BetGkmlLE2+qwgeT4nNj8AOKKwDwwzA/wNIxWu0mUhuM3bL3Cnf+HsoJsq5DY4MlN
-        TpiKEWJHFW6mPdAHeInhIYuMynq2U4w9CA20OLcbClSE3P9gk7bZEkkZsIGttbmtKx4b6/Zm/+gN9
-        pLP7IDDBw1tvI+qFck/uZ+mvzT8QO6jZJRjaLM+mgpr7TVzhDrKspunqCB4AVDCOn6gmocMUAjcm6
-        gBIHdHhg==;
-From:   Christian Schoenebeck <linux_oss@crudebyte.com>
-To:     asmadeus@codewreck.org
-Cc:     David Howells <dhowells@redhat.com>,
-        David Kahurani <k.kahurani@gmail.com>, davem@davemloft.net,
-        ericvh@gmail.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        lucho@ionkov.net, netdev@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net, Greg Kurz <groug@kaod.org>
-Subject: Re: 9p EBADF with cache enabled (Was: 9p fs-cache tests/benchmark (was: 9p
- fscache Duplicate cookie detected))
-Date:   Wed, 04 May 2022 20:33:36 +0200
-Message-ID: <6688504.ZJKUV3z3ry@silver>
-In-Reply-To: <YnECI2+EAzgQExOn@codewreck.org>
-References: <YmKp68xvZEjBFell@codewreck.org> <1817722.O6u07f4CCs@silver>
- <YnECI2+EAzgQExOn@codewreck.org>
+        with ESMTP id S1377308AbiEDStL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 14:49:11 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F00AE0EE
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 11:45:34 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id j6so1796371pfe.13
+        for <netdev@vger.kernel.org>; Wed, 04 May 2022 11:45:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linuxfoundation.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=FuAOc+wNIC5DOVBIAgkTsyelE5cgK01ek6zoAdzRvTk=;
+        b=AZj0/ZHqXNuRK2uYtcC5j3klOWUuvIgC5dicdjXTF9pLrIj+jqWYXDsimJKMRUbnuX
+         u3kU4GyhX8SXUXBHlcObDNCW2/t3LnxSTby/9rPiJamuyRGdKICMnfpg1a+AjFeQ+Ewe
+         c5UI+PkvtT/l5u+QYnFoBl3jL0Ae9shZsWdSQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=FuAOc+wNIC5DOVBIAgkTsyelE5cgK01ek6zoAdzRvTk=;
+        b=CjUXCSbAYeLPIt4OXIh0RRZJAsCzNWESrxMzNu5eiWGmJB5LcV38glAg6cEmqx5nSN
+         Y6bg6J34PsGP0h42pZ7CyGamVdZWtuRKtxC3+htnrStFUuKWMkffIe+Y8cS4a2M6YHJk
+         BxgMrHVOP0q+li6RtKS6juEMqTHG01HrLnyw6YM5LKUORWpWAhu5GpRiAEtyrK6V/SLr
+         6wuwsBqrkdYcW0Iz3b7bF8t5PGsdhmuVQcl1zkfkWVZZKRqPqdr+IehEhyKPbwXhG4/a
+         zxW544ZDISi8gWDjafjbS4X9JxrNVkWYDke3QKUZYCL3gqeKH9qy9YKxNK+bWOJH5Iy7
+         BV4Q==
+X-Gm-Message-State: AOAM531iTtgJgLAPRLhAowgzrmRnKOkT6uvupC4I+fQ1gvBH7tmc1i2Q
+        I3RAqlmZr6Q9U9Cq73rSgZL7hw==
+X-Google-Smtp-Source: ABdhPJyPye6nL1nzMC2VY8GBKj09rnbsOJtsUkSsAuM0pZxQ+xALJkMM2Nq52jbHfhfB7B1Pfc1xbg==
+X-Received: by 2002:a63:81c6:0:b0:3ab:616b:35b with SMTP id t189-20020a6381c6000000b003ab616b035bmr19183626pgd.256.1651689933870;
+        Wed, 04 May 2022 11:45:33 -0700 (PDT)
+Received: from [192.168.120.250] (wsip-70-166-189-147.ph.ph.cox.net. [70.166.189.147])
+        by smtp.gmail.com with ESMTPSA id t9-20020a17090340c900b0015e8d4eb222sm8533218pld.108.2022.05.04.11.45.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 11:45:33 -0700 (PDT)
+Subject: Re: [PATCH][next] selftests/seccomp: Fix spelling mistake "Coud" ->
+ "Could"
+To:     Colin Ian King <colin.i.king@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <skhan@linuxfoundation.org>
+References: <20220504155535.239180-1-colin.i.king@gmail.com>
+From:   Shuah Khan <skhan@linuxfoundation.org>
+Message-ID: <f2dc58e6-0cda-581f-f026-64099494509f@linuxfoundation.org>
+Date:   Wed, 4 May 2022 12:45:31 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220504155535.239180-1-colin.i.king@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Dienstag, 3. Mai 2022 12:21:23 CEST asmadeus@codewreck.org wrote:
-[...]
->  - add some complex code to track the exact byte range that got updated
-> in some conditions e.g. WRONLY or read fails?
-> That'd still be useful depending on how the backend tracks file mode,
-> qemu as user with security_model=mapped-file keeps files 600 but with
-> passthrough or none qemu wouldn't be able to read the file regardless of
-> what we do on client...
-> Christian, if you still have an old kernel around did that use to work?
-
-Sorry, what was the question, i.e. what should I test / look for precisely? :)
-
-[...]
-> > > Also, can you get the contents of /proc/fs/fscache/stats from after
-> > > reproducing the problem?
-> > 
-> > FS-Cache statistics
+On 5/4/22 9:55 AM, Colin Ian King wrote:
+> There is a spelling mistake in an error message. Fix it.
 > 
-> (He probably wanted to confirm the new trace he added got hit with the
-> workaround pattern, I didn't get that far as I couldn't compile my
-> reproducer on that fs...)
+> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+> ---
+>   tools/testing/selftests/seccomp/seccomp_bpf.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/seccomp/seccomp_bpf.c b/tools/testing/selftests/seccomp/seccomp_bpf.c
+> index 29c973f606b2..136df5b76319 100644
+> --- a/tools/testing/selftests/seccomp/seccomp_bpf.c
+> +++ b/tools/testing/selftests/seccomp/seccomp_bpf.c
+> @@ -4320,7 +4320,7 @@ static ssize_t get_nth(struct __test_metadata *_metadata, const char *path,
+>   
+>   	f = fopen(path, "r");
+>   	ASSERT_NE(f, NULL) {
+> -		TH_LOG("Coud not open %s: %s", path, strerror(errno));
+> +		TH_LOG("Could not open %s: %s", path, strerror(errno));
+>   	}
+>   
+>   	for (i = 0; i < position; i++) {
+> 
 
-Yeah, I got that. But since his patch did not apply, I just dumped what I got 
-so far in case the existing stats might be useful anyway.
+Thank you. I will pull this for Linux 5.19-rc1
 
-Best regards,
-Christian Schoenebeck
-
-
+thanks,
+-- Shuah
