@@ -2,134 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BAC25519791
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 08:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDF2551979F
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 08:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345042AbiEDGtp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 02:49:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49780 "EHLO
+        id S1345093AbiEDGzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 02:55:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231573AbiEDGtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 02:49:45 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2078.outbound.protection.outlook.com [40.107.236.78])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A677C1DA74
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 23:46:08 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Ph47NrsxdHXowlLdgbW1OYoxRIIh9YHX066nb7+AiTyJ3qjhB9zGFnz35Q0A8U3y0x2q2qV97l1wUQw6Ux7REXrWfpKYRuXhZ0Tnz0mYSIFWDIykuuOfpNszR3i3cg4rY2uMHPpyEKVwhc0iC+GMoX0pfxEYn/kGWbZ7cIbgjLjgQK4dHKVzilqNd/oWlG1zTore2Ot+l0cx0KAHfximcalRE409vHJeS2dTYfRWq6iKwibMoNBKn0RZNKDv7CMycOc95Mi+6WlHCDP9jvBP5mzQpMLD3Rg7b21ByaKRAZ2SWqiVcHnUBdZ01qvoSRAUC3ZorWSQNV7BJ1P/R8sigQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=v8q3lI5avSla4w7do97k2j5T2Lz37BMUnr9OrIO8YqI=;
- b=Ot9kvaQ7T96K0dXMSFoG8x9YN9vhrWylETtep5maMD9SigNGs9aU2cpBGtBcdaiKchXB2N/FqLtPv9jHpZngqAOgFg65lUffuoaUXD92svwwxNq2d1rMwDPucare1Hq0RZ0I0erkVxWTBuYEGy8NQnp9C2mJ60eSQhdX8l/c6uXkTAThzCoVCvDk8bMbfUZBFX5P7iKvi1J9q3NqrZo6GqZP2geRo4ObzmWOYeD7JJhfA26QkH7M7tHKitaF7gGQLjf6iPGfwK7Ag7V2DR2P86trqKZKOCqYDPMQ20Ide/usMCRgy2kXaH13Gyngu0aByvsv1RGUcMjAGQe5OBMyLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=digitizethings.com; dmarc=pass action=none
- header.from=digitizethings.com; dkim=pass header.d=digitizethings.com;
- arc=none
+        with ESMTP id S1345090AbiEDGzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 02:55:19 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D3BC20BFF
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 23:51:44 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id n10so1073599ejk.5
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 23:51:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=digitizethings.onmicrosoft.com; s=selector2-digitizethings-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=v8q3lI5avSla4w7do97k2j5T2Lz37BMUnr9OrIO8YqI=;
- b=kclGVZ3ejuYmeUYZtLafXD8AoAh91Edqj/6tCnYb+3lPGTsWn2/6GlFOkA/jfxmnzbkQQn9NtCKW5jcWXeP1yfAEjQkUWG++k4uEn0Yd42euPdNYiGkSfTeeyWa4MKWKfQmMzknw8jvmf1HKdgz9fErsoomiDaf9z2Fk3zIafDs=
-Received: from DM5PR20MB2055.namprd20.prod.outlook.com (2603:10b6:4:ba::36) by
- BN0PR20MB3912.namprd20.prod.outlook.com (2603:10b6:408:12e::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.25; Wed, 4 May
- 2022 06:46:05 +0000
-Received: from DM5PR20MB2055.namprd20.prod.outlook.com
- ([fe80::29ed:556f:c7b6:3493]) by DM5PR20MB2055.namprd20.prod.outlook.com
- ([fe80::29ed:556f:c7b6:3493%5]) with mapi id 15.20.5206.025; Wed, 4 May 2022
- 06:46:05 +0000
-From:   "Magesh  M P" <magesh@digitizethings.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: gateway field missing in netlink message
-Thread-Topic: gateway field missing in netlink message
-Thread-Index: AQHYX4JgQ9a90BuNG0u1i9lIsMx3tg==
-Date:   Wed, 4 May 2022 06:46:05 +0000
-Message-ID: <DM5PR20MB2055102B86DB2C2E41682CE3AEC39@DM5PR20MB2055.namprd20.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=digitizethings.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ca3c9742-133b-468c-6685-08da2d99c345
-x-ms-traffictypediagnostic: BN0PR20MB3912:EE_
-x-microsoft-antispam-prvs: <BN0PR20MB3912E81DDC74569399009E0BAEC39@BN0PR20MB3912.namprd20.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: rP1UNe+kGQz1QY41B+ddc19J+2DKqlSCNcAkj512MrYMXyJG6L5xg+QpxewyguIQCo30qGS9x3+6f4HcrgDohHr09q5xwBclfbfuqiFT8Cle8a9hFpXOrafTiKRlNUtEaqK3uJABA8VMx+TKV3CiKBa4E7pccWeT0Sy1K2+rWPHfu8IuYD/PmaeeZsDFztVQ71UagxuMglimyLRkjC+t60UwxLS7QOJqDJ04QI9KKNT+B8vFPEJxdCsZzpMlpCzfqbjIK14+mbc5dKIgNNw1zkVitY071SdjWERduaMRw7bdeO5TGc59bxVku2svV23yM6pgfU9I1sXLIxsewbDS8xZ1FtALo6yCl/WTzowl5pKksZ8fJyoRyRoo4g6Ibb2q/CZAlKtl50uTIDtCw8+onao0FuRNvbh1x6LxEvehaFXWtiPlpvdPXzazzV3MZk+p4g9GPnsS6zt+gEtqzKkxrZn+PIHj6nX9ygXT9Hj5d9MCOoHQEH02Clfq2Gqd/+bbu65bktOBGBZK6QeZAhEGbo/4lEahQX30RPwRoa9MfyUOPe7tbrZgTAhZtrghoWwSNToKfyivNjWC7Rw2jHhxzv+IGoI5gD5FhXBrItMU90S8iyDadduIMkv2jQ/l3owfBK0uCneo39dW1tbpEvAbbSBSmQ2Ze+0pa27HKrMGlwvEOFe2pOvyQ1479WNziM0HCPxJ3c5OsixCE0B+AvAkUg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR20MB2055.namprd20.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(39830400003)(346002)(396003)(366004)(376002)(136003)(8936002)(4744005)(38070700005)(52536014)(38100700002)(33656002)(122000001)(8676002)(5660300002)(7696005)(55016003)(186003)(71200400001)(6506007)(9686003)(508600001)(64756008)(66556008)(66476007)(76116006)(66446008)(66946007)(91956017)(316002)(26005)(86362001)(2906002)(15650500001)(6916009)(83380400001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?rXjsc9Wqb1tmq+NUrsznQRpPqiHxH8ceuKaRtcdEY4ut6ul2x63XQr+bnf?=
- =?iso-8859-1?Q?imI+A5UF3mCDDdqr6GEhsTcVZxhh5a1F/bA8zoJaVm4KPfKahGTszUGlIp?=
- =?iso-8859-1?Q?mNJbn3IpuBdTw1dH1HOxnHlieOUeDHxm9+rpnrYotkA/XhHMD13CkwY5qv?=
- =?iso-8859-1?Q?vqZEsGSumTg73pehzeOUcLQAEd89A2elGy7K2sEKhiiBrJdy+kcefm9T6H?=
- =?iso-8859-1?Q?Qh3nuvxZ1Qry+xvUmdkOgtuebUk73fMnfFpvjtXApfvL6mmgQHlwX37Pd1?=
- =?iso-8859-1?Q?stUzMsi1fofvBgQ3zXGfd7Tj1NP/a0T+940IOuDxZD328t0w7QcFVGnsdz?=
- =?iso-8859-1?Q?RsrONdM7bqAdQPYramSNPPybkR25hXIiTOGJnbc4X5wxFRpLL0sya/lg6Z?=
- =?iso-8859-1?Q?gvrVWGAwizP3Iz448XHTpmuY05iNjVjBaKqwwzBFQo43Fs+9BWLC/kNOad?=
- =?iso-8859-1?Q?HD5GpnU7RtXmTPeMN4yA2MHSdda77KgRNu+9O387bsh7iu2Cl1iKMQKayS?=
- =?iso-8859-1?Q?3dy5wAN5pQvhzlB7YctGSYllnF39XMsjo8AWduUh7BMDOlqGPtXe0QmnPb?=
- =?iso-8859-1?Q?u8DQAJSG/iy4fhfK4P0iCb3w8BlDyG1tuXyKvgr3Vi6tJ0qIx6fN/kuHzP?=
- =?iso-8859-1?Q?xlZO/0vrNfcoICktsYW35mogQ+aC+gvBEz3A26nBb8mzdWlZvzi4YdIgpn?=
- =?iso-8859-1?Q?j5F6ILq0hVsg1iDF6NkaKJ+3t6Qu6eIWn+RrBKi6LpSOtcVhemEa6IIZ5g?=
- =?iso-8859-1?Q?f982RgA71HEg8B2BsG5+7Yf/Sts2jmGB5MwB+I5aw87hbILv449+7Cbysg?=
- =?iso-8859-1?Q?WLRdCISlfAK2g2/mQgDlQ287NICLDusGEq4H3dA9C2Tx2ucEaGvYhxGC6U?=
- =?iso-8859-1?Q?ZYxHKxWscvQZSW3WzYFlfnjQ5W+5fWwV9cKtbkTfs8kmaUSDojCD5YxKqo?=
- =?iso-8859-1?Q?5pm0doP3SzchmZEVNHRCr2WLLgJrWVn896V+YL6m5RI1W2AC8Ufh/6KXHS?=
- =?iso-8859-1?Q?GzkS66jsXeX3jfsvNNsrGivbHjOdWju3L+0xzwpfOLNclwodQhXGAIl2Rx?=
- =?iso-8859-1?Q?JIHJUwCc2ymz6sekNTcPfB4nAral+ae3qFTYLyiJqD4Bsu5K8t+avpKaCk?=
- =?iso-8859-1?Q?ITYokWtVVW162O/cbxQMOA9ssUry5ltDZZuUFQddqV8AcifrGdmjVw0Wu0?=
- =?iso-8859-1?Q?Tf482sM3AG4HJcMDTJQy0NVZwAkZsItVd4jQMZfT6HuBtDsCEkR0Gn9ujn?=
- =?iso-8859-1?Q?BZVUglS8J5+Q0rj/7/Rvp2hVRQ+Ssj+JlEWGUGNP2ijAareJRyfwxV5HuG?=
- =?iso-8859-1?Q?q5CQfIBYEpDUP/Zv8t2z3d0BMb0Mw3kE35hQonV55xkPX+kociJv4azek1?=
- =?iso-8859-1?Q?nx02wY1xh0snMGKRAhqaiVK9ZwhStsxXlpORght+wA28f5YT13rIVykAWj?=
- =?iso-8859-1?Q?LaTn3CaIEczKeWhCiHG5Zy5RWdYeCZpBliHI0Ugd9bXCKq/rwcfvvWjZas?=
- =?iso-8859-1?Q?x4P4m0Ayp/pM78ILELUUsJOxImoegA1vIQyPGJhnnvO5HzpNH7GL+wJNsz?=
- =?iso-8859-1?Q?DNp8M1GTYCpXxhHUbvsUZD0dUTzR7x7hy181hoB/FlF9fN90lQVwnKcYE5?=
- =?iso-8859-1?Q?j1p1BpaUriLHGVbRnim7Ttlpk7iuOaVDO31UUUX/Abw1naxYN48/v5bR5D?=
- =?iso-8859-1?Q?nH155mR2rP/Gh23E4iQP8tW1kCKBjf9O1YlXH8ggpEmN1N4GZOQjcpFEQ1?=
- =?iso-8859-1?Q?EzYpPjsq7N4tQefFQky74dVVZRqQgrTIyNJY/Nmwi/8Kwokm8UZmpmrCCt?=
- =?iso-8859-1?Q?GEQ4/yuONA=3D=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=IjvhY+zx5+cDpT9+ShvD2wIBZoNgfMhne2yk1qc9gqc=;
+        b=eic7UFuqSIPHIgZ3jSbVJ+u7i6PpSPVY7e3+WBdyR38qmzv+FWuisIiMkWe2KpzS4R
+         UnwvMe2voQGKKSuW8ZMI5JMcJuI3KmJ8A1rPmi9AAtCmgjaT0GP0zo5gAqixMJ8VDV0A
+         ZWXOYJlyVr6o+MnZZ6r5g2M58A7uEP4AHQtRmLBwEd6U/CAxwh0Rj84HbMsS1dJMUkQe
+         6PXQTqyiXSz90DZ2JHQG9chh1I2MpCxYverENN9RufkpiACPTDTLdX76RjFtceWLbva6
+         Ewux8w8+l0bPoexCeRMh+kTwR6MujG9lElvDL0zkzoJvMFTp3ZomeFypBMZbY7WGWlPH
+         fuBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=IjvhY+zx5+cDpT9+ShvD2wIBZoNgfMhne2yk1qc9gqc=;
+        b=2sJ9rbvP+dJ403HQHyyY53sXzPlaCIZoW4WokFwuJEZvT6ZD5Dn7KSKycgV1j/lbU7
+         Zy1zwaJAa2l0XJE0pkfWh7cespkVEl3ZS+lnTw9ZqfrJGyiuRzG3xtfqQxiIOfhJ/ZrF
+         RvvVDl5VHBZtGYdlSPA2gG88tUkndtm0dZ3jvnDrnlIgheQf+xt6obPJxawC6Ehhp5zy
+         ozbT+fpkOrZF5YU57EjajVCZZVJ6Sma+gbZIDk1/IcGJxESHWkAr79J+ZLVkAqhw6Yn4
+         o6Px5Dcd65uQ+DZG7LBygaKayAKhUtEnsNcU2SP3CzxXmxA8KgfqamrLazswIfFIOnQT
+         l0Ww==
+X-Gm-Message-State: AOAM531zstzkwt9kCrTQxsnoxYegV9++CbO2Ht/q/YrwIGazqIs07Omj
+        7AQvX5PxUSANBLdfM01xLVoMWw==
+X-Google-Smtp-Source: ABdhPJwsbQjpa6yGQ2U7HY/Ae/uny1/EgLYf0Rw+8IrJbKAirCTUtkOfDH52DAkl4hVSuhbxoPgI8w==
+X-Received: by 2002:a17:906:a089:b0:6ef:e9e6:1368 with SMTP id q9-20020a170906a08900b006efe9e61368mr18809029ejy.626.1651647102720;
+        Tue, 03 May 2022 23:51:42 -0700 (PDT)
+Received: from [192.168.0.208] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id el8-20020a170907284800b006f3ef214e0asm5370519ejc.112.2022.05.03.23.51.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 May 2022 23:51:42 -0700 (PDT)
+Message-ID: <95aea078-3e85-79c3-79c0-430bd7c0fbae@linaro.org>
+Date:   Wed, 4 May 2022 08:51:41 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: digitizethings.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM5PR20MB2055.namprd20.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ca3c9742-133b-468c-6685-08da2d99c345
-X-MS-Exchange-CrossTenant-originalarrivaltime: 04 May 2022 06:46:05.5385
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 49c25098-0dfa-426d-808f-510d26537f85
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: w/PHvAiJ4l0lq+jOKR9P9uJtdEkXDK2i9G7wBPap06QgwBjWAyHKg4s5wFgBJ5wQeVNzVpA0WoSYYY6Ba8FQorqJANAj5WPMlboJ+LVFPj0=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN0PR20MB3912
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: Aw: Re: Re: [RFC v1] dt-bindings: net: dsa: convert binding for
+ mediatek switches
+Content-Language: en-US
+To:     Frank Wunderlich <frank-w@public-files.de>
+Cc:     Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        Frank Wunderlich <linux@fw-web.de>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220502153238.85090-1-linux@fw-web.de>
+ <d29637f8-87ff-b5f0-9604-89b51a2ba7c1@linaro.org>
+ <trinity-cda3b94f-8556-4b83-bc34-d2c215f93bcd-1651587032669@3c-app-gmx-bap25>
+ <10770ff5-c9b1-7364-4276-05fa0c393d3b@linaro.org>
+ <trinity-213ab6b1-ccff-4429-b76c-623c529f6f73-1651590197578@3c-app-gmx-bap25>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <trinity-213ab6b1-ccff-4429-b76c-623c529f6f73-1651590197578@3c-app-gmx-bap25>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi=0A=
-=0A=
-I am trying to configure dual gateways with ip route command.=0A=
-=0A=
-Ip route show command shows the dual gateway information.=0A=
-=0A=
-I got a vpp stack that is running. The communication of route entries betwe=
-en Linux kernel and vpp stack is through netlink messages.=0A=
-=0A=
-On parsing the netlink message for the route entry with dual gateways, we s=
-ee that the message carries only single gateway. Is this a known bug ? Plea=
-se suggest a solution to resolve this.=0A=
-=0A=
-Regards=0A=
-Magesh=0A=
-=0A=
+On 03/05/2022 17:03, Frank Wunderlich wrote:
+> 
+> have not posted this version as it was failing in dtbs_check, this was how i tried:
+> 
+> https://github.com/frank-w/BPI-R2-4.14/blob/8f2033eb6fcae273580263c3f0b31f0d48821740/Documentation/devicetree/bindings/net/dsa/mediatek.yaml#L177
+
+You have mixed up indentation of the second if (and missing -).
+
+(...)
+
+>>>
+>>> basicly this "ports"-property should be required too, right?
+>>
+>> Previous binding did not enforce it, I think, but it is reasonable to
+>> require ports.
+> 
+> basicly it is required in dsa.yaml, so it will be redundant here
+> 
+> https://elixir.bootlin.com/linux/v5.18-rc5/source/Documentation/devicetree/bindings/net/dsa/dsa.yaml#L55
+> 
+> this defines it as pattern "^(ethernet-)?ports$" and should be processed by dsa-core. so maybe changing it to same pattern instead of moving up as normal property?
+
+Just keep what is already used in existing DTS.
+
+>>> for 33 there seem no constant..all other references to pio node are with numbers too and there seem no binding
+>>> header defining the gpio pins (only functions in include/dt-bindings/pinctrl/mt7623-pinfunc.h)
+>>
+>> ok, then my comment
+> 
+> you mean adding a comment to the example that GPIO-flags/constants should be used instead of magic numbers?
+
+I think something was cut from my reply. I wanted to say:
+"ok, then my comment can be skipped"
+
+But I think your check was not correct. I looked at bpi-r2 DTS (mt7623n)
+and pio controller uses GPIO flags.
+
+Best regards,
+Krzysztof
