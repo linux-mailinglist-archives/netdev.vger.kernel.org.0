@@ -2,114 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC8E15197C7
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:04:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20F135197D2
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:04:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345198AbiEDHHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 03:07:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33870 "EHLO
+        id S1345219AbiEDHHc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 03:07:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345228AbiEDHHO (ORCPT
+        with ESMTP id S1345231AbiEDHHO (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:07:14 -0400
 Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2053.outbound.protection.outlook.com [40.107.96.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F127022BC7
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:03:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BD6C23141
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 00:03:35 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L65N/jPB5peCZNUlC35lFF01KFKBGGJWS0/uOrweQnzUK0DbozlILiEWHhUMC2gF8wut3yrkVFu4jVCg+HoZAXAY0jvzg6Kg+r0ZERtrJyXZHTul9ZOQlwbEfug/ujQaUhZ6t6/nTCOoKgTbYn8KD8QMh6QVXToFeb9zOSfCqBX385Hv6SjvuKH8hBPXlMltsiQCkI2cr5v3e2SuDYXfchcS/APLxKlhDVp95cNG7Gnj2CbDeB9E9K0h50/y0YZrpUgYksEDynqBJBmjiolJaYDe2PvjKgppEmv8mNgMY4jyZmWAXGud8VKJ0hveXZej5/JCRyb48A/bXsZN/Zk/1g==
+ b=Bic5wTDFfGLOAY88ts45OGEEggdPgZILq1E9CnhpKLJFawrw8RGcXnNvoceEiC1qbbQIywTRUjWeFfk7XDb52KpdEdHo69pkkGZMrPtvtD2k1noDsIwS+sHSoAeulvPZ//Y3RpJbJ3n41dLtiherbMcCKbr5Tbae1Vk19jP/FwWoKSXi+WdLMXwJv++tghavKJoji/QLYSnzVUpu5A1y5/Qy19o/bE/sBeD3lRFNarJQEYO8R7KKz0YyAiPDxY7PndTQ6dRsdGChDMxkjHnkfNpLArndIuoMBGlqLqq7EflQOIGdbmXOR1P6yAC3pxdpY8vygMMGyC/PLq6135ikUQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nNJtJv4VOqoVsJHzeiy6g/xg1R28lSeEDuDaJmY5nq0=;
- b=FIR3kMeEVXZ9YmE2Mflbdw+ulyocQ4+Ac/QwZDkp33OQ8rL6OgqRTdg1J4xhhLaC1sA3LvT9sCKBZQHS6n6K8/FSL2Z83IC8WV9lPo91fE9sEjc2y3VK9NxleDBxVqOfwBuT2VzU8c9HTS0rqNOfxDYXe+g8L+ZJE5Jj46CFBYEwowveu0dLGDKZFFM5x7fQqvbMomiDn6rMt8CG7zvMp9z+jpuxDaJHvWmfwbr+k4CcdL308ZHVzcHJDT2C/fXIzOAg/GMpP0b39rexCDsS2JSLyotYYGfSb3HiBlBXpUZjaWVHo5mdh1Konn053t5m7ghiwtyOmcsa3nAG0GYr1w==
+ bh=awxK20xa8Fz3hM/bEQv9MKTkWZgH9RWGjMFERIygmrM=;
+ b=SuotFO6gUlwGMapsxoQ7XivPcBkeD7MEyGOZYxjHrAlwrt2SKHVdTKXNjgxriJCxbp2JNnkWQSeS/tMgiG1uUZwqxpcWREoOscDYBUc3qDOGriFI9GFzno2wUi29rsF47wkmNn9pT08/okpt2hW5sS7WzWRyKiXHEKlMOTT4TJv1z2dFS6e1nEnKjheyETdnELpwZDB7LvpXMmxkF6sImsi1me9susXYpez1lpio5KLyJPDqKR6TQ9kMD3iNCekoPNz2zYC/2m7sufoQ2QniV7r499xZGlv5QkGVfLHLeqe+XVBXqiCJJOCTjYYPxk2RG5GLTN8/WG3llGDGa2EN8Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nNJtJv4VOqoVsJHzeiy6g/xg1R28lSeEDuDaJmY5nq0=;
- b=cwgXBna7XpCBZ8BQ7bZxfSqCFi0TnodDqBf+2A5PHxnPXExaBlmwzLczArj2c5zS1o/FroxLgMiy5jFDUplxwAW26jQIhGX89xDMxjGtLU41X+SkdMS+Bc9kIPxk+V9xZfwnQP1+0fAjIZvxsh+CNN+E3RW4g44+YgHXcW8jnC1VByK4UDkLXZcsysU4OM5OI6cEhP6kKeRnz+a+7cjQrCfBew+s6JoHDh4AVTUbDObKA/n2+SxtiLsJXJwcNWoaGRJGLT4ooDDj3+o9B0U4CcTtARq658fAVOPz3iH98gMzJpzmzXMMZmFZdZQrvot0Qa543kZKaWKQKBaax1thIg==
+ bh=awxK20xa8Fz3hM/bEQv9MKTkWZgH9RWGjMFERIygmrM=;
+ b=TWjqjLX3pi04ofyXizi9Cyh9NUdMr515/F5Q16dn4DYlhsnVMPZtUcmgeilJ3oscvr9wzcdxKztwJAYuT64zU7WzcStgyXRJiFEKMF2KgAPnMvYb/8ubaMxE5Jx5+sVg3CO4zW1jjtAvDLlfncWrcJYrF2hAtQd1CEJvbMGvjo5a6gZuRag8QlVusiG6c7GclOOjnyoc3+h+G0s1+Z+j/pHeUqgzR9YSGweIy+k2Iw0yBliJcAJwXC9hXwfuZKKvYYoIcsLm4A45xfzhiFkOJWFH9fo0o7sodZRoN9DsQGHd8uyAkDmKHojHObLyjVy2z+ZwsTi/8kYdTm2gy0v7ug==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
  by MN2PR12MB4503.namprd12.prod.outlook.com (2603:10b6:208:264::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24; Wed, 4 May
- 2022 07:03:28 +0000
+ 2022 07:03:30 +0000
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5206.025; Wed, 4 May 2022
- 07:03:28 +0000
+ 07:03:30 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Moshe Shemesh <moshe@nvidia.com>,
-        Maher Sanalla <msanalla@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>,
+Cc:     netdev@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
+        Maor Gottlieb <maorg@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 14/15] net/mlx5: Avoid double clear or set of sync reset requested
-Date:   Wed,  4 May 2022 00:02:55 -0700
-Message-Id: <20220504070256.694458-15-saeedm@nvidia.com>
+Subject: [net 15/15] net/mlx5: Fix matching on inner TTC
+Date:   Wed,  4 May 2022 00:02:56 -0700
+Message-Id: <20220504070256.694458-16-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220504070256.694458-1-saeedm@nvidia.com>
 References: <20220504070256.694458-1-saeedm@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BY5PR17CA0029.namprd17.prod.outlook.com
- (2603:10b6:a03:1b8::42) To BY5PR12MB4209.namprd12.prod.outlook.com
+X-ClientProxiedBy: BY5PR04CA0010.namprd04.prod.outlook.com
+ (2603:10b6:a03:1d0::20) To BY5PR12MB4209.namprd12.prod.outlook.com
  (2603:10b6:a03:20d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 16fca368-f783-4a37-3e3f-08da2d9c30ba
+X-MS-Office365-Filtering-Correlation-Id: 9aaa49b6-8ada-4ae3-422e-08da2d9c31b5
 X-MS-TrafficTypeDiagnostic: MN2PR12MB4503:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB4503312723710058D94D1BAAB3C39@MN2PR12MB4503.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <MN2PR12MB450333F31B9D73F575873EADB3C39@MN2PR12MB4503.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: yn2aYQy1xmYQiNOmqyKVIrl8fgguv5udepUxyV7RFcw3DkaDn9VcUheG2PCkicFlYDUeZ3g1yeH2V+oLknHxdE2z4OkXXAfio/R6TKj/l5TVSStKqTZUN4RVEwBONNexIWHW2MnhNnkJTuIGeZsycwuPOMDmLPm7BjcM9apeNT6xH8MIHoANBOmbPgz8Yj8PtUkES+SWxgCXM5MqfpL4TmUtssRRKH4W7orsn8RbGDGYRO7aQiEhTlcV/9HImxoo3hhRRxIL3fNfmGkSvWGCzq05VRJaSAU6g8bZdOt+RAiKF+6IB6LtvhtfxFfDWFTym7HOoONzO/S/4x8uCTq/DCy+niY6PDSBYQj+EibTrd1lMkZde6llZL/4PkVPnQB2V6y6DaJymDXeHCO3J+sFpa3mwgqu6hlS7Y5UyFnltJs5eUBP07JsBvDZrRacST8mbokUOvqcMPVLBQOpIdmerKiXsV0ONuXyRJFyqqO61MXzo6fhSyCil/wuBxGNVcwVSTGX2ggWz2LsaDEcBG2aCbIJGlSux7Yd7oq+v5ycj9a1xlkfyOtDmJ37TKNG9kAaT8VILlV/fat/8Ova+w3/YkEiOzuhuBGM75wtTpW5cjDyha80Wa8lzWtqNjTdlfmZnFdRh9Isif7+jzXmgRgydA==
+X-Microsoft-Antispam-Message-Info: wc6NdLL01FgPBC+x5KdbLrhb0DQh1JTLLF0FpzHpT5wN7Yz+aIndGUFLo/Kznz75f0h87gAovQChil4GNVQvPlhuxwIj/jbIUOlSacBeGvuan/f+MfUge7Xe1NFS3G5ikurCikST4dgAXN8cm5scFj9Bmvgp+ZyrEmtvai/m9Rl9yYbe+ubyKin6+YXGSuD2NlLb80Xu416uRwaln26/eXEwPPA9Q2J5KC3teBNRbwJWR3Q609O1IyvRYEXUXMoEBUXKreTvOx5JMlup8bHK1lF9aGLJOiyyvLnNJen6/sQ74LbkBsenF9MdBEyCw08tYLEIvieAqxBfKARavUvtrqGIE675olC4GO3X4jjBokYJ9RFA3kiNd54bExVRL2kE30IRaO8IF2Kscsd0pxpYZjsS5uT6JvDhJb8Y08GYH5iyJGr8Mdx5PLuIpj+z0npNBAj5ZdeRWnryiDQoUGIax0dogD75pMsb62pZuaKS1DpFf9lCTQdFM9Sl8KU7K2SMFAwZ/ByPYyMAjrm9fbnlN7PCi1uGpII37hzHptpCKAV2q9nT4QILp9qCM/bMNlzdicxfw/InD7a2buMWAT2To/npL84+S8Zne10P0Q+69eTWoqLczFX1+LNLur4FPyVtax3223T+iBn7VtjsdEYmmA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6666004)(107886003)(6506007)(2906002)(36756003)(8676002)(508600001)(6486002)(38100700002)(66946007)(4326008)(6512007)(66556008)(66476007)(86362001)(8936002)(316002)(5660300002)(186003)(54906003)(1076003)(110136005)(83380400001)(2616005);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?S2ziZvv264Ks+7ASA+egHI2saS+MfR5UuinTdsJV+WxQJJkEhNlJ5Vp5fX4t?=
- =?us-ascii?Q?5G/9srN6OBtV3Y0fTJWjDN2zpxLlaUIkvCUyuSCVxc9R4v+oAzHNlGVmZocz?=
- =?us-ascii?Q?Sb21c4utrvkyVERMsaLl3kILMhstpDTryJK6+jcHnlcEa84vlK7xsF6HTopN?=
- =?us-ascii?Q?Gs3b61yXyESIFIvVPVlEGqCCl9isE7Ud4tnjpDi1WTiH8yg8Pl3PK0V7itjt?=
- =?us-ascii?Q?hBIWWLmYjdfI9J8NyTrLZVEZK2KXGV1FuhcAajgiRVQyHaM9rrDhXFfR3PQ2?=
- =?us-ascii?Q?hPt8PAMaeIwdLTx/R1sOyE+dGFGpRqxDGAGMhlmshBS/6D09RwL0rZtizK8D?=
- =?us-ascii?Q?LIKrwCVqwkcXmcyq2yb7ptws8iExwJFstWDavfCTni1oqHPWSMRgelKRXx2s?=
- =?us-ascii?Q?UVIqC1pxM3wesNxvB+mnf960z3VwJxok3KWfLgngqfcz7S2QIUUvjG8hJxW6?=
- =?us-ascii?Q?AiAjiqUE4UjgGRCERVlmVuETEOQe+4Nc5wMxJ2BA7azqnfkFNQaqNkEy/lVx?=
- =?us-ascii?Q?HJHgc91YDGouS8CU0mDT+MvTlfu67fCKK9A/bTPlIcLP/TAkyHj4qH/ToLkr?=
- =?us-ascii?Q?eKFeyBccdDKM7JcZoBDfWm4xjacVmrlEID6TPRQYjg9YF5aPG3dczeqlxVsX?=
- =?us-ascii?Q?Jt/AHUAz4IOphDJ/muJBHJ7dcsc8rFlYgPhOloReUUU0DXcXqiHHVQ7eXnEM?=
- =?us-ascii?Q?L9d84QTk+fjUnLdobcXEhkatUA8KpV+RjKAgC4/XQt+h5KQSj3XY+0NE24QL?=
- =?us-ascii?Q?EnsJU+21DH2ZB5Xg1kRWAz+yB6DUsp2cz5SuKLo++0Ia/kwic2u0uAmJXdJ4?=
- =?us-ascii?Q?O9FsC+KBdrlMf8HviCvdZQ2KQ9azeYt+FyjmRTgzcos60Wm9J2AWlmZ5JA9M?=
- =?us-ascii?Q?N53VmWtZ4OkzoJTUQ/TYqg8nf1apiY+/I+dkoMDUmtXSZ7ZKZjdnEb8IytJG?=
- =?us-ascii?Q?pbnIRipjDUsuRR/wR/IlWLHrsb+Y9nCYrwE8foN2WUaT3oPOxzoAILLpI6FF?=
- =?us-ascii?Q?X5TdFO/Pibdbndrx7Bin0ttWtxtRHAEe6L60TcIMDGPtRXjY90AYeggg0SCc?=
- =?us-ascii?Q?ZjRuOH2fz7T2Xe3lk+BvWETtxSsswjWVqyauWhPgZVAYFbCmTcXPmzxSWvcq?=
- =?us-ascii?Q?5BQQAnBRqwsA7/OF5cW8s7IMkBZycIVs0SVZtQr8elEDeaUK/Uqde17b4o2A?=
- =?us-ascii?Q?VBUKZ36XY6a4B/JimhAExMIK+4xtwvhFTSDAjzyBlbzpP0KwhFyiTh4/TP41?=
- =?us-ascii?Q?oBZBkC3+TCYrhQKFAO//L+pZpCkHFkHmUij3OQuvuvxj6/EbyCFWg+7b2MLi?=
- =?us-ascii?Q?XznfJDKYp4TTxGpHzYCx+W7uJ5x+3oYIqJpsOc9lF0mGgHu0OzJPYaiRAkU6?=
- =?us-ascii?Q?QX1DywZFe8sNT8yF9ounURFuoanwNodQgZUsXhu9Khk5UEKXuceucfs3DQdA?=
- =?us-ascii?Q?xuupUAvBJvQhijR8vyJJExmMZKk8Bv3/zMU77464SteXQORtvBzC/hQtuIDx?=
- =?us-ascii?Q?3MPVJxETud2p4wo6OdWbUvrl4ebb5AlhYNUCnA5eYi3C+YzzF1IFng7IObmg?=
- =?us-ascii?Q?hhlVW/rf+Xja1e4noBaaIXpGvnzd1CMs8kgpYgVpJsb2IeAL5b73Apfq4Zzn?=
- =?us-ascii?Q?2eY5RZLoqKvEwdOBjEYtn7CeqvcfWnyjdfSAW1RZpAT9GUPzaA7Y0T0FCSXV?=
- =?us-ascii?Q?iSBDWI3N7lLZoIca0ioLbQT34bVKrL0rTRO9D6cRCT6omp/9k6mqO08Wl6wM?=
- =?us-ascii?Q?BJmOsiaHB8jpa1WeXD73LxVFTcJlZrKWJRpPiwq1hGDhxtIzG3Rv?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?N32UYqtqKFUtqhKXCrmmEeRsPc3EYuq7cXDzEbaOocVcbDfp0rjs5gzet+WS?=
+ =?us-ascii?Q?aUudp1+JTsi73ttX2d3Yo/0rP47YJapOLdAVpDnD0WdHeDuBaeAwBqu1NcXX?=
+ =?us-ascii?Q?H8gn/a/Q7vknf+wiIyBVmdUqnxZxtfVrxib5HmQo97hfJNA1sjE34EW97BpM?=
+ =?us-ascii?Q?PGBnySKqKkvATcno364xInOv87WwyZxGOxHRHGvZfFlc79op4VnqiCXUMGzy?=
+ =?us-ascii?Q?Bj2cSHunVqsYFhc4hd6zLYH7+Ok1aEjrkzHvB25e7irKApaU+8VEFn378NUF?=
+ =?us-ascii?Q?JmiOBvsVadROvpqWWRQvd2cli38EdltkHoF53YZD1jiAy+L21N824bLqdkB/?=
+ =?us-ascii?Q?ikVcrX7pKdYlorO/IWt618ZJ9VFZo5LX0CCeWDIQBd0n4VD/pcJpX0Ag7+gD?=
+ =?us-ascii?Q?vxw+5TE6byokdrbZ5u0s7PJWKk9QL687V2KA8H9E7IRg4VBsVp+KhMU5gN1Z?=
+ =?us-ascii?Q?y/aZR2pTwQkQ9ReByoDn0sJjLCV1WXYYXTuJqJrH9Ne0M/W2cVu/LSFrLj7/?=
+ =?us-ascii?Q?KAFl8PP+kKXZJQfZg1mQXTu6K/r3YPIJZ4KTxxGyqVo1P9Gm81P3+Mz/RhFf?=
+ =?us-ascii?Q?JFun+qQazBLd2KwAnqIsWANFgBtjyT1+rPXCM1K/8kIT7N2KaXlMyMQbiEm1?=
+ =?us-ascii?Q?40dUsF5zr2Uc3WNrEV4LCj2hMIslksWJH/CIKmYyYavJUrWsojp6YQPolv47?=
+ =?us-ascii?Q?yGoHyK2BKQh1tdeGsyZ6HfX1pJisTcoZGA/PKSNpFMx2hxYcwTfE7jKwhn+r?=
+ =?us-ascii?Q?E7+pf2Wo6QJhhSJuStQftB2HN908eev/BJ6Rg0qJLWg4xCE/phtEnMeUjW7p?=
+ =?us-ascii?Q?oTepvzdQ44WQbJxjq/VQrrjcd7HiuBbuuZuxHe7RNtx7IuwySKqihKyAGmYw?=
+ =?us-ascii?Q?waK5bvjcPqVXgoW4hAfvFL7IsTgJtb7PY4Aw/iWEfn6hmzJW35/VVNEMAhBE?=
+ =?us-ascii?Q?UJyNw7hNC1zlKsfDnXJVkOLmIrCCgIl9Susy5w3hO7tMnsyTdKMnADIYnt1S?=
+ =?us-ascii?Q?3CMoNMAghMYQcD4wl5GYTwVkOiZp8fCPZfutFYqaNb7t+sGPNiXV9x/XzoxC?=
+ =?us-ascii?Q?C65phagNkAgRmK/AtjZ22fP+tevy1kTqTIPboFqClim/G3NKZON5wVma18KG?=
+ =?us-ascii?Q?ubKfp7s//rUvgecDBIHz7WbfmE+JP9XHVxQlfmxt+NlmFmCM21et74Q9dXZo?=
+ =?us-ascii?Q?rYvYXk9c8qcrE9xauk2OwHuf6e1XGn1i6DMNMkNi6nI+soKiHjbPj5v7xxqs?=
+ =?us-ascii?Q?BtJe268EoO2Lw0F4iNrx6lYc7zJuzFbtRDHMReVgw9XXxP2krM257QqDvsKN?=
+ =?us-ascii?Q?7UH8fqz/twSvblE3zpv94JJCwI+Sg8O2+VNKBrQ0DXiMlTPnvyoKRlgFzBCL?=
+ =?us-ascii?Q?IvczVTQ/qtQfYvL4QjYCuiatHWjvFfQmmQ4rH6lWPtzgFiTy0G7nPfKXzXiS?=
+ =?us-ascii?Q?wyPurnyTD6YiS8UsEnd6kyl+0aqC3dZ9PaF2sJ0MHt65RJn/RoQmCE1JDqCk?=
+ =?us-ascii?Q?RkrD4qGOiYJddH8W1hMV2KMcG/Tx5NgRAg7PlsVRSBMEZ/4MaI/qgEE5fT8L?=
+ =?us-ascii?Q?V2NPiYAzzTFi9Ixpo4rdYHpKZN3Vj+4elE+H9xvD1Ol1V9PRjWxm+J3uhs7E?=
+ =?us-ascii?Q?pvtAAyL90587F1UbHRrc9VwBgyS0aybPoVABqruemsu9aLlFY1EXVlNU708Q?=
+ =?us-ascii?Q?lQ7fjPRwxBXqKte/w42wOcxaVQSbPHHm8OtAKWnvxsLEBeFx9E7rCLybj91c?=
+ =?us-ascii?Q?JMGIktphHg62U3Vdi4vOKQN05+T1XRtBMf0wg4LKkckr0fT13C24?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16fca368-f783-4a37-3e3f-08da2d9c30ba
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9aaa49b6-8ada-4ae3-422e-08da2d9c31b5
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:03:28.3412
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:03:29.9660
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3v7H1ybLHR1xbAFOl6DC6FYcVPztQj0cNBkNo65NHV9lCzpBtn1QjsXw9ZVBbhX+yQIdoSkTaP6SCRYsH7l6Tg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: S9HIkySXXpj0FTH0xqPhv9nnQPotBV+T9J3eGzYCpBLDFRDXumhuSXG6edwPdJMLgOGKhJbI/1YoeSxXTNRlFA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4503
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -121,103 +120,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Moshe Shemesh <moshe@nvidia.com>
+From: Mark Bloch <mbloch@nvidia.com>
 
-Double clear of reset requested state can lead to NULL pointer as it
-will try to delete the timer twice. This can happen for example on a
-race between abort from FW and pci error or reset. Avoid such case using
-test_and_clear_bit() to verify only one time reset requested state clear
-flow. Similarly use test_and_set_bit() to verify only one time reset
-requested state set flow.
+The cited commits didn't use proper matching on inner TTC
+as a result distribution of encapsulated packets wasn't symmetric
+between the physical ports.
 
-Fixes: 7dd6df329d4c ("net/mlx5: Handle sync reset abort event")
-Signed-off-by: Moshe Shemesh <moshe@nvidia.com>
-Reviewed-by: Maher Sanalla <msanalla@nvidia.com>
-Reviewed-by: Shay Drory <shayd@nvidia.com>
+Fixes: 4c71ce50d2fe ("net/mlx5: Support partial TTC rules")
+Fixes: 8e25a2bc6687 ("net/mlx5: Lag, add support to create TTC tables for LAG port selection")
+Signed-off-by: Mark Bloch <mbloch@nvidia.com>
+Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../ethernet/mellanox/mlx5/core/fw_reset.c    | 28 +++++++++++++------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c | 2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c   | 2 ++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-index ec18d4ccbc11..ca1aba845dd6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c
-@@ -162,14 +162,19 @@ static void mlx5_stop_sync_reset_poll(struct mlx5_core_dev *dev)
- 	del_timer_sync(&fw_reset->timer);
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
+index a6592f9c3c05..5be322528279 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/port_sel.c
+@@ -505,7 +505,7 @@ static int mlx5_lag_create_inner_ttc_table(struct mlx5_lag *ldev)
+ 	struct ttc_params ttc_params = {};
  
--static void mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
-+static int mlx5_sync_reset_clear_reset_requested(struct mlx5_core_dev *dev, bool poll_health)
- {
- 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
+ 	mlx5_lag_set_inner_ttc_params(ldev, &ttc_params);
+-	port_sel->inner.ttc = mlx5_create_ttc_table(dev, &ttc_params);
++	port_sel->inner.ttc = mlx5_create_inner_ttc_table(dev, &ttc_params);
+ 	if (IS_ERR(port_sel->inner.ttc))
+ 		return PTR_ERR(port_sel->inner.ttc);
  
-+	if (!test_and_clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags)) {
-+		mlx5_core_warn(dev, "Reset request was already cleared\n");
-+		return -EALREADY;
-+	}
-+
- 	mlx5_stop_sync_reset_poll(dev);
--	clear_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
- 	if (poll_health)
- 		mlx5_start_health_poll(dev);
-+	return 0;
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
+index b63dec24747a..b78f2ba25c19 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_ttc.c
+@@ -408,6 +408,8 @@ static int mlx5_generate_inner_ttc_table_rules(struct mlx5_core_dev *dev,
+ 	for (tt = 0; tt < MLX5_NUM_TT; tt++) {
+ 		struct mlx5_ttc_rule *rule = &rules[tt];
  
- static void mlx5_sync_reset_reload_work(struct work_struct *work)
-@@ -229,13 +234,17 @@ static int mlx5_fw_reset_set_reset_sync_nack(struct mlx5_core_dev *dev)
- 	return mlx5_reg_mfrl_set(dev, MLX5_MFRL_REG_RESET_LEVEL3, 0, 2, false);
- }
- 
--static void mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
-+static int mlx5_sync_reset_set_reset_requested(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_fw_reset *fw_reset = dev->priv.fw_reset;
- 
-+	if (test_and_set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags)) {
-+		mlx5_core_warn(dev, "Reset request was already set\n");
-+		return -EALREADY;
-+	}
- 	mlx5_stop_health_poll(dev, true);
--	set_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags);
- 	mlx5_start_sync_reset_poll(dev);
-+	return 0;
- }
- 
- static void mlx5_fw_live_patch_event(struct work_struct *work)
-@@ -264,7 +273,9 @@ static void mlx5_sync_reset_request_event(struct work_struct *work)
- 			       err ? "Failed" : "Sent");
- 		return;
- 	}
--	mlx5_sync_reset_set_reset_requested(dev);
-+	if (mlx5_sync_reset_set_reset_requested(dev))
-+		return;
-+
- 	err = mlx5_fw_reset_set_reset_sync_ack(dev);
- 	if (err)
- 		mlx5_core_warn(dev, "PCI Sync FW Update Reset Ack Failed. Error code: %d\n", err);
-@@ -362,7 +373,8 @@ static void mlx5_sync_reset_now_event(struct work_struct *work)
- 	struct mlx5_core_dev *dev = fw_reset->dev;
- 	int err;
- 
--	mlx5_sync_reset_clear_reset_requested(dev, false);
-+	if (mlx5_sync_reset_clear_reset_requested(dev, false))
-+		return;
- 
- 	mlx5_core_warn(dev, "Sync Reset now. Device is going to reset.\n");
- 
-@@ -391,10 +403,8 @@ static void mlx5_sync_reset_abort_event(struct work_struct *work)
- 						      reset_abort_work);
- 	struct mlx5_core_dev *dev = fw_reset->dev;
- 
--	if (!test_bit(MLX5_FW_RESET_FLAGS_RESET_REQUESTED, &fw_reset->reset_flags))
-+	if (mlx5_sync_reset_clear_reset_requested(dev, true))
- 		return;
--
--	mlx5_sync_reset_clear_reset_requested(dev, true);
- 	mlx5_core_warn(dev, "PCI Sync FW Update Reset Aborted.\n");
- }
- 
++		if (test_bit(tt, params->ignore_dests))
++			continue;
+ 		rule->rule = mlx5_generate_inner_ttc_rule(dev, ft,
+ 							  &params->dests[tt],
+ 							  ttc_rules[tt].etype,
 -- 
 2.35.1
 
