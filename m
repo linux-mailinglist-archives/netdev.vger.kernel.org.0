@@ -2,51 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 383565193A2
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 03:47:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C8655193A8
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 03:47:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245469AbiEDBvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 21:51:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54806 "EHLO
+        id S245490AbiEDBvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 21:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245268AbiEDBvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 21:51:10 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E9E330F47
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 18:47:33 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id a11so21680pff.1
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 18:47:33 -0700 (PDT)
+        with ESMTP id S245374AbiEDBvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 21:51:11 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BC0326D7
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 18:47:34 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id k14so43026pga.0
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 18:47:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sclcWESS1vfOtw+/lNSZNu/Le9PHpJZ15I1QqAAnvbk=;
-        b=aAevwHR9bd3JwLUN2/LQ5c9sjKYomRXHOOzT8MO771crgcUz3lq0Os/XqytwNxvtUl
-         OUsDFPJQodMi3Gdr6qEsX6JPLYzpX2mmV6xIquzdXHmOBlRoXebJSJEipFEaZ36NWHtd
-         8ThHw67NIdrIhrBqNV3S6GthwijgxDY2pMUM4=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=+ZZ5vfFx25K1I7i1kYl8UxhLqvkhElnoRitD8+hKJmA=;
+        b=DpRwgsc8k+bO9cXVHmU7ksT2E8T7R4om62xOunRq9j6F4/Hlmd+72tPALfSIkWpTBv
+         6ZsB/FoXumwXqUlvu94h7ehF0Poi6zQZRyL/SVAXWNru3D7CYZKN+GO4S+p3OYu8TvOf
+         p5r4/HuAd0PoSIWCdxVFPC7ODUIYPeBjfKvmU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sclcWESS1vfOtw+/lNSZNu/Le9PHpJZ15I1QqAAnvbk=;
-        b=GuaD9gt+AJc5W1doUehxulJpH5SG86dLubGJosDSl3jnz3krkTFWOdWXWveJY1q7KT
-         VqJ+jzdXlFWsIle6IuGU5NmWd1BrN+VJoVEsntl9clcH3vDGFkSbrRymrL/feilrjUIg
-         foUHuFUKEsCMohBo0SKcVGDe1Oy27UobKq0/aEc36Ueeum7TkLnGfOxnjqNoNB9SYYEC
-         CBQQHfVDCkNdZ7Iw+fKS+/f1l9quAuu/hbq05lBepRpucUnljP0Py/kp1tXVlp8U/w3H
-         h1vKdOtm9cVAHFEeziRLm9ltwhhaZxZV5PMpES2SkQWH8jcPHUa+mu6TRzoIK9du6r87
-         RvmA==
-X-Gm-Message-State: AOAM533fkk+OmafTZU6KUMbou/cr/se0r+zVd9AKzu6quX2knytlp//r
-        tvccJp6NtN/4Zg1SwUYN8Pneiw==
-X-Google-Smtp-Source: ABdhPJzUPi96Fjb/DQUWQvNyerGs6VtmC5g6wU2czv4Ww7LsLvQHH1GWpZX27vEgkGgQ9anjBam12g==
-X-Received: by 2002:a05:6a00:140f:b0:4e0:6995:9c48 with SMTP id l15-20020a056a00140f00b004e069959c48mr18620378pfu.59.1651628852898;
-        Tue, 03 May 2022 18:47:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=+ZZ5vfFx25K1I7i1kYl8UxhLqvkhElnoRitD8+hKJmA=;
+        b=oXQ7Ro54AYVC5UBCT77eA8xdPjekXNVFG7EVerfl7MR33DQ82sYTKASHypUXqqdNfn
+         juRPIRdmJBZ8OpW41DZYpeiTCFpvWuZXhJBS53lcW1biaswl4t6IRTVerfhnSs8v42Eo
+         wX+v8FJSkBnxL3N0DYPCzzEalZdLQ/3YGRFRWFyRXgBjwdNwnGlSY9RLIhLrIomkL5F0
+         06yFczH/oFWIU+L+DlZ1yykZSFjB005xvzbqS3BZzw8AU82XZg+/39LNKWnIiBDfY64W
+         2q0DVl1NnmRTLGo3mBd7svRGbgIMSpXfnrMS2mfn+7oBa9TQU//I5thlf1Gbx1P6OTua
+         ErqQ==
+X-Gm-Message-State: AOAM531bHQjW95CZO9rl81IiXjlQDCOKIg1/z0TipVeaVGpkyWOflKiq
+        +nRj4BTDhAttkS0AwqM3fI7EhQ==
+X-Google-Smtp-Source: ABdhPJx1pk1Kj8VquWNvjueoOJF84IDUN+sdPy6JRVklo0yvv2jKaWOAa1dEeUA85vrZ210XI6GffA==
+X-Received: by 2002:aa7:962e:0:b0:50d:5ed8:aa23 with SMTP id r14-20020aa7962e000000b0050d5ed8aa23mr18603820pfg.43.1651628853848;
+        Tue, 03 May 2022 18:47:33 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id v24-20020a170902e8d800b0015ea8b4b8f3sm3957768plg.263.2022.05.03.18.47.32
+        by smtp.gmail.com with ESMTPSA id k8-20020a170902ce0800b0015e8d4eb283sm7000015plg.205.2022.05.03.18.47.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 18:47:32 -0700 (PDT)
+        Tue, 03 May 2022 18:47:33 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     "Gustavo A . R . Silva" <gustavoars@kernel.org>
 Cc:     Kees Cook <keescook@chromium.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rich Felker <dalias@aerifal.cx>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
         Alexei Starovoitov <ast@kernel.org>,
         alsa-devel@alsa-project.org, Al Viro <viro@zeniv.linux.org.uk>,
         Andrew Gabbasov <andrew_gabbasov@mentor.com>,
@@ -69,12 +74,10 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Dan Williams <dan.j.williams@intel.com>,
         David Gow <davidgow@google.com>,
         David Howells <dhowells@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
         Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
         devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
         Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
         Eli Cohen <elic@nvidia.com>,
-        Eric Dumazet <edumazet@google.com>,
         Eric Paris <eparis@parisplace.org>,
         Eugeniu Rosca <erosca@de.adit-jv.com>,
         Felipe Balbi <balbi@kernel.org>,
@@ -88,7 +91,6 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Hante Meuleman <hante.meuleman@broadcom.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Hulk Robot <hulkci@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
         "James E.J. Bottomley" <jejb@linux.ibm.com>,
         James Morris <jmorris@namei.org>,
         Jarkko Sakkinen <jarkko@kernel.org>,
@@ -127,12 +129,11 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Max Filippov <jcmvbkbc@gmail.com>,
         Mimi Zohar <zohar@linux.ibm.com>,
         Muchun Song <songmuchun@bytedance.com>,
-        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        Nathan Chancellor <nathan@kernel.org>,
         Nick Desaulniers <ndesaulniers@google.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Paul Moore <paul@paul-moore.com>,
-        Rich Felker <dalias@aerifal.cx>,
         Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
         "Serge E. Hallyn" <serge@hallyn.com>,
@@ -151,12 +152,14 @@ Cc:     Kees Cook <keescook@chromium.org>,
         xen-devel@lists.xenproject.org,
         Xiu Jianfeng <xiujianfeng@huawei.com>,
         Yang Yingliang <yangyingliang@huawei.com>
-Subject: [PATCH 00/32] Introduce flexible array struct memcpy() helpers
-Date:   Tue,  3 May 2022 18:44:09 -0700
-Message-Id: <20220504014440.3697851-1-keescook@chromium.org>
+Subject: [PATCH 01/32] netlink: Avoid memcpy() across flexible array boundary
+Date:   Tue,  3 May 2022 18:44:10 -0700
+Message-Id: <20220504014440.3697851-2-keescook@chromium.org>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220504014440.3697851-1-keescook@chromium.org>
+References: <20220504014440.3697851-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=6778; h=from:subject; bh=NBPx/kHPxccGjkqS1SEj//lWw761DgDLlzW6gj8lDu4=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBicdqAMDKbiuLQ8pX7zUwKdz8OKsd8xesPXEJn90lJ iEErvqmJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnHagAAKCRCJcvTf3G3AJjEaD/ sFb+hZKXd2lFEv0+WnlWvb0j4ta2t/UZVhsNUWQNDJHAVtv+Zlu02MxnR0jdR0CBnsA3iKMPIFMmfD pdgs6dba5/tH1Iyi6jW+wJXwtek/3ey7ygj+u19Odj4PSt0QygwmNm6MjSvTES52gqKWv74MU5t5xz L/SasXg+UAUYtWgal3FtLixo//9nvHNO1pQXa0nIFsWFnV/HFJgtQ4lutI26Hj2oKn8G30z3GHGSn4 1IRXOAidSEkPmoGdbgk1b5NrcIB4dDVp1bZOWVQ48/ez1pipyXC5BUmkDkC/X1S5WnuU0ZQ0UW1Grm 3khhO+QcGTzdaxvhpnGpJechhRJETE1ML25oQrj3M1NNy97RDl4CAzoWJillKIvj0+U+3eRoIKQc09 jVarH3JkPknzz7xPutFPSXX+ZRRa9ZIrntaHAJu8fM/gDMHvlhMmoSO/MpZW8uL4xNo34dAwBiIsfO 3kXWSB5poclt6J8JY4UGRwxeS2Ccjolknj9sm/IfEioLedUmK04grKYVaFhwm/AgWMQXfLQYxU4UVg LzieTWMmZ+uNuV5sEynHPDSzGXpTKhNmWdH0WmkjYCGd9FIF8ySFxwKVRfGpnPqbVGVOMqmYz9piV5 jE5S5aSXLfYPuj0uiXQg9UZZfkTvEGuBLHq71VsZwciiyvWRhtAG4UU4gmcQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2198; h=from:subject; bh=m3+rrHA3rlt0sA4WgKzRJNTXeSTN4vWW0f0prUvbWYY=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBicdqAKYSI60YG7oB43Zm2qf2XEYFq9+0dv6JxgKQA Vag6ObOJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnHagAAKCRCJcvTf3G3AJt+PD/ 4wYVpcKl2liC+Uc4jUmmdOovQey8J6/k2HmeHGxkjjuXUGIWCxvRqFTmpp0zt8q6NeCY1dzyQE7A9N PW2CVLlv5GLZfLyBlcsOWL4hofk/Ed905HvAky/Dx8yVe0LszOaIIrWGUii70nX0RIZBcDlNYaOY4k wGJaGLJ9XI5Abp/vMi8qzgEIVt5Qty6Z+cfnpAvETE9FFC0ibHAuxSsOCPhKMgvWgkyDjMAVgJQC6t TKGjSE1Rwow+68x8cxXa3ZsNgWXO0wHDaWWB4/QUxyVrq/AqCxOvgu3SljXBgVpaeUF41w+gB7rTXz Jpn7XXtJZLIDQT9yoNDAsj8yjQSIPdaKabA732knKP+dXXvoimMLj17LWxunuIrNQJ5Awl5Dz2jNa4 96eQ4Eabc5miPNc5+9VOK1Wc20FUE/uqW/VkQkBWzcnLXslpLRuJ2jNTFzk50BKZOJ20vutotuSmWf 5gqjyHzRfK+iajoBCEV6nUiWN7ewO8XDDayLZtzu5foCWXgFFwp2ZWksNnvY6M1djooGD0fU2cMDkZ HK9WR0ZfO5zv8cE5RCjDXb25deVhtGS6HRKU3vBlDmFx3drFqOEK/4zwTej6ttVyJqAspxBqEq7xpi JDgQOkTfh60YdtsNYhykruXCL3NnFuRLtxOeMGWD4IL6YtPwYfH3V6aFCljQ==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -169,134 +172,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+In preparation for run-time memcpy() bounds checking, split the nlmsg
+copying for error messages (which crosses a previous unspecified flexible
+array boundary) in half. Avoids the future run-time warning:
 
-This is the next phase of memcpy() buffer bounds checking[1], which
-starts by adding a new set of helpers to address common code patterns
-that result in memcpy() usage that can't be easily verified by the
-compiler (i.e. dynamic bounds due to flexible arrays). The runtime WARN
-from memcpy has been posted before, but now there's more context around
-alternatives for refactoring false positives, etc.
+memcpy: detected field-spanning write (size 32) of single field "&errmsg->msg" (size 16)
 
-The core of this series is patches 2 (flex_array.h), 3 (flex_array
-KUnit), and 4 (runtime memcpy WARN). Patch 1 is a fix to land before 4
-(and I can send separately), and everything else are examples of what the
-conversions look like for one of the helpers, mem_to_flex_dup(). These
-will need to land via their respective trees, but they all depend on
-patch 2, which I'm hoping to land in the coming merge window.
+Creates an explicit flexible array at the end of nlmsghdr for the payload,
+named "nlmsg_payload". There is no impact on UAPI; the sizeof(struct
+nlmsghdr) does not change, but now the compiler can better reason about
+where things are being copied.
 
-I'm happy to also point out that the conversions (patches 5+) are actually
-a net reduction in lines of code:
- 49 files changed, 154 insertions(+), 244 deletions(-)
+Fixed-by: Rasmus Villemoes <linux@rasmusvillemoes.dk>
+Link: https://lore.kernel.org/lkml/d7251d92-150b-5346-6237-52afc154bb00@rasmusvillemoes.dk
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Rich Felker <dalias@aerifal.cx>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+ include/uapi/linux/netlink.h | 1 +
+ net/netlink/af_netlink.c     | 5 ++++-
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-Anyway, please let me know what you think. And apologies in advance
-if this is spammy; the CC list got rather large due to the "treewide"
-nature of the example conversions.
-
-Also available here:
-https://git.kernel.org/pub/scm/linux/kernel/git/kees/linux.git/log/?h=flexcpy/next-20220502
-
--Kees
-
-[1] https://lwn.net/Articles/864521/
-
-Kees Cook (32):
-  netlink: Avoid memcpy() across flexible array boundary
-  Introduce flexible array struct memcpy() helpers
-  flex_array: Add Kunit tests
-  fortify: Add run-time WARN for cross-field memcpy()
-  brcmfmac: Use mem_to_flex_dup() with struct brcmf_fweh_queue_item
-  iwlwifi: calib: Prepare to use mem_to_flex_dup()
-  iwlwifi: calib: Use mem_to_flex_dup() with struct iwl_calib_result
-  iwlwifi: mvm: Use mem_to_flex_dup() with struct ieee80211_key_conf
-  p54: Use mem_to_flex_dup() with struct p54_cal_database
-  wcn36xx: Use mem_to_flex_dup() with struct wcn36xx_hal_ind_msg
-  nl80211: Use mem_to_flex_dup() with struct cfg80211_cqm_config
-  cfg80211: Use mem_to_flex_dup() with struct cfg80211_bss_ies
-  mac80211: Use mem_to_flex_dup() with several structs
-  af_unix: Use mem_to_flex_dup() with struct unix_address
-  802/garp: Use mem_to_flex_dup() with struct garp_attr
-  802/mrp: Use mem_to_flex_dup() with struct mrp_attr
-  net/flow_offload: Use mem_to_flex_dup() with struct flow_action_cookie
-  firewire: Use __mem_to_flex_dup() with struct iso_interrupt_event
-  afs: Use mem_to_flex_dup() with struct afs_acl
-  ASoC: sigmadsp: Use mem_to_flex_dup() with struct sigmadsp_data
-  soc: qcom: apr: Use mem_to_flex_dup() with struct apr_rx_buf
-  atags_proc: Use mem_to_flex_dup() with struct buffer
-  Bluetooth: Use mem_to_flex_dup() with struct
-    hci_op_configure_data_path
-  IB/hfi1: Use mem_to_flex_dup() for struct tid_rb_node
-  Drivers: hv: utils: Use mem_to_flex_dup() with struct cn_msg
-  ima: Use mem_to_flex_dup() with struct modsig
-  KEYS: Use mem_to_flex_dup() with struct user_key_payload
-  selinux: Use mem_to_flex_dup() with xfrm and sidtab
-  xtensa: Use mem_to_flex_dup() with struct property
-  usb: gadget: f_fs: Use mem_to_flex_dup() with struct ffs_buffer
-  xenbus: Use mem_to_flex_dup() with struct read_buffer
-  esas2r: Use __mem_to_flex() with struct atto_ioctl
-
- arch/arm/kernel/atags_proc.c                  |  12 +-
- arch/xtensa/platforms/xtfpga/setup.c          |   9 +-
- drivers/firewire/core-cdev.c                  |   7 +-
- drivers/hv/hv_utils_transport.c               |   7 +-
- drivers/infiniband/hw/hfi1/user_exp_rcv.c     |   7 +-
- drivers/infiniband/hw/hfi1/user_exp_rcv.h     |   4 +-
- drivers/net/wireless/ath/wcn36xx/smd.c        |   8 +-
- drivers/net/wireless/ath/wcn36xx/smd.h        |   4 +-
- .../broadcom/brcm80211/brcmfmac/fweh.c        |  11 +-
- drivers/net/wireless/intel/iwlwifi/dvm/agn.h  |   2 +-
- .../net/wireless/intel/iwlwifi/dvm/calib.c    |  23 +-
- .../net/wireless/intel/iwlwifi/dvm/ucode.c    |   8 +-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c  |   8 +-
- drivers/net/wireless/intersil/p54/eeprom.c    |   8 +-
- drivers/net/wireless/intersil/p54/p54.h       |   4 +-
- drivers/scsi/esas2r/atioctl.h                 |   1 +
- drivers/scsi/esas2r/esas2r_ioctl.c            |  11 +-
- drivers/soc/qcom/apr.c                        |  12 +-
- drivers/usb/gadget/function/f_fs.c            |  11 +-
- drivers/xen/xenbus/xenbus_dev_frontend.c      |  12 +-
- fs/afs/internal.h                             |   4 +-
- fs/afs/xattr.c                                |   7 +-
- include/keys/user-type.h                      |   4 +-
- include/linux/flex_array.h                    | 637 ++++++++++++++++++
- include/linux/fortify-string.h                |  70 +-
- include/linux/of.h                            |   3 +-
- include/linux/string.h                        |   1 +
- include/net/af_unix.h                         |  14 +-
- include/net/bluetooth/hci.h                   |   4 +-
- include/net/cfg80211.h                        |   4 +-
- include/net/flow_offload.h                    |   4 +-
- include/net/garp.h                            |   4 +-
- include/net/mac80211.h                        |   4 +-
- include/net/mrp.h                             |   4 +-
- include/uapi/linux/connector.h                |   4 +-
- include/uapi/linux/firewire-cdev.h            |   4 +-
- include/uapi/linux/netlink.h                  |   1 +
- include/uapi/linux/stddef.h                   |  14 +
- include/uapi/linux/xfrm.h                     |   4 +-
- lib/Kconfig.debug                             |  12 +-
- lib/Makefile                                  |   1 +
- lib/flex_array_kunit.c                        | 523 ++++++++++++++
- net/802/garp.c                                |   9 +-
- net/802/mrp.c                                 |   9 +-
- net/bluetooth/hci_request.c                   |   9 +-
- net/core/flow_offload.c                       |   7 +-
- net/mac80211/cfg.c                            |  22 +-
- net/mac80211/ieee80211_i.h                    |  12 +-
- net/netlink/af_netlink.c                      |   5 +-
- net/unix/af_unix.c                            |   7 +-
- net/wireless/core.h                           |   4 +-
- net/wireless/nl80211.c                        |  15 +-
- net/wireless/scan.c                           |  21 +-
- security/integrity/ima/ima_modsig.c           |  12 +-
- security/keys/user_defined.c                  |   7 +-
- security/selinux/ss/sidtab.c                  |   9 +-
- security/selinux/xfrm.c                       |   7 +-
- sound/soc/codecs/sigmadsp.c                   |  11 +-
- 58 files changed, 1409 insertions(+), 253 deletions(-)
- create mode 100644 include/linux/flex_array.h
- create mode 100644 lib/flex_array_kunit.c
-
+diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+index 855dffb4c1c3..47f9342d51bc 100644
+--- a/include/uapi/linux/netlink.h
++++ b/include/uapi/linux/netlink.h
+@@ -47,6 +47,7 @@ struct nlmsghdr {
+ 	__u16		nlmsg_flags;	/* Additional flags */
+ 	__u32		nlmsg_seq;	/* Sequence number */
+ 	__u32		nlmsg_pid;	/* Sending process port ID */
++	__u8		nlmsg_payload[];/* Contents of message */
+ };
+ 
+ /* Flags values */
+diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
+index 1b5a9c2e1c29..09346aee1022 100644
+--- a/net/netlink/af_netlink.c
++++ b/net/netlink/af_netlink.c
+@@ -2445,7 +2445,10 @@ void netlink_ack(struct sk_buff *in_skb, struct nlmsghdr *nlh, int err,
+ 			  NLMSG_ERROR, payload, flags);
+ 	errmsg = nlmsg_data(rep);
+ 	errmsg->error = err;
+-	memcpy(&errmsg->msg, nlh, payload > sizeof(*errmsg) ? nlh->nlmsg_len : sizeof(*nlh));
++	errmsg->msg = *nlh;
++	if (payload > sizeof(*errmsg))
++		memcpy(errmsg->msg.nlmsg_payload, nlh->nlmsg_payload,
++		       nlh->nlmsg_len - sizeof(*nlh));
+ 
+ 	if (nlk_has_extack && extack) {
+ 		if (extack->_msg) {
 -- 
 2.32.0
 
