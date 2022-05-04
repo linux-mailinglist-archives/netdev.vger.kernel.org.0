@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3968951A3BC
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:20:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A7E251A3C3
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 17:21:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352290AbiEDPYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 11:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
+        id S1352028AbiEDPYf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 11:24:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352356AbiEDPYC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:24:02 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 691A518E13;
-        Wed,  4 May 2022 08:20:25 -0700 (PDT)
+        with ESMTP id S1352310AbiEDPYK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 11:24:10 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBB4D43ED9;
+        Wed,  4 May 2022 08:20:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1651677626; x=1683213626;
+  t=1651677633; x=1683213633;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=VuDredfNWCy0VmcWUrDrUiLUfGevYZxvoXK38f7EraE=;
-  b=sQUPuDd6h91GEAaezG963qs5KtWuar0hrQ0IMezfrZN0Ir+cPKz1u+nV
-   Ay+ejDmIkxz9cBRLzS+nOuqOan74Ckcy3rbvCnvr45oK207IKHhUd7XwQ
-   H3mIWO1wpmjz8E5ZAHIBrG1ECIiMtSKDUmXIVNlcVdkZwFW5zjMJLUrKY
-   WRz2MdP5gQcEJJF0ALX8Q/3qONEEwgyLY09yMEik99Yq0UsLloy1LihSj
-   kpL7xB5SC7FriWJeUPjOS8g1zGAwL5nBG4MLFlu8sE0MYWg04VlcCK3jO
-   8tbSbEC4U2/dcPKxFLNbITfDRbuKxHcut9hIAMYAwgF2x/7KDsnrH2J0W
-   A==;
+  bh=+rCtV1iavC/O998Lu4+YGLSEk0OPAQ/6AUuzNmdoY4Y=;
+  b=nGVveDyyFUdibgJpP/Vd+lJywkI6deLaAew8kkXhWHqeaxc4bwu+9nNw
+   vQjyTjqAie0H8Zhb4gIWG2UaxnBuSCi6/Tm/Ijv3qL8HFQ2nlGoIKcXxT
+   pf6JVuEFDetG29FSmZyMBghPo0C0qgVeg3ybKPo4vsAxBzJV26Vc8G6Y6
+   fU3pmfNJ/F/zBrc8tlsvM8UVcatNe7+eyV7HJg4HotZZhPEo8XzXaH8MI
+   TLQqcKShNUPg2MDy2kP3fMIqbYwMVsr18gvhCinu5YZgI88C29jgRJgje
+   SJqhDXggGuRTCib9VUZtDDaYa5JgC/xgNAxIGO38aardnQ0brJiP6KTTx
+   g==;
 X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="162309179"
+   d="scan'208";a="94541451"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2022 08:20:25 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 04 May 2022 08:20:32 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 4 May 2022 08:20:19 -0700
+ 15.1.2375.17; Wed, 4 May 2022 08:20:31 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Wed, 4 May 2022 08:20:07 -0700
+ 15.1.2375.17 via Frontend Transport; Wed, 4 May 2022 08:20:20 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <netdev@vger.kernel.org>
@@ -60,9 +60,9 @@ CC:     KP Singh <kpsingh@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>
-Subject: [Patch net-next v13 07/13] net: dsa: microchip: add LAN937x SPI driver
-Date:   Wed, 4 May 2022 20:47:49 +0530
-Message-ID: <20220504151755.11737-8-arun.ramadoss@microchip.com>
+Subject: [Patch net-next v13 08/13] net: dsa: microchip: add support for MTU configuration and fast_age
+Date:   Wed, 4 May 2022 20:47:50 +0530
+Message-ID: <20220504151755.11737-9-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220504151755.11737-1-arun.ramadoss@microchip.com>
 References: <20220504151755.11737-1-arun.ramadoss@microchip.com>
@@ -79,301 +79,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch add the SPI driver for the LAN937x switches. It uses the
-lan937x_main.c and lan937x_dev.c functions.
+This patch add the support for port_max_mtu, port_change_mtu and
+port_fast_age dsa functionality.
 
 Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
 ---
- drivers/net/dsa/microchip/Makefile      |   1 +
- drivers/net/dsa/microchip/ksz_common.h  |   1 +
- drivers/net/dsa/microchip/lan937x_dev.c |   7 +
- drivers/net/dsa/microchip/lan937x_spi.c | 236 ++++++++++++++++++++++++
- 4 files changed, 245 insertions(+)
- create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
+ drivers/net/dsa/microchip/lan937x_dev.c  | 31 +++++++++++++++++
+ drivers/net/dsa/microchip/lan937x_main.c | 44 ++++++++++++++++++++++++
+ 2 files changed, 75 insertions(+)
 
-diff --git a/drivers/net/dsa/microchip/Makefile b/drivers/net/dsa/microchip/Makefile
-index d32ff38dc240..28d8eb62a795 100644
---- a/drivers/net/dsa/microchip/Makefile
-+++ b/drivers/net/dsa/microchip/Makefile
-@@ -10,3 +10,4 @@ obj-$(CONFIG_NET_DSA_MICROCHIP_KSZ8863_SMI)	+= ksz8863_smi.o
- obj-$(CONFIG_NET_DSA_MICROCHIP_LAN937X)		+= lan937x.o
- lan937x-objs := lan937x_dev.o
- lan937x-objs += lan937x_main.o
-+lan937x-objs += lan937x_spi.o
-diff --git a/drivers/net/dsa/microchip/ksz_common.h b/drivers/net/dsa/microchip/ksz_common.h
-index 5671f580948d..fd9e0705d2d2 100644
---- a/drivers/net/dsa/microchip/ksz_common.h
-+++ b/drivers/net/dsa/microchip/ksz_common.h
-@@ -151,6 +151,7 @@ void ksz_switch_remove(struct ksz_device *dev);
- int ksz8_switch_register(struct ksz_device *dev);
- int ksz9477_switch_register(struct ksz_device *dev);
- int lan937x_switch_register(struct ksz_device *dev);
-+int lan937x_check_device_id(struct ksz_device *dev);
- 
- void ksz_update_port_member(struct ksz_device *dev, int port);
- void ksz_init_mib_timer(struct ksz_device *dev);
 diff --git a/drivers/net/dsa/microchip/lan937x_dev.c b/drivers/net/dsa/microchip/lan937x_dev.c
-index 3f1797cc1d16..f430a8711775 100644
+index f430a8711775..353800edfa54 100644
 --- a/drivers/net/dsa/microchip/lan937x_dev.c
 +++ b/drivers/net/dsa/microchip/lan937x_dev.c
-@@ -386,8 +386,15 @@ static int lan937x_mdio_register(struct ksz_device *dev)
+@@ -63,6 +63,36 @@ void lan937x_cfg_port_member(struct ksz_device *dev, int port, u8 member)
+ 	lan937x_pwrite32(dev, port, REG_PORT_VLAN_MEMBERSHIP__4, member);
+ }
  
- static int lan937x_switch_init(struct ksz_device *dev)
++static void lan937x_flush_dyn_mac_table(struct ksz_device *dev, int port)
++{
++	unsigned int value;
++	u8 data;
++
++	regmap_update_bits(dev->regmap[0], REG_SW_LUE_CTRL_2,
++			   SW_FLUSH_OPTION_M << SW_FLUSH_OPTION_S,
++			   SW_FLUSH_OPTION_DYN_MAC << SW_FLUSH_OPTION_S);
++
++	if (port < dev->port_cnt) {
++		/* flush individual port */
++		lan937x_pread8(dev, port, P_STP_CTRL, &data);
++		if (!(data & PORT_LEARN_DISABLE))
++			lan937x_pwrite8(dev, port, P_STP_CTRL,
++					(data | PORT_LEARN_DISABLE));
++		lan937x_cfg(dev, S_FLUSH_TABLE_CTRL, SW_FLUSH_DYN_MAC_TABLE,
++			    true);
++
++		regmap_read_poll_timeout(dev->regmap[0], S_FLUSH_TABLE_CTRL,
++					 value,
++					 !(value & SW_FLUSH_DYN_MAC_TABLE), 10,
++					 1000);
++
++		lan937x_pwrite8(dev, port, P_STP_CTRL, data);
++	} else {
++		/* flush all */
++		lan937x_cfg(dev, S_FLUSH_TABLE_CTRL, SW_FLUSH_STP_TABLE, true);
++	}
++}
++
+ int lan937x_reset_switch(struct ksz_device *dev)
  {
+ 	u32 data32;
+@@ -437,6 +467,7 @@ static int lan937x_init(struct ksz_device *dev)
+ const struct ksz_dev_ops lan937x_dev_ops = {
+ 	.get_port_addr = lan937x_get_port_addr,
+ 	.cfg_port_member = lan937x_cfg_port_member,
++	.flush_dyn_mac_table = lan937x_flush_dyn_mac_table,
+ 	.port_setup = lan937x_port_setup,
+ 	.shutdown = lan937x_reset_switch,
+ 	.detect = lan937x_switch_detect,
+diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
+index 88ca91f59a6f..f48b54d9d2c0 100644
+--- a/drivers/net/dsa/microchip/lan937x_main.c
++++ b/drivers/net/dsa/microchip/lan937x_main.c
+@@ -8,6 +8,7 @@
+ #include <linux/phy.h>
+ #include <linux/of_net.h>
+ #include <linux/if_bridge.h>
++#include <linux/if_vlan.h>
+ #include <linux/math.h>
+ #include <net/dsa.h>
+ #include <net/switchdev.h>
+@@ -217,6 +218,46 @@ static int lan937x_setup(struct dsa_switch *ds)
+ 	return 0;
+ }
+ 
++static int lan937x_change_mtu(struct dsa_switch *ds, int port, int new_mtu)
++{
++	struct ksz_device *dev = ds->priv;
 +	int ret;
 +
- 	dev->ds->ops = &lan937x_switch_ops;
- 
-+	/* Check device tree */
-+	ret = lan937x_check_device_id(dev);
-+	if (ret < 0)
++	new_mtu += VLAN_ETH_HLEN + ETH_FCS_LEN;
++
++	if (dsa_is_cpu_port(ds, port))
++		new_mtu += LAN937X_TAG_LEN;
++
++	if (new_mtu >= FR_MIN_SIZE)
++		ret = lan937x_port_cfg(dev, port, REG_PORT_MAC_CTRL_0,
++				       PORT_JUMBO_EN, true);
++	else
++		ret = lan937x_port_cfg(dev, port, REG_PORT_MAC_CTRL_0,
++				       PORT_JUMBO_EN, false);
++	if (ret < 0) {
++		dev_err(ds->dev, "failed to enable jumbo\n");
 +		return ret;
-+
- 	dev->port_mask = (1 << dev->port_cnt) - 1;
- 
- 	dev->ports = devm_kzalloc(dev->dev,
-diff --git a/drivers/net/dsa/microchip/lan937x_spi.c b/drivers/net/dsa/microchip/lan937x_spi.c
-new file mode 100644
-index 000000000000..a50dfcf27aff
---- /dev/null
-+++ b/drivers/net/dsa/microchip/lan937x_spi.c
-@@ -0,0 +1,236 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Microchip LAN937X switch driver register access through SPI
-+ * Copyright (C) 2019-2021 Microchip Technology Inc.
-+ */
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/regmap.h>
-+#include <linux/spi/spi.h>
-+#include <linux/of_device.h>
-+
-+#include "ksz_common.h"
-+
-+#define SPI_ADDR_SHIFT 24
-+#define SPI_ADDR_ALIGN 3
-+#define SPI_TURNAROUND_SHIFT 5
-+
-+KSZ_REGMAP_TABLE(lan937x, 32, SPI_ADDR_SHIFT, SPI_TURNAROUND_SHIFT,
-+		 SPI_ADDR_ALIGN);
-+
-+struct lan937x_chip_data {
-+	u32 chip_id;
-+	const char *dev_name;
-+	int num_vlans;
-+	int num_alus;
-+	int num_statics;
-+	int cpu_ports;
-+	int port_cnt;
-+};
-+
-+static const struct of_device_id lan937x_dt_ids[];
-+
-+static const struct lan937x_chip_data lan937x_switch_chips[] = {
-+	{
-+		.chip_id = 0x00937010,
-+		.dev_name = "LAN9370",
-+		.num_vlans = 4096,
-+		.num_alus = 1024,
-+		.num_statics = 256,
-+		/* can be configured as cpu port */
-+		.cpu_ports = 0x10,
-+		/* total port count */
-+		.port_cnt = 5,
-+	},
-+	{
-+		.chip_id = 0x00937110,
-+		.dev_name = "LAN9371",
-+		.num_vlans = 4096,
-+		.num_alus = 1024,
-+		.num_statics = 256,
-+		/* can be configured as cpu port */
-+		.cpu_ports = 0x30,
-+		/* total port count */
-+		.port_cnt = 6,
-+	},
-+	{
-+		.chip_id = 0x00937210,
-+		.dev_name = "LAN9372",
-+		.num_vlans = 4096,
-+		.num_alus = 1024,
-+		.num_statics = 256,
-+		/* can be configured as cpu port */
-+		.cpu_ports = 0x30,
-+		/* total port count */
-+		.port_cnt = 8,
-+	},
-+	{
-+		.chip_id = 0x00937310,
-+		.dev_name = "LAN9373",
-+		.num_vlans = 4096,
-+		.num_alus = 1024,
-+		.num_statics = 256,
-+		/* can be configured as cpu port */
-+		.cpu_ports = 0x38,
-+		/* total port count */
-+		.port_cnt = 5,
-+	},
-+	{
-+		.chip_id = 0x00937410,
-+		.dev_name = "LAN9374",
-+		.num_vlans = 4096,
-+		.num_alus = 1024,
-+		.num_statics = 256,
-+		/* can be configured as cpu port */
-+		.cpu_ports = 0x30,
-+		/* total port count */
-+		.port_cnt = 8,
-+	},
-+};
-+
-+static int lan937x_spi_probe(struct spi_device *spi)
-+{
-+	struct regmap_config rc;
-+	struct ksz_device *dev;
-+	int i, ret;
-+
-+	dev = ksz_switch_alloc(&spi->dev, spi);
-+	if (!dev)
-+		return -ENOMEM;
-+
-+	for (i = 0; i < ARRAY_SIZE(lan937x_regmap_config); i++) {
-+		rc = lan937x_regmap_config[i];
-+		rc.lock_arg = &dev->regmap_mutex;
-+		dev->regmap[i] = devm_regmap_init_spi(spi, &rc);
-+
-+		if (IS_ERR(dev->regmap[i])) {
-+			ret = PTR_ERR(dev->regmap[i]);
-+			dev_err(&spi->dev,
-+				"Failed to initialize regmap%i: %d\n",
-+				lan937x_regmap_config[i].val_bits, ret);
-+			return ret;
-+		}
 +	}
 +
-+	if (spi->dev.platform_data)
-+		dev->pdata = spi->dev.platform_data;
-+
-+	ret = lan937x_switch_register(dev);
-+	/* Main DSA driver may not be started yet. */
-+	if (ret)
++	/* Write the frame size in PORT_MAX_FR_SIZE register */
++	ret = lan937x_pwrite16(dev, port, PORT_MAX_FR_SIZE, new_mtu);
++	if (ret < 0) {
++		dev_err(ds->dev, "failed to change the mtu\n");
 +		return ret;
-+
-+	spi_set_drvdata(spi, dev);
++	}
 +
 +	return 0;
 +}
 +
-+int lan937x_check_device_id(struct ksz_device *dev)
++static int lan937x_get_max_mtu(struct dsa_switch *ds, int port)
 +{
-+	const struct lan937x_chip_data *dt_chip_data;
-+	const struct of_device_id *match;
-+	int i;
-+
-+	dt_chip_data = of_device_get_match_data(dev->dev);
-+
-+	if (!dt_chip_data)
-+		return -EINVAL;
-+
-+	for (match = lan937x_dt_ids; match->compatible[0]; match++) {
-+		const struct lan937x_chip_data *chip_data = match->data;
-+
-+		/* Check for chip id */
-+		if (chip_data->chip_id != dev->chip_id)
-+			continue;
-+
-+		/* Check for Device Tree and Chip ID */
-+		if (dt_chip_data->chip_id != dev->chip_id) {
-+			dev_err(dev->dev,
-+				"Device tree specifies chip %s but found %s, please fix it!\n",
-+				dt_chip_data->dev_name, chip_data->dev_name);
-+			return -ENODEV;
-+		}
-+
-+		break;
-+	}
-+
-+	for (i = 0; i < ARRAY_SIZE(lan937x_switch_chips); i++) {
-+		const struct lan937x_chip_data *chip = &lan937x_switch_chips[i];
-+
-+		if (dev->chip_id == chip->chip_id) {
-+			dev->name = chip->dev_name;
-+			dev->num_vlans = chip->num_vlans;
-+			dev->num_alus = chip->num_alus;
-+			dev->num_statics = chip->num_statics;
-+			dev->port_cnt = chip->port_cnt;
-+			dev->cpu_ports = chip->cpu_ports;
-+			break;
-+		}
-+	}
-+
-+	/* no switch found */
-+	if (!dev->port_cnt)
-+		return -ENODEV;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(lan937x_check_device_id);
-+
-+static void lan937x_spi_remove(struct spi_device *spi)
-+{
-+	struct ksz_device *dev = spi_get_drvdata(spi);
-+
-+	if (dev)
-+		ksz_switch_remove(dev);
-+
-+	spi_set_drvdata(spi, NULL);
++	/* Frame max size is 9000 (= 0x2328) if
++	 * jumbo frame support is enabled, PORT_JUMBO_EN bit will be enabled
++	 * based on mtu in lan937x_change_mtu() API
++	 */
++	return (FR_MAX_SIZE - VLAN_ETH_HLEN - ETH_FCS_LEN);
 +}
 +
-+static void lan937x_spi_shutdown(struct spi_device *spi)
-+{
-+	struct ksz_device *dev = spi_get_drvdata(spi);
-+
-+	if (dev)
-+		dsa_switch_shutdown(dev->ds);
-+
-+	spi_set_drvdata(spi, NULL);
-+}
-+
-+static const struct of_device_id lan937x_dt_ids[] = {
-+	{ .compatible = "microchip,lan9370", .data = &lan937x_switch_chips[0] },
-+	{ .compatible = "microchip,lan9371", .data = &lan937x_switch_chips[1] },
-+	{ .compatible = "microchip,lan9372", .data = &lan937x_switch_chips[2] },
-+	{ .compatible = "microchip,lan9373", .data = &lan937x_switch_chips[3] },
-+	{ .compatible = "microchip,lan9374", .data = &lan937x_switch_chips[4] },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, lan937x_dt_ids);
-+
-+static const struct spi_device_id lan937x_spi_ids[] = {
-+	{ .name = "lan9370" },
-+	{ .name = "lan9371" },
-+	{ .name = "lan9372" },
-+	{ .name = "lan9373" },
-+	{ .name = "lan9374" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, lan937x_spi_ids);
-+
-+static struct spi_driver lan937x_spi_driver = {
-+	.driver = {
-+		.name	= "lan937x-switch",
-+		.owner	= THIS_MODULE,
-+		.of_match_table = of_match_ptr(lan937x_dt_ids),
-+	},
-+	.probe	= lan937x_spi_probe,
-+	.remove	= lan937x_spi_remove,
-+	.shutdown = lan937x_spi_shutdown,
-+	.id_table = lan937x_spi_ids,
-+};
-+
-+module_spi_driver(lan937x_spi_driver);
-+
-+MODULE_ALIAS("spi:lan937x");
-+
-+MODULE_AUTHOR("Prasanna Vengateshan Varadharajan <Prasanna.Vengateshan@microchip.com>");
-+MODULE_DESCRIPTION("Microchip LAN937x Series Switch SPI access Driver");
-+MODULE_LICENSE("GPL");
+ const struct dsa_switch_ops lan937x_switch_ops = {
+ 	.get_tag_protocol = lan937x_get_tag_protocol,
+ 	.setup = lan937x_setup,
+@@ -226,6 +267,9 @@ const struct dsa_switch_ops lan937x_switch_ops = {
+ 	.port_bridge_join = ksz_port_bridge_join,
+ 	.port_bridge_leave = ksz_port_bridge_leave,
+ 	.port_stp_state_set = lan937x_port_stp_state_set,
++	.port_fast_age = ksz_port_fast_age,
++	.port_max_mtu = lan937x_get_max_mtu,
++	.port_change_mtu = lan937x_change_mtu,
+ };
+ 
+ int lan937x_switch_register(struct ksz_device *dev)
 -- 
 2.33.0
 
