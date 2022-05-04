@@ -2,59 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18956519459
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 03:51:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95EBD519540
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 03:59:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343769AbiEDBzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 3 May 2022 21:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57058 "EHLO
+        id S1344124AbiEDCCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 3 May 2022 22:02:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45872 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237510AbiEDByM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 21:54:12 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B484507C
-        for <netdev@vger.kernel.org>; Tue,  3 May 2022 18:48:49 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id l11-20020a17090a49cb00b001d923a9ca99so22080pjm.1
-        for <netdev@vger.kernel.org>; Tue, 03 May 2022 18:48:49 -0700 (PDT)
+        with ESMTP id S1343893AbiEDCCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 3 May 2022 22:02:01 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FFD44A3E
+        for <netdev@vger.kernel.org>; Tue,  3 May 2022 18:57:46 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id c14so32441pfn.2
+        for <netdev@vger.kernel.org>; Tue, 03 May 2022 18:57:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=QnKXHDo7FoS6A9KJnTSD5KrVSbLLoX11tytSVaJywLg=;
-        b=I1CnhqzTuM3VIMYb3RIInFBjlZ/Kx1CC2nOaz3zCzGfRz66UhpKktUjcUf1DB5iFHu
-         gfyX0fG10mb1nZrZrHamW6VaM5Mxf2xxMafia1jAkPA8Cn5ohLG+uBumAmwOSdS3hISM
-         a4JzdC7Fo3kAKeDLIrkA80T/ZAttaFcZAV7gI=
+        bh=gAffb2dB7AJw8ctZpf7uy/Kjt0ZfUPuqpFj+O/VUlMc=;
+        b=Hd3jrxU8+XlRdXnNJ6BuxLBWU0ZKLG70m7wHx4jqP+VfQJII0AB4HJY2PvK+TXUYom
+         id9ML06dSBRB1VVnBWjBz+2v5YDaqSJHQM5Ls3McxesxCE+qRmiHqxTVev9Mnq0iPJTj
+         hb0i3oZtBtCUvWZopE6bN0CU7y3IuWgie3Mk8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=QnKXHDo7FoS6A9KJnTSD5KrVSbLLoX11tytSVaJywLg=;
-        b=MQR/xDcOV+3MzMZT+t0WpoCcNUtTdj4Bq+iFyndRxmlE/giIfMmNYCLoLSxzsZM0OF
-         ig8Hd8k/f6tNy2plWQHGPvMEYXnbIqbQf0yg/3vS5SjyvE5FAfo3yNtf/cWIljjR/X8J
-         6U2HcyGSN7lnvHP5+IYbv31zFnGjC5zbqGtcNdxK4te2dorZS93al7xT7B5TMXxao0My
-         RQTjtyrQzhPvpFAfo3PFqkRpUzfTAVt5GWz0KrPUXOTQtnkc56X85wlkGm7UQWhHvqis
-         ZAdaiZZdZ//GKMWZuMvnd5wzUna36/cpHe1ZsFXMHcsm3Dj4pjjEUVfYfrEwA3LiIiV8
-         NIAg==
-X-Gm-Message-State: AOAM5301gVlxCRGEQeyZI3rNP5mUqfB9CJ+dty+6xR9HNWA32mQe77UZ
-        64tJPt1MfzcnMqoZGIgLuyDrRA==
-X-Google-Smtp-Source: ABdhPJwfTAxyAJFgY1oitylR/Cmm8/uATlVgjIuVTmKRpsuPoxTiwANwfO0lQwCtHkRUnQW8wKiN6Q==
-X-Received: by 2002:a17:90b:180d:b0:1dc:6c19:afd3 with SMTP id lw13-20020a17090b180d00b001dc6c19afd3mr7816856pjb.84.1651628867653;
-        Tue, 03 May 2022 18:47:47 -0700 (PDT)
+        bh=gAffb2dB7AJw8ctZpf7uy/Kjt0ZfUPuqpFj+O/VUlMc=;
+        b=i0cmO+72ud0xj/TjEUENzCzDAgnvLkEX3wnGvVb+0cQ64mYYXtLukVhY53vZ7M3iiG
+         tSRCIa+iNnth+/nVHSbeN/AD5mnJnnZ3SOGgDJMEFIlGn6gyqMHqs/F2WujDOzhFEZKY
+         J/Ykw65l80XX6PuChs4uZfD2mhJi/t2HtoPdcYB1Wdh0awd1AWYoHk8urB3RipwuZwee
+         Njjm/WnBBGhIrvHYKYowRcrPdYR2+81yApuElpDLT2IPaLsp8FJ0l1//mop90+ZTMPLu
+         7MWVLGICIzl78lfzee07/8SjKEQlNQ18ya24go3Cu7wmyiPQZ9NjjqK7BF7JzCYQ+K+a
+         mnyg==
+X-Gm-Message-State: AOAM532atFsJu4ozlAmu91OWH6+SYAKyB8XOZ1eKoz/J5X6WiarQXH8j
+        yfhm/xdCr1kvWNYfiysNm2lObQ==
+X-Google-Smtp-Source: ABdhPJxlBLRlfGSyNuTVAnetkTua0ronzL5456WpZJAiTHWkRGz8uFL5gIV5Iqbc+GrBy/+PUt+kRw==
+X-Received: by 2002:a05:6a00:194a:b0:50d:aef0:fb44 with SMTP id s10-20020a056a00194a00b0050daef0fb44mr18390643pfk.77.1651629465325;
+        Tue, 03 May 2022 18:57:45 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id x16-20020a1709027c1000b0015e8d4eb294sm6998452pll.222.2022.05.03.18.47.42
+        by smtp.gmail.com with ESMTPSA id a4-20020aa780c4000000b0050dc76281d9sm7179167pfn.179.2022.05.03.18.57.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 18:47:45 -0700 (PDT)
+        Tue, 03 May 2022 18:57:44 -0700 (PDT)
 From:   Kees Cook <keescook@chromium.org>
 To:     "Gustavo A . R . Silva" <gustavoars@kernel.org>
 Cc:     Kees Cook <keescook@chromium.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>, linux-rdma@vger.kernel.org,
         Alexei Starovoitov <ast@kernel.org>,
         alsa-devel@alsa-project.org, Al Viro <viro@zeniv.linux.org.uk>,
         Andrew Gabbasov <andrew_gabbasov@mentor.com>,
@@ -77,10 +72,11 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Dan Williams <dan.j.williams@intel.com>,
         David Gow <davidgow@google.com>,
         David Howells <dhowells@redhat.com>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        "David S. Miller" <davem@davemloft.net>,
         devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
         Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
         Eli Cohen <elic@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
         Eric Paris <eparis@parisplace.org>,
         Eugeniu Rosca <erosca@de.adit-jv.com>,
         Felipe Balbi <balbi@kernel.org>,
@@ -94,11 +90,12 @@ Cc:     Kees Cook <keescook@chromium.org>,
         Hante Meuleman <hante.meuleman@broadcom.com>,
         Herbert Xu <herbert@gondor.apana.org.au>,
         Hulk Robot <hulkci@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         "James E.J. Bottomley" <jejb@linux.ibm.com>,
         James Morris <jmorris@namei.org>,
         Jarkko Sakkinen <jarkko@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Jaroslav Kysela <perex@perex.cz>, Jens Axboe <axboe@kernel.dk>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
         Johannes Berg <johannes.berg@intel.com>,
         Johannes Berg <johannes@sipsolutions.net>,
         John Keeping <john@metanate.com>,
@@ -109,28 +106,30 @@ Cc:     Kees Cook <keescook@chromium.org>,
         "K. Y. Srinivasan" <kys@microsoft.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Lee Jones <lee.jones@linaro.org>,
-        Leon Romanovsky <leon@kernel.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
         linux1394-devel@lists.sourceforge.net,
         linux-afs@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-hardening@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-scsi@vger.kernel.org,
         linux-security-module@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-wireless@vger.kernel.org, linux-xtensa@linux-xtensa.org,
         llvm@lists.linux.dev, Loic Poulain <loic.poulain@linaro.org>,
         Louis Peens <louis.peens@corigine.com>,
         Luca Coelho <luciano.coelho@intel.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
         Marc Dionne <marc.dionne@auristor.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Mark Brown <broonie@kernel.org>,
         "Martin K. Petersen" <martin.petersen@oracle.com>,
         Max Filippov <jcmvbkbc@gmail.com>,
         Mimi Zohar <zohar@linux.ibm.com>,
         Muchun Song <songmuchun@bytedance.com>,
-        Nathan Chancellor <nathan@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
         Nick Desaulniers <ndesaulniers@google.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Paul Moore <paul@paul-moore.com>,
         Rich Felker <dalias@aerifal.cx>,
         Rob Herring <robh+dt@kernel.org>,
@@ -151,14 +150,14 @@ Cc:     Kees Cook <keescook@chromium.org>,
         xen-devel@lists.xenproject.org,
         Xiu Jianfeng <xiujianfeng@huawei.com>,
         Yang Yingliang <yangyingliang@huawei.com>
-Subject: [PATCH 23/32] Bluetooth: Use mem_to_flex_dup() with struct hci_op_configure_data_path
-Date:   Tue,  3 May 2022 18:44:32 -0700
-Message-Id: <20220504014440.3697851-24-keescook@chromium.org>
+Subject: [PATCH 24/32] IB/hfi1: Use mem_to_flex_dup() for struct tid_rb_node
+Date:   Tue,  3 May 2022 18:44:33 -0700
+Message-Id: <20220504014440.3697851-25-keescook@chromium.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220504014440.3697851-1-keescook@chromium.org>
 References: <20220504014440.3697851-1-keescook@chromium.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2134; h=from:subject; bh=wkblXI7lu8DePbBEkrWcF6TPvSCY+fsd3+cJcm8lUX8=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBicdqFhAG+9XZipSZhJ97uz0MVZAPm9ikLEayXBQca tSbucr2JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnHahQAKCRCJcvTf3G3AJuQgD/ 0RkSBHvTdsmM6uGZhl5vuzw4/t8A08lVzH+n9delDb7Snc4rClp98T7EnMak/i+Ne5YZV/OBum0+Ri 2Rso0KTZ7bgngl/ZWjToI21GZHTx0BvhmyN92pCyMRw8Q5g2WKeqI0pNWy8pO+tdkj+OZBI+kBTpzB DSCicDcFGgdZrS4ClZfIJ3ul5GuyH628GJbhzyj2IkHnbcVJTgVXEYTZfa9CUXIk5OxX0tgeN5hgKI YhvXiesuoZ4ZeGkGoBZgoWkyhWZg61taY7sMsK18JUdPuD2jO1Ziy7pPKMcmqr1QC1dxYBE2bshZ+7 3zm60sMtOhDVJc9pY0GGXTh83THBv9el1PLd8R1i03dHlFU+DYzQrq0OMEQ82DXkr9t89m7UmRpPNh UlFCgY75idmpPhVdKyd4ETvQlZtXZLEj7o98G9BByjCzXoXREee+09IWrA/DOZh7zHcuLHY4mwot7j j2JWq1nvZO0OVDBDjoUB6FMPShLAPZiPeGYn+67y9JU7lL1VFHN8sVsxBLq08bQ/HI32D+rAgZCCsn fVZ7tajhB6zkfYibttaD+E5RLSV+adLK+eXnFBqoQttbtNsKxuiZQF0dJZusj9dnKk/M5l3Ud90Uiq FXQeX6fOpiALefTfw5/ocOvMAHAP7Hz1WKgKO3NK7KYNbxbmS5+syYfDxdWQ==
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2597; h=from:subject; bh=j5qqa5iL1lvOORaDlLtm9UR9x0OLEu0XOUmPN1O3Ohg=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBicdqGK+oIIr5PEnTJbsZIIE6wDFvul9czcGBuCOb4 OJUbtUyJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnHahgAKCRCJcvTf3G3AJlPpD/ 0VwfEZeptxhwXvC03S8kaKbVzD8jf4H7HBP2WwjQ4ovXcZoeEPoHk43gm5ko9ZHxsEuhVYfSsNabEv KwzfkX+Be0SZ1mudTtAQCrxBnFPmMKxMszwt9mMNZtm6E/XnP2w7B2+1rA358f0MYJXzvFe7/kn3VU 5iBgnGpNGOZgXOG+jBcjTyiKQiMSXDSUp0cIXvVQpsePyQMfJGh/eu5bFCRNrwstStCte4Ow73c4Va IaWYSGyLDy4kuX78W5f19yAQR3uD4X1ryr/AVwZV0/P/jnJmz5EmCKU1qFe2YNVe7kF2+3nxmDxawo cvJJ0SuVsX0ZNg8KDkjZEG/9wBeWjiXSyoD0G6pP/WshlZoegMuvye4fFyhyKmatyVqt3t8c7FD223 F60swFGSkgfSg6J4GMTvGe3/d8QAl3MTq2ZH18n8DlcYgMk+3J2vMunZUU58h8auD6hXcni1nXgoMb GZApmHHYK5s4Fqge2j1uqJVBjHZOX3fK3YaZhKtoTqm6FUuJw+H1P3nVYfkcXshsd8t27NuIM2hLa9 jZnMgeaYhLQAUUWWjOKVskE6/+GP5gz4+qjVUI/Alev5kHFOWsbWXBC5JGCSrGBZtpMfJqMcYVqTxZ tS3tgiujwVPsRJdYvH3X2NotOyhjEtEFR8egS3/g8M+hET9UITd8x/6NqLnw==
 X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -176,62 +175,67 @@ replace the open-coded a deserialization of bytes out of memory into a
 trailing flexible array by using a flex_array.h helper to perform the
 allocation, bounds checking, and copying.
 
-Cc: Marcel Holtmann <marcel@holtmann.org>
-Cc: Johan Hedberg <johan.hedberg@gmail.com>
-Cc: Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Paolo Abeni <pabeni@redhat.com>
-Cc: linux-bluetooth@vger.kernel.org
-Cc: netdev@vger.kernel.org
+Cc: Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>
+Cc: Jason Gunthorpe <jgg@ziepe.ca>
+Cc: Leon Romanovsky <leon@kernel.org>
+Cc: linux-rdma@vger.kernel.org
 Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
- include/net/bluetooth/hci.h | 4 ++--
- net/bluetooth/hci_request.c | 9 ++-------
- 2 files changed, 4 insertions(+), 9 deletions(-)
+ drivers/infiniband/hw/hfi1/user_exp_rcv.c | 7 ++-----
+ drivers/infiniband/hw/hfi1/user_exp_rcv.h | 4 ++--
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/include/net/bluetooth/hci.h b/include/net/bluetooth/hci.h
-index 62a9bb022aed..7b398ef0b46d 100644
---- a/include/net/bluetooth/hci.h
-+++ b/include/net/bluetooth/hci.h
-@@ -1321,8 +1321,8 @@ struct hci_rp_read_local_oob_ext_data {
- struct hci_op_configure_data_path {
- 	__u8	direction;
- 	__u8	data_path_id;
--	__u8	vnd_len;
--	__u8	vnd_data[];
-+	DECLARE_FLEX_ARRAY_ELEMENTS_COUNT(__u8, vnd_len);
-+	DECLARE_FLEX_ARRAY_ELEMENTS(__u8, vnd_data);
- } __packed;
+diff --git a/drivers/infiniband/hw/hfi1/user_exp_rcv.c b/drivers/infiniband/hw/hfi1/user_exp_rcv.c
+index 186d30291260..f14846662ac9 100644
+--- a/drivers/infiniband/hw/hfi1/user_exp_rcv.c
++++ b/drivers/infiniband/hw/hfi1/user_exp_rcv.c
+@@ -683,7 +683,7 @@ static int set_rcvarray_entry(struct hfi1_filedata *fd,
+ {
+ 	int ret;
+ 	struct hfi1_ctxtdata *uctxt = fd->uctxt;
+-	struct tid_rb_node *node;
++	struct tid_rb_node *node = NULL;
+ 	struct hfi1_devdata *dd = uctxt->dd;
+ 	dma_addr_t phys;
+ 	struct page **pages = tbuf->pages + pageidx;
+@@ -692,8 +692,7 @@ static int set_rcvarray_entry(struct hfi1_filedata *fd,
+ 	 * Allocate the node first so we can handle a potential
+ 	 * failure before we've programmed anything.
+ 	 */
+-	node = kzalloc(struct_size(node, pages, npages), GFP_KERNEL);
+-	if (!node)
++	if (mem_to_flex_dup(&node, pages, npages, GFP_KERNEL))
+ 		return -ENOMEM;
  
- #define HCI_OP_READ_LOCAL_VERSION	0x1001
-diff --git a/net/bluetooth/hci_request.c b/net/bluetooth/hci_request.c
-index f4afe482e300..e29be3810b93 100644
---- a/net/bluetooth/hci_request.c
-+++ b/net/bluetooth/hci_request.c
-@@ -2435,19 +2435,14 @@ int hci_req_configure_datapath(struct hci_dev *hdev, struct bt_codec *codec)
- 	if (err < 0)
- 		goto error;
+ 	phys = dma_map_single(&dd->pcidev->dev, __va(page_to_phys(pages[0])),
+@@ -707,12 +706,10 @@ static int set_rcvarray_entry(struct hfi1_filedata *fd,
  
--	cmd = kzalloc(sizeof(*cmd) + vnd_len, GFP_KERNEL);
--	if (!cmd) {
--		err = -ENOMEM;
-+	err = mem_to_flex_dup(&cmd, vnd_data, vnd_len, GFP_KERNEL);
-+	if (err < 0)
- 		goto error;
--	}
+ 	node->fdata = fd;
+ 	node->phys = page_to_phys(pages[0]);
+-	node->npages = npages;
+ 	node->rcventry = rcventry;
+ 	node->dma_addr = phys;
+ 	node->grp = grp;
+ 	node->freed = false;
+-	memcpy(node->pages, pages, flex_array_size(node, pages, npages));
  
- 	err = hdev->get_data_path_id(hdev, &cmd->data_path_id);
- 	if (err < 0)
- 		goto error;
+ 	if (fd->use_mn) {
+ 		ret = mmu_interval_notifier_insert(
+diff --git a/drivers/infiniband/hw/hfi1/user_exp_rcv.h b/drivers/infiniband/hw/hfi1/user_exp_rcv.h
+index 8c53e416bf84..4be3446c4d25 100644
+--- a/drivers/infiniband/hw/hfi1/user_exp_rcv.h
++++ b/drivers/infiniband/hw/hfi1/user_exp_rcv.h
+@@ -32,8 +32,8 @@ struct tid_rb_node {
+ 	u32 rcventry;
+ 	dma_addr_t dma_addr;
+ 	bool freed;
+-	unsigned int npages;
+-	struct page *pages[];
++	DECLARE_FLEX_ARRAY_ELEMENTS_COUNT(unsigned int, npages);
++	DECLARE_FLEX_ARRAY_ELEMENTS(struct page *, pages);
+ };
  
--	cmd->vnd_len = vnd_len;
--	memcpy(cmd->vnd_data, vnd_data, vnd_len);
--
- 	cmd->direction = 0x00;
- 	hci_req_add(&req, HCI_CONFIGURE_DATA_PATH, sizeof(*cmd) + vnd_len, cmd);
- 
+ static inline int num_user_pages(unsigned long addr,
 -- 
 2.32.0
 
