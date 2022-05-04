@@ -2,295 +2,311 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A99C51ADC7
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 21:28:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56E8C51ADD6
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 21:34:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376625AbiEDTbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 15:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59522 "EHLO
+        id S1377521AbiEDThj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 15:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231781AbiEDTbe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 15:31:34 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 591EE2A716;
-        Wed,  4 May 2022 12:27:57 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id CA6491F37F;
-        Wed,  4 May 2022 19:27:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1651692475; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QfMEuCSetan9XRRWFKWsb6K22EKUj5mlPD2hKmHn9OA=;
-        b=y/UFq5IrvxkZkFmQEu4t3IyAMXoZhnY89D1YCa+4mFShbOT215HyN4juNSRgpppqsdKRqY
-        A6WUzKTWIWW2EPNzducjggk75qLmWOmJpurJjWBrOebo6Y7m2W1TqjKmZ0/Lutga/FG1YR
-        AEAFk16h5ARd30C7wESXwh2P/xPUPu4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1651692475;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QfMEuCSetan9XRRWFKWsb6K22EKUj5mlPD2hKmHn9OA=;
-        b=w2QUOIvAI5xAkcb2v3e6k+WAmBJvCwp+AnfgNQchFDRwvEVGfjVVAGRnMt3Z5s3qooMEX6
-        3tFcy3HY0vS8YCDw==
-Received: from quack3.suse.cz (unknown [10.100.224.230])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id EA1B42C141;
-        Wed,  4 May 2022 19:27:54 +0000 (UTC)
-Received: by quack3.suse.cz (Postfix, from userid 1000)
-        id 7477FA061E; Wed,  4 May 2022 21:27:51 +0200 (CEST)
-Date:   Wed, 4 May 2022 21:27:51 +0200
-From:   Jan Kara <jack@suse.cz>
-To:     guowei du <duguoweisz@gmail.com>
-Cc:     Jan Kara <jack@suse.cz>, amir73il@gmail.com,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        viro@zeniv.linux.org.uk, jmorris@namei.org, serge@hallyn.com,
-        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, paul@paul-moore.com,
-        stephen.smalley.work@gmail.com, eparis@parisplace.org,
-        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
-        tony.luck@intel.com, selinux@vger.kernel.org,
-        duguowei <duguowei@xiaomi.com>
-Subject: Re: [PATCH] fsnotify: add generic perm check for unlink/rmdir
-Message-ID: <20220504192751.76axinbuuptqdpsz@quack3.lan>
-References: <20220503183750.1977-1-duguoweisz@gmail.com>
- <20220503194943.6bcmsxjvinfjrqxa@quack3.lan>
- <CAC+1Nxv5n0eGtRhfS6pxt8Z-no5scu2kO2pu+_6CpbkeeBqFAw@mail.gmail.com>
+        with ESMTP id S1377547AbiEDThg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 15:37:36 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 845F94C78B
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 12:33:57 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id p10so4039144lfa.12
+        for <netdev@vger.kernel.org>; Wed, 04 May 2022 12:33:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HOEMNGZKa5Tmus2DFi6bec2fIE/amlqELv40n3DXewc=;
+        b=PEIWHhsIYTSHa2ubsdOl50RsnGDjnDS6l/9Q78H4R9zjmgI+VIGT6Ch0klO8BTLuzj
+         QkwWwD19A6kt/WhbCWEZXPEwJRYM3TpZ+cE3cP5MeDBh+aIOWOcohX49LVwMDFUZVK5N
+         F0VOB2O//WhbS3FC0W/bzdzcBd/juFEyjENK2SJFSLuXRN+qFrhWbWdeUAZb9NkbpZXq
+         2zaPcFtkldnZ66VWQQ12RIttNJOF73aLxM03ar+OaSwfAD1QeqBOTqRe87Z9uSpnfdVk
+         LWYN6y4V8AizqgXtcBrR4CAsLLhpVp/pQ2uF2KJ1p7SkaufPpJk4WxJkAscNOJD11xKa
+         W1PA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HOEMNGZKa5Tmus2DFi6bec2fIE/amlqELv40n3DXewc=;
+        b=3w+PNwZj4D18q4Ey3sm9ILO+YHOT77yqnCEJQmy7gEwITwuvN8cZVp5qf5ozLca5Av
+         zws+gvQ2JPDzz4G2f6eI0bHS8lb13pS4LT8dgRQvak3DOm2MDHy39X1+oUhzUz2EcZWQ
+         jWihiL5EaizEkg04BUtqnVsgxD1Mqv745F/BV97rqhPMYn/sSffKnSMwxj6zeaAEBcfq
+         Ic/Xic1gnyl110njAI+cIQJR9uaWXRGDlU1zwu9QhGsdByip0El0JwFsPdBgIB02yTaj
+         wucQU9DUz2dEHhXoLhCqZp66mkXFp86LmxMohXZnr3V8pI2pezFeHKUws5/wMQ0l81rF
+         Ar/g==
+X-Gm-Message-State: AOAM5310FaW8gr2Elm9GzuTV3jq7Eaj88WliMugdJnzkCEVrZkyJ7A48
+        TpbHPmzZEKRvPUjDLUT/bgxJIfQl83ZfqqOwvErFdQ==
+X-Google-Smtp-Source: ABdhPJynUP5X7Ap50Ln/lUGnqWbehA2p3TdLaYrpnA1ieEkvyziWiy0Api8fxqxG6H9YOKNmm2giXpx2cEkPaGo5x1g=
+X-Received: by 2002:ac2:4c51:0:b0:473:ab19:87d9 with SMTP id
+ o17-20020ac24c51000000b00473ab1987d9mr5487995lfk.634.1651692835654; Wed, 04
+ May 2022 12:33:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAC+1Nxv5n0eGtRhfS6pxt8Z-no5scu2kO2pu+_6CpbkeeBqFAw@mail.gmail.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220501111836.10910-1-gerhard@engleder-embedded.com>
+ <20220501111836.10910-5-gerhard@engleder-embedded.com> <20220504182402.m6vsxy3hc6ofd2ni@bsd-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220504182402.m6vsxy3hc6ofd2ni@bsd-mbp.dhcp.thefacebook.com>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Wed, 4 May 2022 21:33:44 +0200
+Message-ID: <CANr-f5yQoAbNHd1XfS+8iHObr1U72VMZJeMrdXHjRdzLrUJZfg@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 4/6] ptp: Support late timestamp determination
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        yangbo.lu@nxp.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-
-On Wed 04-05-22 11:42:23, guowei du wrote:
->           for the first issue,one usecase is ,for the shared storage with
-> android device,shared storage is public to all apps which gained whole
-> storage rwx permission,
->           and computer could also read/write the storage by usb cable
-> connected.
->          so ,we need to protect some resources such as photoes or videos or
-> some secure documents in the shared storage.
->          in other words,we want to subdivide permissions of that area  for
-> open/read/unlink and so on.
-
-I see but I thought that MTP protocol was there exactly so that the phone
-can control the access from computer to the shared storage. So it is
-probably not the case that you'd need this fanotify feature to control MTP
-client access but you want to say block image removal while the file is
-being transfered over MTP? Do I get this right?
-
->          for the second issue. every FANOTIFY_EVENT_TYPE_PATH event will
-> 'dentry_open' a new file with FMODE_NONOTIFY,then bind to a new unused fd,
-> so could tell me the reason?
-
-Yes, this is just how fanotify was designed. And it was designed in this
-way because it was created for use by antivirus scanners which wanted to
-read the file contents and based on that decide whether the file could be
-accessed or not.
-
->         and next step ,i will go on to fix the related issue such as
-> fanotify module.
-
-I have realized that you do propagate struct path to fsnotify with your new
-RMDIR_PERM and UNLINK_PERM events (unlike standard DELETE fsnotify events)
-so things should work in the same way as say for OPEN_PERM events.
-
-								Honza
-
-> On Wed, May 4, 2022 at 3:49 AM Jan Kara <jack@suse.cz> wrote:
-> 
-> > On Wed 04-05-22 02:37:50, Guowei Du wrote:
-> > > From: duguowei <duguowei@xiaomi.com>
-> > >
-> > > For now, there have been open/access/open_exec perms for file operation,
-> > > so we add new perms check with unlink/rmdir syscall. if one app deletes
-> > > any file/dir within pubic area, fsnotify can sends fsnotify_event to
-> > > listener to deny that, even if the app have right dac/mac permissions.
-> > >
-> > > Signed-off-by: duguowei <duguowei@xiaomi.com>
+> > If a physical clock supports a free running cycle counter, then
+> > timestamps shall be based on this time too. For TX it is known in
+> > advance before the transmission if a timestamp based on the free running
+> > cycle counter is needed. For RX it is impossible to know which timestamp
+> > is needed before the packet is received and assigned to a socket.
 > >
-> > Before we go into technical details of implementation can you tell me more
-> > details about the usecase? Why do you need to check specifically for unlink
-> > / delete?
+> > Support late timestamp determination by a network device. Therefore, an
+> > address/cookie is stored within the new netdev_data field of struct
+> > skb_shared_hwtstamps. This address/cookie is provided to a new network
+> > device function called ndo_get_tstamp(), which returns a timestamp based
+> > on the normal/adjustable time or based on the free running cycle
+> > counter. If function is not supported, then timestamp handling is not
+> > changed.
 > >
-> > Also on the design side of things: Do you realize these permission events
-> > will not be usable together with other permission events like
-> > FAN_OPEN_PERM? Because these require notification group returning file
-> > descriptors while your events will return file handles... I guess we should
-> > somehow fix that.
+> > Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> > ---
+> >  include/linux/netdevice.h | 21 ++++++++++++++++++++
+> >  include/linux/skbuff.h    | 16 ++++++++++++---
+> >  net/socket.c              | 42 +++++++++++++++++++++++++++++----------
+> >  3 files changed, 66 insertions(+), 13 deletions(-)
 > >
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 4aba92a4042a..47dca9adfb17 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -1356,6 +1356,12 @@ struct netdev_net_notifier {
+> >   *   The caller must be under RCU read context.
+> >   * int (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx, struct net_device_path *path);
+> >   *     Get the forwarding path to reach the real device from the HW destination address
+> > + * ktime_t (*ndo_get_tstamp)(struct net_device *dev,
+> > + *                        const struct skb_shared_hwtstamps *hwtstamps,
+> > + *                        bool cycles);
+> > + *   Get hardware timestamp based on normal/adjustable time or free running
+> > + *   cycle counter. This function is required if physical clock supports a
+> > + *   free running cycle counter.
+> >   */
+> >  struct net_device_ops {
+> >       int                     (*ndo_init)(struct net_device *dev);
+> > @@ -1578,6 +1584,9 @@ struct net_device_ops {
+> >       struct net_device *     (*ndo_get_peer_dev)(struct net_device *dev);
+> >       int                     (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx,
+> >                                                           struct net_device_path *path);
+> > +     ktime_t                 (*ndo_get_tstamp)(struct net_device *dev,
+> > +                                               const struct skb_shared_hwtstamps *hwtstamps,
+> > +                                               bool cycles);
+> >  };
 > >
-> >                                                                 Honza
-> > > ---
-> > >  fs/notify/fsnotify.c             |  2 +-
-> > >  include/linux/fs.h               |  2 ++
-> > >  include/linux/fsnotify.h         | 16 ++++++++++++++++
-> > >  include/linux/fsnotify_backend.h |  6 +++++-
-> > >  security/security.c              | 12 ++++++++++--
-> > >  security/selinux/hooks.c         |  4 ++++
-> > >  6 files changed, 38 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/fs/notify/fsnotify.c b/fs/notify/fsnotify.c
-> > > index 70a8516b78bc..9c03a5f84be0 100644
-> > > --- a/fs/notify/fsnotify.c
-> > > +++ b/fs/notify/fsnotify.c
-> > > @@ -581,7 +581,7 @@ static __init int fsnotify_init(void)
-> > >  {
-> > >       int ret;
-> > >
-> > > -     BUILD_BUG_ON(HWEIGHT32(ALL_FSNOTIFY_BITS) != 25);
-> > > +     BUILD_BUG_ON(HWEIGHT32(ALL_FSNOTIFY_BITS) != 27);
-> > >
-> > >       ret = init_srcu_struct(&fsnotify_mark_srcu);
-> > >       if (ret)
-> > > diff --git a/include/linux/fs.h b/include/linux/fs.h
-> > > index bbde95387a23..9c661584db7d 100644
-> > > --- a/include/linux/fs.h
-> > > +++ b/include/linux/fs.h
-> > > @@ -100,6 +100,8 @@ typedef int (dio_iodone_t)(struct kiocb *iocb,
-> > loff_t offset,
-> > >  #define MAY_CHDIR            0x00000040
-> > >  /* called from RCU mode, don't block */
-> > >  #define MAY_NOT_BLOCK                0x00000080
-> > > +#define MAY_UNLINK           0x00000100
-> > > +#define MAY_RMDIR            0x00000200
-> > >
-> > >  /*
-> > >   * flags in file.f_mode.  Note that FMODE_READ and FMODE_WRITE must
-> > correspond
-> > > diff --git a/include/linux/fsnotify.h b/include/linux/fsnotify.h
-> > > index bb8467cd11ae..68f5d4aaf1ae 100644
-> > > --- a/include/linux/fsnotify.h
-> > > +++ b/include/linux/fsnotify.h
-> > > @@ -80,6 +80,22 @@ static inline int fsnotify_parent(struct dentry
-> > *dentry, __u32 mask,
-> > >       return fsnotify(mask, data, data_type, NULL, NULL, inode, 0);
-> > >  }
-> > >
-> > > +static inline int fsnotify_path_perm(struct path *path, struct dentry
-> > *dentry, __u32 mask)
-> > > +{
-> > > +     __u32 fsnotify_mask = 0;
-> > > +
-> > > +     if (!(mask & (MAY_UNLINK | MAY_RMDIR)))
-> > > +             return 0;
-> > > +
-> > > +     if (mask & MAY_UNLINK)
-> > > +             fsnotify_mask |= FS_UNLINK_PERM;
-> > > +
-> > > +     if (mask & MAY_RMDIR)
-> > > +             fsnotify_mask |= FS_RMDIR_PERM;
-> > > +
-> > > +     return fsnotify_parent(dentry, fsnotify_mask, path,
-> > FSNOTIFY_EVENT_PATH);
-> > > +}
-> > > +
-> > >  /*
-> > >   * Simple wrappers to consolidate calls to fsnotify_parent() when an
-> > event
-> > >   * is on a file/dentry.
-> > > diff --git a/include/linux/fsnotify_backend.h
-> > b/include/linux/fsnotify_backend.h
-> > > index 0805b74cae44..0e2e240e8234 100644
-> > > --- a/include/linux/fsnotify_backend.h
-> > > +++ b/include/linux/fsnotify_backend.h
-> > > @@ -54,6 +54,8 @@
-> > >  #define FS_OPEN_PERM         0x00010000      /* open event in an
-> > permission hook */
-> > >  #define FS_ACCESS_PERM               0x00020000      /* access event in
-> > a permissions hook */
-> > >  #define FS_OPEN_EXEC_PERM    0x00040000      /* open/exec event in a
-> > permission hook */
-> > > +#define FS_UNLINK_PERM               0x00080000      /* unlink event in
-> > a permission hook */
-> > > +#define FS_RMDIR_PERM                0x00100000      /* rmdir event in
-> > a permission hook */
-> > >
-> > >  #define FS_EXCL_UNLINK               0x04000000      /* do not send
-> > events if object is unlinked */
-> > >  /*
-> > > @@ -79,7 +81,9 @@
-> > >  #define ALL_FSNOTIFY_DIRENT_EVENTS (FS_CREATE | FS_DELETE | FS_MOVE |
-> > FS_RENAME)
-> > >
-> > >  #define ALL_FSNOTIFY_PERM_EVENTS (FS_OPEN_PERM | FS_ACCESS_PERM | \
-> > > -                               FS_OPEN_EXEC_PERM)
-> > > +                               FS_OPEN_EXEC_PERM | \
-> > > +                               FS_UNLINK_PERM | \
-> > > +                               FS_RMDIR_PERM)
-> > >
-> > >  /*
-> > >   * This is a list of all events that may get sent to a parent that is
-> > watching
-> > > diff --git a/security/security.c b/security/security.c
-> > > index b7cf5cbfdc67..8efc00ec02ed 100644
-> > > --- a/security/security.c
-> > > +++ b/security/security.c
-> > > @@ -1160,16 +1160,24 @@ EXPORT_SYMBOL(security_path_mkdir);
-> > >
-> > >  int security_path_rmdir(const struct path *dir, struct dentry *dentry)
-> > >  {
-> > > +     int ret;
-> > >       if (unlikely(IS_PRIVATE(d_backing_inode(dir->dentry))))
-> > >               return 0;
-> > > -     return call_int_hook(path_rmdir, 0, dir, dentry);
-> > > +     ret = call_int_hook(path_rmdir, 0, dir, dentry);
-> > > +     if (ret)
-> > > +             return ret;
-> > > +     return fsnotify_path_perm(dir, dentry, MAY_RMDIR);
-> > >  }
-> > >
-> > >  int security_path_unlink(const struct path *dir, struct dentry *dentry)
-> > >  {
-> > > +     int ret;
-> > >       if (unlikely(IS_PRIVATE(d_backing_inode(dir->dentry))))
-> > >               return 0;
-> > > -     return call_int_hook(path_unlink, 0, dir, dentry);
-> > > +     ret = call_int_hook(path_unlink, 0, dir, dentry);
-> > > +     if (ret)
-> > > +             return ret;
-> > > +     return fsnotify_path_perm(dir, dentry, MAY_UNLINK);
-> > >  }
-> > >  EXPORT_SYMBOL(security_path_unlink);
-> > >
-> > > diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
-> > > index e9e959343de9..f0780f0eb903 100644
-> > > --- a/security/selinux/hooks.c
-> > > +++ b/security/selinux/hooks.c
-> > > @@ -1801,8 +1801,12 @@ static int may_create(struct inode *dir,
-> > >  }
-> > >
-> > >  #define MAY_LINK     0
-> > > +#ifndef MAY_UNLINK
-> > >  #define MAY_UNLINK   1
-> > > +#endif
-> > > +#ifndef MAY_RMDIR
-> > >  #define MAY_RMDIR    2
-> > > +#endif
-> > >
-> > >  /* Check whether a task can link, unlink, or rmdir a file/directory. */
-> > >  static int may_link(struct inode *dir,
-> > > --
-> > > 2.17.1
-> > >
+> >  /**
+> > @@ -4738,6 +4747,18 @@ static inline void netdev_rx_csum_fault(struct net_device *dev,
+> >  void net_enable_timestamp(void);
+> >  void net_disable_timestamp(void);
+> >
+> > +static inline ktime_t netdev_get_tstamp(struct net_device *dev,
+> > +                                     const struct skb_shared_hwtstamps *hwtstamps,
+> > +                                     bool cycles)
+> > +{
+> > +     const struct net_device_ops *ops = dev->netdev_ops;
+> > +
+> > +     if (ops->ndo_get_tstamp)
+> > +             return ops->ndo_get_tstamp(dev, hwtstamps, cycles);
+> > +
+> > +     return hwtstamps->hwtstamp;
+> > +}
+> > +
+> >  static inline netdev_tx_t __netdev_start_xmit(const struct net_device_ops *ops,
+> >                                             struct sk_buff *skb, struct net_device *dev,
+> >                                             bool more)
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index fa03e02b761d..732b995fe54e 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -588,8 +588,10 @@ static inline bool skb_frag_must_loop(struct page *p)
+> >
+> >  /**
+> >   * struct skb_shared_hwtstamps - hardware time stamps
+> > - * @hwtstamp:        hardware time stamp transformed into duration
+> > - *           since arbitrary point in time
+> > + * @hwtstamp:                hardware time stamp transformed into duration
+> > + *                   since arbitrary point in time
+> > + * @netdev_data:     address/cookie of network device driver used as
+> > + *                   reference to actual hardware time stamp
+> >   *
+> >   * Software time stamps generated by ktime_get_real() are stored in
+> >   * skb->tstamp.
+> > @@ -601,7 +603,10 @@ static inline bool skb_frag_must_loop(struct page *p)
+> >   * &skb_shared_info. Use skb_hwtstamps() to get a pointer.
+> >   */
+> >  struct skb_shared_hwtstamps {
+> > -     ktime_t hwtstamp;
+> > +     union {
+> > +             ktime_t hwtstamp;
+> > +             void *netdev_data;
+> > +     };
+> >  };
+> >
+> >  /* Definitions for tx_flags in struct skb_shared_info */
+> > @@ -620,6 +625,11 @@ enum {
+> >        */
+> >       SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
+> >
+> > +     /* determine hardware time stamp based on time or cycles, flag is used
+> > +      * only for RX path
+> > +      */
+> > +     SKBTX_HW_TSTAMP_NETDEV = 1 << 3,
+> > +
+> >       /* generate wifi status information (where possible) */
+> >       SKBTX_WIFI_STATUS = 1 << 4,
+>
+> I follow what is being done here, although it seems a bit messy:
+>   - abusing tx_flags for recive
+>   - keeping a pointer into skb->data for later use.
+
+Abuse of tx_flags is because of saving bits for future flags. The same bit
+is used for TX and RX, instead of a separate bit for RX.
+
+>
+>
+> > diff --git a/net/socket.c b/net/socket.c
+> > index 0f680c7d968a..ee81e25e9b98 100644
+> > --- a/net/socket.c
+> > +++ b/net/socket.c
+> > @@ -805,7 +805,8 @@ static bool skb_is_swtx_tstamp(const struct sk_buff *skb, int false_tstamp)
+> >       return skb->tstamp && !false_tstamp && skb_is_err_queue(skb);
+> >  }
+> >
+> > -static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb)
+> > +static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb,
+> > +                        int if_index)
+> >  {
+> >       struct scm_ts_pktinfo ts_pktinfo;
+> >       struct net_device *orig_dev;
+> > @@ -815,11 +816,15 @@ static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb)
+> >
+> >       memset(&ts_pktinfo, 0, sizeof(ts_pktinfo));
+> >
+> > -     rcu_read_lock();
+> > -     orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+> > -     if (orig_dev)
+> > -             ts_pktinfo.if_index = orig_dev->ifindex;
+> > -     rcu_read_unlock();
+> > +     if (if_index == -1) {
+> > +             rcu_read_lock();
+> > +             orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+> > +             if (orig_dev)
+> > +                     ts_pktinfo.if_index = orig_dev->ifindex;
+> > +             rcu_read_unlock();
+> > +     } else {
+> > +             ts_pktinfo.if_index = if_index;
+> > +     }
+>
+> if_index of 0 is invalid - see dev_new_index().
+> So this optimization would be better written as:
+>
+>         if (!if_index) {
+>                 rcu_read_lock();
+>                 orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+>                 if (orig_dev)
+>                         if_index = orig_dev->ifindex;
+>                 rcu_read_unlock();
+>         }
+>         ts_pktinfo.if_index = if_index;
+
+I will fix that.
+
+> >       ts_pktinfo.pkt_length = skb->len - skb_mac_offset(skb);
+> >       put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMPING_PKTINFO,
+> > @@ -839,6 +844,8 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+> >       int empty = 1, false_tstamp = 0;
+> >       struct skb_shared_hwtstamps *shhwtstamps =
+> >               skb_hwtstamps(skb);
+> > +     struct net_device *orig_dev;
+> > +     int if_index = -1;
+>
+> This should be set to 0 in the SOF_TIMESTAMPING_RAW_HARDWARE block.
+> (see below)
+
+I will fix that.
+
+> >       ktime_t hwtstamp;
+> >
+> >       /* Race occurred between timestamp enabling and packet
+> > @@ -887,18 +894,33 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
+> >       if (shhwtstamps &&
+> >           (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
+> >           !skb_is_swtx_tstamp(skb, false_tstamp)) {
+> > +             if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP_NETDEV) {
+> > +                     rcu_read_lock();
+> > +                     orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
+> > +                     if (orig_dev) {
+> > +                             if_index = orig_dev->ifindex;
+> > +                             hwtstamp = netdev_get_tstamp(orig_dev,
+> > +                                                          shhwtstamps,
+> > +                                                          sk->sk_tsflags &
+> > +                                                          SOF_TIMESTAMPING_BIND_PHC);
+> > +                     } else {
+> > +                             hwtstamp = shhwtstamps->hwtstamp;
+> > +                     }
+> > +                     rcu_read_unlock();
+> > +             } else {
+> > +                     hwtstamp = shhwtstamps->hwtstamp;
+> > +             }
+> > +
+>
+> I'd suggest moving all this into a helper function, so it reads
+> something like this:
+>
+>                 if_index = 0;
+>
+>                 if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP_NETDEV)
+>                         hwtstamp = recover_hw_tstamp(skb, sk, &if_index);
+>                 else
+>                         hwtstamp = shhwtstamps->hwtstamp;
+
+I will add a helper function.
+
+> >               if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
+> > -                     hwtstamp = ptp_convert_timestamp(&shhwtstamps->hwtstamp,
+> > +                     hwtstamp = ptp_convert_timestamp(&hwtstamp,
+> >                                                        sk->sk_bind_phc);
+> > -             else
+> > -                     hwtstamp = shhwtstamps->hwtstamp;
+> >
+> >               if (ktime_to_timespec64_cond(hwtstamp, tss.ts + 2)) {
+> >                       empty = 0;
+> >
+> >                       if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_PKTINFO) &&
+> >                           !skb_is_err_queue(skb))
+> > -                             put_ts_pktinfo(msg, skb);
+> > +                             put_ts_pktinfo(msg, skb, if_index);
+> >               }
+> >       }
+> >       if (!empty) {
 > > --
-> > Jan Kara <jack@suse.com>
-> > SUSE Labs, CR
+> > 2.20.1
 > >
--- 
-Jan Kara <jack@suse.com>
-SUSE Labs, CR
+>
+> --
+> Jonathan
+
+Thank you for the review!
+
+Gerhard
