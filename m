@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 917E851AD67
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 20:59:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 443F851AD65
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 20:59:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232584AbiEDTDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 15:03:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59776 "EHLO
+        id S1377435AbiEDTDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 15:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59750 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377429AbiEDTDF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 15:03:05 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1F322538
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 11:59:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651690768; x=1683226768;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=WrGV7F30JkYXEymN24RAqoZyTyxP0MbDhc+my+s9BWc=;
-  b=LEph+7VWMtAM8mwxpAolnchamLYaHJk7r7Hx08YY8MpTCbLq/yh1wL7U
-   OFhOQP6L8Ieya8D4tBGTNzcgnkzvCXvKcEMdsoqeAyfxjXHfWckCybnTX
-   XKFnm2C7DRwU+P8k3kY6MHMGgWCNGBGd2x8EtKzYvkbLbtUojRCK2mjJ6
-   h93LqqZUHlYYVVfJ/g1ju2A5jsYbOvcjKz59Nfjnkb5YMWG93VP3N1zCh
-   JKPAI+gKt3a6+jFE0kvAnN02Dh7ninvVAfHasEgL5YJRdE7ZLAKr37QIv
-   eqmLx5TWCnWnjacVXQD8MxcWOKPsBtgaTVGReeTLy+fs2JvIIptVcwYb/
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10337"; a="267752297"
-X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="267752297"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 11:59:28 -0700
-X-IronPort-AV: E=Sophos;i="5.91,198,1647327600"; 
-   d="scan'208";a="562869482"
-Received: from jbrandeb-saw1.jf.intel.com ([10.166.28.70])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 May 2022 11:59:28 -0700
-From:   Jesse Brandeburg <jesse.brandeburg@intel.com>
+        with ESMTP id S1376492AbiEDTDE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 15:03:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DDB0D22534
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 11:59:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651690767;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=2bI1b+9CHVnFXDiPfBY5bMPSxLI4NMkzf8DybM3QlWY=;
+        b=VwPVEVvD/uJtUhIUom0OBLTNx9s/ACu1L8qzZt8O5qyOrLGMmeBbAhIKkmmlCKQdtEJgv6
+        59JPjvGC/3G2jqFBr3hCoc9Ukc2cvhPfWJN0IUU3fHyJBCu4KMVXB4WM/PPME4rupYCxmD
+        t9+ePNwoKwZoc3PKxruOxe6Xg0x0XtI=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-652-Wx5mXPf7N8WwPxwMgX0Xmw-1; Wed, 04 May 2022 14:59:23 -0400
+X-MC-Unique: Wx5mXPf7N8WwPxwMgX0Xmw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 61E9219705AA;
+        Wed,  4 May 2022 18:59:23 +0000 (UTC)
+Received: from jtoppins.rdu.csb (unknown [10.22.10.95])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3B107C07F5D;
+        Wed,  4 May 2022 18:59:23 +0000 (UTC)
+From:   Jonathan Toppins <jtoppins@redhat.com>
 To:     netdev@vger.kernel.org
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        alexandr.lobakin@intel.com
-Subject: [PATCH net v1] dim: initialize all struct fields
-Date:   Wed,  4 May 2022 11:58:32 -0700
-Message-Id: <20220504185832.1855538-1-jesse.brandeburg@intel.com>
-X-Mailer: git-send-email 2.34.1
+Cc:     linux-kernel@vger.kernel.org
+Subject: [PATCH net-next RESEND] MAINTAINERS: add missing files for bonding definition
+Date:   Wed,  4 May 2022 14:59:08 -0400
+Message-Id: <903ed2906b93628b38a2015664a20d2802042863.1651690748.git.jtoppins@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,120 +56,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The W=2 build pointed out that the code wasn't initializing all the
-variables in the dim_cq_moder declarations with the struct initializers.
-The net change here is zero since these structs were already static
-const globals and were initialized with zeros by the compiler, but
-removing compiler warnings has value in and of itself.
+The bonding entry did not include additional include files that have
+been added nor did it reference the documentation. Add these references
+for completeness.
 
-lib/dim/net_dim.c: At top level:
-lib/dim/net_dim.c:54:9: warning: missing initializer for field ‘comps’ of ‘const struct dim_cq_moder’ [-Wmissing-field-initializers]
-   54 |         NET_DIM_RX_EQE_PROFILES,
-      |         ^~~~~~~~~~~~~~~~~~~~~~~
-In file included from lib/dim/net_dim.c:6:
-./include/linux/dim.h:45:13: note: ‘comps’ declared here
-   45 |         u16 comps;
-      |             ^~~~~
-
-and repeats for the tx struct, and once you fix the comps entry then
-the cq_period_mode field needs the same treatment.
-
-Add the necessary initializers so that the fields in the struct all have
-explicit values.
-
-While here and fixing these lines, clean up the code slightly with
-a conversion to explicit field initializers from anonymous ones, and fix
-the super long lines by removing the word "_MODERATION" from a couple
-defines only used in this file.
-anon to explicit conversion example similar to used in this patch:
-- struct foo foo_struct = { a, b}
-+ struct foo foo_struct = { .foo_a = a, .foo_b = b)
-
-Fixes: f8be17b81d44 ("lib/dim: Fix -Wunused-const-variable warnings")
-Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
 ---
- lib/dim/net_dim.c | 55 ++++++++++++++++++++++++++---------------------
- 1 file changed, 31 insertions(+), 24 deletions(-)
+ MAINTAINERS | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/lib/dim/net_dim.c b/lib/dim/net_dim.c
-index 06811d866775..286b5220e360 100644
---- a/lib/dim/net_dim.c
-+++ b/lib/dim/net_dim.c
-@@ -12,41 +12,48 @@
-  *        Each profile size must be of NET_DIM_PARAMS_NUM_PROFILES
-  */
- #define NET_DIM_PARAMS_NUM_PROFILES 5
--#define NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE 256
--#define NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE 128
-+#define NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE 256
-+#define NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE 128
- #define NET_DIM_DEF_PROFILE_CQE 1
- #define NET_DIM_DEF_PROFILE_EQE 1
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fa6896e8b2d8..0d024c5308f2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3570,8 +3570,9 @@ M:	Andy Gospodarek <andy@greyhouse.net>
+ L:	netdev@vger.kernel.org
+ S:	Supported
+ W:	http://sourceforge.net/projects/bonding/
++F:	Documentation/networking/bonding.rst
+ F:	drivers/net/bonding/
+-F:	include/net/bonding.h
++F:	include/net/bond*
+ F:	include/uapi/linux/if_bonding.h
  
-+#define DIM_CQ_MODER(u, p, c, m) { \
-+	.usec = (u),		   \
-+	.pkts = (p),		   \
-+	.comps = (c),		   \
-+	.cq_period_mode = (m)	   \
-+}
-+
- #define NET_DIM_RX_EQE_PROFILES { \
--	{1,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
--	{8,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
--	{64,  NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
--	{128, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
--	{256, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
-+	DIM_CQ_MODER(1,   NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0), \
-+	DIM_CQ_MODER(8,   NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0), \
-+	DIM_CQ_MODER(64,  NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0), \
-+	DIM_CQ_MODER(128, NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0), \
-+	DIM_CQ_MODER(256, NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0)  \
- }
- 
--#define NET_DIM_RX_CQE_PROFILES { \
--	{2,  256},             \
--	{8,  128},             \
--	{16, 64},              \
--	{32, 64},              \
--	{64, 64}               \
-+#define NET_DIM_RX_CQE_PROFILES {	\
-+	DIM_CQ_MODER(2, 256, 0, 0),	\
-+	DIM_CQ_MODER(8, 128, 0, 0),	\
-+	DIM_CQ_MODER(16, 64, 0, 0),	\
-+	DIM_CQ_MODER(32, 64, 0, 0),	\
-+	DIM_CQ_MODER(64, 64, 0, 0)	\
- }
- 
- #define NET_DIM_TX_EQE_PROFILES { \
--	{1,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
--	{8,   NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
--	{32,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
--	{64,  NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE},  \
--	{128, NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE}   \
-+	DIM_CQ_MODER(1,   NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE, 0, 0), \
-+	DIM_CQ_MODER(8,   NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE, 0, 0), \
-+	DIM_CQ_MODER(32,  NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE, 0, 0), \
-+	DIM_CQ_MODER(64,  NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE, 0, 0), \
-+	DIM_CQ_MODER(128, NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE, 0, 0)  \
- }
- 
--#define NET_DIM_TX_CQE_PROFILES { \
--	{5,  128},  \
--	{8,  64},  \
--	{16, 32},  \
--	{32, 32},  \
--	{64, 32}   \
-+#define NET_DIM_TX_CQE_PROFILES {	\
-+	DIM_CQ_MODER(5, 128, 0, 0),	\
-+	DIM_CQ_MODER(8,  64, 0, 0),	\
-+	DIM_CQ_MODER(16, 32, 0, 0),	\
-+	DIM_CQ_MODER(32, 32, 0, 0),	\
-+	DIM_CQ_MODER(64, 32, 0, 0)	\
- }
- 
- static const struct dim_cq_moder
-
-base-commit: a0df71948e9548de819a6f1da68f5f1742258a52
+ BOSCH SENSORTEC BMA400 ACCELEROMETER IIO DRIVER
 -- 
-2.34.1
+2.27.0
 
