@@ -2,191 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2F305197FE
-	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:21:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A170351982B
+	for <lists+netdev@lfdr.de>; Wed,  4 May 2022 09:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345323AbiEDHZP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 03:25:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46034 "EHLO
+        id S1345443AbiEDHc3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 03:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345341AbiEDHZM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:25:12 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2055.outbound.protection.outlook.com [40.107.237.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7587023153;
-        Wed,  4 May 2022 00:21:29 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=SzEb43ABQ3ddRTHXyR9mkGSYD3j/thZkYuAjW3DedRosbbvZ/NNF7Bk180txwhxH4NwpJh0LGZViF7OMqMg7KBQLXLvyBlHsxAZGJIw2P+ooQ7alXYQnbkOJTTasOkyQsLARtX6I2kt5S4pBgOm2BMvIWuj/7DjT7+qXM7/rB+gRCsvkWlxPHgfKrVjY6SYjPZmzWQoyOB1nvakheUxxY6w2JyLlM7SELaueiH6/hd8h/+ac0LFNpoZwBYxnEwsfiBhIyLmzHwcGSiy7IV40TrPyMAsbUetF5rob1sAGOGzgi+hlzewuLpPOEQhm/PxfmKaGLinNlq0rwWrLZ8NzVg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=60YjqTa2+342NhJqstej3/N9FKl3FxD9uzekDxGCKik=;
- b=F73Q/fhkjPQ+ZHbbTvQkiCP1+nOa/dbZsYbDT2viTxxfiy56p00KjARpfGQzb7QEuYaGdQJY/N+Uf4mxSxIqQbiro64fdZu3PGz7k+NvCvA0KbFHFq6FKt/x+ZAAM/160Zj6Exb4bR3YRb1BCv1fEIrLww/jMNo1Vuhk41suGmQ8FUK05vFJSg4xUgxcJ+NiUOSe9LQp1a9Y8ASO1u5mMPkFOzKI+EuaLUh09Wvmot/jvH+mf1y5BLP5XJ2OecoDSW5wPnYo9iDCSLHeSW559CT+6ZU/DcDZrd/k38QVbpTWIL52StuxMQNZJHoz3nR1DprsUUd9iI4O4eVSMSvqOg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=silabs.com; dmarc=pass action=none header.from=silabs.com;
- dkim=pass header.d=silabs.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=silabs.onmicrosoft.com; s=selector2-silabs-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=60YjqTa2+342NhJqstej3/N9FKl3FxD9uzekDxGCKik=;
- b=Usv2ePNeNloLLwYt5VFrsnVG3eG5ZAG+QUx4nHOR6mni+G9qgXfn1ctYji0Upe9ziWcRk6Gh7iH4/XS6FcXdm2KpLeJhrLo2EPJFUlRXNjzqk+xp1So84bQcfv1XEwN8JBeby4ay7Qolzfz2ndlEdaUrhcCNZi87bqJRRYBW84c=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=silabs.com;
-Received: from CO6PR11MB5650.namprd11.prod.outlook.com (2603:10b6:5:35a::9) by
- BN6PR11MB1521.namprd11.prod.outlook.com (2603:10b6:405:e::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5206.13; Wed, 4 May 2022 07:21:27 +0000
-Received: from CO6PR11MB5650.namprd11.prod.outlook.com
- ([fe80::f4a6:5ef8:6a66:3251]) by CO6PR11MB5650.namprd11.prod.outlook.com
- ([fe80::f4a6:5ef8:6a66:3251%8]) with mapi id 15.20.5206.024; Wed, 4 May 2022
- 07:21:27 +0000
-From:   =?ISO-8859-1?Q?J=E9r=F4me?= Pouiller <jerome.pouiller@silabs.com>
-To:     Kalle Valo <kvalo@kernel.org>,
+        with ESMTP id S240712AbiEDHcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 03:32:19 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC1E823168;
+        Wed,  4 May 2022 00:28:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=ity6IPNC2WIGLGTiJizfPDCFcsI1FfOGUjdPuI/9x1Q=;
+        t=1651649323; x=1652858923; b=QT/lqMVOF1wssRE3WxIi8JFq9qydord3vIkdiB2RnWp4foW
+        Y2EKnvOYOMnbG95Qdly+MoPypq2sN7AwddMp0VYIzVbdfWTRU6B/9bcArAn9dLA9S3yjy/847JAMM
+        5LJInaNZlJNS2YxORo9/2LoJ6iUnT3wyCzCYnMBPg0rAQhl5m/80xeXDtvXNqloQm4rd81zUR3d9V
+        +Mcf8XskU9Hf/j9Yc5oRhMJ/y7/9QB3NmD3+sAFKcmfTxKBvoiJ6MhI/+px6IbLVE1cYELVTNv3+3
+        WgYpY8SAyqZNJdmAsttGuK1DDFIY0LoU33uBUCWEOSV4lb0v/xiWF1k3mZZVt6oQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nm9Oe-001wnb-ND;
+        Wed, 04 May 2022 09:26:04 +0200
+Message-ID: <d3b73d80f66325fdfaf2d1f00ea97ab3db03146a.camel@sipsolutions.net>
+Subject: Re: [PATCH 02/32] Introduce flexible array struct memcpy() helpers
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Kees Cook <keescook@chromium.org>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>
+Cc:     Keith Packard <keithp@keithp.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        alsa-devel@alsa-project.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bradley Grove <linuxdrivers@attotech.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Christian Brauner <brauner@kernel.org>,
+        Christian =?ISO-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Chris Zankel <chris@zankel.net>,
+        Cong Wang <cong.wang@bytedance.com>,
+        David Gow <davidgow@google.com>,
+        David Howells <dhowells@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hulk Robot <hulkci@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        James Morris <jmorris@namei.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        John Keeping <john@metanate.com>,
+        Juergen Gross <jgross@suse.com>, Kalle Valo <kvalo@kernel.org>,
+        keyrings@vger.kernel.org, kunit-dev@googlegroups.com,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux1394-devel@lists.sourceforge.net,
+        linux-afs@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, llvm@lists.linux.dev,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Louis Peens <louis.peens@corigine.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
-        outreachy@lists.linux.dev, Jaehee Park <jhpark1013@gmail.com>,
-        Stefano Brivio <sbrivio@redhat.com>,
-        Jaehee Park <jhpark1013@gmail.com>
-Subject: Re: [PATCH v5] wfx: use container_of() to get vif
-Date:   Wed, 04 May 2022 09:21:21 +0200
-Message-ID: <16415431.geO5KgaWL5@pc-42>
-Organization: Silicon Labs
-In-Reply-To: <20220503182146.GA886740@jaehee-ThinkPad-X1-Extreme>
-References: <20220503182146.GA886740@jaehee-ThinkPad-X1-Extreme>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="iso-8859-1"
-X-ClientProxiedBy: SA1P222CA0027.NAMP222.PROD.OUTLOOK.COM
- (2603:10b6:806:22c::11) To CO6PR11MB5650.namprd11.prod.outlook.com
- (2603:10b6:5:35a::9)
+        Paul Moore <paul@paul-moore.com>,
+        Rich Felker <dalias@aerifal.cx>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        SHA-cyfmac-dev-list@infineon.com,
+        Simon Horman <simon.horman@corigine.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>, Tom Rix <trix@redhat.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>,
+        wcn36xx@lists.infradead.org, Wei Liu <wei.liu@kernel.org>,
+        xen-devel@lists.xenproject.org,
+        Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>, kvalo@kernel.org
+Date:   Wed, 04 May 2022 09:25:56 +0200
+In-Reply-To: <20220504014440.3697851-3-keescook@chromium.org>
+References: <20220504014440.3697851-1-keescook@chromium.org>
+         <20220504014440.3697851-3-keescook@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3974d25f-be9c-4daf-9c45-08da2d9eb3c9
-X-MS-TrafficTypeDiagnostic: BN6PR11MB1521:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR11MB1521FE342151F4C5DD97B1B093C39@BN6PR11MB1521.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: rcQQ9LS8NDiZsar5UtySNh2W2ugFWOQjU3qT8Kpb1VY9sdYfOSI1oxG7gdCT6rVCct1X0LiPCAB2qwpahtkwNaMBkGY7HpaaU36GbP+1QBCBL7FLh89hqwVVRf0rmGjQfdb1hiX1nj1RT3g/Sj7hzSfQ594CCj+K/GAvaPjKh11lt/ukWalYq6zDymZMDY3DKJAjVMV1ZHNNo16BSY6bNljjtzRoG/riue610nzbZefZInOt2b1TLDHhAkRp7IPE048MhKeeTgcvNrqD35um2yhpeBd7Ay2h+cLT7s7mkRj2jqDlmFQi37JIWues+U7b8BOqHmko4wl2pRNSxkZ1pGPMMcEuN2I3WoJiWJH2PebUg9jtwSWjzp6FJh6QKJRZUB/+cmauEdAZ8EaygbTD8FtVHfpJX8dkNaMzBGlXqCDg2zM4D3hQoacqqZ5l9zuxpyV0CjvsaN0YHYZuzuL9VUGVWKx9JLxfXXG2uIQp+4yZ5omh3uSNvMSIyNXG7uAdgQBLeAtG2XxpzyQ8QctDS1RdfoTZLZbiCiFX6/6pkz9FwyGqJd9GgtuurhRVCkA0l051PaIAgxM0imyQZpgHW4ny8jE84sWamZjTQqHwwaBfvymWsqL9xJG1lKpEUQBX6PEsAYVg7qGwskQfV391VHiEhuJ6XC4ozhec4wfFCNcsEOGopQ5KCt7cwFlmQXregsKODlJA0MKbFzjNYurFvQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR11MB5650.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(366004)(52116002)(5660300002)(33716001)(7416002)(36916002)(66476007)(66946007)(66556008)(508600001)(8936002)(8676002)(921005)(6506007)(316002)(6666004)(38100700002)(2906002)(6486002)(110136005)(83380400001)(6512007)(9686003)(186003)(86362001)(66574015)(39026012);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?QXLNWOu0w3s72ekf2ht//bFtQvb5diDgeWnVJc5FqNnlmEu8eBzcO6r5wl?=
- =?iso-8859-1?Q?ltIZ1NHGXjIMfsTxO1751Ig+2wHpdjKmjK7bRyqrZfrkEI0nJrpjjK36+S?=
- =?iso-8859-1?Q?HGBEKGKGERhn5Ev7RFOd6K/HPwp2CwCFgbx0SauVTDefc0n3CTYv9CVhDZ?=
- =?iso-8859-1?Q?VSazdhBhJ9vzFMhgNlBVVvdVkabjjo4VVpwTa2ACdWBOWenK0fdPcRmcgv?=
- =?iso-8859-1?Q?EIYVu/e/8R1pk/4cwR0oXGkZlu2j2/0xeB7ByaB5Cijfiur6JbwSFK/2PC?=
- =?iso-8859-1?Q?/8mIuRjbMH01+PGALI2v8vbujtwbeNDvtFrSXNbNrVmZOGvRUyj4D0OQr4?=
- =?iso-8859-1?Q?kVR0xCXYVI0SmPWGMQBXqMjqQpa6eJJ6XAtbSo1RJ04RaQmCyu6OfjnWPG?=
- =?iso-8859-1?Q?DLJCE0L3cMBTcDxAkB2QOk5EOmvO4hlOm0s4tCrqvgPsJeiFQMSFFOOxuo?=
- =?iso-8859-1?Q?PUYneJYPp91Juv8Kmf+/K69oHCMM4QNGSHnOMy7mvU0xAtiw8F/z7tFEXe?=
- =?iso-8859-1?Q?Ub6t53MnH+2i7Y+P3NGpi4lLHhsIUpxouKjfdc6snII1MmdbswoAdFk2/P?=
- =?iso-8859-1?Q?42/79H9UI1zByplhg6ds0fCtO898UkXOnIogAzKsAGSsRgGaQtBFVFMN+T?=
- =?iso-8859-1?Q?N6jArqXRt/63MxXbpsDa0/OGxgFRdhHkE9p6CXG/fSrHkNivcACApfermK?=
- =?iso-8859-1?Q?E9ndiKV7nJYWtwo1zIjlSWbDrA/anfRFmba/S6bHpQdlhZ8TFuLDghdgUM?=
- =?iso-8859-1?Q?yYp+uT+VlPRx/Ngk7mslNZ8OhJMppfrLHwdjS+7edEGzwZiLvwMzcE4XM/?=
- =?iso-8859-1?Q?UKOEDEBtWTSqZ0ALBqyTrDFWvTXkYEeh1U0y4kgHkx18Ka57pZPzCha2/Q?=
- =?iso-8859-1?Q?wmJCH+7+xHbdpfoFMdELNyG8qyWPRdR7JQLugfrhBBJrO5p6fEy1Y10lo1?=
- =?iso-8859-1?Q?mO88lX6M2ykgWjhY5wS7KOzxeU3svGPhMLMuNrKDkpGBdM7PEQmXym+DvH?=
- =?iso-8859-1?Q?c0LW5BLwYOiw75kyMxo31RLLUsidW4wTi3VDdYAvoItIser13bkgh/A5fo?=
- =?iso-8859-1?Q?OLKo0NN01rW9901gfWY4/7GwuNtsVigF4PMusTDNGMBGiiWDwjylkCnS4s?=
- =?iso-8859-1?Q?aD71GR8MIdl95eUQsRGspTrVf/10/NYIzFRWSpSse+XJd4GYzMV6lgWMsE?=
- =?iso-8859-1?Q?UfdKL35ErWGBf2JQEfOzXIE31cuF+5H0LiQcsJMhen+GAUaS7egEjPTSsc?=
- =?iso-8859-1?Q?ZSikngGTkWsb9Bkbn9Q7ijT8KNMji4bZSlda15Vun+MpO18vHRDTG7TQw2?=
- =?iso-8859-1?Q?L2yegZ2X6zTjeWPvihxexStI40jMecqluYtwjZKlfuc88dbB79kKZ8Y7Jb?=
- =?iso-8859-1?Q?WE5IfSYhg1sGdY3MTYzJJ+1yovmEw1lwJX175R4xuwL+d2ExqiYBcqBDpG?=
- =?iso-8859-1?Q?8iyrc/fXCKk3I5zhQDzfUM5oj5fiVXqZThIKNwNfS7EwmVDrzR1XR/Vn26?=
- =?iso-8859-1?Q?1qxG8zTHqP3+3Amp14ITE9RJgAxYVLPLnHDb01WJllayRYlFCS3Rp0Vpcq?=
- =?iso-8859-1?Q?eEF4wwaq7mf/g2UD1vLspzAlhPGWcttO59Ai1GyFr5v1Y77uJcacngrm0y?=
- =?iso-8859-1?Q?uYUjlGKZ/lSXWDzcjpe708ZSu/1Yrqz/KGwYCnWagl9hqtRrsQa2KCWnJp?=
- =?iso-8859-1?Q?Sq3OdTZsxcqLJqwjGnLfkdr4LpEpObyM2J5StZKiug0bLYy39eBhhMONP5?=
- =?iso-8859-1?Q?wK7mU8dSab1Bl8jw+V779joEND/qiB3ikfQt+znQ0Aced/vf8LVS1c1kAo?=
- =?iso-8859-1?Q?F3KDE26QlYxnX0aF/FCHndjiwI4zJkqLjZaX++9tnCg3704nxmoCGg/V4O?=
- =?iso-8859-1?Q?Qy?=
-X-MS-Exchange-AntiSpam-MessageData-1: BqzBol5WKt7J9A==
-X-OriginatorOrg: silabs.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3974d25f-be9c-4daf-9c45-08da2d9eb3c9
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR11MB5650.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 May 2022 07:21:27.3419
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 54dbd822-5231-4b20-944d-6f4abcd541fb
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Aomd2tuGN2i0z7gdexZj6zBpudofVx3oFGQK7mfRM0MuqFRT6CZSJvV45k1Q7LmSFLFIyzIpy3RXDR3lmDi2iQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1521
-X-Spam-Status: No, score=-0.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday 3 May 2022 20:21:46 CEST Jaehee Park wrote:
-> Currently, upon virtual interface creation, wfx_add_interface() stores
-> a reference to the corresponding struct ieee80211_vif in private data,
-> for later usage. This is not needed when using the container_of
-> construct. This construct already has all the info it needs to retrieve
-> the reference to the corresponding struct from the offset that is
-> already available, inherent in container_of(), between its type and
-> member inputs (struct ieee80211_vif and drv_priv, respectively).
-> Remove vif (which was previously storing the reference to the struct
-> ieee80211_vif) from the struct wfx_vif, define a function
-> wvif_to_vif(wvif) for container_of(), and replace all wvif->vif with
-> the newly defined container_of construct.
->=20
-> Signed-off-by: Jaehee Park <jhpark1013@gmail.com>
-> ---
-> v2
-> - Sequenced the wfx.h file (with the new defines) to show up first on
-> the diff, which makes the ordering of the diff more logical.
->=20
-> v3
-> - Made edits to the commit message.
-> - Shortened the macro name from wvif_to_vif to to_vif.
-> - For functions that had more than one instance of vif, defined one
-> reference vif at the beginning of the function and used that instead.
-> - Broke the if-statements that ran long into two lines.
->=20
-> v4
-> - Changed macro into function and named it back to wvif_to_vif
-> - Fit all lines in patch to 80 columns
-> - Decared a reference to vif at the beginning of all the functions
-> where it's being used
->=20
-> v5
-> - Placed longest declarations first
->=20
->=20
->  drivers/net/wireless/silabs/wfx/wfx.h     |  6 +-
->  drivers/net/wireless/silabs/wfx/data_rx.c |  5 +-
->  drivers/net/wireless/silabs/wfx/data_tx.c |  3 +-
->  drivers/net/wireless/silabs/wfx/key.c     |  4 +-
->  drivers/net/wireless/silabs/wfx/queue.c   |  3 +-
->  drivers/net/wireless/silabs/wfx/scan.c    | 11 ++--
->  drivers/net/wireless/silabs/wfx/sta.c     | 71 ++++++++++++++---------
->  7 files changed, 65 insertions(+), 38 deletions(-)
->=20
-[...]
-> diff --git a/drivers/net/wireless/silabs/wfx/sta.c b/drivers/net/wireless=
-/silabs/wfx/sta.c
-> index 3297d73c327a..040d1f9fb03a 100644
-> --- a/drivers/net/wireless/silabs/wfx/sta.c
-> +++ b/drivers/net/wireless/silabs/wfx/sta.c
-> @@ -101,6 +101,7 @@ void wfx_configure_filter(struct ieee80211_hw *hw, un=
-signed int changed_flags,
->         struct wfx_vif *wvif =3D NULL;
->         struct wfx_dev *wdev =3D hw->priv;
->         bool filter_bssid, filter_prbreq, filter_beacon;
-> +       struct ieee80211_vif *vif =3D wvif_to_vif(wvif);
+On Tue, 2022-05-03 at 18:44 -0700, Kees Cook wrote:
+> 
+> For example, using the most complicated helper, mem_to_flex_dup():
+> 
+>     /* Flexible array struct with members identified. */
+>     struct something {
+>         int mode;
+>         DECLARE_FLEX_ARRAY_ELEMENTS_COUNT(int, how_many);
+>         unsigned long flags;
+>         DECLARE_FLEX_ARRAY_ELEMENTS(u32, value);
 
-wvif is modified later in the function, so this one is not correct.
+In many cases, the order of the elements doesn't really matter, so maybe
+it'd be nicer to be able to write it as something like
+
+DECLARE_FLEX_STRUCT(something,
+	int mode;
+	unsigned long flags;
+	,
+	int, how_many,
+	u32, value);
+
+perhaps? OK, that doesn't seem so nice either.
+
+Maybe
+
+struct something {
+	int mode;
+	unsigned long flags;
+	FLEX_ARRAY(
+		int, how_many,
+		u32, value
+	);
+};
+
+or so? The long and duplicated DECLARE_FLEX_ARRAY_ELEMENTS_COUNT and
+DECLARE_FLEX_ARRAY_ELEMENTS seems a bit tedious to me, at least in cases
+where the struct layout is not the most important thing (or it's already
+at the end anyway).
 
 
---=20
-J=E9r=F4me Pouiller
+>     struct something *instance = NULL;
+>     int rc;
+> 
+>     rc = mem_to_flex_dup(&instance, byte_array, count, GFP_KERNEL);
+>     if (rc)
+>         return rc;
+
+This seems rather awkward, having to set it to NULL, then checking rc
+(and possibly needing a separate variable for it), etc.
+
+But I can understand how you arrived at this:
+ - need to pass instance or &instance or such for typeof()
+   or offsetof() or such
+ - instance = mem_to_flex_dup(instance, ...)
+   looks too much like it would actually dup 'instance', rather than
+   'byte_array'
+ - if you pass &instance anyway, checking for NULL is simple and adds a
+   bit of safety
+
+but still, honestly, I don't like it. As APIs go, it feels a bit
+cumbersome and awkward to use, and you really need everyone to use this,
+and not say "uh what, I'll memcpy() instead".
+
+Maybe there should also be a realloc() version of it?
 
 
+> +/** __fas_bytes - Calculate potential size of flexible array structure
+
+I think you forgot "\n *" in many cases here after "/**".
+
+johannes
