@@ -2,101 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03B4851B880
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 09:11:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B70B51B896
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 09:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240309AbiEEHPK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 03:15:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54184 "EHLO
+        id S1343636AbiEEHUh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 5 May 2022 03:20:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234790AbiEEHPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 03:15:08 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0a-0016f401.pphosted.com [67.231.148.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C7C33E85;
-        Thu,  5 May 2022 00:11:29 -0700 (PDT)
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.17.1.5/8.16.1.2) with ESMTP id 244LXu5f013451;
-        Thu, 5 May 2022 00:11:21 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pfpt0220;
- bh=h4K4sOayga0gZI8RfBh9lbccbKmt+58cwl9qH4N2V6A=;
- b=AS++L2ACiWLYnaHP1LGi8vPbztbpw7m7DuTrro3r5sxhvxND18YYb5M+voofmTdcOt81
- 46oFOMItEQRTIiKIU6Bl8gaMtQpqHkqLkhjutZxM/qMtUxRpRWDifO392wxt4qN0WM+Q
- UUPdhl8BsjSXkl22P+rgXYdPr1brLFyaGSfPblO7p9GhAyYeD3pxwDdkbpfZCOKQgJ8u
- Omg16XikjSHHS7/LAjXR4sDVafRZJM9KSA3jPD15iRr0usrsv4faTuJ+DO7Vo2jbRsiE
- VWVYi07ddNO3JLJcCA88iMJ5A0ChRbDGUVyBqsWR6xzXhFrRao1OI8aIy8OnSU/8PPCx NA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3fuscx3t0m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 05 May 2022 00:11:21 -0700
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 5 May
- 2022 00:11:20 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 5 May 2022 00:11:20 -0700
-Received: from [10.9.118.10] (EL-LT0043.marvell.com [10.9.118.10])
-        by maili.marvell.com (Postfix) with ESMTP id 2F4A63F70A1;
-        Thu,  5 May 2022 00:11:07 -0700 (PDT)
-Message-ID: <735b9c21-6a8f-0f28-d11d-bd9bbd78986b@marvell.com>
-Date:   Thu, 5 May 2022 09:11:02 +0200
+        with ESMTP id S1343586AbiEEHUb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 03:20:31 -0400
+Received: from mail-qt1-f169.google.com (mail-qt1-f169.google.com [209.85.160.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BECE3CFE4;
+        Thu,  5 May 2022 00:16:53 -0700 (PDT)
+Received: by mail-qt1-f169.google.com with SMTP id fu47so2570467qtb.5;
+        Thu, 05 May 2022 00:16:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Psb/QuXIO3rdiKJBYSV64pOzSRPQoJS6TszufIyjNe8=;
+        b=g2oXlQYt/GvBDNAKvS1NTWm5TO2W3PXM4aHDp1hk1eVk5SPrnIXuWalW+cnQA7UkLx
+         dHhDqz8AV+ww1QH+CZKGrqsWA1cRorVvFiqjZmicr2eN0/oBPAfFfnRl6r2a5zL+wMac
+         UGwtRNf8jqTMNojHw2e30toFvvGOJ1ee25KYALeyGpdNWhrulhjYi1ZRfCDmfywTsqBh
+         ToQA+VG0iANMMQGGGDt4S2xM1MTPB6B65H+XtopNi0PnQy2ybXw7YqQtEpJIFB+4q446
+         7Vj1IGlMYob0fjrKUMOWfoYqIDOXXBA/p2y2p19YUYm262qzR/uJTkku3YBr2ItCIQR0
+         OxVQ==
+X-Gm-Message-State: AOAM533Nb2QkuJUGGkW1TGiv8eLNeOfUkTQlWi5VrQSuysEpMXEEN3g4
+        F/kxt0RVdPcS0xUv7nUyd/C3uDKPD0sUiw==
+X-Google-Smtp-Source: ABdhPJxfcJiP6e3pG1LiEAfAF5dLVDxXwJYl+kiyO2WxFqjRf6BA2lTAv1LUus/hlk6wsBIhMPjW5w==
+X-Received: by 2002:ac8:7d4a:0:b0:2f3:bbe2:f97f with SMTP id h10-20020ac87d4a000000b002f3bbe2f97fmr1592188qtb.355.1651735012120;
+        Thu, 05 May 2022 00:16:52 -0700 (PDT)
+Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
+        by smtp.gmail.com with ESMTPSA id w24-20020ac87198000000b002f39b99f697sm426369qto.49.2022.05.05.00.16.50
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 00:16:50 -0700 (PDT)
+Received: by mail-yb1-f171.google.com with SMTP id f38so6205971ybi.3;
+        Thu, 05 May 2022 00:16:50 -0700 (PDT)
+X-Received: by 2002:a05:6902:352:b0:63e:94c:883c with SMTP id
+ e18-20020a056902035200b0063e094c883cmr19378252ybs.365.1651735010190; Thu, 05
+ May 2022 00:16:50 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:100.0) Gecko/20100101
- Thunderbird/100.0
-Subject: Re: [EXT] Re: [PATCH 0/5] net: atlantic: more fuzzing fixes
-Content-Language: en-US
-To:     Grant Grundler <grundler@chromium.org>,
-        Dmitrii Bezrukov <dbezrukov@marvell.com>
-CC:     Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
+References: <20220504093000.132579-1-clement.leger@bootlin.com> <20220504093000.132579-5-clement.leger@bootlin.com>
+In-Reply-To: <20220504093000.132579-5-clement.leger@bootlin.com>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 5 May 2022 09:16:38 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdU1dF25eKeihBO3xRarW-acG0vUSggWfKOwG3v=7eN+bg@mail.gmail.com>
+Message-ID: <CAMuHMdU1dF25eKeihBO3xRarW-acG0vUSggWfKOwG3v=7eN+bg@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 04/12] net: pcs: add Renesas MII converter driver
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Aashay Shringarpure <aashay@google.com>,
-        "Yi Chou" <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>
-References: <20220418231746.2464800-1-grundler@chromium.org>
- <CANEJEGtaFCRhVBaVtHrQiJvwsuBk3f_4RNTg87CWERHt+453KA@mail.gmail.com>
- <23cbe4be-7ced-62da-8fdb-366b726fe10f@marvell.com>
- <CANEJEGtVFE8awJz3j9j7T2BseJ5qMd_7er7WbdPQNgrdz9F5dg@mail.gmail.com>
- <BY3PR18MB4578949E822F4787E95A126CB4C09@BY3PR18MB4578.namprd18.prod.outlook.com>
- <CANEJEGvsfnry=tFOyx+cTRHJyTo2-TNOe1u4AWV+J=amrFyZpw@mail.gmail.com>
- <BY3PR18MB4578158E656F2508B43B21F6B4C39@BY3PR18MB4578.namprd18.prod.outlook.com>
- <CANEJEGuVwMa9ufwBM817dnbUxBghM0mcsPvrwx1vAWLoZ+CLaA@mail.gmail.com>
-From:   Igor Russkikh <irusskikh@marvell.com>
-In-Reply-To: <CANEJEGuVwMa9ufwBM817dnbUxBghM0mcsPvrwx1vAWLoZ+CLaA@mail.gmail.com>
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-GUID: mPpyEPWLBG1ygaxvhhBGlCOAr_F_gBsQ
-X-Proofpoint-ORIG-GUID: mPpyEPWLBG1ygaxvhhBGlCOAr_F_gBsQ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-05_02,2022-05-04_02,2022-02-23_01
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Clément,
 
-Hi Grant and Dmitrii,
+On Wed, May 4, 2022 at 11:31 AM Clément Léger <clement.leger@bootlin.com> wrote:
+> Add a PCS driver for the MII converter that is present on the Renesas
+> RZ/N1 SoC. This MII converter is reponsible for converting MII to
+> RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows to
+> reuse it in both the switch driver and the stmmac driver. Currently,
+> this driver only allows the PCS to be used by the dual Cortex-A7
+> subsystem since the register locking system is not used.
+>
+> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 
->> So to close session I guess need to set is_rsc_completed to true when 
->> number of frags is going to exceed value MAX_SKB_FRAGS, then packet will 
->> be built and submitted to stack.
->> But of course need to check that there will not be any other corner cases 
->> with this new change.
-> 
-> Ok. Sounds like I should post a v2 then and just drop 1/5 and 5/5
-> patches.  Will post that tomorrow.
+Thanks for your patch!
 
-I think the part with check `hw_head_ >= ring->size` still can be used safely (patch 5).
+> --- /dev/null
+> +++ b/drivers/net/pcs/pcs-rzn1-miic.c
 
-For patch 1 - I agree it may make things worse, so either drop or think on how to interpret invalid `next` and stop LRO session.
+> +static int miic_probe(struct platform_device *pdev)
+> +{
+> +       struct device *dev = &pdev->dev;
+> +       struct miic *miic;
+> +       u32 mode_cfg;
+> +       int ret;
+> +
+> +       ret = miic_parse_dt(dev, &mode_cfg);
+> +       if (ret < 0)
+> +               return -EINVAL;
+> +
+> +       miic = devm_kzalloc(dev, sizeof(*miic), GFP_KERNEL);
+> +       if (!miic)
+> +               return -ENOMEM;
+> +
+> +       spin_lock_init(&miic->lock);
+> +       miic->dev = dev;
+> +       miic->base = devm_platform_ioremap_resource(pdev, 0);
+> +       if (!miic->base)
+> +               return -EINVAL;
+> +
+> +       pm_runtime_enable(dev);
+> +       ret = pm_runtime_resume_and_get(dev);
+> +       if (ret < 0)
 
-Thanks,
-   Igor
+Missing pm_runtime_disable(dev).
+
+> +               return ret;
+> +
+> +       ret = miic_init_hw(miic, mode_cfg);
+> +       if (ret)
+> +               goto disable_runtime_pm;
+> +
+> +       /* miic_create() relies on that fact that data are attached to the
+> +        * platform device to determine if the driver is ready so this needs to
+> +        * be the last thing to be done after everything is initialized
+> +        * properly.
+> +        */
+> +       platform_set_drvdata(pdev, miic);
+> +
+> +       return 0;
+> +
+> +disable_runtime_pm:
+> +       pm_runtime_put(dev);
+
+Missing pm_runtime_disable(dev).
+
+> +
+> +       return ret;
+> +}
+> +
+> +static int miic_remove(struct platform_device *pdev)
+> +{
+> +       pm_runtime_put(&pdev->dev);
+
+Missing pm_runtime_disable(dev).
+
+> +
+> +       return 0;
+> +}
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
