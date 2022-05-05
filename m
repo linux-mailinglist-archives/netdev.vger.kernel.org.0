@@ -2,210 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CD5051BC6B
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 11:47:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FBA551BC81
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 11:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354171AbiEEJvE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 05:51:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34316 "EHLO
+        id S1354313AbiEEJxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 05:53:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354110AbiEEJvB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 05:51:01 -0400
-Received: from mail-io1-f71.google.com (mail-io1-f71.google.com [209.85.166.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C558939813
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 02:47:22 -0700 (PDT)
-Received: by mail-io1-f71.google.com with SMTP id k2-20020a0566022a4200b00654c0f121a9so2546593iov.1
-        for <netdev@vger.kernel.org>; Thu, 05 May 2022 02:47:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=eV38iSYAFGjXt9JWlkIOLhHqsRAqY/eXwKHu9dO4WfM=;
-        b=qFslF1Fb3nYTc0dXZYPAF328rN03mArqs4nYwqQP0it2ZTgX/XTvV34i4BIFFrRiTX
-         dU4+1qLubMc4CoKL2pBNR+PlOVBdSPXJ0Nd4UBsp9iUYLzlkQw6fZCPpJ1wtWz98uePn
-         BBTC6L2SW5o+S26fW+ThAtdORVDPeh0GYX+xHWvMxxbbsld6qfpgWrsvujLSYNpBWnYU
-         bu/CgvNdjqzAgMo8pZTJGxyMyallgnJBdGR45+IX6iaQO7sAHw/Xof/g55T+yCIiW4Zi
-         /brwH1eOwy0vgj2Kl4ni3O7xkHgAPTdPp698xvra5rW6KqRMPlK+PceD/RwTzdc3UgJP
-         nUBw==
-X-Gm-Message-State: AOAM533tMAEpt/UfMZ/CvpvQGZjDnbtBlY9hlcCWTbPyR9uUjIbpzEwK
-        GqlLoFyszE3LWVUIEWdS5Kpv9noO+Zk3FfEkS539jerYc1YZ
-X-Google-Smtp-Source: ABdhPJxL5XoOFhIWkIgGimlGzxLGs+KghxbThlHH0A4u3iFDaS4+GhJKngtIFRIFACuIz4GSRic/MRITFWOHKXmjlxt7C123rDYQ
+        with ESMTP id S231517AbiEEJxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 05:53:48 -0400
+Received: from relay2-d.mail.gandi.net (relay2-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::222])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 206F14F9F6;
+        Thu,  5 May 2022 02:50:08 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 72BC64000C;
+        Thu,  5 May 2022 09:50:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1651744207;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xUjwIJpEfOXdIS7txS+q5utiDVgOIee83y+WNlMxJOM=;
+        b=Z+R6SO9jeWSlxn1vJ7ttjTVjgZr/uE6JODAS49E1voO6KnKAxyiZevbldheyhq2G6csPNL
+        XX57Dw+5SWkX9qU3VfE6ERnfa3rrBv3/2r372uxe4Jx7TgLjYbSwOGze7bhnveo8wNs8EW
+        Xq1eh1nhcfkwj6HZm7FjW90wEADAH6E+GDFOHrO5Er+REgp6DdT3VPN9yo6ZpvVf60mFcM
+        YXaCdLjdxidxKY3pIeXPkdJnG22fldwqzQFELY+XqrSI01D3w40Flf6TuLyAsjtC4NOp0f
+        DqaHZBvK+ThghqYwtfb5ErHuUHJRe0/UVsO3U1MqUADYgwcKhAnV96xZqbol9Q==
+Date:   Thu, 5 May 2022 11:48:46 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 00/12] add support for Renesas RZ/N1
+ ethernet subsystem devices
+Message-ID: <20220505114846.67697021@fixe.home>
+In-Reply-To: <CAMuHMdXdGCebeGiDj-4hYH24tBVRVqGsHbPfEqfUGT88GZKZrw@mail.gmail.com>
+References: <20220504093000.132579-1-clement.leger@bootlin.com>
+        <CAMuHMdXdGCebeGiDj-4hYH24tBVRVqGsHbPfEqfUGT88GZKZrw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-Received: by 2002:a05:6602:2e07:b0:65a:5818:2b3d with SMTP id
- o7-20020a0566022e0700b0065a58182b3dmr8054370iow.128.1651744041879; Thu, 05
- May 2022 02:47:21 -0700 (PDT)
-Date:   Thu, 05 May 2022 02:47:21 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e04c5605de40a0dc@google.com>
-Subject: [syzbot] inconsistent lock state in rxrpc_put_call
-From:   syzbot <syzbot+7ff43f67d38f2d8e07ef@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com, edumazet@google.com,
-        kuba@kernel.org, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org, marc.dionne@auristor.com,
-        netdev@vger.kernel.org, pabeni@redhat.com,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+Le Thu, 5 May 2022 09:29:43 +0200,
+Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
 
-syzbot found the following issue on:
+> Hi Cl=C3=A9ment,
+>=20
+> On Wed, May 4, 2022 at 11:31 AM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
+otlin.com> wrote:
+> > This series needs commits bcfb459b25b8 and 542d5835e4f6 which are on
+> > the renesas-devel tree in order to enable generic power domain on
+> > RZ/N1. =20
+>=20
+> -ENOENT
+>=20
+> I assume you mean:
+> 14f11da778ff6421 ("soc: renesas: rzn1: Select PM and
+> PM_GENERIC_DOMAINS configs")
+> ed66b37f916ee23b ("ARM: dts: r9a06g032: Add missing '#power-domain-cells'=
+")
 
-HEAD commit:    48cec73a891c net: lan966x: Fix compilation error
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=135956d8f00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4f67580b287bc88d
-dashboard link: https://syzkaller.appspot.com/bug?extid=7ff43f67d38f2d8e07ef
-compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+Yep totally, did use my cherry-picked sha1 -_-'. Will fix that, sorry.
 
-Unfortunately, I don't have any reproducer for this issue yet.
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+7ff43f67d38f2d8e07ef@syzkaller.appspotmail.com
-
-================================
-WARNING: inconsistent lock state
-5.18.0-rc4-syzkaller-00910-g48cec73a891c #0 Not tainted
---------------------------------
-inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-swapper/0/0 [HC0[0]:SC1[1]:HE1:SE0] takes:
-ffff88805a1a4038 (&rxnet->call_lock){+.?.}-{2:2}, at: rxrpc_put_call+0x175/0x300 net/rxrpc/call_object.c:634
-{SOFTIRQ-ON-W} state was registered at:
-  lock_acquire kernel/locking/lockdep.c:5641 [inline]
-  lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5606
-  __raw_write_lock include/linux/rwlock_api_smp.h:209 [inline]
-  _raw_write_lock+0x2a/0x40 kernel/locking/spinlock.c:300
-  rxrpc_service_prealloc_one+0xacf/0x1440 net/rxrpc/call_accept.c:143
-  rxrpc_kernel_charge_accept+0xd4/0x120 net/rxrpc/call_accept.c:487
-  afs_charge_preallocation+0xba/0x310 fs/afs/rxrpc.c:733
-  afs_open_socket+0x294/0x360 fs/afs/rxrpc.c:92
-  afs_net_init+0xa75/0xec0 fs/afs/main.c:126
-  ops_init+0xaf/0x470 net/core/net_namespace.c:134
-  __register_pernet_operations net/core/net_namespace.c:1146 [inline]
-  register_pernet_operations+0x35a/0x850 net/core/net_namespace.c:1215
-  register_pernet_device+0x26/0x70 net/core/net_namespace.c:1302
-  afs_init+0xe6/0x218 fs/afs/main.c:189
-  do_one_initcall+0x103/0x650 init/main.c:1298
-  do_initcall_level init/main.c:1371 [inline]
-  do_initcalls init/main.c:1387 [inline]
-  do_basic_setup init/main.c:1406 [inline]
-  kernel_init_freeable+0x6b1/0x73a init/main.c:1613
-  kernel_init+0x1a/0x1d0 init/main.c:1502
-  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:298
-irq event stamp: 474002
-hardirqs last  enabled at (474002): [<ffffffff89800c02>] asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:645
-hardirqs last disabled at (474001): [<ffffffff896a855b>] sysvec_apic_timer_interrupt+0xb/0xc0 arch/x86/kernel/apic/apic.c:1097
-softirqs last  enabled at (473854): [<ffffffff8147bb73>] invoke_softirq kernel/softirq.c:432 [inline]
-softirqs last  enabled at (473854): [<ffffffff8147bb73>] __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
-softirqs last disabled at (473975): [<ffffffff8147bb73>] invoke_softirq kernel/softirq.c:432 [inline]
-softirqs last disabled at (473975): [<ffffffff8147bb73>] __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&rxnet->call_lock);
-  <Interrupt>
-    lock(&rxnet->call_lock);
-
- *** DEADLOCK ***
-
-1 lock held by swapper/0/0:
- #0: ffffc90000007d70 ((&call->timer)){+.-.}-{0:0}, at: lockdep_copy_map include/linux/lockdep.h:35 [inline]
- #0: ffffc90000007d70 ((&call->timer)){+.-.}-{0:0}, at: call_timer_fn+0xd5/0x6b0 kernel/time/timer.c:1411
-
-stack backtrace:
-CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.18.0-rc4-syzkaller-00910-g48cec73a891c #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- <IRQ>
- __dump_stack lib/dump_stack.c:88 [inline]
- dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
- print_usage_bug kernel/locking/lockdep.c:3935 [inline]
- valid_state kernel/locking/lockdep.c:3947 [inline]
- mark_lock_irq kernel/locking/lockdep.c:4150 [inline]
- mark_lock.part.0.cold+0x18/0xd8 kernel/locking/lockdep.c:4607
- mark_lock kernel/locking/lockdep.c:4571 [inline]
- mark_usage kernel/locking/lockdep.c:4502 [inline]
- __lock_acquire+0x11e7/0x56c0 kernel/locking/lockdep.c:4983
- lock_acquire kernel/locking/lockdep.c:5641 [inline]
- lock_acquire+0x1ab/0x510 kernel/locking/lockdep.c:5606
- __raw_write_lock include/linux/rwlock_api_smp.h:209 [inline]
- _raw_write_lock+0x2a/0x40 kernel/locking/spinlock.c:300
- rxrpc_put_call+0x175/0x300 net/rxrpc/call_object.c:634
- rxrpc_call_timer_expired+0xa1/0xc0 net/rxrpc/call_object.c:58
- call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
- expire_timers kernel/time/timer.c:1466 [inline]
- __run_timers.part.0+0x679/0xa80 kernel/time/timer.c:1737
- __run_timers kernel/time/timer.c:1715 [inline]
- run_timer_softirq+0xb3/0x1d0 kernel/time/timer.c:1750
- __do_softirq+0x29b/0x9c2 kernel/softirq.c:558
- invoke_softirq kernel/softirq.c:432 [inline]
- __irq_exit_rcu+0x123/0x180 kernel/softirq.c:637
- irq_exit_rcu+0x5/0x20 kernel/softirq.c:649
- sysvec_apic_timer_interrupt+0x93/0xc0 arch/x86/kernel/apic/apic.c:1097
- </IRQ>
- <TASK>
- asm_sysvec_apic_timer_interrupt+0x12/0x20 arch/x86/include/asm/idtentry.h:645
-RIP: 0010:native_save_fl arch/x86/include/asm/irqflags.h:29 [inline]
-RIP: 0010:arch_local_save_flags arch/x86/include/asm/irqflags.h:70 [inline]
-RIP: 0010:arch_irqs_disabled arch/x86/include/asm/irqflags.h:130 [inline]
-RIP: 0010:acpi_safe_halt drivers/acpi/processor_idle.c:111 [inline]
-RIP: 0010:acpi_idle_do_entry+0x1c6/0x250 drivers/acpi/processor_idle.c:551
-Code: 89 de e8 ad a6 0b f8 84 db 75 ac e8 c4 a2 0b f8 e8 2f eb 11 f8 eb 0c e8 b8 a2 0b f8 0f 00 2d d1 4b c5 00 e8 ac a2 0b f8 fb f4 <9c> 5b 81 e3 00 02 00 00 fa 31 ff 48 89 de e8 27 a5 0b f8 48 85 db
-RSP: 0018:ffffffff8ba07d60 EFLAGS: 00000293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffffffff8babc700 RSI: ffffffff896d8694 RDI: 0000000000000000
-RBP: ffff88801639f864 R08: 0000000000000001 R09: 0000000000000001
-R10: ffffffff817f71e8 R11: 0000000000000000 R12: 0000000000000001
-R13: ffff88801639f800 R14: ffff88801639f864 R15: ffff888019952004
- acpi_idle_enter+0x361/0x500 drivers/acpi/processor_idle.c:686
- cpuidle_enter_state+0x1b1/0xc80 drivers/cpuidle/cpuidle.c:237
- cpuidle_enter+0x4a/0xa0 drivers/cpuidle/cpuidle.c:351
- call_cpuidle kernel/sched/idle.c:155 [inline]
- cpuidle_idle_call kernel/sched/idle.c:236 [inline]
- do_idle+0x3e8/0x590 kernel/sched/idle.c:303
- cpu_startup_entry+0x14/0x20 kernel/sched/idle.c:400
- start_kernel+0x47f/0x4a0 init/main.c:1140
- secondary_startup_64_no_verify+0xc3/0xcb
- </TASK>
-----------------
-Code disassembly (best guess):
-   0:	89 de                	mov    %ebx,%esi
-   2:	e8 ad a6 0b f8       	callq  0xf80ba6b4
-   7:	84 db                	test   %bl,%bl
-   9:	75 ac                	jne    0xffffffb7
-   b:	e8 c4 a2 0b f8       	callq  0xf80ba2d4
-  10:	e8 2f eb 11 f8       	callq  0xf811eb44
-  15:	eb 0c                	jmp    0x23
-  17:	e8 b8 a2 0b f8       	callq  0xf80ba2d4
-  1c:	0f 00 2d d1 4b c5 00 	verw   0xc54bd1(%rip)        # 0xc54bf4
-  23:	e8 ac a2 0b f8       	callq  0xf80ba2d4
-  28:	fb                   	sti
-  29:	f4                   	hlt
-* 2a:	9c                   	pushfq <-- trapping instruction
-  2b:	5b                   	pop    %rbx
-  2c:	81 e3 00 02 00 00    	and    $0x200,%ebx
-  32:	fa                   	cli
-  33:	31 ff                	xor    %edi,%edi
-  35:	48 89 de             	mov    %rbx,%rsi
-  38:	e8 27 a5 0b f8       	callq  0xf80ba564
-  3d:	48 85 db             	test   %rbx,%rbx
+>=20
+> Gr{oetje,eeting}s,
+>=20
+>                         Geert
+>=20
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
+8k.org
+>=20
+> In personal conversations with technical people, I call myself a hacker. =
+But
+> when I'm talking to journalists I just say "programmer" or something like=
+ that.
+>                                 -- Linus Torvalds
 
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
