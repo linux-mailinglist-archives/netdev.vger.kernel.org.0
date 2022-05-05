@@ -2,60 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AAC2D51C6BE
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 20:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D61C851C6D3
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 20:13:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354855AbiEESMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 14:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57894 "EHLO
+        id S1382865AbiEESRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 14:17:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229815AbiEESMA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 14:12:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AFCF554B3
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 11:08:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 616D961F1F
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 18:08:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6763DC385A4;
-        Thu,  5 May 2022 18:08:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651774099;
-        bh=o1D9W3mV4nlOFvs/Rd77CWl4QI0upM7ggMCpojlvSas=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n0GdqlXT8vlY/pkauwl80J2AMHZrHfcndVEYOFcMNzQSFAR1t640sY7vJ/O2TWfli
-         GcroCF6NRbx2cE2vmB/vFx7rzdGGZCRSw+ME71ZPjL6sz45KgGjU4G06KrEE7cefpH
-         y3/KuvUSWpkfrGdVfszh6GHmUPlJGg+VEdhoSeH0MjzTtTokn4+RTbSRqH955VPqvC
-         3I2YmXHfRdb6wnuC2gDVr8sX4kleDPo+4MEV10NQgSZtSG7zaNp1NmFX6M4Pii7XPA
-         xJLeGk+gtfbRq6yeDGIV89ulTbC7u/cjS/jVWa0gWUMh2RLRlW1IHtGhlVe7ptp35w
-         G36YhscgVHIBw==
-Date:   Thu, 5 May 2022 11:08:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Robert Hancock <robert.hancock@calian.com>
-Cc:     "radheys@xilinx.com" <radheys@xilinx.com>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "michals@xilinx.com" <michals@xilinx.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "harinik@xilinx.com" <harinik@xilinx.com>
-Subject: Re: [PATCH net-next] net: axienet: Use NAPI for TX completion path
-Message-ID: <20220505110817.74938ad8@kernel.org>
-In-Reply-To: <5376cbf00c18487b7b96d72396807ab195f53ddc.camel@calian.com>
-References: <20220429222835.3641895-1-robert.hancock@calian.com>
-        <SA1PR02MB856018755A47967B5842A4C4C7C19@SA1PR02MB8560.namprd02.prod.outlook.com>
-        <20220504192028.2f7d10fb@kernel.org>
-        <5376cbf00c18487b7b96d72396807ab195f53ddc.camel@calian.com>
+        with ESMTP id S1357569AbiEESQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 14:16:59 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3425C373
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 11:13:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1651774399; x=1683310399;
+  h=from:to:subject:date:message-id:mime-version;
+  bh=rAE2QANMhCh2QOevk7CeE7tdh96ZzCZkW4jefN/y9yE=;
+  b=ADer8ng4Muumon3mKZzPA6YtZ7J0cupU9JkpVII0aLngEbNQ6tqtfLF1
+   fXmQZyCqPUasj4ARh9jzUEEYnzWPnAoWYyNaworGXjvbURewOuHopiF/F
+   zOIiQEusgOo3Qm48K91EBAW7LV2p8HE+mX58DI0ZIoLkGcb7a+8JaVn1H
+   XG3FA/nYYH3OjQ376mxkPK7BQm5lo778z9UkNPoS798xThNTfaddz6X+O
+   CfD8O52NnlpTICGDYIP3zc8soGSMpUe1c9t2M2PjO79XRRLpQuVOSVoql
+   x2hqW4kzZDBl+Q2P6ZeCJ5YC2iGYdocUdpWshNjf3vnEYmUMoPT+6/yG4
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,202,1647327600"; 
+   d="scan'208";a="94702630"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 05 May 2022 11:13:18 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Thu, 5 May 2022 11:13:08 -0700
+Received: from chn-vm-ungapp01.mchp-main.com (10.10.115.15) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Thu, 5 May 2022 11:13:08 -0700
+From:   Yuiko Oshino <yuiko.oshino@microchip.com>
+To:     <woojung.huh@microchip.com>, <yuiko.oshino@microchip.com>,
+        <davem@davemloft.net>, <netdev@vger.kernel.org>, <andrew@lunn.ch>,
+        <ravi.hegde@microchip.com>, <UNGLinuxDriver@microchip.com>,
+        <kuba@kernel.org>
+Subject: [PATCH v4 net-next 0/2] net: phy: add LAN8742 phy support
+Date:   Thu, 5 May 2022 11:12:50 -0700
+Message-ID: <20220505181252.32196-1-yuiko.oshino@microchip.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,24 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 May 2022 17:33:39 +0000 Robert Hancock wrote:
-> On Wed, 2022-05-04 at 19:20 -0700, Jakub Kicinski wrote:
-> > On Mon, 2 May 2022 19:30:51 +0000 Radhey Shyam Pandey wrote:  
-> > > Thanks for the patch. I assume for simulating heavy network load we
-> > > are using netperf/iperf. Do we have some details on the benchmark
-> > > before and after adding TX NAPI? I want to see the impact on
-> > > throughput.  
-> > 
-> > Seems like a reasonable ask, let's get the patch reposted 
-> > with the numbers in the commit message.  
-> 
-> Didn't mean to ignore that request, looks like I didn't get Radhey's email
-> directly, odd.
-> 
-> I did a test with iperf3 from the board (Xilinx MPSoC ZU9EG platform) connected
-> to a Linux PC via a switch at 1G link speed. With TX NAPI in place I saw about
-> 942 Mbps for TX rate, with the previous code I saw 941 Mbps. RX speed was also
-> unchanged at 941 Mbps. So no real significant change either way. I can spin
-> another version of the patch that includes these numbers.
+add LAN8742 phy support
+update LAN88xx phy ID and phy ID mask so that it can coexist with LAN8742
 
-Sounds like line rate, is there a difference in CPU utilization?
+The current phy IDs on the available hardware.
+    LAN8742 0x0007C130, 0x0007C131
+    LAN88xx 0x0007C132
+
+v3->v4:
+- fixed the one tab missing issue in the smsc.c.
+
+v2->v3:
+-added comments about the 0xfffffff2 mask that is for the differentiation and the future revisions.
+
+v1->v2:
+-removed "REVIEW REQUEST3" from the PATCH 1/2.
+
+Yuiko Oshino (2):
+  net: phy: microchip: update LAN88xx phy ID and phy ID mask.
+  net: phy: smsc: add LAN8742 phy support.
+
+ drivers/net/phy/microchip.c |  6 +++---
+ drivers/net/phy/smsc.c      | 27 +++++++++++++++++++++++++++
+ 2 files changed, 30 insertions(+), 3 deletions(-)
+
+-- 
+2.25.1
+
