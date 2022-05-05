@@ -2,105 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8899551C5EE
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 19:17:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A7A51C609
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 19:25:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382620AbiEERVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 13:21:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41716 "EHLO
+        id S241201AbiEER30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 13:29:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236486AbiEERV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 13:21:29 -0400
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25F85C767;
-        Thu,  5 May 2022 10:17:49 -0700 (PDT)
-Received: by mail-pl1-x630.google.com with SMTP id i1so4995358plg.7;
-        Thu, 05 May 2022 10:17:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=GBeMDGmJ4U1d9VBMctW5UDkywJ/Sjyx6cFCV+k65xy0=;
-        b=Tlt2tj/UJXFSzG0yy68kDwvnpEqA/2Z8g+oOfmbRHbSe+j1xzdd5ZR50dX8FwCCnFw
-         rrgA5Xt/PnrewsGl7aWSiyAUd/ORHicm2aFBBFEFEcJE+oOMM6JHd2t/Ev7VPOV9538K
-         YePVxv+heGhFzlTNnpmo+M7bdBPXgU703YEOFnD0OqYtEnxE1IidPQ+whMR5xlbW7Xpr
-         bXIiBmsaozyp0r7KQA8H4tO+blErHEK4yjm0d+O867vhQQ4CYON2SMToQ8iZVaoIRYxI
-         FYvvEBerMMDJSWY49VlqK+SjqrXQlxOdimLYf6D+JKayABYiHmpqzSFWC0KQAEkKh36a
-         Qo9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=GBeMDGmJ4U1d9VBMctW5UDkywJ/Sjyx6cFCV+k65xy0=;
-        b=dwJpkFDa34ukA8JSBFWlMEmxHcjWk8ENBDO/RbS5IUR1/Y4TeLz628CawrXDW75+RF
-         SYAW9kxnC0RbdiXz/BzUAOQ//T8BjtTZn1mVu+8O5weKnX+NkiDLT6gqNl4/WPgoTrLn
-         BLKRNFhb8unAB0QK0eCOJEekse1p2eFmVSvCcSHH94fIgwQznOaLcgy+M3Y8z9MyAxRB
-         K4ByE2C8nhBD9YEAIa04xOHRPI/FfwpASChMdthkp6Zqh6iq3dLyDnz0kn71jzsh7OxF
-         Cq/OdPQLmoi2bNL4Gu1Lbsvte0ytHtSgUWQnVLgabp6p5TtcHYlUhC6byboC9GhldKgX
-         pNKg==
-X-Gm-Message-State: AOAM531O7h+cLjwXK1RD3FbDBHs/oytFu75sRIhwhALXq2qUAcHOdvFJ
-        lhOH3uuFQQM5VAcFOMz+A/u3Tx80PTU=
-X-Google-Smtp-Source: ABdhPJzqABd+jbcuW6Nx9rlurAmfJjrkmsXmm0XnmteEsRSbLHpTPB5+xWzYyTxWEHwBPCZ5hq/5Dg==
-X-Received: by 2002:a17:902:f649:b0:156:1609:79e9 with SMTP id m9-20020a170902f64900b00156160979e9mr28688105plg.69.1651771069321;
-        Thu, 05 May 2022 10:17:49 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id c6-20020aa79526000000b0050dc7628155sm1666618pfp.47.2022.05.05.10.17.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 10:17:49 -0700 (PDT)
-Message-ID: <9eb82218-95ed-de7f-8a80-31b266d43380@gmail.com>
-Date:   Thu, 5 May 2022 10:17:47 -0700
+        with ESMTP id S236250AbiEER3Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 13:29:25 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 953121CB3D
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 10:25:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651771545; x=1683307545;
+  h=from:to:cc:subject:in-reply-to:references:date:
+   message-id:mime-version;
+  bh=D+BqhT70vbLafzy+DK3O9NAC4LWB46z53YNgbk8g8fU=;
+  b=im/AsqPSi98G425QlPapoHN/jxeKsykr6gUFcuvPC9hIkKsC0cxSbb5p
+   g57Gz6cYXrRf95x7ImQdLjqSwFJbOSkN/lzHLF2E996cunn3jfuqxqnbE
+   paxbIgCiRGOfZ7W/71+sKcq39XAyyI4DdXCU3wGzo8aa7ND8QlwsKcFBJ
+   dIueXZWTnBlvJ3kQawnlEYwrHLW1egojNAU1G/n2tX8NlKZkPzZSo8ecS
+   25fKyu/06ZgPcJ6Utb2J0wyrqF5nmCGRxtERGG/z0a9YpDiBpy3I1m8H4
+   wYtvb90WH4SjV+ShSc7P1nvoHHzG+LceAurrLrFMzF2YLmMJiseKgHXJH
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="328731949"
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="328731949"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 10:25:45 -0700
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="735002972"
+Received: from lkhorgan-mobl.amr.corp.intel.com (HELO vcostago-mobl3) ([10.209.22.233])
+  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 10:25:44 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Yannick Vignon <yannick.vignon@nxp.com>,
+        Michael Walle <michael@walle.cc>
+Subject: Re: [RFC PATCH net] net/sched: taprio: account for L1 overhead when
+ calculating transmit time
+In-Reply-To: <20220505160357.298794-1-vladimir.oltean@nxp.com>
+References: <20220505160357.298794-1-vladimir.oltean@nxp.com>
+Date:   Thu, 05 May 2022 10:25:44 -0700
+Message-ID: <87bkwbj3hj.fsf@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v4 1/1] firmware: tee_bnxt: Use UUID API for exporting the
- UUID
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Allen Pais <apais@linux.microsoft.com>, netdev@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Christoph Hellwig <hch@lst.de>
-References: <20220504091407.70661-1-andriy.shevchenko@linux.intel.com>
- <20220505093938.571702fd@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220505093938.571702fd@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/5/22 09:39, Jakub Kicinski wrote:
-> On Wed,  4 May 2022 12:14:07 +0300 Andy Shevchenko wrote:
->> There is export_uuid() function which exports uuid_t to the u8 array.
->> Use it instead of open coding variant.
->>
->> This allows to hide the uuid_t internals.
->>
->> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->> Reviewed-by: Christoph Hellwig <hch@lst.de>
->> ---
->> v4: added tag (Christoph), resent with 126858db81a5 (in next) in mind (Florian)
-> 
-> Judging by the history of the file this may go via the tee tree or
-> net-next. Since tee was not CCed I presume the latter is preferred.
-> Please let us know if that's incorrect otherwise we'll apply tomorrow :)
+Hi Vladimir,
 
-This file has historically been without a maintainer or tree, but since 
-it is somewhat related to the bnxt driver, I eventually signed up 
-Michael to also review such patches:
+Vladimir Oltean <vladimir.oltean@nxp.com> writes:
 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=126858db81a5094d20885bc59621c3b9497f9048
+> The taprio scheduler underestimates the packet transmission time, which
+> means that packets can be scheduled for transmission in time slots in
+> which they are never going to fit.
+>
+> When this function was added in commit 4cfd5779bd6e ("taprio: Add
+> support for txtime-assist mode"), the only implication was that time
+> triggered packets would overrun its time slot and eat from the next one,
+> because with txtime-assist there isn't really any emulation of a "gate
+> close" event that would stop a packet from being transmitted.
+>
+> However, commit b5b73b26b3ca ("taprio: Fix allowing too small
+> intervals") started using this function too, in all modes of operation
+> (software, txtime-assist and full offload). So we now accept time slots
+> which we know we won't be ever able to fulfill.
+>
+> It's difficult to say which issue is more pressing, I'd say both are
+> visible with testing, even though the second would be more obvious
+> because of a black&white result (trying to send small packets in an
+> insufficiently large window blocks the queue).
+>
+> Issue found through code inspection, the code was not even compile
+> tested.
+>
+> The L1 overhead chosen here is an approximation, because various network
+> equipment has configurable IFG, however I don't think Linux is aware of
+> this.
 
-If you could apply it via netdev-next/master that owuld be great, thanks!
+When testing CBS, I remember using tc-stab: 
+
+https://man7.org/linux/man-pages/man8/tc-stab.8.html
+
+To set the 'overhead' to some value.
+
+That value should be used in the calculation.
+
+I agree that it's not ideal, in the ideal world we would have a way to
+retrieve the link overhead from the netdevice. But I would think that it
+gets complicated really quickly when using netdevices that are not
+Ethernet-based.
+
+>
+> Fixes: 4cfd5779bd6e ("taprio: Add support for txtime-assist mode")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> ---
+>  net/sched/sch_taprio.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+>
+> diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+> index b9c71a304d39..8c8681c37d4f 100644
+> --- a/net/sched/sch_taprio.c
+> +++ b/net/sched/sch_taprio.c
+> @@ -176,7 +176,10 @@ static ktime_t get_interval_end_time(struct sched_gate_list *sched,
+>  
+>  static int length_to_duration(struct taprio_sched *q, int len)
+>  {
+> -	return div_u64(len * atomic64_read(&q->picos_per_byte), 1000);
+> +	/* The duration of frame transmission should account for L1 overhead
+> +	 * (12 octets IFG, 7 octets of preamble, 1 octet SFD, 4 octets FCS)
+> +	 */
+> +	return div_u64((24 + len) * atomic64_read(&q->picos_per_byte), 1000);
+>  }
+>  
+>  /* Returns the entry corresponding to next available interval. If
+> -- 
+> 2.25.1
+>
+
 -- 
-Florian
+Vinicius
