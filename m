@@ -2,55 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7402451C570
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 18:53:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 531AA51C579
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 18:54:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382107AbiEEQ4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 12:56:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45750 "EHLO
+        id S1382134AbiEEQ6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 12:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiEEQ4u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 12:56:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E3357B14
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 09:53:10 -0700 (PDT)
+        with ESMTP id S233268AbiEEQ6T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 12:58:19 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 371D85BD2E;
+        Thu,  5 May 2022 09:54:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EAC0461E3A
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 16:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3781C385A8;
-        Thu,  5 May 2022 16:53:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA45CB82E0B;
+        Thu,  5 May 2022 16:54:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35761C385A8;
+        Thu,  5 May 2022 16:54:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651769589;
-        bh=r5GQqpd4Djf6aR9amOOzWwYgZVHXIiCxvaP0g6X1ios=;
+        s=k20201202; t=1651769676;
+        bh=WFcN9uCuku+W6hl6ivbmd8b2MJhAZo7OV8Rl1CGkL2U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rVCBTPW1wb0zTbZmnnMlzeUtSCR7bv5JveLhRXQhfJKXqhFgl4zQ+56+7oE1g7bSU
-         3HQ+ULHgCuk1yOCXjLblERZR0StmjWdP5o74DIw7iT5UtHP67wOy5pxUEe+1boc80G
-         TZxwq4x7L+Ergqk8UXpCo3Ti8EzkCLLpayE6toUxPft7+0MgGh8yabBee9vWpDg4xk
-         HJWR6mFLsxkTGBTVk9NxtoQIu1X3QGsaLBTcxfOAcXcAqGOz/yz+ni7nyLvRvmLv37
-         EQi7+esvNe4tYAkUPZf96CuKbGxL2HPJqJ3kVJn3rceqS+2s9YqvNkyaa0n2MmqR5N
-         0xsE9ko4ki3uQ==
-Date:   Thu, 5 May 2022 09:53:07 -0700
+        b=dh2Z3lXGfdIdARN4snPQzZGkgmaFmvPZ1GE+B/RacRP6NdyTZ9xSdk8gChwsqRBnb
+         UQSOFeziDRpfxzwGHh03EAHQ3OWj0b5c/9cA4qaMFPtMqwSj5uXaNujQCQEq+XurSY
+         fOLj4aBrhbWYgRgOcZ2+/v80BfUywuABD6m3oTc39MWp+5pbJ5RQTk5BD80OOkPkX2
+         lGVoEzxxM9g3t4lz8cD1tTlR9hH+e5QKI80KnSZXupPx2YjZQ63bZ32cYyJtHwoGev
+         O9/Zbw7SO0efY0le3vkZxQHuV/5Qb9RcwoA32yajCQKynG1bxQaWGRgiW4CcFzAgPC
+         W/SO05zIEyVhg==
+Date:   Thu, 5 May 2022 09:54:35 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Steffen Klassert <steffen.klassert@secunet.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        intel-wired-lan@lists.osuosl.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Raed Salem <raeds@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: Re: [PATCH ipsec-next 6/8] netdevsim: rely on XFRM state direction
- instead of flags
-Message-ID: <20220505095307.488c093b@kernel.org>
-In-Reply-To: <54be8183fb49a5486a8137627c204f00595e21af.1651743750.git.leonro@nvidia.com>
-References: <cover.1651743750.git.leonro@nvidia.com>
-        <54be8183fb49a5486a8137627c204f00595e21af.1651743750.git.leonro@nvidia.com>
+To:     Antoine Tenart <atenart@kernel.org>
+Cc:     Carlos Fernandez <carlos.escuin@gmail.com>,
+        carlos.fernandez@technica-enineering.de, davem@davemloft.net,
+        edumazet@google.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+Subject: Re: [PATCH] net: macsec: XPN Salt copied before passing offload
+ context
+Message-ID: <20220505095435.1a2d8af2@kernel.org>
+In-Reply-To: <165175728541.217313.17093503108252590709@kwain>
+References: <[PATCH] net/macsec copy salt to MACSec ctx for XPN>
+        <20220505123803.17553-1-carlos.fernandez@technica-engineering.de>
+        <165175728541.217313.17093503108252590709@kwain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -64,12 +59,10 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  5 May 2022 13:06:43 +0300 Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Make sure that netdevsim relies on direction and not on flags.
-> 
-> Reviewed-by: Raed Salem <raeds@nvidia.com>
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+On Thu, 05 May 2022 15:28:05 +0200 Antoine Tenart wrote:
+> (Note: please use "[PATCH net]" for fixes and "[PATCH net-next]" for
+> improvements in the subject when submitting patches to the networking
+> subsystem).
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+Plus the version of the patch, FWIW, so [PATCH net v2] would have been
+appropriate here, I think.
