@@ -2,113 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33BF151C210
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 16:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8A051C253
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 16:21:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380471AbiEEORX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 10:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41928 "EHLO
+        id S242137AbiEEOZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 10:25:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380466AbiEEORU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 10:17:20 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BACCE5A0BF
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 07:13:39 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id s30so7833488ybi.8
-        for <netdev@vger.kernel.org>; Thu, 05 May 2022 07:13:39 -0700 (PDT)
+        with ESMTP id S232948AbiEEOZQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 10:25:16 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 128AE1AF34;
+        Thu,  5 May 2022 07:21:37 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id p4so5421977edx.0;
+        Thu, 05 May 2022 07:21:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lW6YmRKgJEIh2eED/+IVKB8oDvU0WH+BiMyppYMx/nM=;
-        b=zRf9tcadFcwynKQBoYA64Lhbx0xApTOpYvVH3ChFo8G0O3Q42LTXvPFy2avUIosaxs
-         eI/9NDOOxChHWnLG9j4KMH1uDozXcWHLqD3rKvkn5P23hu+BjPvG80E6Hlt4re4yEGOF
-         a79yE0QSTarwGHbPm6yGYVug/rEklsGNWdDx5+KZ4wjvdY+EUhliF6eG0s+GFTq4eJkF
-         Rt+Z8xSbn0iWUAUnW5ICTnVTzmiWmGIB1xU4+yGAfmm94gCu/hhO/dPsjt5+9naj70cu
-         6K/ixeB/Yxgj6A+L3PD1a7oxLfQNvwRRGO8f5qfrT4DvlUlG/WVwVNWxp6EBMIP9b6AY
-         Y8eg==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=uGwNvCukPKt5KAQuzs31ksMVk3XSI3SIHYayYJ4DWVY=;
+        b=WWQMyoa/m9OntHX7muyAMEMDG2bYFsVfOLRK7TNHzgaxLF3C1M+93LSzz1zEX6+hmY
+         iCeo1KnKWUyIBM+9C6K4xX2BM93C0n94VpGY7XYCUMWLnpSMaQVVGIg9ltI9v4D/2KoQ
+         nasoI3dJTEz0QM+izEobsfCWIHWjZyWmFjJ8uuO11vXQJsvX76yduzng3pU87SG711ln
+         InsZHaHuJuoikXNEnzwijd7TU5uPYZR9ZUctgWEqb1yOgfEUoP/H0FTydtrKD/CqeO9q
+         0nz3G8Kd//xPi/Y0v18qc57dZnSMRyJZoH4Obqsbecrm2Ya9cbSFPzLPhOzxvRD2A7EP
+         PPOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lW6YmRKgJEIh2eED/+IVKB8oDvU0WH+BiMyppYMx/nM=;
-        b=lyhwImbd/rVs2uWMRUz+IuR7PjgwA7eMKBHr6NtOCKnFySHYhIfld123v110Hhcd3M
-         wzvN3ymSguHHLdtf4nutVn8EB9fE6ddXrLIB30133RIG0XnEfi/2ruTO5BtRb5gL8n+0
-         WR7HX0Pec6krFDopn4MkujCJ8lYrNN64dzpjqcZYZDke3TuXVt5Z6BuPQOfkJZebfhek
-         uId8Fn4yGKX4+VF2xcTN8aS5EUoNeh1Dqe9C/WhCFHLBcvcFM0XvGopBVbRehRotYTEK
-         GFO7IvHbk2CebXAcB1fwKSMj5W55wLj9WjKN4/M0k093jwnkEl2YLQe5NzqM5D8MGg5S
-         5Axg==
-X-Gm-Message-State: AOAM531VHXn1g+Wcss2W1Vocchfl9R91dhNvfluxBPhF0U1R8BCkl9Ex
-        dMOXmmPCXzvXBrknfcihjUTUUtsXbCwrmkezDYwfqw==
-X-Google-Smtp-Source: ABdhPJxQAuCxjgHTzW1wkwTxSKVB4kNQ0PrFCSz6LO6VQMK/t4AKo5edK5uR1u6CXZQ9Z3o/wrUqc+6yWQKD7cWSC+8=
-X-Received: by 2002:a25:bcc7:0:b0:648:d728:d39 with SMTP id
- l7-20020a25bcc7000000b00648d7280d39mr22100634ybm.514.1651760019039; Thu, 05
- May 2022 07:13:39 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=uGwNvCukPKt5KAQuzs31ksMVk3XSI3SIHYayYJ4DWVY=;
+        b=IqUAv8iw08DOiozGlTGsNqu3TDosgVxAtqmdkIpAwa1IeyuczQM+M70p1GYYiAuxB2
+         +6FUsJNz2vhHzD5ov5fB/qLO8d0V47hWDVwIw0T58MsNOha5+EjfW5r6mhSma9UH5ggT
+         rQ/HqHB/4O1O/S/muxezTnDSFQ4AOywIyqi7S4YJSsQxi/NK/6ut5l80cu1myb3/IpNc
+         kunQovv/piPxNhfXMzu+GrdxOIQtTsCbl1mA2SBSrxFd5MQZwjXODT1HA+sYIdQ2uHJ8
+         FnqRQQAttITHPtwtUOxzQcHuMgVXJ7CY92PDgAlxgL2Jxth6maQ3j+ZDZzJiFaWfPQjl
+         H3ag==
+X-Gm-Message-State: AOAM532R4nMuvSuvIvPDmJJPcSDq16Ivz+3qAwob7YO0WpUkrWmgN5h4
+        gu7Zc4lw9ON+7c53AEE+LDo=
+X-Google-Smtp-Source: ABdhPJwxXRp+klyB4r5bfDnlD02Sfhwzq69K52d+xQh42GTTQ4osTHucxjSDxQ1lJweWXodvb27pgw==
+X-Received: by 2002:a05:6402:364:b0:425:f88d:7d4a with SMTP id s4-20020a056402036400b00425f88d7d4amr30252039edw.68.1651760495661;
+        Thu, 05 May 2022 07:21:35 -0700 (PDT)
+Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id v16-20020a17090690d000b006f3ef214da8sm820652ejw.14.2022.05.05.07.21.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 May 2022 07:21:35 -0700 (PDT)
+Message-ID: <b9ef7ce4-2a9d-9ecb-0aee-3f671c25d13f@gmail.com>
+Date:   Thu, 5 May 2022 16:21:33 +0200
 MIME-Version: 1.0
-References: <cover.1651647576.git.hakan.jansson@infineon.com>
- <64b59ca66cc22e6433a044e7bba2b3e97c810dc2.1651647576.git.hakan.jansson@infineon.com>
- <CACRpkdY3xPcyNcJfdGbSP5rdcUV6hr87yJNDVDGZdRCfN+MqLA@mail.gmail.com> <1e8cfbc6-8452-0e87-9713-536d235e5b51@infineon.com>
-In-Reply-To: <1e8cfbc6-8452-0e87-9713-536d235e5b51@infineon.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 5 May 2022 16:13:26 +0200
-Message-ID: <CACRpkda4ByrS8RGAunno_S59+Y2yado4eObzwsVkM2Q=n-B+CQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: net: broadcom-bluetooth: Add property
- for autobaud mode
-To:     Hakan Jansson <hakan.jansson@infineon.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: [PATCH RESEND 0/5] dt-bindings: support Ethernet devices as LED
+ triggers
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Pavel Machek <pavel@ucw.cz>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        linux-bluetooth@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        bcm-kernel-feedback-list@broadcom.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, Vladimir Oltean <olteanv@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        John Crispin <john@phrozen.org>, linux-doc@vger.kernel.org,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <rafal@milecki.pl>
+References: <20220505135512.3486-1-zajec5@gmail.com>
+ <6273d900.1c69fb81.fbc61.4680@mx.google.com>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <6273d900.1c69fb81.fbc61.4680@mx.google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 5, 2022 at 3:11 PM Hakan Jansson <hakan.jansson@infineon.com> wrote:
+On 5.05.2022 16:02, Ansuel Smith wrote:
+> On Thu, May 05, 2022 at 03:55:07PM +0200, Rafał Miłecki wrote:
+>> From: Rafał Miłecki <rafal@milecki.pl>
+>>
+>> Some LEDs are designed to represent a state of another device. That may
+>> be USB port, Ethernet interface, CPU, hard drive and more.
+>>
+>> We already have support for LEDs that are designed to indicate USB port
+>> (e.g. light on when USB device gets connected). There is DT binding for
+>> that and Linux implementation in USB trigger.
+>>
+>> This patchset adds support for describing LEDs that should react to
+>> Ethernet interface status. That is commonly used in routers. They often
+>> have LED to display state and activity of selected physical port. It's
+>> also common to have multiple LEDs, each reacting to a specific link
+>> speed.
+>>
+> 
+> I notice this is specific to ethernet speed... I wonder if we should
+> expand this also to other thing like duplex state or even rx/tx.
 
-> I suppose a general flag could be useful but to be honest I don't know
-> if any other devices besides the ones using the Broadcom driver has any
-> use for it. You would probably also still want to be able to use
-> current-speed to set the link speed and end up using both
-> current-speed=x and current-speed-auto at the same time, which might
-> look a little confusing?
+I didn't see any router with separated Rx/Tx LEDs, but it still sounds
+like a valid case.
 
-I do not think it is more confusing than being able to use
-current-speed and brcm,uses-autobaud-mode at the same time.
+We could add flags for that in proposed field like:
+trigger-sources = <&port (SPEED_1000 | LINK | TX)>;
 
-> Please let me know if you'd still prefer "current-speed-auto" over
-> "brcm,uses-autobaud-mode" and I'll revise the patch and rename it!
+Or add separated field for non-speed flags like:
+trigger-sources = <&port SPEED_1000 (LINK | TX)>;
 
-It actually depends a bit.
-
-This:
-
-> >> +      The controller should be started in autobaud mode by asserting
-> >> +      BT_UART_CTS_N (i.e. host RTS) during startup. Only HCI commands supported
-> >> +      in autobaud mode should be used until patch FW has been loaded.
-
-sounds a bit vague?
-
-Does it mean that CTS is asserted, then you send a bit (CTS then goes low)
-and then CTS is asserted again when the device is ready to receieve more
-data? i.e is this some kind of one-bit mode, because it doesn't sound like
-it is using CTS as it was used in legacy modems.
-
-Some more explanation of this mode is needed so we can understand if
-this is something generic or a BRCM-only thing.
-
-Yours,
-Linus Walleij
+Let's see what DT experts say about it.
