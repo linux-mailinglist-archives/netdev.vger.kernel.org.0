@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7975B51BCC5
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 12:07:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBF4C51BCC3
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 12:07:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238069AbiEEKKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 06:10:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48860 "EHLO
+        id S1349651AbiEEKKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 06:10:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48880 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229956AbiEEKKg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 06:10:36 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B96210DC
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 03:06:57 -0700 (PDT)
+        with ESMTP id S239007AbiEEKKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 06:10:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4243B10DC
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 03:07:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 878F3CE2CC2
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 10:06:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE7EC385A4;
-        Thu,  5 May 2022 10:06:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E854CB82C17
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 10:06:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1365C385A4;
+        Thu,  5 May 2022 10:06:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651745213;
-        bh=ObWDA2SCWwhf8rEgifXrmUVxwSxqpiajpOZA6fDCahk=;
-        h=From:To:Cc:Subject:Date:From;
-        b=a4ky+JXUTuuPpxBkOR+Bn+zZ5+k3DhNXJmQJwCsa64FFSkuRXXO/MEmOvDN/K1jWG
-         O6qiIRfLK1BnS60qoayp8HW08dCTYS8W4Vgfm6gR6Ced8e9RgkzkIcSVFuvpCMniew
-         5sdCxoD2I5Ivcbsw68wKhrdVy1CI79rAguiaXJBCNSD2daukPId/BB1NvJC5JNVJtf
-         iNEPIbiKDxDHIfkrgnTH8JOQFQOMReKzXMPluroE1PYbf7paXj7M0eY9Rv+oSrCBkm
-         75VscNLxQCYp3obtNWrjay0aQPb/UeHMBOkVD9BcGIWhTbQLvY420V2t8qnjbgpmUs
-         gBsx/e1smRj6g==
+        s=k20201202; t=1651745217;
+        bh=q1WEVxyuEoXl7drz0f3Y3iN+PquzoHa/Jr2viDW2oyg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rMx6MAn646g7dMaIDod2V+f1lup8nC0vrqbW8pS0PO/JLEVphczlDv/mdN8PUCaos
+         A2mZBawndb780DBXGORMEYbp8NCRPepuNiuudtdgYc8qTopWCzqSJrj3H8+C3tS+x/
+         JOFC+HLFYjFqXYAdibD8/ZNiQTgDWRjN2zp/V/pzsBD8hNQEWzI+7JKsFaqKRogwBH
+         0qn3FaKqV4GFYxkxeB1V4aODx/maNPp7VvtuAs9ToQSnjZasCs/nlAJE76BWYWtrw6
+         d8qJSBI8NnzUyyAl3PH+mp3EAWFKsYD7oAurWsW44n+2E1aUmL25sBvSeF9EkPoPdg
+         dKaAVKXIu7Xdg==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -44,10 +44,12 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Raed Salem <raeds@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH ipsec-next 0/8] Be explicit with XFRM offload direction
-Date:   Thu,  5 May 2022 13:06:37 +0300
-Message-Id: <cover.1651743750.git.leonro@nvidia.com>
+Subject: [PATCH ipsec-next 1/8] xfrm: free not used XFRM_ESP_NO_TRAILER flag
+Date:   Thu,  5 May 2022 13:06:38 +0300
+Message-Id: <a8b37f45df031108d6b191916570a1005d645d38.1651743750.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1651743750.git.leonro@nvidia.com>
+References: <cover.1651743750.git.leonro@nvidia.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -62,58 +64,79 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Hi Steffen,
+After removal of Innova IPsec support from mlx5 driver, the last user
+of this XFRM_ESP_NO_TRAILER was gone too. This means that we can safely
+remove it as no other hardware is capable (or need) to remove ESP trailer.
 
-I may admit that the title of this series is not the best one as it
-contains straightforward cleanups and code that converts flags to
-something less confusing.
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+---
+ include/net/xfrm.h | 2 +-
+ net/ipv4/esp4.c    | 6 ------
+ net/ipv6/esp6.c    | 6 ------
+ 3 files changed, 1 insertion(+), 13 deletions(-)
 
-This series follows removal of FPGA IPsec code from the mlx5 driver and
-based on net-next commit 4950b6990e3b ("Merge branch 'ocelot-vcap-cleanups'").
-
-As such, first two patches delete code that was used by mlx5 FPGA code
-but isn't needed anymore.
-
-Third patch is simple struct rename.
-
-Rest of the patches separate user's provided flags variable from driver's
-usage. This allows us to created more simple in-kernel interface, that
-supports type checking without blending different properties into one
-variable. It is achieved by converting flags to specific bitfield variables
-with clear, meaningful names.
-    
-Such change allows us more clear addition of new input flags needed to
-mark IPsec offload type.
-
-The followup code uses this extensively:
-https://git.kernel.org/pub/scm/linux/kernel/git/leon/linux-rdma.git/log/?h=xfrm-next
-
-Thanks
-
-Leon Romanovsky (8):
-  xfrm: free not used XFRM_ESP_NO_TRAILER flag
-  xfrm: delete not used number of external headers
-  xfrm: rename xfrm_state_offload struct to allow reuse
-  xfrm: store and rely on direction to construct offload flags
-  ixgbe: propagate XFRM offload state direction instead of flags
-  netdevsim: rely on XFRM state direction instead of flags
-  net/mlx5e: Use XFRM state direction instead of flags
-  xfrm: drop not needed flags variable in XFRM offload struct
-
- .../net/ethernet/intel/ixgbe/ixgbe_ipsec.c    |  9 ++++-----
- .../net/ethernet/intel/ixgbe/ixgbe_ipsec.h    |  2 +-
- drivers/net/ethernet/intel/ixgbevf/ipsec.c    |  6 +++---
- drivers/net/ethernet/intel/ixgbevf/ipsec.h    |  2 +-
- .../mellanox/mlx5/core/en_accel/ipsec.c       | 10 +++++-----
- drivers/net/netdevsim/ipsec.c                 |  2 +-
- include/net/xfrm.h                            | 20 +++++++++++--------
- net/ipv4/esp4.c                               |  6 ------
- net/ipv6/esp6.c                               |  6 ------
- net/xfrm/xfrm_device.c                        | 15 +++++++-------
- net/xfrm/xfrm_state.c                         |  4 ++--
- net/xfrm/xfrm_user.c                          |  5 +++--
- 12 files changed, 40 insertions(+), 47 deletions(-)
-
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 6fb899ff5afc..b41278abeeaa 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -1006,7 +1006,7 @@ struct xfrm_offload {
+ #define	CRYPTO_FALLBACK		8
+ #define	XFRM_GSO_SEGMENT	16
+ #define	XFRM_GRO		32
+-#define	XFRM_ESP_NO_TRAILER	64
++/* 64 is free */
+ #define	XFRM_DEV_RESUME		128
+ #define	XFRM_XMIT		256
+ 
+diff --git a/net/ipv4/esp4.c b/net/ipv4/esp4.c
+index d747166bb291..b21238df3301 100644
+--- a/net/ipv4/esp4.c
++++ b/net/ipv4/esp4.c
+@@ -705,7 +705,6 @@ static int esp_output(struct xfrm_state *x, struct sk_buff *skb)
+ static inline int esp_remove_trailer(struct sk_buff *skb)
+ {
+ 	struct xfrm_state *x = xfrm_input_state(skb);
+-	struct xfrm_offload *xo = xfrm_offload(skb);
+ 	struct crypto_aead *aead = x->data;
+ 	int alen, hlen, elen;
+ 	int padlen, trimlen;
+@@ -717,11 +716,6 @@ static inline int esp_remove_trailer(struct sk_buff *skb)
+ 	hlen = sizeof(struct ip_esp_hdr) + crypto_aead_ivsize(aead);
+ 	elen = skb->len - hlen;
+ 
+-	if (xo && (xo->flags & XFRM_ESP_NO_TRAILER)) {
+-		ret = xo->proto;
+-		goto out;
+-	}
+-
+ 	if (skb_copy_bits(skb, skb->len - alen - 2, nexthdr, 2))
+ 		BUG();
+ 
+diff --git a/net/ipv6/esp6.c b/net/ipv6/esp6.c
+index f2120e92caf1..36e1d0f8dd06 100644
+--- a/net/ipv6/esp6.c
++++ b/net/ipv6/esp6.c
+@@ -741,7 +741,6 @@ static int esp6_output(struct xfrm_state *x, struct sk_buff *skb)
+ static inline int esp_remove_trailer(struct sk_buff *skb)
+ {
+ 	struct xfrm_state *x = xfrm_input_state(skb);
+-	struct xfrm_offload *xo = xfrm_offload(skb);
+ 	struct crypto_aead *aead = x->data;
+ 	int alen, hlen, elen;
+ 	int padlen, trimlen;
+@@ -753,11 +752,6 @@ static inline int esp_remove_trailer(struct sk_buff *skb)
+ 	hlen = sizeof(struct ip_esp_hdr) + crypto_aead_ivsize(aead);
+ 	elen = skb->len - hlen;
+ 
+-	if (xo && (xo->flags & XFRM_ESP_NO_TRAILER)) {
+-		ret = xo->proto;
+-		goto out;
+-	}
+-
+ 	ret = skb_copy_bits(skb, skb->len - alen - 2, nexthdr, 2);
+ 	BUG_ON(ret);
+ 
 -- 
 2.35.1
 
