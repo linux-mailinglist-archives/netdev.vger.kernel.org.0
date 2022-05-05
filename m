@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D42C351C1A2
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:57:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59C2151C193
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:57:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345466AbiEEN7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 09:59:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48222 "EHLO
+        id S1380179AbiEEN7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 09:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380347AbiEEN7J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 09:59:09 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A5F1834B;
-        Thu,  5 May 2022 06:55:29 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id i19so8873989eja.11;
-        Thu, 05 May 2022 06:55:29 -0700 (PDT)
+        with ESMTP id S1380360AbiEEN7L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 09:59:11 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345631834B;
+        Thu,  5 May 2022 06:55:32 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id b24so5291411edu.10;
+        Thu, 05 May 2022 06:55:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ahkARIN+8V3yBAvDKNOhMu072AYtqbFU/lpjoQxJ3Ks=;
-        b=gyhScaHs263fn2FMoFIaeIpmB1OR6lK4hIvTWKMnoqsCeTC4u7f5XlTXbu1qDGT80A
-         7fcgacj4FhqraB8kY6V759+NYx4cX2hkWcGvb32qC9sVoAGgT0c4dRd6y7e+IOJSFnNl
-         PHH4QW2DAEqWANTXLaKCgcW6G7rVVLpcz1Y9yRu2BHdODLKSj7bnvTA+PdIgmneIxKQn
-         oC0YfGZpHfaQqXIvYNm6WzICki7T1sEtt3tFgVSroKZ0jNV5NchrvnoWG+0aocWXlN2T
-         BarZsb5ZxvXwki1O9/qbU1o/HM708vc56H6LtIseoYFnr1ECso98W2oRXzZ4Y6JD/N+5
-         dK2g==
+        bh=JuRsVVqEUdtcZTaqe1dOvQJoNCUAzBZXwnxfkTQiX94=;
+        b=W/5UaXxDAqcyJs7vU252H7GvKSWg0c/fiI5EtvVqQfvbbPoDgxZeoXXz2Bgk//+mch
+         8qTUnwBd0j2CIEhPg/aS4YTarFuuVfBGllA8yzs84ycZDVCyOTpXIptNc42tOPCz4bJ5
+         G4qBDcunfd4lFqKQXpcXd1p7ZPDRbz1YTdnhFD3UVZsw0EdVd6t6mOQkTvUbFeuyyhi+
+         KBPyzJUQv7RpdP7/H9jVZW+yKVEZfCeDO9cmF157c2iIt02b+3+CtN86kfjCVVC1+ZVw
+         LS+UMchVLfARzZsy9nsMQoagGcQ5TlLJ6F9G12/UQkZ3H9uRyUhbgGQJpWvM+/y93GgN
+         l/Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ahkARIN+8V3yBAvDKNOhMu072AYtqbFU/lpjoQxJ3Ks=;
-        b=D4u2Bx7nQGaPPfrDj3pV00Lmfdiw/k60rB5PoCdnO62pcg9svUDiMyxJO5KZCHoziD
-         kXTcAf0PuHML6/rerD111Bls12pBQEKXC14WCH+nswz4PtiwMrKXwEAHESV03Oe1oncC
-         1JbxO7aVcqoGM0uQLFtHYqU0fqKzPHHEqDvsixxwzmXIsLAimxBbe+1UycAzlxxXTH3W
-         N58PCQQCUM4fOcokmNsoqL6d/ES3tnc+XiHp2ahG5d67nFPG97NzDtpkXtxBuwEnjjZC
-         W5NdspzxS/ccCYLmpUtedlNoF8UiZwx+S2cMW13ztJrynCUtLZEeSES+0l6EMrAgfOtb
-         W3Ng==
-X-Gm-Message-State: AOAM530qkHmiNA+u5cJAL+qMkR0iJ+fele4w1jWwkh8va5ml/G+StHDh
-        IJ6zVwMCtErq0SCwjfJKiq8=
-X-Google-Smtp-Source: ABdhPJzi3vKiAPWHMT0W9f/YUPiDcbp8oCkahrkdy1du7Mdl6X0NgMbhUvQRlzLOh3T78kfW8HG0HA==
-X-Received: by 2002:a17:906:2646:b0:6d5:d889:c92b with SMTP id i6-20020a170906264600b006d5d889c92bmr27143703ejc.696.1651758928315;
-        Thu, 05 May 2022 06:55:28 -0700 (PDT)
+        bh=JuRsVVqEUdtcZTaqe1dOvQJoNCUAzBZXwnxfkTQiX94=;
+        b=b/l3ej1DiCFCdYFM7rr6P/R1+zRtYRGMNX3mjOEBDaexQFs2ImN8Yin+6MTcLhpjEw
+         lDvEfJznOKkUL+m3vjNO5PO3BIX/2f33gXwLP2G8iWDNpETvirK1CVj/R/pMWWaszA5i
+         GvmoM/BpySOq82BmFd7u74tivPmsR9HMZHJRaypo91EpiRaoNOiSI6xWIu4KqVMWl4FV
+         UaErHHnkVYH+Qox6Lar3p6hZS+Pq8Q7zn1i2H690mXmiv5evYWv9xBTxD7ZJTWYHTc21
+         9kv973BXyzAYknaPb91XCnbdB9WCNgyIKwtRLO/+kR43BromnrnKHrbqrsjKCSbb+AA4
+         LbyQ==
+X-Gm-Message-State: AOAM530L+tXXK6sCg7nWzyXLgi2vuAruYKZ8c3pJwIoWR9huMtlhBDxN
+        RFSSe47qzZHk/uKtyo1rxOc=
+X-Google-Smtp-Source: ABdhPJzTLEuqMS0XXlAUBVlv48aIfbTihrqnsUKYIVW/6h2dIhYSa6hS2trVlUxvL1OW4mGnO/lzDw==
+X-Received: by 2002:a05:6402:f25:b0:427:bf59:ad72 with SMTP id i37-20020a0564020f2500b00427bf59ad72mr23149749eda.231.1651758930769;
+        Thu, 05 May 2022 06:55:30 -0700 (PDT)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id e15-20020a50e44f000000b0042617ba63c7sm877949edm.81.2022.05.05.06.55.26
+        by smtp.gmail.com with ESMTPSA id e15-20020a50e44f000000b0042617ba63c7sm877949edm.81.2022.05.05.06.55.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 06:55:27 -0700 (PDT)
+        Thu, 05 May 2022 06:55:30 -0700 (PDT)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -66,9 +66,9 @@ Cc:     Pavel Machek <pavel@ucw.cz>,
         Jonathan Corbet <corbet@lwn.net>,
         John Crispin <john@phrozen.org>, linux-doc@vger.kernel.org,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH RESEND 2/5] dt-bindings: net: allow Ethernet devices as LED triggers
-Date:   Thu,  5 May 2022 15:55:09 +0200
-Message-Id: <20220505135512.3486-3-zajec5@gmail.com>
+Subject: [PATCH RESEND 3/5] dt-bindings: leds: add Ethernet triggered LEDs to example
+Date:   Thu,  5 May 2022 15:55:10 +0200
+Message-Id: <20220505135512.3486-4-zajec5@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220505135512.3486-1-zajec5@gmail.com>
 References: <20220505135512.3486-1-zajec5@gmail.com>
@@ -87,28 +87,55 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-This allows specifying Ethernet interfaces and switch ports as triggers
-for LEDs activity.
+This adds 3 entries to existing example:
+1. LED triggered by switch port in 10 / 100 Mbps link state
+2. LED triggered by switch port in 1000 Mbps link
+3. LED triggered by Ethernet interface (any speed)
 
 Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- Documentation/devicetree/bindings/net/ethernet-controller.yaml | 3 +++
- 1 file changed, 3 insertions(+)
+ .../devicetree/bindings/leds/common.yaml      | 21 +++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-controller.yaml b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-index 4f15463611f8..ebeb4446d253 100644
---- a/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-controller.yaml
-@@ -232,6 +232,9 @@ properties:
-           required:
-             - speed
+diff --git a/Documentation/devicetree/bindings/leds/common.yaml b/Documentation/devicetree/bindings/leds/common.yaml
+index 328952d7acbb..6c72121a1656 100644
+--- a/Documentation/devicetree/bindings/leds/common.yaml
++++ b/Documentation/devicetree/bindings/leds/common.yaml
+@@ -168,6 +168,7 @@ examples:
+   - |
+     #include <dt-bindings/gpio/gpio.h>
+     #include <dt-bindings/leds/common.h>
++    #include <dt-bindings/net/eth.h>
  
-+allOf:
-+  - $ref: /schemas/leds/trigger-source.yaml
+     led-controller {
+         compatible = "gpio-leds";
+@@ -183,6 +184,26 @@ examples:
+             gpios = <&gpio0 1 GPIO_ACTIVE_HIGH>;
+             trigger-sources = <&ohci_port1>, <&ehci_port1>;
+         };
 +
- additionalProperties: true
++        led-2 {
++            function = LED_FUNCTION_WAN;
++            color = <LED_COLOR_ID_AMBER>;
++            gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
++            trigger-sources = <&wan_port (SPEED_10 | SPEED_100)>;
++        };
++
++        led-3 {
++            function = LED_FUNCTION_WAN;
++            color = <LED_COLOR_ID_GREEN>;
++            gpios = <&gpio0 3 GPIO_ACTIVE_LOW>;
++            trigger-sources = <&wan_port SPEED_1000>;
++        };
++
++        led-4 {
++            function = LED_FUNCTION_LAN;
++            gpios = <&gpio0 4 GPIO_ACTIVE_LOW>;
++            trigger-sources = <&gmac 0>;
++        };
+     };
  
- ...
+   - |
 -- 
 2.34.1
 
