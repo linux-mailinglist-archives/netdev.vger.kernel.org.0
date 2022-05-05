@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0902A51C9F7
+	by mail.lfdr.de (Postfix) with ESMTP id A741451C9F9
 	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 22:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385590AbiEEUKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 16:10:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58656 "EHLO
+        id S1385611AbiEEUK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 16:10:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385584AbiEEUKm (ORCPT
+        with ESMTP id S1385587AbiEEUKm (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 16:10:42 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49C115E754
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495B25E74F
         for <netdev@vger.kernel.org>; Thu,  5 May 2022 13:07:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1651781221; x=1683317221;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=06VojNUxsxphBpokOIVux4qISl5acOPlWUA3PeCKBdY=;
-  b=VlEocwFZ9XbMlpOK/OX3DxlKyNyRCOwYBCO9M+KLufGPUK6Nse92cepn
-   UCf4BOjS/iWksqnyI6yAl5sw33C9oCzhDxNjm541DnTToG3FbteJUY4PO
-   bHUlCxoaUVwfiAJTuq2K4gFE7m0wxz5ABbbkdW3RuoeOpboH+fYXg1y7r
-   BhLH93Go9SWL4buprKg9fd7jP1uldFALXlhehQcwGZ1kQjXtUW3Fk1poC
-   w9O2JQIT2dyamdnmilvgT8l+ic31wHABV6xmoqXXWun9nCBpCmaMwUgT1
-   QUrlJIrAIy/TkP1xPQBWK4shuUmmq0/WyENAta84QrzvaBQD/Xm3NFerb
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248772036"
+  bh=R0pKWPMFUVQRA0YE2IZQzLxxLkwp6lrHJcg928hrUrc=;
+  b=GwgoPSbbmA1VcTvkCMjpK2NbnGMsze8GwFfXQEuwg8RCFWwBHcSXYlJE
+   E937VWId0eC7Xfcj6Uwt/cJ1BQJPswGhnTqoG8adjDwvZjruq2I7Hl1Dj
+   jXZj+WMCZA/bx1CmrU+yoH88+n8F5O3Z2NOzurFd/j5qwzawf71RYQIyP
+   NqA3sAmZnFbEQqWurIaMftpFqyZZMFsaDcJ7H79ELdhRPw0LlXircjo4v
+   lH483t7q8LJmNxU2DH3iCttnNyrzuiRw8D2z7VbjbaPhvsvXQ6kXsDgQW
+   M8OUgkCvTZ3wKU+NTPyOSr7XVE/G88pJHjsRe7R3SNpGGPDuBlF2h/mlJ
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248772034"
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="248772036"
+   d="scan'208";a="248772034"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
   by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 13:07:00 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="735111704"
+   d="scan'208";a="735111708"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga005.jf.intel.com with ESMTP; 05 May 2022 13:06:59 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Wojciech Drewek <wojciech.drewek@intel.com>,
+Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
         netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
         Marcin Szycik <marcin.szycik@linux.intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
         Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net-next v2 03/10] ice: return ENOSPC when exceeding ICE_MAX_CHAIN_WORDS
-Date:   Thu,  5 May 2022 13:03:52 -0700
-Message-Id: <20220505200359.3080110-4-anthony.l.nguyen@intel.com>
+Subject: [PATCH net-next v2 04/10] ice: get switch id on switchdev devices
+Date:   Thu,  5 May 2022 13:03:53 -0700
+Message-Id: <20220505200359.3080110-5-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220505200359.3080110-1-anthony.l.nguyen@intel.com>
 References: <20220505200359.3080110-1-anthony.l.nguyen@intel.com>
@@ -63,52 +62,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wojciech Drewek <wojciech.drewek@intel.com>
+From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
 
-When number of words exceeds ICE_MAX_CHAIN_WORDS, -ENOSPC
-should be returned not -EINVAL. Do not overwrite this
-error code in ice_add_tc_flower_adv_fltr.
+Switch id should be the same for each netdevice on a driver.
+The id must be unique between devices on the same system, but
+does not need to be unique between devices on different systems.
 
-Signed-off-by: Wojciech Drewek <wojciech.drewek@intel.com>
-Suggested-by: Marcin Szycik <marcin.szycik@linux.intel.com>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+The switch id is used to locate ports on a switch and to know if
+aggregated ports belong to the same switch.
+
+To meet this requirements, use pci_get_dsn as switch id value, as
+this is unique value for each devices on the same system.
+
+Implementing switch id is needed by automatic tools for kubernetes.
+
+Set switch id by setting devlink port attribiutes and calling
+devlink_port_attrs_set while creating pf (for uplink) and vf
+(for representator) devlink port.
+
+To get switch id (in switchdev mode):
+cat /sys/class/net/$PF0/phys_switch_id
+
+Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
 Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_switch.c | 5 ++++-
- drivers/net/ethernet/intel/ice/ice_tc_lib.c | 1 -
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_devlink.c | 22 ++++++++++++++++++++
+ drivers/net/ethernet/intel/ice/ice_main.c    | 15 +++++++++++++
+ 2 files changed, 37 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_switch.c b/drivers/net/ethernet/intel/ice/ice_switch.c
-index 496250f9f8fc..9f0a4dfb4818 100644
---- a/drivers/net/ethernet/intel/ice/ice_switch.c
-+++ b/drivers/net/ethernet/intel/ice/ice_switch.c
-@@ -5992,9 +5992,12 @@ ice_add_adv_rule(struct ice_hw *hw, struct ice_adv_lkup_elem *lkups,
- 				word_cnt++;
- 	}
+diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
+index a230edb38466..d12852d698af 100644
+--- a/drivers/net/ethernet/intel/ice/ice_devlink.c
++++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
+@@ -647,6 +647,23 @@ void ice_devlink_unregister(struct ice_pf *pf)
+ 	devlink_unregister(priv_to_devlink(pf));
+ }
  
--	if (!word_cnt || word_cnt > ICE_MAX_CHAIN_WORDS)
-+	if (!word_cnt)
- 		return -EINVAL;
- 
-+	if (word_cnt > ICE_MAX_CHAIN_WORDS)
-+		return -ENOSPC;
++/**
++ * ice_devlink_set_switch_id - Set unique switch id based on pci dsn
++ * @pf: the PF to create a devlink port for
++ * @ppid: struct with switch id information
++ */
++static void
++ice_devlink_set_switch_id(struct ice_pf *pf, struct netdev_phys_item_id *ppid)
++{
++	struct pci_dev *pdev = pf->pdev;
++	u64 id;
 +
- 	/* locate a dummy packet */
- 	profile = ice_find_dummy_packet(lkups, lkups_cnt, rinfo->tun_type);
++	id = pci_get_dsn(pdev);
++
++	ppid->id_len = sizeof(id);
++	put_unaligned_be64(id, &ppid->id);
++}
++
+ int ice_devlink_register_params(struct ice_pf *pf)
+ {
+ 	struct devlink *devlink = priv_to_devlink(pf);
+@@ -704,6 +721,9 @@ int ice_devlink_create_pf_port(struct ice_pf *pf)
  
-diff --git a/drivers/net/ethernet/intel/ice/ice_tc_lib.c b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-index 3acd9f921c44..0a0c55fb8699 100644
---- a/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-+++ b/drivers/net/ethernet/intel/ice/ice_tc_lib.c
-@@ -622,7 +622,6 @@ ice_add_tc_flower_adv_fltr(struct ice_vsi *vsi,
- 	} else if (ret) {
- 		NL_SET_ERR_MSG_MOD(tc_fltr->extack,
- 				   "Unable to add filter due to error");
--		ret = -EIO;
- 		goto exit;
- 	}
+ 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
+ 	attrs.phys.port_number = pf->hw.bus.func;
++
++	ice_devlink_set_switch_id(pf, &attrs.switch_id);
++
+ 	devlink_port_attrs_set(devlink_port, &attrs);
+ 	devlink = priv_to_devlink(pf);
  
+@@ -760,6 +780,8 @@ int ice_devlink_create_vf_port(struct ice_vf *vf)
+ 	attrs.pci_vf.pf = pf->hw.bus.func;
+ 	attrs.pci_vf.vf = vf->vf_id;
+ 
++	ice_devlink_set_switch_id(pf, &attrs.switch_id);
++
+ 	devlink_port_attrs_set(devlink_port, &attrs);
+ 	devlink = priv_to_devlink(pf);
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 6d8beb84d852..049a3f48caff 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -296,6 +296,20 @@ static int ice_clear_promisc(struct ice_vsi *vsi, u8 promisc_m)
+ 	return status;
+ }
+ 
++/**
++ * ice_get_devlink_port - Get devlink port from netdev
++ * @netdev: the netdevice structure
++ */
++static struct devlink_port *ice_get_devlink_port(struct net_device *netdev)
++{
++	struct ice_pf *pf = ice_netdev_to_pf(netdev);
++
++	if (!ice_is_switchdev_running(pf))
++		return NULL;
++
++	return &pf->devlink_port;
++}
++
+ /**
+  * ice_vsi_sync_fltr - Update the VSI filter list to the HW
+  * @vsi: ptr to the VSI
+@@ -8926,4 +8940,5 @@ static const struct net_device_ops ice_netdev_ops = {
+ 	.ndo_bpf = ice_xdp,
+ 	.ndo_xdp_xmit = ice_xdp_xmit,
+ 	.ndo_xsk_wakeup = ice_xsk_wakeup,
++	.ndo_get_devlink_port = ice_get_devlink_port,
+ };
 -- 
 2.35.1
 
