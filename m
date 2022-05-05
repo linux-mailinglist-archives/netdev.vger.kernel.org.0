@@ -2,111 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F7751B823
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 08:42:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB78551B857
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 08:59:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244994AbiEEGqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 02:46:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55734 "EHLO
+        id S242125AbiEEHDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 03:03:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237878AbiEEGqL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 02:46:11 -0400
-Received: from mail-oi1-x243.google.com (mail-oi1-x243.google.com [IPv6:2607:f8b0:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7EA747063
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 23:42:32 -0700 (PDT)
-Received: by mail-oi1-x243.google.com with SMTP id r8so3456982oib.5
-        for <netdev@vger.kernel.org>; Wed, 04 May 2022 23:42:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=ZEKTenIZ2FZGbVvXbK6R3bSGQKZjKfnDEXc7amdyUIY=;
-        b=fh4ULbAdkWT0pwPhcuvkFrDpZeltRkZtuPI5Wj4eWkHkrkQ8ZDaxOySKZw/xnsz8Wp
-         ptzD6MJiuyso6GyGMA6qPfG7nfs0ogQ6ksIszUISnX3IIRLic9Cas24LHXqXc5pn4Qpc
-         71QAdukbEOUd/4/beO1BAMinTjkBXx2g53pl3Wznq4N33XkY8tMSKnm0WJBl1kFFxNjV
-         sj/YAZE3Yon7i0d/jCV28a8/6DqQ5X8bmPXn7F4WHXtkGingwI9/+IL6DpLxmZE970oZ
-         V/PGXFcB4r7dUkctC1rtPJ5lvfiDuehlqUKGPCPL/nEGOW/zbM+reTUClcMsL6u3wW+r
-         8EMQ==
+        with ESMTP id S235166AbiEEHDL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 03:03:11 -0400
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6B147542;
+        Wed,  4 May 2022 23:59:33 -0700 (PDT)
+Received: by mail-qt1-f178.google.com with SMTP id fu47so2550439qtb.5;
+        Wed, 04 May 2022 23:59:33 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=ZEKTenIZ2FZGbVvXbK6R3bSGQKZjKfnDEXc7amdyUIY=;
-        b=ki5ebUqrls0ZluKmC9GJOjlrr8SL+mgiCZ4sXVYjxNpmq15uBk3+gSPdoG9CBQNrXp
-         oYdIXUK/axM+KgEpHZg46KU5S8X7jLd9TOQ/LcZ7qKD0Tlguz3Ca+ZxzyFLMUaOzTWNu
-         I0+0x72kNhPbToKOKL6HUe9vjJYhi7l1a2of9uc2Kmlb1Dlc+VmFBUh3xBKidJhNotsA
-         MhuLaepUERJHGAF54YE9r6RBHqkcxCx/vZUqXnv0CdwpiV+ax8PmyKMFZ1v5ODYwYqrj
-         CXdiZA5T9AxUnbXMPzhfydruNUDA3mW+PYY4TGyU7c/bq1g62Dec5FcE37c3IBij7dtw
-         FNsw==
-X-Gm-Message-State: AOAM5337ldFsWlfsD7a8dgQigRf5CqjsxrST07gNwnYiLVpc79TKCuWr
-        hx9pqR/WSbIWHctbRyD9EbOtIDYFd7phR8EI4rQ=
-X-Google-Smtp-Source: ABdhPJxLKtoFKiC8lA4LUK9i+cXU7tp69nxTNOZkXX0qTFGvZEzRMMk+LoQj/u0KuMiboQtT5Bdc4mJqWsWr82jqdmo=
-X-Received: by 2002:a05:6808:13d3:b0:322:b8f6:45fb with SMTP id
- d19-20020a05680813d300b00322b8f645fbmr1608140oiw.68.1651732952085; Wed, 04
- May 2022 23:42:32 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1kyfcH624YObu9U2EDyv5UgsEw2pZgVLfORpPmEDwV0=;
+        b=nWWUsf1bTJ+CMZZR5AU2u+FV/aybBvUyJCs+xDgnGh2TzZlfUParIuyftqeoDAok/b
+         RT8Lhl9o014I77zuR8NenXQeojLARxbXAn/OQPE/kQDaF9YZpglfGfINRC8AoLpD7ctX
+         UClm4ry34tJBAZABMAF10YjIYw7k2aRdMNFNFv9GW/U1RtKraEodAM2rSp47qHZDqEiV
+         0wsps8xVODiMZJp4SDShCbYblS4wWMardvB0b7Kih9SfEzSYVdtr5rL+jdCWaP6tORAP
+         qsY3NhZK+cqfQm7N2k94EhP5IfC/ORkdvLRPfMikIZ+5/WPgDXswu35MQJRZwCkmaPQl
+         PdfQ==
+X-Gm-Message-State: AOAM532/yJVEWlfp1l/QmtTWu+u2cUEV9zSAxzjs/l6wa5LyhvoJxn7l
+        FyGBQV6jwwKpn0nekQ1blkbAeMTSJdazQg==
+X-Google-Smtp-Source: ABdhPJw3MVPc9LHMVwPOhabxZSORgomuFxm6Jt5ZC7fVqXJn/7fBzffvKV3zHZL95VgCt2Amnn0lBA==
+X-Received: by 2002:a05:622a:1649:b0:2f3:a6bc:73ea with SMTP id y9-20020a05622a164900b002f3a6bc73eamr16029240qtj.506.1651733971970;
+        Wed, 04 May 2022 23:59:31 -0700 (PDT)
+Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
+        by smtp.gmail.com with ESMTPSA id x74-20020a37634d000000b0069ff51425a2sm392481qkb.120.2022.05.04.23.59.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 May 2022 23:59:31 -0700 (PDT)
+Received: by mail-yb1-f170.google.com with SMTP id y76so6146666ybe.1;
+        Wed, 04 May 2022 23:59:31 -0700 (PDT)
+X-Received: by 2002:a05:6902:389:b0:633:31c1:d0f7 with SMTP id
+ f9-20020a056902038900b0063331c1d0f7mr19881851ybs.543.1651733970778; Wed, 04
+ May 2022 23:59:30 -0700 (PDT)
 MIME-Version: 1.0
-Received: by 2002:ac9:724e:0:0:0:0:0 with HTTP; Wed, 4 May 2022 23:42:31 -0700 (PDT)
-Reply-To: mamastar33m@gmail.com
-From:   "Mrs. LENNY" <ssbutt07@gmail.com>
-Date:   Thu, 5 May 2022 06:42:31 +0000
-Message-ID: <CADEVqW2zApwBme2dAZUNG+Rvqi8WzU+NLy9dfKsQWqYMC3GMEQ@mail.gmail.com>
-Subject: Please Help me
-To:     undisclosed-recipients:;
+References: <20220504145454.71287-1-phil.edworthy@renesas.com> <20220504175757.0a3c1a6a@kernel.org>
+In-Reply-To: <20220504175757.0a3c1a6a@kernel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Thu, 5 May 2022 08:59:19 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdXKUpHa0SGGQUbepAHoS3evEBSzF4RYqA8B09eq1CtBUw@mail.gmail.com>
+Message-ID: <CAMuHMdXKUpHa0SGGQUbepAHoS3evEBSzF4RYqA8B09eq1CtBUw@mail.gmail.com>
+Subject: Re: [PATCH 0/9] Add Renesas RZ/V2M Ethernet support
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Phil Edworthy <phil.edworthy@renesas.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        linux-clk <linux-clk@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.3 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,HK_NAME_FM_MR_MRS,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_FILL_THIS_FORM_SHORT,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:243 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5356]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [ssbutt07[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [ssbutt07[at]gmail.com]
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  0.0 HK_NAME_FM_MR_MRS No description available.
-        *  3.5 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-        *  0.0 T_FILL_THIS_FORM_SHORT Fill in a short form with personal
-        *      information
-X-Spam-Level: *****
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Good Day
+Hi Jakub,
 
+On Thu, May 5, 2022 at 2:58 AM Jakub Kicinski <kuba@kernel.org> wrote:
+> On Wed,  4 May 2022 15:54:45 +0100 Phil Edworthy wrote:
+> > The RZ/V2M Ethernet is very similar to R-Car Gen3 Ethernet-AVB, though
+> > some small parts are the same as R-Car Gen2.
+> > Other differences are:
+> > * It has separate data (DI), error (Line 1) and management (Line 2) irqs
+> >   rather than one irq for all three.
+> > * Instead of using the High-speed peripheral bus clock for gPTP, it has
+> >   a separate gPTP reference clock.
+> >
+> > The dts patches depend on v4 of the following patch set:
+> > "Add new Renesas RZ/V2M SoC and Renesas RZ/V2M EVK support"
+> >
+> > Phil Edworthy (9):
+> >   clk: renesas: r9a09g011: Add eth clock and reset entries
+> >   dt-bindings: net: renesas,etheravb: Document RZ/V2M SoC
+> >   ravb: Separate use of GIC reg for PTME from multi_irqs
+> >   ravb: Separate handling of irq enable/disable regs into feature
+> >   ravb: Support separate Line0 (Desc), Line1 (Err) and Line2 (Mgmt) irqs
+> >   ravb: Use separate clock for gPTP
+> >   ravb: Add support for RZ/V2M
+> >   arm64: dts: renesas: r9a09g011: Add ethernet nodes
+> >   arm64: dts: renesas: rzv2m evk: Enable ethernet
+>
+> How are you expecting this to be merged?
+>
+> I think you should drop the first (clk) patch from this series
+> so we can apply the series to net-next. And route the clk patch
+> thru Geert's tree separately?
 
-With due respect and trust, please exercise a little patience and read
-through my letter. I feel quite safe dealing with you in this
-important business, you have to believe me and let us work together. I
-have a business to discuss with you,  just let me know you received it
-and I will tell you more about this 10.6 million business which will
-benefit the both of us.
+Same for the last two DTS patches, they should go through the
+renesas-devel and SoC trees.
 
-Reply and send this information to me at: mamastar33m@gmail.com
+> Right now patchwork thinks the series is incomplete because it
+> hasn't received patch 1.
 
-Your full Name.................
-Age.......................
-Country....................
+Gr{oetje,eeting}s,
 
-Thanks and I look forward to reading from you soon.
-Warm Regard
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
