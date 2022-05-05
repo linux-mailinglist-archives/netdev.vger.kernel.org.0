@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1025B51BF71
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 14:34:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03A1B51BF77
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 14:34:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377232AbiEEMhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 08:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40592 "EHLO
+        id S243484AbiEEMhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 08:37:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41648 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377442AbiEEMhH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 08:37:07 -0400
+        with ESMTP id S1377106AbiEEMhg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 08:37:36 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D6C555370;
-        Thu,  5 May 2022 05:33:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8F2355489;
+        Thu,  5 May 2022 05:33:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PvUfcZu3+OIYxxgafBIRO0yfRoqLT4xn7hrHgOjuIWU=; b=WwsgmAHfjiW6iu6vVNsXp7w3I3
-        IjENS7wxFefoINmYixEyOkK/dGIdDcVmL5yteYo3LPuSHzjRqeuFUmaTxV/fFyN4FP5tF8YrX0ps6
-        CMsZHE89uRxmmnY/2akxM8S6EnN6pyau72k3W7DOJSB00a3Dy3waLTRgzq8ch8Udg2Ew=;
+        bh=Jh6XcfKXScgavngYC6Z+bUzr7fr039mQj/Km9nfC6fM=; b=3qX97U0n2AzKskjymyFbXY9lS8
+        uFzsBoz0wLTCO6Bw52fIzgFuzFJVALiVYVopUCnZVqbaJJqekoP40g6TdxtYh8CFCpdoC/tewd9sq
+        ai7dtIBMAQ4DAyX8futdtPRaDhrngs7faBABef4CVUDitjIsQt5f4tXfvUypQK7hddJ0=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1nmafW-001Lvz-Oq; Thu, 05 May 2022 14:33:18 +0200
-Date:   Thu, 5 May 2022 14:33:18 +0200
+        id 1nmag0-001Lwp-Vg; Thu, 05 May 2022 14:33:48 +0200
+Date:   Thu, 5 May 2022 14:33:48 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Oleksij Rempel <o.rempel@pengutronix.de>
 Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
@@ -34,15 +34,15 @@ Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>, kernel@pengutronix.de,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v3 5/7] net: phy:
- genphy_c45_pma_baset1_read_master_slave: read actual configuration
-Message-ID: <YnPEDmoW+lmM6rmw@lunn.ch>
+Subject: Re: [PATCH net-next v3 6/7] net: phy: export
+ genphy_c45_baset1_read_status()
+Message-ID: <YnPELC+sScLZ19ZF@lunn.ch>
 References: <20220505063318.296280-1-o.rempel@pengutronix.de>
- <20220505063318.296280-6-o.rempel@pengutronix.de>
+ <20220505063318.296280-7-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220505063318.296280-6-o.rempel@pengutronix.de>
+In-Reply-To: <20220505063318.296280-7-o.rempel@pengutronix.de>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -52,10 +52,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 05, 2022 at 08:33:16AM +0200, Oleksij Rempel wrote:
-> Since MDIO_PMA_PMD_BT1_CTRL register shows actual configuration (and
-> forced state configuration is equal to the state), we should show
-> this configuration for ethtool.
+On Thu, May 05, 2022 at 08:33:17AM +0200, Oleksij Rempel wrote:
+> Export genphy_c45_baset1_read_status() to make it reusable by PHY drivers.
 > 
 > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 
