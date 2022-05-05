@@ -2,76 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CA0A51B506
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 03:04:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64A3E51B51C
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 03:11:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234124AbiEEBIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 21:08:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51346 "EHLO
+        id S234770AbiEEBOU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 21:14:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233995AbiEEBIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 21:08:04 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B80F447AFB;
-        Wed,  4 May 2022 18:04:25 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 699D6B82A69;
-        Thu,  5 May 2022 01:04:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 997EFC385A4;
-        Thu,  5 May 2022 01:04:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651712663;
-        bh=pZLuMeNAgUNcbS/PanWHI1lSbd0SgUz6JW2DMcazGG0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rYn3rfEdkA8gadJ6zmJtrML2lFdBln8AGWwm2PtGmxDlAwODtPQNB70e62V/st4ah
-         83NPMZYoYBEs/uD+Et3WM8gT6jLs7DcDNjFVusWn/hTD3rsC5hENPHDaThdSDfuwvn
-         wfO6/EXAhEFg/4Cq5gQXwohKP7KuXcddQCQ0va7FcxOTcy5lpkOckhlJLaemo9CNNG
-         IzxSp5xN3I4QhLJhLVhj8RA7FG4j388C3YrSsnxieE+/fYfBkwEPBSm3cxHM18B7t3
-         e1GUl2uEgZ2DovQIGThk9pjBuO/APX28BHEb3YSmXYWb1PfaC+d7Q2U+9krj8kQD8n
-         O9rpBNG4qo7rg==
-Date:   Wed, 4 May 2022 18:04:21 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S235166AbiEEBOH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 21:14:07 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A474C79B;
+        Wed,  4 May 2022 18:10:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=YZ3u0VP+Dmz+bUwsOr46MWuxSWaaRBaF3I0ZydiCLpA=; b=wDsc0R4sL6hPDSTF0noRMQfruf
+        mzz4NVOEq4T1/rAJmnOh6QDn2l/0XMSNDTDGyIGfHQ5zS9HgzG51JGSruyZqaQqfCKhngFbzP/mHg
+        DZ8u9OGlibmBwMEKD7zOeInXcHL6iTbqIc1sSoQyx8UFTYKOchdZ+LltLkiFW85QXJXI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nmQ0b-001Hnn-Jk; Thu, 05 May 2022 03:10:21 +0200
+Date:   Thu, 5 May 2022 03:10:21 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        patchwork-bot+netdevbpf@kernel.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        David Miller <davem@davemloft.net>,
-        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-Subject: Re: [PATCH] net: rds: use maybe_get_net() when acquiring refcount
- on TCP sockets
-Message-ID: <20220504180421.52517113@kernel.org>
-In-Reply-To: <63dab11e-2aeb-5608-6dcb-6ebc3e98056e@I-love.SAKURA.ne.jp>
-References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
-        <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
-        <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
-        <CANn89iJ=LF0KhRXDiFcky7mqpVaiHdbc6RDacAdzseS=iwjr4Q@mail.gmail.com>
-        <f6f9f21d-7cdd-682f-f958-5951aa180ec7@I-love.SAKURA.ne.jp>
-        <CANn89iJOt9oC_sSmVhRx8fyyvJ2hWzYKcTfH1Rvbzpt5aP0qNA@mail.gmail.com>
-        <bf5ce176-35e6-0a75-1ada-6bed071a6a75@I-love.SAKURA.ne.jp>
-        <5f3feecc-65ad-af5f-0ecd-94b2605ab67e@I-love.SAKURA.ne.jp>
-        <63dab11e-2aeb-5608-6dcb-6ebc3e98056e@I-love.SAKURA.ne.jp>
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v6 07/11] leds: trigger: netdev: use mutex instead of
+ spinlocks
+Message-ID: <YnMj/SY8BhJuebFO@lunn.ch>
+References: <20220503151633.18760-1-ansuelsmth@gmail.com>
+ <20220503151633.18760-8-ansuelsmth@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503151633.18760-8-ansuelsmth@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 May 2022 09:45:49 +0900 Tetsuo Handa wrote:
-> Subject: [PATCH] net: rds: use maybe_get_net() when acquiring refcount on TCP  sockets
+> @@ -400,7 +400,7 @@ static int netdev_trig_notify(struct notifier_block *nb,
+>  
+>  	cancel_delayed_work_sync(&trigger_data->work);
+>  
+> -	spin_lock_bh(&trigger_data->lock);
+> +	mutex_lock(&trigger_data->lock);
 
-Please tag the next version as [PATCH net v2], and make sure it applies
-cleanly on top of net/master, 'cause reportedly this one didn't?
-https://patchwork.kernel.org/project/netdevbpf/patch/63dab11e-2aeb-5608-6dcb-6ebc3e98056e@I-love.SAKURA.ne.jp/
+I'm not sure you can convert a spin_lock_bh() in a mutex_lock().
+
+Did you check this? What context is the notifier called in?
+
+    Andrew
