@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4932851BCD5
+	by mail.lfdr.de (Postfix) with ESMTP id 9263A51BCD6
 	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 12:08:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350167AbiEEKLC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 06:11:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
+        id S1355039AbiEEKK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 06:10:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355021AbiEEKK6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 06:10:58 -0400
+        with ESMTP id S1350167AbiEEKK5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 06:10:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D86C517ED
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 03:07:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8EB50465
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 03:07:11 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9E92B8279B
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 10:07:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C8CEC385A4;
-        Thu,  5 May 2022 10:07:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B984B8279B
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 10:07:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5AC3DC385B0;
+        Thu,  5 May 2022 10:07:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651745236;
-        bh=yH0duYjC6i5BVPwRe67fyQrYY2GTxtYC+kYEVhMVlmE=;
+        s=k20201202; t=1651745228;
+        bh=iZ1pdneEkYkq338sTxi0jvyQEQbqXPe9qjqG5HlcYcA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ngSGJ7YmTyAkl6xK5D9spDCwVofsSaZAsQGUry3dJ5iuYIknhflr1q/1acWaqUqG2
-         ZKFYdg0GGcSfKqlf0jtyCYwZtcGI7qLKol476Omu0DRRRvLb9n1EZqzI7HBVJQrwTR
-         sPw1DE31A5F6BrpnTa46MFIEDnyhF51Jkz8R31eDPYIh0xgPlkeIwc8XKuPFeTT9az
-         X8n5xBAD/YIlBZxE9+JCgh7S5K6IE0JChEHodWXNAD5it3w8Hr5I/hJqWvSWk06JDg
-         mSFqyA9decBuRGawB9SIXPoYXfPFvBlU/K4lD3n7Sewoe85VVopiGUcCMBp09mjSHK
-         WXOt4FOBOhN5w==
+        b=uCWuWk/GqCsj7wzK4Bu8xtEGUxZrwhgR3jvZ7Wjt0krLBDD/VzMcy1pvxExAj5bQn
+         TANz0n7b972XudBJgo2p5u4DBBpwu6EYCLiYEJtN1GB8NgfTatsclL35Rfnxn/qS40
+         y8LjxzpCwzWOJtQpvxqmq76hScFBUyuaU/3wm5FLQ4S70Dkjo7ERXYkYwyw08MQe5A
+         ZqdLtwjmJ2F3D2K7rc9YnLOXz6HYRWscnUM0FRieVKFkiam4N00G/Fae5FmtCoktmM
+         BDAtxWBtBe7XKd90cMh4U6AHhEOLehj17SO35k/6v4+P9JFidFaXWxPBvw0lCaUGTk
+         pADRXshwFhVkQ==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -44,9 +44,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Raed Salem <raeds@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH ipsec-next 4/8] xfrm: store and rely on direction to construct offload flags
-Date:   Thu,  5 May 2022 13:06:41 +0300
-Message-Id: <79ebb257828b880c4ad9bf81734053ba0f14e3e0.1651743750.git.leonro@nvidia.com>
+Subject: [PATCH ipsec-next 5/8] ixgbe: propagate XFRM offload state direction instead of flags
+Date:   Thu,  5 May 2022 13:06:42 +0300
+Message-Id: <136e50b0e7daad71a2e3516427133ec8296fc4d0.1651743750.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1651743750.git.leonro@nvidia.com>
 References: <cover.1651743750.git.leonro@nvidia.com>
@@ -64,86 +64,116 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-XFRM state doesn't need anything from flags except to understand
-direction, so store it separately. For future patches, such change
-will allow us to reuse xfrm_dev_offload for policy offload too, which
-has three possible directions instead of two.
+Convert the ixgbe driver to rely on XFRM offload state direction instead
+of flags bits that were not checked at all.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- include/net/xfrm.h     | 6 ++++++
- net/xfrm/xfrm_device.c | 8 +++++++-
- net/xfrm/xfrm_user.c   | 3 ++-
- 3 files changed, 15 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c | 9 ++++-----
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.h | 2 +-
+ drivers/net/ethernet/intel/ixgbevf/ipsec.c     | 6 +++---
+ drivers/net/ethernet/intel/ixgbevf/ipsec.h     | 2 +-
+ 4 files changed, 9 insertions(+), 10 deletions(-)
 
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index bb20278d689c..45422f7be0c5 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -126,12 +126,18 @@ struct xfrm_state_walk {
- 	struct xfrm_address_filter *filter;
- };
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+index 69d11ff7677d..774de63dd93a 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c
+@@ -585,7 +585,7 @@ static int ixgbe_ipsec_add_sa(struct xfrm_state *xs)
+ 		return -EINVAL;
+ 	}
  
-+enum {
-+	XFRM_DEV_OFFLOAD_IN = 1,
-+	XFRM_DEV_OFFLOAD_OUT,
-+};
-+
- struct xfrm_dev_offload {
- 	struct net_device	*dev;
- 	netdevice_tracker	dev_tracker;
- 	struct net_device	*real_dev;
- 	unsigned long		offload_handle;
- 	u8			flags;
-+	u8			dir : 2;
- };
+-	if (xs->xso.flags & XFRM_OFFLOAD_INBOUND) {
++	if (xs->xso.dir == XFRM_DEV_OFFLOAD_IN) {
+ 		struct rx_sa rsa;
  
- struct xfrm_mode {
-diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index 6e4d3cb2e24d..c818afca9137 100644
---- a/net/xfrm/xfrm_device.c
-+++ b/net/xfrm/xfrm_device.c
-@@ -117,7 +117,7 @@ struct sk_buff *validate_xmit_xfrm(struct sk_buff *skb, netdev_features_t featur
+ 		if (xs->calg) {
+@@ -757,7 +757,7 @@ static void ixgbe_ipsec_del_sa(struct xfrm_state *xs)
+ 	u32 zerobuf[4] = {0, 0, 0, 0};
+ 	u16 sa_idx;
  
- 	sp = skb_sec_path(skb);
- 	x = sp->xvec[sp->len - 1];
--	if (xo->flags & XFRM_GRO || x->xso.flags & XFRM_OFFLOAD_INBOUND)
-+	if (xo->flags & XFRM_GRO || x->xso.dir == XFRM_DEV_OFFLOAD_IN)
- 		return skb;
+-	if (xs->xso.flags & XFRM_OFFLOAD_INBOUND) {
++	if (xs->xso.dir == XFRM_DEV_OFFLOAD_IN) {
+ 		struct rx_sa *rsa;
+ 		u8 ipi;
  
- 	/* This skb was already validated on the upper/virtual dev */
-@@ -267,10 +267,16 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
- 	/* Don't forward bit that is not implemented */
- 	xso->flags = xuo->flags & ~XFRM_OFFLOAD_IPV6;
+@@ -903,8 +903,7 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+ 	/* Tx IPsec offload doesn't seem to work on this
+ 	 * device, so block these requests for now.
+ 	 */
+-	sam->flags = sam->flags & ~XFRM_OFFLOAD_IPV6;
+-	if (sam->flags != XFRM_OFFLOAD_INBOUND) {
++	if (sam->dir != XFRM_DEV_OFFLOAD_IN) {
+ 		err = -EOPNOTSUPP;
+ 		goto err_out;
+ 	}
+@@ -915,7 +914,7 @@ int ixgbe_ipsec_vf_add_sa(struct ixgbe_adapter *adapter, u32 *msgbuf, u32 vf)
+ 		goto err_out;
+ 	}
  
-+	if (xuo->flags & XFRM_OFFLOAD_INBOUND)
-+		xso->dir = XFRM_DEV_OFFLOAD_IN;
-+	else
-+		xso->dir = XFRM_DEV_OFFLOAD_OUT;
-+
- 	err = dev->xfrmdev_ops->xdo_dev_state_add(x);
- 	if (err) {
- 		xso->flags = 0;
- 		xso->dev = NULL;
-+		xso->dir = 0;
- 		xso->real_dev = NULL;
- 		dev_put_track(dev, &xso->dev_tracker);
+-	xs->xso.flags = sam->flags;
++	xs->xso.dir = sam->dir;
+ 	xs->id.spi = sam->spi;
+ 	xs->id.proto = sam->proto;
+ 	xs->props.family = sam->family;
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.h
+index d2b64ff8eb4e..809ab51a7842 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.h
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.h
+@@ -74,7 +74,7 @@ struct ixgbe_ipsec {
  
-diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
-index 7217c57a76e9..6a58fec6a1fb 100644
---- a/net/xfrm/xfrm_user.c
-+++ b/net/xfrm/xfrm_user.c
-@@ -852,7 +852,8 @@ static int copy_user_offload(struct xfrm_dev_offload *xso, struct sk_buff *skb)
- 	xuo = nla_data(attr);
- 	memset(xuo, 0, sizeof(*xuo));
- 	xuo->ifindex = xso->dev->ifindex;
--	xuo->flags = xso->flags;
-+	if (xso->dir == XFRM_DEV_OFFLOAD_IN)
-+		xuo->flags = XFRM_OFFLOAD_INBOUND;
+ struct sa_mbx_msg {
+ 	__be32 spi;
+-	u8 flags;
++	u8 dir;
+ 	u8 proto;
+ 	u16 family;
+ 	__be32 addr[4];
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ipsec.c b/drivers/net/ethernet/intel/ixgbevf/ipsec.c
+index e763cee0695e..9984ebc62d78 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ipsec.c
++++ b/drivers/net/ethernet/intel/ixgbevf/ipsec.c
+@@ -25,7 +25,7 @@ static int ixgbevf_ipsec_set_pf_sa(struct ixgbevf_adapter *adapter,
  
- 	return 0;
- }
+ 	/* send the important bits to the PF */
+ 	sam = (struct sa_mbx_msg *)(&msgbuf[1]);
+-	sam->flags = xs->xso.flags;
++	sam->dir = xs->xso.dir;
+ 	sam->spi = xs->id.spi;
+ 	sam->proto = xs->id.proto;
+ 	sam->family = xs->props.family;
+@@ -280,7 +280,7 @@ static int ixgbevf_ipsec_add_sa(struct xfrm_state *xs)
+ 		return -EINVAL;
+ 	}
+ 
+-	if (xs->xso.flags & XFRM_OFFLOAD_INBOUND) {
++	if (xs->xso.dir == XFRM_DEV_OFFLOAD_IN) {
+ 		struct rx_sa rsa;
+ 
+ 		if (xs->calg) {
+@@ -394,7 +394,7 @@ static void ixgbevf_ipsec_del_sa(struct xfrm_state *xs)
+ 	adapter = netdev_priv(dev);
+ 	ipsec = adapter->ipsec;
+ 
+-	if (xs->xso.flags & XFRM_OFFLOAD_INBOUND) {
++	if (xs->xso.dir == XFRM_DEV_OFFLOAD_IN) {
+ 		sa_idx = xs->xso.offload_handle - IXGBE_IPSEC_BASE_RX_INDEX;
+ 
+ 		if (!ipsec->rx_tbl[sa_idx].used) {
+diff --git a/drivers/net/ethernet/intel/ixgbevf/ipsec.h b/drivers/net/ethernet/intel/ixgbevf/ipsec.h
+index 3740725041c3..d22990165353 100644
+--- a/drivers/net/ethernet/intel/ixgbevf/ipsec.h
++++ b/drivers/net/ethernet/intel/ixgbevf/ipsec.h
+@@ -57,7 +57,7 @@ struct ixgbevf_ipsec {
+ 
+ struct sa_mbx_msg {
+ 	__be32 spi;
+-	u8 flags;
++	u8 dir;
+ 	u8 proto;
+ 	u16 family;
+ 	__be32 addr[4];
 -- 
 2.35.1
 
