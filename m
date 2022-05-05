@@ -2,90 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E235251B546
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 03:33:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F30EC51B556
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 03:42:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235506AbiEEBe2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 21:34:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49702 "EHLO
+        id S235938AbiEEBqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 21:46:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56614 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230176AbiEEBeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 21:34:24 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5BB84BFC3;
-        Wed,  4 May 2022 18:30:46 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Ktx334ltpzhYnV;
-        Thu,  5 May 2022 09:30:23 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 09:30:45 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 5 May 2022 09:30:44 +0800
-Subject: Re: [PATCH] net: dpaa2-mac: add missing of_node_put() in
- dpaa2_mac_get_node()
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <ioana.ciornei@nxp.com>, <davem@davemloft.net>,
-        <robert-ionut.alexa@nxp.com>
-References: <20220428100127.542399-1-yangyingliang@huawei.com>
- <20220429192950.5a1d23cc@kernel.org>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <61393ca9-618c-017b-c463-93d0afe33c12@huawei.com>
-Date:   Thu, 5 May 2022 09:30:44 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S235887AbiEEBqP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 21:46:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D61DFD1
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 18:42:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F563B82AA2
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 01:42:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DE15C385A5;
+        Thu,  5 May 2022 01:42:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651714955;
+        bh=oIo0r+SeZSnR3FeIlGK8+8wswghaclLisVdCzxh2+3A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jdU0bR6M6XC1rQUIcSIK601MzW4bdJjH+qzPvk7CO1FEs3HFB44I4rkc6e2Qn+ozA
+         U6qEZAvf26simM/b1+ja9jr4dUIARd9EiQLbYre3eiwKK4GZwNaj9vCAcrtuRCAa7x
+         qcyef62QI/ejDCjJ2YoUBH3DBD+PHmI5btdge7SlZntLxcClnOqDmLfqEcJYp9bcV2
+         a6xnjf0cZzsnuSfc0rS31SxpUb2DBQZQt5EBO4yjs/3wDwu61eoC9b1FxBhk9BG9jT
+         d/OellfhRQT0bTPbu5OEtks1aPnYWKCVQCKFC3svJ3z2g+kYFp52QvYZNqJAg479Fe
+         RBq3/815EK49Q==
+Date:   Thu, 5 May 2022 09:42:28 +0800
+From:   Shawn Guo <shawnguo@kernel.org>
+To:     Josua Mayer <josua@solid-run.com>
+Cc:     netdev@vger.kernel.org, alvaro.karsz@solid-run.com,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Subject: Re: [PATCH v3 3/3] ARM: dts: imx6qdl-sr-som: update phy
+ configuration for som revision 1.9
+Message-ID: <20220505014228.GF14615@dragon>
+References: <20220419102709.26432-1-josua@solid-run.com>
+ <20220428082848.12191-1-josua@solid-run.com>
+ <20220428082848.12191-4-josua@solid-run.com>
 MIME-Version: 1.0
-In-Reply-To: <20220429192950.5a1d23cc@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.7 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220428082848.12191-4-josua@solid-run.com>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Apr 28, 2022 at 11:28:48AM +0300, Josua Mayer wrote:
+> Since SoM revision 1.9 the PHY has been replaced with an ADIN1300,
+> add an entry for it next to the original.
+> 
+> As Russell King pointed out, additional phy nodes cause warnings like:
+> mdio_bus 2188000.ethernet-1: MDIO device at address 1 is missing
+> To avoid this the new node has its status set to disabled. U-Boot will
+> be modified to enable the appropriate phy node after probing.
+> 
+> The existing ar8035 nodes have to stay enabled by default to avoid
+> breaking existing systems when they update Linux only.
+> 
+> Co-developed-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+> Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
+> Signed-off-by: Josua Mayer <josua@solid-run.com>
+> ---
+> V2 -> V3: new phy node status set disabled
+> V1 -> V2: changed dts property name
+> 
+>  arch/arm/boot/dts/imx6qdl-sr-som.dtsi | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/arch/arm/boot/dts/imx6qdl-sr-som.dtsi b/arch/arm/boot/dts/imx6qdl-sr-som.dtsi
+> index f86efd0ccc40..ce543e325cd3 100644
+> --- a/arch/arm/boot/dts/imx6qdl-sr-som.dtsi
+> +++ b/arch/arm/boot/dts/imx6qdl-sr-som.dtsi
+> @@ -83,6 +83,16 @@ ethernet-phy@4 {
+>  			qca,clk-out-frequency = <125000000>;
+>  			qca,smarteee-tw-us-1g = <24>;
+>  		};
+> +
+> +		/*
+> +		 * ADIN1300 (som rev 1.9 or later) is always at address 1. It
+> +		 * will be enabled automatically by U-Boot if detected.
+> +		 */
+> +		ethernet-phy@1 {
+> +			reg = <1>;
+> +			adi,phy-output-clock = "125mhz-free-running";
 
-On 2022/4/30 10:29, Jakub Kicinski wrote:
-> On Thu, 28 Apr 2022 18:01:27 +0800 Yang Yingliang wrote:
->> Add missing of_node_put() in error path in dpaa2_mac_get_node().
->>
->> Fixes: 5b1e38c0792c ("dpaa2-mac: bail if the dpmacs fwnode is not found")
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
->> ---
->>   drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 5 ++++-
->>   1 file changed, 4 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
->> index c48811d3bcd5..a91446685526 100644
->> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
->> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
->> @@ -108,8 +108,11 @@ static struct fwnode_handle *dpaa2_mac_get_node(struct device *dev,
->>   		return ERR_PTR(-EPROBE_DEFER);
->>   	}
->>   
->> -	if (!parent)
->> +	if (!parent) {
->> +		if (dpmacs)
->> +			of_node_put(dpmacs);
-> of_node_put() accepts NULL. I know this because unlike you I did
-> at least the bare minimum looking at the surrounding code and saw
-> other places not checking if it's NULL.
-I missed that, I will send a v2 later.
+Hmm, I failed to find binding doc for this.
 
-Thanks,
-Yang
-> .
+Shawn
+
+> +			status = "disabled";
+> +		};
+>  	};
+>  };
+>  
+> -- 
+> 2.34.1
+> 
