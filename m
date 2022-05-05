@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EB1551CCF5
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 01:49:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 504B751CCEF
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 01:49:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386944AbiEEXxU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 19:53:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
+        id S1386976AbiEEXxY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 19:53:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386984AbiEEXxP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 19:53:15 -0400
+        with ESMTP id S1386952AbiEEXxR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 19:53:17 -0400
 Received: from smtp5.emailarray.com (smtp5.emailarray.com [65.39.216.39])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83A460DA3
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 16:49:33 -0700 (PDT)
-Received: (qmail 59228 invoked by uid 89); 5 May 2022 23:49:32 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17B8C606FE
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 16:49:35 -0700 (PDT)
+Received: (qmail 59253 invoked by uid 89); 5 May 2022 23:49:33 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
-  by smtp5.emailarray.com with SMTP; 5 May 2022 23:49:32 -0000
+  by smtp5.emailarray.com with SMTP; 5 May 2022 23:49:33 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     richardcochran@gmail.com, kernel-team@fb.com, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com
-Subject: [PATCH net-next v1 07/10] ptp: ocp: add .init function for sma_op vector
-Date:   Thu,  5 May 2022 16:49:18 -0700
-Message-Id: <20220505234921.3728-8-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next v1 08/10] ptp: ocp: fix PPS source selector reporting
+Date:   Thu,  5 May 2022 16:49:19 -0700
+Message-Id: <20220505234921.3728-9-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220505234921.3728-1-jonathan.lemon@gmail.com>
 References: <20220505234921.3728-1-jonathan.lemon@gmail.com>
@@ -40,168 +40,85 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Create an .init function for the op vector, and a corresponding
-wrapper function, for different sma mapping setups.
+The NTL timecard design has a PPS1 selector which selects the
+the PPS source automatically, according to Section 1.9 of the
+documentation.
 
-Add a default_fcn to the sma information, and use it when displaying
-information for pins which have fixed functions.
+  If there is a SMA PPS input detected:
+     - send signal to MAC and PPS slave selector.
+
+  If there is a MAC PPS input detected:
+     - send GNSS1 to the MAC
+     - send MAC to the PPS slave
+
+  If there is a GNSS1 input detected:
+     - send GNSS1 to the MAC
+     - send GNSS1 to the PPS slave.MAC
 
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- drivers/ptp/ptp_ocp.c | 93 ++++++++++++++++++++++++-------------------
- 1 file changed, 52 insertions(+), 41 deletions(-)
+ drivers/ptp/ptp_ocp.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 4091f74d2d16..4e22c445dad4 100644
+index 4e22c445dad4..2b1f854270b0 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -253,6 +253,7 @@ struct ptp_ocp_sma_connector {
- 	bool	fixed_fcn;
- 	bool	fixed_dir;
- 	bool	disabled;
-+	u8	default_fcn;
- };
- 
- struct ocp_attr_group {
-@@ -713,11 +714,18 @@ static const struct ocp_selector ptp_ocp_sma_out[] = {
- 
- struct ocp_sma_op {
- 	const struct ocp_selector *tbl[2];
-+	void (*init)(struct ptp_ocp *bp);
- 	u32 (*get)(struct ptp_ocp *bp, int sma_nr);
- 	int (*set_inputs)(struct ptp_ocp *bp, int sma_nr, u32 val);
- 	int (*set_output)(struct ptp_ocp *bp, int sma_nr, u32 val);
- };
- 
-+static inline void
-+ptp_ocp_sma_init(struct ptp_ocp *bp)
-+{
-+	return bp->sma_op->init(bp);
-+}
-+
- static inline u32
- ptp_ocp_sma_get(struct ptp_ocp *bp, int sma_nr)
- {
-@@ -1872,45 +1880,6 @@ ptp_ocp_signal_init(struct ptp_ocp *bp)
- 					     bp->signal_out[i]->mem);
- }
- 
--static void
--ptp_ocp_sma_init(struct ptp_ocp *bp)
--{
--	u32 reg;
--	int i;
--
--	/* defaults */
--	bp->sma[0].mode = SMA_MODE_IN;
--	bp->sma[1].mode = SMA_MODE_IN;
--	bp->sma[2].mode = SMA_MODE_OUT;
--	bp->sma[3].mode = SMA_MODE_OUT;
--
--	/* If no SMA1 map, the pin functions and directions are fixed. */
--	if (!bp->sma_map1) {
--		for (i = 0; i < 4; i++) {
--			bp->sma[i].fixed_fcn = true;
--			bp->sma[i].fixed_dir = true;
--		}
--		return;
--	}
--
--	/* If SMA2 GPIO output map is all 1, it is not present.
--	 * This indicates the firmware has fixed direction SMA pins.
--	 */
--	reg = ioread32(&bp->sma_map2->gpio2);
--	if (reg == 0xffffffff) {
--		for (i = 0; i < 4; i++)
--			bp->sma[i].fixed_dir = true;
--	} else {
--		reg = ioread32(&bp->sma_map1->gpio1);
--		bp->sma[0].mode = reg & BIT(15) ? SMA_MODE_IN : SMA_MODE_OUT;
--		bp->sma[1].mode = reg & BIT(31) ? SMA_MODE_IN : SMA_MODE_OUT;
--
--		reg = ioread32(&bp->sma_map1->gpio2);
--		bp->sma[2].mode = reg & BIT(15) ? SMA_MODE_OUT : SMA_MODE_IN;
--		bp->sma[3].mode = reg & BIT(31) ? SMA_MODE_OUT : SMA_MODE_IN;
--	}
--}
--
- static int
- ptp_ocp_fb_set_pins(struct ptp_ocp *bp)
- {
-@@ -2079,6 +2048,47 @@ __handle_signal_inputs(struct ptp_ocp *bp, u32 val)
- 	ptp_ocp_dcf_in(bp, val & 0x00200020);
- }
- 
-+static void
-+ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
-+{
-+	u32 reg;
-+	int i;
-+
-+	/* defaults */
-+	bp->sma[0].mode = SMA_MODE_IN;
-+	bp->sma[1].mode = SMA_MODE_IN;
-+	bp->sma[2].mode = SMA_MODE_OUT;
-+	bp->sma[3].mode = SMA_MODE_OUT;
-+	for (i = 0; i < 4; i++)
-+		bp->sma[i].default_fcn = i & 1;
-+
-+	/* If no SMA1 map, the pin functions and directions are fixed. */
-+	if (!bp->sma_map1) {
-+		for (i = 0; i < 4; i++) {
-+			bp->sma[i].fixed_fcn = true;
-+			bp->sma[i].fixed_dir = true;
+@@ -3072,10 +3072,10 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
+ 	struct device *dev = s->private;
+ 	struct ptp_system_timestamp sts;
+ 	struct ts_reg __iomem *ts_reg;
++	char *buf, *src, *mac_src;
+ 	struct timespec64 ts;
+ 	struct ptp_ocp *bp;
+ 	u16 sma_val[4][2];
+-	char *src, *buf;
+ 	u32 ctrl, val;
+ 	bool on, map;
+ 	int i;
+@@ -3238,17 +3238,26 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
+ 	if (bp->pps_select) {
+ 		val = ioread32(&bp->pps_select->gpio1);
+ 		src = &buf[80];
+-		if (val & 0x01)
++		mac_src = "GNSS1";
++		if (val & 0x01) {
+ 			gpio_input_map(src, bp, sma_val, 0, NULL);
+-		else if (val & 0x02)
++			mac_src = src;
++		} else if (val & 0x02)
+ 			src = "MAC";
+ 		else if (val & 0x04)
+ 			src = "GNSS1";
+-		else
++		else {
+ 			src = "----";
++			mac_src = src;
 +		}
-+		return;
-+	}
-+
-+	/* If SMA2 GPIO output map is all 1, it is not present.
-+	 * This indicates the firmware has fixed direction SMA pins.
-+	 */
-+	reg = ioread32(&bp->sma_map2->gpio2);
-+	if (reg == 0xffffffff) {
-+		for (i = 0; i < 4; i++)
-+			bp->sma[i].fixed_dir = true;
-+	} else {
-+		reg = ioread32(&bp->sma_map1->gpio1);
-+		bp->sma[0].mode = reg & BIT(15) ? SMA_MODE_IN : SMA_MODE_OUT;
-+		bp->sma[1].mode = reg & BIT(31) ? SMA_MODE_IN : SMA_MODE_OUT;
-+
-+		reg = ioread32(&bp->sma_map1->gpio2);
-+		bp->sma[2].mode = reg & BIT(15) ? SMA_MODE_OUT : SMA_MODE_IN;
-+		bp->sma[3].mode = reg & BIT(31) ? SMA_MODE_OUT : SMA_MODE_IN;
-+	}
-+}
-+
- static u32
- ptp_ocp_sma_fb_get(struct ptp_ocp *bp, int sma_nr)
- {
-@@ -2086,7 +2096,7 @@ ptp_ocp_sma_fb_get(struct ptp_ocp *bp, int sma_nr)
- 	u32 shift;
- 
- 	if (bp->sma[sma_nr - 1].fixed_fcn)
--		return (sma_nr - 1) & 1;
-+		return bp->sma[sma_nr - 1].default_fcn;
- 
- 	if (bp->sma[sma_nr - 1].mode == SMA_MODE_IN)
- 		gpio = sma_nr > 2 ? &bp->sma_map2->gpio1 : &bp->sma_map1->gpio1;
-@@ -2151,6 +2161,7 @@ ptp_ocp_sma_fb_set_inputs(struct ptp_ocp *bp, int sma_nr, u32 val)
- 
- static const struct ocp_sma_op ocp_fb_sma_op = {
- 	.tbl		= { ptp_ocp_sma_in, ptp_ocp_sma_out },
-+	.init		= ptp_ocp_sma_fb_init,
- 	.get		= ptp_ocp_sma_fb_get,
- 	.set_inputs	= ptp_ocp_sma_fb_set_inputs,
- 	.set_output	= ptp_ocp_sma_fb_set_output,
-@@ -2303,7 +2314,7 @@ ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
- 		return -EOPNOTSUPP;
- 
- 	if (sma->fixed_fcn) {
--		if (val != ((sma_nr - 1) & 1))
-+		if (val != sma->default_fcn)
- 			return -EOPNOTSUPP;
- 		return 0;
+ 	} else {
+ 		src = "?";
++		mac_src = src;
  	}
++	seq_printf(s, "MAC PPS1 src: %s\n", mac_src);
++
++	gpio_input_map(buf, bp, sma_val, 1, "GNSS2");
++	seq_printf(s, "MAC PPS2 src: %s\n", buf);
+ 
+ 	/* assumes automatic switchover/selection */
+ 	val = ioread32(&bp->reg->select);
+@@ -3273,12 +3282,6 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
+ 	seq_printf(s, "%7s: %s, state: %s\n", "PHC src", buf,
+ 		   val & OCP_STATUS_IN_SYNC ? "sync" : "unsynced");
+ 
+-	/* reuses PPS1 src from earlier */
+-	seq_printf(s, "MAC PPS1 src: %s\n", src);
+-
+-	gpio_input_map(buf, bp, sma_val, 1, "GNSS2");
+-	seq_printf(s, "MAC PPS2 src: %s\n", buf);
+-
+ 	if (!ptp_ocp_gettimex(&bp->ptp_info, &ts, &sts)) {
+ 		struct timespec64 sys_ts;
+ 		s64 pre_ns, post_ns, ns;
 -- 
 2.31.1
 
