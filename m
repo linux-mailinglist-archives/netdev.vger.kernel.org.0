@@ -2,77 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18E3851C8B4
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 21:09:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98AD151C8BF
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 21:13:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384887AbiEETNb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 15:13:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58196 "EHLO
+        id S1384907AbiEETRc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 15:17:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376888AbiEETNa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 15:13:30 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B04214EDDE;
-        Thu,  5 May 2022 12:09:49 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id t25so9014763lfg.7;
-        Thu, 05 May 2022 12:09:49 -0700 (PDT)
+        with ESMTP id S1348852AbiEETRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 15:17:30 -0400
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058D4252B9
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 12:13:50 -0700 (PDT)
+Received: by mail-yb1-xb2f.google.com with SMTP id m128so9265824ybm.5
+        for <netdev@vger.kernel.org>; Thu, 05 May 2022 12:13:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to;
-        bh=95r8yUTj2H1m8JRx9bOkdg77cwQCDoRvR/+l/UIoyJ4=;
-        b=Dm5wM9hZ9u8lEUCIPdXFUtwIig97WpDmFrVoWrSpy7KBBDptnPwD117188AkTu+RoT
-         QvVIiPJemLXZLElpuXUQqZa8K1Q6tFrt1ci9ItQvqQuYs5unjXBC1eIxyFs2Rt+uxgjA
-         mkffEdUBwt4/RqFihQvTByVJp/L8vW2H057AjFDkGEmc0BmHt9I3hK/4eFzgqJvjErCT
-         9ECrRCAHmPy2Nc42gDjMaq+6VQ0wzBdMJkTWZ9ru6VdGGuD7sS48ywGgTF2udX7Ochyy
-         fO3TcZD2D5A/ntwJY13cUS2w8p4+BiljLXSo9oBpf5p3liHNE1Ee6e76kQKfoTglW0aT
-         WhQA==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9ejpnYDVkll3gsTVSk8MmXOA5fC8xW9WmYnpRjDUT5Q=;
+        b=g7oijB9HjOcYL3DCEw6ScrM8dFRK2YivHmtjHSeuDNtmNPs+1S3/NoIOGIkdw3cbfY
+         O+au64qAvpGNvrW+MadNTYr/x5N4JRRHyePZ/uOjRwiR5FZ7j0P3TVfbF0H/24olvRKT
+         LXR4kgmHYHXVDVxViN56RsgZg+1qDgQpQgk5TVV75X8xZQp4OtPZY/hQkQWs0MJR1Et7
+         oTada7MuW1P9DCQLgWO9GeIgnuk5YZoPoE0lfm8pGWyBsgRY6eurNiGJ8mkDxkCCf0fy
+         RjcXTU8UjqnfuixeOPco1WtS9Xhqbb/7+hL3IV7RiqpDR0yeVEJaPizWJ09KgRFQzMKp
+         60+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to;
-        bh=95r8yUTj2H1m8JRx9bOkdg77cwQCDoRvR/+l/UIoyJ4=;
-        b=cPALJqHmwRP2bYOhnkqULmSPUk82n+/ijG36F3OTfaYKXD3ZeKFEDvRPhoL544vJ6p
-         6htwtaTRe05xLe9iyt+Nc6NUMatI17V4lO8yhLB9VAO2VlsgX9qpM2sXeNm89mLNhUvu
-         ikcUORHzM2e9giiEImvJMTN20oZOm/n1FzjWStftgSs1b2Hjjb3wVQJ2LWDYPKUP0qJb
-         9dGQdOLw60Nram1odoFhwevxYxqzg7xEp/eywlZKGbMmCiy8dPnyVlMTjeQoTVFA67H3
-         g6sdQFeHYBVgU8F2Wd0jQ5Y+b/QDscbHG/UjXIKGdcZ6IN5uoItdx9ha9y82/csuyPsW
-         IjqA==
-X-Gm-Message-State: AOAM532AjY5UV0O4gr5KWOLMUz1Ftpk8jiLPzaE2Qw64Qa6qjOy7I1Bc
-        KEKoTpPRIjDCb+LDkft6ZIZq5+vCPpQ=
-X-Google-Smtp-Source: ABdhPJzs2WyDQbVtkHEsX9Z/BuUrxD5bCXGbt9D11Q0Vh136PQNvEb5nQvILOkyKI5Gxq0zNsSd5mQ==
-X-Received: by 2002:a05:6512:22d5:b0:473:a527:717 with SMTP id g21-20020a05651222d500b00473a5270717mr11084254lfu.510.1651777787788;
-        Thu, 05 May 2022 12:09:47 -0700 (PDT)
-Received: from [192.168.1.11] ([217.117.246.114])
-        by smtp.gmail.com with ESMTPSA id s6-20020a2eb8c6000000b0024f3d1daea2sm312947ljp.42.2022.05.05.12.09.46
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 12:09:47 -0700 (PDT)
-Message-ID: <3cb712d9-c6be-94b7-6135-10b0eabba341@gmail.com>
-Date:   Thu, 5 May 2022 22:09:45 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9ejpnYDVkll3gsTVSk8MmXOA5fC8xW9WmYnpRjDUT5Q=;
+        b=ZrRZZ3So3kDe1N+oe5qOR3qWyuWnQKpYoGLTILXjmcOtPzHK3/wH4SBFfXlFL8NRmE
+         L5MppoHmtaqFnP4kX3CWMDnwZno7yqI9kC6Dql/G+b8/lq/ujfqV0kyzKoILqkCblGrM
+         YEHrurBwxrAJ/+KlFZVS/kmIYns3ENg6WX/hmq+aF1G1UCPf1bvqUB9sEiGafSOKGRUb
+         xMcRUIuTx8N+6JYY3YRzNlRN+tDpWqr1wI727T8Eoy1Zt6Uu89Sj5MLcXiLaCWo/0KpQ
+         xchlvkYqPiZs91XNkipaLQ28bBXKu8xEEGkeEd4k5kPzaYmvy9PxoOEMeR8HK5OrJ/3g
+         aZjw==
+X-Gm-Message-State: AOAM532atc8HUgJ/aFeatlxgxE1w5LXFNl53+8CGLRmuKDdaLEPRFZYl
+        m+Vt6VK7ByW4x06Bu85DbvZSnfgxEstyQzo6RBVwaQ==
+X-Google-Smtp-Source: ABdhPJwjoHxnbZZDryz4CiDpslsBAcVgVgC6PDCH9jwcznIVz9FnRYYjp9f6hIghED7cByEwsA4NU/P22ABSOyUKnYc=
+X-Received: by 2002:a25:2a49:0:b0:648:f2b4:cd3d with SMTP id
+ q70-20020a252a49000000b00648f2b4cd3dmr23796100ybq.231.1651778028971; Thu, 05
+ May 2022 12:13:48 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-Content-Language: en-US
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
-        ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
- <87h799a007.fsf@toke.dk> <6f0615da-aa0b-df8e-589c-f5caf09d3449@gmail.com>
- <5fd22dda-01d6-cfae-3458-cb3fa23eb84d@I-love.SAKURA.ne.jp>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <5fd22dda-01d6-cfae-3458-cb3fa23eb84d@I-love.SAKURA.ne.jp>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="------------RwO6X2hG0PGwvossowR4eaBq"
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
+ <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
+ <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
+ <CANn89iJ=LF0KhRXDiFcky7mqpVaiHdbc6RDacAdzseS=iwjr4Q@mail.gmail.com>
+ <f6f9f21d-7cdd-682f-f958-5951aa180ec7@I-love.SAKURA.ne.jp>
+ <CANn89iJOt9oC_sSmVhRx8fyyvJ2hWzYKcTfH1Rvbzpt5aP0qNA@mail.gmail.com>
+ <bf5ce176-35e6-0a75-1ada-6bed071a6a75@I-love.SAKURA.ne.jp>
+ <5f3feecc-65ad-af5f-0ecd-94b2605ab67e@I-love.SAKURA.ne.jp>
+ <63dab11e-2aeb-5608-6dcb-6ebc3e98056e@I-love.SAKURA.ne.jp> <41d09faf-bc78-1a87-dfd1-c6d1b5984b61@I-love.SAKURA.ne.jp>
+In-Reply-To: <41d09faf-bc78-1a87-dfd1-c6d1b5984b61@I-love.SAKURA.ne.jp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 5 May 2022 12:13:37 -0700
+Message-ID: <CANn89iJaairJwd9rqWuTH3vibanugMTG3_4mX3yoqgrNiqHEeA@mail.gmail.com>
+Subject: Re: [PATCH net v2] net: rds: use maybe_get_net() when acquiring
+ refcount on TCP sockets
+To:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        patchwork-bot+netdevbpf@kernel.org,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,63 +82,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---------------RwO6X2hG0PGwvossowR4eaBq
-Content-Type: multipart/mixed; boundary="------------BuTCYHRj8nx9zy0QljTTmpW0";
- protected-headers="v1"
-From: Pavel Skripkin <paskripkin@gmail.com>
-To: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
- =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
- ath9k-devel@qca.qualcomm.com, kvalo@kernel.org, davem@davemloft.net,
- kuba@kernel.org, linville@tuxdriver.com
-Cc: linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- syzbot+03110230a11411024147@syzkaller.appspotmail.com,
- syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Message-ID: <3cb712d9-c6be-94b7-6135-10b0eabba341@gmail.com>
-Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
- <87h799a007.fsf@toke.dk> <6f0615da-aa0b-df8e-589c-f5caf09d3449@gmail.com>
- <5fd22dda-01d6-cfae-3458-cb3fa23eb84d@I-love.SAKURA.ne.jp>
-In-Reply-To: <5fd22dda-01d6-cfae-3458-cb3fa23eb84d@I-love.SAKURA.ne.jp>
+On Wed, May 4, 2022 at 6:54 PM Tetsuo Handa
+<penguin-kernel@i-love.sakura.ne.jp> wrote:
+>
+> Eric Dumazet is reporting addition on 0 problem at rds_tcp_tune(), for
+> delayed works queued in rds_wq might be invoked after a net namespace's
+> refcount already reached 0.
+>
+> Since rds_tcp_exit_net() from cleanup_net() calls flush_workqueue(rds_wq),
+> it is guaranteed that we can instead use maybe_get_net() from delayed work
+> functions until rds_tcp_exit_net() returns.
+>
+> Note that I'm not convinced that all works which might access a net
+> namespace are already queued in rds_wq by the moment rds_tcp_exit_net()
+> calls flush_workqueue(rds_wq). If some race is there, rds_tcp_exit_net()
+> will fail to wait for work functions, and kmem_cache_free() could be
+> called from net_free() before maybe_get_net() is called from
+> rds_tcp_tune().
+>
+> Reported-by: Eric Dumazet <edumazet@google.com>
+> Fixes: 3a58f13a881ed351 ("net: rds: acquire refcount on TCP sockets")
+> Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+> ---
+>
 
---------------BuTCYHRj8nx9zy0QljTTmpW0
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: base64
-
-SGkgVGV0c3VvLA0KDQpPbiA1LzIvMjIgMDk6MTAsIFRldHN1byBIYW5kYSB3cm90ZToNCj4+
-IEFuZCB3ZSBjYW4gbWVldCBOVUxMIGRlZmVyIGV2ZW4gaWYgd2UgbGVhdmUgZHJ2X3ByaXYg
-PSBwcml2IGluaXRpYWxpemF0aW9uDQo+PiBvbiBpdCdzIHBsYWNlLg0KPiANCj4gSSBkaWRu
-J3QgY2F0Y2ggdGhlIGxvY2F0aW9uLiBBcyBsb25nIGFzICJodGNfaGFuZGxlLT5kcnZfcHJp
-diA9IHByaXY7IiBpcyBkb25lDQo+IGJlZm9yZSBjb21wbGV0ZV9hbGwoJmhpZl9kZXYtPmZ3
-X2RvbmUpIGlzIGRvbmUsIGlzIHNvbWV0aGluZyB3cm9uZz8NCj4gDQoNCkkgZG9uJ3QgcmVh
-bGx5IHJlbWVtYmVyIHdoeSBJIHNhaWQgdGhhdCwgYnV0IGxvb2tzIGxpa2UgSSBqdXN0IGhh
-dmVuJ3QgDQpvcGVuZWQgY2FsbGJhY2tzJyBjb2RlLg0KDQpNeSBwb2ludCB3YXMgdGhhdCBt
-eSBwYXRjaCBkb2VzIG5vdCBjaGFuZ2UgdGhlIGxvZ2ljLCBidXQgb25seSBmaXhlcyAyIA0K
-cHJvYmxlbXM6IFVBRiBhbmQgTlVMTCBkZXJlZi4NCg0KDQoNCg0KV2l0aCByZWdhcmRzLA0K
-UGF2ZWwgU2tyaXBraW4NCg==
-
---------------BuTCYHRj8nx9zy0QljTTmpW0--
-
---------------RwO6X2hG0PGwvossowR4eaBq
-Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="OpenPGP_signature"
-
------BEGIN PGP SIGNATURE-----
-
-wsF5BAABCAAjFiEER3XL3TplLQE8Qi40bk1w61LbBA0FAmJ0IPkFAwAAAAAACgkQbk1w61LbBA0T
-Qw//S89A5hXZn0QKDeJ5BiOPpbcWphz7JnMepW4YZ3+c0PSVsOJYnuTGuJP4ZgLCY2Xhlz555CiS
-CIG5CzUAPvisnD2hSVFZd6AxHNgbRi6L9kLzkmYcIdRDBCOHz9/BXyG8+SUQYI9aBGzAWAf6INpl
-Ox1cK9fAkWOPR52tEs5ee3bS82jWftq5Gej5HuXH/OOueDxcRDrvRon/qi8fEe61S4jGUNcPDJIN
-KX/uwWc6UeRWxtw7nl+r28eTLQbU228QR51bn3/rAPlMJ3B/x0lPhl06kuxonskvjY0ZYNZuXvzT
-S5swHOw1VwBbfSfSGBGiNrdzRKvEaygNGGW2NF6FrCkEnYNgykZTv1XuBPaE+E+ICxvPGrhe7X9P
-GFNBAj0Uktl0ULeEXnPjv93sXtZNjy+sz+cK7gcV7Cfb6JuW+myT59zVJBRc2oQJjY905mgtO820
-2CZiBO9Jn18i/VIchONjl62f31aZBblvgejXA69mpco3LIBLUoQ6N57HNp5iUwxZIJxgcBupnheH
-O33BAnFZ6n56OCe4bdRX/nvG7m9ETfpX7m4OOg3V+AEVbc+4aNUz8NK/z9U1ufK6yVQXqj6tuJ/J
-L/aLqJGdb8pGay4nzlmxEypPalLPDhg2U6KIxbasjTKS+u5qHsAm2u/Umnt3Yk/L/hMde+hal+N0
-OzI=
-=P47m
------END PGP SIGNATURE-----
-
---------------RwO6X2hG0PGwvossowR4eaBq--
+Reviewed-by: Eric Dumazet <edumazet@google.com>
