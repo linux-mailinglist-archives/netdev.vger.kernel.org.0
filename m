@@ -2,152 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BC8D51C03F
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:07:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 210CB51C062
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:17:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378891AbiEENJq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 09:09:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
+        id S1378927AbiEENUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 09:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378766AbiEENIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 09:08:47 -0400
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60F4B56425;
-        Thu,  5 May 2022 06:05:06 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A04AD60017;
-        Thu,  5 May 2022 13:05:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1651755905;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AiujlfoIRvGrufRRXdpTmkdQRZg0L/jgVK7rFYQ9oos=;
-        b=DAt0uupYGjyZUZhWiAog41K1Gc6Xaxnjq37AGUk8DEH+7VmPs/EVTyG7naFqP68zK/1US2
-        NxzQiyMH6UwL/feEvi7dVh+OBzRdzfryPRTzOtQYqzsqbxjD90SzEzxvyASu4k3HAD6IQs
-        j7mRgrjTYBMfxJ4mZKonuXBMBJ0eNfJXyP/Skb3ZHcGlfgmzxLFnTY07ZiQ9W/ulXb/iGI
-        ZsCC3JZohz2O0be3Tuyc/taH/DY2hafiQXM20mNnVro1gISZrfEdn9arJs0VUuBsUa0Kq9
-        26ne/H8pbhWwNcM/n5khjbhFkleuATMme1J8Sw8/Xi9xRgCtiNAdkdO+/8Z1PQ==
-Date:   Thu, 5 May 2022 15:03:43 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 04/12] net: pcs: add Renesas MII converter
- driver
-Message-ID: <20220505150343.7bcd198a@fixe.home>
-In-Reply-To: <CAMuHMdU1DZeigT1ES4FMrtLpnRA0fMp6k4ZhDs7U0=CvAuOxgA@mail.gmail.com>
-References: <20220504093000.132579-1-clement.leger@bootlin.com>
-        <20220504093000.132579-5-clement.leger@bootlin.com>
-        <CAMuHMdU1dF25eKeihBO3xRarW-acG0vUSggWfKOwG3v=7eN+bg@mail.gmail.com>
-        <20220505143236.31fc6b58@fixe.home>
-        <CAMuHMdU1DZeigT1ES4FMrtLpnRA0fMp6k4ZhDs7U0=CvAuOxgA@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        with ESMTP id S1354075AbiEENUl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 09:20:41 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E4B18E18;
+        Thu,  5 May 2022 06:17:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651756622; x=1683292622;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=+6MCbEQSUwrgaPZw/EyhSqJQGKL9MpyVEdD0/n5EPeI=;
+  b=NidSsoJSQWI7Xil2Da5FncYmC4RR9xPSXdoS0FD3sT+aCpqFaMydh0jR
+   zTZYYVArzsQ22RV7a2W8ipjYbtZJxEEEgTmJHHbmjR5mx9PqHVidT6mz7
+   CbwMiqbM7zp8ZJx1xJzfYTbSmtwT6tv/+pJQjgxRWaWRXCkYzQao5cbdY
+   CUMFjfjAPphXSC22xGGUKV1jtcWZ+LckTt+h9Zhc6ZXYVuo7FpF9eASsY
+   LP5uAPQvvxNJyDRV18g8K7q95evwEIK9nYhYwsORjzNjVMV95YwKVEEZr
+   PG4QZN2+LAKlCsHZE+5JrJ/bAN9gTRPyN3/BBoD4ztn59bY2EdyEDiL5z
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="331090656"
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="331090656"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 06:17:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
+   d="scan'208";a="563235590"
+Received: from irvmail001.ir.intel.com ([10.43.11.63])
+  by orsmga007.jf.intel.com with ESMTP; 05 May 2022 06:16:58 -0700
+Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
+        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 245DGuYS009371;
+        Thu, 5 May 2022 14:16:56 +0100
+From:   Larysa Zaremba <larysa.zaremba@intel.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Larysa Zaremba <larysa.zaremba@intel.com>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>
+Subject: [PATCH bpf-next v2] bpftool: Use sysfs vmlinux when dumping BTF by ID
+Date:   Thu,  5 May 2022 15:05:08 +0200
+Message-Id: <20220505130507.130670-1-larysa.zaremba@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Thu, 5 May 2022 15:00:28 +0200,
-Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
+Currently, dumping almost all BTFs specified by id requires
+using the -B option to pass the base BTF. For kernel module
+BTFs the vmlinux BTF sysfs path should work.
 
-> Hi Cl=C3=A9ment,
->=20
-> On Thu, May 5, 2022 at 2:33 PM Cl=C3=A9ment L=C3=A9ger <clement.leger@boo=
-tlin.com> wrote:
-> > Le Thu, 5 May 2022 09:16:38 +0200,
-> > Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit : =20
-> > > On Wed, May 4, 2022 at 11:31 AM Cl=C3=A9ment L=C3=A9ger <clement.lege=
-r@bootlin.com> wrote: =20
-> > > > Add a PCS driver for the MII converter that is present on the Renes=
-as
-> > > > RZ/N1 SoC. This MII converter is reponsible for converting MII to
-> > > > RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows=
- to
-> > > > reuse it in both the switch driver and the stmmac driver. Currently,
-> > > > this driver only allows the PCS to be used by the dual Cortex-A7
-> > > > subsystem since the register locking system is not used.
-> > > >
-> > > > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> =
-=20
-> > >
-> > > Thanks for your patch!
-> > > =20
-> > > > --- /dev/null
-> > > > +++ b/drivers/net/pcs/pcs-rzn1-miic.c =20
-> > > =20
-> > > > +static int miic_probe(struct platform_device *pdev)
-> > > > +{
-> > > > +       struct device *dev =3D &pdev->dev;
-> > > > +       struct miic *miic;
-> > > > +       u32 mode_cfg;
-> > > > +       int ret;
-> > > > +
-> > > > +       ret =3D miic_parse_dt(dev, &mode_cfg);
-> > > > +       if (ret < 0)
-> > > > +               return -EINVAL;
-> > > > +
-> > > > +       miic =3D devm_kzalloc(dev, sizeof(*miic), GFP_KERNEL);
-> > > > +       if (!miic)
-> > > > +               return -ENOMEM;
-> > > > +
-> > > > +       spin_lock_init(&miic->lock);
-> > > > +       miic->dev =3D dev;
-> > > > +       miic->base =3D devm_platform_ioremap_resource(pdev, 0);
-> > > > +       if (!miic->base)
-> > > > +               return -EINVAL;
-> > > > +
-> > > > +       pm_runtime_enable(dev);
-> > > > +       ret =3D pm_runtime_resume_and_get(dev);
-> > > > +       if (ret < 0) =20
-> > >
-> > > Missing pm_runtime_disable(dev). =20
-> >
-> > Maybe using devm_pm_runtime_enable() would be sufficient and avoid such
-> > calls. =20
->=20
-> That's an option.
-> Note that that still won't allow you to get rid of the .remove() callback,
-> as you still have to call pm_runtime_put() manually.
+This patch simplifies dumping by ID usage by attempting to
+use vmlinux BTF from sysfs, if the first try of loading BTF by ID
+fails with certain conditions and the ID corresponds to a kernel
+module BTF.
 
-Yes, of course :) I'll do the modifications.
+Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
+Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+---
+ tools/bpf/bpftool/btf.c | 67 +++++++++++++++++++++++++++++++++++------
+ 1 file changed, 58 insertions(+), 9 deletions(-)
 
-Thanks,
+diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
+index a2c665beda87..070e0c1595d7 100644
+--- a/tools/bpf/bpftool/btf.c
++++ b/tools/bpf/bpftool/btf.c
+@@ -459,6 +459,56 @@ static int dump_btf_c(const struct btf *btf,
+ 	return err;
+ }
+ 
++static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
++
++static struct btf *get_vmlinux_btf_from_sysfs(void)
++{
++	struct btf *base;
++
++	base = btf__parse(sysfs_vmlinux, NULL);
++	if (libbpf_get_error(base)) {
++		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
++		      sysfs_vmlinux, libbpf_get_error(base));
++		base = NULL;
++	}
++
++	return base;
++}
++
++static struct btf *btf_try_load_with_vmlinux(__u32 btf_id, struct btf **base)
++{
++	struct bpf_btf_info btf_info = {};
++	unsigned int len;
++	int btf_fd;
++	int err;
++
++	btf_fd = bpf_btf_get_fd_by_id(btf_id);
++	if (btf_fd < 0) {
++		p_err("can't get BTF object by id (%u): %s",
++		      btf_id, strerror(errno));
++		return ERR_PTR(btf_fd);
++	}
++
++	len = sizeof(btf_info);
++	err = bpf_obj_get_info_by_fd(btf_fd, &btf_info, &len);
++	close(btf_fd);
++
++	if (err) {
++		p_err("can't get BTF (ID %u) object info: %s",
++		      btf_id, strerror(errno));
++		return ERR_PTR(err);
++	}
++
++	if (!btf_info.kernel_btf) {
++		p_err("BTF with ID %u is not a kernel module BTF, cannot use vmlinux as base",
++		      btf_id);
++		return ERR_PTR(-EINVAL);
++	}
++
++	*base = get_vmlinux_btf_from_sysfs();
++	return btf__load_from_kernel_by_id_split(btf_id, *base);
++}
++
+ static int do_dump(int argc, char **argv)
+ {
+ 	struct btf *btf = NULL, *base = NULL;
+@@ -536,18 +586,11 @@ static int do_dump(int argc, char **argv)
+ 		NEXT_ARG();
+ 	} else if (is_prefix(src, "file")) {
+ 		const char sysfs_prefix[] = "/sys/kernel/btf/";
+-		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
+ 
+ 		if (!base_btf &&
+ 		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
+-		    strcmp(*argv, sysfs_vmlinux) != 0) {
+-			base = btf__parse(sysfs_vmlinux, NULL);
+-			if (libbpf_get_error(base)) {
+-				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
+-				      sysfs_vmlinux, libbpf_get_error(base));
+-				base = NULL;
+-			}
+-		}
++		    strcmp(*argv, sysfs_vmlinux))
++			base = get_vmlinux_btf_from_sysfs();
+ 
+ 		btf = btf__parse_split(*argv, base ?: base_btf);
+ 		err = libbpf_get_error(btf);
+@@ -593,6 +636,12 @@ static int do_dump(int argc, char **argv)
+ 	if (!btf) {
+ 		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
+ 		err = libbpf_get_error(btf);
++		if (err == -EINVAL && !base_btf) {
++			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (sysfs vmlinux)");
++			btf = btf_try_load_with_vmlinux(btf_id, &base);
++			err = libbpf_get_error(btf);
++		}
++
+ 		if (err) {
+ 			p_err("get btf by id (%u): %s", btf_id, strerror(err));
+ 			goto done;
+-- 
+2.35.1
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
