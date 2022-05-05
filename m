@@ -2,152 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ABE651C3A3
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 17:15:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9BA551C3CD
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 17:22:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376648AbiEEPTL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 11:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40344 "EHLO
+        id S1381254AbiEEPZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 11:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242784AbiEEPSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 11:18:52 -0400
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F294F47054;
-        Thu,  5 May 2022 08:15:12 -0700 (PDT)
-Received: by mail-ej1-x62c.google.com with SMTP id y3so9301562ejo.12;
-        Thu, 05 May 2022 08:15:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=P9U8VtHTMpxS3daOmFxvM8CiEOLd4g2YjivTRqBj1gg=;
-        b=pylu+FcH16PRiwGxvsJ4Lvm8VVlU35vFQHYuCBoWRDRpESWBGDwGuKu0dR9BNAcbqc
-         cKx/JvbNE+O1OdTPQl6gHPG84lxarUomOauCC5h+37/TVx6QZovXxu0XTMAu09utWHin
-         B/eI9jpxuzn/9GpIC0QSQx88YVt0w5HNWJVybF52KdYjdZjezHNF3nZKTU9MuzUAzgvl
-         2E+gls8B87ahmQK74ZKRCUuaVIBgyVu1fyuwjwDFDVDcd/CxOz8RsmsRtJc7X9Gnzb6D
-         VDPU8wCLdF5sluzx4F1K3U6m00TU/VoR2kCAedh8Qq955i57wWN5IVEaQf0zTaNKqaTM
-         0kGQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P9U8VtHTMpxS3daOmFxvM8CiEOLd4g2YjivTRqBj1gg=;
-        b=Lao8he9CrL6bv3MSTmtyEmYok3GQv3hALya7AXShs8VChg19TrovSr4koYOJv7ukZG
-         CtWvetLGm+3JNP7JViVbW0PNpegHoparhK8jOFDlszjp02TK/3gXygi+WXJFUq15u9ne
-         6YAOoVb6MhKkUEZbKbQBy/0LhH16WA4uR+4WvQbfgM8SF4olev/e2gtgZRcY5KB621Vh
-         klutoSfk2ITQ2GsogK55setrm7cpAmyuKwKmIJcnvghG/diUOUT65WQaJIlsoR/cAQXA
-         rYveVoWsFZQFRkJbMtoN1CC+6qf09KJugKLQ2gc/zYSjoIAx2WvoR0ZLVq0OBSDszA0O
-         w1vA==
-X-Gm-Message-State: AOAM531nRd1/OicxJIRZBE6AgFigUmUbgckayVCQbwBWUU/CKEDOECBa
-        cC8VW7UUbMvoYcA86JsN1bU=
-X-Google-Smtp-Source: ABdhPJxbaNdvNnwR7fqSaGdLSEy4BrGkyc6cPNhTM1hE34Dag/JoDOsa5U4KH+iru1hh2yxHWfyfyg==
-X-Received: by 2002:a17:907:1c87:b0:6f0:29ea:cc01 with SMTP id nb7-20020a1709071c8700b006f029eacc01mr26942736ejc.671.1651763711293;
-        Thu, 05 May 2022 08:15:11 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id b21-20020aa7c915000000b0042617ba6380sm954779edt.10.2022.05.05.08.15.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 08:15:10 -0700 (PDT)
-Date:   Thu, 5 May 2022 18:15:07 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Arun.Ramadoss@microchip.com
-Cc:     songliubraving@fb.com, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        robh+dt@kernel.org, andrew@lunn.ch, devicetree@vger.kernel.org,
-        linux@armlinux.org.uk, andrii@kernel.org,
-        UNGLinuxDriver@microchip.com, john.fastabend@gmail.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        kpsingh@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        netdev@vger.kernel.org, kafai@fb.com, yhs@fb.com,
-        krzysztof.kozlowski+dt@linaro.org, davem@davemloft.net,
-        Woojung.Huh@microchip.com
-Subject: Re: [Patch net-next v13 07/13] net: dsa: microchip: add LAN937x SPI
- driver
-Message-ID: <20220505151507.5fp3lur74gs4faee@skbuf>
-References: <20220504151755.11737-1-arun.ramadoss@microchip.com>
- <20220504151755.11737-8-arun.ramadoss@microchip.com>
- <20220504200726.pn7y73gt7wc2dpsg@skbuf>
- <52e682a1bcd2aac1097f2b4f1948066fe5bb6924.camel@microchip.com>
+        with ESMTP id S232495AbiEEPZd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 11:25:33 -0400
+X-Greylist: delayed 338 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 08:21:52 PDT
+Received: from elaine.keithp.com (home.keithp.com [63.227.221.253])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91427554A8;
+        Thu,  5 May 2022 08:21:52 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by elaine.keithp.com (Postfix) with ESMTP id 373F23F3296A;
+        Thu,  5 May 2022 08:16:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=keithp.com; s=mail;
+        t=1651763774; bh=O3aXJOWYxVTqOu3VmcXxOiZZOhMrUjqY/t6cXMT24+E=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=M3zB+WUy+cYZq4HgtgtbfmLljWbRpIeJ5Zkg9r1D71YqvPlgOkiQ4tXheXCRGUa8+
+         RMuby4CqFAMCoPUIrwdzYTZDTf78io+RFFo6OcdGBDUFDZRaGhZfKKcTtwdj7WCFy4
+         6tn6om4NwF6owZoCYEHNTlN4dA5iODmOFbhrxNDmu4q/fHHXFfSRYzNqzWEthWHBp3
+         hB3E0o3k1G8NwFJfKh9rQpVZYZLwPg6CF6he0rk/+KFPQLpotGYN+CgB1L7QQOYecl
+         ymeV9rACfLcKoB95CZdy6K628IEeM8t07ROlSN+X9O0IbQydzX/BQ3xj9k+MYZwzPf
+         UxJC+uQh0iuJw==
+X-Virus-Scanned: Debian amavisd-new at keithp.com
+Received: from elaine.keithp.com ([127.0.0.1])
+        by localhost (elaine.keithp.com [127.0.0.1]) (amavisd-new, port 10024)
+        with LMTP id AExLuWAu_LJ4; Thu,  5 May 2022 08:16:13 -0700 (PDT)
+Received: from keithp.com (koto.keithp.com [192.168.11.2])
+        by elaine.keithp.com (Postfix) with ESMTPSA id 046443F32465;
+        Thu,  5 May 2022 08:16:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=keithp.com; s=mail;
+        t=1651763773; bh=O3aXJOWYxVTqOu3VmcXxOiZZOhMrUjqY/t6cXMT24+E=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=krSTvH+KcMYcsYiJs+brgDawkHD6ep7gtAt/7ImbSH+PVnVS6n5TIWQoiUP+PjBfQ
+         TTV9zZEzFSNSLzQmSsEIJT24ancVfic/4tw1+i19H4UqIv2Soci174vL3i+L8WgOn3
+         3GAVx4Wwdu1vRPL7EVqx5qPLOOTreMDXIScBgNd+X5AcHfMZWw538tPrPoKpSSqHZH
+         dCLZclbzdDsdQUL6m86l3cbny8WccVcefFqv7gslHwR8P3ZsfbW/X+4PLXD3hTeyro
+         XMqcEagdrGN5NURX0L6R0oPpkf8LkkkUJo0DYZf6b68EQ+TuLV1TgvwIq/q3gwMiYO
+         4YgvEK7vCGplw==
+Received: by keithp.com (Postfix, from userid 1000)
+        id 4874D1E601B9; Thu,  5 May 2022 08:16:12 -0700 (PDT)
+From:   Keith Packard <keithp@keithp.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        Kees Cook <keescook@chromium.org>
+Cc:     "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        alsa-devel@alsa-project.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bradley Grove <linuxdrivers@attotech.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Christian Brauner <brauner@kernel.org>,
+        Christian =?utf-8?Q?G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Chris Zankel <chris@zankel.net>,
+        Cong Wang <cong.wang@bytedance.com>,
+        David Gow <davidgow@google.com>,
+        David Howells <dhowells@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hulk Robot <hulkci@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        James Morris <jmorris@namei.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        John Keeping <john@metanate.com>,
+        Juergen Gross <jgross@suse.com>, Kalle Valo <kvalo@kernel.org>,
+        keyrings@vger.kernel.org, kunit-dev@googlegroups.com,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux1394-devel@lists.sourceforge.net,
+        linux-afs@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, llvm@lists.linux.dev,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Louis Peens <louis.peens@corigine.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Rich Felker <dalias@aerifal.cx>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        SHA-cyfmac-dev-list@infineon.com,
+        Simon Horman <simon.horman@corigine.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>, Tom Rix <trix@redhat.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>,
+        wcn36xx@lists.infradead.org, Wei Liu <wei.liu@kernel.org>,
+        xen-devel@lists.xenproject.org,
+        Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>
+Subject: Re: [PATCH 02/32] Introduce flexible array struct memcpy() helpers
+In-Reply-To: <970a674df04271b5fd1971b495c6b11a996c20c2.camel@sipsolutions.net>
+References: <20220504014440.3697851-1-keescook@chromium.org>
+ <20220504014440.3697851-3-keescook@chromium.org>
+ <d3b73d80f66325fdfaf2d1f00ea97ab3db03146a.camel@sipsolutions.net>
+ <202205040819.DEA70BD@keescook>
+ <970a674df04271b5fd1971b495c6b11a996c20c2.camel@sipsolutions.net>
+Date:   Thu, 05 May 2022 08:16:11 -0700
+Message-ID: <871qx8qabo.fsf@keithp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <52e682a1bcd2aac1097f2b4f1948066fe5bb6924.camel@microchip.com>
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha256; protocol="application/pgp-signature"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 05, 2022 at 10:32:17AM +0000, Arun.Ramadoss@microchip.com wrote:
-> > >  static int lan937x_switch_init(struct ksz_device *dev)
-> > >  {
-> > > +     int ret;
-> > > +
-> > >       dev->ds->ops = &lan937x_switch_ops;
-> > > 
-> > > +     /* Check device tree */
-> > > +     ret = lan937x_check_device_id(dev);
-> > > +     if (ret < 0)
-> > > +             return ret;
-> > > +
-> > 
-> > Can't this be called from lan937x_spi_probe() directly, why do you
-> > need
-> > to go through lan937x_switch_register() first?
-> 
-> lan937x_check_device_id function compares the dev->chip_id with the
-> lan937x_switch_chip array and populate the some of the parameters of
-> struct ksz_dev. The dev->chip_id is populated using the dev->dev_ops-
-> >detect in the ksz_switch_register function. If lan937x_check_device_id
-> needs to be called in spi_probe, then chip_id has to be identified as
-> part of spi_probe function. Since ksz_switch_register handles the
-> identifying the chip_id, checking the device_id is part of switch_init.
->  
->  if (dev->dev_ops->detect(dev))
->              return -EINVAL;
->  
->  ret = dev->dev_ops->init(dev);
->  if (ret)
->             return ret;
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-Whatever you do, please use a common pattern for all of ksz9477, ksz8,
-and your lan937x. This includes validation of chip id, placement of the
-chip_data and dev_ops structures, and reuse as much logic as possible.
-The key is to limit the chip-specific information to structured data
-(tables) wherever possible and let common code deal with them.
+Johannes Berg <johannes@sipsolutions.net> writes:
 
-For example there is no reason why struct ksz_chip_data is redefined for
-every switch, why copying from "chip" to "dev" is duplicated for every
-switch, and yet, why every other switch copies from "chip" to "dev" in
-the "switch_init" function yet lan937x does it from "check_device_id".
-So much boilerplate, yet different in subtle ways, makes the code very
-unpleasant to review.
+> Yeah, dunno, I guess I'm slightly more on the side of not requiring it,
+> since we don't do the same for kmalloc() etc. and probably really
+> wouldn't want to add kmalloc_s() that does it ;-)
 
-I'm sure you'll find a straightforward way to code up a probing function.
+I suspect the number of bugs this catches will be small, but they'll be
+in places where the flow of control is complicated. What we want is to
+know that there's no "real" value already present. I'd love it if we
+could make the macro declare a new name (yeah, I know, mixing
+declarations and code).
 
-> As per the comment, enable_spi_indirect_access function called twice
-> https://lore.kernel.org/netdev/20220408232557.b62l3lksotq5vuvm@skbuf/
-> I have removed the enable_spi_indirect_access in the lan937x_setup
-> function in v13 patch 6. But it actually failed our regression.
-> The SPI indirect is required for accessing the Internal phy registers.
-> We have enabled it in lan937x_init before registering the
-> mdio_register. We need it for reading the phy id.
-> And another place enabled in lan937x_setup after lan937x_switch_reset
-> function. When I removed enabling in setup function, switch_reset
-> disables the spi indirecting addressing. Because of that further phy
-> register r/w fails. In Summary, we need to enable spi indirect access
-> in both the places, one for mdio_register and another after
-> switch_reset. 
-> 
-> Can I enable it both the places? Kindly suggest. 
+Of course, we could also end up with people writing a wrapping macro
+that sets the variable to NULL before invoking the underlying macro...
 
-So you call lan937x_reset_switch() as the first thing in ds->ops->setup(),
-and this momentarily breaks the earlier MDIO bus setup done from probe
--> ksz_switch_register() -> dev_ops->init().
+=2D-=20
+=2Dkeith
 
-So why don't you move the lan937x_enable_spi_indirect_access() and
-lan937x_mdio_register() calls to ds->ops->setup(), _after_ the switch
-soft reset, then?
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEw4O3eCVWE9/bQJ2R2yIaaQAAABEFAmJz6jsACgkQ2yIaaQAA
+ABGQAg/+NFgE01jSUQAsZc8G2KY9qfifpQ5rzrWtedUNXoOhcAo33tvPHnED0AxP
+Q4MXv/X4TRCTOD/5aBjZeKgy9I9G2jYbZq9iYf5uaD9zIECpE5XyznDZzo15cWBE
+B+W7olq9dqiARf6CuwNpYCjB8zv2ubR42c+faTCJNM63owpN9xpGT/7OEbE0HoKg
+TawmusqNU2nOkT82kjh1iVoK0BbmPSATiKkCH9ZpUVQYOQvsyieFtAlQREms/pip
+ccnHssDAaV1dgAg2NlKDzU30XA3rIIsfX+v3Bh+CWoj77Az7IO8+/V+nmNm5GHyy
+bs8LUQY3Z7/otHyGVfjVN9eU6LcEvstr7tOPLWxF0h+YxJk12uKhUZnmt4NisYrL
+uOcx/MC4y6tx9+kdn1U5KoV+O/ekhW/N/WwYcE6YUYZeol3Ahpve77B7uzLbwyOj
+TMLF83DtVqGLwl1y5mdKUfdeUeYhVMYo+eaq0ChKHdYdKj9ra2BaL1oiTc3lKqVW
+FdHX7C9qLA4LsTzfuDiEQDOrnwMDXhvtQrysTOjlQLIcivarCfxIKQw0co8Vubug
+sceCDXCr5qY2cCr51YqbDSVqEXK5Dos7IGlIyIlZH0YCktIbgOGTEPZDcidplXy2
+LWWWFIK6Viz1AgjSRxRU24qmTbFCFLZdboKDuzsCHG8HDByLmNM=
+=BTwc
+-----END PGP SIGNATURE-----
+--=-=-=--
