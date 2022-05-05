@@ -2,126 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DC4C51C998
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 21:49:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8273F51C9D0
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 22:00:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385374AbiEETvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 15:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36472 "EHLO
+        id S1385235AbiEEUDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 16:03:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238792AbiEETvk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 15:51:40 -0400
-X-Greylist: delayed 426 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 05 May 2022 12:47:58 PDT
-Received: from mxout01.lancloud.ru (mxout01.lancloud.ru [45.84.86.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB8D75D64A
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 12:47:58 -0700 (PDT)
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 674BB205EE8C
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH 5/9] ravb: Support separate Line0 (Desc), Line1 (Err) and
- Line2 (Mgmt) irqs
-To:     Phil Edworthy <phil.edworthy@renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-CC:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>
-References: <20220504145454.71287-1-phil.edworthy@renesas.com>
- <20220504145454.71287-6-phil.edworthy@renesas.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <80099a39-5727-85fd-1988-01cef8793cc2@omp.ru>
-Date:   Thu, 5 May 2022 22:40:48 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        with ESMTP id S244042AbiEEUDr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 16:03:47 -0400
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 887A45F261
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 13:00:06 -0700 (PDT)
+Received: by mail-lj1-x22c.google.com with SMTP id c15so6922064ljr.9
+        for <netdev@vger.kernel.org>; Thu, 05 May 2022 13:00:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6gPZEnEWKasiTJ+W5JEInWHPtBugWQuFFkqdD2+8rIE=;
+        b=OSv5Pa4D4uv8ROYV++6WvUPY6DGWfSC6/ssVBo9wrnJ/FS8V1bdDXc/4qYF5PqfgAc
+         6tFE0wL83DEv7lsbPFpjbtkVJVfkNWjb2moYISaibfLxoVQt9vdG3SgpHC2ChWwUnNPI
+         Qv9XjLZZInOaJ3gFiQ7HMw/99a0wcpFKNBhLvznjU4FWRBt/Y0hNaTFtbGY5U/7kmik6
+         i+rIXM5FfpccTz7t2S3MuAUaSVugLh9/4/gSApE+idTD6Znv7Bj90oMhtyDYVpExTDhl
+         bI4EFUbRuF74cpn3nlfHCKebjYFqd0T+WWvmLd+Yo+e3/cQLVXkxoV0u05QTYWICz9PJ
+         f5Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6gPZEnEWKasiTJ+W5JEInWHPtBugWQuFFkqdD2+8rIE=;
+        b=N5UNSn3/vP4ZbFQAPnreSaEvrpuis2XFyymzHArF9WLCi7xY/0UUteK4Pz5VnGkbkn
+         Gbp6oq1HSbZ38KQc4NAPShQBOdQhT7cPOKgAS58xGZ7QQ+N5OVJ+i1+Xn/xqOX1lNWQ4
+         pYDoNkv6hBhvlYElekMRsjGu/Fqk8CMT81ldiwJCwkWHkPWxBdys21JGhoWN5y0FkydW
+         D9thCE71KYUYAY+7BBJjopK9A3DW5oInH4dR8l+SOY1diJTX8tMgX4VHjz232Rr+DNpe
+         tq8Vm8+i987EmTik/ab+QNmeb0Te/3K92kLJUott8ajXYbj6kMuM/y8s2qWz1CjQztl+
+         bW7g==
+X-Gm-Message-State: AOAM530KLjka0OH7Zg1XQcdd+HljFED5VoIeqtM6weIO+RIpVGJ0RMtC
+        0+fYxjPiogGLFbGknhsb8llRWEK9OwLipOI7U2O0eg==
+X-Google-Smtp-Source: ABdhPJw62k8QefqEJaNCAVaVyRYvyfFajC9KiIxeIOZP1KcWXDIQr+TvyqGmjPcwSg0lHagCSwhSXQhc0eg9RMQAj8c=
+X-Received: by 2002:a2e:9bce:0:b0:24f:257d:28d3 with SMTP id
+ w14-20020a2e9bce000000b0024f257d28d3mr17176467ljj.93.1651780804544; Thu, 05
+ May 2022 13:00:04 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20220504145454.71287-6-phil.edworthy@renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=unavailable autolearn_force=no version=3.4.6
+References: <20220501111836.10910-1-gerhard@engleder-embedded.com>
+ <20220501111836.10910-3-gerhard@engleder-embedded.com> <4c2a15271887aa3f5d759771ddedac04e11db743.camel@redhat.com>
+In-Reply-To: <4c2a15271887aa3f5d759771ddedac04e11db743.camel@redhat.com>
+From:   Gerhard Engleder <gerhard@engleder-embedded.com>
+Date:   Thu, 5 May 2022 21:59:53 +0200
+Message-ID: <CANr-f5wYg-qxVWgdUb3w3tj89NG9HpDAMvp0xFtts6yTotQ75Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/6] ptp: Request cycles for TX timestamp
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        yangbo.lu@nxp.com, David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, mlichvar@redhat.com,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/4/22 5:54 PM, Phil Edworthy wrote:
+> > The free running cycle counter of physical clocks called cycles shall be
+> > used for hardware timestamps to enable synchronisation.
+> >
+> > Introduce new flag SKBTX_HW_TSTAMP_USE_CYCLES, which signals driver to
+> > provide a TX timestamp based on cycles if cycles are supported.
+> >
+> > Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+> > ---
+> >  include/linux/skbuff.h |  5 +++++
+> >  net/core/skbuff.c      |  5 +++++
+> >  net/socket.c           | 11 ++++++++++-
+> >  3 files changed, 20 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index 3270cb72e4d8..fa03e02b761d 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -615,6 +615,11 @@ enum {
+> >       /* device driver is going to provide hardware time stamp */
+> >       SKBTX_IN_PROGRESS = 1 << 2,
+> >
+> > +     /* generate hardware time stamp based on cycles if supported, flag is
+> > +      * used only for TX path
+> > +      */
+> > +     SKBTX_HW_TSTAMP_USE_CYCLES = 1 << 3,
+> > +
+> >       /* generate wifi status information (where possible) */
+> >       SKBTX_WIFI_STATUS = 1 << 4,
+>
+> Don't you need to update accordingly SKBTX_ANY_TSTAMP, so that this
+> flags is preserved on segmentation?
 
-> R-Car has a combined interrupt line, ch22 = Line0_DiA | Line1_A | Line2_A.
+You are right, SKBTX_HW_TSTAMP_USE_CYCLES should be preserved like
+SKBTX_HW_TSTAMP. I will fix that.
 
-   R-Car gen3, you mean? Because R-Car gen2 has single IRQ...
+Thank you!
 
-> RZ/V2M has separate interrupt lines for each of these, so add a feature
-> that allows the driver to get these interrupts and call the common handler.
-> 
-> We keep the "ch22" name for Line0_DiA and "ch24" for Line3 interrupts to
-> keep the code simple.
-
-   Not sure I agree with such simplification -- at least about "ch22"...
-
-> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
-
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index d0b9688074ca..f12a23b9c391 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-[...]
-> @@ -2167,6 +2184,10 @@ static int ravb_close(struct net_device *ndev)
->  		free_irq(priv->rx_irqs[RAVB_BE], ndev);
->  		free_irq(priv->emac_irq, ndev);
->  	}
-> +	if (info->err_mgmt_irqs) {
-> +		free_irq(priv->erra_irq, ndev);
-> +		free_irq(priv->mgmta_irq, ndev);
-> +	}
-
-   Shouldn't this be under:
-
-	if (info->multi_irqs) {
-
-above?
-
->  	free_irq(ndev->irq, ndev);
->  
->  	if (info->nc_queues)
-> @@ -2665,6 +2686,22 @@ static int ravb_probe(struct platform_device *pdev)
->  		}
->  	}
->  
-> +	if (info->err_mgmt_irqs) {
-> +		irq = platform_get_irq_byname(pdev, "err_a");
-> +		if (irq < 0) {
-> +			error = irq;
-> +			goto out_release;
-> +		}
-> +		priv->erra_irq = irq;
-> +
-> +		irq = platform_get_irq_byname(pdev, "mgmt_a");
-> +		if (irq < 0) {
-> +			error = irq;
-> +			goto out_release;
-> +		}
-> +		priv->mgmta_irq = irq;
-> +	}
-> +
-
-   Same here... 
-
->  	priv->clk = devm_clk_get(&pdev->dev, NULL);
->  	if (IS_ERR(priv->clk)) {
->  		error = PTR_ERR(priv->clk);
-
-MBR, Sergey
+Gerhard
