@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AABEC51BCD3
+	by mail.lfdr.de (Postfix) with ESMTP id 6154151BCD2
 	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 12:08:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354912AbiEEKLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 06:11:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49536 "EHLO
+        id S1355044AbiEEKLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 06:11:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354904AbiEEKLG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 06:11:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA34A5130F
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 03:07:26 -0700 (PDT)
+        with ESMTP id S1354885AbiEEKLB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 06:11:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34FD34F9F6
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 03:07:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68948B82C1B
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 10:07:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F029C385A8;
-        Thu,  5 May 2022 10:07:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B99FBB82C17
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 10:07:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E73E8C385A8;
+        Thu,  5 May 2022 10:07:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651745244;
-        bh=etd9v/VVGDpEbfVjS8WpMYDvZ5aU2wv0dTE3gJx7AzA=;
+        s=k20201202; t=1651745240;
+        bh=KgMZhpYNtqq1/zCqQuoZ4G4J9OVfi6Dr20foBMl3KyA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OAokdw2WNr8aN9sx4bKfD/i2uTs+wZjV3HRdl/Rw3Ab4W6oUHJnYGWxnwccVILv2X
-         v/HoxtmuV0P0gHIcguqVNCxfQsCfeymTSO/tWx7Xj8p6kA0sU4C+ObpjjtztwdHMmq
-         4DGzb9xNYg0EIG4Ghifgt0bet9RKbyjgumJ8XnDqK5XqWpoAOwdl4QxmIGZL6jyCwI
-         NTVEb3FhYXOLZgAcngxN9whxx0o3O4pLK1D+YqqNmJ2RQsQ9skKQeD7ddHBG7FpA0H
-         C6KOgY/3MIeSQW9l5YFYVmJu2TOdotec7EtsPX8/2gprNl2iHXueB9Wab3uRBp9QO6
-         mXyi9u6QTlWSQ==
+        b=hCQw93sTBCQEm1myGaAfMkeXrFOYxQ+fbLaIbkFnCp0RRj68UotfxECUL0ELD8muQ
+         7LCXjXgLV5g/EN1hL4Ay2edh2AIpFNtbaDXALsarqto3MPXCyq6jAasCkvaZqx3A4b
+         TbmUcrOnP2wzg18iHydCZmAoeRrvzxrlIF+cE8UDqu7oTeuDs/B6RvJLAfdND540vQ
+         E06M9HyATNPKQ9F4bHs9w6FOUrbssj3+XEgYH+O9eE+UyzLkapddLwMHn3JuB6pmTE
+         SzzlzH3UQBVsDUdFJEKz8ePUW8ey+SnjtPoNUewj1TB9Zr13lLBnYibC4EbhQHnudi
+         BzF+McfFmaPUw==
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Steffen Klassert <steffen.klassert@secunet.com>
 Cc:     Leon Romanovsky <leonro@nvidia.com>,
@@ -44,9 +44,9 @@ Cc:     Leon Romanovsky <leonro@nvidia.com>,
         Raed Salem <raeds@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>
-Subject: [PATCH ipsec-next 7/8] net/mlx5e: Use XFRM state direction instead of flags
-Date:   Thu,  5 May 2022 13:06:44 +0300
-Message-Id: <a8e511b7d8446e4c1c5414c44a6a81de62f116eb.1651743750.git.leonro@nvidia.com>
+Subject: [PATCH ipsec-next 8/8] xfrm: drop not needed flags variable in XFRM offload struct
+Date:   Thu,  5 May 2022 13:06:45 +0300
+Message-Id: <b0c39ee6e266ee021b810259fd73f5701fa929d1.1651743750.git.leonro@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1651743750.git.leonro@nvidia.com>
 References: <cover.1651743750.git.leonro@nvidia.com>
@@ -64,49 +64,49 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Leon Romanovsky <leonro@nvidia.com>
 
-Convert mlx5 driver to use XFRM state direction.
+After drivers were converted to rely on direction, the flags is not
+used anymore and can be removed.
 
 Reviewed-by: Raed Salem <raeds@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c   | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ include/net/xfrm.h     | 1 -
+ net/xfrm/xfrm_device.c | 3 ---
+ 2 files changed, 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-index 35e2bb301c26..2a8fd7020622 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c
-@@ -172,9 +172,9 @@ mlx5e_ipsec_build_accel_xfrm_attrs(struct mlx5e_ipsec_sa_entry *sa_entry,
- 	}
+diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+index 45422f7be0c5..736c349de8bf 100644
+--- a/include/net/xfrm.h
++++ b/include/net/xfrm.h
+@@ -136,7 +136,6 @@ struct xfrm_dev_offload {
+ 	netdevice_tracker	dev_tracker;
+ 	struct net_device	*real_dev;
+ 	unsigned long		offload_handle;
+-	u8			flags;
+ 	u8			dir : 2;
+ };
  
- 	/* action */
--	attrs->action = (!(x->xso.flags & XFRM_OFFLOAD_INBOUND)) ?
--			MLX5_ACCEL_ESP_ACTION_ENCRYPT :
--			MLX5_ACCEL_ESP_ACTION_DECRYPT;
-+	attrs->action = (x->xso.dir == XFRM_DEV_OFFLOAD_OUT) ?
-+				MLX5_ACCEL_ESP_ACTION_ENCRYPT :
-+				      MLX5_ACCEL_ESP_ACTION_DECRYPT;
- 	/* flags */
- 	attrs->flags |= (x->props.mode == XFRM_MODE_TRANSPORT) ?
- 			MLX5_ACCEL_ESP_FLAGS_TRANSPORT :
-@@ -306,7 +306,7 @@ static int mlx5e_xfrm_add_state(struct xfrm_state *x)
- 	if (err)
- 		goto err_hw_ctx;
+diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
+index c818afca9137..35c7e89b2e7d 100644
+--- a/net/xfrm/xfrm_device.c
++++ b/net/xfrm/xfrm_device.c
+@@ -264,8 +264,6 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
+ 	xso->dev = dev;
+ 	netdev_tracker_alloc(dev, &xso->dev_tracker, GFP_ATOMIC);
+ 	xso->real_dev = dev;
+-	/* Don't forward bit that is not implemented */
+-	xso->flags = xuo->flags & ~XFRM_OFFLOAD_IPV6;
  
--	if (x->xso.flags & XFRM_OFFLOAD_INBOUND) {
-+	if (x->xso.dir == XFRM_DEV_OFFLOAD_IN) {
- 		err = mlx5e_ipsec_sadb_rx_add(sa_entry);
- 		if (err)
- 			goto err_add_rule;
-@@ -333,7 +333,7 @@ static void mlx5e_xfrm_del_state(struct xfrm_state *x)
- {
- 	struct mlx5e_ipsec_sa_entry *sa_entry = to_ipsec_sa_entry(x);
+ 	if (xuo->flags & XFRM_OFFLOAD_INBOUND)
+ 		xso->dir = XFRM_DEV_OFFLOAD_IN;
+@@ -274,7 +272,6 @@ int xfrm_dev_state_add(struct net *net, struct xfrm_state *x,
  
--	if (x->xso.flags & XFRM_OFFLOAD_INBOUND)
-+	if (x->xso.dir == XFRM_DEV_OFFLOAD_IN)
- 		mlx5e_ipsec_sadb_rx_del(sa_entry);
- }
- 
+ 	err = dev->xfrmdev_ops->xdo_dev_state_add(x);
+ 	if (err) {
+-		xso->flags = 0;
+ 		xso->dev = NULL;
+ 		xso->dir = 0;
+ 		xso->real_dev = NULL;
 -- 
 2.35.1
 
