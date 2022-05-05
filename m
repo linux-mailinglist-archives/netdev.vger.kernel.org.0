@@ -2,87 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B82E51C1EF
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 16:09:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DC6851C1F5
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 16:10:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379552AbiEEOMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 10:12:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35408 "EHLO
+        id S1380415AbiEEONK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 10:13:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242724AbiEEOMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 10:12:23 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F15244A19
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 07:08:44 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id r9so4296894pjo.5
-        for <netdev@vger.kernel.org>; Thu, 05 May 2022 07:08:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=hfxlOw/uFAcMcfORhfXQdWWEEspPO62Efp52ySPavfY=;
-        b=S2JJzdms5i6ewB8jhMT4EjzEsiO2XW8iUdmgTuz5TeX+0D8kYairXhnHxblPno9KlQ
-         OJErquIpe0l0PTJfOUX0S3/yOZf3O4tVYDmBXpltmjN5czWH3AvHV2sBzFwQZWY2Usfq
-         r7d8ASNo2nveqvrx/yHCoIDyEnO58UXAhaqDJsyyJpJenhEnJ/D6YHTha9jJiwmWnumK
-         RaR/nRB+r8L6OS05dFmUH1rU5UPfDhfiQedUkMNrSvYPUAjmEm4SahKsYAZHv5BGptMd
-         w7tReqKdIiaIDHwg78SS6k/cwAflUE1nD9UEj77+k/u5b8E2gSKi4ZOnNAPtx2qwgowV
-         td0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=hfxlOw/uFAcMcfORhfXQdWWEEspPO62Efp52ySPavfY=;
-        b=WMkYVKPMBWIaoJUcxz1JsZTLw/JaA7ZZX2mhj0o467jftPIUMvwguJbIsgAncvdvUC
-         NDCxgZgVzWkgc5zOTCC5fU/QrIJwHtIFhMjpANJ+33cs6W9t1M63dO3jPy25sZo0883x
-         VeVT3v6jIs9xSCKLWoPYEEATjxR1t4NUSXZIleT+me5Hdrd4mzf+1tcbHmz20AxLvq3U
-         4ViPun2yGgQvITXq2NRGdLJqUhqTplXPsA+lYEmcr+ludW5Q9lQXSUtFZBcJyITIV8IK
-         /lNPemEUo+xgCdNZxDEPdfj/vsmcdRUi7ThQiPyyALs8PwNZpYGRRgIoXJ+AQCwAcu5x
-         zXDA==
-X-Gm-Message-State: AOAM5328o/1JVkhVDO+KWo3O+zOlWcST+PlO8dUt9kgbltmqWDT5u5Ga
-        wa0kqBSmGXRgo1bF/wq+gSU=
-X-Google-Smtp-Source: ABdhPJx8DgRyy3gjsr8Xk+r/Eyf0T7Zkf6w243phFUggppxR0PSkyLhXxr7G7eb0wyEdkQ7KxTLIUg==
-X-Received: by 2002:a17:90b:4c88:b0:1dc:60c2:25b2 with SMTP id my8-20020a17090b4c8800b001dc60c225b2mr6383246pjb.133.1651759723780;
-        Thu, 05 May 2022 07:08:43 -0700 (PDT)
-Received: from hoboy.vegasvil.org ([2601:640:8200:33:e2d5:5eff:fea5:802f])
-        by smtp.gmail.com with ESMTPSA id cp14-20020a170902e78e00b0015e8d4eb1e2sm1581180plb.44.2022.05.05.07.08.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 07:08:43 -0700 (PDT)
-Date:   Thu, 5 May 2022 07:08:40 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Gerhard Engleder <gerhard@engleder-embedded.com>,
-        vinicius.gomes@intel.com, yangbo.lu@nxp.com, davem@davemloft.net,
-        mlichvar@redhat.com, netdev@vger.kernel.org,
-        Willem de Bruijn <willemb@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>
-Subject: Re: [PATCH net-next v3 0/6] ptp: Support hardware clocks with
- additional free running cycle counter
-Message-ID: <20220505140840.GE1492@hoboy.vegasvil.org>
-References: <20220501111836.10910-1-gerhard@engleder-embedded.com>
- <20220504085552.3ff84d0c@kernel.org>
+        with ESMTP id S1347604AbiEEONH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 10:13:07 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D513F5A0B4;
+        Thu,  5 May 2022 07:09:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=6Lmbk4iO3bAEj7owhMXQsEqPqr87gMH5In94FkOVBfw=; b=Aoqc9T79xRfKYVs3id4satwXyq
+        zthalTtBJQEWrhGGjEiZ8LID9PItEJ8UPFI23dYGREnp3kQPPQXWx4ETJs0RgVlduyzoFsiwc4qcZ
+        Dxt0BWtweS8zIeRBXEg0wRIywxyO7O+OvPIQ+bn5qfr+KxPsC0U00cUesUHbVIXlKQLk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nmcAE-001N3s-Tm; Thu, 05 May 2022 16:09:06 +0200
+Date:   Thu, 5 May 2022 16:09:06 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiabing Wan <jiabing.wan@foxmail.com>
+Cc:     Jiabing Wan <wanjiabing@vivo.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: micrel: Remove unnecessary comparison in
+ lan8814_handle_interrupt
+Message-ID: <YnPagtJIZSt8oPJu@lunn.ch>
+References: <20220505030217.1651422-1-wanjiabing@vivo.com>
+ <YnO/VGKVHfFJG7/7@lunn.ch>
+ <2ec61428-d9af-7712-b008-cf6b7e445aaa@vivo.com>
+ <YnPHdzegs33G4JJ8@lunn.ch>
+ <tencent_3A7D58D1E919ED045A0C40D4CE489320080A@qq.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220504085552.3ff84d0c@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <tencent_3A7D58D1E919ED045A0C40D4CE489320080A@qq.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 04, 2022 at 08:55:52AM -0700, Jakub Kicinski wrote:
+> I write the coccicheck and find these reports:
 
-> The netdev parts looks sane, I think.
+Nice!
+
+> For directly call __phy_read():
 > 
-> Richard? Let me also add Willem, Jonathan and Martin.
+> ./drivers/net/phy/micrel.c:1969:59-60: WARNING: __phy_read() assigned to an
+> unsigned int 'data'
 
-Series is much improved... one more revision and I think it will be ready.
+This one we know about.
 
-Thanks,
-Richard
+> ./drivers/net/phy/mscc/mscc_macsec.c:49:50-51: WARNING: __phy_read()
+> assigned to an unsigned int 'val'
+> ./drivers/net/phy/mscc/mscc_macsec.c:52:51-52: WARNING: __phy_read()
+> assigned to an unsigned int 'val_l'
+> ./drivers/net/phy/mscc/mscc_macsec.c:53:51-52: WARNING: __phy_read()
+> assigned to an unsigned int 'val_h'
+> ./drivers/net/phy/mscc/mscc_macsec.c:89:50-51: WARNING: __phy_read()
+> assigned to an unsigned int 'val'
+
+These are all in the same function. Looking at the first check, it has
+been decided that if something goes wrong, return 0. Not the best
+solution, but better than returning something random. So the do/while
+loop can goto failed: val_l and val_h are a bit more messy, but a
+check would be nice, return 0 on error.
+
+Actually returning an error code is not going to be easy. The rest of
+the code assumes vsc8584_macsec_phy_read() never fails :-(
+
+> ./drivers/net/phy/mscc/mscc_main.c:1511:50-51: WARNING: __phy_read()
+> assigned to an unsigned int 'addr'
+> ./drivers/net/phy/mscc/mscc_main.c:1514:47-48: WARNING: __phy_read()
+> assigned to an unsigned int 'val'
+
+More code which assumes a read can never fail. vsc8514_probe() calls
+this, so it should be reasonable easy to catch the error, return it,
+and make the probe fail.
+
+> ./drivers/net/phy/mscc/mscc_main.c:366:54-55: WARNING: __phy_read() assigned
+> to an unsigned int 'reg_val'
+> ./drivers/net/phy/mscc/mscc_main.c:370:55-56: WARNING: __phy_read() assigned
+> to an unsigned int 'pwd [ 0 ]'
+> ./drivers/net/phy/mscc/mscc_main.c:371:53-54: WARNING: __phy_read() assigned
+> to an unsigned int 'pwd [ 1 ]'
+> ./drivers/net/phy/mscc/mscc_main.c:372:55-56: WARNING: __phy_read() assigned
+> to an unsigned int 'pwd [ 2 ]'
+> ./drivers/net/phy/mscc/mscc_main.c:317:54-55: WARNING: __phy_read() assigned
+> to an unsigned int 'reg_val'
+
+Another void function which assumes it cannot fail. Error checks would
+be nice, don't return random data in the wol structure.
+
+Thanks
+	Andrew
