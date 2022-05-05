@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E50B051C1B9
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:57:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 204C051C182
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:56:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232613AbiEEN70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 09:59:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48866 "EHLO
+        id S1380282AbiEEN72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 09:59:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351058AbiEEN7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 09:59:16 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 339A51834B;
-        Thu,  5 May 2022 06:55:35 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id be20so5275643edb.12;
-        Thu, 05 May 2022 06:55:35 -0700 (PDT)
+        with ESMTP id S1380276AbiEEN7R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 09:59:17 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F071EEDE;
+        Thu,  5 May 2022 06:55:37 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id g23so5294141edy.13;
+        Thu, 05 May 2022 06:55:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HxnwmUt5XXOQZLtedBMlDA6s9oP05DqI/7RXSR5ri4c=;
-        b=f74uBA86yjxvRibJ5/m+mK0DKh+ITswdWnRayKUptZ68YBTe6giJ2U/Lff31CW9f2n
-         9xGhm2wejuObPDBrG/3iASSUq9QfrBEHo9CHcJOx+LtXaAk3kBaC8NYeHavBp9JJPJW3
-         4/jU+k7P7Nv51sG3CBKYgFLbUSE8DJyl8s3/o7mtfgrioAjbcaESnqnMPYUzvVVgwt99
-         I2JWRpZiaWk/V5OWWuYafMakfSJUZBXNhnJ/0ExZAUI+CKp7mWEh7WdkidS8L9exbXd0
-         TkBYmGpCOIIezWpQPkCXVDhGeP9ylbzvBrrpUNYBUv6B4SIsypPPL2nb5wfM+F1LFumY
-         aD/w==
+        bh=W4OY/JvmasUugHSn3rUmXaSkS514QXA0AsYyOrhfQQg=;
+        b=H8Ao8D+HKPoqzvyk98XDDUx5ZI7tA1FociIFIuzl17MmQWY+/ne9onYEyJ0AYfrm6M
+         WBl8sG1lg7rLJT+ffPgm8+ERj97fPvTeSbCsqbV/h6YlsCvpNUU/SH7E4nWQHwQU8Y0H
+         fQhXJQemxVsnGX6dt0rvSKqm47LDBgg9ByAAs+3RMv0Ot3YFjq3hLRfsG2DPniS3t4tp
+         WhEqGTIecb+TAtoJ4goXvh/SbiMP9gwzm/uIIgPQNy116BtfzSDWWjEaRdRfeoc2C1Te
+         o5Mry/99pzA8YkYpAYviJKCNP97gqiItOI+NtsW6Ppnw9ndyiGrdPcpP2ZSxG1ufiQh+
+         +Aig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HxnwmUt5XXOQZLtedBMlDA6s9oP05DqI/7RXSR5ri4c=;
-        b=cPtLxMJgCQ7e59Qy1y0MRo7O1zTWbmp+i1uCjFLZCnUcw+5XH6R7sXBbBqVMBd4PaV
-         Uemc2aWgooB6Ktn4ZMuuEqeO8gESiG6gaIBaJBWQeOOTYnJvfdx7L8G1IyrdTul1G2W6
-         mUvJTDJ2L+dqS0wbjuLk5Is7Zw4N22GFldbA5QUOlEwB0CFhnFIeNo3QVtmErSJJD5XJ
-         M8eXJPHpoOzG+ZvXYeK/tgoAnarD1GXeAlIm6Z4jFBG6ekm879rinbcFZjBJlOm4FiWR
-         lJIIC2pK5tPa+4A2I+5a4MMDboDCYQqhxY2nDXw44YjoUPkaSbB8O3BivmPxtdM59VcF
-         Ss7w==
-X-Gm-Message-State: AOAM533nCwuK4vIAa78mFBrPuyuvaegwFHzcylNT04B+mg5MXNJMDDCz
-        WOfkkLDlVwmnSK8mRnVeu6c=
-X-Google-Smtp-Source: ABdhPJzKQ4doBuTShpt/bqmUap9zPNLxvV2r0btNGW4wF9eKsbrNNiPReGQVLou27wEe566MwrMcEg==
-X-Received: by 2002:a05:6402:26d3:b0:427:c571:86fe with SMTP id x19-20020a05640226d300b00427c57186femr22415605edd.133.1651758933825;
-        Thu, 05 May 2022 06:55:33 -0700 (PDT)
+        bh=W4OY/JvmasUugHSn3rUmXaSkS514QXA0AsYyOrhfQQg=;
+        b=tDfJn+YuPVgaAmVyWZe9n82wFVcEnDpCX+it73cjRR17en3oTWOZxUDwkMsuX0NESr
+         vBqTx11eaPig5HP1RTIk5G4L2yquAqR9eUhhFzcARqAHYv9yd2FGxQNcglOMId3ZLW0Q
+         +XeYpk8Tc36nE0pzDebJPbYbT0FV+1ixP8zoph7p119lUu1ALbMS3l8vNjAO8k8UCnij
+         qcbS4KWDQNs07qsomy26s2SeupEUEotGIc0Wl58LuvLm8fzV5PViPbqYcxUuZTy1Ez6j
+         6LZIK2o+vtkLWIx2Ki55TKerJXMss/7GuvByNtl2TOh1I8NGK7vBWhBibEJ1xIR3ZP9o
+         SzvQ==
+X-Gm-Message-State: AOAM530JLQeWaONohBV7JkkCV9V9eMw0VEgNIJxxMIhcmfhLaP9woxPb
+        vgTkNMxActh+OshNjWGWXKQ=
+X-Google-Smtp-Source: ABdhPJxZtO2nEF1yJ6MjoitOsoR6NiKa4vbJTd4fTbtfyjCPOSo9zQI9bOEoP434SL7qulITdqNiPQ==
+X-Received: by 2002:a05:6402:2741:b0:41f:69dc:9bcd with SMTP id z1-20020a056402274100b0041f69dc9bcdmr30258922edd.239.1651758936244;
+        Thu, 05 May 2022 06:55:36 -0700 (PDT)
 Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id e15-20020a50e44f000000b0042617ba63c7sm877949edm.81.2022.05.05.06.55.31
+        by smtp.gmail.com with ESMTPSA id e15-20020a50e44f000000b0042617ba63c7sm877949edm.81.2022.05.05.06.55.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 06:55:33 -0700 (PDT)
+        Thu, 05 May 2022 06:55:35 -0700 (PDT)
 From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
 To:     Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
@@ -66,9 +66,9 @@ Cc:     Pavel Machek <pavel@ucw.cz>,
         Jonathan Corbet <corbet@lwn.net>,
         John Crispin <john@phrozen.org>, linux-doc@vger.kernel.org,
         =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH RESEND 4/5] ARM: dts: BCM5301X: Add triggers for Luxul XWR-1200 network LEDs
-Date:   Thu,  5 May 2022 15:55:11 +0200
-Message-Id: <20220505135512.3486-5-zajec5@gmail.com>
+Subject: [PATCH RESEND PoC] leds: trigger: netdev: support DT "trigger-sources" property
+Date:   Thu,  5 May 2022 15:55:12 +0200
+Message-Id: <20220505135512.3486-6-zajec5@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220505135512.3486-1-zajec5@gmail.com>
 References: <20220505135512.3486-1-zajec5@gmail.com>
@@ -87,104 +87,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Rafał Miłecki <rafal@milecki.pl>
 
-Those LEDs are not hardware controlled so bootloader / operating system
-may want to control them manually depending on switch ports state.
+Parse "trigger-sources", find referenced netdev & use it as default
+trigger source.
 
 Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
 ---
- arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dts | 22 ++++++++++++++-----
- 1 file changed, 17 insertions(+), 5 deletions(-)
+This is a proof on concept, please don't apply this patch. I'll rework
+this on top of Ansuel's netdev trigger refactoring once it gets accepted
+----
+ drivers/leds/trigger/ledtrig-netdev.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-diff --git a/arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dts b/arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dts
-index 9316a36434f7..ee1b0fd3eb86 100644
---- a/arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dts
-+++ b/arch/arm/boot/dts/bcm47081-luxul-xwr-1200.dts
-@@ -5,6 +5,8 @@
+diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
+index d5e774d83021..c036a3671773 100644
+--- a/drivers/leds/trigger/ledtrig-netdev.c
++++ b/drivers/leds/trigger/ledtrig-netdev.c
+@@ -20,6 +20,8 @@
+ #include <linux/list.h>
+ #include <linux/module.h>
+ #include <linux/netdevice.h>
++#include <linux/of.h>
++#include <linux/of_net.h>
+ #include <linux/spinlock.h>
+ #include <linux/timer.h>
+ #include "../leds.h"
+@@ -389,6 +391,28 @@ static void netdev_trig_work(struct work_struct *work)
+ 			(atomic_read(&trigger_data->interval)*2));
+ }
  
- /dts-v1/;
- 
-+#include <dt-bindings/net/eth.h>
++static void netdev_trig_of_init(struct led_classdev *led_cdev)
++{
++	struct device *dev = led_cdev->dev;
++	struct device_node *np = dev->of_node;
++	struct of_phandle_args args;
++	struct net_device *netdev;
++	int err;
 +
- #include "bcm47081.dtsi"
- #include "bcm5301x-nand-cs0-bch4.dtsi"
++	err = of_parse_phandle_with_args(np, "trigger-sources", "#trigger-source-cells", 0, &args);
++	if (err || WARN_ON(!args.np)) {
++		dev_err(dev, "Failed to get trigger source phandle: %d\n", err);
++		return;
++	}
++
++	netdev = of_find_net_device_by_node(args.np);
++	if (netdev) {
++		device_name_store(dev, NULL, netdev->name, strlen(netdev->name) + 1);
++	}
++
++	of_node_put(args.np);
++}
++
+ static int netdev_trig_activate(struct led_classdev *led_cdev)
+ {
+ 	struct led_netdev_data *trigger_data;
+@@ -415,6 +439,8 @@ static int netdev_trig_activate(struct led_classdev *led_cdev)
  
-@@ -38,24 +40,28 @@ power {
- 		lan3 {
- 			label = "bcm53xx:green:lan3";
- 			gpios = <&chipcommon 1 GPIO_ACTIVE_LOW>;
-+			trigger-sources = <&port_lan3 SPEED_UNSPEC>;
- 			linux,default-trigger = "none";
- 		};
+ 	led_set_trigger_data(led_cdev, trigger_data);
  
- 		lan4 {
- 			label = "bcm53xx:green:lan4";
- 			gpios = <&chipcommon 2 GPIO_ACTIVE_LOW>;
-+			trigger-sources = <&port_lan4 SPEED_UNSPEC>;
- 			linux,default-trigger = "none";
- 		};
- 
- 		wan {
- 			label = "bcm53xx:green:wan";
- 			gpios = <&chipcommon 3 GPIO_ACTIVE_LOW>;
-+			trigger-sources = <&port_wan SPEED_UNSPEC>;
- 			linux,default-trigger = "none";
- 		};
- 
- 		lan2 {
- 			label = "bcm53xx:green:lan2";
- 			gpios = <&chipcommon 6 GPIO_ACTIVE_LOW>;
-+			trigger-sources = <&port_lan2 SPEED_UNSPEC>;
- 			linux,default-trigger = "none";
- 		};
- 
-@@ -87,6 +93,7 @@ status {
- 		lan1 {
- 			label = "bcm53xx:green:lan1";
- 			gpios = <&chipcommon 15 GPIO_ACTIVE_LOW>;
-+			trigger-sources = <&port_lan1 SPEED_UNSPEC>;
- 			linux,default-trigger = "none";
- 		};
- 	};
-@@ -114,29 +121,34 @@ &srab {
- 	status = "okay";
- 
- 	ports {
--		port@0 {
-+		port_lan4: port@0 {
- 			reg = <0>;
- 			label = "lan4";
-+			#trigger-source-cells = <1>;
- 		};
- 
--		port@1 {
-+		port_lan3: port@1 {
- 			reg = <1>;
- 			label = "lan3";
-+			#trigger-source-cells = <1>;
- 		};
- 
--		port@2 {
-+		port_lan2: port@2 {
- 			reg = <2>;
- 			label = "lan2";
-+			#trigger-source-cells = <1>;
- 		};
- 
--		port@3 {
-+		port_lan1: port@3 {
- 			reg = <3>;
- 			label = "lan1";
-+			#trigger-source-cells = <1>;
- 		};
- 
--		port@4 {
-+		port_wan: port@4 {
- 			reg = <4>;
- 			label = "wan";
-+			#trigger-source-cells = <1>;
- 		};
- 
- 		port@5 {
++	netdev_trig_of_init(led_cdev);
++
+ 	rc = register_netdevice_notifier(&trigger_data->notifier);
+ 	if (rc)
+ 		kfree(trigger_data);
 -- 
 2.34.1
 
