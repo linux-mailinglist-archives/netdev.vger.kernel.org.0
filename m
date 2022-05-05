@@ -2,116 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0525651C48B
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 18:04:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F5651C48E
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 18:05:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381625AbiEEQIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 12:08:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56038 "EHLO
+        id S242905AbiEEQJB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 12:09:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233041AbiEEQIQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 12:08:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14EED515A3;
-        Thu,  5 May 2022 09:04:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB227B82DBE;
-        Thu,  5 May 2022 16:04:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19C73C385A4;
-        Thu,  5 May 2022 16:04:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651766674;
-        bh=HAVCUwKRzzzGViCcf2QhsPvIC0F6WRsXgFuVQn2MY9w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nuuatEu5lMst9s45JGhFoVMYbDXrcZTeHgSmbpsW8EzqskUyskFg9sJAhdxfPeFlP
-         HaKSPGtZNW4mWv5oIsypnLqzTgeKX6/wwnfO8dpeSeH5xKJfiDI7C9dnCHFv/5attR
-         gKTETkGyfeMJr+Z8qzwWqhbCg65soALoeeo4m4/nq2f+eGtJ2bpMT5dGwBnnjJ4jWq
-         M2KOVV4o2MdHoJTyJwbm49vJbP44M8Hl3YuCh0ZWPX4CGl7LGqPWPm2J65VusdKCyE
-         TjojtlmOUlL3rTOMqrR66ox7su6Jgd+FFWYyYJsdOD6oF7Vf0Nvs9pwkD5T8zRCqG7
-         HrsB88hBaCfJg==
-Date:   Thu, 5 May 2022 09:04:32 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Carlos Fernandez <carlos.fernandez@technica-engineering.de>
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Carlos Fernansez <carlos.escuin@gmail.com>,
-        "carlos.fernandez@technica-enineering.de" 
-        <carlos.fernandez@technica-enineering.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net/macsec copy salt to MACSec ctx for XPN
-Message-ID: <20220505090432.544ce339@kernel.org>
-In-Reply-To: <AM9PR08MB6788E94C6961047699B20871DBC29@AM9PR08MB6788.eurprd08.prod.outlook.com>
-References: <XPN copy to MACSec context>
-        <20220502121837.22794-1-carlos.escuin@gmail.com>
-        <f277699b10b28b0553c8bbfc296e14096b9f402a.camel@redhat.com>
-        <AM9PR08MB6788E94C6961047699B20871DBC29@AM9PR08MB6788.eurprd08.prod.outlook.com>
+        with ESMTP id S1378685AbiEEQIh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 12:08:37 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F216F5C648
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 09:04:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=VqKIX59XvWcLWxiDke+7WNsv5OCBPbLCau+e8XlNbYk=; b=TVTFixaDfwDfgOKXYDlpRDCDJ+
+        Bq5aw057T8aZ9pBF8WLS6FvWgHQ5a8d5ZzlFasysA4pUkL8tUCkenIpacnNmT2ynk0pIHoAvDMeg6
+        /k6W3P0MFKhv92Gxa8VVphV2TIhEebfySWyr1Yz6/OBlYm8EHM5UWbyKBL18ESBQFb6k=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nmdy8-001Npx-B1; Thu, 05 May 2022 18:04:44 +0200
+Date:   Thu, 5 May 2022 18:04:44 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     =?utf-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Felix Fietkau <nbd@nbd.name>,
+        "openwrt-devel@lists.openwrt.org" <openwrt-devel@lists.openwrt.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: Optimizing kernel compilation / alignments for network
+ performance
+Message-ID: <YnP1nOqXI4EO1DLU@lunn.ch>
+References: <84f25f73-1fab-fe43-70eb-45d25b614b4c@gmail.com>
+ <20220427125658.3127816-1-alexandr.lobakin@intel.com>
+ <066fc320-dc04-11a4-476e-b0d11f3b17e6@gmail.com>
+ <CAK8P3a2tA8vkB-G-sQdvoiB8Pj08LRn_Vhf7qT-YdBJQwaGhaA@mail.gmail.com>
+ <eec5e665-0c89-a914-006f-4fce3f296699@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <eec5e665-0c89-a914-006f-4fce3f296699@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 May 2022 12:32:33 +0000 Carlos Fernandez wrote:
-> When macsec offloading is used with XPN, before mdo_add_rxsa
-> and mdo_add_txsa functions are called, the key salt is not
-> copied to the macsec context struct.
+> you'll see that most used functions are:
+> v7_dma_inv_range
+> __irqentry_text_end
+> l2c210_inv_range
+> v7_dma_clean_range
+> bcma_host_soc_read32
+> __netif_receive_skb_core
+> arch_cpu_idle
+> l2c210_clean_range
+> fib_table_lookup
 
+There is a lot of cache management functions here. Might sound odd,
+but have you tried disabling SMP? These cache functions need to
+operate across all CPUs, and the communication between CPUs can slow
+them down. If there is only one CPU, these cache functions get simpler
+and faster.
 
-So that it can be read out later by user space, but kernel 
-doesn't need it. Is that correct?
+It just depends on your workload. If you have 1 CPU loaded to 100% and
+the other 3 idle, you might see an improvement. If you actually need
+more than one CPU, it will probably be worse.
 
-Please also see below.
+I've also found that some Ethernet drivers invalidate or flush too
+much. If you are sending a 64 byte TCP ACK, all you need to flush is
+64 bytes, not the full 1500 MTU. If you receive a TCP ACK, and then
+recycle the buffer, all you need to invalidate is the size of the ACK,
+so long as you can guarantee nothing has touched the memory above it.
+But you need to be careful when implementing tricks like this, or you
+can get subtle corruption bugs when you get it wrong.
 
-> Fix by copying salt to context struct before calling the
-> offloading functions.
-> 
-> Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites")
-> Signed-off-by: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
-> ---
->  drivers/net/macsec.c | 30 ++++++++++++++++--------------
->  1 file changed, 16 insertions(+), 14 deletions(-)
-
-[snip]
-
->         rtnl_unlock();
-> --
-> 2.25.1
-> 
-> ________________________________________
-> From: Paolo Abeni <pabeni@redhat.com>
-> Sent: Tuesday, May 3, 2022 1:42 PM
-> To: Carlos Fernansez
-> Cc: carlos.fernandez@technica-enineering.de; Carlos Fernandez; David S. Miller; Eric Dumazet; Jakub Kicinski; netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH] net/macsec copy salt to MACSec ctx for XPN
-> 
-> CAUTION: This email originated from outside of the organization. Do not click links or open attachments unless you recognize the sender and know the content is safe.
-
-You'll need to make a fresh posting without this quote and the legal
-footer. Posting as a new thread is encouraged, you don't need to try
-to make it a reply to the previous posting.
-
-> Hello,
-> 
-> On Mon, 2022-05-02 at 14:18 +0200, Carlos Fernansez wrote:
-> > From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
-> >
-> > Salt and KeyId copied to offloading context.
-> >
-> > If not, offloaded phys cannot work with XPN
-> >
-> > Signed-off-by: Carlos Fernandez <carlos.fernandez@technica-engineering.de>  
-> 
-> This looks like a bugfix, could you please provide a relevant 'Fixes'
-> tag? (in a v2).
-
+    Andrew
