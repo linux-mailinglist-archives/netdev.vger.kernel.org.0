@@ -2,188 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D254351B569
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 03:54:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7E4951B56B
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 03:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236433AbiEEB6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 21:58:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35432 "EHLO
+        id S236629AbiEEB7Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 21:59:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235781AbiEEB57 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 21:57:59 -0400
-Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1924CD7F
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 18:54:21 -0700 (PDT)
-Received: from fsav115.sakura.ne.jp (fsav115.sakura.ne.jp [27.133.134.242])
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2451rtkV069073;
-        Thu, 5 May 2022 10:53:55 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Received: from www262.sakura.ne.jp (202.181.97.72)
- by fsav115.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav115.sakura.ne.jp);
- Thu, 05 May 2022 10:53:55 +0900 (JST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav115.sakura.ne.jp)
-Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
-        (authenticated bits=0)
-        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2451rsmX069069
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
-        Thu, 5 May 2022 10:53:55 +0900 (JST)
-        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
-Message-ID: <41d09faf-bc78-1a87-dfd1-c6d1b5984b61@I-love.SAKURA.ne.jp>
-Date:   Thu, 5 May 2022 10:53:53 +0900
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: [PATCH net v2] net: rds: use maybe_get_net() when acquiring refcount
- on TCP sockets
-Content-Language: en-US
-From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-To:     Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>
-Cc:     patchwork-bot+netdevbpf@kernel.org,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        David Miller <davem@davemloft.net>,
+        with ESMTP id S236467AbiEEB7N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 21:59:13 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 871D718E10;
+        Wed,  4 May 2022 18:55:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=sL15BtqxkS83BtwMcXzwwWefkBGsC27aYs1XXsPFiMg=; b=k4YcWOZ0W272989cxF2N9neV80
+        zC0uryM6TrESFaN/7iEAyWBnYSUfQbkXa6eBVJrjLslY4Z2tW1PwlRW8InkBQ4sl8aLNmtH4+a9M7
+        OjY/CPuYhlH+dpD3wW2tl3QcYVqLdJnMWUgeKEU6wjn0PLHQ/j5pqeTKHnl6WMBRCesU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nmQiF-001I3B-0G; Thu, 05 May 2022 03:55:27 +0200
+Date:   Thu, 5 May 2022 03:55:26 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        linux-rdma <linux-rdma@vger.kernel.org>
-References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
- <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
- <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
- <CANn89iJ=LF0KhRXDiFcky7mqpVaiHdbc6RDacAdzseS=iwjr4Q@mail.gmail.com>
- <f6f9f21d-7cdd-682f-f958-5951aa180ec7@I-love.SAKURA.ne.jp>
- <CANn89iJOt9oC_sSmVhRx8fyyvJ2hWzYKcTfH1Rvbzpt5aP0qNA@mail.gmail.com>
- <bf5ce176-35e6-0a75-1ada-6bed071a6a75@I-love.SAKURA.ne.jp>
- <5f3feecc-65ad-af5f-0ecd-94b2605ab67e@I-love.SAKURA.ne.jp>
- <63dab11e-2aeb-5608-6dcb-6ebc3e98056e@I-love.SAKURA.ne.jp>
-In-Reply-To: <63dab11e-2aeb-5608-6dcb-6ebc3e98056e@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v6 10/11] net: dsa: qca8k: add LEDs support
+Message-ID: <YnMujjDHD5M9UdH0@lunn.ch>
+References: <20220503151633.18760-1-ansuelsmth@gmail.com>
+ <20220503151633.18760-11-ansuelsmth@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220503151633.18760-11-ansuelsmth@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eric Dumazet is reporting addition on 0 problem at rds_tcp_tune(), for
-delayed works queued in rds_wq might be invoked after a net namespace's
-refcount already reached 0.
+> +		ret = fwnode_property_read_string(led, "default-state", &state);
 
-Since rds_tcp_exit_net() from cleanup_net() calls flush_workqueue(rds_wq),
-it is guaranteed that we can instead use maybe_get_net() from delayed work
-functions until rds_tcp_exit_net() returns.
+You should probably use led_default_state led_init_default_state_get()
 
-Note that I'm not convinced that all works which might access a net
-namespace are already queued in rds_wq by the moment rds_tcp_exit_net()
-calls flush_workqueue(rds_wq). If some race is there, rds_tcp_exit_net()
-will fail to wait for work functions, and kmem_cache_free() could be
-called from net_free() before maybe_get_net() is called from
-rds_tcp_tune().
-
-Reported-by: Eric Dumazet <edumazet@google.com>
-Fixes: 3a58f13a881ed351 ("net: rds: acquire refcount on TCP sockets")
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
----
-Changes in v2:
-  Add netns_tracker_alloc().
-
- net/rds/tcp.c         | 12 +++++++++---
- net/rds/tcp.h         |  2 +-
- net/rds/tcp_connect.c |  5 ++++-
- net/rds/tcp_listen.c  |  5 ++++-
- 4 files changed, 18 insertions(+), 6 deletions(-)
-
-diff --git a/net/rds/tcp.c b/net/rds/tcp.c
-index 2f638f8b7b1e..73ee2771093d 100644
---- a/net/rds/tcp.c
-+++ b/net/rds/tcp.c
-@@ -487,11 +487,11 @@ struct rds_tcp_net {
- /* All module specific customizations to the RDS-TCP socket should be done in
-  * rds_tcp_tune() and applied after socket creation.
-  */
--void rds_tcp_tune(struct socket *sock)
-+bool rds_tcp_tune(struct socket *sock)
- {
- 	struct sock *sk = sock->sk;
- 	struct net *net = sock_net(sk);
--	struct rds_tcp_net *rtn = net_generic(net, rds_tcp_netid);
-+	struct rds_tcp_net *rtn;
- 
- 	tcp_sock_set_nodelay(sock->sk);
- 	lock_sock(sk);
-@@ -499,10 +499,15 @@ void rds_tcp_tune(struct socket *sock)
- 	 * a process which created this net namespace terminated.
- 	 */
- 	if (!sk->sk_net_refcnt) {
-+		if (!maybe_get_net(net)) {
-+			release_sock(sk);
-+			return false;
-+		}
- 		sk->sk_net_refcnt = 1;
--		get_net_track(net, &sk->ns_tracker, GFP_KERNEL);
-+		netns_tracker_alloc(net, &sk->ns_tracker, GFP_KERNEL);
- 		sock_inuse_add(net, 1);
- 	}
-+	rtn = net_generic(net, rds_tcp_netid);
- 	if (rtn->sndbuf_size > 0) {
- 		sk->sk_sndbuf = rtn->sndbuf_size;
- 		sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
-@@ -512,6 +517,7 @@ void rds_tcp_tune(struct socket *sock)
- 		sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
- 	}
- 	release_sock(sk);
-+	return true;
- }
- 
- static void rds_tcp_accept_worker(struct work_struct *work)
-diff --git a/net/rds/tcp.h b/net/rds/tcp.h
-index dc8d745d6857..f8b5930d7b34 100644
---- a/net/rds/tcp.h
-+++ b/net/rds/tcp.h
-@@ -49,7 +49,7 @@ struct rds_tcp_statistics {
- };
- 
- /* tcp.c */
--void rds_tcp_tune(struct socket *sock);
-+bool rds_tcp_tune(struct socket *sock);
- void rds_tcp_set_callbacks(struct socket *sock, struct rds_conn_path *cp);
- void rds_tcp_reset_callbacks(struct socket *sock, struct rds_conn_path *cp);
- void rds_tcp_restore_callbacks(struct socket *sock,
-diff --git a/net/rds/tcp_connect.c b/net/rds/tcp_connect.c
-index 5461d77fff4f..f0c477c5d1db 100644
---- a/net/rds/tcp_connect.c
-+++ b/net/rds/tcp_connect.c
-@@ -124,7 +124,10 @@ int rds_tcp_conn_path_connect(struct rds_conn_path *cp)
- 	if (ret < 0)
- 		goto out;
- 
--	rds_tcp_tune(sock);
-+	if (!rds_tcp_tune(sock)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
- 
- 	if (isv6) {
- 		sin6.sin6_family = AF_INET6;
-diff --git a/net/rds/tcp_listen.c b/net/rds/tcp_listen.c
-index 09cadd556d1e..7edf2e69d3fe 100644
---- a/net/rds/tcp_listen.c
-+++ b/net/rds/tcp_listen.c
-@@ -133,7 +133,10 @@ int rds_tcp_accept_one(struct socket *sock)
- 	__module_get(new_sock->ops->owner);
- 
- 	rds_tcp_keepalive(new_sock);
--	rds_tcp_tune(new_sock);
-+	if (!rds_tcp_tune(new_sock)) {
-+		ret = -EINVAL;
-+		goto out;
-+	}
- 
- 	inet = inet_sk(new_sock->sk);
- 
--- 
-2.34.1
-
-
+    Andrew
