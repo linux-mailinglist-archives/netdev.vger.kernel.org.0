@@ -2,81 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C612B51B6B2
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 05:49:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 219DF51B6B5
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 05:50:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241723AbiEEDww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 23:52:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48740 "EHLO
+        id S241832AbiEEDx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 23:53:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241715AbiEEDwu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 23:52:50 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 309D31A820
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 20:49:12 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so6911476pju.2
-        for <netdev@vger.kernel.org>; Wed, 04 May 2022 20:49:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fqhzc27a9OulOaELZK8oqmPPExf+OJmruMHx56DlPMU=;
-        b=wAam2UzLs8mRTdbrg5Tm4iXKWRxMmW6XB0QLAR3BKrw01jRsRpQJQW/6VvPNy06ZbZ
-         gisuWF4BSXLaHyXUsSjs4VpmNzYCYrghRoVYcFNOS/hq1xEVDItHYofzM/itXB35vcYI
-         fXTynXq9rjj4jO452GMvNv81Y89/mN2UGBCGDEq7l/Q0hAFvmNLDjzd+cwgGEjTyQkSr
-         QrHW2R58Z/oHFRHCnn1etA3Crbj1/pJsrH46fAmj23Eh+5tDnjXJj9VJwzxDAE2X2f/L
-         XDv3dHIg//fh4/ZoJDla2ma4g4vQbm0HvKCfCc2IDZHwxVACLz6h5CVuSbpTw4wE/VMP
-         IGeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fqhzc27a9OulOaELZK8oqmPPExf+OJmruMHx56DlPMU=;
-        b=L8XiPb//8xXOshiRVJYa7DyljUuQ83qQ8Kz3GNsfktCOBYaeje7XlPRF1V3ZRS/jG1
-         E6gvR6ElHVnFrjWUT6+hgKtd5ocIzvIhMjwZgHvorm3hSt21BqNv4617G0ggjT3vODL8
-         P331rwRnUazin9iwkb0Y9KgUQjuEyyf17aDU9cH77ZFFBVbLsUU4xmc1uL57Cb8Lefzp
-         ktCgsNVZdHV8mUBZ0ds8LxPYUdBBXlh2w9QnU5teng5CtnQjhNgG1MO84tT4DRfKX1Ev
-         2cHJC4N2tYKMQl3Efkk6g7LLwQkK4peNWm66vOdvWakcynTiMjki2rSVYf+SkpVU4E0a
-         GznA==
-X-Gm-Message-State: AOAM531KdMnSvpzt/NH7HLdU+MLxT38oYcizLIsM7l64i8J2zpD4nyGg
-        /OgQ/2SsvtAh/vYpczKTyZX8yw==
-X-Google-Smtp-Source: ABdhPJy/rhPjcoCzFjqmsjiExAwCeGEPmo1rG/SNTjzHOBXgIb1sn7tH5reQLjuL+7lYr8Y+rKyZ7g==
-X-Received: by 2002:a17:902:a712:b0:158:9e75:686c with SMTP id w18-20020a170902a71200b001589e75686cmr26328645plq.56.1651722551647;
-        Wed, 04 May 2022 20:49:11 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id z3-20020a170902708300b0015e8d4eb201sm294756plk.75.2022.05.04.20.49.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 20:49:11 -0700 (PDT)
-Date:   Wed, 4 May 2022 20:49:08 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     "Magesh  M P" <magesh@digitizethings.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: gateway field missing in netlink message
-Message-ID: <20220504204908.025d798c@hermes.local>
-In-Reply-To: <DM5PR20MB2055CCC42062AF5DB5827BAEAEC29@DM5PR20MB2055.namprd20.prod.outlook.com>
-References: <DM5PR20MB2055102B86DB2C2E41682CE3AEC39@DM5PR20MB2055.namprd20.prod.outlook.com>
-        <20220504223100.GA2968@u2004-local>
-        <DM5PR20MB2055CCC42062AF5DB5827BAEAEC29@DM5PR20MB2055.namprd20.prod.outlook.com>
+        with ESMTP id S241726AbiEEDxx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 23:53:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A961BD4
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 20:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B9464615BD
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 03:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1B333C385B0;
+        Thu,  5 May 2022 03:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651722614;
+        bh=G6poZnM/z5fqpfGXQnf6/QKqcEZVUTovNYMbhMVz+QE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=gLElxz+u070rPejozAHBzKkjTghxZ68L08/n9+5xeOG7hme9rNEI+80yC2UHfdneS
+         X6OhWrfcE8W5eu1Nj+BtU1oTknyE2y34yE7LEteqb+3G2E9z6WpS4bC1sTKV9JgPJA
+         L3/6MIB3EI39ekVYRwpU5RRKPVYaSK5Mwqx0WZgw6nW6psqKbZQiEz72uPnkWzAe2j
+         Nsm28p4E/nlGL70ZT2neTckZ1xjFS1UcJ/2uBy7qEDt7v83eIeWPQQ4CXP1SP+RhDv
+         u5S0QgO0XlCPVbxfYVsxTx7/nsmESJXAkIogy8gDMZx5eeqq1vkwUYYu/eOx0MQxuH
+         CGqyWjy7tlM7A==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EC3F5F03848;
+        Thu,  5 May 2022 03:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/5] Ocelot VCAP cleanups
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165172261396.3043.16471282366265202769.git-patchwork-notify@kernel.org>
+Date:   Thu, 05 May 2022 03:50:13 +0000
+References: <20220503120150.837233-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220503120150.837233-1-vladimir.oltean@nxp.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        pabeni@redhat.com, edumazet@google.com, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
+        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
+        UNGLinuxDriver@microchip.com, xiaoliang.yang_1@nxp.com,
+        colin.foster@in-advantage.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 May 2022 03:43:45 +0000
-"Magesh  M P" <magesh@digitizethings.com> wrote:
+Hello:
 
-> Hi Dave,
-> 
-> Thanks for responding.
-> 
-> The librtnl/netns.c contains the parser code as below which parses the MULTIPATH attribute. Could you please take a look at the code and see if anything is wrong ?
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-That won't support IPv6.
+On Tue,  3 May 2022 15:01:45 +0300 you wrote:
+> This is a series of minor code cleanups brought to the Ocelot switch
+> driver logic for VCAP filters.
+> 
+> - don't use list_for_each_safe() in ocelot_vcap_filter_add_to_block
+> - don't use magic numbers for OCELOT_POLICER_DISCARD
+> 
+> Vladimir Oltean (5):
+>   net: mscc: ocelot: use list_add_tail in
+>     ocelot_vcap_filter_add_to_block()
+>   net: mscc: ocelot: add to tail of empty list in
+>     ocelot_vcap_filter_add_to_block
+>   net: mscc: ocelot: use list_for_each_entry in
+>     ocelot_vcap_filter_add_to_block
+>   net: mscc: ocelot: drop port argument from qos_policer_conf_set
+>   net: mscc: ocelot: don't use magic numbers for OCELOT_POLICER_DISCARD
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next,1/5] net: mscc: ocelot: use list_add_tail in ocelot_vcap_filter_add_to_block()
+    https://git.kernel.org/netdev/net-next/c/0a448bba5009
+  - [net-next,2/5] net: mscc: ocelot: add to tail of empty list in ocelot_vcap_filter_add_to_block
+    https://git.kernel.org/netdev/net-next/c/3825a0d02748
+  - [net-next,3/5] net: mscc: ocelot: use list_for_each_entry in ocelot_vcap_filter_add_to_block
+    https://git.kernel.org/netdev/net-next/c/09fd1e0d1481
+  - [net-next,4/5] net: mscc: ocelot: drop port argument from qos_policer_conf_set
+    https://git.kernel.org/netdev/net-next/c/8e90c499bd68
+  - [net-next,5/5] net: mscc: ocelot: don't use magic numbers for OCELOT_POLICER_DISCARD
+    https://git.kernel.org/netdev/net-next/c/91d350d661bf
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
