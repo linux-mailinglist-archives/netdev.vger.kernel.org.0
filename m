@@ -2,153 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 204C051C182
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:56:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDE2751C1C2
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:59:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380282AbiEEN72 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 09:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48990 "EHLO
+        id S1379092AbiEEOBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 10:01:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380276AbiEEN7R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 09:59:17 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8F071EEDE;
-        Thu,  5 May 2022 06:55:37 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id g23so5294141edy.13;
-        Thu, 05 May 2022 06:55:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=W4OY/JvmasUugHSn3rUmXaSkS514QXA0AsYyOrhfQQg=;
-        b=H8Ao8D+HKPoqzvyk98XDDUx5ZI7tA1FociIFIuzl17MmQWY+/ne9onYEyJ0AYfrm6M
-         WBl8sG1lg7rLJT+ffPgm8+ERj97fPvTeSbCsqbV/h6YlsCvpNUU/SH7E4nWQHwQU8Y0H
-         fQhXJQemxVsnGX6dt0rvSKqm47LDBgg9ByAAs+3RMv0Ot3YFjq3hLRfsG2DPniS3t4tp
-         WhEqGTIecb+TAtoJ4goXvh/SbiMP9gwzm/uIIgPQNy116BtfzSDWWjEaRdRfeoc2C1Te
-         o5Mry/99pzA8YkYpAYviJKCNP97gqiItOI+NtsW6Ppnw9ndyiGrdPcpP2ZSxG1ufiQh+
-         +Aig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=W4OY/JvmasUugHSn3rUmXaSkS514QXA0AsYyOrhfQQg=;
-        b=tDfJn+YuPVgaAmVyWZe9n82wFVcEnDpCX+it73cjRR17en3oTWOZxUDwkMsuX0NESr
-         vBqTx11eaPig5HP1RTIk5G4L2yquAqR9eUhhFzcARqAHYv9yd2FGxQNcglOMId3ZLW0Q
-         +XeYpk8Tc36nE0pzDebJPbYbT0FV+1ixP8zoph7p119lUu1ALbMS3l8vNjAO8k8UCnij
-         qcbS4KWDQNs07qsomy26s2SeupEUEotGIc0Wl58LuvLm8fzV5PViPbqYcxUuZTy1Ez6j
-         6LZIK2o+vtkLWIx2Ki55TKerJXMss/7GuvByNtl2TOh1I8NGK7vBWhBibEJ1xIR3ZP9o
-         SzvQ==
-X-Gm-Message-State: AOAM530JLQeWaONohBV7JkkCV9V9eMw0VEgNIJxxMIhcmfhLaP9woxPb
-        vgTkNMxActh+OshNjWGWXKQ=
-X-Google-Smtp-Source: ABdhPJxZtO2nEF1yJ6MjoitOsoR6NiKa4vbJTd4fTbtfyjCPOSo9zQI9bOEoP434SL7qulITdqNiPQ==
-X-Received: by 2002:a05:6402:2741:b0:41f:69dc:9bcd with SMTP id z1-20020a056402274100b0041f69dc9bcdmr30258922edd.239.1651758936244;
-        Thu, 05 May 2022 06:55:36 -0700 (PDT)
-Received: from localhost.lan (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.gmail.com with ESMTPSA id e15-20020a50e44f000000b0042617ba63c7sm877949edm.81.2022.05.05.06.55.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 06:55:35 -0700 (PDT)
-From:   =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>,
-        Jacek Anaszewski <jacek.anaszewski@gmail.com>,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, ansuelsmth@gmail.com,
-        andrew@lunn.ch, vivien.didelot@gmail.com,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        John Crispin <john@phrozen.org>, linux-doc@vger.kernel.org,
-        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <rafal@milecki.pl>
-Subject: [PATCH RESEND PoC] leds: trigger: netdev: support DT "trigger-sources" property
-Date:   Thu,  5 May 2022 15:55:12 +0200
-Message-Id: <20220505135512.3486-6-zajec5@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220505135512.3486-1-zajec5@gmail.com>
-References: <20220505135512.3486-1-zajec5@gmail.com>
+        with ESMTP id S238597AbiEEOBX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 10:01:23 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71ADE220E4;
+        Thu,  5 May 2022 06:57:44 -0700 (PDT)
+Received: from canpemm500007.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KvFc53K4NzfbJY;
+        Thu,  5 May 2022 21:56:37 +0800 (CST)
+Received: from localhost (10.174.179.215) by canpemm500007.china.huawei.com
+ (7.192.104.62) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 5 May
+ 2022 21:57:42 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
+        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
+        <jolsa@kernel.org>, <namhyung@kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
+        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@kernel.org>, <christylee@fb.com>
+CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] perf: Fix pass 0 to PTR_ERR
+Date:   Thu, 5 May 2022 21:57:13 +0800
+Message-ID: <20220505135713.18496-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.174.179.215]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ canpemm500007.china.huawei.com (7.192.104.62)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rafał Miłecki <rafal@milecki.pl>
+Passing NULL to PTR_ERR will result in 0 (success), also move
+evlist__find_evsel_by_str() behind for minor optimization.
 
-Parse "trigger-sources", find referenced netdev & use it as default
-trigger source.
-
-Signed-off-by: Rafał Miłecki <rafal@milecki.pl>
+Fixes: 924b1cd61148 ("perf: Stop using bpf_map__def() API")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
-This is a proof on concept, please don't apply this patch. I'll rework
-this on top of Ansuel's netdev trigger refactoring once it gets accepted
-----
- drivers/leds/trigger/ledtrig-netdev.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ tools/perf/util/bpf-loader.c | 15 ++++++++-------
+ tools/perf/util/bpf_map.c    |  2 +-
+ 2 files changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/leds/trigger/ledtrig-netdev.c b/drivers/leds/trigger/ledtrig-netdev.c
-index d5e774d83021..c036a3671773 100644
---- a/drivers/leds/trigger/ledtrig-netdev.c
-+++ b/drivers/leds/trigger/ledtrig-netdev.c
-@@ -20,6 +20,8 @@
- #include <linux/list.h>
- #include <linux/module.h>
- #include <linux/netdevice.h>
-+#include <linux/of.h>
-+#include <linux/of_net.h>
- #include <linux/spinlock.h>
- #include <linux/timer.h>
- #include "../leds.h"
-@@ -389,6 +391,28 @@ static void netdev_trig_work(struct work_struct *work)
- 			(atomic_read(&trigger_data->interval)*2));
- }
- 
-+static void netdev_trig_of_init(struct led_classdev *led_cdev)
-+{
-+	struct device *dev = led_cdev->dev;
-+	struct device_node *np = dev->of_node;
-+	struct of_phandle_args args;
-+	struct net_device *netdev;
-+	int err;
-+
-+	err = of_parse_phandle_with_args(np, "trigger-sources", "#trigger-source-cells", 0, &args);
-+	if (err || WARN_ON(!args.np)) {
-+		dev_err(dev, "Failed to get trigger source phandle: %d\n", err);
-+		return;
-+	}
-+
-+	netdev = of_find_net_device_by_node(args.np);
-+	if (netdev) {
-+		device_name_store(dev, NULL, netdev->name, strlen(netdev->name) + 1);
-+	}
-+
-+	of_node_put(args.np);
-+}
-+
- static int netdev_trig_activate(struct led_classdev *led_cdev)
+diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
+index f8ad581ea247..b301ffc8c6e7 100644
+--- a/tools/perf/util/bpf-loader.c
++++ b/tools/perf/util/bpf-loader.c
+@@ -1253,21 +1253,22 @@ __bpf_map__config_event(struct bpf_map *map,
+ 			struct parse_events_term *term,
+ 			struct evlist *evlist)
  {
- 	struct led_netdev_data *trigger_data;
-@@ -415,6 +439,8 @@ static int netdev_trig_activate(struct led_classdev *led_cdev)
+-	struct bpf_map_op *op;
+ 	const char *map_name = bpf_map__name(map);
+-	struct evsel *evsel = evlist__find_evsel_by_str(evlist, term->val.str);
++	struct bpf_map_op *op;
++	struct evsel *evsel;
  
- 	led_set_trigger_data(led_cdev, trigger_data);
- 
-+	netdev_trig_of_init(led_cdev);
++	if (!map) {
++		pr_debug("Map '%s' is invalid\n", map_name);
++		return -BPF_LOADER_ERRNO__INTERNAL;
++	}
 +
- 	rc = register_netdevice_notifier(&trigger_data->notifier);
- 	if (rc)
- 		kfree(trigger_data);
++	evsel = evlist__find_evsel_by_str(evlist, term->val.str);
+ 	if (!evsel) {
+ 		pr_debug("Event (for '%s') '%s' doesn't exist\n",
+ 			 map_name, term->val.str);
+ 		return -BPF_LOADER_ERRNO__OBJCONF_MAP_NOEVT;
+ 	}
+ 
+-	if (!map) {
+-		pr_debug("Map '%s' is invalid\n", map_name);
+-		return PTR_ERR(map);
+-	}
+-
+ 	/*
+ 	 * No need to check key_size and value_size:
+ 	 * kernel has already checked them.
+diff --git a/tools/perf/util/bpf_map.c b/tools/perf/util/bpf_map.c
+index c863ae0c5cb5..c72aee6a91ee 100644
+--- a/tools/perf/util/bpf_map.c
++++ b/tools/perf/util/bpf_map.c
+@@ -36,7 +36,7 @@ int bpf_map__fprintf(struct bpf_map *map, FILE *fp)
+ 		return fd;
+ 
+ 	if (!map)
+-		return PTR_ERR(map);
++		return -EINVAL;
+ 
+ 	err = -ENOMEM;
+ 	key = malloc(bpf_map__key_size(map));
 -- 
-2.34.1
+2.17.1
 
