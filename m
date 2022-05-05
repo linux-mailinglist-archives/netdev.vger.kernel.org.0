@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 45A8651B78C
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 07:44:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E415D51B789
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 07:44:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243723AbiEEFr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 01:47:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39226 "EHLO
+        id S243672AbiEEFrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 01:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243693AbiEEFrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 01:47:49 -0400
+        with ESMTP id S241070AbiEEFrs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 01:47:48 -0400
 Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2097.outbound.protection.outlook.com [40.107.236.97])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2277134BB2
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 22:44:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 885BE34B97
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 22:44:09 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b7xRLfd1LGlEgDC430b4ka/0jNXi5wPfi4/+aY7u8R6/sp709TQ0+UBJvwAi0PtLT6ZJFH4WMc28AKJiAkcbSRohqMqY+VRjmfdsxc2vX5y60CKbIOJDXQ4McF/HRNzXHK+ljxA/Bl8+ZdCxxXX/bE8/aldfEIaOhSd7zUz4k7P/dXnq5dl7t/sRZ6QTmJUtpxLFYK3TIpuzcMGu9hxab/9CVsmLLP9bHRlUfIryEKZgKtlX8A+q/sV3tzo/xNzqYTmtASgol1iAxuvXocx0tC1qSZaHpOcr7cnx3dSOyeNaQ7ZPpYG/RVMRWzHaD4veOHljf3xWAMe5yGnGyXnTgw==
+ b=Rs1gzJ+dAmbU3MDS07/jtt37hR+qe0ylxRSRARuT2wV21guxtSPkKYyQr01G9qQShH8Hbtf9KHPmSBAx11jBFKIa1k6JZ76rSfMLmZxReveEBjWeURyxbIYI6go7O+Qvi8rHRX1AFJKq4hRrjPtGjFuCKcS4/jPZ7Sgtb0FU8jnn6l+cwszW5i2Yziry/oVL5jyMWImDepIK54SAHpi+NYq1Rcy5wjV9Kueq2Yw2eSc1J1ChzX6Wd94J5jTpZEuEaiOgKdTJBhjlMwSkWs4tqMH5lB6XIeyUTQvTo+EAvF9oEJ2bHj7BlKzNc0Q2Qh3SeaQxpiWPD4ZY7Eg1FC9Mig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=siOM29ypfPHIxFuUR3hXWDwoCr0vH2bYgGErb4wtaOk=;
- b=NRlt/HXwk+O9Zd3N3xTw0/QD+meunn05L7MbN6zuWxsaSe6t/wkXbxsHRIOLsbtP+AFUriKyqlhQmM2X35uNF/BpmjrVSBlp6e2cp09iJszHxN1mVOK8S3v3wOehp2zf17A+wZMxXrOoeFo9TEpdC+gtZOpl3gNauLK9O90ynQ1Smz0EE/nnOYRsuugqODzhTHkaIR02qWkUe9V6ZrYZAC/QCWsBOsV9PoJFJPBYy6bgb0dLq07N6FGxSrlpy0hcZrxLO4iQZa1CWqH48lTfYp/PHhfbPP9R44y2+uWCynPZ1tSdhjvsStHVV2gt6WP+XaHhxnNxTYQhbawsZs5Uww==
+ bh=wWOm1NhYcUW3/S0DF2zhRwWgres9rcDs5+vSuGi2RmU=;
+ b=QOYU1gQnUtUX1BYtQ31GkLNsYwouruDhZSH9cR1zlkyzZ1VyYpksbdl0+HsZKdZQ1vkXahXWfuUGV7mTEWnizvrWqSbSlwAe9ebd33APzo+9cpmy7IfbA88C3mSXk6w0Fw5dIXqWafp7478rUy9tWvpva4i4FqGpRJToCojqI0iH4A9QwAIHrumJ7uoP9OzxdKO6OXUvnH9xqXSSw7e9aG8mTEYTvKxuMRzpAeFxlmVDOqDSD+uvTonOqHXUjWCJ90OvHiuLTqzLkTV/0wXQq65CUWRyZSZBCJhBF2q5lzSmcr5Xg+jxnbWX67bpGq/VJj/KCjIwK9/ZT4HWOadEVg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=siOM29ypfPHIxFuUR3hXWDwoCr0vH2bYgGErb4wtaOk=;
- b=wfMszr/rnZLbouH0I4LCPNrtw/alu1bVjHY120u+cjYCZoOXI+IRLREvz7JrkgRFnNjjohusDQ7hpNPXS+jWoiNIEATW4sqvhEfLXBHSofDrine5wF7D104WowBg0RINctGON6USrjounXWNvWJ/HJIZVfAdhO36RWY8EVyU5CA=
+ bh=wWOm1NhYcUW3/S0DF2zhRwWgres9rcDs5+vSuGi2RmU=;
+ b=hZ+50ErZNlZFJJyquljtosMNQ0OagA3HWRINXp3OZQIdnEIAaDC7yLDU+JdojuCtmCoEEzhM768eMAIJHuGFgid+70+94AbrLjti72YDufGyBvIJCd5RSK2uHI49l2LiTrDfEHxGbtS8ykNXxHPghbQUgC1fPPii7P1YKA6KObQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
  by DM5PR13MB1257.namprd13.prod.outlook.com (2603:10b6:3:27::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.16; Thu, 5 May
- 2022 05:44:04 +0000
+ 2022 05:44:06 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::8808:1c60:e9cb:1f94]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::8808:1c60:e9cb:1f94%3]) with mapi id 15.20.5227.006; Thu, 5 May 2022
- 05:44:04 +0000
+ 05:44:05 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: [PATCH net-next 0/9] nfp: flower: decap neighbour table rework
-Date:   Thu,  5 May 2022 14:43:39 +0900
-Message-Id: <20220505054348.269511-1-simon.horman@corigine.com>
+Subject: [PATCH net-next 1/9] nfp: flower: add infrastructure for pre_tun rework
+Date:   Thu,  5 May 2022 14:43:40 +0900
+Message-Id: <20220505054348.269511-2-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220505054348.269511-1-simon.horman@corigine.com>
+References: <20220505054348.269511-1-simon.horman@corigine.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ClientProxiedBy: TYAPR01CA0082.jpnprd01.prod.outlook.com
@@ -55,55 +57,55 @@ X-ClientProxiedBy: TYAPR01CA0082.jpnprd01.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a33f2e30-ae92-4234-325c-08da2e5a4365
+X-MS-Office365-Filtering-Correlation-Id: 164d5302-2a7e-47d6-00eb-08da2e5a444f
 X-MS-TrafficTypeDiagnostic: DM5PR13MB1257:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR13MB1257EACA5A9218413E6E5D95E8C29@DM5PR13MB1257.namprd13.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DM5PR13MB1257C87EF3B702FC9EC2A08AE8C29@DM5PR13MB1257.namprd13.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5GqStkoDJOX1rJKzooPr2kBvj0JNKyhr3SNU61oNcRtlbHte9wvsz2FVT2DHOcQSk0wZBbxwfuP5lv0weOXbERsgtXZBi1N4Lq5NGMw2fYcZ32vdtXTmz7j9X6J7xybbS37ForycWomc1tWJwczl+fSNkHF4jyLyIERS2wwRMtxfU9mtEmzYC26qx10l5SqQqAAlJoK/nDI1yN7IhMWZIGhyrVZFSU6Ww8K+90VH4/5+L2YFBFaXkzPu+n4EduMdE7cKBrRy8Jj9jAPTA59Tw7YtaqcqA9IZuJCY5SHPZN+FX1pCBZdbtOm6DmF7te0ZsD4KgHo2n3COpnDnCtIlKfN6RNElO1rRdFIvCqH7tn2/fKnEZY8lOevWg7CcdP6dwZYLKIg+YxACPvLa/K/Ov2ue3qV6jkJtMgkM6CKJMlKObv6A9OWBAxllk5/NiyrKJG0JRQPiVTFnCxHzCnz10a5PiBJyodKQkGTXwzpxOqcykDyRydPV5iZ0G+cLKd0knNhKBdQoNVE9TQtm6ueeptpvfuofrFbXID22qoC5y/MDR40Z+ziuKV4S1Uu7+lxAnSWGi4CG7KaKE0tphnW3pqHU1Lt3KY4F+8B41SwM3YNJE5ldRjVsQkiKSuvd5tAwzyGCLXrEISgwRMwaaumNgpZYHtXxx+g4aK1kKxGmvT+DWFIHv4xqiRX6CwLuGSrC2cQtmanEpHP68UITFWUUXA==
+X-Microsoft-Antispam-Message-Info: wP5Ebyh3gF8nUXBoyxLy7XPIj/ay/DW2yrfUQQorfSTuy+YdV4C9KMfEZS62+hW5WpsWFYCBp4Y37MX+kUibvDBSAFdScCnYUO3LDvv5DdaFdoVGi8GZeyqrZl4H7geWupEfuQz79jwx/hK+gVQYtbuxFzZZBsRORjs5hWk4JPT+NMguQbc2gRaOsKxZfW0QP48m0jEkpPZbC5YQKmV6M2iTVuU4dm3uZFKZmyM0xgjZg5RkazOvksZigPm7xC9M81Kgdy34vqEW712givPjndHtRGhMmnt+ac/vDjZWYB/mOtRw+XmtztD3ylj6DgLE/YIHM7z4NRA+v0qp5DlIH21qKELXyWInJ/ClmHnUa57yw69rv2Z/MZj+sJLDrZUopjzpdx4m9Ld5G3BQ1vVIn4sEJvDH6qjcS9GqVgfQIZvtIFonwzUpPFXmqa58mIDGNxdXCSca+NqRT04Nt+emxsAtTZD1fcGbMQyNotqth1wug2C7on/LjOJ/+UftuJRIuUTkjtAUkkhqkjCzqm+X87RVJq0eOuBIDo5yvlLCfPql7CyZujraYoALi41iOYFusWoFFN77uFw7JNwPJc9RconmpP1Qs2hvItfRnh10UTIg1LZv0VbfWw8muxXT51jHz2uXiGGR/i6BswQ6hgfupniyD7+ROnWt4JTy84Vw6I0yV3oWGK91tWjipNQbiP9BI2NqWdSulOimSSf3DwiZag==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(346002)(376002)(136003)(396003)(39830400003)(66556008)(66946007)(6506007)(8676002)(4326008)(5660300002)(52116002)(1076003)(186003)(6486002)(36756003)(2616005)(316002)(110136005)(83380400001)(107886003)(66476007)(6512007)(8936002)(38100700002)(38350700002)(86362001)(508600001)(26005)(6666004)(44832011)(2906002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?0O8R9Kx+bP8AzbYjsxG6oGcZhrbxnMhFqxftOtDD9/yJ3gXXkmR1FEISVyXa?=
- =?us-ascii?Q?TPvMObVBeF+Ipg6SCsVAGYkxRkqZZL5kEZTgNWj0TIyc/suQSXGUyVeSf7DZ?=
- =?us-ascii?Q?blNhH1F1e5jFnjJ5dsQvQmGmOEAZjmdrBH34jmmfweQnDTc5TPVXxHCmE+V4?=
- =?us-ascii?Q?5/R24QJMqC2rqc6U4W9ylSknqeRg4rSJeP8NdKB5RIy4USR+qgQ9X+qfe+TG?=
- =?us-ascii?Q?9KPZL6cL3gMwtsRIdDhgG9V1hVZ9Qdwqb0qXjusf5XWZcjoA/oe83OVbblfj?=
- =?us-ascii?Q?G3iVwdjuntQzN9quPbbS0BOK4siTKXfnS7PYtm7N4s/dqmfST6CThEpEGfot?=
- =?us-ascii?Q?aEVANMDwRUvBPg8uRXm7OuXHWtr2ZWeQRZj9NRpzTPPW52/IPpCvfsbX9hRO?=
- =?us-ascii?Q?a8lV3Lf8v2zvydUUTHgeBmDGPO0xpPCndOM6QSNYeRduIIracbcvr7eoY4df?=
- =?us-ascii?Q?7FBWJZG5Z77VFOWHAxTVauHeJW7UobiPCnhrkHAx20nEXsDxxFTZ9VrVL0+n?=
- =?us-ascii?Q?Zw4jvIbvx2ld/wCJMYb98P3dknv8WfEpF0+W556hOOHdY0cBtfVoof2oCUo8?=
- =?us-ascii?Q?B7mM3HMC5oB1MDhnlKrI7z25BLRITqmLXQo+ZkUcnrJtNp3ihQjCTIjwprOT?=
- =?us-ascii?Q?LExNQ+7mtQniJwvR6FRx8V+qLCOBOue8fKw/g9DCjP6KOcEpcAqv31iSD7kc?=
- =?us-ascii?Q?h2boMiC1Vg+4PxUnR9St4QJAB9aSsA0lSX0YYNgEbE+t46XElVbKtzrfk9DS?=
- =?us-ascii?Q?k7V7jyxNbiaL0C0ao2DEQRXNPSXsZJAmiFj3X4DZVlZD3mjiYRVC6IiAodfx?=
- =?us-ascii?Q?wnZXiZH8yDWr7Jz6X+Th5wbyxQwYJSsz+JGzGJBr+2wZjL6J3C9t3P6He6Hc?=
- =?us-ascii?Q?AP2OVemLDgo0IlkhmqzeRCzOphuuZH7XFBZeQKhvLLHqWkOTQ/Fe5HmYjQYW?=
- =?us-ascii?Q?Jk3oMBH/41lEDL/NuQDxmlaTiLKFimIipuW3jDE6iWnXg1Q0XadS8XOqyjoL?=
- =?us-ascii?Q?VGr65a7Z/QFP7HFIHaWVmfWvPjn0fQWuhWYtMa21bt0ZZzPwLNiwijzD5hFg?=
- =?us-ascii?Q?wKo8UxWIWsewje64kcj6SctNqZXXrv9F3hGTNka9sYxgVlLf/hIc+AgKL7u0?=
- =?us-ascii?Q?0AH1gjCZZ0bH7eGLq09jgnEFUuoZ10Rl9oh/O4RjUA/RHP4kmfxscUYYfkIh?=
- =?us-ascii?Q?kKLTveiqF05uYgD5VtOTVji2y98ssprNJeuksSrKDmPplOPZTn5s4a45vEka?=
- =?us-ascii?Q?Xn3VEVjk9T2LckHIq6bvwumJbwFnUsHFqIYcKq4FGCaXY5oJpm+V5yt1olKa?=
- =?us-ascii?Q?h/DujA6BFM4SCkZyyKosiGAslnhGdlvDNNyuQ6QMp4oTYCLVZPLhS0L8HpOu?=
- =?us-ascii?Q?wL6Ezg7QSm4tMGrNeOiVMdNhp9BnP/75n5WeEdH9zi16RtAf8i2MKqnjrw+Y?=
- =?us-ascii?Q?YNxMbagkmuHKUun9LlRbo6QYACbfHk3Fn7MQzmiMPQOmt3Ij4jk6A536CCz8?=
- =?us-ascii?Q?9SBK7YXWHW2Pa4FXbKWd1Of9MU8Jdc0QeK/MJVq1IMuHhEBhRuBlZjxps+fz?=
- =?us-ascii?Q?tlIzlz4VQ8syvsNMxS4YfwmHtu5U8u2VIPoE9vwkJdJ/Q6Iu9aSgrOONElQc?=
- =?us-ascii?Q?DQQmTz+zpj2muZChM/106gxWs5NtlQlH4mPNKXxdCrpFOeFscPtBQZDvVKYW?=
- =?us-ascii?Q?p5ATWOJuqNuYZVacKzGBjs6GzMe9too+TkeP4jPtGLZRzI6Gz3Y70QCjCCs0?=
- =?us-ascii?Q?1qL9Ss5PCXo6yMoPz09bvK3dnCgYryo=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?H83qCj5jg1j7u6afXPy3/ZBszqlZQilDF+cE7/sI99KwdPlzk6huivdAs1XY?=
+ =?us-ascii?Q?vhFo+r0sQjgGlFDCW/7VL3px7G/iJJ5l37sT3pBal1ymptWUfI4Sk6NAYOa/?=
+ =?us-ascii?Q?tqtFOJMz6Uj0lT4mn+2JTQ7xm9KxcAPrkvpZZetz1UxnoOns3lv4pv6mMtoU?=
+ =?us-ascii?Q?JFYHwlnllN0w6Sd2LOc0GfjuNtbbPyJFC5YNvAywMNtpW+b/GIm21LRPRkOc?=
+ =?us-ascii?Q?L7Lz/Dm74KnFU1i5eSu1+bCBAPbXYrnxsvPe5oaz7+m3VKei+Bj94XMc/8h+?=
+ =?us-ascii?Q?x5MNW/VHFYABuE8wlh5aVHl86wHW3117MvjHcMzdnFpsNYVmKZeAio7FA8ZX?=
+ =?us-ascii?Q?vWfzuch5kPcvKtUdMRHsOI7YUVCEG+1mUspu+N/mWJcW7r1wzbih1X2r4GQO?=
+ =?us-ascii?Q?m/zRlcBgem5HXkxai5h2gNQyJgW48TYVl3QXLF0bXDB/hvVx2xr1TYQNgBp+?=
+ =?us-ascii?Q?XqJgfvwmVBAqxaAwF5KMBCKLQH/HehbC3G20s464h2vY/Y1rZCjMUgdqOahH?=
+ =?us-ascii?Q?p6JtXMwa6Gd5wWVmo1dRTVPkNzotgl+yZaSSlnlSYSXdGZaoceUWdY/bdtvX?=
+ =?us-ascii?Q?MJrkCP4Ilm81Pb7EcmTzUDKEVvdqaeVWVCc+Fryrgst00oUgQDFwGSRcbiJO?=
+ =?us-ascii?Q?KYDr8F/2QSkcwavfjG+BWB7Sbjy1vBMJMXIS6Ym/QJGZ59ioKmV8C3FwUXiH?=
+ =?us-ascii?Q?Ycn+Q5CUpfbrS06FvkmwBr3wd2lxcE/F2QCK8GIXvXQArLzP2FNJ7I4Lz8uX?=
+ =?us-ascii?Q?y/+PgSnHwnuy+coiP+0yndhGNl2sQRrIqNWWW74omcN0H6HQeFuoMPgwSddS?=
+ =?us-ascii?Q?eibjgvEhBY+K3U1LcLsSxNMDWVjaLplO6metKPEhLMOw7G/T81Tm0sMkbCAO?=
+ =?us-ascii?Q?F1zBA+9qU9YbFTt9/pAf65joo8ItGE0vyfsCa5kVvY98DaDtiOnXAE6yOOq5?=
+ =?us-ascii?Q?CAbQsOPJHNtOF9d6vbFB1mE7JP1cchaOGAJJsg/DS+fydhdtNIQnXaFTEwHu?=
+ =?us-ascii?Q?22F/zzAkhKYWSdGIOPZB89Om6weKYbpsQ/FY+R6NGjVvtvbJkdtKdOUulRTT?=
+ =?us-ascii?Q?Chf1xERKQS3GGtAMTjE3fdvNnGGgfQMu9wuIlH4lkX49l1vNQ5XGnjTRy+VO?=
+ =?us-ascii?Q?7q2eshxYh1FSiLk0/dEdwQ7C2LGealVjX5JM7/XZohJR2Vn7gi2lzz1Dpt6b?=
+ =?us-ascii?Q?3pQq+qKx0GiCTDmeFyso6v9Q1VODRql5eD+eAoIxST1UXVrZPly46IBZzUW4?=
+ =?us-ascii?Q?6JeQvikU5hOZcUbNTLEY2YOdoxWhN5c3oMimQ7W+nt92AZyM2e+YJzUjaHqN?=
+ =?us-ascii?Q?kKL/rJIE+aYkpTEuDkoZsFRBZnXUuawgYXH+vLS1EnKhRfth95OIWKoFgqpc?=
+ =?us-ascii?Q?56Kb9gxuf4iRXSbzJOCPqsJOM3W9CLomBaampRKqltBWiUqz7Pu7hHDMHyjE?=
+ =?us-ascii?Q?rsmN50Z2y9CqZ21iuojEvDRFABHTBilT291bZv8w2TKOCoh5wVsMsf0qK84r?=
+ =?us-ascii?Q?A33wXBfi3p+GDjIQezrCUfjfH01pCsmYuwl1oRROr1a20M0xVy/c/z5mYGT5?=
+ =?us-ascii?Q?Gxx6YIr5HAfALK5QDuwqMzRIOuwBx29keckzWx5DWINEPzrzs6lgYH0rBmxL?=
+ =?us-ascii?Q?YlA44yi7Ub/OoPEaR7lQ11jXTyAkthGeXp60zPLZd62QLeCG13BzkIYCM7AC?=
+ =?us-ascii?Q?mSy+LvZ8BzzxWcTR4vMUbUoSzifcjEzigL+1hZuZes7BGO2O2raQAgeiM9TG?=
+ =?us-ascii?Q?4q15OjZMt8X+OcLH1+ufnv8J27GX1gs=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a33f2e30-ae92-4234-325c-08da2e5a4365
+X-MS-Exchange-CrossTenant-Network-Message-Id: 164d5302-2a7e-47d6-00eb-08da2e5a444f
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 05:44:04.0561
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 05:44:05.5871
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: iocIZVYTK5rqIda6fPm7yBI+rPTrd2BFWNgfwdJGq9YbGSibznZbVcrvse7rQrhC8LLEmJPGFCws0hg6icl67gFTQ96EGnaW1YfCsrEyUt0=
+X-MS-Exchange-CrossTenant-UserPrincipalName: NFNfJYANMbFEc7L0uRvmYxTc7sZOdUEm+UoAEp6RqucvFTDu2z/TKUkSRaUtUzXC8CsCF4DqTO6YMjCgzyFsGBAFBURm9hDfkuiYRL87m9w=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR13MB1257
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
@@ -114,62 +116,279 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Louis Peens says:
+From: Louis Peens <louis.peens@corigine.com>
 
-This patch series reworks the way in which flow rules that outputs to
-OVS internal ports gets handled by the nfp driver.
+The previous implementation of using a pre_tun_table for decap has
+some limitations, causing flows to end up unoffloaded when in fact
+we are able to offload them. This is because the pre_tun_table does
+not have enough matching resolution. The next step is to instead make
+use of the neighbour table which already exists for the encap direction.
+This patch prepares for this by:
 
-Previously this made use of a small pre_tun_table, but this only used
-destination MAC addresses, and made the implicit assumption that there is
-only a single source MAC":"destination MAC" mapping per tunnel. In
-hindsight this seems to be a pretty obvious oversight, but this was hidden
-in plain sight for quite some time.
+- Moving nfp_tun_neigh/_v6 to main.h.
+- Creating two new "wrapping" structures, one to keep track of neighbour
+  entries (previously they were send-and-forget), and another to keep
+  track of pre_tun flows.
+- Create a new list in nfp_flower_priv to keep track of pre_tunnel flows
+- Create a new table in nfp_flower_priv to keep track of next neighbour
+  entries
+- Initialising and destroying these new list/tables
+- Extending nfp_fl_payload->pre_tun_rule to save more information for
+  future use.
 
-This series changes the implementation to make use of the same Neighbour
-table for decap that is in use for the tunnel encap solution. It stores
-any new Neighbour updates in this table. Previously this path was only
-triggered for encapsulation candidates, and the entries were send and
-forget, not saved on the host as it is after this series. It also keeps
-track of any flow rule that outputs to OVS internal ports (and some
-other criteria not worth mentioning here), very similar to how it was
-done previously, except now these flows are kept track of in a list.
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
+---
+ .../net/ethernet/netronome/nfp/flower/main.h  | 87 +++++++++++++++++++
+ .../ethernet/netronome/nfp/flower/metadata.c  | 19 +++-
+ .../netronome/nfp/flower/tunnel_conf.c        | 32 -------
+ 3 files changed, 105 insertions(+), 33 deletions(-)
 
-When a new Neighbour entry gets added this list gets iterated for
-potential matches, in which case the table gets updated with a reference
-to the flow, and the Neighbour entry on the card gets updated with the
-relevant host_ctx. The same happens when a new qualifying flow gets
-added - the Neighbour table gets iterated for applicable matches, and
-once again the firmware gets updated with the host_ctx when any matches
-are found.
-
-Since this also requires a firmware change we add a new capability bit,
-and keep the old behaviour in case of older firmware without this bit
-set.
-
-This series starts by doing some preparation, then adding the new list
-and table entries. Next the functionality to link/unlink these entries
-are added, and finally this new functionality is enabled by adding the
-DECAP_V2 bit to the driver feature list.
-
-
-Louis Peens (9):
-  nfp: flower: add infrastructure for pre_tun rework
-  nfp: flower: add/remove predt_list entries
-  nfp: flower: enforce more strict pre_tun checks
-  nfp: flower: fixup ipv6/ipv4 route lookup for neigh events
-  nfp: flower: update nfp_tun_neigh structs
-  nfp: flower: rework tunnel neighbour configuration
-  nfp: flower: link pre_tun flow rules with neigh entries
-  nfp: flower: remove unused neighbour cache
-  nfp: flower: enable decap_v2 bit
-
- .../ethernet/netronome/nfp/flower/action.c    |   3 +-
- .../net/ethernet/netronome/nfp/flower/main.h  | 110 +++-
- .../ethernet/netronome/nfp/flower/metadata.c  |  19 +-
- .../ethernet/netronome/nfp/flower/offload.c   |  86 ++-
- .../netronome/nfp/flower/tunnel_conf.c        | 502 +++++++++---------
- 5 files changed, 453 insertions(+), 267 deletions(-)
-
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+index fa902ce2dd82..454fdb6ea4a5 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+@@ -51,6 +51,7 @@ struct nfp_app;
+ #define NFP_FL_FEATS_VLAN_QINQ		BIT(8)
+ #define NFP_FL_FEATS_QOS_PPS		BIT(9)
+ #define NFP_FL_FEATS_QOS_METER		BIT(10)
++#define NFP_FL_FEATS_DECAP_V2		BIT(11)
+ #define NFP_FL_FEATS_HOST_ACK		BIT(31)
+ 
+ #define NFP_FL_ENABLE_FLOW_MERGE	BIT(0)
+@@ -109,6 +110,80 @@ struct nfp_fl_tunnel_offloads {
+ 	struct notifier_block neigh_nb;
+ };
+ 
++/**
++ * struct nfp_tun_neigh - neighbour/route entry on the NFP
++ * @dst_ipv4:	Destination IPv4 address
++ * @src_ipv4:	Source IPv4 address
++ * @dst_addr:	Destination MAC address
++ * @src_addr:	Source MAC address
++ * @port_id:	NFP port to output packet on - associated with source IPv4
++ * @vlan_tpid:	VLAN_TPID match field
++ * @vlan_tci:	VLAN_TCI match field
++ * @host_ctx:	Host context ID to be saved here
++ */
++struct nfp_tun_neigh {
++	__be32 dst_ipv4;
++	__be32 src_ipv4;
++	u8 dst_addr[ETH_ALEN];
++	u8 src_addr[ETH_ALEN];
++	__be32 port_id;
++	__be16 vlan_tpid;
++	__be16 vlan_tci;
++	__be32 host_ctx;
++};
++
++/**
++ * struct nfp_tun_neigh_v6 - neighbour/route entry on the NFP
++ * @dst_ipv6:	Destination IPv6 address
++ * @src_ipv6:	Source IPv6 address
++ * @dst_addr:	Destination MAC address
++ * @src_addr:	Source MAC address
++ * @port_id:	NFP port to output packet on - associated with source IPv6
++ * @vlan_tpid:	VLAN_TPID match field
++ * @vlan_tci:	VLAN_TCI match field
++ * @host_ctx:	Host context ID to be saved here
++ */
++struct nfp_tun_neigh_v6 {
++	struct in6_addr dst_ipv6;
++	struct in6_addr src_ipv6;
++	u8 dst_addr[ETH_ALEN];
++	u8 src_addr[ETH_ALEN];
++	__be32 port_id;
++	__be16 vlan_tpid;
++	__be16 vlan_tci;
++	__be32 host_ctx;
++};
++
++/**
++ * struct nfp_neigh_entry
++ * @neigh_cookie:	Cookie for hashtable lookup
++ * @ht_node:		rhash_head entry for hashtable
++ * @list_head:		Needed as member of linked_nn_entries list
++ * @payload:		The neighbour info payload
++ * @flow:		Linked flow rule
++ * @is_ipv6:		Flag to indicate if payload is ipv6 or ipv4
++ */
++struct nfp_neigh_entry {
++	unsigned long neigh_cookie;
++	struct rhash_head ht_node;
++	struct list_head list_head;
++	char *payload;
++	struct nfp_predt_entry *flow;
++	bool is_ipv6;
++};
++
++/**
++ * struct nfp_predt_entry
++ * @list_head:		List head to attach to predt_list
++ * @flow_pay:		Direct link to flow_payload
++ * @nn_list:		List of linked nfp_neigh_entries
++ */
++struct nfp_predt_entry {
++	struct list_head list_head;
++	struct nfp_fl_payload *flow_pay;
++	struct list_head nn_list;
++};
++
+ /**
+  * struct nfp_mtu_conf - manage MTU setting
+  * @portnum:		NFP port number of repr with requested MTU change
+@@ -202,6 +277,9 @@ struct nfp_fl_internal_ports {
+  * @ct_zone_table:	Hash table used to store the different zones
+  * @ct_zone_wc:		Special zone entry for wildcarded zone matches
+  * @ct_map_table:	Hash table used to referennce ct flows
++ * @predt_list:		List to keep track of decap pretun flows
++ * @neigh_table:	Table to keep track of neighbor entries
++ * @predt_lock:		Lock to serialise predt/neigh table updates
+  */
+ struct nfp_flower_priv {
+ 	struct nfp_app *app;
+@@ -241,6 +319,9 @@ struct nfp_flower_priv {
+ 	struct rhashtable ct_zone_table;
+ 	struct nfp_fl_ct_zone_entry *ct_zone_wc;
+ 	struct rhashtable ct_map_table;
++	struct list_head predt_list;
++	struct rhashtable neigh_table;
++	spinlock_t predt_lock; /* Lock to serialise predt/neigh table updates */
+ };
+ 
+ /**
+@@ -344,9 +425,14 @@ struct nfp_fl_payload {
+ 	struct list_head linked_flows;
+ 	bool in_hw;
+ 	struct {
++		struct nfp_predt_entry *predt;
+ 		struct net_device *dev;
++		__be16 vlan_tpid;
+ 		__be16 vlan_tci;
+ 		__be16 port_idx;
++		u8 loc_mac[ETH_ALEN];
++		u8 rem_mac[ETH_ALEN];
++		bool is_ipv6;
+ 	} pre_tun_rule;
+ };
+ 
+@@ -369,6 +455,7 @@ struct nfp_fl_payload_link {
+ 
+ extern const struct rhashtable_params nfp_flower_table_params;
+ extern const struct rhashtable_params merge_table_params;
++extern const struct rhashtable_params neigh_table_params;
+ 
+ struct nfp_merge_info {
+ 	u64 parent_ctx;
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/metadata.c b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+index f448c5682594..74e1b279c13b 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/metadata.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/metadata.c
+@@ -502,6 +502,12 @@ const struct rhashtable_params nfp_ct_map_params = {
+ 	.automatic_shrinking	= true,
+ };
+ 
++const struct rhashtable_params neigh_table_params = {
++	.key_offset	= offsetof(struct nfp_neigh_entry, neigh_cookie),
++	.head_offset	= offsetof(struct nfp_neigh_entry, ht_node),
++	.key_len	= sizeof(unsigned long),
++};
++
+ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 			     unsigned int host_num_mems)
+ {
+@@ -530,6 +536,12 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 	if (err)
+ 		goto err_free_ct_zone_table;
+ 
++	err = rhashtable_init(&priv->neigh_table, &neigh_table_params);
++	if (err)
++		goto err_free_ct_map_table;
++
++	INIT_LIST_HEAD(&priv->predt_list);
++
+ 	get_random_bytes(&priv->mask_id_seed, sizeof(priv->mask_id_seed));
+ 
+ 	/* Init ring buffer and unallocated mask_ids. */
+@@ -537,7 +549,7 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 		kmalloc_array(NFP_FLOWER_MASK_ENTRY_RS,
+ 			      NFP_FLOWER_MASK_ELEMENT_RS, GFP_KERNEL);
+ 	if (!priv->mask_ids.mask_id_free_list.buf)
+-		goto err_free_ct_map_table;
++		goto err_free_neigh_table;
+ 
+ 	priv->mask_ids.init_unallocated = NFP_FLOWER_MASK_ENTRY_RS - 1;
+ 
+@@ -565,6 +577,7 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 		goto err_free_ring_buf;
+ 
+ 	spin_lock_init(&priv->stats_lock);
++	spin_lock_init(&priv->predt_lock);
+ 
+ 	return 0;
+ 
+@@ -574,6 +587,8 @@ int nfp_flower_metadata_init(struct nfp_app *app, u64 host_ctx_count,
+ 	kfree(priv->mask_ids.last_used);
+ err_free_mask_id:
+ 	kfree(priv->mask_ids.mask_id_free_list.buf);
++err_free_neigh_table:
++	rhashtable_destroy(&priv->neigh_table);
+ err_free_ct_map_table:
+ 	rhashtable_destroy(&priv->ct_map_table);
+ err_free_ct_zone_table:
+@@ -700,6 +715,8 @@ void nfp_flower_metadata_cleanup(struct nfp_app *app)
+ 
+ 	rhashtable_free_and_destroy(&priv->ct_map_table,
+ 				    nfp_free_map_table_entry, NULL);
++	rhashtable_free_and_destroy(&priv->neigh_table,
++				    nfp_check_rhashtable_empty, NULL);
+ 	kvfree(priv->stats);
+ 	kfree(priv->mask_ids.mask_id_free_list.buf);
+ 	kfree(priv->mask_ids.last_used);
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index c71bd555f482..f5e8ed14e517 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -76,38 +76,6 @@ struct nfp_tun_active_tuns_v6 {
+ 	} tun_info[];
+ };
+ 
+-/**
+- * struct nfp_tun_neigh - neighbour/route entry on the NFP
+- * @dst_ipv4:	destination IPv4 address
+- * @src_ipv4:	source IPv4 address
+- * @dst_addr:	destination MAC address
+- * @src_addr:	source MAC address
+- * @port_id:	NFP port to output packet on - associated with source IPv4
+- */
+-struct nfp_tun_neigh {
+-	__be32 dst_ipv4;
+-	__be32 src_ipv4;
+-	u8 dst_addr[ETH_ALEN];
+-	u8 src_addr[ETH_ALEN];
+-	__be32 port_id;
+-};
+-
+-/**
+- * struct nfp_tun_neigh_v6 - neighbour/route entry on the NFP
+- * @dst_ipv6:	destination IPv6 address
+- * @src_ipv6:	source IPv6 address
+- * @dst_addr:	destination MAC address
+- * @src_addr:	source MAC address
+- * @port_id:	NFP port to output packet on - associated with source IPv6
+- */
+-struct nfp_tun_neigh_v6 {
+-	struct in6_addr dst_ipv6;
+-	struct in6_addr src_ipv6;
+-	u8 dst_addr[ETH_ALEN];
+-	u8 src_addr[ETH_ALEN];
+-	__be32 port_id;
+-};
+-
+ /**
+  * struct nfp_tun_req_route_ipv4 - NFP requests a route/neighbour lookup
+  * @ingress_port:	ingress port of packet that signalled request
 -- 
 2.30.2
 
