@@ -2,136 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEC1951CBE9
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 00:09:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAC6251CC05
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 00:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386194AbiEEWNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 18:13:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60170 "EHLO
+        id S1356370AbiEEWY1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 18:24:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386186AbiEEWNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 18:13:01 -0400
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2245E17F
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 15:09:19 -0700 (PDT)
-Received: from submission (posteo.de [185.67.36.169]) 
-        by mout02.posteo.de (Postfix) with ESMTPS id EB86A24010B
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 00:09:17 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
-        t=1651788558; bh=KTIRId5INiLOEFZE9cS2PzPrI5XvgN1DeL7OKh0bXQU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=b3Yr+8zO77k8E+Bh8UeX9yrZWwDVxYzDmivIgB/P7DV8zAQf9sxuyTMAWJjw9ncdk
-         CLTy5q8ur3LWFrY62wfimCuDzv4tdYclCya0UXs+FZyuZgtgJGmJCKeyQqIkIjn21L
-         KeDK9WX8FtCy6g3vDzVZFdvo0yfIcWFzGTvtmVqC/7bcI1eTUIDVowGjmGtCdhkG7G
-         muEvQj+EBJcDnxLhNvnO1icQeQJzC6YMqDmOw9Q/FixS6mscGK2o2y4eN7u8n8RP+r
-         EOb3T1QiskZAUfonZrSRWAwCjKCKgLEwvg2z1EuZwpFFLnjnstZEY2YSzMRoPSPzFV
-         77OJ6r2n6qsyg==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4KvSXX0fjpz6tmb;
-        Fri,  6 May 2022 00:09:16 +0200 (CEST)
-From:   Manuel Ullmann <labre@posteo.de>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        regressions@lists.linux.dev, davem@davemloft.net,
-        ndanilov@marvell.com, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, Jordan Leppert <jordanleppert@protonmail.com>,
-        Holger =?utf-8?Q?Hoffst=C3=A4tte?= 
-        <holger@applied-asynchrony.com>, koo5 <kolman.jindrich@gmail.com>
-Subject: [PATCH v3] net: atlantic: always deep reset on pm op, fixing null
- deref regression
-Date:   Thu, 05 May 2022 22:09:29 +0000
-Message-ID: <8735hniqcm.fsf@posteo.de>
+        with ESMTP id S234582AbiEEWY0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 18:24:26 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1751D275CF;
+        Thu,  5 May 2022 15:20:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=KUYjKfhp/PbhUg2lTtsLdW1SIyYpeG21/n0+5cJggHU=; b=jK/EJPlPCz+4obHyo5yjHAWMLq
+        41VWJPwbNN0UUo5aLn2W4fgxk8hBkorhEhcYslcaJcE2Zrc69MpYYk5pfUTCGsw1qC3bEwxUW7R1A
+        KUGTpUA8kBWJgK7z6pyIOc5VnR92U6KNCm5M8wKZenLeX2WEo4oDW5lTFXK0cmgbGfxs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nmjph-001QiJ-H5; Fri, 06 May 2022 00:20:25 +0200
+Date:   Fri, 6 May 2022 00:20:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net v1] net: phy: Fix race condition on link status change
+Message-ID: <YnRNqd32fLbiNpkA@lunn.ch>
+References: <20220505203229.322509-1-francesco.dolcini@toradex.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220505203229.322509-1-francesco.dolcini@toradex.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From d24052938345d456946be0e9ccc337e24d771c79 Mon Sep 17 00:00:00 2001
-Date: Wed, 4 May 2022 21:30:44 +0200
+On Thu, May 05, 2022 at 10:32:29PM +0200, Francesco Dolcini wrote:
+> This fixes the following error caused by a race condition between
+> phydev->adjust_link() and a MDIO transaction in the phy interrupt
+> handler. The issue was reproduced with the ethernet FEC driver and a
+> micrel KSZ9031 phy.
+> 
+> [  146.195696] fec 2188000.ethernet eth0: MDIO read timeout
+> [  146.201779] ------------[ cut here ]------------
+> [  146.206671] WARNING: CPU: 0 PID: 571 at drivers/net/phy/phy.c:942 phy_error+0x24/0x6c
+> [  146.214744] Modules linked in: bnep imx_vdoa imx_sdma evbug
+> [  146.220640] CPU: 0 PID: 571 Comm: irq/128-2188000 Not tainted 5.18.0-rc3-00080-gd569e86915b7 #9
+> [  146.229563] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+> [  146.236257]  unwind_backtrace from show_stack+0x10/0x14
+> [  146.241640]  show_stack from dump_stack_lvl+0x58/0x70
+> [  146.246841]  dump_stack_lvl from __warn+0xb4/0x24c
+> [  146.251772]  __warn from warn_slowpath_fmt+0x5c/0xd4
+> [  146.256873]  warn_slowpath_fmt from phy_error+0x24/0x6c
+> [  146.262249]  phy_error from kszphy_handle_interrupt+0x40/0x48
+> [  146.268159]  kszphy_handle_interrupt from irq_thread_fn+0x1c/0x78
+> [  146.274417]  irq_thread_fn from irq_thread+0xf0/0x1dc
+> [  146.279605]  irq_thread from kthread+0xe4/0x104
+> [  146.284267]  kthread from ret_from_fork+0x14/0x28
+> [  146.289164] Exception stack(0xe6fa1fb0 to 0xe6fa1ff8)
+> [  146.294448] 1fa0:                                     00000000 00000000 00000000 00000000
+> [  146.302842] 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> [  146.311281] 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> [  146.318262] irq event stamp: 12325
+> [  146.321780] hardirqs last  enabled at (12333): [<c01984c4>] __up_console_sem+0x50/0x60
+> [  146.330013] hardirqs last disabled at (12342): [<c01984b0>] __up_console_sem+0x3c/0x60
+> [  146.338259] softirqs last  enabled at (12324): [<c01017f0>] __do_softirq+0x2c0/0x624
+> [  146.346311] softirqs last disabled at (12319): [<c01300ac>] __irq_exit_rcu+0x138/0x178
+> [  146.354447] ---[ end trace 0000000000000000 ]---
+> 
+> With the FEC driver phydev->adjust_link() calls fec_enet_adjust_link()
+> calls fec_stop()/fec_restart() and both these function reset and
+> temporary disable the FEC disrupting any MII transaction that
+> could be happening at the same time.
+> 
+> fec_enet_adjust_link() and phy_read() can be running at the same time
+> when we have one additional interrupt before the phy_state_machine() is
+> able to terminate.
+> 
+> Thread 1 (phylib WQ)       | Thread 2 (phy interrupt)
+>                            |
+>                            | phy_interrupt()            <-- PHY IRQ
+> 	                   |  handle_interrupt()
+> 	                   |   phy_read()
+> 	                   |   phy_trigger_machine()
+> 	                   |    --> schedule phylib WQ
+>                            |
+> 	                   |
+> phy_state_machine()        |
+>  phy_check_link_status()   |
+>   phy_link_change()        |
+>    phydev->adjust_link()   |
+>     fec_enet_adjust_link() |
+>      --> FEC reset         | phy_interrupt()            <-- PHY IRQ
+> 	                   |  phy_read()
+> 	 	           |
 
-The impact of this regression is the same for resume that I saw on
-thaw: the kernel hangs and nothing except SysRq rebooting can be done.
+You have a mix of tabs and spaces here, which is why it is getting
+messed up.
 
-The null deref occurs at the same position as on thaw.
-BUG: kernel NULL pointer dereference
-RIP: aq_ring_rx_fill+0xcf/0x210 [atlantic]
+> 
+> Fix this by acquiring the phydev lock in phy_interrupt().
+> 
+> Link: https://lore.kernel.org/all/20220422152612.GA510015@francesco-nb.int.toradex.com/
+> cc: <stable@vger.kernel.org>
+> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
 
-Fixes regression in commit cbe6c3a8f8f4 ("net: atlantic: invert deep
-par in pm functions, preventing null derefs"), where I disabled deep
-pm resets in suspend and resume, trying to make sense of the
-atl_resume_common deep parameter in the first place.
+The fixes tag is not so easy. I decided on:
 
-It turns out, that atlantic always has to deep reset on pm operations
-and the parameter is useless. Even though I expected that and tested
-resume, I screwed up by kexec-rebooting into an unpatched kernel, thus
-missing the breakage.
+Fixes: c974bdbc3e77 ("net: phy: Use threaded IRQ, to allow IRQ from sleeping devices")
 
-This fixup obsoletes the deep parameter of atl_resume_common, but I
-leave the cleanup for the maintainers to post to mainline.
+This is where threaded interrupts were added. Before this it was not
+possible to read MDIO registers inside the interrupt handler, since
+that often involves blocking operations. 
 
-PS: I'm very sorry for this regression.
-
-Changes in v2:
-Patch formatting fixes
-- Fix Fixes tag
-=E2=80=93 Simplify stable Cc tag
-=E2=80=93 Fix Signed-off-by tag
-
-Changes in v3:
-=E2=80=93 Prefixed commit reference with "commit" aka I managed to use
-  checkpatch.pl.
-- Added Tested-by tags for the testing reporters.
-=E2=80=93 People start to get annoyed by my patch revision spamming. Should=
- be
-  the last one.
-
-Fixes: cbe6c3a8f8f4 ("net: atlantic: invert deep par in pm functions, preve=
-nting null derefs")
-Link: https://lore.kernel.org/regressions/9-Ehc_xXSwdXcvZqKD5aSqsqeNj5Izco4=
-MYEwnx5cySXVEc9-x_WC4C3kAoCqNTi-H38frroUK17iobNVnkLtW36V6VWGSQEOHXhmVMm5iQ=
-=3D@protonmail.com/
-Reported-by: Jordan Leppert <jordanleppert@protonmail.com>
-Reported-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
-Tested-by: Jordan Leppert <jordanleppert@protonmail.com>
-Tested-by: Holger Hoffst=C3=A4tte <holger@applied-asynchrony.com>
-Cc: <stable@vger.kernel.org> # 5.10+
-Signed-off-by: Manuel Ullmann <labre@posteo.de>
----
- drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers=
-/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index 3a529ee8c834..831833911a52 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -449,7 +449,7 @@ static int aq_pm_freeze(struct device *dev)
-=20
- static int aq_pm_suspend_poweroff(struct device *dev)
- {
--	return aq_suspend_common(dev, false);
-+	return aq_suspend_common(dev, true);
- }
-=20
- static int aq_pm_thaw(struct device *dev)
-@@ -459,7 +459,7 @@ static int aq_pm_thaw(struct device *dev)
-=20
- static int aq_pm_resume_restore(struct device *dev)
- {
--	return atl_resume_common(dev, false);
-+	return atl_resume_common(dev, true);
- }
-=20
- static const struct dev_pm_ops aq_pm_ops =3D {
-
-base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
---=20
-2.35.1
+     Andrew
