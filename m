@@ -2,51 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A741451C9F9
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 22:07:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0257251C9F3
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 22:07:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385611AbiEEUK4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 16:10:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58658 "EHLO
+        id S1385579AbiEEUKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 16:10:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385587AbiEEUKm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 16:10:42 -0400
+        with ESMTP id S1385572AbiEEUKk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 16:10:40 -0400
 Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 495B25E74F
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 13:07:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715F45E748
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 13:07:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651781221; x=1683317221;
+  t=1651781220; x=1683317220;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=R0pKWPMFUVQRA0YE2IZQzLxxLkwp6lrHJcg928hrUrc=;
-  b=GwgoPSbbmA1VcTvkCMjpK2NbnGMsze8GwFfXQEuwg8RCFWwBHcSXYlJE
-   E937VWId0eC7Xfcj6Uwt/cJ1BQJPswGhnTqoG8adjDwvZjruq2I7Hl1Dj
-   jXZj+WMCZA/bx1CmrU+yoH88+n8F5O3Z2NOzurFd/j5qwzawf71RYQIyP
-   NqA3sAmZnFbEQqWurIaMftpFqyZZMFsaDcJ7H79ELdhRPw0LlXircjo4v
-   lH483t7q8LJmNxU2DH3iCttnNyrzuiRw8D2z7VbjbaPhvsvXQ6kXsDgQW
-   M8OUgkCvTZ3wKU+NTPyOSr7XVE/G88pJHjsRe7R3SNpGGPDuBlF2h/mlJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248772034"
+  bh=TEUg/eJaNTO5HYodwwAioZOEcE1Yl6eX1kQ3UkR05aw=;
+  b=DsmYeF8IOTVY7r9T2q9GG9NLw4kZwdnXLv6/VHFghgnRj0hHcmwXVaqU
+   S7ydUwUG6w/ylAwe5Sb3WrnrUrYQEORVp3mmvIIpaEnIHoCdp94Wre8LZ
+   SfErRedganXxm5AFgNcyJsHI12gwa2xK83Z6hKgfYz2jFlgAq5vSO6yJR
+   m81/0gN3Z0WZu6USsrfYxdUNwADCi7Ai9q6XPOke5nGQxXx7mtCLQzXJa
+   G5pAcIod6lln1h3HhXIR/8JHtPr0935xwDXWOVlwheXy6nhVSGSqGSKgo
+   rTPhVwmZRAUNxXiTMFEGIV2Tk+fXuMrU+yNukKPJ1xMX3BDgANWQboucz
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="248772033"
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="248772034"
+   d="scan'208";a="248772033"
 Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 13:07:00 -0700
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 13:06:59 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="735111708"
+   d="scan'208";a="735111711"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
   by orsmga005.jf.intel.com with ESMTP; 05 May 2022 13:06:59 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Michal Swiatkowski <michal.swiatkowski@linux.intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        Marcin Szycik <marcin.szycik@linux.intel.com>,
-        Sandeep Penigalapati <sandeep.penigalapati@intel.com>
-Subject: [PATCH net-next v2 04/10] ice: get switch id on switchdev devices
-Date:   Thu,  5 May 2022 13:03:53 -0700
-Message-Id: <20220505200359.3080110-5-anthony.l.nguyen@intel.com>
+Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
+        anthony.l.nguyen@intel.com, Paul Menzel <pmenzel@molgen.mpg.de>
+Subject: [PATCH net-next v2 05/10] ice: add newline to dev_dbg in ice_vf_fdir_dump_info
+Date:   Thu,  5 May 2022 13:03:54 -0700
+Message-Id: <20220505200359.3080110-6-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220505200359.3080110-1-anthony.l.nguyen@intel.com>
 References: <20220505200359.3080110-1-anthony.l.nguyen@intel.com>
@@ -62,114 +60,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
+From: Jacob Keller <jacob.e.keller@intel.com>
 
-Switch id should be the same for each netdevice on a driver.
-The id must be unique between devices on the same system, but
-does not need to be unique between devices on different systems.
+The debug print in ice_vf_fdir_dump_info does not end in newlines. This can
+look confusing when reading the kernel log, as the next print will
+immediately continue on the same line.
 
-The switch id is used to locate ports on a switch and to know if
-aggregated ports belong to the same switch.
+Fix this by adding the forgotten newline.
 
-To meet this requirements, use pci_get_dsn as switch id value, as
-this is unique value for each devices on the same system.
-
-Implementing switch id is needed by automatic tools for kubernetes.
-
-Set switch id by setting devlink port attribiutes and calling
-devlink_port_attrs_set while creating pf (for uplink) and vf
-(for representator) devlink port.
-
-To get switch id (in switchdev mode):
-cat /sys/class/net/$PF0/phys_switch_id
-
-Signed-off-by: Michal Swiatkowski <michal.swiatkowski@linux.intel.com>
-Signed-off-by: Marcin Szycik <marcin.szycik@linux.intel.com>
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
+Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
 Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_devlink.c | 22 ++++++++++++++++++++
- drivers/net/ethernet/intel/ice/ice_main.c    | 15 +++++++++++++
- 2 files changed, 37 insertions(+)
+ drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_devlink.c b/drivers/net/ethernet/intel/ice/ice_devlink.c
-index a230edb38466..d12852d698af 100644
---- a/drivers/net/ethernet/intel/ice/ice_devlink.c
-+++ b/drivers/net/ethernet/intel/ice/ice_devlink.c
-@@ -647,6 +647,23 @@ void ice_devlink_unregister(struct ice_pf *pf)
- 	devlink_unregister(priv_to_devlink(pf));
- }
+diff --git a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+index 8e38ee2faf58..dbc1965c0609 100644
+--- a/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
++++ b/drivers/net/ethernet/intel/ice/ice_virtchnl_fdir.c
+@@ -1349,7 +1349,7 @@ static void ice_vf_fdir_dump_info(struct ice_vf *vf)
  
-+/**
-+ * ice_devlink_set_switch_id - Set unique switch id based on pci dsn
-+ * @pf: the PF to create a devlink port for
-+ * @ppid: struct with switch id information
-+ */
-+static void
-+ice_devlink_set_switch_id(struct ice_pf *pf, struct netdev_phys_item_id *ppid)
-+{
-+	struct pci_dev *pdev = pf->pdev;
-+	u64 id;
-+
-+	id = pci_get_dsn(pdev);
-+
-+	ppid->id_len = sizeof(id);
-+	put_unaligned_be64(id, &ppid->id);
-+}
-+
- int ice_devlink_register_params(struct ice_pf *pf)
- {
- 	struct devlink *devlink = priv_to_devlink(pf);
-@@ -704,6 +721,9 @@ int ice_devlink_create_pf_port(struct ice_pf *pf)
- 
- 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
- 	attrs.phys.port_number = pf->hw.bus.func;
-+
-+	ice_devlink_set_switch_id(pf, &attrs.switch_id);
-+
- 	devlink_port_attrs_set(devlink_port, &attrs);
- 	devlink = priv_to_devlink(pf);
- 
-@@ -760,6 +780,8 @@ int ice_devlink_create_vf_port(struct ice_vf *vf)
- 	attrs.pci_vf.pf = pf->hw.bus.func;
- 	attrs.pci_vf.vf = vf->vf_id;
- 
-+	ice_devlink_set_switch_id(pf, &attrs.switch_id);
-+
- 	devlink_port_attrs_set(devlink_port, &attrs);
- 	devlink = priv_to_devlink(pf);
- 
-diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
-index 6d8beb84d852..049a3f48caff 100644
---- a/drivers/net/ethernet/intel/ice/ice_main.c
-+++ b/drivers/net/ethernet/intel/ice/ice_main.c
-@@ -296,6 +296,20 @@ static int ice_clear_promisc(struct ice_vsi *vsi, u8 promisc_m)
- 	return status;
- }
- 
-+/**
-+ * ice_get_devlink_port - Get devlink port from netdev
-+ * @netdev: the netdevice structure
-+ */
-+static struct devlink_port *ice_get_devlink_port(struct net_device *netdev)
-+{
-+	struct ice_pf *pf = ice_netdev_to_pf(netdev);
-+
-+	if (!ice_is_switchdev_running(pf))
-+		return NULL;
-+
-+	return &pf->devlink_port;
-+}
-+
- /**
-  * ice_vsi_sync_fltr - Update the VSI filter list to the HW
-  * @vsi: ptr to the VSI
-@@ -8926,4 +8940,5 @@ static const struct net_device_ops ice_netdev_ops = {
- 	.ndo_bpf = ice_xdp,
- 	.ndo_xdp_xmit = ice_xdp_xmit,
- 	.ndo_xsk_wakeup = ice_xsk_wakeup,
-+	.ndo_get_devlink_port = ice_get_devlink_port,
- };
+ 	fd_size = rd32(hw, VSIQF_FD_SIZE(vsi_num));
+ 	fd_cnt = rd32(hw, VSIQF_FD_CNT(vsi_num));
+-	dev_dbg(dev, "VF %d: space allocated: guar:0x%x, be:0x%x, space consumed: guar:0x%x, be:0x%x",
++	dev_dbg(dev, "VF %d: space allocated: guar:0x%x, be:0x%x, space consumed: guar:0x%x, be:0x%x\n",
+ 		vf->vf_id,
+ 		(fd_size & VSIQF_FD_CNT_FD_GCNT_M) >> VSIQF_FD_CNT_FD_GCNT_S,
+ 		(fd_size & VSIQF_FD_CNT_FD_BCNT_M) >> VSIQF_FD_CNT_FD_BCNT_S,
 -- 
 2.35.1
 
