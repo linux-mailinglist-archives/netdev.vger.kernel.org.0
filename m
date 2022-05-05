@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F171551CAC5
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 22:42:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E3E551CADB
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 23:00:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377597AbiEEUqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 16:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56404 "EHLO
+        id S1385355AbiEEVBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 17:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236566AbiEEUqK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 16:46:10 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5CBB841;
-        Thu,  5 May 2022 13:42:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651783348; x=1683319348;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ymzjNgr6wXbJBAQoerxRdvjeszrBU3nmqB3iQd5YQy8=;
-  b=koU7yL70toCAj8vk6QNxmLD8q+JlK308b5F0uyF+DNA4GtRn36X3PI5p
-   lKqQCe5TzmN5r2KaoAGNt/kpBQSL5DLMlu8HgQaL3nCZ5MUz+YQHzdOf4
-   vk3AQlugiTsIZ5G/cuenv0qVdWlpFK8VY8cX4NQ+bz3o0v9ZzxiF3ZmiG
-   Gobr7M4xo9OENVZupWgqT4WQtZmIgVan+CsZHFI38A3md1L1dcJySG4D8
-   8x5anvhQm514lj7iGSlfyDwUbLqSED5BMCill1JunMDKP4WZuNaRSsGup
-   N7AeRatnzYEwY698C8xVwHs+zpIsjqwjkjNIH83vyTxlZgVAeDugfyeaX
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="250235012"
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="250235012"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 13:42:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
-   d="scan'208";a="811896847"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 05 May 2022 13:42:25 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nmiIq-000Ck0-Gs;
-        Thu, 05 May 2022 20:42:24 +0000
-Date:   Fri, 6 May 2022 04:42:10 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v3 4/7] net: phy: introduce
- genphy_c45_pma_baset1_read_master_slave()
-Message-ID: <202205060406.gHnrGdXy-lkp@intel.com>
-References: <20220505063318.296280-5-o.rempel@pengutronix.de>
+        with ESMTP id S235860AbiEEVBR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 17:01:17 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B83D25D640
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 13:57:36 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id y11so3649721ilp.4
+        for <netdev@vger.kernel.org>; Thu, 05 May 2022 13:57:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8YC8W9B91rXlP/MWeXz615ZAZibC3F+FRMvosrxHK8A=;
+        b=DJggn+M8CsI29ONQJ1zm0CBr6vfHIx/OzhHcEPgLwYHsm3Dny70RRnWhu9vg1C+WDs
+         AxF0mwZLD8aVdgD0KOR+fAjaRVke8AHOQkDbJhk2O+iAz6BrSFka36cDefOdCOHDHn+r
+         HU4AuGfjDwMSkKuUDPbdOnDqxF5rp6keCQ9dI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8YC8W9B91rXlP/MWeXz615ZAZibC3F+FRMvosrxHK8A=;
+        b=rErmJjgyTXuU2TRgG/e5vDVWiH3o0rgIemFN3k8wvDBnxCKFk/3q3PzL0UJNRRGC0D
+         9uY/wtN8xbhcu5+d3dXwZE0tlaQCVxIRB5IBCCMPmDCgwLfhRLOvjHyvPxTL6SEmFYtt
+         UnveKmWKxR8yLM8CJJzF/tNRfxAnpmxEvwKU5Ecm/yp1r1DA5nsHGdJHRTmf5ospOt66
+         Mq6UYsu73t4iBg2/IrkHoehjMuczHLY/4Q+IbmCAZJdP4PzoFQdJyTqwUeXSdonRQ2M2
+         FP61NiE7j2ZzEu/5NjPsPG7OnwgeOQHLHUaF3mAPuXiUsJVwYMXsUOHOkXZqgp5Gwb06
+         XQgQ==
+X-Gm-Message-State: AOAM530777m9Vzm6ROamdBBEJGvlaMNcNwJaT6JTwss/ckKk6GCdZg+s
+        mlH2quQNDpO/S+vt48o+8Nhi9jYp79E2GfVPaGVs4pkOwr8=
+X-Google-Smtp-Source: ABdhPJzxKZkJXZQjruStiTwU7HCnMNP18Ii6TEjTf5K91VjiWf02IspK1UT787I0vDQtL+3Lp70AXsvncqGsNwodk7w=
+X-Received: by 2002:a05:6e02:b28:b0:2cf:4d2a:dc99 with SMTP id
+ e8-20020a056e020b2800b002cf4d2adc99mr22011ilu.296.1651784255448; Thu, 05 May
+ 2022 13:57:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220505063318.296280-5-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+References: <20220418231746.2464800-1-grundler@chromium.org>
+ <CANEJEGtaFCRhVBaVtHrQiJvwsuBk3f_4RNTg87CWERHt+453KA@mail.gmail.com>
+ <23cbe4be-7ced-62da-8fdb-366b726fe10f@marvell.com> <CANEJEGtVFE8awJz3j9j7T2BseJ5qMd_7er7WbdPQNgrdz9F5dg@mail.gmail.com>
+ <BY3PR18MB4578949E822F4787E95A126CB4C09@BY3PR18MB4578.namprd18.prod.outlook.com>
+ <CANEJEGvsfnry=tFOyx+cTRHJyTo2-TNOe1u4AWV+J=amrFyZpw@mail.gmail.com>
+ <BY3PR18MB4578158E656F2508B43B21F6B4C39@BY3PR18MB4578.namprd18.prod.outlook.com>
+ <CANEJEGuVwMa9ufwBM817dnbUxBghM0mcsPvrwx1vAWLoZ+CLaA@mail.gmail.com> <735b9c21-6a8f-0f28-d11d-bd9bbd78986b@marvell.com>
+In-Reply-To: <735b9c21-6a8f-0f28-d11d-bd9bbd78986b@marvell.com>
+From:   Grant Grundler <grundler@chromium.org>
+Date:   Thu, 5 May 2022 13:57:24 -0700
+Message-ID: <CANEJEGuPUBQ3c12RkzBsDu0Ub+QAb3BJxA_v8GsDTeq9Uvzt8g@mail.gmail.com>
+Subject: Re: [EXT] Re: [PATCH 0/5] net: atlantic: more fuzzing fixes
+To:     Igor Russkikh <irusskikh@marvell.com>
+Cc:     Grant Grundler <grundler@chromium.org>,
+        Dmitrii Bezrukov <dbezrukov@marvell.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_SPF_WL autolearn=unavailable autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,62 +77,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+On Thu, May 5, 2022 at 12:11 AM Igor Russkikh <irusskikh@marvell.com> wrote:
+>
+>
+> Hi Grant and Dmitrii,
+>
+> >> So to close session I guess need to set is_rsc_completed to true when
+> >> number of frags is going to exceed value MAX_SKB_FRAGS, then packet will
+> >> be built and submitted to stack.
+> >> But of course need to check that there will not be any other corner cases
+> >> with this new change.
+> >
+> > Ok. Sounds like I should post a v2 then and just drop 1/5 and 5/5
+> > patches.  Will post that tomorrow.
+>
+> I think the part with check `hw_head_ >= ring->size` still can be used safely (patch 5).
 
-I love your patch! Perhaps something to improve:
+Ok - I'll rewrite 5/5 to only include this hunk.
 
-[auto build test WARNING on net-next/master]
+> For patch 1 - I agree it may make things worse, so either drop or think on how to interpret invalid `next` and stop LRO session.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Oleksij-Rempel/add-ti-dp83td510-support/20220505-143922
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 4950b6990e3b1efae64a5f6fc5738d25e3b816b3
-config: mips-allyesconfig (https://download.01.org/0day-ci/archive/20220506/202205060406.gHnrGdXy-lkp@intel.com/config)
-compiler: mips-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/80dad43edb356876484acb116b8a906dd4bef941
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Oleksij-Rempel/add-ti-dp83td510-support/20220505-143922
-        git checkout 80dad43edb356876484acb116b8a906dd4bef941
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/net/phy/
+I'll drop the proposed patch for now and discuss with Aashay (ChromeOS
+security) more.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+cheers,
+grant
 
-All warnings (new ones prefixed by >>):
-
->> drivers/net/phy/phy-c45.c:558: warning: expecting prototype for genphy_c45_baset1_read_master_slave(). Prototype was for genphy_c45_pma_baset1_read_master_slave() instead
-
-
-vim +558 drivers/net/phy/phy-c45.c
-
-   552	
-   553	/**
-   554	 * genphy_c45_baset1_read_master_slave - read forced master/slave configuration
-   555	 * @phydev: target phy_device struct
-   556	 */
-   557	int genphy_c45_pma_baset1_read_master_slave(struct phy_device *phydev)
- > 558	{
-   559		int val;
-   560	
-   561		phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
-   562	
-   563		val = phy_read_mmd(phydev, MDIO_MMD_PMAPMD, MDIO_PMA_PMD_BT1_CTRL);
-   564		if (val < 0)
-   565			return val;
-   566	
-   567		if (val & MDIO_PMA_PMD_BT1_CTRL_CFG_MST)
-   568			phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
-   569		else
-   570			phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
-   571	
-   572		return 0;
-   573	}
-   574	EXPORT_SYMBOL_GPL(genphy_c45_pma_baset1_read_master_slave);
-   575	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>
+> Thanks,
+>    Igor
