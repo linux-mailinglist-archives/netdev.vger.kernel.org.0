@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B47E51B78B
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 07:44:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAF5151B78D
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 07:44:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243706AbiEEFrw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 01:47:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39220 "EHLO
+        id S243816AbiEEFsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 01:48:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243666AbiEEFrt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 01:47:49 -0400
-Received: from NAM04-MW2-obe.outbound.protection.outlook.com (mail-mw2nam08on2114.outbound.protection.outlook.com [40.107.101.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C353B34B9D
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 22:44:10 -0700 (PDT)
+        with ESMTP id S243701AbiEEFru (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 01:47:50 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2097.outbound.protection.outlook.com [40.107.236.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98C0F34B97
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 22:44:12 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=V8xnt5mPtIOf39s/eY8cHMksJzSwHL8TyOF6d55K1lV9EWdcRSB1Bznu1lZEb2XbOaL47TT9F+ajImGK4mc3EFw+/fFPMRzYeeW74LB4Lv8Z9sq6yy4OKbf4N214os6fe++h0soWPmeAGrK6V054VbWgJsQNdT7Z+hbBlZzWt+1Z8OxNFSi+rAesONuJ9MEpp0R87G2h0lIDsEdpKE7N83QwN6DMyK+RzIDSBCvuhgWiQa1B+xXgkQGm8yMDqy3g3W8zjZlqvTheW1zz0H2f7vYCQ6HWj6g+pjsM80pVsPskYZv8bByi4ZRdUicUudZE8p9fcHEjn4pfvOXQrSWilQ==
+ b=LAL3PosY9LHSaO2a23n6ItTYtKDU1ERkkXCEoUKJD2eSjFDmkhYRNLMRxDtcmAbPfRUAsoxY239oHANv1pegjMuF03cklriwWLzxiFjZAHAtD9twKlkHic1nAsYOdIoc2pAOsQs8DgLzvS4Pcmwj5VV1+2cpFLGH8SS/f/Rmp8tQiwBVf5znFzSRDZuT/i9XEx06DdgpOfWme7+1kpbc/t89/WztFoeyxSC6Hz3CMNc8if31CTW9U3RD4SYQnga3NHIOv2T6VPFtDx7IhZK5Y1SPrm/Gzf3lrFmxrWCS/mY0ZN4j9XsZVzQF+51eQyqNVie3Clud8a+gRhWVhySYCA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LFzBykFnBnIqO4caDsWIwKq7BQ6TOUi+Q6ifVvBrTGk=;
- b=QzzmgH8GBKhAZWPjyG5slCTAlyCBEzf1VW+6Auq2El8+Cu3Lss/5U4WX2KITCbycRrdGUxNZRz4+spRH50qdk6jivq5ff4ePw+omTN4WNkzehLv4zcpQJARe8AjeKToPWDqBNMGjYO8CFo1QGTmtWfmF7Kc0Mzmg6kxz/4pxnaHAyFGCm9CbTvEKtXswkRxouiL9BARjaL6x6TivoVyU5J4Dyy9udjP2bL83+ckbkjIWDuN6w61znXVwmkfd+OQtvGQ5QfwvIskBsbqE5K3HzsnByLCacpC8j391CWoaX2Etx6+8PX4cWdckZMrZc/1j86/drM4tYqm4jRIIMtrU+g==
+ bh=peyrhIeKw+L9kGwHX9lh7TLDN8mFvNolTus/mNAwO9I=;
+ b=WWEUHAR9+6VYIsmXE8P4wBT+EK6M66sKyFiLqRtwI3bEtK+rVUSSHOuLCKfsSF884d7TRkA4ilPYoYKmGx49JP0l7oTqkCODelMa8HNFnJ/rOtqU9P58SkyXVbZ+ONABX1uguIxrgVmf6uDdsP01x5/yMgArrpsK88K+5Nuh53voPnE7v2X8uMUQW2OKmqP09deDZtmL71116a8mR6eSljnvfY3/gc2bw/4IDeQP9B5Cv5YjQWFtSv3YX8f2t3p5dHpx84zXcmxvDJJ8zUb6ON6cdaBDjLVpJ9f69Zm/qcg2tTlGn1CJLiGOiQZ8L9GYsZi5HF4a6A20XKfvzExnFg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LFzBykFnBnIqO4caDsWIwKq7BQ6TOUi+Q6ifVvBrTGk=;
- b=lWpHhgPqqngsP6vwDAFz27TbN/Sb/H7gojCn1eeknRrN1vkzXxhKYkPXiLZkXDrWZxrsjctPdKW0LWFz2mr11PmQNZD437v7kJB8HxOvKRtC8p33tamYVG8FQOku3jmMXiPKun4HGOC8N+xPeMRU3pC00ucOuOTccvDvolqDQX4=
+ bh=peyrhIeKw+L9kGwHX9lh7TLDN8mFvNolTus/mNAwO9I=;
+ b=nXiJZ/IU8bAvNkE+vy7HzZ6NOvkrNywYLDIH8jhtSBPQ8mDg/rd1awQMm/mpXFnNmq/HhW58iyljBokfTqIVDky5fHGqYalNDNymMIwu1lJ0wLiUIGFqOCKzRUoBguuCJLxC/Ed/SRjeNREbxERMY5eO3Qk1eo7hCruDwbkExgk=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by BN8PR13MB2609.namprd13.prod.outlook.com (2603:10b6:408:82::33) with
+ by DM5PR13MB1257.namprd13.prod.outlook.com (2603:10b6:3:27::18) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.14; Thu, 5 May
- 2022 05:44:07 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.16; Thu, 5 May
+ 2022 05:44:09 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::8808:1c60:e9cb:1f94]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::8808:1c60:e9cb:1f94%3]) with mapi id 15.20.5227.006; Thu, 5 May 2022
- 05:44:07 +0000
+ 05:44:09 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com
-Subject: [PATCH net-next 3/9] nfp: flower: enforce more strict pre_tun checks
-Date:   Thu,  5 May 2022 14:43:42 +0900
-Message-Id: <20220505054348.269511-4-simon.horman@corigine.com>
+Subject: [PATCH net-next 4/9] nfp: flower: fixup ipv6/ipv4 route lookup for neigh events
+Date:   Thu,  5 May 2022 14:43:43 +0900
+Message-Id: <20220505054348.269511-5-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220505054348.269511-1-simon.horman@corigine.com>
 References: <20220505054348.269511-1-simon.horman@corigine.com>
@@ -57,56 +57,56 @@ X-ClientProxiedBy: TYAPR01CA0082.jpnprd01.prod.outlook.com
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f8f23c6c-7453-4a37-b47b-08da2e5a45a1
-X-MS-TrafficTypeDiagnostic: BN8PR13MB2609:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR13MB26095FDCC37695CC38740EA8E8C29@BN8PR13MB2609.namprd13.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 6b5399a1-76ca-4d24-0d72-08da2e5a4657
+X-MS-TrafficTypeDiagnostic: DM5PR13MB1257:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR13MB12573B0CE86A10DACFCB8904E8C29@DM5PR13MB1257.namprd13.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: mgVUH8Q3+V9IbSyrxXkVXoJFueSNFdfnGqFtZMGYshiJmxKzJi5UoY62a0n7yub8DyBrKtnz5wX/pPjqD/BEQvHKZXc2PapYbrc2MGfKH+t3KGSKflUasWptC+NSlSoYTJb7aiCDyrQBx5w5cJxVAEl3Ae8WkW1r2/pXqSZAAPduZUFM0y9o2RL8uswciuxDfmpPuPQVR05TgMMjrrz75zH07yB1Nw0hFZdid6UoZzetBYn6rI4hx1CEOWxOc+xp/mBUal2Ai1ik+Z7y9uTRpo32iSK43qpBXPFIdET+ykpyBHQJlqhRpBmC+p0t0XXC7jdzKru9ICuNrHNVOsR6GPhPfnBBS42k0nj0H2+wv3La4tPWWn0wGmOxoBglHTxdip8abGdvN1RItLadPfyU2joHnXBcKZyXh85vGCzIWX5ABGRs90WkAllziz3Vuga+96AiTaWpUsZK2T54PPR4+gH64zYqYb1UMN881IA2pGXEzmfarrtLVYPC22qRtpzL4xolME5gqY+WWyfmBGdF98fMOZwFi1XiQcLZfLkDOIbj6xLfWoOiZs9A7qUG+dnGW1wdirWasHo1iD32dMVnu/NlXHe1APezDZ2ZTC5Z/ok5RD6Q6KEQzdDEkT4Ol5C5h0BwhGUnOajeYx94OukrSLcJzo3YFNQb5gy6uWnd9LHUMiNrU/JAvDUW2ZF20HBAd/v1IyxJML3sbGX2zsI8Zw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(366004)(376002)(346002)(136003)(39830400003)(6666004)(6486002)(38100700002)(38350700002)(44832011)(5660300002)(316002)(508600001)(2906002)(36756003)(86362001)(186003)(52116002)(2616005)(6506007)(6512007)(26005)(83380400001)(8936002)(66476007)(66556008)(66946007)(8676002)(4326008)(1076003)(107886003)(110136005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: tkrQVe4KvMcHirX7/n/bj3sJQNL6DlJzsbmvB06gxhQIMuhpU9W4JSnJtbgdHODWL6lPrF8jlV4JsFgw5uJHi6JCUMv6gi7pp+t/sYoHy5j1Z8Z9VEo1IReLLqFaMcYogsEXSFucmK2+d1zYvS2Ku77zxzUMoobV8Xqib1IBieHLTThm5Dh2qnXiU0DP1BksaWhwQFJyqFxWryaQiwFYpkrQbqowa8nD1+muFjvgRSwG4+5lUkvXjyVdQHOnH+ETAjuuJclvUWDWff/oJWXc+FkekfB+AGF9FA8z0awsZPNrS13P9RMGRQCPOr0lbZZ/JgOLWDkBWJTk7HdjdsJ3D7kk571xmWnw5By6cLDqcCHjdnEi4dKLwTXAtxaKMXnR8/YzuGdcNvVXqs5kYaOlLcgPkcJjkAiuMean747ef2GSTStWi2BMTW/NS9Tmk6DwzGfkk/OSVKGVwBSMJZAuOY025pyDgz+spt2leUIXEPfn8LIQDoO9sVPCe7lFv9MEaEuDwQhErNPsHbtberFqmZkszTsjGi6kEpMRTDGS+EbFKXxhOPkBdqn5HTA5OFYK/TxqNXEmeciE4bDcsnX2Qk2rFrmAo7CthyOVWz+CYF3l61klbFBhN5JQQWQLt0zMUp73v8wup7P1aNhb9Jca/tKdK05DrM3dTqEzM1kzVa/Cggw4x9N7w1AyLFRHC0+pvG7lBO4bn0Mgo3L7qL1O6g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(346002)(376002)(136003)(396003)(39830400003)(66556008)(66946007)(6506007)(8676002)(4326008)(5660300002)(52116002)(1076003)(186003)(6486002)(36756003)(2616005)(316002)(110136005)(83380400001)(107886003)(66476007)(6512007)(8936002)(38100700002)(38350700002)(86362001)(508600001)(26005)(6666004)(44832011)(2906002);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?mA/vtcaLxVQJUVdewBilwcbAMRThkTBNnFB6it/rMIQn1eBKvcs4FCAG8BUV?=
- =?us-ascii?Q?9cCU0eiZnlMFdQx54B0FIlwofSWT4CggotOvrCUiPzOroN8rmNE6uWuv3BAP?=
- =?us-ascii?Q?pmL90i1zL2xXfIa3N5RPl8ed+A4nebaaoDNXxrh0AJrQFuvFY0zumah20pNX?=
- =?us-ascii?Q?EHE/ROnHEblnCnLxJm6Fd0/og8Gn6pS7fjyMJQXY7Vkx2bRnnFdyhbDmNnkn?=
- =?us-ascii?Q?2tuPTvgS9FLYyq2iwUcy0egOBfSpPFnxlwYR7cqxMrFxE4l/4/7oC4PE2+Tn?=
- =?us-ascii?Q?XhgGTDruoYmHPQq6cpQz+1MWKDEOZJFCcQxkJT0OwmlDkVNzpvdWGszeBufT?=
- =?us-ascii?Q?4RiBZ2ZPEOKBfnctMeh+U2nXIbECcSS/2NcSJ3yhrNj9MuXYuucdaKIztfy3?=
- =?us-ascii?Q?Xdnv8xLbAWs2yggDPr6WSK+fUmdCZadfNrTgDo80IuImPTAoG8dzTKZpfcCA?=
- =?us-ascii?Q?HH3vQvVnVjRNHXHYa0VudIf7BATZUjQnfCjtXv8j+zLh7n+W1GU1eYCMwDG0?=
- =?us-ascii?Q?lhMNWimTT0X2TDn/QciCILh3GWXanZ90VsFn/Ce1N5jfBN3M4tAGHI/2oEd+?=
- =?us-ascii?Q?1a0gS80QpVZX/Jgx1uJFwHuuFA4Uoqgvs3yrj+NcPYr+b37Tg+EILP4aFRSc?=
- =?us-ascii?Q?sQueyjuZgolJbJwr4k9mk8l5DGIA/ATZK6xz3v2jd9RxFMW2v2jlGgdPXNN9?=
- =?us-ascii?Q?DFBw+lJYyYidpwdBJNTD5lM5w3H8mXX4mKeLNejrptfHVN7qs+lE1obzq1ty?=
- =?us-ascii?Q?4I6iyX1juEMwuLCnXYhxyImWylkQcnKeFghwNHZ6mXiiy49uzjdG7NR+iNgg?=
- =?us-ascii?Q?VSK9058InEItsGiGeAdYBr9GIZtVnZpREcMr15jogSevrMTn0KPq+0KGe7kZ?=
- =?us-ascii?Q?StM/9/HPVxK1H1lon3INWUdgMThCfx1R8ARhtTWYrU621CgGXqAdICBqgoKy?=
- =?us-ascii?Q?6+xsKIZ/9YG4vTC27Ij1HTgWYtgRMIvjmpM35oxtybP1HNjBFFWrCeCubzka?=
- =?us-ascii?Q?IIdJEIx6in73Hq93PO7pcpO8PDwKk1kQHUHbyVwPI1vvkagIp5VBlS5tqB9Z?=
- =?us-ascii?Q?p1IDwuGdEev3fD/A31cFGIR/ahTPsmQ0rAn3or6RDsr5KKB/3ilPY57lACkr?=
- =?us-ascii?Q?CFkf+ZOAsVpl5k1c1yXkybjpW5sHtPOYxg2GQJfa0ZoqRL70FWBR9AQemHts?=
- =?us-ascii?Q?DTtRCyIm8i89B/AMv/d5hxviaYETRvhfZf0fQGYOjt+8rrbFDyVT0azDyMOM?=
- =?us-ascii?Q?ZtSygUMSw4K107/JKFYr91RRtcBopxNRKsIiMx0xlY7pUeKlAojzAO5ZBeIz?=
- =?us-ascii?Q?kNhK83svodvCvrB96qbPL9AOKzlbSFMZkUzbNrNThEISNvSBA6i7jvus+4AH?=
- =?us-ascii?Q?6lk/RPLPbfk4aV7Pi3Y/BNvH4NOKNAijH1eJQzMZtn/46rEPYUTwjM8llOYS?=
- =?us-ascii?Q?dUIgE9esilmbXi+5nUYinEqJtQu7kDJE1zVkT7dYoH1Bv3Gb38oX9M8/ZsWz?=
- =?us-ascii?Q?yXAvH7vPiSXQxoW3amAR3CkomkcS/vfkTCEpLf3xc4AquQm2jqQJhAnU0YDc?=
- =?us-ascii?Q?6gOb4eECXb/XiTyYQ7Pzj83ANfk55z0iI9QtJL15BTxjWYjq+WKW3vG4e0KS?=
- =?us-ascii?Q?IkglsHpnXye+EfIvs2mF/US3kTpLEJYY9SBhYtsBrlDHl29RuwtrQPStoIDs?=
- =?us-ascii?Q?OB+OKdGye+XlBXrDvYPGD090oWuo7hHB34JGllfH0QJqCMI6ZO6h4Fej+u3x?=
- =?us-ascii?Q?BSdAF6N1wUDacnWr2cSS5o3eWUxxZRg=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Z3HO0Xmv0lDKAAnRYOdahDPAG7avdXCUG15bOyeV+l0hXFDecPOUl0fSBiYQ?=
+ =?us-ascii?Q?0IWa2tV40MVPhxOhq405vl9piOiDrDbD8GGar6qgoKVLgw7hHsJDrI5gET3S?=
+ =?us-ascii?Q?D91UaCIReTvUvVld4qrfZJ7V1NKZ0A5UMWFHBO4eEjGZXpYbybBZBiM7cv/V?=
+ =?us-ascii?Q?dmBd/H12i5IV7GGwxnRSiia1KUYRWO6HL6APN24Lxz1w0XJXpCdOIAZA78o1?=
+ =?us-ascii?Q?ig6Mtq6Gki4s462jyWaj5lTaPXVpyWg+iP774P4r1nLMpc1wayrBI1F7tL52?=
+ =?us-ascii?Q?40jpap1/P7ZOa6UOX1NoSadEYmMRcXcJapBd57za662JOSLJVutD5VH0rGRt?=
+ =?us-ascii?Q?SfcpBkz1B0mK/DY/P5SGukGKl4IRUc2Z+1dFjzWUir4mrCZl/sA3cX12b5mo?=
+ =?us-ascii?Q?dLCSg4b4S3Pl0VtjznjPUS2RbNxMmyrtzSZXPhwSRtLdhU1koY78LwugSzlj?=
+ =?us-ascii?Q?tgFOui68oRe9Kxc/5BVkB7JHSWCK0HzEkitkhB1y70RaOzIHCh0mOGOVD+/x?=
+ =?us-ascii?Q?pT+l+ZoghLzYW4hy7scMf+3mnWiGVyFb9KgHRytMk5iwkl0jZxTrZJNBhjS/?=
+ =?us-ascii?Q?wSDZmVIS86eg3hKkld+Xc3upGUcjMsw9Tya1gy2BghT44MP3D6YscaBg978R?=
+ =?us-ascii?Q?f9xJ6/HuqrTdEiko7uyUhBzlMAm5FKSU84zpYTbm2RXOBp8YlwuO9vIVdScU?=
+ =?us-ascii?Q?y0fiXpahUBdeLx+VdLHPRCKVaMarM0CB/l5eE374JlU07K27D0O7esD2U1Wo?=
+ =?us-ascii?Q?5DXzjZCnxeq0YoVz1xI987RUNv6AKe0dTtKxMfr+BwoicJR2VybmJYuTB1dn?=
+ =?us-ascii?Q?hkKVTd/ecvyLFsRoS4/HmKjpfwXjViaWT8Sozo1mwtA2a9U+JR6xso0ci2S4?=
+ =?us-ascii?Q?XWUkPIGUF5dA2M7Y/diAqh0FEMsoSfbkHIm2YIZkwb8nTlgLzasu66QWXujr?=
+ =?us-ascii?Q?ygZNKal66V2tjKYbe+auk77Y2fjr5q9hZVSiQAM4nqt99cooM9FGK0n9PPqs?=
+ =?us-ascii?Q?QklLP+E8vr7tH6nJhuMyMvxSTrDjR5nTn0CJ8N0kB3XHBVZtG5YNxHUvUxTB?=
+ =?us-ascii?Q?VnsqQPwEnLaePzKv4h3B9vMdyRXtAXkSPOsCe/bKUMu3hAIH4wuinqd18H3m?=
+ =?us-ascii?Q?3P16mQUagFOyYGPOV0LGoVxxrXXcNYs8WfkeuHfrhQCq9ISKFUxNUD67jsOn?=
+ =?us-ascii?Q?91FcpG0chExWI2Jt3OfqTdXeaG6XXanszI+cGVwpqDkTOxF8yeglzhL/J+7m?=
+ =?us-ascii?Q?1uF0GjZ7KeEimswxMOXIj7o51CWionfcziyks9R2xk7ZcpEGTvss3sIRL4vx?=
+ =?us-ascii?Q?MBTXJpV/hejXAk9JMKg5Gy4Bz/Kp80HM/oGUrmuHDQT5WVPslZbg84N0JIcL?=
+ =?us-ascii?Q?bF1BwxFY2hovud8WXy9i/83V6dvcSIdBQWx6LVAB6WJclxyOAinuTxXXpKr/?=
+ =?us-ascii?Q?WZN8xvJQxIimHkf/jBTXpjOlW6eCCAgCXL9U9/Xn9lR/m+GSeQq69WStTZ9z?=
+ =?us-ascii?Q?rZb9e0M5i3Z3bloCANCx4dnwlYN9fSYnCIoIH6BdIAXR/cdAGytNc4+1HNSy?=
+ =?us-ascii?Q?Bai2P8gCWlBXuMQ7NBYkMFbNTc1MEvwWmC1f1va8Mt14fykPG6lt4CBcvAXU?=
+ =?us-ascii?Q?0mZkadpWK3mJXANX7Es0kuMB9qQ43YipmjR2dtUfLJEr6115tUnuTj3W3eWc?=
+ =?us-ascii?Q?+//yGctrypLDYnc3dGjior3xLozAH/RjsybgR/qmfrR0oZAWCgLeBrrRKn9t?=
+ =?us-ascii?Q?isbtKatvbGnck581jz9wsZ9VPCGIfyE=3D?=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8f23c6c-7453-4a37-b47b-08da2e5a45a1
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6b5399a1-76ca-4d24-0d72-08da2e5a4657
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 05:44:07.7599
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 May 2022 05:44:08.9484
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 3qQlLThJHuX9HPBldFCDHjUm41Ow+PJK/MhBEK02W8EXLAuKx1JqfQCUQ37hJU/S3Mb37xEP0mqd3wDMkiKP83mu4z3Tlb376iwjx0a0/P8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR13MB2609
+X-MS-Exchange-CrossTenant-UserPrincipalName: 6fmrPO449OIa3RSs2Mv8tp0tfSI2RMBTWXDBGr3MvbkelmJuV2RNaGpiTy2HVAcL+Aihw40f9bkItbGd227o5uXcT/6ILGmjhfssHy4YmvU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR13MB1257
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -118,109 +118,105 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Louis Peens <louis.peens@corigine.com>
 
-Make sure that the rule also matches on source MAC address. On top
-of that also now save the src and dst MAC addresses similar to how
-vlan_tci is saved - this will be used in later comparisons with
-neighbour entries. Indicate if the flow matched on ipv4 or ipv6.
-Populate the vlan_tpid field that got added to the pre_run_rule
-struct as well.
+When a callback is received to invalidate a neighbour entry
+there is no need to try and populate any other flow information.
+Only the flowX->daddr information is needed as lookup key to delete
+an entry from the NFP neighbour table. Fix this by only doing the
+lookup if the callback is for a new entry.
+
+As part of this cleanup remove the setting of flow6.flowi6_proto, as
+this is not needed either, it looks to be a possible leftover from a
+previous implementation.
 
 Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Yinjun Zhang <yinjun.zhang@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- .../ethernet/netronome/nfp/flower/offload.c   | 41 +++++++++++++++----
- 1 file changed, 34 insertions(+), 7 deletions(-)
+ .../netronome/nfp/flower/tunnel_conf.c        | 52 ++++++++++++-------
+ 1 file changed, 33 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/offload.c b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-index 0fe018bef410..5fea3e3415fe 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/offload.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/offload.c
-@@ -1170,6 +1170,11 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
- 		return -EOPNOTSUPP;
- 	}
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index f5e8ed14e517..0cb016afbab3 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -494,7 +494,7 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
+ 	struct flowi6 flow6 = {};
+ 	struct neighbour *n;
+ 	struct nfp_app *app;
+-	struct rtable *rt;
++	bool neigh_invalid;
+ 	bool ipv6 = false;
+ 	int err;
  
-+	if (key_layer & NFP_FLOWER_LAYER_IPV6)
-+		flow->pre_tun_rule.is_ipv6 = true;
-+	else
-+		flow->pre_tun_rule.is_ipv6 = false;
+@@ -513,6 +513,8 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
+ 	if (n->tbl->family == AF_INET6)
+ 		ipv6 = true;
+ 
++	neigh_invalid = !(n->nud_state & NUD_VALID) || n->dead;
 +
- 	/* Skip fields known to exist. */
- 	mask += sizeof(struct nfp_flower_meta_tci);
- 	ext += sizeof(struct nfp_flower_meta_tci);
-@@ -1180,13 +1185,6 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
- 	mask += sizeof(struct nfp_flower_in_port);
- 	ext += sizeof(struct nfp_flower_in_port);
- 
--	/* Ensure destination MAC address matches pre_tun_dev. */
--	mac = (struct nfp_flower_mac_mpls *)ext;
--	if (memcmp(&mac->mac_dst[0], flow->pre_tun_rule.dev->dev_addr, 6)) {
--		NL_SET_ERR_MSG_MOD(extack, "unsupported pre-tunnel rule: dest MAC must match output dev MAC");
--		return -EOPNOTSUPP;
--	}
+ 	if (ipv6)
+ 		flow6.daddr = *(struct in6_addr *)n->primary_key;
+ 	else
+@@ -533,29 +535,41 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
+ #if IS_ENABLED(CONFIG_INET)
+ 	if (ipv6) {
+ #if IS_ENABLED(CONFIG_IPV6)
+-		struct dst_entry *dst;
 -
- 	/* Ensure destination MAC address is fully matched. */
- 	mac = (struct nfp_flower_mac_mpls *)mask;
- 	if (!is_broadcast_ether_addr(&mac->mac_dst[0])) {
-@@ -1194,11 +1192,36 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
- 		return -EOPNOTSUPP;
- 	}
- 
-+	/* Ensure source MAC address is fully matched. This is only needed
-+	 * for firmware with the DECAP_V2 feature enabled. Don't do this
-+	 * for firmware without this feature to keep old behaviour.
-+	 */
-+	if (priv->flower_ext_feats & NFP_FL_FEATS_DECAP_V2) {
-+		mac = (struct nfp_flower_mac_mpls *)mask;
-+		if (!is_broadcast_ether_addr(&mac->mac_src[0])) {
-+			NL_SET_ERR_MSG_MOD(extack,
-+					   "unsupported pre-tunnel rule: source MAC field must not be masked");
-+			return -EOPNOTSUPP;
+-		dst = ipv6_stub->ipv6_dst_lookup_flow(dev_net(n->dev), NULL,
+-						      &flow6, NULL);
+-		if (IS_ERR(dst))
+-			return NOTIFY_DONE;
+-
+-		dst_release(dst);
+-		flow6.flowi6_proto = IPPROTO_UDP;
++		if (!neigh_invalid) {
++			struct dst_entry *dst;
++			/* Use ipv6_dst_lookup_flow to populate flow6->saddr
++			 * and other fields. This information is only needed
++			 * for new entries, lookup can be skipped when an entry
++			 * gets invalidated - as only the daddr is needed for
++			 * deleting.
++			 */
++			dst = ip6_dst_lookup_flow(dev_net(n->dev), NULL,
++						  &flow6, NULL);
++			if (IS_ERR(dst))
++				return NOTIFY_DONE;
++
++			dst_release(dst);
 +		}
-+	}
+ 		nfp_tun_write_neigh_v6(n->dev, app, &flow6, n, GFP_ATOMIC);
+ #else
+ 		return NOTIFY_DONE;
+ #endif /* CONFIG_IPV6 */
+ 	} else {
+-		/* Do a route lookup to populate flow data. */
+-		rt = ip_route_output_key(dev_net(n->dev), &flow4);
+-		err = PTR_ERR_OR_ZERO(rt);
+-		if (err)
+-			return NOTIFY_DONE;
+-
+-		ip_rt_put(rt);
+-
+-		flow4.flowi4_proto = IPPROTO_UDP;
++		if (!neigh_invalid) {
++			struct rtable *rt;
++			/* Use ip_route_output_key to populate flow4->saddr and
++			 * other fields. This information is only needed for
++			 * new entries, lookup can be skipped when an entry
++			 * gets invalidated - as only the daddr is needed for
++			 * deleting.
++			 */
++			rt = ip_route_output_key(dev_net(n->dev), &flow4);
++			err = PTR_ERR_OR_ZERO(rt);
++			if (err)
++				return NOTIFY_DONE;
 +
- 	if (mac->mpls_lse) {
- 		NL_SET_ERR_MSG_MOD(extack, "unsupported pre-tunnel rule: MPLS not supported");
- 		return -EOPNOTSUPP;
++			ip_rt_put(rt);
++		}
+ 		nfp_tun_write_neigh_v4(n->dev, app, &flow4, n, GFP_ATOMIC);
  	}
- 
-+	/* Ensure destination MAC address matches pre_tun_dev. */
-+	mac = (struct nfp_flower_mac_mpls *)ext;
-+	if (memcmp(&mac->mac_dst[0], flow->pre_tun_rule.dev->dev_addr, 6)) {
-+		NL_SET_ERR_MSG_MOD(extack,
-+				   "unsupported pre-tunnel rule: dest MAC must match output dev MAC");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	/* Save mac addresses in pre_tun_rule entry for later use */
-+	memcpy(&flow->pre_tun_rule.loc_mac, &mac->mac_dst[0], ETH_ALEN);
-+	memcpy(&flow->pre_tun_rule.rem_mac, &mac->mac_src[0], ETH_ALEN);
-+
- 	mask += sizeof(struct nfp_flower_mac_mpls);
- 	ext += sizeof(struct nfp_flower_mac_mpls);
- 	if (key_layer & NFP_FLOWER_LAYER_IPV4 ||
-@@ -1227,17 +1250,21 @@ nfp_flower_validate_pre_tun_rule(struct nfp_app *app,
- 	if ((priv->flower_ext_feats & NFP_FL_FEATS_VLAN_QINQ)) {
- 		if (key_ls->key_layer_two & NFP_FLOWER_LAYER2_QINQ) {
- 			struct nfp_flower_vlan *vlan_tags;
-+			u16 vlan_tpid;
- 			u16 vlan_tci;
- 
- 			vlan_tags = (struct nfp_flower_vlan *)ext;
- 
- 			vlan_tci = be16_to_cpu(vlan_tags->outer_tci);
-+			vlan_tpid = be16_to_cpu(vlan_tags->outer_tpid);
- 
- 			vlan_tci &= ~NFP_FLOWER_MASK_VLAN_PRESENT;
- 			flow->pre_tun_rule.vlan_tci = cpu_to_be16(vlan_tci);
-+			flow->pre_tun_rule.vlan_tpid = cpu_to_be16(vlan_tpid);
- 			vlan = true;
- 		} else {
- 			flow->pre_tun_rule.vlan_tci = cpu_to_be16(0xffff);
-+			flow->pre_tun_rule.vlan_tpid = cpu_to_be16(0xffff);
- 		}
- 	}
- 
+ #else
 -- 
 2.30.2
 
