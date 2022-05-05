@@ -2,183 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 210CB51C062
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:17:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AD7051C032
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 15:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378927AbiEENUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 09:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
+        id S1376705AbiEENJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 09:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354075AbiEENUl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 09:20:41 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28E4B18E18;
-        Thu,  5 May 2022 06:17:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651756622; x=1683292622;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=+6MCbEQSUwrgaPZw/EyhSqJQGKL9MpyVEdD0/n5EPeI=;
-  b=NidSsoJSQWI7Xil2Da5FncYmC4RR9xPSXdoS0FD3sT+aCpqFaMydh0jR
-   zTZYYVArzsQ22RV7a2W8ipjYbtZJxEEEgTmJHHbmjR5mx9PqHVidT6mz7
-   CbwMiqbM7zp8ZJx1xJzfYTbSmtwT6tv/+pJQjgxRWaWRXCkYzQao5cbdY
-   CUMFjfjAPphXSC22xGGUKV1jtcWZ+LckTt+h9Zhc6ZXYVuo7FpF9eASsY
-   LP5uAPQvvxNJyDRV18g8K7q95evwEIK9nYhYwsORjzNjVMV95YwKVEEZr
-   PG4QZN2+LAKlCsHZE+5JrJ/bAN9gTRPyN3/BBoD4ztn59bY2EdyEDiL5z
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10338"; a="331090656"
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="331090656"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 May 2022 06:17:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,201,1647327600"; 
-   d="scan'208";a="563235590"
-Received: from irvmail001.ir.intel.com ([10.43.11.63])
-  by orsmga007.jf.intel.com with ESMTP; 05 May 2022 06:16:58 -0700
-Received: from lincoln.igk.intel.com (lincoln.igk.intel.com [10.102.21.235])
-        by irvmail001.ir.intel.com (8.14.3/8.13.6/MailSET/Hub) with ESMTP id 245DGuYS009371;
-        Thu, 5 May 2022 14:16:56 +0100
-From:   Larysa Zaremba <larysa.zaremba@intel.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Larysa Zaremba <larysa.zaremba@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: [PATCH bpf-next v2] bpftool: Use sysfs vmlinux when dumping BTF by ID
-Date:   Thu,  5 May 2022 15:05:08 +0200
-Message-Id: <20220505130507.130670-1-larysa.zaremba@intel.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1378883AbiEENJB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 09:09:01 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED4265B0;
+        Thu,  5 May 2022 06:05:21 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id bv19so8611700ejb.6;
+        Thu, 05 May 2022 06:05:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:from:to:cc:subject:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=aNKOhtKTSEh4Mqkalcz76ou0WqeGSr1qJcVWuxMdUgc=;
+        b=Rl64O5ujSl9GyaSM5CAsEp/QIQNn+pY27aNk3caCBymQk23TAnjTdLhOdwHuO6v0Xe
+         LX95mSzpjCgmTKkznYc5Yyn76KiDpX9xumKc4M1AUZEYRARlObL/akMmPkCzORIKL2lX
+         dlpF+c7Fo/EM2tTUuQq6vezqYHPWtHJMjpiZD295uy9umFpMWTszJvqe8O9FMRVKKzWZ
+         39NxWphExiy2VLUvQHnw1XON74THBYcpqVaK7Ay9nwQyOij7UZJuTGjXdOoXRJAHLA2l
+         eVAymy9eRQmh81jLURLeW4veoZ0H4K1ec6R+oOwMfiYPlpTwVqvB9viXzZuWG3IS1eu6
+         Paxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=aNKOhtKTSEh4Mqkalcz76ou0WqeGSr1qJcVWuxMdUgc=;
+        b=PJM40PmC6l5F4QsHvu8LMmD0bO35bnQV2IQnGl19spdZHs+KY5T9e/mi4cFkYIz4TR
+         4c0zvXfN6zJiChY3OstDxmigL9FrHRiqN+NV29iPlrNI+/t6nCDwcqP9J9mImtaZz7yk
+         a/sQlbDoyeUiUt5TKOO2voAYu3r0AgGxFFcjmb72IaLoKFGjTb8TtTORhrO/Fga4lyMA
+         gdXoCHDZ3nG+X5bIaQpQjgljyujP1if/BAjrlnTjv7Br6NGd9mfy5mV1zPPIIuFlgSLr
+         jdbqQbWBPCleLocRmF2O/iFo0lBhOwKYrpyXgvwwBlEczPp8KQcokj2b4I4Ldw6I6y/U
+         UILQ==
+X-Gm-Message-State: AOAM533E5J+8Qt26IFavaUCrkumTDm4iS9HZHpy5XmhqNcwF+FjkwQXP
+        HtoydIgxNXI3nEbBBt34soA=
+X-Google-Smtp-Source: ABdhPJyyVh6cKMR5tBekSuJuZBCdlWUsoD48Yo83JDTJb326k6wuXABrCERWF5ectwaSbf2VtzR4pw==
+X-Received: by 2002:a17:907:7e88:b0:6f4:99be:a333 with SMTP id qb8-20020a1709077e8800b006f499bea333mr12336755ejc.719.1651755918889;
+        Thu, 05 May 2022 06:05:18 -0700 (PDT)
+Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
+        by smtp.gmail.com with ESMTPSA id p4-20020a17090628c400b006f3ef214e07sm721237ejd.109.2022.05.05.06.05.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 06:05:18 -0700 (PDT)
+Message-ID: <6273cb8e.1c69fb81.716fc.3f98@mx.google.com>
+X-Google-Original-Message-ID: <YnPLjDg5Vs3eQyG+@Ansuel-xps.>
+Date:   Thu, 5 May 2022 15:05:16 +0200
+From:   Ansuel Smith <ansuelsmth@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Jonathan Corbet <corbet@lwn.net>, Pavel Machek <pavel@ucw.cz>,
+        John Crispin <john@phrozen.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [RFC PATCH v6 03/11] leds: trigger: netdev: drop
+ NETDEV_LED_MODE_LINKUP from mode
+References: <20220503151633.18760-1-ansuelsmth@gmail.com>
+ <20220503151633.18760-4-ansuelsmth@gmail.com>
+ <YnMLay1N2KBjC1VE@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YnMLay1N2KBjC1VE@lunn.ch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        WEIRD_QUOTING autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, dumping almost all BTFs specified by id requires
-using the -B option to pass the base BTF. For kernel module
-BTFs the vmlinux BTF sysfs path should work.
+On Thu, May 05, 2022 at 01:25:31AM +0200, Andrew Lunn wrote:
+> On Tue, May 03, 2022 at 05:16:25PM +0200, Ansuel Smith wrote:
+> > Drop NETDEV_LED_MODE_LINKUP from mode list and convert to a simple bool
+> > that will be true or false based on the carrier link. No functional
+> > change intended.
+> 
+> What is missing from the commit message is an explanation why?
+> 
+>      Andrew
 
-This patch simplifies dumping by ID usage by attempting to
-use vmlinux BTF from sysfs, if the first try of loading BTF by ID
-fails with certain conditions and the ID corresponds to a kernel
-module BTF.
+Will add the reason.
+Just in case it doesn't make sense...
+The reason is that putting a state in the mode bitmap doesn't look
+correct. It's ""acceptable"" if we have only 3 state (rx, tx and link).
+It become problematic when we start to have 7 modes and a link up state
+should be handled differently.
 
-Signed-off-by: Larysa Zaremba <larysa.zaremba@intel.com>
-Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
----
- tools/bpf/bpftool/btf.c | 67 +++++++++++++++++++++++++++++++++++------
- 1 file changed, 58 insertions(+), 9 deletions(-)
+Does it make sense?
 
-diff --git a/tools/bpf/bpftool/btf.c b/tools/bpf/bpftool/btf.c
-index a2c665beda87..070e0c1595d7 100644
---- a/tools/bpf/bpftool/btf.c
-+++ b/tools/bpf/bpftool/btf.c
-@@ -459,6 +459,56 @@ static int dump_btf_c(const struct btf *btf,
- 	return err;
- }
- 
-+static const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
-+
-+static struct btf *get_vmlinux_btf_from_sysfs(void)
-+{
-+	struct btf *base;
-+
-+	base = btf__parse(sysfs_vmlinux, NULL);
-+	if (libbpf_get_error(base)) {
-+		p_err("failed to parse vmlinux BTF at '%s': %ld\n",
-+		      sysfs_vmlinux, libbpf_get_error(base));
-+		base = NULL;
-+	}
-+
-+	return base;
-+}
-+
-+static struct btf *btf_try_load_with_vmlinux(__u32 btf_id, struct btf **base)
-+{
-+	struct bpf_btf_info btf_info = {};
-+	unsigned int len;
-+	int btf_fd;
-+	int err;
-+
-+	btf_fd = bpf_btf_get_fd_by_id(btf_id);
-+	if (btf_fd < 0) {
-+		p_err("can't get BTF object by id (%u): %s",
-+		      btf_id, strerror(errno));
-+		return ERR_PTR(btf_fd);
-+	}
-+
-+	len = sizeof(btf_info);
-+	err = bpf_obj_get_info_by_fd(btf_fd, &btf_info, &len);
-+	close(btf_fd);
-+
-+	if (err) {
-+		p_err("can't get BTF (ID %u) object info: %s",
-+		      btf_id, strerror(errno));
-+		return ERR_PTR(err);
-+	}
-+
-+	if (!btf_info.kernel_btf) {
-+		p_err("BTF with ID %u is not a kernel module BTF, cannot use vmlinux as base",
-+		      btf_id);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	*base = get_vmlinux_btf_from_sysfs();
-+	return btf__load_from_kernel_by_id_split(btf_id, *base);
-+}
-+
- static int do_dump(int argc, char **argv)
- {
- 	struct btf *btf = NULL, *base = NULL;
-@@ -536,18 +586,11 @@ static int do_dump(int argc, char **argv)
- 		NEXT_ARG();
- 	} else if (is_prefix(src, "file")) {
- 		const char sysfs_prefix[] = "/sys/kernel/btf/";
--		const char sysfs_vmlinux[] = "/sys/kernel/btf/vmlinux";
- 
- 		if (!base_btf &&
- 		    strncmp(*argv, sysfs_prefix, sizeof(sysfs_prefix) - 1) == 0 &&
--		    strcmp(*argv, sysfs_vmlinux) != 0) {
--			base = btf__parse(sysfs_vmlinux, NULL);
--			if (libbpf_get_error(base)) {
--				p_err("failed to parse vmlinux BTF at '%s': %ld\n",
--				      sysfs_vmlinux, libbpf_get_error(base));
--				base = NULL;
--			}
--		}
-+		    strcmp(*argv, sysfs_vmlinux))
-+			base = get_vmlinux_btf_from_sysfs();
- 
- 		btf = btf__parse_split(*argv, base ?: base_btf);
- 		err = libbpf_get_error(btf);
-@@ -593,6 +636,12 @@ static int do_dump(int argc, char **argv)
- 	if (!btf) {
- 		btf = btf__load_from_kernel_by_id_split(btf_id, base_btf);
- 		err = libbpf_get_error(btf);
-+		if (err == -EINVAL && !base_btf) {
-+			p_info("Warning: valid base BTF was not specified with -B option, falling back on standard base BTF (sysfs vmlinux)");
-+			btf = btf_try_load_with_vmlinux(btf_id, &base);
-+			err = libbpf_get_error(btf);
-+		}
-+
- 		if (err) {
- 			p_err("get btf by id (%u): %s", btf_id, strerror(err));
- 			goto done;
 -- 
-2.35.1
-
+	Ansuel
