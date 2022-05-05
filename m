@@ -2,124 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 406A851B4B2
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 02:30:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 600D551B4CF
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 02:46:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232238AbiEEAeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 20:34:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52780 "EHLO
+        id S232772AbiEEAt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 20:49:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232266AbiEEAdx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 20:33:53 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB73110F;
-        Wed,  4 May 2022 17:30:15 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so6567116pjb.5;
-        Wed, 04 May 2022 17:30:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=vXjQm31zmug0ZJajiOXjsOsVqx4TK9fapdQ9fvw0pGQ=;
-        b=k21Uk51OpmNTv6LT6RzmMWWRVWXYnQUPImMmJ/DstgPMvA/3UT7fiDsSiHnzC+LxQH
-         YZyUHt+owO8Zzcciv5z+IWJEmf2sJiApDAwdJCeQGesvpuJpeRjdUew4WetUkFr0vS50
-         saf+gxHkN+vcEP1uK7VBU2LA3BckmUsALtz7Usb75IRxO/DhmT2QFR2xz3JK8pvJzRlI
-         nRowVBFWB81VA7v99hp15JGd7wwyPCr1z/52tvkRsUZ/4cIgSCW8588V90DBkLc9SM7p
-         gMH0xenIYyrHN28qKtF13Vs55Xbj7wHxt8z/YQCkXljyzjytAU9jy4OVGqAXkySePj0P
-         i58w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=vXjQm31zmug0ZJajiOXjsOsVqx4TK9fapdQ9fvw0pGQ=;
-        b=nZpplMMxkFBfXL/Pu+gz+RwpiZrJtKRqMCeoXJqBFV5/AGxU14gtMNohemvy4RTwsV
-         uzFMoLqqKxK7XY6CXKstamRr2HGkD/z2xQdVrB1IRI+W9ax3p8IP5cdRDlc4+x8AU584
-         gQlYuF0sEavYWUifLg8txhA55zfe0aoAgmZQOG7SXUwy0sFYQ6a3S9Nr8qmNCAXowmMy
-         FxS7YS0QF9Kt4ex0qoltoD0oBiDclEmeioWa+9F18oaUk3ONj0Mbmsv328Iq6TsONdQa
-         9MShnPLF6eJD1x81+3qy1mvifK8oA+OxEv9gqVds9FeoDMuKHBYluVHC0618AVczL4Sk
-         Es9g==
-X-Gm-Message-State: AOAM530HbKYjiJaq3rIeIRDwztH+TSWskyZsC+u4KmX/Vv5sHeupdZyP
-        MSU0jQgJBdqSlp/DagMRNbQ=
-X-Google-Smtp-Source: ABdhPJx9yIRqIj0VFgSzl+cbOT9204rAjJzMbIvxhmoNmRrS9Ih0GGt3+DB2pseO7zjTeBll6bgEYA==
-X-Received: by 2002:a17:90b:4d0c:b0:1d9:aee3:fac1 with SMTP id mw12-20020a17090b4d0c00b001d9aee3fac1mr2758961pjb.15.1651710615158;
-        Wed, 04 May 2022 17:30:15 -0700 (PDT)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id ie13-20020a17090b400d00b001da3920d985sm3921742pjb.12.2022.05.04.17.30.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 17:30:14 -0700 (PDT)
-Message-ID: <ad80d41e-3e82-3188-f1e5-631e631a1fe4@gmail.com>
-Date:   Thu, 5 May 2022 09:30:08 +0900
+        with ESMTP id S232535AbiEEAt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 20:49:57 -0400
+Received: from www262.sakura.ne.jp (www262.sakura.ne.jp [202.181.97.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B0911BE84
+        for <netdev@vger.kernel.org>; Wed,  4 May 2022 17:46:19 -0700 (PDT)
+Received: from fsav415.sakura.ne.jp (fsav415.sakura.ne.jp [133.242.250.114])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 2450joNY018435;
+        Thu, 5 May 2022 09:45:50 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav415.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav415.sakura.ne.jp);
+ Thu, 05 May 2022 09:45:50 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav415.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 2450joIS018432
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 5 May 2022 09:45:50 +0900 (JST)
+        (envelope-from penguin-kernel@I-love.SAKURA.ne.jp)
+Message-ID: <63dab11e-2aeb-5608-6dcb-6ebc3e98056e@I-love.SAKURA.ne.jp>
+Date:   Thu, 5 May 2022 09:45:49 +0900
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-From:   Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH net-next] net/core: Remove comment quote for
- __dev_queue_xmit()
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Ben Greear <greearb@candelatech.com>
-Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <9d8b436a-5d8d-2a53-a2a1-5fbab987e41b@gmail.com>
- <c578c9e6-b2a5-3294-d291-2abfda7d1aed@gmail.com>
- <20220504073707.5bd851b0@kernel.org>
+Subject: [PATCH] net: rds: use maybe_get_net() when acquiring refcount on TCP
+ sockets
 Content-Language: en-US
-In-Reply-To: <20220504073707.5bd851b0@kernel.org>
+From:   Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+To:     Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>
+Cc:     patchwork-bot+netdevbpf@kernel.org,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        syzbot <syzbot+694120e1002c117747ed@syzkaller.appspotmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        linux-rdma <linux-rdma@vger.kernel.org>
+References: <a5fb1fc4-2284-3359-f6a0-e4e390239d7b@I-love.SAKURA.ne.jp>
+ <165157801106.17866.6764782659491020080.git-patchwork-notify@kernel.org>
+ <CANn89iLHihonbBUQWkd0mjJPUuYBLMVoLCsRswtXmGjU3NKL5w@mail.gmail.com>
+ <CANn89iJ=LF0KhRXDiFcky7mqpVaiHdbc6RDacAdzseS=iwjr4Q@mail.gmail.com>
+ <f6f9f21d-7cdd-682f-f958-5951aa180ec7@I-love.SAKURA.ne.jp>
+ <CANn89iJOt9oC_sSmVhRx8fyyvJ2hWzYKcTfH1Rvbzpt5aP0qNA@mail.gmail.com>
+ <bf5ce176-35e6-0a75-1ada-6bed071a6a75@I-love.SAKURA.ne.jp>
+ <5f3feecc-65ad-af5f-0ecd-94b2605ab67e@I-love.SAKURA.ne.jp>
+In-Reply-To: <5f3feecc-65ad-af5f-0ecd-94b2605ab67e@I-love.SAKURA.ne.jp>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[+To: Ben]
-[-Cc: unreachable addresses]
+Eric Dumazet is reporting addition on 0 problem at rds_tcp_tune(), for
+delayed works queued in rds_wq might be invoked after a net namespace's
+refcount already reached 0.
 
-Hi,
+Since rds_tcp_exit_net() from cleanup_net() calls flush_workqueue(rds_wq),
+it is guaranteed that we can instead use maybe_get_net() from delayed work
+functions until rds_tcp_exit_net() returns.
 
-On 2022/05/04 23:37,
-Jakub Kicinski wrote:
-> On Wed, 4 May 2022 22:43:12 +0900 Akira Yokosawa wrote:
->>> I can't think of preserving delineation between actual documentation
->>> and the quote without messing up kernel-doc.  
-> 
-> That's not what I'm complaining about, I'm saying that you rewrote 
-> the documentation. There were 3 paragraphs now there are 2.
-> 
->> Actually, it is possible.
->>
->> See "Block Quotes" in ReST documentation at:
->> https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html#block-quotes
->>
->> kernel-doc is basically ReST within comment blocks with several kernel-doc
->> specific implicit/explicit markers.
-> 
-> With all due respect I don't even know who (what?) "BLG" is.
+Note that I'm not convinced that all works which might access a net
+namespace are already queued in rds_wq by the moment rds_tcp_exit_net()
+calls flush_workqueue(rds_wq). If some race is there, rds_tcp_exit_net()
+will fail to wait for work functions, and kmem_cache_free() could be
+called from net_free() before maybe_get_net() is called from
+rds_tcp_tune().
 
-In case this might help, this comment block was added in commit
-af191367a752 ("[NET]: Document ->hard_start_xmit() locking in
-comments.") authored by Ben way back in 2005.
+Reported-by: Eric Dumazet <edumazet@google.com>
+Fixes: 3a58f13a881ed351 ("net: rds: acquire refcount on TCP sockets")
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+---
+ net/rds/tcp.c         | 11 ++++++++---
+ net/rds/tcp.h         |  2 +-
+ net/rds/tcp_connect.c |  5 ++++-
+ net/rds/tcp_listen.c  |  5 ++++-
+ 4 files changed, 17 insertions(+), 6 deletions(-)
 
-Ben, if you want to see the circumstances, here is a link to the lore
-archive.
-    https://lore.kernel.org/all/20220504073707.5bd851b0@kernel.org/#r
+diff --git a/net/rds/tcp.c b/net/rds/tcp.c
+index 2f638f8b7b1e..8e26bcf02044 100644
+--- a/net/rds/tcp.c
++++ b/net/rds/tcp.c
+@@ -487,11 +487,11 @@ struct rds_tcp_net {
+ /* All module specific customizations to the RDS-TCP socket should be done in
+  * rds_tcp_tune() and applied after socket creation.
+  */
+-void rds_tcp_tune(struct socket *sock)
++bool rds_tcp_tune(struct socket *sock)
+ {
+ 	struct sock *sk = sock->sk;
+ 	struct net *net = sock_net(sk);
+-	struct rds_tcp_net *rtn = net_generic(net, rds_tcp_netid);
++	struct rds_tcp_net *rtn;
+ 
+ 	tcp_sock_set_nodelay(sock->sk);
+ 	lock_sock(sk);
+@@ -499,10 +499,14 @@ void rds_tcp_tune(struct socket *sock)
+ 	 * a process which created this net namespace terminated.
+ 	 */
+ 	if (!sk->sk_net_refcnt) {
++		if (!maybe_get_net(net)) {
++			release_sock(sk);
++			return false;
++		}
+ 		sk->sk_net_refcnt = 1;
+-		get_net_track(net, &sk->ns_tracker, GFP_KERNEL);
+ 		sock_inuse_add(net, 1);
+ 	}
++	rtn = net_generic(net, rds_tcp_netid);
+ 	if (rtn->sndbuf_size > 0) {
+ 		sk->sk_sndbuf = rtn->sndbuf_size;
+ 		sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
+@@ -512,6 +516,7 @@ void rds_tcp_tune(struct socket *sock)
+ 		sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
+ 	}
+ 	release_sock(sk);
++	return true;
+ }
+ 
+ static void rds_tcp_accept_worker(struct work_struct *work)
+diff --git a/net/rds/tcp.h b/net/rds/tcp.h
+index dc8d745d6857..f8b5930d7b34 100644
+--- a/net/rds/tcp.h
++++ b/net/rds/tcp.h
+@@ -49,7 +49,7 @@ struct rds_tcp_statistics {
+ };
+ 
+ /* tcp.c */
+-void rds_tcp_tune(struct socket *sock);
++bool rds_tcp_tune(struct socket *sock);
+ void rds_tcp_set_callbacks(struct socket *sock, struct rds_conn_path *cp);
+ void rds_tcp_reset_callbacks(struct socket *sock, struct rds_conn_path *cp);
+ void rds_tcp_restore_callbacks(struct socket *sock,
+diff --git a/net/rds/tcp_connect.c b/net/rds/tcp_connect.c
+index 5461d77fff4f..f0c477c5d1db 100644
+--- a/net/rds/tcp_connect.c
++++ b/net/rds/tcp_connect.c
+@@ -124,7 +124,10 @@ int rds_tcp_conn_path_connect(struct rds_conn_path *cp)
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	rds_tcp_tune(sock);
++	if (!rds_tcp_tune(sock)) {
++		ret = -EINVAL;
++		goto out;
++	}
+ 
+ 	if (isv6) {
+ 		sin6.sin6_family = AF_INET6;
+diff --git a/net/rds/tcp_listen.c b/net/rds/tcp_listen.c
+index 09cadd556d1e..7edf2e69d3fe 100644
+--- a/net/rds/tcp_listen.c
++++ b/net/rds/tcp_listen.c
+@@ -133,7 +133,10 @@ int rds_tcp_accept_one(struct socket *sock)
+ 	__module_get(new_sock->ops->owner);
+ 
+ 	rds_tcp_keepalive(new_sock);
+-	rds_tcp_tune(new_sock);
++	if (!rds_tcp_tune(new_sock)) {
++		ret = -EINVAL;
++		goto out;
++	}
+ 
+ 	inet = inet_sk(new_sock->sk);
+ 
+-- 
+2.34.1
 
-> 
-> Let's just get rid of the delineation and the signature and make 
-> the text of the quote normal documentation.
 
-I'm not sure but Ben might be interested in helping rephrase the quote.
-
-        Thanks, Akira
-
-> 
->>> Actually the "--BLG" signature is the culprit.  
-> 
