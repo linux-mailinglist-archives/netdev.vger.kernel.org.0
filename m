@@ -2,131 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB78551B857
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 08:59:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD1651B85F
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 09:01:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242125AbiEEHDL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 03:03:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40386 "EHLO
+        id S245401AbiEEHFP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 03:05:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235166AbiEEHDL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 03:03:11 -0400
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C6B147542;
-        Wed,  4 May 2022 23:59:33 -0700 (PDT)
-Received: by mail-qt1-f178.google.com with SMTP id fu47so2550439qtb.5;
-        Wed, 04 May 2022 23:59:33 -0700 (PDT)
+        with ESMTP id S245404AbiEEHFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 03:05:13 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA62434BE;
+        Thu,  5 May 2022 00:01:35 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id g3so2983280pgg.3;
+        Thu, 05 May 2022 00:01:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oEvUp+vyk+kyHOCOgG5usVRVDzAYyII5UrneuqC2py4=;
+        b=hu5dI2n2abFL5Y/r9WUshvPOufEMDyAeODTu4+O1ig0EQwvbOtz8MVQeTUC0OPTg7l
+         LiLUmbi+zV3CvgNbMX6uErOp51yu+q1lcktssO6ivbgVZDsi0qdgJGGXQ1XMybSJzUPv
+         OrcKgubG8Rd01IsLd1pb4E4Hokyjj68ccJh992BcKqCu0QpliUXSjfmXhjDS44atZwuJ
+         tDZZuu0Wbl3IJXncYzJQnsCE6uX3pUnm8zSmuTnLVBDQZwfQja1mlytSusYCHwB7be1e
+         Sj6zlVf1K1e8sIROdkS2TK3PEbTPaWYIk7qsJHWbfp/xPVZ52DBFOZvO7S5YYoy9sPSx
+         RyzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1kyfcH624YObu9U2EDyv5UgsEw2pZgVLfORpPmEDwV0=;
-        b=nWWUsf1bTJ+CMZZR5AU2u+FV/aybBvUyJCs+xDgnGh2TzZlfUParIuyftqeoDAok/b
-         RT8Lhl9o014I77zuR8NenXQeojLARxbXAn/OQPE/kQDaF9YZpglfGfINRC8AoLpD7ctX
-         UClm4ry34tJBAZABMAF10YjIYw7k2aRdMNFNFv9GW/U1RtKraEodAM2rSp47qHZDqEiV
-         0wsps8xVODiMZJp4SDShCbYblS4wWMardvB0b7Kih9SfEzSYVdtr5rL+jdCWaP6tORAP
-         qsY3NhZK+cqfQm7N2k94EhP5IfC/ORkdvLRPfMikIZ+5/WPgDXswu35MQJRZwCkmaPQl
-         PdfQ==
-X-Gm-Message-State: AOAM532/yJVEWlfp1l/QmtTWu+u2cUEV9zSAxzjs/l6wa5LyhvoJxn7l
-        FyGBQV6jwwKpn0nekQ1blkbAeMTSJdazQg==
-X-Google-Smtp-Source: ABdhPJw3MVPc9LHMVwPOhabxZSORgomuFxm6Jt5ZC7fVqXJn/7fBzffvKV3zHZL95VgCt2Amnn0lBA==
-X-Received: by 2002:a05:622a:1649:b0:2f3:a6bc:73ea with SMTP id y9-20020a05622a164900b002f3a6bc73eamr16029240qtj.506.1651733971970;
-        Wed, 04 May 2022 23:59:31 -0700 (PDT)
-Received: from mail-yb1-f170.google.com (mail-yb1-f170.google.com. [209.85.219.170])
-        by smtp.gmail.com with ESMTPSA id x74-20020a37634d000000b0069ff51425a2sm392481qkb.120.2022.05.04.23.59.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 May 2022 23:59:31 -0700 (PDT)
-Received: by mail-yb1-f170.google.com with SMTP id y76so6146666ybe.1;
-        Wed, 04 May 2022 23:59:31 -0700 (PDT)
-X-Received: by 2002:a05:6902:389:b0:633:31c1:d0f7 with SMTP id
- f9-20020a056902038900b0063331c1d0f7mr19881851ybs.543.1651733970778; Wed, 04
- May 2022 23:59:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oEvUp+vyk+kyHOCOgG5usVRVDzAYyII5UrneuqC2py4=;
+        b=rV7B/WDzQoiu5ys5UDS3N2LfxLumrBzjisG7arys+5J7g95RPEjWg2Q5DlkNYl4FMQ
+         WNBZPcsvnZby2vD68gFkTRz5sP5OLncGCYUjen8Yai6Lfrt55X7RsZMn8njWXPVD2p+X
+         75WifSpmMCfE89U2H4ZS2eskEACpPz1UoeCpeKbFa9ay2/yusIzYzLPHl+el7rEHQzDC
+         4+6CrZJcUeunvdUJi8UjbPc7X6q2Dd+k2bTMitKfP/Ls1lGoBmwFya++ikOdJRP8bxd4
+         /HYfI+2vBoL14evYQnufM7tfq5Asb/EIYXd3jqRwFMpWsuOGLGOtgQ7fTVTbnb01rgAP
+         uomg==
+X-Gm-Message-State: AOAM53071a40xW/67MzGwSzamcqHx8erTlNmYVQHh4Lyqe81mIoO/j14
+        jPOa/2dTqzZ33RRhH0IJVt4=
+X-Google-Smtp-Source: ABdhPJyKkwxHEJ4b2LiA5QyIppB7tZm5pMxXjWWTNuOhyfNUbj6PXzcVAZRNwaLGdwGbDcRzYbvnyg==
+X-Received: by 2002:a63:570f:0:b0:39d:2648:261d with SMTP id l15-20020a63570f000000b0039d2648261dmr20550623pgb.551.1651734094739;
+        Thu, 05 May 2022 00:01:34 -0700 (PDT)
+Received: from localhost.localdomain ([43.132.141.9])
+        by smtp.gmail.com with ESMTPSA id l8-20020a170902f68800b0015e8d4eb213sm716386plg.93.2022.05.05.00.01.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 May 2022 00:01:33 -0700 (PDT)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH bpf-next] bpf: Remove unused parameter from find_kfunc_desc_btf()
+Date:   Thu,  5 May 2022 15:01:14 +0800
+Message-Id: <20220505070114.3522522-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-References: <20220504145454.71287-1-phil.edworthy@renesas.com> <20220504175757.0a3c1a6a@kernel.org>
-In-Reply-To: <20220504175757.0a3c1a6a@kernel.org>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 5 May 2022 08:59:19 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXKUpHa0SGGQUbepAHoS3evEBSzF4RYqA8B09eq1CtBUw@mail.gmail.com>
-Message-ID: <CAMuHMdXKUpHa0SGGQUbepAHoS3evEBSzF4RYqA8B09eq1CtBUw@mail.gmail.com>
-Subject: Re: [PATCH 0/9] Add Renesas RZ/V2M Ethernet support
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Phil Edworthy <phil.edworthy@renesas.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+The func_id parameter in find_kfunc_desc_btf() is not used, get rid of it.
 
-On Thu, May 5, 2022 at 2:58 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> On Wed,  4 May 2022 15:54:45 +0100 Phil Edworthy wrote:
-> > The RZ/V2M Ethernet is very similar to R-Car Gen3 Ethernet-AVB, though
-> > some small parts are the same as R-Car Gen2.
-> > Other differences are:
-> > * It has separate data (DI), error (Line 1) and management (Line 2) irqs
-> >   rather than one irq for all three.
-> > * Instead of using the High-speed peripheral bus clock for gPTP, it has
-> >   a separate gPTP reference clock.
-> >
-> > The dts patches depend on v4 of the following patch set:
-> > "Add new Renesas RZ/V2M SoC and Renesas RZ/V2M EVK support"
-> >
-> > Phil Edworthy (9):
-> >   clk: renesas: r9a09g011: Add eth clock and reset entries
-> >   dt-bindings: net: renesas,etheravb: Document RZ/V2M SoC
-> >   ravb: Separate use of GIC reg for PTME from multi_irqs
-> >   ravb: Separate handling of irq enable/disable regs into feature
-> >   ravb: Support separate Line0 (Desc), Line1 (Err) and Line2 (Mgmt) irqs
-> >   ravb: Use separate clock for gPTP
-> >   ravb: Add support for RZ/V2M
-> >   arm64: dts: renesas: r9a09g011: Add ethernet nodes
-> >   arm64: dts: renesas: rzv2m evk: Enable ethernet
->
-> How are you expecting this to be merged?
->
-> I think you should drop the first (clk) patch from this series
-> so we can apply the series to net-next. And route the clk patch
-> thru Geert's tree separately?
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ kernel/bpf/verifier.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-Same for the last two DTS patches, they should go through the
-renesas-devel and SoC trees.
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 813f6ee80419..c27fee73a2cb 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -1815,8 +1815,7 @@ void bpf_free_kfunc_btf_tab(struct bpf_kfunc_btf_tab *tab)
+ 	kfree(tab);
+ }
+ 
+-static struct btf *find_kfunc_desc_btf(struct bpf_verifier_env *env,
+-				       u32 func_id, s16 offset)
++static struct btf *find_kfunc_desc_btf(struct bpf_verifier_env *env, s16 offset)
+ {
+ 	if (offset) {
+ 		if (offset < 0) {
+@@ -1891,7 +1890,7 @@ static int add_kfunc_call(struct bpf_verifier_env *env, u32 func_id, s16 offset)
+ 		prog_aux->kfunc_btf_tab = btf_tab;
+ 	}
+ 
+-	desc_btf = find_kfunc_desc_btf(env, func_id, offset);
++	desc_btf = find_kfunc_desc_btf(env, offset);
+ 	if (IS_ERR(desc_btf)) {
+ 		verbose(env, "failed to find BTF for kernel function\n");
+ 		return PTR_ERR(desc_btf);
+@@ -2360,7 +2359,7 @@ static const char *disasm_kfunc_name(void *data, const struct bpf_insn *insn)
+ 	if (insn->src_reg != BPF_PSEUDO_KFUNC_CALL)
+ 		return NULL;
+ 
+-	desc_btf = find_kfunc_desc_btf(data, insn->imm, insn->off);
++	desc_btf = find_kfunc_desc_btf(data, insn->off);
+ 	if (IS_ERR(desc_btf))
+ 		return "<error>";
+ 
+@@ -7237,7 +7236,7 @@ static int check_kfunc_call(struct bpf_verifier_env *env, struct bpf_insn *insn,
+ 	if (!insn->imm)
+ 		return 0;
+ 
+-	desc_btf = find_kfunc_desc_btf(env, insn->imm, insn->off);
++	desc_btf = find_kfunc_desc_btf(env, insn->off);
+ 	if (IS_ERR(desc_btf))
+ 		return PTR_ERR(desc_btf);
+ 
+-- 
+2.36.0
 
-> Right now patchwork thinks the series is incomplete because it
-> hasn't received patch 1.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
