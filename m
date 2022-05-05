@@ -2,55 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 15C7B51B620
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 04:51:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00BFF51B623
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 04:51:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239983AbiEECxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 22:53:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57420 "EHLO
+        id S240008AbiEECx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 4 May 2022 22:53:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234337AbiEECxx (ORCPT
+        with ESMTP id S239963AbiEECxx (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 22:53:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74C6AE36
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 19:50:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89169E46;
+        Wed,  4 May 2022 19:50:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 10783618B0
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 02:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E541C385A4;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1EB2A6135D;
+        Thu,  5 May 2022 02:50:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7414DC385AA;
         Thu,  5 May 2022 02:50:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651719014;
-        bh=HMX2+TYEYlbX4eWQMxOyeGBQ+bEEl7vvfs1GvXVqNm4=;
+        bh=W7kgWBekRhjvUK4oGmuZBqzE/MvWvPC3uCOtjm5r1pw=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lE0NzF4VpZrAs+1okJNgnIB9hJKvT8sUr1zrl0X1PMJ40BTPY0M6v51sh6PppESyM
-         pKbsGjP26cRnm986nJuJ+fsApQlnKT85qOk3r0ebRFwRp/15M8Tp7z0cWEh7ynWPu6
-         RKoJl8Ibi8rfCDnbQnA+RR6GzvvPfkfPSF4JA962FZnMkXD/j3ZEJijZXnvLLdwJcm
-         nUc2IZDQktNPK0OQNxmG6JHyDuPbZyvGT84045ODIsAsz0k6LcEwBA/8W2xOFpsq/C
-         aR8hNzxo3plIWC8QxjIbs5b9HUml3muus/jzyXPCij0Ow3f7/gekeSzNoCc+XW6yAK
-         xOmLzz3XvFXKw==
+        b=g/b7CGMVsABkoz6tv5a8MDK5tt75YLuXhcguYpLt59MWqMBlxNHw7z06tOBv3D0IH
+         ul7Epuk3cFXCaDRiLWNzictigyyemE93A1ERJq1f1jIP1EEgmXJbhhiVHcQySWzZsC
+         KSSi7SqbSskXdAJI6czeyNZUZohlI4hmADbEyaWXHaZGHySKWytHnAS7jpB8kcsST3
+         ij9fAjmvjebC8FTE8g8qYnEKcGR5Pdr14M+9kSD+KF6PeTx9pcn3cs1oyRtyE0RZnS
+         1WK8c5S6gwfFyrcQxM6/WeyIPDXK6ybc5LkuylSH+s9r4cxcdV90+qkq5JOjDLZWre
+         YxWwHzJlF1fWg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 47649E5D087;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5593CF03876;
         Thu,  5 May 2022 02:50:14 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] selftests: ocelot: tc_flower_chains: specify
- conform-exceed action for policer
+Subject: Re: [PATCH v3 net 0/7] insufficient TCP source port randomness
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165171901428.9346.11488357746990066914.git-patchwork-notify@kernel.org>
+Message-Id: <165171901434.9346.11862672519464851497.git-patchwork-notify@kernel.org>
 Date:   Thu, 05 May 2022 02:50:14 +0000
-References: <20220503121428.842906-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220503121428.842906-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, xiaoliang.yang_1@nxp.com,
-        colin.foster@in-advantage.com, idosch@nvidia.com
+References: <20220502084614.24123-1-w@1wt.eu>
+In-Reply-To: <20220502084614.24123-1-w@1wt.eu>
+To:     Willy Tarreau <w@1wt.eu>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, moshe.kol@mail.huji.ac.il,
+        yossi.gilad@mail.huji.ac.il, aksecurity@gmail.com, Jason@zx2c4.com,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -63,26 +60,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net.git (master)
+This series was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Tue,  3 May 2022 15:14:28 +0300 you wrote:
-> As discussed here with Ido Schimmel:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220224102908.5255-2-jianbol@nvidia.com/
+On Mon,  2 May 2022 10:46:07 +0200 you wrote:
+> Hi,
 > 
-> the default conform-exceed action is "reclassify", for a reason we don't
-> really understand.
-> 
-> The point is that hardware can't offload that police action, so not
-> specifying "conform-exceed" was always wrong, even though the command
-> used to work in hardware (but not in software) until the kernel started
-> adding validation for it.
+> In a not-yet published paper, Moshe Kol, Amit Klein, and Yossi Gilad
+> report being able to accurately identify a client by forcing it to emit
+> only 40 times more connections than the number of entries in the
+> table_perturb[] table, which is indexed by hashing the connection tuple.
+> The current 2^8 setting allows them to perform that attack with only 10k
+> connections, which is not hard to achieve in a few seconds.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] selftests: ocelot: tc_flower_chains: specify conform-exceed action for policer
-    https://git.kernel.org/netdev/net/c/5a7c5f70c743
+  - [v3,net,1/7] secure_seq: use the 64 bits of the siphash for port offset calculation
+    https://git.kernel.org/netdev/net/c/b2d057560b81
+  - [v3,net,2/7] tcp: use different parts of the port_offset for index and offset
+    https://git.kernel.org/netdev/net/c/9e9b70ae923b
+  - [v3,net,3/7] tcp: resalt the secret every 10 seconds
+    https://git.kernel.org/netdev/net/c/4dfa9b438ee3
+  - [v3,net,4/7] tcp: add small random increments to the source port
+    https://git.kernel.org/netdev/net/c/ca7af0402550
+  - [v3,net,5/7] tcp: dynamically allocate the perturb table used by source ports
+    https://git.kernel.org/netdev/net/c/e9261476184b
+  - [v3,net,6/7] tcp: increase source port perturb table to 2^16
+    https://git.kernel.org/netdev/net/c/4c2c8f03a5ab
+  - [v3,net,7/7] tcp: drop the hash_32() part from the index calculation
+    https://git.kernel.org/netdev/net/c/e8161345ddbb
 
 You are awesome, thank you!
 -- 
