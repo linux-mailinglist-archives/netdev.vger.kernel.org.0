@@ -2,78 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D0AB251B6BD
-	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 05:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4E2851B6E4
+	for <lists+netdev@lfdr.de>; Thu,  5 May 2022 06:01:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242153AbiEEDyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 4 May 2022 23:54:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50836 "EHLO
+        id S242456AbiEEEFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 00:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241728AbiEEDyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 4 May 2022 23:54:16 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89BF218E3C
-        for <netdev@vger.kernel.org>; Wed,  4 May 2022 20:50:26 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id fv2so3034408pjb.4
-        for <netdev@vger.kernel.org>; Wed, 04 May 2022 20:50:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=m+oo7vhQppCx61Aw51KngRQvH6xvApHjMjFYXcJPxtA=;
-        b=UrVQJB7JQgvliirNAEtIz1NuvjjiM5nMhTGg3BNBEEsPqcqpv085o9RqF3k9jSctDd
-         XMBkAq6lGohp9Vl+kk+xLnqvpXZRXGTVVnqih4a4frwxcPsjGOGqaPfyYJLZeU9nDQL4
-         0Oe0ma9Jb7sTEp2eJwxZu1ZHJwlF5xUnLbrfjyS6jDwHk5StX5CZ6xNdiBRR4q4ZNbz+
-         qop/PFGZWK/Els5yPXj/aN8M3GymAazskG0veatPON1s7Gm3oXGxdxfoOlqImJh4VaXo
-         TaiKg/sT2HWoYrh+dx2SrfIm2hAmtZezKx/Vom7umB7/e0AKICg+kUuISWSw8+cpGLEq
-         a30w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=m+oo7vhQppCx61Aw51KngRQvH6xvApHjMjFYXcJPxtA=;
-        b=W8xM3D2wQsrNBKtVbl4OHOcZ2eunYF/xoAUq5RCVng9zYl0PgX1aoGU/BvjFulpNtj
-         vEElUx3enXe77wADhVx+TGRwZpwZRaUanKS4wcpzBC1mbU5RpzoCPrK7QKVK+VBQLJCa
-         6lIGHFeIPOdkutfpHFIBGMhFv+Gqj6IQWIwoouvsCxnQz3lhKQ5VakRD/w45tpDVMyg+
-         uJhKo1+6hYkOk/Ech1K2RqK9X8Cbw78ZzBPbhKEX+aUU63xN1/NqGdRBhSHXd5Zs6XTc
-         ijDHEPMaqM9mxToYOp9VB1V34p4082F/czW4HGy195MetDmL9vRu4L5LNp7q9Xj0c+6v
-         vkKA==
-X-Gm-Message-State: AOAM531i/bLvJKsuiaBswRC8hTG6c/2z/LY7iHDEhtp0gM+kv+Xrh93Z
-        WMS8j68bsTebeJ2VCUE9qP5ung==
-X-Google-Smtp-Source: ABdhPJz/y6j67krcNJKOcTqMGc2R/29a7/yP/TSwD7uruCbf+yfTtD8wPcMb7nFZR2ALsRV/R6vWYA==
-X-Received: by 2002:a17:90a:c302:b0:1bd:14ff:15 with SMTP id g2-20020a17090ac30200b001bd14ff0015mr3640917pjt.19.1651722626058;
-        Wed, 04 May 2022 20:50:26 -0700 (PDT)
-Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
-        by smtp.gmail.com with ESMTPSA id c2-20020a170902d48200b0015e8d4eb24asm286196plg.148.2022.05.04.20.50.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 May 2022 20:50:25 -0700 (PDT)
-Date:   Wed, 4 May 2022 20:50:23 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     "Magesh  M P" <magesh@digitizethings.com>
-Cc:     David Ahern <dsahern@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: gateway field missing in netlink message
-Message-ID: <20220504205023.5c0327ea@hermes.local>
-In-Reply-To: <DM5PR20MB2055CCC42062AF5DB5827BAEAEC29@DM5PR20MB2055.namprd20.prod.outlook.com>
-References: <DM5PR20MB2055102B86DB2C2E41682CE3AEC39@DM5PR20MB2055.namprd20.prod.outlook.com>
-        <20220504223100.GA2968@u2004-local>
-        <DM5PR20MB2055CCC42062AF5DB5827BAEAEC29@DM5PR20MB2055.namprd20.prod.outlook.com>
+        with ESMTP id S231154AbiEEEFX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 00:05:23 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7F74AE16;
+        Wed,  4 May 2022 21:01:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D8F4FB82A86;
+        Thu,  5 May 2022 04:01:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B2DC385AC;
+        Thu,  5 May 2022 04:01:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651723302;
+        bh=FYC0CvQaP+3mMgxceGHIF8Aw1uZcq1KmRRW+MxCfV2I=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=mQYJIj0+JWE20dxYT8W3Z04gILiggLvIy9ppMpDnUNbXVcZp+4dGuY+9nSU7GneeK
+         pEsMRCB3sqDCE6N7KgTU1hoFWcfMkcakm7q5uowHrDjiJ5+rsBNmGewvw7ieLTK+Cj
+         vABJhgV8R5xdQQjM2HvszqoHDDQ9aI635h9wE+NlaWwe/8xKPAs1JxH+FSXszm/9tz
+         HRIf2PcDq/+sOnlvpWMxnTInPB8vOrL7tsAQE3khHppXtdSqlLT3dBtK2Um4C6NPjC
+         3dhSQKJ//JGgbMg5MSe1i4WEBo/fDaVU3wvxIU8g6ncwyyg0nwrExg8qKJXQT9Bvim
+         QLq7VMqVlJwKQ==
+Message-ID: <f2ccff61-bc6d-1a99-dcbd-31b4e5153097@kernel.org>
+Date:   Wed, 4 May 2022 21:01:41 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.8.1
+Subject: Re: [PATCH net v3 1/2] ping: fix address binding wrt vrf
+Content-Language: en-US
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, stable@vger.kernel.org
+References: <1238b102-f491-a917-3708-0df344015a5b@kernel.org>
+ <20220504090739.21821-1-nicolas.dichtel@6wind.com>
+ <20220504090739.21821-2-nicolas.dichtel@6wind.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220504090739.21821-2-nicolas.dichtel@6wind.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-10.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 5 May 2022 03:43:45 +0000
-"Magesh  M P" <magesh@digitizethings.com> wrote:
+On 5/4/22 2:07 AM, Nicolas Dichtel wrote:
+> When ping_group_range is updated, 'ping' uses the DGRAM ICMP socket,
+> instead of an IP raw socket. In this case, 'ping' is unable to bind its
+> socket to a local address owned by a vrflite.
+> 
+> Before the patch:
+> $ sysctl -w net.ipv4.ping_group_range='0  2147483647'
+> $ ip link add blue type vrf table 10
+> $ ip link add foo type dummy
+> $ ip link set foo master blue
+> $ ip link set foo up
+> $ ip addr add 192.168.1.1/24 dev foo
+> $ ip addr add 2001::1/64 dev foo
+> $ ip vrf exec blue ping -c1 -I 192.168.1.1 192.168.1.2
+> ping: bind: Cannot assign requested address
+> $ ip vrf exec blue ping6 -c1 -I 2001::1 2001::2
+> ping6: bind icmp socket: Cannot assign requested address
+> 
+> CC: stable@vger.kernel.org
+> Fixes: 1b69c6d0ae90 ("net: Introduce L3 Master device abstraction")
+> Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+> ---
+>  net/ipv4/ping.c | 12 +++++++++++-
+>  1 file changed, 11 insertions(+), 1 deletion(-)
+> 
 
-> The librtnl/netns.c contains the parser code as below which parses the MULTIPATH attribute. Could you please take a look at the code and see if anything is wrong ?
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Also assuming byte order and assuming sizeof(unsigned int) == sizeof(uint32_t) is likely
-to lead you astray.
