@@ -2,70 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CA43751D585
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 12:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 579AF51D5D8
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 12:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1390879AbiEFKWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 06:22:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60216 "EHLO
+        id S1391033AbiEFKoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 06:44:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390874AbiEFKWf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 06:22:35 -0400
-X-Greylist: delayed 401 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 06 May 2022 03:18:51 PDT
-Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEC065F8E4
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 03:18:51 -0700 (PDT)
-Received: (qmail 10290 invoked from network); 6 May 2022 10:12:03 -0000
-Received: from p200300cf070a0b0076d435fffeb7be92.dip0.t-ipconnect.de ([2003:cf:70a:b00:76d4:35ff:feb7:be92]:41972 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
-        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
-        for <linux-kernel@vger.kernel.org>; Fri, 06 May 2022 12:12:03 +0200
-From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
-To:     linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        netdev@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org
-Subject: Re: [PATCH] ethernet: tulip: fix missing pci_disable_device() on error in tulip_init_one()
-Date:   Fri, 06 May 2022 12:11:56 +0200
-Message-ID: <5564948.DvuYhMxLoT@eto.sf-tec.de>
-In-Reply-To: <20220506094250.3630615-1-yangyingliang@huawei.com>
-References: <20220506094250.3630615-1-yangyingliang@huawei.com>
+        with ESMTP id S1391029AbiEFKoB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 06:44:01 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253A49F
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 03:40:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E9497615F9
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 10:40:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 49C6EC385A8;
+        Fri,  6 May 2022 10:40:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651833616;
+        bh=7FTICRjYcT/vW95oL7XliPW7nGWX6W7oGI2+SgGIdqM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=gY8x1GM6MZWsm8Qx5dxzOpnj/t2ZdCyJvU+ZLblxuMkzHUcwbMiXnIFZnu8OeMzAD
+         Ssai8L18wNshOgbVls4roJpN9s8T0Wxh9G/PQ1LwX1XTrtbSfsWtFKHcbMUGevIE6G
+         eIm0+F45I1XRzZvuBSCcBOmWTnSCVE5Jao2eUpaz3MiHnYNr56uMgBcTdYBjvYHuaF
+         6CjoLcfZO/pUdnQ0Kgrg5w86DZxG8nWhyOx9nTv735+y5mhHjIAL1e+Yk6vCvoynj2
+         f7pWSUwgdHjAQbmqNTdbXQE5/bVN83bJ3rmI0Mv4uLfmMRr+GMQVGJXIHk+fmIPdAy
+         Junf8C11Xc+ag==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 22D5FF0389D;
+        Fri,  6 May 2022 10:40:16 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart5819534.lOV4Wx5bFT"; micalg="pgp-sha1"; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2 00/10][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2022-05-05
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165183361613.1798.7098569814484775563.git-patchwork-notify@kernel.org>
+Date:   Fri, 06 May 2022 10:40:16 +0000
+References: <20220505200359.3080110-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20220505200359.3080110-1-anthony.l.nguyen@intel.com>
+To:     Tony Nguyen <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart5819534.lOV4Wx5bFT
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Hello:
 
-Am Freitag, 6. Mai 2022, 11:42:50 CEST schrieb Yang Yingliang:
-> Fix the missing pci_disable_device() before return
-> from tulip_init_one() in the error handling case.
+This series was applied to netdev/net-next.git (master)
+by Tony Nguyen <anthony.l.nguyen@intel.com>:
 
-I would suggest removing the pci_disable_device() from tulip_remove_one() 
-instead and using pcim_enable_device(), i.e. devres, and let the driver core 
-handle all these things. Of course more of the used functions could be 
-converted them, e.g. using devm_alloc_etherdev() and so on.
+On Thu,  5 May 2022 13:03:49 -0700 you wrote:
+> This series contains updates to ice driver only.
+> 
+> Wan Jiabing converts an open coded min selection to min_t().
+> 
+> Maciej commonizes on a single find VSI function and removes the
+> duplicated implementation.
+> 
+> [...]
 
-Eike
---nextPart5819534.lOV4Wx5bFT
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+Here is the summary with links:
+  - [net-next,v2,01/10] ice: use min_t() to make code cleaner in ice_gnss
+    https://git.kernel.org/netdev/net-next/c/187dbc15d8a7
+  - [net-next,v2,02/10] ice: introduce common helper for retrieving VSI by vsi_num
+    https://git.kernel.org/netdev/net-next/c/295819b562fa
+  - [net-next,v2,03/10] ice: return ENOSPC when exceeding ICE_MAX_CHAIN_WORDS
+    https://git.kernel.org/netdev/net-next/c/bd1ffe8e5df4
+  - [net-next,v2,04/10] ice: get switch id on switchdev devices
+    https://git.kernel.org/netdev/net-next/c/4b889474adc6
+  - [net-next,v2,05/10] ice: add newline to dev_dbg in ice_vf_fdir_dump_info
+    https://git.kernel.org/netdev/net-next/c/9880d3d6f9e3
+  - [net-next,v2,06/10] ice: always check VF VSI pointer values
+    https://git.kernel.org/netdev/net-next/c/baeb705fd6a7
+  - [net-next,v2,07/10] ice: remove return value comment for ice_reset_all_vfs
+    https://git.kernel.org/netdev/net-next/c/00be8197c974
+  - [net-next,v2,08/10] ice: fix wording in comment for ice_reset_vf
+    https://git.kernel.org/netdev/net-next/c/19c3e1ede517
+  - [net-next,v2,09/10] ice: add a function comment for ice_cfg_mac_antispoof
+    https://git.kernel.org/netdev/net-next/c/71c114e87539
+  - [net-next,v2,10/10] ice: remove period on argument description in ice_for_each_vf
+    https://git.kernel.org/netdev/net-next/c/4eaf1797bca1
 
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQSaYVDeqwKa3fTXNeNcpIk+abn8TgUCYnT0bAAKCRBcpIk+abn8
-TpRJAKCSFE72ZhtgBsEs3gZhAmNmCY5v1ACgkwsyEadMyOecFRXMtHurVSrfEz0=
-=LQcA
------END PGP SIGNATURE-----
-
---nextPart5819534.lOV4Wx5bFT--
-
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
