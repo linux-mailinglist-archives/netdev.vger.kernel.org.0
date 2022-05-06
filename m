@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2891251D960
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 15:40:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9370951D968
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 15:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441800AbiEFNo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 09:44:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
+        id S1441829AbiEFNoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 09:44:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441805AbiEFNoP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 09:44:15 -0400
-Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC80FF1;
-        Fri,  6 May 2022 06:40:27 -0700 (PDT)
-Received: by mail-ua1-x92d.google.com with SMTP id v3so2811403uau.4;
-        Fri, 06 May 2022 06:40:26 -0700 (PDT)
+        with ESMTP id S1441828AbiEFNoZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 09:44:25 -0400
+Received: from mail-ua1-x92e.google.com (mail-ua1-x92e.google.com [IPv6:2607:f8b0:4864:20::92e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE18F18;
+        Fri,  6 May 2022 06:40:33 -0700 (PDT)
+Received: by mail-ua1-x92e.google.com with SMTP id x11so2815019uao.2;
+        Fri, 06 May 2022 06:40:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=D/9vItxcPrE5lo7EB96aVhAnmOIWcTLzCizvmWL6Ah4=;
-        b=fr2fU+qa4hg9UYIW009FfLE5XYSSZORij6uQE4lNiNIalBnDmI53UDcWW+vJ2+Ox59
-         gNoaBxFtmK45PyVAe7qZRGGOVpzVQA2ZTGkcqJlEImBeVkcJ9tunYI3BMlBzHOW8yk12
-         jyitijnxl7IHFRGoHMg4+AewudS9TmhisoNI3mw9Pin4uauAk/THtBZiBxq1GhXCV0AL
-         WyEDX2vkHw04EH8IthHqkz2TV4YyH4dLjXMMnkipV9ccpBeXdvjPk5wo6UGvv+BDl9+M
-         o0Ryv8ZA2ilpUkymIcoTaI51DsMtr5vS8V7qjVwrox9TqAqACJPhphaplzfw0O1mNSym
-         tjDA==
+        bh=CVxGfvIdylztEKYqHZTungXdeVR8eiJqsSdWXIBE3g4=;
+        b=XTOuxmzMuz3U4/5PMq3TnsW0JlFG0zetPXMJzm3TcnUxnDYYEfmCqw72YA3N/5eHTw
+         J2i6bX/dSoJiutUQwV7NBw3D5pS/ucKGG4DrF+X/qlUWujVUnS0zXUQ8KL4JOjWxtvTV
+         TX9kMMfcq3YM+XojNT8tVja581P8PYiR/8Oj0K0PC/I6lf7eACXCFvr2esEEmWddxX+o
+         Oti6g3Jv+WNilg7t1FlaloS8VyCoFYXHSAjIOGLPhvDOzDDTc5f2/NC9Nk4BSi45Fzvs
+         /+bHielUFBXpfQR45nfCPXIDDGteVbwmAruh4dQYbGJIguU4o/y2QNUMjC4bC/gUsg+m
+         7sDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=D/9vItxcPrE5lo7EB96aVhAnmOIWcTLzCizvmWL6Ah4=;
-        b=LwcLKzelFhPRCW7H/FORSX4MjnvwAsNTXZWW7qs2AnP1vWeP1SbE0puFrJxFFfVU3S
-         Hl0AldjOWO4LZil3TgX1F/7TsXmxZ6wPHAF6lmeWbBbtZyffHQ59VrRzi/deFqW06jxO
-         n49wi3eY5bW308psTrQwEHX2OQxH9r9g8YdKUvHgitFCR2KNIlKdqXInDh70CnEtMd32
-         R40Eld0Sfp+U4F6+lv8GSa2Re85pwsogxBsvcCs0ECVkbnGY4i6nGy2CqpriHIRzuAoI
-         6Lfj9AqXy9uy5Ts3Du56lMSDTtxX1z3JP/gyti77pQuXmPtZmpgyzsFz4NrPiqxZdXI2
-         5UZw==
-X-Gm-Message-State: AOAM532q0cd8mWQziJ9IDjjCmldUVVvzx0nRKEdLwKeaP0hpr+nHi+xi
-        UCJS/PzQvrhi6XGUwDUvf04iprs7s8IMTOGOKgI=
-X-Google-Smtp-Source: ABdhPJyN9Jggh2tJChsGSAD6/TzoWYSV4/Eq/d2m38Kl3VJ7mkUdqk82StSXpinXxaZQoynb+WLYoisyyUBWoVzxafU=
-X-Received: by 2002:ab0:375b:0:b0:355:c2b3:f6c with SMTP id
- i27-20020ab0375b000000b00355c2b30f6cmr973544uat.84.1651844425785; Fri, 06 May
- 2022 06:40:25 -0700 (PDT)
+        bh=CVxGfvIdylztEKYqHZTungXdeVR8eiJqsSdWXIBE3g4=;
+        b=L5uujQCbvUWcJ17mLjsixgPd0j+Srja4QzNhoQUroZuAsHlcHl9xEEQfveH/sjZnaW
+         pY6n6VpGfT6TGU5avmpuDb3MF7flC93ja62JbuVU6pLgHD57G9fxMto7gVMdtNR/kclf
+         GjHhDjLSmyHCSS4hIQD8a/U6ciaDd15KoJIT7mbA31bZC4lGdlh0+aw92e6alJI7odzw
+         GldQgLrmXk0DeNJYs72hqz9lPtRKk1H/LpDxJXXlrcyt8wbaZxYKFoy9bKwviEefe7Wb
+         +lpzEcQRC0VT1ke8EhLH37po9ZtjSkR286dPLwdO50OOl0A/bFcBayIyAz1xQt85op9p
+         /S7w==
+X-Gm-Message-State: AOAM533AAEoQZy1Md67wMdOPIg9HfHZ58sCtZ7yi+lTUFtQe5gfYnV4W
+        z+pdvdjiN7If+c3u4uFE3Zna3sCoipYIcq6Fjpk=
+X-Google-Smtp-Source: ABdhPJx/hlhG3/R/h+5qG2kG/MGMx4mj5CtKDW6zYn4E7g68qtJnWZwBCdiAObl4WN1VfWYreQdYdUY/r91b1GdD4lA=
+X-Received: by 2002:ab0:2002:0:b0:35f:fd13:960 with SMTP id
+ v2-20020ab02002000000b0035ffd130960mr964247uak.50.1651844432899; Fri, 06 May
+ 2022 06:40:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220506011616.1774805-1-ricardo.martinez@linux.intel.com> <20220506011616.1774805-4-ricardo.martinez@linux.intel.com>
-In-Reply-To: <20220506011616.1774805-4-ricardo.martinez@linux.intel.com>
+References: <20220506011616.1774805-1-ricardo.martinez@linux.intel.com> <20220506011616.1774805-6-ricardo.martinez@linux.intel.com>
+In-Reply-To: <20220506011616.1774805-6-ricardo.martinez@linux.intel.com>
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Fri, 6 May 2022 16:40:14 +0300
-Message-ID: <CAHNKnsRqaKUJA7mjV5pdnPkCAiqtc3FD7wp29mzD=8zS988KqQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 03/14] net: wwan: t7xx: Add control DMA interface
+Date:   Fri, 6 May 2022 16:40:22 +0300
+Message-ID: <CAHNKnsQ8OkLsJ2V6QYjGLO_7fhJ1f7ZG-u=GTY2fg8669CBtOw@mail.gmail.com>
+Subject: Re: [PATCH net-next v7 05/14] net: wwan: t7xx: Add port proxy infrastructure
 To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
 Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
@@ -89,35 +89,13 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, May 6, 2022 at 4:16 AM Ricardo Martinez
 <ricardo.martinez@linux.intel.com> wrote:
-> Cross Layer DMA (CLDMA) Hardware interface (HIF) enables the control
-> path of Host-Modem data transfers. CLDMA HIF layer provides a common
-> interface to the Port Layer.
->
-> CLDMA manages 8 independent RX/TX physical channels with data flow
-> control in HW queues. CLDMA uses ring buffers of General Packet
-> Descriptors (GPD) for TX/RX. GPDs can represent multiple or single
-> data buffers (DB).
->
-> CLDMA HIF initializes GPD rings, registers ISR handlers for CLDMA
-> interrupts, and initializes CLDMA HW registers.
->
-> CLDMA TX flow:
-> 1. Port Layer write
-> 2. Get DB address
-> 3. Configure GPD
-> 4. Triggering processing via HW register write
->
-> CLDMA RX flow:
-> 1. CLDMA HW sends a RX "done" to host
-> 2. Driver starts thread to safely read GPD
-> 3. DB is sent to Port layer
-> 4. Create a new buffer for GPD ring
->
-> Note: This patch does not enable compilation since it has dependencies
-> such as t7xx_pcie_mac_clear_int()/t7xx_pcie_mac_set_int() and
-> struct t7xx_pci_dev which are added by the core patch.
+> Port-proxy provides a common interface to interact with different types
+> of ports. Ports export their configuration via `struct t7xx_port` and
+> operate as defined by `struct port_ops`.
 >
 > Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> Co-developed-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.c=
+om>
 > Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com=
 >
 > Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
