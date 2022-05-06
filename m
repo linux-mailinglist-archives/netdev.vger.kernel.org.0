@@ -2,91 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A58AE51DE40
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 19:17:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26A9151DE69
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 19:41:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377312AbiEFRVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 13:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
+        id S1444235AbiEFRo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 13:44:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237371AbiEFRVQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 13:21:16 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988274F465
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 10:17:32 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso7397961pjb.5
-        for <netdev@vger.kernel.org>; Fri, 06 May 2022 10:17:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=3aGQD+TPJjdgVH2l0L30KOa3TpZnrckIwUjFO1cFGYE=;
-        b=lW2gDRveYM1R9uX7XurI8BuRjzEEQ1u4BFlMYCKx5MXqYxcfZb0oa1RiQtW9aPtY8I
-         Q2aTAkDyKbZTMWiZC4qYsgnAB5Wd0mAUk3qvpk8mn9lyK/CFvf5k8LYuCLQyWHQTF63s
-         evA4PQfXbsfdj6UivndqCvNqN3bcLoZktjC3kf35LJ1dJzCnXw0y5djbWMG3fN7pzoys
-         lKV+Hddmm8i4O44DUsCa5ydRHk7SEehyGhORx96m76QPXFkhk0QU4SZs3ia6x/UXzOig
-         SkjqdcKCA3Bt8a3y6/+Hqoys+QyIyIQgsoTZOAovQ/eOzfAHFDumbOkk/4GYoFTWcLgD
-         WLbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=3aGQD+TPJjdgVH2l0L30KOa3TpZnrckIwUjFO1cFGYE=;
-        b=t18uBJRA9PHrY3wiNKyu2a17N/aASU73nOh41Trn5L5lA5U9ZBOpsGYq0Z7E9aIXCA
-         m9QudKL+Mt4wA8UnVNU3u7NrTqsOPyOF9GtJHtX4mL9warsIzn+5oJi4eoYYP2E17bBR
-         msBQhfCRV7G4Z+NGNM2b/IAKo7whuJSXvt2MLgMvd6DkM5pu0SUiXWab8sdJiov/zb53
-         B8m7QlCE9sIaOktjGxycXoi0GTJlt/CAPqxEhEEzK015S6GUq1xcjOWEqGw58b0DZbfx
-         DPmnSQUm5JLUWmcP+DpHE1DSKmfudxgfDkSOMANqK/A1vChCeu8WVImVO4BVtsnuNIUA
-         KUFg==
-X-Gm-Message-State: AOAM533k277CvIWJHNbY26dEfpGZLBEcbwgMAkpoz1u4Kx72Acz98PgV
-        W+gggBkmj7mSYqeNL/+wWsY=
-X-Google-Smtp-Source: ABdhPJxDSwfh59hLADp3FsOlK/sax9e7TVeTmebb+LvP0goxbshSLiucGyD11nW5KVpdksnc35Xa/w==
-X-Received: by 2002:a17:90b:1e05:b0:1dc:575e:6211 with SMTP id pg5-20020a17090b1e0500b001dc575e6211mr13259095pjb.120.1651857451985;
-        Fri, 06 May 2022 10:17:31 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id pj11-20020a17090b4f4b00b001cd4989ff70sm3835821pjb.55.2022.05.06.10.17.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 10:17:31 -0700 (PDT)
-Message-ID: <ed3c3eec-a79d-0d8a-09ad-4a2c6c5507eb@gmail.com>
-Date:   Fri, 6 May 2022 10:17:29 -0700
+        with ESMTP id S236386AbiEFRoz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 13:44:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8310B532E6;
+        Fri,  6 May 2022 10:41:12 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0025F620D4;
+        Fri,  6 May 2022 17:41:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB73DC385A8;
+        Fri,  6 May 2022 17:41:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651858871;
+        bh=jUYORx95YRDHeeeY52LGlWTfTnt6ibLZ3gg1qG+EM6Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nkgizYeSWtOn1Z5SUsUMNTGLs/CEpROMfjVLnZQgz3A5UUaTbbRDtmCvbcM84K5AG
+         +qgS9SuMNK3F7zi/Bb/Hdy5Eg1oV/7XWmCvzy0mDyrxweaR/Uw1e38byTQj63/tdSM
+         copVMXd1Zrm5Uq+g9tR0CxhB8ya47FWgEiIQ/ONT50PEWMJDGuvi6tguIXSsyajpvo
+         8lzQp0t68xkzVp3KD46OH0QmaEPbcwIqhz/rSjSBKUSlnH922vhnOCf6i7GcxqUpRa
+         gm19BJ45d/KvfTKIUr5PZq9MbFiFQMJPFdBxY3bKYqhSG2yHLYlfSPAxwDetJJoXY6
+         y+fRck3Xynmtg==
+Date:   Fri, 6 May 2022 10:41:09 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
+        Sam.Shih@mediatek.com, linux-mediatek@lists.infradead.org,
+        devicetree@vger.kernel.org, robh@kernel.org
+Subject: Re: [PATCH net-next 11/14] net: ethernet: mtk_eth_soc: add SRAM soc
+ capability
+Message-ID: <20220506104109.63388e33@kernel.org>
+In-Reply-To: <97298a5aeaa7498893a46103de929d0a7df26e8a.1651839494.git.lorenzo@kernel.org>
+References: <cover.1651839494.git.lorenzo@kernel.org>
+        <97298a5aeaa7498893a46103de929d0a7df26e8a.1651839494.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next v3 1/3] net: phy: broadcom: Add Broadcom PTP
- hooks to bcm-phy-lib
-Content-Language: en-US
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>, f.fainelli@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com, andrew@lunn.ch,
-        hkallweit1@gmail.com, richardcochran@gmail.com, lasse@timebeat.app
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com
-References: <20220504224356.1128644-1-jonathan.lemon@gmail.com>
- <20220504224356.1128644-2-jonathan.lemon@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220504224356.1128644-2-jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/4/22 15:43, Jonathan Lemon wrote:
-> Add the public bcm_ptp_probe() and bcm_ptp_config_init() functions
-> to the bcm-phy library.  The PTP functions are contained in a separate
-> file for clarity, and also to simplify the PTP clock dependencies.
-> 
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+On Fri,  6 May 2022 14:30:28 +0200 Lorenzo Bianconi wrote:
+> Introduce SRAM capability for devices that relies on SRAM memory
+> for DMA descriptors.
+> This is a preliminary patch to add mt7986 ethernet support.
 
-This could really be squashed into the next patch since you do not 
-introduce the ability to build that code until patch #3.
+sparse says boo. I think you dropped an __iomem somewhere.
 
-I would also re-order patches #2 and #3 thus making it ultimately a 2 
-patch series only.
--- 
-Florian
+Please heed the 24h rule.
