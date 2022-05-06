@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 109EE51D95C
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 15:40:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2891251D960
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 15:40:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441809AbiEFNoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 09:44:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41982 "EHLO
+        id S1441800AbiEFNo0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 09:44:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441793AbiEFNoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 09:44:10 -0400
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B3A334;
-        Fri,  6 May 2022 06:40:18 -0700 (PDT)
-Received: by mail-ua1-x936.google.com with SMTP id f13so2799220uax.11;
-        Fri, 06 May 2022 06:40:18 -0700 (PDT)
+        with ESMTP id S1441805AbiEFNoP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 09:44:15 -0400
+Received: from mail-ua1-x92d.google.com (mail-ua1-x92d.google.com [IPv6:2607:f8b0:4864:20::92d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AC80FF1;
+        Fri,  6 May 2022 06:40:27 -0700 (PDT)
+Received: by mail-ua1-x92d.google.com with SMTP id v3so2811403uau.4;
+        Fri, 06 May 2022 06:40:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=od0zloc/AA4CPbJv6r2zKruCgN8IBIBynulqDfOqRpM=;
-        b=ox8SDvd17bKlntYSKmZ665by/msQLYfuXc0rsTuR2LRCs2HvFoAPad2rDwv3I0sjmv
-         ie4Fz/4P+BLRp80RS8DxHE9TPSGppl0C+LxWsXaeNOrUAZ3IS/B7XpHa3vrCrLWy4l9t
-         caQsAGsRAp/glQ4Oa4HDI2qVTi5DgIzYnE4AuzKDj5cIq5G0zPxD9+7oq+Qyj8hNmkER
-         zZVp8287ee1c4a8ezcvgMsdwPFzFTxsIIIv0TIKYeupzcVOq8CsyRRe02InUyMk47qJS
-         7FDuFANbpAgvH90hPlyFtBnMRMVmuJbYQTRx2EZcbu5u5uUofy9qKoPxY56yrfyOKP9e
-         Y/Pg==
+         :cc:content-transfer-encoding;
+        bh=D/9vItxcPrE5lo7EB96aVhAnmOIWcTLzCizvmWL6Ah4=;
+        b=fr2fU+qa4hg9UYIW009FfLE5XYSSZORij6uQE4lNiNIalBnDmI53UDcWW+vJ2+Ox59
+         gNoaBxFtmK45PyVAe7qZRGGOVpzVQA2ZTGkcqJlEImBeVkcJ9tunYI3BMlBzHOW8yk12
+         jyitijnxl7IHFRGoHMg4+AewudS9TmhisoNI3mw9Pin4uauAk/THtBZiBxq1GhXCV0AL
+         WyEDX2vkHw04EH8IthHqkz2TV4YyH4dLjXMMnkipV9ccpBeXdvjPk5wo6UGvv+BDl9+M
+         o0Ryv8ZA2ilpUkymIcoTaI51DsMtr5vS8V7qjVwrox9TqAqACJPhphaplzfw0O1mNSym
+         tjDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=od0zloc/AA4CPbJv6r2zKruCgN8IBIBynulqDfOqRpM=;
-        b=ub4IUeEgR5GvOruqTO/gUihynEG7aszDbC8KG8tfgShRqTKpSSDOGT90KGqjKSeZXP
-         9LHEwUMe5hushbQoUSx5ggh2W4Ws7bkgBFQkYLvvHrB26xZGnSJ0WxOix3sBdOdhA+cF
-         zfLmxAJYmpCbore/L+pip9Sl2NDnqlsqvWQ3hMl+a4VyyYbzS7BTsfpzKfe9ItF1kKco
-         Oam//K1fXve/dsDZAOKkj+r5ufbuTzqo+HJVvyjEJqoJ0XB6XVxhlAne3TaPlVjtSJJ6
-         LkkqL42qox6ANLXk0F9dPP/2z4AG5y4SwUIpXTFeGBkYJfkJr5XrAm4E+1EzYJ+elfPz
-         ek9Q==
-X-Gm-Message-State: AOAM530utv6oHpG3ZMdtq5YTyl2PuRUC4Sezz7IQWXGHlBUhxwOiWhrx
-        +2gDXLnfPkk/q8h7HOLWsJffb+BU9/eGVYAJ88A=
-X-Google-Smtp-Source: ABdhPJyoNeN9aVMXNsxzulsgCIBI1BKIzbRf2uYrTvXqov1EJIXXrT4sFqdIT7cSssZH+PyNRxXl8CQvGYJWcCM4c2g=
-X-Received: by 2002:ab0:7290:0:b0:34b:71ac:96c2 with SMTP id
- w16-20020ab07290000000b0034b71ac96c2mr980899uao.102.1651844417591; Fri, 06
- May 2022 06:40:17 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=D/9vItxcPrE5lo7EB96aVhAnmOIWcTLzCizvmWL6Ah4=;
+        b=LwcLKzelFhPRCW7H/FORSX4MjnvwAsNTXZWW7qs2AnP1vWeP1SbE0puFrJxFFfVU3S
+         Hl0AldjOWO4LZil3TgX1F/7TsXmxZ6wPHAF6lmeWbBbtZyffHQ59VrRzi/deFqW06jxO
+         n49wi3eY5bW308psTrQwEHX2OQxH9r9g8YdKUvHgitFCR2KNIlKdqXInDh70CnEtMd32
+         R40Eld0Sfp+U4F6+lv8GSa2Re85pwsogxBsvcCs0ECVkbnGY4i6nGy2CqpriHIRzuAoI
+         6Lfj9AqXy9uy5Ts3Du56lMSDTtxX1z3JP/gyti77pQuXmPtZmpgyzsFz4NrPiqxZdXI2
+         5UZw==
+X-Gm-Message-State: AOAM532q0cd8mWQziJ9IDjjCmldUVVvzx0nRKEdLwKeaP0hpr+nHi+xi
+        UCJS/PzQvrhi6XGUwDUvf04iprs7s8IMTOGOKgI=
+X-Google-Smtp-Source: ABdhPJyN9Jggh2tJChsGSAD6/TzoWYSV4/Eq/d2m38Kl3VJ7mkUdqk82StSXpinXxaZQoynb+WLYoisyyUBWoVzxafU=
+X-Received: by 2002:ab0:375b:0:b0:355:c2b3:f6c with SMTP id
+ i27-20020ab0375b000000b00355c2b30f6cmr973544uat.84.1651844425785; Fri, 06 May
+ 2022 06:40:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220506011616.1774805-1-ricardo.martinez@linux.intel.com> <20220506011616.1774805-3-ricardo.martinez@linux.intel.com>
-In-Reply-To: <20220506011616.1774805-3-ricardo.martinez@linux.intel.com>
+References: <20220506011616.1774805-1-ricardo.martinez@linux.intel.com> <20220506011616.1774805-4-ricardo.martinez@linux.intel.com>
+In-Reply-To: <20220506011616.1774805-4-ricardo.martinez@linux.intel.com>
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Fri, 6 May 2022 16:40:06 +0300
-Message-ID: <CAHNKnsS2p3vFeOiE6L7JHg7LHhWs2-aqrvz_KquHh80P5KEtXw@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 02/14] net: skb: introduce skb_data_area_size()
+Date:   Fri, 6 May 2022 16:40:14 +0300
+Message-ID: <CAHNKnsRqaKUJA7mjV5pdnPkCAiqtc3FD7wp29mzD=8zS988KqQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v7 03/14] net: wwan: t7xx: Add control DMA interface
 To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
 Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
@@ -73,8 +73,10 @@ Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         "Sethuraman, Muralidharan" <muralidharan.sethuraman@intel.com>,
         "Mishra, Soumya Prakash" <Soumya.Prakash.Mishra@intel.com>,
         "Kancharla, Sreehari" <sreehari.kancharla@intel.com>,
-        "Sahu, Madhusmita" <madhusmita.sahu@intel.com>
+        "Sahu, Madhusmita" <madhusmita.sahu@intel.com>,
+        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -87,11 +89,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, May 6, 2022 at 4:16 AM Ricardo Martinez
 <ricardo.martinez@linux.intel.com> wrote:
+> Cross Layer DMA (CLDMA) Hardware interface (HIF) enables the control
+> path of Host-Modem data transfers. CLDMA HIF layer provides a common
+> interface to the Port Layer.
 >
-> Helper to calculate the linear data space in the skb.
+> CLDMA manages 8 independent RX/TX physical channels with data flow
+> control in HW queues. CLDMA uses ring buffers of General Packet
+> Descriptors (GPD) for TX/RX. GPDs can represent multiple or single
+> data buffers (DB).
 >
+> CLDMA HIF initializes GPD rings, registers ISR handlers for CLDMA
+> interrupts, and initializes CLDMA HW registers.
+>
+> CLDMA TX flow:
+> 1. Port Layer write
+> 2. Get DB address
+> 3. Configure GPD
+> 4. Triggering processing via HW register write
+>
+> CLDMA RX flow:
+> 1. CLDMA HW sends a RX "done" to host
+> 2. Driver starts thread to safely read GPD
+> 3. DB is sent to Port layer
+> 4. Create a new buffer for GPD ring
+>
+> Note: This patch does not enable compilation since it has dependencies
+> such as t7xx_pcie_mac_clear_int()/t7xx_pcie_mac_set_int() and
+> struct t7xx_pci_dev which are added by the core patch.
+>
+> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
+> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com=
+>
+> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
 > Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-
-Please refresh the patch, it does not apply to the current net-next tree.
+> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
 
 Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
