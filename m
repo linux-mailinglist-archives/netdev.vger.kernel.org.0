@@ -2,55 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22B3C51DE6D
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 19:44:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7207F51DE98
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 20:04:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444251AbiEFRsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 13:48:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40474 "EHLO
+        id S1388765AbiEFSHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 14:07:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385161AbiEFRsQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 13:48:16 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 447DB53717
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 10:44:32 -0700 (PDT)
+        with ESMTP id S1389227AbiEFSHg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 14:07:36 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 434466D4C4
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 11:03:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651859072; x=1683395072;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=UchaR+pxr8aHHkiPopp6tyvswgeqe4MN/HrFHACDUk0=;
-  b=HpHk+DD0iVVvUIB3SfeprQrxdzj7Zx0MwzxAKyiOPByrXoCerQgiDdNi
-   d3OQBw6f66wKYx88uHjtOwRDcas+v7o8nI+fTw0tGI68qgLLgQ+Yx2tx/
-   VWIAOZxUz6f3GYUyQQAEin9lXne3lwd44vGtI2PPp6FYFAoMDfytA7Phf
-   C4NiPxHxOrDw8HkBHbxESn6BxCkcwe9e/CtWs3S4I0SN+uv0qweSItbUG
-   xx3dXJaMMAh+rR3oNl1KPloibWoEE2HxDECAftwyEpXbL5K6myT2qXd31
-   tTPRrBZ2Q4k6fm4EsRVinEJV3EQo8GDWXCI+lCGChW8lQc2KHqCtGDW/B
+  t=1651860230; x=1683396230;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Xq6j4OfKoXD0TmPJiyn66iAr/sE2rtgxV8o5sUIT24I=;
+  b=Nh8O6PupgHYlAmUU83QW2oBm7Kfyi1nEDtQtSeCI4qVd3ZGEqRu8VTiQ
+   EqhEhbpMyTrghng/LAktBmztGeQBaTvdnUGrYSmJf6eTOmIyCPOe2o6H0
+   jcp0x8rsCEDrgEB852V7vQoYa9v9nT8VG9mPKgySu5PQnlzxALK+50+Mb
+   UDsqt0C4jZI3jL5DPDUTF3tgWX1oRhtxTfaNPgkqBHNf8xI8trRmRTBnN
+   uWaDkxOIMXNB+lJJrhA4Inle1jICuLAat37POrrDk7BNEnLzTV5LM3Q6+
+   u2K2/ndynIl0m6cOqtvJxnoXa+++a4t+i0Sp4rzSgD8WTG85bs2F9PrZX
    Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="331523437"
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="354971158"
 X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="331523437"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 10:44:30 -0700
+   d="scan'208";a="354971158"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 11:03:50 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
-   d="scan'208";a="891929185"
+   d="scan'208";a="600670826"
 Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 06 May 2022 10:44:29 -0700
+  by orsmga001.jf.intel.com with ESMTP; 06 May 2022 11:03:49 -0700
 From:   Tony Nguyen <anthony.l.nguyen@intel.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com
-Cc:     Michal Michalik <michal.michalik@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        richardcochran@gmail.com, Jacob Keller <jacob.e.keller@intel.com>,
-        Paul Menzel <pmenzel@molgen.mpg.de>,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net v2 3/3] ice: fix PTP stale Tx timestamps cleanup
-Date:   Fri,  6 May 2022 10:41:29 -0700
-Message-Id: <20220506174129.4976-4-anthony.l.nguyen@intel.com>
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        marcin.szycik@linux.intel.com
+Subject: [PATCH net-next 0/2][pull request] 100GbE Intel Wired LAN Driver Updates 2022-05-06
+Date:   Fri,  6 May 2022 11:00:50 -0700
+Message-Id: <20220506180052.5256-1-anthony.l.nguyen@intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220506174129.4976-1-anthony.l.nguyen@intel.com>
-References: <20220506174129.4976-1-anthony.l.nguyen@intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -63,73 +58,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michal Michalik <michal.michalik@intel.com>
+Marcin Szycik says:
 
-Read stale PTP Tx timestamps from PHY on cleanup.
+This patchset adds support for systemd defined naming scheme for port
+representors, as well as re-enables displaying PCI bus-info in ethtool.
 
-After running out of Tx timestamps request handlers, hardware (HW) stops
-reporting finished requests. Function ice_ptp_tx_tstamp_cleanup() used
-to only clean up stale handlers in driver and was leaving the hardware
-registers not read. Not reading stale PTP Tx timestamps prevents next
-interrupts from arriving and makes timestamping unusable.
+bus-info information has previously been removed from ethtool for port
+representors, as a workaround for a bug in lshw tool, where the tool would
+sometimes display wrong descriptions for port representors/PF. Now the bug
+has been fixed in lshw tool [1].
 
-Fixes: ea9b847cda64 ("ice: enable transmit timestamps for E810 devices")
-Signed-off-by: Michal Michalik <michal.michalik@intel.com>
-Reviewed-by: Jacob Keller <jacob.e.keller@intel.com>
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_ptp.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+Removing the workaround can be considered a regression (user might be
+running an older, unpatched version of lshw) (see [2] for discussion).
+However, calling SET_NETDEV_DEV also produces the same effect as removing
+the workaround, i.e. lshw is able to access PCI bus-info (this time not
+via ethtool, but in some other way) and the bug can occur.
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ptp.c b/drivers/net/ethernet/intel/ice/ice_ptp.c
-index a1cd33273ca4..da025c204577 100644
---- a/drivers/net/ethernet/intel/ice/ice_ptp.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ptp.c
-@@ -2287,6 +2287,7 @@ ice_ptp_init_tx_e810(struct ice_pf *pf, struct ice_ptp_tx *tx)
- 
- /**
-  * ice_ptp_tx_tstamp_cleanup - Cleanup old timestamp requests that got dropped
-+ * @hw: pointer to the hw struct
-  * @tx: PTP Tx tracker to clean up
-  *
-  * Loop through the Tx timestamp requests and see if any of them have been
-@@ -2295,7 +2296,7 @@ ice_ptp_init_tx_e810(struct ice_pf *pf, struct ice_ptp_tx *tx)
-  * timestamp will never be captured. This might happen if the packet gets
-  * discarded before it reaches the PHY timestamping block.
-  */
--static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
-+static void ice_ptp_tx_tstamp_cleanup(struct ice_hw *hw, struct ice_ptp_tx *tx)
- {
- 	u8 idx;
- 
-@@ -2304,11 +2305,16 @@ static void ice_ptp_tx_tstamp_cleanup(struct ice_ptp_tx *tx)
- 
- 	for_each_set_bit(idx, tx->in_use, tx->len) {
- 		struct sk_buff *skb;
-+		u64 raw_tstamp;
- 
- 		/* Check if this SKB has been waiting for too long */
- 		if (time_is_after_jiffies(tx->tstamps[idx].start + 2 * HZ))
- 			continue;
- 
-+		/* Read tstamp to be able to use this register again */
-+		ice_read_phy_tstamp(hw, tx->quad, idx + tx->quad_offset,
-+				    &raw_tstamp);
-+
- 		spin_lock(&tx->lock);
- 		skb = tx->tstamps[idx].skb;
- 		tx->tstamps[idx].skb = NULL;
-@@ -2330,7 +2336,7 @@ static void ice_ptp_periodic_work(struct kthread_work *work)
- 
- 	ice_ptp_update_cached_phctime(pf);
- 
--	ice_ptp_tx_tstamp_cleanup(&pf->ptp.port.tx);
-+	ice_ptp_tx_tstamp_cleanup(&pf->hw, &pf->ptp.port.tx);
- 
- 	/* Run twice a second */
- 	kthread_queue_delayed_work(ptp->kworker, &ptp->work,
+Adding SET_NETDEV_DEV is important, as it greatly improves netdev naming -
+- port representors are named based on PF name. Currently port representors
+are named "ethX", which might be confusing, especially when spawning VFs on
+multiple PFs. Furthermore, it's currently harder to determine to which PF
+does a particular port representor belong, as bus-info is not shown in
+ethtool.
+
+Consider the following three cases:
+
+
+Case 1: current code - driver workaround in place, no SET_NETDEV_DEV,
+lshw with or without fix. Port representors are not displayed because they
+don't have bus-info (the workaround), PFs are labelled correctly:
+
+$ sudo ./lshw -c net -businfo
+Bus info          Device      Class          Description
+========================================================
+pci@0000:02:00.0  ens6f0      network        Ethernet Controller E810-XXV for SFP <-- PF
+pci@0000:02:00.1  ens6f1      network        Ethernet Controller E810-XXV for SFP
+pci@0000:02:01.0  ens6f0v0    network        Ethernet Adaptive Virtual Function <-- VF
+pci@0000:02:01.1  ens6f0v1    network        Ethernet Adaptive Virtual Function
+...
+
+
+Case 2: driver workaround in place, SET_NETDEV_DEV, no lshw fix. Port
+representors have predictable names. lshw is able to get bus-info because
+of SET_NETDEV_DEV and netdevs CAN be mislabelled:
+
+$ sudo ./lshw -c net -businfo
+Bus info          Device           Class          Description
+=============================================================
+pci@0000:02:00.0  ens6f0npf0vf60   network        Ethernet Controller E810-XXV for SFP <-- mislabeled port representor
+pci@0000:02:00.1  ens6f1           network        Ethernet Controller E810-XXV for SFP
+pci@0000:02:01.0  ens6f0v0         network        Ethernet Adaptive Virtual Function
+pci@0000:02:01.1  ens6f0v1         network        Ethernet Adaptive Virtual Function
+...
+pci@0000:02:00.0  ens6f0npf0vf26   network        Ethernet interface
+pci@0000:02:00.0  ens6f0           network        Ethernet interface <-- mislabeled PF
+pci@0000:02:00.0  ens6f0npf0vf81   network        Ethernet interface
+...
+$ sudo ethtool -i ens6f0npf0vf60
+driver: ice
+...
+bus-info:
+...
+
+Output of lshw would be the same with workaround removed; it does not
+change the fact that lshw labels netdevs incorrectly, while at the same
+time it prevents ethtool from displaying potentially useful data
+(bus-info).
+
+
+Case 3: workaround removed, SET_NETDEV_DEV, lshw fix:
+
+$ sudo ./lshw -c net -businfo
+Bus info          Device           Class          Description
+=============================================================
+pci@0000:02:00.0  ens6f0npf0vf73   network        Ethernet Controller E810-XXV for SFP
+pci@0000:02:00.1  ens6f1           network        Ethernet Controller E810-XXV for SFP
+pci@0000:02:01.0  ens6f0v0         network        Ethernet Adaptive Virtual Function
+pci@0000:02:01.1  ens6f0v1         network        Ethernet Adaptive Virtual Function
+...
+pci@0000:02:00.0  ens6f0npf0vf5    network        Ethernet Controller E810-XXV for SFP
+pci@0000:02:00.0  ens6f0           network        Ethernet Controller E810-XXV for SFP
+pci@0000:02:00.0  ens6f0npf0vf60   network        Ethernet Controller E810-XXV for SFP
+...
+$ sudo ethtool -i ens6f0npf0vf73
+driver: ice
+...
+bus-info: 0000:02:00.0
+...
+
+In this case poort representors have predictable names, netdevs are not
+mislabelled in lshw, and bus-info is shown in ethtool.
+
+[1] https://ezix.org/src/pkg/lshw/commit/9bf4e4c9c1
+[2] https://patchwork.ozlabs.org/project/intel-wired-lan/patch/20220321144731.3935-1-marcin.szycik@linux.intel.com
+
+The following are changes since commit 95730d65708397828f75ca7dbca838edf6727bfd:
+  Merge branch 'tso-gso-limit-split'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
+
+Marcin Szycik (1):
+  Revert "ice: Hide bus-info in ethtool for PRs in switchdev mode"
+
+Michal Swiatkowski (1):
+  ice: link representors to PCI device
+
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 8 +++-----
+ drivers/net/ethernet/intel/ice/ice_repr.c    | 1 +
+ 2 files changed, 4 insertions(+), 5 deletions(-)
+
 -- 
 2.35.1
 
