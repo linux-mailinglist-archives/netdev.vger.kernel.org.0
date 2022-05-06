@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6707751D09A
+	by mail.lfdr.de (Postfix) with ESMTP id B283351D09B
 	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 07:25:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389105AbiEFF2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 01:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33146 "EHLO
+        id S1389110AbiEFF2p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 01:28:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389093AbiEFF2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 01:28:42 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C2C5DA64;
-        Thu,  5 May 2022 22:24:59 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2465OatZ049321;
-        Fri, 6 May 2022 00:24:36 -0500
+        with ESMTP id S1389102AbiEFF2n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 01:28:43 -0400
+Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 476465DA60;
+        Thu,  5 May 2022 22:25:00 -0700 (PDT)
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2465Oc9E046615;
+        Fri, 6 May 2022 00:24:38 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1651814676;
-        bh=4j1xMzQOmlht80z6F07pIV3L6cGhnmTTb4Ja+LRnZBw=;
-        h=From:To:CC:Subject:Date;
-        b=vKNmglauJKXzLk03BsjVhgwBqEm+7Pa5jhrM/7S6lykPGljyhXrNMGY9hLdJaqGAE
-         hl810/olrqdH4c7md74IWlh9nzxqHMI37mlvKY5N9Ad9F5WuZYK58JYrw+PZPZcyHb
-         YuxhWbo4jjjjvpKbDOXZ2CPB4DnzIUYG4vbgxAc4=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2465OZBW003996
+        s=ti-com-17Q1; t=1651814678;
+        bh=kr8KibrQ7OtvC4g1xY1s+00NcMLT18Pa6g215Kfx5tI=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=B4jD75RqcRUQcgd/tpAJ28wi2dUzO0bhzdRrREm3pCjMudBCPIVsBCEulk2Aq5IrR
+         8pluZKXIrJBE6HySg35bDGggJqiPGCpShWUVSJmJt2ZS+/xprK2sHqhKXNsyD9SGHo
+         rGxDkl7RyuD0M5LJ1lbzSPyWr8ETDxbrqh6qwf4Y=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2465Ochp024407
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 6 May 2022 00:24:36 -0500
-Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+        Fri, 6 May 2022 00:24:38 -0500
+Received: from DLEE113.ent.ti.com (157.170.170.24) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 6
- May 2022 00:24:35 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
- (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ May 2022 00:24:38 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Fri, 6 May 2022 00:24:35 -0500
+ Frontend Transport; Fri, 6 May 2022 00:24:38 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2465OY8F009958;
-        Fri, 6 May 2022 00:24:34 -0500
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2465ObEJ009993;
+        Fri, 6 May 2022 00:24:37 -0500
 From:   Puranjay Mohan <p-mohan@ti.com>
 To:     <linux-kernel@vger.kernel.org>
 CC:     <davem@davemloft.net>, <edumazet@google.com>,
@@ -48,10 +48,12 @@ CC:     <davem@davemloft.net>, <edumazet@google.com>,
         <linux-arm-kernel@lists.infradead.org>, <rogerq@kernel.org>,
         <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
         <robh+dt@kernel.org>, <afd@ti.com>, <andrew@lunn.ch>
-Subject: [PATCH 0/2] Introduce ICSSG based ethernet Driver
-Date:   Fri, 6 May 2022 10:54:31 +0530
-Message-ID: <20220506052433.28087-1-p-mohan@ti.com>
+Subject: [PATCH 1/2] dt-bindings: net: Add ICSSG Ethernet Driver bindings
+Date:   Fri, 6 May 2022 10:54:32 +0530
+Message-ID: <20220506052433.28087-2-p-mohan@ti.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220506052433.28087-1-p-mohan@ti.com>
+References: <20220506052433.28087-1-p-mohan@ti.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
@@ -65,79 +67,197 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Programmable Real-time Unit and Industrial Communication Subsystem
-Gigabit (PRU_ICSSG) is a low-latency microcontroller subsystem in the TI
-SoCs. This subsystem is provided for the use cases like implementation of
-custom peripheral interfaces, offloading of tasks from the other
-processor cores of the SoC, etc.
+Add a YAML binding document for the ICSSG Programmable real time unit
+based Ethernet driver. This driver uses the PRU and PRUSS consumer APIs
+to interface the PRUs and load/run the firmware for supporting ethernet
+functionality.
 
-The subsystem includes many accelerators for data processing like
-multiplier and multiplier-accumulator. It also has peripherals like
-UART, MII/RGMII, MDIO, etc. Every ICSSG core includes two 32-bit
-load/store RISC CPU cores called PRUs.
-
-The above features allow it to be used for implementing custom firmware
-based peripherals like ethernet.
-
-This series adds the YAML documentation and the driver with basic EMAC
-support for TI AM654 Silicon Rev 2 SoC with the PRU_ICSSG Sub-system.
-running dual-EMAC firmware.
-This currently supports basic EMAC with 1Gbps and 100Mbps link. 10M and
-half-duplex modes are not yet supported because they require the support
-of an IEP, which will be added later.
-Advanced features like switch-dev and timestamping will be added later.
-
-This series depends on two patch series that are not yet merged, one in
-the remoteproc tree and another in the soc tree. the first one is titled
-Introduce PRU remoteproc consumer API and the second one is titled
-Introduce PRU platform consumer API.
-Both of these are required for this driver.
-
-To explain this dependency and to get reviews, I had earlier posted all
-three of these as an RFC[1], this can be seen for understanding the
-dependencies.
-
-I then posted the remoteproc[2] and soc[3] series seperately to their
-respective trees.
-
-[1] https://lore.kernel.org/all/20220406094358.7895-1-p-mohan@ti.com/
-[2] https://patchwork.kernel.org/project/linux-remoteproc/cover/20220418104118.12878-1-p-mohan@ti.com/
-[3] https://patchwork.kernel.org/project/linux-remoteproc/cover/20220418123004.9332-1-p-mohan@ti.com/
-
-Thanks and Regards,
-Puranjay Mohan
-
-Puranjay Mohan (1):
-  dt-bindings: net: Add ICSSG Ethernet Driver bindings
-
-Roger Quadros (1):
-  net: ti: icssg-prueth: Add ICSSG ethernet driver
-
- .../bindings/net/ti,icssg-prueth.yaml         |  174 ++
- drivers/net/ethernet/ti/Kconfig               |   15 +
- drivers/net/ethernet/ti/Makefile              |    3 +
- drivers/net/ethernet/ti/icssg_classifier.c    |  375 ++++
- drivers/net/ethernet/ti/icssg_config.c        |  443 ++++
- drivers/net/ethernet/ti/icssg_config.h        |  200 ++
- drivers/net/ethernet/ti/icssg_ethtool.c       |  301 +++
- drivers/net/ethernet/ti/icssg_mii_cfg.c       |  104 +
- drivers/net/ethernet/ti/icssg_mii_rt.h        |  151 ++
- drivers/net/ethernet/ti/icssg_prueth.c        | 1891 +++++++++++++++++
- drivers/net/ethernet/ti/icssg_prueth.h        |  247 +++
- drivers/net/ethernet/ti/icssg_switch_map.h    |  183 ++
- include/linux/pruss.h                         |    1 +
- 13 files changed, 4088 insertions(+)
+Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+---
+ .../bindings/net/ti,icssg-prueth.yaml         | 174 ++++++++++++++++++
+ 1 file changed, 174 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
- create mode 100644 drivers/net/ethernet/ti/icssg_classifier.c
- create mode 100644 drivers/net/ethernet/ti/icssg_config.c
- create mode 100644 drivers/net/ethernet/ti/icssg_config.h
- create mode 100644 drivers/net/ethernet/ti/icssg_ethtool.c
- create mode 100644 drivers/net/ethernet/ti/icssg_mii_cfg.c
- create mode 100644 drivers/net/ethernet/ti/icssg_mii_rt.h
- create mode 100644 drivers/net/ethernet/ti/icssg_prueth.c
- create mode 100644 drivers/net/ethernet/ti/icssg_prueth.h
- create mode 100644 drivers/net/ethernet/ti/icssg_switch_map.h
 
+diff --git a/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+new file mode 100644
+index 000000000000..ca6f0af411cf
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+@@ -0,0 +1,174 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/ti,icssg-prueth.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: |+
++  Texas Instruments ICSSG PRUSS Ethernet
++
++maintainers:
++  - Puranjay Mohan <p-mohan@ti.com>
++
++description: |+
++  Ethernet based on the Programmable Real-Time Unit and Industrial Communication Subsystem.
++
++allOf:
++  - $ref: /schemas/remoteproc/ti,pru-consumer.yaml#
++
++properties:
++  compatible:
++    enum:
++      - ti,am654-icssg-prueth  # for AM65x SoC family
++
++  sram:
++    description: |
++      phandle to MSMC SRAM node
++
++  dmas:
++    minItems: 10
++    maxItems: 10
++    description: |
++      list of phandles and specifiers to UDMA as specified in bindings/dma/ti/k3-udma.txt.
++
++  dma-names:
++    items:
++      - const: tx0-0
++      - const: tx0-1
++      - const: tx0-2
++      - const: tx0-3
++      - const: tx1-0
++      - const: tx1-1
++      - const: tx1-2
++      - const: tx1-3
++      - const: rx0
++      - const: rx1
++
++  ethernet-ports:
++    type: object
++    properties:
++      '#address-cells':
++        const: 1
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      ^port@[0-1]$:
++        type: object
++        description: ICSSG PRUETH external ports
++
++        $ref: ethernet-controller.yaml#
++
++        properties:
++          reg:
++            items:
++              - enum: [0, 1]
++            description: ICSSG PRUETH port number
++
++          ti,syscon-rgmii-delay:
++            $ref: /schemas/types.yaml#/definitions/phandle-array
++            description:
++              phandle to system controller node and register offset
++              to ICSSG control register for RGMII transmit delay
++
++        required:
++          - reg
++
++    additionalProperties: false
++
++  ti,mii-g-rt:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: |
++      phandle to MII_G_RT module's syscon regmap.
++
++  ti,mii-rt:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description: |
++      phandle to MII_RT module's syscon regmap
++
++  interrupts:
++    minItems: 2
++    maxItems: 2
++    description: |
++      Interrupt specifiers to TX timestamp IRQ.
++
++  interrupt-names:
++    items:
++      - const: tx_ts0
++      - const: tx_ts1
++
++required:
++  - compatible
++  - sram
++  - ti,mii-g-rt
++  - dmas
++  - dma-names
++  - ethernet-ports
++  - interrupts
++  - interrupt-names
++
++unevaluatedProperties: false
++
++examples:
++  - |
++
++    /* Example k3-am654 base board SR2.0, dual-emac */
++        pruss2_eth: pruss2_eth {
++                compatible = "ti,am654-icssg-prueth";
++                pinctrl-names = "default";
++                pinctrl-0 = <&icssg2_rgmii_pins_default>;
++                sram = <&msmc_ram>;
++
++                ti,prus = <&pru2_0>, <&rtu2_0>, <&tx_pru2_0>, <&pru2_1>, <&rtu2_1>, <&tx_pru2_1>;
++                firmware-name = "ti-pruss/am65x-pru0-prueth-fw.elf",
++                                "ti-pruss/am65x-rtu0-prueth-fw.elf",
++                                "ti-pruss/am65x-txpru0-prueth-fw.elf",
++                                "ti-pruss/am65x-pru1-prueth-fw.elf",
++                                "ti-pruss/am65x-rtu1-prueth-fw.elf",
++                                "ti-pruss/am65x-txpru1-prueth-fw.elf";
++                ti,pruss-gp-mux-sel = <2>,      /* MII mode */
++                                      <2>,
++                                      <2>,
++                                      <2>,      /* MII mode */
++                                      <2>,
++                                      <2>;
++                ti,mii-g-rt = <&icssg2_mii_g_rt>;
++                dmas = <&main_udmap 0xc300>, /* egress slice 0 */
++                       <&main_udmap 0xc301>, /* egress slice 0 */
++                       <&main_udmap 0xc302>, /* egress slice 0 */
++                       <&main_udmap 0xc303>, /* egress slice 0 */
++                       <&main_udmap 0xc304>, /* egress slice 1 */
++                       <&main_udmap 0xc305>, /* egress slice 1 */
++                       <&main_udmap 0xc306>, /* egress slice 1 */
++                       <&main_udmap 0xc307>, /* egress slice 1 */
++                       <&main_udmap 0x4300>, /* ingress slice 0 */
++                       <&main_udmap 0x4301>; /* ingress slice 1 */
++                dma-names = "tx0-0", "tx0-1", "tx0-2", "tx0-3",
++                            "tx1-0", "tx1-1", "tx1-2", "tx1-3",
++                            "rx0", "rx1";
++                interrupts = <24 0 2>, <25 1 3>;
++                interrupt-names = "tx_ts0", "tx_ts1";
++                ethernet-ports {
++                        #address-cells = <1>;
++                        #size-cells = <0>;
++                        pruss2_emac0: port@0 {
++                                reg = <0>;
++                                phy-handle = <&pruss2_eth0_phy>;
++                                phy-mode = "rgmii-rxid";
++                                interrupts-extended = <&icssg2_intc 24>;
++                                ti,syscon-rgmii-delay = <&scm_conf 0x4120>;
++                                /* Filled in by bootloader */
++                                local-mac-address = [00 00 00 00 00 00];
++                        };
++
++                        pruss2_emac1: port@1 {
++                                reg = <1>;
++                                phy-handle = <&pruss2_eth1_phy>;
++                                phy-mode = "rgmii-rxid";
++                                interrupts-extended = <&icssg2_intc 25>;
++                                ti,syscon-rgmii-delay = <&scm_conf 0x4124>;
++                                /* Filled in by bootloader */
++                                local-mac-address = [00 00 00 00 00 00];
++                        };
++                };
++        };
 -- 
 2.17.1
 
