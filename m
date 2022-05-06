@@ -2,319 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EA8B551D017
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 06:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C65A51D095
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 07:22:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388959AbiEFE2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 00:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50552 "EHLO
+        id S1389087AbiEFF0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 01:26:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388960AbiEFE1x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 00:27:53 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A5FA5F270
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 21:24:11 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nmpVY-0001Xs-Pr; Fri, 06 May 2022 06:24:00 +0200
-Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nmpVY-000ddX-O6; Fri, 06 May 2022 06:23:59 +0200
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1nmpVV-003s9X-W2; Fri, 06 May 2022 06:23:57 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v4 7/7] net: phy: dp83td510: Add support for the DP83TD510 Ethernet PHY
-Date:   Fri,  6 May 2022 06:23:57 +0200
-Message-Id: <20220506042357.923026-8-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220506042357.923026-1-o.rempel@pengutronix.de>
-References: <20220506042357.923026-1-o.rempel@pengutronix.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S1389085AbiEFF0P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 01:26:15 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4195E765;
+        Thu,  5 May 2022 22:22:31 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VCQBjlI_1651814548;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VCQBjlI_1651814548)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 06 May 2022 13:22:29 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [PATCH net-next] net/smc: Fix smc-r link reference count
+Date:   Fri,  6 May 2022 13:22:28 +0800
+Message-Id: <1651814548-83231-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The DP83TD510E is an ultra-low power Ethernet physical layer transceiver
-that supports 10M single pair cable.
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-This driver was tested with NXP SJA1105, STMMAC and ASIX AX88772B USB Ethernet
-controller.
+The following scenarios exist:
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+lnk->refcnt=1;
+smcr_link_put(lnk);
+lnk->refcnt=0;
+				smcr_link_hold(lnk);
+__smcr_link_clear(lnk);
+				do_xxx(lnk);
+
+This patch try using refcount_inc_not_zero() instead refcount_inc()
+to prevent this race condition. Therefore, we need to always check its
+return value, and respond with an error when it fails.
+
+Fixes: 20c9398d3309 ("net/smc: Resolve the race between SMC-R link access and clear")
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
 ---
- drivers/net/phy/Kconfig     |   6 ++
- drivers/net/phy/Makefile    |   1 +
- drivers/net/phy/dp83td510.c | 209 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 216 insertions(+)
- create mode 100644 drivers/net/phy/dp83td510.c
+ net/smc/af_smc.c   |  3 +--
+ net/smc/smc_core.c | 27 +++++++++++++++++++++------
+ net/smc/smc_core.h |  4 ++--
+ 3 files changed, 24 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index bbbf6c07ea53..9fee639ee5c8 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -342,6 +342,12 @@ config DP83869_PHY
- 	  Currently supports the DP83869 PHY.  This PHY supports copper and
- 	  fiber connections.
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 30acc31..b449c08 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1129,11 +1129,10 @@ static int smc_connect_rdma(struct smc_sock *smc,
+ 				break;
+ 			}
+ 		}
+-		if (!link) {
++		if (!link || !smc_switch_link_and_count(&smc->conn, link)) {
+ 			reason_code = SMC_CLC_DECL_NOSRVLINK;
+ 			goto connect_abort;
+ 		}
+-		smc_switch_link_and_count(&smc->conn, link);
+ 	}
  
-+config DP83TD510_PHY
-+	tristate "Texas Instruments DP83TD510 Ethernet 10Base-T1L PHY"
-+	help
-+	  Support for the DP83TD510 Ethernet 10Base-T1L PHY. This PHY supports
-+	  a 10M single pair Ethernet connection for up to 1000 meter cable.
+ 	/* create send buffer and rmb */
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 29525d0..f2d08b0 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -996,7 +996,7 @@ static int smc_switch_cursor(struct smc_sock *smc, struct smc_cdc_tx_pend *pend,
+ 	return rc;
+ }
+ 
+-void smc_switch_link_and_count(struct smc_connection *conn,
++bool smc_switch_link_and_count(struct smc_connection *conn,
+ 			       struct smc_link *to_lnk)
+ {
+ 	atomic_dec(&conn->lnk->conn_cnt);
+@@ -1005,7 +1005,7 @@ void smc_switch_link_and_count(struct smc_connection *conn,
+ 	conn->lnk = to_lnk;
+ 	atomic_inc(&conn->lnk->conn_cnt);
+ 	/* link_put in smc_conn_free() */
+-	smcr_link_hold(conn->lnk);
++	return smcr_link_hold(conn->lnk);
+ }
+ 
+ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
+@@ -1029,11 +1029,21 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
+ 		    from_lnk->ibport == lgr->lnk[i].ibport) {
+ 			continue;
+ 		}
 +
- config VITESSE_PHY
- 	tristate "Vitesse PHYs"
- 	help
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index b82651b57043..b12b1d86fc99 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -57,6 +57,7 @@ obj-$(CONFIG_DP83848_PHY)	+= dp83848.o
- obj-$(CONFIG_DP83867_PHY)	+= dp83867.o
- obj-$(CONFIG_DP83869_PHY)	+= dp83869.o
- obj-$(CONFIG_DP83TC811_PHY)	+= dp83tc811.o
-+obj-$(CONFIG_DP83TD510_PHY)	+= dp83td510.o
- obj-$(CONFIG_FIXED_PHY)		+= fixed_phy.o
- obj-$(CONFIG_ICPLUS_PHY)	+= icplus.o
- obj-$(CONFIG_INTEL_XWAY_PHY)	+= intel-xway.o
-diff --git a/drivers/net/phy/dp83td510.c b/drivers/net/phy/dp83td510.c
-new file mode 100644
-index 000000000000..1ae792b0daaa
---- /dev/null
-+++ b/drivers/net/phy/dp83td510.c
-@@ -0,0 +1,209 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Driver for the Texas Instruments DP83TD510 PHY
-+ * Copyright (c) 2022 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-+ */
++		/* Try to hold a reference here. Once succeed,
++		 * all subsequent hold in smc_switch_link_and_count()  will not fail.
++		 * We can simplify the subsequent processing logic.
++		 */
++		if (!smcr_link_hold(&lgr->lnk[i]))
++			continue;
 +
-+#include <linux/bitfield.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/phy.h>
+ 		to_lnk = &lgr->lnk[i];
+ 		break;
+ 	}
+ 	if (!to_lnk || !smc_wr_tx_link_hold(to_lnk)) {
+ 		smc_lgr_terminate_sched(lgr);
++		if (to_lnk)
++			smcr_link_put(to_lnk); /* smcr_link_hold() above */
+ 		return NULL;
+ 	}
+ again:
+@@ -1056,6 +1066,7 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
+ 		    smc->sk.sk_state == SMC_PEERABORTWAIT ||
+ 		    smc->sk.sk_state == SMC_PROCESSABORT) {
+ 			spin_lock_bh(&conn->send_lock);
++			/* smcr_link_hold() already, won't fail */
+ 			smc_switch_link_and_count(conn, to_lnk);
+ 			spin_unlock_bh(&conn->send_lock);
+ 			continue;
+@@ -1068,6 +1079,7 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
+ 			goto err_out;
+ 		/* avoid race with smcr_tx_sndbuf_nonempty() */
+ 		spin_lock_bh(&conn->send_lock);
++		/* smcr_link_hold() already, won't fail */
+ 		smc_switch_link_and_count(conn, to_lnk);
+ 		rc = smc_switch_cursor(smc, pend, wr_buf);
+ 		spin_unlock_bh(&conn->send_lock);
+@@ -1078,11 +1090,13 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
+ 	}
+ 	read_unlock_bh(&lgr->conns_lock);
+ 	smc_wr_tx_link_put(to_lnk);
++	smcr_link_put(to_lnk); /* smcr_link_hold() above */
+ 	return to_lnk;
+ 
+ err_out:
+ 	smcr_link_down_cond_sched(to_lnk);
+ 	smc_wr_tx_link_put(to_lnk);
++	smcr_link_put(to_lnk); /* smcr_link_hold() above */
+ 	return NULL;
+ }
+ 
+@@ -1260,9 +1274,9 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
+ 	smcr_link_put(lnk); /* theoretically last link_put */
+ }
+ 
+-void smcr_link_hold(struct smc_link *lnk)
++bool smcr_link_hold(struct smc_link *lnk)
+ {
+-	refcount_inc(&lnk->refcnt);
++	return refcount_inc_not_zero(&lnk->refcnt);
+ }
+ 
+ void smcr_link_put(struct smc_link *lnk)
+@@ -1904,8 +1918,9 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+ 		}
+ 	}
+ 	smc_lgr_hold(conn->lgr); /* lgr_put in smc_conn_free() */
+-	if (!conn->lgr->is_smcd)
+-		smcr_link_hold(conn->lnk); /* link_put in smc_conn_free() */
++	if (!conn->lgr->is_smcd && !smcr_link_hold(conn->lnk))
++		return SMC_CLC_DECL_NOACTLINK;
 +
-+#define DP83TD510E_PHY_ID			0x20000181
-+
-+/* MDIO_MMD_VEND2 registers */
-+#define DP83TD510E_PHY_STS			0x10
-+#define DP83TD510E_STS_MII_INT			BIT(7)
-+#define DP83TD510E_LINK_STATUS			BIT(0)
-+
-+#define DP83TD510E_GEN_CFG			0x11
-+#define DP83TD510E_GENCFG_INT_POLARITY		BIT(3)
-+#define DP83TD510E_GENCFG_INT_EN		BIT(1)
-+#define DP83TD510E_GENCFG_INT_OE		BIT(0)
-+
-+#define DP83TD510E_INTERRUPT_REG_1		0x12
-+#define DP83TD510E_INT1_LINK			BIT(13)
-+#define DP83TD510E_INT1_LINK_EN			BIT(5)
-+
-+#define DP83TD510E_AN_STAT_1			0x60c
-+#define DP83TD510E_MASTER_SLAVE_RESOL_FAIL	BIT(15)
-+
-+static int dp83td510_config_intr(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		/* Clear any pending interrupts */
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_PHY_STS,
-+				    0x0);
-+		if (ret)
-+			return ret;
-+
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
-+				    DP83TD510E_INTERRUPT_REG_1,
-+				    DP83TD510E_INT1_LINK_EN);
-+		if (ret)
-+			return ret;
-+
-+		ret = phy_set_bits_mmd(phydev, MDIO_MMD_VEND2,
-+				       DP83TD510E_GEN_CFG,
-+				       DP83TD510E_GENCFG_INT_POLARITY |
-+				       DP83TD510E_GENCFG_INT_EN |
-+				       DP83TD510E_GENCFG_INT_OE);
-+	} else {
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2,
-+				    DP83TD510E_INTERRUPT_REG_1, 0x0);
-+		if (ret)
-+			return ret;
-+
-+		ret = phy_clear_bits_mmd(phydev, MDIO_MMD_VEND2,
-+					 DP83TD510E_GEN_CFG,
-+					 DP83TD510E_GENCFG_INT_EN);
-+		if (ret)
-+			return ret;
-+
-+		/* Clear any pending interrupts */
-+		ret = phy_write_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_PHY_STS,
-+				    0x0);
-+	}
-+
-+	return ret;
-+}
-+
-+static irqreturn_t dp83td510_handle_interrupt(struct phy_device *phydev)
-+{
-+	int  ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_PHY_STS);
-+	if (ret < 0) {
-+		phy_error(phydev);
-+		return IRQ_NONE;
-+	} else if (!(ret & DP83TD510E_STS_MII_INT)) {
-+		return IRQ_NONE;
-+	}
-+
-+	/* Read the current enabled interrupts */
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND2, DP83TD510E_INTERRUPT_REG_1);
-+	if (ret < 0) {
-+		phy_error(phydev);
-+		return IRQ_NONE;
-+	} else if (!(ret & DP83TD510E_INT1_LINK_EN) ||
-+		   !(ret & DP83TD510E_INT1_LINK)) {
-+		return IRQ_NONE;
-+	}
-+
-+	phy_trigger_machine(phydev);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int dp83td510_read_status(struct phy_device *phydev)
-+{
-+	u16 phy_sts;
-+	int ret;
-+
-+	phydev->speed = SPEED_UNKNOWN;
-+	phydev->duplex = DUPLEX_UNKNOWN;
-+	phydev->pause = 0;
-+	phydev->asym_pause = 0;
-+	linkmode_zero(phydev->lp_advertising);
-+
-+	phy_sts = phy_read(phydev, DP83TD510E_PHY_STS);
-+
-+	phydev->link = !!(phy_sts & DP83TD510E_LINK_STATUS);
-+	if (phydev->link) {
-+		/* This PHY supports only one link mode: 10BaseT1L_Full */
-+		phydev->duplex = DUPLEX_FULL;
-+		phydev->speed = SPEED_10;
-+
-+		if (phydev->autoneg == AUTONEG_ENABLE) {
-+			ret = genphy_c45_read_lpa(phydev);
-+			if (ret)
-+				return ret;
-+
-+			phy_resolve_aneg_linkmode(phydev);
-+		}
-+	}
-+
-+	if (phydev->autoneg == AUTONEG_ENABLE) {
-+		ret = genphy_c45_baset1_read_status(phydev);
-+		if (ret < 0)
-+			return ret;
-+
-+		ret = phy_read_mmd(phydev, MDIO_MMD_VEND2,
-+				   DP83TD510E_AN_STAT_1);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (ret & DP83TD510E_MASTER_SLAVE_RESOL_FAIL)
-+			phydev->master_slave_state = MASTER_SLAVE_STATE_ERR;
-+	} else {
-+		return genphy_c45_pma_baset1_read_master_slave(phydev);
-+	}
-+
-+	return 0;
-+}
-+
-+static int dp83td510_config_aneg(struct phy_device *phydev)
-+{
-+	bool changed = false;
-+	int ret;
-+
-+	ret = genphy_c45_pma_baset1_setup_master_slave(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (phydev->autoneg == AUTONEG_DISABLE)
-+		return genphy_c45_an_disable_aneg(phydev);
-+
-+	ret = genphy_c45_an_config_aneg(phydev);
-+	if (ret < 0)
-+		return ret;
-+	if (ret > 0)
-+		changed = true;
-+
-+	return genphy_c45_check_and_restart_aneg(phydev, changed);
-+}
-+
-+static int dp83td510_get_features(struct phy_device *phydev)
-+{
-+	/* This PHY can't respond on MDIO bus if no RMII clock is enabled.
-+	 * In case RMII mode is used (most meaningful mode for this PHY) and
-+	 * the PHY do not have own XTAL, and CLK providing MAC is not probed,
-+	 * we won't be able to read all needed ability registers.
-+	 * So provide it manually.
-+	 */
-+
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, phydev->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, phydev->supported);
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT1L_Full_BIT,
-+			 phydev->supported);
-+
-+	return 0;
-+}
-+
-+static struct phy_driver dp83td510_driver[] = {
-+{
-+	PHY_ID_MATCH_MODEL(DP83TD510E_PHY_ID),
-+	.name		= "TI DP83TD510E",
-+
-+	.config_aneg	= dp83td510_config_aneg,
-+	.read_status	= dp83td510_read_status,
-+	.get_features	= dp83td510_get_features,
-+	.config_intr	= dp83td510_config_intr,
-+	.handle_interrupt = dp83td510_handle_interrupt,
-+
-+	.suspend	= genphy_suspend,
-+	.resume		= genphy_resume,
-+} };
-+module_phy_driver(dp83td510_driver);
-+
-+static struct mdio_device_id __maybe_unused dp83td510_tbl[] = {
-+	{ PHY_ID_MATCH_MODEL(DP83TD510E_PHY_ID) },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(mdio, dp83td510_tbl);
-+
-+MODULE_DESCRIPTION("Texas Instruments DP83TD510E PHY driver");
-+MODULE_AUTHOR("Oleksij Rempel <kernel@pengutronix.de>");
-+MODULE_LICENSE("GPL v2");
+ 	conn->freed = 0;
+ 	conn->local_tx_ctrl.common.type = SMC_CDC_MSG_TYPE;
+ 	conn->local_tx_ctrl.len = SMC_WR_TX_SIZE;
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index 4cb03e9..9e2f67d 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -528,9 +528,9 @@ void smc_rtoken_set2(struct smc_link_group *lgr, int rtok_idx, int link_id,
+ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
+ 		   u8 link_idx, struct smc_init_info *ini);
+ void smcr_link_clear(struct smc_link *lnk, bool log);
+-void smcr_link_hold(struct smc_link *lnk);
++bool smcr_link_hold(struct smc_link *lnk);
+ void smcr_link_put(struct smc_link *lnk);
+-void smc_switch_link_and_count(struct smc_connection *conn,
++bool smc_switch_link_and_count(struct smc_connection *conn,
+ 			       struct smc_link *to_lnk);
+ int smcr_buf_map_lgr(struct smc_link *lnk);
+ int smcr_buf_reg_lgr(struct smc_link *lnk);
 -- 
-2.30.2
+1.8.3.1
 
