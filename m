@@ -2,380 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA98951DDCB
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 18:44:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D33551DDD1
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 18:45:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443883AbiEFQsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 12:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48586 "EHLO
+        id S1443860AbiEFQti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 12:49:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357431AbiEFQsC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 12:48:02 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229806D4E8;
-        Fri,  6 May 2022 09:44:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=n30vsYbFzM1NpkJU4bmBEdg/LJQK//tp4Ub+PFiQApA=; b=X0kccbfapMEhKIivM34CpF25bU
-        nFZJzFgRY1WCSoPwKTBfb1Flea3aiT9yTkZsqBVjVDpfXq44qiwlFc1LQ+ZxD90eTQWsBMTbUxhR8
-        u/DoOX5jqzZ0kliPlloz6GpnD8qHwBlJaWBbmTrpcOtSpDGh6OfgdzL9re8PCGkBCJKg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nn13r-001Y4A-Fi; Fri, 06 May 2022 18:44:11 +0200
-Date:   Fri, 6 May 2022 18:44:11 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Puranjay Mohan <p-mohan@ti.com>
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org, nm@ti.com,
-        ssantosh@kernel.org, s-anna@ti.com,
-        linux-arm-kernel@lists.infradead.org, rogerq@kernel.org,
-        grygorii.strashko@ti.com, vigneshr@ti.com, kishon@ti.com,
-        robh+dt@kernel.org, afd@ti.com
-Subject: Re: [PATCH 2/2] net: ti: icssg-prueth: Add ICSSG ethernet driver
-Message-ID: <YnVQW7xpSWEE2/HP@lunn.ch>
-References: <20220506052433.28087-1-p-mohan@ti.com>
- <20220506052433.28087-3-p-mohan@ti.com>
+        with ESMTP id S1343762AbiEFQti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 12:49:38 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC7A52AC44;
+        Fri,  6 May 2022 09:45:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651855554; x=1683391554;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=sHOpTDaVdHwXHGQJz+fHBf4Vwt0d9C/WRQnUKVhhBo4=;
+  b=aQczqjAe4oYx51T5ivVE1oQQgIITqbqcgSpcvBVqdG3MSJsPbcWP3Ciu
+   m9Hby0AE8jnE2XBOxdX+P1DfaXYEdokIQCM/63tOiMzPu5Sjkkj+DXBP5
+   Qo4npAXTVSmG9i0obkR97DzQcnP6XuLrN9DTnaVWrKiWPbV7yoYV79mIh
+   Y1xbceI+RlSasr4gYYeoAOQEEdDZNADyRqVambzWXStUbAxk/0PlN9Bjq
+   wOTaF04OsQ0zUIja99zqtgxP/3tkeGDQ48xAnFmTRVfcnI877Htdx2i33
+   Gts6JV2Qw/K20Ic3WGWD+phShOimdanaaPEfNWSAmcIG12qsbeRg/CXxS
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268659447"
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="268659447"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 09:45:54 -0700
+X-IronPort-AV: E=Sophos;i="5.91,203,1647327600"; 
+   d="scan'208";a="812456991"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.255.230.121]) ([10.255.230.121])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 09:45:53 -0700
+Message-ID: <b77219e1-10e5-a732-89f0-2e90d30ade8f@linux.intel.com>
+Date:   Fri, 6 May 2022 09:45:46 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220506052433.28087-3-p-mohan@ti.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH net-next v7 00/14] net: wwan: t7xx: PCIe driver for
+ MediaTek M.2 modem
+Content-Language: en-US
+To:     Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        "Devegowda, Chandrashekar" <chandrashekar.devegowda@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?UTF-8?B?SGFpanVuIExpdSAo5YiY5rW35YabKQ==?= 
+        <haijun.liu@mediatek.com>,
+        "Hanania, Amir" <amir.hanania@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Sharma, Dinesh" <dinesh.sharma@intel.com>,
+        "Lee, Eliot" <eliot.lee@intel.com>,
+        "Jarvinen, Ilpo Johannes" <ilpo.johannes.jarvinen@intel.com>,
+        "Veleta, Moises" <moises.veleta@intel.com>,
+        "Bossart, Pierre-louis" <pierre-louis.bossart@intel.com>,
+        "Sethuraman, Muralidharan" <muralidharan.sethuraman@intel.com>,
+        "Mishra, Soumya Prakash" <Soumya.Prakash.Mishra@intel.com>,
+        "Kancharla, Sreehari" <sreehari.kancharla@intel.com>,
+        "Sahu, Madhusmita" <madhusmita.sahu@intel.com>
+References: <20220506011616.1774805-1-ricardo.martinez@linux.intel.com>
+ <CAHNKnsTnqNrcnz9gx8uX0mMiq8V_Vt99AQPAom01Q=V50a2bFg@mail.gmail.com>
+From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+In-Reply-To: <CAHNKnsTnqNrcnz9gx8uX0mMiq8V_Vt99AQPAom01Q=V50a2bFg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-10.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +void icssg_config_ipg(struct prueth_emac *emac)
-> +{
-> +	struct prueth *prueth = emac->prueth;
-> +	int slice = prueth_emac_slice(emac);
-> +
-> +	switch (emac->speed) {
-> +	case SPEED_1000:
-> +		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_1G);
-> +		break;
-> +	case SPEED_100:
-> +		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_100M);
-> +		break;
-> +	default:
-> +		/* Other links speeds not supported */
-> +		pr_err("Unsupported link speed\n");
 
-dev_err() or netdev_err(). You then get an idea which device somebody
-is trying to configure into an unsupported mode.
+On 5/6/2022 6:43 AM, Sergey Ryazanov wrote:
+> Hello Ricardo,
+>
+> On Fri, May 6, 2022 at 4:16 AM Ricardo Martinez
+> <ricardo.martinez@linux.intel.com> wrote:
+>> t7xx is the PCIe host device driver for Intel 5G 5000 M.2 solution which
+>> is based on MediaTek's T700 modem to provide WWAN connectivity.
+>> The driver uses the WWAN framework infrastructure to create the following
+>> control ports and network interfaces:
+>> * /dev/wwan0mbim0 - Interface conforming to the MBIM protocol.
+>>    Applications like libmbim [1] or Modem Manager [2] from v1.16 onwards
+>>    with [3][4] can use it to enable data communication towards WWAN.
+>> * /dev/wwan0at0 - Interface that supports AT commands.
+>> * wwan0 - Primary network interface for IP traffic.
+>>
+>> The main blocks in t7xx driver are:
+>> * PCIe layer - Implements probe, removal, and power management callbacks.
+>> * Port-proxy - Provides a common interface to interact with different types
+>>    of ports such as WWAN ports.
+>> * Modem control & status monitor - Implements the entry point for modem
+>>    initialization, reset and exit, as well as exception handling.
+>> * CLDMA (Control Layer DMA) - Manages the HW used by the port layer to send
+>>    control messages to the modem using MediaTek's CCCI (Cross-Core
+>>    Communication Interface) protocol.
+>> * DPMAIF (Data Plane Modem AP Interface) - Controls the HW that provides
+>>    uplink and downlink queues for the data path. The data exchange takes
+>>    place using circular buffers to share data buffer addresses and metadata
+>>    to describe the packets.
+>> * MHCCIF (Modem Host Cross-Core Interface) - Provides interrupt channels
+>>    for bidirectional event notification such as handshake, exception, PM and
+>>    port enumeration.
+>>
+>> The compilation of the t7xx driver is enabled by the CONFIG_MTK_T7XX config
+>> option which depends on CONFIG_WWAN.
+>> This driver was originally developed by MediaTek. Intel adapted t7xx to
+>> the WWAN framework, optimized and refactored the driver source code in close
+>> collaboration with MediaTek. This will enable getting the t7xx driver on the
+>> Approved Vendor List for interested OEM's and ODM's productization plans
+>> with Intel 5G 5000 M.2 solution.
+>>
+>> List of contributors:
+>> Amir Hanania <amir.hanania@intel.com>
+>> Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+>> Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+>> Dinesh Sharma <dinesh.sharma@intel.com>
+>> Eliot Lee <eliot.lee@intel.com>
+>> Haijun Liu <haijun.liu@mediatek.com>
+>> M Chetan Kumar <m.chetan.kumar@intel.com>
+>> Mika Westerberg <mika.westerberg@linux.intel.com>
+>> Moises Veleta <moises.veleta@intel.com>
+>> Pierre-louis Bossart <pierre-louis.bossart@intel.com>
+>> Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
+>> Ricardo Martinez <ricardo.martinez@linux.intel.com>
+>> Madhusmita Sahu <madhusmita.sahu@intel.com>
+>> Muralidharan Sethuraman <muralidharan.sethuraman@intel.com>
+>> Soumya Prakash Mishra <Soumya.Prakash.Mishra@intel.com>
+>> Sreehari Kancharla <sreehari.kancharla@intel.com>
+>> Suresh Nagaraj <suresh.nagaraj@intel.com>
+>>
+>> [1] https://www.freedesktop.org/software/libmbim/
+>> [2] https://www.freedesktop.org/software/ModemManager/
+>> [3] https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/582
+>> [4] https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/523
+> Now the driver looks really nice. Good job!
 
-checkpatch probably also warned about that?
+Thanks Sergey.
 
-> +static void icssg_init_emac_mode(struct prueth *prueth)
-> +{
-> +	u8 mac[ETH_ALEN] = { 0 };
-> +
-> +	if (prueth->emacs_initialized)
-> +		return;
-> +
-> +	regmap_update_bits(prueth->miig_rt, FDB_GEN_CFG1, SMEM_VLAN_OFFSET_MASK, 0);
-> +	regmap_write(prueth->miig_rt, FDB_GEN_CFG2, 0);
-> +	/* Clear host MAC address */
-> +	icssg_class_set_host_mac_addr(prueth->miig_rt, mac);
-
-Seems an odd thing to do, set it to 00:00:00:00:00:00. You probably
-want to add a comment why you do this odd thing.
-
-> +int emac_set_port_state(struct prueth_emac *emac,
-> +			enum icssg_port_state_cmd cmd)
-> +{
-> +	struct icssg_r30_cmd *p;
-> +	int ret = -ETIMEDOUT;
-> +	int timeout = 10;
-> +	int i;
-> +
-> +	p = emac->dram.va + MGR_R30_CMD_OFFSET;
-> +
-> +	if (cmd >= ICSSG_EMAC_PORT_MAX_COMMANDS) {
-> +		netdev_err(emac->ndev, "invalid port command\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* only one command at a time allowed to firmware */
-> +	mutex_lock(&emac->cmd_lock);
-> +
-> +	for (i = 0; i < 4; i++)
-> +		writel(emac_r32_bitmask[cmd].cmd[i], &p->cmd[i]);
-> +
-> +	/* wait for done */
-> +	while (timeout) {
-> +		if (emac_r30_is_done(emac)) {
-> +			ret = 0;
-> +			break;
-> +		}
-> +
-> +		usleep_range(1000, 2000);
-> +		timeout--;
-> +	}
-
-linux/iopoll.h
-
-> +void icssg_config_set_speed(struct prueth_emac *emac)
-> +{
-> +	u8 fw_speed;
-> +
-> +	switch (emac->speed) {
-> +	case SPEED_1000:
-> +		fw_speed = FW_LINK_SPEED_1G;
-> +		break;
-> +	case SPEED_100:
-> +		fw_speed = FW_LINK_SPEED_100M;
-> +		break;
-> +	default:
-> +		/* Other links speeds not supported */
-> +		pr_err("Unsupported link speed\n");
-
-dev_err() or netdev_err().
-
-
-> +static int emac_get_link_ksettings(struct net_device *ndev,
-> +				   struct ethtool_link_ksettings *ecmd)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +
-> +	if (!emac->phydev)
-> +		return -EOPNOTSUPP;
-> +
-> +	phy_ethtool_ksettings_get(emac->phydev, ecmd);
-> +	return 0;
-> +}
-
-phy_ethtool_get_link_ksettings().
-
-You should keep phydev in ndev, not your priv structure.
-
-> +
-> +static int emac_set_link_ksettings(struct net_device *ndev,
-> +				   const struct ethtool_link_ksettings *ecmd)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +
-> +	if (!emac->phydev)
-> +		return -EOPNOTSUPP;
-> +
-> +	return phy_ethtool_ksettings_set(emac->phydev, ecmd);
-
-phy_ethtool_set_link_ksettings()
-
-> +static int emac_nway_reset(struct net_device *ndev)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +
-> +	if (!emac->phydev)
-> +		return -EOPNOTSUPP;
-> +
-> +	return genphy_restart_aneg(emac->phydev);
-
-phy_ethtool_nway_reset()
-
-> +static void emac_get_ethtool_stats(struct net_device *ndev,
-> +				   struct ethtool_stats *stats, u64 *data)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +	struct prueth *prueth = emac->prueth;
-> +	int i;
-> +	int slice = prueth_emac_slice(emac);
-> +	u32 base = stats_base[slice];
-> +	u32 val;
-
-Reverse Christmas tree. Move i to the end. There are other places in
-the driver you need to fix up as well.
-
-> +static int debug_level = -1;
-> +module_param(debug_level, int, 0644);
-> +MODULE_PARM_DESC(debug_level, "PRUETH debug level (NETIF_MSG bits)");
-
-Module parameters are not liked any more. Yes, lots of drivers have
-this one, but you have the ethtool setting, so you should not need
-this.
-
-> +/* called back by PHY layer if there is change in link state of hw port*/
-> +static void emac_adjust_link(struct net_device *ndev)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +	struct phy_device *phydev = emac->phydev;
-> +	struct prueth *prueth = emac->prueth;
-> +	bool new_state = false;
-> +	unsigned long flags;
-> +
-> +	if (phydev->link) {
-> +		/* check the mode of operation - full/half duplex */
-> +		if (phydev->duplex != emac->duplex) {
-> +			new_state = true;
-> +			emac->duplex = phydev->duplex;
-> +		}
-> +		if (phydev->speed != emac->speed) {
-> +			new_state = true;
-> +			emac->speed = phydev->speed;
-> +		}
-> +		if (!emac->link) {
-> +			new_state = true;
-> +			emac->link = 1;
-> +		}
-> +	} else if (emac->link) {
-> +		new_state = true;
-> +		emac->link = 0;
-> +		/* defaults for no link */
-> +
-> +		/* f/w should support 100 & 1000 */
-> +		emac->speed = SPEED_1000;
-> +
-> +		/* half duplex may not supported by f/w */
-> +		emac->duplex = DUPLEX_FULL;
-
-Why set speed and duplex when you have just lost the link? They are
-meaningless until the link comes back.
-
-> +	}
-> +
-> +	if (new_state) {
-> +		phy_print_status(phydev);
-> +
-> +		/* update RGMII and MII configuration based on PHY negotiated
-> +		 * values
-> +		 */
-> +		if (emac->link) {
-> +			/* Set the RGMII cfg for gig en and full duplex */
-> +			icssg_update_rgmii_cfg(prueth->miig_rt, emac);
-> +
-> +			/* update the Tx IPG based on 100M/1G speed */
-> +			spin_lock_irqsave(&emac->lock, flags);
-> +			icssg_config_ipg(emac);
-> +			spin_unlock_irqrestore(&emac->lock, flags);
-> +			icssg_config_set_speed(emac);
-> +			emac_set_port_state(emac, ICSSG_EMAC_PORT_FORWARD);
-> +
-> +		} else {
-> +			emac_set_port_state(emac, ICSSG_EMAC_PORT_DISABLE);
-> +		}
-> +	}
-> +
-> +	if (emac->link) {
-> +		/* link ON */
-> +		netif_carrier_on(ndev);
-
-phylib will do this for you.
-
-> +		/* reactivate the transmit queue */
-> +		netif_tx_wake_all_queues(ndev);
-
-Not something you see other drivers do. Why is it here?
-
-> +	} else {
-> +		/* link OFF */
-> +		netif_carrier_off(ndev);
-> +		netif_tx_stop_all_queues(ndev);
-
-Same as above, for both.
-
-> +static int emac_ndo_open(struct net_device *ndev)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +	int ret, i, num_data_chn = emac->tx_ch_num;
-> +	struct prueth *prueth = emac->prueth;
-> +	int slice = prueth_emac_slice(emac);
-> +	struct device *dev = prueth->dev;
-> +	int max_rx_flows;
-> +	int rx_flow;
-> +
-> +	/* clear SMEM and MSMC settings for all slices */
-> +	if (!prueth->emacs_initialized) {
-> +		memset_io(prueth->msmcram.va, 0, prueth->msmcram.size);
-> +		memset_io(prueth->shram.va, 0, ICSSG_CONFIG_OFFSET_SLICE1 * PRUETH_NUM_MACS);
-> +	}
-> +
-> +	/* set h/w MAC as user might have re-configured */
-> +	ether_addr_copy(emac->mac_addr, ndev->dev_addr);
-> +
-> +	icssg_class_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
-> +	icssg_ft1_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
-> +
-> +	icssg_class_default(prueth->miig_rt, slice, 0);
-> +
-> +	netif_carrier_off(ndev);
-
-It should default to off. phylib will turn it on for you when you get
-link.
-
-> +static int emac_ndo_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
-> +{
-> +	struct prueth_emac *emac = netdev_priv(ndev);
-> +
-> +	if (!emac->phydev)
-> +		return -EOPNOTSUPP;
-> +
-> +	return phy_mii_ioctl(emac->phydev, ifr, cmd);
-> +}
-
-phy_do_ioctl()
-
-> +extern const struct ethtool_ops icssg_ethtool_ops;
-
-Should really by in a header file.
-
-> +static int prueth_probe(struct platform_device *pdev)
-> +{
-> +	struct prueth *prueth;
-> +	struct device *dev = &pdev->dev;
-> +	struct device_node *np = dev->of_node;
-> +	struct device_node *eth_ports_node;
-> +	struct device_node *eth_node;
-> +	struct device_node *eth0_node, *eth1_node;
-> +	const struct of_device_id *match;
-> +	struct pruss *pruss;
-> +	int i, ret;
-> +	u32 msmc_ram_size;
-> +	struct genpool_data_align gp_data = {
-> +		.align = SZ_64K,
-> +	};
-> +
-> +	match = of_match_device(prueth_dt_match, dev);
-> +	if (!match)
-> +		return -ENODEV;
-> +
-> +	prueth = devm_kzalloc(dev, sizeof(*prueth), GFP_KERNEL);
-> +	if (!prueth)
-> +		return -ENOMEM;
-> +
-> +	dev_set_drvdata(dev, prueth);
-> +	prueth->pdev = pdev;
-> +	prueth->pdata = *(const struct prueth_pdata *)match->data;
-> +
-> +	prueth->dev = dev;
-> +	eth_ports_node = of_get_child_by_name(np, "ethernet-ports");
-> +	if (!eth_ports_node)
-> +		return -ENOENT;
-> +
-> +	for_each_child_of_node(eth_ports_node, eth_node) {
-> +		u32 reg;
-> +
-> +		if (strcmp(eth_node->name, "port"))
-> +			continue;
-> +		ret = of_property_read_u32(eth_node, "reg", &reg);
-> +		if (ret < 0) {
-> +			dev_err(dev, "%pOF error reading port_id %d\n",
-> +				eth_node, ret);
-> +		}
-> +
-> +		if (reg == 0)
-> +			eth0_node = eth_node;
-> +		else if (reg == 1)
-> +			eth1_node = eth_node;
-
-and if reg == 42?
-
-Or reg 0 appears twice?
-
-   Andrew
