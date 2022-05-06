@@ -2,80 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC77751D616
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 12:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEC1951D678
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 13:16:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391107AbiEFLCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 07:02:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
+        id S1391255AbiEFLTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 07:19:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391105AbiEFLC3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 07:02:29 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517E81F614;
-        Fri,  6 May 2022 03:58:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DD90461BB6;
-        Fri,  6 May 2022 10:58:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38CA5C385AE;
-        Fri,  6 May 2022 10:58:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651834726;
-        bh=wGkjYK+Q3/CWC/Vo7gfKw8naKn70zntYWDbUwNfSiuM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tVZoGX5fPJjH70QTpNeAjArJAayUKcJ09Js+S7NxoctUpKgibefflt6GaBjp+GOp/
-         g9ahxBYP73eMsMncs4j1NA+ERq8cB61LkoyCrjZ5mm1/OBByAOb7Tafu0azvL9ArOB
-         qoS3tsehKaQhYmSC3ueB8NSLxspqYxG3wEQGbwnouWohYHdmsQKsNXFw4a9pSpHrIa
-         wbGgK0fsWV5RvAb8OAxb91NBV73KO+cfWhV3qIOFAhlXh29fos9atargGnr/u07nJS
-         +c5k9WJKiHMRfH53sqdgmJ/rvhN2Kd24kfyN+ivM1LXGgn2Ufqn3GWzppF+G7Bnqbv
-         HjX7slXKnCoNw==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nmvfX-009RKN-IV; Fri, 06 May 2022 11:58:43 +0100
-Date:   Fri, 06 May 2022 11:58:43 +0100
-Message-ID: <87tua36i70.wl-maz@kernel.org>
-From:   Marc Zyngier <maz@kernel.org>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        with ESMTP id S244042AbiEFLTt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 07:19:49 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4C6575DA3F
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 04:16:03 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-141-5bFZsmBPMJaCVZ5XX50WZg-1; Fri, 06 May 2022 12:15:26 +0100
+X-MC-Unique: 5bFZsmBPMJaCVZ5XX50WZg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.32; Fri, 6 May 2022 12:15:23 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.033; Fri, 6 May 2022 12:15:23 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Johannes Berg' <johannes@sipsolutions.net>,
+        Keith Packard <keithp@keithp.com>,
+        Kees Cook <keescook@chromium.org>
+CC:     "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Daniel Axtens <dja@axtens.net>,
+        "Dan Williams" <dan.j.williams@intel.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "Daniel Vetter" <daniel.vetter@ffwll.ch>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        "Andrew Gabbasov" <andrew_gabbasov@mentor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bradley Grove <linuxdrivers@attotech.com>,
+        "brcm80211-dev-list.pdl@broadcom.com" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        Christian Brauner <brauner@kernel.org>,
+        =?utf-8?B?Q2hyaXN0aWFuIEfDtnR0c2NoZQ==?= <cgzones@googlemail.com>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Chris Zankel <chris@zankel.net>,
+        Cong Wang <cong.wang@bytedance.com>,
+        "David Gow" <davidgow@google.com>,
+        David Howells <dhowells@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "Dmitry Kasatkin" <dmitry.kasatkin@gmail.com>,
+        Eli Cohen <elic@nvidia.com>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Eric Paris <eparis@parisplace.org>,
+        "Eugeniu Rosca" <erosca@de.adit-jv.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        "Hante Meuleman" <hante.meuleman@broadcom.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hulk Robot <hulkci@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        James Morris <jmorris@namei.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        John Keeping <john@metanate.com>,
+        Juergen Gross <jgross@suse.com>, Kalle Valo <kvalo@kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "kunit-dev@googlegroups.com" <kunit-dev@googlegroups.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "linux1394-devel@lists.sourceforge.net" 
+        <linux1394-devel@lists.sourceforge.net>,
+        "linux-afs@lists.infradead.org" <linux-afs@lists.infradead.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "linux-hardening@vger.kernel.org" <linux-hardening@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-scsi@vger.kernel.org" <linux-scsi@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
+        "llvm@lists.linux.dev" <llvm@lists.linux.dev>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Louis Peens <louis.peens@corigine.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        "Luiz Augusto von Dentz" <luiz.dentz@gmail.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Max Filippov" <jcmvbkbc@gmail.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        =?utf-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        "Rich Felker" <dalias@aerifal.cx>,
+        Rob Herring <robh+dt@kernel.org>,
         Russell King <linux@armlinux.org.uk>,
-        Ferry Toth <fntoth@gmail.com>
-Subject: Re: [PATCH net-next v2 5/7] usbnet: smsc95xx: Forward PHY interrupts to PHY driver to avoid polling
-In-Reply-To: <20220505185328.GA14123@wunner.de>
-References: <cover.1651574194.git.lukas@wunner.de>
-        <c6b7f4e4a17913d2f2bc4fe722df0804c2d6fea7.1651574194.git.lukas@wunner.de>
-        <20220505113207.487861b2@kernel.org>
-        <20220505185328.GA14123@wunner.de>
-User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
- FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
- (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
-MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
-Content-Type: text/plain; charset=US-ASCII
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: lukas@wunner.de, kuba@kernel.org, tglx@linutronix.de, davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org, linux-usb@vger.kernel.org, steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com, oneukum@suse.com, andre.edich@microchip.com, linux@rempel-privat.de, martyn.welch@collabora.com, ghojda@yo2urs.ro, chf.fritz@googlemail.com, LinoSanfilippo@gmx.de, p.rosenberger@kunbus.com, hkallweit1@gmail.com, andrew@lunn.ch, linux@armlinux.org.uk, fntoth@gmail.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        "selinux@vger.kernel.org" <selinux@vger.kernel.org>,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        "SHA-cyfmac-dev-list@infineon.com" <SHA-cyfmac-dev-list@infineon.com>,
+        Simon Horman <simon.horman@corigine.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>, Tom Rix <trix@redhat.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>,
+        "wcn36xx@lists.infradead.org" <wcn36xx@lists.infradead.org>,
+        Wei Liu <wei.liu@kernel.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
+        Xiu Jianfeng <xiujianfeng@huawei.com>,
+        "Yang Yingliang" <yangyingliang@huawei.com>
+Subject: RE: [PATCH 02/32] Introduce flexible array struct memcpy() helpers
+Thread-Topic: [PATCH 02/32] Introduce flexible array struct memcpy() helpers
+Thread-Index: AQHYYLyA1R9dSzYVM0KNCrE+uTLPFK0RsSYw
+Date:   Fri, 6 May 2022 11:15:23 +0000
+Message-ID: <46ec2f1d6e9347eaba1feeb00e8c508a@AcuMS.aculab.com>
+References: <20220504014440.3697851-1-keescook@chromium.org>
+         <20220504014440.3697851-3-keescook@chromium.org>
+         <d3b73d80f66325fdfaf2d1f00ea97ab3db03146a.camel@sipsolutions.net>
+         <202205040819.DEA70BD@keescook>
+         <970a674df04271b5fd1971b495c6b11a996c20c2.camel@sipsolutions.net>
+         <871qx8qabo.fsf@keithp.com> <202205051228.4D5B8CD624@keescook>
+         <87pmkrpwrs.fsf@keithp.com>
+ <e1ea4926f105b456f6a86ce30a0380ee5f48fe6d.camel@sipsolutions.net>
+In-Reply-To: <e1ea4926f105b456f6a86ce30a0380ee5f48fe6d.camel@sipsolutions.net>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -83,70 +183,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 05 May 2022 19:53:28 +0100,
-Lukas Wunner <lukas@wunner.de> wrote:
-> 
-> On Thu, May 05, 2022 at 11:32:07AM -0700, Jakub Kicinski wrote:
-> > On Tue, 3 May 2022 15:15:05 +0200 Lukas Wunner wrote:
-> > > @@ -608,11 +618,20 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
-> > >  	intdata = get_unaligned_le32(urb->transfer_buffer);
-> > >  	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
-> > >  
-> > > +	/* USB interrupts are received in softirq (tasklet) context.
-> > > +	 * Switch to hardirq context to make genirq code happy.
-> > > +	 */
-> > > +	local_irq_save(flags);
-> > > +	__irq_enter_raw();
-> > > +
-> > >  	if (intdata & INT_ENP_PHY_INT_)
-> > > -		;
-> > > +		generic_handle_domain_irq(pdata->irqdomain, PHY_HWIRQ);
-> > >  	else
-> > >  		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
-> > >  			    intdata);
-> > > +
-> > > +	__irq_exit_raw();
-> > > +	local_irq_restore(flags);
-> > 
-> > IRQ maintainers could you cast your eyes over this?
-> > 
-> > Full patch:
-> > 
-> > https://lore.kernel.org/all/c6b7f4e4a17913d2f2bc4fe722df0804c2d6fea7.1651574194.git.lukas@wunner.de/
-> 
-> This is basically identical to what drivers/net/usb/lan78xx.c does
-> in lan78xx_status(), except I'm passing the hw irq instead of the
-> linux irq to genirq code, thereby avoiding the overhead of a
-> radix_tree_lookup().
-> 
-> generic_handle_domain_irq() warns unconditionally on !in_irq(),
-> unlike handle_irq_desc(), which constrains the warning to
-> handle_enforce_irqctx() (i.e. x86 APIC, arm GIC/GICv3).
-> Perhaps that's an oversight in generic_handle_domain_irq(),
-> unless __irq_resolve_mapping() becomes unsafe outside in_irq()
-> for some reason...
-> 
-> In any case the unconditional in_irq() necessitates __irq_enter_raw()
-> here.
-> 
-> And there's no _safe variant() of generic_handle_domain_irq()
-> (unlike generic_handle_irq_safe() which was recently added by
-> 509853f9e1e7), hence the necessity of an explicit local_irq_save().
+RnJvbTogSm9oYW5uZXMgQmVyZw0KPiBTZW50OiAwNSBNYXkgMjAyMiAyMToxMw0KPiBPbiBUaHUs
+IDIwMjItMDUtMDUgYXQgMTM6MDggLTA3MDAsIEtlaXRoIFBhY2thcmQgd3JvdGU6DQo+IA0KPiAN
+Cj4gPiBJIGJldCB5b3UndmUgYWxyZWFkeSBjb25zaWRlcmVkIHRoZSBzaW1wbGVyIGZvcm06DQo+
+ID4NCj4gPiAgICAgICAgIHN0cnVjdCBzb21ldGhpbmcgKmluc3RhbmNlID0gbWVtX3RvX2ZsZXhf
+ZHVwKGJ5dGVfYXJyYXksIGNvdW50LCBHRlBfS0VSTkVMKTsNCj4gPiAgICAgICAgIGlmIChJU19F
+UlIoaW5zdGFuY2UpKQ0KPiA+ICAgICAgICAgICAgIHJldHVybiBQVFJfRVJSKGluc3RhbmNlKTsN
+Cj4gPg0KPiANCj4gU2FkbHksIHRoaXMgZG9lc24ndCB3b3JrIGluIGFueSB3YXkgYmVjYXVzZSBt
+ZW1fdG9fZmxleF9kdXAoKSBuZWVkcyB0bw0KPiBrbm93IGF0IGxlYXN0IHRoZSB0eXBlLCBoZW5j
+ZSBwYXNzaW5nICdpbnN0YW5jZScsIHdoaWNoIGlzIHNpbXBsZXIgdGhhbg0KPiBwYXNzaW5nICdz
+dHJ1Y3Qgc29tZXRoaW5nJy4NCg0KWW91IGNhbiB1c2U6DQogICAgICAgICBzdHJ1Y3Qgc29tZXRo
+aW5nICppbnN0YW5jZTsNCiAgICAgICAgIG1lbV90b19mbGV4X2R1cChpbnN0YW5jZSwgYnl0ZV9h
+cnJheSwgY291bnQsIEdGUF9LRVJORUwpOw0KICAgICAgICAgaWYgKElTX0VSUihpbnN0YW5jZSkp
+DQogICAgICAgICAgICAgcmV0dXJuIFBUUl9FUlIoaW5zdGFuY2UpOw0KYW5kIGhhdmUgbWVtX3Rv
+X2ZsZXhfZHVwKCkgKHdoaWNoIG11c3QgYmUgYSAjZGVmaW5lKSB1cGRhdGUgJ2luc3RhbmNlJy4N
+CihZb3UgY2FuIHJlcXVpcmUgJmluc3RhbmNlIC0gYW5kIGp1c3QgcHJlY2VkZSBhbGwgdGhlIHVz
+ZXMgd2l0aA0KYW4gZXh0cmEgJyonIHRvIG1ha2UgaXQgbW9yZSBvYnZpb3VzIHRoZSB2YXJpYWJs
+ZSBpcyB1cGRhdGVkLg0KQnV0IHRoZXJlIGlzIGxpdHRsZSBwb2ludCByZXF1aXJpbmcgaXQgYmUg
+TlVMTC4pDQoNCklmIHlvdSByZWFsbHkgd2FudCB0byBkZWZpbmUgdGhlIHZhcmlhYmxlIG1pZC1i
+bG9jayB5b3UgY2FuIHVzZToNCiAgICAgICAgIG1lbV90b19mbGV4X2R1cChzdHJ1Y3Qgc29tZXRo
+aW5nICosIGluc3RhbmNlLCBieXRlX2FycmF5LCBjb3VudCwgR0ZQX0tFUk5FTCk7DQoNCmJ1dCBJ
+IHJlYWxseSBoYXRlIGhhdmluZyBkZWNsYXJhdGlvbnMgYW55d2hlcmUgb3RoZXIgdGhhbiB0aGUg
+dG9wIG9mDQphIGZ1bmN0aW9uIGJlY2F1c2UgaXQgbWFrZXMgdGhlbSBoYXJkIGZvciB0aGUgJ21r
+MSBleWViYWxsJyB0byBzcG90Lg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExh
+a2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQs
+IFVLDQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-Please don't directly use __irq_enter_raw() and similar things
-directly in driver code (it doesn't do anything related to RCU, for
-example, which could be problematic if used in arbitrary contexts).
-Given how infrequent this interrupt is, I'd rather you use something
-similar to what lan78xx is doing, and be done with it.
-
-And since this is a construct that seems to be often repeated, why
-don't you simply make the phy interrupt handling available over a
-smp_call_function() interface, which would always put you in the
-correct context and avoid faking things up?
-
-Thanks,
-
-	M.
-
--- 
-Without deviation from the norm, progress is not possible.
