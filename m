@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 26A9151DE69
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 19:41:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E979A51DE6F
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 19:44:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444235AbiEFRo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 13:44:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
+        id S1444244AbiEFRsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 13:48:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236386AbiEFRoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 13:44:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8310B532E6;
-        Fri,  6 May 2022 10:41:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0025F620D4;
-        Fri,  6 May 2022 17:41:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB73DC385A8;
-        Fri,  6 May 2022 17:41:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651858871;
-        bh=jUYORx95YRDHeeeY52LGlWTfTnt6ibLZ3gg1qG+EM6Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nkgizYeSWtOn1Z5SUsUMNTGLs/CEpROMfjVLnZQgz3A5UUaTbbRDtmCvbcM84K5AG
-         +qgS9SuMNK3F7zi/Bb/Hdy5Eg1oV/7XWmCvzy0mDyrxweaR/Uw1e38byTQj63/tdSM
-         copVMXd1Zrm5Uq+g9tR0CxhB8ya47FWgEiIQ/ONT50PEWMJDGuvi6tguIXSsyajpvo
-         8lzQp0t68xkzVp3KD46OH0QmaEPbcwIqhz/rSjSBKUSlnH922vhnOCf6i7GcxqUpRa
-         gm19BJ45d/KvfTKIUr5PZq9MbFiFQMJPFdBxY3bKYqhSG2yHLYlfSPAxwDetJJoXY6
-         y+fRck3Xynmtg==
-Date:   Fri, 6 May 2022 10:41:09 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        Sam.Shih@mediatek.com, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, robh@kernel.org
-Subject: Re: [PATCH net-next 11/14] net: ethernet: mtk_eth_soc: add SRAM soc
- capability
-Message-ID: <20220506104109.63388e33@kernel.org>
-In-Reply-To: <97298a5aeaa7498893a46103de929d0a7df26e8a.1651839494.git.lorenzo@kernel.org>
-References: <cover.1651839494.git.lorenzo@kernel.org>
-        <97298a5aeaa7498893a46103de929d0a7df26e8a.1651839494.git.lorenzo@kernel.org>
+        with ESMTP id S1385161AbiEFRsN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 13:48:13 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D42A53717
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 10:44:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1651859069; x=1683395069;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=XoaL2RCgU+5mbzH1nMGLXmb8I8OS43RmiIy8DSc5X7w=;
+  b=UsGQByjD5QsVHDMdj1vGHEnZsUJ5iDn4bYt4uMa1J0LryCWoOTfBiSeY
+   ZwsocXXCh5mRdHy2tBm2ZD9BOmTseN9/9bf4FrxYmrWLq/PRLs1vU4ROA
+   ybbbyuFO9F4A1205zIG7SzJHqfBFVTCPgzQMslbuD+LW7F6Eq/2Ma01Ry
+   MMmNcbPiKeiUkMBawZrY26hqSJfOzDQmYSr30JwAj0tsaRV1Jdmq8P8/K
+   kOwbq+J8GwLV/wh5hevqrQtUzkfC9jLWW8R9cOjytSJYfg7l33QEOKZRU
+   VcAFpraSTQTkerjk/7zPw8tJ8Bt00QjEaQ2kraRNrDF73LBeDUdm7b5+U
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="331523429"
+X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
+   d="scan'208";a="331523429"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 May 2022 10:44:28 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,205,1647327600"; 
+   d="scan'208";a="891929166"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga005.fm.intel.com with ESMTP; 06 May 2022 10:44:28 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        richardcochran@gmail.com
+Subject: [PATCH net v2 0/3][pull request] Intel Wired LAN Driver Updates 2022-05-06
+Date:   Fri,  6 May 2022 10:41:26 -0700
+Message-Id: <20220506174129.4976-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,11 +58,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  6 May 2022 14:30:28 +0200 Lorenzo Bianconi wrote:
-> Introduce SRAM capability for devices that relies on SRAM memory
-> for DMA descriptors.
-> This is a preliminary patch to add mt7986 ethernet support.
+This series contains updates to ice driver only.
 
-sparse says boo. I think you dropped an __iomem somewhere.
+Ivan Vecera fixes a race with aux plug/unplug by delaying setting adev
+until initialization is complete and adding locking.
 
-Please heed the 24h rule.
+Anatolii ensures VF queues are completely disabled before attempting to
+reconfigure them.
+
+Michal ensures stale Tx timestamps are cleared from hardware.
+---
+v2: Dropped patch 4 "ice: fix crash when writing timestamp on RX rings"
+as issues were found.
+
+The following are changes since commit c88d3908516d301972420160f5f15f936ba3ec3a:
+  Merge branch 'ocelot-vcap-fixes'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+
+Anatolii Gerasymenko (1):
+  ice: clear stale Tx queue settings before configuring
+
+Ivan Vecera (1):
+  ice: Fix race during aux device (un)plugging
+
+Michal Michalik (1):
+  ice: fix PTP stale Tx timestamps cleanup
+
+ drivers/net/ethernet/intel/ice/ice.h          |  1 +
+ drivers/net/ethernet/intel/ice/ice_idc.c      | 25 ++++---
+ drivers/net/ethernet/intel/ice/ice_main.c     |  2 +
+ drivers/net/ethernet/intel/ice/ice_ptp.c      | 10 ++-
+ drivers/net/ethernet/intel/ice/ice_virtchnl.c | 68 ++++++++++++++-----
+ 5 files changed, 78 insertions(+), 28 deletions(-)
+
+-- 
+2.35.1
+
