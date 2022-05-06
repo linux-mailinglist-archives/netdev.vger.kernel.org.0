@@ -2,126 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F3C1A51DFC3
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 21:46:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D61B51DFD3
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 21:50:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391415AbiEFTtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 15:49:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51670 "EHLO
+        id S1391986AbiEFTyJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 15:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391394AbiEFTtp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 15:49:45 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 553203668F;
-        Fri,  6 May 2022 12:46:01 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id dv4so6111787qvb.13;
-        Fri, 06 May 2022 12:46:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=REYumsm6kh6dG5JfkpmEJOF6iBFTzLNrYeIRsQ91Yy4=;
-        b=VgAPfjB60nZTL9ZLu1vVz05PN2jFWEmo7BOcQM53pAaGA0tQ83p8FQCMyfMkWCUljO
-         xrUUTVpW545iQaNOP3al4ieey6zhWj2eAeHuWQ2a7+Oe6FuuJbb4bJOvxMWgh3Qk4NmJ
-         Wd7/6LkMCZy7RhIfUGloBVSwbRHaFkIfbkHxfCwJsHyzqaq35+SJZnVWO70KIwVhycPJ
-         XIqvFfFfqOF8Ah2OHjTQ7nwjiYjyxgJ5OSZI+MrmKSFRl2iW4wich8ZSUpf00XWCkFxG
-         S1F7rRgyv7T19H7c6HjBR66HLe1ZrTif7h6o1COmDeSFxKlM8AyLQSxwpijpAH+0W8hM
-         vidQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=REYumsm6kh6dG5JfkpmEJOF6iBFTzLNrYeIRsQ91Yy4=;
-        b=8AXbXr4j8WzxBdo/AWHMG3EPfBQITurOPqO5/M7h2dvnsSNXUMb7/buBy8MYer56ti
-         icHa7fudZXQw4Pu1AEMZmCXH5NpT7FlHSSX7tKZD+P9PamK8+6va0fQtbR1aedMX4aBV
-         e6eLUrLDaZdFSEygr4Q3N45KN0qFol7+0bkZCC/PoRjEpO+upXx9vsAD1wd0CsiXGH9V
-         211pD6NCLGlAn9eXmnqan7UaDe7EiEShaEyu0MrnYhxT1TVyupjOS7TRapJdjkFzSwDM
-         RSpriHlXuGQ8X7yf5x4Uh4jFY0l3cdYK4c/z9onFXcrAmpX1fwnkrcybQ3EsrgH4e3ef
-         P9Ow==
-X-Gm-Message-State: AOAM531je1EghQGNcld0eONcd7dTvmmQaffO3ec365c24HyMHhdmsXBh
-        Tdzp3yjB133R5OgD00o1r/Lo5PYVHJVM
-X-Google-Smtp-Source: ABdhPJwn1oEegsPCYxjvx5slYAKeM9HTqK+wZHoSG8ht/TYx6MTMPYLOpdpDUgiPDZWYRYuyRGvNZg==
-X-Received: by 2002:ad4:5749:0:b0:459:1c08:f80a with SMTP id q9-20020ad45749000000b004591c08f80amr3892776qvx.56.1651866360484;
-        Fri, 06 May 2022 12:46:00 -0700 (PDT)
-Received: from bytedance.attlocal.net (ec2-52-72-174-210.compute-1.amazonaws.com. [52.72.174.210])
-        by smtp.gmail.com with ESMTPSA id c14-20020ac8518e000000b002f39b99f694sm3028513qtn.46.2022.05.06.12.45.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 12:46:00 -0700 (PDT)
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Peilin Ye <yepeilin.cs@gmail.com>
-Subject: [PATCH RFC v1 net-next 4/4] net/sched: sch_cbq: Use Qdisc backpressure infrastructure
-Date:   Fri,  6 May 2022 12:45:46 -0700
-Message-Id: <e9c482dd77e7788f5ec97e1c8c3ef9571741167e.1651800598.git.peilin.ye@bytedance.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <cover.1651800598.git.peilin.ye@bytedance.com>
-References: <cover.1651800598.git.peilin.ye@bytedance.com>
+        with ESMTP id S1392131AbiEFTx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 15:53:58 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 473B26A42F;
+        Fri,  6 May 2022 12:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E00B5B80E9E;
+        Fri,  6 May 2022 19:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 65DDCC385AC;
+        Fri,  6 May 2022 19:50:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651866612;
+        bh=PYVzOsaqyIFnBW0vYPhJBYe8z0KWXMzyyEIw8eb7s3Y=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=j7e50OOPWY4QBsefK2HmKkaVW3t5lBTw0e4ErIx6d1vctqofZ/SdFXPSXpfjAVj9T
+         0wNAyWw1ICesH1eQRYdKtGy/Lyp4bvK4SHyOl+CaVQZ8SBD8lhWwNsgDOfrLyRQsbq
+         lv3qs3Zao0ygNzliLNbyKgSxDvkxLPCwvGiOLdpsS7ieSa1pK0zJJvZO2eL6NUruvK
+         odDyWsYFZURFe3APoqhtmbFgNag8npt+scpL9TLe15+PmrSDrFmnpcl1ENmMLjefkU
+         eJaPS9B5r2Q/dF8Xig93HajNlHgZ5h9z1gQv9+N2MAtyiXPGvBpyk7t154ICXceNNB
+         pM2ZDftmBmIGw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 495FFF03876;
+        Fri,  6 May 2022 19:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [net PATCH] ipv4: drop dst in multicast routing path
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165186661229.28900.13083700844153444313.git-patchwork-notify@kernel.org>
+Date:   Fri, 06 May 2022 19:50:12 +0000
+References: <20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz>
+In-Reply-To: <20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        tgraf@suug.ch, lokesh.dhoundiyal@alliedtelesis.co.nz,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Peilin Ye <peilin.ye@bytedance.com>
+Hello:
 
-Recently we introduced a Qdisc backpressure infrastructure for TCP and
-UDP sockets.  Use it in CBQ.
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Suggested-by: Cong Wang <cong.wang@bytedance.com>
-Signed-off-by: Peilin Ye <peilin.ye@bytedance.com>
----
- net/sched/sch_cbq.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+On Thu,  5 May 2022 14:00:17 +1200 you wrote:
+> From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+> 
+> kmemleak reports the following when routing multicast traffic over an
+> ipsec tunnel.
+> 
+> Kmemleak output:
+> unreferenced object 0x8000000044bebb00 (size 256):
+>   comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
+>     80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<00000000f83947e0>] __kmalloc+0x1e8/0x300
+>     [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
+>     [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
+>     [<00000000824f6cf1>] gre_rcv+0x178/0x540
+>     [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
+>     [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
+>     [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
+>     [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
+>     [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
+>     [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
+>     [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
+>     [<00000000013d7914>] irq_exit+0xc4/0xe0
+>     [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
+>     [<000000000751eb8e>] handle_int+0x16c/0x178
+>     [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
+> 
+> [...]
 
-diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
-index 02d9f0dfe356..4a5204da49d0 100644
---- a/net/sched/sch_cbq.c
-+++ b/net/sched/sch_cbq.c
-@@ -382,6 +382,7 @@ cbq_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 		return ret;
- 	}
- 
-+	qdisc_backpressure_overlimit(sch, skb);
- 	if (net_xmit_drop_count(ret)) {
- 		qdisc_qstats_drop(sch);
- 		cbq_mark_toplevel(q, cl);
-@@ -509,6 +510,7 @@ static enum hrtimer_restart cbq_undelay(struct hrtimer *timer)
- 
- 		time = 0;
- 		time = ktime_add_ns(time, PSCHED_TICKS2NS(now + delay));
-+		qdisc_backpressure_throttle(sch);
- 		hrtimer_start(&q->delay_timer, time, HRTIMER_MODE_ABS_PINNED);
- 	}
- 
-@@ -851,9 +853,11 @@ cbq_dequeue(struct Qdisc *sch)
- 
- 	if (sch->q.qlen) {
- 		qdisc_qstats_overlimit(sch);
--		if (q->wd_expires)
-+		if (q->wd_expires) {
-+			qdisc_backpressure_throttle(sch);
- 			qdisc_watchdog_schedule(&q->watchdog,
- 						now + q->wd_expires);
-+		}
- 	}
- 	return NULL;
- }
+Here is the summary with links:
+  - [net] ipv4: drop dst in multicast routing path
+    https://git.kernel.org/netdev/net/c/9e6c6d17d1d6
+
+You are awesome, thank you!
 -- 
-2.20.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
