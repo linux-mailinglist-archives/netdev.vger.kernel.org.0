@@ -2,237 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 621D751DFE9
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 22:02:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98E8A51DFF8
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 22:12:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392604AbiEFUGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 16:06:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35928 "EHLO
+        id S1387347AbiEFUPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 16:15:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392578AbiEFUGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 16:06:06 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB1D60AA3
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 13:02:22 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id g23so9859754edy.13
-        for <netdev@vger.kernel.org>; Fri, 06 May 2022 13:02:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+5h3vX/uenadcWCVCAzeCC1leutd8xV6aDGFHYcrbP8=;
-        b=hW78uJckmdYar4F9Ge7M2Gyhf4EhCdGmDhIfqzfZkvS3OnNqe9ztZKGoi2DYZgan0A
-         rk3U8UmQwtmDDr4DLV1w/QvsW87C+t8kr4DGH0oqUWXiGas0jWGRrfhFF61yJmAoRhyn
-         5uPMzNSBiCx7uK37mAzakQU0ElCcs7sdkG6O7kelgeLBypVQ5sdXQjsD4eHnyJPm21F0
-         7TnJqxvCbQcdqsn6k+VIVSpNATszOqMmpC0QiLSWkXl09o7IWz1ooQSy0bdI1vAZKKdo
-         q84SBJ2p7snfSF8G0kOzjKmWKrZWyPMy/ql+oUtaS1urpGm9oQL2kwygfoE+q+Ip1cTo
-         W08g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+5h3vX/uenadcWCVCAzeCC1leutd8xV6aDGFHYcrbP8=;
-        b=6r6vu/CuOEb06Uks4L/sU0VlrEizKxJEVG5fMHcy383cl14MfOsJfDzh5tWY+bEOYM
-         w0+bUjKmK14fznxD33yly9qx6IMjmVV0houONt5yJEwwMzTX8pt32pcMy0XQQPWP6mbC
-         Cl6sWmwkDnajRLaxjRhJ3EaE04wLRQgATcNJn2bSjDp46fiJWgrcTrBUdXQB7aaX7V1n
-         R5/WqGp8oOElKnl5LUbWRXddn3QlKqvbdqcJ8F8rUIK9jr61yxqfLRbtu3SCaseeAJ/2
-         weklueORIqOho94wDlkTL8yxVmk8xBjUFlw4fqufvQVd4sLBm2KG9UjS2FOFpbNOD0/A
-         MaxA==
-X-Gm-Message-State: AOAM532wnqtJzWaCPDjBxC6c8KAveeOkeRYL+3jtFpmNnQ0eACQ2Y0Nc
-        n7kOwV1ISXAi9+WW+orPStNo4A==
-X-Google-Smtp-Source: ABdhPJzkLlmrOeaOiuSsFSci6pSgQmVtoF5dtlGG5wEozepniq94L2BXVufKkvRpoVfrxtsnpUFX/A==
-X-Received: by 2002:a05:6402:370b:b0:41d:8508:20af with SMTP id ek11-20020a056402370b00b0041d850820afmr5310370edb.16.1651867341058;
-        Fri, 06 May 2022 13:02:21 -0700 (PDT)
-Received: from hornet.engleder.at ([2001:871:23a:237:6e3b:e5ff:fe2c:34c1])
-        by smtp.gmail.com with ESMTPSA id w5-20020a056402268500b0042617ba6389sm2719887edd.19.2022.05.06.13.02.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 13:02:20 -0700 (PDT)
-From:   Gerhard Engleder <gerhard@engleder-embedded.com>
-To:     richardcochran@gmail.com, vinicius.gomes@intel.com,
-        yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org
-Cc:     mlichvar@redhat.com, willemb@google.com, kafai@fb.com,
-        jonathan.lemon@gmail.com, netdev@vger.kernel.org,
-        Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v4 6/6] tsnep: Add free running cycle counter support
-Date:   Fri,  6 May 2022 22:01:42 +0200
-Message-Id: <20220506200142.3329-7-gerhard@engleder-embedded.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220506200142.3329-1-gerhard@engleder-embedded.com>
-References: <20220506200142.3329-1-gerhard@engleder-embedded.com>
+        with ESMTP id S235013AbiEFUPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 16:15:41 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EFA094C41A
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 13:11:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1651867916;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JSTpH1y2N1V0+fhXfufhf9T3dLqxaEiBFM7l2COqazg=;
+        b=C4QvPD2vTzrTIxe2bYm3fvyTv+k9+Qid0zRLA4Gag1UaRtJhpiVOmIBPiu1KSYgs/W/O27
+        EvHcn0UzLQcEMu6HpHy7cRhNgw4UCq4HSIhT5BCICwziZDQPMJFWzxK51tH9KEV+B1FWUL
+        D6EP6x8drCXMjaCDfJEUhpf4kd52Zk8=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-625-YXk_XTb4PX6H2hfmn7_4xw-1; Fri, 06 May 2022 16:11:52 -0400
+X-MC-Unique: YXk_XTb4PX6H2hfmn7_4xw-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5858485A5BC;
+        Fri,  6 May 2022 20:11:52 +0000 (UTC)
+Received: from renaissance-vector.redhat.com (unknown [10.39.195.116])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B51C020296A9;
+        Fri,  6 May 2022 20:11:50 +0000 (UTC)
+From:   Andrea Claudi <aclaudi@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     stephen@networkplumber.org, dsahern@gmail.com
+Subject: [PATCH iproute2] tc: em_u32: fix offset parsing
+Date:   Fri,  6 May 2022 22:11:46 +0200
+Message-Id: <5ceaf48253d515b8c8e0902d939471b3a95f5407.1651867575.git.aclaudi@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The TSN endpoint Ethernet MAC supports a free running counter
-additionally to its clock. This free running counter can be read and
-hardware timestamps are supported. As the name implies, this counter
-cannot be set and its frequency cannot be adjusted.
+tc u32 ematch offset parsing might fail even if nexthdr offset is
+aligned to 4. The issue can be reproduced with the following script:
 
-Add free running cycle counter support based on this free running
-counter to physical clock. This also requires hardware time stamps
-based on that free running counter.
+tc qdisc del dev dummy0 root
+tc qdisc add dev dummy0 root handle 1: htb r2q 1 default 1
+tc class add dev dummy0 parent 1:1 classid 1:108 htb quantum 1000000 \
+	rate 1.00mbit ceil 10.00mbit burst 6k
 
-Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+while true; do
+if ! tc filter add dev dummy0 protocol all parent 1: prio 1 basic match \
+	"meta(vlan mask 0xfff eq 1)" and "u32(u32 0x20011002 0xffffffff \
+	at nexthdr+8)" flowid 1:108; then
+		exit 0
+fi
+done
+
+which we expect to produce an endless loop.
+With the current code, instead, this ends with:
+
+u32: invalid offset alignment, must be aligned to 4.
+... meta(vlan mask 0xfff eq 1) and >>u32(u32 0x20011002 0xffffffff at nexthdr+8)<< ...
+... u32(u32 0x20011002 0xffffffff at >>nexthdr+8<<)...
+Usage: u32(ALIGN VALUE MASK at [ nexthdr+ ] OFFSET)
+where: ALIGN  := { u8 | u16 | u32 }
+
+Example: u32(u16 0x1122 0xffff at nexthdr+4)
+Illegal "ematch"
+
+This is caused by memcpy copying into buf an unterminated string.
+
+Fix it using strncpy instead of memcpy.
+
+Fixes: commit 311b41454dc4 ("Add new extended match files.")
+Reported-by: Alfred Yang <alf.redyoung@gmail.com>
+Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
 ---
- drivers/net/ethernet/engleder/tsnep_hw.h   |  9 ++++--
- drivers/net/ethernet/engleder/tsnep_main.c | 33 ++++++++++++++++++----
- drivers/net/ethernet/engleder/tsnep_ptp.c  | 28 ++++++++++++++++++
- 3 files changed, 63 insertions(+), 7 deletions(-)
+ tc/em_u32.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/engleder/tsnep_hw.h b/drivers/net/ethernet/engleder/tsnep_hw.h
-index 71cc8577d640..916ceac3ada2 100644
---- a/drivers/net/ethernet/engleder/tsnep_hw.h
-+++ b/drivers/net/ethernet/engleder/tsnep_hw.h
-@@ -43,6 +43,10 @@
- #define ECM_RESET_CHANNEL 0x00000100
- #define ECM_RESET_TXRX 0x00010000
+diff --git a/tc/em_u32.c b/tc/em_u32.c
+index bc284af4..ea2bf882 100644
+--- a/tc/em_u32.c
++++ b/tc/em_u32.c
+@@ -84,7 +84,7 @@ static int u32_parse_eopt(struct nlmsghdr *n, struct tcf_ematch_hdr *hdr,
+ 		char buf[a->len - nh_len + 1];
  
-+/* counter */
-+#define ECM_COUNTER_LOW 0x0028
-+#define ECM_COUNTER_HIGH 0x002C
-+
- /* control and status */
- #define ECM_STATUS 0x0080
- #define ECM_LINK_MODE_OFF 0x01000000
-@@ -190,7 +194,8 @@ struct tsnep_tx_desc {
- /* tsnep TX descriptor writeback */
- struct tsnep_tx_desc_wb {
- 	__le32 properties;
--	__le32 reserved1[3];
-+	__le32 reserved1;
-+	__le64 counter;
- 	__le64 timestamp;
- 	__le32 dma_delay;
- 	__le32 reserved2;
-@@ -221,7 +226,7 @@ struct tsnep_rx_desc_wb {
- 
- /* tsnep RX inline meta */
- struct tsnep_rx_inline {
--	__le64 reserved;
-+	__le64 counter;
- 	__le64 timestamp;
- };
- 
-diff --git a/drivers/net/ethernet/engleder/tsnep_main.c b/drivers/net/ethernet/engleder/tsnep_main.c
-index 49c93aa38862..cb069a0af7b9 100644
---- a/drivers/net/ethernet/engleder/tsnep_main.c
-+++ b/drivers/net/ethernet/engleder/tsnep_main.c
-@@ -470,8 +470,15 @@ static bool tsnep_tx_poll(struct tsnep_tx *tx, int napi_budget)
- 		    (__le32_to_cpu(entry->desc_wb->properties) &
- 		     TSNEP_DESC_EXTENDED_WRITEBACK_FLAG)) {
- 			struct skb_shared_hwtstamps hwtstamps;
--			u64 timestamp =
--				__le64_to_cpu(entry->desc_wb->timestamp);
-+			u64 timestamp;
-+
-+			if (skb_shinfo(entry->skb)->tx_flags &
-+			    SKBTX_HW_TSTAMP_USE_CYCLES)
-+				timestamp =
-+					__le64_to_cpu(entry->desc_wb->counter);
-+			else
-+				timestamp =
-+					__le64_to_cpu(entry->desc_wb->timestamp);
- 
- 			memset(&hwtstamps, 0, sizeof(hwtstamps));
- 			hwtstamps.hwtstamp = ns_to_ktime(timestamp);
-@@ -704,11 +711,11 @@ static int tsnep_rx_poll(struct tsnep_rx *rx, struct napi_struct *napi,
- 					skb_hwtstamps(skb);
- 				struct tsnep_rx_inline *rx_inline =
- 					(struct tsnep_rx_inline *)skb->data;
--				u64 timestamp =
--					__le64_to_cpu(rx_inline->timestamp);
- 
-+				skb_shinfo(skb)->tx_flags |=
-+					SKBTX_HW_TSTAMP_NETDEV;
- 				memset(hwtstamps, 0, sizeof(*hwtstamps));
--				hwtstamps->hwtstamp = ns_to_ktime(timestamp);
-+				hwtstamps->netdev_data = rx_inline;
- 			}
- 			skb_pull(skb, TSNEP_RX_INLINE_METADATA_SIZE);
- 			skb->protocol = eth_type_trans(skb,
-@@ -1010,6 +1017,21 @@ static int tsnep_netdev_set_mac_address(struct net_device *netdev, void *addr)
- 	return 0;
- }
- 
-+static ktime_t tsnep_netdev_get_tstamp(struct net_device *netdev,
-+				       const struct skb_shared_hwtstamps *hwtstamps,
-+				       bool cycles)
-+{
-+	struct tsnep_rx_inline *rx_inline = hwtstamps->netdev_data;
-+	u64 timestamp;
-+
-+	if (cycles)
-+		timestamp = __le64_to_cpu(rx_inline->counter);
-+	else
-+		timestamp = __le64_to_cpu(rx_inline->timestamp);
-+
-+	return ns_to_ktime(timestamp);
-+}
-+
- static const struct net_device_ops tsnep_netdev_ops = {
- 	.ndo_open = tsnep_netdev_open,
- 	.ndo_stop = tsnep_netdev_close,
-@@ -1019,6 +1041,7 @@ static const struct net_device_ops tsnep_netdev_ops = {
- 
- 	.ndo_get_stats64 = tsnep_netdev_get_stats64,
- 	.ndo_set_mac_address = tsnep_netdev_set_mac_address,
-+	.ndo_get_tstamp = tsnep_netdev_get_tstamp,
- 	.ndo_setup_tc = tsnep_tc_setup,
- };
- 
-diff --git a/drivers/net/ethernet/engleder/tsnep_ptp.c b/drivers/net/ethernet/engleder/tsnep_ptp.c
-index eaad453d487e..54fbf0126815 100644
---- a/drivers/net/ethernet/engleder/tsnep_ptp.c
-+++ b/drivers/net/ethernet/engleder/tsnep_ptp.c
-@@ -175,6 +175,33 @@ static int tsnep_ptp_settime64(struct ptp_clock_info *ptp,
- 	return 0;
- }
- 
-+static int tsnep_ptp_getcyclesx64(struct ptp_clock_info *ptp,
-+				  struct timespec64 *ts,
-+				  struct ptp_system_timestamp *sts)
-+{
-+	struct tsnep_adapter *adapter = container_of(ptp, struct tsnep_adapter,
-+						     ptp_clock_info);
-+	u32 high_before;
-+	u32 low;
-+	u32 high;
-+	u64 counter;
-+
-+	/* read high dword twice to detect overrun */
-+	high = ioread32(adapter->addr + ECM_COUNTER_HIGH);
-+	do {
-+		ptp_read_system_prets(sts);
-+		low = ioread32(adapter->addr + ECM_COUNTER_LOW);
-+		ptp_read_system_postts(sts);
-+		high_before = high;
-+		high = ioread32(adapter->addr + ECM_COUNTER_HIGH);
-+	} while (high != high_before);
-+	counter = (((u64)high) << 32) | ((u64)low);
-+
-+	*ts = ns_to_timespec64(counter);
-+
-+	return 0;
-+}
-+
- int tsnep_ptp_init(struct tsnep_adapter *adapter)
- {
- 	int retval = 0;
-@@ -192,6 +219,7 @@ int tsnep_ptp_init(struct tsnep_adapter *adapter)
- 	adapter->ptp_clock_info.adjtime = tsnep_ptp_adjtime;
- 	adapter->ptp_clock_info.gettimex64 = tsnep_ptp_gettimex64;
- 	adapter->ptp_clock_info.settime64 = tsnep_ptp_settime64;
-+	adapter->ptp_clock_info.getcyclesx64 = tsnep_ptp_getcyclesx64;
- 
- 	spin_lock_init(&adapter->ptp_lock);
- 
+ 		offmask = -1;
+-		memcpy(buf, a->data + nh_len, a->len - nh_len);
++		strncpy(buf, a->data + nh_len, a->len - nh_len + 1);
+ 		offset = strtoul(buf, NULL, 0);
+ 	} else if (!bstrcmp(a, "nexthdr+")) {
+ 		a = bstr_next(a);
 -- 
-2.20.1
+2.35.1
 
