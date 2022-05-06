@@ -2,97 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB90851E018
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 22:21:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E229A51E028
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 22:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442617AbiEFUZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 16:25:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
+        id S1352605AbiEFUfA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 16:35:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442564AbiEFUZf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 16:25:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0994064725;
-        Fri,  6 May 2022 13:21:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 97C2162213;
-        Fri,  6 May 2022 20:21:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B945C385A9;
-        Fri,  6 May 2022 20:21:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651868511;
-        bh=cLKLhRbbocol9rJIAJIP4JoIO/mWUJ8WKXroVZt+kQk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Kje+/43WAxiwcb2Qs2nxC7Bo1eaZoYyUrU3tYkZIFYt+oGj9BMUX1rH6eMjtR1Ry2
-         Ujsvc/k4GpYTqKGjnf6pKT8whfbJLLNn3l9nq31cZnF01Uuyryv8V2eC65WzrEfF9d
-         +TdESfWPWp4arAqXE8YEP4VQ12T7LtEw3cLToR9wqpofr1DTCAjRHkfluOcY2FS3lg
-         k85hoPlcIaGX957zVhthJdUGGuIlPbmLRSI2QrutAE/DiHj0W/8AnwZr63RRi3zO/w
-         Z+8/tOvmaAOwF/N3o7lqEWBp9uKw1wDL5JCDTcXrMRBGFce8/CVkb1dDltN9Kw5RSl
-         57ty5sYUXIB2A==
-Date:   Fri, 6 May 2022 22:21:45 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        Sam.Shih@mediatek.com, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, robh@kernel.org
-Subject: Re: [PATCH net-next 11/14] net: ethernet: mtk_eth_soc: add SRAM soc
- capability
-Message-ID: <YnWDWU5wqgfcWND1@lore-desk>
-References: <cover.1651839494.git.lorenzo@kernel.org>
- <97298a5aeaa7498893a46103de929d0a7df26e8a.1651839494.git.lorenzo@kernel.org>
- <20220506104109.63388e33@kernel.org>
+        with ESMTP id S1349214AbiEFUe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 16:34:58 -0400
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A6D16D3A8
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 13:31:14 -0700 (PDT)
+Received: by mail-pj1-x1031.google.com with SMTP id iq10so8004819pjb.0
+        for <netdev@vger.kernel.org>; Fri, 06 May 2022 13:31:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=i3Ntzrv5FDfp2eYpZMiopVYr18OlFo4VdjXUK7cfBPU=;
+        b=O85NYqjWtDow9jeD3TU4kt+F6nWSDZskBn/bCqCnzjrY0EvFfS6+VN0I/1Ug/g1LlB
+         2DVu+gjTG6VequvguY9OTwOg7lx0M0Xei4zmUF4J4To6SZXF6OW0pjPQW5tz+1JziBPu
+         oAJNATpkVHBP2oxE9oggwFfFpeNIqI32ZBDazGe4aKFySi23y67jZQdGZ6KpNArR7aoZ
+         0i6l0s63jE1++BzSxYYsV+zeDutL3ni1k8+8pceZ20jUE70PsJEd49T6CNzTWMAJwSHr
+         kUxbtMyHSumwabqi2UDYAMg4eCWPDRMdgx9HLIxktjj1lcJKVf9rUGHfqG/aHVsWek4T
+         TcLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=i3Ntzrv5FDfp2eYpZMiopVYr18OlFo4VdjXUK7cfBPU=;
+        b=FPQ1I4AcVqBuv8l8iIDG219djhn0XkQKavHzY/00BVgqpFIDNYsEuq2iMDpEP+hVop
+         wzPX+P/jvfb7jQGzc5JgxWztXyI29yYEiZG7Q/7MkPGqXBsUPgh7489nB481c0gdSbai
+         PkoaXLmz3YRKRk07pAJQhIkX8v5PB5g69ku/OlDVB1IoPbZPwQLvQ+wO/deUq36yOIIq
+         oIwV6mPORuL6jNSOKeo0PanQRPGJNXGgvsvUwyPHG1o9KKF5Tum/lWyi+tMWftDDFvug
+         KQM+8oQmLxP3i8GJUpe8iHcf575kq3qp133+AT/5PvqudrRdP3ufejl1WmRS9321G0Pe
+         aV+A==
+X-Gm-Message-State: AOAM533pS135m+zSV4UR+K2ahmS2bhcSd4PGE7ZwNoGA40Dvo7ExcFsF
+        wkJLxNPw3K5ZK2tLwqgR6tMVkw==
+X-Google-Smtp-Source: ABdhPJyUnf/2IAy1zjU8UQe87XfdGkBcgm1RleycVg7wfOu86v/fVUxrm5PQSkosijGggjbgCRfX4w==
+X-Received: by 2002:a17:902:c952:b0:15e:89be:49ea with SMTP id i18-20020a170902c95200b0015e89be49eamr5571513pla.32.1651869074157;
+        Fri, 06 May 2022 13:31:14 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id b7-20020aa79507000000b0050dc7628163sm3822221pfp.61.2022.05.06.13.31.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 13:31:13 -0700 (PDT)
+Date:   Fri, 6 May 2022 13:31:11 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Subject: Re: [PATCH RFC v1 net-next 1/4] net: Introduce Qdisc backpressure
+ infrastructure
+Message-ID: <20220506133111.1d4bebf3@hermes.local>
+In-Reply-To: <f4090d129b685df72070f708294550fbc513f888.1651800598.git.peilin.ye@bytedance.com>
+References: <cover.1651800598.git.peilin.ye@bytedance.com>
+        <f4090d129b685df72070f708294550fbc513f888.1651800598.git.peilin.ye@bytedance.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rLjMcV4QepMwlsrM"
-Content-Disposition: inline
-In-Reply-To: <20220506104109.63388e33@kernel.org>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri,  6 May 2022 12:44:22 -0700
+Peilin Ye <yepeilin.cs@gmail.com> wrote:
 
---rLjMcV4QepMwlsrM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> +static inline void qdisc_backpressure_overlimit(struct Qdisc *sch, struct sk_buff *skb)
+> +{
+> +	struct sock *sk = skb->sk;
+> +
+> +	if (!sk || !sk_fullsock(sk))
+> +		return;
+> +
+> +	if (cmpxchg(&sk->sk_backpressure_status, SK_UNTHROTTLED, SK_OVERLIMIT) == SK_UNTHROTTLED) {
+> +		sock_hold(sk);
+> +		list_add_tail(&sk->sk_backpressure_node, &sch->backpressure_list);
+> +	}
+> +}
 
-On May 06, Jakub Kicinski wrote:
-> On Fri,  6 May 2022 14:30:28 +0200 Lorenzo Bianconi wrote:
-> > Introduce SRAM capability for devices that relies on SRAM memory
-> > for DMA descriptors.
-> > This is a preliminary patch to add mt7986 ethernet support.
->=20
-> sparse says boo. I think you dropped an __iomem somewhere.
+What if socket is closed? You are holding reference but application maybe gone.
 
-ack, I will fix it in v2.
-
->=20
-> Please heed the 24h rule.
-
-ack :)
-
-Regards,
-Lorenzo
-
---rLjMcV4QepMwlsrM
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYnWDWQAKCRA6cBh0uS2t
-rD/pAQD0oGK1X3Ef9v8e3M4KKsaCWTwRUYRgX0rto1i3rbWRAAD/T97NIrVlJ2SF
-KYk5kgfnn9NS4QDPqcXK8oG3nI37iQE=
-=no2d
------END PGP SIGNATURE-----
-
---rLjMcV4QepMwlsrM--
+Or if output is stalled indefinitely?
