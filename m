@@ -2,57 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C823251D116
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 08:12:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F07D51D11A
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 08:13:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389369AbiEFGPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 02:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38666 "EHLO
+        id S1389377AbiEFGRf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 6 May 2022 02:17:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353259AbiEFGPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 02:15:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E90CD5B3C2;
-        Thu,  5 May 2022 23:11:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4B35E61F0C;
-        Fri,  6 May 2022 06:11:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7DBDC385A8;
-        Fri,  6 May 2022 06:11:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651817515;
-        bh=hHJ2dKaQKUKX5YA0P8F4R0QuX/KqDRWP+QfV5J6aF/I=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=AXmhgoivoTIbOkrlU7cOSNNeQVxmMkJrZlYludZjC1B+6e92V8SQFv1SL/KyByxWW
-         Q+wzOCCju2+v0Tveu/H+KRWiEY6aKp+XZOIg/YK8jG9UpwF9wFerSkraLHQyddCxad
-         KQBXpvh7uaJYcQ8Lu7FUSkLROpLCzyi9EC4gQVUTXb4N7yCp2YEP4IZaLT40YDjuR0
-         TsAm7w9DonnasfT0JknwSPUTyA0ay0p+f2ShPc9k20713PJtVtnun7BFKJuzW75lHh
-         MlNi3B6Evj+gy5ZudY+TIpH80mB3pi+BYRtegAmW7Xh40V9HHu++ka97YX1zCCzFRZ
-         o6CDVodLztT6g==
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wl1251: dynamically allocate memory used for DMA
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <1676021ae8b6d7aada0b1806fed99b1b8359bdc4.1651495112.git.hns@goldelico.com>
-References: <1676021ae8b6d7aada0b1806fed99b1b8359bdc4.1651495112.git.hns@goldelico.com>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     arnd@arndb.de, tony@atomide.com,
+        with ESMTP id S238580AbiEFGRe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 02:17:34 -0400
+Received: from de-smtp-delivery-213.mimecast.com (de-smtp-delivery-213.mimecast.com [194.104.109.213])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB8D965D1C
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 23:13:51 -0700 (PDT)
+Received: from CHE01-ZR0-obe.outbound.protection.outlook.com
+ (mail-zr0che01lp2109.outbound.protection.outlook.com [104.47.22.109]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ de-mta-35-yH2fLuCYMFKi9dFf5kszLw-1; Fri, 06 May 2022 08:13:48 +0200
+X-MC-Unique: yH2fLuCYMFKi9dFf5kszLw-1
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:2e::8) by
+ GVAP278MB0007.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:22::8) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.24; Fri, 6 May 2022 06:13:47 +0000
+Received: from ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::f465:3051:c795:3c2]) by ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ ([fe80::f465:3051:c795:3c2%9]) with mapi id 15.20.5206.027; Fri, 6 May 2022
+ 06:13:47 +0000
+Date:   Fri, 6 May 2022 08:13:45 +0200
+From:   Francesco Dolcini <francesco.dolcini@toradex.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Francesco Dolcini <francesco.dolcini@toradex.com>,
         "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com, linux-omap@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165181750762.835.18351799442836112147.kvalo@kernel.org>
-Date:   Fri,  6 May 2022 06:11:52 +0000 (UTC)
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+Subject: Re: [PATCH net v2] net: phy: Fix race condition on link status change
+Message-ID: <20220506061345.GA325851@francesco-nb.int.toradex.com>
+References: <20220506060815.327382-1-francesco.dolcini@toradex.com>
+In-Reply-To: <20220506060815.327382-1-francesco.dolcini@toradex.com>
+X-ClientProxiedBy: MRXP264CA0012.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:15::24) To ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:2e::8)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e43436cd-bf8a-442d-b763-08da2f2794ad
+X-MS-TrafficTypeDiagnostic: GVAP278MB0007:EE_
+X-Microsoft-Antispam-PRVS: <GVAP278MB000728533AD1692E952B94F5E2C59@GVAP278MB0007.CHEP278.PROD.OUTLOOK.COM>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0
+X-Microsoft-Antispam-Message-Info: i5K3jU2m6w+Z7OEQ8NXbJqKL8a7Ui2b2XncgizTzTHJZms5WlJoICgwz/bDZ+OnvEDsj+lyTZUmDcFCG+9bQ2X9Yf4KrVS1EpcCDLQh54MPO1sYTnZnGYkjurdtK/BcsXDm8PGh2HzpUGoT4i3Y0gu/we17QqW7N3SAOygLcgesrW16F4RtTVxqsaOr6TZkZPaoAzfL5yth8X7zHOMcHWjRFzDB23Ahec9hWQpvrfRwIRaxp5KXzz7g5oUux7o2gyJRajQKYNl0axfpWycCVExSB+WPdeqqxE0GVrlBCfr1mfsujf0MaO72XGjxwSYvHRSwchnIvoGbQAA/Blf8eqXXuIPcaAdYW5oRCqM+CRxR4tvZewVXxogSFK0DxMheOZRzdgeaxsehvGBetFao/ZeirFEjeQ8V4AkfH/pvDP8bxIQK801dpLAtOiWdwNRPArbvLBGPa8yzQ+wpN2Oq56SF8zqwb5vWDXpjLepPRbzWj4Y8AjYquUPuuZ59hXeZMnRHGz8Fym5kV5jvon1MQXNlswRhGmj84dcGUmaS9Eb86cAV3iGhxhV0gPJsdDGxGp1Pc8IWDn1i9Er44rjXYMJONVFYhsdnAlCrwXYdyKz2GEpLBlccxgJdodjMExJZjNw9ER/EKdTun/WcwX9ObhyNPiWIm1jVvdpz6IywhIMNPSZmreyglC5PGKRNIi+FXn3we2EqHlg5nZ7kuiqQ9I/1SbbBtQZf44fm8kP0yOOyKcZMxwaVSptdBvwZRI89bQMNzHL2qmWrcgAz4aECDr3DKEwBi2C9Mqq9YfeDz8vE=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(346002)(376002)(136003)(366004)(396003)(39850400004)(66946007)(38350700002)(38100700002)(54906003)(8936002)(4326008)(66556008)(110136005)(66476007)(8676002)(186003)(4744005)(2906002)(86362001)(316002)(33656002)(6486002)(7416002)(26005)(1076003)(44832011)(52116002)(6512007)(6506007)(508600001)(83380400001)(5660300002)(966005);DIR:OUT;SFP:1102
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?cFT9CswsYeTL2wdcAM4DE+u0N2Ia1F6qg6cxI35HFbupIR7TQs41a8uZ+iHU?=
+ =?us-ascii?Q?N34vxIzVfMwEzY8efpwwSh7JgVzsdRGTwaNl5+gKN7clusDQ1rIfdLXmLWU/?=
+ =?us-ascii?Q?FLU2OGvLEnElECNfr1VEZylQQazerGn3t/RLXqpq8NwFcMy2x7YTmbw4jFvd?=
+ =?us-ascii?Q?KisQHMT9YFZlg0z1IDp4Qw/n1t8pfjEXow4M0rMiRm9a0D4Yz1qDPJfKHyzh?=
+ =?us-ascii?Q?MFJTa/YE5pHEnHnDVzSrIcU8lVkxSpsa2vgg7znM5AO3qk//pOZIoQGJouCs?=
+ =?us-ascii?Q?CC4r74hmBvar3uQboe42GAquuYWBXvYN1FyvzimRfaGglIpVHyPWHwwETVrl?=
+ =?us-ascii?Q?U231gOzoXxQVWqN8pEZVVuRNWkrLPn9cZ8gTsv3W6EOFwy69AUd7bu/hk39A?=
+ =?us-ascii?Q?AtlYCOwAsv7j1plkNdPbhJKh9IF9aOmAkmWvYOWkEHs512fH2kM3TjOGIfmP?=
+ =?us-ascii?Q?n3jDMPHp3dlLBCnJHJ3JItsDuZ3WpLok6aV4u3vDXfUsQkHKbDy/vPlVhpHB?=
+ =?us-ascii?Q?HAFg3UVTyUzuCwXaJmVkhcqwIltNdw7tq/9VGSwgS7oteJCDqqiBXlVVCtkC?=
+ =?us-ascii?Q?OHBidKDbEeEfi2gEYUINcBk7uJXJZqD7JMAmpXXLN4BfSIjrj1X2GnfxSrcr?=
+ =?us-ascii?Q?TqP3fAzl0DuZOWHRAqpmAfQkICoeRJbxmF6e8ewpGZyP3amO3KM3fB2CzN8v?=
+ =?us-ascii?Q?xhJk7scMOKFNzOIla9YQLc8XXxrvya0NROn1Ei3v51V8xvgsf2hdV6oBSxKg?=
+ =?us-ascii?Q?q1BkiN2w7RolkJWmSQMX8eXNFLzxq35xZUd4e1Zp30+iEKJeGG8Qe1VTc9II?=
+ =?us-ascii?Q?/Wv/ObKqBuIzLFMKybimgqXUvv695PBqoiR3IzrMW6C+Bv7M1WZtkdxrzin7?=
+ =?us-ascii?Q?+4nTu9IQa+h4aWWubwpFII1Zmdxffk9nPqzc0QDaf1lC0a858DJLO2oEilVw?=
+ =?us-ascii?Q?mRDkLd2MrwbZgkSIcbRx2N7C69cahfPyaTuC0md3xwYpmS7nZHlSH1KTr98t?=
+ =?us-ascii?Q?7XsaL1f3lKQQMy6Bi+QYRY5ktEXw2w/YPKSIn3FhSQ3x7ran0Qrj+R17vfx1?=
+ =?us-ascii?Q?WMPmL4g2Gvb+8fRt7FfT0Gkb6OwFelqNE5ResqVmAgQfeyrYSXdSRkHNUK+e?=
+ =?us-ascii?Q?bxMdUmU0uVWct2YYoMNTZaH01Xu1+bbtbdX91vaWDeWWVOvui2HnsUiwykwe?=
+ =?us-ascii?Q?TBZ6h5gT++jk6wYAt1S2weykCgNDthYH5xwE5430lkuFUEhH5mnG0h/B7gsl?=
+ =?us-ascii?Q?2SDRZ4EZ805M/t3YD0Lq5cZRIZdqUFle+WC9ssIIsqeNl0dPU4c2AIHrvJg5?=
+ =?us-ascii?Q?J4zrWo7LR90m8nNljqg1krn3QNwyCbcfB4OFdCxYRNRfADHVqjVHRzIgRb58?=
+ =?us-ascii?Q?aMkIap61rKxxYV2xcuPeMVDQSNFMxptn39r4lH26tVqwk+X1K0lz4lfceqyZ?=
+ =?us-ascii?Q?wYeZR/6cqvZigS0KJqeus8RJjxPdPCGBZz2vK9P56GpKNGfZ8tJPZU/phaBC?=
+ =?us-ascii?Q?7j+2fn9fvk6J6DYKVNajFSz6AXraPwcEKA+zdCX3I7FhPRg67nJsiUv868c8?=
+ =?us-ascii?Q?GSz31eKry8R08t8nPuMwoxes+t1OaMqOEAxU008JMBcCc48isJkbz4YUTR15?=
+ =?us-ascii?Q?KymaERtMUiAR3suiQCMOWvYc89QQXwsUPQlur4H+YCLRCvOXJmwVHOSwzT8s?=
+ =?us-ascii?Q?PAfwnfwQJ47f6MzSiaMc07S7M0/XcdICG6j6il+bAym8IUdMVokIrYGGh1DE?=
+ =?us-ascii?Q?tYUZrhLz571TVBH+mYUgXiUtUK+XQAs=3D?=
+X-OriginatorOrg: toradex.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e43436cd-bf8a-442d-b763-08da2f2794ad
+X-MS-Exchange-CrossTenant-AuthSource: ZRAP278MB0495.CHEP278.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 May 2022 06:13:47.1926
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d9995866-0d9b-4251-8315-093f062abab4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: t0DuBRg+Nlf42PvOvwQyTj9H8UeFKxq/9B0o+/v8lY4efXgJQ+hl5zpPywDpNDm3Q5eqKeTcjnKuJs0Lho6npNghFHhZpPF2KPiMLopkeQQ=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVAP278MB0007
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CDE13A77 smtp.mailfrom=francesco.dolcini@toradex.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: toradex.com
+Content-Type: text/plain; charset=WINDOWS-1252
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -61,28 +115,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"H. Nikolaus Schaller" <hns@goldelico.com> wrote:
-
-> With introduction of vmap'ed stacks, stack parameters can no
-> longer be used for DMA and now leads to kernel panic.
+On Fri, May 06, 2022 at 08:08:15AM +0200, Francesco Dolcini wrote:
+> This fixes the following error caused by a race condition between
+> phydev->adjust_link() and a MDIO transaction in the phy interrupt
+> handler. The issue was reproduced with the ethernet FEC driver and a
+> micrel KSZ9031 phy.
 > 
-> It happens at several places for the wl1251 (e.g. when
-> accessed through SDIO) making it unuseable on e.g. the
-> OpenPandora.
+...
+> Fix this by acquiring the phydev lock in phy_interrupt().
 > 
-> We solve this by allocating temporary buffers or use wl1251_read32().
-> 
-> Tested on v5.18-rc5 with OpenPandora.
-> 
-> Fixes: a1c510d0adc6 ("ARM: implement support for vmap'ed stacks")
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> Link: https://lore.kernel.org/all/20220422152612.GA510015@francesco-nb.int.toradex.com/
+> Fixes: c974bdbc3e77 ("net: phy: Use threaded IRQ, to allow IRQ from sleeping devices")
+> cc: <stable@vger.kernel.org>
+> Signed-off-by: Francesco Dolcini <francesco.dolcini@toradex.com>
 
-Patch applied to wireless-next.git, thanks.
+whoops, I forgot the changelog, sorry.
 
-454744754cbf wl1251: dynamically allocate memory used for DMA
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/1676021ae8b6d7aada0b1806fed99b1b8359bdc4.1651495112.git.hns@goldelico.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+v2: Added fixes tag, corrected commit message formatting (tab vs space)
 
