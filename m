@@ -2,144 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6427D51D20A
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 09:15:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A53D151D27E
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 09:44:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389441AbiEFHTA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 03:19:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
+        id S1386467AbiEFHsW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 03:48:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389436AbiEFHS7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 03:18:59 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071E018D
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 00:15:16 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id g6so12769784ejw.1
-        for <netdev@vger.kernel.org>; Fri, 06 May 2022 00:15:15 -0700 (PDT)
+        with ESMTP id S236048AbiEFHsU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 03:48:20 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A2205DA57
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 00:44:38 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id p18so7747430edr.7
+        for <netdev@vger.kernel.org>; Fri, 06 May 2022 00:44:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=BeRODHN5BKHdYqCpyT3vOELgLz8mBkeltgcKtiKMp4w=;
-        b=g4TlTYxLR3HgIll7nXj0AF8/r89vyRr8TehXbuimjjfEYJccXGgABWYlPWVPZr3PYW
-         g2VAiB6F3XUnbACivG4wyIHzNoFUNpjcaiA9kScMgL7fSMJzihnSNEqyOO88Apxph3/l
-         G4URVFL2tqrQdjLTkPvZApvG0KAocTJPRzCwwj9ncv9ILchN5blI27jqGplvHCyVc/JH
-         FbO529vOx597xt77lw6dgm5980DDVRJx2sLJcnexgLGqpMpEEZXImo9/n4+j2ZdTDIsX
-         9jDzhNjlO/o/QZlfMpBHPfEUDB9P0gpwBGGu1/xrrq2mUVVgfSHqz7RXsiPCwJc3vAPI
-         HAHw==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=v65mYI2EEz5vZsbVzSt/sJpQodaS8sIPe5rYixNFUDw=;
+        b=EYthJBVpw111Ybe5r9X/Fcd5Jsb0+7uEhmhfnVh/wlK1qHQYUiV+AJD6NP9BbxK4Zk
+         Y17YVl73uUONjMFsXkpOG3SGJdbHD7SHTg/s/RVSzaru6s9igLS3Sh9REu3eVu5wmx8W
+         HGqRHhUgdkJBvPBiM37aSEZ+O6R4IqQX4LDiyQZoeLQdbcfzQcTwPIg5Y45S8LE64lTS
+         UNW9aCDB3Zwp5zizxuqe84tESyEhV4GhnN047KL7hSz3+NsrwRGXWtDDAhXefwDB2ixT
+         Zz43slzlO86EPAOooAAvb95OpygDCPsc1locUXm861/fGS0/6nMijeu+9Ef+Uhg6+NCT
+         cfvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=BeRODHN5BKHdYqCpyT3vOELgLz8mBkeltgcKtiKMp4w=;
-        b=E+R0UEk8X5kCbyjJo8js/w1dZ1GCUisg5OJkA6y+pABk+V+mC0DukJZh8vf2VPE8ep
-         MwBuYo0VPjzoCWwmJvGCu5/IOP/MM25ljeJA6cYR5AfdodYArTOOmHV1UfCZsBbNe02i
-         HmTY+8yl0KrENiqWyH+Chmv0uBJPhNVLdKN/KZwRM68GTfhwg2zjmi+ORpGbgUBV1X3h
-         KpBX1laHac3sEXrBm7Zul+L2NYfSO252T9S9DcB7gwmt8nydsdiUnJgnO41I6fS2+CGr
-         Peag4ZsL69jTVkJ8l1tD3mpFCoXOZ1y7phbTJpHOYm/HPaBNXkpj83/QxAaZ8wxd9VdB
-         vRqA==
-X-Gm-Message-State: AOAM533lljPSB5z/7DThqUn7xIYgK+FYU5JyztOZWAk0nBMGc2fBN+m9
-        EA/niOVHy4jYquI4lAlSk98OWw==
-X-Google-Smtp-Source: ABdhPJw+9MHfJJlxEEjx+RbBnEi8cHVQYqz5vIyQL24y5z6dfIvIfMX1LfWdV4dF8kIRqorulfWLkw==
-X-Received: by 2002:a17:907:2da5:b0:6f4:7cd1:8cf5 with SMTP id gt37-20020a1709072da500b006f47cd18cf5mr1769503ejc.328.1651821314516;
-        Fri, 06 May 2022 00:15:14 -0700 (PDT)
-Received: from [192.168.0.223] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id w16-20020a170907271000b006f3ef214e42sm1559641ejk.168.2022.05.06.00.15.12
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=v65mYI2EEz5vZsbVzSt/sJpQodaS8sIPe5rYixNFUDw=;
+        b=vvhhkutnD99vch9rc5Vhanjb0uUT0Mps8baqrtz3DGc0MFtCUnBPDaB14wvsHZoItA
+         ljXiG0bjK9gqITKQc/fhpZPy8eIuHzNHhXz2YOoq+qe+IcDPZpdbmq3c1zErfrNKm/gG
+         XNuMLdE2N42qxDmOTfpslCh5zl7L15kFHsZL2IpDhgae6rXCWlXWNzwvBdR0tyovza2V
+         lYWYNEtia1EHyHGQUZlMYGIPtSDhFPIJDT2q22cBddLheMAg02txUfyfUjkyD1Tmq6vd
+         /86vBqSVbePTWgQJH37BDoFn+G6AE9ZF07NtsJ21a2b+fiqUMx7Ya5yQr/okY+jZa2xl
+         BxQg==
+X-Gm-Message-State: AOAM531TRWLcyrKq4BT7hcw9XulyPBuJ0QLxCgGzkL7jUoV9tVxgLzlw
+        ARyuQTVTD/TOWwFTn95M0gM=
+X-Google-Smtp-Source: ABdhPJzZAM2CsY9zmKH3fdBqrpqt2wLB8w+NrMVDsG9EfU8fmx2Ee62/DjuvbypUFTZQFp9eO2Dj1g==
+X-Received: by 2002:a05:6402:370b:b0:41d:8508:20af with SMTP id ek11-20020a056402370b00b0041d850820afmr2200551edb.16.1651823076857;
+        Fri, 06 May 2022 00:44:36 -0700 (PDT)
+Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
+        by smtp.googlemail.com with ESMTPSA id w5-20020a056402268500b0042617ba6389sm1945483edd.19.2022.05.06.00.44.36
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 May 2022 00:15:13 -0700 (PDT)
-Message-ID: <ac70ae6d-7e1a-d6b9-e33e-793035d5606e@linaro.org>
-Date:   Fri, 6 May 2022 09:15:12 +0200
+        Fri, 06 May 2022 00:44:36 -0700 (PDT)
+Message-ID: <510bd08b-3d46-2fc8-3974-9d99fd53430e@gmail.com>
+Date:   Fri, 6 May 2022 09:44:35 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: Aw: Re: [RFC v2] dt-bindings: net: dsa: convert binding for
- mediatek switches
-Content-Language: en-US
-To:     Frank Wunderlich <frank-w@public-files.de>
-Cc:     Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        Greg Ungerer <gerg@kernel.org>,
-        =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-References: <20220505150008.126627-1-linux@fw-web.de>
- <6d45f060-85e6-f3ff-ef00-6c68a2ada7a1@linaro.org>
- <trinity-12061c77-38b6-4b56-bccd-3b54cf9dc0e8-1651819574078@3c-app-gmx-bs21>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <trinity-12061c77-38b6-4b56-bccd-3b54cf9dc0e8-1651819574078@3c-app-gmx-bs21>
-Content-Type: text/plain; charset=UTF-8
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
+ Thunderbird/96.0
+Subject: Re: Optimizing kernel compilation / alignments for network
+ performance
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Alexander Lobakin <alexandr.lobakin@intel.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Felix Fietkau <nbd@nbd.name>,
+        "openwrt-devel@lists.openwrt.org" <openwrt-devel@lists.openwrt.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+References: <84f25f73-1fab-fe43-70eb-45d25b614b4c@gmail.com>
+ <20220427125658.3127816-1-alexandr.lobakin@intel.com>
+ <066fc320-dc04-11a4-476e-b0d11f3b17e6@gmail.com>
+ <CAK8P3a2tA8vkB-G-sQdvoiB8Pj08LRn_Vhf7qT-YdBJQwaGhaA@mail.gmail.com>
+ <eec5e665-0c89-a914-006f-4fce3f296699@gmail.com> <YnP1nOqXI4EO1DLU@lunn.ch>
+From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
+In-Reply-To: <YnP1nOqXI4EO1DLU@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06/05/2022 08:46, Frank Wunderlich wrote:
->>> +    const: 1
->>> +
->>> +  "#size-cells":
->>> +    const: 0
->>> +
->>> +  core-supply:
->>> +    description: |
->>
->> Drop | everywhere where it is not needed (so in all places, AFAICT)
+On 5.05.2022 18:04, Andrew Lunn wrote:
+>> you'll see that most used functions are:
+>> v7_dma_inv_range
+>> __irqentry_text_end
+>> l2c210_inv_range
+>> v7_dma_clean_range
+>> bcma_host_soc_read32
+>> __netif_receive_skb_core
+>> arch_cpu_idle
+>> l2c210_clean_range
+>> fib_table_lookup
 > 
-> is it necessary for multiline-descriptions or is indentation enough?
-
-It's necessary only when YAML syntax characters appear in description or
-when you want specific formatting.
-
-https://elixir.bootlin.com/linux/v5.18-rc5/source/Documentation/devicetree/bindings/example-schema.yaml#L97
-
-https://yaml-multiline.info/
-
->>> +
->>> +patternProperties:
->>
->> patternProperties go before allOf, just after regular properties.
+> There is a lot of cache management functions here. Might sound odd,
+> but have you tried disabling SMP? These cache functions need to
+> operate across all CPUs, and the communication between CPUs can slow
+> them down. If there is only one CPU, these cache functions get simpler
+> and faster.
 > 
-> after required, right?
+> It just depends on your workload. If you have 1 CPU loaded to 100% and
+> the other 3 idle, you might see an improvement. If you actually need
+> more than one CPU, it will probably be worse.
 
-properties do not go after required, so neither patternProperties
-should. Something like: propertes -> patternProperties -> dependencies
--> required -> allOf -> additionalProperties -> examples
+It seems to lower my NAT speed from ~362 Mb/s to 320 Mb/s but it feels
+more stable now (lower variations). Let me spend some time on more
+testing.
 
-> 
->>> +  "^(ethernet-)?ports$":
->>> +    type: object
->>
->> Also on this level:
->>     unevaluatedProperties: false
-> 
-> this is imho a bit redundant because in dsa.yaml (which is included now after patternProperties)
-> it is already set on both levels.
 
-dsa.yaml does not set it on ethernet-ports.
+FWIW during all my tests I was using:
+echo 2 > /sys/class/net/eth0/queues/rx-0/rps_cpus
+that is what I need to get similar speeds across iperf sessions
 
-> Adding it here will fail in examples because of size/address-cells which are already defined in dsa.yaml...
-> so i need to define them here again.
+With
+echo 0 > /sys/class/net/eth0/queues/rx-0/rps_cpus
+my NAT speeds were jumping between 4 speeds:
+273 Mbps / 315 Mbps / 353 Mbps / 425 Mbps
+(every time I started iperf kernel jumped into one state and kept the
+  same iperf speed until stopping it and starting another session)
 
-You're right, it cannot be set here.
+With
+echo 1 > /sys/class/net/eth0/queues/rx-0/rps_cpus
+my NAT speeds were jumping between 2 speeds:
+284 Mbps / 408 Mbps
 
-Best regards,
-Krzysztof
+
+> I've also found that some Ethernet drivers invalidate or flush too
+> much. If you are sending a 64 byte TCP ACK, all you need to flush is
+> 64 bytes, not the full 1500 MTU. If you receive a TCP ACK, and then
+> recycle the buffer, all you need to invalidate is the size of the ACK,
+> so long as you can guarantee nothing has touched the memory above it.
+> But you need to be careful when implementing tricks like this, or you
+> can get subtle corruption bugs when you get it wrong.
+
+That was actually bgmac's initial behaviour, see commit 92b9ccd34a90
+("bgmac: pass received packet to the netif instead of copying it"):
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=92b9ccd34a9053c628d230fe27a7e0c10179910f
+
+I think it was Felix who suggested me to avoid skb_copy*() and it seems
+it improved performance indeed.
