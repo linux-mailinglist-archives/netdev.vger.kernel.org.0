@@ -2,68 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 991E551E160
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 23:51:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61EED51E162
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 23:51:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355238AbiEFVyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 17:54:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44470 "EHLO
+        id S1359636AbiEFVzO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 17:55:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359636AbiEFVyh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 17:54:37 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543ED506EE
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 14:50:52 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2ef5380669cso94943857b3.9
-        for <netdev@vger.kernel.org>; Fri, 06 May 2022 14:50:52 -0700 (PDT)
+        with ESMTP id S1355406AbiEFVzJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 17:55:09 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1766C6FA13;
+        Fri,  6 May 2022 14:51:24 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id y11so5625004ilp.4;
+        Fri, 06 May 2022 14:51:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=bwyucxFIAm/PwGTcwC531g+oZjrWV8Ji3QeTcHYIkso=;
-        b=H8nQp5yhlaQdlsDDFedw5zf212vPBAA5BlrNHUEDRsJYA6TVQkbs6nOtCAI9UVpZv5
-         p62wlTUldnCiXAZy/Fz19O7l9tl42a6nLlqpAv6wuFqpnzCoiCFS5XpNUUjk7SrEzH6/
-         YK+JxNfWy6ubqRu/kLZGQ31iyDfECSTnRdZScM94rxiEut4LqaAjx8Ghg8Trq91wfa0+
-         Ldu8EvibTU5o8ngIAXQUIEZg/fFJhS4WYmKXIg41nZZTKWz8XikemAmicgmHQQuYMSJg
-         PksyU6ipuBl0Kl9L1u7JUZqaM3E9pDJAt3Doq3vF4KRmt1DGMUMnkKozELqbZk1PhPIb
-         RO2g==
+        bh=0H4j188mYRcN8sQWXRd1WWvL0ISYSoT0RTO3h++GtuQ=;
+        b=Vs2xhVj9PYXBDuBS0f/ikVUFzjYnQTstwaezXEJpVlnAHME/7NP/hlzk0r77I20ySs
+         gPppbe8iXsA3fkm6wirqG6/KpEgQMZzEvJRNH1DpJ/fvVGJmXp0bgZW5ZmGEGa4DsRHL
+         PsYWZLEx0I0WMfErH9FKAxr4J2Lxrk4Q6jzUt+iEFjk8swPqcGHFg4Fg2Ly5dUozuudv
+         1jzgFSoJ6B5Oqs0pVGrQN4lTC0Z+fguPgkVqN5C63ymuKD/gZeA6SB9ZzNpmom36nIvE
+         TS/82RFqct3zkg+N2NmmF0Boj11IW2A+wUPy2El35nuI56Zl0GrGD8XeRfM75+LZU3Ji
+         NJkg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=bwyucxFIAm/PwGTcwC531g+oZjrWV8Ji3QeTcHYIkso=;
-        b=V61t9aHCYtqyygSlgWB/GbMJAhJ9jA5PApePfeJVVzEHcJ3rzSvzp7d/xSv35typMp
-         FDCi0R3AnP7AkWSWQfcYxVp0GjK+muM40oPSRSqiY8J+g7yod/MzJzlLeHOWJmm2RYvJ
-         mldJMOQ74qYhFb/QosToSaev9IXnj7z2PH/Uv1ty90fa7WgGHbDT63Ono1oWXRh96C3O
-         WBEBD7Yeu5vHhXIC5isAKT976jxvAv8I9yvV+7HKsndq588VXSanrltYo1unjTIad9+a
-         qQ0Q78xGTgfKSEI7VUHCztCfIQ5UWPPJmRE51Wy5J4QEAAlZbCF+3XZ7XFrKlT+F8jeS
-         A+yA==
-X-Gm-Message-State: AOAM531chCX8xPx/5TVUa9uzREK4p/CIM/6Pvbe0JIUBqbkX9cxM882B
-        14q/d2wRrV03GQCPUhRWgBYaM4k31tmFXNdp5qnahg==
-X-Google-Smtp-Source: ABdhPJxZDO6ItvBNzL9Rew99P5wk7MDtJWbijq6n19I/Ehi0Cb7MBx6x4ZNdPysqykbxxq2wYgP4ILSRt9cVgU4Pe/8=
-X-Received: by 2002:a81:5603:0:b0:2f8:3187:f37a with SMTP id
- k3-20020a815603000000b002f83187f37amr4281414ywb.255.1651873851268; Fri, 06
- May 2022 14:50:51 -0700 (PDT)
+        bh=0H4j188mYRcN8sQWXRd1WWvL0ISYSoT0RTO3h++GtuQ=;
+        b=0IcJ1YYDZL3szK7g1AzSJHgZxuQo69kx01PgZdtaKTHja3tyVf7ZgBw6GejEhU7g9F
+         Re6usAmBu7D0HcZmfIeMmfD+J4onMgFsEgf+pSbb4Cf+CYjFGaum40Ij4rZRjGy7qNOm
+         uO1ON7m6Ag8RmrhgRq5ZXw5dciPk5RqMGc7v8Tvcx7icNwQC9EdIxmHuEuJ3QgoAjJRT
+         Yzi53dJhtshBWDNPM4qronUHhjF/ycSOh2NePAnze+7uLnYvWJiaWtSoCKfZcZfp603u
+         d5BV7gkC1NLIJQTQpsvAryErvX00Qj2HHsr0L5/26Rxbb0HULaZ0mtMLf3c/J8LFZfXG
+         1Mrg==
+X-Gm-Message-State: AOAM531sdYaCODW42/sCKOSu6lWrsHKGfit+zcrSuyKcmVKZ70LCEIN4
+        umtkDkKA4ydJhDbOJUHsyuMpFmwsUCPED6J5OpA=
+X-Google-Smtp-Source: ABdhPJy538w8QL1UdWQu61v//rhuRVQiriUv8ahfZNQ3de36b/smTTpb2c3aib/Q6CWeXqjmIThBraihWSea0aQGjDE=
+X-Received: by 2002:a05:6e02:1b82:b0:2cf:199f:3b4b with SMTP id
+ h2-20020a056e021b8200b002cf199f3b4bmr2090170ili.71.1651873883291; Fri, 06 May
+ 2022 14:51:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220506153048.3695721-1-eric.dumazet@gmail.com>
- <20220506153048.3695721-3-eric.dumazet@gmail.com> <e582432dbe85e743cc18d358d020711db5ddbf82.camel@gmail.com>
- <CANn89iL3sjnRKQNwbqxh_jh5cZ-Cxo58FKeqhP+mF969u4oQkA@mail.gmail.com> <CAKgT0Ud2YGhU1_z6xWmjdin5fT-VP7bAdnQrQcbMXULiFYJ3vQ@mail.gmail.com>
-In-Reply-To: <CAKgT0Ud2YGhU1_z6xWmjdin5fT-VP7bAdnQrQcbMXULiFYJ3vQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 6 May 2022 14:50:40 -0700
-Message-ID: <CANn89i+f0PGo86pD4XGS4FpjkcHwh-Nb2=r5D6=jp2jbgTY+nw@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 02/12] ipv6: add IFLA_GSO_IPV6_MAX_SIZE
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <20220503171437.666326-1-maximmi@nvidia.com>
+In-Reply-To: <20220503171437.666326-1-maximmi@nvidia.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 6 May 2022 14:51:12 -0700
+Message-ID: <CAEf4BzbSO8oLK3_4Ecrx-c-o+Z6S8HMm3c_XQhZUQgpU8hfHoQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 0/5] New BPF helpers to accelerate synproxy
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joe Stringer <joe@cilium.io>,
+        Florent Revest <revest@chromium.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Florian Westphal <fw@strlen.de>, pabeni@redhat.com
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,58 +88,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 6, 2022 at 2:37 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
+On Tue, May 3, 2022 at 10:14 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
 >
-> On Fri, May 6, 2022 at 2:20 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Fri, May 6, 2022 at 1:48 PM Alexander H Duyck
-> > <alexander.duyck@gmail.com> wrote:
-> > >
-> > > On Fri, 2022-05-06 at 08:30 -0700, Eric Dumazet wrote:
-> > > > From: Coco Li <lixiaoyan@google.com>
-> > > >
-> > > > This enables ipv6/TCP stacks to build TSO packets bigger than
-> > > > 64KB if the driver is LSOv2 compatible.
-> > > >
-> > > > This patch introduces new variable gso_ipv6_max_size
-> > > > that is modifiable through ip link.
-> > > >
-> > > > ip link set dev eth0 gso_ipv6_max_size 185000
-> > > >
-> > > > User input is capped by driver limit (tso_max_size)
-> > > >
-> > > > Signed-off-by: Coco Li <lixiaoyan@google.com>
-> > > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > >
-> > > So I am still not a fan of adding all this extra tooling to make an
-> > > attribute that is just being applied to one protocol. Why not just
-> > > allow gso_max_size to extend beyond 64K and only limit it by
-> > > tso_max_size?
-> >
-> > Answer is easy, and documented in our paper. Please read it.
+> The first patch of this series is a documentation fix.
 >
-> I have read it.
+> The second patch allows BPF helpers to accept memory regions of fixed
+> size without doing runtime size checks.
 >
-> > We do not want to enable BIG TCP for IPv4, this breaks user space badly.
-> >
-> > I do not want to break tcpdump just because some people think TCP just works.
+> The two next patches add new functionality that allows XDP to
+> accelerate iptables synproxy.
 >
-> The changes I suggested don't enable it for IPv4. What your current
-> code is doing now is using dev->gso_max_size and if it is the correct
-> IPv6 type you are using dev->gso_ipv6_max_size. What I am saying is
-> that instead of adding yet another netdev control you should just make
-> it so that we retain existing behavior when gso_max_size is less than
-> GSO_MAX_SIZE, and when it exceeds it all non-ipv6 types max out at
-> GSO_MAX_SIZE and only the ipv6 type packets use gso_max_size when you
-> exceed GSO_MAX_SIZE.
+> v1 of this series [1] used to include a patch that exposed conntrack
+> lookup to BPF using stable helpers. It was superseded by series [2] by
+> Kumar Kartikeya Dwivedi, which implements this functionality using
+> unstable helpers.
+>
+> The third patch adds new helpers to issue and check SYN cookies without
+> binding to a socket, which is useful in the synproxy scenario.
+>
+> The fourth patch adds a selftest, which includes an XDP program and a
+> userspace control application. The XDP program uses socketless SYN
+> cookie helpers and queries conntrack status instead of socket status.
+> The userspace control application allows to tune parameters of the XDP
+> program. This program also serves as a minimal example of usage of the
+> new functionality.
+>
+> The last patch exposes the new helpers to TC BPF.
+>
+> The draft of the new functionality was presented on Netdev 0x15 [3].
+>
+> v2 changes:
+>
+> Split into two series, submitted bugfixes to bpf, dropped the conntrack
+> patches, implemented the timestamp cookie in BPF using bpf_loop, dropped
+> the timestamp cookie patch.
+>
+> v3 changes:
+>
+> Moved some patches from bpf to bpf-next, dropped the patch that changed
+> error codes, split the new helpers into IPv4/IPv6, added verifier
+> functionality to accept memory regions of fixed size.
+>
+> v4 changes:
+>
+> Converted the selftest to the test_progs runner. Replaced some
+> deprecated functions in xdp_synproxy userspace helper.
+>
+> v5 changes:
+>
+> Fixed a bug in the selftest. Added questionable functionality to support
+> new helpers in TC BPF, added selftests for it.
+>
+> v6 changes:
+>
+> Wrap the new helpers themselves into #ifdef CONFIG_SYN_COOKIES, replaced
+> fclose with pclose and fixed the MSS for IPv6 in the selftest.
+>
+> v7 changes:
+>
+> Fixed the off-by-one error in indices, changed the section name to
+> "xdp", added missing kernel config options to vmtest in CI.
+>
+> v8 changes:
+>
+> Properly rebased, dropped the first patch (the same change was applied
+> by someone else), updated the cover letter.
+>
+> v9 changes:
+>
+> Fixed selftests for no_alu32.
+>
+> [1]: https://lore.kernel.org/bpf/20211020095815.GJ28644@breakpoint.cc/t/
+> [2]: https://lore.kernel.org/bpf/20220114163953.1455836-1-memxor@gmail.com/
+> [3]: https://netdevconf.info/0x15/session.html?Accelerating-synproxy-with-XDP
+>
+> Maxim Mikityanskiy (5):
+>   bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
+>   bpf: Allow helpers to accept pointers with a fixed size
+>   bpf: Add helpers to issue and check SYN cookies in XDP
+>   bpf: Add selftests for raw syncookie helpers
+>   bpf: Allow the new syncookie helpers to work with SKBs
+>
 
-gso_max_size can not exceed GSO_MAX_SIZE.
-This will break many drivers.
-I do not want to change hundreds of them.
+Is it expected that your selftests will fail on s390x? Please check [0]
 
-Look, we chose this implementation so that chances of breaking things
-are very small.
-I understand this is frustrating, but I suggest you take the
-responsibility of breaking things,
-and not add this on us.
+  [0] https://github.com/kernel-patches/bpf/runs/6277764463?check_suite_focus=true#step:6:6130
+
+>  include/linux/bpf.h                           |  10 +
+>  include/net/tcp.h                             |   1 +
+>  include/uapi/linux/bpf.h                      |  88 +-
+>  kernel/bpf/verifier.c                         |  26 +-
+>  net/core/filter.c                             | 128 +++
+>  net/ipv4/tcp_input.c                          |   3 +-
+>  scripts/bpf_doc.py                            |   4 +
+>  tools/include/uapi/linux/bpf.h                |  88 +-
+>  tools/testing/selftests/bpf/.gitignore        |   1 +
+>  tools/testing/selftests/bpf/Makefile          |   5 +-
+>  .../selftests/bpf/prog_tests/xdp_synproxy.c   | 144 +++
+>  .../selftests/bpf/progs/xdp_synproxy_kern.c   | 819 ++++++++++++++++++
+>  tools/testing/selftests/bpf/xdp_synproxy.c    | 466 ++++++++++
+>  13 files changed, 1761 insertions(+), 22 deletions(-)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
+>  create mode 100644 tools/testing/selftests/bpf/xdp_synproxy.c
+>
+> --
+> 2.30.2
+>
