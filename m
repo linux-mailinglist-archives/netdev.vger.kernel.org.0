@@ -2,194 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C65A51D095
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 07:22:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6707751D09A
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 07:25:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389087AbiEFF0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 01:26:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60178 "EHLO
+        id S1389105AbiEFF2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 01:28:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389085AbiEFF0P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 01:26:15 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E4195E765;
-        Thu,  5 May 2022 22:22:31 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VCQBjlI_1651814548;
-Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VCQBjlI_1651814548)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 06 May 2022 13:22:29 +0800
-From:   "D. Wythe" <alibuda@linux.alibaba.com>
-To:     kgraul@linux.ibm.com
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
-Subject: [PATCH net-next] net/smc: Fix smc-r link reference count
-Date:   Fri,  6 May 2022 13:22:28 +0800
-Message-Id: <1651814548-83231-1-git-send-email-alibuda@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1389093AbiEFF2m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 01:28:42 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7C2C5DA64;
+        Thu,  5 May 2022 22:24:59 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2465OatZ049321;
+        Fri, 6 May 2022 00:24:36 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1651814676;
+        bh=4j1xMzQOmlht80z6F07pIV3L6cGhnmTTb4Ja+LRnZBw=;
+        h=From:To:CC:Subject:Date;
+        b=vKNmglauJKXzLk03BsjVhgwBqEm+7Pa5jhrM/7S6lykPGljyhXrNMGY9hLdJaqGAE
+         hl810/olrqdH4c7md74IWlh9nzxqHMI37mlvKY5N9Ad9F5WuZYK58JYrw+PZPZcyHb
+         YuxhWbo4jjjjvpKbDOXZ2CPB4DnzIUYG4vbgxAc4=
+Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2465OZBW003996
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 6 May 2022 00:24:36 -0500
+Received: from DLEE101.ent.ti.com (157.170.170.31) by DLEE114.ent.ti.com
+ (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 6
+ May 2022 00:24:35 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE101.ent.ti.com
+ (157.170.170.31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 6 May 2022 00:24:35 -0500
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2465OY8F009958;
+        Fri, 6 May 2022 00:24:34 -0500
+From:   Puranjay Mohan <p-mohan@ti.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     <davem@davemloft.net>, <edumazet@google.com>,
+        <krzysztof.kozlowski+dt@linaro.org>, <netdev@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <nm@ti.com>, <ssantosh@kernel.org>,
+        <s-anna@ti.com>, <p-mohan@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>, <rogerq@kernel.org>,
+        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
+        <robh+dt@kernel.org>, <afd@ti.com>, <andrew@lunn.ch>
+Subject: [PATCH 0/2] Introduce ICSSG based ethernet Driver
+Date:   Fri, 6 May 2022 10:54:31 +0530
+Message-ID: <20220506052433.28087-1-p-mohan@ti.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "D. Wythe" <alibuda@linux.alibaba.com>
+The Programmable Real-time Unit and Industrial Communication Subsystem
+Gigabit (PRU_ICSSG) is a low-latency microcontroller subsystem in the TI
+SoCs. This subsystem is provided for the use cases like implementation of
+custom peripheral interfaces, offloading of tasks from the other
+processor cores of the SoC, etc.
 
-The following scenarios exist:
+The subsystem includes many accelerators for data processing like
+multiplier and multiplier-accumulator. It also has peripherals like
+UART, MII/RGMII, MDIO, etc. Every ICSSG core includes two 32-bit
+load/store RISC CPU cores called PRUs.
 
-lnk->refcnt=1;
-smcr_link_put(lnk);
-lnk->refcnt=0;
-				smcr_link_hold(lnk);
-__smcr_link_clear(lnk);
-				do_xxx(lnk);
+The above features allow it to be used for implementing custom firmware
+based peripherals like ethernet.
 
-This patch try using refcount_inc_not_zero() instead refcount_inc()
-to prevent this race condition. Therefore, we need to always check its
-return value, and respond with an error when it fails.
+This series adds the YAML documentation and the driver with basic EMAC
+support for TI AM654 Silicon Rev 2 SoC with the PRU_ICSSG Sub-system.
+running dual-EMAC firmware.
+This currently supports basic EMAC with 1Gbps and 100Mbps link. 10M and
+half-duplex modes are not yet supported because they require the support
+of an IEP, which will be added later.
+Advanced features like switch-dev and timestamping will be added later.
 
-Fixes: 20c9398d3309 ("net/smc: Resolve the race between SMC-R link access and clear")
-Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
----
- net/smc/af_smc.c   |  3 +--
- net/smc/smc_core.c | 27 +++++++++++++++++++++------
- net/smc/smc_core.h |  4 ++--
- 3 files changed, 24 insertions(+), 10 deletions(-)
+This series depends on two patch series that are not yet merged, one in
+the remoteproc tree and another in the soc tree. the first one is titled
+Introduce PRU remoteproc consumer API and the second one is titled
+Introduce PRU platform consumer API.
+Both of these are required for this driver.
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 30acc31..b449c08 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1129,11 +1129,10 @@ static int smc_connect_rdma(struct smc_sock *smc,
- 				break;
- 			}
- 		}
--		if (!link) {
-+		if (!link || !smc_switch_link_and_count(&smc->conn, link)) {
- 			reason_code = SMC_CLC_DECL_NOSRVLINK;
- 			goto connect_abort;
- 		}
--		smc_switch_link_and_count(&smc->conn, link);
- 	}
- 
- 	/* create send buffer and rmb */
-diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
-index 29525d0..f2d08b0 100644
---- a/net/smc/smc_core.c
-+++ b/net/smc/smc_core.c
-@@ -996,7 +996,7 @@ static int smc_switch_cursor(struct smc_sock *smc, struct smc_cdc_tx_pend *pend,
- 	return rc;
- }
- 
--void smc_switch_link_and_count(struct smc_connection *conn,
-+bool smc_switch_link_and_count(struct smc_connection *conn,
- 			       struct smc_link *to_lnk)
- {
- 	atomic_dec(&conn->lnk->conn_cnt);
-@@ -1005,7 +1005,7 @@ void smc_switch_link_and_count(struct smc_connection *conn,
- 	conn->lnk = to_lnk;
- 	atomic_inc(&conn->lnk->conn_cnt);
- 	/* link_put in smc_conn_free() */
--	smcr_link_hold(conn->lnk);
-+	return smcr_link_hold(conn->lnk);
- }
- 
- struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
-@@ -1029,11 +1029,21 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
- 		    from_lnk->ibport == lgr->lnk[i].ibport) {
- 			continue;
- 		}
-+
-+		/* Try to hold a reference here. Once succeed,
-+		 * all subsequent hold in smc_switch_link_and_count()  will not fail.
-+		 * We can simplify the subsequent processing logic.
-+		 */
-+		if (!smcr_link_hold(&lgr->lnk[i]))
-+			continue;
-+
- 		to_lnk = &lgr->lnk[i];
- 		break;
- 	}
- 	if (!to_lnk || !smc_wr_tx_link_hold(to_lnk)) {
- 		smc_lgr_terminate_sched(lgr);
-+		if (to_lnk)
-+			smcr_link_put(to_lnk); /* smcr_link_hold() above */
- 		return NULL;
- 	}
- again:
-@@ -1056,6 +1066,7 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
- 		    smc->sk.sk_state == SMC_PEERABORTWAIT ||
- 		    smc->sk.sk_state == SMC_PROCESSABORT) {
- 			spin_lock_bh(&conn->send_lock);
-+			/* smcr_link_hold() already, won't fail */
- 			smc_switch_link_and_count(conn, to_lnk);
- 			spin_unlock_bh(&conn->send_lock);
- 			continue;
-@@ -1068,6 +1079,7 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
- 			goto err_out;
- 		/* avoid race with smcr_tx_sndbuf_nonempty() */
- 		spin_lock_bh(&conn->send_lock);
-+		/* smcr_link_hold() already, won't fail */
- 		smc_switch_link_and_count(conn, to_lnk);
- 		rc = smc_switch_cursor(smc, pend, wr_buf);
- 		spin_unlock_bh(&conn->send_lock);
-@@ -1078,11 +1090,13 @@ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
- 	}
- 	read_unlock_bh(&lgr->conns_lock);
- 	smc_wr_tx_link_put(to_lnk);
-+	smcr_link_put(to_lnk); /* smcr_link_hold() above */
- 	return to_lnk;
- 
- err_out:
- 	smcr_link_down_cond_sched(to_lnk);
- 	smc_wr_tx_link_put(to_lnk);
-+	smcr_link_put(to_lnk); /* smcr_link_hold() above */
- 	return NULL;
- }
- 
-@@ -1260,9 +1274,9 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
- 	smcr_link_put(lnk); /* theoretically last link_put */
- }
- 
--void smcr_link_hold(struct smc_link *lnk)
-+bool smcr_link_hold(struct smc_link *lnk)
- {
--	refcount_inc(&lnk->refcnt);
-+	return refcount_inc_not_zero(&lnk->refcnt);
- }
- 
- void smcr_link_put(struct smc_link *lnk)
-@@ -1904,8 +1918,9 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
- 		}
- 	}
- 	smc_lgr_hold(conn->lgr); /* lgr_put in smc_conn_free() */
--	if (!conn->lgr->is_smcd)
--		smcr_link_hold(conn->lnk); /* link_put in smc_conn_free() */
-+	if (!conn->lgr->is_smcd && !smcr_link_hold(conn->lnk))
-+		return SMC_CLC_DECL_NOACTLINK;
-+
- 	conn->freed = 0;
- 	conn->local_tx_ctrl.common.type = SMC_CDC_MSG_TYPE;
- 	conn->local_tx_ctrl.len = SMC_WR_TX_SIZE;
-diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
-index 4cb03e9..9e2f67d 100644
---- a/net/smc/smc_core.h
-+++ b/net/smc/smc_core.h
-@@ -528,9 +528,9 @@ void smc_rtoken_set2(struct smc_link_group *lgr, int rtok_idx, int link_id,
- int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
- 		   u8 link_idx, struct smc_init_info *ini);
- void smcr_link_clear(struct smc_link *lnk, bool log);
--void smcr_link_hold(struct smc_link *lnk);
-+bool smcr_link_hold(struct smc_link *lnk);
- void smcr_link_put(struct smc_link *lnk);
--void smc_switch_link_and_count(struct smc_connection *conn,
-+bool smc_switch_link_and_count(struct smc_connection *conn,
- 			       struct smc_link *to_lnk);
- int smcr_buf_map_lgr(struct smc_link *lnk);
- int smcr_buf_reg_lgr(struct smc_link *lnk);
+To explain this dependency and to get reviews, I had earlier posted all
+three of these as an RFC[1], this can be seen for understanding the
+dependencies.
+
+I then posted the remoteproc[2] and soc[3] series seperately to their
+respective trees.
+
+[1] https://lore.kernel.org/all/20220406094358.7895-1-p-mohan@ti.com/
+[2] https://patchwork.kernel.org/project/linux-remoteproc/cover/20220418104118.12878-1-p-mohan@ti.com/
+[3] https://patchwork.kernel.org/project/linux-remoteproc/cover/20220418123004.9332-1-p-mohan@ti.com/
+
+Thanks and Regards,
+Puranjay Mohan
+
+Puranjay Mohan (1):
+  dt-bindings: net: Add ICSSG Ethernet Driver bindings
+
+Roger Quadros (1):
+  net: ti: icssg-prueth: Add ICSSG ethernet driver
+
+ .../bindings/net/ti,icssg-prueth.yaml         |  174 ++
+ drivers/net/ethernet/ti/Kconfig               |   15 +
+ drivers/net/ethernet/ti/Makefile              |    3 +
+ drivers/net/ethernet/ti/icssg_classifier.c    |  375 ++++
+ drivers/net/ethernet/ti/icssg_config.c        |  443 ++++
+ drivers/net/ethernet/ti/icssg_config.h        |  200 ++
+ drivers/net/ethernet/ti/icssg_ethtool.c       |  301 +++
+ drivers/net/ethernet/ti/icssg_mii_cfg.c       |  104 +
+ drivers/net/ethernet/ti/icssg_mii_rt.h        |  151 ++
+ drivers/net/ethernet/ti/icssg_prueth.c        | 1891 +++++++++++++++++
+ drivers/net/ethernet/ti/icssg_prueth.h        |  247 +++
+ drivers/net/ethernet/ti/icssg_switch_map.h    |  183 ++
+ include/linux/pruss.h                         |    1 +
+ 13 files changed, 4088 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+ create mode 100644 drivers/net/ethernet/ti/icssg_classifier.c
+ create mode 100644 drivers/net/ethernet/ti/icssg_config.c
+ create mode 100644 drivers/net/ethernet/ti/icssg_config.h
+ create mode 100644 drivers/net/ethernet/ti/icssg_ethtool.c
+ create mode 100644 drivers/net/ethernet/ti/icssg_mii_cfg.c
+ create mode 100644 drivers/net/ethernet/ti/icssg_mii_rt.h
+ create mode 100644 drivers/net/ethernet/ti/icssg_prueth.c
+ create mode 100644 drivers/net/ethernet/ti/icssg_prueth.h
+ create mode 100644 drivers/net/ethernet/ti/icssg_switch_map.h
+
 -- 
-1.8.3.1
+2.17.1
 
