@@ -2,74 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 591CE51E092
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 23:01:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 365B351E0B8
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 23:06:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444313AbiEFVFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 17:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59338 "EHLO
+        id S1444087AbiEFVKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 17:10:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386740AbiEFVFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 17:05:31 -0400
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D42E67D2A;
-        Fri,  6 May 2022 14:01:47 -0700 (PDT)
-Received: by mail-io1-xd2f.google.com with SMTP id e194so9348844iof.11;
-        Fri, 06 May 2022 14:01:47 -0700 (PDT)
+        with ESMTP id S1358746AbiEFVKe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 17:10:34 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD7406EC7C
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 14:06:50 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id iq2-20020a17090afb4200b001d93cf33ae9so11832649pjb.5
+        for <netdev@vger.kernel.org>; Fri, 06 May 2022 14:06:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=1YZT8Q5gNPdhz2HKcCZACwGlpa3VPKGgoNpznG8DFQ0=;
-        b=izKO7nbMwlnej8sDjsX1Kx9zFvAM8LzHFHHc+t+TfIv9ivhXrTaviRvKNmKLh0BYug
-         gG216cohLbLuqkS+AVVQ1W6RSKxZY43s0Esua2tjB/2q4DyiUIFAUC9uf0h0jcmG5nri
-         TRd7EivPenyKB8p1WsO0pVJAnSoN02PeZh3MVXEDoyA1YItQQDjU9/GIHM7KebsccJ/k
-         sNh0horTbWmC/ZXx4SJ99uLbiBtiVqRwUUjRkgnLZ0tnNVn7trMF28vwkRuDpQkm0b0b
-         7JbZ5vgv3kv79fUC5ghAyfhA1mct8qvdpRlPYzpbrByqq1uClylgxOGGwLSrlP1QzlIL
-         0TTQ==
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=coTvZIUv4dZyUUzlr20LuUwIrnLYAjDeVuyK78f4y1E=;
+        b=I4BGJ8NRMg2K0xi8Py7Kl9/ZeJXat2KH2ilJEBHetgxR5evYcboIYAmaRhQoVr+Cde
+         mKQ/jnPQdCl4oRhae90qwn7tPgXhBX2W1rvqulEPbEq8mnOD7cYypVock1GBFP2Rx4pI
+         nyitDkfjxK4N9x7n+h69vEnTreBx/2F+9Hfe0RIoGI5/pnbo5YQwPKYSpZV1QF18Am7F
+         CBfnySOAgKvpRGvC5ANZEzNACsm7qKznhJH3Dy+k8++Sx57n7wIAkOXuVdbk4eChmpQN
+         D7GPPpFkHAEW4qeERLPKCwxgNzDft0x9Kma81gAhRQ/aAkRpW3k1/3Jt0CScVNeUZsAT
+         pPIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=1YZT8Q5gNPdhz2HKcCZACwGlpa3VPKGgoNpznG8DFQ0=;
-        b=1wKH6wA+DybzNyr0V0ixYuE2/xfytWTsmT8Qkv45Ky+CAxbuwajOo3cPftxBRecMMO
-         ifXx5TEF6adjgFIDr9nmjWHLojYfunWejKrbr2CBwVg0HYog4tu7YsQ0Ru8id/KWkzVX
-         PULLQDSTTkCLixblC0DNDZVH7MOEdISdcFJ8s5ButmXe5XXydh3ht3xdTBtfcPHs3dSJ
-         JxPT1Plsc/wmW0FgN0JSh3q7NUYi0a5ffg/kxa0L/I48g72AbZHFMXZobktuNw1Ykwrp
-         EzEOkRQL1A6geC+1AvPpS3VhtjJFugg/6TdLQjWfq3pejyplAc8MbJE5fm11z/KTVDaX
-         k5fg==
-X-Gm-Message-State: AOAM533FooMdP9Ue/AmtDngTLiPKbmPCa9eDwgRUBMKJEdwPNsdpiERx
-        innDwbKh74c4njrOaaXA6TtnpBe48E1p4cTZT38=
-X-Google-Smtp-Source: ABdhPJwd4wUYX8+IWkqoEimKTpfwS/3lXAvq8zfZnEvIJyoTUy27SqnBGylGFnellmYWJIlFEvAgnmpiT9uzvzWxgGs=
-X-Received: by 2002:a5e:8e42:0:b0:657:bc82:64e5 with SMTP id
- r2-20020a5e8e42000000b00657bc8264e5mr2032977ioo.112.1651870906577; Fri, 06
- May 2022 14:01:46 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220426140924.3308472-1-pulehui@huawei.com> <20220426140924.3308472-2-pulehui@huawei.com>
- <CAEf4BzYvGaskrquK1hsKv6h7iz0NXWCNYn_zJEHvYUBYC=2UoA@mail.gmail.com> <f1777267-7904-e993-24f9-8071cd4b5bf7@huawei.com>
-In-Reply-To: <f1777267-7904-e993-24f9-8071cd4b5bf7@huawei.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 6 May 2022 14:01:35 -0700
-Message-ID: <CAEf4BzZ-eDcdJZgJ+Np7Y=V-TVjDDvOMqPwzKjyWrh=i5juv4w@mail.gmail.com>
-Subject: Re: [PATCH -next 1/2] bpf: Unify data extension operation of
- jited_ksyms and jited_linfo
-To:     Pu Lehui <pulehui@huawei.com>
-Cc:     bpf <bpf@vger.kernel.org>, linux-riscv@lists.infradead.org,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Luke Nelson <luke.r.nels@gmail.com>,
-        Xi Wang <xi.wang@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=coTvZIUv4dZyUUzlr20LuUwIrnLYAjDeVuyK78f4y1E=;
+        b=V4iEab5+j7DYNeXBr6fK5jCwYBXT51+2O/o8OO69iJ3Tzfj1bpBw7XLSfwtgFu4aLu
+         vGGhSJJXkU6ppPEV1a3WvRS82IZnmspJMikD1GeU9QyUXlfCiqzrB1vOs3rGJaV/wuWh
+         xNIlqehQHotht/PKWHiJvMcXajE3P+Vcz99ksyVi1N9YbXXwZbiKAvDhHa6C8KhzC43s
+         3pHcuHCelCVwdPM8f2LdMq/PUpI0So0wEhZH1/XYnZ2g6sx0UvixTYnI9/o3tmpUAcDh
+         gHqyGU7c/hBYYooUVDoSZUtQMdACWv0dd4Gs5Pn5UFtKoFuyxGrgk3jVt5LFxhoOqvpR
+         Xd/g==
+X-Gm-Message-State: AOAM531jLntm5cKn40A2NGe3fvX+I6zjo1FmztLqMAZ6sp3s845R429G
+        Xs7/W2PYpqM1pvXWrytUgsA=
+X-Google-Smtp-Source: ABdhPJyigKdgema/jPUWB9MKJgY9/ZZIDGrBe3d/Fk6Csr2nXQ+FHiSiQzleFP9sBZlr9xw/p25gAg==
+X-Received: by 2002:a17:902:d4c2:b0:15e:aa9c:dbad with SMTP id o2-20020a170902d4c200b0015eaa9cdbadmr5637894plg.5.1651871210252;
+        Fri, 06 May 2022 14:06:50 -0700 (PDT)
+Received: from [192.168.0.128] ([98.97.39.30])
+        by smtp.googlemail.com with ESMTPSA id 4-20020a620604000000b0050dc76281d5sm3881662pfg.175.2022.05.06.14.06.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 14:06:49 -0700 (PDT)
+Message-ID: <b75489431902bd73fcefd4da2e81e39eec8cc667.camel@gmail.com>
+Subject: Re: [PATCH v4 net-next 07/12] ipv6: add IFLA_GRO_IPV6_MAX_SIZE
+From:   Alexander H Duyck <alexander.duyck@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Date:   Fri, 06 May 2022 14:06:47 -0700
+In-Reply-To: <20220506153048.3695721-8-eric.dumazet@gmail.com>
+References: <20220506153048.3695721-1-eric.dumazet@gmail.com>
+         <20220506153048.3695721-8-eric.dumazet@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.4 (3.40.4-3.fc34) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -80,224 +74,124 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Apr 28, 2022 at 2:47 AM Pu Lehui <pulehui@huawei.com> wrote:
->
-> Hi Andrii,
->
-> On 2022/4/28 6:33, Andrii Nakryiko wrote:
-> > On Tue, Apr 26, 2022 at 6:40 AM Pu Lehui <pulehui@huawei.com> wrote:
-> >>
-> >> We found that 32-bit environment can not print bpf line info due
-> >> to data inconsistency between jited_ksyms[0] and jited_linfo[0].
-> >>
-> >> For example:
-> >> jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
-> >>
-> >> We know that both of them store bpf func address, but due to the
-> >> different data extension operations when extended to u64, they may
-> >> not be the same. We need to unify the data extension operations of
-> >> them.
-> >>
-> >> Signed-off-by: Pu Lehui <pulehui@huawei.com>
-> >> ---
-> >>   kernel/bpf/syscall.c                         |  5 ++++-
-> >>   tools/lib/bpf/bpf_prog_linfo.c               |  8 ++++----
-> >>   tools/testing/selftests/bpf/prog_tests/btf.c | 18 +++++++++---------
-> >
-> > please split kernel changes, libbpf changes, and selftests/bpf changes
-> > into separate patches
-> Thanks for your review. Alright, I will split it next time.
->
-> >
-> >>   3 files changed, 17 insertions(+), 14 deletions(-)
-> >>
-> >> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> >> index e9621cfa09f2..4c417c806d92 100644
-> >> --- a/kernel/bpf/syscall.c
-> >> +++ b/kernel/bpf/syscall.c
-> >> @@ -3868,13 +3868,16 @@ static int bpf_prog_get_info_by_fd(struct file *file,
-> >>                  info.nr_jited_line_info = 0;
-> >>          if (info.nr_jited_line_info && ulen) {
-> >>                  if (bpf_dump_raw_ok(file->f_cred)) {
-> >> +                       unsigned long jited_linfo_addr;
-> >>                          __u64 __user *user_linfo;
-> >>                          u32 i;
-> >>
-> >>                          user_linfo = u64_to_user_ptr(info.jited_line_info);
-> >>                          ulen = min_t(u32, info.nr_jited_line_info, ulen);
-> >>                          for (i = 0; i < ulen; i++) {
-> >> -                               if (put_user((__u64)(long)prog->aux->jited_linfo[i],
-> >> +                               jited_linfo_addr = (unsigned long)
-> >> +                                       prog->aux->jited_linfo[i];
-> >> +                               if (put_user((__u64) jited_linfo_addr,
-> >>                                               &user_linfo[i]))
-> >>                                          return -EFAULT;
-> >>                          }
-> Please let me to explain more detail, sorry if I'm wordy.
-> The main reason that 32-bit env does not print bpf line info is here:
->
-> kernel/bpf/syscall.c:
-> bpf_prog_get_info_by_fd {
->         ...
->         user_ksyms = u64_to_user_ptr(info.jited_ksyms);
->         ksym_addr = (unsigned long)prog->aux->func[i]->bpf_func;
->         if (put_user((u64) ksym_addr, &user_ksyms[i]))
->         ...
->
->         user_linfo = u64_to_user_ptr(info.jited_line_info);
->         if (put_user((__u64)(long)prog->aux->jited_linfo[i],
->                      &user_linfo[i]))
->         ...
-> }
->
-> In 32-bit env, ksym_addr and prog->aux->jited_linfo[0] both store the
-> 32-bit address of bpf_func, but the first one is zero-extension to u64,
-> while the other is sign-extension to u64.
-> For example:
->         prog->aux->func[0]->bpf_func = 0xb800067c
->         user_ksyms[0] = 0xb800067c, user_linfo[0] = 0xffffffffb800067c
->
-> Both zero-extension and sign-extension are fine, but if operating
-> directly between them without casting in 32-bit env, there will have
-> some potential problems. Such as:
->
-> tools/lib/bpf/bpf_prog_linfo.c:
-> dissect_jited_func {
->         ...
->         if (ksym_func[0] != *jited_linfo) //always missmatch in 32 env
->                 goto errout;
->         ...
->         if (ksym_func[f] == *jited_linfo) {
->         ...
->         last_jited_linfo = *jited_linfo;
->         if (last_jited_linfo - ksym_func[f - 1] + 1 >
->             ksym_len[f - 1])
->         ...
-> }
->
-> We could cast them to 32-bit data type, but I think unify data extension
-> operation will be better.
->
-> >> diff --git a/tools/lib/bpf/bpf_prog_linfo.c b/tools/lib/bpf/bpf_prog_linfo.c
-> >> index 5c503096ef43..5cf41a563ef5 100644
-> >> --- a/tools/lib/bpf/bpf_prog_linfo.c
-> >> +++ b/tools/lib/bpf/bpf_prog_linfo.c
-> >> @@ -127,7 +127,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
-> >>          prog_linfo->raw_linfo = malloc(data_sz);
-> >>          if (!prog_linfo->raw_linfo)
-> >>                  goto err_free;
-> >> -       memcpy(prog_linfo->raw_linfo, (void *)(long)info->line_info, data_sz);
-> >> +       memcpy(prog_linfo->raw_linfo, (void *)(unsigned long)info->line_info, data_sz);
-> >>
-> >>          nr_jited_func = info->nr_jited_ksyms;
-> >>          if (!nr_jited_func ||
-> >> @@ -148,7 +148,7 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
-> >>          if (!prog_linfo->raw_jited_linfo)
-> >>                  goto err_free;
-> >>          memcpy(prog_linfo->raw_jited_linfo,
-> >> -              (void *)(long)info->jited_line_info, data_sz);
-> >> +              (void *)(unsigned long)info->jited_line_info, data_sz);
-> >>
-> >>          /* Number of jited_line_info per jited func */
-> >>          prog_linfo->nr_jited_linfo_per_func = malloc(nr_jited_func *
-> >> @@ -166,8 +166,8 @@ struct bpf_prog_linfo *bpf_prog_linfo__new(const struct bpf_prog_info *info)
-> >>                  goto err_free;
-> >>
-> >>          if (dissect_jited_func(prog_linfo,
-> >> -                              (__u64 *)(long)info->jited_ksyms,
-> >> -                              (__u32 *)(long)info->jited_func_lens))
-> >> +                              (__u64 *)(unsigned long)info->jited_ksyms,
-> >> +                              (__u32 *)(unsigned long)info->jited_func_lens))
-> >
-> > so I'm trying to understand how this is changing anything for 32-bit
-> > architecture and I must be missing something, sorry if I'm being
-> > dense. The example you used below
-> >
-> > jited_kyms[0] = 0xb800067c, jited_linfo[0] = 0xffffffffb800067c
-> >
-> > Wouldn't (unsigned long)0xffffffffb800067c == (long)0xffffffffb800067c
-> > == 0xb800067c ?
-> If I understand correctly, info->jited_ksyms or info->jited_func_lens is
-> just a u64 address that point to the corresponding space. The bpf_func
-> address is stored in the item of info->jited_ksyms but not
-> info->jited_ksyms.
->
-> And here, I may have misled you. Both (__u64 *)(long)info->jited_ksyms
-> and (__u64 *)(unsigned long)info->jited_ksyms are the same, I just want
-> to unify the style. I will remove them in v2.
->
-> Please let me know if there is any problem with my understanding.
->
+On Fri, 2022-05-06 at 08:30 -0700, Eric Dumazet wrote:
+> From: Coco Li <lixiaoyan@google.com>
+> 
+> Enable GRO to have IPv6 specific limit for max packet size.
+> 
+> This patch introduces new dev->gro_ipv6_max_size
+> that is modifiable through ip link.
+> 
+> ip link set dev eth0 gro_ipv6_max_size 185000
+> 
+> Note that this value is only considered if bigger than
+> gro_max_size, and for non encapsulated TCP/ipv6 packets.
+> 
+> Signed-off-by: Coco Li <lixiaoyan@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Thanks for explanation. I guess in my mind I was always sign extending
-32-bit to 64-bit, but I think memory addresses are conceptually
-unsigned, so (unsigned long) casting makes more sense, and u64
-representation of 0xb800067c should be 0x00000000b800067c and not
-0xffffffffb800067c. So your changes make sense, and I agree that
-libbpf-side changes for conceptual uniformity are also good.
+This is another spot where it doesn't make much sense to me to add yet
+another control. Instead it would make much more sense to simply remove
+the cap from the existing control and simply add a check that caps the
+non-IPv6 protocols at GRO_MAX_SIZE.
+
+> ---
+>  include/linux/netdevice.h          |  3 +++
+>  include/uapi/linux/if_link.h       |  1 +
+>  net/core/dev.c                     |  1 +
+>  net/core/gro.c                     | 20 ++++++++++++++++++--
+>  net/core/rtnetlink.c               | 22 ++++++++++++++++++++++
+>  tools/include/uapi/linux/if_link.h |  1 +
+>  6 files changed, 46 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 47f413dac12e901700045f4b73d47ecdca0f4f3c..df12c9843d94cb847e0ce5ba1b3b36bde7d476ed 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -1962,6 +1962,8 @@ enum netdev_ml_priv_type {
+>   *			keep a list of interfaces to be deleted.
+>   *	@gro_max_size:	Maximum size of aggregated packet in generic
+>   *			receive offload (GRO)
+> + *	@gro_ipv6_max_size:	Maximum size of aggregated packet in generic
+> + *				receive offload (GRO), for IPv6
+>   *
+>   *	@dev_addr_shadow:	Copy of @dev_addr to catch direct writes.
+>   *	@linkwatch_dev_tracker:	refcount tracker used by linkwatch.
+> @@ -2154,6 +2156,7 @@ struct net_device {
+>  	int			napi_defer_hard_irqs;
+>  #define GRO_MAX_SIZE		65536
+>  	unsigned int		gro_max_size;
+> +	unsigned int		gro_ipv6_max_size;
+>  	rx_handler_func_t __rcu	*rx_handler;
+>  	void __rcu		*rx_handler_data;
+>  
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index aa05fc9cc23f4ccf92f4cbba57f43472749cd42a..9ece3a391105c171057cc491c1458ee8a45e07e0 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -371,6 +371,7 @@ enum {
+>  	IFLA_TSO_MAX_SIZE,
+>  	IFLA_TSO_MAX_SEGS,
+>  	IFLA_GSO_IPV6_MAX_SIZE,
+> +	IFLA_GRO_IPV6_MAX_SIZE,
+>  
+>  	__IFLA_MAX
+>  };
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index aa8757215b2a9f14683f95086732668eb99a875b..582b7fe052a6fb06437f95bd6a451b79e188cc57 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -10608,6 +10608,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+>  	dev->tso_max_size = TSO_LEGACY_MAX_SIZE;
+>  	dev->tso_max_segs = TSO_MAX_SEGS;
+>  	dev->gso_ipv6_max_size = GSO_MAX_SIZE;
+> +	dev->gro_ipv6_max_size = GRO_MAX_SIZE;
+>  
+>  	dev->upper_level = 1;
+>  	dev->lower_level = 1;
+> diff --git a/net/core/gro.c b/net/core/gro.c
+> index 78110edf5d4b36d2fa6f8a2676096efe0112aa0e..8b35403dd7e909a8d7df591d952a4600c13f360b 100644
+> --- a/net/core/gro.c
+> +++ b/net/core/gro.c
+> @@ -161,11 +161,27 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+>  	unsigned int new_truesize;
+>  	struct sk_buff *lp;
+>  
+> +	if (unlikely(NAPI_GRO_CB(skb)->flush))
+> +		return -E2BIG;
+> +
+>  	/* pairs with WRITE_ONCE() in netif_set_gro_max_size() */
+>  	gro_max_size = READ_ONCE(p->dev->gro_max_size);
+>  
+> -	if (unlikely(p->len + len >= gro_max_size || NAPI_GRO_CB(skb)->flush))
+> -		return -E2BIG;
+
+So if we just overwrite the existing gro_max_size we could skip the
+changes above and all the extra netlink overhead.
+
+> +	if (unlikely(p->len + len >= gro_max_size)) {
+> +		/* pairs with WRITE_ONCE() in netif_set_gro_ipv6_max_size() */
+> +		unsigned int gro6_max_size = READ_ONCE(p->dev->gro_ipv6_max_size);
+> +
+> +		if (gro6_max_size > gro_max_size &&
+> +		    p->protocol == htons(ETH_P_IPV6) &&
+> +		    skb_headroom(p) >= sizeof(struct hop_jumbo_hdr) &&
+> +		    ipv6_hdr(p)->nexthdr == IPPROTO_TCP &&
+> +		    !p->encapsulation)
+> +			gro_max_size = gro6_max_size;
+> +
+> +		if (p->len + len >= gro_max_size)
+> +			return -E2BIG;
+> +	}
+> +
+
+Instead all we would need to do is add an extra section here along the
+lines of:
+	if (p->len + len > GRO_MAX_SIZE &&
+	    (p->protocol != htons(ETH_P_IPV6) ||
+	     skb_headroom(p) < sizeof(struct hop_jumbo_hdr) ||
+	     ipv6_hdr(p)->nexthdr != IPPROTO_TCP ||
+	     p->encapsulation)
+		return -E2BIG;
 
 
-> Thanks,
-> Lehui
-> >
-> > isn't sizeof(long) == sizeof(void*) == 4?
-> >
-> > It would be nice if you could elaborate a bit more on what problems
-> > did you see in practice?
-> >
-> >>                  goto err_free;
-> >>
-> >>          return prog_linfo;
-> >> diff --git a/tools/testing/selftests/bpf/prog_tests/btf.c b/tools/testing/selftests/bpf/prog_tests/btf.c
-> >> index 84aae639ddb5..d9ba1ec1d5b3 100644
-> >> --- a/tools/testing/selftests/bpf/prog_tests/btf.c
-> >> +++ b/tools/testing/selftests/bpf/prog_tests/btf.c
-> >> @@ -6451,8 +6451,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
-> >>                    info.nr_jited_line_info, jited_cnt,
-> >>                    info.line_info_rec_size, rec_size,
-> >>                    info.jited_line_info_rec_size, jited_rec_size,
-> >> -                 (void *)(long)info.line_info,
-> >> -                 (void *)(long)info.jited_line_info)) {
-> >> +                 (void *)(unsigned long)info.line_info,
-> >> +                 (void *)(unsigned long)info.jited_line_info)) {
-> >>                  err = -1;
-> >>                  goto done;
-> >>          }
-> >> @@ -6500,8 +6500,8 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
-> >>          }
-> >>
-> >>          if (CHECK(jited_linfo[0] != jited_ksyms[0],
-> >> -                 "jited_linfo[0]:%lx != jited_ksyms[0]:%lx",
-> >> -                 (long)(jited_linfo[0]), (long)(jited_ksyms[0]))) {
-> >> +                 "jited_linfo[0]:%llx != jited_ksyms[0]:%llx",
-> >> +                 jited_linfo[0], jited_ksyms[0])) {
-> >>                  err = -1;
-> >>                  goto done;
-> >>          }
-> >> @@ -6519,16 +6519,16 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
-> >>                  }
-> >>
-> >>                  if (CHECK(jited_linfo[i] <= jited_linfo[i - 1],
-> >> -                         "jited_linfo[%u]:%lx <= jited_linfo[%u]:%lx",
-> >> -                         i, (long)jited_linfo[i],
-> >> -                         i - 1, (long)(jited_linfo[i - 1]))) {
-> >> +                         "jited_linfo[%u]:%llx <= jited_linfo[%u]:%llx",
-> >> +                         i, jited_linfo[i],
-> >> +                         i - 1, (jited_linfo[i - 1]))) {
-> >>                          err = -1;
-> >>                          goto done;
-> >>                  }
-> >>
-> >>                  if (CHECK(jited_linfo[i] - cur_func_ksyms > cur_func_len,
-> >> -                         "jited_linfo[%u]:%lx - %lx > %u",
-> >> -                         i, (long)jited_linfo[i], (long)cur_func_ksyms,
-> >> +                         "jited_linfo[%u]:%llx - %llx > %u",
-> >> +                         i, jited_linfo[i], cur_func_ksyms,
-> >>                            cur_func_len)) {
-> >>                          err = -1;
-> >>                          goto done;
-> >> --
-> >> 2.25.1
-> >>
-> > .
-> >
