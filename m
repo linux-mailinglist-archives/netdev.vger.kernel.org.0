@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 529E351DC32
+	by mail.lfdr.de (Postfix) with ESMTP id 9D74C51DC33
 	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 17:32:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379604AbiEFPgC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 11:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54580 "EHLO
+        id S1346346AbiEFPf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 11:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442986AbiEFPf3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 11:35:29 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A0E6E8D6
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 08:31:21 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id n18so7776403plg.5
-        for <netdev@vger.kernel.org>; Fri, 06 May 2022 08:31:21 -0700 (PDT)
+        with ESMTP id S1442941AbiEFPfa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 11:35:30 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB53A6D397
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 08:31:22 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id p6so7334972pjm.1
+        for <netdev@vger.kernel.org>; Fri, 06 May 2022 08:31:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=V+KJgJWC/mZzQ1xI2xAF94ZgqLkHsDJA4L2W1AotAhQ=;
-        b=EEDm61/uLum5dW3PKEQD+dtsH7CvHTMJEVpZi4tdMofKeQHSOU4qazS+I0NhqqA5bX
-         VENF7gjSm9t79yNHnuDAuh1qTwvufH1B4XVSkLU1YwCYx5acj5y2C7ga5Zz11iXVbm1p
-         Q+bCWnRhZdJnd3s25KCM/Bh8f/KgaWjbkgmnhDTHESKkTMQpssbsPBDkzROiAnMgovKe
-         KV63dOmjFS0VL+MKiOllSq2r0zPocpgZYhzTyx8M3TcqspqC4KbR0v2tOAUl1k1GhjUu
-         m9QY4Cxt1ihd+aw8FhuDf2XamR1OWeJ7yGT4Y7mjUjoYquxClajnsvFRh3BxNAB7GX5N
-         /0HQ==
+        bh=/P9EWKSxN2uCXkVodpKaHqSst+cMbWDBm9KaQ/M+xK8=;
+        b=TOonhpbWODRKCjtHXI++ZqipYfxS00shKPb04NrNXXWvgjy3rTJYBegCjhhLMyAIFp
+         /PvLUTUOBVOsqNhyBskQ4evyGGTEsAQTSExEMShKM7R3TIE6gOj2wsV7tY6AYsKLUxkY
+         MSkj7DkxgqcdabNUi81eignY3Uy7dcDYo8jOESh/7CGhN8BJnh1hQiee10jz33TLaF9B
+         /MowMLwG03bkrpniuv/n2r44dRCrAEdoFOIP5X3JojT76MowYGnYQLRKrBTLEJRF/ocY
+         WVyVVaQRA4B75dAV0+4hm0Gfn7AoPs6kwQ33G2J4EHvQSGsc3W4k5UcOPhuClqWRvCqU
+         jK+g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=V+KJgJWC/mZzQ1xI2xAF94ZgqLkHsDJA4L2W1AotAhQ=;
-        b=AEkHyNLEstm1aJZ62jjE9XmB/yyZekbVMDfBQRERu+rYqQ0CvBIUO1pfgjZxwXniXT
-         dTlsiGuENSbR8EnQoVThQVHLxRywY+sGEYkPfqA8ZhtTGamKhh/D4e4XKfEIaOPdeVw6
-         /vD44DO0eu4pXZo+LkCp/+SRapJHaE1k3Yqhl/Ap3Zyu/Xi0ZrAvQi8Dry9seUdFVhR0
-         vIt5DQVoIUi57YECa6JtMSpGHlIr4HONSgv8tVcJ/5TjmOBs0PzQCts/P7rFpxzXT4l4
-         AVjDjmrVdPQ5+DVRO1GeGxloK7yTQwYjfRPH/sZvJRfmyeSYz9xRhKz6Dzc/MBbS8FM3
-         SscA==
-X-Gm-Message-State: AOAM530sRWgnFb67HmpfG1mrSGgsPpxDtdhztszlQS+9myxqXt94/ZDY
-        R2Xt3sn2PA1RpIG5Qjpz0KqAhBgGeAM=
-X-Google-Smtp-Source: ABdhPJzB159EEAJZ+RXe8VhZdIg/qhI/qnbzccMKPkAuwNmFuiorUIOip30U6Cy5pTxrAtflcaP+kg==
-X-Received: by 2002:a17:902:b78c:b0:15d:2431:a806 with SMTP id e12-20020a170902b78c00b0015d2431a806mr4210960pls.77.1651851080826;
-        Fri, 06 May 2022 08:31:20 -0700 (PDT)
+        bh=/P9EWKSxN2uCXkVodpKaHqSst+cMbWDBm9KaQ/M+xK8=;
+        b=dPjoOJBRKHOm/j9Uzwvx6chold4kC+WkY8rPXg9DfwPOiAaEu8TSjNLvc+NzaoOE4N
+         cIQCgX5aSqwQ2vBvyiphWkc/+WLRoucuVZ1tmG5dzgs2Uql4QZ2D2p09Z9ViHazlm60W
+         WgtDrWHStj9BYAZHWXjqhy51ozFhKz1qUM+YGxULvMjinPXSD076ky/7wL74nj7XU8rx
+         1VdqiUnG8dEfKba52+0ShX53cTnut+18vIJrK242ufcmpD7Xr8P2oYE2W3t76rJoptEb
+         SOScr3habAICkFk71jHHkQ0uc5Z+3f0oxCSHVdaYNCPtoFZXa8Ktd1TLk9PozRszbLwT
+         BJTA==
+X-Gm-Message-State: AOAM533L+GBXzt/+BVxff/d0MlNiCQixzHcxbGp3SfSw9SZNYAGdy11y
+        TbMZ6vGbgxuul3H7YmxBdx0=
+X-Google-Smtp-Source: ABdhPJxOr+r7UUWXXdqgmZbRIWTCPD1mM3ksalB9WQ9vOlTVqANHMBkrrxflD7bkZ44p3PAqybWiZQ==
+X-Received: by 2002:a17:902:d2d1:b0:15e:9b06:28b3 with SMTP id n17-20020a170902d2d100b0015e9b0628b3mr4284761plc.148.1651851082514;
+        Fri, 06 May 2022 08:31:22 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:709e:d3d8:321b:df52])
-        by smtp.gmail.com with ESMTPSA id w4-20020a170902d70400b0015e8d4eb1bfsm1918612ply.9.2022.05.06.08.31.19
+        by smtp.gmail.com with ESMTPSA id w4-20020a170902d70400b0015e8d4eb1bfsm1918612ply.9.2022.05.06.08.31.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 08:31:20 -0700 (PDT)
+        Fri, 06 May 2022 08:31:22 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,9 +54,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v4 net-next 09/12] net: loopback: enable BIG TCP packets
-Date:   Fri,  6 May 2022 08:30:45 -0700
-Message-Id: <20220506153048.3695721-10-eric.dumazet@gmail.com>
+Subject: [PATCH v4 net-next 10/12] veth: enable BIG TCP packets
+Date:   Fri,  6 May 2022 08:30:46 -0700
+Message-Id: <20220506153048.3695721-11-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
 In-Reply-To: <20220506153048.3695721-1-eric.dumazet@gmail.com>
 References: <20220506153048.3695721-1-eric.dumazet@gmail.com>
@@ -78,40 +78,25 @@ Set the driver limit to 512 KB per TSO ipv6 packet.
 
 This allows the admin/user to set a GSO ipv6 limit up to this value.
 
-Tested:
-
-ip link set dev lo gso_ipv6_max_size 200000
-netperf -H ::1 -t TCP_RR -l 100 -- -r 80000,80000 &
-
-tcpdump shows :
-
-18:28:42.962116 IP6 ::1 > ::1: HBH 40051 > 63780: Flags [P.], seq 3626480001:3626560001, ack 3626560001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 80000
-18:28:42.962138 IP6 ::1.63780 > ::1.40051: Flags [.], ack 3626560001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 0
-18:28:42.962152 IP6 ::1 > ::1: HBH 63780 > 40051: Flags [P.], seq 3626560001:3626640001, ack 3626560001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 80000
-18:28:42.962157 IP6 ::1.40051 > ::1.63780: Flags [.], ack 3626640001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 0
-18:28:42.962180 IP6 ::1 > ::1: HBH 40051 > 63780: Flags [P.], seq 3626560001:3626640001, ack 3626640001, win 17743, options [nop,nop,TS val 3771179265 ecr 3771179265], length 80000
-18:28:42.962214 IP6 ::1.63780 > ::1.40051: Flags [.], ack 3626640001, win 17743, options [nop,nop,TS val 3771179266 ecr 3771179265], length 0
-18:28:42.962228 IP6 ::1 > ::1: HBH 63780 > 40051: Flags [P.], seq 3626640001:3626720001, ack 3626640001, win 17743, options [nop,nop,TS val 3771179266 ecr 3771179265], length 80000
-18:28:42.962233 IP6 ::1.40051 > ::1.63780: Flags [.], ack 3626720001, win 17743, options [nop,nop,TS val 3771179266 ecr 3771179266], length 0
+ip link set dev veth10 gso_ipv6_max_size 200000
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- drivers/net/loopback.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/veth.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/loopback.c b/drivers/net/loopback.c
-index 720394c0639b20a2fd6262e4ee9d5813c02802f1..f504dd0817092d63f0e929500ec49cfdda562c4b 100644
---- a/drivers/net/loopback.c
-+++ b/drivers/net/loopback.c
-@@ -191,6 +191,8 @@ static void gen_lo_setup(struct net_device *dev,
- 	dev->netdev_ops		= dev_ops;
- 	dev->needs_free_netdev	= true;
- 	dev->priv_destructor	= dev_destructor;
-+
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index f474e79a774580e4cb67da44b5f0c796c3ce8abb..989248b0f0c64349494a54735bb5abac66a42a93 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -1647,6 +1647,7 @@ static void veth_setup(struct net_device *dev)
+ 	dev->hw_features = VETH_FEATURES;
+ 	dev->hw_enc_features = VETH_FEATURES;
+ 	dev->mpls_features = NETIF_F_HW_CSUM | NETIF_F_GSO_SOFTWARE;
 +	netif_set_tso_max_size(dev, 512 * 1024);
  }
  
- /* The loopback device is special. There is only one instance
+ /*
 -- 
 2.36.0.512.ge40c2bad7a-goog
 
