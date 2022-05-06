@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D332D51E18F
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 00:08:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B70E51E192
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 00:15:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387886AbiEFWMZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 18:12:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55344 "EHLO
+        id S1444681AbiEFWSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 18:18:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241939AbiEFWMX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 18:12:23 -0400
-Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A52965DA7D
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 15:08:39 -0700 (PDT)
-Received: by mail-yb1-xb2f.google.com with SMTP id y76so15173210ybe.1
-        for <netdev@vger.kernel.org>; Fri, 06 May 2022 15:08:39 -0700 (PDT)
+        with ESMTP id S241939AbiEFWSj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 18:18:39 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D5C06540F;
+        Fri,  6 May 2022 15:14:54 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id e3so9521370ios.6;
+        Fri, 06 May 2022 15:14:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=h8N8f/YMGzp0t9xBfRj+qQHogs+OoMAE9FozPFE9eKI=;
-        b=AHc06IaQEYE3EKoIKSZfhgE80WHFuoqTzPisu/wFvC++qmVtUdI8ILqhoqv+wQ95Z+
-         EMeG1P8kwgHjnljkOIUpKMrCk8fVSHgwYikU4+51bbvuISEzPRiEasDDvs18vY3cVgXQ
-         uRm9PZuZjnybJkniFXZmv4Ih7NP9M75G48ZbQ0GWxbDsYuKF5OBf6P+BDDZH95Wit6lP
-         E1VpMCY4U+XvvX4g8LoKXtl3wSJARhEsaoPX9DAMVEYLFuBuI1VoV287u7wmAk2Szk8O
-         +aI7ukOSYA+C7E4s+WpAEFACR/nwOKnSvtgGuH1zjfvGN9HgTgpLZMJTDybO8sxKU2j7
-         DSTQ==
+        bh=rCTLTbLP/HCPwEyRHnS4Xntt1B1zffntB8D6OmsmIYM=;
+        b=pg0/Yt3QJEJeyRkqIy1cKjUnl4Q5IC5OVFEgPVFVI9uYOt7Xmm7edvsl6gBEjCELEg
+         SnFEiHqFqtJNoimavdRivrQjd4ET896Y+7gS9WthGdnonHoggAlP9MkvbgbP6KcJMIQl
+         YiQ0o0q2L55cEB6cjE892PJ3+EiEAMxf9ocexcwjUGMYC//ZCMkg/ArE9S/uU5/bN94+
+         zToBvUNywhFlS719I9+9aq7K/fkCLLnebbKWxol21h11RibuL5bzBKeS/i2GsyXDmcIk
+         rBHYqK3W9jk/APsnpp+ivf6nQ8PcPYp76lKw6ULV4lYD7s1gQQ+RYnIi8T821cOhijoG
+         bRAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=h8N8f/YMGzp0t9xBfRj+qQHogs+OoMAE9FozPFE9eKI=;
-        b=SPAPn0QrEIhUxOeHgB1t8G89m80kZZkZ8+wQZdvHRa4PPLpYGzN7WEZiCilc+bBJNR
-         Zurbqp0rYRL0PSKMWOKOTo/7dpllC1wb9egzQv0iCCIJLjsf6HrCdYV8fGYMaVlVsHJL
-         g48Vb+OzAfUErdGkttDFSDU3mxejdB4/TrQdxYTqzjw4nn2J+/1yRAYYhQold+2gIOsM
-         YBZfPdGrAQIGt/qqWTG3CElNDuum2BQr799ox/+ATIG2/vCbMYthJsoLNFvy6Er4VRMX
-         kbJZsYDLi7VAMS9zRofwaOXc03w/nv7ZYdGtDEBoGkVLaaOLRb5DrlwoQ/odVMiFilCY
-         Fdqg==
-X-Gm-Message-State: AOAM530N5tQU53D1r6Vcl/mCfazV4S3sUUolAgUcwS95WaLO6Td+qfUu
-        zAP6HJJZ1Gj5/zk4f3s74N9aqHq5vMOaE9N3tF+uraF1e50ATAQw
-X-Google-Smtp-Source: ABdhPJyqybPDxnQ9/9xF4h3K9AttgVhDxjkvNPsCunwN4W/PXwR0A2TClE65HIlLh0EaH479ii6Rcgm7UC4YVrJl6rE=
-X-Received: by 2002:a25:6157:0:b0:645:8d0e:f782 with SMTP id
- v84-20020a256157000000b006458d0ef782mr4496220ybb.36.1651874918539; Fri, 06
- May 2022 15:08:38 -0700 (PDT)
+        bh=rCTLTbLP/HCPwEyRHnS4Xntt1B1zffntB8D6OmsmIYM=;
+        b=QE1ZPlHhmfmfyaUe41Zlp99F0TlYN5cqXwHXfxtk1cWEPrvMul4AMQr1kZ/bFK0D+q
+         RBsRgwxZO8Ydrs+Rc/NCdgGLOT7RwMOJH72Pa7Df+nKwNRRTGaKbo/at2/bhtUubhIJD
+         LSuuFT9OM2Feu7BZa2Lwy9WkcJT1RL+32+txfq5S5JHVaSCrThhDs5uwb0vWTQpJ4jnc
+         Afq+DOz83nXufHY3Nbb88h7O8/iNDTpXDYY4rfEp6s0jgt+08m0Zg8qsxF6ca0v91M7J
+         xr5y8dh0s+kXomn2D1YG9BiRgUf7cFEs6A5mWt1KZNbB4nWTLTU5Yw6SYmOwBW1jzVFX
+         xjUw==
+X-Gm-Message-State: AOAM5332SyDtiWvYTLnVv2Au1cdbR5oiox3VIDj4HJC5xQcWDTVyODht
+        qDDBr/1nUF+yFKnWMwH80AK7+xKjm7jV8h+a+QC9goWp
+X-Google-Smtp-Source: ABdhPJx6cH8/kFAVuNSsKGTXPt73jPWXP1ujELpoKsSM82Mr15WnMzNVpnAQdo4BtqYozrL8n+V7/jh3uk/FDntTVvk=
+X-Received: by 2002:a05:6638:33a1:b0:32b:8e2b:f9ba with SMTP id
+ h33-20020a05663833a100b0032b8e2bf9bamr2370798jav.93.1651875293774; Fri, 06
+ May 2022 15:14:53 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220506153048.3695721-1-eric.dumazet@gmail.com>
- <20220506153048.3695721-8-eric.dumazet@gmail.com> <b75489431902bd73fcefd4da2e81e39eec8cc667.camel@gmail.com>
- <CANn89iJW9GCUWBRtutv1=KHYn0Gpj8ue6bGWMO9LLGXqvgWhmQ@mail.gmail.com> <CAKgT0UdFqN5UuwoT683Rh=SsFfXMJxtkRu10WbFkqV7deObNtQ@mail.gmail.com>
-In-Reply-To: <CAKgT0UdFqN5UuwoT683Rh=SsFfXMJxtkRu10WbFkqV7deObNtQ@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 6 May 2022 15:08:27 -0700
-Message-ID: <CANn89iL7bjhVTtbhLGPJv=_srr_epVBe-ZroSDkWjFafxTat3Q@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 07/12] ipv6: add IFLA_GRO_IPV6_MAX_SIZE
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
+References: <20220503150410.2d9e88aa@rorschach.local.home>
+In-Reply-To: <20220503150410.2d9e88aa@rorschach.local.home>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 6 May 2022 15:14:43 -0700
+Message-ID: <CAEf4BzYJan2c0oy-eww++VC57ak=+QOt6a9SWUT1M__AKF8VSA@mail.gmail.com>
+Subject: Re: : [PATCH] ftrace/x86: Add FTRACE_MCOUNT_MAX_OFFSET to avoid
+ adding weak functions
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>, X86 ML <x86@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,84 +77,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 6, 2022 at 3:01 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
+On Tue, May 3, 2022 at 12:04 PM Steven Rostedt <rostedt@goodmis.org> wrote:
 >
-> On Fri, May 6, 2022 at 2:22 PM Eric Dumazet <edumazet@google.com> wrote:
-> >
-> > On Fri, May 6, 2022 at 2:06 PM Alexander H Duyck
-> > <alexander.duyck@gmail.com> wrote:
-> > >
-> > > On Fri, 2022-05-06 at 08:30 -0700, Eric Dumazet wrote:
-> > > > From: Coco Li <lixiaoyan@google.com>
-> > > >
-> > > > Enable GRO to have IPv6 specific limit for max packet size.
-> > > >
-> > > > This patch introduces new dev->gro_ipv6_max_size
-> > > > that is modifiable through ip link.
-> > > >
-> > > > ip link set dev eth0 gro_ipv6_max_size 185000
-> > > >
-> > > > Note that this value is only considered if bigger than
-> > > > gro_max_size, and for non encapsulated TCP/ipv6 packets.
-> > > >
-> > > > Signed-off-by: Coco Li <lixiaoyan@google.com>
-> > > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> > >
-> > > This is another spot where it doesn't make much sense to me to add yet
-> > > another control. Instead it would make much more sense to simply remove
-> > > the cap from the existing control and simply add a check that caps the
-> > > non-IPv6 protocols at GRO_MAX_SIZE.
-> >
-> > Can you please send a diff on top of our patch series ?
+> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
 >
-> I would rather not as it would essentially just be a revert of the two
-> problematic patches since what I am suggesting is significantly
-> smaller.
+> If an unused weak function was traced, it's call to fentry will still
+> exist, which gets added into the __mcount_loc table. Ftrace will use
+> kallsyms to retrieve the name for each location in __mcount_loc to display
+> it in the available_filter_functions and used to enable functions via the
+> name matching in set_ftrace_filter/notrace. Enabling these functions do
+> nothing but enable an unused call to ftrace_caller. If a traced weak
+> function is overridden, the symbol of the function would be used for it,
+> which will either created duplicate names, or if the previous function was
+> not traced, it would be incorrectly listed in available_filter_functions
+> as a function that can be traced.
 >
-> > It is kind of hard to see what you want, and _why_ you want this.
-> >
-> > Note that GRO_MAX_SIZE has been replaced by dev->gro_max_size last year.
+> This became an issue with BPF[1] as there are tooling that enables the
+> direct callers via ftrace but then checks to see if the functions were
+> actually enabled. The case of one function that was marked notrace, but
+> was followed by an unused weak function that was traced. The unused
+> function's call to fentry was added to the __mcount_loc section, and
+> kallsyms retrieved the untraced function's symbol as the weak function was
+> overridden. Since the untraced function would not get traced, the BPF
+> check would detect this and fail.
 >
-> I am using GRO_MAX_SIZE as a legacy value for everything that is not
-> IPv6. If it would help you could go back and take a look at Jakub's
-> patch series and see what he did with TSO_LEGACY_MAX_SIZE.
-
-Yes, I was the one suggesting this TSO_LEGACY_MAX_SIZE.
-
-> You could
-> think of my use here as GRO_LEGACY_MAX_SIZE. What I am doing is
-> capping all the non-ipv6/tcp flows at the default maximum limit for
-> legacy setups.
+> The real fix would be to fix kallsyms to not show address of weak
+> functions as the function before it. But that would require adding code in
+> the build to add function size to kallsyms so that it can know when the
+> function ends instead of just using the start of the next known symbol.
 >
-> > Yes, yet another control, but some people want more control than others I guess.
+> In the mean time, this is a work around. Add a FTRACE_MCOUNT_MAX_OFFSET
+> macro that if defined, ftrace will ignore any function that has its call
+> to fentry/mcount that has an offset from the symbol that is greater than
+> FTRACE_MCOUNT_MAX_OFFSET.
 >
-> Basically these patches are reducing functionality from an existing
-> control. The g[sr]o_max_size values were applied to all incoming or
-> outgoing traffic.
+> If CONFIG_HAVE_FENTRY is defined for x86, define FTRACE_MCOUNT_MAX_OFFSET
+> to zero, which will have ftrace ignore all locations that are not at the
+> start of the function.
+>
+> [1] https://lore.kernel.org/all/20220412094923.0abe90955e5db486b7bca279@kernel.org/
+>
+> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+> ---
+>  arch/x86/include/asm/ftrace.h |  5 ++++
+>  kernel/trace/ftrace.c         | 50 +++++++++++++++++++++++++++++++++--
+>  2 files changed, 53 insertions(+), 2 deletions(-)
+>
 
-Yes, and we need to change that, otherwise we are stuck at 65536,
-because legacy.
-
-> The patches are adding a special control that only applies to a subset of ipv6 traffic.
-
-Exactly. This is not an accident.
-
-> Instead of taking that route I
-> would rather have the max_size values allowed to exceed the legacy
-> limits, and in those cases that cannot support the new sizes we
-> default back to the legacy maxes.
-
-Please send a tested patch. I think it will break drivers.
-
-We spent months doing extensive tests, and I do not see any reason to spend more
-time on something that you suggest that I feel is wrong.
-
-> Doing that I feel like we would get
-> much more consistent behavior and if somebody is wanting to use these
-> values for their original intended purpose which was limiting the
-> traffic they will be able to affect all traffic, not just the
-> non-ipv6/tcp traffic.
-
-Some people (not us) want to add BIG-TCP with IPv4 as well in a future
-evolution.
+Thanks for investigating and fixing this! I guess we'll need ENDBR
+handling, but otherwise it looks good to me!
