@@ -2,55 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9370951D968
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 15:40:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BC2DE51D98B
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 15:43:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441829AbiEFNoa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 09:44:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
+        id S1441854AbiEFNrW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 09:47:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441828AbiEFNoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 09:44:25 -0400
-Received: from mail-ua1-x92e.google.com (mail-ua1-x92e.google.com [IPv6:2607:f8b0:4864:20::92e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE18F18;
-        Fri,  6 May 2022 06:40:33 -0700 (PDT)
-Received: by mail-ua1-x92e.google.com with SMTP id x11so2815019uao.2;
-        Fri, 06 May 2022 06:40:33 -0700 (PDT)
+        with ESMTP id S240638AbiEFNrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 09:47:21 -0400
+Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BE8D22BC9;
+        Fri,  6 May 2022 06:43:38 -0700 (PDT)
+Received: by mail-ua1-x931.google.com with SMTP id p1so2810018uak.1;
+        Fri, 06 May 2022 06:43:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CVxGfvIdylztEKYqHZTungXdeVR8eiJqsSdWXIBE3g4=;
-        b=XTOuxmzMuz3U4/5PMq3TnsW0JlFG0zetPXMJzm3TcnUxnDYYEfmCqw72YA3N/5eHTw
-         J2i6bX/dSoJiutUQwV7NBw3D5pS/ucKGG4DrF+X/qlUWujVUnS0zXUQ8KL4JOjWxtvTV
-         TX9kMMfcq3YM+XojNT8tVja581P8PYiR/8Oj0K0PC/I6lf7eACXCFvr2esEEmWddxX+o
-         Oti6g3Jv+WNilg7t1FlaloS8VyCoFYXHSAjIOGLPhvDOzDDTc5f2/NC9Nk4BSi45Fzvs
-         /+bHielUFBXpfQR45nfCPXIDDGteVbwmAruh4dQYbGJIguU4o/y2QNUMjC4bC/gUsg+m
-         7sDQ==
+         :cc;
+        bh=HQhBIk9ZDxRam1pPGjEuYg3pQxnTdOv2YFzBqunrJeM=;
+        b=SIZk9CuNLYUSGPut057biDMGfXxIcHV6hRVcr3IIy515N/Pk/Q1P5Zp4rg8sILC10G
+         I4NSwKqUNAzg8OcPKdmu5rSpZmQiGvM4ASmxrHRQpdnnkLPVvrVgMlswxz98iMAMh5cu
+         7GTp05gjAzlKR1U/CmSmTvosiP7m0PwRu9Atq8q6xBbnPN4386U9GZzpxB+XpiUUm2Ah
+         e92NGAybkVI74xHUv1CrxMR4qxAa3kneG8oXARAR5dPliJ46ZbnCsI3VC4fMPe2BvxEt
+         PfzzEFXfmxjlxU80ScTFA3alMzFNeFEZxbqtxW+2ZyqBN9D+w8nk1AvbdGTI5a/eRIRU
+         NCzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CVxGfvIdylztEKYqHZTungXdeVR8eiJqsSdWXIBE3g4=;
-        b=L5uujQCbvUWcJ17mLjsixgPd0j+Srja4QzNhoQUroZuAsHlcHl9xEEQfveH/sjZnaW
-         pY6n6VpGfT6TGU5avmpuDb3MF7flC93ja62JbuVU6pLgHD57G9fxMto7gVMdtNR/kclf
-         GjHhDjLSmyHCSS4hIQD8a/U6ciaDd15KoJIT7mbA31bZC4lGdlh0+aw92e6alJI7odzw
-         GldQgLrmXk0DeNJYs72hqz9lPtRKk1H/LpDxJXXlrcyt8wbaZxYKFoy9bKwviEefe7Wb
-         +lpzEcQRC0VT1ke8EhLH37po9ZtjSkR286dPLwdO50OOl0A/bFcBayIyAz1xQt85op9p
-         /S7w==
-X-Gm-Message-State: AOAM533AAEoQZy1Md67wMdOPIg9HfHZ58sCtZ7yi+lTUFtQe5gfYnV4W
-        z+pdvdjiN7If+c3u4uFE3Zna3sCoipYIcq6Fjpk=
-X-Google-Smtp-Source: ABdhPJx/hlhG3/R/h+5qG2kG/MGMx4mj5CtKDW6zYn4E7g68qtJnWZwBCdiAObl4WN1VfWYreQdYdUY/r91b1GdD4lA=
-X-Received: by 2002:ab0:2002:0:b0:35f:fd13:960 with SMTP id
- v2-20020ab02002000000b0035ffd130960mr964247uak.50.1651844432899; Fri, 06 May
- 2022 06:40:32 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=HQhBIk9ZDxRam1pPGjEuYg3pQxnTdOv2YFzBqunrJeM=;
+        b=gJUxPFWFcmCgopUT/v4agHjp/MkNUGmHecpvahvhoRR8zheHuTLZJsawaetj8cYSzQ
+         5J31DhJWimieEvTN4nEaK1AP6BZfg8sRaj7wkPCqzMnllddcUcSPBkU5De96Bf70OSJl
+         qMcXUHWKtBHJPScrFOTNZg1kloqmrFj26f1kfMZ7sBMKu18XtW4JYm4OwnVhHqfmPNS8
+         cJXIt0jRbsPq+Us8s5gpPJ5+BG6T8Jv7XbTZyMdycktKhaPcTO2uFLF+K8abhXZbDLqk
+         wBRksfC0N12J08Gcn9j+8ruCvOFlPbQVloQwpJqasazIGpMfGPBBfs4oEIneyxK57g/R
+         +Vwg==
+X-Gm-Message-State: AOAM532xmLq9IbaANHk/ED5vKHva/bohgtdbeawT7VCdmiBKJz+cd41j
+        HN2gaQ4HyYFghmQ/MqX/+POEvkblcQTZJkioJf8=
+X-Google-Smtp-Source: ABdhPJxHxTbUAd6UlMUr3ArGNnK2kJsC7Y5cjqHp6RfrlB61b2FCo6YJffPi8pDqH0arxqefD58Nn7h91me4o7om2pI=
+X-Received: by 2002:ab0:407:0:b0:35f:ef75:81e8 with SMTP id
+ 7-20020ab00407000000b0035fef7581e8mr1023186uav.91.1651844617699; Fri, 06 May
+ 2022 06:43:37 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220506011616.1774805-1-ricardo.martinez@linux.intel.com> <20220506011616.1774805-6-ricardo.martinez@linux.intel.com>
-In-Reply-To: <20220506011616.1774805-6-ricardo.martinez@linux.intel.com>
+References: <20220506011616.1774805-1-ricardo.martinez@linux.intel.com>
+In-Reply-To: <20220506011616.1774805-1-ricardo.martinez@linux.intel.com>
 From:   Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Date:   Fri, 6 May 2022 16:40:22 +0300
-Message-ID: <CAHNKnsQ8OkLsJ2V6QYjGLO_7fhJ1f7ZG-u=GTY2fg8669CBtOw@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 05/14] net: wwan: t7xx: Add port proxy infrastructure
+Date:   Fri, 6 May 2022 16:43:26 +0300
+Message-ID: <CAHNKnsTnqNrcnz9gx8uX0mMiq8V_Vt99AQPAom01Q=V50a2bFg@mail.gmail.com>
+Subject: Re: [PATCH net-next v7 00/14] net: wwan: t7xx: PCIe driver for
+ MediaTek M.2 modem
 To:     Ricardo Martinez <ricardo.martinez@linux.intel.com>
 Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         Jakub Kicinski <kuba@kernel.org>,
@@ -73,10 +74,8 @@ Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
         "Sethuraman, Muralidharan" <muralidharan.sethuraman@intel.com>,
         "Mishra, Soumya Prakash" <Soumya.Prakash.Mishra@intel.com>,
         "Kancharla, Sreehari" <sreehari.kancharla@intel.com>,
-        "Sahu, Madhusmita" <madhusmita.sahu@intel.com>,
-        =?UTF-8?Q?Ilpo_J=C3=A4rvinen?= <ilpo.jarvinen@linux.intel.com>
+        "Sahu, Madhusmita" <madhusmita.sahu@intel.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -87,20 +86,70 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello Ricardo,
+
 On Fri, May 6, 2022 at 4:16 AM Ricardo Martinez
 <ricardo.martinez@linux.intel.com> wrote:
-> Port-proxy provides a common interface to interact with different types
-> of ports. Ports export their configuration via `struct t7xx_port` and
-> operate as defined by `struct port_ops`.
+> t7xx is the PCIe host device driver for Intel 5G 5000 M.2 solution which
+> is based on MediaTek's T700 modem to provide WWAN connectivity.
+> The driver uses the WWAN framework infrastructure to create the following
+> control ports and network interfaces:
+> * /dev/wwan0mbim0 - Interface conforming to the MBIM protocol.
+>   Applications like libmbim [1] or Modem Manager [2] from v1.16 onwards
+>   with [3][4] can use it to enable data communication towards WWAN.
+> * /dev/wwan0at0 - Interface that supports AT commands.
+> * wwan0 - Primary network interface for IP traffic.
 >
-> Signed-off-by: Haijun Liu <haijun.liu@mediatek.com>
-> Co-developed-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.c=
-om>
-> Signed-off-by: Chandrashekar Devegowda <chandrashekar.devegowda@intel.com=
+> The main blocks in t7xx driver are:
+> * PCIe layer - Implements probe, removal, and power management callbacks.
+> * Port-proxy - Provides a common interface to interact with different types
+>   of ports such as WWAN ports.
+> * Modem control & status monitor - Implements the entry point for modem
+>   initialization, reset and exit, as well as exception handling.
+> * CLDMA (Control Layer DMA) - Manages the HW used by the port layer to send
+>   control messages to the modem using MediaTek's CCCI (Cross-Core
+>   Communication Interface) protocol.
+> * DPMAIF (Data Plane Modem AP Interface) - Controls the HW that provides
+>   uplink and downlink queues for the data path. The data exchange takes
+>   place using circular buffers to share data buffer addresses and metadata
+>   to describe the packets.
+> * MHCCIF (Modem Host Cross-Core Interface) - Provides interrupt channels
+>   for bidirectional event notification such as handshake, exception, PM and
+>   port enumeration.
 >
-> Co-developed-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Signed-off-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-> Reviewed-by: Ilpo J=C3=A4rvinen <ilpo.jarvinen@linux.intel.com>
+> The compilation of the t7xx driver is enabled by the CONFIG_MTK_T7XX config
+> option which depends on CONFIG_WWAN.
+> This driver was originally developed by MediaTek. Intel adapted t7xx to
+> the WWAN framework, optimized and refactored the driver source code in close
+> collaboration with MediaTek. This will enable getting the t7xx driver on the
+> Approved Vendor List for interested OEM's and ODM's productization plans
+> with Intel 5G 5000 M.2 solution.
+>
+> List of contributors:
+> Amir Hanania <amir.hanania@intel.com>
+> Andriy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Chandrashekar Devegowda <chandrashekar.devegowda@intel.com>
+> Dinesh Sharma <dinesh.sharma@intel.com>
+> Eliot Lee <eliot.lee@intel.com>
+> Haijun Liu <haijun.liu@mediatek.com>
+> M Chetan Kumar <m.chetan.kumar@intel.com>
+> Mika Westerberg <mika.westerberg@linux.intel.com>
+> Moises Veleta <moises.veleta@intel.com>
+> Pierre-louis Bossart <pierre-louis.bossart@intel.com>
+> Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
+> Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> Madhusmita Sahu <madhusmita.sahu@intel.com>
+> Muralidharan Sethuraman <muralidharan.sethuraman@intel.com>
+> Soumya Prakash Mishra <Soumya.Prakash.Mishra@intel.com>
+> Sreehari Kancharla <sreehari.kancharla@intel.com>
+> Suresh Nagaraj <suresh.nagaraj@intel.com>
+>
+> [1] https://www.freedesktop.org/software/libmbim/
+> [2] https://www.freedesktop.org/software/ModemManager/
+> [3] https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/582
+> [4] https://gitlab.freedesktop.org/mobile-broadband/ModemManager/-/merge_requests/523
 
-Reviewed-by: Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Now the driver looks really nice. Good job!
+
+-- 
+Sergey
