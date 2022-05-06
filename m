@@ -2,63 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B5A651E140
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 23:38:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8AF451E144
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 23:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354623AbiEFVlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 17:41:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33336 "EHLO
+        id S1444547AbiEFVnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 17:43:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242341AbiEFVli (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 17:41:38 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96FBF6EC71
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 14:37:54 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id n10so16736701ejk.5
-        for <netdev@vger.kernel.org>; Fri, 06 May 2022 14:37:54 -0700 (PDT)
+        with ESMTP id S1352550AbiEFVnC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 17:43:02 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50AC66FA13;
+        Fri,  6 May 2022 14:39:18 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id m6so9457004iob.4;
+        Fri, 06 May 2022 14:39:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=IhMmmyiCbfTajTm1I2je9SC8UCZMWfjdAhbEn27Gcu8=;
-        b=AWqypfa36ems7mytxD5GjR5vF+dX1BAwOWIA3+rKaA6CrhCyxLwKV+YJ/aX/r1dXvP
-         YzzEENJOc9Uxdzqa5TOfDHSaF8+AmyrhluRqvW57yb8xIUsPzwSb/cURIMmF8vVWDin5
-         veRePezPGwy77sGhTZ5sqwtaFq/SnW3izhhnWMuDLVYxDawwTdc8tNNU7dkc0GoW4iiE
-         5H8MnEPN2g9BcHedtKwqhdj+TlAfmaeCN1rYQ6LwWDCf21nHtGVzigmsdKgUhBxw4Fid
-         4cr5x9SfOrm4c7Qk/VpB/whDG8mhsL7NOxUw+9j+vILxe66s97VfjfMtvBWGUxUR+09u
-         psCw==
+        bh=OshuYdi3mkXkKwphYHfoNTYLlgVkbS/n5H63gaEbdPA=;
+        b=BnBLKDdkE01B9gzYpT7+xo6GROb0grAE8OQ4omX6+dHMoKyVvW7PXddFZK/pWv1fRH
+         l81dqcMxUa8eaOCF53wRE/GCxN71rSn+Ty8et7r8Z68AgWt4BOLLOs8ubqf3gza5TE2F
+         Lcmrb78xwTR20VL6KbW/wZoT/F0azeeIpDA7P6h6yt3wAnEQOGfDig7++iARuYYCDVHS
+         B6gmvhg51x74JnqQ1LH9RymEO8Rs13oDHUew7mSCsPw9Rfb2qltSveTWJ3luhX7VaAFr
+         DArUO6vZ/m5/1zPU9h9QotL7O2UiA5EY8qe6zczCsPbRpIVJ1pVMrXxdVMgk3xjFtgy4
+         3azw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IhMmmyiCbfTajTm1I2je9SC8UCZMWfjdAhbEn27Gcu8=;
-        b=l1kyT3GC7eHN/9iIAbwF4aNpgUHEagjcmoz1/bp5rpPTyGok8b80GXQ45G3grAjfci
-         2DpZ1ornfuzZnA4hpmRGjQJI4goNjc/rtNu3xP7gi5SfQjgbY1RbCGMgAn1s7XvKx6bz
-         T3nXPFo0DbtmQHFlDKm3wv7cNr5vAogFtoqDwTjUoetMJ6365c0w7UnttGShU6bO4PMt
-         uj4qCZvtxGv2srWIFGYPrWPi868GPp5Eb3VbYitB82L2Ahd9sSAWlMWnLniiKKPwpFCd
-         qfFQmvOre+OJVG411WibFHR3LsJcbdnoyC2ZMW6kp/p5MtlVSH6rVEMRwQeQZaUUWtTn
-         WdpA==
-X-Gm-Message-State: AOAM533KxVgRNXbENxpUWRcDhCO1WWavtN6LXNAz9IsYlsdmZ3XQV5ND
-        KC766oIkiLOS+oQ/g8UKmnK9kPMGZfg/bdPM8fs=
-X-Google-Smtp-Source: ABdhPJw/pTlaC3ydNkXnisZ+MCL3aOLk2998J8xXrSsimcnubhGak+BA+1mvK47Vh0Nc6jNfOthvL50XNnIMvtyilnM=
-X-Received: by 2002:a17:907:d29:b0:6f4:87d4:ecad with SMTP id
- gn41-20020a1709070d2900b006f487d4ecadmr4694859ejc.166.1651873073012; Fri, 06
- May 2022 14:37:53 -0700 (PDT)
+        bh=OshuYdi3mkXkKwphYHfoNTYLlgVkbS/n5H63gaEbdPA=;
+        b=x5cbmbs+62YTGMcZE8pveZfF5XOe9aiaKStRBKZDHtSzOXiiWCNDmK6ZBXBSMZCmcm
+         XJJ9uvzyKsexhBvLJMHJJta5Kb20RBy53yJMHwQEE8xQexTmUDyrlp7RlihF12eMOHR9
+         RByRuRVFzYwIsfFlbauBtwVt4cbDfbKi6a4bq1ew7T0h4NJcJwC0vUhnBSz2ZgCGVAd8
+         lxifWsCOvPG3Lv5RZjVwVOMEKaaII7fd3aycKgnHaagTJBU7Q6A9E2p8JbM4nePtZr0v
+         59egMqmJ7GIuDGVyg7Zp53f+0Bzoe3okKhvFWbecE1doG15/M37tA0V2IDuRByw2dnAh
+         0VGQ==
+X-Gm-Message-State: AOAM530m9eWGA43frfkb40CFuV8r32/oonxp/LiyG4/FJNyD4y8VO/Xo
+        Hqk1AXA0RXlulFXSy2aKTQ8xEJMfJmRiU03tzRw=
+X-Google-Smtp-Source: ABdhPJwFKqekhY9a+lweru+5CWuqFc5GrgqmwTckqf7ouwymeFmW8jRzIamCDCok1zRHz7O73y2QMlywtPqhwS13u3o=
+X-Received: by 2002:a02:5d47:0:b0:32b:4387:51c8 with SMTP id
+ w68-20020a025d47000000b0032b438751c8mr2349692jaa.103.1651873157649; Fri, 06
+ May 2022 14:39:17 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220506153048.3695721-1-eric.dumazet@gmail.com>
- <20220506153048.3695721-3-eric.dumazet@gmail.com> <e582432dbe85e743cc18d358d020711db5ddbf82.camel@gmail.com>
- <CANn89iL3sjnRKQNwbqxh_jh5cZ-Cxo58FKeqhP+mF969u4oQkA@mail.gmail.com>
-In-Reply-To: <CANn89iL3sjnRKQNwbqxh_jh5cZ-Cxo58FKeqhP+mF969u4oQkA@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 6 May 2022 14:37:41 -0700
-Message-ID: <CAKgT0Ud2YGhU1_z6xWmjdin5fT-VP7bAdnQrQcbMXULiFYJ3vQ@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 02/12] ipv6: add IFLA_GSO_IPV6_MAX_SIZE
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+References: <20220503171437.666326-1-maximmi@nvidia.com> <20220503171437.666326-6-maximmi@nvidia.com>
+In-Reply-To: <20220503171437.666326-6-maximmi@nvidia.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 6 May 2022 14:39:06 -0700
+Message-ID: <CAEf4BzZRHsW=e40+ZD7GAnUr+03GroouxpF82zO7GoBjrGBB7A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 5/5] bpf: Allow the new syncookie helpers to
+ work with SKBs
+To:     Maxim Mikityanskiy <maximmi@nvidia.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joe Stringer <joe@cilium.io>,
+        Florent Revest <revest@chromium.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Florian Westphal <fw@strlen.de>, pabeni@redhat.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -70,52 +89,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 6, 2022 at 2:20 PM Eric Dumazet <edumazet@google.com> wrote:
+On Tue, May 3, 2022 at 10:15 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
 >
-> On Fri, May 6, 2022 at 1:48 PM Alexander H Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > On Fri, 2022-05-06 at 08:30 -0700, Eric Dumazet wrote:
-> > > From: Coco Li <lixiaoyan@google.com>
-> > >
-> > > This enables ipv6/TCP stacks to build TSO packets bigger than
-> > > 64KB if the driver is LSOv2 compatible.
-> > >
-> > > This patch introduces new variable gso_ipv6_max_size
-> > > that is modifiable through ip link.
-> > >
-> > > ip link set dev eth0 gso_ipv6_max_size 185000
-> > >
-> > > User input is capped by driver limit (tso_max_size)
-> > >
-> > > Signed-off-by: Coco Li <lixiaoyan@google.com>
-> > > Signed-off-by: Eric Dumazet <edumazet@google.com>
-> >
-> > So I am still not a fan of adding all this extra tooling to make an
-> > attribute that is just being applied to one protocol. Why not just
-> > allow gso_max_size to extend beyond 64K and only limit it by
-> > tso_max_size?
+> This commits allows the new BPF helpers to work in SKB context (in TC
+> BPF programs): bpf_tcp_raw_{gen,check}_syncookie_ipv{4,6}.
 >
-> Answer is easy, and documented in our paper. Please read it.
-
-I have read it.
-
-> We do not want to enable BIG TCP for IPv4, this breaks user space badly.
+> The sample application and selftest are updated to support the TC mode.
+> It's not the recommended mode of operation, because the SKB is already
+> created at this point, and it's unlikely that the BPF program will
+> provide any substantional speedup compared to regular SYN cookies or
+> synproxy.
 >
-> I do not want to break tcpdump just because some people think TCP just works.
+> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> ---
+>  net/core/filter.c                             |  10 ++
+>  .../selftests/bpf/prog_tests/xdp_synproxy.c   |  53 +++++--
+>  .../selftests/bpf/progs/xdp_synproxy_kern.c   | 141 +++++++++++++-----
+>  tools/testing/selftests/bpf/xdp_synproxy.c    |  94 +++++++++---
 
-The changes I suggested don't enable it for IPv4. What your current
-code is doing now is using dev->gso_max_size and if it is the correct
-IPv6 type you are using dev->gso_ipv6_max_size. What I am saying is
-that instead of adding yet another netdev control you should just make
-it so that we retain existing behavior when gso_max_size is less than
-GSO_MAX_SIZE, and when it exceeds it all non-ipv6 types max out at
-GSO_MAX_SIZE and only the ipv6 type packets use gso_max_size when you
-exceed GSO_MAX_SIZE.
+please split selftests and kernel code into separate patches (and use
+selftests/bpf: prefix for selftests)
 
-The big thing I am not a fan of is adding protocol level controls down
-in the link level interface. It makes things confusing. For example,
-say somebody has existing scripts to limit the gso_max_size and they
-were using IPv6 and your new control is added. Suddenly the
-gso_max_size limitations they were setting won't be applied because
-you split things up at the protocol level.
+>  4 files changed, 230 insertions(+), 68 deletions(-)
+>
+
+[...]
+
+> @@ -87,7 +112,11 @@ void test_xdp_synproxy(void)
+>         if (!ASSERT_OK_PTR(ns, "setns"))
+>                 goto out;
+>
+> -       ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --single");
+> +       if (xdp)
+> +               ctrl_file = SYS_OUT("./xdp_synproxy --iface tmp1 --single");
+> +       else
+> +               ctrl_file = SYS_OUT("./xdp_synproxy --prog %s --single",
+> +                                   prog_id);
+>         size = fread(buf, 1, sizeof(buf), ctrl_file);
+>         pclose(ctrl_file);
+>         if (!ASSERT_TRUE(expect_str(buf, size, "Total SYNACKs generated: 1\n"),
+> @@ -107,3 +136,9 @@ void test_xdp_synproxy(void)
+>         system("ip link del tmp0");
+>         system("ip netns del synproxy");
+>  }
+> +
+> +void test_xdp_synproxy(void)
+> +{
+> +       test_synproxy(true);
+> +       test_synproxy(false);
+
+let's model this as subtests instead? See test__start_subtest() use in
+other selftests
+
+> +}
+> diff --git a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
+> index 9ae85b189072..f70b5f776dcf 100644
+> --- a/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
+> +++ b/tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
+> @@ -7,6 +7,9 @@
+>  #include <bpf/bpf_endian.h>
+>  #include <asm/errno.h>
+>
+
+[...]
+
+> @@ -201,21 +220,50 @@ static int syncookie_attach(const char *argv0, unsigned int ifindex)
+>                 fprintf(stderr, "Error: bpf_obj_get_info_by_fd: %s\n", strerror(-err));
+>                 goto out;
+>         }
+> +       attached_tc = tc;
+>         attached_prog_id = info.id;
+>         signal(SIGINT, cleanup);
+>         signal(SIGTERM, cleanup);
+> -       err = bpf_xdp_attach(ifindex, prog_fd, XDP_FLAGS_UPDATE_IF_NOEXIST, NULL);
+> -       if (err < 0) {
+> -               fprintf(stderr, "Error: bpf_set_link_xdp_fd: %s\n", strerror(-err));
+> -               signal(SIGINT, SIG_DFL);
+> -               signal(SIGTERM, SIG_DFL);
+> -               attached_prog_id = 0;
+> -               goto out;
+> +       if (tc) {
+> +               DECLARE_LIBBPF_OPTS(bpf_tc_hook, hook,
+
+nit: LIBBPF_OPTS is shorter, DECLARE_LIBBPF_OPTS is discouraged
+
+> +                                   .ifindex = ifindex,
+> +                                   .attach_point = BPF_TC_INGRESS);
+> +               DECLARE_LIBBPF_OPTS(bpf_tc_opts, opts,
+> +                                   .handle = 1,
+> +                                   .priority = 1,
+> +                                   .prog_fd = prog_fd);
+> +
+
+[...]
