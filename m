@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBC2B51E0DD
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 23:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4F7751E0FD
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 23:19:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444353AbiEFVQA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 17:16:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38462 "EHLO
+        id S1444404AbiEFVXY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 17:23:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234769AbiEFVP7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 17:15:59 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F976EC7B;
-        Fri,  6 May 2022 14:12:15 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id i22so5580791ila.1;
-        Fri, 06 May 2022 14:12:14 -0700 (PDT)
+        with ESMTP id S245548AbiEFVXX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 17:23:23 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C5266AED;
+        Fri,  6 May 2022 14:19:35 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id e3so9404011ios.6;
+        Fri, 06 May 2022 14:19:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=S4OxoVMwYpNwbrGj4NKGMSUgtBwSQCWc2E0fSlFQJtE=;
-        b=jsVP1iDrUumwbjhE98Y+o+fYPdQTFQ+kEQkVPfu3XOOqxoDWmHKY6SEVExZlYJs7SX
-         1XImN/INIRNhMstxtMw1njpkH4XqWtz/deAgpyNNqm1u+P15hFG3jUWOuo9f/9jDPm2h
-         uNtX574SnvjuBUCk9R+l/DD2O+ya+zeOzeSpySo5d1bNSqTTGDURTxvbIrBduCTWaFST
-         nV14SBWpHoYNU8VHTyV9epVKskZr13LXCcFJvJXQ5yDjaDGDeux8cMHr9+cMR9M8/9Yv
-         dpCcgK4J9W3o6vkYMePoZuQFZpGMZZpk65HmNN1e8sXObePkTY03fFuqsNajNBD6P0lG
-         vf9A==
+        bh=O89+Pj0R1K87sBA0p/6SiTAciUfgGWsngXnY3NHvp2I=;
+        b=IFAlHwq1kcOb6ePWBdOk3f+48m38l479DGoupQW0Az6OAkUt5HreCPyvV5Cz4+gsoO
+         3pDvHm3tje2xst6tErTi7D0NOpl+elks9n7e9m6cL/99jUkeFnshZxnpTX1fD9He3/pv
+         x7pf/Ld1+uYbPqGyF2UH2BfvslAKhGD0fgW6fURiacffTzsJw5ITNC/Tq3ccYnSgD3C9
+         Q+BH3FR6Ugudje3KusvIRzeVr+UMLsNKSV8pt1NLJhjZ94x9MLkx+JR17EjS/DZBVz5K
+         CBfYfLyRH6K+OJeq4Gbkm31Vd+HDEBGrHsN1HPMoamQVeDdxn4ueW7OT1SuIqoDZMiCO
+         3/MA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=S4OxoVMwYpNwbrGj4NKGMSUgtBwSQCWc2E0fSlFQJtE=;
-        b=za0R/84pAIf4VvN1rhDqIaTfzCJ57C3DDTuy+OWSK/JOFlLlUzDX35bpcECwg5NPr9
-         HZm4Hyg03pH6NbyE1rUQt1zKZ5u01j9dQDFbJKQRL1FTPFMLKPKbszHnjqO6q+Pe2wGH
-         JC7kn5IAnTX0+C6JxSUayIH52qP+M4v4IuuOyHMG/mqLvAWNvGhOxN18dsxImDd5psEv
-         sJtYNZv7iGc/tGGBfms+pXt4xcuQTsXlE8v77iODVN9UttVrBRxDlK9pUDCAoiOZ1FGp
-         F+bnZmOazi3WVuepzeyrTCIzEb7zW2W1u3wSdhEf/a5G9LwQhYklM6WPnfN+rE1io5cg
-         7Lnw==
-X-Gm-Message-State: AOAM5339ZZLPZuJJ65ByLNyGEJ02lDHJgjEzn0/zruCvMkNU7gYH47dM
-        z9NUvc4r2lE4Z+KztTzCGCev/+KUEXQXf+9qGcs=
-X-Google-Smtp-Source: ABdhPJxLB+Z+rDhsxemCPyaFDhQEmIC5l9UvjlCfN1f+VU1VibPtYe7vL6/SSellQFTIiGdYCtViSjhxHesHve1yhas=
-X-Received: by 2002:a92:6406:0:b0:2bb:f1de:e13e with SMTP id
- y6-20020a926406000000b002bbf1dee13emr2038491ilb.305.1651871534347; Fri, 06
- May 2022 14:12:14 -0700 (PDT)
+        bh=O89+Pj0R1K87sBA0p/6SiTAciUfgGWsngXnY3NHvp2I=;
+        b=HxZyMqK7WBtzHuWpFhXFNPTwAI4RnlVuaE/LTCyPsvu5ZMC1pWkAn7z4Yt8mqFKvsX
+         I7MlYMhSsx1XzTLHCx/F5Y+nUcxm6T6er5ygkYuS711NsBBhjOGaC5ReHNJtQsQUyYMq
+         jTn7mSM01qEaghnmkHSOAUiJ1/iuImGSymsglGjfwYqhoRRLEfC41v/lA/dhObwbQQq+
+         J0CcMonQs0ESg55tjdlvPg+CAIN62pqJjVdgljrZwhYW9NABV27KZKqLz2HMwDfJuDe+
+         HSsnQZWd1JQndPrEl/1rPR5Bswbz/Vya3GhWZs4L9piozFfLTga0Gei6L+FfKKiwaFIp
+         zgLg==
+X-Gm-Message-State: AOAM533s6wgoJy6WKvNQS8vaFO2g7ZsNC2lmEQ3uKBx82M0C+sx+qZFq
+        ifXaxE3c4sUxdd0bhONxSL0xEFHG9QLpPvGqrDk=
+X-Google-Smtp-Source: ABdhPJxnBYHF81qMhqTjdrgq7ehU0fLwrNURNssgOXIZPgEdwFeQG2SfZgRHWy90PQiibuqfnbNIBqqk/Nd0bbUbfxU=
+X-Received: by 2002:a05:6638:16d6:b0:32b:a283:a822 with SMTP id
+ g22-20020a05663816d600b0032ba283a822mr2322177jat.145.1651871974324; Fri, 06
+ May 2022 14:19:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220503171437.666326-1-maximmi@nvidia.com> <20220503171437.666326-3-maximmi@nvidia.com>
-In-Reply-To: <20220503171437.666326-3-maximmi@nvidia.com>
+References: <20220503171437.666326-1-maximmi@nvidia.com> <20220503171437.666326-4-maximmi@nvidia.com>
+In-Reply-To: <20220503171437.666326-4-maximmi@nvidia.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 6 May 2022 14:12:03 -0700
-Message-ID: <CAEf4Bzb-y7-5PG2vjdy__Jqwb2n2hPPQ_8Xs9R_cnenwT-AyTg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 2/5] bpf: Allow helpers to accept pointers
- with a fixed size
+Date:   Fri, 6 May 2022 14:19:23 -0700
+Message-ID: <CAEf4BzYDfNuF4QL37ZLjR5--zimpycZsjzXhq6ao79_05+OOiA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v9 3/5] bpf: Add helpers to issue and check SYN
+ cookies in XDP
 To:     Maxim Mikityanskiy <maximmi@nvidia.com>
 Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -91,66 +91,126 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, May 3, 2022 at 10:15 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
 >
-> Before this commit, the BPF verifier required ARG_PTR_TO_MEM arguments
-> to be followed by ARG_CONST_SIZE holding the size of the memory region.
-> The helpers had to check that size in runtime.
+> The new helpers bpf_tcp_raw_{gen,check}_syncookie_ipv{4,6} allow an XDP
+> program to generate SYN cookies in response to TCP SYN packets and to
+> check those cookies upon receiving the first ACK packet (the final
+> packet of the TCP handshake).
 >
-> There are cases where the size expected by a helper is a compile-time
-> constant. Checking it in runtime is an unnecessary overhead and waste of
-> BPF registers.
->
-> This commit allows helpers to accept ARG_PTR_TO_MEM arguments without
-> the corresponding ARG_CONST_SIZE, given that they define the memory
-> region size in struct bpf_func_proto.
-
-I think it's much less confusing and cleaner to have
-ARG_PTR_TO_FIXED_SIZE_MEM (or whatever similar name), instead of
-adding special casing to ARG_PTR_TO_MEM.
-
+> Unlike bpf_tcp_{gen,check}_syncookie these new helpers don't need a
+> listening socket on the local machine, which allows to use them together
+> with synproxy to accelerate SYN cookie generation.
 >
 > Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
 > Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 > ---
->  include/linux/bpf.h   | 10 ++++++++++
->  kernel/bpf/verifier.c | 26 +++++++++++++++-----------
->  2 files changed, 25 insertions(+), 11 deletions(-)
+>  include/net/tcp.h              |   1 +
+>  include/uapi/linux/bpf.h       |  78 ++++++++++++++++++++++
+>  net/core/filter.c              | 118 +++++++++++++++++++++++++++++++++
+>  net/ipv4/tcp_input.c           |   3 +-
+>  scripts/bpf_doc.py             |   4 ++
+>  tools/include/uapi/linux/bpf.h |  78 ++++++++++++++++++++++
+>  6 files changed, 281 insertions(+), 1 deletion(-)
 >
-> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> index be94833d390a..255ae3652225 100644
-> --- a/include/linux/bpf.h
-> +++ b/include/linux/bpf.h
-> @@ -514,6 +514,16 @@ struct bpf_func_proto {
->                 };
->                 u32 *arg_btf_id[5];
->         };
-> +       union {
-> +               struct {
-> +                       size_t arg1_size;
-> +                       size_t arg2_size;
-> +                       size_t arg3_size;
-> +                       size_t arg4_size;
-> +                       size_t arg5_size;
-> +               };
-> +               size_t arg_size[5];
-> +       };
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 94a52ad1101c..45aafc28ce00 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -432,6 +432,7 @@ u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
+>                          struct tcphdr *th, u32 *cookie);
+>  u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
+>                          struct tcphdr *th, u32 *cookie);
+> +u16 tcp_parse_mss_option(const struct tcphdr *th, u16 user_mss);
+>  u16 tcp_get_syncookie_mss(struct request_sock_ops *rsk_ops,
+>                           const struct tcp_request_sock_ops *af_ops,
+>                           struct sock *sk, struct tcphdr *th);
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 4dd9e34f2a60..5e611d898302 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -5156,6 +5156,80 @@ union bpf_attr {
+>   *             if not NULL, is a reference which must be released using its
+>   *             corresponding release function, or moved into a BPF map before
+>   *             program exit.
+> + *
+> + * s64 bpf_tcp_raw_gen_syncookie_ipv4(struct iphdr *iph, struct tcphdr *th, u32 th_len)
+> + *     Description
+> + *             Try to issue a SYN cookie for the packet with corresponding
+> + *             IPv4/TCP headers, *iph* and *th*, without depending on a
+> + *             listening socket.
+> + *
+> + *             *iph* points to the IPv4 header.
+> + *
+> + *             *th* points to the start of the TCP header, while *th_len*
+> + *             contains the length of the TCP header (at least
+> + *             **sizeof**\ (**struct tcphdr**)).
+> + *     Return
+> + *             On success, lower 32 bits hold the generated SYN cookie in
+> + *             followed by 16 bits which hold the MSS value for that cookie,
+> + *             and the top 16 bits are unused.
+> + *
+> + *             On failure, the returned value is one of the following:
+> + *
+> + *             **-EINVAL** if *th_len* is invalid.
+> + *
+> + * s64 bpf_tcp_raw_gen_syncookie_ipv6(struct ipv6hdr *iph, struct tcphdr *th, u32 th_len)
+> + *     Description
+> + *             Try to issue a SYN cookie for the packet with corresponding
+> + *             IPv6/TCP headers, *iph* and *th*, without depending on a
+> + *             listening socket.
+> + *
+> + *             *iph* points to the IPv6 header.
+> + *
+> + *             *th* points to the start of the TCP header, while *th_len*
+> + *             contains the length of the TCP header (at least
+> + *             **sizeof**\ (**struct tcphdr**)).
+> + *     Return
+> + *             On success, lower 32 bits hold the generated SYN cookie in
+> + *             followed by 16 bits which hold the MSS value for that cookie,
+> + *             and the top 16 bits are unused.
+> + *
+> + *             On failure, the returned value is one of the following:
+> + *
+> + *             **-EINVAL** if *th_len* is invalid.
+> + *
+> + *             **-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
+> + *
+> + * int bpf_tcp_raw_check_syncookie_ipv4(struct iphdr *iph, struct tcphdr *th)
 
-We have almost 250 instances of struct bpf_func_proto variables:
+Note that all existing helpers that just return error or 0 on success
+return long. Please use long for consistency.
 
-$ rg 'const struct bpf_func_proto.* = \{' | wc -l
-244
+> + *     Description
+> + *             Check whether *iph* and *th* contain a valid SYN cookie ACK
+> + *             without depending on a listening socket.
+> + *
+> + *             *iph* points to the IPv4 header.
+> + *
+> + *             *th* points to the TCP header.
+> + *     Return
+> + *             0 if *iph* and *th* are a valid SYN cookie ACK.
+> + *
+> + *             On failure, the returned value is one of the following:
+> + *
+> + *             **-EACCES** if the SYN cookie is not valid.
+> + *
+> + * int bpf_tcp_raw_check_syncookie_ipv6(struct ipv6hdr *iph, struct tcphdr *th)
 
-You are adding 40 bytes to it just to use it for 1-2 special
-prototypes. It is quite expensive, IMHO, to increase vmlinux image
-size by 10KB just for this.
+same
 
-Should we reuse arg_btf_id union (same argument won't be PTR_TO_BTF_ID
-and PTR_TO_FIXED_SIZE_MEM, right)? Or alternatively special-case those
-few prototypes in verifier code directly when trying to fetch memory
-size?
-
-
->         int *ret_btf_id; /* return value btf_id */
->         bool (*allowed)(const struct bpf_prog *prog);
->  };
+> + *     Description
+> + *             Check whether *iph* and *th* contain a valid SYN cookie ACK
+> + *             without depending on a listening socket.
+> + *
+> + *             *iph* points to the IPv6 header.
+> + *
+> + *             *th* points to the TCP header.
+> + *     Return
+> + *             0 if *iph* and *th* are a valid SYN cookie ACK.
+> + *
+> + *             On failure, the returned value is one of the following:
+> + *
+> + *             **-EACCES** if the SYN cookie is not valid.
+> + *
+> + *             **-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
 
 [...]
