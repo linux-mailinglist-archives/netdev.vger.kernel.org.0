@@ -2,53 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 508E951D6A9
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 13:30:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2882951D709
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 13:49:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391348AbiEFLeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 07:34:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34142 "EHLO
+        id S1391506AbiEFLws (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 07:52:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391358AbiEFLd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 07:33:57 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C77C013F7F
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 04:30:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C98061EC5
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 11:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C7EC8C385AA;
-        Fri,  6 May 2022 11:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651836613;
-        bh=Keq1zuOuWB7H3UbHeXdjUaRHaXUh/qwUJtCQ4Y0cZd8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=EuYCEKwcmPbdScerESADs/GvCDwU6VKfBLk4UoujBjnrAn5PXB/ebkt1eVIcUDs0s
-         YFqaDR2RYjfAeYj9wcb6VWgdGqz2cTijBvZvXnw8d/D58IUTwv6uy6xroWiOD40Puq
-         kly6J8W5OKlFk+1lP0aRE2AlijDiAy1EliylRi2titWj1F2oALj1HC7cHtzj8aQDeM
-         dTKbLXj1UHX2Gxq3RtDeYBz4pomf72L9+mCoOLK1Kw7X2YYPZ/eKCmA47EwKLjU1fx
-         NfYl05l4ak1KlcUOhi/lp6VBV+Y2y7bLsoZBtCCFLyWphWxMgWaxnDdmwiQVuPaojA
-         ahGWrqeHC2tDA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AB019F03870;
-        Fri,  6 May 2022 11:30:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1390339AbiEFLwr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 07:52:47 -0400
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E865D58E40;
+        Fri,  6 May 2022 04:49:03 -0700 (PDT)
+Received: from [2a02:8108:963f:de38:eca4:7d19:f9a2:22c5]; authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nmwSB-0005cn-TK; Fri, 06 May 2022 13:48:59 +0200
+Message-ID: <833f2574-daf6-1357-d865-3528436ba393@leemhuis.info>
+Date:   Fri, 6 May 2022 13:48:59 +0200
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Content-Language: en-US
+To:     Manuel Ullmann <labre@posteo.de>,
+        Igor Russkikh <irusskikh@marvell.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        regressions@lists.linux.dev, davem@davemloft.net,
+        ndanilov@marvell.com, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, Jordan Leppert <jordanleppert@protonmail.com>,
+        =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>,
+        koo5 <kolman.jindrich@gmail.com>
+References: <8735hniqcm.fsf@posteo.de>
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+Subject: Re: [PATCH v3] net: atlantic: always deep reset on pm op, fixing null
+ deref regression
+In-Reply-To: <8735hniqcm.fsf@posteo.de>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/4] net: disambiguate the TSO and GSO limits
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165183661369.26942.12493737757589783291.git-patchwork-notify@kernel.org>
-Date:   Fri, 06 May 2022 11:30:13 +0000
-References: <20220506025134.794537-1-kuba@kernel.org>
-In-Reply-To: <20220506025134.794537-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, alexander.duyck@gmail.com,
-        stephen@networkplumber.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1651837744;143b143e;
+X-HE-SMSGID: 1nmwSB-0005cn-TK
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -57,35 +49,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
-
-On Thu,  5 May 2022 19:51:30 -0700 you wrote:
-> This series separates the device-reported TSO limitations
-> from the user space-controlled GSO limits. It used to be that
-> we only had the former (HW limits) but they were named GSO.
-> This probably lead to confusion and letting user override them.
+On 06.05.22 00:09, Manuel Ullmann wrote:
+>>From d24052938345d456946be0e9ccc337e24d771c79 Mon Sep 17 00:00:00 2001
+> Date: Wed, 4 May 2022 21:30:44 +0200
 > 
-> The problem came up in the BIG TCP discussion between Eric and
-> Alex, and seems like something we should address.
+> The impact of this regression is the same for resume that I saw on
+> thaw: the kernel hangs and nothing except SysRq rebooting can be done.
 > 
-> [...]
+> The null deref occurs at the same position as on thaw.
+> BUG: kernel NULL pointer dereference
+> RIP: aq_ring_rx_fill+0xcf/0x210 [atlantic]
+> 
+> Fixes regression in commit cbe6c3a8f8f4 ("net: atlantic: invert deep
+> par in pm functions, preventing null derefs"), where I disabled deep
+> pm resets in suspend and resume, trying to make sense of the
+> atl_resume_common deep parameter in the first place.
+> 
+> It turns out, that atlantic always has to deep reset on pm operations
+> and the parameter is useless. Even though I expected that and tested
+> resume, I screwed up by kexec-rebooting into an unpatched kernel, thus
+> missing the breakage.
+> 
+> This fixup obsoletes the deep parameter of atl_resume_common, but I
+> leave the cleanup for the maintainers to post to mainline.
 
-Here is the summary with links:
-  - [net-next,1/4] net: add netif_inherit_tso_max()
-    https://git.kernel.org/netdev/net-next/c/6df6398f7c8b
-  - [net-next,2/4] net: don't allow user space to lift the device limits
-    https://git.kernel.org/netdev/net-next/c/14d7b8122fd5
-  - [net-next,3/4] net: make drivers set the TSO limit not the GSO limit
-    https://git.kernel.org/netdev/net-next/c/ee8b7a1156f3
-  - [net-next,4/4] net: move netif_set_gso_max helpers
-    https://git.kernel.org/netdev/net-next/c/744d49daf8bd
+FWIW, this section starting here and...
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> PS: I'm very sorry for this regression.
+> 
+> Changes in v2:
+> Patch formatting fixes
+> - Fix Fixes tag
+> – Simplify stable Cc tag
+> – Fix Signed-off-by tag
+> 
+> Changes in v3:
+> – Prefixed commit reference with "commit" aka I managed to use
+>   checkpatch.pl.
+> - Added Tested-by tags for the testing reporters.
+> – People start to get annoyed by my patch revision spamming. Should be
+>   the last one.
 
+...ending here needs should be below the "---" line you already have
+below. For details see:
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html
 
+BTW, same goes for any "#regzbot" commands (like you had in
+cbe6c3a8f8f4), as things otherwise get confused when a patch for example
+is posted as part of a stable/longterm -rc review.
+
+But don't worry, no big deal, I handled that :-D Many thx for actually
+directly getting regzbot involved and taking care of this regression!
+
+> Fixes: cbe6c3a8f8f4 ("net: atlantic: invert deep par in pm functions, preventing null derefs")
+> Link: https://lore.kernel.org/regressions/9-Ehc_xXSwdXcvZqKD5aSqsqeNj5Izco4MYEwnx5cySXVEc9-x_WC4C3kAoCqNTi-H38frroUK17iobNVnkLtW36V6VWGSQEOHXhmVMm5iQ=@protonmail.com/
+> Reported-by: Jordan Leppert <jordanleppert@protonmail.com>
+> Reported-by: Holger Hoffstätte <holger@applied-asynchrony.com>
+> Tested-by: Jordan Leppert <jordanleppert@protonmail.com>
+> Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
+> Cc: <stable@vger.kernel.org> # 5.10+
+> Signed-off-by: Manuel Ullmann <labre@posteo.de>
+> ---
+>  drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+
+Ciao, Thorsten
