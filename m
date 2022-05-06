@@ -2,70 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DF2E51CF69
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 05:26:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2931E51CF6E
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 05:28:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388537AbiEFD3u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 23:29:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57790 "EHLO
+        id S1388550AbiEFDcH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 23:32:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58816 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352476AbiEFD3t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 23:29:49 -0400
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C16A5A15A
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 20:26:08 -0700 (PDT)
-Received: by mail-pf1-x42e.google.com with SMTP id a11so5234170pff.1
-        for <netdev@vger.kernel.org>; Thu, 05 May 2022 20:26:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=9km1PlRIKW7YuCltBXEwS6g9xW++l5YU05wV6gL0Yxc=;
-        b=NWVSLlbLwYYrBz/bbA1PkKha0EXTERUYL5QeESPBG9Amnz16p+fdyzLE4NHBHLcDWZ
-         EzVV+9s4YNTzh8owtcTeRO/ySsgGsq18KkKEXnloekK3v6BT0TC4gfOnJk6RfbpHnk8d
-         hTmTAYxnYBXXfT0JZjt5zQv96hmyEM0/F2y1t01Jqvf6Nn1IQr9GaTtp3znpNu22x+8C
-         /3tUOGfcS5Z6iYn3C6W1Q6BwXzuEp1y1P4kwj9lFIiT7mDy9hBrKUQnNT7iRTlDpLUjk
-         DALFlNW/5Ig4F9QUZslNAt5T+3h1CSMJumTJR9R36vEXfp4bLNVW1km0LrYwRgbUofmg
-         urwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=9km1PlRIKW7YuCltBXEwS6g9xW++l5YU05wV6gL0Yxc=;
-        b=qyHXtXB1YLZG1bcWLaoMaYpt88fBGVezEnm6sqG/6QGLF40jxIajsSqynZ+Qgevizl
-         xSKKQwvN403cte75co6IE+OnoYKgnEuHnPvD2yMaLyvuoe+W7Y8LgHjSnW/PdNPAw0ea
-         AYZ67sOBvrfsVkoTl9/U7U/67qjv8ETtOrptWiZaeYeAwYYvhE8qACACoBCN4g0pIr3g
-         8r0htMy/CwQr1Uub/+ZjzkrkTU71sMrGpQOPCZSeAx+YxNElgAPYKcvKTPuw2iT+NzUr
-         fJkIp11jiwnrN8I7SMI7lijkEFIzqYj/h2vL6mV72AXEdMMGBSdEJFr4u8X5JkF8ixx9
-         sIaA==
-X-Gm-Message-State: AOAM5322iFOZI2pE7AMUx00bcHMFlVBt2w3FjjDFs1sD6n8Hjrr8yCl8
-        tYj4uDkwSZjQj4dszKOywtFuBEJ414Q=
-X-Google-Smtp-Source: ABdhPJz/VsXfmhVrRgx8Kwqv93sI7OXVtlFV8KB9+ROyWRgpmTUFly4CxeZCpdRVyUKI+eJlHKPc+Q==
-X-Received: by 2002:a63:cc4f:0:b0:3c5:fc22:f6a with SMTP id q15-20020a63cc4f000000b003c5fc220f6amr1099286pgi.67.1651807567632;
-        Thu, 05 May 2022 20:26:07 -0700 (PDT)
-Received: from [172.16.0.2] ([8.45.42.186])
-        by smtp.googlemail.com with ESMTPSA id z12-20020a63330c000000b003c14af50629sm2045791pgz.65.2022.05.05.20.26.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 05 May 2022 20:26:06 -0700 (PDT)
-Message-ID: <9278f614-9994-362c-75ae-5a0fe009ef01@gmail.com>
-Date:   Thu, 5 May 2022 20:26:04 -0700
+        with ESMTP id S1388539AbiEFDcC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 23:32:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58B15644C0;
+        Thu,  5 May 2022 20:28:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 219B5B832C4;
+        Fri,  6 May 2022 03:28:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 685DEC385AC;
+        Fri,  6 May 2022 03:28:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651807698;
+        bh=/Busav/MercVn3U7qos3BeCdpeFW+y8S+aaQ9UEgLOg=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=jsBG26qh+s213Ai58L/c76nzSly7WUrMn1CW1KN9i9Ky51OURpsDA8Sue2D1CJ9Sq
+         D8CjECh08aUOh24sOOD33Rszb5HqzS3oCrMHt7J9QZ5KK7ThbTIN8fWjSxQGvAxN6Q
+         wdSWi/aFNzQ4Fsh/B+YFmhpQTvm3gFaA7Eu/Kznm3H/n3c1g3DKxwrUj8NDa4bbkUr
+         dTaDkNqV1drIVgG1E8DYViBhnnKaMxvcP6cr9gNLtlfs6p8gtWeqONXKRInUx3IuES
+         matYNYW+DmzRSrK9oWJeilQ6ahPS2ea5Mt7yGypTxX+HYFgfWH2LN7Lpta8o7j2xya
+         hf/isN0EBWRXQ==
+Message-ID: <366d529e-6149-423a-e012-dbfd9c41baac@kernel.org>
+Date:   Thu, 5 May 2022 20:28:16 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
  Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH iproute2 net-next 0/3] support for vxlan vni filtering
+Subject: Re: [net PATCH] ipv4: drop dst in multicast routing path
 Content-Language: en-US
-To:     Roopa Prabhu <roopa@nvidia.com>
-Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
-        razor@blackwall.org
-References: <20220501001205.33782-1-roopa@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220501001205.33782-1-roopa@nvidia.com>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, tgraf@suug.ch,
+        lokesh.dhoundiyal@alliedtelesis.co.nz
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220505020017.3111846-1-chris.packham@alliedtelesis.co.nz>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-10.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,26 +58,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 4/30/22 5:12 PM, Roopa Prabhu wrote:
-> This series adds bridge command to manage
-> recently added vnifilter on a collect metadata
-> vxlan (external) device. Also includes per vni stats
-> support.
+On 5/4/22 7:00 PM, Chris Packham wrote:
+> From: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
 > 
-> examples:
-> $bridge vni add dev vxlan0 vni 400
+> kmemleak reports the following when routing multicast traffic over an
+> ipsec tunnel.
 > 
-> $bridge vni add dev vxlan0 vni 200 group 239.1.1.101
+> Kmemleak output:
+> unreferenced object 0x8000000044bebb00 (size 256):
+>   comm "softirq", pid 0, jiffies 4294985356 (age 126.810s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 80 00 00 00 05 13 74 80  ..............t.
+>     80 00 00 00 04 9b bf f9 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<00000000f83947e0>] __kmalloc+0x1e8/0x300
+>     [<00000000b7ed8dca>] metadata_dst_alloc+0x24/0x58
+>     [<0000000081d32c20>] __ipgre_rcv+0x100/0x2b8
+>     [<00000000824f6cf1>] gre_rcv+0x178/0x540
+>     [<00000000ccd4e162>] gre_rcv+0x7c/0xd8
+>     [<00000000c024b148>] ip_protocol_deliver_rcu+0x124/0x350
+>     [<000000006a483377>] ip_local_deliver_finish+0x54/0x68
+>     [<00000000d9271b3a>] ip_local_deliver+0x128/0x168
+>     [<00000000bd4968ae>] xfrm_trans_reinject+0xb8/0xf8
+>     [<0000000071672a19>] tasklet_action_common.isra.16+0xc4/0x1b0
+>     [<0000000062e9c336>] __do_softirq+0x1fc/0x3e0
+>     [<00000000013d7914>] irq_exit+0xc4/0xe0
+>     [<00000000a4d73e90>] plat_irq_dispatch+0x7c/0x108
+>     [<000000000751eb8e>] handle_int+0x16c/0x178
+>     [<000000001668023b>] _raw_spin_unlock_irqrestore+0x1c/0x28
 > 
-> $bridge vni del dev vxlan0 vni 400
+> The metadata dst is leaked when ip_route_input_mc() updates the dst for
+> the skb. Commit f38a9eb1f77b ("dst: Metadata destinations") correctly
+> handled dropping the dst in ip_route_input_slow() but missed the
+> multicast case which is handled by ip_route_input_mc(). Drop the dst in
+> ip_route_input_mc() avoiding the leak.
 > 
-> $bridge vni show
+> Fixes: f38a9eb1f77b ("dst: Metadata destinations")
+> Signed-off-by: Lokesh Dhoundiyal <lokesh.dhoundiyal@alliedtelesis.co.nz>
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+> ---
 > 
-> $bridge -s vni show
+> Notes:
+>     We started seeing this leak in our scenario after commit c0d59da79534
+>     ("ip_gre: Make none-tun-dst gre tunnel store tunnel info as metadat_dst
+>     in recv") but there may be other paths that hit the leak so I've set the
+>     fixes tag as f38a9eb1f77b ("dst: Metadata destinations").
 > 
+>  net/ipv4/route.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
 
-hey Roopa: sorry for the delay; traveling. The patches have a number of
-new uses of matches(). We are not taking any more of those; please
-convert to strcmp. The rest looks fine to me.
+Reviewed-by: David Ahern <dsahern@kernel.org>
+
 
