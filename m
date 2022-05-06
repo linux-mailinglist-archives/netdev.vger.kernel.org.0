@@ -2,146 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6A9051D60C
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 12:55:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC77751D616
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 12:58:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1391089AbiEFK7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 06:59:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59500 "EHLO
+        id S1391107AbiEFLCa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 07:02:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391083AbiEFK7a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 06:59:30 -0400
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818A72125F;
-        Fri,  6 May 2022 03:55:47 -0700 (PDT)
-Received: by mail-wm1-x32c.google.com with SMTP id 125-20020a1c1983000000b003941f354c62so4157796wmz.0;
-        Fri, 06 May 2022 03:55:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MiSdeuIWfJPHE02m0fnyecGEq/W7GHoLUnL16Dqju/k=;
-        b=O8AiPdJT+IpJW26Bu8XAWVpVSaAlhbrZFBrtU+xNmuwUr4z1n8Lfo6Dez6JVnSZw3Y
-         DxWZ4k6zHHkAJEcxm6JD/DDTCgxzFNYgS58zRKlxeA7m847yL2L3xbbAzroPPUs8GzqY
-         fs+IxV//2pSRjBIi7U8swFqMqqdCCAELT2GdQ2cM6DMtR+RIvnj6fCOj+Rdi/JoEcczG
-         Yj1a9XwCoNBRUvfoiM+ri2YeEUeo0dqXtI81vLA/EcfBK3b5vUNcycqchKbRTBCf9Ofj
-         rO9Fj7sp+30szZzKD+WLNZmFM7/CxqFppkdO4PJ2M41vn9KLyE2IeOC6SsVAWb3DBfSB
-         LrbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MiSdeuIWfJPHE02m0fnyecGEq/W7GHoLUnL16Dqju/k=;
-        b=kj9NI4TydtUbbP9o3n0+OD1ANi3l0sPjjv50onGdOCkRwbNjNPbTAqQVQj9D0l/QdM
-         9b77KbxA1F0tOgzEozrsbW3LhbORXq7QFFouOtHA9Urht0VdRvfe900QJwwc8OCoQtVA
-         suwXjxjjq2cUBGXyEXAvJO7m1KExdyjhXeWDpoIduUw8kdBDx7uhUPomRC5jkYzhaPfG
-         77wDpdLEqRDTXUKcqEyqzRVg2irfnrGDSxIw3h9C3bn39K7H5iXLfI57M/wtT7dawIxl
-         U497Tt/poaKO7FsHRIuCOV5U7qkZucMpJLBbdHC7nWaO9NXkHlVyGgxnL/WPxaIldUQM
-         +JDQ==
-X-Gm-Message-State: AOAM531cDTb3jgRWcrjoHfF+VfupWgqJm/lH35h42vIMArpr0fXA9rjH
-        usJu/JCtclDNzWrKKqtI1IU=
-X-Google-Smtp-Source: ABdhPJzs0oMneS1c0XF1SbfGLq5qEyW+UjmnghBw+Zmpjr3zONou2rvHLl5fWk56j7LojJpw5Rsb7g==
-X-Received: by 2002:a1c:3b54:0:b0:394:3910:3c7b with SMTP id i81-20020a1c3b54000000b0039439103c7bmr2710106wma.3.1651834545983;
-        Fri, 06 May 2022 03:55:45 -0700 (PDT)
-Received: from localhost.localdomain (52.pool85-60-27.dynamic.orange.es. [85.60.27.52])
-        by smtp.gmail.com with ESMTPSA id l13-20020a7bc34d000000b003942a244ebfsm3771969wmj.4.2022.05.06.03.55.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 03:55:45 -0700 (PDT)
-From:   Carlos Fernandez <carlos.escuin@gmail.com>
-X-Google-Original-From: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
-To:     pabeni@redhat.com, carlos.fernandez@technica-engineering.de,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net v2] net: macsec: retrieve the XPN attributes before offloading
-Date:   Fri,  6 May 2022 12:55:40 +0200
-Message-Id: <20220506105540.9868-1-carlos.fernandez@technica-engineering.de>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1391105AbiEFLC3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 07:02:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 517E81F614;
+        Fri,  6 May 2022 03:58:47 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD90461BB6;
+        Fri,  6 May 2022 10:58:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38CA5C385AE;
+        Fri,  6 May 2022 10:58:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651834726;
+        bh=wGkjYK+Q3/CWC/Vo7gfKw8naKn70zntYWDbUwNfSiuM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tVZoGX5fPJjH70QTpNeAjArJAayUKcJ09Js+S7NxoctUpKgibefflt6GaBjp+GOp/
+         g9ahxBYP73eMsMncs4j1NA+ERq8cB61LkoyCrjZ5mm1/OBByAOb7Tafu0azvL9ArOB
+         qoS3tsehKaQhYmSC3ueB8NSLxspqYxG3wEQGbwnouWohYHdmsQKsNXFw4a9pSpHrIa
+         wbGgK0fsWV5RvAb8OAxb91NBV73KO+cfWhV3qIOFAhlXh29fos9atargGnr/u07nJS
+         +c5k9WJKiHMRfH53sqdgmJ/rvhN2Kd24kfyN+ivM1LXGgn2Ufqn3GWzppF+G7Bnqbv
+         HjX7slXKnCoNw==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nmvfX-009RKN-IV; Fri, 06 May 2022 11:58:43 +0100
+Date:   Fri, 06 May 2022 11:58:43 +0100
+Message-ID: <87tua36i70.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: Re: [PATCH net-next v2 5/7] usbnet: smsc95xx: Forward PHY interrupts to PHY driver to avoid polling
+In-Reply-To: <20220505185328.GA14123@wunner.de>
+References: <cover.1651574194.git.lukas@wunner.de>
+        <c6b7f4e4a17913d2f2bc4fe722df0804c2d6fea7.1651574194.git.lukas@wunner.de>
+        <20220505113207.487861b2@kernel.org>
+        <20220505185328.GA14123@wunner.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: lukas@wunner.de, kuba@kernel.org, tglx@linutronix.de, davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org, linux-usb@vger.kernel.org, steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com, oneukum@suse.com, andre.edich@microchip.com, linux@rempel-privat.de, martyn.welch@collabora.com, ghojda@yo2urs.ro, chf.fritz@googlemail.com, LinoSanfilippo@gmx.de, p.rosenberger@kunbus.com, hkallweit1@gmail.com, andrew@lunn.ch, linux@armlinux.org.uk, fntoth@gmail.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When MACsec offloading is used with XPN, before mdo_add_rxsa
-and mdo_add_txsa functions are called, the key salt is not
-copied to the macsec context struct. Offloaded phys will need
-this data when performing offloading.
+On Thu, 05 May 2022 19:53:28 +0100,
+Lukas Wunner <lukas@wunner.de> wrote:
+> 
+> On Thu, May 05, 2022 at 11:32:07AM -0700, Jakub Kicinski wrote:
+> > On Tue, 3 May 2022 15:15:05 +0200 Lukas Wunner wrote:
+> > > @@ -608,11 +618,20 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+> > >  	intdata = get_unaligned_le32(urb->transfer_buffer);
+> > >  	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
+> > >  
+> > > +	/* USB interrupts are received in softirq (tasklet) context.
+> > > +	 * Switch to hardirq context to make genirq code happy.
+> > > +	 */
+> > > +	local_irq_save(flags);
+> > > +	__irq_enter_raw();
+> > > +
+> > >  	if (intdata & INT_ENP_PHY_INT_)
+> > > -		;
+> > > +		generic_handle_domain_irq(pdata->irqdomain, PHY_HWIRQ);
+> > >  	else
+> > >  		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
+> > >  			    intdata);
+> > > +
+> > > +	__irq_exit_raw();
+> > > +	local_irq_restore(flags);
+> > 
+> > IRQ maintainers could you cast your eyes over this?
+> > 
+> > Full patch:
+> > 
+> > https://lore.kernel.org/all/c6b7f4e4a17913d2f2bc4fe722df0804c2d6fea7.1651574194.git.lukas@wunner.de/
+> 
+> This is basically identical to what drivers/net/usb/lan78xx.c does
+> in lan78xx_status(), except I'm passing the hw irq instead of the
+> linux irq to genirq code, thereby avoiding the overhead of a
+> radix_tree_lookup().
+> 
+> generic_handle_domain_irq() warns unconditionally on !in_irq(),
+> unlike handle_irq_desc(), which constrains the warning to
+> handle_enforce_irqctx() (i.e. x86 APIC, arm GIC/GICv3).
+> Perhaps that's an oversight in generic_handle_domain_irq(),
+> unless __irq_resolve_mapping() becomes unsafe outside in_irq()
+> for some reason...
+> 
+> In any case the unconditional in_irq() necessitates __irq_enter_raw()
+> here.
+> 
+> And there's no _safe variant() of generic_handle_domain_irq()
+> (unlike generic_handle_irq_safe() which was recently added by
+> 509853f9e1e7), hence the necessity of an explicit local_irq_save().
 
-Fix by copying salt and id to context struct before calling the
-offloading functions.
+Please don't directly use __irq_enter_raw() and similar things
+directly in driver code (it doesn't do anything related to RCU, for
+example, which could be problematic if used in arbitrary contexts).
+Given how infrequent this interrupt is, I'd rather you use something
+similar to what lan78xx is doing, and be done with it.
 
-Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites")
+And since this is a construct that seems to be often repeated, why
+don't you simply make the phy interrupt handling available over a
+smp_call_function() interface, which would always put you in the
+correct context and avoid faking things up?
 
-Signed-off-by: Carlos Fernandez <carlos.fernandez@technica-engineering.de>
----
- drivers/net/macsec.c | 30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+Thanks,
 
-diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
-index 832f09ac075e..4f2bd3d722c3 100644
---- a/drivers/net/macsec.c
-+++ b/drivers/net/macsec.c
-@@ -1804,6 +1804,14 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 
- 	rx_sa->sc = rx_sc;
- 
-+	if (secy->xpn) {
-+		rx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
-+		nla_memcpy(rx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
-+			   MACSEC_SALT_LEN);
-+	}
-+
-+	nla_memcpy(rx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
-+
- 	/* If h/w offloading is available, propagate to the device */
- 	if (macsec_is_offloaded(netdev_priv(dev))) {
- 		const struct macsec_ops *ops;
-@@ -1826,13 +1834,6 @@ static int macsec_add_rxsa(struct sk_buff *skb, struct genl_info *info)
- 			goto cleanup;
- 	}
- 
--	if (secy->xpn) {
--		rx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
--		nla_memcpy(rx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
--			   MACSEC_SALT_LEN);
--	}
--
--	nla_memcpy(rx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
- 	rcu_assign_pointer(rx_sc->sa[assoc_num], rx_sa);
- 
- 	rtnl_unlock();
-@@ -2046,6 +2047,14 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 	if (assoc_num == tx_sc->encoding_sa && tx_sa->active)
- 		secy->operational = true;
- 
-+	if (secy->xpn) {
-+		tx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
-+		nla_memcpy(tx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
-+			   MACSEC_SALT_LEN);
-+	}
-+
-+	nla_memcpy(tx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
-+
- 	/* If h/w offloading is available, propagate to the device */
- 	if (macsec_is_offloaded(netdev_priv(dev))) {
- 		const struct macsec_ops *ops;
-@@ -2068,13 +2077,6 @@ static int macsec_add_txsa(struct sk_buff *skb, struct genl_info *info)
- 			goto cleanup;
- 	}
- 
--	if (secy->xpn) {
--		tx_sa->ssci = nla_get_ssci(tb_sa[MACSEC_SA_ATTR_SSCI]);
--		nla_memcpy(tx_sa->key.salt.bytes, tb_sa[MACSEC_SA_ATTR_SALT],
--			   MACSEC_SALT_LEN);
--	}
--
--	nla_memcpy(tx_sa->key.id, tb_sa[MACSEC_SA_ATTR_KEYID], MACSEC_KEYID_LEN);
- 	rcu_assign_pointer(tx_sc->sa[assoc_num], tx_sa);
- 
- 	rtnl_unlock();
+	M.
+
+-- 
+Without deviation from the norm, progress is not possible.
