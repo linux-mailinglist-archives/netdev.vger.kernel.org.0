@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81BC451E290
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 01:41:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8674E51E1D6
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 01:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444723AbiEFWTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 18:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59682 "EHLO
+        id S1444712AbiEFWTm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 18:19:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444695AbiEFWT2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 18:19:28 -0400
-Received: from smtp3.emailarray.com (smtp3.emailarray.com [65.39.216.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 984AEE0DD
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 15:15:44 -0700 (PDT)
-Received: (qmail 73485 invoked by uid 89); 6 May 2022 22:15:43 -0000
+        with ESMTP id S1444713AbiEFWTa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 18:19:30 -0400
+Received: from smtp5.emailarray.com (smtp5.emailarray.com [65.39.216.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DD7615FE0
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 15:15:46 -0700 (PDT)
+Received: (qmail 68703 invoked by uid 89); 6 May 2022 22:15:44 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
-  by smtp3.emailarray.com with SMTP; 6 May 2022 22:15:43 -0000
+  by smtp5.emailarray.com with SMTP; 6 May 2022 22:15:44 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     richardcochran@gmail.com, kernel-team@fb.com, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net-next v2 08/10] ptp: ocp: fix PPS source selector reporting
-Date:   Fri,  6 May 2022 15:15:29 -0700
-Message-Id: <20220506221531.1308-9-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next v2 09/10] ptp: ocp: Add firmware header checks
+Date:   Fri,  6 May 2022 15:15:30 -0700
+Message-Id: <20220506221531.1308-10-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220506221531.1308-1-jonathan.lemon@gmail.com>
 References: <20220506221531.1308-1-jonathan.lemon@gmail.com>
@@ -40,85 +40,142 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The NTL timecard design has a PPS1 selector which selects the
-the PPS source automatically, according to Section 1.9 of the
-documentation.
+From: Vadim Fedorenko <vadfed@fb.com>
 
-  If there is a SMA PPS input detected:
-     - send signal to MAC and PPS slave selector.
+Right now it's possible to flash any kind of binary via devlink and
+break the card easily. This diff adds an optional header check when
+installing the firmware.
 
-  If there is a MAC PPS input detected:
-     - send GNSS1 to the MAC
-     - send MAC to the PPS slave
-
-  If there is a GNSS1 input detected:
-     - send GNSS1 to the MAC
-     - send GNSS1 to the PPS slave.MAC
-
+Signed-off-by: Vadim Fedorenko <vadfed@fb.com>
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- drivers/ptp/ptp_ocp.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
+ drivers/ptp/ptp_ocp.c | 77 ++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 72 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index ec3c21655382..787561be37da 100644
+index 787561be37da..e056ccaec80d 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -3071,10 +3071,10 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
- 	struct device *dev = s->private;
- 	struct ptp_system_timestamp sts;
- 	struct ts_reg __iomem *ts_reg;
-+	char *buf, *src, *mac_src;
- 	struct timespec64 ts;
- 	struct ptp_ocp *bp;
- 	u16 sma_val[4][2];
--	char *src, *buf;
- 	u32 ctrl, val;
- 	bool on, map;
- 	int i;
-@@ -3237,17 +3237,26 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
- 	if (bp->pps_select) {
- 		val = ioread32(&bp->pps_select->gpio1);
- 		src = &buf[80];
--		if (val & 0x01)
-+		mac_src = "GNSS1";
-+		if (val & 0x01) {
- 			gpio_input_map(src, bp, sma_val, 0, NULL);
--		else if (val & 0x02)
-+			mac_src = src;
-+		} else if (val & 0x02)
- 			src = "MAC";
- 		else if (val & 0x04)
- 			src = "GNSS1";
--		else
-+		else {
- 			src = "----";
-+			mac_src = src;
-+		}
- 	} else {
- 		src = "?";
-+		mac_src = src;
- 	}
-+	seq_printf(s, "MAC PPS1 src: %s\n", mac_src);
+@@ -19,6 +19,7 @@
+ #include <linux/i2c.h>
+ #include <linux/mtd/mtd.h>
+ #include <linux/nvmem-consumer.h>
++#include <linux/crc16.h>
+ 
+ #ifndef PCI_VENDOR_ID_FACEBOOK
+ #define PCI_VENDOR_ID_FACEBOOK 0x1d9b
+@@ -223,6 +224,16 @@ struct ptp_ocp_flash_info {
+ 	void *data;
+ };
+ 
++struct ptp_ocp_firmware_header {
++	char magic[4];
++	__be16 pci_vendor_id;
++	__be16 pci_device_id;
++	__be32 image_size;
++	__be16 hw_revision;
++	__be16 crc;
++};
++#define OCP_FIRMWARE_MAGIC_HEADER "OCPC"
 +
-+	gpio_input_map(buf, bp, sma_val, 1, "GNSS2");
-+	seq_printf(s, "MAC PPS2 src: %s\n", buf);
+ struct ptp_ocp_i2c_info {
+ 	const char *name;
+ 	unsigned long fixed_rate;
+@@ -1334,25 +1345,81 @@ ptp_ocp_find_flash(struct ptp_ocp *bp)
+ 	return dev;
+ }
  
- 	/* assumes automatic switchover/selection */
- 	val = ioread32(&bp->reg->select);
-@@ -3272,12 +3281,6 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
- 	seq_printf(s, "%7s: %s, state: %s\n", "PHC src", buf,
- 		   val & OCP_STATUS_IN_SYNC ? "sync" : "unsynced");
++static int
++ptp_ocp_devlink_fw_image(struct devlink *devlink, const struct firmware *fw,
++			 const u8 **data, size_t *size)
++{
++	struct ptp_ocp *bp = devlink_priv(devlink);
++	const struct ptp_ocp_firmware_header *hdr;
++	size_t offset, length;
++	u16 crc;
++
++	hdr = (const struct ptp_ocp_firmware_header *)fw->data;
++	if (memcmp(hdr->magic, OCP_FIRMWARE_MAGIC_HEADER, 4)) {
++		devlink_flash_update_status_notify(devlink,
++			"No firmware header found, flashing raw image",
++			NULL, 0, 0);
++		offset = 0;
++		length = fw->size;
++		goto out;
++	}
++
++	if (be16_to_cpu(hdr->pci_vendor_id) != bp->pdev->vendor ||
++	    be16_to_cpu(hdr->pci_device_id) != bp->pdev->device) {
++		devlink_flash_update_status_notify(devlink,
++			"Firmware image compatibility check failed",
++			NULL, 0, 0);
++		return -EINVAL;
++	}
++
++	offset = sizeof(*hdr);
++	length = be32_to_cpu(hdr->image_size);
++	if (length != (fw->size - offset)) {
++		devlink_flash_update_status_notify(devlink,
++			"Firmware image size check failed",
++			NULL, 0, 0);
++		return -EINVAL;
++	}
++
++	crc = crc16(0xffff, &fw->data[offset], length);
++	if (be16_to_cpu(hdr->crc) != crc) {
++		devlink_flash_update_status_notify(devlink,
++			"Firmware image CRC check failed",
++			NULL, 0, 0);
++		return -EINVAL;
++	}
++
++out:
++	*data = &fw->data[offset];
++	*size = length;
++
++	return 0;
++}
++
+ static int
+ ptp_ocp_devlink_flash(struct devlink *devlink, struct device *dev,
+ 		      const struct firmware *fw)
+ {
+ 	struct mtd_info *mtd = dev_get_drvdata(dev);
+ 	struct ptp_ocp *bp = devlink_priv(devlink);
+-	size_t off, len, resid, wrote;
++	size_t off, len, size, resid, wrote;
+ 	struct erase_info erase;
+ 	size_t base, blksz;
+-	int err = 0;
++	const u8 *data;
++	int err;
++
++	err = ptp_ocp_devlink_fw_image(devlink, fw, &data, &size);
++	if (err)
++		goto out;
  
--	/* reuses PPS1 src from earlier */
--	seq_printf(s, "MAC PPS1 src: %s\n", src);
--
--	gpio_input_map(buf, bp, sma_val, 1, "GNSS2");
--	seq_printf(s, "MAC PPS2 src: %s\n", buf);
--
- 	if (!ptp_ocp_gettimex(&bp->ptp_info, &ts, &sts)) {
- 		struct timespec64 sys_ts;
- 		s64 pre_ns, post_ns, ns;
+ 	off = 0;
+ 	base = bp->flash_start;
+ 	blksz = 4096;
+-	resid = fw->size;
++	resid = size;
+ 
+ 	while (resid) {
+ 		devlink_flash_update_status_notify(devlink, "Flashing",
+-						   NULL, off, fw->size);
++						   NULL, off, size);
+ 
+ 		len = min_t(size_t, resid, blksz);
+ 		erase.addr = base + off;
+@@ -1362,7 +1429,7 @@ ptp_ocp_devlink_flash(struct devlink *devlink, struct device *dev,
+ 		if (err)
+ 			goto out;
+ 
+-		err = mtd_write(mtd, base + off, len, &wrote, &fw->data[off]);
++		err = mtd_write(mtd, base + off, len, &wrote, data + off);
+ 		if (err)
+ 			goto out;
+ 
 -- 
 2.31.1
 
