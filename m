@@ -2,29 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B202F51E20D
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 01:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D184251E1E2
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 01:40:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444811AbiEFWl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 18:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49230 "EHLO
+        id S1444813AbiEFWl3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 18:41:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356030AbiEFWl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 18:41:26 -0400
+        with ESMTP id S1356030AbiEFWl3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 18:41:29 -0400
 Received: from smtp3.emailarray.com (smtp3.emailarray.com [65.39.216.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 375E4496BF
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 15:37:41 -0700 (PDT)
-Received: (qmail 16631 invoked by uid 89); 6 May 2022 22:37:40 -0000
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA47E496BF
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 15:37:44 -0700 (PDT)
+Received: (qmail 16696 invoked by uid 89); 6 May 2022 22:37:42 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
-  by smtp3.emailarray.com with SMTP; 6 May 2022 22:37:40 -0000
+  by smtp3.emailarray.com with SMTP; 6 May 2022 22:37:42 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     richardcochran@gmail.com, kernel-team@fb.com, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net RESEND] ptp: ocp: have adjtime handle negative delta_ns correctly
-Date:   Fri,  6 May 2022 15:37:38 -0700
-Message-Id: <20220506223739.1930-1-jonathan.lemon@gmail.com>
+Subject: [PATCH net RESEND] ptp: ocp: Use DIV64_U64_ROUND_UP for rounding.
+Date:   Fri,  6 May 2022 15:37:39 -0700
+Message-Id: <20220506223739.1930-2-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220506223739.1930-1-jonathan.lemon@gmail.com>
+References: <20220506223739.1930-1-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
@@ -38,46 +40,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-delta_ns is a s64, but it was being passed ptp_ocp_adjtime_coarse
-as an u64.  Also, it turns out that timespec64_add_ns() only handles
-positive values, so the math needs to be updated.
+The initial code used roundup() to round the starting time to
+a multiple of a period.  This generated an error on 32-bit
+systems, so was replaced with DIV_ROUND_UP_ULL().
 
-Fix by passing in the correct signed value, then adding to a
-nanosecond version of the timespec.
+However, this truncates to 32-bits on a 64-bit system.  Replace
+with DIV64_U64_ROUND_UP() instead.
 
-Fixes: 90f8f4c0e3ce ("ptp: ocp: Add ptp_ocp_adjtime_coarse for large adjustments")
+Fixes: b325af3cfab9 ("ptp: ocp: Add signal generators and update sysfs nodes")
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
 Resend to fix misquoted Fixes: tag
 ---
- drivers/ptp/ptp_ocp.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/ptp/ptp_ocp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index dd45471f6780..65e592ec272e 100644
+index 0feaa4b45317..dd45471f6780 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -841,16 +841,18 @@ __ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u32 adj_val)
- }
- 
- static void
--ptp_ocp_adjtime_coarse(struct ptp_ocp *bp, u64 delta_ns)
-+ptp_ocp_adjtime_coarse(struct ptp_ocp *bp, s64 delta_ns)
- {
- 	struct timespec64 ts;
- 	unsigned long flags;
- 	int err;
-+	s64 ns;
- 
- 	spin_lock_irqsave(&bp->lock, flags);
- 	err = __ptp_ocp_gettime_locked(bp, &ts, NULL);
- 	if (likely(!err)) {
--		timespec64_add_ns(&ts, delta_ns);
-+		ns = timespec64_to_ns(&ts) + delta_ns;
-+		ts = ns_to_timespec64(ns);
- 		__ptp_ocp_settime_locked(bp, &ts);
+@@ -1557,7 +1557,7 @@ ptp_ocp_signal_set(struct ptp_ocp *bp, int gen, struct ptp_ocp_signal *s)
+ 	start_ns = ktime_set(ts.tv_sec, ts.tv_nsec) + NSEC_PER_MSEC;
+ 	if (!s->start) {
+ 		/* roundup() does not work on 32-bit systems */
+-		s->start = DIV_ROUND_UP_ULL(start_ns, s->period);
++		s->start = DIV64_U64_ROUND_UP(start_ns, s->period);
+ 		s->start = ktime_add(s->start, s->phase);
  	}
- 	spin_unlock_irqrestore(&bp->lock, flags);
+ 
 -- 
 2.31.1
 
