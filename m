@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEECB51DFE3
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 22:02:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8952451DFE8
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 22:02:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392523AbiEFUGC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 16:06:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35854 "EHLO
+        id S1390742AbiEFUGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 16:06:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392485AbiEFUGB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 16:06:01 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F5D95F8C3
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 13:02:17 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id gh6so16432548ejb.0
-        for <netdev@vger.kernel.org>; Fri, 06 May 2022 13:02:17 -0700 (PDT)
+        with ESMTP id S1392566AbiEFUGE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 16:06:04 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E715D5F8C3
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 13:02:19 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id kq17so16388195ejb.4
+        for <netdev@vger.kernel.org>; Fri, 06 May 2022 13:02:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=engleder-embedded-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=iVpcVd0AG8Qe/siFxqPItCTauXIAj/GtOoZ8PYCyTE4=;
-        b=EpQsnl/4njl0PeNQG/BTsxgwTcy3d+KJ+oNRro1ONq5xQ2K47gZ9y4DpL1pLAByt+/
-         KPw17TAJkYe7WTXlf98dAOQGeAEJ/6lx9XfZBLulEYyR4CgBK51xys9s/HyQ2RROsyM4
-         Nx62Ze6FkKWmYt3pcQ1f9u6NWHwTVrmqwfisQmVL/doYYPBEXK6xBiKIr7tNoiyHh0Kf
-         +gQ0I6NfvigwaCwSr88n6uCzPYXoSAGEmKKfalr89BmqsxQ82NahWbHPb6sHeIlXqMdL
-         wvr/P8Nu/2TtNsVWAUVnPpHeRfoFyOklNF4NPZqg1LF7k6WHk4l8nmoko8f20kF1qQz5
-         mzWA==
+        bh=xoVsRGejc7SLTpulyc05jnVi3zahQUiuPmNIltw8heM=;
+        b=xDUui9fcqirnMiIQzuI/5wo90GL76WVLQEJMSke/dv/Y9P8px4QCotZ7bkaEVJQ4LP
+         lO0HJv0WoKa51wHQ5A4wWocKGnf+b2C4MZWGB/46Oft3o4gq4OtZAoRtP+3PDMlctIag
+         u3DTr1DP2n6yOFHYQiZx452Kyc+oXdW6ed1QMnKRWdiJx1DQqPuTjbKO9IO42EqU5i5z
+         wdgo1LcMP55W2WdG/YEo17McawPTXFWzI3iK07fiTl34lSW7TLshUrGVp9+jgSUFA2fd
+         lfU7hzNEuJkAkG+OdACU66bQ02uzHpao3NMQ522Z8LosZMoyO1h/IWKcixe0F4FXkeMF
+         LUcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=iVpcVd0AG8Qe/siFxqPItCTauXIAj/GtOoZ8PYCyTE4=;
-        b=X8NegNw0kmroTR0UByDNNn9lwWQ0AqPUJscLrJ1UTY6hP4YPuMEx1NFgUa6Two0Duu
-         RiC9frCPTX+5R05N7svfu+HY27X341b4gP4owz8zuV+mmoO5vMX/ESlXITLW48otirR5
-         aLBg5cMLftNxG8v6UeF+OSSM2jwB/B8XOhMAITFMrvsdMZ4gEkIx3XdEkEW1dcFBFfA2
-         da1K257j4UHkgoxtP4c+ocDAKsL4J220AN2jWtATvxw8mIZg6M9L4eWxmgaVk5LdECqW
-         VQpi9ZRb9PtP1y4xBXO3nYsIg2pMtYDUOmy6Tqk+aLFD2HUfg7jBsCvFNSu/Ay2FkYGO
-         dRdw==
-X-Gm-Message-State: AOAM532SVJqiXL0Fo3GbKPq4ePmSN+rAKiUxviRf5dJE8EZvCnwNaM/b
-        jncAJ05Ma7LOO79pHolMgZVbng==
-X-Google-Smtp-Source: ABdhPJymzoUwFcmP2ccMnDWK95Lmqx2Etz3/sGKKlDE0XaOsvS469Xd9x8j6VgtHbz7H4X/qBznnVw==
-X-Received: by 2002:a17:907:2064:b0:6f4:3f07:c76e with SMTP id qp4-20020a170907206400b006f43f07c76emr4527619ejb.462.1651867335949;
-        Fri, 06 May 2022 13:02:15 -0700 (PDT)
+        bh=xoVsRGejc7SLTpulyc05jnVi3zahQUiuPmNIltw8heM=;
+        b=oWDWmnyLDgUs2aSqf/vOWqYzt9uIftCt6AeWgFSxgu78lO8UOcnXSbdBOG1ewHfIIv
+         Ujj8/O+27VvcrkAfbk7Srt6Sz2/RiZunDUrUam1TDbeUTpVVtaX6MjpLzDKB5dpz5gg6
+         RhKnQTD+C+2z8F7WSYn5Pt9rs961IiyqLRq9ar2iyGgfKF/9iTClGmjANJQ4khAEIGpq
+         MhXaUDw7Amry0MD/hEdgWf427KNn694tKxjSvbGfZuDNAvgmaxLdiZ1PLg1YBLdPdLv0
+         pGQwxHtsJW5LBOqh7SAaScVsdon8nLAvxTMGMCqv7O9NZSIBM48iso6hTHISXAjdgi0G
+         J6QA==
+X-Gm-Message-State: AOAM5313QqHy7glpeowcjuleLlwX1SzptImZlXkafSX25OJ05e1czQlT
+        iadhMwPfm12Wvm4lfj3pc3simQ==
+X-Google-Smtp-Source: ABdhPJxERB7WBKs358mL5A+qWxnO8Ul5y7PT4SEX8uDDz1vXqmyq4DKz+AHg24ShL8yn+qIpw2zjAA==
+X-Received: by 2002:a17:907:6d24:b0:6f4:bc43:e7d1 with SMTP id sa36-20020a1709076d2400b006f4bc43e7d1mr4376145ejc.581.1651867338453;
+        Fri, 06 May 2022 13:02:18 -0700 (PDT)
 Received: from hornet.engleder.at ([2001:871:23a:237:6e3b:e5ff:fe2c:34c1])
-        by smtp.gmail.com with ESMTPSA id w5-20020a056402268500b0042617ba6389sm2719887edd.19.2022.05.06.13.02.15
+        by smtp.gmail.com with ESMTPSA id w5-20020a056402268500b0042617ba6389sm2719887edd.19.2022.05.06.13.02.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 13:02:15 -0700 (PDT)
+        Fri, 06 May 2022 13:02:18 -0700 (PDT)
 From:   Gerhard Engleder <gerhard@engleder-embedded.com>
 To:     richardcochran@gmail.com, vinicius.gomes@intel.com,
         yangbo.lu@nxp.com, davem@davemloft.net, kuba@kernel.org
 Cc:     mlichvar@redhat.com, willemb@google.com, kafai@fb.com,
         jonathan.lemon@gmail.com, netdev@vger.kernel.org,
         Gerhard Engleder <gerhard@engleder-embedded.com>
-Subject: [PATCH net-next v4 4/6] ptp: Support late timestamp determination
-Date:   Fri,  6 May 2022 22:01:40 +0200
-Message-Id: <20220506200142.3329-5-gerhard@engleder-embedded.com>
+Subject: [PATCH net-next v4 5/6] ptp: Speed up vclock lookup
+Date:   Fri,  6 May 2022 22:01:41 +0200
+Message-Id: <20220506200142.3329-6-gerhard@engleder-embedded.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20220506200142.3329-1-gerhard@engleder-embedded.com>
 References: <20220506200142.3329-1-gerhard@engleder-embedded.com>
@@ -70,203 +70,152 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a physical clock supports a free running cycle counter, then
-timestamps shall be based on this time too. For TX it is known in
-advance before the transmission if a timestamp based on the free running
-cycle counter is needed. For RX it is impossible to know which timestamp
-is needed before the packet is received and assigned to a socket.
+ptp_convert_timestamp() is called in the RX path of network messages.
+The current implementation takes ~5000ns on 1.2GHz A53. This is too much
+for the hot path of packet processing.
 
-Support late timestamp determination by a network device. Therefore, an
-address/cookie is stored within the new netdev_data field of struct
-skb_shared_hwtstamps. This address/cookie is provided to a new network
-device function called ndo_get_tstamp(), which returns a timestamp based
-on the normal/adjustable time or based on the free running cycle
-counter. If function is not supported, then timestamp handling is not
-changed.
-
-This mechanism is intended for RX, but TX use is also possible.
+Introduce hash table for fast vclock lookup in ptp_convert_timestamp().
+The execution time of ptp_convert_timestamp() is reduced to ~700ns on
+1.2GHz A53.
 
 Signed-off-by: Gerhard Engleder <gerhard@engleder-embedded.com>
+Acked-by: Richard Cochran <richardcochran@gmail.com>
 ---
- include/linux/netdevice.h | 21 +++++++++++++++++
- include/linux/skbuff.h    | 14 ++++++++---
- net/socket.c              | 49 +++++++++++++++++++++++++++++++--------
- 3 files changed, 71 insertions(+), 13 deletions(-)
+ drivers/ptp/ptp_private.h |  1 +
+ drivers/ptp/ptp_vclock.c  | 66 ++++++++++++++++++++++++++++-----------
+ 2 files changed, 48 insertions(+), 19 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 8cf0ac616cb9..efd136b2d177 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1356,6 +1356,12 @@ struct netdev_net_notifier {
-  *	The caller must be under RCU read context.
-  * int (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx, struct net_device_path *path);
-  *     Get the forwarding path to reach the real device from the HW destination address
-+ * ktime_t (*ndo_get_tstamp)(struct net_device *dev,
-+ *			     const struct skb_shared_hwtstamps *hwtstamps,
-+ *			     bool cycles);
-+ *	Get hardware timestamp based on normal/adjustable time or free running
-+ *	cycle counter. This function is required if physical clock supports a
-+ *	free running cycle counter.
+diff --git a/drivers/ptp/ptp_private.h b/drivers/ptp/ptp_private.h
+index ab47c10b3874..77918a2c6701 100644
+--- a/drivers/ptp/ptp_private.h
++++ b/drivers/ptp/ptp_private.h
+@@ -63,6 +63,7 @@ struct ptp_vclock {
+ 	struct ptp_clock *pclock;
+ 	struct ptp_clock_info info;
+ 	struct ptp_clock *clock;
++	struct hlist_node vclock_hash_node;
+ 	struct cyclecounter cc;
+ 	struct timecounter tc;
+ 	spinlock_t lock;	/* protects tc/cc */
+diff --git a/drivers/ptp/ptp_vclock.c b/drivers/ptp/ptp_vclock.c
+index c30bcce2bb43..1c0ed4805c0a 100644
+--- a/drivers/ptp/ptp_vclock.c
++++ b/drivers/ptp/ptp_vclock.c
+@@ -5,6 +5,7 @@
+  * Copyright 2021 NXP
   */
- struct net_device_ops {
- 	int			(*ndo_init)(struct net_device *dev);
-@@ -1578,6 +1584,9 @@ struct net_device_ops {
- 	struct net_device *	(*ndo_get_peer_dev)(struct net_device *dev);
- 	int                     (*ndo_fill_forward_path)(struct net_device_path_ctx *ctx,
-                                                          struct net_device_path *path);
-+	ktime_t			(*ndo_get_tstamp)(struct net_device *dev,
-+						  const struct skb_shared_hwtstamps *hwtstamps,
-+						  bool cycles);
- };
+ #include <linux/slab.h>
++#include <linux/hashtable.h>
+ #include "ptp_private.h"
  
- /**
-@@ -4761,6 +4770,18 @@ static inline void netdev_rx_csum_fault(struct net_device *dev,
- void net_enable_timestamp(void);
- void net_disable_timestamp(void);
+ #define PTP_VCLOCK_CC_SHIFT		31
+@@ -13,6 +14,32 @@
+ #define PTP_VCLOCK_FADJ_DENOMINATOR	15625ULL
+ #define PTP_VCLOCK_REFRESH_INTERVAL	(HZ * 2)
  
-+static inline ktime_t netdev_get_tstamp(struct net_device *dev,
-+					const struct skb_shared_hwtstamps *hwtstamps,
-+					bool cycles)
++/* protects vclock_hash addition/deletion */
++static DEFINE_SPINLOCK(vclock_hash_lock);
++
++static DEFINE_READ_MOSTLY_HASHTABLE(vclock_hash, 8);
++
++static void ptp_vclock_hash_add(struct ptp_vclock *vclock)
 +{
-+	const struct net_device_ops *ops = dev->netdev_ops;
++	spin_lock(&vclock_hash_lock);
 +
-+	if (ops->ndo_get_tstamp)
-+		return ops->ndo_get_tstamp(dev, hwtstamps, cycles);
++	hlist_add_head_rcu(&vclock->vclock_hash_node,
++			   &vclock_hash[vclock->clock->index % HASH_SIZE(vclock_hash)]);
 +
-+	return hwtstamps->hwtstamp;
++	spin_unlock(&vclock_hash_lock);
 +}
 +
- static inline netdev_tx_t __netdev_start_xmit(const struct net_device_ops *ops,
- 					      struct sk_buff *skb, struct net_device *dev,
- 					      bool more)
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 4d49503bdc4d..878b2631324c 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -588,8 +588,10 @@ static inline bool skb_frag_must_loop(struct page *p)
- 
- /**
-  * struct skb_shared_hwtstamps - hardware time stamps
-- * @hwtstamp:	hardware time stamp transformed into duration
-- *		since arbitrary point in time
-+ * @hwtstamp:		hardware time stamp transformed into duration
-+ *			since arbitrary point in time
-+ * @netdev_data:	address/cookie of network device driver used as
-+ *			reference to actual hardware time stamp
-  *
-  * Software time stamps generated by ktime_get_real() are stored in
-  * skb->tstamp.
-@@ -601,7 +603,10 @@ static inline bool skb_frag_must_loop(struct page *p)
-  * &skb_shared_info. Use skb_hwtstamps() to get a pointer.
-  */
- struct skb_shared_hwtstamps {
--	ktime_t	hwtstamp;
-+	union {
-+		ktime_t	hwtstamp;
-+		void *netdev_data;
-+	};
- };
- 
- /* Definitions for tx_flags in struct skb_shared_info */
-@@ -621,6 +626,9 @@ enum {
- 	/* generate wifi status information (where possible) */
- 	SKBTX_WIFI_STATUS = 1 << 4,
- 
-+	/* determine hardware time stamp based on time or cycles */
-+	SKBTX_HW_TSTAMP_NETDEV = 1 << 5,
++static void ptp_vclock_hash_del(struct ptp_vclock *vclock)
++{
++	spin_lock(&vclock_hash_lock);
 +
- 	/* generate software time stamp when entering packet scheduling */
- 	SKBTX_SCHED_TSTAMP = 1 << 6,
- };
-diff --git a/net/socket.c b/net/socket.c
-index 0f680c7d968a..6ee634c01eca 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -805,7 +805,28 @@ static bool skb_is_swtx_tstamp(const struct sk_buff *skb, int false_tstamp)
- 	return skb->tstamp && !false_tstamp && skb_is_err_queue(skb);
++	hlist_del_init_rcu(&vclock->vclock_hash_node);
++
++	spin_unlock(&vclock_hash_lock);
++
++	synchronize_rcu();
++}
++
+ static int ptp_vclock_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+ {
+ 	struct ptp_vclock *vclock = info_to_vclock(ptp);
+@@ -176,6 +203,8 @@ struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock)
+ 	snprintf(vclock->info.name, PTP_CLOCK_NAME_LEN, "ptp%d_virt",
+ 		 pclock->index);
+ 
++	INIT_HLIST_NODE(&vclock->vclock_hash_node);
++
+ 	spin_lock_init(&vclock->lock);
+ 
+ 	vclock->clock = ptp_clock_register(&vclock->info, &pclock->dev);
+@@ -187,11 +216,15 @@ struct ptp_vclock *ptp_vclock_register(struct ptp_clock *pclock)
+ 	timecounter_init(&vclock->tc, &vclock->cc, 0);
+ 	ptp_schedule_worker(vclock->clock, PTP_VCLOCK_REFRESH_INTERVAL);
+ 
++	ptp_vclock_hash_add(vclock);
++
+ 	return vclock;
  }
  
--static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb)
-+static ktime_t get_timestamp(struct sock *sk, struct sk_buff *skb, int *if_index)
-+{
-+	bool cycles = sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC;
-+	struct skb_shared_hwtstamps *shhwtstamps = skb_hwtstamps(skb);
-+	struct net_device *orig_dev;
-+	ktime_t hwtstamp;
-+
-+	rcu_read_lock();
-+	orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
-+	if (orig_dev) {
-+		*if_index = orig_dev->ifindex;
-+		hwtstamp = netdev_get_tstamp(orig_dev, shhwtstamps, cycles);
-+	} else {
-+		hwtstamp = shhwtstamps->hwtstamp;
-+	}
-+	rcu_read_unlock();
-+
-+	return hwtstamp;
-+}
-+
-+static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb,
-+			   int if_index)
+ void ptp_vclock_unregister(struct ptp_vclock *vclock)
  {
- 	struct scm_ts_pktinfo ts_pktinfo;
- 	struct net_device *orig_dev;
-@@ -815,11 +836,14 @@ static void put_ts_pktinfo(struct msghdr *msg, struct sk_buff *skb)
- 
- 	memset(&ts_pktinfo, 0, sizeof(ts_pktinfo));
- 
--	rcu_read_lock();
--	orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
--	if (orig_dev)
--		ts_pktinfo.if_index = orig_dev->ifindex;
--	rcu_read_unlock();
-+	if (!if_index) {
-+		rcu_read_lock();
-+		orig_dev = dev_get_by_napi_id(skb_napi_id(skb));
-+		if (orig_dev)
-+			if_index = orig_dev->ifindex;
-+		rcu_read_unlock();
-+	}
-+	ts_pktinfo.if_index = if_index;
- 
- 	ts_pktinfo.pkt_length = skb->len - skb_mac_offset(skb);
- 	put_cmsg(msg, SOL_SOCKET, SCM_TIMESTAMPING_PKTINFO,
-@@ -839,6 +863,7 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
- 	int empty = 1, false_tstamp = 0;
- 	struct skb_shared_hwtstamps *shhwtstamps =
- 		skb_hwtstamps(skb);
-+	int if_index;
- 	ktime_t hwtstamp;
- 
- 	/* Race occurred between timestamp enabling and packet
-@@ -887,18 +912,22 @@ void __sock_recv_timestamp(struct msghdr *msg, struct sock *sk,
- 	if (shhwtstamps &&
- 	    (sk->sk_tsflags & SOF_TIMESTAMPING_RAW_HARDWARE) &&
- 	    !skb_is_swtx_tstamp(skb, false_tstamp)) {
--		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
--			hwtstamp = ptp_convert_timestamp(&shhwtstamps->hwtstamp,
--							 sk->sk_bind_phc);
-+		if_index = 0;
-+		if (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP_NETDEV)
-+			hwtstamp = get_timestamp(sk, skb, &if_index);
- 		else
- 			hwtstamp = shhwtstamps->hwtstamp;
- 
-+		if (sk->sk_tsflags & SOF_TIMESTAMPING_BIND_PHC)
-+			hwtstamp = ptp_convert_timestamp(&hwtstamp,
-+							 sk->sk_bind_phc);
++	ptp_vclock_hash_del(vclock);
 +
- 		if (ktime_to_timespec64_cond(hwtstamp, tss.ts + 2)) {
- 			empty = 0;
+ 	ptp_clock_unregister(vclock->clock);
+ 	kfree(vclock);
+ }
+@@ -234,34 +267,29 @@ EXPORT_SYMBOL(ptp_get_vclocks_index);
  
- 			if ((sk->sk_tsflags & SOF_TIMESTAMPING_OPT_PKTINFO) &&
- 			    !skb_is_err_queue(skb))
--				put_ts_pktinfo(msg, skb);
-+				put_ts_pktinfo(msg, skb, if_index);
- 		}
- 	}
- 	if (!empty) {
+ ktime_t ptp_convert_timestamp(const ktime_t *hwtstamp, int vclock_index)
+ {
+-	char name[PTP_CLOCK_NAME_LEN] = "";
++	unsigned int hash = vclock_index % HASH_SIZE(vclock_hash);
+ 	struct ptp_vclock *vclock;
+-	struct ptp_clock *ptp;
+ 	unsigned long flags;
+-	struct device *dev;
+ 	u64 ns;
++	u64 vclock_ns = 0;
+ 
+-	snprintf(name, PTP_CLOCK_NAME_LEN, "ptp%d", vclock_index);
+-	dev = class_find_device_by_name(ptp_class, name);
+-	if (!dev)
+-		return 0;
++	ns = ktime_to_ns(*hwtstamp);
+ 
+-	ptp = dev_get_drvdata(dev);
+-	if (!ptp->is_virtual_clock) {
+-		put_device(dev);
+-		return 0;
+-	}
++	rcu_read_lock();
+ 
+-	vclock = info_to_vclock(ptp->info);
++	hlist_for_each_entry_rcu(vclock, &vclock_hash[hash], vclock_hash_node) {
++		if (vclock->clock->index != vclock_index)
++			continue;
+ 
+-	ns = ktime_to_ns(*hwtstamp);
++		spin_lock_irqsave(&vclock->lock, flags);
++		vclock_ns = timecounter_cyc2time(&vclock->tc, ns);
++		spin_unlock_irqrestore(&vclock->lock, flags);
++		break;
++	}
+ 
+-	spin_lock_irqsave(&vclock->lock, flags);
+-	ns = timecounter_cyc2time(&vclock->tc, ns);
+-	spin_unlock_irqrestore(&vclock->lock, flags);
++	rcu_read_unlock();
+ 
+-	put_device(dev);
+-	return ns_to_ktime(ns);
++	return ns_to_ktime(vclock_ns);
+ }
+ EXPORT_SYMBOL(ptp_convert_timestamp);
+ #endif
 -- 
 2.20.1
 
