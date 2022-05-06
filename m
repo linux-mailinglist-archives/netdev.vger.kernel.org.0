@@ -2,51 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E61451CE8C
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 04:16:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DD751CE4B
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 04:16:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387846AbiEFBYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 21:24:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45522 "EHLO
+        id S1352400AbiEFBed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 21:34:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387839AbiEFBX6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 21:23:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C50419D
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 18:20:16 -0700 (PDT)
+        with ESMTP id S232969AbiEFBec (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 21:34:32 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E9F5B896
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 18:30:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD39762023
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 01:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1F088C385B5;
-        Fri,  6 May 2022 01:20:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 19ED2B82E5D
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 01:30:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B6E0C385A4;
+        Fri,  6 May 2022 01:30:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651800015;
-        bh=kGdEq/FNJBhtqmjzibO9QDEiWqzQqYGySzfwOF9ATS4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=rH/fHozEmyVa+6vWTLq/AonDAzCgIFM1a8cxKSFhtQRtK7YsTKLaWQdQhxP3lal/A
-         4hYVJFEUd9IWtWHFXh55Em1r8uhCwLdy0kik/bytWpam/W2XdUuLF9gjw/RiW+x06b
-         mxeNUpqludoNKtTNT1pjRdt6/1iqRXM5XIsf89BcvHewGHdPkS8nspRruheDmifheQ
-         C2E+nqKQIpikH4abzKu6cxlpTw4tWr4sZ7Ag6QafFiofp3uOb6wVL57JPCQiFEW1vB
-         PNhkaw893B8Bf8eq9V+zJoKoEwDpwScqMi67L0fFEq4Tjd/J3CSEAjP4dYahgLQVho
-         bYvv79VCuX+Hw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0CFC3E8DBDA;
-        Fri,  6 May 2022 01:20:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1651800647;
+        bh=rLvqzKiS73+aVA3DDRGt5LJEuBw08EoKUpgSOHubVr0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tWBMVUwP9GE4RXaJAz8BtRgQn6l5jJSIQ+p7RgnHLY1ssxUDYs+yeb+piCjYF+UDW
+         fFa2Z5mWZCwHWeFER3EKmND90nRlG6k8dZMmlzfJF1BpAGIk6GbUonArcyg0PiybOb
+         7HX8ZgnWPyHcV7AwdQTUYzA/khWVorAZQNvEjBJ8kk739OtR/L2Tzemo1VGEEPzXe8
+         FB8cUqMTMHgI/WXkkFlRhD0vsT5LiOwby2eEFMJnYGlWz1OWkB3QzWP154lhZa23DB
+         fP+t5W+64ktukHkpvCrAY9Ja5sSqTDsEitPkhrheG/YroC4Ofg+OtqAVhPppOruvfP
+         55nXz+ci/Dziw==
+Date:   Thu, 5 May 2022 18:30:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tariq Toukan <tariqt@nvidia.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Gal Pressman <gal@nvidia.com>
+Subject: Re: [PATCH net] net: Fix features skip in for_each_netdev_feature()
+Message-ID: <20220505183046.19952bf2@kernel.org>
+In-Reply-To: <20220504080914.1918-1-tariqt@nvidia.com>
+References: <20220504080914.1918-1-tariqt@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] Revert "Merge branch 'mlxsw-line-card-model'"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165180001504.16316.12147367518416012413.git-patchwork-notify@kernel.org>
-Date:   Fri, 06 May 2022 01:20:15 +0000
-References: <20220504154037.539442-1-kuba@kernel.org>
-In-Reply-To: <20220504154037.539442-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com,
-        edumazet@google.com, jiri@nvidia.com, idosch@nvidia.com,
-        andrew@lunn.ch, dsahern@gmail.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,30 +53,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Wed,  4 May 2022 08:40:37 -0700 you wrote:
-> This reverts commit 5e927a9f4b9f29d78a7c7d66ea717bb5c8bbad8e, reversing
-> changes made to cfc1d91a7d78cf9de25b043d81efcc16966d55b3.
+On Wed, 4 May 2022 11:09:14 +0300 Tariq Toukan wrote:
+> The find_next_netdev_feature() macro gets the "remaining length",
+> not bit index.
+> Passing "bit - 1" for the following iteration is wrong as it skips
+> the adjacent bit. Pass "bit" instead.
 > 
-> The discussion is still ongoing so let's remove the uAPI
-> until the discussion settles.
+> Fixes: 3b89ea9c5902 ("net: Fix for_each_netdev_feature on Big endian")
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> Reviewed-by: Gal Pressman <gal@nvidia.com>
+> ---
+>  include/linux/netdev_features.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> Link: https://lore.kernel.org/all/20220425090021.32e9a98f@kernel.org/
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> 
-> [...]
+> Hi,
+> Please queue to -stable >= v5.0.
 
-Here is the summary with links:
-  - [net-next] Revert "Merge branch 'mlxsw-line-card-model'"
-    https://git.kernel.org/netdev/net-next/c/c4a67a21a6d2
+You can add the normal Cc: stable tags in networking these days, 
+the rules were updated.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+But I'll forgo doing that here since your >= 5.0 is incorrect, looks 
+like the bad commit got backported to earlier stable branches.
+Greg will probably do the right thing based on the Fixes tag, anyway.
