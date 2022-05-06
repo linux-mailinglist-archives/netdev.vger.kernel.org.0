@@ -2,72 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CFA551CE00
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 04:16:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35AF551CE40
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 04:16:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387945AbiEFBgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 5 May 2022 21:36:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54080 "EHLO
+        id S1387981AbiEFBoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 5 May 2022 21:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387939AbiEFBgD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 21:36:03 -0400
-Received: from mail-oa1-x2c.google.com (mail-oa1-x2c.google.com [IPv6:2001:4860:4864:20::2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A13E95D1A4
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 18:32:21 -0700 (PDT)
-Received: by mail-oa1-x2c.google.com with SMTP id 586e51a60fabf-edf9ddb312so4976211fac.8
-        for <netdev@vger.kernel.org>; Thu, 05 May 2022 18:32:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mdaverde-com.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=068F+h8RQfUvOVO1t4k8OZXqnvKUCyKIVv9Y/xDcfUE=;
-        b=X5LjzzrJPRILUj2wePdckLtkz/yTAOqqlWhNuos29HgZKVERn5uPygdpkEd7Or71yL
-         elGUCzpyV/JjsRz0SAB2nmrME7scMN0yoWb0QEG26w+WM3A0fx5DwIKj7ZDatndOD/rU
-         csRJ3qwoP/K+yJK1Abk6vIZCVNLHDfqqKe0sJlcZfpXpnHYo2uzpR9EHZRgL9q7Kmzwk
-         sr/vSoRnWjKthofCIScEFvjnCb0C4h4xMDEj34gmd7bhr5dFigfK5nwGjqayrUogWgUy
-         SZf8NU6wAlv9Sysds9a2iEZ+hUy6pcLCFgY7L0+WotCDwALnOEDjqLcaiAqPSuQI6j7K
-         XYqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=068F+h8RQfUvOVO1t4k8OZXqnvKUCyKIVv9Y/xDcfUE=;
-        b=pZopirjeVDo8BLMctDIYHvTpgLTzyTfmgUmGF0T0cfAJMywqBBngOsGpWJ7Rab9jOP
-         E/nOi5j4++Tn9g08AzatsjCS7G+Cl0/sGi03E6kfZaetD3f/EcQNx08PzC3BHRq8grKQ
-         sgXBxOUkgvsy+AeBXQMGjDrElT85sCuDC1GmpvW2lN3j7cH2oA8t/SOK4J1M22QLw+ZJ
-         NuAzMaxBAN0AOwsSab2IXHyJ5KGITWX09Klhj30brRQl66nefMeFlTbVmuJyZSHXscT8
-         JRmqCUggw+ePaIyT9CPRP/D5k/EHfThoyycNk80jFNT7PVXHilq90QHzLsX7v52kHxHn
-         g0Sg==
-X-Gm-Message-State: AOAM533mPbxsUPSUEAlRofZ5xzLfujTovLZwWv3NvBkuF+o5RDVj7NT9
-        rLpwojU68Oj7stH/DMOiQW6rKQ==
-X-Google-Smtp-Source: ABdhPJw7EpOD9gz0ff27qFrh6p53w00QVueh6ajPyfZRMU6f46uyyPmO+pPTTLpC3Ni/FuWHCI8UPA==
-X-Received: by 2002:a05:6870:d0cf:b0:ec:4559:86e1 with SMTP id k15-20020a056870d0cf00b000ec455986e1mr373763oaa.225.1651800740991;
-        Thu, 05 May 2022 18:32:20 -0700 (PDT)
-Received: from pop-os.localdomain ([2600:1700:1d10:5830:1761:845b:ca10:1b4d])
-        by smtp.gmail.com with ESMTPSA id x4-20020a9d2084000000b006060322127csm1133944ota.76.2022.05.05.18.32.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 18:32:20 -0700 (PDT)
-Date:   Thu, 5 May 2022 21:32:17 -0400
-From:   Milan Landaverde <milan@mdaverde.com>
-To:     Larysa Zaremba <larysa.zaremba@intel.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>
-Subject: Re: [PATCH] bpftool: Use sysfs vmlinux when dumping BTF by ID
-Message-ID: <YnR6oWaoUkEGW1iV@pop-os.localdomain>
-References: <20220428110839.111042-1-larysa.zaremba@intel.com>
+        with ESMTP id S1387978AbiEFBoU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 21:44:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD6E653710
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 18:40:38 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 0F275CE323F
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 01:40:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAF00C385A4;
+        Fri,  6 May 2022 01:40:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651801235;
+        bh=GzQ3Ss3XstGvZURNpS+MMpmajRzsNiPwnuHLG7Xh9iA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PH3BwHV5dwaqD1BUe/k+1ZoPtlX/E4QlBPu3+I+3xnz+8ovyIGN7KAEoXMB1wDfzo
+         qAo/VR1MaCSwyjAV1X6cQHkmAaFcGGZuUMiMTl5gmCq3kpGhml64QxuMFkLJH2gA8e
+         uB66MluzkJlcoGuV3E9VeDNmUiyYKZqCXWHVon7vaiMDhZ8OYBKt5RglUH/94+0zm4
+         TgOosTf/gsODWeoWuaNGoRAKQ8IUIVn3fvwWzPZ1M3r8k4zpWN4fQSiuPBgASsKbWQ
+         /1U/WLkxst5a5ECECJ4XUxupOwMXlUYFJGnkrT/LAj26Edk4SCvF6vjRjzjUe01VEW
+         dAG8xKGdYEq/A==
+Date:   Thu, 5 May 2022 18:40:33 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+Cc:     netdev@vger.kernel.org, alexandr.lobakin@intel.com
+Subject: Re: [PATCH net v1] dim: initialize all struct fields
+Message-ID: <20220505184033.65d7a6e5@kernel.org>
+In-Reply-To: <20220504185832.1855538-1-jesse.brandeburg@intel.com>
+References: <20220504185832.1855538-1-jesse.brandeburg@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220428110839.111042-1-larysa.zaremba@intel.com>
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -75,24 +52,88 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello! Just ran into this. I think we also need to pass in errno
-here to strerror instead of err:
+On Wed,  4 May 2022 11:58:32 -0700 Jesse Brandeburg wrote:
+> The W=3D2 build pointed out that the code wasn't initializing all the
+> variables in the dim_cq_moder declarations with the struct initializers.
+> The net change here is zero since these structs were already static
+> const globals and were initialized with zeros by the compiler, but
+> removing compiler warnings has value in and of itself.
+>=20
+> lib/dim/net_dim.c: At top level:
+> lib/dim/net_dim.c:54:9: warning: missing initializer for field =E2=80=98c=
+omps=E2=80=99 of =E2=80=98const struct dim_cq_moder=E2=80=99 [-Wmissing-fie=
+ld-initializers]
+>    54 |         NET_DIM_RX_EQE_PROFILES,
+>       |         ^~~~~~~~~~~~~~~~~~~~~~~
+> In file included from lib/dim/net_dim.c:6:
+> ./include/linux/dim.h:45:13: note: =E2=80=98comps=E2=80=99 declared here
+>    45 |         u16 comps;
+>       |             ^~~~~
+>=20
+> and repeats for the tx struct, and once you fix the comps entry then
+> the cq_period_mode field needs the same treatment.
+>=20
+> Add the necessary initializers so that the fields in the struct all have
+> explicit values.
+>=20
+> While here and fixing these lines, clean up the code slightly with
+> a conversion to explicit field initializers from anonymous ones, and fix
+> the super long lines by removing the word "_MODERATION" from a couple
+> defines only used in this file.
+> anon to explicit conversion example similar to used in this patch:
+> - struct foo foo_struct =3D { a, b}
+> + struct foo foo_struct =3D { .foo_a =3D a, .foo_b =3D b)
+>=20
+> Fixes: f8be17b81d44 ("lib/dim: Fix -Wunused-const-variable warnings")
+> Signed-off-by: Jesse Brandeburg <jesse.brandeburg@intel.com>
+> ---
+>  lib/dim/net_dim.c | 55 ++++++++++++++++++++++++++---------------------
+>  1 file changed, 31 insertions(+), 24 deletions(-)
+>=20
+> diff --git a/lib/dim/net_dim.c b/lib/dim/net_dim.c
+> index 06811d866775..286b5220e360 100644
+> --- a/lib/dim/net_dim.c
+> +++ b/lib/dim/net_dim.c
+> @@ -12,41 +12,48 @@
+>   *        Each profile size must be of NET_DIM_PARAMS_NUM_PROFILES
+>   */
+>  #define NET_DIM_PARAMS_NUM_PROFILES 5
+> -#define NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE 256
+> -#define NET_DIM_DEFAULT_TX_CQ_MODERATION_PKTS_FROM_EQE 128
+> +#define NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE 256
+> +#define NET_DIM_DEFAULT_TX_CQ_PKTS_FROM_EQE 128
+>  #define NET_DIM_DEF_PROFILE_CQE 1
+>  #define NET_DIM_DEF_PROFILE_EQE 1
+> =20
+> +#define DIM_CQ_MODER(u, p, c, m) { \
+> +	.usec =3D (u),		   \
+> +	.pkts =3D (p),		   \
+> +	.comps =3D (c),		   \
+> +	.cq_period_mode =3D (m)	   \
+> +}
+> +
+>  #define NET_DIM_RX_EQE_PROFILES { \
+> -	{1,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+> -	{8,   NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+> -	{64,  NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+> -	{128, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+> -	{256, NET_DIM_DEFAULT_RX_CQ_MODERATION_PKTS_FROM_EQE}, \
+> +	DIM_CQ_MODER(1,   NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0), \
+> +	DIM_CQ_MODER(8,   NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0), \
+> +	DIM_CQ_MODER(64,  NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0), \
+> +	DIM_CQ_MODER(128, NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0), \
+> +	DIM_CQ_MODER(256, NET_DIM_DEFAULT_RX_CQ_PKTS_FROM_EQE, 0, 0)  \
+>  }
 
-On Thu, Apr 28, 2022 at 01:08:40PM +0200, Larysa Zaremba wrote:
->  		if (err) {
->  			p_err("get btf by id (%u): %s", btf_id, strerror(err));
->  			goto done;
->
+That may give people the false impression that we always have=20
+to initialize all the fields to appease W=3D2. The most common
+way of fixing this warning is to tell the compiler that we know
+what we're doing and add a comma after the last member:
 
-Currently, the error output without a base btf reads:
+-	{2,  256},             \
++	{2,  256,},             \
 
-$ bpftool btf dump id 816
-Error: get btf by id (816): Unknown error -22
+The commit message needs to at least discuss why this direction=20
+was not taken. My preference would actually be to do it, tho.
 
-When it should (or at least intends to) read:
-
-$ bpftool btf dump id 816
-Error: get btf by id (816): Invalid argument
-
-I was going to send this patch but if a v2 is going to be sent, figured
-I mention it. Thanks!
+Also please CC maintainers and authors of patches under Fixes:.
