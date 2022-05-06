@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AF6D651CE63
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 04:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3576951CE45
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 04:16:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388139AbiEFBx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1388152AbiEFBx4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 5 May 2022 21:53:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44678 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388141AbiEFBxy (ORCPT
+        with ESMTP id S1388142AbiEFBxy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 5 May 2022 21:53:54 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAD9862A27
-        for <netdev@vger.kernel.org>; Thu,  5 May 2022 18:50:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 096F462A29
+        for <netdev@vger.kernel.org>; Thu,  5 May 2022 18:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89D386203B
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 99F7662044
         for <netdev@vger.kernel.org>; Fri,  6 May 2022 01:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D5A21C385A4;
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E4501C385AC;
         Fri,  6 May 2022 01:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651801812;
-        bh=xKcGO9ek3kjJXGyMDbFe5S1WD11OMl2J/HggiQeX0zQ=;
+        s=k20201202; t=1651801813;
+        bh=S+1piw3bR98/WvXKMO/nSrz9ojI88U2ZYuIdzezM8+U=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=vBlNl0TtJ0BQMleKNwIml5ATIEPH6ugdslrS3FZ32sIA8r7bEcsIkZ2zYXnwzCc/Y
-         o4cLbaCPqrNJIROrMNn6yQmU1bqBNv+mI0WpDbHQbbd9MBeida4Mk1fqs0Hm+wa6Pa
-         UWz/aqNKBOGw/lz27q47GHuKFGU+VealCISUpReld/7gHW1QpzWQhMK+6PoPBIdoav
-         YPsb9rUE6H0DfsvsjOD5LIJ/+JoxHe9bR7tAeSF3oRvdoS0/Uz9mzSGAuLGRhP8XQt
-         OSuZe7eyziVrrcAFgzK44kwAqDR0Kl2ltn641P6hwl8a0mej9wUDMysMOuZv4QhxP/
-         K9IM7AUPPuv1g==
+        b=s/NR+xBsCY7+veOFhppArShOl8s8AAJB5ESD+h7ueth0G8ls7ENujibpMslPkzoCV
+         biVoT/fMMdggJkP532o/XgfRRM4vwS3N9mTHx3377P7iW9zXN9HbwDS4F2C8jAci0D
+         nCH+2toj98iacMpkSBvfZEJdxBa8SP7Tf3vDbbjjTmrn87prpt3Tn/f/Qg02Vfqg3+
+         MuUE3XUsEMZyniNa8vVwAH9mr62I//TUv8jyFKh0Q+/qyDxuQnZ/qGHucUxGW5W4ey
+         KOdNvwsSEPYWf331/5bz5WZm71u2FezMY6Z0mqOt2Q8PuCT04jXDdauiKqcwP/XxWO
+         5WblMWlg0mdOg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AC156F03874;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C03A7F0389E;
         Fri,  6 May 2022 01:50:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v3 0/2] vrf: fix address binding with icmp socket
+Subject: Re: [PATCH net] net: Fix features skip in for_each_netdev_feature()
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165180181270.30469.14724657054910081010.git-patchwork-notify@kernel.org>
+Message-Id: <165180181278.30469.7040851368260362493.git-patchwork-notify@kernel.org>
 Date:   Fri, 06 May 2022 01:50:12 +0000
-References: <20220504090739.21821-1-nicolas.dichtel@6wind.com>
-In-Reply-To: <20220504090739.21821-1-nicolas.dichtel@6wind.com>
-To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, dsahern@kernel.org, netdev@vger.kernel.org
+References: <20220504080914.1918-1-tariqt@nvidia.com>
+In-Reply-To: <20220504080914.1918-1-tariqt@nvidia.com>
+To:     Tariq Toukan <tariqt@nvidia.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        gal@nvidia.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,24 +58,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Wed,  4 May 2022 11:07:37 +0200 you wrote:
-> The first patch fixes the issue.
-> The second patch adds related tests in selftests.
+On Wed, 4 May 2022 11:09:14 +0300 you wrote:
+> The find_next_netdev_feature() macro gets the "remaining length",
+> not bit index.
+> Passing "bit - 1" for the following iteration is wrong as it skips
+> the adjacent bit. Pass "bit" instead.
 > 
-> v2 -> v3:
->  update seltests
->  fix ipv6
+> Fixes: 3b89ea9c5902 ("net: Fix for_each_netdev_feature on Big endian")
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> Reviewed-by: Gal Pressman <gal@nvidia.com>
 > 
 > [...]
 
 Here is the summary with links:
-  - [net,v3,1/2] ping: fix address binding wrt vrf
-    https://git.kernel.org/netdev/net/c/e1a7ac6f3ba6
-  - [net,v3,2/2] selftests: add ping test with ping_group_range tuned
-    https://git.kernel.org/netdev/net/c/e71b7f1f44d3
+  - [net] net: Fix features skip in for_each_netdev_feature()
+    https://git.kernel.org/netdev/net/c/85db6352fc8a
 
 You are awesome, thank you!
 -- 
