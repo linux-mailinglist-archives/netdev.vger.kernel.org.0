@@ -2,111 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98E8A51DFF8
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 22:12:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B712B51E011
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 22:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1387347AbiEFUPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 16:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42760 "EHLO
+        id S1442556AbiEFUUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 16:20:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235013AbiEFUPl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 16:15:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EFA094C41A
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 13:11:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651867916;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=JSTpH1y2N1V0+fhXfufhf9T3dLqxaEiBFM7l2COqazg=;
-        b=C4QvPD2vTzrTIxe2bYm3fvyTv+k9+Qid0zRLA4Gag1UaRtJhpiVOmIBPiu1KSYgs/W/O27
-        EvHcn0UzLQcEMu6HpHy7cRhNgw4UCq4HSIhT5BCICwziZDQPMJFWzxK51tH9KEV+B1FWUL
-        D6EP6x8drCXMjaCDfJEUhpf4kd52Zk8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-625-YXk_XTb4PX6H2hfmn7_4xw-1; Fri, 06 May 2022 16:11:52 -0400
-X-MC-Unique: YXk_XTb4PX6H2hfmn7_4xw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5858485A5BC;
-        Fri,  6 May 2022 20:11:52 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (unknown [10.39.195.116])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B51C020296A9;
-        Fri,  6 May 2022 20:11:50 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com
-Subject: [PATCH iproute2] tc: em_u32: fix offset parsing
-Date:   Fri,  6 May 2022 22:11:46 +0200
-Message-Id: <5ceaf48253d515b8c8e0902d939471b3a95f5407.1651867575.git.aclaudi@redhat.com>
+        with ESMTP id S1442766AbiEFUUk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 16:20:40 -0400
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [176.9.242.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8970D6A073;
+        Fri,  6 May 2022 13:16:49 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 97440102F6752;
+        Fri,  6 May 2022 22:16:47 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id 6F514119CF2; Fri,  6 May 2022 22:16:47 +0200 (CEST)
+Date:   Fri, 6 May 2022 22:16:47 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Marc Zyngier <maz@kernel.org>, Mark Rutland <mark.rutland@arm.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: Re: [PATCH net-next v2 5/7] usbnet: smsc95xx: Forward PHY interrupts
+ to PHY driver to avoid polling
+Message-ID: <20220506201647.GA30860@wunner.de>
+References: <cover.1651574194.git.lukas@wunner.de>
+ <c6b7f4e4a17913d2f2bc4fe722df0804c2d6fea7.1651574194.git.lukas@wunner.de>
+ <20220505113207.487861b2@kernel.org>
+ <20220505185328.GA14123@wunner.de>
+ <87tua36i70.wl-maz@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87tua36i70.wl-maz@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tc u32 ematch offset parsing might fail even if nexthdr offset is
-aligned to 4. The issue can be reproduced with the following script:
+On Fri, May 06, 2022 at 11:58:43AM +0100, Marc Zyngier wrote:
+> On Thu, 05 May 2022 19:53:28 +0100, Lukas Wunner <lukas@wunner.de> wrote:
+> > On Thu, May 05, 2022 at 11:32:07AM -0700, Jakub Kicinski wrote:
+> > > On Tue, 3 May 2022 15:15:05 +0200 Lukas Wunner wrote:
+> > > > @@ -608,11 +618,20 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+> > > >  	intdata = get_unaligned_le32(urb->transfer_buffer);
+> > > >  	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
+> > > >  
+> > > > +	/* USB interrupts are received in softirq (tasklet) context.
+> > > > +	 * Switch to hardirq context to make genirq code happy.
+> > > > +	 */
+> > > > +	local_irq_save(flags);
+> > > > +	__irq_enter_raw();
+> > > > +
+> > > >  	if (intdata & INT_ENP_PHY_INT_)
+> > > > -		;
+> > > > +		generic_handle_domain_irq(pdata->irqdomain, PHY_HWIRQ);
+> > > >  	else
+> > > >  		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
+> > > >  			    intdata);
+> > > > +
+> > > > +	__irq_exit_raw();
+> > > > +	local_irq_restore(flags);
+> > > 
+> > > Full patch:
+> > > 
+> > > https://lore.kernel.org/all/c6b7f4e4a17913d2f2bc4fe722df0804c2d6fea7.1651574194.git.lukas@wunner.de/
+> > 
+> > This is basically identical to what drivers/net/usb/lan78xx.c does
+> > in lan78xx_status(), except I'm passing the hw irq instead of the
+> > linux irq to genirq code, thereby avoiding the overhead of a
+> > radix_tree_lookup().
+> > 
+> > generic_handle_domain_irq() warns unconditionally on !in_irq(),
+> > unlike handle_irq_desc(), which constrains the warning to
+> > handle_enforce_irqctx() (i.e. x86 APIC, arm GIC/GICv3).
+> > Perhaps that's an oversight in generic_handle_domain_irq(),
+> > unless __irq_resolve_mapping() becomes unsafe outside in_irq()
+> > for some reason...
+> > 
+> > In any case the unconditional in_irq() necessitates __irq_enter_raw()
+> > here.
+> > 
+> > And there's no _safe variant() of generic_handle_domain_irq()
+> > (unlike generic_handle_irq_safe() which was recently added by
+> > 509853f9e1e7), hence the necessity of an explicit local_irq_save().
+> 
+> Please don't directly use __irq_enter_raw() and similar things
+> directly in driver code (it doesn't do anything related to RCU, for
+> example, which could be problematic if used in arbitrary contexts).
+> Given how infrequent this interrupt is, I'd rather you use something
+> similar to what lan78xx is doing, and be done with it.
+> 
+> And since this is a construct that seems to be often repeated, why
+> don't you simply make the phy interrupt handling available over a
+> smp_call_function() interface, which would always put you in the
+> correct context and avoid faking things up?
 
-tc qdisc del dev dummy0 root
-tc qdisc add dev dummy0 root handle 1: htb r2q 1 default 1
-tc class add dev dummy0 parent 1:1 classid 1:108 htb quantum 1000000 \
-	rate 1.00mbit ceil 10.00mbit burst 6k
+As I've explained in the commit message (linked above), LAN95xx chips
+have 11 GPIOs which can be an interrupt source.  This patch adds
+PHY interrupt support in such a way that GPIO interrupts can easily
+be supported by a subsequent commit.  To this end, LAN95xx needs
+to be represented as a proper irqchip.
 
-while true; do
-if ! tc filter add dev dummy0 protocol all parent 1: prio 1 basic match \
-	"meta(vlan mask 0xfff eq 1)" and "u32(u32 0x20011002 0xffffffff \
-	at nexthdr+8)" flowid 1:108; then
-		exit 0
-fi
-done
+The crucial thing to understand is that a USB interrupt is not received
+as a hardirq.  USB gadgets are incapable of directly signaling an
+interrupt because they cannot initiate a bus transaction by themselves.
+All communication on the bus is initiated by the host controller,
+which polls a gadget's Interrupt Endpoint in regular intervals.
+If an interrupt is pending, that information is passed up the stack
+in softirq context.  Hence there's no other way than "faking things up",
+to borrow your language.
 
-which we expect to produce an endless loop.
-With the current code, instead, this ends with:
+Another USB driver in the tree, drivers/gpio/gpio-dln2.c, likewise
+represents the USB gadget as an irqchip to signal GPIO interrupts.
+This shows that LAN95xx is not an isolated case.  gpio-dln2.c does
+not invoke __irq_enter_raw(), so I think users will now see a WARN
+splat with that driver since Mark Rutland's 0953fb263714 (+cc).
 
-u32: invalid offset alignment, must be aligned to 4.
-... meta(vlan mask 0xfff eq 1) and >>u32(u32 0x20011002 0xffffffff at nexthdr+8)<< ...
-... u32(u32 0x20011002 0xffffffff at >>nexthdr+8<<)...
-Usage: u32(ALIGN VALUE MASK at [ nexthdr+ ] OFFSET)
-where: ALIGN  := { u8 | u16 | u32 }
+As I've pointed out above, it seems like an oversight that Mark
+didn't make the WARN_ON_ONCE() conditional on handle_enforce_irqctx()
+(as handle_irq_desc() does).  Sadly you did not respond to that
+observation.  Please clarify whether that is indeed erroneous.
+Once handle_enforce_irqctx() is added to generic_handle_domain_irq(),
+there's no need for me to call __irq_enter_raw().  Problem solved.
 
-Example: u32(u16 0x1122 0xffff at nexthdr+4)
-Illegal "ematch"
+Should there be a valid reason for the missing handle_enforce_irqctx(),
+then I propose adding a generic_handle_domain_irq_safe() function which
+calls __irq_enter_raw() (or probably __irq_enter() to get accounting),
+thereby resolving your objection to calling __irq_enter_raw() from a
+driver.
 
-This is caused by memcpy copying into buf an unterminated string.
+Thanks,
 
-Fix it using strncpy instead of memcpy.
-
-Fixes: commit 311b41454dc4 ("Add new extended match files.")
-Reported-by: Alfred Yang <alf.redyoung@gmail.com>
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- tc/em_u32.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/tc/em_u32.c b/tc/em_u32.c
-index bc284af4..ea2bf882 100644
---- a/tc/em_u32.c
-+++ b/tc/em_u32.c
-@@ -84,7 +84,7 @@ static int u32_parse_eopt(struct nlmsghdr *n, struct tcf_ematch_hdr *hdr,
- 		char buf[a->len - nh_len + 1];
- 
- 		offmask = -1;
--		memcpy(buf, a->data + nh_len, a->len - nh_len);
-+		strncpy(buf, a->data + nh_len, a->len - nh_len + 1);
- 		offset = strtoul(buf, NULL, 0);
- 	} else if (!bstrcmp(a, "nexthdr+")) {
- 		a = bstr_next(a);
--- 
-2.35.1
-
+Lukas
