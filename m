@@ -2,75 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F05C51D8BD
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 15:18:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8D851D946
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 15:37:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392342AbiEFNWb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 09:22:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43982 "EHLO
+        id S1392598AbiEFNlW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 09:41:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343556AbiEFNWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 09:22:30 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA5564709
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 06:18:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=5sm77WW8oeptNyKKzjFQExbRMu2tQxOt2w1bYFv387g=; b=imX4tqrSJ/6w/XUmO9UaPoxBBH
-        4Yoild3tA7D8LK2jjxN4SneuLXL+z0qLCcnYig72Updhgs3TG4zgrEGMaQe5O8UbGeNWYi2xiTyCj
-        ydSwkPFQECfoPm/thb83OIevAXNwnx+dSOA7Hevsd1aYa7YqBfLC/mAz+AxlEhLl6wco=;
-Received: from p200300daa70ef2004175abbac4c8f9c2.dip0.t-ipconnect.de ([2003:da:a70e:f200:4175:abba:c4c8:f9c2] helo=Maecks.lan)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1nmxr3-0005Kx-O0; Fri, 06 May 2022 15:18:45 +0200
-From:   Felix Fietkau <nbd@nbd.name>
-To:     netdev@vger.kernel.org
-Cc:     pablo@netfilter.org
-Subject: [PATCH 4/4] netfilter: nft_flow_offload: fix offload with pppoe + vlan
-Date:   Fri,  6 May 2022 15:18:41 +0200
-Message-Id: <20220506131841.3177-4-nbd@nbd.name>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220506131841.3177-1-nbd@nbd.name>
-References: <20220506131841.3177-1-nbd@nbd.name>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1347079AbiEFNlV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 09:41:21 -0400
+Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 64DB15D651;
+        Fri,  6 May 2022 06:37:38 -0700 (PDT)
+Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-edf3b6b0f2so6804417fac.9;
+        Fri, 06 May 2022 06:37:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=bXouDNTd1mqqNaROQPaX+ROWqeN12vTnYsJ6b+irPxI=;
+        b=cVrC9mIpiWqzmazl7ggZQH+dm8ubcrDShdFTSgQ+6rrYZQIO14fWR+KySAIZkRc3be
+         ALA4+i8ZmEc8txrojWsQqbNtAgdMv8tfNx4Jx974jQvmjVwPKgpqp1OkMR6IDSfT3vld
+         fuP2ZQsV7+sc80ansctZt5FShN6wEjvZgpqKSFIh8QpfQ/u27ZTGQow/aRI/vGMMCsoA
+         3kM5/Ly2AYcLluiKEKzylCN4Q175501NGP5d7YZHFgn/wGeU39RowDOkotYjd3mF1v+F
+         z2atbEjSFxsxLR846xdRekwHn9Be2QuRVyqQMPLh43WnKSddt9tUetMvP9RPhcQSkVOh
+         1J4g==
+X-Gm-Message-State: AOAM530mlCfpaHZOp4QL7606y7B4RSzeJ9IJWHbQUiMOkFzCtdRwxpzz
+        alDhtltPltqNc+ZqXITxDQ==
+X-Google-Smtp-Source: ABdhPJzQXmIFc8ZStq1x1BfkSPjisZIu0znwFW1uSwTfb2zHq8RvF9wBmTnTmAyyhFOh/bU7lnM35w==
+X-Received: by 2002:a05:6870:9615:b0:e7:c74:e993 with SMTP id d21-20020a056870961500b000e70c74e993mr4582519oaq.87.1651844257675;
+        Fri, 06 May 2022 06:37:37 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id x23-20020a9d6297000000b0060603221256sm1585798otk.38.2022.05.06.06.37.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 May 2022 06:37:37 -0700 (PDT)
+Received: (nullmailer pid 1590046 invoked by uid 1000);
+        Fri, 06 May 2022 13:37:36 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Puranjay Mohan <p-mohan@ti.com>
+Cc:     kishon@ti.com, krzysztof.kozlowski+dt@linaro.org,
+        davem@davemloft.net, netdev@vger.kernel.org, s-anna@ti.com,
+        rogerq@kernel.org, vigneshr@ti.com, afd@ti.com, andrew@lunn.ch,
+        devicetree@vger.kernel.org, ssantosh@kernel.org, nm@ti.com,
+        grygorii.strashko@ti.com, edumazet@google.com,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        linux-arm-kernel@lists.infradead.org
+In-Reply-To: <20220506052433.28087-2-p-mohan@ti.com>
+References: <20220506052433.28087-1-p-mohan@ti.com> <20220506052433.28087-2-p-mohan@ti.com>
+Subject: Re: [PATCH 1/2] dt-bindings: net: Add ICSSG Ethernet Driver bindings
+Date:   Fri, 06 May 2022 08:37:36 -0500
+Message-Id: <1651844256.314860.1590045.nullmailer@robh.at.kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
+        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When running a combination of PPPoE on top of a VLAN, we need to set
-info->outdev to the PPPoE device, otherwise PPPoE encap is skipped
-during software offload.
+On Fri, 06 May 2022 10:54:32 +0530, Puranjay Mohan wrote:
+> Add a YAML binding document for the ICSSG Programmable real time unit
+> based Ethernet driver. This driver uses the PRU and PRUSS consumer APIs
+> to interface the PRUs and load/run the firmware for supporting ethernet
+> functionality.
+> 
+> Signed-off-by: Puranjay Mohan <p-mohan@ti.com>
+> ---
+>  .../bindings/net/ti,icssg-prueth.yaml         | 174 ++++++++++++++++++
+>  1 file changed, 174 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+> 
 
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
----
- net/netfilter/nft_flow_offload.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index d88de26aad75..187b8cb9a510 100644
---- a/net/netfilter/nft_flow_offload.c
-+++ b/net/netfilter/nft_flow_offload.c
-@@ -123,7 +123,8 @@ static void nft_dev_path_info(const struct net_device_path_stack *stack,
- 				info->indev = NULL;
- 				break;
- 			}
--			info->outdev = path->dev;
-+			if (!info->outdev)
-+				info->outdev = path->dev;
- 			info->encap[info->num_encaps].id = path->encap.id;
- 			info->encap[info->num_encaps].proto = path->encap.proto;
- 			info->num_encaps++;
--- 
-2.35.1
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+./Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/remoteproc/ti,pru-consumer.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: pruss2_eth: False schema does not allow {'compatible': ['ti,am654-icssg-prueth'], 'pinctrl-names': ['default'], 'pinctrl-0': [[4294967295]], 'sram': [[4294967295]], 'ti,prus': [[4294967295, 4294967295, 4294967295, 4294967295, 4294967295, 4294967295]], 'firmware-name': ['ti-pruss/am65x-pru0-prueth-fw.elf', 'ti-pruss/am65x-rtu0-prueth-fw.elf', 'ti-pruss/am65x-txpru0-prueth-fw.elf', 'ti-pruss/am65x-pru1-prueth-fw.elf', 'ti-pruss/am65x-rtu1-prueth-fw.elf', 'ti-pruss/am65x-txpru1-prueth-fw.elf'], 'ti,pruss-gp-mux-sel': [[2, 2, 2, 2, 2, 2]], 'ti,mii-g-rt': [[4294967295]], 'dmas': [[4294967295, 49920], [4294967295, 49921], [4294967295, 49922], [4294967295, 49923], [4294967295, 49924], [4294967295, 49925], [4294967295, 49926], [4294967295, 49927], [4294967295, 17152], [4294967295, 17153]], 'dma-names': ['tx0-0', 'tx0-1', 'tx0-2', 'tx0-3', 'tx1-0', 'tx1-1', 'tx1-2', 'tx1-3', 'rx0', 'rx1'], 'i
+ nterrupts': [[24, 0, 2], [25, 1, 3]], 'interrupt-names': ['tx_ts0', 'tx_ts1'], 'ethernet-ports': {'#address-cells': [[1]], '#size-cells': [[0]], 'port@0': {'reg': [[0]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-rxid'], 'interrupts-extended': [[4294967295, 24]], 'ti,syscon-rgmii-delay': [[4294967295, 16672]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}, 'port@1': {'reg': [[1]], 'phy-handle': [[4294967295]], 'phy-mode': ['rgmii-rxid'], 'interrupts-extended': [[4294967295, 25]], 'ti,syscon-rgmii-delay': [[4294967295, 16676]], 'local-mac-address': [[0, 0, 0, 0, 0, 0]]}}, '$nodename': ['pruss2_eth']}
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.example.dtb: pruss2_eth: Unevaluated properties are not allowed ('firmware-name', 'ti,prus', 'ti,pruss-gp-mux-sel' were unexpected)
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/net/ti,icssg-prueth.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
