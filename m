@@ -2,43 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B45851DE25
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 19:08:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 204D151DE22
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 19:08:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444107AbiEFRL7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 13:11:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46310 "EHLO
+        id S1444114AbiEFRMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 13:12:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444103AbiEFRLu (ORCPT
+        with ESMTP id S1444104AbiEFRLu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 13:11:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28B4C6EC63
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 10:08:02 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C38C36EC64;
+        Fri,  6 May 2022 10:08:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB007620A4
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 17:08:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D759BC385B4;
-        Fri,  6 May 2022 17:08:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F73C620A8;
+        Fri,  6 May 2022 17:08:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A57DC385B1;
+        Fri,  6 May 2022 17:08:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1651856881;
-        bh=7MEfFfBWj67o0eLjWbCVhM8Q6WZbKnmQYW9UoRjwsOI=;
+        bh=S2T+9Y6sl30nIpo8x3GVqzVKOXcUQSwRlOt6wQSeijw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ROT1YSmQ3TKUMy3diWfC4g7o0vUjMErR1Dil1ubvEL2RPOHeVlQBDGBxMnMjH2c7w
-         ulDAEHmCmbU/dRIHq8clw5UL0vfDzUlx/5zW27Mt35+hyFl6qAEMILCyXQ3cJoVWzD
-         7k+HgYiisiVyTOQH+bYOtWPVOWGrzlG3mmJg45GtN2NnlHWk7Z0r/3SqlZSx3AogAb
-         wEBKAd/Uvrg3a/Xe94ykKM8eR/3IeTTK+mK25O1XvxVCYs6RfKpCEv04li5YbiwHUV
-         9DC46LBcg7NbSry+LUmWdTQxZahWJjCm5F0rrg8CKx49HN2VyfTIakK8WI4asYECuC
-         1od37d+JMCUHg==
+        b=GCHLpI/HNWsKKkKAkHDcq/gsdg8FVt13ED0xc2YEjMbBmqbLlaOTGp3H7mXAyYXZM
+         wce0IxFX6wB5+PmqSphf7WNGNAUFz6m1dmbhdCJv4EX34Yr8rzaBslFUl3mPGqGUvU
+         NOlyIlRfpnl87BSV2ERv0dGqz0EIgoO/iuAASl0oPMark/dY7pxNSvvNgur7nyM/FC
+         QkIyktDpQvXj7iyHlp2+/Bq9I7wxWxG/WirBeSC3peCgyltveo2UBrmQtEQQP+XcVk
+         DivkCltAealVLCW5lCFVg3CwgrBDUfaBgly4Bd8fKUMctN16HA7DEswnEaMs5hsovu
+         HOVpdY/mKwqgA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
-        Jakub Kicinski <kuba@kernel.org>, mst@redhat.com,
-        jasowang@redhat.com, virtualization@lists.linux-foundation.org
-Subject: [PATCH net-next 5/6] net: virtio: switch to netif_napi_add_weight()
-Date:   Fri,  6 May 2022 10:07:50 -0700
-Message-Id: <20220506170751.822862-6-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, qiang.zhao@nxp.com,
+        khc@pm.waw.pl, ms@dev.tdt.de, linuxppc-dev@lists.ozlabs.org,
+        linux-x25@vger.kernel.org
+Subject: [PATCH net-next 6/6] net: wan: switch to netif_napi_add_weight()
+Date:   Fri,  6 May 2022 10:07:51 -0700
+Message-Id: <20220506170751.822862-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220506170751.822862-1-kuba@kernel.org>
 References: <20220506170751.822862-1-kuba@kernel.org>
@@ -54,33 +55,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-virtio netdev driver uses a custom napi weight, switch to the new
-API for setting custom weight.
+A handful of WAN drivers use custom napi weights,
+switch them to the new API.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: mst@redhat.com
-CC: jasowang@redhat.com
-CC: virtualization@lists.linux-foundation.org
+CC: qiang.zhao@nxp.com
+CC: khc@pm.waw.pl
+CC: ms@dev.tdt.de
+CC: linuxppc-dev@lists.ozlabs.org
+CC: linux-x25@vger.kernel.org
 ---
- drivers/net/virtio_net.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wan/fsl_ucc_hdlc.c | 2 +-
+ drivers/net/wan/hd64572.c      | 3 ++-
+ drivers/net/wan/ixp4xx_hss.c   | 2 +-
+ drivers/net/wan/lapbether.c    | 2 +-
+ 4 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index ebb98b796352..db05b5e930be 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -3313,8 +3313,8 @@ static int virtnet_alloc_queues(struct virtnet_info *vi)
- 	INIT_DELAYED_WORK(&vi->refill, refill_work);
- 	for (i = 0; i < vi->max_queue_pairs; i++) {
- 		vi->rq[i].pages = NULL;
--		netif_napi_add(vi->dev, &vi->rq[i].napi, virtnet_poll,
--			       napi_weight);
-+		netif_napi_add_weight(vi->dev, &vi->rq[i].napi, virtnet_poll,
-+				      napi_weight);
- 		netif_napi_add_tx_weight(vi->dev, &vi->sq[i].napi,
- 					 virtnet_poll_tx,
- 					 napi_tx ? napi_weight : 0);
+diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
+index 5ae2d27b5da9..22edea6ca4b8 100644
+--- a/drivers/net/wan/fsl_ucc_hdlc.c
++++ b/drivers/net/wan/fsl_ucc_hdlc.c
+@@ -1231,7 +1231,7 @@ static int ucc_hdlc_probe(struct platform_device *pdev)
+ 	dev->watchdog_timeo = 2 * HZ;
+ 	hdlc->attach = ucc_hdlc_attach;
+ 	hdlc->xmit = ucc_hdlc_tx;
+-	netif_napi_add(dev, &uhdlc_priv->napi, ucc_hdlc_poll, 32);
++	netif_napi_add_weight(dev, &uhdlc_priv->napi, ucc_hdlc_poll, 32);
+ 	if (register_hdlc_device(dev)) {
+ 		ret = -ENOBUFS;
+ 		pr_err("ucc_hdlc: unable to register hdlc device\n");
+diff --git a/drivers/net/wan/hd64572.c b/drivers/net/wan/hd64572.c
+index b89b03a6aba7..534369ffe5de 100644
+--- a/drivers/net/wan/hd64572.c
++++ b/drivers/net/wan/hd64572.c
+@@ -173,7 +173,8 @@ static void sca_init_port(port_t *port)
+ 	sca_out(DIR_EOME, DIR_TX(port->chan), card); /* enable interrupts */
+ 
+ 	sca_set_carrier(port);
+-	netif_napi_add(port->netdev, &port->napi, sca_poll, NAPI_WEIGHT);
++	netif_napi_add_weight(port->netdev, &port->napi, sca_poll,
++			      NAPI_WEIGHT);
+ }
+ 
+ /* MSCI interrupt service */
+diff --git a/drivers/net/wan/ixp4xx_hss.c b/drivers/net/wan/ixp4xx_hss.c
+index 863c3e34e136..e46b7f5ee49e 100644
+--- a/drivers/net/wan/ixp4xx_hss.c
++++ b/drivers/net/wan/ixp4xx_hss.c
+@@ -1504,7 +1504,7 @@ static int ixp4xx_hss_probe(struct platform_device *pdev)
+ 	port->clock_reg = CLK42X_SPEED_2048KHZ;
+ 	port->id = pdev->id;
+ 	port->dev = &pdev->dev;
+-	netif_napi_add(ndev, &port->napi, hss_hdlc_poll, NAPI_WEIGHT);
++	netif_napi_add_weight(ndev, &port->napi, hss_hdlc_poll, NAPI_WEIGHT);
+ 
+ 	err = register_hdlc_device(ndev);
+ 	if (err)
+diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
+index 282192b82404..960f1393595c 100644
+--- a/drivers/net/wan/lapbether.c
++++ b/drivers/net/wan/lapbether.c
+@@ -408,7 +408,7 @@ static int lapbeth_new_device(struct net_device *dev)
+ 	spin_lock_init(&lapbeth->up_lock);
+ 
+ 	skb_queue_head_init(&lapbeth->rx_queue);
+-	netif_napi_add(ndev, &lapbeth->napi, lapbeth_napi_poll, 16);
++	netif_napi_add_weight(ndev, &lapbeth->napi, lapbeth_napi_poll, 16);
+ 
+ 	rc = -EIO;
+ 	if (register_netdevice(ndev))
 -- 
 2.34.1
 
