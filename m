@@ -2,129 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 204D151DE22
-	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 19:08:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A58AE51DE40
+	for <lists+netdev@lfdr.de>; Fri,  6 May 2022 19:17:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444114AbiEFRMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 13:12:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46370 "EHLO
+        id S1377312AbiEFRVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 13:21:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52824 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444104AbiEFRLu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 13:11:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C38C36EC64;
-        Fri,  6 May 2022 10:08:02 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5F73C620A8;
-        Fri,  6 May 2022 17:08:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A57DC385B1;
-        Fri,  6 May 2022 17:08:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651856881;
-        bh=S2T+9Y6sl30nIpo8x3GVqzVKOXcUQSwRlOt6wQSeijw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GCHLpI/HNWsKKkKAkHDcq/gsdg8FVt13ED0xc2YEjMbBmqbLlaOTGp3H7mXAyYXZM
-         wce0IxFX6wB5+PmqSphf7WNGNAUFz6m1dmbhdCJv4EX34Yr8rzaBslFUl3mPGqGUvU
-         NOlyIlRfpnl87BSV2ERv0dGqz0EIgoO/iuAASl0oPMark/dY7pxNSvvNgur7nyM/FC
-         QkIyktDpQvXj7iyHlp2+/Bq9I7wxWxG/WirBeSC3peCgyltveo2UBrmQtEQQP+XcVk
-         DivkCltAealVLCW5lCFVg3CwgrBDUfaBgly4Bd8fKUMctN16HA7DEswnEaMs5hsovu
-         HOVpdY/mKwqgA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
-        Jakub Kicinski <kuba@kernel.org>, qiang.zhao@nxp.com,
-        khc@pm.waw.pl, ms@dev.tdt.de, linuxppc-dev@lists.ozlabs.org,
-        linux-x25@vger.kernel.org
-Subject: [PATCH net-next 6/6] net: wan: switch to netif_napi_add_weight()
-Date:   Fri,  6 May 2022 10:07:51 -0700
-Message-Id: <20220506170751.822862-7-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220506170751.822862-1-kuba@kernel.org>
-References: <20220506170751.822862-1-kuba@kernel.org>
+        with ESMTP id S237371AbiEFRVQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 13:21:16 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 988274F465
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 10:17:32 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso7397961pjb.5
+        for <netdev@vger.kernel.org>; Fri, 06 May 2022 10:17:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=3aGQD+TPJjdgVH2l0L30KOa3TpZnrckIwUjFO1cFGYE=;
+        b=lW2gDRveYM1R9uX7XurI8BuRjzEEQ1u4BFlMYCKx5MXqYxcfZb0oa1RiQtW9aPtY8I
+         Q2aTAkDyKbZTMWiZC4qYsgnAB5Wd0mAUk3qvpk8mn9lyK/CFvf5k8LYuCLQyWHQTF63s
+         evA4PQfXbsfdj6UivndqCvNqN3bcLoZktjC3kf35LJ1dJzCnXw0y5djbWMG3fN7pzoys
+         lKV+Hddmm8i4O44DUsCa5ydRHk7SEehyGhORx96m76QPXFkhk0QU4SZs3ia6x/UXzOig
+         SkjqdcKCA3Bt8a3y6/+Hqoys+QyIyIQgsoTZOAovQ/eOzfAHFDumbOkk/4GYoFTWcLgD
+         WLbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=3aGQD+TPJjdgVH2l0L30KOa3TpZnrckIwUjFO1cFGYE=;
+        b=t18uBJRA9PHrY3wiNKyu2a17N/aASU73nOh41Trn5L5lA5U9ZBOpsGYq0Z7E9aIXCA
+         m9QudKL+Mt4wA8UnVNU3u7NrTqsOPyOF9GtJHtX4mL9warsIzn+5oJi4eoYYP2E17bBR
+         msBQhfCRV7G4Z+NGNM2b/IAKo7whuJSXvt2MLgMvd6DkM5pu0SUiXWab8sdJiov/zb53
+         B8m7QlCE9sIaOktjGxycXoi0GTJlt/CAPqxEhEEzK015S6GUq1xcjOWEqGw58b0DZbfx
+         DPmnSQUm5JLUWmcP+DpHE1DSKmfudxgfDkSOMANqK/A1vChCeu8WVImVO4BVtsnuNIUA
+         KUFg==
+X-Gm-Message-State: AOAM533k277CvIWJHNbY26dEfpGZLBEcbwgMAkpoz1u4Kx72Acz98PgV
+        W+gggBkmj7mSYqeNL/+wWsY=
+X-Google-Smtp-Source: ABdhPJxDSwfh59hLADp3FsOlK/sax9e7TVeTmebb+LvP0goxbshSLiucGyD11nW5KVpdksnc35Xa/w==
+X-Received: by 2002:a17:90b:1e05:b0:1dc:575e:6211 with SMTP id pg5-20020a17090b1e0500b001dc575e6211mr13259095pjb.120.1651857451985;
+        Fri, 06 May 2022 10:17:31 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id pj11-20020a17090b4f4b00b001cd4989ff70sm3835821pjb.55.2022.05.06.10.17.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 May 2022 10:17:31 -0700 (PDT)
+Message-ID: <ed3c3eec-a79d-0d8a-09ad-4a2c6c5507eb@gmail.com>
+Date:   Fri, 6 May 2022 10:17:29 -0700
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next v3 1/3] net: phy: broadcom: Add Broadcom PTP
+ hooks to bcm-phy-lib
+Content-Language: en-US
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>, f.fainelli@gmail.com,
+        bcm-kernel-feedback-list@broadcom.com, andrew@lunn.ch,
+        hkallweit1@gmail.com, richardcochran@gmail.com, lasse@timebeat.app
+Cc:     netdev@vger.kernel.org, kernel-team@fb.com
+References: <20220504224356.1128644-1-jonathan.lemon@gmail.com>
+ <20220504224356.1128644-2-jonathan.lemon@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220504224356.1128644-2-jonathan.lemon@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A handful of WAN drivers use custom napi weights,
-switch them to the new API.
+On 5/4/22 15:43, Jonathan Lemon wrote:
+> Add the public bcm_ptp_probe() and bcm_ptp_config_init() functions
+> to the bcm-phy library.  The PTP functions are contained in a separate
+> file for clarity, and also to simplify the PTP clock dependencies.
+> 
+> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: qiang.zhao@nxp.com
-CC: khc@pm.waw.pl
-CC: ms@dev.tdt.de
-CC: linuxppc-dev@lists.ozlabs.org
-CC: linux-x25@vger.kernel.org
----
- drivers/net/wan/fsl_ucc_hdlc.c | 2 +-
- drivers/net/wan/hd64572.c      | 3 ++-
- drivers/net/wan/ixp4xx_hss.c   | 2 +-
- drivers/net/wan/lapbether.c    | 2 +-
- 4 files changed, 5 insertions(+), 4 deletions(-)
+This could really be squashed into the next patch since you do not 
+introduce the ability to build that code until patch #3.
 
-diff --git a/drivers/net/wan/fsl_ucc_hdlc.c b/drivers/net/wan/fsl_ucc_hdlc.c
-index 5ae2d27b5da9..22edea6ca4b8 100644
---- a/drivers/net/wan/fsl_ucc_hdlc.c
-+++ b/drivers/net/wan/fsl_ucc_hdlc.c
-@@ -1231,7 +1231,7 @@ static int ucc_hdlc_probe(struct platform_device *pdev)
- 	dev->watchdog_timeo = 2 * HZ;
- 	hdlc->attach = ucc_hdlc_attach;
- 	hdlc->xmit = ucc_hdlc_tx;
--	netif_napi_add(dev, &uhdlc_priv->napi, ucc_hdlc_poll, 32);
-+	netif_napi_add_weight(dev, &uhdlc_priv->napi, ucc_hdlc_poll, 32);
- 	if (register_hdlc_device(dev)) {
- 		ret = -ENOBUFS;
- 		pr_err("ucc_hdlc: unable to register hdlc device\n");
-diff --git a/drivers/net/wan/hd64572.c b/drivers/net/wan/hd64572.c
-index b89b03a6aba7..534369ffe5de 100644
---- a/drivers/net/wan/hd64572.c
-+++ b/drivers/net/wan/hd64572.c
-@@ -173,7 +173,8 @@ static void sca_init_port(port_t *port)
- 	sca_out(DIR_EOME, DIR_TX(port->chan), card); /* enable interrupts */
- 
- 	sca_set_carrier(port);
--	netif_napi_add(port->netdev, &port->napi, sca_poll, NAPI_WEIGHT);
-+	netif_napi_add_weight(port->netdev, &port->napi, sca_poll,
-+			      NAPI_WEIGHT);
- }
- 
- /* MSCI interrupt service */
-diff --git a/drivers/net/wan/ixp4xx_hss.c b/drivers/net/wan/ixp4xx_hss.c
-index 863c3e34e136..e46b7f5ee49e 100644
---- a/drivers/net/wan/ixp4xx_hss.c
-+++ b/drivers/net/wan/ixp4xx_hss.c
-@@ -1504,7 +1504,7 @@ static int ixp4xx_hss_probe(struct platform_device *pdev)
- 	port->clock_reg = CLK42X_SPEED_2048KHZ;
- 	port->id = pdev->id;
- 	port->dev = &pdev->dev;
--	netif_napi_add(ndev, &port->napi, hss_hdlc_poll, NAPI_WEIGHT);
-+	netif_napi_add_weight(ndev, &port->napi, hss_hdlc_poll, NAPI_WEIGHT);
- 
- 	err = register_hdlc_device(ndev);
- 	if (err)
-diff --git a/drivers/net/wan/lapbether.c b/drivers/net/wan/lapbether.c
-index 282192b82404..960f1393595c 100644
---- a/drivers/net/wan/lapbether.c
-+++ b/drivers/net/wan/lapbether.c
-@@ -408,7 +408,7 @@ static int lapbeth_new_device(struct net_device *dev)
- 	spin_lock_init(&lapbeth->up_lock);
- 
- 	skb_queue_head_init(&lapbeth->rx_queue);
--	netif_napi_add(ndev, &lapbeth->napi, lapbeth_napi_poll, 16);
-+	netif_napi_add_weight(ndev, &lapbeth->napi, lapbeth_napi_poll, 16);
- 
- 	rc = -EIO;
- 	if (register_netdevice(ndev))
+I would also re-order patches #2 and #3 thus making it ultimately a 2 
+patch series only.
 -- 
-2.34.1
-
+Florian
