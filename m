@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC39E51E73B
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 14:58:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2440951E734
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 14:58:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446507AbiEGNBt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 May 2022 09:01:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34876 "EHLO
+        id S1446499AbiEGNBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 May 2022 09:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446446AbiEGNBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 09:01:46 -0400
+        with ESMTP id S1446494AbiEGNBr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 09:01:47 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44EF14B413;
-        Sat,  7 May 2022 05:57:48 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42CBA50459;
+        Sat,  7 May 2022 05:57:58 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C98B760920;
-        Sat,  7 May 2022 12:57:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71F8CC385A5;
-        Sat,  7 May 2022 12:57:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D25AB61204;
+        Sat,  7 May 2022 12:57:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 783D2C385A6;
+        Sat,  7 May 2022 12:57:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651928267;
-        bh=aDprmzPJjly6FaPGeFMauML0ykC9vs5hDKffxwEHhY4=;
+        s=k20201202; t=1651928277;
+        bh=+LByHrrtf81CwdaFC5DHRS/xfMmBXs2eEoWjFB8FU1Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qUJ1i8zTKEVK+Zm2kIJtPAY3caDa0SCgUl+w2VUZqw3DExZfTeGGL3o3i6XMrOrhI
-         mLq6zomeG5Bd+a+NhCHuo6ak1UlwrM4RLwHbPwqtIEoFBiySK6FVQA3KCLI+HBgjIM
-         1brA/lZkkOy97GqQ8V1sjwN978sJXI9nGQHg6GzXiAzJxhNt+AvMdwcS62ANvmco1W
-         wSiaSdBbhw6i0C128B8EJxcKpxl55hd4orrG4CeJ4j0/a/7xpoWQfYCey4cIobvfCs
-         OIXSscmjjJ6oyOCbAkAsGUSE1JLsKUhFlO9ORJLVRcEHjONnoEM7h+m99bwpDus5jl
-         unenFb+y1ctCQ==
+        b=JwimWVGFRkpKCuMnkkbXA9Cjddt3q4RrELgLim5zSP904E7DuXhLNxjHt/0Nl3Spw
+         v92leytQ3cTUi5+R4FSEdaujJAtm/R/n+13osbITcOgxddxJ/VyCIGbxf4Z3ebwHMr
+         icbIMcDe/Znr7FFt5Qs1JvnFkOEY1GyZYgufBE18jYxaJR7iv9gsz+Ci5tZkWPkDYs
+         vwMjq4CSdri+S3w45pW//dWT7se7p+0mwmdZJoQwIZ6fEgVRUpR4yz2dg4kWQrJx/7
+         s+5mVdG+XK367y2aGYtHsUUF3ByCdznr8xhd5kc43yWs7dbdVH0Dv1NeFuia1j+0PA
+         l7IB0IDGO7vrg==
 From:   Jiri Olsa <jolsa@kernel.org>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -43,9 +43,9 @@ Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@chromium.org>,
         Steven Rostedt <rostedt@goodmis.org>
-Subject: [PATCHv5 bpf-next 3/5] fprobe: Resolve symbols with ftrace_lookup_symbols
-Date:   Sat,  7 May 2022 14:57:09 +0200
-Message-Id: <20220507125711.2022238-4-jolsa@kernel.org>
+Subject: [PATCHv5 bpf-next 4/5] bpf: Resolve symbols with ftrace_lookup_symbols for kprobe multi link
+Date:   Sat,  7 May 2022 14:57:10 +0200
+Message-Id: <20220507125711.2022238-5-jolsa@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220507125711.2022238-1-jolsa@kernel.org>
 References: <20220507125711.2022238-1-jolsa@kernel.org>
@@ -61,71 +61,167 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Using ftrace_lookup_symbols to speed up symbols lookup
-in register_fprobe_syms API.
+Using kallsyms_lookup_names function to speed up symbols lookup in
+kprobe multi link attachment and replacing with it the current
+kprobe_multi_resolve_syms function.
 
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+This speeds up bpftrace kprobe attachment:
+
+  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+  ...
+  6.5681 +- 0.0225 seconds time elapsed  ( +-  0.34% )
+
+After:
+
+  # perf stat -r 5 -e cycles ./src/bpftrace -e 'kprobe:x* {  } i:ms:1 { exit(); }'
+  ...
+  0.5661 +- 0.0275 seconds time elapsed  ( +-  4.85% )
+
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 ---
- kernel/trace/fprobe.c | 32 ++++++++++++--------------------
- 1 file changed, 12 insertions(+), 20 deletions(-)
+ kernel/trace/bpf_trace.c | 112 +++++++++++++++++++++++----------------
+ 1 file changed, 66 insertions(+), 46 deletions(-)
 
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 89d9f994ebb0..aac63ca9c3d1 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -85,39 +85,31 @@ static void fprobe_exit_handler(struct rethook_node *rh, void *data,
- }
- NOKPROBE_SYMBOL(fprobe_exit_handler);
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index f15b826f9899..7fd11c17558d 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -2229,6 +2229,59 @@ struct bpf_kprobe_multi_run_ctx {
+ 	unsigned long entry_ip;
+ };
  
-+static int symbols_cmp(const void *a, const void *b)
-+{
-+	const char **str_a = (const char **) a;
-+	const char **str_b = (const char **) b;
++struct user_syms {
++	const char **syms;
++	char *buf;
++};
 +
-+	return strcmp(*str_a, *str_b);
++static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32 cnt)
++{
++	unsigned long __user usymbol;
++	const char **syms = NULL;
++	char *buf = NULL, *p;
++	int err = -ENOMEM;
++	unsigned int i;
++
++	syms = kvmalloc(cnt * sizeof(*syms), GFP_KERNEL);
++	if (!syms)
++		goto error;
++
++	buf = kvmalloc(cnt * KSYM_NAME_LEN, GFP_KERNEL);
++	if (!buf)
++		goto error;
++
++	for (p = buf, i = 0; i < cnt; i++) {
++		if (__get_user(usymbol, usyms + i)) {
++			err = -EFAULT;
++			goto error;
++		}
++		err = strncpy_from_user(p, (const char __user *) usymbol, KSYM_NAME_LEN);
++		if (err == KSYM_NAME_LEN)
++			err = -E2BIG;
++		if (err < 0)
++			goto error;
++		syms[i] = p;
++		p += err + 1;
++	}
++
++	us->syms = syms;
++	us->buf = buf;
++	return 0;
++
++error:
++	if (err) {
++		kvfree(syms);
++		kvfree(buf);
++	}
++	return err;
 +}
 +
- /* Convert ftrace location address from symbols */
- static unsigned long *get_ftrace_locations(const char **syms, int num)
++static void free_user_syms(struct user_syms *us)
++{
++	kvfree(us->syms);
++	kvfree(us->buf);
++}
++
+ static void bpf_kprobe_multi_link_release(struct bpf_link *link)
+ {
+ 	struct bpf_kprobe_multi_link *kmulti_link;
+@@ -2349,53 +2402,12 @@ kprobe_multi_link_handler(struct fprobe *fp, unsigned long entry_ip,
+ 	kprobe_multi_link_prog_run(link, entry_ip, regs);
+ }
+ 
+-static int
+-kprobe_multi_resolve_syms(const void __user *usyms, u32 cnt,
+-			  unsigned long *addrs)
++static int symbols_cmp(const void *a, const void *b)
  {
 -	unsigned long addr, size;
- 	unsigned long *addrs;
--	int i;
- 
- 	/* Convert symbols to symbol address */
- 	addrs = kcalloc(num, sizeof(*addrs), GFP_KERNEL);
- 	if (!addrs)
- 		return ERR_PTR(-ENOMEM);
- 
--	for (i = 0; i < num; i++) {
--		addr = kallsyms_lookup_name(syms[i]);
--		if (!addr)	/* Maybe wrong symbol */
--			goto error;
+-	const char __user **syms;
+-	int err = -ENOMEM;
+-	unsigned int i;
+-	char *func;
 -
--		/* Convert symbol address to ftrace location. */
--		if (!kallsyms_lookup_size_offset(addr, &size, NULL) || !size)
--			goto error;
-+	/* ftrace_lookup_symbols expects sorted symbols */
-+	sort(syms, num, sizeof(*syms), symbols_cmp, NULL);
+-	size = cnt * sizeof(*syms);
+-	syms = kvzalloc(size, GFP_KERNEL);
+-	if (!syms)
+-		return -ENOMEM;
++	const char **str_a = (const char **) a;
++	const char **str_b = (const char **) b;
  
+-	func = kmalloc(KSYM_NAME_LEN, GFP_KERNEL);
+-	if (!func)
+-		goto error;
+-
+-	if (copy_from_user(syms, usyms, size)) {
+-		err = -EFAULT;
+-		goto error;
+-	}
+-
+-	for (i = 0; i < cnt; i++) {
+-		err = strncpy_from_user(func, syms[i], KSYM_NAME_LEN);
+-		if (err == KSYM_NAME_LEN)
+-			err = -E2BIG;
+-		if (err < 0)
+-			goto error;
+-		err = -EINVAL;
+-		addr = kallsyms_lookup_name(func);
+-		if (!addr)
+-			goto error;
+-		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
+-			goto error;
 -		addr = ftrace_location_range(addr, addr + size - 1);
--		if (!addr) /* No dynamic ftrace there. */
+-		if (!addr)
 -			goto error;
-+	if (!ftrace_lookup_symbols(syms, num, addrs))
-+		return addrs;
- 
 -		addrs[i] = addr;
 -	}
 -
--	return addrs;
--
+-	err = 0;
 -error:
- 	kfree(addrs);
--
- 	return ERR_PTR(-ENOENT);
+-	kvfree(syms);
+-	kfree(func);
+-	return err;
++	return strcmp(*str_a, *str_b);
  }
  
+ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *prog)
+@@ -2441,7 +2453,15 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+ 			goto error;
+ 		}
+ 	} else {
+-		err = kprobe_multi_resolve_syms(usyms, cnt, addrs);
++		struct user_syms us;
++
++		err = copy_user_syms(&us, usyms, cnt);
++		if (err)
++			goto error;
++
++		sort(us.syms, cnt, sizeof(*us.syms), symbols_cmp, NULL);
++		err = ftrace_lookup_symbols(us.syms, cnt, addrs);
++		free_user_syms(&us);
+ 		if (err)
+ 			goto error;
+ 	}
 -- 
 2.35.1
 
