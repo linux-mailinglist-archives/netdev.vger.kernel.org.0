@@ -2,74 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AE86F51E4FB
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 08:56:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C234351E4FF
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 08:57:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445954AbiEGHAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 May 2022 03:00:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41560 "EHLO
+        id S1445927AbiEGHBE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 May 2022 03:01:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446074AbiEGG7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 02:59:41 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 076552D1F0
-        for <netdev@vger.kernel.org>; Fri,  6 May 2022 23:55:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1651906555;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mA3ni8Zg3OWPpt35GHXOc/cRif71faI1+8GwT0AzIDA=;
-        b=bh5/eGsKyifoEK0lo3EJLutNEyVpoRvUbPzqOT4QwZN9ngIPPArq0SY3tHNm0BV0rSafyZ
-        4nny+GQWeNcBDWwT9CndxjlCi9Pcyet0vp5oBI16p2Wj2x9CUOO7O+aPfXjHNOr26Wjmg0
-        pXFOsAgIxopz0githzp9cDzNw/08jh0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-1nnfkd-wOPW2oX32ppH0ww-1; Sat, 07 May 2022 02:55:53 -0400
-X-MC-Unique: 1nnfkd-wOPW2oX32ppH0ww-1
-Received: by mail-wm1-f72.google.com with SMTP id t2-20020a7bc3c2000000b003528fe59cb9so2924016wmj.5
-        for <netdev@vger.kernel.org>; Fri, 06 May 2022 23:55:53 -0700 (PDT)
+        with ESMTP id S1359576AbiEGHBD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 03:01:03 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97CAF5DA4E
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 23:57:17 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id x23so7998418pff.9
+        for <netdev@vger.kernel.org>; Fri, 06 May 2022 23:57:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=ofqOYWzFm1+8QkTYUFBWiva6kDC1LMhuvEpR1Jhkfe4=;
+        b=CavoxqxvNbQ2bd5LFSXCtaS6FJnae0Kqvhe1fCMGvocSAceWynDPkHdgGRZC6YgicZ
+         uTb9ktrCmv3bQ9FJuiaSAXP0gzIVErsHUQ+EWpzR4IaNHGskfBcwUKrEdeh9MDVj9ZdV
+         fZFSawQdwbTMh02uBHnu87sRo+go5XM9gnPmI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=mA3ni8Zg3OWPpt35GHXOc/cRif71faI1+8GwT0AzIDA=;
-        b=ZBi/bLPwPSbrvyxB8ViBo0RJ0n4Qr8tTX2am46JTzaRqHRFxm919FZplY7ei2b4Hu7
-         us2ULrorPv8tsyB7Wudrpp7ynnEip1mZUZY6u0d1oIPDSEDWBP8j+hoUhi/4fdYxWn5s
-         1CMCbE923ssJ/fd0u/y0j6Qd3fR7MtIEWxpnrX5b+dDGiSD9aUAxP7Efi26408s975sb
-         Fo4V2MtWDRz+qf575iVItKrir+M9BcSFYc4ylik486ZqCjGCm7Qj9/NxTVj4xt2ofJul
-         aGFVjMErDuImK+dUu3POonxxm1aorbFVfcCvGDWgJ5PZAPtQLRryEHYQKQDXp0fi1uj+
-         gr+Q==
-X-Gm-Message-State: AOAM5321o89vWwe5SJ3oLCOjjEYUorM56DsCu+680KDp0DhFJTHMFLw/
-        AFu9+udPaq9ySv5it4w5dJtUewZhgHTyaC3wwu3Kqwo33UtZbFlQaVdxqSTFHft1zfzoin97U9K
-        BQokj3VNbKE3KDnPW
-X-Received: by 2002:a1c:cc08:0:b0:393:e7d2:e580 with SMTP id h8-20020a1ccc08000000b00393e7d2e580mr6927383wmb.145.1651906552625;
-        Fri, 06 May 2022 23:55:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxB2ngzTaW/27Ki7b/jkMItsT5HlxPv1mI3lwVeD1vH5toUt9GGrERjwHdyAq5CSpK2ugUcsQ==
-X-Received: by 2002:a1c:cc08:0:b0:393:e7d2:e580 with SMTP id h8-20020a1ccc08000000b00393e7d2e580mr6927375wmb.145.1651906552426;
-        Fri, 06 May 2022 23:55:52 -0700 (PDT)
-Received: from redhat.com ([2.55.154.141])
-        by smtp.gmail.com with ESMTPSA id q20-20020a7bce94000000b0039456fb80b3sm8600883wmj.43.2022.05.06.23.55.50
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=ofqOYWzFm1+8QkTYUFBWiva6kDC1LMhuvEpR1Jhkfe4=;
+        b=YoW7JdixseoGwjg6JEEX7+f++WOZHohkYWq+JcFbPBOKms9q7qpE0wWKL+gvFUMXgh
+         7aCJrTR1FyuZjkruNVbD7GZeuypyzim1gkbslBQjAK1v6WaC84lx8RB1dmwQmvm5paDj
+         d3XW6JbwQcmSMk0F2a8uDlmxgsO5+CwtG2YMo99osrYHyCELLnRxENMPmXVcmNmPuxEN
+         YlQs0RC9E1OWTdYtfiuxwJER1rnuWTyTfTxjSt6zMuP7pM8tfpUTRiEQeuyp9j/2Xn+0
+         e67qMLk20vLM+F8SrsmQl4i8y26MDSuGyvx1rachxeHT9pKdPzUL8KOEJitociayL9th
+         Hx+A==
+X-Gm-Message-State: AOAM5333GB9qLdJGhmT+fJmMy/TzcJtsqsvtHWP9AjB0IB9099OlKGWl
+        +k4NqUIPlVoaRZwoBHuQegFCKg==
+X-Google-Smtp-Source: ABdhPJyoGRq2cbSlZYYC0YXn3R//CflxAA7xPCmlA7jpzoBkfYo3byHT4L08Hq34NIYNKsBWlpOrLg==
+X-Received: by 2002:a65:5181:0:b0:3aa:3668:26a9 with SMTP id h1-20020a655181000000b003aa366826a9mr5761509pgq.184.1651906637110;
+        Fri, 06 May 2022 23:57:17 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id v184-20020a6389c1000000b003c14af505fbsm4365659pgd.19.2022.05.06.23.57.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 May 2022 23:55:51 -0700 (PDT)
-Date:   Sat, 7 May 2022 02:55:48 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
+        Fri, 06 May 2022 23:57:16 -0700 (PDT)
+Date:   Fri, 6 May 2022 23:57:15 -0700
+From:   Kees Cook <keescook@chromium.org>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, pabeni@redhat.com,
-        edumazet@google.com, wanghai38@huawei.com
-Subject: Re: [PATCH net-next 2/6] caif_virtio: switch to
- netif_napi_add_weight()
-Message-ID: <20220507025543-mutt-send-email-mst@kernel.org>
-References: <20220506170751.822862-1-kuba@kernel.org>
- <20220506170751.822862-3-kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: Re: [PATCH v4 net-next 12/12] mlx5: support BIG TCP packets
+Message-ID: <202205062344.BB945AD3@keescook>
+References: <20220506153048.3695721-1-eric.dumazet@gmail.com>
+ <20220506153048.3695721-13-eric.dumazet@gmail.com>
+ <20220506153414.72f26ee3@kernel.org>
+ <CANn89iJDP1aSwsCyVVq_qjVY8OZjg-vWULR=GN-WQV6FpLz+Mg@mail.gmail.com>
+ <20220506185405.527a79d4@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220506170751.822862-3-kuba@kernel.org>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220506185405.527a79d4@kernel.org>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,35 +78,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 06, 2022 at 10:07:47AM -0700, Jakub Kicinski wrote:
-> caif_virtio uses a custom napi weight, switch to the new
-> API for setting custom weights.
+On Fri, May 06, 2022 at 06:54:05PM -0700, Jakub Kicinski wrote:
+> On Fri, 6 May 2022 17:32:43 -0700 Eric Dumazet wrote:
+> > On Fri, May 6, 2022 at 3:34 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > >
+> > > On Fri,  6 May 2022 08:30:48 -0700 Eric Dumazet wrote:  
+> > > > From: Coco Li <lixiaoyan@google.com>
+> > > >
+> > > > mlx5 supports LSOv2.
+> > > >
+> > > > IPv6 gro/tcp stacks insert a temporary Hop-by-Hop header
+> > > > with JUMBO TLV for big packets.
+> > > >
+> > > > We need to ignore/skip this HBH header when populating TX descriptor.
+> > > >
+> > > > Note that ipv6_has_hopopt_jumbo() only recognizes very specific packet
+> > > > layout, thus mlx5e_sq_xmit_wqe() is taking care of this layout only.
+> > > >
+> > > > v2: clear hopbyhop in mlx5e_tx_get_gso_ihs()
+> > > > v4: fix compile error for CONFIG_MLX5_CORE_IPOIB=y  
+> > >
+> > > In file included from ../include/linux/string.h:253,
+> > >                  from ../arch/x86/include/asm/page_32.h:22,
+> > >                  from ../arch/x86/include/asm/page.h:14,
+> > >                  from ../arch/x86/include/asm/processor.h:19,
+> > >                  from ../arch/x86/include/asm/timex.h:5,
+> > >                  from ../include/linux/timex.h:65,
+> > >                  from ../include/linux/time32.h:13,
+> > >                  from ../include/linux/time.h:60,
+> > >                  from ../include/linux/skbuff.h:15,
+> > >                  from ../include/linux/tcp.h:17,
+> > >                  from ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:33:
+> > > In function ‘fortify_memcpy_chk’,
+> > >     inlined from ‘mlx5e_insert_vlan’ at ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:104:2,
+> > >     inlined from ‘mlx5e_sq_xmit_wqe’ at ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:404:5:
+> > > ../include/linux/fortify-string.h:328:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+> > >   328 |                         __write_overflow_field(p_size_field, size);
+> > >       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > > In function ‘fortify_memcpy_chk’,
+> > >     inlined from ‘mlx5e_sq_xmit_wqe’ at ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:408:5:
+> > > ../include/linux/fortify-string.h:328:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+> > >   328 |                         __write_overflow_field(p_size_field, size);
+> > >       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> > > In function ‘fortify_memcpy_chk’,
+> > >     inlined from ‘mlx5i_sq_xmit’ at ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:962:4:
+> > > ../include/linux/fortify-string.h:328:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+> > >   328 |                         __write_overflow_field(p_size_field, size);
+> > >       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+> > 
+> > I guess these warnings show up before this BIG TCP patch ?
+> > 
+> > I do not see any struct_group() being used in mlx5
+> > 
+> > May I ask which compiler is used here, and what CONFIG_ option needs to be set ?
+> > 
+> > Thanks.
 > 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Without our patches drivers/net/ethernet/mellanox/mlx5/core/ builds
+> cleanly. Gotta be the new W=1 filed overflow warnings, let's bother
+> Kees.
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+Hello!
 
-> ---
-> CC: mst@redhat.com
-> CC: wanghai38@huawei.com
-> ---
->  drivers/net/caif/caif_virtio.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+These aren't from W=1. The read overflows are hidden behind W=1. I
+imagine this is due to gcc getting smarter and being able to introspect
+the possible values of ihs during inlining.
+
+> I believe this is the code in question:
 > 
-> diff --git a/drivers/net/caif/caif_virtio.c b/drivers/net/caif/caif_virtio.c
-> index 444ef6a342f6..5458f57177a0 100644
-> --- a/drivers/net/caif/caif_virtio.c
-> +++ b/drivers/net/caif/caif_virtio.c
-> @@ -714,7 +714,8 @@ static int cfv_probe(struct virtio_device *vdev)
->  	/* Initialize NAPI poll context data */
->  	vringh_kiov_init(&cfv->ctx.riov, NULL, 0);
->  	cfv->ctx.head = USHRT_MAX;
-> -	netif_napi_add(netdev, &cfv->napi, cfv_rx_poll, CFV_DEFAULT_QUOTA);
-> +	netif_napi_add_weight(netdev, &cfv->napi, cfv_rx_poll,
-> +			      CFV_DEFAULT_QUOTA);
->  
->  	tasklet_setup(&cfv->tx_release_tasklet, cfv_tx_release_tasklet);
->  
-> -- 
-> 2.34.1
+> @@ -379,15 +393,36 @@ mlx5e_sq_xmit_wqe(struct mlx5e_txqsq *sq, struct sk_buff *skb,
+> 
+> +		u8 *start = eseg->inline_hdr.start;
+> +
+> +		if (unlikely(attr->hopbyhop)) {
+> +			/* remove the HBH header.
+> +			 * Layout: [Ethernet header][IPv6 header][HBH][TCP header]
+> +			 */
+> +			if (skb_vlan_tag_present(skb)) {
+> +				mlx5e_insert_vlan(start, skb, ETH_HLEN + sizeof(*h6));
+> 
+> Unhappiness #1 ^^^
+> 
+> Where mlx5e_insert_vlan() is:
+> 
+> static inline void mlx5e_insert_vlan(void *start, struct sk_buff *skb, u16 ihs)
+> {
+> 	struct vlan_ethhdr *vhdr = (struct vlan_ethhdr *)start;
+> 	int cpy1_sz = 2 * ETH_ALEN;
+> 	int cpy2_sz = ihs - cpy1_sz;
 
+Why are these "int"? Seems like they should be u16?
+
+> 
+> 	memcpy(&vhdr->addrs, skb->data, cpy1_sz);
+               ^^^^^ this line was actually fixed earlier.
+
+> 	vhdr->h_vlan_proto = skb->vlan_proto;
+> 	vhdr->h_vlan_TCI = cpu_to_be16(skb_vlan_tag_get(skb));
+> 	memcpy(&vhdr->h_vlan_encapsulated_proto, skb->data + cpy1_sz, cpy2_sz);
+               ^^^^^
+This one, though, is the new problem. The lack of annotation in the
+struct made me miss it -- this code is asking the compiler to
+potentially copy beyond the end of the struct declaration. If this is
+intentional, I could suggest a solution, but ...
+
+> }
+> 
+> indeed ihs == ETH_HLEN + sizeof(*h6) will make cpy2_sz come out as something
+> much bigger than the vhdr->h_vlan_encapsulated_proto field.
+
+It sounds like it's not. In which case, I would ask: "what validates the
+size of ihs?" because neither I nor the compiler can see it. :P If
+nothing validates it, then this looks like a potential heap overflow,
+though I haven't studied how these is laid out in memory. Maybe it's
+harmless, but I never assume that. :)
+
+-- 
+Kees Cook
