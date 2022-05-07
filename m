@@ -2,92 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F16AA51E3D9
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 05:42:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3522951E3E2
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 05:57:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1445461AbiEGDqX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 23:46:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54674 "EHLO
+        id S237640AbiEGEBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 May 2022 00:01:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232700AbiEGDqW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 23:46:22 -0400
-Received: from out30-131.freemail.mail.aliyun.com (out30-131.freemail.mail.aliyun.com [115.124.30.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E5C736152;
-        Fri,  6 May 2022 20:42:36 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R251e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VCUhPF._1651894943;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VCUhPF._1651894943)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 07 May 2022 11:42:32 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     ralf@linux-mips.org
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-hams@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] [NET] ROSE: Remove unused code and clean up some inconsistent indenting
-Date:   Sat,  7 May 2022 11:42:07 +0800
-Message-Id: <20220507034207.18651-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S230269AbiEGEBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 00:01:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5498758E49
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 20:57:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC3F4B8399F
+        for <netdev@vger.kernel.org>; Sat,  7 May 2022 03:57:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A24E9C385A5;
+        Sat,  7 May 2022 03:57:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1651895871;
+        bh=yBcYF2B4vAuY+lPmaAvwfuJUvcJf9C4J1Dir3tjmuFc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hn0ZETlw8cuV63sF20c+23YmgzG6bjtFDt6w/FDIt/DgwpDQnBde8PxsPWkj0c1NH
+         3ncjC5uxqw3Dck/Hq3+hTrkvn5DJAInFkPoaRRG4wL1qSTeY2zfMr7x07KLZKoK4zg
+         mziQSsJ/FH33Iy7hAv48hMRONF5jKDrf2+53xitv6UKc9oZv4NnlIRPoWfDi5YiK6W
+         TAPy9Z6eqy61ZFN/5ozCPipkI/aIAqISybymu614ecO6GnNv/ATRTcnpJM0B1PLfQ3
+         ylbyQfp71v9hRx1QI3Go0B8l7IAObpLk30LhEqO4igROAVfFL6/3MXb0FkCXWRC7dN
+         HEfBEA5RUphaQ==
+Date:   Fri, 6 May 2022 20:57:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com,
+        netdev@vger.kernel.org, kernel-team@fb.com, davem@davemloft.net,
+        pabeni@redhat.com, edumazet@google.com, lasse@timebeat.app,
+        clk@fb.com
+Subject: Re: [PATCH net-next v4 1/2] net: phy: broadcom: Add PTP support for
+ some Broadcom PHYs.
+Message-ID: <20220506205749.2b89ee57@kernel.org>
+In-Reply-To: <20220506224210.1425817-2-jonathan.lemon@gmail.com>
+References: <20220506224210.1425817-1-jonathan.lemon@gmail.com>
+        <20220506224210.1425817-2-jonathan.lemon@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eliminate the follow smatch warning:
+On Fri,  6 May 2022 15:42:09 -0700 Jonathan Lemon wrote:
+> +struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev)
 
-net/rose/rose_route.c:1136 rose_node_show() warn: inconsistent
-indenting.
+The prototype for probe and init needs to get added in patch 1:
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- net/rose/rose_route.c | 25 +++++++++----------------
- 1 file changed, 9 insertions(+), 16 deletions(-)
-
-diff --git a/net/rose/rose_route.c b/net/rose/rose_route.c
-index e2e6b6b78578..fee6409c2bb3 100644
---- a/net/rose/rose_route.c
-+++ b/net/rose/rose_route.c
-@@ -1128,22 +1128,15 @@ static int rose_node_show(struct seq_file *seq, void *v)
- 		seq_puts(seq, "address    mask n neigh neigh neigh\n");
- 	else {
- 		const struct rose_node *rose_node = v;
--		/* if (rose_node->loopback) {
--			seq_printf(seq, "%-10s %04d 1 loopback\n",
--				   rose2asc(rsbuf, &rose_node->address),
--				   rose_node->mask);
--		} else { */
--			seq_printf(seq, "%-10s %04d %d",
--				   rose2asc(rsbuf, &rose_node->address),
--				   rose_node->mask,
--				   rose_node->count);
--
--			for (i = 0; i < rose_node->count; i++)
--				seq_printf(seq, " %05d",
--					rose_node->neighbour[i]->number);
--
--			seq_puts(seq, "\n");
--		/* } */
-+		seq_printf(seq, "%-10s %04d %d",
-+			   rose2asc(rsbuf, &rose_node->address),
-+			   rose_node->mask,
-+			   rose_node->count);
-+
-+		for (i = 0; i < rose_node->count; i++)
-+			seq_printf(seq, " %05d", rose_node->neighbour[i]->number);
-+
-+		seq_puts(seq, "\n");
- 	}
- 	return 0;
- }
--- 
-2.20.1.7.g153144c
-
+drivers/net/phy/bcm-phy-ptp.c:803:6: warning: no previous prototype for function 'bcm_ptp_config_init' [-Wmissing-prototypes]
+void bcm_ptp_config_init(struct phy_device *phydev)
+     ^
+drivers/net/phy/bcm-phy-ptp.c:839:25: warning: no previous prototype for function 'bcm_ptp_probe' [-Wmissing-prototypes]
+struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev)
+                        ^
