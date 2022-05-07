@@ -2,67 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 940C851E302
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 03:26:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DED9C51E32B
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 03:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1392543AbiEGBa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 6 May 2022 21:30:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50384 "EHLO
+        id S1356392AbiEGBmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 6 May 2022 21:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236738AbiEGBa2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 21:30:28 -0400
-Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 849033AA49;
-        Fri,  6 May 2022 18:26:43 -0700 (PDT)
-Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-ee1e7362caso4872692fac.10;
-        Fri, 06 May 2022 18:26:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iDAhf762jxRhEv8fWwnY9wpSIpXGHrpFlmpaUo6C1zk=;
-        b=F3gz8XL26fGIg5x4zHuPywcBt3scsTWHmrRlxUXkNEfEVYZl/M35+V+YGFWfo1lE+P
-         yhotM6PX8de5M9NSCEYYSecqiOWoxVzkwSokt7PmQxJ834yfpEZne76p+bi2YybspM/P
-         el4Lyw701k1uZ1l9gYwf3BUAbccvic8rYHyzGmcHgGXyyUe9LpH1NrLphqCE2YFQrUu2
-         imT+3aMBlQzUZerRybx8SrUsoUBqjND8/NsQeokLI0WJ92ldvWKfU645zdimqXwxUIFn
-         VR4hTGFntXAmxyuG51Drm0j3zyzGuNxV6Oaf8Joh+TF+4fZj2wkPtC75Hkl6w+/UeU7W
-         dMpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iDAhf762jxRhEv8fWwnY9wpSIpXGHrpFlmpaUo6C1zk=;
-        b=HrC149XtE6741vFJqlJh5VtsY2uPrN52rL4BzEp4teFAK1liLyNsY9WldqpmHHHjRY
-         v2Hph+6Nw4XS3PAYw4Ue2PvFRXRoV01AeUC0HHpuh82kqmghsG+gDN8ajnSfTYt3bMUX
-         cLIyoKTjqHlUOpg3PpakF1gdrohOqAv02vuRGxPjWrfaQbFD40KLtlETkN2dGh6zfVkL
-         R9IeY2wF/g56oZqPlcKZr8+IYTAFlky6kAZacfe/QFha28Jr9nIi1K3rZpGffnpsIV6R
-         f7e2sZAHvuEGLE/9l9i7AmGaxchSUfdmweqOjGkcHnW/FNXHfDqK8H/817gl6IYUOY7x
-         rWRQ==
-X-Gm-Message-State: AOAM531xJirNqfDe9ZbL7a7ayfk9sUVHB60W2wHoj/0r+4mxQ6oktcvG
-        wdCL2aKx2u6DhRp4H5pc2lAwRGTqSLzs0YEgFk3gzQkUMW0+WA==
-X-Google-Smtp-Source: ABdhPJzyLNv+Q6ZAyNJ7GFtl4fwjM7lLihcjDwTRVz3yxuhErRy90ery7vxfFURM1YDzqoGEyqq1Pfrc60/WgfWMP1E=
-X-Received: by 2002:a05:6870:1c7:b0:ed:b4b6:27a1 with SMTP id
- n7-20020a05687001c700b000edb4b627a1mr5626941oad.223.1651886802927; Fri, 06
- May 2022 18:26:42 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220505130826.40914-1-kerneljasonxing@gmail.com> <20220506185641.GA2289@bytedance>
-In-Reply-To: <20220506185641.GA2289@bytedance>
-From:   Jason Xing <kerneljasonxing@gmail.com>
-Date:   Sat, 7 May 2022 09:26:07 +0800
-Message-ID: <CAL+tcoBwQ2tijfzwOO6zb2MobCL27PcyN3foRcAw91MpyWg_VA@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: use the %px format to display sock
-To:     Peilin Ye <yepeilin.cs@gmail.com>
-Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        kuba@kernel.org, pabeni@redhat.com, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        Jason Xing <xingwanli@kuaishou.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        with ESMTP id S234131AbiEGBmm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 6 May 2022 21:42:42 -0400
+Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C265D67E
+        for <netdev@vger.kernel.org>; Fri,  6 May 2022 18:38:57 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VCUAvP6_1651887533;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0VCUAvP6_1651887533)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 07 May 2022 09:38:54 +0800
+Message-ID: <1651887524.8548894-1-xuanzhuo@linux.alibaba.com>
+Subject: Re: [PATCH net-next 5/6] net: virtio: switch to netif_napi_add_weight()
+Date:   Sat, 7 May 2022 09:38:44 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com,
+        Jakub Kicinski <kuba@kernel.org>, mst@redhat.com,
+        jasowang@redhat.com, virtualization@lists.linux-foundation.org,
+        davem@davemloft.net
+References: <20220506170751.822862-1-kuba@kernel.org>
+ <20220506170751.822862-6-kuba@kernel.org>
+In-Reply-To: <20220506170751.822862-6-kuba@kernel.org>
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,32 +40,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 7, 2022 at 2:56 AM Peilin Ye <yepeilin.cs@gmail.com> wrote:
+On Fri,  6 May 2022 10:07:50 -0700, Jakub Kicinski <kuba@kernel.org> wrote:
+> virtio netdev driver uses a custom napi weight, switch to the new
+> API for setting custom weight.
 >
-> Hi Jason,
->
-> On Thu, May 05, 2022 at 09:08:26PM +0800, kerneljasonxing@gmail.com wrote:
-> > -             pr_err("Attempt to release TCP socket in state %d %p\n",
-> > +             pr_err("Attempt to release TCP socket in state %d %px\n",
->
-> I think we cannot use %px here for security reasons?  checkpatch is also
-> warning about it:
->
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 
-I noticed this warning before submitting. Since the %p format doesn't
-print the real address, printing the address here will be helpless and
-we cannot trace what exactly the bad socket is.
+Reviewed-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 
-What do you suggest?
-
-Thanks,
-Jason
-
-> WARNING: Using vsprintf specifier '%px' potentially exposes the kernel memory layout, if you don't really need the address please consider using '%p'.
-> #21: FILE: net/ipv4/af_inet.c:142:
-> +               pr_err("Attempt to release TCP socket in state %d %px\n",
->                        sk->sk_state, sk);
+> ---
+> CC: mst@redhat.com
+> CC: jasowang@redhat.com
+> CC: virtualization@lists.linux-foundation.org
+> ---
+>  drivers/net/virtio_net.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 >
-> Thanks,
-> Peilin Ye
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index ebb98b796352..db05b5e930be 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -3313,8 +3313,8 @@ static int virtnet_alloc_queues(struct virtnet_info *vi)
+>  	INIT_DELAYED_WORK(&vi->refill, refill_work);
+>  	for (i = 0; i < vi->max_queue_pairs; i++) {
+>  		vi->rq[i].pages = NULL;
+> -		netif_napi_add(vi->dev, &vi->rq[i].napi, virtnet_poll,
+> -			       napi_weight);
+> +		netif_napi_add_weight(vi->dev, &vi->rq[i].napi, virtnet_poll,
+> +				      napi_weight);
+>  		netif_napi_add_tx_weight(vi->dev, &vi->sq[i].napi,
+>  					 virtnet_poll_tx,
+>  					 napi_tx ? napi_weight : 0);
+> --
+> 2.34.1
 >
