@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F3751E658
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 12:04:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0404C51E651
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 12:02:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446271AbiEGKGE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 May 2022 06:06:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56696 "EHLO
+        id S1446250AbiEGKF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 May 2022 06:05:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446217AbiEGKFo (ORCPT
+        with ESMTP id S1388612AbiEGKFo (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 06:05:44 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2DDB3DA6B;
-        Sat,  7 May 2022 03:01:56 -0700 (PDT)
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB60C3AA56;
+        Sat,  7 May 2022 03:01:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651917717; x=1683453717;
+  t=1651917715; x=1683453715;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=/TH2t2Zl2v5PlFXuYgl2cfI4T7s5wGnQ+3rQ63ZiRDM=;
-  b=BKyb90VKeR2fb351g3S7LYuQ5xQOwq1Wl/4LH7fcnrWhAY9hxMlo+X19
-   pCnl2MJ01Y7dDmHGti17wcQVj1S3OH6IJp3HFkT+5oKxwo0FD7/XuDI4T
-   hUBaAKijgBnVexRCAFqTd17ypx7A33gUnfJ8c3zch9mVhRudYrqceTvYN
-   OOxYkFCI2rL0YsOexMLtUWUWZghkFOAG4ndOa5hG5AhNfUTXSFV4fjsvT
-   uG41Ef1u1kgD+mxq171w6W2E2C+Gh6qykMtze4JoZcuF8VH/041MR82nl
-   OA93H9JQX4vvCSAMWx5HlkvJIdBxA6GiljmysW4wNFaxBWGdqPMO/vW2c
+  bh=1MylfDouAUkI19ElTFtDpDZL11z3RMfTO2EX3tvIe7Q=;
+  b=K5RfCjzUGjuAlLmBVwcIU8OfH5ZBHSMwGB4ak5i2IHM0bIp7IOFs2dBl
+   1FoT6EhtunRHtQIwfP6FUVDTxcFjJjcgEMaV8yVRCQW4ZIYCLXM+1lW3a
+   cfDSJFnwppXDwNAe59tcy+GnzLcoBMrtTYSpht9lHfmCffHFgzzSZ3EAA
+   U3qEFBqWbltxgk/wSLPF1HeGZsdkkSY3JGMf6b61u75ieND2T/uMa6tCP
+   cpZgx+5m0PQ4cV7NewnWtsvMn36MHFXn+y7LkEEM3f7yDhQAie7G12arg
+   wf1TpkaDCI589XL8VjZrPQYYxvlDgVCLxEmGsOlsCv6ZYsSuLHroznQWv
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="250701988"
+X-IronPort-AV: E=McAfee;i="6400,9594,10339"; a="268315653"
 X-IronPort-AV: E=Sophos;i="5.91,206,1647327600"; 
-   d="scan'208";a="250701988"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 03:01:54 -0700
+   d="scan'208";a="268315653"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 03:01:54 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,206,1647327600"; 
-   d="scan'208";a="655073428"
+   d="scan'208";a="600936229"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 07 May 2022 03:01:48 -0700
+  by orsmga001.jf.intel.com with ESMTP; 07 May 2022 03:01:48 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 931661D6; Sat,  7 May 2022 13:01:49 +0300 (EEST)
+        id A0ED027D; Sat,  7 May 2022 13:01:49 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Wolfram Sang <wsa@kernel.org>,
@@ -63,16 +63,17 @@ Cc:     Michael Ellerman <mpe@ellerman.id.au>,
         Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
         Pantelis Antoniou <pantelis.antoniou@gmail.com>
-Subject: [PATCH v2 3/4] powerpc/52xx: Get rid of of_node assignment
-Date:   Sat,  7 May 2022 13:01:46 +0300
-Message-Id: <20220507100147.5802-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 4/4] powerpc/52xx: Convert to use fwnode API
+Date:   Sat,  7 May 2022 13:01:47 +0300
+Message-Id: <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
 References: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,78 +81,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Let GPIO library assign of_node from the parent device.
-This allows to move GPIO library and drivers to use fwnode
-APIs instead of being stuck with OF-only interfaces.
+We may convert the GPT driver to use fwnode API for the sake
+of consistency of the used APIs inside the driver.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
 v2: no changes
- arch/powerpc/platforms/52xx/mpc52xx_gpt.c | 18 ++++++++----------
- 1 file changed, 8 insertions(+), 10 deletions(-)
+ arch/powerpc/platforms/52xx/mpc52xx_gpt.c | 47 +++++++++++------------
+ 1 file changed, 22 insertions(+), 25 deletions(-)
 
 diff --git a/arch/powerpc/platforms/52xx/mpc52xx_gpt.c b/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
-index 2605b4667b39..ae47fdcc8a96 100644
+index ae47fdcc8a96..58c3651034bd 100644
 --- a/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
 +++ b/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
-@@ -58,6 +58,7 @@
- #include <linux/of_platform.h>
- #include <linux/of_gpio.h>
+@@ -53,10 +53,9 @@
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/list.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
+ #include <linux/mutex.h>
+-#include <linux/of.h>
+-#include <linux/of_platform.h>
+-#include <linux/of_gpio.h>
  #include <linux/kernel.h>
-+#include <linux/property.h>
+ #include <linux/property.h>
  #include <linux/slab.h>
- #include <linux/fs.h>
+@@ -64,7 +63,7 @@
  #include <linux/watchdog.h>
-@@ -314,17 +315,15 @@ mpc52xx_gpt_gpio_dir_out(struct gpio_chip *gc, unsigned int gpio, int val)
+ #include <linux/miscdevice.h>
+ #include <linux/uaccess.h>
+-#include <linux/module.h>
++
+ #include <asm/div64.h>
+ #include <asm/mpc52xx.h>
+ 
+@@ -235,18 +234,17 @@ static const struct irq_domain_ops mpc52xx_gpt_irq_ops = {
+ 	.xlate = mpc52xx_gpt_irq_xlate,
+ };
+ 
+-static void
+-mpc52xx_gpt_irq_setup(struct mpc52xx_gpt_priv *gpt, struct device_node *node)
++static void mpc52xx_gpt_irq_setup(struct mpc52xx_gpt_priv *gpt)
+ {
+ 	int cascade_virq;
+ 	unsigned long flags;
+ 	u32 mode;
+ 
+-	cascade_virq = irq_of_parse_and_map(node, 0);
+-	if (!cascade_virq)
++	cascade_virq = platform_get_irq(to_platform_device(gpt->dev), 0);
++	if (cascade_virq < 0)
+ 		return;
+ 
+-	gpt->irqhost = irq_domain_add_linear(node, 1, &mpc52xx_gpt_irq_ops, gpt);
++	gpt->irqhost = irq_domain_create_linear(dev_fwnode(gpt->dev), 1, &mpc52xx_gpt_irq_ops, gpt);
+ 	if (!gpt->irqhost) {
+ 		dev_err(gpt->dev, "irq_domain_add_linear() failed\n");
+ 		return;
+@@ -670,8 +668,7 @@ static int mpc52xx_gpt_wdt_init(void)
+ 	return err;
+ }
+ 
+-static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+-				 const u32 *period)
++static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt, const u32 period)
+ {
+ 	u64 real_timeout;
+ 
+@@ -679,14 +676,14 @@ static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+ 	mpc52xx_gpt_wdt = gpt;
+ 
+ 	/* configure the wdt if the device tree contained a timeout */
+-	if (!period || *period == 0)
++	if (period == 0)
+ 		return 0;
+ 
+-	real_timeout = (u64) *period * 1000000000ULL;
++	real_timeout = (u64)period * 1000000000ULL;
+ 	if (mpc52xx_gpt_do_start(gpt, real_timeout, 0, 1))
+ 		dev_warn(gpt->dev, "starting as wdt failed\n");
+ 	else
+-		dev_info(gpt->dev, "watchdog set to %us timeout\n", *period);
++		dev_info(gpt->dev, "watchdog set to %us timeout\n", period);
  	return 0;
  }
  
--static void
--mpc52xx_gpt_gpio_setup(struct mpc52xx_gpt_priv *gpt, struct device_node *node)
-+static void mpc52xx_gpt_gpio_setup(struct mpc52xx_gpt_priv *gpt)
- {
- 	int rc;
- 
--	/* Only setup GPIO if the device tree claims the GPT is
--	 * a GPIO controller */
--	if (!of_find_property(node, "gpio-controller", NULL))
-+	/* Only setup GPIO if the device claims the GPT is a GPIO controller */
-+	if (!device_property_present(gpt->dev, "gpio-controller"))
- 		return;
- 
--	gpt->gc.label = kasprintf(GFP_KERNEL, "%pOF", node);
-+	gpt->gc.label = kasprintf(GFP_KERNEL, "%pfw", dev_fwnode(gpt->dev));
- 	if (!gpt->gc.label) {
- 		dev_err(gpt->dev, "out of memory\n");
- 		return;
-@@ -336,7 +335,7 @@ mpc52xx_gpt_gpio_setup(struct mpc52xx_gpt_priv *gpt, struct device_node *node)
- 	gpt->gc.get = mpc52xx_gpt_gpio_get;
- 	gpt->gc.set = mpc52xx_gpt_gpio_set;
- 	gpt->gc.base = -1;
--	gpt->gc.of_node = node;
-+	gpt->gc.parent = gpt->dev;
- 
- 	/* Setup external pin in GPIO mode */
- 	clrsetbits_be32(&gpt->regs->mode, MPC52xx_GPT_MODE_MS_MASK,
-@@ -349,8 +348,7 @@ mpc52xx_gpt_gpio_setup(struct mpc52xx_gpt_priv *gpt, struct device_node *node)
- 	dev_dbg(gpt->dev, "%s() complete.\n", __func__);
+@@ -697,8 +694,7 @@ static int mpc52xx_gpt_wdt_init(void)
+ 	return 0;
  }
- #else /* defined(CONFIG_GPIOLIB) */
--static void
--mpc52xx_gpt_gpio_setup(struct mpc52xx_gpt_priv *p, struct device_node *np) { }
-+static void mpc52xx_gpt_gpio_setup(struct mpc52xx_gpt_priv *gpt) { }
- #endif /* defined(CONFIG_GPIOLIB) */
  
- /***********************************************************************
-@@ -727,7 +725,7 @@ static int mpc52xx_gpt_probe(struct platform_device *ofdev)
- 
+-static inline int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+-					const u32 *period)
++static inline int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt, const u32 period)
+ {
+ 	return 0;
+ }
+@@ -726,25 +722,26 @@ static int mpc52xx_gpt_probe(struct platform_device *ofdev)
  	dev_set_drvdata(&ofdev->dev, gpt);
  
--	mpc52xx_gpt_gpio_setup(gpt, ofdev->dev.of_node);
-+	mpc52xx_gpt_gpio_setup(gpt);
- 	mpc52xx_gpt_irq_setup(gpt, ofdev->dev.of_node);
+ 	mpc52xx_gpt_gpio_setup(gpt);
+-	mpc52xx_gpt_irq_setup(gpt, ofdev->dev.of_node);
++	mpc52xx_gpt_irq_setup(gpt);
  
  	mutex_lock(&mpc52xx_gpt_list_mutex);
+ 	list_add(&gpt->list, &mpc52xx_gpt_list);
+ 	mutex_unlock(&mpc52xx_gpt_list_mutex);
+ 
+ 	/* check if this device could be a watchdog */
+-	if (of_get_property(ofdev->dev.of_node, "fsl,has-wdt", NULL) ||
+-	    of_get_property(ofdev->dev.of_node, "has-wdt", NULL)) {
+-		const u32 *on_boot_wdt;
++	if (device_property_present(gpt->dev, "fsl,has-wdt") ||
++	    device_property_present(gpt->dev, "has-wdt")) {
++		u32 on_boot_wdt = 0;
++		int ret;
+ 
+ 		gpt->wdt_mode = MPC52xx_GPT_CAN_WDT;
+-		on_boot_wdt = of_get_property(ofdev->dev.of_node,
+-					      "fsl,wdt-on-boot", NULL);
+-		if (on_boot_wdt) {
++		ret = device_property_read_u32(gpt->dev, "fsl,wdt-on-boot", &on_boot_wdt);
++		if (ret) {
++			dev_info(gpt->dev, "can function as watchdog\n");
++		} else {
+ 			dev_info(gpt->dev, "used as watchdog\n");
+ 			gpt->wdt_mode |= MPC52xx_GPT_IS_WDT;
+-		} else
+-			dev_info(gpt->dev, "can function as watchdog\n");
++		}
+ 		mpc52xx_gpt_wdt_setup(gpt, on_boot_wdt);
+ 	}
+ 
 -- 
 2.35.1
 
