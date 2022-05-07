@@ -2,70 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 366F151E54D
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 09:42:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3D6D51E552
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 09:46:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239296AbiEGHpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 May 2022 03:45:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45772 "EHLO
+        id S1383544AbiEGHuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 May 2022 03:50:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48422 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235270AbiEGHpn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 03:45:43 -0400
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF9FA3BA45
-        for <netdev@vger.kernel.org>; Sat,  7 May 2022 00:41:53 -0700 (PDT)
-Received: by mail-lf1-x12a.google.com with SMTP id w19so15950827lfu.11
-        for <netdev@vger.kernel.org>; Sat, 07 May 2022 00:41:53 -0700 (PDT)
+        with ESMTP id S1358709AbiEGHuE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 03:50:04 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACA453B55
+        for <netdev@vger.kernel.org>; Sat,  7 May 2022 00:46:18 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id t13so7889355pgn.8
+        for <netdev@vger.kernel.org>; Sat, 07 May 2022 00:46:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=awYvuDlGXgSYXEjihWbh8CODDi8Cg7WHxPC91lRZqyw=;
-        b=rmwsaDLYWZ4lDUaLORI+GrWgynCxEBTJU/4mT58A9dWyeSN1/gVTb+6npLY7qCifhD
-         9xzWKF+NkiI/hAE24rufukSVQb+SRBTEUpxBCYeFe9QIbl9HNwzrE8mLkvlghnczv5lM
-         +DvjgWKxilcL/qfnZXuqoulCSM7YhtVOcVRTD4yRRL/R6MWm93NyIy+DIGKCaAQogKjt
-         RNTxWqupEM1e3A6gzaWb1eFBSPx0dWq8QePMdr8JloGADq3q2XiUPhEFms1+FUHh5McP
-         oVytmVKhYGuivKXir/nQYNAcRVSCA7iC9vw/T2QG5K5ogd/ljk4m/YQhAZAm/074X7Gp
-         /wPQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=bG1lfOw0gYB4Hj9EXFbaQ7U10hHdJO0es6gnE8C7D3A=;
+        b=WWWqlrJLd5rQHmbPxI6mK8GX1j030cfHlBukVQfrR4KW72j3KaZ4jqjPojVpc9jPmB
+         PI32OHaMSJNkFjg2IsDaGWjORdaWrBjgvsHMmdFiqq8a0ymJDR/S19Rpuw62QjOhMDLB
+         XCH66b8op60ZS/sS7UVkTe/lTpe8i0ThLN//o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=awYvuDlGXgSYXEjihWbh8CODDi8Cg7WHxPC91lRZqyw=;
-        b=mX8FT7XzTP4ZNuB7Vf53DYcvk2PbcKpTrwuBmM9t4QeQrRulZiOmNTglcJBj6FWNTZ
-         wM3exxi/oByQv7m8Rl+fyOoVHb/LaH8kyYx/SD7G+nnK5bYwM65TnSKojQkQvOY69k9P
-         dDK3+LC4KauQ6HGuoW/HNSAK5043ycA1354EUwWFG/BZwkNt9NsnA9l6FPn44lhBRQ5b
-         oQOpOHj5OiunnJy6MspDIj4CbBzAoXjeLe9fglsMp7SCAlZkjbwuNPb8wCTjQzg3mqhM
-         JAAe7iock5bBowHdrCxUmRMPMb9FkhgFgNI/u8RiJF1XhLlwQMCPha5B7GlTfvh1rc8X
-         zPAQ==
-X-Gm-Message-State: AOAM532HcFlJSAGWOVSGN72PC+6e30CSqoLbDJT6gL/u4ybazMr+1z02
-        jpBd1GASekDW1Zyhl9A/yAaCkg==
-X-Google-Smtp-Source: ABdhPJz8QI4hWUaSVF0nVi0MUNMZFXojjpK7gwvcXwulT/sOajyh9I/raDn6DsxhClaZUvxcnxBWNQ==
-X-Received: by 2002:a05:6512:3341:b0:44a:ea52:9735 with SMTP id y1-20020a056512334100b0044aea529735mr5322648lfd.593.1651909312122;
-        Sat, 07 May 2022 00:41:52 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id du8-20020a056512298800b0047255d21153sm997499lfb.130.2022.05.07.00.41.51
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=bG1lfOw0gYB4Hj9EXFbaQ7U10hHdJO0es6gnE8C7D3A=;
+        b=tnqI9BlJSUW23vWRKK/4w+MH3j9TI0lh4FL/YXsAKSB67kCQ3j2u+XV4DabeAOwJ61
+         1Eu2zS0ACxzMEKvtiv2dE4dsPB37lOa6Yufw+bXcPWU17kQ+TFxVSb+467/auo7EAVqk
+         7qPBnxAfKYi804Bpi+0q6BspgONUQ0Dai7xzPN/E9tlkm5awA5/9do5rSr9gGsZow7jc
+         Bl9KbCC+ZF325a3q4oL/8d1nbQAGovwy4R5vDoHezyLn9ekQbZaCBD8q1yOSOF+Nw74K
+         PvHzdT4b2K1JTn9j29RfnzDmEzPErbK2N6zMmvqoH/KcSkpiqTqRR7wH6bBrhOA531gw
+         Hntg==
+X-Gm-Message-State: AOAM531QskYM0Rda37Sq0SUHALodZFjV289mveIRfZBnNSGcOX2n/Nt8
+        +X8AMihE9ow5v7IVVBjIZMhPjA==
+X-Google-Smtp-Source: ABdhPJyhkAysDB6RqgVWxk9976zbUNaF1SYtFT2gcnelJHCZBOospc0InSzSdZis10qeajcKfLSmXg==
+X-Received: by 2002:a63:4e62:0:b0:398:cb40:19b0 with SMTP id o34-20020a634e62000000b00398cb4019b0mr5913006pgl.445.1651909578276;
+        Sat, 07 May 2022 00:46:18 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d133-20020a621d8b000000b0050dc7628196sm4637796pfd.112.2022.05.07.00.46.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 May 2022 00:41:51 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Sat, 07 May 2022 00:46:17 -0700 (PDT)
+Date:   Sat, 7 May 2022 00:46:17 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH] net: dsa: realtek: rtl8366rb: Serialize indirect PHY register access
-Date:   Sat,  7 May 2022 09:39:45 +0200
-Message-Id: <20220507073945.2462186-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: Re: [PATCH v4 net-next 12/12] mlx5: support BIG TCP packets
+Message-ID: <202205070026.11B94DF@keescook>
+References: <20220506153048.3695721-1-eric.dumazet@gmail.com>
+ <20220506153048.3695721-13-eric.dumazet@gmail.com>
+ <20220506153414.72f26ee3@kernel.org>
+ <CANn89iJDP1aSwsCyVVq_qjVY8OZjg-vWULR=GN-WQV6FpLz+Mg@mail.gmail.com>
+ <20220506185405.527a79d4@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+In-Reply-To: <20220506185405.527a79d4@kernel.org>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,101 +78,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+On Fri, May 06, 2022 at 06:54:05PM -0700, Jakub Kicinski wrote:
+> On Fri, 6 May 2022 17:32:43 -0700 Eric Dumazet wrote:
+> > On Fri, May 6, 2022 at 3:34 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > > In function ‘fortify_memcpy_chk’,
+> > >     inlined from ‘mlx5e_sq_xmit_wqe’ at ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:408:5:
+> > > ../include/linux/fortify-string.h:328:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+> > >   328 |                         __write_overflow_field(p_size_field, size);
+> > >       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Lock the regmap during the whole PHY register access routines in
-rtl8366rb.
+Ah, my old friend, inline_hdr.start. Looks a lot like another one I fixed
+earlier in ad5185735f7d ("net/mlx5e: Avoid field-overflowing memcpy()"):
 
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Tested-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-I have tested that this does not create any regressions,
-it makes more sense to have this applied than not. First
-it is related to the same family as the other ASICs, also
-it makes perfect logical sense to enforce serialization
-of these reads/writes.
----
- drivers/net/dsa/realtek/rtl8366rb.c | 33 +++++++++++++++++++----------
- 1 file changed, 22 insertions(+), 11 deletions(-)
+        if (attr->ihs) {
+                if (skb_vlan_tag_present(skb)) {
+                        eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs + VLAN_HLEN);
+                        mlx5e_insert_vlan(eseg->inline_hdr.start, skb, attr->ihs);
+                        stats->added_vlan_packets++;
+                } else {
+                        eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs);
+                        memcpy(eseg->inline_hdr.start, skb->data, attr->ihs);
+			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                }
+                dseg += wqe_attr->ds_cnt_inl;
 
-diff --git a/drivers/net/dsa/realtek/rtl8366rb.c b/drivers/net/dsa/realtek/rtl8366rb.c
-index 1a3406b9e64c..1298661abf2d 100644
---- a/drivers/net/dsa/realtek/rtl8366rb.c
-+++ b/drivers/net/dsa/realtek/rtl8366rb.c
-@@ -1653,28 +1653,34 @@ static int rtl8366rb_phy_read(struct realtek_priv *priv, int phy, int regnum)
- 	if (phy > RTL8366RB_PHY_NO_MAX)
- 		return -EINVAL;
- 
--	ret = regmap_write(priv->map, RTL8366RB_PHY_ACCESS_CTRL_REG,
-+	mutex_lock(&priv->map_lock);
-+
-+	ret = regmap_write(priv->map_nolock, RTL8366RB_PHY_ACCESS_CTRL_REG,
- 			   RTL8366RB_PHY_CTRL_READ);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	reg = 0x8000 | (1 << (phy + RTL8366RB_PHY_NO_OFFSET)) | regnum;
- 
--	ret = regmap_write(priv->map, reg, 0);
-+	ret = regmap_write(priv->map_nolock, reg, 0);
- 	if (ret) {
- 		dev_err(priv->dev,
- 			"failed to write PHY%d reg %04x @ %04x, ret %d\n",
- 			phy, regnum, reg, ret);
--		return ret;
-+		goto out;
- 	}
- 
--	ret = regmap_read(priv->map, RTL8366RB_PHY_ACCESS_DATA_REG, &val);
-+	ret = regmap_read(priv->map_nolock, RTL8366RB_PHY_ACCESS_DATA_REG,
-+			  &val);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	dev_dbg(priv->dev, "read PHY%d register 0x%04x @ %08x, val <- %04x\n",
- 		phy, regnum, reg, val);
- 
-+out:
-+	mutex_unlock(&priv->map_lock);
-+
- 	return val;
- }
- 
-@@ -1687,21 +1693,26 @@ static int rtl8366rb_phy_write(struct realtek_priv *priv, int phy, int regnum,
- 	if (phy > RTL8366RB_PHY_NO_MAX)
- 		return -EINVAL;
- 
--	ret = regmap_write(priv->map, RTL8366RB_PHY_ACCESS_CTRL_REG,
-+	mutex_lock(&priv->map_lock);
-+
-+	ret = regmap_write(priv->map_nolock, RTL8366RB_PHY_ACCESS_CTRL_REG,
- 			   RTL8366RB_PHY_CTRL_WRITE);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	reg = 0x8000 | (1 << (phy + RTL8366RB_PHY_NO_OFFSET)) | regnum;
- 
- 	dev_dbg(priv->dev, "write PHY%d register 0x%04x @ %04x, val -> %04x\n",
- 		phy, regnum, reg, val);
- 
--	ret = regmap_write(priv->map, reg, val);
-+	ret = regmap_write(priv->map_nolock, reg, val);
- 	if (ret)
--		return ret;
-+		goto out;
- 
--	return 0;
-+out:
-+	mutex_unlock(&priv->map_lock);
-+
-+	return ret;
- }
- 
- static int rtl8366rb_dsa_phy_read(struct dsa_switch *ds, int phy, int regnum)
+This is actually two regions, 2 bytes in eseg and everything else in
+dseg. Splitting the memcpy() will work:
+
+	memcpy(eseg->inline_hdr.start, skb->data, sizeof(eseg->inline_hdr.start));
+	memcpy(dseg, skb->data + sizeof(eseg->inline_hdr.start), ihs - sizeof(eseg->inline_hdr.start));
+
+But this begs the question, what is validating that ihs -2 is equal to
+wqe_attr->ds_cnt_inl * sizeof(*desg) ?
+
+And how is wqe bounds checked?
+
+
+> > > In function ‘fortify_memcpy_chk’,
+> > >     inlined from ‘mlx5i_sq_xmit’ at ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:962:4:
+> > > ../include/linux/fortify-string.h:328:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
+> > >   328 |                         __write_overflow_field(p_size_field, size);
+> > >       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
+
+And moar inline_hdr.start:
+
+	if (attr.ihs) {
+		memcpy(eseg->inline_hdr.start, skb->data, attr.ihs);
+		eseg->inline_hdr.sz = cpu_to_be16(attr.ihs);
+		dseg += wqe_attr.ds_cnt_inl;
+	}
+
+again, a split:
+
+	memcpy(eseg->inline_hdr.start, skb->data, sizeof(eseg->inline_hdr.start));
+	eseg->inline_hdr.sz = cpu_to_be16(attr.ihs);
+	memcpy(dseg, skb->data + sizeof(eseg->inline_hdr.start), ihs - sizeof(eseg->inline_hdr.start));
+	dseg += wqe_attr.ds_cnt_inl;
+
+And the same bounds questions come up.
+
+It'd be really nice to get some kind of generalized "copy out of
+skb->data with bounds checking that may likely all get reduced to
+constant checks".
+
 -- 
-2.35.1
-
+Kees Cook
