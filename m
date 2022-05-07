@@ -2,144 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3D6D51E552
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 09:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD6DB51E5B7
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 10:47:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383544AbiEGHuG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 May 2022 03:50:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48422 "EHLO
+        id S1446144AbiEGIvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 May 2022 04:51:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358709AbiEGHuE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 03:50:04 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CACA453B55
-        for <netdev@vger.kernel.org>; Sat,  7 May 2022 00:46:18 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id t13so7889355pgn.8
-        for <netdev@vger.kernel.org>; Sat, 07 May 2022 00:46:18 -0700 (PDT)
+        with ESMTP id S1344519AbiEGIvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 04:51:12 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22DA848380;
+        Sat,  7 May 2022 01:47:26 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id a11so8150330pff.1;
+        Sat, 07 May 2022 01:47:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=bG1lfOw0gYB4Hj9EXFbaQ7U10hHdJO0es6gnE8C7D3A=;
-        b=WWWqlrJLd5rQHmbPxI6mK8GX1j030cfHlBukVQfrR4KW72j3KaZ4jqjPojVpc9jPmB
-         PI32OHaMSJNkFjg2IsDaGWjORdaWrBjgvsHMmdFiqq8a0ymJDR/S19Rpuw62QjOhMDLB
-         XCH66b8op60ZS/sS7UVkTe/lTpe8i0ThLN//o=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ccfTY95+psHCY6He+eK67UQqmYafold9pHrglmLvAmo=;
+        b=a0c+PxeyYec6iuI72OoPUUxOdZemThLnOXunZERwdu1npZzTEHdmVXp3DZFbeM/kd0
+         4ELSCLd2hwArfQvPcmuuNpExoQXLBYZQ/2sKLQ9mQ4ePwOL9x4mHLwtScbUmhfcpygFT
+         doEAhVK8vp9iylie7nfmGvdqefo9L7hXHK6HUwGchFeHMoyHg5gdu7TZjGljXZfJiCla
+         JaXr4zACb9C/GrlgyiFi3w2APlDcPjHM5kf2SSeNSlq38G+PRxB5LqBE2mlc0uRMRY/d
+         1AecSIIHKBW7pw4kvm4Q3dKzL3irJIutJEVsd4JVt2QPVqOvHwpTKHlLCqcjyORyEWvH
+         ZdQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=bG1lfOw0gYB4Hj9EXFbaQ7U10hHdJO0es6gnE8C7D3A=;
-        b=tnqI9BlJSUW23vWRKK/4w+MH3j9TI0lh4FL/YXsAKSB67kCQ3j2u+XV4DabeAOwJ61
-         1Eu2zS0ACxzMEKvtiv2dE4dsPB37lOa6Yufw+bXcPWU17kQ+TFxVSb+467/auo7EAVqk
-         7qPBnxAfKYi804Bpi+0q6BspgONUQ0Dai7xzPN/E9tlkm5awA5/9do5rSr9gGsZow7jc
-         Bl9KbCC+ZF325a3q4oL/8d1nbQAGovwy4R5vDoHezyLn9ekQbZaCBD8q1yOSOF+Nw74K
-         PvHzdT4b2K1JTn9j29RfnzDmEzPErbK2N6zMmvqoH/KcSkpiqTqRR7wH6bBrhOA531gw
-         Hntg==
-X-Gm-Message-State: AOAM531QskYM0Rda37Sq0SUHALodZFjV289mveIRfZBnNSGcOX2n/Nt8
-        +X8AMihE9ow5v7IVVBjIZMhPjA==
-X-Google-Smtp-Source: ABdhPJyhkAysDB6RqgVWxk9976zbUNaF1SYtFT2gcnelJHCZBOospc0InSzSdZis10qeajcKfLSmXg==
-X-Received: by 2002:a63:4e62:0:b0:398:cb40:19b0 with SMTP id o34-20020a634e62000000b00398cb4019b0mr5913006pgl.445.1651909578276;
-        Sat, 07 May 2022 00:46:18 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id d133-20020a621d8b000000b0050dc7628196sm4637796pfd.112.2022.05.07.00.46.17
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ccfTY95+psHCY6He+eK67UQqmYafold9pHrglmLvAmo=;
+        b=iSGt2AQdR6n8ANe/heB5VMpplxVxHdcrn3PX7+yuUgj7Jgken6Yzfms2R96sr9NBdS
+         oJwMpLZ7UDfNYFXGGdKFQQ7lzRbYGPwFJvxj2Zf60orR2S23atrQq9BUVbMM2oMMPkLs
+         R4T14oQYnpCCayA+gQkRBGN28EBtwtk4w1CUwzojx763stQqCPagiSW2QWLLLrnt8QCz
+         ZIXr6y+hCoLIZzdUjFwaf9IWekuRgU4p1hflw1RHTV8WAWU+g2uaw8aSkmo/m8xRDOqQ
+         Lt0eubR4iuysE3REt6tUG238tSH/6fff2H9C7A8xNG8sHMKsjkTwz5oSY1rIZGOCZpCI
+         RRow==
+X-Gm-Message-State: AOAM532eYq0YAhbHGJvuq1X/Rb5ymMpCOpT1fCxTfEcXq9sM1SYDpk0G
+        BGT6uIAoDs5zwyFbn1Ra16Z5FNombVUVgQ==
+X-Google-Smtp-Source: ABdhPJw98tTxONDGUaX/2zcjqg4/YagwX+3tFePd02L85CION61ElJstk4CmLbKdovWuk9L6C2Zy2Q==
+X-Received: by 2002:a05:6a00:21c8:b0:4fd:f89f:ec0e with SMTP id t8-20020a056a0021c800b004fdf89fec0emr7123513pfj.83.1651913245215;
+        Sat, 07 May 2022 01:47:25 -0700 (PDT)
+Received: from debian.me (subs02-180-214-232-9.three.co.id. [180.214.232.9])
+        by smtp.gmail.com with ESMTPSA id ot16-20020a17090b3b5000b001dc4d22c0a7sm5055729pjb.10.2022.05.07.01.47.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 May 2022 00:46:17 -0700 (PDT)
-Date:   Sat, 7 May 2022 00:46:17 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH v4 net-next 12/12] mlx5: support BIG TCP packets
-Message-ID: <202205070026.11B94DF@keescook>
-References: <20220506153048.3695721-1-eric.dumazet@gmail.com>
- <20220506153048.3695721-13-eric.dumazet@gmail.com>
- <20220506153414.72f26ee3@kernel.org>
- <CANn89iJDP1aSwsCyVVq_qjVY8OZjg-vWULR=GN-WQV6FpLz+Mg@mail.gmail.com>
- <20220506185405.527a79d4@kernel.org>
+        Sat, 07 May 2022 01:47:24 -0700 (PDT)
+From:   Bagas Sanjaya <bagasdotme@gmail.com>
+To:     linux-doc@vger.kernel.org
+Cc:     Bagas Sanjaya <bagasdotme@gmail.com>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Ben Greear <greearb@candelatech.com>,
+        Pavel Begunkov <asml.silence@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>, netdev@vger.kernel.org,
+        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3] net/core: Rephrase function description of __dev_queue_xmit()
+Date:   Sat,  7 May 2022 15:46:44 +0700
+Message-Id: <20220507084643.18278-1-bagasdotme@gmail.com>
+X-Mailer: git-send-email 2.36.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220506185405.527a79d4@kernel.org>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 06, 2022 at 06:54:05PM -0700, Jakub Kicinski wrote:
-> On Fri, 6 May 2022 17:32:43 -0700 Eric Dumazet wrote:
-> > On Fri, May 6, 2022 at 3:34 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > In function ‘fortify_memcpy_chk’,
-> > >     inlined from ‘mlx5e_sq_xmit_wqe’ at ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:408:5:
-> > > ../include/linux/fortify-string.h:328:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-> > >   328 |                         __write_overflow_field(p_size_field, size);
-> > >       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Commit c526fd8f9f4f21 ("net: inline dev_queue_xmit()") inlines
+dev_queue_xmit() that contains comment quote from Ben Greear, which
+originates from commit af191367a75262 ("[NET]: Document ->hard_start_xmit()
+locking in comments."). It triggers htmldocs warning:
 
-Ah, my old friend, inline_hdr.start. Looks a lot like another one I fixed
-earlier in ad5185735f7d ("net/mlx5e: Avoid field-overflowing memcpy()"):
+Documentation/networking/kapi:92: net/core/dev.c:4101: WARNING: Missing matching underline for section title overline.
 
-        if (attr->ihs) {
-                if (skb_vlan_tag_present(skb)) {
-                        eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs + VLAN_HLEN);
-                        mlx5e_insert_vlan(eseg->inline_hdr.start, skb, attr->ihs);
-                        stats->added_vlan_packets++;
-                } else {
-                        eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs);
-                        memcpy(eseg->inline_hdr.start, skb->data, attr->ihs);
-			^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                }
-                dseg += wqe_attr->ds_cnt_inl;
+-----------------------------------------------------------------------------------
+     I notice this method can also return errors from the queue disciplines,
+     including NET_XMIT_DROP, which is a positive value.  So, errors can also
 
-This is actually two regions, 2 bytes in eseg and everything else in
-dseg. Splitting the memcpy() will work:
+Fix the warning by rephrasing the function description. This is done by
+incorporating notes from the quote as well as dropping the banner and
+attribution signature.
 
-	memcpy(eseg->inline_hdr.start, skb->data, sizeof(eseg->inline_hdr.start));
-	memcpy(dseg, skb->data + sizeof(eseg->inline_hdr.start), ihs - sizeof(eseg->inline_hdr.start));
+Fixes: c526fd8f9f4f21 ("net: inline dev_queue_xmit()")
+Link: https://lore.kernel.org/linux-next/20220503073420.6d3f135d@canb.auug.org.au/
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Cc: Ben Greear <greearb@candelatech.com>
+Cc: Pavel Begunkov <asml.silence@gmail.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Akira Yokosawa <akiyks@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-next@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Bagas Sanjaya <bagasdotme@gmail.com>
+---
+ Changes since v2 [1]:
+   - Approach the problem by rephrasing (suggested by Jakub)
+   - Explain that inlining in the Fixes: commit triggers the warning
+     (suggested by Akira)
 
-But this begs the question, what is validating that ihs -2 is equal to
-wqe_attr->ds_cnt_inl * sizeof(*desg) ?
+ [1]: https://lore.kernel.org/linux-doc/20220505082907.42393-1-bagasdotme@gmail.com/
 
-And how is wqe bounds checked?
+ net/core/dev.c | 30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index f036ccb61da4da..75c00bb45f9b46 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -4139,22 +4139,20 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
+  *	have set the device and priority and built the buffer before calling
+  *	this function. The function can be called from an interrupt.
+  *
+- *	A negative errno code is returned on a failure. A success does not
+- *	guarantee the frame will be transmitted as it may be dropped due
+- *	to congestion or traffic shaping.
+- *
+- * -----------------------------------------------------------------------------------
+- *      I notice this method can also return errors from the queue disciplines,
+- *      including NET_XMIT_DROP, which is a positive value.  So, errors can also
+- *      be positive.
+- *
+- *      Regardless of the return value, the skb is consumed, so it is currently
+- *      difficult to retry a send to this method.  (You can bump the ref count
+- *      before sending to hold a reference for retry if you are careful.)
+- *
+- *      When calling this method, interrupts MUST be enabled.  This is because
+- *      the BH enable code must have IRQs enabled so that it will not deadlock.
+- *          --BLG
++ *	This function can returns a negative errno code in case of failure.
++ *	Positive errno code can also be returned from the queue disciplines
++ *	(including NET_XMIT_DROP). A success does not guarantee the frame
++ *	will be transmitted as it may be dropped due to congestion or
++ *	traffic shaping.
++ *
++ *	The skb is consumed anyway regardless of return value, so it is
++ *	currently difficult to retry sending to this method. If careful,
++ *	you can bump the ref count before sending to hold a reference for
++ *	retry.
++ *
++ *	Interrupts must be enabled when calling this function, because
++ *	BH-enabled code must have IRQs enabled so that it will not deadlock.
++ *
+  */
+ int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
+ {
 
-> > > In function ‘fortify_memcpy_chk’,
-> > >     inlined from ‘mlx5i_sq_xmit’ at ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:962:4:
-> > > ../include/linux/fortify-string.h:328:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-> > >   328 |                         __write_overflow_field(p_size_field, size);
-> > >       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~  
-
-And moar inline_hdr.start:
-
-	if (attr.ihs) {
-		memcpy(eseg->inline_hdr.start, skb->data, attr.ihs);
-		eseg->inline_hdr.sz = cpu_to_be16(attr.ihs);
-		dseg += wqe_attr.ds_cnt_inl;
-	}
-
-again, a split:
-
-	memcpy(eseg->inline_hdr.start, skb->data, sizeof(eseg->inline_hdr.start));
-	eseg->inline_hdr.sz = cpu_to_be16(attr.ihs);
-	memcpy(dseg, skb->data + sizeof(eseg->inline_hdr.start), ihs - sizeof(eseg->inline_hdr.start));
-	dseg += wqe_attr.ds_cnt_inl;
-
-And the same bounds questions come up.
-
-It'd be really nice to get some kind of generalized "copy out of
-skb->data with bounds checking that may likely all get reduced to
-constant checks".
-
+base-commit: 8fc0b6992a06998404321f26a57ea54522659b64
 -- 
-Kees Cook
+An old man doll... just what I always wanted! - Clara
+
