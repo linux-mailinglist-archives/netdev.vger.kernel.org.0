@@ -2,146 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BEB751E8C1
-	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 19:07:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EEE551E92E
+	for <lists+netdev@lfdr.de>; Sat,  7 May 2022 20:21:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239481AbiEGRJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 May 2022 13:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
+        id S1381034AbiEGSY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 May 2022 14:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446666AbiEGRIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 13:08:45 -0400
-Received: from mxout4.routing.net (mxout4.routing.net [IPv6:2a03:2900:1:a::9])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810F31B781;
-        Sat,  7 May 2022 10:04:58 -0700 (PDT)
-Received: from mxbox4.masterlogin.de (unknown [192.168.10.79])
-        by mxout4.routing.net (Postfix) with ESMTP id 588691004CD;
-        Sat,  7 May 2022 17:04:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1651943096;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ztXbd80xozaI47bUw9fR7hUTHlVlOWP8CEepv0mY5ag=;
-        b=hjvBnIMgtNv5Y0TtmliGNJFJJyvdDsncrvJxS5hh75rBbCmxjMTKkmF5kSJ/IZJIhIVBxu
-        KAcTaTa1v55y4ouhZLrtwSouLWL7hwn4+7s6xDyx6APX46UEv5ziI2TFDLH7xmHpa0A80f
-        uyeMuJIlnOxrQ/cPrv/C1mg3oJMlAzE=
-Received: from localhost.localdomain (fttx-pool-80.245.74.2.bambit.de [80.245.74.2])
-        by mxbox4.masterlogin.de (Postfix) with ESMTPSA id 415B1800AB;
-        Sat,  7 May 2022 17:04:55 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     linux-rockchip@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S230521AbiEGSY5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 14:24:57 -0400
+Received: from mxout02.lancloud.ru (mxout02.lancloud.ru [45.84.86.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CBB76154;
+        Sat,  7 May 2022 11:21:07 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru 1A3322327E34
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Subject: Re: [PATCH 2/9] dt-bindings: net: renesas,etheravb: Document RZ/V2M
+ SoC
+To:     Phil Edworthy <phil.edworthy@renesas.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
-        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
-        "Mauro Carvalho Chehab" <mchehab+samsung@kernel.org>
-Subject: [PATCH v3 6/6] arm64: dts: rockchip: Add mt7531 dsa node to BPI-R2-Pro board
-Date:   Sat,  7 May 2022 19:04:40 +0200
-Message-Id: <20220507170440.64005-7-linux@fw-web.de>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220507170440.64005-1-linux@fw-web.de>
-References: <20220507170440.64005-1-linux@fw-web.de>
+        Geert Uytterhoeven <geert+renesas@glider.be>
+CC:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, Biju Das <biju.das.jz@bp.renesas.com>
+References: <20220504145454.71287-1-phil.edworthy@renesas.com>
+ <20220504145454.71287-3-phil.edworthy@renesas.com>
+Organization: Open Mobile Platform
+Message-ID: <d0c1800f-8826-207f-35a8-90d3a62a32fe@omp.ru>
+Date:   Sat, 7 May 2022 21:21:02 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Mail-ID: 744a8d14-3188-4f88-af20-b041c28fd74e
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220504145454.71287-3-phil.edworthy@renesas.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+Hello!
 
-Add Device Tree node for mt7531 switch connected to gmac0.
+On 5/4/22 5:54 PM, Phil Edworthy wrote:
 
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
----
-v2:
-- drop status=disabled
----
- .../boot/dts/rockchip/rk3568-bpi-r2-pro.dts   | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
+> Document the Ethernet AVB IP found on RZ/V2M SoC.
+> It includes the Ethernet controller (E-MAC) and Dedicated Direct memory
+> access controller (DMAC) for transferring transmitted Ethernet frames
+> to and received Ethernet frames from respective storage areas in the
+> URAM at high speed.
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-index 235cb7405d9b..e517712f5d8d 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-+++ b/arch/arm64/boot/dts/rockchip/rk3568-bpi-r2-pro.dts
-@@ -454,6 +454,54 @@ &i2c5 {
- 	status = "disabled";
- };
- 
-+&mdio0 {
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+
-+	switch@0 {
-+		compatible = "mediatek,mt7531";
-+		reg = <0>;
-+
-+		ports {
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			port@1 {
-+				reg = <1>;
-+				label = "lan0";
-+			};
-+
-+			port@2 {
-+				reg = <2>;
-+				label = "lan1";
-+			};
-+
-+			port@3 {
-+				reg = <3>;
-+				label = "lan2";
-+			};
-+
-+			port@4 {
-+				reg = <4>;
-+				label = "lan3";
-+			};
-+
-+			port@5 {
-+				reg = <5>;
-+				label = "cpu";
-+				ethernet = <&gmac0>;
-+				phy-mode = "rgmii";
-+
-+				fixed-link {
-+					speed = <1000>;
-+					full-duplex;
-+					pause;
-+				};
-+			};
-+		};
-+	};
-+};
-+
- &mdio1 {
- 	rgmii_phy1: ethernet-phy@0 {
- 		compatible = "ethernet-phy-ieee802.3-c22";
--- 
-2.25.1
+   I think nobody knows what exactly URAM stands for... you better call it
+just RAM. :-)
 
+> The AVB-DMAC is compliant with IEEE 802.1BA, IEEE 802.1AS timing and
+> synchronization protocol, IEEE 802.1Qav real-time transfer, and the
+> IEEE 802.1Qat stream reservation protocol.
+> 
+> R-Car has a pair of combined interrupt lines:
+>  ch22 = Line0_DiA | Line1_A | Line2_A
+>  ch23 = Line0_DiB | Line1_B | Line2_B
+> Line0 for descriptor interrupts.
+> Line1 for error related interrupts (which we call err_a and err_b).
+> Line2 for management and gPTP related interrupts (mgmt_a and mgmt_b).
+> 
+> RZ/V2M hardware has separate interrupt lines for each of these, but
+> we keep the "ch22" name for Line0_DiA.
+
+   Not sure I agree here...
+   BTW, aren't the interrupts called "Ethernet ABV.ch<n>" (as on R-Car gen3)
+in your (complete?) manual?
+
+> We also keep the "ch24" name for the Line3 (MAC) interrupt.
+> 
+> It has 3 clocks; the main AXI clock, the AMBA CHI clock and a gPTP
+
+   Could you spell out CHI like below?
+
+> reference clock.
+> 
+> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+[...]
+
+MBR, Sergey
