@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C61451EEB3
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 17:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7E151EE9A
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 17:51:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234993AbiEHPfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 11:35:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
+        id S234969AbiEHPfa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 11:35:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234925AbiEHPfY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 11:35:24 -0400
+        with ESMTP id S234871AbiEHPfO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 11:35:14 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B06D3E091
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 08:31:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76A21E03D
+        for <netdev@vger.kernel.org>; Sun,  8 May 2022 08:31:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
         Message-Id:Date:Subject:Cc:To:From:From:Sender:Reply-To:Subject:Date:
         Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Wub2o2o5opWSk2owkpZC7OOd9FIctYGP1nAZJ6u1f1Q=; b=jigMk5ME09Qawsc2Mgf3vz4wQb
-        MAY5usYAazbwUwvitmym0poE+7FQ1yd++5ciefDk3+fA7/4ifN77SI71JEFwsXrWZM80+7hv//pL2
-        H7XDDHY2NqVJcXKnXUvkoRLg2JgxriC9lh/U9BnKZmiBGGuikittJFMuacDebvqqHoOg=;
+        bh=taXuv8gm74IpYkKEglhQbs1TY03vhu8uZ63S5N0vKx0=; b=ETweOh+0ZzV8Db7Ez1CaANM0Yu
+        ojek+597zmecPXWIUj0T038s/Pf3b7LCvEf6nC8EHZsSDosLICxWmEQIZ4Ek68nSUCmbGdBjAVK38
+        v6xto8YEcdMil8XvsP9kzqDl1b7e2sac4A63edJNNanjq98N1DlPVaT9nVpmyOVifPi0=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1nnisJ-001n9g-2d; Sun, 08 May 2022 17:31:11 +0200
+        id 1nnisJ-001n9i-3s; Sun, 08 May 2022 17:31:11 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     netdev <netdev@vger.kernel.org>
 Cc:     Sean Wang <sean.wang@mediatek.com>,
@@ -45,9 +45,9 @@ Cc:     Sean Wang <sean.wang@mediatek.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Yang Yingliang <yangyingliang@huawei.com>,
         Hao Chen <chenhao288@hisilicon.com>
-Subject: [PATCH net-next 02/10] net: mdio: mdiobus_register: Update validation test
-Date:   Sun,  8 May 2022 17:30:41 +0200
-Message-Id: <20220508153049.427227-3-andrew@lunn.ch>
+Subject: [PATCH net-next 03/10] net: mdio: C22 is now optional, EOPNOTSUPP if not provided
+Date:   Sun,  8 May 2022 17:30:42 +0200
+Message-Id: <20220508153049.427227-4-andrew@lunn.ch>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220508153049.427227-1-andrew@lunn.ch>
 References: <20220508153049.427227-1-andrew@lunn.ch>
@@ -62,39 +62,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that C45 uses its own read/write methods, the validation performed
-when a bus is registers needs updating. All combinations of C22 and
-C45 are supported, but both read and write methods must be provided,
-read only busses are not supported etc.
+When performing a C22 operation, check that the bus driver actually
+provides the methods, and return -EOPNOTSUPP if not. C45 only busses
+do exist, and in future their C22 methods will be NULL.
 
 Signed-off-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/phy/mdio_bus.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/net/phy/mdio_bus.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 46a03c0b45e3..818d22fb3cb5 100644
+index 818d22fb3cb5..4638ae3e13e3 100644
 --- a/drivers/net/phy/mdio_bus.c
 +++ b/drivers/net/phy/mdio_bus.c
-@@ -526,8 +526,16 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
- 	int i, err;
- 	struct gpio_desc *gpiod;
+@@ -767,7 +767,10 @@ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum)
  
--	if (NULL == bus || NULL == bus->name ||
--	    NULL == bus->read || NULL == bus->write)
-+	if (NULL == bus || NULL == bus->name)
-+		return -EINVAL;
-+
-+	if (!bus->read != !bus->write)
-+		return -EINVAL;
-+
-+	if (!bus->read_c45 != !bus->write_c45)
-+		return -EINVAL;
-+
-+	if (!bus->read && !bus->read_c45)
- 		return -EINVAL;
+ 	lockdep_assert_held_once(&bus->mdio_lock);
  
- 	if (bus->parent && bus->parent->of_node)
+-	retval = bus->read(bus, addr, regnum);
++	if (bus->read)
++		retval = bus->read(bus, addr, regnum);
++	else
++		retval = -EOPNOTSUPP;
+ 
+ 	trace_mdio_access(bus, 1, addr, regnum, retval, retval);
+ 	mdiobus_stats_acct(&bus->stats[addr], true, retval);
+@@ -793,7 +796,10 @@ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+ 
+ 	lockdep_assert_held_once(&bus->mdio_lock);
+ 
+-	err = bus->write(bus, addr, regnum, val);
++	if (bus->write)
++		err = bus->write(bus, addr, regnum, val);
++	else
++		err = -EOPNOTSUPP;
+ 
+ 	trace_mdio_access(bus, 0, addr, regnum, val, err);
+ 	mdiobus_stats_acct(&bus->stats[addr], false, err);
 -- 
 2.36.0
 
