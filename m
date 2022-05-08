@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25D9651EF2A
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 21:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E915D51EF72
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 21:12:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238362AbiEHTF6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 15:05:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55894 "EHLO
+        id S239109AbiEHTGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 15:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236071AbiEHS5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 14:57:45 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2102.outbound.protection.outlook.com [40.107.220.102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8BA29A1B1;
-        Sun,  8 May 2022 11:53:54 -0700 (PDT)
+        with ESMTP id S1377188AbiEHS5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 14:57:48 -0400
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2111.outbound.protection.outlook.com [40.107.220.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12048A1B1;
+        Sun,  8 May 2022 11:53:57 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aZsxDBy7pTYHpj2s1V7NqmgypGF0DYQ1drXGf1gnp6djfYXNFCQPhCZG3se27cFh5Zp76EOiW8hVt/Vp/oDLbc/jqNWVWj5yEdAuPYber3K3fetawIO8RWic1FNpQH15/S8MwEc7tHTHdhogJMR2O/8KlN18bFpk6/E/N76V9HgXhg86aQLhMYYwu/LrcHab1BnHzG6sdcHInaU53joxhL1RDU9dybWUfRylpzCubVKFTfSLkkQsAEfD8iOfo4702nE7t/unxNSzwRA3i/B/cP8lmZUIY00DJRurko/ilXboNRW2M6dUaR6Lqdp8+MEbNtKa2/OjW71Jdo9G9RlpKA==
+ b=OTxbK/ZMYUJQknanyiufCI+unS+S0pzG+qj6NZoJLh6YfCrXZh2tq7fcQW1qeJq7I6hYxkmdUiw+7tDD9Tt0pQolB/nkPt4DkY2Fb4WGh7cqpRG8g5bny+YslrHkZExSoXz2eFHUI4APVK4EHn8iVAU9fH0ZO2DWs+/XEGVvJBjkNby31SWUS/lzEf0/i2m937/PvAVIKmiGWJxA6aGsmCfDIisdepZhDWUWI6E/QiGi6F5wEOZIgOJ3hj1+X2FNWtA5irvA5q4VeKA30w+xx/1WWnRUckym8id+VlVWqTOvAJ/samWli/upLbTsKqJ4z3hFXaV9R2u5xKZxUCtJJw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jht0BpWcJRTHFvJRgbv6zaCcBdyebYpgiTuhrzO+5mA=;
- b=nGYwRAvdR2J5ZHt4LrsqgqhtekAXABk4tjyXUjBfP+oHa0UIvSDDb/stYteNjtfKJgIdjj82HNfanSQ28By/EPbhFLQjT/Z8Olzrq+zsrBU0Iwz35t+XDFcmaQHppV9GFZy/12o6UweZQq/AK7oXy4ToVqo0CuMWCcvpo19/1Jf6UiBMmfcQ2KeTIwEfCEQrC/ij8LxirmwS3LK9GJ5hgGvd9TYZAlSgINTaKerfewwdtFhP3PTeRC5HsKlPwcki/JCT3gjU0RBP5PCMWfmwjWWqmn06EYx+xiKel06FEin7DeNcCo7yAaWwGRAA9stD1gjYep8sBSMDzhTMASPMsg==
+ bh=zFkQ0OKEFLYVgq8FFL3lOp7a1XD65RKQBAXNAqoZEYk=;
+ b=LmBjtxC1HGNbs5vBgeKaFwv6GUitxChDVK3HaWcV0+D3Hghdp3bmr7gg00C1lWZcENnQB+rPJP5OZ2xr4ADOhOUAi30d9J4X/JfU62ZGxucQ47Q1dC9fz59/IM3mN8Xrse8i2n0i52p/EPAlbztA9km+sRegLcBf3hBTK/Vz8FbgKBr+qKjGnm93HiBim2LvCs5s1FEapmkxtq7JtS8Gmhywy/v7QUI/CUNRuQcvbRp7dDx2Uk1Z7Bw6SE8zz5vV+PczCm+XoX2ZbKPhqTkMXLYLj78jAoBYY/9+hq4cyeDo+/BABV8CrTvVwRLoBmTxg1WVCopcl0W+BjF/2fcyGg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=in-advantage.com; dmarc=pass action=none
  header.from=in-advantage.com; dkim=pass header.d=in-advantage.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=jht0BpWcJRTHFvJRgbv6zaCcBdyebYpgiTuhrzO+5mA=;
- b=trY32lhpQt686ztp39oTxVB8u67f+RMdFAWN8i8bjFqYYfWJA+kGWHUP3qQNqUqUV0SG3tbqK7Z2BJLzQUVwogj7YNe+jisyPxOMSDjcmu9RaAr2JUh5mVHPuiYoxwsUCQujJqgXd4+yNb5uSBDXDsKBdYXLa+xxdtRw3mx+RxY=
+ bh=zFkQ0OKEFLYVgq8FFL3lOp7a1XD65RKQBAXNAqoZEYk=;
+ b=PqbNA4bVcM5M+wqPPRQIkdXXEsc8aCRhh9/q9AZxoza6q1E8/7BkkguaNgIffOU2yJgLfSPUl0PJGAZdFGbFYvdDBOER0yK6gvegFbz/GElyJCvYJDxh75PexZMrdylkUkfq4yyhp/7BsDr6IcY+QdZ1AzrVih+Iyi3Msgao6sw=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=in-advantage.com;
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  (2603:10b6:301:35::37) by SJ0PR10MB5672.namprd10.prod.outlook.com
  (2603:10b6:a03:3ef::21) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.18; Sun, 8 May
- 2022 18:53:53 +0000
+ 2022 18:53:55 +0000
 Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::4581:787c:1a7a:873e]) by MWHPR1001MB2351.namprd10.prod.outlook.com
  ([fe80::4581:787c:1a7a:873e%3]) with mapi id 15.20.5227.020; Sun, 8 May 2022
- 18:53:53 +0000
+ 18:53:55 +0000
 From:   Colin Foster <colin.foster@in-advantage.com>
 To:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
         netdev@vger.kernel.org
@@ -61,9 +61,9 @@ Cc:     Terry Bowman <terry.bowman@amd.com>, Wolfram Sang <wsa@kernel.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         Lee Jones <lee.jones@linaro.org>
-Subject: [RFC v8 net-next 11/16] net: mscc: ocelot: expose regfield definition to be used by other drivers
-Date:   Sun,  8 May 2022 11:53:08 -0700
-Message-Id: <20220508185313.2222956-12-colin.foster@in-advantage.com>
+Subject: [RFC v8 net-next 12/16] net: mscc: ocelot: expose stats layout definition to be used by other drivers
+Date:   Sun,  8 May 2022 11:53:09 -0700
+Message-Id: <20220508185313.2222956-13-colin.foster@in-advantage.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508185313.2222956-1-colin.foster@in-advantage.com>
 References: <20220508185313.2222956-1-colin.foster@in-advantage.com>
@@ -74,241 +74,320 @@ X-ClientProxiedBy: SJ0PR03CA0045.namprd03.prod.outlook.com
  (2603:10b6:301:35::37)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2358fb44-91e6-47a5-f69e-08da312418b2
+X-MS-Office365-Filtering-Correlation-Id: 16a2075b-a1c1-452f-b5f1-08da31241a3e
 X-MS-TrafficTypeDiagnostic: SJ0PR10MB5672:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR10MB5672A70BBEBD461A30613CDAA4C79@SJ0PR10MB5672.namprd10.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <SJ0PR10MB5672E6A8BC9C77925157FF91A4C79@SJ0PR10MB5672.namprd10.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ZYB70u66F2DILRYBHq22yeLm/KjL0Yt+L0ZGSseriRjcPutEp+U8WCgxLpWEmSdUeG6cTkgHnK++kt3iWUnL/GtPnTcLgoL0aPWn6puQioucEK5JWtz2LjRHzDxEnNatotrMSfA4Z964hUyCkWbDoITVuaEaCOvv7+9b/88vwgt+fnZyZRQ+lYVytlYvz4XCcK9HpoMbsV1yaDPFVSFgereHj4ZCApns6CXGEEbi2oTlzLtLIcefE/m+7uc+JijA1caAqzAgzyeqBUzhGM1u8Cms9tj4RnImBrqi+7NVAAjxy5tUoteZGgVBbRTN1cFy2HiGwAa5Xhwe/8Qh9nJIqONlTRz7U+ihadwuTnP5oG5VFusVnnoX1S5up2M5mcWqPWc02l0BoLuQcrWBKSnjM5zNvwX0YUlaz9GRqCFSHW6K475JOE/W+UzB8HzomRbY08nHB9VTFqvuQNCeWFTSLMl3fMbvcMm2hLWHeJW42XdjjKpbO6IUbUrQs7LAwouDDTQ7R/JrK7CbQzHTuNE9br55soDcj7aIy5rfrJUJou47589gXsM5bN06UKj5dLj9M2OGS99MkjS6XIZJBFqpBtNlllvgPOjw+XqGS2CKusKlAsxgmU1ZT550dc2e7kgDMQtPhuF3w9zoHYxJcK/LX5xShHREKIUDE0dldS7lGlxRWWKXjJ6GBphV+40/QhhkMeh8Uu3dZcOoSNLcyc5n/A==
+X-Microsoft-Antispam-Message-Info: hj4BlolD3AYhYRGh9T5KDWOfB9tcta9zL3gBXOfFAzKTM+rqabduD8nOWGuiER4X7YYUjqSn67wx5/3HEYhr3cvd7AaUQj3xz9Ch2wCr1ergkC9sRNUUrLptcDfUCXaqpcl/bRtevNiW2rx0357aqebeZ67UeG3O/XQAfg5kxIEw1tGe29xwexlMkFpNAhVcvEGnZPriRfTT9CcHcIxLjzz07DAUPCs3AC+RLC4E4H2uIvNvG8339QE6qSXg1RhaZDLQ2rdF/bQUtOM9C8xR/AZB1kufbTiItsd8+agcyH/tAcpSMR/F5I2eGMEGyABx9+CmzZaVVW16wwtd5Y8KO6pYaq3a2iosLiscTUdh2FUEth8y3nzq/EhASayZMoHx2Pu46XGax8p/46lAml9nH8/p2Ko7peGMcezU9a4aILjJbJRBHnSFqJpjYksJYpTmHJeeySi49SVDZ8B+ZIpwTRiWTuGzXnn9V/4HQr2ktbUyYpuADrnqXzdmHU06IFIXI0seQfbmbzJkmv9PLzxbgaP3SnqeSbjt2r3lxZMR8HRH7BtghxNKJ6XRjg/Rrtqfu75RQOQQkK6rzL5q2qpWy7C/A/40qjKd+bf/FGmXvL53iVaKgb+y6U9xTNcpPLTyeSyNW+IfGG1fDOjoazgXTTEdV9ZA9MVs0s9kzRfsKbUxm5it1PTd3XNuNor9g+CB61mtm9bhpLRsgKBij+XEgA==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(39830400003)(396003)(366004)(346002)(376002)(136003)(6506007)(6666004)(6512007)(2906002)(8676002)(7416002)(52116002)(8936002)(4326008)(36756003)(5660300002)(86362001)(44832011)(66556008)(66476007)(26005)(30864003)(2616005)(66946007)(6486002)(508600001)(38350700002)(1076003)(38100700002)(54906003)(186003)(316002)(83380400001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?+vBcpq2rWPMStgqdxRhZx7EigdUPuhdXVLsU7GHqjSQBvAIS6a7D+PGTPWVV?=
- =?us-ascii?Q?VnlcwzIlNChgCTy8SkkChL6zLbbWYPFhAITIyI7MByal/dcoPJlo9idkxITF?=
- =?us-ascii?Q?KxWTF2fKWPPPDX0CtW6uys5VlUFzlSh7uxn2ZkaOTWB1vhkzMk7L3CCfkA/D?=
- =?us-ascii?Q?iEZi6odGEFsEvfOh7vK17qjTP4pULhQgYg9f0VP+3QXMoB6X6Lnd2sjuCPqG?=
- =?us-ascii?Q?O6XgGECnVaEK1VYKkF9R5OyN4kCqAj4sL0JWv3nJ9ECdy+DI/5VlY+AuNYMx?=
- =?us-ascii?Q?xSOsQLq290Z78CXPk34CMrzlKfj3MSGhyMB2F5QP38+7xzS1usLLqJRrKtjV?=
- =?us-ascii?Q?8CGILky//kBhIk/VEbLzznEg166d5X/SCuWj4XUQ/c05uJIY4KPJd4FRCxVS?=
- =?us-ascii?Q?X6/uJJCP7McSoRK5eGl4DWJb5Kmv1L13LhjowuemdB5eUxJjMMlZHs1fd5y8?=
- =?us-ascii?Q?yKQpKDn7XOaDnNFRi0kOlxxOC0WU0xFVcKSvW6b9vOVyvjng98Qrr2YIGkLb?=
- =?us-ascii?Q?WgmTPdlO3qLnhRjq2JfFX4EARFgI8YTfUuetP/KpntimzCGSkxOpY1zcTAsi?=
- =?us-ascii?Q?5+z/LJZCndJG5Bb1DkyjcuNFuS2rN98LGfdCvjN9iTX5Ow3yfOnkcIGJJjaL?=
- =?us-ascii?Q?hW0YnvuYflWEwdebnRz3AVYrrszrRst4EsFeZylhxBUFSFNPzrrnD/YgLnpo?=
- =?us-ascii?Q?97peMwiE09YcypaBEvduBZcisVUPdyJumY4DgNzkrxGGyxh2EjGhP6L4hm2a?=
- =?us-ascii?Q?ZIER+LKr8HAp+oUk7PmZ9vKGQfUSIpNOrP/J6DWaqb8sIqF1uXyC3svzWTdT?=
- =?us-ascii?Q?+JvZSxJl3/FoOY6vS91h63beGfi3BZkUmW2PmNd58+ldUMnAamEpzX27Fw7l?=
- =?us-ascii?Q?KDAK6DGtrINaECdyArC+BqKQlbTzmnE3grzigK0RwbVOUZF7uHq7Q1TJN8h3?=
- =?us-ascii?Q?AbXGINKft6b5RvQ/6cOgHhpuZVLcgsSHt6Meagu27aYj/JDriM8SRzJH462I?=
- =?us-ascii?Q?kz0Hp3pORiCNdiN4i196Ur05WH1emyVpWYqrHEY29C2ICTnje/QLdbk0h++H?=
- =?us-ascii?Q?e7LEBKyMSFZ3XSbe9CZMg7m5sdFw1tEEZuWbJL+ffTkDnRTbMOWZxCvg2Fke?=
- =?us-ascii?Q?+i1lFIrfCYWMtEEyDEU8BQoeCttKMWTW39ipkUGAwvRRnCwXY7ZezninLi4+?=
- =?us-ascii?Q?EdrL2wOpdnOUMZz3DuDNyA9mcAk5pJH0y8eivkIO01urfj90naaqEwBQlwbk?=
- =?us-ascii?Q?r056FSWmeKK8/yxX4jWl1VYCKeIVgukOFpwfBulYmwvYSIFD45GlPBtchmJn?=
- =?us-ascii?Q?Wi58HD6j2n9N22NBvsNcNB0ep6iUjzTC00t1CD5mdB2XTnLj1VBkUCALWTy2?=
- =?us-ascii?Q?3XaPlbdQ4kZPCNSD2TEETuUJeJ+D3MJ+mY+2ojLVFOqchW9/9j/PqcUeIif2?=
- =?us-ascii?Q?g7zykMivqHAM2t4Kn3IKvGGCwCofHV+J6P8qlvWoXYcxkVPbUjzyeG6pZygY?=
- =?us-ascii?Q?MucGXR/RUK6Oy1fRQn63khDpve3GcOEr3YKTlvz65CUFM60owZoce7D1OWJC?=
- =?us-ascii?Q?At2M+I7Q0ReOM3+iLpGow+CM1csKQRDC2wOA7SwhO6Eaf7qDk5yr9F8CCscV?=
- =?us-ascii?Q?a0+9kylIWgzvrjYjl2q6jTDgP9/otCBwAWf9KOZwDknT7jYgH2xT1TA3egFD?=
- =?us-ascii?Q?twHm3jk3LGigWNA66kPrxzuMT65t/JFZfgpMKvRvNipFKBarQ6lJkixTSfq0?=
- =?us-ascii?Q?Gg9Mlodp5+b9xFRSBsmqMTnqH6+sCSLpIccdBdjofaqIrEeocL9G?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?ijvRkMjzOb2c9zX3t5qw9sybjBMIJJYe00VdI84jJD1+FAIJ9ElQa8LEayDq?=
+ =?us-ascii?Q?bpIOvvargzuhLuLlv9s+rbVRIl/0xJ+JMUfGzTlYtL8BYDuiaPh5N7BUDSb/?=
+ =?us-ascii?Q?n5JwV/AXnNnrgG9+zZq462nghwGr/syqxdRyW1ah0DTCc1668sDyQDfP8Fbu?=
+ =?us-ascii?Q?4lb2Z4P28Pnv24e32tBE6qlORUU1JLimthjZsIyworn1Oi2BsEbYyNJVBJPt?=
+ =?us-ascii?Q?3e3FfXmuvF4iet3uD5IyuUJRIdj8XKgB84xwICVSetHlQXEokndSBhdIrymR?=
+ =?us-ascii?Q?V5luUW9Plhkb3yrpuS5MljKo015IZELM2jvg8dTdEjaAdktj8zDR+zQ8PIb7?=
+ =?us-ascii?Q?RkeGL5rzrThlPmpdnL8RiYs2c2FoivW6jsPT4yPSECBRAlDXOcbjhgO5ktKq?=
+ =?us-ascii?Q?rwHoGi/EQO1QG8CqWcwqDv8HaVftaQrkOr+8AyBEAiV0DmVu49o46iN3ucru?=
+ =?us-ascii?Q?y4hoUkXH93nJwyFxZFlZ6GduK7XgnXhEMVOON5uLYM7qxRFzn3cXYJmDiwr1?=
+ =?us-ascii?Q?10ClGyHtijPnr+/rjhC2snnxmOuOezSx8Ss6+8/3YJEVmZozCyZosmT360k4?=
+ =?us-ascii?Q?foJCYQsJ2YtGVogN9NTBJr4UOBw7+G+arEpUKAcOMEugV3Da/Q71eZxm9GX6?=
+ =?us-ascii?Q?eKQ3o98Jz7C0p/E7E1/ZHrkHHnSdPMnicqdw9Q+G/yS3uV3nwmzhn+ijrT6Z?=
+ =?us-ascii?Q?T3m1iGn5jYqCvuk9zIj/yeAROsUSHqD33qC0mjyEeyP1iFslgq5uqtK74C89?=
+ =?us-ascii?Q?hmJNJokkWX/UV8fH6X1gx3X4zG90rlbcXEonM3OXp2ki8krFcWNkymY7OCOC?=
+ =?us-ascii?Q?ouTjippLWkBdl4U0XNF1oXkAgEd1dBsDuD2CxC8U5apmMP6fRDLSh7sh2R8t?=
+ =?us-ascii?Q?rJLk+wOGF21vo0BDRVfJLfAC7H4x082yH+9CN40IhnTyTDCmIgptAKyngw1K?=
+ =?us-ascii?Q?hZs7jMR1d8uH9JZm4a0QjjnpuffGRqDUmECEkZrZ2FLi7UNHAIwIuUsptzrj?=
+ =?us-ascii?Q?l45DyxmEEuJah9tuPotxXVFWyegFP4m0CYCuMZLZw5NGaipmzccQ5w7GerVR?=
+ =?us-ascii?Q?c5NXehF5ymkeZZIPpSQyng7UNbLDwDMMs3eDH3AU3Cpd+33ARrDJGMycBoZD?=
+ =?us-ascii?Q?+66+vpS5kodZ6LWml116hI5hhCz3RzvuzOfLxvnyW2YLV8v9w6O04fW2cvC0?=
+ =?us-ascii?Q?xtab5gjmC6RmcMegUbf9DvcFbUm+Dg9jqGm52Gxvf3cF8uYl/lJgjNkJSFql?=
+ =?us-ascii?Q?f209os4PYt9DcCdmyxNGEZoTlUicSSQ7ghpJOpunmurCnfdd77sh0zfKPIvC?=
+ =?us-ascii?Q?SHjcyHcxaoi105OSwzqygbP+eBdSg++0drJWar9Cel66wxU0QxG4+3NgGvIb?=
+ =?us-ascii?Q?gs2q6tYQ1BNHmYBOY3NT25t4CrN9ShokZFYP8x1fvhN7z+MSDSauxnfDy9fg?=
+ =?us-ascii?Q?CUHZKBAYfoQIPh1NYA0rsNChon4jSz206np3JlMia0zRGQuX7uYZh3Rn0pUl?=
+ =?us-ascii?Q?I5ytTUuOt0tqA5Ze73L/IrCwFFp+LSQdL66qSVDLAQQzUv7ZlI/JF+35Swa+?=
+ =?us-ascii?Q?CTiUiW5xztbdPadUuNrAWBSietCsF1mxR3WQrcWzubRGLmgv6IzPrmoF/czF?=
+ =?us-ascii?Q?Xco9tfCCGcsOJ2+LJtauiHM48qcj14XBe6l1hacSWb/pgaH7q7pzgGt9N55a?=
+ =?us-ascii?Q?uWSJZZpbfxWyxehr2knyhFokVNmzk3xsQprqoLrrwoUQ11dv87lXQ1LP7lp3?=
+ =?us-ascii?Q?2GyC/VtKu2EFusZryaO42bhRUzMAo25qXnucHKQ1IltUKflIlT8O?=
 X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2358fb44-91e6-47a5-f69e-08da312418b2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 16a2075b-a1c1-452f-b5f1-08da31241a3e
 X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 18:53:53.1811
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 18:53:55.7903
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: oFpvI+rXI4fAVQqVz5rR/9z8dbuAJO4jKhIOyd+IyVMECAnQArxUGfipmlCCGREn0aBv9p3jpKa/4Wt3GkhqJndIKJTb7PlVNWpiv7HIYfY=
+X-MS-Exchange-CrossTenant-UserPrincipalName: bjqq1lZI6Kahj3+mkPpZ8lZh2RncqMus9NW2sXyNduJyZ+DwjNV6S2o7PfHdSAlNl8wQ5qjfvG26rEL70QFjsSYtHlfyEawTihP1EhHuPH0=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5672
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UPPERCASE_50_75 autolearn=no autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ocelot_regfields struct is common between several different chips, some
-of which can only be controlled externally. Export this structure so it
-doesn't have to be duplicated in these other drivers.
+The ocelot_stats_layout array is common between several different chips,
+some of which can only be controlled externally. Export this structure so
+it doesn't have to be duplicated in these other drivers.
 
 Rename the structure as well, to follow the conventions of other shared
 resources.
 
 Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
 ---
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 60 +---------------------
- drivers/net/ethernet/mscc/vsc7514_regs.c   | 59 +++++++++++++++++++++
- include/soc/mscc/vsc7514_regs.h            |  2 +
- 3 files changed, 62 insertions(+), 59 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 99 +---------------------
+ drivers/net/ethernet/mscc/vsc7514_regs.c   | 97 +++++++++++++++++++++
+ include/soc/mscc/vsc7514_regs.h            |  3 +
+ 3 files changed, 101 insertions(+), 98 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 68d205088665..a13fec7247d6 100644
+index a13fec7247d6..7673ed76358b 100644
 --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
 +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -38,64 +38,6 @@ static const u32 *ocelot_regmap[TARGET_MAX] = {
+@@ -38,103 +38,6 @@ static const u32 *ocelot_regmap[TARGET_MAX] = {
  	[DEV_GMII] = vsc7514_dev_gmii_regmap,
  };
  
--static const struct reg_field ocelot_regfields[REGFIELD_MAX] = {
--	[ANA_ADVLEARN_VLAN_CHK] = REG_FIELD(ANA_ADVLEARN, 11, 11),
--	[ANA_ADVLEARN_LEARN_MIRROR] = REG_FIELD(ANA_ADVLEARN, 0, 10),
--	[ANA_ANEVENTS_MSTI_DROP] = REG_FIELD(ANA_ANEVENTS, 27, 27),
--	[ANA_ANEVENTS_ACLKILL] = REG_FIELD(ANA_ANEVENTS, 26, 26),
--	[ANA_ANEVENTS_ACLUSED] = REG_FIELD(ANA_ANEVENTS, 25, 25),
--	[ANA_ANEVENTS_AUTOAGE] = REG_FIELD(ANA_ANEVENTS, 24, 24),
--	[ANA_ANEVENTS_VS2TTL1] = REG_FIELD(ANA_ANEVENTS, 23, 23),
--	[ANA_ANEVENTS_STORM_DROP] = REG_FIELD(ANA_ANEVENTS, 22, 22),
--	[ANA_ANEVENTS_LEARN_DROP] = REG_FIELD(ANA_ANEVENTS, 21, 21),
--	[ANA_ANEVENTS_AGED_ENTRY] = REG_FIELD(ANA_ANEVENTS, 20, 20),
--	[ANA_ANEVENTS_CPU_LEARN_FAILED] = REG_FIELD(ANA_ANEVENTS, 19, 19),
--	[ANA_ANEVENTS_AUTO_LEARN_FAILED] = REG_FIELD(ANA_ANEVENTS, 18, 18),
--	[ANA_ANEVENTS_LEARN_REMOVE] = REG_FIELD(ANA_ANEVENTS, 17, 17),
--	[ANA_ANEVENTS_AUTO_LEARNED] = REG_FIELD(ANA_ANEVENTS, 16, 16),
--	[ANA_ANEVENTS_AUTO_MOVED] = REG_FIELD(ANA_ANEVENTS, 15, 15),
--	[ANA_ANEVENTS_DROPPED] = REG_FIELD(ANA_ANEVENTS, 14, 14),
--	[ANA_ANEVENTS_CLASSIFIED_DROP] = REG_FIELD(ANA_ANEVENTS, 13, 13),
--	[ANA_ANEVENTS_CLASSIFIED_COPY] = REG_FIELD(ANA_ANEVENTS, 12, 12),
--	[ANA_ANEVENTS_VLAN_DISCARD] = REG_FIELD(ANA_ANEVENTS, 11, 11),
--	[ANA_ANEVENTS_FWD_DISCARD] = REG_FIELD(ANA_ANEVENTS, 10, 10),
--	[ANA_ANEVENTS_MULTICAST_FLOOD] = REG_FIELD(ANA_ANEVENTS, 9, 9),
--	[ANA_ANEVENTS_UNICAST_FLOOD] = REG_FIELD(ANA_ANEVENTS, 8, 8),
--	[ANA_ANEVENTS_DEST_KNOWN] = REG_FIELD(ANA_ANEVENTS, 7, 7),
--	[ANA_ANEVENTS_BUCKET3_MATCH] = REG_FIELD(ANA_ANEVENTS, 6, 6),
--	[ANA_ANEVENTS_BUCKET2_MATCH] = REG_FIELD(ANA_ANEVENTS, 5, 5),
--	[ANA_ANEVENTS_BUCKET1_MATCH] = REG_FIELD(ANA_ANEVENTS, 4, 4),
--	[ANA_ANEVENTS_BUCKET0_MATCH] = REG_FIELD(ANA_ANEVENTS, 3, 3),
--	[ANA_ANEVENTS_CPU_OPERATION] = REG_FIELD(ANA_ANEVENTS, 2, 2),
--	[ANA_ANEVENTS_DMAC_LOOKUP] = REG_FIELD(ANA_ANEVENTS, 1, 1),
--	[ANA_ANEVENTS_SMAC_LOOKUP] = REG_FIELD(ANA_ANEVENTS, 0, 0),
--	[ANA_TABLES_MACACCESS_B_DOM] = REG_FIELD(ANA_TABLES_MACACCESS, 18, 18),
--	[ANA_TABLES_MACTINDX_BUCKET] = REG_FIELD(ANA_TABLES_MACTINDX, 10, 11),
--	[ANA_TABLES_MACTINDX_M_INDEX] = REG_FIELD(ANA_TABLES_MACTINDX, 0, 9),
--	[QSYS_TIMED_FRAME_ENTRY_TFRM_VLD] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 20, 20),
--	[QSYS_TIMED_FRAME_ENTRY_TFRM_FP] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 8, 19),
--	[QSYS_TIMED_FRAME_ENTRY_TFRM_PORTNO] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 4, 7),
--	[QSYS_TIMED_FRAME_ENTRY_TFRM_TM_SEL] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 1, 3),
--	[QSYS_TIMED_FRAME_ENTRY_TFRM_TM_T] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 0, 0),
--	[SYS_RESET_CFG_CORE_ENA] = REG_FIELD(SYS_RESET_CFG, 2, 2),
--	[SYS_RESET_CFG_MEM_ENA] = REG_FIELD(SYS_RESET_CFG, 1, 1),
--	[SYS_RESET_CFG_MEM_INIT] = REG_FIELD(SYS_RESET_CFG, 0, 0),
--	/* Replicated per number of ports (12), register size 4 per port */
--	[QSYS_SWITCH_PORT_MODE_PORT_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 14, 14, 12, 4),
--	[QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 11, 13, 12, 4),
--	[QSYS_SWITCH_PORT_MODE_YEL_RSRVD] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 10, 10, 12, 4),
--	[QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 9, 9, 12, 4),
--	[QSYS_SWITCH_PORT_MODE_TX_PFC_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 1, 8, 12, 4),
--	[QSYS_SWITCH_PORT_MODE_TX_PFC_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 0, 0, 12, 4),
--	[SYS_PORT_MODE_DATA_WO_TS] = REG_FIELD_ID(SYS_PORT_MODE, 5, 6, 12, 4),
--	[SYS_PORT_MODE_INCL_INJ_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 3, 4, 12, 4),
--	[SYS_PORT_MODE_INCL_XTR_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 1, 2, 12, 4),
--	[SYS_PORT_MODE_INCL_HDR_ERR] = REG_FIELD_ID(SYS_PORT_MODE, 0, 0, 12, 4),
--	[SYS_PAUSE_CFG_PAUSE_START] = REG_FIELD_ID(SYS_PAUSE_CFG, 10, 18, 12, 4),
--	[SYS_PAUSE_CFG_PAUSE_STOP] = REG_FIELD_ID(SYS_PAUSE_CFG, 1, 9, 12, 4),
--	[SYS_PAUSE_CFG_PAUSE_ENA] = REG_FIELD_ID(SYS_PAUSE_CFG, 0, 1, 12, 4),
+-static const struct ocelot_stat_layout ocelot_stats_layout[] = {
+-	{ .name = "rx_octets", .offset = 0x00, },
+-	{ .name = "rx_unicast", .offset = 0x01, },
+-	{ .name = "rx_multicast", .offset = 0x02, },
+-	{ .name = "rx_broadcast", .offset = 0x03, },
+-	{ .name = "rx_shorts", .offset = 0x04, },
+-	{ .name = "rx_fragments", .offset = 0x05, },
+-	{ .name = "rx_jabbers", .offset = 0x06, },
+-	{ .name = "rx_crc_align_errs", .offset = 0x07, },
+-	{ .name = "rx_sym_errs", .offset = 0x08, },
+-	{ .name = "rx_frames_below_65_octets", .offset = 0x09, },
+-	{ .name = "rx_frames_65_to_127_octets", .offset = 0x0A, },
+-	{ .name = "rx_frames_128_to_255_octets", .offset = 0x0B, },
+-	{ .name = "rx_frames_256_to_511_octets", .offset = 0x0C, },
+-	{ .name = "rx_frames_512_to_1023_octets", .offset = 0x0D, },
+-	{ .name = "rx_frames_1024_to_1526_octets", .offset = 0x0E, },
+-	{ .name = "rx_frames_over_1526_octets", .offset = 0x0F, },
+-	{ .name = "rx_pause", .offset = 0x10, },
+-	{ .name = "rx_control", .offset = 0x11, },
+-	{ .name = "rx_longs", .offset = 0x12, },
+-	{ .name = "rx_classified_drops", .offset = 0x13, },
+-	{ .name = "rx_red_prio_0", .offset = 0x14, },
+-	{ .name = "rx_red_prio_1", .offset = 0x15, },
+-	{ .name = "rx_red_prio_2", .offset = 0x16, },
+-	{ .name = "rx_red_prio_3", .offset = 0x17, },
+-	{ .name = "rx_red_prio_4", .offset = 0x18, },
+-	{ .name = "rx_red_prio_5", .offset = 0x19, },
+-	{ .name = "rx_red_prio_6", .offset = 0x1A, },
+-	{ .name = "rx_red_prio_7", .offset = 0x1B, },
+-	{ .name = "rx_yellow_prio_0", .offset = 0x1C, },
+-	{ .name = "rx_yellow_prio_1", .offset = 0x1D, },
+-	{ .name = "rx_yellow_prio_2", .offset = 0x1E, },
+-	{ .name = "rx_yellow_prio_3", .offset = 0x1F, },
+-	{ .name = "rx_yellow_prio_4", .offset = 0x20, },
+-	{ .name = "rx_yellow_prio_5", .offset = 0x21, },
+-	{ .name = "rx_yellow_prio_6", .offset = 0x22, },
+-	{ .name = "rx_yellow_prio_7", .offset = 0x23, },
+-	{ .name = "rx_green_prio_0", .offset = 0x24, },
+-	{ .name = "rx_green_prio_1", .offset = 0x25, },
+-	{ .name = "rx_green_prio_2", .offset = 0x26, },
+-	{ .name = "rx_green_prio_3", .offset = 0x27, },
+-	{ .name = "rx_green_prio_4", .offset = 0x28, },
+-	{ .name = "rx_green_prio_5", .offset = 0x29, },
+-	{ .name = "rx_green_prio_6", .offset = 0x2A, },
+-	{ .name = "rx_green_prio_7", .offset = 0x2B, },
+-	{ .name = "tx_octets", .offset = 0x40, },
+-	{ .name = "tx_unicast", .offset = 0x41, },
+-	{ .name = "tx_multicast", .offset = 0x42, },
+-	{ .name = "tx_broadcast", .offset = 0x43, },
+-	{ .name = "tx_collision", .offset = 0x44, },
+-	{ .name = "tx_drops", .offset = 0x45, },
+-	{ .name = "tx_pause", .offset = 0x46, },
+-	{ .name = "tx_frames_below_65_octets", .offset = 0x47, },
+-	{ .name = "tx_frames_65_to_127_octets", .offset = 0x48, },
+-	{ .name = "tx_frames_128_255_octets", .offset = 0x49, },
+-	{ .name = "tx_frames_256_511_octets", .offset = 0x4A, },
+-	{ .name = "tx_frames_512_1023_octets", .offset = 0x4B, },
+-	{ .name = "tx_frames_1024_1526_octets", .offset = 0x4C, },
+-	{ .name = "tx_frames_over_1526_octets", .offset = 0x4D, },
+-	{ .name = "tx_yellow_prio_0", .offset = 0x4E, },
+-	{ .name = "tx_yellow_prio_1", .offset = 0x4F, },
+-	{ .name = "tx_yellow_prio_2", .offset = 0x50, },
+-	{ .name = "tx_yellow_prio_3", .offset = 0x51, },
+-	{ .name = "tx_yellow_prio_4", .offset = 0x52, },
+-	{ .name = "tx_yellow_prio_5", .offset = 0x53, },
+-	{ .name = "tx_yellow_prio_6", .offset = 0x54, },
+-	{ .name = "tx_yellow_prio_7", .offset = 0x55, },
+-	{ .name = "tx_green_prio_0", .offset = 0x56, },
+-	{ .name = "tx_green_prio_1", .offset = 0x57, },
+-	{ .name = "tx_green_prio_2", .offset = 0x58, },
+-	{ .name = "tx_green_prio_3", .offset = 0x59, },
+-	{ .name = "tx_green_prio_4", .offset = 0x5A, },
+-	{ .name = "tx_green_prio_5", .offset = 0x5B, },
+-	{ .name = "tx_green_prio_6", .offset = 0x5C, },
+-	{ .name = "tx_green_prio_7", .offset = 0x5D, },
+-	{ .name = "tx_aged", .offset = 0x5E, },
+-	{ .name = "drop_local", .offset = 0x80, },
+-	{ .name = "drop_tail", .offset = 0x81, },
+-	{ .name = "drop_yellow_prio_0", .offset = 0x82, },
+-	{ .name = "drop_yellow_prio_1", .offset = 0x83, },
+-	{ .name = "drop_yellow_prio_2", .offset = 0x84, },
+-	{ .name = "drop_yellow_prio_3", .offset = 0x85, },
+-	{ .name = "drop_yellow_prio_4", .offset = 0x86, },
+-	{ .name = "drop_yellow_prio_5", .offset = 0x87, },
+-	{ .name = "drop_yellow_prio_6", .offset = 0x88, },
+-	{ .name = "drop_yellow_prio_7", .offset = 0x89, },
+-	{ .name = "drop_green_prio_0", .offset = 0x8A, },
+-	{ .name = "drop_green_prio_1", .offset = 0x8B, },
+-	{ .name = "drop_green_prio_2", .offset = 0x8C, },
+-	{ .name = "drop_green_prio_3", .offset = 0x8D, },
+-	{ .name = "drop_green_prio_4", .offset = 0x8E, },
+-	{ .name = "drop_green_prio_5", .offset = 0x8F, },
+-	{ .name = "drop_green_prio_6", .offset = 0x90, },
+-	{ .name = "drop_green_prio_7", .offset = 0x91, },
+-	OCELOT_STAT_END
 -};
 -
- static const struct ocelot_stat_layout ocelot_stats_layout[] = {
- 	{ .name = "rx_octets", .offset = 0x00, },
- 	{ .name = "rx_unicast", .offset = 0x01, },
-@@ -231,7 +173,7 @@ static int ocelot_chip_init(struct ocelot *ocelot, const struct ocelot_ops *ops)
+ static void ocelot_pll5_init(struct ocelot *ocelot)
+ {
+ 	/* Configure PLL5. This will need a proper CCF driver
+@@ -169,7 +72,7 @@ static int ocelot_chip_init(struct ocelot *ocelot, const struct ocelot_ops *ops)
+ 	int ret;
+ 
+ 	ocelot->map = ocelot_regmap;
+-	ocelot->stats_layout = ocelot_stats_layout;
++	ocelot->stats_layout = vsc7514_stats_layout;
  	ocelot->num_mact_rows = 1024;
  	ocelot->ops = ops;
  
--	ret = ocelot_regfields_init(ocelot, ocelot_regfields);
-+	ret = ocelot_regfields_init(ocelot, vsc7514_regfields);
- 	if (ret)
- 		return ret;
- 
 diff --git a/drivers/net/ethernet/mscc/vsc7514_regs.c b/drivers/net/ethernet/mscc/vsc7514_regs.c
-index c2af4eb8ca5d..847e64d11075 100644
+index 847e64d11075..2b75753da4e2 100644
 --- a/drivers/net/ethernet/mscc/vsc7514_regs.c
 +++ b/drivers/net/ethernet/mscc/vsc7514_regs.c
-@@ -9,6 +9,65 @@
+@@ -9,6 +9,103 @@
  #include <soc/mscc/vsc7514_regs.h>
  #include "ocelot.h"
  
-+const struct reg_field vsc7514_regfields[REGFIELD_MAX] = {
-+	[ANA_ADVLEARN_VLAN_CHK] = REG_FIELD(ANA_ADVLEARN, 11, 11),
-+	[ANA_ADVLEARN_LEARN_MIRROR] = REG_FIELD(ANA_ADVLEARN, 0, 10),
-+	[ANA_ANEVENTS_MSTI_DROP] = REG_FIELD(ANA_ANEVENTS, 27, 27),
-+	[ANA_ANEVENTS_ACLKILL] = REG_FIELD(ANA_ANEVENTS, 26, 26),
-+	[ANA_ANEVENTS_ACLUSED] = REG_FIELD(ANA_ANEVENTS, 25, 25),
-+	[ANA_ANEVENTS_AUTOAGE] = REG_FIELD(ANA_ANEVENTS, 24, 24),
-+	[ANA_ANEVENTS_VS2TTL1] = REG_FIELD(ANA_ANEVENTS, 23, 23),
-+	[ANA_ANEVENTS_STORM_DROP] = REG_FIELD(ANA_ANEVENTS, 22, 22),
-+	[ANA_ANEVENTS_LEARN_DROP] = REG_FIELD(ANA_ANEVENTS, 21, 21),
-+	[ANA_ANEVENTS_AGED_ENTRY] = REG_FIELD(ANA_ANEVENTS, 20, 20),
-+	[ANA_ANEVENTS_CPU_LEARN_FAILED] = REG_FIELD(ANA_ANEVENTS, 19, 19),
-+	[ANA_ANEVENTS_AUTO_LEARN_FAILED] = REG_FIELD(ANA_ANEVENTS, 18, 18),
-+	[ANA_ANEVENTS_LEARN_REMOVE] = REG_FIELD(ANA_ANEVENTS, 17, 17),
-+	[ANA_ANEVENTS_AUTO_LEARNED] = REG_FIELD(ANA_ANEVENTS, 16, 16),
-+	[ANA_ANEVENTS_AUTO_MOVED] = REG_FIELD(ANA_ANEVENTS, 15, 15),
-+	[ANA_ANEVENTS_DROPPED] = REG_FIELD(ANA_ANEVENTS, 14, 14),
-+	[ANA_ANEVENTS_CLASSIFIED_DROP] = REG_FIELD(ANA_ANEVENTS, 13, 13),
-+	[ANA_ANEVENTS_CLASSIFIED_COPY] = REG_FIELD(ANA_ANEVENTS, 12, 12),
-+	[ANA_ANEVENTS_VLAN_DISCARD] = REG_FIELD(ANA_ANEVENTS, 11, 11),
-+	[ANA_ANEVENTS_FWD_DISCARD] = REG_FIELD(ANA_ANEVENTS, 10, 10),
-+	[ANA_ANEVENTS_MULTICAST_FLOOD] = REG_FIELD(ANA_ANEVENTS, 9, 9),
-+	[ANA_ANEVENTS_UNICAST_FLOOD] = REG_FIELD(ANA_ANEVENTS, 8, 8),
-+	[ANA_ANEVENTS_DEST_KNOWN] = REG_FIELD(ANA_ANEVENTS, 7, 7),
-+	[ANA_ANEVENTS_BUCKET3_MATCH] = REG_FIELD(ANA_ANEVENTS, 6, 6),
-+	[ANA_ANEVENTS_BUCKET2_MATCH] = REG_FIELD(ANA_ANEVENTS, 5, 5),
-+	[ANA_ANEVENTS_BUCKET1_MATCH] = REG_FIELD(ANA_ANEVENTS, 4, 4),
-+	[ANA_ANEVENTS_BUCKET0_MATCH] = REG_FIELD(ANA_ANEVENTS, 3, 3),
-+	[ANA_ANEVENTS_CPU_OPERATION] = REG_FIELD(ANA_ANEVENTS, 2, 2),
-+	[ANA_ANEVENTS_DMAC_LOOKUP] = REG_FIELD(ANA_ANEVENTS, 1, 1),
-+	[ANA_ANEVENTS_SMAC_LOOKUP] = REG_FIELD(ANA_ANEVENTS, 0, 0),
-+	[ANA_TABLES_MACACCESS_B_DOM] = REG_FIELD(ANA_TABLES_MACACCESS, 18, 18),
-+	[ANA_TABLES_MACTINDX_BUCKET] = REG_FIELD(ANA_TABLES_MACTINDX, 10, 11),
-+	[ANA_TABLES_MACTINDX_M_INDEX] = REG_FIELD(ANA_TABLES_MACTINDX, 0, 9),
-+	[GCB_SOFT_RST_SWC_RST] = REG_FIELD(GCB_SOFT_RST, 1, 1),
-+	[QSYS_TIMED_FRAME_ENTRY_TFRM_VLD] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 20, 20),
-+	[QSYS_TIMED_FRAME_ENTRY_TFRM_FP] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 8, 19),
-+	[QSYS_TIMED_FRAME_ENTRY_TFRM_PORTNO] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 4, 7),
-+	[QSYS_TIMED_FRAME_ENTRY_TFRM_TM_SEL] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 1, 3),
-+	[QSYS_TIMED_FRAME_ENTRY_TFRM_TM_T] = REG_FIELD(QSYS_TIMED_FRAME_ENTRY, 0, 0),
-+	[SYS_RESET_CFG_CORE_ENA] = REG_FIELD(SYS_RESET_CFG, 2, 2),
-+	[SYS_RESET_CFG_MEM_ENA] = REG_FIELD(SYS_RESET_CFG, 1, 1),
-+	[SYS_RESET_CFG_MEM_INIT] = REG_FIELD(SYS_RESET_CFG, 0, 0),
-+	/* Replicated per number of ports (12), register size 4 per port */
-+	[QSYS_SWITCH_PORT_MODE_PORT_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 14, 14, 12, 4),
-+	[QSYS_SWITCH_PORT_MODE_SCH_NEXT_CFG] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 11, 13, 12, 4),
-+	[QSYS_SWITCH_PORT_MODE_YEL_RSRVD] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 10, 10, 12, 4),
-+	[QSYS_SWITCH_PORT_MODE_INGRESS_DROP_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 9, 9, 12, 4),
-+	[QSYS_SWITCH_PORT_MODE_TX_PFC_ENA] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 1, 8, 12, 4),
-+	[QSYS_SWITCH_PORT_MODE_TX_PFC_MODE] = REG_FIELD_ID(QSYS_SWITCH_PORT_MODE, 0, 0, 12, 4),
-+	[SYS_PORT_MODE_DATA_WO_TS] = REG_FIELD_ID(SYS_PORT_MODE, 5, 6, 12, 4),
-+	[SYS_PORT_MODE_INCL_INJ_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 3, 4, 12, 4),
-+	[SYS_PORT_MODE_INCL_XTR_HDR] = REG_FIELD_ID(SYS_PORT_MODE, 1, 2, 12, 4),
-+	[SYS_PORT_MODE_INCL_HDR_ERR] = REG_FIELD_ID(SYS_PORT_MODE, 0, 0, 12, 4),
-+	[SYS_PAUSE_CFG_PAUSE_START] = REG_FIELD_ID(SYS_PAUSE_CFG, 10, 18, 12, 4),
-+	[SYS_PAUSE_CFG_PAUSE_STOP] = REG_FIELD_ID(SYS_PAUSE_CFG, 1, 9, 12, 4),
-+	[SYS_PAUSE_CFG_PAUSE_ENA] = REG_FIELD_ID(SYS_PAUSE_CFG, 0, 1, 12, 4),
++const struct ocelot_stat_layout vsc7514_stats_layout[] = {
++	{ .name = "rx_octets", .offset = 0x00, },
++	{ .name = "rx_unicast", .offset = 0x01, },
++	{ .name = "rx_multicast", .offset = 0x02, },
++	{ .name = "rx_broadcast", .offset = 0x03, },
++	{ .name = "rx_shorts", .offset = 0x04, },
++	{ .name = "rx_fragments", .offset = 0x05, },
++	{ .name = "rx_jabbers", .offset = 0x06, },
++	{ .name = "rx_crc_align_errs", .offset = 0x07, },
++	{ .name = "rx_sym_errs", .offset = 0x08, },
++	{ .name = "rx_frames_below_65_octets", .offset = 0x09, },
++	{ .name = "rx_frames_65_to_127_octets", .offset = 0x0A, },
++	{ .name = "rx_frames_128_to_255_octets", .offset = 0x0B, },
++	{ .name = "rx_frames_256_to_511_octets", .offset = 0x0C, },
++	{ .name = "rx_frames_512_to_1023_octets", .offset = 0x0D, },
++	{ .name = "rx_frames_1024_to_1526_octets", .offset = 0x0E, },
++	{ .name = "rx_frames_over_1526_octets", .offset = 0x0F, },
++	{ .name = "rx_pause", .offset = 0x10, },
++	{ .name = "rx_control", .offset = 0x11, },
++	{ .name = "rx_longs", .offset = 0x12, },
++	{ .name = "rx_classified_drops", .offset = 0x13, },
++	{ .name = "rx_red_prio_0", .offset = 0x14, },
++	{ .name = "rx_red_prio_1", .offset = 0x15, },
++	{ .name = "rx_red_prio_2", .offset = 0x16, },
++	{ .name = "rx_red_prio_3", .offset = 0x17, },
++	{ .name = "rx_red_prio_4", .offset = 0x18, },
++	{ .name = "rx_red_prio_5", .offset = 0x19, },
++	{ .name = "rx_red_prio_6", .offset = 0x1A, },
++	{ .name = "rx_red_prio_7", .offset = 0x1B, },
++	{ .name = "rx_yellow_prio_0", .offset = 0x1C, },
++	{ .name = "rx_yellow_prio_1", .offset = 0x1D, },
++	{ .name = "rx_yellow_prio_2", .offset = 0x1E, },
++	{ .name = "rx_yellow_prio_3", .offset = 0x1F, },
++	{ .name = "rx_yellow_prio_4", .offset = 0x20, },
++	{ .name = "rx_yellow_prio_5", .offset = 0x21, },
++	{ .name = "rx_yellow_prio_6", .offset = 0x22, },
++	{ .name = "rx_yellow_prio_7", .offset = 0x23, },
++	{ .name = "rx_green_prio_0", .offset = 0x24, },
++	{ .name = "rx_green_prio_1", .offset = 0x25, },
++	{ .name = "rx_green_prio_2", .offset = 0x26, },
++	{ .name = "rx_green_prio_3", .offset = 0x27, },
++	{ .name = "rx_green_prio_4", .offset = 0x28, },
++	{ .name = "rx_green_prio_5", .offset = 0x29, },
++	{ .name = "rx_green_prio_6", .offset = 0x2A, },
++	{ .name = "rx_green_prio_7", .offset = 0x2B, },
++	{ .name = "tx_octets", .offset = 0x40, },
++	{ .name = "tx_unicast", .offset = 0x41, },
++	{ .name = "tx_multicast", .offset = 0x42, },
++	{ .name = "tx_broadcast", .offset = 0x43, },
++	{ .name = "tx_collision", .offset = 0x44, },
++	{ .name = "tx_drops", .offset = 0x45, },
++	{ .name = "tx_pause", .offset = 0x46, },
++	{ .name = "tx_frames_below_65_octets", .offset = 0x47, },
++	{ .name = "tx_frames_65_to_127_octets", .offset = 0x48, },
++	{ .name = "tx_frames_128_255_octets", .offset = 0x49, },
++	{ .name = "tx_frames_256_511_octets", .offset = 0x4A, },
++	{ .name = "tx_frames_512_1023_octets", .offset = 0x4B, },
++	{ .name = "tx_frames_1024_1526_octets", .offset = 0x4C, },
++	{ .name = "tx_frames_over_1526_octets", .offset = 0x4D, },
++	{ .name = "tx_yellow_prio_0", .offset = 0x4E, },
++	{ .name = "tx_yellow_prio_1", .offset = 0x4F, },
++	{ .name = "tx_yellow_prio_2", .offset = 0x50, },
++	{ .name = "tx_yellow_prio_3", .offset = 0x51, },
++	{ .name = "tx_yellow_prio_4", .offset = 0x52, },
++	{ .name = "tx_yellow_prio_5", .offset = 0x53, },
++	{ .name = "tx_yellow_prio_6", .offset = 0x54, },
++	{ .name = "tx_yellow_prio_7", .offset = 0x55, },
++	{ .name = "tx_green_prio_0", .offset = 0x56, },
++	{ .name = "tx_green_prio_1", .offset = 0x57, },
++	{ .name = "tx_green_prio_2", .offset = 0x58, },
++	{ .name = "tx_green_prio_3", .offset = 0x59, },
++	{ .name = "tx_green_prio_4", .offset = 0x5A, },
++	{ .name = "tx_green_prio_5", .offset = 0x5B, },
++	{ .name = "tx_green_prio_6", .offset = 0x5C, },
++	{ .name = "tx_green_prio_7", .offset = 0x5D, },
++	{ .name = "tx_aged", .offset = 0x5E, },
++	{ .name = "drop_local", .offset = 0x80, },
++	{ .name = "drop_tail", .offset = 0x81, },
++	{ .name = "drop_yellow_prio_0", .offset = 0x82, },
++	{ .name = "drop_yellow_prio_1", .offset = 0x83, },
++	{ .name = "drop_yellow_prio_2", .offset = 0x84, },
++	{ .name = "drop_yellow_prio_3", .offset = 0x85, },
++	{ .name = "drop_yellow_prio_4", .offset = 0x86, },
++	{ .name = "drop_yellow_prio_5", .offset = 0x87, },
++	{ .name = "drop_yellow_prio_6", .offset = 0x88, },
++	{ .name = "drop_yellow_prio_7", .offset = 0x89, },
++	{ .name = "drop_green_prio_0", .offset = 0x8A, },
++	{ .name = "drop_green_prio_1", .offset = 0x8B, },
++	{ .name = "drop_green_prio_2", .offset = 0x8C, },
++	{ .name = "drop_green_prio_3", .offset = 0x8D, },
++	{ .name = "drop_green_prio_4", .offset = 0x8E, },
++	{ .name = "drop_green_prio_5", .offset = 0x8F, },
++	{ .name = "drop_green_prio_6", .offset = 0x90, },
++	{ .name = "drop_green_prio_7", .offset = 0x91, },
++	OCELOT_STAT_END
 +};
 +
- const u32 vsc7514_ana_regmap[] = {
- 	REG(ANA_ADVLEARN,				0x009000),
- 	REG(ANA_VLANMASK,				0x009004),
+ const struct reg_field vsc7514_regfields[REGFIELD_MAX] = {
+ 	[ANA_ADVLEARN_VLAN_CHK] = REG_FIELD(ANA_ADVLEARN, 11, 11),
+ 	[ANA_ADVLEARN_LEARN_MIRROR] = REG_FIELD(ANA_ADVLEARN, 0, 10),
 diff --git a/include/soc/mscc/vsc7514_regs.h b/include/soc/mscc/vsc7514_regs.h
-index ceee26c96959..9b40e7d00ec5 100644
+index 9b40e7d00ec5..d2b5b6b86aff 100644
 --- a/include/soc/mscc/vsc7514_regs.h
 +++ b/include/soc/mscc/vsc7514_regs.h
-@@ -10,6 +10,8 @@
+@@ -8,8 +8,11 @@
+ #ifndef VSC7514_REGS_H
+ #define VSC7514_REGS_H
  
++#include <soc/mscc/ocelot.h>
  #include <soc/mscc/ocelot_vcap.h>
  
-+extern const struct reg_field vsc7514_regfields[REGFIELD_MAX];
++extern const struct ocelot_stat_layout vsc7514_stats_layout[];
 +
+ extern const struct reg_field vsc7514_regfields[REGFIELD_MAX];
+ 
  extern const u32 vsc7514_ana_regmap[];
- extern const u32 vsc7514_qs_regmap[];
- extern const u32 vsc7514_qsys_regmap[];
 -- 
 2.25.1
 
