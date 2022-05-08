@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B7A651EE8C
+	by mail.lfdr.de (Postfix) with ESMTP id B8D5051EE8D
 	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 17:28:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234835AbiEHPbn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 11:31:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46872 "EHLO
+        id S234848AbiEHPbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 11:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234791AbiEHPbc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 11:31:32 -0400
+        with ESMTP id S234831AbiEHPbe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 11:31:34 -0400
 Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10053.outbound.protection.outlook.com [40.107.1.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63A1A1125
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 08:27:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18A3363BC
+        for <netdev@vger.kernel.org>; Sun,  8 May 2022 08:27:43 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GF7dAuhjmyQQDdUK4O7ni+RS0W3eYiSmLLUr0+eptsKm0o1tpbE9DUjt3Ci85x6IlnjGfhYJwzAJ7UGFGgFvp2qKY3r27tFbs+cE6QQux9yu3gLjLUfuYxaJ74ZCXmF5oLWXFDVwZWJHVPNELhabi2oL8nrDE2xmUsX+ap5tcDXC7u9OmSodxQoGrehGmt6KvXhkIo1eORt6A/NezBfrcSCmYcrSkn2qYkNfjQy336KklTw1LXSlGbVMK22x6Ve+92LWh7P6Hd/Akvzk9nRzQ6YU7SHD3j22pLHh6gONyQH0szvgkWU+fiSXWPDC0BaPuJr+nR3Sih76FujLrdCSkQ==
+ b=C4KDxH+MkGba/0o4KWMOmnb8lHAnoco6Sdp7CkijZqA/mlyAsmHeRYlRHwlNo0tMy/SeXsXIzRBkUw/2nc5BztGfDZml/QvDEMCt4bVVWJC179HoOm13q+8sO6SXR+wiuB6hF5guhWHYoUma/3JuWASus3M8y4zvYnPOSNT++MAuNH03CNSqrPF9adD3j0dmOaMk9M0/5gtEgK+y7e6DCMJnq8kQuCqeyd36LAGMiPbDCMJ2buTHMLsaDChGOx9CQeTYPlLXJIvlVYAekkHIReCNnDg2DeK91o6PcKilYnF4DX3Wq1vwGxQDUtH14esgDqGZ5Kn1GecLTxPoplaL9w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6r3RwTVx0dlSr+oJvUb3AnEuTlbv6nqsS6TOJHP810A=;
- b=D/2Hf9OhzfK8rzA/wYh7p/dA2MlX1OTaTW7T9Dkf/VhEQX1+LZa1bZK2dQhG145M+DjJQJ/vwNvqtKzRY/+K4GbX7Lr9h1JhQLFGFTTo11YR3Z41f5yDrFFD2nqH6jmYN+4mIMmrL3uCkoIFdhNIz7uEaD4GqU/JxmJH2+JAMhTV0fGH2yZnjshZlb8RUVDY7XQHV0Y5FIufVkvXw+yOhGJYAvTTwg0FSXTlbAuonePh1hGkxrUjq/B8KxX6Pe+9mJg1Ajk77lcJPIk4iDNmq4GzMrQcFjTb3t54eWusUhbL6zAkrhPjy3lDKrIM9d0xSRMYihuP4f2JxIJOHcq0ZQ==
+ bh=v0sR+AHhDa+WMSapO09v8S2cAv1hvTP1dnhlpiT+gFM=;
+ b=ec0om27t5FF/4gOvPVPJBo2+RJY9EWQes7eJwaP01JUALyYybY8b/3FdCr2I3KLoEsdzJ8tzipga878TrIu+uA5N+bBesY4ZD027vbJGH7lLUtpeVxqA8Kp078rU4OD72ZyneQ4f9adIU8RZjnklKmaE9H52p4OgvkTFG8u2a4dKYPqON4L6QaYF8LAdnrIbjQtewubYt/rDpLq1YNHPexSJIbbxYF/thn6qleo8I6FXcJqIY+Cvnl6DgoMtOsa58JSItys578ZGYawV53TqYtpZYjW7P8Rp95lb8EqK8QjEbeAcXkbETg7anyYA5MDRyCEOuMkqeiPfTjbZhEkFrA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6r3RwTVx0dlSr+oJvUb3AnEuTlbv6nqsS6TOJHP810A=;
- b=hJH9YLhkGZuY+a7YCYUaPVd3H826ed2A5nrRx/oQgLP2XcG7kwR0d3G4Jkfp6mpQKGFvL6zITY2p+YjfEUs8A4S1LtbkH+QRxRxbrUyd8KKZBBhAxlNg22yW+A5bXsPp7sqKGlZDz3F7p53VLOzfezQcySMekaqlFCKlU3FbTPA=
+ bh=v0sR+AHhDa+WMSapO09v8S2cAv1hvTP1dnhlpiT+gFM=;
+ b=kleS6Vdvse8BaooKt77JHXEVjack7akIwIAyZLABHHwDzOOrBpUokxmMSKY+dX8IKAYxsvzrNwaksKHJPDWuPVz9O99exK5ddpDAvsFBp0PuwpCNvwiSz6iwZt6uNC+xOijtqc6dZfqr6mJL3azYTWfUxll2aBzpCYPOR+NDMy4=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
  by DB6PR0402MB2806.eurprd04.prod.outlook.com (2603:10a6:4:97::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Sun, 8 May
- 2022 15:27:37 +0000
+ 2022 15:27:38 +0000
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::d42:c23c:780e:78eb]) by AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::d42:c23c:780e:78eb%4]) with mapi id 15.20.5227.022; Sun, 8 May 2022
- 15:27:37 +0000
+ 15:27:38 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -59,9 +59,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         UNGLinuxDriver@microchip.com,
         Colin Foster <colin.foster@in-advantage.com>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [RFC PATCH net-next 7/8] net: dsa: felix: dynamically determine tag_8021q CPU port for traps
-Date:   Sun,  8 May 2022 18:27:12 +0300
-Message-Id: <20220508152713.2704662-8-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 8/8] net: dsa: felix: reimplement tagging protocol change with function pointers
+Date:   Sun,  8 May 2022 18:27:13 +0300
+Message-Id: <20220508152713.2704662-9-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508152713.2704662-1-vladimir.oltean@nxp.com>
 References: <20220508152713.2704662-1-vladimir.oltean@nxp.com>
@@ -72,55 +72,55 @@ X-ClientProxiedBy: AS8PR04CA0205.eurprd04.prod.outlook.com
  (2603:10a6:208:c1::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 54aee72d-0c69-4234-3f20-08da31074833
+X-MS-Office365-Filtering-Correlation-Id: 76a0c716-caa0-4cd8-9547-08da310748ef
 X-MS-TrafficTypeDiagnostic: DB6PR0402MB2806:EE_
-X-Microsoft-Antispam-PRVS: <DB6PR0402MB2806B0D974EF7922E9B95374E0C79@DB6PR0402MB2806.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DB6PR0402MB2806BAC88AA2383D432B0C2EE0C79@DB6PR0402MB2806.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fFVp5cWaYLvc4ZC49qK8ZaCi4qnlQCs8GbOgYiwrc5/Ye+adHGWjA0K+luuCXZUODwnO/tal29q649tnLzrBtgwOUe2UHoYp57139T53G8JqYAbGAHNUJlyFt1wBoD16DRvqxjT5pxiAoHaEq28nrGpf3ZnAUtva0YxVj4+JgOYJ1TmIDTA5dSyaPzBDxkr6UqICpLzbC3EKlTh/+AOqpWBJNBCSrgA2pZlOGtAvJ/KQqn6NZNaz/hsuXBJXXRYMzvsoJCAB6IkdGi1WkUrz4rIYRMFPVUN3PE135oGc5rmxrZ8BakF7cbJ83shtTOjqxreD8fuWF0n4pZilQc2mKCoQfDCdC+ShdZ0P57CK04FwTm4/Umao0mFeUUXyD4nkEKp03g5yEHseoqOtcNUH31Tan50gdz0p+qFY1JBmo90PxFZiIxrzR5vwBYoKtGCvC14mLq0S7D90oKydW2NAT8uNVetz2YeqaDvpzjRuMT/R+ZNSLlzJUNgGMOsmvXKuKv9d4d07ezFedOR+ZkPKF3V5IizJsp+cYrpgMJ69pUf+KO673VZhrsH3JhW0g152G8efD7NESELbOFOKEA1oHxNtWq1rA5Rbm+ZPQ/Jq/4kbsXVpwikcj+oZKo9+E4jwVf1l7sUiK2p9XDcdziyJjbssZP5LngMkmYE+yRplYoMeHv8ruO5+Fysj7evVtmDaK/70LgvFHml7MD3jg77TFCfENsAHbLrjuu7ig/7h9AM=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52116002)(6666004)(6506007)(36756003)(186003)(508600001)(6486002)(2906002)(38100700002)(38350700002)(5660300002)(6916009)(66946007)(26005)(1076003)(44832011)(7416002)(8936002)(54906003)(66556008)(8676002)(4326008)(83380400001)(86362001)(66476007)(6512007)(2616005)(316002)(309714004);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: Cj3rdTyXwtqfjQ6daehpOF1y6pbW68ZMsWx0E+3zo6lTxykk7dGANyshbjyIHkrj57DFBakYRpf+OzJqEU1hV7X34iFkADF5CniOjvu63pokHkrt7nuy/GE1bpTA9HfurfGtf/FHuPOlPYELkSPOdRrxmvyA+2QoyAsT7iexk6aHYzcpjWAW6FWuxylf5GeDsYA50h0ps5h7bNtQekne4O4yu/LTPNrVrePQ78PbXa8e1QwUWrnA+vF8OYWms2JVgkFVZp/uuYpzqobVWnQmDMA6m/67FQ7V56Kig770vM3v+jeAm1g8g5ipCM3G29KM4h35vGIJbYyj5iILdkP82oxXHxDmmOXA/bkYrycLa12g8zZBaLK9O+IMo8i9cGO+z6qHbVXn23RUG3OXRa9uFaLCMarzJC63BP/KsJSyXdWgFXCk66PQwWP4FhjF7OT+4LDAiqMvBLZ6GaFUa4TkABT8xz7NanF9QemSIl1uTSIvyLmCqE/1ODUMiTIOE+jcRa/J0Cw75EIRU9ZN7xCPC8Pe0QHBipU+iXcTJn+mMeeVDhRjZ6Lf2wTuFpdmRdaTmWxMqa2C4WS1C+HH7NmcyLi1AGwsormZkjH36D6vjloCgJ4G0goIyQHgvBG7crL7OhXjW99KPuougsdkLaIIrF3UtT3tF87nehR6mdazJ+AKYNYmv+mcwi3Vn16VGVpgPnkd+jyu97lGrkTdb33JTKPXETfvMQApimpf7ck8M5w=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52116002)(6666004)(6506007)(36756003)(186003)(508600001)(6486002)(2906002)(38100700002)(38350700002)(5660300002)(6916009)(66946007)(26005)(1076003)(44832011)(7416002)(8936002)(30864003)(54906003)(66556008)(8676002)(4326008)(83380400001)(86362001)(66476007)(6512007)(2616005)(316002)(309714004);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dA6buF1c6IGrBXsYn6eIq8WDpiBYoiikxoVhxtqAwFg/jl6621m28RyoJW3x?=
- =?us-ascii?Q?6T+TPypk46xsTuDIpmoxQBvBHPs0H9WNrg+zGfVWUcAnf0C4+SxSaQgUQc2U?=
- =?us-ascii?Q?cBQOVoEhGELQjYz6fy1PpzgjzKGeuIlZ/SCuJ4u//RKQ6rl61xoprk8jEOfY?=
- =?us-ascii?Q?p5Aqc+5Fc9SUpS/+dJSISzNt2+KcwXH9B/4HjMio4uMBPVPMEmg6/Acd9DfY?=
- =?us-ascii?Q?Cr0tsDpHERlH05ng4QExYCQGumeAGto/z4CoE1VbVfwWH8Oyrfkqvdkhhjxm?=
- =?us-ascii?Q?F1EKamcOc0egJ0ct1YevX++cY9EPQJUbKbV1EfK+f0FYnCiCo8wh3b+8JSBG?=
- =?us-ascii?Q?fBldke947qiehAtRkS5zXSHFKM6kz52cKfouyHVJ+SPbsqggPWPyAyMtej0c?=
- =?us-ascii?Q?2v8ZnNwR/Lk9PXFEMyeMjNqq2XtKq2wGbwd3kDI+tNVAhqAnRgZA686K9vmN?=
- =?us-ascii?Q?KPbJd0QizxXp1blB4XKkDVBXMYDxUT5Gcla1e2Ea/rLeSWGHW1HAmqyeOGzi?=
- =?us-ascii?Q?TU6Vghyy1OZORUiAdbjroFK8b3yttY2MujbcmRlj/mFv5+nQ9GjRDbVAGLO0?=
- =?us-ascii?Q?AzBQMA2BGmbsQYMuBWhoNLRjQQnf2lej+PnQPW5rl9Qzk3St1MdxEJWTJ1hy?=
- =?us-ascii?Q?3+K3wcxLv/OsuOYNiooBJegOY+fQMjlevn1vDQznNvY0PyjbIFTv5PHM8n6h?=
- =?us-ascii?Q?5ZhL+ZH7cYlZzM/WXFwfPpl5trVqVj0QoPGUNxsZm42n3K7e5zvb1mj+VOE5?=
- =?us-ascii?Q?MGFxiNKLX0ftHkuv5+naQEAB8Em252ufMCuM37HKziAPSg2OtD3FJyIy4TiK?=
- =?us-ascii?Q?0z9AmG7ovsIIXGnDwm2riQXvrWJbmJ5isemdkcxLc4VoSsGfHBLZ2+SWut9P?=
- =?us-ascii?Q?JZWEPm4Zxn/lTQ1KAotVhR7GaDvdklYGroNIsHdJjD4URiqOk40Vki46/on0?=
- =?us-ascii?Q?qVFt+7WSsvlSzkQrMS16JOeVTniYwKdnezB0O2DDFtUYGvQZ6tIsmHLdwbTK?=
- =?us-ascii?Q?3OT1nzo4FaCK1TIA8iGolX8ZtQpcqataGBO0NzNNuGD9m7UCmdaszBBEsY1k?=
- =?us-ascii?Q?aplsINx8KHb51BImeW7Q3MxN+rKNaNQFHuNcN0KJCXAFbFRkAu6TxE/4NC81?=
- =?us-ascii?Q?p687rKz3tiBkUNGElfFoa3UnLdJY/F0PYHeQvORtpvGZKgUbTBDxhDD8SG2e?=
- =?us-ascii?Q?Wryf1jea9a5+cUziIU+wmGQwMf4+QXK8OYXvVlT0qOdTw85juJyMHwv8sOO+?=
- =?us-ascii?Q?uX4SrEHbOmjeopGbXC34tNrekjI6USkZYtmHhZqt4TJ71Xv9WRGvuA1wZRds?=
- =?us-ascii?Q?yw7yuk3hjJpDU7ZtBD6+mViMfB52YCHiRerR3/QDY1M8loa5n24Rds3ghsP0?=
- =?us-ascii?Q?sDrYaGfz60DqqRiBi7yPnv/BQuyFH94/+VAoSSitsZ8BywbtO43/xQsX7vcF?=
- =?us-ascii?Q?7VNDuRMrDgIayRziw28rhVr2SHkY+7Hwo+HqDebjue2LcYe5sgWC9L8qQiDN?=
- =?us-ascii?Q?uctp+pXzPQdIHweJy390jecnEZQS75vH1dQ5Ud8ROrXPS+PaJhXnHd5Sq+R2?=
- =?us-ascii?Q?8LDiz9y7JQ9gWL1S1wXf36cYzaEDBX73g4pnKBD9M2aGXEr0wD8SY07xbEHQ?=
- =?us-ascii?Q?NM/EV4U1gr5Ourv47HYHzHOR2zt3bZ1FQQESZhXgT70NSwgU6qdolaBkzcYH?=
- =?us-ascii?Q?TFyuRkowWyHvxLEomQ2Vrzqf3PswoGoVHKW3BcMyVZGoqO7z+P/TCcWTd+3N?=
- =?us-ascii?Q?Lnl4ah6X6Ar1N9D9PXwImb59dIVHLts=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?9frZLIiJ8diV3hX4IGeu5eSokQliMCoyvY/BDWTT4pq+EL0fYS8Pb3mOXZVc?=
+ =?us-ascii?Q?MioGoaQsvVHcsnloAX7kdMUjGrmmymdo+lTwVIlDR6g68O19v9o4mQ7EOewP?=
+ =?us-ascii?Q?m0GcovMKhYMuKI6o/kCrKIrN20zkt5oY6UkUg230SJsEBMiSqCLCauEYXB7a?=
+ =?us-ascii?Q?WQNCUNzNrkCfn1mmjKifHHtOd91yrrMCSrcPKDQicNLmFkk+v0pzYP6U8/PT?=
+ =?us-ascii?Q?a2JBOq4BlfTMG1HmOWCLtY7wTOvA00x0pu4QWKRXORoBm+AyNgboZxVHhjE0?=
+ =?us-ascii?Q?OzdT7GkvNq7jJFXrKEwqS4kVxMetF3GiBOFT0QgPSsf/KWjVY/gLnkaGk+/c?=
+ =?us-ascii?Q?V3GM2l7T2q8woMMjjv/spugGKZFfEOAOFnHh01LbWqKwUMGh39B3uti6Y9C2?=
+ =?us-ascii?Q?tSsv9DLwoenhqtBWQOrAxyEMMu912U0invPocoxYqGmzvXLCtsvdizDajvhJ?=
+ =?us-ascii?Q?v9KZfdWIHQ9ywl+1E6O+zWgse6OAxlqud14wOBtafyyZQloEIyw0W4XL8tgI?=
+ =?us-ascii?Q?5wehPxHglasIsXn75vbO1O/3DSNq9AhV+hwKPso25FjMHc/6VXU30hE6BSNP?=
+ =?us-ascii?Q?8uaffMlm8DysR0wvZfcJj3zCCym9bOuYaGY2yPhxT7D90PRFeu9ksfZ43Gtg?=
+ =?us-ascii?Q?dD490KcGA43aDcm8CfZP5f1bdttsGvhSlHZeoyE92lgXnPLUP2pYB2kHj9ho?=
+ =?us-ascii?Q?OdjGgb4a99HN7Flq62W0qgNXK5psrGaDBDmH2Vhz1jQxvHPEsixH8WrP6eEl?=
+ =?us-ascii?Q?L7Dpqo78LOHeNuLO7JFsyPQGC635KGL0lq7En7j0iPwTp3WEGcMyVqXZ7NAJ?=
+ =?us-ascii?Q?H/Qu7KVl+r+dgUORMpsN6mggVEqUyLkZEgedC6R9UEbIGNvJ93sIARBhSo7H?=
+ =?us-ascii?Q?gT7NfE1XfEdyza/50MXo40GZRiiH4cdfMrzubxuvu4odp60B3LaMVEBDQ/jC?=
+ =?us-ascii?Q?Ww5ia0P2b9uo00CndinjyTWQN2LnA7NXXP56I9qd2+4IFueynFfa1BNOmiEL?=
+ =?us-ascii?Q?v5tGXr6PNUFxxxs3Bc4gr9B1RDIzRgpHByyxPpglTMgYopOi0R64jMnif2X7?=
+ =?us-ascii?Q?11N/MuEw4r9+dE7dGFtZw+5/MtWOgBfqdb14w+EMZQzhDFTp3iGnjy6HSqDu?=
+ =?us-ascii?Q?Dp8ctEbXByAvYr0as0XDJli6U8m2c/LBcOxcaPmbKnZkNkegMoMbC/YInGb+?=
+ =?us-ascii?Q?6c0WuUPf8Uf2ARfSgGBYbKOPL43AH2GX4kOFBPr68n6iSB1Rcq+YsKhkUDJs?=
+ =?us-ascii?Q?QklI313Q0Vtc1yWhRbKvVomZ4vElw1pgqdHreEd8EWXmI/AZWrpeMPMH99bo?=
+ =?us-ascii?Q?OdveOfUb8Gt19HWepDIu/MOkf2Lak3cpAwZkkMh157moFZVRTscAtCDnQxnI?=
+ =?us-ascii?Q?gXm3+Zt86olo5ETUNtma08+uBaGTQkmxYWDeaXzGTGqYw1+FOFg7cbv1vMUx?=
+ =?us-ascii?Q?NPfyYvla0vDskYELNmhA+E+ukUC8NjWdfyKlPrQHDJ8GfdxNu9IZkKOA/sjW?=
+ =?us-ascii?Q?AQ6ZCDs/iFipliyCNG58BOK8YcuAzmOGOoHpMIWCTrIOf45Dky7N7RXBPsUm?=
+ =?us-ascii?Q?HQU1BEDzW9c9Dr2/5CLPdmfE1WiVg1MZW9LvTvcpth0NMFFJxjo3YBKzyhnY?=
+ =?us-ascii?Q?s8zzsBcj6GAUerI1s/0din1Ms/5Z6wKhjlg3ccmsbeZQm07DmbjEqcuf8rVg?=
+ =?us-ascii?Q?dTDEihoLD/7LrFV1mFIsfumDF1XuCuShojaq483Wzx/z9KwlQXY4o4bg1kEi?=
+ =?us-ascii?Q?YUZeMJacEUhmrH4bn1xw57UTblsjFrw=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 54aee72d-0c69-4234-3f20-08da31074833
+X-MS-Exchange-CrossTenant-Network-Message-Id: 76a0c716-caa0-4cd8-9547-08da310748ef
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 15:27:37.3759
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 15:27:38.6258
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EHpvmZRlGyDKFT/ywQpuhVG0s/XggP5iHiiMxnPuiohUED/vlw+kHCf7IP/6ECyjKQQ+IbI9kWsA2tVBoj8zQg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: E78uihpAkCZvsGG+vMWfgeqOajtAe+t/oCGLBEsOJ1rrMn6moPm/6Sv5FoPaxsXg+dCL2J4ekRg+J5kFm31HeA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2806
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -132,97 +132,600 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ocelot switches support a single active CPU port at a time (at least as
-a trapping destination, i.e. for control traffic). This is true
-regardless of whether we are using the native copy-to-CPU-port-module
-functionality, or a redirect action towards the software-defined
-tag_8021q CPU port.
+The error handling for the current tagging protocol change procedure is
+a bit brittle (we dismantle the previous tagging protocol entirely
+before setting up the new one). By identifying which parts of a tagging
+protocol are unique to itself and which parts are shared with the other,
+we can implement a protocol change procedure where error handling is a
+bit more robust, because we start setting up the new protocol first, and
+tear down the old one only after the setup of the specific and shared
+parts succeeded.
 
-Currently we assume that the trapping destination in tag_8021q mode is
-the first CPU port, yet in the future we may want to migrate the user
-ports to the second CPU port.
+The protocol change is a bit too open-coded too, in the area of
+migrating host flood settings and MDBs. By identifying what differs
+between tagging protocols (the forwarding masks for host flooding) we
+can implement a more straightforward migration procedure which is
+handled in the shared portion of the protocol change, rather than
+individually by each protocol.
 
-For that to work, we need to make sure that the tag_8021q trapping
-destination is a CPU port that is active, i.e. is used by at least some
-user port on which the trap was added. Otherwise, we may end up
-redirecting the traffic to a CPU port which isn't even up.
+Therefore, a more structured approach calls for the introduction of a
+structure of function pointers per tagging protocol. This covers setup,
+teardown and the host forwarding mask. In the future it will also cover
+how to prepare for a new DSA master.
 
-Note that due to the current design where we simply choose the CPU port
-of the first port from the trap's ingress port mask, it may be that a
-CPU port absorbes control traffic from user ports which aren't affine to
-it as per user space's request. This isn't ideal, but is the lesser of
-two evils. Following the user-configured affinity for traps would mean
-that we can no longer reuse a single TCAM entry for multiple traps,
-which is what we actually do for e.g. PTP. Either we duplicate and
-deduplicate TCAM entries on the fly when user-to-CPU-port mappings
-change (which is unnecessarily complicated), or we redirect trapped
-traffic to all tag_8021q CPU ports if multiple such ports are in use.
-The latter would have actually been nice, if it actually worked, but it
-doesn't, since a OCELOT_MASK_MODE_REDIRECT action towards multiple ports
-would not take PGID_SRC into consideration, and it would just duplicate
-the packet towards each (CPU) port, leading to duplicates in software.
+The initial tagging protocol setup (at driver probe time) and the final
+teardown (at driver removal time) are also adapted to call into the
+structured methods of the specific protocol in current use. This is
+especially relevant for teardown, where we previously called
+felix_del_tag_protocol() only for the first CPU port. But by not
+specifying which CPU port this is for, we gain more flexibility to
+support multiple CPU ports in the future.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix.c | 26 +++++++++++++++++---------
- 1 file changed, 17 insertions(+), 9 deletions(-)
+ drivers/net/dsa/ocelot/felix.c | 399 +++++++++++++++++----------------
+ drivers/net/dsa/ocelot/felix.h |  14 ++
+ 2 files changed, 216 insertions(+), 197 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 4430495a4d21..68187d7904a7 100644
+index 68187d7904a7..e87fe7fb0bf6 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -313,6 +313,21 @@ static void felix_8021q_cpu_port_deinit(struct ocelot *ocelot, int port)
- 	mutex_unlock(&ocelot->fwd_domain_lock);
+@@ -42,43 +42,6 @@ static struct net_device *felix_classify_db(struct dsa_db db)
+ 	}
  }
  
-+static int felix_trap_get_cpu_port(struct dsa_switch *ds,
-+				   const struct ocelot_vcap_filter *trap)
+-static void felix_migrate_pgid_bit(struct dsa_switch *ds, int from, int to,
+-				   int pgid)
+-{
+-	struct ocelot *ocelot = ds->priv;
+-	bool on;
+-	u32 val;
+-
+-	val = ocelot_read_rix(ocelot, ANA_PGID_PGID, pgid);
+-	on = !!(val & BIT(from));
+-	val &= ~BIT(from);
+-	if (on)
+-		val |= BIT(to);
+-	else
+-		val &= ~BIT(to);
+-
+-	ocelot_write_rix(ocelot, val, ANA_PGID_PGID, pgid);
+-}
+-
+-static void felix_migrate_flood_to_npi_port(struct dsa_switch *ds, int port)
+-{
+-	struct ocelot *ocelot = ds->priv;
+-
+-	felix_migrate_pgid_bit(ds, port, ocelot->num_phys_ports, PGID_UC);
+-	felix_migrate_pgid_bit(ds, port, ocelot->num_phys_ports, PGID_MC);
+-	felix_migrate_pgid_bit(ds, port, ocelot->num_phys_ports, PGID_BC);
+-}
+-
+-static void
+-felix_migrate_flood_to_tag_8021q_port(struct dsa_switch *ds, int port)
+-{
+-	struct ocelot *ocelot = ds->priv;
+-
+-	felix_migrate_pgid_bit(ds, ocelot->num_phys_ports, port, PGID_UC);
+-	felix_migrate_pgid_bit(ds, ocelot->num_phys_ports, port, PGID_MC);
+-	felix_migrate_pgid_bit(ds, ocelot->num_phys_ports, port, PGID_BC);
+-}
+-
+ /* Set up VCAP ES0 rules for pushing a tag_8021q VLAN towards the CPU such that
+  * the tagger can perform RX source port identification.
+  */
+@@ -392,13 +355,107 @@ static int felix_update_trapping_destinations(struct dsa_switch *ds,
+ 	return 0;
+ }
+ 
+-static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
++/* The CPU port module is connected to the Node Processor Interface (NPI). This
++ * is the mode through which frames can be injected from and extracted to an
++ * external CPU, over Ethernet. In NXP SoCs, the "external CPU" is the ARM CPU
++ * running Linux, and this forms a DSA setup together with the enetc or fman
++ * DSA master.
++ */
++static void felix_npi_port_init(struct ocelot *ocelot, int port)
 +{
-+	struct dsa_port *dp;
-+	int first_port;
++	ocelot->npi = port;
 +
-+	if (WARN_ON(!trap->ingress_port_mask))
-+		return -1;
++	ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
++		     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(port),
++		     QSYS_EXT_CPU_CFG);
 +
-+	first_port = __ffs(trap->ingress_port_mask);
-+	dp = dsa_to_port(ds, first_port);
++	/* NPI port Injection/Extraction configuration */
++	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
++			    ocelot->npi_xtr_prefix);
++	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
++			    ocelot->npi_inj_prefix);
 +
-+	return dp->cpu_dp->index;
++	/* Disable transmission of pause frames */
++	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 0);
 +}
 +
- /* On switches with no extraction IRQ wired, trapped packets need to be
-  * replicated over Ethernet as well, otherwise we'd get no notification of
-  * their arrival when using the ocelot-8021q tagging protocol.
-@@ -326,19 +341,12 @@ static int felix_update_trapping_destinations(struct dsa_switch *ds,
- 	struct ocelot_vcap_filter *trap;
- 	enum ocelot_mask_mode mask_mode;
- 	unsigned long port_mask;
++static void felix_npi_port_deinit(struct ocelot *ocelot, int port)
++{
++	/* Restore hardware defaults */
++	int unused_port = ocelot->num_phys_ports + 2;
++
++	ocelot->npi = -1;
++
++	ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPU_PORT(unused_port),
++		     QSYS_EXT_CPU_CFG);
++
++	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
++			    OCELOT_TAG_PREFIX_DISABLED);
++	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
++			    OCELOT_TAG_PREFIX_DISABLED);
++
++	/* Enable transmission of pause frames */
++	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 1);
++}
++
++static int felix_tag_npi_setup(struct dsa_switch *ds)
++{
++	struct dsa_port *dp, *first_cpu_dp = NULL;
++	struct ocelot *ocelot = ds->priv;
++
++	dsa_switch_for_each_user_port(dp, ds) {
++		if (first_cpu_dp && dp->cpu_dp != first_cpu_dp) {
++			dev_err(ds->dev, "Multiple NPI ports not supported\n");
++			return -EINVAL;
++		}
++
++		first_cpu_dp = dp->cpu_dp;
++	}
++
++	if (!first_cpu_dp)
++		return -EINVAL;
++
++	felix_npi_port_init(ocelot, first_cpu_dp->index);
++
++	return 0;
++}
++
++static void felix_tag_npi_teardown(struct dsa_switch *ds)
+ {
+ 	struct ocelot *ocelot = ds->priv;
 -	struct dsa_port *dp;
- 	bool cpu_copy_ena;
--	int cpu = -1, err;
-+	int err;
++
++	felix_npi_port_deinit(ocelot, ocelot->npi);
++}
++
++static unsigned long felix_tag_npi_get_host_fwd_mask(struct dsa_switch *ds)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return BIT(ocelot->num_phys_ports);
++}
++
++static const struct felix_tag_proto_ops felix_tag_npi_proto_ops = {
++	.setup			= felix_tag_npi_setup,
++	.teardown		= felix_tag_npi_teardown,
++	.get_host_fwd_mask	= felix_tag_npi_get_host_fwd_mask,
++};
++
++static int felix_tag_8021q_setup(struct dsa_switch *ds)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct dsa_port *dp, *cpu_dp;
+ 	int err;
  
- 	if (!felix->info->quirk_no_xtr_irq)
- 		return 0;
+-	felix_8021q_cpu_port_init(ocelot, cpu);
++	err = dsa_tag_8021q_register(ds, htons(ETH_P_8021AD));
++	if (err)
++		return err;
++
++	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
++		felix_8021q_cpu_port_init(ocelot, cpu_dp->index);
++
++		/* TODO we could support multiple CPU ports in tag_8021q mode */
++		break;
++	}
  
--	/* Figure out the current CPU port */
--	dsa_switch_for_each_cpu_port(dp, ds) {
--		cpu = dp->index;
+ 	dsa_switch_for_each_available_port(dp, ds) {
+ 		/* This overwrites ocelot_init():
+@@ -416,21 +473,6 @@ static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
+ 				 ANA_PORT_CPU_FWD_BPDU_CFG, dp->index);
+ 	}
+ 
+-	err = dsa_tag_8021q_register(ds, htons(ETH_P_8021AD));
+-	if (err)
+-		return err;
+-
+-	err = ocelot_migrate_mdbs(ocelot, BIT(ocelot->num_phys_ports),
+-				  BIT(cpu));
+-	if (err)
+-		goto out_tag_8021q_unregister;
+-
+-	felix_migrate_flood_to_tag_8021q_port(ds, cpu);
+-
+-	err = felix_update_trapping_destinations(ds, true);
+-	if (err)
+-		goto out_migrate_flood;
+-
+ 	/* The ownership of the CPU port module's queues might have just been
+ 	 * transferred to the tag_8021q tagger from the NPI-based tagger.
+ 	 * So there might still be all sorts of crap in the queues. On the
+@@ -441,27 +483,12 @@ static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
+ 	ocelot_drain_cpu_queue(ocelot, 0);
+ 
+ 	return 0;
+-
+-out_migrate_flood:
+-	felix_migrate_flood_to_npi_port(ds, cpu);
+-	ocelot_migrate_mdbs(ocelot, BIT(cpu), BIT(ocelot->num_phys_ports));
+-out_tag_8021q_unregister:
+-	dsa_tag_8021q_unregister(ds);
+-	return err;
+ }
+ 
+-static void felix_teardown_tag_8021q(struct dsa_switch *ds, int cpu)
++static void felix_tag_8021q_teardown(struct dsa_switch *ds)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+-	struct dsa_port *dp;
+-	int err;
+-
+-	err = felix_update_trapping_destinations(ds, false);
+-	if (err)
+-		dev_err(ds->dev, "felix_teardown_mmio_filtering returned %d",
+-			err);
+-
+-	dsa_tag_8021q_unregister(ds);
++	struct dsa_port *dp, *cpu_dp;
+ 
+ 	dsa_switch_for_each_available_port(dp, ds) {
+ 		/* Restore the logic from ocelot_init:
+@@ -473,110 +500,99 @@ static void felix_teardown_tag_8021q(struct dsa_switch *ds, int cpu)
+ 				 dp->index);
+ 	}
+ 
+-	felix_8021q_cpu_port_deinit(ocelot, cpu);
+-}
+-
+-/* The CPU port module is connected to the Node Processor Interface (NPI). This
+- * is the mode through which frames can be injected from and extracted to an
+- * external CPU, over Ethernet. In NXP SoCs, the "external CPU" is the ARM CPU
+- * running Linux, and this forms a DSA setup together with the enetc or fman
+- * DSA master.
+- */
+-static void felix_npi_port_init(struct ocelot *ocelot, int port)
+-{
+-	ocelot->npi = port;
+-
+-	ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
+-		     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(port),
+-		     QSYS_EXT_CPU_CFG);
++	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
++		felix_8021q_cpu_port_deinit(ocelot, cpu_dp->index);
+ 
+-	/* NPI port Injection/Extraction configuration */
+-	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
+-			    ocelot->npi_xtr_prefix);
+-	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
+-			    ocelot->npi_inj_prefix);
++		/* TODO we could support multiple CPU ports in tag_8021q mode */
++		break;
++	}
+ 
+-	/* Disable transmission of pause frames */
+-	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 0);
++	dsa_tag_8021q_unregister(ds);
+ }
+ 
+-static void felix_npi_port_deinit(struct ocelot *ocelot, int port)
++static unsigned long felix_tag_8021q_get_host_fwd_mask(struct dsa_switch *ds)
+ {
+-	/* Restore hardware defaults */
+-	int unused_port = ocelot->num_phys_ports + 2;
++	return dsa_cpu_ports(ds);
++}
+ 
+-	ocelot->npi = -1;
++static const struct felix_tag_proto_ops felix_tag_8021q_proto_ops = {
++	.setup			= felix_tag_8021q_setup,
++	.teardown		= felix_tag_8021q_teardown,
++	.get_host_fwd_mask	= felix_tag_8021q_get_host_fwd_mask,
++};
+ 
+-	ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPU_PORT(unused_port),
+-		     QSYS_EXT_CPU_CFG);
++static void felix_set_host_flood(struct dsa_switch *ds, unsigned long mask,
++				 bool uc, bool mc, bool bc)
++{
++	struct ocelot *ocelot = ds->priv;
++	unsigned long val;
+ 
+-	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
+-			    OCELOT_TAG_PREFIX_DISABLED);
+-	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
+-			    OCELOT_TAG_PREFIX_DISABLED);
++	val = uc ? mask : 0;
++	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_UC);
+ 
+-	/* Enable transmission of pause frames */
+-	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 1);
++	val = mc ? mask : 0;
++	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_MC);
++	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_MCIPV4);
++	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_MCIPV6);
+ }
+ 
+-static int felix_setup_tag_npi(struct dsa_switch *ds, int cpu)
++static void
++felix_migrate_host_flood(struct dsa_switch *ds,
++			 const struct felix_tag_proto_ops *proto_ops,
++			 const struct felix_tag_proto_ops *old_proto_ops)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+-	int err;
+-
+-	err = ocelot_migrate_mdbs(ocelot, BIT(cpu),
+-				  BIT(ocelot->num_phys_ports));
+-	if (err)
+-		return err;
+-
+-	felix_migrate_flood_to_npi_port(ds, cpu);
++	struct felix *felix = ocelot_to_felix(ocelot);
++	unsigned long mask;
+ 
+-	felix_npi_port_init(ocelot, cpu);
++	if (old_proto_ops) {
++		mask = old_proto_ops->get_host_fwd_mask(ds);
++		felix_set_host_flood(ds, mask, false, false, false);
++	}
+ 
+-	return 0;
++	mask = proto_ops->get_host_fwd_mask(ds);
++	felix_set_host_flood(ds, mask, !!felix->host_flood_uc_mask,
++			     !!felix->host_flood_mc_mask, true);
+ }
+ 
+-static void felix_teardown_tag_npi(struct dsa_switch *ds, int cpu)
++static int felix_migrate_mdbs(struct dsa_switch *ds,
++			      const struct felix_tag_proto_ops *proto_ops,
++			      const struct felix_tag_proto_ops *old_proto_ops)
+ {
+ 	struct ocelot *ocelot = ds->priv;
++	unsigned long from, to;
++
++	if (!old_proto_ops)
++		return 0;
++
++	from = old_proto_ops->get_host_fwd_mask(ds);
++	to = proto_ops->get_host_fwd_mask(ds);
+ 
+-	felix_npi_port_deinit(ocelot, cpu);
++	return ocelot_migrate_mdbs(ocelot, from, to);
+ }
+ 
+-static int felix_set_tag_protocol(struct dsa_switch *ds, int cpu,
+-				  enum dsa_tag_protocol proto)
++/* Configure the shared hardware resources for a transition between
++ * @old_proto_ops and @proto_ops.
++ * Manual migration is needed because as far as DSA is concerned, no change of
++ * the CPU port is taking place here, just of the tagging protocol.
++ */
++static int
++felix_tag_proto_setup_shared(struct dsa_switch *ds,
++			     const struct felix_tag_proto_ops *proto_ops,
++			     const struct felix_tag_proto_ops *old_proto_ops)
+ {
++	bool using_tag_8021q = (proto_ops == &felix_tag_8021q_proto_ops);
+ 	int err;
+ 
+-	switch (proto) {
+-	case DSA_TAG_PROTO_SEVILLE:
+-	case DSA_TAG_PROTO_OCELOT:
+-		err = felix_setup_tag_npi(ds, cpu);
+-		break;
+-	case DSA_TAG_PROTO_OCELOT_8021Q:
+-		err = felix_setup_tag_8021q(ds, cpu);
+-		break;
+-	default:
+-		err = -EPROTONOSUPPORT;
+-	}
++	err = felix_migrate_mdbs(ds, proto_ops, old_proto_ops);
++	if (err)
++		return err;
+ 
+-	return err;
+-}
++	felix_update_trapping_destinations(ds, using_tag_8021q);
+ 
+-static void felix_del_tag_protocol(struct dsa_switch *ds, int cpu,
+-				   enum dsa_tag_protocol proto)
+-{
+-	switch (proto) {
+-	case DSA_TAG_PROTO_SEVILLE:
+-	case DSA_TAG_PROTO_OCELOT:
+-		felix_teardown_tag_npi(ds, cpu);
+-		break;
+-	case DSA_TAG_PROTO_OCELOT_8021Q:
+-		felix_teardown_tag_8021q(ds, cpu);
+-		break;
+-	default:
 -		break;
 -	}
++	felix_migrate_host_flood(ds, proto_ops, old_proto_ops);
++
++	return 0;
+ }
+ 
+ /* This always leaves the switch in a consistent state, because although the
+@@ -586,33 +602,45 @@ static void felix_del_tag_protocol(struct dsa_switch *ds, int cpu,
+ static int felix_change_tag_protocol(struct dsa_switch *ds,
+ 				     enum dsa_tag_protocol proto)
+ {
++	const struct felix_tag_proto_ops *old_proto_ops, *proto_ops;
+ 	struct ocelot *ocelot = ds->priv;
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+-	enum dsa_tag_protocol old_proto = felix->tag_proto;
+-	struct dsa_port *cpu_dp;
+ 	int err;
+ 
+-	if (proto != DSA_TAG_PROTO_SEVILLE &&
+-	    proto != DSA_TAG_PROTO_OCELOT &&
+-	    proto != DSA_TAG_PROTO_OCELOT_8021Q)
++	switch (proto) {
++	case DSA_TAG_PROTO_SEVILLE:
++	case DSA_TAG_PROTO_OCELOT:
++		proto_ops = &felix_tag_npi_proto_ops;
++		break;
++	case DSA_TAG_PROTO_OCELOT_8021Q:
++		proto_ops = &felix_tag_8021q_proto_ops;
++		break;
++	default:
+ 		return -EPROTONOSUPPORT;
++	}
+ 
+-	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
+-		felix_del_tag_protocol(ds, cpu_dp->index, old_proto);
++	old_proto_ops = felix->tag_proto_ops;
+ 
+-		err = felix_set_tag_protocol(ds, cpu_dp->index, proto);
+-		if (err) {
+-			felix_set_tag_protocol(ds, cpu_dp->index, old_proto);
+-			return err;
+-		}
++	err = proto_ops->setup(ds);
++	if (err)
++		goto setup_failed;
+ 
+-		/* Stop at first CPU port */
+-		break;
+-	}
++	err = felix_tag_proto_setup_shared(ds, proto_ops, old_proto_ops);
++	if (err)
++		goto setup_shared_failed;
+ 
++	if (old_proto_ops)
++		old_proto_ops->teardown(ds);
++
++	felix->tag_proto_ops = proto_ops;
+ 	felix->tag_proto = proto;
+ 
+ 	return 0;
++
++setup_shared_failed:
++	proto_ops->teardown(ds);
++setup_failed:
++	return err;
+ }
+ 
+ static enum dsa_tag_protocol felix_get_tag_protocol(struct dsa_switch *ds,
+@@ -630,7 +658,7 @@ static void felix_port_set_host_flood(struct dsa_switch *ds, int port,
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+-	unsigned long mask, val;
++	unsigned long mask;
+ 
+ 	if (uc)
+ 		felix->host_flood_uc_mask |= BIT(port);
+@@ -642,18 +670,9 @@ static void felix_port_set_host_flood(struct dsa_switch *ds, int port,
+ 	else
+ 		felix->host_flood_mc_mask &= ~BIT(port);
+ 
+-	if (felix->tag_proto == DSA_TAG_PROTO_OCELOT_8021Q)
+-		mask = dsa_cpu_ports(ds);
+-	else
+-		mask = BIT(ocelot->num_phys_ports);
 -
- 	/* We are sure that "cpu" was found, otherwise
- 	 * dsa_tree_setup_default_cpu() would have failed earlier.
- 	 */
-@@ -356,7 +364,7 @@ static int felix_update_trapping_destinations(struct dsa_switch *ds,
- 			 * port module.
- 			 */
- 			mask_mode = OCELOT_MASK_MODE_REDIRECT;
--			port_mask = BIT(cpu);
-+			port_mask = BIT(felix_trap_get_cpu_port(ds, trap));
- 			cpu_copy_ena = !!trap->take_ts;
- 		} else {
- 			/* Trap packets only to the CPU port module, which is
+-	val = (felix->host_flood_uc_mask) ? mask : 0;
+-	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_UC);
+-
+-	val = (felix->host_flood_mc_mask) ? mask : 0;
+-	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_MC);
+-	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_MCIPV4);
+-	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_MCIPV6);
++	mask = felix->tag_proto_ops->get_host_fwd_mask(ds);
++	felix_set_host_flood(ds, mask, !!felix->host_flood_uc_mask,
++			     !!felix->host_flood_mc_mask, true);
+ }
+ 
+ static int felix_set_ageing_time(struct dsa_switch *ds,
+@@ -1331,7 +1350,6 @@ static int felix_setup(struct dsa_switch *ds)
+ {
+ 	struct ocelot *ocelot = ds->priv;
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+-	unsigned long cpu_flood;
+ 	struct dsa_port *dp;
+ 	int err;
+ 
+@@ -1365,21 +1383,10 @@ static int felix_setup(struct dsa_switch *ds)
+ 	if (err)
+ 		goto out_deinit_ports;
+ 
+-	dsa_switch_for_each_cpu_port(dp, ds) {
+-		/* The initial tag protocol is NPI which always returns 0, so
+-		 * there's no real point in checking for errors.
+-		 */
+-		felix_set_tag_protocol(ds, dp->index, felix->tag_proto);
+-
+-		/* Start off with flooding disabled towards the NPI port
+-		 * (actually CPU port module).
+-		 */
+-		cpu_flood = ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports));
+-		ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_UC);
+-		ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_MC);
+-
+-		break;
+-	}
++	/* The initial tag protocol is NPI which won't fail during initial
++	 * setup, there's no real point in checking for errors.
++	 */
++	felix_change_tag_protocol(ds, felix->tag_proto);
+ 
+ 	ds->mtu_enforcement_ingress = true;
+ 	ds->assisted_learning_on_cpu_port = true;
+@@ -1408,10 +1415,8 @@ static void felix_teardown(struct dsa_switch *ds)
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	struct dsa_port *dp;
+ 
+-	dsa_switch_for_each_cpu_port(dp, ds) {
+-		felix_del_tag_protocol(ds, dp->index, felix->tag_proto);
+-		break;
+-	}
++	if (felix->tag_proto_ops)
++		felix->tag_proto_ops->teardown(ds);
+ 
+ 	dsa_switch_for_each_available_port(dp, ds)
+ 		ocelot_deinit_port(ocelot, dp->index);
+diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
+index 2b3df06e2a14..4befe4376dc7 100644
+--- a/drivers/net/dsa/ocelot/felix.h
++++ b/drivers/net/dsa/ocelot/felix.h
+@@ -58,6 +58,19 @@ struct felix_info {
+ 				      struct resource *res);
+ };
+ 
++/* Methods for initializing the hardware resources specific to a tagging
++ * protocol (like the NPI port, for "ocelot" or "seville", or the VCAP TCAMs,
++ * for "ocelot-8021q").
++ * It is important that the resources configured here do not have side effects
++ * for the other tagging protocols. If that is the case, their configuration
++ * needs to go to felix_tag_proto_setup_shared().
++ */
++struct felix_tag_proto_ops {
++	int (*setup)(struct dsa_switch *ds);
++	void (*teardown)(struct dsa_switch *ds);
++	unsigned long (*get_host_fwd_mask)(struct dsa_switch *ds);
++};
++
+ extern const struct dsa_switch_ops felix_switch_ops;
+ 
+ /* DSA glue / front-end for struct ocelot */
+@@ -70,6 +83,7 @@ struct felix {
+ 	resource_size_t			switch_base;
+ 	resource_size_t			imdio_base;
+ 	enum dsa_tag_protocol		tag_proto;
++	const struct felix_tag_proto_ops *tag_proto_ops;
+ 	struct kthread_worker		*xmit_worker;
+ 	unsigned long			host_flood_uc_mask;
+ 	unsigned long			host_flood_mc_mask;
 -- 
 2.25.1
 
