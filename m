@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7A0B51F1C7
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 23:14:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5CEEF51F1DE
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 23:45:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232968AbiEHVSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 17:18:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
+        id S231994AbiEHVs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 17:48:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiEHVSm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 17:18:42 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CE1765F;
-        Sun,  8 May 2022 14:14:50 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id g23so14195257edy.13;
-        Sun, 08 May 2022 14:14:50 -0700 (PDT)
+        with ESMTP id S233276AbiEHVsy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 17:48:54 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D56506445;
+        Sun,  8 May 2022 14:45:02 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id 1-20020a05600c248100b00393fbf11a05so9763420wms.3;
+        Sun, 08 May 2022 14:45:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=w+wW2j4Qi2ZhKYtEoYitFu0KdkNdZFsS+kowU+VfreY=;
-        b=Wj4XjWI2kf1xIO5YfBwwdg2vdJWpb1sNLQhpYx1yxsTqitNWCVQ5/Kb65yVMFm5coF
-         Mu8rT6p6VeemiMfz28Aw4L+MoYBvc4sU+5ESTP50bzMSQjPe+W5W0J61hV6cA05+0KG4
-         W+LUm4H2iFJ3qf4CHWPu+iTCKRXJKY1jDbCKFtsHBK6pLOaXXterBldefbbTAJJ9syx8
-         ffu5FuTqyUsL6bqL1Hm+bbX/q3vnW4zaLw9nmI8HvNrNWQ0HRP3AFhRuLcjP/jBne3O+
-         CmNFjgj09fq4+lsny6mVR78KIS/FtEdGZ2Yhm07WUkkwNyTtilEQkmW97TQWJ9/u8WkR
-         cCcA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sz9yDMbWolCR5CSm2J/3vC7zIKazVJISgiLAk/Sxmjk=;
+        b=odEgRES1w3ohIoQJFJMZIgwiqx0w9ikZ5ahO6mKSOCp5MV2nmKdXmMa7ejQCzBEk4V
+         6R1CSUB6tZptfCRhrKnB1vNWbOLi64YT2Hi+c0HL9+oYjINMASi5tDhYdw1fCJODPbC0
+         10rOjcK0UOKfoJ9Xc2hOCRXvC4k93g2wuIfbmyvn8OAYISHIKxVyzlFQ6Z5BC1EeRkS8
+         TNbylN5WqYiOAPbiz7hubby5HgaJazQtdpHYw8dsoEzhyXIqBJQyR2QLMLXiSuU4ogmj
+         mHCIC/h9Ee/4LheQ8KaApm5E5dDQkinwP02y2XvlLjowe5BZWJZSU3awpGaNzlP1y1Or
+         98Hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=w+wW2j4Qi2ZhKYtEoYitFu0KdkNdZFsS+kowU+VfreY=;
-        b=LrJe8Sn6eHlN+z334h+68Gl4vV4KRJ+fbECmX3FXg8R3z6h9crzM990pneL+YCGBL6
-         Yftm8Etl6XLFi9Zm4lb3EM6KL3XRz+1b/rTmZxROdpK2JNtHJRnwCh7Do8ARdS/6FSm9
-         w4TnHhBYfZwf66RRXjizc2DCvTySzqYWbZuduNeKGQ6HH4dw8D2rnWCrHAagR7+z7Adh
-         XHuXQGV/TjzLaxJ06dZbu0u/1Md9kjyHbzSEibzKJo9krP6VWt5ooiKDMbL8toE2sJGI
-         rxSQDgf+S8oH8lH2qws9VbyPAOWT5zA1detYenfKxD5/QpL3Xtges8Zc97Pbb9b1CIA6
-         +W3Q==
-X-Gm-Message-State: AOAM532Rtoou9YURBMCzmmU6OROoFij8lSysyhEeDMi2L72npyuNJh24
-        zwtQfS+/5YK17sOHrggvoShRmmTGxtteCb9Jw7s=
-X-Google-Smtp-Source: ABdhPJyoW50uF0WrtGrEbHbI9iwmrV+S8/zNPOIFMyKSdKez42MdNCM8dpOaAKhXpe/Sf/uREYeC+0buKxPavuthygY=
-X-Received: by 2002:a05:6402:1d4c:b0:427:d1f5:3a41 with SMTP id
- dz12-20020a0564021d4c00b00427d1f53a41mr14079196edb.218.1652044488894; Sun, 08
- May 2022 14:14:48 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220508185313.2222956-1-colin.foster@in-advantage.com> <20220508185313.2222956-5-colin.foster@in-advantage.com>
-In-Reply-To: <20220508185313.2222956-5-colin.foster@in-advantage.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 8 May 2022 23:14:12 +0200
-Message-ID: <CAHp75VdAE70EbAyuPXFQPLq+4E_Bj+8VbmY7amEB7TFB=U5HZQ@mail.gmail.com>
-Subject: Re: [RFC v8 net-next 04/16] net: mdio: mscc-miim: add ability to be
- used in a non-mmio configuration
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sz9yDMbWolCR5CSm2J/3vC7zIKazVJISgiLAk/Sxmjk=;
+        b=3Kwd00JdbKJTfx+8mGkVFSgKQt3KkMQTdvSPXVj8Oot83KtMKlt5MxEzRF5uxLpH89
+         uM1KoSopDNokwGuWVr8cW0kwUI/eO/ROSIyzOR9w9qVHI1NyQ9sXxYD3B0WLnxyFYZur
+         ggKk/TRO+tqfpgpqWR5lbN8O1hNSw/1UyoyT2r1DJBwlaFG0oNnoKpfHQt0AhYwRDruA
+         l08bhi/z3V41cdICvSlM9isFjgyeKRRNODYEHSxGLaAF8bmH6rwPB/Q00HAXZaWtyV0m
+         dgS/DpANONSNDHD9EM0i5eiFVMmfFrh2/NUqm3/6s5BKw2fc2FdKJZ0O3zJl1ZCyQ1cb
+         moKA==
+X-Gm-Message-State: AOAM533zBDHKzO1RDGSHKNcr2BkQgCZTBSvL6CjrikhbPo1PHu/WY+yk
+        7dh0TnAER4NjiyXAUTzYI10=
+X-Google-Smtp-Source: ABdhPJzsQei1PUBRbz+zo5dt6pV/R1IwS6bibqDjpiffCWMdTH92R5BM6ZHxo9cYWaGnJYzDCUJvbw==
+X-Received: by 2002:a05:600c:4187:b0:394:4cf8:7c61 with SMTP id p7-20020a05600c418700b003944cf87c61mr13164229wmh.119.1652046301468;
+        Sun, 08 May 2022 14:45:01 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id l17-20020adff491000000b0020c6a524fe0sm9283123wro.98.2022.05.08.14.45.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 May 2022 14:45:01 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Martin Schiller <ms@dev.tdt.de>,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] x25: remove redundant pointer dev
+Date:   Sun,  8 May 2022 22:45:00 +0100
+Message-Id: <20220508214500.60446-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -83,37 +72,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 8, 2022 at 8:53 PM Colin Foster
-<colin.foster@in-advantage.com> wrote:
->
-> There are a few Ocelot chips that contain the logic for this bus, but are
-> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
-> the externally controlled configurations these registers are not
-> memory-mapped.
->
-> Add support for these non-memory-mapped configurations.
+Pointer dev is being assigned a value that is never used, the assignment
+and the variable are redundant and can be removed. Also replace null check
+with the preferred !ptr idiom.
 
-...
+Cleans up clang scan warning:
+net/x25/x25_proc.c:94:26: warning: Although the value stored to 'dev' is
+used in the enclosing expression, the value is never actually read
+from 'dev' [deadcode.DeadStores]
 
-> +               res = platform_get_resource(pdev, IORESOURCE_REG, 0);
-> +               if (!res) {
-> +                       dev_err(dev, "Unable to get MIIM resource\n");
-> +                       return -ENODEV;
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ net/x25/x25_proc.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-return dev_err_probe(...); ?
-
-> +               }
-
-...
-
-> +       if (IS_ERR(phy_regmap)) {
-> +               dev_err(dev, "Unable to create phy register regmap\n");
-> +               return PTR_ERR(phy_regmap);
-
-Ditto.
-
->         }
-
+diff --git a/net/x25/x25_proc.c b/net/x25/x25_proc.c
+index 3bddcbdf2e40..91a2aade3960 100644
+--- a/net/x25/x25_proc.c
++++ b/net/x25/x25_proc.c
+@@ -79,7 +79,6 @@ static int x25_seq_socket_show(struct seq_file *seq, void *v)
+ {
+ 	struct sock *s;
+ 	struct x25_sock *x25;
+-	struct net_device *dev;
+ 	const char *devname;
+ 
+ 	if (v == SEQ_START_TOKEN) {
+@@ -91,7 +90,7 @@ static int x25_seq_socket_show(struct seq_file *seq, void *v)
+ 	s = sk_entry(v);
+ 	x25 = x25_sk(s);
+ 
+-	if (!x25->neighbour || (dev = x25->neighbour->dev) == NULL)
++	if (!x25->neighbour || !x25->neighbour->dev)
+ 		devname = "???";
+ 	else
+ 		devname = x25->neighbour->dev->name;
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
