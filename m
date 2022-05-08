@@ -2,110 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AF1451EC2A
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 10:10:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D2F4F51EC29
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 10:10:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231133AbiEHINn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 04:13:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59944 "EHLO
+        id S231163AbiEHINv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 04:13:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230527AbiEHINk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 04:13:40 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2053.outbound.protection.outlook.com [40.107.244.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B2D7E0B7
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 01:09:50 -0700 (PDT)
+        with ESMTP id S231145AbiEHINq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 04:13:46 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2052.outbound.protection.outlook.com [40.107.244.52])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A02E0C1
+        for <netdev@vger.kernel.org>; Sun,  8 May 2022 01:09:56 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=d3DlIiOA2gf7oyMetjANX6h4tH1PqFyJu/RR3aUbeKbBeUod4tS+p1QCUo3z1b/2oJ0YP2aCijO3jugcrDPQTGdvKz+ICPnzKV4WCeNl5pTpFm34NWhv0ZDG+NkFEUJVIp7Y258i4hInFBefxnmgLlTLaHVWZK33zpK4vDXPH6H8lZ2s+rOi9H4m436Sci8hlagcGEVYK3qdscS69/zkM8ilD7ZQfhkQ3R4lo2SUau++6mzGmhg1I8k0vEcnsckVJcHVhpk3QNarCJZQ0Oe867Ag6KUJjjRqWP6XYxBXIr9ORexpn6Q+7xCj1InZ7j8G006kIR6tWro9/QoY1Kkd9A==
+ b=cDZ8vwkVcPpnw98rp8ZpbR3WcV6+vLe/Euu0Xeey8+INJG334mE6SzetMTqSmTyn3gdvGuG72ohDNNRKG+82QbI+/0+oBZyrM+t/fbbSJzw3j39gXJwljBDkxOUV7aHHQNv+0Eh6D3kzkP8XhzJQSiMFWAvkqvwVZowgL6sLSahnQq3UNPKDkirIqRoK4vBJZvA1Cbdiop09HZd6WidfBkroqAUuCaEbwJ8lNqHqdiVcNBtloI6AxFLX3V8xkS49bnNABJUn5olXIJXF+npUKczsEtiJBa4sWRaUWdkSrHh1vOCWYla+swfmJc81VbJ0mXln6DSKVz/nTUQ8p4N0AQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=J3XAfDVRD4iZBmYU7uvIELT2ObXj54thv1uTBAH0KAU=;
- b=ibsKlBkD6MmaE+VD1Aa25/rQSeOX0P0DuHThTUVoTUFRuD1WgChReH4+oZwV90bkH/k+umKLQHknhxiR5RDJZHJh2Jr9LB6DzXJ0UignsaqFpMwbkajE4NrBbPRl9ZHsno/3FTKwNDnQGQTYJTdIMN2r7CUODzVwpgbTrlj8X40MKcE6Nd2GbgWRbqCg238a7oB2c01r91HAF8GQFhZ1oNLnSifk3WcF07CK42XC69udfY6COTdDiwegdmU2WJLfG85tRfw1DDZE1rwp2EJXhKmOgn/Uubn1YhLXsnIHf7fNLfwbBaTcb+1bWFhzbDDW/d3DBPqus+vkqvi1LK1dmA==
+ bh=h01OWDnkZ487yE9hntlZnhLz3uKucu73jQsQC6SYsEg=;
+ b=kcnwcZ7cgEMoF+np4ObKv9oAxhgr+gsnxxOPWHzX3lE0pRXvCoVBc8xPqgAuf3nxo86wn65Juual/01OUy3d92dv3iQMAIUWy5jyi2GOqnVeKILqDXFSw3NGtwMpl55Yv617JkcPaoUxf76uMAwMb31AMUS/vpOoowj3YknDEw0S+HwBuM7Z/3LbOW1MRbsq4j5c9qTsIuEi7YakjiPp/lmlW25RazqUmuYl629LbherPASub5cDx7yRgeXjnTfGRgDacVPALZDg76kqc6yM4OOgkUcB5gx0QcRzJyPHlGHStIhPC097UYjoIxkEQlwd0k/BlbECQpEp49W61XQG7w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J3XAfDVRD4iZBmYU7uvIELT2ObXj54thv1uTBAH0KAU=;
- b=rZmGteuerFDL9p1YZlZ7IlIYcH6e2KGtVV5uzlwxgKJQTsMY+C1sYEmQyWK2CfCYyqol5GlDKCE/IXOB1MRuDzrwQ1yo1V4B9rfV0uOvvh3qxpwUEMqPGWaM1wSCjl2KBzHdQctqFV3JcWHrVufQ4x1PsknLFHf2TiwrMMXKNIu+i1VlTBbsH6Scfe9bHOOZYWvur8qDY0yL+E8lzTGpZ/tElNk8PCot/z3KykssTPPBhz2raFfSlQeptHaB4aJ3ERbbmoitFl03dWXXG3TDTNXv14WcFdOMVEHCpqpgCmh2igC1GCPfgC+CxLBG5dGiaL7YP3UbZYndNGoKoJwMyA==
+ bh=h01OWDnkZ487yE9hntlZnhLz3uKucu73jQsQC6SYsEg=;
+ b=qyGQnEalNQLYi5zL1qfT/w6UezLsqFeefgR252d/OpRp7BD6kfvYNBPl62a776Y8lqMhrajggjoqDjj9uRvMLy8nplDAuTIPKXwbFsa7tby7M6WDjjrxQLMB4MxWrjT+P7nHZAr1GNjvDb8ya1RCH343z3be7k/7FuxSHWNNieBvrh2wQ7bZ8n5f5isEOU6H2fh/yZxkcarQZ7nkQgPkPX1zM6/HcABQgVIQKrB7i5KbergRQ4HaFOa+Yxrsho/apU3VIdBB2nK6RBlqqig2jJZoKXg4XgoAKHq38eLH8KDCpI6GLIFxcUIl5s2nRUB5I92oYduZ4QTGAzQ2kYLYog==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com (2603:10b6:5:2a9::12)
  by DS7PR12MB6096.namprd12.prod.outlook.com (2603:10b6:8:9b::9) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.22; Sun, 8 May 2022 08:09:49 +0000
+ 15.20.5227.22; Sun, 8 May 2022 08:09:55 +0000
 Received: from DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::45b7:af36:457d:7331]) by DM6PR12MB4337.namprd12.prod.outlook.com
  ([fe80::45b7:af36:457d:7331%7]) with mapi id 15.20.5227.023; Sun, 8 May 2022
- 08:09:49 +0000
+ 08:09:55 +0000
 From:   Ido Schimmel <idosch@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, petrm@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 09/10] selftests: lib: Add a generic helper for obtaining HW stats
-Date:   Sun,  8 May 2022 11:08:22 +0300
-Message-Id: <20220508080823.32154-10-idosch@nvidia.com>
+Subject: [PATCH net-next 10/10] selftests: forwarding: Add a tunnel-based test for L3 HW stats
+Date:   Sun,  8 May 2022 11:08:23 +0300
+Message-Id: <20220508080823.32154-11-idosch@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220508080823.32154-1-idosch@nvidia.com>
 References: <20220508080823.32154-1-idosch@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: MR2P264CA0101.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:33::17) To DM6PR12MB4337.namprd12.prod.outlook.com
+X-ClientProxiedBy: MRXP264CA0027.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:500:14::15) To DM6PR12MB4337.namprd12.prod.outlook.com
  (2603:10b6:5:2a9::12)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cf47e658-40ed-46f0-8ea5-08da30ca1f50
+X-MS-Office365-Filtering-Correlation-Id: ce8d48d0-67e9-4959-9eb0-08da30ca22b9
 X-MS-TrafficTypeDiagnostic: DS7PR12MB6096:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR12MB609679F0412984703A1B1983B2C79@DS7PR12MB6096.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DS7PR12MB6096EBEAC3E139356CE3CA8CB2C79@DS7PR12MB6096.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +SgMTM5kb+c26Imlkf3itU2fRzbMjtvvWYQLHN9arDTdkknbKcXjkiXUHCso9KUNut1OpEBBa1T1AsRd9BXC0f23kA8b5hMJOIBMdsgvCVGOt0Ngx6lXr3qgZKdXgxgnvA7iwakXcEuVhSLajG8mZNKL/LP+BnYWLtRL5D+JD0+euGoCCMODADqy9EtVv3ftlI9HVYF876r9Sz5Jf34M/SgtjqyoDJ6m58Is05O2PkpHAz7VvJJmdyYwqvOzZg6Vf2hIyBC/MNhW5/ZDvkVUc5ZuggbDPi29ndI8FDjuQoC6YTE1zdS7eTTdz9+AnRRAf7W/PIcaEd7cxsSVSxyfcNI77qn+P17Vt1IyfdgrsqQJ2SNrVNEDU4jNb6BezNZdfE/paeBhExmvc98c8MXXwm5ZKL0dgRKoPL80K5Gr00NWi/fBrYzaSA76lfPWIGnD/CS+e5kyeiB6NVD3T8iewpROcqP0R0RBlCzy0p1ecFLKeeMHiMT3FTUxa0z34MbBmwVv7OQjaSRd4EBYIRHeIdzrRrCd9rkZfYnuK8vIM21gV7CZ6HkGHRG2oXZtfKywWHJmE9+utAPc+hbVsKC77jVS6wZsnEoQ6IsZyg+HaRsvGoGe0hDO577FptOFSAy0ayR92NtoOunMs2NgrbjExGTAiMYysoyRF7iJi5QLlgR8wBiMdufwz6AGIjSexP9gxXOUsl+BykEvIv/29pP11A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(6916009)(2616005)(36756003)(316002)(6666004)(83380400001)(186003)(107886003)(8936002)(86362001)(4326008)(26005)(66476007)(66556008)(6512007)(8676002)(66946007)(38100700002)(508600001)(2906002)(6486002)(5660300002)(6506007)(41533002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: MHPnUQYtAGn68TGhL0uMI1KtKLmlJhgsZ0tcNfwW/Pz9Uua9DETD/HPZ90wG2IiK5DvSaB/eCz1KhLMS3crXqEimmtZ1xhiuDeHp2R9POdfGDu60xOSQzN9hVPYug2Lz1GMzapk3b2LkbXMDws1I3s8va5bSW+k1Fiw5JJuHeT/+AHG5jpTCuV35ObrKhofQqBVgFgzx9HjxPKSVgzANHOn0KsBJZtETEfz/gwacHtYG+42v6MrRWpEZvBXslpAkC8xF0ZtgkO0BHADZYp7QoIXbGP4nwZIb16eIXjTTkrO5zkhp7NYTxe13DYFZvsjWJN6iVjd7+L61CpFA6JbVlUhuAW63zLFKtd1eU0KStKFX7X5CKzDkO/F2wKgt5qQDLm95FIxGUnF+QU1iARn5BmCpdA6RjjP7srFTSZQFVNaMq9NvdK7XDeAGqKdZLBadKplaQVlRCF2msoIV3edvqSlkcpf6H+jExRgbGw5wcu5LR8fmiOaLerU+r+gaIi4hWhZflEO6GnLsXM5EwJy2ryQz+2Sl226WhnctdZbi1rRPA/mmy+1Kh/mCwSVhdlZdbmiPz9X8XP9efxtbDRVMt8rPBZFcb77C09kDS0bu0vtuh+cC1eSdD+7CRDKPjHL1fv+1qxD3Xdfv9JNUSLhBDV9tSfoFYPFLVsZhx57LyMR3VDioIV5tHmc0mvZhT/On5W+Iwa3YLBNf5h1WRcdkTw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4337.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(1076003)(6916009)(2616005)(36756003)(316002)(6666004)(83380400001)(186003)(107886003)(8936002)(86362001)(4326008)(26005)(66476007)(66556008)(6512007)(8676002)(66946007)(38100700002)(508600001)(2906002)(6486002)(5660300002)(6506007)(473944003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sCkk9J7TQRGKe4mRS6cyToLE3mCzIAsw+Slm18a1iKSF1wDgKxMo7ZyyKVtm?=
- =?us-ascii?Q?qSDkaQmRIudcRz3vriiBi2AMMo5812me327LR+lv1Ptu3c9BA9dmATx9WSmZ?=
- =?us-ascii?Q?u5CjkXx8MNE4ysJh7pjA1BlTAtbSHNAF/n8h6IWWBSnDbU+a3iEyvuCenbHT?=
- =?us-ascii?Q?HgeYWpjjpn65iIajRqxpsPEKWe3ATqW6iDAwFXRVT+e9Icm24XB4p4xzkLK/?=
- =?us-ascii?Q?NEfrOqgFMnzf2Z+eR7llfa2aCfrqpmzMEEuzq3u1NuORmK3M6NqnuDKq1zSy?=
- =?us-ascii?Q?C3r+sYcSW4SNdWkV16nK7wl1VC/nO9yqShu0Vni78FAKHtFzLYF9YyEOAYvV?=
- =?us-ascii?Q?ObZ+Xyg9RbGYPKnzFqTF1DzGCYOy1Ohm1m8XMjriFp5tnG2pF1R7yIrQMAQq?=
- =?us-ascii?Q?eGnbJP0AnVI/ppxhhN5VLVxzqmq+CX4vUmPzxe7q06PAypS7TsWynP+sTtAy?=
- =?us-ascii?Q?4PfA8L8HzBVuvdB6BMCbZ4+BVdbaUFvcyxwo2FBElMnGG7lWO7J8SVPHovBZ?=
- =?us-ascii?Q?nKk05pg8kMHyaXE+2golP/ZXmrZFFysDs1NS+PQsqlFJUEO2SDdIKpZqxniM?=
- =?us-ascii?Q?gfotxxqhMgt4czwL3u4Pn/0q8T5lJVdaXdWlUS0Es8IRK00IPosxLbl/gEkQ?=
- =?us-ascii?Q?4BhhbeS+kvhGoefqUlBgVbxZubEwSIhXXUbMU/wuProEs5dSeZ1U9he3K3u4?=
- =?us-ascii?Q?Y67qfmRCr48p1iWzq69eDcaz7pGyDC4GQDlz4uy6DVLnRSzO4tm/dI8zqQVD?=
- =?us-ascii?Q?+6TvxygdyOO3tO+Su1mLCidtKF95rM8j8bcFk0X+ojWJbWNfWhIRvZZOm6fF?=
- =?us-ascii?Q?QtPz7NK6CvGrJ2YkCbifh99s4O3FZG81O2fAudQsJOJj2zN+esOkN9RFYCIs?=
- =?us-ascii?Q?8tSahp61uX/YSAdQsFc050Se85W7zUZjH4m8dnLbtqKRtItJSwBhdnXeI+fG?=
- =?us-ascii?Q?VVyfNc+eiG8R4bfpbHcixpzRZkOsPZYB5WC3YD5p/HCPY5pOeSVMWyUJpuzG?=
- =?us-ascii?Q?Ay5lfQVkRk8DHTeZ/fud3IzF7/3bw9QCe5bBiKy/tKJ4fuJu9YiHhTX+3pmv?=
- =?us-ascii?Q?b4sIsIstaAKS1qjLTnrG/GCMXT648zimdAD7uZXcOp8btr0FZevbF/2J/CbG?=
- =?us-ascii?Q?ii6r4fPi5nlXybnBJx2de/Gzf4hlBHJZtis+L4a3+B+lods/b8t0o9wSGLbr?=
- =?us-ascii?Q?U1uVluo1qEPXtVQc0vS83hsAH0A5bFyaCBR0us1oA2S0MTJNH6D+4PNVfdir?=
- =?us-ascii?Q?0KgIA40+3G+tuwfF846qa7s+0u28QsSbmXZiwPJm9dRTvG3ouhbLAMY5esHn?=
- =?us-ascii?Q?G5o4N8tjecEMuTpiMZeJr2wCngfdjIBCP2olC95+fR23pWKV1CEp23u+ehnn?=
- =?us-ascii?Q?5RNGSqFrq4SANRI0ouB3z7RFCssT64g7cXb2ATUXsP5sGKy3lNACGKvS8FBB?=
- =?us-ascii?Q?qHJT5y6n4ijMR8ucAlDMjCg7RgprdNyMdLiwmHfTHGaxkcFXV/ycA6W39Bq2?=
- =?us-ascii?Q?gNG18uVjwaqUoKGQYsbsLCdORYzMVtRpAotcVtixoofjB+ASSp2+YEyF8km+?=
- =?us-ascii?Q?2JJ3rdc78ksQXUPUfg/bAOhlGx1IC644chVWXk1gxqXJIWHQgPtcRzN02TpL?=
- =?us-ascii?Q?03Tw7Yr1QUV+L4rppxzOLL8eB7INA6d/lHLaXTXWJu+Fa4CrtlXA2tBqg5h2?=
- =?us-ascii?Q?Cgv33GJZO6sWWP+d1jKlltSrXlzh0q/H8dPzqX+0wqot/yQvP8puPbQJJL14?=
- =?us-ascii?Q?dJtUQpHArw=3D=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1eDLcKG32pF0Fur3aO/98kz4XE27F4jbMUhCVMjXZrqJgpeWCLtYz8A/hx9h?=
+ =?us-ascii?Q?+wO2R332XbCNRgfGJ1N5WEMUrTor/x+naiEI41acouw13QWSZVWyZB/N9kNy?=
+ =?us-ascii?Q?lhPLUVD2mwDp98Vo7z5+RnzCZND6O7PHTCB8ZRoKmPw4o/kMrOhipk9ln4PH?=
+ =?us-ascii?Q?u1jMXUOf6JYvuq2ecuehomAuZbLsRLoVkGOawyIkn4qfyv4HYG82nAFBUhOj?=
+ =?us-ascii?Q?0+JiyZGUulC6qwnQ7mNVLtSbtbwi7+qwI6PqO36aJ68RzoNKjfCqqfXfH/Ga?=
+ =?us-ascii?Q?UwUzmjoXtAPAKJjos8mxKaSNktAo2PPL9BPWlVvGs52cPwod8SDeNEOW0E4v?=
+ =?us-ascii?Q?79ppS8QPaCjO4uZwsYUpuJ5CxBHFjdbTHglVXCMHNzY5taB9ojHDFDrcjP3n?=
+ =?us-ascii?Q?2HItgs7RrRELzTpVKGgyZ4lYbFujlJBNYcTqBsg2KajaDQADLkn+1P2fvIAQ?=
+ =?us-ascii?Q?YW5rGOfktcGE+dE0hY/VvtBAsXxMCNYgCaAkeg7bBtJLQ9nKXkGYUPJhvRjz?=
+ =?us-ascii?Q?7L4YD/FplnMEEftUkH2ifTyn999KVhFCl7ssW4DnsmPBGSiHet2s/b6Anl5U?=
+ =?us-ascii?Q?OftqaF6xCbK/5NlY16oA6wi/SeI4qsD5/EG6JZB/whMIB5Ba1ejb+Y4FIk8W?=
+ =?us-ascii?Q?+cZber7a77yGUGksHxmsx9c+44abLM+0EqxTIkQAmxxBLr/mxSV3ZpoWZFAU?=
+ =?us-ascii?Q?VBkh24BIGPwy2umLdehVxzqkfk+wsxhlgvinnSGGF5Vmsz8jbNKm2iK9JBRY?=
+ =?us-ascii?Q?WlBUMAXiNi6hZl4ev6SL8LLaUAY7ya5TYWChsX+m9g1rMc0eYxd5X/QyY43v?=
+ =?us-ascii?Q?AiCpPIx9PmRCqmCGN76nAI6dVC1j0NfCg/aUxJRQneif4Te19HpQClkINUMF?=
+ =?us-ascii?Q?Z1Nc5NVHfvTIu6L7+ZAYDxPUAGHu5bjxNX48ueodserQE+W8U80bOsaR7Sjk?=
+ =?us-ascii?Q?rjKjg4ru79wCXZkdyiWU9lSoASOJed197vaiEVloHw1UEP0AT26EBYtNZ6xg?=
+ =?us-ascii?Q?GqfcwA4TEu9XSuHV6pJLe8VPRscEWE8G4pCSi5wms62/RhtNg5Ee5R5CCq4m?=
+ =?us-ascii?Q?ofhgt8+H1X2P7IlTvHr03MmlSaciug7PlOzq7vb/PLwWqOD1OUox0tNJHpUb?=
+ =?us-ascii?Q?CzXEDqCr6H64VtVSvEIFPF8gnYypqNxgvNDHXxk85PjbDvoXujvue0KxRO8K?=
+ =?us-ascii?Q?dY2V3REDprtIFVL0XZQ1JsQU76bZzF1vwbtIV0sBlSItM9cmDxWrGLACnsaP?=
+ =?us-ascii?Q?TIZj202/UZavc/VxXurEl30stmudZJB5wqh8Eiciteqw7I4+bFjvB7L3c0ZR?=
+ =?us-ascii?Q?xKDAlvBJl6KCQRDPewcDtnPmdfKRYG6pq+8GJABUEI5xx5drNLSEvQ3WLMRK?=
+ =?us-ascii?Q?c9yguyLZcyt3dX2prwLcqr9yi6T3uWJDZx6QJqRinUTOuLRW3rmGOkmrp0cQ?=
+ =?us-ascii?Q?i/j8jAoJXkP8HL4N7eN48IF6ikEIXG/qa0sZk3+9tq7hPoOMKSWk2/6g0eUY?=
+ =?us-ascii?Q?fhNdsGH5kPvX6wcQwELxNpo26qL5o1Ace+JYCqwm5XDtVIZf8WZn7ckAGLb7?=
+ =?us-ascii?Q?0aQCu4O9iATaKSJ2WBfw+LxkllHzw3bUtPR4YUAoUhusqKjs2peeqrRvHHD4?=
+ =?us-ascii?Q?qSiUSpQBCWqzlDl5FT0hNzI6ms18IiHYYqSISkTfR0Xhi4aMIkhtQ3tVU1Tl?=
+ =?us-ascii?Q?cV4N3Qe3cgRXnfNxfvBTMe6fDRbg4jYaZ+JcYjbvRTiz2r70VATBpTEbvrxW?=
+ =?us-ascii?Q?TUWf2mjyuA=3D=3D?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cf47e658-40ed-46f0-8ea5-08da30ca1f50
+X-MS-Exchange-CrossTenant-Network-Message-Id: ce8d48d0-67e9-4959-9eb0-08da30ca22b9
 X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4337.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 08:09:49.4183
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 08:09:55.1400
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: QIBF3GhhsFkZb2blz1VpC3szH1kSnsfQK4iXR88zHm1+pXE810YPhmfN8yv26pNlzzl69KE8+bCUMa7ki44VMA==
+X-MS-Exchange-CrossTenant-UserPrincipalName: nqH/RxtoZP9aZ9qkcoNhAeVYrrS9cpgGEQE5iiVA/KzUk4HKqPM+rFgHjruQBqmcjSCyomng4iTFnoxzUBCDQw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB6096
 X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -119,89 +119,144 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Petr Machata <petrm@nvidia.com>
 
-The function get_l3_stats() from the test hw_stats_l3.sh will be useful for
-any test that wishes to work with L3 stats. Furthermore, it is easy to
-generalize to other HW stats suites (for when such are added). Therefore,
-move the code to lib.sh, rewrite it to have the same interface as the other
-stats-collecting functions, and generalize to take the name of the HW stats
-suite to collect as an argument.
+Add a selftest that uses an IPIP topology and tests that L3 HW stats
+reflect the traffic in the tunnel.
 
 Signed-off-by: Petr Machata <petrm@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../selftests/net/forwarding/hw_stats_l3.sh      | 16 ++++------------
- tools/testing/selftests/net/forwarding/lib.sh    | 11 +++++++++++
- 2 files changed, 15 insertions(+), 12 deletions(-)
+ .../testing/selftests/net/forwarding/Makefile |   1 +
+ .../net/forwarding/hw_stats_l3_gre.sh         | 109 ++++++++++++++++++
+ 2 files changed, 110 insertions(+)
+ create mode 100755 tools/testing/selftests/net/forwarding/hw_stats_l3_gre.sh
 
-diff --git a/tools/testing/selftests/net/forwarding/hw_stats_l3.sh b/tools/testing/selftests/net/forwarding/hw_stats_l3.sh
-index 1c11c4256d06..9c1f76e108af 100755
---- a/tools/testing/selftests/net/forwarding/hw_stats_l3.sh
-+++ b/tools/testing/selftests/net/forwarding/hw_stats_l3.sh
-@@ -162,14 +162,6 @@ ping_ipv6()
- 	ping_test $h1.200 2001:db8:2::1 " IPv6"
- }
- 
--get_l3_stat()
--{
--	local selector=$1; shift
--
--	ip -j stats show dev $rp1.200 group offload subgroup l3_stats |
--		  jq '.[0].stats64.'$selector
--}
--
- send_packets_rx_ipv4()
- {
- 	# Send 21 packets instead of 20, because the first one might trap and go
-@@ -208,11 +200,11 @@ ___test_stats()
- 	local a
- 	local b
- 
--	a=$(get_l3_stat ${dir}.packets)
-+	a=$(hw_stats_get l3_stats $rp1.200 ${dir} packets)
- 	send_packets_${dir}_${prot}
- 	"$@"
- 	b=$(busywait "$TC_HIT_TIMEOUT" until_counter_is ">= $a + 20" \
--		       get_l3_stat ${dir}.packets)
-+		       hw_stats_get l3_stats $rp1.200 ${dir} packets)
- 	check_err $? "Traffic not reflected in the counter: $a -> $b"
- }
- 
-@@ -281,11 +273,11 @@ __test_stats_report()
- 
- 	RET=0
- 
--	a=$(get_l3_stat ${dir}.packets)
-+	a=$(hw_stats_get l3_stats $rp1.200 ${dir} packets)
- 	send_packets_${dir}_${prot}
- 	ip address flush dev $rp1.200
- 	b=$(busywait "$TC_HIT_TIMEOUT" until_counter_is ">= $a + 20" \
--		       get_l3_stat ${dir}.packets)
-+		       hw_stats_get l3_stats $rp1.200 ${dir} packets)
- 	check_err $? "Traffic not reflected in the counter: $a -> $b"
- 	log_test "Test ${dir} packets: stats pushed on loss of L3"
- 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 66681a2bcdd3..37ae49d47853 100755
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -828,6 +828,17 @@ ipv6_stats_get()
- 	cat /proc/net/dev_snmp6/$dev | grep "^$stat" | cut -f2
- }
- 
-+hw_stats_get()
-+{
-+	local suite=$1; shift
-+	local if_name=$1; shift
-+	local dir=$1; shift
-+	local stat=$1; shift
+diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
+index 0912f5ae7f6b..b5181b5a8e29 100644
+--- a/tools/testing/selftests/net/forwarding/Makefile
++++ b/tools/testing/selftests/net/forwarding/Makefile
+@@ -20,6 +20,7 @@ TEST_PROGS = bridge_igmp.sh \
+ 	gre_multipath_nh.sh \
+ 	gre_multipath.sh \
+ 	hw_stats_l3.sh \
++	hw_stats_l3_gre.sh \
+ 	ip6_forward_instats_vrf.sh \
+ 	ip6gre_custom_multipath_hash.sh \
+ 	ip6gre_flat_key.sh \
+diff --git a/tools/testing/selftests/net/forwarding/hw_stats_l3_gre.sh b/tools/testing/selftests/net/forwarding/hw_stats_l3_gre.sh
+new file mode 100755
+index 000000000000..eb9ec4a68f84
+--- /dev/null
++++ b/tools/testing/selftests/net/forwarding/hw_stats_l3_gre.sh
+@@ -0,0 +1,109 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
 +
-+	ip -j stats show dev $if_name group offload subgroup $suite |
-+		jq ".[0].stats64.$dir.$stat"
++# Test L3 stats on IP-in-IP GRE tunnel without key.
++
++# This test uses flat topology for IP tunneling tests. See ipip_lib.sh for more
++# details.
++
++ALL_TESTS="
++	ping_ipv4
++	test_stats_rx
++	test_stats_tx
++"
++NUM_NETIFS=6
++source lib.sh
++source ipip_lib.sh
++
++setup_prepare()
++{
++	h1=${NETIFS[p1]}
++	ol1=${NETIFS[p2]}
++
++	ul1=${NETIFS[p3]}
++	ul2=${NETIFS[p4]}
++
++	ol2=${NETIFS[p5]}
++	h2=${NETIFS[p6]}
++
++	ol1mac=$(mac_get $ol1)
++
++	forwarding_enable
++	vrf_prepare
++	h1_create
++	h2_create
++	sw1_flat_create gre $ol1 $ul1
++	sw2_flat_create gre $ol2 $ul2
++	ip stats set dev g1a l3_stats on
++	ip stats set dev g2a l3_stats on
 +}
 +
- humanize()
- {
- 	local speed=$1; shift
++cleanup()
++{
++	pre_cleanup
++
++	ip stats set dev g1a l3_stats off
++	ip stats set dev g2a l3_stats off
++
++	sw2_flat_destroy $ol2 $ul2
++	sw1_flat_destroy $ol1 $ul1
++	h2_destroy
++	h1_destroy
++
++	vrf_cleanup
++	forwarding_restore
++}
++
++ping_ipv4()
++{
++	RET=0
++
++	ping_test $h1 192.0.2.18 " gre flat"
++}
++
++send_packets_ipv4()
++{
++	# Send 21 packets instead of 20, because the first one might trap and go
++	# through the SW datapath, which might not bump the HW counter.
++	$MZ $h1 -c 21 -d 20msec -p 100 \
++	    -a own -b $ol1mac -A 192.0.2.1 -B 192.0.2.18 \
++	    -q -t udp sp=54321,dp=12345
++}
++
++test_stats()
++{
++	local dev=$1; shift
++	local dir=$1; shift
++
++	local a
++	local b
++
++	RET=0
++
++	a=$(hw_stats_get l3_stats $dev $dir packets)
++	send_packets_ipv4
++	b=$(busywait "$TC_HIT_TIMEOUT" until_counter_is ">= $a + 20" \
++		     hw_stats_get l3_stats $dev $dir packets)
++	check_err $? "Traffic not reflected in the counter: $a -> $b"
++
++	log_test "Test $dir packets: $prot"
++}
++
++test_stats_tx()
++{
++	test_stats g1a tx
++}
++
++test_stats_rx()
++{
++	test_stats g2a rx
++}
++
++trap cleanup EXIT
++
++setup_prepare
++setup_wait
++
++tests_run
++
++exit $EXIT_STATUS
 -- 
 2.35.1
 
