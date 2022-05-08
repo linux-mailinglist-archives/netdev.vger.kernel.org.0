@@ -2,129 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9236851EB24
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 04:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0B2551EB57
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 06:02:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358287AbiEHC4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 May 2022 22:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51580 "EHLO
+        id S230388AbiEHDtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 May 2022 23:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386454AbiEHC4V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 22:56:21 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9953F6594
-        for <netdev@vger.kernel.org>; Sat,  7 May 2022 19:52:29 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id kq17so20937137ejb.4
-        for <netdev@vger.kernel.org>; Sat, 07 May 2022 19:52:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=motec-com-au.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0jVDkHUl1fqfqQLGFjqvBHj+kZDZmLfom5JvGNbdgg4=;
-        b=m1so14Tb9iGfnhOfA1ik+03YVB1S3j147piYsa2vFeyo2Nqm8ZTKxhkfyf+pX/z3mU
-         pWojsoRO1A5A7FQqUQ/XmvRcxtEE7crXdEuMGNvLMkUz8St272ImE2jSBFXMDBfp68V1
-         4+vJAbkTKSw00DeAmYdQ2WqLkwI6CuwNU/zUz+5qzlZNioJpbPR2FhDgy021JN5remtq
-         PUO+ZPr3phvbIKuGAmPgCFdsjto7cmZoPQf7UaQZ7O7J/juGFOn/pRLxC20mW/WIO+41
-         cGAs+2NoEcvFPFikdahqRk/iAltpdlP5pW2xTgUwGKMxsmHWlxQFSEMUOpebEiLAQb2r
-         r2qA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0jVDkHUl1fqfqQLGFjqvBHj+kZDZmLfom5JvGNbdgg4=;
-        b=IZ2QgrEJkb+RVzCueNDg9qB54iA6/Va0pQWOM3qhd3knLhNhtEKAh5Zo9fp5a8hhJE
-         M/RghD+St67hAPp97GgjoDx84TA4DcIVTOqXMHbGGulfFdHyZ20PK5qS47j8w+kqBTo9
-         yhzKigKYijM9/usucDApNME/V6Z5YnD8Q9f9lpZCLY0L6S2wXJ2HFXaU/1En7pNidGPO
-         BiCseI6MoUVYR3isRa0AT/GwJ4wIOoneAyC8ZSaGp9kXak2zWuAJOu+CkXtX4CQZxHQq
-         px4CsizvcDe8dDHcIZmtAl0kIdqJvvQ8IrRxFfjrQDbRI1HFMIRPgVHXuJJUxRqP551T
-         2V3Q==
-X-Gm-Message-State: AOAM530izp3EGmINOghHiHVmk8wCbUw1iQftRkejx/zjNlGvamwiM0X2
-        wlb8kpR1U3gLzdwaUkpY3WUa0a0BrvKBNOmODZUBkg==
-X-Google-Smtp-Source: ABdhPJxMbGSVhfTCHkAolesSJEG0JlP8qpbg27wSzY2JDrLJrrvEJV+0BSSKyCpSOCwrH3RxO//nmdh0xi96rdz6/+o=
-X-Received: by 2002:a17:907:7fa8:b0:6f3:e975:abfa with SMTP id
- qk40-20020a1709077fa800b006f3e975abfamr9336479ejc.86.1651978348179; Sat, 07
- May 2022 19:52:28 -0700 (PDT)
+        with ESMTP id S230371AbiEHDtl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 23:49:41 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2084.outbound.protection.outlook.com [40.107.94.84])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED758DF29
+        for <netdev@vger.kernel.org>; Sat,  7 May 2022 20:45:52 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=av1QNe+vQSNs2oZ/9RmpeY8qBxiZamtM7zLphx5pzIlD6iYdBhMGtb2r8YU52lqir3VNkOysHyH9KXGZyeWcoTGMY+tpCg5y5mMhunr+3MRZx3tsPTtJHMHd9nfBoju4u2X7V+uRH0/vx6BOmRbJ3JsjzjcbyQjxgCIBP0bdFNndghOG3c4rkegCD0CktMuokf77mTdzqVrC+o4XR7AzeJvFNL8R+hLyvL4wpVAYqz7Ynl+JuCQjEE2yeatJ3fFudRtsXtV5xoUZJoe2kBfEGqLvI4uREwCv2TAcxqfETnvSb7Pr1Aj+TxeStP4FnY4doahsKthLVhY/feKEOvXpQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ilE+GtKs7kdTKnFD1zVVBgdJvqV981FkMFDroz1RhdQ=;
+ b=C7TfeVnb5S1uDCLpFUn4tSjvNWVPGDv4EIoUKtOpPK6Fjddpvru/wXlTytpIE5uX6XnE0C2PWqAvAig57v1ABlCTqfUy7wG8/akJ2TCwfLMh3huNDLtOpsGcr3udmjIPj59zAO6iAyyblCSBZpE/v3cbjgQvdchTK1M57zWgn5s5Ek/GmbVBlt6TIviKiDSc0lXzUpmrDvSdJ2n4vYrvs8eSBphVXyUuwicZUfLTY9kQRldaKB45RyLlleNV+QWuSk0ycF0u4+t7jpjL5MZMxAquLS2tUOLptZJD3k0/7g+H34qja10HL9QizAfEBkLN3Wgw08vlgMiv2coajhSYxg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ilE+GtKs7kdTKnFD1zVVBgdJvqV981FkMFDroz1RhdQ=;
+ b=lV1gTdBa32SIQ+HQXzX3BkjkO5S+8TtQw0XCOQb98h6JYuuaG+eu/p3x5/xS5P6KCoIasEvMCRJBOUBjKwIU01cwlzwGe3T7/90P2+GYEFNbwSfq2Vs4DfLBvLSKjEFkebwQ6M1tvqN6HlAbZ+/jF9sWex+Y85PvGEtaCcs0jKj6Pn9ElX4B0Ej+b7o8NIfLZ1QxPBuB5+pjndcqw7RPKSaZKLhARmXIcwWjyDOKxnojCpZ/3ih4fchE/shrAQsQUB60rD7oGuu9MB2pVf9u96WHiA6P/rbll2ok15Sw+8R8KPtkzoocFC+FMEJSYQgCTLrW23hddl5s/4J8C+IHwA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from SJ0PR12MB5504.namprd12.prod.outlook.com (2603:10b6:a03:3ad::24)
+ by BYAPR12MB3624.namprd12.prod.outlook.com (2603:10b6:a03:aa::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.18; Sun, 8 May
+ 2022 03:45:49 +0000
+Received: from SJ0PR12MB5504.namprd12.prod.outlook.com
+ ([fe80::3887:c9c8:b2de:fe5f]) by SJ0PR12MB5504.namprd12.prod.outlook.com
+ ([fe80::3887:c9c8:b2de:fe5f%6]) with mapi id 15.20.5227.022; Sun, 8 May 2022
+ 03:45:49 +0000
+Message-ID: <062ff145-1175-5523-bb3e-3b615fc5538d@nvidia.com>
+Date:   Sat, 7 May 2022 20:45:46 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH iproute2 net-next 0/3] support for vxlan vni filtering
+Content-Language: en-US
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        razor@blackwall.org
+References: <20220501001205.33782-1-roopa@nvidia.com>
+ <9278f614-9994-362c-75ae-5a0fe009ef01@gmail.com>
+From:   Roopa Prabhu <roopa@nvidia.com>
+In-Reply-To: <9278f614-9994-362c-75ae-5a0fe009ef01@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: SJ0PR13CA0012.namprd13.prod.outlook.com
+ (2603:10b6:a03:2c0::17) To SJ0PR12MB5504.namprd12.prod.outlook.com
+ (2603:10b6:a03:3ad::24)
 MIME-Version: 1.0
-References: <cover.1650816929.git.pisa@cmp.felk.cvut.cz> <CAHQrW0_bxDyTf7pNHgXwcO=-0YRWtsxscOSWWU4fDmNYo8d-9Q@mail.gmail.com>
- <20220503064626.lcc7nl3rze5txive@pengutronix.de> <202205030927.15558.pisa@cmp.felk.cvut.cz>
- <20220503085506.d5v4xtpumr7gm7hy@pengutronix.de> <CAA7ZjpbzaSiX6jbV5B88_VqqJga=9y0Kf_Z77Q4DN-5YfQFy0g@mail.gmail.com>
-In-Reply-To: <CAA7ZjpbzaSiX6jbV5B88_VqqJga=9y0Kf_Z77Q4DN-5YfQFy0g@mail.gmail.com>
-From:   Andrew Dennison <andrew.dennison@motec.com.au>
-Date:   Sun, 8 May 2022 12:51:52 +1000
-Message-ID: <CAHQrW08jAYde-S_pk3QVdvCzGbeg5TL=wJbGBC4euHx6rowewg@mail.gmail.com>
-Subject: Re: [PATCH v1 0/4] can: ctucanfd: clenup acoording to the actual
- rules and documentation linking
-To:     Ondrej Ille <ondrej.ille@gmail.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Pavel Pisa <pisa@cmp.felk.cvut.cz>, linux-can@vger.kernel.org,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Marin Jerabek <martin.jerabek01@gmail.com>,
-        Jiri Novak <jnovak@fel.cvut.cz>,
-        Jaroslav Beran <jara.beran@gmail.com>,
-        Petr Porazil <porazil@pikron.com>, Pavel Machek <pavel@ucw.cz>,
-        Carsten Emde <c.emde@osadl.org>,
-        Drew Fustini <pdp7pdp7@gmail.com>,
-        Matej Vasilevski <matej.vasilevski@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,T_SCC_BODY_TEXT_LINE,
-        T_SPF_PERMERROR autolearn=unavailable autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8d2352a7-2380-4fa5-9365-08da30a53e20
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3624:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB36244C1CC5E6C8F022B7C891CBC79@BYAPR12MB3624.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: jdnrRjEc2BrVjU2cnRBYExHNH+y8eqQWbEd1z0HjajpXECXRsBZ3RXbTAMKan3F+3R1r75ddV3fQYJJQbE32PlwSY1xb9Fy+APDf/9ONLCj+3efM404FbTvVCrxk722OTnC2+fFawi+J1p2pt3bfI8ugkvB1F5hXQEfW66O8M2EA2dm6m6NtD+2S/UVsJaBhwDkKlIPqJ4ggtMLQHho8FdPKUj4/HhM6ry8jFoW6dh+o6/bfEn3a/BF0xGWLdefL3bcME09UnoBHl0tyQGKUnLxl8i0BKrJfedF1ewiXiHfDdA45U42e2RR0Y6NrITppMlczrYLYQQrdOOZmHs+OpAOlD3pq3U9tzjdBo7Yz3kzKtF/lJaga8gM1V2ar57bQnylLsn+Mv57Q2ju7iiKmOzJf2RMyt+z+HQe6EvV5AptEkIoT6oYdkzWOTNjxRTuCFhusC8XIv7HNWSE9l6J0Sp6bptjWC9G65CmoHB8I5aWrl4l5HWU30BMUTd+VCUXbSxT+YVdZ25B3r9Ax6FwuAzobjxmF9JJXdcOYNr6vbM2pl98WI7pK9MzELiz3pfBAmInaQdsWpL2gwhsmPg04RAZyo5dCiHZRd3qQo9CQHMDyg7tgX2FkxExbFbO8/rVASZSZmaYDEo4bdMAmG810uCvhlJjRGY6kpJg6HgkdQgmprew4AHj+lx54sdeQhH8EERS9+XlCkGjyi6n68pUx901yr0zgnE0EOCn4O0o9DVQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR12MB5504.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66476007)(66946007)(66556008)(31686004)(4326008)(8676002)(6506007)(316002)(53546011)(6666004)(83380400001)(36756003)(6916009)(8936002)(86362001)(31696002)(5660300002)(2906002)(6512007)(4744005)(2616005)(508600001)(186003)(38100700002)(6486002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?QnRrSWZJajA5MEd0aVNuUHV4S3p1U0Nmb3pXNGxoOVBjVjZYR2xwWXFMcVB4?=
+ =?utf-8?B?bnR6eDBDN0YvVUZXTlhhUFZVayswWkduNWl0VVArYTlyZTRhSlVxQkF5Ykhr?=
+ =?utf-8?B?ZVRmL2VDV3RNc2dQVHhvcUIzclk5eWdSeTJ2SkdoeUZRa1p0WjhickxiU0tv?=
+ =?utf-8?B?cTBkTzRBN2dIZDk5UjRxakR4VnR0QzdkN0JPWWtDTFlWaVlxT09PY2NONVdp?=
+ =?utf-8?B?c3dMbnJISUlDV2Z3Sk9ZWTZkVkRaU2hKLzJZRWlwVysrcUQxcHNzbHRCNUp5?=
+ =?utf-8?B?dGppVnpXb3R5Yk41TXNOcEhuMDFPenVkQ3hwNmlmdWRYZ0NqWnduT21aNkhk?=
+ =?utf-8?B?R3A4c243dVcyNnRnYzFKOVUwVzI5a3dIUDZqa1pxZW5zTGlha0Q0OVBTS2du?=
+ =?utf-8?B?Vnc2MzhEZVRCM3JtWHpES0xCUFcvTG1SUmVhK0FxUGlTdEFJbjNsV1FEVDRX?=
+ =?utf-8?B?a3FsbmI4VjJGVTN5U3pNUnNBbWlxVjlvemVoWisrYWt2a0RORDV1OHJueEtp?=
+ =?utf-8?B?VFpob1VEYUExMGdwenFDTHdSMzFOTGkxaEk4Tnk2VEE5dnVCUW5CUnJPUGFM?=
+ =?utf-8?B?Q2pFQlJwN0o4Smg0V1I4WDVQYWpyTUJxZ05ScGNmeXlWc1dWa0t5c0NYZnZY?=
+ =?utf-8?B?b0lBK3YrNFplZ2tMbUNCd3o2R1lTYTJuczRMY0pLYUhQanhlcXAybkh3ZFcr?=
+ =?utf-8?B?aU82WHFCZlduRm9xNldOSUM0aTVzakVQa1lzYTlYTjN3c2FQcjJvc1dYanZq?=
+ =?utf-8?B?b2htNUNBQ2xLSUZOYXRSTzFTSUR4cVBGZzdDRGNLTnNRT2RaWXluWHRRc2hD?=
+ =?utf-8?B?czNxWTlNeVNZWTI4aDBhMGNsRDNoQkJiaWJCNjJDZ05iSHgvaFRISGZic2hF?=
+ =?utf-8?B?QmFnTjZISlJ1aUtnc3R0ZFpjd04rc2xZRjlBZWNvZHhPelpQc3NHbjBXYmxV?=
+ =?utf-8?B?VUIyT0UvOUdaenJjOTliVjZxbGQvQlJ5bzhoK1VPcFIrbWJoTC9yWi9VZnJJ?=
+ =?utf-8?B?K0VxT3A4UVdhR05qcDBnV3c4YVJFTUhtT3phOUVsa253U2RGbzExNnBlNmxX?=
+ =?utf-8?B?OXdsRGw1bFZNTENJdEs0R2tsRjBmWDlLVk9xSUJsN0MvaGdBTExEdVd4R2Vw?=
+ =?utf-8?B?dzR2dDhPUkVoamtDb1NOUnI2TW5Gb2ZDbnllTG94b3M4QS9yTTgyaDJETDU3?=
+ =?utf-8?B?MkpJeEVUUnArdDBrVU50ZlZXWnVFV0dLTWs1SUxueWcxVGs5M0lQVWpjNFJj?=
+ =?utf-8?B?cnlZK3dzRzVpdklOOFpvbWU2UjR0MmlGV0x1VFhlZngrMVhCYmJWMVNndzlV?=
+ =?utf-8?B?TzNXT1dZSXdrQXNwYjZCMmsvWWxhSlFSUDFudlo4YlNwY3lPL1NoVTBNWE9q?=
+ =?utf-8?B?c1JHSzVsYUs2ZzU3RlFDWDNEMmpjQzdIeE1zZGs1bHdRaXFOMG83YXhiS2F2?=
+ =?utf-8?B?blMrbVdCTjhKZlNFc3E3SVJIcElRYnpRSEFyWDdia2dwSHZmalp3WGNtZkQv?=
+ =?utf-8?B?Q3RjTDY5OXEwd2FENngxVThQN29EeXovYWlvTWdIclQ5dEJ0a2xOVDZ2RzIw?=
+ =?utf-8?B?RFdWdk43ZkJrZ2JHc3oxQ2dEUWdZb3Z2OHd5eW1DRm1MSmJGaVlDSUhhcjhz?=
+ =?utf-8?B?VWxGUkJxNWl1T3BDSWRrT1M5R3kxdDJDdVZrMUFBOGJHQTJoMEtXQkt6NW1v?=
+ =?utf-8?B?QzZxcXZTTFoxRGpNblEyaTQydkRWZEtpdVlMNjlQWUhPVmNkb1JJNldRVGFV?=
+ =?utf-8?B?bTY1OEdrV2dnS0IwSElzdVR1UDhPN2ExVjdUREs4dVBGWTNmZ0FoQ2FZdy9V?=
+ =?utf-8?B?Vk42YmR4MDhSSzY2SFlvdzVQMEFGTCtoZlljTFhYbkRzcTFYZ1BhaVJNNXg2?=
+ =?utf-8?B?QVlJMk5zNkhFNkQxMHhxNk84Nm9FSlhtSVNLYWNMT0xVcWdtVWxaejRxRnl4?=
+ =?utf-8?B?cmRJdTUxSXBsV3FRNzF1bGR5YUttdENNMEd3MG16eW1jTjNCSFNmbVA1ZFRU?=
+ =?utf-8?B?TGFSK1B1ckhjSi9CY3VFMFlPd1pVM2VqK29rSXJDMGlGZzBpa1pOMEw3UnZO?=
+ =?utf-8?B?ai9iNVNQaGM3RzdmZnFwaG5JOXd1d2s4ZDh5V1dVYSt2eHRyaXlvNUZseFJO?=
+ =?utf-8?B?NDVBckFJa05lZzFBaXhXdGg2VUx4b3duZkd1OGNqenN1OWVQRmtGNTQyc3ZK?=
+ =?utf-8?B?ZWVLMFFScHA0bWx2b2VMa1pnTFY3M3VNVk12Ylk5MkJhRVZvU0ZNREtiRjA2?=
+ =?utf-8?B?VDlsSk9jZFZBZGtWQlhpWHRjcW8wQ241eDdXU2tSRkFvazNkc2Nvekl5dXpX?=
+ =?utf-8?B?ajltdEVxKzI0azBvaE54WGVvazJIZXEwOCsxcm5WR0R4Q1hjd2NLd0RPUlJG?=
+ =?utf-8?Q?hhAWvYLO1X329K+Y98bnVufzbPmzamuWtuUKUOeerc6Hc?=
+X-MS-Exchange-AntiSpam-MessageData-1: m+OIFQQEnzjYMA==
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8d2352a7-2380-4fa5-9365-08da30a53e20
+X-MS-Exchange-CrossTenant-AuthSource: SJ0PR12MB5504.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 03:45:49.7811
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Fx07F591rtpVoiIAZZplCS45XMZhJW6LquFHRgddIsIBF3hXdzXgCkIYfMTasl/VOvj3YS4f+a5nxi5yFNB0kw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3624
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 8 May 2022 at 01:51, Ondrej Ille <ondrej.ille@gmail.com> wrote:
->
-> Hello all,
->
-> again, sorry for the late reply, my daily job keeps me very busy, and the vision of completely new silicon
-> coming to our office if we meet a tape-out date is somehow motivating :)
->
-> Just few notes about the discussion:
->
-> 1. Number of TXT Buffers
-> I agree that driver should read-out this information from the HW, not rely on fixed configuration.
-> True, the default value in HW master is 2, but Linux driver had 4 hard-coded. This was coming from
-> times when there were only 4 buffers (no genericity in the HW). IMHO this is HW bug, because the
-> intention when doing the "arbitrary number of buffers" extension, was to keep default value the
-> same as in previous implementation. System architecture document also has "4" as value of txt_buffer_count generic.
->
-> I will fix this ASAP in the master branch, hopefully regression will not complain so that the current driver
-> version is compatible with default HW.
->
-> As per reading out number of TXT Buffers from HW, Pavel proposed moving TXTB_INFO else-where
-> so that there is more space for TX_COMMAND in the same memory word. The rationale here, is having
-> reserve in case of an increasing number of TXT Buffers.
->
-> But, with the current format of TX_COMMAND, the reserve would be up to 24 TXT Buffers. Even if there
-> ever was a use-case for more than 8 buffers, there would need to be another non-compatible changes
-> in TX_PRIORITY and TX_STATUS, and the whole register map would anyway not be backwards compatible...
-> So, I propose to keep TXTB_INFO in its current location.
 
-Hi Ondrej,
-
-Based on this it seems my patches can be cleaned up for merging.
-
-Pavel / Odjrej: did you want to include the patches in your public
-driver tree and submit from there, or shall I submit them? Adding to
-yoru tree would keep it in sync with the upstream driver already
-submitted. If you provide a review I'll cleanup any issues reported. I
-can submit directly to Linux as Marc proposed but having a single
-authoritative source seems cleanest to me.
-
-My current patches are on master in this tree:
-https://github.com/AndrewD/ctucanfd_ip_core
-
-I'll add "Signed-off-by: " to the commit messages next time I touch
-this - once I get clarity on the way forward. I don't have an
-immediate need for a Linux driver for ctucanfd so haven't touched this
-recently.
-
-Kind regards,
-
-Andrew
+On 5/5/22 20:26, David Ahern wrote:
+> On 4/30/22 5:12 PM, Roopa Prabhu wrote:
+>> This series adds bridge command to manage
+>> recently added vnifilter on a collect metadata
+>> vxlan (external) device. Also includes per vni stats
+>> support.
+>>
+>> examples:
+>> $bridge vni add dev vxlan0 vni 400
+>>
+>> $bridge vni add dev vxlan0 vni 200 group 239.1.1.101
+>>
+>> $bridge vni del dev vxlan0 vni 400
+>>
+>> $bridge vni show
+>>
+>> $bridge -s vni show
+>>
+>>
+> hey Roopa: sorry for the delay; traveling. The patches have a number of
+> new uses of matches(). We are not taking any more of those; please
+> convert to strcmp. The rest looks fine to me.
+>
+will do, thanks David
