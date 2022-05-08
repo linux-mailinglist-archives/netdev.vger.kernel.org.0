@@ -2,88 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 801BA51F1B1
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 22:50:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7A0B51F1C7
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 23:14:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232809AbiEHUyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 16:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35794 "EHLO
+        id S232968AbiEHVSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 17:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232844AbiEHUyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 16:54:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FFD165B4
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 13:50:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F1F28B80E8F
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 20:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B40F5C385B3;
-        Sun,  8 May 2022 20:50:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652043012;
-        bh=kvHimcYV+nq5QxUCfS8EaXujOyCtkjXMrd0uGB19TOQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iz/qsrrKUHu2W2E/hWWiFHulkVyNXhjkYMhLv25SQopd9qPhQdrGTVVONkbjMyG9I
-         rO82AFgu0HpYbTcll5DpZkBH+Pq5NgyHNZjnGaeUVKNBxZQpvNalXHm4gaq8u5/AWA
-         Pvmq06VRE2zaM0P40SSrlaMpZSA9Hk+yMFxmgiuReMNxDDRFwt9Gj7CV1HT/dmxf6T
-         /lPQIemmGdcbxd87bkpEI+wSLsE8oHlYo+nd3fKB3QDVhUKl/V4voXUXjpdxcUxAi/
-         gdk05/S0SAJ25Ztj6e9iX6M43a+LxybXQcNDT6YXRSx0Sgf0encLXF+YJ7Ha0GcwaK
-         G6NcQ1IWMQAoA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9E847F03876;
-        Sun,  8 May 2022 20:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229491AbiEHVSm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 17:18:42 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87CE1765F;
+        Sun,  8 May 2022 14:14:50 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id g23so14195257edy.13;
+        Sun, 08 May 2022 14:14:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=w+wW2j4Qi2ZhKYtEoYitFu0KdkNdZFsS+kowU+VfreY=;
+        b=Wj4XjWI2kf1xIO5YfBwwdg2vdJWpb1sNLQhpYx1yxsTqitNWCVQ5/Kb65yVMFm5coF
+         Mu8rT6p6VeemiMfz28Aw4L+MoYBvc4sU+5ESTP50bzMSQjPe+W5W0J61hV6cA05+0KG4
+         W+LUm4H2iFJ3qf4CHWPu+iTCKRXJKY1jDbCKFtsHBK6pLOaXXterBldefbbTAJJ9syx8
+         ffu5FuTqyUsL6bqL1Hm+bbX/q3vnW4zaLw9nmI8HvNrNWQ0HRP3AFhRuLcjP/jBne3O+
+         CmNFjgj09fq4+lsny6mVR78KIS/FtEdGZ2Yhm07WUkkwNyTtilEQkmW97TQWJ9/u8WkR
+         cCcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=w+wW2j4Qi2ZhKYtEoYitFu0KdkNdZFsS+kowU+VfreY=;
+        b=LrJe8Sn6eHlN+z334h+68Gl4vV4KRJ+fbECmX3FXg8R3z6h9crzM990pneL+YCGBL6
+         Yftm8Etl6XLFi9Zm4lb3EM6KL3XRz+1b/rTmZxROdpK2JNtHJRnwCh7Do8ARdS/6FSm9
+         w4TnHhBYfZwf66RRXjizc2DCvTySzqYWbZuduNeKGQ6HH4dw8D2rnWCrHAagR7+z7Adh
+         XHuXQGV/TjzLaxJ06dZbu0u/1Md9kjyHbzSEibzKJo9krP6VWt5ooiKDMbL8toE2sJGI
+         rxSQDgf+S8oH8lH2qws9VbyPAOWT5zA1detYenfKxD5/QpL3Xtges8Zc97Pbb9b1CIA6
+         +W3Q==
+X-Gm-Message-State: AOAM532Rtoou9YURBMCzmmU6OROoFij8lSysyhEeDMi2L72npyuNJh24
+        zwtQfS+/5YK17sOHrggvoShRmmTGxtteCb9Jw7s=
+X-Google-Smtp-Source: ABdhPJyoW50uF0WrtGrEbHbI9iwmrV+S8/zNPOIFMyKSdKez42MdNCM8dpOaAKhXpe/Sf/uREYeC+0buKxPavuthygY=
+X-Received: by 2002:a05:6402:1d4c:b0:427:d1f5:3a41 with SMTP id
+ dz12-20020a0564021d4c00b00427d1f53a41mr14079196edb.218.1652044488894; Sun, 08
+ May 2022 14:14:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH ethtool-next v3 0/2] Add support to get/set tx push by ethtool
- -G/g
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165204301264.30767.10690359782009256931.git-patchwork-notify@kernel.org>
-Date:   Sun, 08 May 2022 20:50:12 +0000
-References: <20220429091704.21258-1-huangguangbin2@huawei.com>
-In-Reply-To: <20220429091704.21258-1-huangguangbin2@huawei.com>
-To:     huangguangbin (A) <huangguangbin2@huawei.com>
-Cc:     mkubecek@suse.cz, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, lipeng321@huawei.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220508185313.2222956-1-colin.foster@in-advantage.com> <20220508185313.2222956-5-colin.foster@in-advantage.com>
+In-Reply-To: <20220508185313.2222956-5-colin.foster@in-advantage.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 8 May 2022 23:14:12 +0200
+Message-ID: <CAHp75VdAE70EbAyuPXFQPLq+4E_Bj+8VbmY7amEB7TFB=U5HZQ@mail.gmail.com>
+Subject: Re: [RFC v8 net-next 04/16] net: mdio: mscc-miim: add ability to be
+ used in a non-mmio configuration
+To:     Colin Foster <colin.foster@in-advantage.com>
+Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sun, May 8, 2022 at 8:53 PM Colin Foster
+<colin.foster@in-advantage.com> wrote:
+>
+> There are a few Ocelot chips that contain the logic for this bus, but are
+> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
+> the externally controlled configurations these registers are not
+> memory-mapped.
+>
+> Add support for these non-memory-mapped configurations.
 
-This series was applied to ethtool/ethtool.git (next)
-by Michal Kubecek <mkubecek@suse.cz>:
+...
 
-On Fri, 29 Apr 2022 17:17:02 +0800 you wrote:
-> From: Jie Wang <wangjie125@huawei.com>
-> 
-> These two patches first update uapi headers by using the import shell, then
-> add support to get/set tx push by ethtool -G/g.
-> 
-> Changelog:
-> v2->v3
-> 1.Revise the min_argc value of tx-push.
-> link:https://lore.kernel.org/netdev/20220421084646.15458-1-huangguangbin2@huawei.com/
-> 
-> [...]
+> +               res = platform_get_resource(pdev, IORESOURCE_REG, 0);
+> +               if (!res) {
+> +                       dev_err(dev, "Unable to get MIIM resource\n");
+> +                       return -ENODEV;
 
-Here is the summary with links:
-  - [ethtool-next,v3,1/2] update UAPI header copies
-    https://git.kernel.org/pub/scm/network/ethtool/ethtool.git/commit/?id=bd138ee083c4
-  - [ethtool-next,v3,2/2] ethtool: add support to get/set tx push by ethtool -G/g
-    (no matching commit)
+return dev_err_probe(...); ?
 
-You are awesome, thank you!
+> +               }
+
+...
+
+> +       if (IS_ERR(phy_regmap)) {
+> +               dev_err(dev, "Unable to create phy register regmap\n");
+> +               return PTR_ERR(phy_regmap);
+
+Ditto.
+
+>         }
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+With Best Regards,
+Andy Shevchenko
