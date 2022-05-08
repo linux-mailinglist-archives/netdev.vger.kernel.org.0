@@ -2,126 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE5951ECBC
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 11:57:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 933E451ECD3
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 12:13:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229574AbiEHKBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 06:01:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40184 "EHLO
+        id S230239AbiEHKRX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 06:17:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229456AbiEHKBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 06:01:17 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE3455A5
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 02:57:27 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id e24so15701160wrc.9
-        for <netdev@vger.kernel.org>; Sun, 08 May 2022 02:57:27 -0700 (PDT)
+        with ESMTP id S229569AbiEHKRW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 06:17:22 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7501EBF69;
+        Sun,  8 May 2022 03:13:32 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id c11so11375044plg.13;
+        Sun, 08 May 2022 03:13:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xjdDA14ZWJVoEoFEVymH3jKuZk4YmCeTZ9pm/X59uF4=;
-        b=2KgIvlEl9Pp3kTwP4ubvVTWZDZhLv4bTh4xJxsWW/rb8m94YG4JL04IPIovbd1Rf7M
-         sTDdVm1d5THPKEk9OKUaEedtOCySP9pedQOfEn0d6IXyoldef78JqujqEGPrGSzxT4gZ
-         E4PmH0t8eIYNQkFHzroxW0x/NJ+bRYTZBRr1ujCS/eUwWlmBSfpCfA3WSpIjufNxT0kp
-         K+HQGsq1VIrxfQw8hJJCCyLAMIuzipey+EiGvqXCGOpXf05k1zJspY9Jw3SYQYQKJWl2
-         TBo0rDgZ0G447AAhXx/4LJMfmlzjfSIR2PnidLajZPy0sX5Z1nA2451k1+k5XPmpN07M
-         d6EA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=ByYr7aMGGDr8h8TkbEKkYd3QBbrE2CshJtP9jL4rIUg=;
+        b=ZV3pJrdNCrloK9Go644vqxakmipQakmvUGH7IXuPAJnmwT+9lGuJO1hCtX4JpHdTxf
+         L/4VdezXSGX9dNBy4LYc03zzTa1abdInvmS6ZtoDf35Xrclw/QZ3UOoX72PTcLt6HxGk
+         w1f7CLI6qzfQE2u+6SbYxYyU4MNk8kCkfOjUIk00VevlxlNxeEO2BeqbtAU2l3KKm0ze
+         VvNteSeQLyvrRp7yg73JzaPCMdijdRkX6Jzeok33qMQ86xrvfpjdh0JNrC4ZH2LloAkt
+         1iP26h93+yXndkLx2GJ5CJvKaz+Vu0vTRHZDhApvIotAvkzxV1WAB+67SsvSCSUdEXO1
+         VpoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xjdDA14ZWJVoEoFEVymH3jKuZk4YmCeTZ9pm/X59uF4=;
-        b=GviDdFU3yA24ie6kr6uw07gulaEwGU7ORY05JFR52yR5pd82umy540tqEZ/mOxPCNS
-         7jWYyeV6Io0JHo/R89QkgWfcZ24n3egyuOsf/Jnw9/n4MJbiuTaDCs4e2GaJXtDlBkdm
-         LBz5aAYXuq5v+rVLcSqlG//8YFAJch8BEC0J2om/r2YxKyrurn7NYziyjNC+XhTqmzl3
-         dMEGa3TNfxNrstxtciktdtCywZDtq7Amukl5CyMEq0ZhINls/CQLYWp4Qgmu2HQnZqyt
-         FosccciFZenKVBT2xN63tJ6pXhTszho0HcIwX8HzB4hu/tpLaVXaa6nwkTK+ae4eW+AF
-         Gwsw==
-X-Gm-Message-State: AOAM530WmMngXOvrETOcbaqkaFV/Mg/3EKZGDlKs4XizW0/8CCByWTgx
-        4HIXoNcJTzS5fmatcQVKxpfdgZGRF6+YtBjaxFw=
-X-Google-Smtp-Source: ABdhPJws9EtrvlmkH/KV2DQZQ0qNO3mW/SNYPim62ObjvCpXrkYwmFLGKJW7/yRQvEWkXE3hYuQzwQ==
-X-Received: by 2002:a5d:5228:0:b0:20c:b986:469d with SMTP id i8-20020a5d5228000000b0020cb986469dmr3885198wra.34.1652003846368;
-        Sun, 08 May 2022 02:57:26 -0700 (PDT)
-Received: from [192.168.17.225] (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
-        by smtp.gmail.com with ESMTPSA id bw22-20020a0560001f9600b0020c5253d8d8sm9172958wrb.36.2022.05.08.02.57.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 02:57:25 -0700 (PDT)
-Message-ID: <e46335cd-7e14-49aa-7d93-e88de0930f66@solid-run.com>
-Date:   Sun, 8 May 2022 12:57:24 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 1/3] dt-bindings: net: adin: document phy clock output
- properties
-Content-Language: en-US
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        netdev@vger.kernel.org
-Cc:     alvaro.karsz@solid-run.com, Andrew Lunn <andrew@lunn.ch>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-References: <20220419102709.26432-1-josua@solid-run.com>
- <20220428082848.12191-1-josua@solid-run.com>
- <20220428082848.12191-2-josua@solid-run.com>
- <22f2a54a-12ac-26a7-4175-1edfed2e74de@linaro.org>
-From:   Josua Mayer <josua@solid-run.com>
-In-Reply-To: <22f2a54a-12ac-26a7-4175-1edfed2e74de@linaro.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ByYr7aMGGDr8h8TkbEKkYd3QBbrE2CshJtP9jL4rIUg=;
+        b=y7V+VY6rrYV7m9oPHP+eZKxS8wcTlNTsNep0W6eVuq1aX3JNGb4f7cCqIFjnm6W9YC
+         Ei4qpfUZIOCB1C0kv/ivFk7JYXcHY8Nmw7D49s46BMZv/pPFend+LZ5yVGERTFOXnoW/
+         fx8oqIJzI668Vq1pS+cnUXrt7T/Mkh2tOMBTKairkx4EPO+zWVx5CDmliKsIhfqV9QM9
+         7HqUL2WTT5mbgNKrspXOwzWzl2mEGoWouy9tAv1kNQXl6sON2eI2CZMuicwYSKZEle6G
+         wISvY3u1A40hrFl1hrjDTJiNV1SrxYMrxNkPNgmzTfCuyrc+i1gDwHXFC2lZ3elb9Dkk
+         gEMg==
+X-Gm-Message-State: AOAM530aceVJxTK94XqpmL3HZfOr3QJU8yIXYrKu0/B6ChCdzbD6FUN5
+        VJyLAgv9rR+DEh1I1MuTxzE=
+X-Google-Smtp-Source: ABdhPJykwCm5x4A2BlKUc+oCoxbEhkoiNiI9kotOHCKbwiwuHW2Ln2GZbjJabvvNgCPkv6pBtM9zqw==
+X-Received: by 2002:a17:90b:33c5:b0:1dc:eff1:d749 with SMTP id lk5-20020a17090b33c500b001dceff1d749mr6990239pjb.239.1652004811650;
+        Sun, 08 May 2022 03:13:31 -0700 (PDT)
+Received: from scdiu3.sunplus.com ([113.196.136.192])
+        by smtp.googlemail.com with ESMTPSA id y2-20020a17090322c200b0015e8d4eb1f6sm4969610plg.64.2022.05.08.03.13.29
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 08 May 2022 03:13:31 -0700 (PDT)
+From:   Wells Lu <wellslutw@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, robh+dt@kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, p.zabel@pengutronix.de,
+        pabeni@redhat.com, krzk+dt@kernel.org, roopa@nvidia.com,
+        andrew@lunn.ch, edumazet@google.com
+Cc:     wells.lu@sunplus.com, Wells Lu <wellslutw@gmail.com>
+Subject: [PATCH net-next v11 0/2] This is a patch series for Ethernet driver of Sunplus SP7021 SoC.
+Date:   Sun,  8 May 2022 18:13:18 +0800
+Message-Id: <1652004800-3212-1-git-send-email-wellslutw@gmail.com>
+X-Mailer: git-send-email 2.7.4
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-\o/
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control
+applications.
 
-Am 05.05.22 um 23:24 schrieb Krzysztof Kozlowski:
-> On 28/04/2022 10:28, Josua Mayer wrote:
->
-> Thank you for your patch. There is something to discuss/improve.
-Thank you for taking a look.
->> diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
->> index 1129f2b58e98..3e0c6304f190 100644
->> --- a/Documentation/devicetree/bindings/net/adi,adin.yaml
->> +++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
->> @@ -36,6 +36,23 @@ properties:
->>       enum: [ 4, 8, 12, 16, 20, 24 ]
->>       default: 8
->>   
->> +  adi,phy-output-clock:
->> +    description: Select clock output on GP_CLK pin. Three clocks are available:
->> +      A 25MHz reference, a free-running 125MHz and a recovered 125MHz.
->> +      The phy can also automatically switch between the reference and the
->> +      respective 125MHz clocks based on its internal state.
->> +    $ref: /schemas/types.yaml#/definitions/string
->> +    enum:
->> +    - 25mhz-reference
->> +    - 125mhz-free-running
->> +    - 125mhz-recovered
->> +    - adaptive-free-running
->> +    - adaptive-recovered
-> Missing two spaces of indentation for all these items.
-Will add in v4, thank you.
->
->> +
->> +  adi,phy-output-reference-clock:
->> +    description: Enable 25MHz reference clock output on CLK25_REF pin.
->> +    $ref: /schemas/types.yaml#/definitions/flag
-> This could be just "type:boolean".
-Yes, it could be boolean, and default to false.
-So ... I figured its a flag, but whether to make it a flag or boolean is 
-better I do not know.
-> Best regards,
-> Krzysztof
-sincerely
-- Josua Mayer
+Refer to:
+https://sunplus.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
+
+Wells Lu (2):
+  devicetree: bindings: net: Add bindings doc for Sunplus SP7021.
+  net: ethernet: Add driver for Sunplus SP7021
+
+ .../bindings/net/sunplus,sp7021-emac.yaml          | 141 +++++
+ MAINTAINERS                                        |   8 +
+ drivers/net/ethernet/Kconfig                       |   1 +
+ drivers/net/ethernet/Makefile                      |   1 +
+ drivers/net/ethernet/sunplus/Kconfig               |  35 ++
+ drivers/net/ethernet/sunplus/Makefile              |   6 +
+ drivers/net/ethernet/sunplus/spl2sw_define.h       | 270 ++++++++++
+ drivers/net/ethernet/sunplus/spl2sw_desc.c         | 228 ++++++++
+ drivers/net/ethernet/sunplus/spl2sw_desc.h         |  19 +
+ drivers/net/ethernet/sunplus/spl2sw_driver.c       | 578 +++++++++++++++++++++
+ drivers/net/ethernet/sunplus/spl2sw_int.c          | 271 ++++++++++
+ drivers/net/ethernet/sunplus/spl2sw_int.h          |  13 +
+ drivers/net/ethernet/sunplus/spl2sw_mac.c          | 274 ++++++++++
+ drivers/net/ethernet/sunplus/spl2sw_mac.h          |  18 +
+ drivers/net/ethernet/sunplus/spl2sw_mdio.c         | 126 +++++
+ drivers/net/ethernet/sunplus/spl2sw_mdio.h         |  12 +
+ drivers/net/ethernet/sunplus/spl2sw_phy.c          |  92 ++++
+ drivers/net/ethernet/sunplus/spl2sw_phy.h          |  12 +
+ drivers/net/ethernet/sunplus/spl2sw_register.h     |  86 +++
+ 19 files changed, 2191 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/sunplus,sp7021-emac.yaml
+ create mode 100644 drivers/net/ethernet/sunplus/Kconfig
+ create mode 100644 drivers/net/ethernet/sunplus/Makefile
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_define.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_desc.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_desc.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_driver.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_int.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_int.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mac.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mac.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mdio.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_mdio.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_phy.c
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_phy.h
+ create mode 100644 drivers/net/ethernet/sunplus/spl2sw_register.h
+
+-- 
+2.7.4
+
