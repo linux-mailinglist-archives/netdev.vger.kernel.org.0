@@ -2,164 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DF98351ED44
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 13:59:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B9F551ED6B
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 14:13:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232079AbiEHMD3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 08:03:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49942 "EHLO
+        id S232727AbiEHMQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 08:16:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232569AbiEHLwI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 07:52:08 -0400
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B2D5E013;
-        Sun,  8 May 2022 04:48:17 -0700 (PDT)
-Received: by mail-pf1-x432.google.com with SMTP id c14so10017399pfn.2;
-        Sun, 08 May 2022 04:48:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:from:subject:to:cc
-         :references:content-language:in-reply-to:content-transfer-encoding;
-        bh=78GiAOcDFncQpxS3zJf0oIIsYa1BfjnHtYeGhRAmaco=;
-        b=eD6eGLRe6NGh0IxAF1cXnuOGWl6JVY1GAzSEyk7VT9zSinKK0vtUfjaeC165b19kH1
-         mE2DCDKw6eLM8uF6HqdwgRjXy8kLpte6ejvwtEte0WUKzdnbTvZps2yZoMOKRYUeMW+N
-         7n0RQAWlUYZhpB0ONWgfcOUQdPWA+7J/VYGtkfaRsyeOjyZ37h4APer6qmNFFrGkAlX+
-         WHwd5rpja0fzgPsjQPlq45oKY8Q4t2UvTM7TAx1ymxylZSVFe0aSJi08R8FiTL8tqt1H
-         Ur20Gh/YZHbfo8NwdfIm3z8Muz6H/aIv3K+FO+S5R5xRcaAi9tA17EOSJV3NXB3lJxBN
-         vWjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:to:cc:references:content-language:in-reply-to
-         :content-transfer-encoding;
-        bh=78GiAOcDFncQpxS3zJf0oIIsYa1BfjnHtYeGhRAmaco=;
-        b=4dJ5Skvw40WfkmMEn1K+dsZJix2YBm7tqS/e6BE0QUS/RMJLh5F9+1lS4v2tQ4vlc4
-         Ph/yC0UJirI4CxBDKzBApR2ic7koaxfd+ndXxk2fMX1l6abt2qv/f6kBZt2DW6UDE+P9
-         gKq8YrhuV32tfPYBHBhEFDPLNgWhsAq09MrAk8uFELSydNw2YtRqdhBDj5J29qeUYlZz
-         H8y9gVo0rSFRTMBye1r1HA868l1xSMo6TzsICBqByZzyFnD5RBFz4tu2NhS7uTH5e01t
-         FaPYRr+P6PjBni2O3blos+K1xakX7JAAN9qB7I8fE5Z55D0mNEHdCPxS6bU05xCyEuEI
-         F0Bw==
-X-Gm-Message-State: AOAM532p0POkgr45I0eo6WSSpC8TzaQWFeAxRYGW2yV3QXQcavRHxJP4
-        ErW6uMtHeZXE1dP3z9OnMxA=
-X-Google-Smtp-Source: ABdhPJxpCSfAVDVRnbHSqMuz2nPP3bs7F50tRdZX6SrsJr+n2JBZpbm4jmiquICfhPCpNS/DFbH5Qg==
-X-Received: by 2002:a05:6a00:b52:b0:510:5cbd:de94 with SMTP id p18-20020a056a000b5200b005105cbdde94mr11526599pfo.19.1652010497430;
-        Sun, 08 May 2022 04:48:17 -0700 (PDT)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id gf1-20020a17090ac7c100b001cd4989fedesm10448954pjb.42.2022.05.08.04.48.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 08 May 2022 04:48:16 -0700 (PDT)
-Message-ID: <0cf2306a-2218-2cd5-ad54-0d73e25680a7@gmail.com>
-Date:   Sun, 8 May 2022 20:48:10 +0900
+        with ESMTP id S232540AbiEHMQx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 08:16:53 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A313AE0E9;
+        Sun,  8 May 2022 05:12:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652011928;
+        bh=urf/6grh3HJinL6V+chc5QjAaSNuRTaSFnBMrsEERZQ=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=dp3haL9EMAb+d40ThGLw2NcWomb7pYltQytDtNfkzAZ5gbjPBwiMDhhB4553s+/q0
+         Pxh1T0BrletMfoS6DkhrAbGjRG4PG0gsNFQWX7e5yKIwBy618RmnHkIIlK0h1I4HcI
+         H85tzNqlGG9U35ba2U7mUc0CTXvpFE96DppUj+wg=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [217.61.158.76] ([217.61.158.76]) by web-mail.gmx.net
+ (3c-app-gmx-bap68.server.lan [172.19.172.68]) (via HTTP); Sun, 8 May 2022
+ 14:12:08 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-From:   Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH net-next v3] net/core: Rephrase function description of
- __dev_queue_xmit()
-To:     Bagas Sanjaya <bagasdotme@gmail.com>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Ben Greear <greearb@candelatech.com>,
-        Pavel Begunkov <asml.silence@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-next@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-doc@vger.kernel.org
-References: <20220507084643.18278-1-bagasdotme@gmail.com>
-Content-Language: en-US
-In-Reply-To: <20220507084643.18278-1-bagasdotme@gmail.com>
+Message-ID: <trinity-7f04b598-0300-4f3c-80e7-0c2145e8ba8f-1652011928036@3c-app-gmx-bap68>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     linux-rockchip@lists.infradead.org,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Subject: Aw: Re: [PATCH v3 5/6] dt-bindings: net: dsa: make reset optional
+ and add rgmii-mode to mt7531
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Date:   Sun, 8 May 2022 14:12:08 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <2509116.Lt9SDvczpP@phil>
+References: <20220507170440.64005-1-linux@fw-web.de>
+ <06157623-4b9c-6f26-e963-432c75cfc9e5@linaro.org>
+ <DC0D3996-DFFE-4E71-B843-8D34C613D498@public-files.de>
+ <2509116.Lt9SDvczpP@phil>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:5zepZXQ7VM3wRIvl1omrRkcQYRbWljpPdOn3rctdJ68EDLRb/Q24a0AfByhcEpmThRrM9
+ XDXoxnndTJTTB8ftDLsJbKlbc/RsJfe6tPnM5q19yQJOp+qsA7fAHwMjuCMXI9X42gFBFwc9hJ1n
+ MClWkUTW6eDQ9zRklCIDhuiIkrkRWPrpwjuJCghQ4jaxS14SEjcpUFVvsttTXFg/v+izpHP9rjHG
+ 5K8t4XzErdhMlTCH/eYhANMQV5xXm3aJlb+YL7E9gNFRtINKVGPK7vVv/4Tn/zZ3M303CC9DAAen
+ ZY=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:kpgB8WD7jB0=:31o1l/JqXaifC2Kwk5BnA5
+ VGzswJjo2yL+aKgrRVCfdD4clXFY0s+2dA8zSb0Vh49KYvyC17eChYgUHcpi8OIef/2dV+w/9
+ Pn58j/Uc6nV6fII/bnOQ0NZIANmW21dXO6FgCMPHzMtNZPfONtGm+Pewx4XryZ0xFc0rqeUQw
+ j4VlKJzc3cdZR3uPToufdhdpNVStsXL6BwLujp9kNQM5aPO/CZuZrlrM9rrWj2s23czwi53mv
+ /wsWJzP+pUbjpqYXhr/8Pn1vU3L8HugYQBKVTHjAFBWf1p41wBY9xHvR/Mkzgj2nefCXPQtNn
+ RLjR/a+3JA7eKzEBPDgduFS4gW1pL6rNKcBowGKzAWDOvM2rxJnd+TqmduYBthZcoyfw4r2QW
+ N8oLlea5BdJN8H19WlnIrG/pQd5AsuPzHhUjS2hJehG+cbKqy/m0KCJroKtJ1mAMl+0PpIdQA
+ Mb5eH9x+wFs/kUo73f3RuX+rGzXWV3CQjX2V88tuFVK85Y+XIxIYZ6rIFT3zjAe2nUcltGX6K
+ mYYsBLQNqpnBuz7V5tHDOtWTM8MqDxTNy/7oZl8M/ngQO1Q8HZbxBYBXnBE+AmOFclPa5Rut9
+ KEzRKol37E3i7GDtMH1woyZoLJVzFHMvU0o1/C9NFlnqyxtVAKNlOnSHfzOesXq8iCFwrcQlU
+ vST0akrfSHJYXuZwP1YJoC25O+/6mSWBhtfyyzDO55reVS3f1ojxNGEhm7+W8hQgyq5nGJa9W
+ lT8FIVab+rrge0tW0xSpkVXBLFFiI1lo0YLKzu/jhjzzMSCQKKlUo5AKOn89KsW1W4q7cCnVx
+ igaLZ1o
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/05/07 17:46,
-Bagas Sanjaya wrote:
-> Commit c526fd8f9f4f21 ("net: inline dev_queue_xmit()") inlines
-> dev_queue_xmit() that contains comment quote from Ben Greear, which
-> originates from commit af191367a75262 ("[NET]: Document ->hard_start_xmit()
-> locking in comments.").It triggers htmldocs warning:
+Hi Heiko
 
-What I asked was the explanation of *why* the inlining of the
-function caused the new warning.
+> Gesendet: Sonntag, 08. Mai 2022 um 11:41 Uhr
+> Von: "Heiko Stuebner" <heiko@sntech.de>
+> Am Sonntag, 8. Mai 2022, 08:24:37 CEST schrieb Frank Wunderlich:
+> > Am 7. Mai 2022 22:01:22 MESZ schrieb Krzysztof Kozlowski <krzysztof.ko=
+zlowski@linaro.org>:
+> > >On 07/05/2022 19:04, Frank Wunderlich wrote:
+> > >> From: Frank Wunderlich <frank-w@public-files.de>
+> > >>
+> > >> Make reset optional as driver already supports it,
+> > >
+> > >I do not see the connection between hardware needing or not needing a
+> > >reset GPIO and a driver supporting it or not... What does it mean?
+> >
+> > My board has a shared gpio-reset between gmac and switch, so both will=
+ resetted if it
+> > is asserted. Currently it is set to the gmac and is aquired exclusive.=
+ Adding it to switch results in 2 problems:
+> >
+> > - due to exclusive and already mapped to gmac, switch driver exits as =
+it cannot get the reset-gpio again.
+> > - if i drop the reset from gmac and add to switch, it resets the gmac =
+and this takes too long for switch
+> > to get up. Of course i can increase the wait time after reset,but drop=
+ping reset here was the easier way.
+> >
+> > Using reset only on gmac side brings the switch up.
+>
+> I think the issue is more for the description itself.
+>
+> Devicetree is only meant to describe the hardware and does in general do=
+n't
+> care how any firmware (Linux-kernel, *BSD, etc) handles it. So going wit=
+h
+> "the kernel does it this way" is not a valid reason for a binding change=
+ ;-) .
+>
+> Instead in general want to reason that there are boards without this res=
+et
+> facility and thus make it optional for those.
 
-Your explanation above tries to tell *what* the offending commit
-did, which is not what I asked.  Furthermore, your explanation
-is not accurate in that the comment block does not belong to
-dev_queue_xmit() but to __dev_queue_xmit().
+if only the wording is the problem i try to rephrase it from hardware PoV.
 
-After seeking the answer myself, I reached a conclusion that
-it is wrong to meddle with the comment block.
+maybe something like this?
 
-So, appended below is my version of the fix with the answer to
-Stephen's question, "I am not sure why this has turned up just now."
+https://github.com/frank-w/BPI-R2-4.14/commits/5.18-mt7531-mainline2/Docum=
+entation/devicetree/bindings/net/dsa/mediatek%2Cmt7530.yaml
 
-Stephen, Jakub, what do you think?
+Another way is maybe increasing the delay after the reset (to give more ti=
+me all
+come up again), but imho it is no good idea resetting the gmac/mdio-bus fr=
+om the
+child device.
 
-        Thanks, Akira
+have not looked into the gmac driver if this always  does the initial rese=
+t to
+have a "clean state". In this initial reset the switch will be resetted to=
+o
+and does not need an additional one which needs the gmac/mdio initializati=
+on
+to be done again.
 
-----8<--------------
-From: Akira Yokosawa <akiyks@gmail.com>
-Subject: [PATCH -next] net/core: Hide __dev_queue_xmit()'s kernel-doc
+> > >> allow port 5 as
+> > >> cpu-port
+> > >
+> > >How do you allow it here?
+> >
+> > Argh, seems i accidentally removed this part and have not recognized w=
+hile checking :(
+> >
+> > It should only change description of reg for ports to:
+> >
+> > "Port address described must be 5 or 6 for CPU port and from 0 to 5 fo=
+r user ports."
 
-Commit c526fd8f9f4f21 ("net: inline dev_queue_xmit()") added
-export of __dev_queue_exit() to cope with inlining of its
-wrapper functions dev_queue_xmit() and dev_queue_xmit_accel().
-This made __dev_queue_exit()'s comment block visible to Sphinx
-processing in "make htmldocs" because
-Documentation/networking/kapi.rst has the directive of:
+noticed that the target-phase is not removed but squashed in the first bin=
+dings-patch.
+This was a rebasing error and not intented...will fix in next version.
 
-    .. kernel-doc:: net/core/dev.c
-       :export:
-
-Unfortunately, the kernel-doc style comment has a number of
-issues when parsed as RestructuredText.  Stephen reported a
-new warning message from "make htmldocs" caused by one of
-such issues.
-
-The leading "__" in the function name indicates that it is an
-internal API and should not be widely used.
-Exposing documentation of such a function in HTML and PDF
-documentations does not make sense.
-
-For the time being, hide the kernel-doc style comment from Sphinx
-processing by removing the kernel-doc marker of "/**".
-
-Proper kernel-doc comments should be added to the inlined
-wrapper functions, which is deferred to those who are familiar
-with those netdev APIs.
-
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Fixes: c526fd8f9f4f21 ("net: inline dev_queue_xmit()")
-Link: https://lore.kernel.org/linux-next/20220503073420.6d3f135d@canb.auug.org.au/
-Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Pavel Begunkov <asml.silence@gmail.com>
----
- net/core/dev.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index c2d73595a7c3..a97fd413d705 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -4085,8 +4085,7 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
- 	return netdev_get_tx_queue(dev, queue_index);
- }
- 
--/**
-- *	__dev_queue_xmit - transmit a buffer
-+/*	__dev_queue_xmit - transmit a buffer
-  *	@skb: buffer to transmit
-  *	@sb_dev: suboordinate device used for L2 forwarding offload
-  *
--- 
-2.25.1
-
+regards Frank
