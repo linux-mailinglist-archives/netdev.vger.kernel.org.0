@@ -2,153 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0C4C51EABB
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 02:46:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7E4051EACB
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 03:33:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244702AbiEHAkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 7 May 2022 20:40:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44366 "EHLO
+        id S230015AbiEHBgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 7 May 2022 21:36:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229974AbiEHAkl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 20:40:41 -0400
-Received: from mout02.posteo.de (mout02.posteo.de [185.67.36.66])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71D0C273
-        for <netdev@vger.kernel.org>; Sat,  7 May 2022 17:36:51 -0700 (PDT)
-Received: from submission (posteo.de [185.67.36.169]) 
-        by mout02.posteo.de (Postfix) with ESMTPS id CFBDD240108
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 02:36:49 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=posteo.de; s=2017;
-        t=1651970209; bh=eRJ72IYITlVDpKnZ6+UmjwqGp62CGsHXISCjq+X2pUU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=htiC7MpderyPkMni74pcJip/ThagMEqWgQEwlpsU6u/5RV4PfczParYp4l4EX+NPJ
-         StiMHYN1ZRt4qX5l+F3y81wYpB1vM26U/wsSqGoGVqJ87L+JPeKQYwtd0A8yyAiSL2
-         vFsToZJeo18TfZhJILkosIc+0lsQ88ZrDI50H/o1eTlLz3IIceFqe1hfAAN7y17a6s
-         gZY1UTcqsb46XKA1tprU9msbV36A2txwt9Wc3o+TUCFAFf29YXohaeWpHxPgv4xcjh
-         KqcGSr0dBbs0j+LQP4OEgjHcZXECI6JwFFTsf6aQKi4Z47ZDErd0lurj5kFul72Ty9
-         stET4FtO43M6w==
-Received: from customer (localhost [127.0.0.1])
-        by submission (posteo.de) with ESMTPSA id 4Kwljr30zTz9rxG;
-        Sun,  8 May 2022 02:36:48 +0200 (CEST)
-From:   Manuel Ullmann <labre@posteo.de>
-To:     Igor Russkikh <irusskikh@marvell.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        regressions@lists.linux.dev, davem@davemloft.net,
-        ndanilov@marvell.com, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, Jordan Leppert <jordanleppert@protonmail.com>,
-        Holger Hoffstaette <holger@applied-asynchrony.com>,
-        koo5 <kolman.jindrich@gmail.com>
-Subject: [PATCH v6] net: atlantic: always deep reset on pm op, fixing up my
- null deref regression
-Date:   Sun, 08 May 2022 00:36:46 +0000
-Message-ID: <87bkw8dfmp.fsf@posteo.de>
+        with ESMTP id S229712AbiEHBgv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 7 May 2022 21:36:51 -0400
+Received: from mail-vk1-xa41.google.com (mail-vk1-xa41.google.com [IPv6:2607:f8b0:4864:20::a41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC83387
+        for <netdev@vger.kernel.org>; Sat,  7 May 2022 18:33:03 -0700 (PDT)
+Received: by mail-vk1-xa41.google.com with SMTP id s68so5359490vke.6
+        for <netdev@vger.kernel.org>; Sat, 07 May 2022 18:33:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=e7Q4y7iPGLCVPWqTkoNkP7leQjTRit1YqVpiGh/1AQo=;
+        b=i9uJ5w8MHdbQ6l9faNgrqK9ZaUMhinLBYMEIUlHziSjNm8FZWvHcvW72bXUSjSpfkn
+         zknU3yNOyGYtOruv9hwY5ikTFdPRBBQoUAJ7Eu8gNvwax+8ZI2DGHkfJlJ/T36pKkZia
+         LR9ZgYHEKwpfnU8fpyVpJi2Gmczlt0oDH3eBuBOIRQNw+5KELuJKVTCjA3ESy9+gAE3x
+         rG9WnRdKnzt++bv7hrVpRtl2Lca3nT3KuE03M3hgqxtOG0avfiRA+Yu1k2iuu5DvTzy1
+         U24CvoAQOkfFoAx/9XqUoCKj9IVc8p++gXbsu806bkjr6tQ1yK5lz715N+Em3KgZjUmG
+         9sVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=e7Q4y7iPGLCVPWqTkoNkP7leQjTRit1YqVpiGh/1AQo=;
+        b=UiQBARXRk88fTCuhmETucSe4uyfM/2lrziKgY16qB04zwIhrCNeN1YVdP0gW0mv2xa
+         zdLTElkeCQ0iLV70vTcLDM/dCo3/fWUqNkyob7qyY/6bnDwjZm7Ht4mtfTLFmm3l8y3N
+         AnHPE7/kT8gysUe8O0l/mEkAbv/7HC3aCf8VLVWDUYDyI3KBCtmBdLlY5O6CXJODTlZQ
+         CjvHlxlnMKqqs6L9xa8QfpumOcsvxZgWoBsgn4c+Iw2S5Te1WGYadeCxWmTg4sFJar+l
+         UsuD+GqzHZF8trvFbBvIljq8Nni60Yyg+fb1aLfO1R2cUepnWHUkgrqivPB+qt4p6y8e
+         tyZw==
+X-Gm-Message-State: AOAM531kOZ8WFPqmk/vLabk58/cfW0CLl6p8a+3HorUnuPjphjCpF67O
+        XGaYvni/w7GDdTEwHS58G02tswWHGi2Aa70tmLw=
+X-Google-Smtp-Source: ABdhPJwMjgQkVHHw4b8ZQ+KMtnYWbaizSfHeYr4V1Q8IhDRNGfYD6NW+1UcMWHU45AxjRDSjORtdYrEaGu1G0SvB4X4=
+X-Received: by 2002:a1f:286:0:b0:352:69d4:4823 with SMTP id
+ 128-20020a1f0286000000b0035269d44823mr5560356vkc.8.1651973582039; Sat, 07 May
+ 2022 18:33:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+Received: by 2002:ab0:3c4f:0:0:0:0:0 with HTTP; Sat, 7 May 2022 18:33:01 -0700 (PDT)
+Reply-To: wijh555@gmail.com
+From:   "Mr. Ahmed Osane" <osane706@gmail.com>
+Date:   Sat, 7 May 2022 18:33:01 -0700
+Message-ID: <CAC7Oyrqo4_E-_K5azOChjU13B=P8bjM5PLv5pep19Jt-iJgbUw@mail.gmail.com>
+Subject: Greetings,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        HK_NAME_FM_MR_MRS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no autolearn_force=no
         version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:a41 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4988]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [wijh555[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [osane706[at]gmail.com]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [osane706[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 HK_NAME_FM_MR_MRS No description available.
+        *  3.5 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From 18dc080d8d4a30d0fcb45f24fd15279cc87c47d5 Mon Sep 17 00:00:00 2001
-Date: Wed, 4 May 2022 21:30:44 +0200
-
-The impact of this regression is the same for resume that I saw on
-thaw: the kernel hangs and nothing except SysRq rebooting can be done.
-
-Fixes regression in commit cbe6c3a8f8f4 ("net: atlantic: invert deep
-par in pm functions, preventing null derefs"), where I disabled deep
-pm resets in suspend and resume, trying to make sense of the
-atl_resume_common() deep parameter in the first place.
-
-It turns out, that atlantic always has to deep reset on pm
-operations. Even though I expected that and tested resume, I screwed
-up by kexec-rebooting into an unpatched kernel, thus missing the
-breakage.
-
-This fixup obsoletes the deep parameter of atl_resume_common, but I
-leave the cleanup for the maintainers to post to mainline.
-
-Suspend and hibernation were successfully tested by the reporters.
-
-Fixes: cbe6c3a8f8f4 ("net: atlantic: invert deep par in pm functions, preventing null derefs")
-Link: https://lore.kernel.org/regressions/9-Ehc_xXSwdXcvZqKD5aSqsqeNj5Izco4MYEwnx5cySXVEc9-x_WC4C3kAoCqNTi-H38frroUK17iobNVnkLtW36V6VWGSQEOHXhmVMm5iQ=@protonmail.com/
-Reported-by: Jordan Leppert <jordanleppert@protonmail.com>
-Reported-by: Holger Hoffstaette <holger@applied-asynchrony.com>
-Tested-by: Jordan Leppert <jordanleppert@protonmail.com>
-Tested-by: Holger Hoffstaette <holger@applied-asynchrony.com>
-CC: <stable@vger.kernel.org> # 5.10+
-Signed-off-by: Manuel Ullmann <labre@posteo.de>
----
-I'm very sorry for this regression. It would be nice, if this could
-reach mainline before 5.18 release, if applicable. This restores the
-original suspend behaviour, while keeping the fix for hibernation. The
-fix for hibernation might not be the root cause, but still is the most
-simple fix for backporting to stable while the root cause is unknown
-to the maintainers.
-
-Changes in v2:
-Patch formatting fixes
-~ Fix Fixes tag
-~ Simplify stable Cc tag
-~ Fix Signed-off-by tag
-
-Changes in v3:
-~ Prefixed commit reference with "commit" aka I managed to use
-  checkpatch.pl.
-~ Added Tested-by tags for the testing reporters.
-~ People start to get annoyed by my patch revision spamming. Should be
-  the last one.
-
-Changes in v4:
-~ Moved patch changelog to comment section
-~ Use unicode ndash for patch changelog list to avoid confusion with
-  diff in editors
-~ Expanded comment
-~ Targeting net-next by subject
-
-Changes in v5:
-~ Changed my MTA transfer encoding to 8 bit instead of
-  quoted-printable. Git should like this a bit more.
-
-Changes in v6:
-~ Reducing content to 7 bit chars, because nipa did not apply v4 and v5, while
-  git does against a fresh net-next HEAD. Maybe it chokes on the
-  additional bit.
-~ Omitting target tree to resemble the last passing patch version the most.
-
- drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-
-base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
-
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-index 3a529ee8c834..831833911a52 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_pci_func.c
-@@ -449,7 +449,7 @@ static int aq_pm_freeze(struct device *dev)
- 
- static int aq_pm_suspend_poweroff(struct device *dev)
- {
--	return aq_suspend_common(dev, false);
-+	return aq_suspend_common(dev, true);
- }
- 
- static int aq_pm_thaw(struct device *dev)
-@@ -459,7 +459,7 @@ static int aq_pm_thaw(struct device *dev)
- 
- static int aq_pm_resume_restore(struct device *dev)
- {
--	return atl_resume_common(dev, false);
-+	return atl_resume_common(dev, true);
- }
- 
- static const struct dev_pm_ops aq_pm_ops = {
-
-base-commit: 672c0c5173427e6b3e2a9bbb7be51ceeec78093a
 -- 
-2.35.1
+Greetings,
+I'm Mr. Ahmed Osane, how are you doing hope you are in good health,
+the Board director try to reach you on phone several times Meanwhile,
+your number was not
+connecting. before he ask me to send you an email to hear from you if
+you are fine. hope to hear you are in good Health.
+
+Thanks,
+Mr. Ahmed Osane.
