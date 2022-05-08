@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B74651EE93
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 17:28:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C68051EE87
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 17:28:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234817AbiEHPba (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 11:31:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46784 "EHLO
+        id S234826AbiEHPbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 11:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234773AbiEHPb0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 11:31:26 -0400
+        with ESMTP id S234797AbiEHPb1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 11:31:27 -0400
 Received: from EUR02-HE1-obe.outbound.protection.outlook.com (mail-eopbgr10053.outbound.protection.outlook.com [40.107.1.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1FEFBBE
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 08:27:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A05AC0D
+        for <netdev@vger.kernel.org>; Sun,  8 May 2022 08:27:37 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QIkBTu2z0kMvOmhxbAKG9G+enw8JU8KBTRw8v9V0M0QFtgqaTtDsT6cKH+vBkGCrGuBORt5vme7P0vj4IXo+ZrlWJvGqDGbrrcsfLzStIdudgbrFD9PBXAQrni2bhv3Yg9asE+uhUTWqD4Xni+d3b5AVPXXdRkHXqcgT9vQr7BIqpA6MVlM/6PGvou/spLZ7OGUaC0CaDex9d2aP+5u578GLULguLCd3mi/b/q/s9DKyvhsZy5da6vc4jw/tvCsZDARsITxMRmUtOXtvCar41p/dzVPFxZFByG2RP7idNHFcR4RaAXO7/YW4/TtWEMAcbt/pots4GpNvgf4VnPz9cA==
+ b=BSvZrKurQaTgKQPkQ5jN1sIWgXWmLpQ8kpAmVX8jcbLAd8ZKPKt4KbtF26kWQHV3NY+kFIP5yIc9i8QLu2Yywf6DeygiUiwxtwNf97WTEx18W5C8pdd4zOCDuB3bBZX+H5bK1vhom/n7TomyNTXd67B4JNGiCVYfuCQ6aFCuTYXhPd4mIslooOQR3+gvOl30ylhNO7/PIw0j7jtoF7LGAohotNKnfKT+ILqtD7AgMP9tWPE3AwN3O5p6lscfBlrYgQ2gJoRM29ANjzKMUV/xYmxmFX7JLDiNPbO4CC1tgC76+DND/a/A1WoV1n5vyG8dGiHd6Je2xiZfX4jSQ1O+dA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=egt6MWu/WXDifbwtZbLGtOb9TFKYdMtcabqEf9RnNlU=;
- b=DQsYyd3U6Fvq/Qi9DPOPqNyD+hKg2CipNXYLQAtobLto3djT7sQgiDtsUaSrwiKKAOFWDKw74QqWO6HA37Q2az5hNCUN+jLHoSngbIPvEVu2PO5q8ZDE2cr0rAQPkBEwTIiLa/beba+3NKxUaAZCCFzpmL0gedilXHfdNv164/p6aHQdOlsaiSJjThPVDgt217HU/KYdt3CRfwopszOW3Ct8XWUGvAuaMlcd+0kvj5ueuACER2AvleSlqcXdAU1BoyX9JvtnsUvxpfXi2BqBsoZWiBY5StZTRmYAFVeEqfpU5crWmKHjEALZjCiZ7LsJBO5/GhifExw8gfWNAVC9mw==
+ bh=z0jKayjEB9RCJ0Ke0DzWBk3Uq0Vi/Q8bWe1EJJPzSKc=;
+ b=OHUof/GdsLJfqZGK4A0Anan6o7mZMoBmZqgTGKQJ2pbPaAWa3nvBTNToegY11zlyB45JyCXT4cy0Qg4lDzE8EHkn+ZaPAlYuzhzMtveZR1NVIQ51tkGf/q6tVSoy1ROGKMhLoIOkVmKa+miIaU9cWP001+FH/XMKBp8cRr6Wftrca308DylDgaNtCYOM6oGkmgHTU9dzPqYdG3PCuDEOEJaEhfyKp5K8ZR/t0GmghvCBZSazdvChSOZa+Ab+PYUUhbRMuFt519qNN2sFYOq/DE4Bsz5PSzocmo9LZ5pnL/3Bea4ifO3NCw3QadxQWU8nNk2+5upxBqlKK2ltKMIrhw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=egt6MWu/WXDifbwtZbLGtOb9TFKYdMtcabqEf9RnNlU=;
- b=UqIs//H9A23gWbgADeXJMc9BBeoUf/QcuXw+CHHMIuzn2eFAduabrhiNcSE/aSS0kT/53pNa9HEVmKp+flxH91UTJ2Xm7D2EGg81wKiMBDArGiN4VInQ/vpFsRf9tCGcg2ZHju93xuPfnBmqpfL705xJuDX4qdLAqKaEuRudyUM=
+ bh=z0jKayjEB9RCJ0Ke0DzWBk3Uq0Vi/Q8bWe1EJJPzSKc=;
+ b=APKMTVCIir8sXSFW3J4b5xfDkf8a5d1ItRHKWpg1Qz4jfiZjEdnaZqX2O8lnq/xptx6I8kBKbKV2/wc0MV6FWds8dv0Ay48oBXZOMb3QVG8jJVvCT+V0fB4YjQwKiyFHdJkYdJgllsP+fQXA65Ys7IbG4LxcldcnZBubApgXogQ=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
  by DB6PR0402MB2806.eurprd04.prod.outlook.com (2603:10a6:4:97::14) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Sun, 8 May
- 2022 15:27:32 +0000
+ 2022 15:27:33 +0000
 Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::d42:c23c:780e:78eb]) by AM0PR04MB5121.eurprd04.prod.outlook.com
  ([fe80::d42:c23c:780e:78eb%4]) with mapi id 15.20.5227.022; Sun, 8 May 2022
- 15:27:32 +0000
+ 15:27:33 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -59,9 +59,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         UNGLinuxDriver@microchip.com,
         Colin Foster <colin.foster@in-advantage.com>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [RFC PATCH net-next 3/8] net: dsa: felix: bring the NPI port indirection for host flooding to surface
-Date:   Sun,  8 May 2022 18:27:08 +0300
-Message-Id: <20220508152713.2704662-4-vladimir.oltean@nxp.com>
+Subject: [RFC PATCH net-next 4/8] net: dsa: introduce the dsa_cpu_ports() helper
+Date:   Sun,  8 May 2022 18:27:09 +0300
+Message-Id: <20220508152713.2704662-5-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508152713.2704662-1-vladimir.oltean@nxp.com>
 References: <20220508152713.2704662-1-vladimir.oltean@nxp.com>
@@ -72,55 +72,55 @@ X-ClientProxiedBy: AS8PR04CA0205.eurprd04.prod.outlook.com
  (2603:10a6:208:c1::16)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 101267fe-06ab-47e7-ab01-08da31074546
+X-MS-Office365-Filtering-Correlation-Id: bfab62f4-ae65-4fba-012e-08da31074603
 X-MS-TrafficTypeDiagnostic: DB6PR0402MB2806:EE_
-X-Microsoft-Antispam-PRVS: <DB6PR0402MB280696DB23903E0AB3E2774BE0C79@DB6PR0402MB2806.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <DB6PR0402MB2806518833A873BD556D84F0E0C79@DB6PR0402MB2806.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ukDzwyP6j9z1v7GDagoGIEIceln417SK1eD0TwOTIUsmFFl9Wz7+jXYzaUiyh4/U+sRWryyvJm6aiCkmLwCIb4RzaEVmpqNSHOsn/83c871fZKrnPX2zXo4nRWtVtWc+ibHVBrboxcL2g8yqzXmxUM75sQ6EdqGx8kz5jy6Q9VD6lMRdQyXHhrWsclkK7F2sJG7ZHLcyz2+3BCHHxOPb0eAPAqhjeViSuHWLKtUygokIylyGPNVPAxE43YobafmPZf7qBT9srnD7PRr7KRJ7dXRAr0JPstOR3w+CV8scURgvLMdmEj9WHn4hSushOEY4+FsCSmCpxWqTI7c8f9Oz9ttj9kKYS1vF12YnGQkSuuu98iVp66JGaGsJUx74REgtqa7gXhn8+pcRZaFQD8+KVKuM3D/qzpVPxN3neAFiD/P5gv//p+Fe6w55y+tFPTMGYjoVujLwzF67RlFQEcoLc0NM3RKlD/mtMu/iSH9kc1sD0mEZJ+H0r0FpGXIQqYM7IGvpOArA8IXTM5oJG1aaX00rDdDDICHVh7HgwWAxVWctGogb8vI/2Yr+ufEdtngD3UJm1y9Llwhj29zAxKzCgBe6jaKXc5V9lg/a0TQyNwMD8aQ56IZB1uMMA0ajnTtrM6PlitegAmMhuu5B+BNygVXq1Nmh+bbwp2LjlAelN5nEhOw5V4TNszszfQ0bnk4WaWv8bdjjQLuJlrddT8xQMw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52116002)(6666004)(6506007)(36756003)(186003)(508600001)(6486002)(2906002)(38100700002)(38350700002)(5660300002)(6916009)(66946007)(26005)(1076003)(44832011)(7416002)(8936002)(54906003)(66556008)(8676002)(4326008)(83380400001)(86362001)(66476007)(6512007)(2616005)(316002);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: a5ozmiYfGFFTa6C6AI10UiaTp4yTB+Gc4EAxZ3cVTTYc/faUQWGZyCfoojY3yYY27x+6zz8SwB14R6OFRdK/Ob056h6qFtpag0+YY4zz4BeSL3EL12SU8YNmdYbcWeAVLlcOyo174aUHCM6l4p9g8j75m4nQ7nEoqBMVj6XAAuw+RTmvc8NtA2fxoWMt7RUgwcJCAgQDYw0N5Rf8zYOt8NicfjcB89Fz0zYMu79BfOtx0nMAO5qucE0q0L9ffb0d7OAYi5jQKWs5tGoMw+czmv3ztbd3kuEGeI+Jf/8AzxW3pjVgXppS7ISnRa3pY7hkvOb34ovtPlXUMKUwrQctPAsBz7qn/itmS//SywhMoBPuyAhePumlB7B3lL8RcehdxGuCyD6IpKl2e8aFOBeZMWWxtkoM4etVGJ8HtUvk5j7WTkA/dQgCd3Nw3tTbb7IIwkrUR600oeB62flhenaM1Cl5Lo1mrekX4YMr1oGfxjy8IbrVhGhR1UdHI0sOQ0XtSIuOjq2Mw3GW7pYfqfNsGclw8VhBF3uZXTLHluyfJf8P5vIJnjYwRcin2H3fBnGa8+5H572p3+0KsO7aZ0MOL6j8uWUzj7sA8jrhbkcepNIuKgTJBzjqNRwfINOaNYkMCDi22/E0aKqJ9z0eel6YpqGuX5+0P2LTAtctgy58/tdeszeTjWHWCQdWg5xnBwCc1iQMkLEBY9MvqE2jk67BBw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52116002)(6666004)(6506007)(36756003)(186003)(508600001)(6486002)(2906002)(38100700002)(38350700002)(5660300002)(4744005)(6916009)(66946007)(26005)(1076003)(44832011)(7416002)(8936002)(54906003)(66556008)(8676002)(4326008)(86362001)(66476007)(6512007)(2616005)(316002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EKVMffGNB/yYeqq6y10hnKMxc/7m6dVBJebuwgkOdKWQeWeqA94YX0BCXhMn?=
- =?us-ascii?Q?BOL0KXFwyRl7B1p3jquDW0X9xVQ7VPoTzFwoRa4OOnmG/SQFz4sXOOmKoazj?=
- =?us-ascii?Q?yo0Nbl8fX0kcBPvoAbZ7IzDXif686ZH+enrJIHG716NUjqK+JO1SNYKVaqkV?=
- =?us-ascii?Q?kgSXyeTLcCgIiK++P7RpTH+ryEbBLGY+JeDc84kLeFPASknbfn8ORceQuNec?=
- =?us-ascii?Q?spZgW9tTW4mqHAlP4YDrJG17agx5QaeD16PqRw9MKOIiox1xET8vRVtXHW/Q?=
- =?us-ascii?Q?RYwZBfh9nCNHdGiWBODugnBPkapiNpdMBxkr+f3/3X7P6oFyW37lWx1CGGnk?=
- =?us-ascii?Q?Ymq+87wPQMefJigG43PvMqbi5Yqi0WU4m8bnMkJj0yAeNkzV6MOxFkhOjkDl?=
- =?us-ascii?Q?BrlpNMT6uLl9vcqneAUdNalBFAnkWMel/rhE01W+gCvcQv0VicM1I3xBim12?=
- =?us-ascii?Q?xj6pxrsiZValfi6O1Ipl+BGJSD9gbsrs3XVoAElWxxVZ4+cRwYNlvZU4UsW0?=
- =?us-ascii?Q?k/oMg8b+ldwjC+1FEatMwA4wwCWapylJWqlppuoMWdiTi7tkheVmgfltrWIl?=
- =?us-ascii?Q?iWDZzruBvbeezjQu5BGWVbe8PIqMQPvTq9qbTR1glC22jnJemrHFJr44p2Re?=
- =?us-ascii?Q?oBCZ9qRUe2qi+M+WzUzAgxO3b8+lIhFN7tPEGDIcLfO1y4X/3ZmpQW9bpwi+?=
- =?us-ascii?Q?V4ZBeBeE3r/KGx/4SsI4K2xQRa58WKGi3ZlttPFYQ2jQUUcCdPIeKq986v9v?=
- =?us-ascii?Q?UisUKKYlxh5b6nbzJXfmjlZPvc6/FVyzRBRkqvA2VhP/pJ3UYm7SwZNtnWxq?=
- =?us-ascii?Q?tW1LzFLkhkTctk61+IWv4Hy7tCXatYYvhSkHHIpp2yNToq06ApVWlpMijC1o?=
- =?us-ascii?Q?lR0DOPANC6b4HNMCrYF2vBqHAfmr8oYCFSCfN4esC2ox9pwDfBEh3vgtOk/n?=
- =?us-ascii?Q?Ien/J+oIDJVxKQHKm++vdzISB9yygArWBqnni0zf58wZNbkLWB3Pz2MGmURN?=
- =?us-ascii?Q?qcCr+/ynnOQWzS0VRTmbAuxKk0qfdRbs1eq+55IUcvy9bZR84RBZus8lLOyb?=
- =?us-ascii?Q?enTKQFUbG483T7r23RVa2Epl/yy/rWV1GBNcGmQI3hS71R3Dk57Tay79ns6d?=
- =?us-ascii?Q?HqoCvuALaa2Yn6bRlXrtkj887rQt6CFBdoGZIY7R4IsQYVQIWOS8tO1WGk1U?=
- =?us-ascii?Q?N+n3xcfPSYV/YPK7XnZw0KNEj1Ca8l4P4xIxU8Q+UZd/n41TXK6Z7RlJTia9?=
- =?us-ascii?Q?d90ryjXGvGxZgb4wqkpTh2rzyBbS25PlEFDM42z2DrSaOb2TBA+ihZHFK/H4?=
- =?us-ascii?Q?9fTVAJPnQysJBt02VcWs7XPbjklR5Ei5NAIYpB91hSssHVX2Z4EABtJlus2S?=
- =?us-ascii?Q?3HxDOdDeIOEarmWUxf6QkosdUckHJgMYGa5NSDCecEo8MhkZR/mxZDC2NZRy?=
- =?us-ascii?Q?7gSVIVdyk2CIz4FGKMClFlBq/kcK9qGJrxqOehOW83YBQV4nx4T0Wbc28uBe?=
- =?us-ascii?Q?HG9fd9Pvcu7dSFc3I8eu7wUBYza9xGEhvff8z2o8CFSSwXsJifgoP4XzaTjR?=
- =?us-ascii?Q?jZvRz4qipBO0rtgTb2QBqYVkoV2ruJJmniwLm2Xvu1faoghil8cc+NYppIny?=
- =?us-ascii?Q?K05tZ6XASWilz63Z5q2lgBsI6uIOfiPCnPJ3dsQoxpV68qeO7LqMhmcERlKY?=
- =?us-ascii?Q?gUcbJQSRl3X07pvUD/1W8mpzN8OHF9IFwt54It8wPl0543MYYO+g9M/8V/yI?=
- =?us-ascii?Q?dwdjdxIEVoLu/Ms+UCKq/FrIggwsoY0=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?AU9yhPUHPIfHcm1Wc2co+oZF0a6nmPr/ju1QlyigpCwfLcP+fsdAKA47YBfl?=
+ =?us-ascii?Q?FyHiR7oNd9ymeUMYjM0BUlP75MUNo6tRXX/sUF9FVz1nIGOOQ5CcdHxKnGqh?=
+ =?us-ascii?Q?7DbCoJKl0gVcVGkCVoqfLXnJZB72eA5GN3YfjLN9bdgT3570IcOIwUbHdvI0?=
+ =?us-ascii?Q?BxM91J7YKHDM9Xeqe0+iZjM8n4Qzaa3BxIte1ZbsjUUTypgXUHvwajOVq2lx?=
+ =?us-ascii?Q?qgHCKBOUPAgrX5ZygGiR1X+uBCza6h31RpJqEbQvZypBdgpOwwl//zzrpKtj?=
+ =?us-ascii?Q?NwkeRFtIlskI4LS+NKo9IgaWtsPSmb/pgrh/FMl5jEIHJLbt23l1/0JLKUNx?=
+ =?us-ascii?Q?9c3sTVI+4sDEkoqs5P2ceW+PGiUUDseM9WpH2+jML4m5k6cuWPz/1o066tfn?=
+ =?us-ascii?Q?lw9ftirFNSbPtTfmjeem0Chg2MnVNsf9gqBLz5ASN5jagjTAIgMLE1sHAKiq?=
+ =?us-ascii?Q?8Lw3i4L3O0Nhz5hp3z3hUpIwn4Y+xSxpnTJrHWHtzjttm5viz89sIpBpxnTW?=
+ =?us-ascii?Q?4C2MZWRTKqkx820K2OGo6cTCjPlFtRPR5kHgxAMKM7mKYTYXpCeW1YsNA7TH?=
+ =?us-ascii?Q?WkcY9OD8Zh3T1j7gJF2gEmYEucXOLylF9JGUbUxUaeyAqgaOMdnzFrSsf4f+?=
+ =?us-ascii?Q?rSRF2JDOivyoVTkqE3Y+Jd0xHWvKazZYnwUe6FHl3b8Ny17CFcCWuhIPNBg8?=
+ =?us-ascii?Q?SWPvGMGRO5DNwxrRQ7AWN5//C/mW02TqcznfBFKWUOcoPspswlb3v9YAOdG0?=
+ =?us-ascii?Q?GJ5LiVU+1fMNhwtQz4jC2UBlXyol6uKMCXanuQf5Bs5sK8zaLsH5pflogioX?=
+ =?us-ascii?Q?z9BqxVR9+tQkQ4qqCjmse+l70vkciuzDSiiiCXlBRlbog5ASX8mokcBTvMSW?=
+ =?us-ascii?Q?y+LTk4Alp7NFDm8NIkmCjWyznTG9nykV9qlQN6s1Xk2Vxs5lXBvw+ExWTMeG?=
+ =?us-ascii?Q?mlLmqBS3pwD9EQzwSqzwJQWTSdDhmM0xQnF8vIS7JLLW6Oh5pLtpPB1W8Lnx?=
+ =?us-ascii?Q?+BSFlg1tf85DbK4htzcuYpJky5Dv0tVfNvl1SfApO6ljSDml68yoYYHb2g+e?=
+ =?us-ascii?Q?gt/avO0ZvPj6hA5HVDPHB2DshAuyL2jJ85Fp8EqZZg8MN8hQJSCiUqoC0LoM?=
+ =?us-ascii?Q?kljgJuGorgjGVYVyy8Du8ywovtZzeKDWbY0hrdpyXcAS9emTJHhJABN0p9nN?=
+ =?us-ascii?Q?JZ7ZR/NXw7AnGEZgZefZKmtatws6aKjK+rNFXNYTSpq7KondKlAQJfCRSVcY?=
+ =?us-ascii?Q?8ZBUFSPOfRXSvvmIob8am5UeUPBec735djO5IjhhghgQ5GTtBb1pE2c3hQwU?=
+ =?us-ascii?Q?jDeEqNmcbjC9tKYrjFhhVU6JioWBs7BPmBJdJWuZInJi972axMAXHeWZiG0V?=
+ =?us-ascii?Q?vnxkQ9rXdoHUASEdJSbj+OdzSeQer5krAguvXbnfXstZ/g95HnuT8g4LjPkk?=
+ =?us-ascii?Q?lKo61Agepc4W1NJRvVUTMUFUL7cEpsL5RUCxWR1kvOECcnM0yUE8wfgmkyog?=
+ =?us-ascii?Q?CTtf9a+vdEARQUcNMFIe31opEQlM4FQrBOSlZ5ltUsa8arBoM/rljR/iYCUy?=
+ =?us-ascii?Q?eDj7fym+ekb981TpIY9uDrG2rOFwwaxR71cF0rq2L0dEEQYj84rYx/pbO9gh?=
+ =?us-ascii?Q?vA6qQUy5uPpjUMTNQ3MOKM0VgHvDTK0Nfyy4UG3XfxwPGUMu9WQ/iVGCyIge?=
+ =?us-ascii?Q?ngNNLam/wxtK9n4l8PFDNR3dWC22qgbRNX9rbOpyi+lOHlSy4sPnZ67nuFPz?=
+ =?us-ascii?Q?qbfTC60XpdCL8NwLRkWByNHnhwgXpWs=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 101267fe-06ab-47e7-ab01-08da31074546
+X-MS-Exchange-CrossTenant-Network-Message-Id: bfab62f4-ae65-4fba-012e-08da31074603
 X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 15:27:32.4700
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 15:27:33.7043
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Al7/QtefMija5J8BAr00+n8JNBAXQsTQZW6vFfRtSuSEnNxGCfO8qkMDYYVfOXsESm16tj7768R2DlH721Ax8g==
+X-MS-Exchange-CrossTenant-UserPrincipalName: JOV801uMK7MSQDFZZC5wKZ91sOqmbOm5jiMAS5qqCPYRWh+8GG+L96bKgLwxGq1iWsueC8AMnCBdY1aQWlyIqw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2806
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -132,47 +132,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For symmetry with host FDBs and MDBs where the indirection is now
-handled outside the ocelot switch lib, do the same for bridge port
-flags (unicast/multicast/broadcast flooding).
-
-The only caller of the ocelot switch lib which uses the NPI port is the
-Felix DSA driver.
+Similar to dsa_user_ports() which retrieves a port mask of all user
+ports, introduce dsa_cpu_ports() which retrieves the mask of all CPU
+ports of a switch.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/ocelot/felix.c     | 3 +++
- drivers/net/ethernet/mscc/ocelot.c | 3 ---
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ include/net/dsa.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 3f23a6093b27..e9d8aa9cc294 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -794,6 +794,9 @@ static int felix_bridge_flags(struct dsa_switch *ds, int port,
- {
- 	struct ocelot *ocelot = ds->priv;
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index efd33956df37..76257a9f0e1b 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -590,6 +590,17 @@ static inline u32 dsa_user_ports(struct dsa_switch *ds)
+ 	return mask;
+ }
  
-+	if (port == ocelot->npi)
-+		port = ocelot->num_phys_ports;
++static inline u32 dsa_cpu_ports(struct dsa_switch *ds)
++{
++	struct dsa_port *cpu_dp;
++	u32 mask = 0;
 +
- 	ocelot_port_bridge_flags(ocelot, port, val);
- 
- 	return 0;
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 29e8011e4a91..e0d1d5b59981 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -2943,9 +2943,6 @@ EXPORT_SYMBOL(ocelot_port_pre_bridge_flags);
- void ocelot_port_bridge_flags(struct ocelot *ocelot, int port,
- 			      struct switchdev_brport_flags flags)
++	dsa_switch_for_each_cpu_port(cpu_dp, ds)
++		mask |= BIT(cpu_dp->index);
++
++	return mask;
++}
++
+ /* Return the local port used to reach an arbitrary switch device */
+ static inline unsigned int dsa_routing_port(struct dsa_switch *ds, int device)
  {
--	if (port == ocelot->npi)
--		port = ocelot->num_phys_ports;
--
- 	if (flags.mask & BR_LEARNING)
- 		ocelot_port_set_learning(ocelot, port,
- 					 !!(flags.val & BR_LEARNING));
 -- 
 2.25.1
 
