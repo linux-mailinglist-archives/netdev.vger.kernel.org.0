@@ -2,57 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CEC1D51EBDA
+	by mail.lfdr.de (Postfix) with ESMTP id 8388351EBD9
 	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 06:54:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231183AbiEHE5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 00:57:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32786 "EHLO
+        id S231255AbiEHE5q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 00:57:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32808 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbiEHE5b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 00:57:31 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2045.outbound.protection.outlook.com [40.107.244.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47506E0BE
-        for <netdev@vger.kernel.org>; Sat,  7 May 2022 21:53:42 -0700 (PDT)
+        with ESMTP id S230476AbiEHE5e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 00:57:34 -0400
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2059.outbound.protection.outlook.com [40.107.94.59])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06198E0B8
+        for <netdev@vger.kernel.org>; Sat,  7 May 2022 21:53:44 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aG1eLo4VbjGVsMtZC171vGlSbpK5Mc8/l7FG1QjG6u8NuUl/Ovbga0ot/owxmqq7NpDRFfdnLG52LscXp70FNF2a656oyGHgjLPU7+QOMZ33wtzGYw+3gHhrnp40n6l5rshUd4EzHVOuh54o+ulTKqY7YJGT+mQ7dmxRZGmxW1NLmxwUVuFALDYm+jg98Qk4CFk8xM0KrJ3Kg/UlGuU/f5ZTPTqrC2wWEqQTZNhDWTSV+b0S4BWCTGdFGIFiC5tjxsVbCT7xMktVFunkOJamPrNUaZpCmLD3HFqBsc+zXSpTpVAMBJ1UHVwt3HtP3DJ1IC8dWJcj7bBXZO7SOkmF4Q==
+ b=ZUQ3cslEP01RQR/33CdofHxFD5aXOGUoXRyjgVhaEYUJNkw9zFDCofYkyDI2wCjvxVsUvj2wGqUBcMceDBfmJhD5CP8W1StzDUvUB2goWgINY4Vfh/WKrS+FFVziin6bqHaxIpo/R71poaYtLjLuBlqNoLcckQG99SKaslw1ngK6uyC9NbnfM9XAP8ekI7J82P0R4phAoHesxSh8urzQ0mMYDpp/SULcjd34cXCN0WMeTzw23P8/hRBmwLLmurvqzTZC8djBXdw1SeA+HK8lhrqZu0/jQ5KI+EOKXbu0xVsgyYOXisds/TNtSXK3EAriu3VxcR6vj4a62iwGBTZv/g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vayLjKvEX/IdvlXtyxxYdnQPDRkG2h6CUl4mcevhzEg=;
- b=TJfrB4KygUPJhz11A5Hj2uREA8btwFHIYx5p2OGQrSiE6E+GrjZ4m0U5Svg9sK1IKH/ljJGWXJqBAZGfw5qtIX/Ufyjr79v8Qmr4VJhU6cZwTV7WspZAPs4Sd9r1RqoUNwyjDIx89lVyqiMjqYxiTOpwWqLzrDgtuPpf1F+VwFskrs060d05eJjKorwq7oCvnYtuRgbZnlM2/J0asTYjn/TfvF2FisnISgLIw8nt4ugRaTFdfXKMkdQz3BjHnNvugGcNqXnBQcHAp4fETQRQnKr/VbJgOlFDg8G0yZgPm9w/0lf9XXLj5ddoh1ElBS8g7+rzqvLXZYicaEN1AtjIYA==
+ bh=Yb7WJJk/rKkiZrfJ2hbnnXP/GjqdCPGLEHhz5EOHov0=;
+ b=ga3+OguJlKpip0tIOOTJgbMiDIb2ueMNhYTNCAd32iu+H9MSTl9NACjujta9+2eK6I5uHDSbaKGUYmeu+6kN9NVOwx56mAp6FZnzQli3aAKR0xbzjWDdD8cxzh8VD1QpuzVwf3nhkyG5J0eV7LsHr00VaKwDKcVwUASdB+5PdPMUB9TbSiNKP64UpWOmWww+ulg684x+qMYA6JDnb51gghoXkG5PwmgeJqsmM+7btf4dk3AsWo6Xn9DzeVHaq9Uu6w3J9nLXAum5hNWpj4evVDtKxVfW2i5XdNo5A6DqGrtfMGdXApOMfH5OgEuRW4s4M5Jziyjk1nLUlNchIegvzw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=networkplumber.org smtp.mailfrom=nvidia.com;
+ 12.22.5.238) smtp.rcpttodomain=networkplumber.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vayLjKvEX/IdvlXtyxxYdnQPDRkG2h6CUl4mcevhzEg=;
- b=fqRBGfdhEDv74/t8lSdps75/RmAIUB6AtzCSABDCoccti3TdNNk6U3kMRSr4MI6NRLDszW0s6kEkPLL8K2mGhG0gF/AYfmalNQiS0ecfALk+V2WdvRGMHXeehONXoRak/vgAJ9F3r/RzFLCcYHQscHrj4GYM8P1+bVhoin/ePF4GevVMbasB8IYPRepOD9MEmeMqP9vSbVYEWB4NR1e2BEJl5UXpONVl3MT6m/3xPqG9Jaf4YS0H6lCJmWYcnZhPv4ZUY4ATQ1xiqfbxK832WuVuh8hQp+rR/SgZb66cNmgWtrVvRG1IpI1L7W9ModeoPrC4ydJAGA02nsfrS0I6Ig==
-Received: from MW4PR03CA0156.namprd03.prod.outlook.com (2603:10b6:303:8d::11)
- by CH0PR12MB5233.namprd12.prod.outlook.com (2603:10b6:610:d0::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.18; Sun, 8 May
- 2022 04:53:40 +0000
-Received: from CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:8d:cafe::f9) by MW4PR03CA0156.outlook.office365.com
- (2603:10b6:303:8d::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24 via Frontend
- Transport; Sun, 8 May 2022 04:53:40 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ bh=Yb7WJJk/rKkiZrfJ2hbnnXP/GjqdCPGLEHhz5EOHov0=;
+ b=jIFdf9guzJtJDSooa+p/NlT8NHN7TvU0tZln2tZww2YuJmKE63dHvF8E8MCUeogjqDBVglTbnASkvZX+LGguN8A0JepbIVaIwzK4D+FETzD9Q2Ik5t0uoY7A13FT8OjqD6od/aM+hVfChX5M4gqesocA0QNf7ryB0vUQbA6To+nmi6VBX/ZPSOpIzuDWyjs9R5FXZk6zmaDaDhHZSFGZUflLUY86ZGIQkWNj70oM3soOxC/K14QddUXbrLgT1yEw6ZSlwaDS0Efi1kkbW8k+n8CV3RvZyMeuyGoBzXybHb6V/ID1NYPPlENWbw0X+pXguYFyyM1owMZ4YEOTKdOtVg==
+Received: from DM6PR08CA0023.namprd08.prod.outlook.com (2603:10b6:5:80::36) by
+ SN6PR12MB2638.namprd12.prod.outlook.com (2603:10b6:805:6f::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5206.24; Sun, 8 May 2022 04:53:41 +0000
+Received: from DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:5:80:cafe::38) by DM6PR08CA0023.outlook.office365.com
+ (2603:10b6:5:80::36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.14 via Frontend
+ Transport; Sun, 8 May 2022 04:53:41 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- CO1NAM11FT029.mail.protection.outlook.com (10.13.174.214) with Microsoft SMTP
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ DM6NAM11FT012.mail.protection.outlook.com (10.13.173.109) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5227.15 via Frontend Transport; Sun, 8 May 2022 04:53:40 +0000
+ 15.20.5227.15 via Frontend Transport; Sun, 8 May 2022 04:53:41 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
- DRHQMAIL107.nvidia.com (10.27.9.16) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Sun, 8 May 2022 04:53:39 +0000
+ DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Sun, 8 May 2022 04:53:40 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
  drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
@@ -64,9 +63,9 @@ From:   Roopa Prabhu <roopa@nvidia.com>
 To:     <dsahern@gmail.com>
 CC:     <netdev@vger.kernel.org>, <stephen@networkplumber.org>,
         <razor@blackwall.org>
-Subject: [PATCH iproute2 net-next v2 2/3] ip: iplink_vxlan: add support to set vnifiltering flag on vxlan device
-Date:   Sun, 8 May 2022 04:53:39 +0000
-Message-ID: <20220508045340.120653-3-roopa@nvidia.com>
+Subject: [PATCH iproute2 net-next v2 3/3] bridge: vni: add support for stats dumping
+Date:   Sun, 8 May 2022 04:53:40 +0000
+Message-ID: <20220508045340.120653-4-roopa@nvidia.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220508045340.120653-1-roopa@nvidia.com>
 References: <20220508045340.120653-1-roopa@nvidia.com>
@@ -75,24 +74,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 51fc8c58-1bd6-4e81-bac2-08da30aeb88b
-X-MS-TrafficTypeDiagnostic: CH0PR12MB5233:EE_
-X-Microsoft-Antispam-PRVS: <CH0PR12MB5233A4509291FD402DC5760FCBC79@CH0PR12MB5233.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 2369d559-3c25-484f-dcbf-08da30aeb8f5
+X-MS-TrafficTypeDiagnostic: SN6PR12MB2638:EE_
+X-Microsoft-Antispam-PRVS: <SN6PR12MB263821509AA71DD6842A88AFCBC79@SN6PR12MB2638.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: NzptpC9OJnUjeeft4vKPNTv+1I37ye42PHPE2wc5LHroV/scYCmgt0JQAjV6y1KsbmIANb8qR91eoAgUY01qrlV8c2mFwRyhq5rmht3kf76ZFl9iwfXBo0F0UsD+2esdzc+SASdTozoSTuISLsKRFnoDY5l6U5U90sh3a6VKnDFmCY58pJxUCxs5JjgCJtsHkjbT7BYehG73J0BvH6pk9/3F8L7gOUUXF5YFt4NChQ1Gf8X5Q+SiE35opL++j3uMetZ5bTLFJYjMEmYzaKylPN8m5gfTecgsztwQRmg+88MeG/b3Q7cqT68uhq6n/bkT7AFXHyzlmAlqGhPkuUlSvT9k6D8QnJXJfVOMdvcVvyIqosDqftaL1cFNZr7W+R/TlmDkBRNBIpTaa3ZU0NOeyW8q2OBeJ0vJtjZWORSADRCZbPeYZSesQXN3aok8GZ0i5sdwOYphPXlacEUM8i1fCekBhi+VqFNSlpDtyh0GGMJ2gy/yoLrRkwPI5pVMfpg9w5wa71QX+SuO2JBExoyYswhotbYinHBypOjW4zmOLeSf4RAOjosqTxyJYTvxS5pWnyP+2E1cVLq70B5KdtKwrySntHWNmk/TwpWZHzap5tWc41/Q+Oa+paR5tBTnfYiloQm5ulBPjOgqZrQFZlc3Xhga2JU49xRS0okZvO0WMyTPU/0XG4RBc4dOfhqXQT3930YIzFyGp9rKI7XJbF56ehFuo0KFbjgode7DC+KIkJVx7VR1PPOLaju1yyFxQwMrLXfETwchCa+87Ps0dVuGsg==
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(81166007)(36756003)(356005)(316002)(5660300002)(508600001)(83380400001)(8936002)(2906002)(426003)(26005)(336012)(82310400005)(86362001)(1076003)(47076005)(2616005)(186003)(54906003)(6916009)(36860700001)(8676002)(70206006)(4326008)(40460700003)(70586007)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 9j6rHBhKuYQFfUrEcOtEugx7H1hhlBt3T22+QcKvpDTnpiNHKm0PmOfHik1pvslN+VQ3O/UUSpHAAXYRACbtTXsICoQBE1FPzng/wxDedPPxWLG8jT/cA1XRbpsDk4HnTapXgIvxxCQFUAoi9HsqEizjxoUx5VGNoLcomo96TDRaoI8raaYOyKBEwCm2dwwN0mL65LAYkD00dlNPXzqCKJsiwTZH++qlABRl6mkK9pzI9nOd6J1ty1FT+IFejVkCLdepNrUik2wZ40k4rP+r0JaNWLI3eu7YFT/CyP64QjvuVKLVNVI6yeUo2shTmPkazhp/TnfAIIsLKUZziJC1K3QlZwcTB5any+Y87QMphvIbaoHJg3VW6xZ0g9dV1w3c9aQ+SgkaOEcz5YOXEuP4dD4r0oo2E1nTXwjJgEp68mVbt7Ctw35OXTYpJETG3KHexU4YRTZgjZoP6IsPdJeew0PEvApWnFlft1P65/YdUDK3BUgQQNwa3o4bnHLzaogDTTyXDscahnEQsDramC2EHuRwj6S/75mAUPf2+dVgw5tvjoB/sjFSQE47AdW37v1ioEcjOVC9PHBCPjHj54F2VQVs0zwF2M/AOexoD2zloi4zr3Hx4ekQGmIWUirNSakbX9O1uOXxAEtdQiknfG7fZJU5XSM7FqjPE4ks2gNplNswvWqZuMzwVjZYbqvHgbnoaCEbTVjrZMn8NjxqVoA+FQ==
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(336012)(47076005)(2906002)(5660300002)(83380400001)(54906003)(426003)(186003)(6916009)(8936002)(36756003)(1076003)(316002)(2616005)(36860700001)(86362001)(40460700003)(70206006)(70586007)(82310400005)(26005)(8676002)(4326008)(6666004)(508600001)(356005)(81166007)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 04:53:40.4016
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 04:53:41.0659
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 51fc8c58-1bd6-4e81-bac2-08da30aeb88b
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2369d559-3c25-484f-dcbf-08da30aeb8f5
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT012.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR12MB5233
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR12MB2638
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -103,112 +102,192 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds option to set vnifilter flag on a vxlan device. vnifilter is
-only supported on a collect metadata device.
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-example: set vnifilter flag
-$ ip link add vxlan0 type vxlan external vnifilter local 172.16.0.1
+Add support for "-s" option which causes bridge vni to dump per-vni
+statistics. Note that it disables vni range compression.
 
+Example:
+$ bridge -s vni | more
+ dev               vni              group/remote
+ vxlan0             1024  239.1.1.1
+                     RX: bytes 0 pkts 0 drops 0 errors 0
+                     TX: bytes 0 pkts 0 drops 0 errors 0
+                    1025  239.1.1.1
+                     RX: bytes 0 pkts 0 drops 0 errors 0
+                     TX: bytes 0 pkts 0 drops 0 errors 0
+
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 Signed-off-by: Roopa Prabhu <roopa@nvidia.com>
 ---
- ip/iplink_vxlan.c     | 23 ++++++++++++++++++++++-
- man/man8/ip-link.8.in |  9 +++++++++
- 2 files changed, 31 insertions(+), 1 deletion(-)
+ bridge/vni.c         | 93 ++++++++++++++++++++++++++++++++++++--------
+ include/libnetlink.h |  3 +-
+ lib/libnetlink.c     |  4 +-
+ 3 files changed, 81 insertions(+), 19 deletions(-)
 
-diff --git a/ip/iplink_vxlan.c b/ip/iplink_vxlan.c
-index 9afa3cca..3dde2150 100644
---- a/ip/iplink_vxlan.c
-+++ b/ip/iplink_vxlan.c
-@@ -48,6 +48,7 @@ static void print_explain(FILE *f)
- 		"		[ [no]udp6zerocsumrx ]\n"
- 		"		[ [no]remcsumtx ] [ [no]remcsumrx ]\n"
- 		"		[ [no]external ] [ gbp ] [ gpe ]\n"
-+		"		[ [no]vnifilter ]\n"
- 		"\n"
- 		"Where:	VNI	:= 0-16777215\n"
- 		"	ADDR	:= { IP_ADDRESS | any }\n"
-@@ -81,6 +82,7 @@ static int vxlan_parse_opt(struct link_util *lu, int argc, char **argv,
- 	__u8 learning = 1;
- 	__u16 dstport = 0;
- 	__u8 metadata = 0;
-+	__u8 vnifilter = 0;
- 	__u64 attrs = 0;
- 	bool set_op = (n->nlmsg_type == RTM_NEWLINK &&
- 		       !(n->nlmsg_flags & NLM_F_CREATE));
-@@ -330,6 +332,15 @@ static int vxlan_parse_opt(struct link_util *lu, int argc, char **argv,
- 		} else if (!matches(*argv, "gpe")) {
- 			check_duparg(&attrs, IFLA_VXLAN_GPE, *argv, *argv);
- 			addattr_l(n, 1024, IFLA_VXLAN_GPE, NULL, 0);
-+		} else if (!matches(*argv, "vnifilter")) {
-+			check_duparg(&attrs, IFLA_VXLAN_VNIFILTER,
-+				     *argv, *argv);
-+			addattr8(n, 1024, IFLA_VXLAN_VNIFILTER, 1);
-+			vnifilter = 1;
-+		} else if (!matches(*argv, "novnifilter")) {
-+			check_duparg(&attrs, IFLA_VXLAN_VNIFILTER,
-+				     *argv, *argv);
-+			addattr8(n, 1024, IFLA_VXLAN_VNIFILTER, 0);
- 		} else if (matches(*argv, "help") == 0) {
- 			explain();
- 			return -1;
-@@ -341,12 +352,17 @@ static int vxlan_parse_opt(struct link_util *lu, int argc, char **argv,
- 		argc--, argv++;
- 	}
+diff --git a/bridge/vni.c b/bridge/vni.c
+index 79dff005..a0c2792c 100644
+--- a/bridge/vni.c
++++ b/bridge/vni.c
+@@ -186,6 +186,59 @@ static void print_range(const char *name, __u32 start, __u32 id)
  
-+	if (!metadata && vnifilter) {
-+		fprintf(stderr, "vxlan: vnifilter is valid only when 'external' is set\n");
-+		return -1;
+ }
+ 
++static void print_vnifilter_entry_stats(struct rtattr *stats_attr)
++{
++	struct rtattr *stb[VNIFILTER_ENTRY_STATS_MAX+1];
++	__u64 stat;
++
++	open_json_object("stats");
++	parse_rtattr_flags(stb, VNIFILTER_ENTRY_STATS_MAX, RTA_DATA(stats_attr),
++			   RTA_PAYLOAD(stats_attr), NLA_F_NESTED);
++
++	print_nl();
++	print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s   ", "");
++	print_string(PRINT_FP, NULL, "RX: ", "");
++
++	if (stb[VNIFILTER_ENTRY_STATS_RX_BYTES]) {
++		stat = rta_getattr_u64(stb[VNIFILTER_ENTRY_STATS_RX_BYTES]);
++		print_lluint(PRINT_ANY, "rx_bytes", "bytes %llu ", stat);
++	}
++	if (stb[VNIFILTER_ENTRY_STATS_RX_PKTS]) {
++		stat = rta_getattr_u64(stb[VNIFILTER_ENTRY_STATS_RX_PKTS]);
++		print_lluint(PRINT_ANY, "rx_pkts", "pkts %llu ", stat);
++	}
++	if (stb[VNIFILTER_ENTRY_STATS_RX_DROPS]) {
++		stat = rta_getattr_u64(stb[VNIFILTER_ENTRY_STATS_RX_DROPS]);
++		print_lluint(PRINT_ANY, "rx_drops", "drops %llu ", stat);
++	}
++	if (stb[VNIFILTER_ENTRY_STATS_RX_ERRORS]) {
++		stat = rta_getattr_u64(stb[VNIFILTER_ENTRY_STATS_RX_ERRORS]);
++		print_lluint(PRINT_ANY, "rx_errors", "errors %llu ", stat);
 +	}
 +
- 	if (metadata && VXLAN_ATTRSET(attrs, IFLA_VXLAN_ID)) {
- 		fprintf(stderr, "vxlan: both 'external' and vni cannot be specified\n");
- 		return -1;
++	print_nl();
++	print_string(PRINT_FP, NULL, "%-" __stringify(IFNAMSIZ) "s   ", "");
++	print_string(PRINT_FP, NULL, "TX: ", "");
++
++	if (stb[VNIFILTER_ENTRY_STATS_TX_BYTES]) {
++		stat = rta_getattr_u64(stb[VNIFILTER_ENTRY_STATS_TX_BYTES]);
++		print_lluint(PRINT_ANY, "tx_bytes", "bytes %llu ", stat);
++	}
++	if (stb[VNIFILTER_ENTRY_STATS_TX_PKTS]) {
++		stat = rta_getattr_u64(stb[VNIFILTER_ENTRY_STATS_TX_PKTS]);
++		print_lluint(PRINT_ANY, "tx_pkts", "pkts %llu ", stat);
++	}
++	if (stb[VNIFILTER_ENTRY_STATS_TX_DROPS]) {
++		stat = rta_getattr_u64(stb[VNIFILTER_ENTRY_STATS_TX_DROPS]);
++		print_lluint(PRINT_ANY, "tx_drops", "drops %llu ", stat);
++	}
++	if (stb[VNIFILTER_ENTRY_STATS_TX_ERRORS]) {
++		stat = rta_getattr_u64(stb[VNIFILTER_ENTRY_STATS_TX_ERRORS]);
++		print_lluint(PRINT_ANY, "tx_errors", "errors %llu ", stat);
++	}
++	close_json_object();
++}
++
+ static void print_vni(struct rtattr *t, int ifindex)
+ {
+ 	struct rtattr *ttb[VXLAN_VNIFILTER_ENTRY_MAX+1];
+@@ -242,6 +295,10 @@ static void print_vni(struct rtattr *t, int ifindex)
+ 							 &addr));
+ 		}
  	}
++
++	if (ttb[VXLAN_VNIFILTER_ENTRY_STATS])
++		print_vnifilter_entry_stats(ttb[VXLAN_VNIFILTER_ENTRY_STATS]);
++
+ 	close_json_object();
+ 	print_string(PRINT_FP, NULL, "%s", _SL_);
+ }
+@@ -310,6 +367,7 @@ static int print_vnifilter_rtm_filter(struct nlmsghdr *n, void *arg)
+ static int vni_show(int argc, char **argv)
+ {
+ 	char *filter_dev = NULL;
++	__u8 flags = 0;
+ 	int ret = 0;
  
--	if (!metadata && !VXLAN_ATTRSET(attrs, IFLA_VXLAN_ID) && !set_op) {
-+	if (!metadata && !vnifilter && !VXLAN_ATTRSET(attrs, IFLA_VXLAN_ID) && !set_op) {
- 		fprintf(stderr, "vxlan: missing virtual network identifier\n");
- 		return -1;
- 	}
-@@ -420,6 +436,11 @@ static void vxlan_print_opt(struct link_util *lu, FILE *f, struct rtattr *tb[])
- 		print_bool(PRINT_ANY, "external", "external ", true);
- 	}
+ 	while (argc > 0) {
+@@ -330,25 +388,26 @@ static int vni_show(int argc, char **argv)
  
-+	if (tb[IFLA_VXLAN_VNIFILTER] &&
-+	    rta_getattr_u8(tb[IFLA_VXLAN_VNIFILTER])) {
-+		print_bool(PRINT_ANY, "vnifilter", "vnifilter", true);
+ 	new_json_obj(json);
+ 
+-	if (!show_stats) {
+-		if (rtnl_tunneldump_req(&rth, PF_BRIDGE, filter_index) < 0) {
+-			perror("Cannot send dump request");
+-			exit(1);
+-		}
++	if (show_stats)
++		flags = TUNNEL_MSG_FLAG_STATS;
+ 
+-		if (!is_json_context()) {
+-			printf("%-" __stringify(IFNAMSIZ) "s  %-"
+-			       __stringify(VXLAN_ID_LEN) "s  %-"
+-			       __stringify(15) "s",
+-			       "dev", "vni", "group/remote");
+-			printf("\n");
+-		}
++	if (rtnl_tunneldump_req(&rth, PF_BRIDGE, filter_index, flags) < 0) {
++		perror("Cannot send dump request");
++		exit(1);
++	}
+ 
+-		ret = rtnl_dump_filter(&rth, print_vnifilter_rtm_filter, NULL);
+-		if (ret < 0) {
+-			fprintf(stderr, "Dump ternminated\n");
+-			exit(1);
+-		}
++	if (!is_json_context()) {
++		printf("%-" __stringify(IFNAMSIZ) "s  %-"
++		       __stringify(VXLAN_ID_LEN) "s  %-"
++		       __stringify(15) "s",
++		       "dev", "vni", "group/remote");
++		printf("\n");
 +	}
 +
- 	if (tb[IFLA_VXLAN_ID] &&
- 	    RTA_PAYLOAD(tb[IFLA_VXLAN_ID]) >= sizeof(__u32)) {
- 		print_uint(PRINT_ANY, "id", "id %u ", rta_getattr_u32(tb[IFLA_VXLAN_ID]));
-diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
-index fc214a10..6f332645 100644
---- a/man/man8/ip-link.8.in
-+++ b/man/man8/ip-link.8.in
-@@ -601,6 +601,8 @@ the following additional arguments are supported:
- .B gbp
- ] [
- .B gpe
-+] [
-+.RB [ no ] vnifilter
- ]
++	ret = rtnl_dump_filter(&rth, print_vnifilter_rtm_filter, NULL);
++	if (ret < 0) {
++		fprintf(stderr, "Dump ternminated\n");
++		exit(1);
+ 	}
  
- .in +8
-@@ -712,6 +714,13 @@ are entered into the VXLAN device forwarding database.
- .RB "(e.g. " "ip route encap" )
- or the internal FDB should be used.
+ 	delete_json_obj();
+diff --git a/include/libnetlink.h b/include/libnetlink.h
+index a1ec91ec..a7b0f352 100644
+--- a/include/libnetlink.h
++++ b/include/libnetlink.h
+@@ -112,7 +112,8 @@ int rtnl_nexthop_bucket_dump_req(struct rtnl_handle *rth, int family,
+ 				 req_filter_fn_t filter_fn)
+ 	__attribute__((warn_unused_result));
  
-+.sp
-+.RB [ no ] vnifilter
-+- specifies whether the vxlan device is capable of vni filtering. Only works with a vxlan
-+device with external flag set. once enabled, bridge vni command is used to manage the
-+vni filtering table on the device. The device can only receive packets with vni's configured
-+in the vni filtering table.
-+
- .sp
- .B gbp
- - enables the Group Policy extension (VXLAN-GBP).
+-int rtnl_tunneldump_req(struct rtnl_handle *rth, int family, int ifindex)
++int rtnl_tunneldump_req(struct rtnl_handle *rth, int family, int ifindex,
++			__u8 flags)
+ 	__attribute__((warn_unused_result));
+ 
+ struct rtnl_ctrl_data {
+diff --git a/lib/libnetlink.c b/lib/libnetlink.c
+index b3c3d0ba..c27627fe 100644
+--- a/lib/libnetlink.c
++++ b/lib/libnetlink.c
+@@ -1610,7 +1610,8 @@ void nl_print_policy(const struct rtattr *attr, FILE *fp)
+ 	}
+ }
+ 
+-int rtnl_tunneldump_req(struct rtnl_handle *rth, int family, int ifindex)
++int rtnl_tunneldump_req(struct rtnl_handle *rth, int family, int ifindex,
++			__u8 flags)
+ {
+ 	struct {
+ 		struct nlmsghdr nlh;
+@@ -1622,6 +1623,7 @@ int rtnl_tunneldump_req(struct rtnl_handle *rth, int family, int ifindex)
+ 		.nlh.nlmsg_flags = NLM_F_DUMP | NLM_F_REQUEST,
+ 		.nlh.nlmsg_seq = rth->dump = ++rth->seq,
+ 		.tmsg.family = family,
++		.tmsg.flags = flags,
+ 		.tmsg.ifindex = ifindex,
+ 	};
+ 
 -- 
 2.25.1
 
