@@ -2,173 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B9F551ED6B
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 14:13:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E01C51ED91
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 14:58:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232727AbiEHMQy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 08:16:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59048 "EHLO
+        id S233361AbiEHNCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 09:02:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46390 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232540AbiEHMQx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 08:16:53 -0400
-Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A313AE0E9;
-        Sun,  8 May 2022 05:12:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1652011928;
-        bh=urf/6grh3HJinL6V+chc5QjAaSNuRTaSFnBMrsEERZQ=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=dp3haL9EMAb+d40ThGLw2NcWomb7pYltQytDtNfkzAZ5gbjPBwiMDhhB4553s+/q0
-         Pxh1T0BrletMfoS6DkhrAbGjRG4PG0gsNFQWX7e5yKIwBy618RmnHkIIlK0h1I4HcI
-         H85tzNqlGG9U35ba2U7mUc0CTXvpFE96DppUj+wg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.158.76] ([217.61.158.76]) by web-mail.gmx.net
- (3c-app-gmx-bap68.server.lan [172.19.172.68]) (via HTTP); Sun, 8 May 2022
- 14:12:08 +0200
+        with ESMTP id S233732AbiEHNAm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 09:00:42 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2079.outbound.protection.outlook.com [40.107.244.79])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B34E000;
+        Sun,  8 May 2022 05:56:50 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=A1T8z+bzE9FRviWQ42r46aHPMXNyYi9vmyTrEWEKoYYk2PyjA7VNVUxBHmRUAXsuQiv015eTpNGtncJXwCwzNMVyftH6zSERcWS+Ivaj/qVu85FPJL6ojPWBzL47rU3mkzvdrf0ofJ+KFXgsG5NLQB6pFgdRAqGANtHAmRnkV34oCrsxBHXevvgkxW7GvhF6t9tLMS420wvPEasyEaB9semca81kJw3MfszIz8YRXZQKabSCJUxP5tHXunjXU0pDqnkPBUDvdPoiFsmlHSElwK5iqqPGAo2i1OB8JmFPD4hklCDSiUeTgnIXJThi77CfG++mOQw0WSR69kz44YkhuA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=MBaJrLznBlMSr6Fi262QxR4X7PpfekxB6ke3GfKf4uA=;
+ b=Bn8mCbLRl2eIlMLku/P9KZTxanWVWBKludqoTVDqjjNNTyzpSfDfxc3R1Z1mOwYjQtuurJ3GPKKSjZG4hJtaq2gBck6sfctS1iZZuw1pMREObYQH6qYF1cVRUUdxOdxnfZX2ww2qhMWbwTxeO/qVUfBYR8wIybUnNeYRxlUiv71cxwj0H5DGVjY8ZlK0BzlfLYLln714YxSM06HhHmpCWQ4MU+WcdcBduAlXmYLi1qZ59jdCVafos/lHRPo/ueVM0Sb9Xw6vNDDeZf72yCCpD0IGAstwLkQw7ac4jJnMfLBKtK2golvK3E5qROpaxy+cAoTIbLTplyx/bD8sSBeUdA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=MBaJrLznBlMSr6Fi262QxR4X7PpfekxB6ke3GfKf4uA=;
+ b=eCn3Q0FvtvOJBJoxpGytqJN1GMwjK+Bxx2k1n26Kbo3e04hww/35s1l9BBhaqblol8Z3utX9uy1nhilQBKjYmUZPcizSzS2VNdt3MWUjb9lDW4PBwgvqX7J5y8rq3Brk3Pxndo18HZm6U0OrA11Zc/uAXEfeppA3pTNiaycgdgmFaOebinFshW1PL1MAZYS85W7PwLg3NStwQLMdwM0pdElpOZFtaQ7KVmP29QT9wIffQXhNcEQu0W6adVaWkM/A4Kh735JL+OAhlhVyH6Kzkz56sCl8rEcV+tWRKx0vpbXGboy1q4q06DlsayzTJQCkKYj/hnbd03z2pigwu6sTQA==
+Received: from MW4PR03CA0137.namprd03.prod.outlook.com (2603:10b6:303:8c::22)
+ by PH7PR12MB5952.namprd12.prod.outlook.com (2603:10b6:510:1db::6) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20; Sun, 8 May
+ 2022 12:56:47 +0000
+Received: from CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8c:cafe::f0) by MW4PR03CA0137.outlook.office365.com
+ (2603:10b6:303:8c::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22 via Frontend
+ Transport; Sun, 8 May 2022 12:56:47 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT029.mail.protection.outlook.com (10.13.174.214) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5227.15 via Frontend Transport; Sun, 8 May 2022 12:56:46 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Sun, 8 May
+ 2022 12:56:46 +0000
+Received: from [172.27.15.27] (10.126.231.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 8 May 2022
+ 05:56:43 -0700
+Message-ID: <f66e171d-2969-ee69-25e4-4645b567f996@nvidia.com>
+Date:   Sun, 8 May 2022 15:56:40 +0300
 MIME-Version: 1.0
-Message-ID: <trinity-7f04b598-0300-4f3c-80e7-0c2145e8ba8f-1652011928036@3c-app-gmx-bap68>
-From:   Frank Wunderlich <frank-w@public-files.de>
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     linux-rockchip@lists.infradead.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Peter Geis <pgwipeout@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Subject: Aw: Re: [PATCH v3 5/6] dt-bindings: net: dsa: make reset optional
- and add rgmii-mode to mt7531
-Content-Type: text/plain; charset=UTF-8
-Date:   Sun, 8 May 2022 14:12:08 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <2509116.Lt9SDvczpP@phil>
-References: <20220507170440.64005-1-linux@fw-web.de>
- <06157623-4b9c-6f26-e963-432c75cfc9e5@linaro.org>
- <DC0D3996-DFFE-4E71-B843-8D34C613D498@public-files.de>
- <2509116.Lt9SDvczpP@phil>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:5zepZXQ7VM3wRIvl1omrRkcQYRbWljpPdOn3rctdJ68EDLRb/Q24a0AfByhcEpmThRrM9
- XDXoxnndTJTTB8ftDLsJbKlbc/RsJfe6tPnM5q19yQJOp+qsA7fAHwMjuCMXI9X42gFBFwc9hJ1n
- MClWkUTW6eDQ9zRklCIDhuiIkrkRWPrpwjuJCghQ4jaxS14SEjcpUFVvsttTXFg/v+izpHP9rjHG
- 5K8t4XzErdhMlTCH/eYhANMQV5xXm3aJlb+YL7E9gNFRtINKVGPK7vVv/4Tn/zZ3M303CC9DAAen
- ZY=
-X-UI-Out-Filterresults: notjunk:1;V03:K0:kpgB8WD7jB0=:31o1l/JqXaifC2Kwk5BnA5
- VGzswJjo2yL+aKgrRVCfdD4clXFY0s+2dA8zSb0Vh49KYvyC17eChYgUHcpi8OIef/2dV+w/9
- Pn58j/Uc6nV6fII/bnOQ0NZIANmW21dXO6FgCMPHzMtNZPfONtGm+Pewx4XryZ0xFc0rqeUQw
- j4VlKJzc3cdZR3uPToufdhdpNVStsXL6BwLujp9kNQM5aPO/CZuZrlrM9rrWj2s23czwi53mv
- /wsWJzP+pUbjpqYXhr/8Pn1vU3L8HugYQBKVTHjAFBWf1p41wBY9xHvR/Mkzgj2nefCXPQtNn
- RLjR/a+3JA7eKzEBPDgduFS4gW1pL6rNKcBowGKzAWDOvM2rxJnd+TqmduYBthZcoyfw4r2QW
- N8oLlea5BdJN8H19WlnIrG/pQd5AsuPzHhUjS2hJehG+cbKqy/m0KCJroKtJ1mAMl+0PpIdQA
- Mb5eH9x+wFs/kUo73f3RuX+rGzXWV3CQjX2V88tuFVK85Y+XIxIYZ6rIFT3zjAe2nUcltGX6K
- mYYsBLQNqpnBuz7V5tHDOtWTM8MqDxTNy/7oZl8M/ngQO1Q8HZbxBYBXnBE+AmOFclPa5Rut9
- KEzRKol37E3i7GDtMH1woyZoLJVzFHMvU0o1/C9NFlnqyxtVAKNlOnSHfzOesXq8iCFwrcQlU
- vST0akrfSHJYXuZwP1YJoC25O+/6mSWBhtfyyzDO55reVS3f1ojxNGEhm7+W8hQgyq5nGJa9W
- lT8FIVab+rrge0tW0xSpkVXBLFFiI1lo0YLKzu/jhjzzMSCQKKlUo5AKOn89KsW1W4q7cCnVx
- igaLZ1o
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH mlx5-next 1/5] vfio/mlx5: Reorganize the VF is migratable
+ code
+Content-Language: en-US
+To:     Alex Williamson <alex.williamson@redhat.com>
+CC:     <jgg@nvidia.com>, <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
+        <maorg@nvidia.com>, <cohuck@redhat.com>
+References: <20220427093120.161402-1-yishaih@nvidia.com>
+ <20220427093120.161402-2-yishaih@nvidia.com>
+ <20220504141304.7c511e57.alex.williamson@redhat.com>
+From:   Yishai Hadas <yishaih@nvidia.com>
+In-Reply-To: <20220504141304.7c511e57.alex.williamson@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.126.231.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5611ad79-609f-4c6c-71ea-08da30f235d9
+X-MS-TrafficTypeDiagnostic: PH7PR12MB5952:EE_
+X-Microsoft-Antispam-PRVS: <PH7PR12MB59522DB30189BFA19232F2B1C3C79@PH7PR12MB5952.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fohVK7py5wU4FmtRejZP0fAOOVgbZY2wQ6scGoDlCwklJM85iwJgJSX76suTxc1rBq9SyBTEGj0lxakGjsb/CI3nxk8Jhi5Ayx/WWfXkDHpqeZOCRTyv0jzP0ieOreIfNYtbDegrnAF4Q7c9Ircw3oCog8IePHrdWC9ejeeH21pzH2RSPS+cNo3oqJhTiUkWSLhhU+JH4ut0CWAHnrN5BM+UwU5wizZruq17pJkFNAlc1iJPWF7DW8gez9adA1tM1vYZIOSlq4SYcXBwqrSz5x8Pqhi2mCrswR75NTo3N4uFDIaMtwBcjGahsW78ZV3WqpZM+uD0PwMlDnivXRvrOvrPXKg6xo4GuTQgPQYjXXihcKJAl9o8QfY/73n0U5crbCnKLC7wD553O6zYrp+bdmPUsvW4mi4uLR5oAhAAf4itUsxT0QFwCVZgcdE0oD2/PewZHenE2zUY2OdE7r8ubr8Qp687berlXrP3zxgS8i7Gpxq7PWRUHgCuVqvnPki3FZG8fNCUr2N8q5ZXwROwsZc9d0ubUNo0512tOVLUwlNShIKm7pAASyXXUlsj4mO7eVJxVIJiKS4NSlKed+UULSEBnzpEJ24ut5MSBBRQ3ZqXh9beCjEpFNHHk7WwmzzeRiZV6D2TcYG2uHWnRU6lKQwdkH5McDC9FyxrU1jf9D/hkrYHFf0z5YbseN/Zz/KdpBZEhZL7Pj3OvTSyQIA8Fpxvr3hM4pWCwWRqKcYNl6rIjgpjA++GHLNyCTqtROmg
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(36756003)(31696002)(86362001)(186003)(2616005)(16526019)(83380400001)(47076005)(426003)(8936002)(336012)(356005)(2906002)(81166007)(5660300002)(36860700001)(70586007)(70206006)(508600001)(8676002)(4326008)(40460700003)(31686004)(16576012)(6916009)(54906003)(316002)(53546011)(26005)(82310400005)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 12:56:46.8758
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5611ad79-609f-4c6c-71ea-08da30f235d9
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT029.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR12MB5952
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Heiko
-
-> Gesendet: Sonntag, 08. Mai 2022 um 11:41 Uhr
-> Von: "Heiko Stuebner" <heiko@sntech.de>
-> Am Sonntag, 8. Mai 2022, 08:24:37 CEST schrieb Frank Wunderlich:
-> > Am 7. Mai 2022 22:01:22 MESZ schrieb Krzysztof Kozlowski <krzysztof.ko=
-zlowski@linaro.org>:
-> > >On 07/05/2022 19:04, Frank Wunderlich wrote:
-> > >> From: Frank Wunderlich <frank-w@public-files.de>
-> > >>
-> > >> Make reset optional as driver already supports it,
-> > >
-> > >I do not see the connection between hardware needing or not needing a
-> > >reset GPIO and a driver supporting it or not... What does it mean?
-> >
-> > My board has a shared gpio-reset between gmac and switch, so both will=
- resetted if it
-> > is asserted. Currently it is set to the gmac and is aquired exclusive.=
- Adding it to switch results in 2 problems:
-> >
-> > - due to exclusive and already mapped to gmac, switch driver exits as =
-it cannot get the reset-gpio again.
-> > - if i drop the reset from gmac and add to switch, it resets the gmac =
-and this takes too long for switch
-> > to get up. Of course i can increase the wait time after reset,but drop=
-ping reset here was the easier way.
-> >
-> > Using reset only on gmac side brings the switch up.
+On 04/05/2022 23:13, Alex Williamson wrote:
+> On Wed, 27 Apr 2022 12:31:16 +0300
+> Yishai Hadas <yishaih@nvidia.com> wrote:
 >
-> I think the issue is more for the description itself.
+>> Reorganize the VF is migratable code to be in a separate function, next
+>> patches from the series may use this.
+>>
+>> Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
+>> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+>> ---
+>>   drivers/vfio/pci/mlx5/cmd.c  | 18 ++++++++++++++++++
+>>   drivers/vfio/pci/mlx5/cmd.h  |  1 +
+>>   drivers/vfio/pci/mlx5/main.c | 22 +++++++---------------
+>>   3 files changed, 26 insertions(+), 15 deletions(-)
+>>
+>> diff --git a/drivers/vfio/pci/mlx5/cmd.c b/drivers/vfio/pci/mlx5/cmd.c
+>> index 5c9f9218cc1d..d608b8167f58 100644
+>> --- a/drivers/vfio/pci/mlx5/cmd.c
+>> +++ b/drivers/vfio/pci/mlx5/cmd.c
+>> @@ -71,6 +71,24 @@ int mlx5vf_cmd_query_vhca_migration_state(struct pci_dev *pdev, u16 vhca_id,
+>>   	return ret;
+>>   }
+>>   
+>> +bool mlx5vf_cmd_is_migratable(struct pci_dev *pdev)
+>> +{
+>> +	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
+>> +	bool migratable = false;
+>> +
+>> +	if (!mdev)
+>> +		return false;
+>> +
+>> +	if (!MLX5_CAP_GEN(mdev, migration))
+>> +		goto end;
+>> +
+>> +	migratable = true;
+>> +
+>> +end:
+>> +	mlx5_vf_put_core_dev(mdev);
+>> +	return migratable;
+>> +}
+> This goto seems unnecessary, couldn't it instead be written:
 >
-> Devicetree is only meant to describe the hardware and does in general do=
-n't
-> care how any firmware (Linux-kernel, *BSD, etc) handles it. So going wit=
-h
-> "the kernel does it this way" is not a valid reason for a binding change=
- ;-) .
+> {
+> 	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
+> 	boot migratable = true;
 >
-> Instead in general want to reason that there are boards without this res=
-et
-> facility and thus make it optional for those.
+> 	if (!mdev)
+> 		return false;
+>
+> 	if (!MLX5_CAP_GEN(mdev, migration))
+> 		migratable = false;
+>
+> 	mlx5_vf_put_core_mdev(mdev);
+> 	return migratable;
+> }
+>
+> Thanks,
+> Alex
 
-if only the wording is the problem i try to rephrase it from hardware PoV.
 
-maybe something like this?
+V1 will handle that as part of some refactoring and combing this patch 
+and patch #3 based on your notes there.
 
-https://github.com/frank-w/BPI-R2-4.14/commits/5.18-mt7531-mainline2/Docum=
-entation/devicetree/bindings/net/dsa/mediatek%2Cmt7530.yaml
+Thanks.
 
-Another way is maybe increasing the delay after the reset (to give more ti=
-me all
-come up again), but imho it is no good idea resetting the gmac/mdio-bus fr=
-om the
-child device.
+>
+>> +
+>>   int mlx5vf_cmd_get_vhca_id(struct pci_dev *pdev, u16 function_id, u16 *vhca_id)
+>>   {
+>>   	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
+>> diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
+>> index 1392a11a9cc0..2da6a1c0ec5c 100644
+>> --- a/drivers/vfio/pci/mlx5/cmd.h
+>> +++ b/drivers/vfio/pci/mlx5/cmd.h
+>> @@ -29,6 +29,7 @@ int mlx5vf_cmd_resume_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod);
+>>   int mlx5vf_cmd_query_vhca_migration_state(struct pci_dev *pdev, u16 vhca_id,
+>>   					  size_t *state_size);
+>>   int mlx5vf_cmd_get_vhca_id(struct pci_dev *pdev, u16 function_id, u16 *vhca_id);
+>> +bool mlx5vf_cmd_is_migratable(struct pci_dev *pdev);
+>>   int mlx5vf_cmd_save_vhca_state(struct pci_dev *pdev, u16 vhca_id,
+>>   			       struct mlx5_vf_migration_file *migf);
+>>   int mlx5vf_cmd_load_vhca_state(struct pci_dev *pdev, u16 vhca_id,
+>> diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
+>> index bbec5d288fee..2578f61eaeae 100644
+>> --- a/drivers/vfio/pci/mlx5/main.c
+>> +++ b/drivers/vfio/pci/mlx5/main.c
+>> @@ -597,21 +597,13 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
+>>   		return -ENOMEM;
+>>   	vfio_pci_core_init_device(&mvdev->core_device, pdev, &mlx5vf_pci_ops);
+>>   
+>> -	if (pdev->is_virtfn) {
+>> -		struct mlx5_core_dev *mdev =
+>> -			mlx5_vf_get_core_dev(pdev);
+>> -
+>> -		if (mdev) {
+>> -			if (MLX5_CAP_GEN(mdev, migration)) {
+>> -				mvdev->migrate_cap = 1;
+>> -				mvdev->core_device.vdev.migration_flags =
+>> -					VFIO_MIGRATION_STOP_COPY |
+>> -					VFIO_MIGRATION_P2P;
+>> -				mutex_init(&mvdev->state_mutex);
+>> -				spin_lock_init(&mvdev->reset_lock);
+>> -			}
+>> -			mlx5_vf_put_core_dev(mdev);
+>> -		}
+>> +	if (pdev->is_virtfn && mlx5vf_cmd_is_migratable(pdev)) {
+>> +		mvdev->migrate_cap = 1;
+>> +		mvdev->core_device.vdev.migration_flags =
+>> +			VFIO_MIGRATION_STOP_COPY |
+>> +			VFIO_MIGRATION_P2P;
+>> +		mutex_init(&mvdev->state_mutex);
+>> +		spin_lock_init(&mvdev->reset_lock);
+>>   	}
+>>   
+>>   	ret = vfio_pci_core_register_device(&mvdev->core_device);
 
-have not looked into the gmac driver if this always  does the initial rese=
-t to
-have a "clean state". In this initial reset the switch will be resetted to=
-o
-and does not need an additional one which needs the gmac/mdio initializati=
-on
-to be done again.
 
-> > >> allow port 5 as
-> > >> cpu-port
-> > >
-> > >How do you allow it here?
-> >
-> > Argh, seems i accidentally removed this part and have not recognized w=
-hile checking :(
-> >
-> > It should only change description of reg for ports to:
-> >
-> > "Port address described must be 5 or 6 for CPU port and from 0 to 5 fo=
-r user ports."
-
-noticed that the target-phase is not removed but squashed in the first bin=
-dings-patch.
-This was a rebasing error and not intented...will fix in next version.
-
-regards Frank
