@@ -2,95 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 929E051EC55
-	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 11:10:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93D9651EC52
+	for <lists+netdev@lfdr.de>; Sun,  8 May 2022 11:10:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231747AbiEHJOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 05:14:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
+        id S231772AbiEHJOH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 05:14:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231772AbiEHJNy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 05:13:54 -0400
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (mail-dm6nam10on2067.outbound.protection.outlook.com [40.107.93.67])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50093DF1C
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 02:10:04 -0700 (PDT)
+        with ESMTP id S231846AbiEHJNz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 05:13:55 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2064.outbound.protection.outlook.com [40.107.237.64])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 639E9DF1C
+        for <netdev@vger.kernel.org>; Sun,  8 May 2022 02:10:06 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e/CiGE5W9VHAwO31M75xs5jzFVKOKeC7WYi7VUt7+5ISvNrm8X35eZI1njsanSufXKjiQabLtOb+EmKgAbqvxvhwaLUY/6VZ4ox/nDc2Kdj+n10puVY0M6d7BgdKRo30tCOCiVgiGoHO9xK2EkItTqBykhEFsl37a8jBqebMRcY95VNY0IF6SNLXpHuHVGqVWfRiosypnqI1BE5CohyekBY9R4fd2E+Q0M5ZgdGjvIR+DUkMc12bBorPb0rkcQe0uGyOzzvy7QbO7CQN54PyhmNta7T0Z2vtltep7cQdRCgZhseWltKb9T+Ko6ghbieDf/2kSQImH+V3nWCglYAjuQ==
+ b=YHgRyFbfWXCWCchTLkr8SxdaRhOgftjpqvk14BO4L7U7eNrYE7S8GYcY4x1XZTT3XV21ajBKz7qeiLqHR7dsVS+UG6X/icQu/pHChC75oxXcWSpc26zJx5GNl8IoQrbWcN+TnpVP+/ZFddffcF1kPc7nIzEXGVUoKfiTVqEpI/XRpV++ign+aRTegfatAi9xD82LfxAIJmr+KbXblcZI6SSFR6qw8UKMEC4s1WMFGkU6YRGZyk2K7EejeZaJckE4ze5zFLxHdzOVWclPlB0SaKBbakr1lgi6VV9gP8czxwxWx+L9TIXThsSduKXRNT6vJEaWIaom2c1nhLATVwZqww==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FI8tDYeHnQvZ7AGpnrT4pedSw2GjD+Z91ATYcBruMzU=;
- b=IpElCBnVEtvsAqSBbl1G8L6Ysh1GkUV7I/2TUqL6PwF9lMCmBtiL/jFnPnq7o0NPfTNXdmviLo8EaimDIimPdNMhzymvngWuiR2yzjCFBzK+oV8DB3r6DLs7SCHPBdt8sLxLwzNopyQMhQtLLBqzbL8Eo+NyWWePw9EjThMVJiugZma66Nc69UFEVomiD/YbH+sdZ78iwq+OW59Y6e30BkHmUPz7ozqZXWAHI2lAbSJem4XB34jStzajr/ls78FQQA2oPzR1D2d1cBLkspgS8JVyZ/qbBReitZoewaZGq4hRSsSo8+Gri4DUjWFEGVX8R1mu+eut3BW5/FBAiIpOcQ==
+ bh=mR1PHQr79HqBd2W9uzr8JPnr1SPIM420MzWZmyN6Po0=;
+ b=X8pKXdoMTBNzbAb0h2kusKsKONNbae6YqoKz06ZWNoZipGj9ybwGb2aB2tweJejGbuwzpAc4q7ccAlCDCBwZ6nqsPOxvODc2fCJMX7ZGAY4gkfGvzbprGmmvoX/pjUvg/aW0xKAWVwkia2vMkR2Nd/DLxuft5EQUbwLJcK91DOr3G4vPzWPiBbOZ1IymhzigwVVMKuAJH34XbHKIF51e1HeCVExqFb/uz6R7g4dFIKjQnVoSB0ncU8QxrArdQgV2xa1kBJkVE2Fa9e5Q3yBZjLx9YxOgyVgJHXtHyhHUtgGewLR/cUn/oWoewBRQY8vOzkv2ZbhGHwmlRuYug7ZzRQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
+ 12.22.5.235) smtp.rcpttodomain=davemloft.net smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FI8tDYeHnQvZ7AGpnrT4pedSw2GjD+Z91ATYcBruMzU=;
- b=avbisETDthK0jBoZenk1X/M4zfhao63uvfdqHe2qvFo6UVNQrFiBFSUnXs9S1pPr78CgSDoAzEbKbMqVJdxOFd4JQ3IXE2o1K1UdUEK/cmBnoFRYYZWD5U4LQ98neVE85qAM/Ljjaaq8QnF5EPvUjw4KM5h63k6bPs1tgOyqpGWtnUo2ABtZ2r20fYzC4mUpBeoJCIqdnmbt+5c3Gx477QoDaNM4xE8xFagBeItxx60yZ51I4EmlYm3r4nlNfowN7cHBNtDg4/NeiWMFGcv/2MQY/TCQ1RIqITVRYgoVS6X9HaXus1C7tNCys1SclFbKKb/m9q9zgztPEN8QqIiAjw==
-Received: from DM6PR07CA0117.namprd07.prod.outlook.com (2603:10b6:5:330::32)
- by IA1PR12MB6307.namprd12.prod.outlook.com (2603:10b6:208:3e5::22) with
+ bh=mR1PHQr79HqBd2W9uzr8JPnr1SPIM420MzWZmyN6Po0=;
+ b=sRqZStJXGOXtvcfzVXe5Lkk6ZOhgx9EhYHnmMH0ZGtWZSN7Rp70Nnw5hYFtr6D7ai+VStGnMW98epG+60ZEiy7cB+dAYbbprY5/cGxFmwWuegbq8963G7FKJyyG1+TExi/d2PlAdLN6cRkF8Skcpp5lZvCGhwXofVpoqv7VcjPQ8+PfJDnVJpSyhUyVaDRKUCIk687dlu0JNErC/JPqoz+RtN5IjkjTcbUV/iE0Ayf7gYmQGi78OcSMAZlFYWnzBtDUofKen5I9nrj7/TMoTs2pQADF3m303lOLhbVgIpv1wkraKPSLXA+ARhaTQhz1IOg917NBEENZr/7OfZZN3gg==
+Received: from BN9PR03CA0864.namprd03.prod.outlook.com (2603:10b6:408:13d::29)
+ by BL0PR12MB2449.namprd12.prod.outlook.com (2603:10b6:207:40::10) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Sun, 8 May
- 2022 09:10:03 +0000
-Received: from DM6NAM11FT032.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:330:cafe::46) by DM6PR07CA0117.outlook.office365.com
- (2603:10b6:5:330::32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21 via Frontend
- Transport; Sun, 8 May 2022 09:10:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.18; Sun, 8 May
+ 2022 09:10:04 +0000
+Received: from BN8NAM11FT062.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:408:13d:cafe::bd) by BN9PR03CA0864.outlook.office365.com
+ (2603:10b6:408:13d::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.24 via Frontend
+ Transport; Sun, 8 May 2022 09:10:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- DM6NAM11FT032.mail.protection.outlook.com (10.13.173.93) with Microsoft SMTP
+ 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.235; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.235) by
+ BN8NAM11FT062.mail.protection.outlook.com (10.13.177.34) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5227.15 via Frontend Transport; Sun, 8 May 2022 09:10:01 +0000
-Received: from rnnvmail205.nvidia.com (10.129.68.10) by DRHQMAIL105.nvidia.com
- (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Sun, 8 May
- 2022 09:10:01 +0000
-Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail205.nvidia.com
- (10.129.68.10) with Microsoft SMTP Server (version=TLS1_2,
+ 15.20.5227.15 via Frontend Transport; Sun, 8 May 2022 09:10:04 +0000
+Received: from rnnvmail204.nvidia.com (10.129.68.6) by DRHQMAIL107.nvidia.com
+ (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Sun, 8 May
+ 2022 09:10:03 +0000
+Received: from rnnvmail203.nvidia.com (10.129.68.9) by rnnvmail204.nvidia.com
+ (10.129.68.6) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Sun, 8 May 2022
- 02:10:00 -0700
+ 02:10:03 -0700
 Received: from nps-server-31.mtl.labs.mlnx (10.127.8.9) by mail.nvidia.com
  (10.129.68.9) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Sun, 8 May 2022 02:09:58 -0700
+ Transport; Sun, 8 May 2022 02:10:00 -0700
 From:   Lior Nahmanson <liorna@nvidia.com>
 To:     <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
 CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        Lior Nahmanson <liorna@nvidia.com>
-Subject: [PATCH net-next v1 00/3] Introduce MACsec offload SKB extension
-Date:   Sun, 8 May 2022 12:09:51 +0300
-Message-ID: <20220508090954.10864-1-liorna@nvidia.com>
+        Lior Nahmanson <liorna@nvidia.com>,
+        Raed Salem <raeds@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Ben Ben-Ishay <benishay@nvidia.com>
+Subject: [PATCH net-next v1 01/03] net/macsec: Add MACsec skb extension Tx Data path support
+Date:   Sun, 8 May 2022 12:09:52 +0300
+Message-ID: <20220508090954.10864-2-liorna@nvidia.com>
 X-Mailer: git-send-email 2.21.3
+In-Reply-To: <20220508090954.10864-1-liorna@nvidia.com>
+References: <20220508090954.10864-1-liorna@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 919e8327-efbc-4fc6-29d8-08da30d28872
-X-MS-TrafficTypeDiagnostic: IA1PR12MB6307:EE_
-X-Microsoft-Antispam-PRVS: <IA1PR12MB6307E260603312240C9D3824BFC79@IA1PR12MB6307.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: b8442b82-3fae-4d31-e086-08da30d28a29
+X-MS-TrafficTypeDiagnostic: BL0PR12MB2449:EE_
+X-Microsoft-Antispam-PRVS: <BL0PR12MB24496A7B9EAE57B0AF2D006FBFC79@BL0PR12MB2449.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: fPd4YI4Mt7soHawnvp78h9juTPLb2oo9oUCX7D0M2XaF1rMzmq55i7h1V3VO+8GrcVFVrjh/7GQUJBKIKMeyXVoVUHpY1/BjFniqIPYwIQtdM0cKhVHMf5e/VVT04mJVH61r7nG1cgVTEfKLzpfbByvOtEynpiGBq1qmndotp1l9y+MqlBzQGq1123nlq6YhqAaan2+V3dn3mQNSg//PIaum5XvHezg3SCQBNbWfnjwcQZl+BSbgmdL5YW4svhJycQ8mJJf5LVBoveyNziJWuvQ8kAu98Av1TMvP8EWJc9zjC02LHnPlwo7xRlPLYzP5+dD0ta2EBEV0QFL9spTrFWzWbZQN8imd8JOu0aesxRBokpzDg4jJup146rQLSyzNumdU/9mPFj4Ovk/UgGB0odph+8FN71JQuyNwqIKAogOXMeCBApzJcgvWF+ovZQLNBffj6lFWB+gPi4Jyc/LDVqYJG5D5j8D6DKMy+gCFx/7W5LjQBernQdth+srDAmyuTPcDrI4Y9cW4zhJESIUBOaHSuCIGeNIRtDxZ8dmCsHxCBMIWEkxsTYWmxmqObB3qQ/qSxDPFfygO6YP8oarvfdfdUBqT2dkILi1WH1nY4shpmwky7f3YGQRHzyN68eK88ZN4ghGM8r74eVx7Y+uelIq7usPCzb5AHnOXKRQx2B9Q9b9u/FduPY284qzTNObuaIZbanLoYdgx2Olvqq38ow==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(46966006)(36840700001)(70586007)(81166007)(8676002)(26005)(70206006)(4326008)(8936002)(86362001)(5660300002)(508600001)(2906002)(110136005)(36860700001)(6666004)(2616005)(1076003)(316002)(36756003)(54906003)(40460700003)(82310400005)(336012)(107886003)(426003)(186003)(83380400001)(356005)(47076005)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: UxK5m/NYxIZs7rB4GP7l+fL51hU8wUpUwEJntDS9bFtfn6Ek+bUUZCGuna1qH4BBiBGfZuKyqc3cN8C+LeEO1YYvvleRkmY0fTz4NJ3F71hdvfyMYGvqPhYM1V04NiUhGj8axXXZ4RjEfVfyjzJBvT0CNQ7xHX38VdHq8mCf0eH0rTvNFmvfljWtI5X3ntePdv8hCp73LmDJghxbdMpL5bOCWLjeTyIUz59MfvLytoBnYU6rdE7DbCC45WxynjFhf/JnS3WpRWCLPnbJcD2Vl9dKyxmacEBP5Mv6TTVo2L1hhuwSA2dinKwbLtnQJG5FYXscs2ARZZffhhoiWHrt9OK6l/e0NYzza2/CmEF2hJ3BosoAZre5SlqFCmlOhGgH4vnIUMZ/3tezCiZ1y/ZqI+bRTDbzHp+qaPnCDsrZqdfnRJcPT7ZXKFwPTeR7dPHsBskB/enV+w0Y6Pg3PBSL6m6I++XHf4+RqsBtZDY0h9GUgnaPJx6spQkBzkq3VJ0OVie8wUpMCDuMm+aPDSRB4DoMklNVbZC43wKlnZp6OgOe5MXrUF0IcuGIffJptWx6+fkQseirCfmBGnLyLIpMO+NhVU56WlMg7J26xuMbzHr72vb2bL2rc2JJAIdkcDOtj+QOGjohyOpQRZB9QcXnfagNIq2nu9Bkbhd0VsbA0WqIqyHEE0mhJxbh/7zNVcPp7nzoA4HY2kAf6BuYHQFWMA==
+X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(2616005)(186003)(47076005)(107886003)(26005)(426003)(86362001)(336012)(1076003)(81166007)(356005)(40460700003)(82310400005)(508600001)(36860700001)(316002)(54906003)(110136005)(83380400001)(36756003)(8676002)(8936002)(2906002)(70206006)(70586007)(5660300002)(6666004)(4326008)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 09:10:01.5545
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 May 2022 09:10:04.3893
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 919e8327-efbc-4fc6-29d8-08da30d28872
+X-MS-Exchange-CrossTenant-Network-Message-Id: b8442b82-3fae-4d31-e086-08da30d28a29
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT032.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN8NAM11FT062.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR12MB6307
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR12MB2449
 X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -101,22 +105,6 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset introduces MACsec SKB extension to lay the ground
-for MACsec HW offload.
-
-MACsec is an IEEE standard (IEEE 802.1AE) for MAC security.
-It defines a way to establish a protocol independent connection
-between two hosts with data confidentiality, authenticity and/or
-integrity, using GCM-AES. MACsec operates on the Ethernet layer and
-as such is a layer 2 protocol, which means it’s designed to secure
-traffic within a layer 2 network, including DHCP or ARP requests.
-
-Linux has a software implementation of the MACsec standard and
-HW offloading support.
-The offloading is re-using the logic, netlink API and data
-structures of the existing MACsec software implementation.
-
-For Tx:
 In the current MACsec offload implementation, MACsec interfaces are
 sharing the same MAC address of their parent interface by default.
 Therefore, HW can't distinguish if a packet was sent from MACsec
@@ -128,31 +116,109 @@ Used SKB extension, so SW can mark if a packet is needed to be offloaded
 and use the SCI, which is unique value for each MACsec interface,
 to notify the HW from which MACsec interface the packet is sent.
 
-For Rx:
-Like in the Tx changes, packet that don't have SecTAG
-header aren't necessary been offloaded by the HW.
-Therefore, the MACsec driver needs to distinguish if the packet
-was offloaded or not and handle accordingly.
-Moreover, if there are more than one MACsec device with the same MAC
-address as in the packet's destination MAC, the packet will forward only
-to this device and only to the desired one.
+Signed-off-by: Lior Nahmanson <liorna@nvidia.com>
+Reviewed-by: Raed Salem <raeds@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Ben Ben-Ishay <benishay@nvidia.com>
+---
+ drivers/net/Kconfig    | 1 +
+ drivers/net/macsec.c   | 5 +++++
+ include/linux/skbuff.h | 3 +++
+ include/net/macsec.h   | 6 ++++++
+ net/core/skbuff.c      | 7 +++++++
+ 5 files changed, 22 insertions(+)
 
-Used SKB extension and marking it by the HW if the packet was offloaded
-and to which MACsec offload device it belongs according to the packet's
-SCI.
-
-1) patch 0001-0002, Add support to SKB extension in MACsec code:
-net/macsec: Add MACsec skb extension Tx Data path support
-net/macsec: Add MACsec skb extension Rx Data path support
-
-2) patch 0003, Move some MACsec driver code for sharing with various
-drivers that implements offload:
-net/macsec: Move some code for sharing with various drivers that
-implements offload
-
-Follow-up patchset for Nvidia MACsec HW offload will be submitted
-later on.
-
+diff --git a/drivers/net/Kconfig b/drivers/net/Kconfig
+index b2a4f998c180..6c9a950b7010 100644
+--- a/drivers/net/Kconfig
++++ b/drivers/net/Kconfig
+@@ -313,6 +313,7 @@ config MACSEC
+ 	select CRYPTO_AES
+ 	select CRYPTO_GCM
+ 	select GRO_CELLS
++	select SKB_EXTENSIONS
+ 	help
+ 	   MACsec is an encryption standard for Ethernet.
+ 
+diff --git a/drivers/net/macsec.c b/drivers/net/macsec.c
+index 832f09ac075e..0960339e2442 100644
+--- a/drivers/net/macsec.c
++++ b/drivers/net/macsec.c
+@@ -3377,6 +3377,11 @@ static netdev_tx_t macsec_start_xmit(struct sk_buff *skb,
+ 	int ret, len;
+ 
+ 	if (macsec_is_offloaded(netdev_priv(dev))) {
++		struct macsec_ext *secext = skb_ext_add(skb, SKB_EXT_MACSEC);
++
++		secext->sci = secy->sci;
++		secext->offloaded = true;
++
+ 		skb->dev = macsec->real_dev;
+ 		return dev_queue_xmit(skb);
+ 	}
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 84d78df60453..4ee71c7848bf 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -4552,6 +4552,9 @@ enum skb_ext_id {
+ #endif
+ #if IS_ENABLED(CONFIG_MCTP_FLOWS)
+ 	SKB_EXT_MCTP,
++#endif
++#if IS_ENABLED(CONFIG_MACSEC)
++	SKB_EXT_MACSEC,
+ #endif
+ 	SKB_EXT_NUM, /* must be last */
+ };
+diff --git a/include/net/macsec.h b/include/net/macsec.h
+index d6fa6b97f6ef..fcbca963c04d 100644
+--- a/include/net/macsec.h
++++ b/include/net/macsec.h
+@@ -20,6 +20,12 @@
+ typedef u64 __bitwise sci_t;
+ typedef u32 __bitwise ssci_t;
+ 
++/* MACsec sk_buff extension data */
++struct macsec_ext {
++	sci_t sci;
++	bool offloaded;
++};
++
+ typedef union salt {
+ 	struct {
+ 		u32 ssci;
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 30b523fa4ad2..7483f45a6a83 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -72,6 +72,7 @@
+ #include <net/mptcp.h>
+ #include <net/mctp.h>
+ #include <net/page_pool.h>
++#include <net/macsec.h>
+ 
+ #include <linux/uaccess.h>
+ #include <trace/events/skb.h>
+@@ -4345,6 +4346,9 @@ static const u8 skb_ext_type_len[] = {
+ #if IS_ENABLED(CONFIG_MCTP_FLOWS)
+ 	[SKB_EXT_MCTP] = SKB_EXT_CHUNKSIZEOF(struct mctp_flow),
+ #endif
++#if IS_ENABLED(CONFIG_MACSEC)
++	[SKB_EXT_MACSEC] = SKB_EXT_CHUNKSIZEOF(struct macsec_ext),
++#endif
+ };
+ 
+ static __always_inline unsigned int skb_ext_total_length(void)
+@@ -4364,6 +4368,9 @@ static __always_inline unsigned int skb_ext_total_length(void)
+ #endif
+ #if IS_ENABLED(CONFIG_MCTP_FLOWS)
+ 		skb_ext_type_len[SKB_EXT_MCTP] +
++#endif
++#if IS_ENABLED(CONFIG_MACSEC)
++		skb_ext_type_len[SKB_EXT_MACSEC] +
+ #endif
+ 		0;
+ }
 -- 
 2.25.4
 
