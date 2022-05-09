@@ -2,139 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B4BDC5206B9
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 23:37:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2870520726
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 23:54:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229681AbiEIVlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 17:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49896 "EHLO
+        id S229754AbiEIV6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 17:58:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiEIVlY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 17:41:24 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3ED5AAB5C;
-        Mon,  9 May 2022 14:37:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652132247; x=1683668247;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=bpwLLLksaAjmFbrWqexTl9pq/J50D/MrBAfquLBNJVw=;
-  b=STMUFLYXPv8yXx4vzIdxwVZX4F1yb8qfACH60whZaLa5rsuvAEgELmC6
-   fvVn1UEdHBd/E5Bb49r3SxKglMrPIt1+UgL6BjoAYc6nHPNj32iCxqLEV
-   4tej7smh9Z+uUJZkwU0EOJes+PZuAA9XPrK6N2WSLvNf/hJB8B5o16WM/
-   AIBR4bEbauIuGJvWIrsxrsB5cXkwEB2xnAv+qb0HOGFMcAVRrFnQw8Ms9
-   GjVMD/Dm/SrHQdXpckYPtus7aOoiM2wmM7EH9uuA3OcJ2ffjxYawOnu9R
-   faoDxmA6EF4gSYeFQTisD3ZL3AHOnvB6mVduGRWlS/soYsqzWXP6ktaBt
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="294402865"
-X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
-   d="scan'208";a="294402865"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 14:37:27 -0700
-X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
-   d="scan'208";a="602152507"
-Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.209.126.63]) ([10.209.126.63])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 14:37:26 -0700
-Message-ID: <c4892d58-9d97-8fd7-800d-8433181cbda5@linux.intel.com>
-Date:   Mon, 9 May 2022 14:37:26 -0700
+        with ESMTP id S231246AbiEIVzp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 17:55:45 -0400
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2B462CAA98;
+        Mon,  9 May 2022 14:49:15 -0700 (PDT)
+Received: by mail-io1-xd33.google.com with SMTP id r27so16783500iot.1;
+        Mon, 09 May 2022 14:49:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fhp+F4xfYnb8fD7mYS48fVBfznRXTRAmEck5eOq6Vj4=;
+        b=kwF3uZPpQP6cE69Wg+Cuk6xAb7uMcNTjugnQuuLlJP7H76lHYLKhAQcFW/CbIdWb/Q
+         MAMgU2k2X+1l766zZLs0L990062Bzz5woKw+zrSe0kmUKLbH4Iu8nK+2dgS2eExWiU3m
+         +LftxAVsPUPF98JYHsyM3od4E5YU0EzpBYZ0zJ999EzRl8bJsvgfK5FFDKBvV6NeNTKy
+         KdiPbfr9lRftIqEzm4rkv8x79Wr9t/1owUEumszq7RvPBef1x62GzVwyztbfdQhGBvSh
+         aAWJkr2kbUq9ElYb5/FHFl7wBNoEie1rhZ3W42ngPsNlGIYkEyJ9AkUVMTrBIjaqZ7I6
+         skbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fhp+F4xfYnb8fD7mYS48fVBfznRXTRAmEck5eOq6Vj4=;
+        b=zQs31oHoJkBY0wc4uL7GrXfJv5Mcn4R/bh7Ouh/e3SsCgKH93JaiwgIiadGMJl2pfa
+         4Flgfo2eGi/tOKDJblkL3wq9LUPCOASww1AoVhEKkZBCfdeZpqOEh9W7gyIfU9LS96pC
+         kKimdTnozywSt7+mdIl7v6l2JCUtTge5xz898efnUXCY3lX9T3QOh+A9Bk9S11eU3mfw
+         pFh7L5ZVI/AzWMG6tsAAEF85quEjgzupKNbOFwYIp8WCrJ8uxfwNJHn/Sg+OYqX5DAf2
+         Sl5K/0xMLgJ/cJ72KmeBJUP0FBrKTT4IFky5L64qwHsgL5ZpU5EUfCRzSs/jFizMhZ6H
+         YVxw==
+X-Gm-Message-State: AOAM531oDFeC5Uh4Udm6yx1idg4eTyQnE+nVYUEMtsSlWR5T2Zvy2DEA
+        DlH/PD/QhSlImATjFJ16WmUhVeeTmyuE8Gn7M5A=
+X-Google-Smtp-Source: ABdhPJyq5xGZnYmxwjyT3pi4tT+/AfimlEdcEmrm6paH0Q1FRW5zzXgWiI5LKWLRdy+NRG6ogZCYad8xIc06FBMsiWU=
+X-Received: by 2002:a02:5d47:0:b0:32b:4387:51c8 with SMTP id
+ w68-20020a025d47000000b0032b438751c8mr8369977jaa.103.1652132955122; Mon, 09
+ May 2022 14:49:15 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH net-next v8 02/14] net: skb: introduce
- skb_data_area_size()
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Sergey Ryazanov <ryazanov.s.a@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        David Miller <davem@davemloft.net>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Loic Poulain <loic.poulain@linaro.org>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>,
-        "Devegowda, Chandrashekar" <chandrashekar.devegowda@intel.com>,
-        Intel Corporation <linuxwwan@intel.com>,
-        chiranjeevi.rapolu@linux.intel.com,
-        =?UTF-8?B?SGFpanVuIExpdSAoIOWImOa1t+WGmyk=?= 
-        <haijun.liu@mediatek.com>,
-        "Hanania, Amir" <amir.hanania@intel.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "Sharma, Dinesh" <dinesh.sharma@intel.com>,
-        "Lee, Eliot" <eliot.lee@intel.com>,
-        "Jarvinen, Ilpo Johannes" <ilpo.johannes.jarvinen@intel.com>,
-        "Veleta, Moises" <moises.veleta@intel.com>,
-        "Bossart, Pierre-louis" <pierre-louis.bossart@intel.com>,
-        "Sethuraman, Muralidharan" <muralidharan.sethuraman@intel.com>,
-        "Mishra, Soumya Prakash" <Soumya.Prakash.Mishra@intel.com>,
-        "Kancharla, Sreehari" <sreehari.kancharla@intel.com>,
-        "Sahu, Madhusmita" <madhusmita.sahu@intel.com>
-References: <20220506181310.2183829-1-ricardo.martinez@linux.intel.com>
- <20220506181310.2183829-3-ricardo.martinez@linux.intel.com>
- <20220509094930.6d5db0f8@kernel.org>
- <CAHNKnsSZ-Sf=5f3puLUiRRysz80b2CS3tVMXds_Ugur-Dga2aQ@mail.gmail.com>
- <20220509125008.6d1c3b9b@kernel.org>
-From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
-In-Reply-To: <20220509125008.6d1c3b9b@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220429211540.715151-1-sdf@google.com> <20220429211540.715151-6-sdf@google.com>
+In-Reply-To: <20220429211540.715151-6-sdf@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 9 May 2022 14:49:04 -0700
+Message-ID: <CAEf4BzbSW3Wgpt_RYaFSHiPEmiGVkqa0ZsA45hD6pOnBqCFfuQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 05/10] bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Apr 29, 2022 at 2:15 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> We have two options:
+> 1. Treat all BPF_LSM_CGROUP as the same, regardless of attach_btf_id
+> 2. Treat BPF_LSM_CGROUP+attach_btf_id as a separate hook point
+>
+> I'm doing (2) here and adding attach_btf_id as a new BPF_PROG_QUERY
+> argument. The downside is that it requires iterating over all possible
+> bpf_lsm_ hook points in the userspace which might take some time.
+>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  include/uapi/linux/bpf.h       |  1 +
+>  kernel/bpf/cgroup.c            | 43 ++++++++++++++++++++++++----------
+>  kernel/bpf/syscall.c           |  3 ++-
+>  tools/include/uapi/linux/bpf.h |  1 +
+>  tools/lib/bpf/bpf.c            | 42 ++++++++++++++++++++++++++-------
+>  tools/lib/bpf/bpf.h            | 15 ++++++++++++
+>  tools/lib/bpf/libbpf.map       |  1 +
 
-On 5/9/2022 12:50 PM, Jakub Kicinski wrote:
-> On Mon, 9 May 2022 21:34:58 +0300 Sergey Ryazanov wrote:
->>>> +static inline unsigned int skb_data_area_size(struct sk_buff *skb)
->>>> +{
->>>> +     return skb_end_pointer(skb) - skb->data;
->>>> +}
->>> Not a great name, skb->data_len is the length of paged data.
->>> There is no such thing as "data area", data is just a pointer
->>> somewhere into skb->head.
->> What name would you recommend for this helper?
-> We are assuming that skb->data is where we want to start to write
-> to so we own the skb. If it's a fresh skb skb->data == skb->tail.
-> If it's not fresh but recycled - skb->data is presumably reset
-> correctly, and then skb_reset_tail_pointer() has to be called. Either
-> way we give HW empty skbs, tailroom is an existing concept we can use.
+please split kernel and libbpf changes into separate patches and mark
+libbpf's with "libbpf: " prefix
+
+>  7 files changed, 85 insertions(+), 21 deletions(-)
 >
->>> Why do you need this? Why can't you use the size you passed
->>> to the dev_alloc_skb() like everyone else?
->> It was I who suggested to Ricardo to make this helper a common
->> function [1]. So let me begin the discussion, perhaps Ricardo will add
->> to my thoughts as the driver author.
->>
->> There are many other places where authors do the same but without a
->> helper function:
->>
->> [...]
->>
->> There are at least two reasons to evaluate the linear data size from skb:
->> 1) it is difficult to access the same variable that contains a size
->> during skb allocation (consider skb in a queue);
-> Usually all the Rx skbs on the queue are equally sized so no need to
-> save the length per buffer, but perhaps that's not universally true.
+
+[...]
+
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index a9d292c106c2..f62823451b99 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -946,28 +946,54 @@ int bpf_iter_create(int link_fd)
+>         return libbpf_err_errno(fd);
+>  }
 >
->> 2) you may not have access to an allocation size because a driver does
->> not allocate that skb (consider a xmit path).
-> On Tx you should only map the data that's actually populated, for that
-> we have skb_headlen().
+> -int bpf_prog_query(int target_fd, enum bpf_attach_type type, __u32 query_flags,
+> -                  __u32 *attach_flags, __u32 *prog_ids, __u32 *prog_cnt)
+> +int bpf_prog_query2(int target_fd,
+
+this would have to be named bpf_prog_query_opts()
+
+> +                   enum bpf_attach_type type,
+> +                   struct bpf_prog_query_opts *opts)
+>  {
+>         union bpf_attr attr;
+>         int ret;
 >
->> Eventually you found themself in a position where you need to carry
->> additional info along with skb. But, on the other hand, you can simply
->> calculate this value from the skb pointers themselves.
->>
->> 1. https://lore.kernel.org/netdev/CAHNKnsTr3aq1sgHnZQFL7-0uHMp3Wt4PMhVgTMSAiiXT=8p35A@mail.gmail.com/
-> Fair enough, I didn't know more drivers are doing this.
+>         memset(&attr, 0, sizeof(attr));
+> +
+
+[...]
+
+> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> index b5bc84039407..5e5bb3e437cc 100644
+> --- a/tools/lib/bpf/libbpf.map
+> +++ b/tools/lib/bpf/libbpf.map
+> @@ -450,4 +450,5 @@ LIBBPF_0.8.0 {
+>                 bpf_program__attach_usdt;
+>                 libbpf_register_prog_handler;
+>                 libbpf_unregister_prog_handler;
+> +               bpf_prog_query2;
+
+this list is alphabetically ordered
+
+>  } LIBBPF_0.7.0;
+> --
+> 2.36.0.464.gb9c8b46e94-goog
 >
-> We have two cases:
->   - for Tx - drivers should use skb_headlen();
->   - for Rx - I presume we are either dealing with fresh or correctly
->     reset skbs, so we can use skb_tailroom().
-Thanks for the information, looks like indeed we can avoid the helper in 
-t7xx driver by following those guidelines.
