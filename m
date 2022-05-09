@@ -2,104 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D6C0B520522
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 21:18:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E9995204FC
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 21:11:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240499AbiEITUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 15:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
+        id S240426AbiEITMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 15:12:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240474AbiEITUB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 15:20:01 -0400
-X-Greylist: delayed 711 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 12:16:04 PDT
-Received: from relay-b03.edpnet.be (relay-b03.edpnet.be [212.71.1.220])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A361A54BE3
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 12:16:03 -0700 (PDT)
-X-ASG-Debug-ID: 1652123048-15c435381a966b00001-BZBGGp
-Received: from srv21.vandijck-laurijssen.be (77.109.97.42.adsl.dyn.edpnet.net [77.109.97.42]) by relay-b03.edpnet.be with ESMTP id evQvZkMsT4fx48c7; Mon, 09 May 2022 21:04:08 +0200 (CEST)
-X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
-X-Barracuda-Effective-Source-IP: 77.109.97.42.adsl.dyn.edpnet.net[77.109.97.42]
-X-Barracuda-Apparent-Source-IP: 77.109.97.42
-Received: from x1.vandijck-laurijssen.be (x1.vandijck-laurijssen.be [IPv6:fd01::1a1d:eaff:fe02:d339])
-        by srv21.vandijck-laurijssen.be (Postfix) with ESMTPSA id 0E1DA1063BE;
-        Mon,  9 May 2022 21:04:08 +0200 (CEST)
-Date:   Mon, 9 May 2022 21:04:06 +0200
-From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-To:     Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
-Cc:     Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
+        with ESMTP id S240401AbiEITMx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 15:12:53 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9D7E2BD21B
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 12:08:55 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id m12so1011511plb.4
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 12:08:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pXa65HSOekWaeyzVWpCjR2cUTwoVlIGMwmqZrezGgpM=;
+        b=RciZSc0HZxxQu4Ns7GyvMmsGXouKEOXJo78Y4IoQyEc+9iFCqFi1YulIn6iqyTcoPs
+         Q+HrwtVXnmPGUEl08j5yaePhPc/xPz1Orq+2FXWlTwA1CVPI3uDbVwe+f04tQ9tP1d1d
+         YJd/HwqCD+aXkgel96UnBrWtVhadGx6Din/X9mtr29vTIwPe2El6oczEk2R9iFjJ6diw
+         ERjRsSZVfCRraE4xy75OgBQ8YGey7/OvHeCK8UZ+sXYYhxrEOR6RKWgItDeOD+UVJKcx
+         x54+pmiyRW0NOmc3dJP7kdUVN4JeN58FouHQUW7/4PZpiDUBkJNcj7w7jIkQUYTmQwgd
+         rCiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pXa65HSOekWaeyzVWpCjR2cUTwoVlIGMwmqZrezGgpM=;
+        b=OzEMU5XH0VOeHpvsj+uSYMjMJxiR8GDm3c/t9w0vzjrRj+U5A7o/e365eYQpzNwBh4
+         oVirTX6Zsv+AT3MaVtuvtvGm/FDKf7405B8OV5iQuMLgzbcEAKVX05bdX6SCrlQdSKal
+         KdY5jukE8LnHka74fo+VImX7/TDtJuqjm/hbav1XuXgMzMnHfkNZpTVsi9b6w4s7FW8T
+         HAPoOKOebZSBhFDkxFevvcsNN9uX3Hg/1OLrdoik+3FLDrYWdkTbPMeWWHZNdp3beDL2
+         goNHFWlB4eh8SntUFhmI4xV7GY0XnO5CjVLk5MuDH5I0DH+m/RH8OoN+tvdtMztbJpCW
+         T2xg==
+X-Gm-Message-State: AOAM530CPh2Vip7g19tnsfQkU34Y+6A9arRg4C7aiVniRvb1NsVIEwTS
+        GS6ulqOWbsouLIX7+vuPlhwLzLRrSKk=
+X-Google-Smtp-Source: ABdhPJzO5dC4tea8be3e3ecp8gDIPzKL13qae6RQsBHqjYFh7UADf/YE/TCQ21DFTCtG+wh85QTBoA==
+X-Received: by 2002:a17:903:14a:b0:15c:f657:62d0 with SMTP id r10-20020a170903014a00b0015cf65762d0mr17661198plc.81.1652123335254;
+        Mon, 09 May 2022 12:08:55 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5d30:4e79:203f:a909])
+        by smtp.gmail.com with ESMTPSA id a6-20020aa79706000000b0050dc7628174sm9032631pfg.78.2022.05.09.12.08.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 12:08:54 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
- was already claimed
-Message-ID: <YnllpntZ8V5CD07v@x1.vandijck-laurijssen.be>
-X-ASG-Orig-Subj: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
- was already claimed
-Mail-Followup-To: Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        Robin van der Gracht <robin@protonic.nl>,
-        Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, Oleksij Rempel <linux@rempel-privat.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next 0/4] net: CONFIG_DEBUG_NET and friends
+Date:   Mon,  9 May 2022 12:08:47 -0700
+Message-Id: <20220509190851.1107955-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
-X-Barracuda-Connect: 77.109.97.42.adsl.dyn.edpnet.net[77.109.97.42]
-X-Barracuda-Start-Time: 1652123048
-X-Barracuda-URL: https://212.71.1.220:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at edpnet.be
-X-Barracuda-Scan-Msg-Size: 1034
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Spam-Score: 0.00
-X-Barracuda-Spam-Status: No, SCORE=0.00 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.97894
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On ma, 09 mei 2022 19:03:03 +0200, Devid Antonio Filoni wrote:
-> This is not explicitly stated in SAE J1939-21 and some tools used for
-> ISO-11783 certification do not expect this wait.
+From: Eric Dumazet <edumazet@google.com>
 
-IMHO, the current behaviour is not explicitely stated, but nor is the opposite.
-And if I'm not mistaken, this introduces a 250msec delay.
+This patch series is inspired by some syzbot reports
+hinting that skb transport_header might be not set
+in places we expect it being set.
 
-1. If you want to avoid the 250msec gap, you should avoid to contest the same address.
+Add a new CONFIG_DEBUG_NET option
+and DEBUG_NET_WARN_ON_ONCE() helper, so that we can start
+adding more sanity checks in the future.
 
-2. It's a balance between predictability and flexibility, but if you try to accomplish both,
-as your patch suggests, there is slight time-window until the current owner responds,
-in which it may be confusing which node has the address. It depends on how much history
-you have collected on the bus.
+Replace two BUG() in skb_checksum_help()
+with less risky code.
 
-I'm sure that this problem decreases with increasing processing power on the nodes,
-but bigger internal queues also increase this window.
+Eric Dumazet (4):
+  net: add include/net/net_debug.h
+  net: add CONFIG_DEBUG_NET
+  net: warn if transport header was not set
+  net: remove two BUG() from skb_checksum_help()
 
-It would certainly help if you describe how the current implementation fails.
+ include/linux/netdevice.h | 154 +----------------------------------
+ include/linux/skbuff.h    |   2 +
+ include/net/net_debug.h   | 165 ++++++++++++++++++++++++++++++++++++++
+ net/Kconfig.debug         |   7 ++
+ net/core/dev.c            |   8 +-
+ 5 files changed, 181 insertions(+), 155 deletions(-)
+ create mode 100644 include/net/net_debug.h
 
-Would decreasing the dead time to 50msec help in such case.
+-- 
+2.36.0.512.ge40c2bad7a-goog
 
-Kind regards,
-Kurt
