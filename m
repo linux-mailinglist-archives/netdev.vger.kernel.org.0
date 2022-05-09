@@ -2,251 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9738351F6A0
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:42:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 005A751F6DC
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233285AbiEIIMu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 04:12:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
+        id S232580AbiEIIMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 04:12:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238830AbiEIIJ5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:09:57 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E9E8C14AC93
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 01:05:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652083343;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=L0dEJhPvtpVY9vKuKdRWMDwwctVUgQ9NezFDM8exNt8=;
-        b=XgsuxuTjKne3T607Lnero9XT4mvkjVMjgFkR7/sf8VwsIV3xk+pDFkmWQxPxR0MAg7md+c
-        ueppxXX28RPsvDTtMNVrLuTuopszfMCsz4kCnfufbveYMGDjd2R2UlYmLeA6ZDQSGhcJGe
-        WLHryY6cxHy13B2WdkszL+EVbV33GA8=
-Received: from mail-lf1-f71.google.com (mail-lf1-f71.google.com
- [209.85.167.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-277-kNlrX3gMMbSYAV1PvVF-Xw-1; Mon, 09 May 2022 04:02:20 -0400
-X-MC-Unique: kNlrX3gMMbSYAV1PvVF-Xw-1
-Received: by mail-lf1-f71.google.com with SMTP id h15-20020ac24daf000000b00472586ed83dso5496614lfe.22
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 01:02:20 -0700 (PDT)
+        with ESMTP id S238713AbiEIIIk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:08:40 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED37E1C12D8
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 01:04:43 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id d22so13110494plr.9
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 01:04:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Zd4aF0rovRZTBGwlOQmd71JhMoJJjwfPdWdSeArtrCs=;
+        b=PucSv8ePVvdl/sJWlBjiSxE6R2FPWfQqAhV85oW1QOk0RHwKb31a69TSXFwuf4831f
+         RE+oWZBkU/GNX8suYkVdboCM09YzpQ/REWjgLM/xnHo5PY0s8G0Sz+f+Y4zWfCRfP856
+         XwghDUzXsjSPvVe2Trl7migiRp6aHlBFrL/1LmuVzSwQClbqUwXI+KPxuLE7zntFpohr
+         xRqyNk0Og2M5lZqF9Mwyom5arT9ZO0pGhgGE7Sz6/OuoRZVjrL/dhPDGpcxoVx/EGdwq
+         hbm40SYrh3IwPQ1v5FA8V+Bji6LywI3Ua+az5eLfPSKJXRMkTb658JhQcZEXWoAyS/hG
+         /jtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=L0dEJhPvtpVY9vKuKdRWMDwwctVUgQ9NezFDM8exNt8=;
-        b=JZcbH6H/bHWmw1BI14jRDR2zT9FBIStUKJ9OR5daZt/VsHYC/db8QVSXzw0QMk5c1f
-         xd4JbiTc+yq35RqWrhsfg15EGVCE/I2Rd/7SIQT1khhMAzqEJPa3e/jWioQFwCzNmPs1
-         JQIQ7oeEcQg0XgRg1VcmenU7lem7pWSBz7jEzQWDeUzmYGqVOli60mb5721HQ234SwuL
-         avttNtKyg7v1azrglmkqvOJJXXEazsxZ6WibJfE4DQquBEo0LAlHNq1s+R5mOoDeaTfa
-         oBgov47t+W9zK8r45C/FbMfkYSDKedkQ1CWM5gx5uNtkPwiekfYTnAwHyxi6eLMjxMRF
-         lrRg==
-X-Gm-Message-State: AOAM531nB/NmcPXt/Daa3U9GxeZwq4FDLSpio04BVpBG5iSVQ6RnPTmT
-        CoVzAbDDlrz7dTjO6gbgzB0JxP8iDwEtxXz20Z7yRhud9quvbbzrpBJJtOOaLlYWO4iyzURIlmX
-        M9hQa3SQIHLL1eZWzbYnp5vX+zijqg9p/
-X-Received: by 2002:a05:651c:89:b0:250:87c9:d4e6 with SMTP id 9-20020a05651c008900b0025087c9d4e6mr9955097ljq.315.1652083338955;
-        Mon, 09 May 2022 01:02:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJz+R1VfoIPFwnxs6fui5BsHA9rC2X2yYYrOq5wpGklCNwM4/hEwSYAJG1Ghk78Cjqu1eMIefFsXW/FXguj6+c8=
-X-Received: by 2002:a05:651c:89:b0:250:87c9:d4e6 with SMTP id
- 9-20020a05651c008900b0025087c9d4e6mr9955078ljq.315.1652083338682; Mon, 09 May
- 2022 01:02:18 -0700 (PDT)
+        bh=Zd4aF0rovRZTBGwlOQmd71JhMoJJjwfPdWdSeArtrCs=;
+        b=1HwCgCGQY7gy7KmU30sxxcc77Q3HNV+gO92Xjb8SO0W7hrKaLGhbwKIq3O4CJv/+ci
+         eInSIla5LAUOK0uq+/M0u7zHWko9URfE7AuI8mvuZ0t3eqYcsMHVBYUw3GhmpKdd5VNT
+         F7O5zJRUrKMQmI8uS1MZhD8ZG5Xitbv7HB9ETExTBF3O2ObPbHGnNl/kq4kYI0Oiod+0
+         0F1tZBBajlQJe1E2rvUSVxCZn/R7MbEJFkKN2Xheh33ImjQxGQzLXPIagHxztnEuxKkg
+         fE0oexKk+4bDx06SHchOF2vOqWtVKaNCNG7JD/PIv94fxzvNpS8XjIjMxc5B2tJt5iGN
+         Vwcw==
+X-Gm-Message-State: AOAM532GkKYHyILnb+XvLE0lPs/FwJicGo9eq/TLwLBhY+NqAFIMGL0Z
+        S2bj30P3N/dL+4HS0A5Vbq2XMggriE/5jYNvkO0=
+X-Google-Smtp-Source: ABdhPJwaoPLmGySJqu6Xx+FNfmCueT5XmhB9QtPDH2oUtVak2pzJcSvpYuQfYuio9AS4FzazLQhBDbY1qMCBSgSP1qA=
+X-Received: by 2002:a17:902:d145:b0:15e:d1a8:7f33 with SMTP id
+ t5-20020a170902d14500b0015ed1a87f33mr15320256plt.66.1652083450518; Mon, 09
+ May 2022 01:04:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220509071426.155941-1-lulu@redhat.com>
-In-Reply-To: <20220509071426.155941-1-lulu@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 9 May 2022 16:02:06 +0800
-Message-ID: <CACGkMEuPoXp7kC1yVoTJ8jpgV8c+0=LcPbuZdzxm8D3v6jAmbQ@mail.gmail.com>
-Subject: Re: [PATCH v1] vdpa: Do not count the pages that were already pinned
- in the vhost-vDPA
-To:     Cindy Lu <lulu@redhat.com>
-Cc:     mst <mst@redhat.com>, kvm <kvm@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
+References: <20220508224848.2384723-1-hauke@hauke-m.de> <20220508224848.2384723-3-hauke@hauke-m.de>
+In-Reply-To: <20220508224848.2384723-3-hauke@hauke-m.de>
+From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
+Date:   Mon, 9 May 2022 05:03:59 -0300
+Message-ID: <CAJq09z5GSQzhVZip56itiOgW_LAyEEkXhzy=3AdryAT33hAv4g@mail.gmail.com>
+Subject: Re: [PATCH 2/4] net: dsa: realtek: rtl8365mb: Get chip option
+To:     Hauke Mehrtens <hauke@hauke-m.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 9, 2022 at 3:15 PM Cindy Lu <lulu@redhat.com> wrote:
->
-> We count pinned_vm as follow in vhost-vDPA
->
->         lock_limit = rlimit(RLIMIT_MEMLOCK) >> PAGE_SHIFT;
->         if (npages + atomic64_read(&dev->mm->pinned_vm) > lock_limit) {
->                 ret = -ENOMEM;
->                 goto unlock;
->         }
-> This means if we have two vDPA devices for the same VM the pages would be counted twice
-> So we add a tree to save the page that counted and we will not count it again
->
-> Signed-off-by: Cindy Lu <lulu@redhat.com>
-> ---
->  drivers/vhost/vdpa.c     | 79 ++++++++++++++++++++++++++++++++++++++--
->  include/linux/mm_types.h |  2 +
->  2 files changed, 78 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 05f5fd2af58f..48cb5c8264b5 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -24,6 +24,9 @@
->  #include <linux/vhost.h>
->
->  #include "vhost.h"
-> +#include <linux/rbtree.h>
-> +#include <linux/interval_tree.h>
-> +#include <linux/interval_tree_generic.h>
->
->  enum {
->         VHOST_VDPA_BACKEND_FEATURES =
-> @@ -505,6 +508,50 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
->         mutex_unlock(&d->mutex);
->         return r;
->  }
-> +int vhost_vdpa_add_range_ctx(struct rb_root_cached *root, u64 start, u64 last)
-> +{
-> +       struct interval_tree_node *new_node;
-> +
-> +       if (last < start)
-> +               return -EFAULT;
-> +
-> +       /* If the range being mapped is [0, ULONG_MAX], split it into two entries
-> +        * otherwise its size would overflow u64.
-> +        */
-> +       if (start == 0 && last == ULONG_MAX) {
-> +               u64 mid = last / 2;
-> +
-> +               vhost_vdpa_add_range_ctx(root, start, mid);
-> +               start = mid + 1;
-> +       }
-> +
-> +       new_node = kmalloc(sizeof(struct interval_tree_node), GFP_ATOMIC);
-> +       if (!new_node)
-> +               return -ENOMEM;
-> +
-> +       new_node->start = start;
-> +       new_node->last = last;
-> +
-> +       interval_tree_insert(new_node, root);
-> +
-> +       return 0;
-> +}
-> +
-> +void vhost_vdpa_del_range(struct rb_root_cached *root, u64 start, u64 last)
-> +{
-> +       struct interval_tree_node *new_node;
-> +
-> +       while ((new_node = interval_tree_iter_first(root, start, last))) {
-> +               interval_tree_remove(new_node, root);
-> +               kfree(new_node);
-> +       }
-> +}
-> +
-> +struct interval_tree_node *vhost_vdpa_search_range(struct rb_root_cached *root,
-> +                                                  u64 start, u64 last)
-> +{
-> +       return interval_tree_iter_first(root, start, last);
-> +}
->
->  static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v, u64 start, u64 last)
->  {
-> @@ -513,6 +560,7 @@ static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v, u64 start, u64 last)
->         struct vhost_iotlb_map *map;
->         struct page *page;
->         unsigned long pfn, pinned;
-> +       struct interval_tree_node *new_node = NULL;
->
->         while ((map = vhost_iotlb_itree_first(iotlb, start, last)) != NULL) {
->                 pinned = PFN_DOWN(map->size);
-> @@ -523,7 +571,18 @@ static void vhost_vdpa_pa_unmap(struct vhost_vdpa *v, u64 start, u64 last)
->                                 set_page_dirty_lock(page);
->                         unpin_user_page(page);
->                 }
-> -               atomic64_sub(PFN_DOWN(map->size), &dev->mm->pinned_vm);
-> +
-> +               new_node = vhost_vdpa_search_range(&dev->mm->root_for_vdpa,
-> +                                                  map->start,
-> +                                                  map->start + map->size - 1);
-> +
-> +               if (new_node) {
-> +                       vhost_vdpa_del_range(&dev->mm->root_for_vdpa,
-> +                                            map->start,
-> +                                            map->start + map->size - 1);
-> +                       atomic64_sub(PFN_DOWN(map->size), &dev->mm->pinned_vm);
-> +               }
-> +
->                 vhost_iotlb_map_free(iotlb, map);
->         }
->  }
-> @@ -591,6 +650,7 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, u64 iova,
->         struct vdpa_device *vdpa = v->vdpa;
->         const struct vdpa_config_ops *ops = vdpa->config;
->         int r = 0;
-> +       struct interval_tree_node *new_node = NULL;
->
->         r = vhost_iotlb_add_range_ctx(dev->iotlb, iova, iova + size - 1,
->                                       pa, perm, opaque);
-> @@ -611,9 +671,22 @@ static int vhost_vdpa_map(struct vhost_vdpa *v, u64 iova,
->                 return r;
->         }
->
-> -       if (!vdpa->use_va)
-> -               atomic64_add(PFN_DOWN(size), &dev->mm->pinned_vm);
-> +       if (!vdpa->use_va) {
-> +               new_node = vhost_vdpa_search_range(&dev->mm->root_for_vdpa,
-> +                                                  iova, iova + size - 1);
-> +
-> +               if (new_node == 0) {
-> +                       r = vhost_vdpa_add_range_ctx(&dev->mm->root_for_vdpa,
-> +                                                    iova, iova + size - 1);
-> +                       if (r) {
-> +                               vhost_iotlb_del_range(dev->iotlb, iova,
-> +                                                     iova + size - 1);
-> +                               return r;
-> +                       }
->
-> +                       atomic64_add(PFN_DOWN(size), &dev->mm->pinned_vm);
-> +               }
+> Read the option register in addition to the other registers to identify
+> the chip. The SGMII initialization is different for the different chip
+> options.
 
-This seems not sufficient, consider:
+Is it possible to have two different chip models that share the same
+chip ip and version but differ only in the option?
+If that is true and the driver still wishes to print the correct model
+name, we should keep track of each option value for each supported
+chip, just like we already do with id/version.
+If not, I don't believe we need to print that out during probe because
+it would be just a derived property from chip id/model.
 
-vhost-vDPA-A: add [A, B)
-vhost-vDPA-B: add [A, C) (C>B)
+Regards,
 
-We lose the accounting for [B, C)?
-
-> +       }
->         return 0;
->  }
->
-> diff --git a/include/linux/mm_types.h b/include/linux/mm_types.h
-> index 5140e5feb486..46eaa6d0560b 100644
-> --- a/include/linux/mm_types.h
-> +++ b/include/linux/mm_types.h
-> @@ -634,6 +634,8 @@ struct mm_struct {
->  #ifdef CONFIG_IOMMU_SUPPORT
->                 u32 pasid;
->  #endif
-> +               struct rb_root_cached root_for_vdpa;
-> +
-
-Let's avoid touching mm_structure unless it's a must.
-
-We can allocate something like vhost_mm if needed during SET_OWNER.
-
-Thanks
-
->         } __randomize_layout;
->
->         /*
-> --
-> 2.34.1
->
-
+Luiz
