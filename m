@@ -2,145 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6621A520137
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 17:34:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C01A520141
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 17:37:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238467AbiEIPho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 11:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
+        id S238364AbiEIPkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 11:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238468AbiEIPh3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 11:37:29 -0400
-Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91CAF238D50
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 08:33:24 -0700 (PDT)
-Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id B3D503200F2;
-        Mon,  9 May 2022 16:33:23 +0100 (BST)
-Received: from localhost ([::1] helo=palantir17.mph.net)
-        by palantir17.mph.net with esmtp (Exim 4.89)
-        (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1no5Nz-0001S7-Gj; Mon, 09 May 2022 16:33:23 +0100
-Subject: [PATCH net-next v4 11/11] sfc: Add a basic Siena module
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Mon, 09 May 2022 16:33:23 +0100
-Message-ID: <165211040255.5289.15600898006437166615.stgit@palantir17.mph.net>
-In-Reply-To: <165211018297.5289.9658523545298485394.stgit@palantir17.mph.net>
-References: <165211018297.5289.9658523545298485394.stgit@palantir17.mph.net>
-User-Agent: StGit/0.17.1-dirty
+        with ESMTP id S238342AbiEIPkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 11:40:17 -0400
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7595240E61
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 08:36:22 -0700 (PDT)
+Received: by mail-pf1-x434.google.com with SMTP id bo5so12555277pfb.4
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 08:36:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=/H8X/t96Z0Ja/vl3a5IQ5/81ZYUwm6CMVw4j5Buqh7w=;
+        b=ntvNPUBJPhcuEj8Zc5lwaRsDGEhhpYh70UsvIG3x+U35M48Rkk6iEaFDZk3YoZXLmj
+         WZHSO6XNItgSw/TJ58MpjNkORXW2QvYdBkzOAxoEDUxaqPn97MRaEBEcf3Fnth2mleBF
+         vBsN5hLRCBG0LsmpvNPw8NJnNbMPTIs8KX84o0i0zedUZAXTqFWugVzYAWAbPy2jTV82
+         Bgzank6vxNjZraVmZp2cCL3zyw4MsYQDVHwfp+D6ezkzlIi1hYelL+nxCvYYoLjaAyXK
+         ZAMxgHJ3IhP6TT8UcEU21aGDUsvWaxEGXsvFGJr9IBKMa3XdUi1jW2cqtRFR5bgbkboC
+         VmOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/H8X/t96Z0Ja/vl3a5IQ5/81ZYUwm6CMVw4j5Buqh7w=;
+        b=u3UpWdb3siGDjo5Q+bBVU3BctC8jkMe9nyE92uawgpK3GgomceBzGmuQQdTWxCV58y
+         ecNr6/hYocVpIN5+SupY8ebbrRmb9xtn8pYcEvEHFCB+wso5aHdxcWGZHQx5zTgMoU8D
+         NvuXjYT3d9LKEsgfu+qOzxuFjSDc1MWQt0F3BtIfyCdQE7OVH0l+YC44L9oKN1TphIqT
+         zPuhWsfn8Qw+2IpOEUOixjzGnn8uEXafO6oBYZPZ0CR10TfBu0WA4KbR8JPRv1/sjava
+         BIeWx5TJd7MSdGZk/rTtIUInrWWDgB+hDUa78oj0JgS9EG3+q5EUnp+G02WRXeSS2Ivc
+         dzpQ==
+X-Gm-Message-State: AOAM530ZGEOEmtMavz/iodHwkbHk17RY0Ey3aYrL1sidiuZRa0ydh2fU
+        Bq7dBX8wGj45J2hdecBXCh2jDswhACA=
+X-Google-Smtp-Source: ABdhPJz71z4mEHE+qnueHSh3hNZ0KxbE266QnlLKt655Eah2E0CxSCm4e1JTXGvWDZdoiIrF3eGXKg==
+X-Received: by 2002:a65:63d9:0:b0:374:6b38:c6b3 with SMTP id n25-20020a6563d9000000b003746b38c6b3mr13763321pgv.195.1652110581733;
+        Mon, 09 May 2022 08:36:21 -0700 (PDT)
+Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
+        by smtp.gmail.com with ESMTPSA id v7-20020a170902b7c700b0015e8d4eb2bcsm7193516plz.262.2022.05.09.08.36.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 08:36:20 -0700 (PDT)
+Message-ID: <4724449b-75b2-2a25-c40b-e31bfcffa7ff@gmail.com>
+Date:   Mon, 9 May 2022 08:36:19 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 0/4] net: dsa: realtek: rtl8365mb: Add SGMII and HSGMII
+ support
+Content-Language: en-US
+To:     Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Hauke Mehrtens <hauke@hauke-m.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        =?UTF-8?B?QXLEsW7DpyDDnE5BTA==?= <arinc.unal@arinc9.com>
+References: <20220508224848.2384723-1-hauke@hauke-m.de>
+ <CAJq09z7+bDpMShTxuOvURmp272d-FVDNaDpx1_-qjuOZOOrS3g@mail.gmail.com>
+ <CAJq09z5=xAKN99xXSQNbYXej0VdCTM=kFF0CTx1JxCjUcOUudw@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <CAJq09z5=xAKN99xXSQNbYXej0VdCTM=kFF0CTx1JxCjUcOUudw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,NML_ADSP_CUSTOM_MED,
-        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Make the (un)load message more specific to differentiate it from
-the sfc.ko messages.
 
-Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/Kconfig        |    1 +
- drivers/net/ethernet/sfc/Makefile       |    1 +
- drivers/net/ethernet/sfc/siena/Kconfig  |   12 ++++++++++++
- drivers/net/ethernet/sfc/siena/Makefile |   11 +++++++++++
- drivers/net/ethernet/sfc/siena/efx.c    |    6 +++---
- 5 files changed, 28 insertions(+), 3 deletions(-)
- create mode 100644 drivers/net/ethernet/sfc/siena/Kconfig
- create mode 100644 drivers/net/ethernet/sfc/siena/Makefile
 
-diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
-index 846fff16fa48..98db551ba2b7 100644
---- a/drivers/net/ethernet/sfc/Kconfig
-+++ b/drivers/net/ethernet/sfc/Kconfig
-@@ -65,5 +65,6 @@ config SFC_MCDI_LOGGING
- 	  a sysfs file 'mcdi_logging' under the PCI device.
- 
- source "drivers/net/ethernet/sfc/falcon/Kconfig"
-+source "drivers/net/ethernet/sfc/siena/Kconfig"
- 
- endif # NET_VENDOR_SOLARFLARE
-diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
-index 9b3374cf7937..b9298031ea51 100644
---- a/drivers/net/ethernet/sfc/Makefile
-+++ b/drivers/net/ethernet/sfc/Makefile
-@@ -13,3 +13,4 @@ sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o ef10_sriov.o ef100_sriov.o
- obj-$(CONFIG_SFC)	+= sfc.o
- 
- obj-$(CONFIG_SFC_FALCON) += falcon/
-+obj-$(CONFIG_SFC_SIENA) += siena/
-diff --git a/drivers/net/ethernet/sfc/siena/Kconfig b/drivers/net/ethernet/sfc/siena/Kconfig
-new file mode 100644
-index 000000000000..3d52aee50d5a
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/siena/Kconfig
-@@ -0,0 +1,12 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+config SFC_SIENA
-+	tristate "Solarflare SFC9000 support"
-+	depends on PCI
-+	select MDIO
-+	select CRC32
-+	help
-+	  This driver supports 10-gigabit Ethernet cards based on
-+	  the Solarflare SFC9000 controller.
-+
-+	  To compile this driver as a module, choose M here.  The module
-+	  will be called sfc-siena.
-diff --git a/drivers/net/ethernet/sfc/siena/Makefile b/drivers/net/ethernet/sfc/siena/Makefile
-new file mode 100644
-index 000000000000..74cb8b7d281e
---- /dev/null
-+++ b/drivers/net/ethernet/sfc/siena/Makefile
-@@ -0,0 +1,11 @@
-+# SPDX-License-Identifier: GPL-2.0
-+sfc-siena-y		+= farch.o siena.o \
-+			   efx.o efx_common.o efx_channels.o nic.o \
-+			   tx.o tx_common.o rx.o rx_common.o \
-+			   selftest.o ethtool.o ethtool_common.o ptp.o \
-+			   mcdi.o mcdi_port.o mcdi_port_common.o \
-+			   mcdi_mon.o
-+sfc-siena-$(CONFIG_SFC_MTD)	+= mtd.o
-+sfc-siena-$(CONFIG_SFC_SRIOV)	+= siena_sriov.o
-+
-+obj-$(CONFIG_SFC_SIENA)	+= sfc-siena.o
-diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
-index d937704e416b..3f6e732f5fdc 100644
---- a/drivers/net/ethernet/sfc/siena/efx.c
-+++ b/drivers/net/ethernet/sfc/siena/efx.c
-@@ -1265,7 +1265,7 @@ static int __init efx_init_module(void)
- {
- 	int rc;
- 
--	printk(KERN_INFO "Solarflare NET driver\n");
-+	pr_info("Solarflare Siena driver\n");
- 
- 	rc = register_netdevice_notifier(&efx_netdev_notifier);
- 	if (rc)
-@@ -1291,7 +1291,7 @@ static int __init efx_init_module(void)
- 
- static void __exit efx_exit_module(void)
- {
--	printk(KERN_INFO "Solarflare NET driver unloading\n");
-+	pr_info("Solarflare Siena driver unloading\n");
- 
- 	pci_unregister_driver(&efx_pci_driver);
- 	efx_siena_destroy_reset_workqueue();
-@@ -1304,6 +1304,6 @@ module_exit(efx_exit_module);
- 
- MODULE_AUTHOR("Solarflare Communications and "
- 	      "Michael Brown <mbrown@fensystems.co.uk>");
--MODULE_DESCRIPTION("Solarflare network driver");
-+MODULE_DESCRIPTION("Solarflare Siena network driver");
- MODULE_LICENSE("GPL");
- MODULE_DEVICE_TABLE(pci, efx_pci_table);
+On 5/9/2022 12:38 AM, Luiz Angelo Daros de Luca wrote:
+>>> Hauke Mehrtens (4):
+>>>    net: dsa: realtek: rtl8365mb: Fix interface type mask
+>>>    net: dsa: realtek: rtl8365mb: Get chip option
+>>>    net: dsa: realtek: rtl8365mb: Add setting MTU
+>>>    net: dsa: realtek: rtl8365mb: Add SGMII and HSGMII support
+> 
+> I didn't get these two, although patchwork got them:
+> 
+>    net: dsa: realtek: rtl8365mb: Get chip option
+>    net: dsa: realtek: rtl8365mb: Add SGMII and HSGMII support
 
+Probably yet another instance of poor interaction between gmail.com and 
+vger.kernel.org, I got all of them in my inbox.
+-- 
+Florian
