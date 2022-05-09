@@ -2,109 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 24C5D51FFEF
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD7CD51FFDC
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:36:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237188AbiEIO3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 10:29:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57406 "EHLO
+        id S237250AbiEIOfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 10:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237151AbiEIO3j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:29:39 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71ADB15700;
-        Mon,  9 May 2022 07:25:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:References:
-        Cc:To:From:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=P7ItdBTC+KXB0aqEwbSMXisX2R2Wb9V+tpF+BUJ3fMQ=; b=afqWOj15+1L7ZOehgz4TDp3T9b
-        MarVdwm0LTk8+i9B4YSy7xFp7vHwG1/w4WbfDff1U5lUjMxS0vk2DRuV0fJ7wbVLLeaMw89VjYM5x
-        WVJwpPzVyva0X5NmUi/i4nuSyMS2YeO8WasLcgi1Y8xImc6fOPpwaaWR9ocIpTn6nZEFaqdopezXx
-        OHjXA1hjw9QuPDRbTOoKOwl5vTqszrquVcmDp1xGYYzEdEOTzOi8SiNmSxJjEIE9o/SJMrBbQG4MO
-        b+UdR8rUhoog9dM2StftHOG35g7VaJwxTPUyd5VBoTJ128N6lfMi0IgW+WU1FzuWQA7pga9h2J0Nf
-        78MmVTaA==;
-Received: from [177.183.162.244] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1no4KQ-000BPa-6C; Mon, 09 May 2022 16:25:38 +0200
-Message-ID: <260dccd8-a4f6-882c-8767-5bc27576df14@igalia.com>
-Date:   Mon, 9 May 2022 11:25:06 -0300
+        with ESMTP id S237264AbiEIOfn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:35:43 -0400
+Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE065213339
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 07:31:42 -0700 (PDT)
+Received: by mail-lj1-x234.google.com with SMTP id 4so17266363ljw.11
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 07:31:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Qgqai7f9lS7Suf9yllivg2gEv4Ncv7OAyyOiWFDdECA=;
+        b=FXUtX9olu2gnzr5+poKYzCqa1xf+HtK7HT8GWzxXNTZQQ0b3ARcqDZJOQYAhIcDYa6
+         tSNK0mszQInhPge7jIBsKqDPKonFCgRNMxkXfYEHDFoxV3TZu1FNqoNEAFH3IsWuI1ud
+         K/E2cFscnCJ29CYpu0trerQ4nGSpuN5A8OxYO4vooZzADOldblqrHTiG3VaHEuQmMNi4
+         a+VakUC9OX1hu6YUAYQtXlXLD4lkvnQzB1503B7FMHfLgLYL7B2YWYlW3nyDXcZklTL1
+         gyA4FQeQODZjQOKEnFxMKw2MMf+tgrFYKrcYlPV7M0fahH3fk/uVoG5VCw7Vo1Yk+WPJ
+         BIYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Qgqai7f9lS7Suf9yllivg2gEv4Ncv7OAyyOiWFDdECA=;
+        b=Inz6Fuxh9hUc0Msix7y8UXZSEesdoI2/enBRrXRZreSQt3r9j32NjFeBysBR3pSuyv
+         lJUc8wp5tH2nskJAO0niY4plZdS4giGn0MEp7/R6xkfnZ96aP921t2qhhoyFVyxBAHC1
+         uHr2enIskDdUlpngoelO9aVA2sP8vy71oO6zUFpzjllBJYmtTqh3dbhclXbXuRh7Rz96
+         Oy4JsgTqaO6+MCA9buE3r2uTPW0xEzv8OIH0iArLpAaWtuS0pVSfS/QkXPQ2qpuASR7G
+         FwFWuLr5MI0xJTwGunk9Gza3snCsxRa0aCxHEi4kBZbDOJ2xu64muztToGU8rrSegZH0
+         XZ9Q==
+X-Gm-Message-State: AOAM533BZNT1S3muF2VMO6MZfIH+zMkXpItCYjQcRKSjP5Wo8asx3Tdh
+        FtkwU+x0ar+VxO1QJxBCcMOpjVBXW29fMVIQy6N2Kw==
+X-Google-Smtp-Source: ABdhPJxqNtTSR5nUh0j/WBFU0R3eaENvnpD4iIqG+qWiuhvFJCsrpYSaREgd8um7eiuFAM8z3dXvXyDW12lIggdNIoU=
+X-Received: by 2002:a2e:9581:0:b0:24f:2dc9:6275 with SMTP id
+ w1-20020a2e9581000000b0024f2dc96275mr10284304ljh.486.1652106700628; Mon, 09
+ May 2022 07:31:40 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 24/30] panic: Refactor the panic path
-Content-Language: en-US
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, bhe@redhat.com,
-        akpm@linux-foundation.org, bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        kexec@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, pmladek@suse.com
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-25-gpiccoli@igalia.com>
- <4fe85e9c-4e96-e9d5-9fd8-f062bafcda4f@infradead.org>
- <7518924e-5bb4-e6e9-0e3e-3f5cb03bf946@igalia.com>
-In-Reply-To: <7518924e-5bb4-e6e9-0e3e-3f5cb03bf946@igalia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220506025134.794537-1-kuba@kernel.org> <20220506025134.794537-4-kuba@kernel.org>
+In-Reply-To: <20220506025134.794537-4-kuba@kernel.org>
+From:   Marcin Wojtas <mw@semihalf.com>
+Date:   Mon, 9 May 2022 16:31:28 +0200
+Message-ID: <CAPv3WKehhJgOFJRiGSsEb3FeOkm3iBSbSO-N39z8+n=7PWtxHA@mail.gmail.com>
+Subject: Re: [PATCH net-next 3/4] net: make drivers set the TSO limit not the
+ GSO limit
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>, pabeni@redhat.com,
+        alexander.duyck@gmail.com,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        chris.snook@gmail.com, dchickles@marvell.com, sburla@marvell.com,
+        fmanlunas@marvell.com, ajit.khaparde@broadcom.com,
+        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
+        qiangqing.zhang@nxp.com, yisen.zhuang@huawei.com,
+        salil.mehta@huawei.com, jesse.brandeburg@intel.com,
+        anthony.l.nguyen@intel.com,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
+        gakula@marvell.com, sbhatta@marvell.com, hkelam@marvell.com,
+        simon.horman@corigine.com, Heiner Kallweit <hkallweit1@gmail.com>,
+        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
+        wei.liu@kernel.org, decui@microsoft.com, woojung.huh@microchip.com,
+        wintera@linux.ibm.com, roopa@nvidia.com, razor@blackwall.org,
+        cai.huoqing@linux.dev, fei.qin@corigine.com,
+        niklas.soderlund@corigine.com, yinjun.zhang@corigine.com,
+        marcinguy@gmail.com, jesionowskigreg@gmail.com, jannh@google.com,
+        hayeswang@realtek.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 29/04/2022 13:04, Guilherme G. Piccoli wrote:
-> On 27/04/2022 21:28, Randy Dunlap wrote:
->>
->>
->> On 4/27/22 15:49, Guilherme G. Piccoli wrote:
->>> +	crash_kexec_post_notifiers
->>> +			This was DEPRECATED - users should always prefer the
->>
->> 			This is DEPRECATED - users should always prefer the
->>
->>> +			parameter "panic_notifiers_level" - check its entry
->>> +			in this documentation for details on how it works.
->>> +			Setting this parameter is exactly the same as setting
->>> +			"panic_notifiers_level=4".
->>
-> 
-> Thanks Randy, for your suggestion - but I confess I couldn't understand
-> it properly. It's related to spaces/tabs, right? What you suggest me to
-> change in this formatting? Just by looking the email I can't parse.
-> 
-> Cheers,
-> 
-> 
-> Guilherme
+HI,
 
-Complete lack of attention from me, apologies!
-The suggestions was s/was/is - already fixed for V2, thanks Randy.
+[snip]
+
+> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
+> index f6a54c7f0c69..384f5a16753d 100644
+> --- a/drivers/net/ethernet/marvell/mvneta.c
+> +++ b/drivers/net/ethernet/marvell/mvneta.c
+> @@ -5617,7 +5617,7 @@ static int mvneta_probe(struct platform_device *pdev)
+>         dev->hw_features |= dev->features;
+>         dev->vlan_features |= dev->features;
+>         dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
+> -       netif_set_gso_max_segs(dev, MVNETA_MAX_TSO_SEGS);
+> +       netif_set_tso_max_segs(dev, MVNETA_MAX_TSO_SEGS);
+>
+>         /* MTU range: 68 - 9676 */
+>         dev->min_mtu = ETH_MIN_MTU;
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 1a835b48791b..2b7eade373be 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -6861,7 +6861,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
+>                 mvpp2_set_hw_csum(port, port->pool_long->id);
+>
+>         dev->vlan_features |= features;
+> -       netif_set_gso_max_segs(dev, MVPP2_MAX_TSO_SEGS);
+> +       netif_set_tso_max_segs(dev, MVPP2_MAX_TSO_SEGS);
+>         dev->priv_flags |= IFF_UNICAST_FLT;
+>
+
+For mvpp2:
+Reviewed-by: Marcin Wojtas <mw@semihalf.com>
+
+Thanks,
+Marcin
+
+[snip]
