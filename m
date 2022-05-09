@@ -2,139 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D31652031D
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 19:03:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E546D52032A
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 19:05:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239477AbiEIRGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 13:06:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38692 "EHLO
+        id S239461AbiEIRIw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 13:08:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239473AbiEIRGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 13:06:40 -0400
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B76B2817BB
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 10:02:44 -0700 (PDT)
-Received: by mail-il1-x129.google.com with SMTP id l15so9738257ilh.3
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 10:02:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=tFM7xIQtCpOuioxyy6/Mgl+Oz5Ak50q4/dFV83odINU=;
-        b=um0dIWhKN/iXCfaGm8+FEYxlBDrzeVkWflwBl3MZDAYiXO0mWKB3mReX2kAQXacZXV
-         ek9euhHPQLReN+sXMA2O630UW13e330/zgAILeukScpL+tsfcs4h1ynpWWQIpk1J4VaS
-         WqpvAdF5PHCEsun6NJxb2Met7nPnrQyCQMjBKD4fF/uFhoqBBDrOhPi9doIOHZuGT1GZ
-         B7qrXMKDPCBTvmAczfP+G9oIxupKr+vrwAX9SMmpHrcTLONGLXcR/v/L3qA2XdZCsM4v
-         6o18/Cbk4lERTRX5a/Ck6T9JoP8tltSGYwr26nH0DnGU1hIRHdm439Q9Fdxf9C+Z3/r3
-         +sUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=tFM7xIQtCpOuioxyy6/Mgl+Oz5Ak50q4/dFV83odINU=;
-        b=P5dt6l/AxVONyk6Q9RjXGTiUG9zaK9xyw9R7XBehO7b0eB9U1Sdm1ulL1ZC0rg6Lm7
-         WotXbvea7GTEON/h9nr0JhKUnDyJRDUdDtSuUewobnmURTTwfxwUYRUzzgsnlZSJqM3C
-         BmeKU8IBp4DL+OLG8dYcFV40HeYAcAtSVnAHYyuuEJfmd0Ya8sX2UOAJOucfR+v5v1LF
-         JjXgbsNZcZc6QX/XCHDTYkGrHBowL2qOw70MBVE2vagtNwuUfCZ5oU/BwQuYjMCBJqwD
-         NiGz34jmErNyZrOCmGyi29kIIVZDRFE+I+SLPkaUOK2aXPihwJ9SmbzfMtskdpeEv3CL
-         R6UA==
-X-Gm-Message-State: AOAM532Yuyt2gA1j/EG/o/CIw0BqgVDJW56qHa12cHJDYn3FNrd0eHi0
-        SbgK2qXOo75OjL6xfQIgxaUX8Q==
-X-Google-Smtp-Source: ABdhPJwSWLRXskKUk/xSTtlslzuAA/xGA0C0JNmxOobr7l0+SCxm22xrVKrUcAaF6GnHI5NXVzi5IA==
-X-Received: by 2002:a05:6e02:144c:b0:2cf:7a91:50da with SMTP id p12-20020a056e02144c00b002cf7a9150damr6727276ilo.123.1652115763443;
-        Mon, 09 May 2022 10:02:43 -0700 (PDT)
-Received: from [192.168.1.172] ([207.135.234.126])
-        by smtp.gmail.com with ESMTPSA id i13-20020a056e020ecd00b002cde6e352dfsm3333827ilk.41.2022.05.09.10.02.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 10:02:42 -0700 (PDT)
-Message-ID: <a72282ef-650c-143b-4b88-5185009c3ec2@kernel.dk>
-Date:   Mon, 9 May 2022 11:02:41 -0600
+        with ESMTP id S239571AbiEIRIO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 13:08:14 -0400
+X-Greylist: delayed 60 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 10:04:12 PDT
+Received: from smtpcmd0757.aruba.it (smtpcmd0757.aruba.it [62.149.156.57])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6F2C72D570D
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 10:04:12 -0700 (PDT)
+Received: from localhost.localdomain ([213.215.163.55])
+        by Aruba Outgoing Smtp  with ESMTPSA
+        id o6mpnGRcmrvmbo6mpnCu9c; Mon, 09 May 2022 19:03:09 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
+        t=1652115789; bh=LVsltK9iEcTGK7OSkzv3VRUP3DRRbW6AQt/m9+GMyVk=;
+        h=From:To:Subject:Date:MIME-Version;
+        b=g8iJ9JJXkLCycAh349eNyL//x1EZ4ypV7vmNaaTbBnEzpJtFNSoIU2vJ5sebw2Hg0
+         kiPc1bVoRiIMfkRJeej3Rsy7yjMvEHctHqCPYYYolh7n/PNHwoiYELhe0AgZk37Fxj
+         2+DZ1IN6eB7sKj72oxdQqMMA6oAWjZJob+4jJlrZBjXuigue8iLiL3Tr++4SVdJkE1
+         XtFkShHxJpdSwLhDaqHDRpt3ukSDhmvrE5s3jgCDWvzoLMRXkxGsquTN6C6VTqFAFd
+         SdXsFSVUEj3+8ekoRhuD0/eseRCAS3eibkRcLIID9FSJVjLVRzANNFJbHutksui0rx
+         NWbCYv+NOIrqQ==
+From:   Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
+To:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     kernel@pengutronix.de, linux-can@vger.kernel.org,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
+Subject: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr was already claimed
+Date:   Mon,  9 May 2022 19:03:03 +0200
+Message-Id: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [syzbot] KASAN: use-after-free Read in bio_poll
-Content-Language: en-US
-To:     syzbot <syzbot+99938118dfd9e1b0741a@syzkaller.appspotmail.com>,
-        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
-        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
-        kpsingh@kernel.org, linux-block@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
-        Ming Lei <ming.lei@redhat.com>, Christoph Hellwig <hch@lst.de>
-References: <00000000000029572505de968021@google.com>
-From:   Jens Axboe <axboe@kernel.dk>
-In-Reply-To: <00000000000029572505de968021@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CMAE-Envelope: MS4xfL3pMpetwi3Y3IAoKunxzsMB5CMuj+1LhO4mLMoLUaFmfbwFEG2Rv4e8f9BIDJC2Y4tMd+YwDb+VnqVfRAzX+jTIwP5Rfvwc3ENHeVCPfCoWW3KJz1ON
+ 4NZSj1W1woWxyQzHV6xmnGrt9L8SJiMKs4p32fLTapb/xnJG76SxsQ+2aTXLbbNH64B06SRxEW1bys+wEBrv75kPgHq6vdoV8psVYLhqdHrqbwPDZbOOs6BL
+ x7N62RW1X4QvRGhJRBqG0o4wRRf6QG5EfZ5cdqi/07wWjoJMm6jNs4UwzvSxXmtGxecBC58k12zgRxnn44veiKL6Ij2ue48/IgtPhcz8WOtSY3z9W5Cb6QEq
+ 54PFEtWwo1nViD92AW4Ojx4wtFlQcjpjVxgLql2gNisVXh4QlI35QJBlzMuQ13QFqIfGUFxfxyvdj6tbR2awlVf7VkkX8zwohPknQLGpHCRC17vno3cTIvxE
+ sbTitJCH3BXLd/OlLpPGP62T26BBRfpFMVPnlVNA1IQBw/fS9y95zLGBSWiwgIUnFaFLYN1s5PGrSjY6g2xRtZu3AW69vZBu1P/rzMYOtOJvh9+GMc7w60fx
+ 0JFp6nIqSwbgPrHhTCbLfYXhPc7u8L4Klm7BKdgBHPgJf6WIi1oTtS9+1iUp/6wEoQJhE4x8zpN5LBmlJNB5yg88HnjiyXrL57GnwYCiE9LzSg==
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/22 10:14 AM, syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    c5eb0a61238d Linux 5.18-rc6
-> git tree:       upstream
-> console+strace: https://syzkaller.appspot.com/x/log.txt?x=112bf03ef00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=79caa0035f59d385
-> dashboard link: https://syzkaller.appspot.com/bug?extid=99938118dfd9e1b0741a
-> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12311571f00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177a2e86f00000
-> 
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+99938118dfd9e1b0741a@syzkaller.appspotmail.com
-> 
-> ==================================================================
-> BUG: KASAN: use-after-free in bio_poll+0x275/0x3c0 block/blk-core.c:942
-> Read of size 4 at addr ffff8880751d92b4 by task syz-executor486/3607
-> 
-> CPU: 0 PID: 3607 Comm: syz-executor486 Not tainted 5.18.0-rc6-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Call Trace:
->  <TASK>
->  __dump_stack lib/dump_stack.c:88 [inline]
->  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->  print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
->  print_report mm/kasan/report.c:429 [inline]
->  kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
->  bio_poll+0x275/0x3c0 block/blk-core.c:942
->  __iomap_dio_rw+0x10ee/0x1ae0 fs/iomap/direct-io.c:658
->  iomap_dio_rw+0x38/0x90 fs/iomap/direct-io.c:681
->  ext4_dio_write_iter fs/ext4/file.c:566 [inline]
->  ext4_file_write_iter+0xe4d/0x1510 fs/ext4/file.c:677
->  call_write_iter include/linux/fs.h:2050 [inline]
->  do_iter_readv_writev+0x3d1/0x640 fs/read_write.c:726
->  do_iter_write+0x182/0x700 fs/read_write.c:852
->  vfs_writev+0x1aa/0x630 fs/read_write.c:925
->  do_pwritev+0x1b6/0x270 fs/read_write.c:1022
->  __do_sys_pwritev2 fs/read_write.c:1081 [inline]
->  __se_sys_pwritev2 fs/read_write.c:1072 [inline]
->  __x64_sys_pwritev2+0xeb/0x150 fs/read_write.c:1072
->  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->  entry_SYSCALL_64_after_hwframe+0x44/0xae
-> RIP: 0033:0x7f6846af7e69
+This is not explicitly stated in SAE J1939-21 and some tools used for
+ISO-11783 certification do not expect this wait.
 
-Guys, should we just queue:
+Fixes: 9d71dd0 ("can: add support of SAE J1939 protocol")
+Signed-off-by: Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
+---
+ net/can/j1939/address-claim.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-ommit 9650b453a3d4b1b8ed4ea8bcb9b40109608d1faf
-Author: Ming Lei <ming.lei@redhat.com>
-Date:   Wed Apr 20 22:31:10 2022 +0800
-
-    block: ignore RWF_HIPRI hint for sync dio
-
-up for 5.18 and stable?
-
+diff --git a/net/can/j1939/address-claim.c b/net/can/j1939/address-claim.c
+index f33c47327927..1d070c08edf1 100644
+--- a/net/can/j1939/address-claim.c
++++ b/net/can/j1939/address-claim.c
+@@ -165,6 +165,12 @@ static void j1939_ac_process(struct j1939_priv *priv, struct sk_buff *skb)
+ 	 * leaving this function.
+ 	 */
+ 	ecu = j1939_ecu_get_by_name_locked(priv, name);
++
++	if (ecu && ecu->addr == skcb->addr.sa) {
++		/* the address was already claimed with the same name, nothing to do */
++		goto out_ecu_put;
++	}
++
+ 	if (!ecu && j1939_address_is_unicast(skcb->addr.sa))
+ 		ecu = j1939_ecu_create_locked(priv, name);
+ 
 -- 
-Jens Axboe
+2.25.1
 
