@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7625A5204F7
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 21:11:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A13D5204F9
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 21:11:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240448AbiEITNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S240431AbiEITNI (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 9 May 2022 15:13:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43818 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240431AbiEITM4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 15:12:56 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69A862C5107
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 12:09:00 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id s16so2725687pgs.3
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 12:09:00 -0700 (PDT)
+        with ESMTP id S240438AbiEITM5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 15:12:57 -0400
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB392C512D
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 12:09:01 -0700 (PDT)
+Received: by mail-pg1-x52e.google.com with SMTP id x12so12814468pgj.7
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 12:09:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/z4M3GBGw6/WGXULFKw/7yx8sXpcmNAe2LOaka9wT5k=;
-        b=P4PNCkNxZzf+Qp+/hcaor5d4IiBBYo198uaFWDrEPBrihRc99+d1kdRvulgT2Gt4VZ
-         L8qqOLgBWYRlE/DPuCn+f6E674unzOR2fPQfyeD0oXeRyRAE1Ps3ASfEL0qhNA+qgbYL
-         u8E0GL8mScLV87hwy6UYDX67F0XzoZPrc8XGbuCtfBjc/Iuzhi/TxsX42AssUUJ43AeL
-         62lCmqQwJyBdaU5q3Xf9cxvjbgTkLJ4Rd2ltMVY1D/J4/fZKf+PuzhSJv1Jb8BCjPDCH
-         2suYkqUlLPcAVNhF3zY+lWoMXcFfjqK2PL29Xywq+a/gmnaUw2IbMuihMTCsCo2Yd9q9
-         m8Hg==
+        bh=F23hvNdZVN0CdwC6BDdwdQ1zcLt+U3y9nLMorclWjn4=;
+        b=GmPS2/u/atWfhpEDJ46EekvU36Yt0L2WEtm6xRsSZyXTbsLmjkLnD1OcLeqIGZPsoa
+         dAGVgHj5XMFAZ0JF1X8ZYORVoqL356t0JBytSRS/9GEK5e1VOmL4tRzEhC7qxkUEastB
+         zOg/jNIqEC8bLwftvqarQE+GDIIeO60Ap5SJjt1eQETu/AFSgD4FIhG7JyWUgO91ywJX
+         v46WJOYFZyvXWqloza1qGqTp/TMLvPggly8oxnJcA3FmtzzVsR1Fu1q14ozdBEidTUOI
+         M8F+m6GOE7zJP1vYTLYbB7wJulrdqyFhJ4jLSqks52iaq49r9RjPAS6+FX9Biwt+mArb
+         IVmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/z4M3GBGw6/WGXULFKw/7yx8sXpcmNAe2LOaka9wT5k=;
-        b=gW+LRH0oTyw/1zDgfYkoBkKJmAF6plNbZLIgKRpKaqrhoLRZ4mI6ZpdI1hoU6VRS5o
-         stG1OjWnqVxdahZVwkiLmvPrayQd4oe0GI79UN9Nghm5K2iDTFNzW1odX1O+5+RN2oYM
-         XX/IXVPCR62GRZ1qCMhp1CwOnjLoQtzLY+SO5JsNPzKWZl3GMQ5X1QggYSODS6PbZzW1
-         GQ7xNMHMiM8W2oGaBxR2aMgrfi3ULGV7yECe67wee4u9Uk77k5nYdCu9RLde2Rgd16Gj
-         ujPcg/xIy6OdHAXlywX1MIOIE/dkww2mG/HJZMTVzip7vv9AzYJCjsq3jyvoCVyVX44S
-         R6Ug==
-X-Gm-Message-State: AOAM533F+jALWlCNDVfsNQxAcIHOnLLjqo3Q/UzREX5/UUojtkms5bRF
-        agnj9mvRai46ehfSTCLF8NA=
-X-Google-Smtp-Source: ABdhPJypJATFp8RkOv6KYmXmuEg+IWzP6NTqkPWFypxNVMz/4mcGgVzUcAprUmR8/DK4olIpEZrgSw==
-X-Received: by 2002:a63:41c1:0:b0:3c6:e382:c125 with SMTP id o184-20020a6341c1000000b003c6e382c125mr1491668pga.383.1652123340014;
-        Mon, 09 May 2022 12:09:00 -0700 (PDT)
+        bh=F23hvNdZVN0CdwC6BDdwdQ1zcLt+U3y9nLMorclWjn4=;
+        b=DrGnW8LGnAXAr0rsEZBEOqb8QQUxlvUJKsEXtaO8F2qi5zRqxcCbY94JERu552SVun
+         7nEqBF5JQyk2Q5TqQmva7Gxda055d/iqJUn8a9cHE/NlnCbfyeuCkXhSR/fSxWhCgXit
+         7qju14iq5U7VLqQe28P/eyhh3g+DkBFyMbvxrExrez1l+rOSbBb0b8ZhFWeblOLozGAi
+         fn2YTInfMrAXRen6foKkrLJVS5ajjAOqF8J2xRkifjl/2neGzv2K0JbGwuoTcauL5lHD
+         y8yk2XfmCCnrVVam+kwh2aL7fKavUwTv+UYchWHs55WwAl26gkLBBF04Bu2VteMIpggm
+         H9aw==
+X-Gm-Message-State: AOAM533njIhTdtEI1G5j2K554HMNgV4qBrDaW6pU/2kvcyNEoZj9OV6/
+        PoSST2eza83EpXk4ysvIdJs=
+X-Google-Smtp-Source: ABdhPJwt06tor8/5bLEYJ3btoY2iYz/FzuDxuPlVo9yfFRyGmm4d2NiJ+j4DLXKfkVYQeUuExT/3Lw==
+X-Received: by 2002:a05:6a00:230d:b0:4f6:ec4f:35ff with SMTP id h13-20020a056a00230d00b004f6ec4f35ffmr17270195pfh.53.1652123341451;
+        Mon, 09 May 2022 12:09:01 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5d30:4e79:203f:a909])
-        by smtp.gmail.com with ESMTPSA id a6-20020aa79706000000b0050dc7628174sm9032631pfg.78.2022.05.09.12.08.59
+        by smtp.gmail.com with ESMTPSA id a6-20020aa79706000000b0050dc7628174sm9032631pfg.78.2022.05.09.12.09.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 12:08:59 -0700 (PDT)
+        Mon, 09 May 2022 12:09:01 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,9 +54,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH net-next 3/4] net: warn if transport header was not set
-Date:   Mon,  9 May 2022 12:08:50 -0700
-Message-Id: <20220509190851.1107955-4-eric.dumazet@gmail.com>
+Subject: [PATCH net-next 4/4] net: remove two BUG() from skb_checksum_help()
+Date:   Mon,  9 May 2022 12:08:51 -0700
+Message-Id: <20220509190851.1107955-5-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
 In-Reply-To: <20220509190851.1107955-1-eric.dumazet@gmail.com>
 References: <20220509190851.1107955-1-eric.dumazet@gmail.com>
@@ -74,36 +74,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Make sure skb_transport_header() and skb_transport_offset() uses
-are not fooled if the transport header has not been set.
+I have a syzbot report that managed to get a crash in skb_checksum_help()
 
-This change will likely expose existing bugs in linux networking stacks.
+If syzbot can trigger these BUG(), it makes sense to replace
+them with more friendly WARN_ON_ONCE() since skb_checksum_help()
+can instead return an error code.
+
+Note that syzbot will still crash there, until real bug is fixed.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- include/linux/skbuff.h | 2 ++
- 1 file changed, 2 insertions(+)
+ net/core/dev.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index d58669d6cb91aa30edc70d59a0a7e9d4e2298842..a1c73fccccc68641fe46066e6d1195b31483ca4c 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -42,6 +42,7 @@
- #if IS_ENABLED(CONFIG_NF_CONNTRACK)
- #include <linux/netfilter/nf_conntrack_common.h>
- #endif
-+#include <net/net_debug.h>
+diff --git a/net/core/dev.c b/net/core/dev.c
+index f036ccb61da4da3ffc52c4f2402427054b831e8a..e12f8310dd86b312092c5d8fd50fa2ab60fce310 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -3265,11 +3265,15 @@ int skb_checksum_help(struct sk_buff *skb)
+ 	}
  
- /* The interface for checksum offload between the stack and networking drivers
-  * is as follows...
-@@ -2804,6 +2805,7 @@ static inline bool skb_transport_header_was_set(const struct sk_buff *skb)
+ 	offset = skb_checksum_start_offset(skb);
+-	BUG_ON(offset >= skb_headlen(skb));
++	ret = -EINVAL;
++	if (WARN_ON_ONCE(offset >= skb_headlen(skb)))
++		goto out;
++
+ 	csum = skb_checksum(skb, offset, skb->len - offset, 0);
  
- static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
- {
-+	DEBUG_NET_WARN_ON_ONCE(!skb_transport_header_was_set(skb));
- 	return skb->head + skb->transport_header;
- }
+ 	offset += skb->csum_offset;
+-	BUG_ON(offset + sizeof(__sum16) > skb_headlen(skb));
++	if (WARN_ON_ONCE(offset + sizeof(__sum16) > skb_headlen(skb)))
++		goto out;
  
+ 	ret = skb_ensure_writable(skb, offset + sizeof(__sum16));
+ 	if (ret)
 -- 
 2.36.0.512.ge40c2bad7a-goog
 
