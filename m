@@ -2,86 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD7CD51FFDC
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:36:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC3CA51FFFB
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:37:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237250AbiEIOfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 10:35:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50166 "EHLO
+        id S237263AbiEIOiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 10:38:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237264AbiEIOfn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:35:43 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE065213339
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 07:31:42 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id 4so17266363ljw.11
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 07:31:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=semihalf-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Qgqai7f9lS7Suf9yllivg2gEv4Ncv7OAyyOiWFDdECA=;
-        b=FXUtX9olu2gnzr5+poKYzCqa1xf+HtK7HT8GWzxXNTZQQ0b3ARcqDZJOQYAhIcDYa6
-         tSNK0mszQInhPge7jIBsKqDPKonFCgRNMxkXfYEHDFoxV3TZu1FNqoNEAFH3IsWuI1ud
-         K/E2cFscnCJ29CYpu0trerQ4nGSpuN5A8OxYO4vooZzADOldblqrHTiG3VaHEuQmMNi4
-         a+VakUC9OX1hu6YUAYQtXlXLD4lkvnQzB1503B7FMHfLgLYL7B2YWYlW3nyDXcZklTL1
-         gyA4FQeQODZjQOKEnFxMKw2MMf+tgrFYKrcYlPV7M0fahH3fk/uVoG5VCw7Vo1Yk+WPJ
-         BIYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Qgqai7f9lS7Suf9yllivg2gEv4Ncv7OAyyOiWFDdECA=;
-        b=Inz6Fuxh9hUc0Msix7y8UXZSEesdoI2/enBRrXRZreSQt3r9j32NjFeBysBR3pSuyv
-         lJUc8wp5tH2nskJAO0niY4plZdS4giGn0MEp7/R6xkfnZ96aP921t2qhhoyFVyxBAHC1
-         uHr2enIskDdUlpngoelO9aVA2sP8vy71oO6zUFpzjllBJYmtTqh3dbhclXbXuRh7Rz96
-         Oy4JsgTqaO6+MCA9buE3r2uTPW0xEzv8OIH0iArLpAaWtuS0pVSfS/QkXPQ2qpuASR7G
-         FwFWuLr5MI0xJTwGunk9Gza3snCsxRa0aCxHEi4kBZbDOJ2xu64muztToGU8rrSegZH0
-         XZ9Q==
-X-Gm-Message-State: AOAM533BZNT1S3muF2VMO6MZfIH+zMkXpItCYjQcRKSjP5Wo8asx3Tdh
-        FtkwU+x0ar+VxO1QJxBCcMOpjVBXW29fMVIQy6N2Kw==
-X-Google-Smtp-Source: ABdhPJxqNtTSR5nUh0j/WBFU0R3eaENvnpD4iIqG+qWiuhvFJCsrpYSaREgd8um7eiuFAM8z3dXvXyDW12lIggdNIoU=
-X-Received: by 2002:a2e:9581:0:b0:24f:2dc9:6275 with SMTP id
- w1-20020a2e9581000000b0024f2dc96275mr10284304ljh.486.1652106700628; Mon, 09
- May 2022 07:31:40 -0700 (PDT)
+        with ESMTP id S237225AbiEIOiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:38:16 -0400
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399A72AED94;
+        Mon,  9 May 2022 07:34:18 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id F19E830B2954;
+        Mon,  9 May 2022 16:34:15 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
+        :content-type:date:from:from:in-reply-to:message-id:mime-version
+        :references:reply-to:subject:subject:to:to; s=felkmail; bh=3bXf2
+        2+Nw/0Od99Sjn+qvkBNLItca+JSrqVBQ0ekeoA=; b=KyrBaUw2BhbHetjD/tBfn
+        0xPskG+rZ8S8NS0pcLJFWAYaGyIz2CN1p6HRoO3JaO2gHZzQgVpsA7N7rZKmQ0Rk
+        2oZd17AHRJfaDSy4f79STC98g8z+JHMZZaCrM3lpjoJrPUOAjgQ7E6T1LnyowgNL
+        17M1o3VhGGQsUovwMhuPqjjaxgTTGG2Y4S+8M5QK6lC/56ePGEbvNBVLUWXpF+d2
+        1LgWaSN+MyUaWNUHr1zXYk6yBIXQmwRIMiEAWIBBY51QAl4as7SiioTFcrrDUfXd
+        844Bm2MO65B/GVzZk51Fb3bFpp9U7gyh0k9XbWOrU8hWWguj2O8KYTKvzXzK2NvT
+        g==
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 7BE2930B2948;
+        Mon,  9 May 2022 16:34:15 +0200 (CEST)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 249EYF9M032507;
+        Mon, 9 May 2022 16:34:15 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 249EYEIP032506;
+        Mon, 9 May 2022 16:34:14 +0200
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Subject: Re: [PATCH] can: ctucanfd: Let users select instead of depend on CAN_CTUCANFD
+Date:   Mon, 9 May 2022 16:34:05 +0200
+User-Agent: KMail/1.9.10
+Cc:     Ondrej Ille <ondrej.ille@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <887b7440446b6244a20a503cc6e8dc9258846706.1652104941.git.geert+renesas@glider.be>
+In-Reply-To: <887b7440446b6244a20a503cc6e8dc9258846706.1652104941.git.geert+renesas@glider.be>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-References: <20220506025134.794537-1-kuba@kernel.org> <20220506025134.794537-4-kuba@kernel.org>
-In-Reply-To: <20220506025134.794537-4-kuba@kernel.org>
-From:   Marcin Wojtas <mw@semihalf.com>
-Date:   Mon, 9 May 2022 16:31:28 +0200
-Message-ID: <CAPv3WKehhJgOFJRiGSsEb3FeOkm3iBSbSO-N39z8+n=7PWtxHA@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/4] net: make drivers set the TSO limit not the
- GSO limit
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>, pabeni@redhat.com,
-        alexander.duyck@gmail.com,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        chris.snook@gmail.com, dchickles@marvell.com, sburla@marvell.com,
-        fmanlunas@marvell.com, ajit.khaparde@broadcom.com,
-        sriharsha.basavapatna@broadcom.com, somnath.kotur@broadcom.com,
-        qiangqing.zhang@nxp.com, yisen.zhuang@huawei.com,
-        salil.mehta@huawei.com, jesse.brandeburg@intel.com,
-        anthony.l.nguyen@intel.com,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        gakula@marvell.com, sbhatta@marvell.com, hkelam@marvell.com,
-        simon.horman@corigine.com, Heiner Kallweit <hkallweit1@gmail.com>,
-        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
-        kys@microsoft.com, haiyangz@microsoft.com, sthemmin@microsoft.com,
-        wei.liu@kernel.org, decui@microsoft.com, woojung.huh@microchip.com,
-        wintera@linux.ibm.com, roopa@nvidia.com, razor@blackwall.org,
-        cai.huoqing@linux.dev, fei.qin@corigine.com,
-        niklas.soderlund@corigine.com, yinjun.zhang@corigine.com,
-        marcinguy@gmail.com, jesionowskigreg@gmail.com, jannh@google.com,
-        hayeswang@realtek.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Message-Id: <202205091634.05147.pisa@cmp.felk.cvut.cz>
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -89,40 +69,57 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-HI,
+Hello Geert,
 
-[snip]
-
-> diff --git a/drivers/net/ethernet/marvell/mvneta.c b/drivers/net/ethernet/marvell/mvneta.c
-> index f6a54c7f0c69..384f5a16753d 100644
-> --- a/drivers/net/ethernet/marvell/mvneta.c
-> +++ b/drivers/net/ethernet/marvell/mvneta.c
-> @@ -5617,7 +5617,7 @@ static int mvneta_probe(struct platform_device *pdev)
->         dev->hw_features |= dev->features;
->         dev->vlan_features |= dev->features;
->         dev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
-> -       netif_set_gso_max_segs(dev, MVNETA_MAX_TSO_SEGS);
-> +       netif_set_tso_max_segs(dev, MVNETA_MAX_TSO_SEGS);
+On Monday 09 of May 2022 16:02:59 Geert Uytterhoeven wrote:
+> The CTU CAN-FD IP core is only useful when used with one of the
+> corresponding PCI/PCIe or platform (FPGA, SoC) drivers, which depend on
+> PCI resp. OF.
 >
->         /* MTU range: 68 - 9676 */
->         dev->min_mtu = ETH_MIN_MTU;
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> index 1a835b48791b..2b7eade373be 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-> @@ -6861,7 +6861,7 @@ static int mvpp2_port_probe(struct platform_device *pdev,
->                 mvpp2_set_hw_csum(port, port->pool_long->id);
+> Hence make the users select the core driver code, instead of letting
+> then depend on it.  Keep the core code config option visible when
+> compile-testing, to maintain compile-coverage.
 >
->         dev->vlan_features |= features;
-> -       netif_set_gso_max_segs(dev, MVPP2_MAX_TSO_SEGS);
-> +       netif_set_tso_max_segs(dev, MVPP2_MAX_TSO_SEGS);
->         dev->priv_flags |= IFF_UNICAST_FLT;
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+
+Thanks for suggestion, I have no strong opinion/experience there
+but I agree that proposed behavior seems more friendly to users. 
+
+>  drivers/net/can/ctucanfd/Kconfig | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 >
+> diff --git a/drivers/net/can/ctucanfd/Kconfig
+> b/drivers/net/can/ctucanfd/Kconfig index 48963efc7f19955f..3c383612eb1764e2
+> 100644
+> --- a/drivers/net/can/ctucanfd/Kconfig
+> +++ b/drivers/net/can/ctucanfd/Kconfig
+> @@ -1,5 +1,5 @@
+>  config CAN_CTUCANFD
+> -	tristate "CTU CAN-FD IP core"
+> +	tristate "CTU CAN-FD IP core" if COMPILE_TEST
+>  	help
+>  	  This driver adds support for the CTU CAN FD open-source IP core.
+>  	  More documentation and core sources at project page
+> @@ -13,8 +13,8 @@ config CAN_CTUCANFD
+>
+>  config CAN_CTUCANFD_PCI
+>  	tristate "CTU CAN-FD IP core PCI/PCIe driver"
+> -	depends on CAN_CTUCANFD
+>  	depends on PCI
+> +	select CAN_CTUCANFD
+>  	help
+>  	  This driver adds PCI/PCIe support for CTU CAN-FD IP core.
+>  	  The project providing FPGA design for Intel EP4CGX15 based DB4CGX15
+> @@ -23,8 +23,8 @@ config CAN_CTUCANFD_PCI
+>
+>  config CAN_CTUCANFD_PLATFORM
+>  	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
+> -	depends on CAN_CTUCANFD
+>  	depends on OF || COMPILE_TEST
+> +	select CAN_CTUCANFD
+>  	help
+>  	  The core has been tested together with OpenCores SJA1000
+>  	  modified to be CAN FD frames tolerant on MicroZed Zynq based
 
-For mvpp2:
-Reviewed-by: Marcin Wojtas <mw@semihalf.com>
-
-Thanks,
-Marcin
-
-[snip]
