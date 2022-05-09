@@ -2,159 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 329CF51FEF3
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BF5351FF12
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:08:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236541AbiEIN7u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 09:59:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
+        id S236839AbiEIOFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 10:05:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236387AbiEIN7r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 09:59:47 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2105.outbound.protection.outlook.com [40.107.215.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B1418B3E;
-        Mon,  9 May 2022 06:55:51 -0700 (PDT)
+        with ESMTP id S236808AbiEIOF0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:05:26 -0400
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2071.outbound.protection.outlook.com [40.107.92.71])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 555E326564
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 07:01:27 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=MEZqPS7pCBexxOlGb5hq6KkibpaYePKdvOzQUq6FjVJp0HN9WtQeq/PicRsYEnVjHeNm1z3aovWZhhpjNvX4Iy6hRSa3k/pU9I/BI0QvVO79JyijohmQPnDu3W2zfwOoeXu3tIbx/vJcE5CvGc+xgKqt54rEeeDLYk9vIaxZ18Qd3uQLry96mUmHV3mfhUmRXe6NGqt5w6PvNa6817RUCHJPpsoD7mzT76hHWTaNCgWS/VnvhgTH5hmll1fWtkroP+THboxUBOfPJN9xdauOOQwULC/+GZWEbLUk/wRpQYFlvxeSijxU6qNyj0rfiRmf0j9LK/uTnSWVW8YFFZGctg==
+ b=cJeRMoC5r6R3Jkje0Ej7/OhkpOEUhTgBeU0NROfAvZ0lb6NZ18nEhXO1geRCB2MlD7U//8IUcxO1QqXftnrPOSbQalSG7V5pCMw20XoaLodkZeoZX/QZHMMY5fwXi/znIk4gReLbFaZ4VexA7Le/tr9pPdzSHcFTXUwMGpZ3sMQHJtKztYbU4rY41POTdytXStylgAZUs6/sdGiRh1uCV206b7gHk5x9/JNjQbjzo1/ofHnBGpYLqgXpnWbkKob9BWFoXCYPPc6cmuCQzcXCdgtrC1zdcEjkA/GJbfpuKbxnpFs5d9Ph37CCo+cU8cKvqjzxxs9vJB9+TF+3GAK1Ew==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=oK2rogvgNdkBaBxpL2ZlZZioTUSw/jVf3WKy8JIF7SI=;
- b=gOVKynbDjXuB237iDnIlN/ogHc4cgupwexZDHDz4R5KjVcCh0CZWqM4IwP5jBfo2GnOubJ1HdtlJMx8kbwfBS5MAFhxPDc/oIy0xiBFqhdhtYoEW+X+RTZRVn+VA8gF47WefPQZ+e5uOrsr/ZBs4F+BEqDeSpTlmAKqz2FKOK3SVcyUOlvSmaIrn92ypi/K/csXoERL2DMTls6UkyB+0jFokkpji6gxVyvNPL5M3z+JXIcm8mkRaOdBByze7poA1H3Q30TTFOK/zfp7bzLhBwTcsDvyw7C1jGRbppt1D59JuxLHedYkmriB5mBQcv4L7s0SLOGBWnXlIZ01GnfbU4Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
+ bh=fgNCi1/rMNire5ZRPVP4tCIkFPqZo/A760/FGcYmi2I=;
+ b=FQUnhd3N56W3hcyR+CgUgUJZ3L1GxjWNPoswvAMcXjesgKLWV81LSJujjYp9f25pjxs+psy/lsGf+vZ30vaeBt4Dt7H0q61lcpDOg2Z8kSsx1KAI5XyPkre9be5gPhi8gvPzlD+a9PMF83xwBEXY2ar1SGwRr6TObPMhYyoki7+zZfPOPjTH7vLdSlRgt3TO7Gqo3nDCitIU0wpRpybIeoP93V1k6W2VnJisHRb9d3EYvsl9vWC2jAwTaGQ2oStvNp4vureexJsyu08BPsNFyHy2TYGRjdtIFf4F07SpXRwHEhwWwfh9kx4rHJd9naNlt0+WOc4FmvnLbyQ1NSzAkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.238) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
+ (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oK2rogvgNdkBaBxpL2ZlZZioTUSw/jVf3WKy8JIF7SI=;
- b=obOyLiIGJS2BMa/JO6bFoeEtQHAY5EXgBkpCo5pjOH+WjG5tk8HFMYajFrFiTUF1sTGszEn/himzlQ72pB9maS/r7HCDSDpFf28JvWCStM7PU9yymCCPwGNpvvTWHj58OeXzB0QxaV+9A9I0M8hI0Ufpfbn5MvAqGmYUIiIbJ7g=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com (2603:1096:4:78::19) by
- HK0PR06MB2995.apcprd06.prod.outlook.com (2603:1096:203:80::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.22; Mon, 9 May 2022 13:55:48 +0000
-Received: from SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::4591:4f3e:f951:6c8c]) by SG2PR06MB3367.apcprd06.prod.outlook.com
- ([fe80::4591:4f3e:f951:6c8c%7]) with mapi id 15.20.5227.022; Mon, 9 May 2022
- 13:55:48 +0000
-Message-ID: <8e2e3c34-1aa3-bab4-cdde-256a6eea5e44@vivo.com>
-Date:   Mon, 9 May 2022 21:55:42 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] net: phy: micrel: Fix incorret variable type in micrel
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220509134951.2327924-1-wanjiabing@vivo.com>
- <Ynkcy0VhJ/HTfqMU@lunn.ch>
-From:   Jiabing Wan <wanjiabing@vivo.com>
-Organization: vivo
-In-Reply-To: <Ynkcy0VhJ/HTfqMU@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: TY2PR02CA0001.apcprd02.prod.outlook.com
- (2603:1096:404:56::13) To SG2PR06MB3367.apcprd06.prod.outlook.com
- (2603:1096:4:78::19)
+ bh=fgNCi1/rMNire5ZRPVP4tCIkFPqZo/A760/FGcYmi2I=;
+ b=YMB0/04NpmZAElYHFkePGA9MiRaI7EGzsb1MZSigwSgOplGhj7yS1e51NkbpacTPR9kHkREpvq7LRJq5ijdZJEEKO508ZNX9FOHJOjyMllf7nsn8WEC0lpeJxH0Bn5qkz3RNR3JV6P4fr/yhReuZW9GKyryh+IIu0MrnLnj0FBgpW7RIU01h4yyySwAgjCgy5Q3SqguK0K72eE1jJu12H1w74je+PwOPMqRejICgSB2ZkM4pl4hQtjdk5s7oDeYLO2N60I/I8zyzbvSulCD3sqqQfv5XZH00EIZE2qCY3gGtfz+fFez0vLm1xUWc8uhamrzRXXcKvujcBfaREv7owQ==
+Received: from MW4PR03CA0047.namprd03.prod.outlook.com (2603:10b6:303:8e::22)
+ by MWHPR12MB1789.namprd12.prod.outlook.com (2603:10b6:300:112::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.18; Mon, 9 May
+ 2022 14:01:24 +0000
+Received: from CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:8e:cafe::f) by MW4PR03CA0047.outlook.office365.com
+ (2603:10b6:303:8e::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22 via Frontend
+ Transport; Mon, 9 May 2022 14:01:24 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.238; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.238) by
+ CO1NAM11FT022.mail.protection.outlook.com (10.13.175.199) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 14:01:24 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL105.nvidia.com
+ (10.27.9.14) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Mon, 9 May
+ 2022 14:01:08 +0000
+Received: from localhost.localdomain (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Mon, 9 May 2022
+ 07:01:06 -0700
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     David Ahern <dsahern@gmail.com>, Ido Schimmel <idosch@nvidia.com>,
+        "Petr Machata" <petrm@nvidia.com>
+Subject: [PATCH iproute2-next 00/10] ip stats: Support for xstats and afstats
+Date:   Mon, 9 May 2022 15:59:53 +0200
+Message-ID: <cover.1652104101.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 006b4bf7-916d-4b89-fccd-08da31c39f0a
-X-MS-TrafficTypeDiagnostic: HK0PR06MB2995:EE_
-X-Microsoft-Antispam-PRVS: <HK0PR06MB29956D51F956B427119B1631ABC69@HK0PR06MB2995.apcprd06.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: d44d2b99-a18b-4d58-cff5-08da31c46759
+X-MS-TrafficTypeDiagnostic: MWHPR12MB1789:EE_
+X-Microsoft-Antispam-PRVS: <MWHPR12MB1789DB526BC28F0104318355D6C69@MWHPR12MB1789.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Q51NHcoElPG0sa4Wwr+iLT67ucZW1x72v11AUW9xs76dHz0Rgd1oceIPxOTsDtoPHYKJdj945CsS8ugttVxUbuiG9SMQL1QyW0lWACdg1DQ2xxV/ZFx4azB4rsbLufzGxIFsGCY3uqiSsxEUzd9Fpl8K/ML4NT2ltMIBtUDAGfQHb6eMw83NOFBr2cQ/c1M6l00gMh4Q9ZGpBqQwJVaMGq1uMaFBYSeiJwWWEbroUyNh5TJs9Ku2fJBtAJ90qdrzaaaWeusjpV3JEtTEdY+mRlnUtj0UMKGmG5lU1i+eutR7itS5pCUCn1T3L77Sp86KqbmObcrJUSTnIempu3YP198zC0i6CEr/j4iFoK2KzNvNiOO9RsYWma1CJIr+LsF+4ATVfH+dkHkV8cTHfQB3+MwPXAk39dFn0lRs8hVkpsWqDc+IX4mEBefw4PpfxqSmdh7J8wVqqU8XGvgc6+42uNTJF/dF+3z1vYY94H6tCRjj0NPO7KzKHacYARmgHfKHe5TtQesEdyOXVakdZrSkT8M+lRxdCKpnsJtsZKjV3IylmkfjPYKF+fqfxqijpWQgIRcMonWk9kITRzdQrxbFj9O8bHlRxJNat9V1hDA2kDKGk4HC5aDZyv2ZODAAnNEQenpl9yzBWbh2aC2vwSgNCaxybaXRG/xXtT1As44cUBdk3+pw+aQJ9Qa7p9iV9BYSEXPPC9ISQhL2M+u0mBbYPuDNyiziqsCTuL2lS1s9AnCgSGrgHlxdgsLa7dBZn/ObwaH1FM+TJrpDdFkJdC8dhn1i3vRaADvvJOl4hu8fE9c=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SG2PR06MB3367.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(508600001)(6486002)(6512007)(26005)(2906002)(86362001)(186003)(6666004)(6506007)(52116002)(36916002)(5660300002)(49246003)(4744005)(31696002)(2616005)(53546011)(36756003)(316002)(4326008)(8676002)(6916009)(66476007)(54906003)(66946007)(66556008)(38350700002)(38100700002)(31686004)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UGJEVTZ5YVd3Q1ZWc0sxakRQR2pBVVRWeXlWN05xaXFuOWZ2eEhDdElKMXFQ?=
- =?utf-8?B?WStqV0JQMm5tdkYrdVByL1FoRzgxN1hJYXNubCsyclUwcHJWMzZsS3FqekN6?=
- =?utf-8?B?Q3NXUXJxN3NlWUdzb0NyMUJoVGdVM2dOaGNadlRBK1lVOXpKclhUVHVsZmhj?=
- =?utf-8?B?bXZ6ajB3RHJaODBNd1diYVlPdTFBd0UyV2thb3hITmZJU3dqMkx4dFNJdkEy?=
- =?utf-8?B?dk5DWUZwb0pxbEtyRUtycG02aWZPMU4zeWtzNlZVRzd2Ym56ay9Ybmk0YWlp?=
- =?utf-8?B?SVluQm1wbkQycGdGMWNXSm9BS21LZEFYU29JaHpJWlZLRkltekhsRHdoWW4v?=
- =?utf-8?B?VXNLYzFPcDRMd0tIWjBiZ1AyTHBCKzVGcGZGOWZiM3J6OThKTlRnMWVYcERK?=
- =?utf-8?B?WFkxWitLdlE5VFNLbElCYy91U25hNlhGc3BpSDdXSGVhZWVUb2dUSm1XRzVs?=
- =?utf-8?B?MUt0cTNaV0pwTCtLSy8vVEY1REZWQWplbFlNOFBxR1dXblZpd1lEWDVEQnVH?=
- =?utf-8?B?TFoxLy9LU1FLZVlvQkMyY1V5Rkt6V25PVGkzR3lUSXVEcll3ejhJZUgrc1lu?=
- =?utf-8?B?eVgzNnBDMWpHOUFpOWJ5ek8rcnNjZ3ZVTHpyZzBPZHJBOUxaWm82UURQRHV2?=
- =?utf-8?B?Q0dNMW8ybFA2eWVkRWMwd3gyVkltMnM1d3NhMS9LR2FjVzBGdElYaXhWWlIr?=
- =?utf-8?B?SzFtc3YzemZzQnc0TmhMWHN6Qi9SaXphUDN3S0d1K0ZaY05xZXZaMzFMT1RI?=
- =?utf-8?B?UjFTMU53YnFTNUk4SWYxdjJMQjNNNm42YTdBWkVQZ3RpY1BZZ3RacXFBMnZT?=
- =?utf-8?B?cGRVRHlOcHhUbGU5endQNGZnMU1EeG92d2ltL0NlZlptUHZXV2g0S293NVlQ?=
- =?utf-8?B?TVBIeXFIanFtdVppVU5zbUFxVjFsYlJUaEYzQlNDSENFZXp1QmZKS1VVa2U0?=
- =?utf-8?B?NHpIcWJHb1hqOUpLcERFTjVWRVd1QnRTK1lPRUIxdVhrUGgyTnNWaFlUMjBU?=
- =?utf-8?B?T1BnRGxnY3JwcXNHMUVXMk4rM3ZuZGJpVUZQN3FqVGJXRTFPUTI5cDUycVJ4?=
- =?utf-8?B?dXJLYVJ1MFdOdTRlTDZSUjFxK3BHelVZMEE3d0FpZVlvcE5RbGdRZzJiT1Ev?=
- =?utf-8?B?MnVpOHF1OEx4ZkptTnVsVTBRTm9ya2VrSWhHb05MSnVubU96WW9mZ3JtR1NJ?=
- =?utf-8?B?eHpTZUY0WkJjRlhBTkVxQzJJaCszdk5McHZ6RUdHblFKTnZmQmhGWnEvQTlY?=
- =?utf-8?B?MGV0bXFIQnlUcVVDTzhZMHpwajQ4d2RtMVNpUUhmTGNzajMxSmxzTlhaV2JG?=
- =?utf-8?B?TGtTL3NxOVI0ZzI4OVg3a0ZzYlJCR28wdGEvc2hEOXdHQWtUWlNoUHQyR3VU?=
- =?utf-8?B?dC9MNW5DNG1DL3ErcVpra2k5NVdQZUNXaXRKei90S3VRRTlaUUtsT2J4Qm1x?=
- =?utf-8?B?VTRWekNOaWNwaTR4SHA5R01uK0laRS9IRmdNUU1Ucms3VHhybzliV3llcDRO?=
- =?utf-8?B?bXpncEJscmd5UzY3d0xMemMzU2gydFBRd0RwVDVmSFg1QjUrVFh4NXdsaXBB?=
- =?utf-8?B?M0tFRnplbWl1RWxOODhzTlBZYjkrd3R2NU1VeVBBRjQ3TEtGVUVuTDB6NjZn?=
- =?utf-8?B?UGJJeUk2R3hTRHlJc2Fra1BwRHYyUVRSODR6bHFGZTFSTlZHQ2h6MGZjdGZt?=
- =?utf-8?B?NHlKekVFQ3JMeVA3ZlhqVFdEZitZZTF4WjdXM2duZWZSL1ZaRzFkbENGZExW?=
- =?utf-8?B?S2ZmUUVUR1R5Y1RvKzJGM1ljMTBnd0dQVW00cldzcEhRZU8zYkhvdXJkc09q?=
- =?utf-8?B?VVVTQitNck9xQW1YRHZud1VMb3N2YjcxVkJwWWhSOW9tZmpIU1U1d3pBNFY5?=
- =?utf-8?B?QmlXUTltYmtPUEpYTkoyRkk2Sm5uRWlFZ0dUSlJ6RHlhTzN0N1Vnd0pkZzVa?=
- =?utf-8?B?Wms3RFducjVoc2lyUi9QeVczWDV5TVc1NnpYVldkRVVEZHFVNlJQT21jZDND?=
- =?utf-8?B?MnRtbnJ4QnErN20yK0ZpcG4xS09xTGRobEJabHhuYXViU2gvdEJiTFJBUElp?=
- =?utf-8?B?WkszZDJuQkViOUVsSDNmYWpNbi9rVU5yQUhkTklhTlZYQWl2SWhWSnFEZzNQ?=
- =?utf-8?B?TTBPWStYUEluczEwRWFhSHFqV2cxT0dkVXZWNGNtQUFkTFRmNDZkS0RsNVlt?=
- =?utf-8?B?UmtiTUxjalRDcXFES3RmMERGUE9kbHY3Qlp4cloxUWZ2dWI4M2lSU3BFSGJl?=
- =?utf-8?B?Mjc5V0JDQ3lBRFNrQjZ1UHcvYWtCTUlMK09sT3FEbTlVTTY3TzNmR2tBanQw?=
- =?utf-8?B?bTI2QXhvRFBNbzU4SU1vT3d4UStKNUc1dWxHUW5WbkJqQlg5eHYydz09?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 006b4bf7-916d-4b89-fccd-08da31c39f0a
-X-MS-Exchange-CrossTenant-AuthSource: SG2PR06MB3367.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 13:55:48.4590
+X-Microsoft-Antispam-Message-Info: RGWFHZU8/IJuRn1w7Z8x/EP/f57WjGYC0b6qOjD+IGGDwr49dreVJ6+i9RDhoWxe26Bxpojng3ZA8NVLFRPfNdiTEhcVic7h8P2dyPoNuFE0U62sNEDif28cbjlYT+bMgYIwtHX1VWuXb36XjAvd4lyPlkpWUOxeEUKjd6InFr7yfZciRid/vJ9pa9mCd44kPnMieDXgwVJgaY+oc6wZK4PsKzzWouCXoZ/yU0Fxz9pFSj9GMTUTZ5DVGKTlov9A7Dq0Tl7CcOeywYisTMCL5NDzo0UrfrvxTyNx9ZCoaob0VbYvcCl37RSy6tPV52AGF8FmIIKt+RpEQbUU6vxy2T3EzbePd9qCuQOSufS7yhGJt+rEAruNosfyaFyCTLQSlOs0BrayTm4rfvgIlIL1r4T8ClCKYsPZvMPeBBsd77bGqGQ7AOUCboJ7AvboZT/YuTkly48onfUZaCG9jz6iFLqt4m6SjCPRqzzXFkbWiwt8T17BxnXHZEuiVpevTV3wYqDgshe9g89V4s5/PtwugyvwFBKMowmTpkLq98izXPH2ySfXbM1LV0o5HvpAoG7hkoNs+eRKHlKU3lYad4mulQS8yyryOZW+sxOrikTMB0qsNUdeFmpyBgRmYU9zvFPy5oP7lGs2XkmWPZBoko1VON0o3fuaI4QxP2eSQzxIg2Z1/Lae0ifAFX40pMRGzzQ/883LPY8nJWHbDdOpRt+SMA==
+X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(6916009)(8936002)(316002)(508600001)(40460700003)(5660300002)(107886003)(426003)(47076005)(54906003)(186003)(16526019)(36756003)(82310400005)(70586007)(70206006)(86362001)(36860700001)(26005)(2616005)(81166007)(8676002)(4326008)(2906002)(6666004)(356005)(83380400001)(336012)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 14:01:24.2542
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: N0x+VQUGcL5VV+ue516z6xonQ6tqGJhMSkKQEYe97aE7hV5obGeLaSA5mz7LI4blZze7/gpZ7Y7r0QIdS6IhoA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HK0PR06MB2995
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-Network-Message-Id: d44d2b99-a18b-4d58-cff5-08da31c46759
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT022.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR12MB1789
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+The RTM_GETSTATS response attributes IFLA_STATS_LINK_XSTATS and
+IFLA_STATS_LINK_XSTATS_SLAVE are used to carry statistics related to,
+respectively, netdevices of a certain type, and netdevices enslaved to
+netdevices of a certain type. IFLA_STATS_AF_SPEC are similarly used to
+carry statistics specific to a certain address family.
 
-Hi, Andrew
+In this patch set, add support for three new stats groups that cover the
+above attributes: xstats, xstats_slave and afstats. Add bridge and bond
+subgroups to the former two groups, and mpls subgroup to the latter one.
 
-On 2022/5/9 21:53, Andrew Lunn wrote:
-> On Mon, May 09, 2022 at 09:49:51PM +0800, Wan Jiabing wrote:
->> In lanphy_read_page_reg, calling __phy_read() might return a negative
->> error code. Use 'int' to check the negative error code.
-> Hi Wan
->
-> As far as the code goes, this looks good.
->
-> Please could you add a Fixes: tag, to indicate where the problem was
-> introduced. Please also read the netdev FAQ, so you can correctly set
-> the patch subject. This should be against the net tree, since it is a
-> fix.
->
-> Thanks
-> 	Andrew
+Now "group" is used for selecting the top-level attribute, and subgroup
+for the link-type or address-family nest below it (bridge, bond, mpls in
+this patchset). But xstats (both master and slave) are further
+subdivided. E.g. in the case of bridge statistics, the two subdivisions
+are called "stp" and "mcast". To make it possible to pick these sets,
+add to the two selector levels of group and subgroup a third level,
+suite, which is filtered in the userspace.
 
-OK, I'll fix it in v2.
+The patchset progresses as follows:
 
-Thanks,
-Wan Jiabing
+- Patches #1 and #2 fix up MPLS stats formatting and expose the helpers
+  for reuse.
+- Patch #3 adds ip stats group afstats and a subgroup mpls
+- Patch #4 adds support for JSON formatting to MPLS
+
+- Patch #5 adds support for the selector level "suite"
+- Patch #6 adds groups "xstats" and "xstats_slave"
+- Patches #7 and #8 first prepare helpers, then add support for the
+  "bridge" subgroup of the xstats groups.
+- Patch #9 adds the "bond" subgroup.
+
+- Patch #10 adds manual page coverage.
+
+Petr Machata (10):
+  iplink: Fix formatting of MPLS stats
+  iplink: Publish a function to format MPLS stats
+  ipstats: Add a group "afstats", subgroup "mpls"
+  iplink: Add JSON support to MPLS stats formatter
+  ipstats: Add a third level of stats hierarchy, a "suite"
+  ipstats: Add groups "xstats", "xstats_slave"
+  iplink_bridge: Split bridge_print_stats_attr()
+  ipstats: Expose bridge stats in ipstats
+  ipstats: Expose bond stats in ipstats
+  man: ip-stats.8: Describe groups xstats, xstats_slave and afstats
+
+ ip/ip_common.h      |  22 +++
+ ip/iplink.c         |  75 ++++++++--
+ ip/iplink_bond.c    |  55 +++++++-
+ ip/iplink_bridge.c  | 334 ++++++++++++++++++++++++++++----------------
+ ip/ipstats.c        | 126 ++++++++++++++++-
+ man/man8/ip-stats.8 |  50 ++++++-
+ 6 files changed, 522 insertions(+), 140 deletions(-)
+
+-- 
+2.31.1
 
