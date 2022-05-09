@@ -2,98 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B30D51FB2E
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 13:21:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E646951FB36
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 13:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232345AbiEILYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 07:24:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59106 "EHLO
+        id S232531AbiEIL0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 07:26:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232306AbiEILYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 07:24:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6619A1CA060;
-        Mon,  9 May 2022 04:20:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02B7F61181;
-        Mon,  9 May 2022 11:20:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 66A17C385B0;
-        Mon,  9 May 2022 11:20:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652095213;
-        bh=hxLPtFToauw/CypSw3PgRx03g+BtJcjhzt3UySK+NqY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=iwXAgTgqnNjRgc2XeufwA34jE6Zu+gNg8x2zEMG/qMwfUD9IwAAO+6ycA9S3d9fLz
-         yUMn3UPiWbUnonkyrJnOvim4DgiFm8LKgdwaE8CPodKA2CZ8VX9JxoulfPAH2uiQNn
-         Ca29y47QK81l6I8CbkK8ZBMRsZpceCwseyx4QYX42MKQVWeLYivsjYmZ8u5lVYCXrQ
-         vF+ioQKjI28MFxfY+WDFsTIQprmnE/bL2P/gfh9WZGLuPWLEyQNjLMxg6uu8gjJLPG
-         NITydoI5jZ4TysOMGkwUcSM/YqLh26lls4qyj0TaEHxIB93VChQ31lMpxwiTNAlJkm
-         0B/1V3vvgIGkw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 419F0F03929;
-        Mon,  9 May 2022 11:20:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233069AbiEIL0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 07:26:19 -0400
+Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019DF1AF8EF;
+        Mon,  9 May 2022 04:22:23 -0700 (PDT)
+Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2f7c57ee6feso140409107b3.2;
+        Mon, 09 May 2022 04:22:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JHcyRb0A9TdQ3ZPZeebW28t674FP8onCU6WazLElK4U=;
+        b=Cg6+le4ubJ1hcAxrmpylHiTdhVQUuoVW9aEA+iFxxELX6T+A4h3sE6HzJqz6D1834F
+         Vx852sLUvU75YM1EVCdR4NV8kKrypKVn92RyNlAOS9M/o44QTnUE20FPvKpm1XQxUYJW
+         g//yWu3fDYLTb3vTadJXQak2SIfU1HZVuqSYA+8SMRH0lJUUni9hHCXB+GiXgxj30JQY
+         MPMpNGvS1vf3cEx7wxeGs6k9pFp1EISW9qGofMa6X6OK8pYs754hPRo/DOu9uAAaW7jG
+         NgZlSz7Ib0BwyYgSAhHCydm2MqJkySpOzsONRp9HWwW6epPyZkaSeuT7JdHX8TdYf29i
+         NHbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JHcyRb0A9TdQ3ZPZeebW28t674FP8onCU6WazLElK4U=;
+        b=THmvn6kXYdofFrj4qm8fQwp5y0YmBbeXk8JFdgXKhbAjztLpacIzRCZbV6c4Lqi2cy
+         0jKzvNNW5L7jMQPEf2/ZkZmq7sJhc+XUgEzUqkt15sahWYnzNsbP1OSO9BcsTE4Ts1ob
+         lBAhMc3Z83B64rmHlY4j50lwQYRmKk4KisfgjrRepys9sgpUANW5zIu4c2PV2WidvwCw
+         yOCbgq4abS9gfSelI/yp+YBKwWxMtqZbPCPTCdNcMWU4a9C63HJegtrP8xfUneyjhdTF
+         1iEwjz63do/vRQdxPqQ07+8Voy9fR0HZS6yfJ/h4ui6Uw3HblKBiAbez6vl/nlf6V3FZ
+         CWdA==
+X-Gm-Message-State: AOAM531AD7NPx3E82HyC6mRERZy8/Tjk4JIxvfdo+JsF9EskP72XhM1a
+        XU7dLV5Uys/b8vp1a4DD6wdYjZ+BnSpUbaJpuDQ=
+X-Google-Smtp-Source: ABdhPJz3TmYnVu7MVB0CYjUmpfm9sDvGiFsAxvCb7o+aew79C34oQx2aF8SKyaY9aCiZum4rKA8OI5Xm2KcEiO3AYls=
+X-Received: by 2002:a05:690c:89:b0:2d7:fb7d:db7 with SMTP id
+ be9-20020a05690c008900b002d7fb7d0db7mr14793757ywb.219.1652095341920; Mon, 09
+ May 2022 04:22:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4 0/7] add ti dp83td510 support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165209521326.15458.16390229009185175258.git-patchwork-notify@kernel.org>
-Date:   Mon, 09 May 2022 11:20:13 +0000
-References: <20220506042357.923026-1-o.rempel@pengutronix.de>
-In-Reply-To: <20220506042357.923026-1-o.rempel@pengutronix.de>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220507170440.64005-1-linux@fw-web.de> <06157623-4b9c-6f26-e963-432c75cfc9e5@linaro.org>
+ <DC0D3996-DFFE-4E71-B843-8D34C613D498@public-files.de> <2509116.Lt9SDvczpP@phil>
+ <trinity-7f04b598-0300-4f3c-80e7-0c2145e8ba8f-1652011928036@3c-app-gmx-bap68>
+ <CAMdYzYrG8bK-Yo15RjhhCQKS4ZQW53ePu1q4gbGxVVNKPJHBWg@mail.gmail.com> <41d6b00f-d8ac-ca54-99db-ea99c9049e0a@linaro.org>
+In-Reply-To: <41d6b00f-d8ac-ca54-99db-ea99c9049e0a@linaro.org>
+From:   Peter Geis <pgwipeout@gmail.com>
+Date:   Mon, 9 May 2022 07:22:11 -0400
+Message-ID: <CAMdYzYomJPxQ7cnUuP_T7-rVbYPeZwr13Dy6b=PP4ijqQfh5gg@mail.gmail.com>
+Subject: Re: [PATCH v3 5/6] dt-bindings: net: dsa: make reset optional and add
+ rgmii-mode to mt7531
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        Frank Wunderlich <linux@fw-web.de>,
+        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, May 9, 2022 at 2:48 AM Krzysztof Kozlowski
+<krzysztof.kozlowski@linaro.org> wrote:
+>
+> On 08/05/2022 19:04, Peter Geis wrote:
+> > On Sun, May 8, 2022 at 8:12 AM Frank Wunderlich <frank-w@public-files.de> wrote:
+> >>>
+> >>> I think the issue is more for the description itself.
+> >>>
+> >>> Devicetree is only meant to describe the hardware and does in general don't
+> >>> care how any firmware (Linux-kernel, *BSD, etc) handles it. So going with
+> >>> "the kernel does it this way" is not a valid reason for a binding change ;-) .
+>
+> Exactly. The argument in commit msg was not matching the change, because
+> driver implementation should not be (mostly) a reason for such changes.
+>
+> >>>
+> >>> Instead in general want to reason that there are boards without this reset
+> >>> facility and thus make it optional for those.
+> >>
+> >> if only the wording is the problem i try to rephrase it from hardware PoV.
+> >>
+> >> maybe something like this?
+> >>
+> >> https://github.com/frank-w/BPI-R2-4.14/commits/5.18-mt7531-mainline2/Documentation/devicetree/bindings/net/dsa/mediatek%2Cmt7530.yaml
+>
+> Looks ok.
+>
+> >>
+> >> Another way is maybe increasing the delay after the reset (to give more time all
+> >> come up again), but imho it is no good idea resetting the gmac/mdio-bus from the
+> >> child device.
+> >>
+> >> have not looked into the gmac driver if this always  does the initial reset to
+> >> have a "clean state". In this initial reset the switch will be resetted too
+> >> and does not need an additional one which needs the gmac/mdio initialization
+> >> to be done again.
+> >
+> > For clarification, the reset gpio line is purely to reset the phy.
+> > If having the switch driver own the reset gpio instead of the gmac
+> > breaks initialization that means there's a bug in the gmac driver
+> > handling phy init.
+> > In testing I've seen issues moving the reset line to the mdio node
+> > with other phys and the stmmac gmac driver, so I do believe this is
+> > the case.
+>
+> Yes, this seems reasonable, although Frank mentioned that reset is
+> shared with gmac, so it resets some part of it as well?
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+No, the gpio-reset line is purely to reset the phy. The stmmac gmac
+driver handles it because it seems initialization failures occur if
+it's handled by the mdio drivers. I suspect this is due to a
+difference between when the driver initializes the phy vs when the
+driver triggers the reset.
+They had tried to attach the gpio binding to both the gmac node and
+the mdio node at the same time when only one can own it. Having it
+owned by the switch driver on the mdio node leads to the same
+initialization failures we see in other mdio drivers.
 
-On Fri,  6 May 2022 06:23:50 +0200 you wrote:
-> changes v4:
-> - dp83td510: remove unused variables
-> - s/base1/baset1
-> - s/genphy_c45_baset1_read_master_slave/genphy_c45_pma_baset1_read_master_slave
-> 
-> changes v3:
-> - export reusable code snippets and make use of it in the dp83td510
->   driver
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v4,1/7] net: phy: genphy_c45_baset1_an_config_aneg: do no set unknown configuration
-    https://git.kernel.org/netdev/net-next/c/a7f0e4bea8ed
-  - [net-next,v4,2/7] net: phy: introduce genphy_c45_pma_baset1_setup_master_slave()
-    https://git.kernel.org/netdev/net-next/c/90532850eb21
-  - [net-next,v4,3/7] net: phy: genphy_c45_pma_baset1_setup_master_slave: do no set unknown configuration
-    https://git.kernel.org/netdev/net-next/c/a04dd88f77a4
-  - [net-next,v4,4/7] net: phy: introduce genphy_c45_pma_baset1_read_master_slave()
-    https://git.kernel.org/netdev/net-next/c/b9a366f3d874
-  - [net-next,v4,5/7] net: phy: genphy_c45_pma_baset1_read_master_slave: read actual configuration
-    https://git.kernel.org/netdev/net-next/c/acb8c5aec2b1
-  - [net-next,v4,6/7] net: phy: export genphy_c45_baset1_read_status()
-    https://git.kernel.org/netdev/net-next/c/2013ad8836ac
-  - [net-next,v4,7/7] net: phy: dp83td510: Add support for the DP83TD510 Ethernet PHY
-    https://git.kernel.org/netdev/net-next/c/165cd04fe253
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+>
+>
+>
+>
+> Best regards,
+> Krzysztof
