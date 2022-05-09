@@ -2,106 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E9716520667
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 23:06:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4BDC5206B9
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 23:37:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230043AbiEIVKD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 17:10:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55522 "EHLO
+        id S229681AbiEIVlZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 17:41:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230008AbiEIVJr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 17:09:47 -0400
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AAC472218
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 14:05:39 -0700 (PDT)
-Received: by mail-yb1-xb49.google.com with SMTP id t42-20020a25aaad000000b00649d5b19ee3so13003894ybi.4
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 14:05:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=bfz1mnwaX4ka3VLZxEi1SIdcRgMxAF5AucTmvkifj0I=;
-        b=AiKMPLXlZuaA3VPSpj/ofOF1/jtgSK4b7F0Y8MltTlfTMOaVr/mSsv2C6Lg+/bm8pK
-         b3MmagvFZZvLwH/NIdZSL/eOLHl/1wD7ijQNvZOA1w8Eu5TQCsxDm4fKdWQ/y/zEIymr
-         W6lPsa9LMn534psJhgmJ2CL5y5aVTvrinKDT+vVcXvn2BMhzvpxOXWNFAvmmiqAfZVKS
-         uefy5ND7VVukTWWPv4zKp8Hbcf7m0qf+5X2rJuh/yg3XD5UKXakphQPF4AZwHvr0+v9R
-         yG+smavIqT0RJ9KqK99UIt65nZaAnpD/oCat5UVC/7ZKsCtMuTdXpWH49MM/03xDvj/9
-         0aqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=bfz1mnwaX4ka3VLZxEi1SIdcRgMxAF5AucTmvkifj0I=;
-        b=zhI8nMiGCBl+2Gwa2oHezL2K/ERSY9g32Ukin0A0MWmSPPNp8A5B/ccajoKPhv16hy
-         cCW7pvbZkf0JNYUgPqGmbrEV3Sp4vtvmBLu3rMab6fv25w6RBksO1JzJErvAvpXQufw5
-         W3SDwW1yfa13n1l1HNmmdb3tvKlhSSAQYHqXifhReKmz0qpWszcQQJcjp8OjR0GRztp9
-         Zd1G36VNlSS2vrj4aX56fV4u4vjrKIPu2LdFFAjdum2IKp9yV7LbTOGepI1eLu1bt2wh
-         67ZZ8M6t8UnY6cNtzep6gC4TozHk/jiZ9dp+cjskqFGJjUXoBqS1Kpo8xjyc2seOfA65
-         SP5A==
-X-Gm-Message-State: AOAM530cYfcHrQUtPhPDKmolRVT8KHq5yFCUvlBwukGGfyVsgybpOsQV
-        /rffiZ7TjWcbu+4Tnc8S+4kVXn8cBEvEvg==
-X-Google-Smtp-Source: ABdhPJxuy3o513Mphh5qdmHGZppOwcPpU0V84poKA6tagZCsNhO7fAnDzJqL+eG1MvWxf2DsHMZGUUGiCIggUw==
-X-Received: from mmandlik.mtv.corp.google.com ([2620:15c:202:201:dfb9:149b:15ff:6b47])
- (user=mmandlik job=sendgmr) by 2002:a25:d450:0:b0:649:1be0:506b with SMTP id
- m77-20020a25d450000000b006491be0506bmr14843403ybf.532.1652130338606; Mon, 09
- May 2022 14:05:38 -0700 (PDT)
-Date:   Mon,  9 May 2022 14:05:33 -0700
-Message-Id: <20220509140403.1.I28d2ec514ad3b612015b28b8de861b8955033a19@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [PATCH] Bluetooth: Fix Adv Monitor msft_add/remove_monitor_sync()
-From:   Manish Mandlik <mmandlik@google.com>
-To:     marcel@holtmann.org, luiz.dentz@gmail.com
-Cc:     chromeos-bluetooth-upstreaming@chromium.org,
-        linux-bluetooth@vger.kernel.org,
-        Manish Mandlik <mmandlik@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        with ESMTP id S229636AbiEIVlY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 17:41:24 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3ED5AAB5C;
+        Mon,  9 May 2022 14:37:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652132247; x=1683668247;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=bpwLLLksaAjmFbrWqexTl9pq/J50D/MrBAfquLBNJVw=;
+  b=STMUFLYXPv8yXx4vzIdxwVZX4F1yb8qfACH60whZaLa5rsuvAEgELmC6
+   fvVn1UEdHBd/E5Bb49r3SxKglMrPIt1+UgL6BjoAYc6nHPNj32iCxqLEV
+   4tej7smh9Z+uUJZkwU0EOJes+PZuAA9XPrK6N2WSLvNf/hJB8B5o16WM/
+   AIBR4bEbauIuGJvWIrsxrsB5cXkwEB2xnAv+qb0HOGFMcAVRrFnQw8Ms9
+   GjVMD/Dm/SrHQdXpckYPtus7aOoiM2wmM7EH9uuA3OcJ2ffjxYawOnu9R
+   faoDxmA6EF4gSYeFQTisD3ZL3AHOnvB6mVduGRWlS/soYsqzWXP6ktaBt
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="294402865"
+X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
+   d="scan'208";a="294402865"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 14:37:27 -0700
+X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
+   d="scan'208";a="602152507"
+Received: from rmarti10-mobl2.amr.corp.intel.com (HELO [10.209.126.63]) ([10.209.126.63])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 14:37:26 -0700
+Message-ID: <c4892d58-9d97-8fd7-800d-8433181cbda5@linux.intel.com>
+Date:   Mon, 9 May 2022 14:37:26 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH net-next v8 02/14] net: skb: introduce
+ skb_data_area_size()
+Content-Language: en-US
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Sergey Ryazanov <ryazanov.s.a@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        David Miller <davem@davemloft.net>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Loic Poulain <loic.poulain@linaro.org>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        "Devegowda, Chandrashekar" <chandrashekar.devegowda@intel.com>,
+        Intel Corporation <linuxwwan@intel.com>,
+        chiranjeevi.rapolu@linux.intel.com,
+        =?UTF-8?B?SGFpanVuIExpdSAoIOWImOa1t+WGmyk=?= 
+        <haijun.liu@mediatek.com>,
+        "Hanania, Amir" <amir.hanania@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Sharma, Dinesh" <dinesh.sharma@intel.com>,
+        "Lee, Eliot" <eliot.lee@intel.com>,
+        "Jarvinen, Ilpo Johannes" <ilpo.johannes.jarvinen@intel.com>,
+        "Veleta, Moises" <moises.veleta@intel.com>,
+        "Bossart, Pierre-louis" <pierre-louis.bossart@intel.com>,
+        "Sethuraman, Muralidharan" <muralidharan.sethuraman@intel.com>,
+        "Mishra, Soumya Prakash" <Soumya.Prakash.Mishra@intel.com>,
+        "Kancharla, Sreehari" <sreehari.kancharla@intel.com>,
+        "Sahu, Madhusmita" <madhusmita.sahu@intel.com>
+References: <20220506181310.2183829-1-ricardo.martinez@linux.intel.com>
+ <20220506181310.2183829-3-ricardo.martinez@linux.intel.com>
+ <20220509094930.6d5db0f8@kernel.org>
+ <CAHNKnsSZ-Sf=5f3puLUiRRysz80b2CS3tVMXds_Ugur-Dga2aQ@mail.gmail.com>
+ <20220509125008.6d1c3b9b@kernel.org>
+From:   "Martinez, Ricardo" <ricardo.martinez@linux.intel.com>
+In-Reply-To: <20220509125008.6d1c3b9b@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Do not call skb_pull() in msft_add_monitor_sync() as
-msft_le_monitor_advertisement_cb() expects 'status' to be
-part of the skb.
 
-Same applies for msft_remove_monitor_sync().
-
-Signed-off-by: Manish Mandlik <mmandlik@google.com>
----
-
- net/bluetooth/msft.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
-index f43994523b1f..9990924719aa 100644
---- a/net/bluetooth/msft.c
-+++ b/net/bluetooth/msft.c
-@@ -387,7 +387,6 @@ static int msft_remove_monitor_sync(struct hci_dev *hdev,
- 		return PTR_ERR(skb);
- 
- 	status = skb->data[0];
--	skb_pull(skb, 1);
- 
- 	msft_le_cancel_monitor_advertisement_cb(hdev, status, hdev->msft_opcode,
- 						skb);
-@@ -506,7 +505,6 @@ static int msft_add_monitor_sync(struct hci_dev *hdev,
- 		return PTR_ERR(skb);
- 
- 	status = skb->data[0];
--	skb_pull(skb, 1);
- 
- 	msft_le_monitor_advertisement_cb(hdev, status, hdev->msft_opcode, skb);
- 
--- 
-2.36.0.512.ge40c2bad7a-goog
-
+On 5/9/2022 12:50 PM, Jakub Kicinski wrote:
+> On Mon, 9 May 2022 21:34:58 +0300 Sergey Ryazanov wrote:
+>>>> +static inline unsigned int skb_data_area_size(struct sk_buff *skb)
+>>>> +{
+>>>> +     return skb_end_pointer(skb) - skb->data;
+>>>> +}
+>>> Not a great name, skb->data_len is the length of paged data.
+>>> There is no such thing as "data area", data is just a pointer
+>>> somewhere into skb->head.
+>> What name would you recommend for this helper?
+> We are assuming that skb->data is where we want to start to write
+> to so we own the skb. If it's a fresh skb skb->data == skb->tail.
+> If it's not fresh but recycled - skb->data is presumably reset
+> correctly, and then skb_reset_tail_pointer() has to be called. Either
+> way we give HW empty skbs, tailroom is an existing concept we can use.
+>
+>>> Why do you need this? Why can't you use the size you passed
+>>> to the dev_alloc_skb() like everyone else?
+>> It was I who suggested to Ricardo to make this helper a common
+>> function [1]. So let me begin the discussion, perhaps Ricardo will add
+>> to my thoughts as the driver author.
+>>
+>> There are many other places where authors do the same but without a
+>> helper function:
+>>
+>> [...]
+>>
+>> There are at least two reasons to evaluate the linear data size from skb:
+>> 1) it is difficult to access the same variable that contains a size
+>> during skb allocation (consider skb in a queue);
+> Usually all the Rx skbs on the queue are equally sized so no need to
+> save the length per buffer, but perhaps that's not universally true.
+>
+>> 2) you may not have access to an allocation size because a driver does
+>> not allocate that skb (consider a xmit path).
+> On Tx you should only map the data that's actually populated, for that
+> we have skb_headlen().
+>
+>> Eventually you found themself in a position where you need to carry
+>> additional info along with skb. But, on the other hand, you can simply
+>> calculate this value from the skb pointers themselves.
+>>
+>> 1. https://lore.kernel.org/netdev/CAHNKnsTr3aq1sgHnZQFL7-0uHMp3Wt4PMhVgTMSAiiXT=8p35A@mail.gmail.com/
+> Fair enough, I didn't know more drivers are doing this.
+>
+> We have two cases:
+>   - for Tx - drivers should use skb_headlen();
+>   - for Rx - I presume we are either dealing with fresh or correctly
+>     reset skbs, so we can use skb_tailroom().
+Thanks for the information, looks like indeed we can avoid the helper in 
+t7xx driver by following those guidelines.
