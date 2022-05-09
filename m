@@ -2,71 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56B4951F201
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 01:05:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31C3851F255
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 03:29:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233646AbiEHXJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 19:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48138 "EHLO
+        id S233986AbiEIBau (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 21:30:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233628AbiEHXJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 19:09:02 -0400
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E4710FD6
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 16:05:09 -0700 (PDT)
-Received: by mail-lf1-x12f.google.com with SMTP id bu29so21077705lfb.0
-        for <netdev@vger.kernel.org>; Sun, 08 May 2022 16:05:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pKcWqMXPbRXnlvseTKhNC7oDfe4PMWMkoN/OBTzYimw=;
-        b=x4oaL6H/PCLlyEgmSnKLbOFxYYsQl4TrurnRi5EtGpr/NRkefNRb/oK/EAKSAyHHPK
-         /0DGIpd/yDAI1wuv4YoYwstBB54o+B80RTFFf2Vk08OmD1Bd8OHwFY8a4kIhNDAdKSho
-         AKk0qAfqD1O5DXQzzIKVNXM1fgnYyqhtroRsI0VBJbbyf/pjP3ynrGqNG7qPKAXrsIsQ
-         pxO2x9tAlaYfGvbpDRufRU+9ATIF+9gG9L9xjx5dIYtrbApP1wQEFT1BT9tdpzG5cywK
-         b43gd73E1DOew+pRkfAnHeedLKKRYy8ZMOIIabJJ6mCCt0dbL9TzbvrehH7FsQGk9sal
-         L51A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pKcWqMXPbRXnlvseTKhNC7oDfe4PMWMkoN/OBTzYimw=;
-        b=7dsLxqStJLQ+ZMoTTcI3Bz5yJtDkgKjC2T8zx21UNeQSwED5Z6qjWCxQJnNzioMgke
-         nsfbSqmz4R6wvT3W+qqQ3Rw9cbIQegy+CKEmh9hezkDI+50f5xgArvz7ZMfFRLkYm9/Q
-         MPnGIkLD5ngPnNdfA6kQGxsHuAACUtyaiRkr5b2CDgJcBHl6OU82oNIBjbyqJhHhhb26
-         hNYNcLlq7irffFzlBkLNWPXVgbmnBWLv6VMUQ+g8emILf9+/+oTN0VXMC4edTx00JDri
-         qR4xoZV7wEi5Og0hB9IjAPRUzoKaxm5LvTbmgC40dF7XpMQ9DDNA97wrxK9BPU9reHEo
-         kE6g==
-X-Gm-Message-State: AOAM531gxN+Pw8BOv/4++GeQv3oX3SynQzvEAIBbJTQXdKw+EKGexoZA
-        ipYNUPTTjjPjoUUNXgTItfOj5Q==
-X-Google-Smtp-Source: ABdhPJyMxDja7uciWqpo+DrDyTEigmo+Io5Lt6UGH2LKLrRS2hqr5QQHpwWR5PhrH3tV1l+JYXkJTg==
-X-Received: by 2002:a05:6512:31cd:b0:473:a235:1ac0 with SMTP id j13-20020a05651231cd00b00473a2351ac0mr11043962lfe.364.1652051107778;
-        Sun, 08 May 2022 16:05:07 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id n6-20020a056512310600b0047255d2111bsm1714963lfb.74.2022.05.08.16.05.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 May 2022 16:05:07 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        kernel test robot <lkp@intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH v2] net: dsa: realtek: rtl8366rb: Serialize indirect PHY register access
-Date:   Mon,  9 May 2022 01:03:03 +0200
-Message-Id: <20220508230303.2522980-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S235817AbiEIAyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 20:54:05 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C274E65CA;
+        Sun,  8 May 2022 17:50:12 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KxMsJ4HqXzXdlb;
+        Mon,  9 May 2022 08:45:24 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 9 May
+ 2022 08:50:08 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <kpsingh@kernel.org>
+CC:     <weiyongjun1@huawei.com>, <shaozhengchao@huawei.com>,
+        <yuehaibing@huawei.com>
+Subject: [PATCH bpf-next] samples/bpf: check detach prog exist or not in xdp_fwd
+Date:   Mon, 9 May 2022 08:51:05 +0800
+Message-ID: <20220509005105.271089-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -75,111 +49,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+Before detach the prog, we should check detach prog exist or not.
 
-Lock the regmap during the whole PHY register access routines in
-rtl8366rb.
-
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
 ---
-ChangeLog v1->v2:
-- Make sure to always return a properly assigned error
-  code on the error path in rtl8366rb_phy_read()
-  found by the kernel test robot.
+ samples/bpf/xdp_fwd_user.c | 13 ++++++++++++-
+ 1 file changed, 12 insertions(+), 1 deletion(-)
 
-I have tested that this does not create any regressions,
-it makes more sense to have this applied than not. First
-it is related to the same family as the other ASICs, also
-it makes perfect logical sense to enforce serialization
-of these reads/writes.
----
- drivers/net/dsa/realtek/rtl8366rb.c | 37 +++++++++++++++++++----------
- 1 file changed, 25 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/dsa/realtek/rtl8366rb.c b/drivers/net/dsa/realtek/rtl8366rb.c
-index 1a3406b9e64c..25f88022b9e4 100644
---- a/drivers/net/dsa/realtek/rtl8366rb.c
-+++ b/drivers/net/dsa/realtek/rtl8366rb.c
-@@ -1653,29 +1653,37 @@ static int rtl8366rb_phy_read(struct realtek_priv *priv, int phy, int regnum)
- 	if (phy > RTL8366RB_PHY_NO_MAX)
- 		return -EINVAL;
+diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+index 1828487bae9a..a273ede3fd73 100644
+--- a/samples/bpf/xdp_fwd_user.c
++++ b/samples/bpf/xdp_fwd_user.c
+@@ -49,7 +49,18 @@ static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
  
--	ret = regmap_write(priv->map, RTL8366RB_PHY_ACCESS_CTRL_REG,
-+	mutex_lock(&priv->map_lock);
+ static int do_detach(int idx, const char *name)
+ {
+-	int err;
++	int err = 1;
++	__u32 curr_prog_id;
 +
-+	ret = regmap_write(priv->map_nolock, RTL8366RB_PHY_ACCESS_CTRL_REG,
- 			   RTL8366RB_PHY_CTRL_READ);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	reg = 0x8000 | (1 << (phy + RTL8366RB_PHY_NO_OFFSET)) | regnum;
- 
--	ret = regmap_write(priv->map, reg, 0);
-+	ret = regmap_write(priv->map_nolock, reg, 0);
- 	if (ret) {
- 		dev_err(priv->dev,
- 			"failed to write PHY%d reg %04x @ %04x, ret %d\n",
- 			phy, regnum, reg, ret);
--		return ret;
-+		goto out;
- 	}
- 
--	ret = regmap_read(priv->map, RTL8366RB_PHY_ACCESS_DATA_REG, &val);
-+	ret = regmap_read(priv->map_nolock, RTL8366RB_PHY_ACCESS_DATA_REG,
-+			  &val);
- 	if (ret)
--		return ret;
-+		goto out;
++	if (bpf_xdp_query_id(idx, xdp_flags, &curr_prog_id)) {
++		printf("ERROR: bpf_xdp_query_id failed\n");
++		return err;
++	}
 +
-+	ret = val;
++	if (!curr_prog_id) {
++		printf("ERROR: flags(0x%x) xdp prog is not attached to %s\n", xdp_flags, name);
++		return err;
++	}
  
- 	dev_dbg(priv->dev, "read PHY%d register 0x%04x @ %08x, val <- %04x\n",
- 		phy, regnum, reg, val);
- 
--	return val;
-+out:
-+	mutex_unlock(&priv->map_lock);
-+
-+	return ret;
- }
- 
- static int rtl8366rb_phy_write(struct realtek_priv *priv, int phy, int regnum,
-@@ -1687,21 +1695,26 @@ static int rtl8366rb_phy_write(struct realtek_priv *priv, int phy, int regnum,
- 	if (phy > RTL8366RB_PHY_NO_MAX)
- 		return -EINVAL;
- 
--	ret = regmap_write(priv->map, RTL8366RB_PHY_ACCESS_CTRL_REG,
-+	mutex_lock(&priv->map_lock);
-+
-+	ret = regmap_write(priv->map_nolock, RTL8366RB_PHY_ACCESS_CTRL_REG,
- 			   RTL8366RB_PHY_CTRL_WRITE);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	reg = 0x8000 | (1 << (phy + RTL8366RB_PHY_NO_OFFSET)) | regnum;
- 
- 	dev_dbg(priv->dev, "write PHY%d register 0x%04x @ %04x, val -> %04x\n",
- 		phy, regnum, reg, val);
- 
--	ret = regmap_write(priv->map, reg, val);
-+	ret = regmap_write(priv->map_nolock, reg, val);
- 	if (ret)
--		return ret;
-+		goto out;
- 
--	return 0;
-+out:
-+	mutex_unlock(&priv->map_lock);
-+
-+	return ret;
- }
- 
- static int rtl8366rb_dsa_phy_read(struct dsa_switch *ds, int phy, int regnum)
+ 	err = bpf_xdp_detach(idx, xdp_flags, NULL);
+ 	if (err < 0)
 -- 
-2.35.1
+2.17.1
 
