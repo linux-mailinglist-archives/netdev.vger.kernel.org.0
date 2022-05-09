@@ -2,160 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD5A951FCDF
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 14:31:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF3B351FCB3
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 14:26:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234469AbiEIMfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 08:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48506 "EHLO
+        id S234385AbiEIM3Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 08:29:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234432AbiEIMfF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 08:35:05 -0400
-Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E24011B434C;
-        Mon,  9 May 2022 05:31:11 -0700 (PDT)
-Received: by mail-pl1-x642.google.com with SMTP id q18so742306pln.12;
-        Mon, 09 May 2022 05:31:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MBkrt0SUkDfCJX6P4GbifrxeHSLkx5CXpfEy6Fo+oxI=;
-        b=j24J2mmCWVTfciS79l9WsXOME+o2GRmy+XDFsljOg+u/rf3JIlbK8C8C0/obdWTlYs
-         Lyti8j7T+/vIlQ1XYwUg2ldJUT97k2PP1fMeNVClx5eFDgP2NXxMtIYEtBVsPfXd23+k
-         sC6PJPEiTSPZ1oDuttnRAaFAuNgX2OUVT84kuFFx1RVubJu3ba4vG6Th4E96AgExGGeu
-         arf7htlXrjeuT5jr0ESUIH/b6InURDwz8lCl+eKwRXOEzGBcIfi9eoJNdUXsj22MT55A
-         tDsQqKWZw3Q6MEtyxVeyvhSDCEJYD5Ng3OSPtkcvTBCWOwAUXd4MsXOfab9pN6ncp3aj
-         QmGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MBkrt0SUkDfCJX6P4GbifrxeHSLkx5CXpfEy6Fo+oxI=;
-        b=zjdf0bY0/qQr1is5j5VtF7lJzivPT+1WfyQcNHv9jhgVDLmgS31DTXv7aHth+x4Pnn
-         6Z0U0jT1IRAnPJRw9uazPpZNShUQep5QlEL+4WdklPEu3StY2mbrJyWKqBzWGc0/ud5b
-         ludMXnGPP4xLr+kaQI2h3TSVgWz8I3uyOjhYPVHttPVYI/H5aIcPyfUmU0MJi2Hq+M2z
-         65bnIeM+NaYfN3frJbNXQ/eqw71R9QkjqLDHD4Wa1ouWl6U4D3qzXDcAAjK10bjryIvC
-         cN3aGvioNqB1qMm2uPg/QmPrQnbFlxBEgYBfTSsoRbVDl1F3tHZ1ejLQxXaVWvIqx3pE
-         Idng==
-X-Gm-Message-State: AOAM531KuKq0W1IiZ2VAScNgN2FHsrctYc80d+tTUxUKmiFtZXc6UmZf
-        FLtRAE/LQ7Errocr4Fw+nw8=
-X-Google-Smtp-Source: ABdhPJx0119ewapiTv0gtx/bvLqOkiUycrfiG2H+OZMR7WXYJoc3gdTakKXA4DiXUcUeaux2aKAShQ==
-X-Received: by 2002:a17:902:f681:b0:15e:ade1:b703 with SMTP id l1-20020a170902f68100b0015eade1b703mr16022627plg.112.1652099471413;
-        Mon, 09 May 2022 05:31:11 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.88])
-        by smtp.gmail.com with ESMTPSA id t20-20020a170902b21400b0015e8d4eb269sm7025761plr.179.2022.05.09.05.31.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 05:31:10 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     kuba@kernel.org
-Cc:     horms@verge.net.au, ja@ssi.bg, pablo@netfilter.org,
-        kadlec@netfilter.org, fw@strlen.de, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        lvs-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        Menglong Dong <imagedong@tencent.com>
-Subject: [PATCH net-next] net: ipvs: random start for RR scheduler
-Date:   Mon,  9 May 2022 20:22:13 +0800
-Message-Id: <20220509122213.19508-1-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.0
+        with ESMTP id S234314AbiEIM3N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 08:29:13 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E767267C0C;
+        Mon,  9 May 2022 05:25:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=yNVt9Xkogy2Y6RfStWm3MnOZ08b3XpDdi9+k9hGnieE=; b=5cWJGl4i7eE50jQ1I1NfA5x3++
+        vLiqVc54gjitP+oCDHaxOZtMK9i4aO9YiOd2nQVW7lWy/h8NinNRm5odlJgMIvIsMW9d2+H/p+BLy
+        TrezhO2zcsdNu8PYM8gVIQjKvHBzLnJ5nHIyzeRVFUNlIzHQVGHGTEavFVo+qB0aVKYk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1no2Rq-001wMB-BQ; Mon, 09 May 2022 14:25:10 +0200
+Date:   Mon, 9 May 2022 14:25:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     netdev@vger.kernel.org, ilias.apalodimas@linaro.org,
+        hawk@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, corbet@lwn.net,
+        linux-doc@vger.kernel.org, jbrouer@redhat.com,
+        lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH net-next] Documentation: update networking/page_pool.rst
+ with ethtool APIs
+Message-ID: <YnkIJn2BhSzyfQjh@lunn.ch>
+References: <2b0f8921096d45e1f279d1b7b99fe467f6f3dc6d.1652090091.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2b0f8921096d45e1f279d1b7b99fe467f6f3dc6d.1652090091.git.lorenzo@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Mon, May 09, 2022 at 12:00:01PM +0200, Lorenzo Bianconi wrote:
+> Update page_pool documentation with page_pool ethtool stats APIs.
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  Documentation/networking/page_pool.rst | 23 +++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+> 
+> diff --git a/Documentation/networking/page_pool.rst b/Documentation/networking/page_pool.rst
+> index 5db8c263b0c6..ef5e18cf7cdf 100644
+> --- a/Documentation/networking/page_pool.rst
+> +++ b/Documentation/networking/page_pool.rst
+> @@ -146,6 +146,29 @@ The ``struct page_pool_recycle_stats`` has the following fields:
+>    * ``ring_full``: page released from page pool because the ptr ring was full
+>    * ``released_refcnt``: page released (and not recycled) because refcnt > 1
+>  
+> +The following APIs can be used to report page_pool stats through ethtool and
+> +avoid code duplication in each driver:
+> +
+> +* page_pool_ethtool_stats_get_strings(): reports page_pool ethtool stats
+> +  strings according to the ``struct page_pool_stats``
+> +     * ``rx_pp_alloc_fast``
+> +     * ``rx_pp_alloc_slow``
+> +     * ``rx_pp_alloc_slow_ho``
+> +     * ``rx_pp_alloc_empty``
+> +     * ``rx_pp_alloc_refill``
+> +     * ``rx_pp_alloc_waive``
+> +     * ``rx_pp_recycle_cached``
+> +     * ``rx_pp_recycle_cache_full``
+> +     * ``rx_pp_recycle_ring``
+> +     * ``rx_pp_recycle_ring_full``
+> +     * ``rx_pp_recycle_released_ref``
 
-For now, the start of the RR scheduler is in the order of dest
-service added, it will result in imbalance if the load balance
-is done in client side and long connect is used.
+My knowledge of Sphinx is pretty poor. Is it possible to put this list
+next to the actual definition and cross reference it? When new
+counters are added, they are more likely to be added to the list, if
+the list is nearby.
 
-For example, we have client1, client2, ..., client5 and real service
-service1, service2, service3. All clients have the same ipvs config,
-and each of them will create 2 long TCP connect to the virtual
-service. Therefore, all the clients will connect to service1 and
-service2, leaving service3 free.
-
-Fix this by randomize the start of dest service to RR scheduler when
-IP_VS_SVC_F_SCHED_RR_RANDOM is set.
-
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- include/uapi/linux/ip_vs.h    |  2 ++
- net/netfilter/ipvs/ip_vs_rr.c | 25 ++++++++++++++++++++++++-
- 2 files changed, 26 insertions(+), 1 deletion(-)
-
-diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
-index 4102ddcb4e14..7f74bafd3211 100644
---- a/include/uapi/linux/ip_vs.h
-+++ b/include/uapi/linux/ip_vs.h
-@@ -28,6 +28,8 @@
- #define IP_VS_SVC_F_SCHED_SH_FALLBACK	IP_VS_SVC_F_SCHED1 /* SH fallback */
- #define IP_VS_SVC_F_SCHED_SH_PORT	IP_VS_SVC_F_SCHED2 /* SH use port */
- 
-+#define IP_VS_SVC_F_SCHED_RR_RANDOM	IP_VS_SVC_F_SCHED1 /* random start */
-+
- /*
-  *      Destination Server Flags
-  */
-diff --git a/net/netfilter/ipvs/ip_vs_rr.c b/net/netfilter/ipvs/ip_vs_rr.c
-index 38495c6f6c7c..e309d97bdd08 100644
---- a/net/netfilter/ipvs/ip_vs_rr.c
-+++ b/net/netfilter/ipvs/ip_vs_rr.c
-@@ -22,13 +22,36 @@
- 
- #include <net/ip_vs.h>
- 
-+static void ip_vs_rr_random_start(struct ip_vs_service *svc)
-+{
-+	struct list_head *cur;
-+	u32 start;
-+
-+	if (!(svc->flags | IP_VS_SVC_F_SCHED_RR_RANDOM) ||
-+	    svc->num_dests <= 1)
-+		return;
-+
-+	spin_lock_bh(&svc->sched_lock);
-+	start = get_random_u32() % svc->num_dests;
-+	cur = &svc->destinations;
-+	while (start--)
-+		cur = cur->next;
-+	svc->sched_data = cur;
-+	spin_unlock_bh(&svc->sched_lock);
-+}
- 
- static int ip_vs_rr_init_svc(struct ip_vs_service *svc)
- {
- 	svc->sched_data = &svc->destinations;
-+	ip_vs_rr_random_start(svc);
- 	return 0;
- }
- 
-+static int ip_vs_rr_add_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
-+{
-+	ip_vs_rr_random_start(svc);
-+	return 0;
-+}
- 
- static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
- {
-@@ -104,7 +127,7 @@ static struct ip_vs_scheduler ip_vs_rr_scheduler = {
- 	.module =		THIS_MODULE,
- 	.n_list =		LIST_HEAD_INIT(ip_vs_rr_scheduler.n_list),
- 	.init_service =		ip_vs_rr_init_svc,
--	.add_dest =		NULL,
-+	.add_dest =		ip_vs_rr_add_dest,
- 	.del_dest =		ip_vs_rr_del_dest,
- 	.schedule =		ip_vs_rr_schedule,
- };
--- 
-2.36.0
-
+    Andrew
