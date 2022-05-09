@@ -2,109 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5811351F6E7
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:43:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B2A151F6C3
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:42:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233897AbiEIINK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 04:13:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46642 "EHLO
+        id S229897AbiEIINP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 04:13:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238078AbiEIIDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:03:30 -0400
-Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 812851CE61B
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 00:59:35 -0700 (PDT)
-Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-deb9295679so13839584fac.6
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 00:59:35 -0700 (PDT)
+        with ESMTP id S237628AbiEIIFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:05:38 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F71B15EA5F;
+        Mon,  9 May 2022 01:01:35 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id u3so18239865wrg.3;
+        Mon, 09 May 2022 01:01:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=2xFvAUu2Mi5eQC7Ozo69GKucsTfJHJ60BEy3d9RaYNk=;
+        b=QTYEuxBrySeygqE9/VtZUARHlYpRUDDnHJiufCAnDQhgtCNlt0G8xsngJxuGBaAzM+
+         N3gwfHjWe1p7X+qUQ3yjBqrH1cktJIvXSvA/DVvOtPwoNwe6vg2DuQqqN/nGXbt/0L1k
+         dcfoNd1TQLoD7jDONs/CnCcLYvVtLwdhVs4U/KAzH/F2fZ597lmFLyc5IJje0mRXRrjj
+         BP4s3SSfHKC3mAE88m/qQ+lx1e5mSyVMHQhQ0nzf3hPANLsqNGARitzLS5ilZlf2s9Dt
+         VcYQn81XEOrdsrHTQt/l0C3qkH4KsKIXl7c+QnuYsEYCKUPvBn2Ps+DZWbxyLL4UPp3X
+         KOmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=73dKpew/ODbtnvYGSJpvXbSYCQqMiE36DamWX/iniPk=;
-        b=kJ8Pk2LcOxrOUHKOA6Ec2ywAbj4HcRarUVVMdlzEG7rUaCnz3/gTuBeZpMS4vjow3I
-         p2Cg/TPcjVNt1CfmmXu5OFQJ3dYnOa+EU/khZ9sw8urLWyzl9QFhlnHqEZvUqYrAVOpQ
-         eRWNkC5oI0v/cwog+/y1VPB1ePFdNMAQMi8JuQ2/Eo8/2lBh3R6WlP0c1++Vri6bTpd2
-         Zg7rQbmT92A7RL3Ku2QkENgVydoYvMQhaNfWhBSvmVQcDMpFos8csqrFjPqssJwr3jeC
-         VRHFkQc7glpWifLf0vu4m8cjKycLEJ1uuc4gOQrsu2eCv3fAlB1h9lwszpc3koJaknpG
-         b4PA==
-X-Gm-Message-State: AOAM530x9rxnDvcAUgDs14xBwHQAJbkMY/1rGxewZcPpYpCWPVMgp8zi
-        gaoQiYyExRF1drk2KjFk9NHBkZjBW4hM/Q==
-X-Google-Smtp-Source: ABdhPJwgqCSZ0yCKMY7Xbn8f90B0uiW3FwLwinXf8hXRk8N5AQVXIvJNNRD1FXhUueN3wn8BkMF01A==
-X-Received: by 2002:a05:6870:f224:b0:e5:c30a:fa4f with SMTP id t36-20020a056870f22400b000e5c30afa4fmr6396715oao.252.1652083097633;
-        Mon, 09 May 2022 00:58:17 -0700 (PDT)
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com. [209.85.210.50])
-        by smtp.gmail.com with ESMTPSA id g4-20020a9d6184000000b0060603221250sm4393747otk.32.2022.05.09.00.58.17
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 00:58:17 -0700 (PDT)
-Received: by mail-ot1-f50.google.com with SMTP id g11-20020a9d648b000000b00605e4278793so9570035otl.7
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 00:58:17 -0700 (PDT)
-X-Received: by 2002:a81:6588:0:b0:2f8:b75e:1e1a with SMTP id
- z130-20020a816588000000b002f8b75e1e1amr13330284ywb.358.1652082761496; Mon, 09
- May 2022 00:52:41 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=2xFvAUu2Mi5eQC7Ozo69GKucsTfJHJ60BEy3d9RaYNk=;
+        b=eYlfF6IRkPUXTbkdsbNxqaLsP0Y0cm3hnhIgoauwBU2lAXwqVmptW/Xyw0iNj23lZR
+         yR+gydFpc7oUgS32c9rthZCYy3TenOfHBCjbOXuGu/NRT1x9zkow7SLTFB/Moh5XYWIa
+         ncD0AeyENTF/ZdPAy4HIxyYr2SVi0lAKw8qmM8J7O8F6XKbla/rtrqs3z/EhWPBnN4VM
+         LBCg4/u1l3PtkcsFHZ4QdCPtO2+olAyOmQ/wZSJOcPzl63dUT2/uW5dfV2+dtnAj3nNM
+         QoqEijqo8yNuwmF0NXU7buah5gGgcwF+wh2RdX5hhh2MLjbZFxKoadAGSzAVmPRBuPCU
+         HTlA==
+X-Gm-Message-State: AOAM530gQG13wmU+RlVZYjHiHF3vlAl5gB/pFR/HTi8YvzEBsZ02T3Rv
+        qapVb5+OrVYFta8n6e2ouAHyPS/L2mDqrH52G6mOSn9wVHGQLw==
+X-Google-Smtp-Source: ABdhPJwDlmtMZ5dUkpujCx+0M1K6rytzDgpjReAOAEEoDP6/0eGSTUfB3xMJevDLkZRohPi0uFJ8i5YU+cUEgDrP0Dg=
+X-Received: by 2002:a17:907:7296:b0:6e8:97c1:a7ef with SMTP id
+ dt22-20020a170907729600b006e897c1a7efmr13221254ejc.262.1652082819903; Mon, 09
+ May 2022 00:53:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220508153049.427227-1-andrew@lunn.ch> <20220508153049.427227-6-andrew@lunn.ch>
-In-Reply-To: <20220508153049.427227-6-andrew@lunn.ch>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 9 May 2022 09:52:29 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXY_eC5Tb55t4-1Ug3eAUMVBg0tJAwme2+AMD=1ooYuaw@mail.gmail.com>
-Message-ID: <CAMuHMdXY_eC5Tb55t4-1Ug3eAUMVBg0tJAwme2+AMD=1ooYuaw@mail.gmail.com>
-Subject: Re: [PATCH net-next 05/10] net: mdio: mdio-bitbang: Separate C22 and
- C45 transactions
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Markus Koch <markus@notsyncing.net>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Hao Chen <chenhao288@hisilicon.com>
+References: <cover.1651800598.git.peilin.ye@bytedance.com> <f4090d129b685df72070f708294550fbc513f888.1651800598.git.peilin.ye@bytedance.com>
+In-Reply-To: <f4090d129b685df72070f708294550fbc513f888.1651800598.git.peilin.ye@bytedance.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Mon, 9 May 2022 00:53:28 -0700
+Message-ID: <CAA93jw4dFxwWCrhv98wwbPvM+UrAQKYRNbbSVp3UCp1zOnsD5w@mail.gmail.com>
+Subject: Re: [PATCH RFC v1 net-next 1/4] net: Introduce Qdisc backpressure infrastructure
+To:     Peilin Ye <yepeilin.cs@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        Peilin Ye <peilin.ye@bytedance.com>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 8, 2022 at 5:31 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> The bitbbanging bus driver can perform both C22 and C45 transfers.
-> Create separate functions for each and register the C45 versions using
-> the new driver API calls.
->
-> The SH Ethernet driver places wrappers around these functions. In
-> order to not break boards which might be using C45, add similar
-> wrappers for C45 operations.
->
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  drivers/net/ethernet/renesas/sh_eth.c | 37 ++++++++++---
+I am very pleased to see this work.
 
-This part LGTM, so
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+However,  my "vision" such as it was, and as misguided as it might be,
+was to implement a facility similar to tcp_notsent_lowat for udp
+packets, tracking the progress of the udp packet through the kernel,
+and supplying backpressure and providing better information about
+where when and why the packet was dropped in the stack back to the
+application.
 
-Gr{oetje,eeting}s,
+I've been really impressed by the DROP_REASON work and had had no clue
+prior to seeing all that instrumentation, where else packets might be
+dropped in the kernel.
 
-                        Geert
+I'd be interested to see what happens with sch_cake.
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+--=20
+FQ World Domination pending: https://blog.cerowrt.org/post/state_of_fq_code=
+l/
+Dave T=C3=A4ht CEO, TekLibre, LLC
