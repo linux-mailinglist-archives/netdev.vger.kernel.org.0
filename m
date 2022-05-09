@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A1A7851F72F
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:47:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDC3551F739
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:49:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230400AbiEIIuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 04:50:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
+        id S234208AbiEIIuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 04:50:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237439AbiEIIXC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:23:02 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AA641F018A;
-        Mon,  9 May 2022 01:19:00 -0700 (PDT)
-Received: from kwepemi500019.china.huawei.com (unknown [172.30.72.55])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KxYVx2gPFz1JC4T;
-        Mon,  9 May 2022 16:00:09 +0800 (CST)
+        with ESMTP id S237430AbiEIIW6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:22:58 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12F91EE0A0;
+        Mon,  9 May 2022 01:18:52 -0700 (PDT)
+Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxYWb1D9CzhZ5y;
+        Mon,  9 May 2022 16:00:43 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500019.china.huawei.com (7.221.188.117) with Microsoft SMTP Server
+ kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Mon, 9 May 2022 16:01:18 +0800
+ 15.1.2375.24; Mon, 9 May 2022 16:01:19 +0800
 Received: from localhost.localdomain (10.67.165.24) by
  kwepemm600016.china.huawei.com (7.193.23.20) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -30,10 +30,12 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH V2 net-next 0/6] net: hns3: updates for -next
-Date:   Mon, 9 May 2022 15:55:26 +0800
-Message-ID: <20220509075532.32166-1-huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 1/6] net: hns3: fix access null pointer issue when set tx-buf-size as 0
+Date:   Mon, 9 May 2022 15:55:27 +0800
+Message-ID: <20220509075532.32166-2-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220509075532.32166-1-huangguangbin2@huawei.com>
+References: <20220509075532.32166-1-huangguangbin2@huawei.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -50,42 +52,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series includes some updates for the HNS3 ethernet driver.
+From: Hao Chen <chenhao288@hisilicon.com>
 
-Change logs:
-V1 -> V2:
- - Fix some sparse warnings of patch 3# and 4#.
- - Add patch #6 to fix sparse warnings of incorrect type of argument.
+When set tx-buf-size as 0 by ethtool, hns3_init_tx_spare_buffer()
+will return directly and priv->ring->tx_spare->len is uninitialized,
+then print function access priv->ring->tx_spare->len will cause
+this issue.
 
+When set tx-buf-size as 0 by ethtool, the print function will
+print 0 directly and not access priv->ring->tx_spare->len.
 
-Guangbin Huang (2):
-  net: hns3: add query vf ring and vector map relation
-  net: hns3: fix incorrect type of argument in declaration of function
-    hclge_comm_get_rss_indir_tbl
+Fixes: 2373b35c24ff ("net: hns3: add log for setting tx spare buf size")
+Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-Hao Chen (1):
-  net: hns3: fix access null pointer issue when set tx-buf-size as 0
-
-Jie Wang (2):
-  net: hns3: add byte order conversion for PF to VF mailbox message
-  net: hns3: add byte order conversion for VF to PF mailbox message
-
-Yufeng Mo (1):
-  net: hns3: remove the affinity settings of vector0
-
- .../net/ethernet/hisilicon/hns3/hclge_mbx.h   |  62 +++++-
- .../hns3/hns3_common/hclge_comm_rss.h         |   2 +-
- .../ethernet/hisilicon/hns3/hns3_ethtool.c    |   7 +-
- .../hisilicon/hns3/hns3pf/hclge_main.c        |  27 +--
- .../hisilicon/hns3/hns3pf/hclge_main.h        |   6 +-
- .../hisilicon/hns3/hns3pf/hclge_mbx.c         | 193 +++++++++++++-----
- .../hisilicon/hns3/hns3pf/hclge_trace.h       |   2 +-
- .../hisilicon/hns3/hns3vf/hclgevf_main.c      |  58 +++---
- .../hisilicon/hns3/hns3vf/hclgevf_main.h      |   2 +-
- .../hisilicon/hns3/hns3vf/hclgevf_mbx.c       |  80 +++++---
- .../hisilicon/hns3/hns3vf/hclgevf_trace.h     |   2 +-
- 11 files changed, 275 insertions(+), 166 deletions(-)
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 1db8a86f046d..6d20974519fe 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -1915,8 +1915,11 @@ static int hns3_set_tunable(struct net_device *netdev,
+ 			return ret;
+ 		}
+ 
+-		netdev_info(netdev, "the active tx spare buf size is %u, due to page order\n",
+-			    priv->ring->tx_spare->len);
++		if (!priv->ring->tx_spare)
++			netdev_info(netdev, "the active tx spare buf size is 0, disable tx spare buffer\n");
++		else
++			netdev_info(netdev, "the active tx spare buf size is %u, due to page order\n",
++				    priv->ring->tx_spare->len);
+ 
+ 		break;
+ 	default:
 -- 
 2.33.0
 
