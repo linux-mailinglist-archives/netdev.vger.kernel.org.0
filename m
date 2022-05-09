@@ -2,64 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D630E51F251
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 03:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1DE951F273
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 03:30:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233958AbiEIBaq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 8 May 2022 21:30:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48714 "EHLO
+        id S231865AbiEIBdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 8 May 2022 21:33:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236005AbiEIBBq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 21:01:46 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27F7BBE0B
-        for <netdev@vger.kernel.org>; Sun,  8 May 2022 17:57:53 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id y32so21264277lfa.6
-        for <netdev@vger.kernel.org>; Sun, 08 May 2022 17:57:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uk2GCo4tzO2z68A4aXi5qgjOdRQLhbqgNbxwMMvi8jk=;
-        b=Nql1Yjsic1g62x+3t7bP9sHcXY0u/gU5tmXaF5KQZzfGTru2e4lVe0MtlZA0k3imjr
-         YJxXKkTCdME5QT1vex+PZQooBQh5O0iISkVhcWdtmTb504b90IqPn944ijh9S2yR++u1
-         IQ1fIJlmWrCDlpWRNr+iMvB8UtpS7SN/swZmg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uk2GCo4tzO2z68A4aXi5qgjOdRQLhbqgNbxwMMvi8jk=;
-        b=RSd06CiezuP3GDcE24oXR/w3/NuWOMob3hetyMPDjA578DWSaJikPYs2BCBIrKgLDS
-         q2exUtYVgWOAvjIFi6w6Z1DEFgEYxBoS26Ng6O/dH6bjcnPDp8i9qj8ui7ACMRkJqwy7
-         4h/FZVkXd/XgD1t5BJ2r0KCL9Hzk8lXhKJ34zsFa262IlASaffOpgyu88JQq7qVAoLAl
-         +Ib6KPE7qkp7Hqb8wUXJAp8cI9ALh3YGyEfzpitBfsaamkbPsTK4+BqIpqAppsILrRy/
-         3oxt5hgyznK1qi7/nbbI84M2QIkE84s6GX1lFreo/vE9pSZuomUMMHREMr108nfVFOa6
-         uEJA==
-X-Gm-Message-State: AOAM5310hsuCGJWjYhEpwLbX/LbVusXT8rDG1yTK6SS8GwqJeJj0tM6E
-        ubxWY2aHXeWUlkHuy1YaO9XSwE+uhWlWG9sNOG7Uhg==
-X-Google-Smtp-Source: ABdhPJxYBGZN3P6DUr9QO720p7L7DYzFc6NRLCCRB9YrdPE8dAs6b+kSAN+4GFnljqurF4eRVhDm4HNiVEwm+vNJoIs=
-X-Received: by 2002:a05:6512:220d:b0:473:9ee1:660d with SMTP id
- h13-20020a056512220d00b004739ee1660dmr11065115lfu.326.1652057870802; Sun, 08
- May 2022 17:57:50 -0700 (PDT)
+        with ESMTP id S235394AbiEIBbr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 8 May 2022 21:31:47 -0400
+Received: from novek.ru (unknown [93.153.171.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBAE312744
+        for <netdev@vger.kernel.org>; Sun,  8 May 2022 18:22:41 -0700 (PDT)
+Received: from [192.168.0.18] (unknown [37.228.234.7])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id A4587500E92;
+        Mon,  9 May 2022 04:21:53 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru A4587500E92
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1652059315; bh=E2+jQz+6nbhv/O838lMg1fm4+1TFt+hQbFft8nH8nec=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=uAFvsx0Zfb9tTjVvXAWR32mYDbZYeN+0kZQwu2YUZGI7BNafhlnmRvOgjSJUJ09S9
+         t4VmniU0nFS6EckyjEn9IIgLFGGTvlb9t06kzeZGNu5VkNJlBrNFHXc4vOIFPe9dL7
+         DmBy7tJWI0i4Ye5wfk+1BAQYm2f3p5jo89BOGBx4=
+Message-ID: <0d054105-0142-ccf2-4d2d-43767f63ca46@novek.ru>
+Date:   Mon, 9 May 2022 02:22:36 +0100
 MIME-Version: 1.0
-References: <20220508214500.60446-1-colin.i.king@gmail.com>
-In-Reply-To: <20220508214500.60446-1-colin.i.king@gmail.com>
-From:   Ozgur <ozgurk@ieee.org>
-Date:   Mon, 9 May 2022 04:57:40 +0400
-Message-ID: <CAADfD8wApw_v+uDTijY1K89WRJ_f7tkHmz=6LR086yMjEU4mWQ@mail.gmail.com>
-Subject: Re: [PATCH] x25: remove redundant pointer dev
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Martin Schiller <ms@dev.tdt.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        lkml <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH net] ptp: ocp: have adjtime handle negative delta_ns
+ correctly
+Content-Language: en-US
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
+        kernel-team@fb.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com
+References: <20220505234050.3378-1-jonathan.lemon@gmail.com>
+ <a07b0326-19c7-5756-106c-28b52975871d@novek.ru>
+ <20220508045507.ut2t5n2yyxvpoe22@bsd-mbp>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+In-Reply-To: <20220508045507.ut2t5n2yyxvpoe22@bsd-mbp>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RDNS_NONE,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,57 +55,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 9, 2022 at 1:45 AM Colin Ian King <colin.i.king@gmail.com> wrote:
->
-> Pointer dev is being assigned a value that is never used, the assignment
-> and the variable are redundant and can be removed. Also replace null check
-> with the preferred !ptr idiom.
->
+On 08.05.2022 05:55, Jonathan Lemon wrote:
+> On Sat, May 07, 2022 at 01:19:54AM +0100, Vadim Fedorenko wrote:
+>> On 06.05.2022 00:40, Jonathan Lemon wrote:
+>>> delta_ns is a s64, but it was being passed ptp_ocp_adjtime_coarse
+>>> as an u64.  Also, it turns out that timespec64_add_ns() only handles
+>>> positive values, so the math needs to be updated.
+>>>
+>>> Fix by passing in the correct signed value, then adding to a
+>>> nanosecond version of the timespec.
+>>>
+>>> Fixes: '90f8f4c0e3ce ("ptp: ocp: Add ptp_ocp_adjtime_coarse for large adjustments")'
+>>> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+>>> ---
+>>>    drivers/ptp/ptp_ocp.c | 6 ++++--
+>>>    1 file changed, 4 insertions(+), 2 deletions(-)
+>>>
+>>> diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
+>>> index dd45471f6780..65e592ec272e 100644
+>>> --- a/drivers/ptp/ptp_ocp.c
+>>> +++ b/drivers/ptp/ptp_ocp.c
+>>> @@ -841,16 +841,18 @@ __ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u32 adj_val)
+>>>    }
+>>>    static void
+>>> -ptp_ocp_adjtime_coarse(struct ptp_ocp *bp, u64 delta_ns)
+>>> +ptp_ocp_adjtime_coarse(struct ptp_ocp *bp, s64 delta_ns)
+>>>    {
+>>>    	struct timespec64 ts;
+>>>    	unsigned long flags;
+>>>    	int err;
+>>> +	s64 ns;
+>>>    	spin_lock_irqsave(&bp->lock, flags);
+>>>    	err = __ptp_ocp_gettime_locked(bp, &ts, NULL);
+>>>    	if (likely(!err)) {
+>>> -		timespec64_add_ns(&ts, delta_ns);
+>>> +		ns = timespec64_to_ns(&ts) + delta_ns;
+>>> +		ts = ns_to_timespec64(ns);
+>>
+>> Maybe use set_normalized_timespec64 instead of this ugly transformations and
+>> additional variable?
+> 
+> I don't see how that would work - set_normalized_timespec64 just sets
+> the ts from a <sec>.<nsec> value.  In this case, delta_ns need to be
+> added in to the ts value, but timespec64_add_ns() doeesn't handle
+> negative values, hence the conversion / add / reconversion.
 
-Hello,
+Could be like:
 
-*dev pointer is device assign global linked list and shouldnt be
-touched by the driver so *dev wont get any value right?
-Also seems to use this while network interface is initializing because
-some activation information and stats information is also kept here,
-for example, open *dev will call when ifconfig is called from.
+-	timespec64_add_ns(&ts, delta_ns);
++	set_normalized_timespec64(&ts, ts.tv_sec, ts.tv_nsec + delta_ns);
 
-route, link, forward these inital activate and move all values with
-net_device *dev?
-
-Regards
-
-> Cleans up clang scan warning:
-> net/x25/x25_proc.c:94:26: warning: Although the value stored to 'dev' is
-> used in the enclosing expression, the value is never actually read
-> from 'dev' [deadcode.DeadStores]
->
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
-> ---
->  net/x25/x25_proc.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
->
-> diff --git a/net/x25/x25_proc.c b/net/x25/x25_proc.c
-> index 3bddcbdf2e40..91a2aade3960 100644
-> --- a/net/x25/x25_proc.c
-> +++ b/net/x25/x25_proc.c
-> @@ -79,7 +79,6 @@ static int x25_seq_socket_show(struct seq_file *seq, void *v)
->  {
->         struct sock *s;
->         struct x25_sock *x25;
-> -       struct net_device *dev;
->         const char *devname;
->
->         if (v == SEQ_START_TOKEN) {
-> @@ -91,7 +90,7 @@ static int x25_seq_socket_show(struct seq_file *seq, void *v)
->         s = sk_entry(v);
->         x25 = x25_sk(s);
->
-> -       if (!x25->neighbour || (dev = x25->neighbour->dev) == NULL)
-> +       if (!x25->neighbour || !x25->neighbour->dev)
->                 devname = "???";
->         else
->                 devname = x25->neighbour->dev->name;
-> --
-> 2.35.1
->
+That's actually without multiplication and division caused by two conversions.
