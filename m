@@ -2,127 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 644C451F73A
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:49:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4E4251F80F
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 11:26:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234568AbiEIIuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 04:50:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49790 "EHLO
+        id S236958AbiEIJ1w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 05:27:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236510AbiEIItU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:49:20 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A85871F0DC5;
-        Mon,  9 May 2022 01:45:26 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id g20so15409680edw.6;
-        Mon, 09 May 2022 01:45:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pACjuUWFJ5GZIbniWMSNPk/IN6wOmnS55W0CKNtZNbk=;
-        b=Ifmf8JI3lGr7NqR25+3ysog33HBpALcK432GUQBzkzQ0BDuRT6oUV6cIXRXot5s1nn
-         D/nobqvlRNRbiCCE7wwNyV+2kAxj1RLdPffHBT4QbVbukqt+Uj9zxt3EG4zEXvFO3PtV
-         4GW75c5lRqwc4bqouS+jO4egMbalASyYHgqEuBuqJYoHnenTe6VRtfneSo/9RYOQRuBz
-         7V+/rspE/7RbYF4N0iVwQRGgJzNo3e9V2jFXgFQyuEA8WVsJ4u+olbEiwy0HHFJUf+ez
-         v83Qcq9QC1UIRd3F++wYpm9zy9+VxV9sjBu0yXQXh7B7KeiWRbh5UBXAY7NIVTo/KcOP
-         cjkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pACjuUWFJ5GZIbniWMSNPk/IN6wOmnS55W0CKNtZNbk=;
-        b=mr61ygtuW0q8moYahNlYr2qQkdZZVZ6k0PlGLkqNIUseG6uQq4/sBmcKdhr9+XURCJ
-         5xCwvA0Cnpseljj/rp3e1BuHYYMtNTX2rUE0p3W/V/N8qPt31zReqOkGkgVbvNy7eJvu
-         Ijj7ReJiDuqx0FavDaxro7mk/qydYX4cCpjp8wASIXxyvl0o2rsOew9SwOl1WH32wBju
-         cQiGSzyxtX6etk4kF/xJX369Xoe/m0mtU20AxDYX67dd0OAvwid9yb8BOcZ8RY2MNhi7
-         9tNwf5MVHyNb9eFIvOm68npoPtfssslhBGdyMvK2rJanZr8jOw5PzBqXOKYp6+BBvkWe
-         AtMw==
-X-Gm-Message-State: AOAM531ucla1wRCeFXCMx4fvFqpYCTcUWA3bnJDu5ua2H6Lb3NpCZFoX
-        9mqlDpfZ2UcnGxhKRNM8UoF2+uXoautFLUJPtk0=
-X-Google-Smtp-Source: ABdhPJxAyMOf+0tdFqa4L6QCJYoi99Yp4xMOthZru/m//p1OZVJgjJvBaoTjUcXNoTY2kPSYCsp+IKPQuEpnlaAOK1Y=
-X-Received: by 2002:a50:e696:0:b0:419:998d:5feb with SMTP id
- z22-20020a50e696000000b00419998d5febmr16548918edm.122.1652085917945; Mon, 09
- May 2022 01:45:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220508185313.2222956-1-colin.foster@in-advantage.com> <20220508185313.2222956-7-colin.foster@in-advantage.com>
-In-Reply-To: <20220508185313.2222956-7-colin.foster@in-advantage.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 9 May 2022 10:44:42 +0200
-Message-ID: <CAHp75VcWWDvakG_OLkTgZYbNeoDH5Bw5U0t-NqmzcYyd44uU_g@mail.gmail.com>
-Subject: Re: [RFC v8 net-next 06/16] pinctrl: microchip-sgpio: add ability to
- be used in a non-mmio configuration
-To:     Colin Foster <colin.foster@in-advantage.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
-        netdev@vger.kernel.org, Terry Bowman <terry.bowman@amd.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S236492AbiEIIvS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:51:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 026A5240B7;
+        Mon,  9 May 2022 01:47:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF3BBB80FEA;
+        Mon,  9 May 2022 08:47:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6063BC385A8;
+        Mon,  9 May 2022 08:47:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652086042;
+        bh=m/b+9hVDs/NpFu20f3zMR0zeKJUF5Hwvxq1T1SnXtL8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KAkwORF04sxysBiseSCgjyrO0HfAfJI6X4MSl8xqczJ7FPY8SDXfAOAYRY/qivwIP
+         A1G3s2hckFB6zCoTnLzk6ahWwtDAdf4cffN0U/vFDxCELc5yQBIy+8sllm8o8XUYV7
+         Us/tNd/6RsQZFxjXtwTxihanU813H+9L/a3Jane+o7dKfKUn3+KyE5S/WZYrfNyJ6Y
+         7YLzGrLKSVxSLXsiPcdWtvOXTpYIGAeHwoWGMF9RT2jzn8IKPoIL4nkLIhbONPOGI0
+         C+Mm8+cdr6jnTaBINkkUUD7dHzE4bS+TP8Wa4oKNWrSn+mkoAuvfiNtovfnvP/3i0T
+         qbS1anpd/EU7A==
+Received: from sofa.misterjones.org ([185.219.108.64] helo=why.misterjones.org)
+        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <maz@kernel.org>)
+        id 1nnz31-009uWt-Oj; Mon, 09 May 2022 09:47:19 +0100
+Date:   Mon, 09 May 2022 09:47:19 +0100
+Message-ID: <87ilqf6qjs.wl-maz@kernel.org>
+From:   Marc Zyngier <maz@kernel.org>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, UNGLinuxDriver@microchip.com,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>
+Subject: Re: [PATCH net-next v2 5/7] usbnet: smsc95xx: Forward PHY interrupts to PHY driver to avoid polling
+In-Reply-To: <20220506201647.GA30860@wunner.de>
+References: <cover.1651574194.git.lukas@wunner.de>
+        <c6b7f4e4a17913d2f2bc4fe722df0804c2d6fea7.1651574194.git.lukas@wunner.de>
+        <20220505113207.487861b2@kernel.org>
+        <20220505185328.GA14123@wunner.de>
+        <87tua36i70.wl-maz@kernel.org>
+        <20220506201647.GA30860@wunner.de>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI-EPG/1.14.7 (Harue)
+ FLIM-LB/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL-LB/10.8 EasyPG/1.0.0 Emacs/27.1
+ (x86_64-pc-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI-EPG 1.14.7 - "Harue")
+Content-Type: text/plain; charset=US-ASCII
+X-SA-Exim-Connect-IP: 185.219.108.64
+X-SA-Exim-Rcpt-To: lukas@wunner.de, mark.rutland@arm.com, kuba@kernel.org, tglx@linutronix.de, davem@davemloft.net, pabeni@redhat.com, netdev@vger.kernel.org, linux-usb@vger.kernel.org, steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com, oneukum@suse.com, andre.edich@microchip.com, linux@rempel-privat.de, martyn.welch@collabora.com, ghojda@yo2urs.ro, chf.fritz@googlemail.com, LinoSanfilippo@gmx.de, p.rosenberger@kunbus.com, hkallweit1@gmail.com, andrew@lunn.ch, linux@armlinux.org.uk, fntoth@gmail.com
+X-SA-Exim-Mail-From: maz@kernel.org
+X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 8, 2022 at 8:53 PM Colin Foster
-<colin.foster@in-advantage.com> wrote:
+On Fri, 06 May 2022 21:16:47 +0100,
+Lukas Wunner <lukas@wunner.de> wrote:
+> 
+> On Fri, May 06, 2022 at 11:58:43AM +0100, Marc Zyngier wrote:
+> > On Thu, 05 May 2022 19:53:28 +0100, Lukas Wunner <lukas@wunner.de> wrote:
+> > > On Thu, May 05, 2022 at 11:32:07AM -0700, Jakub Kicinski wrote:
+> > > > On Tue, 3 May 2022 15:15:05 +0200 Lukas Wunner wrote:
+> > > > > @@ -608,11 +618,20 @@ static void smsc95xx_status(struct usbnet *dev, struct urb *urb)
+> > > > >  	intdata = get_unaligned_le32(urb->transfer_buffer);
+> > > > >  	netif_dbg(dev, link, dev->net, "intdata: 0x%08X\n", intdata);
+> > > > >  
+> > > > > +	/* USB interrupts are received in softirq (tasklet) context.
+> > > > > +	 * Switch to hardirq context to make genirq code happy.
+> > > > > +	 */
+> > > > > +	local_irq_save(flags);
+> > > > > +	__irq_enter_raw();
+> > > > > +
+> > > > >  	if (intdata & INT_ENP_PHY_INT_)
+> > > > > -		;
+> > > > > +		generic_handle_domain_irq(pdata->irqdomain, PHY_HWIRQ);
+> > > > >  	else
+> > > > >  		netdev_warn(dev->net, "unexpected interrupt, intdata=0x%08X\n",
+> > > > >  			    intdata);
+> > > > > +
+> > > > > +	__irq_exit_raw();
+> > > > > +	local_irq_restore(flags);
+> > > > 
+> > > > Full patch:
+> > > > 
+> > > > https://lore.kernel.org/all/c6b7f4e4a17913d2f2bc4fe722df0804c2d6fea7.1651574194.git.lukas@wunner.de/
+> > > 
+> > > This is basically identical to what drivers/net/usb/lan78xx.c does
+> > > in lan78xx_status(), except I'm passing the hw irq instead of the
+> > > linux irq to genirq code, thereby avoiding the overhead of a
+> > > radix_tree_lookup().
+> > > 
+> > > generic_handle_domain_irq() warns unconditionally on !in_irq(),
+> > > unlike handle_irq_desc(), which constrains the warning to
+> > > handle_enforce_irqctx() (i.e. x86 APIC, arm GIC/GICv3).
+> > > Perhaps that's an oversight in generic_handle_domain_irq(),
+> > > unless __irq_resolve_mapping() becomes unsafe outside in_irq()
+> > > for some reason...
+> > > 
+> > > In any case the unconditional in_irq() necessitates __irq_enter_raw()
+> > > here.
+> > > 
+> > > And there's no _safe variant() of generic_handle_domain_irq()
+> > > (unlike generic_handle_irq_safe() which was recently added by
+> > > 509853f9e1e7), hence the necessity of an explicit local_irq_save().
+> > 
+> > Please don't directly use __irq_enter_raw() and similar things
+> > directly in driver code (it doesn't do anything related to RCU, for
+> > example, which could be problematic if used in arbitrary contexts).
+> > Given how infrequent this interrupt is, I'd rather you use something
+> > similar to what lan78xx is doing, and be done with it.
+> > 
+> > And since this is a construct that seems to be often repeated, why
+> > don't you simply make the phy interrupt handling available over a
+> > smp_call_function() interface, which would always put you in the
+> > correct context and avoid faking things up?
+> 
+> As I've explained in the commit message (linked above), LAN95xx chips
+> have 11 GPIOs which can be an interrupt source.  This patch adds
+> PHY interrupt support in such a way that GPIO interrupts can easily
+> be supported by a subsequent commit.  To this end, LAN95xx needs
+> to be represented as a proper irqchip.
 >
-> There are a few Ocelot chips that can contain SGPIO logic, but can be
-> controlled externally. Specifically the VSC7511, 7512, 7513, and 7514. In
-> the externally controlled configurations these registers are not
-> memory-mapped.
+> The crucial thing to understand is that a USB interrupt is not received
+> as a hardirq.  USB gadgets are incapable of directly signaling an
+> interrupt because they cannot initiate a bus transaction by themselves.
+> All communication on the bus is initiated by the host controller,
+> which polls a gadget's Interrupt Endpoint in regular intervals.
+> If an interrupt is pending, that information is passed up the stack
+> in softirq context.  Hence there's no other way than "faking things up",
+> to borrow your language.
 >
-> Add support for these non-memory-mapped configurations.
+> Another USB driver in the tree, drivers/gpio/gpio-dln2.c, likewise
+> represents the USB gadget as an irqchip to signal GPIO interrupts.
+> This shows that LAN95xx is not an isolated case.  gpio-dln2.c does
+> not invoke __irq_enter_raw(), so I think users will now see a WARN
+> splat with that driver since Mark Rutland's 0953fb263714 (+cc).
+> 
+> As I've pointed out above, it seems like an oversight that Mark
+> didn't make the WARN_ON_ONCE() conditional on handle_enforce_irqctx()
+> (as handle_irq_desc() does).  Sadly you did not respond to that
+> observation.
 
-...
+When did you make that observation? I can only see an email from you
+being sent *after* the one I am replying to.
 
-> -       regs = devm_platform_ioremap_resource(pdev, 0);
-> -       if (IS_ERR(regs))
-> -               return PTR_ERR(regs);
-> +       regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
-> +       if (IS_ERR(regs)) {
-> +               /*
-> +                * Fall back to using IORESOURCE_REG, which is possible in an
-> +                * MFD configuration
-> +                */
-> +               res = platform_get_resource(pdev, IORESOURCE_REG, 0);
-> +               if (!res) {
-> +                       dev_err(dev, "Failed to get resource\n");
-> +                       return -ENODEV;
-> +               }
-> +
-> +               priv->regs = ocelot_init_regmap_from_resource(dev, res);
-> +       } else {
-> +               priv->regs = devm_regmap_init_mmio(dev, regs, &regmap_config);
-> +       }
->
-> -       priv->regs = devm_regmap_init_mmio(dev, regs, &regmap_config);
->         if (IS_ERR(priv->regs))
->                 return PTR_ERR(priv->regs);
+> Please clarify whether that is indeed erroneous.
+> Once handle_enforce_irqctx() is added to generic_handle_domain_irq(),
+> there's no need for me to call __irq_enter_raw().  Problem solved.
 
-This looks like repetition of something you have done in a few
-previous patches. Can you avoid code duplication by introducing a
-corresponding helper function?
+I don't see it as an oversight. Drivers shouldn't rely on
+architectural quirks, and it is much clearer to simply forbid
+something that cannot be guaranteed across the board, specially for
+something that is as generic as USB.
+
+> Should there be a valid reason for the missing handle_enforce_irqctx(),
+> then I propose adding a generic_handle_domain_irq_safe() function which
+> calls __irq_enter_raw() (or probably __irq_enter() to get accounting),
+> thereby resolving your objection to calling __irq_enter_raw() from a
+> driver.
+
+Feel free to submit a patch.
+
+Thanks,
+
+	M.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Without deviation from the norm, progress is not possible.
