@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AED3E520133
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 17:34:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C35C52012A
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 17:34:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238339AbiEIPf2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 11:35:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41016 "EHLO
+        id S238360AbiEIPfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 11:35:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238213AbiEIPf0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 11:35:26 -0400
+        with ESMTP id S238342AbiEIPfj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 11:35:39 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4D185FE21B
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 08:31:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F6661BE10D
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 08:31:44 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 6FC023200F2;
-        Mon,  9 May 2022 16:31:31 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id D41B73200F2;
+        Mon,  9 May 2022 16:31:43 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.89)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1no5MB-0001Pj-7C; Mon, 09 May 2022 16:31:31 +0100
-Subject: [PATCH net-next v4 02/11] sfc: Copy shared files needed for Siena
- (part 1)
+        id 1no5MN-0001Pz-L3; Mon, 09 May 2022 16:31:43 +0100
+Subject: [PATCH net-next v4 03/11] sfc: Copy shared files needed for Siena
+ (part 2)
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Mon, 09 May 2022 16:31:31 +0100
-Message-ID: <165211029089.5289.1091556750756406391.stgit@palantir17.mph.net>
+Date:   Mon, 09 May 2022 16:31:43 +0100
+Message-ID: <165211030330.5289.4000537768029138098.stgit@palantir17.mph.net>
 In-Reply-To: <165211018297.5289.9658523545298485394.stgit@palantir17.mph.net>
 References: <165211018297.5289.9658523545298485394.stgit@palantir17.mph.net>
 User-Agent: StGit/0.17.1-dirty
@@ -45,95 +45,175 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These are the files starting with b through i.
+From: Martin Habets <martinh@xilinx.com>
+
+These are the files starting with m through w.
 No changes are done, those will be done with subsequent commits.
 
 Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/siena/bitfield.h       |    0 
- drivers/net/ethernet/sfc/siena/efx.c            |    0 
- drivers/net/ethernet/sfc/siena/efx.h            |    0 
- drivers/net/ethernet/sfc/siena/efx_channels.c   |    0 
- drivers/net/ethernet/sfc/siena/efx_channels.h   |    0 
- drivers/net/ethernet/sfc/siena/efx_common.c     |    0 
- drivers/net/ethernet/sfc/siena/efx_common.h     |    0 
- drivers/net/ethernet/sfc/siena/enum.h           |    0 
- drivers/net/ethernet/sfc/siena/ethtool.c        |    0 
- drivers/net/ethernet/sfc/siena/ethtool_common.c |    0 
- drivers/net/ethernet/sfc/siena/ethtool_common.h |    0 
- drivers/net/ethernet/sfc/siena/farch_regs.h     |    0 
- drivers/net/ethernet/sfc/siena/filter.h         |    0 
- drivers/net/ethernet/sfc/siena/io.h             |    0 
- 14 files changed, 0 insertions(+), 0 deletions(-)
- copy drivers/net/ethernet/sfc/{bitfield.h => siena/bitfield.h} (100%)
- copy drivers/net/ethernet/sfc/{efx.c => siena/efx.c} (100%)
- copy drivers/net/ethernet/sfc/{efx.h => siena/efx.h} (100%)
- copy drivers/net/ethernet/sfc/{efx_channels.c => siena/efx_channels.c} (100%)
- copy drivers/net/ethernet/sfc/{efx_channels.h => siena/efx_channels.h} (100%)
- copy drivers/net/ethernet/sfc/{efx_common.c => siena/efx_common.c} (100%)
- copy drivers/net/ethernet/sfc/{efx_common.h => siena/efx_common.h} (100%)
- copy drivers/net/ethernet/sfc/{enum.h => siena/enum.h} (100%)
- copy drivers/net/ethernet/sfc/{ethtool.c => siena/ethtool.c} (100%)
- copy drivers/net/ethernet/sfc/{ethtool_common.c => siena/ethtool_common.c} (100%)
- copy drivers/net/ethernet/sfc/{ethtool_common.h => siena/ethtool_common.h} (100%)
- copy drivers/net/ethernet/sfc/{farch_regs.h => siena/farch_regs.h} (100%)
- copy drivers/net/ethernet/sfc/{filter.h => siena/filter.h} (100%)
- copy drivers/net/ethernet/sfc/{io.h => siena/io.h} (100%)
+ drivers/net/ethernet/sfc/siena/mcdi.c             |    0 
+ drivers/net/ethernet/sfc/siena/mcdi.h             |    0 
+ drivers/net/ethernet/sfc/siena/mcdi_mon.c         |    0 
+ drivers/net/ethernet/sfc/siena/mcdi_port.c        |    0 
+ drivers/net/ethernet/sfc/siena/mcdi_port.h        |    0 
+ drivers/net/ethernet/sfc/siena/mcdi_port_common.c |    0 
+ drivers/net/ethernet/sfc/siena/mcdi_port_common.h |    0 
+ drivers/net/ethernet/sfc/siena/mtd.c              |    0 
+ drivers/net/ethernet/sfc/siena/net_driver.h       |    0 
+ drivers/net/ethernet/sfc/siena/nic.c              |    0 
+ drivers/net/ethernet/sfc/siena/nic.h              |    0 
+ drivers/net/ethernet/sfc/siena/nic_common.h       |    0 
+ drivers/net/ethernet/sfc/siena/ptp.c              |    0 
+ drivers/net/ethernet/sfc/siena/ptp.h              |    0 
+ drivers/net/ethernet/sfc/siena/rx.c               |    0 
+ drivers/net/ethernet/sfc/siena/rx_common.c        |    0 
+ drivers/net/ethernet/sfc/siena/rx_common.h        |    0 
+ drivers/net/ethernet/sfc/siena/selftest.c         |    0 
+ drivers/net/ethernet/sfc/siena/selftest.h         |    0 
+ drivers/net/ethernet/sfc/siena/sriov.c            |    0 
+ drivers/net/ethernet/sfc/siena/sriov.h            |    0 
+ drivers/net/ethernet/sfc/siena/tx.c               |    0 
+ drivers/net/ethernet/sfc/siena/tx.h               |    0 
+ drivers/net/ethernet/sfc/siena/tx_common.c        |    0 
+ drivers/net/ethernet/sfc/siena/tx_common.h        |    0 
+ drivers/net/ethernet/sfc/siena/vfdi.h             |    0 
+ drivers/net/ethernet/sfc/siena/workarounds.h      |    0 
+ 27 files changed, 0 insertions(+), 0 deletions(-)
+ copy drivers/net/ethernet/sfc/{mcdi.c => siena/mcdi.c} (100%)
+ copy drivers/net/ethernet/sfc/{mcdi.h => siena/mcdi.h} (100%)
+ copy drivers/net/ethernet/sfc/{mcdi_mon.c => siena/mcdi_mon.c} (100%)
+ copy drivers/net/ethernet/sfc/{mcdi_port.c => siena/mcdi_port.c} (100%)
+ copy drivers/net/ethernet/sfc/{mcdi_port.h => siena/mcdi_port.h} (100%)
+ copy drivers/net/ethernet/sfc/{mcdi_port_common.c => siena/mcdi_port_common.c} (100%)
+ copy drivers/net/ethernet/sfc/{mcdi_port_common.h => siena/mcdi_port_common.h} (100%)
+ copy drivers/net/ethernet/sfc/{mtd.c => siena/mtd.c} (100%)
+ copy drivers/net/ethernet/sfc/{net_driver.h => siena/net_driver.h} (100%)
+ copy drivers/net/ethernet/sfc/{nic.c => siena/nic.c} (100%)
+ copy drivers/net/ethernet/sfc/{nic.h => siena/nic.h} (100%)
+ copy drivers/net/ethernet/sfc/{nic_common.h => siena/nic_common.h} (100%)
+ copy drivers/net/ethernet/sfc/{ptp.c => siena/ptp.c} (100%)
+ copy drivers/net/ethernet/sfc/{ptp.h => siena/ptp.h} (100%)
+ copy drivers/net/ethernet/sfc/{rx.c => siena/rx.c} (100%)
+ copy drivers/net/ethernet/sfc/{rx_common.c => siena/rx_common.c} (100%)
+ copy drivers/net/ethernet/sfc/{rx_common.h => siena/rx_common.h} (100%)
+ copy drivers/net/ethernet/sfc/{selftest.c => siena/selftest.c} (100%)
+ copy drivers/net/ethernet/sfc/{selftest.h => siena/selftest.h} (100%)
+ copy drivers/net/ethernet/sfc/{sriov.c => siena/sriov.c} (100%)
+ copy drivers/net/ethernet/sfc/{sriov.h => siena/sriov.h} (100%)
+ copy drivers/net/ethernet/sfc/{tx.c => siena/tx.c} (100%)
+ copy drivers/net/ethernet/sfc/{tx.h => siena/tx.h} (100%)
+ copy drivers/net/ethernet/sfc/{tx_common.c => siena/tx_common.c} (100%)
+ copy drivers/net/ethernet/sfc/{tx_common.h => siena/tx_common.h} (100%)
+ copy drivers/net/ethernet/sfc/{vfdi.h => siena/vfdi.h} (100%)
+ copy drivers/net/ethernet/sfc/{workarounds.h => siena/workarounds.h} (100%)
 
-diff --git a/drivers/net/ethernet/sfc/bitfield.h b/drivers/net/ethernet/sfc/siena/bitfield.h
+diff --git a/drivers/net/ethernet/sfc/mcdi.c b/drivers/net/ethernet/sfc/siena/mcdi.c
 similarity index 100%
-copy from drivers/net/ethernet/sfc/bitfield.h
-copy to drivers/net/ethernet/sfc/siena/bitfield.h
-diff --git a/drivers/net/ethernet/sfc/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
+copy from drivers/net/ethernet/sfc/mcdi.c
+copy to drivers/net/ethernet/sfc/siena/mcdi.c
+diff --git a/drivers/net/ethernet/sfc/mcdi.h b/drivers/net/ethernet/sfc/siena/mcdi.h
 similarity index 100%
-copy from drivers/net/ethernet/sfc/efx.c
-copy to drivers/net/ethernet/sfc/siena/efx.c
-diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/siena/efx.h
+copy from drivers/net/ethernet/sfc/mcdi.h
+copy to drivers/net/ethernet/sfc/siena/mcdi.h
+diff --git a/drivers/net/ethernet/sfc/mcdi_mon.c b/drivers/net/ethernet/sfc/siena/mcdi_mon.c
 similarity index 100%
-copy from drivers/net/ethernet/sfc/efx.h
-copy to drivers/net/ethernet/sfc/siena/efx.h
-diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/siena/efx_channels.c
+copy from drivers/net/ethernet/sfc/mcdi_mon.c
+copy to drivers/net/ethernet/sfc/siena/mcdi_mon.c
+diff --git a/drivers/net/ethernet/sfc/mcdi_port.c b/drivers/net/ethernet/sfc/siena/mcdi_port.c
 similarity index 100%
-copy from drivers/net/ethernet/sfc/efx_channels.c
-copy to drivers/net/ethernet/sfc/siena/efx_channels.c
-diff --git a/drivers/net/ethernet/sfc/efx_channels.h b/drivers/net/ethernet/sfc/siena/efx_channels.h
+copy from drivers/net/ethernet/sfc/mcdi_port.c
+copy to drivers/net/ethernet/sfc/siena/mcdi_port.c
+diff --git a/drivers/net/ethernet/sfc/mcdi_port.h b/drivers/net/ethernet/sfc/siena/mcdi_port.h
 similarity index 100%
-copy from drivers/net/ethernet/sfc/efx_channels.h
-copy to drivers/net/ethernet/sfc/siena/efx_channels.h
-diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/siena/efx_common.c
+copy from drivers/net/ethernet/sfc/mcdi_port.h
+copy to drivers/net/ethernet/sfc/siena/mcdi_port.h
+diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.c b/drivers/net/ethernet/sfc/siena/mcdi_port_common.c
 similarity index 100%
-copy from drivers/net/ethernet/sfc/efx_common.c
-copy to drivers/net/ethernet/sfc/siena/efx_common.c
-diff --git a/drivers/net/ethernet/sfc/efx_common.h b/drivers/net/ethernet/sfc/siena/efx_common.h
+copy from drivers/net/ethernet/sfc/mcdi_port_common.c
+copy to drivers/net/ethernet/sfc/siena/mcdi_port_common.c
+diff --git a/drivers/net/ethernet/sfc/mcdi_port_common.h b/drivers/net/ethernet/sfc/siena/mcdi_port_common.h
 similarity index 100%
-copy from drivers/net/ethernet/sfc/efx_common.h
-copy to drivers/net/ethernet/sfc/siena/efx_common.h
-diff --git a/drivers/net/ethernet/sfc/enum.h b/drivers/net/ethernet/sfc/siena/enum.h
+copy from drivers/net/ethernet/sfc/mcdi_port_common.h
+copy to drivers/net/ethernet/sfc/siena/mcdi_port_common.h
+diff --git a/drivers/net/ethernet/sfc/mtd.c b/drivers/net/ethernet/sfc/siena/mtd.c
 similarity index 100%
-copy from drivers/net/ethernet/sfc/enum.h
-copy to drivers/net/ethernet/sfc/siena/enum.h
-diff --git a/drivers/net/ethernet/sfc/ethtool.c b/drivers/net/ethernet/sfc/siena/ethtool.c
+copy from drivers/net/ethernet/sfc/mtd.c
+copy to drivers/net/ethernet/sfc/siena/mtd.c
+diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/siena/net_driver.h
 similarity index 100%
-copy from drivers/net/ethernet/sfc/ethtool.c
-copy to drivers/net/ethernet/sfc/siena/ethtool.c
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.c b/drivers/net/ethernet/sfc/siena/ethtool_common.c
+copy from drivers/net/ethernet/sfc/net_driver.h
+copy to drivers/net/ethernet/sfc/siena/net_driver.h
+diff --git a/drivers/net/ethernet/sfc/nic.c b/drivers/net/ethernet/sfc/siena/nic.c
 similarity index 100%
-copy from drivers/net/ethernet/sfc/ethtool_common.c
-copy to drivers/net/ethernet/sfc/siena/ethtool_common.c
-diff --git a/drivers/net/ethernet/sfc/ethtool_common.h b/drivers/net/ethernet/sfc/siena/ethtool_common.h
+copy from drivers/net/ethernet/sfc/nic.c
+copy to drivers/net/ethernet/sfc/siena/nic.c
+diff --git a/drivers/net/ethernet/sfc/nic.h b/drivers/net/ethernet/sfc/siena/nic.h
 similarity index 100%
-copy from drivers/net/ethernet/sfc/ethtool_common.h
-copy to drivers/net/ethernet/sfc/siena/ethtool_common.h
-diff --git a/drivers/net/ethernet/sfc/farch_regs.h b/drivers/net/ethernet/sfc/siena/farch_regs.h
+copy from drivers/net/ethernet/sfc/nic.h
+copy to drivers/net/ethernet/sfc/siena/nic.h
+diff --git a/drivers/net/ethernet/sfc/nic_common.h b/drivers/net/ethernet/sfc/siena/nic_common.h
 similarity index 100%
-copy from drivers/net/ethernet/sfc/farch_regs.h
-copy to drivers/net/ethernet/sfc/siena/farch_regs.h
-diff --git a/drivers/net/ethernet/sfc/filter.h b/drivers/net/ethernet/sfc/siena/filter.h
+copy from drivers/net/ethernet/sfc/nic_common.h
+copy to drivers/net/ethernet/sfc/siena/nic_common.h
+diff --git a/drivers/net/ethernet/sfc/ptp.c b/drivers/net/ethernet/sfc/siena/ptp.c
 similarity index 100%
-copy from drivers/net/ethernet/sfc/filter.h
-copy to drivers/net/ethernet/sfc/siena/filter.h
-diff --git a/drivers/net/ethernet/sfc/io.h b/drivers/net/ethernet/sfc/siena/io.h
+copy from drivers/net/ethernet/sfc/ptp.c
+copy to drivers/net/ethernet/sfc/siena/ptp.c
+diff --git a/drivers/net/ethernet/sfc/ptp.h b/drivers/net/ethernet/sfc/siena/ptp.h
 similarity index 100%
-copy from drivers/net/ethernet/sfc/io.h
-copy to drivers/net/ethernet/sfc/siena/io.h
+copy from drivers/net/ethernet/sfc/ptp.h
+copy to drivers/net/ethernet/sfc/siena/ptp.h
+diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/siena/rx.c
+similarity index 100%
+copy from drivers/net/ethernet/sfc/rx.c
+copy to drivers/net/ethernet/sfc/siena/rx.c
+diff --git a/drivers/net/ethernet/sfc/rx_common.c b/drivers/net/ethernet/sfc/siena/rx_common.c
+similarity index 100%
+copy from drivers/net/ethernet/sfc/rx_common.c
+copy to drivers/net/ethernet/sfc/siena/rx_common.c
+diff --git a/drivers/net/ethernet/sfc/rx_common.h b/drivers/net/ethernet/sfc/siena/rx_common.h
+similarity index 100%
+copy from drivers/net/ethernet/sfc/rx_common.h
+copy to drivers/net/ethernet/sfc/siena/rx_common.h
+diff --git a/drivers/net/ethernet/sfc/selftest.c b/drivers/net/ethernet/sfc/siena/selftest.c
+similarity index 100%
+copy from drivers/net/ethernet/sfc/selftest.c
+copy to drivers/net/ethernet/sfc/siena/selftest.c
+diff --git a/drivers/net/ethernet/sfc/selftest.h b/drivers/net/ethernet/sfc/siena/selftest.h
+similarity index 100%
+copy from drivers/net/ethernet/sfc/selftest.h
+copy to drivers/net/ethernet/sfc/siena/selftest.h
+diff --git a/drivers/net/ethernet/sfc/sriov.c b/drivers/net/ethernet/sfc/siena/sriov.c
+similarity index 100%
+copy from drivers/net/ethernet/sfc/sriov.c
+copy to drivers/net/ethernet/sfc/siena/sriov.c
+diff --git a/drivers/net/ethernet/sfc/sriov.h b/drivers/net/ethernet/sfc/siena/sriov.h
+similarity index 100%
+copy from drivers/net/ethernet/sfc/sriov.h
+copy to drivers/net/ethernet/sfc/siena/sriov.h
+diff --git a/drivers/net/ethernet/sfc/tx.c b/drivers/net/ethernet/sfc/siena/tx.c
+similarity index 100%
+copy from drivers/net/ethernet/sfc/tx.c
+copy to drivers/net/ethernet/sfc/siena/tx.c
+diff --git a/drivers/net/ethernet/sfc/tx.h b/drivers/net/ethernet/sfc/siena/tx.h
+similarity index 100%
+copy from drivers/net/ethernet/sfc/tx.h
+copy to drivers/net/ethernet/sfc/siena/tx.h
+diff --git a/drivers/net/ethernet/sfc/tx_common.c b/drivers/net/ethernet/sfc/siena/tx_common.c
+similarity index 100%
+copy from drivers/net/ethernet/sfc/tx_common.c
+copy to drivers/net/ethernet/sfc/siena/tx_common.c
+diff --git a/drivers/net/ethernet/sfc/tx_common.h b/drivers/net/ethernet/sfc/siena/tx_common.h
+similarity index 100%
+copy from drivers/net/ethernet/sfc/tx_common.h
+copy to drivers/net/ethernet/sfc/siena/tx_common.h
+diff --git a/drivers/net/ethernet/sfc/vfdi.h b/drivers/net/ethernet/sfc/siena/vfdi.h
+similarity index 100%
+copy from drivers/net/ethernet/sfc/vfdi.h
+copy to drivers/net/ethernet/sfc/siena/vfdi.h
+diff --git a/drivers/net/ethernet/sfc/workarounds.h b/drivers/net/ethernet/sfc/siena/workarounds.h
+similarity index 100%
+copy from drivers/net/ethernet/sfc/workarounds.h
+copy to drivers/net/ethernet/sfc/siena/workarounds.h
 
