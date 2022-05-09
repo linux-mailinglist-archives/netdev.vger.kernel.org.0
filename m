@@ -2,66 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC3CA51FFFB
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:37:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A57A451FFFF
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237263AbiEIOiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 10:38:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35856 "EHLO
+        id S237420AbiEIOkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 10:40:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237225AbiEIOiQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:38:16 -0400
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 399A72AED94;
-        Mon,  9 May 2022 07:34:18 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id F19E830B2954;
-        Mon,  9 May 2022 16:34:15 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
-        :content-type:date:from:from:in-reply-to:message-id:mime-version
-        :references:reply-to:subject:subject:to:to; s=felkmail; bh=3bXf2
-        2+Nw/0Od99Sjn+qvkBNLItca+JSrqVBQ0ekeoA=; b=KyrBaUw2BhbHetjD/tBfn
-        0xPskG+rZ8S8NS0pcLJFWAYaGyIz2CN1p6HRoO3JaO2gHZzQgVpsA7N7rZKmQ0Rk
-        2oZd17AHRJfaDSy4f79STC98g8z+JHMZZaCrM3lpjoJrPUOAjgQ7E6T1LnyowgNL
-        17M1o3VhGGQsUovwMhuPqjjaxgTTGG2Y4S+8M5QK6lC/56ePGEbvNBVLUWXpF+d2
-        1LgWaSN+MyUaWNUHr1zXYk6yBIXQmwRIMiEAWIBBY51QAl4as7SiioTFcrrDUfXd
-        844Bm2MO65B/GVzZk51Fb3bFpp9U7gyh0k9XbWOrU8hWWguj2O8KYTKvzXzK2NvT
-        g==
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 7BE2930B2948;
-        Mon,  9 May 2022 16:34:15 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 249EYF9M032507;
-        Mon, 9 May 2022 16:34:15 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 249EYEIP032506;
-        Mon, 9 May 2022 16:34:14 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: Re: [PATCH] can: ctucanfd: Let users select instead of depend on CAN_CTUCANFD
-Date:   Mon, 9 May 2022 16:34:05 +0200
-User-Agent: KMail/1.9.10
-Cc:     Ondrej Ille <ondrej.ille@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <887b7440446b6244a20a503cc6e8dc9258846706.1652104941.git.geert+renesas@glider.be>
-In-Reply-To: <887b7440446b6244a20a503cc6e8dc9258846706.1652104941.git.geert+renesas@glider.be>
-X-KMail-QuotePrefix: > 
+        with ESMTP id S237409AbiEIOki (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:40:38 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD1801B1779
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 07:36:41 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id i5so19733658wrc.13
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 07:36:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XHZCc9KkCkiMkPg4oNxM0kp6W9oK2PEGUqIawe5Nj4A=;
+        b=FG12aAHkrTaOiwYtJnoTsermbyosAi0TYyZ/xCIKk1f8xsLm/EKrQ4r5Qq8nCZjdqA
+         XnJTASox8Selnp3Kv0PeBeWIpEAXw9xvs45S8g+ZDf8P4LoWJ2XhclJKbD4Spgc9dDms
+         L7xdxXH4LxPQsN5ASTpBxOOzvATDdcp2JAZoUsp12d2v7K769ym5g35R/6bYgLg+U8SP
+         qTtPcuBSqmaTNqLolPQOrgxQMj/bai3IUlOWbUsNQVgLe4Czl1w7/aLvff4Xibtva7aH
+         aXzhR0WufHcOqRTZwqAwAQAhZPecuWHNdevg5b6PQFiVyCO5n78u9k2krP3y9BY5zbqO
+         EszQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XHZCc9KkCkiMkPg4oNxM0kp6W9oK2PEGUqIawe5Nj4A=;
+        b=Pok2mS8CWcjc8NgvXqSI5cttN3N2YS+mNbYQ41/HaukhI5wxUvsxHj2wa1R1HEjOFZ
+         Pj4T/MiBAPBhNgBjYwV5b0YyM5sE44wGbBXkZGVw92Ou9sdcKGIyCv8KW/YnB/B1b2yy
+         t8120e8pn2ezs/5Z0/bPspSIHOWrIGgoCqUqENWtjiX/nYshsPABWf+nSAsMkdk9jmzo
+         epUjXk79R3UnUEVrBThYTwdlZ9HmPXq6NK4ZuAMD5+rGdn57RMKxMMPe/Ft6Tku13XJ5
+         CX2DK2ZmaXOCM9Cnt5ZOhJ+xzyRpZO7vu4ea0ZfcwWO4WxSd/zfpdIh/IlnSkOCMvI5a
+         Y6pA==
+X-Gm-Message-State: AOAM530TIHaUsueXSKbslG2tyskTv+9eVT+DasYC4DKBG9r2PwaRmLI4
+        hsAPtszUjQCCNx0w0S+bk0pe86FXm6o8LuSV8k2SVw==
+X-Google-Smtp-Source: ABdhPJwe3NQAKj4gbRSCBxXIZaIl39CSw61d0sByu3vjfWOjPXW4ZWVLANxArx1j+/vhgubG+H5Yzg==
+X-Received: by 2002:a5d:5984:0:b0:20c:7de2:5416 with SMTP id n4-20020a5d5984000000b0020c7de25416mr14084604wri.30.1652106999898;
+        Mon, 09 May 2022 07:36:39 -0700 (PDT)
+Received: from josua-work.lan (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
+        by smtp.gmail.com with ESMTPSA id x18-20020adfdd92000000b0020c5253d915sm11121155wrl.97.2022.05.09.07.36.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 07:36:39 -0700 (PDT)
+From:   Josua Mayer <josua@solid-run.com>
+To:     netdev@vger.kernel.org
+Cc:     alvaro.karsz@solid-run.com, Josua Mayer <josua@solid-run.com>
+Subject: [PATCH v4 0/3] adin: add support for clock output
+Date:   Mon,  9 May 2022 17:36:32 +0300
+Message-Id: <20220509143635.26233-1-josua@solid-run.com>
+X-Mailer: git-send-email 2.35.3
+In-Reply-To: <20220428082848.12191-1-josua@solid-run.com>
+References: <20220428082848.12191-1-josua@solid-run.com>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202205091634.05147.pisa@cmp.felk.cvut.cz>
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,57 +67,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Geert,
+This patch series adds support for configuring the two clock outputs of adin
+1200 and 1300 PHYs. Certain network controllers require an external reference
+clock which can be provided by the PHY.
 
-On Monday 09 of May 2022 16:02:59 Geert Uytterhoeven wrote:
-> The CTU CAN-FD IP core is only useful when used with one of the
-> corresponding PCI/PCIe or platform (FPGA, SoC) drivers, which depend on
-> PCI resp. OF.
->
-> Hence make the users select the core driver code, instead of letting
-> then depend on it.  Keep the core code config option visible when
-> compile-testing, to maintain compile-coverage.
->
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+One of the replies to v1 was asking why the common clock framework isn't used.
+Currently no PHY driver has implemented providing a clock to the network
+controller. Instead they rely on vendor extensions to make the appropriate
+configuration. For example ar8035 uses qca,clk-out-frequency - this patchset
+aimed to replicate the same functionality.
 
-Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Finally the 125MHz free-running clock is enabled in the device-tree for
+SolidRun i.MX6 SoMs, to support revisions 1.9 and later, where the original phy
+has been replaced with an adin 1300.
+To avoid introducing new warning messages during boot for SoMs before rev 1.9,
+the status field of the new phy node is disabled by default, and will be
+enabled by U-Boot on demand.
 
-Thanks for suggestion, I have no strong opinion/experience there
-but I agree that proposed behavior seems more friendly to users. 
+Changes since v3:
+- fix coding style violations reported by Andrew and checkpatch
+- changed type of adi,phy-output-reference-clock from flag to boolean
 
->  drivers/net/can/ctucanfd/Kconfig | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/can/ctucanfd/Kconfig
-> b/drivers/net/can/ctucanfd/Kconfig index 48963efc7f19955f..3c383612eb1764e2
-> 100644
-> --- a/drivers/net/can/ctucanfd/Kconfig
-> +++ b/drivers/net/can/ctucanfd/Kconfig
-> @@ -1,5 +1,5 @@
->  config CAN_CTUCANFD
-> -	tristate "CTU CAN-FD IP core"
-> +	tristate "CTU CAN-FD IP core" if COMPILE_TEST
->  	help
->  	  This driver adds support for the CTU CAN FD open-source IP core.
->  	  More documentation and core sources at project page
-> @@ -13,8 +13,8 @@ config CAN_CTUCANFD
->
->  config CAN_CTUCANFD_PCI
->  	tristate "CTU CAN-FD IP core PCI/PCIe driver"
-> -	depends on CAN_CTUCANFD
->  	depends on PCI
-> +	select CAN_CTUCANFD
->  	help
->  	  This driver adds PCI/PCIe support for CTU CAN-FD IP core.
->  	  The project providing FPGA design for Intel EP4CGX15 based DB4CGX15
-> @@ -23,8 +23,8 @@ config CAN_CTUCANFD_PCI
->
->  config CAN_CTUCANFD_PLATFORM
->  	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
-> -	depends on CAN_CTUCANFD
->  	depends on OF || COMPILE_TEST
-> +	select CAN_CTUCANFD
->  	help
->  	  The core has been tested together with OpenCores SJA1000
->  	  modified to be CAN FD frames tolerant on MicroZed Zynq based
+Changes since v2:
+- set new phy node status to disabled
+- fix integer-as-null-pointer compiler warning
+  Reported-by: kernel test robot <lkp@intel.com>
+
+Changes since v1:
+- renamed device-tree property and changed to enum
+- added device-tree property for second clock output
+- implemented all bits from the clock configuration register
+
+Josua Mayer (3):
+  dt-bindings: net: adin: document phy clock output properties
+  net: phy: adin: add support for clock output
+  ARM: dts: imx6qdl-sr-som: update phy configuration for som revision
+    1.9
+
+ .../devicetree/bindings/net/adi,adin.yaml     | 17 +++++++
+ arch/arm/boot/dts/imx6qdl-sr-som.dtsi         | 10 +++++
+ drivers/net/phy/adin.c                        | 44 +++++++++++++++++++
+ 3 files changed, 71 insertions(+)
+
+-- 
+2.35.3
 
