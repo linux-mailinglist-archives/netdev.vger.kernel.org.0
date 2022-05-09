@@ -2,248 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00A2251FCD8
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 14:31:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 542EC51FCFD
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 14:33:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234525AbiEIMdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 08:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43000 "EHLO
+        id S234640AbiEIMhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 08:37:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234456AbiEIMdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 08:33:42 -0400
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B47277356
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 05:29:48 -0700 (PDT)
-Received: by mail-wm1-x335.google.com with SMTP id r1-20020a1c2b01000000b00394398c5d51so8172355wmr.2
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 05:29:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qya9DKm3po5ZY7TUUF2J1LfI82l4MgWggnh2mZNErbI=;
-        b=zA6FS0iOawK2nTlHnnZbUNA8bXwx9CyZBKKQ0y2ZKU1II8Z0h4dOWkxeWtpL5jBQ9N
-         chcE4kZHHUdChSNUH485ygXgrE6BXWIzleVVOhhKc6kDT2EWhBMoo+tBsHnopA18nvJL
-         QJd1d5Nsf/Pa24dHs9HUw/o4T0Ey/oYPe+XA+08yhiUv9hI2qWJzyKhbyt7maPICLcRu
-         mMiojEYn0ZMiw7F/pbayUIEYHGb7cVua0PEFxsVgz1wU9lQFOhxGQdOzCdiejJ96PSQM
-         YJtABhFn8txkJzyTHmJCI7SQKFXsdomDr7T6pAoAmxev8phSrttCsph4XTOhgQJK6mgu
-         prDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qya9DKm3po5ZY7TUUF2J1LfI82l4MgWggnh2mZNErbI=;
-        b=JVoS4s/Ez3zUzCqIOHY3IkUOHqbF5OinJT14XMhTVhhgOwTTtPtjEmakrefs6yGYZE
-         bXHEK+PkOuoT2eIrICr+Py4S5fb/+XLjMfRqi5S4HGehK5IfdSyxOXap/XIv5aFbnXVv
-         Tk7QQvFVa7ygiuLgy8c4Pf/ibJg9msb5Fg4BEGyLDre54Qa6T5HgQ6shP7hsVwNQ2JTk
-         AwZVWd+Q9cjxrX84xQ+8TS/kdBBLndYLUPVamdg3bWcd+Ol7kv82h5/KvICP0eEwKS4R
-         QvqS9pSD9wS/JlhbdKRs5zsZDVEUedeESW9f6XAsR1+HF6SAAkms11zr3gXfjVFwWtM1
-         kIBg==
-X-Gm-Message-State: AOAM530P04oYJNQpi15E3PAsyoBKjS84prE6VZWpRIINrZzx2QCNWho3
-        FUk5bG2L++yXbpfl1Q5pTia+pU5TKNIyQD2/NDLopw==
-X-Google-Smtp-Source: ABdhPJx11e62RVRvPHpJCKOVp3aqg1i5OItE5t3hie8Nt5B32mk3MdOESjOhQ5ib+j5SG5hxWI/yRA==
-X-Received: by 2002:a05:600c:4f53:b0:394:6a35:79ac with SMTP id m19-20020a05600c4f5300b003946a3579acmr20725791wmq.36.1652099386422;
-        Mon, 09 May 2022 05:29:46 -0700 (PDT)
-Received: from josua-work.lan (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
-        by smtp.gmail.com with ESMTPSA id l5-20020a5d5605000000b0020c5253d8d3sm10795672wrv.31.2022.05.09.05.29.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 05:29:45 -0700 (PDT)
-From:   Josua Mayer <josua@solid-run.com>
-To:     netdev@vger.kernel.org
-Cc:     Josua Mayer <josua@solid-run.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH RFC] net: sfp: support assigning status LEDs to SFP connectors
-Date:   Mon,  9 May 2022 15:29:38 +0300
-Message-Id: <20220509122938.14651-1-josua@solid-run.com>
-X-Mailer: git-send-email 2.35.3
+        with ESMTP id S234488AbiEIMhi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 08:37:38 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21BD28BDC9;
+        Mon,  9 May 2022 05:33:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=L3p0/83L4yDVyZoegOtsQfWmJV/6wtv6TZoOXChWFJg=; b=Gm1PabHNS+/VMjWNpRDgN0q7Gz
+        okgDM+2WHp5z93ZUGeQzJtlj40ch1Djul+F9LKvzWURwbafLBOoP/NgGu9GSmPuuE28KOgN2Dlog/
+        GHXl8dWWFH9IUIBQmU28gspF2npPpEWaJ19eWl8SzxR3mk4Q/F4kmhrZuCV0rVMHSE4nkq5aDi9ss
+        tskoNSlPr3h/0gKp/FmRCE42MZtPYeJf36WeID1+imZk2dUy5vrTX2Nb6oqUW3HqWx20YRVV7+Jqn
+        2U5xO3lqX+ogULZEqtYM74LQ/XjYNOdW70A5rw6LBK7UHwdRlT2URD08Y6BIbm5BwJqTO8MAols4i
+        vbgjN92g==;
+Received: from [177.183.162.244] (helo=[192.168.0.5])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1no2ZO-0002Vw-CD; Mon, 09 May 2022 14:32:58 +0200
+Message-ID: <b5a1370c-1319-24d1-6b2a-629e5c8915ed@igalia.com>
+Date:   Mon, 9 May 2022 09:32:27 -0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH 01/30] x86/crash,reboot: Avoid re-disabling VMX in all
+ CPUs on crash/restart
+Content-Language: en-US
+To:     Paolo Bonzini <pbonzini@redhat.com>,
+        Sean Christopherson <seanjc@google.com>, vkuznets@redhat.com
+Cc:     kexec@lists.infradead.org, pmladek@suse.com, bhe@redhat.com,
+        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, will@kernel.org,
+        "David P . Reed" <dpreed@deepplum.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-2-gpiccoli@igalia.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <20220427224924.592546-2-gpiccoli@igalia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Maintainers,
+On 27/04/2022 19:48, Guilherme G. Piccoli wrote:
+> In the panic path we have a list of functions to be called, the panic
+> notifiers - such callbacks perform various actions in the machine's
+> last breath, and sometimes users want them to run before kdump. We
+> have the parameter "crash_kexec_post_notifiers" for that. When such
+> parameter is used, the function "crash_smp_send_stop()" is executed
+> to poweroff all secondary CPUs through the NMI-shootdown mechanism;
+> part of this process involves disabling virtualization features in
+> all CPUs (except the main one).
+> 
+> Now, in the emergency restart procedure we have also a way of
+> disabling VMX in all CPUs, using the same NMI-shootdown mechanism;
+> what happens though is that in case we already NMI-disabled all CPUs,
+> the emergency restart fails due to a second addition of the same items
+> in the NMI list, as per the following log output:
+> 
+> sysrq: Trigger a crash
+> Kernel panic - not syncing: sysrq triggered crash
+> [...]
+> Rebooting in 2 seconds..
+> list_add double add: new=<addr1>, prev=<addr2>, next=<addr1>.
+> ------------[ cut here ]------------
+> kernel BUG at lib/list_debug.c:29!
+> invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> 
+> In order to reproduce the problem, users just need to set the kernel
+> parameter "crash_kexec_post_notifiers" *without* kdump set in any
+> system with the VMX feature present.
+> 
+> Since there is no benefit in re-disabling VMX in all CPUs in case
+> it was already done, this patch prevents that by guarding the restart
+> routine against doubly issuing NMIs unnecessarily. Notice we still
+> need to disable VMX locally in the emergency restart.
+> 
+> Fixes: ed72736183c4 ("x86/reboot: Force all cpus to exit VMX root if VMX is supported)
+> Fixes: 0ee59413c967 ("x86/panic: replace smp_send_stop() with kdump friendly version in panic path")
+> Cc: David P. Reed <dpreed@deepplum.com>
+> Cc: Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>
+> Cc: Paolo Bonzini <pbonzini@redhat.com>
+> Cc: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> ---
+>  arch/x86/include/asm/cpu.h |  1 +
+>  arch/x86/kernel/crash.c    |  8 ++++----
+>  arch/x86/kernel/reboot.c   | 14 ++++++++++++--
+>  3 files changed, 17 insertions(+), 6 deletions(-)
+> 
 
-I am working on a new device based on the LX2160A platform, that exposes
-16 sfp connectors, each with its own led controlled by gpios intended
-to show link status.
-This patch intends to illustrate in code what we want to achieve,
-so that I can better ask you all:
-How can this work with the generic led framework, and how was it meant to work?
+Hi Paolo / Sean / Vitaly, sorry for the ping.
+But do you think this fix is OK from the VMX point-of-view?
 
-The paragraphs below are a discussion of paths I have explored without success.
-Please let me know if you have any opinions and ideas.
+I'd like to send a V2 of this set soon, so any review here is highly
+appreciated!
 
-Describing in device-tree that an led node belongs to a particular network
-device (dpmac) however seems impossible. Instead the standard appears to work
-through triggers, where in device-tree one only annotates that the led should
-show a trigger "netdev" or "phy". Both of these make no sense when multiple
-network interfaces exist - raising the first question:
-How can device-tree indicate that an individual led should show the events of
-a particular network interface?
+Cheers,
 
-We have found that there is a way in sysfs to echo the name of the network
-device to the api of the led driver, and it will start showing link status.
-However this has to be done at runtime by the user.
-But network interface names are unstable. They depend on probe order and
-can be changed at will. Further they can be moved to different namespaces,
-which will allow e.g. two instances of "eth0" to coexist.
-On the Layerscape platform in particular these devices are created dynamically
-by the networkign coprocessor, which supports complex functions such as
-creating one network interface that spans multiple ports.
-It seems to me that the netdev trigger therefore can not properly reflect
-the relation between an LED (which is hard-wired to an sfp cage), and the
-link state reported by e.g. a phy inside an sfp module.
 
-There exists also a phy trigger for leds.
-When invoking the phy_attach or phy_connect functions from the generic phy
-framework to connect an instance of net_device with an instance of phy_device,
-a trigger providing the link and speed events is registered.
-You may notice that again leds are tied to existence of a particular logical
-network interface, which may or may not exist, and may span multiple
-physical interfaces in case of layerscape.
-This is a dead end though, simply because the dpaa2 driver does not even use
-objects of phy_device, so this registering of triggers never happens.
-
-In addition the dpmac nodes in device-tree don't really have a phy modeled.
-One end are the serdes which are managed by the networking coprocessor.
-The other end has removable sfp modules, which may or may not contain a phy.
-
-The serdes are modeled as phy in device-tree though, perhaps the dpaa2 driver
-could be extended to instantiate phy_device objects for the serdes?
-However I feel like this would especially not solve when mutliple physical
-ports are used as one logical interface.
-
-It seems to me that there should be a way to explicitly link gpio-driven LEDs to
-either specific phy nodes, or specific sfp connectors - and have them receive
-link events from the respective phy, fully independent even from whether there
-is a logical network interface.
-
-If you got here, thank you very much for reading!
-Ay comments?
-
-sincerely
-Josua Mayer
-
-Signed-off-by: Josua Mayer <josua@solid-run.com>
----
- .../devicetree/bindings/net/sff,sfp.txt       |  4 +++
- drivers/net/phy/sfp.c                         | 36 +++++++++++++++++++
- 2 files changed, 40 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/net/sff,sfp.txt b/Documentation/devicetree/bindings/net/sff,sfp.txt
-index 832139919f20..d46df1300d28 100644
---- a/Documentation/devicetree/bindings/net/sff,sfp.txt
-+++ b/Documentation/devicetree/bindings/net/sff,sfp.txt
-@@ -37,6 +37,10 @@ Optional Properties:
-   Specifies the maximum power consumption allowable by a module in the
-   slot, in milli-Watts.  Presently, modules can be up to 1W, 1.5W or 2W.
- 
-+- link-status-led:
-+    description: An LED node for showing link status.
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+
- Example #1: Direct serdes to SFP connection
- 
- sfp_eth3: sfp-eth3 {
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 2fff62695455..0f18e77b8b68 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -7,6 +7,7 @@
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
- #include <linux/jiffies.h>
-+#include <linux/leds.h>
- #include <linux/mdio/mdio-i2c.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-@@ -258,6 +259,7 @@ struct sfp {
- 	char *hwmon_name;
- #endif
- 
-+	struct led_classdev *link_status_led;
- };
- 
- static bool sff_module_supported(const struct sfp_eeprom_id *id)
-@@ -1490,6 +1492,8 @@ static int sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
- 
- static void sfp_sm_link_up(struct sfp *sfp)
- {
-+	if (sfp->link_status_led)
-+		led_set_brightness(sfp->link_status_led, sfp->link_status_led->max_brightness);
- 	sfp_link_up(sfp->sfp_bus);
- 	sfp_sm_next(sfp, SFP_S_LINK_UP, 0);
- }
-@@ -1497,6 +1501,8 @@ static void sfp_sm_link_up(struct sfp *sfp)
- static void sfp_sm_link_down(struct sfp *sfp)
- {
- 	sfp_link_down(sfp->sfp_bus);
-+	if (sfp->link_status_led)
-+		led_set_brightness(sfp->link_status_led, LED_OFF);
- }
- 
- static void sfp_sm_link_check_los(struct sfp *sfp)
-@@ -2425,6 +2429,23 @@ static int sfp_probe(struct platform_device *pdev)
- 
- 		i2c = of_find_i2c_adapter_by_node(np);
- 		of_node_put(np);
-+
-+		np = of_parse_phandle(node, "link-status-led", 0);
-+		sfp->link_status_led = of_led_get_hack(np);
-+		of_node_put(np);
-+
-+		if (IS_ERR(sfp->link_status_led)) {
-+			switch (PTR_ERR(sfp->link_status_led)) {
-+			case -ENODEV:
-+				sfp->link_status_led = NULL;
-+				break;
-+			default:
-+				dev_err(sfp->dev, "failed to get link-statusled from 'link-status-led' property: %pe\n", sfp->link_status_led);
-+				fallthrough;
-+			case -EPROBE_DEFER:
-+				return PTR_ERR(sfp->link_status_led);
-+			};
-+		}
- 	} else if (has_acpi_companion(&pdev->dev)) {
- 		struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
- 		struct fwnode_handle *fw = acpi_fwnode_handle(adev);
-@@ -2453,6 +2476,14 @@ static int sfp_probe(struct platform_device *pdev)
- 		return err;
- 	}
- 
-+	if (sfp->link_status_led) {
-+		/* remove from sysfs to avoid userspce control */
-+		led_sysfs_disable(sfp->link_status_led);
-+
-+		/* turn off initially */
-+		led_set_brightness(sfp->link_status_led, LED_OFF);
-+	}
-+
- 	for (i = 0; i < GPIO_MAX; i++)
- 		if (sff->gpios & BIT(i)) {
- 			sfp->gpio[i] = devm_gpiod_get_optional(sfp->dev,
-@@ -2545,6 +2576,11 @@ static int sfp_remove(struct platform_device *pdev)
- {
- 	struct sfp *sfp = platform_get_drvdata(pdev);
- 
-+	if (sfp->link_status_led) {
-+		/* re-enable sysfs interface */
-+		led_sysfs_enable(sfp->link_status_led);
-+	}
-+
- 	sfp_unregister_socket(sfp->sfp_bus);
- 
- 	rtnl_lock();
--- 
-2.35.3
+Guilherme
 
