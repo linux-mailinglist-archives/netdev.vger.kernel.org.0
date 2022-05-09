@@ -2,77 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C73F3520850
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 01:21:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0F2B520867
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 01:32:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232315AbiEIXYx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 19:24:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51608 "EHLO
+        id S232456AbiEIXgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 19:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36696 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232336AbiEIXYq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 19:24:46 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E46438791
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 16:20:49 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id j14so15261585plx.3
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 16:20:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=UnVJFBU8Of138vQ65R2bL0eo1K3/bVsgAZS6qku60tI=;
-        b=AJtZZuGNWIeim9tYrydinTJcadnpuadrHvo3/jrvKul3ho4wIIbCCyQh8vjO6Zru0/
-         NjKI3Uk3CBF7aLWJuAUy8e26QelVqXTCCsgTeRd2uOt9JSMcte7JNq5TFPlwerVibmJz
-         8P7Li9Y0zqWWKvdAgI71xUxdRbxQ+6x7WsE9E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=UnVJFBU8Of138vQ65R2bL0eo1K3/bVsgAZS6qku60tI=;
-        b=5mh3Hx6vdSih4ZERRln8XbK2ebaBkoXb54peEXm/qMAWXZnw9rQYrFLkcYPhQ210yZ
-         FL8QCBhhMo+GuGaiWMviA0kUCCurdjID/bl2t/+9FymYi5isjSLg2x2wZ31df11467gW
-         MLq2xIEcC7XXJt/mhnh0+Enbf9SwjglYYfGHfzlJYvvgNQgpN9pE87j3Z6MLI46R7giG
-         j25QQX18LyDS06VVAEu79M3Y2EK8KdwX+S5kB/7QjFh4qRXCNcYZDnVYj7zaFbsI/wbF
-         tzhmHyn5sMY52JZrzP9tmfovfpXISsj7PK+78bl2ma5rzlHB52Miuo1gB4jFpYLAL1z1
-         mb0Q==
-X-Gm-Message-State: AOAM531LSkPKvGUmVi8UtjHXOMIdqaBxrFKn4fbAr7xgJc2acBLVCf9Z
-        F1w2IrRs4hkzDG3v0CfapVDVzQ==
-X-Google-Smtp-Source: ABdhPJynMfb+tc93tdQLTMGm5Ixo9lciJ8d2aWW2d93+SLJsuOsKRBdJy9ZSE7MB5MIhet5n3h2thQ==
-X-Received: by 2002:a17:90b:3649:b0:1db:a201:5373 with SMTP id nh9-20020a17090b364900b001dba2015373mr20213858pjb.175.1652138448589;
-        Mon, 09 May 2022 16:20:48 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id b24-20020a170902b61800b0015e8d4eb21fsm422736pls.105.2022.05.09.16.20.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 16:20:48 -0700 (PDT)
-Date:   Mon, 9 May 2022 16:20:47 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
+        with ESMTP id S232487AbiEIXgB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 19:36:01 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D4D20D267
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 16:32:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652139124; x=1683675124;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FzHEK7nZzm9FI1iKStZdzdKwVde9YF4O+OBbpJJgkts=;
+  b=nHSTpNH8meT9hqz7CMMC6EzysB2tEvLynZNNe35zkwmzUpnmL5byd2CS
+   FlNcl4M6AXBKoOyg7jYWWt9NSTzTaWMWy2/6j+l4CXHI5uumdy6Z1Xodl
+   4uQzvZFDcrFQRItjYhg59fG2x0hIvmhoUCykdAjbV2Q0Dll7UlzgiPBiG
+   zVO8DzOhXUWhgE+Qp+oG7P56XSOK88lSiE6wINGedbwwd4rLJkGCbxBch
+   QyLi80ydrzbsbRIivr84I/NupHaMaLoEO8QwzqND5UhnyTf4cZNXNyjmF
+   3rr4wtS3IzwbdA4bqrrLoi2onIqso2kXgYeq1gq+DKAzPWA5i3EWh7ezG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="355626795"
+X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
+   d="scan'208";a="355626795"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 16:32:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
+   d="scan'208";a="669585915"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga002.fm.intel.com with ESMTP; 09 May 2022 16:32:02 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1noCrA-000H0F-Rw;
+        Mon, 09 May 2022 23:32:00 +0000
+Date:   Tue, 10 May 2022 07:31:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>, Coco Li <lixiaoyan@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH v4 net-next 12/12] mlx5: support BIG TCP packets
-Message-ID: <202205091614.C55B5D49F@keescook>
-References: <20220506153048.3695721-1-eric.dumazet@gmail.com>
- <20220506153048.3695721-13-eric.dumazet@gmail.com>
- <20220506153414.72f26ee3@kernel.org>
- <CANn89iJDP1aSwsCyVVq_qjVY8OZjg-vWULR=GN-WQV6FpLz+Mg@mail.gmail.com>
- <20220506185405.527a79d4@kernel.org>
- <202205070026.11B94DF@keescook>
- <CANn89iLS_2cshtuXPyNUGDPaic=sJiYfvTb_wNLgWrZRyBxZ_g@mail.gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 3/4] net: warn if transport header was not set
+Message-ID: <202205100723.9Wqso3nI-lkp@intel.com>
+References: <20220509190851.1107955-4-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CANn89iLS_2cshtuXPyNUGDPaic=sJiYfvTb_wNLgWrZRyBxZ_g@mail.gmail.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+In-Reply-To: <20220509190851.1107955-4-eric.dumazet@gmail.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,83 +66,387 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 07, 2022 at 04:19:06AM -0700, Eric Dumazet wrote:
-> On Sat, May 7, 2022 at 12:46 AM Kees Cook <keescook@chromium.org> wrote:
-> >
-> > On Fri, May 06, 2022 at 06:54:05PM -0700, Jakub Kicinski wrote:
-> > > On Fri, 6 May 2022 17:32:43 -0700 Eric Dumazet wrote:
-> > > > On Fri, May 6, 2022 at 3:34 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> > > > > In function ‘fortify_memcpy_chk’,
-> > > > >     inlined from ‘mlx5e_sq_xmit_wqe’ at ../drivers/net/ethernet/mellanox/mlx5/core/en_tx.c:408:5:
-> > > > > ../include/linux/fortify-string.h:328:25: warning: call to ‘__write_overflow_field’ declared with attribute warning: detected write beyond size of field (1st parameter); maybe use struct_group()? [-Wattribute-warning]
-> > > > >   328 |                         __write_overflow_field(p_size_field, size);
-> > > > >       |                         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-> >
-> > Ah, my old friend, inline_hdr.start. Looks a lot like another one I fixed
-> > earlier in ad5185735f7d ("net/mlx5e: Avoid field-overflowing memcpy()"):
-> >
-> >         if (attr->ihs) {
-> >                 if (skb_vlan_tag_present(skb)) {
-> >                         eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs + VLAN_HLEN);
-> >                         mlx5e_insert_vlan(eseg->inline_hdr.start, skb, attr->ihs);
-> >                         stats->added_vlan_packets++;
-> >                 } else {
-> >                         eseg->inline_hdr.sz |= cpu_to_be16(attr->ihs);
-> >                         memcpy(eseg->inline_hdr.start, skb->data, attr->ihs);
-> >                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> >                 }
-> >                 dseg += wqe_attr->ds_cnt_inl;
-> >
-> > This is actually two regions, 2 bytes in eseg and everything else in
-> > dseg. Splitting the memcpy() will work:
-> >
-> >         memcpy(eseg->inline_hdr.start, skb->data, sizeof(eseg->inline_hdr.start));
-> >         memcpy(dseg, skb->data + sizeof(eseg->inline_hdr.start), ihs - sizeof(eseg->inline_hdr.start));
-> >
-> > But this begs the question, what is validating that ihs -2 is equal to
-> > wqe_attr->ds_cnt_inl * sizeof(*desg) ?
-> >
-> > And how is wqe bounds checked?
-> 
-> Look at the definition of struct mlx5i_tx_wqe
-> 
-> Then mlx5i_sq_calc_wqe_attr() computes the number of ds_cnt  (16 bytes
-> granularity)
-> units needed.
-> 
-> Then look at mlx5e_txqsq_get_next_pi()
+Hi Eric,
 
-Thanks! I'll study the paths.
+I love your patch! Perhaps something to improve:
 
-> I doubt a compiler can infer that the driver is correct.
+[auto build test WARNING on net-next/master]
 
-Agreed; this layering visibility is a bit strange to deal with. I'll see
-if I can come up with a sane solution that doesn't split the memcpy but
-establishes some way to do compile-time (or run-time) bounds checking.
-If I can't, I suspect I'll have to create an "unsafe_memcpy" wrapper
-that expressly ignores the structure layouts, etc. That's basically what
-memcpy() currently is, so it's not a regression from that perspective.
-I'd just prefer to find a way to refactor things so that the compiler
-can actually help us do the bounds checking.
+url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-CONFIG_DEBUG_NET-and-friends/20220510-031145
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9c095bd0d4c451d31d0fd1131cc09d3b60de815d
+config: arm-oxnas_v6_defconfig (https://download.01.org/0day-ci/archive/20220510/202205100723.9Wqso3nI-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/d316b61f313a417d7dfa97fa006320288f3af150
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Eric-Dumazet/net-CONFIG_DEBUG_NET-and-friends/20220510-031145
+        git checkout d316b61f313a417d7dfa97fa006320288f3af150
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/net/ethernet/stmicro/stmmac/ drivers/net/mdio/ net/core/
 
-> Basically this is variable length structure, quite common in NIC
-> world, given number of dma descriptor can vary from 1 to XX,
-> and variable size of headers. (Typically, fast NIC want to get the
-> headers inlined in TX descriptor)
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Yup; most of the refactoring patches I've sent for the memcpy bounds
-checking have been in networking. :) (But then, also, all the recent
-security flaws with memcpy overflows have also been in networking,
-so no real surprise, I guess.)
+All warnings (new ones prefixed by >>):
 
-> NIC drivers send millions of packets per second.
-> We can not really afford copying each component of a frame one byte at a time.
-> 
-> The memcpy() here can typically copy IPv6 header (40 bytes) + TCP
-> header (up to 60 bytes), plus more headers if encapsulation is added.
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from include/linux/phy.h:16,
+                    from include/linux/fwnode_mdio.h:9,
+                    from drivers/net/mdio/of_mdio.c:13:
+>> include/net/net_debug.h:6:52: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                                    ^~~~~~~~~~
+   include/net/net_debug.h:9:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       9 | void netdev_emerg(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:11:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      11 | void netdev_alert(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:13:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      13 | void netdev_crit(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:15:30: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                              ^~~~~~~~~~
+   include/net/net_debug.h:17:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      17 | void netdev_warn(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:19:33: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      19 | void netdev_notice(const struct net_device *dev, const char *format, ...);
+         |                                 ^~~~~~~~~~
+   include/net/net_debug.h:21:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   drivers/net/mdio/of_mdio.c: In function 'of_phy_get_and_connect':
+   drivers/net/mdio/of_mdio.c:326:36: error: passing argument 1 of 'netdev_err' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     326 |                         netdev_err(dev, "broken fixed-link specification\n");
+         |                                    ^~~
+         |                                    |
+         |                                    struct net_device *
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from include/linux/phy.h:16,
+                    from include/linux/fwnode_mdio.h:9,
+                    from drivers/net/mdio/of_mdio.c:13:
+   include/net/net_debug.h:15:42: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   cc1: some warnings being treated as errors
+--
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/ip.h:16,
+                    from drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:20:
+>> include/net/net_debug.h:6:52: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                                    ^~~~~~~~~~
+   include/net/net_debug.h:9:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       9 | void netdev_emerg(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:11:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      11 | void netdev_alert(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:13:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      13 | void netdev_crit(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:15:30: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                              ^~~~~~~~~~
+   include/net/net_debug.h:17:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      17 | void netdev_warn(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:19:33: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      19 | void netdev_notice(const struct net_device *dev, const char *format, ...);
+         |                                 ^~~~~~~~~~
+   include/net/net_debug.h:21:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/ip.h:16,
+                    from drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:20:
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_eee_init':
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:486:40: error: passing argument 2 of 'netdev_printk' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     486 |                         netdev_dbg(priv->dev, "disable EEE\n");
+         |                                    ~~~~^~~~~
+         |                                        |
+         |                                        struct net_device *
+   include/net/net_debug.h:61:43: note: in definition of macro 'netdev_dbg'
+      61 |                 netdev_printk(KERN_DEBUG, __dev, format, ##args); \
+         |                                           ^~~~~
+   include/net/net_debug.h:6:64: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                       ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:520:24: error: passing argument 2 of 'netdev_printk' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     520 |         netdev_dbg(priv->dev, "Energy-Efficient Ethernet initialized\n");
+         |                    ~~~~^~~~~
+         |                        |
+         |                        struct net_device *
+   include/net/net_debug.h:61:43: note: in definition of macro 'netdev_dbg'
+      61 |                 netdev_printk(KERN_DEBUG, __dev, format, ##args); \
+         |                                           ^~~~~
+   include/net/net_debug.h:6:64: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                       ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_get_tx_hwtstamp':
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:560:32: error: passing argument 2 of 'netdev_printk' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     560 |                 netdev_dbg(priv->dev, "get valid TX hw timestamp %llu\n", ns);
+         |                            ~~~~^~~~~
+         |                                |
+         |                                struct net_device *
+   include/net/net_debug.h:61:43: note: in definition of macro 'netdev_dbg'
+      61 |                 netdev_printk(KERN_DEBUG, __dev, format, ##args); \
+         |                                           ^~~~~
+   include/net/net_debug.h:6:64: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                       ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_get_rx_hwtstamp':
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:594:32: error: passing argument 2 of 'netdev_printk' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     594 |                 netdev_dbg(priv->dev, "get valid RX hw timestamp %llu\n", ns);
+         |                            ~~~~^~~~~
+         |                                |
+         |                                struct net_device *
+   include/net/net_debug.h:61:43: note: in definition of macro 'netdev_dbg'
+      61 |                 netdev_printk(KERN_DEBUG, __dev, format, ##args); \
+         |                                           ^~~~~
+   include/net/net_debug.h:6:64: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                       ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:599:32: error: passing argument 2 of 'netdev_printk' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     599 |                 netdev_dbg(priv->dev, "cannot get RX hw timestamp\n");
+         |                            ~~~~^~~~~
+         |                                |
+         |                                struct net_device *
+   include/net/net_debug.h:61:43: note: in definition of macro 'netdev_dbg'
+      61 |                 netdev_printk(KERN_DEBUG, __dev, format, ##args); \
+         |                                           ^~~~~
+   include/net/net_debug.h:6:64: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                       ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'stmmac_hwtstamp_set':
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:628:34: error: passing argument 1 of 'netdev_alert' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     628 |                 netdev_alert(priv->dev, "No support for HW time stamping\n");
+         |                              ~~~~^~~~~
+         |                                  |
+         |                                  struct net_device *
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/ip.h:16,
+                    from drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:20:
+   include/net/net_debug.h:11:44: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+      11 | void netdev_alert(const struct net_device *dev, const char *format, ...);
+         |                   ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:639:24: error: passing argument 2 of 'netdev_printk' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     639 |         netdev_dbg(priv->dev, "%s config flags:0x%x, tx_type:0x%x, rx_filter:0x%x\n",
+         |                    ~~~~^~~~~
+         |                        |
+--
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/if_ether.h:19,
+                    from include/linux/etherdevice.h:20,
+                    from drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c:11:
+>> include/net/net_debug.h:6:52: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                                    ^~~~~~~~~~
+   include/net/net_debug.h:9:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       9 | void netdev_emerg(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:11:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      11 | void netdev_alert(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:13:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      13 | void netdev_crit(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:15:30: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                              ^~~~~~~~~~
+   include/net/net_debug.h:17:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      17 | void netdev_warn(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:19:33: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      19 | void netdev_notice(const struct net_device *dev, const char *format, ...);
+         |                                 ^~~~~~~~~~
+   include/net/net_debug.h:21:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c: In function 'stmmac_ethtool_op_set_eee':
+   drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c:803:33: error: passing argument 1 of 'netdev_warn' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     803 |                 netdev_warn(priv->dev,
+         |                             ~~~~^~~~~
+         |                                 |
+         |                                 struct net_device *
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/if_ether.h:19,
+                    from include/linux/etherdevice.h:20,
+                    from drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c:11:
+   include/net/net_debug.h:17:43: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+      17 | void netdev_warn(const struct net_device *dev, const char *format, ...);
+         |                  ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   cc1: some warnings being treated as errors
+--
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from include/linux/linkmode.h:5,
+                    from include/linux/mii.h:13,
+                    from drivers/net/ethernet/stmicro/stmmac/stmmac_mdio.c:16:
+>> include/net/net_debug.h:6:52: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                                    ^~~~~~~~~~
+   include/net/net_debug.h:9:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       9 | void netdev_emerg(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:11:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      11 | void netdev_alert(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:13:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      13 | void netdev_crit(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:15:30: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                              ^~~~~~~~~~
+   include/net/net_debug.h:17:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      17 | void netdev_warn(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:19:33: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      19 | void netdev_notice(const struct net_device *dev, const char *format, ...);
+         |                                 ^~~~~~~~~~
+   include/net/net_debug.h:21:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+--
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:15:
+>> include/net/net_debug.h:6:52: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       6 | void netdev_printk(const char *level, const struct net_device *dev,
+         |                                                    ^~~~~~~~~~
+   include/net/net_debug.h:9:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+       9 | void netdev_emerg(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:11:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      11 | void netdev_alert(const struct net_device *dev, const char *format, ...);
+         |                                ^~~~~~~~~~
+   include/net/net_debug.h:13:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      13 | void netdev_crit(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:15:30: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                              ^~~~~~~~~~
+   include/net/net_debug.h:17:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      17 | void netdev_warn(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   include/net/net_debug.h:19:33: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      19 | void netdev_notice(const struct net_device *dev, const char *format, ...);
+         |                                 ^~~~~~~~~~
+   include/net/net_debug.h:21:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
+      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
+         |                               ^~~~~~~~~~
+   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c: In function 'dwmac4_write_vlan_filter':
+   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:462:20: error: passing argument 1 of 'netdev_err' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     462 |         netdev_err(dev, "Timeout accessing MAC_VLAN_Tag_Filter\n");
+         |                    ^~~
+         |                    |
+         |                    struct net_device *
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:15:
+   include/net/net_debug.h:15:42: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c: In function 'dwmac4_add_hw_vlan_rx_fltr':
+   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:479:28: error: passing argument 1 of 'netdev_err' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     479 |                 netdev_err(dev,
+         |                            ^~~
+         |                            |
+         |                            struct net_device *
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:15:
+   include/net/net_debug.h:15:42: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:488:37: error: passing argument 1 of 'netdev_warn' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     488 |                         netdev_warn(dev, "Adding VLAN ID 0 is not supported\n");
+         |                                     ^~~
+         |                                     |
+         |                                     struct net_device *
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:15:
+   include/net/net_debug.h:17:43: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+      17 | void netdev_warn(const struct net_device *dev, const char *format, ...);
+         |                  ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:493:36: error: passing argument 1 of 'netdev_err' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     493 |                         netdev_err(dev, "Only single VLAN ID supported\n");
+         |                                    ^~~
+         |                                    |
+         |                                    struct net_device *
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:15:
+   include/net/net_debug.h:15:42: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:514:28: error: passing argument 1 of 'netdev_err' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     514 |                 netdev_err(dev, "MAC_VLAN_Tag_Filter full (size: %0u)\n",
+         |                            ^~~
+         |                            |
+         |                            struct net_device *
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:15:
+   include/net/net_debug.h:15:42: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c: In function 'dwmac4_del_hw_vlan_rx_fltr':
+   drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:534:28: error: passing argument 1 of 'netdev_err' from incompatible pointer type [-Werror=incompatible-pointer-types]
+     534 |                 netdev_err(dev,
+         |                            ^~~
+         |                            |
+         |                            struct net_device *
+   In file included from include/linux/skbuff.h:45,
+                    from include/linux/netlink.h:7,
+                    from include/linux/ethtool.h:18,
+                    from drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c:15:
+   include/net/net_debug.h:15:42: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
+      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
+         |                 ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
+   cc1: some warnings being treated as errors
+..
 
-Right; I need to make sure this gets fixed without wrecking performance.
-:)
+
+vim +6 include/net/net_debug.h
+
+877efca8201a88 Eric Dumazet 2022-05-09   4  
+877efca8201a88 Eric Dumazet 2022-05-09   5  __printf(3, 4) __cold
+877efca8201a88 Eric Dumazet 2022-05-09  @6  void netdev_printk(const char *level, const struct net_device *dev,
+877efca8201a88 Eric Dumazet 2022-05-09   7  		   const char *format, ...);
+877efca8201a88 Eric Dumazet 2022-05-09   8  __printf(2, 3) __cold
+877efca8201a88 Eric Dumazet 2022-05-09   9  void netdev_emerg(const struct net_device *dev, const char *format, ...);
+877efca8201a88 Eric Dumazet 2022-05-09  10  __printf(2, 3) __cold
+877efca8201a88 Eric Dumazet 2022-05-09  11  void netdev_alert(const struct net_device *dev, const char *format, ...);
+877efca8201a88 Eric Dumazet 2022-05-09  12  __printf(2, 3) __cold
+877efca8201a88 Eric Dumazet 2022-05-09  13  void netdev_crit(const struct net_device *dev, const char *format, ...);
+877efca8201a88 Eric Dumazet 2022-05-09  14  __printf(2, 3) __cold
+877efca8201a88 Eric Dumazet 2022-05-09  15  void netdev_err(const struct net_device *dev, const char *format, ...);
+877efca8201a88 Eric Dumazet 2022-05-09  16  __printf(2, 3) __cold
+877efca8201a88 Eric Dumazet 2022-05-09  17  void netdev_warn(const struct net_device *dev, const char *format, ...);
+877efca8201a88 Eric Dumazet 2022-05-09  18  __printf(2, 3) __cold
+877efca8201a88 Eric Dumazet 2022-05-09  19  void netdev_notice(const struct net_device *dev, const char *format, ...);
+877efca8201a88 Eric Dumazet 2022-05-09  20  __printf(2, 3) __cold
+877efca8201a88 Eric Dumazet 2022-05-09  21  void netdev_info(const struct net_device *dev, const char *format, ...);
+877efca8201a88 Eric Dumazet 2022-05-09  22  
 
 -- 
-Kees Cook
+0-DAY CI Kernel Test Service
+https://01.org/lkp
