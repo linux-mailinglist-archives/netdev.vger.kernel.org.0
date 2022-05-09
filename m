@@ -2,51 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23E6551FCE9
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 14:33:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5949A51FD05
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 14:36:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234585AbiEIMgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 08:36:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
+        id S234498AbiEIMkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 08:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234528AbiEIMgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 08:36:37 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF35284924;
-        Mon,  9 May 2022 05:32:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=VvadgFGR5P7Y1v/cSX7S4UjT+qCj1J/fEEMY6EaLxbE=; b=4DROTrduGydJj/ZaRB/TsSFC78
-        3LscZqNAdYrMMpEP3jgH3vbIaVJyOBHorGQU8yR3rZkRizfb3PRHeXcluKeyidUkeapArws3gBCj7
-        2vGRgVGhklzt19zJV+t7shNPDyG7k3ox9PMeKfXdllIp/o7qrMbAzDKgyc1weMy1Uz5w=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1no2Z3-001wQT-9m; Mon, 09 May 2022 14:32:37 +0200
-Date:   Mon, 9 May 2022 14:32:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Puranjay Mohan <p-mohan@ti.com>
-Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org, nm@ti.com,
-        ssantosh@kernel.org, s-anna@ti.com,
-        linux-arm-kernel@lists.infradead.org, rogerq@kernel.org,
-        grygorii.strashko@ti.com, vigneshr@ti.com, kishon@ti.com,
-        robh+dt@kernel.org, afd@ti.com
-Subject: Re: [PATCH 2/2] net: ti: icssg-prueth: Add ICSSG ethernet driver
-Message-ID: <YnkJ5bFd72d0FagD@lunn.ch>
-References: <20220506052433.28087-1-p-mohan@ti.com>
- <20220506052433.28087-3-p-mohan@ti.com>
- <YnVQW7xpSWEE2/HP@lunn.ch>
- <f674c56c-0621-f471-9517-5c349940d362@ti.com>
+        with ESMTP id S234590AbiEIMkD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 08:40:03 -0400
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0361511E1F9
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 05:36:10 -0700 (PDT)
+Received: by mail-wr1-x429.google.com with SMTP id w4so19216632wrg.12
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 05:36:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jCx7kbE4U1tF0YGrW+htV6mu4Y5YtAaVSHTYv9DBZvE=;
+        b=lO/ZAzzGt/HM2WqkUT6jCN0LL3c8MfhZh8g4Xv5Ig+cJLVxTZR+D84rQDRIFFn3D36
+         zByTMllwgZwPx61O5akvMB6ESBVVpOT3y5HsIYOvizd0KEfZw0miQrpXes/JVXo+/kkX
+         RWH5YGytWA1jwnfEBhjyxkxoBFAINRof1LGcNWOrnW06kTEyCyFWN+wasbUH2ULkn7Zz
+         badItzk+lK9C1OxZ9mWxrkKoLN/08HFV5oSnvZ6x7M5LJawbRaxWdkgEqAl1/ZYFQF9M
+         GJwa8TpesBk+RveJ3dIxfsnS7dPUz4i5OSZ237YqgbsrZGRldoI+D0hAt0sIxHIt+Ek1
+         DY0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jCx7kbE4U1tF0YGrW+htV6mu4Y5YtAaVSHTYv9DBZvE=;
+        b=NMiPO9Op5hpXf3ywastkemXqQKompTXPBrD76Xz0c7wfzWNoXRJhgTuyhiLE+E7z1j
+         b++1smmkNK2KfywhRM3dX2aLLvZRugaAHdNAAJVd6JNzrW0+lN/DpVZ3kT0tzjKP0EBG
+         9YlZiGoJRf5R6Prp54lHxl6lT5xSEaRRpv6R9fctso7UliSCMkIPa7za0xBB895vD3II
+         XlQxicBQ8YpR9LozE0/wCHnBoLT6kZJ2KOsqH7r7838w0lAf4E9I9yiS1nuN4/PEL/RC
+         oBJzs1uZvPuE8MKTh1ToDyq7YPepOTfNdIJXwQsl8bUTFRsfs0KYLmjmduUwylAADH3M
+         6tkQ==
+X-Gm-Message-State: AOAM532AhAJdJnWheQNYS+kYDxPSnhipKRoFRBxIEjcFvxo5crzzp7+h
+        3pX0KpXBvTATzl/eepw++1JoiQ==
+X-Google-Smtp-Source: ABdhPJyDlPVKbgpRvBySpk6wiBE1xHgwrmVXo1c36Ltaz4gCgVg7+qbex2foPxQyHkJBEXrR+hEuog==
+X-Received: by 2002:a5d:5707:0:b0:20a:c768:bc8 with SMTP id a7-20020a5d5707000000b0020ac7680bc8mr13772614wrv.565.1652099768554;
+        Mon, 09 May 2022 05:36:08 -0700 (PDT)
+Received: from [192.168.17.225] (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
+        by smtp.gmail.com with ESMTPSA id v12-20020a5d610c000000b0020c5253d8e1sm2558192wrt.45.2022.05.09.05.36.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 May 2022 05:36:07 -0700 (PDT)
+Message-ID: <db888673-7513-e084-9266-1848e4cf36a4@solid-run.com>
+Date:   Mon, 9 May 2022 15:36:04 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <f674c56c-0621-f471-9517-5c349940d362@ti.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 1/3] dt-bindings: net: adin: document phy clock output
+ properties
+Content-Language: en-US
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        netdev@vger.kernel.org
+Cc:     alvaro.karsz@solid-run.com, Andrew Lunn <andrew@lunn.ch>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+References: <20220419102709.26432-1-josua@solid-run.com>
+ <20220428082848.12191-1-josua@solid-run.com>
+ <20220428082848.12191-2-josua@solid-run.com>
+ <22f2a54a-12ac-26a7-4175-1edfed2e74de@linaro.org>
+From:   Josua Mayer <josua@solid-run.com>
+In-Reply-To: <22f2a54a-12ac-26a7-4175-1edfed2e74de@linaro.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,74 +83,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> >> +static void icssg_init_emac_mode(struct prueth *prueth)
-> >> +{
-> >> +	u8 mac[ETH_ALEN] = { 0 };
-> >> +
-> >> +	if (prueth->emacs_initialized)
-> >> +		return;
-> >> +
-> >> +	regmap_update_bits(prueth->miig_rt, FDB_GEN_CFG1, SMEM_VLAN_OFFSET_MASK, 0);
-> >> +	regmap_write(prueth->miig_rt, FDB_GEN_CFG2, 0);
-> >> +	/* Clear host MAC address */
-> >> +	icssg_class_set_host_mac_addr(prueth->miig_rt, mac);
-> > 
-> > Seems an odd thing to do, set it to 00:00:00:00:00:00. You probably
-> > want to add a comment why you do this odd thing.
-> 
-> Actually, this is when the device is configured as a bridge, the host
-> mac address has to be set to zero to while bringing it back to emac
-> mode. I will add a comment to explain this.
 
-I don't see any switchdev interface. How does it get into bridge mode?
-
-> >> +	} else if (emac->link) {
-> >> +		new_state = true;
-> >> +		emac->link = 0;
-> >> +		/* defaults for no link */
-> >> +
-> >> +		/* f/w should support 100 & 1000 */
-> >> +		emac->speed = SPEED_1000;
-> >> +
-> >> +		/* half duplex may not supported by f/w */
-> >> +		emac->duplex = DUPLEX_FULL;
-> > 
-> > Why set speed and duplex when you have just lost the link? They are
-> > meaningless until the link comes back.
-> 
-> These were just the default values that we added.
-> What do you suggest I put here?
-
-Nothing. If the link is down, they are meaningless. If something is
-accessing them when the link is down, that code is broken. So i
-suppose you could give them poison values to help find your broken
-code.
-
-> >> +	for_each_child_of_node(eth_ports_node, eth_node) {
-> >> +		u32 reg;
-> >> +
-> >> +		if (strcmp(eth_node->name, "port"))
-> >> +			continue;
-> >> +		ret = of_property_read_u32(eth_node, "reg", &reg);
-> >> +		if (ret < 0) {
-> >> +			dev_err(dev, "%pOF error reading port_id %d\n",
-> >> +				eth_node, ret);
-> >> +		}
-> >> +
-> >> +		if (reg == 0)
-> >> +			eth0_node = eth_node;
-> >> +		else if (reg == 1)
-> >> +			eth1_node = eth_node;
-> > 
-> > and if reg == 4
-> > 
-> > Or reg 0 appears twice?
-> 
-> In both of the cases that you mentioned, the device tree schema check
-> will fail, hence, we can safely assume that this will be 0 and 1 only.
-
-Nothing forces you to run the scheme checker. It is not run by the
-kernel before it starts accessing the DT blob. You should assume it is
-invalid until you have proven it to be valid.
-
-	Andrew
+Am 05.05.22 um 23:24 schrieb Krzysztof Kozlowski:
+> On 28/04/2022 10:28, Josua Mayer wrote:
+>
+> Thank you for your patch. There is something to discuss/improve.
+>
+>> diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
+>> index 1129f2b58e98..3e0c6304f190 100644
+>> --- a/Documentation/devicetree/bindings/net/adi,adin.yaml
+>> +++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
+>> @@ -36,6 +36,23 @@ properties:
+>>       enum: [ 4, 8, 12, 16, 20, 24 ]
+>>       default: 8
+>>   
+>> +  adi,phy-output-clock:
+>> +    description: Select clock output on GP_CLK pin. Three clocks are available:
+>> +      A 25MHz reference, a free-running 125MHz and a recovered 125MHz.
+>> +      The phy can also automatically switch between the reference and the
+>> +      respective 125MHz clocks based on its internal state.
+>> +    $ref: /schemas/types.yaml#/definitions/string
+>> +    enum:
+>> +    - 25mhz-reference
+>> +    - 125mhz-free-running
+>> +    - 125mhz-recovered
+>> +    - adaptive-free-running
+>> +    - adaptive-recovered
+> Missing two spaces of indentation for all these items.
+>
+>> +
+>> +  adi,phy-output-reference-clock:
+>> +    description: Enable 25MHz reference clock output on CLK25_REF pin.
+>> +    $ref: /schemas/types.yaml#/definitions/flag
+> This could be just "type:boolean".
+I will change it accordingly, thanks.
+> Best regards,
+> Krzysztof
