@@ -2,111 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED09D51F642
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:01:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43DC651F6E4
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:43:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236192AbiEIH6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 03:58:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34430 "EHLO
+        id S233714AbiEIINI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 04:13:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236703AbiEIHxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 03:53:48 -0400
-Received: from mxout04.lancloud.ru (mxout04.lancloud.ru [45.84.86.114])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93363166444
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 00:49:53 -0700 (PDT)
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru 37FB020C4C1E
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH net-next 02/10] net: mdio: mdiobus_register: Update
- validation test
-To:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>
-CC:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "Vladimir Oltean" <olteanv@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        "Joakim Zhang" <qiangqing.zhang@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Markus Koch <markus@notsyncing.net>,
-        "Geert Uytterhoeven" <geert+renesas@glider.be>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Hao Chen <chenhao288@hisilicon.com>
-References: <20220508153049.427227-1-andrew@lunn.ch>
- <20220508153049.427227-3-andrew@lunn.ch>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <ae79823f-3697-feee-32e6-645c6f4b4e93@omp.ru>
-Date:   Mon, 9 May 2022 10:49:49 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        with ESMTP id S237360AbiEIIAW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:00:22 -0400
+Received: from mail.companydia.pl (mail.companydia.pl [162.19.155.128])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4A9416499A
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 00:56:23 -0700 (PDT)
+Received: by mail.companydia.pl (Postfix, from userid 1002)
+        id 6332623478; Mon,  9 May 2022 07:51:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=companydia.pl;
+        s=mail; t=1652082761;
+        bh=ChRcLNpIfKnVgp03/tSyWuRw1tWSTk/OEiEnuZMWs58=;
+        h=Date:From:To:Subject:From;
+        b=xV69dO4RiFxAbh9PkzMgYxq/Uv0iu8PfRW4wP7dPyYWCLFE9ZdkDhzZmLQklZ8Blz
+         oD+nVKo9odNAX83SJiF9lZdc9MSup5Mmg8T/g8Mt4IEKVIIIS5kz4ewczRVGtmGqUg
+         uUpGab7F0sTP3qQmxc8ZGC6WbtNt0Ky27kUJJSuftMJjHeB5VOoBGrtmBkNmD5NRyU
+         ba8MT7HQ5gAMiT31M2mJEulL66yrzaEZviRG8MBdtxcu2RANSVG/goK2BYpI1WWzqu
+         LYS7q6lMXtFYAlqmnvFOfel7aJapaCFt4NSer+LGarCof5/jbB6NBSceFd7jx8+B+x
+         wGfTIojzyUWXw==
+Received: by mail.companydia.pl for <netdev@vger.kernel.org>; Mon,  9 May 2022 07:50:53 GMT
+Message-ID: <20220509064500-0.1.m.9gca.0.u5kyg3rlre@companydia.pl>
+Date:   Mon,  9 May 2022 07:50:53 GMT
+From:   "Norbert Karecki" <norbert.karecki@companydia.pl>
+To:     <netdev@vger.kernel.org>
+Subject: Wycena paneli fotowoltaicznych
+X-Mailer: mail.companydia.pl
 MIME-Version: 1.0
-In-Reply-To: <20220508153049.427227-3-andrew@lunn.ch>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Dzie=C5=84 dobry,
 
-On 5/8/22 6:30 PM, Andrew Lunn wrote:
+dostrzegam mo=C5=BCliwo=C5=9B=C4=87 wsp=C3=B3=C5=82pracy z Pa=C5=84stwa f=
+irm=C4=85.
 
-> Now that C45 uses its own read/write methods, the validation performed
-> when a bus is registers needs updating. All combinations of C22 and
-> C45 are supported, but both read and write methods must be provided,
-> read only busses are not supported etc.
-> 
-> Signed-off-by: Andrew Lunn <andrew@lunn.ch>
-> ---
->  drivers/net/phy/mdio_bus.c | 12 ++++++++++--
->  1 file changed, 10 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-> index 46a03c0b45e3..818d22fb3cb5 100644
-> --- a/drivers/net/phy/mdio_bus.c
-> +++ b/drivers/net/phy/mdio_bus.c
-> @@ -526,8 +526,16 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
->  	int i, err;
->  	struct gpio_desc *gpiod;
->  
-> -	if (NULL == bus || NULL == bus->name ||
-> -	    NULL == bus->read || NULL == bus->write)
-> +	if (NULL == bus || NULL == bus->name)
+=C5=9Awiadczymy kompleksow=C4=85 obs=C5=82ug=C4=99 inwestycji w fotowolta=
+ik=C4=99, kt=C3=B3ra obni=C5=BCa koszty energii elektrycznej nawet o 90%.
 
-   I suggest (!bus || !bus->name) to be consistent with the code below.
-   BTW, doesn't checkpatch.pl complain about NULL == bus?
+Czy s=C4=85 Pa=C5=84stwo zainteresowani weryfikacj=C4=85 wst=C4=99pnych p=
+ropozycji?
 
-> +		return -EINVAL;
-> +
-> +	if (!bus->read != !bus->write)
-> +		return -EINVAL;
-> +
-> +	if (!bus->read_c45 != !bus->write_c45)
-> +		return -EINVAL;
 
-   Hm, that's complicated! :-)
-
-> +
-> +	if (!bus->read && !bus->read_c45)
->  		return -EINVAL;
->  
->  	if (bus->parent && bus->parent->of_node)
-
-MBR, Sergey
+Pozdrawiam,
+Norbert Karecki
