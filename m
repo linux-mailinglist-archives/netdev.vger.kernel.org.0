@@ -2,101 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A52D51FF1E
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95BB551FF38
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:13:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236556AbiEIOHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 10:07:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43720 "EHLO
+        id S236722AbiEIONM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 10:13:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236551AbiEIOHH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:07:07 -0400
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A910F218FFD
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 07:03:12 -0700 (PDT)
-Received: from ramsan.of.borg ([IPv6:2a02:1810:ac12:ed40:8886:2b92:63eb:2922])
-        by xavier.telenet-ops.be with bizsmtp
-        id Ue312700i0moLbn01e31NE; Mon, 09 May 2022 16:03:09 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1no3yX-003XrP-7E; Mon, 09 May 2022 16:03:01 +0200
-Received: from geert by rox.of.borg with local (Exim 4.93)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1no3yW-003Sj2-Mq; Mon, 09 May 2022 16:03:00 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] can: ctucanfd: Let users select instead of depend on CAN_CTUCANFD
-Date:   Mon,  9 May 2022 16:02:59 +0200
-Message-Id: <887b7440446b6244a20a503cc6e8dc9258846706.1652104941.git.geert+renesas@glider.be>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S236692AbiEIONI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:13:08 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E1E9B2A18A2;
+        Mon,  9 May 2022 07:09:13 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 8BE2A1480;
+        Mon,  9 May 2022 07:09:13 -0700 (PDT)
+Received: from donnerap.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 945423F73D;
+        Mon,  9 May 2022 07:09:10 -0700 (PDT)
+Date:   Mon, 9 May 2022 15:09:07 +0100
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Corentin Labbe <clabbe@baylibre.com>
+Cc:     alexandre.torgue@foss.st.com, andrew@lunn.ch, broonie@kernel.org,
+        calvin.johnson@oss.nxp.com, davem@davemloft.net,
+        edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, joabreu@synopsys.com,
+        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
+        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
+        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
+        wens@csie.org, netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 2/6] net: stmmac: dwmac-sun8i: remove regulator
+Message-ID: <20220509150907.6cf9c4d1@donnerap.cambridge.arm.com>
+In-Reply-To: <20220509074857.195302-3-clabbe@baylibre.com>
+References: <20220509074857.195302-1-clabbe@baylibre.com>
+        <20220509074857.195302-3-clabbe@baylibre.com>
+Organization: ARM
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; aarch64-unknown-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The CTU CAN-FD IP core is only useful when used with one of the
-corresponding PCI/PCIe or platform (FPGA, SoC) drivers, which depend on
-PCI resp. OF.
+On Mon,  9 May 2022 07:48:53 +0000
+Corentin Labbe <clabbe@baylibre.com> wrote:
 
-Hence make the users select the core driver code, instead of letting
-then depend on it.  Keep the core code config option visible when
-compile-testing, to maintain compile-coverage.
+Hi,
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/net/can/ctucanfd/Kconfig | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> Now regulator is handled by phy core, there is no need to handle it in
+> stmmac driver.
 
-diff --git a/drivers/net/can/ctucanfd/Kconfig b/drivers/net/can/ctucanfd/Kconfig
-index 48963efc7f19955f..3c383612eb1764e2 100644
---- a/drivers/net/can/ctucanfd/Kconfig
-+++ b/drivers/net/can/ctucanfd/Kconfig
-@@ -1,5 +1,5 @@
- config CAN_CTUCANFD
--	tristate "CTU CAN-FD IP core"
-+	tristate "CTU CAN-FD IP core" if COMPILE_TEST
- 	help
- 	  This driver adds support for the CTU CAN FD open-source IP core.
- 	  More documentation and core sources at project page
-@@ -13,8 +13,8 @@ config CAN_CTUCANFD
- 
- config CAN_CTUCANFD_PCI
- 	tristate "CTU CAN-FD IP core PCI/PCIe driver"
--	depends on CAN_CTUCANFD
- 	depends on PCI
-+	select CAN_CTUCANFD
- 	help
- 	  This driver adds PCI/PCIe support for CTU CAN-FD IP core.
- 	  The project providing FPGA design for Intel EP4CGX15 based DB4CGX15
-@@ -23,8 +23,8 @@ config CAN_CTUCANFD_PCI
- 
- config CAN_CTUCANFD_PLATFORM
- 	tristate "CTU CAN-FD IP core platform (FPGA, SoC) driver"
--	depends on CAN_CTUCANFD
- 	depends on OF || COMPILE_TEST
-+	select CAN_CTUCANFD
- 	help
- 	  The core has been tested together with OpenCores SJA1000
- 	  modified to be CAN FD frames tolerant on MicroZed Zynq based
--- 
-2.25.1
+I don't think you can do that, since we definitely need to maintain
+compatibility with *older* DTs.
+Is there a real need for this patch, or is it just a cleanup?
+I mean we should be able to keep both approaches in, and the respective
+board and DT version selects which it is using.
+
+Cheers,
+Andre
+
+> Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+> ---
+>  .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 37 +------------------
+>  1 file changed, 2 insertions(+), 35 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> index f834472599f7..17888813c707 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+> @@ -17,7 +17,6 @@
+>  #include <linux/phy.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/pm_runtime.h>
+> -#include <linux/regulator/consumer.h>
+>  #include <linux/regmap.h>
+>  #include <linux/stmmac.h>
+>  
+> @@ -59,7 +58,6 @@ struct emac_variant {
+>  
+>  /* struct sunxi_priv_data - hold all sunxi private data
+>   * @ephy_clk:	reference to the optional EPHY clock for the internal PHY
+> - * @regulator:	reference to the optional regulator
+>   * @rst_ephy:	reference to the optional EPHY reset for the internal PHY
+>   * @variant:	reference to the current board variant
+>   * @regmap:	regmap for using the syscon
+> @@ -69,7 +67,6 @@ struct emac_variant {
+>   */
+>  struct sunxi_priv_data {
+>  	struct clk *ephy_clk;
+> -	struct regulator *regulator;
+>  	struct reset_control *rst_ephy;
+>  	const struct emac_variant *variant;
+>  	struct regmap_field *regmap_field;
+> @@ -568,29 +565,11 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
+>  {
+>  	struct net_device *ndev = platform_get_drvdata(pdev);
+>  	struct sunxi_priv_data *gmac = priv;
+> -	int ret;
+>  
+> -	if (gmac->regulator) {
+> -		ret = regulator_enable(gmac->regulator);
+> -		if (ret) {
+> -			dev_err(&pdev->dev, "Fail to enable regulator\n");
+> -			return ret;
+> -		}
+> -	}
+> -
+> -	if (gmac->use_internal_phy) {
+> -		ret = sun8i_dwmac_power_internal_phy(netdev_priv(ndev));
+> -		if (ret)
+> -			goto err_disable_regulator;
+> -	}
+> +	if (gmac->use_internal_phy)
+> +		return sun8i_dwmac_power_internal_phy(netdev_priv(ndev));
+>  
+>  	return 0;
+> -
+> -err_disable_regulator:
+> -	if (gmac->regulator)
+> -		regulator_disable(gmac->regulator);
+> -
+> -	return ret;
+>  }
+>  
+>  static void sun8i_dwmac_core_init(struct mac_device_info *hw,
+> @@ -1034,9 +1013,6 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
+>  
+>  	if (gmac->variant->soc_has_internal_phy)
+>  		sun8i_dwmac_unpower_internal_phy(gmac);
+> -
+> -	if (gmac->regulator)
+> -		regulator_disable(gmac->regulator);
+>  }
+>  
+>  static void sun8i_dwmac_set_mac_loopback(void __iomem *ioaddr, bool enable)
+> @@ -1157,15 +1133,6 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+>  		return -EINVAL;
+>  	}
+>  
+> -	/* Optional regulator for PHY */
+> -	gmac->regulator = devm_regulator_get_optional(dev, "phy");
+> -	if (IS_ERR(gmac->regulator)) {
+> -		if (PTR_ERR(gmac->regulator) == -EPROBE_DEFER)
+> -			return -EPROBE_DEFER;
+> -		dev_info(dev, "No regulator found\n");
+> -		gmac->regulator = NULL;
+> -	}
+> -
+>  	/* The "GMAC clock control" register might be located in the
+>  	 * CCU address range (on the R40), or the system control address
+>  	 * range (on most other sun8i and later SoCs).
 
