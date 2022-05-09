@@ -2,82 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17FD951FF80
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C69C51FF76
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 16:25:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236922AbiEIOUw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 10:20:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
+        id S237148AbiEIO2k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 10:28:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236866AbiEIOUs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:20:48 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE601FB548;
-        Mon,  9 May 2022 07:16:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vHtkmd2lwLYVtO4FWqrbyaVkWxRk4axb2Qa+PPeChZA=; b=LskkzzJmYfWYXPeDfr2IdCaTLR
-        3hA3AwAXsFwPvw1yZOWysZYMySqHGiMeZOm0bDb2Q6RbJ01gLxUFvc0TPbGO4CNTknFlmWLHek9+j
-        fNw6GIgfVAC2AwFEbPjx/A49ZgvLf4C98a1NhLhauKhl6X16yGXgUhVYkbLiMhd2bcyjc8FRhGAlV
-        b0fE3r5ZHANgTVnzKk9zmgNYn+K1dB4VlK+OrOntysNOTeFSF6+gnM24q5MRGfpCActKh2ASDkGBP
-        /lhbboZ2BaxSaPQdOYRyUWk/WZOTlB1ImMULVLiCjsomiGL/EUGjICR18d54kbZvnwoQGALy9IH6V
-        nZhYpE5g==;
-Received: from [177.183.162.244] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1no4Bp-000ApE-Jf; Mon, 09 May 2022 16:16:45 +0200
-Message-ID: <7017c234-7c73-524a-11b6-fefdd5646f59@igalia.com>
-Date:   Mon, 9 May 2022 11:16:10 -0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 22/30] panic: Introduce the panic post-reboot notifier
- list
-Content-Language: en-US
-To:     Alexander Gordeev <agordeev@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        with ESMTP id S237124AbiEIO2j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 10:28:39 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9DCB11E3EDA;
+        Mon,  9 May 2022 07:24:45 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.91,211,1647270000"; 
+   d="scan'208";a="119126743"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie5.idc.renesas.com with ESMTP; 09 May 2022 23:24:44 +0900
+Received: from localhost.localdomain (unknown [10.226.93.110])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id E654C40078D5;
+        Mon,  9 May 2022 23:24:38 +0900 (JST)
+From:   Phil Edworthy <phil.edworthy@renesas.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, pmladek@suse.com, bhe@redhat.com,
-        akpm@linux-foundation.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        kexec@lists.infradead.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-23-gpiccoli@igalia.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220427224924.592546-23-gpiccoli@igalia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Phil Edworthy <phil.edworthy@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>, linux-clk@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v2 0/5] Add Renesas RZ/V2M Ethernet support
+Date:   Mon,  9 May 2022 15:24:26 +0100
+Message-Id: <20220509142431.24898-1-phil.edworthy@renesas.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -86,34 +55,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/04/2022 19:49, Guilherme G. Piccoli wrote:
-> Currently we have 3 notifier lists in the panic path, which will
-> be wired in a way to allow the notifier callbacks to run in
-> different moments at panic time, in a subsequent patch.
-> 
-> But there is also an odd set of architecture calls hardcoded in
-> the end of panic path, after the restart machinery. They're
-> responsible for late time tunings / events, like enabling a stop
-> button (Sparc) or effectively stopping the machine (s390).
-> 
-> This patch introduces yet another notifier list to offer the
-> architectures a way to add callbacks in such late moment on
-> panic path without the need of ifdefs / hardcoded approaches.
-> 
-> Cc: Alexander Gordeev <agordeev@linux.ibm.com>
-> Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Heiko Carstens <hca@linux.ibm.com>
-> Cc: Sven Schnelle <svens@linux.ibm.com>
-> Cc: Vasily Gorbik <gor@linux.ibm.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+The RZ/V2M Ethernet is very similar to R-Car Gen3 Ethernet-AVB, though
+some small parts are the same as R-Car Gen2.
+Other differences are:
+* It has separate data (DI), error (Line 1) and management (Line 2) irqs
+  rather than one irq for all three.
+* Instead of using the High-speed peripheral bus clock for gPTP, it has
+  a separate gPTP reference clock.
 
-Hey S390/SPARC folks, sorry for the ping!
-
-Any reviews on this V1 would be greatly appreciated, I'm working on V2
-and seeking feedback in the non-reviewed patches.
-
-Thanks in advance,
+v2:
+ * Just net patches in this series
+ * Instead of reusing ch22 and ch24 interrupt names, use the proper names
+ * Renamed irq_en_dis_regs to irq_en_dis
+ * Squashed use of GIC reg versus GIE/GID and got rid of separate gptp_ptm_gic feature.
+ * Move err_mgmt_irqs code under multi_irqs
+ * Minor editing of the commit msgs
 
 
-Guilherme
+Phil Edworthy (5):
+  dt-bindings: net: renesas,etheravb: Document RZ/V2M SoC
+  ravb: Separate handling of irq enable/disable regs into feature
+  ravb: Support separate Line0 (Desc), Line1 (Err) and Line2 (Mgmt) irqs
+  ravb: Use separate clock for gPTP
+  ravb: Add support for RZ/V2M
+
+ .../bindings/net/renesas,etheravb.yaml        |  82 ++++++++++----
+ drivers/net/ethernet/renesas/ravb.h           |   6 ++
+ drivers/net/ethernet/renesas/ravb_main.c      | 102 ++++++++++++++++--
+ drivers/net/ethernet/renesas/ravb_ptp.c       |   4 +-
+ 4 files changed, 162 insertions(+), 32 deletions(-)
+
+-- 
+2.32.0
+
