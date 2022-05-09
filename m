@@ -2,33 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EDD0752012F
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 17:34:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6621A520137
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 17:34:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238444AbiEIPhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 11:37:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47348 "EHLO
+        id S238467AbiEIPho (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 11:37:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238455AbiEIPhM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 11:37:12 -0400
+        with ESMTP id S238468AbiEIPh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 11:37:29 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6727922D626
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 08:33:11 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 91CAF238D50
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 08:33:24 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id ADC0E3200F2;
-        Mon,  9 May 2022 16:33:10 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id B3D503200F2;
+        Mon,  9 May 2022 16:33:23 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.89)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1no5Nm-0001Rr-FN; Mon, 09 May 2022 16:33:10 +0100
-Subject: [PATCH net-next v4 10/11] sfc/siena: Inline functions in sriov.h to
- avoid conflicts with sfc
+        id 1no5Nz-0001S7-Gj; Mon, 09 May 2022 16:33:23 +0100
+Subject: [PATCH net-next v4 11/11] sfc: Add a basic Siena module
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Mon, 09 May 2022 16:33:10 +0100
-Message-ID: <165211039017.5289.5346164883871029432.stgit@palantir17.mph.net>
+Date:   Mon, 09 May 2022 16:33:23 +0100
+Message-ID: <165211040255.5289.15600898006437166615.stgit@palantir17.mph.net>
 In-Reply-To: <165211018297.5289.9658523545298485394.stgit@palantir17.mph.net>
 References: <165211018297.5289.9658523545298485394.stgit@palantir17.mph.net>
 User-Agent: StGit/0.17.1-dirty
@@ -45,175 +44,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The implementation of each is quite short. This means sriov.c is
-not needed any more.
+Make the (un)load message more specific to differentiate it from
+the sfc.ko messages.
 
 Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/siena/sriov.c |   72 --------------------------------
- drivers/net/ethernet/sfc/siena/sriov.h |   68 ++++++++++++++++++++++++++++--
- 2 files changed, 63 insertions(+), 77 deletions(-)
- delete mode 100644 drivers/net/ethernet/sfc/siena/sriov.c
+ drivers/net/ethernet/sfc/Kconfig        |    1 +
+ drivers/net/ethernet/sfc/Makefile       |    1 +
+ drivers/net/ethernet/sfc/siena/Kconfig  |   12 ++++++++++++
+ drivers/net/ethernet/sfc/siena/Makefile |   11 +++++++++++
+ drivers/net/ethernet/sfc/siena/efx.c    |    6 +++---
+ 5 files changed, 28 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/net/ethernet/sfc/siena/Kconfig
+ create mode 100644 drivers/net/ethernet/sfc/siena/Makefile
 
-diff --git a/drivers/net/ethernet/sfc/siena/sriov.c b/drivers/net/ethernet/sfc/siena/sriov.c
-deleted file mode 100644
-index 3f241e6c881a..000000000000
---- a/drivers/net/ethernet/sfc/siena/sriov.c
-+++ /dev/null
-@@ -1,72 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0-only
--/****************************************************************************
-- * Driver for Solarflare network controllers and boards
-- * Copyright 2014-2015 Solarflare Communications Inc.
-- */
--#include <linux/module.h>
--#include "net_driver.h"
--#include "nic.h"
--#include "sriov.h"
--
--int efx_sriov_set_vf_mac(struct net_device *net_dev, int vf_i, u8 *mac)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
--
--	if (efx->type->sriov_set_vf_mac)
--		return efx->type->sriov_set_vf_mac(efx, vf_i, mac);
--	else
--		return -EOPNOTSUPP;
--}
--
--int efx_sriov_set_vf_vlan(struct net_device *net_dev, int vf_i, u16 vlan,
--			  u8 qos, __be16 vlan_proto)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
--
--	if (efx->type->sriov_set_vf_vlan) {
--		if ((vlan & ~VLAN_VID_MASK) ||
--		    (qos & ~(VLAN_PRIO_MASK >> VLAN_PRIO_SHIFT)))
--			return -EINVAL;
--
--		if (vlan_proto != htons(ETH_P_8021Q))
--			return -EPROTONOSUPPORT;
--
--		return efx->type->sriov_set_vf_vlan(efx, vf_i, vlan, qos);
--	} else {
--		return -EOPNOTSUPP;
--	}
--}
--
--int efx_sriov_set_vf_spoofchk(struct net_device *net_dev, int vf_i,
--			      bool spoofchk)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
--
--	if (efx->type->sriov_set_vf_spoofchk)
--		return efx->type->sriov_set_vf_spoofchk(efx, vf_i, spoofchk);
--	else
--		return -EOPNOTSUPP;
--}
--
--int efx_sriov_get_vf_config(struct net_device *net_dev, int vf_i,
--			    struct ifla_vf_info *ivi)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
--
--	if (efx->type->sriov_get_vf_config)
--		return efx->type->sriov_get_vf_config(efx, vf_i, ivi);
--	else
--		return -EOPNOTSUPP;
--}
--
--int efx_sriov_set_vf_link_state(struct net_device *net_dev, int vf_i,
--				int link_state)
--{
--	struct efx_nic *efx = netdev_priv(net_dev);
--
--	if (efx->type->sriov_set_vf_link_state)
--		return efx->type->sriov_set_vf_link_state(efx, vf_i,
--							  link_state);
--	else
--		return -EOPNOTSUPP;
--}
-diff --git a/drivers/net/ethernet/sfc/siena/sriov.h b/drivers/net/ethernet/sfc/siena/sriov.h
-index 747707bee483..fbde67319d87 100644
---- a/drivers/net/ethernet/sfc/siena/sriov.h
-+++ b/drivers/net/ethernet/sfc/siena/sriov.h
-@@ -11,15 +11,73 @@
+diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
+index 846fff16fa48..98db551ba2b7 100644
+--- a/drivers/net/ethernet/sfc/Kconfig
++++ b/drivers/net/ethernet/sfc/Kconfig
+@@ -65,5 +65,6 @@ config SFC_MCDI_LOGGING
+ 	  a sysfs file 'mcdi_logging' under the PCI device.
  
- #ifdef CONFIG_SFC_SRIOV
+ source "drivers/net/ethernet/sfc/falcon/Kconfig"
++source "drivers/net/ethernet/sfc/siena/Kconfig"
  
--int efx_sriov_set_vf_mac(struct net_device *net_dev, int vf_i, u8 *mac);
-+static inline
-+int efx_sriov_set_vf_mac(struct net_device *net_dev, int vf_i, u8 *mac)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+
-+	if (efx->type->sriov_set_vf_mac)
-+		return efx->type->sriov_set_vf_mac(efx, vf_i, mac);
-+	else
-+		return -EOPNOTSUPP;
-+}
-+
-+static inline
- int efx_sriov_set_vf_vlan(struct net_device *net_dev, int vf_i, u16 vlan,
--			  u8 qos, __be16 vlan_proto);
-+			  u8 qos, __be16 vlan_proto)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+
-+	if (efx->type->sriov_set_vf_vlan) {
-+		if ((vlan & ~VLAN_VID_MASK) ||
-+		    (qos & ~(VLAN_PRIO_MASK >> VLAN_PRIO_SHIFT)))
-+			return -EINVAL;
-+
-+		if (vlan_proto != htons(ETH_P_8021Q))
-+			return -EPROTONOSUPPORT;
-+
-+		return efx->type->sriov_set_vf_vlan(efx, vf_i, vlan, qos);
-+	} else {
-+		return -EOPNOTSUPP;
-+	}
-+}
-+
-+static inline
- int efx_sriov_set_vf_spoofchk(struct net_device *net_dev, int vf_i,
--			      bool spoofchk);
-+			      bool spoofchk)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+
-+	if (efx->type->sriov_set_vf_spoofchk)
-+		return efx->type->sriov_set_vf_spoofchk(efx, vf_i, spoofchk);
-+	else
-+		return -EOPNOTSUPP;
-+}
-+
-+static inline
- int efx_sriov_get_vf_config(struct net_device *net_dev, int vf_i,
--			    struct ifla_vf_info *ivi);
-+			    struct ifla_vf_info *ivi)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+
-+	if (efx->type->sriov_get_vf_config)
-+		return efx->type->sriov_get_vf_config(efx, vf_i, ivi);
-+	else
-+		return -EOPNOTSUPP;
-+}
-+
-+static inline
- int efx_sriov_set_vf_link_state(struct net_device *net_dev, int vf_i,
--				int link_state);
-+				int link_state)
-+{
-+	struct efx_nic *efx = netdev_priv(net_dev);
-+
-+	if (efx->type->sriov_set_vf_link_state)
-+		return efx->type->sriov_set_vf_link_state(efx, vf_i,
-+							  link_state);
-+	else
-+		return -EOPNOTSUPP;
-+}
- #endif /* CONFIG_SFC_SRIOV */
+ endif # NET_VENDOR_SOLARFLARE
+diff --git a/drivers/net/ethernet/sfc/Makefile b/drivers/net/ethernet/sfc/Makefile
+index 9b3374cf7937..b9298031ea51 100644
+--- a/drivers/net/ethernet/sfc/Makefile
++++ b/drivers/net/ethernet/sfc/Makefile
+@@ -13,3 +13,4 @@ sfc-$(CONFIG_SFC_SRIOV)	+= sriov.o ef10_sriov.o ef100_sriov.o
+ obj-$(CONFIG_SFC)	+= sfc.o
  
- #endif /* EFX_SRIOV_H */
+ obj-$(CONFIG_SFC_FALCON) += falcon/
++obj-$(CONFIG_SFC_SIENA) += siena/
+diff --git a/drivers/net/ethernet/sfc/siena/Kconfig b/drivers/net/ethernet/sfc/siena/Kconfig
+new file mode 100644
+index 000000000000..3d52aee50d5a
+--- /dev/null
++++ b/drivers/net/ethernet/sfc/siena/Kconfig
+@@ -0,0 +1,12 @@
++# SPDX-License-Identifier: GPL-2.0-only
++config SFC_SIENA
++	tristate "Solarflare SFC9000 support"
++	depends on PCI
++	select MDIO
++	select CRC32
++	help
++	  This driver supports 10-gigabit Ethernet cards based on
++	  the Solarflare SFC9000 controller.
++
++	  To compile this driver as a module, choose M here.  The module
++	  will be called sfc-siena.
+diff --git a/drivers/net/ethernet/sfc/siena/Makefile b/drivers/net/ethernet/sfc/siena/Makefile
+new file mode 100644
+index 000000000000..74cb8b7d281e
+--- /dev/null
++++ b/drivers/net/ethernet/sfc/siena/Makefile
+@@ -0,0 +1,11 @@
++# SPDX-License-Identifier: GPL-2.0
++sfc-siena-y		+= farch.o siena.o \
++			   efx.o efx_common.o efx_channels.o nic.o \
++			   tx.o tx_common.o rx.o rx_common.o \
++			   selftest.o ethtool.o ethtool_common.o ptp.o \
++			   mcdi.o mcdi_port.o mcdi_port_common.o \
++			   mcdi_mon.o
++sfc-siena-$(CONFIG_SFC_MTD)	+= mtd.o
++sfc-siena-$(CONFIG_SFC_SRIOV)	+= siena_sriov.o
++
++obj-$(CONFIG_SFC_SIENA)	+= sfc-siena.o
+diff --git a/drivers/net/ethernet/sfc/siena/efx.c b/drivers/net/ethernet/sfc/siena/efx.c
+index d937704e416b..3f6e732f5fdc 100644
+--- a/drivers/net/ethernet/sfc/siena/efx.c
++++ b/drivers/net/ethernet/sfc/siena/efx.c
+@@ -1265,7 +1265,7 @@ static int __init efx_init_module(void)
+ {
+ 	int rc;
+ 
+-	printk(KERN_INFO "Solarflare NET driver\n");
++	pr_info("Solarflare Siena driver\n");
+ 
+ 	rc = register_netdevice_notifier(&efx_netdev_notifier);
+ 	if (rc)
+@@ -1291,7 +1291,7 @@ static int __init efx_init_module(void)
+ 
+ static void __exit efx_exit_module(void)
+ {
+-	printk(KERN_INFO "Solarflare NET driver unloading\n");
++	pr_info("Solarflare Siena driver unloading\n");
+ 
+ 	pci_unregister_driver(&efx_pci_driver);
+ 	efx_siena_destroy_reset_workqueue();
+@@ -1304,6 +1304,6 @@ module_exit(efx_exit_module);
+ 
+ MODULE_AUTHOR("Solarflare Communications and "
+ 	      "Michael Brown <mbrown@fensystems.co.uk>");
+-MODULE_DESCRIPTION("Solarflare network driver");
++MODULE_DESCRIPTION("Solarflare Siena network driver");
+ MODULE_LICENSE("GPL");
+ MODULE_DEVICE_TABLE(pci, efx_pci_table);
 
