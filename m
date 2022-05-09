@@ -2,142 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 542EC51FCFD
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 14:33:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23E6551FCE9
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 14:33:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234640AbiEIMhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 08:37:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
+        id S234585AbiEIMgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 08:36:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234488AbiEIMhi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 08:37:38 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C21BD28BDC9;
-        Mon,  9 May 2022 05:33:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=L3p0/83L4yDVyZoegOtsQfWmJV/6wtv6TZoOXChWFJg=; b=Gm1PabHNS+/VMjWNpRDgN0q7Gz
-        okgDM+2WHp5z93ZUGeQzJtlj40ch1Djul+F9LKvzWURwbafLBOoP/NgGu9GSmPuuE28KOgN2Dlog/
-        GHXl8dWWFH9IUIBQmU28gspF2npPpEWaJ19eWl8SzxR3mk4Q/F4kmhrZuCV0rVMHSE4nkq5aDi9ss
-        tskoNSlPr3h/0gKp/FmRCE42MZtPYeJf36WeID1+imZk2dUy5vrTX2Nb6oqUW3HqWx20YRVV7+Jqn
-        2U5xO3lqX+ogULZEqtYM74LQ/XjYNOdW70A5rw6LBK7UHwdRlT2URD08Y6BIbm5BwJqTO8MAols4i
-        vbgjN92g==;
-Received: from [177.183.162.244] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1no2ZO-0002Vw-CD; Mon, 09 May 2022 14:32:58 +0200
-Message-ID: <b5a1370c-1319-24d1-6b2a-629e5c8915ed@igalia.com>
-Date:   Mon, 9 May 2022 09:32:27 -0300
+        with ESMTP id S234528AbiEIMgh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 08:36:37 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAF35284924;
+        Mon,  9 May 2022 05:32:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=VvadgFGR5P7Y1v/cSX7S4UjT+qCj1J/fEEMY6EaLxbE=; b=4DROTrduGydJj/ZaRB/TsSFC78
+        3LscZqNAdYrMMpEP3jgH3vbIaVJyOBHorGQU8yR3rZkRizfb3PRHeXcluKeyidUkeapArws3gBCj7
+        2vGRgVGhklzt19zJV+t7shNPDyG7k3ox9PMeKfXdllIp/o7qrMbAzDKgyc1weMy1Uz5w=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1no2Z3-001wQT-9m; Mon, 09 May 2022 14:32:37 +0200
+Date:   Mon, 9 May 2022 14:32:37 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Puranjay Mohan <p-mohan@ti.com>
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, krzysztof.kozlowski+dt@linaro.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org, nm@ti.com,
+        ssantosh@kernel.org, s-anna@ti.com,
+        linux-arm-kernel@lists.infradead.org, rogerq@kernel.org,
+        grygorii.strashko@ti.com, vigneshr@ti.com, kishon@ti.com,
+        robh+dt@kernel.org, afd@ti.com
+Subject: Re: [PATCH 2/2] net: ti: icssg-prueth: Add ICSSG ethernet driver
+Message-ID: <YnkJ5bFd72d0FagD@lunn.ch>
+References: <20220506052433.28087-1-p-mohan@ti.com>
+ <20220506052433.28087-3-p-mohan@ti.com>
+ <YnVQW7xpSWEE2/HP@lunn.ch>
+ <f674c56c-0621-f471-9517-5c349940d362@ti.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 01/30] x86/crash,reboot: Avoid re-disabling VMX in all
- CPUs on crash/restart
-Content-Language: en-US
-To:     Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>, vkuznets@redhat.com
-Cc:     kexec@lists.infradead.org, pmladek@suse.com, bhe@redhat.com,
-        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, will@kernel.org,
-        "David P . Reed" <dpreed@deepplum.com>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-2-gpiccoli@igalia.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <20220427224924.592546-2-gpiccoli@igalia.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f674c56c-0621-f471-9517-5c349940d362@ti.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 27/04/2022 19:48, Guilherme G. Piccoli wrote:
-> In the panic path we have a list of functions to be called, the panic
-> notifiers - such callbacks perform various actions in the machine's
-> last breath, and sometimes users want them to run before kdump. We
-> have the parameter "crash_kexec_post_notifiers" for that. When such
-> parameter is used, the function "crash_smp_send_stop()" is executed
-> to poweroff all secondary CPUs through the NMI-shootdown mechanism;
-> part of this process involves disabling virtualization features in
-> all CPUs (except the main one).
+> >> +static void icssg_init_emac_mode(struct prueth *prueth)
+> >> +{
+> >> +	u8 mac[ETH_ALEN] = { 0 };
+> >> +
+> >> +	if (prueth->emacs_initialized)
+> >> +		return;
+> >> +
+> >> +	regmap_update_bits(prueth->miig_rt, FDB_GEN_CFG1, SMEM_VLAN_OFFSET_MASK, 0);
+> >> +	regmap_write(prueth->miig_rt, FDB_GEN_CFG2, 0);
+> >> +	/* Clear host MAC address */
+> >> +	icssg_class_set_host_mac_addr(prueth->miig_rt, mac);
+> > 
+> > Seems an odd thing to do, set it to 00:00:00:00:00:00. You probably
+> > want to add a comment why you do this odd thing.
 > 
-> Now, in the emergency restart procedure we have also a way of
-> disabling VMX in all CPUs, using the same NMI-shootdown mechanism;
-> what happens though is that in case we already NMI-disabled all CPUs,
-> the emergency restart fails due to a second addition of the same items
-> in the NMI list, as per the following log output:
+> Actually, this is when the device is configured as a bridge, the host
+> mac address has to be set to zero to while bringing it back to emac
+> mode. I will add a comment to explain this.
+
+I don't see any switchdev interface. How does it get into bridge mode?
+
+> >> +	} else if (emac->link) {
+> >> +		new_state = true;
+> >> +		emac->link = 0;
+> >> +		/* defaults for no link */
+> >> +
+> >> +		/* f/w should support 100 & 1000 */
+> >> +		emac->speed = SPEED_1000;
+> >> +
+> >> +		/* half duplex may not supported by f/w */
+> >> +		emac->duplex = DUPLEX_FULL;
+> > 
+> > Why set speed and duplex when you have just lost the link? They are
+> > meaningless until the link comes back.
 > 
-> sysrq: Trigger a crash
-> Kernel panic - not syncing: sysrq triggered crash
-> [...]
-> Rebooting in 2 seconds..
-> list_add double add: new=<addr1>, prev=<addr2>, next=<addr1>.
-> ------------[ cut here ]------------
-> kernel BUG at lib/list_debug.c:29!
-> invalid opcode: 0000 [#1] PREEMPT SMP PTI
+> These were just the default values that we added.
+> What do you suggest I put here?
+
+Nothing. If the link is down, they are meaningless. If something is
+accessing them when the link is down, that code is broken. So i
+suppose you could give them poison values to help find your broken
+code.
+
+> >> +	for_each_child_of_node(eth_ports_node, eth_node) {
+> >> +		u32 reg;
+> >> +
+> >> +		if (strcmp(eth_node->name, "port"))
+> >> +			continue;
+> >> +		ret = of_property_read_u32(eth_node, "reg", &reg);
+> >> +		if (ret < 0) {
+> >> +			dev_err(dev, "%pOF error reading port_id %d\n",
+> >> +				eth_node, ret);
+> >> +		}
+> >> +
+> >> +		if (reg == 0)
+> >> +			eth0_node = eth_node;
+> >> +		else if (reg == 1)
+> >> +			eth1_node = eth_node;
+> > 
+> > and if reg == 4
+> > 
+> > Or reg 0 appears twice?
 > 
-> In order to reproduce the problem, users just need to set the kernel
-> parameter "crash_kexec_post_notifiers" *without* kdump set in any
-> system with the VMX feature present.
-> 
-> Since there is no benefit in re-disabling VMX in all CPUs in case
-> it was already done, this patch prevents that by guarding the restart
-> routine against doubly issuing NMIs unnecessarily. Notice we still
-> need to disable VMX locally in the emergency restart.
-> 
-> Fixes: ed72736183c4 ("x86/reboot: Force all cpus to exit VMX root if VMX is supported)
-> Fixes: 0ee59413c967 ("x86/panic: replace smp_send_stop() with kdump friendly version in panic path")
-> Cc: David P. Reed <dpreed@deepplum.com>
-> Cc: Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>
-> Cc: Paolo Bonzini <pbonzini@redhat.com>
-> Cc: Sean Christopherson <seanjc@google.com>
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> ---
->  arch/x86/include/asm/cpu.h |  1 +
->  arch/x86/kernel/crash.c    |  8 ++++----
->  arch/x86/kernel/reboot.c   | 14 ++++++++++++--
->  3 files changed, 17 insertions(+), 6 deletions(-)
-> 
+> In both of the cases that you mentioned, the device tree schema check
+> will fail, hence, we can safely assume that this will be 0 and 1 only.
 
-Hi Paolo / Sean / Vitaly, sorry for the ping.
-But do you think this fix is OK from the VMX point-of-view?
+Nothing forces you to run the scheme checker. It is not run by the
+kernel before it starts accessing the DT blob. You should assume it is
+invalid until you have proven it to be valid.
 
-I'd like to send a V2 of this set soon, so any review here is highly
-appreciated!
-
-Cheers,
-
-
-Guilherme
-
+	Andrew
