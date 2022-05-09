@@ -2,251 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C888520866
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 01:32:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2511D52098B
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 01:43:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232515AbiEIXgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 19:36:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36508 "EHLO
+        id S233321AbiEIXrd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 19:47:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232456AbiEIXf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 19:35:59 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B90E120CA70
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 16:32:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652139123; x=1683675123;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=AbSkMJhVBi75MwZZeKR4TvLfgc1klxv+VamqFHa1KVw=;
-  b=bxGlfO7xBNjJtorhwXm/h/rQwTdkdzwciFGoAEWxX1+MZwQ4ll3WHyz6
-   5tGE5GVyulYmnlh3jNYIB2CNfdLPIt674ERaw8f2vF1am3gWf9jS0MnNv
-   k2mqmpat9rfizxKPpPx71oXhPK9WQrNbqsYdGIykQNLmRCmg42mD3OwMT
-   0UEsVUa1RP3/zvag6S+Josz7tMD9osdKaZuq9JcG5NrxSTm5feT81HUhs
-   /xJVXZ1mXx+YLy4YdDWht6jlFxBNqQO0mkOn8U2/cKx7HR0zIII34kpa2
-   kNc+oDoJLtJOWqHeMVWika42YCU1fEvhGVg/d4nnTapk9Avq41p1N7YUs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="269333884"
-X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
-   d="scan'208";a="269333884"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 16:32:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
-   d="scan'208";a="657360647"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 09 May 2022 16:32:01 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1noCrA-000H0C-RB;
-        Mon, 09 May 2022 23:32:00 +0000
-Date:   Tue, 10 May 2022 07:31:13 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next 3/4] net: warn if transport header was not set
-Message-ID: <202205100711.cCKt89Rb-lkp@intel.com>
-References: <20220509190851.1107955-4-eric.dumazet@gmail.com>
+        with ESMTP id S235049AbiEIXrP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 19:47:15 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B1A260865
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 16:38:30 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id k126so9205933wme.2
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 16:38:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zghuCGHkc6a+SvxDoH06AuPeBjqhtbj285hmjbg59/s=;
+        b=A2kjtRM+KbV4UyjxuOfHYeI7X6S0FBX7g9PBz/cecgSZesyQa53UGc87ngZOJDzlE0
+         C1lgQc2435bOnm1R86VuR71bFzmKntlz8nCnoPZL7pQszOFpxpGiXJLr6k235qlXhLwy
+         TQ8HUtNuQ49nkc4hujtww9O85N09sw9YvKfdMEaX0vIIc5uYLBtoGUWgWja733q1iYgv
+         x+gXoCpJmU53MIIzqs7JdG0JUK9drkISIdTqdPoc8pp9QSt47bM+2ZjuICnOXEFm9pRh
+         vW2AFyfy9hq+AlbuMS/rcObJ6XOaWrWpO0o188SxB0S54lm9Jke/97q85xXatM/ivHn0
+         6Mwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zghuCGHkc6a+SvxDoH06AuPeBjqhtbj285hmjbg59/s=;
+        b=59UdoKTsfjBQeJ/e7FwH4MqSEoEuvB0UKi/h30caz9gAJ93Sb/A3Psl2H3DTXA8D0M
+         36h9PpaQNnKcnwMFomR+RRAHvMDTKyvcpL6Z2QbvZZmXw5USD9THymEkA8F7ndMCWGVf
+         EcBa7d9sPn+0VfQ+B8Eqjc6evc8rg87kCy1YlfBOB3C9ptx56e42SUrckvlC32p5AxCG
+         E3WEpAADAXKBDyKw0Dw8tqc6yy8jBZS+2NIMWfTovSOAJCEr80ygHQnY34poj/9ZbJDR
+         XqO7R2X/ht0CcBfQDxafRhIEwj3ezytg+vhPhhqjLWtwzQmlgguCDk4+uD3zmTdmbF+q
+         mYWQ==
+X-Gm-Message-State: AOAM532YdWScKUTcx7Y/kLkHwp53EKcG9ZzzIqhEuz1mWJZFT2dyisEu
+        zptSJSAqEIhh5QESGFJrsiFNGt8mDFSrT2cZrXknRQ==
+X-Google-Smtp-Source: ABdhPJylHBoOsp+4zmH4s5XX0sGZApTpSs7lY2YhsWcRPbjovAaEdG8W7TX7RDESE6AMRJtvSbQrWqb0T4NRyZnsqHc=
+X-Received: by 2002:a05:600c:1f08:b0:394:9060:bb54 with SMTP id
+ bd8-20020a05600c1f0800b003949060bb54mr7335899wmb.73.1652139508395; Mon, 09
+ May 2022 16:38:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509190851.1107955-4-eric.dumazet@gmail.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220429211540.715151-1-sdf@google.com> <20220429211540.715151-6-sdf@google.com>
+ <20220507001250.yhisk4otoas7h4gx@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220507001250.yhisk4otoas7h4gx@kafai-mbp.dhcp.thefacebook.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Mon, 9 May 2022 16:38:16 -0700
+Message-ID: <CAKH8qBsGr+466B23ExBixwcriKxNrFa3v47st-S3qUggNP2Q5A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v6 05/10] bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+On Fri, May 6, 2022 at 5:12 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Fri, Apr 29, 2022 at 02:15:35PM -0700, Stanislav Fomichev wrote:
+> > We have two options:
+> > 1. Treat all BPF_LSM_CGROUP as the same, regardless of attach_btf_id
+> > 2. Treat BPF_LSM_CGROUP+attach_btf_id as a separate hook point
+> >
+> > I'm doing (2) here and adding attach_btf_id as a new BPF_PROG_QUERY
+> > argument. The downside is that it requires iterating over all possible
+> > bpf_lsm_ hook points in the userspace which might take some time.
+> >
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  include/uapi/linux/bpf.h       |  1 +
+> >  kernel/bpf/cgroup.c            | 43 ++++++++++++++++++++++++----------
+> >  kernel/bpf/syscall.c           |  3 ++-
+> >  tools/include/uapi/linux/bpf.h |  1 +
+> >  tools/lib/bpf/bpf.c            | 42 ++++++++++++++++++++++++++-------
+> >  tools/lib/bpf/bpf.h            | 15 ++++++++++++
+> >  tools/lib/bpf/libbpf.map       |  1 +
+> >  7 files changed, 85 insertions(+), 21 deletions(-)
+> >
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 112e396bbe65..e38ea0b47b6a 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -1431,6 +1431,7 @@ union bpf_attr {
+> >               __u32           attach_flags;
+> >               __aligned_u64   prog_ids;
+> >               __u32           prog_cnt;
+> > +             __u32           attach_btf_id;  /* for BPF_LSM_CGROUP */
+> If the downside/concern on (1) is the bpftool cannot show
+> which bpf_lsm_* hook that a cgroup-lsm is attached to,
+> how about adding this attach_btf_id to the bpf_prog_info instead.
+> The bpftool side is getting the bpf_prog_info (e.g. for the name) anyway.
+>
+> Probably need to rename it to attach_func_btf_id (== prog->aux->attach_btf_id)
+> and then also add the attach_btf_id (== prog->aux->attach_btf->id) to
+> bpf_prog_info.
+>
+> The bpftool then will work mostly the same and no need to iterate btf_vmlinux
+> to figure out the btf_id for all bpf_lsm_* hooks and no need to worry about
+> the increasing total number of lsm hooks in the future while
+> the latter bpftool patch has a static 1024.
+>
+> If you also agree on (1), for this patch on the kernel side concern,
+> it needs to return all BPF_LSM_CGROUP progs to the userspace.
 
-I love your patch! Yet something to improve:
+I was exploring this initially but with this scheme I'm not sure how
+to export attach_flags. I'm assuming that one lsm hook can, say, be
+attached as BPF_F_ALLOW_OVERRIDE and the other one can use
+BPF_F_ALLOW_MULTI. Now, if we return all BPF_LSM_CGROUP programs (1),
+we have a problem because there is only one attach_flags field per
+attach_type.
 
-[auto build test ERROR on net-next/master]
+I can extend BPF_PROG_QUERY with another user-provided pointer where
+the kernel can put per-program attach_flags, doesn't seem like there
+would be a problem, right?
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-CONFIG_DEBUG_NET-and-friends/20220510-031145
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9c095bd0d4c451d31d0fd1131cc09d3b60de815d
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220510/202205100711.cCKt89Rb-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/d316b61f313a417d7dfa97fa006320288f3af150
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eric-Dumazet/net-CONFIG_DEBUG_NET-and-friends/20220510-031145
-        git checkout d316b61f313a417d7dfa97fa006320288f3af150
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash drivers/net/
+> Feel free to put the bpf_prog_info modification and bpftool changes as a follow up
+> patch.  In this same set is also fine.  Suggesting it because this set is
+> getting long already.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   In file included from include/linux/skbuff.h:45,
-                    from drivers/net/tun.c:44:
-   include/net/net_debug.h:6:52: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
-       6 | void netdev_printk(const char *level, const struct net_device *dev,
-         |                                                    ^~~~~~~~~~
-   include/net/net_debug.h:9:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
-       9 | void netdev_emerg(const struct net_device *dev, const char *format, ...);
-         |                                ^~~~~~~~~~
-   include/net/net_debug.h:11:32: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
-      11 | void netdev_alert(const struct net_device *dev, const char *format, ...);
-         |                                ^~~~~~~~~~
-   include/net/net_debug.h:13:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
-      13 | void netdev_crit(const struct net_device *dev, const char *format, ...);
-         |                               ^~~~~~~~~~
-   include/net/net_debug.h:15:30: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
-      15 | void netdev_err(const struct net_device *dev, const char *format, ...);
-         |                              ^~~~~~~~~~
-   include/net/net_debug.h:17:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
-      17 | void netdev_warn(const struct net_device *dev, const char *format, ...);
-         |                               ^~~~~~~~~~
-   include/net/net_debug.h:19:33: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
-      19 | void netdev_notice(const struct net_device *dev, const char *format, ...);
-         |                                 ^~~~~~~~~~
-   include/net/net_debug.h:21:31: warning: 'struct net_device' declared inside parameter list will not be visible outside of this definition or declaration
-      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
-         |                               ^~~~~~~~~~
-   In file included from include/linux/skbuff.h:45,
-                    from drivers/net/tun.c:44:
-   drivers/net/tun.c: In function 'tun_flow_create':
->> drivers/net/tun.c:380:47: error: passing argument 1 of 'netdev_info' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     380 |                 netif_info(tun, tx_queued, tun->dev,
-         |                                            ~~~^~~~~
-         |                                               |
-         |                                               struct net_device *
-   include/net/net_debug.h:101:32: note: in definition of macro 'netif_level'
-     101 |                 netdev_##level(dev, fmt, ##args);               \
-         |                                ^~~
-   drivers/net/tun.c:380:17: note: in expansion of macro 'netif_info'
-     380 |                 netif_info(tun, tx_queued, tun->dev,
-         |                 ^~~~~~~~~~
-   include/net/net_debug.h:21:43: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
-      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
-         |                  ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-   drivers/net/tun.c: In function 'tun_flow_delete':
-   drivers/net/tun.c:396:39: error: passing argument 1 of 'netdev_info' from incompatible pointer type [-Werror=incompatible-pointer-types]
-     396 |         netif_info(tun, tx_queued, tun->dev, "delete flow: hash %u index %u\n",
-         |                                    ~~~^~~~~
-         |                                       |
-         |                                       struct net_device *
-   include/net/net_debug.h:101:32: note: in definition of macro 'netif_level'
-     101 |                 netdev_##level(dev, fmt, ##args);               \
-         |                                ^~~
-   drivers/net/tun.c:396:9: note: in expansion of macro 'netif_info'
-     396 |         netif_info(tun, tx_queued, tun->dev, "delete flow: hash %u index %u\n",
-         |         ^~~~~~~~~~
-   include/net/net_debug.h:21:43: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
-      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
-         |                  ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-   drivers/net/tun.c: In function 'tun_net_xmit':
-   drivers/net/tun.c:1078:39: error: passing argument 1 of 'netdev_info' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    1078 |         netif_info(tun, tx_queued, tun->dev, "%s %d\n", __func__, skb->len);
-         |                                    ~~~^~~~~
-         |                                       |
-         |                                       struct net_device *
-   include/net/net_debug.h:101:32: note: in definition of macro 'netif_level'
-     101 |                 netdev_##level(dev, fmt, ##args);               \
-         |                                ^~~
-   drivers/net/tun.c:1078:9: note: in expansion of macro 'netif_info'
-    1078 |         netif_info(tun, tx_queued, tun->dev, "%s %d\n", __func__, skb->len);
-         |         ^~~~~~~~~~
-   include/net/net_debug.h:21:43: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
-      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
-         |                  ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-   drivers/net/tun.c: In function '__tun_chr_ioctl':
-   drivers/net/tun.c:3095:33: error: passing argument 1 of 'netdev_info' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    3095 |         netif_info(tun, drv, tun->dev, "tun_chr_ioctl cmd %u\n", cmd);
-         |                              ~~~^~~~~
-         |                                 |
-         |                                 struct net_device *
-   include/net/net_debug.h:101:32: note: in definition of macro 'netif_level'
-     101 |                 netdev_##level(dev, fmt, ##args);               \
-         |                                ^~~
-   drivers/net/tun.c:3095:9: note: in expansion of macro 'netif_info'
-    3095 |         netif_info(tun, drv, tun->dev, "tun_chr_ioctl cmd %u\n", cmd);
-         |         ^~~~~~~~~~
-   include/net/net_debug.h:21:43: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
-      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
-         |                  ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-   drivers/net/tun.c:3116:41: error: passing argument 1 of 'netdev_info' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    3116 |                 netif_info(tun, drv, tun->dev, "ignored: set checksum %s\n",
-         |                                      ~~~^~~~~
-         |                                         |
-         |                                         struct net_device *
-   include/net/net_debug.h:101:32: note: in definition of macro 'netif_level'
-     101 |                 netdev_##level(dev, fmt, ##args);               \
-         |                                ^~~
-   drivers/net/tun.c:3116:17: note: in expansion of macro 'netif_info'
-    3116 |                 netif_info(tun, drv, tun->dev, "ignored: set checksum %s\n",
-         |                 ^~~~~~~~~~
-   include/net/net_debug.h:21:43: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
-      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
-         |                  ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-   drivers/net/tun.c:3135:41: error: passing argument 1 of 'netdev_info' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    3135 |                 netif_info(tun, drv, tun->dev, "persist %s\n",
-         |                                      ~~~^~~~~
-         |                                         |
-         |                                         struct net_device *
-   include/net/net_debug.h:101:32: note: in definition of macro 'netif_level'
-     101 |                 netdev_##level(dev, fmt, ##args);               \
-         |                                ^~~
-   drivers/net/tun.c:3135:17: note: in expansion of macro 'netif_info'
-    3135 |                 netif_info(tun, drv, tun->dev, "persist %s\n",
-         |                 ^~~~~~~~~~
-   include/net/net_debug.h:21:43: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
-      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
-         |                  ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-   drivers/net/tun.c:3148:41: error: passing argument 1 of 'netdev_info' from incompatible pointer type [-Werror=incompatible-pointer-types]
-    3148 |                 netif_info(tun, drv, tun->dev, "owner set to %u\n",
-         |                                      ~~~^~~~~
-         |                                         |
-         |                                         struct net_device *
-   include/net/net_debug.h:101:32: note: in definition of macro 'netif_level'
-     101 |                 netdev_##level(dev, fmt, ##args);               \
-         |                                ^~~
-   drivers/net/tun.c:3148:17: note: in expansion of macro 'netif_info'
-    3148 |                 netif_info(tun, drv, tun->dev, "owner set to %u\n",
-         |                 ^~~~~~~~~~
-   include/net/net_debug.h:21:43: note: expected 'const struct net_device *' but argument is of type 'struct net_device *'
-      21 | void netdev_info(const struct net_device *dev, const char *format, ...);
-         |                  ~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-
-
-vim +/netdev_info +380 drivers/net/tun.c
-
-96442e42429e5f Jason Wang     2012-10-31  372  
-96442e42429e5f Jason Wang     2012-10-31  373  static struct tun_flow_entry *tun_flow_create(struct tun_struct *tun,
-96442e42429e5f Jason Wang     2012-10-31  374  					      struct hlist_head *head,
-96442e42429e5f Jason Wang     2012-10-31  375  					      u32 rxhash, u16 queue_index)
-96442e42429e5f Jason Wang     2012-10-31  376  {
-9fdc6bef5f1e8b Eric Dumazet   2012-12-21  377  	struct tun_flow_entry *e = kmalloc(sizeof(*e), GFP_ATOMIC);
-9fdc6bef5f1e8b Eric Dumazet   2012-12-21  378  
-96442e42429e5f Jason Wang     2012-10-31  379  	if (e) {
-3424170f37e78c Michal Kubecek 2020-03-04 @380  		netif_info(tun, tx_queued, tun->dev,
-3424170f37e78c Michal Kubecek 2020-03-04  381  			   "create flow: hash %u index %u\n",
-96442e42429e5f Jason Wang     2012-10-31  382  			   rxhash, queue_index);
-96442e42429e5f Jason Wang     2012-10-31  383  		e->updated = jiffies;
-96442e42429e5f Jason Wang     2012-10-31  384  		e->rxhash = rxhash;
-9bc8893937c836 Tom Herbert    2013-12-22  385  		e->rps_rxhash = 0;
-96442e42429e5f Jason Wang     2012-10-31  386  		e->queue_index = queue_index;
-96442e42429e5f Jason Wang     2012-10-31  387  		e->tun = tun;
-96442e42429e5f Jason Wang     2012-10-31  388  		hlist_add_head_rcu(&e->hash_link, head);
-b8732fb7f8920e Jason Wang     2013-01-23  389  		++tun->flow_count;
-96442e42429e5f Jason Wang     2012-10-31  390  	}
-96442e42429e5f Jason Wang     2012-10-31  391  	return e;
-96442e42429e5f Jason Wang     2012-10-31  392  }
-96442e42429e5f Jason Wang     2012-10-31  393  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+SG. Let's discuss it first. I can do a follow up series to add this
+query api, the series is getting long indeed :-(
