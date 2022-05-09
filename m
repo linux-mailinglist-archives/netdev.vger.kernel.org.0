@@ -2,432 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5799951F9B4
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 12:21:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5993651F9DC
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 12:29:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233163AbiEIKZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 06:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
+        id S232227AbiEIKc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 06:32:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232406AbiEIKY5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 06:24:57 -0400
-Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB747403DC;
-        Mon,  9 May 2022 03:21:00 -0700 (PDT)
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 249AKW6L053311;
-        Mon, 9 May 2022 05:20:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1652091632;
-        bh=osMp8LaM7WxWl93D15Dd0t8zs0K59TXdoQKV0BTa4PI=;
-        h=Date:Subject:To:CC:References:From:In-Reply-To;
-        b=vXxLcHDj0+RM+PGZlVA1xWmrQN0LMYwlUAKHxLL9UwSK+SkDUzgyTY2DBr8MOal06
-         qD1DSopPqv9VgyFfWFcRDrUvecWtMge6DWTXOgZuKCd/VQSxkqVRcjPvqe/rHd/zoD
-         AuCgzPVrTgZr2pFZlzYVJc1X98IbsEAO6kPDuYgU=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 249AKWFx123284
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 9 May 2022 05:20:32 -0500
-Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 9
- May 2022 05:20:31 -0500
-Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE110.ent.ti.com
- (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Mon, 9 May 2022 05:20:31 -0500
-Received: from [172.24.220.119] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 249AKPg8114930;
-        Mon, 9 May 2022 05:20:26 -0500
-Message-ID: <f674c56c-0621-f471-9517-5c349940d362@ti.com>
-Date:   Mon, 9 May 2022 15:50:24 +0530
+        with ESMTP id S231449AbiEIKcY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 06:32:24 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A91724EA2B;
+        Mon,  9 May 2022 03:27:53 -0700 (PDT)
+Received: from canpemm100008.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4KxclT20G8zfbQ1;
+        Mon,  9 May 2022 18:26:13 +0800 (CST)
+Received: from dggpeml500026.china.huawei.com (7.185.36.106) by
+ canpemm100008.china.huawei.com (7.192.104.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 9 May 2022 18:27:23 +0800
+Received: from dggpeml500026.china.huawei.com ([7.185.36.106]) by
+ dggpeml500026.china.huawei.com ([7.185.36.106]) with mapi id 15.01.2375.024;
+ Mon, 9 May 2022 18:27:22 +0800
+From:   shaozhengchao <shaozhengchao@huawei.com>
+To:     =?utf-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+CC:     "weiyongjun (A)" <weiyongjun1@huawei.com>,
+        yuehaibing <yuehaibing@huawei.com>
+Subject: =?utf-8?B?562U5aSNOiBbUEFUQ0ggYnBmLW5leHRdIHNhbXBsZXMvYnBmOiBjaGVjayBk?=
+ =?utf-8?Q?etach_prog_exist_or_not_in_xdp=5Ffwd?=
+Thread-Topic: [PATCH bpf-next] samples/bpf: check detach prog exist or not in
+ xdp_fwd
+Thread-Index: AQHYYz67ysyf9xnyEEa5gXY59XVHBq0VxqsAgACPrJA=
+Date:   Mon, 9 May 2022 10:27:22 +0000
+Message-ID: <f9c85578b94a4a38b3f7b9c796810a30@huawei.com>
+References: <20220509005105.271089-1-shaozhengchao@huawei.com>
+ <87pmknyr6b.fsf@toke.dk>
+In-Reply-To: <87pmknyr6b.fsf@toke.dk>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.174.178.66]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 2/2] net: ti: icssg-prueth: Add ICSSG ethernet driver
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
-        <edumazet@google.com>, <krzysztof.kozlowski+dt@linaro.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
-        <linux-arm-kernel@lists.infradead.org>, <rogerq@kernel.org>,
-        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
-        <robh+dt@kernel.org>, <afd@ti.com>
-References: <20220506052433.28087-1-p-mohan@ti.com>
- <20220506052433.28087-3-p-mohan@ti.com> <YnVQW7xpSWEE2/HP@lunn.ch>
-From:   Puranjay Mohan <p-mohan@ti.com>
-In-Reply-To: <YnVQW7xpSWEE2/HP@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
-X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-Thanks for your comments.
-
-On 06/05/22 22:14, Andrew Lunn wrote:
->> +void icssg_config_ipg(struct prueth_emac *emac)
->> +{
->> +	struct prueth *prueth = emac->prueth;
->> +	int slice = prueth_emac_slice(emac);
->> +
->> +	switch (emac->speed) {
->> +	case SPEED_1000:
->> +		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_1G);
->> +		break;
->> +	case SPEED_100:
->> +		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_100M);
->> +		break;
->> +	default:
->> +		/* Other links speeds not supported */
->> +		pr_err("Unsupported link speed\n");
-> 
-> dev_err() or netdev_err(). You then get an idea which device somebody
-> is trying to configure into an unsupported mode.
-
-I will use netdev_err() in next version.
-
-> 
-> checkpatch probably also warned about that?
-
-unfortunately it didn't.
-
-> 
->> +static void icssg_init_emac_mode(struct prueth *prueth)
->> +{
->> +	u8 mac[ETH_ALEN] = { 0 };
->> +
->> +	if (prueth->emacs_initialized)
->> +		return;
->> +
->> +	regmap_update_bits(prueth->miig_rt, FDB_GEN_CFG1, SMEM_VLAN_OFFSET_MASK, 0);
->> +	regmap_write(prueth->miig_rt, FDB_GEN_CFG2, 0);
->> +	/* Clear host MAC address */
->> +	icssg_class_set_host_mac_addr(prueth->miig_rt, mac);
-> 
-> Seems an odd thing to do, set it to 00:00:00:00:00:00. You probably
-> want to add a comment why you do this odd thing.
-
-Actually, this is when the device is configured as a bridge, the host
-mac address has to be set to zero to while bringing it back to emac
-mode. I will add a comment to explain this.
-
-
-> 
->> +int emac_set_port_state(struct prueth_emac *emac,
->> +			enum icssg_port_state_cmd cmd)
->> +{
->> +	struct icssg_r30_cmd *p;
->> +	int ret = -ETIMEDOUT;
->> +	int timeout = 10;
->> +	int i;
->> +
->> +	p = emac->dram.va + MGR_R30_CMD_OFFSET;
->> +
->> +	if (cmd >= ICSSG_EMAC_PORT_MAX_COMMANDS) {
->> +		netdev_err(emac->ndev, "invalid port command\n");
->> +		return -EINVAL;
->> +	}
->> +
->> +	/* only one command at a time allowed to firmware */
->> +	mutex_lock(&emac->cmd_lock);
->> +
->> +	for (i = 0; i < 4; i++)
->> +		writel(emac_r32_bitmask[cmd].cmd[i], &p->cmd[i]);
->> +
->> +	/* wait for done */
->> +	while (timeout) {
->> +		if (emac_r30_is_done(emac)) {
->> +			ret = 0;
->> +			break;
->> +		}
->> +
->> +		usleep_range(1000, 2000);
->> +		timeout--;
->> +	}
-> 
-> linux/iopoll.h
-
-will add in next version
-
-> 
->> +void icssg_config_set_speed(struct prueth_emac *emac)
->> +{
->> +	u8 fw_speed;
->> +
->> +	switch (emac->speed) {
->> +	case SPEED_1000:
->> +		fw_speed = FW_LINK_SPEED_1G;
->> +		break;
->> +	case SPEED_100:
->> +		fw_speed = FW_LINK_SPEED_100M;
->> +		break;
->> +	default:
->> +		/* Other links speeds not supported */
->> +		pr_err("Unsupported link speed\n");
-> 
-> dev_err() or netdev_err().
-> 
-> 
->> +static int emac_get_link_ksettings(struct net_device *ndev,
->> +				   struct ethtool_link_ksettings *ecmd)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +
->> +	if (!emac->phydev)
->> +		return -EOPNOTSUPP;
->> +
->> +	phy_ethtool_ksettings_get(emac->phydev, ecmd);
->> +	return 0;
->> +}
-> 
-> phy_ethtool_get_link_ksettings().
-> 
-> You should keep phydev in ndev, not your priv structure.
-
-Okay, I will make this change in the whole driver.
-
-> 
->> +
->> +static int emac_set_link_ksettings(struct net_device *ndev,
->> +				   const struct ethtool_link_ksettings *ecmd)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +
->> +	if (!emac->phydev)
->> +		return -EOPNOTSUPP;
->> +
->> +	return phy_ethtool_ksettings_set(emac->phydev, ecmd);
-> 
-> phy_ethtool_set_link_ksettings()
-> 
->> +static int emac_nway_reset(struct net_device *ndev)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +
->> +	if (!emac->phydev)
->> +		return -EOPNOTSUPP;
->> +
->> +	return genphy_restart_aneg(emac->phydev);
-> 
-> phy_ethtool_nway_reset()
-> 
->> +static void emac_get_ethtool_stats(struct net_device *ndev,
->> +				   struct ethtool_stats *stats, u64 *data)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +	struct prueth *prueth = emac->prueth;
->> +	int i;
->> +	int slice = prueth_emac_slice(emac);
->> +	u32 base = stats_base[slice];
->> +	u32 val;
-> 
-> Reverse Christmas tree. Move i to the end. There are other places in
-> the driver you need to fix up as well.
-> 
->> +static int debug_level = -1;
->> +module_param(debug_level, int, 0644);
->> +MODULE_PARM_DESC(debug_level, "PRUETH debug level (NETIF_MSG bits)");
-> 
-> Module parameters are not liked any more. Yes, lots of drivers have
-> this one, but you have the ethtool setting, so you should not need
-> this.
-> 
->> +/* called back by PHY layer if there is change in link state of hw port*/
->> +static void emac_adjust_link(struct net_device *ndev)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +	struct phy_device *phydev = emac->phydev;
->> +	struct prueth *prueth = emac->prueth;
->> +	bool new_state = false;
->> +	unsigned long flags;
->> +
->> +	if (phydev->link) {
->> +		/* check the mode of operation - full/half duplex */
->> +		if (phydev->duplex != emac->duplex) {
->> +			new_state = true;
->> +			emac->duplex = phydev->duplex;
->> +		}
->> +		if (phydev->speed != emac->speed) {
->> +			new_state = true;
->> +			emac->speed = phydev->speed;
->> +		}
->> +		if (!emac->link) {
->> +			new_state = true;
->> +			emac->link = 1;
->> +		}
->> +	} else if (emac->link) {
->> +		new_state = true;
->> +		emac->link = 0;
->> +		/* defaults for no link */
->> +
->> +		/* f/w should support 100 & 1000 */
->> +		emac->speed = SPEED_1000;
->> +
->> +		/* half duplex may not supported by f/w */
->> +		emac->duplex = DUPLEX_FULL;
-> 
-> Why set speed and duplex when you have just lost the link? They are
-> meaningless until the link comes back.
-
-These were just the default values that we added.
-What do you suggest I put here?
-
-> 
->> +	}
->> +
->> +	if (new_state) {
->> +		phy_print_status(phydev);
->> +
->> +		/* update RGMII and MII configuration based on PHY negotiated
->> +		 * values
->> +		 */
->> +		if (emac->link) {
->> +			/* Set the RGMII cfg for gig en and full duplex */
->> +			icssg_update_rgmii_cfg(prueth->miig_rt, emac);
->> +
->> +			/* update the Tx IPG based on 100M/1G speed */
->> +			spin_lock_irqsave(&emac->lock, flags);
->> +			icssg_config_ipg(emac);
->> +			spin_unlock_irqrestore(&emac->lock, flags);
->> +			icssg_config_set_speed(emac);
->> +			emac_set_port_state(emac, ICSSG_EMAC_PORT_FORWARD);
->> +
->> +		} else {
->> +			emac_set_port_state(emac, ICSSG_EMAC_PORT_DISABLE);
->> +		}
->> +	}
->> +
->> +	if (emac->link) {
->> +		/* link ON */
->> +		netif_carrier_on(ndev);
-> 
-> phylib will do this for you.
-> 
->> +		/* reactivate the transmit queue */
->> +		netif_tx_wake_all_queues(ndev);
-> 
-> Not something you see other drivers do. Why is it here?
-> 
->> +	} else {
->> +		/* link OFF */
->> +		netif_carrier_off(ndev);
->> +		netif_tx_stop_all_queues(ndev);
-> 
-> Same as above, for both.
-> 
->> +static int emac_ndo_open(struct net_device *ndev)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +	int ret, i, num_data_chn = emac->tx_ch_num;
->> +	struct prueth *prueth = emac->prueth;
->> +	int slice = prueth_emac_slice(emac);
->> +	struct device *dev = prueth->dev;
->> +	int max_rx_flows;
->> +	int rx_flow;
->> +
->> +	/* clear SMEM and MSMC settings for all slices */
->> +	if (!prueth->emacs_initialized) {
->> +		memset_io(prueth->msmcram.va, 0, prueth->msmcram.size);
->> +		memset_io(prueth->shram.va, 0, ICSSG_CONFIG_OFFSET_SLICE1 * PRUETH_NUM_MACS);
->> +	}
->> +
->> +	/* set h/w MAC as user might have re-configured */
->> +	ether_addr_copy(emac->mac_addr, ndev->dev_addr);
->> +
->> +	icssg_class_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
->> +	icssg_ft1_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
->> +
->> +	icssg_class_default(prueth->miig_rt, slice, 0);
->> +
->> +	netif_carrier_off(ndev);
-> 
-> It should default to off. phylib will turn it on for you when you get
-> link.
-> 
->> +static int emac_ndo_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
->> +{
->> +	struct prueth_emac *emac = netdev_priv(ndev);
->> +
->> +	if (!emac->phydev)
->> +		return -EOPNOTSUPP;
->> +
->> +	return phy_mii_ioctl(emac->phydev, ifr, cmd);
->> +}
-> 
-> phy_do_ioctl()
-> 
->> +extern const struct ethtool_ops icssg_ethtool_ops;
-> 
-> Should really by in a header file.
-> 
->> +static int prueth_probe(struct platform_device *pdev)
->> +{
->> +	struct prueth *prueth;
->> +	struct device *dev = &pdev->dev;
->> +	struct device_node *np = dev->of_node;
->> +	struct device_node *eth_ports_node;
->> +	struct device_node *eth_node;
->> +	struct device_node *eth0_node, *eth1_node;
->> +	const struct of_device_id *match;
->> +	struct pruss *pruss;
->> +	int i, ret;
->> +	u32 msmc_ram_size;
->> +	struct genpool_data_align gp_data = {
->> +		.align = SZ_64K,
->> +	};
->> +
->> +	match = of_match_device(prueth_dt_match, dev);
->> +	if (!match)
->> +		return -ENODEV;
->> +
->> +	prueth = devm_kzalloc(dev, sizeof(*prueth), GFP_KERNEL);
->> +	if (!prueth)
->> +		return -ENOMEM;
->> +
->> +	dev_set_drvdata(dev, prueth);
->> +	prueth->pdev = pdev;
->> +	prueth->pdata = *(const struct prueth_pdata *)match->data;
->> +
->> +	prueth->dev = dev;
->> +	eth_ports_node = of_get_child_by_name(np, "ethernet-ports");
->> +	if (!eth_ports_node)
->> +		return -ENOENT;
->> +
->> +	for_each_child_of_node(eth_ports_node, eth_node) {
->> +		u32 reg;
->> +
->> +		if (strcmp(eth_node->name, "port"))
->> +			continue;
->> +		ret = of_property_read_u32(eth_node, "reg", &reg);
->> +		if (ret < 0) {
->> +			dev_err(dev, "%pOF error reading port_id %d\n",
->> +				eth_node, ret);
->> +		}
->> +
->> +		if (reg == 0)
->> +			eth0_node = eth_node;
->> +		else if (reg == 1)
->> +			eth1_node = eth_node;
-> 
-> and if reg == 4
-> 
-> Or reg 0 appears twice?
-
-In both of the cases that you mentioned, the device tree schema check
-will fail, hence, we can safely assume that this will be 0 and 1 only.
-
-> 
->    Andrew
-
-Thanks,
-Puranjay Mohan
+DQotLS0tLemCruS7tuWOn+S7ti0tLS0tDQrlj5Hku7bkuro6IFRva2UgSMO4aWxhbmQtSsO4cmdl
+bnNlbiBbbWFpbHRvOnRva2VAa2VybmVsLm9yZ10gDQrlj5HpgIHml7bpl7Q6IDIwMjLlubQ15pyI
+OeaXpSAxNzo0Ng0K5pS25Lu25Lq6OiBzaGFvemhlbmdjaGFvIDxzaGFvemhlbmdjaGFvQGh1YXdl
+aS5jb20+OyBicGZAdmdlci5rZXJuZWwub3JnOyBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51
+eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBhc3RAa2VybmVsLm9yZzsgZGFuaWVsQGlvZ2VhcmJv
+eC5uZXQ7IGRhdmVtQGRhdmVtbG9mdC5uZXQ7IGt1YmFAa2VybmVsLm9yZzsgaGF3a0BrZXJuZWwu
+b3JnOyBqb2huLmZhc3RhYmVuZEBnbWFpbC5jb207IGFuZHJpaUBrZXJuZWwub3JnOyBrYWZhaUBm
+Yi5jb207IHNvbmdsaXVicmF2aW5nQGZiLmNvbTsgeWhzQGZiLmNvbTsga3BzaW5naEBrZXJuZWwu
+b3JnDQrmioTpgIE6IHdlaXlvbmdqdW4gKEEpIDx3ZWl5b25nanVuMUBodWF3ZWkuY29tPjsgc2hh
+b3poZW5nY2hhbyA8c2hhb3poZW5nY2hhb0BodWF3ZWkuY29tPjsgeXVlaGFpYmluZyA8eXVlaGFp
+YmluZ0BodWF3ZWkuY29tPg0K5Li76aKYOiBSZTogW1BBVENIIGJwZi1uZXh0XSBzYW1wbGVzL2Jw
+ZjogY2hlY2sgZGV0YWNoIHByb2cgZXhpc3Qgb3Igbm90IGluIHhkcF9md2QNCg0KWmhlbmdjaGFv
+IFNoYW8gPHNoYW96aGVuZ2NoYW9AaHVhd2VpLmNvbT4gd3JpdGVzOg0KDQo+IEJlZm9yZSBkZXRh
+Y2ggdGhlIHByb2csIHdlIHNob3VsZCBjaGVjayBkZXRhY2ggcHJvZyBleGlzdCBvciBub3QuDQoN
+CklmIHdlJ3JlIGFkZGluZyBzdWNoIGEgY2hlY2sgd2Ugc2hvdWxkIGFsc28gY2hlY2sgdGhhdCBp
+dCdzIHRoZSAqcmlnaHQqIHByb2dyYW0uIEkuZS4sIHF1ZXJ5IHRoZSBJRCBmb3IgdGhlIHByb2dy
+YW0gbmFtZSBhbmQgY2hlY2sgdGhhdCBpdCBtYXRjaGVzIHdoYXQgdGhlIHByb2dyYW0gYXR0YWNo
+ZWQsIHRoZW4gb2J0YWluIGFuIGZkIGFuZCBwYXNzIHRoYXQgYXMgWERQX0VYUEVDVEVEX0ZEIG9u
+IGRldGFjaCB0byBtYWtlIHN1cmUgaXQgd2Fzbid0IHN3YXBwZWQgb3V0IGluIHRoZSBtZWFudGlt
+ZS4uLg0KDQotVG9rZQ0KDQpUaGFuayB5b3UgZm9yIHlvdXIgcmVwbHkuIFdoZW4gZmluaXNoIHJ1
+bm5pbmcgeGRwX2Z3ZCB0byBhdHRhdGNoIHByb2csIHRoZSBwcm9ncmFtIHdpbGwgZXhpdCBhbmQg
+Y2FuJ3Qgc3RvcmUgZmQgYXMgWERQX0VYUEVDVEVEX0ZELiANCg0KSSB0aGluayB0aGUgc2FtcGxl
+IHhkcF9md2QgLWQgaXMganVzdCBkZXRhY2ggcHJvZyBhbmQgZG9uJ3QgY2FyZSBpZiB0aGUgZmQg
+aXMgZXhwZWN0ZWQuDQoNCi16aGVuZ2NoYW8gc2hhbyANCg==
