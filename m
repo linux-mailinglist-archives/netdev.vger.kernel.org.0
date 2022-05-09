@@ -2,85 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B852E51F80D
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 11:26:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A69C451F80A
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 11:26:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236754AbiEIJ1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 05:27:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38758 "EHLO
+        id S236429AbiEIJ1q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 05:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238308AbiEIJOF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 05:14:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 011AA18C058
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 02:10:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88570614BE
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 09:10:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E32B6C385AC;
-        Mon,  9 May 2022 09:10:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652087412;
-        bh=tshMzCGRvlPkebCSi5RUR97fB126xfaHGXr2+zsh89k=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bIlt7pQKtGwHNuTanbI4RjWnTk3qe22gQbUhYscf4RSCjiWczdeOUF6D/LHRIoqlv
-         lG9+lG0WOqW1E2fCRu84o6SmbypYwODf6PiUIbLnhHUKw+VBJA33Cu7rR0FBV+zrDF
-         2xEaHO61/nXNgEylh1ba5IUzC+3JBx1chNBxPiIeBCtDzlKHL8tRe7892IrtmihRkB
-         RkPM7UaFRpUIyY2A0+QJO0+NKnJJ9psD9xWWNriMDQvBZd/1GrPh2O4WvlIrxmIjPp
-         +AzWfbZAn/IgPsu/F04BDsvUMrvNx3opDfgBUU4SBHDZRAVj6WIgSjkbnAwNTrNYqC
-         XK8SrAJZxot8Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C6529F03876;
-        Mon,  9 May 2022 09:10:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S237916AbiEIJS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 05:18:28 -0400
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C79C20793B
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 02:14:35 -0700 (PDT)
+Received: by mail-wm1-f49.google.com with SMTP id 129so7996084wmz.0
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 02:14:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zuhjKSdN+LknLeBLaF/0FJtpQWrxnv+xaPb8o+aLSrU=;
+        b=t0FipPqbxlT7DLBmCEPfIIrOLQt1e8GPh90uFkOtH0vTgrdU/qVOZnHLLzNbIkPwj3
+         kY/cLV9Ol9tDVpA6eaedL0sFXLCCl4dIlgvinE5HOMJ+uzDPKmPRlhUMy1w5QLoTs29R
+         r5OzGtTVCN/z1bOzxEP6+lIBmBAl9GkkO1fO5XyuqZRc2NNvHIwKaTI2g8pM8TJ7E2ms
+         63Qva3AMS6C04DbiejlYE3+QxGsJHFTL6NDuhcyfYVfooYET/NiPCf8xftIHoFkmuQrl
+         N4SOk/GG1cX8cDGTQQcx4mHTyQdixjIuH5Stlaz92Fr5YYyUXuwVrJpGbHo5BcEK+gv4
+         dj9A==
+X-Gm-Message-State: AOAM532MHWLfBSNdvVFf2pP9xqboH94rFjGVOjFpHdrTWU2tx65rOm7Q
+        xndAkCvQxrZXMW8s5+rgzuRyedPOeNERSZTjqhAbxdFvsgjL6R/g
+X-Google-Smtp-Source: ABdhPJzivWaIFvjAdelQmqNl3uwr9Oy59wdLOHYApeJEFAaYhRMfca1KvYDOjkLtfgpHM94GV28mTLPtzGZBezmUXIc=
+X-Received: by 2002:a7b:c202:0:b0:394:1e7d:af44 with SMTP id
+ x2-20020a7bc202000000b003941e7daf44mr15023758wmi.139.1652087674078; Mon, 09
+ May 2022 02:14:34 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net: sfc: fix memory leak due to ptp channel
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165208741180.4565.7847310079388354915.git-patchwork-notify@kernel.org>
-Date:   Mon, 09 May 2022 09:10:11 +0000
-References: <20220504123227.19434-1-ap420073@gmail.com>
-In-Reply-To: <20220504123227.19434-1-ap420073@gmail.com>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org,
-        ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220429223122.3642255-1-robert.hancock@calian.com>
+ <20220429223122.3642255-3-robert.hancock@calian.com> <555eee6a7f6661b12de7bd5373e7835a0dc43b65.camel@calian.com>
+ <7b84cace-778b-2a73-a718-94af1147698a@vaisala.com> <96fbf2e7f08912b1f80426aca981f52a4a7e7b97.camel@calian.com>
+In-Reply-To: <96fbf2e7f08912b1f80426aca981f52a4a7e7b97.camel@calian.com>
+From:   Harini Katakam <harinik@xilinx.com>
+Date:   Mon, 9 May 2022 14:44:22 +0530
+Message-ID: <CAFcVECJL0PSTUxCh3LERxT1465vzdL7vAb+GxGHqL+FtmyQJgA@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] net: macb: use NAPI for TX completion path
+To:     Robert Hancock <robert.hancock@calian.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "tomas.melin@vaisala.com" <tomas.melin@vaisala.com>,
+        "nicolas.ferre@microchip.com" <nicolas.ferre@microchip.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "claudiu.beznea@microchip.com" <claudiu.beznea@microchip.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Robert,
 
-This patch was applied to netdev/net.git (master)
-by David S. Miller <davem@davemloft.net>:
+Thanks for the patch.
 
-On Wed,  4 May 2022 12:32:27 +0000 you wrote:
-> It fixes memory leak in ring buffer change logic.
-> 
-> When ring buffer size is changed(ethtool -G eth0 rx 4096), sfc driver
-> works like below.
-> 1. stop all channels and remove ring buffers.
-> 2. allocates new buffer array.
-> 3. allocates rx buffers.
-> 4. start channels.
-> 
-> [...]
+<snip>
+>
+> Originally I thought there might be a correctness issue with calling it
+> unconditionally, but looking at it further I don't think there really is. The
+> FreeBSD driver for this hardware also seems to always do the TX restart in the
+> interrupt handler if there are packets in the TX queue.
+>
+> I think the only real issue is whether it's better performance wise to do it
+> all the time rather than only after the hardware asserts a TXUBR interrupt. I
+> expect it would be worse to do it all the time, as that would mean an extra
+> MMIO read, spinlock, MMIO read and MMIO write, versus just a read barrier and
+> checking a flag in memory.
+>
 
-Here is the summary with links:
-  - [net,v2] net: sfc: fix memory leak due to ptp channel
-    https://git.kernel.org/netdev/net/c/49e6123c65da
+I agree that doing TX restart only on UBR is better.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> >
+> > But should there anyways be some condition for the tx side handling, as
+> > I suppose macb_poll() runs when there is rx interrupt even if tx side
+> > has nothing to process?
+>
+> I opted not to do that for this case, as it should be pretty harmless and cheap
+> to just check the TX ring to see if any packets have been completed yet, rather
+> than actually tracking if a TX completion was pending. That seems to be the
+> standard practice in some other drivers (r8169, etc.)
 
+In this implementation the TX interrupt bit is being cleared and TX
+processing is
+scheduled when there is an RX interrupt as well as vice versa. Could you please
+consider using the check "status & MACB_BIT(TCOMP)" for TX interrupt and NAPI?
+If I understand your reply above right, you mention that the above check is more
+expensive than parsing the TX ring for new data. In unbalanced traffic
+scenarios i.e.
+server only or client only, will this be efficient?
 
+Regards,
+Harini
