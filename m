@@ -2,58 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD81E5204D3
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 20:59:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6C0B520522
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 21:18:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240381AbiEITCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 15:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60598 "EHLO
+        id S240499AbiEITUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 15:20:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240352AbiEITCF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 15:02:05 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CB620139D
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 11:58:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652122688; x=1683658688;
-  h=from:to:subject:date:message-id:in-reply-to:references:
-   mime-version;
-  bh=dvw2Hjyo5G08axm7x3bAgNJzQl6tH8KgWi7GNvDR/eo=;
-  b=jFhFsHekLVYHS0SRwrEwNOJ3gwqL9HITYyFyuFDkuNYq6ZZ486wVjlrj
-   dLJt0GLIKSJEge6SyVaAt83x8aFSscjg+MKBGzSaMWkc1m0idlCDgcDtR
-   JbqK0YRScu/LSJrjFxtoj27Ek6ASMlbgUOHFQxhReY9Ouajc2/TsphNnC
-   kCBFPGlWipQr62XheHHXZtFCaBy6K/nvH/6JwRTkkjuFxcxd5JyrK/Fvt
-   rmD7kNKzYp8/9mWYmykH+abmQwv17qdAxGB8MnhwFVQHshWQvkYi4RQit
-   A2NEUn4g7JqJCFmv+MgqQeni+T7z03MXR4lB0fEUoxAnxYWKtrdTjKiSk
-   Q==;
-X-IronPort-AV: E=Sophos;i="5.91,212,1647327600"; 
-   d="scan'208";a="163289249"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 11:58:07 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 9 May 2022 11:58:06 -0700
-Received: from chn-vm-ungapp01.mchp-main.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 11:58:06 -0700
-From:   Yuiko Oshino <yuiko.oshino@microchip.com>
-To:     <woojung.huh@microchip.com>, <yuiko.oshino@microchip.com>,
-        <davem@davemloft.net>, <netdev@vger.kernel.org>, <andrew@lunn.ch>,
-        <ravi.hegde@microchip.com>, <UNGLinuxDriver@microchip.com>,
-        <kuba@kernel.org>
-Subject: [PATCH net-next 2/2] net: phy: smsc: add comments for the LAN8742 phy ID mask.
-Date:   Mon, 9 May 2022 11:58:04 -0700
-Message-ID: <20220509185804.7147-3-yuiko.oshino@microchip.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220509185804.7147-1-yuiko.oshino@microchip.com>
-References: <20220509185804.7147-1-yuiko.oshino@microchip.com>
+        with ESMTP id S240474AbiEITUB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 15:20:01 -0400
+X-Greylist: delayed 711 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 12:16:04 PDT
+Received: from relay-b03.edpnet.be (relay-b03.edpnet.be [212.71.1.220])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A361A54BE3
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 12:16:03 -0700 (PDT)
+X-ASG-Debug-ID: 1652123048-15c435381a966b00001-BZBGGp
+Received: from srv21.vandijck-laurijssen.be (77.109.97.42.adsl.dyn.edpnet.net [77.109.97.42]) by relay-b03.edpnet.be with ESMTP id evQvZkMsT4fx48c7; Mon, 09 May 2022 21:04:08 +0200 (CEST)
+X-Barracuda-Envelope-From: dev.kurt@vandijck-laurijssen.be
+X-Barracuda-Effective-Source-IP: 77.109.97.42.adsl.dyn.edpnet.net[77.109.97.42]
+X-Barracuda-Apparent-Source-IP: 77.109.97.42
+Received: from x1.vandijck-laurijssen.be (x1.vandijck-laurijssen.be [IPv6:fd01::1a1d:eaff:fe02:d339])
+        by srv21.vandijck-laurijssen.be (Postfix) with ESMTPSA id 0E1DA1063BE;
+        Mon,  9 May 2022 21:04:08 +0200 (CEST)
+Date:   Mon, 9 May 2022 21:04:06 +0200
+From:   Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
+To:     Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
+ was already claimed
+Message-ID: <YnllpntZ8V5CD07v@x1.vandijck-laurijssen.be>
+X-ASG-Orig-Subj: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
+ was already claimed
+Mail-Followup-To: Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
+        Robin van der Gracht <robin@protonic.nl>,
+        Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, Oleksij Rempel <linux@rempel-privat.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
+X-Barracuda-Connect: 77.109.97.42.adsl.dyn.edpnet.net[77.109.97.42]
+X-Barracuda-Start-Time: 1652123048
+X-Barracuda-URL: https://212.71.1.220:443/cgi-mod/mark.cgi
+X-Virus-Scanned: by bsmtpd at edpnet.be
+X-Barracuda-Scan-Msg-Size: 1034
+X-Barracuda-BRTS-Status: 1
+X-Barracuda-Spam-Score: 0.00
+X-Barracuda-Spam-Status: No, SCORE=0.00 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=7.0 tests=
+X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.97894
+        Rule breakdown below
+         pts rule name              description
+        ---- ---------------------- --------------------------------------------------
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,31 +80,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-add comments for the LAN8742 phy ID mask in the previous patch.
-add one missing tab in the LAN8742 phy ID line.
+On ma, 09 mei 2022 19:03:03 +0200, Devid Antonio Filoni wrote:
+> This is not explicitly stated in SAE J1939-21 and some tools used for
+> ISO-11783 certification do not expect this wait.
 
-Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
----
- drivers/net/phy/smsc.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+IMHO, the current behaviour is not explicitely stated, but nor is the opposite.
+And if I'm not mistaken, this introduces a 250msec delay.
 
-diff --git a/drivers/net/phy/smsc.c b/drivers/net/phy/smsc.c
-index 44fa9e00cc50..92225d0fc246 100644
---- a/drivers/net/phy/smsc.c
-+++ b/drivers/net/phy/smsc.c
-@@ -484,7 +484,11 @@ static struct phy_driver smsc_phy_driver[] = {
- 	.suspend	= genphy_suspend,
- 	.resume		= genphy_resume,
- }, {
--	.phy_id	= 0x0007c130,	/* 0x0007c130 and 0x0007c131 */
-+	.phy_id		= 0x0007c130,	/* 0x0007c130 and 0x0007c131 */
-+	/* This mask (0xfffffff2) is to differentiate from
-+	 * LAN88xx (phy_id 0x0007c132)
-+	 * and allows future phy_id revisions.
-+	 */
- 	.phy_id_mask	= 0xfffffff2,
- 	.name		= "Microchip LAN8742",
- 
--- 
-2.25.1
+1. If you want to avoid the 250msec gap, you should avoid to contest the same address.
 
+2. It's a balance between predictability and flexibility, but if you try to accomplish both,
+as your patch suggests, there is slight time-window until the current owner responds,
+in which it may be confusing which node has the address. It depends on how much history
+you have collected on the bus.
+
+I'm sure that this problem decreases with increasing processing power on the nodes,
+but bigger internal queues also increase this window.
+
+It would certainly help if you describe how the current implementation fails.
+
+Would decreasing the dead time to 50msec help in such case.
+
+Kind regards,
+Kurt
