@@ -2,136 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 99BD452063F
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 22:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC60652064E
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 23:01:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiEIVBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 17:01:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
+        id S229915AbiEIVE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 17:04:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229756AbiEIVBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 17:01:00 -0400
-Received: from olfflo.fourcot.fr (fourcot.fr [217.70.191.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC012B8268
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 13:57:03 -0700 (PDT)
-From:   Florent Fourcot <florent.fourcot@wifirst.fr>
-To:     netdev@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        David Ahern <dsahern@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Florent Fourcot <florent.fourcot@wifirst.fr>
-Subject: [PATCH v2 net-next] net: neigh: add netlink filtering based on LLADDR for dump
-Date:   Mon,  9 May 2022 22:56:46 +0200
-Message-Id: <20220509205646.20814-1-florent.fourcot@wifirst.fr>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S229750AbiEIVEZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 17:04:25 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC4D2B8D2A;
+        Mon,  9 May 2022 14:00:30 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id r27so16675339iot.1;
+        Mon, 09 May 2022 14:00:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sfa+L1MKfwEVwek6Xm7/cKDId/OMBsX1x8UVDLlmeV4=;
+        b=GCcrFI3Odr9GEQgYk8BV9rgcTKJnDUVqyrcwwE8GZdomb9ZZZ40xoKK1GBfnEosnPj
+         u9IrBFEnhZVUHU8eaZjvaGo70R4xC5KXjvW29q5KhLYK/fo6usoEYN6MIeeV0lc2ZdR6
+         x8dHu9Igf9AZjD0htWBDkZJgLP1JAG1nHNiKXfE+1TG9kOET4UfllxU5HDxhmv/jhDzO
+         VuF8hIfIi1d9kPdYYJqH02+/Z6zpxd5R65F++gsJoKvarCKcd6lrZ29HtkORxGzOOxGT
+         lP50Np5GQIk5WOeqdt8FqjvmP4yvwoaAG3FYMg8B6a91RV7dqj/fnUaYpvtKmNhjnjv7
+         Hzvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sfa+L1MKfwEVwek6Xm7/cKDId/OMBsX1x8UVDLlmeV4=;
+        b=JVfz7RWRVkYQXLmj0gkkFq4w97QI7nERGDOe3UPQcjUgTv/4n2T4M2zYqGOcz7T3BK
+         X+DjTVYkj/y46YqbgZKCckfwRBb7q1vbX9PGx4T0y2H3m/ZSllfMBPNR1+eZ5ZxiYUAG
+         bAhhtVJTpuEg/bHLDDUceaK57cKa1h69h6ibOF0khTt99EkXYZtpdWZHP6fOPQweL7sb
+         /RqxDLepeyeKt/foLgK6nGWrDdPLK+ODDvd4tIRk9B9tv3LDavfN7pDPRUVhYjkwSlDM
+         y1++iwOIyM1lNEglFyN1YqHmj9ypLqdPPrhf5JxqcLtJhrzdY/cvzj6xoLftlgTwkjXp
+         ouWg==
+X-Gm-Message-State: AOAM533i4oGRVoT6N0EjvNqrIdGHG4v/+DNsSgLyek1U//47T9+lSGlC
+        R7nj5BHGgMnJfM+S0LCr7Wonmi5u/SvdhlTiDvw=
+X-Google-Smtp-Source: ABdhPJwSq+cVlV6IA0h/x6EIQOBZsDxmow6vmYrzlXG44EPzm6h31VbH2TlRahj+ZSCn2GWJWzi9tjE0CBuyemGsSfY=
+X-Received: by 2002:a05:6638:16d6:b0:32b:a283:a822 with SMTP id
+ g22-20020a05663816d600b0032ba283a822mr8275162jat.145.1652130029615; Mon, 09
+ May 2022 14:00:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+References: <20220502211235.142250-1-mathew.j.martineau@linux.intel.com>
+ <20220502211235.142250-6-mathew.j.martineau@linux.intel.com>
+ <CAEf4BzY-t=ZtmU+6yeSo5DD6+C==NUN=twAKq=OQyVb2rS2ENw@mail.gmail.com> <8afe6b33-49c1-5060-87ed-80ef21096bbb@tessares.net>
+In-Reply-To: <8afe6b33-49c1-5060-87ed-80ef21096bbb@tessares.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 9 May 2022 14:00:18 -0700
+Message-ID: <CAEf4BzbwGHtoEooE3wFotgoYi8uDRYJcK=Y0Vdt-JUtWi4rqhg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 5/8] selftests: bpf: test bpf_skc_to_mptcp_sock
+To:     Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, mptcp@lists.linux.dev
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-neighbours table dump supports today two filtering:
- * based on interface index
- * based on master index
+On Mon, May 9, 2022 at 2:00 AM Matthieu Baerts
+<matthieu.baerts@tessares.net> wrote:
+>
+> Hi Andrii,
+>
+> Thank you for the review!
+>
+> On 07/05/2022 00:26, Andrii Nakryiko wrote:
+> > On Mon, May 2, 2022 at 2:12 PM Mat Martineau
+> > <mathew.j.martineau@linux.intel.com> wrote:
+>
+> (...)
+>
+> >> diff --git a/MAINTAINERS b/MAINTAINERS
+> >> index 359afc617b92..d48d3cb6abbc 100644
+> >> --- a/MAINTAINERS
+> >> +++ b/MAINTAINERS
+> >> @@ -13780,6 +13780,7 @@ F:      include/net/mptcp.h
+> >>  F:     include/trace/events/mptcp.h
+> >>  F:     include/uapi/linux/mptcp.h
+> >>  F:     net/mptcp/
+> >> +F:     tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+> >>  F:     tools/testing/selftests/bpf/*/*mptcp*.c
+> >>  F:     tools/testing/selftests/net/mptcp/
+> >>
+> >> diff --git a/tools/testing/selftests/bpf/bpf_mptcp_helpers.h b/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+> >> new file mode 100644
+> >> index 000000000000..18da4cc65e89
+> >> --- /dev/null
+> >> +++ b/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+> >> @@ -0,0 +1,14 @@
+> >> +/* SPDX-License-Identifier: GPL-2.0 */
+> >> +/* Copyright (c) 2022, SUSE. */
+> >> +
+> >> +#ifndef __BPF_MPTCP_HELPERS_H
+> >> +#define __BPF_MPTCP_HELPERS_H
+> >> +
+> >> +#include "bpf_tcp_helpers.h"
+> >> +
+> >> +struct mptcp_sock {
+> >> +       struct inet_connection_sock     sk;
+> >> +
+> >> +} __attribute__((preserve_access_index));
+> >
+> > why can't all this live in bpf_tcp_helpers.h? why do we need extra header?
+>
+> The main reason is related to the maintenance: to have MPTCP ML being
+> cc'd for all patches modifying this file.
+>
+> Do you prefer if all these specific MPTCP structures and macros and
+> mixed with TCP ones?
+>
 
-This patch adds a new filtering, based on layer two address. That will
-help to replace something like it:
+These definitions don't even have to be 1:1 w/ whatever is kernel
+defining in terms of having all the fields, or their order, etc. So I
+think it won't require active maintenance and thus can be merged into
+bpf_tcp_helpers.h to keep it in one place.
 
- ip neigh show | grep aa:11:22:bb:ee:ff
 
-by a better command:
-
- ip neigh show lladdr aa:11:22:bb:ee:ff
-
-Changes in v2:
-  * Check NDA_LLADDR length
-
-Signed-off-by: Florent Fourcot <florent.fourcot@wifirst.fr>
----
- net/core/neighbour.c | 35 +++++++++++++++++++++++++++++++++--
- 1 file changed, 33 insertions(+), 2 deletions(-)
-
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index 47b6c1f0fdbb..913b9dbcd276 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -2641,9 +2641,25 @@ static bool neigh_ifindex_filtered(struct net_device *dev, int filter_idx)
- 	return false;
- }
- 
-+static bool neigh_lladdr_filtered(struct neighbour *neigh, const u8 *lladdr,
-+				  u32 lladdr_len)
-+{
-+	if (!lladdr)
-+		return false;
-+
-+	if (lladdr_len != neigh->dev->addr_len)
-+		return true;
-+
-+	if (memcmp(lladdr, neigh->ha, neigh->dev->addr_len) != 0)
-+		return true;
-+
-+	return false;
-+}
-+
- struct neigh_dump_filter {
- 	int master_idx;
- 	int dev_idx;
-+	struct nlattr *nla_lladdr;
- };
- 
- static int neigh_dump_table(struct neigh_table *tbl, struct sk_buff *skb,
-@@ -2656,13 +2672,20 @@ static int neigh_dump_table(struct neigh_table *tbl, struct sk_buff *skb,
- 	int idx, s_idx = idx = cb->args[2];
- 	struct neigh_hash_table *nht;
- 	unsigned int flags = NLM_F_MULTI;
-+	u8 *lladdr = NULL;
-+	u32 lladdr_len;
- 
--	if (filter->dev_idx || filter->master_idx)
-+	if (filter->dev_idx || filter->master_idx || filter->nla_lladdr)
- 		flags |= NLM_F_DUMP_FILTERED;
- 
- 	rcu_read_lock_bh();
- 	nht = rcu_dereference_bh(tbl->nht);
- 
-+	if (filter->nla_lladdr) {
-+		lladdr_len = nla_len(filter->nla_lladdr);
-+		lladdr = nla_data(filter->nla_lladdr);
-+	}
-+
- 	for (h = s_h; h < (1 << nht->hash_shift); h++) {
- 		if (h > s_h)
- 			s_idx = 0;
-@@ -2672,7 +2695,8 @@ static int neigh_dump_table(struct neigh_table *tbl, struct sk_buff *skb,
- 			if (idx < s_idx || !net_eq(dev_net(n->dev), net))
- 				goto next;
- 			if (neigh_ifindex_filtered(n->dev, filter->dev_idx) ||
--			    neigh_master_filtered(n->dev, filter->master_idx))
-+			    neigh_master_filtered(n->dev, filter->master_idx) ||
-+			    neigh_lladdr_filtered(n, lladdr, lladdr_len))
- 				goto next;
- 			if (neigh_fill_info(skb, n, NETLINK_CB(cb->skb).portid,
- 					    cb->nlh->nlmsg_seq,
-@@ -2788,6 +2812,13 @@ static int neigh_valid_dump_req(const struct nlmsghdr *nlh,
- 		case NDA_MASTER:
- 			filter->master_idx = nla_get_u32(tb[i]);
- 			break;
-+		case NDA_LLADDR:
-+			if (!nla_len(tb[i])) {
-+				NL_SET_ERR_MSG(extack, "Invalid link address");
-+				return -EINVAL;
-+			}
-+			filter->nla_lladdr = tb[i];
-+			break;
- 		default:
- 			if (strict_check) {
- 				NL_SET_ERR_MSG(extack, "Unsupported attribute in neighbor dump request");
--- 
-2.30.2
-
+> Cheers,
+> Matt
+> --
+> Tessares | Belgium | Hybrid Access Solutions
+> www.tessares.net
