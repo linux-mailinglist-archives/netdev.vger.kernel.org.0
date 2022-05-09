@@ -2,156 +2,432 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7FCD51F96B
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 12:09:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5799951F9B4
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 12:21:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234307AbiEIKNC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 06:13:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36222 "EHLO
+        id S233163AbiEIKZB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 06:25:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234122AbiEIKM6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 06:12:58 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-db3eur04on061a.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0c::61a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE56023516D;
-        Mon,  9 May 2022 03:08:56 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=JJ0bDUhL0bjOQZ1ZsaWaltKbEv6bG6utDTPFCWHYD9UmSxINya4q4FwTHnp3II6qL2UhVVQzH1TxvJs7tlZvM91LxHjFVnwk4JJBWpVC78iTg7IyNcKZES00Q1PmgYAf2n1PZuaUfagIlbgqsFK+zPGLBf+NzL6xzUq2uY6sWIfy8uY6TicjMyJW5t1z6ISby/v0K/116K+HRyzJwCx+dHXPpQJLxUUPRqihdgV64jEZXvZIM2aPSOebp5+O56i+nKADnXxzjCxumIPOGe+XAzC8U0Bp3BfhJ2p2DIzpJGmu96yG0ENloL5vv89x/t/7R6IcMt0e2d46pO0eHlBF0Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=iPYd3dKKkSb6+aZ6jzdk9RZQX/grnR5Wr9H5cY/+oqw=;
- b=AzeOekzkjLAMcSf0gY0Ms5dzSXobr8ZcgDd2jNZ7MI+EjuEZTra7lXCZyPFPCDJLXv7lyyFxX+TUB8eUwR2JUx4wOYSOF2XpOYwhDZu8dOgUSGVTksjTGO5HX34Z09MY92UKBd/6Iyn5CiiZISSt3RRI/xjWChKGlXcINOrwwrKkP3ARrgKAzhmoAgHLyFh4lHPzj0JXJ/z2J/ZoGE62Vdxh1W/cszxW7IHW0sY55PGaUHaW6S7PB7TY5CP7vGLQ7fkkJeth4TugpVkZZ0Ei3/ZUXSCffzbhZbW46lqULDQakumoObeNqoKcmt23v/rUz8gAr2wLp6dB5sk04NlZdA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iPYd3dKKkSb6+aZ6jzdk9RZQX/grnR5Wr9H5cY/+oqw=;
- b=YhEn6vR5a8h81FPumM5hzlkCJei2JgKVCJImesrmXEDplDohgMqDVxTR2F2w5bsJk/VgTynDuCcDXV5IvRr9zljXFMmA7u+d2QurmBslp1aCwAh8m2QGXwwCrtGRmLcxKzOnCamOYvIeVbZmVCHZWfncYCjnwsF2imd1g6Cu3io=
-Received: from AM0PR04MB5121.eurprd04.prod.outlook.com (2603:10a6:208:c1::16)
- by AM9PR04MB8066.eurprd04.prod.outlook.com (2603:10a6:20b:3eb::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Mon, 9 May
- 2022 10:05:48 +0000
-Received: from AM0PR04MB5121.eurprd04.prod.outlook.com
- ([fe80::d42:c23c:780e:78eb]) by AM0PR04MB5121.eurprd04.prod.outlook.com
- ([fe80::d42:c23c:780e:78eb%4]) with mapi id 15.20.5227.022; Mon, 9 May 2022
- 10:05:48 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Colin Foster <colin.foster@in-advantage.com>
-CC:     "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Terry Bowman <terry.bowman@amd.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: Re: [RFC v8 net-next 02/16] pinctrl: microchip-sgpio: allow sgpio
- driver to be used as a module
-Thread-Topic: [RFC v8 net-next 02/16] pinctrl: microchip-sgpio: allow sgpio
- driver to be used as a module
-Thread-Index: AQHYYwzrNs4aifVBdkSP+G8ZOCg1C60WUpkA
-Date:   Mon, 9 May 2022 10:05:48 +0000
-Message-ID: <20220509100546.aq26ztokjgg46xvq@skbuf>
-References: <20220508185313.2222956-1-colin.foster@in-advantage.com>
- <20220508185313.2222956-3-colin.foster@in-advantage.com>
-In-Reply-To: <20220508185313.2222956-3-colin.foster@in-advantage.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 169583e1-11c1-4af8-ec74-08da31a37d9d
-x-ms-traffictypediagnostic: AM9PR04MB8066:EE_
-x-microsoft-antispam-prvs: <AM9PR04MB8066E4AC740ABD3BE7416898E0C69@AM9PR04MB8066.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: khjy1HIQc1OJtx0UOVRwg4t5kLsG5deoqPA6bWscIhvQEvsf5YMTYJ0pMzVp8SW4h1FdY99lKqukzndIZK48mmfltdig55b3il6Ju0adNjhwHfK0PtW2HQgB3rlUn/XJLjXqLU8mbiKNnHWYyfW972mq5a0RLfGqgA8Or67ZItGxadtlHnkJXHqNbs4ZM8HA0hIve+OHK2YBKZKDMd3C3C0NPwjkNBUVFKAeKjy9yXbmgezRwkSOZKfJnK85ES3Kc6YVJ99D4SD2m/YUxj/pwCyQW734NLOoq6FXDvsSXiaG4APpGQ1OyZ07dMv5UnAPzIplX/WPmzfXN1SwhA3qqyu8wIt3YaAsCDzuBkRg2d7iX7Xf3Cdbqpw/TGnJPIGZPowyixnjnfRXpyMiOD7/W5D22p9zbT9dgaE8FwKGxa5YtgnWY2Nhe3KMvwyM61Pj5i2vwgRCCYi+hF7vrY6TLk2KV5RXITDuqCyC7FVfeBgULucqVkvqH9XkQq9AxS8fwouoFGmK3R/r7h1nr4svsfvyAuhEx3fjV01JMjpm8dvdvjodLz8g4dfVmnlC2TMdAyQknwLJm4DU3DrYMNFvz2kjVMzG0zVxJLr7qZ7kcDwDRm2YQaaeOO2coX5nYGewEMOWLGqjg31yMBlppJSNtvOTi2KC2JCBqpAXegSTj3LZ3TsJGwvOVI/CKjq79yt99b4kzXzO5DrlLqaSmCARnA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR04MB5121.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(4326008)(8676002)(66446008)(8936002)(6916009)(54906003)(66946007)(66476007)(64756008)(66556008)(76116006)(1076003)(91956017)(316002)(86362001)(122000001)(6512007)(9686003)(6506007)(26005)(71200400001)(508600001)(38070700005)(2906002)(6486002)(33716001)(83380400001)(5660300002)(44832011)(186003)(7416002)(4744005)(38100700002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?iaFHSAUm7GzlETnYbh9EqHIzKMz0Ht/9RJNgybOGaKE+/64Fb/oOZ315Ym03?=
- =?us-ascii?Q?2s89czwbBUJwAvQBGyZYyDTiwzNe06W7rcsnMBJl8FXAF3h88TroLvRVcd/C?=
- =?us-ascii?Q?X25jgF0+r2zLgU3pd+ALcnw9X4estsSM3h1mbJtTYaRYS87vBkCpSfKPzbHD?=
- =?us-ascii?Q?N0/w4FP+WvlX/u4r26OCRQ/baRMxeqVUIQ4iXMfsScPGn0pbKywj4hkMjrVJ?=
- =?us-ascii?Q?Q/cTCrohIjJeEQXqp0ZpIBgDVm6pvYWAFL53Epf2lHAN451qra3EJQjMeB++?=
- =?us-ascii?Q?CaUxuOveLwkyCLBIAH3pVj+NrXtGrbx9Oje3KjIs1gfkV6k1D62M40ElpBxD?=
- =?us-ascii?Q?6hiOYZW3GGfR+A6/XEgquLQNx8w3QN5PiXOC06EbkpOIv0F9ZZV/NScN5sCh?=
- =?us-ascii?Q?VfvuNumJxN/1ev7duEtJpu4Cl++pbqJmxCpPcnaY6mfr/SzCcEyjq384h1ka?=
- =?us-ascii?Q?0kmAttLtVRJWyVBaHv8CWp6w21B/QZeV281r5/A8Js+Fnqc5gxP8Dk70F76g?=
- =?us-ascii?Q?fhUTAdF08cN4quqgP9CAwc8WNCAZY2T8fAVx0gPgBJH2LGpXKlM7yocfjCh+?=
- =?us-ascii?Q?Oz/8SdJypT68VkOGx+ghfbo/PY91yBCg6c090GVqbHk+JSYGwiVGoimL2oH3?=
- =?us-ascii?Q?OXR/ioSPuMoXbdWtfji+I7HaonIiMjp0RHMtu+0wxBx+0q6oAiiAL89bsHNn?=
- =?us-ascii?Q?CJTVasxdSmNZ9dfsGNG/1TOKsvsAEz943Xu6usqjOIg2kwVtGBn7BNdaBdNh?=
- =?us-ascii?Q?efPO1IUBP59pex0ktUno2UUG5F9fRaXZMaubMXtd68VV5AwDReaAROFom7MG?=
- =?us-ascii?Q?jYRPeE05TgloNq/mGdm9kg44YyR0gZFV7iSpNPOg/O8lke24X77gHj+wtbsy?=
- =?us-ascii?Q?GEKYczgMxAYcG+GGP1R6WmPOk1G/vZcawXxadC5QeAuINYd1W6bWwfakwcVS?=
- =?us-ascii?Q?kCd1ZWqHDqjcBNK9Ty7VCXJTxLX2n9yMOyp7auxcTylOzlBBG5BvgVKro2iy?=
- =?us-ascii?Q?hCa2QM8WtGg5pjuDFxLx6bW17RClUdlDRDkvidV1JiWpf0nh5eGwSu7ZqxEY?=
- =?us-ascii?Q?DzXCE0bUuXucqDVxdTzxE1f/IGt2+DMDNfwIhVpLzLeZPnhkOaHuca8xd1iG?=
- =?us-ascii?Q?dcpVdmFv9lLsXgNe+deVK0+czCEhYfg5BThFAFtN058Y6t8tgzbline1lNe8?=
- =?us-ascii?Q?cAXYliOWVLmKKMTYzoCur+59Xm8d9cyj6JslaQL7dFPEwomFIEpRT/8j0v5s?=
- =?us-ascii?Q?PRFzjEuttRLuQDysrCSMlxclNkQ/dZ09IykzcWhfXXrq23iBT2Wag/iBUwTS?=
- =?us-ascii?Q?GaaHb/al6Th/cVdonkBiWoj7wh4F1Y/osrK68MZcsFj7yEht+s5g7YIeo12b?=
- =?us-ascii?Q?lE7KSR7E7GPVoiJwQgo2tjGZ8GQTKrzWbh3tIShUS+P8W6fiZkggq70LL9y+?=
- =?us-ascii?Q?HwxDn8ECuNoLNeUr+fZVQK+BAhOlPhHwu3vobXTErdOty0GoDKh++RJpATsI?=
- =?us-ascii?Q?YKSBIArJEPs2EAWIqBVakdl12Mn3zmjRk3LeAPrksH5ZKWbSYpvyJc2QgOaE?=
- =?us-ascii?Q?yRZUFIVu/ggwXikOMvZOQuGksEJCzGypIup7rGoYEJy1D/Fqo8DNVbjHuwkl?=
- =?us-ascii?Q?O55++9G1tr6EePPyuulg0/BLD4Qf9drp6a9jomv6BT++GCidhXbAVyttB2bm?=
- =?us-ascii?Q?3Teifv7pm95c/42tT8cpPpchHjdCtW12Olb97AvjHG6jjhndsT8VAMuS3xdS?=
- =?us-ascii?Q?ZG0fYk7edeoRSWVi2lwEzs2eWrcpt8c=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <5E1CF5F87E594B40B8FDCE0DDDC28540@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S232406AbiEIKY5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 06:24:57 -0400
+Received: from lelv0142.ext.ti.com (lelv0142.ext.ti.com [198.47.23.249])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB747403DC;
+        Mon,  9 May 2022 03:21:00 -0700 (PDT)
+Received: from fllv0034.itg.ti.com ([10.64.40.246])
+        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 249AKW6L053311;
+        Mon, 9 May 2022 05:20:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1652091632;
+        bh=osMp8LaM7WxWl93D15Dd0t8zs0K59TXdoQKV0BTa4PI=;
+        h=Date:Subject:To:CC:References:From:In-Reply-To;
+        b=vXxLcHDj0+RM+PGZlVA1xWmrQN0LMYwlUAKHxLL9UwSK+SkDUzgyTY2DBr8MOal06
+         qD1DSopPqv9VgyFfWFcRDrUvecWtMge6DWTXOgZuKCd/VQSxkqVRcjPvqe/rHd/zoD
+         AuCgzPVrTgZr2pFZlzYVJc1X98IbsEAO6kPDuYgU=
+Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 249AKWFx123284
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 9 May 2022 05:20:32 -0500
+Received: from DLEE110.ent.ti.com (157.170.170.21) by DLEE106.ent.ti.com
+ (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Mon, 9
+ May 2022 05:20:31 -0500
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE110.ent.ti.com
+ (157.170.170.21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Mon, 9 May 2022 05:20:31 -0500
+Received: from [172.24.220.119] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 249AKPg8114930;
+        Mon, 9 May 2022 05:20:26 -0500
+Message-ID: <f674c56c-0621-f471-9517-5c349940d362@ti.com>
+Date:   Mon, 9 May 2022 15:50:24 +0530
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR04MB5121.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 169583e1-11c1-4af8-ec74-08da31a37d9d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 May 2022 10:05:48.2965
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: uYvYYiaMqXZdZi5GagNnSRMQfXN51vfSL9Jft29aLz67ki3x6EjPLPP6oIaAMNKE/dq0hMVORvIP0A/hQWU35Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR04MB8066
-X-Spam-Status: No, score=-1.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_PASS,T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 2/2] net: ti: icssg-prueth: Add ICSSG ethernet driver
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     <linux-kernel@vger.kernel.org>, <davem@davemloft.net>,
+        <edumazet@google.com>, <krzysztof.kozlowski+dt@linaro.org>,
+        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <nm@ti.com>, <ssantosh@kernel.org>, <s-anna@ti.com>,
+        <linux-arm-kernel@lists.infradead.org>, <rogerq@kernel.org>,
+        <grygorii.strashko@ti.com>, <vigneshr@ti.com>, <kishon@ti.com>,
+        <robh+dt@kernel.org>, <afd@ti.com>
+References: <20220506052433.28087-1-p-mohan@ti.com>
+ <20220506052433.28087-3-p-mohan@ti.com> <YnVQW7xpSWEE2/HP@lunn.ch>
+From:   Puranjay Mohan <p-mohan@ti.com>
+In-Reply-To: <YnVQW7xpSWEE2/HP@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+X-Spam-Status: No, score=-6.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 08, 2022 at 11:52:59AM -0700, Colin Foster wrote:
-> As the commit message suggests, this simply adds the ability to select
-> SGPIO pinctrl as a module. This becomes more practical when the SGPIO
-> hardware exists on an external chip, controlled indirectly by I2C or SPI.
-> This commit enables that level of control.
->=20
-> Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
+Hi Andrew,
+Thanks for your comments.
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>=
+On 06/05/22 22:14, Andrew Lunn wrote:
+>> +void icssg_config_ipg(struct prueth_emac *emac)
+>> +{
+>> +	struct prueth *prueth = emac->prueth;
+>> +	int slice = prueth_emac_slice(emac);
+>> +
+>> +	switch (emac->speed) {
+>> +	case SPEED_1000:
+>> +		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_1G);
+>> +		break;
+>> +	case SPEED_100:
+>> +		icssg_mii_update_ipg(prueth->mii_rt, slice, MII_RT_TX_IPG_100M);
+>> +		break;
+>> +	default:
+>> +		/* Other links speeds not supported */
+>> +		pr_err("Unsupported link speed\n");
+> 
+> dev_err() or netdev_err(). You then get an idea which device somebody
+> is trying to configure into an unsupported mode.
+
+I will use netdev_err() in next version.
+
+> 
+> checkpatch probably also warned about that?
+
+unfortunately it didn't.
+
+> 
+>> +static void icssg_init_emac_mode(struct prueth *prueth)
+>> +{
+>> +	u8 mac[ETH_ALEN] = { 0 };
+>> +
+>> +	if (prueth->emacs_initialized)
+>> +		return;
+>> +
+>> +	regmap_update_bits(prueth->miig_rt, FDB_GEN_CFG1, SMEM_VLAN_OFFSET_MASK, 0);
+>> +	regmap_write(prueth->miig_rt, FDB_GEN_CFG2, 0);
+>> +	/* Clear host MAC address */
+>> +	icssg_class_set_host_mac_addr(prueth->miig_rt, mac);
+> 
+> Seems an odd thing to do, set it to 00:00:00:00:00:00. You probably
+> want to add a comment why you do this odd thing.
+
+Actually, this is when the device is configured as a bridge, the host
+mac address has to be set to zero to while bringing it back to emac
+mode. I will add a comment to explain this.
+
+
+> 
+>> +int emac_set_port_state(struct prueth_emac *emac,
+>> +			enum icssg_port_state_cmd cmd)
+>> +{
+>> +	struct icssg_r30_cmd *p;
+>> +	int ret = -ETIMEDOUT;
+>> +	int timeout = 10;
+>> +	int i;
+>> +
+>> +	p = emac->dram.va + MGR_R30_CMD_OFFSET;
+>> +
+>> +	if (cmd >= ICSSG_EMAC_PORT_MAX_COMMANDS) {
+>> +		netdev_err(emac->ndev, "invalid port command\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	/* only one command at a time allowed to firmware */
+>> +	mutex_lock(&emac->cmd_lock);
+>> +
+>> +	for (i = 0; i < 4; i++)
+>> +		writel(emac_r32_bitmask[cmd].cmd[i], &p->cmd[i]);
+>> +
+>> +	/* wait for done */
+>> +	while (timeout) {
+>> +		if (emac_r30_is_done(emac)) {
+>> +			ret = 0;
+>> +			break;
+>> +		}
+>> +
+>> +		usleep_range(1000, 2000);
+>> +		timeout--;
+>> +	}
+> 
+> linux/iopoll.h
+
+will add in next version
+
+> 
+>> +void icssg_config_set_speed(struct prueth_emac *emac)
+>> +{
+>> +	u8 fw_speed;
+>> +
+>> +	switch (emac->speed) {
+>> +	case SPEED_1000:
+>> +		fw_speed = FW_LINK_SPEED_1G;
+>> +		break;
+>> +	case SPEED_100:
+>> +		fw_speed = FW_LINK_SPEED_100M;
+>> +		break;
+>> +	default:
+>> +		/* Other links speeds not supported */
+>> +		pr_err("Unsupported link speed\n");
+> 
+> dev_err() or netdev_err().
+> 
+> 
+>> +static int emac_get_link_ksettings(struct net_device *ndev,
+>> +				   struct ethtool_link_ksettings *ecmd)
+>> +{
+>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>> +
+>> +	if (!emac->phydev)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	phy_ethtool_ksettings_get(emac->phydev, ecmd);
+>> +	return 0;
+>> +}
+> 
+> phy_ethtool_get_link_ksettings().
+> 
+> You should keep phydev in ndev, not your priv structure.
+
+Okay, I will make this change in the whole driver.
+
+> 
+>> +
+>> +static int emac_set_link_ksettings(struct net_device *ndev,
+>> +				   const struct ethtool_link_ksettings *ecmd)
+>> +{
+>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>> +
+>> +	if (!emac->phydev)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	return phy_ethtool_ksettings_set(emac->phydev, ecmd);
+> 
+> phy_ethtool_set_link_ksettings()
+> 
+>> +static int emac_nway_reset(struct net_device *ndev)
+>> +{
+>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>> +
+>> +	if (!emac->phydev)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	return genphy_restart_aneg(emac->phydev);
+> 
+> phy_ethtool_nway_reset()
+> 
+>> +static void emac_get_ethtool_stats(struct net_device *ndev,
+>> +				   struct ethtool_stats *stats, u64 *data)
+>> +{
+>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>> +	struct prueth *prueth = emac->prueth;
+>> +	int i;
+>> +	int slice = prueth_emac_slice(emac);
+>> +	u32 base = stats_base[slice];
+>> +	u32 val;
+> 
+> Reverse Christmas tree. Move i to the end. There are other places in
+> the driver you need to fix up as well.
+> 
+>> +static int debug_level = -1;
+>> +module_param(debug_level, int, 0644);
+>> +MODULE_PARM_DESC(debug_level, "PRUETH debug level (NETIF_MSG bits)");
+> 
+> Module parameters are not liked any more. Yes, lots of drivers have
+> this one, but you have the ethtool setting, so you should not need
+> this.
+> 
+>> +/* called back by PHY layer if there is change in link state of hw port*/
+>> +static void emac_adjust_link(struct net_device *ndev)
+>> +{
+>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>> +	struct phy_device *phydev = emac->phydev;
+>> +	struct prueth *prueth = emac->prueth;
+>> +	bool new_state = false;
+>> +	unsigned long flags;
+>> +
+>> +	if (phydev->link) {
+>> +		/* check the mode of operation - full/half duplex */
+>> +		if (phydev->duplex != emac->duplex) {
+>> +			new_state = true;
+>> +			emac->duplex = phydev->duplex;
+>> +		}
+>> +		if (phydev->speed != emac->speed) {
+>> +			new_state = true;
+>> +			emac->speed = phydev->speed;
+>> +		}
+>> +		if (!emac->link) {
+>> +			new_state = true;
+>> +			emac->link = 1;
+>> +		}
+>> +	} else if (emac->link) {
+>> +		new_state = true;
+>> +		emac->link = 0;
+>> +		/* defaults for no link */
+>> +
+>> +		/* f/w should support 100 & 1000 */
+>> +		emac->speed = SPEED_1000;
+>> +
+>> +		/* half duplex may not supported by f/w */
+>> +		emac->duplex = DUPLEX_FULL;
+> 
+> Why set speed and duplex when you have just lost the link? They are
+> meaningless until the link comes back.
+
+These were just the default values that we added.
+What do you suggest I put here?
+
+> 
+>> +	}
+>> +
+>> +	if (new_state) {
+>> +		phy_print_status(phydev);
+>> +
+>> +		/* update RGMII and MII configuration based on PHY negotiated
+>> +		 * values
+>> +		 */
+>> +		if (emac->link) {
+>> +			/* Set the RGMII cfg for gig en and full duplex */
+>> +			icssg_update_rgmii_cfg(prueth->miig_rt, emac);
+>> +
+>> +			/* update the Tx IPG based on 100M/1G speed */
+>> +			spin_lock_irqsave(&emac->lock, flags);
+>> +			icssg_config_ipg(emac);
+>> +			spin_unlock_irqrestore(&emac->lock, flags);
+>> +			icssg_config_set_speed(emac);
+>> +			emac_set_port_state(emac, ICSSG_EMAC_PORT_FORWARD);
+>> +
+>> +		} else {
+>> +			emac_set_port_state(emac, ICSSG_EMAC_PORT_DISABLE);
+>> +		}
+>> +	}
+>> +
+>> +	if (emac->link) {
+>> +		/* link ON */
+>> +		netif_carrier_on(ndev);
+> 
+> phylib will do this for you.
+> 
+>> +		/* reactivate the transmit queue */
+>> +		netif_tx_wake_all_queues(ndev);
+> 
+> Not something you see other drivers do. Why is it here?
+> 
+>> +	} else {
+>> +		/* link OFF */
+>> +		netif_carrier_off(ndev);
+>> +		netif_tx_stop_all_queues(ndev);
+> 
+> Same as above, for both.
+> 
+>> +static int emac_ndo_open(struct net_device *ndev)
+>> +{
+>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>> +	int ret, i, num_data_chn = emac->tx_ch_num;
+>> +	struct prueth *prueth = emac->prueth;
+>> +	int slice = prueth_emac_slice(emac);
+>> +	struct device *dev = prueth->dev;
+>> +	int max_rx_flows;
+>> +	int rx_flow;
+>> +
+>> +	/* clear SMEM and MSMC settings for all slices */
+>> +	if (!prueth->emacs_initialized) {
+>> +		memset_io(prueth->msmcram.va, 0, prueth->msmcram.size);
+>> +		memset_io(prueth->shram.va, 0, ICSSG_CONFIG_OFFSET_SLICE1 * PRUETH_NUM_MACS);
+>> +	}
+>> +
+>> +	/* set h/w MAC as user might have re-configured */
+>> +	ether_addr_copy(emac->mac_addr, ndev->dev_addr);
+>> +
+>> +	icssg_class_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
+>> +	icssg_ft1_set_mac_addr(prueth->miig_rt, slice, emac->mac_addr);
+>> +
+>> +	icssg_class_default(prueth->miig_rt, slice, 0);
+>> +
+>> +	netif_carrier_off(ndev);
+> 
+> It should default to off. phylib will turn it on for you when you get
+> link.
+> 
+>> +static int emac_ndo_ioctl(struct net_device *ndev, struct ifreq *ifr, int cmd)
+>> +{
+>> +	struct prueth_emac *emac = netdev_priv(ndev);
+>> +
+>> +	if (!emac->phydev)
+>> +		return -EOPNOTSUPP;
+>> +
+>> +	return phy_mii_ioctl(emac->phydev, ifr, cmd);
+>> +}
+> 
+> phy_do_ioctl()
+> 
+>> +extern const struct ethtool_ops icssg_ethtool_ops;
+> 
+> Should really by in a header file.
+> 
+>> +static int prueth_probe(struct platform_device *pdev)
+>> +{
+>> +	struct prueth *prueth;
+>> +	struct device *dev = &pdev->dev;
+>> +	struct device_node *np = dev->of_node;
+>> +	struct device_node *eth_ports_node;
+>> +	struct device_node *eth_node;
+>> +	struct device_node *eth0_node, *eth1_node;
+>> +	const struct of_device_id *match;
+>> +	struct pruss *pruss;
+>> +	int i, ret;
+>> +	u32 msmc_ram_size;
+>> +	struct genpool_data_align gp_data = {
+>> +		.align = SZ_64K,
+>> +	};
+>> +
+>> +	match = of_match_device(prueth_dt_match, dev);
+>> +	if (!match)
+>> +		return -ENODEV;
+>> +
+>> +	prueth = devm_kzalloc(dev, sizeof(*prueth), GFP_KERNEL);
+>> +	if (!prueth)
+>> +		return -ENOMEM;
+>> +
+>> +	dev_set_drvdata(dev, prueth);
+>> +	prueth->pdev = pdev;
+>> +	prueth->pdata = *(const struct prueth_pdata *)match->data;
+>> +
+>> +	prueth->dev = dev;
+>> +	eth_ports_node = of_get_child_by_name(np, "ethernet-ports");
+>> +	if (!eth_ports_node)
+>> +		return -ENOENT;
+>> +
+>> +	for_each_child_of_node(eth_ports_node, eth_node) {
+>> +		u32 reg;
+>> +
+>> +		if (strcmp(eth_node->name, "port"))
+>> +			continue;
+>> +		ret = of_property_read_u32(eth_node, "reg", &reg);
+>> +		if (ret < 0) {
+>> +			dev_err(dev, "%pOF error reading port_id %d\n",
+>> +				eth_node, ret);
+>> +		}
+>> +
+>> +		if (reg == 0)
+>> +			eth0_node = eth_node;
+>> +		else if (reg == 1)
+>> +			eth1_node = eth_node;
+> 
+> and if reg == 4
+> 
+> Or reg 0 appears twice?
+
+In both of the cases that you mentioned, the device tree schema check
+will fail, hence, we can safely assume that this will be 0 and 1 only.
+
+> 
+>    Andrew
+
+Thanks,
+Puranjay Mohan
