@@ -2,116 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D0D2520304
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 18:56:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4208B52030F
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 18:58:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239345AbiEIRAl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 13:00:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42972 "EHLO
+        id S239330AbiEIRBR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 13:01:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239330AbiEIRAi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 13:00:38 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C526F127193;
-        Mon,  9 May 2022 09:56:43 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B4F161535;
-        Mon,  9 May 2022 16:56:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 307B2C385B1;
-        Mon,  9 May 2022 16:56:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652115402;
-        bh=ma7KAt89IfR03ZZVvYgYcIHD1fN0+zc6+GsP1F0gGzM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BCDBv2RszqfGdCRpA+zNo6nDPlRAGB4Um5Q05dhrDATW6+VY9oikBbL1zqEEv1Jn7
-         S+EIpoJvQVYeXmM8tFhEkKKx2Py1/Sj8lsjxi4v1FYlb9XfOeyCfDdkEsj8rcYdLCX
-         Yjc1DwuItizN4NHPa5fH4f/H/I5rpkFNVCTLa2JS4re+x+jFUqTvmRIBDYZaOUZxKx
-         I2VD9a3K+OINYZeowh3qGTK0kabNNRpINVXSGQCJRCzX7YWFJF6SZ0Drs/GNHxIzVf
-         CYgE+QW/LGYPdDnCLrrc2Xo+l7I7IpZe1gZEE3hoyHKAMeyoG8EitIDQ1xDzGK/onX
-         21/6jYDVL1WKA==
-Date:   Mon, 9 May 2022 17:56:34 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     LABBE Corentin <clabbe@baylibre.com>, alexandre.torgue@foss.st.com,
-        calvin.johnson@oss.nxp.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, joabreu@synopsys.com,
-        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
-        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
-        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org, netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 3/6] dt-bindings: net: Add documentation for phy-supply
-Message-ID: <YnlHwpiow9Flgzas@sirena.org.uk>
-References: <20220509074857.195302-1-clabbe@baylibre.com>
- <20220509074857.195302-4-clabbe@baylibre.com>
- <YnkGV8DyTlCuT92R@lunn.ch>
- <YnkWl+xYCX8r9DE7@Red>
- <Ynk7L07VH/RFVzl6@lunn.ch>
- <Ynk9ccoVh32Deg45@sirena.org.uk>
- <YnlDbbegQ1IbbaHy@lunn.ch>
+        with ESMTP id S239444AbiEIRBP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 13:01:15 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29211E010E
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 09:57:19 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id fv2so13690675pjb.4
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 09:57:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gECE3xEP7jHNIcR16cw0a4r66b5ac6b60792aY0sxeo=;
+        b=LIocaOLsDg8cf6KQOUKXKo2u+3ht2F4SNMSsvjtwcw2xG2rNqoRwLzj9W3mY0U4Zob
+         UD95+RMOHEGnYWfUpzqpqkjH2sm1bPWv/n3nnbjwtKfn/bVXIhYvWGEHZnQFO7NYPbnz
+         BysdTFozAKV8/7QdXNTh/TISCfCd1kYWeg/Dkduutta98cU0/Fi1SYJyJu9Kpp7zJAcE
+         F045Zb1ooakQD1yu7hb1FOZldAi+nl13fNxiGDPsxpKSN7DJPCdsfucV8ck2czzSlZ9M
+         KIgFrciw0ryYlYkWkplBaTm9eBB/+vEsDyAPhjk438ly/AHfrCTxpt1FSPc14ubbMiDE
+         Hb5Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gECE3xEP7jHNIcR16cw0a4r66b5ac6b60792aY0sxeo=;
+        b=Ej0JF5uuTTMhWFo5Vjp0WDugLEh7nR68YSJzw+DdxZDjNm3ErhgOxiBnFs53SHWl5S
+         iuvdmHIcCcRyOUdhAO9Emispud/xD3yXMmhwjVowrA0NJkl3yeuwAbKYGaVIpHnjf5/2
+         C2qMGdptwwvGk6bWQpGhKreyv2/rg/39vKWFbDpKKrrbm59Y9KITVAzgxwEpPvGEVJ1/
+         h9nefRxTAUGuyhYDBQPy1kuh6rvlgbkv8iQp+hBeevx+TYoNA0pVFCVeVv/dR8uwE2nd
+         LG4LE3dQ3ouPj4CcvQSnZlys9xvJ8gUYV+PODQkUnJhi62a3TVGNWWvwOeet0tyro1sw
+         MiEQ==
+X-Gm-Message-State: AOAM532TNNjF6+WUtUVUlMdNsRcBoUy7L7IBZ/4RhTvBvMM1LBOf6oY9
+        B02EOfm1ubwlztywpPSncP4=
+X-Google-Smtp-Source: ABdhPJwjc3f1C5LqpaDUycPvX5lg9DEc4zSJybBLcPDlF/7rB9II+8cVBXq6uN8kwyPd66bRoQ6NZw==
+X-Received: by 2002:a17:90a:8b91:b0:1be:db25:eecd with SMTP id z17-20020a17090a8b9100b001bedb25eecdmr18922699pjn.10.1652115439513;
+        Mon, 09 May 2022 09:57:19 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5d30:4e79:203f:a909])
+        by smtp.gmail.com with ESMTPSA id c4-20020a624e04000000b0050dc76281c0sm8894176pfb.154.2022.05.09.09.57.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 09:57:19 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next] net: warn if transport header was not set
+Date:   Mon,  9 May 2022 09:57:16 -0700
+Message-Id: <20220509165716.745111-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="8w1oAQG8zH7Npult"
-Content-Disposition: inline
-In-Reply-To: <YnlDbbegQ1IbbaHy@lunn.ch>
-X-Cookie: Boycott meat -- suck your thumb.
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
 
---8w1oAQG8zH7Npult
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Make sure skb_transport_header() and skb_transport_offset() uses
+are not fooled if the transport header has not been set.
 
-On Mon, May 09, 2022 at 06:38:05PM +0200, Andrew Lunn wrote:
+This change will likely expose existing bugs in linux networking stacks.
 
-> So we have a collection of regulators, varying in numbers between
-> different PHYs, with different vendor names and purposes. In general,
-> they all should be turned on. Yet we want them named so it is clear
-> what is going on.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ include/linux/skbuff.h | 1 +
+ 1 file changed, 1 insertion(+)
 
-> Is there a generic solution here so that the phylib core can somehow
-> enumerate them and turn them on, without actually knowing what they
-> are called because they have vendor specific names in order to be
-> clear what they are?
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index d58669d6cb91aa30edc70d59a0a7e9d4e2298842..043c59fa0bd6d921f2d2e211348929681bfce186 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -2804,6 +2804,7 @@ static inline bool skb_transport_header_was_set(const struct sk_buff *skb)
+ 
+ static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
+ {
++	WARN_ON_ONCE(!skb_transport_header_was_set(skb));
+ 	return skb->head + skb->transport_header;
+ }
+ 
+-- 
+2.36.0.512.ge40c2bad7a-goog
 
-> There must be a solution to this, phylib cannot be the first subsystem
-> to have this requirement, so if you could point to an example, that
-> would be great.
-
-No, it's not really come up much before - generally things with
-regulator control that have generic drivers tend not to be sophisticated
-enough to have more than one supply, or to be on an enumerable bus where
-the power is part of the bus specification so have the power specified
-as part of the bus.  You'd need to extend the regulator bindings to
-support parallel array of phandles and array of names properties like
-clocks have as an option like you were asking for, which would doubtless
-be fun for validation but is probably the thing here.
-
---8w1oAQG8zH7Npult
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJ5R8IACgkQJNaLcl1U
-h9DsBgf/dLCjimiHfZ3BVIqJ24wTWXFg5dJk+Jp65LrpXJ6qSG86NuEHpNdoLTbZ
-9y2PhDrkyF9y28KpLHo26UuISE9N74k2L/ZNzJrsqCVTc933fJ+JaViuvhx+LsdY
-ZXlZG27WBycLjVGqW3BVqiN1h8xFIJZ+4I/LYr832cUHnPrQu+JpoJpvsMjrge3+
-iSm3dqO1KZEGCaw8lK4MlGRS8ZoPBUA1lc4h2yvU8zpJc0OfIq5LU0p0DlggMlLE
-ag0ct9nkNKD96unqDxXIYscDNf/9Kv2UjXR4M18yNnmLDZr4bDuiQAB+L+2jKzbR
-dyOk2GxUf6FtgeOrdPmWMPuAn4+YWw==
-=EKEu
------END PGP SIGNATURE-----
-
---8w1oAQG8zH7Npult--
