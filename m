@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A68D75201EC
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 18:05:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4F5A5201E9
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 18:05:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238814AbiEIQJG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 12:09:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39266 "EHLO
+        id S238803AbiEIQJH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 12:09:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238785AbiEIQJB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 12:09:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A26DD2532FC;
-        Mon,  9 May 2022 09:05:07 -0700 (PDT)
+        with ESMTP id S238801AbiEIQJC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 12:09:02 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24F9A253AAF;
+        Mon,  9 May 2022 09:05:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2AB7FB8171C;
+        by ams.source.kernel.org (Postfix) with ESMTPS id CF1D2B81751;
         Mon,  9 May 2022 16:05:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E8FFC385B1;
-        Mon,  9 May 2022 16:05:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18F15C385B4;
+        Mon,  9 May 2022 16:05:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652112304;
-        bh=MTWcxb4n2z3AA9uoa1fPqejI1OvldbKNr2TkR2i7/PA=;
+        s=k20201202; t=1652112305;
+        bh=DvQTtl6V3ZL0hPjfv6Ii9cYVyK56e4JNCIOEGxupVCU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jSoe5vzGDIJWTOrlPs/FyJGAT6V5hXoTRROzmNgdOn854Uh4AZqIDOE2oxBTigWyD
-         lG8hOCuW24vETQrMyOG7HXE8QLtjq51jHCd8/lf9Ul2sjw2rvqYpSsdm985IbFQfYe
-         3VF9hqfgkorX/Cwpe6zHYpk7HexW/nDQNJ2ylIocsXZfxLWhQsGSxtYO10DhZ5QsYu
-         rYB6olGQoGZhAlgd6iKtCu8LqIPE9gDEupxXj/UrdCaGYe/4l+D+RWO3x0OXZDqNwo
-         gKGktKPXzC0lwyp5NBiP3/6b8jIMYCC+FLb9NAnyk6xzq/CmfOXsjBV8WgS/4fafWx
-         osKHpA7kAIniQ==
+        b=bPvVs+oF8P8Z2GCM84QPMjGXF35Swqu73i4neo7YJymcuts1AJhMmKmYAZ+zykVfo
+         9RmdBF8u36CMU8UtsG/5HDAETXnVX+kYGKExc0vDD3wZMrIkKsFOzE+2SmJ1qUkXIq
+         L5qwV2XTLXFzggyn1QuVVQej7MYG0DhF2gOJuIdIMyklHtLvXkbt1yZBAiNlkjHKHY
+         4TD3sGVq6w9qdg6JyaVkckhYDdMEFzosmUKFYjNHB/btby5IlKG/sMhlgEwdD6Rm8v
+         JIMUskb0S9oYL+17FkCjWlvWMWACTmfplWyz9af9Ts5ef/bXEnioK1nFdJ+EUvxEsB
+         N66t6nc8heTSw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
         linux-doc@vger.kernel.org, corbet@lwn.net, imagedong@tencent.com,
         dsahern@gmail.com, talalahmad@google.com,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next 1/3] skbuff: add a basic intro doc
-Date:   Mon,  9 May 2022 09:04:54 -0700
-Message-Id: <20220509160456.1058940-2-kuba@kernel.org>
+Subject: [PATCH net-next 2/3] skbuff: rewrite the doc for data-only skbs
+Date:   Mon,  9 May 2022 09:04:55 -0700
+Message-Id: <20220509160456.1058940-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.3
 In-Reply-To: <20220509160456.1058940-1-kuba@kernel.org>
 References: <20220509160456.1058940-1-kuba@kernel.org>
@@ -55,99 +55,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add basic skb documentation. It's mostly an intro to the subsequent
-patches - it would looks strange if we documented advanced topics
-without covering the basics in any way.
+The comment about shinfo->dataref split is really unhelpful,
+at least to me. Rewrite it and render it to skb documentation.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
- Documentation/networking/skbuff.rst | 25 ++++++++++++++++++
- include/linux/skbuff.h              | 40 +++++++++++++++++++++++++++++
- 2 files changed, 65 insertions(+)
- create mode 100644 Documentation/networking/skbuff.rst
+ Documentation/networking/index.rst  |  1 +
+ Documentation/networking/skbuff.rst |  6 +++++
+ include/linux/skbuff.h              | 42 ++++++++++++++++++++---------
+ 3 files changed, 37 insertions(+), 12 deletions(-)
 
+diff --git a/Documentation/networking/index.rst b/Documentation/networking/index.rst
+index 72cf33579b78..a1c271fe484e 100644
+--- a/Documentation/networking/index.rst
++++ b/Documentation/networking/index.rst
+@@ -97,6 +97,7 @@ Refer to :ref:`netdev-FAQ` for a guide on netdev development process specifics.
+    sctp
+    secid
+    seg6-sysctl
++   skbuff
+    smc-sysctl
+    statistics
+    strparser
 diff --git a/Documentation/networking/skbuff.rst b/Documentation/networking/skbuff.rst
-new file mode 100644
-index 000000000000..b4a008feceb4
---- /dev/null
+index b4a008feceb4..94681523e345 100644
+--- a/Documentation/networking/skbuff.rst
 +++ b/Documentation/networking/skbuff.rst
-@@ -0,0 +1,25 @@
-+.. SPDX-License-Identifier: GPL-2.0
+@@ -23,3 +23,9 @@ skb_clone() allows for fast duplication of skbs. None of the data buffers
+ get copied, but caller gets a new metadata struct (struct sk_buff).
+ &skb_shared_info.refcount indicates the number of skbs pointing at the same
+ packet data (i.e. clones).
 +
-+struct sk_buff
-+==============
-+
-+:c:type:`sk_buff` is the main networking structure representing
-+a packet.
-+
-+Basic sk_buff geometry
-+----------------------
++dataref and headerless skbs
++---------------------------
 +
 +.. kernel-doc:: include/linux/skbuff.h
-+   :doc: Basic sk_buff geometry
-+
-+Shared skbs and skb clones
-+--------------------------
-+
-+:c:member:`sk_buff.users` is a simple refcount allowing multiple entities
-+to keep a struct sk_buff alive. skbs with a ``sk_buff.users != 1`` are referred
-+to as shared skbs (see skb_shared()).
-+
-+skb_clone() allows for fast duplication of skbs. None of the data buffers
-+get copied, but caller gets a new metadata struct (struct sk_buff).
-+&skb_shared_info.refcount indicates the number of skbs pointing at the same
-+packet data (i.e. clones).
++   :doc: dataref and headerless skbs
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index d58669d6cb91..d30c0a33c547 100644
+index d30c0a33c547..60d4ec30ef66 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -787,6 +787,46 @@ typedef unsigned int sk_buff_data_t;
- typedef unsigned char *sk_buff_data_t;
- #endif
+@@ -714,16 +714,32 @@ struct skb_shared_info {
+ 	skb_frag_t	frags[MAX_SKB_FRAGS];
+ };
  
+-/* We divide dataref into two halves.  The higher 16 bits hold references
+- * to the payload part of skb->data.  The lower 16 bits hold references to
+- * the entire skb->data.  A clone of a headerless skb holds the length of
+- * the header in skb->hdr_len.
+- *
+- * All users must obey the rule that the skb->data reference count must be
+- * greater than or equal to the payload reference count.
+- *
+- * Holding a reference to the payload part means that the user does not
+- * care about modifications to the header part of skb->data.
 +/**
-+ * DOC: Basic sk_buff geometry
++ * DOC: dataref and headerless skbs
 + *
-+ * struct sk_buff itself is a metadata structure and does not hold any packet
-+ * data. All the data is held in associated buffers.
++ * Transport layers send out clones of payload skbs they hold for
++ * retransmissions. To allow lower layers of the stack to prepend their headers
++ * we split &skb_shared_info.dataref into two halves.
++ * The lower 16 bits count the overall number of references.
++ * The higher 16 bits indicate how many of the references are payload-only.
++ * skb_header_cloned() checks if skb is allowed to add / write the headers.
 + *
-+ * &sk_buff.head points to the main "head" buffer. The head buffer is divided
-+ * into two parts:
++ * The creator of the skb (e.g. TCP) marks its skb as &sk_buff.nohdr
++ * (via __skb_header_release()). Any clone created from marked skb will get
++ * &sk_buff.hdr_len populated with the available headroom.
++ * If there's the only clone in existence it's able to modify the headroom
++ * at will. The sequence of calls inside the transport layer is::
 + *
-+ *  - data buffer, containing headers and sometimes payload;
-+ *    this is the part of the skb operated on by the common helpers
-+ *    such as skb_put() or skb_pull();
-+ *  - shared info (struct skb_shared_info) which holds an array of pointers
-+ *    to read-only data in the (page, offset, length) format.
++ *  <alloc skb>
++ *  skb_reserve()
++ *  __skb_header_release()
++ *  skb_clone()
++ *  // send the clone down the stack
 + *
-+ * Optionally &skb_shared_info.frag_list may point to another skb.
-+ *
-+ * Basic diagram may look like this::
-+ *
-+ *                                  ---------------
-+ *                                 | sk_buff       |
-+ *                                  ---------------
-+ *     ,---------------------------  + head
-+ *    /          ,-----------------  + data
-+ *   /          /      ,-----------  + tail
-+ *  |          |      |            , + end
-+ *  |          |      |           |
-+ *  v          v      v           v
-+ *   -----------------------------------------------
-+ *  | headroom | data |  tailroom | skb_shared_info |
-+ *   -----------------------------------------------
-+ *                                 + [page frag]
-+ *                                 + [page frag]
-+ *                                 + [page frag]
-+ *                                 + [page frag]       ---------
-+ *                                 + frag_list    --> | sk_buff |
-+ *                                                     ---------
-+ *
-+ */
-+
++ * This is not a very generic construct and it depends on the transport layers
++ * doing the right thing. In practice there's usually only one payload-only skb.
++ * Having multiple payload-only skbs with different lengths of hdr_len is not
++ * possible. The payload-only skbs should never leave their owner.
+  */
+ #define SKB_DATAREF_SHIFT 16
+ #define SKB_DATAREF_MASK ((1 << SKB_DATAREF_SHIFT) - 1)
+@@ -2014,8 +2030,10 @@ static inline int skb_header_unclone(struct sk_buff *skb, gfp_t pri)
+ }
+ 
  /**
-  *	struct sk_buff - socket buffer
-  *	@next: Next buffer in list
+- *	__skb_header_release - release reference to header
+- *	@skb: buffer to operate on
++ * __skb_header_release() - allow clones to use the headroom
++ * @skb: buffer to operate on
++ *
++ * See "DOC: dataref and headerless skbs".
+  */
+ static inline void __skb_header_release(struct sk_buff *skb)
+ {
 -- 
 2.34.3
 
