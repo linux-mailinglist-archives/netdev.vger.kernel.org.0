@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6455851FCB5
+	by mail.lfdr.de (Postfix) with ESMTP id B568E51FCB6
 	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 14:26:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234424AbiEIMaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 08:30:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55342 "EHLO
+        id S234410AbiEIMaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 08:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234375AbiEIMaT (ORCPT
+        with ESMTP id S234314AbiEIMaT (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 08:30:19 -0400
 Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AF2E26FA57;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A9822AC47;
         Mon,  9 May 2022 05:26:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
          s=20160729; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
@@ -20,20 +20,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=6sFJxf5po82d6fyrKdcbn2ClHklZR+fikang+MDSOJo=; b=az0H2XWfFzRftFVJyHgKwWpgu8
-        ZKOMGtMtsfSAvC6vW5tNtqBHE2do0ElEEUy+ZVEWp9n/DA3OsZuUj/nG9XPIKvK9Ac3ASHuORrrzB
-        5TnNCsjyQDbdy8WDtcP+Jw6E3m3psEke8lI132NxfBJxoMcGZdDLcwu7klOh7C0cG8hs=;
+        bh=BQrHcg0SdKByu+hHVqPndSb+ErQKSZycgLyclzck4Rk=; b=SaBvqIvd6hbKJ2cWNmGsYBcLbi
+        FTcca3T6oOouIKmyhqlC60X9b+PdQW0gvEYWHwS5J/XqjZ68DdHwaH3EtA1DYhQVD1JQAZT6gh7zz
+        YWGneEqMztTHKbHdSXW37JdUz/Tu/wMgd8UlyWzo0+ur3voSH4MaR0vf1U0nZuSnE/tg=;
 Received: from p200300daa70ef2003c9b1ea8f6ef4a42.dip0.t-ipconnect.de ([2003:da:a70e:f200:3c9b:1ea8:f6ef:4a42] helo=Maecks.lan)
         by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <nbd@nbd.name>)
-        id 1no2T0-0003Fl-Fg; Mon, 09 May 2022 14:26:22 +0200
+        id 1no2T0-0003Fl-Nl; Mon, 09 May 2022 14:26:22 +0200
 From:   Felix Fietkau <nbd@nbd.name>
 To:     netdev@vger.kernel.org
 Cc:     pablo@netfilter.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH v2 nf 2/4] netfilter: nft_flow_offload: skip dst neigh lookup for ppp devices
-Date:   Mon,  9 May 2022 14:26:14 +0200
-Message-Id: <20220509122616.65449-2-nbd@nbd.name>
+Subject: [PATCH v2 nf 3/4] net: fix dev_fill_forward_path with pppoe + bridge
+Date:   Mon,  9 May 2022 14:26:15 +0200
+Message-Id: <20220509122616.65449-3-nbd@nbd.name>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220509122616.65449-1-nbd@nbd.name>
 References: <20220509122616.65449-1-nbd@nbd.name>
@@ -48,70 +48,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The dst entry does not contain a valid hardware address, so skip the lookup
-in order to avoid running into errors here.
-The proper hardware address is filled in from nft_dev_path_info
+When calling dev_fill_forward_path on a pppoe device, the provided destination
+address is invalid. In order for the bridge fdb lookup to succeed, the pppoe
+code needs to update ctx->daddr to the correct value.
+Fix this by storing the address inside struct net_device_path_ctx
 
-Fixes: 72efd585f714 ("netfilter: flowtable: add pppoe support")
+Fixes: f6efc675c9dd ("net: ppp: resolve forwarding path for bridge pppoe devices")
 Signed-off-by: Felix Fietkau <nbd@nbd.name>
 ---
- net/netfilter/nft_flow_offload.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/net/ppp/pppoe.c   | 1 +
+ include/linux/netdevice.h | 2 +-
+ net/core/dev.c            | 2 +-
+ 3 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index 900d48c810a1..d88de26aad75 100644
---- a/net/netfilter/nft_flow_offload.c
-+++ b/net/netfilter/nft_flow_offload.c
-@@ -36,6 +36,15 @@ static void nft_default_forward_path(struct nf_flow_route *route,
- 	route->tuple[dir].xmit_type	= nft_xmit_type(dst_cache);
- }
+diff --git a/drivers/net/ppp/pppoe.c b/drivers/net/ppp/pppoe.c
+index 3619520340b7..e172743948ed 100644
+--- a/drivers/net/ppp/pppoe.c
++++ b/drivers/net/ppp/pppoe.c
+@@ -988,6 +988,7 @@ static int pppoe_fill_forward_path(struct net_device_path_ctx *ctx,
+ 	path->encap.proto = htons(ETH_P_PPP_SES);
+ 	path->encap.id = be16_to_cpu(po->num);
+ 	memcpy(path->encap.h_dest, po->pppoe_pa.remote, ETH_ALEN);
++	memcpy(ctx->daddr, po->pppoe_pa.remote, ETH_ALEN);
+ 	path->dev = ctx->dev;
+ 	ctx->dev = dev;
  
-+static bool nft_is_valid_ether_device(const struct net_device *dev)
-+{
-+	if (!dev || (dev->flags & IFF_LOOPBACK) || dev->type != ARPHRD_ETHER ||
-+	    dev->addr_len != ETH_ALEN || !is_valid_ether_addr(dev->dev_addr))
-+		return false;
-+
-+	return true;
-+}
-+
- static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
- 				     const struct dst_entry *dst_cache,
- 				     const struct nf_conn *ct,
-@@ -47,6 +56,9 @@ static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
- 	struct neighbour *n;
- 	u8 nud_state;
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index b1fbe21650bb..f736c020cde2 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -900,7 +900,7 @@ struct net_device_path_stack {
  
-+	if (!nft_is_valid_ether_device(dev))
-+		goto out;
-+
- 	n = dst_neigh_lookup(dst_cache, daddr);
- 	if (!n)
- 		return -1;
-@@ -60,6 +72,7 @@ static int nft_dev_fill_forward_path(const struct nf_flow_route *route,
- 	if (!(nud_state & NUD_VALID))
- 		return -1;
+ struct net_device_path_ctx {
+ 	const struct net_device *dev;
+-	const u8		*daddr;
++	u8			daddr[ETH_ALEN];
  
-+out:
- 	return dev_fill_forward_path(dev, ha, stack);
- }
+ 	int			num_vlans;
+ 	struct {
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 1461c2d9dec8..2771fd22dc6a 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -681,11 +681,11 @@ int dev_fill_forward_path(const struct net_device *dev, const u8 *daddr,
+ 	const struct net_device *last_dev;
+ 	struct net_device_path_ctx ctx = {
+ 		.dev	= dev,
+-		.daddr	= daddr,
+ 	};
+ 	struct net_device_path *path;
+ 	int ret = 0;
  
-@@ -78,15 +91,6 @@ struct nft_forward_info {
- 	enum flow_offload_xmit_type xmit_type;
- };
- 
--static bool nft_is_valid_ether_device(const struct net_device *dev)
--{
--	if (!dev || (dev->flags & IFF_LOOPBACK) || dev->type != ARPHRD_ETHER ||
--	    dev->addr_len != ETH_ALEN || !is_valid_ether_addr(dev->dev_addr))
--		return false;
--
--	return true;
--}
--
- static void nft_dev_path_info(const struct net_device_path_stack *stack,
- 			      struct nft_forward_info *info,
- 			      unsigned char *ha, struct nf_flowtable *flowtable)
++	memcpy(ctx.daddr, daddr, sizeof(ctx.daddr));
+ 	stack->num_paths = 0;
+ 	while (ctx.dev && ctx.dev->netdev_ops->ndo_fill_forward_path) {
+ 		last_dev = ctx.dev;
 -- 
 2.35.1
 
