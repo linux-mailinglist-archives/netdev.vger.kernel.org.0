@@ -2,115 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A69C52045C
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 20:17:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F4D5520488
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 20:31:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240135AbiEISVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 14:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47666 "EHLO
+        id S240177AbiEIS3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 14:29:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240103AbiEISVV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 14:21:21 -0400
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0527C26C4FD
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 11:17:27 -0700 (PDT)
-Received: by mail-pf1-x431.google.com with SMTP id 204so10146786pfx.3
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 11:17:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:from:to:cc:date:message-id:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=oWkDpHsNQcU//WqyA+dRFFfwiFMMIS/Sy6GPIt6kPDw=;
-        b=qk8GjUGeSy2GhEECdOFRgQvet7NqgsoXiCDpaQVkJXIGpivqsucxXxWlRSKWV/+3YD
-         fyD8Qy8vBsXh0Jd8wwAebDGYXUHHLPHytiGe6ULGMGzgpUFmST0at3yiBVp2/6259vQ5
-         l0Ee4B731CGzI9tQwsZgH0+PhQ6DxXIZeW55dJFmwOYIBpAzwrpDHi+GTCVXVERYybWz
-         z4pXAEQWKqvkMF9rQuI60cfFvT3X83oEwWE5ttZxe8Phl9YZmf1ww3UJYB+pFRtxbnys
-         iF/SLpqxleF87J0PvzJHx6mC120TTu4ZdLX41Vb+K0HLCExfC9j6p+6is94sG0v8fREp
-         O/4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=oWkDpHsNQcU//WqyA+dRFFfwiFMMIS/Sy6GPIt6kPDw=;
-        b=wuJF+Y8iSeD6Xh+4aGc3co7yHJScxjmt0zOb2/Wxb65bbW/NzrKj9/eqRfjuT9SR5k
-         N4SSN9M91zZefTWmmqrJuWUYmNuNSMIjZunkx3EdWaTUJqtem4gyceqb1XckZRaU0ZX0
-         7rl5BlbTMdd4/FA3bergZN4Zuc96cuOGrZL2SDK/RJkPwvlUKM4ZVInaXTnQJ6wWVFeA
-         AfqWWFleXyXJaWixjyslhwMujqdskMIJIkKMD65P7lHNLYU0L/ZJT9IJC9lewA4n/O27
-         bHGwNy/Yn2/p10HwFkSCll9DIVnZSq9fpZxY1wnr5Aec88bdqC7GzyA2NSo/8/b/NcOJ
-         2kUQ==
-X-Gm-Message-State: AOAM530DkiquOfaM530fsdFHOz1sy0xi4aUS3Ge9Q5xww6gQ4h6qyWv7
-        KoR1O4MLCcKb9pu7oO3D4XE=
-X-Google-Smtp-Source: ABdhPJymrOIkfw+N5oS9yuMgYEkR248qhs02vGECPTuhaAbPiMS0Poxua9wMF73oSC4/pPWGfBeMng==
-X-Received: by 2002:a63:385b:0:b0:3c1:3f5e:1d2a with SMTP id h27-20020a63385b000000b003c13f5e1d2amr14097855pgn.30.1652120246374;
-        Mon, 09 May 2022 11:17:26 -0700 (PDT)
-Received: from localhost.localdomain ([98.97.39.30])
-        by smtp.gmail.com with ESMTPSA id lw17-20020a17090b181100b001dcf9fe5cddsm4600213pjb.38.2022.05.09.11.17.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 11:17:25 -0700 (PDT)
-Subject: [PATCH 0/2] Replacements for patches 2 and 7 in Big TCP series
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-To:     edumazet@google.com
-Cc:     alexander.duyck@gmail.com, davem@davemloft.net,
-        eric.dumazet@gmail.com, kuba@kernel.org, lixiaoyan@google.com,
-        netdev@vger.kernel.org, pabeni@redhat.com
-Date:   Mon, 09 May 2022 11:17:24 -0700
-Message-ID: <165212006050.5729.9059171256935942562.stgit@localhost.localdomain>
-In-Reply-To: <CANn89iJW9GCUWBRtutv1=KHYn0Gpj8ue6bGWMO9LLGXqvgWhmQ@mail.gmail.com>
-References: <CANn89iJW9GCUWBRtutv1=KHYn0Gpj8ue6bGWMO9LLGXqvgWhmQ@mail.gmail.com>
-User-Agent: StGit/1.5
+        with ESMTP id S240122AbiEIS3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 14:29:35 -0400
+X-Greylist: delayed 479 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 09 May 2022 11:25:37 PDT
+Received: from mg.ssi.bg (mg.ssi.bg [193.238.174.37])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5124A1E5EFB;
+        Mon,  9 May 2022 11:25:34 -0700 (PDT)
+Received: from mg.ssi.bg (localhost [127.0.0.1])
+        by mg.ssi.bg (Proxmox) with ESMTP id 345551AD70;
+        Mon,  9 May 2022 21:17:37 +0300 (EEST)
+Received: from ink.ssi.bg (unknown [193.238.174.40])
+        by mg.ssi.bg (Proxmox) with ESMTP id 982F01AEBC;
+        Mon,  9 May 2022 21:17:35 +0300 (EEST)
+Received: from ja.ssi.bg (unknown [178.16.129.10])
+        by ink.ssi.bg (Postfix) with ESMTPS id 18DCD3C07D1;
+        Mon,  9 May 2022 21:17:31 +0300 (EEST)
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1])
+        by ja.ssi.bg (8.16.1/8.16.1) with ESMTP id 249IHPlO074453;
+        Mon, 9 May 2022 21:17:28 +0300
+Date:   Mon, 9 May 2022 21:17:25 +0300 (EEST)
+From:   Julian Anastasov <ja@ssi.bg>
+To:     menglong8.dong@gmail.com
+cc:     Simon Horman <horms@verge.net.au>, pablo@netfilter.org,
+        netdev@vger.kernel.org, lvs-devel@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org,
+        Menglong Dong <imagedong@tencent.com>
+Subject: Re: [PATCH net-next] net: ipvs: random start for RR scheduler
+In-Reply-To: <20220509122213.19508-1-imagedong@tencent.com>
+Message-ID: <cb8eaad0-83c5-a150-d830-e078682ba18b@ssi.bg>
+References: <20220509122213.19508-1-imagedong@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        T_SCC_BODY_TEXT_LINE,T_SPF_PERMERROR autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set is meant to replace patches 2 and 7 in the Big TCP series.
-From what I can tell it looks like they can just be dropped from the series
-and these two patches could be added to the end of the set.
 
-With these patches I have verified that both the loopback and mlx5 drivers
-are able to send and receive IPv6 jumbogram frames when configured with a
-g[sr]o_max_size value larger than 64K.
+	Hello,
 
-Note I had to make one minor change to iproute2 to allow submitting a value
-larger than 64K in that I removed a check that was limiting gso_max_size to
-no more than 65536. In the future an alternative might be to fetch the
-IFLA_TSO_MAX_SIZE attribute if it exists and use that, and if not then use
-65536 as the limit.
+On Mon, 9 May 2022, menglong8.dong@gmail.com wrote:
 
----
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> For now, the start of the RR scheduler is in the order of dest
+> service added, it will result in imbalance if the load balance
 
-Alexander Duyck (2):
-      net: Allow gso_max_size to exceed 65536
-      net: Allow gro_max_size to exceed 65536
+	...order of added destinations,...
 
+> is done in client side and long connect is used.
 
- drivers/net/ethernet/amd/xgbe/xgbe.h            |  3 ++-
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c |  2 +-
- drivers/net/ethernet/sfc/ef100_nic.c            |  3 ++-
- drivers/net/ethernet/sfc/falcon/tx.c            |  3 ++-
- drivers/net/ethernet/sfc/tx_common.c            |  3 ++-
- drivers/net/ethernet/synopsys/dwc-xlgmac.h      |  3 ++-
- drivers/net/hyperv/rndis_filter.c               |  2 +-
- drivers/scsi/fcoe/fcoe.c                        |  2 +-
- include/linux/netdevice.h                       |  6 ++++--
- include/net/ipv6.h                              |  2 +-
- net/bpf/test_run.c                              |  2 +-
- net/core/dev.c                                  |  7 ++++---
- net/core/gro.c                                  |  8 ++++++++
- net/core/rtnetlink.c                            | 10 +---------
- net/core/sock.c                                 |  4 ++++
- net/ipv4/tcp_bbr.c                              |  2 +-
- net/ipv4/tcp_output.c                           |  2 +-
- net/sctp/output.c                               |  3 ++-
- 18 files changed, 40 insertions(+), 27 deletions(-)
+	..."long connections are used". Is this a case where
+small number of connections are used? And the two connections
+relatively overload the real servers?
+
+> For example, we have client1, client2, ..., client5 and real service
+> service1, service2, service3. All clients have the same ipvs config,
+> and each of them will create 2 long TCP connect to the virtual
+> service. Therefore, all the clients will connect to service1 and
+> service2, leaving service3 free.
+
+	You mean, there are many IPVS directors with same
+config and each director gets 2 connections? Third connection
+will get real server #3, right ? Also, are the clients local
+to the director?
+
+> Fix this by randomize the start of dest service to RR scheduler when
+
+	..."randomizing the starting destination when"
+
+> IP_VS_SVC_F_SCHED_RR_RANDOM is set.
+> 
+> Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> ---
+>  include/uapi/linux/ip_vs.h    |  2 ++
+>  net/netfilter/ipvs/ip_vs_rr.c | 25 ++++++++++++++++++++++++-
+>  2 files changed, 26 insertions(+), 1 deletion(-)
+> 
+> diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
+> index 4102ddcb4e14..7f74bafd3211 100644
+> --- a/include/uapi/linux/ip_vs.h
+> +++ b/include/uapi/linux/ip_vs.h
+> @@ -28,6 +28,8 @@
+>  #define IP_VS_SVC_F_SCHED_SH_FALLBACK	IP_VS_SVC_F_SCHED1 /* SH fallback */
+>  #define IP_VS_SVC_F_SCHED_SH_PORT	IP_VS_SVC_F_SCHED2 /* SH use port */
+>  
+> +#define IP_VS_SVC_F_SCHED_RR_RANDOM	IP_VS_SVC_F_SCHED1 /* random start */
+> +
+>  /*
+>   *      Destination Server Flags
+>   */
+> diff --git a/net/netfilter/ipvs/ip_vs_rr.c b/net/netfilter/ipvs/ip_vs_rr.c
+> index 38495c6f6c7c..e309d97bdd08 100644
+> --- a/net/netfilter/ipvs/ip_vs_rr.c
+> +++ b/net/netfilter/ipvs/ip_vs_rr.c
+> @@ -22,13 +22,36 @@
+>  
+>  #include <net/ip_vs.h>
+>  
+> +static void ip_vs_rr_random_start(struct ip_vs_service *svc)
+> +{
+> +	struct list_head *cur;
+> +	u32 start;
+> +
+> +	if (!(svc->flags | IP_VS_SVC_F_SCHED_RR_RANDOM) ||
+
+	| -> &
+
+> +	    svc->num_dests <= 1)
+> +		return;
+> +
+> +	spin_lock_bh(&svc->sched_lock);
+> +	start = get_random_u32() % svc->num_dests;
+
+	May be prandom is more appropriate for non-crypto purposes. 
+Also, not sure if it is a good idea to limit the number of steps,
+eg. to 128...
+
+	start = prandom_u32_max(min(svc->num_dests, 128U));
+
+	or just use
+
+	start = prandom_u32_max(svc->num_dests);
+
+	Also, this line can be before the spin_lock_bh.
+
+> +	cur = &svc->destinations;
+
+	cur = svc->sched_data;
+
+	... and to start from current svc->sched_data because
+we are called for every added dest. Better to jump 0..127 steps
+ahead, to avoid delay with long lists?
+
+> +	while (start--)
+> +		cur = cur->next;
+> +	svc->sched_data = cur;
+> +	spin_unlock_bh(&svc->sched_lock);
+> +}
+>  
+>  static int ip_vs_rr_init_svc(struct ip_vs_service *svc)
+>  {
+>  	svc->sched_data = &svc->destinations;
+> +	ip_vs_rr_random_start(svc);
+>  	return 0;
+>  }
+>  
+> +static int ip_vs_rr_add_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
+> +{
+> +	ip_vs_rr_random_start(svc);
+> +	return 0;
+> +}
+>  
+>  static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
+>  {
+> @@ -104,7 +127,7 @@ static struct ip_vs_scheduler ip_vs_rr_scheduler = {
+>  	.module =		THIS_MODULE,
+>  	.n_list =		LIST_HEAD_INIT(ip_vs_rr_scheduler.n_list),
+>  	.init_service =		ip_vs_rr_init_svc,
+> -	.add_dest =		NULL,
+> +	.add_dest =		ip_vs_rr_add_dest,
+>  	.del_dest =		ip_vs_rr_del_dest,
+>  	.schedule =		ip_vs_rr_schedule,
+>  };
+> -- 
+> 2.36.0
+
+Regards
 
 --
+Julian Anastasov <ja@ssi.bg>
 
