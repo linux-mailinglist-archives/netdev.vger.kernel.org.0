@@ -2,73 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F3E452063B
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 22:53:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 99BD452063F
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 22:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbiEIU5w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 16:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41660 "EHLO
+        id S229580AbiEIVBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 17:01:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229846AbiEIU5v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 16:57:51 -0400
-Received: from mxout01.lancloud.ru (mxout01.lancloud.ru [45.84.86.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29631B7919;
-        Mon,  9 May 2022 13:53:54 -0700 (PDT)
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 004A420D8A10
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Subject: Re: [PATCH v2 5/5] ravb: Add support for RZ/V2M
-To:     Phil Edworthy <phil.edworthy@renesas.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>
-References: <20220509142431.24898-1-phil.edworthy@renesas.com>
- <20220509142431.24898-6-phil.edworthy@renesas.com>
-Organization: Open Mobile Platform
-Message-ID: <542cce77-be6a-4405-5eb2-ee3839856808@omp.ru>
-Date:   Mon, 9 May 2022 23:53:51 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        with ESMTP id S229756AbiEIVBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 17:01:00 -0400
+Received: from olfflo.fourcot.fr (fourcot.fr [217.70.191.14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC012B8268
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 13:57:03 -0700 (PDT)
+From:   Florent Fourcot <florent.fourcot@wifirst.fr>
+To:     netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        David Ahern <dsahern@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Florent Fourcot <florent.fourcot@wifirst.fr>
+Subject: [PATCH v2 net-next] net: neigh: add netlink filtering based on LLADDR for dump
+Date:   Mon,  9 May 2022 22:56:46 +0200
+Message-Id: <20220509205646.20814-1-florent.fourcot@wifirst.fr>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20220509142431.24898-6-phil.edworthy@renesas.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/22 5:24 PM, Phil Edworthy wrote:
+neighbours table dump supports today two filtering:
+ * based on interface index
+ * based on master index
 
-> RZ/V2M Ethernet is very similar to R-Car Gen3 Ethernet-AVB, though
-> some small parts are the same as R-Car Gen2.
-> Other differences to R-Car Gen3 and Gen2 are:
-> * It has separate data (DI), error (Line 1) and management (Line 2) irqs
->   rather than one irq for all three.
-> * Instead of using the High-speed peripheral bus clock for gPTP, it has a
->   separate gPTP reference clock.
-> 
-> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+This patch adds a new filtering, based on layer two address. That will
+help to replace something like it:
 
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+ ip neigh show | grep aa:11:22:bb:ee:ff
 
-[...]
+by a better command:
 
-MBR, Sergey
+ ip neigh show lladdr aa:11:22:bb:ee:ff
+
+Changes in v2:
+  * Check NDA_LLADDR length
+
+Signed-off-by: Florent Fourcot <florent.fourcot@wifirst.fr>
+---
+ net/core/neighbour.c | 35 +++++++++++++++++++++++++++++++++--
+ 1 file changed, 33 insertions(+), 2 deletions(-)
+
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 47b6c1f0fdbb..913b9dbcd276 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -2641,9 +2641,25 @@ static bool neigh_ifindex_filtered(struct net_device *dev, int filter_idx)
+ 	return false;
+ }
+ 
++static bool neigh_lladdr_filtered(struct neighbour *neigh, const u8 *lladdr,
++				  u32 lladdr_len)
++{
++	if (!lladdr)
++		return false;
++
++	if (lladdr_len != neigh->dev->addr_len)
++		return true;
++
++	if (memcmp(lladdr, neigh->ha, neigh->dev->addr_len) != 0)
++		return true;
++
++	return false;
++}
++
+ struct neigh_dump_filter {
+ 	int master_idx;
+ 	int dev_idx;
++	struct nlattr *nla_lladdr;
+ };
+ 
+ static int neigh_dump_table(struct neigh_table *tbl, struct sk_buff *skb,
+@@ -2656,13 +2672,20 @@ static int neigh_dump_table(struct neigh_table *tbl, struct sk_buff *skb,
+ 	int idx, s_idx = idx = cb->args[2];
+ 	struct neigh_hash_table *nht;
+ 	unsigned int flags = NLM_F_MULTI;
++	u8 *lladdr = NULL;
++	u32 lladdr_len;
+ 
+-	if (filter->dev_idx || filter->master_idx)
++	if (filter->dev_idx || filter->master_idx || filter->nla_lladdr)
+ 		flags |= NLM_F_DUMP_FILTERED;
+ 
+ 	rcu_read_lock_bh();
+ 	nht = rcu_dereference_bh(tbl->nht);
+ 
++	if (filter->nla_lladdr) {
++		lladdr_len = nla_len(filter->nla_lladdr);
++		lladdr = nla_data(filter->nla_lladdr);
++	}
++
+ 	for (h = s_h; h < (1 << nht->hash_shift); h++) {
+ 		if (h > s_h)
+ 			s_idx = 0;
+@@ -2672,7 +2695,8 @@ static int neigh_dump_table(struct neigh_table *tbl, struct sk_buff *skb,
+ 			if (idx < s_idx || !net_eq(dev_net(n->dev), net))
+ 				goto next;
+ 			if (neigh_ifindex_filtered(n->dev, filter->dev_idx) ||
+-			    neigh_master_filtered(n->dev, filter->master_idx))
++			    neigh_master_filtered(n->dev, filter->master_idx) ||
++			    neigh_lladdr_filtered(n, lladdr, lladdr_len))
+ 				goto next;
+ 			if (neigh_fill_info(skb, n, NETLINK_CB(cb->skb).portid,
+ 					    cb->nlh->nlmsg_seq,
+@@ -2788,6 +2812,13 @@ static int neigh_valid_dump_req(const struct nlmsghdr *nlh,
+ 		case NDA_MASTER:
+ 			filter->master_idx = nla_get_u32(tb[i]);
+ 			break;
++		case NDA_LLADDR:
++			if (!nla_len(tb[i])) {
++				NL_SET_ERR_MSG(extack, "Invalid link address");
++				return -EINVAL;
++			}
++			filter->nla_lladdr = tb[i];
++			break;
+ 		default:
+ 			if (strict_check) {
+ 				NL_SET_ERR_MSG(extack, "Unsupported attribute in neighbor dump request");
+-- 
+2.30.2
+
