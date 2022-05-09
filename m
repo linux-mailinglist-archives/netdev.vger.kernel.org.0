@@ -2,141 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A166451FB83
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 13:44:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 113C651FB9C
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 13:50:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232623AbiEILn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 07:43:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58928 "EHLO
+        id S233208AbiEILtn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 07:49:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232592AbiEILnY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 07:43:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5491FC7C1;
-        Mon,  9 May 2022 04:39:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9BCFB8119D;
-        Mon,  9 May 2022 11:39:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47441C385AB;
-        Mon,  9 May 2022 11:39:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652096368;
-        bh=W32hoCGP3nIdxrrrYu+Ox8K9dj4+urX6psk0ONvi8fw=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=mM31Rflnzg9ZzjxBTVNWhCTURBuFd4oF66lrAT7cojCRMBPj9FVACwnnqDNAIRYYW
-         UdHAipmTU1W+/qcVBRzpGO0xT2ayotMsHaDSMkdXrEb5T24OEudSeQKSyixyN7eoY5
-         hxm/jNMnrvbP3RBxr/N755aYMwPexAtMx8vNcYNaTMeS++ux61HrocHxoBPi4C9vQ7
-         Csr8IBM7ljFqiONKdjp4eBDOH2Ei5YFZi14fA61ksxWYDpgkLl5MHvY/xlKAPB1wue
-         HlVd5fP6L7nvod4xmoVy57xveAYAq0cmtV8wT3ZZ3E9nsUVGIqQjKLwTL4eRfuAel8
-         UHMCvaQ0nLmWQ==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Cc:     pizza@shaftnet.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, linville@tuxdriver.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Wang Qing <wangqing@vivo.com>
-Subject: Re: [PATCH v3] cw1200: fix incorrect check to determine if no element is found in list
-References: <20220413091723.17596-1-xiam0nd.tong@gmail.com>
-Date:   Mon, 09 May 2022 14:39:23 +0300
-In-Reply-To: <20220413091723.17596-1-xiam0nd.tong@gmail.com> (Xiaomeng Tong's
-        message of "Wed, 13 Apr 2022 17:17:23 +0800")
-Message-ID: <87k0av7x5g.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        with ESMTP id S233165AbiEILtm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 07:49:42 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 183141D075A
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 04:45:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652096747; x=1683632747;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=pO2a14cHXshvaYaQs+WD75K0qo14MliBs5VMJIJL32M=;
+  b=ROUIsPORbcwFC4QUJpQRiB0zwT4nQCMDmu/0KAiXUixhWmBadck2DKdE
+   sScoEuxfMXoIxc5eCkogpsbc4D/57x47c+hLYxe4G6raEO+yGPF6fl3ZY
+   HoMY85QhRwp76pkUimRTOX5FOGBs0+Q4IsoHKEzqBlJaejC/f3gsDmaiD
+   iHi85489sHTof42OmKyfRLSwMPcdHiEesmsMDX6JwWxdYcuHlTgrNe/cZ
+   Abz5qltsSD6qP1+beXA+Eeht7LchSbNGJDfja2XLftspPYBYGu31M1Ykn
+   XaHfmBr5TYXATtB3VdDnutf2VFjoyR5vE4lKRCt93KjA09+CrWWLC2LJw
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="155274010"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 May 2022 04:45:46 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Mon, 9 May 2022 04:45:46 -0700
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17 via Frontend Transport; Mon, 9 May 2022 04:45:45 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=U4vdU1UYEI/hZpDBMcpevv/3jn5lF5hK98y8g5KZTNx2vLzyT0V3oiqj9A9NaSq/ssXEzbZPEDX3B34QOtSlcB+UB/UgYJTbTvadJTm4EhblQ7qdUtjLzbLdSsw8woqLFXYQWx4OaNJNsx3A2mg0pAIJGMCn76cl8OZF2vCIdhd1DwkQr3MfokHaoJFLMEWZXItcHJqqomHu8pnupzXRqzczhsUAiXBtBxWg74ffI1nCejw9Vbgs4nCJP1Q4QTGjpVpGPWikVOLDtHECUjXFfGg1+fW9forDC8OKtMH345z6xEdM8alL7OfVIyzFj/Sj/CsVByBAc9R5BAHGH7oizA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=apbBunZdsws6GAUtatMv6xBOcJDHRx9lJQpyhJeGLDM=;
+ b=XWhqYXTyYiRLuzy/emBlO+mU2GyoCn6D6WYIAP++a8PK8CbSqygO5u/RweJUL8CxbauXtEavvNw7egLUWrMoiQ49GQVQTGTpJli394iZm4D+TTVxncEK+DVm+CEGSpDC8R/4ZwoiQC5uFpKUqswO4Q5RST6aWfNkwdJUmbS74OOqmD80N4ukGpZatigbeRyBbKhmsySUXKX1sanRxAadEcn5LEOccSTjs/quQJ2NL6pqc0KSNiBNhmDDYMcaq016ImRE7e5P5CSI9Mtj28/nAFnBkbtTibLrHVq+5QgPrqNog55PGYVMnpVLMl19mH2cXX5Jm8DFsG+XtTWEGSL7TA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=apbBunZdsws6GAUtatMv6xBOcJDHRx9lJQpyhJeGLDM=;
+ b=qOu1c82zSHXlz/XQTKl9L1YWvaJBZSnbRYijnoZtUE95EO4CVYOceaGe6Yot5NumX+kFPIcDtBp5TlmX5aWu1UNHfQ/eh5VHTFmYq4WSnqEAO8HkcfpLU7CautPXvonzKk7LbBUqdo7P42UbEpq1TLGsRnH/c9f3AlmBxpA94jk=
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com (2603:10b6:610:d4::8)
+ by BY5PR11MB4118.namprd11.prod.outlook.com (2603:10b6:a03:191::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Mon, 9 May
+ 2022 11:45:41 +0000
+Received: from CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::251b:8192:8a6c:741b]) by CH0PR11MB5561.namprd11.prod.outlook.com
+ ([fe80::251b:8192:8a6c:741b%6]) with mapi id 15.20.5227.023; Mon, 9 May 2022
+ 11:45:40 +0000
+From:   <Yuiko.Oshino@microchip.com>
+To:     <kuba@kernel.org>, <andrew@lunn.ch>
+CC:     <Woojung.Huh@microchip.com>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>, <Ravi.Hegde@microchip.com>,
+        <UNGLinuxDriver@microchip.com>
+Subject: RE: [PATCH v4 net-next 2/2] net: phy: smsc: add LAN8742 phy support.
+Thread-Topic: [PATCH v4 net-next 2/2] net: phy: smsc: add LAN8742 phy support.
+Thread-Index: AQHYYKvOScev42KTZkuZEw3AktpFnK0Qq3WAgAHJGICAA/5ZMA==
+Date:   Mon, 9 May 2022 11:45:40 +0000
+Message-ID: <CH0PR11MB5561938D85478C47EE01D9378EC69@CH0PR11MB5561.namprd11.prod.outlook.com>
+References: <20220505181252.32196-1-yuiko.oshino@microchip.com>
+        <20220505181252.32196-3-yuiko.oshino@microchip.com>
+        <YnQlicxRi3XXGhCG@lunn.ch> <20220506154513.48f16e24@kernel.org>
+In-Reply-To: <20220506154513.48f16e24@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microchip.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4cf0e8c4-4a8d-43c3-40ef-08da31b17127
+x-ms-traffictypediagnostic: BY5PR11MB4118:EE_
+x-microsoft-antispam-prvs: <BY5PR11MB411807287059E024C9C011B48EC69@BY5PR11MB4118.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: carRGHvrgIxoYzV5CEQBZLINuQhxQceKM8P4SHQ+PshSoM04W+2g9rE52DqILTFMxkzeSjr0nWsWTNaTkbL4qb5rhJ4qsxOScMKEGz1BVjFgNKxuk///3FnFIKPnG94VTdc/2+Kf1RBqejEeo7rJpg2pPn9hXbJ4LVjLGEUKWuJubGSbbV7iRana8dTq3XtNg4zUbeJlBsx8HH2SdBqgwti+DHxhCU1+ytX9stkKofrL4pF9JnuTRZhc+qMwGcJsluNV+6vFjUIPkB1bbCo2Nrppy7uZQoP7wFBD7SXqTbqyKDITKG3VIK1LRqmN2G7N/Du2CRAB2nN73E+RKVnw58TEdZWZt9Es2qiSHOhYGdx9FxtrOXn49o1xWbRg5Uy6loX/QHZt/TWOdouNIop+M0K+hua1aI+tlMGHB1eeKHb5ui05I3Yl5BaMdDxqL/GlxKnFGHjPTskRcOhR5p9IQ1Qev8wE6uFEigDXimMPfIJDqu9JbpYQCaZE1Do7kfT9FnGNPzgebWceW+Ycm+kfu+gZH86EJ1cVFUkijHJFrfAZXrpTtVLvh5+EKm1d/RO5DOKmb/8qL8MCLkeoi4LPstYvNWwSxKaOstpCpfZDsy2kjithX7uETCMAGUR2m5K4ivHfYXgPjoNowOCWokqe4jhNeV/VPb6hfHV80Gae1L4hLtWpNA7ZKnuV00hzLZLUILyaGa7rK38K5drJn+NmxQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH0PR11MB5561.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(71200400001)(86362001)(8676002)(4326008)(26005)(9686003)(4744005)(52536014)(6506007)(7696005)(2906002)(122000001)(83380400001)(8936002)(316002)(38100700002)(508600001)(33656002)(38070700005)(5660300002)(55016003)(186003)(66946007)(66476007)(76116006)(107886003)(54906003)(66556008)(66446008)(110136005)(64756008);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?6FZnGimdqs9oJSuyD8nMCcaocuCP1JT48P2CPlUwmQFIfZNR4ZPpZG3WEf6D?=
+ =?us-ascii?Q?KnP0pDHSNX2cmNOUi8M7/m4vUSq9MnF+FDrrVq/9jSd8DT+9etkFiFWVp6/r?=
+ =?us-ascii?Q?oiikJ5RyX77h5NAjEnHMu/z4NseTvxjJVH2q3TCka5GEbu1oOIyTao0gCz9Z?=
+ =?us-ascii?Q?Rc7Xhv6t/86KJz08PQhUPtYQf8Q5fIFGk0SLV3h7KsmMpXp69Nca4a8rUcJM?=
+ =?us-ascii?Q?mrvHhEHB1KR8H4XA+zBMLmvEkcMLD7Dz3JbWQ6QmNDMhYwKXe/qT6At3ZG6d?=
+ =?us-ascii?Q?bg2vMB6l0+yIeepROTIXtgEkWxenkKEeYocjy4Sszatb6wTrpD9uUEGquq2f?=
+ =?us-ascii?Q?/y2EWDgA8RyonzpC/KjTwkBELyE/YPCRqAV9qCuo4ztq5c/2uYGqk9LuCeV4?=
+ =?us-ascii?Q?kPpCC9im/BmMnxzjh9wS9qdf3Z7Iswh7TytngPCeOsfzZx9+F0OYM5PDYUXK?=
+ =?us-ascii?Q?sLMvYEB1xiLIU2EcIOVI9FskOpxPdjT4H/Icngk029Uhy+3YxV8jTAcxcIlp?=
+ =?us-ascii?Q?xsX7749IkvjVp2aVV9kiirM9b51kqILk4lPB/zJoMHHeBR8hS7IwA0wR76z5?=
+ =?us-ascii?Q?aY7Z8MrmfjkLtVtt1MBIMx32bWq3NHOCzUNIORs5DOF7rZ2Qb4wL2Q8+GO0D?=
+ =?us-ascii?Q?8HPggx2wYFvnA88P/KyEBESHScI/mYYPUv+f+kt7wH45sU6yIQoYIvDjzKdm?=
+ =?us-ascii?Q?7E/bpF/a8MjSO6tx2UH/DDaje5lnP4GKAZLWahcWoDZFjgFWzdMW0io2yhO1?=
+ =?us-ascii?Q?crNNuEuHxiTboI7zoVFbfPJTD/ZcdgbkNVlctaVS3XEY7tkeA2fnBxsI/+zS?=
+ =?us-ascii?Q?nEs1Xct7zRC+jAse3aATxG9gRNgyle6dBAF5JQ5QLAOjDzf2HjxrFiOAqFzx?=
+ =?us-ascii?Q?Us6+wI6GSY6Oq3jv4ZnFRQiOfDYspde+txyKpXdl7p9CJeuc/wiWFITZLEdN?=
+ =?us-ascii?Q?sUMda9tZJGPDccPfsGy+JDbHz2ZzxgHCjtGbHez7D9K4W6erWL1bpGQe5unW?=
+ =?us-ascii?Q?+Yo6LSvpaxE0U7FhLWMJKuPlELAx0OsYd3LEWlyi4qQ8r4dm5V8mi9nwS8a/?=
+ =?us-ascii?Q?bk4PZBuiGoAWpL+W9rPNvgToiiKwdMLeiBCK0TY5+IyZQVZ0tiFk9FXSAnTY?=
+ =?us-ascii?Q?mh5gEVi7PXMcbGWTae74GzFwKrV0D/oB54MB4TPZd6gtRFRrFpiAdgGyt6mf?=
+ =?us-ascii?Q?XTHHXYXXSWspFwK2XZoG+Qgj8sMbPHYZ5oBlQhvixOnZVA3GA3WLOnsPavQ7?=
+ =?us-ascii?Q?RsQ+6OtrDKpPKN/PJSzZxGcNcHSp10kmQQ4ca06EhAACLS0PwCsRCC3+Ktgc?=
+ =?us-ascii?Q?uGVVAngXn96OrRh4G87U6D7NMBb0kpb3F0LftstRo1nme+yzxwS7UeTgYHNg?=
+ =?us-ascii?Q?Pd89UtVpC9CiS7I/2y7yhErerABeyZPmQesnoCgAIKZbIXoCxm0VmzfqERbu?=
+ =?us-ascii?Q?m3xU32N5iLiq3j09kUtd4pWtH3N9v2f7H0tQMOXpTw/Hhoh54iEO7HO69rCh?=
+ =?us-ascii?Q?t/cfylIjoL1bvGZUQbjU73ltnJ7zvrKA9YTSngDFgnBEKIE7F37CxNfg29AV?=
+ =?us-ascii?Q?w0if+bLGBaqlpfGHkHRFpKrZRKMw0nLocMbkDV0mD+yfayQsP7F1RLd0Ae3N?=
+ =?us-ascii?Q?oBMdYE+4vPxwBch3Vm4jKew/5rZY824kG+IRtsOzMhAzZM9DMTb7z33GUy9x?=
+ =?us-ascii?Q?f0aym2fgjAprA+kppGx4YitwIVNnvnwbIwaY/G6RQ+g+6WPHPHzLj4tEv5FJ?=
+ =?us-ascii?Q?qs6miPQAl8Ts8EA6s27eGgUnCoHu6L8=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CH0PR11MB5561.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4cf0e8c4-4a8d-43c3-40ef-08da31b17127
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 May 2022 11:45:40.3561
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FL2W6pCuNJ7+AYuArEEcWwD+DPAMFoToIUkRTct8gzOZayQxFYDtmPjihH1nro1wKf7ZgxxtzGcN5vWB3LyOLSlzbrKXU+EBBPEH/71pY+E=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4118
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xiaomeng Tong <xiam0nd.tong@gmail.com> writes:
-
-> The bug is here: "} else if (item) {".
+>-----Original Message-----
+>From: Jakub Kicinski <kuba@kernel.org>
+>Sent: Friday, May 6, 2022 6:45 PM
+>To: Andrew Lunn <andrew@lunn.ch>
+>Cc: Yuiko Oshino - C18177 <Yuiko.Oshino@microchip.com>; Woojung Huh -
+>C21699 <Woojung.Huh@microchip.com>; davem@davemloft.net;
+>netdev@vger.kernel.org; Ravi Hegde - C21689 <Ravi.Hegde@microchip.com>;
+>UNGLinuxDriver <UNGLinuxDriver@microchip.com>
+>Subject: Re: [PATCH v4 net-next 2/2] net: phy: smsc: add LAN8742 phy suppo=
+rt.
 >
-> The list iterator value will *always* be set and non-NULL by
-> list_for_each_entry(), so it is incorrect to assume that the iterator
-> value will be NULL if the list is empty or no element is found in list.
+>EXTERNAL EMAIL: Do not click links or open attachments unless you know the
+>content is safe
 >
-> Use a new value 'iter' as the list iterator, while use the old value
-> 'item' as a dedicated pointer to point to the found element, which
-> 1. can fix this bug, due to now 'item' is NULL only if it's not found.
-> 2. do not need to change all the uses of 'item' after the loop.
-> 3. can also limit the scope of the list iterator 'iter' *only inside*
->    the traversal loop by simply declaring 'iter' inside the loop in the
->    future, as usage of the iterator outside of the list_for_each_entry
->    is considered harmful. https://lkml.org/lkml/2022/2/17/1032
+>On Thu, 5 May 2022 21:29:13 +0200 Andrew Lunn wrote:
+>> On Thu, May 05, 2022 at 11:12:52AM -0700, Yuiko Oshino wrote:
+>> > The current phy IDs on the available hardware.
+>> >         LAN8742 0x0007C130, 0x0007C131
+>> >
+>> > Signed-off-by: Yuiko Oshino <yuiko.oshino@microchip.com>
+>>
+>> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 >
-> Fixes: a910e4a94f692 ("cw1200: add driver for the ST-E CW1100 & CW1200 WLAN chipsets")
-> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-> ---
-> changes since v2:
->  - rebase on latest wireless-next (Kalle Valo)
-> changes since v1:
->  - fix incorrect check to item (Jakob Koschel)
->
-> v2: https://lore.kernel.org/lkml/20220320035436.11293-1-xiam0nd.tong@gmail.com/
-> v1: https://lore.kernel.org/all/20220319063800.28791-1-xiam0nd.tong@gmail.com/
-> ---
->  drivers/net/wireless/st/cw1200/queue.c | 18 ++++++++++--------
->  1 file changed, 10 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/net/wireless/st/cw1200/queue.c b/drivers/net/wireless/st/cw1200/queue.c
-> index e06da4b3b0d4..805a3c1bf8fe 100644
-> --- a/drivers/net/wireless/st/cw1200/queue.c
-> +++ b/drivers/net/wireless/st/cw1200/queue.c
-> @@ -91,23 +91,25 @@ static void __cw1200_queue_gc(struct cw1200_queue *queue,
->  			      bool unlock)
->  {
->  	struct cw1200_queue_stats *stats = queue->stats;
-> -	struct cw1200_queue_item *item = NULL, *tmp;
-> +	struct cw1200_queue_item *item = NULL, *iter, *tmp;
->  	bool wakeup_stats = false;
->  
-> -	list_for_each_entry_safe(item, tmp, &queue->queue, head) {
-> -		if (time_is_after_jiffies(item->queue_timestamp + queue->ttl))
-> +	list_for_each_entry_safe(iter, tmp, &queue->queue, head) {
-> +		if (time_is_after_jiffies(iter->queue_timestamp + queue->ttl)) {
-> +			item = iter;
->  			break;
-> +		}
->  		--queue->num_queued;
-> -		--queue->link_map_cache[item->txpriv.link_id];
-> +		--queue->link_map_cache[iter->txpriv.link_id];
->  		spin_lock_bh(&stats->lock);
->  		--stats->num_queued;
-> -		if (!--stats->link_map_cache[item->txpriv.link_id])
-> +		if (!--stats->link_map_cache[iter->txpriv.link_id])
->  			wakeup_stats = true;
->  		spin_unlock_bh(&stats->lock);
->  		cw1200_debug_tx_ttl(stats->priv);
-> -		cw1200_queue_register_post_gc(head, item);
-> -		item->skb = NULL;
-> -		list_move_tail(&item->head, &queue->free_pool);
-> +		cw1200_queue_register_post_gc(head, iter);
-> +		iter->skb = NULL;
-> +		list_move_tail(&iter->head, &queue->free_pool);
->  	}
->  
->  	if (wakeup_stats)
+>The comments which I think were requested in the review of v2 and appeared=
+ in v3
+>are now gone, again. Is that okay?
 
-I started to look at this myself. I don't know if I'm missing something,
-but is the time_is_after_jiffies() really correct? This was added by
-Wang in commit 8cbc3d51b4ae ("cw1200: use time_is_after_jiffies()
-instead of open coding it"):
+Thank you for the review.
+Sorry, I will fix it (add the comments) and re-submit.
+Yuiko
 
--               if (jiffies - item->queue_timestamp < queue->ttl)
-+               if (time_is_after_jiffies(item->queue_timestamp + queue->ttl))
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8cbc3d51b4ae
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
