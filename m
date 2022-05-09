@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C6151FB5C
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 13:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A166451FB83
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 13:44:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233099AbiEILhu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 07:37:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44170 "EHLO
+        id S232623AbiEILn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 07:43:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58928 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233037AbiEILhk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 07:37:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B83241F92A5
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 04:33:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652096025;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0zAxrsAdCK0uO6AyvDlrnCyq5UipGmFRAGYSLTQAK7U=;
-        b=bP+tb6/IF93ywqrNsF0TTNgV2jSwtbLCYKvU72eMRQJTxPlFBUEXoWwdGgTQKx157IE5+C
-        mP+EMKLzTP3hOMpan6mfvEIBAVFgPLNjaqThYDeozsh1QIY6pU2Qe0CcGzTq+OLDfvY5Fk
-        mh3EwUUxq6AP5cD8G9syny8twHyv6xQ=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-606-sf4cDH2IMmOtRv9v9gepCg-1; Mon, 09 May 2022 07:33:44 -0400
-X-MC-Unique: sf4cDH2IMmOtRv9v9gepCg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S232592AbiEILnY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 07:43:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D5491FC7C1;
+        Mon,  9 May 2022 04:39:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 04F1A85A5BE;
-        Mon,  9 May 2022 11:33:44 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.196.14])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C787B2166B2F;
-        Mon,  9 May 2022 11:33:42 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [PATCH v2 net] net/sched: act_pedit: really ensure the skb is writable
-Date:   Mon,  9 May 2022 13:33:34 +0200
-Message-Id: <004a9eddf22a44b415a6573bdc67040b995c14dc.1652095998.git.pabeni@redhat.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9BCFB8119D;
+        Mon,  9 May 2022 11:39:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47441C385AB;
+        Mon,  9 May 2022 11:39:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652096368;
+        bh=W32hoCGP3nIdxrrrYu+Ox8K9dj4+urX6psk0ONvi8fw=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=mM31Rflnzg9ZzjxBTVNWhCTURBuFd4oF66lrAT7cojCRMBPj9FVACwnnqDNAIRYYW
+         UdHAipmTU1W+/qcVBRzpGO0xT2ayotMsHaDSMkdXrEb5T24OEudSeQKSyixyN7eoY5
+         hxm/jNMnrvbP3RBxr/N755aYMwPexAtMx8vNcYNaTMeS++ux61HrocHxoBPi4C9vQ7
+         Csr8IBM7ljFqiONKdjp4eBDOH2Ei5YFZi14fA61ksxWYDpgkLl5MHvY/xlKAPB1wue
+         HlVd5fP6L7nvod4xmoVy57xveAYAq0cmtV8wT3ZZ3E9nsUVGIqQjKLwTL4eRfuAel8
+         UHMCvaQ0nLmWQ==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Cc:     pizza@shaftnet.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, linville@tuxdriver.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Wang Qing <wangqing@vivo.com>
+Subject: Re: [PATCH v3] cw1200: fix incorrect check to determine if no element is found in list
+References: <20220413091723.17596-1-xiam0nd.tong@gmail.com>
+Date:   Mon, 09 May 2022 14:39:23 +0300
+In-Reply-To: <20220413091723.17596-1-xiam0nd.tong@gmail.com> (Xiaomeng Tong's
+        message of "Wed, 13 Apr 2022 17:17:23 +0800")
+Message-ID: <87k0av7x5g.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,107 +56,87 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently pedit tries to ensure that the accessed skb offset
-is writeble via skb_unclone(). The action potentially allows
-touching any skb bytes, so it may end-up modifying shared data.
+Xiaomeng Tong <xiam0nd.tong@gmail.com> writes:
 
-The above causes some sporadic MPTCP self-test failures.
+> The bug is here: "} else if (item) {".
+>
+> The list iterator value will *always* be set and non-NULL by
+> list_for_each_entry(), so it is incorrect to assume that the iterator
+> value will be NULL if the list is empty or no element is found in list.
+>
+> Use a new value 'iter' as the list iterator, while use the old value
+> 'item' as a dedicated pointer to point to the found element, which
+> 1. can fix this bug, due to now 'item' is NULL only if it's not found.
+> 2. do not need to change all the uses of 'item' after the loop.
+> 3. can also limit the scope of the list iterator 'iter' *only inside*
+>    the traversal loop by simply declaring 'iter' inside the loop in the
+>    future, as usage of the iterator outside of the list_for_each_entry
+>    is considered harmful. https://lkml.org/lkml/2022/2/17/1032
+>
+> Fixes: a910e4a94f692 ("cw1200: add driver for the ST-E CW1100 & CW1200 WLAN chipsets")
+> Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+> ---
+> changes since v2:
+>  - rebase on latest wireless-next (Kalle Valo)
+> changes since v1:
+>  - fix incorrect check to item (Jakob Koschel)
+>
+> v2: https://lore.kernel.org/lkml/20220320035436.11293-1-xiam0nd.tong@gmail.com/
+> v1: https://lore.kernel.org/all/20220319063800.28791-1-xiam0nd.tong@gmail.com/
+> ---
+>  drivers/net/wireless/st/cw1200/queue.c | 18 ++++++++++--------
+>  1 file changed, 10 insertions(+), 8 deletions(-)
+>
+> diff --git a/drivers/net/wireless/st/cw1200/queue.c b/drivers/net/wireless/st/cw1200/queue.c
+> index e06da4b3b0d4..805a3c1bf8fe 100644
+> --- a/drivers/net/wireless/st/cw1200/queue.c
+> +++ b/drivers/net/wireless/st/cw1200/queue.c
+> @@ -91,23 +91,25 @@ static void __cw1200_queue_gc(struct cw1200_queue *queue,
+>  			      bool unlock)
+>  {
+>  	struct cw1200_queue_stats *stats = queue->stats;
+> -	struct cw1200_queue_item *item = NULL, *tmp;
+> +	struct cw1200_queue_item *item = NULL, *iter, *tmp;
+>  	bool wakeup_stats = false;
+>  
+> -	list_for_each_entry_safe(item, tmp, &queue->queue, head) {
+> -		if (time_is_after_jiffies(item->queue_timestamp + queue->ttl))
+> +	list_for_each_entry_safe(iter, tmp, &queue->queue, head) {
+> +		if (time_is_after_jiffies(iter->queue_timestamp + queue->ttl)) {
+> +			item = iter;
+>  			break;
+> +		}
+>  		--queue->num_queued;
+> -		--queue->link_map_cache[item->txpriv.link_id];
+> +		--queue->link_map_cache[iter->txpriv.link_id];
+>  		spin_lock_bh(&stats->lock);
+>  		--stats->num_queued;
+> -		if (!--stats->link_map_cache[item->txpriv.link_id])
+> +		if (!--stats->link_map_cache[iter->txpriv.link_id])
+>  			wakeup_stats = true;
+>  		spin_unlock_bh(&stats->lock);
+>  		cw1200_debug_tx_ttl(stats->priv);
+> -		cw1200_queue_register_post_gc(head, item);
+> -		item->skb = NULL;
+> -		list_move_tail(&item->head, &queue->free_pool);
+> +		cw1200_queue_register_post_gc(head, iter);
+> +		iter->skb = NULL;
+> +		list_move_tail(&iter->head, &queue->free_pool);
+>  	}
+>  
+>  	if (wakeup_stats)
 
-Address the issue keeping track of a rough over-estimate highest skb
-offset accessed by the action and ensure such offset is really
-writable.
+I started to look at this myself. I don't know if I'm missing something,
+but is the time_is_after_jiffies() really correct? This was added by
+Wang in commit 8cbc3d51b4ae ("cw1200: use time_is_after_jiffies()
+instead of open coding it"):
 
-Note that this may cause performance regressions in some scenario,
-but hopefully pedit is not critical path.
+-               if (jiffies - item->queue_timestamp < queue->ttl)
++               if (time_is_after_jiffies(item->queue_timestamp + queue->ttl))
 
-v1 -> v2:
- - cleanup hint update (Jakub)
- - avoid raices while accessing the hint (Jakub)
- - re-organize the comments for clarity
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=8cbc3d51b4ae
 
-Fixes: db2c24175d14 ("act_pedit: access skb->data safely")
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Tested-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- include/net/tc_act/tc_pedit.h |  1 +
- net/sched/act_pedit.c         | 26 ++++++++++++++++++++++----
- 2 files changed, 23 insertions(+), 4 deletions(-)
-
-diff --git a/include/net/tc_act/tc_pedit.h b/include/net/tc_act/tc_pedit.h
-index 748cf87a4d7e..3e02709a1df6 100644
---- a/include/net/tc_act/tc_pedit.h
-+++ b/include/net/tc_act/tc_pedit.h
-@@ -14,6 +14,7 @@ struct tcf_pedit {
- 	struct tc_action	common;
- 	unsigned char		tcfp_nkeys;
- 	unsigned char		tcfp_flags;
-+	u32			tcfp_off_max_hint;
- 	struct tc_pedit_key	*tcfp_keys;
- 	struct tcf_pedit_key_ex	*tcfp_keys_ex;
- };
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index 31fcd279c177..0eaaf1f45de1 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -149,7 +149,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 	struct nlattr *pattr;
- 	struct tcf_pedit *p;
- 	int ret = 0, err;
--	int ksize;
-+	int i, ksize;
- 	u32 index;
- 
- 	if (!nla) {
-@@ -228,6 +228,18 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 		p->tcfp_nkeys = parm->nkeys;
- 	}
- 	memcpy(p->tcfp_keys, parm->keys, ksize);
-+	p->tcfp_off_max_hint = 0;
-+	for (i = 0; i < p->tcfp_nkeys; ++i) {
-+		u32 cur = p->tcfp_keys[i].off;
-+
-+		/* The AT option can read a single byte, we can bound the actual
-+		 * value with uchar max.
-+		 */
-+		cur += (0xff & p->tcfp_keys[i].offmask) >> p->tcfp_keys[i].shift;
-+
-+		/* Each key touches 4 bytes starting from the computed offset */
-+		p->tcfp_off_max_hint = max(p->tcfp_off_max_hint, cur + 4);
-+	}
- 
- 	p->tcfp_flags = parm->flags;
- 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-@@ -308,13 +320,18 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			 struct tcf_result *res)
- {
- 	struct tcf_pedit *p = to_pedit(a);
-+	u32 max_offset;
- 	int i;
- 
--	if (skb_unclone(skb, GFP_ATOMIC))
--		return p->tcf_action;
--
- 	spin_lock(&p->tcf_lock);
- 
-+	max_offset = (skb_transport_header_was_set(skb) ?
-+		      skb_transport_offset(skb) :
-+		      skb_network_offset(skb)) +
-+		     p->tcfp_off_max_hint;
-+	if (skb_ensure_writable(skb, min(skb->len, max_offset)))
-+		goto unlock;
-+
- 	tcf_lastuse_update(&p->tcf_tm);
- 
- 	if (p->tcfp_nkeys > 0) {
-@@ -403,6 +420,7 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- 	p->tcf_qstats.overlimits++;
- done:
- 	bstats_update(&p->tcf_bstats, skb);
-+unlock:
- 	spin_unlock(&p->tcf_lock);
- 	return p->tcf_action;
- }
 -- 
-2.35.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
