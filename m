@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDC3551F739
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 10:49:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8C7451F7FA
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 11:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234208AbiEIIuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 04:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35650 "EHLO
+        id S231617AbiEIJ1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 05:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237430AbiEIIW6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:22:58 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A12F91EE0A0;
-        Mon,  9 May 2022 01:18:52 -0700 (PDT)
-Received: from kwepemi500012.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KxYWb1D9CzhZ5y;
-        Mon,  9 May 2022 16:00:43 +0800 (CST)
+        with ESMTP id S235012AbiEIIuf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 04:50:35 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54A04AAE13;
+        Mon,  9 May 2022 01:46:41 -0700 (PDT)
+Received: from kwepemi500014.china.huawei.com (unknown [172.30.72.53])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4KxYQp1XcRzCsX9;
+        Mon,  9 May 2022 15:56:34 +0800 (CST)
 Received: from kwepemm600016.china.huawei.com (7.193.23.20) by
- kwepemi500012.china.huawei.com (7.221.188.12) with Microsoft SMTP Server
+ kwepemi500014.china.huawei.com (7.221.188.232) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2375.24; Mon, 9 May 2022 16:01:19 +0800
 Received: from localhost.localdomain (10.67.165.24) by
@@ -30,9 +30,9 @@ To:     <davem@davemloft.net>, <kuba@kernel.org>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <lipeng321@huawei.com>, <huangguangbin2@huawei.com>,
         <chenhao288@hisilicon.com>
-Subject: [PATCH V2 net-next 1/6] net: hns3: fix access null pointer issue when set tx-buf-size as 0
-Date:   Mon, 9 May 2022 15:55:27 +0800
-Message-ID: <20220509075532.32166-2-huangguangbin2@huawei.com>
+Subject: [PATCH V2 net-next 2/6] net: hns3: remove the affinity settings of vector0
+Date:   Mon, 9 May 2022 15:55:28 +0800
+Message-ID: <20220509075532.32166-3-huangguangbin2@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220509075532.32166-1-huangguangbin2@huawei.com>
 References: <20220509075532.32166-1-huangguangbin2@huawei.com>
@@ -52,41 +52,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hao Chen <chenhao288@hisilicon.com>
+From: Yufeng Mo <moyufeng@huawei.com>
 
-When set tx-buf-size as 0 by ethtool, hns3_init_tx_spare_buffer()
-will return directly and priv->ring->tx_spare->len is uninitialized,
-then print function access priv->ring->tx_spare->len will cause
-this issue.
+Vector0 is used for common interrupt control events and is
+irrelevant to performance. Currently, the driver sets the
+default affinity of vector0 to NUMA nodes, which is unnecessary.
+Therefore, the default setting is removed, and the driver does
+not set the affinity for vector0.
 
-When set tx-buf-size as 0 by ethtool, the print function will
-print 0 directly and not access priv->ring->tx_spare->len.
-
-Fixes: 2373b35c24ff ("net: hns3: add log for setting tx spare buf size")
-Signed-off-by: Hao Chen <chenhao288@hisilicon.com>
+Signed-off-by: Yufeng Mo <moyufeng@huawei.com>
 Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ .../hisilicon/hns3/hns3pf/hclge_main.c        | 27 +------------------
+ .../hisilicon/hns3/hns3pf/hclge_main.h        |  2 --
+ 2 files changed, 1 insertion(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-index 1db8a86f046d..6d20974519fe 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
-@@ -1915,8 +1915,11 @@ static int hns3_set_tunable(struct net_device *netdev,
- 			return ret;
- 		}
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index a5dd2c8c244a..1ebad0e50e6a 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -1546,9 +1546,8 @@ static void hclge_init_tc_config(struct hclge_dev *hdev)
+ static int hclge_configure(struct hclge_dev *hdev)
+ {
+ 	struct hnae3_ae_dev *ae_dev = pci_get_drvdata(hdev->pdev);
+-	const struct cpumask *cpumask = cpu_online_mask;
+ 	struct hclge_cfg cfg;
+-	int node, ret;
++	int ret;
  
--		netdev_info(netdev, "the active tx spare buf size is %u, due to page order\n",
--			    priv->ring->tx_spare->len);
-+		if (!priv->ring->tx_spare)
-+			netdev_info(netdev, "the active tx spare buf size is 0, disable tx spare buffer\n");
-+		else
-+			netdev_info(netdev, "the active tx spare buf size is %u, due to page order\n",
-+				    priv->ring->tx_spare->len);
+ 	ret = hclge_get_cfg(hdev, &cfg);
+ 	if (ret)
+@@ -1594,13 +1593,6 @@ static int hclge_configure(struct hclge_dev *hdev)
+ 	hclge_init_tc_config(hdev);
+ 	hclge_init_kdump_kernel_config(hdev);
  
- 		break;
- 	default:
+-	/* Set the affinity based on numa node */
+-	node = dev_to_node(&hdev->pdev->dev);
+-	if (node != NUMA_NO_NODE)
+-		cpumask = cpumask_of_node(node);
+-
+-	cpumask_copy(&hdev->affinity_mask, cpumask);
+-
+ 	return ret;
+ }
+ 
+@@ -3564,17 +3556,6 @@ static void hclge_get_misc_vector(struct hclge_dev *hdev)
+ 	hdev->num_msi_used += 1;
+ }
+ 
+-static void hclge_misc_affinity_setup(struct hclge_dev *hdev)
+-{
+-	irq_set_affinity_hint(hdev->misc_vector.vector_irq,
+-			      &hdev->affinity_mask);
+-}
+-
+-static void hclge_misc_affinity_teardown(struct hclge_dev *hdev)
+-{
+-	irq_set_affinity_hint(hdev->misc_vector.vector_irq, NULL);
+-}
+-
+ static int hclge_misc_irq_init(struct hclge_dev *hdev)
+ {
+ 	int ret;
+@@ -11457,11 +11438,6 @@ static int hclge_init_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 	timer_setup(&hdev->reset_timer, hclge_reset_timer, 0);
+ 	INIT_DELAYED_WORK(&hdev->service_task, hclge_service_task);
+ 
+-	/* Setup affinity after service timer setup because add_timer_on
+-	 * is called in affinity notify.
+-	 */
+-	hclge_misc_affinity_setup(hdev);
+-
+ 	hclge_clear_all_event_cause(hdev);
+ 	hclge_clear_resetting_state(hdev);
+ 
+@@ -11879,7 +11855,6 @@ static void hclge_uninit_ae_dev(struct hnae3_ae_dev *ae_dev)
+ 
+ 	hclge_reset_vf_rate(hdev);
+ 	hclge_clear_vf_vlan(hdev);
+-	hclge_misc_affinity_teardown(hdev);
+ 	hclge_state_uninit(hdev);
+ 	hclge_ptp_uninit(hdev);
+ 	hclge_uninit_rxd_adv_layout(hdev);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index c70239758bb2..ab5c37848a7b 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -938,8 +938,6 @@ struct hclge_dev {
+ 	DECLARE_KFIFO(mac_tnl_log, struct hclge_mac_tnl_stats,
+ 		      HCLGE_MAC_TNL_LOG_SIZE);
+ 
+-	/* affinity mask and notify for misc interrupt */
+-	cpumask_t affinity_mask;
+ 	struct hclge_ptp *ptp;
+ 	struct devlink *devlink;
+ 	struct hclge_comm_rss_cfg rss_cfg;
 -- 
 2.33.0
 
