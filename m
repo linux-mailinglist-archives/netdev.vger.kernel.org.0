@@ -2,153 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF4995205F0
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 22:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B226520604
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 22:38:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229379AbiEIUhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 16:37:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41376 "EHLO
+        id S229582AbiEIUmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 16:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229525AbiEIUhE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 16:37:04 -0400
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D355EAD02
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 13:31:27 -0700 (PDT)
-Received: by mail-yb1-xb36.google.com with SMTP id w187so27077812ybe.2
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 13:31:27 -0700 (PDT)
+        with ESMTP id S229448AbiEIUmn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 16:42:43 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DF35D89
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 13:38:46 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id a14-20020a7bc1ce000000b00393fb52a386so220657wmj.1
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 13:38:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yoSibLIeaq7WeOtPbayCDWgSYL2uTmYOTPFeBylokis=;
-        b=es8SuHK1DnqI6FlwLKO+q9F5gG7c8sRegq1Slfr5oDKH8VcmeIl73zPBTwRZjCeKL5
-         GiHv7byF/CcRxy3fmLVb9ZCpIthCzMwoyUsMw/eJpjdFnWGRxAX3OqR7ZBkmnrQOFHrl
-         AqyXucGVeV2CRIGLTRatgEfSjd9ndumBKaztnnK0UJ9Fy6RkYJmTtWdexlXTaTNThLAp
-         MbZjwViQqr/oEgXJ72UikUE1dSsmcdk/SzFoWW/6ceGWoSXOgKd8HLvRogKkkkNNTcKC
-         ffj5PAcL+PloZalcjGVTeVmhdHZ0hOAQqiOGrNdHLOxGhrWkOg1WcDfBR3A/L7pMBhb5
-         DzrA==
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=7va6PYBEaxzVzOFHDSxBigUPhGrAPiX/eRU/9Co02p4=;
+        b=l93xZyCr6nJE5UdrUWPGTvE2uRhQaTwbDk53+Nl5tIpitiU0ZsTdmORL65dGJwAwWz
+         CQxtpxvXboq9kYNfYvMf0UbONQ3nPoZ/gevlkW89UMhqSRBph+0eJbQBKpl2Awk6pXS/
+         69URk0TjjU8nT4s6PPfSMT5x4mkdt5VpQLOZm0vLLKlP6vCzBn0v6MHFBZFgv70K+JXU
+         g0Mbm7UZxQvfaE2UeucANE78k9cZHwqGwe5EbB4GhlbebI4r/wfh9/dKrPiEpc8Hl+Dy
+         VpJDPJ32X2v+1lSoySwzrBNhRs81eUad9eXE5utJVS3zKGFxx+Kp6LRIbaSUt71Mb8Lq
+         4+QQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yoSibLIeaq7WeOtPbayCDWgSYL2uTmYOTPFeBylokis=;
-        b=s/SJ89FR93rNcCD+tovDc4WPVpf0IfgNdfEOu4cdmXe0sV3PLcUUlv51LBtzjyzBUd
-         w5sG17zuogwhchVM33rcnud/MEkCRV1mP2+IwYbFlM2y40DXEqwoSgDw783qFAmKtnsV
-         n7oq2FCh3jhkX4o9BNMc7bCPfWT2J/kEyxfjXurjvYwV1WR/WlaN/jNhLK1jf3oP9YuZ
-         BAiXKIWjH2JbCEWX10RYZ4g2Dcm2aN2HXuLHFmaEw4ABanN5RlN+8LZtRDrD5pEb2iQS
-         tA+C3aY1YcnC8NHCz8ucMtzOObEP4dNi/ZWTcltXOjj3y3xPTNsr50BA4hIbHA1iivsb
-         N8qQ==
-X-Gm-Message-State: AOAM531pHtahEfTFImrKeeZaEroxhZqpLHHbMXetxKyFTenyhYybF6NG
-        0FmwQSTKQ5w2+MxwiTQseUIujpt0KSgBz8s6ndso9TeilvrHUZFq
-X-Google-Smtp-Source: ABdhPJxl/JuHz7HXdGuArDajd0FhD8ZOO0O+2JRMGNtid/8eK3Zm7wZ2v43Emz3ltbBrN6uvI2Y7oINZsvWbYm18lj8=
-X-Received: by 2002:a25:8b88:0:b0:64b:8a2:aae4 with SMTP id
- j8-20020a258b88000000b0064b08a2aae4mr478200ybl.231.1652128286392; Mon, 09 May
- 2022 13:31:26 -0700 (PDT)
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to:content-transfer-encoding;
+        bh=7va6PYBEaxzVzOFHDSxBigUPhGrAPiX/eRU/9Co02p4=;
+        b=t+36K0MSu2CeblgwUIph+L9vW67DjF07O2MsdB7ZODh9KTj4E5w5gclXsz8DHF4rMc
+         wMbrbXeYrrPgC7ifUaWB3aZ3YYQKqALPyZP9DCZsrk/4ZX0y5SVUisGWW3VMPfhAEr9u
+         ZPODMHfJ41sqPNC1fme0gSkzrsuxc8f4Ykk1rdqqbQGnOkgojbvfxdbKHqzTNFvrel4G
+         4oq8hdUaIjs4qcf3TmLO9GrUJFeBP+CnLOxy029KWwizNg1TMpmsaMSXN9k8R6vSw8kn
+         cjF+lzsxNrFSeCvRc/ASzTCPGXWBuh4CcS7nKm1BNEMdnPbjDaZ38IVjJHPeD7PVKHbS
+         HGgg==
+X-Gm-Message-State: AOAM530b1oi8A+EHKs/XDP3PmH0kL9JFbQkoYEYvzHg+0bMkZRN0I/qD
+        lzBd/tm2Vl9Pr79DNZlG4tKQMJdVpGHf2SaFng==
+X-Google-Smtp-Source: ABdhPJyDbzoDohhdgOvN4FFOAwKF+o66C1chT5SEfPjwiQSlW7OHRec8hW4ICrb4p/5+dTp5Qrpt+X8Lvgtd7Sf6gzM=
+X-Received: by 2002:a05:600c:5104:b0:394:7d22:aad8 with SMTP id
+ o4-20020a05600c510400b003947d22aad8mr16907704wms.68.1652128724455; Mon, 09
+ May 2022 13:38:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <CANn89iJW9GCUWBRtutv1=KHYn0Gpj8ue6bGWMO9LLGXqvgWhmQ@mail.gmail.com>
- <165212006050.5729.9059171256935942562.stgit@localhost.localdomain>
- <CANn89iL+r=dgW4ndjBBR=E0KQ0rBVshWMQOVmco0cZDbNXymrw@mail.gmail.com> <433e8f1e98c583d04798102f234aea6b566bef36.camel@gmail.com>
-In-Reply-To: <433e8f1e98c583d04798102f234aea6b566bef36.camel@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 9 May 2022 13:31:15 -0700
-Message-ID: <CANn89i+74TjkiuTwScqF0ML=R8cpvWZ6z0M-cSuh2g7fuhwnZQ@mail.gmail.com>
-Subject: Re: [PATCH 0/2] Replacements for patches 2 and 7 in Big TCP series
-To:     Alexander H Duyck <alexander.duyck@gmail.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Coco Li <lixiaoyan@google.com>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>
+Sender: felyikpuckan@gmail.com
+Received: by 2002:a05:600c:a07:0:0:0:0 with HTTP; Mon, 9 May 2022 13:38:44
+ -0700 (PDT)
+From:   dr adama ali <dradamaali4@gmail.com>
+Date:   Mon, 9 May 2022 08:38:44 -1200
+X-Google-Sender-Auth: HLb2Q91GeN6cT2knBZDHOY_dOKU
+Message-ID: <CACF60Hj4Vce4OHTv2Bar6QucoRgM=vP7QVGp6OxL7Fav_w=Hcw@mail.gmail.com>
+Subject: Greetings,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: Yes, score=6.0 required=5.0 tests=ADVANCE_FEE_5_NEW_MONEY,
+        BAYES_50,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        FREEMAIL_FROM,LOTS_OF_MONEY,MONEY_FRAUD_8,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_MONEY_PERCENT,T_SCC_BODY_TEXT_LINE,
+        UNDISC_MONEY autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:331 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [dradamaali4[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 T_MONEY_PERCENT X% of a lot of money for you
+        *  0.0 MONEY_FRAUD_8 Lots of money and very many fraud phrases
+        *  3.0 ADVANCE_FEE_5_NEW_MONEY Advance Fee fraud and lots of money
+        *  2.4 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 9, 2022 at 1:22 PM Alexander H Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Mon, 2022-05-09 at 11:54 -0700, Eric Dumazet wrote:
-> > On Mon, May 9, 2022 at 11:17 AM Alexander Duyck
-> > <alexander.duyck@gmail.com> wrote:
-> > >
-> > > This patch set is meant to replace patches 2 and 7 in the Big TCP series.
-> > > From what I can tell it looks like they can just be dropped from the series
-> > > and these two patches could be added to the end of the set.
-> > >
-> > > With these patches I have verified that both the loopback and mlx5 drivers
-> > > are able to send and receive IPv6 jumbogram frames when configured with a
-> > > g[sr]o_max_size value larger than 64K.
-> > >
-> > > Note I had to make one minor change to iproute2 to allow submitting a value
-> > > larger than 64K in that I removed a check that was limiting gso_max_size to
-> > > no more than 65536. In the future an alternative might be to fetch the
-> > > IFLA_TSO_MAX_SIZE attribute if it exists and use that, and if not then use
-> > > 65536 as the limit.
-> >
-> > OK, thanks.
-> >
-> > My remarks are :
-> >
-> > 1) Adding these enablers at the end of the series will not be
-> > bisection friendly.
->
-> They don't have to be added at the end, but essentially they could be
-> drop in replacements for the two patches called out. I just called it
-> out that way as that is what I ended up doing in order to test the
-> patches, and to make it easier to just send them as a pair instead of
-> sending the entire set. I moved them to the end of the list and was
-> swapping between the 2 sets in my testing. I was able to reorder them
-> without any issues. So if you wanted you could place these two patches
-> as patches 2 and 7 in your series.
->
-> > 2) Lots more changes, and more backport conflicts for us.
-> >
-> > I do not care really, it seems you absolutely hate the new attributes,
-> > I can live with that,
-> > but honestly this makes the BIG TCP patch series quite invasive.
->
-> As it stands the BIG TCP patch series breaks things since it is
-> outright overrriding the gso_max_size value in the case of IPv6/TCP
-> frames. As I mentioned before this is going to force people to have to
-> update scripts if they are reducing gso_max_size as they would also now
-> need to update gso_ipv6_max_size.
+Greetings My Dear Friend,
 
-If they never set  gso_ipv6_max_size, they do not have to change it.
-If they set it, well, they get what they wanted.
-Also, the driver value caps  gso_ipv6_max_size, so our patches broke nothing.
-
-Some people could actually decide to limit IPV4 TSO packets to 40KB,
-and yet limit
-IPv6 packets to 128KB.
-Their choice.
-Apparently you think this is not a valid choice.
+Before I introduce myself, I wish to inform you that this letter is not a
+hoax mail and I urge you to treat it serious. This letter must come to you
+as a big surprise, but I believe it is only a day that people meet and
+become great friends and business partners. Please I want you to read this
+letter very carefully and I must apologize for barging this message into
+your mail box without any formal introduction due to the urgency and
+confidentiality of this business and I know that this message will come to
+you as a surprise. Please
 
 
->
-> It makes much more sense to me to allow people to push up the value
-> from 64K to whatever value it is you want to allow for the IPv6/TCP GSO
-> and then just cap the protocols if they cannot support it.
->
-> As far as the backport/kcompat work it should be pretty straight
-> forward. You just replace the references in the driver to GSO_MAX_SIZE
-> with GSO_LEGACY_MAX_SIZE and then do a check in a header file somewhere
-> via #ifndef and if it doesn't exist you define it.
+this is not a joke and I will not like you to joke with it ok, With due
+respect to your person and much sincerity of purpose, I make this contact
+with you as I believe that you can be of great assistance to me. My name is
+DR.ADAMA ALI, from Burkina Faso, West Africa. I work in Bank Of Africa
+(BOA) as telex manager, please see this as a confidential message and do
+not reveal it to another person and let me know whether you can be of
+assistance regarding my proposal below because it is top secret.
 
-Well, this is the kind of stuff that Intel loves to do in their
-out-of-tree driver,
-which is kind of horrible.
 
-Look, I will spend fews days rebasing and testing a new series
-including your patches,
-no need to answer this email.
+I am about to retire from active Banking service to start a new life but I
+am skeptical to reveal this particular secret to a stranger. You must
+assure me that everything will be handled confidentially because we are not
+going to suffer again in life. It has been 10 years now that most of the
+greedy African Politicians used our bank to launder money overseas through
+the help of their Political advisers. Most of the funds which they
+transferred out of the shores of Africa were gold and oil money that was
+supposed to have been used to develop the continent. Their Political
+advisers always inflated the amounts before transferring to foreign
+accounts, so I also used the opportunity to divert part of the funds hence
+I am aware that there is no official trace of how much was transferred as
+all the accounts used for such transfers were being closed after transfer.
+I acted as the Bank Officer to most of the politicians and when I
+discovered that they were using me to succeed in their greedy act; I also
+cleaned some of their banking records from the Bank files and no one cared
+to ask me
 
-We will live with future merge conflicts, and errors because you
-wanted to change
-GSO_MAX_SIZE, instead of a clean change.
+
+because the money was too much for them to control. They laundered over
+$5billion Dollars during the process.Before I send this message to you, I
+have already diverted ($10.5million Dollars) to an escrow account belonging
+to no one in the bank. The bank is anxious now to know who the beneficiary
+to the funds is because they have made a lot of profits with the funds. It
+is more than Eight years now and most of the politicians are no longer
+using our bank to transfer funds overseas. The ($10.5million Dollars) has
+been laying waste in our bank and I don=E2=80=99t want to retire from the b=
+ank
+without transferring the funds to a foreign account to enable me share the
+proceeds with the receiver (a foreigner). The money will be shared 60% for
+me and 40% for you. There is no one coming to ask you about the funds
+because I secured everything. I only want you to assist me by providing a
+reliable bank account where the funds can be transferred.
+
+
+You are not to face any difficulties or legal implications as I am going to
+handle the transfer personally. If you are capable of receiving the funds,
+do let me know immediately to enable me give you a detailed information on
+what to do. For me, I have not stolen the money from anyone because the
+other people that took the whole money did not face any problems. This is
+my chance to grab my own life opportunity but you must keep the details of
+the funds secret to avoid any leakages as no one in the bank knows about my
+plans Please get back to me if you are interested and capable to handle
+this project, I shall intimate you on what to do when I hear from your
+confirmation and acceptance.If you are capable of being my trusted
+associate do declare your consent to me. I am looking forward to hear from
+you immediately for further information.
+
+
+
+Thanks with my best regards.
+DR.ADAMA ALI
+Telex Manager
+Bank Of Africa(BOA)
+Burkina Faso
