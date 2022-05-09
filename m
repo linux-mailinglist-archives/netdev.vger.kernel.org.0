@@ -2,58 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7ADD5203A3
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 19:38:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 345AF5203BD
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 19:45:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239676AbiEIRgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 13:36:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41368 "EHLO
+        id S239759AbiEIRmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 13:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239666AbiEIRgP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 13:36:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5D7711AFD5;
-        Mon,  9 May 2022 10:32:20 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68511B81897;
-        Mon,  9 May 2022 17:32:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A803FC385B1;
-        Mon,  9 May 2022 17:32:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652117538;
-        bh=wbTfRTa1LYaVdf9Q0XCcxIfLxAm6dKGFkdpNVVBPAoY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UU+mNilnLYVA0ENPVmo3ioIjpztt9e95KvT5zQtLujRKbA1ajuEXBwbQFWi6OjrCj
-         Wp5tN1zojmRyKh1DNm2NF0LMeqXC/SNO8znGn97Vzk61ZCXjIBg/jv67CDSbfistf/
-         hyZ1QSrF40ZzChK5ovtHUhh9muy/8cFIINnvTwCrcQok+hvCdMHt+3VlX3pqaU9dAa
-         /6KP5F0Uqg38k0Y9e0CD3NP/3lEWWJkpOSGCOJCsO4kOW2mAlrrcKkgasHs1IDoTWI
-         6FBgM0mgyqzXkmQDp2hynYzPGDcqPzoj/BAgVWBSMc2T++BIcfj0rkCJRKpEKde7kS
-         ztqKlBHCzM7TA==
-Date:   Mon, 9 May 2022 10:32:16 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Doug Brown <doug@schmorgal.com>
-Subject: Re: [PATCH net-next] net: appletalk: remove Apple/Farallon
- LocalTalk PC support
-Message-ID: <20220509103216.180be080@kernel.org>
-In-Reply-To: <CAK8P3a0FVM8g0LG3_mHJ1xX3Bs9cxae8ez7b9qvGOD+aJdc8Dw@mail.gmail.com>
-References: <20220509150130.1047016-1-kuba@kernel.org>
-        <CAK8P3a0FVM8g0LG3_mHJ1xX3Bs9cxae8ez7b9qvGOD+aJdc8Dw@mail.gmail.com>
+        with ESMTP id S239745AbiEIRmm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 13:42:42 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE0A62171BE
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 10:38:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652117928; x=1683653928;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Ov5l4/imIA/6edRk6qsYpiWvaK9inycSUw2vtyDpXU8=;
+  b=IlN/Dhfodjljc4sQw6p7dUI1FOShjYDE54zqBzZ/ImgA4z6chZ4GNTSH
+   Na0/iPmG37QoDo/4lbiI3dJ8pPCYLe17vDMZanSse6KfULmxGm3/Y/aZL
+   ClMNf83euY54pB4wcJder4uMrZ/p7YjW76KDmcZj82S8RrldpQQd08TSG
+   UkW1FVtuteLk1NCc+MQy3gZ8eYbfwjOvxrgA4HHt6dJv1TPDgNkPFYJzO
+   7tljNjKnpdEGrPxjbuz84eMOH1d89qrB/e/Zt84kZENF/8beCqR7BMejL
+   YjFfjN7ESeOsd89KSDHUktaWU9tP3z5mOrR5xx5JDy3OScUW7FLRTCuk3
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10342"; a="249656239"
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="249656239"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 10:38:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="519336721"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga003.jf.intel.com with ESMTP; 09 May 2022 10:38:48 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net-next 0/2][pull request] 40GbE Intel Wired LAN Driver Updates 2022-05-09
+Date:   Mon,  9 May 2022 10:35:45 -0700
+Message-Id: <20220509173547.562461-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,40 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 9 May 2022 19:14:42 +0200 Arnd Bergmann wrote:
-> On Mon, May 9, 2022 at 5:01 PM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > Looks like all the changes to this driver had been tree-wide
-> > refactoring since git era begun. The driver is using virt_to_bus()
-> > we should make it use more modern DMA APIs but since it's unlikely
-> > to be getting any use these days delete it instead. We can always
-> > revert to bring it back.
-> >
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>  
-> 
-> Removing this driver sounds good to me, your description makes sense
-> and it gets us closer to completely removing virt_to_bus() in the future.
-> 
-> Acked-by: Arnd Bergmann <arnd@arndb.de>
-> 
-> I think however, if we remove this driver, we need to discuss removing the
-> last remaining localtalk driver (CONFIG_COPS) and possibly the localtalk
-> bits in net/appletalk along with it.
-> 
-> Doug Brown suggested removing COPS last year for entirely different
-> reasons[1] but never got a reply. I suppose that is a sign that nobody
-> cared about the driver enough, but we should remove it. He also
-> mentioned working on a new localtalk driver, though I don't think he
-> posted that one yet.
-> 
->        Arnd
-> 
-> [1] https://lore.kernel.org/netdev/6c62d7d5-5171-98a3-5287-ecb1df20f574@schmorgal.com/
+This series contains updates to i40e and iavf drivers.
 
-Very interesting, thanks!
+Mateusz adds implementation for setting VF VLAN pruning to allow user to
+specify visibility of VLAN tagged traffic to VFs for i40e. He also adds
+waiting for result from PF for setting MAC address in iavf.
 
-Removing COPS and appletalk makes perfect sense to me (minus what Doug
-has plans to use, obviously).
+The following are changes since commit 9c095bd0d4c451d31d0fd1131cc09d3b60de815d:
+  Merge branch 'hns3-next'
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 40GbE
 
-I'm taking notes for "next steps" while trying to strategically cast 
-a narrow net, hitting VIRT_TO_BUS only now.
+Mateusz Palczewski (2):
+  i40e: Add VF VLAN pruning
+  iavf: Add waiting for response from PF in set mac
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |   1 +
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    |   9 ++
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 135 +++++++++++++++++-
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    |   8 +-
+ drivers/net/ethernet/intel/iavf/iavf.h        |   7 +-
+ drivers/net/ethernet/intel/iavf/iavf_main.c   | 123 +++++++++++++---
+ .../net/ethernet/intel/iavf/iavf_virtchnl.c   |  61 +++++++-
+ 7 files changed, 317 insertions(+), 27 deletions(-)
+
+-- 
+2.35.1
+
