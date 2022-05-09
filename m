@@ -2,156 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E646951FB36
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 13:23:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A91AA51FB4A
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 13:27:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232531AbiEIL0X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 07:26:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37218 "EHLO
+        id S232895AbiEILbQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 07:31:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233069AbiEIL0T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 07:26:19 -0400
-Received: from mail-yw1-x1132.google.com (mail-yw1-x1132.google.com [IPv6:2607:f8b0:4864:20::1132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 019DF1AF8EF;
-        Mon,  9 May 2022 04:22:23 -0700 (PDT)
-Received: by mail-yw1-x1132.google.com with SMTP id 00721157ae682-2f7c57ee6feso140409107b3.2;
-        Mon, 09 May 2022 04:22:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=JHcyRb0A9TdQ3ZPZeebW28t674FP8onCU6WazLElK4U=;
-        b=Cg6+le4ubJ1hcAxrmpylHiTdhVQUuoVW9aEA+iFxxELX6T+A4h3sE6HzJqz6D1834F
-         Vx852sLUvU75YM1EVCdR4NV8kKrypKVn92RyNlAOS9M/o44QTnUE20FPvKpm1XQxUYJW
-         g//yWu3fDYLTb3vTadJXQak2SIfU1HZVuqSYA+8SMRH0lJUUni9hHCXB+GiXgxj30JQY
-         MPMpNGvS1vf3cEx7wxeGs6k9pFp1EISW9qGofMa6X6OK8pYs754hPRo/DOu9uAAaW7jG
-         NgZlSz7Ib0BwyYgSAhHCydm2MqJkySpOzsONRp9HWwW6epPyZkaSeuT7JdHX8TdYf29i
-         NHbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=JHcyRb0A9TdQ3ZPZeebW28t674FP8onCU6WazLElK4U=;
-        b=THmvn6kXYdofFrj4qm8fQwp5y0YmBbeXk8JFdgXKhbAjztLpacIzRCZbV6c4Lqi2cy
-         0jKzvNNW5L7jMQPEf2/ZkZmq7sJhc+XUgEzUqkt15sahWYnzNsbP1OSO9BcsTE4Ts1ob
-         lBAhMc3Z83B64rmHlY4j50lwQYRmKk4KisfgjrRepys9sgpUANW5zIu4c2PV2WidvwCw
-         yOCbgq4abS9gfSelI/yp+YBKwWxMtqZbPCPTCdNcMWU4a9C63HJegtrP8xfUneyjhdTF
-         1iEwjz63do/vRQdxPqQ07+8Voy9fR0HZS6yfJ/h4ui6Uw3HblKBiAbez6vl/nlf6V3FZ
-         CWdA==
-X-Gm-Message-State: AOAM531AD7NPx3E82HyC6mRERZy8/Tjk4JIxvfdo+JsF9EskP72XhM1a
-        XU7dLV5Uys/b8vp1a4DD6wdYjZ+BnSpUbaJpuDQ=
-X-Google-Smtp-Source: ABdhPJz3TmYnVu7MVB0CYjUmpfm9sDvGiFsAxvCb7o+aew79C34oQx2aF8SKyaY9aCiZum4rKA8OI5Xm2KcEiO3AYls=
-X-Received: by 2002:a05:690c:89:b0:2d7:fb7d:db7 with SMTP id
- be9-20020a05690c008900b002d7fb7d0db7mr14793757ywb.219.1652095341920; Mon, 09
- May 2022 04:22:21 -0700 (PDT)
+        with ESMTP id S232832AbiEILbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 07:31:07 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02908DCF;
+        Mon,  9 May 2022 04:27:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652095633; x=1683631633;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Ya1pIm6vZbBNzSqJeY65qthxy/T3x9Rl6SrCFaTGnYo=;
+  b=KLzsPcKvLJumb91OkJg9jync2y2nIcLR20AGON05uMXeDGrkiz4nA7yo
+   SjXWDra0zZl50BmlZC2qk0zhC9shmG/JoeinDfuymQCgToZdqCNBAvArg
+   wKJgiDerKQwMbbiOqsxvRA96FKh9IhAlG2SRfLjNbhgRBzlc7207kpJEF
+   vkuzswAcZ2mFjDV+I66xPEiMjfqggLjdw1sC1YK0kc0bw9hAF59GGdnl4
+   hUPXmdbnT04r7D9hagxZ57btrp7qetbBBFVMJd1Q33+PhSM8v/toNWjis
+   YJs5wMlJVLNDd7OqZvQDpmnzbMzQXn6CKJW7uaRUe1u2W2IS45uextPmK
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10341"; a="268685193"
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="268685193"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 May 2022 04:27:11 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,211,1647327600"; 
+   d="scan'208";a="622923821"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 09 May 2022 04:27:09 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1no1Xg-000GTA-Fj;
+        Mon, 09 May 2022 11:27:08 +0000
+Date:   Mon, 9 May 2022 19:26:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Cindy Lu <lulu@redhat.com>, jasowang@redhat.com, mst@redhat.com,
+        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org
+Subject: Re: [PATCH v1] vdpa: Do not count the pages that were already pinned
+ in the vhost-vDPA
+Message-ID: <202205091928.dheTGNAt-lkp@intel.com>
+References: <20220509071426.155941-1-lulu@redhat.com>
 MIME-Version: 1.0
-References: <20220507170440.64005-1-linux@fw-web.de> <06157623-4b9c-6f26-e963-432c75cfc9e5@linaro.org>
- <DC0D3996-DFFE-4E71-B843-8D34C613D498@public-files.de> <2509116.Lt9SDvczpP@phil>
- <trinity-7f04b598-0300-4f3c-80e7-0c2145e8ba8f-1652011928036@3c-app-gmx-bap68>
- <CAMdYzYrG8bK-Yo15RjhhCQKS4ZQW53ePu1q4gbGxVVNKPJHBWg@mail.gmail.com> <41d6b00f-d8ac-ca54-99db-ea99c9049e0a@linaro.org>
-In-Reply-To: <41d6b00f-d8ac-ca54-99db-ea99c9049e0a@linaro.org>
-From:   Peter Geis <pgwipeout@gmail.com>
-Date:   Mon, 9 May 2022 07:22:11 -0400
-Message-ID: <CAMdYzYomJPxQ7cnUuP_T7-rVbYPeZwr13Dy6b=PP4ijqQfh5gg@mail.gmail.com>
-Subject: Re: [PATCH v3 5/6] dt-bindings: net: dsa: make reset optional and add
- rgmii-mode to mt7531
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        Frank Wunderlich <linux@fw-web.de>,
-        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        arm-mail-list <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Greg Ungerer <gerg@kernel.org>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509071426.155941-1-lulu@redhat.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 9, 2022 at 2:48 AM Krzysztof Kozlowski
-<krzysztof.kozlowski@linaro.org> wrote:
->
-> On 08/05/2022 19:04, Peter Geis wrote:
-> > On Sun, May 8, 2022 at 8:12 AM Frank Wunderlich <frank-w@public-files.de> wrote:
-> >>>
-> >>> I think the issue is more for the description itself.
-> >>>
-> >>> Devicetree is only meant to describe the hardware and does in general don't
-> >>> care how any firmware (Linux-kernel, *BSD, etc) handles it. So going with
-> >>> "the kernel does it this way" is not a valid reason for a binding change ;-) .
->
-> Exactly. The argument in commit msg was not matching the change, because
-> driver implementation should not be (mostly) a reason for such changes.
->
-> >>>
-> >>> Instead in general want to reason that there are boards without this reset
-> >>> facility and thus make it optional for those.
-> >>
-> >> if only the wording is the problem i try to rephrase it from hardware PoV.
-> >>
-> >> maybe something like this?
-> >>
-> >> https://github.com/frank-w/BPI-R2-4.14/commits/5.18-mt7531-mainline2/Documentation/devicetree/bindings/net/dsa/mediatek%2Cmt7530.yaml
->
-> Looks ok.
->
-> >>
-> >> Another way is maybe increasing the delay after the reset (to give more time all
-> >> come up again), but imho it is no good idea resetting the gmac/mdio-bus from the
-> >> child device.
-> >>
-> >> have not looked into the gmac driver if this always  does the initial reset to
-> >> have a "clean state". In this initial reset the switch will be resetted too
-> >> and does not need an additional one which needs the gmac/mdio initialization
-> >> to be done again.
-> >
-> > For clarification, the reset gpio line is purely to reset the phy.
-> > If having the switch driver own the reset gpio instead of the gmac
-> > breaks initialization that means there's a bug in the gmac driver
-> > handling phy init.
-> > In testing I've seen issues moving the reset line to the mdio node
-> > with other phys and the stmmac gmac driver, so I do believe this is
-> > the case.
->
-> Yes, this seems reasonable, although Frank mentioned that reset is
-> shared with gmac, so it resets some part of it as well?
+Hi Cindy,
 
-No, the gpio-reset line is purely to reset the phy. The stmmac gmac
-driver handles it because it seems initialization failures occur if
-it's handled by the mdio drivers. I suspect this is due to a
-difference between when the driver initializes the phy vs when the
-driver triggers the reset.
-They had tried to attach the gpio binding to both the gmac node and
-the mdio node at the same time when only one can own it. Having it
-owned by the switch driver on the mdio node leads to the same
-initialization failures we see in other mdio drivers.
+Thank you for the patch! Perhaps something to improve:
 
->
->
->
->
-> Best regards,
-> Krzysztof
+[auto build test WARNING on mst-vhost/linux-next]
+[also build test WARNING on linux/master linus/master v5.18-rc6]
+[cannot apply to next-20220506]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Cindy-Lu/vdpa-Do-not-count-the-pages-that-were-already-pinned-in-the-vhost-vDPA/20220509-152644
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
+config: s390-randconfig-r044-20220509 (https://download.01.org/0day-ci/archive/20220509/202205091928.dheTGNAt-lkp@intel.com/config)
+compiler: s390-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/4225cc2a756b75d1e0ff7ca2a593bada42def380
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Cindy-Lu/vdpa-Do-not-count-the-pages-that-were-already-pinned-in-the-vhost-vDPA/20220509-152644
+        git checkout 4225cc2a756b75d1e0ff7ca2a593bada42def380
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/vhost/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/vhost/vdpa.c:542:5: warning: no previous prototype for 'vhost_vdpa_add_range_ctx' [-Wmissing-prototypes]
+     542 | int vhost_vdpa_add_range_ctx(struct rb_root_cached *root, u64 start, u64 last)
+         |     ^~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/vhost/vdpa.c:571:6: warning: no previous prototype for 'vhost_vdpa_del_range' [-Wmissing-prototypes]
+     571 | void vhost_vdpa_del_range(struct rb_root_cached *root, u64 start, u64 last)
+         |      ^~~~~~~~~~~~~~~~~~~~
+>> drivers/vhost/vdpa.c:581:28: warning: no previous prototype for 'vhost_vdpa_search_range' [-Wmissing-prototypes]
+     581 | struct interval_tree_node *vhost_vdpa_search_range(struct rb_root_cached *root,
+         |                            ^~~~~~~~~~~~~~~~~~~~~~~
+
+
+vim +/vhost_vdpa_add_range_ctx +542 drivers/vhost/vdpa.c
+
+   464	
+   465	static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+   466					      unsigned int cmd, unsigned long arg)
+   467	{
+   468		struct vhost_vdpa *v = filep->private_data;
+   469		struct vhost_dev *d = &v->vdev;
+   470		void __user *argp = (void __user *)arg;
+   471		u64 __user *featurep = argp;
+   472		u64 features;
+   473		long r = 0;
+   474	
+   475		if (cmd == VHOST_SET_BACKEND_FEATURES) {
+   476			if (copy_from_user(&features, featurep, sizeof(features)))
+   477				return -EFAULT;
+   478			if (features & ~VHOST_VDPA_BACKEND_FEATURES)
+   479				return -EOPNOTSUPP;
+   480			vhost_set_backend_features(&v->vdev, features);
+   481			return 0;
+   482		}
+   483	
+   484		mutex_lock(&d->mutex);
+   485	
+   486		switch (cmd) {
+   487		case VHOST_VDPA_GET_DEVICE_ID:
+   488			r = vhost_vdpa_get_device_id(v, argp);
+   489			break;
+   490		case VHOST_VDPA_GET_STATUS:
+   491			r = vhost_vdpa_get_status(v, argp);
+   492			break;
+   493		case VHOST_VDPA_SET_STATUS:
+   494			r = vhost_vdpa_set_status(v, argp);
+   495			break;
+   496		case VHOST_VDPA_GET_CONFIG:
+   497			r = vhost_vdpa_get_config(v, argp);
+   498			break;
+   499		case VHOST_VDPA_SET_CONFIG:
+   500			r = vhost_vdpa_set_config(v, argp);
+   501			break;
+   502		case VHOST_GET_FEATURES:
+   503			r = vhost_vdpa_get_features(v, argp);
+   504			break;
+   505		case VHOST_SET_FEATURES:
+   506			r = vhost_vdpa_set_features(v, argp);
+   507			break;
+   508		case VHOST_VDPA_GET_VRING_NUM:
+   509			r = vhost_vdpa_get_vring_num(v, argp);
+   510			break;
+   511		case VHOST_SET_LOG_BASE:
+   512		case VHOST_SET_LOG_FD:
+   513			r = -ENOIOCTLCMD;
+   514			break;
+   515		case VHOST_VDPA_SET_CONFIG_CALL:
+   516			r = vhost_vdpa_set_config_call(v, argp);
+   517			break;
+   518		case VHOST_GET_BACKEND_FEATURES:
+   519			features = VHOST_VDPA_BACKEND_FEATURES;
+   520			if (copy_to_user(featurep, &features, sizeof(features)))
+   521				r = -EFAULT;
+   522			break;
+   523		case VHOST_VDPA_GET_IOVA_RANGE:
+   524			r = vhost_vdpa_get_iova_range(v, argp);
+   525			break;
+   526		case VHOST_VDPA_GET_CONFIG_SIZE:
+   527			r = vhost_vdpa_get_config_size(v, argp);
+   528			break;
+   529		case VHOST_VDPA_GET_VQS_COUNT:
+   530			r = vhost_vdpa_get_vqs_count(v, argp);
+   531			break;
+   532		default:
+   533			r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+   534			if (r == -ENOIOCTLCMD)
+   535				r = vhost_vdpa_vring_ioctl(v, cmd, argp);
+   536			break;
+   537		}
+   538	
+   539		mutex_unlock(&d->mutex);
+   540		return r;
+   541	}
+ > 542	int vhost_vdpa_add_range_ctx(struct rb_root_cached *root, u64 start, u64 last)
+   543	{
+   544		struct interval_tree_node *new_node;
+   545	
+   546		if (last < start)
+   547			return -EFAULT;
+   548	
+   549		/* If the range being mapped is [0, ULONG_MAX], split it into two entries
+   550		 * otherwise its size would overflow u64.
+   551		 */
+   552		if (start == 0 && last == ULONG_MAX) {
+   553			u64 mid = last / 2;
+   554	
+   555			vhost_vdpa_add_range_ctx(root, start, mid);
+   556			start = mid + 1;
+   557		}
+   558	
+   559		new_node = kmalloc(sizeof(struct interval_tree_node), GFP_ATOMIC);
+   560		if (!new_node)
+   561			return -ENOMEM;
+   562	
+   563		new_node->start = start;
+   564		new_node->last = last;
+   565	
+   566		interval_tree_insert(new_node, root);
+   567	
+   568		return 0;
+   569	}
+   570	
+ > 571	void vhost_vdpa_del_range(struct rb_root_cached *root, u64 start, u64 last)
+   572	{
+   573		struct interval_tree_node *new_node;
+   574	
+   575		while ((new_node = interval_tree_iter_first(root, start, last))) {
+   576			interval_tree_remove(new_node, root);
+   577			kfree(new_node);
+   578		}
+   579	}
+   580	
+ > 581	struct interval_tree_node *vhost_vdpa_search_range(struct rb_root_cached *root,
+   582							   u64 start, u64 last)
+   583	{
+   584		return interval_tree_iter_first(root, start, last);
+   585	}
+   586	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
