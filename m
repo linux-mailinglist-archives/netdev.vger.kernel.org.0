@@ -2,162 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A82785205D3
-	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 22:24:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59FBE5205DE
+	for <lists+netdev@lfdr.de>; Mon,  9 May 2022 22:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229592AbiEIU2u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 16:28:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55268 "EHLO
+        id S229564AbiEIUch (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 16:32:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiEIU2b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 16:28:31 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7001D1C9648
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 13:10:55 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id h29so25773582lfj.2
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 13:10:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rT7YZE3Rpnro7ms1QgM5M6t01Btb0lYC4Iw9G2/tffo=;
-        b=F8NAGQmeeDvyF3JbzdcP1Kh47+XNSVBOrrpDtR9NdWTh7oZnC3zphUjwIFkTh0v6cq
-         CYiS5UDmrvG6Ypi2LxMycY0DwH37Kk2xq0JIRQbBYm5iu+SitfPEEiaLJf9Lvjvl13i8
-         M7Q3+eFZwt5izyvTk1nFkfsh860SQVVXtfl3pbD9//M0zKL9DXY8buydBeGzRM7bWngk
-         PhzTnX07p8GsYSMaF5BdukhZDANcmyI2cs2Gkbxivt5gqK/gshpJMr/a2AWJt804866i
-         vXPShrt4V00Gj8asyc4v0BJwv58TV0BiPaimaHE9i4QGDIoc0KJv0cyYKHsN3YVdLxkf
-         QHrA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rT7YZE3Rpnro7ms1QgM5M6t01Btb0lYC4Iw9G2/tffo=;
-        b=wdlVbdScJs3iq9De1Iscr5NEIYdaOW/84VfUR3yE8k/+lKa4kvDarppp6j9QbKmCda
-         VaZ+WXf1F68Uure2QgmTb0XcQO4VVcpXPxQfGsbpvl1GMkJJtzYwa+6kIyJqmYCdXyqD
-         E6d4Ffdr5dSbQFzN181vHQqPl3gw/KNLgM/BmPpOK6QPr8Ijugm9tw5HLHI9fXwPUELv
-         9lDbMBj8mHllFg0hi6tsQk0ijetI2KrGf9uCZ2ytuwFqG/X4lDeSKHwDXhCZ92dqF1hS
-         k4vdG4HMhSV2V3OKhbI30fiWYNPCq3gHgSkqa5RKAIIeqVMUbLKkxkh1MnkdfgzPNFn4
-         lGiw==
-X-Gm-Message-State: AOAM532PlVB0mnyVJhrf52G7K2sxdycw41vwCOvW1EvTP/jcBJ7hxQs9
-        CwmZcGTbV4R25YE6RuTV8l8PFEGntkVq14Eprl4xlQ==
-X-Google-Smtp-Source: ABdhPJx/R5qRF5XEROe3y8D5fDil5gozZE7Z3ccZu5gNCXCbjzi7qAXklKfQmkGBEjdyhgRvl7bglXL1FgdYtvfBbVI=
-X-Received: by 2002:ac2:4a78:0:b0:472:2106:4b94 with SMTP id
- q24-20020ac24a78000000b0047221064b94mr13893868lfp.632.1652127053475; Mon, 09
- May 2022 13:10:53 -0700 (PDT)
+        with ESMTP id S229489AbiEIUb6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 16:31:58 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CA88D5A;
+        Mon,  9 May 2022 13:20:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=obE3GvP5MiFalr+zUuFTsVYAipwQCABa5LeNZRhk2iw=; b=hyHleL2qGRNzf/f0LIaT4+nAG0
+        7ldV8Th5xj9XD3zKxtMqCjfCZP2P548K9Exfs7scwOVT0ZO9/3RK9VKgXfcFNU6WMvqJt39n9f/rE
+        A5Jccm7RiR00kZn9xF6tW/7+VAqZVW+gfhAj6r5bor8oNoU2pl7RfV50UHpDpKF2C3R+C91DoeIge
+        Avvgcyb5d7MGKgcrfgZacnrnxMQB7dTTw3xRD0IcAP1H0l/I2RB1n2hlhAtWeKcdxM3WSrGeWweiy
+        OrgEmgnYUArHP0/C0B2f1z9ccASxFScvthsYLfDqH5+vOixi6KccN7kUPSPBpRKklhGB/i4CE3muW
+        VjWMN+tA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60654)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1no9rt-0003i3-Uw; Mon, 09 May 2022 21:20:34 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1no9rq-0005Oe-CL; Mon, 09 May 2022 21:20:30 +0100
+Date:   Mon, 9 May 2022 21:20:30 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 04/12] net: pcs: add Renesas MII converter
+ driver
+Message-ID: <Ynl3jpuJFqXLscvE@shell.armlinux.org.uk>
+References: <20220509131900.7840-1-clement.leger@bootlin.com>
+ <20220509131900.7840-5-clement.leger@bootlin.com>
 MIME-Version: 1.0
-References: <20220509191810.2157940-1-jeffreyjilinux@gmail.com>
-In-Reply-To: <20220509191810.2157940-1-jeffreyjilinux@gmail.com>
-From:   Brian Vazquez <brianvv@google.com>
-Date:   Mon, 9 May 2022 13:10:42 -0700
-Message-ID: <CAMzD94RAV2WWBGAar_S729DU9rQBtgJy5iUReJ_diOj5DRb=ug@mail.gmail.com>
-Subject: Re: [PATCH net-next] show rx_otherhost_dropped stat in ip link show
-To:     Jeffrey Ji <jeffreyjilinux@gmail.com>
-Cc:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        Jeffrey Ji <jeffreyji@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220509131900.7840-5-clement.leger@bootlin.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hey Jeffrey, thanks for working on this, some comments:
+Hi,
 
-I think you meant iproute2-next in the subject. Could you resend, please?
-
-On Mon, May 9, 2022 at 12:18 PM Jeffrey Ji <jeffreyjilinux@gmail.com> wrote:
->
-> From: Jeffrey Ji <jeffreyji@google.com>
->
-> This stat was added in commit 794c24e9921f ("net-core: rx_otherhost_dropped to core_stats")
->
-> Tested: sent packet with wrong MAC address from 1
-> network namespace to another, verified that counter showed "1" in
-> `ip -s -s link sh` and `ip -s -s -j link sh`
->
-> Signed-off-by: Jeffrey Ji <jeffreyji@google.com>
-> ---
->  include/uapi/linux/if_link.h |  2 ++
->  ip/ipaddress.c               | 15 +++++++++++++--
->  2 files changed, 15 insertions(+), 2 deletions(-)
->
-> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-> index 22e21e57afc9..50477985bfea 100644
-> --- a/include/uapi/linux/if_link.h
-> +++ b/include/uapi/linux/if_link.h
-> @@ -243,6 +243,8 @@ struct rtnl_link_stats64 {
->         __u64   rx_compressed;
->         __u64   tx_compressed;
->         __u64   rx_nohandler;
+On Mon, May 09, 2022 at 03:18:52PM +0200, Clément Léger wrote:
+> +#define MIIC_PRCMD			0x0
+> +#define MIIC_ESID_CODE			0x4
 > +
-> +       __u64   rx_otherhost_dropped;
->  };
->
->  /* Subset of link stats useful for in-HW collection. Meaning of the fields is as
-> diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-> index a80996efdc28..9d6af56e2a72 100644
-> --- a/ip/ipaddress.c
-> +++ b/ip/ipaddress.c
-> @@ -692,6 +692,7 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
->                 strlen("heartbt"),
->                 strlen("overrun"),
->                 strlen("compressed"),
-> +               strlen("otherhost_dropped"),
->         };
->         int ret;
->
-> @@ -713,6 +714,10 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
->                 if (s->rx_compressed)
->                         print_u64(PRINT_JSON,
->                                    "compressed", NULL, s->rx_compressed);
-> +               if (s->rx_otherhost_dropped)
-> +                       print_u64(PRINT_JSON,
-> +                                  "otherhost_dropped",
-> +                                  NULL, s->rx_otherhost_dropped);
->
->                 /* RX error stats */
->                 if (show_stats > 1) {
-> @@ -795,11 +800,15 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
->                                      rta_getattr_u32(carrier_changes) : 0);
->
->                 /* RX stats */
-> -               fprintf(fp, "    RX: %*s %*s %*s %*s %*s %*s %*s%s",
-> +               fprintf(fp, "    RX: %*s %*s %*s %*s %*s %*s %*s%*s%s",
-I think you're missing a space in the line above (but code shouldn't
-be here, see my comment below)
->                         cols[0] - 4, "bytes", cols[1], "packets",
->                         cols[2], "errors", cols[3], "dropped",
->                         cols[4], "missed", cols[5], "mcast",
-> -                       cols[6], s->rx_compressed ? "compressed" : "", _SL_);
-> +                       s->rx_compressed ? cols[6] : 0,
-> +                       s->rx_compressed ? "compressed " : "",
-> +                       s->rx_otherhost_dropped ? cols[7] : 0,
-> +                       s->rx_otherhost_dropped ? "otherhost_dropped" : "",
-> +                       _SL_);
-rx_otherhost_dropped code should be below in the "RX error stats" not
-here, it should be after the rx_nohandler stat. Also IIUC, the code
-should be:
-  cols[7], s->rx_otherhost_dropped? "otherhost_dropped" : "",
+> +#define MIIC_MODCTRL			0x20
+> +#define MIIC_MODCTRL_SW_MODE		GENMASK(4, 0)
+> +
+> +#define MIIC_CONVCTRL(port)		(0x100 + (port) * 4)
+> +
+> +#define MIIC_CONVCTRL_CONV_SPEED	GENMASK(1, 0)
+> +#define CONV_MODE_10MBPS		0
+> +#define CONV_MODE_100MBPS		BIT(0)
+> +#define CONV_MODE_1000MBPS		BIT(1)
 
->
->                 fprintf(fp, "    ");
->                 print_num(fp, cols[0], s->rx_bytes);
-> @@ -810,6 +819,8 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
->                 print_num(fp, cols[5], s->multicast);
->                 if (s->rx_compressed)
->                         print_num(fp, cols[6], s->rx_compressed);
-> +               if (s->rx_otherhost_dropped)
-> +                       print_num(fp, cols[7], s->rx_otherhost_dropped);
->
->                 /* RX error stats */
->                 if (show_stats > 1) {
-> --
-> 2.36.0.512.ge40c2bad7a-goog
->
+I think this is an inappropriate use of the BIT() macro. BIT() should be
+used for single bit rather than for field values.
+
+You seem to have a two bit field in bits 1 and 0 of a register, which
+has the values of:
+0 - 10MBPS
+1 - 100MBPS
+2 - 1GBPS
+
+I'd guess 3 is listed as "undefined", "do not use" or something similar?
+
+> +
+> +#define MIIC_CONVCTRL_CONV_MODE		GENMASK(3, 2)
+> +#define CONV_MODE_MII			0
+> +#define CONV_MODE_RMII			BIT(0)
+> +#define CONV_MODE_RGMII			BIT(1)
+
+This looks similar. a 2-bit field in bits 3 and 2 taking values:
+0 - MII
+1 - RMII
+2 - RGMII
+
+...
+
+> +static int miic_config(struct phylink_pcs *pcs, unsigned int mode,
+> +		       phy_interface_t interface,
+> +		       const unsigned long *advertising, bool permit)
+> +{
+> +	u32 speed = CONV_MODE_10MBPS, conv_mode = CONV_MODE_MII, val;
+> +	struct miic_port *miic_port = phylink_pcs_to_miic_port(pcs);
+> +	struct miic *miic = miic_port->miic;
+> +	int port = miic_port->port;
+> +
+> +	switch (interface) {
+> +	case PHY_INTERFACE_MODE_RMII:
+> +		conv_mode = CONV_MODE_RMII;
+> +		speed = CONV_MODE_100MBPS;
+> +		break;
+> +	case PHY_INTERFACE_MODE_RGMII:
+> +		conv_mode = CONV_MODE_RGMII;
+> +		speed = CONV_MODE_1000MBPS;
+> +		break;
+> +	case PHY_INTERFACE_MODE_MII:
+
+I'm not sure why you need to initialise "speed" and "conv_mode" above
+when you could set them here.
+
+Thanks. 
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
