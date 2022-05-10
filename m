@@ -2,329 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 707E0520F07
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 09:47:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA750520F0A
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 09:49:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236741AbiEJHvq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 03:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
+        id S236871AbiEJHxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 03:53:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229513AbiEJHvo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 03:51:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C43718F248;
-        Tue, 10 May 2022 00:47:46 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42567B81B40;
-        Tue, 10 May 2022 07:47:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F77BC385C8;
-        Tue, 10 May 2022 07:47:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652168864;
-        bh=stuafJVZtwKDF6rhdvlW8qzNIfKPXztnW9RelnVY/us=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G95DUNOeLAMSM/WRN2zNnLiz48PW9DJ3/pEEhUoAGZlyRZ+0W6+heew2vOHXe9ule
-         g5zu2rRBg4/qLLNhUn5TYzeViu8s/YvoBxBHZp3xJjAjK9i/SHvvpArFv4DloPYjJX
-         o/3pUqJYHf2WKYk3ndOuvPF24sbakwN4EfD7TbsVzPM0JqL7NTlxeEwSw65FYzDWmT
-         koQ2gS8yhqNpC6UHQifjDsSvsV9fWjWGKVwqnn8LogmazLVtExsFP/A96vDHphbAIT
-         018Z0axEbpLLeGeoiBx/5u3TyhU8sfPpaW8Ib5tqLQ9OGBQ8F1ZKjqLIvhxtU/oGsS
-         bPl7UxK9z4Elw==
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     linux-perf-users@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ian Rogers <irogers@google.com>
-Subject: [PATCHv2 perf/core 3/3] perf tools: Rework prologue generation code
-Date:   Tue, 10 May 2022 09:46:59 +0200
-Message-Id: <20220510074659.2557731-4-jolsa@kernel.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220510074659.2557731-1-jolsa@kernel.org>
-References: <20220510074659.2557731-1-jolsa@kernel.org>
-MIME-Version: 1.0
+        with ESMTP id S234658AbiEJHxJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 03:53:09 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2139.outbound.protection.outlook.com [40.107.236.139])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51893219C1E
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 00:49:06 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WvDP009jiOo8fhQJ5/1VXH9VJI1EvbY4b5/gRUXhlr7yT3nms8DaZiM0xZR3bvVZOa0crS+tZlHmRVFysgyNNozR0fWLxlhliFveyxJmpQZ2DU4HO7dy2n6VWLcdGtxlJy1zMGaBfSxI6jmZY6T2UQERo72gyxVGZiU5pzj7/KU7rRgOwONrEE/pcOOfYEBZyoAMH6mdXEBuzlgKgWJ5KUcmosQ9tTKDytm+mJ0knDMox0D918S76TgegkzOlrucAF/W9zum5sil+c+Dxl1kX8/YFST8bc4y/Q1qhHDo253dI+WXCBSknI365CuqVrfscUz2YaYtWxWspd0kup8QPw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=aYJRSXf8AyxGRUAw1SkXbBYJbwgFFjUY0BgxZ4at3Ko=;
+ b=OEw1ZJxC88QS50PUegwfjXJ1cXNNOyc4j3ZJ9BQDcVpxjJKDjDPrbCaRETPz9akT3N5UIl09HeQr4vrQ2R3l0ZpDzMCtS7ynhGmHc7KbdM8AYTfWtrk/LUU8aVN/1saoJDYGsMu9n9b4XaCUpMe3HFb1EUACxaI2KAtWJT/CYuebEDeSOfrqHdYgTfWE1AWS3zl4gGHIsXYGC8I1HWM91wT1Xd0x9DNdjJ2cn0GEqWu5wqx90kWS0mNFxACZPKEuapYq6ySm4NCC6Nl8BM3j5ZUo42zjJ0JYQJ/s7WZyweTrmoAkH4WRzXgOT03l/qRGlK2K1Ve1DHvMY4zYz/fq2w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
+ dkim=pass header.d=corigine.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aYJRSXf8AyxGRUAw1SkXbBYJbwgFFjUY0BgxZ4at3Ko=;
+ b=sUdxPRSQUPhLadEH7iXKBd7CPCKlk2mWngLE8r1kD0deyiDbg2WUGPihFOJ3RsoO6GzmCt589fKmYmBwR7J5w8i55REUFo+5GvDtxYwjHDMHgQb9h/lpSGitNP/AyJ+0LEUAGBrhyZy4Ggb3Vh0mxlHeh0XOjfrNiiY85dPJp3c=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=corigine.com;
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
+ by MN2PR13MB2605.namprd13.prod.outlook.com (2603:10b6:208:f4::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.12; Tue, 10 May
+ 2022 07:49:04 +0000
+Received: from PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::8808:1c60:e9cb:1f94]) by PH0PR13MB4842.namprd13.prod.outlook.com
+ ([fe80::8808:1c60:e9cb:1f94%3]) with mapi id 15.20.5250.012; Tue, 10 May 2022
+ 07:49:04 +0000
+From:   Simon Horman <simon.horman@corigine.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
+        Louis Peens <louis.peens@corigine.com>,
+        kernel test robot <lkp@intel.com>,
+        Simon Horman <simon.horman@corigine.com>
+Subject: [PATCH net-next] nfp: flower: fix 'variable 'flow6' set but not used'
+Date:   Tue, 10 May 2022 09:48:45 +0200
+Message-Id: <20220510074845.41457-1-simon.horman@corigine.com>
+X-Mailer: git-send-email 2.30.2
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-ClientProxiedBy: AM0PR03CA0032.eurprd03.prod.outlook.com
+ (2603:10a6:208:14::45) To PH0PR13MB4842.namprd13.prod.outlook.com
+ (2603:10b6:510:78::6)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 3bbe0283-12c0-4434-1942-08da32598dfa
+X-MS-TrafficTypeDiagnostic: MN2PR13MB2605:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR13MB260564F2F03CF3083F1B9594E8C99@MN2PR13MB2605.namprd13.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: aU0T1v/I0rnJWRY1z2WfQ6Ou9+PNH/VjM2risDxipY97iDL+QFu06vyEdqhQaNqeNiYy/OzZH3FCS46DCH5YyFmerpeE1vS/BBlkMZY5gqzHk3zvmb7Umi921z2SSzoKsrp/i/7elfT6Kos7ZMzBROi+gLtnZUsj1AOiXkq296rnULDmfqF8GT7+uKh1a9w9fogqCyKwy+nDJ0oZIa5dvK4gvj/LYYpslw1tyyPLRFbJjBiS6IiBJze5JOyp2W75QeoERT1iuk1sglKCRmVkUndUTqpeDdPaqaV0KDOzs9a9tDhRxh68YhA3NiWrpj7b/TMeqBeW1MS9ejvsdXuyV9wPCdETDI4A8qqPRgOuQvexstDADgD6P4qu52kZRiDHke0iufLw781HNYeVNZ/sLXQujuMGBhhcFAr4/M1fyHfSeM3+5/FK15ghGDWzXZPYY3xTkY1M0JrIc0Bh5CG/HyI4YT5QbbADFPIdl0aq65RN4HjBO7zgC5xd3SWLieguit92j/QC4e/Pdd8VHq+NvbQDp7qag201iDrhCMRfw+xmmU8aTgwp3XcfZR9t5IwCnVN2giGDjOCvlt0LuSWUBCLF2eVSg1UGcdj55tB/AuDQeLL/KyDMPRs2XBzkZqfesINrwIG3fS8w50nll8+00g==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(136003)(396003)(346002)(376002)(39830400003)(36756003)(8936002)(2906002)(44832011)(5660300002)(66476007)(66556008)(66946007)(8676002)(4326008)(86362001)(107886003)(110136005)(38100700002)(6486002)(186003)(83380400001)(54906003)(2616005)(1076003)(6506007)(52116002)(316002)(6666004)(508600001)(6512007);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4svKP4+Vql3IWCQIHLj38cHMm6iNtmqiqG+Yclq7s1ufYdeRlJOQYksTdqVL?=
+ =?us-ascii?Q?xBmXOrUwxgXnYt+fItHZEiKtDhunNz1kWih/LpgFwtFS/MmmaRFn5tvS3du1?=
+ =?us-ascii?Q?DLLIize8Vrp1wXcNaCvJS8rEDtqf9BamVK5z6jZjoMYP3ZtZNoFfEuv6A0CI?=
+ =?us-ascii?Q?9oeBpmTp5s8ckgNhAZ/8wklhx9fDPL2SXW0ZWY2RZZlf/kHQ2KGOLvchYiSj?=
+ =?us-ascii?Q?+u8mjqeBofKfAdvDlm21Ru5xg0b66aDpxfZQRVn6jA5YwGcusxI0fWle3cLv?=
+ =?us-ascii?Q?cWMPJAL8ZIhF0pVLbgqaIf7P69canvd1In7hTdhRj3EBp0Lq0IQl0Rv3YvVH?=
+ =?us-ascii?Q?xTnq5fX+hntPzps+/kMp4nvAKZS8iVGKPip8ByBH0fi6SUU5hrMNHgFUT22Q?=
+ =?us-ascii?Q?NWTfJI+LHUdOCfIUTcl0E7zTrkUksMFnOXPQOQ29TDr3qQeuc1wJh8Zb6Lqj?=
+ =?us-ascii?Q?WSuSrQkb4GMcqo96W4d5DusHMA2/kj+/WF7iEZUdLEhnN4ldnn+OwSQJzlOU?=
+ =?us-ascii?Q?FZdWpTfmbo9tTNeQRUW3+sG6K7Xb3NssLB5NLxciTpdoRam7SEwrE663tpY+?=
+ =?us-ascii?Q?9cJbyFetp9rOAeydrHwKG08RED2jW7F76hdSYQTrWRH+0SGTJtoX70e5EB6z?=
+ =?us-ascii?Q?WeJxez7gujUhH58PAnAn4pBK57dyL4Nt+UGTj4gAayKurmjTDPxxd5sVOX/B?=
+ =?us-ascii?Q?OTqKafIxkaodaKtsNcLxPIKBQ2t6m6w4PEp3ZxyulAuc1+80QPUwb5ZQucQW?=
+ =?us-ascii?Q?RtPFJMoJfP4YrVdqpqa+CxeLfXFltGoXZvwe+8y1KLRpcfJNQUsQIlcvmX1p?=
+ =?us-ascii?Q?x1H4v6WHQWxmEZMqwmsHT9Aopesyxl5PFxeqnex62p8IQfG4F4CmXMmDE/EU?=
+ =?us-ascii?Q?dylUyIU+kAby71plTMjQ9qeAJdgLemtbBF2Oasng4Wc4mTtoC8m407PmAOny?=
+ =?us-ascii?Q?nAdyXYnL4etHKTAPpq4uLfuQAeoF+ZIYLwKBC8ZX4EXYwJKYprdriyLdHop4?=
+ =?us-ascii?Q?cJfynD08VqIZIz3zcHKmx3nX1r6MvalS3n72QwgvRuL0lopgN8MFAkcoeCSD?=
+ =?us-ascii?Q?ASNBFpRU2AvklD3Is1h9wS0Wfbz45RwYfgcFGjwU/lktZwR4Op/lnK4EsYZm?=
+ =?us-ascii?Q?d9qFJ4WzCJCFnmHWpiga6ypV641m4bVv1no3FWHIhgZ8RUZurhzUHuhDQakd?=
+ =?us-ascii?Q?8Pw2ieZfBfsLLNATLM4unAUXVgIYzJGTUlGiRm26z7i7SJ0FT6nAapl/X/m7?=
+ =?us-ascii?Q?BEBFt+rnENJYrPC3yTC5YUZH2O0jZfRv4eVCh1pNASJ2AH2Ov/m6x1yfS8Jk?=
+ =?us-ascii?Q?6bMn9eS6IzNaKLljMcrEj60wH2gV1zdWHwsq1NHYfyZJqNEYE3ej54sDcXJ6?=
+ =?us-ascii?Q?ssKXXbpT4UQCdqC4dN1ag52Uox25B9QnY1Smd+l69H7mz7NV11l+CplfnFEO?=
+ =?us-ascii?Q?l6yHCTp4b1u/iKCuSZPFcwJQ7eD4SZmGBR6Xze+CVvE7mQx7oAu7AQI44ati?=
+ =?us-ascii?Q?GOBw23Tf0SVRtdL+/wsHHmml3nI1J0aJfMrB1n/8RY61p9vVqkwP3/HJnbmC?=
+ =?us-ascii?Q?phlGDDVXw3tZ9CDq0hgmzzGEA5fGmAobfUC8TBIMMOWHUHeTjl2c8g1cMCVT?=
+ =?us-ascii?Q?pyyEdbtjJRcgrUiY97ev62fn2b5CNZXAdh9J0cr1n56uMaClqUKcH+0Ab8Ig?=
+ =?us-ascii?Q?MoTGIRNlyPEwBnLlUzuqbt3G/lgBEeJ6mGpun0BZRKkxkzeNSPOGHmyYb0Xa?=
+ =?us-ascii?Q?p7IzCaI0XW6t1StUy0WS1cb+QJa7a3UfhrY7zAeHxw8Kv/IjVmMXfkn7NOY4?=
+X-MS-Exchange-AntiSpam-MessageData-1: RdwyHPV5TlSNnhE3SqmgLhP4LjLS4WprPAc=
+X-OriginatorOrg: corigine.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3bbe0283-12c0-4434-1942-08da32598dfa
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 07:49:04.3221
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: imNcDjw3SC+Fs1IlePKpehi8gAlkWlCBpNTzzv2wLVWKky9+DlW2a4m31su6AU26uYlorTMQ0gLsFSk9tcoRYLhSqrMRwtOq4v5Q6VZu8PE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB2605
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some functions we use for bpf prologue generation are going to be
-deprecated. This change reworks current code not to use them.
+From: Louis Peens <louis.peens@corigine.com>
 
-We need to replace following functions/struct:
-   bpf_program__set_prep
-   bpf_program__nth_fd
-   struct bpf_prog_prep_result
+Kernel test robot reported an issue after a recent patch about an
+unused variable when CONFIG_IPV6 is disabled. Move the variable
+declaration to be inside the #ifdef, and do a bit more cleanup. There
+is no need to use a temporary ipv6 bool value, it is just checked once,
+remove the extra variable and just do the check directly.
 
-Currently we use bpf_program__set_prep to hook perf callback before
-program is loaded and provide new instructions with the prologue.
-
-We replace this function/ality by taking instructions for specific
-program, attaching prologue to them and load such new ebpf programs
-with prologue using separate bpf_prog_load calls (outside libbpf
-load machinery).
-
-Before we can take and use program instructions, we need libbpf to
-actually load it. This way we get the final shape of its instructions
-with all relocations and verifier adjustments).
-
-There's one glitch though.. perf kprobe program already assumes
-generated prologue code with proper values in argument registers,
-so loading such program directly will fail in the verifier.
-
-That's where the fallback pre-load handler fits in and prepends
-the initialization code to the program. Once such program is loaded
-we take its instructions, cut off the initialization code and prepend
-the prologue.
-
-I know.. sorry ;-)
-
-Suggested-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Fixes: 9d5447ed44b5 ("nfp: flower: fixup ipv6/ipv4 route lookup for neigh events")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
+Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- tools/perf/util/bpf-loader.c | 128 ++++++++++++++++++++++++++++++-----
- 1 file changed, 110 insertions(+), 18 deletions(-)
+ .../netronome/nfp/flower/tunnel_conf.c        | 19 +++++++------------
+ 1 file changed, 7 insertions(+), 12 deletions(-)
 
-diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
-index 2a2c9512c4e8..2ed977a7b2c4 100644
---- a/tools/perf/util/bpf-loader.c
-+++ b/tools/perf/util/bpf-loader.c
-@@ -9,6 +9,7 @@
- #include <linux/bpf.h>
- #include <bpf/libbpf.h>
- #include <bpf/bpf.h>
-+#include <linux/filter.h>
- #include <linux/err.h>
- #include <linux/kernel.h>
- #include <linux/string.h>
-@@ -49,6 +50,7 @@ struct bpf_prog_priv {
- 	struct bpf_insn *insns_buf;
- 	int nr_types;
- 	int *type_mapping;
-+	int *proglogue_fds;
- };
- 
- struct bpf_perf_object {
-@@ -56,6 +58,11 @@ struct bpf_perf_object {
- 	struct bpf_object *obj;
- };
- 
-+struct bpf_preproc_result {
-+	struct bpf_insn *new_insn_ptr;
-+	int new_insn_cnt;
-+};
-+
- static LIST_HEAD(bpf_objects_list);
- static struct hashmap *bpf_program_hash;
- static struct hashmap *bpf_map_hash;
-@@ -235,14 +242,31 @@ struct bpf_object *bpf__prepare_load(const char *filename, bool source)
- 	return obj;
- }
- 
-+static void close_prologue_programs(struct bpf_prog_priv *priv)
-+{
-+	struct perf_probe_event *pev;
-+	int i, fd;
-+
-+	if (!priv->need_prologue)
-+		return;
-+	pev = &priv->pev;
-+	for (i = 0; i < pev->ntevs; i++) {
-+		fd = priv->proglogue_fds[i];
-+		if (fd != -1)
-+			close(fd);
-+	}
-+}
-+
- static void
- clear_prog_priv(const struct bpf_program *prog __maybe_unused,
- 		void *_priv)
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+index 9c37ed6943d0..6bf3ec448e7e 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
+@@ -563,12 +563,9 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
  {
- 	struct bpf_prog_priv *priv = _priv;
- 
-+	close_prologue_programs(priv);
- 	cleanup_perf_probe_events(&priv->pev, 1);
- 	zfree(&priv->insns_buf);
-+	zfree(&priv->proglogue_fds);
- 	zfree(&priv->type_mapping);
- 	zfree(&priv->sys_name);
- 	zfree(&priv->evt_name);
-@@ -605,8 +629,8 @@ static int bpf__prepare_probe(void)
- 
- static int
- preproc_gen_prologue(struct bpf_program *prog, int n,
--		     struct bpf_insn *orig_insns, int orig_insns_cnt,
--		     struct bpf_prog_prep_result *res)
-+		     const struct bpf_insn *orig_insns, int orig_insns_cnt,
-+		     struct bpf_preproc_result *res)
- {
- 	struct bpf_prog_priv *priv = program_priv(prog);
- 	struct probe_trace_event *tev;
-@@ -654,7 +678,6 @@ preproc_gen_prologue(struct bpf_program *prog, int n,
- 
- 	res->new_insn_ptr = buf;
- 	res->new_insn_cnt = prologue_cnt + orig_insns_cnt;
--	res->pfd = NULL;
- 	return 0;
- 
- errout:
-@@ -762,7 +785,7 @@ static int hook_load_preprocessor(struct bpf_program *prog)
- 	struct bpf_prog_priv *priv = program_priv(prog);
- 	struct perf_probe_event *pev;
- 	bool need_prologue = false;
--	int err, i;
-+	int i;
- 
- 	if (IS_ERR_OR_NULL(priv)) {
- 		pr_debug("Internal error when hook preprocessor\n");
-@@ -800,6 +823,13 @@ static int hook_load_preprocessor(struct bpf_program *prog)
- 		return -ENOMEM;
- 	}
- 
-+	priv->proglogue_fds = malloc(sizeof(int) * pev->ntevs);
-+	if (!priv->proglogue_fds) {
-+		pr_debug("Not enough memory: alloc prologue fds failed\n");
-+		return -ENOMEM;
-+	}
-+	memset(priv->proglogue_fds, -1, sizeof(int) * pev->ntevs);
-+
- 	priv->type_mapping = malloc(sizeof(int) * pev->ntevs);
- 	if (!priv->type_mapping) {
- 		pr_debug("Not enough memory: alloc type_mapping failed\n");
-@@ -808,13 +838,7 @@ static int hook_load_preprocessor(struct bpf_program *prog)
- 	memset(priv->type_mapping, -1,
- 	       sizeof(int) * pev->ntevs);
- 
--	err = map_prologue(pev, priv->type_mapping, &priv->nr_types);
--	if (err)
--		return err;
--
--	err = bpf_program__set_prep(prog, priv->nr_types,
--				    preproc_gen_prologue);
--	return err;
-+	return map_prologue(pev, priv->type_mapping, &priv->nr_types);
- }
- 
- int bpf__probe(struct bpf_object *obj)
-@@ -921,6 +945,77 @@ int bpf__unprobe(struct bpf_object *obj)
- 	return ret;
- }
- 
-+static int bpf_object__load_prologue(struct bpf_object *obj)
-+{
-+	int init_cnt = ARRAY_SIZE(prologue_init_insn);
-+	const struct bpf_insn *orig_insns;
-+	struct bpf_preproc_result res;
-+	struct perf_probe_event *pev;
-+	struct bpf_program *prog;
-+	int orig_insns_cnt;
-+
-+	bpf_object__for_each_program(prog, obj) {
-+		struct bpf_prog_priv *priv = program_priv(prog);
-+		int err, i, fd;
-+
-+		if (IS_ERR_OR_NULL(priv)) {
-+			pr_debug("bpf: failed to get private field\n");
-+			return -BPF_LOADER_ERRNO__INTERNAL;
-+		}
-+
-+		if (!priv->need_prologue)
-+			continue;
-+
-+		/*
-+		 * For each program that needs prologue we do following:
-+		 *
-+		 * - take its current instructions and use them
-+		 *   to generate the new code with prologue
-+		 * - load new instructions with bpf_prog_load
-+		 *   and keep the fd in proglogue_fds
-+		 * - new fd will be used in bpf__foreach_event
-+		 *   to connect this program with perf evsel
-+		 */
-+		orig_insns = bpf_program__insns(prog);
-+		orig_insns_cnt = bpf_program__insn_cnt(prog);
-+
-+		pev = &priv->pev;
-+		for (i = 0; i < pev->ntevs; i++) {
-+			/*
-+			 * Skipping artificall prologue_init_insn instructions
-+			 * (init_cnt), so the prologue can be generated instead
-+			 * of them.
-+			 */
-+			err = preproc_gen_prologue(prog, i,
-+						   orig_insns + init_cnt,
-+						   orig_insns_cnt - init_cnt,
-+						   &res);
-+			if (err)
-+				return err;
-+
-+			fd = bpf_prog_load(bpf_program__get_type(prog),
-+					   bpf_program__name(prog), "GPL",
-+					   res.new_insn_ptr,
-+					   res.new_insn_cnt, NULL);
-+			if (fd < 0) {
-+				char bf[128];
-+
-+				libbpf_strerror(-errno, bf, sizeof(bf));
-+				pr_debug("bpf: load objects with prologue failed: err=%d: (%s)\n",
-+					 -errno, bf);
-+				return -errno;
-+			}
-+			priv->proglogue_fds[i] = fd;
-+		}
-+		/*
-+		 * We no longer need the original program,
-+		 * we can unload it.
-+		 */
-+		bpf_program__unload(prog);
-+	}
-+	return 0;
-+}
-+
- int bpf__load(struct bpf_object *obj)
- {
+ 	struct nfp_flower_priv *app_priv;
+ 	struct netevent_redirect *redir;
+-	struct flowi4 flow4 = {};
+-	struct flowi6 flow6 = {};
+ 	struct neighbour *n;
+ 	struct nfp_app *app;
+ 	bool neigh_invalid;
+-	bool ipv6 = false;
  	int err;
-@@ -932,7 +1027,7 @@ int bpf__load(struct bpf_object *obj)
- 		pr_debug("bpf: load objects failed: err=%d: (%s)\n", err, bf);
- 		return err;
+ 
+ 	switch (event) {
+@@ -583,16 +580,8 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
+ 		return NOTIFY_DONE;
  	}
--	return 0;
-+	return bpf_object__load_prologue(obj);
- }
  
- int bpf__foreach_event(struct bpf_object *obj,
-@@ -967,13 +1062,10 @@ int bpf__foreach_event(struct bpf_object *obj,
- 		for (i = 0; i < pev->ntevs; i++) {
- 			tev = &pev->tevs[i];
- 
--			if (priv->need_prologue) {
--				int type = priv->type_mapping[i];
+-	if (n->tbl->family == AF_INET6)
+-		ipv6 = true;
 -
--				fd = bpf_program__nth_fd(prog, type);
--			} else {
-+			if (priv->need_prologue)
-+				fd = priv->proglogue_fds[i];
-+			else
- 				fd = bpf_program__fd(prog);
--			}
+ 	neigh_invalid = !(n->nud_state & NUD_VALID) || n->dead;
  
- 			if (fd < 0) {
- 				pr_debug("bpf: failed to get file descriptor\n");
+-	if (ipv6)
+-		flow6.daddr = *(struct in6_addr *)n->primary_key;
+-	else
+-		flow4.daddr = *(__be32 *)n->primary_key;
+-
+ 	app_priv = container_of(nb, struct nfp_flower_priv, tun.neigh_nb);
+ 	app = app_priv->app;
+ 
+@@ -601,8 +590,11 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
+ 		return NOTIFY_DONE;
+ 
+ #if IS_ENABLED(CONFIG_INET)
+-	if (ipv6) {
++	if (n->tbl->family == AF_INET6) {
+ #if IS_ENABLED(CONFIG_IPV6)
++		struct flowi6 flow6 = {};
++
++		flow6.daddr = *(struct in6_addr *)n->primary_key;
+ 		if (!neigh_invalid) {
+ 			struct dst_entry *dst;
+ 			/* Use ipv6_dst_lookup_flow to populate flow6->saddr
+@@ -623,6 +615,9 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
+ 		return NOTIFY_DONE;
+ #endif /* CONFIG_IPV6 */
+ 	} else {
++		struct flowi4 flow4 = {};
++
++		flow4.daddr = *(__be32 *)n->primary_key;
+ 		if (!neigh_invalid) {
+ 			struct rtable *rt;
+ 			/* Use ip_route_output_key to populate flow4->saddr and
 -- 
-2.35.3
+2.30.2
 
