@@ -2,83 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB86A520A60
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 02:50:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A0A5520A6C
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 02:54:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233878AbiEJAyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 20:54:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
+        id S232095AbiEJA6R (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 20:58:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230109AbiEJAyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 20:54:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B52F62B276F;
-        Mon,  9 May 2022 17:50:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CBD36158D;
-        Tue, 10 May 2022 00:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A3D80C385CC;
-        Tue, 10 May 2022 00:50:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652143812;
-        bh=zZOmZym5pqdBOPsCfPDOt0BQ17UULmanHfYJ/VIHmAM=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZN6mEdi8UxijWZM8bBJJzQNKmp0i5A/9T+vBas0XKBti3RVExqRflrDDPlYCfVend
-         5l1rBG5h+4g77nd10zGk4m9LENuE3FOAvZX9ggK4Gvi+sm6jjhNszWbAVNeXLb1brK
-         EWwXOHUE09CjAOt3MY70yxhkJuigaat4JzhnV5Fw8+oYwHb1OceBTPAVG6U/N/8Yas
-         M/eXk3LOdxh5fi5Lg0cEqcN/O/YptqY8WEFfXT6NSabe9x40QUhHDZcxsBx19FEv0R
-         5sx+ysSG55kY75rHgMQKxd7qpvgwzaqjwPp6NI0Qq2JcH/y/r3nOl6RjmRIL8kKohJ
-         08vHJ5b1XNm0g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7FD54F03932;
-        Tue, 10 May 2022 00:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229451AbiEJA6O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 20:58:14 -0400
+Received: from 69-171-232-181.mail-mxout.facebook.com (69-171-232-181.mail-mxout.facebook.com [69.171.232.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A0BF2B52FC
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 17:54:18 -0700 (PDT)
+Received: by devbig010.atn6.facebook.com (Postfix, from userid 115148)
+        id 138C9C2694FD; Mon,  9 May 2022 17:54:02 -0700 (PDT)
+From:   Joanne Koong <joannelkoong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     edumazet@google.com, kafai@fb.com, kuba@kernel.org,
+        davem@davemloft.net, Joanne Koong <joannelkoong@gmail.com>
+Subject: [PATCH net-next v2 0/2] Add a bhash2 table hashed by port + address
+Date:   Mon,  9 May 2022 17:53:14 -0700
+Message-Id: <20220510005316.3967597-1-joannelkoong@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] bpftool: declare generator name
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165214381252.1602.949986695734841683.git-patchwork-notify@kernel.org>
-Date:   Tue, 10 May 2022 00:50:12 +0000
-References: <20220509090247.5457-1-jasowang@redhat.com>
-In-Reply-To: <20220509090247.5457-1-jasowang@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kafai@fb.com, songliubraving@fb.com,
-        yhs@fb.com, john.fastabend@gmail.com, kpsingh@kernel.org,
-        peter.maydell@linaro.org, armbru@redhat.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=4.0 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RDNS_DYNAMIC,
+        SPF_HELO_PASS,SPF_SOFTFAIL,SPOOFED_FREEMAIL,SPOOF_GMAIL_MID,
+        TVD_RCVD_IP,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+This patchset proposes adding a bhash2 table that hashes by port and addr=
+ess.
+The motivation behind bhash2 is to expedite bind requests in situations w=
+here
+the port has many sockets in its bhash table entry, which makes checking =
+bind
+conflicts costly especially given that we acquire the table entry spinloc=
+k
+while doing so, which can cause softirq cpu lockups and can prevent new t=
+cp
+connections.
 
-This patch was applied to bpf/bpf-next.git (master)
-by Andrii Nakryiko <andrii@kernel.org>:
+We ran into this problem at Meta where the traffic team binds a large num=
+ber
+of IPs to port 443 and the bind() call took a significant amount of time
+which led to cpu softirq lockups, which caused packet drops and other fai=
+lures
+on the machine
 
-On Mon,  9 May 2022 17:02:47 +0800 you wrote:
-> Most code generators declare its name so did this for bfptool.
-> 
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
-> ---
->  tools/bpf/bpftool/gen.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+The patches are as follows:
+1/2 - Adds a second bhash table (bhash2) hashed by port and address
+2/2 - Adds a test for timing how long an additional bind request takes wh=
+en
+the bhash entry is populated
 
-Here is the summary with links:
-  - bpftool: declare generator name
-    https://git.kernel.org/bpf/bpf-next/c/56c3e749d08a
+When experimentally testing this on a local server for ~24k sockets bound=
+ to
+the port, the results seen were:
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ipv4:
+before - 0.002317 seconds
+with bhash2 - 0.000018 seconds
 
+ipv6:
+before - 0.002431 seconds
+with bhash2 - 0.000021 seconds
+
+v1 -> v2:
+v1:
+https://lore.kernel.org/netdev/20220421221449.1817041-1-joannelkoong@gmai=
+l.com/
+
+* Attached test for timing bind request
+
+
+Joanne Koong (2):
+  net: Add a second bind table hashed by port and address
+  selftests: Add test for timing a bind request to a port with a
+    populated bhash entry
+
+ include/net/inet_connection_sock.h            |   3 +
+ include/net/inet_hashtables.h                 |  56 ++++-
+ include/net/sock.h                            |  14 ++
+ net/dccp/proto.c                              |  14 +-
+ net/ipv4/inet_connection_sock.c               | 227 +++++++++++++-----
+ net/ipv4/inet_hashtables.c                    | 188 ++++++++++++++-
+ net/ipv4/tcp.c                                |  14 +-
+ tools/testing/selftests/net/.gitignore        |   1 +
+ tools/testing/selftests/net/Makefile          |   2 +
+ tools/testing/selftests/net/bind_bhash_test.c | 119 +++++++++
+ 10 files changed, 560 insertions(+), 78 deletions(-)
+ create mode 100644 tools/testing/selftests/net/bind_bhash_test.c
+
+--=20
+2.30.2
 
