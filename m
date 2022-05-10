@@ -2,81 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBDDC520BD5
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 05:15:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1ED0520BEB
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 05:21:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230294AbiEJDTb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 23:19:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59024 "EHLO
+        id S235277AbiEJDZ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 23:25:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235232AbiEJDT1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 23:19:27 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 424C22A7C36;
-        Mon,  9 May 2022 20:15:28 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id j6so13826534pfe.13;
-        Mon, 09 May 2022 20:15:28 -0700 (PDT)
+        with ESMTP id S232678AbiEJDZ2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 23:25:28 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A440B252BC;
+        Mon,  9 May 2022 20:21:30 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id i19so30306418eja.11;
+        Mon, 09 May 2022 20:21:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OzBRtyA4Byv4LHvvdlavJZPXa2xwqQ3WqNSL+ipftlE=;
-        b=GRyifsnxSAzQclB46AIqh//+4UVGhBderEtEsgh88zGcsLB6KJfD4JqQotuLmYQk8C
-         qlWplL77Gza4lP3BSveSdF+ZsPItB7vHxW3p1K06qWPGHVB0HKJm9rQYB/F3VYHbi6Po
-         bYhc+MYISHqIWN8palL2/40KWuIy5SK+VMCp2078167w96Q7/bQccaovelMHkFE1N41v
-         zJ6kHyBj+H0YTYOLH0Wk2d0vJx7PcFM3RHlx/IxKenDEjGnx/lGzd8vIipji3mkpornL
-         6nCxSOiGZPNmWOkDYhXbD89Cx9QTcpl/N7g4pgZdfSRAQ1os9u74kz+sOrYQUs52DGiX
-         RMwA==
+         :cc;
+        bh=W6hg8xZDlvVbV0yxBFJp6M3i2By/uzGhIKuyQsM88v4=;
+        b=P+wESGRbK7UrpgEo0WHOiYGsdzWzZ8+u3MZXUDBD4YdLv0BOKi/E+XbjkFcw6DoRaN
+         LenQnO42u8tz5dMfezSlUYh7mWdgCucKAr1fPOYcuPBvBQp4xQiCsNPZyCL+LxgPhrrf
+         veBicKCnUjsb4wSJjmvW+1gbMijZcgobY0wy5gqSBHsLiZJi6QFk1owyvBeCAcSL1S36
+         TVJ3B318oVs8ampqE+l+C6rWHg8nWxfmg8BhUGb6gqo2W498Bo+vfxGsE9pOMhyvAc8X
+         MwQJyuatuyH/Pe7rZDYhDlFYKFbSvx3LU4SUdCXn4Q7gK0ZFCplpHbfthTj3SECxSJFR
+         snqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OzBRtyA4Byv4LHvvdlavJZPXa2xwqQ3WqNSL+ipftlE=;
-        b=Ujl+paofVJPJ8B+ecRBAasmWgoX7nNpuaVMu/LDUN3fhRMNEmA6FkYx4b4kXT6e0bb
-         z+R6BzahBKMgTnvj715wwVdmNwhcVPm8td3HMKZVJD1ap61+9zdvYfac7VI1gZicO+S5
-         ixDBrfDeKPe2a7nVmPFNQT6y5r9HeJEjJoroeRAWldLpWeSG2skBspnIf01NacsYepHN
-         TWW9MVd2SH1CdvRCEQOqSr7YviTtbtLHk/88aZtnlyuAEv9lxmhwxv9pyB0VNAs8nLKo
-         AgwhfO/UM5KZpBe9xN9ido6NG0mnJVyf4yvVUsYLNT6fTm5dMCiBz1HfLo68tTnCKkDl
-         i0Sw==
-X-Gm-Message-State: AOAM532bGGyAHcr6JZRlaDMgjz6ww3qxDX8N6ftJFnvylyiDV6R0OMeI
-        Huwr6YlkxITG3bLY+qyLjbKwWe8AOcyH1GhcnYg=
-X-Google-Smtp-Source: ABdhPJx5NoYTMAQANTkydC4IpcP+swG4dX1n9zoWhruqsIgQDTRC5XKQkT1vr5YaiY0DmWqZsC4y49eBzgbkatMRFIE=
-X-Received: by 2002:a05:6a00:8ce:b0:510:9298:ea26 with SMTP id
- s14-20020a056a0008ce00b005109298ea26mr12990895pfu.55.1652152527696; Mon, 09
- May 2022 20:15:27 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=W6hg8xZDlvVbV0yxBFJp6M3i2By/uzGhIKuyQsM88v4=;
+        b=t5X6kE/0bh7zr9jDchgv9KeXZ1S7hhqCsY2HH4/tb2AAgp1NWS1ck6U9bdiWsq/5Qi
+         uGw3+RGssfmSH+qRDTLucuSRceXcnuNzpntZKFwydKqdnb1veq9WKL0ge2XPy1AsYhYX
+         sPNFOkD8XZ6H/PVv9TywjAqfHJoG2MN14QCEAev0JBUV1JNiOTRi5Zz1PZgJvsUwiUUC
+         R+x37qFWxFVhi4kNmzWjzdILmhFyydGJDO4OR/2iv9NPPM5fB9wRJRfm770/4u0shKqQ
+         8TH4chTmnnhzKi+UnWkyfKvEwq5VOG18yrUy7jvCbiwR4rV+wuZTZjFGb6F5SxZUZueP
+         +cVA==
+X-Gm-Message-State: AOAM530a4vLvckO1awVyLE6lstKNE6cP1iSNzurLGQNBBOqyCC+DP9J/
+        10fDxR3Ml9hIllIoM8zSMHBeEbCHo8/LsElyHFeuJJrD1D6m1A==
+X-Google-Smtp-Source: ABdhPJwIr5oMdwzvHgt4e/5Aa9fSbNcXke+HDO7hTgH8FBfuwfgQdcUn+FngDnm8/mfyzKtDJRcj1i6vBDj5PVGLXSU=
+X-Received: by 2002:a17:906:3144:b0:6ce:de5d:5e3b with SMTP id
+ e4-20020a170906314400b006cede5d5e3bmr17816104eje.689.1652152889158; Mon, 09
+ May 2022 20:21:29 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220507024840.42662-1-zhoufeng.zf@bytedance.com>
- <CAEf4BzZD5q2j229_gL_nDFse2v=k2Ea0nfguH+sOA2O1Nm5sQw@mail.gmail.com>
- <CAJD7tkbd8qA-4goUCVW6Tf0xGpj2OSBXncpWhrWFn5y010oBMw@mail.gmail.com> <d20aef2a-273a-3183-0923-bde9657d4418@bytedance.com>
-In-Reply-To: <d20aef2a-273a-3183-0923-bde9657d4418@bytedance.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 9 May 2022 20:15:16 -0700
-Message-ID: <CAADnVQL+Vq5y47J++VCppti1728w3U0maxg9d4SqAtArY+h1yg@mail.gmail.com>
-Subject: Re: [External] Re: [PATCH bpf-next] bpf: add bpf_map_lookup_percpu_elem
- for percpu map
-To:     Feng Zhou <zhoufeng.zf@bytedance.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joanne Koong <joannekoong@fb.com>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>
+References: <20220509122213.19508-1-imagedong@tencent.com> <cb8eaad0-83c5-a150-d830-e078682ba18b@ssi.bg>
+In-Reply-To: <cb8eaad0-83c5-a150-d830-e078682ba18b@ssi.bg>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Tue, 10 May 2022 11:21:17 +0800
+Message-ID: <CADxym3bgR9xfHgoAwWeEQvLUnwrUxee3gK4SkRqcS+TmmfWUGw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: ipvs: random start for RR scheduler
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev <netdev@vger.kernel.org>, lvs-devel@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org,
+        Menglong Dong <imagedong@tencent.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -87,54 +69,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 9, 2022 at 7:41 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote:
+On Tue, May 10, 2022 at 2:17 AM Julian Anastasov <ja@ssi.bg> wrote:
 >
-> =E5=9C=A8 2022/5/10 =E4=B8=8A=E5=8D=889:04, Yosry Ahmed =E5=86=99=E9=81=
-=93:
-> > On Mon, May 9, 2022 at 5:34 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> >> On Fri, May 6, 2022 at 7:49 PM Feng zhou <zhoufeng.zf@bytedance.com> w=
-rote:
-> >>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
-> >>>
-> >>> Trace some functions, such as enqueue_task_fair, need to access the
-> >>> corresponding cpu, not the current cpu, and bpf_map_lookup_elem percp=
-u map
-> >>> cannot do it. So add bpf_map_lookup_percpu_elem to accomplish it for
-> >>> percpu_array_map, percpu_hash_map, lru_percpu_hash_map.
-> >>>
-> >>> The implementation method is relatively simple, refer to the implemen=
-tation
-> >>> method of map_lookup_elem of percpu map, increase the parameters of c=
-pu, and
-> >>> obtain it according to the specified cpu.
-> >>>
-> >> I don't think it's safe in general to access per-cpu data from another
-> >> CPU. I'd suggest just having either a ARRAY_OF_MAPS or adding CPU ID
-> >> as part of the key, if you need such a custom access pattern.
-> > I actually just sent an RFC patch series containing a similar patch
-> > for the exact same purpose. There are instances in the kernel where
-> > per-cpu data is accessed from other cpus (e.g.
-> > mem_cgroup_css_rstat_flush()). I believe, like any other variable,
-> > percpu data can be safe or not safe to access, based on the access
-> > pattern. It is up to the user to coordinate accesses to the variable.
-> >
-> > For example, in my use case, one of the accessors only reads percpu
-> > values of different cpus, so it should be safe. If a user accesses
-> > percpu data of another cpu without guaranteeing safety, they corrupt
-> > their own data. I understand that the main purpose of percpu data is
-> > lockless (and therefore fast) access, but in some use cases the user
-> > may be able to safely (and locklessly) access the data concurrently.
-> >
 >
-> Regarding data security, I think users need to consider before using it,
-> such
-> as hook enqueue_task_fair, the function itself takes the rq lock of the
-> corresponding cpu, there is no problem, and the kernel only provides a
-> method,
-> like bpf_per_cpu_ptr and bpf_this_cpu_ptr, data security needs to be
-> guaranteed
-> by users in different scenarios, such as using bpf_spin_lock.
+>         Hello,
+>
+> On Mon, 9 May 2022, menglong8.dong@gmail.com wrote:
+>
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > For now, the start of the RR scheduler is in the order of dest
+> > service added, it will result in imbalance if the load balance
+>
+>         ...order of added destinations,...
+>
+> > is done in client side and long connect is used.
+>
+>         ..."long connections are used". Is this a case where
+> small number of connections are used? And the two connections
+> relatively overload the real servers?
+>
+> > For example, we have client1, client2, ..., client5 and real service
+> > service1, service2, service3. All clients have the same ipvs config,
+> > and each of them will create 2 long TCP connect to the virtual
+> > service. Therefore, all the clients will connect to service1 and
+> > service2, leaving service3 free.
+>
+>         You mean, there are many IPVS directors with same
+> config and each director gets 2 connections? Third connection
+> will get real server #3, right ? Also, are the clients local
+> to the director?
+>
 
-Right. The new helper looks useful and is safe.
-Please add a selftest and respin.
+Sorry to have missed your message here. Yeah, this is what I mean.
+And in my case, the directors are local the to client, and each client
+only have 2 connections. If the 3th connection happens, it will get #3
+real server. And all directors connected to #1 and #2 real servers,
+resulting in overload.
+
+> > Fix this by randomize the start of dest service to RR scheduler when
+>
+>         ..."randomizing the starting destination when"
+>
+> > IP_VS_SVC_F_SCHED_RR_RANDOM is set.
+> >
+> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> > ---
+> >  include/uapi/linux/ip_vs.h    |  2 ++
+> >  net/netfilter/ipvs/ip_vs_rr.c | 25 ++++++++++++++++++++++++-
+> >  2 files changed, 26 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
+> > index 4102ddcb4e14..7f74bafd3211 100644
+> > --- a/include/uapi/linux/ip_vs.h
+> > +++ b/include/uapi/linux/ip_vs.h
+> > @@ -28,6 +28,8 @@
+> >  #define IP_VS_SVC_F_SCHED_SH_FALLBACK        IP_VS_SVC_F_SCHED1 /* SH fallback */
+> >  #define IP_VS_SVC_F_SCHED_SH_PORT    IP_VS_SVC_F_SCHED2 /* SH use port */
+> >
+> > +#define IP_VS_SVC_F_SCHED_RR_RANDOM  IP_VS_SVC_F_SCHED1 /* random start */
+> > +
+> >  /*
+> >   *      Destination Server Flags
+> >   */
+> > diff --git a/net/netfilter/ipvs/ip_vs_rr.c b/net/netfilter/ipvs/ip_vs_rr.c
+> > index 38495c6f6c7c..e309d97bdd08 100644
+> > --- a/net/netfilter/ipvs/ip_vs_rr.c
+> > +++ b/net/netfilter/ipvs/ip_vs_rr.c
+> > @@ -22,13 +22,36 @@
+> >
+> >  #include <net/ip_vs.h>
+> >
+> > +static void ip_vs_rr_random_start(struct ip_vs_service *svc)
+> > +{
+> > +     struct list_head *cur;
+> > +     u32 start;
+> > +
+> > +     if (!(svc->flags | IP_VS_SVC_F_SCHED_RR_RANDOM) ||
+>
+>         | -> &
+>
+> > +         svc->num_dests <= 1)
+> > +             return;
+> > +
+> > +     spin_lock_bh(&svc->sched_lock);
+> > +     start = get_random_u32() % svc->num_dests;
+>
+>         May be prandom is more appropriate for non-crypto purposes.
+> Also, not sure if it is a good idea to limit the number of steps,
+> eg. to 128...
+>
+>         start = prandom_u32_max(min(svc->num_dests, 128U));
+>
+>         or just use
+>
+>         start = prandom_u32_max(svc->num_dests);
+>
+>         Also, this line can be before the spin_lock_bh.
+>
+> > +     cur = &svc->destinations;
+>
+>         cur = svc->sched_data;
+>
+>         ... and to start from current svc->sched_data because
+> we are called for every added dest. Better to jump 0..127 steps
+> ahead, to avoid delay with long lists?
+>
+> > +     while (start--)
+> > +             cur = cur->next;
+> > +     svc->sched_data = cur;
+> > +     spin_unlock_bh(&svc->sched_lock);
+> > +}
+> >
+> >  static int ip_vs_rr_init_svc(struct ip_vs_service *svc)
+> >  {
+> >       svc->sched_data = &svc->destinations;
+> > +     ip_vs_rr_random_start(svc);
+> >       return 0;
+> >  }
+> >
+> > +static int ip_vs_rr_add_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
+> > +{
+> > +     ip_vs_rr_random_start(svc);
+> > +     return 0;
+> > +}
+> >
+> >  static int ip_vs_rr_del_dest(struct ip_vs_service *svc, struct ip_vs_dest *dest)
+> >  {
+> > @@ -104,7 +127,7 @@ static struct ip_vs_scheduler ip_vs_rr_scheduler = {
+> >       .module =               THIS_MODULE,
+> >       .n_list =               LIST_HEAD_INIT(ip_vs_rr_scheduler.n_list),
+> >       .init_service =         ip_vs_rr_init_svc,
+> > -     .add_dest =             NULL,
+> > +     .add_dest =             ip_vs_rr_add_dest,
+> >       .del_dest =             ip_vs_rr_del_dest,
+> >       .schedule =             ip_vs_rr_schedule,
+> >  };
+> > --
+> > 2.36.0
+>
+> Regards
+>
+> --
+> Julian Anastasov <ja@ssi.bg>
+>
