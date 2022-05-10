@@ -2,71 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CA6B520B71
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 04:44:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B7E1520B91
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 04:56:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234939AbiEJCs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 22:48:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36654 "EHLO
+        id S234647AbiEJDAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 23:00:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232495AbiEJCs1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 22:48:27 -0400
-Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D5C627F135;
-        Mon,  9 May 2022 19:44:32 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id r27so17271941iot.1;
-        Mon, 09 May 2022 19:44:32 -0700 (PDT)
+        with ESMTP id S231519AbiEJDAI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 23:00:08 -0400
+Received: from mail-ed1-x543.google.com (mail-ed1-x543.google.com [IPv6:2a00:1450:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77AC0179092;
+        Mon,  9 May 2022 19:56:12 -0700 (PDT)
+Received: by mail-ed1-x543.google.com with SMTP id p18so18363226edr.7;
+        Mon, 09 May 2022 19:56:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=f8UJqGII15EUvAh7IVf71vJDer3ywxR+YC79U4WRNxg=;
-        b=IIuYSphoxM5Xe74hHyUvVMx4rZYWDgA//kqo93jCh5ZzUb94Mi486Lg/keBF+gcczl
-         x6zS5eYgw5zDwrucwJ5k7Xoa/DS7n+M11FUkyUmTK9VP5CkRGr/+lA+ogibvf5b0AQjY
-         OzHnl7dYP/ejbqslbi8R36pWk1zPihsU+x3qgOW8O3/A64Z8xvg1bfWFUzzmXlciIIAn
-         ihi1Vn3ZY4NQdPuU1Gy9Pyl29qq2Yl7+tcAfrknMJqg06GtIV3gV5Y9I5EfTgzigXlZh
-         P5nSTDH5Sgmb9WahyhINli1SoSxTPOqVP1VKYYqkMeaPv8AScouN4NyeAtWyB23aHX72
-         SG/A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jxQ4FfNifoAJnZ9RmrNs5f5NM/VT87rpdDF11Jk1btA=;
+        b=SIoRNBBruUGqvs1gFylAGuQkpK43TNtybVWSF7483tLUz8XioL7cLwS6mWSdNif4Zl
+         yejzbF09bGelUNpFCzxixRshQf/uzmkyxlfCZvjeLamGQmHU0Q3d+opBLK+gKS4xAs20
+         jsI15Y3sgjWwvSP33vRuKK2KVsruIu+TDuHtgalnAMsgUOr5YKLKzVxiu1Vua32lKgIC
+         FQxU8Tf4Hy5FpwlZTbLCtVShnNA/LDfBA950XwR3dXRo90sC28amqEoq/LFtm6KwAawz
+         o38cKjw0EEerDpWthWTlbTHEcXoUNrohxAzXn2Dr3+VCz6o//Po7D/c0ytcMWK8fN/6E
+         1JVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=f8UJqGII15EUvAh7IVf71vJDer3ywxR+YC79U4WRNxg=;
-        b=YWWDWtgpmRvBgePRuRUPehyd9ootFjKzMnE7iIeMhjk3Z1C6yGfP5Hpg9swjL9xsss
-         rLdv26eOniFotrTjrBn41LADzmUeiZGAWDfUQQ/OL33kDUWZvsnLiYL4Kr7if6A94hLX
-         p8tBk4TrG8jUJyclIC+HpOxKuHllh+gUbhxDot1MRM2DT4sIjZILtaYX9io7VUWO3rnP
-         l4P3aaAwHZVWOzs4HeZp9UEw6Ybjxd5AgUzIfGRuPh1Ss5y5F1EWfKmIdPJtr9U7CrWU
-         k7VmEdX3ZKzaPK1ggtSAsBHj1IZPkf5DQoVOBrPnuk6J6mkxe4ok554BDeFXOC1SneBc
-         4s9w==
-X-Gm-Message-State: AOAM530YjYazP47HdMDYjH8VfO79IgxDI6qFNcKJav4MNXY2A8YnlU2+
-        yVrEZBlhfFiS3xbfPWkUrBA=
-X-Google-Smtp-Source: ABdhPJyXLLuEDD9M3yW9LnoWjmZogru3bafdzoOFDyhv+X4IIHArlzC+yIAOkUzW8Ffz9vijA3fR/A==
-X-Received: by 2002:a05:6638:d0a:b0:32b:b579:6875 with SMTP id q10-20020a0566380d0a00b0032bb5796875mr8983698jaj.291.1652150671562;
-        Mon, 09 May 2022 19:44:31 -0700 (PDT)
-Received: from ?IPV6:2601:282:800:dc80:e970:4f57:6d9a:73c8? ([2601:282:800:dc80:e970:4f57:6d9a:73c8])
-        by smtp.googlemail.com with ESMTPSA id e131-20020a6bb589000000b0065a47e16f38sm3675091iof.10.2022.05.09.19.44.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 19:44:30 -0700 (PDT)
-Message-ID: <6d8a4c78-648f-07fe-496a-4ab34891f716@gmail.com>
-Date:   Mon, 9 May 2022 20:44:28 -0600
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jxQ4FfNifoAJnZ9RmrNs5f5NM/VT87rpdDF11Jk1btA=;
+        b=xtAeunBzKz4cLMi7uyLeF8n7BikeOcrtUi/XXKrNGANoKMkPYYgSMjwHKINYdl/6B4
+         MMDgucahMq6rsKEk6jhdRlR2VxmTOkE/yr+mF1Ip/pGE/hdtfANTw2r/uPFeFt/g3ZPs
+         uWR06crA0jwb3kuM8f5Qs6RhiwzHtZjVUcS2ktQXDQZkIwcaoW3CdwViguXHK9kqRpj6
+         2KksQsvIjbRtcmI0Z5eTurNyfqESJzTn++NGFVAxif7wsiYhv0CE1zVEpJRb7fr5guCC
+         6uhSGjkx4umOJ5cL2UTk8tlK89PJFVScZ12kVkS3NCRykdNbGR+oMx3nqrtT04VjoMj8
+         ayOA==
+X-Gm-Message-State: AOAM530341f0yDE9EaAbwDO/M9Q77alEqFkzVcYBvJCE8048eQ022MaV
+        2NGL4tzJtg+LHovSXppWyXFQGbIu2m1ZrnQttmQ=
+X-Google-Smtp-Source: ABdhPJwwHna8gv/y3VblXwcs6HxkUVCt3J+24Nkru1QGmlBwI8NbhBJjNhhh5sfy1uEWmTb35kbjxHOkM6S/PTqBx/U=
+X-Received: by 2002:a05:6402:3326:b0:426:4883:60a with SMTP id
+ e38-20020a056402332600b004264883060amr20183055eda.310.1652151370936; Mon, 09
+ May 2022 19:56:10 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH net-next 0/3] docs: document some aspects of struct
- sk_buff
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        linux-doc@vger.kernel.org, corbet@lwn.net, imagedong@tencent.com,
-        talalahmad@google.com
-References: <20220509160456.1058940-1-kuba@kernel.org>
-From:   David Ahern <dsahern@gmail.com>
-In-Reply-To: <20220509160456.1058940-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+References: <20220509122213.19508-1-imagedong@tencent.com> <cb8eaad0-83c5-a150-d830-e078682ba18b@ssi.bg>
+In-Reply-To: <cb8eaad0-83c5-a150-d830-e078682ba18b@ssi.bg>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Tue, 10 May 2022 10:55:59 +0800
+Message-ID: <CADxym3YH_76+5g29QF4Xp4gXJz5bwdQXD_gXv3esAVTgNGkXyg@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: ipvs: random start for RR scheduler
+To:     Julian Anastasov <ja@ssi.bg>
+Cc:     Simon Horman <horms@verge.net.au>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        netdev <netdev@vger.kernel.org>, lvs-devel@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        netfilter-devel@vger.kernel.org,
+        Menglong Dong <imagedong@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -75,30 +69,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/9/22 10:04 AM, Jakub Kicinski wrote:
-> This small set creates a place to render sk_buff documentation,
-> documents one random thing (data-only skbs) and converts the big
-> checksum comment to kdoc.
-> 
-> RFC v2 (no changes since then):
->  - fix type reference in patch 1
->  - use "payload" and "data" more consistently
->  - add snippet with calls
-> https://lore.kernel.org/r/20220324231312.2241166-1-kuba@kernel.org/
-> 
-> RFC v1:
-> https://lore.kernel.org/all/20220323233715.2104106-1-kuba@kernel.org/
-> 
-> Jakub Kicinski (3):
->   skbuff: add a basic intro doc
->   skbuff: rewrite the doc for data-only skbs
->   skbuff: render the checksum comment to documentation
-> 
->  Documentation/networking/index.rst  |   1 +
->  Documentation/networking/skbuff.rst |  37 ++++
->  include/linux/skbuff.h              | 301 ++++++++++++++++++----------
->  3 files changed, 232 insertions(+), 107 deletions(-)
->  create mode 100644 Documentation/networking/skbuff.rst
-> 
+On Tue, May 10, 2022 at 2:17 AM Julian Anastasov <ja@ssi.bg> wrote:
+>
+>
+>         Hello,
+>
+> On Mon, 9 May 2022, menglong8.dong@gmail.com wrote:
+>
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > For now, the start of the RR scheduler is in the order of dest
+> > service added, it will result in imbalance if the load balance
+>
+>         ...order of added destinations,...
+>
+> > is done in client side and long connect is used.
+>
+>         ..."long connections are used". Is this a case where
+> small number of connections are used? And the two connections
+> relatively overload the real servers?
+>
+> > For example, we have client1, client2, ..., client5 and real service
+> > service1, service2, service3. All clients have the same ipvs config,
+> > and each of them will create 2 long TCP connect to the virtual
+> > service. Therefore, all the clients will connect to service1 and
+> > service2, leaving service3 free.
+>
+>         You mean, there are many IPVS directors with same
+> config and each director gets 2 connections? Third connection
+> will get real server #3, right ? Also, are the clients local
+> to the director?
+>
+> > Fix this by randomize the start of dest service to RR scheduler when
+>
+>         ..."randomizing the starting destination when"
+>
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Nice description :/
+
+> > IP_VS_SVC_F_SCHED_RR_RANDOM is set.
+> >
+> > Signed-off-by: Menglong Dong <imagedong@tencent.com>
+> > ---
+> >  include/uapi/linux/ip_vs.h    |  2 ++
+> >  net/netfilter/ipvs/ip_vs_rr.c | 25 ++++++++++++++++++++++++-
+> >  2 files changed, 26 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/uapi/linux/ip_vs.h b/include/uapi/linux/ip_vs.h
+> > index 4102ddcb4e14..7f74bafd3211 100644
+> > --- a/include/uapi/linux/ip_vs.h
+> > +++ b/include/uapi/linux/ip_vs.h
+> > @@ -28,6 +28,8 @@
+> >  #define IP_VS_SVC_F_SCHED_SH_FALLBACK        IP_VS_SVC_F_SCHED1 /* SH fallback */
+> >  #define IP_VS_SVC_F_SCHED_SH_PORT    IP_VS_SVC_F_SCHED2 /* SH use port */
+> >
+> > +#define IP_VS_SVC_F_SCHED_RR_RANDOM  IP_VS_SVC_F_SCHED1 /* random start */
+> > +
+> >  /*
+> >   *      Destination Server Flags
+> >   */
+> > diff --git a/net/netfilter/ipvs/ip_vs_rr.c b/net/netfilter/ipvs/ip_vs_rr.c
+> > index 38495c6f6c7c..e309d97bdd08 100644
+> > --- a/net/netfilter/ipvs/ip_vs_rr.c
+> > +++ b/net/netfilter/ipvs/ip_vs_rr.c
+> > @@ -22,13 +22,36 @@
+> >
+> >  #include <net/ip_vs.h>
+> >
+> > +static void ip_vs_rr_random_start(struct ip_vs_service *svc)
+> > +{
+> > +     struct list_head *cur;
+> > +     u32 start;
+> > +
+> > +     if (!(svc->flags | IP_VS_SVC_F_SCHED_RR_RANDOM) ||
+>
+>         | -> &
+>
+> > +         svc->num_dests <= 1)
+> > +             return;
+> > +
+> > +     spin_lock_bh(&svc->sched_lock);
+> > +     start = get_random_u32() % svc->num_dests;
+>
+>         May be prandom is more appropriate for non-crypto purposes.
+> Also, not sure if it is a good idea to limit the number of steps,
+> eg. to 128...
+>
+>         start = prandom_u32_max(min(svc->num_dests, 128U));
+>
+
+Yeah, prandom_u32_max is a good choice, I'll use it instead.
+
+>         or just use
+>
+>         start = prandom_u32_max(svc->num_dests);
+>
+>         Also, this line can be before the spin_lock_bh.
+>
+> > +     cur = &svc->destinations;
+>
+>         cur = svc->sched_data;
+>
+>         ... and to start from current svc->sched_data because
+> we are called for every added dest. Better to jump 0..127 steps
+> ahead, to avoid delay with long lists?
+>
+
+I'm a little afraid that the 'steps' may make the starting dest not
+absolutely random, in terms of probability. For example, we have
+256 services, and will the services in the middle have more chances
+to be chosen as the start? It's just a feeling, I'm not good at
+Probability :/
+
+The delay that ip_vs_wrr_gcd_weight() caused is much more than
+this case, so maybe the delay here can be ignored?
+
+Thanks!
+Menglong Dong
