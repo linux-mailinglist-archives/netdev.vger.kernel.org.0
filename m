@@ -2,82 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BD105521283
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 12:45:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 612305212AC
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 12:50:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239996AbiEJKtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 06:49:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53246 "EHLO
+        id S240172AbiEJKxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 06:53:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231440AbiEJKtk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 06:49:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A3B2FD
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 03:45:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652179541;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=plD3D6fn7skqGXxFWcDHbuLMx2cvK0NKTp6AWvmKD9s=;
-        b=Em6jnlEFPxRm3B13MfBm4yN6NHy0pytirY4sBv/y/KeX7fjk4J7D4xYN5ZN0RLofeFeSeM
-        k4z1aOAVfCXhO5z/hFhUFLkqpSpjrh72FWUkCsPWjoahFdeepyXg5akeLAwg/kN75BMgOs
-        RS6DDbjJba/Kh/Wcab40idpnO3A+5hs=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-490-8ZaZSkF2OSuWyqXITcKP9w-1; Tue, 10 May 2022 06:45:39 -0400
-X-MC-Unique: 8ZaZSkF2OSuWyqXITcKP9w-1
-Received: by mail-qv1-f72.google.com with SMTP id j2-20020a0cfd42000000b0045ad9cba5deso10562147qvs.5
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 03:45:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=plD3D6fn7skqGXxFWcDHbuLMx2cvK0NKTp6AWvmKD9s=;
-        b=rUN97DN/RGD2lMhnxE4YfFvAv9SrB0T0IWdp6vEhT3+CC3OTYNdra113PQVdmlv6FQ
-         ACjHgdxjOyB/2LXH8Z36zMOgjnYJ7W7Fw0++hfLOz84+ihHnSKpWUqi6TnorJPMW/wxl
-         5PqXBDvH3pfozK8WysjUhlcF9YirIgF+AS+3vIfe0J762ep1A1av+4V0Y1zuCVuJE7z2
-         4ar/ctjafWZmQ5g4kuJ5+W0RiF4LyBbDvhsvp8QJL4XyMsb8G88rbiPGyvVRBBRuvk/O
-         QjEb2bc5L+QTLbLhKadxhAnIZ+vzqED7tyjhrm74wFdo+Bg6lCTBVwogzOBcTW3Hr1VA
-         Glpw==
-X-Gm-Message-State: AOAM533cF1GJykDmlyTsjeK+vaLvSCk+KyQGz1poz5/TmJELV4jBF7ih
-        vlYyDbUBMJdeI4Sf1ZrP18A0auM7v/lFAumKlJhSdKgWA4l9b5UaqvkgJEaeJf6z5ryfCS29Q2j
-        irpyJ6DBahQOmRZHU
-X-Received: by 2002:a05:622a:309:b0:2f3:b965:f1d with SMTP id q9-20020a05622a030900b002f3b9650f1dmr18919835qtw.314.1652179539379;
-        Tue, 10 May 2022 03:45:39 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyR5Uhu2AwCz7Oy4Dqs8rtOuP91wrsXY4XMyhccwjX2if879YO7+1zxumI2XDQTs3NI7QU8aQ==
-X-Received: by 2002:a05:622a:309:b0:2f3:b965:f1d with SMTP id q9-20020a05622a030900b002f3b9650f1dmr18919824qtw.314.1652179539158;
-        Tue, 10 May 2022 03:45:39 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
-        by smtp.gmail.com with ESMTPSA id n19-20020a05620a153300b0069fd57d435fsm8076753qkk.101.2022.05.10.03.45.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 03:45:38 -0700 (PDT)
-Message-ID: <b8e254c50ca23571a640bbc230730ab4219b9308.camel@redhat.com>
-Subject: Re: [PATCH v2] net: dsa: realtek: rtl8366rb: Serialize indirect PHY
- register access
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        with ESMTP id S235177AbiEJKx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 06:53:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2DE2AD74F
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 03:49:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C3A87B81C24
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 10:49:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D85A3C385A6;
+        Tue, 10 May 2022 10:49:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652179753;
+        bh=NC9Y281A9E8MtsKCsSgVVznAIcb0dmCVQR7qh/TmpPQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CD4SmRh+j11ddUzii/Zp8IBPcbdXntxHO1E2pjZDntwF32kwU46w4LeDMxE5PqTTh
+         tQFvdpUsHZiDovUAF8kH0F30mxJgTCUsqmNtCjzh3SpBQxFtzRjh2pwWuiBbuaiojC
+         CB9n2eAdQq7Ld87HtXhrrs++pT2twLUngvkVqdZ4byyArbsoIJu6/ThVKL+bV/lIfA
+         aYxZgUh5WquKDGgaShhJUvrza8hjRURTi21o8Ci3RpaaUVN579jXGI7Vb74GXsJ99G
+         Epm57j93owC8cmyDtawV+veiY7KgD2Pv77maxnCPLnjvGP7xyK94YIh/aTUUEcOck+
+         c1XIqevk9TJ1g==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        David Ahern <dsahern@gmail.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        Alvin =?UTF-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        kernel test robot <lkp@intel.com>
-Date:   Tue, 10 May 2022 12:45:35 +0200
-In-Reply-To: <20220508230303.2522980-1-linus.walleij@linaro.org>
-References: <20220508230303.2522980-1-linus.walleij@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
+        ipsec-devel <devel@linux-ipsec.org>
+Subject: [PATCH iproute2=next 0/4] Add new IPsec offload type
+Date:   Tue, 10 May 2022 13:49:04 +0300
+Message-Id: <cover.1652179360.git.leonro@nvidia.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,37 +55,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Leon Romanovsky <leonro@nvidia.com>
 
-On Mon, 2022-05-09 at 01:03 +0200, Linus Walleij wrote:
-> From: Alvin Šipraga <alsi@bang-olufsen.dk>
-> 
-> Lock the regmap during the whole PHY register access routines in
-> rtl8366rb.
-> 
-> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Tested-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v1->v2:
-> - Make sure to always return a properly assigned error
->   code on the error path in rtl8366rb_phy_read()
->   found by the kernel test robot.
-> 
-> I have tested that this does not create any regressions,
-> it makes more sense to have this applied than not. First
-> it is related to the same family as the other ASICs, also
-> it makes perfect logical sense to enforce serialization
-> of these reads/writes.
+Extend ip tool to support new IPsec offload mode.
+Followup of the recently sent series to XFRM core.
+https://lore.kernel.org/all/cover.1652176932.git.leonro@nvidia.com
 
-I'm unable to understand if this is targeting the 'net' or the 'net-
-next' tree, could you please clarify?
+Leon Romanovsky (4):
+  Update kernel headers
+  xfrm: prepare state offload logic to set mode
+  xfrm: add full offload mode to xfrm state
+  xfrm: add an interface to offload policy
 
-If targeting 'net', adding an additional, suitable 'Fixes' tag would be
-nice.
+ include/uapi/linux/xfrm.h |  1 +
+ ip/ipxfrm.c               | 16 +++++++++----
+ ip/xfrm.h                 |  4 ++--
+ ip/xfrm_monitor.c         |  2 +-
+ ip/xfrm_policy.c          | 26 +++++++++++++++++++++
+ ip/xfrm_state.c           | 49 +++++++++++++++++++++++++--------------
+ man/man8/ip-xfrm.8        | 14 +++++++++++
+ 7 files changed, 87 insertions(+), 25 deletions(-)
 
-Thanks!
-
-Paolo
+-- 
+2.35.1
 
