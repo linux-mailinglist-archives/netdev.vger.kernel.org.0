@@ -2,109 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35470520D65
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 07:58:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D93BD520D66
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 07:58:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236873AbiEJGB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 02:01:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50188 "EHLO
+        id S236904AbiEJGB7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 02:01:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233186AbiEJGB5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 02:01:57 -0400
+        with ESMTP id S236461AbiEJGB6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 02:01:58 -0400
 Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2073.outbound.protection.outlook.com [40.107.94.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4A5A266E12
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 22:58:00 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FF7266F34
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 22:58:02 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UqVt2j2elJESk+0Z9IzN5AsUk4hCyaKzp8pAkgbsGz8dDgM/8QlbbuFieILmm49ZWDu4D0yZX0XNnfQPbW+aba3IV5kMFOEVbpcIGACgTr04vnKcG8dfZ7CDTeO0mi8ap367c4kBN2MM+Me3rABUN2MroVEIUd6kWOFPf8Y3OUwH5JkPU85aakTKGKEMsD1qmhCMRG/Jr52WNpvG6hD05YhWI7yPSPoWDfZlG8kx3L10a5+quH/8md3fyUchPQrQ0NC/pAbxThNuZgq3CV4rrw28R3H+8PG5GoPDLAsCo9FJ4h4A5O2X8w3c5iCnKbdguOSy0x2s+LeFDAVBMD/E0w==
+ b=i3lVMSSepjltZXecA1bZg4/BPM4KQnbIkFd10/QKkPBTWq3rrqFk44XPP7KKztpHQGaD4+zKThksLvg1ORCI6mm5UI0LIu08u4/M/w6uvDdm/7KC/bgHGkqr6OY29SfxNb4R+m9L+Hgo+1NRursV085lmKgNQ9cV0CcT4r+jeLH1INikE21vGaMlJN3/ck9jmOI/5xJVNg2Emb5FPsL17XiyjpDJ5aCxvYZyUkA2ggCAMZMFspKRgylGye5A/lQ7nBhF4jv6XJ5UPjdUCjU8mqE8zezXMquh99LYnEiS7exuodccqwtpRSs99bnNFT85Z4s2keel40UdUi5IZiiTWA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=1PJ1i4dOVkXZEBuCviExIFXgUPVxhaU5lBqyb/a0kAY=;
- b=SAQFe25SfkZdPoWDd5ML5P2Mg4aXIgfEFuxVW+u2t6RZfp0dZ7cpRO3XDQ31FCmO1prI9HTfHcZWERdrDHrOOlxQqDR2L4sS9JFZUKdRpod1TkcFrhRdc46kpR2OmGBiRM/RDl3IGCIS/jL9Q5TPHSNXUVJOs0kykBUNoicJFiJBKMo9R7XfIhspK7KHPTuG6KmLhtuNHTRSaq7SftZrNRTac9DPTkPegGv5rVJJky1nOeekokYO5o0vW2x0jQaQohZNdZhcDx4D3DW3gkadiBFoF/jiH9qAQpse9m1M3S10t4YhZ9EFIAXirekHpNCJGPAIWOrfHTm9UYS8RdTq5Q==
+ bh=wtKTIkYcFwdZJmdygMoxhthS7FuchNejDIOSfLbNMD8=;
+ b=eumKrzSHnm9lM73K/gF3v7Pk6tKNBtt2yYyo1ORFAYVXxW8VR3OO5J04O89gs5nFYLREdultOG4ayd71w7fIWYG5hPUl8P5b+HXArYsa5aJr0covmfjy1LnPCFaapRL0diSOeXkEgqpWd1A3IPYZs2xoLNGXWrAeEZPq4UL1g2ikZQog6hka318xH7qmHGQpdReDp7X7GTngn90KIEa/bvdFziu2hE3rDmz475kU0eGxWr0OyfhsfHvUPp83/ioD52xq43v1c33PTDB0Cb76lIrQMvDLG1AofWSJ/T6U8uCw6IoMUpHBlYoM3FXBnxxSq3DJLExbFkGsYiRlpYwhiw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1PJ1i4dOVkXZEBuCviExIFXgUPVxhaU5lBqyb/a0kAY=;
- b=asLkUzQJO0o89KHxucK8BJNAhRt8sX8ERXPO5QNkI795qE5FXicFxJFWN+nPM09nE8qJzPeEzVo4epVRqNYFNZdsGOXwhNrDJAnrwppHynxPylKv7ZVZJGLgOBbsjzDLwID3cqjRcJ1RwmtyMMBvNzKlF1/1yB8pbwitO6b74RimHFeFsU+zTKtyqB/pKJ1p4IXVLLkTYUe/FqSiyirjmsSthY6JdAuFB+ReU3scBtXHntxJ4g1WUjSQA7u1owqN7A2667PtqJ/f5k/BXD9ZfrfS+oLtRnJ5NwVKQu31vbh7FPXx+7fJr3UngcDkmRWsPtWCA43Oj55UBBz4hU5iRg==
+ bh=wtKTIkYcFwdZJmdygMoxhthS7FuchNejDIOSfLbNMD8=;
+ b=mzQGzRE6RTkyhlvM+DJf1cr7Cvucn+EL1fFoJ/dP8ElS9DedakJGEteB++6SMRm1XUnLIOzTPBXyeLWbrPf5R5e+yKxxtQRoNuUYOBWY5Qtwo7YFCXo5HOIcjM2G+z3sb2jPpAepzETDP9xJaHBdQcQvreC1ShuROAKgAD3BCctQC4pmEa9glGtAwCHbfuo595RvvBt1plEFxA0c5vw9WHtq17T3kM889mdXPWcnjSC8YVApUBGNMWXrm40w0kNUwJ4ZsQFalgvv7knpT5Ejo8lGmcJTsuWLOXwp3MXSpLEvZfbkAGmXdq7YZu1+qzwKvWjBb45OtpNdvbagWfa1AA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
  by CY5PR12MB6383.namprd12.prod.outlook.com (2603:10b6:930:3d::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.25; Tue, 10 May
- 2022 05:57:59 +0000
+ 2022 05:58:00 +0000
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 05:57:59 +0000
+ 05:58:00 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next 00/15] mlx5 updates 2022-05-09
-Date:   Mon,  9 May 2022 22:57:28 -0700
-Message-Id: <20220510055743.118828-1-saeedm@nvidia.com>
+Cc:     netdev@vger.kernel.org, Gavin Li <gavinl@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next 01/15] net/mlx5: Add exit route when waiting for FW
+Date:   Mon,  9 May 2022 22:57:29 -0700
+Message-Id: <20220510055743.118828-2-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510055743.118828-1-saeedm@nvidia.com>
+References: <20220510055743.118828-1-saeedm@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BYAPR02CA0046.namprd02.prod.outlook.com
- (2603:10b6:a03:54::23) To BY5PR12MB4209.namprd12.prod.outlook.com
+X-ClientProxiedBy: BYAPR02CA0045.namprd02.prod.outlook.com
+ (2603:10b6:a03:54::22) To BY5PR12MB4209.namprd12.prod.outlook.com
  (2603:10b6:a03:20d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bc5c2c34-b72d-4cf4-7df7-08da324a093d
+X-MS-Office365-Filtering-Correlation-Id: 830da621-8cea-4768-d1c8-08da324a09b9
 X-MS-TrafficTypeDiagnostic: CY5PR12MB6383:EE_
-X-Microsoft-Antispam-PRVS: <CY5PR12MB638399B80F4EBC69A09F8F3EB3C99@CY5PR12MB6383.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <CY5PR12MB6383D6BC528623D849EA1F5CB3C99@CY5PR12MB6383.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: RFuvIg2sWzh6Fqn7kZI2o4SOAyUB0B9bVj/rV02CZaYH3zvfG7kjRIprMlrNVjWV5Yys2KrMFhVVnYSnKSXb8m97Rnk1LmvOzMdPTfGzzhKhm1xIDyT0U6VQJ8W3pfYmKl9TMomyGk6fJ75zFnhRwq1g1Zou02Ei3AacCbMaHmqFT9QNczjjQzXJGv3I18j70AV7xk8ZUrR033hfdi/ED5DhTPBoEG6mYfdNuQ6TvdFdN46D89835r7rudFB6gi5j08qvDVgWJraUpD6BQ5hTeKRLgWbj4icQpxQ5iCjMBxbrsn8CeYhlZ6tiX1SUlKZ2w1K8/yJMFuGghtM3365C56euw1eC2T1a8kgA0vBhgCmqVFtsAXqqE3DZeorvYQJhRubWyNkxxLqf0DPU7E1+hd7qRLjhxVDRUiMZMm7qLyYieSXoV41kW82v1FrIdcg+3ke2o/1sf0dvywdpCLCMUAuA8ZMQI/Qgnw9XW4H20SmWndCFYII9qaZIA2NwPG+eZusMqzAIKEq1mlvdcxn3ebZOWWbeEMqHrkP0E8n5hsW/5s9iPiHFwmCKjZ1PeLJuWjHiIyCR2bZTkDh5/dVrLdMJSfPWZGtt8axIme/uc1NvoJ8rRqC6/Ya2TpfGvWdM7QVMOCCZgbT9ozrfedWYg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(316002)(8676002)(36756003)(2906002)(6506007)(107886003)(2616005)(1076003)(83380400001)(38100700002)(186003)(4326008)(8936002)(6486002)(15650500001)(5660300002)(508600001)(6666004)(66556008)(66946007)(66476007)(86362001)(6512007);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: MeznUurAVvcj7QJy5k0u0fzjNsieefkHO+RFs9Zghamd3KbcTYtPG/+HU+p5bZ70mby/5Iq8DK8Vo95cZ84l3Wy/baDFGUKQCPRdhCqTj9tAZId1g33ZkccG1JzUbJcSzn2+KBn4VqkD8BBiIrPJ+HIt5FYfra3W0x+oa8vIDA89aa5LbdKWyrcFLY4nsZ8rSDtRykglANh5ufPmCNF2bJRTb7MOBL4UR6f089ufq7SIbAnHMxAIb0WD9PJPnohxCUSJ2F4LJlqSq/rgPOVGz1TEMYsy7cqTlEt8LrICGjgd1BFsTRIIAPeNPmFtOQSmJ1ld/9zX28HvmpxdBFR4adsNnLYIxhfvafGhx/bd7PG/JUlIfDtlxelWGIU5MWgM4LaM/aBpVnQa2Rj7kvHizdh8UmZiElTY32PFt2srFGKV5byBP9Tn+ND9hKhJ01pVnl7gnafhufpCoHj0D9Ed8cHcc5B95wdeFJbbOyNVSJK5+lbGDk2zQ5bAwfZJqKUGrbqqGK9CcAF3DJXT2XXM1cZ1PMyzxXwR1bqjd5baKzkzF8ISBDuG1HVwmRWKfWa1/hNDkipbkePNBnAiKR+6Qd0PVDynFqDSTqYsdyX7hJM0OuWYoCEN9iFrAsQcU97qb047ty5VWd/fcNIfBRYj8Q==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(316002)(8676002)(36756003)(2906002)(6506007)(107886003)(2616005)(1076003)(83380400001)(38100700002)(186003)(4326008)(8936002)(6486002)(5660300002)(508600001)(6666004)(66556008)(66946007)(66476007)(86362001)(6512007)(54906003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nSDUiwNN84MTZUpP3R7DOb0X1FzcFFAmdzg03ahKRNs2NB7W9cAy0jzA2mUC?=
- =?us-ascii?Q?yL5BZZ0RKzYj9zcJtsyHP49xZZMUzdIydJKFc9xXfPB3AGfxflN8m0dQ6m1A?=
- =?us-ascii?Q?THlfdW3l8RrrrIY1HygWkbg0qcKeyM0Zf6wzXpbeHIfAKSOWYBxcPYeS2gnn?=
- =?us-ascii?Q?cfPKYrCDEvC9VkcAA+Vh+ITWo8fwXliTQThi2hiPB3BqKuiDNUPYirb/JcMo?=
- =?us-ascii?Q?EuIDWvRbrAYy0LJdDc0U7w1ayzshcMUlpNZL7IpLKD+LZp9uO5KbaBeEBWOj?=
- =?us-ascii?Q?tA8o2RTZc3K71dv9CHgbn0V6TfsI+cm0J4vzArkmIaD4dk67AX46MG/nW7hL?=
- =?us-ascii?Q?mfDbzhGRsgpD5SJkjOWy49o4Ep+ktGAolv4bhLgacwTaxjKeTnYCuOXDJgZU?=
- =?us-ascii?Q?Dq/8lukRVk/WeHr/Z8phL/yQ2cninQahEHMcvz1FV3OfKaZzUxD07j6KTb2F?=
- =?us-ascii?Q?RInFVrDjdH2fgy1aSBcgXB0YBBFesS2M7RlfjX2h3Zhe7O4KcHPdjLnrqJqm?=
- =?us-ascii?Q?gLNjI3NzzF/VU6PK1jQWYSDd4sopi5Q7+4WsBZJLbOyXVWzRXmHY54KsE5lo?=
- =?us-ascii?Q?kbM+sj5xXMhb9V6UwXIonL0hu089trt3jy6Em+gy47QqjqWYylKX9lgqXbhQ?=
- =?us-ascii?Q?QEKBZ8yuzTixkOG9EFvKJx3tX5rgERExxOFgvjIhk/pqc41k0kzaqpekVChW?=
- =?us-ascii?Q?QP2gv8JWv2NcEXOx7yaviO8YauBiZXC/soHrpiJXlV/06AwL3YLDBAa1K2e/?=
- =?us-ascii?Q?13flakpqGnAe1oNBTfCInrK4byTVFV1vO9YobfEQlte6CZEKfIPBwsHXAdxI?=
- =?us-ascii?Q?+uyRgW0In/QFJMFpn8Ahsdh+e1gwTcN/ArfQ8FBTJGvpSjZp30XmBEmSNXy0?=
- =?us-ascii?Q?iHbL0H5YvIJEXaFtW5bHKhiuXULqCJZXyWsgPjWdu6aycHYwiv1ijPzc+bWb?=
- =?us-ascii?Q?YbUmR8vThqd7t+Lw7XKOcfXUseTgXf/Bd562zvzM/gZeNfP5j/SIKWAHfWBz?=
- =?us-ascii?Q?K9GPUHd2obpwIFfILK7NHQfi4EBbMpD6NehmD/3rUS6b8HCsEwRaCP43jGVH?=
- =?us-ascii?Q?HPCJRHsTkBcv/6SPSNfdo4YMa1kNU4NRxEA0wRRQEJkXLUnIYN40/bqeZHV9?=
- =?us-ascii?Q?YA0g94sgh3kvv13uqKPihaW1nqEX8gs/c4Bnb+EVgh90SLZ1r1N63j/z/7rJ?=
- =?us-ascii?Q?c2bGU0BVJWVIAE0cBiu/+OIoSyQOOBrrWwuxDjic2zWJq8KDuEnjLlb5WZ1C?=
- =?us-ascii?Q?wt5tCnbzPAuj3eD4fWVnm7grgnl/uXT7peBwMvUqu60dIAyw2ovPq3a3sSUE?=
- =?us-ascii?Q?kCWogGNE5fbe08qhr/gIbx2iaa7w/qgHaLf5VPZCce8dpzO3bd4kUP6iQnbT?=
- =?us-ascii?Q?c7ag1PUTGVoyOKcMp3c3oVY/mR3wePyuj7ynNnejnTMjPboIHqlBShJNWC6k?=
- =?us-ascii?Q?zVjqcFK/XgAVVD4dVqI1dwEEGmuba46GTfsxbxMf8jAxc9ojlp3Y7H+P9s2b?=
- =?us-ascii?Q?OmEmQAdJQRyAgqOcaYT7xnDGICGWTkugIc9cM/n8dyi0cRLRk/YjQlidbogf?=
- =?us-ascii?Q?aXDn1v7HOVCvl2RaXMSJrG1QADWF4gMSzKkXozFffo0GzFetVZCVTWThApb3?=
- =?us-ascii?Q?mYqErftWBTwICOwcIY9ydLquF+N7WJUjqhqFU7/FlO1GeyaQQI6phEplKR9w?=
- =?us-ascii?Q?47KM6iIyp3HG6IAYFXEgjai+2BCjkEaX40P8pUhEgnSGrRS+/fHWyMEmUvsI?=
- =?us-ascii?Q?65RbkG73YKBBa1nwGYoLG8gTDKK1WyM=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?nPwMVuu40PEZZHeKip5eeSX9eCBD0bFegHqpA3tTRfDHYFKiRY9pqk6eubI8?=
+ =?us-ascii?Q?7qIP9bH8Q3YSb5HLum3iJr34GCcvHI9EsxiUE8MtLkhLnQ2ynxaeaCkd4rMG?=
+ =?us-ascii?Q?yAKVqWU4U5NWkugrGXFneh3LRo2pLhjzqIyJDx2FApxhAvUqSR0a5S/7JMBr?=
+ =?us-ascii?Q?+JhnIRLdK6ugNAkAZMeASFK4URlCZGW9lsZePBX5MqELW33sphA6G94htskl?=
+ =?us-ascii?Q?19f+WctNCnYLIt09VcStqfWIG0bJZRSyiYLlDkzTf7YdyHIVm32Tiz3WE9DV?=
+ =?us-ascii?Q?Td4AwSWwAkYv62BhDYdr5hj0DcPtb66xRw+7QqNrTXukNOeFmVAL+l8KVXSm?=
+ =?us-ascii?Q?iwYjvHUBwetpWMnyldmiEKXbRtpDDX4lwZnii09k4qrh3003AVenXweCBRyq?=
+ =?us-ascii?Q?t4h6X2wTLHbUuLym+hzTBDA7cC6/wzoRKr2mKMcBF6OmHRwn2LNVWRf+K4qW?=
+ =?us-ascii?Q?Kd9G2u/UO1jqiIWjM4IgmPa0UPfp6rOEkhPhC0uRfI6+H2vnZiDAfEyX3SGu?=
+ =?us-ascii?Q?oSbxl7HeZmfVJm2X4TJW90XA6daMxpiQrBNJiFLe7vYRRzQNr1S7MN3if621?=
+ =?us-ascii?Q?KPxuff5nqNJGRQoZ93zsIeGr2W2N92hkMCkgSeRzqpn04HeEmSOyPpuyYp8x?=
+ =?us-ascii?Q?Jr5L3kJ+1SNkvI3yvfMvOw+/XFyE8ZH3FHUEbtBH0qcjxI7hIGKVnXz28+Eg?=
+ =?us-ascii?Q?nyKzqqbTmXP+UM6Wae4TpexggzJTNKgEeGFuWI3eJtgiJI+SA+oCxcxgEq5T?=
+ =?us-ascii?Q?nrgNMlw1BeZTkj8+3WhcVpMHOBLM77wplY9/o5dbZeLQKFGTaEdUpLg6IS2g?=
+ =?us-ascii?Q?6vFBLUhVtRXxC3d95921OPwy4yqQuYPj0vmc0onaZYSmkeC2KIyV3EBZdKrw?=
+ =?us-ascii?Q?/tE0uAmwOE2kDpC8ngyLEeB8SO+O+J/rfDts/0+gWOO52nqZqI+45waXRD38?=
+ =?us-ascii?Q?H9HEBI5DxtIB34DStCzT1e6oWhoaRSoOVOqPwu6+3nGw4U49IyuseVfKi7N4?=
+ =?us-ascii?Q?1q4hn23uwA74hUdFJFBAAqdFsG++Tx1uVYtoueBB+aC1EgF491DlYV9LEZgt?=
+ =?us-ascii?Q?CzRc0eOoq+Id9xgAJeYO6aWSkjbwjrJXAGUSNzDOQRm3c+zR8AQnJJ5jahB2?=
+ =?us-ascii?Q?L+TQ/VuZhaIPWpGjgH5pTLIHPbwccH02pXMY8KXtnZEllILrQolX8nLDKolS?=
+ =?us-ascii?Q?FsOscGCw1raPTkXbC+UByzINrvzbf1OG5hMQT1K0t5KrB9wBfOxNi6G7lAfT?=
+ =?us-ascii?Q?JEsMvv5PXrsUUrjMoLe8UBkkmO0yt+qB6ZwxAY6Jn5Q4XAhw2k02bjqxY5QP?=
+ =?us-ascii?Q?s8T/2KajbGiFC/TBMiHTstoPHJBqa4IJSXlL3IAUKcZyTMu9RPpLHmX5KR+S?=
+ =?us-ascii?Q?iMkfaZerg084oNf7exJnxEcEaX4KXG2zppzTYgTp0aVb+p5gaEr10HgCxQn3?=
+ =?us-ascii?Q?U21FsG4g4/79Hyb1Z6DAJh/dZt/RVK6z36wehPVz1k73yr6VTMR5b/ieGHO7?=
+ =?us-ascii?Q?JT0sEeWeUVRNHRtW93m+A1bVH4/gUQ4XSB0FsvlPOa23OQDqIkUvWEbhVDg2?=
+ =?us-ascii?Q?6kY54aZEoZ2eghBgf9HdjnJe0qjzSYARSf9zmMzo21mNhYq3pxFfBIE/xIbj?=
+ =?us-ascii?Q?0De5FkNuXkCDZag13hIAKhCy42aE5NJua1UyAUVKCmxED2lGFv9HGRF58Xsm?=
+ =?us-ascii?Q?dhkOs/EkK0PVUe68v4S8RMFUIx5DsHTPpUepDZNumEyMl+2T19WFzJB9MMhF?=
+ =?us-ascii?Q?VYR0hyG3E9KDWMP4T1FbMaKxyudTYryBv81BAHxH1+jKzyGB7rhL?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bc5c2c34-b72d-4cf4-7df7-08da324a093d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 830da621-8cea-4768-d1c8-08da324a09b9
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 05:57:59.2070
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 05:57:59.9737
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: TtvdD4Mys/TAtBMM4nAcCXC+woxrFwdxOBF2F6TfbI03ydDAdtNJb2Z1QWei1A9iTR4uoNRyPp36HtayRELbAg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: +/AE/4BwzQSTNJrV3CceNSlKPPzSHtwwObkDfS3o/giaLRuyQuQPABfZxzVIXrpGbJlNqKYTh/TdVFTfo/o+YA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6383
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -117,110 +121,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds the support for 4 ports HCAs LAG mode in mlx5 driver.
-For more information please see tag log below.
+From: Gavin Li <gavinl@nvidia.com>
 
-Please pull and let me know if there is any problem.
+Currently, removing a device needs to get the driver interface lock before
+doing any cleanup. If the driver is waiting in a loop for FW init, there
+is no way to cancel the wait, instead the device cleanup waits for the
+loop to conclude and release the lock.
 
-Thanks,
-Saeed.
+To allow immediate response to remove device commands, check the TEARDOWN
+flag while waiting for FW init, and exit the loop if it has been set.
 
+Signed-off-by: Gavin Li <gavinl@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 5 ++++-
+ include/linux/mlx5/driver.h                    | 1 +
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-The following changes since commit 9eab75d45ddc9d29640fd17199880d39241eeb35:
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index 35e48ef04845..f28a3526aafa 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -189,7 +189,8 @@ static int wait_fw_init(struct mlx5_core_dev *dev, u32 max_wait_mili,
+ 		fw_initializing = ioread32be(&dev->iseg->initializing);
+ 		if (!(fw_initializing >> 31))
+ 			break;
+-		if (time_after(jiffies, end)) {
++		if (time_after(jiffies, end) ||
++		    test_and_clear_bit(MLX5_BREAK_FW_WAIT, &dev->intf_state)) {
+ 			err = -EBUSY;
+ 			break;
+ 		}
+@@ -1602,6 +1603,7 @@ static void remove_one(struct pci_dev *pdev)
+ 	struct mlx5_core_dev *dev  = pci_get_drvdata(pdev);
+ 	struct devlink *devlink = priv_to_devlink(dev);
+ 
++	set_bit(MLX5_BREAK_FW_WAIT, &dev->intf_state);
+ 	devlink_unregister(devlink);
+ 	mlx5_sriov_disable(pdev);
+ 	mlx5_crdump_disable(dev);
+@@ -1785,6 +1787,7 @@ static void shutdown(struct pci_dev *pdev)
+ 	int err;
+ 
+ 	mlx5_core_info(dev, "Shutdown was called\n");
++	set_bit(MLX5_BREAK_FW_WAIT, &dev->intf_state);
+ 	err = mlx5_try_fast_unload(dev);
+ 	if (err)
+ 		mlx5_unload_one(dev);
+diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
+index ff47d49d8be4..f327d0544038 100644
+--- a/include/linux/mlx5/driver.h
++++ b/include/linux/mlx5/driver.h
+@@ -632,6 +632,7 @@ enum mlx5_device_state {
+ 
+ enum mlx5_interface_state {
+ 	MLX5_INTERFACE_STATE_UP = BIT(0),
++	MLX5_BREAK_FW_WAIT = BIT(1),
+ };
+ 
+ enum mlx5_pci_status {
+-- 
+2.35.1
 
-  Merge branch 'nfp-support-corigine-pcie-vendor-id' (2022-05-09 18:20:42 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-05-09
-
-for you to fetch changes up to 7f46a0b7327ae261f9981888708dbca22c283900:
-
-  net/mlx5: Lag, add debugfs to query hardware lag state (2022-05-09 22:54:04 -0700)
-
-----------------------------------------------------------------
-mlx5-updates-2022-05-09
-
-1) Gavin Li, adds exit route from waiting for FW init on device boot and
-   increases FW init timeout on health recovery flow
-
-2) Support 4 ports HCAs LAG mode
-
-Mark Bloch Says:
-================
-
-This series adds to mlx5 drivers support for 4 ports HCAs.
-Starting with ConnectX-7 HCAs with 4 ports are possible.
-
-As most driver parts aren't affected by such configuration most driver
-code is unchanged.
-
-Specially the only affected areas are:
-- Lag
-- Devcom
-- Merged E-Switch
-- Single FDB E-Switch
-
-Lag was chosen to be converted first. Creating hardware LAG when all 4
-ports are added to the same bond device.
-
-Devom, merge E-Switch and single FDB E-Switch, are marked as supporting
-only 2 ports HCAs and future patches will add support for 4 ports HCAs.
-
-In order to activate the hardware lag a user can execute the:
-
-ip link add bond0 type bond
-ip link set bond0 type bond miimon 100 mode 2
-ip link set eth2 master bond0
-ip link set eth3 master bond0
-ip link set eth4 master bond0
-ip link set eth5 master bond0
-
-Where eth2, eth3, eth4 and eth5 are the PFs of the same HCA.
-
-================
-
-----------------------------------------------------------------
-Gavin Li (2):
-      net/mlx5: Add exit route when waiting for FW
-      net/mlx5: Increase FW pre-init timeout for health recovery
-
-Mark Bloch (13):
-      net/mlx5: Lag, expose number of lag ports
-      net/mlx5: devcom only supports 2 ports
-      net/mlx5: Lag, move E-Switch prerequisite check into lag code
-      net/mlx5: Lag, use lag lock
-      net/mlx5: Lag, filter non compatible devices
-      net/mlx5: Lag, store number of ports inside lag object
-      net/mlx5: Lag, support single FDB only on 2 ports
-      net/mlx5: Lag, use hash when in roce lag on 4 ports
-      net/mlx5: Lag, use actual number of lag ports
-      net/mlx5: Support devices with more than 2 ports
-      net/mlx5: Lag, refactor dmesg print
-      net/mlx5: Lag, use buckets in hash mode
-      net/mlx5: Lag, add debugfs to query hardware lag state
-
- drivers/infiniband/hw/mlx5/gsi.c                   |   2 +-
- drivers/infiniband/hw/mlx5/main.c                  |   1 +
- drivers/infiniband/hw/mlx5/mlx5_ib.h               |   1 +
- drivers/infiniband/hw/mlx5/qp.c                    |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
- drivers/net/ethernet/mellanox/mlx5/core/dev.c      |  49 +-
- drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |   4 +-
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  25 -
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |   8 -
- drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |   2 +-
- .../net/ethernet/mellanox/mlx5/core/lag/debugfs.c  | 173 +++++++
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c  | 537 ++++++++++++++-------
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h  |  16 +-
- .../net/ethernet/mellanox/mlx5/core/lag/port_sel.c | 129 +++--
- .../net/ethernet/mellanox/mlx5/core/lag/port_sel.h |  15 +-
- .../net/ethernet/mellanox/mlx5/core/lib/devcom.c   |  16 +-
- .../net/ethernet/mellanox/mlx5/core/lib/devcom.h   |   2 +
- drivers/net/ethernet/mellanox/mlx5/core/lib/tout.c |   1 +
- drivers/net/ethernet/mellanox/mlx5/core/lib/tout.h |   1 +
- drivers/net/ethernet/mellanox/mlx5/core/main.c     |  28 +-
- .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |   3 +-
- include/linux/mlx5/driver.h                        |   5 +-
- 22 files changed, 720 insertions(+), 302 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lag/debugfs.c
