@@ -2,123 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CE95E522440
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 20:42:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 762B0522449
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 20:44:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244810AbiEJSmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 14:42:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41538 "EHLO
+        id S1349051AbiEJSoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 14:44:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235872AbiEJSmJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 14:42:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 571BA1649BE
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 11:42:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652208125;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=My8Rl7ea47B+HwUMWyal7bJCbA6soPVSA7SmTGeFXV4=;
-        b=i8lY2zo5GTykQHnfFjcCLWqMClGpzGj3ydC/URkbNpsGfOZQ4wPqONhD5TIRAXvbAsfS6p
-        qTjWPVPQnIaTJNICcIR+2hw6/pTd/1TM2wLRdviCqukqDMwMf3s49hkGwdPwPth1TzMdMA
-        ssfcN04sNVETEoKwSnyx/n5b/t3Y0JM=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-62-gTJ2yLWsM_Ot9w76UMdo3Q-1; Tue, 10 May 2022 14:42:02 -0400
-X-MC-Unique: gTJ2yLWsM_Ot9w76UMdo3Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 96F7A185A7BA;
-        Tue, 10 May 2022 18:42:01 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.5])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2036515230D2;
-        Tue, 10 May 2022 18:41:57 +0000 (UTC)
-Date:   Tue, 10 May 2022 20:41:55 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        with ESMTP id S1349050AbiEJSo1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 14:44:27 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0893F2A7C0B;
+        Tue, 10 May 2022 11:44:26 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id d22so17506975plr.9;
+        Tue, 10 May 2022 11:44:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PY+WJJsqIbfDwJgzkuBE2iPkWgMrw4K1Mhhpa4dAqtU=;
+        b=p00MbnRqdRmjeePF8YWO/lHYe4mcUBFcKUfEBVak/KvHMu0ou5wk4CPtT/oCkXaR48
+         KuOCnGuz8Tupkgg8erPU71pw/B9OfUdw27Ms83guk1NRhCXBQvolY998RoMWgk/u1H9W
+         sE08oN8p86ys70WKR7PmsfQ9mJvfWyZfkM6eGPX2N0k1g1THUfJg3JXUrt+TD3H4wDJo
+         y7zo6tzKoehDCXIHdWGAoDhj1aUs5r7fLWEEmubl89AFL6lyXcE/qmTCmsvn5fiYsZSz
+         UCgu32eq2rKygSnX8KRwTTLTj8MYrGsNZ54/Zu3xSvdorA3bhe4kssveKBF1bAx+dqsy
+         pHxw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=PY+WJJsqIbfDwJgzkuBE2iPkWgMrw4K1Mhhpa4dAqtU=;
+        b=0dKVG4RXXos6FfPFwGwjnucVruMdY/4L5aGhWCo58FB58W+9LG2m5QoqfZDMduDVbr
+         zacCs/LloRB8R9B2AuoDWhjkb17eh0ZhefRq9U2VwkT4T1EZoIYlFcycX2FVs9OSXSnM
+         Phlj4O5OakM2CLipYnNtygxy1StPgUcMUVKsnGXr2RVgqXh/8HrJUQDEVR/2kHc9Jl3F
+         YHYVq5xQ2gRXMbEv9pHquJ22g5kn4xv7k0G6tDpfJO5gIqPSp+XjUkGGQYk83ZhmEoiK
+         JTMCok9ONFJrjrXuE86Wyab5Sm3yDbZ8PXJj6y8Mu6Qlk76Lrfke+y870v+ag7lqR0m1
+         sO4A==
+X-Gm-Message-State: AOAM531n8I07BSsZxbU87oavmHqCD/fE1sLEORq7IY8XjQ2sd3sekXBs
+        lOgdvCZtvcZBlmZ7rQ1q7fg=
+X-Google-Smtp-Source: ABdhPJxE4jsnrGQQxRR8zWzwQ6l6VqaQdZx3bbC5B5iVac1YBXClL3sKqzZcxPPvYsb09AACudf5OA==
+X-Received: by 2002:a17:902:b610:b0:15f:3063:6530 with SMTP id b16-20020a170902b61000b0015f30636530mr761629pls.131.1652208265386;
+        Tue, 10 May 2022 11:44:25 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:6c64])
+        by smtp.gmail.com with ESMTPSA id b3-20020a170902d30300b0015e8d4eb1edsm2275735plc.55.2022.05.10.11.44.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 11:44:25 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 10 May 2022 08:44:23 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Yosry Ahmed <yosryahmed@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf] bpf_trace: bail out from
- bpf_kprobe_multi_link_attach when in compat
-Message-ID: <20220510184155.GA8295@asgard.redhat.com>
-References: <20220506142148.GA24802@asgard.redhat.com>
- <CAADnVQKNkEX-caBjozegRaOb67g1HNOHn1e-enRk_s-7Gtt=gg@mail.gmail.com>
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next 1/9] bpf: introduce CGROUP_SUBSYS_RSTAT
+ program type
+Message-ID: <Ynqyh+K1tMyNCTUW@slm.duckdns.org>
+References: <20220510001807.4132027-1-yosryahmed@google.com>
+ <20220510001807.4132027-2-yosryahmed@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAADnVQKNkEX-caBjozegRaOb67g1HNOHn1e-enRk_s-7Gtt=gg@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220510001807.4132027-2-yosryahmed@google.com>
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:10:35AM -0700, Alexei Starovoitov wrote:
-> On Fri, May 6, 2022 at 7:22 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
-> >
-> > Since bpf_kprobe_multi_link_attach doesn't support 32-bit kernels
-> > for whatever reason,
-> 
-> Jiri,
-> why did you add this restriction?
-> 
-> > having it enabled for compat processes on 64-bit
-> > kernels makes even less sense due to discrepances in the type sizes
-> > that it does not handle.
-> 
-> I don't follow this logic.
-> bpf progs are always 64-bit. Even when user space is 32-bit.
-> Jiri's check is for the kernel.
+Hello,
 
-The interface as defined (and implemented in libbpf) expects arrays of userspace
-pointers to be passed (for example, syms points to an array of userspace
-pointers—character strings; same goes for addrs, but with generic userspace
-pointers) without regard to possible difference in the pointer size in case
-of compat userspace.
+On Tue, May 10, 2022 at 12:17:59AM +0000, Yosry Ahmed wrote:
+> @@ -706,6 +707,9 @@ struct cgroup_subsys {
+>  	 * specifies the mask of subsystems that this one depends on.
+>  	 */
+>  	unsigned int depends_on;
+> +
+> +	/* used to store bpf programs.*/
+> +	struct cgroup_subsys_bpf bpf;
+>  };
 
-> > Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-> > Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
-> > ---
-> >  kernel/trace/bpf_trace.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index d8553f4..9560af6 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -2410,7 +2410,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
-> >         int err;
-> >
-> >         /* no support for 32bit archs yet */
-> > -       if (sizeof(u64) != sizeof(void *))
-> > +       if (sizeof(u64) != sizeof(void *) || in_compat_syscall())
-> >                 return -EOPNOTSUPP;
-> >
-> >         if (prog->expected_attach_type != BPF_TRACE_KPROBE_MULTI)
-> > --
-> > 2.1.4
-> >
-> 
+Care to elaborate on rationales around associating this with a specific
+cgroup_subsys rather than letting it walk cgroups and access whatever csses
+as needed? I don't think it's a wrong approach or anything but I can think
+of plenty of things that would be interesting without being associated with
+a specific subsystem - even all the cpu usage statistics are built to in the
+cgroup core and given how e.g. systemd uses cgroup to organize the
+applications in the system whether resource control is active or not, there
+are a lot of info one can gather about those without being associated with a
+specific subsystem.
 
+Thanks.
+
+-- 
+tejun
