@@ -2,540 +2,200 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52A3A5224AC
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 21:22:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 544385224B0
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 21:23:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242337AbiEJTWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 15:22:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46076 "EHLO
+        id S231208AbiEJTXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 15:23:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48288 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239148AbiEJTWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 15:22:34 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFF141FBF
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 12:22:32 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id t6so5716wra.4
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 12:22:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7Fl8o9vqQHXkRhUTsCQTt0ZwmTbCavxp1lBY7KQiqEg=;
-        b=pkDBIQ1JUSjCleZwrCt2twDTUFGkjIiJdVzHRqsAFXYvU6t3uG3j9YEIViHc1bLVZ0
-         xmGV58tfipuAmPW6p2t+DuGRAOG7tkEU5Qb5+9XUmjus9jZgLhdHz7IfuIC6Y86Lqsdf
-         Bl1r4bSO9g+1dm9xehEclH8k/9oVpuSpJS5mpVOuw5qvAJvkEcTWZnmDAzP7p/rRDxqG
-         i6lZZDHsR4hjFrH3O6DOSaO/MJzIt6gQAa/HgkYpXK6oJ2qcP4A0QKaEThwxiUwEspwy
-         IeasyHDjxpI1m/oCNWRrL2t1TNBBaEKzDzga5zP9tmXkf98N5lS1Uimpkgsu47CQ7zhb
-         RuPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7Fl8o9vqQHXkRhUTsCQTt0ZwmTbCavxp1lBY7KQiqEg=;
-        b=JqxBTg2/3UhJDpC+/KU2Ttrwwk8KBrIdcD0G/ryYaQUYJ15QfpaZpdFg5/9xFMjJGf
-         EVAYkezxPkrjFvlDE3FX4ufwZkBUonWMNU/uKD60BtrIOFnH/sLX3vXs3u3SRjad2mEl
-         fkFW/9ACMYI/ItQ6UMTtnnitIRb6WBnTu7bxaprCDiPTQNOnrqEb89OQwuHtWTqbFGaP
-         sUndpdwyF4p5vD4+/OArfb5NB6Ce7cWDizJP3upK/dtcRvt02LhRWBzzZwjOti8YvELA
-         KnctFInVO7Ob6JlE7+n/sFOKAOkvlp+6Iw3RZDucSmpJ23wnV1BPI5Ro1wZ8spudSSt5
-         UZoA==
-X-Gm-Message-State: AOAM531tE0Kty365NSI5hpDkp1ZrCSwPIB+SSW2uxNHiKtdiaTvsfquS
-        9z1uE0UfYa6CyO1Clf+BC+ZFdTrulbmcU7IpDR7iEA==
-X-Google-Smtp-Source: ABdhPJyZnQDpgfxwzi9pPMAY3OAG3r6SkU6RhijFLHdLaYzcXNiwHcp/YCCKUM0F9rdqDaQAia6Q9raCLSuhGql5zAU=
-X-Received: by 2002:a05:6000:154a:b0:20c:7e65:c79e with SMTP id
- 10-20020a056000154a00b0020c7e65c79emr19981471wry.582.1652210550757; Tue, 10
- May 2022 12:22:30 -0700 (PDT)
+        with ESMTP id S1349009AbiEJTXH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 15:23:07 -0400
+Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2121.outbound.protection.outlook.com [40.107.22.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1588266CB4
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 12:23:03 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GmuO+C/LqkkQ8iofVzGKPoEkz3mQ9gfc6AIk1gBpCoyNUJolzktKKq+w3E7Z67Cp3+xzqhvbJVUX4gcxzbewSRkm/4ql6fFb/AzJFcn1Am6K/xKbn4FPb5K+h3fFrZkIu8DhnXyUY1ypHanNhZzMfzwX37d60aQkfyZL+76FzXFcs5NaZjyWmn/p44sEAUPerMbzUx1hGbRDNdPYLQYJrJRZQN8gGHWAdSi87rywkRozo/nY0whfvuOQZ/zf1DbAG8j2CNy2KJ0GXryL8jnkaQYBFcTD8Iy8G9NVVHbBeLh5cH1GioDXqZZWv7UiHgoIumNHZ9x6gH5ipoQJOoN+qQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=tm+p153Qmw+fln4/6XfOITu5hlK0SYNypCehKcspdUo=;
+ b=eAzBHui1V49hvMbfeYgAQXlIDcEJwlx6DajMBBg/oVCMMNP+rNO+oE0CRh7AhJZT8IiJhAeAk/KubE1N3zwI+p+1OzIYhpRrpqJhfQnQFX2S6/fH9Srwc2aQiTwPh53KrYbzej0H4cWuo6C6X1RHX/yjn/7KeLPHVIP4Umx9ZSSBHgT127vyyvZDP0Bm6mOnCOk1gfJ3bQWCCvvvFw9ggbQnxcVH8kAmXEnVh+PRtRPWnd19kF57b6wg1JM3h2Lg3VCUNT/KuP4y1c9YslV6Jm+djoCUJWxdxdtNi1qKpwyps9/6R9I+Xs+z0z0CHqNXUhGMaey10cpOjqcMjs971w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=bang-olufsen.dk; dmarc=pass action=none
+ header.from=bang-olufsen.dk; dkim=pass header.d=bang-olufsen.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bang-olufsen.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tm+p153Qmw+fln4/6XfOITu5hlK0SYNypCehKcspdUo=;
+ b=Qs8LHwUZgC1X5Nkr4TgC8dGfbA7dnoAvDBtJHKqj/aoPvQoFnVEd9DC9Ogb19dFrtlx/e6jzz5vI+A2V/sMfngETFUWKOdHoEII1LZnXzjnxwrijSXeaX03cecVuwAutumtqRhUjqv2Pcw5IqzmzPhDgfwEJ/g2YnvxavIIiyOY=
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com (2603:10a6:20b:26::24)
+ by AM0PR0302MB3475.eurprd03.prod.outlook.com (2603:10a6:208:2::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
+ 2022 19:23:01 +0000
+Received: from AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::e5d4:b044:7949:db96]) by AM6PR03MB3943.eurprd03.prod.outlook.com
+ ([fe80::e5d4:b044:7949:db96%3]) with mapi id 15.20.5227.023; Tue, 10 May 2022
+ 19:23:01 +0000
+From:   =?utf-8?B?QWx2aW4gxaBpcHJhZ2E=?= <ALSI@bang-olufsen.dk>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Hauke Mehrtens <hauke@hauke-m.de>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "vivien.didelot@gmail.com" <vivien.didelot@gmail.com>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 4/4] net: dsa: realtek: rtl8365mb: Add SGMII and HSGMII
+ support
+Thread-Topic: [PATCH 4/4] net: dsa: realtek: rtl8365mb: Add SGMII and HSGMII
+ support
+Thread-Index: AQHYYy3myVmlByOXDkG6ZhLq4x50Ba0YYI4AgAAf0IA=
+Date:   Tue, 10 May 2022 19:23:01 +0000
+Message-ID: <20220510192301.5djdt3ghoavxulhl@bang-olufsen.dk>
+References: <20220508224848.2384723-1-hauke@hauke-m.de>
+ <20220508224848.2384723-5-hauke@hauke-m.de>
+ <20220510172910.kthpd7kokb2qk27l@skbuf>
+In-Reply-To: <20220510172910.kthpd7kokb2qk27l@skbuf>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=bang-olufsen.dk;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 734f8178-326e-4fe5-d48c-08da32ba7fca
+x-ms-traffictypediagnostic: AM0PR0302MB3475:EE_
+x-microsoft-antispam-prvs: <AM0PR0302MB3475D5862B9856E70BAB200D83C99@AM0PR0302MB3475.eurprd03.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: /SGuVZUnqwR6XOwKUFqF04BH8uTPpRLQqpEOJQsD7hldA+1hsq4T6jwdTqAvzDWI4XiEkkQ1ydLCkvg1h3KF9AuWJfmIL9+KSdq4NG53PochSn2BHvTSI5FWOljhA3WXhY6vJIZdpIM7MYd6clUkEcYn7Umt57mnk+WeIhze/hDuHk7Wvgg+zcfvsUJl/8lW+mMxt9sC7c9Dy+PKyIEs4WQFkMa04fK12FmvCbxx/oEXRmEFmxUweTIM3vXPij9HrfMIS5H7RwSuJGeFr4Rx5Uiyoka2OwoiSAjRKTKn5bGqbQ3woEFobHg9toeuMu13/xJcl2cygYR45NlUksMBfQVeaipvck2X3y8bejazZ/swdEWGczE2wjMccLLO5Xy4FNvez1W4n1rAALE84faDiKSjCPq5YWVN3MCWi0LbNTeDEHz/rU6dC2TVOryosHEcKf7quYbMzqMKV3+Tn/sIavaqd5D8+yDPxy3D/sgVUPgmURPX4UUehy195HfF3GPPyUXsFGlh4+RAcssK2KESCth/hwNwLztZef7mBPFHhTRSN2qN2eHsZTVpOcAg5/079V0wDZ2boUZOFZ/d8zxoKXaKlLdRrpG1/dvLaj0f6eTIi2QZyuQ53W6Rg0XPeTY+yP/m0Kg2jmX5G5sMAUSVWZJXp6lkj/kDv+pNK68IZPQC2RCZHXlYOrS3NRieCsGMAcatEwCoJXRasl8WTqmFFw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR03MB3943.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8976002)(66946007)(66556008)(54906003)(508600001)(76116006)(91956017)(6486002)(8936002)(86362001)(2616005)(26005)(5660300002)(6512007)(6506007)(64756008)(66446008)(38070700005)(38100700002)(6916009)(8676002)(66476007)(4326008)(316002)(122000001)(1076003)(85202003)(186003)(85182001)(36756003)(2906002)(71200400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?YUxwUWt6OE0xU2h0RGRKcTVJclJpaFJhNS9DMzZXUjlydzR4U3pFWDgrMlFF?=
+ =?utf-8?B?bmZTTnV1U2x5QXZWYkN0S25JTGhrVGpmYUVLV0tvWHZNN2ZrZWJDaTNiK0Jl?=
+ =?utf-8?B?c2ZEeFcrNnptOEljdTUvTk8yb2w3K1NIa1B4d3ZzNVJkZ0tMZklkMExjTGRB?=
+ =?utf-8?B?ZStiNEhaN3NSVVFvOTc1c2Ywck41bFhZM1l0OWgyR05WM2J6MERKa2pHTVpL?=
+ =?utf-8?B?N3RpWGRVTlVjT2w3bTE2SmV1ekhraXRHUHpmWTlSRGl5REJ3Yyt2OW5QSmxn?=
+ =?utf-8?B?RzZsOU5hZHlVVE5SVi9zdUpHQ1RyV1NzajJNMlEwOVpNUWNEK1l5cW9UaExY?=
+ =?utf-8?B?VUZ4amswQnlvbWM2cVM0OThpc0tOZ2l1dERveUoxY0xvb095TjFDQmZrZTcr?=
+ =?utf-8?B?YlREeHFLcUpEUWNrblZHaG4zTnhxWGF0d3Y4OCtTbFZCV0cyNFN6eWZKVkdO?=
+ =?utf-8?B?VmwxT3JBWlJrcFl2UU9MWVhDYXErM3EyT3hrY3ZPMEMyMWptK0NXQlNDV0Fj?=
+ =?utf-8?B?clIxa0c1Z3VXd1k0d1ZEOFBpTWxNWlRFR2NNVng3YzZNYUorTDJSbXEvTVgz?=
+ =?utf-8?B?aTREWFZhbDduYzhLSlA5cXA3ekJPb0Q2b2lIdmRKTFdxNkVhZ1M3b3lrYUZE?=
+ =?utf-8?B?NHVrb1VQdzRiOE84SndPb00wbWk3RTcreEF4UldMK3VZcjlpRlNMMGVBQWFV?=
+ =?utf-8?B?YXkxYXJ3SVFRclRPVFZIZkQrRW9FS3g3bnZZTHpxcjk3VXdreHorV2Z2a21R?=
+ =?utf-8?B?aUVJOFloRm1Fb2RLeFdDMmtWQ3NmVWM1anJBdzIvODZVTm5pL0ZZaW9JKy9V?=
+ =?utf-8?B?ZTVUNWYzbWpOUjdOM1M2SVdmUlc0VVEydy9ybE94QUdHUHZMRUMzblRKSUlm?=
+ =?utf-8?B?cUNlU2xBbUxDc3R5YStPdXBQeDlEUWFNbzlNVVZQdEpTWE5uNCtRVWFqZVZV?=
+ =?utf-8?B?MEZLbTBVTngwaC9HcDF5bGJDNDN2N0g1Wm1EYzA1a05lNG05OXB6L1FEb3N6?=
+ =?utf-8?B?UGNTelcxUUEvZG1uakY1Z1FrdXgvY1BXSzdiQXpuMTVIb0RSWFl2ais2R3Np?=
+ =?utf-8?B?ZGdHQklYb3U3eUEwRGFvcS9iWmgrSDBHM05ROFZNakEyZjV2VzVEV015VWoy?=
+ =?utf-8?B?Ky9IZlprLytRbkFlcWVIek05clp1QjJ1UlFwZHJ0UU01MlpHZ1J4UVpDNEdi?=
+ =?utf-8?B?TGdFTUsvQzYva1dwbU4zbmFzUWl1ZFNnZzlkLzJ6UmlXLzNyanZ3eEI0THdR?=
+ =?utf-8?B?N3JLZHJhTUp6dmE3Y0x2Q2dkV2QwMGNxR3cxOEpWYnlHWmFiRzBoSnV3OUxM?=
+ =?utf-8?B?bVJtMHR1YUdURkRIanhCNzVnRGUzdzUxZnVmWnNFVEZSd2pEcXZwU3kxdVNB?=
+ =?utf-8?B?WGJpV1FvbkNHSUJaMzdzMXlzYXRoMmJhMUF4TkhjT1lvdGJvODFoS2xZTkRD?=
+ =?utf-8?B?dTQwdDR0ejJlblBwbFBnaGQzazZSN3NqUlNmOEtNYlJzdXBVMjJncGtkSEM3?=
+ =?utf-8?B?cmN4YXAyQmYzMEZwdm1kTk4rb0U2d3JzdktESTJYa3dtcE4yWFZRUGI1ZzRZ?=
+ =?utf-8?B?TkU0RDJ3RFdDckgyZDdaMm1pakxuS0tiWGFObW53WFEwcnNHRzM0ZDdKSTlm?=
+ =?utf-8?B?VlF4Mm02ODQ5Vjl1WnZoYmlWeHNFMkloSm1EUGxlVksvczlzYkFHQ3BrL1lN?=
+ =?utf-8?B?K2RMSDBPQlZGbENqTWx3K0xoSjdrSXlhd2tlUGViUjY2VnBuNC9nV1I0WXFB?=
+ =?utf-8?B?WVZIaDl5bmxyelk3elY2TnhKaFM4ZzhPeVVrSlNzY2FwalRmL1RVYWtNRHNj?=
+ =?utf-8?B?QTB3ejRqcThLblhSSEI1aTBITXJ3dldXazliTUNZYmp5b2V4OW1Id1Y2Uzk0?=
+ =?utf-8?B?ZnNPR1ZXa0NKa0RCMmxtbGlzN21XVFFHRmxXU0o1aHBPRHVDZUtuSElQQmpF?=
+ =?utf-8?B?YzFRYlN2RkNuQmxYaUxBRDd5N0pDSHJqdzVvT2xlVHdJMjdFUFNZenN2bkpj?=
+ =?utf-8?B?RXZIbnBGNTFUUzBjcm9rYUtMY1pxcHd6blRranIwRFlLVEN0bE9GMUpNMVZu?=
+ =?utf-8?B?V1I4dmRRWHZmNVBoazhId0R2MTdwWjhhVlEwR2MrOG9YVDRjU2pRZHpINWU2?=
+ =?utf-8?B?elJuUStYRThsSW0zRFNoemNFT1dyMHhOcllWWG1jMWZrbGl3UHc3NWZEc01V?=
+ =?utf-8?B?QnZPMUwzcmw0UHRlYXZ3M2U0UGhlV21QSmpEeW45NGI2OUtXY2hXRTBMMXc0?=
+ =?utf-8?B?TjJBbmM1RWFIbG1XU2kvdWtXNkRSUE9LSWlmRmpkYU8wZlpiZXZMSE93MEhm?=
+ =?utf-8?B?cmxGNWdOTGdjTHdTZFZZRkNnNm15Z2JpRThpOHZsdERzbnljYXpMY0pYVnRy?=
+ =?utf-8?Q?Bqfvxh3Mzjf9bnw8=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7DF0BF50FC83EE45A5CA3F266699B8FC@eurprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220510001807.4132027-1-yosryahmed@google.com>
- <20220510001807.4132027-2-yosryahmed@google.com> <CAJD7tkYHGE1h2jJ7xT9CN7Bbf4+YJ86CoieAv_gmD+Ho=jNrcg@mail.gmail.com>
-In-Reply-To: <CAJD7tkYHGE1h2jJ7xT9CN7Bbf4+YJ86CoieAv_gmD+Ho=jNrcg@mail.gmail.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Tue, 10 May 2022 12:21:54 -0700
-Message-ID: <CAJD7tkYF8W_MaWuWJmy+g-aU=kGm5=BWyHtkV-0FmGJ7xqB=rg@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 1/9] bpf: introduce CGROUP_SUBSYS_RSTAT
- program type
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+X-OriginatorOrg: bang-olufsen.dk
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR03MB3943.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 734f8178-326e-4fe5-d48c-08da32ba7fca
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2022 19:23:01.5182
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 210d08b8-83f7-470a-bc96-381193ca14a1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OvqIIZ8Xe19r3sEk0Ly53KJ7JoBXXlRIQLoHmE39Z1QJGjBP7jRQv8n+FIskhYkGIYuaRT65KuGvKE14jVCK1w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR0302MB3475
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:07 AM Yosry Ahmed <yosryahmed@google.com> wrote:
->
-> On Mon, May 9, 2022 at 5:18 PM Yosry Ahmed <yosryahmed@google.com> wrote:
-> >
-> > This patch introduces a new bpf program type CGROUP_SUBSYS_RSTAT,
-> > with new corresponding link and attach types.
-> >
-> > The main purpose of these programs is to allow BPF programs to collect
-> > and maintain hierarchical cgroup stats easily and efficiently by making
-> > using of the rstat framework in the kernel.
-> >
-> > Those programs attach to a cgroup subsystem. They typically contain logic
-> > to aggregate per-cpu and per-cgroup stats collected by other BPF programs.
-> >
-> > Currently, only rstat flusher programs can be attached to cgroup
-> > subsystems, but this can be extended later if a use-case arises.
-> >
-> > See the selftest in the final patch for a practical example.
-> >
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > ---
-> >  include/linux/bpf-cgroup-subsys.h |  30 ++++++
-> >  include/linux/bpf_types.h         |   2 +
-> >  include/linux/cgroup-defs.h       |   4 +
-> >  include/uapi/linux/bpf.h          |  12 +++
-> >  kernel/bpf/Makefile               |   1 +
-> >  kernel/bpf/cgroup_subsys.c        | 166 ++++++++++++++++++++++++++++++
-> >  kernel/bpf/syscall.c              |   6 ++
-> >  kernel/cgroup/cgroup.c            |   1 +
-> >  tools/include/uapi/linux/bpf.h    |  12 +++
-> >  9 files changed, 234 insertions(+)
-> >  create mode 100644 include/linux/bpf-cgroup-subsys.h
-> >  create mode 100644 kernel/bpf/cgroup_subsys.c
-> >
-> > diff --git a/include/linux/bpf-cgroup-subsys.h b/include/linux/bpf-cgroup-subsys.h
-> > new file mode 100644
-> > index 000000000000..4dcde06b5599
-> > --- /dev/null
-> > +++ b/include/linux/bpf-cgroup-subsys.h
-> > @@ -0,0 +1,30 @@
-> > +/* SPDX-License-Identifier: GPL-2.0 */
-> > +/*
-> > + * Copyright 2022 Google LLC.
-> > + */
-> > +#ifndef _BPF_CGROUP_SUBSYS_H_
-> > +#define _BPF_CGROUP_SUBSYS_H_
-> > +
-> > +#include <linux/bpf.h>
-> > +
-> > +struct cgroup_subsys_bpf {
-> > +       /* Head of the list of BPF rstat flushers attached to this subsystem */
-> > +       struct list_head rstat_flushers;
-> > +       spinlock_t flushers_lock;
-> > +};
-> > +
-> > +struct bpf_subsys_rstat_flusher {
-> > +       struct bpf_prog *prog;
-> > +       /* List of BPF rtstat flushers, anchored at subsys->bpf */
-> > +       struct list_head list;
-> > +};
-> > +
-> > +struct bpf_cgroup_subsys_link {
-> > +       struct bpf_link link;
-> > +       struct cgroup_subsys *ss;
-> > +};
-> > +
-> > +int cgroup_subsys_bpf_link_attach(const union bpf_attr *attr,
-> > +                                 struct bpf_prog *prog);
-> > +
->
-> In the next version I will make sure everything here is also defined
-> for when CONFIG_BPF_SYSCALL is not set, and move the structs that can
-> be moved to the cc file there.
->
-> > +#endif  // _BPF_CGROUP_SUBSYS_H_
-> > diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
-> > index 3e24ad0c4b3c..854ee958b0e4 100644
-> > --- a/include/linux/bpf_types.h
-> > +++ b/include/linux/bpf_types.h
-> > @@ -56,6 +56,8 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SYSCTL, cg_sysctl,
-> >               struct bpf_sysctl, struct bpf_sysctl_kern)
-> >  BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SOCKOPT, cg_sockopt,
-> >               struct bpf_sockopt, struct bpf_sockopt_kern)
-> > +BPF_PROG_TYPE(BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT, cgroup_subsys_rstat,
-> > +             struct bpf_rstat_ctx, struct bpf_rstat_ctx)
-> >  #endif
-> >  #ifdef CONFIG_BPF_LIRC_MODE2
-> >  BPF_PROG_TYPE(BPF_PROG_TYPE_LIRC_MODE2, lirc_mode2,
-> > diff --git a/include/linux/cgroup-defs.h b/include/linux/cgroup-defs.h
-> > index 1bfcfb1af352..3bd6eed1fa13 100644
-> > --- a/include/linux/cgroup-defs.h
-> > +++ b/include/linux/cgroup-defs.h
-> > @@ -20,6 +20,7 @@
-> >  #include <linux/u64_stats_sync.h>
-> >  #include <linux/workqueue.h>
-> >  #include <linux/bpf-cgroup-defs.h>
-> > +#include <linux/bpf-cgroup-subsys.h>
-> >  #include <linux/psi_types.h>
-> >
-> >  #ifdef CONFIG_CGROUPS
-> > @@ -706,6 +707,9 @@ struct cgroup_subsys {
-> >          * specifies the mask of subsystems that this one depends on.
-> >          */
-> >         unsigned int depends_on;
-> > +
-> > +       /* used to store bpf programs.*/
-> > +       struct cgroup_subsys_bpf bpf;
-> >  };
-> >
-> >  extern struct percpu_rw_semaphore cgroup_threadgroup_rwsem;
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index d14b10b85e51..0f4855fa85db 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -952,6 +952,7 @@ enum bpf_prog_type {
-> >         BPF_PROG_TYPE_LSM,
-> >         BPF_PROG_TYPE_SK_LOOKUP,
-> >         BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
-> > +       BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT,
-> >  };
-> >
-> >  enum bpf_attach_type {
-> > @@ -998,6 +999,7 @@ enum bpf_attach_type {
-> >         BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
-> >         BPF_PERF_EVENT,
-> >         BPF_TRACE_KPROBE_MULTI,
-> > +       BPF_CGROUP_SUBSYS_RSTAT,
-> >         __MAX_BPF_ATTACH_TYPE
-> >  };
-> >
-> > @@ -1013,6 +1015,7 @@ enum bpf_link_type {
-> >         BPF_LINK_TYPE_XDP = 6,
-> >         BPF_LINK_TYPE_PERF_EVENT = 7,
-> >         BPF_LINK_TYPE_KPROBE_MULTI = 8,
-> > +       BPF_LINK_TYPE_CGROUP_SUBSYS = 9,
-> >
-> >         MAX_BPF_LINK_TYPE,
-> >  };
-> > @@ -1482,6 +1485,9 @@ union bpf_attr {
-> >                                  */
-> >                                 __u64           bpf_cookie;
-> >                         } perf_event;
-> > +                       struct {
-> > +                               __u64           name;
-> > +                       } cgroup_subsys;
-> >                         struct {
-> >                                 __u32           flags;
-> >                                 __u32           cnt;
-> > @@ -6324,6 +6330,12 @@ struct bpf_cgroup_dev_ctx {
-> >         __u32 minor;
-> >  };
-> >
-> > +struct bpf_rstat_ctx {
-> > +       __u64 cgroup_id;
-> > +       __u64 parent_cgroup_id; /* 0 if root */
-> > +       __s32 cpu;
-> > +};
-> > +
-> >  struct bpf_raw_tracepoint_args {
-> >         __u64 args[0];
-> >  };
-> > diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-> > index c1a9be6a4b9f..6caf4a61e543 100644
-> > --- a/kernel/bpf/Makefile
-> > +++ b/kernel/bpf/Makefile
-> > @@ -25,6 +25,7 @@ ifeq ($(CONFIG_PERF_EVENTS),y)
-> >  obj-$(CONFIG_BPF_SYSCALL) += stackmap.o
-> >  endif
-> >  obj-$(CONFIG_CGROUP_BPF) += cgroup.o
-> > +obj-$(CONFIG_CGROUP_BPF) += cgroup_subsys.o
->
-> In the next version I will replace this with:
-> ifeq ($(CONFIG_CGROUP),y)
-> obj-$(CONFIG_BPF_SYSCALL) += cgroup_subsys.o
-> endif
->
-> , as this program type doesn't attach to cgroups and does not depend
-> on CONFIG_CGROUP_BPF, only CONFIG_CGROUP and CONFIG_BPF_SYSCALL.
-
-On second thought it might be simpler and cleaner to leave this code
-under CONFIG_CGROUP_BPF.
-
->
-> >  ifeq ($(CONFIG_INET),y)
-> >  obj-$(CONFIG_BPF_SYSCALL) += reuseport_array.o
-> >  endif
-> > diff --git a/kernel/bpf/cgroup_subsys.c b/kernel/bpf/cgroup_subsys.c
-> > new file mode 100644
-> > index 000000000000..9673ce6aa84a
-> > --- /dev/null
-> > +++ b/kernel/bpf/cgroup_subsys.c
-> > @@ -0,0 +1,166 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Functions to manage eBPF programs attached to cgroup subsystems
-> > + *
-> > + * Copyright 2022 Google LLC.
-> > + */
-> > +
-> > +#include <linux/bpf-cgroup-subsys.h>
-> > +#include <linux/filter.h>
-> > +
-> > +#include "../cgroup/cgroup-internal.h"
-> > +
-> > +
-> > +static int cgroup_subsys_bpf_attach(struct cgroup_subsys *ss, struct bpf_prog *prog)
-> > +{
-> > +       struct bpf_subsys_rstat_flusher *rstat_flusher;
-> > +
-> > +       rstat_flusher = kmalloc(sizeof(*rstat_flusher), GFP_KERNEL);
-> > +       if (!rstat_flusher)
-> > +               return -ENOMEM;
-> > +       rstat_flusher->prog = prog;
-> > +
-> > +       spin_lock(&ss->bpf.flushers_lock);
-> > +       list_add(&rstat_flusher->list, &ss->bpf.rstat_flushers);
-> > +       spin_unlock(&ss->bpf.flushers_lock);
-> > +
-> > +       return 0;
-> > +}
-> > +
-> > +static void cgroup_subsys_bpf_detach(struct cgroup_subsys *ss, struct bpf_prog *prog)
-> > +{
-> > +       struct bpf_subsys_rstat_flusher *rstat_flusher = NULL;
-> > +
-> > +       spin_lock(&ss->bpf.flushers_lock);
-> > +       list_for_each_entry(rstat_flusher, &ss->bpf.rstat_flushers, list)
-> > +               if (rstat_flusher->prog == prog)
-> > +                       break;
-> > +
-> > +       if (rstat_flusher) {
-> > +               list_del(&rstat_flusher->list);
-> > +               bpf_prog_put(rstat_flusher->prog);
-> > +               kfree(rstat_flusher);
-> > +       }
-> > +       spin_unlock(&ss->bpf.flushers_lock);
-> > +}
-> > +
-> > +static void bpf_cgroup_subsys_link_release(struct bpf_link *link)
-> > +{
-> > +       struct bpf_cgroup_subsys_link *ss_link = container_of(link,
-> > +                                                      struct bpf_cgroup_subsys_link,
-> > +                                                      link);
-> > +       if (ss_link->ss) {
-> > +               cgroup_subsys_bpf_detach(ss_link->ss, ss_link->link.prog);
-> > +               ss_link->ss = NULL;
-> > +       }
-> > +}
-> > +
-> > +static int bpf_cgroup_subsys_link_detach(struct bpf_link *link)
-> > +{
-> > +       bpf_cgroup_subsys_link_release(link);
-> > +       return 0;
-> > +}
-> > +
-> > +static void bpf_cgroup_subsys_link_dealloc(struct bpf_link *link)
-> > +{
-> > +       struct bpf_cgroup_subsys_link *ss_link = container_of(link,
-> > +                                                      struct bpf_cgroup_subsys_link,
-> > +                                                      link);
-> > +       kfree(ss_link);
-> > +}
-> > +
-> > +static const struct bpf_link_ops bpf_cgroup_subsys_link_lops = {
-> > +       .detach = bpf_cgroup_subsys_link_detach,
-> > +       .release = bpf_cgroup_subsys_link_release,
-> > +       .dealloc = bpf_cgroup_subsys_link_dealloc,
-> > +};
-> > +
-> > +int cgroup_subsys_bpf_link_attach(const union bpf_attr *attr,
-> > +                                 struct bpf_prog *prog)
-> > +{
-> > +       struct bpf_link_primer link_primer;
-> > +       struct bpf_cgroup_subsys_link *link;
-> > +       struct cgroup_subsys *ss, *attach_ss = NULL;
-> > +       const char __user *ss_name_user;
-> > +       char ss_name[MAX_CGROUP_TYPE_NAMELEN];
-> > +       int ssid, err;
-> > +
-> > +       if (attr->link_create.target_fd || attr->link_create.flags)
-> > +               return -EINVAL;
-> > +
-> > +       ss_name_user = u64_to_user_ptr(attr->link_create.cgroup_subsys.name);
-> > +       if (strncpy_from_user(ss_name, ss_name_user, sizeof(ss_name) - 1) < 0)
-> > +               return -EFAULT;
-> > +
-> > +       for_each_subsys(ss, ssid)
-> > +               if (!strcmp(ss_name, ss->name) ||
-> > +                   !strcmp(ss_name, ss->legacy_name))
-> > +                       attach_ss = ss;
-> > +
-> > +       if (!attach_ss)
-> > +               return -EINVAL;
-> > +
-> > +       link = kzalloc(sizeof(*link), GFP_USER);
-> > +       if (!link)
-> > +               return -ENOMEM;
-> > +
-> > +       bpf_link_init(&link->link, BPF_LINK_TYPE_CGROUP_SUBSYS,
-> > +                     &bpf_cgroup_subsys_link_lops,
-> > +                     prog);
-> > +       link->ss = attach_ss;
-> > +
-> > +       err = bpf_link_prime(&link->link, &link_primer);
-> > +       if (err) {
-> > +               kfree(link);
-> > +               return err;
-> > +       }
-> > +
-> > +       err = cgroup_subsys_bpf_attach(attach_ss, prog);
-> > +       if (err) {
-> > +               bpf_link_cleanup(&link_primer);
-> > +               return err;
-> > +       }
-> > +
-> > +       return bpf_link_settle(&link_primer);
-> > +}
-> > +
-> > +static const struct bpf_func_proto *
-> > +cgroup_subsys_rstat_func_proto(enum bpf_func_id func_id,
-> > +                              const struct bpf_prog *prog)
-> > +{
-> > +       return bpf_base_func_proto(func_id);
-> > +}
-> > +
-> > +static bool cgroup_subsys_rstat_is_valid_access(int off, int size,
-> > +                                          enum bpf_access_type type,
-> > +                                          const struct bpf_prog *prog,
-> > +                                          struct bpf_insn_access_aux *info)
-> > +{
-> > +       if (type == BPF_WRITE)
-> > +               return false;
-> > +
-> > +       if (off < 0 || off + size > sizeof(struct bpf_rstat_ctx))
-> > +               return false;
-> > +       /* The verifier guarantees that size > 0 */
-> > +       if (off % size != 0)
-> > +               return false;
-> > +
-> > +       switch (off) {
-> > +       case offsetof(struct bpf_rstat_ctx, cgroup_id):
-> > +               return size == sizeof(__u64);
-> > +       case offsetof(struct bpf_rstat_ctx, parent_cgroup_id):
-> > +               return size == sizeof(__u64);
-> > +       case offsetof(struct bpf_rstat_ctx, cpu):
-> > +               return size == sizeof(__s32);
-> > +       default:
-> > +               return false;
-> > +       }
-> > +}
-> > +
-> > +const struct bpf_prog_ops cgroup_subsys_rstat_prog_ops = {
-> > +};
-> > +
-> > +const struct bpf_verifier_ops cgroup_subsys_rstat_verifier_ops = {
-> > +       .get_func_proto         = cgroup_subsys_rstat_func_proto,
-> > +       .is_valid_access        = cgroup_subsys_rstat_is_valid_access,
-> > +};
-> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > index cdaa1152436a..48149c54d969 100644
-> > --- a/kernel/bpf/syscall.c
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -3,6 +3,7 @@
-> >   */
-> >  #include <linux/bpf.h>
-> >  #include <linux/bpf-cgroup.h>
-> > +#include <linux/bpf-cgroup-subsys.h>
-> >  #include <linux/bpf_trace.h>
-> >  #include <linux/bpf_lirc.h>
-> >  #include <linux/bpf_verifier.h>
-> > @@ -3194,6 +3195,8 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
-> >                 return BPF_PROG_TYPE_SK_LOOKUP;
-> >         case BPF_XDP:
-> >                 return BPF_PROG_TYPE_XDP;
-> > +       case BPF_CGROUP_SUBSYS_RSTAT:
-> > +               return BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT;
-> >         default:
-> >                 return BPF_PROG_TYPE_UNSPEC;
-> >         }
-> > @@ -4341,6 +4344,9 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
-> >                 else
-> >                         ret = bpf_kprobe_multi_link_attach(attr, prog);
-> >                 break;
-> > +       case BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT:
-> > +               ret = cgroup_subsys_bpf_link_attach(attr, prog);
-> > +               break;
-> >         default:
-> >                 ret = -EINVAL;
-> >         }
-> > diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-> > index adb820e98f24..7b1448013009 100644
-> > --- a/kernel/cgroup/cgroup.c
-> > +++ b/kernel/cgroup/cgroup.c
-> > @@ -5745,6 +5745,7 @@ static void __init cgroup_init_subsys(struct cgroup_subsys *ss, bool early)
-> >
-> >         idr_init(&ss->css_idr);
-> >         INIT_LIST_HEAD(&ss->cfts);
-> > +       INIT_LIST_HEAD(&ss->bpf.rstat_flushers);
-> >
-> >         /* Create the root cgroup state for this subsystem */
-> >         ss->root = &cgrp_dfl_root;
-> > diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-> > index d14b10b85e51..0f4855fa85db 100644
-> > --- a/tools/include/uapi/linux/bpf.h
-> > +++ b/tools/include/uapi/linux/bpf.h
-> > @@ -952,6 +952,7 @@ enum bpf_prog_type {
-> >         BPF_PROG_TYPE_LSM,
-> >         BPF_PROG_TYPE_SK_LOOKUP,
-> >         BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
-> > +       BPF_PROG_TYPE_CGROUP_SUBSYS_RSTAT,
-> >  };
-> >
-> >  enum bpf_attach_type {
-> > @@ -998,6 +999,7 @@ enum bpf_attach_type {
-> >         BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
-> >         BPF_PERF_EVENT,
-> >         BPF_TRACE_KPROBE_MULTI,
-> > +       BPF_CGROUP_SUBSYS_RSTAT,
-> >         __MAX_BPF_ATTACH_TYPE
-> >  };
-> >
-> > @@ -1013,6 +1015,7 @@ enum bpf_link_type {
-> >         BPF_LINK_TYPE_XDP = 6,
-> >         BPF_LINK_TYPE_PERF_EVENT = 7,
-> >         BPF_LINK_TYPE_KPROBE_MULTI = 8,
-> > +       BPF_LINK_TYPE_CGROUP_SUBSYS = 9,
-> >
-> >         MAX_BPF_LINK_TYPE,
-> >  };
-> > @@ -1482,6 +1485,9 @@ union bpf_attr {
-> >                                  */
-> >                                 __u64           bpf_cookie;
-> >                         } perf_event;
-> > +                       struct {
-> > +                               __u64           name;
-> > +                       } cgroup_subsys;
-> >                         struct {
-> >                                 __u32           flags;
-> >                                 __u32           cnt;
-> > @@ -6324,6 +6330,12 @@ struct bpf_cgroup_dev_ctx {
-> >         __u32 minor;
-> >  };
-> >
-> > +struct bpf_rstat_ctx {
-> > +       __u64 cgroup_id;
-> > +       __u64 parent_cgroup_id; /* 0 if root */
-> > +       __s32 cpu;
-> > +};
-> > +
-> >  struct bpf_raw_tracepoint_args {
-> >         __u64 args[0];
-> >  };
-> > --
-> > 2.36.0.512.ge40c2bad7a-goog
-> >
+T24gVHVlLCBNYXkgMTAsIDIwMjIgYXQgMDg6Mjk6MTBQTSArMDMwMCwgVmxhZGltaXIgT2x0ZWFu
+IHdyb3RlOg0KPiBPbiBNb24sIE1heSAwOSwgMjAyMiBhdCAxMjo0ODo0OEFNICswMjAwLCBIYXVr
+ZSBNZWhydGVucyB3cm90ZToNCj4gPiBAQCAtOTgzLDE0ICsxMjk1LDI1IEBAIHN0YXRpYyBib29s
+IHJ0bDgzNjVtYl9waHlfbW9kZV9zdXBwb3J0ZWQoc3RydWN0IGRzYV9zd2l0Y2ggKmRzLCBpbnQg
+cG9ydCwNCj4gPiAgc3RhdGljIHZvaWQgcnRsODM2NW1iX3BoeWxpbmtfZ2V0X2NhcHMoc3RydWN0
+IGRzYV9zd2l0Y2ggKmRzLCBpbnQgcG9ydCwNCj4gPiAgCQkJCSAgICAgICBzdHJ1Y3QgcGh5bGlu
+a19jb25maWcgKmNvbmZpZykNCj4gPiAgew0KPiA+IC0JaWYgKGRzYV9pc191c2VyX3BvcnQoZHMs
+IHBvcnQpKQ0KPiA+ICsJaW50IGV4dF9pbnQgPSBydGw4MzY1bWJfZXh0aW50X3BvcnRfbWFwW3Bv
+cnRdOw0KPiA+ICsNCj4gPiArCWNvbmZpZy0+bWFjX2NhcGFiaWxpdGllcyA9IE1BQ19TWU1fUEFV
+U0UgfCBNQUNfQVNZTV9QQVVTRSB8DQo+ID4gKwkJCQkgICBNQUNfMTAgfCBNQUNfMTAwIHwgTUFD
+XzEwMDBGRDsNCj4gPiArDQo+ID4gKwlpZiAoZHNhX2lzX3VzZXJfcG9ydChkcywgcG9ydCkpIHsN
+Cj4gPiAgCQlfX3NldF9iaXQoUEhZX0lOVEVSRkFDRV9NT0RFX0lOVEVSTkFMLA0KPiA+ICAJCQkg
+IGNvbmZpZy0+c3VwcG9ydGVkX2ludGVyZmFjZXMpOw0KPiA+IC0JZWxzZSBpZiAoZHNhX2lzX2Nw
+dV9wb3J0KGRzLCBwb3J0KSkNCj4gPiArCX0gZWxzZSBpZiAoZHNhX2lzX2NwdV9wb3J0KGRzLCBw
+b3J0KSkgew0KPiANCj4gV2hhdCBkb2VzIHRoZSBxdWFsaXR5IG9mIGJlaW5nIGEgdXNlciBwb3J0
+IG9yIGEgQ1BVIHBvcnQgaGF2ZSB0byBkbyB3aXRoDQo+IHdoaWNoIGludGVyZmFjZXMgYXJlIHN1
+cHBvcnRlZD8NCg0KUmlnaHQsIEkgdGhpbmsgdGhpcyBmdW5jdGlvbiB3YXMgYWN0dWFsbHkgYnJv
+a2VuIGFscmVhZHkgaW4gYSBmZXcgd2F5cy4gVGhlDQpzd2l0Y2ggd2lsbCBoYXZlIHBvcnRzIHdp
+dGggaW50ZWdyYXRlZCBQSFlzLCBhbmQgcG9ydHMgd2l0aCBleHRlbnNpb24gaW50ZXJmYWNlcw0K
+bGlrZSBSR01JSSBvciBTR01JSSBldGMuIEJ1dCB3aGljaCBvZiB0aG9zZSBwb3J0cyBvbmUgdXNl
+cyBhcyBhIENQVSBwb3J0LCB1c2VyDQpwb3J0LCBvciAob25lIGRheSkgRFNBIHBvcnQsIGlzIG9m
+IG5vIGNvbmNlcm4gdG8gdGhlIHN3aXRjaC4gVGhlIHN1cHBvcnRlZA0KaW50ZXJmYWNlIG9mIGEg
+Z2l2ZW4gcG9ydCBpcyBhIHN0YXRpYyBwcm9wZXJ0eSBhbmQgc2ltcGx5IGEgZnVuY3Rpb24gb2Yg
+dGhlIHBvcnQNCm51bWJlciBhbmQgc3dpdGNoIG1vZGVsLiBBbGwgc3dpdGNoIG1vZGVscyBpbiB0
+aGUgZmFtaWx5IGhhdmUgYmV0d2VlbiAxIGFuZCAyDQpwb3J0cyB3aXRoIGFuIGV4dGVuc2lvbiBp
+bnRlcmZhY2UuDQoNCkx1aXogaW50cm9kdWNlZCB0aGlzIG1hcDoNCg0KLyogdmFsaWQgZm9yIGFs
+bCA2LXBvcnQgb3IgbGVzcyB2YXJpYW50cyAqLw0Kc3RhdGljIGNvbnN0IGludCBydGw4MzY1bWJf
+ZXh0aW50X3BvcnRfbWFwW10gID0geyAtMSwgLTEsIC0xLCAtMSwgLTEsIC0xLCAxLCAyLCAtMSwg
+LTF9Ow0KDQouLi4gd2hpY2ggSSB0aGluayBpcyBhY3R1YWxseSB3aGF0IHdlIG91Z2h0IHRvIHRl
+c3Qgb24uIEl0IGNhbiBiZSBpbXByb3ZlZCwgYnV0DQpjdXJyZW50bHkgaXQgaXMgY29ycmVjdCBm
+b3IgYWxsIHN1cHBvcnRlZCBtb2RlbHMuDQoNClNvIHNvbWV0aGluZyBsaWtlIHRoaXMgd291bGQg
+YmUgY29ycmVjdDoNCg0Kc3RhdGljIHZvaWQgcnRsODM2NW1iX3BoeWxpbmtfZ2V0X2NhcHMoc3Ry
+dWN0IGRzYV9zd2l0Y2ggKmRzLCBpbnQgcG9ydCwNCgkJCQkgICAgICAgc3RydWN0IHBoeWxpbmtf
+Y29uZmlnICpjb25maWcpDQp7DQoJaW50IGV4dF9pbnQgPSBydGw4MzY1bWJfZXh0aW50X3BvcnRf
+bWFwW3BvcnRdOw0KCWlmIChleHRfaW50ID09IC0xKSB7DQoJCS8qIGludGVncmF0ZWQgUEhZLCBz
+ZXQgUEhZX0lOVEVSRkFDRV9NT0RFX0lOVEVSTkFMIGV0Yy4gKi8NCgl9IGVsc2Ugew0KCQkvKiBl
+eHRlbnNpb24gaW50ZXJmYWNlIGF2YWlsYWJsZSwgYnV0IGhlcmUgb25lIHNob3VsZCByZWFsbHkN
+CgkJICogY2hlY2sgdGhlIG1vZGVsIGJhc2VkIG9uIHRoZSBjaGlwIElEL3ZlcnNpb24sIGJlY2F1
+c2UgaXQNCgkJICogdmFyaWVzIGEgbG90DQoJCSAqLw0KCQlpZiAobW9kZWwgPT0gUlRMODM2NU1C
+ICYmIGV4dF9pbnQgPT0gMSkNCgkJCS8qIFJHTUlJICovDQoJCWVsc2UgaWYgKG1vZGVsID09IFJU
+TDgzNjdTICYmIGV4dF9pbnQgPT0gMSkNCgkJCS8qIFNHTUlJIC8gSFNHTUlJICovDQoJCWVsc2Ug
+aWYgKG1vZGVsID09IFJUTDgzNjdTICYmIGV4dF9pbnQgPT0gMikNCgkJCS8qIFJHTUlJICovDQoJ
+CS8qIGV0YyAqLw0KCX0NCg0KCS8qIC4uLiAqLw0KfQ0KDQpUaGVyZSBhcmUgb2YgY291cnNlIHZh
+cmlvdXMgd2F5cyB0byBkbyB0aGlzLg0KDQpIYXVrZSwgZG8geW91IGZvbGxvdyB3aGF0IEkgbWVh
+bj8gIFdvdWxkIHlvdSBsaWtlIG1lIHRvIHByZXBhcmUgYSBwYXRjaCBmb3IgdGhlDQpjdXJyZW50
+IHN1cHBvcnRlZCBtb2RlbHMvaW50ZXJmYWNlcyBhbmQgdGhlbiB5b3UgY2FuIHJlYmFzZSB5b3Vy
+IGNoYW5nZXMgb24gdG9wDQpvZiB0aGF0IHRvIGluZGljYXRlIHN1cHBvcnQgZm9yIChIKVNHTUlJ
+PyBPciBkbyB5b3Ugd2FudCB0byBnaXZlIGl0IGEgdHJ5DQp5b3Vyc2VsZj8NCg0KS2luZCByZWdh
+cmRzLA0KQWx2aW4NCiAgICANCg0KPiANCj4gPiArCQlpZiAoZXh0X2ludCA9PSAxKSB7DQo+ID4g
+KwkJCV9fc2V0X2JpdChQSFlfSU5URVJGQUNFX01PREVfU0dNSUksDQo+ID4gKwkJCQkgIGNvbmZp
+Zy0+c3VwcG9ydGVkX2ludGVyZmFjZXMpOw0KPiA+ICsJCQlfX3NldF9iaXQoUEhZX0lOVEVSRkFD
+RV9NT0RFXzI1MDBCQVNFWCwNCj4gPiArCQkJCSAgY29uZmlnLT5zdXBwb3J0ZWRfaW50ZXJmYWNl
+cyk7DQo+ID4gKwkJCWNvbmZpZy0+bWFjX2NhcGFiaWxpdGllcyB8PSBNQUNfMjUwMEZEOw0KPiA+
+ICsJCX0NCj4gPiAgCQlwaHlfaW50ZXJmYWNlX3NldF9yZ21paShjb25maWctPnN1cHBvcnRlZF9p
+bnRlcmZhY2VzKTsNCj4gPiArCX0NCj4gPiAgDQo+ID4gLQljb25maWctPm1hY19jYXBhYmlsaXRp
+ZXMgPSBNQUNfU1lNX1BBVVNFIHwgTUFDX0FTWU1fUEFVU0UgfA0KPiA+IC0JCQkJICAgTUFDXzEw
+IHwgTUFDXzEwMCB8IE1BQ18xMDAwRkQ7DQo+ID4gIH0NCj4gPiAgDQo+ID4gIHN0YXRpYyB2b2lk
+IHJ0bDgzNjVtYl9waHlsaW5rX21hY19jb25maWcoc3RydWN0IGRzYV9zd2l0Y2ggKmRzLCBpbnQg
+cG9ydCw=
