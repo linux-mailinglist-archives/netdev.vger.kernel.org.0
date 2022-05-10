@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C050E521FB5
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:48:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3CAD3521FDC
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:48:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346467AbiEJPw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 11:52:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33172 "EHLO
+        id S1346600AbiEJPwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 11:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346648AbiEJPvQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:51:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 561AB28D4E1;
+        with ESMTP id S1346634AbiEJPvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:51:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 564A028D4EC;
         Tue, 10 May 2022 08:45:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7CFFB81D0D;
-        Tue, 10 May 2022 15:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC4ADC385A6;
-        Tue, 10 May 2022 15:45:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B3CBF614A1;
+        Tue, 10 May 2022 15:45:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06A32C385C2;
+        Tue, 10 May 2022 15:45:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197527;
-        bh=4IYxJ6CPgg/V9tO8g9viSi66zx65sRyQ0HAkWF2gGN8=;
+        s=k20201202; t=1652197529;
+        bh=DMfk2C4x4pFjrWAncW3ibnLRZMa9P+J5sL+rXn/mBoE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tkdMGS3kK23l3eKlkgcFK3RRl7VxntRFPo4d2WQyW2ujBmu2d77huBqVXRNUQgCxo
-         hHJ1juGFNw/htyeopIpickvxrNaAcPXmX8swfXSDx43CEHVAvbY4HZvMZga4ejqhEW
-         iuq2SUq0/7AA8eR58altCpc8nzAakMy1F50TMX0vVwCAZA0isxbwE8/0HGZAtdAg5m
-         XfUZu89DnRNmeS8UWjckztW/KYl7efOdA+D6McqOSoDqRkjahpBt5CC8DHW9OUHi7A
-         wmpKYi5moQshWFTuk9RiJil5MgOhuKhv/efq1CxWw83QR+7+GERw0DypV3A5FsOozn
-         xxamTQCoKP4SA==
+        b=q2WEctxwiWioh6cSG/2GvGZxD/f/OkV9hlYMmsT5yj0GYHEg0Ew4AMx14FMELH0Im
+         ZdIumHDF5nUAfvDEGentGm20dpL6UddSkxyxsDf2RjmQoWa/v1SEH4ZqbzMXNP6wgk
+         OQaWcJK7T7/ZNOM4kXMxn8kHZ1X4jTHa6CfKWwUiJWCAWP+JasSsr90DiqMtN03i8p
+         3moDYCzyupCsAxNIsqaU6AKIqyeEGueFyxJtzRPPXmF4DtnBdr1NiNsfooug2i1Ll/
+         vGNqq1COryzyhuA17owavrp6TKH2Bnqjt9QcQsvysBJXnMd6g9U2K73YZBo9JPbANb
+         AZX+nIX6InZuA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shravya Kumbham <shravya.kumbham@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, michal.simek@xilinx.com,
-        yuehaibing@huawei.com, arnd@arndb.de, trix@redhat.com,
-        linmq006@gmail.com, prabhakar.mahadev-lad.rj@bp.renesas.com,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 6/9] net: emaclite: Don't advertise 1000BASE-T and do auto negotiation
-Date:   Tue, 10 May 2022 11:45:09 -0400
-Message-Id: <20220510154512.153945-6-sashal@kernel.org>
+Cc:     Matthew Hagan <mnhagan88@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        hkallweit1@gmail.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 7/9] net: sfp: Add tx-fault workaround for Huawei MA5671A SFP ONT
+Date:   Tue, 10 May 2022 11:45:10 -0400
+Message-Id: <20220510154512.153945-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510154512.153945-1-sashal@kernel.org>
 References: <20220510154512.153945-1-sashal@kernel.org>
@@ -61,60 +58,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shravya Kumbham <shravya.kumbham@xilinx.com>
+From: Matthew Hagan <mnhagan88@gmail.com>
 
-[ Upstream commit b800528b97d0adc3a5ba42d78a8b0d3f07a31f44 ]
+[ Upstream commit 2069624dac19d62c558bb6468fe03678553ab01d ]
 
-In xemaclite_open() function we are setting the max speed of
-emaclite to 100Mb using phy_set_max_speed() function so,
-there is no need to write the advertising registers to stop
-giga-bit speed and the phy_start() function starts the
-auto-negotiation so, there is no need to handle it separately
-using advertising registers. Remove the phy_read and phy_write
-of advertising registers in xemaclite_open() function.
+As noted elsewhere, various GPON SFP modules exhibit non-standard
+TX-fault behaviour. In the tested case, the Huawei MA5671A, when used
+in combination with a Marvell mv88e6085 switch, was found to
+persistently assert TX-fault, resulting in the module being disabled.
 
-Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+This patch adds a quirk to ignore the SFP_F_TX_FAULT state, allowing the
+module to function.
+
+Change from v1: removal of erroneous return statment (Andrew Lunn)
+
+Signed-off-by: Matthew Hagan <mnhagan88@gmail.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Link: https://lore.kernel.org/r/20220502223315.1973376-1-mnhagan88@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_emaclite.c | 15 ---------------
- 1 file changed, 15 deletions(-)
+ drivers/net/phy/sfp.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-index 4bd44fbc6ecf..cc0335fceec5 100644
---- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
-@@ -923,8 +923,6 @@ static int xemaclite_open(struct net_device *dev)
- 	xemaclite_disable_interrupts(lp);
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index efffa65f8214..96068e0d841a 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -249,6 +249,7 @@ struct sfp {
+ 	struct sfp_eeprom_id id;
+ 	unsigned int module_power_mW;
+ 	unsigned int module_t_start_up;
++	bool tx_fault_ignore;
  
- 	if (lp->phy_node) {
--		u32 bmcr;
--
- 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
- 					     xemaclite_adjust_link, 0,
- 					     PHY_INTERFACE_MODE_MII);
-@@ -935,19 +933,6 @@ static int xemaclite_open(struct net_device *dev)
+ #if IS_ENABLED(CONFIG_HWMON)
+ 	struct sfp_diag diag;
+@@ -1893,6 +1894,12 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+ 	else
+ 		sfp->module_t_start_up = T_START_UP;
  
- 		/* EmacLite doesn't support giga-bit speeds */
- 		phy_set_max_speed(lp->phy_dev, SPEED_100);
--
--		/* Don't advertise 1000BASE-T Full/Half duplex speeds */
--		phy_write(lp->phy_dev, MII_CTRL1000, 0);
--
--		/* Advertise only 10 and 100mbps full/half duplex speeds */
--		phy_write(lp->phy_dev, MII_ADVERTISE, ADVERTISE_ALL |
--			  ADVERTISE_CSMA);
--
--		/* Restart auto negotiation */
--		bmcr = phy_read(lp->phy_dev, MII_BMCR);
--		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
--		phy_write(lp->phy_dev, MII_BMCR, bmcr);
--
- 		phy_start(lp->phy_dev);
- 	}
++	if (!memcmp(id.base.vendor_name, "HUAWEI          ", 16) &&
++	    !memcmp(id.base.vendor_pn, "MA5671A         ", 16))
++		sfp->tx_fault_ignore = true;
++	else
++		sfp->tx_fault_ignore = false;
++
+ 	return 0;
+ }
  
+@@ -2320,7 +2327,10 @@ static void sfp_check_state(struct sfp *sfp)
+ 	mutex_lock(&sfp->st_mutex);
+ 	state = sfp_get_state(sfp);
+ 	changed = state ^ sfp->state;
+-	changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
++	if (sfp->tx_fault_ignore)
++		changed &= SFP_F_PRESENT | SFP_F_LOS;
++	else
++		changed &= SFP_F_PRESENT | SFP_F_LOS | SFP_F_TX_FAULT;
+ 
+ 	for (i = 0; i < GPIO_MAX; i++)
+ 		if (changed & BIT(i))
 -- 
 2.35.1
 
