@@ -2,75 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAF0A5221C9
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 18:52:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65E455221F3
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 19:08:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347702AbiEJQ4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 12:56:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54142 "EHLO
+        id S238571AbiEJRLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 13:11:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347708AbiEJQ4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 12:56:35 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12EBB27D004;
-        Tue, 10 May 2022 09:52:38 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id gh6so34243176ejb.0;
-        Tue, 10 May 2022 09:52:37 -0700 (PDT)
+        with ESMTP id S1347776AbiEJRLw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 13:11:52 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB7B456F9F;
+        Tue, 10 May 2022 10:07:51 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id k14so15167021pga.0;
+        Tue, 10 May 2022 10:07:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=9xQwPtQrBfYT0IuemJx5F5so+crXxKK0HLvlBxjKC0s=;
-        b=Okxteym8CaF/RHkBfO6Cp/WIgRcGbMBTJWIdNmMU19vXsWaAS8Z9L5ircpFp6VDy1S
-         u10DkF0PLDeKl0gv5ijUtxkdcF6bG192cWFecvN8MBUJG7Gf6mTiy5C5HhKL4yKu+y7C
-         fuY6AdEp9N1XEYZGCa4lJVnIb7TNode2Iu5C1xlRmg0nS7mbu3qxTeimBa81215XyjFo
-         QElNUXkGIvL4YkC8lKNY8VCKfeTD0cAqUcjHZxtS/9ZzoiyeCWdvf6MDRaohKXFJocJ4
-         hgsSm0nftb8Eh1JEkwsZlH1sB4qIgwF0i7eJAzKg0c4C7PNz0ybEYElL1dvCdzxHrOvq
-         D4Aw==
+        bh=zIype/cZZggoKMv2+Lp7+DJjIFxw0T4PQlIuMMh3aP0=;
+        b=kxpggMHoWYtfA37VEsMzGIqcU6HAujHR5psBfheDgHM5/JT0d4AdbZv+GErs59j765
+         nmNb5lk23+vBh4y5oXfPLR9tFg1KVyy9Br0s91wVBywjmDlLSl7hOo8gp/DHrCEipUc9
+         N1cfWdxScyAwzO/wcU/kCU8hdhvM7XIVzk/9UgtcMxXV2z4w5OVXH8BFC0B86S5zxs+D
+         CJVHThtd1R404ht5cWguikMCNkmHfULFeWClFeiIHwWWAYGfq6IrfHnL+C8r3fZY2Sth
+         0kRIYgXsCLCOUKUPEONFnpdd7LZcrVxid45D0+z48k6WM/FodHywcg/+EGhItPw2gT1X
+         f08A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=9xQwPtQrBfYT0IuemJx5F5so+crXxKK0HLvlBxjKC0s=;
-        b=rJtN0WqRo/Rj5T1Nka5GFZ4sNedW6en3vj1uqMFa+Lqf23/PelyMjINSkfzhwE589Y
-         FZKgmeL8kFjSHZmgw9tZO5r/fjEaCdvOYuT9hOLv1jaBKqb/FyNB2zfgehxCdsxE1apj
-         MFXbTBBkzRcr2vGz9nWxfTgxwOn/E4gQEoAhg1tPj++X6WQVGp5Rl0/zOFgriRC8AAMD
-         7sgt6RbhEzRtFY9KTY+e0aS+dlICtbkuHLDDet3uQh3iD+KCxRxCpW2JWCLH6Zl+vYqe
-         vyb6uebQdYFoFHVoCsYhtIdPai7QIGiEHHPm2c6a7v8950Ufavy/EIU95zK7lXAODuDm
-         hI7A==
-X-Gm-Message-State: AOAM533/8dSDltKmROr4cP52PEOXXsXkKJHrCHSQ20Xq5bu8cJUxPc9i
-        hn3SlTTwimo4ZwYw+AaMIfA=
-X-Google-Smtp-Source: ABdhPJxZw7qCY5xAugBz1OmSZd7IfwPIm4rayHyJ2D2Dl9oe0PTmAbGz9w3tCVGoNe698i+vy9lkAw==
-X-Received: by 2002:a17:907:d88:b0:6f5:1321:37ed with SMTP id go8-20020a1709070d8800b006f5132137edmr20817558ejc.67.1652201556379;
-        Tue, 10 May 2022 09:52:36 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id a21-20020a170906685500b006f3ef214dffsm6221861ejs.101.2022.05.10.09.52.34
+        bh=zIype/cZZggoKMv2+Lp7+DJjIFxw0T4PQlIuMMh3aP0=;
+        b=FIPY9iAJQwPDvpjr1LQj4XYBnEUdTfriiIJocOSj765TxwEcHhNoM6r9gePpqH3TME
+         TKdRiT0zEIos/fxUuf4xxFc+VuHE2QKYeaOWPMVN0XFQkABTH8K6AjZP8j32B9Yptcv7
+         Ch4708aFMW9imPywyXUuOZecasPdBIwyGi4fGLGim7M6wb+KskCVaOZP7MPzLKO+3Zs0
+         dTlK1P9/ygRZ+GEFYbYx7OxY5bS97Yxu03yZphmmTuxmLVA+1/V8IHKGVzjeICY68AG8
+         oCVVZAvs4J0KLYMWIAObYzHrr/bVWxQe2JkJFk64Ay8HP28YlSkJBs7Et245QTdwdjVT
+         5gRQ==
+X-Gm-Message-State: AOAM533sL6Cnlmj/u4OtlHTu/4kds2GAqds/6kDLo0wKw2J65yBaUwQx
+        ezpK/gVDhpFnp0lsFgN07lewDB2TDiU=
+X-Google-Smtp-Source: ABdhPJyX/DhA8ziE9lSUbKRMOk34nNfgYQb2PXenq6G+/TgYwFNOUIkvHYIrOwLgCU7LEPWmCKgHhg==
+X-Received: by 2002:a63:6c0a:0:b0:3ab:894f:8309 with SMTP id h10-20020a636c0a000000b003ab894f8309mr17659220pgc.536.1652202470953;
+        Tue, 10 May 2022 10:07:50 -0700 (PDT)
+Received: from MBP-98dd607d3435.dhcp.thefacebook.com ([2620:10d:c090:400::4:e8e5])
+        by smtp.gmail.com with ESMTPSA id u11-20020a170902bf4b00b0015e8d4eb21asm2312536pls.100.2022.05.10.10.07.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 09:52:35 -0700 (PDT)
-Date:   Tue, 10 May 2022 19:52:33 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
-Message-ID: <20220510165233.yahsznxxb5yq6rai@skbuf>
-References: <20220510094014.68440-1-nbd@nbd.name>
- <20220510123724.i2xqepc56z4eouh2@skbuf>
- <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
+        Tue, 10 May 2022 10:07:50 -0700 (PDT)
+Date:   Tue, 10 May 2022 10:07:46 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+Cc:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, netdev@vger.kernel.org,
+        maciej.fijalkowski@intel.com, yhs@fb.com, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, jonathan.lemon@gmail.com, bpf@vger.kernel.org
+Subject: Re: [PATCH bpf-next 0/9] selftests: xsk: add busy-poll testing plus
+ various fixes
+Message-ID: <20220510170746.ujho4d22xao3ingj@MBP-98dd607d3435.dhcp.thefacebook.com>
+References: <20220510115604.8717-1-magnus.karlsson@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
+In-Reply-To: <20220510115604.8717-1-magnus.karlsson@gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -81,23 +73,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 04:52:16PM +0200, Felix Fietkau wrote:
+On Tue, May 10, 2022 at 01:55:55PM +0200, Magnus Karlsson wrote:
+> This patch set adds busy-poll testing to the xsk selftests. It runs
+> exactly the same tests as with regular softirq processing, but with
+> busy-poll enabled. I have also included a number of fixes to the
+> selftests that have been bugging me for a while or was discovered
+> while implementing the busy-poll support. In summary these are:
 > 
-> On 10.05.22 14:37, Vladimir Oltean wrote:
-> > On Tue, May 10, 2022 at 11:40:13AM +0200, Felix Fietkau wrote:
-> > > Padding for transmitted packets needs to account for the special tag.
-> > > With not enough padding, garbage bytes are inserted by the switch at the
-> > > end of small packets.
-> > 
-> > I don't think padding bytes are guaranteed to be zeroes. Aren't they
-> > discarded? What is the issue?
-> With the broken padding, ARP requests are silently discarded on the receiver
-> side in my test. Adding the padding explicitly fixes the issue.
+> * Fix the error reporting of failed tests. Each failed test used to be
+>   reported as both failed and passed, messing up things.
 > 
-> - Felix
+> * Added a summary test printout at the end of the test suite so that
+>   users do not have to scroll up and look at the result of both the
+>   softirq run and the busy_poll run.
+> 
+> * Added a timeout to the tests, so that if a test locks up, we report
+>   a fail and still get to run all the other tests.
+> 
+> * Made the stats test just look and feel like all the other
+>   tests. Makes the code simpler and the test reporting more
+>   consistent. These are the 3 last commits.
+> 
+> * Replaced zero length packets with packets of 64 byte length. This so
+>   that some of the tests will pass after commit 726e2c5929de84 ("veth:
+>   Ensure eth header is in skb's linear part").
+> 
+> * Added clean-up of the veth pair when terminating the test run.
+> 
+> * Some smaller clean-ups of unused stuff.
 
-Ok, I'm not going to complain too much about the patch, but I'm still
-curious where are the so-called "broken" packets discarded.
-I think the receiving MAC should be passing up to software a buffer
-without the extra padding beyond the L2 payload length (at least that's
-the behavior I'm familiar with).
+Sounds like a good set of improvements and fixes.
+
+Bjorn,
+please review.
