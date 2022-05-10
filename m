@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE4A521E4D
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:24:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBEAC521EB7
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345779AbiEJP15 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 11:27:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55916 "EHLO
+        id S1345928AbiEJPee (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 11:34:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50478 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345835AbiEJP1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:27:15 -0400
+        with ESMTP id S1345654AbiEJPeU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:34:20 -0400
 Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA6F05A5AA;
-        Tue, 10 May 2022 08:16:08 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A0A436B52;
+        Tue, 10 May 2022 08:28:44 -0700 (PDT)
 Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 88F0D21BB9;
-        Tue, 10 May 2022 15:16:07 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTP id BDBAF21B8C;
+        Tue, 10 May 2022 15:28:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652195767; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1652196522; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=OZqtmv8UjkqRBSiOYZ6ar9KDyJT6hDNxXl9SSULCXTQ=;
-        b=fGhdvJlPt//dq0KQAtVijfj/ESEJ/OC2EKpevE2XN9mzQ9A1L9iCAxeXNQ+pUyb1Mv1UlE
-        HCruB1nKt1ZaJRQk1txzbCvkQt9XnVOQap2jC6oxObMWliWuUvAfiBCulbtCmC4sio8+xa
-        +ZqWsGMsijF1KXpHWJf4ANyjUo2sNOU=
+        bh=e4wukkdgHyYEEL082h2+8MXPywOa6STdjbSVdRIKUGE=;
+        b=rR4mS/+oT4jH07pNjBmARAg7zdRtaoeIif/UACNxEBTH30BjG7Bppc3qvkDfJRoCh4TawW
+        6luoRejPAMFZr+z9Kvz9iubCA5AxZw1bIiLsMXPqeMDKaF9ra8TkGI7FOIFKW72kOoldt+
+        xkdV40YW6dtF4zTHXKWuKX4kUttIYC0=
 Received: from suse.cz (unknown [10.100.208.146])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 2901B2C141;
-        Tue, 10 May 2022 15:16:06 +0000 (UTC)
-Date:   Tue, 10 May 2022 17:16:01 +0200
+        by relay2.suse.de (Postfix) with ESMTPS id 913582C141;
+        Tue, 10 May 2022 15:28:41 +0000 (UTC)
+Date:   Tue, 10 May 2022 17:28:40 +0200
 From:   Petr Mladek <pmladek@suse.com>
 To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
 Cc:     akpm@linux-foundation.org, bhe@redhat.com,
@@ -58,19 +58,19 @@ Cc:     akpm@linux-foundation.org, bhe@redhat.com,
         paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
         senozhatsky@chromium.org, stern@rowland.harvard.edu,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-Subject: Re: [PATCH 14/30] panic: Properly identify the panic event to the
- notifiers' callbacks
-Message-ID: <YnqBsXBImU64PAOL@alley>
+        will@kernel.org, Brian Norris <computersforpeace@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Subject: Re: [PATCH 15/30] bus: brcmstb_gisb: Clean-up panic/die notifiers
+Message-ID: <YnqEqDnMfUgC4dM6@alley>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-15-gpiccoli@igalia.com>
+ <20220427224924.592546-16-gpiccoli@igalia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220427224924.592546-15-gpiccoli@igalia.com>
+In-Reply-To: <20220427224924.592546-16-gpiccoli@igalia.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,51 +78,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 2022-04-27 19:49:08, Guilherme G. Piccoli wrote:
-> The notifiers infrastructure provides a way to pass an "id" to the
-> callbacks to determine what kind of event happened, i.e., what is
-> the reason behind they getting called.
+On Wed 2022-04-27 19:49:09, Guilherme G. Piccoli wrote:
+> This patch improves the panic/die notifiers in this driver by
+> making use of a passed "id" instead of comparing pointer
+> address; also, it removes an useless prototype declaration
+> and unnecessary header inclusion.
 > 
-> The panic notifier currently pass 0, but this is soon to be
-> used in a multi-targeted notifier, so let's pass a meaningful
-> "id" over there.
->
-> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
-> ---
->  include/linux/panic_notifier.h | 5 +++++
->  kernel/panic.c                 | 2 +-
->  2 files changed, 6 insertions(+), 1 deletion(-)
+> This is part of a panic notifiers refactor - this notifier in
+> the future will be moved to a new list, that encompass the
+> information notifiers only.
 > 
-> diff --git a/include/linux/panic_notifier.h b/include/linux/panic_notifier.h
-> index 41e32483d7a7..07dced83a783 100644
-> --- a/include/linux/panic_notifier.h
-> +++ b/include/linux/panic_notifier.h
-> @@ -9,4 +9,9 @@ extern struct atomic_notifier_head panic_notifier_list;
+> --- a/drivers/bus/brcmstb_gisb.c
+> +++ b/drivers/bus/brcmstb_gisb.c
+> @@ -347,25 +346,14 @@ static irqreturn_t brcmstb_gisb_bp_handler(int irq, void *dev_id)
+>  /*
+>   * Dump out gisb errors on die or panic.
+>   */
+> -static int dump_gisb_error(struct notifier_block *self, unsigned long v,
+> -			   void *p);
+> -
+> -static struct notifier_block gisb_die_notifier = {
+> -	.notifier_call = dump_gisb_error,
+> -};
+> -
+> -static struct notifier_block gisb_panic_notifier = {
+> -	.notifier_call = dump_gisb_error,
+> -};
+> -
+>  static int dump_gisb_error(struct notifier_block *self, unsigned long v,
+>  			   void *p)
+>  {
+>  	struct brcmstb_gisb_arb_device *gdev;
+> -	const char *reason = "panic";
+> +	const char *reason = "die";
 >  
->  extern bool crash_kexec_post_notifiers;
->  
-> +enum panic_notifier_val {
-> +	PANIC_UNUSED,
-> +	PANIC_NOTIFIER = 0xDEAD,
-> +};
+> -	if (self == &gisb_die_notifier)
+> -		reason = "die";
+> +	if (v == PANIC_NOTIFIER)
+> +		reason = "panic";
 
-Hmm, this looks like a hack. PANIC_UNUSED will never be used.
-All notifiers will be always called with PANIC_NOTIFIER.
+IMHO, the check of the @self parameter was the proper solution.
 
-The @val parameter is normally used when the same notifier_list
-is used in different situations.
+"gisb_die_notifier" list uses @val from enum die_val.
+"gisb_panic_notifier" list uses @val from enum panic_notifier_val.
 
-But you are going to use it when the same notifier is used
-in more lists. This is normally distinguished by the @nh
-(atomic_notifier_head) parameter.
-
-IMHO, it is a bad idea. First, it would confuse people because
-it does not follow the original design of the parameters.
-Second, the related code must be touched anyway when
-the notifier is moved into another list so it does not
-help much.
-
-Or do I miss anything, please?
+These are unrelated types. It might easily break when
+someone defines the same constant also in enum die_val.
 
 Best Regards,
 Petr
