@@ -2,66 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C79B85209B2
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 01:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D8685209DD
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 02:14:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232808AbiEIX4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 19:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56612 "EHLO
+        id S233417AbiEJASQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 20:18:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233436AbiEIX4Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 19:56:25 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCE0156C05
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 16:52:29 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2f7d621d1caso162165617b3.11
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 16:52:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KPy/7NbEAoIiRfW2yFmwpDhdDkkk5IoJxIY+izjqK6I=;
-        b=FLpJxzJTkUTv6sRzC1r86F+JmTtLyl0ay7uCnXjcXSUfejtUoTKzeKKMD2ppP0L6gb
-         nRnVdjHrmfxHQOgdyp+FWKmMRNkU3g7DAkSsbQ3xYxJkexWXmi8IGhHP3a7vjmWvd4D1
-         pFEwHbJf8/H7xfXwU9JI2kTzpuGzXSQL7seDY9gsj4kpPf9zn1UhG0jeJetTJ6YzU6E3
-         K9c82NOo2eFdhPNxMdu50rLO7qcrfs62HV/DJ+wN+EPDD4DuXfTP1PoYpiY/glKqunaC
-         jfO7aSg8qmbHwBIBJDe7OuBrlpFhYBTi35sIOOt3gB7Hr9+LOIvvv1d6AlEdgsZsQayI
-         seOg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KPy/7NbEAoIiRfW2yFmwpDhdDkkk5IoJxIY+izjqK6I=;
-        b=WDQq2R5EDmatRU8WlNmTyIac82gkFSowTMSzwEsTMIMgdFECoZ7GlJHkq9atQA4Z1y
-         FwiCRBrcMVcHKPTPEpCokk97iZBYkBATjthOHmowQK+XxemWCcbb/2pxc5KfYQPRA3pR
-         aQTz0A4QmW+VQbD3PhEhVG3uufmHIQ1e0tl2305MuNdsNlhUfLT3sGL6gnHw7sGRuKmc
-         V5BSh9z+VQQ3F4oxJfs1Onl4aP7wnXs1W42bbc+tpeY9BC0VSF9py9UZJE7xFGlEFO1T
-         FHC+nzZrVJC3/bBcq2Jz6HLt32Sx5123i0lNo56eIwoyvYcWrk8CjO6telwgHeCDA2p2
-         A6kQ==
-X-Gm-Message-State: AOAM532ZIaeVKIHhvmfisQg/NeGGq5VovGglZxiDAhf1PlWWtXwOlk8q
-        9ugCqkBr8cnl9Lp/KE1iemQheIPg5MCJS52tkraiYHdRdDevXg==
-X-Google-Smtp-Source: ABdhPJxm3uUgMvP4Hnaw647bywXkwKpjnDP6bfPJr1Ks/85ODKfKFc9lVv6EJqsw9RRwWRV3zGdlvL1H/m0p5iWuFxs=
-X-Received: by 2002:a81:4f0c:0:b0:2f8:46f4:be90 with SMTP id
- d12-20020a814f0c000000b002f846f4be90mr17106858ywb.332.1652140348735; Mon, 09
- May 2022 16:52:28 -0700 (PDT)
+        with ESMTP id S232688AbiEJASN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 20:18:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 87FF5262643
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 17:14:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652141657;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m/Cpn4znmGtPMU6JmBbESD0qm5X4CWqOjWVCzDX837U=;
+        b=JfNK5CKgOMKbSJHpenud6wL2ykoIVFZ5rWlfOt8HLII66gsRfSUz9213fXIvXhl8rKUcHS
+        irLrV8lZteSg6z2KGnwFAski4wAlVz5O22vitOhLT+Qh6Rurb98izhoTij5N6mNW9+QmDY
+        vxgJ9VxEcsvw7Es1sONPUbbNgyFFq/I=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-614-VeKmZPTnMrGw1e9T0pqueA-1; Mon, 09 May 2022 20:14:13 -0400
+X-MC-Unique: VeKmZPTnMrGw1e9T0pqueA-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E8FE9811E80;
+        Tue, 10 May 2022 00:14:12 +0000 (UTC)
+Received: from T590 (ovpn-8-16.pek2.redhat.com [10.72.8.16])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CD07840D1B9A;
+        Tue, 10 May 2022 00:14:03 +0000 (UTC)
+Date:   Tue, 10 May 2022 08:13:58 +0800
+From:   Ming Lei <ming.lei@redhat.com>
+To:     Jens Axboe <axboe@kernel.dk>
+Cc:     syzbot <syzbot+99938118dfd9e1b0741a@syzkaller.appspotmail.com>,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        Christoph Hellwig <hch@lst.de>
+Subject: Re: [syzbot] KASAN: use-after-free Read in bio_poll
+Message-ID: <YnmuRuO4yplt8p/p@T590>
+References: <00000000000029572505de968021@google.com>
+ <a72282ef-650c-143b-4b88-5185009c3ec2@kernel.dk>
 MIME-Version: 1.0
-References: <20220509190851.1107955-4-eric.dumazet@gmail.com> <202205100723.9Wqso3nI-lkp@intel.com>
-In-Reply-To: <202205100723.9Wqso3nI-lkp@intel.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 9 May 2022 16:52:17 -0700
-Message-ID: <CANn89i+rMnV8RotzD7jfp8TgbJeV+XpzJFkWrhJe9YAtD9Wdbg@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/4] net: warn if transport header was not set
-To:     kernel test robot <lkp@intel.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, kbuild-all@lists.01.org,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a72282ef-650c-143b-4b88-5185009c3ec2@kernel.dk>
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,33 +65,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 9, 2022 at 4:32 PM kernel test robot <lkp@intel.com> wrote:
->
-> Hi Eric,
->
-> I love your patch! Perhaps something to improve:
->
-> [auto build test WARNING on net-next/master]
->
-> url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-CONFIG_DEBUG_NET-and-friends/20220510-031145
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git 9c095bd0d4c451d31d0fd1131cc09d3b60de815d
-> config: arm-oxnas_v6_defconfig (https://download.01.org/0day-ci/archive/20220510/202205100723.9Wqso3nI-lkp@intel.com/config)
-> compiler: arm-linux-gnueabi-gcc (GCC) 11.3.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/intel-lab-lkp/linux/commit/d316b61f313a417d7dfa97fa006320288f3af150
->         git remote add linux-review https://github.com/intel-lab-lkp/linux
->         git fetch --no-tags linux-review Eric-Dumazet/net-CONFIG_DEBUG_NET-and-friends/20220510-031145
->         git checkout d316b61f313a417d7dfa97fa006320288f3af150
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/net/ethernet/stmicro/stmmac/ drivers/net/mdio/ net/core/
->
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
->
+On Mon, May 09, 2022 at 11:02:41AM -0600, Jens Axboe wrote:
+> On 5/9/22 10:14 AM, syzbot wrote:
+> > Hello,
+> > 
+> > syzbot found the following issue on:
+> > 
+> > HEAD commit:    c5eb0a61238d Linux 5.18-rc6
+> > git tree:       upstream
+> > console+strace: https://syzkaller.appspot.com/x/log.txt?x=112bf03ef00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=79caa0035f59d385
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=99938118dfd9e1b0741a
+> > compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12311571f00000
+> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=177a2e86f00000
+> > 
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+99938118dfd9e1b0741a@syzkaller.appspotmail.com
+> > 
+> > ==================================================================
+> > BUG: KASAN: use-after-free in bio_poll+0x275/0x3c0 block/blk-core.c:942
+> > Read of size 4 at addr ffff8880751d92b4 by task syz-executor486/3607
+> > 
+> > CPU: 0 PID: 3607 Comm: syz-executor486 Not tainted 5.18.0-rc6-syzkaller #0
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> > Call Trace:
+> >  <TASK>
+> >  __dump_stack lib/dump_stack.c:88 [inline]
+> >  dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> >  print_address_description.constprop.0.cold+0xeb/0x495 mm/kasan/report.c:313
+> >  print_report mm/kasan/report.c:429 [inline]
+> >  kasan_report.cold+0xf4/0x1c6 mm/kasan/report.c:491
+> >  bio_poll+0x275/0x3c0 block/blk-core.c:942
+> >  __iomap_dio_rw+0x10ee/0x1ae0 fs/iomap/direct-io.c:658
+> >  iomap_dio_rw+0x38/0x90 fs/iomap/direct-io.c:681
+> >  ext4_dio_write_iter fs/ext4/file.c:566 [inline]
+> >  ext4_file_write_iter+0xe4d/0x1510 fs/ext4/file.c:677
+> >  call_write_iter include/linux/fs.h:2050 [inline]
+> >  do_iter_readv_writev+0x3d1/0x640 fs/read_write.c:726
+> >  do_iter_write+0x182/0x700 fs/read_write.c:852
+> >  vfs_writev+0x1aa/0x630 fs/read_write.c:925
+> >  do_pwritev+0x1b6/0x270 fs/read_write.c:1022
+> >  __do_sys_pwritev2 fs/read_write.c:1081 [inline]
+> >  __se_sys_pwritev2 fs/read_write.c:1072 [inline]
+> >  __x64_sys_pwritev2+0xeb/0x150 fs/read_write.c:1072
+> >  do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+> >  do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+> >  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> > RIP: 0033:0x7f6846af7e69
+> 
+> Guys, should we just queue:
+> 
+> ommit 9650b453a3d4b1b8ed4ea8bcb9b40109608d1faf
+> Author: Ming Lei <ming.lei@redhat.com>
+> Date:   Wed Apr 20 22:31:10 2022 +0800
+> 
+>     block: ignore RWF_HIPRI hint for sync dio
+> 
+> up for 5.18 and stable?
 
-I suppose some compiler/arches are asking us to add forward
-declaration for struct net_device.
-I have no idea what is the justification for that.
+I am fine with merging to 5.18 & stable.
+
+
+Thanks,
+Ming
+
