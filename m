@@ -2,169 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F26FA521403
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:38:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBB18521429
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:47:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241131AbiEJLmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 07:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57416 "EHLO
+        id S241217AbiEJLvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 07:51:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241118AbiEJLmk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 07:42:40 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBBC24DC00;
-        Tue, 10 May 2022 04:38:43 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id E7BCB21C07;
-        Tue, 10 May 2022 11:38:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652182721; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QjxQbnD6WUcAB5XSGPbhgiXq5Z1nB8h07eo4ZkZ4QC8=;
-        b=ux1OKlKPpQAZrqb3VSx/+cdnKv+z0GMrb7Vrl4wT7av9mwtdsYHmGTFl15YLILBNoNipDu
-        zhzvyNUQ0tVf4I8bosAIddNvm3hk9CLYxTFt2W7RQIuTrmM1G9742/mw3JpxDF9W//N0xh
-        4YsR4kO61TX2TGUrgE/V7TAnZzSnJsg=
-Received: from suse.cz (unknown [10.100.208.146])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id F0AB42C141;
-        Tue, 10 May 2022 11:38:39 +0000 (UTC)
-Date:   Tue, 10 May 2022 13:38:39 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     Evan Green <evgreen@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
-        kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de,
-        Kees Cook <keescook@chromium.org>, luto@kernel.org,
-        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
-        peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
-        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
-        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
+        with ESMTP id S241241AbiEJLvD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 07:51:03 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 386EC250E96
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 04:47:05 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id z2so30802288ejj.3
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 04:47:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=mIOxc2Hr0TwMKC4GyCG7ad4BrNm8On4BnelZfSZoMY8=;
+        b=Cq0YVifZjAg/L4a+qlOkNkDWcHo+balp673bgz2Xzq8NYuyUWd4UIlNecRZHOmOZtL
+         WITd7u5+Q3fwt/lMny//WQLUUvidBhKfkO/Jl2oNOUFBqFEwcFcey9lf7Y1aelLuySDz
+         FKzgrBUKgHOFhkT5RWUHKLhJIy72//L2kETTY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=mIOxc2Hr0TwMKC4GyCG7ad4BrNm8On4BnelZfSZoMY8=;
+        b=aKTrrj3EpL9hneV6yAliY9wl5QX3U5vCj2IEgCGbszKaI6ssBeB66S78oWH5nsEgre
+         gyuGyTDXNR2LQCMEmnHqOiEcyBe+6J/dBo48pS711aj85ShDZS/QFcxWkM+K6O1TFweW
+         KMeA9X5U7SNcG1FCsBYv3oPZhTxUS2OqwFJkZr5z5XXuE1q9c10TZfQEOvN/V4aq2vvZ
+         yJvoZe04tCU/TjAqpKixYMjkxJY7JgF8AwFsqwPj92J6J7LSviT8sElhW5tkLcZq7ciH
+         aBttXtWfpNHR2x1yWHTEZkd5yQMW3liv/ec1QZWZ0rWPymMXr1TNmxqsPUlbOtN2ghi2
+         oVuw==
+X-Gm-Message-State: AOAM5308TOo0YhWH+kUtY4aRhSQfHCDB3ffg5sFxSe5aT9pH3eyZaJDw
+        6EPzaqvbOuL3UfnURyfuZsk++A==
+X-Google-Smtp-Source: ABdhPJwH5mhjRvh6ubT75T74jcRYxHqZKy0ovowvflSqOUgy8E1RfmWmmzchzDbkunBXYV3eG+hSPw==
+X-Received: by 2002:a17:906:d554:b0:6f5:2242:a499 with SMTP id cr20-20020a170906d55400b006f52242a499mr18119410ejc.488.1652183223425;
+        Tue, 10 May 2022 04:47:03 -0700 (PDT)
+Received: from cloudflare.com (79.184.139.106.ipv4.supernova.orange.pl. [79.184.139.106])
+        by smtp.gmail.com with ESMTPSA id lr9-20020a170906fb8900b006f3ef214dd9sm5997773ejb.63.2022.05.10.04.47.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 04:47:02 -0700 (PDT)
+References: <20220424154028.1698685-1-xukuohai@huawei.com>
+ <20220424154028.1698685-5-xukuohai@huawei.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
         Ard Biesheuvel <ardb@kernel.org>,
-        David Gow <davidgow@google.com>,
-        Julius Werner <jwerner@chromium.org>
-Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
- trylock on panic path
-Message-ID: <YnpOv4hAPV4b+6v4@alley>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-5-gpiccoli@igalia.com>
- <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com>
- <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH bpf-next v3 4/7] bpf, arm64: Impelment
+ bpf_arch_text_poke() for arm64
+Date:   Tue, 10 May 2022 13:45:38 +0200
+In-reply-to: <20220424154028.1698685-5-xukuohai@huawei.com>
+Message-ID: <87ee11obih.fsf@cloudflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 2022-05-03 16:12:09, Guilherme G. Piccoli wrote:
-> On 03/05/2022 15:03, Evan Green wrote:
-> > [...]
-> > gsmi_shutdown_reason() is a common function called in other scenarios
-> > as well, like reboot and thermal trip, where it may still make sense
-> > to wait to acquire a spinlock. Maybe we should add a parameter to
-> > gsmi_shutdown_reason() so that you can get your change on panic, but
-> > we don't convert other callbacks into try-fail scenarios causing us to
-> > miss logs.
-> > 
-> 
-> Hi Evan, thanks for your feedback, much appreciated!
-> What I've done in other cases like this was to have a helper checking
-> the spinlock in the panic notifier - if we can acquire that, go ahead
-> but if not, bail out. For a proper example of an implementation, check
-> patch 13 of the series:
-> https://lore.kernel.org/lkml/20220427224924.592546-14-gpiccoli@igalia.com/ .
-> 
-> Do you agree with that, or prefer really a parameter in
-> gsmi_shutdown_reason() ? I'll follow your choice =)
+On Sun, Apr 24, 2022 at 11:40 AM -04, Xu Kuohai wrote:
+> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
+> it to replace nop with jump, or replace jump with nop.
+>
+> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+> Acked-by: Song Liu <songliubraving@fb.com>
+> ---
+>  arch/arm64/net/bpf_jit_comp.c | 63 +++++++++++++++++++++++++++++++++++
+>  1 file changed, 63 insertions(+)
+>
+> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+> index 8ab4035dea27..3f9bdfec54c4 100644
+> --- a/arch/arm64/net/bpf_jit_comp.c
+> +++ b/arch/arm64/net/bpf_jit_comp.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/bitfield.h>
+>  #include <linux/bpf.h>
+> +#include <linux/memory.h>
+>  #include <linux/filter.h>
+>  #include <linux/printk.h>
+>  #include <linux/slab.h>
+> @@ -18,6 +19,7 @@
+>  #include <asm/cacheflush.h>
+>  #include <asm/debug-monitors.h>
+>  #include <asm/insn.h>
+> +#include <asm/patching.h>
+>  #include <asm/set_memory.h>
+>  
+>  #include "bpf_jit.h"
+> @@ -1529,3 +1531,64 @@ void bpf_jit_free_exec(void *addr)
+>  {
+>  	return vfree(addr);
+>  }
+> +
+> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
+> +			     void *addr, u32 *insn)
+> +{
+> +	if (!addr)
+> +		*insn = aarch64_insn_gen_nop();
+> +	else
+> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
+> +						    (unsigned long)addr,
+> +						    type);
+> +
+> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
+> +}
+> +
+> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+> +		       void *old_addr, void *new_addr)
+> +{
+> +	int ret;
+> +	u32 old_insn;
+> +	u32 new_insn;
+> +	u32 replaced;
+> +	enum aarch64_insn_branch_type branch_type;
+> +
+> +	if (!is_bpf_text_address((long)ip))
+> +		/* Only poking bpf text is supported. Since kernel function
+> +		 * entry is set up by ftrace, we reply on ftrace to poke kernel
+> +		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
 
-I see two more alternative solutions:
+Nit: s/funcitons/functions/
 
-1st variant is a trick already used in console write() callbacks.
-They do trylock() when oops_in_progress is set. They remember
-the result to prevent double unlock when printing Oops messages and
-the system will try to continue working. For example:
+> +		 * called after a failed poke with ftrace. In this case, there
+> +		 * is probably something wrong with fentry, so there is nothing
+> +		 * we can do here. See register_fentry, unregister_fentry and
+> +		 * modify_fentry for details.
+> +		 */
+> +		return -EINVAL;
+> +
+> +	if (poke_type == BPF_MOD_CALL)
+> +		branch_type = AARCH64_INSN_BRANCH_LINK;
+> +	else
+> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
+> +		return -EFAULT;
+> +
+> +	mutex_lock(&text_mutex);
+> +	if (aarch64_insn_read(ip, &replaced)) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	if (replaced != old_insn) {
+> +		ret = -EFAULT;
+> +		goto out;
+> +	}
+> +
+> +	ret = aarch64_insn_patch_text_nosync((void *)ip, new_insn);
 
-pl011_console_write(struct console *co, const char *s, unsigned int count)
-{
-[...]
-	int locked = 1;
-[...]
-	if (uap->port.sysrq)
-		locked = 0;
-	else if (oops_in_progress)
-		locked = spin_trylock(&uap->port.lock);
-	else
-		spin_lock(&uap->port.lock);
+Nit: No need for the explicit cast to void *. Type already matches.
 
-[...]
+> +out:
+> +	mutex_unlock(&text_mutex);
+> +	return ret;
+> +}
 
-	if (locked)
-		spin_unlock(&uap->port.lock);
-}
-
-
-2nd variant is to check panic_cpu variable. It is used in printk.c.
-We might move the function to panic.h:
-
-static bool panic_in_progress(void)
-{
-	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
-}
-
-and then do:
-
-	if (panic_in_progress()) {
-		...
-
-
-> > Though thinking more about it, is this really a Good Change (TM)? The
-> > spinlock itself already disables interrupts, meaning the only case
-> > where this change makes a difference is if the panic happens from
-> > within the function that grabbed the spinlock (in which case the
-> > callback is also likely to panic), or in an NMI that panics within
-> > that window.
-
-As already mentioned in the other reply, panic() sometimes stops
-the other CPUs using NMI, for example, see kdump_nmi_shootdown_cpus().
-
-Another situation is when the CPU using the lock ends in some
-infinite loop because something went wrong. The system is in
-an unpredictable state during panic().
-
-I am not sure if this is possible with the code under gsmi_dev.lock
-but such things really happen during panic() in other subsystems.
-Using trylock in the panic() code path is a good practice.
-
-Best Regards,
-Petr
