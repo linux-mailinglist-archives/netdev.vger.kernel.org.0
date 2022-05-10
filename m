@@ -2,145 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F5505224DB
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 21:35:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D22A25224F5
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 21:40:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232556AbiEJTf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 15:35:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37104 "EHLO
+        id S232868AbiEJTkt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 15:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229549AbiEJTfW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 15:35:22 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5AAB28B683
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 12:35:19 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id k126-20020a1ca184000000b003943fd07180so13801wme.3
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 12:35:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LKRFb9sxsi8oVNRQ43Dsv1RUcYQL89fBmT5eMJ6Q6vc=;
-        b=EfY1U3ySncids9bZ/XiDLa2VH9i6sbY/PMjLNCbvBO1E67+B//9XD39LPI+k4M4SXb
-         0mo6agcKMHL4JcqBGuur1rZZOR0bYlBs9lVOXwn6IxVJevsm9h4qZ5fCDG0CsQl86FHc
-         dZm45vhhVRzeMywWFM3c/rIK3xZj9OfCrjmXk+ay6MaeYyuLU2MaWZK4v3cKSshiy3Hh
-         8dxDMZWPxm8hyWF/FqJUetv/QUwyev5dO10y3i0kox5kliJcYyKHTQbwrNCeq2ieBpQn
-         0QHn/Xra2ZglGj1nSXfcsFwuCOVxiit8IExysiIj+GKovfTp/eBVC8LodvK2lIvQQLOF
-         NK9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LKRFb9sxsi8oVNRQ43Dsv1RUcYQL89fBmT5eMJ6Q6vc=;
-        b=aiV5zA526c/mQJvY9r7CYH/ZNVQUQ4fPis35Bv7LN2/zc1rBSENsEsH2FdOi34D4vH
-         Ur8mhtyCH/DgPFsRzmMbMO54pa+yX1NxuZEceIMEBoEXsK8CwexQBFSHNqo20pTjic5q
-         ycTP+kKIXiCf1cgIu++UQdA3hZuvDHbAnyHrop54ZrLjlRsE9HqUbvjatUWZHca9MElv
-         IwJzoaUmGFbIvu7HTjwHiVZ+o6TwlC6nhSdfswecDj8N5HuIgPYPwpyXoiYFEPDvFy3U
-         LhTnvph3MhncZxoSRVNPbiv5vFnDJ0qR4Sqt8bilq990cH3W2AgBl5mTN1zmPH6tuqsd
-         1EHQ==
-X-Gm-Message-State: AOAM530cBt71Xo0ZzLsmdCnq8Kn2LWAyXfiBPOeqbXwRUwsyyF55ovdl
-        RQPzersiz52oMcr1xVt1nOiv1BbsoqzK8lbeY1hhsg==
-X-Google-Smtp-Source: ABdhPJwtdbqlTr6NGdts99IEdCRtAfnTWT+wHPPMXwyZcWIMcXkbhDPH8ehovcRs+RmtpcnP4cUwZes7T+tfAkJVltw=
-X-Received: by 2002:a05:600c:4ecc:b0:394:790d:5f69 with SMTP id
- g12-20020a05600c4ecc00b00394790d5f69mr1481079wmq.196.1652211318302; Tue, 10
- May 2022 12:35:18 -0700 (PDT)
+        with ESMTP id S229635AbiEJTko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 15:40:44 -0400
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FE9111163;
+        Tue, 10 May 2022 12:40:42 -0700 (PDT)
+From:   John Ogness <john.ogness@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1652211640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OEDxfxfGB0zzvmyrmmb19QrPenmgyOx+wB7aMTpPY14=;
+        b=s9qpTYE/3WJU4N3KJVSOdyb7xWHt1vkR4fCuQ5J8Zkt0v0hhGnmBmJdDRvMzx7U23g78AD
+        5x0GWGYOK6up5rJgLjlqAJ0oKWgxSuZArLqIZD7/93+m719asCNv2npDv0K4E3pzaf0TU1
+        QT3fxi7rAkTN0NzY7sIU3W6vHFJAKmFF1D5WFGFp25IVzQ1U2GLRWaAA15JzW4DMVMPiln
+        C4PlGutDHid0b5MW+yz4Oad3VH/9G9wKQ7qYFzrw5pmS2R8UQ108RRuRC1xOe7QqhudZaN
+        toooF05flVTdgRJ8Mw90Ti/8UtTs7R3lmx6LjRAd0TtWQNVsyqtk/eFe4jDJKA==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1652211640;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=OEDxfxfGB0zzvmyrmmb19QrPenmgyOx+wB7aMTpPY14=;
+        b=vLCouTuSreEprlIyaHBdxRuhj0utQMxldxJLsrUVX2CbalgS135YGbpGNA0WSY+j9euZdD
+        GTFEAV97omDLmGAg==
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Petr Mladek <pmladek@suse.com>
+Cc:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Evan Green <evgreen@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
+        kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, Kees Cook <keescook@chromium.org>,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, senozhatsky@chromium.org,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
+        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        David Gow <davidgow@google.com>,
+        Julius Werner <jwerner@chromium.org>
+Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
+ trylock on panic path
+In-Reply-To: <20220510132015.38923cb2@gandalf.local.home>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-5-gpiccoli@igalia.com>
+ <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com>
+ <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com> <YnpOv4hAPV4b+6v4@alley>
+ <20220510132015.38923cb2@gandalf.local.home>
+Date:   Tue, 10 May 2022 21:46:38 +0206
+Message-ID: <87h75xkwg9.fsf@jogness.linutronix.de>
 MIME-Version: 1.0
-References: <20220510001807.4132027-1-yosryahmed@google.com>
- <20220510001807.4132027-2-yosryahmed@google.com> <Ynqyh+K1tMyNCTUW@slm.duckdns.org>
-In-Reply-To: <Ynqyh+K1tMyNCTUW@slm.duckdns.org>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Tue, 10 May 2022 12:34:42 -0700
-Message-ID: <CAJD7tkZVXJY3s2k8M4pcq+eJVD+aX=iMDiDKtdE=j0_q+UWQzA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 1/9] bpf: introduce CGROUP_SUBSYS_RSTAT
- program type
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-3.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,INVALID_DATE_TZ_ABSURD,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:44 AM Tejun Heo <tj@kernel.org> wrote:
+On 2022-05-10, Steven Rostedt <rostedt@goodmis.org> wrote:
+>> As already mentioned in the other reply, panic() sometimes stops the
+>> other CPUs using NMI, for example, see kdump_nmi_shootdown_cpus().
+>> 
+>> Another situation is when the CPU using the lock ends in some
+>> infinite loop because something went wrong. The system is in
+>> an unpredictable state during panic().
+>> 
+>> I am not sure if this is possible with the code under gsmi_dev.lock
+>> but such things really happen during panic() in other subsystems.
+>> Using trylock in the panic() code path is a good practice.
 >
-> Hello,
->
-> On Tue, May 10, 2022 at 12:17:59AM +0000, Yosry Ahmed wrote:
-> > @@ -706,6 +707,9 @@ struct cgroup_subsys {
-> >        * specifies the mask of subsystems that this one depends on.
-> >        */
-> >       unsigned int depends_on;
-> > +
-> > +     /* used to store bpf programs.*/
-> > +     struct cgroup_subsys_bpf bpf;
-> >  };
->
-> Care to elaborate on rationales around associating this with a specific
-> cgroup_subsys rather than letting it walk cgroups and access whatever csses
-> as needed? I don't think it's a wrong approach or anything but I can think
-> of plenty of things that would be interesting without being associated with
-> a specific subsystem - even all the cpu usage statistics are built to in the
-> cgroup core and given how e.g. systemd uses cgroup to organize the
-> applications in the system whether resource control is active or not, there
-> are a lot of info one can gather about those without being associated with a
-> specific subsystem.
+> I believe that Peter Zijlstra had a special spin lock for NMIs or
+> early printk, where it would not block if the lock was held on the
+> same CPU. That is, if an NMI happened and paniced while this lock was
+> held on the same CPU, it would not deadlock. But it would block if the
+> lock was held on another CPU.
 
-Hi Tejun,
+Yes. And starting with 5.19 it will be carrying the name that _you_ came
+up with (cpu_sync):
 
-Thanks so much for taking the time to look into this!
+printk_cpu_sync_get_irqsave()
+printk_cpu_sync_put_irqrestore()
 
-The rationale behind associating this work with cgroup_subsys is that
-usually the stats are associated with a resource (e.g. memory, cpu,
-etc). For example, if the memory controller is only enabled for a
-subtree in a big hierarchy, it would be more efficient to only run BPF
-rstat programs for those cgroups, not the entire hierarchy. It
-provides a way to control what part of the hierarchy you want to
-collect stats for. This is also semantically similar to the
-css_rstat_flush() callback.
-
-However, I do see your point about the benefits of collecting stats
-that are not associated with any controller. I think there are
-multiple options here, and I would love to hear what you prefer:
-1. In addition to subsystems, support an "all" or "cgroup" attach
-point that loads BPF rstat flush programs that will run for all
-cgroups.
-2. Simplify the interface so that all BPF rstat flush programs run for
-all cgroups, and add the subsystem association later if a need arises.
-3. Instead of attaching BPF programs to a subsystem, attach them to a
-cgroup. This gives more flexibility, but also makes lifetime handling
-of programs more complicated and error-prone. I can also see most use
-cases (including ours) attaching programs to the root cgroup anyway.
-In this case, we waste space by storing pointers to the same program
-in every cgroup, and have unnecessary complexity in the code.
-
-Let me know what you think!
-
->
-> Thanks.
->
-> --
-> tejun
+John
