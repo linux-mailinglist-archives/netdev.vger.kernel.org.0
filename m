@@ -2,133 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 04B25520FC4
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 10:35:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C906520FCD
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 10:38:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237808AbiEJIjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 04:39:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59158 "EHLO
+        id S238074AbiEJIly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 04:41:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232173AbiEJIjC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 04:39:02 -0400
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675481BD73A;
-        Tue, 10 May 2022 01:35:03 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id F0FD620000B;
-        Tue, 10 May 2022 08:34:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652171702;
+        with ESMTP id S238149AbiEJIl0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 04:41:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A27262370E9
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:37:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652171848;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Kh7DYyBInXTh3sG9c4M0Sk5M7gxxMdC14JimjF3W+Nw=;
-        b=dtIs2wdRF3USwu7B0gKSjyiiiOIhdk93PWxVGVtb0s0ZA2Oj+ue41m2ONpp6FHPijz8N1V
-        99NyKykZg3IccFuBnOuLRb75PsaB+la/ibdKXLR8OEDvQOeDHutZBk9BpBpDzD0XKRIvjj
-        1t9v3+qyhvfW9R8oKPwb8DphwAQhjqmY8nM1TNm2Z2cHYEZ9hW6KbvpxsJMCpmC277GMRf
-        olQp/zD9+orxRJdMQtFO8s6qcLdPlS6GWzbqeqa7jsog9zq+1jTtNwDlM8BrvehF29/kxq
-        DZmF3+aODL7Ji+Vd0qJ+OEKNrRGiJbQ9MgkxTA54PHKFn+61/KXqlAynCwnRLQ==
-Date:   Tue, 10 May 2022 10:34:58 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH net-next v4 06/12] net: dsa: rzn1-a5psw: add Renesas
- RZ/N1 advanced 5 port switch driver
-Message-ID: <20220510103458.381aaee2@xps-bootlin>
-In-Reply-To: <20220509160813.stfqb4c2houmfn2g@skbuf>
-References: <20220509131900.7840-1-clement.leger@bootlin.com>
-        <20220509131900.7840-7-clement.leger@bootlin.com>
-        <20220509160813.stfqb4c2houmfn2g@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        bh=j+bf0vsHdIZwwE9q6c75T7kOPMxvneKaFOveGY+sLTY=;
+        b=ExL7ZMkaHmvZJqL4tczacj2GNE2kJc/5zCP3nMUQekB+hB5SFzXreQNOc0tIndRQ8lkXTM
+        3c5l3+mYFC7yfkoBQCUo0uJ76b7CyZtDMujDlmoVA9EVTxgwOgmr734Mey+gyIXOT0Cnrk
+        A6r/Brw9ZTrMUf5BBzlfvzZZLj+7wDI=
+Received: from mail-wr1-f69.google.com (mail-wr1-f69.google.com
+ [209.85.221.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-410-UlFdzVALP1CV3S5kNVZGUg-1; Tue, 10 May 2022 04:37:27 -0400
+X-MC-Unique: UlFdzVALP1CV3S5kNVZGUg-1
+Received: by mail-wr1-f69.google.com with SMTP id t17-20020adfa2d1000000b0020ac519c222so6719282wra.4
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:37:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=j+bf0vsHdIZwwE9q6c75T7kOPMxvneKaFOveGY+sLTY=;
+        b=wQOZazJrDYIh5uHwmbkxHiCFOpqcsgULHYE4fL22p30U89QGgs1UO5C1ozMfTnUJyI
+         Q/DYXHFe0VUo67yl9ztGEYBMmNP2jRKaJvU985XAPW6hCvthLAE45WNtKWYq2YibbcPh
+         4XoFJMvHeqc1FuOdbFdKJAkhx8jBnutUOC15tgAO18ajD6se4bGXeY5PkI4N63R8lPnR
+         5AhO5i1W+N31I2ImSN+fAcMTAE7MW2PDXa4/1RtXafvQWEp838YGgZZ0hFgn7zOMSobN
+         b1VLlk8TdlVyw9dSyNmzmDRpoKGBR1InTkssX/y3IVi70RWHBBlsHhtxZyNWUmQai5W5
+         smUw==
+X-Gm-Message-State: AOAM532iE0k61iDrVEguQgugstLEqt0XA7TL2th5jHlug75vZr2OTrnK
+        4srZVdYCo2Hl1PXYhNks3a2heZI14bWSWZW5yXLW0hv6TSkav74VtkKPzU8uMeLcXQtiIMM1RYH
+        nRMr/g2C9h8I8SFva
+X-Received: by 2002:a5d:630d:0:b0:20a:e1a3:8018 with SMTP id i13-20020a5d630d000000b0020ae1a38018mr17590614wru.489.1652171845936;
+        Tue, 10 May 2022 01:37:25 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwGL3y7pRTXcLytDFuw+KuLGDAOLIN9orN+ms074kBoO0zDNQxsf08xbRCBU2oDTE8Z+kx8xA==
+X-Received: by 2002:a5d:630d:0:b0:20a:e1a3:8018 with SMTP id i13-20020a5d630d000000b0020ae1a38018mr17590583wru.489.1652171845547;
+        Tue, 10 May 2022 01:37:25 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
+        by smtp.gmail.com with ESMTPSA id az20-20020adfe194000000b0020c5253d8basm13146661wrb.6.2022.05.10.01.37.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 01:37:25 -0700 (PDT)
+Message-ID: <b140c37fe1aac315e07464dd6a2d7a8f463e6fe4.camel@redhat.com>
+Subject: Re: [PATCH v6] net: atlantic: always deep reset on pm op, fixing up
+ my null deref regression
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Manuel Ullmann <labre@posteo.de>,
+        Igor Russkikh <irusskikh@marvell.com>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        regressions@lists.linux.dev, davem@davemloft.net,
+        ndanilov@marvell.com, kuba@kernel.org, edumazet@google.com,
+        Jordan Leppert <jordanleppert@protonmail.com>,
+        Holger Hoffstaette <holger@applied-asynchrony.com>,
+        koo5 <kolman.jindrich@gmail.com>
+Date:   Tue, 10 May 2022 10:37:24 +0200
+In-Reply-To: <87bkw8dfmp.fsf@posteo.de>
+References: <87bkw8dfmp.fsf@posteo.de>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Mon, 9 May 2022 19:08:13 +0300,
-Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
+On Sun, 2022-05-08 at 00:36 +0000, Manuel Ullmann wrote:
+> From 18dc080d8d4a30d0fcb45f24fd15279cc87c47d5 Mon Sep 17 00:00:00 2001
+> Date: Wed, 4 May 2022 21:30:44 +0200
+> 
+> The impact of this regression is the same for resume that I saw on
+> thaw: the kernel hangs and nothing except SysRq rebooting can be done.
+> 
+> Fixes regression in commit cbe6c3a8f8f4 ("net: atlantic: invert deep
+> par in pm functions, preventing null derefs"), where I disabled deep
+> pm resets in suspend and resume, trying to make sense of the
+> atl_resume_common() deep parameter in the first place.
+> 
+> It turns out, that atlantic always has to deep reset on pm
+> operations. Even though I expected that and tested resume, I screwed
+> up by kexec-rebooting into an unpatched kernel, thus missing the
+> breakage.
+> 
+> This fixup obsoletes the deep parameter of atl_resume_common, but I
+> leave the cleanup for the maintainers to post to mainline.
+> 
+> Suspend and hibernation were successfully tested by the reporters.
+> 
+> Fixes: cbe6c3a8f8f4 ("net: atlantic: invert deep par in pm functions, preventing null derefs")
+> Link: https://lore.kernel.org/regressions/9-Ehc_xXSwdXcvZqKD5aSqsqeNj5Izco4MYEwnx5cySXVEc9-x_WC4C3kAoCqNTi-H38frroUK17iobNVnkLtW36V6VWGSQEOHXhmVMm5iQ=@protonmail.com/
+> Reported-by: Jordan Leppert <jordanleppert@protonmail.com>
+> Reported-by: Holger Hoffstaette <holger@applied-asynchrony.com>
+> Tested-by: Jordan Leppert <jordanleppert@protonmail.com>
+> Tested-by: Holger Hoffstaette <holger@applied-asynchrony.com>
+> CC: <stable@vger.kernel.org> # 5.10+
+> Signed-off-by: Manuel Ullmann <labre@posteo.de>
+> ---
+> I'm very sorry for this regression. It would be nice, if this could
+> reach mainline before 5.18 release, if applicable. This restores the
+> original suspend behaviour, while keeping the fix for hibernation. The
+> fix for hibernation might not be the root cause, but still is the most
+> simple fix for backporting to stable while the root cause is unknown
+> to the maintainers.
+> 
+> Changes in v2:
+> Patch formatting fixes
+> ~ Fix Fixes tag
+> ~ Simplify stable Cc tag
+> ~ Fix Signed-off-by tag
+> 
+> Changes in v3:
+> ~ Prefixed commit reference with "commit" aka I managed to use
+>   checkpatch.pl.
+> ~ Added Tested-by tags for the testing reporters.
+> ~ People start to get annoyed by my patch revision spamming. Should be
+>   the last one.
+> 
+> Changes in v4:
+> ~ Moved patch changelog to comment section
+> ~ Use unicode ndash for patch changelog list to avoid confusion with
+>   diff in editors
+> ~ Expanded comment
+> ~ Targeting net-next by subject
+> 
+> Changes in v5:
+> ~ Changed my MTA transfer encoding to 8 bit instead of
+>   quoted-printable. Git should like this a bit more.
+> 
+> Changes in v6:
+> ~ Reducing content to 7 bit chars, because nipa did not apply v4 and v5, while
+>   git does against a fresh net-next HEAD. Maybe it chokes on the
+>   additional bit.
+> ~ Omitting target tree to resemble the last passing patch version the most.
 
-> On Mon, May 09, 2022 at 03:18:54PM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > Add Renesas RZ/N1 advanced 5 port switch driver. This switch
-> > handles 5 ports including 1 CPU management port. A MDIO bus is also
-> > exposed by this switch and allows to communicate with PHYs
-> > connected to the ports. Each switch port (except for the CPU
-> > management ports) is connected to the MII converter.
-> >=20
-> > This driver includes basic bridging support, more support will be
-> > added later (vlan, etc).
-> >=20
-> > Suggested-by: Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>
-> > Suggested-by: Phil Edworthy <phil.edworthy@renesas.com>
-> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
-> > ---
-> > +static int a5psw_port_bridge_join(struct dsa_switch *ds, int port,
-> > +				  struct dsa_bridge bridge,
-> > +				  bool *tx_fwd_offload,
-> > +				  struct netlink_ext_ack *extack)
-> > +{
-> > +	struct a5psw *a5psw =3D ds->priv;
-> > +
-> > +	/* We only support 1 bridge device */
-> > +	if (a5psw->br_dev && bridge.dev !=3D a5psw->br_dev) {
-> > +		NL_SET_ERR_MSG_MOD(extack,
-> > +				   "Forwarding offload supported
-> > for a single bridge"); =20
->=20
-> I don't think I saw the dsa_slave_changeupper() patch that avoids
-> overwriting the extack when dsa_port_bridge_join() returns
-> -EOPNOTSUPP.
+For future submission, please always specify the target tree (which is
+-net in this case). No need to resubmit: I'm applying it.
 
-Ok, I did not understood that dsa_slave_changeupper() *did* needed to
-be modified. I'll do that.
+Thanks,
 
->=20
-> > +		return -EOPNOTSUPP;
-> > +	}
-> > +
-> > +	a5psw->br_dev =3D bridge.dev;
-> > +	a5psw_flooding_set_resolution(a5psw, port, true);
-> > +	a5psw_port_mgmtfwd_set(a5psw, port, false);
-> > +
-> > +	return 0; =20
->=20
-> By the way, does this switch pass
-> tools/testing/selftests/drivers/net/dsa/no_forwarding.sh?
-
-Unfortunately, the board I have only has 2 ports availables and thus, I
-can only test one bridge or two separated ports at a time... I *should*
-receive a 4 ports one in a near future but that not yet sure.
-
+Paolo
 
