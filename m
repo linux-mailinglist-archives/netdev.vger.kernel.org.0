@@ -2,118 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3A18520E93
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 09:35:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 984F3520E8F
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 09:35:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236585AbiEJHho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 03:37:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51496 "EHLO
+        id S237486AbiEJHhX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 03:37:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238730AbiEJHJV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 03:09:21 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FC4728FEAA;
-        Tue, 10 May 2022 00:05:25 -0700 (PDT)
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24A6hQn1024939;
-        Tue, 10 May 2022 07:05:21 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=dv74yVCTxJWMrGmc+xkj7P21G7PTlAbLvXX/vB7xbco=;
- b=aKzn50qNAi93z9l5BAcZ9RyGBKRmYChBibarp6pSNjr4wk8uPl3NN2qs68/jRLZG071Z
- h6xHNVKMKoT8oCb+T+o0a6EUt4sEWUYydBGovhr3OHzk3r4uj536TM4LjP35Q44YEdN1
- BYRB1EozozNY6oRIOCrnxZCCpzlTOg9W9wfvmnsu5Db+V3ToVsOo7t//2uAS3omclGyf
- M57DKezXyQairnH0UO1jqKRIE4+c7D4nq/bE9k1jMDtN8Kw+tY4MdTn7jR/eUy1X4CHJ
- f1YmFGrsyBNVJvIJv6bmnP6q/BC3V1clBR/iR3geiPlNHGLKLDrWob+DYsaFtShpGjHW rA== 
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3fyk18rdun-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 07:05:21 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24A72UW4029090;
-        Tue, 10 May 2022 07:05:18 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 3fwgd8uka5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 07:05:18 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24A75FnV37552606
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 10 May 2022 07:05:15 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id ECFC3AE051;
-        Tue, 10 May 2022 07:05:14 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DB071AE045;
-        Tue, 10 May 2022 07:05:14 +0000 (GMT)
-Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Tue, 10 May 2022 07:05:14 +0000 (GMT)
-Received: by tuxmaker.boeblingen.de.ibm.com (Postfix, from userid 55271)
-        id 9C220E78E9; Tue, 10 May 2022 09:05:14 +0200 (CEST)
-From:   Alexandra Winter <wintera@linux.ibm.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Alexandra Winter <wintera@linux.ibm.com>
-Subject: [PATCH net 3/3] s390/lcs: fix variable dereferenced before check
-Date:   Tue, 10 May 2022 09:05:08 +0200
-Message-Id: <20220510070508.334726-4-wintera@linux.ibm.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220510070508.334726-1-wintera@linux.ibm.com>
-References: <20220510070508.334726-1-wintera@linux.ibm.com>
+        with ESMTP id S239357AbiEJHNX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 03:13:23 -0400
+Received: from out2-smtp.messagingengine.com (out2-smtp.messagingengine.com [66.111.4.26])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8C2E2AC6FB
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 00:09:26 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 5122B5C0058;
+        Tue, 10 May 2022 03:09:24 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Tue, 10 May 2022 03:09:24 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1652166564; x=
+        1652252964; bh=p9mILSzH6fUBHeedgTz4JmckqlK8TrOpRupTpvWyVe0=; b=x
+        3y3kv7PaLZATHk0xv/eYxw9nycJyoNOZ0zhC+DSQXr6fcScNqTpJ1jtWlPi00i6F
+        eRUGJX3ViCbF5GWPRPkavMj7H33yE+RF64v/IUQWkIK5VgNcQlk8w81BXYUSvYWS
+        g5TW37OCAYlwAIK3OBIwW3ljA6Rl/90yRO+P7Mb9Lesq/ZSAotsVBTxMnpEeXnFs
+        kJ++uplY6QyK/nQcT2/7O8H0/VI/SVPtf8lAvU9yrxUfxutHFICK/IvmtnaijeSd
+        Tt9HUXZlheIRx4PK//GBrhy7SHrzZvY3Ku622UpFJpSbp7gkvvTxOXmgrhmaQw0U
+        GtzXbbUYb7Shn0ILxtezg==
+X-ME-Sender: <xms:pA96YiWbIJN9Q9yNPt4mA2ms5R7AUsyTrpE9hz_Cqv-Gp8j-ZR0XHQ>
+    <xme:pA96YuloV1Rt238PEm9RV7-tSu-Y5XK_PyNvSUGSHlcdmHABCVtvA8CfuYx1CTx17
+    _wNP7c8ZKW9lpo>
+X-ME-Received: <xmr:pA96YmZZpS1s5mymhGIqUyEI4Jfv3z2_tET9JPwINITS3uVoHUPqc7qkZe5cob89u7Bdx3sCKKqi1Rt_x9bbCcbn7z8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedtgdduudejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvfevuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
+    htvghrnhephefhtdejvdeiffefudduvdffgeetieeigeeugfduffdvffdtfeehieejtdfh
+    jeeknecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucevlhhushhtvghrufhiiigvpe
+    dtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:pA96YpUgpCATXk1xq9hZAnZh-6DKq6yWEe3b1X3rymQsmz9fcl4MyQ>
+    <xmx:pA96YsmBx9YpuBlGqckR9qrc4rjhTqTxB1sea0wXExPftyew-IrUxA>
+    <xmx:pA96Yud0vyVk6lGd-JZclNz8ZYqTFy1XruhBjQUKQd0Kg0G3aadjkg>
+    <xmx:pA96YtBrm8v8KqQZd9uJNFqgrrxnD26WK1zJTVfFmpXuxU7C6G9p5g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 10 May 2022 03:09:23 -0400 (EDT)
+Date:   Tue, 10 May 2022 10:09:19 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jeffrey Ji <jeffreyjilinux@gmail.com>
+Cc:     David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Brian Vazquez <brianvv@google.com>, netdev@vger.kernel.org,
+        Jeffrey Ji <jeffreyji@google.com>
+Subject: Re: [PATCH net-next] show rx_otherhost_dropped stat in ip link show
+Message-ID: <YnoPn+hQt7hQYWkA@shredder>
+References: <20220509191810.2157940-1-jeffreyjilinux@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: QjBhA2ZkHKUSZyduHqVxFCGjKjmDnGDa
-X-Proofpoint-ORIG-GUID: QjBhA2ZkHKUSZyduHqVxFCGjKjmDnGDa
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-09_06,2022-05-09_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
- adultscore=0 spamscore=0 clxscore=1015 mlxlogscore=720 priorityscore=1501
- impostorscore=0 bulkscore=0 mlxscore=0 phishscore=0 lowpriorityscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205100028
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509191810.2157940-1-jeffreyjilinux@gmail.com>
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-smatch complains about
-drivers/s390/net/lcs.c:1741 lcs_get_control() warn: variable dereferenced before check 'card->dev' (see line 1739)
+On Mon, May 09, 2022 at 07:18:10PM +0000, Jeffrey Ji wrote:
+> From: Jeffrey Ji <jeffreyji@google.com>
+> 
+> This stat was added in commit 794c24e9921f ("net-core: rx_otherhost_dropped to core_stats")
+> 
+> Tested: sent packet with wrong MAC address from 1
+> network namespace to another, verified that counter showed "1" in
+> `ip -s -s link sh` and `ip -s -s -j link sh`
+> 
+> Signed-off-by: Jeffrey Ji <jeffreyji@google.com>
+> ---
+>  include/uapi/linux/if_link.h |  2 ++
+>  ip/ipaddress.c               | 15 +++++++++++++--
+>  2 files changed, 15 insertions(+), 2 deletions(-)
+> 
+> diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+> index 22e21e57afc9..50477985bfea 100644
+> --- a/include/uapi/linux/if_link.h
+> +++ b/include/uapi/linux/if_link.h
+> @@ -243,6 +243,8 @@ struct rtnl_link_stats64 {
+>  	__u64	rx_compressed;
+>  	__u64	tx_compressed;
+>  	__u64	rx_nohandler;
+> +
+> +	__u64	rx_otherhost_dropped;
 
-Fixes: 27eb5ac8f015 ("[PATCH] s390: lcs driver bug fixes and improvements [1/2]")
-Signed-off-by: Alexandra Winter <wintera@linux.ibm.com>
----
- drivers/s390/net/lcs.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+I believe you need to rebase against current iproute2-next. The kernel
+headers are already updated there. This tree:
+https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git
 
-diff --git a/drivers/s390/net/lcs.c b/drivers/s390/net/lcs.c
-index bab9b34926c6..84c8981317b4 100644
---- a/drivers/s390/net/lcs.c
-+++ b/drivers/s390/net/lcs.c
-@@ -1736,10 +1736,11 @@ lcs_get_control(struct lcs_card *card, struct lcs_cmd *cmd)
- 			lcs_schedule_recovery(card);
- 			break;
- 		case LCS_CMD_STOPLAN:
--			pr_warn("Stoplan for %s initiated by LGW\n",
--				card->dev->name);
--			if (card->dev)
-+			if (card->dev) {
-+				pr_warn("Stoplan for %s initiated by LGW\n",
-+					card->dev->name);
- 				netif_carrier_off(card->dev);
-+			}
- 			break;
- 		default:
- 			LCS_DBF_TEXT(5, trace, "noLGWcmd");
--- 
-2.32.0
+>  };
+>  
+>  /* Subset of link stats useful for in-HW collection. Meaning of the fields is as
+> diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+> index a80996efdc28..9d6af56e2a72 100644
+> --- a/ip/ipaddress.c
+> +++ b/ip/ipaddress.c
+> @@ -692,6 +692,7 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
+>  		strlen("heartbt"),
+>  		strlen("overrun"),
+>  		strlen("compressed"),
+> +		strlen("otherhost_dropped"),
 
+There were a lot of changes in this area as part of the "ip stats"
+work. See print_stats64() in current iproute2-next.
+
+>  	};
+>  	int ret;
+>  
+> @@ -713,6 +714,10 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
+>  		if (s->rx_compressed)
+>  			print_u64(PRINT_JSON,
+>  				   "compressed", NULL, s->rx_compressed);
+> +		if (s->rx_otherhost_dropped)
+> +			print_u64(PRINT_JSON,
+> +				   "otherhost_dropped",
+> +				   NULL, s->rx_otherhost_dropped);
+>  
+>  		/* RX error stats */
+>  		if (show_stats > 1) {
+> @@ -795,11 +800,15 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
+>  				     rta_getattr_u32(carrier_changes) : 0);
+>  
+>  		/* RX stats */
+> -		fprintf(fp, "    RX: %*s %*s %*s %*s %*s %*s %*s%s",
+> +		fprintf(fp, "    RX: %*s %*s %*s %*s %*s %*s %*s%*s%s",
+>  			cols[0] - 4, "bytes", cols[1], "packets",
+>  			cols[2], "errors", cols[3], "dropped",
+>  			cols[4], "missed", cols[5], "mcast",
+> -			cols[6], s->rx_compressed ? "compressed" : "", _SL_);
+> +			s->rx_compressed ? cols[6] : 0,
+> +			s->rx_compressed ? "compressed " : "",
+> +			s->rx_otherhost_dropped ? cols[7] : 0,
+> +			s->rx_otherhost_dropped ? "otherhost_dropped" : "",
+> +			_SL_);
+>  
+>  		fprintf(fp, "    ");
+>  		print_num(fp, cols[0], s->rx_bytes);
+> @@ -810,6 +819,8 @@ static void __print_link_stats(FILE *fp, struct rtattr *tb[])
+>  		print_num(fp, cols[5], s->multicast);
+>  		if (s->rx_compressed)
+>  			print_num(fp, cols[6], s->rx_compressed);
+> +		if (s->rx_otherhost_dropped)
+> +			print_num(fp, cols[7], s->rx_otherhost_dropped);
+>  
+>  		/* RX error stats */
+>  		if (show_stats > 1) {
+> -- 
+> 2.36.0.512.ge40c2bad7a-goog
+> 
