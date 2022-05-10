@@ -2,51 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 95EFC521DF7
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:16:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D88B0521E01
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:18:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345135AbiEJPUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 11:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51518 "EHLO
+        id S233525AbiEJPWn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 11:22:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345542AbiEJPUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:20:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E0F124A922
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 08:00:00 -0700 (PDT)
+        with ESMTP id S1345647AbiEJPVE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:21:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B4F83EAAC
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 08:01:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652194799;
+        s=mimecast20190719; t=1652194863;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=GI5hVPcjR+PWDXsNYyiqaKG7/zHeDCrkZhcxXL1Rh78=;
-        b=WwkfN0V5eHJQb3OBq0kECZVAmk6+8m2V/NCUB+g34cho+uAVXpmf0+rfHSuF0+l8B4BOKc
-        BsTMjOFOMskjKWL2E4GWdssHtdF8ob6pI0LFv7mf3ksiaSz9NgQKntryhIRKF32Qy5hgtK
-        azztLIuwV9A01FoqES5Ma/ofb/AQp8U=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZgUzPbN0afxln/UTR8mU8CnaJ4q6LZxgDDzZlA9fUdQ=;
+        b=eSJZKTW2bwl7IwRwb5AsIk+0FTY9Oa6R/xZ91g+Nmi8dskJ9jNcRYSTg0hHKwSLW2Wq31W
+        ISq/fbxwKILvflnLNIMGIRSB3grXxqNKBk0DTnax0gDaXY15qLFTllcWu2NpjEHv1uVTZ2
+        nsB2+LPA+jIGCIQaB7CfSx1NGtl0KgU=
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com
+ [209.85.166.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-313-tROt7s3wMN2jbZB4T3zgPg-1; Tue, 10 May 2022 10:59:54 -0400
-X-MC-Unique: tROt7s3wMN2jbZB4T3zgPg-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1D9C229ABA2B;
-        Tue, 10 May 2022 14:59:54 +0000 (UTC)
-Received: from gerbillo.redhat.com (unknown [10.39.194.162])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B25C52166B2F;
-        Tue, 10 May 2022 14:59:52 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Subject: [PATCH v3 net] net/sched: act_pedit: really ensure the skb is writable
-Date:   Tue, 10 May 2022 16:57:34 +0200
-Message-Id: <1fcf78e6679d0a287dd61bb0f04730ce33b3255d.1652194627.git.pabeni@redhat.com>
+ us-mta-630-c_p6b8VKNCuqzlgQHSring-1; Tue, 10 May 2022 11:01:02 -0400
+X-MC-Unique: c_p6b8VKNCuqzlgQHSring-1
+Received: by mail-io1-f69.google.com with SMTP id r17-20020a0566022b9100b00654b99e71dbso12035710iov.3
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 08:01:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=ZgUzPbN0afxln/UTR8mU8CnaJ4q6LZxgDDzZlA9fUdQ=;
+        b=zL1AyQzzi0mhIy+EMiPyYwlW3xVUR4kxIhshpTXe00SzJvh5myPcMEv6OXMYNbKhdn
+         mUvPKxlZw6YLsJGmXhGTmngWdegtKxMRfUPEMBFyJquUJ1geah/Pk3sPw97UPCPx1NTI
+         JxgUUVKy3O+EmaZKQ+p6KN90dbK5QbH0jaxRqafMDoEe//LFXAUgRjlW8F5tB6mG/tz5
+         sVPBUF5EpYq90aDLeD5Gk9lNxZKfG4w4Pi8elj8XxTq6x3vrEc/7SCdJNT0EGbDCBPOO
+         6JYOFiTeIRktBKQ+LyGpORYM9sIAKRwQTRMDnnIq4xuNznkUDGLYKHyIbu0ktDzxH3gT
+         W8SQ==
+X-Gm-Message-State: AOAM533URJY5zg1AkevWL7qPe5tY+d0qAzBtV2Ozse+rzBPvVOmDpTzX
+        RczrtjW/8XU5rb3kto2kgIjZxIljDEj/qsMD8fTsHOgN0Yv53W0ctiKfTKA0kHsARokZGx7X0Ya
+        oi/01LYvs8ruSCaGm
+X-Received: by 2002:a05:6e02:1581:b0:2c2:5aef:db32 with SMTP id m1-20020a056e02158100b002c25aefdb32mr9958603ilu.158.1652194860677;
+        Tue, 10 May 2022 08:01:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz4uw1f1KcnIVJRERNnof9GFlhBvJCRdG/rb9nEoWLR23yvG31IbGKGpnEx9phxYhVtXO/jQA==
+X-Received: by 2002:a05:6e02:1581:b0:2c2:5aef:db32 with SMTP id m1-20020a056e02158100b002c25aefdb32mr9958575ilu.158.1652194860140;
+        Tue, 10 May 2022 08:01:00 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id w11-20020a05663800cb00b0032bdc27fbd0sm2711561jao.150.2022.05.10.08.00.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 08:00:59 -0700 (PDT)
+Date:   Tue, 10 May 2022 09:00:53 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, jgg@nvidia.com,
+        saeedm@nvidia.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
+        kuba@kernel.org, maorg@nvidia.com, cohuck@redhat.com
+Subject: Re: [PATCH V2 mlx5-next 0/4] Improve mlx5 live migration driver
+Message-ID: <20220510090053.56efd550.alex.williamson@redhat.com>
+In-Reply-To: <YnploMZRI9jXMXAi@unreal>
+References: <20220510090206.90374-1-yishaih@nvidia.com>
+        <YnploMZRI9jXMXAi@unreal>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,121 +79,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently pedit tries to ensure that the accessed skb offset
-is writable via skb_unclone(). The action potentially allows
-touching any skb bytes, so it may end-up modifying shared data.
+On Tue, 10 May 2022 16:16:16 +0300
+Leon Romanovsky <leon@kernel.org> wrote:
 
-The above causes some sporadic MPTCP self-test failures, due to
-this code:
+> On Tue, May 10, 2022 at 12:02:02PM +0300, Yishai Hadas wrote:
+> > This series improves mlx5 live migration driver in few aspects as of
+> > below.
+> > 
+> > Refactor to enable running migration commands in parallel over the PF
+> > command interface.
+> > 
+> > To achieve that we exposed from mlx5_core an API to let the VF be
+> > notified before that the PF command interface goes down/up. (e.g. PF
+> > reload upon health recovery).
+> > 
+> > Once having the above functionality in place mlx5 vfio doesn't need any
+> > more to obtain the global PF lock upon using the command interface but
+> > can rely on the above mechanism to be in sync with the PF.
+> > 
+> > This can enable parallel VFs migration over the PF command interface
+> > from kernel driver point of view.
+> > 
+> > In addition,
+> > Moved to use the PF async command mode for the SAVE state command.
+> > This enables returning earlier to user space upon issuing successfully
+> > the command and improve latency by let things run in parallel.
+> > 
+> > Alex, as this series touches mlx5_core we may need to send this in a
+> > pull request format to VFIO to avoid conflicts before acceptance.  
+> 
+> The PR was sent.
+> https://lore.kernel.org/netdev/20220510131236.1039430-1-leon@kernel.org/T/#u
 
-	tc -n $ns2 filter add dev ns2eth$i egress \
-		protocol ip prio 1000 \
-		handle 42 fw \
-		action pedit munge offset 148 u8 invert \
-		pipe csum tcp \
-		index 100
+For patches 2-4, please add:
 
-The above modifies a data byte outside the skb head and the skb is
-a cloned one, carrying a TCP output packet.
+Reviewed-by: Alex Williamson <alex.williamson@redhat.com>
 
-This change addresses the issue by keeping track of a rough
-over-estimate highest skb offset accessed by the action and ensuring
-such offset is really writable.
-
-Note that this may cause performance regressions in some scenarios,
-but hopefully pedit is not in the critical path.
-
-v2 -> v3:
- - more descriptive commit message (Jamal)
-
-v1 -> v2:
- - cleanup hint update (Jakub)
- - avoid raices while accessing the hint (Jakub)
- - re-organize the comments for clarity
-
-Fixes: db2c24175d14 ("act_pedit: access skb->data safely")
-Acked-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Tested-by: Geliang Tang <geliang.tang@suse.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- include/net/tc_act/tc_pedit.h |  1 +
- net/sched/act_pedit.c         | 26 ++++++++++++++++++++++----
- 2 files changed, 23 insertions(+), 4 deletions(-)
-
-diff --git a/include/net/tc_act/tc_pedit.h b/include/net/tc_act/tc_pedit.h
-index 748cf87a4d7e..3e02709a1df6 100644
---- a/include/net/tc_act/tc_pedit.h
-+++ b/include/net/tc_act/tc_pedit.h
-@@ -14,6 +14,7 @@ struct tcf_pedit {
- 	struct tc_action	common;
- 	unsigned char		tcfp_nkeys;
- 	unsigned char		tcfp_flags;
-+	u32			tcfp_off_max_hint;
- 	struct tc_pedit_key	*tcfp_keys;
- 	struct tcf_pedit_key_ex	*tcfp_keys_ex;
- };
-diff --git a/net/sched/act_pedit.c b/net/sched/act_pedit.c
-index 31fcd279c177..0eaaf1f45de1 100644
---- a/net/sched/act_pedit.c
-+++ b/net/sched/act_pedit.c
-@@ -149,7 +149,7 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 	struct nlattr *pattr;
- 	struct tcf_pedit *p;
- 	int ret = 0, err;
--	int ksize;
-+	int i, ksize;
- 	u32 index;
- 
- 	if (!nla) {
-@@ -228,6 +228,18 @@ static int tcf_pedit_init(struct net *net, struct nlattr *nla,
- 		p->tcfp_nkeys = parm->nkeys;
- 	}
- 	memcpy(p->tcfp_keys, parm->keys, ksize);
-+	p->tcfp_off_max_hint = 0;
-+	for (i = 0; i < p->tcfp_nkeys; ++i) {
-+		u32 cur = p->tcfp_keys[i].off;
-+
-+		/* The AT option can read a single byte, we can bound the actual
-+		 * value with uchar max.
-+		 */
-+		cur += (0xff & p->tcfp_keys[i].offmask) >> p->tcfp_keys[i].shift;
-+
-+		/* Each key touches 4 bytes starting from the computed offset */
-+		p->tcfp_off_max_hint = max(p->tcfp_off_max_hint, cur + 4);
-+	}
- 
- 	p->tcfp_flags = parm->flags;
- 	goto_ch = tcf_action_set_ctrlact(*a, parm->action, goto_ch);
-@@ -308,13 +320,18 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- 			 struct tcf_result *res)
- {
- 	struct tcf_pedit *p = to_pedit(a);
-+	u32 max_offset;
- 	int i;
- 
--	if (skb_unclone(skb, GFP_ATOMIC))
--		return p->tcf_action;
--
- 	spin_lock(&p->tcf_lock);
- 
-+	max_offset = (skb_transport_header_was_set(skb) ?
-+		      skb_transport_offset(skb) :
-+		      skb_network_offset(skb)) +
-+		     p->tcfp_off_max_hint;
-+	if (skb_ensure_writable(skb, min(skb->len, max_offset)))
-+		goto unlock;
-+
- 	tcf_lastuse_update(&p->tcf_tm);
- 
- 	if (p->tcfp_nkeys > 0) {
-@@ -403,6 +420,7 @@ static int tcf_pedit_act(struct sk_buff *skb, const struct tc_action *a,
- 	p->tcf_qstats.overlimits++;
- done:
- 	bstats_update(&p->tcf_bstats, skb);
-+unlock:
- 	spin_unlock(&p->tcf_lock);
- 	return p->tcf_action;
- }
--- 
-2.35.3
+Thanks,
+Alex
 
