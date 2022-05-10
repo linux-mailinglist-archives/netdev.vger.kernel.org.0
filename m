@@ -2,316 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACE18520C09
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 05:28:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6A82A520C12
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 05:32:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234005AbiEJDbp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 23:31:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38808 "EHLO
+        id S235042AbiEJDgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 23:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235503AbiEJDag (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 23:30:36 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C926B6D97B;
-        Mon,  9 May 2022 20:26:29 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id c1-20020a17090a558100b001dca2694f23so1018233pji.3;
-        Mon, 09 May 2022 20:26:29 -0700 (PDT)
+        with ESMTP id S230497AbiEJDgW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 23:36:22 -0400
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D58B179096
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 20:32:23 -0700 (PDT)
+Received: by mail-pg1-x52b.google.com with SMTP id a191so13614668pge.2
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 20:32:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/k2Rh9N35QdKVmFAAVQT5bIUzhhwmEjyL+VsoErqVkI=;
-        b=XJ/9xiodL+AamsRuKRVwEH3bzfE9F5WeP16Eg5DPMJ0w4zgWWrD3hT9t5zKBuo+5ke
-         Sax1RYNPRlebJo/+xFFb4xlrndn3VFwV7hQQ0aXiHxHVA+1ntJbpSUiSCzIN0gyN4xCE
-         b+d3WCP5DbmNSprp2FRDTSFEesB69btFkCs1LVTWuikbTKNlxxBF2tbKIkAJpIYh86re
-         aFpT/+GHf+7aZeF0SsdOIdm2HMwS4qtryOr4JWIWCxA72aea1V0SFJp2Hlju+eVyxxTj
-         JllF8EtvnhxXk3CylgCuEmqehUlPhpwl3r4Mh+CtmUoVUWdi3rMJWqoyI/3tLh7bBWLu
-         +H4A==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Sx5yHr0RtNdGn0iaLqmYAdJ01EHOBH32C4JbsGDQkmI=;
+        b=JZJvVfIGUUVfiKCkzcRUBwCkM9A1A2BGGE2p6N2HbPpE5Yx4dXP6cT1xdSWGbhrRmh
+         uoynuRJ0E5fRe0hknXieaTHpoej0slQlsX7h70YHFVy4KoB7bTGAc3lm263gLq8eTz9a
+         oZinstoX+PT86OPw9WrcYzD9ls71jBBdYSce364TcgQwHW3MJxXeBJSSSAcgYgEn1sAV
+         h28necwt0XoV6fguhfqKcA3nI4o+iL7bNCbhTC9XmCkiUO8uoMcuRHWNuM2X+BlXgTSV
+         85m+PAN0g0ZVBETts1NC6iREvqBvosU8ol/6F7i6jYqZTZAgYmR89GfktG8PljHQkgRv
+         nX6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/k2Rh9N35QdKVmFAAVQT5bIUzhhwmEjyL+VsoErqVkI=;
-        b=oWOV9aPalkhlqqDLjpJgjMXspSJDaS+6NOSmo7+Dycz+RrYvR0motGo9sVqDBFz2Cf
-         pMQOi6Ab5sE2UohyiR8UYaNEMV5+L887aq1WTy6UaSyeE65v8Fc3/EsyiI6wxBJnJdoe
-         vSxqKWpGqzdr8RSpW7T+YRU0FiXBhvn8CA8AYiALYi+1uJAJHXWZCV+6NKpeXNYsLzqm
-         6jd/VeUshhF40VIfOQcq7QztvbF84Penta4IoEWzwNA1yupTobW16thrSqWN1bxt7QdK
-         3ScZrZPNCjCG94QQjCzVNyHMA8UzD/R0Eibzd6J/cpasg6CK+zrEn0TW/yRKau/NCsRB
-         ootw==
-X-Gm-Message-State: AOAM531wfMUBcWDUQoTZLaxgUv3LmY0zG4gZVgqS+Xe+esdjuewpOP1S
-        5KMwfW7qtpWIHqod+clJr6c=
-X-Google-Smtp-Source: ABdhPJyzHurBXGyGbtG7UWaP3ycoMaaDo9bLr6xDdMjq5pdVsrk/gLWe59rt9zLV0SylX0DJe3IfbQ==
-X-Received: by 2002:a17:903:3093:b0:15e:d850:56 with SMTP id u19-20020a170903309300b0015ed8500056mr19342914plc.152.1652153189274;
-        Mon, 09 May 2022 20:26:29 -0700 (PDT)
-Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
-        by smtp.gmail.com with ESMTPSA id d4-20020a170902b70400b0015e8d4eb298sm646444pls.226.2022.05.09.20.26.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 09 May 2022 20:26:28 -0700 (PDT)
-Message-ID: <2dbd5e38-b748-0c16-5b8b-b32bc0cc43b0@gmail.com>
-Date:   Mon, 9 May 2022 20:26:27 -0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH RFC v1 net-next 0/4] net: Qdisc backpressure
- infrastructure
-Content-Language: en-US
-To:     Peilin Ye <yepeilin.cs@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
-References: <cover.1651800598.git.peilin.ye@bytedance.com>
+        bh=Sx5yHr0RtNdGn0iaLqmYAdJ01EHOBH32C4JbsGDQkmI=;
+        b=ecWa/lQ83y8B84ZOFXHtoCOACw423PZVJOn5Mq2/kEhVkL4EJIi+8Ul5SfRCz72wWT
+         cClCVGJtqSd0QI0t5eMtzfszpyzoPSwHfkHscQZPSYBoHR+yUNzWrXTybg4paP2MHV7A
+         O8IGLix1i9pIex6Jhb1AzecHyVLH2sGWPy7hERiY2iYxQuXY+OHhO0JNJ1GVZAtRSMx5
+         2lzgGdnaAijihzeaccpTthcPT8Q8+HJqHW7aeu+hs7NSu3BM2uxqa7f/jprkYCZOBCY6
+         NLUgzhdulCpEgz5d0pgTGWkfbEHjmwf9KtrTHifqTkzscTqatGU0dmSlmakE/k83/wlw
+         wW2g==
+X-Gm-Message-State: AOAM532Bbvp9JWdNeucD406Tz/+ZydejCtk8nvZ/hEkIROZSrtmUbXzU
+        5NMJu4lEM1imiMCd21cfcKw=
+X-Google-Smtp-Source: ABdhPJw0NvJxIGN2VXuM6S5YtRi3PgeXEtnvz0Bps0Uy3sFMWPke/VTZNi0f35fadM2yAysO60yXCg==
+X-Received: by 2002:a63:e218:0:b0:3c6:7449:15a2 with SMTP id q24-20020a63e218000000b003c6744915a2mr11718195pgh.515.1652153542902;
+        Mon, 09 May 2022 20:32:22 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5d30:4e79:203f:a909])
+        by smtp.gmail.com with ESMTPSA id me16-20020a17090b17d000b001d77f392280sm538185pjb.30.2022.05.09.20.32.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 20:32:22 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <cover.1651800598.git.peilin.ye@bytedance.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Coco Li <lixiaoyan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH v6 net-next 00/13] tcp: BIG TCP implementation
+Date:   Mon,  9 May 2022 20:32:06 -0700
+Message-Id: <20220510033219.2639364-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
 
-On 5/6/22 12:43, Peilin Ye wrote:
-> From: Peilin Ye <peilin.ye@bytedance.com>
->
-> Hi all,
->
-> Currently sockets (especially UDP ones) can drop a lot of skbs at TC
-> egress when rate limited by shaper Qdiscs like HTB.  This experimental
-> patchset tries to improve this by introducing a backpressure mechanism, so
-> that sockets are temporarily throttled when they "send too much".
->
-> For now it takes care of TBF, HTB and CBQ, for UDP and TCP sockets.  Any
-> comments, suggestions would be much appreciated.  Thanks!
+This series implements BIG TCP as presented in netdev 0x15:
+
+https://netdevconf.info/0x15/session.html?BIG-TCP
+
+Jonathan Corbet made a nice summary: https://lwn.net/Articles/884104/
+
+Standard TSO/GRO packet limit is 64KB
+
+With BIG TCP, we allow bigger TSO/GRO packet sizes for IPv6 traffic.
+
+Note that this feature is by default not enabled, because it might
+break some eBPF programs assuming TCP header immediately follows IPv6 header.
+
+While tcpdump recognizes the HBH/Jumbo header, standard pcap filters
+are unable to skip over IPv6 extension headers.
+
+Reducing number of packets traversing networking stack usually improves
+performance, as shown on this experiment using a 100Gbit NIC, and 4K MTU.
+
+'Standard' performance with current (74KB) limits.
+for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
+77           138          183          8542.19    
+79           143          178          8215.28    
+70           117          164          9543.39    
+80           144          176          8183.71    
+78           126          155          9108.47    
+80           146          184          8115.19    
+71           113          165          9510.96    
+74           113          164          9518.74    
+79           137          178          8575.04    
+73           111          171          9561.73    
+
+Now enable BIG TCP on both hosts.
+
+ip link set dev eth0 gro_max_size 185000 gso_max_size 185000
+for i in {1..10}; do ./netperf -t TCP_RR -H iroa23  -- -r80000,80000 -O MIN_LATENCY,P90_LATENCY,P99_LATENCY,THROUGHPUT|tail -1; done
+57           83           117          13871.38   
+64           118          155          11432.94   
+65           116          148          11507.62   
+60           105          136          12645.15   
+60           103          135          12760.34   
+60           102          134          12832.64   
+62           109          132          10877.68   
+58           82           115          14052.93   
+57           83           124          14212.58   
+57           82           119          14196.01   
+
+We see an increase of transactions per second, and lower latencies as well.
+
+v6: fix a compilation error for CONFIG_IPV6=n in
+    "net: allow gso_max_size to exceed 65536", reported by kernel bots.
+
+v5: Replaced two patches (that were adding new attributes) with patches
+    from Alexander Duyck. Idea is to reuse existing gso_max_size/gro_max_size
+
+v4: Rebased on top of Jakub series (Merge branch 'tso-gso-limit-split')
+    max_tso_size is now family independent.
+
+v3: Fixed a typo in RFC number (Alexander)
+    Added Reviewed-by: tags from Tariq on mlx4/mlx5 parts.
+
+v2: Removed the MAX_SKB_FRAGS change, this belongs to a different series.
+    Addressed feedback, for Alexander and nvidia folks.
 
 
-This very much looks like trying to solve an old problem to me.
+Alexander Duyck (2):
+  net: allow gso_max_size to exceed 65536
+  net: allow gro_max_size to exceed 65536
 
-If you were using EDT model, a simple eBPF program could get rid of the 
-HTB/TBF qdisc
+Coco Li (2):
+  ipv6: Add hop-by-hop header to jumbograms in ip6_output
+  mlx5: support BIG TCP packets
 
-and you could use MQ+FQ as the packet schedulers, with the true 
-multiqueue sharding.
+Eric Dumazet (9):
+  net: add IFLA_TSO_{MAX_SIZE|SEGS} attributes
+  net: limit GSO_MAX_SIZE to 524280 bytes
+  tcp_cubic: make hystart_ack_delay() aware of BIG TCP
+  ipv6: add struct hop_jumbo_hdr definition
+  ipv6/gso: remove temporary HBH/jumbo header
+  ipv6/gro: insert temporary HBH/jumbo header
+  net: loopback: enable BIG TCP packets
+  veth: enable BIG TCP packets
+  mlx4: support BIG TCP packets
 
-FQ provides fairness, so a flow can not anymore consume all the qdisc limit.
+ drivers/net/ethernet/amd/xgbe/xgbe.h          |  3 +-
+ .../net/ethernet/mellanox/mlx4/en_netdev.c    |  3 +
+ drivers/net/ethernet/mellanox/mlx4/en_tx.c    | 47 +++++++++--
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  1 +
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   | 84 +++++++++++++++----
+ drivers/net/ethernet/sfc/ef100_nic.c          |  3 +-
+ drivers/net/ethernet/sfc/falcon/tx.c          |  3 +-
+ drivers/net/ethernet/sfc/tx_common.c          |  3 +-
+ drivers/net/ethernet/synopsys/dwc-xlgmac.h    |  3 +-
+ drivers/net/hyperv/rndis_filter.c             |  2 +-
+ drivers/net/loopback.c                        |  2 +
+ drivers/net/veth.c                            |  1 +
+ drivers/scsi/fcoe/fcoe.c                      |  2 +-
+ include/linux/ipv6.h                          |  1 +
+ include/linux/netdevice.h                     | 15 +++-
+ include/net/ipv6.h                            | 44 ++++++++++
+ include/uapi/linux/if_link.h                  |  2 +
+ net/bpf/test_run.c                            |  2 +-
+ net/core/dev.c                                |  9 +-
+ net/core/gro.c                                |  8 ++
+ net/core/rtnetlink.c                          | 16 ++--
+ net/core/sock.c                               | 14 ++++
+ net/ipv4/tcp_bbr.c                            |  2 +-
+ net/ipv4/tcp_cubic.c                          |  4 +-
+ net/ipv4/tcp_output.c                         |  2 +-
+ net/ipv6/ip6_offload.c                        | 56 ++++++++++++-
+ net/ipv6/ip6_output.c                         | 22 ++++-
+ net/sctp/output.c                             |  3 +-
+ tools/include/uapi/linux/if_link.h            |  2 +
+ 30 files changed, 301 insertions(+), 60 deletions(-)
 
-(If your UDP sockets send packets all over the place (not connected 
-sockets),
+-- 
+2.36.0.512.ge40c2bad7a-goog
 
-then the eBPF can also be used to rate limit them)
-
-
->
-> Contents
->       [I] Background
->      [II] Design Overview
->     [III] Performance Numbers & Issues
->      [IV] Synchronization
->       [V] Test Setup
->
-> ______________
-> [I] Background
->
-> Imagine 2 UDP iperf2 clients, both wish to send at 1 GByte/sec from veth0.
-> veth0's egress root Qdisc is a TBF Qdisc, with a configured rate of 200
-> Mbits/sec.  I tested this setup [V]:
->
-> [  3] 10.0-10.5 sec  25.9 MBytes   434 Mbits/sec
-> [  3] 10.0-10.5 sec  22.0 MBytes   369 Mbits/sec
-> [  3] 10.5-11.0 sec  24.3 MBytes   407 Mbits/sec
-> [  3] 10.5-11.0 sec  21.7 MBytes   363 Mbits/sec
-> <...>                              ^^^^^^^^^^^^^
->
-> [  3]  0.0-30.0 sec   358 MBytes   100 Mbits/sec   0.030 ms 702548/958104 (73%)
-> [  3]  0.0-30.0 sec   347 MBytes  96.9 Mbits/sec   0.136 ms 653610/900810 (73%)
->                                                              ^^^^^^^^^^^^^ ^^^^^
->
-> On average, both clients try to send at 389.82 Mbits/sec.  TBF drops 74.7%
-> of the traffic, in order to keep veth0's egress rate (196.93 Mbits/sec)
-> under the configured 200 Mbits/sec.
->
-> Why is this happening?  Consider sk->sk_wmem_alloc, number of bytes of
-> skbs that a socket has currently "committed" to the "transmit queue":
->
->           ┌─────┐         ┌───────────┐     ┌──────────────┐
->      ─ ─ >│ UDP │─ ... ─ >│ TBF Qdisc │─ ─ >│ device queue │─ ┬ >
->           └───┬─┘         └───────────┘     └──────────────┘ [b]
->              [a]
->
-> Normally, sk_wmem_alloc is increased right before an skb leaves UDP [a],
-> and decreased when an skb is consumed upon TX completion [b].
->
-> However, when TBF becomes full, and starts to drop skbs (assuming a
-> simple taildrop inner Qdisc like bfifo for brevity):
->
->           ┌─────┐         ┌───────────┐     ┌──────────────┐
->      ─ ─ >│ UDP │─ ... ─ >│ TBF Qdisc │─ ─ >│ device queue │─ ┬ >
->           └───┬─┘         ├───────────┘     └──────────────┘ [b]
->              [a]         [c]
->
-> For those dropped skbs, sk_wmem_alloc is decreased right before TBF [c].
-> This is problematic: since the (a,c) "interval" does not cover TBF,
-> whenever UDP starts to send faster, TBF simply drops faster, keeping
-> sk_wmem_alloc balanced, and tricking UDP into thinking "it is okay to send
-> more".
->
-> Similar thing happens to other shapers as well.  TCP behaves much better
-> than UDP, since TCP slows down itself when TC egress fails to enqueue an
-> skb.
->
-> ____________________
-> [II] Design Overview
->
-> Hacking sk_wmem_alloc turned out to be tricky.  Instead, introduce the
-> following state machine for sockets:
->
->    ┌────────────────┐  [d]  ┌────────────────┐  [e]  ┌────────────────┐
->    │ SK_UNTHROTTLED │─ ─ ─ >│  SK_OVERLIMIT  │─ ─ ─ >│  SK_THROTTLED  │
->    └────────────────┘       └────────────────┘       └────────────────┘
->             └─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ < ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─┘
->                                     [f]
->
-> Take TBF as an example:
->
->    [d] qdisc_backpressure_overlimit()
->        When TBF fails to enqueue an skb belonging to an UNTHROTTLED socket,
->        the socket is marked as OVERLIMIT, and added to TBF's
->        "backpressure_list";
->
->    [e] qdisc_backpressure_throttle()
->        Later, when TBF runs out of tokens, it marks all OVERLIMIT sockets
->        on its backpressure_list as THROTTLED, and schedules a Qdisc
->        watchdog to wait for more tokens;
->
->      * TCP and UDP sleeps on THROTTLED sockets
->      * epoll() and friends should not report EPOLL{OUT,WRNORM} for
->        THROTTLED sockets
->
->    [f] qdisc_backpressure_unthrottle()
->        When the timer expires, all THROTTLED sockets are removed from TBF's
->        backpressure_list, and marked back as UNTHROTTLED.
->
->      * Also call ->sk_write_space(), so that all TCP and UDP waiters are
->        woken up, and all SOCKWQ_ASYNC_NOSPACE subscribers are notified
->
-> This should work for all Qdisc watchdog-based shapers (as pointed out by
-> Cong though, ETF seems like a special one, I haven't looked into it yet).
->
-> (As discussed with Cong, a slightly different design would be: only
->   mark OVERLIMIT sockets as THROTTLED when:
->   
->   1. TBF is full, AND
->   2. TBF is out of tokens i.e. Qdisc watchdog timer is active
->
->   This approach seems to have a slightly lower drop rate under heavy load,
->   at least for TBF.  I'm still working on it.)
->
-> __________________________________
-> [III] Performance Numbers & Issues
->
-> I tested the same setup [V] after applying this patchset:
->
-> [  3] 10.0-10.5 sec  6.29 MBytes   106 Mbits/sec
-> [  3] 10.0-10.5 sec  5.84 MBytes  98.0 Mbits/sec
-> [  3] 10.5-11.0 sec  6.31 MBytes   106 Mbits/sec
-> [  3] 10.5-11.0 sec  6.01 MBytes   101 Mbits/sec
-> <...>                              ^^^^^^^^^^^^^
->
-> [  3]  0.0-30.0 sec   358 MBytes   100 Mbits/sec  62.444 ms 8500/263825 (3.2%)
-> [  3]  0.0-30.0 sec   357 MBytes  99.9 Mbits/sec   0.217 ms 8411/263310 (3.2%)
->                                                              ^^^^^^^^^^^ ^^^^^^
->
-> On average, drop rate decreased from 74.7% to 3.2%.  No significant
-> affects on throughput (196.93 Mbits/sec becomes 197.46 Mbits/sec).
->
-> However, drop rate starts to increase when we add more iperf2 clients.
-> For example, 3 clients (also UDP -b 1G):
->
-> [  3]  0.0-30.0 sec   232 MBytes  65.0 Mbits/sec   0.092 ms 104961/270765 (39%)
-> [  3]  0.0-30.0 sec   232 MBytes  64.8 Mbits/sec   0.650 ms 102493/267769 (38%)
-> [  3]  0.0-30.1 sec   239 MBytes  66.8 Mbits/sec   0.045 ms 99234/269987 (37%)
->                                                              ^^^^^^^^^^^^ ^^^^^
->
-> 38% of the traffic is dropped.  This is still a lot better than current
-> (87%), but not ideal.  There is a thundering herd problem: when the Qdisc
-> watchdog timer expires, we wake up all THROTTLED sockets at once in [f],
-> so all of them just resume sending (and dropping...).  We probably need a
-> better algorithm here, please advise, thanks!
->
-> One "workaround" is making TBF's queue larger (the "limit" parameter).  In
-> the above 3-client example, raising "limit" from 200k to 300k decreases
-> drop rate from 38% back to 3.1%.  Without this patchset, it requires about
-> a 400k "limit" for the same setup to drop less than 5% of the traffic.
->
-> ____________________
-> [IV] Synchronization
->
-> 1. For each device, all backpressure_list operations are serialized by
->     Qdisc root_lock:
->
->     [d] and [e] happen in shaper's ->enqueue() and ->dequeue()
->     respectively; in both cases we hold root_lock.
->
->     [f] happens in TX softirq, right after grabbing root_lock.  Scheduling
->     Qdisc watchdog is not the only way to wait for more tokens, see
->     htb_work_func() for an example.  However, they all end up raising TX
->     softirq, so run [f] there.
->
-> 2. Additionally, we should prevent 2 CPUs from trying to add the same
->     socket to 2 different backpressure_lists (on 2 different devices).  Use
->     memory barriers to make sure this will not happen.  Please see [1/4]
->     commit message for details.
->
-> ______________
-> [V] Test Setup
->
->      # setup network namespace
->      ip netns add red
->      ip link add name veth0 type veth peer name veth1
->      ip link set veth1 netns red
->      ip addr add 10.0.0.1/24 dev veth0
->      ip -n red addr add 10.0.0.2/24 dev veth1
->      ip link set veth0 up
->      ip -n red link set veth1 up
->
->      tc qdisc replace dev veth0 handle 1: root \
->          tbf rate 200mbit burst 20kb limit 200k
->
->      # servers
->      ip netns exec red iperf -u -s -p 5555 -i 0.5 -t 1000 &
->      ip netns exec red iperf -u -s -p 6666 -i 0.5 -t 1000 &
->
->      # clients
->      iperf -u -c 10.0.0.2 -p 5555 -i 0.5 -t 30 -b 1G &
->      iperf -u -c 10.0.0.2 -p 6666 -i 0.5 -t 30 -b 1G &
->
-> Thanks,
-> Peilin Ye (4):
->    net: Introduce Qdisc backpressure infrastructure
->    net/sched: sch_tbf: Use Qdisc backpressure infrastructure
->    net/sched: sch_htb: Use Qdisc backpressure infrastructure
->    net/sched: sch_cbq: Use Qdisc backpressure infrastructure
->
->   include/net/sch_generic.h | 43 +++++++++++++++++++++++++++++++++++++++
->   include/net/sock.h        | 18 +++++++++++++++-
->   net/core/dev.c            |  1 +
->   net/core/sock.c           |  6 ++++--
->   net/ipv4/tcp_ipv4.c       | 11 +++++++---
->   net/sched/sch_cbq.c       |  6 +++++-
->   net/sched/sch_generic.c   |  4 ++++
->   net/sched/sch_htb.c       |  5 +++++
->   net/sched/sch_tbf.c       |  2 ++
->   9 files changed, 89 insertions(+), 7 deletions(-)
->
