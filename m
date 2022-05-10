@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8256E520A07
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 02:20:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0744B5209F7
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 02:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233663AbiEJAWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 20:22:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
+        id S233728AbiEJAWl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 20:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233614AbiEJAWa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 20:22:30 -0400
-Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A14B28E4C0
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 17:18:31 -0700 (PDT)
-Received: by mail-pj1-x104a.google.com with SMTP id z14-20020a17090a66ce00b001dd05e92bb8so377630pjl.4
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 17:18:31 -0700 (PDT)
+        with ESMTP id S233634AbiEJAWb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 20:22:31 -0400
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E6128ED15
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 17:18:32 -0700 (PDT)
+Received: by mail-pl1-x649.google.com with SMTP id s2-20020a17090302c200b00158ea215fa2so9029864plk.3
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 17:18:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=Dj8G52Ku/C8Y7g0RB9bNxhRV9jY61G7LwBKsHFtUSBY=;
-        b=T2/IAHh55Gjn5HeBRFdMbJMuKc4A52+bUpWlUzeffogFLw8TTHeFLtYgq22aCDSH0T
-         9m4JTdgAoZuuUHr5I3kddwnsxcs8TQAQHDjK0UzNNzDxg/le5nOw/ffd5aukwJ4o5odv
-         hqrUXfaotL2uO9PHctmV7H/6ClL+ttTG+dlAwNNowSl/QZnHkF0tmiub103C3Lc+H366
-         YaCrxgdzJ1UEE5C+opIeGU7M6jGjOoESS0Kq0WQGfx5CJSHP7FogfGa56LdFw0/8ZBX/
-         QYaa6FmxrCLIdWPx0PReW/umNNuLKbGeFGSlAXTWp7OOLAXyLtxRE/8udLP34ZfvVWyw
-         p5Rw==
+        bh=2lpWRE3YG+N9rpa27nVaVWWHXRfllKAdvtsLrNhKAK8=;
+        b=E2tVTWuknXlQ+T7MTDseqm2kLasAoY5TbquTKQN6G7HFagvNqmuYGwrGCvXPasSU3N
+         X7Hfaz6BkAsSlJCS8floN1LW1Ls3ez8PP3Qk4CDVxNmG8LczACkldG8ojDGR0v0+Q7lZ
+         21MumA+UYt52X45SeiI4gFrF5deapKiOdu+hj+4jT0AI8QNFnGPAtcYnE+rE1vLh3I/p
+         DgTM+ee4LV0B+gFa0sepONWuiGDP56tlAl4OGQqNbhtSDbkgWBB0l4UraO/yy1Apvxzl
+         ZeZuNJv+q2z07LlTR07+RdQp7xf+QnHW2FhcVMIRWFBWLCQI9fLvZVExE5a870tRXnw3
+         sazg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=Dj8G52Ku/C8Y7g0RB9bNxhRV9jY61G7LwBKsHFtUSBY=;
-        b=PNDwW+9UBvjt14AdcW2MxRu90w/cCsGzVI+GvtRbn38Jtsq5X7yFiiP+qodc028FHa
-         2GEQjNpf5pmvdTZPxeKxsMxBoDOWdBPd3rxsKSwy97/S5BW0K81KRofYckB7IJl4g+bN
-         52XXc/J9Z6qZTc75Uf7JKr6tiIakeUccQveu13aj+4HmzLsF3UwX6CjKzDs9YwvBzlkr
-         8GdETEf9Sa4zyysuq2y9Ea3DOLFPaD3U+X/6WDw02BkLH6CQlJYgUeY2Hj7InvquGuiV
-         vOL+liP2/7ogyxJRSSZihgr5IIlEmehFor5nfVw2Ap1yZTZUU3dMYlGI0FzTbfvbu6pN
-         4FZg==
-X-Gm-Message-State: AOAM530oj7CSF10GDWE8OIlyu5hY+9u9LSNCEOqN66+3vWFvQtnusCLJ
-        DAzRZtXwXIizJ6jFKVirpgM+s30Pa7iDFYc4
-X-Google-Smtp-Source: ABdhPJwJDYWCoQr30dyGFQU8Ug2nQEwX5PR9g5M5GMtyX4z/IRwxNHeNkD3NdPQj8xC89ISB2tVjV9cDHDleViKi
+        bh=2lpWRE3YG+N9rpa27nVaVWWHXRfllKAdvtsLrNhKAK8=;
+        b=i4jre3vb++vggjBUE5hP1zf/e+WqjtHHPGKnt4W/ckM+0a0yrJinryJ2glTw/3l9Ds
+         Q9FB07DJ4E1/QLleUPJYikpNkpUWioA+5Pc2R5kuYHiGrTF2iosRiskvObhBsdBipmJy
+         5oXdGQLYYG7foqHAXWvdVgk8h1G/7aIGfM773kqsju2KHT7EFks4xE0vX3HOKwKVk1TS
+         uhCjZyMir1SZzTQo5lpsX/zYnMnXG5G6//rKWfmGTUvt5i0or0a7ytpIznpj8YRv8viX
+         gUjR4RlrnztwO+98C/TiJwyP1V0LoXcNsB5EHlSYPSgeDdNRElHGkXzAWMmcj+ag4bOq
+         9ztg==
+X-Gm-Message-State: AOAM5335ZGopO/2I/+y4qVhLxflIOfmD+qAtm4HYEzc7lUH7OE25uZfN
+        ubFuVamC+OW7euuhjFNJB/v33fB2J4EkEVnE
+X-Google-Smtp-Source: ABdhPJy/UitjFbSu8JI5SJOkgoBGVuKW70iU2528pDg3GbFKneC3JYejg17wXmGVU2MICHcJbmM/y4RyYnBm86oa
 X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a62:fb0f:0:b0:4f2:6d3f:5ffb with SMTP
- id x15-20020a62fb0f000000b004f26d3f5ffbmr17950305pfm.55.1652141910739; Mon,
- 09 May 2022 17:18:30 -0700 (PDT)
-Date:   Tue, 10 May 2022 00:18:04 +0000
+ (user=yosryahmed job=sendgmr) by 2002:a63:8ac7:0:b0:3aa:fa62:5a28 with SMTP
+ id y190-20020a638ac7000000b003aafa625a28mr15111188pgd.400.1652141912340; Mon,
+ 09 May 2022 17:18:32 -0700 (PDT)
+Date:   Tue, 10 May 2022 00:18:05 +0000
 In-Reply-To: <20220510001807.4132027-1-yosryahmed@google.com>
-Message-Id: <20220510001807.4132027-7-yosryahmed@google.com>
+Message-Id: <20220510001807.4132027-8-yosryahmed@google.com>
 Mime-Version: 1.0
 References: <20220510001807.4132027-1-yosryahmed@google.com>
 X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [RFC PATCH bpf-next 6/9] cgroup: add v1 support to cgroup_get_from_id()
+Subject: [RFC PATCH bpf-next 7/9] cgroup: Add cgroup_put() in !CONFIG_CGROUPS case
 From:   Yosry Ahmed <yosryahmed@google.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -83,41 +83,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The current implementation of cgroup_get_from_id() only searches the
-default hierarchy for the given id. Make it compatible with cgroup v1 by
-looking through all the roots instead.
+From: Hao Luo <haoluo@google.com>
 
-cgrp_dfl_root should be the first element in the list so there shouldn't
-be a performance impact for cgroup v2 users (in the case of a valid id).
+There is already a cgroup_get_from_id() in the !CONFIG_CGROUPS case,
+let's have a matching cgroup_put() in !CONFIG_CGROUPS too.
 
+Signed-off-by: Hao Luo <haoluo@google.com>
 Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
 ---
- kernel/cgroup/cgroup.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ include/linux/cgroup.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/kernel/cgroup/cgroup.c b/kernel/cgroup/cgroup.c
-index af703cfcb9d2..12700cd21973 100644
---- a/kernel/cgroup/cgroup.c
-+++ b/kernel/cgroup/cgroup.c
-@@ -5970,10 +5970,16 @@ void cgroup_path_from_kernfs_id(u64 id, char *buf, size_t buflen)
-  */
- struct cgroup *cgroup_get_from_id(u64 id)
+diff --git a/include/linux/cgroup.h b/include/linux/cgroup.h
+index 5408c74d5c44..4f1d8febb9fd 100644
+--- a/include/linux/cgroup.h
++++ b/include/linux/cgroup.h
+@@ -759,6 +759,9 @@ static inline struct cgroup *cgroup_get_from_id(u64 id)
  {
--	struct kernfs_node *kn;
-+	struct kernfs_node *kn = NULL;
- 	struct cgroup *cgrp = NULL;
-+	struct cgroup_root *root;
+ 	return NULL;
+ }
 +
-+	for_each_root(root) {
-+		kn = kernfs_find_and_get_node_by_id(root->kf_root, id);
-+		if (kn)
-+			break;
-+	}
++static inline struct cgroup *cgroup_put(void)
++{}
+ #endif /* !CONFIG_CGROUPS */
  
--	kn = kernfs_find_and_get_node_by_id(cgrp_dfl_root.kf_root, id);
- 	if (!kn)
- 		goto out;
- 
+ #ifdef CONFIG_CGROUPS
 -- 
 2.36.0.512.ge40c2bad7a-goog
 
