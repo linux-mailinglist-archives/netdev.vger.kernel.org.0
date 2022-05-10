@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 535EC520D68
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 07:58:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED8F4520D6A
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 07:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236910AbiEJGCK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 02:02:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50458 "EHLO
+        id S236927AbiEJGCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 02:02:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236905AbiEJGCA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 02:02:00 -0400
+        with ESMTP id S236903AbiEJGCC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 02:02:02 -0400
 Received: from NAM10-MW2-obe.outbound.protection.outlook.com (mail-mw2nam10on2073.outbound.protection.outlook.com [40.107.94.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C702266F34
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 22:58:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AD22764EB
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 22:58:05 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bM62gVDN+SMv4XIghaKupGEq/Pe8Tz1xsqA12mPJSH7l1SFLo2Hn6gpNhlKJmD/BMomoU3lmiv2TCqfcx6m37cFlfbHMNKnmv5Vj7RYaxfyh7mf5MhufooQJELwuKLOKuNUqrzOkhC4UcCn/MtBwN9rgA6JtJ8QpSXHIuMBEhuCKBz3l1Cc8XfNmQkXOsmloA4Cyzu/2zEux4kIe5XIEQPkZUyVIiLCajHhNoJqJvlv5jIhlVwW+0M7EiOyYQnFyxIkUOVZkscdVgkeyBG/1pAEhOW7RVzO3plM8Hnw1bQx/iHHMf5GGZpovfUqsxcohWecdkRGUjH5b3uB8LPPLgQ==
+ b=OKmZJtM6iWVAh03aEJ5AiBbRpo0eMcCNWgHhtaVw4u0iJBwjIBRS+VTeMiwGN0A3zQ1VZjbBuktxEf/7BcWwomwETaX3iJ0quyD7k/sW/S2Li9uiKz4hyjuUzikFKDZmpzkE/eJpTFsm/lYM3WtECGldoH4WV8O2imOu1i+uz9vhJOfMShQ2szzxHp5aHCHrZcMMVaxQVb0ieXINzsqGA+94GxNeXvzL8WHGQqimValj0TDs1FdwrPcOl8YY9UNAD6cr03VpzrBNu5Ku/X5ic/hazrg0eWX1jQfJAhYhG3DG17cts4RLzkqU+eCgMfIlLG2tEmmDRSiOEtM+kKkwkQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=atqOzSB2ToMkzbnCWeR+bLtX2EsF0YrqdnfHZYJlkoQ=;
- b=IzrTE9TpX91jIooU96uLyi/MKBcoJX+MIm6q+0OwXPNue/IaMHFNlbKqo+ZVhSmuojxaM2QUi1uzmBwQL7kFF+6eEqCzZF/tlpSE3VAKXODqyjgx3IB2BXjKfrdY2KhwSuWOd93+JAwpCA4zKEKrwY4YQaX5cc28cdQUEYJnxFs8iN+t+Gosuv15ZbqIMCXkg70mHv4R8hxa4Ku6ho+Xcl6+buF+VQeGPsfi638DRw/qZ379WUw9m4UAF2k17j8ivMkPXMKD+RITmg79dftJPm7ZogdmCcifCZUSYJlgWfMymi/LKn0sYbSL7M2+j/+X6lw+y+o3FJ8/aTFvpYJgNg==
+ bh=ACObdb178CSBlNpesNroGPFPy5Kq36mtFRI2Z308tQM=;
+ b=DiErXINyyOKvGEI59TcVuGeK1Lria5kQW3qYGGNzzeLGPMZZEMMzOM3Gy1bmEGA685aZk96gz5x5SGwb6k3U3uRhGuKKA2DXrZS68c0u1e55QnU7Y6kI9qPOUiOTClJ1vq2mpmOJmEwWyEs9GOs2hEkt3S5D2BAyV/C6OJi94Kyllr94B1giNIGj8+lmWfZCNNv2sajWprV2mGh541ejC3UPPb+pMwNSOLNWiXsDeW/1Ll2LMhgdSH5fyXUNtqXBOnu22EznibJZ+vTYJDLRxJMEiujk7lyXMjnTCClJ8tIiYRUbX6xndYEuyeGjtYBsvfi6xIIngM7L34eSjoqd4g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
  dkim=pass header.d=nvidia.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=atqOzSB2ToMkzbnCWeR+bLtX2EsF0YrqdnfHZYJlkoQ=;
- b=WXUmxzOjHYzMMwRGbQnsBmYF5itJA+gHjeR57MrDpM68K8+pm2Nu37pNKCCX2beFTinHGCy4WUsqxKCifaIENxUmlmfdcnRh/2S+0+ieadLWDO1+kCmCVzmfkwDSZt2HOMdw6hm2hP/nPev/1OcYHsWCSJHNNmk8o7X9KT8ImXICrOa6px7wLZpzKq4wY+G4D1lj/SZ3fU+swndeV9L0lHvF8iIHX9T3aOZP1VNpKX3OiRD9VUCtQE/NFBukLe/tY6a4+hWP8tuiQ2P7bXDzEJA+NLhJ1RA82fMzfyQOaNzesmIBMZRVYVk4TiqQV7NLYFRV5hajHdPLAGEnuiI4Hg==
+ bh=ACObdb178CSBlNpesNroGPFPy5Kq36mtFRI2Z308tQM=;
+ b=NgS/whYsa28p8S9fc7y1wxzm2WcuonV/dhX2J5PG128zVHZClJ2Im3nO39+k4423knfm2L82xp6K1CKLWUycwFMJ3e345xUNPSPlFL/dyxoVrIMALUihwFaKCA8rbKDwczuApY/fQZSXmC5JL1rvClXIicZIIGzhkHPOKMbifWd2Nspb7hU4jseBOlE3DP3mKZbhAwVlwoWOm+E3eZkOC5iAGyqkQgXOldtoRJLmQc14fCb2MMQNzwNfRA6ogfC6dNW5n4+dIVc9Xr5jbvm6Jamnq6nQDbGMwINwvRQu6Qr/jS5Rp5no+3cfG+RNKcW+z78bZImh0ON7Ar5evyXyDg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nvidia.com;
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
  by CY5PR12MB6383.namprd12.prod.outlook.com (2603:10b6:930:3d::12) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5206.25; Tue, 10 May
- 2022 05:58:02 +0000
+ 2022 05:58:04 +0000
 Received: from BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
  ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 05:58:02 +0000
+ 05:58:03 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -47,68 +47,67 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     netdev@vger.kernel.org, Mark Bloch <mbloch@nvidia.com>,
         Maor Gottlieb <maorg@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 03/15] net/mlx5: Lag, expose number of lag ports
-Date:   Mon,  9 May 2022 22:57:31 -0700
-Message-Id: <20220510055743.118828-4-saeedm@nvidia.com>
+Subject: [net-next 04/15] net/mlx5: devcom only supports 2 ports
+Date:   Mon,  9 May 2022 22:57:32 -0700
+Message-Id: <20220510055743.118828-5-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220510055743.118828-1-saeedm@nvidia.com>
 References: <20220510055743.118828-1-saeedm@nvidia.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: BYAPR02CA0046.namprd02.prod.outlook.com
- (2603:10b6:a03:54::23) To BY5PR12MB4209.namprd12.prod.outlook.com
- (2603:10b6:a03:20d::22)
+X-ClientProxiedBy: BYAPR01CA0006.prod.exchangelabs.com (2603:10b6:a02:80::19)
+ To BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0bd2c60a-db4d-4b93-0fa3-08da324a0b41
+X-MS-Office365-Filtering-Correlation-Id: 028dc94e-6222-440d-8740-08da324a0c04
 X-MS-TrafficTypeDiagnostic: CY5PR12MB6383:EE_
-X-Microsoft-Antispam-PRVS: <CY5PR12MB6383D824B70A06E3B3BD51D0B3C99@CY5PR12MB6383.namprd12.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <CY5PR12MB63834B74AA7CD9A61335647DB3C99@CY5PR12MB6383.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Ds+d6h6Q/25twWx03nOrU46hVeeJqhVLTQfeEgZ4d+xBEPR3HaX5txwuhN1AulkwzNnhW1bvNg7TMs1SRkyGgcgOFYPtQWwciVhTrCLju9eQ+jtagxLCoEKiPbaZfakUhkv+esky6KCubBzM0kiOhVB+4+GHBrPZ6w+IDemVUWm6c1SKcHTwMrrkm3ApVtTVctlDM03tWXnqB6qVLzHEMz6YVvHXnJcwEV61sOcIU489+2ikOJjD9zVzGgEm7EqalOHjTBb+Dcnge9/I+K9OvNVDFr6jgzrHQxiC+sXO85v3fi73gWoHGJPx1xeqqrsarWUNuGHnavRBywvCeK+qqUjDJ7WmCE5jOlEw4kTs2NbSY9DnOD6hbF9MZxM2fmue1MTf9PPKAAtLYOSe1AOGAV4CrnjCsAQYXa0DvREKcgtJdlTmNe/78+tiLcZ7/7E97wrbKRBuvu5fdTA9zqF26SAG6D6qeOS6H3Z2nqco7KPfuVE8bhCXwfU01/qvsDX9qJdBfsLCXzrKhdVX5s0ZHGX27CqD+vN0O+koXLfOqlZ0LgiUUiD3KlE2KbmktKxyfvV37lbDyv2m3UhzyObAGg/1n3pKenEWb6YSTR0wksMTnqmYn4PsJHp0YGaPL80w0XGpNlNDrZcwcy4VcNqA9Q==
+X-Microsoft-Antispam-Message-Info: VDsANtH/KtHpD+gB9IHwKyO+oycsI+aHm+b/y2wa0ef/U8N9Y5IJUnVszh3NCQLnJJ9RrZ+r10Qj5r/VxQanTVBmFoUfFIoZM0yPP3EN4omX0Paa/eE5QD6WnFNgdvLEXxxDwBgxfg10T+AuF2GFO1XMkk+H7QRjMwunls3gq1Sg7JiCj0eULanAlV+PJuxYnjhY50fCmqN4xtb+YZJxGoFKkfoPbhZV1JLlVQhlSWT2roOvUKaO68BPP5g8VpgC4bRIL3Q6CMqyS9K0avn+88QgHMnlTMa0FzUet9Gi6LECqCBWERx8VEMmVCRBAHLoj1lUNaMisKcMw25UyoywVamMeauG8GRyj/HZnip0Il+upbm97KX3pwxyN/pn4McjI7lKzSGQCDViUToIWIGkE3hl54ejX3SiNVStOeZoGjnZvO0lGny16OnTDWV0S9TnPag+oSF06oq3mqqd9sCaCZOW/R0QREepLnVitrRHVL3WpjwfeqXvlCbD2hstQbS2m8PeFd2nzdo0KPv/WGLm7dX5r+rlHaLP4eh71pG9i8Zd3jy9SSCO+YTmH+HBLK736dQmP0C0NEtrPbFw5fhK0BBZKJTEwJDW1HJckteofxuzUJDIhEcx5dXzprDptQARUHp9TV11XVk4h0wHvssf5A==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(110136005)(316002)(8676002)(36756003)(2906002)(6506007)(107886003)(2616005)(1076003)(83380400001)(38100700002)(186003)(4326008)(8936002)(6486002)(5660300002)(508600001)(6666004)(66556008)(66946007)(66476007)(86362001)(6512007)(54906003);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sZcrFMIroIOUiUrZ3MT3gaKBth8ACFiJoDp8WullSA17b7carhbr+K64b02E?=
- =?us-ascii?Q?vaR3QMQF/n9BfEzZye9ahhn31BP9VlafyaTYO07l+u96nV1S/cht64rZazyf?=
- =?us-ascii?Q?VWAuyJQ1QDcm2XMi7PcLYw7xIUgZWSJQOPXlF8tjxjGtvxW7SuFARqB6+I6m?=
- =?us-ascii?Q?Hei/KSNqy8gmt+OF1XgoxxnKxckD9yRsQGCrbUHw2ZN0dDGJPnA1d1eMkGVW?=
- =?us-ascii?Q?nloeNvZ075hzZ/uf5asilYIDIClT23sXFYXTLUFy8khkej7ir5sJlOqXQIqm?=
- =?us-ascii?Q?Y2luil7gZlnE8CnW/9b6IeRbyFnMXjqfOEHZazl+bTR42ywdP8TW9i4LbSw4?=
- =?us-ascii?Q?h8NKuT4oBghDrqLZxt8Bb/TeqRjlvQjF0q8HQ1+KjyjfGfwP96SEjAa6hA+7?=
- =?us-ascii?Q?q0Fw85dt3OW29byesThyJcRdvoYwAr3YihmiY4ERB0gWcsbTBRbrFo1zNBFY?=
- =?us-ascii?Q?fd2HMZcYB982uNj9emYzUJLDCKZsjJQMuPXf8969rjqI1MkYIc2f/D69PaI8?=
- =?us-ascii?Q?sk+AXUrfpkV1I03tHKANOVbJrYc7+nj74oMVEqXm5CfqpKU+hYeJLHlH9hsr?=
- =?us-ascii?Q?EogzLl2IiEEpEYoV5CLyNW1cx7btsdSecpv+f/2nbkc3utaFf11tLCBkp4+7?=
- =?us-ascii?Q?rPyNg+xyHsGipCsVQSkUeceX+x3BaIoZAK9+BmW02pNdJH2nhm31FNRTAZ4w?=
- =?us-ascii?Q?lSZ4xGARBRfn8v9h1xXrN4Gl0EmVG0lAfEb+7nJrhyX6i07K59K594zXBjm5?=
- =?us-ascii?Q?59nCqhNEWOxX1+5U4IRUIfOrSx6IdNU+D8SlxgvhT2m7wBYb3Rdvb7zDsgGB?=
- =?us-ascii?Q?8KrObQoTnQq7suvz4+FI9mdv56GspplOgPsMPBChh/PmJjBLcKt79B04zvvD?=
- =?us-ascii?Q?9aGRD8QgWwfeclcKgFSbb0RslFKRTf5bNPFdRFE+1rcEfeJO+saYb4qi4ubH?=
- =?us-ascii?Q?WHFSqDV6I+IwYV6hP3BineKdmvJF60QUm8+84mfGHFLQSJscS24kIenn4Y7y?=
- =?us-ascii?Q?IOjGHKpn2krlmiBZk8QfJFW11pMVjyVtcSoYjzdLBtMXDtPYwJzQbvgc6Ovl?=
- =?us-ascii?Q?IifY10i6I91tXApFKYIhSue/J6/zPY3d6aBPb2ZHPirXXMUj7JUOOqY8gcRs?=
- =?us-ascii?Q?UkOyag8WG0zzcA7p1nkhr1qXw5xdSHx+ZN1moh9MD8GmAjlu/JbP3Mg1SiiC?=
- =?us-ascii?Q?TbpnXRNlYTex0IQnvbOlYc07oTyQpitPhveQYAGOacWJWLz1Q6ku9tgMe6if?=
- =?us-ascii?Q?Yt2jI1kGISqjURXLefuvpbNh8JvxCCsJDrH72RyBlUbOlLkO4G+S8bmjnBF+?=
- =?us-ascii?Q?cOFgqM7VaD4uddlK1yZLdI2ZWefzv7EEGrSZkUP6TnWs8cxDJwkqA9AJbM4A?=
- =?us-ascii?Q?xWg39b47VQrF2limX8UM4TJFxDqc8Y1zlFkTTeSEtgEeIw3zn7GjEu0f3oV4?=
- =?us-ascii?Q?5mUOQmuxi4W4dsuxuOOGmqD5eGlEL6V2fdxlfVA+qrp/Gab81o8GqFCcd1lI?=
- =?us-ascii?Q?LHf5ZI/zoPQtunKiaMIhZpYpyV5x9M57lywlUInNW27JtHW6rCErlFFctcHy?=
- =?us-ascii?Q?28PxirqLWDfrHKOzyO/8P4QB8XDksQ5VlQpdULr5U96scBiKPNrprJdSF/1O?=
- =?us-ascii?Q?ST8yCB5kfvGZ1jM9kwP0NQDqXAhD/NLq/XyJ1xD9nwAwmNZahW3eHWv9eysO?=
- =?us-ascii?Q?Y/fPcyolrZyWC9PWBLgihJaAvromGzj5LIj5X8KKpvPH5exhW5Q4sYTN//ic?=
- =?us-ascii?Q?HciuGX6v87bxCKZs6SejqFLOJwqOjwbinG9QUCap6n7WG9S9YDGv?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?dKpMgY1jx6EOH43KVSFgEDP1qHnQTGQgkrsMVWa3/UXcYf4SgmeEp+EYt+DP?=
+ =?us-ascii?Q?8LIO0j2zPcBU22vxgOpQK3Qk4ONfx71lPiejK6NYtzmQ/zLDYA7xWSCtBe61?=
+ =?us-ascii?Q?xu0bxVTst61OMwdCBxUvXTDXGCd5Y5dWBYg+3OJYP2cqdlXWBRhbqFyE9Bmt?=
+ =?us-ascii?Q?pcMCAR6mxrazEOnN6ZuuNwySbixvwQlCqA5JIn53gi3g6euz/ybmSFewknzc?=
+ =?us-ascii?Q?qvyc7rHRBN6IRoPxiOw2XcEz9FHar9d9lPcgSWvVHL5jpTa+FKz6V8Y8v7Jk?=
+ =?us-ascii?Q?6krsUSl3LvIcCiJVXBWoImaoqBKOoT3gc4oFuY8vb2ZyJepGjJF+PTiRced0?=
+ =?us-ascii?Q?v7ee5KAN6EdA47qIJTGDiXB0ciPbv44ggZE+TDcfnZbSReWbs/uOZiZfhUtw?=
+ =?us-ascii?Q?SQduGtja6bGyn82CA4dpWFK70jdGU/dn+B9p97Dsxynzs5P2szeM1IrVDVZ1?=
+ =?us-ascii?Q?Bmti5KOCawjJbm8ti1hNyBTV+H/yF3dY0akOBJUKpSpaIiDEglcBZGUxzijw?=
+ =?us-ascii?Q?oJYgqEgFhP4ypW+/oPjCe+jMXGYlQ8CtJnx0yoPv+vVE6susNiKwTLhSm77u?=
+ =?us-ascii?Q?eI4/6BeJp5J0y7gAD7Yf/iJUVk85AWI5/qqBm3M98+ozZ0wBylyXaelQ5bTg?=
+ =?us-ascii?Q?IjGuqQ6Ov7+Qm+3lk/EsX5xPZToQ+nIWq6Pl0r64/Yenqkmp7dMH0kCRuvCG?=
+ =?us-ascii?Q?kUw0wZ87ZooM7Jd196nT5lba/iew30KDpVtZTIGYlUpNOB2lZNfa5OAB6QqK?=
+ =?us-ascii?Q?uh+Ci8vLso/0pE4pnZzObPD4E2wR+R3L92QHa7kka+FFVa1KXV9pPKDRE1U/?=
+ =?us-ascii?Q?JaTrDPrTzhD+52ih3XyIBPcaRgsXkuf/Td+jdMCBavv0dZR/TosJMSpSHMZc?=
+ =?us-ascii?Q?YODwL6c85vuc4bzFeD9ulW4LVjsa9v4JV9MUX4Sgy7cdheRZaVIUjCNDfHGq?=
+ =?us-ascii?Q?TAnHFRBep3jdiDj+Fo/HI2hBT0caDilqD78lWl36qth5wQF5OQgtMItx7Eew?=
+ =?us-ascii?Q?Sw6dEzGHuqqNEOOwdu7XCNb1fPblHDPHxlD+mfzSWR8Bre6Y+jbQsO1evJHc?=
+ =?us-ascii?Q?/P5D6kmitq8tHVT96TklfvF+7abGpf89g/npqmpZoShp4SujqfBrD8oRCyIW?=
+ =?us-ascii?Q?dl9S0Y/gAKNU0OS7VPOsN0ZO2+ONPlp/opmLUbI38ctsIvcfji/fAJh0E9+U?=
+ =?us-ascii?Q?y5biRu/cxBXsDcJQ3vQ9I3orh8yAAXl7SK53kXxEQzf3uiCO3DRtQCVIeU61?=
+ =?us-ascii?Q?W2KxtMcPKGFwawE7we3zYEEAzZ6BNDEynyHFIe0TQbFWblaHS6lEjuEdZIJH?=
+ =?us-ascii?Q?eUrjeN1G3n0tvjZzNt6HClT8NzCCNaNfgMVp7rmxOIoo9lTTqBeF+hWwIHQ/?=
+ =?us-ascii?Q?MQXek19YMCmDcb8o0cUeWrj54Zu8V28svNvo37/+oY9NKmEFsMk3S2PuYL5U?=
+ =?us-ascii?Q?QWT3eKgzPWxvtMem+Tu1lpIW/Wu7ryoQ9vLGIDS04bSzihUt8/mevIdDR661?=
+ =?us-ascii?Q?O9elnBOGh6sI91tmH3uSAyLz+8+EBdZWeS/s25iF4oxaQ4KoSKCsk5DBhIZi?=
+ =?us-ascii?Q?1xAld62w5hjA+Svg8rcbY9to0ZXWwlBCJOq+0O6qN9p1ZoIRI01QhAgZjBZY?=
+ =?us-ascii?Q?B/ASHUqgCDmmgHR0CJ3Ld/MMy8YdvHCuTU4zdrC/IXiA9ycUraJ4xZvkSzxK?=
+ =?us-ascii?Q?JwfDUMo5uwpR601zINUrUrv3SRQhYlLJTqQIZbiUMTsa3xkX/On4lNA2DuLW?=
+ =?us-ascii?Q?JbIYd6D4UCy7Qv8ZXLCQFAWY9FxIQWhEBbPE9EfUK3FLOS/XP5sM?=
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0bd2c60a-db4d-4b93-0fa3-08da324a0b41
+X-MS-Exchange-CrossTenant-Network-Message-Id: 028dc94e-6222-440d-8740-08da324a0c04
 X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 05:58:02.5846
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 05:58:03.8515
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 5ZvqGZm3jfDm5+0gnWtadKgo37fM5OqmpJ0fPBHhM410tRiLfNYtUD8ZS4L+gN7GHEq3B83bblHOIdPRigGqng==
+X-MS-Exchange-CrossTenant-UserPrincipalName: g+lFwAJt3fcmu2fCLHT2LUevwaNUlUbMbgvW6F1jGv2PMDMst3Xd1GrJMBHNalUS9gOZvJki/g8/9/dHwfyfzg==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY5PR12MB6383
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
@@ -123,100 +122,101 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mark Bloch <mbloch@nvidia.com>
 
-Downstream patches will add support for hardware lag with
-more than 2 ports. Add a way for users to query the number of lag ports.
+Devcom API is intended to be used between 2 devices only add this
+implied assumption into the code and check when it's no true.
 
 Signed-off-by: Mark Bloch <mbloch@nvidia.com>
 Reviewed-by: Maor Gottlieb <maorg@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/infiniband/hw/mlx5/gsi.c                  | 2 +-
- drivers/infiniband/hw/mlx5/main.c                 | 1 +
- drivers/infiniband/hw/mlx5/mlx5_ib.h              | 1 +
- drivers/infiniband/hw/mlx5/qp.c                   | 2 +-
- drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c | 6 ++++++
- include/linux/mlx5/driver.h                       | 1 +
- 6 files changed, 11 insertions(+), 2 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/lib/devcom.c | 16 +++++++++-------
+ .../net/ethernet/mellanox/mlx5/core/lib/devcom.h |  2 ++
+ 2 files changed, 11 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/infiniband/hw/mlx5/gsi.c b/drivers/infiniband/hw/mlx5/gsi.c
-index 3ad8f637c589..b804f2dd5628 100644
---- a/drivers/infiniband/hw/mlx5/gsi.c
-+++ b/drivers/infiniband/hw/mlx5/gsi.c
-@@ -100,7 +100,7 @@ int mlx5_ib_create_gsi(struct ib_pd *pd, struct mlx5_ib_qp *mqp,
- 				 port_type) == MLX5_CAP_PORT_TYPE_IB)
- 			num_qps = pd->device->attrs.max_pkeys;
- 		else if (dev->lag_active)
--			num_qps = MLX5_MAX_PORTS;
-+			num_qps = dev->lag_ports;
- 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/devcom.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/devcom.c
+index bced2efe9bef..adefde3ea941 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/devcom.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/devcom.c
+@@ -14,7 +14,7 @@ static LIST_HEAD(devcom_list);
+ struct mlx5_devcom_component {
+ 	struct {
+ 		void *data;
+-	} device[MLX5_MAX_PORTS];
++	} device[MLX5_DEVCOM_PORTS_SUPPORTED];
  
- 	gsi = &mqp->gsi;
-diff --git a/drivers/infiniband/hw/mlx5/main.c b/drivers/infiniband/hw/mlx5/main.c
-index 61aa196d6484..61a3b767262f 100644
---- a/drivers/infiniband/hw/mlx5/main.c
-+++ b/drivers/infiniband/hw/mlx5/main.c
-@@ -2991,6 +2991,7 @@ static int mlx5_eth_lag_init(struct mlx5_ib_dev *dev)
- 	}
+ 	mlx5_devcom_event_handler_t handler;
+ 	struct rw_semaphore sem;
+@@ -25,7 +25,7 @@ struct mlx5_devcom_list {
+ 	struct list_head list;
  
- 	dev->flow_db->lag_demux_ft = ft;
-+	dev->lag_ports = mlx5_lag_get_num_ports(mdev);
- 	dev->lag_active = true;
- 	return 0;
- 
-diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-index 4f04bb55c4c6..8b3c83c0b70a 100644
---- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
-+++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
-@@ -1131,6 +1131,7 @@ struct mlx5_ib_dev {
- 	struct xarray sig_mrs;
- 	struct mlx5_port_caps port_caps[MLX5_MAX_PORTS];
- 	u16 pkey_table_len;
-+	u8 lag_ports;
+ 	struct mlx5_devcom_component components[MLX5_DEVCOM_NUM_COMPONENTS];
+-	struct mlx5_core_dev *devs[MLX5_MAX_PORTS];
++	struct mlx5_core_dev *devs[MLX5_DEVCOM_PORTS_SUPPORTED];
  };
  
- static inline struct mlx5_ib_cq *to_mibcq(struct mlx5_core_cq *mcq)
-diff --git a/drivers/infiniband/hw/mlx5/qp.c b/drivers/infiniband/hw/mlx5/qp.c
-index 3f467557d34e..fb8669c02546 100644
---- a/drivers/infiniband/hw/mlx5/qp.c
-+++ b/drivers/infiniband/hw/mlx5/qp.c
-@@ -3907,7 +3907,7 @@ static unsigned int get_tx_affinity_rr(struct mlx5_ib_dev *dev,
- 		tx_port_affinity = &dev->port[port_num].roce.tx_port_affinity;
+ struct mlx5_devcom {
+@@ -74,13 +74,15 @@ struct mlx5_devcom *mlx5_devcom_register_device(struct mlx5_core_dev *dev)
  
- 	return (unsigned int)atomic_add_return(1, tx_port_affinity) %
--		MLX5_MAX_PORTS + 1;
-+		(dev->lag_active ? dev->lag_ports : MLX5_CAP_GEN(dev->mdev, num_lag_ports)) + 1;
- }
+ 	if (!mlx5_core_is_pf(dev))
+ 		return NULL;
++	if (MLX5_CAP_GEN(dev, num_lag_ports) != MLX5_DEVCOM_PORTS_SUPPORTED)
++		return NULL;
  
- static bool qp_supports_affinity(struct mlx5_ib_qp *qp)
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-index 6cad3b72c133..fe34cce77d07 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c
-@@ -1185,6 +1185,12 @@ u8 mlx5_lag_get_slave_port(struct mlx5_core_dev *dev,
- }
- EXPORT_SYMBOL(mlx5_lag_get_slave_port);
+ 	sguid0 = mlx5_query_nic_system_image_guid(dev);
+ 	list_for_each_entry(iter, &devcom_list, list) {
+ 		struct mlx5_core_dev *tmp_dev = NULL;
  
-+u8 mlx5_lag_get_num_ports(struct mlx5_core_dev *dev)
-+{
-+	return MLX5_MAX_PORTS;
-+}
-+EXPORT_SYMBOL(mlx5_lag_get_num_ports);
+ 		idx = -1;
+-		for (i = 0; i < MLX5_MAX_PORTS; i++) {
++		for (i = 0; i < MLX5_DEVCOM_PORTS_SUPPORTED; i++) {
+ 			if (iter->devs[i])
+ 				tmp_dev = iter->devs[i];
+ 			else
+@@ -134,11 +136,11 @@ void mlx5_devcom_unregister_device(struct mlx5_devcom *devcom)
+ 
+ 	kfree(devcom);
+ 
+-	for (i = 0; i < MLX5_MAX_PORTS; i++)
++	for (i = 0; i < MLX5_DEVCOM_PORTS_SUPPORTED; i++)
+ 		if (priv->devs[i])
+ 			break;
+ 
+-	if (i != MLX5_MAX_PORTS)
++	if (i != MLX5_DEVCOM_PORTS_SUPPORTED)
+ 		return;
+ 
+ 	list_del(&priv->list);
+@@ -191,7 +193,7 @@ int mlx5_devcom_send_event(struct mlx5_devcom *devcom,
+ 
+ 	comp = &devcom->priv->components[id];
+ 	down_write(&comp->sem);
+-	for (i = 0; i < MLX5_MAX_PORTS; i++)
++	for (i = 0; i < MLX5_DEVCOM_PORTS_SUPPORTED; i++)
+ 		if (i != devcom->idx && comp->device[i].data) {
+ 			err = comp->handler(event, comp->device[i].data,
+ 					    event_data);
+@@ -239,7 +241,7 @@ void *mlx5_devcom_get_peer_data(struct mlx5_devcom *devcom,
+ 		return NULL;
+ 	}
+ 
+-	for (i = 0; i < MLX5_MAX_PORTS; i++)
++	for (i = 0; i < MLX5_DEVCOM_PORTS_SUPPORTED; i++)
+ 		if (i != devcom->idx)
+ 			break;
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/devcom.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/devcom.h
+index 939d5bf1581b..94313c18bb64 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/devcom.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/devcom.h
+@@ -6,6 +6,8 @@
+ 
+ #include <linux/mlx5/driver.h>
+ 
++#define MLX5_DEVCOM_PORTS_SUPPORTED 2
 +
- struct mlx5_core_dev *mlx5_lag_get_peer_mdev(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_core_dev *peer_dev = NULL;
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index f327d0544038..62ea1120de9c 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -1142,6 +1142,7 @@ int mlx5_lag_query_cong_counters(struct mlx5_core_dev *dev,
- 				 int num_counters,
- 				 size_t *offsets);
- struct mlx5_core_dev *mlx5_lag_get_peer_mdev(struct mlx5_core_dev *dev);
-+u8 mlx5_lag_get_num_ports(struct mlx5_core_dev *dev);
- struct mlx5_uars_page *mlx5_get_uars_page(struct mlx5_core_dev *mdev);
- void mlx5_put_uars_page(struct mlx5_core_dev *mdev, struct mlx5_uars_page *up);
- int mlx5_dm_sw_icm_alloc(struct mlx5_core_dev *dev, enum mlx5_sw_icm_type type,
+ enum mlx5_devcom_components {
+ 	MLX5_DEVCOM_ESW_OFFLOADS,
+ 
 -- 
 2.35.1
 
