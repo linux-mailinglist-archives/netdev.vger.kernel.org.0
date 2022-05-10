@@ -2,48 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B42B7521CE1
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 16:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C93F521D0F
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 16:52:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345078AbiEJOwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 10:52:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54460 "EHLO
+        id S1345156AbiEJOzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 10:55:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345246AbiEJOvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 10:51:10 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9574D2631E2;
-        Tue, 10 May 2022 07:11:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=vlPcmXA97Qhtkz3pBw6LdXf1X8P0UYvVzj4VthO5jgc=; b=e9qBavzt7iSXqotIL+kEfOWSDC
-        iVRppT3Hb/vZk3YrAi/b/1Sks4coJ4CDDP+7PsBf/3PYaPFt1gdo8rsOdKqYQ7smquEWj28eStWqL
-        CRF+oqCbuJG6ZM1a8GSMIH+b891MTAxbko/s3bV28TSILNPx0vJS6lKq9Hi1OrpvIOMJ2yAsDH+AE
-        5UZLLIZnAX0XkUOFElR9JGQkkK04aCtF/juYrAyo+JJs0W0WZech05pCgMVZEF/gDbG3lXHdR+nlg
-        gc7p3pNqQj2cprKtyF3OhhaP7dxC5PNGfWWqohU3giKekM5UQ60wlcwHLGqdoJfnT4tcYUBBcGgto
-        etn8qzNQ==;
-Received: from [177.183.162.244] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1noQa0-000AUZ-9j; Tue, 10 May 2022 16:11:12 +0200
-Message-ID: <58837e3d-0e2a-42ac-f198-9fe7be7aa823@igalia.com>
-Date:   Tue, 10 May 2022 11:10:40 -0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 08/30] powerpc/setup: Refactor/untangle panic notifiers
-Content-Language: en-US
-To:     Michael Ellerman <mpe@ellerman.id.au>,
-        Hari Bathini <hbathini@linux.ibm.com>
-Cc:     linux-kernel@vger.kernel.org,
+        with ESMTP id S1344797AbiEJOzl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 10:55:41 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C9C71A06C;
+        Tue, 10 May 2022 07:16:12 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 932E91F8C6;
+        Tue, 10 May 2022 14:16:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652192171; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=A8/NZJeBAhTKLHLb3PoAvlXD/AvbEgaBaR5HXaRNdkM=;
+        b=BeTzacf3mS4VoGHK6i1jVn2p93FIleajbiX/lqLZYQzEPT5BuEThdtby46ST2AJUboj/I/
+        VqEG9r83Q4xijGW9lCE2hweKm6E7raa+vKstZ+w2OtTvG5P31Un3HT5rf7nvpJdK7CHBFy
+        VZPQPYk1mnBdJ3vUcDiFbXkwBcjlkRU=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 01C5F2C141;
+        Tue, 10 May 2022 14:16:09 +0000 (UTC)
+Date:   Tue, 10 May 2022 16:16:06 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        Matt Turner <mattst88@gmail.com>, rth@gcc.gnu.org,
+        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
         bcm-kernel-feedback-list@broadcom.com,
         linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        bhe@redhat.com, kexec@lists.infradead.org,
         linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        pmladek@suse.com, kexec@lists.infradead.org, bhe@redhat.com,
         linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
@@ -63,21 +59,19 @@ Cc:     linux-kernel@vger.kernel.org,
         paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
         senozhatsky@chromium.org, stern@rowland.harvard.edu,
         tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paul Mackerras <paulus@samba.org>, akpm@linux-foundation.org
+        will@kernel.org
+Subject: Re: [PATCH 10/30] alpha: Clean-up the panic notifier code
+Message-ID: <YnpzpkfuwzJYbPYj@alley>
 References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-9-gpiccoli@igalia.com>
- <3c34d8e2-6f84-933f-a4ed-338cd300d6b0@linux.ibm.com>
- <f9c3de3c-1709-a1aa-2ece-c9fbfd5e6d6a@igalia.com>
- <87fslh8pe3.fsf@mpe.ellerman.id.au>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <87fslh8pe3.fsf@mpe.ellerman.id.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+ <20220427224924.592546-11-gpiccoli@igalia.com>
+ <f6def662-5742-b3a8-544f-bf15c636d83d@igalia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f6def662-5742-b3a8-544f-bf15c636d83d@igalia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,36 +79,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/05/2022 10:53, Michael Ellerman wrote:
-> "Guilherme G. Piccoli" <gpiccoli@igalia.com> writes:
->> On 05/05/2022 15:55, Hari Bathini wrote:
->>> [...] 
->>> The change looks good. I have tested it on an LPAR (ppc64).
->>>
->>> Reviewed-by: Hari Bathini <hbathini@linux.ibm.com>
->>>
->>
->> Hi Michael. do you think it's possible to add this one to powerpc/next
->> (or something like that), or do you prefer a V2 with his tag?
-> 
-> Ah sorry, I assumed it was going in as part of the whole series. I guess
-> I misread the cover letter.
-> 
-> So you want me to take this patch on its own via the powerpc tree?
-> 
-> cheers
+On Mon 2022-05-09 11:13:17, Guilherme G. Piccoli wrote:
+> On 27/04/2022 19:49, Guilherme G. Piccoli wrote:
+> > The alpha panic notifier has some code issues, not following
+> > the conventions of other notifiers. Also, it might halt the
+> > machine but still it is set to run as early as possible, which
+> > doesn't seem to be a good idea.
 
-Hi Michael, thanks for the prompt response!
+Yeah, it is pretty strange behavior.
 
-You didn't misread, that was the plan heh
-But some maintainers start to take patches and merge in their trees, and
-in the end, it seems to make sense - almost half of this series are
-fixes or clean-ups, that are not really necessary to get merged altogether.
+I looked into the history. This notifier was added into the alpha code
+in 2.4.0-test2pre2. In this historic code, the default panic() code
+either rebooted after a timeout or ended in a infinite loop. There
+was not crasdump at that times.
 
-So, if you can take this one, I'd appreciate - it'll make V2 a bit
-smaller =)
+The notifier allowed to change the behavior. There were 3 notifiers:
 
-Cheers,
+   + mips and mips64 ended with blinking in panic()
+   + alpha did __halt() in this srm case
 
+They both still do this. I guess that it is some historic behavior
+that people using these architectures are used to.
 
-Guilherme
+Anyway, it makes sense to do this as the last notifier after
+dumping other information.
+
+Reviewed-by: Petr Mladek <pmladek@suse.com>
+
+Best Regards,
+Petr
