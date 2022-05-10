@@ -2,56 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 40AFC521265
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 12:40:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD105521283
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 12:45:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237498AbiEJKoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 06:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59380 "EHLO
+        id S239996AbiEJKtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 06:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231309AbiEJKoK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 06:44:10 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BE3F286FFA;
-        Tue, 10 May 2022 03:40:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A49DD61790;
-        Tue, 10 May 2022 10:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0AA0AC385A6;
-        Tue, 10 May 2022 10:40:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652179213;
-        bh=EHD5jt5sWyKaNSKhBgZoFlrvLc0kk1Tv6Qen37JCPzw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=hVwFcw2Mn9OHACWfFp9eSmBtyeYQtpJ0rR9LecQt24MkPkgFl6b8jEbgzgsbaYBfV
-         C6Ln0QGViJeAHr70i99JR0AwhZrht1nlVgkvJVGej4Zaep6J0f5vhxBDKl/Px8l8be
-         tU0yd8rqBvdh1qqqPlKkmsqjTLTtIhgUPruIpodZ3lVdIOGgoZIGXjXUdTBGeYN83k
-         zXeaE73PD7UksPcuz4Wn2st5gRV0cGKB+gr3SqscI1ei3edNrNw//ae6UZLOZhZ3yz
-         HZkjDC30Xp/JAKxFR6cRkTu983NkEOE70lsGvWAQ/jubo0Dso93J/YdvZTDAfUeX4K
-         qEggR8iDnPIGg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DB39EE8DCCE;
-        Tue, 10 May 2022 10:40:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S231440AbiEJKtk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 06:49:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0A3B2FD
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 03:45:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652179541;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=plD3D6fn7skqGXxFWcDHbuLMx2cvK0NKTp6AWvmKD9s=;
+        b=Em6jnlEFPxRm3B13MfBm4yN6NHy0pytirY4sBv/y/KeX7fjk4J7D4xYN5ZN0RLofeFeSeM
+        k4z1aOAVfCXhO5z/hFhUFLkqpSpjrh72FWUkCsPWjoahFdeepyXg5akeLAwg/kN75BMgOs
+        RS6DDbjJba/Kh/Wcab40idpnO3A+5hs=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-490-8ZaZSkF2OSuWyqXITcKP9w-1; Tue, 10 May 2022 06:45:39 -0400
+X-MC-Unique: 8ZaZSkF2OSuWyqXITcKP9w-1
+Received: by mail-qv1-f72.google.com with SMTP id j2-20020a0cfd42000000b0045ad9cba5deso10562147qvs.5
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 03:45:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=plD3D6fn7skqGXxFWcDHbuLMx2cvK0NKTp6AWvmKD9s=;
+        b=rUN97DN/RGD2lMhnxE4YfFvAv9SrB0T0IWdp6vEhT3+CC3OTYNdra113PQVdmlv6FQ
+         ACjHgdxjOyB/2LXH8Z36zMOgjnYJ7W7Fw0++hfLOz84+ihHnSKpWUqi6TnorJPMW/wxl
+         5PqXBDvH3pfozK8WysjUhlcF9YirIgF+AS+3vIfe0J762ep1A1av+4V0Y1zuCVuJE7z2
+         4ar/ctjafWZmQ5g4kuJ5+W0RiF4LyBbDvhsvp8QJL4XyMsb8G88rbiPGyvVRBBRuvk/O
+         QjEb2bc5L+QTLbLhKadxhAnIZ+vzqED7tyjhrm74wFdo+Bg6lCTBVwogzOBcTW3Hr1VA
+         Glpw==
+X-Gm-Message-State: AOAM533cF1GJykDmlyTsjeK+vaLvSCk+KyQGz1poz5/TmJELV4jBF7ih
+        vlYyDbUBMJdeI4Sf1ZrP18A0auM7v/lFAumKlJhSdKgWA4l9b5UaqvkgJEaeJf6z5ryfCS29Q2j
+        irpyJ6DBahQOmRZHU
+X-Received: by 2002:a05:622a:309:b0:2f3:b965:f1d with SMTP id q9-20020a05622a030900b002f3b9650f1dmr18919835qtw.314.1652179539379;
+        Tue, 10 May 2022 03:45:39 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyR5Uhu2AwCz7Oy4Dqs8rtOuP91wrsXY4XMyhccwjX2if879YO7+1zxumI2XDQTs3NI7QU8aQ==
+X-Received: by 2002:a05:622a:309:b0:2f3:b965:f1d with SMTP id q9-20020a05622a030900b002f3b9650f1dmr18919824qtw.314.1652179539158;
+        Tue, 10 May 2022 03:45:39 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
+        by smtp.gmail.com with ESMTPSA id n19-20020a05620a153300b0069fd57d435fsm8076753qkk.101.2022.05.10.03.45.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 03:45:38 -0700 (PDT)
+Message-ID: <b8e254c50ca23571a640bbc230730ab4219b9308.camel@redhat.com>
+Subject: Re: [PATCH v2] net: dsa: realtek: rtl8366rb: Serialize indirect PHY
+ register access
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Alvin =?UTF-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
+        kernel test robot <lkp@intel.com>
+Date:   Tue, 10 May 2022 12:45:35 +0200
+In-Reply-To: <20220508230303.2522980-1-linus.walleij@linaro.org>
+References: <20220508230303.2522980-1-linus.walleij@linaro.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] decnet: Use container_of() for struct dn_neigh casts
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165217921289.11394.178390152550838154.git-patchwork-notify@kernel.org>
-Date:   Tue, 10 May 2022 10:40:12 +0000
-References: <20220508102217.2647184-1-keescook@chromium.org>
-In-Reply-To: <20220508102217.2647184-1-keescook@chromium.org>
-To:     Kees Cook <keescook@chromium.org>
-Cc:     davem@davemloft.net, lkp@intel.com, kuba@kernel.org,
-        pabeni@redhat.com, yajun.deng@linux.dev, zhengyongjun3@huawei.com,
-        morbo@google.com, linux-decnet-user@lists.sourceforge.net,
-        netdev@vger.kernel.org, nathan@kernel.org, ndesaulniers@google.com,
-        trix@redhat.com, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,28 +85,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hello,
 
-This patch was applied to netdev/net.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
-
-On Sun,  8 May 2022 03:22:17 -0700 you wrote:
-> Clang's structure layout randomization feature gets upset when it sees
-> struct neighbor (which is randomized) cast to struct dn_neigh:
+On Mon, 2022-05-09 at 01:03 +0200, Linus Walleij wrote:
+> From: Alvin Šipraga <alsi@bang-olufsen.dk>
 > 
-> net/decnet/dn_route.c:1123:15: error: casting from randomized structure pointer type 'struct neighbour *' to 'struct dn_neigh *'
-> 			gateway = ((struct dn_neigh *)neigh)->addr;
-> 				   ^
+> Lock the regmap during the whole PHY register access routines in
+> rtl8366rb.
 > 
-> [...]
+> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Tested-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v1->v2:
+> - Make sure to always return a properly assigned error
+>   code on the error path in rtl8366rb_phy_read()
+>   found by the kernel test robot.
+> 
+> I have tested that this does not create any regressions,
+> it makes more sense to have this applied than not. First
+> it is related to the same family as the other ASICs, also
+> it makes perfect logical sense to enforce serialization
+> of these reads/writes.
 
-Here is the summary with links:
-  - decnet: Use container_of() for struct dn_neigh casts
-    https://git.kernel.org/netdev/net/c/dc5306a8c0ea
+I'm unable to understand if this is targeting the 'net' or the 'net-
+next' tree, could you please clarify?
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+If targeting 'net', adding an additional, suitable 'Fixes' tag would be
+nice.
 
+Thanks!
+
+Paolo
 
