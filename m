@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25F1C520A09
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 02:20:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D2CA5209F2
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 02:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233570AbiEJAXI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 20:23:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33102 "EHLO
+        id S233482AbiEJAWi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 20:22:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233560AbiEJAW3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 20:22:29 -0400
-Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D566228C9DE
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 17:18:27 -0700 (PDT)
-Received: by mail-pg1-x549.google.com with SMTP id d127-20020a633685000000b003ab20e589a8so8042137pga.22
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 17:18:27 -0700 (PDT)
+        with ESMTP id S233600AbiEJAWa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 20:22:30 -0400
+Received: from mail-pl1-x64a.google.com (mail-pl1-x64a.google.com [IPv6:2607:f8b0:4864:20::64a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437D628C9FF
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 17:18:30 -0700 (PDT)
+Received: by mail-pl1-x64a.google.com with SMTP id ij27-20020a170902ab5b00b0015d41282214so9025874plb.9
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 17:18:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=KcVlDhYIqiGAy0xA6Ny1iEWIuZrHDDkBi7OMZAuyAKA=;
-        b=CbFDRQM+DJHPuLYLBakMiPuPtWC2dPz39UZfOmcu4qup9XyxZPCJINo69q4jZT4AoC
-         dLRunNzKgmtg9/SjwCmLiNW5Q87qDk2kiCE3Bvr3D+WjbNu8Syu3BhuMYSNbGa207ILF
-         Qh7apNc/4HgAHnDy45R3N6ppLnbRqI6AWkGDHHxN3ezenAc++v64jfbpcV8RvtKTW5OW
-         H5cK0SaNA8KayXojnjkq3df/p9zd5sCw6q/pivecBUNQfPA6gTBNzpdlsha/+JCX+EP2
-         b27F5hHeQOk9I6B+LWTtNHptDhwCCBC3wK41+O8Y1dY+/ywCr06lqwmPK5GvIEQsBDUo
-         dI5w==
+        bh=PLe94BZhE80q/pDQVvt5DmK8lXFEEEfCjMN3zuEnNPw=;
+        b=b2rDa5+JQZQE63OVUadnzrDA9sRT5AyfXJyIIB31LrDJUWYPfnBVOfa5ojXs9imp6d
+         DwF4Awnj/fUwKBhjAsgQY8m/yjkmSpC8h+esfZ2DRrbYeFr9Z/TmnLxUNToiDS3GuWhL
+         I1CZcBuzvF+TZLDnC8IEwjt7q1mTj3TCig5j9p1Ib8ZD2Ruj1aVOM/uCMLOLMW0lhB+V
+         JFmWTSNEtcFtJ3hkLXygufK/9TBzOJNp+Fh6TscWo5hSpcL6vJVLjYxwh5He67lJ6S5P
+         g9h25soVq8JfMXLQ4xTp/9u3XVMKLP8/QyHCB1uSKJk2RK02ZF3mB9ksJ9Py4vK/Ika7
+         3aDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=KcVlDhYIqiGAy0xA6Ny1iEWIuZrHDDkBi7OMZAuyAKA=;
-        b=0gHTEkzxA0gQUk3BdQbofxhidD5SaMipwJwJYcskWC+zlRVdKN7tUPysWQsj0O9//1
-         CLS+i0XlgBOoDCgB41DuEVYHr6KZmcNzq0/qDTXhcdUsIS8oiVi7mHuf5KG50+zlxVWL
-         1chQ53pqrLzcc66nJqs9mxtBVdLBYQBzknlGOgyi+dARI7187UMaq3I1EP+PF8lDPoWp
-         3TZ5eEQyXnuwNkzZtzHhjNuL3OevKTT+gqciu074LLVocVsCfWPE1MwPXKE45QOQmxxU
-         3hAInDhfCOy0vs457QLo8zRK1NeUHE0M6vZMbuVPPMi3AXpaJr+dn7xOUVbxctGWheeI
-         jXqQ==
-X-Gm-Message-State: AOAM532IUaOM+lW+X/U3uwyJLMQQcaq+YeUKIvMsOZHfBmboOD1s8MlK
-        noCw8jTL0YDGWab3npDkAw98oaLi7CAmEp6q
-X-Google-Smtp-Source: ABdhPJzYYkjJ3ZLtAxYLy2pZUwKzXH4+bOWrXeRHBvANSFiGZs994Oo4pdOYa15sJhMjmUsYw0Y5YSKbOxkEbCUX
+        bh=PLe94BZhE80q/pDQVvt5DmK8lXFEEEfCjMN3zuEnNPw=;
+        b=SWMaSeFfTB0sHNZ7PDTU3ZgAA5CuXRl2JYWw3c+LZ3HORajsHWxqlHZNqL9B0HdToj
+         BgqZKQhr5YSOclVwL0p335ljmPvb5gIUy0tv5RO2dYe8q5iJD8Upfca1ds0akF/E30DY
+         NySY8XB6xncFQqmMGhSNP70heZ1tLK3QKbGtnQGmFnpgC4sIntDVS9tE+MyrC8li8d0N
+         mH+zCVeOqds9v9za4/JqF9hAjwVB0TT7ndGrWANnZsfBEPSEYMtJ9CddgNYsBvjkOpwB
+         wSzzVEJdUUAb2NlPnLH4seVHMD/XACCBAle7DBuhutd/u8r82FWhEbsD6aF/zmiXQ/XX
+         URAQ==
+X-Gm-Message-State: AOAM533pIf6kA1u3Nyc3Y9XfWx5i4HoJ6+KxZEePqGI/XQtPK0Ts7l+X
+        5aPzgbkHGvPFaMyDaOt7T5aiAoKO/AEy/rDA
+X-Google-Smtp-Source: ABdhPJz/zhDfC/scR3LASeLDbHzHW221VoVK/8Sqq0+Z+mT9XUaQdCel9UEi8YE3fJyduB/0tUYYEcm0Ld+tn4Li
 X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a17:90b:2311:b0:1d9:277e:edad with SMTP
- id mt17-20020a17090b231100b001d9277eedadmr20549707pjb.190.1652141907370; Mon,
- 09 May 2022 17:18:27 -0700 (PDT)
-Date:   Tue, 10 May 2022 00:18:02 +0000
+ (user=yosryahmed job=sendgmr) by 2002:a17:90a:e510:b0:1d9:ee23:9fa1 with SMTP
+ id t16-20020a17090ae51000b001d9ee239fa1mr16845pjy.0.1652141908990; Mon, 09
+ May 2022 17:18:28 -0700 (PDT)
+Date:   Tue, 10 May 2022 00:18:03 +0000
 In-Reply-To: <20220510001807.4132027-1-yosryahmed@google.com>
-Message-Id: <20220510001807.4132027-5-yosryahmed@google.com>
+Message-Id: <20220510001807.4132027-6-yosryahmed@google.com>
 Mime-Version: 1.0
 References: <20220510001807.4132027-1-yosryahmed@google.com>
 X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
-Subject: [RFC PATCH bpf-next 4/9] bpf: add bpf rstat helpers
+Subject: [RFC PATCH bpf-next 5/9] bpf: add bpf_map_lookup_percpu_elem() helper
 From:   Yosry Ahmed <yosryahmed@google.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -83,163 +83,230 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add bpf_cgroup_rstat_updated() and bpf_cgroup_rstat_flush() helpers
-to enable  bpf programs that collect and output cgroup stats
-to communicate with the rstat frameworkto add a cgroup to the rstat
-updated tree or trigger an rstat flush before reading stats.
-
-ARG_ANYTHING is used here for the struct *cgroup parameter. Would it be
-better to add a task_cgroup(subsys_id) helper that returns a cgroup
-pointer so that we can use a BTF argument instead?
+Add a helper for bpf programs to lookup a percpu element for a cpu other
+than the current one. This is useful for rstat flusher programs as they
+get called to aggregate stats from different cpus, regardless of the
+current cpu.
 
 Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
 ---
- include/uapi/linux/bpf.h       | 18 ++++++++++++++++++
- kernel/bpf/helpers.c           | 30 ++++++++++++++++++++++++++++++
- scripts/bpf_doc.py             |  2 ++
- tools/include/uapi/linux/bpf.h | 18 ++++++++++++++++++
- 4 files changed, 68 insertions(+)
+ include/linux/bpf.h            |  2 ++
+ include/uapi/linux/bpf.h       |  9 +++++++++
+ kernel/bpf/arraymap.c          | 11 ++++++++---
+ kernel/bpf/hashtab.c           | 25 +++++++++++--------------
+ kernel/bpf/helpers.c           | 26 ++++++++++++++++++++++++++
+ kernel/bpf/verifier.c          |  6 ++++++
+ tools/include/uapi/linux/bpf.h |  9 +++++++++
+ 7 files changed, 71 insertions(+), 17 deletions(-)
 
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index bdb5298735ce..f6fa35ffe311 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1665,6 +1665,8 @@ int map_set_for_each_callback_args(struct bpf_verifier_env *env,
+ 				   struct bpf_func_state *caller,
+ 				   struct bpf_func_state *callee);
+ 
++void *bpf_percpu_hash_lookup(struct bpf_map *map, void *key, int cpu);
++void *bpf_percpu_array_lookup(struct bpf_map *map, void *key, int cpu);
+ int bpf_percpu_hash_copy(struct bpf_map *map, void *key, void *value);
+ int bpf_percpu_array_copy(struct bpf_map *map, void *key, void *value);
+ int bpf_percpu_hash_update(struct bpf_map *map, void *key, void *value,
 diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index 0f4855fa85db..fce5535579d6 100644
+index fce5535579d6..015ed402c642 100644
 --- a/include/uapi/linux/bpf.h
 +++ b/include/uapi/linux/bpf.h
-@@ -5149,6 +5149,22 @@ union bpf_attr {
-  *		The **hash_algo** is returned on success,
-  *		**-EOPNOTSUP** if the hash calculation failed or **-EINVAL** if
-  *		invalid arguments are passed.
-+ *
-+ * void bpf_cgroup_rstat_updated(struct cgroup *cgrp)
+@@ -1553,6 +1553,14 @@ union bpf_attr {
+  * 		Map value associated to *key*, or **NULL** if no entry was
+  * 		found.
+  *
++ * void *bpf_map_lookup_percpu_elem(struct bpf_map *map, const void *key, int cpu)
 + *	Description
-+ *		Notify the rstat framework that bpf stats were updated for
-+ *		*cgrp* on the current cpu. Directly calls cgroup_rstat_updated
-+ *		with the given *cgrp* and the current cpu.
++ *		Perform a lookup in percpu *map* for an entry associated to
++ *		*key* for the given *cpu*.
 + *	Return
-+ *		0
++ *		Map value associated to *key* per *cpu*, or **NULL** if no entry
++ *		was found.
 + *
-+ * void bpf_cgroup_rstat_flush(struct cgroup *cgrp)
-+ *	Description
-+ *		Collect all per-cpu stats in *cgrp*'s subtree into global
-+ *		counters and propagate them upwards. Directly calls
-+ *		cgroup_rstat_flush_irqsafe with the given *cgrp*.
-+ *	Return
-+ *		0
-  */
+  * long bpf_map_update_elem(struct bpf_map *map, const void *key, const void *value, u64 flags)
+  * 	Description
+  * 		Add or update the value of the entry associated to *key* in
+@@ -5169,6 +5177,7 @@ union bpf_attr {
  #define __BPF_FUNC_MAPPER(FN)		\
  	FN(unspec),			\
-@@ -5345,6 +5361,8 @@ union bpf_attr {
- 	FN(copy_from_user_task),	\
- 	FN(skb_set_tstamp),		\
- 	FN(ima_file_hash),		\
-+	FN(cgroup_rstat_updated),	\
-+	FN(cgroup_rstat_flush),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
-index 315053ef6a75..d124eed97ad7 100644
---- a/kernel/bpf/helpers.c
-+++ b/kernel/bpf/helpers.c
-@@ -1374,6 +1374,32 @@ void bpf_timer_cancel_and_free(void *val)
- 	kfree(t);
+ 	FN(map_lookup_elem),		\
++	FN(map_lookup_percpu_elem),	\
+ 	FN(map_update_elem),		\
+ 	FN(map_delete_elem),		\
+ 	FN(probe_read),			\
+diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+index 7f145aefbff8..945dae4c20eb 100644
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -230,8 +230,7 @@ static int array_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
+ 	return insn - insn_buf;
  }
  
-+BPF_CALL_1(bpf_cgroup_rstat_updated, struct cgroup *, cgrp)
-+{
-+	cgroup_rstat_updated(cgrp, smp_processor_id());
-+	return 0;
+-/* Called from eBPF program */
+-static void *percpu_array_map_lookup_elem(struct bpf_map *map, void *key)
++void *bpf_percpu_array_lookup(struct bpf_map *map, void *key, int cpu)
+ {
+ 	struct bpf_array *array = container_of(map, struct bpf_array, map);
+ 	u32 index = *(u32 *)key;
+@@ -239,7 +238,13 @@ static void *percpu_array_map_lookup_elem(struct bpf_map *map, void *key)
+ 	if (unlikely(index >= array->map.max_entries))
+ 		return NULL;
+ 
+-	return this_cpu_ptr(array->pptrs[index & array->index_mask]);
++	return per_cpu_ptr(array->pptrs[index & array->index_mask], cpu);
 +}
 +
-+static const struct bpf_func_proto bpf_cgroup_rstat_updated_proto = {
-+	.func		= bpf_cgroup_rstat_updated,
-+	.gpl_only	= false,
-+	.ret_type	= RET_VOID,
-+	.arg1_type	= ARG_ANYTHING,
-+};
-+
-+BPF_CALL_1(bpf_cgroup_rstat_flush, struct cgroup *, cgrp)
++/* Called from eBPF program */
++static void *percpu_array_map_lookup_elem(struct bpf_map *map, void *key)
 +{
-+	cgroup_rstat_flush_irqsafe(cgrp);
-+	return 0;
++	return bpf_percpu_array_lookup(map, key, smp_processor_id());
+ }
+ 
+ int bpf_percpu_array_copy(struct bpf_map *map, void *key, void *value)
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 65877967f414..c6d4699d65e8 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -2150,27 +2150,24 @@ const struct bpf_map_ops htab_lru_map_ops = {
+ 	.iter_seq_info = &iter_seq_info,
+ };
+ 
+-/* Called from eBPF program */
+-static void *htab_percpu_map_lookup_elem(struct bpf_map *map, void *key)
++void *bpf_percpu_hash_lookup(struct bpf_map *map, void *key, int cpu)
+ {
++	struct bpf_htab *htab = container_of(map, struct bpf_htab, map);
+ 	struct htab_elem *l = __htab_map_lookup_elem(map, key);
+ 
+-	if (l)
+-		return this_cpu_ptr(htab_elem_get_ptr(l, map->key_size));
++	if (l) {
++		if (htab_is_lru(htab))
++			bpf_lru_node_set_ref(&l->lru_node);
++		return per_cpu_ptr(htab_elem_get_ptr(l, map->key_size), cpu);
++	}
+ 	else
+ 		return NULL;
+ }
+ 
+-static void *htab_lru_percpu_map_lookup_elem(struct bpf_map *map, void *key)
++/* Called from eBPF program */
++static void *htab_percpu_map_lookup_elem(struct bpf_map *map, void *key)
+ {
+-	struct htab_elem *l = __htab_map_lookup_elem(map, key);
+-
+-	if (l) {
+-		bpf_lru_node_set_ref(&l->lru_node);
+-		return this_cpu_ptr(htab_elem_get_ptr(l, map->key_size));
+-	}
+-
+-	return NULL;
++	return bpf_percpu_hash_lookup(map, key, smp_processor_id());
+ }
+ 
+ int bpf_percpu_hash_copy(struct bpf_map *map, void *key, void *value)
+@@ -2279,7 +2276,7 @@ const struct bpf_map_ops htab_lru_percpu_map_ops = {
+ 	.map_alloc = htab_map_alloc,
+ 	.map_free = htab_map_free,
+ 	.map_get_next_key = htab_map_get_next_key,
+-	.map_lookup_elem = htab_lru_percpu_map_lookup_elem,
++	.map_lookup_elem = htab_percpu_map_lookup_elem,
+ 	.map_lookup_and_delete_elem = htab_lru_percpu_map_lookup_and_delete_elem,
+ 	.map_update_elem = htab_lru_percpu_map_update_elem,
+ 	.map_delete_elem = htab_lru_map_delete_elem,
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index d124eed97ad7..abed4e1737f6 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -45,6 +45,30 @@ const struct bpf_func_proto bpf_map_lookup_elem_proto = {
+ 	.arg2_type	= ARG_PTR_TO_MAP_KEY,
+ };
+ 
++BPF_CALL_3(bpf_map_lookup_percpu_elem, struct bpf_map *, map, void *, key,
++	   int, cpu)
++{
++	WARN_ON_ONCE(!rcu_read_lock_held() && !rcu_read_lock_bh_held());
++	switch (map->map_type) {
++	case BPF_MAP_TYPE_PERCPU_ARRAY:
++		return (unsigned long) bpf_percpu_array_lookup(map, key, cpu);
++	case BPF_MAP_TYPE_PERCPU_HASH:
++	case BPF_MAP_TYPE_LRU_PERCPU_HASH:
++		return (unsigned long) bpf_percpu_hash_lookup(map, key, cpu);
++	default:
++		return (unsigned long) NULL;
++	}
 +}
 +
-+static const struct bpf_func_proto bpf_cgroup_rstat_flush_proto = {
-+	.func		= bpf_cgroup_rstat_flush,
++const struct bpf_func_proto bpf_map_lookup_percpu_elem_proto = {
++	.func		= bpf_map_lookup_percpu_elem,
 +	.gpl_only	= false,
-+	.ret_type	= RET_VOID,
-+	.arg1_type	= ARG_ANYTHING,
++	.ret_type	= RET_PTR_TO_MAP_VALUE_OR_NULL,
++	.arg1_type	= ARG_CONST_MAP_PTR,
++	.arg2_type	= ARG_PTR_TO_MAP_KEY,
++	.arg3_type	= ARG_ANYTHING,
 +};
 +
- const struct bpf_func_proto bpf_get_current_task_proto __weak;
- const struct bpf_func_proto bpf_get_current_task_btf_proto __weak;
- const struct bpf_func_proto bpf_probe_read_user_proto __weak;
-@@ -1426,6 +1452,10 @@ bpf_base_func_proto(enum bpf_func_id func_id)
- 		return &bpf_loop_proto;
- 	case BPF_FUNC_strncmp:
- 		return &bpf_strncmp_proto;
-+	case BPF_FUNC_cgroup_rstat_updated:
-+		return &bpf_cgroup_rstat_updated_proto;
-+	case BPF_FUNC_cgroup_rstat_flush:
-+		return &bpf_cgroup_rstat_flush_proto;
+ BPF_CALL_4(bpf_map_update_elem, struct bpf_map *, map, void *, key,
+ 	   void *, value, u64, flags)
+ {
+@@ -1414,6 +1438,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 	switch (func_id) {
+ 	case BPF_FUNC_map_lookup_elem:
+ 		return &bpf_map_lookup_elem_proto;
++	case BPF_FUNC_map_lookup_percpu_elem:
++		return &bpf_map_lookup_percpu_elem_proto;
+ 	case BPF_FUNC_map_update_elem:
+ 		return &bpf_map_update_elem_proto;
+ 	case BPF_FUNC_map_delete_elem:
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index d175b70067b3..2d7f7c9a970d 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5879,6 +5879,12 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+ 		if (map->map_type != BPF_MAP_TYPE_TASK_STORAGE)
+ 			goto error;
+ 		break;
++	case BPF_FUNC_map_lookup_percpu_elem:
++		if (map->map_type != BPF_MAP_TYPE_PERCPU_HASH &&
++		    map->map_type != BPF_MAP_TYPE_LRU_PERCPU_HASH &&
++		    map->map_type != BPF_MAP_TYPE_PERCPU_ARRAY)
++			goto error;
++		break;
  	default:
  		break;
  	}
-diff --git a/scripts/bpf_doc.py b/scripts/bpf_doc.py
-index 096625242475..9e2b08557a6f 100755
---- a/scripts/bpf_doc.py
-+++ b/scripts/bpf_doc.py
-@@ -633,6 +633,7 @@ class PrinterHelpers(Printer):
-             'struct socket',
-             'struct file',
-             'struct bpf_timer',
-+            'struct cgroup',
-     ]
-     known_types = {
-             '...',
-@@ -682,6 +683,7 @@ class PrinterHelpers(Printer):
-             'struct socket',
-             'struct file',
-             'struct bpf_timer',
-+            'struct cgroup',
-     }
-     mapped_types = {
-             'u8': '__u8',
 diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 0f4855fa85db..fce5535579d6 100644
+index fce5535579d6..015ed402c642 100644
 --- a/tools/include/uapi/linux/bpf.h
 +++ b/tools/include/uapi/linux/bpf.h
-@@ -5149,6 +5149,22 @@ union bpf_attr {
-  *		The **hash_algo** is returned on success,
-  *		**-EOPNOTSUP** if the hash calculation failed or **-EINVAL** if
-  *		invalid arguments are passed.
-+ *
-+ * void bpf_cgroup_rstat_updated(struct cgroup *cgrp)
+@@ -1553,6 +1553,14 @@ union bpf_attr {
+  * 		Map value associated to *key*, or **NULL** if no entry was
+  * 		found.
+  *
++ * void *bpf_map_lookup_percpu_elem(struct bpf_map *map, const void *key, int cpu)
 + *	Description
-+ *		Notify the rstat framework that bpf stats were updated for
-+ *		*cgrp* on the current cpu. Directly calls cgroup_rstat_updated
-+ *		with the given *cgrp* and the current cpu.
++ *		Perform a lookup in percpu *map* for an entry associated to
++ *		*key* for the given *cpu*.
 + *	Return
-+ *		0
++ *		Map value associated to *key* per *cpu*, or **NULL** if no entry
++ *		was found.
 + *
-+ * void bpf_cgroup_rstat_flush(struct cgroup *cgrp)
-+ *	Description
-+ *		Collect all per-cpu stats in *cgrp*'s subtree into global
-+ *		counters and propagate them upwards. Directly calls
-+ *		cgroup_rstat_flush_irqsafe with the given *cgrp*.
-+ *	Return
-+ *		0
-  */
+  * long bpf_map_update_elem(struct bpf_map *map, const void *key, const void *value, u64 flags)
+  * 	Description
+  * 		Add or update the value of the entry associated to *key* in
+@@ -5169,6 +5177,7 @@ union bpf_attr {
  #define __BPF_FUNC_MAPPER(FN)		\
  	FN(unspec),			\
-@@ -5345,6 +5361,8 @@ union bpf_attr {
- 	FN(copy_from_user_task),	\
- 	FN(skb_set_tstamp),		\
- 	FN(ima_file_hash),		\
-+	FN(cgroup_rstat_updated),	\
-+	FN(cgroup_rstat_flush),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+ 	FN(map_lookup_elem),		\
++	FN(map_lookup_percpu_elem),	\
+ 	FN(map_update_elem),		\
+ 	FN(map_delete_elem),		\
+ 	FN(probe_read),			\
 -- 
 2.36.0.512.ge40c2bad7a-goog
 
