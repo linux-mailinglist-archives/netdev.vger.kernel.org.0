@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5360052216A
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 18:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4BEA52216F
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 18:40:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347520AbiEJQmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 12:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57426 "EHLO
+        id S245597AbiEJQoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 12:44:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347508AbiEJQko (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 12:40:44 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2079.outbound.protection.outlook.com [40.107.22.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6135056769
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 09:36:44 -0700 (PDT)
+        with ESMTP id S245440AbiEJQoA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 12:44:00 -0400
+Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50046.outbound.protection.outlook.com [40.107.5.46])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC8356758
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 09:40:02 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZkhK5cfLLgJp7NvbMagQa6Y34YtbMka1mfWxSSIhVo3Vo+FJ9JogGV3yQiPpSsdfKoxx17I0c1cGp6v6Y8vcb8JvUBECGMbsWgqhPMeQOU5O/EH5V/TKEU2PncdcTkfpmGeA0Njz9Yy1A+s/rH4H2q4rqoxWH5za1G+psEDj0FoGwTBPKZY0PqF98CI4uJ99imJCpRojGAJ41oODBrGgkKAPWg+m9HFE6AqoW9368h8lv4LXFT4WV4C9qF01MN6TFdr6D88RcTse3W3EotGo/YSy3jxyGlTNZIPb0wrn/3v7acURW7kst2Cydgvu6pn1JIH/BoKzK5yLjx+uqSPBgQ==
+ b=ZBF9kzUWChg1gmaYll8q0fqd24J7KVdk1KXKYDHL5CElHm/yVDiFBDi7MFWT6ZylpSYmZlGf2VQqU8W8oyDZqK3ZIdWviwAHnI5/jTy5tKHGDi8nXByob9oO5PFh6O7dN/bAcuxuHEY/mLz4KfVqzwqbgj+tE0/PtDdIWPTVBh2F/mblPuaWWG1Uu3SPx1JCRB0XKaqVx+5uTKDYt1oqLNN4KSIxmJHjQf2/KwVs0SsPGz2lfXgKDSKmjMssdE1HAKMuWUh678tDSbesDzzY+OiPYOC/ysCLsITPn1/3M3JIUBDN9GKFH797xHeVzu7MFUBt/NtndYllxZwoy8YJQg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6BqbvMgialmX7Ad7jh0iZMMu7j0FXpC9EbY16f82SCo=;
- b=k5hfK8bECiMa4nuxGCd5MBHjmZUw6bH5mEOsoqX0mrkXKdyGISFLX3uh1+EphWb+tQKp3PsxCyU347jLScdFt904wFXsuLv8chp27oTVSm5909FgowWewBnpftux5yusKhrSOJi9vVWrUuY78zPQ/p5EdzeIk12S5c7+zt6D6MBdKQ5ezshT7Lb2aKBWHKg0kbFYUENyNm+4rKg5LYbXFawe73hAiXzWhhsl3hJEVBvtpmOiHLRXoBbQtnNcJxBk+Eu1eF91Hg/4Zn+7Lnj0TrPaj2eZWo/YdN3QJFMfkIiuboV9q1mcYdFlKFs3/FbKLA4/CH2ffTSpvrm+iFZQ9w==
+ bh=fmWUo0KcV/e1yhcXECYVSYyxAl0KFXD+GlWs2nX0Bbs=;
+ b=fX92CcCAtQ4NzS52IMy+EMvvGhifx4ryB0UCTmvDT5lE5cy7eInihPl07W/zXiZ9SNuBv3Ya2bETdDh0/9jFTFDF/qCSF393y3vQHBdBkGooSApX+xahBz/CkKGrvwUNcI4tF0y1vTsd2oEdtRpGbRpG1LBzvZ0GuJ5tVZlzvqiGkzPSMOdMNH88s0LmKlGiQWsvoc1W6vefOlQUutoWSWYUW3b1AXQx0Bt3SISmECGXluFKZkUplpiq+X++knvfDfvk66gR41EmbPuLvsZDUw5P9pMvzUc6Obf1pSi2G8qxJSAYNuRniT4ZiPg+LeDEmWQUMQu1uw+//Z7Tcd7dJw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6BqbvMgialmX7Ad7jh0iZMMu7j0FXpC9EbY16f82SCo=;
- b=EeM6noSU/o5J2rh/rXH6A/KumBTmHeSt2EQEandW3yBUc1VLjLQ2B6+nPNrgmIY5Oue1eF8gnfheYod53UWWAnzrD2b5WE6c9SjxFqnhWsFzAejn5nq0MgZpOCdGr4s8ukDnDFfG1AYg6e25wNOBfkVLNIKQpJlUdXNkEqqKaTc=
+ bh=fmWUo0KcV/e1yhcXECYVSYyxAl0KFXD+GlWs2nX0Bbs=;
+ b=HPp5b65aziBv2Du79j0nrbqX50Jk4WWNXN9cn051evkLzUN3J7zjkiP1rNtFF2kF0R1anQ8PZxrrcXkTSPE8xIRrFmexCnIWG2svNW+90fVWvVacaMseUnGwS6F/e04dnWKFIL3HTMTTxk4ah9g/QVPCVIxh9iy0OKh+ktV6+N0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by PA4PR04MB9461.eurprd04.prod.outlook.com (2603:10a6:102:2a9::18) with
+ by DBAPR04MB7365.eurprd04.prod.outlook.com (2603:10a6:10:1a2::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
- 2022 16:36:27 +0000
+ 2022 16:40:00 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::fd1f:cc16:dafe:4bf5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::fd1f:cc16:dafe:4bf5%5]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 16:36:27 +0000
+ 16:39:59 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -46,73 +46,68 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
         Eric Dumazet <edumazet@google.com>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Michael Walle <michael@walle.cc>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Po Liu <Po.Liu@nxp.com>
-Subject: [PATCH net-next 2/2] net: enetc: count the tc-taprio window drops
-Date:   Tue, 10 May 2022 19:36:15 +0300
-Message-Id: <20220510163615.6096-3-vladimir.oltean@nxp.com>
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH net-next] net: enetc: kill PHY-less mode for PFs
+Date:   Tue, 10 May 2022 19:39:50 +0300
+Message-Id: <20220510163950.8724-1-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220510163615.6096-1-vladimir.oltean@nxp.com>
-References: <20220510163615.6096-1-vladimir.oltean@nxp.com>
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ClientProxiedBy: AM0PR01CA0097.eurprd01.prod.exchangelabs.com
- (2603:10a6:208:10e::38) To VI1PR04MB5136.eurprd04.prod.outlook.com
+X-ClientProxiedBy: AM0PR01CA0084.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:10e::25) To VI1PR04MB5136.eurprd04.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a00d1206-4eb0-48eb-d3ad-08da32a33ae2
-X-MS-TrafficTypeDiagnostic: PA4PR04MB9461:EE_
-X-Microsoft-Antispam-PRVS: <PA4PR04MB94618A0BC40B8AA66C551236E0C99@PA4PR04MB9461.eurprd04.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: d9aaa8b3-da18-4b7f-ddc8-08da32a3b94d
+X-MS-TrafficTypeDiagnostic: DBAPR04MB7365:EE_
+X-Microsoft-Antispam-PRVS: <DBAPR04MB73657329DA36EB4FFBC14107E0C99@DBAPR04MB7365.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YCi9NTgsh1nCh7E039xHTON0iUxutHPD/1IfoKBWHwPKV2tBLyJkiGo+Ruz+SVJ6hhRF84M8SCUP9BOO5JksaEs8IpdmJyZI9CoeXEO0HPOn2XWcRL85MUTXtQrsAsDFucSflSblJ4V+y1GEJ0lQ8Mq+tPxTiV2DMNQsR79AqQNUDT1rgxoSBNFeP/AGa+lka3Lj6OA0ZbRuhjlEjifBtu0rfYYcYlHMZSTK5k8iRWefCrfipyd0AXJrrJjF5JM4aVE8hKBd74fYquId/vp8uVwJFzM3gzWPpVQHBCxiKOOAzDllQWBxJLPpWupkLugleJ5HDNzyo5fHXExrDLbOcB6Q4RU1Zisjsj3wuyfYfcCEXyRpfJNg55ThhHSfsL2suIyN4PMfhHXCA7ImUZ9v8XGgLoH6vtppUsiSOZ9jhc4Z2P5K/LAA8NaLLNwSJPWSrGrJT3T76HTT4FKxIJS/kfHFZS6WWn7ksgPIsYrxP83BXjUGh4qwi0bWlOEjZo3oMCDFeulQywj98A+uANO6FmXrdfuz+MnUaVNXTqRG5gpoLybeDKMX0M1+6jrqFz3jT+I6zbjVGXKba8D2gzs/eOnjvfl4p/dCXnZAuMYO7q/XQsA0o25wCfxaNh1UsdqMmneeIjDSiFLfWYnZyIR3DuzBWBCCg6xL4S65R1fyt2GSwF5JvcPgpZeTIveEQMWboy3n2RXiVu8rCCDGyRsZ0Q==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2906002)(6666004)(6486002)(508600001)(66946007)(52116002)(8676002)(66556008)(8936002)(66476007)(6506007)(4326008)(44832011)(5660300002)(38100700002)(38350700002)(316002)(6916009)(36756003)(1076003)(2616005)(83380400001)(54906003)(186003)(6512007)(86362001)(26005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: rmd7+VihcvJBiB92SHazT3s869xS2UUbOhicFxsB0wLI+LXHSZeQUUspRapk0wopQIGFoze3t0GBRfUYBiMAszfC6XOmJ8/X6v+3kBNoLE6yrSkjCgRQiOARcMQgsrpTCaATlbF98FE0CbwT+OQJLuGnt2w9GDa4PJQcOoVne2Sg3EY1IZXATiYnEbLQ/CrBSgAfc3n2SiG4ObY0drzwScuqsDWrgO2n7D3RBrzyb1GboqDCh6sz/ghHSrxNyQq5dhIRABeK0hMBSaYchDhKy74UOwyNEeWkDDC6+vjXDlqs3Pey0vI+UCvh4cq1Dom6LzGjfbAMh0BRMCtNkupq49WV5U3MovpW8zH9HmkWST+pWKPLiiMTKA0iVD4j4MHdQgKK6wpd1bli6gQJCr1OJHZn+G/Avvf7p0Q8NM4zse8hNZ7ug11iyVlw32s1AUkDuUUy/yUGDydUvoui+bw26/ngRHTmEoamvdMro8YoJVpPIqXeAIIhJulL5bLCMfKJujiufFxiWiha13dsY3wieL8zU2oCEBLVvbGmfKMoRaVH+/MCfb0TWxK+bL4MCY6xgjEF747V2VGiZHGLzyuZQ2A07At25Nh+8suDyYve4Kguo4U42YWzolTnlk7SWJurZJeZgAnY3UFnMM3iWMFupNr9+KS4x80oOKYbNQFPjZZDD0WoN7shfeR6g/r8OTYDIPvRWl6Iia8DhOAdEog9Vg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6506007)(52116002)(83380400001)(26005)(44832011)(6512007)(6666004)(66556008)(36756003)(5660300002)(186003)(1076003)(2616005)(2906002)(38100700002)(508600001)(38350700002)(8936002)(316002)(6486002)(66476007)(8676002)(4326008)(66946007)(86362001)(54906003)(6916009);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?uhBacEQM20mLoM5Ggipn1sDlIOlTloQ4mTur3zxi/xXuX4tCJ08pY5VD3dAz?=
- =?us-ascii?Q?huG/i+/67HmcHRoN2YBoIcvPecFeHdwxFYiRkL5kugTXdvl8emQ7dCyOj9yd?=
- =?us-ascii?Q?WxRtaLSI74qQoqvWr8ssLdsnj2O+a7CU1oS10Juek9ksOqYcfpPgj06fvbb1?=
- =?us-ascii?Q?4bugRRRvtdAqiBNfJAYT11as71pTHXMXZSm4t/+GWFN3hCdS+HGXFU0pkcwc?=
- =?us-ascii?Q?5nBktMKHV7VdX3Apm5pNcpF80rktYW8JnOpmS/FtRd/7GokfGt9VS4RabFWq?=
- =?us-ascii?Q?KwBmUtMFK9OsyY+2e2Kz2HnuFLLaW+6HMhq0g/F68nApe7/WbIHqjJ0K60jU?=
- =?us-ascii?Q?IkCXFEQmZ91khwVDnMGEI6YxQn6sz9wimQYzy8kB16Amg1Wz3sy90k1JgRWd?=
- =?us-ascii?Q?EBQI6fMMz/RLjc+OJ+0gyD9UwWRQ4gilJtZR9cjWwnB/pOJ0USjCRbPEAn7i?=
- =?us-ascii?Q?eICnlQpgdojKPhuGrKpaazZ8yM2GiL5huEb0ci5DNvot+AV9flZhVbm2cUKw?=
- =?us-ascii?Q?JtF6RbMUWyRRms+pN3LE3YPchG3XJyv007wt4pPszVB478gmdcKCQ6dUOY7l?=
- =?us-ascii?Q?YY3eStwvtoRe5x9eoA+3hws+JDMtfUrOJhes+lJyEuUpnc9BrZdLZHgZEXqm?=
- =?us-ascii?Q?z/MoFtcbXkztpfQm65ygQtXgH1kj35C1Zfjw8XLUHbSP21bj26m3fFt2EkvJ?=
- =?us-ascii?Q?A3ZVI9fLj5u6ACeqy2nMlyidJ/HDyXTssOv3iGU6/3wRkLWYgl/auAEh1XX8?=
- =?us-ascii?Q?m9Ypc0/Jw+VRO4qku8hVWMY/Ja9f9/WlK6HJS+tFtcsEc9cJeN+TeGoZkGRo?=
- =?us-ascii?Q?j6DxWNReZQMrInf03P/XhDtMYh3TfEeUWpUaFyBaalhTF1tKMtqBDgyoq48t?=
- =?us-ascii?Q?GpzG1zMRSzvMotVWrptsNeXMkt+3zlHBB5M9Bu7Ec+TjYB51jsApR/5RwKfE?=
- =?us-ascii?Q?c7N0A69eOs/YpcSsQhW0i7DhLKx/FREoscXUlARrEYzd0QVQqcfSvTnou3lG?=
- =?us-ascii?Q?UnMFmxwswupZMbAcsEEWhkqGlcQk/kEo+qxvshn1EAtvWwOt/XYHt2tDsbYZ?=
- =?us-ascii?Q?zo9sNSCun1v8n2zJvmS7jVlG1dxmD2R6q8rURjUWeoQul40NAECHVjLxLkAw?=
- =?us-ascii?Q?IF7XOtb4GeKRgCsZUCvaOioGZbAalhcQvJQGG2ROoyCwXc8JUD8MflqQVRZa?=
- =?us-ascii?Q?qS+LS97bgM30YEli4FuBMC/njbfWeu8H5LYq/u/+BoUTQd4QTDgN8cj57Ho6?=
- =?us-ascii?Q?w0a7orIrE7ZX3eTfYWDqRYVSKbp4R5bJFUtagqb5emM7tZ67J7xHet0DeybI?=
- =?us-ascii?Q?+zocMzzJzzvEADXwCctfhQU3uUaLWu6V+u2WDZWxgdlSnv2pJfFHtP/gaF4/?=
- =?us-ascii?Q?1ZT7jdltTVHhHa0VBHGxiCs2JqtECQ3UvhdmEmOdhXdGMIyp4+23IcC4Yuzo?=
- =?us-ascii?Q?rl3vjUY4XGrEdQPWUf9f5eOdqLjvweFeZlIwM5H+/tcK2uAbheGOpGa4xLc1?=
- =?us-ascii?Q?yEa7crRGO3WDBLPW+BIsMrnwhLLShbm6y6hmXgFjqB041tAQOLYxRN6+0yIm?=
- =?us-ascii?Q?upKlca0SY/EcGX27w26axcWgZP4edIgM1uU5+uW6Vxxn07B4QCNpdV4BPKp8?=
- =?us-ascii?Q?aKuEMdYo3nnOLnb3FFevCD1yhvOhDJeEzmF6z3Qo6oilP9Kw3qmJenkktTIi?=
- =?us-ascii?Q?Cx1nMwzRhaS8KrASJO77rvgnR/bHNLgZos/4qjKSd+PZxBljfUXfj1sFvkJ+?=
- =?us-ascii?Q?HZCUBtsMGYlJ1ji9UUVYXBqApPK05/4=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?hGEQAhAXn7AERvzm6QT2ewS8WraiRip667R5LdYrEeINQpkfHMV+P3UdcUVs?=
+ =?us-ascii?Q?+3AY/zRX5hoAcSP/h/q4/QOjZ5lpSmyfqtjgQKhMo/eiRA6lsgyJ9KnPSwuS?=
+ =?us-ascii?Q?nmUai9Ut2X0Xr01RD4z9GFCcPbG2G+4tB7aKRCHfmSizy9U+B8p2CW3pjzmA?=
+ =?us-ascii?Q?i+nWQNkagRKLhUsfb/SAqY0RTjejSkEvtl64nTOguOPSVGMm2N0WuFKOGord?=
+ =?us-ascii?Q?xzDyQJqqzh/jcaIt9ibyF7nvxxaravTvL/lecTDaDqxDAJCjlG4U09Jl8Ret?=
+ =?us-ascii?Q?ofiyXkIeMnPqTiuxqeJ+q8a4f6p7Q21qxnbusx8fVkmOj/NVf8zj3h6FVwx9?=
+ =?us-ascii?Q?7RJe1kmHCALtfOCG0vxp64e7qt/7Ub2XOAApr8hNvhW7XVLljez/y75uSe/X?=
+ =?us-ascii?Q?oeg6SlTPOjmxRswaLCeMPypxt8khTGDVc5sjOhvGo3/S9+/0UIJiX76Jy4mp?=
+ =?us-ascii?Q?s0+MQ0iSEvHAaB/1DX1FLXmqy+qWEgM7wYWbZMuHUJj90YbwR9b2PywchBdt?=
+ =?us-ascii?Q?+/oShc0oTKVlyyqUpBhzR3LqIn3MSnO2qd1b7/w3qMBmjMM5gd1N4IqR2PYy?=
+ =?us-ascii?Q?W999PCfWhe6NKR0ZqHBaSQ1G0ZZqR8oPtUYLuSoAWU8jiz3gTQBHSLmWI7+o?=
+ =?us-ascii?Q?mwjiqTteDmWV1HPasmKFxrfSB8EY92nPVaO3L7PJUTrmS3njU/KiPIbYsFTB?=
+ =?us-ascii?Q?6VjtENmoDGhtO9aEvkuXtOyezpHIq/pQYw4WR97HBGlVZqCizs9Un3dKvnwX?=
+ =?us-ascii?Q?uv+BxfgEbgFN+vSEO9WWsRPXGS0ZZPKCd6GQ9/+EIMeYn7I7S9hn/hp1GsTm?=
+ =?us-ascii?Q?wOyt0jidc+jGcfA8skIv70UpOZ8RUaahIZlgdDQ1uBpUcSObAL/oqnLxyS8w?=
+ =?us-ascii?Q?bnBZ8yvsI8K65rgmFgzreL33BpL04di1NhueP5oi4XUGhFQBenk9o2S3bM3U?=
+ =?us-ascii?Q?QI8aIukz+4v9YlYXct7EBIyCX12pl/lk+DAmHdUEE8eIknzMkYQ5vAQoy++9?=
+ =?us-ascii?Q?gB5ZLf+CmcSgzFWv4pAFpYcmW3pC/uchnWieN21qnVUbROVWLBvipWsF+u9J?=
+ =?us-ascii?Q?/XDmG87isUHxsNug8qmDznUhRWjIAGiTL0mFzGiFK3hiMjO2SuGM8Vg316xK?=
+ =?us-ascii?Q?Lj+ctq/bw4r3FcBsUpQQ4qUUPFS2OR6YnWSuWPPqaSTdzLaQCzkrcLLKv6tj?=
+ =?us-ascii?Q?/4ComVusJhtQCEtt5Oz5bIivHL5FO8FTC5bkE2zIOUmhqpsx+mS4ovabW7dq?=
+ =?us-ascii?Q?TC4neGFithwfDVPPukLQfJ/qJUoSDZOm4/499NpKsUUU9Zzb7fEax1x6L5WV?=
+ =?us-ascii?Q?ueeY1NaFxuhX/ErIcFNk1RIemSKbiQsnFzJHzXd+0fFCJesrDdJ1vKxjtUsz?=
+ =?us-ascii?Q?iELLc4fS490+TkAKkiobbPYVvMJ1Iptj2ynRkNFyr/1tY5I6/bzIq9T3VYTZ?=
+ =?us-ascii?Q?tuacQq7UBsHG2f75GV1zKW9YWkaRWFY7YgksSw/aByZWBESuZxc3IIzkcOz7?=
+ =?us-ascii?Q?QcenogXCVlke7B4UnMu8XGOdsJg//TCqY/hdBA3thudzj2sCPZdgGhN6HTkw?=
+ =?us-ascii?Q?07YiX8jTcnuOB85chp3XiFyZIOCvUUL8t0Hb0a1ypOJ8P/3sQvDG6DxH9E2R?=
+ =?us-ascii?Q?5nBenv0VsWsUCTDU53XRcKYQ+T3viPSmt+u0VYC8CefX0oBePvYNyEDm+UMu?=
+ =?us-ascii?Q?YSBt3WNcClyI+Gh9kPa5GUrf2Mgy5jtoZEjeaeEKWX9xqJGNSmdeA3jw486G?=
+ =?us-ascii?Q?hFiHQw91mc2SNlLgOJL3ncrUGAtYpIo=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a00d1206-4eb0-48eb-d3ad-08da32a33ae2
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9aaa8b3-da18-4b7f-ddc8-08da32a3b94d
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 16:36:27.7223
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 16:39:59.7854
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: mLaCwaLxAWt2A93HPd1jg3+bvnFUY34apVR3i097Wnu9zXayetNLQURoUREhy7+talvx+94e/CLPyVCNtSsWpg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PA4PR04MB9461
+X-MS-Exchange-CrossTenant-UserPrincipalName: EQUfO1hfbl0clELpBAp4RPSmPCKzLom/wSLIgsxwyiQHl5ySym5yYLlDBo/g5lIEex9cKbEhmvXw9P1Jtw/wEQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBAPR04MB7365
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
@@ -123,149 +118,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Po Liu <Po.Liu@nxp.com>
+Right now, a PHY-less port (no phy-mode, no fixed-link, no phy-handle)
+doesn't register with phylink, but calls netif_carrier_on() from
+enetc_start().
 
-The enetc scheduler for IEEE 802.1Qbv has 2 options (depending on
-PTGCR[TG_DROP_DISABLE]) when we attempt to send an oversized packet
-which will never fit in its allotted time slot for its traffic class:
-either block the entire port due to head-of-line blocking, or drop the
-packet and set a bit in the writeback format of the transmit buffer
-descriptor, allowing other packets to be sent.
+This makes sense for a VF, but for a PF, this is braindead, because we
+never call enetc_mac_enable() so the MAC is left inoperational.
+Furthermore, commit 71b77a7a27a3 ("enetc: Migrate to PHYLINK and
+PCS_LYNX") put the nail in the coffin because it removed the initial
+netif_carrier_off() call done right after register_netdev().
 
-We obviously choose the second option in the driver, but we do not
-detect the drop condition, so from the perspective of the network stack,
-the packet is sent and no error counter is incremented.
+Without that call, netif_carrier_on() does not call
+linkwatch_fire_event(), so the operstate remains IF_OPER_UNKNOWN.
 
-This change checks the writeback of the TX BD when tc-taprio is enabled,
-and increments a specific ethtool statistics counter and a generic
-"tx_dropped" counter in ndo_get_stats64.
+Just deny the broken configuration by requiring that a phy-mode is
+present, and always register a PF with phylink.
 
-Signed-off-by: Po Liu <Po.Liu@nxp.com>
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/ethernet/freescale/enetc/enetc.c        | 13 +++++++++++--
- drivers/net/ethernet/freescale/enetc/enetc.h        |  2 ++
- .../net/ethernet/freescale/enetc/enetc_ethtool.c    |  2 ++
- drivers/net/ethernet/freescale/enetc/enetc_hw.h     |  1 +
- 4 files changed, 16 insertions(+), 2 deletions(-)
+ .../net/ethernet/freescale/enetc/enetc_pf.c   | 24 +++++++++++--------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.c b/drivers/net/ethernet/freescale/enetc/enetc.c
-index d6930a797c6c..4470a4a3e4c3 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.c
-@@ -172,7 +172,8 @@ static int enetc_map_tx_buffs(struct enetc_bdr *tx_ring, struct sk_buff *skb)
- 	}
+diff --git a/drivers/net/ethernet/freescale/enetc/enetc_pf.c b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+index 7cccdf54359f..5cc2847ad05e 100644
+--- a/drivers/net/ethernet/freescale/enetc/enetc_pf.c
++++ b/drivers/net/ethernet/freescale/enetc/enetc_pf.c
+@@ -1105,8 +1105,7 @@ static int enetc_phylink_create(struct enetc_ndev_priv *priv,
  
- 	tx_swbd->do_twostep_tstamp = do_twostep_tstamp;
--	tx_swbd->check_wb = tx_swbd->do_twostep_tstamp;
-+	tx_swbd->qbv_en = !!(priv->active_offloads & ENETC_F_QBV);
-+	tx_swbd->check_wb = tx_swbd->do_twostep_tstamp || tx_swbd->qbv_en;
- 
- 	if (do_vlan || do_onestep_tstamp || do_twostep_tstamp)
- 		flags |= ENETC_TXBD_FLAGS_EX;
-@@ -792,9 +793,9 @@ static void enetc_recycle_xdp_tx_buff(struct enetc_bdr *tx_ring,
- 
- static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
+ static void enetc_phylink_destroy(struct enetc_ndev_priv *priv)
  {
-+	int tx_frm_cnt = 0, tx_byte_cnt = 0, tx_win_drop = 0;
- 	struct net_device *ndev = tx_ring->ndev;
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
--	int tx_frm_cnt = 0, tx_byte_cnt = 0;
- 	struct enetc_tx_swbd *tx_swbd;
- 	int i, bds_to_clean;
- 	bool do_twostep_tstamp;
-@@ -821,6 +822,10 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 						    &tstamp);
- 				do_twostep_tstamp = true;
- 			}
-+
-+			if (tx_swbd->qbv_en &&
-+			    txbd->wb.status & ENETC_TXBD_STATS_WIN)
-+				tx_win_drop++;
- 		}
- 
- 		if (tx_swbd->is_xdp_tx)
-@@ -873,6 +878,7 @@ static bool enetc_clean_tx_ring(struct enetc_bdr *tx_ring, int napi_budget)
- 	tx_ring->next_to_clean = i;
- 	tx_ring->stats.packets += tx_frm_cnt;
- 	tx_ring->stats.bytes += tx_byte_cnt;
-+	tx_ring->stats.win_drop += tx_win_drop;
- 
- 	if (unlikely(tx_frm_cnt && netif_carrier_ok(ndev) &&
- 		     __netif_subqueue_stopped(ndev, tx_ring->index) &&
-@@ -2552,6 +2558,7 @@ struct net_device_stats *enetc_get_stats(struct net_device *ndev)
- 	struct enetc_ndev_priv *priv = netdev_priv(ndev);
- 	struct net_device_stats *stats = &ndev->stats;
- 	unsigned long packets = 0, bytes = 0;
-+	unsigned long tx_dropped = 0;
- 	int i;
- 
- 	for (i = 0; i < priv->num_rx_rings; i++) {
-@@ -2567,10 +2574,12 @@ struct net_device_stats *enetc_get_stats(struct net_device *ndev)
- 	for (i = 0; i < priv->num_tx_rings; i++) {
- 		packets += priv->tx_ring[i]->stats.packets;
- 		bytes	+= priv->tx_ring[i]->stats.bytes;
-+		tx_dropped += priv->tx_ring[i]->stats.win_drop;
- 	}
- 
- 	stats->tx_packets = packets;
- 	stats->tx_bytes = bytes;
-+	stats->tx_dropped = tx_dropped;
- 
- 	return stats;
+-	if (priv->phylink)
+-		phylink_destroy(priv->phylink);
++	phylink_destroy(priv->phylink);
  }
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc.h b/drivers/net/ethernet/freescale/enetc/enetc.h
-index 68d806dc3701..29922c20531f 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc.h
-@@ -36,6 +36,7 @@ struct enetc_tx_swbd {
- 	u8 is_eof:1;
- 	u8 is_xdp_tx:1;
- 	u8 is_xdp_redirect:1;
-+	u8 qbv_en:1;
- };
  
- #define ENETC_RX_MAXFRM_SIZE	ENETC_MAC_MAXFRM_SIZE
-@@ -72,6 +73,7 @@ struct enetc_ring_stats {
- 	unsigned int xdp_redirect_sg;
- 	unsigned int recycles;
- 	unsigned int recycle_failures;
-+	unsigned int win_drop;
- };
- 
- struct enetc_xdp_data {
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-index 60ec64bfb3f0..ff872e40ce85 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_ethtool.c
-@@ -204,6 +204,7 @@ static const char tx_ring_stats[][ETH_GSTRING_LEN] = {
- 	"Tx ring %2d frames",
- 	"Tx ring %2d XDP frames",
- 	"Tx ring %2d XDP drops",
-+	"Tx window drop %2d frames",
- };
- 
- static int enetc_get_sset_count(struct net_device *ndev, int sset)
-@@ -279,6 +280,7 @@ static void enetc_get_ethtool_stats(struct net_device *ndev,
- 		data[o++] = priv->tx_ring[i]->stats.packets;
- 		data[o++] = priv->tx_ring[i]->stats.xdp_tx;
- 		data[o++] = priv->tx_ring[i]->stats.xdp_tx_drops;
-+		data[o++] = priv->tx_ring[i]->stats.win_drop;
+ /* Initialize the entire shared memory for the flow steering entries
+@@ -1273,16 +1272,20 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ 		goto err_alloc_msix;
  	}
  
- 	for (i = 0; i < priv->num_rx_rings; i++) {
-diff --git a/drivers/net/ethernet/freescale/enetc/enetc_hw.h b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-index ce5b677e8c2f..647c87f73bf7 100644
---- a/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-+++ b/drivers/net/ethernet/freescale/enetc/enetc_hw.h
-@@ -543,6 +543,7 @@ enum enetc_txbd_flags {
- 	ENETC_TXBD_FLAGS_EX = BIT(6),
- 	ENETC_TXBD_FLAGS_F = BIT(7)
- };
-+#define ENETC_TXBD_STATS_WIN	BIT(7)
- #define ENETC_TXBD_TXSTART_MASK GENMASK(24, 0)
- #define ENETC_TXBD_FLAGS_OFFSET 24
+-	if (!of_get_phy_mode(node, &pf->if_mode)) {
+-		err = enetc_mdiobus_create(pf, node);
+-		if (err)
+-			goto err_mdiobus_create;
+-
+-		err = enetc_phylink_create(priv, node);
+-		if (err)
+-			goto err_phylink_create;
++	err = of_get_phy_mode(node, &pf->if_mode);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to read PHY mode\n");
++		goto err_phy_mode;
+ 	}
  
++	err = enetc_mdiobus_create(pf, node);
++	if (err)
++		goto err_mdiobus_create;
++
++	err = enetc_phylink_create(priv, node);
++	if (err)
++		goto err_phylink_create;
++
+ 	err = register_netdev(ndev);
+ 	if (err)
+ 		goto err_reg_netdev;
+@@ -1296,6 +1299,7 @@ static int enetc_pf_probe(struct pci_dev *pdev,
+ err_mdiobus_create:
+ 	enetc_free_msix(priv);
+ err_config_si:
++err_phy_mode:
+ err_alloc_msix:
+ 	enetc_free_si_resources(priv);
+ err_alloc_si_res:
 -- 
 2.25.1
 
