@@ -2,163 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F89052130A
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 139AE52131E
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:05:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240339AbiEJLFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 07:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59660 "EHLO
+        id S240620AbiEJLJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 07:09:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233929AbiEJLFq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 07:05:46 -0400
-X-Greylist: delayed 61 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 10 May 2022 04:01:49 PDT
-Received: from smtpweb147.aruba.it (smtpweb147.aruba.it [62.149.158.147])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 27020260877
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 04:01:48 -0700 (PDT)
-Received: from dfiloni-82ds ([213.215.163.55])
-        by Aruba Outgoing Smtp  with ESMTPSA
-        id oNbenE7sabMeioNbenQdt9; Tue, 10 May 2022 13:00:46 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
-        t=1652180446; bh=HOtQ3KnLO5XsUQz6lMBn4fhMi4iEVOtrqetfJutDP5Y=;
-        h=Subject:From:To:Date:Content-Type:MIME-Version;
-        b=HyDu/PV5lSUJ8R6AGvr8HjrRlC6CmeykcBvhd3Aj3hsBF04c9ST64I1+1A1YryeRb
-         H6AmtFbZDuR856TjExsDpUDr6cwhLc20ckhCk5JxFu0Ka+uD1YcXhbjASxSeUjCygo
-         /j5bRXuKuhp2ygj5eZkQQ1+jHdC0Cy2+OlpgW/qElTQwTUbapHeugOtZC/3hFD0mWF
-         tdYzQAGMgWvg6OA0LfwSrgxQQtxx49hSqoHvF4Bz1ysH5bgFn/RQe2l/3wId62qjUs
-         AbtmrIOTORfS0gCkgniiCUhnZoC+PSdEn+D1WN42r8odkOK6RzIsNyeYdNf0SQ8Iad
-         otB0GueCZie8g==
-Message-ID: <ce7da10389fe448efee86d788dd5282b8022f92e.camel@egluetechnologies.com>
-Subject: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
- was already claimed
-From:   Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-Cc:     Robin van der Gracht <robin@protonic.nl>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, Oleksij Rempel <linux@rempel-privat.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
+        with ESMTP id S234466AbiEJLJ3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 07:09:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 694E82B09C2
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 04:05:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652180731;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=L879vTuOytFC1BBKCpJazjTgxv9uvQMbOkHnTde3iP0=;
+        b=WRNPmTvXSmdZj7Oi3LWKikJRGJmjeROC8AzM1qHd1l9Jkr6T8NzJ3hZnGWfBhWRm4V/7VO
+        zxyvW1t/DyEgbQZtT9+hgK5j/8sU23qWfVQ3VkiFPR8bQxQGdj+z6vaCUHznFZCLn/fYof
+        S+SksCtC92/SIt4ClJp7OBIdM2I/H3I=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-472-jRJHJGswO6GUFUJeZvRf2A-1; Tue, 10 May 2022 07:05:30 -0400
+X-MC-Unique: jRJHJGswO6GUFUJeZvRf2A-1
+Received: by mail-qv1-f70.google.com with SMTP id g10-20020a0562141cca00b00456332167ffso13973426qvd.13
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 04:05:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=L879vTuOytFC1BBKCpJazjTgxv9uvQMbOkHnTde3iP0=;
+        b=XrW8WTyMZTc6Wn7eYsFwlx2spSSuCLTV+wI9g5rxjtnYIr3NQyDsp9k+htRn4pg+xB
+         RVBNuMd1ElUAR8IMMzvBW2NFKpnsE++z6i3JmI7Ki+sWXmHIeJIwT6559oUkAl2FKmku
+         p//Vd+7AE+fN2zJunoW02HjvnOJ7Q8JWBX5NFBlK/tgUGjjUocFv6E70tD360mso+Dm4
+         jl+t4s1I4QKLX2FJuV18iKt6s63ifvkdLPhYkXLNhyTRGKL/TNJHv73T+/krx/neb5UH
+         GPgj4PZxakiCLIgr2LvED5IL7hZfTE5s+DxX2pf/K0qmNZzwHC2QjgnVCQMTK3qWYJXu
+         5f7A==
+X-Gm-Message-State: AOAM533Kg1UAvZxeCc7L5L1ee5MCbQq3BUVW5ABMlzlYDpvqk6dn2M2e
+        LOPq1GgW2ps6K+qdjK+yduVZDj9aszTs2R0LSRcZk7+cR+LmXFtu4JzuBlsIIDQ9l1G5SHs0ub3
+        PZKDxvkMofsmN5KWS
+X-Received: by 2002:ac8:7f04:0:b0:2f3:d6d6:8406 with SMTP id f4-20020ac87f04000000b002f3d6d68406mr10162345qtk.509.1652180729597;
+        Tue, 10 May 2022 04:05:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzoeC9I1S6EUIH6D3Ol16trgj7nqKgi4NXn76Y6uUPXMSnfTiJrPdzyZM7KNtUGJxzuqRQjUQ==
+X-Received: by 2002:ac8:7f04:0:b0:2f3:d6d6:8406 with SMTP id f4-20020ac87f04000000b002f3d6d68406mr10162321qtk.509.1652180729321;
+        Tue, 10 May 2022 04:05:29 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
+        by smtp.gmail.com with ESMTPSA id g12-20020ac842cc000000b002f39b99f678sm9342697qtm.18.2022.05.10.04.05.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 04:05:27 -0700 (PDT)
+Message-ID: <b826a78efa5e015b93038f5f8564ca7e98e1240a.camel@redhat.com>
+Subject: Re: [PATCH net 2/2] net/smc: align the connect behaviour with TCP
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>,
+        kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Date:   Tue, 10 May 2022 13:00:41 +0200
-In-Reply-To: <20220510042609.GA10669@pengutronix.de>
-References: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
-         <YnllpntZ8V5CD07v@x1.vandijck-laurijssen.be>
-         <20220510042609.GA10669@pengutronix.de>
+Date:   Tue, 10 May 2022 13:05:24 +0200
+In-Reply-To: <20220509115837.94911-3-guangguan.wang@linux.alibaba.com>
+References: <20220509115837.94911-1-guangguan.wang@linux.alibaba.com>
+         <20220509115837.94911-3-guangguan.wang@linux.alibaba.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-X-CMAE-Envelope: MS4xfKCKKM6c2Ra6nGX+5TZvp2Fc+vvphWm25IW1ZBxuYQgtGpuiJk2Ba4516wIVBoSxdXkm2ndX4inrwlzXNn7Gul6X3feF89NXOqoGpR5xH6gz4FJkirKZ
- A2u0aDp1VaLBdPUzH9Oh4rEe+SOPYYfFd6v8ekY/Crl6okpKtylPCSpNocyh0YnxKKBNc1YuFzbyAWIEdtzR80f+ZP4A5IAvQlctNQDw0vHJC3HgvJBH1ijZ
- UBNNGdjNAMF9nu2xnb9dB3yCsZlqY/OpzbZYcUO0SYskhXLQ/N2OHPVC3OOFaLEF+q8g5wwBb1qvuQvDcvtfPhoC2RQQwrzWE06uvdccNPD9WINNDape4px1
- XGlzMz5RPK3AAvxeLeRlG+XfZXgRjptsNdl9daM98f/yqpnDOkB/tyBrckU2lz6QojAdItb2elXxaCSQ762Ib+nE9EcGCvERs/6Jmx2PtSL+CjatYC+m0AKz
- l/4E4H1FzoB/tNXXAtpGRVHjgeAgo+Qd6H5HuxrW/IwpKXY+5DtAnn8q7UynK4VIMNYhcKuZ3z/ujbIubSHDX23Zi4oMk+G9cbiR6HrvFNDm8QSnGgBs4B9o
- 1m7nQmqQVplyxKixgSSnk//GPR7EmUQ/V4oX2jVbCUawLVRWrJJhED/BmYXjnoUtReaPOXm1dOzwO9JOSYAVKy8B6COk3rNYd1Pjmu65r2VxrA==
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Tue, 2022-05-10 at 06:26 +0200, Oleksij Rempel wrote:
-> Hi,
+On Mon, 2022-05-09 at 19:58 +0800, Guangguan Wang wrote:
+> Connect with O_NONBLOCK will not be completed immediately
+> and returns -EINPROGRESS. It is possible to use selector/poll
+> for completion by selecting the socket for writing. After select
+> indicates writability, a second connect function call will return
+> 0 to indicate connected successfully as TCP does, but smc returns
+> -EISCONN. Use socket state for smc to indicate connect state, which
+> can help smc aligning the connect behaviour with TCP.
 > 
-> On Mon, May 09, 2022 at 09:04:06PM +0200, Kurt Van Dijck wrote:
-> > On ma, 09 mei 2022 19:03:03 +0200, Devid Antonio Filoni wrote:
-> > > This is not explicitly stated in SAE J1939-21 and some tools used for
-> > > ISO-11783 certification do not expect this wait.
+> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+> ---
+>  net/smc/af_smc.c | 53 ++++++++++++++++++++++++++++++++++++++++++++----
+>  1 file changed, 49 insertions(+), 4 deletions(-)
 > 
-> It will be interesting to know which certification tool do not expect it and
-> what explanation is used if it fails?
-> 
-> > IMHO, the current behaviour is not explicitely stated, but nor is the opposite.
-> > And if I'm not mistaken, this introduces a 250msec delay.
-> > 
-> > 1. If you want to avoid the 250msec gap, you should avoid to contest the same address.
-> > 
-> > 2. It's a balance between predictability and flexibility, but if you try to accomplish both,
-> > as your patch suggests, there is slight time-window until the current owner responds,
-> > in which it may be confusing which node has the address. It depends on how much history
-> > you have collected on the bus.
-> > 
-> > I'm sure that this problem decreases with increasing processing power on the nodes,
-> > but bigger internal queues also increase this window.
-> > 
-> > It would certainly help if you describe how the current implementation fails.
-> > 
-> > Would decreasing the dead time to 50msec help in such case.
-> > 
-> > Kind regards,
-> > Kurt
-> > 
-> 
+> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+> index fce16b9d6e1a..45f9f7c6e776 100644
+> --- a/net/smc/af_smc.c
+> +++ b/net/smc/af_smc.c
+> @@ -1544,9 +1544,32 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
+>  		goto out_err;
+>  
+>  	lock_sock(sk);
+> +	switch (sock->state) {
+> +	default:
+> +		rc = -EINVAL;
+> +		goto out;
+> +	case SS_CONNECTED:
+> +		rc = sk->sk_state == SMC_ACTIVE ? -EISCONN : -EINVAL;
+> +		goto out;
+> +	case SS_CONNECTING:
+> +		if (sk->sk_state == SMC_ACTIVE) {
+> +			sock->state = SS_CONNECTED;
+> +			rc = 0;
+> +			goto out;
+> +		}
+> +		break;
+> +	case SS_UNCONNECTED:
+> +		sock->state = SS_CONNECTING;
+> +		break;
+> +	}
+> +
+>  	switch (sk->sk_state) {
+>  	default:
+>  		goto out;
+> +	case SMC_CLOSED:
+> +		rc = sock_error(sk) ? : -ECONNABORTED;
+> +		sock->state = SS_UNCONNECTED;
+> +		goto out;
+>  	case SMC_ACTIVE:
+>  		rc = -EISCONN;
+>  		goto out;
+> @@ -1565,18 +1588,22 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
+>  		goto out;
+>  
+>  	sock_hold(&smc->sk); /* sock put in passive closing */
+> -	if (smc->use_fallback)
+> +	if (smc->use_fallback) {
+> +		sock->state = SS_CONNECTED;
+>  		goto out;
+> +	}
+>  	if (flags & O_NONBLOCK) {
+>  		if (queue_work(smc_hs_wq, &smc->connect_work))
+>  			smc->connect_nonblock = 1;
+>  		rc = -EINPROGRESS;
+>  	} else {
+>  		rc = __smc_connect(smc);
+> -		if (rc < 0)
+> +		if (rc < 0) {
+>  			goto out;
+> -		else
+> +		} else {
+>  			rc = 0; /* success cases including fallback */
+> +			sock->state = SS_CONNECTED;
 
-The test that is being executed during the ISOBUS compliance is the
-following: after an address has been claimed by a CF (#1), another CF
-(#2) sends a  message (other than address-claim) using the same address
-claimed by CF #1.
+'else' is not needed here, you can keep the above 2 statements dropping
+an indentation level.
 
-As per ISO11783-5 standard, if a CF receives a message, other than the
-address-claimed message, which uses the CF's own SA, then the CF (#1):
-- shall send the address-claim message to the Global address;
-- shall activate a diagnostic trouble code with SPN = 2000+SA and FMI =
-31
+> +		}
+>  	}
+>  
 
-After the address-claim message is sent by CF #1, as per ISO11783-5
-standard:
-- If the name of the CF #1 has a lower priority then the one of the CF
-#2, the the CF #2 shall send its address-claim message and thus the CF
-#1 shall send the cannot-claim-address message or shall execute again
-the claim procedure with a new address
-- If the name of the CF #1 has higher priority then the of the CF #2,
-then the CF #2 shall send the cannot-claim-address message or shall
-execute the claim procedure with a new address
+You can avoid a little code duplication adding here the following:
 
-Above conflict management is OK with current J1939 driver
-implementation, however, since the driver always waits 250ms after
-sending an address-claim message, the CF #1 cannot set the DTC. The DM1
-message which is expected to be sent each second (as per J1939-73
-standard) may not be sent.
+connected:
+   sock->state = SS_CONNECTED;
 
-Honestly, I don't know which company is doing the ISOBUS compliance
-tests on our products and which tool they use as it was choosen by our
-customer, however they did send us some CAN traces of previously
-performed tests and we noticed that the DM1 message is sent 160ms after
-the address-claim message (but it may also be lower then that), and this
-is something that we cannot do because the driver blocks the application
-from sending it.
+and using the new label where appropriate.
 
-28401.127146 1  18E6FFF0x    Tx   d 8 FE 26 FF FF FF FF FF FF  //Message
-with other CF's address
-28401.167414 1  18EEFFF0x    Rx   d 8 15 76 D1 0B 00 86 00 A0  //Address
-Claim - SA = F0
-28401.349214 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 01 FF FF  //DM1
-28402.155774 1  18E6FFF0x    Tx   d 8 FE 26 FF FF FF FF FF FF  //Message
-with other CF's address
-28402.169455 1  18EEFFF0x    Rx   d 8 15 76 D1 0B 00 86 00 A0  //Address
-Claim - SA = F0
-28402.348226 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 02 FF FF  //DM1
-28403.182753 1  18E6FFF0x    Tx   d 8 FE 26 FF FF FF FF FF FF  //Message
-with other CF's address
-28403.188648 1  18EEFFF0x    Rx   d 8 15 76 D1 0B 00 86 00 A0  //Address
-Claim - SA = F0
-28403.349328 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 03 FF FF  //DM1
-28404.349406 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 03 FF FF  //DM1
-28405.349740 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 03 FF FF  //DM1
-
-Since the 250ms wait is not explicitly stated, IMHO it should be up to
-the user-space implementation to decide how to manage it.
-
-Thank you,
-Devid
+>  out:
+> @@ -1693,6 +1720,7 @@ struct sock *smc_accept_dequeue(struct sock *parent,
+>  		}
+>  		if (new_sock) {
+>  			sock_graft(new_sk, new_sock);
+> +			new_sock->state = SS_CONNECTED;
+>  			if (isk->use_fallback) {
+>  				smc_sk(new_sk)->clcsock->file = new_sock->file;
+>  				isk->clcsock->file->private_data = isk->clcsock;
+> @@ -2424,7 +2452,7 @@ static int smc_listen(struct socket *sock, int backlog)
+>  
+>  	rc = -EINVAL;
+>  	if ((sk->sk_state != SMC_INIT && sk->sk_state != SMC_LISTEN) ||
+> -	    smc->connect_nonblock)
+> +	    smc->connect_nonblock || sock->state != SS_UNCONNECTED)
+>  		goto out;
+>  
+>  	rc = 0;
+> @@ -2716,6 +2744,17 @@ static int smc_shutdown(struct socket *sock, int how)
+>  
+>  	lock_sock(sk);
+>  
+> +	if (sock->state == SS_CONNECTING) {
+> +		if (sk->sk_state == SMC_ACTIVE)
+> +			sock->state = SS_CONNECTED;
+> +		else if (sk->sk_state == SMC_PEERCLOSEWAIT1 ||
+> +			 sk->sk_state == SMC_PEERCLOSEWAIT2 ||
+> +			 sk->sk_state == SMC_APPCLOSEWAIT1 ||
+> +			 sk->sk_state == SMC_APPCLOSEWAIT2 ||
+> +			 sk->sk_state == SMC_APPFINCLOSEWAIT)
+> +			sock->state = SS_DISCONNECTING;
+> +	}
+> +
+>  	rc = -ENOTCONN;
+>  	if ((sk->sk_state != SMC_ACTIVE) &&
+>  	    (sk->sk_state != SMC_PEERCLOSEWAIT1) &&
+> @@ -2729,6 +2768,7 @@ static int smc_shutdown(struct socket *sock, int how)
+>  		sk->sk_shutdown = smc->clcsock->sk->sk_shutdown;
+>  		if (sk->sk_shutdown == SHUTDOWN_MASK) {
+>  			sk->sk_state = SMC_CLOSED;
+> +			sk->sk_socket->state = SS_UNCONNECTED;
+>  			sock_put(sk);
+>  		}
+>  		goto out;
+> @@ -2754,6 +2794,10 @@ static int smc_shutdown(struct socket *sock, int how)
+>  	/* map sock_shutdown_cmd constants to sk_shutdown value range */
+>  	sk->sk_shutdown |= how + 1;
+>  
+> +	if (sk->sk_state == SMC_CLOSED)
+> +		sock->state = SS_UNCONNECTED;
+> +	else
+> +		sock->state = SS_DISCONNECTING;
+>  out:
+>  	release_sock(sk);
+>  	return rc ? rc : rc1;
+> @@ -3139,6 +3183,7 @@ static int __smc_create(struct net *net, struct socket *sock, int protocol,
+>  
+>  	rc = -ENOBUFS;
+>  	sock->ops = &smc_sock_ops;
+> +	sock->state = SS_UNCONNECTED;
+>  	sk = smc_sock_alloc(net, sock, protocol);
+>  	if (!sk)
+>  		goto out;
 
