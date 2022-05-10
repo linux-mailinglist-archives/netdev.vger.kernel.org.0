@@ -2,102 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 03DEA52269B
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 00:07:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 732765226A0
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 00:08:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231873AbiEJWGp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 18:06:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52160 "EHLO
+        id S234207AbiEJWHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 18:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229608AbiEJWGo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 18:06:44 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 870451E7;
-        Tue, 10 May 2022 15:06:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
-        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-        :List-Post:List-Owner:List-Archive;
-        bh=BhPDuCZhU013enU/ezL39tFkaksHmV+NLwg0WAYz1Ww=; b=KOt0bgXFpEGiFG29hcGikLWsBW
-        kCtuR/Jf4HUtRukiWGZZ1fBe+6W/yhShGpA69RR/Y72BX/9p/jbPkkuYkMJpxrcEXQ3SA/KurEZnb
-        vuhmwEz1Tmy5Qm5pElBsb3TqqpBXYHmILip3WOveBFZhHS7IAQSoX8W7oAiPasydoDkQ=;
-Received: from p200300daa70ef200adfdb724d8b39c56.dip0.t-ipconnect.de ([2003:da:a70e:f200:adfd:b724:d8b3:9c56] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1noXzv-0001pa-2S; Wed, 11 May 2022 00:06:27 +0200
-Message-ID: <bc4bde22-c2d6-1ded-884a-69465b9d1dc7@nbd.name>
-Date:   Wed, 11 May 2022 00:06:25 +0200
+        with ESMTP id S231318AbiEJWHs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 18:07:48 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BF625EBFE;
+        Tue, 10 May 2022 15:07:47 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id c11so45557plg.13;
+        Tue, 10 May 2022 15:07:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=/D0OGw2on3AvUmlzv6/hmtVTR0FwAvCOjEZGHeN3148=;
+        b=D+gxb7yJZ8m9WsThtL1BuBBOK9yZLCBXHYCPmiuC3APueeYrvaQ54LuI6lVJ9KDkGH
+         bq8GCDiooCm7ohQyIPpk/Kemojg6ouW6d3J42fNcrTqpgF5QKN4NAP95JpFbeuv6tpy8
+         eydzSFu4lyZgZrhRoHv/IdwFTGtzmVWzOiM/azxGTFxwwaR8UBZ8EFSiEh9bdNBHdb0B
+         pxZ0jZeBQbGHGF+LgD5PRcmJm4mDJ/Ajquo0bduwqzhPfvj2IYFI0EwegKDL3MFvKjDU
+         4Hi5BLDA2H/KhFY4EuEhj+wqb2D5jVc74T94LZr/+9gDTT4iItLQjiB9E6fH5zaQNaPy
+         bEeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=/D0OGw2on3AvUmlzv6/hmtVTR0FwAvCOjEZGHeN3148=;
+        b=pOJc0qRibX8J429WnIaQNxldeI9edZ2YZtkc854huV8xtvQiCrRHBqqB8SmQHjpxqk
+         lKaRn6/lbyGOkrkbMLOCVzwJdxnmS9p62pOUD2/UcJJQ5c6c9WwTiZ7QqcEp0TBsHI/j
+         JPRBa/RM6U4OmKposzkWRK/PXQyO5Dzuz26+QJyXaZFB/hv+RKI/I0b6wEuDfC1ZuvTl
+         m/DZo9l8uueThrmBDk0rQ6itYd7pdRqneX1G98PxXbC/h0tAmq6Dz001q4Ot5LXzzAHg
+         mLFxD8uZFx34GwI7D5eIyQamttHxFyQrA2s6mbRaeLNo6bLoYS1mRX1nrTXCUKXt+yhx
+         /Z3A==
+X-Gm-Message-State: AOAM530qBNUu96ForQBo7sk0TmTZB+pzG/sEqTO2OFMN0qeqRDxX4BH/
+        YPgOVM9dNvsL0xcv4wGzMfI=
+X-Google-Smtp-Source: ABdhPJzxtINQ2mxuzNFYfiTFTPIUxv7J7/LYgiXNkci9t3/kBm0Ez1sdfLL3KriCyw+dsZt6P8aeSA==
+X-Received: by 2002:a17:902:ec8a:b0:15e:967b:f928 with SMTP id x10-20020a170902ec8a00b0015e967bf928mr23020423plg.133.1652220466953;
+        Tue, 10 May 2022 15:07:46 -0700 (PDT)
+Received: from localhost ([2620:10d:c090:400::4:6c64])
+        by smtp.gmail.com with ESMTPSA id q7-20020a63d607000000b003c14af5062asm200577pgg.66.2022.05.10.15.07.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 15:07:46 -0700 (PDT)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 10 May 2022 12:07:44 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Hao Luo <haoluo@google.com>
+Cc:     Yosry Ahmed <yosryahmed@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org
+Subject: Re: [RFC PATCH bpf-next 8/9] bpf: Introduce cgroup iter
+Message-ID: <YnriMPYyOP9ibskc@slm.duckdns.org>
+References: <20220510001807.4132027-1-yosryahmed@google.com>
+ <20220510001807.4132027-9-yosryahmed@google.com>
+ <Ynq04gC1l7C2tx6o@slm.duckdns.org>
+ <CA+khW7girnNwap1ABN1a4XuvkEEnmkztTV+fsuC3MsxNeB08Yg@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220510094014.68440-1-nbd@nbd.name>
- <20220510123724.i2xqepc56z4eouh2@skbuf>
- <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
- <20220510165233.yahsznxxb5yq6rai@skbuf>
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
-In-Reply-To: <20220510165233.yahsznxxb5yq6rai@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+khW7girnNwap1ABN1a4XuvkEEnmkztTV+fsuC3MsxNeB08Yg@mail.gmail.com>
+X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello,
 
-On 10.05.22 18:52, Vladimir Oltean wrote:
-> On Tue, May 10, 2022 at 04:52:16PM +0200, Felix Fietkau wrote:
->> 
->> On 10.05.22 14:37, Vladimir Oltean wrote:
->> > On Tue, May 10, 2022 at 11:40:13AM +0200, Felix Fietkau wrote:
->> > > Padding for transmitted packets needs to account for the special tag.
->> > > With not enough padding, garbage bytes are inserted by the switch at the
->> > > end of small packets.
->> > 
->> > I don't think padding bytes are guaranteed to be zeroes. Aren't they
->> > discarded? What is the issue?
->> With the broken padding, ARP requests are silently discarded on the receiver
->> side in my test. Adding the padding explicitly fixes the issue.
->> 
->> - Felix
+On Tue, May 10, 2022 at 02:12:16PM -0700, Hao Luo wrote:
+> > Is there a reason why this can't be a proper iterator which supports
+> > lseek64() to locate a specific cgroup?
+> >
 > 
-> Ok, I'm not going to complain too much about the patch, but I'm still
-> curious where are the so-called "broken" packets discarded.
-> I think the receiving MAC should be passing up to software a buffer
-> without the extra padding beyond the L2 payload length (at least that's
-> the behavior I'm familiar with).
+> There are two reasons:
+> 
+> - Bpf_iter assumes no_llseek. I haven't looked closely on why this is
+> so and whether we can add its support.
+> 
+> - Second, the name 'iter' in this patch is misleading. What this patch
+> really does is reusing the functionality of dumping in bpf_iter.
+> 'Dumper' is a better name. We want to create one file in bpffs for
+> each cgroup. We are essentially just iterating a set of one single
+> element.
 
-I don't know where exactly these packets are discarded.
-After digging through the devices I used during the tests, I just found 
-some leftover pcap files that show the differences in the received 
-packets. Since the packets are bigger after my patch, I can't rule out 
-that packet size instead of the padding may have made a difference here 
-in getting the ARP requests accepted by the receiver.
+I see. I'm just shooting in the dark without context but at least in
+principle there's no reason why cgroups wouldn't be iterable, so it might be
+something worth at least thinking about before baking in the interface.
 
-I've extracted the ARP requests and you can find them here:
-http://nbd.name/arp-broken.pcap
-http://nbd.name/arp-working.pcap
+Thanks.
 
-- Felix
+-- 
+tejun
