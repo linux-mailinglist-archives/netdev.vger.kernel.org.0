@@ -2,118 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B79AD52255A
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 22:21:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BA34522569
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 22:27:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230016AbiEJUVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 16:21:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        id S231476AbiEJU1Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 16:27:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231958AbiEJUUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 16:20:53 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02A95208234
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 13:20:49 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id n10so218400pjh.5
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 13:20:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=VPY+BPFQANz3gDy7cqE3RCNN6lWRUXJ8ern2JoTstfU=;
-        b=jXJ6JFzMblllvK795NI3FvQqpQcwPkVl0bVhyMK3o6LmyhiyVnc9pM+SKsWNtbwkrb
-         vXm0gGlSLp7eTZ8a3YevY+oHmXKB8W/ilZrxw5RUlRCGLC2N3HG9SVP/c97aedgjRwhp
-         wWaIxviwceQPsCLv0sWmrBE0Tj9PqDc3LgbWs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=VPY+BPFQANz3gDy7cqE3RCNN6lWRUXJ8ern2JoTstfU=;
-        b=FrGD+GAuwnJeSfC0DOTitm790hr0PtSTD3q0PZ8WSAqjhsbGNZKU5rGedOlvSHWQLK
-         VNZJquJeF1plHP3EnX5dCFOVtmgBgjefOd/oNegFyuvxAXE5ndmxdI9Nq8zlxDLxcsK+
-         sM3WOzcdmNwy/FXCEZcUmYM4GNx8RaUsDr1tN/DXL/IqDPTzfKkD9UIbq2ipxlMnU/6Q
-         ME5A1IyB6Yw/Od7FGGZARFzN96TbqblDu3LBYmI3V5PE3LACQ99j4owhB3+Vycatnqq8
-         RozL/KQJaUvKyTNr7xVSgcRSQtHyI4o3bTVn15005NozY+d0PMom0HngcLxjzCehyM75
-         VY5Q==
-X-Gm-Message-State: AOAM53327KI7B469ksLapEtodoiqnCV1t2p+B7Mm2sHjfHof6u7IObh4
-        wwxjRX+XWJ1AFmLa5GfZai+OUQ==
-X-Google-Smtp-Source: ABdhPJxDdK9krQAGRnUj2ALxtk0356084bzaUSCApoi5YQd/8+Z41ynrHVmWGvv4Q3NHHnQBRhfzLA==
-X-Received: by 2002:a17:90b:4b01:b0:1dc:7405:dd62 with SMTP id lx1-20020a17090b4b0100b001dc7405dd62mr1604206pjb.160.1652214049398;
-        Tue, 10 May 2022 13:20:49 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id y11-20020a17090a644b00b001d95cdb62d4sm2256217pjm.33.2022.05.10.13.20.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 13:20:48 -0700 (PDT)
-Date:   Tue, 10 May 2022 13:20:48 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Du Cheng <ducheng2@gmail.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        William Kucharski <william.kucharski@oracle.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH] niu: Add "overloaded" struct page union member
-Message-ID: <202205101318.4980180F9@keescook>
-References: <20220509222334.3544344-1-keescook@chromium.org>
- <YnoT+cBTNnPzzg8H@infradead.org>
- <202205100849.58D2C81@keescook>
- <YnqgjVoMDu5v9PNG@casper.infradead.org>
+        with ESMTP id S231903AbiEJU1V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 16:27:21 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6580F1A830
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 13:27:20 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EAB0A61674
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 20:27:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A683C385CB;
+        Tue, 10 May 2022 20:27:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652214439;
+        bh=0Su4DxQf57kauRZz2GCQbO6/eidVhZjdC8r4AJrbMTk=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=HrM3+u6D9dkFV+m4j/tLtPqANnMNG+hKHXca+PYBNthYZI2OfFddvQNQZCIbyyXgw
+         JMJaqkKyiqJuB8juLjYEHhPs/YKHM5MZCs1/L60t4O4KvG4NlkoIF78YEvCeEK2IeC
+         pnNSZI0EbkSnJC1RwyMWSmY2ngA+6bg10zs31NsK/8FyqAIrxOSnJGLpVTSMVDbGtz
+         31BRFzBJ35YkSXSAPvI1VDtMLoAA66FWVpP3awMUw7CxXgWC9tpq9TkgJWE2YrFEc8
+         b48uuDSjb5rAZC0LbMxcFZIDKy9bt+y+1NVItHtgcSu3qwS1j7M4tCAT/EOZfW+IS3
+         d3GIKcDHy/4PA==
+Message-ID: <c083d69e-2310-39d3-960b-1971f095463c@kernel.org>
+Date:   Tue, 10 May 2022 14:27:18 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnqgjVoMDu5v9PNG@casper.infradead.org>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH net] net: ping6: Fix ping -6 with interface name
+Content-Language: en-US
+To:     Tariq Toukan <tariqt@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Aya Levin <ayal@nvidia.com>,
+        Gal Pressman <gal@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+References: <20220510172739.30823-1-tariqt@nvidia.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220510172739.30823-1-tariqt@nvidia.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 06:27:41PM +0100, Matthew Wilcox wrote:
-> On Tue, May 10, 2022 at 08:50:47AM -0700, Kees Cook wrote:
-> > On Tue, May 10, 2022 at 12:27:53AM -0700, Christoph Hellwig wrote:
-> > > On Mon, May 09, 2022 at 03:23:33PM -0700, Kees Cook wrote:
-> > > > The randstruct GCC plugin gets upset when it sees struct addresspace
-> > > > (which is randomized) being assigned to a struct page (which is not
-> > > > randomized):
-> > > 
-> > > Well, the right fix here is to remove this abuse from the driver, not
-> > > to legitimize it as part of a "driver" patch touching a core mm header
-> > 
-> > Right, I didn't expect anyone to like the new "overloaded" member.
-> > Mainly I'd just like to understand how niu _should_ be fixed. Is using
-> > the "private" member the correct thing here?
+On 5/10/22 11:27 AM, Tariq Toukan wrote:
+> From: Aya Levin <ayal@nvidia.com>
 > 
-> Well ... no.  We're not entirely set up yet to go to the good answer
-> that means we don't have to touch this driver again, and yet we're also
-> in a situation where we'll need to touch this driver at some point in
-> order to get rid of the way it abuses struct page before we can get to
-> our good place.
+> When passing interface parameter to ping -6:
+> $ ping -6 ::11:141:84:9 -I eth2
+> Results in:
+> PING ::11:141:84:10(::11:141:84:10) from ::11:141:84:9 eth2: 56 data bytes
+> ping: sendmsg: Invalid argument
+> ping: sendmsg: Invalid argument
 > 
-> The eventual good answer is that we declare a driver-private memdesc
-> variant that has a ->link, ->base ->refcount and ->pfn (maybe it has more
-> than that; I'd have to really understand this driver to be completely
-> certain about what it needs).  Or perhaps there's a better way to handle
-> driver-allocated memory for this kind of networking card that this driver
-> should be converted to use.
+> Initialize the fl6's outgoing interface (OIF) before triggering
+> ip6_datagram_send_ctl.
 > 
-> I haven't looked into this case deeply enough to have strong thoughts
-> about how we should handle it, both now and in the glorious future.
+> Fixes: 13651224c00b ("net: ping6: support setting basic SOL_IPV6 options via cmsg")
+> Signed-off-by: Aya Levin <ayal@nvidia.com>
+> Reviewed-by: Gal Pressman <gal@nvidia.com>
+> Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
+> Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> ---
+>  net/ipv6/ping.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/ipv6/ping.c b/net/ipv6/ping.c
+> index ff033d16549e..83f014559c0d 100644
+> --- a/net/ipv6/ping.c
+> +++ b/net/ipv6/ping.c
+> @@ -106,6 +106,8 @@ static int ping_v6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>  
+>  		opt.tot_len = sizeof(opt);
+>  		ipc6.opt = &opt;
+> +		memset(&fl6, 0, sizeof(fl6));
+> +		fl6.flowi6_oif = oif;
+>  
+>  		err = ip6_datagram_send_ctl(sock_net(sk), sk, msg, &fl6, &ipc6);
+>  		if (err < 0)
 
-Okay, in the meantime, I'll just add a casting wrapper with a big
-comment to explain what I understand about it with some pointers back to
-this and prior threads. :)
+I agree that fl6 is used unitialized here, but right after this is:
 
-Thanks!
+        memset(&fl6, 0, sizeof(fl6));
 
--- 
-Kees Cook
+        fl6.flowi6_proto = IPPROTO_ICMPV6;
+        fl6.saddr = np->saddr;
+        fl6.daddr = *daddr;
+        fl6.flowi6_oif = oif;
+
+so adding a memset before the call to ip6_datagram_send_ctl duplicates
+the existing one. Best to move the memset before the 'if
+(msg->msg_controllen) {'
