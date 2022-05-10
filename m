@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E92A9521FE3
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:48:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACBFA521FBA
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:48:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346573AbiEJPwm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 11:52:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33124 "EHLO
+        id S1346441AbiEJPwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 11:52:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347018AbiEJPvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:51:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CC6244F1C;
-        Tue, 10 May 2022 08:46:39 -0700 (PDT)
+        with ESMTP id S1347147AbiEJPwA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:52:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1063286FC7;
+        Tue, 10 May 2022 08:47:04 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B615BB81D7C;
-        Tue, 10 May 2022 15:46:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26B50C385C2;
-        Tue, 10 May 2022 15:46:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1FAFBB81DFA;
+        Tue, 10 May 2022 15:47:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E8C7C385CB;
+        Tue, 10 May 2022 15:47:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197596;
-        bh=fBLJJBa4HMdeOHZr3X0XZgfHZVV7cWYDol4q08834Zo=;
+        s=k20201202; t=1652197621;
+        bh=KuVmxcN1RR5gLpFNGJGar/lGk7b6M9imhOEuY6GRs6Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ISIk1hF/rgzpQRdIC3SQcuIHYHEq5daNPleLmaE3kx4n6nHJdz3WLzWdM/RJ4262l
-         IU8iYB6Ysn68DQmev2a4t7JGL9pRlwR1UbbtHYgXKMGqzCLkacb4KAaY5L10an5msc
-         Bq1F1+V3HWx0y//W8R/FQu3y9FB8ATh68R0gBFz0awWn+d622kUHrKSoq/PtvkNvEC
-         2qw1HC+ew4FHRdjeBN9///RSzHEMFXRwSBMJqJP2Ria9e8Aex9V6emZrJFCldq8ROE
-         OBX0OQQPYKrmNhEVgAf37vJQfGjyFKIlbJryoUN0GwydSPCo94BNfXXG07Ug4uu81L
-         bluXvx/zHWGqQ==
+        b=OVrGYMKQkm97Y9nj09GbAvDSgyuimSLkzFe6OPeXh7988xj4CoVo2mEBrZg6kGXZc
+         rowvaSaZOblQl0njJCwPHGRHY443bCAI+8TrHjXAMp9elMSnQfoZYn30xfwgJpSOhs
+         WvmtcU5nslJOQ1iWtdbxxdAlmOEZRkqeybznmtp62JlTOxANb4SwxX/xDGN2eBx/+y
+         oxSQ+XdoRIQ0TqzY9f/wC6ipyNTr5GOQDXSbRIuZlhz2H/ilI0nvlgBswhkxEyzP8G
+         UVhYdshzbMw2vB920XDwEhLhlM1LbELEh09Sr7Wr5JkR/scB/qvwgZr9s2i0tu5hwM
+         x0i8xOnR0Rb1g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Eric Dumazet <edumazet@google.com>,
@@ -41,12 +41,12 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
         pabeni@redhat.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 6/6] tcp: resalt the secret every 10 seconds
-Date:   Tue, 10 May 2022 11:46:14 -0400
-Message-Id: <20220510154614.154187-6-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 5/5] tcp: resalt the secret every 10 seconds
+Date:   Tue, 10 May 2022 11:46:37 -0400
+Message-Id: <20220510154637.154283-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220510154614.154187-1-sashal@kernel.org>
-References: <20220510154614.154187-1-sashal@kernel.org>
+In-Reply-To: <20220510154637.154283-1-sashal@kernel.org>
+References: <20220510154637.154283-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -83,7 +83,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 9 insertions(+), 3 deletions(-)
 
 diff --git a/net/core/secure_seq.c b/net/core/secure_seq.c
-index af6ad467ed61..3a8128341e6a 100644
+index 7232274de334..17683aea8a35 100644
 --- a/net/core/secure_seq.c
 +++ b/net/core/secure_seq.c
 @@ -22,6 +22,8 @@
@@ -110,7 +110,7 @@ index af6ad467ed61..3a8128341e6a 100644
  	};
  	net_secret_init();
  	return siphash(&combined, offsetofend(typeof(combined), dport),
-@@ -145,8 +149,10 @@ EXPORT_SYMBOL_GPL(secure_tcp_seq);
+@@ -144,8 +148,10 @@ u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
  u32 secure_ipv4_port_ephemeral(__be32 saddr, __be32 daddr, __be16 dport)
  {
  	net_secret_init();
