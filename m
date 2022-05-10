@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 753A9521466
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:57:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AC96521469
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:57:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241323AbiEJMBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 08:01:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37366 "EHLO
+        id S241360AbiEJMBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 08:01:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241330AbiEJMAv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:00:51 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10A04419AD;
-        Tue, 10 May 2022 04:56:53 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id x18so23507113wrc.0;
-        Tue, 10 May 2022 04:56:52 -0700 (PDT)
+        with ESMTP id S241341AbiEJMBC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:01:02 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF34451E48;
+        Tue, 10 May 2022 04:56:55 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id m62so10032648wme.5;
+        Tue, 10 May 2022 04:56:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gAL6zZTa140Etsk0f3R0C3qsnG9t6c99DknSxRBwIyE=;
-        b=AZ/k/VJEUTm/DBQkLH6uVN/OKA1BC+pFJn2WbK0b/3GUqPHrIi0MpFZ5Ghc5lg/K/T
-         /8vj+QEowaQWzqXYuiWAV/XIk39IRBED6PP1Q6HNUghH7u3mY+uk0Z/qDsk/HB5Hxzl5
-         xbpTAy61Vb/DlkoKvcvPNDoowZIKy4MeoZSKLCOprKOCFT7sNhpLvtJfyUItUjQeC+85
-         9cmlLGIy9uoa/jyi4eAU0FCM+uf3zFMK17OipoAFLa59RXHdtfuttRfoSyDRmmt+7nsS
-         g2IaaGALf9uHrnuZyBCssNC5L49z3NEMW5PFKxk7uhF91ZA2CZj1xoK5Qr9wzHUqAJlX
-         adSQ==
+        bh=8RQhqbSMSQzlO2uVLhr3KZ2C5bSXSd8PmfwKkTKIDiY=;
+        b=i9S6mC9d2nfA5TapOs+3ohWK8WT27Q/pctT1sTq3bk3BpTPQspnL8PjEhiEaKoQfYk
+         7JwIPy1qZkeHIfLsGh9qskXF+kZQy35m7mAcksPrz1p0jye9SmsEmNfPvqYdh3qwgRjT
+         UBl4fNNvA0PyCxrk+aS0Rcm7KxYnyk3/EuCZixqfC3ysirmiU2879lyYw5UOTaNH1YmQ
+         x42AxmAHRpsMHqqalnv9CVREBegykYKeACa7GT7Vhbr1xagKEG+ocf1brWSLFaTYNUgg
+         F41DETRP++LuXGlEHwB53ZkmKzHHRzr34o2yY3jWTkiXh76vd1a8+qLM7c4Tv9W6DZrA
+         ad9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gAL6zZTa140Etsk0f3R0C3qsnG9t6c99DknSxRBwIyE=;
-        b=kaHC/41inCBSrcHb7sfLamFG/nSbYurFNY1ViWTD6XInTcKi7nObp1p9gL87ew02UT
-         uiicg+vESEfWi7vCaJo9vT0m+dlEIkpEektjYeMxakwEHP+piOmfAHOEU/pxIf3noN2/
-         MN2Xv5VIZsR491mSaR1GYoReGAHkq5dHtTbsw96xbf/RC/9yC+trCbanKQ9JI3Y14fI4
-         wCOOw8/jlySg3tKFTa7o/dS6AN3EEsrr4BWnyPHaYOAjFy8azTLn4SNRFUr/clKi42nK
-         o6TmnQ21CA1fkcyXImcvBdmWnjz4partJ4d1PWebse+y0/sBEEWiyg9N84oCsfDy/GWf
-         Yu4Q==
-X-Gm-Message-State: AOAM5339sBX9ZrMlxRcMZChhphLokt2YObj5EatNFnnsHpAPae4pzFDG
-        jdhGsOoIdsBQ73nKyfK0PYb+DAlYZAmtHllq
-X-Google-Smtp-Source: ABdhPJwMCAGMYZ0eBoi3kJzrXNGm6P2P7o/P/4PQYuqTTMVbySWVoRP2yZU5MEiabQyuavpHXeAkcw==
-X-Received: by 2002:a5d:678b:0:b0:20a:db0b:7395 with SMTP id v11-20020a5d678b000000b0020adb0b7395mr18770988wru.668.1652183812478;
-        Tue, 10 May 2022 04:56:52 -0700 (PDT)
+        bh=8RQhqbSMSQzlO2uVLhr3KZ2C5bSXSd8PmfwKkTKIDiY=;
+        b=BBeRCwWAtnha6EU5AH6YwdCRTxrHBInIAkV72tFo+NG+b3sUAZfYQTwzcRmLKqX2kN
+         jb6wag+dFCqC+cQc5sMVpuVV8gt2HzAq4MHRod7qPcYIZ+nacwEhfspEQqspQcs9++aJ
+         /i0V4NJ6R8XWSBS2uybv5aP6Jk2Pa/Y0SmTSjp6da4mtPSig2teRkOI6hRq4nfIcYnSo
+         RliB6WezN5kFdO3ZDRcMlANDhS2fj+U8zpSw0F/QLWE/lQ/rNmX/AbhOgFypcz7CpQcI
+         ZzO+FOE/j9+wQZ7mPPx2HdqWpnjV5odbD2nPYvC200t7e0gXur5/FDBpogkcvzsg4ZC6
+         sonw==
+X-Gm-Message-State: AOAM530qNAzxlGXhw9CpXASRjS31ljoi7J7CFUUBLPXjQhRqGoH9gi1J
+        JQukpIiTBxj95lBqP2tOXRY=
+X-Google-Smtp-Source: ABdhPJzDjdJjWvtr8gRvargpUqTSQD8Z2G6nT4s1K68C6ryesG7ysc+wVzzX8AOSaA38oACZ1dLCRg==
+X-Received: by 2002:a05:600c:354e:b0:394:89ba:e211 with SMTP id i14-20020a05600c354e00b0039489bae211mr12567844wmq.86.1652183814247;
+        Tue, 10 May 2022 04:56:54 -0700 (PDT)
 Received: from localhost.localdomain ([188.149.128.194])
-        by smtp.gmail.com with ESMTPSA id e25-20020a05600c4b9900b003942a244f51sm2267797wmp.42.2022.05.10.04.56.50
+        by smtp.gmail.com with ESMTPSA id e25-20020a05600c4b9900b003942a244f51sm2267797wmp.42.2022.05.10.04.56.52
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 May 2022 04:56:52 -0700 (PDT)
+        Tue, 10 May 2022 04:56:53 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -54,9 +54,9 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, john.fastabend@gmail.com,
         kpsingh@kernel.org
 Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
-Subject: [PATCH bpf-next 3/9] selftests: xsk: run all tests for busy-poll
-Date:   Tue, 10 May 2022 13:55:58 +0200
-Message-Id: <20220510115604.8717-4-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next 4/9] selftests: xsk: fix reporting of failed tests
+Date:   Tue, 10 May 2022 13:55:59 +0200
+Message-Id: <20220510115604.8717-5-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220510115604.8717-1-magnus.karlsson@gmail.com>
 References: <20220510115604.8717-1-magnus.karlsson@gmail.com>
@@ -64,8 +64,8 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -74,283 +74,615 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Execute all xsk selftests for busy-poll mode too. Currently they were
-only run for the standard interrupt driven softirq mode. Replace the
-unused option queue-id with the new option busy-poll.
+Fix the reporting of failed tests as it was broken in several
+ways. First, a failed test was reported as both failed and passed
+messing up the count. Second, tests were not aborted after a failure
+and could generate more "failures" messing up the count even
+more. Third, the failure reporting from the application to the shell
+script was wrong. It always reported pass. And finally, the handling
+of the failures in the launch script was not correct.
+
+Correct all this by propagating the failure up through the function
+calls to a calling function that can abort the test. A receiver or
+sender thread will mark the new variable in the test spec called fail,
+if a test has failed. This is then picked up by the main thread when
+everyone else has exited and this is then marked and propagated up to
+the calling script.
+
+Also add a summary function in the calling script so that a user
+does not have to go through the sub tests to see if something has
+failed.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/test_xsk.sh    | 25 +++++++-
- tools/testing/selftests/bpf/xdpxceiver.c   | 68 ++++++++++++++++++----
- tools/testing/selftests/bpf/xdpxceiver.h   |  9 +++
- tools/testing/selftests/bpf/xsk_prereqs.sh |  6 +-
- 4 files changed, 94 insertions(+), 14 deletions(-)
+ tools/testing/selftests/bpf/test_xsk.sh    |  23 ++-
+ tools/testing/selftests/bpf/xdpxceiver.c   | 173 +++++++++++++--------
+ tools/testing/selftests/bpf/xdpxceiver.h   |   4 +
+ tools/testing/selftests/bpf/xsk_prereqs.sh |  30 ++--
+ 4 files changed, 141 insertions(+), 89 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
-index 2bd12c16fbb7..7989a9376f0e 100755
+index 7989a9376f0e..d06215ee843d 100755
 --- a/tools/testing/selftests/bpf/test_xsk.sh
 +++ b/tools/testing/selftests/bpf/test_xsk.sh
-@@ -109,6 +109,14 @@ setup_vethPairs() {
- 	if [[ $verbose -eq 1 ]]; then
- 	        echo "setting up ${VETH1}: namespace: ${NS1}"
- 	fi
-+
-+	if [[ $busy_poll -eq 1 ]]; then
-+	        echo 2 > /sys/class/net/${VETH0}/napi_defer_hard_irqs
-+		echo 200000 > /sys/class/net/${VETH0}/gro_flush_timeout
-+		echo 2 > /sys/class/net/${VETH1}/napi_defer_hard_irqs
-+		echo 200000 > /sys/class/net/${VETH1}/gro_flush_timeout
-+	fi
-+
- 	ip link set ${VETH1} netns ${NS1}
- 	ip netns exec ${NS1} ip link set ${VETH1} mtu ${MTU}
- 	ip link set ${VETH0} mtu ${MTU}
-@@ -130,11 +138,11 @@ if [ $retval -ne 0 ]; then
- fi
+@@ -87,7 +87,7 @@ done
+ TEST_NAME="PREREQUISITES"
  
- if [[ $verbose -eq 1 ]]; then
--	VERBOSE_ARG="-v"
-+	ARGS+="-v "
- fi
+ URANDOM=/dev/urandom
+-[ ! -e "${URANDOM}" ] && { echo "${URANDOM} not found. Skipping tests."; test_exit 1 1; }
++[ ! -e "${URANDOM}" ] && { echo "${URANDOM} not found. Skipping tests."; test_exit $ksft_fail; }
  
- if [[ $dump_pkts -eq 1 ]]; then
--	DUMP_PKTS_ARG="-D"
-+	ARGS="-D "
- fi
+ VETH0_POSTFIX=$(cat ${URANDOM} | tr -dc '0-9' | fold -w 256 | head -n 1 | head --bytes 4)
+ VETH0=ve${VETH0_POSTFIX}
+@@ -155,10 +155,6 @@ TEST_NAME="XSK_SELFTESTS_SOFTIRQ"
  
- test_status $retval "${TEST_NAME}"
-@@ -143,8 +151,19 @@ test_status $retval "${TEST_NAME}"
- 
- statusList=()
- 
--TEST_NAME="XSK KSELFTESTS"
-+TEST_NAME="XSK_SELFTESTS_SOFTIRQ"
-+
-+execxdpxceiver
-+
-+retval=$?
-+test_status $retval "${TEST_NAME}"
-+statusList+=($retval)
- 
-+cleanup_exit ${VETH0} ${VETH1} ${NS1}
-+TEST_NAME="XSK_SELFTESTS_BUSY_POLL"
-+busy_poll=1
-+
-+setup_vethPairs
  execxdpxceiver
  
- retval=$?
+-retval=$?
+-test_status $retval "${TEST_NAME}"
+-statusList+=($retval)
+-
+ cleanup_exit ${VETH0} ${VETH1} ${NS1}
+ TEST_NAME="XSK_SELFTESTS_BUSY_POLL"
+ busy_poll=1
+@@ -166,19 +162,20 @@ busy_poll=1
+ setup_vethPairs
+ execxdpxceiver
+ 
+-retval=$?
+-test_status $retval "${TEST_NAME}"
+-statusList+=($retval)
+-
+ ## END TESTS
+ 
+ cleanup_exit ${VETH0} ${VETH1} ${NS1}
+ 
+-for _status in "${statusList[@]}"
++failures=0
++echo -e "\nSummary:"
++for i in "${!statusList[@]}"
+ do
+-	if [ $_status -ne 0 ]; then
+-		test_exit $ksft_fail 0
++	if [ ${statusList[$i]} -ne 0 ]; then
++	        test_status ${statusList[$i]} ${nameList[$i]}
++		failures=1
+ 	fi
+ done
+ 
+-test_exit $ksft_pass 0
++if [ $failures -eq 0 ]; then
++        echo "All tests successful!"
++fi
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 218f20f135c9..6efac9e35c2e 100644
+index 6efac9e35c2e..ebbab8f967c1 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -90,6 +90,7 @@
- #include <string.h>
- #include <stddef.h>
- #include <sys/mman.h>
-+#include <sys/socket.h>
- #include <sys/types.h>
- #include <sys/queue.h>
- #include <time.h>
-@@ -122,9 +123,11 @@ static void __exit_with_error(int error, const char *file, const char *func, int
- #define exit_with_error(error) __exit_with_error(error, __FILE__, __func__, __LINE__)
- 
+@@ -125,9 +125,15 @@ static void __exit_with_error(int error, const char *file, const char *func, int
  #define mode_string(test) (test)->ifobj_tx->xdp_flags & XDP_FLAGS_SKB_MODE ? "SKB" : "DRV"
-+#define busy_poll_string(test) (test)->ifobj_tx->busy_poll ? "BUSY-POLL " : ""
+ #define busy_poll_string(test) (test)->ifobj_tx->busy_poll ? "BUSY-POLL " : ""
  
- #define print_ksft_result(test)						\
--	(ksft_test_result_pass("PASS: %s %s\n", mode_string(test), (test)->name))
-+	(ksft_test_result_pass("PASS: %s %s%s\n", mode_string(test), busy_poll_string(test), \
-+			       (test)->name))
+-#define print_ksft_result(test)						\
+-	(ksft_test_result_pass("PASS: %s %s%s\n", mode_string(test), busy_poll_string(test), \
+-			       (test)->name))
++static void report_failure(struct test_spec *test)
++{
++	if (test->fail)
++		return;
++
++	ksft_test_result_fail("FAIL: %s %s%s\n", mode_string(test), busy_poll_string(test),
++			      test->name);
++	test->fail = true;
++}
  
  static void memset32_htonl(void *dest, u32 val, u32 size)
  {
-@@ -264,6 +267,26 @@ static int xsk_configure_umem(struct xsk_umem_info *umem, void *buffer, u64 size
- 	return 0;
+@@ -443,6 +449,7 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
+ 	test->current_step = 0;
+ 	test->total_steps = 1;
+ 	test->nb_sockets = 1;
++	test->fail = false;
  }
  
-+static void enable_busy_poll(struct xsk_socket_info *xsk)
-+{
-+	int sock_opt;
-+
-+	sock_opt = 1;
-+	if (setsockopt(xsk_socket__fd(xsk->xsk), SOL_SOCKET, SO_PREFER_BUSY_POLL,
-+		       (void *)&sock_opt, sizeof(sock_opt)) < 0)
-+		exit_with_error(errno);
-+
-+	sock_opt = 20;
-+	if (setsockopt(xsk_socket__fd(xsk->xsk), SOL_SOCKET, SO_BUSY_POLL,
-+		       (void *)&sock_opt, sizeof(sock_opt)) < 0)
-+		exit_with_error(errno);
-+
-+	sock_opt = BATCH_SIZE;
-+	if (setsockopt(xsk_socket__fd(xsk->xsk), SOL_SOCKET, SO_BUSY_POLL_BUDGET,
-+		       (void *)&sock_opt, sizeof(sock_opt)) < 0)
-+		exit_with_error(errno);
-+}
-+
- static int xsk_configure_socket(struct xsk_socket_info *xsk, struct xsk_umem_info *umem,
- 				struct ifobject *ifobject, bool shared)
- {
-@@ -287,8 +310,8 @@ static int xsk_configure_socket(struct xsk_socket_info *xsk, struct xsk_umem_inf
+ static void test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
+@@ -689,8 +696,7 @@ static bool is_offset_correct(struct xsk_umem_info *umem, struct pkt_stream *pkt
+ 	if (offset == expected_offset)
+ 		return true;
  
- static struct option long_options[] = {
- 	{"interface", required_argument, 0, 'i'},
--	{"queue", optional_argument, 0, 'q'},
--	{"dump-pkts", optional_argument, 0, 'D'},
-+	{"busy-poll", no_argument, 0, 'b'},
-+	{"dump-pkts", no_argument, 0, 'D'},
- 	{"verbose", no_argument, 0, 'v'},
- 	{0, 0, 0, 0}
- };
-@@ -299,9 +322,9 @@ static void usage(const char *prog)
- 		"  Usage: %s [OPTIONS]\n"
- 		"  Options:\n"
- 		"  -i, --interface      Use interface\n"
--		"  -q, --queue=n        Use queue n (default 0)\n"
- 		"  -D, --dump-pkts      Dump packets L2 - L5\n"
--		"  -v, --verbose        Verbose output\n";
-+		"  -v, --verbose        Verbose output\n"
-+		"  -b, --busy-poll      Enable busy poll\n";
- 
- 	ksft_print_msg(str, prog);
- }
-@@ -347,7 +370,7 @@ static void parse_command_line(struct ifobject *ifobj_tx, struct ifobject *ifobj
- 	for (;;) {
- 		char *sptr, *token;
- 
--		c = getopt_long(argc, argv, "i:Dv", long_options, &option_index);
-+		c = getopt_long(argc, argv, "i:Dvb", long_options, &option_index);
- 		if (c == -1)
- 			break;
- 
-@@ -373,6 +396,10 @@ static void parse_command_line(struct ifobject *ifobj_tx, struct ifobject *ifobj
- 		case 'v':
- 			opt_verbose = true;
- 			break;
-+		case 'b':
-+			ifobj_tx->busy_poll = true;
-+			ifobj_rx->busy_poll = true;
-+			break;
- 		default:
- 			usage(basename(argv[0]));
- 			ksft_exit_xfail();
-@@ -716,11 +743,24 @@ static void kick_tx(struct xsk_socket_info *xsk)
- 	int ret;
- 
- 	ret = sendto(xsk_socket__fd(xsk->xsk), NULL, 0, MSG_DONTWAIT, NULL, 0);
--	if (ret >= 0 || errno == ENOBUFS || errno == EAGAIN || errno == EBUSY || errno == ENETDOWN)
-+	if (ret >= 0)
-+		return;
-+	if (errno == ENOBUFS || errno == EAGAIN || errno == EBUSY || errno == ENETDOWN) {
-+		usleep(100);
- 		return;
-+	}
- 	exit_with_error(errno);
+-	ksft_test_result_fail("ERROR: [%s] expected [%u], got [%u]\n", __func__, expected_offset,
+-			      offset);
++	ksft_print_msg("[%s] expected [%u], got [%u]\n", __func__, expected_offset, offset);
+ 	return false;
  }
  
-+static void kick_rx(struct xsk_socket_info *xsk)
-+{
-+	int ret;
-+
-+	ret = recvfrom(xsk_socket__fd(xsk->xsk), NULL, 0, MSG_DONTWAIT, NULL, NULL);
-+	if (ret < 0)
-+		exit_with_error(errno);
-+}
-+
- static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
+@@ -700,7 +706,7 @@ static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
+ 	struct iphdr *iphdr = (struct iphdr *)(data + sizeof(struct ethhdr));
+ 
+ 	if (!pkt) {
+-		ksft_test_result_fail("ERROR: [%s] too many packets received\n", __func__);
++		ksft_print_msg("[%s] too many packets received\n", __func__);
+ 		return false;
+ 	}
+ 
+@@ -710,9 +716,8 @@ static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
+ 	}
+ 
+ 	if (pkt->len != len) {
+-		ksft_test_result_fail
+-			("ERROR: [%s] expected length [%d], got length [%d]\n",
+-			 __func__, pkt->len, len);
++		ksft_print_msg("[%s] expected length [%d], got length [%d]\n",
++			       __func__, pkt->len, len);
+ 		return false;
+ 	}
+ 
+@@ -723,9 +728,8 @@ static bool is_pkt_valid(struct pkt *pkt, void *buffer, u64 addr, u32 len)
+ 			pkt_dump(data, PKT_SIZE);
+ 
+ 		if (pkt->payload != seqnum) {
+-			ksft_test_result_fail
+-				("ERROR: [%s] expected seqnum [%d], got seqnum [%d]\n",
+-					__func__, pkt->payload, seqnum);
++			ksft_print_msg("[%s] expected seqnum [%d], got seqnum [%d]\n",
++				       __func__, pkt->payload, seqnum);
+ 			return false;
+ 		}
+ 	} else {
+@@ -761,7 +765,7 @@ static void kick_rx(struct xsk_socket_info *xsk)
+ 		exit_with_error(errno);
+ }
+ 
+-static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
++static int complete_pkts(struct xsk_socket_info *xsk, int batch_size)
  {
  	unsigned int rcvd;
-@@ -745,15 +785,18 @@ static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
+ 	u32 idx;
+@@ -774,18 +778,19 @@ static void complete_pkts(struct xsk_socket_info *xsk, int batch_size)
+ 		if (rcvd > xsk->outstanding_tx) {
+ 			u64 addr = *xsk_ring_cons__comp_addr(&xsk->umem->cq, idx + rcvd - 1);
+ 
+-			ksft_test_result_fail("ERROR: [%s] Too many packets completed\n",
+-					      __func__);
++			ksft_print_msg("[%s] Too many packets completed\n", __func__);
+ 			ksft_print_msg("Last completion address: %llx\n", addr);
+-			return;
++			return TEST_FAILURE;
+ 		}
+ 
+ 		xsk_ring_cons__release(&xsk->umem->cq, rcvd);
+ 		xsk->outstanding_tx -= rcvd;
  	}
++
++	return TEST_PASS;
  }
  
--static void receive_pkts(struct pkt_stream *pkt_stream, struct xsk_socket_info *xsk,
--			 struct pollfd *fds)
-+static void receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+-static void receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
++static int receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
  {
-+	struct pkt_stream *pkt_stream = ifobj->pkt_stream;
+ 	struct pkt_stream *pkt_stream = ifobj->pkt_stream;
  	struct pkt *pkt = pkt_stream_get_next_rx_pkt(pkt_stream);
-+	struct xsk_socket_info *xsk = ifobj->xsk;
- 	struct xsk_umem_info *umem = xsk->umem;
- 	u32 idx_rx = 0, idx_fq = 0, rcvd, i;
- 	int ret;
+@@ -824,20 +829,19 @@ static void receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+ 			u64 addr = desc->addr, orig;
  
- 	while (pkt) {
-+		kick_rx(xsk);
-+
- 		rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
- 		if (!rcvd) {
- 			if (xsk_ring_prod__needs_wakeup(&umem->fq)) {
-@@ -890,6 +933,8 @@ static bool rx_stats_are_valid(struct ifobject *ifobject)
- 	socklen_t optlen;
- 	int err;
+ 			if (!pkt) {
+-				ksft_test_result_fail("ERROR: [%s] Received too many packets.\n",
+-						      __func__);
++				ksft_print_msg("[%s] Received too many packets.\n",
++					       __func__);
+ 				ksft_print_msg("Last packet has addr: %llx len: %u\n",
+ 					       addr, desc->len);
+-				return;
++				return TEST_FAILURE;
+ 			}
  
-+	kick_rx(ifobject->xsk);
+ 			orig = xsk_umem__extract_addr(addr);
+ 			addr = xsk_umem__add_offset_to_addr(addr);
+ 
+-			if (!is_pkt_valid(pkt, umem->buffer, addr, desc->len))
+-				return;
+-			if (!is_offset_correct(umem, pkt_stream, addr, pkt->addr))
+-				return;
++			if (!is_pkt_valid(pkt, umem->buffer, addr, desc->len) ||
++			    !is_offset_correct(umem, pkt_stream, addr, pkt->addr))
++				return TEST_FAILURE;
+ 
+ 			*xsk_ring_prod__fill_addr(&umem->fq, idx_fq++) = orig;
+ 			pkt = pkt_stream_get_next_rx_pkt(pkt_stream);
+@@ -852,9 +856,11 @@ static void receive_pkts(struct ifobject *ifobj, struct pollfd *fds)
+ 			pthread_cond_signal(&pacing_cond);
+ 		pthread_mutex_unlock(&pacing_mutex);
+ 	}
 +
++	return TEST_PASS;
+ }
+ 
+-static u32 __send_pkts(struct ifobject *ifobject, u32 pkt_nb)
++static int __send_pkts(struct ifobject *ifobject, u32 *pkt_nb)
+ {
+ 	struct xsk_socket_info *xsk = ifobject->xsk;
+ 	u32 i, idx, valid_pkts = 0;
+@@ -864,14 +870,14 @@ static u32 __send_pkts(struct ifobject *ifobject, u32 pkt_nb)
+ 
+ 	for (i = 0; i < BATCH_SIZE; i++) {
+ 		struct xdp_desc *tx_desc = xsk_ring_prod__tx_desc(&xsk->tx, idx + i);
+-		struct pkt *pkt = pkt_generate(ifobject, pkt_nb);
++		struct pkt *pkt = pkt_generate(ifobject, *pkt_nb);
+ 
+ 		if (!pkt)
+ 			break;
+ 
+ 		tx_desc->addr = pkt->addr;
+ 		tx_desc->len = pkt->len;
+-		pkt_nb++;
++		(*pkt_nb)++;
+ 		if (pkt->valid)
+ 			valid_pkts++;
+ 	}
+@@ -886,10 +892,11 @@ static u32 __send_pkts(struct ifobject *ifobject, u32 pkt_nb)
+ 
+ 	xsk_ring_prod__submit(&xsk->tx, i);
+ 	xsk->outstanding_tx += valid_pkts;
+-	complete_pkts(xsk, i);
++	if (complete_pkts(xsk, i))
++		return TEST_FAILURE;
+ 
+ 	usleep(10);
+-	return i;
++	return TEST_PASS;
+ }
+ 
+ static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+@@ -898,7 +905,7 @@ static void wait_for_tx_completion(struct xsk_socket_info *xsk)
+ 		complete_pkts(xsk, BATCH_SIZE);
+ }
+ 
+-static void send_pkts(struct ifobject *ifobject)
++static int send_pkts(struct test_spec *test, struct ifobject *ifobject)
+ {
+ 	struct pollfd fds = { };
+ 	u32 pkt_cnt = 0;
+@@ -907,6 +914,8 @@ static void send_pkts(struct ifobject *ifobject)
+ 	fds.events = POLLOUT;
+ 
+ 	while (pkt_cnt < ifobject->pkt_stream->nb_pkts) {
++		int err;
++
+ 		if (ifobject->use_poll) {
+ 			int ret;
+ 
+@@ -918,13 +927,16 @@ static void send_pkts(struct ifobject *ifobject)
+ 				continue;
+ 		}
+ 
+-		pkt_cnt += __send_pkts(ifobject, pkt_cnt);
++		err = __send_pkts(ifobject, &pkt_cnt);
++		if (err || test->fail)
++			return TEST_FAILURE;
+ 	}
+ 
+ 	wait_for_tx_completion(ifobject->xsk);
++	return TEST_PASS;
+ }
+ 
+-static bool rx_stats_are_valid(struct ifobject *ifobject)
++static int rx_stats_validate(struct ifobject *ifobject)
+ {
+ 	u32 xsk_stat = 0, expected_stat = ifobject->pkt_stream->nb_pkts;
+ 	struct xsk_socket *xsk = ifobject->xsk->xsk;
+@@ -938,9 +950,9 @@ static bool rx_stats_are_valid(struct ifobject *ifobject)
  	optlen = sizeof(stats);
  	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
  	if (err) {
-@@ -984,6 +1029,9 @@ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
- 				exit_with_error(-ret);
- 			usleep(USLEEP_MAX);
- 		}
-+
-+		if (ifobject->busy_poll)
-+			enable_busy_poll(&ifobject->xsk_arr[i]);
+-		ksft_test_result_fail("ERROR Rx: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
+-				      __func__, -err, strerror(-err));
+-		return true;
++		ksft_print_msg("[%s] getsockopt(XDP_STATISTICS) error %u %s\n",
++			       __func__, -err, strerror(-err));
++		return TEST_FAILURE;
  	}
  
- 	ifobject->xsk = &ifobject->xsk_arr[0];
-@@ -1083,7 +1131,7 @@ static void *worker_testapp_validate_rx(void *arg)
- 		while (!rx_stats_are_valid(ifobject))
- 			continue;
- 	else
--		receive_pkts(ifobject->pkt_stream, ifobject->xsk, &fds);
-+		receive_pkts(ifobject, &fds);
+ 	if (optlen == sizeof(struct xdp_statistics)) {
+@@ -965,13 +977,13 @@ static bool rx_stats_are_valid(struct ifobject *ifobject)
+ 		}
  
- 	if (test->total_steps == test->current_step)
+ 		if (xsk_stat == expected_stat)
+-			return true;
++			return TEST_PASS;
+ 	}
+ 
+-	return false;
++	return TEST_CONTINUE;
+ }
+ 
+-static void tx_stats_validate(struct ifobject *ifobject)
++static int tx_stats_validate(struct ifobject *ifobject)
+ {
+ 	struct xsk_socket *xsk = ifobject->xsk->xsk;
+ 	int fd = xsk_socket__fd(xsk);
+@@ -982,16 +994,18 @@ static void tx_stats_validate(struct ifobject *ifobject)
+ 	optlen = sizeof(stats);
+ 	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
+ 	if (err) {
+-		ksft_test_result_fail("ERROR Tx: [%s] getsockopt(XDP_STATISTICS) error %u %s\n",
+-				      __func__, -err, strerror(-err));
+-		return;
++		ksft_print_msg("[%s] getsockopt(XDP_STATISTICS) error %u %s\n",
++			       __func__, -err, strerror(-err));
++		return TEST_FAILURE;
+ 	}
+ 
+-	if (stats.tx_invalid_descs == ifobject->pkt_stream->nb_pkts)
+-		return;
++	if (stats.tx_invalid_descs != ifobject->pkt_stream->nb_pkts) {
++		ksft_print_msg("[%s] tx_invalid_descs incorrect. Got [%u] expected [%u]\n",
++			       __func__, stats.tx_invalid_descs, ifobject->pkt_stream->nb_pkts);
++		return TEST_FAILURE;
++	}
+ 
+-	ksft_test_result_fail("ERROR: [%s] tx_invalid_descs incorrect. Got [%u] expected [%u]\n",
+-			      __func__, stats.tx_invalid_descs, ifobject->pkt_stream->nb_pkts);
++	return TEST_PASS;
+ }
+ 
+ static void thread_common_ops(struct test_spec *test, struct ifobject *ifobject)
+@@ -1064,18 +1078,26 @@ static void *worker_testapp_validate_tx(void *arg)
+ {
+ 	struct test_spec *test = (struct test_spec *)arg;
+ 	struct ifobject *ifobject = test->ifobj_tx;
++	int err;
+ 
+ 	if (test->current_step == 1)
+ 		thread_common_ops(test, ifobject);
+ 
+ 	print_verbose("Sending %d packets on interface %s\n", ifobject->pkt_stream->nb_pkts,
+ 		      ifobject->ifname);
+-	send_pkts(ifobject);
++	err = send_pkts(test, ifobject);
++	if (err) {
++		report_failure(test);
++		goto out;
++	}
+ 
+-	if (stat_test_type == STAT_TEST_TX_INVALID)
+-		tx_stats_validate(ifobject);
++	if (stat_test_type == STAT_TEST_TX_INVALID) {
++		err = tx_stats_validate(ifobject);
++		report_failure(test);
++	}
+ 
+-	if (test->total_steps == test->current_step)
++out:
++	if (test->total_steps == test->current_step || err)
  		testapp_cleanup_xsk_res(ifobject);
+ 	pthread_exit(NULL);
+ }
+@@ -1116,6 +1138,7 @@ static void *worker_testapp_validate_rx(void *arg)
+ 	struct test_spec *test = (struct test_spec *)arg;
+ 	struct ifobject *ifobject = test->ifobj_rx;
+ 	struct pollfd fds = { };
++	int err;
+ 
+ 	if (test->current_step == 1)
+ 		thread_common_ops(test, ifobject);
+@@ -1127,18 +1150,27 @@ static void *worker_testapp_validate_rx(void *arg)
+ 
+ 	pthread_barrier_wait(&barr);
+ 
+-	if (test_type == TEST_TYPE_STATS)
+-		while (!rx_stats_are_valid(ifobject))
+-			continue;
+-	else
+-		receive_pkts(ifobject, &fds);
++	if (test_type == TEST_TYPE_STATS) {
++		do {
++			err = rx_stats_validate(ifobject);
++		} while (err == TEST_CONTINUE);
++	} else {
++		err = receive_pkts(ifobject, &fds);
++	}
++
++	if (err) {
++		report_failure(test);
++		pthread_mutex_lock(&pacing_mutex);
++		pthread_cond_signal(&pacing_cond);
++		pthread_mutex_unlock(&pacing_mutex);
++	}
+ 
+-	if (test->total_steps == test->current_step)
++	if (test->total_steps == test->current_step || err)
+ 		testapp_cleanup_xsk_res(ifobject);
+ 	pthread_exit(NULL);
+ }
+ 
+-static void testapp_validate_traffic(struct test_spec *test)
++static int testapp_validate_traffic(struct test_spec *test)
+ {
+ 	struct ifobject *ifobj_tx = test->ifobj_tx;
+ 	struct ifobject *ifobj_rx = test->ifobj_rx;
+@@ -1163,6 +1195,8 @@ static void testapp_validate_traffic(struct test_spec *test)
+ 
+ 	pthread_join(t1, NULL);
+ 	pthread_join(t0, NULL);
++
++	return !!test->fail;
+ }
+ 
+ static void testapp_teardown(struct test_spec *test)
+@@ -1171,7 +1205,8 @@ static void testapp_teardown(struct test_spec *test)
+ 
+ 	test_spec_set_name(test, "TEARDOWN");
+ 	for (i = 0; i < MAX_TEARDOWN_ITER; i++) {
+-		testapp_validate_traffic(test);
++		if (testapp_validate_traffic(test))
++			return;
+ 		test_spec_reset(test);
+ 	}
+ }
+@@ -1194,7 +1229,8 @@ static void testapp_bidi(struct test_spec *test)
+ 	test->ifobj_tx->rx_on = true;
+ 	test->ifobj_rx->tx_on = true;
+ 	test->total_steps = 2;
+-	testapp_validate_traffic(test);
++	if (testapp_validate_traffic(test))
++		return;
+ 
+ 	print_verbose("Switching Tx/Rx vectors\n");
+ 	swap_directions(&test->ifobj_rx, &test->ifobj_tx);
+@@ -1222,7 +1258,8 @@ static void testapp_bpf_res(struct test_spec *test)
+ 	test_spec_set_name(test, "BPF_RES");
+ 	test->total_steps = 2;
+ 	test->nb_sockets = 2;
+-	testapp_validate_traffic(test);
++	if (testapp_validate_traffic(test))
++		return;
+ 
+ 	swap_xsk_resources(test->ifobj_tx, test->ifobj_rx);
+ 	testapp_validate_traffic(test);
+@@ -1278,6 +1315,9 @@ static void testapp_stats(struct test_spec *test)
+ 		default:
+ 			break;
+ 		}
++
++		if (test->fail)
++			break;
+ 	}
+ 
+ 	/* To only see the whole stat set being completed unless an individual test fails. */
+@@ -1458,7 +1498,9 @@ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_
+ 		break;
+ 	}
+ 
+-	print_ksft_result(test);
++	if (!test->fail)
++		ksft_test_result_pass("PASS: %s %s%s\n", mode_string(test), busy_poll_string(test),
++				      test->name);
+ }
+ 
+ static struct ifobject *ifobject_create(void)
+@@ -1497,8 +1539,8 @@ int main(int argc, char **argv)
+ {
+ 	struct pkt_stream *pkt_stream_default;
+ 	struct ifobject *ifobj_tx, *ifobj_rx;
++	u32 i, j, failed_tests = 0;
+ 	struct test_spec test;
+-	u32 i, j;
+ 
+ 	/* Use libbpf 1.0 API mode */
+ 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL);
+@@ -1537,12 +1579,17 @@ int main(int argc, char **argv)
+ 			test_spec_init(&test, ifobj_tx, ifobj_rx, i);
+ 			run_pkt_test(&test, i, j);
+ 			usleep(USLEEP_MAX);
++
++			if (test.fail)
++				failed_tests++;
+ 		}
+ 
+ 	pkt_stream_delete(pkt_stream_default);
+ 	ifobject_delete(ifobj_tx);
+ 	ifobject_delete(ifobj_rx);
+ 
+-	ksft_exit_pass();
+-	return 0;
++	if (failed_tests)
++		ksft_exit_fail();
++	else
++		ksft_exit_pass();
+ }
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 37ab549ce5fe..0eea0e1495ba 100644
+index 0eea0e1495ba..7c6bf5ed594d 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.h
 +++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -17,6 +17,14 @@
- #define PF_XDP AF_XDP
+@@ -25,6 +25,9 @@
+ #define SO_PREFER_BUSY_POLL 69
  #endif
  
-+#ifndef SO_BUSY_POLL_BUDGET
-+#define SO_BUSY_POLL_BUDGET 70
-+#endif
-+
-+#ifndef SO_PREFER_BUSY_POLL
-+#define SO_PREFER_BUSY_POLL 69
-+#endif
-+
++#define TEST_PASS 0
++#define TEST_FAILURE -1
++#define TEST_CONTINUE -2
  #define MAX_INTERFACES 2
  #define MAX_INTERFACE_NAME_CHARS 7
  #define MAX_INTERFACES_NAMESPACE_CHARS 10
-@@ -139,6 +147,7 @@ struct ifobject {
- 	bool tx_on;
- 	bool rx_on;
- 	bool use_poll;
-+	bool busy_poll;
- 	bool pacing_on;
- 	u8 dst_mac[ETH_ALEN];
- 	u8 src_mac[ETH_ALEN];
+@@ -160,6 +163,7 @@ struct test_spec {
+ 	u16 total_steps;
+ 	u16 current_step;
+ 	u16 nb_sockets;
++	bool fail;
+ 	char name[MAX_TEST_NAME_SIZE];
+ };
+ 
 diff --git a/tools/testing/selftests/bpf/xsk_prereqs.sh b/tools/testing/selftests/bpf/xsk_prereqs.sh
-index 7606d59b06bd..8b77d4c78aba 100755
+index 8b77d4c78aba..684e813803ec 100755
 --- a/tools/testing/selftests/bpf/xsk_prereqs.sh
 +++ b/tools/testing/selftests/bpf/xsk_prereqs.sh
-@@ -80,5 +80,9 @@ validate_ip_utility()
+@@ -15,7 +15,7 @@ validate_root_exec()
+ 	msg="skip all tests:"
+ 	if [ $UID != 0 ]; then
+ 		echo $msg must be run as root >&2
+-		test_exit $ksft_fail 2
++		test_exit $ksft_fail
+ 	else
+ 		return $ksft_pass
+ 	fi
+@@ -26,7 +26,7 @@ validate_veth_support()
+ 	msg="skip all tests:"
+ 	if [ $(ip link add $1 type veth 2>/dev/null; echo $?;) != 0 ]; then
+ 		echo $msg veth kernel support not available >&2
+-		test_exit $ksft_skip 1
++		test_exit $ksft_skip
+ 	else
+ 		ip link del $1
+ 		return $ksft_pass
+@@ -36,22 +36,21 @@ validate_veth_support()
+ test_status()
+ {
+ 	statusval=$1
+-	if [ $statusval -eq 2 ]; then
+-		echo -e "$2: [ FAIL ]"
+-	elif [ $statusval -eq 1 ]; then
+-		echo -e "$2: [ SKIPPED ]"
+-	elif [ $statusval -eq 0 ]; then
+-		echo -e "$2: [ PASS ]"
++	if [ $statusval -eq $ksft_fail ]; then
++		echo "$2: [ FAIL ]"
++	elif [ $statusval -eq $ksft_skip ]; then
++		echo "$2: [ SKIPPED ]"
++	elif [ $statusval -eq $ksft_pass ]; then
++		echo "$2: [ PASS ]"
+ 	fi
+ }
+ 
+ test_exit()
+ {
+-	retval=$1
+-	if [ $2 -ne 0 ]; then
+-		test_status $2 $(basename $0)
++	if [ $1 -ne 0 ]; then
++		test_status $1 $(basename $0)
+ 	fi
+-	exit $retval
++	exit 1
+ }
+ 
+ clear_configs()
+@@ -75,7 +74,7 @@ cleanup_exit()
+ 
+ validate_ip_utility()
+ {
+-	[ ! $(type -P ip) ] && { echo "'ip' not found. Skipping tests."; test_exit $ksft_skip 1; }
++	[ ! $(type -P ip) ] && { echo "'ip' not found. Skipping tests."; test_exit $ksft_skip; }
+ }
  
  execxdpxceiver()
- {
--	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${VERBOSE_ARG} ${DUMP_PKTS_ARG}
-+        if [[ $busy_poll -eq 1 ]]; then
-+	        ARGS+="-b "
-+	fi
+@@ -85,4 +84,9 @@ execxdpxceiver()
+ 	fi
+ 
+ 	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${ARGS}
 +
-+	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${ARGS}
++	retval=$?
++	test_status $retval "${TEST_NAME}"
++	statusList+=($retval)
++	nameList+=(${TEST_NAME})
  }
 -- 
 2.34.1
