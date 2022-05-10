@@ -2,76 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 139AE52131E
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:05:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3477D52135A
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:14:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240620AbiEJLJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 07:09:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46700 "EHLO
+        id S240824AbiEJLR7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 07:17:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234466AbiEJLJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 07:09:29 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 694E82B09C2
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 04:05:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652180731;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=L879vTuOytFC1BBKCpJazjTgxv9uvQMbOkHnTde3iP0=;
-        b=WRNPmTvXSmdZj7Oi3LWKikJRGJmjeROC8AzM1qHd1l9Jkr6T8NzJ3hZnGWfBhWRm4V/7VO
-        zxyvW1t/DyEgbQZtT9+hgK5j/8sU23qWfVQ3VkiFPR8bQxQGdj+z6vaCUHznFZCLn/fYof
-        S+SksCtC92/SIt4ClJp7OBIdM2I/H3I=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-472-jRJHJGswO6GUFUJeZvRf2A-1; Tue, 10 May 2022 07:05:30 -0400
-X-MC-Unique: jRJHJGswO6GUFUJeZvRf2A-1
-Received: by mail-qv1-f70.google.com with SMTP id g10-20020a0562141cca00b00456332167ffso13973426qvd.13
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 04:05:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=L879vTuOytFC1BBKCpJazjTgxv9uvQMbOkHnTde3iP0=;
-        b=XrW8WTyMZTc6Wn7eYsFwlx2spSSuCLTV+wI9g5rxjtnYIr3NQyDsp9k+htRn4pg+xB
-         RVBNuMd1ElUAR8IMMzvBW2NFKpnsE++z6i3JmI7Ki+sWXmHIeJIwT6559oUkAl2FKmku
-         p//Vd+7AE+fN2zJunoW02HjvnOJ7Q8JWBX5NFBlK/tgUGjjUocFv6E70tD360mso+Dm4
-         jl+t4s1I4QKLX2FJuV18iKt6s63ifvkdLPhYkXLNhyTRGKL/TNJHv73T+/krx/neb5UH
-         GPgj4PZxakiCLIgr2LvED5IL7hZfTE5s+DxX2pf/K0qmNZzwHC2QjgnVCQMTK3qWYJXu
-         5f7A==
-X-Gm-Message-State: AOAM533Kg1UAvZxeCc7L5L1ee5MCbQq3BUVW5ABMlzlYDpvqk6dn2M2e
-        LOPq1GgW2ps6K+qdjK+yduVZDj9aszTs2R0LSRcZk7+cR+LmXFtu4JzuBlsIIDQ9l1G5SHs0ub3
-        PZKDxvkMofsmN5KWS
-X-Received: by 2002:ac8:7f04:0:b0:2f3:d6d6:8406 with SMTP id f4-20020ac87f04000000b002f3d6d68406mr10162345qtk.509.1652180729597;
-        Tue, 10 May 2022 04:05:29 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzoeC9I1S6EUIH6D3Ol16trgj7nqKgi4NXn76Y6uUPXMSnfTiJrPdzyZM7KNtUGJxzuqRQjUQ==
-X-Received: by 2002:ac8:7f04:0:b0:2f3:d6d6:8406 with SMTP id f4-20020ac87f04000000b002f3d6d68406mr10162321qtk.509.1652180729321;
-        Tue, 10 May 2022 04:05:29 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
-        by smtp.gmail.com with ESMTPSA id g12-20020ac842cc000000b002f39b99f678sm9342697qtm.18.2022.05.10.04.05.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 04:05:27 -0700 (PDT)
-Message-ID: <b826a78efa5e015b93038f5f8564ca7e98e1240a.camel@redhat.com>
-Subject: Re: [PATCH net 2/2] net/smc: align the connect behaviour with TCP
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>,
-        kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Tue, 10 May 2022 13:05:24 +0200
-In-Reply-To: <20220509115837.94911-3-guangguan.wang@linux.alibaba.com>
-References: <20220509115837.94911-1-guangguan.wang@linux.alibaba.com>
-         <20220509115837.94911-3-guangguan.wang@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S240782AbiEJLRu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 07:17:50 -0400
+Received: from out3-smtp.messagingengine.com (out3-smtp.messagingengine.com [66.111.4.27])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A31D2A9764;
+        Tue, 10 May 2022 04:13:53 -0700 (PDT)
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id 696B95C01AC;
+        Tue, 10 May 2022 07:13:52 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Tue, 10 May 2022 07:13:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1652181232; x=1652267632; bh=v1AUMe2H5y
+        jb10graXLGgnMmPSWt+Y9DqKU1OZcVoY8=; b=JCeLgAZQEVcWBB3Idj6rtS+tMy
+        4KylvmewMli1Gq8aEubGF6JDHKdRSp1hAAqm2eAuephyXWhgJjEM+kXMQfWMM6IC
+        u0PzPUWcWycwNT0ZkD49jmC7NE7P47IXl7XOSp3tP8wGpL4Wzn+4grj+Jh+npC5B
+        gvuRldGztu8PFmQx4cpeVOexxrJm0yS9W0+GAr9ZxWNCTAqTC4ahjYik4066N1b3
+        ko7KzIQvANT9MIbnmKmrsYGzrIoRVY/3gWrCE6pmvr3+KbHKCwLabwdTBQC0D/w2
+        xT7VFbhTerd60gHe2+a5XqqWQZ1bQgWFsgZGG9B3Em8ohH3QFM8KFOSh2VVA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1652181232; x=
+        1652267632; bh=v1AUMe2H5yjb10graXLGgnMmPSWt+Y9DqKU1OZcVoY8=; b=m
+        NFYCg54VxqHfFgGwaSjaiIWIoBiWr9Li0nLsvqsmlgMjggyhf96qGlwvg8hXrZ/U
+        lrn558kWikFNPb6kiOsSXECZF3wy5gYRdbdYo0tmfmFV3cL32lijrDl1mYSyeJSf
+        3zELh058YbtSNDeE8/pHeW9sBGqzfS+dJFlqkv+rBod4BAFcpeeaCQ2zbGHqVzd9
+        uCMqrodEJ6qfAmD6Z10FaAekSlnXTpJrUJXVv8QeqDiARauC5wwJt3Rua7Db3GD2
+        IU+zhm/vRQtoJdmtFSoKP8+8RRjVm2nMJxgKJDb+5fLI1VUgchNDbg0QY1rcOZkQ
+        s2YqtO29xyhl10GP/8kiQ==
+X-ME-Sender: <xms:70h6YjysmPSRJiol8OsLgz7aceTPbNw63XptrSBmx_RWfzpGTGkusA>
+    <xme:70h6YrRZBWdaPu_xNiLJni0d4nys8YIZ0LXM9Di86vHOWs8uM5l_MpiNyZEfv8Jkv
+    MvMb8jJSw32ag>
+X-ME-Received: <xmr:70h6YtVBL235KMe-1KaIFEboWy4CQ-9F-3bAIwQGANvRfDZLb2Ztll47bgxDzqB3pICODqPNYsj7Kwo3htGWskKVi8kZItpG>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgedugdefgecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeehgedvve
+    dvleejuefgtdduudfhkeeltdeihfevjeekjeeuhfdtueefhffgheekteenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:70h6YtjRg51TipwwUT3JlUX54eqZkK-IY_KU1MBueTNRLXMIR3MjMw>
+    <xmx:70h6YlAtDH_TPhGxRSMWNayMspNcgZwwBLc8vubfR4rq6Ic4EoCVJg>
+    <xmx:70h6YmLHi68m-NffJ8oxTNcxpV4vdLQ2FXSo0GastGDGJ7Q1LOru1g>
+    <xmx:8Eh6YnxqjzpOhifxrhkk1nlNHGJdetm4BU10MLGXlfIMqMu07EvTBQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Tue,
+ 10 May 2022 07:13:51 -0400 (EDT)
+Date:   Tue, 10 May 2022 13:13:48 +0200
+From:   Greg KH <greg@kroah.com>
+To:     Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+Cc:     stable@vger.kernel.org, netdev@vger.kernel.org, kuba@kernel.org,
+        davem@davemloft.net, jiri@resnulli.us, xiyou.wangcong@gmail.com,
+        jhs@mojatatu.com, vladbu@mellanox.com
+Subject: Re: [PATCH 4.9.y] net: sched: prevent UAF on tc_ctl_tfilter when
+ temporarily dropping rtnl_lock
+Message-ID: <YnpI7Pqp/PmgD8WW@kroah.com>
+References: <20220502204924.3456590-1-cascardo@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220502204924.3456590-1-cascardo@canonical.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,155 +83,158 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-05-09 at 19:58 +0800, Guangguan Wang wrote:
-> Connect with O_NONBLOCK will not be completed immediately
-> and returns -EINPROGRESS. It is possible to use selector/poll
-> for completion by selecting the socket for writing. After select
-> indicates writability, a second connect function call will return
-> 0 to indicate connected successfully as TCP does, but smc returns
-> -EISCONN. Use socket state for smc to indicate connect state, which
-> can help smc aligning the connect behaviour with TCP.
+On Mon, May 02, 2022 at 05:49:24PM -0300, Thadeu Lima de Souza Cascardo wrote:
+> When dropping the rtnl_lock for looking up for a module, the device may be
+> removed, releasing the qdisc and class memory. Right after trying to load
+> the module, cl_ops->put is called, leading to a potential use-after-free.
 > 
-> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
+> Though commit e368fdb61d8e ("net: sched: use Qdisc rcu API instead of
+> relying on rtnl lock") fixes this, it involves a lot of refactoring of the
+> net/sched/ code, complicating its backport.
+> 
+> This fix calls cl_ops->put before dropping rtnl_lock as it will be called
+> either way, and zeroes it out so it won't be called again on the exit path.
+> 
+> This has been shown to stop the following KASAN report with the reproducer:
+> 
+> [  256.609111] ==================================================================
+> [  256.609585] BUG: KASAN: use-after-free in cbq_put+0x20/0xd0 at addr ffff880021daaba0
+> [  256.610078] Read of size 4 by task total_cbq/11184
+> [  256.610380] CPU: 0 PID: 11184 Comm: total_cbq Not tainted 4.9.311 #78
+> [  256.610778]  ffff8800215875a8 ffffffff96e18735 ffff880024803080 ffff880021daaa80
+> [  256.611274]  ffff8800215875d0 ffffffff96334841 ffffed00043b5574 ffffed00043b5574
+> [  256.611768]  ffff880024803080 ffff880021587658 ffffffff96334af8 0000000000000000
+> [  256.612186] Call Trace:
+> [  256.612344]  [<ffffffff96e18735>] dump_stack+0x6d/0x8b
+> [  256.612632]  [<ffffffff96334841>] kasan_object_err+0x21/0x70
+> [  256.612973]  [<ffffffff96334af8>] kasan_report.part.1+0x218/0x4f0
+> [  256.613349]  [<ffffffff96c5a2e0>] ? cbq_put+0x20/0xd0
+> [  256.613634]  [<ffffffff96333cd6>] ? kasan_unpoison_shadow+0x36/0x50
+> [  256.613993]  [<ffffffff96335105>] kasan_report+0x25/0x30
+> [  256.614288]  [<ffffffff96333701>] __asan_load4+0x61/0x80
+> [  256.614580]  [<ffffffff96c5a2e0>] cbq_put+0x20/0xd0
+> [  256.614862]  [<ffffffff96c53184>] tc_ctl_tfilter+0x4f4/0xb80
+> [  256.615151]  [<ffffffff96c52c90>] ? tfilter_notify+0x140/0x140
+> [  256.615478]  [<ffffffff960056ef>] ? do_syscall_64+0xef/0x190
+> [  256.615799]  [<ffffffff96e28a8e>] ? entry_SYSCALL_64_after_swapgs+0x58/0xc6
+> [  256.616190]  [<ffffffff96bce3f6>] ? sock_sendmsg+0x76/0x80
+> [  256.616484]  [<ffffffff96bce53f>] ? sock_write_iter+0x13f/0x1f0
+> [  256.616833]  [<ffffffff96367b02>] ? __vfs_write+0x262/0x3c0
+> [  256.617152]  [<ffffffff96369dc9>] ? vfs_write+0xf9/0x260
+> [  256.617451]  [<ffffffff9636c009>] ? SyS_write+0xc9/0x1b0
+> [  256.617754]  [<ffffffff960decda>] ? ns_capable_common+0x5a/0xa0
+> [  256.618067]  [<ffffffff960ded33>] ? ns_capable+0x13/0x20
+> [  256.618334]  [<ffffffff96c9125d>] ? __netlink_ns_capable+0x6d/0x80
+> [  256.618666]  [<ffffffff96c2750f>] rtnetlink_rcv_msg+0x1af/0x410
+> [  256.618969]  [<ffffffff96c90d6b>] ? netlink_compare+0x5b/0x70
+> [  256.619295]  [<ffffffff96c27360>] ? rtnl_newlink+0xc60/0xc60
+> [  256.619587]  [<ffffffff96c94214>] ? __netlink_lookup+0x1a4/0x240
+> [  256.619885]  [<ffffffff96c94070>] ? netlink_broadcast+0x20/0x20
+> [  256.620179]  [<ffffffff96c97815>] netlink_rcv_skb+0x155/0x190
+> [  256.620463]  [<ffffffff96c27360>] ? rtnl_newlink+0xc60/0xc60
+> [  256.620748]  [<ffffffff96c1e758>] rtnetlink_rcv+0x28/0x30
+> [  256.621015]  [<ffffffff96c96d11>] netlink_unicast+0x2f1/0x3b0
+> [  256.621354]  [<ffffffff96c96a20>] ? netlink_attachskb+0x340/0x340
+> [  256.621765]  [<ffffffff96c9733e>] netlink_sendmsg+0x56e/0x6f0
+> [  256.622181]  [<ffffffff96c96dd0>] ? netlink_unicast+0x3b0/0x3b0
+> [  256.622578]  [<ffffffff96c96dd0>] ? netlink_unicast+0x3b0/0x3b0
+> [  256.622893]  [<ffffffff96bce3f6>] sock_sendmsg+0x76/0x80
+> [  256.623157]  [<ffffffff96bce53f>] sock_write_iter+0x13f/0x1f0
+> [  256.623440]  [<ffffffff96bce400>] ? sock_sendmsg+0x80/0x80
+> [  256.623729]  [<ffffffff966a8032>] ? iov_iter_init+0x82/0xc0
+> [  256.624006]  [<ffffffff96367b02>] __vfs_write+0x262/0x3c0
+> [  256.624274]  [<ffffffff963678a0>] ? default_llseek+0x120/0x120
+> [  256.624566]  [<ffffffff965e8c02>] ? common_file_perm+0x92/0x170
+> [  256.624925]  [<ffffffff96369a58>] ? rw_verify_area+0x78/0x140
+> [  256.625277]  [<ffffffff96369dc9>] vfs_write+0xf9/0x260
+> [  256.625593]  [<ffffffff9636c009>] SyS_write+0xc9/0x1b0
+> [  256.625891]  [<ffffffff9636bf40>] ? SyS_read+0x1b0/0x1b0
+> [  256.626154]  [<ffffffff9636bf40>] ? SyS_read+0x1b0/0x1b0
+> [  256.626422]  [<ffffffff960056ef>] do_syscall_64+0xef/0x190
+> [  256.626697]  [<ffffffff96e28a8e>] entry_SYSCALL_64_after_swapgs+0x58/0xc6
+> [  256.627033] Object at ffff880021daaa80, in cache kmalloc-512 size: 512
+> [  256.627415] Allocated:
+> [  256.627563] PID = 164
+> [  256.627711]  save_stack_trace+0x1b/0x20
+> [  256.627947]  save_stack+0x46/0xd0
+> [  256.628151]  kasan_kmalloc+0xad/0xe0
+> [  256.628362]  kmem_cache_alloc_trace+0xe8/0x1e0
+> [  256.628637]  cbq_change_class+0x8b6/0xde0
+> [  256.628896]  tc_ctl_tclass+0x56a/0x5b0
+> [  256.629129]  rtnetlink_rcv_msg+0x1af/0x410
+> [  256.629380]  netlink_rcv_skb+0x155/0x190
+> [  256.629621]  rtnetlink_rcv+0x28/0x30
+> [  256.629840]  netlink_unicast+0x2f1/0x3b0
+> [  256.630066]  netlink_sendmsg+0x56e/0x6f0
+> [  256.630263]  sock_sendmsg+0x76/0x80
+> [  256.630456]  sock_write_iter+0x13f/0x1f0
+> [  256.630698]  __vfs_write+0x262/0x3c0
+> [  256.630918]  vfs_write+0xf9/0x260
+> [  256.631123]  SyS_write+0xc9/0x1b0
+> [  256.631327]  do_syscall_64+0xef/0x190
+> [  256.631553]  entry_SYSCALL_64_after_swapgs+0x58/0xc6
+> [  256.631827] Freed:
+> [  256.631931] PID = 164
+> [  256.632048]  save_stack_trace+0x1b/0x20
+> [  256.632241]  save_stack+0x46/0xd0
+> [  256.632408]  kasan_slab_free+0x71/0xb0
+> [  256.632597]  kfree+0x8c/0x1a0
+> [  256.632751]  cbq_destroy_class+0x85/0xa0
+> [  256.632948]  cbq_destroy+0xfa/0x120
+> [  256.633125]  qdisc_destroy+0xa1/0x140
+> [  256.633309]  dev_shutdown+0x12d/0x190
+> [  256.633497]  rollback_registered_many+0x43c/0x5b0
+> [  256.633753]  unregister_netdevice_many+0x2c/0x130
+> [  256.634041]  rtnl_delete_link+0xb3/0x100
+> [  256.634283]  rtnl_dellink+0x19c/0x360
+> [  256.634509]  rtnetlink_rcv_msg+0x1af/0x410
+> [  256.634760]  netlink_rcv_skb+0x155/0x190
+> [  256.635001]  rtnetlink_rcv+0x28/0x30
+> [  256.635221]  netlink_unicast+0x2f1/0x3b0
+> [  256.635463]  netlink_sendmsg+0x56e/0x6f0
+> [  256.635700]  sock_sendmsg+0x76/0x80
+> [  256.635915]  sock_write_iter+0x13f/0x1f0
+> [  256.636156]  __vfs_write+0x262/0x3c0
+> [  256.636376]  vfs_write+0xf9/0x260
+> [  256.636580]  SyS_write+0xc9/0x1b0
+> [  256.636787]  do_syscall_64+0xef/0x190
+> [  256.637013]  entry_SYSCALL_64_after_swapgs+0x58/0xc6
+> [  256.637316] Memory state around the buggy address:
+> [  256.637610]  ffff880021daaa80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  256.638047]  ffff880021daab00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  256.638487] >ffff880021daab80: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  256.638924]                                ^
+> [  256.639186]  ffff880021daac00: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  256.639624]  ffff880021daac80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+> 
+> Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
 > ---
->  net/smc/af_smc.c | 53 ++++++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 49 insertions(+), 4 deletions(-)
+>  net/sched/cls_api.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index fce16b9d6e1a..45f9f7c6e776 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -1544,9 +1544,32 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
->  		goto out_err;
+> diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+> index c1a4b5d30814..330a2c9d1907 100644
+> --- a/net/sched/cls_api.c
+> +++ b/net/sched/cls_api.c
+> @@ -268,10 +268,13 @@ static int tc_ctl_tfilter(struct sk_buff *skb, struct nlmsghdr *n)
+>  		err = -ENOENT;
+>  		tp_ops = tcf_proto_lookup_ops(tca[TCA_KIND]);
+>  		if (tp_ops == NULL) {
+> -#ifdef CONFIG_MODULES
+>  			struct nlattr *kind = tca[TCA_KIND];
+>  			char name[IFNAMSIZ];
 >  
->  	lock_sock(sk);
-> +	switch (sock->state) {
-> +	default:
-> +		rc = -EINVAL;
-> +		goto out;
-> +	case SS_CONNECTED:
-> +		rc = sk->sk_state == SMC_ACTIVE ? -EISCONN : -EINVAL;
-> +		goto out;
-> +	case SS_CONNECTING:
-> +		if (sk->sk_state == SMC_ACTIVE) {
-> +			sock->state = SS_CONNECTED;
-> +			rc = 0;
-> +			goto out;
-> +		}
-> +		break;
-> +	case SS_UNCONNECTED:
-> +		sock->state = SS_CONNECTING;
-> +		break;
-> +	}
-> +
->  	switch (sk->sk_state) {
->  	default:
->  		goto out;
-> +	case SMC_CLOSED:
-> +		rc = sock_error(sk) ? : -ECONNABORTED;
-> +		sock->state = SS_UNCONNECTED;
-> +		goto out;
->  	case SMC_ACTIVE:
->  		rc = -EISCONN;
->  		goto out;
-> @@ -1565,18 +1588,22 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
->  		goto out;
->  
->  	sock_hold(&smc->sk); /* sock put in passive closing */
-> -	if (smc->use_fallback)
-> +	if (smc->use_fallback) {
-> +		sock->state = SS_CONNECTED;
->  		goto out;
-> +	}
->  	if (flags & O_NONBLOCK) {
->  		if (queue_work(smc_hs_wq, &smc->connect_work))
->  			smc->connect_nonblock = 1;
->  		rc = -EINPROGRESS;
->  	} else {
->  		rc = __smc_connect(smc);
-> -		if (rc < 0)
-> +		if (rc < 0) {
->  			goto out;
-> -		else
-> +		} else {
->  			rc = 0; /* success cases including fallback */
-> +			sock->state = SS_CONNECTED;
+> +			if (cl)
+> +				cops->put(q, cl);
+> +			cl = 0;
+> +#ifdef CONFIG_MODULES
+>  			if (kind != NULL &&
+>  			    nla_strlcpy(name, kind, IFNAMSIZ) < IFNAMSIZ) {
+>  				rtnl_unlock();
+> -- 
+> 2.32.0
+> 
 
-'else' is not needed here, you can keep the above 2 statements dropping
-an indentation level.
+Now queued up, thanks.
 
-> +		}
->  	}
->  
-
-You can avoid a little code duplication adding here the following:
-
-connected:
-   sock->state = SS_CONNECTED;
-
-and using the new label where appropriate.
-
->  out:
-> @@ -1693,6 +1720,7 @@ struct sock *smc_accept_dequeue(struct sock *parent,
->  		}
->  		if (new_sock) {
->  			sock_graft(new_sk, new_sock);
-> +			new_sock->state = SS_CONNECTED;
->  			if (isk->use_fallback) {
->  				smc_sk(new_sk)->clcsock->file = new_sock->file;
->  				isk->clcsock->file->private_data = isk->clcsock;
-> @@ -2424,7 +2452,7 @@ static int smc_listen(struct socket *sock, int backlog)
->  
->  	rc = -EINVAL;
->  	if ((sk->sk_state != SMC_INIT && sk->sk_state != SMC_LISTEN) ||
-> -	    smc->connect_nonblock)
-> +	    smc->connect_nonblock || sock->state != SS_UNCONNECTED)
->  		goto out;
->  
->  	rc = 0;
-> @@ -2716,6 +2744,17 @@ static int smc_shutdown(struct socket *sock, int how)
->  
->  	lock_sock(sk);
->  
-> +	if (sock->state == SS_CONNECTING) {
-> +		if (sk->sk_state == SMC_ACTIVE)
-> +			sock->state = SS_CONNECTED;
-> +		else if (sk->sk_state == SMC_PEERCLOSEWAIT1 ||
-> +			 sk->sk_state == SMC_PEERCLOSEWAIT2 ||
-> +			 sk->sk_state == SMC_APPCLOSEWAIT1 ||
-> +			 sk->sk_state == SMC_APPCLOSEWAIT2 ||
-> +			 sk->sk_state == SMC_APPFINCLOSEWAIT)
-> +			sock->state = SS_DISCONNECTING;
-> +	}
-> +
->  	rc = -ENOTCONN;
->  	if ((sk->sk_state != SMC_ACTIVE) &&
->  	    (sk->sk_state != SMC_PEERCLOSEWAIT1) &&
-> @@ -2729,6 +2768,7 @@ static int smc_shutdown(struct socket *sock, int how)
->  		sk->sk_shutdown = smc->clcsock->sk->sk_shutdown;
->  		if (sk->sk_shutdown == SHUTDOWN_MASK) {
->  			sk->sk_state = SMC_CLOSED;
-> +			sk->sk_socket->state = SS_UNCONNECTED;
->  			sock_put(sk);
->  		}
->  		goto out;
-> @@ -2754,6 +2794,10 @@ static int smc_shutdown(struct socket *sock, int how)
->  	/* map sock_shutdown_cmd constants to sk_shutdown value range */
->  	sk->sk_shutdown |= how + 1;
->  
-> +	if (sk->sk_state == SMC_CLOSED)
-> +		sock->state = SS_UNCONNECTED;
-> +	else
-> +		sock->state = SS_DISCONNECTING;
->  out:
->  	release_sock(sk);
->  	return rc ? rc : rc1;
-> @@ -3139,6 +3183,7 @@ static int __smc_create(struct net *net, struct socket *sock, int protocol,
->  
->  	rc = -ENOBUFS;
->  	sock->ops = &smc_sock_ops;
-> +	sock->state = SS_UNCONNECTED;
->  	sk = smc_sock_alloc(net, sock, protocol);
->  	if (!sk)
->  		goto out;
-
+greg k-h
