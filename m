@@ -2,41 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FAAF52103F
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 11:04:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8087521042
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 11:04:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236602AbiEJJIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 05:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48118 "EHLO
+        id S238390AbiEJJIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 05:08:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234681AbiEJJH6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 05:07:58 -0400
-Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D88DA2AED86;
-        Tue, 10 May 2022 02:04:01 -0700 (PDT)
+        with ESMTP id S234681AbiEJJIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 05:08:09 -0400
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5E37E2AC6FB;
+        Tue, 10 May 2022 02:04:12 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.91,214,1647270000"; 
-   d="scan'208";a="120503634"
+   d="scan'208";a="119233059"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie6.idc.renesas.com with ESMTP; 10 May 2022 18:04:01 +0900
+  by relmlie5.idc.renesas.com with ESMTP; 10 May 2022 18:04:12 +0900
 Received: from localhost.localdomain (unknown [10.226.93.89])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id E5EDF4274F1C;
-        Tue, 10 May 2022 18:03:56 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id CACD74275148;
+        Tue, 10 May 2022 18:04:08 +0900 (JST)
 From:   Phil Edworthy <phil.edworthy@renesas.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+        Paolo Abeni <pabeni@redhat.com>
 Cc:     Phil Edworthy <phil.edworthy@renesas.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org, Biju Das <biju.das.jz@bp.renesas.com>
-Subject: [PATCH v3 1/5] dt-bindings: net: renesas,etheravb: Document RZ/V2M SoC
-Date:   Tue, 10 May 2022 10:03:32 +0100
-Message-Id: <20220510090336.14272-2-phil.edworthy@renesas.com>
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v3 2/5] ravb: Separate handling of irq enable/disable regs into feature
+Date:   Tue, 10 May 2022 10:03:33 +0100
+Message-Id: <20220510090336.14272-3-phil.edworthy@renesas.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220510090336.14272-1-phil.edworthy@renesas.com>
 References: <20220510090336.14272-1-phil.edworthy@renesas.com>
@@ -51,145 +49,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Document the Ethernet AVB IP found on RZ/V2M SoC.
-It includes the Ethernet controller (E-MAC) and Dedicated Direct memory
-access controller (DMAC) for transferring transmitted Ethernet frames
-to and received Ethernet frames from respective storage areas in the
-RAM at high speed.
-The AVB-DMAC is compliant with IEEE 802.1BA, IEEE 802.1AS timing and
-synchronization protocol, IEEE 802.1Qav real-time transfer, and the
-IEEE 802.1Qat stream reservation protocol.
+Currently, when the HW has a single interrupt, the driver uses the
+GIC, TIC, RIC0 registers to enable and disable interrupts.
+When the HW has multiple interrupts, it uses the GIE, GID, TIE, TID,
+RIE0, RID0 registers.
 
-R-Car has a pair of combined interrupt lines:
- ch22 = Line0_DiA | Line1_A | Line2_A
- ch23 = Line0_DiB | Line1_B | Line2_B
-Line0 for descriptor interrupts (which we call dia and dib).
-Line1 for error related interrupts (which we call err_a and err_b).
-Line2 for management and gPTP related interrupts (mgmt_a and mgmt_b).
-
-RZ/V2M hardware has separate interrupt lines for each of these.
-
-It has 3 clocks; the main AXI clock, the AMBA CHI (Coherent Hub
-Interface) clock and a gPTP reference clock.
+However, other devices, e.g. RZ/V2M, have multiple irqs and only have
+the GIC, TIC, RIC0 registers.
+Therefore, split this into a separate feature.
 
 Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
 Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
 ---
 v3:
- - No change
+ - Actually renamed irq_en_dis_regs to irq_en_dis this time
+ - Make ravb_ptp_extts() use irq_en_dis instead of multi_irqs
 v2:
- - Instead of reusing ch22 and ch24 interupt names, use the proper names
+ - Renamed irq_en_dis_regs to irq_en_dis
+ - Squashed use of GIC reg versus GIE/GID into this patch and got rid
+   of separate gptp_ptm_gic feature.
+ - Minor editing of the commit msg
 ---
- .../bindings/net/renesas,etheravb.yaml        | 82 ++++++++++++++-----
- 1 file changed, 61 insertions(+), 21 deletions(-)
+ drivers/net/ethernet/renesas/ravb.h      | 1 +
+ drivers/net/ethernet/renesas/ravb_main.c | 5 +++--
+ drivers/net/ethernet/renesas/ravb_ptp.c  | 6 +++---
+ 3 files changed, 7 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
-index ee2ccacc39ff..acf347f3cdbe 100644
---- a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
-+++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
-@@ -43,6 +43,11 @@ properties:
-               - renesas,etheravb-r8a779a0     # R-Car V3U
-           - const: renesas,etheravb-rcar-gen3 # R-Car Gen3 and RZ/G2
+diff --git a/drivers/net/ethernet/renesas/ravb.h b/drivers/net/ethernet/renesas/ravb.h
+index 08062d73df10..bb82efd222c7 100644
+--- a/drivers/net/ethernet/renesas/ravb.h
++++ b/drivers/net/ethernet/renesas/ravb.h
+@@ -1027,6 +1027,7 @@ struct ravb_hw_info {
+ 	unsigned tx_counters:1;		/* E-MAC has TX counters */
+ 	unsigned carrier_counters:1;	/* E-MAC has carrier counters */
+ 	unsigned multi_irqs:1;		/* AVB-DMAC and E-MAC has multiple irqs */
++	unsigned irq_en_dis:1;		/* Has separate irq enable and disable regs */
+ 	unsigned gptp:1;		/* AVB-DMAC has gPTP support */
+ 	unsigned ccc_gac:1;		/* AVB-DMAC has gPTP support active in config mode */
+ 	unsigned nc_queues:1;		/* AVB-DMAC has RX and TX NC queues */
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index 525d66f71f02..e22c0e6ed0f3 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1124,7 +1124,7 @@ static bool ravb_queue_interrupt(struct net_device *ndev, int q)
+ 	if (((ris0 & ric0) & BIT(q)) || ((tis  & tic)  & BIT(q))) {
+ 		if (napi_schedule_prep(&priv->napi[q])) {
+ 			/* Mask RX and TX interrupts */
+-			if (!info->multi_irqs) {
++			if (!info->irq_en_dis) {
+ 				ravb_write(ndev, ric0 & ~BIT(q), RIC0);
+ 				ravb_write(ndev, tic & ~BIT(q), TIC);
+ 			} else {
+@@ -1306,7 +1306,7 @@ static int ravb_poll(struct napi_struct *napi, int budget)
  
-+      - items:
-+          - enum:
-+              - renesas,etheravb-r9a09g011 # RZ/V2M
-+          - const: renesas,etheravb-rzv2m  # RZ/V2M compatible
-+
-       - items:
-           - enum:
-               - renesas,r9a07g043-gbeth # RZ/G2UL
-@@ -160,16 +165,33 @@ allOf:
-             - const: arp_ns
-         rx-internal-delay-ps: false
-     else:
--      properties:
--        interrupts:
--          minItems: 25
--          maxItems: 25
--        interrupt-names:
--          items:
--            pattern: '^ch[0-9]+$'
--      required:
--        - interrupt-names
--        - rx-internal-delay-ps
-+      if:
-+        properties:
-+          compatible:
-+            contains:
-+              const: renesas,etheravb-rzv2m
-+      then:
-+        properties:
-+          interrupts:
-+            minItems: 29
-+            maxItems: 29
-+          interrupt-names:
-+            items:
-+              pattern: '^(ch(1?)[0-9])|ch20|ch21|dia|dib|err_a|err_b|mgmt_a|mgmt_b|line3$'
-+          rx-internal-delay-ps: false
-+        required:
-+          - interrupt-names
-+      else:
-+        properties:
-+          interrupts:
-+            minItems: 25
-+            maxItems: 25
-+          interrupt-names:
-+            items:
-+              pattern: '^ch[0-9]+$'
-+        required:
-+          - interrupt-names
-+          - rx-internal-delay-ps
+ 	/* Re-enable RX/TX interrupts */
+ 	spin_lock_irqsave(&priv->lock, flags);
+-	if (!info->multi_irqs) {
++	if (!info->irq_en_dis) {
+ 		ravb_modify(ndev, RIC0, mask, mask);
+ 		ravb_modify(ndev, TIC,  mask, mask);
+ 	} else {
+@@ -2410,6 +2410,7 @@ static const struct ravb_hw_info ravb_gen3_hw_info = {
+ 	.internal_delay = 1,
+ 	.tx_counters = 1,
+ 	.multi_irqs = 1,
++	.irq_en_dis = 1,
+ 	.ccc_gac = 1,
+ 	.nc_queues = 1,
+ 	.magic_pkt = 1,
+diff --git a/drivers/net/ethernet/renesas/ravb_ptp.c b/drivers/net/ethernet/renesas/ravb_ptp.c
+index c099656dd75b..87c4306d66ec 100644
+--- a/drivers/net/ethernet/renesas/ravb_ptp.c
++++ b/drivers/net/ethernet/renesas/ravb_ptp.c
+@@ -198,7 +198,7 @@ static int ravb_ptp_extts(struct ptp_clock_info *ptp,
+ 	priv->ptp.extts[req->index] = on;
  
-   - if:
-       properties:
-@@ -231,17 +253,35 @@ allOf:
-             - const: chi
-             - const: refclk
-     else:
--      properties:
--        clocks:
--          minItems: 1
--          items:
--            - description: AVB functional clock
--            - description: Optional TXC reference clock
--        clock-names:
--          minItems: 1
--          items:
--            - const: fck
--            - const: refclk
-+      if:
-+        properties:
-+          compatible:
-+            contains:
-+              const: renesas,etheravb-rzv2m
-+      then:
-+        properties:
-+          clocks:
-+            items:
-+              - description: Main clock
-+              - description: Coherent Hub Interface clock
-+              - description: gPTP reference clock
-+          clock-names:
-+            items:
-+              - const: axi
-+              - const: chi
-+              - const: gptp
-+      else:
-+        properties:
-+          clocks:
-+            minItems: 1
-+            items:
-+              - description: AVB functional clock
-+              - description: Optional TXC reference clock
-+          clock-names:
-+            minItems: 1
-+            items:
-+              - const: fck
-+              - const: refclk
+ 	spin_lock_irqsave(&priv->lock, flags);
+-	if (!info->multi_irqs)
++	if (!info->irq_en_dis)
+ 		ravb_modify(ndev, GIC, GIC_PTCE, on ? GIC_PTCE : 0);
+ 	else if (on)
+ 		ravb_write(ndev, GIE_PTCS, GIE);
+@@ -254,7 +254,7 @@ static int ravb_ptp_perout(struct ptp_clock_info *ptp,
+ 		error = ravb_ptp_update_compare(priv, (u32)start_ns);
+ 		if (!error) {
+ 			/* Unmask interrupt */
+-			if (!info->multi_irqs)
++			if (!info->irq_en_dis)
+ 				ravb_modify(ndev, GIC, GIC_PTME, GIC_PTME);
+ 			else
+ 				ravb_write(ndev, GIE_PTMS0, GIE);
+@@ -266,7 +266,7 @@ static int ravb_ptp_perout(struct ptp_clock_info *ptp,
+ 		perout->period = 0;
  
- additionalProperties: false
- 
+ 		/* Mask interrupt */
+-		if (!info->multi_irqs)
++		if (!info->irq_en_dis)
+ 			ravb_modify(ndev, GIC, GIC_PTME, 0);
+ 		else
+ 			ravb_write(ndev, GID_PTMD0, GID);
 -- 
 2.32.0
 
