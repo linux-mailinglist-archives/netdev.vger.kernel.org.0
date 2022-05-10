@@ -2,85 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 064595226E3
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 00:32:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B28BF522734
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 00:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236554AbiEJWaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 18:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S234023AbiEJWuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 18:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236719AbiEJWaW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 18:30:22 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37682E15FA;
-        Tue, 10 May 2022 15:30:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CA74161811;
-        Tue, 10 May 2022 22:30:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 248F8C385D3;
-        Tue, 10 May 2022 22:30:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652221813;
-        bh=tq6Lj50E3IpWlV66/XO9VHgtd+iJ7qGiygGljBpexSE=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ZFbI0mVlqtJAqJqDGvIkU6SmKMUeudh0g0dwm2PdiafUS77KOMwApTxbCp6E+4BJh
-         Ir8rEqVxHijTtAHgUuA1paXx1qX5oXQ+zycaGrxpYzK75nveFulQ+TQZccWobOlNtW
-         aaLrA4yhG0WOB3ttTg56c2wyXHnlpOkDHlEhy7RgmAnOMWuvhyytl25bmHOeAUPlzs
-         9oHwpByI95zm+SPS6UB9UsTm+9/vUdWU24IF+1mMr/WhK3yPyvVRfT8UB1TctvDht4
-         ZhY9TEpMk4Mrhz/N1LKPoFUdJg1NlLuihuIbxIG5kHGSa4ZPSUeCIPqNxcI9cdN4M/
-         OGdVf5LToKwyg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F30ABF03933;
-        Tue, 10 May 2022 22:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233255AbiEJWuN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 18:50:13 -0400
+Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 441F224DC67
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 15:50:12 -0700 (PDT)
+Received: by mail-qv1-xf30.google.com with SMTP id jt15so603168qvb.8
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 15:50:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5pgf2LC4mfZtxmKKitMud+Oy12RPGcU3F46iHWGsadA=;
+        b=ekAQBJLQ0g2H+FUmFV5f70dwdMJlmpMe43UT4QIXA58jzQ7eDTurlQUHhbMjmFXgUn
+         iSvHyXVOpjYMsk92HbvRZQl8ByOek4TmP4dutBYmWmysLSp+0lz8VY73TGj93QW0TK/I
+         wFDu3nWggMxUUhT25DqnrpkQRHcZyfZQlsTbTl94c/g9RyI7z/yYTSrr78bkYPz4zPE6
+         iY4Bp9up41gXopOTZgVvz0svbTi1cJwop5wCmJ5rigsS40iOXz4jYN10Zh1qCwptI9S1
+         NrCYR94Zlax6XmK+bd61BAf+16YQeV+dhN2Bpph/aIHzuhFyMVqWf35ODyxRjEeOQHST
+         hZVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5pgf2LC4mfZtxmKKitMud+Oy12RPGcU3F46iHWGsadA=;
+        b=x/DATRB/7yZp1gRcXj/RfdMSlsneNfPSp90U5NWeKaTZsm74WqkU97h3W0BMC5hctE
+         vK+qiRdoYWytbZ+3z1f19O0cgI9Cf7NyeIyPdGpbdqoPh1gEb4tBfuSeYVE6FTY4iphj
+         VWawagFDo0gSn9d1tPEHVOMdb7fmwanJn78p9cZmTn22TqmW8EFzMbcC7XFAEN+eFzHc
+         ewpNVYeTHdtNv6Uqt2NEPtHhWOSYXJaqy068Czc03Ho8m9dzeALjYNV+gACgWEyzJzeV
+         4ew70MwLSbECT4a55SPi3/JLev6sm6izj6E7XcGuvwy4bavjOC3w4LKkLHoLs73xBC/n
+         fu0Q==
+X-Gm-Message-State: AOAM531pgBredIoHbUHYBm8rs/gKeNlYtQtmpS0ODzzyMPmW+2GwZ6h2
+        7+Zx0sjjwKmV2fx4DSknpHwFCbD7rEykQ+UBihz/XA==
+X-Google-Smtp-Source: ABdhPJzAFn9/jIPprW6IL+T0z4v5PPLX/63yNDyYNQ0qdZ3QxvFVYV7PhbjIoCNQF1WFZkNWMTKoVzPSeNUYybVJQSc=
+X-Received: by 2002:ad4:4753:0:b0:456:34db:614b with SMTP id
+ c19-20020ad44753000000b0045634db614bmr19945189qvx.17.1652223010267; Tue, 10
+ May 2022 15:50:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v3 net] net: phy: micrel: Fix incorrect variable type in
- micrel
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165222181298.9200.1509164955750702026.git-patchwork-notify@kernel.org>
-Date:   Tue, 10 May 2022 22:30:12 +0000
-References: <20220510015521.2542096-1-wanjiabing@vivo.com>
-In-Reply-To: <20220510015521.2542096-1-wanjiabing@vivo.com>
-To:     Wan Jiabing <wanjiabing@vivo.com>
-Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, horatiu.vultur@microchip.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220510001807.4132027-1-yosryahmed@google.com>
+ <20220510001807.4132027-9-yosryahmed@google.com> <Ynq04gC1l7C2tx6o@slm.duckdns.org>
+ <CA+khW7girnNwap1ABN1a4XuvkEEnmkztTV+fsuC3MsxNeB08Yg@mail.gmail.com> <YnriMPYyOP9ibskc@slm.duckdns.org>
+In-Reply-To: <YnriMPYyOP9ibskc@slm.duckdns.org>
+From:   Hao Luo <haoluo@google.com>
+Date:   Tue, 10 May 2022 15:49:59 -0700
+Message-ID: <CA+khW7gUdZQq77jO2_A6rvE6f+HV=sGfBVGvAmazGPvwudE0RQ@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 8/9] bpf: Introduce cgroup iter
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Yosry Ahmed <yosryahmed@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, May 10, 2022 at 3:07 PM Tejun Heo <tj@kernel.org> wrote:
+>
+> Hello,
+>
+> On Tue, May 10, 2022 at 02:12:16PM -0700, Hao Luo wrote:
+> > > Is there a reason why this can't be a proper iterator which supports
+> > > lseek64() to locate a specific cgroup?
+> > >
+> >
+> > There are two reasons:
+> >
+> > - Bpf_iter assumes no_llseek. I haven't looked closely on why this is
+> > so and whether we can add its support.
+> >
+> > - Second, the name 'iter' in this patch is misleading. What this patch
+> > really does is reusing the functionality of dumping in bpf_iter.
+> > 'Dumper' is a better name. We want to create one file in bpffs for
+> > each cgroup. We are essentially just iterating a set of one single
+> > element.
+>
+> I see. I'm just shooting in the dark without context but at least in
+> principle there's no reason why cgroups wouldn't be iterable, so it might be
+> something worth at least thinking about before baking in the interface.
+>
 
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Yep. Conceptually there should be no problem to iterate cgroups in the
+system. It may be better to have two independent bpf objects: bpf_iter
+and bpf_dumper. In our use case, we want bpf_dumper, which just
+exports data out through fs interface.
 
-On Tue, 10 May 2022 09:55:21 +0800 you wrote:
-> In lanphy_read_page_reg, calling __phy_read() might return a negative
-> error code. Use 'int' to check the error code.
-> 
-> Fixes: 7c2dcfa295b1 ("net: phy: micrel: Add support for LAN8804 PHY")
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-> 
-> [...]
-
-Here is the summary with links:
-  - [v3,net] net: phy: micrel: Fix incorrect variable type in micrel
-    https://git.kernel.org/netdev/net/c/12a4d677b1c3
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Hao
