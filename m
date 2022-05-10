@@ -2,152 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE40520F9B
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 10:19:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B791520FA1
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 10:22:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237935AbiEJIXB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 04:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59782 "EHLO
+        id S237820AbiEJI0n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 04:26:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237466AbiEJIW7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 04:22:59 -0400
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9118E28E4FE;
-        Tue, 10 May 2022 01:19:01 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id CCFF610029C26;
-        Tue, 10 May 2022 10:18:58 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id A91422E6707; Tue, 10 May 2022 10:18:58 +0200 (CEST)
-Date:   Tue, 10 May 2022 10:18:58 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Ferry Toth <fntoth@gmail.com>
-Subject: Re: [PATCH net-next v2 5/7] usbnet: smsc95xx: Forward PHY interrupts
- to PHY driver to avoid polling
-Message-ID: <20220510081858.GA13058@wunner.de>
-References: <cover.1651574194.git.lukas@wunner.de>
- <c6b7f4e4a17913d2f2bc4fe722df0804c2d6fea7.1651574194.git.lukas@wunner.de>
- <20220505113207.487861b2@kernel.org>
- <20220505185328.GA14123@wunner.de>
- <87tua36i70.wl-maz@kernel.org>
- <20220506201647.GA30860@wunner.de>
- <87ilqf6qjs.wl-maz@kernel.org>
+        with ESMTP id S231668AbiEJI0k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 04:26:40 -0400
+Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C52291E40
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:22:42 -0700 (PDT)
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 249MUotC005791
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:22:41 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=facebook; bh=OfumEzhOnlOw70e2w1ij9HWvhgXZI9aRtgvjFfPDTmE=;
+ b=FdBTx+PaE2fGYefhuR+NM1ph9q//WaTlcR4GC5Jph2dJsqbXypgdztPF4DT50VcIdImZ
+ EZ2mTSUPIN+mYP+bpMbBPmdod9ZF94mQhDQmV2BkXWxPCfzSLHYsokiKmE8O7s2zmADt
+ 7qFZZ5sAASSKeS0pBP0L11sGdJBQH3TCPrw= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by m0089730.ppops.net (PPS) with ESMTPS id 3fxhwx1tu0-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:22:41 -0700
+Received: from twshared24024.25.frc3.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 01:22:39 -0700
+Received: by devvm2896.atn0.facebook.com (Postfix, from userid 153359)
+        id 0E77214AE8B3C; Tue, 10 May 2022 01:22:36 -0700 (PDT)
+From:   Takshak Chahande <ctakshak@fb.com>
+To:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>
+CC:     <andrii@kernel.org>, <ast@kernel.org>, <ctakshak@fb.com>,
+        <ndixit@fb.com>, <kafai@fb.com>, <andriin@fb.com>,
+        <daniel@iogearbox.net>, <yhs@fb.com>
+Subject: [PATCH bpf-next v6 1/2] bpf: Extend batch operations for map-in-map bpf-maps
+Date:   Tue, 10 May 2022 01:22:20 -0700
+Message-ID: <20220510082221.2390540-1-ctakshak@fb.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87ilqf6qjs.wl-maz@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: GdfLHc2u-Fvi_mLdO3FixtrO_R_KLa_1
+X-Proofpoint-ORIG-GUID: GdfLHc2u-Fvi_mLdO3FixtrO_R_KLa_1
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-10_01,2022-05-09_02,2022-02-23_01
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 09, 2022 at 09:47:19AM +0100, Marc Zyngier wrote:
-> On Fri, 06 May 2022 21:16:47 +0100, Lukas Wunner <lukas@wunner.de> wrote:
-> > On Fri, May 06, 2022 at 11:58:43AM +0100, Marc Zyngier wrote:
-> > > On Thu, 05 May 2022 19:53:28 +0100, Lukas Wunner <lukas@wunner.de> wrote:
-> > > > generic_handle_domain_irq() warns unconditionally on !in_irq(),
-> > > > unlike handle_irq_desc(), which constrains the warning to
-> > > > handle_enforce_irqctx() (i.e. x86 APIC, arm GIC/GICv3).
-> > > > Perhaps that's an oversight in generic_handle_domain_irq(),
-> > > > unless __irq_resolve_mapping() becomes unsafe outside in_irq()
-> > > > for some reason...
-> > > > 
-> > > > In any case the unconditional in_irq() necessitates __irq_enter_raw()
-> > > > here.
-> > > 
-> > > Please don't directly use __irq_enter_raw() and similar things
-> > > directly in driver code (it doesn't do anything related to RCU, for
-> > > example, which could be problematic if used in arbitrary contexts).
-> > 
-> > As I've pointed out above, it seems like an oversight that Mark
-> > didn't make the WARN_ON_ONCE() conditional on handle_enforce_irqctx()
-> > (as handle_irq_desc() does).  Sadly you did not respond to that
-> > observation.
-> 
-> When did you make that observation? I can only see an email from you
-> being sent *after* the one I am replying to.
+This patch extends batch operations support for map-in-map map-types:
+BPF_MAP_TYPE_HASH_OF_MAPS and BPF_MAP_TYPE_ARRAY_OF_MAPS
 
-I was referring to the above-quoted sentence:
+A usecase where outer HASH map holds hundred of VIP entries and its
+associated reuse-ports per VIP stored in REUSEPORT_SOCKARRAY type
+inner map, needs to do batch operation for performance gain.
 
-     "generic_handle_domain_irq() warns unconditionally on !in_irq(),
-      unlike handle_irq_desc(), which constrains the warning to
-      handle_enforce_irqctx() (i.e. x86 APIC, arm GIC/GICv3).
-      Perhaps that's an oversight in generic_handle_domain_irq(),
-      unless __irq_resolve_mapping() becomes unsafe outside in_irq()
-      for some reason..."
+This patch leverages the exiting generic functions for most of the batch
+operations. As map-in-map's value contains the actual reference of the in=
+ner map,
+for BPF_MAP_TYPE_HASH_OF_MAPS type, it needed an extra step to fetch the
+map_id from the reference value.
 
-Never mind, let's focus on the problem at hand.
-It's secondary who said what when.
+selftests are added in next patch 2/2.
 
+Signed-off-by: Takshak Chahande <ctakshak@fb.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+---
+ kernel/bpf/arraymap.c |  2 ++
+ kernel/bpf/hashtab.c  | 13 +++++++++++--
+ 2 files changed, 13 insertions(+), 2 deletions(-)
 
-> > Please clarify whether that is indeed erroneous.
-> > Once handle_enforce_irqctx() is added to generic_handle_domain_irq(),
-> > there's no need for me to call __irq_enter_raw().  Problem solved.
-> 
-> I don't see it as an oversight. Drivers shouldn't rely on
-> architectural quirks, and it is much clearer to simply forbid
-> something that cannot be guaranteed across the board, specially for
-> something that is as generic as USB.
+v4->v6:
+- Changes in selftest/bpf patch 2/2
 
-Whether a warning is warranted is not dependent on the architecture,
-but on the irqchip from which an interrupt normally originates:
+v3->v4:
+- Added blank line between var declaration and actual code block (Yonghon=
+g)
 
-* Interrupt normally originates from x86 APIC or arm GIC/GICv3,
-  but is synthesized in non-hardirq context:  Warning is warranted.
+v1->v3:
+- Changes in selftest/bpf patch 2/2
 
-* Interrupt normally originates from any other top-level irqchip,
-  such as irq-bcm2836.c, but is synthesized in non-hardirq context:
-  Warning is a false positive!
+diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+index b3bf31fd9458..724613da6576 100644
+--- a/kernel/bpf/arraymap.c
++++ b/kernel/bpf/arraymap.c
+@@ -1345,6 +1345,8 @@ const struct bpf_map_ops array_of_maps_map_ops =3D =
+{
+ 	.map_fd_put_ptr =3D bpf_map_fd_put_ptr,
+ 	.map_fd_sys_lookup_elem =3D bpf_map_fd_sys_lookup_elem,
+ 	.map_gen_lookup =3D array_of_map_gen_lookup,
++	.map_lookup_batch =3D generic_map_lookup_batch,
++	.map_update_batch =3D generic_map_update_batch,
+ 	.map_check_btf =3D map_check_no_btf,
+ 	.map_btf_id =3D &array_map_btf_ids[0],
+ };
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 3e00e62b2218..705841279d16 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -140,7 +140,7 @@ static inline bool htab_use_raw_lock(const struct bpf=
+_htab *htab)
+=20
+ static void htab_init_buckets(struct bpf_htab *htab)
+ {
+-	unsigned i;
++	unsigned int i;
+=20
+ 	for (i =3D 0; i < htab->n_buckets; i++) {
+ 		INIT_HLIST_NULLS_HEAD(&htab->buckets[i].head, i);
+@@ -1627,7 +1627,7 @@ __htab_map_lookup_and_delete_batch(struct bpf_map *=
+map,
+ 	void __user *uvalues =3D u64_to_user_ptr(attr->batch.values);
+ 	void __user *ukeys =3D u64_to_user_ptr(attr->batch.keys);
+ 	void __user *ubatch =3D u64_to_user_ptr(attr->batch.in_batch);
+-	u32 batch, max_count, size, bucket_size;
++	u32 batch, max_count, size, bucket_size, map_id;
+ 	struct htab_elem *node_to_free =3D NULL;
+ 	u64 elem_map_flags, map_flags;
+ 	struct hlist_nulls_head *head;
+@@ -1752,6 +1752,14 @@ __htab_map_lookup_and_delete_batch(struct bpf_map =
+*map,
+ 			}
+ 		} else {
+ 			value =3D l->key + roundup_key_size;
++			if (map->map_type =3D=3D BPF_MAP_TYPE_HASH_OF_MAPS) {
++				struct bpf_map **inner_map =3D value;
++
++				 /* Actual value is the id of the inner map */
++				map_id =3D map->ops->map_fd_sys_lookup_elem(*inner_map);
++				value =3D &map_id;
++			}
++
+ 			if (elem_map_flags & BPF_F_LOCK)
+ 				copy_map_value_locked(map, dst_val, value,
+ 						      true);
+@@ -2450,5 +2458,6 @@ const struct bpf_map_ops htab_of_maps_map_ops =3D {
+ 	.map_fd_sys_lookup_elem =3D bpf_map_fd_sys_lookup_elem,
+ 	.map_gen_lookup =3D htab_of_map_gen_lookup,
+ 	.map_check_btf =3D map_check_no_btf,
++	BATCH_OPS(htab),
+ 	.map_btf_id =3D &htab_map_btf_ids[0],
+ };
+--=20
+2.30.2
 
-* Interrupt is always synthesized in non-hardirq context by a
-  USB irqchip: Warning is a false positive, regardless whether
-  the top-level irqchip is x86 APIC, arm GIC/GICv3 or anything else!
-
-
-> > Should there be a valid reason for the missing handle_enforce_irqctx(),
-> > then I propose adding a generic_handle_domain_irq_safe() function which
-> > calls __irq_enter_raw() (or probably __irq_enter() to get accounting),
-> > thereby resolving your objection to calling __irq_enter_raw() from a
-> > driver.
-> 
-> Feel free to submit a patch.
-
-Done:
-
-https://lore.kernel.org/lkml/c3caf60bfa78e5fdbdf483096b7174da65d1813a.1652168866.git.lukas@wunner.de/
-
-I'm focussing on eliminating the false-positive warning for now.
-Introducing a generic_handle_domain_irq_safe() wrapper which alleviates
-drivers from calling local_irq_save() can be done in a separate step.
-
-Thanks,
-
-Lukas
