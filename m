@@ -2,89 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EDD6520AC9
+	by mail.lfdr.de (Postfix) with ESMTP id EAC4B520ACA
 	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 03:39:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233935AbiEJBm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 21:42:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34094 "EHLO
+        id S234258AbiEJBnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 21:43:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229782AbiEJBmw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 21:42:52 -0400
+        with ESMTP id S231941AbiEJBm6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 21:42:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CD0C187
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 18:38:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9AE62BDC
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 18:39:02 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAA76B81A69
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:38:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C96CC385C2;
-        Tue, 10 May 2022 01:38:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A1E75B810EA
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:39:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A484C385C5;
+        Tue, 10 May 2022 01:39:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652146734;
-        bh=QPt8GZutPwMpMG4T2f0EPYnri0WR5B6W52ltxX+6xbM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=eq4QvPnrAe/5W3zJgN2SRum0mIoCz29sdLOtnJJhSJ/KTlnsoBeEbKAOOFZ/EkcHC
-         TO5QY/bVBwbscElN1iyzJ/7IN7T0DjzAuuCULd+rqnKGCWmHo6LQ40RwRe5iXMGoyT
-         hW1QUgAh0WoDICRuN6RqddPhUwnodtLREZNLVWF/agvRmX6DnUo2j8AmtWtL82pfjq
-         9AP1i/fDhZNNDVtuSEn3m3hfEGkfisPbOnrIdnprdcLnI2SaYYEtQ1NO5UdNonxcTk
-         9VbVPjpOnLUc4u7dg0rVY8AzjPlqo6hWhnKGQNhO9qwhlaztfOwPmaZ4eyuyEbesi1
-         VI4G8C/TjxrFg==
-Date:   Mon, 9 May 2022 18:38:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Kees Cook <keescook@chromium.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Coco Li <lixiaoyan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH v5 net-next 13/13] mlx5: support BIG TCP packets
-Message-ID: <20220509183853.23bd409d@kernel.org>
-In-Reply-To: <20220509222149.1763877-14-eric.dumazet@gmail.com>
-References: <20220509222149.1763877-1-eric.dumazet@gmail.com>
-        <20220509222149.1763877-14-eric.dumazet@gmail.com>
+        s=k20201202; t=1652146740;
+        bh=wYAqNlOd8X8AHHgsuq0w1JlfvMBpR/XOu1fl32X4omQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=Z1pSs3+fO7Q+YFPGgD+rDyEMeXkeXwoQsZxFpFMQ8CjFLykPxACrSCZ6B7m4Kzlo7
+         mJW+qOe+uQG1fS8DDWQlrG43//PEqG2ECaADfkkSAT6Qe5ZxNxr3H0UwXBnVB3INs7
+         igVcPzZNwa+eh7qJ54XrQJEc9I7G0CnFHY9Y9V0Se8sAK79RjITlOOGQUbokYFBkcF
+         fKTT4vLrPnmnZroVHRpgT3OEIj1uDoS0bxbIoJaiZLSB521RkW1AJXASB/kqQWuN7N
+         /6XAVuOgwp9ZXHavdr1hPoONe7Gt2pCoZ3vKDtorKZWLLje7Q5MgFJ+O7DTxnPIaRC
+         IdQxo4P1Ennzw==
+Message-ID: <b84e51fa-f410-956e-7304-7a49d297f254@kernel.org>
+Date:   Mon, 9 May 2022 19:38:58 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH v2 net-next] net: neigh: add netlink filtering based on
+ LLADDR for dump
+Content-Language: en-US
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>,
+        netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+References: <20220509205646.20814-1-florent.fourcot@wifirst.fr>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220509205646.20814-1-florent.fourcot@wifirst.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-8.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  9 May 2022 15:21:49 -0700 Eric Dumazet wrote:
-> From: Coco Li <lixiaoyan@google.com>
+On 5/9/22 2:56 PM, Florent Fourcot wrote:
+> neighbours table dump supports today two filtering:
+>  * based on interface index
+>  * based on master index
 > 
-> mlx5 supports LSOv2.
+> This patch adds a new filtering, based on layer two address. That will
+> help to replace something like it:
 > 
-> IPv6 gro/tcp stacks insert a temporary Hop-by-Hop header
-> with JUMBO TLV for big packets.
+>  ip neigh show | grep aa:11:22:bb:ee:ff
 > 
-> We need to ignore/skip this HBH header when populating TX descriptor.
+> by a better command:
 > 
-> Note that ipv6_has_hopopt_jumbo() only recognizes very specific packet
-> layout, thus mlx5e_sq_xmit_wqe() is taking care of this layout only.
+>  ip neigh show lladdr aa:11:22:bb:ee:ff
 > 
-> v2: clear hopbyhop in mlx5e_tx_get_gso_ihs()
-> v4: fix compile error for CONFIG_MLX5_CORE_IPOIB=y
-> 
-> Signed-off-by: Coco Li <lixiaoyan@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
-> Cc: Saeed Mahameed <saeedm@nvidia.com>
-> Cc: Leon Romanovsky <leon@kernel.org>
 
-So we're leaving the warning for Kees to deal with?
+that is done by a GET without the NLM_F_DUMP flag set; doing a table
+dump and filtering to get the one entry is wrong.
 
-Kees is there some form of "I know what I'm doing" cast 
-that you could sneak us under the table?
