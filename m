@@ -2,147 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63DFB520D9C
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 08:06:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 255A7520E0D
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 08:48:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236616AbiEJGKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 02:10:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48492 "EHLO
+        id S237337AbiEJGwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 02:52:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236993AbiEJGKS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 02:10:18 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2083.outbound.protection.outlook.com [40.107.92.83])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 253C7275D3;
-        Mon,  9 May 2022 23:06:22 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L49ipIE674svkX7c05jlMVsLz2wWoJs0hixRmkXeh+NO2Nk0fW8dgczNLwrNmcuDTj6Vc7l/SHCwkZsj0N+VldwCxToG/0cE5BmXRvzZjB7cj5w5U+H5DvdjAfSRMfWSCok7dI9rhY4sfIa+8ty2MeLs1NtLsLIgtpGrqQfH+Kq0brNwAgrEO0Jlpo5v7+kJVMKBVHaBUhvVHeGlb1HnvdtwacEQQlJHbN8xQ3TyrDap2GiOjeKEYza3TVMfGvAGewj2JvU0mlzIew2EHWyubYR8h1NTn2OsJ2Ljc85Fh0JTy7eARu4NVkk9Q/dDwK23AFeNL6jePrMD9SxxPJFiXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=rkzkSr2aZc/+KrCQz/n/nGGw7eob6gmJQlGU7IPvfBU=;
- b=kFeYz3oHl6S1utM1fjZT63PxS6XLcgmJa8zsdvmxs9in9dxcTRP78AXje9fGTm8n1oabKYtCGP68q6H6EmfIf6Tl9Kb1dL2KbKV8rQnrUXTI6ItgJTMuDKilmbYtgynvY6eNRvf4rhehEw5sKHKbaBr7Kla5AQWL9ao9jnX0txsqaH/v3RePdFpMuMfnWMazs214vCg2WwS5wJGgsq0QPTivWcbrCElQAMHT87Gi38gXFlH+PUhC1oIYh+lNhNtyVDdzmf8MGkiwGbFrOlaAM4Rp6aAUGGe27zNIrOf+60EbyTkgpNdOqVe1lrDDEGjedA1n/qvc24IQpl9rOgUWeg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rkzkSr2aZc/+KrCQz/n/nGGw7eob6gmJQlGU7IPvfBU=;
- b=KcX+GsjVHyVLzJ2lZ1wcAekXENLClJk1yoEAPY/ZCFxyU/eh4IvrgiIu07OrtduilM31T69B8dIyI5DCc7eNDU8en2X9lJrYlkwMBasYfW8cJwI4+Itu1LKRRaLWjsuwlFNs6rA75cDsntxKuQH42FWcvi0ypakk9J3hey9sUi3y8UL5PmPOy+degb2JByYk8ipJ4zQtJb234SM9pzjHLeK+BVVd+IWq14Gm/XMZC0YJsM260BTHgfO9pRhN3cM8vIB9hxgri24MNNciXHnTyuP6Pvz438SB3kct2UGxnciE9CQfzMTQXuVcobHEcW/3LYgSjwMyPEWzdYaVSI8qmg==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
- by MN2PR12MB4062.namprd12.prod.outlook.com (2603:10b6:208:1d0::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20; Tue, 10 May
- 2022 06:06:20 +0000
-Received: from BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
- ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 06:06:20 +0000
-Date:   Mon, 9 May 2022 23:06:19 -0700
-From:   Saeed Mahameed <saeedm@nvidia.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Changcheng Liu <changchengx.liu@outlook.com>,
-        linux-rdma@vger.kernel.org, linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net/mlx5: correct ECE offset in query qp output
-Message-ID: <20220510060619.hmuwrwgplnhlfcnc@sx1>
-References: <OSZP286MB1629E3E8563657C551711194FEFB9@OSZP286MB1629.JPNP286.PROD.OUTLOOK.COM>
- <Ym+/WnWceotzny4f@unreal>
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <Ym+/WnWceotzny4f@unreal>
-X-ClientProxiedBy: SJ0PR05CA0201.namprd05.prod.outlook.com
- (2603:10b6:a03:330::26) To BY5PR12MB4209.namprd12.prod.outlook.com
- (2603:10b6:a03:20d::22)
+        with ESMTP id S236920AbiEJGwj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 02:52:39 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA462AC0EB;
+        Mon,  9 May 2022 23:48:37 -0700 (PDT)
+Received: from mail-yb1-f171.google.com ([209.85.219.171]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MYeAP-1nJMX22lNr-00VkoP; Tue, 10 May 2022 08:48:35 +0200
+Received: by mail-yb1-f171.google.com with SMTP id w187so28984979ybe.2;
+        Mon, 09 May 2022 23:48:35 -0700 (PDT)
+X-Gm-Message-State: AOAM532G2KwUR9bmYpsf2UYuio94xCY+jJ9MLVshXh5SECvI3EALCdqK
+        fXW9xD82xhSwIgFo+LUyR2YFc5oJ6POwK24HzrI=
+X-Google-Smtp-Source: ABdhPJwZLPKPegMnSAYKUMRPIlw4w0nMh5Ua1zzbhdIVDi8c5t+lK+3Bk06FfarQubwIRmz24ICGg9b2tvpgmnYuNnA=
+X-Received: by 2002:a25:c604:0:b0:645:d969:97a7 with SMTP id
+ k4-20020a25c604000000b00645d96997a7mr16021831ybf.134.1652165314213; Mon, 09
+ May 2022 23:48:34 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9dedf8fc-5842-4b60-2ad1-08da324b33ec
-X-MS-TrafficTypeDiagnostic: MN2PR12MB4062:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR12MB40628ED4880E1340B8775A8CB3C99@MN2PR12MB4062.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QISp2YUQatmn+FHW3vzSqOvrD+Hr4GDWOrg47V1h2IdGdYt0e0Fw9xdPgAzzKow52bA8ToBw0gDUfSQWr+v+J+SX+DixTo3LeZFBO2hy20pE9l8vHD1YjO8O+9I+SLEJNbSmdSXVd+C2QN01bXQcct8yqrwORdvVTpHiZ6EIIDpmTUTRew0/hlI88h1NPcz1Q9b0uFW+o+jwKUVFTTT8XXB79rmZXt4WZPJcirtOHWuEyIuDlBW078MdaCkOtbcQXjc6ZDPzqZWr1ThGLApXnSwm25CiRYg7e4YOPwFBjvwuhVnTuERH4LbDrX1kzYfiSQ9gz2yo7ymmaK2XXLlCElEN9Bp2qswgaXlXuZxStBAMLRxAp2DDdbuJ6ottF0lx/kb+jg6qbAy6ZBdApxOsgdK/AVP4YU+zmK8WOtWRm/6ETiw+8DBhqDsCa9/dTFNENzpQB0CNtjr0tszfWkps4F4KErnUo4evLdHmrIst5VgXP2fAYo+TgbYKYFq5qrAmiaBllHFatatNDizjOyxrP2lds8ss23THS7w5aXWI655IA7rzLw3eZgjhikqn+l7/TedRpsrHTT0Aa/nnlqNGOAShzM17ObSjGMmPQ8gdid3SiRxz8HoY2dgAlrEnRcYn2lQGKklE3DB4YbiYVTf1CA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(86362001)(6916009)(66476007)(66946007)(66556008)(2906002)(8936002)(54906003)(1076003)(8676002)(4326008)(316002)(9686003)(6512007)(53546011)(6506007)(508600001)(3716004)(33716001)(5660300002)(186003)(6486002)(38100700002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?7T6pHlhDnirJRX3dahXzkZHPpGkSANlyEON05bYg9t6lEqgMnn4Cp7dZSPeG?=
- =?us-ascii?Q?4a6jjkKVO8JZ6eOMvjcGmMJwXYy2H8jpBZRJe1evObxmJh8BE3UPnanO3gNI?=
- =?us-ascii?Q?3OFs+Rb20k3rbavF0T1XtYUYl/OXiqTSCf3gDUKbacKJ3N59RtCnKUZ+lFVE?=
- =?us-ascii?Q?C0H8dOWiS2a5Uw/ZBb4rqfN/5CpfS0zkCywvwkLWgTvCnlSyvaCdmkuEhD7x?=
- =?us-ascii?Q?ExjFiB7YQb6Z9y0B+8p2U+rwb3KvEVhPIOH9Gw9DUDiG2hjWLdfdwhZfiaAd?=
- =?us-ascii?Q?5zQEcVEibBvdIPKDUjPtWb1HoER9z5A7B+4uSd4utlALn1ZAIRXRpfNf6I+D?=
- =?us-ascii?Q?jiewIfNuiH6JlUropTk9EIWb3txbfdoc43dV5RVl2RAKbw/U/IaYBhVqy2Fu?=
- =?us-ascii?Q?/cJj/NzK3AMvA3cBmWv7+Gj5xKqwnp+EVqgt+v2M2lS9K5BXAbxy6logoN2s?=
- =?us-ascii?Q?tRL2B8hqrOBmLJU+Uj3YMwDgvwjL8JAScTqEB9Yn1Hn0i0rvOfrW4opdwjNU?=
- =?us-ascii?Q?YoCu0dVeANTKuoTGcRp8u3aYuhU9G1nqOGeh64bCxNZLP376M1oCM9pdycrn?=
- =?us-ascii?Q?xgYlnJM5SJ9X7VeuQ/x7F6Yv9+nazy2XVRgv8/mc5L7LpvYe+01/BJ1RtmH8?=
- =?us-ascii?Q?7XOhaBfYMHG3hchrc7x2mD9x49EygDykXFbAe6Z/3ZpKkTVAXeFZbaLFYocb?=
- =?us-ascii?Q?+vGsLqZPx0cXw+CIqmslSjS571pekGbCRH3sFrC9gXU9OIqOxvNVMqut9zEL?=
- =?us-ascii?Q?WhglNPWapB4+1FpS4oXR/N1LIg3jh++bU/qmxp+0Qfkdp+z6N8hAymzFgpaB?=
- =?us-ascii?Q?D9OknCbdPHEzKRaZBzcoSSyQYqUXK7cxstuXDMdTqTTnNIZB6tp9a2XFWQcA?=
- =?us-ascii?Q?FG1JhrWeZw8JWH42nNXvlYe0uxqv4aJIml2pUDbNii0YJukxyHSIru1hjCbN?=
- =?us-ascii?Q?RxtSrvglNmeqefY9fofU5cbVlNZPf08lPSz6UIrz5H4UUN/pOf3FSDeJHAiD?=
- =?us-ascii?Q?+RSgeK6BRjzcL8C4s9agjoyyQfQn0Dmh61v/792Mtv2kW8moC4p19VXuoPm3?=
- =?us-ascii?Q?m0nWFDT2yJ6ogtchOiVj5Q7lpAGzMMINUPAHOTYE16B+/+D06DDPxn94W4Ou?=
- =?us-ascii?Q?t3tXQsTMbhz64X394hq6FXN5vnDDcg9LHTy1hw6s/AkzlRwUTSXMyCx6rF/M?=
- =?us-ascii?Q?vCG+EvixceNYWzYTC8pTAW/+T3MeOwOrUiDDLWXojfsoczl3NBLAPe7eW5kw?=
- =?us-ascii?Q?xywLrT3zqc3nMrcf7XOY773iXG993PrEIQjT34I5wAlygdJe22tWA3JWolrH?=
- =?us-ascii?Q?40btnXMScMbVy1jxCzPRuueIk76zhwraCXhBdVDIot1A/GjOfG6SNHo7cCXr?=
- =?us-ascii?Q?5vBuwdkDxVeFXC6HHuHSRaCfTsN5L8i9XK0tn3pZpdq55MjxApay+oGjhrUK?=
- =?us-ascii?Q?7K2eENhFHav3oB23zhpF9KxpxIKWxdckCnEoJskD9wWoAFlaw7KGpRM2X/fy?=
- =?us-ascii?Q?HCVWHTIVwQwqrXflCIZk3oddZ7T4MVsJ4fKxMJFJIFH6k7KPY7jRH3wjkQin?=
- =?us-ascii?Q?QIIm10Y3Q3e9U2uScnxCePO/ORu/nTRGsaQAtmOoDY8j7OXT8HPaDzYc4TfJ?=
- =?us-ascii?Q?4qOhPNgC4uE/kfoOStmOXAt0QHrr+LshBHTgaQ/rKSA+xBk6ayzk9aE0mG3I?=
- =?us-ascii?Q?gSRwft8e3FUnnS3cRi8ETqwQxm2/J9e0wQEpHnVGgURs/9xvYz1HJgYnJQUa?=
- =?us-ascii?Q?QWAPqwxq1GD9N1YtQ8zlESPqZqlA3YDUOdFWfNq3VBTP+XE+IXb+?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9dedf8fc-5842-4b60-2ad1-08da324b33ec
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 06:06:20.3741
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: M/JyZalVk1fzJNAJbITmGiFqvcH6yf4ZxgdyHpKSpKq3jWoUWk6kq0wEXrJV6FmQ3JUwrdVFuBPdiXkXAZ0sYQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4062
-X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+References: <20220509150130.1047016-1-kuba@kernel.org> <CAK8P3a0FVM8g0LG3_mHJ1xX3Bs9cxae8ez7b9qvGOD+aJdc8Dw@mail.gmail.com>
+ <20220509103216.180be080@kernel.org> <9cac4fbd-9557-b0b8-54fa-93f0290a6fb8@schmorgal.com>
+In-Reply-To: <9cac4fbd-9557-b0b8-54fa-93f0290a6fb8@schmorgal.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 10 May 2022 08:48:17 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a1AA181LqQSxnToSVx0e5wmneUsOKfmnxVMsUNh465C_Q@mail.gmail.com>
+Message-ID: <CAK8P3a1AA181LqQSxnToSVx0e5wmneUsOKfmnxVMsUNh465C_Q@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: appletalk: remove Apple/Farallon LocalTalk
+ PC support
+To:     Doug Brown <doug@schmorgal.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:4fxcH+zG31JR2D5fSC8tLGPdDxOCmtc2fjga73OYZJ7qrX6mnGc
+ vHphlNKZaDjMe2A0FEywlctccpZeBErsqrXa5WRXNOh+RYdZzGqBBy/qBRaHnvtAf/lyOGW
+ xBwuh1w0XCJdsUN+PmD37B4w9TtbOL1vTKSY/UaytI4u1RhD5fmrFsNbglTiyGl/XaQv/ut
+ gzEvaM+fSTPDx2JylxE+Q==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:gNZ1gOntbLU=:KDlqCAJY4XtzvRd9LHRg1k
+ ZNGOaOTD6adm1drYyMVHcfXzExzT1C7RPwMaF096in2hD7rUALAJACPf81L0G1Xs1yDz/V0YM
+ cuYtnR2q3HijhYrKVfM48dzchzgr+J5lZw8sMRtf+bn+m6RCO10gjyuu5BgNgNufnrV/zCo8K
+ fbJK9XGaUKuKPSsvY7ER+BZudV1TAVCa7KGAE+ILBBiSAdczIkt7bA3UqgH534G8BI0VIbjAf
+ KTT9J/YzohMLCHQphvNQT9tDzQ18fwg+mawhuIG8GkrEnSargnA6GwxrRIAvPrPDYQqbiI6yy
+ 6e7Kd3nzmMot5VRqPh/ikq2iu3FTJ+igdauAdxdBGfca2LSThuIqYl9PCpom47TIP67UlV/wF
+ ZeaJyv1Cn1pXHxDmHH4Y01ZH83tUENE9Hty3Q6JnwPU8yKm8jst3wuDUKSl5cAVJcmnD2v97Q
+ 1wxa1OwiMGr7ganCEYm/jILPjCDkK2OejbQLLJ4RJrXPXYvL/ez0NZO6P3KcciDF4DB4sCoOF
+ 88mu7Sgm3D7ALTreJZpLCEc877tMFG4ptTfM6pcT8MqomPj/ga/Ocf0+C+WoTRuBuFdbjiOiq
+ 1v9US8RoD7ETKikr0hzdWge8U2xPnfxdimVQnd6W+aPsmS3FluC5tMYYHL/qT4ObJO7YHAQN8
+ t+N9kIm3cxFKMObNXGsSy/8JWOMAyHwDf+3Dm3A2zEheadeqQTB3ZYOCW9JQqA7VM9lMyS4oe
+ Xswixb8vg+f/7QfwmTU3Pi5M3vK9bsaLHsEZCsyBuzTXzGG2zNAKRcyM7ggb8I+0zAeqyo9iW
+ 3pVz8BuNxf0euD357GHHQ7kn/BS4FcbQScALlWdZiQ0ZrF/OIo=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02 May 14:24, Leon Romanovsky wrote:
->On Tue, Apr 26, 2022 at 10:06:11PM +0800, Changcheng Liu wrote:
->>
->> From cd2890fc0f756d809f684768fabb34b449df6d29 Mon Sep 17 00:00:00 2001
->> From: Changcheng Liu <jerrliu@nvidia.com>
->> Date: Tue, 26 Apr 2022 21:28:14 +0800
->> Subject: [PATCH] net/mlx5: correct ECE offset in query qp output
->>
-
-Patches withtout a target branch [net] or [net-next] are invisible to
-netdev patchwork, please for next time add a target branch to the title.
-
->> ECE field should be after opt_param_mask in query qp output.
->>
->> Fixes: 6b646a7e4af6 ("net/mlx5: Add ability to read and write ECE options")
->> Signed-off-by: Changcheng Liu <jerrliu@nvidia.com>
+On Tue, May 10, 2022 at 4:34 AM Doug Brown <doug@schmorgal.com> wrote:
 >
->Saeed,
+> On 5/9/2022 10:32 AM, Jakub Kicinski wrote:
+> > On Mon, 9 May 2022 19:14:42 +0200 Arnd Bergmann wrote:
+> >> I think however, if we remove this driver, we need to discuss removing the
+> >> last remaining localtalk driver (CONFIG_COPS) and possibly the localtalk
+> >> bits in net/appletalk along with it.
+> > Removing COPS and appletalk makes perfect sense to me (minus what Doug
+> > has plans to use, obviously).
 >
->Do you plan to add new patches to mlx5-next?
->This change can go to that branch as this field is not used in current
->code at all.
+> I also think removing the COPS driver is a great idea. I actually ended
+> up buying a compatible card in the hopes of working on that driver to
+> change it to load the firmware through the firmware API, but the
+> licensing situation with the firmware blobs kind of brought that idea to
+> a standstill. I would be very surprised if anybody is actually using
+> LocalTalk ISA cards these days anyway, so it's probably not worth the
+> effort to maintain it.
 >
+> There have been a few "modern" LocalTalk interface projects. One is
+> mine, which I haven't found time to finish, but I was able to get
+> working in the kernel with a lt0 network interface. I suspect I was the
+> only one in the last decade to actually use the LocalTalk code in modern
+> kernel versions, because it was crashing until I fixed a bug involving
+> too short of a header length being allocated. There's another more
+> recent LocalTalk project called TashTalk [1]. A kernel driver could be
+> developed for it using serdev or a tty ldisc, but all of the current
+> development seems focused on the userspace side.
+>
+> With that in mind, I personally wouldn't be sad to see the entire
+> LocalTalk interface support stripped from the kernel, as long as
+> EtherTalk support can remain. There is still a decent sized community of
+> users who are using it to talk with classic Macs using netatalk 2.x.
+> So most of the stuff in net/appletalk is still relevant today for us.
+>
+> Might as well remove CONFIG_IPDDP too. It actually -interferes- with the
+> current way that people do MacIP gateways through userspace with macipgw
+> [2]. I'm not aware of anyone actually using the kernel's implementation.
 
-I don't mind, i will apply to net-next-mlx5, and keep it there until the end of
-this release until i am sure it introduces no conflicts,
-I don't see any point of putting this in mlx5-next at this time.
+Thanks for all the background information!
 
+If I understand this correct, this means we could remove all of
+drivers/net/appletalk/ except for the CONFIG_ATALK Kconfig entry,
+and also remove net/appletalk/dev.c and a few bits of net/appletalk
+that reference localtalk device structures and their ioctls, right?
+
+What about appletalk over PPP (phase1 probing in aarp.c) and
+ARPHRD_LOCALTLK support in drivers/net/tun.c? Are these still
+useful without localtalk device support?
+
+         Arnd
