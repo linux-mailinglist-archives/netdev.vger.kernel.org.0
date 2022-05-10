@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0E61521F29
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:38:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82E8D521F2C
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:38:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346044AbiEJPmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 11:42:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45654 "EHLO
+        id S1346053AbiEJPmL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 11:42:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346600AbiEJPlw (ORCPT
+        with ESMTP id S1346601AbiEJPlw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:41:52 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2678155496
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 08:37:40 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id i17so17066585pla.10
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 08:37:40 -0700 (PDT)
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 103B023021F
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 08:37:44 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id k14so14968984pga.0
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 08:37:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ewTyoQ/+iWcmU29RnsXrYQ82QNVfKCcVgsgraxTWcKE=;
-        b=h04ZXlDCMnt6RheYKPEtONChHBfn6N7dpe0/0Jtlr0RrzrkMrZN7GTXuNLO/QA4Imx
-         7hS7fUx4c/7f0oLmc47fvNdL4aYX5NsB93gSkibYYG/6sTd6Iabj1FxUplw4vs6RoxCF
-         uBuB97F+pd9K7rybjSphigst5K8iUsSmVW+tSVkdSeq//xkyUJV4XEIKdr8Tsb6AuqZG
-         SRJ4E5TDHVkXNu5NHu5hMtfk1w+oOY9ryZbbudVdgBmyVQLCfTOjqHo28DeCL/FJuAWg
-         DVhPPmOB5ebtECPZmpllVbhMAQscWbNFNio9PHoREfofH0croD4ecxfYY5AOvzkBzC1s
-         qwBQ==
+        bh=gPGlKIAYkvzGWLOdfcrBZK0/pi/ThcFLRN561k+SIq0=;
+        b=g+aNfmsOTKV9L938IyOgO8Izs2wS87w3lmVqxRZX0o+wPycccd0FeJLy8XaqPzn330
+         3NkoONUxC2HzwTvA2cTUw7NopSvtOCCN09jzGL6I2A+CUEj6L/2YzBzKjYeagdzhAOhs
+         P6zFQkwrpbTVLoauFCShihmSzlKwes6lFR5y8DVpxH5tbjSBixVoAZUvxro+EjERihFS
+         ElLAryCHEMUUYO55/kJahW6fRwE/2TeWOl2vcPbMYtT6yg0x55U5+Qlv5oxSlg8+EQz0
+         7pelDMJ8AtyMA2pSKl5OaV/5BQwX8QL1AM31d6TQJuIA5C7D6ZrvWWjiOY1tCkzaTFMw
+         XDBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ewTyoQ/+iWcmU29RnsXrYQ82QNVfKCcVgsgraxTWcKE=;
-        b=ejhFAayeZTSZkqrqOQaNiZ7W9tMRXn8EWcDGezx+1c0VHgdqdL+dYtQqPOejlVxTti
-         rGa56xjm49e8j9h8M+vkdWZkdNtCkAB1iVNfWTrd4R8Vp8GmskosB5P8ZOOp6ildryoQ
-         gNkAxxv4+im6JliHfvpAug1wr+fW7oJAcjZIHlykMFIoV1zw3+Qhth0nQtvoPiDSgn53
-         NnfF/Zd2jDBLu3xEnCKcrD4vEE8E71AvaYls0252WAZU8HXLhhZF4XzVwx6Drmee0ZZA
-         1TYZ+yg88h4hrGtBO5qTrsCrRNDMR5vT4wDZcwzZp+WIik8OTWxLwEayVEr9dAKXfIyR
-         GYEQ==
-X-Gm-Message-State: AOAM531LKd7ragUncxIILoGmJPY209Gsuv3h76tQ4Cy8vTS0UzeROrwz
-        7qW+kRupCowamzYZOgUUApm7RNxlVQU=
-X-Google-Smtp-Source: ABdhPJya98FPP3tInt8yvPqEXagO72f2Nzv2M7b/r4ymM6p/VK8iRR17PFHZSgx5pcMwBhfkzztUkQ==
-X-Received: by 2002:a17:902:d717:b0:15e:b6ed:4824 with SMTP id w23-20020a170902d71700b0015eb6ed4824mr21070314ply.110.1652197059627;
-        Tue, 10 May 2022 08:37:39 -0700 (PDT)
+        bh=gPGlKIAYkvzGWLOdfcrBZK0/pi/ThcFLRN561k+SIq0=;
+        b=bJPf+DL5JO0MAvaxWoTx9JR5QKbAFQsErRpj6qo8A1vVdzUZ14cPiSvzp1Jj9Se9YU
+         pgVqNMG2HcoiBtdWW1ySNu2BPmFOkPax+RUuNTBA6gcMCP74BrUt5ml7AXPwLuNuIxy+
+         t79TYfJvdhIj7m5iDYsX0N7PlbRyEii/7vrKHiwTKKSy2NVXA3tBuyR2b5neKxdlrSMf
+         chI7I4XhNQDXEGXkJAvgfoTGQlakSTQWi6wMygjmpPEb6ZQAaZ/irqBCQubf3T6Uv90i
+         B/DAJ8FReQtvuMQCTp9vFpH9xFFE68znOkDZRF9gJegdl5iVL37JOxo8twroC7AYjdaw
+         0b8Q==
+X-Gm-Message-State: AOAM5319CI4ywqyk7YcotKAeyDUFtBxjOScZpRMTwcch6IHpEVDkbJqF
+        gAbRVVjKLgsp+6dMjGY8OGpVGitJMTM=
+X-Google-Smtp-Source: ABdhPJziHOCfemtpV57d0K+VJns9sNam6jPE+Wj4l4C3uzDm26CjaEoFTJJvbSZPlD29jYthb/PbWQ==
+X-Received: by 2002:a05:6a00:2186:b0:4f7:5544:1cc9 with SMTP id h6-20020a056a00218600b004f755441cc9mr20797008pfi.62.1652197063657;
+        Tue, 10 May 2022 08:37:43 -0700 (PDT)
 Received: from localhost.localdomain ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id bi10-20020a170902bf0a00b0015e8d4eb1fcsm2211308plb.70.2022.05.10.08.37.35
+        by smtp.gmail.com with ESMTPSA id bi10-20020a170902bf0a00b0015e8d4eb1fcsm2211308plb.70.2022.05.10.08.37.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:37:38 -0700 (PDT)
+        Tue, 10 May 2022 08:37:42 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, ecree.xilinx@gmail.com,
         habetsm.xilinx@gmail.com, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net 1/2] net: sfc: ef10: fix memory leak in efx_ef10_mtd_probe()
-Date:   Tue, 10 May 2022 15:36:18 +0000
-Message-Id: <20220510153619.32464-2-ap420073@gmail.com>
+Subject: [PATCH net 2/2] net: sfc: siena: fix memory leak in siena_mtd_probe()
+Date:   Tue, 10 May 2022 15:36:19 +0000
+Message-Id: <20220510153619.32464-3-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220510153619.32464-1-ap420073@gmail.com>
 References: <20220510153619.32464-1-ap420073@gmail.com>
@@ -67,52 +67,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the NIC ->probe() callback, ->mtd_probe() callback is called.
+In the NIC ->probe callback, ->mtd_probe() callback is called.
 If NIC has 2 ports, ->probe() is called twice and ->mtd_probe() too.
-In the ->mtd_probe(), which is efx_ef10_mtd_probe() it allocates and
+In the ->mtd_probe(), which is siena_mtd_probe() it allocates and
 initializes mtd partiion.
 But mtd partition for sfc is shared data.
 So that allocated mtd partition data from last called
-efx_ef10_mtd_probe() will not be used.
+siena_mtd_probe() will not be used.
 Therefore it must be freed.
-But it doesn't free a not used mtd partition data in efx_ef10_mtd_probe().
+But it doesn't free a not used mtd partition data in siena_mtd_probe().
 
-kmemleak reports:
-unreferenced object 0xffff88811ddb0000 (size 63168):
-  comm "systemd-udevd", pid 265, jiffies 4294681048 (age 348.586s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<ffffffffa3767749>] kmalloc_order_trace+0x19/0x120
-    [<ffffffffa3873f0e>] __kmalloc+0x20e/0x250
-    [<ffffffffc041389f>] efx_ef10_mtd_probe+0x11f/0x270 [sfc]
-    [<ffffffffc0484c8a>] efx_pci_probe.cold.17+0x3df/0x53d [sfc]
-    [<ffffffffa414192c>] local_pci_probe+0xdc/0x170
-    [<ffffffffa4145df5>] pci_device_probe+0x235/0x680
-    [<ffffffffa443dd52>] really_probe+0x1c2/0x8f0
-    [<ffffffffa443e72b>] __driver_probe_device+0x2ab/0x460
-    [<ffffffffa443e92a>] driver_probe_device+0x4a/0x120
-    [<ffffffffa443f2ae>] __driver_attach+0x16e/0x320
-    [<ffffffffa4437a90>] bus_for_each_dev+0x110/0x190
-    [<ffffffffa443b75e>] bus_add_driver+0x39e/0x560
-    [<ffffffffa4440b1e>] driver_register+0x18e/0x310
-    [<ffffffffc02e2055>] 0xffffffffc02e2055
-    [<ffffffffa3001af3>] do_one_initcall+0xc3/0x450
-    [<ffffffffa33ca574>] do_init_module+0x1b4/0x700
-
-Fixes: 8127d661e77f ("sfc: Add support for Solarflare SFC9100 family")
+Fixes: 8880f4ec21e6 ("sfc: Add support for SFC9000 family (2)")
 Signed-off-by: Taehee Yoo <ap420073@gmail.com>
 ---
- drivers/net/ethernet/sfc/ef10.c | 5 +++++
+ drivers/net/ethernet/sfc/siena.c | 5 +++++
  1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
-index 50d535981a35..f8edb3f1b73a 100644
---- a/drivers/net/ethernet/sfc/ef10.c
-+++ b/drivers/net/ethernet/sfc/ef10.c
-@@ -3579,6 +3579,11 @@ static int efx_ef10_mtd_probe(struct efx_nic *efx)
- 		n_parts++;
+diff --git a/drivers/net/ethernet/sfc/siena.c b/drivers/net/ethernet/sfc/siena.c
+index ce3060e15b54..8b42951e34d6 100644
+--- a/drivers/net/ethernet/sfc/siena.c
++++ b/drivers/net/ethernet/sfc/siena.c
+@@ -939,6 +939,11 @@ static int siena_mtd_probe(struct efx_nic *efx)
+ 		nvram_types >>= 1;
  	}
  
 +	if (!n_parts) {
@@ -120,9 +96,9 @@ index 50d535981a35..f8edb3f1b73a 100644
 +		return 0;
 +	}
 +
- 	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
- fail:
+ 	rc = siena_mtd_get_fw_subtypes(efx, parts, n_parts);
  	if (rc)
+ 		goto fail;
 -- 
 2.17.1
 
