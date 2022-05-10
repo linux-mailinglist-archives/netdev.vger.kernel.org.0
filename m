@@ -2,103 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0EA9521535
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:24:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E16FB521558
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:25:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241725AbiEJM14 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 08:27:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58090 "EHLO
+        id S241429AbiEJM3V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 08:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241265AbiEJM1z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:27:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 60F882218D8
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 05:23:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652185437;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
-        bh=7m17XESO0G49jDg02rMzQLZSx70dw+GOL5ZFcuicuDo=;
-        b=TBBLy/alubZ89OqlFfHTKaoMvRccKoY7J9H9itFODM3llr8WVpAJyg7XWWEKf+f+xu427D
-        jBlcgLyJbTYvUxBaBeaiLPBka7j2CwOKMa0A5loUBl1WPkJUgOqb/HmXYUUKAGfu2gzt+R
-        0Rx4tdOmV1GqxEczDMmXynTU5LhgtQU=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-80-b-Exy568P-eS7zIEE3TuIw-1; Tue, 10 May 2022 08:23:56 -0400
-X-MC-Unique: b-Exy568P-eS7zIEE3TuIw-1
-Received: by mail-wr1-f71.google.com with SMTP id v29-20020adfa1dd000000b0020ad932b7c0so6927791wrv.0
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 05:23:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=7m17XESO0G49jDg02rMzQLZSx70dw+GOL5ZFcuicuDo=;
-        b=wTXuPJtEqW0kt5wWGsNl4RSEz/Xan9tVa6iH3ctsMBgtRlTdXwYscwEf/cMV6AOdwf
-         ProV48MxwXbA1WAV6J8JZyCQ8Kl1pXiSCFi/nrvrfz6mhbV0Eh6Hcpx1Gn5i2n8yMRiP
-         cbiVdlmb4pZfoNOnLkIlNiTuEv3CyG/P04C+Z5FpudS27/7OavHtkTbhgNUKxZkMsWqa
-         edMuuNcGgT6pR+kXMrk+Hufxrdt1uFc1NR6e5rkj9rPUYoplpukOe4BhMbT86ofwjW/d
-         k8Jfzzf1QxX3HRqVkOv/4m+AbENWH6i62ROWcnJ+nU4Yqh/v4GpCTqNx2PGD8AG1rQb+
-         lpGg==
-X-Gm-Message-State: AOAM530BlTpQLxAPrkuKFfgOMKDl+ASet/rqf+Agy0e8NjNe9wxjD9eR
-        92Kvn2g/ohPT7ApWGE4QieFN5L3gdvynefTX8YW5f1406GvZG/WUlEAw78WpN5dnTxM5otuzNbD
-        2cv26hsCtSJksLLNG
-X-Received: by 2002:a05:600c:1552:b0:394:52a9:e48a with SMTP id f18-20020a05600c155200b0039452a9e48amr27849862wmg.45.1652185434970;
-        Tue, 10 May 2022 05:23:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwsBADRFdiPYDIntIzaGZobSQWMrIRqRIfrtkXtgAgFq5t+PGvub34r/lKVUbvjx0CiBVRltA==
-X-Received: by 2002:a05:600c:1552:b0:394:52a9:e48a with SMTP id f18-20020a05600c155200b0039452a9e48amr27849841wmg.45.1652185434656;
-        Tue, 10 May 2022 05:23:54 -0700 (PDT)
-Received: from redhat.com ([2.55.130.230])
-        by smtp.gmail.com with ESMTPSA id n21-20020a1c7215000000b0039489e1bbd6sm2373609wmc.47.2022.05.10.05.23.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 05:23:54 -0700 (PDT)
-Date:   Tue, 10 May 2022 08:23:51 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mie@igel.co.jp, mst@redhat.com
-Subject: [GIT PULL] virtio: last minute fixup
-Message-ID: <20220510082351-mutt-send-email-mst@kernel.org>
+        with ESMTP id S237699AbiEJM3U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:29:20 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A232224685;
+        Tue, 10 May 2022 05:25:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=0SOHdnZm/qIXaafuGPsWb+8y+0cZMBYOdPMCj5bdxFs=; b=ssUW9aQmsIjXI3QzluEQbxRQ+M
+        cC6kGQGCJDuXvSHWxXW8y1iNfTI+j8Pr2dCPhNVjmV4BapCvHOFAt32KVk6l1fFnJGmLp22dM2BFj
+        8xqPnxzRt9SBMspCfijipgoFeOVo7+KZNQoQVXdxHYgyfhW0FWgkssAKHOFIPiBlpPGQ=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1noOvO-0028E6-3y; Tue, 10 May 2022 14:25:10 +0200
+Date:   Tue, 10 May 2022 14:25:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Antoine Tenart <atenart@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kael_w@yeah.net
+Subject: Re: [PATCH net] net: phy: mscc: Add error check when __phy_read()
+ failed
+Message-ID: <YnpZphRYEZJm/9D6@lunn.ch>
+References: <20220510035458.9804-1-wanjiabing@vivo.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Mutt-Fcc: =sent
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220510035458.9804-1-wanjiabing@vivo.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 1c80cf031e0204fde471558ee40183695773ce13:
+On Tue, May 10, 2022 at 11:54:56AM +0800, Wan Jiabing wrote:
+> Calling __phy_read() might return a negative error code. Use 'int'
+> to declare variables which call __phy_read() and also add error check
+> for them.
 
-  vdpa: mlx5: synchronize driver status with CVQ (2022-03-30 04:18:14 -0400)
+It would be good to add a comment here:
 
-are available in the Git repository at:
+The numerous callers of vsc8584_macsec_phy_read() don't expect it to
+fail. So don't return the error code from __phy_read(), but also don't
+return random values if it does fail.
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git tags/for_linus
+The commit message should try to answer any questions to reviewer
+has. And when i first looked at the change, i thought this is wrong,
+the error code is thrown away. But then i remembers our discussion. So
+it is good to mention that in the commit message.
 
-for you to fetch changes up to 7ff960a6fe399fdcbca6159063684671ae57eee9:
+> Fixes: fa164e40c53b ("net: phy: mscc: split the driver into separate files")
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+> ---
+>  drivers/net/phy/mscc/mscc_macsec.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/phy/mscc/mscc_macsec.c b/drivers/net/phy/mscc/mscc_macsec.c
+> index b7b2521c73fb..8a63e32fafa0 100644
+> --- a/drivers/net/phy/mscc/mscc_macsec.c
+> +++ b/drivers/net/phy/mscc/mscc_macsec.c
+> @@ -22,9 +22,9 @@
+>  static u32 vsc8584_macsec_phy_read(struct phy_device *phydev,
+>  				   enum macsec_bank bank, u32 reg)
+>  {
+> -	u32 val, val_l = 0, val_h = 0;
+>  	unsigned long deadline;
+> -	int rc;
+> +	int rc, val, val_l, val_h;
+> +	u32 ret = 0;
 
-  virtio: fix virtio transitional ids (2022-05-10 07:22:28 -0400)
+Networking code uses "reverse christmas tree", meaning these lines
+should be sorted, longest first, shortest last. So deadline needs to
+come after val_h.
 
-----------------------------------------------------------------
-virtio: last minute fixup
-
-A last minute fixup of the transitional ID numbers.
-Important to get these right - if users start to depend on the
-wrong ones they are very hard to fix.
-
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-
-----------------------------------------------------------------
-Shunsuke Mie (1):
-      virtio: fix virtio transitional ids
-
- include/uapi/linux/virtio_ids.h | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
+     Andrew
