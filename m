@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C643752154A
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:25:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69D5B52154C
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:25:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241766AbiEJM2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 08:28:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49524 "EHLO
+        id S241708AbiEJM2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 08:28:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241697AbiEJM0B (ORCPT
+        with ESMTP id S241706AbiEJM0B (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:26:01 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E92A79BAFD;
-        Tue, 10 May 2022 05:22:03 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 90241AF1F0;
+        Tue, 10 May 2022 05:22:04 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 15/17] netfilter: prefer extension check to pointer check
-Date:   Tue, 10 May 2022 14:21:48 +0200
-Message-Id: <20220510122150.92533-16-pablo@netfilter.org>
+Subject: [PATCH net-next 16/17] netfilter: flowtable: nft_flow_route use more data for reverse route
+Date:   Tue, 10 May 2022 14:21:49 +0200
+Message-Id: <20220510122150.92533-17-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220510122150.92533-1-pablo@netfilter.org>
 References: <20220510122150.92533-1-pablo@netfilter.org>
@@ -34,95 +34,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+From: Sven Auhagen <Sven.Auhagen@voleatech.de>
 
-The pointer check usually results in a 'false positive': its likely
-that the ctnetlink module is loaded but no event monitoring is enabled.
+When creating a flow table entry, the reverse route is looked
+up based on the current packet.
+There can be scenarios where the user creates a custom ip rule
+to route the traffic differently.
+In order to support those scenarios, the lookup needs to add
+more information based on the current packet.
+The patch adds multiple new information to the route lookup.
 
-After recent change to autodetect ctnetlink usage and only allocate
-the ecache extension if a listener is active, check if the extension
-is present on a given conntrack.
-
-If its not there, there is nothing to report and calls to the
-notification framework can be elided.
-
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Sven Auhagen <sven.auhagen@voleatech.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_conntrack_core.h   |  2 +-
- include/net/netfilter/nf_conntrack_ecache.h | 31 ++++++++++-----------
- 2 files changed, 16 insertions(+), 17 deletions(-)
+ net/netfilter/nft_flow_offload.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/include/net/netfilter/nf_conntrack_core.h b/include/net/netfilter/nf_conntrack_core.h
-index 13807ea94cd2..6406cfee34c2 100644
---- a/include/net/netfilter/nf_conntrack_core.h
-+++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -60,7 +60,7 @@ static inline int nf_conntrack_confirm(struct sk_buff *skb)
- 	if (ct) {
- 		if (!nf_ct_is_confirmed(ct))
- 			ret = __nf_conntrack_confirm(skb);
--		if (likely(ret == NF_ACCEPT))
-+		if (ret == NF_ACCEPT && nf_ct_ecache_exist(ct))
- 			nf_ct_deliver_cached_events(ct);
+diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
+index 900d48c810a1..50991ab1e2d2 100644
+--- a/net/netfilter/nft_flow_offload.c
++++ b/net/netfilter/nft_flow_offload.c
+@@ -227,11 +227,19 @@ static int nft_flow_route(const struct nft_pktinfo *pkt,
+ 	switch (nft_pf(pkt)) {
+ 	case NFPROTO_IPV4:
+ 		fl.u.ip4.daddr = ct->tuplehash[dir].tuple.src.u3.ip;
++		fl.u.ip4.saddr = ct->tuplehash[dir].tuple.dst.u3.ip;
+ 		fl.u.ip4.flowi4_oif = nft_in(pkt)->ifindex;
++		fl.u.ip4.flowi4_iif = this_dst->dev->ifindex;
++		fl.u.ip4.flowi4_tos = RT_TOS(ip_hdr(pkt->skb)->tos);
++		fl.u.ip4.flowi4_mark = pkt->skb->mark;
+ 		break;
+ 	case NFPROTO_IPV6:
+ 		fl.u.ip6.daddr = ct->tuplehash[dir].tuple.src.u3.in6;
++		fl.u.ip6.saddr = ct->tuplehash[dir].tuple.dst.u3.in6;
+ 		fl.u.ip6.flowi6_oif = nft_in(pkt)->ifindex;
++		fl.u.ip6.flowi6_iif = this_dst->dev->ifindex;
++		fl.u.ip6.flowlabel = ip6_flowinfo(ipv6_hdr(pkt->skb));
++		fl.u.ip6.flowi6_mark = pkt->skb->mark;
+ 		break;
  	}
- 	return ret;
-diff --git a/include/net/netfilter/nf_conntrack_ecache.h b/include/net/netfilter/nf_conntrack_ecache.h
-index 2e3d58439e34..0c1dac318e02 100644
---- a/include/net/netfilter/nf_conntrack_ecache.h
-+++ b/include/net/netfilter/nf_conntrack_ecache.h
-@@ -36,6 +36,15 @@ nf_ct_ecache_find(const struct nf_conn *ct)
- #endif
- }
  
-+static inline bool nf_ct_ecache_exist(const struct nf_conn *ct)
-+{
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
-+	return nf_ct_ext_exist(ct, NF_CT_EXT_ECACHE);
-+#else
-+	return false;
-+#endif
-+}
-+
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
- 
- /* This structure is passed to event handler */
-@@ -108,30 +117,20 @@ nf_conntrack_event_report(enum ip_conntrack_events event, struct nf_conn *ct,
- 			  u32 portid, int report)
- {
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
--	const struct net *net = nf_ct_net(ct);
--
--	if (!rcu_access_pointer(net->ct.nf_conntrack_event_cb))
--		return 0;
--
--	return nf_conntrack_eventmask_report(1 << event, ct, portid, report);
--#else
--	return 0;
-+	if (nf_ct_ecache_exist(ct))
-+		return nf_conntrack_eventmask_report(1 << event, ct, portid, report);
- #endif
-+	return 0;
- }
- 
- static inline int
- nf_conntrack_event(enum ip_conntrack_events event, struct nf_conn *ct)
- {
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
--	const struct net *net = nf_ct_net(ct);
--
--	if (!rcu_access_pointer(net->ct.nf_conntrack_event_cb))
--		return 0;
--
--	return nf_conntrack_eventmask_report(1 << event, ct, 0, 0);
--#else
--	return 0;
-+	if (nf_ct_ecache_exist(ct))
-+		return nf_conntrack_eventmask_report(1 << event, ct, 0, 0);
- #endif
-+	return 0;
- }
- 
- #ifdef CONFIG_NF_CONNTRACK_EVENTS
 -- 
 2.30.2
 
