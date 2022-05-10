@@ -2,195 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA750520F0A
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 09:49:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29E05520F51
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 10:01:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236871AbiEJHxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 03:53:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34492 "EHLO
+        id S237691AbiEJIFN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 04:05:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234658AbiEJHxJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 03:53:09 -0400
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2139.outbound.protection.outlook.com [40.107.236.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51893219C1E
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 00:49:06 -0700 (PDT)
+        with ESMTP id S235701AbiEJIFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 04:05:11 -0400
+Received: from EUR05-VI1-obe.outbound.protection.outlook.com (mail-vi1eur05on2054.outbound.protection.outlook.com [40.107.21.54])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1EAF27154;
+        Tue, 10 May 2022 01:01:11 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WvDP009jiOo8fhQJ5/1VXH9VJI1EvbY4b5/gRUXhlr7yT3nms8DaZiM0xZR3bvVZOa0crS+tZlHmRVFysgyNNozR0fWLxlhliFveyxJmpQZ2DU4HO7dy2n6VWLcdGtxlJy1zMGaBfSxI6jmZY6T2UQERo72gyxVGZiU5pzj7/KU7rRgOwONrEE/pcOOfYEBZyoAMH6mdXEBuzlgKgWJ5KUcmosQ9tTKDytm+mJ0knDMox0D918S76TgegkzOlrucAF/W9zum5sil+c+Dxl1kX8/YFST8bc4y/Q1qhHDo253dI+WXCBSknI365CuqVrfscUz2YaYtWxWspd0kup8QPw==
+ b=kWZFk7q0EJL4FBPJuhqDUW0GsMotki/vYb5trantBxGtNHSlej3oX7JK/aWsNAtea8FChdsoPIgoHlc6G5F8PRAGT+fj4QxRUF06f0RxbX2d6cQsa1DgXQEKSd6UN4hDSo7lujv+HxKGepkO4ZGBl+4+pO0zAGrzWFIsOWb5GyOpDcX2I9oVRtZFtgfm4C/m/Vu4YW0THVO1MTlhjSEPVQiCJzUkys4xi0lMPYYrSOZZUZ/dxpPMOJgqTV1D7cOAZPmLMCvcIrk7JR/K8BRGxRgBCezqVDH8OfexAzV643a0wD9iC5o40cbt3eOun7P88uoyBkLmrwN3aKetSZ1Lzg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=aYJRSXf8AyxGRUAw1SkXbBYJbwgFFjUY0BgxZ4at3Ko=;
- b=OEw1ZJxC88QS50PUegwfjXJ1cXNNOyc4j3ZJ9BQDcVpxjJKDjDPrbCaRETPz9akT3N5UIl09HeQr4vrQ2R3l0ZpDzMCtS7ynhGmHc7KbdM8AYTfWtrk/LUU8aVN/1saoJDYGsMu9n9b4XaCUpMe3HFb1EUACxaI2KAtWJT/CYuebEDeSOfrqHdYgTfWE1AWS3zl4gGHIsXYGC8I1HWM91wT1Xd0x9DNdjJ2cn0GEqWu5wqx90kWS0mNFxACZPKEuapYq6ySm4NCC6Nl8BM3j5ZUo42zjJ0JYQJ/s7WZyweTrmoAkH4WRzXgOT03l/qRGlK2K1Ve1DHvMY4zYz/fq2w==
+ bh=irmghXwUcEGZT2RaCJUif28z8Bm89JpgqyhRZxDBJz4=;
+ b=MNgW9mvov/pwJdUMfAg2KBOGEXYt0jfto8AbF+7B9YEuDHAQpyfJx4TkC1u6p+ERsX0vo5AOeiUN6mJIMkis14kzs6zJFbEkqjz/+dOvZ4953tniLdLmFkHOI+lBMsh/DUSUDMZ1yMSaNZN5vg9ogPO1HNGlB8c5MEJokv4tU6Bg45qFkVgBFsMsorw5u3dPURP7x3TtqZqjPbNEXSA1xKPL7sswQxdGo2QNRAScCJbsZLPLeI1GdqRQRzD9m3RAvXAn2fBz/rrQqBptZVvBg7DBGMbv8/Un29thrhCcPTSiYuGkZ8ySTPlW6GrtQ5EqWKolsGeEpU/m/FygxwWY0A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
- dkim=pass header.d=corigine.com; arc=none
+ smtp.mailfrom=technica-engineering.de; dmarc=pass action=none
+ header.from=technica-engineering.de; dkim=pass
+ header.d=technica-engineering.de; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
+ d=technica-engineering.de; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aYJRSXf8AyxGRUAw1SkXbBYJbwgFFjUY0BgxZ4at3Ko=;
- b=sUdxPRSQUPhLadEH7iXKBd7CPCKlk2mWngLE8r1kD0deyiDbg2WUGPihFOJ3RsoO6GzmCt589fKmYmBwR7J5w8i55REUFo+5GvDtxYwjHDMHgQb9h/lpSGitNP/AyJ+0LEUAGBrhyZy4Ggb3Vh0mxlHeh0XOjfrNiiY85dPJp3c=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=corigine.com;
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by MN2PR13MB2605.namprd13.prod.outlook.com (2603:10b6:208:f4::11) with
+ bh=irmghXwUcEGZT2RaCJUif28z8Bm89JpgqyhRZxDBJz4=;
+ b=doBb2ySLdVYYcVTk4JX9mShJs6i8Cu3S+K2FNwKAqVq2y95FRf0WlmxARhlRqj8nPwOu5Cj6ia0PrTjE/mdZIxEOy6ynbwCf5G0cikPTOQuNZNAnnfQtX0bJwpRbTKlrkJrylaWsaSizGf2PD30GmsGN2qcGhFBIhwX7OOri2nY=
+Received: from AM9PR08MB6788.eurprd08.prod.outlook.com (2603:10a6:20b:30d::24)
+ by AS8PR08MB6757.eurprd08.prod.outlook.com (2603:10a6:20b:39e::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.12; Tue, 10 May
- 2022 07:49:04 +0000
-Received: from PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::8808:1c60:e9cb:1f94]) by PH0PR13MB4842.namprd13.prod.outlook.com
- ([fe80::8808:1c60:e9cb:1f94%3]) with mapi id 15.20.5250.012; Tue, 10 May 2022
- 07:49:04 +0000
-From:   Simon Horman <simon.horman@corigine.com>
-To:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
-        Louis Peens <louis.peens@corigine.com>,
-        kernel test robot <lkp@intel.com>,
-        Simon Horman <simon.horman@corigine.com>
-Subject: [PATCH net-next] nfp: flower: fix 'variable 'flow6' set but not used'
-Date:   Tue, 10 May 2022 09:48:45 +0200
-Message-Id: <20220510074845.41457-1-simon.horman@corigine.com>
-X-Mailer: git-send-email 2.30.2
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM0PR03CA0032.eurprd03.prod.outlook.com
- (2603:10a6:208:14::45) To PH0PR13MB4842.namprd13.prod.outlook.com
- (2603:10b6:510:78::6)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Tue, 10 May
+ 2022 08:01:07 +0000
+Received: from AM9PR08MB6788.eurprd08.prod.outlook.com
+ ([fe80::8443:249b:921d:345a]) by AM9PR08MB6788.eurprd08.prod.outlook.com
+ ([fe80::8443:249b:921d:345a%5]) with mapi id 15.20.5227.023; Tue, 10 May 2022
+ 08:01:07 +0000
+From:   Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+To:     Paolo Abeni <pabeni@redhat.com>,
+        Carlos Fernandez <carlos.escuin@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2] net: macsec: retrieve the XPN attributes before
+ offloading
+Thread-Topic: [PATCH net v2] net: macsec: retrieve the XPN attributes before
+ offloading
+Thread-Index: AQHYYTfXh/kHUW8MQEKwzGN89ZB7660Xt3SAgAANtKg=
+Date:   Tue, 10 May 2022 08:01:07 +0000
+Message-ID: <AM9PR08MB6788116C170D7127F77AC864DBC99@AM9PR08MB6788.eurprd08.prod.outlook.com>
+References: <20220506105540.9868-1-carlos.fernandez@technica-engineering.de>
+ <0b66ddcc8428231632e7e1050045b2c282dc92d7.camel@redhat.com>
+In-Reply-To: <0b66ddcc8428231632e7e1050045b2c282dc92d7.camel@redhat.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+suggested_attachment_session_id: 7e036b78-4d82-93c5-310a-05d4b1189314
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=technica-engineering.de;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6d372d07-e359-4e72-2e26-08da325b3d47
+x-ms-traffictypediagnostic: AS8PR08MB6757:EE_
+x-microsoft-antispam-prvs: <AS8PR08MB6757A0F2B95217846B5B5C85DBC99@AS8PR08MB6757.eurprd08.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ZzzqGWF7rOs1u2kKkjSfVdDZ80pVUyO/sfnj4Qu36PmwtvIPkyc+G2YkbdO3+uZIOtf9kkl0iJZyHTpq1Do8W2Py00hEPWkd2W8bWBVL46k0AdGG7JbuLFdQlA63rGM+PkWOlxHeLDAAjylL86kZMPiHCiQ83GE7sZXTYukwTw0AmopakrAMGpUEUctdIcIZoOPboaflpKeI2qnGPYB8JNS750BVBO6t2z20gPLxksnJ69dM9Hk0mO3YuwjyOkqxwFV1sJ2/vGPfFuwzNUA8lK6brxu3iEu/OEM/4Vf/oQSOPHKsNnmci83Rnnzs2w4r4MGpzOyaKfX6E/6Hiyj09fVTIH37YAIB/0DdtixoOhPsrLRrMIHQjOHG3jvX53ufbiPHw9m4i1ICFkutBNF+LEQQjWOmTHW/cc8W88AfYQVFnNVRVrIIDGiwWT5aEnRLY2uRrqdi3YUuhJoiPIjmbtRHu64h8BRET9KYcDlxTc6N5eFLyxfhx7vB0U4XZoNrymIGwaP6fyLBkn1pnNE2dxqt53UTHH5PvOtusz0uo/H0HOQ1wVMG1e4hyuqmM314hXrGHy9b1F2f2rSOKdhyHz5r6L4S8RgeUyUxDKBB6kq4klHyh5k+9KBZr79+/EMVBM8mEvp2SvJRb0aRJ2FrYDomUpY7c5cg+RUUTtlbcMPdcsGTEwI9uwfSu99vLL+Iw6wDUqW1ttLwZ1mYHenAkA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM9PR08MB6788.eurprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(508600001)(55016003)(71200400001)(52536014)(33656002)(8676002)(66556008)(66946007)(64756008)(66446008)(66476007)(122000001)(91956017)(76116006)(110136005)(86362001)(316002)(9686003)(5660300002)(38100700002)(38070700005)(26005)(6506007)(53546011)(7696005)(186003)(2906002)(44832011)(8936002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?TR1VMRird4c/GssphRsUarDS79TsLskvdSp1HqeO3E3kJaz3t24bST95H4g2?=
+ =?us-ascii?Q?LDmwm5vjV087UKDz1Tao1/h4VgzxLZ2uuBhAxpSk3i377eIFRVCpFFUQarpF?=
+ =?us-ascii?Q?ZRp2FZm9mSkaUzifRKWJupk0lYCUi5yOejnJj6TAnikZ5yrBBa9UDNhB6+UC?=
+ =?us-ascii?Q?ABP4jXYla+nI27ZplS3bac/rMBT0HcxbUm3nzgnK6sNi7DXf3tS8JwohVwb4?=
+ =?us-ascii?Q?teNFocnfCnnF+n9klSgZ++TVyGdJNAPrSanUzHAbgSAY2eaoeXM+R1XjAHHX?=
+ =?us-ascii?Q?aUMZPHUX8C2OYaAKXElS6wFh6b/NTGac5JGXemG4YAID0esUc+DzeEX8qMxU?=
+ =?us-ascii?Q?wTRohCsgQmPXwhnCYCUhwy9uaillUlOuTurdqsXstmu7aq8clb1CFbzVqI/Z?=
+ =?us-ascii?Q?pZvzKcQG3UHvlswu27EaZIM4FBlWJ4xZuBPKGXGbaALFUHzxWeqUAysHO4S5?=
+ =?us-ascii?Q?ITW0K1uGeC/iGiNz9ybfvBwQzrYtBnsAGhMHdefwBzuelXCkahRluA7i6Obn?=
+ =?us-ascii?Q?EduZAhs8iRJMy0GNAi97v4DGdeMykXeU84lFilbuG5CYhSK8D42fK5yPLz5k?=
+ =?us-ascii?Q?IGUjdzjLT4Bzq73VAJqXuHLvj70xJM8Ab+prIxGOpf+gWi2sBd+MH1ghWWDH?=
+ =?us-ascii?Q?oUXoegkfiy4kGR0+biJleVH6oSxpbAAn3JrS4U6zRMrGcqSHsuLUsWfe3YH4?=
+ =?us-ascii?Q?NtxJqYY+siN34/3P5p1UDi5dkr7FB8h5CG63Rw79RpFCLfgr1+XuZK6od3hZ?=
+ =?us-ascii?Q?wEkybj4Y9Ro72AZkLBdIBzVvwh+cTStXovcjr25uxOJFJEPrus0Io3WGAERy?=
+ =?us-ascii?Q?jG9SkUhxlV88VjSAO0Ym+m1zhcCqDx9Ol/8sxuFu6CDIS9B391JqVLI7HgO2?=
+ =?us-ascii?Q?xfn8S8Y1F1ZJkfxMxTQYTNt82h5EbG4wxB+qOT1uj84PVREXxENQdtcHgR23?=
+ =?us-ascii?Q?ZOPCHMxQ7tpynai96VwfeJT03wc5L7sXAX88niyS9twK2bgFLzJ27qkl3uI1?=
+ =?us-ascii?Q?5GLVJk1gpY7nJF/mMLAoQEgV6/FeV+qe9uOHXEPeKSX3tRl5K9coLTh6wodz?=
+ =?us-ascii?Q?0MT6cldazjHEoSOzGdmjArXFJ56DadYer0UUMsqvTJIL6sp2FyafgVnPhSlu?=
+ =?us-ascii?Q?sA1wpR42OtUakMZVI5tdzkZMczPOKnLCbgxZd1oz+5ZPyEESIXeC4ZEW5GVW?=
+ =?us-ascii?Q?KZY6HZOovfnqx/0DexT1eWAIDnlf0jFJf3NcWGkoAt6FR1ta9OgV4OsKO5Xt?=
+ =?us-ascii?Q?qEd+J2mjgWqjJz+8/bTPj9w0+u1MaoTG8lBL/VqxiwAeUEH1IYLVwAhcQb4n?=
+ =?us-ascii?Q?WjZj/sT0h9VIqckmog2dO2ERZCTteHX2HQdp7H8kY8UQQHhTUqY0Ft3BRMoV?=
+ =?us-ascii?Q?rQWFyShM57NSehS6/unCrsh/KkVeht5S/8pw3kY4y0OvI8NMwbU5gIUngtYZ?=
+ =?us-ascii?Q?mtL4kLxGuysdZR5AylnemcKjemK9GotfyLrcA568X940qdcjAFlA3bN4c3vf?=
+ =?us-ascii?Q?WQMVCMuIvReb4YjwMj3wFAz23toYMvyxcY1Mrre1yVgc4lhPdGfc8glWe2yd?=
+ =?us-ascii?Q?AqbFIMZrGYbxd28WCZYOQpOiEBfqXV0+TopONTQHKbSCdrfv3sLVWFsFPNZB?=
+ =?us-ascii?Q?IaX1uPQhj18nRi8c6n1oXaW4IjiTHIRGsD0zaTGdIphYUUh4MlMfIfnaJCH7?=
+ =?us-ascii?Q?T3sm0AcQqonLeCNhc4gHWAaF+gBoMybK25BLE+GTij69SLIgkDEbyqhTFGqJ?=
+ =?us-ascii?Q?o7Bd2HjEYGXo4NaeZ8PlJHHJw3eGzhHCpt7TFzqRl2FOS6UcbEUs?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 3bbe0283-12c0-4434-1942-08da32598dfa
-X-MS-TrafficTypeDiagnostic: MN2PR13MB2605:EE_
-X-Microsoft-Antispam-PRVS: <MN2PR13MB260564F2F03CF3083F1B9594E8C99@MN2PR13MB2605.namprd13.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aU0T1v/I0rnJWRY1z2WfQ6Ou9+PNH/VjM2risDxipY97iDL+QFu06vyEdqhQaNqeNiYy/OzZH3FCS46DCH5YyFmerpeE1vS/BBlkMZY5gqzHk3zvmb7Umi921z2SSzoKsrp/i/7elfT6Kos7ZMzBROi+gLtnZUsj1AOiXkq296rnULDmfqF8GT7+uKh1a9w9fogqCyKwy+nDJ0oZIa5dvK4gvj/LYYpslw1tyyPLRFbJjBiS6IiBJze5JOyp2W75QeoERT1iuk1sglKCRmVkUndUTqpeDdPaqaV0KDOzs9a9tDhRxh68YhA3NiWrpj7b/TMeqBeW1MS9ejvsdXuyV9wPCdETDI4A8qqPRgOuQvexstDADgD6P4qu52kZRiDHke0iufLw781HNYeVNZ/sLXQujuMGBhhcFAr4/M1fyHfSeM3+5/FK15ghGDWzXZPYY3xTkY1M0JrIc0Bh5CG/HyI4YT5QbbADFPIdl0aq65RN4HjBO7zgC5xd3SWLieguit92j/QC4e/Pdd8VHq+NvbQDp7qag201iDrhCMRfw+xmmU8aTgwp3XcfZR9t5IwCnVN2giGDjOCvlt0LuSWUBCLF2eVSg1UGcdj55tB/AuDQeLL/KyDMPRs2XBzkZqfesINrwIG3fS8w50nll8+00g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(136003)(396003)(346002)(376002)(39830400003)(36756003)(8936002)(2906002)(44832011)(5660300002)(66476007)(66556008)(66946007)(8676002)(4326008)(86362001)(107886003)(110136005)(38100700002)(6486002)(186003)(83380400001)(54906003)(2616005)(1076003)(6506007)(52116002)(316002)(6666004)(508600001)(6512007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?4svKP4+Vql3IWCQIHLj38cHMm6iNtmqiqG+Yclq7s1ufYdeRlJOQYksTdqVL?=
- =?us-ascii?Q?xBmXOrUwxgXnYt+fItHZEiKtDhunNz1kWih/LpgFwtFS/MmmaRFn5tvS3du1?=
- =?us-ascii?Q?DLLIize8Vrp1wXcNaCvJS8rEDtqf9BamVK5z6jZjoMYP3ZtZNoFfEuv6A0CI?=
- =?us-ascii?Q?9oeBpmTp5s8ckgNhAZ/8wklhx9fDPL2SXW0ZWY2RZZlf/kHQ2KGOLvchYiSj?=
- =?us-ascii?Q?+u8mjqeBofKfAdvDlm21Ru5xg0b66aDpxfZQRVn6jA5YwGcusxI0fWle3cLv?=
- =?us-ascii?Q?cWMPJAL8ZIhF0pVLbgqaIf7P69canvd1In7hTdhRj3EBp0Lq0IQl0Rv3YvVH?=
- =?us-ascii?Q?xTnq5fX+hntPzps+/kMp4nvAKZS8iVGKPip8ByBH0fi6SUU5hrMNHgFUT22Q?=
- =?us-ascii?Q?NWTfJI+LHUdOCfIUTcl0E7zTrkUksMFnOXPQOQ29TDr3qQeuc1wJh8Zb6Lqj?=
- =?us-ascii?Q?WSuSrQkb4GMcqo96W4d5DusHMA2/kj+/WF7iEZUdLEhnN4ldnn+OwSQJzlOU?=
- =?us-ascii?Q?FZdWpTfmbo9tTNeQRUW3+sG6K7Xb3NssLB5NLxciTpdoRam7SEwrE663tpY+?=
- =?us-ascii?Q?9cJbyFetp9rOAeydrHwKG08RED2jW7F76hdSYQTrWRH+0SGTJtoX70e5EB6z?=
- =?us-ascii?Q?WeJxez7gujUhH58PAnAn4pBK57dyL4Nt+UGTj4gAayKurmjTDPxxd5sVOX/B?=
- =?us-ascii?Q?OTqKafIxkaodaKtsNcLxPIKBQ2t6m6w4PEp3ZxyulAuc1+80QPUwb5ZQucQW?=
- =?us-ascii?Q?RtPFJMoJfP4YrVdqpqa+CxeLfXFltGoXZvwe+8y1KLRpcfJNQUsQIlcvmX1p?=
- =?us-ascii?Q?x1H4v6WHQWxmEZMqwmsHT9Aopesyxl5PFxeqnex62p8IQfG4F4CmXMmDE/EU?=
- =?us-ascii?Q?dylUyIU+kAby71plTMjQ9qeAJdgLemtbBF2Oasng4Wc4mTtoC8m407PmAOny?=
- =?us-ascii?Q?nAdyXYnL4etHKTAPpq4uLfuQAeoF+ZIYLwKBC8ZX4EXYwJKYprdriyLdHop4?=
- =?us-ascii?Q?cJfynD08VqIZIz3zcHKmx3nX1r6MvalS3n72QwgvRuL0lopgN8MFAkcoeCSD?=
- =?us-ascii?Q?ASNBFpRU2AvklD3Is1h9wS0Wfbz45RwYfgcFGjwU/lktZwR4Op/lnK4EsYZm?=
- =?us-ascii?Q?d9qFJ4WzCJCFnmHWpiga6ypV641m4bVv1no3FWHIhgZ8RUZurhzUHuhDQakd?=
- =?us-ascii?Q?8Pw2ieZfBfsLLNATLM4unAUXVgIYzJGTUlGiRm26z7i7SJ0FT6nAapl/X/m7?=
- =?us-ascii?Q?BEBFt+rnENJYrPC3yTC5YUZH2O0jZfRv4eVCh1pNASJ2AH2Ov/m6x1yfS8Jk?=
- =?us-ascii?Q?6bMn9eS6IzNaKLljMcrEj60wH2gV1zdWHwsq1NHYfyZJqNEYE3ej54sDcXJ6?=
- =?us-ascii?Q?ssKXXbpT4UQCdqC4dN1ag52Uox25B9QnY1Smd+l69H7mz7NV11l+CplfnFEO?=
- =?us-ascii?Q?l6yHCTp4b1u/iKCuSZPFcwJQ7eD4SZmGBR6Xze+CVvE7mQx7oAu7AQI44ati?=
- =?us-ascii?Q?GOBw23Tf0SVRtdL+/wsHHmml3nI1J0aJfMrB1n/8RY61p9vVqkwP3/HJnbmC?=
- =?us-ascii?Q?phlGDDVXw3tZ9CDq0hgmzzGEA5fGmAobfUC8TBIMMOWHUHeTjl2c8g1cMCVT?=
- =?us-ascii?Q?pyyEdbtjJRcgrUiY97ev62fn2b5CNZXAdh9J0cr1n56uMaClqUKcH+0Ab8Ig?=
- =?us-ascii?Q?MoTGIRNlyPEwBnLlUzuqbt3G/lgBEeJ6mGpun0BZRKkxkzeNSPOGHmyYb0Xa?=
- =?us-ascii?Q?p7IzCaI0XW6t1StUy0WS1cb+QJa7a3UfhrY7zAeHxw8Kv/IjVmMXfkn7NOY4?=
-X-MS-Exchange-AntiSpam-MessageData-1: RdwyHPV5TlSNnhE3SqmgLhP4LjLS4WprPAc=
-X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3bbe0283-12c0-4434-1942-08da32598dfa
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
+X-OriginatorOrg: technica-engineering.de
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 07:49:04.3221
+X-MS-Exchange-CrossTenant-AuthSource: AM9PR08MB6788.eurprd08.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6d372d07-e359-4e72-2e26-08da325b3d47
+X-MS-Exchange-CrossTenant-originalarrivaltime: 10 May 2022 08:01:07.7209
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: imNcDjw3SC+Fs1IlePKpehi8gAlkWlCBpNTzzv2wLVWKky9+DlW2a4m31su6AU26uYlorTMQ0gLsFSk9tcoRYLhSqrMRwtOq4v5Q6VZu8PE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR13MB2605
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 1f04372a-6892-44e3-8f58-03845e1a70c1
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7ejDH1wIzi058hO9dtFQRPAvOir95SfC4S9z+r1G5ZzqKEFLG7LZosoFHhdZ3diOAk2RK66wY1VyVboA6IVmB51TtlVSW/qpfA4uhHBWyFWvueypGbxGCO+Da9vc2L+CaXNQ0Dh5TvsWTxuOP6ov0Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR08MB6757
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Louis Peens <louis.peens@corigine.com>
+Thanks Paolo,
 
-Kernel test robot reported an issue after a recent patch about an
-unused variable when CONFIG_IPV6 is disabled. Move the variable
-declaration to be inside the #ifdef, and do a bit more cleanup. There
-is no need to use a temporary ipv6 bool value, it is just checked once,
-remove the extra variable and just do the check directly.
+I'll redo the patch and send it again.
+About the changes between the previous patch, there're only changes on the =
+description and format of the patch, but none on the code side, maybe refer=
+encing them is irrelevant.
 
-Fixes: 9d5447ed44b5 ("nfp: flower: fixup ipv6/ipv4 route lookup for neigh events")
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Louis Peens <louis.peens@corigine.com>
-Signed-off-by: Simon Horman <simon.horman@corigine.com>
----
- .../netronome/nfp/flower/tunnel_conf.c        | 19 +++++++------------
- 1 file changed, 7 insertions(+), 12 deletions(-)
+________________________________________
+From: Paolo Abeni <pabeni@redhat.com>
+Sent: Tuesday, May 10, 2022 9:09 AM
+To: Carlos Fernandez; Carlos Fernandez; davem@davemloft.net; edumazet@googl=
+e.com; kuba@kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.or=
+g
+Subject: Re: [PATCH net v2] net: macsec: retrieve the XPN attributes before=
+ offloading
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-index 9c37ed6943d0..6bf3ec448e7e 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/tunnel_conf.c
-@@ -563,12 +563,9 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
- {
- 	struct nfp_flower_priv *app_priv;
- 	struct netevent_redirect *redir;
--	struct flowi4 flow4 = {};
--	struct flowi6 flow6 = {};
- 	struct neighbour *n;
- 	struct nfp_app *app;
- 	bool neigh_invalid;
--	bool ipv6 = false;
- 	int err;
- 
- 	switch (event) {
-@@ -583,16 +580,8 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
- 		return NOTIFY_DONE;
- 	}
- 
--	if (n->tbl->family == AF_INET6)
--		ipv6 = true;
--
- 	neigh_invalid = !(n->nud_state & NUD_VALID) || n->dead;
- 
--	if (ipv6)
--		flow6.daddr = *(struct in6_addr *)n->primary_key;
--	else
--		flow4.daddr = *(__be32 *)n->primary_key;
--
- 	app_priv = container_of(nb, struct nfp_flower_priv, tun.neigh_nb);
- 	app = app_priv->app;
- 
-@@ -601,8 +590,11 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
- 		return NOTIFY_DONE;
- 
- #if IS_ENABLED(CONFIG_INET)
--	if (ipv6) {
-+	if (n->tbl->family == AF_INET6) {
- #if IS_ENABLED(CONFIG_IPV6)
-+		struct flowi6 flow6 = {};
-+
-+		flow6.daddr = *(struct in6_addr *)n->primary_key;
- 		if (!neigh_invalid) {
- 			struct dst_entry *dst;
- 			/* Use ipv6_dst_lookup_flow to populate flow6->saddr
-@@ -623,6 +615,9 @@ nfp_tun_neigh_event_handler(struct notifier_block *nb, unsigned long event,
- 		return NOTIFY_DONE;
- #endif /* CONFIG_IPV6 */
- 	} else {
-+		struct flowi4 flow4 = {};
-+
-+		flow4.daddr = *(__be32 *)n->primary_key;
- 		if (!neigh_invalid) {
- 			struct rtable *rt;
- 			/* Use ip_route_output_key to populate flow4->saddr and
--- 
-2.30.2
+CAUTION: This email originated from outside of the organization. Do not cli=
+ck links or open attachments unless you recognize the sender and know the c=
+ontent is safe.
+
+Hello,
+
+On Fri, 2022-05-06 at 12:55 +0200, Carlos Fernandez wrote:
+> When MACsec offloading is used with XPN, before mdo_add_rxsa
+> and mdo_add_txsa functions are called, the key salt is not
+> copied to the macsec context struct. Offloaded phys will need
+> this data when performing offloading.
+>
+> Fix by copying salt and id to context struct before calling the
+> offloading functions.
+>
+> Fixes: 48ef50fa866a ("macsec: Netlink support of XPN cipher suites")
+>
+> Signed-off-by: Carlos Fernandez <carlos.fernandez@technica-engineering.de=
+>
+
+I'm sorry for nit-picking, but you must avoid empty lines between the
+the 'Fixes' and the 'Signed-off-by' tags (or any other tag).
+
+Additionnaly you should include a summary of the changes WRT the
+previous patch version, see e.g. commit cec16052d5a7.
+
+The patch contents looks good, but it's better if you address the
+above, thanks!
+
+Paolo
 
