@@ -2,75 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 52A6A5214EE
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:13:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 918765214F8
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241576AbiEJMRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 08:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
+        id S241626AbiEJMS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 08:18:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241177AbiEJMRp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:17:45 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 429A54F45F
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 05:13:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=jYg6hjcXxGtlrCwep9J9XWfjdnaomxhWncqAJZxW8Hs=; b=5dPVxdJJDv/kk3sAFd58KycaHf
-        awD3KD7mSBgixCtIW2ZWzlBQsLWKVtwrAvJ0Yra/T2MbmKgjkJoeqHBfGRTeoMiySjFJ3u6VHmD40
-        FwIuy0heaWZMYuJufd79/xP7n7hDVHsPYzulhl6pfmdo/fWPYNijFkFEUMC8FIBcwXPQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1noOkI-00282a-39; Tue, 10 May 2022 14:13:42 +0200
-Date:   Tue, 10 May 2022 14:13:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Josua Mayer <josua@solid-run.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH RFC] net: sfp: support assigning status LEDs to SFP
- connectors
-Message-ID: <YnpW9nSZ2zMAmmq0@lunn.ch>
-References: <20220509122938.14651-1-josua@solid-run.com>
- <YnkN954Wb7ioPkru@lunn.ch>
- <1bc46272-f26b-14a5-0139-a987b47a5814@solid-run.com>
+        with ESMTP id S241592AbiEJMSS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:18:18 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE1B244F2E;
+        Tue, 10 May 2022 05:14:20 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 6756A21B7F;
+        Tue, 10 May 2022 12:14:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652184859; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=z0qCXGbgchboCgbitrJZObbFnXC/YqP7fhEXmnIw2vY=;
+        b=OcxDFXmKKoVdDJUxSKREkD35h3cfh7L/UHzdGP/cbflejeipwrciY4AbOjnQu6DKNCs7aq
+        Tea2QFXBj209QcyaHp7BuefH2IIusivsxr3vlgfi6p9lZaMFpVOppWn8lIP/+rweBZrcrm
+        +Lwt8IUC7jK6VwI0ouYkElgPt01wPwE=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 552522C141;
+        Tue, 10 May 2022 12:14:16 +0000 (UTC)
+Date:   Tue, 10 May 2022 14:14:16 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        zhenwei pi <pizhenwei@bytedance.com>
+Subject: Re: [PATCH 05/30] misc/pvpanic: Convert regular spinlock into
+ trylock on panic path
+Message-ID: <YnpXGOXicwdy1E6n@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-6-gpiccoli@igalia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1bc46272-f26b-14a5-0139-a987b47a5814@solid-run.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220427224924.592546-6-gpiccoli@igalia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > As far as i'm aware, the in kernel code always has a netdev for each
-> > MAC. Are you talking about the vendor stack?
-> The coprocessor can be configured both at boot-time and runtime.
-> During runtime there is a vendor tool "restool" which can create and destroy
-> network interfaces, which the dpaa2 driver knows to discover and bind to.
+On Wed 2022-04-27 19:48:59, Guilherme G. Piccoli wrote:
+> The pvpanic driver relies on panic notifiers to execute a callback
+> on panic event. Such function is executed in atomic context - the
+> panic function disables local IRQs, preemption and all other CPUs
+> that aren't running the panic code.
+> 
+> With that said, it's dangerous to use regular spinlocks in such path,
+> as introduced by commit b3c0f8774668 ("misc/pvpanic: probe multiple instances").
+> This patch fixes that by replacing regular spinlocks with the trylock
+> safer approach.
 
-There should not be any need to use a vendor tool for mainline. In
-fact, that is strongly discouraged, since it leads to fragmentation,
-each device doing its own thing, the user needing to read each vendors
-user manual, rather than it just being a standard Unix box with
-interfaces.
+It seems that the lock is used just to manipulating a list. A super
+safe solution would be to use the rcu API: rcu_add_rcu() and
+list_del_rcu() under rcu_read_lock(). The spin lock will not be
+needed and the list will always be valid.
 
-What should happen is that all the front panel interfaces exist from
-boot. If you want to add them to a bridge, for example, you do so in
-the normal linux way, create a bridge and add an interface to the
-bridge. The kernel driver can then talk to the coprocessor and magic
-up a dpaa2 bridge object, and add the port to the bridge, but as far
-as the user is concerned, it should all be the usual iproute2
-commands, nothing more.
+The advantage would be that it will always call members that
+were successfully added earlier. That said, I am not familiar
+with pvpanic and am not sure if it is worth it.
 
-	  Andrew
+> It also fixes an old comment (about a long gone framebuffer code) and
+> the notifier priority - we should execute hypervisor notifiers early,
+> deferring this way the panic action to the hypervisor, as expected by
+> the users that are setting up pvpanic.
+
+This should be done in a separate patch. It changes the behavior.
+Also there might be a discussion whether it really should be
+the maximal priority.
+
+Best Regards,
+Petr
