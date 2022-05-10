@@ -2,189 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 39DC75227B1
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 01:35:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8767F5227C3
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 01:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238279AbiEJXfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 19:35:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54966 "EHLO
+        id S238386AbiEJXpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 19:45:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34156 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233707AbiEJXfG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 19:35:06 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79232802F5;
-        Tue, 10 May 2022 16:35:04 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id x18so229806plg.6;
-        Tue, 10 May 2022 16:35:04 -0700 (PDT)
+        with ESMTP id S229837AbiEJXpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 19:45:13 -0400
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8043A5BE6B;
+        Tue, 10 May 2022 16:45:12 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id e15so444151iob.3;
+        Tue, 10 May 2022 16:45:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=R13jHsl0NRq2P7uupdPrQEK0knUWVCVlecfA2FHAsIY=;
-        b=i6LMAZCFD+2w5H807GfcaKA0KFBunhQMkZ4oNhifqGqedLQWS0l4oYs5yiLhDNtB9E
-         kzC8SpUjZBK3RsBeGeRG/ZfUTYH2GXeTBP8S7gqRFHFzqGvgymqfELVeW7qoPIFW4VGh
-         GceRYpMBG1+oFZRy3IFPBPuecFyUGBQvv4sHVak/ehU4VhkBIM89rJIWPUb3+TNeq55j
-         XB50sdW1SncopJC0TPQz6UVUHprqYUCSzdwZn2ahW9oaxJb6msfEQhQJt9V0wtvsAbWI
-         GhSFn8GLq4d3d5Wcy8EmmGa/z32Mhn/mstI1BryUQjsIJWyf+sIz7HU1OqpwPLtHYu5H
-         z45w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=wATuxJ90w3SohnNFQrv277+BPZn2Ntr4DIlED5m3scw=;
+        b=dbheb9oJ9YgLDUok/wjCXtnU2EgK9IV3VjjeTOkTox5vtD9ImLTlhCjk75DT+EinMU
+         4XS3gcJo4K6wOL+ejoL1hHQZ7xo04Po9CAOEip58QhkZmZ1BRAah6yUYV3MRjZhszvA6
+         RNWV3r/04GUSrCh/9iTDB/OGdACCo5LxM1krcfA0m3/u2/9AseO5PN+EU6xy5knPpGo/
+         09SmNbdQAF4jgE23nZwjDmK6dtbHrlrOud4NMdRgogj6ONW86pmHFQtp1/88US4unvSZ
+         1o4fKLi6e+gDi6sQHUDlcYy2C0jYlddc7pSgDDD8BcAJd7AyieTF2G3mcn3ffvBR/2ge
+         wX9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=R13jHsl0NRq2P7uupdPrQEK0knUWVCVlecfA2FHAsIY=;
-        b=x6r/SqwdMyu8QYk4nwwIUcwXLLmCEydGPE5gcpB4q+Pm+l3/9VfRlikOQePTBeicdz
-         TDkBolaYV8lNOFR8Is24MdTyon5Qid+V/oAI2XSib29YWOhb1vm7Ttfz2Ah/KThMU8Ig
-         jobk4GqW5+jI9LuMmHMypmunvkaIN88YM8bc3fCMX7UvH+6CHVg3NIiPRFJ+eRg78nAp
-         /NjIXHpKONJ7mrvSw2LPchsciVJp/tqm+jyZ2yzuDP78xzJgpVyQe3g1ZRmufkCAouf3
-         Hg1mVLJkayY6ohIspWB7GtZ7VoFxTFB5Js62JFVylz4De/EUT4vi3pMEdqCoKp8CxKql
-         imjw==
-X-Gm-Message-State: AOAM5334kZJFhqX6SgNF0w6JIiD+q3yL8Ve0Ka1VvdOqnDMEn3QLLRiK
-        YeWjB0pP1Mu+QsGj9nRlL8k=
-X-Google-Smtp-Source: ABdhPJxus5TmFdysSKYsoNhz5hOfAwQQ0cxSm5zp6mx6kXcl62wvePrQ8fNn1TW4Mea2M4xbAF0dKg==
-X-Received: by 2002:a17:90b:38c3:b0:1dc:b8c1:d428 with SMTP id nn3-20020a17090b38c300b001dcb8c1d428mr2216367pjb.55.1652225704431;
-        Tue, 10 May 2022 16:35:04 -0700 (PDT)
-Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
-        by smtp.gmail.com with ESMTPSA id u11-20020a17090341cb00b0015ee60ef65bsm160273ple.260.2022.05.10.16.35.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 16:35:03 -0700 (PDT)
-Message-ID: <268372a9-2f6a-74f3-29ea-c51536a73dba@gmail.com>
-Date:   Wed, 11 May 2022 08:34:58 +0900
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wATuxJ90w3SohnNFQrv277+BPZn2Ntr4DIlED5m3scw=;
+        b=De5NnQ1Al1vLBayFhTWgPeydGv9/oWvyWFo2Ha+jHIsxuGXhYM9KqVxjNovObHW5jX
+         MtBLdCjrOIqzo1TC9zCdCottgTXD1irbI/fIhLSvynk7H1lQeCHP0873LUkAdrMj6oXa
+         WzKUKq/QO/QaKDD4AecNBQIBYV5C/yE7GU0oZG1YAEfJ7uoT/r/FTV5rMV9KF5fHNjCv
+         6DVrVM32ay6LOeFdwTHaE2827pXr3rTK+kd/YYhE9W6ci8smidWAyjlVm+ZYhau4rfEM
+         eRM3XZZS6hs15HDHbaYAadMBpaXHUHxCxdrdX0H0XPXGfOhL0RMIib32T3JjTQhieCzq
+         aHww==
+X-Gm-Message-State: AOAM532ARF9HpNV/5l9OWnZCLW78C2tXAT6pX/iIFxKZurrWXnuCUFFu
+        AF/LNPP3YZRkMtvmD7r42O5MnJ8B/QIEHYIcMJU=
+X-Google-Smtp-Source: ABdhPJyY+v3smYSOc36bZa6g3lpDz8xQNV/WmwkBYGNeXJOu318bre8+/gDvUoeKaI4xZM7U8xgQMyb3ZELBHbgmUXY=
+X-Received: by 2002:a05:6638:16d6:b0:32b:a283:a822 with SMTP id
+ g22-20020a05663816d600b0032ba283a822mr11247396jat.145.1652226311934; Tue, 10
+ May 2022 16:45:11 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive
- instead of 'figure'
-Content-Language: en-US
-To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Martin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
- <202205101825.15126.pisa@cmp.felk.cvut.cz>
-From:   Akira Yokosawa <akiyks@gmail.com>
-In-Reply-To: <202205101825.15126.pisa@cmp.felk.cvut.cz>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+References: <20220510074659.2557731-1-jolsa@kernel.org> <20220510074659.2557731-3-jolsa@kernel.org>
+In-Reply-To: <20220510074659.2557731-3-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 10 May 2022 16:45:01 -0700
+Message-ID: <CAEf4Bzav8he-_fD=D5KMFW7s=PkJoZG9cUr+BOTuV54KKOC70A@mail.gmail.com>
+Subject: Re: [PATCHv2 perf/core 2/3] perf tools: Register fallback libbpf
+ section handler
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 May 2022 18:25:15 +0200,
-Pavel Pisa wrote:
-> Hello Akira,
->=20
-> On Tuesday 10 of May 2022 11:34:37 Akira Yokosawa wrote:
->> Two issues were observed in the ReST doc added by commit c3a0addefbde
->> ("docs: ctucanfd: CTU CAN FD open-source IP core documentation.").
->=20
-> Thanks for the fix
->=20
->> The plain "figure" directive broke "make pdfdocs" due to a missing=20
->> PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"=
+On Tue, May 10, 2022 at 12:47 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> Perf is using section name to declare special kprobe arguments,
+> which no longer works with current libbpf, that either requires
+> certain form of the section name or allows to register custom
+> handler.
+>
+> Adding perf support to register 'fallback' section handler to take
+> care of perf kprobe programs. The fallback means that it handles
+> any section definition besides the ones that libbpf handles.
+>
+> The handler serves two purposes:
+>   - allows perf programs to have special arguments in section name
+>   - allows perf to use pre-load callback where we can attach init
+>     code (zeroing all argument registers) to each perf program
+>
+> The second is essential part of new prologue generation code,
+> that's coming in following patch.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  tools/perf/util/bpf-loader.c | 47 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+>
+> diff --git a/tools/perf/util/bpf-loader.c b/tools/perf/util/bpf-loader.c
+> index f8ad581ea247..2a2c9512c4e8 100644
+> --- a/tools/perf/util/bpf-loader.c
+> +++ b/tools/perf/util/bpf-loader.c
+> @@ -86,6 +86,7 @@ bpf_perf_object__next(struct bpf_perf_object *prev)
+>              (perf_obj) = (tmp), (tmp) = bpf_perf_object__next(tmp))
+>
+>  static bool libbpf_initialized;
+> +static int libbpf_sec_handler;
+>
+>  static int bpf_perf_object__add(struct bpf_object *obj)
+>  {
+> @@ -99,12 +100,58 @@ static int bpf_perf_object__add(struct bpf_object *obj)
+>         return perf_obj ? 0 : -ENOMEM;
+>  }
+>
+> +static struct bpf_insn prologue_init_insn[] = {
+> +       BPF_MOV64_IMM(BPF_REG_0, 0),
+> +       BPF_MOV64_IMM(BPF_REG_1, 0),
 
->> directive, which is an extension for kernel documentations, should
->> be used instead.
->=20
-> I have not noticed that there is kernel-figure
-> option. We have setup own Sphinx 1.4.9 based build for driver
-> documentation out of the tree compilation, I am not sure if that
-> would work with this option but if not we keep this version
-> modified. There are required modification for sources location anyway..=
-=2E
->=20
-> https://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/linux_driver/buil=
-d/ctucanfd-driver.html
+R0 should be initialized before exit anyway. R1 contains context, so
+doesn't need initialization, so I think you only need R2-R5?
 
-You might want to see kernel's doc-guide at
-
-    https://www.kernel.org/doc/html/latest/doc-guide/sphinx.html
-
-, or its source
-
-    Documentation/doc-guide/sphinx.rst
-
->=20
->> The directive of "code:: raw" causes a warning from both
->> "make htmldocs" and "make pdfdocs", which reads:
->>
->>     [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name=
-
->>     'raw' is not known
->=20
-> Strange I have not seen any warning when building htmldocs
-> in my actual linux kernel tree. I have cleaned docs to be warnings
-> free, but it is possible that I have another tools versions.
-Well, I don't think "make htmldocs" runs with Sphinx 1.4.9.
-
-You mean 1.7.9?
-
-Then the above mentioned warning is not shown.
-I see the warning with Sphinx versions 2.4.4. and 4.5.0.
-
-I'll amend the changelog to mention the Sphinx versions and
-post as v2.
-
-        Thanks, Akira
-
->=20
-> Anyway thanks for cleanup.
->=20
->> A plain literal-block marker should suffice where no syntax
->> highlighting is intended.
->>
->> Fix the issues by using suitable directive and marker.
->>
->> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
->> Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
->> documentation.") Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
->> Cc: Martin Jerabek <martin.jerabek01@gmail.com>
->> Cc: Ondrej Ille <ondrej.ille@gmail.com>
->> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
->=20
-> Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
->=20
->> ---
->>  .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++-=
--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->>
->> diff --git
->> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
->> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst =
-index
->> 2fde5551e756..40c92ea272af 100644
->> --- a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.=
-rst
->> +++ b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.=
-rst
->> @@ -72,7 +72,7 @@ it is reachable (on which bus it resides) and its
->> configuration =E2=80=93 registers address, interrupts and so on. An ex=
-ample of such
->> a device tree is given in .
->>
->> -.. code:: raw
->> +::
->>
->>             / {
->>                 /* ... */
->> @@ -451,7 +451,7 @@ the FIFO is maintained, together with priority
->> rotation, is depicted in
->>
->>
->>
->> -.. figure:: fsm_txt_buffer_user.svg
->> +.. kernel-figure:: fsm_txt_buffer_user.svg
->>
->>     TX Buffer states with possible transitions
->=20
->=20
+> +       BPF_MOV64_IMM(BPF_REG_2, 0),
+> +       BPF_MOV64_IMM(BPF_REG_3, 0),
+> +       BPF_MOV64_IMM(BPF_REG_4, 0),
+> +       BPF_MOV64_IMM(BPF_REG_5, 0),
+> +};
+> +
+> +static int libbpf_prog_prepare_load_fn(struct bpf_program *prog,
+> +                                      struct bpf_prog_load_opts *opts __maybe_unused,
+> +                                      long cookie __maybe_unused)
+> +{
+> +       size_t init_size_cnt = ARRAY_SIZE(prologue_init_insn);
+> +       size_t orig_insn_cnt, insn_cnt, init_size, orig_size;
+> +       const struct bpf_insn *orig_insn;
+> +       struct bpf_insn *insn;
+> +
+> +       /* prepend initialization code to program instructions */
+> +       orig_insn = bpf_program__insns(prog);
+> +       orig_insn_cnt = bpf_program__insn_cnt(prog);
+> +       init_size = init_size_cnt * sizeof(*insn);
+> +       orig_size = orig_insn_cnt * sizeof(*insn);
+> +
+> +       insn_cnt = orig_insn_cnt + init_size_cnt;
+> +       insn = malloc(insn_cnt * sizeof(*insn));
+> +       if (!insn)
+> +               return -ENOMEM;
+> +
+> +       memcpy(insn, prologue_init_insn, init_size);
+> +       memcpy((char *) insn + init_size, orig_insn, orig_size);
+> +       bpf_program__set_insns(prog, insn, insn_cnt);
+> +       return 0;
+> +}
+> +
+>  static int libbpf_init(void)
+>  {
+> +       LIBBPF_OPTS(libbpf_prog_handler_opts, handler_opts,
+> +               .prog_prepare_load_fn = libbpf_prog_prepare_load_fn,
+> +       );
+> +
+>         if (libbpf_initialized)
+>                 return 0;
+>
+>         libbpf_set_print(libbpf_perf_print);
+> +       libbpf_sec_handler = libbpf_register_prog_handler(NULL, BPF_PROG_TYPE_KPROBE,
+> +                                                         0, &handler_opts);
+> +       if (libbpf_sec_handler < 0) {
+> +               pr_debug("bpf: failed to register libbpf section handler: %d\n",
+> +                        libbpf_sec_handler);
+> +               return -BPF_LOADER_ERRNO__INTERNAL;
+> +       }
+>         libbpf_initialized = true;
+>         return 0;
+>  }
+> --
+> 2.35.3
+>
