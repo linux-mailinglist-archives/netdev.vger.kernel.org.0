@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4337D520C1A
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 05:33:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F32F6520C1B
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 05:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235484AbiEJDgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 23:36:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59194 "EHLO
+        id S235545AbiEJDhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 23:37:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235487AbiEJDgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 23:36:33 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 149B2179C01
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 20:32:36 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id e5so13599492pgc.5
-        for <netdev@vger.kernel.org>; Mon, 09 May 2022 20:32:36 -0700 (PDT)
+        with ESMTP id S235507AbiEJDgt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 23:36:49 -0400
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B639D179421
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 20:32:37 -0700 (PDT)
+Received: by mail-pl1-x630.google.com with SMTP id i17so15625124pla.10
+        for <netdev@vger.kernel.org>; Mon, 09 May 2022 20:32:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Rpwc7xh/8eoR1iuVrnrqpeL3VTTsd60sGp0FCBGNJ3k=;
-        b=hmWva1U0bMFJqkMAbcuAWyPedwjQxWLyuxqteXLXOZmhCI8WbzZnFxQNqa7QX2V5J4
-         8Ho9ggGFcQhAitKlT6wsJIZIe8QQLYoR58SNcgPXxjr/iCeSula3PIQ+1v7YTkKYZ7r5
-         0IsfI1Gf27g2bdGBKlBPZbYOtiwbONuO4YffAD9kDiybn/VKO7lQsRHaWnppEjmi0VQD
-         +VhtkCvwDVBwVrxM1urPCeHjSeHyuP3uhi2vhN5TU3CssV0aAtAHpovWrodu8jEAyj0/
-         72XMZUHG+MBfPtKi189FKt2Z5LZl5UhfWXMRSv7KlmcrHDhZ0TX4kmswXuf3FWm9G0nA
-         0r0Q==
+        bh=3plY4QYEdjKGAPxIOu4e/4uq96gqixpA+zmKua8m2bA=;
+        b=bOqGb1DKl8n/RYmrBNWeZLlcZE5RNQH+risA3IOHGNYQDeIy3NruPb2r8PkIaMxApM
+         omyIsXIchA+hmc8e8DwA5wpKkBvZAX/xARa1oyAz4EqVlALWxJGQeEL8vrh5E0Of7xxk
+         5TvIPl5R1WqRj7IQV8sOBdCDCK/Dj0kmQPzCbjgCfr08HvNgQceek4WaGNSUovvbMolN
+         h9p+VeznDDV7fNmigqF/rOz0HMuU0OWS9huOI4t1Sp9IZYpBdnlMsgUEO6TIFLrHh1sB
+         c8/xpYr0C5twybgPslewGZyo+Hl2opmashaxq8a4hOAvRFd3VkEqw3bIgdCfHJ7tSQEZ
+         58pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Rpwc7xh/8eoR1iuVrnrqpeL3VTTsd60sGp0FCBGNJ3k=;
-        b=6KTeto0qNnhi3gzYZ+C40G0XcgOKI0RFb+EglZjMxxuVXapv0/yI1G2DwRlbR4jM+z
-         3TaAlbnbLT29LYEvZzE6nMzRVEJhm03U+qwWEDVFvVHZkesCaH5Qh1XmhvMGjDcQgIeb
-         oNJuxYDS3PacK8T0NNszj1Z+76HaDU4sjfAM5idatdiZiXCl6eFvxls+bJvvxGarEIkj
-         e7PJWe0KSCWmtemqoziXNsjhJ65t/7w2tOm5FQKjNXYYgJatfP41qXh7MMPjp2akDyeR
-         sR8X9yeuUwPVDeMwsPNB7MfQTnXO4BPNyHyBOJ10qmy+mrJfR7cgLbhzgjL1GGkdi5ns
-         As/A==
-X-Gm-Message-State: AOAM532ZG/JUWcrW09QH4N52qSMxTGfR3vvCK4cbWnfx96YQhUjdNpWL
-        XSEFpBkN+5i3MUnEVFYmjQg=
-X-Google-Smtp-Source: ABdhPJy4EGIuBvRR5D/0m91iSwa9TMmRZNEDvOH0oBEmjU3K9H7Fa+Yr+6poVWu582ZJxlzUpWM1GQ==
-X-Received: by 2002:a65:6946:0:b0:39d:a0c3:71f with SMTP id w6-20020a656946000000b0039da0c3071fmr15106994pgq.160.1652153555652;
-        Mon, 09 May 2022 20:32:35 -0700 (PDT)
+        bh=3plY4QYEdjKGAPxIOu4e/4uq96gqixpA+zmKua8m2bA=;
+        b=arhsyq2FD9TEzUZXkPGuOdEhndlnw1Un0UZuLtjHngURDPCT+/alRpZAy1X3XWxjLX
+         JIKHThGq52t+WM7cUtDGsp7VmAD+1QdV+2K8CaSfwgoPYXA3omFpokA4Ry8Z1rs306Y4
+         oW7/UcX+ykrrFch328GQx8H29TjpCwc7s1DlzjWK7cKY5HmETC914LtuVXS3iP+EUOIx
+         t59zh+pkhhtB+KdjyDQkDPKljxfD0GbnE/rwhweDBRgrpyffMeKY2/w6MBic5PN7+SAB
+         JC7/qgevXOGDmrwsWt647C+U4LAaGsDdd4FoRfvrfYYsnnN6hG9z7B/CFUwrvtZL0DU5
+         4y0g==
+X-Gm-Message-State: AOAM5300i+sonpOxErcWvKeKfc3aX5o0AFnYIMh0os6C5hDlnoKoOUtm
+        Gyy9BmHjqWAVpe3F+1ITCQc=
+X-Google-Smtp-Source: ABdhPJx2SqoSFMexLDx637N5TLKU0RxBTusnDxyT45tkO9advqzJjElDZ8usSZno2HQVjP+GCDIgag==
+X-Received: by 2002:a17:902:ccc9:b0:15b:c265:b7a0 with SMTP id z9-20020a170902ccc900b0015bc265b7a0mr18763208ple.107.1652153557153;
+        Mon, 09 May 2022 20:32:37 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:5d30:4e79:203f:a909])
-        by smtp.gmail.com with ESMTPSA id me16-20020a17090b17d000b001d77f392280sm538185pjb.30.2022.05.09.20.32.34
+        by smtp.gmail.com with ESMTPSA id me16-20020a17090b17d000b001d77f392280sm538185pjb.30.2022.05.09.20.32.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 May 2022 20:32:35 -0700 (PDT)
+        Mon, 09 May 2022 20:32:36 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -56,9 +56,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Coco Li <lixiaoyan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v6 net-next 08/13] net: allow gro_max_size to exceed 65536
-Date:   Mon,  9 May 2022 20:32:14 -0700
-Message-Id: <20220510033219.2639364-9-eric.dumazet@gmail.com>
+Subject: [PATCH v6 net-next 09/13] ipv6: Add hop-by-hop header to jumbograms in ip6_output
+Date:   Mon,  9 May 2022 20:32:15 -0700
+Message-Id: <20220510033219.2639364-10-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.0.512.ge40c2bad7a-goog
 In-Reply-To: <20220510033219.2639364-1-eric.dumazet@gmail.com>
 References: <20220510033219.2639364-1-eric.dumazet@gmail.com>
@@ -74,123 +74,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Duyck <alexanderduyck@fb.com>
+From: Coco Li <lixiaoyan@google.com>
 
-Allow the gro_max_size to exceed a value larger than 65536.
+Instead of simply forcing a 0 payload_len in IPv6 header,
+implement RFC 2675 and insert a custom extension header.
 
-There weren't really any external limitations that prevented this other
-than the fact that IPv4 only supports a 16 bit length field. Since we have
-the option of adding a hop-by-hop header for IPv6 we can allow IPv6 to
-exceed this value and for IPv4 and non-TCP flows we can cap things at 65536
-via a constant rather than relying on gro_max_size.
+Note that only TCP stack is currently potentially generating
+jumbograms, and that this extension header is purely local,
+it wont be sent on a physical link.
 
-[edumazet] limit GRO_MAX_SIZE to (8 * 65535) to avoid overflows.
+This is needed so that packet capture (tcpdump and friends)
+can properly dissect these large packets.
 
-Signed-off-by: Alexander Duyck <alexanderduyck@fb.com>
+Signed-off-by: Coco Li <lixiaoyan@google.com>
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c | 2 +-
- include/linux/netdevice.h                       | 6 +++++-
- include/net/ipv6.h                              | 2 +-
- net/core/dev.c                                  | 2 +-
- net/core/gro.c                                  | 8 ++++++++
- net/core/rtnetlink.c                            | 8 --------
- 6 files changed, 16 insertions(+), 12 deletions(-)
+ include/linux/ipv6.h  |  1 +
+ net/ipv6/ip6_output.c | 22 ++++++++++++++++++++--
+ 2 files changed, 21 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 838870bc6dbd6e3a3d8c9443ff4675a0e411006b..24de37b79f5a917b304c011fcebcd09748ee5c6a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -2038,7 +2038,7 @@ mlx5e_hw_gro_skb_has_enough_space(struct sk_buff *skb, u16 data_bcnt)
- {
- 	int nr_frags = skb_shinfo(skb)->nr_frags;
+diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
+index ec5ca392eaa31e83a022b1124fae6b607ba168cd..38c8203d52cbf39e523c43fe630a7b184b9991aa 100644
+--- a/include/linux/ipv6.h
++++ b/include/linux/ipv6.h
+@@ -145,6 +145,7 @@ struct inet6_skb_parm {
+ #define IP6SKB_L3SLAVE         64
+ #define IP6SKB_JUMBOGRAM      128
+ #define IP6SKB_SEG6	      256
++#define IP6SKB_FAKEJUMBO      512
+ };
  
--	return PAGE_SIZE * nr_frags + data_bcnt <= GRO_MAX_SIZE;
-+	return PAGE_SIZE * nr_frags + data_bcnt <= GRO_LEGACY_MAX_SIZE;
- }
+ #if defined(CONFIG_NET_L3_MASTER_DEV)
+diff --git a/net/ipv6/ip6_output.c b/net/ipv6/ip6_output.c
+index afa5bd4ad167c4a40878f33773d43be85e89c32f..4081b12a01ff22ecf94a6490aef0665808407a6e 100644
+--- a/net/ipv6/ip6_output.c
++++ b/net/ipv6/ip6_output.c
+@@ -182,7 +182,9 @@ static int __ip6_finish_output(struct net *net, struct sock *sk, struct sk_buff
+ #endif
  
- static void
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 673c444aae874428b117df45dffcaf702ac72a47..69743188f639c5afd20f06a5e301edca00aedaef 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2151,7 +2151,11 @@ struct net_device {
- 	struct bpf_prog __rcu	*xdp_prog;
- 	unsigned long		gro_flush_timeout;
- 	int			napi_defer_hard_irqs;
--#define GRO_MAX_SIZE		65536
-+#define GRO_LEGACY_MAX_SIZE	65536u
-+/* TCP minimal MSS is 8 (TCP_MIN_GSO_SIZE),
-+ * and shinfo->gso_segs is a 16bit field.
-+ */
-+#define GRO_MAX_SIZE		(8 * 65535u)
- 	unsigned int		gro_max_size;
- 	rx_handler_func_t __rcu	*rx_handler;
- 	void __rcu		*rx_handler_data;
-diff --git a/include/net/ipv6.h b/include/net/ipv6.h
-index b6df0314aa02dd1c4094620145ccb24da7195b2b..5b38bf1a586b9da55f43db30d140d364a70f6c11 100644
---- a/include/net/ipv6.h
-+++ b/include/net/ipv6.h
-@@ -477,7 +477,7 @@ static inline int ipv6_has_hopopt_jumbo(const struct sk_buff *skb)
- 	const struct hop_jumbo_hdr *jhdr;
- 	const struct ipv6hdr *nhdr;
+ 	mtu = ip6_skb_dst_mtu(skb);
+-	if (skb_is_gso(skb) && !skb_gso_validate_network_len(skb, mtu))
++	if (skb_is_gso(skb) &&
++	    !(IP6CB(skb)->flags & IP6SKB_FAKEJUMBO) &&
++	    !skb_gso_validate_network_len(skb, mtu))
+ 		return ip6_finish_output_gso_slowpath_drop(net, sk, skb, mtu);
  
--	if (likely(skb->len <= GRO_MAX_SIZE))
-+	if (likely(skb->len <= GRO_LEGACY_MAX_SIZE))
- 		return 0;
+ 	if ((skb->len > mtu && !skb_is_gso(skb)) ||
+@@ -252,6 +254,8 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
+ 	struct dst_entry *dst = skb_dst(skb);
+ 	struct net_device *dev = dst->dev;
+ 	struct inet6_dev *idev = ip6_dst_idev(dst);
++	struct hop_jumbo_hdr *hop_jumbo;
++	int hoplen = sizeof(*hop_jumbo);
+ 	unsigned int head_room;
+ 	struct ipv6hdr *hdr;
+ 	u8  proto = fl6->flowi6_proto;
+@@ -259,7 +263,7 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
+ 	int hlimit = -1;
+ 	u32 mtu;
  
- 	if (skb->protocol != htons(ETH_P_IPV6))
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 68b76b45a5ac5f2ea705bd3db5d1732b79034609..4be3695846520af18a687cdcaa70c5f327ba94e8 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10605,7 +10605,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
+-	head_room = sizeof(struct ipv6hdr) + LL_RESERVED_SPACE(dev);
++	head_room = sizeof(struct ipv6hdr) + hoplen + LL_RESERVED_SPACE(dev);
+ 	if (opt)
+ 		head_room += opt->opt_nflen + opt->opt_flen;
  
- 	dev->gso_max_size = GSO_LEGACY_MAX_SIZE;
- 	dev->gso_max_segs = GSO_MAX_SEGS;
--	dev->gro_max_size = GRO_MAX_SIZE;
-+	dev->gro_max_size = GRO_LEGACY_MAX_SIZE;
- 	dev->tso_max_size = TSO_LEGACY_MAX_SIZE;
- 	dev->tso_max_segs = TSO_MAX_SEGS;
- 	dev->upper_level = 1;
-diff --git a/net/core/gro.c b/net/core/gro.c
-index 78110edf5d4b36d2fa6f8a2676096efe0112aa0e..b4190eb084672fb4f2be8b437eccb4e8507ff63f 100644
---- a/net/core/gro.c
-+++ b/net/core/gro.c
-@@ -167,6 +167,14 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
- 	if (unlikely(p->len + len >= gro_max_size || NAPI_GRO_CB(skb)->flush))
- 		return -E2BIG;
- 
-+	if (unlikely(p->len + len >= GRO_LEGACY_MAX_SIZE)) {
-+		if (p->protocol != htons(ETH_P_IPV6) ||
-+		    skb_headroom(p) < sizeof(struct hop_jumbo_hdr) ||
-+		    ipv6_hdr(p)->nexthdr != IPPROTO_TCP ||
-+		    p->encapsulation)
-+			return -E2BIG;
-+	}
-+
- 	lp = NAPI_GRO_CB(p)->last;
- 	pinfo = skb_shinfo(lp);
- 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 823db8999a2c1d5959042393783492dbecf1352c..5d7d7fe1e63a972bbcbd5eed1404b2643c74cfcb 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2347,14 +2347,6 @@ static int validate_linkmsg(struct net_device *dev, struct nlattr *tb[],
- 		}
+@@ -282,6 +286,20 @@ int ip6_xmit(const struct sock *sk, struct sk_buff *skb, struct flowi6 *fl6,
+ 					     &fl6->saddr);
  	}
  
--	if (tb[IFLA_GRO_MAX_SIZE]) {
--		u32 gro_max_size = nla_get_u32(tb[IFLA_GRO_MAX_SIZE]);
--
--		if (gro_max_size > GRO_MAX_SIZE) {
--			NL_SET_ERR_MSG(extack, "too big gro_max_size");
--			return -EINVAL;
--		}
--	}
- 	return 0;
- }
- 
++	if (unlikely(seg_len > IPV6_MAXPLEN)) {
++		hop_jumbo = skb_push(skb, hoplen);
++
++		hop_jumbo->nexthdr = proto;
++		hop_jumbo->hdrlen = 0;
++		hop_jumbo->tlv_type = IPV6_TLV_JUMBO;
++		hop_jumbo->tlv_len = 4;
++		hop_jumbo->jumbo_payload_len = htonl(seg_len + hoplen);
++
++		proto = IPPROTO_HOPOPTS;
++		seg_len = 0;
++		IP6CB(skb)->flags |= IP6SKB_FAKEJUMBO;
++	}
++
+ 	skb_push(skb, sizeof(struct ipv6hdr));
+ 	skb_reset_network_header(skb);
+ 	hdr = ipv6_hdr(skb);
 -- 
 2.36.0.512.ge40c2bad7a-goog
 
