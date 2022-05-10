@@ -2,139 +2,258 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9E7C522685
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 23:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B5A952268C
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 23:59:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233176AbiEJV43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 17:56:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49096 "EHLO
+        id S232533AbiEJV7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 17:59:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235048AbiEJV4N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 17:56:13 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF6B45712A
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 14:56:10 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id e24so402770wrc.9
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 14:56:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IwUgKUFNj7ibkuKWy6cspfPFQL3X6FyIq81DUZlFReI=;
-        b=pvu4vmnNkxBfNPaw9v92a2w+TVqfwi+iTgvjgFvjq+ssgXnL2/XxuczeCjzFigw6Fp
-         LdrwiJrm5va3fTljcIrhm2cCN2U3mHlAeGm/YCKUXs8GdTX9I68G+Bkv1+NDR1Vt5YAL
-         b0Oy+hcWXfNh68+frvkkZEUFC4PBzALS5U5cfl6+gErj5JV6cqdOWZypd5vUtHNf1ZvG
-         S5ld+Bo59W0iXbrlJP/mnDfnhgKqL6sJExvTb1S/4mzhTBYEDX1kSPUfTU+4U7XvOULp
-         BlWx/yzcaO3KNO9uZIsiptBfq34GgjqYlMOzrHkqYyBggfOuj6Q3k2CYVGzEXWLPerlF
-         PpIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IwUgKUFNj7ibkuKWy6cspfPFQL3X6FyIq81DUZlFReI=;
-        b=dBKf77NX+jLu6YdicVwV4Hd31LjLoVCntKzoJ7B7vDiYkOAbEqqeenDNro47Cffjv+
-         foxn2oovq/vsZ7vKb7Mm9umVJ+1f2Sb1SXxk2HJLTaqAPyIaf5pQadWuqx4ZfFTxSCtA
-         PzoACZZS3k0j8zVazVyGTcOgkF/MhxwYhzlnFQqobDnlSAYZkfwXQIHCmLMBga0fvtRS
-         3o0v4zt23R/zGhqdKgmDfbOJ+1ic0U4LiCP/2nE0srcMYSJsS52/UbEJrJIfuZvSPgJY
-         uXmukKF7XBAVGeJReMKWpfMQSWR0U/jBg5UXp91hqRHEy4G8q27H8WQoYJ0393XfyycJ
-         OdFg==
-X-Gm-Message-State: AOAM531m5lJPB9kpuVCtRake7vnD6LiKJi7lzamI71EIRkSBfVlLaCIp
-        O8IigFXzHt1yxiseQLXZ3WcZJUziWeGxyXMwYo5ieQ==
-X-Google-Smtp-Source: ABdhPJyvhf5tHo+7ymkHhZKRFq0olhspXHd8enDR9DXvVol++Jwbk6xZofLsCZBaS03E9VdsgNBSy5whbtz0QVbHtl8=
-X-Received: by 2002:a05:6000:154a:b0:20c:7e65:c79e with SMTP id
- 10-20020a056000154a00b0020c7e65c79emr20365907wry.582.1652219768969; Tue, 10
- May 2022 14:56:08 -0700 (PDT)
+        with ESMTP id S229503AbiEJV7O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 17:59:14 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D6572983B4;
+        Tue, 10 May 2022 14:59:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652219953; x=1683755953;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=bDmHE9RtsY1GFLabNCf+ocLinbNnKD56fkDirs/BpkA=;
+  b=EsAqd4pHE9wff3nXWWKu43zZNXR+wzexG72OoEeU0sHF5T5RoFroW7Fl
+   NlNgWOQ6q+PSYDzJUj2/AcjLk9wNffvoyVkXrWPJYNi0zbMdgeDFLsq9n
+   EWF4ZBo3nVKiOA4vMwFpwkoBhhnlqC2MxtbIdi1mQ7vSrHI2PczNZtRZr
+   BXufetadGQPKD/uTYrfQJmryC88eSgWEbsK+XeBhXYEg8JaN0xiahXqFw
+   TFW/YspY/k+YHRYANlvDrDel7XX8P4rqxszy6fg/Szouj9YeVDYSIyHNF
+   VAAADP5zbrHMWCQLk0ipISNOj8NVx6jQiU313ME0GaXxWbpdYgWAKAgoT
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="269650258"
+X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
+   d="scan'208";a="269650258"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 14:59:11 -0700
+X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
+   d="scan'208";a="670079565"
+Received: from yperng-mobl1.amr.corp.intel.com ([10.209.50.90])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 14:59:11 -0700
+Date:   Tue, 10 May 2022 14:59:03 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        Geliang Tang <geliang.tang@suse.com>
+cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        mptcp@lists.linux.dev,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Subject: Re: [PATCH bpf-next v3 6/8] selftests: bpf: verify token of struct
+ mptcp_sock
+In-Reply-To: <20220502211235.142250-7-mathew.j.martineau@linux.intel.com>
+Message-ID: <e024cde0-70ad-5332-1818-e6af77509a8c@linux.intel.com>
+References: <20220502211235.142250-1-mathew.j.martineau@linux.intel.com> <20220502211235.142250-7-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
-References: <20220510001807.4132027-1-yosryahmed@google.com>
- <20220510001807.4132027-2-yosryahmed@google.com> <Ynqyh+K1tMyNCTUW@slm.duckdns.org>
- <CAJD7tkZVXJY3s2k8M4pcq+eJVD+aX=iMDiDKtdE=j0_q+UWQzA@mail.gmail.com>
- <YnrEDfZs1kuB1gu5@slm.duckdns.org> <CAJD7tkahC1e-_K0xJMu-xXwd8WNVzYDRgJFua9=JhNRq7b+G8A@mail.gmail.com>
- <YnrSrKFTBn3IyUfa@slm.duckdns.org>
-In-Reply-To: <YnrSrKFTBn3IyUfa@slm.duckdns.org>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Tue, 10 May 2022 14:55:32 -0700
-Message-ID: <CAJD7tkbeZPH9UJXtGeopPnTSVPYN-GzzM51SE_QNuLmiaVNpeA@mail.gmail.com>
-Subject: Re: [RFC PATCH bpf-next 1/9] bpf: introduce CGROUP_SUBSYS_RSTAT
- program type
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        cgroups@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 2:01 PM Tejun Heo <tj@kernel.org> wrote:
+On Mon, 2 May 2022, Mat Martineau wrote:
+
+> From: Geliang Tang <geliang.tang@suse.com>
 >
-> Hello,
+> This patch verifies the struct member token of struct mptcp_sock. Add a
+> new function get_msk_token() to parse the msk token from the output of
+> the command 'ip mptcp monitor', and verify it in verify_msk().
 >
-> On Tue, May 10, 2022 at 01:43:46PM -0700, Yosry Ahmed wrote:
-> > I assume if we do this optimization, and have separate updated lists
-> > for controllers, we will still have a "core" updated list that is not
-> > tied to any controller. Is this correct?
+> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> ---
+> .../testing/selftests/bpf/bpf_mptcp_helpers.h |  1 +
+> .../testing/selftests/bpf/prog_tests/mptcp.c  | 66 +++++++++++++++++++
+> .../testing/selftests/bpf/progs/mptcp_sock.c  |  5 ++
+> 3 files changed, 72 insertions(+)
 >
-> Or we can create a dedicated updated list for the bpf progs, or even
-> multiple for groups of them and so on.
+> diff --git a/tools/testing/selftests/bpf/bpf_mptcp_helpers.h b/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+> index 18da4cc65e89..87e15810997d 100644
+> --- a/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+> +++ b/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+> @@ -9,6 +9,7 @@
+> struct mptcp_sock {
+> 	struct inet_connection_sock	sk;
 >
-> > If yes, then we can make the interface controller-agnostic (a global
-> > list of BPF flushers). If we do the optimization later, we tie BPF
-> > stats to the "core" updated list. We can even extend the userland
-> > interface then to allow for controller-specific BPF stats if found
-> > useful.
+> +	__u32		token;
+> } __attribute__((preserve_access_index));
 >
-> We'll need that anyway as cpustats are tied to the cgroup themselves rather
-> than the cpu controller.
+> #endif
+> diff --git a/tools/testing/selftests/bpf/prog_tests/mptcp.c b/tools/testing/selftests/bpf/prog_tests/mptcp.c
+> index 4b40bbdaf91f..c5d96ba81e04 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/mptcp.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/mptcp.c
+> @@ -8,8 +8,11 @@
+> struct mptcp_storage {
+> 	__u32 invoked;
+> 	__u32 is_mptcp;
+> +	__u32 token;
+> };
 >
-> > If not, and there will only be controller-specific updated lists then,
-> > then we might need to maintain a "core" updated list just for the sake
-> > of BPF programs, which I don't think would be favorable.
+> +static char monitor_log_path[64];
+> +
+> static int verify_tsk(int map_fd, int client_fd)
+> {
+> 	char *msg = "plain TCP socket";
+> @@ -36,11 +39,58 @@ static int verify_tsk(int map_fd, int client_fd)
+> 	return err;
+> }
 >
-> If needed, that's fine actually.
+> +/*
+> + * Parse the token from the output of 'ip mptcp monitor':
+> + *
+> + * [       CREATED] token=3ca933d3 remid=0 locid=0 saddr4=127.0.0.1 ...
+> + * [       CREATED] token=2ab57040 remid=0 locid=0 saddr4=127.0.0.1 ...
+> + */
+> +static __u32 get_msk_token(void)
+> +{
+> +	char *prefix = "[       CREATED] token=";
+> +	char buf[BUFSIZ] = {};
+> +	__u32 token = 0;
+> +	ssize_t len;
+> +	int fd;
+> +
+> +	sync();
+> +
+> +	fd = open(monitor_log_path, O_RDONLY);
+> +	if (CHECK_FAIL(fd < 0)) {
+> +		log_err("Failed to open %s", monitor_log_path);
+> +		return token;
+> +	}
+> +
+> +	len = read(fd, buf, sizeof(buf));
+> +	if (CHECK_FAIL(len < 0)) {
+> +		log_err("Failed to read %s", monitor_log_path);
+> +		goto err;
+> +	}
+> +
+> +	if (strncmp(buf, prefix, strlen(prefix))) {
+> +		log_err("Invalid prefix %s", buf);
+> +		goto err;
+> +	}
+> +
+> +	token = strtol(buf + strlen(prefix), NULL, 16);
+> +
+> +err:
+> +	close(fd);
+> +	return token;
+> +}
+> +
+> static int verify_msk(int map_fd, int client_fd)
+> {
+> 	char *msg = "MPTCP subflow socket";
+> 	int err = 0, cfd = client_fd;
+> 	struct mptcp_storage val;
+> +	__u32 token;
+> +
+> +	token = get_msk_token();
+> +	if (token <= 0) {
+> +		log_err("Unexpected token %x", token);
+> +		return -1;
+> +	}
 >
-> > What do you think? Either-way, I will try to document our discussion
-> > outcome in the commit message (and maybe the code), so that
-> > if-and-when this optimization is made, we can come back to it.
+> 	if (CHECK_FAIL(bpf_map_lookup_elem(map_fd, &cfd, &val) < 0)) {
+> 		perror("Failed to read socket storage");
+> @@ -59,6 +109,12 @@ static int verify_msk(int map_fd, int client_fd)
+> 		err++;
+> 	}
 >
-> So, the main focus is keeping the userspace interface as simple as possible
-> and solving performance issues on the rstat side. If we need however many
-> updated lists to do that, that's all fine. FWIW, the experience up until now
-> has been consistent with the assumptions that the current implementation
-> makes and I haven't seen real any world cases where the shared updated list
-> are problematic.
+> +	if (val.token != token) {
+> +		log_err("Unexpected mptcp_sock.token %x != %x",
+> +			val.token, token);
+> +		err++;
+> +	}
+> +
+> 	return err;
+> }
+>
+> @@ -124,6 +180,7 @@ static int run_test(int cgroup_fd, int server_fd, bool is_mptcp)
+>
+> void test_base(void)
+> {
+> +	char cmd[256], tmp_dir[] = "/tmp/XXXXXX";
+> 	int server_fd, cgroup_fd;
+>
+> 	cgroup_fd = test__join_cgroup("/mptcp");
+> @@ -141,6 +198,13 @@ void test_base(void)
+>
+> with_mptcp:
+> 	/* with MPTCP */
+
+Geliang, could you add a check here that skips this test (instead of 
+failing) if the 'ip mptcp monitor' command is not supported?
+
+Checking the exit status of "ip mptcp help 2>&1 | grep monitor" should 
+work.
+
+Thanks,
+
+Mat
+
+> +	if (CHECK_FAIL(!mkdtemp(tmp_dir)))
+> +		goto close_cgroup_fd;
+> +	snprintf(monitor_log_path, sizeof(monitor_log_path),
+> +		 "%s/ip_mptcp_monitor", tmp_dir);
+> +	snprintf(cmd, sizeof(cmd), "ip mptcp monitor > %s &", monitor_log_path);
+> +	if (CHECK_FAIL(system(cmd)))
+> +		goto close_cgroup_fd;
+> 	server_fd = start_mptcp_server(AF_INET, NULL, 0, 0);
+> 	if (CHECK_FAIL(server_fd < 0))
+> 		goto close_cgroup_fd;
+> @@ -148,6 +212,8 @@ void test_base(void)
+> 	CHECK_FAIL(run_test(cgroup_fd, server_fd, true));
+>
+> 	close(server_fd);
+> +	snprintf(cmd, sizeof(cmd), "rm -rf %s", tmp_dir);
+> +	system(cmd);
+>
+> close_cgroup_fd:
+> 	close(cgroup_fd);
+> diff --git a/tools/testing/selftests/bpf/progs/mptcp_sock.c b/tools/testing/selftests/bpf/progs/mptcp_sock.c
+> index 7b6a25e37de8..c58c191d8416 100644
+> --- a/tools/testing/selftests/bpf/progs/mptcp_sock.c
+> +++ b/tools/testing/selftests/bpf/progs/mptcp_sock.c
+> @@ -12,6 +12,7 @@ extern bool CONFIG_MPTCP __kconfig;
+> struct mptcp_storage {
+> 	__u32 invoked;
+> 	__u32 is_mptcp;
+> +	__u32 token;
+> };
+>
+> struct {
+> @@ -46,6 +47,8 @@ int _sockops(struct bpf_sock_ops *ctx)
+> 					     BPF_SK_STORAGE_GET_F_CREATE);
+> 		if (!storage)
+> 			return 1;
+> +
+> +		storage->token = 0;
+> 	} else {
+> 		if (!CONFIG_MPTCP)
+> 			return 1;
+> @@ -58,6 +61,8 @@ int _sockops(struct bpf_sock_ops *ctx)
+> 					     BPF_SK_STORAGE_GET_F_CREATE);
+> 		if (!storage)
+> 			return 1;
+> +
+> +		storage->token = msk->token;
+> 	}
+> 	storage->invoked++;
+> 	storage->is_mptcp = tcp_sk->is_mptcp;
+> -- 
+> 2.36.0
+>
 >
 
-Thanks again for your insights and time!
-
-That's great to hear. I am all in for making the userspace interface
-simpler. I will rework this patch series so that the BPF programs just
-attach to "rstat" and send a V1.
-Any other concerns you have that you think I should address in V1?
-
-> Thanks.
->
-> --
-> tejun
+--
+Mat Martineau
+Intel
