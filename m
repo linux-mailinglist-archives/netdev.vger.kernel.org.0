@@ -2,195 +2,287 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E82F352249B
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 21:19:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C882352249E
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 21:21:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231584AbiEJTTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 15:19:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
+        id S232093AbiEJTUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 15:20:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230071AbiEJTTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 15:19:07 -0400
-Received: from mx0b-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D662E261954;
-        Tue, 10 May 2022 12:19:05 -0700 (PDT)
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24AFLoSA030470;
-        Tue, 10 May 2022 12:18:51 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
- subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=jcA5K2pMBMJnmh4j0SCUhRCyJlJp7+/dPkh4AuGVLRo=;
- b=HcopILaoJmySLvEr2t30yXDIZoD34RW8Ey6gsLuCnKR3ByK8ptDnFU0uVGef+GHQMIHn
- U3pII1PojNZL06w+2Q50Bkx/p5D7eJCWKvIdvDn/ekbbIJM2sT9RCJOoev8a8OJsY8ps
- BORfRLoNip2EncouISdCzMeZIaRdukrFwZM= 
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2172.outbound.protection.outlook.com [104.47.59.172])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3fyay5pxd4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 10 May 2022 12:18:51 -0700
+        with ESMTP id S229599AbiEJTUw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 15:20:52 -0400
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (mail-bn8nam11on2083.outbound.protection.outlook.com [40.107.236.83])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E03F13DA46;
+        Tue, 10 May 2022 12:20:50 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZfXxUgx8SGuo9cACoppf+RZl8Skq6gs9fiRJPFJflqn/dMm8eertMmV8Ux88+vD8sV3VNQ/68y76zwGnQRzNYPiPoOfAm3fgOq6FqjSFNV1QMSkKIQ7hn08ygiWEOirdYcS+YLUBzOow9ZrdjJ3gFU+AmLXIsPIGwWap3jzsVTp010z8IPqiOoMf/Zog//zxz6lC0WZtnyoIhTD8/fbYoeghApYdvBYCD27O2dXC1zO2fReLVZbZ9kB4ydamckvSYZmrx/8UkCinO6uNhp5eKuc+AE8a3fUI1fjcnl8/ZjiW4IfGBSkZ0220xGUjfW6KQETBwNiYlPU3vaFhmzA4JA==
+ b=eRANBCmSgIdYkH+Iz9x0PpYArwzCPwBB+Qkc6ygKmu/SrtoI5FeNxvWGtO0rUga/m4qf46YvfSoKXqkJOo3K9uxYrznCfL8HmdBBCCiffw9PSSAFN2aVWpO2mHi4RjWueNVOYPbaSFnSW62dXXsV69WT33exzmeQ4Od1nzTeqM8ZB0JGTK24LmebZP8wovnJ4TJoqOSGMxTP3k81ldFRDgK7pRIdWYfAZRITpsHx1mvTPZ6MS7CtgvHNKHPsD9OuMf8F/c+I2+qkVuHpeRU04SsSvp6JZYWnY9VXeGr6OOQUz89pxg1BA44zy8DP6cYq85T7S2icANlSrq/toxFjuw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jcA5K2pMBMJnmh4j0SCUhRCyJlJp7+/dPkh4AuGVLRo=;
- b=MW3T4xbmOvDXbSXTFBYEzWjjnfEFqpuOE2bJxT98EnHRZNtBy4WqhkSV6xGXNjaOe2DNrVSdene1b8xwlExPOWdAoAfljSiYvwOjIPQIlUMARKNxXi2vhnfFGmHcm8FGKa/IgeXPqHuscq35Zoai4pkJde9lbIC+PlGU3hi2KTfs3CqdjtdYwz3H3BQv7yIjRCL5SD2fh8mmX8lUxNeWbfBC/5MnCyRzubOp2i9uMxsR3L0NP6deO7ByOe2Frw/ZLnx1RHqhst1kGbwZAxcXnOxp/DrvwvM7ajCqnSUXO4QwhSu8dRRkTpKdan2wDzvV+YFhYUB3xuoYrNFkIr+HJw==
+ bh=AqgVW8PwoJ6vNjMRP78blR/9nL5EdkKjBdM3Ppy2wKY=;
+ b=V+Js0D8QI4oQL4MElKiGTSDOKGbDWf/hS+8aJuq/GVFhUGUUugYrwxgOysevrggO/ZafCsghO48dXUf4HMzoBmetYMiccvjHIGrLkVVBSlJlZGVVaRCW3x3Rww1xJbOrwC/+MXLKEaFSZJC8+jt1E+h6V18CGnYknHryxK/LSfsgdPd7A5uT06WEuM0Kbhv7dq3QkrQi44bKUrhJlqhu6T6q3JyzBR45bUyogO1V760G/pwTpm1X+rPZh+cf7kL04WxRkRD80jJmYc9tNuKT47+nVA6Lcy5fST97eZ2cVyztRvk5eut5uUEL972NEk4+BuGnUymAtWKMms1B9nBj8Q==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
- by BN8PR15MB3267.namprd15.prod.outlook.com (2603:10b6:408:74::20) with
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AqgVW8PwoJ6vNjMRP78blR/9nL5EdkKjBdM3Ppy2wKY=;
+ b=LiAWuQF8nmYmcyb/A2FmdAA/AvQ71rs5TZwjD+Fl6uEr/YPSwe2FslcZBeICcNJPCgrhpQ5niDNRJoSgCATREy242q5FYZPHOWwfY679OJ10PgbiJMKMIrktmTs/N9LFfoE8KQVco/XcRfy0ta7ESx1t7y6Z7kO/aH5hd/guj0RVOr999jwYXew32NLIZTcGI5CyDT3xrjiQD57evNs+YwC2h+B07Lj48FlT6DX9ZrjAJjcI4ucG1IGzTXenBdh9L4GzLf2wGrv1H4CwWEBRKQ9GgkWILIeIkQd9l/SiiM/2RPmsYBqGQsUHZwv9imUVvIhuebximIihRjzkZ1ainw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from DM4PR12MB5150.namprd12.prod.outlook.com (2603:10b6:5:391::23)
+ by BYAPR12MB2855.namprd12.prod.outlook.com (2603:10b6:a03:12c::24) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Tue, 10 May
- 2022 19:18:49 +0000
-Received: from SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::fd7d:7e89:37f4:1714]) by SA1PR15MB5016.namprd15.prod.outlook.com
- ([fe80::fd7d:7e89:37f4:1714%5]) with mapi id 15.20.5227.023; Tue, 10 May 2022
- 19:18:49 +0000
-Date:   Tue, 10 May 2022 12:18:46 -0700
-From:   Martin KaFai Lau <kafai@fb.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Subject: Re: [PATCH bpf-next v6 03/10] bpf: per-cgroup lsm flavor
-Message-ID: <20220510191846.exg6gremtqx7wbst@kafai-mbp.dhcp.thefacebook.com>
-References: <20220429211540.715151-1-sdf@google.com>
- <20220429211540.715151-4-sdf@google.com>
- <20220506230244.4t4p5gnbgg6i4tht@kafai-mbp.dhcp.thefacebook.com>
- <CAKH8qBsQnzHPtuAiCs67YvTh9m+CmVR+-9wVKJggKjZnV_oYtg@mail.gmail.com>
- <20220510071334.duvldvzob777dt47@kafai-mbp.dhcp.thefacebook.com>
- <CAKH8qBsR_kgQ3ETwm++AL7vZDcq1H-56eykqDdAcrveH5+ejzA@mail.gmail.com>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKH8qBsR_kgQ3ETwm++AL7vZDcq1H-56eykqDdAcrveH5+ejzA@mail.gmail.com>
-X-ClientProxiedBy: BYAPR08CA0040.namprd08.prod.outlook.com
- (2603:10b6:a03:117::17) To SA1PR15MB5016.namprd15.prod.outlook.com
- (2603:10b6:806:1db::19)
+ 2022 19:20:48 +0000
+Received: from DM4PR12MB5150.namprd12.prod.outlook.com
+ ([fe80::a186:70f2:4280:14df]) by DM4PR12MB5150.namprd12.prod.outlook.com
+ ([fe80::a186:70f2:4280:14df%7]) with mapi id 15.20.5227.023; Tue, 10 May 2022
+ 19:20:48 +0000
+Message-ID: <1eaebd1b-6933-20c9-1371-0429703bab2f@nvidia.com>
+Date:   Tue, 10 May 2022 22:20:34 +0300
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH bpf-next v9 3/5] bpf: Add helpers to issue and check SYN
+ cookies in XDP
+Content-Language: en-US
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Joe Stringer <joe@cilium.io>,
+        Florent Revest <revest@chromium.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@toke.dk>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Florian Westphal <fw@strlen.de>, pabeni@redhat.com
+References: <20220503171437.666326-1-maximmi@nvidia.com>
+ <20220503171437.666326-4-maximmi@nvidia.com>
+ <CAEf4BzYDfNuF4QL37ZLjR5--zimpycZsjzXhq6ao79_05+OOiA@mail.gmail.com>
+From:   Maxim Mikityanskiy <maximmi@nvidia.com>
+In-Reply-To: <CAEf4BzYDfNuF4QL37ZLjR5--zimpycZsjzXhq6ao79_05+OOiA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: LO2P123CA0081.GBRP123.PROD.OUTLOOK.COM
+ (2603:10a6:600:138::14) To DM4PR12MB5150.namprd12.prod.outlook.com
+ (2603:10b6:5:391::23)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 11dd028e-77dc-40f7-d0be-08da32b9e906
-X-MS-TrafficTypeDiagnostic: BN8PR15MB3267:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR15MB32678655E3EC8231DF36D35DD5C99@BN8PR15MB3267.namprd15.prod.outlook.com>
-X-FB-Source: Internal
+X-MS-Office365-Filtering-Correlation-Id: 9eea7d1d-efc2-4da6-b0f3-08da32ba3061
+X-MS-TrafficTypeDiagnostic: BYAPR12MB2855:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB2855D11BD263D87111BB1245DCC99@BYAPR12MB2855.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kvHNm+jHRepI+w18Gs54yxWsq9EHsA1pDhaduvicmVTzxYWncm4o2KWMjzmSmDIiUubUTOsFK8nFk+kcWusea2EoLd1YS8zrF8sFLMGedOLXwaNj7cMDZ6FppfN1XE9A43isrlQjoDsRq1O8UBeUpO7TsFCrGbZLLWvMICe/AwHkf73kOD0Nx+iUlihE/0QqDYKsRRcW4faTrpWte8Jfd2Ubvt7VPvMuDCuQfGb3biU/gPj5dj2MsPZJqGb0BmbXFjRKqrOZ+QI98/QM5O2S9OFRyvuIRlpI4928L1cFdy/+UZHe97oAHv6hjN9kLin/LTUkrSBxKNgObtO8iGixxNQpwleAZeNRsq9BC54IGe0m6E6X+Scn+qLf7ryLnTOPaig+fN+rkdfVEmJdFLQlRuWchTAC8HePu7Wd3EUF2j6omXlEKeu2Nsiv0BbVjJZrXviX9FP8hMDaqPRJtbt+b4O4pETW3ZD/x2ZY0C/8zeIFWObnMBrCzjSVC9EZUJtvt7ZlY4Pkc+VxcJExSk+mjmxNlvxGHzX8qBLXJd7FQr3PbaUaiOTvWLsuSQ+q8BRGebFz2ygZEB59S7F5zxSr5ON81eBJ6CGjfpoIHHi/m1Mx+annaDxbbGxhxdlYRJ6fAO0L7pCV/BXAvFDMXimeC8oFoODQTD4sF9BJzRX3ma+jRaztAoOHKoOiZb/9rc8yDb6KJZYt+oPcJBp0BA7/Dg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(66556008)(6512007)(6666004)(9686003)(508600001)(6486002)(66476007)(86362001)(66946007)(316002)(186003)(2906002)(52116002)(4326008)(8676002)(6916009)(38100700002)(8936002)(6506007)(83380400001)(1076003)(5660300002)(53546011)(21314003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: VFK7m96ieDfyxIO7iDyfKgcLfewgXyoPyHtF/Q5hQfQHRRNZLpqPz2yUf84d1NHQymDgMolrFxgdHQyMNKvVDRKZMRQOrvbEppXtt2uvD+4JsmDV++4T1/orE4RIhCUgrUL/VxPI6F8mqKrd9+21SBCq1NUNPXytWxS2E4RTyadlBJ51p2a+oiAUtinrjfMpqZM999/3ok8ZErVr/dqYy7am/aldfmTjGFCS4bUAtWCdCCMpyeinOr3+/5A8shUrW6h2mymB80ZzvFICAE+BxDD2dq/HuXkP3EDxnTK3m3aQ4hGAcYPKMzxTgY+WkE/CnpZoDzw3ZOWbeEYjWawmRzvkjaNfcX634lAQ5wiDUA3ZFHMqTRGCaMDd/hvmwkrZqwjShrOBPy/R7rb2poYMWf881BRf+uS6UvcYv3DNR067lwyPeHAVdDJm28bX8nGoLEIIISbVALfK7fOrCrEXczmwswW9OiOwQq9ZXHQfEGTTYcrrjM/xb9xdxhws+WNIecIZIYDNHsUOKkOKfl85j3LtbgiDIPUf1ppHqTaMRYIia7/ujPmPK3pJKRY8pF02rDPmjR3U6BTbtH0VWzSRXY01EBbTOagdFwMuxuydQ1UfO86GoisxI+0RqnfEPdC6PaV5hvA081Fk6RLywjs+niJ2BXULI/Oy5PHtENixwXM2A7IRHcNX5bCytcS0ph0uF5skOwZbzU/xu7O5JM7SsUAQkSDUj9XtX93zKe5jnUQ=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5150.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(53546011)(86362001)(38100700002)(83380400001)(6512007)(26005)(31696002)(2616005)(186003)(66476007)(31686004)(66556008)(8676002)(316002)(8936002)(4326008)(66946007)(36756003)(5660300002)(7416002)(2906002)(508600001)(6486002)(6506007)(6916009)(54906003)(6666004)(45980500001)(43740500002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?sjrSuvE8MYxieQRlXy2OKKK2Wif8KFTZAytGfvaVYyIIEPeh/dzP3/sqRr3u?=
- =?us-ascii?Q?Rnfzv1cn1gIvTRCSd6g6nSqyYBL6e6NzdF6qV65xPmpstYeTmjnBhtzVnWlj?=
- =?us-ascii?Q?KtZY2HrC+xwY4m84LaqjKJKX30c7cPuRgOawKvk38yTvRS3O1p637eEGOmC1?=
- =?us-ascii?Q?xhaaHvwtZvoQuhzA96LncCUPc1l9PhFGjioid6ijunXaae4IaKUNbP+UkB8I?=
- =?us-ascii?Q?jL9S9hKnak7hLJXhZv6wut4EXg3+DCRr2ZdHNBzP9sqn5m6rSM8rcklDSJpR?=
- =?us-ascii?Q?ULhZVPYbU06PZkIwYFJmX3yAeFC4bxGO7nQEDQWPboIXswpazODWTXk+Xs5i?=
- =?us-ascii?Q?jXeUFC02go+YF210klY+PTvjJMFdQ/bS9iuZ1U/X1e2+OdOVNxrpmCELFjvk?=
- =?us-ascii?Q?sGvw4bsJ2Fb1JdSbeJ3EwnUcLVLuISJvLqeOJQn1eobbRhMnRNf0uo9DpYyT?=
- =?us-ascii?Q?1SDumIgKQcofCj89jAq9Bd0NN9bcCapkbhouoVP6/uCMvyPzgW2aIj9urvQM?=
- =?us-ascii?Q?KtgjuazLxjMWMU8KyG+keqslr4lniSmkS4frXd2El0tXsLxFzfaiIFmR2JQ8?=
- =?us-ascii?Q?O9ns7t0vbtzLDua/v6lN7tvwdPRG2MHCYqIzFiljwtiKdXrk8H+tsetl+mmx?=
- =?us-ascii?Q?V87WJddqpvT0oHaaJb2YfSYClV4MIVmrRezP+ArGrQ14v9ZlCiJhjvQVdDcM?=
- =?us-ascii?Q?WDbiClCBc9ODka3GiTWZg6P4numVCUF60DgJdp8Fnd+ggXkMolfJqJ518WtM?=
- =?us-ascii?Q?ryP39TjnJQ8mf5Sp2BG9AyP/hQc4sE4q5OCT0M+M8iT2u7xO7lEA7MMawKw3?=
- =?us-ascii?Q?ZyzBObT0/glX4DpcHoQ3bScFxEbjfXvkcdXZ9yZtt23c3KApb2fMFd+TQRc9?=
- =?us-ascii?Q?TO9CI7Wo6CfJvljF24kfE48jGQcnixakLoeVAJe479gNW5l4DHrVokSHH2aE?=
- =?us-ascii?Q?DUI2ZBCRwx3MmvhwEfQkVQYNdxeLVPGBq7qJnX17scwji+2IHepvIM2HYI9D?=
- =?us-ascii?Q?F+j2Prb02QuIL5vdWyi7aqjFydV8W6/HgqUKwrwrm8u+FMa+N8109hTxpV2W?=
- =?us-ascii?Q?QcaZVferSWqTbqwyHtfF1gwP9lrrrJQd1JbQvJ/O6ez+1gSzsg1bcAepzRhk?=
- =?us-ascii?Q?XOBNDDPHCiL/GtvKbBEXUeTWR5jrEkf2lGqSMDv9BYoqlarDXcraflzBoZZ0?=
- =?us-ascii?Q?xy9mpOHx07D/BOMIBQMBsXu9e0nUR38wNT8w/Ac4P+PzEC412jwneSx63TSC?=
- =?us-ascii?Q?L8/v7mVkfyl+kBbod5XlQyMBO6YG2nAxKOb5Zb+V/slbn22ztoqJTHzLA8Fr?=
- =?us-ascii?Q?m9cMQa2f7+5wGnX2p1OjYXWXzNo9EldtsL4O9hU40CJXric+pYHiOqRgSm9j?=
- =?us-ascii?Q?eW9gryBbgLvD/FbB7tK38XnoqjDrkTLyIgZSxuRrxgze9b5NiEqS7Q0VHlnz?=
- =?us-ascii?Q?v+2+WKXbNVKyHrCAEe+zLlzZj11B5DrdhWbt5l8hShtLUDSNGnhAuxTK4FVl?=
- =?us-ascii?Q?6KzGSAQNmCVeUKWaWwq49NMNIDWxWnUHQ13Yr+W9slPNkzvwukMJxw8D+OjU?=
- =?us-ascii?Q?xe8IBhpMzyko+pJ6xlg/xxXFPXm4lliVGWjqaxyAT44GP0GU6I+Lz60gP3qg?=
- =?us-ascii?Q?PRLn9X3qSgx+GBAIxGDxfPnsJe6OXS2APeFK/t/fEClbFdIYtpuG4sNWUHnp?=
- =?us-ascii?Q?/meIc7+spy1yW1bOr2H8d3fN1mhM0IXun583tkEgda0Z/5aUBTP/WuNMv5pN?=
- =?us-ascii?Q?N5asD8m9y5tekwKnxZyzoKk5Pi4Ygv0=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11dd028e-77dc-40f7-d0be-08da32b9e906
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YlRWb1FsOTVlTG5mSXB6NlNXNkE1VTlLcWFxMThIQUJDWVE5TWJIbEFRaHRj?=
+ =?utf-8?B?UjkzcjZTTDhQR1BCWkdMaWJnemZhRDg2RGpjYzNpUG9pSDM2YzE3R0llY3pK?=
+ =?utf-8?B?d3NkYnV1UWhCQ1ZLcHZRNFZTdUNqVkNtQnArWCtvTWJHUzFyeUdLb1pvWmR2?=
+ =?utf-8?B?ZGpvdW5mWERmNzdCaE14SWF2blU0QXp6V0VxcVlwS2dCZzM1czVzQ09nN0p2?=
+ =?utf-8?B?cC9aRFFOVnQzZGpCUENqZ3dzM2xoeHJhQ1FLMkJITml3ME1hZFNVUXRiQmth?=
+ =?utf-8?B?VTkzM1RrdEY1ZFAwUFZ4TFhQMmFsazNVaG5FQStiS2l4RjM1Y2JnaTN4aDFW?=
+ =?utf-8?B?d1JPb2hoOStSZjRJTkNLZFNwR25ncm0xRWo2YkFjUGNGVzAwcTNTZWs4UmhI?=
+ =?utf-8?B?RzlhR3lwZFZJaUZpb3dZRWlhNWJzbUh4QWQ1TDQ0REMzMjFiOEk3Y2IybTda?=
+ =?utf-8?B?MjV2VHA2QlkxMkZHUU5xZWpXa3ZuK1B0eGhBK2dJZWoxdzAwbGszd0FwYmVT?=
+ =?utf-8?B?Z2xWTzYrUUV6VkVLRzdTS2tQL3BZRWszMEJIVzRzTGpsRGJZMlo4dFhMamZO?=
+ =?utf-8?B?QzhvSUNtL1VITmVQcUljSlBIK3luZEp1TkZuWVlmWEhsS0RZVVdYSXNGMEtJ?=
+ =?utf-8?B?WWpqVzE4L08zL2NZY1pEc3ovcGVraEJCOWhNcm1UOS9UOStoaTVlQmFPZXd5?=
+ =?utf-8?B?TjZObGxMM3lDQ2duakZkeFllRlhVWWdMUWpZem5UMGFRS0lodU8wdGMxNVJV?=
+ =?utf-8?B?QmEzVWtlOUFoanF3QmxqTzF4R3BUVjRZMER6SEZ1dkFWSnJsR0U3ejJZVUQv?=
+ =?utf-8?B?dHlsRTVTMldsNHZkWFluTy8vbUgyWG1NVmFCVnM5LzRFbEJ5dUF3c1lkUWky?=
+ =?utf-8?B?ZU5uM2RmTFc5S1BjNDh3T2FrNHJ1V0ZXK0hhNFkzNXdycU00cStqZWxEUW92?=
+ =?utf-8?B?bXQyQXBucmZyeWZxL0kvREFnbERXUHo5TjZTSjZ6aGZKeHBHemRuWDhndEhX?=
+ =?utf-8?B?U1Fac2dnMndOZ0Njc1piRXEvakZqOGpOK1JJN29hSDFWL3lSMUZmQnFGT1p1?=
+ =?utf-8?B?cHBOMGJHKzRDSmM2bFdzLy8xRkd6WmFoSmdYOC9Wb3Z0UVBYTFkxVXFjdHR2?=
+ =?utf-8?B?MS9oenl3TVdBWlp4YnV3YmJzNTlOOVVSblVlMFlRSUhtWTFDQzFUWVprcHo1?=
+ =?utf-8?B?eVlyZ09CY0N1QVBEaGlsMktKTngycE0xZ1E3RU9TWHM4dU1NTDVQckRHaGJH?=
+ =?utf-8?B?b2d0bDdMV05WMnFQZ0lraG94QTVKUEJBR3lDZURtWkVEbDdwOEQwNW5VZk9k?=
+ =?utf-8?B?VTN1Q0FsWHFiTlgzdU5WQ3NyRnZsb0Z0NEM4YXNNOFZCMkdBbmIzS1A1V0E4?=
+ =?utf-8?B?aDRkSjlETUpkL3k0Ym9YZUY2bVZHUUtQaFBuY3YxeXVVTitiQkIyS1JON3NQ?=
+ =?utf-8?B?L0ZrT3RSdjU0MEZsQ1FsdjF3Ykdxb08zeUU3cDl1TDloNVVzNk0vKzd6bmVj?=
+ =?utf-8?B?WURrTFE3N3NXYnBHV0lSRndUOHdUb3ZIWDIyUjdLWDVYUFdJZks2V29LbkZn?=
+ =?utf-8?B?RW9QcjA3SWJZZGd1eFp6d3FBYWoxQk44TWVObEF5UEFUbWVGcFJ6MVdVQUNH?=
+ =?utf-8?B?alpDZEpXQWx4dWM4aTlkK2pYNVErU1V3QlVybVpiSUwxRkVZZ2laRVN5TjNw?=
+ =?utf-8?B?ZEtOeWR6VE1mMnJ2OUUwQVg5aFJtSXRDblhMa2VUby9USGJKZVZvWEUwdHk3?=
+ =?utf-8?B?U1kwU3Y0ZktLdHJvNWFGNHpvREhlb1pBS3FTbDJRSVcxalg2TUpTUmdkNkU5?=
+ =?utf-8?B?ZFh5RlBDM0s2KzYyY2pFek1IRWVJMzZ0RU5ITnhBdHQvM2tGVHF2eUYreEYv?=
+ =?utf-8?B?eWMxZEJDdWhsSVJyWlp5UUNxQUQwQzAyU3RTcWtmNXo1SXdMK09tbEJxcGNv?=
+ =?utf-8?B?d2RCZGthbVBQcWd4T1AwWERvcDA1ank1eitrVlRCNU9nWjd0OFJoZHZKaFVX?=
+ =?utf-8?B?NE1US3FGM2s4VVgxZ205OEVQZndweVNCOUhtMDN4aGpEazFJRXVFeWJSSFp0?=
+ =?utf-8?B?MzlCN01YV2xRem1xQ3hhMTBvYjgyd3BidHBSVmxYbzI5V3JQZEdxZm1rangr?=
+ =?utf-8?B?MjNaTEZTODY2UXhsQ3U5ZVVZNm9LeSt4VjRzeTRQVC9hVUR2L2JZc0pSN0JQ?=
+ =?utf-8?B?TnFNaklWYy9HZStTcWFQa2UxUUthQ2FDcitPSmZKV3RsbzlIRUduQjRaTGFu?=
+ =?utf-8?B?bU1EdHIwakIrOEZzVnRsSjYrdlpmaldmMjFPd1RBRUhXbUNtWktMd2JIYWhh?=
+ =?utf-8?B?NnVSbVk5ZW5VeXIrSUhxNnFSY0pJdXhIc1JvN0lBSFNFRFoyRjh2Zz09?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9eea7d1d-efc2-4da6-b0f3-08da32ba3061
+X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5150.namprd12.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 19:18:48.9816
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 19:20:48.6954
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: t7ggCtMvK/QcIDKMKc6esZMEHRmj5lz9yMpvGe5s9rzUmPyzJOPbpwP09egQ0mpL
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR15MB3267
-X-Proofpoint-GUID: mYkD7N_VNx-fMQIec8mpuF9KH5RSwDWe
-X-Proofpoint-ORIG-GUID: mYkD7N_VNx-fMQIec8mpuF9KH5RSwDWe
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-10_06,2022-05-10_01,2022-02-23_01
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-UserPrincipalName: dsEojl5A1lD/7r/QV1EgwhntSrd1gGqhNAi91s0NfHCsJUvMr6A9nkngHnxTRqUq1HbHONxdKL7t2oFBUIVHnw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB2855
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 10:30:57AM -0700, Stanislav Fomichev wrote:
-> On Tue, May 10, 2022 at 12:13 AM Martin KaFai Lau <kafai@fb.com> wrote:
-> >
-> > On Mon, May 09, 2022 at 04:38:36PM -0700, Stanislav Fomichev wrote:
-> > > > > +unsigned int __cgroup_bpf_run_lsm_current(const void *ctx,
-> > > > > +                                       const struct bpf_insn *insn)
-> > > > > +{
-> > > > > +     const struct bpf_prog *shim_prog;
-> > > > > +     struct cgroup *cgrp;
-> > > > > +     int ret = 0;
-> > > > From lsm_hook_defs.h, there are some default return values that are not 0.
-> > > > Is it ok to always return 0 in cases like the cgroup array is empty ?
-> > >
-> > > That's a good point, I haven't thought about it. You're right, it
-> > > seems like attaching to this hook for some LSMs will change the
-> > > default from some error to zero.
-> > > Let's start by prohibiting those hooks for now? I guess in theory,
-> > > when we generate a trampoline, we can put this default value as an
-> > > input arg to these new __cgroup_bpf_run_lsm_xxx helpers (in the
-> > > future)?
-> > After looking at arch_prepare_bpf_trampoline, return 0 here should be fine.
-> > If I read it correctly, when the shim_prog returns 0, the trampoline
-> > will call the original kernel function which is the bpf_lsm_##NAME()
-> > defined in bpf_lsm.c and it will then return the zero/-ve DEFAULT.
+On 2022-05-07 00:19, Andrii Nakryiko wrote:
+> On Tue, May 3, 2022 at 10:15 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
+>>
+>> The new helpers bpf_tcp_raw_{gen,check}_syncookie_ipv{4,6} allow an XDP
+>> program to generate SYN cookies in response to TCP SYN packets and to
+>> check those cookies upon receiving the first ACK packet (the final
+>> packet of the TCP handshake).
+>>
+>> Unlike bpf_tcp_{gen,check}_syncookie these new helpers don't need a
+>> listening socket on the local machine, which allows to use them together
+>> with synproxy to accelerate SYN cookie generation.
+>>
+>> Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+>> Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+>> ---
+>>   include/net/tcp.h              |   1 +
+>>   include/uapi/linux/bpf.h       |  78 ++++++++++++++++++++++
+>>   net/core/filter.c              | 118 +++++++++++++++++++++++++++++++++
+>>   net/ipv4/tcp_input.c           |   3 +-
+>>   scripts/bpf_doc.py             |   4 ++
+>>   tools/include/uapi/linux/bpf.h |  78 ++++++++++++++++++++++
+>>   6 files changed, 281 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/net/tcp.h b/include/net/tcp.h
+>> index 94a52ad1101c..45aafc28ce00 100644
+>> --- a/include/net/tcp.h
+>> +++ b/include/net/tcp.h
+>> @@ -432,6 +432,7 @@ u16 tcp_v4_get_syncookie(struct sock *sk, struct iphdr *iph,
+>>                           struct tcphdr *th, u32 *cookie);
+>>   u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
+>>                           struct tcphdr *th, u32 *cookie);
+>> +u16 tcp_parse_mss_option(const struct tcphdr *th, u16 user_mss);
+>>   u16 tcp_get_syncookie_mss(struct request_sock_ops *rsk_ops,
+>>                            const struct tcp_request_sock_ops *af_ops,
+>>                            struct sock *sk, struct tcphdr *th);
+>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>> index 4dd9e34f2a60..5e611d898302 100644
+>> --- a/include/uapi/linux/bpf.h
+>> +++ b/include/uapi/linux/bpf.h
+>> @@ -5156,6 +5156,80 @@ union bpf_attr {
+>>    *             if not NULL, is a reference which must be released using its
+>>    *             corresponding release function, or moved into a BPF map before
+>>    *             program exit.
+>> + *
+>> + * s64 bpf_tcp_raw_gen_syncookie_ipv4(struct iphdr *iph, struct tcphdr *th, u32 th_len)
+>> + *     Description
+>> + *             Try to issue a SYN cookie for the packet with corresponding
+>> + *             IPv4/TCP headers, *iph* and *th*, without depending on a
+>> + *             listening socket.
+>> + *
+>> + *             *iph* points to the IPv4 header.
+>> + *
+>> + *             *th* points to the start of the TCP header, while *th_len*
+>> + *             contains the length of the TCP header (at least
+>> + *             **sizeof**\ (**struct tcphdr**)).
+>> + *     Return
+>> + *             On success, lower 32 bits hold the generated SYN cookie in
+>> + *             followed by 16 bits which hold the MSS value for that cookie,
+>> + *             and the top 16 bits are unused.
+>> + *
+>> + *             On failure, the returned value is one of the following:
+>> + *
+>> + *             **-EINVAL** if *th_len* is invalid.
+>> + *
+>> + * s64 bpf_tcp_raw_gen_syncookie_ipv6(struct ipv6hdr *iph, struct tcphdr *th, u32 th_len)
+>> + *     Description
+>> + *             Try to issue a SYN cookie for the packet with corresponding
+>> + *             IPv6/TCP headers, *iph* and *th*, without depending on a
+>> + *             listening socket.
+>> + *
+>> + *             *iph* points to the IPv6 header.
+>> + *
+>> + *             *th* points to the start of the TCP header, while *th_len*
+>> + *             contains the length of the TCP header (at least
+>> + *             **sizeof**\ (**struct tcphdr**)).
+>> + *     Return
+>> + *             On success, lower 32 bits hold the generated SYN cookie in
+>> + *             followed by 16 bits which hold the MSS value for that cookie,
+>> + *             and the top 16 bits are unused.
+>> + *
+>> + *             On failure, the returned value is one of the following:
+>> + *
+>> + *             **-EINVAL** if *th_len* is invalid.
+>> + *
+>> + *             **-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
+>> + *
+>> + * int bpf_tcp_raw_check_syncookie_ipv4(struct iphdr *iph, struct tcphdr *th)
 > 
-> Not sure I read the same :-/ I'm assuming that for those cases we
-> actually end up generating fmod_ret trampoline which seems to be
-> unconditionally saving r0 into fp-8 ?
-invoke_bpf_mod_ret() calls invoke_bpf_prog(..., true) that saves the r0.
+> Note that all existing helpers that just return error or 0 on success
+> return long. Please use long for consistency.
 
-Later, the "if (flags & BPF_TRAMP_F_CALL_ORIG)" will still
-"/* call the original function */" and then stores the r0 retval
-from the original function, no? or I mis-read something ?
+OK. There are some existing helpers that return int, though: 
+bpf_inode_storage_delete, bpf_get_retval, bpf_set_retval. They should 
+probably be fixed by someone as well.
 
+>> + *     Description
+>> + *             Check whether *iph* and *th* contain a valid SYN cookie ACK
+>> + *             without depending on a listening socket.
+>> + *
+>> + *             *iph* points to the IPv4 header.
+>> + *
+>> + *             *th* points to the TCP header.
+>> + *     Return
+>> + *             0 if *iph* and *th* are a valid SYN cookie ACK.
+>> + *
+>> + *             On failure, the returned value is one of the following:
+>> + *
+>> + *             **-EACCES** if the SYN cookie is not valid.
+>> + *
+>> + * int bpf_tcp_raw_check_syncookie_ipv6(struct ipv6hdr *iph, struct tcphdr *th)
 > 
-> > > Another thing that seems to be related: there are a bunch of hooks
-> > > that return void, so returning EPERM from the cgroup programs won't
-> > > work as expected.
-> > > I can probably record, at verification time, whether lsm_cgroup
-> > > programs return any "non-success" return codes and prohibit attaching
-> > > these progs to the void hooks?
-> > hmm...yeah, BPF_LSM_CGROUP can be enforced to return either 0 or 1 as
-> > most other cgroup-progs do.
-> >
-> > Do you have a use case that needs to return something other than -EPERM ?
+> same
 > 
-> We do already enforce 0/1 for cgroup progs (and we have helpers to
-> expose custom errno). What I want to avoid is letting users attach
-> programs that try to return the error for the void hooks. And it seems
-> like we record that return range for a particular cgroup program and
-> verify it at attach time, WDYT?
-Make sense.  Do that in check_return_code() at load time instead of
-attach time?
-To be specific, meaning enforce BPF_LSM_CGROUP to 0/1 for int return type
-and always 1 for void return type?
+>> + *     Description
+>> + *             Check whether *iph* and *th* contain a valid SYN cookie ACK
+>> + *             without depending on a listening socket.
+>> + *
+>> + *             *iph* points to the IPv6 header.
+>> + *
+>> + *             *th* points to the TCP header.
+>> + *     Return
+>> + *             0 if *iph* and *th* are a valid SYN cookie ACK.
+>> + *
+>> + *             On failure, the returned value is one of the following:
+>> + *
+>> + *             **-EACCES** if the SYN cookie is not valid.
+>> + *
+>> + *             **-EPROTONOSUPPORT** if CONFIG_IPV6 is not builtin.
+> 
+> [...]
 
-Ah, I forgot there is a bpf_set_retval().  I assume we eventually want
-to allow that for BPF_LSM_CGROUP later?  Once it is allowed,
-the verifier should also reject bpf_set_retval() when the
-attach_btf_id has a void return type?
