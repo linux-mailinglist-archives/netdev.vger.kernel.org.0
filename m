@@ -2,142 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60D3A5227CD
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 01:49:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 564125227D1
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 01:51:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236670AbiEJXtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 19:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47768 "EHLO
+        id S236944AbiEJXvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 19:51:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232867AbiEJXtJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 19:49:09 -0400
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBC5D7982A;
-        Tue, 10 May 2022 16:49:06 -0700 (PDT)
-Received: by mail-io1-xd29.google.com with SMTP id m6so449651iob.4;
-        Tue, 10 May 2022 16:49:06 -0700 (PDT)
+        with ESMTP id S238645AbiEJXvI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 19:51:08 -0400
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD42F366B8
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 16:51:06 -0700 (PDT)
+Received: by mail-ed1-x529.google.com with SMTP id be20so539998edb.12
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 16:51:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linux-foundation.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=9pcB5jys6dNcZue2nxpSEaqmzI5+cJi/9C2vrddSdtA=;
-        b=YN05Rdb6bf94IudrameYyHKfVdI7l3D3mdbXpF+GDB8xcSKSQK2Wtd2sSPKKcEgeRj
-         1P1rc/oKs3SMYYjf5hC0+9dgtgcyXJ9JRcKGMxRxyG4enp3UgZ5gTrPoFMg1aM7Qk8ES
-         HgCTdaI11+cHSY1EEoOXv/bFtRhP8CDwTVkhYtwp8UBpT8+lGrCGxrNq+Eh2CVtHloPn
-         aH4gkw8LftVB+y1ZwZS6kxvH9X/V7dxc4YK9V4jBX0y80GhxvTiNHHck4e/Lhh42z2KP
-         HQU0gD22zJAw9489JdCHdHwhkyV28LMIH1s+oZLMvtkozJZzD+fuXeliR2yBMTh/ohpH
-         Zzmg==
+        bh=s7uQP88rm2fFVrAVhakdMnaytPLChwV+spwEqxpvxKE=;
+        b=Wvb2Yr5ntSMikIY6rsVTXCZINVsgnvf5OHdXaS5WophjI51WFvB8FsxEaYv1RdGkSy
+         ORGLa02GFQN4jWiwyp35UkGxqCVY8hbh1eV9xU7ToJNJzjVWjhEYOqjgamybrHXG8cWb
+         TwhAiglLuZCkojR6K6YA46HDyLB6G+PqIX51A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9pcB5jys6dNcZue2nxpSEaqmzI5+cJi/9C2vrddSdtA=;
-        b=ajyZWOstt0Eyv0wksO+j3gYaHrQXnRu15BC3Wq7/sQEOiI49n4phcBBmZDnNLMG2ba
-         UyhXQoeLCSmVOzadw/b+TNw51BFzRXryt1FQwhFHdMB+Yrb2B8ascSecvYv4C5KX6XzE
-         qFGOlSti55VF0q2YMMZzLW0sigHB/fBsDh8huExv4x5O6wIVymRqMd9hgcYYDQRgIL8C
-         JdmrIMp3iZPl0UgpwoWCVjJdcXPoLzZAHMYkAKieW5yBedsh0Nc60V49ZB648vZfZ+dE
-         uq7GlfoXCpR9NRQOG5NIMMMBTPtVCDi8H9Dj5VamDhaRoEu7j36Be3McrZIjGGsaJbWA
-         n4iw==
-X-Gm-Message-State: AOAM530CL2a31vqhtreRnRCRNG576StGXH9NlWEYwAEvNKcu/31pGpMQ
-        86CYoQIJiAULaSiixLPsa2JOVELhJm/vB9YcWQA=
-X-Google-Smtp-Source: ABdhPJwnOiHQnfoYzQ4Ulsm9ONZgM9YlTtOsQb2tM1auygLlB1Fk20jk2kfhBgZ+9xdYTn1XvyjX3CM3Gehh9KksPDc=
-X-Received: by 2002:a05:6602:1683:b0:64f:ba36:d3cf with SMTP id
- s3-20020a056602168300b0064fba36d3cfmr9640442iow.144.1652226546288; Tue, 10
- May 2022 16:49:06 -0700 (PDT)
+        bh=s7uQP88rm2fFVrAVhakdMnaytPLChwV+spwEqxpvxKE=;
+        b=MdKT/BhanABdbs6yACudT84+3zuNOPtFy5+WR+v4eBhzbo6jvCXM7frMg7dKSKT29a
+         xSmgz779RUqEiDBdRZULk21NjSlzEON8qSYMpbf/U4Gngz7HQBYeFv4VNU6P5TWTidYF
+         lCa6Q0Alfnml7zCz6D0vLjytHV/KK06H5HbEZi3A2AvOH817daoC2ph3iSOdaq/z8scJ
+         sgg6eZZc3QwvyCs7pIFRUK/wkrXfocMU2LHLttoSVJvAbvSyZ+nXo43cJpYPsOfSJ43f
+         hxc2t43g1vUrks/nngn/b2hXthtgIFvxpOCQ0JxRX5EBtBZJ537FlW98PH8KqiOmA2F1
+         Nvyg==
+X-Gm-Message-State: AOAM533UCpnzz2jwu3AUSRSJVQzbLgURefthOxCR1fGGy+Guts1s2d43
+        WY4IuGqgenS1ZIekQGznOoRzLEgT816VgjgzDPc=
+X-Google-Smtp-Source: ABdhPJztD0mzLuuU2JtTw+WUWwXzkbk2Gxpqezb9D/9l3Pzbh/fu/gduE3iJgx/5dcD84NWx5raS9w==
+X-Received: by 2002:a05:6402:350f:b0:428:43a1:647d with SMTP id b15-20020a056402350f00b0042843a1647dmr25906845edd.62.1652226665218;
+        Tue, 10 May 2022 16:51:05 -0700 (PDT)
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
+        by smtp.gmail.com with ESMTPSA id b15-20020a170906660f00b006f39ffe23fdsm305624ejp.0.2022.05.10.16.51.03
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 16:51:04 -0700 (PDT)
+Received: by mail-wm1-f45.google.com with SMTP id bd25-20020a05600c1f1900b0039485220e16so2013262wmb.0
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 16:51:03 -0700 (PDT)
+X-Received: by 2002:a1c:4c06:0:b0:394:65c4:bd03 with SMTP id
+ z6-20020a1c4c06000000b0039465c4bd03mr2167400wmf.8.1652226663399; Tue, 10 May
+ 2022 16:51:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220510074659.2557731-1-jolsa@kernel.org>
-In-Reply-To: <20220510074659.2557731-1-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 10 May 2022 16:48:55 -0700
-Message-ID: <CAEf4BzbK9zgetgE1yKkCANTZqizUrXgamJa2X0f0XmzQUdFrCQ@mail.gmail.com>
-Subject: Re: [PATCHv2 0/3] perf tools: Fix prologue generation
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ian Rogers <irogers@google.com>
+References: <20220510082351-mutt-send-email-mst@kernel.org>
+ <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com> <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X>
+In-Reply-To: <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 10 May 2022 16:50:47 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
+Message-ID: <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
+Subject: Re: [GIT PULL] virtio: last minute fixup
+To:     Nathan Chancellor <nathan@kernel.org>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mie@igel.co.jp
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 12:47 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Tue, May 10, 2022 at 4:12 PM Nathan Chancellor <nathan@kernel.org> wrote:
 >
-> hi,
-> sending change we discussed some time ago [1] to get rid of
-> some deprecated functions we use in perf prologue code.
->
-> Despite the gloomy discussion I think the final code does
-> not look that bad ;-)
->
-> This patchset removes following libbpf functions from perf:
->   bpf_program__set_prep
->   bpf_program__nth_fd
->   struct bpf_prog_prep_result
->
-> v2 changes:
->   - use fallback section prog handler, so we don't need to
->     use section prefix [Andrii]
->   - realloc prog->insns array in bpf_program__set_insns [Andrii]
->   - squash patch 1 from previous version with
->     bpf_program__set_insns change [Daniel]
->   - patch 3 already merged [Arnaldo]
->   - added more comments
->
->   meanwhile.. perf/core and bpf-next diverged, so:
->     - libbpf bpf_program__set_insns change is based on bpf-next/master
->     - perf changes do not apply on bpf-next/master so they are based on
->       perf/core ... however they can be merged only after we release
->       libbpf 0.8.0 with bpf_program__set_insns change, so we don't break
->       the dynamic linking
->       I'm sending perf changes now just for review, I'll resend them
->       once libbpf 0.8.0 is released
->
-> thanks,
-> jirka
->
->
-> [1] https://lore.kernel.org/bpf/CAEf4BzaiBO3_617kkXZdYJ8hS8YF--ZLgapNbgeeEJ-pY0H88g@mail.gmail.com/
-> ---
-> Jiri Olsa (1):
->       libbpf: Add bpf_program__set_insns function
->
+> For what it's worth, as someone who is frequently tracking down and
+> reporting issues, a link to the mailing list post in the commit message
+> makes it much easier to get these reports into the right hands, as the
+> original posting is going to have all relevant parties in one location
+> and it will usually have all the context necessary to triage the
+> problem.
 
-The first patch looks good to me. The rest I can't really review and
-test properly, so I'll leave it up to Arnaldo.
+Honestly, I think such a thing would be trivial to automate with
+something like just a patch-id lookup, rather than a "Link:".
 
-Arnaldo, how do we coordinate these patches? Should they go through
-bpf-next (after you Ack them) or you want them in your tree?
+And such a lookup model ("where was this patch posted") would work for
+<i>any</i> patch (and often also find previous unmodified versions of
+it when it has been posted multiple times).
 
-I'd like to get the bpf_program__set_insns() patch into bpf-next so
-that I can do libbpf v0.8 release, having it in a separate tree is
-extremely inconvenient. Please let me know how you think we should
-proceed?
+I suspect that most of the building blocks of such automation
+effectively already exists, since I think the lore infrastructure
+already integrates with patchwork, and patchwork already has a "look
+up by patch id".
 
->  tools/lib/bpf/libbpf.c   | 22 ++++++++++++++++++++++
->  tools/lib/bpf/libbpf.h   | 18 ++++++++++++++++++
->  tools/lib/bpf/libbpf.map |  1 +
->  3 files changed, 41 insertions(+)
->
-> Jiri Olsa (2):
->       perf tools: Register fallback libbpf section handler
->       perf tools: Rework prologue generation code
->
->  tools/perf/util/bpf-loader.c | 175 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-------------
->  1 file changed, 157 insertions(+), 18 deletions(-)
+Wouldn't it be cool if you had some webby interface to just go from
+commit SHA1 to patch ID to a lore.kernel.org lookup of where said
+patch was done?
+
+Of course, I personally tend to just search by the commit contents
+instead, which works just about as well. If the first line of the
+commit isn't very unique, add a "f:author" to the search.
+
+IOW, I really don't find much value in the "Link to original
+submission", because that thing is *already* trivial to find, and the
+lore search is actually better in many ways (it also tends to find
+people *reporting* that commit, which is often what you really want -
+the reason you're doing the search is that there's something going on
+with it).
+
+My argument here really is that "find where this commit was posted" is
+
+ (a) not generally the most interesting thing
+
+ (b) doesn't even need that "Link:" line.
+
+but what *is* interesting, and where the "Link:" line is very useful,
+is finding where the original problem that *caused* that patch to be
+posted in the first place.
+
+Yes, obviously you can find that original problem by searching too if
+the commit message has enough other information.
+
+For example, if there is an oops quoted in the commit message, I have
+personally searched for parts of that kind of information to find the
+original report and discussion.
+
+So that whole "searching is often an option" is true for pretty much
+_any_ Link:, but I think that for the whole "original submission" it's
+so mindless and can be automated that it really doesn't add much real
+value at all.
+
+                Linus
