@@ -2,54 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89FFE522643
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 23:26:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D386F522655
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 23:31:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230509AbiEJV0N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 17:26:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51414 "EHLO
+        id S234922AbiEJVb0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 17:31:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41578 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229595AbiEJV0L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 17:26:11 -0400
+        with ESMTP id S235348AbiEJVbJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 17:31:09 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05317D3;
-        Tue, 10 May 2022 14:26:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE4CF4B43E;
+        Tue, 10 May 2022 14:31:05 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D0806178B;
-        Tue, 10 May 2022 21:26:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAAAFC385CD;
-        Tue, 10 May 2022 21:26:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6ABF061694;
+        Tue, 10 May 2022 21:31:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5728C385CA;
+        Tue, 10 May 2022 21:31:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652217968;
-        bh=kR2kpr/WthoIHNv/CMjDoYh09YdTh0O5cNq+3yPSmP8=;
+        s=k20201202; t=1652218264;
+        bh=qMN+5WDoS3UIEh8Xz7V+tC8QRCRZGmauwtSb43rY0QI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GBX1NGtj8+fZSAQU+zwr0peTmOEVQ78ODOb3Wddpp7aNGpjggHfepUfk6+Nzrm2a/
-         4Mb5YfAjDAXSJbQ+s95159HCT5EMsN01iONNmvHtL5QZdw2woEEamTn2S322glxmub
-         UusdklfhDjjriBLJ/xbJFUsdrCie6t5oZCoHdwOR/SiZp4ajxO9QMWAaVZkWg+7vnG
-         n4EPDUpFbnKaC1a+hyyujBMtwYISNrdhodogQOKP5B5315uwxIm4lxaMe+UySXQkPU
-         heKBoimsFsohAPxifQJnp0o0EAJZMZ+75l5x01H0s4cmf3MgK9rolX7PpiS6YvqGcY
-         JPJ0gu3Ji1TjQ==
-Date:   Tue, 10 May 2022 14:26:06 -0700
+        b=dbb4gITNAKvNAM2A7SQHuN4sjH0ThxDvf1mYtJsvVK8M9WSOtokL91cedxypRFt2G
+         a8HN4fRmmy+PI8pJABzCSGpcPEISz3tdnM5ruPnfS12BZ0VGadXUzdbwQu9BnqBTrA
+         e4PxJcV6XAaU/Su2GdYfC8RwXFIodXbm3YldBLJkWe1V+XuUpyuGG5Tg7qYdtn8Xig
+         puIMhAAznC/E6xm8Vio1vMva2QHCr75oouro6gqs6xuNwKHPI+2mZC6sKErcVfZnOt
+         LTbFjJQqMTLK7leDW1amQ7OE8PrtCHs5ubIsChp9DvZaTjBo2yYdK+qAL8+e1daem/
+         VYFh6wA8mD9Eg==
+Date:   Tue, 10 May 2022 14:31:02 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Joe Perches <joe@perches.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
+        linux-kernel@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Jerin Jacob <jerinj@marvell.com>,
+        Linu Cherian <lcherian@marvell.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
-Message-ID: <20220510142606.34d83121@kernel.org>
-In-Reply-To: <20220510094014.68440-1-nbd@nbd.name>
-References: <20220510094014.68440-1-nbd@nbd.name>
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        hariprasad <hkelam@marvell.com>, netdev@vger.kernel.org
+Subject: Re: [PATCH 06/22] octeontx2: use bitmap_empty() instead of
+ bitmap_weight()
+Message-ID: <20220510143102.3da4498e@kernel.org>
+In-Reply-To: <20220510154750.212913-7-yury.norov@gmail.com>
+References: <20220510154750.212913-1-yury.norov@gmail.com>
+        <20220510154750.212913-7-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -63,12 +74,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 10 May 2022 11:40:13 +0200 Felix Fietkau wrote:
-> Padding for transmitted packets needs to account for the special tag.
-> With not enough padding, garbage bytes are inserted by the switch at the
-> end of small packets.
-> 
-> Fixes: 5cd8985a1909 ("net-next: dsa: add Mediatek tag RX/TX handler")
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+On Tue, 10 May 2022 08:47:34 -0700 Yury Norov wrote:
+> bitmap_empty() is better than bitmap_weight() because it may return
+> earlier, and improves on readability.
 
-You should answer all questions and address or dispute all feedback.
+resend patches 6 and 9 separately please. if you CC the ML only on 
+a portion of the patches our build bot will ignore it.
