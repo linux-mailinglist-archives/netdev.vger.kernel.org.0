@@ -2,40 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 837375210EA
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 11:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEB475210FE
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 11:34:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238815AbiEJJeY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 05:34:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34764 "EHLO
+        id S238912AbiEJJil (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 05:38:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234466AbiEJJeW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 05:34:22 -0400
-Received: from out30-57.freemail.mail.aliyun.com (out30-57.freemail.mail.aliyun.com [115.124.30.57])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E936928C9D3;
-        Tue, 10 May 2022 02:30:24 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R361e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=tonylu@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0VCqS5tH_1652175021;
-Received: from localhost(mailfrom:tonylu@linux.alibaba.com fp:SMTPD_---0VCqS5tH_1652175021)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 10 May 2022 17:30:22 +0800
-Date:   Tue, 10 May 2022 17:30:21 +0800
-From:   Tony Lu <tonylu@linux.alibaba.com>
-To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 2/2] net/smc: align the connect behaviour with TCP
-Message-ID: <Ynowrcnqb/wv1iNt@TonyMac-Alibaba>
-Reply-To: Tony Lu <tonylu@linux.alibaba.com>
-References: <20220509115837.94911-1-guangguan.wang@linux.alibaba.com>
- <20220509115837.94911-3-guangguan.wang@linux.alibaba.com>
+        with ESMTP id S235891AbiEJJij (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 05:38:39 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940B128F7D9;
+        Tue, 10 May 2022 02:34:42 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id d22so16227150plr.9;
+        Tue, 10 May 2022 02:34:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=qaDh4Ckz8QrCcHoQ04UJEqXA1un3Pk43mgbPkIGVN1I=;
+        b=KVEJAoTst/XMBdGnBfrFVplKvsiqSzit2RwnZ7YD0A3CpnQAafw/CLzObaclOYYcMR
+         VY0VtGrEwffts3ooJ/aWd6Y3OiGHrKNnA+2TQfO5EbQLI2np25d2zdp36orDc7NCaDsy
+         p7hnQ50UM/95iDTalSnkgGuGu31IAPd7odOCq8d2mz8IrW8+zS8ruIQw9H9NfmfdQOd1
+         mKVOLdEvvAGLEyVhv1dAmbEwLRVfIT4MrEqmuQo8ozINm3iLE/uyN/W9dPE/FgQfpUfe
+         pwXBYLO6p0XZrZ1+YZ6eGPqe1BsvHXXZPfIveHzDLlu+kC0RzTHrJNVb8894S6f+c5oe
+         sfcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=qaDh4Ckz8QrCcHoQ04UJEqXA1un3Pk43mgbPkIGVN1I=;
+        b=6CIzvJzjXsjt/Tm5xisYKaZszkWE6lMZh9YuJYSBUxhBBW3oova3K3r5lnIJR5fDD/
+         v35Ka9mnU7ceW3t7IbNjwAaSYS4qAO5bRaL5pjO47+mUFi34I8tdUud2DVSOtSzEDnEt
+         XZZIuTIG/L9z1BfxL0PP8R3aFFhH2VmlzbhN0Synyw1QVEW3hHjQJbSrx7Rv/DeOw0xf
+         tPWTK4MdMG7uYm+ezRp+aMnt/OcqeuUEDDP1hg8zz++Ezvug3E7zYb7ICHiJv4pPiMFk
+         z5rnl5ASH3tilRJ38cul+a+rMnkE9/a1FWlpQDYFd/B/emCo5MfIdTgqvVx1D3E0meWQ
+         ckeg==
+X-Gm-Message-State: AOAM530WcDYwrhJmMKoXdB0Bi07ZH7krjhx4+QbevR+eFS50eafesf0G
+        Xv7+ArbbbYKVSUGm4lk0I/4E+9BRIQOMIw==
+X-Google-Smtp-Source: ABdhPJy/YUSbDEPTeKe1+Vh8Kbzycu5xwlQFcScA9EB0LpH/f0Zgcz/Kilxl0fL/79wxmIjbIQMvJg==
+X-Received: by 2002:a17:902:d510:b0:15e:afc4:85a0 with SMTP id b16-20020a170902d51000b0015eafc485a0mr19918712plg.64.1652175282090;
+        Tue, 10 May 2022 02:34:42 -0700 (PDT)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id i8-20020aa796e8000000b0050dc762812bsm10176399pfq.5.2022.05.10.02.34.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 02:34:41 -0700 (PDT)
+Message-ID: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
+Date:   Tue, 10 May 2022 18:34:37 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509115837.94911-3-guangguan.wang@linux.alibaba.com>
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     Martin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Akira Yokosawa <akiyks@gmail.com>
+Subject: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive
+ instead of 'figure'
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -43,154 +75,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 09, 2022 at 07:58:37PM +0800, Guangguan Wang wrote:
-> Connect with O_NONBLOCK will not be completed immediately
-> and returns -EINPROGRESS. It is possible to use selector/poll
-> for completion by selecting the socket for writing. After select
-> indicates writability, a second connect function call will return
-> 0 to indicate connected successfully as TCP does, but smc returns
+Two issues were observed in the ReST doc added by commit c3a0addefbde
+("docs: ctucanfd: CTU CAN FD open-source IP core documentation.").
 
-If the connection is established successfully, the following up call of
-connect() returns -EISCONN (SS_CONNECTED), which is expected and SMC
-does it, same as TCP.
+The plain "figure" directive broke "make pdfdocs" due to a missing
+PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"
+directive, which is an extension for kernel documentations, should
+be used instead.
 
-In case of misunderstanding, could you append more detailed information?
+The directive of "code:: raw" causes a warning from both
+"make htmldocs" and "make pdfdocs", which reads:
 
-Thanks,
-Tony Lu
+    [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name
+    'raw' is not known
 
-> -EISCONN. Use socket state for smc to indicate connect state, which
-> can help smc aligning the connect behaviour with TCP.
-> 
-> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
-> ---
->  net/smc/af_smc.c | 53 ++++++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 49 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-> index fce16b9d6e1a..45f9f7c6e776 100644
-> --- a/net/smc/af_smc.c
-> +++ b/net/smc/af_smc.c
-> @@ -1544,9 +1544,32 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
->  		goto out_err;
->  
->  	lock_sock(sk);
-> +	switch (sock->state) {
-> +	default:
-> +		rc = -EINVAL;
-> +		goto out;
-> +	case SS_CONNECTED:
-> +		rc = sk->sk_state == SMC_ACTIVE ? -EISCONN : -EINVAL;
-> +		goto out;
-> +	case SS_CONNECTING:
-> +		if (sk->sk_state == SMC_ACTIVE) {
-> +			sock->state = SS_CONNECTED;
-> +			rc = 0;
-> +			goto out;
-> +		}
-> +		break;
-> +	case SS_UNCONNECTED:
-> +		sock->state = SS_CONNECTING;
-> +		break;
-> +	}
-> +
->  	switch (sk->sk_state) {
->  	default:
->  		goto out;
-> +	case SMC_CLOSED:
-> +		rc = sock_error(sk) ? : -ECONNABORTED;
-> +		sock->state = SS_UNCONNECTED;
-> +		goto out;
->  	case SMC_ACTIVE:
->  		rc = -EISCONN;
->  		goto out;
-> @@ -1565,18 +1588,22 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
->  		goto out;
->  
->  	sock_hold(&smc->sk); /* sock put in passive closing */
-> -	if (smc->use_fallback)
-> +	if (smc->use_fallback) {
-> +		sock->state = SS_CONNECTED;
->  		goto out;
-> +	}
->  	if (flags & O_NONBLOCK) {
->  		if (queue_work(smc_hs_wq, &smc->connect_work))
->  			smc->connect_nonblock = 1;
->  		rc = -EINPROGRESS;
->  	} else {
->  		rc = __smc_connect(smc);
-> -		if (rc < 0)
-> +		if (rc < 0) {
->  			goto out;
-> -		else
-> +		} else {
->  			rc = 0; /* success cases including fallback */
-> +			sock->state = SS_CONNECTED;
-> +		}
->  	}
->  
->  out:
-> @@ -1693,6 +1720,7 @@ struct sock *smc_accept_dequeue(struct sock *parent,
->  		}
->  		if (new_sock) {
->  			sock_graft(new_sk, new_sock);
-> +			new_sock->state = SS_CONNECTED;
->  			if (isk->use_fallback) {
->  				smc_sk(new_sk)->clcsock->file = new_sock->file;
->  				isk->clcsock->file->private_data = isk->clcsock;
-> @@ -2424,7 +2452,7 @@ static int smc_listen(struct socket *sock, int backlog)
->  
->  	rc = -EINVAL;
->  	if ((sk->sk_state != SMC_INIT && sk->sk_state != SMC_LISTEN) ||
-> -	    smc->connect_nonblock)
-> +	    smc->connect_nonblock || sock->state != SS_UNCONNECTED)
->  		goto out;
->  
->  	rc = 0;
-> @@ -2716,6 +2744,17 @@ static int smc_shutdown(struct socket *sock, int how)
->  
->  	lock_sock(sk);
->  
-> +	if (sock->state == SS_CONNECTING) {
-> +		if (sk->sk_state == SMC_ACTIVE)
-> +			sock->state = SS_CONNECTED;
-> +		else if (sk->sk_state == SMC_PEERCLOSEWAIT1 ||
-> +			 sk->sk_state == SMC_PEERCLOSEWAIT2 ||
-> +			 sk->sk_state == SMC_APPCLOSEWAIT1 ||
-> +			 sk->sk_state == SMC_APPCLOSEWAIT2 ||
-> +			 sk->sk_state == SMC_APPFINCLOSEWAIT)
-> +			sock->state = SS_DISCONNECTING;
-> +	}
-> +
->  	rc = -ENOTCONN;
->  	if ((sk->sk_state != SMC_ACTIVE) &&
->  	    (sk->sk_state != SMC_PEERCLOSEWAIT1) &&
-> @@ -2729,6 +2768,7 @@ static int smc_shutdown(struct socket *sock, int how)
->  		sk->sk_shutdown = smc->clcsock->sk->sk_shutdown;
->  		if (sk->sk_shutdown == SHUTDOWN_MASK) {
->  			sk->sk_state = SMC_CLOSED;
-> +			sk->sk_socket->state = SS_UNCONNECTED;
->  			sock_put(sk);
->  		}
->  		goto out;
-> @@ -2754,6 +2794,10 @@ static int smc_shutdown(struct socket *sock, int how)
->  	/* map sock_shutdown_cmd constants to sk_shutdown value range */
->  	sk->sk_shutdown |= how + 1;
->  
-> +	if (sk->sk_state == SMC_CLOSED)
-> +		sock->state = SS_UNCONNECTED;
-> +	else
-> +		sock->state = SS_DISCONNECTING;
->  out:
->  	release_sock(sk);
->  	return rc ? rc : rc1;
-> @@ -3139,6 +3183,7 @@ static int __smc_create(struct net *net, struct socket *sock, int protocol,
->  
->  	rc = -ENOBUFS;
->  	sock->ops = &smc_sock_ops;
-> +	sock->state = SS_UNCONNECTED;
->  	sk = smc_sock_alloc(net, sock, protocol);
->  	if (!sk)
->  		goto out;
-> -- 
-> 2.24.3 (Apple Git-128)
+A plain literal-block marker should suffice where no syntax
+highlighting is intended.
+
+Fix the issues by using suitable directive and marker.
+
+Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core docu=
+mentation.")
+Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc: Martin Jerabek <martin.jerabek01@gmail.com>
+Cc: Ondrej Ille <ondrej.ille@gmail.com>
+Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+---
+ .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/networking/device_drivers/can/ctu/ctucanfd-dri=
+ver.rst b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver=
+=2Erst
+index 2fde5551e756..40c92ea272af 100644
+--- a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst=
+
++++ b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst=
+
+@@ -72,7 +72,7 @@ it is reachable (on which bus it resides) and its confi=
+guration =E2=80=93
+ registers address, interrupts and so on. An example of such a device
+ tree is given in .
+=20
+-.. code:: raw
++::
+=20
+            / {
+                /* ... */
+@@ -451,7 +451,7 @@ the FIFO is maintained, together with priority rotati=
+on, is depicted in
+=20
+ |
+=20
+-.. figure:: fsm_txt_buffer_user.svg
++.. kernel-figure:: fsm_txt_buffer_user.svg
+=20
+    TX Buffer states with possible transitions
+=20
+--=20
+2.25.1
+
