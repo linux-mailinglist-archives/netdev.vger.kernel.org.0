@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E0B8521529
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:22:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46E95521522
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:22:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241782AbiEJM02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 08:26:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48680 "EHLO
+        id S241781AbiEJM00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 08:26:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241640AbiEJMZy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:25:54 -0400
+        with ESMTP id S241673AbiEJMZ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:25:56 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DD0491365;
-        Tue, 10 May 2022 05:21:57 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A6D39859D;
+        Tue, 10 May 2022 05:21:59 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net-next 02/17] netfilter: conntrack: include ecache dying list in dumps
-Date:   Tue, 10 May 2022 14:21:35 +0200
-Message-Id: <20220510122150.92533-3-pablo@netfilter.org>
+Subject: [PATCH net-next 03/17] netfilter: conntrack: remove the percpu dying list
+Date:   Tue, 10 May 2022 14:21:36 +0200
+Message-Id: <20220510122150.92533-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220510122150.92533-1-pablo@netfilter.org>
 References: <20220510122150.92533-1-pablo@netfilter.org>
@@ -36,114 +36,257 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-The new pernet dying list includes conntrack entries that await
-delivery of the 'destroy' event via ctnetlink.
+Its no longer needed. Entries that need event redelivery are placed
+on the new pernet dying list.
 
-The old percpu dying list will be removed soon.
+The advantage is that there is no need to take additional spinlock on
+conntrack removal unless event redelivery failed or the conntrack entry
+was never added to the table in the first place (confirmed bit not set).
+
+The IPS_CONFIRMED bit now needs to be set as soon as the entry has been
+unlinked from the unconfirmed list, else the destroy function may
+attempt to unlink it a second time.
 
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_conntrack_ecache.h |  2 +
- net/netfilter/nf_conntrack_ecache.c         | 10 +++++
- net/netfilter/nf_conntrack_netlink.c        | 43 +++++++++++++++++++++
- 3 files changed, 55 insertions(+)
+ include/net/netns/conntrack.h        |  1 -
+ net/netfilter/nf_conntrack_core.c    | 35 +++++-----------------------
+ net/netfilter/nf_conntrack_ecache.c  |  1 -
+ net/netfilter/nf_conntrack_netlink.c | 23 ++++++------------
+ 4 files changed, 13 insertions(+), 47 deletions(-)
 
-diff --git a/include/net/netfilter/nf_conntrack_ecache.h b/include/net/netfilter/nf_conntrack_ecache.h
-index a6135b5030dd..b57d73785e4d 100644
---- a/include/net/netfilter/nf_conntrack_ecache.h
-+++ b/include/net/netfilter/nf_conntrack_ecache.h
-@@ -164,6 +164,8 @@ void nf_conntrack_ecache_work(struct net *net, enum nf_ct_ecache_state state);
- void nf_conntrack_ecache_pernet_init(struct net *net);
- void nf_conntrack_ecache_pernet_fini(struct net *net);
- 
-+struct nf_conntrack_net_ecache *nf_conn_pernet_ecache(const struct net *net);
-+
- static inline bool nf_conntrack_ecache_dwork_pending(const struct net *net)
- {
- 	return net->ct.ecache_dwork_pending;
-diff --git a/net/netfilter/nf_conntrack_ecache.c b/net/netfilter/nf_conntrack_ecache.c
-index 4d5e729741b2..b362c399efeb 100644
---- a/net/netfilter/nf_conntrack_ecache.c
-+++ b/net/netfilter/nf_conntrack_ecache.c
-@@ -38,6 +38,16 @@ enum retry_state {
- 	STATE_DONE,
+diff --git a/include/net/netns/conntrack.h b/include/net/netns/conntrack.h
+index 0294f3d473af..e985a3010b89 100644
+--- a/include/net/netns/conntrack.h
++++ b/include/net/netns/conntrack.h
+@@ -96,7 +96,6 @@ struct nf_ip_net {
+ struct ct_pcpu {
+ 	spinlock_t		lock;
+ 	struct hlist_nulls_head unconfirmed;
+-	struct hlist_nulls_head dying;
  };
  
-+struct nf_conntrack_net_ecache *nf_conn_pernet_ecache(const struct net *net)
-+{
-+	struct nf_conntrack_net *cnet = nf_ct_pernet(net);
-+
-+	return &cnet->ecache;
-+}
-+#if IS_MODULE(CONFIG_NF_CT_NETLINK)
-+EXPORT_SYMBOL_GPL(nf_conn_pernet_ecache);
-+#endif
-+
- static enum retry_state ecache_work_evict_list(struct nf_conntrack_net *cnet)
+ struct netns_ct {
+diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+index ca1d1d105163..9010b6e5a072 100644
+--- a/net/netfilter/nf_conntrack_core.c
++++ b/net/netfilter/nf_conntrack_core.c
+@@ -525,21 +525,6 @@ clean_from_lists(struct nf_conn *ct)
+ 	nf_ct_remove_expectations(ct);
+ }
+ 
+-/* must be called with local_bh_disable */
+-static void nf_ct_add_to_dying_list(struct nf_conn *ct)
+-{
+-	struct ct_pcpu *pcpu;
+-
+-	/* add this conntrack to the (per cpu) dying list */
+-	ct->cpu = smp_processor_id();
+-	pcpu = per_cpu_ptr(nf_ct_net(ct)->ct.pcpu_lists, ct->cpu);
+-
+-	spin_lock(&pcpu->lock);
+-	hlist_nulls_add_head(&ct->tuplehash[IP_CT_DIR_ORIGINAL].hnnode,
+-			     &pcpu->dying);
+-	spin_unlock(&pcpu->lock);
+-}
+-
+ /* must be called with local_bh_disable */
+ static void nf_ct_add_to_unconfirmed_list(struct nf_conn *ct)
  {
- 	unsigned long stop = jiffies + ECACHE_MAX_JIFFIES;
+@@ -556,11 +541,11 @@ static void nf_ct_add_to_unconfirmed_list(struct nf_conn *ct)
+ }
+ 
+ /* must be called with local_bh_disable */
+-static void nf_ct_del_from_dying_or_unconfirmed_list(struct nf_conn *ct)
++static void nf_ct_del_from_unconfirmed_list(struct nf_conn *ct)
+ {
+ 	struct ct_pcpu *pcpu;
+ 
+-	/* We overload first tuple to link into unconfirmed or dying list.*/
++	/* We overload first tuple to link into unconfirmed list.*/
+ 	pcpu = per_cpu_ptr(nf_ct_net(ct)->ct.pcpu_lists, ct->cpu);
+ 
+ 	spin_lock(&pcpu->lock);
+@@ -648,7 +633,8 @@ void nf_ct_destroy(struct nf_conntrack *nfct)
+ 	 */
+ 	nf_ct_remove_expectations(ct);
+ 
+-	nf_ct_del_from_dying_or_unconfirmed_list(ct);
++	if (unlikely(!nf_ct_is_confirmed(ct)))
++		nf_ct_del_from_unconfirmed_list(ct);
+ 
+ 	local_bh_enable();
+ 
+@@ -686,7 +672,6 @@ static void nf_ct_delete_from_lists(struct nf_conn *ct)
+ 	local_bh_disable();
+ 
+ 	__nf_ct_delete_from_lists(ct);
+-	nf_ct_add_to_dying_list(ct);
+ 
+ 	local_bh_enable();
+ }
+@@ -700,8 +685,6 @@ static void nf_ct_add_to_ecache_list(struct nf_conn *ct)
+ 	hlist_nulls_add_head_rcu(&ct->tuplehash[IP_CT_DIR_ORIGINAL].hnnode,
+ 				 &cnet->ecache.dying_list);
+ 	spin_unlock(&cnet->ecache.dying_lock);
+-#else
+-	nf_ct_add_to_dying_list(ct);
+ #endif
+ }
+ 
+@@ -995,7 +978,6 @@ static void __nf_conntrack_insert_prepare(struct nf_conn *ct)
+ 	struct nf_conn_tstamp *tstamp;
+ 
+ 	refcount_inc(&ct->ct_general.use);
+-	ct->status |= IPS_CONFIRMED;
+ 
+ 	/* set conntrack timestamp, if enabled. */
+ 	tstamp = nf_conn_tstamp_find(ct);
+@@ -1024,7 +1006,6 @@ static int __nf_ct_resolve_clash(struct sk_buff *skb,
+ 		nf_conntrack_get(&ct->ct_general);
+ 
+ 		nf_ct_acct_merge(ct, ctinfo, loser_ct);
+-		nf_ct_add_to_dying_list(loser_ct);
+ 		nf_ct_put(loser_ct);
+ 		nf_ct_set(skb, ct, ctinfo);
+ 
+@@ -1157,7 +1138,6 @@ nf_ct_resolve_clash(struct sk_buff *skb, struct nf_conntrack_tuple_hash *h,
+ 		return ret;
+ 
+ drop:
+-	nf_ct_add_to_dying_list(loser_ct);
+ 	NF_CT_STAT_INC(net, drop);
+ 	NF_CT_STAT_INC(net, insert_failed);
+ 	return NF_DROP;
+@@ -1224,10 +1204,10 @@ __nf_conntrack_confirm(struct sk_buff *skb)
+ 	 * user context, else we insert an already 'dead' hash, blocking
+ 	 * further use of that particular connection -JM.
+ 	 */
+-	nf_ct_del_from_dying_or_unconfirmed_list(ct);
++	nf_ct_del_from_unconfirmed_list(ct);
++	ct->status |= IPS_CONFIRMED;
+ 
+ 	if (unlikely(nf_ct_is_dying(ct))) {
+-		nf_ct_add_to_dying_list(ct);
+ 		NF_CT_STAT_INC(net, insert_failed);
+ 		goto dying;
+ 	}
+@@ -1251,7 +1231,6 @@ __nf_conntrack_confirm(struct sk_buff *skb)
+ 			goto out;
+ 		if (chainlen++ > max_chainlen) {
+ chaintoolong:
+-			nf_ct_add_to_dying_list(ct);
+ 			NF_CT_STAT_INC(net, chaintoolong);
+ 			NF_CT_STAT_INC(net, insert_failed);
+ 			ret = NF_DROP;
+@@ -2800,7 +2779,6 @@ void nf_conntrack_init_end(void)
+  * We need to use special "null" values, not used in hash table
+  */
+ #define UNCONFIRMED_NULLS_VAL	((1<<30)+0)
+-#define DYING_NULLS_VAL		((1<<30)+1)
+ 
+ int nf_conntrack_init_net(struct net *net)
+ {
+@@ -2821,7 +2799,6 @@ int nf_conntrack_init_net(struct net *net)
+ 
+ 		spin_lock_init(&pcpu->lock);
+ 		INIT_HLIST_NULLS_HEAD(&pcpu->unconfirmed, UNCONFIRMED_NULLS_VAL);
+-		INIT_HLIST_NULLS_HEAD(&pcpu->dying, DYING_NULLS_VAL);
+ 	}
+ 
+ 	net->ct.stat = alloc_percpu(struct ip_conntrack_stat);
+diff --git a/net/netfilter/nf_conntrack_ecache.c b/net/netfilter/nf_conntrack_ecache.c
+index b362c399efeb..0d075161ae3a 100644
+--- a/net/netfilter/nf_conntrack_ecache.c
++++ b/net/netfilter/nf_conntrack_ecache.c
+@@ -95,7 +95,6 @@ static enum retry_state ecache_work_evict_list(struct nf_conntrack_net *cnet)
+ 	hlist_nulls_for_each_entry_safe(h, n, &evicted_list, hnnode) {
+ 		struct nf_conn *ct = nf_ct_tuplehash_to_ctrack(h);
+ 
+-		hlist_nulls_add_fake(&ct->tuplehash[IP_CT_DIR_ORIGINAL].hnnode);
+ 		hlist_nulls_del_rcu(&ct->tuplehash[IP_CT_DIR_REPLY].hnnode);
+ 		nf_ct_put(ct);
+ 
 diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index 924d766e6c53..a4ec2aad2187 100644
+index a4ec2aad2187..2e9c8183e4a2 100644
 --- a/net/netfilter/nf_conntrack_netlink.c
 +++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -62,6 +62,7 @@ struct ctnetlink_list_dump_ctx {
+@@ -62,7 +62,6 @@ struct ctnetlink_list_dump_ctx {
  	struct nf_conn *last;
  	unsigned int cpu;
  	bool done;
-+	bool retrans_done;
+-	bool retrans_done;
  };
  
  static int ctnetlink_dump_tuples_proto(struct sk_buff *skb,
-@@ -1802,6 +1803,48 @@ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying
- static int
- ctnetlink_dump_dying(struct sk_buff *skb, struct netlink_callback *cb)
- {
-+	struct ctnetlink_list_dump_ctx *ctx = (void *)cb->ctx;
-+	struct nf_conn *last = ctx->last;
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
-+	const struct net *net = sock_net(skb->sk);
-+	struct nf_conntrack_net_ecache *ecache_net;
-+	struct nf_conntrack_tuple_hash *h;
-+	struct hlist_nulls_node *n;
-+#endif
-+
-+	if (ctx->retrans_done)
-+		return ctnetlink_dump_list(skb, cb, true);
-+
-+	ctx->last = NULL;
-+
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
-+	ecache_net = nf_conn_pernet_ecache(net);
-+	spin_lock_bh(&ecache_net->dying_lock);
-+
-+	hlist_nulls_for_each_entry(h, n, &ecache_net->dying_list, hnnode) {
-+		struct nf_conn *ct;
-+		int res;
-+
-+		ct = nf_ct_tuplehash_to_ctrack(h);
-+		if (last && last != ct)
-+			continue;
-+
-+		res = ctnetlink_dump_one_entry(skb, cb, ct, true);
-+		if (res < 0) {
-+			spin_unlock_bh(&ecache_net->dying_lock);
-+			nf_ct_put(last);
-+			return skb->len;
-+		}
-+
-+		nf_ct_put(last);
-+		last = NULL;
-+	}
-+
-+	spin_unlock_bh(&ecache_net->dying_lock);
-+#endif
-+	nf_ct_put(last);
-+	ctx->retrans_done = true;
-+
- 	return ctnetlink_dump_list(skb, cb, true);
+@@ -1751,13 +1750,12 @@ static int ctnetlink_dump_one_entry(struct sk_buff *skb,
  }
  
+ static int
+-ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying)
++ctnetlink_dump_unconfirmed(struct sk_buff *skb, struct netlink_callback *cb)
+ {
+ 	struct ctnetlink_list_dump_ctx *ctx = (void *)cb->ctx;
+ 	struct nf_conn *ct, *last;
+ 	struct nf_conntrack_tuple_hash *h;
+ 	struct hlist_nulls_node *n;
+-	struct hlist_nulls_head *list;
+ 	struct net *net = sock_net(skb->sk);
+ 	int res, cpu;
+ 
+@@ -1774,12 +1772,11 @@ ctnetlink_dump_list(struct sk_buff *skb, struct netlink_callback *cb, bool dying
+ 
+ 		pcpu = per_cpu_ptr(net->ct.pcpu_lists, cpu);
+ 		spin_lock_bh(&pcpu->lock);
+-		list = dying ? &pcpu->dying : &pcpu->unconfirmed;
+ restart:
+-		hlist_nulls_for_each_entry(h, n, list, hnnode) {
++		hlist_nulls_for_each_entry(h, n, &pcpu->unconfirmed, hnnode) {
+ 			ct = nf_ct_tuplehash_to_ctrack(h);
+ 
+-			res = ctnetlink_dump_one_entry(skb, cb, ct, dying);
++			res = ctnetlink_dump_one_entry(skb, cb, ct, false);
+ 			if (res < 0) {
+ 				ctx->cpu = cpu;
+ 				spin_unlock_bh(&pcpu->lock);
+@@ -1812,8 +1809,8 @@ ctnetlink_dump_dying(struct sk_buff *skb, struct netlink_callback *cb)
+ 	struct hlist_nulls_node *n;
+ #endif
+ 
+-	if (ctx->retrans_done)
+-		return ctnetlink_dump_list(skb, cb, true);
++	if (ctx->done)
++		return 0;
+ 
+ 	ctx->last = NULL;
+ 
+@@ -1842,10 +1839,10 @@ ctnetlink_dump_dying(struct sk_buff *skb, struct netlink_callback *cb)
+ 
+ 	spin_unlock_bh(&ecache_net->dying_lock);
+ #endif
++	ctx->done = true;
+ 	nf_ct_put(last);
+-	ctx->retrans_done = true;
+ 
+-	return ctnetlink_dump_list(skb, cb, true);
++	return skb->len;
+ }
+ 
+ static int ctnetlink_get_ct_dying(struct sk_buff *skb,
+@@ -1863,12 +1860,6 @@ static int ctnetlink_get_ct_dying(struct sk_buff *skb,
+ 	return -EOPNOTSUPP;
+ }
+ 
+-static int
+-ctnetlink_dump_unconfirmed(struct sk_buff *skb, struct netlink_callback *cb)
+-{
+-	return ctnetlink_dump_list(skb, cb, false);
+-}
+-
+ static int ctnetlink_get_ct_unconfirmed(struct sk_buff *skb,
+ 					const struct nfnl_info *info,
+ 					const struct nlattr * const cda[])
 -- 
 2.30.2
 
