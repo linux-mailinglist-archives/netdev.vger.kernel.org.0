@@ -2,75 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1227A520A8F
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 03:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD8DC520A9B
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 03:20:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234115AbiEJBUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 21:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43276 "EHLO
+        id S233934AbiEJBYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 21:24:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58984 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234133AbiEJBUD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 21:20:03 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D384BB87;
-        Mon,  9 May 2022 18:16:04 -0700 (PDT)
-Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ky0Qx6h0WzGpgM;
-        Tue, 10 May 2022 09:13:13 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 09:15:59 +0800
-Received: from [10.174.178.174] (10.174.178.174) by
- dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 10 May 2022 09:15:59 +0800
-Subject: Re: [PATCH] net: stmmac: fix missing pci_disable_device() on error in
- stmmac_pci_probe()
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <netdev@vger.kernel.org>, <peppe.cavallaro@st.com>,
-        <alexandre.torgue@foss.st.com>, <davem@davemloft.net>,
-        <edumazet@google.com>
-References: <20220506094039.3629649-1-yangyingliang@huawei.com>
- <20220509155525.26e053db@kernel.org>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <e54d585b-3295-127e-0a49-08293eaed2ed@huawei.com>
-Date:   Tue, 10 May 2022 09:15:58 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        with ESMTP id S232695AbiEJBYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 21:24:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B481A20F774
+        for <netdev@vger.kernel.org>; Mon,  9 May 2022 18:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6D486B81A6A
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0A1C3C385C7;
+        Tue, 10 May 2022 01:20:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652145613;
+        bh=3CWkc1QD+14BPOojWsyLteAn9/GOrTidNxwF2KiexpA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=tp2/iHxjfCA9n+GE8ZyCrVD5GkhvWbFOfHwBvRNg5ipuwkYDi8L/coBzkZVhC2tCl
+         hd91vEWgrmIILT1rO5MVLvhxwsRkH9aerNiA0sk8U4o4hxCGBvqwKIPH/1LqOlEVaO
+         ZgWefZFZ8hse2C+4BAwcT4t+lrckeLi8rNIqPAfwMHOrzfuXhvjragbXiNSCr1vnO3
+         GOw7RgPXAyrYVK3mb1euUgbfFA2GDnptPNQyHUeoAfHR4Ik0vQIleWH6GuH3NJ8OpO
+         cEhW0K+PwZu4y8psqjaSMlbGoQ6BV70TflCXBAQWRd+vQsboTjMBy37L7s15l7Jbmw
+         8zVxcZLMlABUA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D9B83F03931;
+        Tue, 10 May 2022 01:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20220509155525.26e053db@kernel.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.174.178.174]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/1] batman-adv: Don't skb_split skbuffs with frag_list
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165214561288.15844.2929287601845577779.git-patchwork-notify@kernel.org>
+Date:   Tue, 10 May 2022 01:20:12 +0000
+References: <20220508132110.20451-2-sw@simonwunderlich.de>
+In-Reply-To: <20220508132110.20451-2-sw@simonwunderlich.de>
+To:     Simon Wunderlich <sw@simonwunderlich.de>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        b.a.t.m.a.n@lists.open-mesh.org, sven@narfation.org,
+        felix@kaechele.ca
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello:
 
-On 2022/5/10 6:55, Jakub Kicinski wrote:
-> On Fri, 6 May 2022 17:40:39 +0800 Yang Yingliang wrote:
->> Fix the missing pci_disable_device() before return
->> from stmmac_pci_probe() in the error handling case.
->>
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> Here indeed pcim_enable_device() seems like a better fit.
-OK, I will send a v2 later.
+This patch was applied to netdev/net.git (master)
+by Simon Wunderlich <sw@simonwunderlich.de>:
 
-Thanks,
-Yang
-> .
+On Sun,  8 May 2022 15:21:10 +0200 you wrote:
+> From: Sven Eckelmann <sven@narfation.org>
+> 
+> The receiving interface might have used GRO to receive more fragments than
+> MAX_SKB_FRAGS fragments. In this case, these will not be stored in
+> skb_shinfo(skb)->frags but merged into the frag list.
+> 
+> batman-adv relies on the function skb_split to split packets up into
+> multiple smaller packets which are not larger than the MTU on the outgoing
+> interface. But this function cannot handle frag_list entries and is only
+> operating on skb_shinfo(skb)->frags. If it is still trying to split such an
+> skb and xmit'ing it on an interface without support for NETIF_F_FRAGLIST,
+> then validate_xmit_skb() will try to linearize it. But this fails due to
+> inconsistent information. And __pskb_pull_tail will trigger a BUG_ON after
+> skb_copy_bits() returns an error.
+> 
+> [...]
+
+Here is the summary with links:
+  - [1/1] batman-adv: Don't skb_split skbuffs with frag_list
+    https://git.kernel.org/netdev/net/c/a063f2fba3fa
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
