@@ -2,207 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4092D5213A1
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:23:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F26FA521403
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:38:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240989AbiEJL1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 07:27:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
+        id S241131AbiEJLmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 07:42:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240988AbiEJL1l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 07:27:41 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698282ABBF4
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 04:23:42 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id y21so19604414edo.2
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 04:23:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=LctLxw6WJgRnNRfVYjXR7qnVGoqfoOtpSvD0+ebnLhE=;
-        b=RIz6tvyYGEz0K9vamq4/wwycNP/liF7QX/Z9HdwDgI5dUlz7Cbb4ZSh4cNdQ30NHYW
-         g9CLZq6b4CTTxObQIfLBGIszm9KrxVisfOV8iHosRpUmBar4igC6mTznUVX9pZfDEU93
-         /DGLoowijKW/LABhcbEPyHE6QhwnURkNuGr8ltIteK+1seVYbLQU6QCryseLVIQhObYH
-         2QByimVv6/9QYX37sDPKysqJK2l1ssVq7oX4HcpUDUE1O0BJHgx/eUP+pCPo3N2sGHnQ
-         f9CSJfFClBUf+lGIzgSaw1RW2zuguTXrBvpkZa0j4YI6AytU5S3ystD1DTZNdKkaGaOz
-         ilaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LctLxw6WJgRnNRfVYjXR7qnVGoqfoOtpSvD0+ebnLhE=;
-        b=5KNgENUuoh0byvSQHYt2oKZh2yUnYYLAG9sycwWWcVx1uoEd5OyGFqSHF5Oha4mRFW
-         2ASgJ9p9vHHbaTn9vHoVHHonhhT0MCJracfnEq54DSPRxal8zUbnMOvd1MTnNItxrI8k
-         gcloB1MVhRdr7Z0P0OU61o6zkbNDWgLs0TtvN9pOxmyFsI69Xo4tfqgrBr+mSBTIdUNV
-         jUmjrLWum3VmAwOc+Ss497AQzcjYwOFaryTgYW0292jX1m9ULG9zriwgSkH3lbMlL99u
-         ELsFTpfrttd3Iu2Ji3gjnlgbbC/udp2sM1N92A3Ax09vOqFK+L1N8nfwsMwtYPdZnUBZ
-         TlMw==
-X-Gm-Message-State: AOAM531Y0etyxYBgFUaehQPPdflhp2ExCbdSeh5Mps1WbkdRQMwU6LDO
-        peCl1O11y4LDOn4el8hYjhc=
-X-Google-Smtp-Source: ABdhPJx6UaT/4WcJPNkyHKS8PFV8NwNi6CQ1w7jE7XdU0y7DVeuGveGz5acydbQS1rzlPg9qfPzVJg==
-X-Received: by 2002:aa7:c70f:0:b0:425:f70d:b34 with SMTP id i15-20020aa7c70f000000b00425f70d0b34mr23171384edq.306.1652181820868;
-        Tue, 10 May 2022 04:23:40 -0700 (PDT)
-Received: from [192.168.26.149] (ip-194-187-74-233.konfederacka.maverick.com.pl. [194.187.74.233])
-        by smtp.googlemail.com with ESMTPSA id n12-20020a1709065e0c00b006f3ef214e0bsm6107300eju.113.2022.05.10.04.23.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 04:23:40 -0700 (PDT)
-Message-ID: <bc628101-8772-9994-3aa7-c141ae151f15@gmail.com>
-Date:   Tue, 10 May 2022 13:23:38 +0200
+        with ESMTP id S241118AbiEJLmk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 07:42:40 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FBBC24DC00;
+        Tue, 10 May 2022 04:38:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id E7BCB21C07;
+        Tue, 10 May 2022 11:38:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652182721; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=QjxQbnD6WUcAB5XSGPbhgiXq5Z1nB8h07eo4ZkZ4QC8=;
+        b=ux1OKlKPpQAZrqb3VSx/+cdnKv+z0GMrb7Vrl4wT7av9mwtdsYHmGTFl15YLILBNoNipDu
+        zhzvyNUQ0tVf4I8bosAIddNvm3hk9CLYxTFt2W7RQIuTrmM1G9742/mw3JpxDF9W//N0xh
+        4YsR4kO61TX2TGUrgE/V7TAnZzSnJsg=
+Received: from suse.cz (unknown [10.100.208.146])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id F0AB42C141;
+        Tue, 10 May 2022 11:38:39 +0000 (UTC)
+Date:   Tue, 10 May 2022 13:38:39 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Evan Green <evgreen@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
+        kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
+        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de,
+        Kees Cook <keescook@chromium.org>, luto@kernel.org,
+        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
+        peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
+        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
+        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        David Gow <davidgow@google.com>,
+        Julius Werner <jwerner@chromium.org>
+Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
+ trylock on panic path
+Message-ID: <YnpOv4hAPV4b+6v4@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-5-gpiccoli@igalia.com>
+ <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com>
+ <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:96.0) Gecko/20100101
- Thunderbird/96.0
-Subject: Re: Optimizing kernel compilation / alignments for network
- performance
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Alexander Lobakin <alexandr.lobakin@intel.com>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Felix Fietkau <nbd@nbd.name>,
-        "openwrt-devel@lists.openwrt.org" <openwrt-devel@lists.openwrt.org>,
-        Florian Fainelli <f.fainelli@gmail.com>
-References: <84f25f73-1fab-fe43-70eb-45d25b614b4c@gmail.com>
- <20220427125658.3127816-1-alexandr.lobakin@intel.com>
- <066fc320-dc04-11a4-476e-b0d11f3b17e6@gmail.com>
- <CAK8P3a2tA8vkB-G-sQdvoiB8Pj08LRn_Vhf7qT-YdBJQwaGhaA@mail.gmail.com>
- <eec5e665-0c89-a914-006f-4fce3f296699@gmail.com> <YnP1nOqXI4EO1DLU@lunn.ch>
- <510bd08b-3d46-2fc8-3974-9d99fd53430e@gmail.com>
- <CAK8P3a0Rouw8jHHqGhKtMu-ks--bqpVYj_+u4-Pt9VoFOK7nMw@mail.gmail.com>
-From:   =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>
-In-Reply-To: <CAK8P3a0Rouw8jHHqGhKtMu-ks--bqpVYj_+u4-Pt9VoFOK7nMw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 6.05.2022 10:45, Arnd Bergmann wrote:
-> On Fri, May 6, 2022 at 9:44 AM Rafał Miłecki <zajec5@gmail.com> wrote:
->>
->> On 5.05.2022 18:04, Andrew Lunn wrote:
->>>> you'll see that most used functions are:
->>>> v7_dma_inv_range
->>>> __irqentry_text_end
->>>> l2c210_inv_range
->>>> v7_dma_clean_range
->>>> bcma_host_soc_read32
->>>> __netif_receive_skb_core
->>>> arch_cpu_idle
->>>> l2c210_clean_range
->>>> fib_table_lookup
->>>
->>> There is a lot of cache management functions here.
+On Tue 2022-05-03 16:12:09, Guilherme G. Piccoli wrote:
+> On 03/05/2022 15:03, Evan Green wrote:
+> > [...]
+> > gsmi_shutdown_reason() is a common function called in other scenarios
+> > as well, like reboot and thermal trip, where it may still make sense
+> > to wait to acquire a spinlock. Maybe we should add a parameter to
+> > gsmi_shutdown_reason() so that you can get your change on panic, but
+> > we don't convert other callbacks into try-fail scenarios causing us to
+> > miss logs.
+> > 
 > 
-> Indeed, so optimizing the coherency management (see Felix' reply)
-> is likely to help most in making the driver faster, but that does not
-> explain why the alignment of the object code has such a big impact
-> on performance.
+> Hi Evan, thanks for your feedback, much appreciated!
+> What I've done in other cases like this was to have a helper checking
+> the spinlock in the panic notifier - if we can acquire that, go ahead
+> but if not, bail out. For a proper example of an implementation, check
+> patch 13 of the series:
+> https://lore.kernel.org/lkml/20220427224924.592546-14-gpiccoli@igalia.com/ .
 > 
-> To investigate the alignment further, what I was actually looking for
-> is a comparison of the profile of the slow and fast case. Here I would
-> expect that the slow case spends more time in one of the functions
-> that don't deal with cache management (maybe fib_table_lookup or
-> __netif_receive_skb_core).
-> 
-> A few other thoughts:
-> 
-> - bcma_host_soc_read32() is a fundamentally slow operation, maybe
->    some of the calls can turned into a relaxed read, like the readback
->    in bgmac_chip_intrs_off() or the 'poll again' at the end bgmac_poll(),
->    though obviously not the one in bgmac_dma_rx_read().
->    It may be possible to even avoid some of the reads entirely, checking
->    for more data in bgmac_poll() may actually be counterproductive
->    depending on the workload.
+> Do you agree with that, or prefer really a parameter in
+> gsmi_shutdown_reason() ? I'll follow your choice =)
 
-I'll experiment with that, hopefully I can optimize it a bit.
+I see two more alternative solutions:
 
+1st variant is a trick already used in console write() callbacks.
+They do trylock() when oops_in_progress is set. They remember
+the result to prevent double unlock when printing Oops messages and
+the system will try to continue working. For example:
 
-> - The higher-end networking SoCs are usually cache-coherent and
->    can avoid the cache management entirely. There is a slim chance
->    that this chip is designed that way and it just needs to be enabled
->    properly. Most low-end chips don't implement the coherent
->    interconnect though, and I suppose you have checked this already.
+pl011_console_write(struct console *co, const char *s, unsigned int count)
+{
+[...]
+	int locked = 1;
+[...]
+	if (uap->port.sysrq)
+		locked = 0;
+	else if (oops_in_progress)
+		locked = spin_trylock(&uap->port.lock);
+	else
+		spin_lock(&uap->port.lock);
 
-To my best knowledge Northstar platform doesn't support hw coherency.
+[...]
 
-I just took an extra look at Broadcom's SDK and them seem to have some
-driver for selected chipsets but BCM708 isn't there.
-
-config BCM_GLB_COHERENCY
-	bool "Global Hardware Cache Coherency"
-	default n
-	depends on BCM963158 || BCM96846 || BCM96858 || BCM96856 || BCM963178 || BCM947622 || BCM963146  || BCM94912 || BCM96813 || BCM96756 || BCM96855
+	if (locked)
+		spin_unlock(&uap->port.lock);
+}
 
 
-> - bgmac_dma_rx_update_index() and bgmac_dma_tx_add() appear
->    to have an extraneous dma_wmb(), which should be implied by the
->    non-relaxed writel() in bgmac_write().
+2nd variant is to check panic_cpu variable. It is used in printk.c.
+We might move the function to panic.h:
 
-I tried dropping wmb() calls.
-With wmb(): 421 Mb/s
-Without: 418 Mb/s
+static bool panic_in_progress(void)
+{
+	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
+}
 
+and then do:
 
-I also tried dropping bgmac_read() from bgmac_chip_intrs_off() which
-seems to be a flushing readback.
-
-With bgmac_read(): 421 Mb/s
-Without: 413 Mb/s
+	if (panic_in_progress()) {
+		...
 
 
-> - accesses to the DMA descriptor don't show up in the profile here,
->    but look like they can get misoptimized by the compiler. I would
->    generally use READ_ONCE() and WRITE_ONCE() for these to
->    ensure that you don't end up with extra or out-of-order accesses.
->    This also makes it clearer to the reader that something special
->    happens here.
+> > Though thinking more about it, is this really a Good Change (TM)? The
+> > spinlock itself already disables interrupts, meaning the only case
+> > where this change makes a difference is if the panic happens from
+> > within the function that grabbed the spinlock (in which case the
+> > callback is also likely to panic), or in an NMI that panics within
+> > that window.
 
-Should I use something as below?
+As already mentioned in the other reply, panic() sometimes stops
+the other CPUs using NMI, for example, see kdump_nmi_shootdown_cpus().
 
-FWIW it doesn't seem to change NAT performance.
-Without WRITE_ONCE: 421 Mb/s
-With: 419 Mb/s
+Another situation is when the CPU using the lock ends in some
+infinite loop because something went wrong. The system is in
+an unpredictable state during panic().
 
+I am not sure if this is possible with the code under gsmi_dev.lock
+but such things really happen during panic() in other subsystems.
+Using trylock in the panic() code path is a good practice.
 
-diff --git a/drivers/net/ethernet/broadcom/bgmac.c b/drivers/net/ethernet/broadcom/bgmac.c
-index 87700072..ce98f2a9 100644
---- a/drivers/net/ethernet/broadcom/bgmac.c
-+++ b/drivers/net/ethernet/broadcom/bgmac.c
-@@ -119,10 +119,10 @@ bgmac_dma_tx_add_buf(struct bgmac *bgmac, struct bgmac_dma_ring *ring,
-
-  	slot = &ring->slots[i];
-  	dma_desc = &ring->cpu_base[i];
--	dma_desc->addr_low = cpu_to_le32(lower_32_bits(slot->dma_addr));
--	dma_desc->addr_high = cpu_to_le32(upper_32_bits(slot->dma_addr));
--	dma_desc->ctl0 = cpu_to_le32(ctl0);
--	dma_desc->ctl1 = cpu_to_le32(ctl1);
-+	WRITE_ONCE(dma_desc->addr_low, cpu_to_le32(lower_32_bits(slot->dma_addr)));
-+	WRITE_ONCE(dma_desc->addr_high, cpu_to_le32(upper_32_bits(slot->dma_addr)));
-+	WRITE_ONCE(dma_desc->ctl0, cpu_to_le32(ctl0));
-+	WRITE_ONCE(dma_desc->ctl1, cpu_to_le32(ctl1));
-  }
-
-  static netdev_tx_t bgmac_dma_tx_add(struct bgmac *bgmac,
-@@ -387,10 +387,10 @@ static void bgmac_dma_rx_setup_desc(struct bgmac *bgmac,
-  	 * B43_DMA64_DCTL1_ADDREXT_MASK;
-  	 */
-
--	dma_desc->addr_low = cpu_to_le32(lower_32_bits(ring->slots[desc_idx].dma_addr));
--	dma_desc->addr_high = cpu_to_le32(upper_32_bits(ring->slots[desc_idx].dma_addr));
--	dma_desc->ctl0 = cpu_to_le32(ctl0);
--	dma_desc->ctl1 = cpu_to_le32(ctl1);
-+	WRITE_ONCE(dma_desc->addr_low, cpu_to_le32(lower_32_bits(ring->slots[desc_idx].dma_addr)));
-+	WRITE_ONCE(dma_desc->addr_high, cpu_to_le32(upper_32_bits(ring->slots[desc_idx].dma_addr)));
-+	WRITE_ONCE(dma_desc->ctl0, cpu_to_le32(ctl0));
-+	WRITE_ONCE(dma_desc->ctl1, cpu_to_le32(ctl1));
-
-  	ring->end = desc_idx;
-  }
+Best Regards,
+Petr
