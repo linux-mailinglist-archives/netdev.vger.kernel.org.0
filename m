@@ -2,83 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B627E522001
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:49:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40272522032
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:54:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346680AbiEJPxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 11:53:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33406 "EHLO
+        id S1346500AbiEJP6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 11:58:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347267AbiEJPwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:52:13 -0400
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3D8B27FE4;
-        Tue, 10 May 2022 08:48:15 -0700 (PDT)
-Received: by mail-qt1-x82b.google.com with SMTP id fu47so13827619qtb.5;
-        Tue, 10 May 2022 08:48:15 -0700 (PDT)
+        with ESMTP id S1346756AbiEJPzC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:55:02 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66AE9285AC2
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 08:49:06 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id w17-20020a17090a529100b001db302efed6so2494727pjh.4
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 08:49:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Yb/F6YFHx8jMmT8NzFo+iYOEgGU08YViXeElbI3tjgc=;
-        b=MMnXS3xA1tmydR2qCDMamehnHI5FTZPQnT0YdSBT4isID4m9dejiQqAVaASciKXh2t
-         uNvjLP9M1SpNR4L9suFWs2GB3zj0kW6tIw+HGOGD0qgwx94I6AWsORwzqjwEJ0Yw8Lon
-         SHAjLcmqVRiNW8qsl5AfmJNSQJxIMdeX/5OhcZCWobvLe1G4TOlSiS1f4gQUkC3AyewE
-         s/5zKTm6e85HXpPxzZGWWHF7kuC8kNjOOFMOLzuI6valozkPvbjyLJR/echRLonbSXes
-         Vef44tpvYg2wXOOhFuE8RU0X4TxNWG/udFq3Emz7Cl/FRJe4tXgux0zhuZj3kBgh3jZD
-         9N3g==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=INhlKhGvpbu7fgZ9vELnJ2sy44vYqZ9ozRxM6uzB+QM=;
+        b=kXb7KvLTy7DujcSQyAk8xUP6oTufpB/UG5TBPFNOvIwxey942mY38akAy2aRVoGjR0
+         99pU6OXXmdz5Zng0u219mGDLrTqIxto06goatJ7Gc9drNL/LAysOCLtl81MUs4K/l4NP
+         pza0Xw89EtEmD8zkZwShTzoruWUxzCjyf8Zkw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Yb/F6YFHx8jMmT8NzFo+iYOEgGU08YViXeElbI3tjgc=;
-        b=76KRrIAfArRUp4oHOH+q8Q1eCGeF4C0taImlIGbukwMIGyjKwxuWpkklPgrT/kuhc5
-         yJPlwBiUUp3BfXD23HIutJPzok2gMTbXuAj4TuMCfatte54JKnaTs071rCvslAIwfiXs
-         GjRWKXwZFo9LmnbeHU8EjetkITZw7XCvp42ZLbB3JLqyzZzL1+DB9cnrgumfFfx3XEFu
-         81YqUvKwGGgrNZyCzo6JE1EVaALx3h+bAiMXJl4CHM1eEt9COp5aKE8QD4F5RSCIpWXf
-         x+OskF7rVUhA5bp/XIPd8YDkylrloaraa3kfMW70URozjbjLZN88Y0WDdn4hP1GoV2s2
-         ZjHQ==
-X-Gm-Message-State: AOAM530b7Dwz3XLIq9adoT9BAqCT1884OEYOjet/Y45Lk+w3lWs23hnH
-        poNcC8IgoVBlCZE81XbzsAg=
-X-Google-Smtp-Source: ABdhPJwV70hoAcYnRzaFrPNRGD//htdKIyrvhMG9B5O5rgnhDgAUf7COuLmQzmUbet3XQOUvrJCg2A==
-X-Received: by 2002:a05:622a:93:b0:2f3:c4ef:6c71 with SMTP id o19-20020a05622a009300b002f3c4ef6c71mr19568082qtw.505.1652197694757;
-        Tue, 10 May 2022 08:48:14 -0700 (PDT)
-Received: from localhost ([98.242.65.84])
-        by smtp.gmail.com with ESMTPSA id c2-20020ac80542000000b002f39b99f67bsm9312717qth.21.2022.05.10.08.48.14
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=INhlKhGvpbu7fgZ9vELnJ2sy44vYqZ9ozRxM6uzB+QM=;
+        b=2cGk0gQzu9aQKL1RR8J9g2rSEQrVXwMg4JCk0jQVLN0xL6J9dsZot3J+M9gD3tbcVn
+         81IA3HOqp6dy84jQpBe6qnNxZ9qwKfAsij78iizbIniNrcx3votGSk+aJVQB4L+XkiVA
+         OkWY+khQAaZFLAuK0dv1Juo74zhX20TFwuZWX38GdHcHxP0LieS4dt8WDt24YtViimy3
+         sYB+BDkHoVNeFj65CQ2V+3pIPMjntQjui1ofuiNbSV44Fz+6gOhUG8FhloRId2vAeUz4
+         Z5PRgo5tmItFQ724HR/C3ekTDAF9S/CfSZVnWGmnmqM4vaY88nTLHGu2W6R5g1MdDCXc
+         lXgA==
+X-Gm-Message-State: AOAM530mbcFPb1Xd6eqC2mbff5Kau8oTk/GLFYd9Eb5J5hzQvqm5sgp5
+        vneuIi1kfjzXntx52s0jnxgfWg==
+X-Google-Smtp-Source: ABdhPJwimId/P5IhzKoL8Uc2YdZ50wmCJQRH04A+W2g2mcs/4LXkOtBcKfsI8+a4nHfsbaKY9ROEBg==
+X-Received: by 2002:a17:90b:1c87:b0:1ca:f4e:4fbe with SMTP id oo7-20020a17090b1c8700b001ca0f4e4fbemr582842pjb.159.1652197745191;
+        Tue, 10 May 2022 08:49:05 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id d8-20020a170902cec800b0015e8e7db067sm2322580plg.4.2022.05.10.08.49.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 08:48:14 -0700 (PDT)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Joe Perches <joe@perches.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Yury Norov <yury.norov@gmail.com>,
+        Tue, 10 May 2022 08:49:04 -0700 (PDT)
+Date:   Tue, 10 May 2022 08:49:03 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Leon Romanovsky <leon@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Saeed Mahameed <saeedm@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH 15/22] net/mlx5: use cpumask_weight_gt() in irq_pool_request_irq()
-Date:   Tue, 10 May 2022 08:47:43 -0700
-Message-Id: <20220510154750.212913-16-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220510154750.212913-1-yury.norov@gmail.com>
-References: <20220510154750.212913-1-yury.norov@gmail.com>
+        netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Coco Li <lixiaoyan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: Re: [PATCH v5 net-next 13/13] mlx5: support BIG TCP packets
+Message-ID: <202205100846.4E07C4E5@keescook>
+References: <20220509222149.1763877-1-eric.dumazet@gmail.com>
+ <20220509222149.1763877-14-eric.dumazet@gmail.com>
+ <20220509183853.23bd409d@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220509183853.23bd409d@kernel.org>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -86,36 +76,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-cpumask_weight_gt() is more efficient because it may stop traversing
-cpumask depending on condition.
+On Mon, May 09, 2022 at 06:38:53PM -0700, Jakub Kicinski wrote:
+> On Mon,  9 May 2022 15:21:49 -0700 Eric Dumazet wrote:
+> > From: Coco Li <lixiaoyan@google.com>
+> > 
+> > mlx5 supports LSOv2.
+> > 
+> > IPv6 gro/tcp stacks insert a temporary Hop-by-Hop header
+> > with JUMBO TLV for big packets.
+> > 
+> > We need to ignore/skip this HBH header when populating TX descriptor.
+> > 
+> > Note that ipv6_has_hopopt_jumbo() only recognizes very specific packet
+> > layout, thus mlx5e_sq_xmit_wqe() is taking care of this layout only.
+> > 
+> > v2: clear hopbyhop in mlx5e_tx_get_gso_ihs()
+> > v4: fix compile error for CONFIG_MLX5_CORE_IPOIB=y
+> > 
+> > Signed-off-by: Coco Li <lixiaoyan@google.com>
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> > Cc: Saeed Mahameed <saeedm@nvidia.com>
+> > Cc: Leon Romanovsky <leon@kernel.org>
+> 
+> So we're leaving the warning for Kees to deal with?
+> 
+> Kees is there some form of "I know what I'm doing" cast 
+> that you could sneak us under the table?
 
-CC: David S. Miller <davem@davemloft.net>
-CC: Eric Dumazet <edumazet@google.com>
-CC: Jakub Kicinski <kuba@kernel.org>
-CC: Leon Romanovsky <leon@kernel.org>
-CC: Paolo Abeni <pabeni@redhat.com>
-CC: Saeed Mahameed <saeedm@nvidia.com>
-CC: netdev@vger.kernel.org
-CC: linux-rdma@vger.kernel.org
-CC: linux-kernel@vger.kernel.org
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Right now, it's switching that memcpy to __builtin_memcpy(), but I'll
+send a patch that'll create an unsafe_memcpy() macro that does the right
+things vs kasan, fortify, etc.
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c b/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c
-index 380a208ab137..d57f804ee934 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/irq_affinity.c
-@@ -58,7 +58,7 @@ irq_pool_request_irq(struct mlx5_irq_pool *pool, const struct cpumask *req_mask)
- 	if (err)
- 		return ERR_PTR(err);
- 	if (pool->irqs_per_cpu) {
--		if (cpumask_weight(req_mask) > 1)
-+		if (cpumask_weight_gt(req_mask, 1))
- 			/* if req_mask contain more then one CPU, set the least loadad CPU
- 			 * of req_mask
- 			 */
 -- 
-2.32.0
-
+Kees Cook
