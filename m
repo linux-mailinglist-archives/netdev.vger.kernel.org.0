@@ -2,149 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9120552101C
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 10:56:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BEE552101F
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 10:57:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238280AbiEJJAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 05:00:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
+        id S238290AbiEJJBN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 05:01:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235262AbiEJJAH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 05:00:07 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B9F17909A
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:56:09 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id x18so22831046wrc.0
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:56:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=4tRLxiEfapdgf/U9EFVjBVGgvdBx2RQ6+Dq8TsNOap0=;
-        b=AzZNu7PTvcDrdFdSll+dUFp4ykSuCofrARtqVU8gFVIchsq6v9dDMPs1JKNG6iebpO
-         VJB9tIRy/bRDsJ4CCHJSXn1cXZEOVd/OAtK6FPU6x2w+P5mywtavA9gQ2ZLyl6tWzWAV
-         NASZpn+vnKZdN2WVRrrYWrFsYxpuNJ7dCSDI03BH+s7/ccugVmVoC1pRJXk/QEcnFazA
-         sSUhfYTODt04lqERkc1kmNaxCrcU4zdAR/akoZHq3KH88C4TFPZNmYAGMQ5u5YXbG2eW
-         OZOEIVA7ZnDAeS+LJqPMrWxlPUSSCQ763YEfRqvhjY3BUcXNgMRK7qXb1jzxAjl6duos
-         zpjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=4tRLxiEfapdgf/U9EFVjBVGgvdBx2RQ6+Dq8TsNOap0=;
-        b=WfxEsS/YX+F26C/rU1Xbfe+O2h5Bh9RNn0AEEwH1HG2sjQ/5P2ic3L65OIgrRNhRa2
-         369wVax2Tft6qDM6iYJAd22jNrJqNOqRv+PMJvHVWtbzrhivuazQXG37k0Go0TpomFiE
-         XZyoZpIYjJ7Li3WTdgUTYlhQLTNyk7ymgbEiUdT3zrnW0Eg7KTh6t5rrp+SR8KJc6QbS
-         Xzd2G1qP/fNZE+ZWgDLS7OYJEXovQXKNc2L9JlOsFzJSO3S5IxnyGtcErTXVwv/ND1LR
-         FlRVNzgfv4x4m5zJSWrk8F2dCmRVFOUDYWHf6FJcq5nFhZ2TGiOaNKodjsDSJQDMBi1V
-         IOYQ==
-X-Gm-Message-State: AOAM532DmouZJ/GWyZLEQZlJD9jiE9UVIvW01jIuR6nH8lVyNdfjBGn1
-        EkSTjz0znv6CakUZ90vPGsTfig==
-X-Google-Smtp-Source: ABdhPJxuOQwh+vy+SrhwKCobqjdicffWh+KMHB3k94CeBPEwDRucEYh3ezPgIDGmrFzt+N9F3JdJuA==
-X-Received: by 2002:a05:6000:786:b0:20c:d72e:ad3c with SMTP id bu6-20020a056000078600b0020cd72ead3cmr1347185wrb.67.1652172967768;
-        Tue, 10 May 2022 01:56:07 -0700 (PDT)
-Received: from [192.168.17.225] (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
-        by smtp.gmail.com with ESMTPSA id j33-20020a05600c1c2100b003942a244ec9sm2560804wms.14.2022.05.10.01.56.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 01:56:07 -0700 (PDT)
-Message-ID: <1bc46272-f26b-14a5-0139-a987b47a5814@solid-run.com>
-Date:   Tue, 10 May 2022 11:56:06 +0300
+        with ESMTP id S238291AbiEJJBF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 05:01:05 -0400
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (mail-sn1anam02on2072.outbound.protection.outlook.com [40.107.96.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF684488B3;
+        Tue, 10 May 2022 01:57:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hq8JK37KjYhQx92MjVHAf5aC9FY7O1Tr+qFM8ueAqgUuJWznNW5llWJYGXxyR8u7h2vgDmC5Y5jgd9NJ8tP4fozFWBO4BO2bfu17UdnLoDoHDKfe2tvNxZtr0xUk+1LHjCAO5JmK+u3K3eFWwpe4k8E6gTBg5AvAUs6mzD1UpRfEI9GNKGG2JGfzubOHXOYTKjHNNeRZRmpCp31F6xsYc8c5j3e6uaSehJSDS1qQ3j5WHOqpcmF3DKrcDnqr8SAklhVLNbKZDvm7lWDAFx49bFeUJ/LMVgKDkx9kbGJ2T8FKiWcJYAyxQWpAYgSr6lZ5f09YNCo2KwQMAzgquSoHHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=pWjno8yH/FCLjx5X7W7W12XufWaHJbrc7YNGzLSuNp0=;
+ b=FdUYcSZm22RQbBGq6nMyV7q7KqfvA/VNR9q3Bd/HzjoqBMNGHqIpkAI/eZorXk0ALCgqNLy/xgL/XmGg1ALwewKlFAOkBFjaMzzBsD/MeOuGxAI2yqgcByK/v6rNiBdMu1CnkQ0Q7dQoZYYPOS9HPFzDIBEsWQRutRqD3HUs305h3SJxXqeEiB9h3yMlSYbmJ4on9UJ+L6GFpW9b91qmPefl2crM1SxH/UFL9akrJDD8se7/kLO3dTErb0HYWJUPm14H1nHNuUhdXslKLN59S+C5Ww7CZudqhMF88Ll6tZNdBh8idOhQUP30rZpFuFQpWT7duPjhgO90trG9kAkqsw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 12.22.5.234) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pWjno8yH/FCLjx5X7W7W12XufWaHJbrc7YNGzLSuNp0=;
+ b=pmdt1z8SOtPji6iNV3stomq7Eq9vv7rQqZC86iOFT2+KcNsRi73exowmwn6jKKbqcsz2W2IAz2KjpbKnwi7cJH+uvri5XV6/X/SQw9hOGgxhjVmZEk9Mwaf4Kulj4FjhS2Jm0O6kyjLXLVz0hcgs47MaDRUy/XYDWTPwlpNTeydi/fFyeRpoO/m1Jz1TJ7aSZD9mXx/4SGAnRd5JyhtFh0ZOyGdfCiLDpg0Hpl4cY/1ZUDNkOdGgMCgM95rZfrmh0nTCKW2yYb8644+WKvdnpVnT5xh5NyCFshZFHijrqRlRECqWg46EUYLHFnMkZ0brFDH+vBQ9daslOySk1raCQg==
+Received: from MW4PR04CA0076.namprd04.prod.outlook.com (2603:10b6:303:6b::21)
+ by MN2PR12MB3920.namprd12.prod.outlook.com (2603:10b6:208:168::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Tue, 10 May
+ 2022 08:57:06 +0000
+Received: from CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:6b:cafe::25) by MW4PR04CA0076.outlook.office365.com
+ (2603:10b6:303:6b::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20 via Frontend
+ Transport; Tue, 10 May 2022 08:57:05 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ smtp.mailfrom=nvidia.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=nvidia.com;
+Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
+ 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.234; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.234) by
+ CO1NAM11FT005.mail.protection.outlook.com (10.13.174.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 08:57:05 +0000
+Received: from rnnvmail201.nvidia.com (10.129.68.8) by DRHQMAIL101.nvidia.com
+ (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.32; Tue, 10 May
+ 2022 08:57:05 +0000
+Received: from [172.27.11.245] (10.126.230.35) by rnnvmail201.nvidia.com
+ (10.129.68.8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.22; Tue, 10 May
+ 2022 01:57:00 -0700
+Message-ID: <8d9dcc65-a754-ec6b-e1ed-1511efaf0b14@nvidia.com>
+Date:   Tue, 10 May 2022 11:56:58 +0300
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH RFC] net: sfp: support assigning status LEDs to SFP
- connectors
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH V1 mlx5-next 4/4] vfio/mlx5: Run the SAVE state command in
+ an async mode
 Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-References: <20220509122938.14651-1-josua@solid-run.com>
- <YnkN954Wb7ioPkru@lunn.ch>
-From:   Josua Mayer <josua@solid-run.com>
-In-Reply-To: <YnkN954Wb7ioPkru@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Alex Williamson <alex.williamson@redhat.com>
+CC:     <jgg@nvidia.com>, <saeedm@nvidia.com>, <kvm@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <kuba@kernel.org>, <leonro@nvidia.com>,
+        <maorg@nvidia.com>, <cohuck@redhat.com>
+References: <20220508131053.241347-1-yishaih@nvidia.com>
+ <20220508131053.241347-5-yishaih@nvidia.com>
+ <20220509112904.17e9b7d0.alex.williamson@redhat.com>
+From:   Yishai Hadas <yishaih@nvidia.com>
+In-Reply-To: <20220509112904.17e9b7d0.alex.williamson@redhat.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Originating-IP: [10.126.230.35]
+X-ClientProxiedBy: rnnvmail203.nvidia.com (10.129.68.9) To
+ rnnvmail201.nvidia.com (10.129.68.8)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 6284c783-88ac-41f6-88b5-08da32630eba
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3920:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3920242DF52758346135E4F4C3C99@MN2PR12MB3920.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8REiFfZUF3Z+jvCB/slrBtEYlYy0RizZvchX0b5JF+z3UjZ7sJFdvgc0v3VQMvmmOkoGkiPgW5U123893DjCc/8IRI8FvXjC+j1Gtxwm6j6T7IU8b87BsX2L5CmpEHq1PMI6NhaF+etPj/7fGZEAqR+3CCaOFRG3idYWtDClwUOoDa06I3JxmZXAG5hGwhkSJHVc9DFmE5uwF5NfSAcXXnnZhCTZLuakQw4sikULd7UufYcBkRIRJgC2bfZxYYWGEFKSYCBhTRSHi4sUFblxWrx3EAYc/gXU0zulbJ3w/fyFgfM4LY4q4eZEnivmzjvDlzEZt4ukZYH9T4VrSSF9tKoQDggnIhyLe8PshiCoCYHz4KjI+0GyBH6icmTRBRXzth5+q+tuPpmjNX5wtNVmyIjXcnGe7X8/YAtW1Av+jzGoogyYnQwtdHIMX6N4GnYOijiBxhaXY5baJFF0+bBg79O+urcPf+ifiRGW7sFyp0moLS/WzAJc3L2xvEYDKBzVuC8b8CmH9pAFRIQIYAjvY40oJM6nKUrBcLlepSVwCRSCdTpJX31QExjVUHlIXGMRjDH8nXrUuf4AWAYzdDq8PcfJYwI2jrwS9zFmZEXNiMsoG4pwH0B6wJ482JCoCQHCfjdjjmxGjysvsZTHXZKOFj4cqiP9SlGErFwa5uULnB9G320FaGvvmIgVXAtGvb9R5pExXYeQrzmv95cjNwwlYNNOx9bYTKEzxwjLOdhePpY0dedL0300EZQEfR1MfXuG
+X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(36860700001)(336012)(508600001)(40460700003)(47076005)(426003)(26005)(16526019)(186003)(31696002)(2616005)(86362001)(5660300002)(2906002)(53546011)(356005)(36756003)(83380400001)(81166007)(82310400005)(70586007)(16576012)(54906003)(70206006)(4326008)(6916009)(8676002)(31686004)(8936002)(316002)(36900700001)(43740500002);DIR:OUT;SFP:1101;
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 08:57:05.5665
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6284c783-88ac-41f6-88b5-08da32630eba
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT005.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3920
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 09/05/2022 20:29, Alex Williamson wrote:
+> On Sun, 8 May 2022 16:10:53 +0300
+> Yishai Hadas <yishaih@nvidia.com> wrote:
+>> diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
+>> index 2a20b7435393..d053d314b745 100644
+>> --- a/drivers/vfio/pci/mlx5/cmd.h
+>> +++ b/drivers/vfio/pci/mlx5/cmd.h
+>> @@ -10,10 +10,20 @@
+>>   #include <linux/vfio_pci_core.h>
+>>   #include <linux/mlx5/driver.h>
+>>   
+>> +struct mlx5vf_async_data {
+>> +	struct mlx5_async_work cb_work;
+>> +	struct work_struct work;
+>> +	int status;
+>> +	u32 pdn;
+>> +	u32 mkey;
+>> +	void *out;
+>> +};
+>> +
+>>   struct mlx5_vf_migration_file {
+>>   	struct file *filp;
+>>   	struct mutex lock;
+>>   	bool disabled;
+>> +	u8 is_err:1;
+> Convert @disabled to bit field as well to pack these?
 
-Am 09.05.22 um 15:49 schrieb Andrew Lunn:
-> On Mon, May 09, 2022 at 03:29:38PM +0300, Josua Mayer wrote:
->> Dear Maintainers,
->>
->> I am working on a new device based on the LX2160A platform, that exposes
->> 16 sfp connectors, each with its own led controlled by gpios intended
->> to show link status.
-> Can you define link status?
-I am still struggling with the lower levels of networking terminology 
-... so I was considering
-when ethtool would report "Link detected: yes".
->   It is a messy concept with SFPs. Is it
-> !LOS? I guess not, because you would not of used a GPIO, just hard
-> wired it.
-I believe the intention was to decide later what information to visualize.
-In this iteration there is one LED per sfp connector, with one colour.
-But it is conceivable to in the future add more, and use them to 
-indicate e.g. the negotiated speed (10/100/1000/10000).
-> Does it mean the SERDES has sync? Does it reflect the netdev
-> carrier status?
+OK
+
 >
->> We have found that there is a way in sysfs to echo the name of the network
->> device to the api of the led driver, and it will start showing link status.
->> However this has to be done at runtime by the user.
-> Please take a look at the patches Ansuel Smith submitted last week,
-> maybe the week before last.
+> ...
+>> @@ -558,6 +592,13 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
+>>   		return -ENOMEM;
+>>   	vfio_pci_core_init_device(&mvdev->core_device, pdev, &mlx5vf_pci_ops);
+>>   	mlx5vf_cmd_set_migratable(mvdev);
+>> +	if (mvdev->migrate_cap) {
+>> +		mvdev->cb_wq = alloc_ordered_workqueue("mlx5vf_wq", 0);
+>> +		if (!mvdev->cb_wq) {
+>> +			ret = -ENOMEM;
+>> +			goto out_free;
+>> +		}
+>> +	}
+> Should this be rolled into mlx5vf_cmd_set_migratable(), updating the
+> function to return -errno?
 
-Found them. Those are a great pointer - I did not notice the 
-trigger-sources property
-while looking at led documentation and bindings,
-but Documentation/devicetree/bindings/leds/common.yaml does have it.
+This can be done, however, I would still keep the function as void as 
+you previously suggested.
 
-So what his patch-set proposes covers a large part of my question here, 
-thanks!
+In case the WQ somehow couldn't be created it just means that migratable 
+functionality couldn't be activated and its cap won't be set.
 
->> On the Layerscape platform in particular these devices are created dynamically
->> by the networkign coprocessor, which supports complex functions such as
->> creating one network interface that spans multiple ports.
-> The linux model is that each MAC has a netdev, hence a name. If you
-> need to span multiple ports, you then add a bridge and add the MACs to
-> the bridge. So there should not be an issue here.
-Okay. That will do for the immediate use-case.
->> It seems to me that the netdev trigger therefore can not properly reflect
->> the relation between an LED (which is hard-wired to an sfp cage), and the
->> link state reported by e.g. a phy inside an sfp module.
-> The netdev carrier will correctly reflect this.
-Once the netdev (eth[0-9]+) has been created, all relations are known, yes.
-And because you mentioned above that each MAC has a netdev, it will do.
-E.g. while whatever we plug into the sfp connector changes, the MAC 
-stays where it is - connected to a particular cage.
+>>   	ret = vfio_pci_core_register_device(&mvdev->core_device);
+>>   	if (ret)
+>>   		goto out_free;
+>> @@ -566,8 +607,11 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
+>>   	return 0;
+>>   
+>>   out_free:
+>> -	if (mvdev->migrate_cap)
+>> +	if (mvdev->migrate_cap) {
+>>   		mlx5vf_cmd_remove_migratable(mvdev);
+>> +		if (mvdev->cb_wq)
+>> +			destroy_workqueue(mvdev->cb_wq);
+>> +	}
+>>   	vfio_pci_core_uninit_device(&mvdev->core_device);
+>>   	kfree(mvdev);
+>>   	return ret;
+>> @@ -578,8 +622,10 @@ static void mlx5vf_pci_remove(struct pci_dev *pdev)
+>>   	struct mlx5vf_pci_core_device *mvdev = dev_get_drvdata(&pdev->dev);
+>>   
+>>   	vfio_pci_core_unregister_device(&mvdev->core_device);
+>> -	if (mvdev->migrate_cap)
+>> +	if (mvdev->migrate_cap) {
+>>   		mlx5vf_cmd_remove_migratable(mvdev);
+>> +		destroy_workqueue(mvdev->cb_wq);
+>> +	}
+>>   	vfio_pci_core_uninit_device(&mvdev->core_device);
+>>   	kfree(mvdev);
+>>   }
+> This looks like more evidence for expanding remove_migratable(),
+> rolling this in as well.  If this workqueue were setup in
+> set_migratable() we'd not need the special condition to test if cb_wq
+> is NULL while migrate_cap is set.  Thanks,
 >
->> You may notice that again leds are tied to existence of a particular logical
->> network interface, which may or may not exist, and may span multiple
->> physical interfaces in case of layerscape.
-> As far as i'm aware, the in kernel code always has a netdev for each
-> MAC. Are you talking about the vendor stack?
-The coprocessor can be configured both at boot-time and runtime.
-During runtime there is a vendor tool "restool" which can create and 
-destroy network interfaces, which the dpaa2 driver knows to discover and 
-bind to.
+> Alex
+>
+Makes sense, will be part of V2.
 
-Your statement holds, quoting from the dpaa2 driver documentation:
-"... exposes each switch port as a network interface, which can be 
-included in a bridge or used as a standalone interface"
+Yishai
 
-I made a false assumption here, Thank you!
-
-> 	Andrew
-sincerely
-Josua Mayer
