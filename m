@@ -2,89 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2436A520A83
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 03:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1227A520A8F
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 03:16:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233325AbiEJBOK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 21:14:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50342 "EHLO
+        id S234115AbiEJBUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 21:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232560AbiEJBOJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 21:14:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 996092BA9B4
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 18:10:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 35001615AC
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 8E679C385C2;
-        Tue, 10 May 2022 01:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652145012;
-        bh=Pf53W+P3KTtIrm/dUH8KynPpBQf0uaicEUFWlfqxmuI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=NlurrFvpoFeucgJtff7dVSJ6Q9nlrB+OkFLEB0+peSEuUAxBji2zSJcuVM/677WOj
-         NS4IQVs2wjO3ey+31DH9GWfyScdMKtvODi80ht/+a5TZ0O0179w+LNYs4zGqDRpaLV
-         IS3nRHIDWve0iyxoTJau4X6ZNhGCTcjKBo4Jzm+eFgupkZ0wZliRQGz1sn/5FdPuDl
-         MzZifkdHtQwJMkEjoCuTmPUcm2j6zXATMQPoHPQU7lJU+T1PICFkYVw6Y9ZdPNZ1zl
-         iZT7Fg15aCFNSrk7IzNkZU9ouS3X3f6JxxkjYZ+DXEs9pLpii5PCecXtnSo/wVOoVv
-         ALV8jy60Qs6Ww==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6A798F03876;
-        Tue, 10 May 2022 01:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S234133AbiEJBUD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 21:20:03 -0400
+Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0D384BB87;
+        Mon,  9 May 2022 18:16:04 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Ky0Qx6h0WzGpgM;
+        Tue, 10 May 2022 09:13:13 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 09:15:59 +0800
+Received: from [10.174.178.174] (10.174.178.174) by
+ dggpemm500007.china.huawei.com (7.185.36.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 10 May 2022 09:15:59 +0800
+Subject: Re: [PATCH] net: stmmac: fix missing pci_disable_device() on error in
+ stmmac_pci_probe()
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <netdev@vger.kernel.org>, <peppe.cavallaro@st.com>,
+        <alexandre.torgue@foss.st.com>, <davem@davemloft.net>,
+        <edumazet@google.com>
+References: <20220506094039.3629649-1-yangyingliang@huawei.com>
+ <20220509155525.26e053db@kernel.org>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <e54d585b-3295-127e-0a49-08293eaed2ed@huawei.com>
+Date:   Tue, 10 May 2022 09:15:58 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/3][pull request] Intel Wired LAN Driver Updates
- 2022-05-06
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165214501242.9968.13113084735980958108.git-patchwork-notify@kernel.org>
-Date:   Tue, 10 May 2022 01:10:12 +0000
-References: <20220506174129.4976-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20220506174129.4976-1-anthony.l.nguyen@intel.com>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org,
-        richardcochran@gmail.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220509155525.26e053db@kernel.org>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.174.178.174]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi,
 
-This series was applied to netdev/net.git (master)
-by Tony Nguyen <anthony.l.nguyen@intel.com>:
+On 2022/5/10 6:55, Jakub Kicinski wrote:
+> On Fri, 6 May 2022 17:40:39 +0800 Yang Yingliang wrote:
+>> Fix the missing pci_disable_device() before return
+>> from stmmac_pci_probe() in the error handling case.
+>>
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> Here indeed pcim_enable_device() seems like a better fit.
+OK, I will send a v2 later.
 
-On Fri,  6 May 2022 10:41:26 -0700 you wrote:
-> This series contains updates to ice driver only.
-> 
-> Ivan Vecera fixes a race with aux plug/unplug by delaying setting adev
-> until initialization is complete and adding locking.
-> 
-> Anatolii ensures VF queues are completely disabled before attempting to
-> reconfigure them.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net,v2,1/3] ice: Fix race during aux device (un)plugging
-    https://git.kernel.org/netdev/net/c/486b9eee57dd
-  - [net,v2,2/3] ice: clear stale Tx queue settings before configuring
-    https://git.kernel.org/netdev/net/c/6096dae926a2
-  - [net,v2,3/3] ice: fix PTP stale Tx timestamps cleanup
-    https://git.kernel.org/netdev/net/c/a11b6c1a383f
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Yang
+> .
