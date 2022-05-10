@@ -2,224 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 859FD520A6D
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 02:54:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC76D520A75
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 03:00:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232541AbiEJA6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 9 May 2022 20:58:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
+        id S234046AbiEJBEM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 9 May 2022 21:04:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229942AbiEJA6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 20:58:15 -0400
-Received: from 69-171-232-181.mail-mxout.facebook.com (69-171-232-181.mail-mxout.facebook.com [69.171.232.181])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B6C82B52FB
-        for <netdev@vger.kernel.org>; Mon,  9 May 2022 17:54:17 -0700 (PDT)
-Received: by devbig010.atn6.facebook.com (Postfix, from userid 115148)
-        id 291B6C269501; Mon,  9 May 2022 17:54:02 -0700 (PDT)
-From:   Joanne Koong <joannelkoong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     edumazet@google.com, kafai@fb.com, kuba@kernel.org,
-        davem@davemloft.net, Joanne Koong <joannelkoong@gmail.com>
-Subject: [PATCH net-next v2 2/2] selftests: Add test for timing a bind request to a port with a populated bhash entry
-Date:   Mon,  9 May 2022 17:53:16 -0700
-Message-Id: <20220510005316.3967597-3-joannelkoong@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220510005316.3967597-1-joannelkoong@gmail.com>
-References: <20220510005316.3967597-1-joannelkoong@gmail.com>
+        with ESMTP id S234032AbiEJBEL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 9 May 2022 21:04:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF976205F18;
+        Mon,  9 May 2022 18:00:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61E45B81A59;
+        Tue, 10 May 2022 01:00:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 015C4C385C6;
+        Tue, 10 May 2022 01:00:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652144413;
+        bh=ziS3WCHioEKf1pR5CDM4tX9+GV1g1JENVBzt48tvVFg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Hs6iPTsTeqsbF6Fhl7cf8H3O32eKb+lziCo5nbA9Jn+r4ymCc2jKHEaDmsQMSezGd
+         sOD8QvxClWAHR/hLGtCffrDam2rlxzbjcDawPtkTc3aRb3QRw72oC6g3X6yAn/5wnm
+         VAZUD6RWWaKro9qpStn7/B3FSG52C2G5Rp/IeimLNs/CE/4WhXCo/Kcsyo64sGvTnD
+         Bq993rjcCg5Lf2NBhofGRsCtd+2JmLaRTWLWwWUFkcUCK/EoQS8naSZLV1G8WIl1fg
+         rexWnsA1ZUdkIwpqbS2vhdf1ebhEKz5mUtqOSj02zlEzJnAI3yms2kvmHB6fxPEBcI
+         CQqAfBKG39wFw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C8B22F0392B;
+        Tue, 10 May 2022 01:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=1.6 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RDNS_DYNAMIC,
-        SPF_HELO_PASS,SPF_SOFTFAIL,TVD_RCVD_IP,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] net: phy: Fix race condition on link status change
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165214441281.5782.4607549809987119589.git-patchwork-notify@kernel.org>
+Date:   Tue, 10 May 2022 01:00:12 +0000
+References: <20220506060815.327382-1-francesco.dolcini@toradex.com>
+In-Reply-To: <20220506060815.327382-1-francesco.dolcini@toradex.com>
+To:     Francesco Dolcini <francesco.dolcini@toradex.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        qiangqing.zhang@nxp.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        stable@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test populates the bhash table for a given port with
-MAX_THREADS * MAX_CONNECTIONS sockets, and then times how long
-a bind request on the port takes.
+Hello:
 
-When populating the bhash table, we create the sockets and then bind
-the sockets to the same address and port (SO_REUSEADDR and SO_REUSEPORT
-are set). When timing how long a bind on the port takes, we bind on a
-different address without SO_REUSEPORT set. We do not set SO_REUSEPORT
-because we are interested in the case where the bind request does not
-go through the tb->fastreuseport path, which is fragile (eg
-tb->fastreuseport path does not work if binding with a different uid).
+This patch was applied to netdev/net.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-To run the test locally, I did:
-* ulimit -n 65535000
-* ip addr add 2001:0db8:0:f101::1 dev eth0
-* ./bind_bhash_test 443
+On Fri,  6 May 2022 08:08:15 +0200 you wrote:
+> This fixes the following error caused by a race condition between
+> phydev->adjust_link() and a MDIO transaction in the phy interrupt
+> handler. The issue was reproduced with the ethernet FEC driver and a
+> micrel KSZ9031 phy.
+> 
+> [  146.195696] fec 2188000.ethernet eth0: MDIO read timeout
+> [  146.201779] ------------[ cut here ]------------
+> [  146.206671] WARNING: CPU: 0 PID: 571 at drivers/net/phy/phy.c:942 phy_error+0x24/0x6c
+> [  146.214744] Modules linked in: bnep imx_vdoa imx_sdma evbug
+> [  146.220640] CPU: 0 PID: 571 Comm: irq/128-2188000 Not tainted 5.18.0-rc3-00080-gd569e86915b7 #9
+> [  146.229563] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+> [  146.236257]  unwind_backtrace from show_stack+0x10/0x14
+> [  146.241640]  show_stack from dump_stack_lvl+0x58/0x70
+> [  146.246841]  dump_stack_lvl from __warn+0xb4/0x24c
+> [  146.251772]  __warn from warn_slowpath_fmt+0x5c/0xd4
+> [  146.256873]  warn_slowpath_fmt from phy_error+0x24/0x6c
+> [  146.262249]  phy_error from kszphy_handle_interrupt+0x40/0x48
+> [  146.268159]  kszphy_handle_interrupt from irq_thread_fn+0x1c/0x78
+> [  146.274417]  irq_thread_fn from irq_thread+0xf0/0x1dc
+> [  146.279605]  irq_thread from kthread+0xe4/0x104
+> [  146.284267]  kthread from ret_from_fork+0x14/0x28
+> [  146.289164] Exception stack(0xe6fa1fb0 to 0xe6fa1ff8)
+> [  146.294448] 1fa0:                                     00000000 00000000 00000000 00000000
+> [  146.302842] 1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> [  146.311281] 1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> [  146.318262] irq event stamp: 12325
+> [  146.321780] hardirqs last  enabled at (12333): [<c01984c4>] __up_console_sem+0x50/0x60
+> [  146.330013] hardirqs last disabled at (12342): [<c01984b0>] __up_console_sem+0x3c/0x60
+> [  146.338259] softirqs last  enabled at (12324): [<c01017f0>] __do_softirq+0x2c0/0x624
+> [  146.346311] softirqs last disabled at (12319): [<c01300ac>] __irq_exit_rcu+0x138/0x178
+> [  146.354447] ---[ end trace 0000000000000000 ]---
+> 
+> [...]
 
-Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
----
- tools/testing/selftests/net/.gitignore        |   1 +
- tools/testing/selftests/net/Makefile          |   2 +
- tools/testing/selftests/net/bind_bhash_test.c | 119 ++++++++++++++++++
- 3 files changed, 122 insertions(+)
- create mode 100644 tools/testing/selftests/net/bind_bhash_test.c
+Here is the summary with links:
+  - [net,v2] net: phy: Fix race condition on link status change
+    https://git.kernel.org/netdev/net/c/91a7cda1f4b8
 
-diff --git a/tools/testing/selftests/net/.gitignore b/tools/testing/selft=
-ests/net/.gitignore
-index 21a411b04890..735423136bc4 100644
---- a/tools/testing/selftests/net/.gitignore
-+++ b/tools/testing/selftests/net/.gitignore
-@@ -36,3 +36,4 @@ gro
- ioam6_parser
- toeplitz
- cmsg_sender
-+bind_bhash_test
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftes=
-ts/net/Makefile
-index af7f6e6ff182..b2cf3fa152ad 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -55,6 +55,7 @@ TEST_GEN_PROGS =3D reuseport_bpf reuseport_bpf_cpu reus=
-eport_bpf_numa
- TEST_GEN_PROGS +=3D reuseport_dualstack reuseaddr_conflict tls
- TEST_GEN_FILES +=3D toeplitz
- TEST_GEN_FILES +=3D cmsg_sender
-+TEST_GEN_FILES +=3D bind_bhash_test
-=20
- TEST_FILES :=3D settings
-=20
-@@ -63,4 +64,5 @@ include ../lib.mk
-=20
- $(OUTPUT)/reuseport_bpf_numa: LDLIBS +=3D -lnuma
- $(OUTPUT)/tcp_mmap: LDLIBS +=3D -lpthread
-+$(OUTPUT)/bind_bhash_test: LDLIBS +=3D -lpthread
- $(OUTPUT)/tcp_inq: LDLIBS +=3D -lpthread
-diff --git a/tools/testing/selftests/net/bind_bhash_test.c b/tools/testin=
-g/selftests/net/bind_bhash_test.c
-new file mode 100644
-index 000000000000..252e73754e76
---- /dev/null
-+++ b/tools/testing/selftests/net/bind_bhash_test.c
-@@ -0,0 +1,119 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * This times how long it takes to bind to a port when the port already
-+ * has multiple sockets in its bhash table.
-+ *
-+ * In the setup(), we populate the port's bhash table with
-+ * MAX_THREADS * MAX_CONNECTIONS number of entries.
-+ */
-+
-+#include <unistd.h>
-+#include <stdio.h>
-+#include <netdb.h>
-+#include <pthread.h>
-+
-+#define MAX_THREADS 600
-+#define MAX_CONNECTIONS 40
-+
-+static const char *bind_addr =3D "::1";
-+static const char *port;
-+
-+static int fd_array[MAX_THREADS][MAX_CONNECTIONS];
-+
-+static int bind_socket(int opt, const char *addr)
-+{
-+	struct addrinfo *res, hint =3D {};
-+	int sock_fd, reuse =3D 1, err;
-+
-+	sock_fd =3D socket(AF_INET6, SOCK_STREAM, 0);
-+	if (sock_fd < 0) {
-+		perror("socket fd err");
-+		return -1;
-+	}
-+
-+	hint.ai_family =3D AF_INET6;
-+	hint.ai_socktype =3D SOCK_STREAM;
-+
-+	err =3D getaddrinfo(addr, port, &hint, &res);
-+	if (err) {
-+		perror("getaddrinfo failed");
-+		return -1;
-+	}
-+
-+	if (opt) {
-+		err =3D setsockopt(sock_fd, SOL_SOCKET, opt, &reuse, sizeof(reuse));
-+		if (err) {
-+			perror("setsockopt failed");
-+			return -1;
-+		}
-+	}
-+
-+	err =3D bind(sock_fd, res->ai_addr, res->ai_addrlen);
-+	if (err) {
-+		perror("failed to bind to port");
-+		return -1;
-+	}
-+
-+	return sock_fd;
-+}
-+
-+static void *setup(void *arg)
-+{
-+	int sock_fd, i;
-+	int *array =3D (int *)arg;
-+
-+	for (i =3D 0; i < MAX_CONNECTIONS; i++) {
-+		sock_fd =3D bind_socket(SO_REUSEADDR | SO_REUSEPORT, bind_addr);
-+		if (sock_fd < 0)
-+			return NULL;
-+		array[i] =3D sock_fd;
-+	}
-+
-+	return NULL;
-+}
-+
-+int main(int argc, const char *argv[])
-+{
-+	int listener_fd, sock_fd, i, j;
-+	pthread_t tid[MAX_THREADS];
-+	clock_t begin, end;
-+
-+	if (argc !=3D 2) {
-+		printf("Usage: listener <port>\n");
-+		return -1;
-+	}
-+
-+	port =3D argv[1];
-+
-+	listener_fd =3D bind_socket(SO_REUSEADDR | SO_REUSEPORT, bind_addr);
-+	if (listen(listener_fd, 100) < 0) {
-+		perror("listen failed");
-+		return -1;
-+	}
-+
-+	/* Set up threads to populate the bhash table entry for the port */
-+	for (i =3D 0; i < MAX_THREADS; i++)
-+		pthread_create(&tid[i], NULL, setup, fd_array[i]);
-+
-+	for (i =3D 0; i < MAX_THREADS; i++)
-+		pthread_join(tid[i], NULL);
-+
-+	begin =3D clock();
-+
-+	/* Bind to the same port on a different address */
-+	sock_fd  =3D bind_socket(0, "2001:0db8:0:f101::1");
-+
-+	end =3D clock();
-+
-+	printf("time spent =3D %f\n", (double)(end - begin) / CLOCKS_PER_SEC);
-+
-+	/* clean up */
-+	close(sock_fd);
-+	close(listener_fd);
-+	for (i =3D 0; i < MAX_THREADS; i++) {
-+		for (j =3D 0; i < MAX_THREADS; i++)
-+			close(fd_array[i][j]);
-+	}
-+
-+	return 0;
-+}
---=20
-2.30.2
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
