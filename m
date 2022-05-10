@@ -2,159 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A21552165F
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 15:04:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FFC95219E9
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 15:49:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242224AbiEJNIv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 09:08:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36458 "EHLO
+        id S236572AbiEJNw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 09:52:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233776AbiEJNIr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 09:08:47 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21A17281368;
-        Tue, 10 May 2022 06:04:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=ERCDIneY1Q4o8JFrn6huil0jOKhd5NF1nm9+poeBUGY=; b=C1bwe/Dp28hHJCcth6j9FIvLRX
-        pDXbwTw3GNkAuVoDVZ2t1Ig0Ha8VAgFyN1qfYHmoUYQVyDRHd7IRdBkOHux1OzR9Q7hmNC/ZbkDNy
-        i9N1ZP1KkXJYzqp8Xch5cykWJAl8GjhN23tq785F2kRMcqVY6TftmyHyPJZTtkL8PDJb7GYsR63+v
-        CyHpUemygecHOqy6UnkI5sacYa9DSfBokIBgO1vbgxAO3Lo/ZpYDMcX65a4mJHituF1N7bEMHTqnl
-        wjibh2hSmhpgeMzHripimwe7gT4RuGZfcia5HzNoWvLT/w9CiRN4l1p9e5qQ/+lp5TdT6UNVMzl77
-        9RtLUAvA==;
-Received: from [177.183.162.244] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1noPXc-0005Ct-K8; Tue, 10 May 2022 15:04:40 +0200
-Message-ID: <c23f408f-d030-b599-19b4-8561d511ef73@igalia.com>
-Date:   Tue, 10 May 2022 10:04:08 -0300
+        with ESMTP id S245144AbiEJNr0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 09:47:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 560CB2C13CB;
+        Tue, 10 May 2022 06:35:27 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D7172618A0;
+        Tue, 10 May 2022 13:35:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D84E9C385A6;
+        Tue, 10 May 2022 13:35:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652189726;
+        bh=/avtzuZvfnMi1NnIu7uKKrjB03sJRY+GFZrwoZkIdA4=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=1+3Bcslfp2vl5Ycev8DQ5k/6ogIVZdy33DMSHSGOHwsXOamhkfhWvy3TdRLKbbC6E
+         1d0WPvWqYVeYK3qvTo5TCnQs7wci2gSKKWOvmfyaCeYBKrSU+X06ea2VwVuL/60XFH
+         O2mV2dbLrqCYHpdMkrImzuAdaCmvIaehSvjnJgpQ=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Ondrej Mosnacek <omosnace@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Sunil Goutham <sgoutham@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Subject: [PATCH 5.17 001/140] pci_irq_vector() cant be used in atomic context any longer. This conflicts with the usage of this function in nic_mbx_intr_handler(). =?UTF-8?q?age=20of=20this=20function=20in=20nic=5Fmbx=5Fintr=5Fhandler().?=
+Date:   Tue, 10 May 2022 15:06:31 +0200
+Message-Id: <20220510130741.644300046@linuxfoundation.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220510130741.600270947@linuxfoundation.org>
+References: <20220510130741.600270947@linuxfoundation.org>
+User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH 04/30] firmware: google: Convert regular spinlock into
- trylock on panic path
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>, Evan Green <evgreen@chromium.org>
-Cc:     Andrew Morton <akpm@linux-foundation.org>, bhe@redhat.com,
-        kexec@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-parisc@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>, Borislav Petkov <bp@alien8.de>,
-        Jonathan Corbet <corbet@lwn.net>, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de,
-        Kees Cook <keescook@chromium.org>, luto@kernel.org,
-        mhiramat@kernel.org, mingo@redhat.com, paulmck@kernel.org,
-        peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, Alan Stern <stern@rowland.harvard.edu>,
-        Thomas Gleixner <tglx@linutronix.de>, vgoyal@redhat.com,
-        vkuznets@redhat.com, Will Deacon <will@kernel.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        David Gow <davidgow@google.com>,
-        Julius Werner <jwerner@chromium.org>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-5-gpiccoli@igalia.com>
- <CAE=gft5Pq25L4KFoPWbftkPF-JN1ex2yws77mMJ4GQnn9W0L2g@mail.gmail.com>
- <adcf6d0e-c37c-6ede-479e-29959d03d8c0@igalia.com> <YnpOv4hAPV4b+6v4@alley>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YnpOv4hAPV4b+6v4@alley>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 10/05/2022 08:38, Petr Mladek wrote:
-> [...]
-> I see two more alternative solutions:
-> 
-> 1st variant is a trick already used in console write() callbacks.
-> They do trylock() when oops_in_progress is set. They remember
-> the result to prevent double unlock when printing Oops messages and
-> the system will try to continue working. For example:
-> 
-> pl011_console_write(struct console *co, const char *s, unsigned int count)
-> {
-> [...]
-> 	int locked = 1;
-> [...]
-> 	if (uap->port.sysrq)
-> 		locked = 0;
-> 	else if (oops_in_progress)
-> 		locked = spin_trylock(&uap->port.lock);
-> 	else
-> 		spin_lock(&uap->port.lock);
-> 
-> [...]
-> 
-> 	if (locked)
-> 		spin_unlock(&uap->port.lock);
-> }
-> 
-> 
-> 2nd variant is to check panic_cpu variable. It is used in printk.c.
-> We might move the function to panic.h:
-> 
-> static bool panic_in_progress(void)
-> {
-> 	return unlikely(atomic_read(&panic_cpu) != PANIC_CPU_INVALID);
-> }
-> 
-> and then do:
-> 
-> 	if (panic_in_progress()) {
-> 		...
+From: Thomas Gleixner <tglx@linutronix.de>
 
-Thanks for the review Petr! I feel alternative two is way better, it
-checks for panic - the oops_in_progress isn't really enough, since we
-can call panic() directly, not necessarily through an oops path, correct?
+commit 6b292a04c694573a302686323fe15b1c7e673e5b upstream.
 
-For me, we could stick with the lock check, but I'll defer to Evan - I
-didn't work the V2 patch yet, what do you prefer Evan?
+Cache the Linux interrupt numbers in struct nicpf and use that cache in the
+interrupt handler to select the mailbox.
+
+Fixes: 495c66aca3da ("genirq/msi: Convert to new functions")
+Reported-by: Ondrej Mosnacek <omosnace@redhat.com>
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Cc: Sunil Goutham <sgoutham@marvell.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: netdev@vger.kernel.org
+Cc: stable@vger.kernel.org
+Link: https://bugzilla.redhat.com/show_bug.cgi?id=2041772
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ drivers/net/ethernet/cavium/thunder/nic_main.c |   16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
+
+--- a/drivers/net/ethernet/cavium/thunder/nic_main.c
++++ b/drivers/net/ethernet/cavium/thunder/nic_main.c
+@@ -59,7 +59,7 @@ struct nicpf {
+ 
+ 	/* MSI-X */
+ 	u8			num_vec;
+-	bool			irq_allocated[NIC_PF_MSIX_VECTORS];
++	unsigned int		irq_allocated[NIC_PF_MSIX_VECTORS];
+ 	char			irq_name[NIC_PF_MSIX_VECTORS][20];
+ };
+ 
+@@ -1150,7 +1150,7 @@ static irqreturn_t nic_mbx_intr_handler(
+ 	u64 intr;
+ 	u8  vf;
+ 
+-	if (irq == pci_irq_vector(nic->pdev, NIC_PF_INTR_ID_MBOX0))
++	if (irq == nic->irq_allocated[NIC_PF_INTR_ID_MBOX0])
+ 		mbx = 0;
+ 	else
+ 		mbx = 1;
+@@ -1176,14 +1176,14 @@ static void nic_free_all_interrupts(stru
+ 
+ 	for (irq = 0; irq < nic->num_vec; irq++) {
+ 		if (nic->irq_allocated[irq])
+-			free_irq(pci_irq_vector(nic->pdev, irq), nic);
+-		nic->irq_allocated[irq] = false;
++			free_irq(nic->irq_allocated[irq], nic);
++		nic->irq_allocated[irq] = 0;
+ 	}
+ }
+ 
+ static int nic_register_interrupts(struct nicpf *nic)
+ {
+-	int i, ret;
++	int i, ret, irq;
+ 	nic->num_vec = pci_msix_vec_count(nic->pdev);
+ 
+ 	/* Enable MSI-X */
+@@ -1201,13 +1201,13 @@ static int nic_register_interrupts(struc
+ 		sprintf(nic->irq_name[i],
+ 			"NICPF Mbox%d", (i - NIC_PF_INTR_ID_MBOX0));
+ 
+-		ret = request_irq(pci_irq_vector(nic->pdev, i),
+-				  nic_mbx_intr_handler, 0,
++		irq = pci_irq_vector(nic->pdev, i);
++		ret = request_irq(irq, nic_mbx_intr_handler, 0,
+ 				  nic->irq_name[i], nic);
+ 		if (ret)
+ 			goto fail;
+ 
+-		nic->irq_allocated[i] = true;
++		nic->irq_allocated[i] = irq;
+ 	}
+ 
+ 	/* Enable mailbox interrupt */
 
 
-> [...]
-> As already mentioned in the other reply, panic() sometimes stops
-> the other CPUs using NMI, for example, see kdump_nmi_shootdown_cpus().
-> 
-> Another situation is when the CPU using the lock ends in some
-> infinite loop because something went wrong. The system is in
-> an unpredictable state during panic().
-> 
-> I am not sure if this is possible with the code under gsmi_dev.lock
-> but such things really happen during panic() in other subsystems.
-> Using trylock in the panic() code path is a good practice.
-> 
-> Best Regards,
-> Petr
-
-Makes total sense, thanks for confirming!
-Cheers,
-
-
-Guilherme
