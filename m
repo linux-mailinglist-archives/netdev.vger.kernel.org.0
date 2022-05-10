@@ -2,263 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 88F3F522123
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 18:23:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D02AA522160
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 18:34:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347335AbiEJQ1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 12:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
+        id S1347487AbiEJQin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 12:38:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237625AbiEJQ1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 12:27:36 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6B2211C089;
-        Tue, 10 May 2022 09:23:38 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id y63so19055073oia.7;
-        Tue, 10 May 2022 09:23:38 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=AsmH6qO9HwkmcMOMbobeK/VdQk8dmPZzzT3Cf0QWRWs=;
-        b=HmLyyYaIwMMAOtDc46ZxIleEIFV5xhWMh5nZ+JeEEU+dk87Vr7vAQ7l72Mv55CYN1X
-         EosztGYEh5C2Zk7KQCNMJKFYyvBR1lJ3oBtWLhE0+c3Jf30TzjqYRixEFlHbP+qlZN6l
-         xEcqmG/12EfWtK+J5kOOfydecqMmlo8dNYiNQ6yBpm3g4Q51yvaM8hm4Y61TooKtlkS9
-         xImdmiYIx2MtA4Qo54F7id9HO+nQVh214uEXn7QMAaR4s+pru9wHAbUgxtTO00Y0AiMb
-         jhGxV+MU5LdO807dii90eKWWN1HVLH8y8FE3d3Ln0+plUopbfxZ2/uKRtZK2i//Ubd0A
-         cdrA==
-X-Gm-Message-State: AOAM532VMFnXwGRZQurH8qbM3auTCqf1a/XnxFg0Vaed0IMYNsBIfcXA
-        /yOdwNxSVvDsFBFk9WM9Ag==
-X-Google-Smtp-Source: ABdhPJxrg0B07y3+mX7CtbGGxImTXRMtKDadJvvZD01n75pgpAm1PYwoLukdXANtBtPD9rUYwcPUeQ==
-X-Received: by 2002:a05:6808:ec8:b0:2f9:6119:d6ed with SMTP id q8-20020a0568080ec800b002f96119d6edmr415268oiv.215.1652199817829;
-        Tue, 10 May 2022 09:23:37 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id m33-20020a056870562100b000edf80be4ecsm5603899oao.58.2022.05.10.09.23.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 09:23:37 -0700 (PDT)
-Received: (nullmailer pid 2135880 invoked by uid 1000);
-        Tue, 10 May 2022 16:23:36 -0000
-Date:   Tue, 10 May 2022 11:23:36 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Sam.Shih@mediatek.com,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next 02/14] dt-bindings: net: mediatek,net: add
- mt7986-eth binding
-Message-ID: <YnqRiEvS8OV20NSY@robh.at.kernel.org>
-References: <cover.1651839494.git.lorenzo@kernel.org>
- <ce9e2975645e81758558201337f50c6693143fd8.1651839494.git.lorenzo@kernel.org>
+        with ESMTP id S244941AbiEJQim (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 12:38:42 -0400
+X-Greylist: delayed 557 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 10 May 2022 09:34:43 PDT
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 891E02A3752;
+        Tue, 10 May 2022 09:34:43 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 4F8D8303260B;
+        Tue, 10 May 2022 18:25:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
+        :content-type:date:from:from:in-reply-to:message-id:mime-version
+        :references:reply-to:subject:subject:to:to; s=felkmail; bh=GUwmb
+        8WUz+d8rIT5s68PdvGp8OiPvyQgMToZHWTShs8=; b=anjgfRPvazXbKAMxUXKa7
+        fY6juY58etYD/ZiNtJmBdIBIdGc4KaooWeuPCcPz51tSx6dqctHVf106A4I7RPMb
+        1TEgzTFo4U/YVOyaWGs39x4NKRCTRkfoMTSOob95cXLgg+ZbOjzvnS0am3VPvL6T
+        c1bqktoZkeemT60Xy0O8S57CRqB4GFw8LJxevnYiLXmj6qnAQpwq+aMn4CZOiqQz
+        8yHC/4abCXhKR2UqR6AX8wewcPtF6LYTERJLnWiVZpqUuC4VP5MyMMNBmwPokEcO
+        SUnGfniSF6vixheoxKvEoyvX/y0yfVi5y+mNdp/NDeZWEBQxDJYejAZ7/IxUs79Z
+        g==
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 77C823032609;
+        Tue, 10 May 2022 18:25:23 +0200 (CEST)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 24AGPNgM025943;
+        Tue, 10 May 2022 18:25:23 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 24AGPM8X025942;
+        Tue, 10 May 2022 18:25:22 +0200
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     Akira Yokosawa <akiyks@gmail.com>
+Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive instead of 'figure'
+Date:   Tue, 10 May 2022 18:25:15 +0200
+User-Agent: KMail/1.9.10
+Cc:     "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        Martin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
+In-Reply-To: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-In-Reply-To: <ce9e2975645e81758558201337f50c6693143fd8.1651839494.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Message-Id: <202205101825.15126.pisa@cmp.felk.cvut.cz>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 06, 2022 at 02:30:19PM +0200, Lorenzo Bianconi wrote:
-> Introduce dts bindings for mt7986 soc in mediatek,net.yaml.
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Hello Akira,
+
+On Tuesday 10 of May 2022 11:34:37 Akira Yokosawa wrote:
+> Two issues were observed in the ReST doc added by commit c3a0addefbde
+> ("docs: ctucanfd: CTU CAN FD open-source IP core documentation.").
+
+Thanks for the fix
+
+> The plain "figure" directive broke "make pdfdocs" due to a missing=20
+> PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"
+> directive, which is an extension for kernel documentations, should
+> be used instead.
+
+I have not noticed that there is kernel-figure
+option. We have setup own Sphinx 1.4.9 based build for driver
+documentation out of the tree compilation, I am not sure if that
+would work with this option but if not we keep this version
+modified. There are required modification for sources location anyway...
+
+https://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/linux_driver/build/ct=
+ucanfd-driver.html
+
+> The directive of "code:: raw" causes a warning from both
+> "make htmldocs" and "make pdfdocs", which reads:
+>
+>     [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name
+>     'raw' is not known
+
+Strange I have not seen any warning when building htmldocs
+in my actual linux kernel tree. I have cleaned docs to be warnings
+free, but it is possible that I have another tools versions.
+
+Anyway thanks for cleanup.
+
+> A plain literal-block marker should suffice where no syntax
+> highlighting is intended.
+>
+> Fix the issues by using suitable directive and marker.
+>
+> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+> Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
+> documentation.") Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+> Cc: Martin Jerabek <martin.jerabek01@gmail.com>
+> Cc: Ondrej Ille <ondrej.ille@gmail.com>
+> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+
+Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+
 > ---
->  .../devicetree/bindings/net/mediatek,net.yaml | 133 +++++++++++++++++-
->  1 file changed, 131 insertions(+), 2 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/net/mediatek,net.yaml b/Documentation/devicetree/bindings/net/mediatek,net.yaml
-> index 43cc4024ef98..da1294083eeb 100644
-> --- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
-> +++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
-> @@ -21,6 +21,7 @@ properties:
->        - mediatek,mt7623-eth
->        - mediatek,mt7622-eth
->        - mediatek,mt7629-eth
-> +      - mediatek,mt7986-eth
->        - ralink,rt5350-eth
->  
->    reg:
-> @@ -28,7 +29,7 @@ properties:
->  
->    interrupts:
->      minItems: 3
-> -    maxItems: 3
-> +    maxItems: 4
+>  .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git
+> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst ind=
+ex
+> 2fde5551e756..40c92ea272af 100644
+> --- a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> +++ b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> @@ -72,7 +72,7 @@ it is reachable (on which bus it resides) and its
+> configuration =E2=80=93 registers address, interrupts and so on. An examp=
+le of such
+> a device tree is given in .
+>
+> -.. code:: raw
+> +::
+>
+>             / {
+>                 /* ... */
+> @@ -451,7 +451,7 @@ the FIFO is maintained, together with priority
+> rotation, is depicted in
+>
+>
+>
+> -.. figure:: fsm_txt_buffer_user.svg
+> +.. kernel-figure:: fsm_txt_buffer_user.svg
+>
+>     TX Buffer states with possible transitions
 
-What's the new interrupt? This should describe what each entry is.
 
-If the mt7986-eth must have all 4 interrupts, then the if/then needs a 
-'minItems: 4'.
-
->  
->    power-domains:
->      maxItems: 1
-> @@ -189,6 +190,43 @@ allOf:
->            minItems: 2
->            maxItems: 2
->  
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: mediatek,mt7986-eth
-> +    then:
-> +      properties:
-> +        clocks:
-> +          minItems: 15
-> +          maxItems: 15
-> +
-> +        clock-names:
-> +          items:
-> +            - const: fe
-> +            - const: gp2
-> +            - const: gp1
-> +            - const: wocpu1
-> +            - const: wocpu0
-> +            - const: sgmii_tx250m
-> +            - const: sgmii_rx250m
-> +            - const: sgmii_cdr_ref
-> +            - const: sgmii_cdr_fb
-> +            - const: sgmii2_tx250m
-> +            - const: sgmii2_rx250m
-> +            - const: sgmii2_cdr_ref
-> +            - const: sgmii2_cdr_fb
-> +            - const: netsys0
-> +            - const: netsys1
-> +
-> +        mediatek,sgmiisys:
-> +          minItems: 2
-> +          maxItems: 2
-> +
-
-> +        assigned-clocks: true
-> +
-> +        assigned-clock-parents: true
-
-These are automatically allowed on any node with 'clocks' (and now 
-#clock-cells), so you can drop them.
-
-> +
->  patternProperties:
->    "^mac@[0-1]$":
->      type: object
-> @@ -219,7 +257,6 @@ required:
->    - interrupts
->    - clocks
->    - clock-names
-> -  - power-domains
-
-Is that because this chip doesn't have power domains, or support for 
-them hasn't been added? In the latter case, then you should keep this. 
-
->    - mediatek,ethsys
->  
->  unevaluatedProperties: false
-> @@ -295,3 +332,95 @@ examples:
->          };
->        };
->      };
-> +
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/clock/mt7622-clk.h>
-> +
-> +    soc {
-> +      #address-cells = <2>;
-> +      #size-cells = <2>;
-> +
-> +      eth: ethernet@15100000 {
-> +        #define CLK_ETH_FE_EN            0
-> +        #define CLK_ETH_WOCPU1_EN        3
-> +        #define CLK_ETH_WOCPU0_EN        4
-> +        #define CLK_TOP_NETSYS_SEL      43
-> +        #define CLK_TOP_NETSYS_500M_SEL 44
-> +        #define CLK_TOP_NETSYS_2X_SEL   46
-> +        #define CLK_TOP_SGM_325M_SEL    47
-> +        #define CLK_APMIXED_NET2PLL      1
-> +        #define CLK_APMIXED_SGMPLL       3
-> +
-> +        compatible = "mediatek,mt7986-eth";
-> +        reg = <0 0x15100000 0 0x80000>;
-> +        interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>,
-> +                     <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH>;
-> +        clocks = <&ethsys CLK_ETH_FE_EN>,
-> +                 <&ethsys CLK_ETH_GP2_EN>,
-> +                 <&ethsys CLK_ETH_GP1_EN>,
-> +                 <&ethsys CLK_ETH_WOCPU1_EN>,
-> +                 <&ethsys CLK_ETH_WOCPU0_EN>,
-> +                 <&sgmiisys0 CLK_SGMII_TX250M_EN>,
-> +                 <&sgmiisys0 CLK_SGMII_RX250M_EN>,
-> +                 <&sgmiisys0 CLK_SGMII_CDR_REF>,
-> +                 <&sgmiisys0 CLK_SGMII_CDR_FB>,
-> +                 <&sgmiisys1 CLK_SGMII_TX250M_EN>,
-> +                 <&sgmiisys1 CLK_SGMII_RX250M_EN>,
-> +                 <&sgmiisys1 CLK_SGMII_CDR_REF>,
-> +                 <&sgmiisys1 CLK_SGMII_CDR_FB>,
-> +                 <&topckgen CLK_TOP_NETSYS_SEL>,
-> +                 <&topckgen CLK_TOP_NETSYS_SEL>;
-> +        clock-names = "fe", "gp2", "gp1", "wocpu1", "wocpu0",
-> +                      "sgmii_tx250m", "sgmii_rx250m",
-> +                      "sgmii_cdr_ref", "sgmii_cdr_fb",
-> +                      "sgmii2_tx250m", "sgmii2_rx250m",
-> +                      "sgmii2_cdr_ref", "sgmii2_cdr_fb",
-> +                      "netsys0", "netsys1";
-> +        mediatek,ethsys = <&ethsys>;
-> +        mediatek,sgmiisys = <&sgmiisys0>, <&sgmiisys1>;
-> +        assigned-clocks = <&topckgen CLK_TOP_NETSYS_2X_SEL>,
-> +                          <&topckgen CLK_TOP_SGM_325M_SEL>;
-> +        assigned-clock-parents = <&apmixedsys CLK_APMIXED_NET2PLL>,
-> +                                 <&apmixedsys CLK_APMIXED_SGMPLL>;
-> +
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        mdio: mdio-bus {
-> +          #address-cells = <1>;
-> +          #size-cells = <0>;
-> +
-> +          phy5: ethernet-phy@0 {
-> +            compatible = "ethernet-phy-id67c9.de0a";
-> +            phy-mode = "2500base-x";
-> +            reset-gpios = <&pio 6 1>;
-> +            reset-deassert-us = <20000>;
-> +            reg = <5>;
-> +          };
-> +
-> +          phy6: ethernet-phy@1 {
-> +            compatible = "ethernet-phy-id67c9.de0a";
-> +            phy-mode = "2500base-x";
-> +            reg = <6>;
-> +          };
-> +        };
-> +
-> +        mac0: mac@0 {
-> +          compatible = "mediatek,eth-mac";
-> +          phy-mode = "2500base-x";
-> +          phy-handle = <&phy5>;
-> +          reg = <0>;
-> +        };
-> +
-> +        mac1: mac@1 {
-> +          compatible = "mediatek,eth-mac";
-> +          phy-mode = "2500base-x";
-> +          phy-handle = <&phy6>;
-> +          reg = <1>;
-> +        };
-> +      };
-> +    };
-> -- 
-> 2.35.1
-> 
-> 
