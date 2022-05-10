@@ -2,158 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9254C521BD5
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 16:19:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75572521C42
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 16:29:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244889AbiEJOWx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 10:22:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37234 "EHLO
+        id S241381AbiEJOc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 10:32:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344229AbiEJOVY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 10:21:24 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75DCA24FDAF
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 06:48:05 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id ks9so26656048ejb.2
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 06:48:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tessares-net.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qxN4fURmY7B6OoGlAl7TnZh+A6v7toVBfv8XiVHnZPs=;
-        b=7SMXTERkd3/gNZd9hcEblZXFf89HNEF1w2DzcV0/SvWbKebt9E/slmZT3Y4BXI7RpN
-         nRwzWfOuCBlMvHyEz+Zaxr8s1R8JRNAHJTlBfYC0BD8KMIYsq5xKzNwm22Q3bl7gpfNr
-         BAUm/weOcahU4V1JAZCdtcsYzc6+8FfDLXaXF3GIx75QqN7Rr4bd0ScAyzSgfMmYFI42
-         k9ThExqUhPAUZ+UNx0lYup3uLi2LJOwM80NmmMJNCdDRm2zaP9cHq6r8ME+m8Iws7LOM
-         WuHsOIaHF5e1MvqtFYJ0Sk0IvAiBA1g2EgYsO6VKOiJzve0kJpnb/lXHIdyu3rtpQyzM
-         emRg==
+        with ESMTP id S1345146AbiEJOck (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 10:32:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3E7962A0A52
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 06:52:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652190671;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZAGHGrcoAkfJTCYhh0+KXJWKuk5hs3gPSub8G/kTM/Y=;
+        b=DP5O8c8Fs2by5V13bVW/fnmoOQ3TiLRBDeaGQyhewpAxAp/H8fyIjWCK67Ic1D8jSle2vt
+        ra0VJRF5ItB81WkLVWFPt93VQYk7MsF715ShzaHQfQ95P2AS6nnit3io/eWlbA3gudHR1/
+        PgkTnRxFodNk/P6+J2aCDHYH3W5wA50=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-65-O7eYUDhHMA2jGq2uQyTnvw-1; Tue, 10 May 2022 09:51:09 -0400
+X-MC-Unique: O7eYUDhHMA2jGq2uQyTnvw-1
+Received: by mail-wm1-f72.google.com with SMTP id c62-20020a1c3541000000b0038ec265155fso1329948wma.6
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 06:51:09 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=qxN4fURmY7B6OoGlAl7TnZh+A6v7toVBfv8XiVHnZPs=;
-        b=pcngQhSpFIbQYYoCDy13/9DJNzkRIYnXUVpbTPTX+F+Y/O21ci+QvCX6tFDQk2j9sw
-         8CKG/phzgK6hWlOXyLx4/OUNhEq/0U9sF4b/jGa6fNL9fClIlhbo+cMU6D6G1kMAovYq
-         YMC9dTShDu26ZPDfIKEKrrSpQreMMfIredi2rRnvBEjPcF//cgvBihuVQkjt7f9sY+HR
-         K3c6oVLASwGUDXgBzmd3ovovlEER5uCRKuONFyI6qTPL8zwEXrUUQFwg/4Ic9gSOMk7g
-         e9zfdcnu99uXsv0U9mMDqWr/dkUNQjxf6H8W0QvnNKJXMR9h9ijjDLxXSXUv544LMDtI
-         gdmg==
-X-Gm-Message-State: AOAM5312aVtowoqwWfPCiJ/ljcFKd2aPkL76BD5wOLuuPLfm061ZEVEq
-        KecSvT4ab290ztE5sLBxeIJ7/w==
-X-Google-Smtp-Source: ABdhPJz67etFY7SFqB7dXmIx6c5+FLU2cHXZAcwYNvoIwNsUAstURDc7iQGPVCoNA46qAWnebQ/56g==
-X-Received: by 2002:a17:907:1c06:b0:6df:b257:cbb3 with SMTP id nc6-20020a1709071c0600b006dfb257cbb3mr19500751ejc.631.1652190483935;
-        Tue, 10 May 2022 06:48:03 -0700 (PDT)
-Received: from [192.168.47.124] (228-177-145-178.mobileinternet.proximus.be. [178.145.177.228])
-        by smtp.gmail.com with ESMTPSA id jz2-20020a17090775e200b006f3ef214e4dsm6278024ejc.179.2022.05.10.06.48.02
+        bh=ZAGHGrcoAkfJTCYhh0+KXJWKuk5hs3gPSub8G/kTM/Y=;
+        b=my03CZs2HuLo5egdnwD9TGFluUDCq1YMSkkp8xZEsjWS7k5mXItITxeA1XUtC0dX1r
+         KigBU2+P/lC6n2Qn3SkVaKXRbhddNpCDHfHb8y4la18RN8dF6v2eeIoDD1xpz8O2plZQ
+         QmzpsjInMfzWh6JkHKLmacA04adxELaAGNIzwWdzc215SCoMxnBX8m1ugaYl9ZJKXhB1
+         bHU6daM3RK2MidJh3dJtkIaxy7Yc3Au3+o2MjjOmN8Ln3vPN9uOY/l35LzDPS8dUnzlr
+         JD03ZS0llYvtxtYDAuvR9f/TVrF1zRLcDT4MNovo9cqWRKhrvSC//6c8szE2D5MRMseP
+         uucg==
+X-Gm-Message-State: AOAM533FrY4CPMZgWWnfHW/HtoKlgZRuXDhE5NzXCnomxWdNqMDpM4sr
+        rVVHLyzJiendZTna+/jSSYcgpf4xsAWcgN3HiMvKvrZtm1a2PxKHP3NT/ywO9AWbsjpvi3tG/GB
+        cH70eKp7A1GVmlHd+
+X-Received: by 2002:a05:6000:1a89:b0:20c:613f:da94 with SMTP id f9-20020a0560001a8900b0020c613fda94mr18362137wry.356.1652190667158;
+        Tue, 10 May 2022 06:51:07 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJw3IgxLwZziy91sXD3yrkheTJ3uGwJ3zLdE2j03c0MRWxjGcQGeDy06Ef/vxojp3Um9k3+OMg==
+X-Received: by 2002:a05:6000:1a89:b0:20c:613f:da94 with SMTP id f9-20020a0560001a8900b0020c613fda94mr18362122wry.356.1652190666957;
+        Tue, 10 May 2022 06:51:06 -0700 (PDT)
+Received: from ?IPV6:2001:b07:add:ec09:c399:bc87:7b6c:fb2a? ([2001:b07:add:ec09:c399:bc87:7b6c:fb2a])
+        by smtp.googlemail.com with ESMTPSA id l7-20020a5d5607000000b0020c5253d904sm13941681wrv.80.2022.05.10.06.50.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 06:48:03 -0700 (PDT)
-Message-ID: <e58c97e5-450a-3abc-f796-180273134423@tessares.net>
-Date:   Tue, 10 May 2022 15:48:01 +0200
+        Tue, 10 May 2022 06:51:06 -0700 (PDT)
+Message-ID: <8f24d358-1fbd-4598-1f2d-959b4f8d75fd@redhat.com>
+Date:   Tue, 10 May 2022 15:50:57 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.0
-Subject: Re: [PATCH bpf-next v3 5/8] selftests: bpf: test
- bpf_skc_to_mptcp_sock
-Content-Language: en-GB
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, mptcp@lists.linux.dev
-References: <20220502211235.142250-1-mathew.j.martineau@linux.intel.com>
- <20220502211235.142250-6-mathew.j.martineau@linux.intel.com>
- <CAEf4BzY-t=ZtmU+6yeSo5DD6+C==NUN=twAKq=OQyVb2rS2ENw@mail.gmail.com>
- <8afe6b33-49c1-5060-87ed-80ef21096bbb@tessares.net>
- <CAEf4BzbwGHtoEooE3wFotgoYi8uDRYJcK=Y0Vdt-JUtWi4rqhg@mail.gmail.com>
-From:   Matthieu Baerts <matthieu.baerts@tessares.net>
-In-Reply-To: <CAEf4BzbwGHtoEooE3wFotgoYi8uDRYJcK=Y0Vdt-JUtWi4rqhg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [syzbot] INFO: task hung in synchronize_rcu (3)
+Content-Language: en-US
+To:     Sean Christopherson <seanjc@google.com>,
+        syzbot <syzbot+0c6da80218456f1edc36@syzkaller.appspotmail.com>
+Cc:     akpm@linux-foundation.org, davem@davemloft.net, jhs@mojatatu.com,
+        jiri@resnulli.us, kvm@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        mingo@elte.hu, mlevitsk@redhat.com, netdev@vger.kernel.org,
+        peterz@infradead.org, syzkaller-bugs@googlegroups.com,
+        tglx@linutronix.de, vinicius.gomes@intel.com,
+        viro@zeniv.linux.org.uk, xiyou.wangcong@gmail.com
+References: <000000000000402c5305ab0bd2a2@google.com>
+ <0000000000004f3c0d05dea46dac@google.com> <Ynpsc7dRs8tZugpl@google.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <Ynpsc7dRs8tZugpl@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrii,
-
-On 09/05/2022 23:00, Andrii Nakryiko wrote:
-> On Mon, May 9, 2022 at 2:00 AM Matthieu Baerts
-> <matthieu.baerts@tessares.net> wrote:
+On 5/10/22 15:45, Sean Christopherson wrote:
 >>
->> Hi Andrii,
+>>      KVM: x86: Don't re-acquire SRCU lock in complete_emulated_io()
 >>
->> Thank you for the review!
+>> bisection log:https://syzkaller.appspot.com/x/bisect.txt?x=16dc2e49f00000
+>> start commit:   ea4424be1688 Merge tag 'mtd/fixes-for-5.17-rc8' of git://g..
+>> git tree:       upstream
+>> kernel config:https://syzkaller.appspot.com/x/.config?x=442f8ac61e60a75e
+>> dashboard link:https://syzkaller.appspot.com/bug?extid=0c6da80218456f1edc36
+>> syz repro:https://syzkaller.appspot.com/x/repro.syz?x=1685af9e700000
+>> C reproducer:https://syzkaller.appspot.com/x/repro.c?x=11b09df1700000
 >>
->> On 07/05/2022 00:26, Andrii Nakryiko wrote:
->>> On Mon, May 2, 2022 at 2:12 PM Mat Martineau
->>> <mathew.j.martineau@linux.intel.com> wrote:
+>> If the result looks correct, please mark the issue as fixed by replying with:
 >>
->> (...)
+>> #syz fix: KVM: x86: Don't re-acquire SRCU lock in complete_emulated_io()
 >>
->>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>>> index 359afc617b92..d48d3cb6abbc 100644
->>>> --- a/MAINTAINERS
->>>> +++ b/MAINTAINERS
->>>> @@ -13780,6 +13780,7 @@ F:      include/net/mptcp.h
->>>>  F:     include/trace/events/mptcp.h
->>>>  F:     include/uapi/linux/mptcp.h
->>>>  F:     net/mptcp/
->>>> +F:     tools/testing/selftests/bpf/bpf_mptcp_helpers.h
->>>>  F:     tools/testing/selftests/bpf/*/*mptcp*.c
->>>>  F:     tools/testing/selftests/net/mptcp/
->>>>
->>>> diff --git a/tools/testing/selftests/bpf/bpf_mptcp_helpers.h b/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
->>>> new file mode 100644
->>>> index 000000000000..18da4cc65e89
->>>> --- /dev/null
->>>> +++ b/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
->>>> @@ -0,0 +1,14 @@
->>>> +/* SPDX-License-Identifier: GPL-2.0 */
->>>> +/* Copyright (c) 2022, SUSE. */
->>>> +
->>>> +#ifndef __BPF_MPTCP_HELPERS_H
->>>> +#define __BPF_MPTCP_HELPERS_H
->>>> +
->>>> +#include "bpf_tcp_helpers.h"
->>>> +
->>>> +struct mptcp_sock {
->>>> +       struct inet_connection_sock     sk;
->>>> +
->>>> +} __attribute__((preserve_access_index));
->>>
->>> why can't all this live in bpf_tcp_helpers.h? why do we need extra header?
->>
->> The main reason is related to the maintenance: to have MPTCP ML being
->> cc'd for all patches modifying this file.
->>
->> Do you prefer if all these specific MPTCP structures and macros and
->> mixed with TCP ones?
->>
+>> For information about bisection process see:https://goo.gl/tpsmEJ#bisection
+> #syz fix: KVM: x86: Don't re-acquire SRCU lock in complete_emulated_io()
 > 
-> These definitions don't even have to be 1:1 w/ whatever is kernel
-> defining in terms of having all the fields, or their order, etc. So I
-> think it won't require active maintenance and thus can be merged into
-> bpf_tcp_helpers.h to keep it in one place.
 
-Thank you for your reply!
+Are you sure? The hang is in synchronize_*rcu* and the testcase is 
+unrelated to KVM.  It seems like the testcase is not 100% reproducible.
 
-New structures and macros[1] are going to be added later but I see your
-point: there is nothing requiring an active maintenance. We can move
-them all to bpf_tcp_helpers.h.
+Paolo
 
-[1]
-https://github.com/multipath-tcp/mptcp_net-next/blob/export/20220510T054929/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
-
-Cheers,
-Matt
--- 
-Tessares | Belgium | Hybrid Access Solutions
-www.tessares.net
