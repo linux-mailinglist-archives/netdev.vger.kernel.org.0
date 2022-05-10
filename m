@@ -2,53 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C15521F33
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:41:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D66F3521F59
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:44:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244173AbiEJPpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 11:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47654 "EHLO
+        id S244315AbiEJPsQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 11:48:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243916AbiEJPpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:45:04 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C42423C4B7;
-        Tue, 10 May 2022 08:41:05 -0700 (PDT)
+        with ESMTP id S1346226AbiEJPsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:48:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07C51280E18;
+        Tue, 10 May 2022 08:44:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AFA66137D;
-        Tue, 10 May 2022 15:41:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 800CCC385C2;
-        Tue, 10 May 2022 15:41:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01810614A9;
+        Tue, 10 May 2022 15:44:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AAC0DC385C2;
+        Tue, 10 May 2022 15:44:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652197264;
-        bh=gqCPYvwaXq1HHzFT7PPYDVj1xG98Nrh9/uLDsEF5+9g=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=TavP+gWuT+m1YnIchkwlb/z8f4b8mu3qKiWZoFXmdov2wBXdnRFmk65ZhpnQLF4W5
-         h5UoSNzV2ujZClf9tfemHkpVjs1gi+EKnqhUMZvHT9WupRkioXFsK7Nd58/Sgknel4
-         zyagdyQ6jbWuCuckiGl78MS/snesuMQVz7s41Gv11q3XnX+g1ZMsBDmfvjrlH4gz99
-         g+FiRNOS5Gr7RoAhJc9Ji5AgF3jbqGMwS2bvGAMmhcrGAvexaZWUlsSW7t122nLJzU
-         TJv1e2YQZQUlZT+MM4ymA3lfmMJvjz6xRU9A4qFi9SOZT7lLloyyUSIuREQwCyIB+S
-         RWeSTHySN1V+g==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Abhishek Kumar <kuabhs@chromium.org>
-Cc:     netdev@vger.kernel.org, dianders@chromium.org,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ath10k@lists.infradead.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [PATCH v3] ath10k: improve BDF search fallback strategy
-References: <20220509022618.v3.1.Ibfd52b9f0890fffe87f276fa84deaf6f1fb0055c@changeid>
-Date:   Tue, 10 May 2022 18:41:00 +0300
-In-Reply-To: <20220509022618.v3.1.Ibfd52b9f0890fffe87f276fa84deaf6f1fb0055c@changeid>
-        (Abhishek Kumar's message of "Mon, 9 May 2022 02:26:36 +0000")
-Message-ID: <87a6bp8kfn.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        s=k20201202; t=1652197446;
+        bh=DNkhD6VTUM7fXUikvAIycfwNIqFBbm8FeVeT6ISDgZs=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=B9D5dHX0uglBH69wzaeBFTkj7Gt6xla+ijzRrG9SB1sDS/HbQBf6sVMrY8PpETEmV
+         3J6cgizqEjYSbiNvBFHlBd2iQ8J1nHK7FyPfF3xaZ2p299mkwox327KpkYpUtBlHM8
+         A+x824I4XUFwO9T5fcWALRCPoEDJF8mlYT1uZp6tabsKUaa/6iUu7Ph+gx0umS1aHa
+         ARM10QgnVrCD2I55BjE9IhnzhOjAFSRS/VHGS1upG4e4xEgyn3VrQaT2Iln7mQ1VPf
+         128lBH+w7hh7Dea9X8I3sGSQTIauVYJO/TDeSPoB8TB8CuJ3rlk19hlqU/vf+QmkdG
+         4bUCNZqLpT1Pw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Shravya Kumbham <shravya.kumbham@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
+        Andrew Lunn <andrew@lunn.ch>, Paolo Abeni <pabeni@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, michal.simek@xilinx.com,
+        arnd@arndb.de, yuehaibing@huawei.com,
+        prabhakar.mahadev-lad.rj@bp.renesas.com, linmq006@gmail.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.17 11/21] net: emaclite: Don't advertise 1000BASE-T and do auto negotiation
+Date:   Tue, 10 May 2022 11:43:30 -0400
+Message-Id: <20220510154340.153400-11-sashal@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220510154340.153400-1-sashal@kernel.org>
+References: <20220510154340.153400-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,62 +61,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Abhishek Kumar <kuabhs@chromium.org> writes:
+From: Shravya Kumbham <shravya.kumbham@xilinx.com>
 
-> Board data files wrapped inside board-2.bin files are
-> identified based on a combination of bus architecture,
-> chip-id, board-id or variants. Here is one such example
-> of a BDF entry in board-2.bin file:
-> bus=snoc,qmi-board-id=67,qmi-chip-id=320,variant=GO_XXXX
-> It is possible for few platforms none of the combinations
-> of bus,qmi-board,chip-id or variants match, e.g. if
-> board-id is not programmed and thus reads board-id=0xff,
-> there won't be any matching BDF to be found. In such
-> situations, the wlan will fail to enumerate.
->
-> Currently, to search for BDF, there are two fallback
-> boardnames creates to search for BDFs in case the full BDF
-> is not found. It is still possible that even the fallback
-> boardnames do not match.
->
-> As an improvement, search for BDF with full BDF combination
-> and perform the fallback searches by stripping down the last
-> elements until a BDF entry is found or none is found for all
-> possible BDF combinations.e.g.
-> Search for initial BDF first then followed by reduced BDF
-> names as follows:
-> bus=snoc,qmi-board-id=67,qmi-chip-id=320,variant=GO_XXXX
-> bus=snoc,qmi-board-id=67,qmi-chip-id=320
-> bus=snoc,qmi-board-id=67
-> bus=snoc
-> <No BDF found>
->
-> Tested-on: WCN3990/hw1.0 WLAN.HL.3.2.2.c10-00754-QCAHLSWMTPL-1
-> Signed-off-by: Abhishek Kumar <kuabhs@chromium.org>
+[ Upstream commit b800528b97d0adc3a5ba42d78a8b0d3f07a31f44 ]
 
-[...]
+In xemaclite_open() function we are setting the max speed of
+emaclite to 100Mb using phy_set_max_speed() function so,
+there is no need to write the advertising registers to stop
+giga-bit speed and the phy_start() function starts the
+auto-negotiation so, there is no need to handle it separately
+using advertising registers. Remove the phy_read and phy_write
+of advertising registers in xemaclite_open() function.
 
->  static int ath10k_core_fetch_board_data_api_n(struct ath10k *ar,
->  					      const char *boardname,
-> -					      const char *fallback_boardname1,
-> -					      const char *fallback_boardname2,
->  					      const char *filename)
->  {
-> -	size_t len, magic_len;
-> +	size_t len, magic_len, board_len;
->  	const u8 *data;
->  	int ret;
-> +	char temp_boardname[100];
-> +
-> +	board_len = 100 * sizeof(temp_boardname[0]);
+Signed-off-by: Shravya Kumbham <shravya.kumbham@xilinx.com>
+Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/xilinx/xilinx_emaclite.c | 15 ---------------
+ 1 file changed, 15 deletions(-)
 
-Why not:
-
-board_len = sizeof(temp_board-name);
-
-That way number 100 is used only once.
-
+diff --git a/drivers/net/ethernet/xilinx/xilinx_emaclite.c b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+index 77fa2cb03aca..29e942cd3c44 100644
+--- a/drivers/net/ethernet/xilinx/xilinx_emaclite.c
++++ b/drivers/net/ethernet/xilinx/xilinx_emaclite.c
+@@ -926,8 +926,6 @@ static int xemaclite_open(struct net_device *dev)
+ 	xemaclite_disable_interrupts(lp);
+ 
+ 	if (lp->phy_node) {
+-		u32 bmcr;
+-
+ 		lp->phy_dev = of_phy_connect(lp->ndev, lp->phy_node,
+ 					     xemaclite_adjust_link, 0,
+ 					     PHY_INTERFACE_MODE_MII);
+@@ -938,19 +936,6 @@ static int xemaclite_open(struct net_device *dev)
+ 
+ 		/* EmacLite doesn't support giga-bit speeds */
+ 		phy_set_max_speed(lp->phy_dev, SPEED_100);
+-
+-		/* Don't advertise 1000BASE-T Full/Half duplex speeds */
+-		phy_write(lp->phy_dev, MII_CTRL1000, 0);
+-
+-		/* Advertise only 10 and 100mbps full/half duplex speeds */
+-		phy_write(lp->phy_dev, MII_ADVERTISE, ADVERTISE_ALL |
+-			  ADVERTISE_CSMA);
+-
+-		/* Restart auto negotiation */
+-		bmcr = phy_read(lp->phy_dev, MII_BMCR);
+-		bmcr |= (BMCR_ANENABLE | BMCR_ANRESTART);
+-		phy_write(lp->phy_dev, MII_BMCR, bmcr);
+-
+ 		phy_start(lp->phy_dev);
+ 	}
+ 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.35.1
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
