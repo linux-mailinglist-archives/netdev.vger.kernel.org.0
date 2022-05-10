@@ -2,72 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D107952102F
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 11:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE9A2521031
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 11:02:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238336AbiEJJGa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 05:06:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40774 "EHLO
+        id S238334AbiEJJGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 05:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238325AbiEJJG1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 05:06:27 -0400
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (mail-dm6nam11on2068.outbound.protection.outlook.com [40.107.223.68])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5CD243102;
-        Tue, 10 May 2022 02:02:29 -0700 (PDT)
+        with ESMTP id S238317AbiEJJG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 05:06:28 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2040.outbound.protection.outlook.com [40.107.244.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A98462415EE;
+        Tue, 10 May 2022 02:02:31 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=e5HUkoJnqo3NgE4OjagfBNFV87mD27lSG7S4actVdP2DLFyXLxtvHwfKflXJxYczN5hQa3i41xvDYkNw1qcZH8I/wzOABghTb7m/kKieqXcSrgp2Oqs9NLU9MrLb3gmCsaQR8bMcXIm/NhhX1zMdVOrNLaL/sXNXYZkdSHOY8wZQIIjL2S118KMp9c3QlhSHpOigfPl8nm/tgLQdvI3IoB8xoKyiX5Gn1GT7n2/YUoPFpPUBNPK3FBdmAjVRJt+ST5HIcKtugBCBRM29ON7jwf1GpE1a23jSig/jBitbPw5Tds1jOm7pnhbXP3466WeRAjwGKWQsYFQm+6MqRPOBWw==
+ b=N0jdH2nTUmdaVa1TkismMMs9FODn8G9wLgLIzRAgmtEyekrTSkeUMi4dY2ln8fkbc/4qUR/hJDbLnre50UvP6XeupgE3bMh2PQOrTTZMXFYMa4c5GtQoo2oRJB5xcTxMELBcCD6Mfw6HU5/kkDuklgq3gtpCGJglI5KMSlBMNtrNU1Cb7zlZfatqi7MIoYSgJPc20eQBZhVOPJqVQJMPsuChJOo2hOeYnSS0iwJxc/hDcIgqYysBvlDbgpf/oQ/rx8Gc5OIHB7H5aeHR9ZqQdsjs2S6Ls/+6Ur2KvhlxUTcyQNmqwEsNCeiz4fFLx83+Zz+8ZaQ3zWyMxIK99g1V8Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qTT49T9BQL5NUW4JY+ynp+9PRZYGgj3jzGrxRyfxqq4=;
- b=JdaoOiJCX+JvSfAfgp4UrvxtZsyo1xsZHUCLBXxfNIjdI1aeeOQTUdHpdf2VNrqkTA6/x1jRWEsYspQMfTDZYtlZjCgd0Vd8osdagcrZjqymAoGrveH0dsOc2ogGTgzTaHdlcT1IZTpKan/mSqoAXgfgBecfsX/R85jzu4pu7cpct7WVSRtsSkyOy6xKKShsQ2F0ylClViZvj1e7xtFdvNNz+GB+P8w2HPtzz2fGz42EOL+a+nmfnoBdcoBhIbZji6u1w+ZXstBL/0GbeskXYyZ18rfLNCUw2kIfPgZJ0VrMkWd0KC7QobC2/k0YonOJ8XrZwOBpFJPuGsprhWS8TQ==
+ bh=GoQQxkwFlEPlGYynXtSx0OtJoUDM6cC5N1YIjJDiA1o=;
+ b=EN4T4y0rRSZ1woe4viBYZ5AZNfnhuZGgKFdomNaluIQTa6LmE83fHRMW49Ib4TF6WM53NhuXuRBKe96Dwwy2B2cJVTzIhU1U3nBNvFdXV6aQIgaHvZk9mQLKjWDhvG8Y1kCCYwzjv4TUDlSbW3THjSkCriXzVefvd9G6dWasVJ70SG2XWn9uW21rZac4SmHC8czeVL97Ajg7LB5NhMXJEcZBO3TEGGs3OHBvuWU4+PAus/IyQMHg/5UPsEIuwwJ0SPtAaAKxajBzh6yOfrgtkI3pRvZtXRPzNUj9nlJydOuvwr7SfGyJX+BqYvYoGoPO5jev+VGYWBbxyQKBqrY92g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
+ 12.22.5.236) smtp.rcpttodomain=kernel.org smtp.mailfrom=nvidia.com;
  dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
  dkim=none (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qTT49T9BQL5NUW4JY+ynp+9PRZYGgj3jzGrxRyfxqq4=;
- b=be1B1PLC0zTUScXvc0efgDLW0nLLIr7/WghGSmZBvrYsqFHlo1jr/uSh875HX9psp//e5YjSqopbbflH2FUw2N1atxAsF2KnI+FNCIylHut4UBZxlpAuXH3TT7M7tYfRPnYKMNzphNBVKXtUBIh8u7H0WJEcn+B2JbIv6/buXkqxTV5SCmcHzdrq0ADopvBXq0SLRP7igIBxM1ksjfyr4I3zq+EeND3l7P05CfR9B/ZuY6o8djDica0a9IQXpv0B6Bt/HyvONgtq9hWryvMsCt4oqiRHbOPcmeL7JgMEzWvtCevELsWEsbjTvV9UYmmycsvWrcHDPVN5yTF8KiPUoQ==
-Received: from MW4PR04CA0361.namprd04.prod.outlook.com (2603:10b6:303:81::6)
- by DM5PR1201MB0107.namprd12.prod.outlook.com (2603:10b6:4:55::8) with
+ bh=GoQQxkwFlEPlGYynXtSx0OtJoUDM6cC5N1YIjJDiA1o=;
+ b=AWuzT61bdc8f/L4QvNXeQG4YOk2SAqRqzOlTX5Q7xsALoF9IECHO+1YYmqH1G4WTzUDXQw4U+n6RF/usuCeLj4t43XzP9DvMy9rAQNnLBQylmh0Qq58O3flNIVbvI2gTUJM2yDgNv0IGKucYZuXcb1Vu3MmxdwPP+nKitKdx3cL4kxEmFn5Y6TbtN6cDawMV4//uGmLFcex7NdWfuJuw+rrFZ3nrx8j9SDc4DGu8f2FCUfQkdisYfKma1SbLDOtWVWJFASDXNYHX9bOHHDIM3KLgfnQGV5jzaIcsruVTSI+faXdbJYLUSXvVVrvhavTgj1pkZaKnyWRbZVaEDvGgbQ==
+Received: from MW4PR04CA0222.namprd04.prod.outlook.com (2603:10b6:303:87::17)
+ by BYAPR12MB3543.namprd12.prod.outlook.com (2603:10b6:a03:130::11) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Tue, 10 May
- 2022 09:02:27 +0000
-Received: from CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
- (2603:10b6:303:81:cafe::11) by MW4PR04CA0361.outlook.office365.com
- (2603:10b6:303:81::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23 via Frontend
- Transport; Tue, 10 May 2022 09:02:27 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20; Tue, 10 May
+ 2022 09:02:30 +0000
+Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:87:cafe::e6) by MW4PR04CA0222.outlook.office365.com
+ (2603:10b6:303:87::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20 via Frontend
+ Transport; Tue, 10 May 2022 09:02:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT055.mail.protection.outlook.com (10.13.175.129) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 09:02:26 +0000
+ 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 09:02:29 +0000
+Received: from drhqmail203.nvidia.com (10.126.190.182) by
+ DRHQMAIL109.nvidia.com (10.27.9.19) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.32; Tue, 10 May 2022 09:02:29 +0000
 Received: from drhqmail201.nvidia.com (10.126.190.180) by
- DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
- 15.0.1497.32; Tue, 10 May 2022 09:02:26 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
+ drhqmail203.nvidia.com (10.126.190.182) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.22; Tue, 10 May 2022 02:02:25 -0700
+ 15.2.986.22; Tue, 10 May 2022 02:02:29 -0700
 Received: from vdi.nvidia.com (10.127.8.10) by mail.nvidia.com
  (10.126.190.180) with Microsoft SMTP Server id 15.2.986.22 via Frontend
- Transport; Tue, 10 May 2022 02:02:23 -0700
+ Transport; Tue, 10 May 2022 02:02:26 -0700
 From:   Yishai Hadas <yishaih@nvidia.com>
 To:     <alex.williamson@redhat.com>, <jgg@nvidia.com>, <saeedm@nvidia.com>
 CC:     <kvm@vger.kernel.org>, <netdev@vger.kernel.org>, <kuba@kernel.org>,
         <leonro@nvidia.com>, <yishaih@nvidia.com>, <maorg@nvidia.com>,
         <cohuck@redhat.com>
-Subject: [PATCH V2 mlx5-next 2/4] vfio/mlx5: Manage the VF attach/detach callback from the PF
-Date:   Tue, 10 May 2022 12:02:04 +0300
-Message-ID: <20220510090206.90374-3-yishaih@nvidia.com>
+Subject: [PATCH V2 mlx5-next 3/4] vfio/mlx5: Refactor to enable VFs migration in parallel
+Date:   Tue, 10 May 2022 12:02:05 +0300
+Message-ID: <20220510090206.90374-4-yishaih@nvidia.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20220510090206.90374-1-yishaih@nvidia.com>
 References: <20220510090206.90374-1-yishaih@nvidia.com>
@@ -76,24 +76,24 @@ Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e621053e-3b77-4e7b-35d0-08da3263ce32
-X-MS-TrafficTypeDiagnostic: DM5PR1201MB0107:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR1201MB0107367129B232541958BCA8C3C99@DM5PR1201MB0107.namprd12.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 43ca9bfc-8a35-41ed-d1c8-08da3263cfff
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3543:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB3543037415590D7196A157E9C3C99@BYAPR12MB3543.namprd12.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TJJ61mbLCXZfGXVxwUb7Z6bsK7QG6l8qPQQ/GqFMN/kXOesFHgZZGCdQObFtOJArfiiHkN21ise2CPlzk+Yrw/+LQufICFuAMu36ub9ooyNfkos6s24s+W+4dV/HSeRjL0tos80dN7BP9U6/1yRlPe4dRZVQFHR2nhfMVeX/gEv9sNfMsRF8RoqfjnY7NS4Hc3lBX6Og48u20dQ3+q3qJkqJ3zGSTKTrTq6EYQ4Bds3oeH+4py2QOAnIzK6zif3MspzR330eHw3fSdacy8op2zNvfqBDUaTIowdNGVoDXwZMUZ4K1PhiGsYtG1oP72i0nT48qbTBr4TF996OIiKW/KPC0eIToeFvOa4faEPj9Nk098AoiP6CGyUlDWjD3IFx4NhxlU1FTF6pLvN7GHzb7zpIL0dPYN/AGYc5nulBWGv7CEwXJatitmALNl8FrD+9d8TmucCGpyhApDtc3XeduApjqP4cdw7+GOGVYPvOwGvieYbauzy1gh9vcH1VWAHdlsJj4kr0ZOQfPdQ0DbDYBJNkCGutxlZUInRs2f3NfyL51tVKvmrGI1+kA0ksJL3QihGpUZPUKlXUYBP+ZkCu01bB1y4UiExqHOV1Kx0jiZ2iCY7Vo5LMXFczuSx7X3YSVqzA8Jmbzxkb/4EEUV9S7tvpoMOvxGlVOCf1uAxO0Wdh07DqU5aW22nQMoDwkFteD1nVqmIj/rki/jAkztScww==
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(40460700003)(36756003)(81166007)(1076003)(186003)(336012)(47076005)(356005)(2906002)(426003)(5660300002)(2616005)(6636002)(110136005)(54906003)(8936002)(26005)(316002)(6666004)(83380400001)(8676002)(82310400005)(508600001)(70206006)(86362001)(4326008)(36860700001)(7696005)(70586007)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: K7+NlZnWHSJh6huO80KjAvrEeGDmtcAtQU0du/tMJn8qUehNFVGwXaWU2Ua345CnPTARYdS2h9ZOgeycLmFntzGiLIHQQll9wEGrcGlzp8LdsUOr88ynbWLcLrEtcqRdMww1Wk3/Gj8j73LDzetp0wFoXEy00e/bOx8iHY6p+N9vO6KpEMd6v1vsFi/aaN65f8AYbtMA+Oh61tAouunvHu/V0un31INVqJaGY1llZlLNTi+FjmInEyEPNc6R4+rgmClmDgRzvdWgrRM39e3T+YIwfY/aqUxS7+rw8MzH6LDHyXvWYYlgrUC2kyo5dTPDjfhEL3uKw8in2kYZhvSOxwigGLEVzsDB0DMe/BoIoZ3h6LbNnsJBSApaohy9eGw3Z0uXOKmW+39gEkRo+9jetiON7PksDTo13jdwVtUbt7+IPGcGUJqMmwfacbaVEKOB11pELvJH0o7QT1N/mdUBE+IWZ5ltyH3X1ikuq8UE5hH/8aUS0FMO+x6AQjVB6TawY9XcW9tn0mVDwxQS4Ai9X6G/sm4rB0+5g1ykHz3M6U0EKbsfL8DI/MRrXRTm+zpiumymSP88OESAJwFW3YCv34zLnZ5/YN8vbu6kcwvj5XFy9MYTxiihB3iS2zlyzSj3ulQq5G5+9BgNSsgLVyaAur9ga9cql8U1cyWoRZHgDd56/Ue3zyl68uLzFOdcdCxzjgJZrngsYKQHQAWKJ8os2g==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(13230001)(4636009)(40470700004)(36840700001)(46966006)(8936002)(316002)(508600001)(36860700001)(110136005)(54906003)(81166007)(6636002)(356005)(70586007)(8676002)(86362001)(4326008)(70206006)(83380400001)(40460700003)(26005)(6666004)(30864003)(7696005)(1076003)(2616005)(186003)(82310400005)(426003)(336012)(2906002)(47076005)(5660300002)(36756003)(36900700001);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 09:02:26.7801
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 09:02:29.7740
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e621053e-3b77-4e7b-35d0-08da3263ce32
+X-MS-Exchange-CrossTenant-Network-Message-Id: 43ca9bfc-8a35-41ed-d1c8-08da3263cfff
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT055.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1201MB0107
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3543
 X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
         RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,
@@ -105,231 +105,408 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Manage the VF attach/detach callback from the PF.
+Refactor to enable different VFs to run their commands over the PF
+command interface in parallel and to not block one each other.
 
-This lets the driver to enable parallel VFs migration as will be
-introduced in the next patch.
-
-As part of this, reorganize the VF is migratable code to be in a
-separate function and rename it to be set_migratable() to match its
-functionality.
+This is done by not using the global PF lock that was used before but
+relying on the VF attach/detach mechanism to sync.
 
 Signed-off-by: Yishai Hadas <yishaih@nvidia.com>
 Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 ---
- drivers/vfio/pci/mlx5/cmd.c  | 66 ++++++++++++++++++++++++++++++++++++
- drivers/vfio/pci/mlx5/cmd.h  | 22 ++++++++++++
- drivers/vfio/pci/mlx5/main.c | 38 +++------------------
- 3 files changed, 92 insertions(+), 34 deletions(-)
+ drivers/vfio/pci/mlx5/cmd.c  | 103 +++++++++++++++--------------------
+ drivers/vfio/pci/mlx5/cmd.h  |  11 ++--
+ drivers/vfio/pci/mlx5/main.c |  44 ++++-----------
+ 3 files changed, 59 insertions(+), 99 deletions(-)
 
 diff --git a/drivers/vfio/pci/mlx5/cmd.c b/drivers/vfio/pci/mlx5/cmd.c
-index 5c9f9218cc1d..eddb7dedc047 100644
+index eddb7dedc047..2d6e323de268 100644
 --- a/drivers/vfio/pci/mlx5/cmd.c
 +++ b/drivers/vfio/pci/mlx5/cmd.c
-@@ -71,6 +71,72 @@ int mlx5vf_cmd_query_vhca_migration_state(struct pci_dev *pdev, u16 vhca_id,
- 	return ret;
- }
- 
-+static int mlx5fv_vf_event(struct notifier_block *nb,
-+			   unsigned long event, void *data)
-+{
-+	struct mlx5vf_pci_core_device *mvdev =
-+		container_of(nb, struct mlx5vf_pci_core_device, nb);
-+
-+	mutex_lock(&mvdev->state_mutex);
-+	switch (event) {
-+	case MLX5_PF_NOTIFY_ENABLE_VF:
-+		mvdev->mdev_detach = false;
-+		break;
-+	case MLX5_PF_NOTIFY_DISABLE_VF:
-+		mvdev->mdev_detach = true;
-+		break;
-+	default:
-+		break;
-+	}
-+	mlx5vf_state_mutex_unlock(mvdev);
-+	return 0;
-+}
-+
-+void mlx5vf_cmd_remove_migratable(struct mlx5vf_pci_core_device *mvdev)
-+{
-+	if (!mvdev->migrate_cap)
-+		return;
-+
-+	mlx5_sriov_blocking_notifier_unregister(mvdev->mdev, mvdev->vf_id,
-+						&mvdev->nb);
-+}
-+
-+void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev)
-+{
-+	struct pci_dev *pdev = mvdev->core_device.pdev;
-+	int ret;
-+
-+	if (!pdev->is_virtfn)
-+		return;
-+
-+	mvdev->mdev = mlx5_vf_get_core_dev(pdev);
-+	if (!mvdev->mdev)
-+		return;
-+
-+	if (!MLX5_CAP_GEN(mvdev->mdev, migration))
-+		goto end;
-+
-+	mvdev->vf_id = pci_iov_vf_id(pdev);
-+	if (mvdev->vf_id < 0)
-+		goto end;
-+
-+	mutex_init(&mvdev->state_mutex);
-+	spin_lock_init(&mvdev->reset_lock);
-+	mvdev->nb.notifier_call = mlx5fv_vf_event;
-+	ret = mlx5_sriov_blocking_notifier_register(mvdev->mdev, mvdev->vf_id,
-+						    &mvdev->nb);
-+	if (ret)
-+		goto end;
-+
-+	mvdev->migrate_cap = 1;
-+	mvdev->core_device.vdev.migration_flags =
-+		VFIO_MIGRATION_STOP_COPY |
-+		VFIO_MIGRATION_P2P;
-+
-+end:
-+	mlx5_vf_put_core_dev(mvdev->mdev);
-+}
-+
- int mlx5vf_cmd_get_vhca_id(struct pci_dev *pdev, u16 function_id, u16 *vhca_id)
- {
- 	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
-diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
-index 1392a11a9cc0..dd4257b27d22 100644
---- a/drivers/vfio/pci/mlx5/cmd.h
-+++ b/drivers/vfio/pci/mlx5/cmd.h
-@@ -7,6 +7,7 @@
- #define MLX5_VFIO_CMD_H
- 
- #include <linux/kernel.h>
-+#include <linux/vfio_pci_core.h>
- #include <linux/mlx5/driver.h>
- 
- struct mlx5_vf_migration_file {
-@@ -24,13 +25,34 @@ struct mlx5_vf_migration_file {
- 	unsigned long last_offset;
- };
- 
-+struct mlx5vf_pci_core_device {
-+	struct vfio_pci_core_device core_device;
-+	int vf_id;
-+	u16 vhca_id;
-+	u8 migrate_cap:1;
-+	u8 deferred_reset:1;
-+	u8 mdev_detach:1;
-+	/* protect migration state */
-+	struct mutex state_mutex;
-+	enum vfio_device_mig_state mig_state;
-+	/* protect the reset_done flow */
-+	spinlock_t reset_lock;
-+	struct mlx5_vf_migration_file *resuming_migf;
-+	struct mlx5_vf_migration_file *saving_migf;
-+	struct notifier_block nb;
-+	struct mlx5_core_dev *mdev;
-+};
-+
- int mlx5vf_cmd_suspend_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod);
- int mlx5vf_cmd_resume_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod);
- int mlx5vf_cmd_query_vhca_migration_state(struct pci_dev *pdev, u16 vhca_id,
- 					  size_t *state_size);
- int mlx5vf_cmd_get_vhca_id(struct pci_dev *pdev, u16 function_id, u16 *vhca_id);
-+void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev);
-+void mlx5vf_cmd_remove_migratable(struct mlx5vf_pci_core_device *mvdev);
- int mlx5vf_cmd_save_vhca_state(struct pci_dev *pdev, u16 vhca_id,
- 			       struct mlx5_vf_migration_file *migf);
- int mlx5vf_cmd_load_vhca_state(struct pci_dev *pdev, u16 vhca_id,
- 			       struct mlx5_vf_migration_file *migf);
-+void mlx5vf_state_mutex_unlock(struct mlx5vf_pci_core_device *mvdev);
- #endif /* MLX5_VFIO_CMD_H */
-diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
-index bbec5d288fee..26065487881f 100644
---- a/drivers/vfio/pci/mlx5/main.c
-+++ b/drivers/vfio/pci/mlx5/main.c
-@@ -17,7 +17,6 @@
- #include <linux/uaccess.h>
- #include <linux/vfio.h>
- #include <linux/sched/mm.h>
--#include <linux/vfio_pci_core.h>
- #include <linux/anon_inodes.h>
+@@ -5,70 +5,65 @@
  
  #include "cmd.h"
-@@ -25,20 +24,6 @@
- /* Arbitrary to prevent userspace from consuming endless memory */
- #define MAX_MIGRATION_SIZE (512*1024*1024)
  
--struct mlx5vf_pci_core_device {
--	struct vfio_pci_core_device core_device;
--	u16 vhca_id;
--	u8 migrate_cap:1;
--	u8 deferred_reset:1;
--	/* protect migration state */
--	struct mutex state_mutex;
--	enum vfio_device_mig_state mig_state;
--	/* protect the reset_done flow */
--	spinlock_t reset_lock;
--	struct mlx5_vf_migration_file *resuming_migf;
--	struct mlx5_vf_migration_file *saving_migf;
--};
--
- static struct page *
- mlx5vf_get_migration_page(struct mlx5_vf_migration_file *migf,
- 			  unsigned long offset)
-@@ -444,7 +429,7 @@ mlx5vf_pci_step_device_state_locked(struct mlx5vf_pci_core_device *mvdev,
-  * This function is called in all state_mutex unlock cases to
-  * handle a 'deferred_reset' if exists.
-  */
--static void mlx5vf_state_mutex_unlock(struct mlx5vf_pci_core_device *mvdev)
-+void mlx5vf_state_mutex_unlock(struct mlx5vf_pci_core_device *mvdev)
+-int mlx5vf_cmd_suspend_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod)
++static int mlx5vf_cmd_get_vhca_id(struct mlx5_core_dev *mdev, u16 function_id,
++				  u16 *vhca_id);
++
++int mlx5vf_cmd_suspend_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod)
  {
- again:
- 	spin_lock(&mvdev->reset_lock);
-@@ -596,24 +581,7 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
- 	if (!mvdev)
- 		return -ENOMEM;
- 	vfio_pci_core_init_device(&mvdev->core_device, pdev, &mlx5vf_pci_ops);
+-	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
+ 	u32 out[MLX5_ST_SZ_DW(suspend_vhca_out)] = {};
+ 	u32 in[MLX5_ST_SZ_DW(suspend_vhca_in)] = {};
+-	int ret;
+ 
+-	if (!mdev)
++	lockdep_assert_held(&mvdev->state_mutex);
++	if (mvdev->mdev_detach)
+ 		return -ENOTCONN;
+ 
+ 	MLX5_SET(suspend_vhca_in, in, opcode, MLX5_CMD_OP_SUSPEND_VHCA);
+-	MLX5_SET(suspend_vhca_in, in, vhca_id, vhca_id);
++	MLX5_SET(suspend_vhca_in, in, vhca_id, mvdev->vhca_id);
+ 	MLX5_SET(suspend_vhca_in, in, op_mod, op_mod);
+ 
+-	ret = mlx5_cmd_exec_inout(mdev, suspend_vhca, in, out);
+-	mlx5_vf_put_core_dev(mdev);
+-	return ret;
++	return mlx5_cmd_exec_inout(mvdev->mdev, suspend_vhca, in, out);
+ }
+ 
+-int mlx5vf_cmd_resume_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod)
++int mlx5vf_cmd_resume_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod)
+ {
+-	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
+ 	u32 out[MLX5_ST_SZ_DW(resume_vhca_out)] = {};
+ 	u32 in[MLX5_ST_SZ_DW(resume_vhca_in)] = {};
+-	int ret;
+ 
+-	if (!mdev)
++	lockdep_assert_held(&mvdev->state_mutex);
++	if (mvdev->mdev_detach)
+ 		return -ENOTCONN;
+ 
+ 	MLX5_SET(resume_vhca_in, in, opcode, MLX5_CMD_OP_RESUME_VHCA);
+-	MLX5_SET(resume_vhca_in, in, vhca_id, vhca_id);
++	MLX5_SET(resume_vhca_in, in, vhca_id, mvdev->vhca_id);
+ 	MLX5_SET(resume_vhca_in, in, op_mod, op_mod);
+ 
+-	ret = mlx5_cmd_exec_inout(mdev, resume_vhca, in, out);
+-	mlx5_vf_put_core_dev(mdev);
+-	return ret;
++	return mlx5_cmd_exec_inout(mvdev->mdev, resume_vhca, in, out);
+ }
+ 
+-int mlx5vf_cmd_query_vhca_migration_state(struct pci_dev *pdev, u16 vhca_id,
++int mlx5vf_cmd_query_vhca_migration_state(struct mlx5vf_pci_core_device *mvdev,
+ 					  size_t *state_size)
+ {
+-	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
+ 	u32 out[MLX5_ST_SZ_DW(query_vhca_migration_state_out)] = {};
+ 	u32 in[MLX5_ST_SZ_DW(query_vhca_migration_state_in)] = {};
+ 	int ret;
+ 
+-	if (!mdev)
++	lockdep_assert_held(&mvdev->state_mutex);
++	if (mvdev->mdev_detach)
+ 		return -ENOTCONN;
+ 
+ 	MLX5_SET(query_vhca_migration_state_in, in, opcode,
+ 		 MLX5_CMD_OP_QUERY_VHCA_MIGRATION_STATE);
+-	MLX5_SET(query_vhca_migration_state_in, in, vhca_id, vhca_id);
++	MLX5_SET(query_vhca_migration_state_in, in, vhca_id, mvdev->vhca_id);
+ 	MLX5_SET(query_vhca_migration_state_in, in, op_mod, 0);
+ 
+-	ret = mlx5_cmd_exec_inout(mdev, query_vhca_migration_state, in, out);
++	ret = mlx5_cmd_exec_inout(mvdev->mdev, query_vhca_migration_state, in,
++				  out);
+ 	if (ret)
+-		goto end;
++		return ret;
+ 
+ 	*state_size = MLX5_GET(query_vhca_migration_state_out, out,
+ 			       required_umem_size);
 -
--	if (pdev->is_virtfn) {
--		struct mlx5_core_dev *mdev =
--			mlx5_vf_get_core_dev(pdev);
+-end:
+-	mlx5_vf_put_core_dev(mdev);
+-	return ret;
++	return 0;
+ }
+ 
+ static int mlx5fv_vf_event(struct notifier_block *nb,
+@@ -120,6 +115,10 @@ void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev)
+ 	if (mvdev->vf_id < 0)
+ 		goto end;
+ 
++	if (mlx5vf_cmd_get_vhca_id(mvdev->mdev, mvdev->vf_id + 1,
++				   &mvdev->vhca_id))
++		goto end;
++
+ 	mutex_init(&mvdev->state_mutex);
+ 	spin_lock_init(&mvdev->reset_lock);
+ 	mvdev->nb.notifier_call = mlx5fv_vf_event;
+@@ -137,23 +136,18 @@ void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev)
+ 	mlx5_vf_put_core_dev(mvdev->mdev);
+ }
+ 
+-int mlx5vf_cmd_get_vhca_id(struct pci_dev *pdev, u16 function_id, u16 *vhca_id)
++static int mlx5vf_cmd_get_vhca_id(struct mlx5_core_dev *mdev, u16 function_id,
++				  u16 *vhca_id)
+ {
+-	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
+ 	u32 in[MLX5_ST_SZ_DW(query_hca_cap_in)] = {};
+ 	int out_size;
+ 	void *out;
+ 	int ret;
+ 
+-	if (!mdev)
+-		return -ENOTCONN;
 -
--		if (mdev) {
--			if (MLX5_CAP_GEN(mdev, migration)) {
--				mvdev->migrate_cap = 1;
--				mvdev->core_device.vdev.migration_flags =
--					VFIO_MIGRATION_STOP_COPY |
--					VFIO_MIGRATION_P2P;
--				mutex_init(&mvdev->state_mutex);
--				spin_lock_init(&mvdev->reset_lock);
--			}
--			mlx5_vf_put_core_dev(mdev);
--		}
+ 	out_size = MLX5_ST_SZ_BYTES(query_hca_cap_out);
+ 	out = kzalloc(out_size, GFP_KERNEL);
+-	if (!out) {
+-		ret = -ENOMEM;
+-		goto end;
 -	}
++	if (!out)
++		return -ENOMEM;
+ 
+ 	MLX5_SET(query_hca_cap_in, in, opcode, MLX5_CMD_OP_QUERY_HCA_CAP);
+ 	MLX5_SET(query_hca_cap_in, in, other_function, 1);
+@@ -171,8 +165,6 @@ int mlx5vf_cmd_get_vhca_id(struct pci_dev *pdev, u16 function_id, u16 *vhca_id)
+ 
+ err_exec:
+ 	kfree(out);
+-end:
+-	mlx5_vf_put_core_dev(mdev);
+ 	return ret;
+ }
+ 
+@@ -217,21 +209,23 @@ static int _create_state_mkey(struct mlx5_core_dev *mdev, u32 pdn,
+ 	return err;
+ }
+ 
+-int mlx5vf_cmd_save_vhca_state(struct pci_dev *pdev, u16 vhca_id,
++int mlx5vf_cmd_save_vhca_state(struct mlx5vf_pci_core_device *mvdev,
+ 			       struct mlx5_vf_migration_file *migf)
+ {
+-	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
+ 	u32 out[MLX5_ST_SZ_DW(save_vhca_state_out)] = {};
+ 	u32 in[MLX5_ST_SZ_DW(save_vhca_state_in)] = {};
++	struct mlx5_core_dev *mdev;
+ 	u32 pdn, mkey;
+ 	int err;
+ 
+-	if (!mdev)
++	lockdep_assert_held(&mvdev->state_mutex);
++	if (mvdev->mdev_detach)
+ 		return -ENOTCONN;
+ 
++	mdev = mvdev->mdev;
+ 	err = mlx5_core_alloc_pd(mdev, &pdn);
+ 	if (err)
+-		goto end;
++		return err;
+ 
+ 	err = dma_map_sgtable(mdev->device, &migf->table.sgt, DMA_FROM_DEVICE,
+ 			      0);
+@@ -245,7 +239,7 @@ int mlx5vf_cmd_save_vhca_state(struct pci_dev *pdev, u16 vhca_id,
+ 	MLX5_SET(save_vhca_state_in, in, opcode,
+ 		 MLX5_CMD_OP_SAVE_VHCA_STATE);
+ 	MLX5_SET(save_vhca_state_in, in, op_mod, 0);
+-	MLX5_SET(save_vhca_state_in, in, vhca_id, vhca_id);
++	MLX5_SET(save_vhca_state_in, in, vhca_id, mvdev->vhca_id);
+ 	MLX5_SET(save_vhca_state_in, in, mkey, mkey);
+ 	MLX5_SET(save_vhca_state_in, in, size, migf->total_length);
+ 
+@@ -253,37 +247,28 @@ int mlx5vf_cmd_save_vhca_state(struct pci_dev *pdev, u16 vhca_id,
+ 	if (err)
+ 		goto err_exec;
+ 
+-	migf->total_length =
+-		MLX5_GET(save_vhca_state_out, out, actual_image_size);
 -
-+	mlx5vf_cmd_set_migratable(mvdev);
- 	ret = vfio_pci_core_register_device(&mvdev->core_device);
+-	mlx5_core_destroy_mkey(mdev, mkey);
+-	mlx5_core_dealloc_pd(mdev, pdn);
+-	dma_unmap_sgtable(mdev->device, &migf->table.sgt, DMA_FROM_DEVICE, 0);
+-	mlx5_vf_put_core_dev(mdev);
+-
+-	return 0;
+-
++	migf->total_length = MLX5_GET(save_vhca_state_out, out,
++				      actual_image_size);
+ err_exec:
+ 	mlx5_core_destroy_mkey(mdev, mkey);
+ err_create_mkey:
+ 	dma_unmap_sgtable(mdev->device, &migf->table.sgt, DMA_FROM_DEVICE, 0);
+ err_dma_map:
+ 	mlx5_core_dealloc_pd(mdev, pdn);
+-end:
+-	mlx5_vf_put_core_dev(mdev);
+ 	return err;
+ }
+ 
+-int mlx5vf_cmd_load_vhca_state(struct pci_dev *pdev, u16 vhca_id,
++int mlx5vf_cmd_load_vhca_state(struct mlx5vf_pci_core_device *mvdev,
+ 			       struct mlx5_vf_migration_file *migf)
+ {
+-	struct mlx5_core_dev *mdev = mlx5_vf_get_core_dev(pdev);
++	struct mlx5_core_dev *mdev;
+ 	u32 out[MLX5_ST_SZ_DW(save_vhca_state_out)] = {};
+ 	u32 in[MLX5_ST_SZ_DW(save_vhca_state_in)] = {};
+ 	u32 pdn, mkey;
+ 	int err;
+ 
+-	if (!mdev)
++	lockdep_assert_held(&mvdev->state_mutex);
++	if (mvdev->mdev_detach)
+ 		return -ENOTCONN;
+ 
+ 	mutex_lock(&migf->lock);
+@@ -292,6 +277,7 @@ int mlx5vf_cmd_load_vhca_state(struct pci_dev *pdev, u16 vhca_id,
+ 		goto end;
+ 	}
+ 
++	mdev = mvdev->mdev;
+ 	err = mlx5_core_alloc_pd(mdev, &pdn);
+ 	if (err)
+ 		goto end;
+@@ -307,7 +293,7 @@ int mlx5vf_cmd_load_vhca_state(struct pci_dev *pdev, u16 vhca_id,
+ 	MLX5_SET(load_vhca_state_in, in, opcode,
+ 		 MLX5_CMD_OP_LOAD_VHCA_STATE);
+ 	MLX5_SET(load_vhca_state_in, in, op_mod, 0);
+-	MLX5_SET(load_vhca_state_in, in, vhca_id, vhca_id);
++	MLX5_SET(load_vhca_state_in, in, vhca_id, mvdev->vhca_id);
+ 	MLX5_SET(load_vhca_state_in, in, mkey, mkey);
+ 	MLX5_SET(load_vhca_state_in, in, size, migf->total_length);
+ 
+@@ -319,7 +305,6 @@ int mlx5vf_cmd_load_vhca_state(struct pci_dev *pdev, u16 vhca_id,
+ err_reg:
+ 	mlx5_core_dealloc_pd(mdev, pdn);
+ end:
+-	mlx5_vf_put_core_dev(mdev);
+ 	mutex_unlock(&migf->lock);
+ 	return err;
+ }
+diff --git a/drivers/vfio/pci/mlx5/cmd.h b/drivers/vfio/pci/mlx5/cmd.h
+index dd4257b27d22..94928055c005 100644
+--- a/drivers/vfio/pci/mlx5/cmd.h
++++ b/drivers/vfio/pci/mlx5/cmd.h
+@@ -43,16 +43,15 @@ struct mlx5vf_pci_core_device {
+ 	struct mlx5_core_dev *mdev;
+ };
+ 
+-int mlx5vf_cmd_suspend_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod);
+-int mlx5vf_cmd_resume_vhca(struct pci_dev *pdev, u16 vhca_id, u16 op_mod);
+-int mlx5vf_cmd_query_vhca_migration_state(struct pci_dev *pdev, u16 vhca_id,
++int mlx5vf_cmd_suspend_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod);
++int mlx5vf_cmd_resume_vhca(struct mlx5vf_pci_core_device *mvdev, u16 op_mod);
++int mlx5vf_cmd_query_vhca_migration_state(struct mlx5vf_pci_core_device *mvdev,
+ 					  size_t *state_size);
+-int mlx5vf_cmd_get_vhca_id(struct pci_dev *pdev, u16 function_id, u16 *vhca_id);
+ void mlx5vf_cmd_set_migratable(struct mlx5vf_pci_core_device *mvdev);
+ void mlx5vf_cmd_remove_migratable(struct mlx5vf_pci_core_device *mvdev);
+-int mlx5vf_cmd_save_vhca_state(struct pci_dev *pdev, u16 vhca_id,
++int mlx5vf_cmd_save_vhca_state(struct mlx5vf_pci_core_device *mvdev,
+ 			       struct mlx5_vf_migration_file *migf);
+-int mlx5vf_cmd_load_vhca_state(struct pci_dev *pdev, u16 vhca_id,
++int mlx5vf_cmd_load_vhca_state(struct mlx5vf_pci_core_device *mvdev,
+ 			       struct mlx5_vf_migration_file *migf);
+ void mlx5vf_state_mutex_unlock(struct mlx5vf_pci_core_device *mvdev);
+ #endif /* MLX5_VFIO_CMD_H */
+diff --git a/drivers/vfio/pci/mlx5/main.c b/drivers/vfio/pci/mlx5/main.c
+index 26065487881f..2db6b816f003 100644
+--- a/drivers/vfio/pci/mlx5/main.c
++++ b/drivers/vfio/pci/mlx5/main.c
+@@ -208,8 +208,8 @@ mlx5vf_pci_save_device_data(struct mlx5vf_pci_core_device *mvdev)
+ 	stream_open(migf->filp->f_inode, migf->filp);
+ 	mutex_init(&migf->lock);
+ 
+-	ret = mlx5vf_cmd_query_vhca_migration_state(
+-		mvdev->core_device.pdev, mvdev->vhca_id, &migf->total_length);
++	ret = mlx5vf_cmd_query_vhca_migration_state(mvdev,
++						    &migf->total_length);
  	if (ret)
  		goto out_free;
-@@ -622,6 +590,7 @@ static int mlx5vf_pci_probe(struct pci_dev *pdev,
+ 
+@@ -218,8 +218,7 @@ mlx5vf_pci_save_device_data(struct mlx5vf_pci_core_device *mvdev)
+ 	if (ret)
+ 		goto out_free;
+ 
+-	ret = mlx5vf_cmd_save_vhca_state(mvdev->core_device.pdev,
+-					 mvdev->vhca_id, migf);
++	ret = mlx5vf_cmd_save_vhca_state(mvdev, migf);
+ 	if (ret)
+ 		goto out_free;
+ 	return migf;
+@@ -346,8 +345,7 @@ mlx5vf_pci_step_device_state_locked(struct mlx5vf_pci_core_device *mvdev,
+ 	int ret;
+ 
+ 	if (cur == VFIO_DEVICE_STATE_RUNNING_P2P && new == VFIO_DEVICE_STATE_STOP) {
+-		ret = mlx5vf_cmd_suspend_vhca(
+-			mvdev->core_device.pdev, mvdev->vhca_id,
++		ret = mlx5vf_cmd_suspend_vhca(mvdev,
+ 			MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_RESPONDER);
+ 		if (ret)
+ 			return ERR_PTR(ret);
+@@ -355,8 +353,7 @@ mlx5vf_pci_step_device_state_locked(struct mlx5vf_pci_core_device *mvdev,
+ 	}
+ 
+ 	if (cur == VFIO_DEVICE_STATE_STOP && new == VFIO_DEVICE_STATE_RUNNING_P2P) {
+-		ret = mlx5vf_cmd_resume_vhca(
+-			mvdev->core_device.pdev, mvdev->vhca_id,
++		ret = mlx5vf_cmd_resume_vhca(mvdev,
+ 			MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_RESPONDER);
+ 		if (ret)
+ 			return ERR_PTR(ret);
+@@ -364,8 +361,7 @@ mlx5vf_pci_step_device_state_locked(struct mlx5vf_pci_core_device *mvdev,
+ 	}
+ 
+ 	if (cur == VFIO_DEVICE_STATE_RUNNING && new == VFIO_DEVICE_STATE_RUNNING_P2P) {
+-		ret = mlx5vf_cmd_suspend_vhca(
+-			mvdev->core_device.pdev, mvdev->vhca_id,
++		ret = mlx5vf_cmd_suspend_vhca(mvdev,
+ 			MLX5_SUSPEND_VHCA_IN_OP_MOD_SUSPEND_INITIATOR);
+ 		if (ret)
+ 			return ERR_PTR(ret);
+@@ -373,8 +369,7 @@ mlx5vf_pci_step_device_state_locked(struct mlx5vf_pci_core_device *mvdev,
+ 	}
+ 
+ 	if (cur == VFIO_DEVICE_STATE_RUNNING_P2P && new == VFIO_DEVICE_STATE_RUNNING) {
+-		ret = mlx5vf_cmd_resume_vhca(
+-			mvdev->core_device.pdev, mvdev->vhca_id,
++		ret = mlx5vf_cmd_resume_vhca(mvdev,
+ 			MLX5_RESUME_VHCA_IN_OP_MOD_RESUME_INITIATOR);
+ 		if (ret)
+ 			return ERR_PTR(ret);
+@@ -409,8 +404,7 @@ mlx5vf_pci_step_device_state_locked(struct mlx5vf_pci_core_device *mvdev,
+ 	}
+ 
+ 	if (cur == VFIO_DEVICE_STATE_RESUMING && new == VFIO_DEVICE_STATE_STOP) {
+-		ret = mlx5vf_cmd_load_vhca_state(mvdev->core_device.pdev,
+-						 mvdev->vhca_id,
++		ret = mlx5vf_cmd_load_vhca_state(mvdev,
+ 						 mvdev->resuming_migf);
+ 		if (ret)
+ 			return ERR_PTR(ret);
+@@ -517,34 +511,16 @@ static int mlx5vf_pci_open_device(struct vfio_device *core_vdev)
+ 	struct mlx5vf_pci_core_device *mvdev = container_of(
+ 		core_vdev, struct mlx5vf_pci_core_device, core_device.vdev);
+ 	struct vfio_pci_core_device *vdev = &mvdev->core_device;
+-	int vf_id;
+ 	int ret;
+ 
+ 	ret = vfio_pci_core_enable(vdev);
+ 	if (ret)
+ 		return ret;
+ 
+-	if (!mvdev->migrate_cap) {
+-		vfio_pci_core_finish_enable(vdev);
+-		return 0;
+-	}
+-
+-	vf_id = pci_iov_vf_id(vdev->pdev);
+-	if (vf_id < 0) {
+-		ret = vf_id;
+-		goto out_disable;
+-	}
+-
+-	ret = mlx5vf_cmd_get_vhca_id(vdev->pdev, vf_id + 1, &mvdev->vhca_id);
+-	if (ret)
+-		goto out_disable;
+-
+-	mvdev->mig_state = VFIO_DEVICE_STATE_RUNNING;
++	if (mvdev->migrate_cap)
++		mvdev->mig_state = VFIO_DEVICE_STATE_RUNNING;
+ 	vfio_pci_core_finish_enable(vdev);
  	return 0;
- 
- out_free:
-+	mlx5vf_cmd_remove_migratable(mvdev);
- 	vfio_pci_core_uninit_device(&mvdev->core_device);
- 	kfree(mvdev);
- 	return ret;
-@@ -632,6 +601,7 @@ static void mlx5vf_pci_remove(struct pci_dev *pdev)
- 	struct mlx5vf_pci_core_device *mvdev = dev_get_drvdata(&pdev->dev);
- 
- 	vfio_pci_core_unregister_device(&mvdev->core_device);
-+	mlx5vf_cmd_remove_migratable(mvdev);
- 	vfio_pci_core_uninit_device(&mvdev->core_device);
- 	kfree(mvdev);
+-out_disable:
+-	vfio_pci_core_disable(vdev);
+-	return ret;
  }
+ 
+ static void mlx5vf_pci_close_device(struct vfio_device *core_vdev)
 -- 
 2.18.1
 
