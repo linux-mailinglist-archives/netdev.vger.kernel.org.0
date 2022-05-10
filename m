@@ -2,91 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0375522791
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 01:27:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39DC75227B1
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 01:35:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238097AbiEJX1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 19:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
+        id S238279AbiEJXfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 19:35:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237993AbiEJX1J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 19:27:09 -0400
-Received: from mail-qt1-x82f.google.com (mail-qt1-x82f.google.com [IPv6:2607:f8b0:4864:20::82f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECE4340F9;
-        Tue, 10 May 2022 16:27:08 -0700 (PDT)
-Received: by mail-qt1-x82f.google.com with SMTP id p4so539978qtq.12;
-        Tue, 10 May 2022 16:27:08 -0700 (PDT)
+        with ESMTP id S233707AbiEJXfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 19:35:06 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E79232802F5;
+        Tue, 10 May 2022 16:35:04 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id x18so229806plg.6;
+        Tue, 10 May 2022 16:35:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RxqE5ZJWuzRnOKii1KyY4gqmrmpnlt//j5R303qeipM=;
-        b=KH33irEqLvUWALSUZFHF9bWSTnxx+Mrv458SV9MPHb64vxmRcUYD6tlPk4cHEO85Is
-         3XyrWcEEG1IHlF3hszvonfGXocIOokZXJ/uaMKrJaJC2jXNtAq2LdEOjDNpu4vnkqF8x
-         Bu+dMRCij/GS6GaOgrp6kOUdCN6C4Ia7Fxdnx1rQ4MrOdoVs3vtfxd8BR+YNW3pMxkfj
-         UJiOlXeH6j+HC24getmLeJ0x8gcXce40unAAdwjzFI6u5sQIHxj+AyclnhZKRkY7+GVx
-         ymOg/wR82FkDdzfWaEHrm2ns51X92tCD+zSprB4swzOAbO7YCDBZRtObaaHDuW1x4a6m
-         G2xw==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=R13jHsl0NRq2P7uupdPrQEK0knUWVCVlecfA2FHAsIY=;
+        b=i6LMAZCFD+2w5H807GfcaKA0KFBunhQMkZ4oNhifqGqedLQWS0l4oYs5yiLhDNtB9E
+         kzC8SpUjZBK3RsBeGeRG/ZfUTYH2GXeTBP8S7gqRFHFzqGvgymqfELVeW7qoPIFW4VGh
+         GceRYpMBG1+oFZRy3IFPBPuecFyUGBQvv4sHVak/ehU4VhkBIM89rJIWPUb3+TNeq55j
+         XB50sdW1SncopJC0TPQz6UVUHprqYUCSzdwZn2ahW9oaxJb6msfEQhQJt9V0wtvsAbWI
+         GhSFn8GLq4d3d5Wcy8EmmGa/z32Mhn/mstI1BryUQjsIJWyf+sIz7HU1OqpwPLtHYu5H
+         z45w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RxqE5ZJWuzRnOKii1KyY4gqmrmpnlt//j5R303qeipM=;
-        b=UZP+KExPg4Pi+uSUhLiO+tPzKYD0Nqn0YYvOpv4XY8plNwCc7WWJP2P22qoQUfH8+y
-         fVpRyBRU5O9l50wxF3RQCfdioOtoHuCShm2d+If8GH47gz4rYndSPJd9SF2k0hGgHkjW
-         ERJnbEaISLL29DsaR3brD996MBRvbeVn8jx/qHgYyAd6UkjhAl45FMXUosC1dP+DOkKa
-         +nUbYrM9U04rEN6Fq9BEWjzpSucjLc35zowg7f/n7ngBqqQT6BxpJSwPABsd4uZEOjDW
-         tpiYDIMjdK3YPursAi8w5snShpTlty3viIOmiFAQzN32YIW9B0OVrurNSX39z8PNIjII
-         fixw==
-X-Gm-Message-State: AOAM531+eUUbqTVkdCFGeF70r8b8din5Y0MEGz/7SvNPJcG1CakGxuNF
-        j6qM1WROxXOhm5ySYF27MxxZNt/F+g==
-X-Google-Smtp-Source: ABdhPJxgDV7qCRup0DaOlqWibc0Iavyobr4jEzrOaIuzZ+nbAc/aQDkROUeW2jgxBWp2OqIprLSXSg==
-X-Received: by 2002:ac8:5745:0:b0:2f3:e231:bc12 with SMTP id 5-20020ac85745000000b002f3e231bc12mr5893406qtx.291.1652225227371;
-        Tue, 10 May 2022 16:27:07 -0700 (PDT)
-Received: from bytedance (ec2-52-72-174-210.compute-1.amazonaws.com. [52.72.174.210])
-        by smtp.gmail.com with ESMTPSA id z21-20020ac87115000000b002f39b99f6adsm188086qto.71.2022.05.10.16.27.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 16:27:06 -0700 (PDT)
-Date:   Tue, 10 May 2022 16:27:02 -0700
-From:   Peilin Ye <yepeilin.cs@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Peilin Ye <peilin.ye@bytedance.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
-Subject: Re: [PATCH RFC v1 net-next 0/4] net: Qdisc backpressure
- infrastructure
-Message-ID: <20220510232702.GA11259@bytedance>
-References: <cover.1651800598.git.peilin.ye@bytedance.com>
- <2dbd5e38-b748-0c16-5b8b-b32bc0cc43b0@gmail.com>
- <20220510230347.GA11152@bytedance>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=R13jHsl0NRq2P7uupdPrQEK0knUWVCVlecfA2FHAsIY=;
+        b=x6r/SqwdMyu8QYk4nwwIUcwXLLmCEydGPE5gcpB4q+Pm+l3/9VfRlikOQePTBeicdz
+         TDkBolaYV8lNOFR8Is24MdTyon5Qid+V/oAI2XSib29YWOhb1vm7Ttfz2Ah/KThMU8Ig
+         jobk4GqW5+jI9LuMmHMypmunvkaIN88YM8bc3fCMX7UvH+6CHVg3NIiPRFJ+eRg78nAp
+         /NjIXHpKONJ7mrvSw2LPchsciVJp/tqm+jyZ2yzuDP78xzJgpVyQe3g1ZRmufkCAouf3
+         Hg1mVLJkayY6ohIspWB7GtZ7VoFxTFB5Js62JFVylz4De/EUT4vi3pMEdqCoKp8CxKql
+         imjw==
+X-Gm-Message-State: AOAM5334kZJFhqX6SgNF0w6JIiD+q3yL8Ve0Ka1VvdOqnDMEn3QLLRiK
+        YeWjB0pP1Mu+QsGj9nRlL8k=
+X-Google-Smtp-Source: ABdhPJxus5TmFdysSKYsoNhz5hOfAwQQ0cxSm5zp6mx6kXcl62wvePrQ8fNn1TW4Mea2M4xbAF0dKg==
+X-Received: by 2002:a17:90b:38c3:b0:1dc:b8c1:d428 with SMTP id nn3-20020a17090b38c300b001dcb8c1d428mr2216367pjb.55.1652225704431;
+        Tue, 10 May 2022 16:35:04 -0700 (PDT)
+Received: from [192.168.11.5] (KD106167171201.ppp-bb.dion.ne.jp. [106.167.171.201])
+        by smtp.gmail.com with ESMTPSA id u11-20020a17090341cb00b0015ee60ef65bsm160273ple.260.2022.05.10.16.35.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 16:35:03 -0700 (PDT)
+Message-ID: <268372a9-2f6a-74f3-29ea-c51536a73dba@gmail.com>
+Date:   Wed, 11 May 2022 08:34:58 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510230347.GA11152@bytedance>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive
+ instead of 'figure'
+Content-Language: en-US
+To:     Pavel Pisa <pisa@cmp.felk.cvut.cz>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Martin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
+ <202205101825.15126.pisa@cmp.felk.cvut.cz>
+From:   Akira Yokosawa <akiyks@gmail.com>
+In-Reply-To: <202205101825.15126.pisa@cmp.felk.cvut.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 04:03:47PM -0700, Peilin Ye wrote:
-> This RFC does not cover EDT though, since it does not use Qdisc watchdog
-> or friends.
+On Tue, 10 May 2022 18:25:15 +0200,
+Pavel Pisa wrote:
+> Hello Akira,
+>=20
+> On Tuesday 10 of May 2022 11:34:37 Akira Yokosawa wrote:
+>> Two issues were observed in the ReST doc added by commit c3a0addefbde
+>> ("docs: ctucanfd: CTU CAN FD open-source IP core documentation.").
+>=20
+> Thanks for the fix
+>=20
+>> The plain "figure" directive broke "make pdfdocs" due to a missing=20
+>> PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"=
 
-Sorry, there is a call to qdisc_watchdog_schedule_range_ns() in
-sch_fq.c.  I will learn more about how sch_fq is implemented.
+>> directive, which is an extension for kernel documentations, should
+>> be used instead.
+>=20
+> I have not noticed that there is kernel-figure
+> option. We have setup own Sphinx 1.4.9 based build for driver
+> documentation out of the tree compilation, I am not sure if that
+> would work with this option but if not we keep this version
+> modified. There are required modification for sources location anyway..=
+=2E
+>=20
+> https://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/linux_driver/buil=
+d/ctucanfd-driver.html
 
-Thanks,
-Peilin Ye
+You might want to see kernel's doc-guide at
 
+    https://www.kernel.org/doc/html/latest/doc-guide/sphinx.html
+
+, or its source
+
+    Documentation/doc-guide/sphinx.rst
+
+>=20
+>> The directive of "code:: raw" causes a warning from both
+>> "make htmldocs" and "make pdfdocs", which reads:
+>>
+>>     [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name=
+
+>>     'raw' is not known
+>=20
+> Strange I have not seen any warning when building htmldocs
+> in my actual linux kernel tree. I have cleaned docs to be warnings
+> free, but it is possible that I have another tools versions.
+Well, I don't think "make htmldocs" runs with Sphinx 1.4.9.
+
+You mean 1.7.9?
+
+Then the above mentioned warning is not shown.
+I see the warning with Sphinx versions 2.4.4. and 4.5.0.
+
+I'll amend the changelog to mention the Sphinx versions and
+post as v2.
+
+        Thanks, Akira
+
+>=20
+> Anyway thanks for cleanup.
+>=20
+>> A plain literal-block marker should suffice where no syntax
+>> highlighting is intended.
+>>
+>> Fix the issues by using suitable directive and marker.
+>>
+>> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+>> Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
+>> documentation.") Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+>> Cc: Martin Jerabek <martin.jerabek01@gmail.com>
+>> Cc: Ondrej Ille <ondrej.ille@gmail.com>
+>> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+>=20
+> Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+>=20
+>> ---
+>>  .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++-=
+-
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git
+>> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+>> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst =
+index
+>> 2fde5551e756..40c92ea272af 100644
+>> --- a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.=
+rst
+>> +++ b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.=
+rst
+>> @@ -72,7 +72,7 @@ it is reachable (on which bus it resides) and its
+>> configuration =E2=80=93 registers address, interrupts and so on. An ex=
+ample of such
+>> a device tree is given in .
+>>
+>> -.. code:: raw
+>> +::
+>>
+>>             / {
+>>                 /* ... */
+>> @@ -451,7 +451,7 @@ the FIFO is maintained, together with priority
+>> rotation, is depicted in
+>>
+>>
+>>
+>> -.. figure:: fsm_txt_buffer_user.svg
+>> +.. kernel-figure:: fsm_txt_buffer_user.svg
+>>
+>>     TX Buffer states with possible transitions
+>=20
+>=20
