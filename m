@@ -2,117 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C0AAD521595
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:37:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 374DD5215C0
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 14:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241899AbiEJMl1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 08:41:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48550 "EHLO
+        id S241956AbiEJMtf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 08:49:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51244 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241881AbiEJMl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:41:26 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0A941E123B;
-        Tue, 10 May 2022 05:37:28 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id n10so32656659ejk.5;
-        Tue, 10 May 2022 05:37:28 -0700 (PDT)
+        with ESMTP id S241933AbiEJMte (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:49:34 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25C8155222
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 05:45:34 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id x23so14841142pff.9
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 05:45:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=cosidqETohHtF0bI5X8WaN3KLjN3jNK+X2ZAPFOKt/o=;
-        b=q4WK37dxm2Rg4AHUGk7Wi4kVtwYOHay21u/XuI4XfzNMEyT71Bvff7CmdlnIImsooi
-         L9KZIsHxZVuWcbld60k2dRE1nqPdvX9iUDQ/esPVHs7fcjwcgF7tkxvdGJpoR7XYudXS
-         muSWsZuXTbqKGCFiSWFmdAHNrCg+ULsFjyrHjBA46B/e3zy9cUsu67O3uGCKSvgG133o
-         4hrnYv3h1uEIGEvcaT4O2aifRc6c/kxWAjp3TYhEdZLe/7JVVeLFsV+lyb3uIBNdTlUH
-         0kc5vhNXi72hrStZ8d+wUYkAQooUtteY91qjzO6B48GYNOdakRtplEzhT6qK2XZcu76a
-         nlLQ==
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=81CmoXK8W2fMc2E/XpNylErNEPWG7PeFWSGfTvENHek=;
+        b=BuizLo0eMVf1CFKzq5z5mJXXTCdmsbZnthwaSpGZvyOinz0zK1oVrwY+RjDSbz0lsj
+         W4/gcD2GsatA2CltDPm42940C9Zx8OlEiXWEDruJeUP+scX4B4Dn/BR45LSBkgx0ha/1
+         1lof9Sxe/0+TSOSmg+ZbSpzVPPfdI8D1n/IK23ovFovWMObnth4tWgSXWT44+EFOD5cw
+         YRdLOnhCKKUDhjj1PBpvvrU/SLEYIvonvF8JuhoBcVkVWvziCCxnA6XbN07WU1oTTJuX
+         9N9BICkQtsDiH2S5IvrqAAzmp2SqDTXhUfx7lB75VtVwJ+wJsJW+JGZukF4rewQyhJ7E
+         HF3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=cosidqETohHtF0bI5X8WaN3KLjN3jNK+X2ZAPFOKt/o=;
-        b=On5feP6X8k8BvKNcBy6Ld9fFhkOG1BGTamqu1S1w0MRPKGfgP1yjvT+Kv9Mj+9t0Nu
-         SU5JffuxOUpNFkzYwOocx7Do91bHsiKG0DmsEL4RBuwgK5EkIvORpdUCgbWCP7Pty/b5
-         g22tTm/5stQAS7I5QV1TF9wsVROfnuwj4QXOgvlPagNm6Blpy4uJAekOvv1CykIddDcB
-         nTLfCP0Q1Oqau81tdJVUeAOgH9Dir0eQF6E5vgrYKor5vc63wCIMs8qWJwxh3OLzY44f
-         XW6F5hbCEJb7ouD4LP5t7n940Y9OdOQlHg95eY1F6G8YcdR5DTg0AmTyrT+GBlunV/XV
-         2ANw==
-X-Gm-Message-State: AOAM531/WgVpUGAzAm1Qydmhk5uT3jhsTFTXnu71zlXNsfSNT58yZPQl
-        LlOOlj42uaj+OEOjUfNsc/8=
-X-Google-Smtp-Source: ABdhPJyvR8it5vxFmmtJtLeJIPRxLec58Z+2m8Tzbxt3mXDU6pHSDFlsyogmrno+6KSTWUzIH/zjyA==
-X-Received: by 2002:a17:906:3ce9:b0:6ef:a8aa:ab46 with SMTP id d9-20020a1709063ce900b006efa8aaab46mr19291235ejh.579.1652186247272;
-        Tue, 10 May 2022 05:37:27 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id e15-20020a50e44f000000b0042617ba63c7sm7576578edm.81.2022.05.10.05.37.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 05:37:26 -0700 (PDT)
-Date:   Tue, 10 May 2022 15:37:24 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Felix Fietkau <nbd@nbd.name>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
-Message-ID: <20220510123724.i2xqepc56z4eouh2@skbuf>
-References: <20220510094014.68440-1-nbd@nbd.name>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=81CmoXK8W2fMc2E/XpNylErNEPWG7PeFWSGfTvENHek=;
+        b=H5EegwHI30YFjHtYz+kUup2VdwGI5azOM4HpoWZNvGNqmT6x7B/Q/fYPUOpi7bW1tC
+         j9nBbWJ+2y3RG9jvD9VVyEW2Vst22oeHxwEsws2LP2DKBwzc+0ya4g0BDVD9FVg1JWT3
+         yNtMDar7tOJd1MONllfZq0xLlrzc6Qhdcc2VT3hsjhrOipx+e71EDXphTUDkCVA9kFem
+         nHF3WAwmluxITtOj+YRKC/GDVStBUJq3lhlqamG2yFdMH4XOrvVSeYH2Phs3sIhWXDLa
+         Ix0V4gDRbjXGZX3OhgDPzz/X63D7rG5oj6UL9B+kvcSrv6VOlSd/s1PKUrSrV48wdN6i
+         xK0g==
+X-Gm-Message-State: AOAM531v8CDi7IWLjej/rknCpnvy8XnERzG+IcOZZZUWpCC05pE5GJFa
+        sMord1vrW3XACLGI93f2vij24A==
+X-Google-Smtp-Source: ABdhPJww7Eg4/Zxst2GZrQrVNwauUtpxNCsfNjZ19FUR133ytWOXTk+q1xGx0v1s2BhN+B7mV7yS+A==
+X-Received: by 2002:a63:2c8a:0:b0:3aa:86ea:f2c9 with SMTP id s132-20020a632c8a000000b003aa86eaf2c9mr16916062pgs.46.1652186733527;
+        Tue, 10 May 2022 05:45:33 -0700 (PDT)
+Received: from [192.168.1.100] ([198.8.77.157])
+        by smtp.gmail.com with ESMTPSA id q187-20020a632ac4000000b003c14af5063fsm10345438pgq.87.2022.05.10.05.45.31
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 05:45:32 -0700 (PDT)
+Message-ID: <0e1b3d10-ae79-f987-187e-58109441ccee@kernel.dk>
+Date:   Tue, 10 May 2022 06:45:31 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510094014.68440-1-nbd@nbd.name>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux aarch64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [syzbot] KASAN: use-after-free Read in bio_poll
+Content-Language: en-US
+To:     Christoph Hellwig <hch@lst.de>, Ming Lei <ming.lei@redhat.com>
+Cc:     syzbot <syzbot+99938118dfd9e1b0741a@syzkaller.appspotmail.com>,
+        andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@kernel.org, linux-block@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com, yhs@fb.com
+References: <00000000000029572505de968021@google.com>
+ <a72282ef-650c-143b-4b88-5185009c3ec2@kernel.dk> <YnmuRuO4yplt8p/p@T590>
+ <20220510055039.GA10576@lst.de>
+From:   Jens Axboe <axboe@kernel.dk>
+In-Reply-To: <20220510055039.GA10576@lst.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:40:13AM +0200, Felix Fietkau wrote:
-> Padding for transmitted packets needs to account for the special tag.
-> With not enough padding, garbage bytes are inserted by the switch at the
-> end of small packets.
+On 5/9/22 11:50 PM, Christoph Hellwig wrote:
+> On Tue, May 10, 2022 at 08:13:58AM +0800, Ming Lei wrote:
+>>> Guys, should we just queue:
+>>>
+>>> ommit 9650b453a3d4b1b8ed4ea8bcb9b40109608d1faf
+>>> Author: Ming Lei <ming.lei@redhat.com>
+>>> Date:   Wed Apr 20 22:31:10 2022 +0800
+>>>
+>>>     block: ignore RWF_HIPRI hint for sync dio
+>>>
+>>> up for 5.18 and stable?
+>>
+>> I am fine with merging to 5.18 & stable.
+> 
+> I'm fine, too.  But are we sure this actually is one and the same
+> issue?  Otherwise I'll try to find some time to feed it to syzbot
+> first.
 
-I don't think padding bytes are guaranteed to be zeroes. Aren't they
-discarded? What is the issue?
+I re-wrote the reproducer a bit and can reproduce it, so I can certainly
+test a backport. But yes, I was skeptical on this being the same issue
+too. My initial reaction was that this is likely due to the bio being
+"downgraded" from polled to IRQ driven, and hence completes without an
+extra reference before the bio_poll() is done on it. Which is not the
+issue described in the referenced commit.
 
-> 
-> Fixes: 5cd8985a1909 ("net-next: dsa: add Mediatek tag RX/TX handler")
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> ---
->  net/dsa/tag_mtk.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/net/dsa/tag_mtk.c b/net/dsa/tag_mtk.c
-> index 415d8ece242a..1d1f9dbd9e93 100644
-> --- a/net/dsa/tag_mtk.c
-> +++ b/net/dsa/tag_mtk.c
-> @@ -25,6 +25,14 @@ static struct sk_buff *mtk_tag_xmit(struct sk_buff *skb,
->  	u8 xmit_tpid;
->  	u8 *mtk_tag;
->  
-> +	/* The Ethernet switch we are interfaced with needs packets to be at
-> +	 * least 64 bytes (including FCS) otherwise their padding might be
-> +	 * corrupted. With tags enabled, we need to make sure that packets are
-> +	 * at least 68 bytes (including FCS and tag).
-> +	 */
-> +	if (__skb_put_padto(skb, ETH_ZLEN + MTK_HDR_LEN, false))
-> +		return NULL;
-> +
->  	/* Build the special tag after the MAC Source Address. If VLAN header
->  	 * is present, it's required that VLAN header and special tag is
->  	 * being combined. Only in this way we can allow the switch can parse
-> -- 
-> 2.36.1
-> 
+-- 
+Jens Axboe
+
