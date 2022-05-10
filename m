@@ -2,56 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FAEF521DB5
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:10:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BCD22521DDC
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:13:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244228AbiEJPOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 11:14:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
+        id S244077AbiEJPRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 11:17:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345358AbiEJPNr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:13:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250F7E15DA;
-        Tue, 10 May 2022 07:48:39 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CB8AFB81DC2;
-        Tue, 10 May 2022 14:48:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469F0C385C2;
-        Tue, 10 May 2022 14:48:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652194116;
-        bh=c72iSkrAht/54lLLKTIxiRoey/GUJUzE+v+TIYu3Wck=;
-        h=In-Reply-To:References:From:To:Subject:Date:From;
-        b=b12edvEC6Cd9+lzThv0TF16/SG5tD+l/8mvTxGiKtAdTgm8szgIO5yF+vn/5U+T55
-         3+808qHZKr/ypcSlwIzOJtTEN6tPN/wOi7v67RFWNrnC70RE21Bhz3G8EgKHVCffHR
-         ndllQ5LFfqR+hgtg8ou3g9b3gTpAt9ZcSpgec6U/u4GgHep4cX7Lx4TgyPDzZWGqqo
-         v/2uqch5DV62WaiZmff7MpPnEKIUITh0ZgObNK8EAwkyjRDy89w8N/C5gVV7j96lCJ
-         wzoRuQFvv2GQLenULmCWJJyP3T6yDoz2aWxaJ8OoYLmi8I5hDVeANbdYCGQqluhDMJ
-         FzkbaDlhUmkew==
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1345721AbiEJPQW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:16:22 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CE0C1F3EAD;
+        Tue, 10 May 2022 07:52:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=x1CTARxTCcBRmbOr4xdk6jXfgn0v4S9YKk4prgzATyE=; b=UleV9ZTWCCUELqwT4Zl/Uyh1D8
+        h/koyeCGeQ+PSs1/86JHD39OsfbdjRYromqJT11p00JgkD4b42U9LBVnjjKZ58nBoQPc2+J+U+kJR
+        uX0yVmQsX/X7GqwdEQ9UZT5Bl7c69a5CH0LsBaf5A8DrLsVJUpLiQpWRlHHxHOxta6Pk=;
+Received: from p200300daa70ef200fccd1f935f1cf3cd.dip0.t-ipconnect.de ([2003:da:a70e:f200:fccd:1f93:5f1c:f3cd] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1noRDl-0000yY-5w; Tue, 10 May 2022 16:52:17 +0200
+Message-ID: <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
+Date:   Tue, 10 May 2022 16:52:16 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20220510142247.16071-1-wanjiabing@vivo.com>
-References: <20220510142247.16071-1-wanjiabing@vivo.com>
-From:   Antoine Tenart <atenart@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Wan Jiabing <wanjiabing@vivo.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net] net: phy: mscc: Add error check when __phy_read() failed
-Message-ID: <165219411356.3924.11722336879963021691@kwain>
-Date:   Tue, 10 May 2022 16:48:33 +0200
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220510094014.68440-1-nbd@nbd.name>
+ <20220510123724.i2xqepc56z4eouh2@skbuf>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <20220510123724.i2xqepc56z4eouh2@skbuf>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,65 +64,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
 
-Quoting Wan Jiabing (2022-05-10 16:22:45)
-> Calling __phy_read() might return a negative error code. Use 'int'
-> to declare variables which call __phy_read() and also add error check
-> for them.
->=20
-> The numerous callers of vsc8584_macsec_phy_read() don't expect it to
-> fail. So don't return the error code from __phy_read(), but also don't
-> return random values if it does fail.
->=20
-> Fixes: fa164e40c53b ("net: phy: mscc: split the driver into separate file=
-s")
+On 10.05.22 14:37, Vladimir Oltean wrote:
+> On Tue, May 10, 2022 at 11:40:13AM +0200, Felix Fietkau wrote:
+>> Padding for transmitted packets needs to account for the special tag.
+>> With not enough padding, garbage bytes are inserted by the switch at the
+>> end of small packets.
+> 
+> I don't think padding bytes are guaranteed to be zeroes. Aren't they
+> discarded? What is the issue?
+With the broken padding, ARP requests are silently discarded on the 
+receiver side in my test. Adding the padding explicitly fixes the issue.
 
-Does this fix an actual issue or was this found by code inspection? If
-that is not fixing a real issue I don't think it should go to stable
-trees.
-
-Also this is not the right commit, the __phy_read call was introduced
-before splitting the file.
-
->  static u32 vsc8584_macsec_phy_read(struct phy_device *phydev,
->                                    enum macsec_bank bank, u32 reg)
->  {
-> -       u32 val, val_l =3D 0, val_h =3D 0;
-> +       int rc, val, val_l, val_h;
->         unsigned long deadline;
-> -       int rc;
-> +       u32 ret =3D 0;
-> =20
->         rc =3D phy_select_page(phydev, MSCC_PHY_PAGE_MACSEC);
->         if (rc < 0)
-> @@ -47,15 +47,20 @@ static u32 vsc8584_macsec_phy_read(struct phy_device =
-*phydev,
->         deadline =3D jiffies + msecs_to_jiffies(PROC_CMD_NCOMPLETED_TIMEO=
-UT_MS);
->         do {
->                 val =3D __phy_read(phydev, MSCC_EXT_PAGE_MACSEC_19);
-> +               if (val < 0)
-> +                       goto failed;
->         } while (time_before(jiffies, deadline) && !(val & MSCC_PHY_MACSE=
-C_19_CMD));
-> =20
->         val_l =3D __phy_read(phydev, MSCC_EXT_PAGE_MACSEC_17);
->         val_h =3D __phy_read(phydev, MSCC_EXT_PAGE_MACSEC_18);
-> =20
-> +       if (val_l > 0 && val_h > 0)
-> +               ret =3D (val_h << 16) | val_l;
-
-Both values have to be non-0 for the function to return a value? I
-haven't checked but I would assume it is valid to have one of the two
-being 0.
-
->  failed:
->         phy_restore_page(phydev, rc, rc);
-> =20
-> -       return (val_h << 16) | val_l;
-> +       return ret;
->  }
-
-Thanks,
-Antoine
+- Felix
