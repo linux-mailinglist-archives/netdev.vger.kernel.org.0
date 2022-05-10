@@ -2,77 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 714DD521D5E
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 16:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FAEF521DB5
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 17:10:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243570AbiEJPDt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 11:03:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55346 "EHLO
+        id S244228AbiEJPOB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 11:14:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345496AbiEJPDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:03:34 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C51731361;
-        Tue, 10 May 2022 07:28:24 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 3A6AE1F896;
-        Tue, 10 May 2022 14:28:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652192903; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=5Vk/8pdLWJKvC1pkcnRQ/HwoU2ABECojPYTjSUx9JWI=;
-        b=qCuBe8399OKc/XhS2YM19THr9x0w+LK3v0+yrYrVMx1O5y8bO2nhr7ld/xwzdNWpoeMnQv
-        KDbf9vzeiGs4Zk4jc5/KyT1Cq3WiPlflRqYiR6m11RKyyC/hq4LcZ09p+y2XB4Mv583rFK
-        /mj4yXQtU5XfZ45MAwfj3oDOrq6/m9Q=
-Received: from suse.cz (unknown [10.100.208.146])
+        with ESMTP id S1345358AbiEJPNr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 11:13:47 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250F7E15DA;
+        Tue, 10 May 2022 07:48:39 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 344FF2C141;
-        Tue, 10 May 2022 14:28:22 +0000 (UTC)
-Date:   Tue, 10 May 2022 16:28:21 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Richard Weinberger <richard@nod.at>
-Subject: Re: [PATCH 11/30] um: Improve panic notifiers consistency and
- ordering
-Message-ID: <Ynp2hRodh04K3pzK@alley>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-12-gpiccoli@igalia.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id CB8AFB81DC2;
+        Tue, 10 May 2022 14:48:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469F0C385C2;
+        Tue, 10 May 2022 14:48:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652194116;
+        bh=c72iSkrAht/54lLLKTIxiRoey/GUJUzE+v+TIYu3Wck=;
+        h=In-Reply-To:References:From:To:Subject:Date:From;
+        b=b12edvEC6Cd9+lzThv0TF16/SG5tD+l/8mvTxGiKtAdTgm8szgIO5yF+vn/5U+T55
+         3+808qHZKr/ypcSlwIzOJtTEN6tPN/wOi7v67RFWNrnC70RE21Bhz3G8EgKHVCffHR
+         ndllQ5LFfqR+hgtg8ou3g9b3gTpAt9ZcSpgec6U/u4GgHep4cX7Lx4TgyPDzZWGqqo
+         v/2uqch5DV62WaiZmff7MpPnEKIUITh0ZgObNK8EAwkyjRDy89w8N/C5gVV7j96lCJ
+         wzoRuQFvv2GQLenULmCWJJyP3T6yDoz2aWxaJ8OoYLmi8I5hDVeANbdYCGQqluhDMJ
+         FzkbaDlhUmkew==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220427224924.592546-12-gpiccoli@igalia.com>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220510142247.16071-1-wanjiabing@vivo.com>
+References: <20220510142247.16071-1-wanjiabing@vivo.com>
+From:   Antoine Tenart <atenart@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Eric Dumazet <edumazet@google.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Wan Jiabing <wanjiabing@vivo.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net] net: phy: mscc: Add error check when __phy_read() failed
+Message-ID: <165219411356.3924.11722336879963021691@kwain>
+Date:   Tue, 10 May 2022 16:48:33 +0200
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,31 +59,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 2022-04-27 19:49:05, Guilherme G. Piccoli wrote:
-> Currently the panic notifiers from user mode linux don't follow
-> the convention for most of the other notifiers present in the
-> kernel (indentation, priority setting, numeric return).
-> More important, the priorities could be improved, since it's a
-> special case (userspace), hence we could run the notifiers earlier;
-> user mode linux shouldn't care much with other panic notifiers but
-> the ordering among the mconsole and arch notifier is important,
-> given that the arch one effectively triggers a core dump.
+Hello,
 
-It is not clear to me why user mode linux should not care about
-the other notifiers. It might be because I do not know much
-about the user mode linux.
+Quoting Wan Jiabing (2022-05-10 16:22:45)
+> Calling __phy_read() might return a negative error code. Use 'int'
+> to declare variables which call __phy_read() and also add error check
+> for them.
+>=20
+> The numerous callers of vsc8584_macsec_phy_read() don't expect it to
+> fail. So don't return the error code from __phy_read(), but also don't
+> return random values if it does fail.
+>=20
+> Fixes: fa164e40c53b ("net: phy: mscc: split the driver into separate file=
+s")
 
-Is the because they always create core dump or are never running
-in a hypervisor or ...?
+Does this fix an actual issue or was this found by code inspection? If
+that is not fixing a real issue I don't think it should go to stable
+trees.
 
-AFAIK, the notifiers do many different things. For example, there
-is a notifier that disables RCU watchdog, print some extra
-information. Why none of them make sense here?
+Also this is not the right commit, the __phy_read call was introduced
+before splitting the file.
 
-> This patch fixes that by running the mconsole notifier as the first
-> panic notifier, followed by the architecture one (that coredumps).
-> Also, we remove a useless header inclusion.
+>  static u32 vsc8584_macsec_phy_read(struct phy_device *phydev,
+>                                    enum macsec_bank bank, u32 reg)
+>  {
+> -       u32 val, val_l =3D 0, val_h =3D 0;
+> +       int rc, val, val_l, val_h;
+>         unsigned long deadline;
+> -       int rc;
+> +       u32 ret =3D 0;
+> =20
+>         rc =3D phy_select_page(phydev, MSCC_PHY_PAGE_MACSEC);
+>         if (rc < 0)
+> @@ -47,15 +47,20 @@ static u32 vsc8584_macsec_phy_read(struct phy_device =
+*phydev,
+>         deadline =3D jiffies + msecs_to_jiffies(PROC_CMD_NCOMPLETED_TIMEO=
+UT_MS);
+>         do {
+>                 val =3D __phy_read(phydev, MSCC_EXT_PAGE_MACSEC_19);
+> +               if (val < 0)
+> +                       goto failed;
+>         } while (time_before(jiffies, deadline) && !(val & MSCC_PHY_MACSE=
+C_19_CMD));
+> =20
+>         val_l =3D __phy_read(phydev, MSCC_EXT_PAGE_MACSEC_17);
+>         val_h =3D __phy_read(phydev, MSCC_EXT_PAGE_MACSEC_18);
+> =20
+> +       if (val_l > 0 && val_h > 0)
+> +               ret =3D (val_h << 16) | val_l;
 
+Both values have to be non-0 for the function to return a value? I
+haven't checked but I would assume it is valid to have one of the two
+being 0.
 
-Best Regards,
-Petr
+>  failed:
+>         phy_restore_page(phydev, rc, rc);
+> =20
+> -       return (val_h << 16) | val_l;
+> +       return ret;
+>  }
+
+Thanks,
+Antoine
