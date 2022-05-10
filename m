@@ -2,150 +2,247 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A2595225E0
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 22:52:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E71B75225F5
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 22:57:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231975AbiEJUwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 16:52:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48224 "EHLO
+        id S231743AbiEJU5j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 16:57:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237085AbiEJUvw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 16:51:52 -0400
-Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8840D517FB;
-        Tue, 10 May 2022 13:51:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652215909; x=1683751909;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Z6AYtUl6pSxkUDotnea/tzBkTCWcYCFzfWEKuVXB61M=;
-  b=akk9VjV2p16g1v06Ku7mpPjMvVJaySSuDA37nFwID+X+8RFYfgZ5eBAo
-   zyVlJ42x4rf38J/RCbA4KxkV64q3Aw+CFY8Yi54vOvWq6ud18Efehy94E
-   e6+0rJZ2LC4/RvLS7y7WuSs5pUvOfThS8H7fHGMRESljOIN8jnf/9zXIz
-   CwcSql5bLHZxZyXRJtu5ZkRVZMYKPv7aCqVQokHCbSbKu2FGx25WyBdnm
-   c8CkSrGO9gJshCiguQbV+TG1r2gYSpe0+blunqq9QWHlUo3EZRIoN2b91
-   NVVWQEfgeH2I7ZoyCXQmv0gcTY9HtTo6cYgigPsduSLTor7nvOPG5QnKn
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10343"; a="268341424"
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="268341424"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 May 2022 13:51:45 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,215,1647327600"; 
-   d="scan'208";a="553013236"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by orsmga002.jf.intel.com with ESMTP; 10 May 2022 13:51:45 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Xiaomeng Tong <xiam0nd.tong@gmail.com>, netdev@vger.kernel.org,
-        anthony.l.nguyen@intel.com, sassmann@redhat.com,
-        stable@vger.kernel.org, Gurucharan <gurucharanx.g@intel.com>
-Subject: [PATCH net v2 1/1] i40e: i40e_main: fix a missing check on list iterator
-Date:   Tue, 10 May 2022 13:48:46 -0700
-Message-Id: <20220510204846.2166999-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S229771AbiEJU5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 16:57:36 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E626B4C7B7
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 13:57:33 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id iq10so346828pjb.0
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 13:57:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qEwSLaBnufvf0B/G9DnjVyMhvQQtp6PRHTVxLgDlPK8=;
+        b=JZZc8nkB/4Su4yIh1M5akAXPXMXUy7OMtkUi17Z4U6q8imKFEnTV2ldgRsbBiWHbOc
+         OXkC8mulfoTXZNJgg7dy8ejG6nYNpAntJzw/UJ+ZREiXKr9wDqUzvSrnqoqdQxyFobaM
+         R+HM0meqwbmtR1sWL0MDTYxA0VK0lzS8IXVh8=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qEwSLaBnufvf0B/G9DnjVyMhvQQtp6PRHTVxLgDlPK8=;
+        b=lXXIX9AzKT313Q30oQFxkG6CY7iRViIo34l8Xloh84l3NxwxC374QlBJdKpxRf8zJo
+         yTpBDZLTcMfItG0CBIyKTY6v2IzYjiuGLWUpIK/0SetKXFrvrATaz4PWr7OVB6l7L1BN
+         kadgWzmYsgarxha8Z+B9yx0cLfdE006pwfL43ZWvlNPF6uICwG6ANX/WSB6NEtpicq/J
+         jdLcouAgS1imeTHMU9/XhQyiYriwtdsufo8vSGpdA43r20b6xjnXL6DyBDcSIprNvYIt
+         VBSiJ9JWL/tQyCe/D33mMXBlaYzOqXhxCfbf/FKR4WkqbRRof7hwu8c6Dbk4vvmRRyd1
+         55UQ==
+X-Gm-Message-State: AOAM5332YS81VFDWa8LaLauXmXubBPyYdd2I8X92t73O37XPIimLGXNf
+        FW1mXrObWk8ULjZSVdBg6W6C8w==
+X-Google-Smtp-Source: ABdhPJzq6QFou00wiYYBUDT4UWIfcPJViSah6uRx1sl8Xa88lUVgHIvT844SOrOHnYuyyCgBDE0x7w==
+X-Received: by 2002:a17:902:a583:b0:15d:197b:9259 with SMTP id az3-20020a170902a58300b0015d197b9259mr22529041plb.51.1652216253338;
+        Tue, 10 May 2022 13:57:33 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id u3-20020a170903108300b0015ee9bb2a38sm72477pld.72.2022.05.10.13.57.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 13:57:33 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, Du Cheng <ducheng2@gmail.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        William Kucharski <william.kucharski@oracle.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        linux-mm@kvack.org, linux-hardening@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] niu: Silence randstruct warnings
+Date:   Tue, 10 May 2022 13:57:29 -0700
+Message-Id: <20220510205729.3574400-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6424; h=from:subject; bh=qjuk20AT1lvrR1lDg81FqCODCnq2+tj+/Y7wwEnRQa8=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBietG4dsJ9H5fxphZwsMR3iDSJzvX3mPa4VHlCGvUH hideMGiJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnrRuAAKCRCJcvTf3G3AJtleD/ 9zyb+fsiOw5Yfe5VTpCrrjyUdaIkIJl/vUPO3MSulEMU1Unng7KrEqQmJgAJM5WTUcAh7cTjNpY1q7 8+KeeGAO0KfG+t8kYQEEZRsOTCpFxnS4/oaFATHvLKVmZr83K0Yev/T2Ks6sActMbiWmsoo1mWhbJP ZMxlvaAFuKNEW9EjhNwKggoufIHyZcrx55WZFm5FF5HWQpa8sHQswEfZEQdK9raFdLCfMrBUfEEYbu UvlGalUlLC0Eg3kxD8/3HoqiKYvY9oQLdo8jnYGX7iqtwpQdXs9Y45aRQXDg7N55W9cOSut7I2kIMZ luOU+ygvT7MzXWj4Lo2ixe8ZwX7v+Hff8CLqdCpozXqoYiUYH6RzrJbX2ltMwpR4NNhsUsi7YznAT9 2Q0DKZZAjkGQq6c13DiqXaBQjRDAXhpPiUY0jNRi6l6FzxS3jqz9Zxrx2W7QYHGga4BpIc1LVgb5aT Kd04io55f66UaqZWMPDUw6dt02EdrN21KLLjlJUYMBus1KJR5LomjDBIhtphXZSh6+fD5cmFPZO8ZM k8JpuL3zTs+wcdSc4JdrsoELDqoR1K2PmCqX5eiS5GGfDobMFeJkx0lD8QY13R9yGukQrPhbcIcSG8 m7ViudNhHRmgfEdMjUJn0Ws8ouESfaGkchCFruYPxZ8TwyMWXHnsMqOb/7dw==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xiaomeng Tong <xiam0nd.tong@gmail.com>
+Clang randstruct gets upset when it sees struct addresspace (which is
+randomized) being assigned to a struct page (which is not randomized):
 
-The bug is here:
-	ret = i40e_add_macvlan_filter(hw, ch->seid, vdev->dev_addr, &aq_err);
+drivers/net/ethernet/sun/niu.c:3385:12: error: casting from randomized structure pointer type 'struct address_space *' to 'struct page *'
+                        *link = (struct page *) page->mapping;
+                                ^
 
-The list iterator 'ch' will point to a bogus position containing
-HEAD if the list is empty or no element is found. This case must
-be checked before any use of the iterator, otherwise it will
-lead to a invalid memory access.
+It looks like niu.c is looking for an in-line place to chain its allocated
+pages together and is overloading the "mapping" member, as it is unused.
+This is very non-standard, and is expected to be cleaned up in the
+future[1], but there is no "correct" way to handle it today.
 
-To fix this bug, use a new variable 'iter' as the list iterator,
-while use the origin variable 'ch' as a dedicated pointer to
-point to the found element.
+No meaningful machine code changes result after this change, and source
+readability is improved.
 
-Cc: stable@vger.kernel.org
-Fixes: 1d8d80b4e4ff6 ("i40e: Add macvlan support on i40e")
-Signed-off-by: Xiaomeng Tong <xiam0nd.tong@gmail.com>
-Tested-by: Gurucharan <gurucharanx.g@intel.com> (A Contingent worker at Intel)
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+Drop the randstruct exception now that there is no "confusing" cross-type
+assignment.
+
+[1] https://lore.kernel.org/lkml/YnqgjVoMDu5v9PNG@casper.infradead.org/
+
+Cc: "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Du Cheng <ducheng2@gmail.com>
+Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: William Kucharski <william.kucharski@oracle.com>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Nathan Chancellor <nathan@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-mm@kvack.org
+Cc: linux-hardening@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
-v2: Dropped patch "iavf: Fix error when changing ring parameters on ice PF"
-as its being reworked
+earlier version: https://lore.kernel.org/lkml/20220509222334.3544344-1-keescook@chromium.org/
+---
+ drivers/net/ethernet/sun/niu.c                | 41 ++++++++++++++-----
+ scripts/gcc-plugins/randomize_layout_plugin.c |  2 -
+ 2 files changed, 31 insertions(+), 12 deletions(-)
 
- drivers/net/ethernet/intel/i40e/i40e_main.c | 27 +++++++++++----------
- 1 file changed, 14 insertions(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 6778df2177a1..98871f014994 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -7549,42 +7549,43 @@ static void i40e_free_macvlan_channels(struct i40e_vsi *vsi)
- static int i40e_fwd_ring_up(struct i40e_vsi *vsi, struct net_device *vdev,
- 			    struct i40e_fwd_adapter *fwd)
- {
-+	struct i40e_channel *ch = NULL, *ch_tmp, *iter;
- 	int ret = 0, num_tc = 1,  i, aq_err;
--	struct i40e_channel *ch, *ch_tmp;
- 	struct i40e_pf *pf = vsi->back;
- 	struct i40e_hw *hw = &pf->hw;
+diff --git a/drivers/net/ethernet/sun/niu.c b/drivers/net/ethernet/sun/niu.c
+index 42460c0885fc..df70df29deea 100644
+--- a/drivers/net/ethernet/sun/niu.c
++++ b/drivers/net/ethernet/sun/niu.c
+@@ -35,6 +35,25 @@
  
--	if (list_empty(&vsi->macvlan_list))
--		return -EINVAL;
--
- 	/* Go through the list and find an available channel */
--	list_for_each_entry_safe(ch, ch_tmp, &vsi->macvlan_list, list) {
--		if (!i40e_is_channel_macvlan(ch)) {
--			ch->fwd = fwd;
-+	list_for_each_entry_safe(iter, ch_tmp, &vsi->macvlan_list, list) {
-+		if (!i40e_is_channel_macvlan(iter)) {
-+			iter->fwd = fwd;
- 			/* record configuration for macvlan interface in vdev */
- 			for (i = 0; i < num_tc; i++)
- 				netdev_bind_sb_channel_queue(vsi->netdev, vdev,
- 							     i,
--							     ch->num_queue_pairs,
--							     ch->base_queue);
--			for (i = 0; i < ch->num_queue_pairs; i++) {
-+							     iter->num_queue_pairs,
-+							     iter->base_queue);
-+			for (i = 0; i < iter->num_queue_pairs; i++) {
- 				struct i40e_ring *tx_ring, *rx_ring;
- 				u16 pf_q;
+ #include "niu.h"
  
--				pf_q = ch->base_queue + i;
-+				pf_q = iter->base_queue + i;
- 
- 				/* Get to TX ring ptr */
- 				tx_ring = vsi->tx_rings[pf_q];
--				tx_ring->ch = ch;
-+				tx_ring->ch = iter;
- 
- 				/* Get the RX ring ptr */
- 				rx_ring = vsi->rx_rings[pf_q];
--				rx_ring->ch = ch;
-+				rx_ring->ch = iter;
- 			}
-+			ch = iter;
- 			break;
- 		}
- 	}
- 
-+	if (!ch)
-+		return -EINVAL;
++/* This driver wants to store a link to a "next page" within the
++ * page struct itself by overloading the content of the "mapping"
++ * member. This is not expected by the page API, but does currently
++ * work. However, the randstruct plugin gets very bothered by this
++ * case because "mapping" (struct address_space) is randomized, so
++ * casts to/from it trigger warnings. Hide this by way of a union,
++ * to create a typed alias of "mapping", since that's how it is
++ * actually being used here.
++ */
++union niu_page {
++	struct page page;
++	struct {
++		unsigned long __flags;	/* unused alias of "flags" */
++		struct list_head __lru;	/* unused alias of "lru" */
++		struct page *next;	/* alias of "mapping" */
++	};
++};
++#define niu_next_page(p)	container_of(p, union niu_page, page)->next
 +
- 	/* Guarantee all rings are updated before we update the
- 	 * MAC address filter.
- 	 */
+ #define DRV_MODULE_NAME		"niu"
+ #define DRV_MODULE_VERSION	"1.1"
+ #define DRV_MODULE_RELDATE	"Apr 22, 2010"
+@@ -3283,7 +3302,7 @@ static struct page *niu_find_rxpage(struct rx_ring_info *rp, u64 addr,
+ 
+ 	addr &= PAGE_MASK;
+ 	pp = &rp->rxhash[h];
+-	for (; (p = *pp) != NULL; pp = (struct page **) &p->mapping) {
++	for (; (p = *pp) != NULL; pp = &niu_next_page(p)) {
+ 		if (p->index == addr) {
+ 			*link = pp;
+ 			goto found;
+@@ -3300,7 +3319,7 @@ static void niu_hash_page(struct rx_ring_info *rp, struct page *page, u64 base)
+ 	unsigned int h = niu_hash_rxaddr(rp, base);
+ 
+ 	page->index = base;
+-	page->mapping = (struct address_space *) rp->rxhash[h];
++	niu_next_page(page) = rp->rxhash[h];
+ 	rp->rxhash[h] = page;
+ }
+ 
+@@ -3382,11 +3401,11 @@ static int niu_rx_pkt_ignore(struct niu *np, struct rx_ring_info *rp)
+ 		rcr_size = rp->rbr_sizes[(val & RCR_ENTRY_PKTBUFSZ) >>
+ 					 RCR_ENTRY_PKTBUFSZ_SHIFT];
+ 		if ((page->index + PAGE_SIZE) - rcr_size == addr) {
+-			*link = (struct page *) page->mapping;
++			*link = niu_next_page(page);
+ 			np->ops->unmap_page(np->device, page->index,
+ 					    PAGE_SIZE, DMA_FROM_DEVICE);
+ 			page->index = 0;
+-			page->mapping = NULL;
++			niu_next_page(page) = NULL;
+ 			__free_page(page);
+ 			rp->rbr_refill_pending++;
+ 		}
+@@ -3451,11 +3470,11 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
+ 
+ 		niu_rx_skb_append(skb, page, off, append_size, rcr_size);
+ 		if ((page->index + rp->rbr_block_size) - rcr_size == addr) {
+-			*link = (struct page *) page->mapping;
++			*link = niu_next_page(page);
+ 			np->ops->unmap_page(np->device, page->index,
+ 					    PAGE_SIZE, DMA_FROM_DEVICE);
+ 			page->index = 0;
+-			page->mapping = NULL;
++			niu_next_page(page) = NULL;
+ 			rp->rbr_refill_pending++;
+ 		} else
+ 			get_page(page);
+@@ -3518,13 +3537,13 @@ static void niu_rbr_free(struct niu *np, struct rx_ring_info *rp)
+ 
+ 		page = rp->rxhash[i];
+ 		while (page) {
+-			struct page *next = (struct page *) page->mapping;
++			struct page *next = niu_next_page(page);
+ 			u64 base = page->index;
+ 
+ 			np->ops->unmap_page(np->device, base, PAGE_SIZE,
+ 					    DMA_FROM_DEVICE);
+ 			page->index = 0;
+-			page->mapping = NULL;
++			niu_next_page(page) = NULL;
+ 
+ 			__free_page(page);
+ 
+@@ -6440,8 +6459,7 @@ static void niu_reset_buffers(struct niu *np)
+ 
+ 				page = rp->rxhash[j];
+ 				while (page) {
+-					struct page *next =
+-						(struct page *) page->mapping;
++					struct page *next = niu_next_page(page);
+ 					u64 base = page->index;
+ 					base = base >> RBR_DESCR_ADDR_SHIFT;
+ 					rp->rbr[k++] = cpu_to_le32(base);
+@@ -10176,6 +10194,9 @@ static int __init niu_init(void)
+ 
+ 	BUILD_BUG_ON(PAGE_SIZE < 4 * 1024);
+ 
++	BUILD_BUG_ON(offsetof(struct page, mapping) !=
++		     offsetof(union niu_page, next));
++
+ 	niu_debug = netif_msg_init(debug, NIU_MSG_DEFAULT);
+ 
+ #ifdef CONFIG_SPARC64
+diff --git a/scripts/gcc-plugins/randomize_layout_plugin.c b/scripts/gcc-plugins/randomize_layout_plugin.c
+index 727512eebb3b..38a8cf90f611 100644
+--- a/scripts/gcc-plugins/randomize_layout_plugin.c
++++ b/scripts/gcc-plugins/randomize_layout_plugin.c
+@@ -46,8 +46,6 @@ struct whitelist_entry {
+ };
+ 
+ static const struct whitelist_entry whitelist[] = {
+-	/* NIU overloads mapping with page struct */
+-	{ "drivers/net/ethernet/sun/niu.c", "page", "address_space" },
+ 	/* unix_skb_parms via UNIXCB() buffer */
+ 	{ "net/unix/af_unix.c", "unix_skb_parms", "char" },
+ 	{ }
 -- 
-2.35.1
+2.32.0
 
