@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10D1A521474
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:57:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D5EB521476
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 13:57:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241387AbiEJMB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 08:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37922 "EHLO
+        id S241364AbiEJMBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 08:01:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241368AbiEJMBG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:01:06 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C52601BD712;
-        Tue, 10 May 2022 04:56:59 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id b19so23453640wrh.11;
-        Tue, 10 May 2022 04:56:59 -0700 (PDT)
+        with ESMTP id S241381AbiEJMBH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 08:01:07 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F267124EA09;
+        Tue, 10 May 2022 04:57:02 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id u3so23476055wrg.3;
+        Tue, 10 May 2022 04:57:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0NbQnsAHGSoodBL7RWkdZ9Gi+Iz4OOxKMu0gOxSm1YQ=;
-        b=KGNf36sqI5V+RAnd+RDfrx+9rckUxGzQ1bETQBTWq81nWpcQFLhu9LRDNcjkW8/Bds
-         2r+oNZxZ7/BYKwTsvycLsBG+6Qp3H7tARfB+ODHqJVpjHKWhNcLcNhvO1ZofaS1KqcDy
-         cSYoFyICqkm72vPqTcEvb3aVrzNBw2Fs+t+bW8pRj0RPvNLQ9ORbh7HTnDHZLpzG7kce
-         XAR6dL2kVIFcRbMwT8iHixZkZBsZHQSka+dskT0+gyZSH2UhBAmX85mharQaQJ0A37RL
-         77RTmAdyn3T+E5yEWeFOnqmKfpmW3PRHFSZQXUCvRsy/VQxARu1diyR5XyUMC7e1bIEK
-         ck1w==
+        bh=hwswGezRygKMF5aesl0YIOClootFiCitW6j/Wf2pgKA=;
+        b=KaHYpBSM2kWmvgTNhw9SOvb00ooQreAXZ21mgG9gBCRNIe0IOobjm33kTgh6aWO6qf
+         kZXkrG8XdKlaB/wk4fsLd4CSl86SR/V9bvwRTkLibaXTQKXCuUnWh+5/UjVp+fgW63Tm
+         3dNtDFzgwkKoijwABZ/SbngXNpgmIaVmQUOPn/Hg38tSup04jcUetrp20VhZZh0Qp0r+
+         wMq0u4UBiwBE5dkf0sY3CjACy84gK3/txAddENE2w0uAapkYMEtxX+W6kHT+E58J1pfh
+         M6stFhjAwQJtchZURz1APJAzUHUEQw7XzS90XYk6uCGa7RcgwH8JoltsuGr4NJKjxGsa
+         85vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0NbQnsAHGSoodBL7RWkdZ9Gi+Iz4OOxKMu0gOxSm1YQ=;
-        b=gIt5xtAg8msYRazqms+TV2XQTxOjWBlgrtC/x6o3XqN3n0vucif4fMCJtECcYQGXDA
-         al/RnkCK/HTAnpvphwQuQb0r+IMow26fu8gq5MIG+27sQMdZ/WDv8jtbtonlg3giFjTB
-         aynoWLN4mjlEQPf1Q+BgiJ1BVcvzR0Lg4PgbxSRUe3O11N9WW5PTz/KEmO/xkt7N/i0P
-         sUgD0WXXrEe8VLFXxGn1hZ0lXK8ldb8cSlIVtUppJe+bO49WMrBVKjaE28AJd9WBE+l6
-         6GY1cRwsTuceXGNn4BztwgGeeT1+Idr6TBo6QDZq8iz/PNyHEIMRhhyAWxPktA8yB0UA
-         HR0w==
-X-Gm-Message-State: AOAM5303ZFX4yeQU+ROOvp7iLbj1n/l8rWzV1sJE8SUCcgSn67LKx8pl
-        eeGsL/ikqlsh4ejfMD99fSQ=
-X-Google-Smtp-Source: ABdhPJziefuhMPdZi/pHOK1g08t7m6QA8dbyDiKbcZdVE33yWQgesJtExTc28F5DcdjK/d3OyuRA6A==
-X-Received: by 2002:a05:6000:1ac7:b0:20c:6c81:c8e5 with SMTP id i7-20020a0560001ac700b0020c6c81c8e5mr18832665wry.580.1652183819341;
-        Tue, 10 May 2022 04:56:59 -0700 (PDT)
+        bh=hwswGezRygKMF5aesl0YIOClootFiCitW6j/Wf2pgKA=;
+        b=rn2W6BLtr1wBd83m239Xybrc55hQHaXFRp6hwZ+I4iHTcgKvK0EQl8RMhXbgblel8s
+         Vnpa8lUGNUNRxn3Njs5R2k2HWs3qaS1bQiCpZD1gM6qJMUfRlNN5AdetxCc7qo9CnaA6
+         rCBTMeeXBNRQazgxWM0c6r8z7dudeew42ARsPyLaMd3QbyHhzkNT4I/1Gv9ui90m98Ej
+         iId+l7vlfGxMTgxHdBi3CxxUZSillbPFy2VBb2IV577o6vvoWDfqkpJJzfqQpQxSXXw/
+         Eg5Usl77t8LM0rGHriCM4jvVo4//Beq/yhd3zYscAiEjRaDZqAF8f6cRZuI354Pr2BDo
+         9QTg==
+X-Gm-Message-State: AOAM531PSaRvmyctuu2491EUhPZeLKEfq4QFL3wQdLFHQDjfpft1u0F+
+        Bcabe3DK25IQ/VaxyCP8smI=
+X-Google-Smtp-Source: ABdhPJwBFXWOtWCjLEDFaK+NrSWlsdvlHcqqo9nTS5ePHSyVxGRLvXPwhtEjkRhD59BXur4FwL4RuQ==
+X-Received: by 2002:a05:6000:1acd:b0:20c:811c:9f39 with SMTP id i13-20020a0560001acd00b0020c811c9f39mr17777994wry.482.1652183821015;
+        Tue, 10 May 2022 04:57:01 -0700 (PDT)
 Received: from localhost.localdomain ([188.149.128.194])
-        by smtp.gmail.com with ESMTPSA id e25-20020a05600c4b9900b003942a244f51sm2267797wmp.42.2022.05.10.04.56.57
+        by smtp.gmail.com with ESMTPSA id e25-20020a05600c4b9900b003942a244f51sm2267797wmp.42.2022.05.10.04.56.59
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 May 2022 04:56:58 -0700 (PDT)
+        Tue, 10 May 2022 04:57:00 -0700 (PDT)
 From:   Magnus Karlsson <magnus.karlsson@gmail.com>
 To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -54,9 +54,9 @@ To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
         kafai@fb.com, songliubraving@fb.com, john.fastabend@gmail.com,
         kpsingh@kernel.org
 Cc:     jonathan.lemon@gmail.com, bpf@vger.kernel.org
-Subject: [PATCH bpf-next 7/9] selftests: xsk: introduce validation functions
-Date:   Tue, 10 May 2022 13:56:02 +0200
-Message-Id: <20220510115604.8717-8-magnus.karlsson@gmail.com>
+Subject: [PATCH bpf-next 8/9] selftests: xsk: make the stats tests normal tests
+Date:   Tue, 10 May 2022 13:56:03 +0200
+Message-Id: <20220510115604.8717-9-magnus.karlsson@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220510115604.8717-1-magnus.karlsson@gmail.com>
 References: <20220510115604.8717-1-magnus.karlsson@gmail.com>
@@ -74,226 +74,179 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Magnus Karlsson <magnus.karlsson@intel.com>
 
-Introduce validation functions that can be optionally called by the Rx
-and Tx threads. These are then used to replace the Rx and Tx stats
-dispatchers. This so that we in the next commit can make the stats
-tests proper normal tests and not be some special case, as today.
+Make the stats tests look and feel just like normal tests instead of
+bunched under the umbrella of TEST_STATS. This means we will always
+run each of them even if one fails. Also gets rid of some special case
+code.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- tools/testing/selftests/bpf/xdpxceiver.c | 117 +++++++++++++++--------
- tools/testing/selftests/bpf/xdpxceiver.h |   3 +
- 2 files changed, 82 insertions(+), 38 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 106 +++++++++++------------
+ tools/testing/selftests/bpf/xdpxceiver.h |  16 +---
+ 2 files changed, 53 insertions(+), 69 deletions(-)
 
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index dc21951a1b0a..3eef29cacf94 100644
+index 3eef29cacf94..a75af0ea19a3 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.c
 +++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -426,6 +426,7 @@ static void __test_spec_init(struct test_spec *test, struct ifobject *ifobj_tx,
- 		ifobj->use_poll = false;
- 		ifobj->pacing_on = true;
- 		ifobj->pkt_stream = test->pkt_stream_default;
-+		ifobj->validation_func = NULL;
- 
- 		if (i == 0) {
- 			ifobj->rx_on = false;
-@@ -951,54 +952,90 @@ static int send_pkts(struct test_spec *test, struct ifobject *ifobject)
- 	return TEST_PASS;
+@@ -1324,60 +1324,48 @@ static void testapp_headroom(struct test_spec *test)
+ 	testapp_validate_traffic(test);
  }
  
--static int rx_stats_validate(struct ifobject *ifobject)
-+static int get_xsk_stats(struct xsk_socket *xsk, struct xdp_statistics *stats)
-+{
-+	int fd = xsk_socket__fd(xsk), err;
-+	socklen_t optlen, expected_len;
-+
-+	optlen = sizeof(*stats);
-+	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, stats, &optlen);
-+	if (err) {
-+		ksft_print_msg("[%s] getsockopt(XDP_STATISTICS) error %u %s\n",
-+			       __func__, -err, strerror(-err));
-+		return TEST_FAILURE;
-+	}
-+
-+	expected_len = sizeof(struct xdp_statistics);
-+	if (optlen != expected_len) {
-+		ksft_print_msg("[%s] getsockopt optlen error. Expected: %u got: %u\n",
-+			       __func__, expected_len, optlen);
-+		return TEST_FAILURE;
-+	}
-+
-+	return TEST_PASS;
-+}
-+
-+static int validate_rx_dropped(struct ifobject *ifobject)
+-static void testapp_stats(struct test_spec *test)
++static void testapp_stats_rx_dropped(struct test_spec *test)
  {
--	u32 xsk_stat = 0, expected_stat = ifobject->pkt_stream->nb_pkts;
- 	struct xsk_socket *xsk = ifobject->xsk->xsk;
--	int fd = xsk_socket__fd(xsk);
- 	struct xdp_statistics stats;
--	socklen_t optlen;
- 	int err;
+-	int i;
++	test_spec_set_name(test, "STAT_RX_DROPPED");
++	test->ifobj_tx->pacing_on = false;
++	test->ifobj_rx->umem->frame_headroom = test->ifobj_rx->umem->frame_size -
++		XDP_PACKET_HEADROOM - 1;
++	test->ifobj_rx->validation_func = validate_rx_dropped;
++	testapp_validate_traffic(test);
++}
  
- 	kick_rx(ifobject->xsk);
- 
--	optlen = sizeof(stats);
--	err = getsockopt(fd, SOL_XDP, XDP_STATISTICS, &stats, &optlen);
--	if (err) {
--		ksft_print_msg("[%s] getsockopt(XDP_STATISTICS) error %u %s\n",
--			       __func__, -err, strerror(-err));
-+	err = get_xsk_stats(xsk, &stats);
-+	if (err)
- 		return TEST_FAILURE;
--	}
- 
--	if (optlen == sizeof(struct xdp_statistics)) {
+-	for (i = 0; i < STAT_TEST_TYPE_MAX; i++) {
+-		test_spec_reset(test);
+-		stat_test_type = i;
+-		/* No or few packets will be received so cannot pace packets */
+-		test->ifobj_tx->pacing_on = false;
+-
 -		switch (stat_test_type) {
 -		case STAT_TEST_RX_DROPPED:
--			xsk_stat = stats.rx_dropped;
+-			test_spec_set_name(test, "STAT_RX_DROPPED");
+-			test->ifobj_rx->umem->frame_headroom = test->ifobj_rx->umem->frame_size -
+-				XDP_PACKET_HEADROOM - 1;
+-			test->ifobj_rx->validation_func = validate_rx_dropped;
+-			testapp_validate_traffic(test);
+-			break;
+-		case STAT_TEST_RX_FULL:
+-			test_spec_set_name(test, "STAT_RX_FULL");
+-			test->ifobj_rx->xsk->rxqsize = RX_FULL_RXQSIZE;
+-			test->ifobj_rx->validation_func = validate_rx_full;
+-			testapp_validate_traffic(test);
 -			break;
 -		case STAT_TEST_TX_INVALID:
--			return true;
--		case STAT_TEST_RX_FULL:
--			xsk_stat = stats.rx_ring_full;
--			if (ifobject->umem->num_frames < XSK_RING_PROD__DEFAULT_NUM_DESCS)
--				expected_stat = ifobject->umem->num_frames - RX_FULL_RXQSIZE;
--			else
--				expected_stat = XSK_RING_PROD__DEFAULT_NUM_DESCS - RX_FULL_RXQSIZE;
+-			test_spec_set_name(test, "STAT_TX_INVALID");
+-			pkt_stream_replace(test, DEFAULT_PKT_CNT, XSK_UMEM__INVALID_FRAME_SIZE);
+-			test->ifobj_tx->validation_func = validate_tx_invalid_descs;
+-			testapp_validate_traffic(test);
++static void testapp_stats_tx_invalid_descs(struct test_spec *test)
++{
++	test_spec_set_name(test, "STAT_TX_INVALID");
++	test->ifobj_tx->pacing_on = false;
++	pkt_stream_replace(test, DEFAULT_PKT_CNT, XSK_UMEM__INVALID_FRAME_SIZE);
++	test->ifobj_tx->validation_func = validate_tx_invalid_descs;
++	testapp_validate_traffic(test);
+ 
+-			pkt_stream_restore_default(test);
 -			break;
 -		case STAT_TEST_RX_FILL_EMPTY:
--			xsk_stat = stats.rx_fill_ring_empty_descs;
+-			test_spec_set_name(test, "STAT_RX_FILL_EMPTY");
+-			test->ifobj_rx->pkt_stream = pkt_stream_generate(test->ifobj_rx->umem, 0,
+-									 MIN_PKT_SIZE);
+-			if (!test->ifobj_rx->pkt_stream)
+-				exit_with_error(ENOMEM);
+-			test->ifobj_rx->pkt_stream->use_addr_for_fill = true;
+-			test->ifobj_rx->validation_func = validate_fill_empty;
+-			testapp_validate_traffic(test);
+-
+-			pkt_stream_restore_default(test);
 -			break;
 -		default:
 -			break;
 -		}
-+	if (stats.rx_dropped == ifobject->pkt_stream->nb_pkts)
-+		return TEST_PASS;
++	pkt_stream_restore_default(test);
++}
  
--		if (xsk_stat == expected_stat)
--			return TEST_PASS;
+-		if (test->fail)
+-			break;
 -	}
-+	return TEST_CONTINUE;
-+}
-+
-+static int validate_rx_full(struct ifobject *ifobject)
++static void testapp_stats_rx_full(struct test_spec *test)
 +{
-+	struct xsk_socket *xsk = ifobject->xsk->xsk;
-+	struct xdp_statistics stats;
-+	u32 expected_stat;
-+	int err;
-+
-+	kick_rx(ifobject->xsk);
-+
-+	err = get_xsk_stats(xsk, &stats);
-+	if (err)
-+		return TEST_FAILURE;
-+
-+	if (ifobject->umem->num_frames < XSK_RING_PROD__DEFAULT_NUM_DESCS)
-+		expected_stat = ifobject->umem->num_frames - RX_FULL_RXQSIZE;
-+	else
-+		expected_stat = XSK_RING_PROD__DEFAULT_NUM_DESCS - RX_FULL_RXQSIZE;
-+
-+	if (stats.rx_ring_full == expected_stat)
-+		return TEST_PASS;
-+
-+	return TEST_CONTINUE;
++	test_spec_set_name(test, "STAT_RX_FULL");
++	test->ifobj_tx->pacing_on = false;
++	test->ifobj_rx->xsk->rxqsize = RX_FULL_RXQSIZE;
++	test->ifobj_rx->validation_func = validate_rx_full;
++	testapp_validate_traffic(test);
 +}
-+
-+static int validate_fill_empty(struct ifobject *ifobject)
-+{
-+	struct xsk_socket *xsk = ifobject->xsk->xsk;
-+	struct xdp_statistics stats;
-+	int err;
-+
-+	kick_rx(ifobject->xsk);
-+
-+	err = get_xsk_stats(xsk, &stats);
-+	if (err)
-+		return TEST_FAILURE;
-+
-+	if (stats.rx_fill_ring_empty_descs == ifobject->pkt_stream->nb_pkts)
-+		return TEST_PASS;
  
- 	return TEST_CONTINUE;
+-	/* To only see the whole stat set being completed unless an individual test fails. */
+-	test_spec_set_name(test, "STATS");
++static void testapp_stats_fill_empty(struct test_spec *test)
++{
++	test_spec_set_name(test, "STAT_RX_FILL_EMPTY");
++	test->ifobj_tx->pacing_on = false;
++	test->ifobj_rx->pkt_stream = pkt_stream_generate(test->ifobj_rx->umem, 0, MIN_PKT_SIZE);
++	if (!test->ifobj_rx->pkt_stream)
++		exit_with_error(ENOMEM);
++	test->ifobj_rx->pkt_stream->use_addr_for_fill = true;
++	test->ifobj_rx->validation_func = validate_fill_empty;
++	testapp_validate_traffic(test);
++
++	pkt_stream_restore_default(test);
  }
  
--static int tx_stats_validate(struct ifobject *ifobject)
-+static int validate_tx_invalid_descs(struct ifobject *ifobject)
+ /* Simple test */
+@@ -1482,14 +1470,18 @@ static void init_iface(struct ifobject *ifobj, const char *dst_mac, const char *
+ 
+ static void run_pkt_test(struct test_spec *test, enum test_mode mode, enum test_type type)
  {
- 	struct xsk_socket *xsk = ifobject->xsk->xsk;
- 	int fd = xsk_socket__fd(xsk);
-@@ -1106,8 +1143,8 @@ static void *worker_testapp_validate_tx(void *arg)
- 		goto out;
- 	}
- 
--	if (stat_test_type == STAT_TEST_TX_INVALID) {
--		err = tx_stats_validate(ifobject);
-+	if (ifobject->validation_func) {
-+		err = ifobject->validation_func(ifobject);
- 		report_failure(test);
- 	}
- 
-@@ -1165,9 +1202,9 @@ static void *worker_testapp_validate_rx(void *arg)
- 
- 	pthread_barrier_wait(&barr);
- 
--	if (test_type == TEST_TYPE_STATS) {
-+	if (ifobject->validation_func) {
- 		do {
--			err = rx_stats_validate(ifobject);
-+			err = ifobject->validation_func(ifobject);
- 		} while (err == TEST_CONTINUE);
- 	} else {
- 		err = receive_pkts(ifobject, &fds);
-@@ -1302,16 +1339,19 @@ static void testapp_stats(struct test_spec *test)
- 			test_spec_set_name(test, "STAT_RX_DROPPED");
- 			test->ifobj_rx->umem->frame_headroom = test->ifobj_rx->umem->frame_size -
- 				XDP_PACKET_HEADROOM - 1;
-+			test->ifobj_rx->validation_func = validate_rx_dropped;
- 			testapp_validate_traffic(test);
- 			break;
- 		case STAT_TEST_RX_FULL:
- 			test_spec_set_name(test, "STAT_RX_FULL");
- 			test->ifobj_rx->xsk->rxqsize = RX_FULL_RXQSIZE;
-+			test->ifobj_rx->validation_func = validate_rx_full;
- 			testapp_validate_traffic(test);
- 			break;
- 		case STAT_TEST_TX_INVALID:
- 			test_spec_set_name(test, "STAT_TX_INVALID");
- 			pkt_stream_replace(test, DEFAULT_PKT_CNT, XSK_UMEM__INVALID_FRAME_SIZE);
-+			test->ifobj_tx->validation_func = validate_tx_invalid_descs;
- 			testapp_validate_traffic(test);
- 
- 			pkt_stream_restore_default(test);
-@@ -1323,6 +1363,7 @@ static void testapp_stats(struct test_spec *test)
- 			if (!test->ifobj_rx->pkt_stream)
- 				exit_with_error(ENOMEM);
- 			test->ifobj_rx->pkt_stream->use_addr_for_fill = true;
-+			test->ifobj_rx->validation_func = validate_fill_empty;
- 			testapp_validate_traffic(test);
- 
- 			pkt_stream_restore_default(test);
+-	test_type = type;
+-
+-	/* reset defaults after potential previous test */
+-	stat_test_type = -1;
+-
+-	switch (test_type) {
+-	case TEST_TYPE_STATS:
+-		testapp_stats(test);
++	switch (type) {
++	case TEST_TYPE_STATS_RX_DROPPED:
++		testapp_stats_rx_dropped(test);
++		break;
++	case TEST_TYPE_STATS_TX_INVALID_DESCS:
++		testapp_stats_tx_invalid_descs(test);
++		break;
++	case TEST_TYPE_STATS_RX_FULL:
++		testapp_stats_rx_full(test);
++		break;
++	case TEST_TYPE_STATS_FILL_EMPTY:
++		testapp_stats_fill_empty(test);
+ 		break;
+ 	case TEST_TYPE_TEARDOWN:
+ 		testapp_teardown(test);
 diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
-index 79ba344d2765..f271c7b35a2c 100644
+index f271c7b35a2c..bf18a95be48c 100644
 --- a/tools/testing/selftests/bpf/xdpxceiver.h
 +++ b/tools/testing/selftests/bpf/xdpxceiver.h
-@@ -130,6 +130,8 @@ struct pkt_stream {
- 	bool use_addr_for_fill;
+@@ -77,24 +77,16 @@ enum test_type {
+ 	TEST_TYPE_HEADROOM,
+ 	TEST_TYPE_TEARDOWN,
+ 	TEST_TYPE_BIDI,
+-	TEST_TYPE_STATS,
++	TEST_TYPE_STATS_RX_DROPPED,
++	TEST_TYPE_STATS_TX_INVALID_DESCS,
++	TEST_TYPE_STATS_RX_FULL,
++	TEST_TYPE_STATS_FILL_EMPTY,
+ 	TEST_TYPE_BPF_RES,
+ 	TEST_TYPE_MAX
  };
  
-+struct ifobject;
-+typedef int (*validation_func_t)(struct ifobject *ifobj);
- typedef void *(*thread_func_t)(void *arg);
+-enum stat_test_type {
+-	STAT_TEST_RX_DROPPED,
+-	STAT_TEST_TX_INVALID,
+-	STAT_TEST_RX_FULL,
+-	STAT_TEST_RX_FILL_EMPTY,
+-	STAT_TEST_TYPE_MAX
+-};
+-
+ static bool opt_pkt_dump;
+-static int test_type;
+-
+ static bool opt_verbose;
+-static int stat_test_type;
  
- struct ifobject {
-@@ -139,6 +141,7 @@ struct ifobject {
- 	struct xsk_socket_info *xsk_arr;
- 	struct xsk_umem_info *umem;
- 	thread_func_t func_ptr;
-+	validation_func_t validation_func;
- 	struct pkt_stream *pkt_stream;
- 	int ns_fd;
- 	int xsk_map_fd;
+ struct xsk_umem_info {
+ 	struct xsk_ring_prod fq;
 -- 
 2.34.1
 
