@@ -2,138 +2,278 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 564125227D1
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 01:51:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE52C522802
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 01:59:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236944AbiEJXvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 19:51:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
+        id S238930AbiEJX7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 19:59:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238645AbiEJXvI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 19:51:08 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD42F366B8
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 16:51:06 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id be20so539998edb.12
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 16:51:06 -0700 (PDT)
+        with ESMTP id S239050AbiEJX7M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 19:59:12 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6527F227B4A;
+        Tue, 10 May 2022 16:58:46 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id r27so482266iot.1;
+        Tue, 10 May 2022 16:58:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=s7uQP88rm2fFVrAVhakdMnaytPLChwV+spwEqxpvxKE=;
-        b=Wvb2Yr5ntSMikIY6rsVTXCZINVsgnvf5OHdXaS5WophjI51WFvB8FsxEaYv1RdGkSy
-         ORGLa02GFQN4jWiwyp35UkGxqCVY8hbh1eV9xU7ToJNJzjVWjhEYOqjgamybrHXG8cWb
-         TwhAiglLuZCkojR6K6YA46HDyLB6G+PqIX51A=
+        bh=LIfUjAZIEHf1KpjRZvZJrcDVb3Re8H1xsX5MJbeUAFQ=;
+        b=DbZhSiXenRB3CYAjj8DHcI3kJDszgmwNu6Cki9CzC+BANO5R/hOz87iyPlo9lVPLoh
+         Z8jW++G8gnHoGrpFJc1LK9rlqOyyDe2c5qZqFY5fFv7xKaFxGlKJnCUEVYaWHKPEMLRH
+         s0Ge5gA3x8jnJucDEiHFjR2waJgqGglF4cdVi9yLiHsk++SWwhrxWKQ+SU0b1q4RmiSI
+         RdXZZf0kjdDZRyf40rXAwtSCXi1Xm2zPpZXcLMDZ8syWtFD/m/KBlKzZ/Oso0fwTrpnu
+         UKdhjn8FHSnC7Uk1uD7Dl2mYKDcSzfSQsHGcohgfhuegHjexYizOWI0atSZUtz94lO6B
+         qGlg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=s7uQP88rm2fFVrAVhakdMnaytPLChwV+spwEqxpvxKE=;
-        b=MdKT/BhanABdbs6yACudT84+3zuNOPtFy5+WR+v4eBhzbo6jvCXM7frMg7dKSKT29a
-         xSmgz779RUqEiDBdRZULk21NjSlzEON8qSYMpbf/U4Gngz7HQBYeFv4VNU6P5TWTidYF
-         lCa6Q0Alfnml7zCz6D0vLjytHV/KK06H5HbEZi3A2AvOH817daoC2ph3iSOdaq/z8scJ
-         sgg6eZZc3QwvyCs7pIFRUK/wkrXfocMU2LHLttoSVJvAbvSyZ+nXo43cJpYPsOfSJ43f
-         hxc2t43g1vUrks/nngn/b2hXthtgIFvxpOCQ0JxRX5EBtBZJ537FlW98PH8KqiOmA2F1
-         Nvyg==
-X-Gm-Message-State: AOAM533UCpnzz2jwu3AUSRSJVQzbLgURefthOxCR1fGGy+Guts1s2d43
-        WY4IuGqgenS1ZIekQGznOoRzLEgT816VgjgzDPc=
-X-Google-Smtp-Source: ABdhPJztD0mzLuuU2JtTw+WUWwXzkbk2Gxpqezb9D/9l3Pzbh/fu/gduE3iJgx/5dcD84NWx5raS9w==
-X-Received: by 2002:a05:6402:350f:b0:428:43a1:647d with SMTP id b15-20020a056402350f00b0042843a1647dmr25906845edd.62.1652226665218;
-        Tue, 10 May 2022 16:51:05 -0700 (PDT)
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com. [209.85.128.45])
-        by smtp.gmail.com with ESMTPSA id b15-20020a170906660f00b006f39ffe23fdsm305624ejp.0.2022.05.10.16.51.03
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 May 2022 16:51:04 -0700 (PDT)
-Received: by mail-wm1-f45.google.com with SMTP id bd25-20020a05600c1f1900b0039485220e16so2013262wmb.0
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 16:51:03 -0700 (PDT)
-X-Received: by 2002:a1c:4c06:0:b0:394:65c4:bd03 with SMTP id
- z6-20020a1c4c06000000b0039465c4bd03mr2167400wmf.8.1652226663399; Tue, 10 May
- 2022 16:51:03 -0700 (PDT)
+        bh=LIfUjAZIEHf1KpjRZvZJrcDVb3Re8H1xsX5MJbeUAFQ=;
+        b=e9BF3PLSDCXtLba4xLinxQtLkKhrvHxbVUjvviEuw8RD/+3lk7QiPJC+0f9jdYMc5t
+         R3L1o0bJh9VjI2aPJopwbE2F5tt9Gg1RP/IG0g/9n3bsgehXCEeCapkGMXT0bV+l19Km
+         GopxfvDnsyD0/X9DriXYRGrAObLmM8j9Y8PSF/eVooMSDj4s8NLELg9ctxqi7zwyEerh
+         HsT6s6MfWas9gjmVYHS7xSQTNPCelh8hHKaNE4AlBtX3KwBl2FmlXt7AYpAvcK7SsHLH
+         h1dyJELnTMgvx/1BPsvxTOB2KBJJuiCfFVJncbZp4reaH4EcJX/Pq8ZusRNuN2txMCuy
+         u5RQ==
+X-Gm-Message-State: AOAM530nr9KZ0zKixvwilNKv0CEYcRtqaDqmn9R1B0X82MEwy70Z9XVL
+        5kY99aZHG1dygR/D23+CnFrZymLaQvgJJUbINXw=
+X-Google-Smtp-Source: ABdhPJxhi0mRHy7O3mol15xME9VrLH+gtnYjGV2KknrggjSISwlb6ABLMy7j08qK7u26OQoAOY6XQEKJ4Rz7RizW/7U=
+X-Received: by 2002:a05:6602:2acd:b0:65a:9f9d:23dc with SMTP id
+ m13-20020a0566022acd00b0065a9f9d23dcmr9636596iov.154.1652227125788; Tue, 10
+ May 2022 16:58:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220510082351-mutt-send-email-mst@kernel.org>
- <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com> <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X>
-In-Reply-To: <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 10 May 2022 16:50:47 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
-Message-ID: <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
-Subject: Re: [GIT PULL] virtio: last minute fixup
-To:     Nathan Chancellor <nathan@kernel.org>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
+References: <20220502211235.142250-1-mathew.j.martineau@linux.intel.com>
+ <20220502211235.142250-7-mathew.j.martineau@linux.intel.com> <e024cde0-70ad-5332-1818-e6af77509a8c@linux.intel.com>
+In-Reply-To: <e024cde0-70ad-5332-1818-e6af77509a8c@linux.intel.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 10 May 2022 16:58:34 -0700
+Message-ID: <CAEf4BzY5GPzdZbFXKKhsCNubsJKp-ROB-iLVHz=9v6FOkt_r0Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 6/8] selftests: bpf: verify token of struct mptcp_sock
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, mptcp@lists.linux.dev,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 4:12 PM Nathan Chancellor <nathan@kernel.org> wrote:
+On Tue, May 10, 2022 at 2:59 PM Mat Martineau
+<mathew.j.martineau@linux.intel.com> wrote:
 >
-> For what it's worth, as someone who is frequently tracking down and
-> reporting issues, a link to the mailing list post in the commit message
-> makes it much easier to get these reports into the right hands, as the
-> original posting is going to have all relevant parties in one location
-> and it will usually have all the context necessary to triage the
-> problem.
+> On Mon, 2 May 2022, Mat Martineau wrote:
+>
+> > From: Geliang Tang <geliang.tang@suse.com>
+> >
+> > This patch verifies the struct member token of struct mptcp_sock. Add a
+> > new function get_msk_token() to parse the msk token from the output of
+> > the command 'ip mptcp monitor', and verify it in verify_msk().
+> >
+> > Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> > Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+> > Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> > ---
+> > .../testing/selftests/bpf/bpf_mptcp_helpers.h |  1 +
+> > .../testing/selftests/bpf/prog_tests/mptcp.c  | 66 +++++++++++++++++++
+> > .../testing/selftests/bpf/progs/mptcp_sock.c  |  5 ++
+> > 3 files changed, 72 insertions(+)
+> >
+> > diff --git a/tools/testing/selftests/bpf/bpf_mptcp_helpers.h b/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+> > index 18da4cc65e89..87e15810997d 100644
+> > --- a/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+> > +++ b/tools/testing/selftests/bpf/bpf_mptcp_helpers.h
+> > @@ -9,6 +9,7 @@
+> > struct mptcp_sock {
+> >       struct inet_connection_sock     sk;
+> >
+> > +     __u32           token;
+> > } __attribute__((preserve_access_index));
+> >
+> > #endif
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/mptcp.c b/tools/testing/selftests/bpf/prog_tests/mptcp.c
+> > index 4b40bbdaf91f..c5d96ba81e04 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/mptcp.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/mptcp.c
+> > @@ -8,8 +8,11 @@
+> > struct mptcp_storage {
+> >       __u32 invoked;
+> >       __u32 is_mptcp;
+> > +     __u32 token;
+> > };
+> >
+> > +static char monitor_log_path[64];
+> > +
+> > static int verify_tsk(int map_fd, int client_fd)
+> > {
+> >       char *msg = "plain TCP socket";
+> > @@ -36,11 +39,58 @@ static int verify_tsk(int map_fd, int client_fd)
+> >       return err;
+> > }
+> >
+> > +/*
+> > + * Parse the token from the output of 'ip mptcp monitor':
+> > + *
+> > + * [       CREATED] token=3ca933d3 remid=0 locid=0 saddr4=127.0.0.1 ...
+> > + * [       CREATED] token=2ab57040 remid=0 locid=0 saddr4=127.0.0.1 ...
+> > + */
+> > +static __u32 get_msk_token(void)
+> > +{
+> > +     char *prefix = "[       CREATED] token=";
+> > +     char buf[BUFSIZ] = {};
+> > +     __u32 token = 0;
+> > +     ssize_t len;
+> > +     int fd;
+> > +
+> > +     sync();
+> > +
+> > +     fd = open(monitor_log_path, O_RDONLY);
+> > +     if (CHECK_FAIL(fd < 0)) {
+> > +             log_err("Failed to open %s", monitor_log_path);
+> > +             return token;
+> > +     }
+> > +
+> > +     len = read(fd, buf, sizeof(buf));
+> > +     if (CHECK_FAIL(len < 0)) {
+> > +             log_err("Failed to read %s", monitor_log_path);
+> > +             goto err;
+> > +     }
+> > +
+> > +     if (strncmp(buf, prefix, strlen(prefix))) {
+> > +             log_err("Invalid prefix %s", buf);
+> > +             goto err;
+> > +     }
+> > +
+> > +     token = strtol(buf + strlen(prefix), NULL, 16);
+> > +
+> > +err:
+> > +     close(fd);
+> > +     return token;
+> > +}
+> > +
+> > static int verify_msk(int map_fd, int client_fd)
+> > {
+> >       char *msg = "MPTCP subflow socket";
+> >       int err = 0, cfd = client_fd;
+> >       struct mptcp_storage val;
+> > +     __u32 token;
+> > +
+> > +     token = get_msk_token();
+> > +     if (token <= 0) {
+> > +             log_err("Unexpected token %x", token);
+> > +             return -1;
+> > +     }
+> >
+> >       if (CHECK_FAIL(bpf_map_lookup_elem(map_fd, &cfd, &val) < 0)) {
+> >               perror("Failed to read socket storage");
+> > @@ -59,6 +109,12 @@ static int verify_msk(int map_fd, int client_fd)
+> >               err++;
+> >       }
+> >
+> > +     if (val.token != token) {
+> > +             log_err("Unexpected mptcp_sock.token %x != %x",
+> > +                     val.token, token);
+> > +             err++;
+> > +     }
+> > +
+> >       return err;
+> > }
+> >
+> > @@ -124,6 +180,7 @@ static int run_test(int cgroup_fd, int server_fd, bool is_mptcp)
+> >
+> > void test_base(void)
+> > {
+> > +     char cmd[256], tmp_dir[] = "/tmp/XXXXXX";
+> >       int server_fd, cgroup_fd;
+> >
+> >       cgroup_fd = test__join_cgroup("/mptcp");
+> > @@ -141,6 +198,13 @@ void test_base(void)
+> >
+> > with_mptcp:
+> >       /* with MPTCP */
+>
+> Geliang, could you add a check here that skips this test (instead of
+> failing) if the 'ip mptcp monitor' command is not supported?
+>
+> Checking the exit status of "ip mptcp help 2>&1 | grep monitor" should
+> work.
+>
 
-Honestly, I think such a thing would be trivial to automate with
-something like just a patch-id lookup, rather than a "Link:".
+Ilya actually already generated updated image, and after [0] it should
+be used in CI runs. But we'll know for sure with your next MPTCP
+submission.
 
-And such a lookup model ("where was this patch posted") would work for
-<i>any</i> patch (and often also find previous unmodified versions of
-it when it has been posted multiple times).
+  [0] https://github.com/libbpf/ci/pull/16
 
-I suspect that most of the building blocks of such automation
-effectively already exists, since I think the lore infrastructure
-already integrates with patchwork, and patchwork already has a "look
-up by patch id".
-
-Wouldn't it be cool if you had some webby interface to just go from
-commit SHA1 to patch ID to a lore.kernel.org lookup of where said
-patch was done?
-
-Of course, I personally tend to just search by the commit contents
-instead, which works just about as well. If the first line of the
-commit isn't very unique, add a "f:author" to the search.
-
-IOW, I really don't find much value in the "Link to original
-submission", because that thing is *already* trivial to find, and the
-lore search is actually better in many ways (it also tends to find
-people *reporting* that commit, which is often what you really want -
-the reason you're doing the search is that there's something going on
-with it).
-
-My argument here really is that "find where this commit was posted" is
-
- (a) not generally the most interesting thing
-
- (b) doesn't even need that "Link:" line.
-
-but what *is* interesting, and where the "Link:" line is very useful,
-is finding where the original problem that *caused* that patch to be
-posted in the first place.
-
-Yes, obviously you can find that original problem by searching too if
-the commit message has enough other information.
-
-For example, if there is an oops quoted in the commit message, I have
-personally searched for parts of that kind of information to find the
-original report and discussion.
-
-So that whole "searching is often an option" is true for pretty much
-_any_ Link:, but I think that for the whole "original submission" it's
-so mindless and can be automated that it really doesn't add much real
-value at all.
-
-                Linus
+> Thanks,
+>
+> Mat
+>
+> > +     if (CHECK_FAIL(!mkdtemp(tmp_dir)))
+> > +             goto close_cgroup_fd;
+> > +     snprintf(monitor_log_path, sizeof(monitor_log_path),
+> > +              "%s/ip_mptcp_monitor", tmp_dir);
+> > +     snprintf(cmd, sizeof(cmd), "ip mptcp monitor > %s &", monitor_log_path);
+> > +     if (CHECK_FAIL(system(cmd)))
+> > +             goto close_cgroup_fd;
+> >       server_fd = start_mptcp_server(AF_INET, NULL, 0, 0);
+> >       if (CHECK_FAIL(server_fd < 0))
+> >               goto close_cgroup_fd;
+> > @@ -148,6 +212,8 @@ void test_base(void)
+> >       CHECK_FAIL(run_test(cgroup_fd, server_fd, true));
+> >
+> >       close(server_fd);
+> > +     snprintf(cmd, sizeof(cmd), "rm -rf %s", tmp_dir);
+> > +     system(cmd);
+> >
+> > close_cgroup_fd:
+> >       close(cgroup_fd);
+> > diff --git a/tools/testing/selftests/bpf/progs/mptcp_sock.c b/tools/testing/selftests/bpf/progs/mptcp_sock.c
+> > index 7b6a25e37de8..c58c191d8416 100644
+> > --- a/tools/testing/selftests/bpf/progs/mptcp_sock.c
+> > +++ b/tools/testing/selftests/bpf/progs/mptcp_sock.c
+> > @@ -12,6 +12,7 @@ extern bool CONFIG_MPTCP __kconfig;
+> > struct mptcp_storage {
+> >       __u32 invoked;
+> >       __u32 is_mptcp;
+> > +     __u32 token;
+> > };
+> >
+> > struct {
+> > @@ -46,6 +47,8 @@ int _sockops(struct bpf_sock_ops *ctx)
+> >                                            BPF_SK_STORAGE_GET_F_CREATE);
+> >               if (!storage)
+> >                       return 1;
+> > +
+> > +             storage->token = 0;
+> >       } else {
+> >               if (!CONFIG_MPTCP)
+> >                       return 1;
+> > @@ -58,6 +61,8 @@ int _sockops(struct bpf_sock_ops *ctx)
+> >                                            BPF_SK_STORAGE_GET_F_CREATE);
+> >               if (!storage)
+> >                       return 1;
+> > +
+> > +             storage->token = msk->token;
+> >       }
+> >       storage->invoked++;
+> >       storage->is_mptcp = tcp_sk->is_mptcp;
+> > --
+> > 2.36.0
+> >
+> >
+>
+> --
+> Mat Martineau
+> Intel
