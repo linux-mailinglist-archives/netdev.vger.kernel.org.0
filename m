@@ -2,82 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6950E52100D
-	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 10:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9120552101C
+	for <lists+netdev@lfdr.de>; Tue, 10 May 2022 10:56:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238275AbiEJIzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 04:55:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55440 "EHLO
+        id S238280AbiEJJAH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 05:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238233AbiEJIzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 04:55:11 -0400
-Received: from mail-io1-f70.google.com (mail-io1-f70.google.com [209.85.166.70])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 233673DDD8
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:51:14 -0700 (PDT)
-Received: by mail-io1-f70.google.com with SMTP id r17-20020a0566022b9100b00654b99e71dbso11462986iov.3
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:51:14 -0700 (PDT)
+        with ESMTP id S235262AbiEJJAH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 05:00:07 -0400
+Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39B9F17909A
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:56:09 -0700 (PDT)
+Received: by mail-wr1-x430.google.com with SMTP id x18so22831046wrc.0
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 01:56:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=4tRLxiEfapdgf/U9EFVjBVGgvdBx2RQ6+Dq8TsNOap0=;
+        b=AzZNu7PTvcDrdFdSll+dUFp4ykSuCofrARtqVU8gFVIchsq6v9dDMPs1JKNG6iebpO
+         VJB9tIRy/bRDsJ4CCHJSXn1cXZEOVd/OAtK6FPU6x2w+P5mywtavA9gQ2ZLyl6tWzWAV
+         NASZpn+vnKZdN2WVRrrYWrFsYxpuNJ7dCSDI03BH+s7/ccugVmVoC1pRJXk/QEcnFazA
+         sSUhfYTODt04lqERkc1kmNaxCrcU4zdAR/akoZHq3KH88C4TFPZNmYAGMQ5u5YXbG2eW
+         OZOEIVA7ZnDAeS+LJqPMrWxlPUSSCQ763YEfRqvhjY3BUcXNgMRK7qXb1jzxAjl6duos
+         zpjA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=gEeJNjfS0q6RM62Nvi60TGEoWat+e1zZfxTGA+WRzSY=;
-        b=0rRWi3CX1S+prI+SGqTl0X0U3xH6IbhEN6nINONfcB2mBkC2HzDfq3DUzMl9HUVwxm
-         o3Kmt0FOg/4LK9FM/uy3oreLNjb3mnx3CS43xDnLo91YkoVhWWK7ZvzmSC4DDxD3D8tf
-         8MyXA6SFW46W18nt+US4J9Hw34lANICRO7oCI74jq9GCmUe2JL+6OE4gKlJ0D6yxh6Y4
-         suOsx04EopweHf2a2iBIv9EsusSTM0oIYNhtTIZgrW6AJgZ3tZo148hQuSmsZg/RIYg9
-         O52R+n5ygwZcfhm3HGfugs+UNtP0jyd93W0SDmaD/DjA7ze6SlKteCQS4z6HTL0hsUeS
-         2osg==
-X-Gm-Message-State: AOAM531WaFemJGoEMH5QQkJL8kJcFcRexUkzsRZXvVD45gCMP1VdALd7
-        eR69ArpeNxO4s7BZ1QrR0JiSmXy/7Am8r9Mfbtdx5iV0Jku4
-X-Google-Smtp-Source: ABdhPJymd70zSLRupmjht8i7wwnCSSg/9t9Ls3kE6/21v2tdD1hcmHlI4ApXwuuuEnn2Izn9LJhqsv6m4l19IZnSt7QWs+/iF9HJ
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=4tRLxiEfapdgf/U9EFVjBVGgvdBx2RQ6+Dq8TsNOap0=;
+        b=WfxEsS/YX+F26C/rU1Xbfe+O2h5Bh9RNn0AEEwH1HG2sjQ/5P2ic3L65OIgrRNhRa2
+         369wVax2Tft6qDM6iYJAd22jNrJqNOqRv+PMJvHVWtbzrhivuazQXG37k0Go0TpomFiE
+         XZyoZpIYjJ7Li3WTdgUTYlhQLTNyk7ymgbEiUdT3zrnW0Eg7KTh6t5rrp+SR8KJc6QbS
+         Xzd2G1qP/fNZE+ZWgDLS7OYJEXovQXKNc2L9JlOsFzJSO3S5IxnyGtcErTXVwv/ND1LR
+         FlRVNzgfv4x4m5zJSWrk8F2dCmRVFOUDYWHf6FJcq5nFhZ2TGiOaNKodjsDSJQDMBi1V
+         IOYQ==
+X-Gm-Message-State: AOAM532DmouZJ/GWyZLEQZlJD9jiE9UVIvW01jIuR6nH8lVyNdfjBGn1
+        EkSTjz0znv6CakUZ90vPGsTfig==
+X-Google-Smtp-Source: ABdhPJxuOQwh+vy+SrhwKCobqjdicffWh+KMHB3k94CeBPEwDRucEYh3ezPgIDGmrFzt+N9F3JdJuA==
+X-Received: by 2002:a05:6000:786:b0:20c:d72e:ad3c with SMTP id bu6-20020a056000078600b0020cd72ead3cmr1347185wrb.67.1652172967768;
+        Tue, 10 May 2022 01:56:07 -0700 (PDT)
+Received: from [192.168.17.225] (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
+        by smtp.gmail.com with ESMTPSA id j33-20020a05600c1c2100b003942a244ec9sm2560804wms.14.2022.05.10.01.56.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 May 2022 01:56:07 -0700 (PDT)
+Message-ID: <1bc46272-f26b-14a5-0139-a987b47a5814@solid-run.com>
+Date:   Tue, 10 May 2022 11:56:06 +0300
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:218b:b0:2cd:fb28:5417 with SMTP id
- j11-20020a056e02218b00b002cdfb285417mr9002492ila.83.1652172673463; Tue, 10
- May 2022 01:51:13 -0700 (PDT)
-Date:   Tue, 10 May 2022 01:51:13 -0700
-In-Reply-To: <000000000000402c5305ab0bd2a2@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000004f3c0d05dea46dac@google.com>
-Subject: Re: [syzbot] INFO: task hung in synchronize_rcu (3)
-From:   syzbot <syzbot+0c6da80218456f1edc36@syzkaller.appspotmail.com>
-To:     akpm@linux-foundation.org, davem@davemloft.net, jhs@mojatatu.com,
-        jiri@resnulli.us, kvm@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mingo@elte.hu, mlevitsk@redhat.com, netdev@vger.kernel.org,
-        pbonzini@redhat.com, peterz@infradead.org, seanjc@google.com,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        vinicius.gomes@intel.com, viro@zeniv.linux.org.uk,
-        xiyou.wangcong@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH RFC] net: sfp: support assigning status LEDs to SFP
+ connectors
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+References: <20220509122938.14651-1-josua@solid-run.com>
+ <YnkN954Wb7ioPkru@lunn.ch>
+From:   Josua Mayer <josua@solid-run.com>
+In-Reply-To: <YnkN954Wb7ioPkru@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
 
-commit 2d08935682ac5f6bfb70f7e6844ec27d4a245fa4
-Author: Sean Christopherson <seanjc@google.com>
-Date:   Fri Apr 15 00:43:41 2022 +0000
+Am 09.05.22 um 15:49 schrieb Andrew Lunn:
+> On Mon, May 09, 2022 at 03:29:38PM +0300, Josua Mayer wrote:
+>> Dear Maintainers,
+>>
+>> I am working on a new device based on the LX2160A platform, that exposes
+>> 16 sfp connectors, each with its own led controlled by gpios intended
+>> to show link status.
+> Can you define link status?
+I am still struggling with the lower levels of networking terminology 
+... so I was considering
+when ethtool would report "Link detected: yes".
+>   It is a messy concept with SFPs. Is it
+> !LOS? I guess not, because you would not of used a GPIO, just hard
+> wired it.
+I believe the intention was to decide later what information to visualize.
+In this iteration there is one LED per sfp connector, with one colour.
+But it is conceivable to in the future add more, and use them to 
+indicate e.g. the negotiated speed (10/100/1000/10000).
+> Does it mean the SERDES has sync? Does it reflect the netdev
+> carrier status?
+>
+>> We have found that there is a way in sysfs to echo the name of the network
+>> device to the api of the led driver, and it will start showing link status.
+>> However this has to be done at runtime by the user.
+> Please take a look at the patches Ansuel Smith submitted last week,
+> maybe the week before last.
 
-    KVM: x86: Don't re-acquire SRCU lock in complete_emulated_io()
+Found them. Those are a great pointer - I did not notice the 
+trigger-sources property
+while looking at led documentation and bindings,
+but Documentation/devicetree/bindings/leds/common.yaml does have it.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16dc2e49f00000
-start commit:   ea4424be1688 Merge tag 'mtd/fixes-for-5.17-rc8' of git://g..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=442f8ac61e60a75e
-dashboard link: https://syzkaller.appspot.com/bug?extid=0c6da80218456f1edc36
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1685af9e700000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11b09df1700000
+So what his patch-set proposes covers a large part of my question here, 
+thanks!
 
-If the result looks correct, please mark the issue as fixed by replying with:
+>> On the Layerscape platform in particular these devices are created dynamically
+>> by the networkign coprocessor, which supports complex functions such as
+>> creating one network interface that spans multiple ports.
+> The linux model is that each MAC has a netdev, hence a name. If you
+> need to span multiple ports, you then add a bridge and add the MACs to
+> the bridge. So there should not be an issue here.
+Okay. That will do for the immediate use-case.
+>> It seems to me that the netdev trigger therefore can not properly reflect
+>> the relation between an LED (which is hard-wired to an sfp cage), and the
+>> link state reported by e.g. a phy inside an sfp module.
+> The netdev carrier will correctly reflect this.
+Once the netdev (eth[0-9]+) has been created, all relations are known, yes.
+And because you mentioned above that each MAC has a netdev, it will do.
+E.g. while whatever we plug into the sfp connector changes, the MAC 
+stays where it is - connected to a particular cage.
+>
+>> You may notice that again leds are tied to existence of a particular logical
+>> network interface, which may or may not exist, and may span multiple
+>> physical interfaces in case of layerscape.
+> As far as i'm aware, the in kernel code always has a netdev for each
+> MAC. Are you talking about the vendor stack?
+The coprocessor can be configured both at boot-time and runtime.
+During runtime there is a vendor tool "restool" which can create and 
+destroy network interfaces, which the dpaa2 driver knows to discover and 
+bind to.
 
-#syz fix: KVM: x86: Don't re-acquire SRCU lock in complete_emulated_io()
+Your statement holds, quoting from the dpaa2 driver documentation:
+"... exposes each switch port as a network interface, which can be 
+included in a bridge or used as a standalone interface"
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+I made a false assumption here, Thank you!
+
+> 	Andrew
+sincerely
+Josua Mayer
