@@ -2,98 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A437E522C85
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:46:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27DA2522CAC
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:55:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242286AbiEKGpO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 02:45:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44180 "EHLO
+        id S240819AbiEKGzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 02:55:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56198 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240707AbiEKGpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:45:13 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8170478FEE
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:45:12 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nog5d-0005UM-PD; Wed, 11 May 2022 08:44:53 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 13FD27B124;
-        Wed, 11 May 2022 06:44:51 +0000 (UTC)
-Date:   Wed, 11 May 2022 08:44:50 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Bernard Zhao <zhaojunkui2008@126.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        with ESMTP id S238702AbiEKGzh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:55:37 -0400
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9107A243105;
+        Tue, 10 May 2022 23:55:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=u1j75
+        +jwMktH6WYAlX+Azz8jfD4KSlO2j7a6v1tqq5E=; b=pk1zLcnONLE5+XxUCcVkW
+        TDWFbncfWIPO97BebKB3GOACmwfAjDLvC8mwYbI23TXhPNMb2sIwVFV/VXIxLe53
+        rnXdENFlckqpfTvu0yfnwE7sZedKRakyMvdXDUNgvaX8d3b6AdQBAcuM4OyLukzh
+        4nbFmajLK5H31z8Rx2/VHc=
+Received: from ubuntu.localdomain (unknown [58.213.83.157])
+        by smtp3 (Coremail) with SMTP id DcmowACXS5zBXXtit4LEBQ--.33384S4;
+        Wed, 11 May 2022 14:54:58 +0800 (CST)
+From:   Bernard Zhao <zhaojunkui2008@126.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Stefan =?utf-8?B?TcOkdGpl?= <stefan.maetje@esd.eu>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bernard@vivo.com
-Subject: Re: [PATCH] usb/peak_usb: cleanup code
-Message-ID: <20220511064450.phisxc7ztcc3qkpj@pengutronix.de>
-References: <20220511063850.649012-1-zhaojunkui2008@126.com>
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     bernard@vivo.com, Bernard Zhao <zhaojunkui2008@126.com>
+Subject: [PATCH] intel/i40e: delete if NULL check before dev_kfree_skb
+Date:   Tue, 10 May 2022 23:54:51 -0700
+Message-Id: <20220511065451.655335-1-zhaojunkui2008@126.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="dq7m2atvmyrifx54"
-Content-Disposition: inline
-In-Reply-To: <20220511063850.649012-1-zhaojunkui2008@126.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcmowACXS5zBXXtit4LEBQ--.33384S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrtF1fCw18Wr1UAF1kZrWUurg_yoWfZFc_Cr
+        n7XF1xKw45KwnYqrn8Cr4fu3yjyrZ8W3yrury7t3yfJr9Fyr4UZryDZr95Xw4fWr4rCFy5
+        Aa43t3W7C345AjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRAR6w3UUUUU==
+X-Originating-IP: [58.213.83.157]
+X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiYAP9qlpEHUaynQAAse
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+dev_kfree_skb check if the input parameter NULL and do the right
+thing, there is no need to check again.
+This change is to cleanup the code a bit.
 
---dq7m2atvmyrifx54
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
+---
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-On 10.05.2022 23:38:38, Bernard Zhao wrote:
-> The variable fi and bi only used in branch if (!dev->prev_siblings)
-> , fi & bi not kmalloc in else branch, so move kfree into branch
-> if (!dev->prev_siblings),this change is to cleanup the code a bit.
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index 0eae5858f2fe..98cfadfd0f35 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -1482,10 +1482,8 @@ void i40e_clean_rx_ring(struct i40e_ring *rx_ring)
+ 	if (!rx_ring->rx_bi)
+ 		return;
+ 
+-	if (rx_ring->skb) {
+-		dev_kfree_skb(rx_ring->skb);
+-		rx_ring->skb = NULL;
+-	}
++	dev_kfree_skb(rx_ring->skb);
++	rx_ring->skb = NULL;
+ 
+ 	if (rx_ring->xsk_pool) {
+ 		i40e_xsk_clean_rx_ring(rx_ring);
+-- 
+2.33.1
 
-Please move the variable declaration into that scope, too. Adjust the
-error handling accordingly.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---dq7m2atvmyrifx54
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ7W18ACgkQrX5LkNig
-013BNgf+P67Oin0cXNemqeEdYw4/XZiAPTSqYELYFmJ+aSFuL+/0bT98LwE+3Age
-wuaDlSZrLAYnB8FiOyISV6Hgmqubw46mukSn7KRZUrEyug4ca2U4SbKXU8IyZP9z
-c07Ufpyk3lDSMOunJoyaNt37gF/JiCz7+adtnh3ipvGUy2/VwRdmmundl9U6cC02
-3YawFRwA3Qju7VTYB0oEdA4EnxJ2y5OpnZvnBD1oOu8btEHW1pvptR324KW+NNlm
-hO4/wFzPH37GICxmgUm9kHbBdqA3bZA3PnmbaZHaSSq8jEsgkb2pc9I5+FF8r6cb
-OD0zhBSE5km2+JCEtKQNFBYoFtfOhw==
-=tSaC
------END PGP SIGNATURE-----
-
---dq7m2atvmyrifx54--
