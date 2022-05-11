@@ -2,70 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8A2523365
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:51:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F72152336F
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:53:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242782AbiEKMvq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 08:51:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59202 "EHLO
+        id S236732AbiEKMxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 08:53:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242783AbiEKMvp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:51:45 -0400
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D27D9663EC
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 05:51:43 -0700 (PDT)
-Received: by mail-qv1-xf36.google.com with SMTP id l1so2007623qvh.1
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 05:51:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GsXGnGW71xdRX9TpipcU/BgXrkcWkUlQ6Hr+Y0283Ws=;
-        b=SJKkejdOYKhF2vFLREb+t7eLHhIpRD45lCN4nN5wEWJQugUtw0YzSZkfi22MOUqkJv
-         8G1C3Qi4HsXBluNkNm4uTJTXoY8utMjoPUF7Kfi6GlVA5k0Vfc6TMSTt3intwDiqUgJb
-         HJDfUeNwkOMenrFH4SNbRVVzV7TMh/U0TT5zw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GsXGnGW71xdRX9TpipcU/BgXrkcWkUlQ6Hr+Y0283Ws=;
-        b=wxEXXrOFyx6HhT+FRJ1ESqFdUynIau4XwZ+zh4DVHPdFI7S6fw9jKELtOWq1O4w2wq
-         cgpe9JO2j/RnZofjDys1EDfgqjfgkWe6wWXPvmErtfiuvbQM2hxqK9+vzEhg9pP3JOm+
-         J38AFQ5NVGz0QXGz/LJ7Om+3RATqNfFN53oRlEq4xFKaX2W0vMhrrDcK7k0ek/AwkzxE
-         kyP6sSNbaquZmW3mEjB07u4TmRO1iUHsiw9TloWwvngpB0zI+nx9v/ogjl4MpQ8L2fJS
-         75zKQzbo0wNVLdWrwLfTCZLDrdgZs8k7z50kuCQLrJRIm9ZL2RxliSgFOpTT8EW1yv9B
-         2XjA==
-X-Gm-Message-State: AOAM533QeT+Eq/fxkXIx49k3ZDh5pQnOgouG3ml5f5vjUxQzTKnDS2B0
-        HB9Hz6MiDjk+uG47GKyZ3e+dZA==
-X-Google-Smtp-Source: ABdhPJyRnJ7iURbc5a5x7qz1EEVZLrS8jDAIwKazBun0PBOtERSyijdUXYqUvqXI5wpy65Lj+y2ElQ==
-X-Received: by 2002:a0c:a699:0:b0:45a:b237:e066 with SMTP id t25-20020a0ca699000000b0045ab237e066mr22195445qva.49.1652273502923;
-        Wed, 11 May 2022 05:51:42 -0700 (PDT)
-Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-127.dsl.bell.ca. [216.209.220.127])
-        by smtp.gmail.com with ESMTPSA id h26-20020ac8505a000000b002f39b99f672sm1043718qtm.12.2022.05.11.05.51.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 05:51:42 -0700 (PDT)
-Date:   Wed, 11 May 2022 08:51:40 -0400
-From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
-Subject: Re: [GIT PULL] virtio: last minute fixup
-Message-ID: <20220511125140.ormw47yluv4btiey@meerkat.local>
-References: <20220510082351-mutt-send-email-mst@kernel.org>
- <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
- <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X>
- <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
+        with ESMTP id S231210AbiEKMxt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:53:49 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4113A68308
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 05:53:48 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nolqa-0004z8-Cs; Wed, 11 May 2022 14:53:44 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nolqZ-0003oj-Tj; Wed, 11 May 2022 14:53:43 +0200
+Date:   Wed, 11 May 2022 14:53:43 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
+Message-ID: <20220511125343.GA24267@pengutronix.de>
+References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
+ <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+In-Reply-To: <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 14:41:16 up 42 days,  1:10, 82 users,  load average: 0.08, 0.10,
+ 0.09
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -74,91 +60,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 04:50:47PM -0700, Linus Torvalds wrote:
-> > For what it's worth, as someone who is frequently tracking down and
-> > reporting issues, a link to the mailing list post in the commit message
-> > makes it much easier to get these reports into the right hands, as the
-> > original posting is going to have all relevant parties in one location
-> > and it will usually have all the context necessary to triage the
-> > problem.
+On Wed, May 11, 2022 at 02:38:32PM +0200, Oliver Hartkopp wrote:
+> Hi Oleksij,
 > 
-> Honestly, I think such a thing would be trivial to automate with
-> something like just a patch-id lookup, rather than a "Link:".
-
-I'm not sure that's quite reliable, and I'm speaking from experience of
-running git-patchwork-bot, which attempts to match commits to patches.
-Patch-id has these important disadvantages:
-
-1. git-patch-id can be fragile: if the maintainer changes things like add
-   curly braces, rename a variable, or edit a code comment for clarity, the
-   patch-id stops matching. This happens routinely with git-patchwork-bot,
-   and patchwork uses an even laxer algorithm than git-patch-id. In fact, I
-   had to hack git-patchwork-bot to fall back on Link: tags to match by
-   message-id to address some of the maintainers' complaints.
-
-2. git-patch-id doesn't include author/date/commit message: which can actually
-   be important for establishing provenance and attribution and can confuse
-   automation. E.g. an author submits a patch as part of a large series, gets
-   told to break it apart, then submits it as part of a different series.
-   Automated processes trying to match commits to submissions won't be able to
-   tell from which series the commit came from.
-
-Cregit folks (cregit.linuxsources.org) have encountered all of these and I
-know from talking to them that they are quite happy to have a way to match
-commit provenance to the exact messages in the archives.
-
-> Wouldn't it be cool if you had some webby interface to just go from
-> commit SHA1 to patch ID to a lore.kernel.org lookup of where said
-> patch was done?
-
-Yes, it's https://cregit.linuxsources.org/ and it's... okay. :) It certainly
-doesn't manage to match all commits to patches despite having access to all of
-lore.kernel.org archives.
-
-> My argument here really is that "find where this commit was posted" is
+> On 5/11/22 14:19, Oleksij Rempel wrote:
+> > Add new can_skb_priv::local_origin flag to be able detect egress
+> > packages even if they was sent directly from kernel and not assigned to
+> > some socket.
+> > 
+> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > Cc: Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
+> > ---
+> >   drivers/net/can/dev/skb.c | 3 +++
+> >   include/linux/can/skb.h   | 1 +
+> >   net/can/raw.c             | 2 +-
+> >   3 files changed, 5 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
+> > index 61660248c69e..3e2357fb387e 100644
+> > --- a/drivers/net/can/dev/skb.c
+> > +++ b/drivers/net/can/dev/skb.c
+> > @@ -63,6 +63,7 @@ int can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
+> >   		/* save frame_len to reuse it when transmission is completed */
+> >   		can_skb_prv(skb)->frame_len = frame_len;
+> > +		can_skb_prv(skb)->local_origin = true;
+> >   		skb_tx_timestamp(skb);
+> > @@ -200,6 +201,7 @@ struct sk_buff *alloc_can_skb(struct net_device *dev, struct can_frame **cf)
+> >   	can_skb_reserve(skb);
+> >   	can_skb_prv(skb)->ifindex = dev->ifindex;
+> >   	can_skb_prv(skb)->skbcnt = 0;
+> > +	can_skb_prv(skb)->local_origin = false;
+> >   	*cf = skb_put_zero(skb, sizeof(struct can_frame));
+> > @@ -231,6 +233,7 @@ struct sk_buff *alloc_canfd_skb(struct net_device *dev,
+> >   	can_skb_reserve(skb);
+> >   	can_skb_prv(skb)->ifindex = dev->ifindex;
+> >   	can_skb_prv(skb)->skbcnt = 0;
+> > +	can_skb_prv(skb)->local_origin = false;
 > 
->  (a) not generally the most interesting thing
+> IMO this patch does not work as intended.
 > 
->  (b) doesn't even need that "Link:" line.
+> You probably need to revisit every place where can_skb_reserve() is used,
+> e.g. in raw_sendmsg().
 > 
-> but what *is* interesting, and where the "Link:" line is very useful,
-> is finding where the original problem that *caused* that patch to be
-> posted in the first place.
+> E.g. to make it work for virtual CAN and vxcan interfaces.
 
-I think the disconnect here is that you're approaching this from the
-perspective of a human being, while what many want is a dumb and reliable way
-to match commits to ML submissions, which will allow improving unattended
-automation.
+ok, i'll take a look on it.
 
-> So that whole "searching is often an option" is true for pretty much
-> _any_ Link:, but I think that for the whole "original submission" it's
-> so mindless and can be automated that it really doesn't add much real
-> value at all.
+> 
+> I'm a bit unsure why we should not stick with the simple skb->sk handling?
 
-Believe me, I've tried, and I really, really like having a fool-proof way to
-match commits directly to the exact ML submissions. :( Even a 99%-reliable
-fuzzy matching algorithm has enough of a failure rate that causes maintainers
-to get annoyed -- I have many "git-patchwork-bot missed this commit"
-complaints in the queue to prove this.
+In case of J1939 we have kernel generate control frames not associated with any
+socket. For example transfer abort messages because no receive socket
+was detected. Or there are multiple receive sockets and attaching to one
+of it make no sense.
 
-I think we should simply disambiguate the trailer added by tooling like b4.
-Instead of using Link:, it can go back to using Message-Id, which is already
-standard with git -- it's trivial for git.kernel.org to link them to
-lore.kernel.org.
-
-Before:
-
-    Signed-off-by: Main Tainer <main.tainer@linux.dev>
-    Link: https://lore.kernel.org/r/CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com
-
-After:
-
-    Signed-off-by: Main Tainer <main.tainer@linux.dev>
-    Message-Id: <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
-
-This would allow people to still use Link: for things like linking to actual
-ML discussions. I know this pollutes commits a bit, but I would argue that
-this is a worthwhile trade-off that allows us to improve our automation and
-better scale maintainers.
-
--K
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
