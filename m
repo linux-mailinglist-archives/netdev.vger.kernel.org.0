@@ -2,92 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FFA8522A19
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 04:56:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0832522A24
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 04:57:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231709AbiEKCzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 22:55:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34472 "EHLO
+        id S232114AbiEKC5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 22:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231633AbiEKCzT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 22:55:19 -0400
-Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DAE3245A1
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 19:55:18 -0700 (PDT)
-Received: by mail-pj1-x1031.google.com with SMTP id e24so965810pjt.2
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 19:55:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=e5TSQmlaIE97V89CsywSF+QHSB2mdkRsJ1zhFO0li3k=;
-        b=HNEmXx5yKJfZlK79TRxc76Fi0dg1ENK4ytkbziq0xdFm88B8LqofYUV3OWGP+OiX9e
-         gyF6OaKmDtkd06comB0u5fpHe7GZiwMZdBWGD/QES/nPdeTSk6TB4zrKSLiV9ak/Igoi
-         0B9vR8GLI6PfuhJK8PmzsxtasCp7ukGcgQPoE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=e5TSQmlaIE97V89CsywSF+QHSB2mdkRsJ1zhFO0li3k=;
-        b=Us9b3kVNJVrCNIxZ+sFNm6prB5fJcpW3yRk7xze9JKHxeeInScVHDA7wtgAhLSpzKE
-         XH7nRzyYZY25oAqZj/QvQ0/BxsXY/70i11Qt1qJS/t2sFhdQiosL0y9jhocurI0aFKZb
-         LaF5HeVIT/BCwW75d/elreC1RjJpUa++FKBGpxZSTm56I+O3H5peCFL2CrXdxmr0SjGB
-         TmU5C++Kti4/24pl4QWHspOWr1rwBvSRAJaM2EaI2kUZ+3yrcSX4Y7otekYBhKsb1NW3
-         l/nWZOqVHw6O3IaHzR9ZT/oKYf+OdSuZWXjMc5XEUlx/FjQTUFhuLPmiQhEH4RefaFhB
-         c0YQ==
-X-Gm-Message-State: AOAM530D3jNmE+0dBg4+BwGcu8xe/G7cxXAMwamdDbwIc4Qne62MJXi4
-        83sUoVQaobhlX1w7RuLsvO/fBg==
-X-Google-Smtp-Source: ABdhPJyrWApA8UEMZpSM6gQ2LnLcbj2vFNyozpreJgBtsJpytNcU29a8WX77PpuOeo9w89z1GTKGkQ==
-X-Received: by 2002:a17:903:2406:b0:158:f6f0:6c44 with SMTP id e6-20020a170903240600b00158f6f06c44mr23227935plo.88.1652237717893;
-        Tue, 10 May 2022 19:55:17 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id ft16-20020a17090b0f9000b001dc1e6db7c2sm2570541pjb.57.2022.05.10.19.55.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 19:55:17 -0700 (PDT)
-Date:   Tue, 10 May 2022 19:55:16 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Coco Li <lixiaoyan@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>
-Subject: Re: [PATCH v5 net-next 13/13] mlx5: support BIG TCP packets
-Message-ID: <202205101953.3C76196@keescook>
-References: <20220509222149.1763877-1-eric.dumazet@gmail.com>
- <20220509222149.1763877-14-eric.dumazet@gmail.com>
- <20220509183853.23bd409d@kernel.org>
+        with ESMTP id S229608AbiEKC5F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 22:57:05 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DD7849F35;
+        Tue, 10 May 2022 19:57:03 -0700 (PDT)
+Received: from dggpemm500024.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Kyfgk0rclzbng6;
+        Wed, 11 May 2022 10:56:34 +0800 (CST)
+Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
+ dggpemm500024.china.huawei.com (7.185.36.203) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 11 May 2022 10:57:02 +0800
+Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
+ (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 11 May
+ 2022 10:57:01 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <linux-kernel@vger.kernel.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>
+CC:     <nbd@nbd.name>, <davem@davemloft.net>, <kuba@kernel.org>
+Subject: [PATCH] net: ethernet: mediatek: ppe: fix wrong size passed to memset()
+Date:   Wed, 11 May 2022 11:08:29 +0800
+Message-ID: <20220511030829.3308094-1-yangyingliang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220509183853.23bd409d@kernel.org>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.103.91]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ dggpemm500007.china.huawei.com (7.185.36.183)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 09, 2022 at 06:38:53PM -0700, Jakub Kicinski wrote:
-> So we're leaving the warning for Kees to deal with?
-> 
-> Kees is there some form of "I know what I'm doing" cast 
-> that you could sneak us under the table?
+'foe_table' is a pointer, the real size of struct mtk_foe_entry
+should be pass to memset().
 
-Okay, I've sent this[1] now. If that looks okay to you, I figure you'll
-land it via netdev for the coming merge window?
+Fixes: ba37b7caf1ed ("net: ethernet: mtk_eth_soc: add support for initializing the PPE")
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/ethernet/mediatek/mtk_ppe.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
--Kees
-
-[1] https://lore.kernel.org/netdev/20220511025301.3636666-1-keescook@chromium.org/
-
+diff --git a/drivers/net/ethernet/mediatek/mtk_ppe.c b/drivers/net/ethernet/mediatek/mtk_ppe.c
+index 3ad10c793308..66298e2235c9 100644
+--- a/drivers/net/ethernet/mediatek/mtk_ppe.c
++++ b/drivers/net/ethernet/mediatek/mtk_ppe.c
+@@ -395,7 +395,7 @@ static void mtk_ppe_init_foe_table(struct mtk_ppe *ppe)
+ 	static const u8 skip[] = { 12, 25, 38, 51, 76, 89, 102 };
+ 	int i, k;
+ 
+-	memset(ppe->foe_table, 0, MTK_PPE_ENTRIES * sizeof(ppe->foe_table));
++	memset(ppe->foe_table, 0, MTK_PPE_ENTRIES * sizeof(*ppe->foe_table));
+ 
+ 	if (!IS_ENABLED(CONFIG_SOC_MT7621))
+ 		return;
 -- 
-Kees Cook
+2.25.1
+
