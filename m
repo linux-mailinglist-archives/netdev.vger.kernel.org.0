@@ -2,157 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85BD8522DCF
+	by mail.lfdr.de (Postfix) with ESMTP id 2FA04522DCE
 	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 10:03:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243268AbiEKIDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 04:03:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36798 "EHLO
+        id S243282AbiEKIDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 04:03:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241805AbiEKIDD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 04:03:03 -0400
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F29E08B085
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 01:03:01 -0700 (PDT)
-Received: by mail-wr1-x42e.google.com with SMTP id h16so1086297wrb.2
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 01:03:01 -0700 (PDT)
+        with ESMTP id S239763AbiEKIDE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 04:03:04 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA7508B086
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 01:03:02 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id b19so1736683wrh.11
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 01:03:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=+wPy9NPHk/Mf1gdMAmzmwC+sHb1QCR/lOjxgbei49/A=;
-        b=D2IGg74L6dmswcPFahDlKvyia8kQbEnAeicoczDa5oObXdov9toyBrd4lX/S7wsGRm
-         CcCT8d+KsjUUOhIcT8pkF83Ql1h2o08JXjcdsb8wD+Wq4Sqe7AKk+7d8hP3cW9be5hKl
-         D1qQJnTwg/CJZu2hpHTThRfWkatKeoMc9d7ew5DAUnkpnBTQ+UFXfbGVTgvx0z3gaTTB
-         sGH+FjGCjJb7phqCjotn+jb+hB3xO12PgoKiwud2WAp04X0k02CBIfQwt3u+HjGE708v
-         93pBoFstkeVh7xfX0zN2VrBQnX4+v+3MnIGJCQjoLRMiJ11qVx10C6+PSIw/XO4lYnRJ
-         Mpmw==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=GcjkZzrLn6gMWk4BhtvbTNa6RAyAFLU8Gib10fMIL6M=;
+        b=UFsCqPurNA77DAQgdLeQK8XeRTaY48TIY6s55owkQ/HgvOvfVLRQqmVns5XkEwBZm6
+         56SK0SRGUPqyFSHm6kzFsqS/WCSavHeFIJcunmiB8T6YQVsHAP976fuV0RDx1fancQkE
+         pSz4Dy+7QjawQo5E9RZCzBbjfCovqAgf6SQnM4htoYjHzRGklIi+IRKyQ3Vq3sfQUUFj
+         Ob5BtPJ9es4c7J1OqHqdFMkzvbg3vandDzGIcfssTWeB3TYQ7BdlOt4vC2SQ69owYueh
+         YcwkeL249xYiu+DEr2CGR6yORYiafhfJr4LYTW0bAPJZE22e2aHtcWk3YZKi6NGCe6bD
+         pUow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to:user-agent;
-        bh=+wPy9NPHk/Mf1gdMAmzmwC+sHb1QCR/lOjxgbei49/A=;
-        b=yMiK0u/af836SckBwb3Msp+u2POAwkaFYfXmxi/onBPZz8nlU/CnIjOxwrORWxetUa
-         AssRVcRJcbLSdZbPneS1xXoSjwNQFPwc+NqplEtE5XZiQIZ/Qk5aoW4IkclQyA9urUei
-         QX10IGIoVKxvmWMmNAboVzZ8E+VdzYe8Ant1ZIYHkGZXUuPs4UqWZGtaWtEzcYeN3Ul2
-         /3of0dBblhliTHTwQUt6xG3BVHPPsEigW81aUs6euu/XVPoCc0sEYiSpoWhCdGndMS7y
-         xrGn5cppHN0xghWkMFaF0rniQm7IBliq5cIjSNc21YsYzbXeNupJYtuWjTVXLQ7CAjcN
-         zu6w==
-X-Gm-Message-State: AOAM5306JAr7lPLdVMibfxG0IWm18szMSfdHyq3joiKAgjCS2UTxJ0sZ
-        TcvT5Ns/XGKUK1uhU2KvKTE=
-X-Google-Smtp-Source: ABdhPJxessb45V5hc05DY5VcOZtiv4VKDhpRURkgQUQLhuXdDh1PR86wuyTkjczzK2UPwfuScDo+NA==
-X-Received: by 2002:a5d:47c8:0:b0:20c:95c6:23df with SMTP id o8-20020a5d47c8000000b0020c95c623dfmr22278080wrc.315.1652256180218;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=GcjkZzrLn6gMWk4BhtvbTNa6RAyAFLU8Gib10fMIL6M=;
+        b=NrJC2o5af7gzElSRS8ekIXshDPY5fD2Tmms+wCjvvYuqmwrXU6y2603OUj8/9uIwPW
+         9irCo1HrH6O0OfWopTVspTGo6fkrhwig8SC+5lqf8R3JycR3BoSMjChEi9QDWFdzz6Rg
+         9lrTrTj58xTSIrQsdmsHzUwzjbQN3FjO1o7eLUrkdy1sUrSFGiSTxeSrwZe7K+xz6dJ8
+         8GSYa3d1J4ngHkWZP7F+exVYVT8J+m3+GZK3CJcXKQm/P4xCdr+q5nG3+COzjHWB26wk
+         nq6+Or4Hh5MFEyTCnonBA5Y4nZzZFSg3IzJCTQ+CBG13yl9UY5/rz9KFhLbUHXr3oSVB
+         T5IA==
+X-Gm-Message-State: AOAM533HcBjLWO4bpN9CQ1VJaceUn/rAIdNLeDh7y2HTyQ2BgMW3h7I3
+        qPjfOgAu0VwUP5yMHIPeG9qA8A==
+X-Google-Smtp-Source: ABdhPJz141wwvjEmkFZHdaUgpw9RZwbK3CfA9t7e/8C9BiOzO9p9S/blepjTYOpKbso5uRqwI3xJxQ==
+X-Received: by 2002:a05:6000:1c09:b0:20c:b986:e593 with SMTP id ba9-20020a0560001c0900b0020cb986e593mr16089270wrb.170.1652256181310;
+        Wed, 11 May 2022 01:03:01 -0700 (PDT)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id z15-20020a05600c220f00b00394538d039esm4602915wml.6.2022.05.11.01.02.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Wed, 11 May 2022 01:03:00 -0700 (PDT)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id q2-20020a5d61c2000000b0020c5253d8e0sm992873wrv.44.2022.05.11.01.02.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 11 May 2022 01:02:59 -0700 (PDT)
-Date:   Wed, 11 May 2022 09:02:57 +0100
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
-Cc:     ecree.xilinx@gmail.com, ap420073@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 5/5] sfc: move tx_channel_offset calculation to
- interrupts probe
-Message-ID: <20220511080257.zorpazlwyefv3fjy@gmail.com>
-Mail-Followup-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-        ecree.xilinx@gmail.com, ap420073@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-References: <20220510084443.14473-1-ihuguet@redhat.com>
- <20220510084443.14473-6-ihuguet@redhat.com>
+Date:   Wed, 11 May 2022 10:02:58 +0200
+From:   LABBE Corentin <clabbe@baylibre.com>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, alexandre.torgue@foss.st.com,
+        calvin.johnson@oss.nxp.com, davem@davemloft.net,
+        edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, joabreu@synopsys.com,
+        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
+        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
+        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
+        wens@csie.org, netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 3/6] dt-bindings: net: Add documentation for phy-supply
+Message-ID: <YnttssHyCf8PJJev@Red>
+References: <20220509074857.195302-1-clabbe@baylibre.com>
+ <20220509074857.195302-4-clabbe@baylibre.com>
+ <YnkGV8DyTlCuT92R@lunn.ch>
+ <YnkWl+xYCX8r9DE7@Red>
+ <Ynk7L07VH/RFVzl6@lunn.ch>
+ <Ynk9ccoVh32Deg45@sirena.org.uk>
+ <YnlDbbegQ1IbbaHy@lunn.ch>
+ <YnlHwpiow9Flgzas@sirena.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220510084443.14473-6-ihuguet@redhat.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <YnlHwpiow9Flgzas@sirena.org.uk>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 10:44:43AM +0200, Íñigo Huguet wrote:
-> All parameters related to what channels are used for RX, TX and/or XDP
-> are calculated in efx_probe_interrupts or its called function
-> efx_allocate_msix_channels.
+Le Mon, May 09, 2022 at 05:56:34PM +0100, Mark Brown a écrit :
+> On Mon, May 09, 2022 at 06:38:05PM +0200, Andrew Lunn wrote:
 > 
-> tx_channel_offset was recalculated needlessly in efx_set_queues. Remove
-> this from here since it's more coherent to calculate it only once, in
-> the same place than the rest of channels parameters. If MSIX is not used,
-> this value was not set in efx_probe_interrupts, so let's do it now.
+> > So we have a collection of regulators, varying in numbers between
+> > different PHYs, with different vendor names and purposes. In general,
+> > they all should be turned on. Yet we want them named so it is clear
+> > what is going on.
 > 
-> The value calculated in efx_set_queues was wrong anyway, because with
-> the addition of the support for XDP, additional channels had been added
-> after the TX channels, and efx->n_channels - efx->n_tx_channels didn't
-> point to the beginning of the TX channels any more.
-
-Apart from the reformatting this fixes a bug in the existing code.
-Please submit this bug fix part again as an individual patch.
-
-Martin
-
-> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-> ---
->  drivers/net/ethernet/sfc/efx_channels.c | 17 +++++------------
->  1 file changed, 5 insertions(+), 12 deletions(-)
+> > Is there a generic solution here so that the phylib core can somehow
+> > enumerate them and turn them on, without actually knowing what they
+> > are called because they have vendor specific names in order to be
+> > clear what they are?
 > 
-> diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
-> index f6634faa1ec4..b9bbef07bb5e 100644
-> --- a/drivers/net/ethernet/sfc/efx_channels.c
-> +++ b/drivers/net/ethernet/sfc/efx_channels.c
-> @@ -220,14 +220,9 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
->  	n_channels -= efx->n_xdp_channels;
->  
->  	if (efx_separate_tx_channels) {
-> -		efx->n_tx_channels =
-> -			min(max(n_channels / 2, 1U),
-> -			    efx->max_tx_channels);
-> -		efx->tx_channel_offset =
-> -			n_channels - efx->n_tx_channels;
-> -		efx->n_rx_channels =
-> -			max(n_channels -
-> -			    efx->n_tx_channels, 1U);
-> +		efx->n_tx_channels = min(max(n_channels / 2, 1U), efx->max_tx_channels);
-> +		efx->tx_channel_offset = n_channels - efx->n_tx_channels;
-> +		efx->n_rx_channels = max(n_channels - efx->n_tx_channels, 1U);
->  	} else {
->  		efx->n_tx_channels = min(n_channels, efx->max_tx_channels);
->  		efx->tx_channel_offset = 0;
-> @@ -303,6 +298,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
->  		efx->n_channels = 1;
->  		efx->n_rx_channels = 1;
->  		efx->n_tx_channels = 1;
-> +		efx->tx_channel_offset = 0;
->  		efx->n_xdp_channels = 0;
->  		efx->xdp_channel_offset = efx->n_channels;
->  		rc = pci_enable_msi(efx->pci_dev);
-> @@ -323,6 +319,7 @@ int efx_probe_interrupts(struct efx_nic *efx)
->  		efx->n_channels = 1 + (efx_separate_tx_channels ? 1 : 0);
->  		efx->n_rx_channels = 1;
->  		efx->n_tx_channels = 1;
-> +		efx->tx_channel_offset = 1;
->  		efx->n_xdp_channels = 0;
->  		efx->xdp_channel_offset = efx->n_channels;
->  		efx->legacy_irq = efx->pci_dev->irq;
-> @@ -952,10 +949,6 @@ int efx_set_queues(struct efx_nic *efx)
->  	unsigned int queue_num = 0;
->  	int rc;
->  
-> -	efx->tx_channel_offset =
-> -		efx_separate_tx_channels ?
-> -		efx->n_channels - efx->n_tx_channels : 0;
-> -
->  	/* We need to mark which channels really have RX and TX queues, and
->  	 * adjust the TX queue numbers if we have separate RX/TX only channels.
->  	 */
-> -- 
-> 2.34.1
+> > There must be a solution to this, phylib cannot be the first subsystem
+> > to have this requirement, so if you could point to an example, that
+> > would be great.
+> 
+> No, it's not really come up much before - generally things with
+> regulator control that have generic drivers tend not to be sophisticated
+> enough to have more than one supply, or to be on an enumerable bus where
+> the power is part of the bus specification so have the power specified
+> as part of the bus.  You'd need to extend the regulator bindings to
+> support parallel array of phandles and array of names properties like
+> clocks have as an option like you were asking for, which would doubtless
+> be fun for validation but is probably the thing here.
+
+Does you mean something like this:
+diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
+index 1e54a833f2cf..404f5b874b59 100644
+--- a/drivers/regulator/core.c
++++ b/drivers/regulator/core.c
+@@ -351,6 +351,32 @@ static void regulator_lock_dependent(struct regulator_dev *rdev,
+ 	mutex_unlock(&regulator_list_mutex);
+ }
+ 
++/**
++ * of_get_regulator_from_list - get a regulator device node based on supply name
++ * from a DT regulators list
++ * @dev: Device pointer for the consumer (of regulator) device
++ * @supply: regulator supply name
++ *
++ * Extract the regulator device node corresponding to the supply name.
++ * returns the device node corresponding to the regulator if found, else
++ * returns NULL.
++ */
++static struct device_node *of_get_regulator_from_list(struct device *dev,
++						      struct device_node *np,
++						      const char *supply)
++{
++	int index, ret;
++	struct of_phandle_args regspec;
++
++	index = of_property_match_string(np, "regulator-names", supply);
++	if (index >= 0) {
++		ret = of_parse_phandle_with_args(np, "regulators", NULL, index, &regspec);
++		if (ret == 0)
++			return regspec.np;
++	}
++	return NULL;
++}
++
+ /**
+  * of_get_child_regulator - get a child regulator device node
+  * based on supply name
+@@ -362,17 +388,23 @@ static void regulator_lock_dependent(struct regulator_dev *rdev,
+  * returns the device node corresponding to the regulator if found, else
+  * returns NULL.
+  */
+-static struct device_node *of_get_child_regulator(struct device_node *parent,
+-						  const char *prop_name)
++static struct device_node *of_get_child_regulator(struct device *dev,
++						  struct device_node *parent,
++						  const char *supply)
+ {
+ 	struct device_node *regnode = NULL;
+ 	struct device_node *child = NULL;
++	char prop_name[64]; /* 64 is max size of property name */
+ 
++	snprintf(prop_name, 64, "%s-supply", supply);
+ 	for_each_child_of_node(parent, child) {
++		regnode = of_get_regulator_from_list(dev, child, supply);
++		if (regnode)
++			return regnode;
+ 		regnode = of_parse_phandle(child, prop_name, 0);
+ 
+ 		if (!regnode) {
+-			regnode = of_get_child_regulator(child, prop_name);
++			regnode = of_get_child_regulator(dev, child, prop_name);
+ 			if (regnode)
+ 				goto err_node_put;
+ 		} else {
+@@ -401,12 +433,15 @@ static struct device_node *of_get_regulator(struct device *dev, const char *supp
+ 	char prop_name[64]; /* 64 is max size of property name */
+ 
+ 	dev_dbg(dev, "Looking up %s-supply from device tree\n", supply);
++	regnode = of_get_regulator_from_list(dev, dev->of_node, supply);
++	if (regnode)
++		return regnode;
+ 
+ 	snprintf(prop_name, 64, "%s-supply", supply);
+ 	regnode = of_parse_phandle(dev->of_node, prop_name, 0);
+ 
+ 	if (!regnode) {
+-		regnode = of_get_child_regulator(dev->of_node, prop_name);
++		regnode = of_get_child_regulator(dev, dev->of_node, supply);
+ 		if (regnode)
+ 			return regnode;
+ 
+
+And then for our case, a regulator_get_bulk will be needed.
+Does I well understood what you mean ?
