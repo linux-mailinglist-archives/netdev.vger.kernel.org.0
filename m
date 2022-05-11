@@ -2,218 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2574E5238C8
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:20:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 758E35239EA
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344627AbiEKQUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 12:20:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47026 "EHLO
+        id S245090AbiEKQU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 12:20:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344628AbiEKQUE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:20:04 -0400
-Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14B302380C0
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:20:02 -0700 (PDT)
-Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id B46923200F2;
-        Wed, 11 May 2022 17:20:01 +0100 (BST)
-Received: from localhost ([::1] helo=palantir17.mph.net)
-        by palantir17.mph.net with esmtp (Exim 4.89)
-        (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1nop4D-0000DO-GD; Wed, 11 May 2022 17:20:01 +0100
-Subject: [PATCH net-next 4/6] sfc/siena: Make MCDI logging support specific
- for Siena
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Wed, 11 May 2022 17:20:01 +0100
-Message-ID: <165228600135.696.1243231411252975277.stgit@palantir17.mph.net>
-In-Reply-To: <165228589518.696.7119477411428288875.stgit@palantir17.mph.net>
-References: <165228589518.696.7119477411428288875.stgit@palantir17.mph.net>
-User-Agent: StGit/0.17.1-dirty
+        with ESMTP id S1344655AbiEKQU0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:20:26 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081BC2380E2
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:20:24 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id y21so3211527edo.2
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:20:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=svG1L/bGhyxGAlocPxyHJusAcsDTJHaGb4g7JRnLN34=;
+        b=SLYn3yafpxhPinrhVN+KvALYpBdGm6IPDJeU17IYRguThw4zYzuAUMO+wgE8mES8b4
+         TAvhOMEIzlAjl54FO2fajRhHHQdSYqfX00mqyItYDD3jbYNbNda6kImAMtKkUrF3hSa2
+         naE7anfld7oOW69AFhZbUG91usyzFIculkTzI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=svG1L/bGhyxGAlocPxyHJusAcsDTJHaGb4g7JRnLN34=;
+        b=Rh4yAm1nJ2sB3nKdAXLmN1UqU9djadOK74xNmRieKEpJ2Z25olDDb/AYORwUi6bW/e
+         sjaXS8SGKqPNZNLw7D5bJGVXb4ZpIshltb3fEgAKkcY6LeHPedvUozAx0p4751Dw5e4n
+         j7yyKA05LG+nUddPFKJc+ut12CPHFIKsxXKcn4Jo8RSN4eS7CP7phFvBVTnexJOR2bj7
+         NKJfspmPTpU6MzRkctp2/JWe2QUv0pALr3Xtp3EdYJKhp9x28EkJAE3lhyG3KcB7JWfc
+         IoeR3vWnfw3B1gDElgc4drEh5n9cAvqlcywy1xPNV2n43x5EuGO1Sr+omh+anTbjE6l+
+         E5mA==
+X-Gm-Message-State: AOAM530GDDmw+BvNu6MlcaNZa0v7Z6V9aXvez9Z2OPDLi/AbX//SDKSg
+        BTLyLbvGQE7/VAWF1CsSRjM2tV6BtQ3pNQgNBM0=
+X-Google-Smtp-Source: ABdhPJzwd1V8XZikOLj6D3ILnxVooOhmB3dC1IfAfM/n5eAVfZHIDaXZ5TjK7T93rjPemYTxb3CY/g==
+X-Received: by 2002:a05:6402:34cd:b0:428:1043:6231 with SMTP id w13-20020a05640234cd00b0042810436231mr29932889edc.274.1652286022318;
+        Wed, 11 May 2022 09:20:22 -0700 (PDT)
+Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
+        by smtp.gmail.com with ESMTPSA id bu17-20020a170906a15100b006f3ef214e24sm1148571ejb.138.2022.05.11.09.20.20
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 May 2022 09:20:20 -0700 (PDT)
+Received: by mail-wr1-f52.google.com with SMTP id i5so3683890wrc.13
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:20:20 -0700 (PDT)
+X-Received: by 2002:a05:6000:2c2:b0:20c:7329:7c10 with SMTP id
+ o2-20020a05600002c200b0020c73297c10mr23431402wry.193.1652286020296; Wed, 11
+ May 2022 09:20:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
-        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Level: *
+References: <20220510082351-mutt-send-email-mst@kernel.org>
+ <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com> <87czgk8jjo.fsf@mpe.ellerman.id.au>
+In-Reply-To: <87czgk8jjo.fsf@mpe.ellerman.id.au>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 11 May 2022 09:20:03 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wj9zKJGA_6SJOMPiQEoYke6cKX-FV3X_5zNXOcFJX1kOQ@mail.gmail.com>
+Message-ID: <CAHk-=wj9zKJGA_6SJOMPiQEoYke6cKX-FV3X_5zNXOcFJX1kOQ@mail.gmail.com>
+Subject: Re: [GIT PULL] virtio: last minute fixup
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mie@igel.co.jp
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a Siena Kconfig option and use it in stead of the sfc one.
-Rename the internal variable for the 'mcdi_logging_default' module
-parameter to avoid a naming conflict with the one in sfc.ko.
+On Wed, May 11, 2022 at 3:12 AM Michael Ellerman <mpe@ellerman.id.au> wrote:
+>
+> Which I read as you endorsing Link: tags :)
 
-Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
----
- drivers/net/ethernet/sfc/siena/Kconfig      |   10 ++++++++++
- drivers/net/ethernet/sfc/siena/efx_common.c |    2 +-
- drivers/net/ethernet/sfc/siena/efx_common.h |    2 +-
- drivers/net/ethernet/sfc/siena/mcdi.c       |   23 ++++++++++++-----------
- drivers/net/ethernet/sfc/siena/mcdi.h       |    2 +-
- 5 files changed, 25 insertions(+), 14 deletions(-)
+I absolutely adore "Link:" tags. They've been great.
 
-diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
-index dac2f09702aa..0950e6b0508f 100644
---- a/drivers/net/ethernet/sfc/Kconfig
-+++ b/drivers/net/ethernet/sfc/Kconfig
-@@ -55,7 +55,7 @@ config SFC_SRIOV
- 	  features, allowing accelerated network performance in
- 	  virtualized environments.
- config SFC_MCDI_LOGGING
--	bool "Solarflare SFC9000/SFC9100-family MCDI logging support"
-+	bool "Solarflare SFC9100-family MCDI logging support"
- 	depends on SFC
- 	default y
- 	help
-diff --git a/drivers/net/ethernet/sfc/siena/Kconfig b/drivers/net/ethernet/sfc/siena/Kconfig
-index 4eb6801ff3c0..cb3c5cb42a53 100644
---- a/drivers/net/ethernet/sfc/siena/Kconfig
-+++ b/drivers/net/ethernet/sfc/siena/Kconfig
-@@ -33,3 +33,13 @@ config SFC_SIENA_SRIOV
- 	  This enables support for the Single Root I/O Virtualization
- 	  features, allowing accelerated network performance in
- 	  virtualized environments.
-+config SFC_SIENA_MCDI_LOGGING
-+	bool "Solarflare SFC9000-family MCDI logging support"
-+	depends on SFC_SIENA
-+	default y
-+	help
-+	  This enables support for tracing of MCDI (Management-Controller-to-
-+	  Driver-Interface) commands and responses, allowing debugging of
-+	  driver/firmware interaction.  The tracing is actually enabled by
-+	  a sysfs file 'mcdi_logging' under the PCI device, or via module
-+	  parameter mcdi_logging_default.
-diff --git a/drivers/net/ethernet/sfc/siena/efx_common.c b/drivers/net/ethernet/sfc/siena/efx_common.c
-index 3aef8d216f95..a615bffcbad4 100644
---- a/drivers/net/ethernet/sfc/siena/efx_common.c
-+++ b/drivers/net/ethernet/sfc/siena/efx_common.c
-@@ -1170,7 +1170,7 @@ void efx_siena_fini_io(struct efx_nic *efx)
- 		pci_disable_device(efx->pci_dev);
- }
- 
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- static ssize_t mcdi_logging_show(struct device *dev,
- 				 struct device_attribute *attr,
- 				 char *buf)
-diff --git a/drivers/net/ethernet/sfc/siena/efx_common.h b/drivers/net/ethernet/sfc/siena/efx_common.h
-index 470033611436..aeb92f4e34b7 100644
---- a/drivers/net/ethernet/sfc/siena/efx_common.h
-+++ b/drivers/net/ethernet/sfc/siena/efx_common.h
-@@ -88,7 +88,7 @@ static inline void efx_schedule_channel_irq(struct efx_channel *channel)
- 	efx_schedule_channel(channel);
- }
- 
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- void efx_siena_init_mcdi_logging(struct efx_nic *efx);
- void efx_siena_fini_mcdi_logging(struct efx_nic *efx);
- #else
-diff --git a/drivers/net/ethernet/sfc/siena/mcdi.c b/drivers/net/ethernet/sfc/siena/mcdi.c
-index b767e29cfe92..3df0f0eca3b7 100644
---- a/drivers/net/ethernet/sfc/siena/mcdi.c
-+++ b/drivers/net/ethernet/sfc/siena/mcdi.c
-@@ -51,9 +51,10 @@ static int efx_mcdi_drv_attach(struct efx_nic *efx, bool driver_operating,
- static bool efx_mcdi_poll_once(struct efx_nic *efx);
- static void efx_mcdi_abandon(struct efx_nic *efx);
- 
--#ifdef CONFIG_SFC_MCDI_LOGGING
--static bool mcdi_logging_default;
--module_param(mcdi_logging_default, bool, 0644);
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
-+static bool efx_siena_mcdi_logging_default;
-+module_param_named(mcdi_logging_default, efx_siena_mcdi_logging_default,
-+		   bool, 0644);
- MODULE_PARM_DESC(mcdi_logging_default,
- 		 "Enable MCDI logging on newly-probed functions");
- #endif
-@@ -70,12 +71,12 @@ int efx_siena_mcdi_init(struct efx_nic *efx)
- 
- 	mcdi = efx_mcdi(efx);
- 	mcdi->efx = efx;
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- 	/* consuming code assumes buffer is page-sized */
- 	mcdi->logging_buffer = (char *)__get_free_page(GFP_KERNEL);
- 	if (!mcdi->logging_buffer)
- 		goto fail1;
--	mcdi->logging_enabled = mcdi_logging_default;
-+	mcdi->logging_enabled = efx_siena_mcdi_logging_default;
- #endif
- 	init_waitqueue_head(&mcdi->wq);
- 	init_waitqueue_head(&mcdi->proxy_rx_wq);
-@@ -114,7 +115,7 @@ int efx_siena_mcdi_init(struct efx_nic *efx)
- 
- 	return 0;
- fail2:
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- 	free_page((unsigned long)mcdi->logging_buffer);
- fail1:
- #endif
-@@ -140,7 +141,7 @@ void efx_siena_mcdi_fini(struct efx_nic *efx)
- 	if (!efx->mcdi)
- 		return;
- 
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- 	free_page((unsigned long)efx->mcdi->iface.logging_buffer);
- #endif
- 
-@@ -151,7 +152,7 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
- 				  const efx_dword_t *inbuf, size_t inlen)
- {
- 	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- 	char *buf = mcdi->logging_buffer; /* page-sized */
- #endif
- 	efx_dword_t hdr[2];
-@@ -198,7 +199,7 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
- 		hdr_len = 8;
- 	}
- 
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- 	if (mcdi->logging_enabled && !WARN_ON_ONCE(!buf)) {
- 		int bytes = 0;
- 		int i;
-@@ -266,7 +267,7 @@ static void efx_mcdi_read_response_header(struct efx_nic *efx)
- {
- 	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
- 	unsigned int respseq, respcmd, error;
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- 	char *buf = mcdi->logging_buffer; /* page-sized */
- #endif
- 	efx_dword_t hdr;
-@@ -286,7 +287,7 @@ static void efx_mcdi_read_response_header(struct efx_nic *efx)
- 			EFX_DWORD_FIELD(hdr, MC_CMD_V2_EXTN_IN_ACTUAL_LEN);
- 	}
- 
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- 	if (mcdi->logging_enabled && !WARN_ON_ONCE(!buf)) {
- 		size_t hdr_len, data_len;
- 		int bytes = 0;
-diff --git a/drivers/net/ethernet/sfc/siena/mcdi.h b/drivers/net/ethernet/sfc/siena/mcdi.h
-index 03810c570a33..06f38e5e6832 100644
---- a/drivers/net/ethernet/sfc/siena/mcdi.h
-+++ b/drivers/net/ethernet/sfc/siena/mcdi.h
-@@ -80,7 +80,7 @@ struct efx_mcdi_iface {
- 	spinlock_t async_lock;
- 	struct list_head async_list;
- 	struct timer_list async_timer;
--#ifdef CONFIG_SFC_MCDI_LOGGING
-+#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
- 	char *logging_buffer;
- 	bool logging_enabled;
- #endif
+But they've been great for links that are *usedful*.
 
+They are wonderful when they link to the original problem.
+
+They are *really* wonderful when they link to some long discussion
+about how to solve the problem.
+
+They are completely useless when they link to "this is the patch
+submission of the SAME DAMN PATCH THAT THE COMMIT IS".
+
+See the difference?
+
+The two first links add actual new information.
+
+That last link adds absolutely nothing. It's a link to the same email
+that was just applied.
+
+                   Linus
