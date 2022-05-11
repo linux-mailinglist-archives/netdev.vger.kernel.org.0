@@ -2,116 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE2D3523473
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 15:39:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 96C1D523472
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 15:39:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243931AbiEKNjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 09:39:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36414 "EHLO
+        id S243915AbiEKNje (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 09:39:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237276AbiEKNjd (ORCPT
+        with ESMTP id S230389AbiEKNjd (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 09:39:33 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D541B7921
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 06:39:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=xmALSnUT+h5R99s7899/L5KuToWhGctHNaIbwW7d828=; b=WXIdwufY0N4vQheQKqNkqfWokA
-        4bwW8CwHRMXXqADRbwWiTnuN+usPTxDDCBP8wEu0OIRmlRAuFBbgwI/yMYHsH0I5BRkdlDYSWlE3l
-        aX3YZKcsnoUVBnL/RzTTwky0TBHUQuTYooM0UfaLID1AzC4TBE6RnviZeFACXLAMDaDQFpcDY52Ah
-        mAbCLCD8HfHQkdsKgfc7gl29/iwf4hqlchgvwZz7zygSRPW9bjYfsY8pQ2cM+dMJg3D13FsqivqLC
-        jL04/+edQr2SEGIFrSZJf00iJJnm4ypZWUCTg1/htwRg1SNBBFOLdsx+Q6yH1UJnMjH940Nbcd9V8
-        6a2JxPbw==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60684)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nomYo-0006sj-CG; Wed, 11 May 2022 14:39:27 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nomYl-00079z-GQ; Wed, 11 May 2022 14:39:23 +0100
-Date:   Wed, 11 May 2022 14:39:23 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Josua Mayer <josua@solid-run.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH RFC] net: sfp: support assigning status LEDs to SFP
- connectors
-Message-ID: <Ynu8ixB5cm3zy6Yx@shell.armlinux.org.uk>
-References: <20220509122938.14651-1-josua@solid-run.com>
- <Ynk5UPWkuoXeqfJj@shell.armlinux.org.uk>
- <bc461bd4-e123-212d-42a5-2da2efb7235a@solid-run.com>
- <20220511132221.pkvi3g7agjm2xuph@skbuf>
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B28401BDAED;
+        Wed, 11 May 2022 06:39:31 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id k2so1989450qtp.1;
+        Wed, 11 May 2022 06:39:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aWOO/quq1svhOVB6+WysSQZaYh0NuG1Dcmlsc91McHI=;
+        b=SM2ng3Wy3NqTJv3b7WlYGryPauwIw9941UW8KaAOlF7Jis4RMwHN47k0bWFNIi6IQ6
+         DhpxQ/9QjKpGhaUBP/551fjuZcFfoLZpiUQFfgmVAUiXR7oRPVrIFZMxkipn6XVlQPQR
+         /YvuszDsfAejdhi4XPPgfALqYHYVeT0R8ZgWC69qx8hV3jaeIu5XINkgW/1SwbxXJL2r
+         8PQOowvLuduc7Aw3YPVjx8g0oL9Kzp6qvS8o7bjJHdGW/sfMI09zaUpcp1oHp0ZB2EhA
+         lZ9mYNoNmOtfAfXz6z33AfjS5ditaLl6HVKNRUdBHbpwTWiHVauUNbTL88lpM4TC+FMj
+         YeYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aWOO/quq1svhOVB6+WysSQZaYh0NuG1Dcmlsc91McHI=;
+        b=AFaxV2AFUFoiAQ7NYvmhrduDrA21lGtQeBTgOIIFwNmZD9+bt0MXKZUH6NrBCT4p2g
+         yecrchLmxSZ9p1Tap0cNSvGcbWgQEzD62VyR04HfqrHRALxxJk8JB3VvHul0z00IAhPd
+         /9quP5gXUpb18Ir4jemB/As0qyqChJefwc/kU+096dIBONqBsUU44sTr1+8QGXEmnJTb
+         3NXFTV38MkSs3fE0z5HU5S9T0ryKeuSbn2k1gUR4se6XxkWo0kudfWM7dwlhcXMNZPpG
+         YI6P5CG8B6LtXBKKlNQoBBpViqH7AajWT+Pj1u4WuvKe7r6vmCgP2oI2YmviswZ2nDeQ
+         LIDQ==
+X-Gm-Message-State: AOAM532jj1lw8STQb4zm0FHveeVERlEiWfcVAMb+FG4/YD44VwAkS+0D
+        OFCaVgNlhuFxFg8za7zAGaAXRFs+5V3jgGy1
+X-Google-Smtp-Source: ABdhPJw89bZlWhdg5K92STGDxWd9niCTUY79Xob2uXPfEiy3zrtjb+1ATlk9YeI2Xr/Vq3Yu2fYqgQ==
+X-Received: by 2002:ac8:5a4f:0:b0:2f3:ddac:fe60 with SMTP id o15-20020ac85a4f000000b002f3ddacfe60mr11447348qta.90.1652276370837;
+        Wed, 11 May 2022 06:39:30 -0700 (PDT)
+Received: from debian.lan ([98.97.182.206])
+        by smtp.gmail.com with ESMTPSA id k14-20020a05620a414e00b0069fc2a7e7a5sm1277026qko.75.2022.05.11.06.39.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 May 2022 06:39:30 -0700 (PDT)
+From:   David Ober <dober6023@gmail.com>
+To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, hayeswang@realtek.com, aaron.ma@canonical.com
+Cc:     mpearson@lenovo.com, dober@lenovo.com,
+        David Ober <dober6023@gmail.com>
+Subject: [PATCH v2] net: usb: r8152: Add in new Devices that are supported for Mac-Passthru
+Date:   Wed, 11 May 2022 09:39:26 -0400
+Message-Id: <20220511133926.246464-1-dober6023@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511132221.pkvi3g7agjm2xuph@skbuf>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 11, 2022 at 01:22:22PM +0000, Ioana Ciornei wrote:
-> On Tue, May 10, 2022 at 12:44:41PM +0300, Josua Mayer wrote:
-> 
-> > One issue is that the interfaces don't have stable names. It purely depends
-> > on probe order,
-> > which is controlled by sending commands to the networking coprocessor.
-> > 
-> > We actually get asked this question sometimes how to have stable device
-> > names, and so far the answer has been systemd services with explicit sleep
-> > to force the order.
-> > But this is a different topic.
-> > 
-> 
-> Stable names can be achieved using some udev rules based on the OF node.
-> For example, I am using the following rules on a Clearfog CX LX2:
-> 
-> [root@clearfog-cx-lx2 ~] # cat /etc/udev/rules.d/70-persistent-net.rules
-> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@7", NAME="eth7"
-> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@8", NAME="eth8"
-> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@9", NAME="eth9"
-> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@a", NAME="eth10"
-> SUBSYSTEM=="net", ACTION=="add", DRIVERS=="fsl_dpaa2_eth", ENV{OF_FULLNAME}=="/soc/fsl-mc@80c000000/dpmacs/ethernet@11", NAME="eth17"
+Lenovo Thunderbolt 4 Dock, and other Lenovo USB Docks are using the original
+Realtek USB ethernet Vendor and Product IDs
+If the Network device is Realtek verify that it is on a Lenovo USB hub
+before enabling the passthru feature
 
-Or by using systemd - for example, on the Armada 38x Clearfog platform,
-I use:
+This also adds in the device IDs for the Lenovo USB Dongle and one other
+USB-C dock
 
-/etc/systemd/network/01-ded.link:
-[Match]
-Path=platform-f1070000.ethernet
-[Link]
-MACAddressPolicy=none
-Name=eno0
+Signed-off-by: David Ober <dober6023@gmail.com>
+---
+ drivers/net/usb/r8152.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-/etc/systemd/network/02-sw.link:
-[Match]
-Path=platform-f1030000.ethernet
-[Link]
-MACAddressPolicy=none
-Name=eno1
-
-/etc/systemd/network/03-sfp.link:
-[Match]
-Path=platform-f1034000.ethernet
-[Link]
-MACAddressPolicy=none
-Name=eno2
-
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index c2da3438387c..c32b9bf90baa 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -771,6 +771,9 @@ enum rtl8152_flags {
+ };
+ 
+ #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
++#define DEVICE_ID_THINKPAD_THUNDERBOLT4_DOCK_GEN1	0x8153
++#define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3		0x3062
++#define DEVICE_ID_THINKPAD_USB_C_DONGLE		0x720c
+ #define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2		0xa387
+ 
+ struct tally_counter {
+@@ -9644,11 +9647,20 @@ static int rtl8152_probe(struct usb_interface *intf,
+ 
+ 	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO) {
+ 		switch (le16_to_cpu(udev->descriptor.idProduct)) {
++		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3:
++		case DEVICE_ID_THINKPAD_USB_C_DONGLE:
+ 		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
+ 		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
+ 			tp->lenovo_macpassthru = 1;
+ 		}
+ 	}
++	else if ((le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_REALTEK) &&
++		(le16_to_cpu(udev->parent->descriptor.idVendor) == VENDOR_ID_LENOVO)) {
++		switch (le16_to_cpu(udev->descriptor.idProduct)) {
++		case DEVICE_ID_THINKPAD_THUNDERBOLT4_DOCK_GEN1:
++			tp->lenovo_macpassthru = 1;
++		}
++	}
+ 
+ 	if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial &&
+ 	    (!strcmp(udev->serial, "000001000000") ||
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.30.2
+
