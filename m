@@ -2,218 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C9FC522809
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 02:00:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42AB852280A
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 02:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238823AbiEJX76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 19:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55942 "EHLO
+        id S234903AbiEKABX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 10 May 2022 20:01:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239165AbiEJX7r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 19:59:47 -0400
-Received: from mail-il1-x12b.google.com (mail-il1-x12b.google.com [IPv6:2607:f8b0:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2979D245622;
-        Tue, 10 May 2022 16:59:46 -0700 (PDT)
-Received: by mail-il1-x12b.google.com with SMTP id y11so401410ilp.4;
-        Tue, 10 May 2022 16:59:46 -0700 (PDT)
+        with ESMTP id S231612AbiEKABS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 20:01:18 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC422663E5
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 17:01:16 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so551434pjq.2
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 17:01:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5+/7AqLahlqgJLPyZPFZRgN5KrtHdAiASNn8Z0Zak9g=;
-        b=U5MfSqCtkkUgBOqJKJ9jbCEVyj+sGK2vQ2wjUnOHKcdwKzbxQWiUwWDPUnzap6tV50
-         eZlAZVorOiAysru1yrjE5mm2HaUrZYTUHUIqfgct12VNq5EcAof/sSaaGe9rXl7/X/H5
-         r9BI1ywlJlrqMtXEd/uQ9lOfxoT+VxHxLgBPOp3kIoqDDKoXYUD4Gm9URmcrfcZGZ28P
-         sFHVFvzKU0p11prpWCrUVQsbtBQCSBSibxXF95kcZ9UArcQTG117SlEJ+Qbwvqnva36X
-         bH5fqeIMZINtAlhbJPnGNYpBjFj55XxpkFHS34eG2XFoMzarhsddJtuwg+a0X6INrD0g
-         iOUA==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gQmAuOYXmnd9R6pgw1MBHX8mjNOUZA8M09MP8VBXtO4=;
+        b=keHsAlL6n7GQLoOOgNL8UMpOfUaonSG7oLWW5qink/s8+VHXzHBEJHf95wwVAFnI9L
+         CbBwI+3J0KPzTBg9hq2wVgqIwBpafU92lLVg+BUzw3PC1KopXjzzAcXuxMV8sZdMrgXX
+         9+XmFwWSIdu3ZMdVpmC5oTOxWHE4IifnE6NpI=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5+/7AqLahlqgJLPyZPFZRgN5KrtHdAiASNn8Z0Zak9g=;
-        b=1d7ThCexOfKKC9aVlqaurH7rUDHbHA6iutfwXLiKb39IYzSdrsRodbWITihXmnTpFJ
-         6JHHB4HyOlXb9robulXaTanQaYilqrcprwB3AsgazM7lGSIWxQgPW1rIg+oiY4AVs1a6
-         TXqWjA43eHJW7Isy6Qu4HuyZPEI3gCh1Svnz7S6xmtgNG7iFSr0IOaW/QxkS+/22cnPa
-         b7AA0/PsXxX8wzcwrKnTVLl3UTIvL+uKVvZhAWCyzcrvJgRspfUVdwQUYeeqfr6jbCVh
-         x8pN5bcIecX3rpx+a6qDuaVz4nWXdG6hpA4nnE5Bwg5eonptMbJ9TxeVDTi9thgzHH1a
-         KxAw==
-X-Gm-Message-State: AOAM5323Rib16x1ASEnFkl1C0Ww2PjVymlVXLOJUh02sreiUJHpCIQqX
-        v7P5Gp13V1qvJcC+Uq03V9uOgFU/fLuZgklKB0U=
-X-Google-Smtp-Source: ABdhPJwMsl29IMrQPQhpH42NWAlqRpyvuhP4i7KsfHqx2CFEzt5O1tWmjzNtsAQa1JW0rZgAicO3elopdr2Sg0Ro1YQ=
-X-Received: by 2002:a92:6406:0:b0:2bb:f1de:e13e with SMTP id
- y6-20020a926406000000b002bbf1dee13emr10424392ilb.305.1652227185421; Tue, 10
- May 2022 16:59:45 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220503171437.666326-1-maximmi@nvidia.com> <CAEf4BzbSO8oLK3_4Ecrx-c-o+Z6S8HMm3c_XQhZUQgpU8hfHoQ@mail.gmail.com>
- <a330e7d6-e064-5734-4430-9d7a3d141c04@nvidia.com>
-In-Reply-To: <a330e7d6-e064-5734-4430-9d7a3d141c04@nvidia.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 10 May 2022 16:59:34 -0700
-Message-ID: <CAEf4BzYnVK_1J_m-W8UxfFZNhZ1BpbRs=zQWwN3eejvSBJRrXw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v9 0/5] New BPF helpers to accelerate synproxy
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gQmAuOYXmnd9R6pgw1MBHX8mjNOUZA8M09MP8VBXtO4=;
+        b=65IiMDa5mPwN0XY+wpeK9LkX1sD/4B5AfbSW4tW8A/0nTZcy77dhRU70KWaKrgB5jV
+         JjC+tJ3Z6dkY2iHz1pW78XnL9APGkBXIB82rfkFkW2wbzYkG8i1JOf62veohVGYjs+jL
+         pkuAIm5FLI7rXVH6knMIFdBZpVlnZ/A7potTILiF1vDYgW6l8OoMT2yai07Aj2YVDciu
+         M0MXEMcjB7rRQMyBal6rmTD/8sP+OKC+3WJCLFygxnF5ynsDYzVyGusg7hX9hgwTCfJI
+         fHJbXVIYMED3OCJaCw3ZKqG+panC7r47Qv1oxQyi71/Zp98VcWjODaglUtld8o1akqD/
+         2dwA==
+X-Gm-Message-State: AOAM533WGqnjlm3TLcNxuJ4uTJtkRieoT1QDoCLQWt7W7s+J2f08tnrW
+        pUfnBJwUvoLBcOqyrVsWH7lh3A==
+X-Google-Smtp-Source: ABdhPJzNW5iDVbDMLzx4HJCAwT94LGijR/seDI0Qc6zeiGzxgPthp1FNwcZ9bgZx+kF2n6QycIi1Jg==
+X-Received: by 2002:a17:903:2288:b0:15e:8da2:fcc0 with SMTP id b8-20020a170903228800b0015e8da2fcc0mr23502263plh.125.1652227276336;
+        Tue, 10 May 2022 17:01:16 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id 1-20020a056a00072100b005107da0f34csm140350pfm.20.2022.05.10.17.01.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 17:01:15 -0700 (PDT)
+From:   Kees Cook <keescook@chromium.org>
+To:     "David S. Miller" <davem@davemloft.net>
+Cc:     Kees Cook <keescook@chromium.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Joe Stringer <joe@cilium.io>,
-        Florent Revest <revest@chromium.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        Florian Westphal <fw@strlen.de>, pabeni@redhat.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
+        Christoph Hellwig <hch@infradead.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Al Viro <viro@zeniv.linux.org.uk>, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] af_unix: Silence randstruct GCC plugin warning
+Date:   Tue, 10 May 2022 17:01:09 -0700
+Message-Id: <20220511000109.3628404-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2542; h=from:subject; bh=2qqmG5mf2TH4QC6jnO0oEV+/qqCppk0f1iQ+9SL2+LA=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBievzE4lce9slhXthS9Kpqhswewam15D4zkW2Qsbu5 eBZyYo2JAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYnr8xAAKCRCJcvTf3G3AJgmZD/ 9s0zTUejiTGXFUobnI2W1wICbOcu4zqOLwG+V6XJCkprUDW+bqWrVU5//Ea0S82bZLyEYzr+V0sHxJ 1kqVOFhMKN3EMwXPTcLhIZupUys3LjRQzyq0JBEHpCYxZEJ3JYJ7EI7vJo5AJhOyJjXxDaFTosd3ei V5vGR5pVeXdEjp3yWEf9+Me27ZPjCrLYB3tDBHOG5Gxlts17WZwD2s1nnA9Syvak+bGuKjeLABjHkY w2IyVQlyvq8rZX91KzhYYq/ulFBTZjspifqj7TRycyiBUp+ltrmKXkLX+8OkjhrFNOt2x8U6N8Zgn5 hOWcMeeqCdsZNYZhz7mj0EvjJIj3PGKSjWm+KTHIxo8C7pIGUWD1O+V+ioJBiEhlxrNqq5qV6HmfJq 20wl97cY6ynkV4lhBTuumCvt0yPc27/0DNjlK/D8bAVPER+GdbYg4uHvNTqGkg2At7drZYP0yZfZJe H9h+63jvxbQ+pTk/gWE2y7CEhUTdfsmluiV/Hp4s0XX1BaLT7mRB0cIQ0rrKb3ADlWvawFrGhkXqjW 6117F2oBxHNOlKhxHXDP0s3a0/QErj0mP1YwjsLX6/t7gUkW0q7H17ivWL1JiL581HM0r9a1kytS/m tNSc9pzN+1WmiXPxoFIcuDHruHOvWP3BqE2646Gb/ezRvKuCHxMnmsNbxDrQ==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 12:21 PM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
->
-> On 2022-05-07 00:51, Andrii Nakryiko wrote:
-> > On Tue, May 3, 2022 at 10:14 AM Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
-> >>
-> >> The first patch of this series is a documentation fix.
-> >>
-> >> The second patch allows BPF helpers to accept memory regions of fixed
-> >> size without doing runtime size checks.
-> >>
-> >> The two next patches add new functionality that allows XDP to
-> >> accelerate iptables synproxy.
-> >>
-> >> v1 of this series [1] used to include a patch that exposed conntrack
-> >> lookup to BPF using stable helpers. It was superseded by series [2] by
-> >> Kumar Kartikeya Dwivedi, which implements this functionality using
-> >> unstable helpers.
-> >>
-> >> The third patch adds new helpers to issue and check SYN cookies without
-> >> binding to a socket, which is useful in the synproxy scenario.
-> >>
-> >> The fourth patch adds a selftest, which includes an XDP program and a
-> >> userspace control application. The XDP program uses socketless SYN
-> >> cookie helpers and queries conntrack status instead of socket status.
-> >> The userspace control application allows to tune parameters of the XDP
-> >> program. This program also serves as a minimal example of usage of the
-> >> new functionality.
-> >>
-> >> The last patch exposes the new helpers to TC BPF.
-> >>
-> >> The draft of the new functionality was presented on Netdev 0x15 [3].
-> >>
-> >> v2 changes:
-> >>
-> >> Split into two series, submitted bugfixes to bpf, dropped the conntrack
-> >> patches, implemented the timestamp cookie in BPF using bpf_loop, dropped
-> >> the timestamp cookie patch.
-> >>
-> >> v3 changes:
-> >>
-> >> Moved some patches from bpf to bpf-next, dropped the patch that changed
-> >> error codes, split the new helpers into IPv4/IPv6, added verifier
-> >> functionality to accept memory regions of fixed size.
-> >>
-> >> v4 changes:
-> >>
-> >> Converted the selftest to the test_progs runner. Replaced some
-> >> deprecated functions in xdp_synproxy userspace helper.
-> >>
-> >> v5 changes:
-> >>
-> >> Fixed a bug in the selftest. Added questionable functionality to support
-> >> new helpers in TC BPF, added selftests for it.
-> >>
-> >> v6 changes:
-> >>
-> >> Wrap the new helpers themselves into #ifdef CONFIG_SYN_COOKIES, replaced
-> >> fclose with pclose and fixed the MSS for IPv6 in the selftest.
-> >>
-> >> v7 changes:
-> >>
-> >> Fixed the off-by-one error in indices, changed the section name to
-> >> "xdp", added missing kernel config options to vmtest in CI.
-> >>
-> >> v8 changes:
-> >>
-> >> Properly rebased, dropped the first patch (the same change was applied
-> >> by someone else), updated the cover letter.
-> >>
-> >> v9 changes:
-> >>
-> >> Fixed selftests for no_alu32.
-> >>
-> >> [1]: https://lore.kernel.org/bpf/20211020095815.GJ28644@breakpoint.cc/t/
-> >> [2]: https://lore.kernel.org/bpf/20220114163953.1455836-1-memxor@gmail.com/
-> >> [3]: https://netdevconf.info/0x15/session.html?Accelerating-synproxy-with-XDP
-> >>
-> >> Maxim Mikityanskiy (5):
-> >>    bpf: Fix documentation of th_len in bpf_tcp_{gen,check}_syncookie
-> >>    bpf: Allow helpers to accept pointers with a fixed size
-> >>    bpf: Add helpers to issue and check SYN cookies in XDP
-> >>    bpf: Add selftests for raw syncookie helpers
-> >>    bpf: Allow the new syncookie helpers to work with SKBs
-> >>
-> >
-> > Is it expected that your selftests will fail on s390x? Please check [0]
->
-> I see it fails with:
->
-> test_synproxy:FAIL:ethtool -K tmp0 tx off unexpected error: 32512 (errno 2)
->
-> errno 2 is ENOENT, probably the ethtool binary is missing from the s390x
-> image? When reviewing v6, you said you added ethtool to the CI image.
-> Maybe it was added to x86_64 only? Could you add it to s390x?
->
+While preparing for Clang randstruct support (which duplicated many of
+the warnings the randstruct GCC plugin warned about), one strange one
+remained only for the randstruct GCC plugin. Eliminating this rids
+the plugin of the last exception.
 
-Could be that it was outdated in s390x, but with [0] just merged in it
-should have pretty recent one.
+It seems the plugin is happy to dereference individual members of
+a cross-struct cast, but it is upset about casting to a whole object
+pointer. This only manifests in one place in the kernel, so just replace
+the variable with individual member accesses. There is no change in
+executable instruction output.
 
-  [0] https://github.com/libbpf/ci/pull/16
+Drop the last exception from the randstruct GCC plugin.
 
-> [1]:
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220422172422.4037988-6-maximmi@nvidia.com/
->
-> >    [0] https://github.com/kernel-patches/bpf/runs/6277764463?check_suite_focus=true#step:6:6130
-> >
-> >>   include/linux/bpf.h                           |  10 +
-> >>   include/net/tcp.h                             |   1 +
-> >>   include/uapi/linux/bpf.h                      |  88 +-
-> >>   kernel/bpf/verifier.c                         |  26 +-
-> >>   net/core/filter.c                             | 128 +++
-> >>   net/ipv4/tcp_input.c                          |   3 +-
-> >>   scripts/bpf_doc.py                            |   4 +
-> >>   tools/include/uapi/linux/bpf.h                |  88 +-
-> >>   tools/testing/selftests/bpf/.gitignore        |   1 +
-> >>   tools/testing/selftests/bpf/Makefile          |   5 +-
-> >>   .../selftests/bpf/prog_tests/xdp_synproxy.c   | 144 +++
-> >>   .../selftests/bpf/progs/xdp_synproxy_kern.c   | 819 ++++++++++++++++++
-> >>   tools/testing/selftests/bpf/xdp_synproxy.c    | 466 ++++++++++
-> >>   13 files changed, 1761 insertions(+), 22 deletions(-)
-> >>   create mode 100644 tools/testing/selftests/bpf/prog_tests/xdp_synproxy.c
-> >>   create mode 100644 tools/testing/selftests/bpf/progs/xdp_synproxy_kern.c
-> >>   create mode 100644 tools/testing/selftests/bpf/xdp_synproxy.c
-> >>
-> >> --
-> >> 2.30.2
-> >>
->
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Christoph Hellwig <hch@infradead.org>
+Cc: Paolo Abeni <pabeni@redhat.com>
+Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc: Alexei Starovoitov <ast@kernel.org>
+Cc: Cong Wang <cong.wang@bytedance.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Cc: netdev@vger.kernel.org
+Cc: linux-hardening@vger.kernel.org
+Signed-off-by: Kees Cook <keescook@chromium.org>
+---
+If someone can Ack this, I can carry it in the gcc-plugins tree,
+as I'm trying to remove all its exceptions so I can drop that code.
+---
+ net/unix/af_unix.c                            | 8 +++-----
+ scripts/gcc-plugins/randomize_layout_plugin.c | 2 --
+ 2 files changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index e71a312faa1e..36367e7e3e0a 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -1808,11 +1808,9 @@ static int maybe_init_creds(struct scm_cookie *scm,
+ static bool unix_skb_scm_eq(struct sk_buff *skb,
+ 			    struct scm_cookie *scm)
+ {
+-	const struct unix_skb_parms *u = &UNIXCB(skb);
+-
+-	return u->pid == scm->pid &&
+-	       uid_eq(u->uid, scm->creds.uid) &&
+-	       gid_eq(u->gid, scm->creds.gid) &&
++	return UNIXCB(skb).pid == scm->pid &&
++	       uid_eq(UNIXCB(skb).uid, scm->creds.uid) &&
++	       gid_eq(UNIXCB(skb).gid, scm->creds.gid) &&
+ 	       unix_secdata_eq(scm, skb);
+ }
+ 
+diff --git a/scripts/gcc-plugins/randomize_layout_plugin.c b/scripts/gcc-plugins/randomize_layout_plugin.c
+index c9d345a91c41..2ca768d88a68 100644
+--- a/scripts/gcc-plugins/randomize_layout_plugin.c
++++ b/scripts/gcc-plugins/randomize_layout_plugin.c
+@@ -46,8 +46,6 @@ struct whitelist_entry {
+ };
+ 
+ static const struct whitelist_entry whitelist[] = {
+-	/* unix_skb_parms via UNIXCB() buffer */
+-	{ "net/unix/af_unix.c", "unix_skb_parms", "char" },
+ 	{ }
+ };
+ 
+-- 
+2.32.0
+
