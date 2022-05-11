@@ -2,96 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B594E523895
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:19:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 291EF523897
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:19:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343554AbiEKQTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 12:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44280 "EHLO
+        id S1344550AbiEKQTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 12:19:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234281AbiEKQTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:19:16 -0400
+        with ESMTP id S234281AbiEKQT1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:19:27 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7DFDD56418
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:19:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1068558385
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:19:25 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 183783200F2;
-        Wed, 11 May 2022 17:19:13 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id 0D8F53200F2;
+        Wed, 11 May 2022 17:19:25 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.89)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1nop3Q-0000CO-JU; Wed, 11 May 2022 17:19:12 +0100
-Subject: [PATCH net-next 0/6]: Make sfc-siena.ko specific to Siena
+        id 1nop3c-0000Cd-QQ; Wed, 11 May 2022 17:19:24 +0100
+Subject: [PATCH net-next 1/6] siena: Make MTD support specific for Siena
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Wed, 11 May 2022 17:19:12 +0100
-Message-ID: <165228589518.696.7119477411428288875.stgit@palantir17.mph.net>
+Date:   Wed, 11 May 2022 17:19:24 +0100
+Message-ID: <165228596467.696.7070610538839753629.stgit@palantir17.mph.net>
+In-Reply-To: <165228589518.696.7119477411428288875.stgit@palantir17.mph.net>
+References: <165228589518.696.7119477411428288875.stgit@palantir17.mph.net>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=4.0 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
         FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
-        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL,SPOOFED_FREEMAIL,
-        SPOOF_GMAIL_MID,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Level: ***
+        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series is a follow-up to the one titled "Move Siena into
-a separate subdirectory".
-It enhances the new sfc-siena.ko module to differentiate it from sfc.ko.
+Add a Siena Kconfig option and use it in stead of the sfc one.
 
-	Patches
-
-Patches 1-5 create separate Kconfig options for Siena, and adjusts the
-various names used for work items and directories.
-Patch 6 reinstates SRIOV functionality in sfc-siena.ko.
-
-	Testing
-
-Various build tests were done such as allyesconfig, W=1 and sparse.
-The new sfc-siena.ko and sfc.ko modules were tested on a machine with NICs
-for both modules in them.
-Inserting the updated sfc.ko and the new sfc-siena.ko modules at the same
-time works, and no work items and directories exist with the same name.
-
-Martin
+Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
+ drivers/net/ethernet/sfc/siena/Kconfig      |    8 ++++++++
+ drivers/net/ethernet/sfc/siena/Makefile     |    4 ++--
+ drivers/net/ethernet/sfc/siena/efx.h        |    2 +-
+ drivers/net/ethernet/sfc/siena/efx_common.c |    2 +-
+ drivers/net/ethernet/sfc/siena/mcdi.c       |    4 ++--
+ drivers/net/ethernet/sfc/siena/mcdi.h       |    2 +-
+ drivers/net/ethernet/sfc/siena/net_driver.h |    4 ++--
+ drivers/net/ethernet/sfc/siena/siena.c      |    6 +++---
+ 8 files changed, 20 insertions(+), 12 deletions(-)
 
-Martin Habets (6):
-      siena: Make MTD support specific for Siena
-      siena: Make SRIOV support specific for Siena
-      siena: Make HWMON support specific for Siena
-      sfc/siena: Make MCDI logging support specific for Siena
-      sfc/siena: Make PTP and reset support specific for Siena
-      sfc/siena: Reinstate SRIOV init/fini function calls
+diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
+index 98db551ba2b7..79b8ccaeee01 100644
+--- a/drivers/net/ethernet/sfc/Kconfig
++++ b/drivers/net/ethernet/sfc/Kconfig
+@@ -32,7 +32,7 @@ config SFC
+ 	  To compile this driver as a module, choose M here.  The module
+ 	  will be called sfc.
+ config SFC_MTD
+-	bool "Solarflare SFC9000/SFC9100-family MTD support"
++	bool "Solarflare SFC9100-family MTD support"
+ 	depends on SFC && MTD && !(SFC=y && MTD=m)
+ 	default y
+ 	help
+diff --git a/drivers/net/ethernet/sfc/siena/Kconfig b/drivers/net/ethernet/sfc/siena/Kconfig
+index 3d52aee50d5a..805b902f903d 100644
+--- a/drivers/net/ethernet/sfc/siena/Kconfig
++++ b/drivers/net/ethernet/sfc/siena/Kconfig
+@@ -10,3 +10,11 @@ config SFC_SIENA
+ 
+ 	  To compile this driver as a module, choose M here.  The module
+ 	  will be called sfc-siena.
++config SFC_SIENA_MTD
++	bool "Solarflare SFC9000-family MTD support"
++	depends on SFC_SIENA && MTD && !(SFC_SIENA=y && MTD=m)
++	default y
++	help
++	  This exposes the on-board flash and/or EEPROM as MTD devices
++	  (e.g. /dev/mtd1).  This is required to update the firmware or
++	  the boot configuration under Linux.
+diff --git a/drivers/net/ethernet/sfc/siena/Makefile b/drivers/net/ethernet/sfc/siena/Makefile
+index 74cb8b7d281e..3729095a51d9 100644
+--- a/drivers/net/ethernet/sfc/siena/Makefile
++++ b/drivers/net/ethernet/sfc/siena/Makefile
+@@ -5,7 +5,7 @@ sfc-siena-y		+= farch.o siena.o \
+ 			   selftest.o ethtool.o ethtool_common.o ptp.o \
+ 			   mcdi.o mcdi_port.o mcdi_port_common.o \
+ 			   mcdi_mon.o
+-sfc-siena-$(CONFIG_SFC_MTD)	+= mtd.o
+-sfc-siena-$(CONFIG_SFC_SRIOV)	+= siena_sriov.o
++sfc-siena-$(CONFIG_SFC_SIENA_MTD)	+= mtd.o
++sfc-siena-$(CONFIG_SFC_SRIOV)		+= siena_sriov.o
+ 
+ obj-$(CONFIG_SFC_SIENA)	+= sfc-siena.o
+diff --git a/drivers/net/ethernet/sfc/siena/efx.h b/drivers/net/ethernet/sfc/siena/efx.h
+index f91f3c94a275..1d9755e59d75 100644
+--- a/drivers/net/ethernet/sfc/siena/efx.h
++++ b/drivers/net/ethernet/sfc/siena/efx.h
+@@ -162,7 +162,7 @@ void efx_siena_get_irq_moderation(struct efx_nic *efx, unsigned int *tx_usecs,
+ void efx_siena_update_sw_stats(struct efx_nic *efx, u64 *stats);
+ 
+ /* MTD */
+-#ifdef CONFIG_SFC_MTD
++#ifdef CONFIG_SFC_SIENA_MTD
+ int efx_siena_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
+ 		      size_t n_parts, size_t sizeof_part);
+ static inline int efx_mtd_probe(struct efx_nic *efx)
+diff --git a/drivers/net/ethernet/sfc/siena/efx_common.c b/drivers/net/ethernet/sfc/siena/efx_common.c
+index b44a7114e319..7c400fd590f5 100644
+--- a/drivers/net/ethernet/sfc/siena/efx_common.c
++++ b/drivers/net/ethernet/sfc/siena/efx_common.c
+@@ -997,7 +997,7 @@ int efx_siena_init_struct(struct efx_nic *efx,
+ 	INIT_LIST_HEAD(&efx->node);
+ 	INIT_LIST_HEAD(&efx->secondary_list);
+ 	spin_lock_init(&efx->biu_lock);
+-#ifdef CONFIG_SFC_MTD
++#ifdef CONFIG_SFC_SIENA_MTD
+ 	INIT_LIST_HEAD(&efx->mtd_list);
+ #endif
+ 	INIT_WORK(&efx->reset_work, efx_reset_work);
+diff --git a/drivers/net/ethernet/sfc/siena/mcdi.c b/drivers/net/ethernet/sfc/siena/mcdi.c
+index eb13aa59fe50..b767e29cfe92 100644
+--- a/drivers/net/ethernet/sfc/siena/mcdi.c
++++ b/drivers/net/ethernet/sfc/siena/mcdi.c
+@@ -2014,7 +2014,7 @@ int efx_siena_mcdi_wol_filter_reset(struct efx_nic *efx)
+ 	return rc;
+ }
+ 
+-#ifdef CONFIG_SFC_MTD
++#ifdef CONFIG_SFC_SIENA_MTD
+ 
+ #define EFX_MCDI_NVRAM_LEN_MAX 128
+ 
+@@ -2256,4 +2256,4 @@ void efx_siena_mcdi_mtd_rename(struct efx_mtd_partition *part)
+ 		 efx->name, part->type_name, mcdi_part->fw_subtype);
+ }
+ 
+-#endif /* CONFIG_SFC_MTD */
++#endif /* CONFIG_SFC_SIENA_MTD */
+diff --git a/drivers/net/ethernet/sfc/siena/mcdi.h b/drivers/net/ethernet/sfc/siena/mcdi.h
+index dcebdbf956ce..64990f398e67 100644
+--- a/drivers/net/ethernet/sfc/siena/mcdi.h
++++ b/drivers/net/ethernet/sfc/siena/mcdi.h
+@@ -373,7 +373,7 @@ static inline int efx_siena_mcdi_mon_probe(struct efx_nic *efx) { return 0; }
+ static inline void efx_siena_mcdi_mon_remove(struct efx_nic *efx) {}
+ #endif
+ 
+-#ifdef CONFIG_SFC_MTD
++#ifdef CONFIG_SFC_SIENA_MTD
+ int efx_siena_mcdi_mtd_read(struct mtd_info *mtd, loff_t start, size_t len,
+ 			    size_t *retlen, u8 *buffer);
+ int efx_siena_mcdi_mtd_erase(struct mtd_info *mtd, loff_t start, size_t len);
+diff --git a/drivers/net/ethernet/sfc/siena/net_driver.h b/drivers/net/ethernet/sfc/siena/net_driver.h
+index 7e0659be4348..6af172fb0b10 100644
+--- a/drivers/net/ethernet/sfc/siena/net_driver.h
++++ b/drivers/net/ethernet/sfc/siena/net_driver.h
+@@ -1031,7 +1031,7 @@ struct efx_nic {
+ 	unsigned irq_level;
+ 	struct delayed_work selftest_work;
+ 
+-#ifdef CONFIG_SFC_MTD
++#ifdef CONFIG_SFC_SIENA_MTD
+ 	struct list_head mtd_list;
+ #endif
+ 
+@@ -1411,7 +1411,7 @@ struct efx_nic_type {
+ 	bool (*filter_rfs_expire_one)(struct efx_nic *efx, u32 flow_id,
+ 				      unsigned int index);
+ #endif
+-#ifdef CONFIG_SFC_MTD
++#ifdef CONFIG_SFC_SIENA_MTD
+ 	int (*mtd_probe)(struct efx_nic *efx);
+ 	void (*mtd_rename)(struct efx_mtd_partition *part);
+ 	int (*mtd_read)(struct mtd_info *mtd, loff_t start, size_t len,
+diff --git a/drivers/net/ethernet/sfc/siena/siena.c b/drivers/net/ethernet/sfc/siena/siena.c
+index 741313aff1d1..9fe8ffc3a8d3 100644
+--- a/drivers/net/ethernet/sfc/siena/siena.c
++++ b/drivers/net/ethernet/sfc/siena/siena.c
+@@ -830,7 +830,7 @@ static int siena_mcdi_poll_reboot(struct efx_nic *efx)
+  **************************************************************************
+  */
+ 
+-#ifdef CONFIG_SFC_MTD
++#ifdef CONFIG_SFC_SIENA_MTD
+ 
+ struct siena_nvram_type_info {
+ 	int port;
+@@ -954,7 +954,7 @@ static int siena_mtd_probe(struct efx_nic *efx)
+ 	return rc;
+ }
+ 
+-#endif /* CONFIG_SFC_MTD */
++#endif /* CONFIG_SFC_SIENA_MTD */
+ 
+ static unsigned int siena_check_caps(const struct efx_nic *efx,
+ 				     u8 flag, u32 offset)
+@@ -1058,7 +1058,7 @@ const struct efx_nic_type siena_a0_nic_type = {
+ #ifdef CONFIG_RFS_ACCEL
+ 	.filter_rfs_expire_one = efx_farch_filter_rfs_expire_one,
+ #endif
+-#ifdef CONFIG_SFC_MTD
++#ifdef CONFIG_SFC_SIENA_MTD
+ 	.mtd_probe = siena_mtd_probe,
+ 	.mtd_rename = efx_siena_mcdi_mtd_rename,
+ 	.mtd_read = efx_siena_mcdi_mtd_read,
 
-
- drivers/net/ethernet/sfc/siena/Kconfig        |   33 +++++++++++++++++++++++++
- drivers/net/ethernet/sfc/siena/Makefile       |    4 ++-
- drivers/net/ethernet/sfc/siena/efx.c          |   28 +++++++++++++++++----
- drivers/net/ethernet/sfc/siena/efx.h          |    4 ++-
- drivers/net/ethernet/sfc/siena/efx_channels.c |    4 ++-
- drivers/net/ethernet/sfc/siena/efx_common.c   |    8 +++---
- drivers/net/ethernet/sfc/siena/efx_common.h   |    2 +-
- drivers/net/ethernet/sfc/siena/farch.c        |   18 +++++++-------
- drivers/net/ethernet/sfc/siena/mcdi.c         |   27 +++++++++++---------
- drivers/net/ethernet/sfc/siena/mcdi.h         |   10 ++++----
- drivers/net/ethernet/sfc/siena/mcdi_mon.c     |    4 ++-
- drivers/net/ethernet/sfc/siena/net_driver.h   |    6 ++---
- drivers/net/ethernet/sfc/siena/nic.h          |    2 +-
- drivers/net/ethernet/sfc/siena/ptp.c          |    7 +++--
- drivers/net/ethernet/sfc/siena/siena.c        |   10 ++++----
- drivers/net/ethernet/sfc/siena/siena_sriov.h  |    9 +++++--
- drivers/net/ethernet/sfc/siena/sriov.h        |    4 ++-
- 17 files changed, 117 insertions(+), 63 deletions(-)
-
---
-Martin Habets <habetsm.xilinx@gmail.com>
