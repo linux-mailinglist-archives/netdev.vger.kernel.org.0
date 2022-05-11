@@ -2,71 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 47B08522DC9
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 10:00:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DB59522DD6
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 10:03:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242822AbiEKH7v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 03:59:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        id S239849AbiEKIDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 04:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235522AbiEKH7t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 03:59:49 -0400
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79EB865D12
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 00:59:48 -0700 (PDT)
-Received: by mail-pl1-x629.google.com with SMTP id i1so1121633plg.7
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 00:59:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=peT7r8pDYHzB7rvEWL8t+lzxBsS2mteBeDziDEpDcxM=;
-        b=fE4YTvXu0C/FrN8OkeXnm0r8eTWhe+lomko+A82CJexvcLb1a/Fp5vBVlncz4fCz5Q
-         Q7PfUwnc3FS61FcjVFgNQ3QB33Hp5pCRtG3rqAHAw9RH6Gb1upkLDC/6hO6XPEhM8iOg
-         cuPsYbZIoMBagF2MrMmcBZsaietcvTgS+/AjIdluAIjtfAHndhvof+LxPt1R8SfuwBy7
-         GRZAn2QfTqMrbzaBgfcoPwBPnqc/NiSc1PnlSu05wlmYeIVbuLjGFan6JI1owGtB9Jrx
-         CKg0fTi8inkJnR3O9MGKXVuJj0qi5ctgnZU4Hc2Ha4galV0PE1CjkJTO5txy9rlU5GrN
-         dH6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=peT7r8pDYHzB7rvEWL8t+lzxBsS2mteBeDziDEpDcxM=;
-        b=pFUaqfciTDnJRezZ+otXP/naLFPI5spNwdbgdfCG2FPJQZTiIVEoUtoXyn757q/QWt
-         HcqFcvF1kEPXbOEr2HaaCgK2Y2T0Ftm7HfDF/NBryQAWayBc/9qdoQDqllGLGGPEe1Tj
-         IwIlK2bBb4DmiEVXhzMlziZehL45usqjqleVpcs17nbQl8D8q1fve7wtW+fC/Dr685z4
-         lfHYNUV7cwZhMTbfeebMqgQdGgJbX7KE7zQzmVJxihnd+g50V5s2LVywRZ6C+JtqO53k
-         nVy+G44ey2YnXk30lskx7RaVyYcPSGqSbBDHtzwhOCHlK//HNAqbuiIZ2fzG5d0x98Yn
-         Q0dQ==
-X-Gm-Message-State: AOAM530RZ8UJnAf2Px69sF3+HtWFnuMrSDZHXj6bqK34U2TLrMdbqeHu
-        D6KskZLJ8gnIXOLg4wO+dGE=
-X-Google-Smtp-Source: ABdhPJz3YMcCAIB9HfabrwiBVOIssBIbO4SLBM1BBAhSOAV2R/8FT/VP7zGfq3FTxoKAc805KiBh6Q==
-X-Received: by 2002:a17:90b:4b0d:b0:1dc:3d21:72c1 with SMTP id lx13-20020a17090b4b0d00b001dc3d2172c1mr4035859pjb.21.1652255987875;
-        Wed, 11 May 2022 00:59:47 -0700 (PDT)
-Received: from smtpclient.apple ([223.104.68.106])
-        by smtp.gmail.com with ESMTPSA id c9-20020a621c09000000b0050dc762814bsm946308pfc.37.2022.05.11.00.59.44
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 11 May 2022 00:59:47 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [Intel-wired-lan] [PATCH] igb_ethtool: fix efficiency issues in
- igb_set_eeprom
-From:   lixue liang <lixue.liang5086@gmail.com>
-In-Reply-To: <8d7e86ad-932c-d08c-3131-762edd553b22@molgen.mpg.de>
-Date:   Wed, 11 May 2022 15:59:41 +0800
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        anthony.l.nguyen@intel.com, Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, Netdev <netdev@vger.kernel.org>
+        with ESMTP id S243300AbiEKIDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 04:03:41 -0400
+Received: from mout.gmx.net (mout.gmx.net [212.227.17.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D15158D69B;
+        Wed, 11 May 2022 01:03:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1652256165;
+        bh=B8FTFbkEKSq9FU1nYtmjnKVxghiXhAC0tTT4mBqiWNo=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=aJuH3WpsbGssY0jxWTz6NtSsyJj/F0xB3cw1/JLXp51ddDUIpUqmQD5Wdp4TqBz2q
+         CyjAL6KdVYo2Ky8npof7tVC9Rz3ydTCsz0+V5soEV9cGcl3c5snAF9lfbdd+Oqk7jz
+         o3Dv6CHPzzSk2VO22pirR0DPXkoP6QVPNaqeZdlQ=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [80.245.76.65] ([80.245.76.65]) by web-mail.gmx.net
+ (3c-app-gmx-bap47.server.lan [172.19.172.117]) (via HTTP); Wed, 11 May 2022
+ 10:02:45 +0200
+MIME-Version: 1.0
+Message-ID: <trinity-68761fe5-fcca-456b-ba50-ead759f0fb54-1652256165646@3c-app-gmx-bap47>
+From:   Frank Wunderlich <frank-w@public-files.de>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Frank Wunderlich <linux@fw-web.de>,
+        linux-rockchip@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Peter Geis <pgwipeout@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Greg Ungerer <gerg@kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Subject: Aw: Re: [PATCH v3 1/6] dt-bindings: net: dsa: convert binding for
+ mediatek switches
+Content-Type: text/plain; charset=UTF-8
+Date:   Wed, 11 May 2022 10:02:45 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <YnqymzCbabEjV7GQ@robh.at.kernel.org>
+References: <20220507170440.64005-1-linux@fw-web.de>
+ <20220507170440.64005-2-linux@fw-web.de>
+ <YnqymzCbabEjV7GQ@robh.at.kernel.org>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:eV/uQqPXza9IH9Y6Gv0NJsaSRebtJEgsDYaeyvL96Y4T6fYpr0o3B2H8VkA557m4XfuMP
+ EJm8YxcfAdgzGs60GWOyMLLyOLwpHUmbcx+QBI57BblTcXBCv083UmF50AdAZIM3kIVCwTi/9e6S
+ RZ31tWDNSxRFhYErWSOsYivD8eVR/a8PeaGq7XD3uTo325JmaNm68SgIKTNEqUSN38nYYXYf2/KT
+ mxvT4xypcXMmCQ4hX3DmI53H0fBjFxbp3EhsginVvb+AQXve2LPZbAm22l28+vdqt1gTW2Vyz3jw
+ 7s=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IOaqh5ngyBI=:d3wI83YyXXlAM5qDVFD0Bx
+ cMUtUb2TC50x2gRAAJG8+Zg6pLpPDiDW9a92hECLC/VqDTv6yKkWZBeDp/qwthXNsa9xm6kVR
+ LkII6/vwvDGV3DD1wFHaWMKvAH18z0Ufgo41xshVPfGu2lmUbxzjT3RaBtSXyvKTopRWP3gsx
+ sPnFcGXfaVmXoA0AN9//S+VV/PVQ90jQ+9dTtsPEkgTpiGVgCs6FIWGjcyQ7u3tVEaCkNSUyi
+ 6RjE/M2Bo17O3Jb282h/qPFdHf4GS4k2Rq+BaBq7teOgLe/Y8oVScC45CVtGe2j/0XkJ1dbNM
+ LBk4Ts7/2cO8h6hX9BydCCEiX5lwqRNX1rDXTgVxqwdFdpbnnw/l2Pm6Kst1VA2ba4zjjKgJw
+ ZbrTNSqpt2lqPQiymgBt/e5NLYYn4GaUcTofI0j7jaGTiz0UOUMGzZg0uQwWCQoPtuf0afZHR
+ HvYfLGzpoYO3eEkT6DkOM2l4GOQdTADBRzPPl5ExffJfpBVk+rCMG1ZIwsLnBnwz/aOvUv+Hz
+ kctcK4jKKYPSSY+6LgGRFcR/wL2v7ZPEClOrrQE4GJgK0mN8lN66cTCSCP6eVNLjQsd8EuwhD
+ RrKqo97HwEmf5fMgTpUYoefC1aQi9DTIRS3RTk6o82BI9ay5kJO5zy428FX+UX8EVPmZzOC/+
+ 22GIwYHZnZnJrLv7AQAjNoYXx4ZxcMo207iAE1fbEPbcrm6gSuWWnUAdW0VmdjnmFYt4aZ6g5
+ E668W/8r4WDOpD8roFZvuJ12jZJ9N8wm0OhM2CsyQ0j2006xHt3m5PC63Ej5TtMF0KO2MgWMp
+ nupH2rG
 Content-Transfer-Encoding: quoted-printable
-Message-Id: <B0201E3D-98F5-490E-81CF-45B16A06760D@gmail.com>
-References: <20220510012159.8924-1-lianglixue@greatwall.com.cn>
- <8d7e86ad-932c-d08c-3131-762edd553b22@molgen.mpg.de>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -74,75 +89,116 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paul,
+Hi
 
-Thank you very much for your reply and suggestions.I have made the =
-corresponding changes according to your suggestion.
+thanks for review
 
-In addition, for the problem that the invalid mac address cannot load =
-the igb driver, I personally think there is a better way to modify it,=20=
+> Gesendet: Dienstag, 10. Mai 2022 um 20:44 Uhr
+> Von: "Rob Herring" <robh@kernel.org>
+> On Sat, May 07, 2022 at 07:04:35PM +0200, Frank Wunderlich wrote:
+> > From: Frank Wunderlich <frank-w@public-files.de>
 
-and I will resubmit the patch about igb_main.c.
+> > +++ b/Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.yaml
 
-It's the same question, but I may not know how to continue submitting =
-new patches on this email, sorry about that.
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - mediatek,mt7530
+> > +      - mediatek,mt7531
+> > +      - mediatek,mt7621
+> > +
+>
+> > +  "#address-cells":
+> > +    const: 1
+> > +
+> > +  "#size-cells":
+> > +    const: 0
+>
+> I don't see any child nodes with addresses, so these can be removed.
 
-> 2022=E5=B9=B45=E6=9C=8811=E6=97=A5 14:41=EF=BC=8CPaul Menzel =
-<pmenzel@molgen.mpg.de> =E5=86=99=E9=81=93=EF=BC=9A
->=20
-> Dear lianglixue,
->=20
->=20
-> Thank you for your patch.
->=20
-> Am 10.05.22 um 03:21 schrieb lianglixue:
->=20
-> It=E2=80=99d be great if you spelled your name with spaces (if =
-possible).
->=20
-> Also, currently your Google Mail address would be used for the Author =
-field. If you want to use your company(?) address, please add a From: =
-line at the top.
->=20
->> Modify the value of eeprom in igb_set_eeprom. If the mac address
->> of i210 is changed to illegal, then in igp_probe in the
->> igb_main file, is_valid_eth_addr (netdev->dev_addr) exits
->> with an error, causing the igb driver to fail to load,
->> such as ethtool -E eth0 magic 0x15338086 offset 0 value 0x01.
->> In this way, the igb driver can no longer be loaded,
->> and the legal mac address cannot be recovered through ethtool;
->> add is_valid_eth_addr to igb_set_eeprom to determine
->> whether it is legal to rewrite, so as to avoid driver
->> errors due to illegal mac addresses.
->=20
-> Please reflow the text for 75 characters per line.
->=20
->> Signed-off-by: lianglixue <lianglixue@greatwall.com.cn>
->> ---
->> drivers/net/ethernet/intel/igb/igb_ethtool.c | 7 +++++++
->> 1 file changed, 7 insertions(+)
->> diff --git a/drivers/net/ethernet/intel/igb/igb_ethtool.c =
-b/drivers/net/ethernet/intel/igb/igb_ethtool.c
->> index 2a5782063f4c..30554fd684db 100644
->> --- a/drivers/net/ethernet/intel/igb/igb_ethtool.c
->> +++ b/drivers/net/ethernet/intel/igb/igb_ethtool.c
->> @@ -798,6 +798,13 @@ static int igb_set_eeprom(struct net_device =
-*netdev,
->> 	if (eeprom->magic !=3D (hw->vendor_id | (hw->device_id << 16)))
->> 		return -EFAULT;
->> +	if (hw->mac.type =3D=3D e1000_i210 && eeprom->offset =3D=3D 0) {
->> +		if (!is_valid_ether_addr(bytes)) {
->> +			dev_err(&adapter->pdev->dev, "Invalid MAC =
-Address for i210\n");
->> +			return -EINVAL;
->> +		}
->> +	}
->> +
->> 	max_len =3D hw->nvm.word_size * 2;
->> 	first_word =3D eeprom->offset >> 1;
->=20
->=20
-> Kind regards,
->=20
-> Paul
+dropping this (and address-cells/size-cells from examples) causes errors l=
+ike this (address-/size-cells set in mdio
+node, so imho it should inherite):
 
+Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.example.dts:34.2=
+5-35: Warning (reg_format):
+/example-0/mdio/switch@0/ports/port@0:reg: property has invalid length (4 =
+bytes) (#address-cells =3D=3D 2, #size-cells =3D=3D 1)
+Documentation/devicetree/bindings/net/dsa/mediatek,mt7530.example.dtb: War=
+ning (pci_device_reg): Failed prerequisite 'reg_format'
+
+> > +  interrupt-controller:
+> > +    type: boolean
+>
+> Already has a type. Just:
+>
+> interrupt-controller: true
+>
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+
+> > +patternProperties:
+> > +  "^(ethernet-)?ports$":
+> > +    type: object
+>
+>        additionalProperties: false
+
+imho this will block address-/size-cells from this level too. looks like i=
+t is needed here too (for port-regs).
+
+> > +
+> > +    patternProperties:
+> > +      "^(ethernet-)?port@[0-9]+$":
+> > +        type: object
+> > +        description: Ethernet switch ports
+> > +
+> > +        unevaluatedProperties: false
+> > +
+> > +        properties:
+> > +          reg:
+> > +            description:
+> > +              Port address described must be 5 or 6 for CPU port and =
+from 0
+> > +              to 5 for user ports.
+> > +
+> > +        allOf:
+> > +          - $ref: dsa-port.yaml#
+> > +          - if:
+> > +              properties:
+> > +                label:
+> > +                  items:
+> > +                    - const: cpu
+> > +            then:
+> > +              required:
+> > +                - reg
+> > +                - phy-mode
+> > +
+
+> > +  - if:
+> > +      required:
+> > +        - interrupt-controller
+> > +    then:
+> > +      required:
+> > +        - interrupts
+>
+> This can be expressed as:
+>
+> dependencies:
+>   interrupt-controller: [ interrupts ]
+
+ok, i will change this
+
+> > +            ports {
+>
+> Use the preferred form: ethernet-ports
+
+current implementation in all existing dts and examples from old binding a=
+re "ports" only.
+should they changed too?
+
+> > +                #address-cells =3D <1>;
+> > +                #size-cells =3D <0>;
+> > +                port@0 {
+
+regards Frank
