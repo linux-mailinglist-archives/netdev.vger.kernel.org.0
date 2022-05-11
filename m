@@ -2,79 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E5A8523B90
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 19:30:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EC18523BAB
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 19:36:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241216AbiEKRad (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 13:30:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40662 "EHLO
+        id S230270AbiEKRgO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 13:36:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243285AbiEKRac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 13:30:32 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C072317E0
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 10:30:31 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2f7ca2ce255so29400247b3.7
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 10:30:31 -0700 (PDT)
+        with ESMTP id S234003AbiEKRgM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 13:36:12 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAFDF65D0B;
+        Wed, 11 May 2022 10:36:10 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id t5so3364037edw.11;
+        Wed, 11 May 2022 10:36:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Cghg16ufuQBLEvNuh0Nb/eQltKZiUL09EytQ2yuKV38=;
-        b=XqS+igim3PLUgUyQV5m2TjzdGyrNcDAhVz3VGs82QjxLn7qwTRDtLCtsPORJe8auZC
-         iXwSMCGpPv93XbD8Olj0WstKSZkz8Syuw8UrWlVpJQfIRJ8ETEcSnpCJ+E/V8gpBAJrI
-         tpVQn+OVJwMj0FlhtLlX/aadKNMcYayRNeVI7ESB7BpBXSLTpx0UCbSGjR86itFHOauu
-         HfvuyGVw47fWErxDDJmI2BTBl3OXDyR7RQT8VzTPL1i1C+VHiWRkQmQNjlP6VAqz8kmC
-         N9jiZPVvsUZ3ogCWQ02Yl3StGPoyV2ob9aFJUG/xYJqDwvDt+q8FR6ZlY2tvNzpLO6Iq
-         d5CA==
+         :cc:content-transfer-encoding;
+        bh=Q+sQrzaE7q/wJ6M9e4FJHPDLoako2RAr16Pq76NbOZk=;
+        b=WvBgvMgu4OutIFewhlEQT4/Q1Bd3fS5amVCGjf6MOewd1YKvZd9ahbz3Vz6ArX8QA4
+         kq6RbKI9Cv601VnSFjDtyxN/3KNItwU+PIyC39fNYw1kY5C+LXLieFFGY1mTiTR84pcJ
+         phP0/eGMn7+mmI3gV1MJZo+c+4SJ1ibDZ5gwTQCD4/iOU9RzpTV8tgwitTMkcLtKRlmG
+         BqZDyL0F1tz3pn3wzobYa8bD+wPh5A1EiLg3zPE4VbV4vHZo2Xp35BGbHq7ux2/1IN+Z
+         lDPrbBuMk4xpqyKwDFAbJFvwlVazPXVyRlSBvX/zR2HC3ed4hJq1fgRW9Rs7tym46Eov
+         uGkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Cghg16ufuQBLEvNuh0Nb/eQltKZiUL09EytQ2yuKV38=;
-        b=iv5IjE7vppsLoteor3lW6M+AHESODzdZ2bfmYO9OEQA23GvlMq70ODnoGkLbUMNNIS
-         Fzf3R4zOn+9cdnwTazHAX0ROPmI2AmaHssAUjczvv/kh+xWKSvCOWIRwB1ftibw3/grq
-         AJ7tla0RQQT3Hlo/XxulzJeWYrukwgYFF40/80EfWbs08HlLIt6k9e5OxlB9Dkut2hKm
-         wdkUo3AA91rFMwIn/Qe4eo2brbDEtsebr7iu3qBjc0oV38KmtWHezGkK0QDArr3cQQSW
-         zySR38w44EbSOMxDLNqLprWPBSmMYjCeyycFsdL+wwIhB6bWa1gVZkrtieZhNpCZwnoC
-         3wAA==
-X-Gm-Message-State: AOAM531ZR5fbaHyMnJAJhfv5HR1F71jzaDjn1ztFsPbTv+VWOytb4Zby
-        vpy+HD2nn3fUGynbIu9CY7bXQIu0d0Dt54E7HBAdpQ==
-X-Google-Smtp-Source: ABdhPJw+vcfZJKo+HArRsFlknkC730cl9n9Hd4LPX3tLSwP1FbpVhg0pw/5N3za6ZTVMvT9Nk4qubCCCDqTxXj/0qsA=
-X-Received: by 2002:a81:5603:0:b0:2f8:3187:f37a with SMTP id
- k3-20020a815603000000b002f83187f37amr25237461ywb.255.1652290230239; Wed, 11
- May 2022 10:30:30 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Q+sQrzaE7q/wJ6M9e4FJHPDLoako2RAr16Pq76NbOZk=;
+        b=mMsDVJwCo7+DqZqRhzP8RBhdsIVz4Zyinuk5q8Ic6FgehXdljZcvxLfcjgpoHfgc3A
+         g4Gadu3HpfOee80mJGrl2SGDLhdJVwKd/Kg/INzneLOja9tQCYJP6qOdewUuwin7hBqc
+         iSWiIcOkd81+vQdqfiaAZzEnpgwMwucBYkfufNLCXTuy5dhq/mXubThZ+hs15TptGZq7
+         4CNzt/zqZBZdxGaPpq0Qbe7z7LQGkIiF4iDR3e8TW0kEdseQUu2eVUc+04T4LUcwq/tp
+         5H7Rjka0O5LDMGsz7lG/I7bK8FfsGc31xKJ1995gmAbmPq7xBevpcTOsbfi36pej9lFe
+         DZ9w==
+X-Gm-Message-State: AOAM533EQZch2F7ioAtBXGS2N3308xhpz7m/H7RjCD8T2Ns9TR7F1oSd
+        1lrN0Ie+16d2V/tAVSyvLaLCMJYOE59Wa6YoJz8=
+X-Google-Smtp-Source: ABdhPJynENfmraW6oQiF/P+GETWKUOT7bj4NNo/dDUhDEXz+AGnRCKll2vkap09kaqq+rGv0ZOJjPDHohINe34Ie+RE=
+X-Received: by 2002:a05:6402:51d2:b0:428:48d0:5d05 with SMTP id
+ r18-20020a05640251d200b0042848d05d05mr30732830edd.28.1652290569273; Wed, 11
+ May 2022 10:36:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220511172305.1382810-1-kuba@kernel.org>
-In-Reply-To: <20220511172305.1382810-1-kuba@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 11 May 2022 10:30:19 -0700
-Message-ID: <CANn89iLqE1XUvb1nt1vU_YtHqmeqPqVTDrn=FSGFx4FUm2ajNw@mail.gmail.com>
-Subject: Re: [PATCH net-next] skbuff: replace a BUG_ON() with the new DEBUG_NET_WARN_ON_ONCE()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        Menglong Dong <imagedong@tencent.com>
+References: <20220510082351-mutt-send-email-mst@kernel.org>
+ <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
+ <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X> <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
+In-Reply-To: <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Wed, 11 May 2022 10:35:54 -0700
+Message-ID: <CAA93jw50TyLohZRQNkGf+LKSfzPykh9XcbYb8FCN5hmEd4Pc4g@mail.gmail.com>
+Subject: Re: [GIT PULL] virtio: last minute fixup
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Nathan Chancellor <nathan@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization <virtualization@lists.linux-foundation.org>,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mie@igel.co.jp
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 11, 2022 at 10:23 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> Very few drivers actually have Kconfig knobs for adding
-> -DDEBUG. 8 according to a quick grep, while there are
-> 93 users of skb_checksum_none_assert(). Switch to the
-> new DEBUG_NET_WARN_ON_ONCE() to catch bad skbs.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
+On Wed, May 11, 2022 at 2:54 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+> but what *is* interesting, and where the "Link:" line is very useful,
+> is finding where the original problem that *caused* that patch to be
+> posted in the first place.
+
+More generally, inside and outside the linux universe, a search engine
+that searched for all the *closed bugs* and their symptoms, in the
+world would often be helpful. There is such a long deployment tail and
+in modern bug trackers the closed bugs tend to vanish, even though the
+problem might still exist in the field for another decade or more.
+
+
+--=20
+FQ World Domination pending: https://blog.cerowrt.org/post/state_of_fq_code=
+l/
+Dave T=C3=A4ht CEO, TekLibre, LLC
