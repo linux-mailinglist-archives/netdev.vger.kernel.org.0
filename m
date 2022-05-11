@@ -2,138 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1018C523356
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:49:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF8FB523363
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:51:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242634AbiEKMtT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 08:49:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51854 "EHLO
+        id S242770AbiEKMvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 08:51:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237096AbiEKMtS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:49:18 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 374645EBF4;
-        Wed, 11 May 2022 05:49:16 -0700 (PDT)
-Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S242824AbiEKMvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:51:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C4D93D1D0;
+        Wed, 11 May 2022 05:51:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 2C05061E6478B;
-        Wed, 11 May 2022 14:49:13 +0200 (CEST)
-Message-ID: <6246d753-00cb-b5dc-f5fc-d041a8e78718@molgen.mpg.de>
-Date:   Wed, 11 May 2022 14:49:12 +0200
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC2B3B82359;
+        Wed, 11 May 2022 12:51:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1872C3410F;
+        Wed, 11 May 2022 12:51:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652273467;
+        bh=ilKGaxGKhxB0YYV/ztEYYWw7I0QBzPzqY3ODK4muYDQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Q4gUwAz+TH/cL8ISyjeXIkdK5QhVVTrbZhwP/mcQHEF8uQUMG1CT/4TaLj/mk1jmZ
+         MTmMaVV6JV4wZjSHrTSmg58dRcpgkiy6C1bBnCjVq4AwD1bVw8aqagwfKy8Z57eABM
+         0MCX5J8aisIjZqpvG3rz/9JyAqSGEvT4Yug5afofW85kCj8L8aeshDNhL4EcB6YW1W
+         GoUCoVwGzB9WkTfHivGVVxtkaxyVoXiiHX3b2vdOTA6DSuQBL1gPd6meQDvZ/d7yJX
+         bhKqwYFeNAv1RXKdFWMLGHN9P6J83yu92ngvN1VcOa0+4D2q58gcks2P1RSwt2BZcD
+         YifGv0I9oBVuA==
+Date:   Wed, 11 May 2022 13:50:59 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     LABBE Corentin <clabbe@baylibre.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, alexandre.torgue@foss.st.com,
+        calvin.johnson@oss.nxp.com, davem@davemloft.net,
+        edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, joabreu@synopsys.com,
+        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
+        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
+        peppe.cavallaro@st.com, robh+dt@kernel.org, samuel@sholland.org,
+        wens@csie.org, netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev
+Subject: Re: [PATCH 3/6] dt-bindings: net: Add documentation for phy-supply
+Message-ID: <YnuxM3StiTuLMBux@sirena.org.uk>
+References: <20220509074857.195302-1-clabbe@baylibre.com>
+ <20220509074857.195302-4-clabbe@baylibre.com>
+ <YnkGV8DyTlCuT92R@lunn.ch>
+ <YnkWl+xYCX8r9DE7@Red>
+ <Ynk7L07VH/RFVzl6@lunn.ch>
+ <Ynk9ccoVh32Deg45@sirena.org.uk>
+ <YnlDbbegQ1IbbaHy@lunn.ch>
+ <YnlHwpiow9Flgzas@sirena.org.uk>
+ <YnttssHyCf8PJJev@Red>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [Intel-wired-lan] [PATCH 2/2] igb: Make DMA faster when CPU is
- active on the PCIe link
-Content-Language: en-US
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220511122806.2146847-1-kai.heng.feng@canonical.com>
- <20220511122806.2146847-2-kai.heng.feng@canonical.com>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220511122806.2146847-2-kai.heng.feng@canonical.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="sbRn3mnJQka7KUAO"
+Content-Disposition: inline
+In-Reply-To: <YnttssHyCf8PJJev@Red>
+X-Cookie: Look ere ye leap.
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Kai-Hang,
 
+--sbRn3mnJQka7KUAO
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for the patch.
+On Wed, May 11, 2022 at 10:02:58AM +0200, LABBE Corentin wrote:
+> Le Mon, May 09, 2022 at 05:56:34PM +0100, Mark Brown a =E9crit :
 
+> > as part of the bus.  You'd need to extend the regulator bindings to
+> > support parallel array of phandles and array of names properties like
+> > clocks have as an option like you were asking for, which would doubtless
+> > be fun for validation but is probably the thing here.
 
-Am 11.05.22 um 14:28 schrieb Kai-Heng Feng:
-> We found Intel I210 can only achieve ~750Mbps Tx speed on some
-> platforms. The RR2DCDELAY shows around 0x2xxx DMA delay, which will be
+> Does you mean something like this:
 
-Please give an example platform, where it works and where it does not.
+=2E..
 
-How did you test transfer speed?
+> And then for our case, a regulator_get_bulk will be needed.
+> Does I well understood what you mean ?
 
-> significantly lower when 1) ASPM is disabled or 2) SoC package c-state
-> stays above PC3. When the RR2DCDELAY is around 0x1xxx the Tx speed can
-> reach to ~950Mbps.
-> 
-> According to the I210 datasheet "8.26.1 PCIe Misc. Register - PCIEMISC",
-> "DMA Idle Indication" doesn't seem to tie to DMA coalesce anymore, so
-> set it to 1b for "DMA is considered idle when there is no Rx or Tx AND
-> when there are no TLPs indicating that CPU is active detected on the
-> PCIe link (such as the host executes CSR or Configuration register read
-> or write operation)" and performing Tx should also fall under "active
-> CPU on PCIe link" case.
-> 
-> In addition to that, commit b6e0c419f040 ("igb: Move DMA Coalescing init
-> code to separate function.") seems to wrongly changed from enabling
-> E1000_PCIEMISC_LX_DECISION to disabling it, also fix that.
+Yes.
 
-Please split this into a separate commit with Fixes tag, and maybe the 
-commit author in Cc.
+--sbRn3mnJQka7KUAO
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-Kind regards,
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmJ7sTIACgkQJNaLcl1U
+h9CLDAf/WwjQBtzQ6Tt2Pi241jQ9Fv3CvwrQ+/Xb1dJ1V/872V1Ymq99YP0tS7CZ
+LM1m2NWTzuDilJpzAfvyQX5QKp1OnRhT3qgz9Aer6r5zLJmTIByrlCMFlbrn6Q7V
+OkjdV+G0cPYJQdezzzG4OKC24aGBvP/l7eKp1ZBe4sidLGLU6O6d5Hs4WUjgbMXQ
+WGfqSNOR3Cyu+2qA/eDxt+sI8FWdu1zgNWifjYmhbuAgIuOW+fYOJS8atZtZFDQk
+fFTABew0eD/hrBORWPLRpd0BOELQss8jC+TE8l8E83vG1Crl9BAhXoCMDRNk9+2g
+X6a9mbgqEG0AaM1Ct57gLDsTU0mMKg==
+=Nt6t
+-----END PGP SIGNATURE-----
 
-Paul
-
-
-> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> ---
->   drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++-------
->   1 file changed, 5 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 34b33b21e0dcd..eca797dded429 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -9897,11 +9897,10 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
->   	struct e1000_hw *hw = &adapter->hw;
->   	u32 dmac_thr;
->   	u16 hwm;
-> +	u32 reg;
->   
->   	if (hw->mac.type > e1000_82580) {
->   		if (adapter->flags & IGB_FLAG_DMAC) {
-> -			u32 reg;
-> -
->   			/* force threshold to 0. */
->   			wr32(E1000_DMCTXTH, 0);
->   
-> @@ -9934,7 +9933,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
->   			/* Disable BMC-to-OS Watchdog Enable */
->   			if (hw->mac.type != e1000_i354)
->   				reg &= ~E1000_DMACR_DC_BMC2OSW_EN;
-> -
->   			wr32(E1000_DMACR, reg);
->   
->   			/* no lower threshold to disable
-> @@ -9951,12 +9949,12 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
->   			 */
->   			wr32(E1000_DMCTXTH, (IGB_MIN_TXPBSIZE -
->   			     (IGB_TX_BUF_4096 + adapter->max_frame_size)) >> 6);
-> +		}
->   
-> -			/* make low power state decision controlled
-> -			 * by DMA coal
-> -			 */
-> +		if (hw->mac.type >= e1000_i210 ||
-> +		    (adapter->flags & IGB_FLAG_DMAC)) {
->   			reg = rd32(E1000_PCIEMISC);
-> -			reg &= ~E1000_PCIEMISC_LX_DECISION;
-> +			reg |= E1000_PCIEMISC_LX_DECISION;
->   			wr32(E1000_PCIEMISC, reg);
->   		} /* endif adapter->dmac is not disabled */
->   	} else if (hw->mac.type == e1000_82580) {
+--sbRn3mnJQka7KUAO--
