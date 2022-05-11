@@ -2,95 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D8074522C6F
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08191522C76
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236897AbiEKGhh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 02:37:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
+        id S242208AbiEKGkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 02:40:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234462AbiEKGhg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:37:36 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DFCB102754;
-        Tue, 10 May 2022 23:37:35 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id fv2so1321673pjb.4;
-        Tue, 10 May 2022 23:37:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZfSoPNQMQ3JtFIIIzzgju0SL8LR4iC7N17yQ0q5g1Gw=;
-        b=QvBv2UfaGGwqFWNY/pqXIZh/GYk8NUG2EtFqNMhHJItgzyGdcST13XjgT+C51QFIu0
-         wVRUAFagaBzJS1NQ19RnmAjO8E1K4w1zVumajYnd6dT4tvhMTgjaIX7mVrzFjuN+MdQ6
-         AjoMhKZnuR5eE4T4wrSqyPkP3cXhfYhVrdfRL9sQmy5ouvNWLQ4VowVZn9rznHpkBK7/
-         IbTWBK86znT2+Ma8LKDyx2Et/AwRVPK/pYs0za6VXQeQA/Rk5lUCqkV6hlnQYeLCB42U
-         4R5LHx5APkIlgmoX2sHMd6JXdI4qUVaEyN4kplZmkr75KP4eCOHxu7vORlx1aPvDjwnL
-         dl9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZfSoPNQMQ3JtFIIIzzgju0SL8LR4iC7N17yQ0q5g1Gw=;
-        b=ZUuiyiFAudULwR9dd5iPpX7P8erZv+bFFa04a7O89XUvqY4O1DJtD1XhvykXYKygW8
-         hNuB3JrrRlM/geePetWuEsQcexEHwqTjoIA1Z/1Ds5nFpRn8zPkIYYLVrIcLvLY29W9O
-         GkOY2KQI0RstTmmLeO1lvM52OBQ1jhogKvPOPBjvOrUBXTd02zpuYy/rfbLmtJU8dhvp
-         Ex90+8PLduGPwjzvcRDZse0EAQYDE7HrP/Jjs7wMaMNV0Afcc4s333qI7+TcfzPK1U5r
-         vJo/54X71FTXbM90hOKVoE/xgZv9P59HYSx1xANrBQYMhght1YopEvl19HKSlh6Fe8Zb
-         QbYg==
-X-Gm-Message-State: AOAM533UrhfNs81fidfOTIx+Pw87CdGcErBC84s49bKTi7V92xiSvzn2
-        ksJ3lBkS0+HnwL24wOZtKCI=
-X-Google-Smtp-Source: ABdhPJwgwpaW/4sIrJ2DtPGOF3tg6+/fSjpKZf+P2/qrsXRtPAFe1BSQEXPb0SCMKuAXhX1wdnAmWg==
-X-Received: by 2002:a17:90a:1509:b0:1d9:44a9:28c7 with SMTP id l9-20020a17090a150900b001d944a928c7mr3760102pja.89.1652251054890;
-        Tue, 10 May 2022 23:37:34 -0700 (PDT)
-Received: from localhost (subs02-180-214-232-26.three.co.id. [180.214.232.26])
-        by smtp.gmail.com with ESMTPSA id t67-20020a628146000000b0050dc762814asm732056pfd.36.2022.05.10.23.37.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 23:37:34 -0700 (PDT)
-Date:   Wed, 11 May 2022 13:37:31 +0700
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-To:     Akira Yokosawa <akiyks@gmail.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Pavel Pisa <pisa@cmp.felk.cvut.cz>,
-        Martin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
+        with ESMTP id S234181AbiEKGkI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:40:08 -0400
+Received: from m15111.mail.126.com (m15111.mail.126.com [220.181.15.111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7C4C42421BA;
+        Tue, 10 May 2022 23:40:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=RtS24
+        7RW6ZxcuKLxbipUrhShdpX0VWnQy9+bo9nU/z0=; b=MtRl5z1q/6cIOBNpfGv+r
+        d+HK7xlcGhnOB1NZz5JT3W5KP4euDRBauSrk4vaAOpt5albmVCDnmSajEf/SC1PR
+        UpmtuSWazeyp5UUjAwiycAmy9zM6Jf5hicMy5+yiIv1h3XegS83EvDW951zrgfyL
+        o7xWVdkvcAJbYDBU8hwWL8=
+Received: from ubuntu.localdomain (unknown [58.213.83.157])
+        by smtp1 (Coremail) with SMTP id C8mowAAXj9_8WXtiubKBBw--.33626S4;
+        Wed, 11 May 2022 14:38:54 +0800 (CST)
+From:   Bernard Zhao <zhaojunkui2008@126.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive
- instead of 'figure'
-Message-ID: <YntZqxuLSci6f8Z+@debian.me>
-References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Bernard Zhao <zhaojunkui2008@126.com>,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     bernard@vivo.com
+Subject: [PATCH] usb/peak_usb: cleanup code
+Date:   Tue, 10 May 2022 23:38:38 -0700
+Message-Id: <20220511063850.649012-1-zhaojunkui2008@126.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com>
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_SORBS_WEB,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: C8mowAAXj9_8WXtiubKBBw--.33626S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrurWktF4fWF1fAryrWFyxGrg_yoWktrXEkr
+        W7Zr4kJF1UCrWjqF4DJw4Svry2y3WkuFs7XwnrKFs3G34YyF4UXrWxCFZ3Gw43WF1ayF9I
+        kr1UJr4xAr18tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7sRAR6w3UUUUU==
+X-Originating-IP: [58.213.83.157]
+X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiuR79qlpD854fggAAsZ
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 06:34:37PM +0900, Akira Yokosawa wrote:
-> Two issues were observed in the ReST doc added by commit c3a0addefbde
-> ("docs: ctucanfd: CTU CAN FD open-source IP core documentation.").
-> 
-> The plain "figure" directive broke "make pdfdocs" due to a missing
-> PDF figure.  For conversion of SVG -> PDF to work, the "kernel-figure"
-> directive, which is an extension for kernel documentations, should
-> be used instead.
-> 
+The variable fi and bi only used in branch if (!dev->prev_siblings)
+, fi & bi not kmalloc in else branch, so move kfree into branch
+if (!dev->prev_siblings),this change is to cleanup the code a bit.
 
-Does plain "figure" directive not currently support SVG file argument?
-Because when I see reST documentation ([1]), it doesn't explicitly
-mentioned supported image formats.
+Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
+---
+ drivers/net/can/usb/peak_usb/pcan_usb_pro.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-[1]: https://docutils.sourceforge.io/docs/ref/rst/directives.html#figure
-
+diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
+index ebe087f258e3..70c5aef57247 100644
+--- a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
++++ b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
+@@ -903,6 +903,9 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
+ 		     pcan_usb_pro.name,
+ 		     bi->hw_rev, bi->serial_num_hi, bi->serial_num_lo,
+ 		     pcan_usb_pro.ctrl_count);
++
++		kfree(bi);
++		kfree(fi);
+ 	} else {
+ 		usb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
+ 	}
+@@ -913,9 +916,6 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
+ 	/* set LED in default state (end of init phase) */
+ 	pcan_usb_pro_set_led(dev, PCAN_USBPRO_LED_DEVICE, 1);
+ 
+-	kfree(bi);
+-	kfree(fi);
+-
+ 	return 0;
+ 
+  err_out:
 -- 
-An old man doll... just what I always wanted! - Clara
+2.33.1
+
