@@ -2,146 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84802522C1A
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:10:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9DFE522C3B
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:24:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238207AbiEKGKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 02:10:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36548 "EHLO
+        id S242152AbiEKGXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 02:23:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229899AbiEKGKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:10:48 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE104205EE;
-        Tue, 10 May 2022 23:10:45 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id x88so1298964pjj.1;
-        Tue, 10 May 2022 23:10:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Rxwmw7F4yraTtQttPtF/0wZ/ikGq2Rscn+f5iMrT7V8=;
-        b=hk5nmcxWqr1+4XZIG4Y2EoHdn4MFyQuBSg3wMbJB03xCN3J0/fGQJI9kJKzQLLlWfP
-         ZDVe37fm/UkBmm/PkjCtG1P4jelVut0rqGMNUuM6eaNwDqMDWJXOAVNl43inn/9fzuiX
-         08PIOuW+zLnKULD33PrfJiIhTaBGApajk5KJgbDuUBGdDqvD325R1qkKy6xn2plIZWb6
-         q0aQvfYNQ6zMw9ug/iMN/mRFoKLZLTd/4HF2ZzjOoZxf4gLk0u7t38GhennBESJ0W/R3
-         gpWBhIKHac6jv9zJ8sSWOg69s2c3x674NJk5GSfVmEAeoaiakgRb0u/l55Wh9RH3czUw
-         sUqA==
+        with ESMTP id S242042AbiEKGXR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:23:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E6E81FC7EB
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:23:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652250187;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WwyljACqAbVlQtU4LAdoRLkrWe0WUBj5SX13dxtUmBw=;
+        b=LLMEWoQn1bOStS/dx8iGTNnuKBT3j92eqM0pMdKdITcECbk8XGXmBIKj6gXLo2N0uMvyav
+        bnzuC6R2+bCpFWgdGPhFtnqlR57XvFYAyfDq7fW0TkJ2kWXPQRTaPaoAIR+heoh2EsEB+e
+        MUWW6ayLh0cUsHIukhSO0TJVGUGMz/I=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-296-AW26DCFIOtye5jmNpaP9zA-1; Wed, 11 May 2022 02:23:03 -0400
+X-MC-Unique: AW26DCFIOtye5jmNpaP9zA-1
+Received: by mail-wr1-f71.google.com with SMTP id o11-20020adfca0b000000b0020adc114131so429989wrh.8
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:23:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Rxwmw7F4yraTtQttPtF/0wZ/ikGq2Rscn+f5iMrT7V8=;
-        b=wYldsW1JXUalSrSHKRfmylqPaxvLv3fbH5+8XCpmWHWujyespPWtDMZFl/OhQQIeuF
-         xN6sSG3THp+7hC+NeJHCqfYak2dtQAEgqOMTUF03TJXRFb4LF2iOlngGUZUODzmGZ3Ic
-         9xybs+godMM4/tPZH9Q0aDO1dJDHmDLSJ17gGpLVAD83Hs4Sxa9SZsSIEZdBDHiLR5qJ
-         DZZlO80ePidx8M9oxFVzHntQfBotPAK3APKc/u4wp+6sA4oKTXCcSmt3yN3ZSUlkzKYh
-         wI7nm3HKLd9l3bB48Wt5+szB9sszQZJAs1y2hpMPBzqlEpZq1VH2kmw9VrYEsFHNgyTf
-         Jo9A==
-X-Gm-Message-State: AOAM5332wQMR0n45xZCerDPjr3xV7gf+k0OxDq9WS6rP1uYIi4Gc9gG1
-        IaqFJD5bZGodb8djffbq3tfKdwNyBuwQc8CzyzrOOM/97bk=
-X-Google-Smtp-Source: ABdhPJyvXv/OGzpotKsy1AIe0kD136J2PA88iaQfJStWhn17wXqCV6y8+g7+UBAut26mWSxafLKVkQRZipa4VxIIYG4=
-X-Received: by 2002:a17:902:8f8d:b0:15b:7b98:22e6 with SMTP id
- z13-20020a1709028f8d00b0015b7b9822e6mr23907991plo.102.1652249445174; Tue, 10
- May 2022 23:10:45 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WwyljACqAbVlQtU4LAdoRLkrWe0WUBj5SX13dxtUmBw=;
+        b=iSNeuvPR/WTbFSDqtuzSn7Suz4LeNFXg7M3zAJkPxFUrmIoXHMwUn9na7sS0r82pX6
+         m/heb2Vdbyt/6YrqJKVI8zCbxryipnyyF/4OKab4YxVEUlxwsfw032+DrCsZs1M2KvP1
+         IGH/e1W1ktCzjCbeQK34JBvOhcdW1/7bVDk93ND/DfIyp1x0x0BRIAVTygeuKvTc2jiT
+         cH8epI32DMn5cUMbipOJoT2D3U8a5+G5zYSXk1zZOqqYmizL4WeftZRjHf74Gc/4JLHU
+         Kn6g9i9TqzLlAZtjrsEpI2OUv/h0XBDgEehcoWniDsWbDkr4QvNtGiMRwNtY/R9Ukpul
+         c11g==
+X-Gm-Message-State: AOAM532KXCxo2cYMsFhbtDPCLPTtWn/Bi27t5yu2HbfNYb0hHi8HSlhl
+        nlK/7Fl4Vfp9IyHKgHlzg9V/aj7to1+pnEaKbzeQovnpByUj6pDGn/6QUVW7k1Bf6ReLHrSgj3K
+        iYPq2v85Iks3grosl
+X-Received: by 2002:a05:600c:5112:b0:394:55bd:5f9d with SMTP id o18-20020a05600c511200b0039455bd5f9dmr3210783wms.188.1652250182463;
+        Tue, 10 May 2022 23:23:02 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxcV3T8X8kCnCQofNw+5gZoO6rnCBUJnaiWHS+ZFla1vKmmL1Rqa83V1y1VetYmuhrJXc006Q==
+X-Received: by 2002:a05:600c:5112:b0:394:55bd:5f9d with SMTP id o18-20020a05600c511200b0039455bd5f9dmr3210762wms.188.1652250182189;
+        Tue, 10 May 2022 23:23:02 -0700 (PDT)
+Received: from redhat.com ([2.55.31.58])
+        by smtp.gmail.com with ESMTPSA id p19-20020a7bcc93000000b003942a244ecesm1155431wma.19.2022.05.10.23.23.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 May 2022 23:23:01 -0700 (PDT)
+Date:   Wed, 11 May 2022 02:22:58 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mie@igel.co.jp
+Subject: Re: [GIT PULL] virtio: last minute fixup
+Message-ID: <20220511021608-mutt-send-email-mst@kernel.org>
+References: <20220510082351-mutt-send-email-mst@kernel.org>
+ <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220502211235.142250-1-mathew.j.martineau@linux.intel.com>
- <20220502211235.142250-2-mathew.j.martineau@linux.intel.com>
- <20220511004818.qnfpzgepmg7xufwd@kafai-mbp.dhcp.thefacebook.com> <CAEf4BzbnsdSAKoZhQbX8WPuNtnJBx9hNLS2ct8gBkSRg-=Meog@mail.gmail.com>
-In-Reply-To: <CAEf4BzbnsdSAKoZhQbX8WPuNtnJBx9hNLS2ct8gBkSRg-=Meog@mail.gmail.com>
-From:   Geliang Tang <geliangtang@gmail.com>
-Date:   Wed, 11 May 2022 14:10:42 +0800
-Message-ID: <CA+WQbwvdOPk7c1s648kgkgVf+DOrEhRvOv2kz+WuP8eWV+qvBA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/8] bpf: expose is_mptcp flag to bpf_tcp_sock
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Martin KaFai Lau <kafai@fb.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Nicolas Rybowski <nicolas.rybowski@tessares.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        MPTCP Upstream <mptcp@lists.linux.dev>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> =E4=BA=8E2022=E5=B9=B45=E6=9C=
-=8811=E6=97=A5=E5=91=A8=E4=B8=89 13:02=E5=86=99=E9=81=93=EF=BC=9A
->
-> On Tue, May 10, 2022 at 5:48 PM Martin KaFai Lau <kafai@fb.com> wrote:
+On Tue, May 10, 2022 at 11:23:11AM -0700, Linus Torvalds wrote:
+> On Tue, May 10, 2022 at 5:24 AM Michael S. Tsirkin <mst@redhat.com> wrote:
 > >
-> > On Mon, May 02, 2022 at 02:12:27PM -0700, Mat Martineau wrote:
-> > > From: Nicolas Rybowski <nicolas.rybowski@tessares.net>
-> > >
-> > > is_mptcp is a field from struct tcp_sock used to indicate that the
-> > > current tcp_sock is part of the MPTCP protocol.
-> > >
-> > > In this protocol, a first socket (mptcp_sock) is created with
-> > > sk_protocol set to IPPROTO_MPTCP (=3D262) for control purpose but it
-> > > isn't directly on the wire. This is the role of the subflow (kernel)
-> > > sockets which are classical tcp_sock with sk_protocol set to
-> > > IPPROTO_TCP. The only way to differentiate such sockets from plain TC=
-P
-> > > sockets is the is_mptcp field from tcp_sock.
-> > >
-> > > Such an exposure in BPF is thus required to be able to differentiate
-> > > plain TCP sockets from MPTCP subflow sockets in BPF_PROG_TYPE_SOCK_OP=
-S
-> > > programs.
-> > >
-> > > The choice has been made to silently pass the case when CONFIG_MPTCP =
-is
-> > > unset by defaulting is_mptcp to 0 in order to make BPF independent of
-> > > the MPTCP configuration. Another solution is to make the verifier fai=
-l
-> > > in 'bpf_tcp_sock_is_valid_ctx_access' but this will add an additional
-> > > '#ifdef CONFIG_MPTCP' in the BPF code and a same injected BPF program
-> > > will not run if MPTCP is not set.
-> > There is already bpf_skc_to_tcp_sock() and its returned tcp_sock pointe=
-r
-> > can access all fields of the "struct tcp_sock" without extending
-> > the bpf_tcp_sock.
-> >
-> > iiuc, I believe the needs to extend bpf_tcp_sock here is to make the
-> > same bpf sockops prog works for kernel with and without CONFIG_MPTCP
-> > because tp->is_mptcp is not always available:
-> >
-> > struct tcp_sock {
-> >         /* ... */
-> >
-> > #if IS_ENABLED(CONFIG_MPTCP)
-> >         bool    is_mptcp;
-> > #endif
-> > };
-> >
-> > Andrii, do you think bpf_core_field_exists() can be used in
-> > the bpf prog to test if is_mptcp is available in the running kernel
-> > such that the same bpf prog can be used in kernel with and without
-> > CONFIG_MPTCP?
->
-> yep, absolutely:
->
-> bool is_mptcp =3D bpf_core_field_exists(struct tcp_sock, is_mptcp) ?
-> sock->is_mptcp : false;
->
-> One can also directly check if CONFIG_MPTCP is set with the following
-> in BPF-side code:
->
-> extern bool CONFIG_MPTCP __kconfig;
+> > A last minute fixup of the transitional ID numbers.
+> > Important to get these right - if users start to depend on the
+> > wrong ones they are very hard to fix.
+> 
+> Hmm. I've pulled this, but those numbers aren't exactly "new".
+> 
+> They've been that way since 5.14, so what makes you think people
+> haven't already started depending on them?
 
-Thanks Martin & Andrii, will update this in v4.
+Yes they have been in the header but they are not used by *Linux* yet.
+My worry is for when we start using them and then someone backports
+the patches without backporting the macro fix.
+Maybe we should just drop these until there's a user, but I am
+a bit wary of a step like this so late in the cycle.
 
--Geliang
-SUSE
+> And - once again - I want to complain about the "Link:" in that commit.
+> 
+> It points to a completely useless patch submission. It doesn't point
+> to anything useful at all.
+> 
+> I think it's a disease that likely comes from "b4", and people decided
+> that "hey, I can use the -l parameter to add that Link: field", and it
+> looks better that way.
+> 
+> And then they add it all the time, whether it makes any sense or not.
+> 
+> I've mainly noticed it with the -tip tree, but maybe that's just
+> because I've happened to look at it.
+> 
+> I really hate those worthless links that basically add zero actual
+> information to the commit.
+> 
+> The "Link" field is for _useful_ links. Not "let's add a link just
+> because we can".
+> 
+>                            Linus
 
->
+
+OK I will stop doing this.
+I thought they are handy for when there are several versions of the
+patch. It helps me make sure I applied the latest one. Saving the
+message ID of the original mail in some other way would also be ok.
+Any suggestions for a better way to do this?
+
+-- 
+MST
+
