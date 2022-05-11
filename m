@@ -2,214 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AA81523576
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 16:29:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE894523595
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 16:33:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241511AbiEKO3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 10:29:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39814 "EHLO
+        id S244694AbiEKOdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 10:33:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231251AbiEKO3A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 10:29:00 -0400
-Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com [209.85.219.179])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 552188FD4C;
-        Wed, 11 May 2022 07:28:59 -0700 (PDT)
-Received: by mail-yb1-f179.google.com with SMTP id e12so4300750ybc.11;
-        Wed, 11 May 2022 07:28:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qTQsWzO3YZW4uR9nq/l9n7qJaYMCw4ErgRQiynA4kEg=;
-        b=ZV0Iae6vKejP0m7BWxQuZsPkeeRuFbUVZ4SDI5/u8Vdk1B5C9CwB1HSzxi3hk33WBU
-         q5DsrcsuH6Fa4pRndQk36T/x/DYCxrmnYdnY+H68/yCk27bN520vRTXQgI5EirAZZWAf
-         fgAwgrau/eEqP7nwxkZBiE1LYKR05znvEUbEX27o+WxK88L4D6fnCL5JHtIrMzV4KhXE
-         9n/jFcrM4o2civTiMod3BLQ+fYPe6H5seWtuH5mEIAmoEySBkY5swQy+gHxMzzNzvVm2
-         Vi2aMxVmzP5XApbqOZa9expa3FvdYwaodeLV/Pl4QvTKs4X7qwE2Lb+dij/wmbV3gqdf
-         An4Q==
-X-Gm-Message-State: AOAM533Ll7PzdEMWfWE9S3iYAjmxK14HCc4AOdpj9ZaXE6o8KVy4xEbG
-        jRXjTIKbwG15qZwz5ci7GyQKLZRQIeaIPhrAs3I=
-X-Google-Smtp-Source: ABdhPJzUF1Hmo7chhIyI7QmLnOOhTeYUSu+/KrSyvQOVI3jgtw6tpn8zgdQR8STtyAp27JjupRvIDytVxTu6nPU33Lw=
-X-Received: by 2002:a25:cb4b:0:b0:645:d702:eb15 with SMTP id
- b72-20020a25cb4b000000b00645d702eb15mr22026644ybg.500.1652279338443; Wed, 11
- May 2022 07:28:58 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220511130240.790771-1-zhaojunkui2008@126.com>
-In-Reply-To: <20220511130240.790771-1-zhaojunkui2008@126.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 11 May 2022 23:28:47 +0900
-Message-ID: <CAMZ6RqJpgUkr0i4X4w5GxYKgiu9aX8KvQ3fJ9OB0Ob3kbL2abw@mail.gmail.com>
-Subject: Re: [PATCH v2] usb/peak_usb: cleanup code
-To:     Bernard Zhao <zhaojunkui2008@126.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        with ESMTP id S240682AbiEKOdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 10:33:17 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB77668F80;
+        Wed, 11 May 2022 07:33:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=bEAJtgnMEKMbBgh9iYBqIdW4JqbXFYk0M7Z0CTygwNQ=; b=EK9OTj7tkiqGEEdsbkjzOt8cx+
+        9PIAG7mefFSDJPIn5ZVbt62K5LHyorLQQHfuhVglXto87oC3GVbpSJdKrSltBrOQo9vm0W42kpgC1
+        J7XQo/TiiBKbxVnZD+Xs1NW4V73B38KhiaGIbhVXlliV8iLudKNUzPMu10egYaNWJf64=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nonOY-002Jqv-2H; Wed, 11 May 2022 16:32:54 +0200
+Date:   Wed, 11 May 2022 16:32:54 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Felix Fietkau <nbd@nbd.name>, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bernard@vivo.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
+Message-ID: <YnvJFmX+BRscJOtm@lunn.ch>
+References: <20220510094014.68440-1-nbd@nbd.name>
+ <20220510123724.i2xqepc56z4eouh2@skbuf>
+ <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
+ <20220510165233.yahsznxxb5yq6rai@skbuf>
+ <bc4bde22-c2d6-1ded-884a-69465b9d1dc7@nbd.name>
+ <20220510222101.od3n7gk3cofwhbks@skbuf>
+ <376b13ac-d90b-24e0-37ed-a96d8e5f80da@nbd.name>
+ <20220511093245.3266lqdze2b4odh5@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511093245.3266lqdze2b4odh5@skbuf>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed. 11 May 2022 at 22:02, Bernard Zhao <zhaojunkui2008@126.com> wrote:
-> The variable fi and bi only used in branch if (!dev->prev_siblings)
-> , fi & bi not kmalloc in else branch, so move kfree into branch
-> if (!dev->prev_siblings),this change is to cleanup the code a bit.
->
-> Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
->
-> ---
-> Changes since V1:
-> * move all the content of the if (!dev->prev_siblings) to a new
-> function.
-> ---
->  drivers/net/can/usb/peak_usb/pcan_usb_pro.c | 57 +++++++++++++--------
->  1 file changed, 36 insertions(+), 21 deletions(-)
->
-> diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-> index ebe087f258e3..5e472fe086a8 100644
-> --- a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-> +++ b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-> @@ -841,32 +841,28 @@ static int pcan_usb_pro_stop(struct peak_usb_device *dev)
->         return 0;
->  }
->
-> -/*
-> - * called when probing to initialize a device object.
-> - */
-> -static int pcan_usb_pro_init(struct peak_usb_device *dev)
-> +static int pcan_usb_pro_init_first_channel(struct peak_usb_device *dev, struct pcan_usb_pro_interface **usb_if)
->  {
-> -       struct pcan_usb_pro_device *pdev =
-> -                       container_of(dev, struct pcan_usb_pro_device, dev);
-> -       struct pcan_usb_pro_interface *usb_if = NULL;
-> -       struct pcan_usb_pro_fwinfo *fi = NULL;
-> -       struct pcan_usb_pro_blinfo *bi = NULL;
-> +       struct pcan_usb_pro_interface *pusb_if = NULL;
+> Let's see what others have to say. I've been wanting to make the policy
+> of whether to call __skb_put_padto() standardized for all tagging protocol
+> drivers (similar to what is done in dsa_realloc_skb() and below it).
+> We pad for tail taggers, maybe we can always pad and this removes a
+> conditional, and simplifies taggers. Side note, I already dislike that
+> the comment in tag_brcm.c is out of sync with the code. It says that
+> padding up to ETH_ZLEN is necessary, but proceeds to pad up until
+> ETH_ZLEN + tag len, only to add the tag len once more below via skb_push().
+> It would be nice if we could use the simple eth_skb_pad().
 
-Nitpick but I would expect the argument of the function to be named pusb_if:
+There are some master devices which will perform padding on their own,
+in hardware. So for taggers which insert the header at the head,
+forcing such padding would be a waste of CPU time.
 
-struct pcan_usb_pro_interface **pusb_if
+For tail taggers, padding short packets by default does however make
+sense. The master device is probably going to pad in the wrong way if
+it does padding.
 
-And this variable to be call usb_if:
-
-struct pcan_usb_pro_interface *usb_if = NULL;
-
-This is to be consistent with pcan_usb_pro_init() where the single
-pointer is also named usb_if (and not pusb_if).
-
-Also, you might as well consider not using and intermediate variable
-and just do *pusb_if throughout all this helper function instead.
-
->         int err;
->
->         /* do this for 1st channel only */
->         if (!dev->prev_siblings) {
-> +               struct pcan_usb_pro_fwinfo *fi = NULL;
-> +               struct pcan_usb_pro_blinfo *bi = NULL;
-> +
->                 /* allocate netdevices common structure attached to first one */
-> -               usb_if = kzalloc(sizeof(struct pcan_usb_pro_interface),
-> +               pusb_if = kzalloc(sizeof(struct pcan_usb_pro_interface),
->                                  GFP_KERNEL);
->                 fi = kmalloc(sizeof(struct pcan_usb_pro_fwinfo), GFP_KERNEL);
->                 bi = kmalloc(sizeof(struct pcan_usb_pro_blinfo), GFP_KERNEL);
-> -               if (!usb_if || !fi || !bi) {
-> +               if (!pusb_if || !fi || !bi) {
->                         err = -ENOMEM;
->                         goto err_out;
-
-Did you test that code? Here, you are keeping the original err_out
-label, correct? Aren't the variables fi and bi out of scope after the
-err_out label?
-
->                 }
->
->                 /* number of ts msgs to ignore before taking one into account */
-> -               usb_if->cm_ignore_count = 5;
-> +               pusb_if->cm_ignore_count = 5;
->
->                 /*
->                  * explicit use of dev_xxx() instead of netdev_xxx() here:
-> @@ -903,18 +899,14 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
->                      pcan_usb_pro.name,
->                      bi->hw_rev, bi->serial_num_hi, bi->serial_num_lo,
->                      pcan_usb_pro.ctrl_count);
-> +
-> +               kfree(bi);
-> +               kfree(fi);
->         } else {
-> -               usb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
-> +               pusb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
->         }
-
-Sorry if I was not clear but I was thinking of just moving the if
-block in a new function and leaving the else part of the original one
-(c.f. below). This way, you lose one level on indentation and you can
-have the declaration, the kmalloc() and the err_out label all at the
-same indentation level in the function's main block.
-
-> -       pdev->usb_if = usb_if;
-> -       usb_if->dev[dev->ctrl_idx] = dev;
-> -
-> -       /* set LED in default state (end of init phase) */
-> -       pcan_usb_pro_set_led(dev, PCAN_USBPRO_LED_DEVICE, 1);
-> -
-> -       kfree(bi);
-> -       kfree(fi);
-> +       *usb_if = pusb_if;
->
->         return 0;
->
-> @@ -926,6 +918,29 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
->         return err;
->  }
->
-> +/*
-> + * called when probing to initialize a device object.
-> + */
-> +static int pcan_usb_pro_init(struct peak_usb_device *dev)
-> +{
-> +       struct pcan_usb_pro_device *pdev =
-> +                       container_of(dev, struct pcan_usb_pro_device, dev);
-> +       struct pcan_usb_pro_interface *usb_if = NULL;
-> +       int err;
-> +
-> +       err = pcan_usb_pro_init_first_channel(dev, &usb_if);
-> +       if (err)
-> +               return err;
-
-I was thinking of this:
-
-        if (!dev->prev_siblings) {
-              err = pcan_usb_pro_init_first_channel(dev, &usb_if);
-              if (err)
-                     return err;
-       } else {
-               usb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
-        }
-> +
-> +       pdev->usb_if = usb_if;
-> +       usb_if->dev[dev->ctrl_idx] = dev;
-> +
-> +       /* set LED in default state (end of init phase) */
-> +       pcan_usb_pro_set_led(dev, PCAN_USBPRO_LED_DEVICE, 1);
-> +
-> +       return 0;
-> +}
-> +
->  static void pcan_usb_pro_exit(struct peak_usb_device *dev)
->  {
->         struct pcan_usb_pro_device *pdev =
-> --
-> 2.33.1
->
+   Andrew
