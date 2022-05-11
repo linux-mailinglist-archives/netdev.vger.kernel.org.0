@@ -2,73 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B065C523311
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:24:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A2FF52331D
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:29:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242348AbiEKMYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 08:24:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54304 "EHLO
+        id S242024AbiEKM3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 08:29:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236963AbiEKMYg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:24:36 -0400
-Received: from theia.8bytes.org (8bytes.org [IPv6:2a01:238:4383:600:38bc:a715:4b6d:a889])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C47451C766D;
-        Wed, 11 May 2022 05:24:35 -0700 (PDT)
-Received: by theia.8bytes.org (Postfix, from userid 1000)
-        id D6B675A4; Wed, 11 May 2022 14:24:28 +0200 (CEST)
-Date:   Wed, 11 May 2022 14:24:23 +0200
-From:   =?iso-8859-1?Q?J=F6rg_R=F6del?= <joro@8bytes.org>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
-Subject: Re: [GIT PULL] virtio: last minute fixup
-Message-ID: <Ynuq9wMtJKBe8WOk@8bytes.org>
-References: <20220510082351-mutt-send-email-mst@kernel.org>
- <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
+        with ESMTP id S229927AbiEKM3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:29:09 -0400
+Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B551FD847;
+        Wed, 11 May 2022 05:29:05 -0700 (PDT)
+Received: from localhost.localdomain (unknown [10.101.196.174])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id E29D83F616;
+        Wed, 11 May 2022 12:28:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1652272143;
+        bh=BmDFlIfQNeKeHtrDmolTavZYGTvT+TUesJSYirKtAaI=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=ERQih4Y3mFWFLZjpVZZlfw3n4PzKo5NAB/s8126P5SHo+sXYQ1blcPlSPNR+suBUM
+         Za5ott4oG9OtIZkfIXF0/pPjYbhu2qIvRiRCush0P4RWmhsgQNmOAFbD7Qt4l4cTEn
+         tQVLI8nyCBY8uYzamON/EI/TX1jPYhosRV2hxfBnCUxJ1UfWrMln9V/3Fy+f9IVqap
+         5EDnPcKXnCyKtsEN5xrzmVCVgI9SoHNrwLqYlswCgKpLyr3RuK8fio3CqV+zyhf5X4
+         lnOACtB0VjI033GbmDPLeHlVcIC1eSzVFpz/OcHg2G9qYjd6gKCR2GbUNojGCryHoL
+         laBC9RbMCbMLA==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] igb: Remove duplicate defines
+Date:   Wed, 11 May 2022 20:28:04 +0800
+Message-Id: <20220511122806.2146847-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:23:11AM -0700, Linus Torvalds wrote:
-> And - once again - I want to complain about the "Link:" in that commit.
+There's no need to define same thing twice.
 
-I have to say that for me (probably for others as well) those Link tags
-pointing to the patch submission have quite some value:
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/net/ethernet/intel/igb/e1000_defines.h | 3 ---
+ drivers/net/ethernet/intel/igb/e1000_regs.h    | 1 -
+ 2 files changed, 4 deletions(-)
 
-	1) First of all it is an easy proof that the patch was actually
-	   submitted somewhere for public review before it went into a
-	   maintainers tree.
+diff --git a/drivers/net/ethernet/intel/igb/e1000_defines.h b/drivers/net/ethernet/intel/igb/e1000_defines.h
+index ca5429774994e..fa028928482fc 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_defines.h
++++ b/drivers/net/ethernet/intel/igb/e1000_defines.h
+@@ -1033,9 +1033,6 @@
+ #define E1000_VFTA_ENTRY_MASK                0x7F
+ #define E1000_VFTA_ENTRY_BIT_SHIFT_MASK      0x1F
+ 
+-/* DMA Coalescing register fields */
+-#define E1000_PCIEMISC_LX_DECISION      0x00000080 /* Lx power on DMA coal */
+-
+ /* Tx Rate-Scheduler Config fields */
+ #define E1000_RTTBCNRC_RS_ENA		0x80000000
+ #define E1000_RTTBCNRC_RF_DEC_MASK	0x00003FFF
+diff --git a/drivers/net/ethernet/intel/igb/e1000_regs.h b/drivers/net/ethernet/intel/igb/e1000_regs.h
+index 9cb49980ec2d1..eb9f6da9208a6 100644
+--- a/drivers/net/ethernet/intel/igb/e1000_regs.h
++++ b/drivers/net/ethernet/intel/igb/e1000_regs.h
+@@ -116,7 +116,6 @@
+ #define E1000_DMCRTRH	0x05DD0 /* Receive Packet Rate Threshold */
+ #define E1000_DMCCNT	0x05DD4 /* Current Rx Count */
+ #define E1000_FCRTC	0x02170 /* Flow Control Rx high watermark */
+-#define E1000_PCIEMISC	0x05BB8 /* PCIE misc config register */
+ 
+ /* TX Rate Limit Registers */
+ #define E1000_RTTDQSEL	0x3604 /* Tx Desc Plane Queue Select - WO */
+-- 
+2.34.1
 
-	2) The patch submission is often the entry point to the
-	   discussion which lead to this patch. From that email I can
-	   see what was discussed and often there is even a link to
-	   previous versions and the discussions that happened there. It
-	   helps to better understand how a patch came to be the way it
-	   is. I know this should ideally be part of the commit message,
-	   but in reality this is what I also use the link tag for.
-
-	3) When backporting a patch to a downstream kernel it often
-	   helps a lot to see the whole patch-set the change was
-	   submitted in, especially when it comes to fixes. With the
-	   Link: tag the whole submission thread is easy to find.
-
-I can stop adding them to patches if you want, but as I said, I think
-there is some value in them which make me want to keep them.
-
-Regards,
-
-	Joerg
