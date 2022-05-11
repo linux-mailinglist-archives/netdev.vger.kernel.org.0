@@ -2,131 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D9DFE522C3B
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:24:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1D2A522C42
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:25:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242152AbiEKGXV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 02:23:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49290 "EHLO
+        id S241622AbiEKGZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 02:25:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242042AbiEKGXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:23:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1E6E81FC7EB
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:23:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652250187;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=WwyljACqAbVlQtU4LAdoRLkrWe0WUBj5SX13dxtUmBw=;
-        b=LLMEWoQn1bOStS/dx8iGTNnuKBT3j92eqM0pMdKdITcECbk8XGXmBIKj6gXLo2N0uMvyav
-        bnzuC6R2+bCpFWgdGPhFtnqlR57XvFYAyfDq7fW0TkJ2kWXPQRTaPaoAIR+heoh2EsEB+e
-        MUWW6ayLh0cUsHIukhSO0TJVGUGMz/I=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-296-AW26DCFIOtye5jmNpaP9zA-1; Wed, 11 May 2022 02:23:03 -0400
-X-MC-Unique: AW26DCFIOtye5jmNpaP9zA-1
-Received: by mail-wr1-f71.google.com with SMTP id o11-20020adfca0b000000b0020adc114131so429989wrh.8
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:23:03 -0700 (PDT)
+        with ESMTP id S240066AbiEKGZI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:25:08 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227F622442D
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:25:07 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id t6so1465996wra.4
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:25:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ObCZ7MnpdBI4o7emrmzCT2A3YCoOsYeRw9ONlu1emLE=;
+        b=pHaJelVfxLeXa3UViuuV2NFr62eO3WSW0QZjjXGklVMsXicw4tQICpTsWlSS7M43/2
+         j9zfzGryCZskyIVrbNceE07w0Aany8T40QP5owuxlh6LiQRGY3jD37dh/pxw9RSjK52o
+         Pece9wctfOh0JfkxsnzlFaXosx0tXVy48eShEnumTU227ePT/uGQAfaS4O89dKEeHS70
+         YKiFFtCHBrU0In3Rr0m1T5X26OS0343A4PuPhjLUoFOpHhCVzOhnxbbbeIs6/C0Mc4CR
+         2+m7RkdmS6P3e0eiQ7kB+i1RxbJZbPlwSGZKTy93c6H5ceQ4+tviTwNHF6P3ipXyiG+X
+         lXWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WwyljACqAbVlQtU4LAdoRLkrWe0WUBj5SX13dxtUmBw=;
-        b=iSNeuvPR/WTbFSDqtuzSn7Suz4LeNFXg7M3zAJkPxFUrmIoXHMwUn9na7sS0r82pX6
-         m/heb2Vdbyt/6YrqJKVI8zCbxryipnyyF/4OKab4YxVEUlxwsfw032+DrCsZs1M2KvP1
-         IGH/e1W1ktCzjCbeQK34JBvOhcdW1/7bVDk93ND/DfIyp1x0x0BRIAVTygeuKvTc2jiT
-         cH8epI32DMn5cUMbipOJoT2D3U8a5+G5zYSXk1zZOqqYmizL4WeftZRjHf74Gc/4JLHU
-         Kn6g9i9TqzLlAZtjrsEpI2OUv/h0XBDgEehcoWniDsWbDkr4QvNtGiMRwNtY/R9Ukpul
-         c11g==
-X-Gm-Message-State: AOAM532KXCxo2cYMsFhbtDPCLPTtWn/Bi27t5yu2HbfNYb0hHi8HSlhl
-        nlK/7Fl4Vfp9IyHKgHlzg9V/aj7to1+pnEaKbzeQovnpByUj6pDGn/6QUVW7k1Bf6ReLHrSgj3K
-        iYPq2v85Iks3grosl
-X-Received: by 2002:a05:600c:5112:b0:394:55bd:5f9d with SMTP id o18-20020a05600c511200b0039455bd5f9dmr3210783wms.188.1652250182463;
-        Tue, 10 May 2022 23:23:02 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxcV3T8X8kCnCQofNw+5gZoO6rnCBUJnaiWHS+ZFla1vKmmL1Rqa83V1y1VetYmuhrJXc006Q==
-X-Received: by 2002:a05:600c:5112:b0:394:55bd:5f9d with SMTP id o18-20020a05600c511200b0039455bd5f9dmr3210762wms.188.1652250182189;
-        Tue, 10 May 2022 23:23:02 -0700 (PDT)
-Received: from redhat.com ([2.55.31.58])
-        by smtp.gmail.com with ESMTPSA id p19-20020a7bcc93000000b003942a244ecesm1155431wma.19.2022.05.10.23.23.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 May 2022 23:23:01 -0700 (PDT)
-Date:   Wed, 11 May 2022 02:22:58 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
-Subject: Re: [GIT PULL] virtio: last minute fixup
-Message-ID: <20220511021608-mutt-send-email-mst@kernel.org>
-References: <20220510082351-mutt-send-email-mst@kernel.org>
- <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=ObCZ7MnpdBI4o7emrmzCT2A3YCoOsYeRw9ONlu1emLE=;
+        b=Oa/AvouxYdtVMTQfucnhpul1j/pGlBi+P+4i8nW/wHRvJGHEtmnEJSQMAOKSBEPxlG
+         YgMmoLB1fwLmTE8FChGgGy4IGDQ7xYlb+DS8uEEHhT+meQ222ZcB7sUcTeqLWpliINuv
+         fiOu+RJeqg7V23nN5PbEn/v7BDfGUnaZ4kQbJ3egzYTrPPdZtxB+ejT4VshOOfdWKX/+
+         L1KMGld9RcnM6PRDpaQy6tqSxr9PpGdB6ojn0EhKI/lIO8908M5hiqhTz4FL15MIUB/2
+         yLSK67CqU2sT2NOMYvtWdrOvBqkskVE5rbRF+EfAa9OME+jaMkemjwmneVoXbf1j9/pn
+         jMkg==
+X-Gm-Message-State: AOAM532gkWtT09byxbW6dM1Vc8Lfra0glsxOoMoqvwetV9Z9nXSoulX6
+        mIIsgqy4E+9zzRCPpbh/Fs8=
+X-Google-Smtp-Source: ABdhPJzU69kOeS5zdS0Bn+YCeb95zOhydE9ibDTbcFIQpb/nA/VKSkDxZDqUOuL1YSCQFhLoX8T60w==
+X-Received: by 2002:a05:6000:18ac:b0:20c:ba84:1260 with SMTP id b12-20020a05600018ac00b0020cba841260mr15735984wri.379.1652250305771;
+        Tue, 10 May 2022 23:25:05 -0700 (PDT)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id m3-20020adffe43000000b0020c7fb81b0fsm776642wrs.46.2022.05.10.23.25.04
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 10 May 2022 23:25:05 -0700 (PDT)
+Date:   Wed, 11 May 2022 07:25:03 +0100
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     Taehee Yoo <ap420073@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, ecree.xilinx@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net 2/2] net: sfc: siena: fix memory leak in
+ siena_mtd_probe()
+Message-ID: <20220511062503.s7ndwcvzxzkyyniq@gmail.com>
+Mail-Followup-To: Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
+        ecree.xilinx@gmail.com, netdev@vger.kernel.org
+References: <20220510153619.32464-1-ap420073@gmail.com>
+ <20220510153619.32464-3-ap420073@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220510153619.32464-3-ap420073@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 11:23:11AM -0700, Linus Torvalds wrote:
-> On Tue, May 10, 2022 at 5:24 AM Michael S. Tsirkin <mst@redhat.com> wrote:
-> >
-> > A last minute fixup of the transitional ID numbers.
-> > Important to get these right - if users start to depend on the
-> > wrong ones they are very hard to fix.
-> 
-> Hmm. I've pulled this, but those numbers aren't exactly "new".
-> 
-> They've been that way since 5.14, so what makes you think people
-> haven't already started depending on them?
+On Tue, May 10, 2022 at 03:36:19PM +0000, Taehee Yoo wrote:
+> In the NIC ->probe callback, ->mtd_probe() callback is called.
+> If NIC has 2 ports, ->probe() is called twice and ->mtd_probe() too.
+> In the ->mtd_probe(), which is siena_mtd_probe() it allocates and
+> initializes mtd partiion.
+> But mtd partition for sfc is shared data.
+> So that allocated mtd partition data from last called
+> siena_mtd_probe() will not be used.
 
-Yes they have been in the header but they are not used by *Linux* yet.
-My worry is for when we start using them and then someone backports
-the patches without backporting the macro fix.
-Maybe we should just drop these until there's a user, but I am
-a bit wary of a step like this so late in the cycle.
+On Siena the 2nd port does have MTD partitions. In the output
+from /proc/mtd below eth3 is the 1st port and eth4 is the 2nd
+port:
 
-> And - once again - I want to complain about the "Link:" in that commit.
-> 
-> It points to a completely useless patch submission. It doesn't point
-> to anything useful at all.
-> 
-> I think it's a disease that likely comes from "b4", and people decided
-> that "hey, I can use the -l parameter to add that Link: field", and it
-> looks better that way.
-> 
-> And then they add it all the time, whether it makes any sense or not.
-> 
-> I've mainly noticed it with the -tip tree, but maybe that's just
-> because I've happened to look at it.
-> 
-> I really hate those worthless links that basically add zero actual
-> information to the commit.
-> 
-> The "Link" field is for _useful_ links. Not "let's add a link just
-> because we can".
-> 
->                            Linus
+mtd12: 00030000 00010000 "eth3 sfc_mcfw:0b"
+mtd13: 00010000 00010000 "eth3 sfc_dynamic_cfg:00"
+mtd14: 00030000 00010000 "eth3 sfc_exp_rom:01"
+mtd15: 00010000 00010000 "eth3 sfc_exp_rom_cfg:00"
+mtd16: 00120000 00010000 "eth3 sfc_fpga:01"
+mtd17: 00010000 00010000 "eth4 sfc_dynamic_cfg:00"
+mtd18: 00010000 00010000 "eth4 sfc_exp_rom_cfg:00"
 
+So this patch is not needed, and efx_mtd_remove() will free
+the memory for both ports.
 
-OK I will stop doing this.
-I thought they are handy for when there are several versions of the
-patch. It helps me make sure I applied the latest one. Saving the
-message ID of the original mail in some other way would also be ok.
-Any suggestions for a better way to do this?
+Martin
 
--- 
-MST
-
+> Therefore it must be freed.
+> But it doesn't free a not used mtd partition data in siena_mtd_probe().
+> 
+> Fixes: 8880f4ec21e6 ("sfc: Add support for SFC9000 family (2)")
+> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+> ---
+>  drivers/net/ethernet/sfc/siena.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/sfc/siena.c b/drivers/net/ethernet/sfc/siena.c
+> index ce3060e15b54..8b42951e34d6 100644
+> --- a/drivers/net/ethernet/sfc/siena.c
+> +++ b/drivers/net/ethernet/sfc/siena.c
+> @@ -939,6 +939,11 @@ static int siena_mtd_probe(struct efx_nic *efx)
+>  		nvram_types >>= 1;
+>  	}
+>  
+> +	if (!n_parts) {
+> +		kfree(parts);
+> +		return 0;
+> +	}
+> +
+>  	rc = siena_mtd_get_fw_subtypes(efx, parts, n_parts);
+>  	if (rc)
+>  		goto fail;
+> -- 
+> 2.17.1
