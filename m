@@ -2,248 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4E9E523374
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:55:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05EEF523380
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:58:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242852AbiEKMzQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 08:55:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
+        id S241214AbiEKM60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 08:58:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242826AbiEKMzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:55:15 -0400
-Received: from smtpcmd14161.aruba.it (smtpcmd14161.aruba.it [62.149.156.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5EC146B7E2
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 05:55:11 -0700 (PDT)
-Received: from dfiloni-82ds ([213.215.163.55])
-        by Aruba Outgoing Smtp  with ESMTPSA
-        id olrtnPwzQJtD2olrtnwG5g; Wed, 11 May 2022 14:55:08 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
-        t=1652273708; bh=BXC7lJze1QSVSShN2eHB9LPUHjnehZrtUc0+mvuHeqE=;
-        h=Subject:From:To:Date:Content-Type:MIME-Version;
-        b=BH574N/G/mQXbVXsD29IQe1qQ9cqakW76Id9piIdGlYSILadeoVT0gPya6ckdl8NU
-         NQy2F2soAJWRmnyS5NdsyWoH+WApbx0oixhMpzd3Yu8/WNYIIzFD3HjOzP9p50DBuv
-         5xcd9ldqJfWWGETgFW/u33msnEy4GqyqeEYTdf1Rco6oCxBWipaHssO1isvwWBRZq4
-         0TRmLQ0M2yfqVBfTxbQ6j9C1hnbT0Uieab+GzSNWYSzVUvQJhRyg29Re4ubVDewHL/
-         zVZxz1UyoDGKPkf7MlIOdXrERt7Da9Po6D5ONGjwD4XgSyglqinQfUASj+xxO0sttM
-         xAkQh1wdUJ0EA==
-Message-ID: <baaf0b8b237a2e6a8f99faca60112919d79cf549.camel@egluetechnologies.com>
-Subject: Re: [PATCH RESEND] can: j1939: do not wait 250ms if the same addr
- was already claimed
-From:   Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
-To:     David Jander <david@protonic.nl>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        Robin van der Gracht <robin@protonic.nl>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
-        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 11 May 2022 14:55:04 +0200
-In-Reply-To: <20220511110649.21cc1f65@erd992>
-References: <20220509170303.29370-1-devid.filoni@egluetechnologies.com>
-         <YnllpntZ8V5CD07v@x1.vandijck-laurijssen.be>
-         <20220510042609.GA10669@pengutronix.de>
-         <ce7da10389fe448efee86d788dd5282b8022f92e.camel@egluetechnologies.com>
-         <20220511084728.GD10669@pengutronix.de> <20220511110649.21cc1f65@erd992>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5-0ubuntu1 
+        with ESMTP id S237596AbiEKM6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:58:25 -0400
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2EF495DFE
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 05:58:23 -0700 (PDT)
+Received: by mail-wm1-x332.google.com with SMTP id k126so1172648wme.2
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 05:58:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=NrpRK8AQVtooYclQQJrz162MpFfoF9t0R7qf9WTv27c=;
+        b=Dt4TetKMIA2i8LbPPhbSfGDokCxCkvNssG8nb2SCKpM4Xr+/mFDQPlAzXYrMLDaEOL
+         IzrAVv+2vDYatkHIeUOlE/SCL5V5E0BJYSROYGMIg2KkdrM1QVuiDUUJgvSwEvI6Hmvq
+         kjnidikvgUU1F6TL84aJ/0NayfwzyIjRUf6kVs2r8luDNnubU5xzh7h78HhZrLdOh7mh
+         Ky39rP9fHKwP+x87oqyKz9CzNQAtxPeZj7BAZ9B57yJyxTVKS2Tlo3qDkPO5v7cDQd5F
+         vtTwac+IuSvMJEzTKZhDt/loZCEYWzt07hEKx2PqF21E1NJ3u5EXizoYYG/8n+bhl4UV
+         h0AQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to:user-agent;
+        bh=NrpRK8AQVtooYclQQJrz162MpFfoF9t0R7qf9WTv27c=;
+        b=KpATZCDuJmvAIbjxywjo0/8nCKisCguy+u7xtR89mhyi5ST5gzUIebrGDMbm62gLer
+         uR4Rc+RKAMRkpYQKVRGqxKvBUUEgNfuXvtBGLAASE+iWoLZbmqFwYT4xU6wq790rRQ7j
+         cxNqu8Zq28LKHmW8T+PJx0Ut6oM6fLUoA505ub1UpRjrFHCOVI91jBRg9S5ZZWztsg0m
+         71I6IRyGH8my2dg2zwU/IEVJBaKGGPo22+3thnABcoypOImg750vOozVtVgp0cHg9rY4
+         lqvAhZA2Bco8yaHowoDZiISrpANQN44lyOrfiUvVy7mqSSEJVfopRaEZCes1VCjtPO0P
+         rMKQ==
+X-Gm-Message-State: AOAM531SlkOdsZCTRAfcsYxG2hBuPwqR/o2/RA9QstvXsd/h2ikHk9gY
+        pIcIL0cXf4IGs2OYvyDHbQR73v5LZnY=
+X-Google-Smtp-Source: ABdhPJxi/QM1NhQqy+ckLbPXPvCkQoNsUaIVjhoJrgUSoGQKJlHduIxkMg84TklAsZEudiVqY8ezxg==
+X-Received: by 2002:a05:600c:1e28:b0:394:8f2a:e266 with SMTP id ay40-20020a05600c1e2800b003948f2ae266mr4769353wmb.112.1652273902217;
+        Wed, 11 May 2022 05:58:22 -0700 (PDT)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id r6-20020a5d4986000000b0020c5253d8f6sm1610153wrq.66.2022.05.11.05.58.21
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 11 May 2022 05:58:21 -0700 (PDT)
+Date:   Wed, 11 May 2022 13:58:19 +0100
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
+Cc:     ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        Liang Li <liali@redhat.com>
+Subject: Re: [PATCH net-next 1/2] sfc: fix memory leak on mtd_probe
+Message-ID: <20220511125819.nz6ethnd2yyljdj6@gmail.com>
+Mail-Followup-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
+        ecree.xilinx@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        Liang Li <liali@redhat.com>
+References: <20220511103604.37962-1-ihuguet@redhat.com>
+ <20220511103604.37962-2-ihuguet@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-CMAE-Envelope: MS4xfC8Ryy1issIuBiRxd66ZxvfTBUsOibYGe/cRlvWMIpPEqb9GcLSEebdGNqHWj2czV7eJL5NgRKWVu+wGABepScEQgsVbMlhVxCSgQ1HGnD+AWsXkCjnZ
- o2xW75pWySSD4iqYhziN7jyW4d4RSd51lYN88bOkevqUgDcld4HbJ90/HPB2kYCP7wQs+bdydEUCLBEZi/deK+Deq9hQ44E4ViD+yo6XsWe3WZPQT7p1zIqD
- pQddQ6rjcsbrO9fPsH8nTN+hJ0h5+1nov+zR+8sIYHzpUMgGwBr/UiTt2woKKo8WGyfYflLT7TpN0VOqQar/4JyAekOKejF+UbJKvrpqEfbImyiObJf9xFY/
- E9zkQh72SDeihJsxUzEhNQRgBX5RtIBhx9BTmK5DtEqkT0vWB0QeyBvZjILzKCG+DuiDu6Lse7N5NR7OWoepz3dlnGO1wu5J6ASAtgWEJkTWQLe0d2NXMMDO
- cyDuXdT3HCcwdV/WS4Z89TWY4vOBLoOY4GVVOWA2M5l+EkTXia9iYuCqTZFo0nBVKrGmjUHnSCpD8cV3o1IL/Oxaqg//wW8TrkIBqk/WAiNSQzNNWy7tNqPx
- uWYC9jQYpJumYRBMp83H2nAnEXk39ZGx9UDuh/YAgX0MVJLXdXRlWpWGmzr90sgsVpKlfO2RUWwHyAjH7BQ3KvkhrWEmdvtH96hEo/6vpy2nh8cC5O9yctbF
- 5Bo60Nqoruw=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+In-Reply-To: <20220511103604.37962-2-ihuguet@redhat.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-05-11 at 11:06 +0200, David Jander wrote:
-> Hi,
-> 
-> On Wed, 11 May 2022 10:47:28 +0200
-> Oleksij Rempel <
-> o.rempel@pengutronix.de
-> > wrote:
-> 
-> > Hi,
-> > 
-> > i'll CC more J1939 users to the discussion.
-> 
-> Thanks for the CC.
-> 
-> > On Tue, May 10, 2022 at 01:00:41PM +0200, Devid Antonio Filoni wrote:
-> > > Hi,
-> > > 
-> > > On Tue, 2022-05-10 at 06:26 +0200, Oleksij Rempel wrote:  
-> > > > Hi,
-> > > > 
-> > > > On Mon, May 09, 2022 at 09:04:06PM +0200, Kurt Van Dijck wrote:  
-> > > > > On ma, 09 mei 2022 19:03:03 +0200, Devid Antonio Filoni wrote:  
-> > > > > > This is not explicitly stated in SAE J1939-21 and some tools used for
-> > > > > > ISO-11783 certification do not expect this wait.  
-> > > > 
-> > > > It will be interesting to know which certification tool do not expect it and
-> > > > what explanation is used if it fails?
-> > > >   
-> > > > > IMHO, the current behaviour is not explicitely stated, but nor is the opposite.
-> > > > > And if I'm not mistaken, this introduces a 250msec delay.
-> > > > > 
-> > > > > 1. If you want to avoid the 250msec gap, you should avoid to contest the same address.
-> > > > > 
-> > > > > 2. It's a balance between predictability and flexibility, but if you try to accomplish both,
-> > > > > as your patch suggests, there is slight time-window until the current owner responds,
-> > > > > in which it may be confusing which node has the address. It depends on how much history
-> > > > > you have collected on the bus.
-> > > > > 
-> > > > > I'm sure that this problem decreases with increasing processing power on the nodes,
-> > > > > but bigger internal queues also increase this window.
-> > > > > 
-> > > > > It would certainly help if you describe how the current implementation fails.
-> > > > > 
-> > > > > Would decreasing the dead time to 50msec help in such case.
-> > > > > 
-> > > > > Kind regards,
-> > > > > Kurt
-> > > > >   
-> > > > 
-> > > >   
-> > > 
-> > > The test that is being executed during the ISOBUS compliance is the
-> > > following: after an address has been claimed by a CF (#1), another CF
-> > > (#2) sends a  message (other than address-claim) using the same address
-> > > claimed by CF #1.
-> > > 
-> > > As per ISO11783-5 standard, if a CF receives a message, other than the
-> > > address-claimed message, which uses the CF's own SA, then the CF (#1):
-> > > - shall send the address-claim message to the Global address;
-> > > - shall activate a diagnostic trouble code with SPN = 2000+SA and FMI =
-> > > 31
-> > > 
-> > > After the address-claim message is sent by CF #1, as per ISO11783-5
-> > > standard:
-> > > - If the name of the CF #1 has a lower priority then the one of the CF
-> > > #2, the the CF #2 shall send its address-claim message and thus the CF
-> > > #1 shall send the cannot-claim-address message or shall execute again
-> > > the claim procedure with a new address
-> > > - If the name of the CF #1 has higher priority then the of the CF #2,
-> > > then the CF #2 shall send the cannot-claim-address message or shall
-> > > execute the claim procedure with a new address
-> > > 
-> > > Above conflict management is OK with current J1939 driver
-> > > implementation, however, since the driver always waits 250ms after
-> > > sending an address-claim message, the CF #1 cannot set the DTC. The DM1
-> > > message which is expected to be sent each second (as per J1939-73
-> > > standard) may not be sent.
-> > > 
-> > > Honestly, I don't know which company is doing the ISOBUS compliance
-> > > tests on our products and which tool they use as it was choosen by our
-> > > customer, however they did send us some CAN traces of previously
-> > > performed tests and we noticed that the DM1 message is sent 160ms after
-> > > the address-claim message (but it may also be lower then that), and this
-> > > is something that we cannot do because the driver blocks the application
-> > > from sending it.
-> > > 
-> > > 28401.127146 1  18E6FFF0x    Tx   d 8 FE 26 FF FF FF FF FF FF  //Message
-> > > with other CF's address
-> > > 28401.167414 1  18EEFFF0x    Rx   d 8 15 76 D1 0B 00 86 00 A0  //Address
-> > > Claim - SA = F0
-> > > 28401.349214 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 01 FF FF  //DM1
-> > > 28402.155774 1  18E6FFF0x    Tx   d 8 FE 26 FF FF FF FF FF FF  //Message
-> > > with other CF's address
-> > > 28402.169455 1  18EEFFF0x    Rx   d 8 15 76 D1 0B 00 86 00 A0  //Address
-> > > Claim - SA = F0
-> > > 28402.348226 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 02 FF FF  //DM1
-> > > 28403.182753 1  18E6FFF0x    Tx   d 8 FE 26 FF FF FF FF FF FF  //Message
-> > > with other CF's address
-> > > 28403.188648 1  18EEFFF0x    Rx   d 8 15 76 D1 0B 00 86 00 A0  //Address
-> > > Claim - SA = F0
-> > > 28403.349328 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 03 FF FF  //DM1
-> > > 28404.349406 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 03 FF FF  //DM1
-> > > 28405.349740 1  18FECAF0x    Rx   d 8 FF FF C0 08 1F 03 FF FF  //DM1
-> > > 
-> > > Since the 250ms wait is not explicitly stated, IMHO it should be up to
-> > > the user-space implementation to decide how to manage it.
-> 
-> I think this is not entirely correct. AFAICS the 250ms wait is indeed
-> explicitly stated.
-> The following is taken from ISO 11783-5:
-> 
-> In "4.4.4.3 Address violation" it states that "If a CF receives a message,
-> other than the address-claimed message, which uses the CFâ€™s own SA, then the
-> CF [...] shall send the address-claim message to the Global address."
-> 
-> So the CF shall claim its address again. But further down, in "4.5.2 Address
-> claim requirements" it is stated that "...No CF shall begin, or resume,
-> transmission on the network until 250 ms after it has successfully claimed an
-> address".
-> 
-> At this moment, the address is in dispute. The affected CFs are not allowed to
-> send any other messages until this dispute is resolved, and the standard
-> requires a waiting time of 250ms which is minimally deemed necessary to give
-> all participants time to respond and eventually dispute the address claim.
-> 
-> If the offending CF ignores this dispute and keeps sending incorrect messages
-> faster than every 250ms, then effectively the other CF has no chance to ever
-> resume normal operation because its address is still disputed.
-> 
-> According to 4.4.4.3 it is also required to set a DTC, but it will not be
-> allowed to send the DM1 message unless the address dispute is resolved.
-> 
-> This effectively leads to the offending CF to DoS the affected CF if it keeps
-> sending offending messages. Unfortunately neither J1939 nor ISObus takes into
-> account adversarial behavior on the CAN network, so we cannot do anything
-> about this.
-> 
-> As for the ISObus compliance tool that is mentioned by Devid, IMHO this
-> compliance tool should be challenged and fixed, since it is broken.
-> 
-> The networking layer is prohibiting the DM1 message to be sent, and the
-> networking layer has precedence above all superior protocol layers, so the
-> diagnostics layer is not able to operate at this moment.
-> 
-> Best regards,
-> 
-> 
+The same patch was submitted earlier, see
+https://lore.kernel.org/netdev/20220510153619.32464-1-ap420073@gmail.com/
 
-Hi David,
+Martin
 
-I get your point but I'm not sure that it is the correct interpretation
-that should be applied in this particular case for the following
-reasons:
-
-- In "4.5.2 Address claim requirements" it is explicitly stated that
-"The CF shall claim its own address when initializing and when
-responding to a command to change its NAME or address" and this seems to
-completely ignore the "4.4.4.3 Address violation" that states that the
-address-claimed message shall be sent also when "the CF receives a
-message, other than the address-claimed message, which uses the CF's own
-SA".
-Please note that the address was already claimed by the CF, so I think
-that the initialization requirements should not apply in this case since
-all disputes were already resolved.
-
-- If the offending CF ignores the dispute, as you said, then the other
-CF has no chance to ever resume normal operation and so the network
-cannot be aware that the other CF is not working correctly because the
-offending CF is spoofing its own address. This seems to make useless the
-requirement that states to activate the DTC in "4.4.4.3 Address
-violation".
-
-Regards,
-Devid
-
+On Wed, May 11, 2022 at 12:36:03PM +0200, Íñigo Huguet wrote:
+> In some cases there is no mtd partitions that can be probed, so the mtd
+> partitions list stays empty. This happens, for example, in SFC9220
+> devices on the second port of the NIC.
+> 
+> The memory for the mtd partitions is deallocated in efx_mtd_remove,
+> recovering the address of the first element of efx->mtd_list and then
+> deallocating it. But if the list is empty, the address passed to kfree
+> doesn't point to the memory allocated for the mtd partitions, but to the
+> list head itself. Despite this hasn't caused other problems other than
+> the memory leak, this is obviously incorrect.
+> 
+> This patch deallocates the memory during mtd_probe in the case that
+> there are no probed partitions, avoiding the leak.
+> 
+> This was detected with kmemleak, output example:
+> unreferenced object 0xffff88819cfa0000 (size 46560):
+>   comm "kworker/0:2", pid 48435, jiffies 4364987018 (age 45.924s)
+>   hex dump (first 32 bytes):
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>   backtrace:
+>     [<000000000f8e92d9>] kmalloc_order_trace+0x19/0x130
+>     [<0000000042a03844>] efx_ef10_mtd_probe+0x12d/0x320 [sfc]
+>     [<000000004555654f>] efx_pci_probe.cold+0x4e1/0x6db [sfc]
+>     [<00000000b03d5126>] local_pci_probe+0xde/0x170
+>     [<00000000376cc8d9>] work_for_cpu_fn+0x51/0xa0
+>     [<00000000141f8de9>] process_one_work+0x8cb/0x1590
+>     [<00000000cb2d8065>] worker_thread+0x707/0x1010
+>     [<000000001ef4b9f6>] kthread+0x364/0x420
+>     [<0000000014767137>] ret_from_fork+0x22/0x30
+> 
+> Fixes: 8127d661e77f ("sfc: Add support for Solarflare SFC9100 family")
+> Reported-by: Liang Li <liali@redhat.com>
+> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+> ---
+>  drivers/net/ethernet/sfc/ef10.c        | 5 +++++
+>  drivers/net/ethernet/sfc/siena/siena.c | 5 +++++
+>  2 files changed, 10 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+> index c9ee5011803f..15a229731296 100644
+> --- a/drivers/net/ethernet/sfc/ef10.c
+> +++ b/drivers/net/ethernet/sfc/ef10.c
+> @@ -3579,6 +3579,11 @@ static int efx_ef10_mtd_probe(struct efx_nic *efx)
+>  		n_parts++;
+>  	}
+>  
+> +	if (n_parts == 0) {
+> +		kfree(parts);
+> +		return 0;
+> +	}
+> +
+>  	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
+>  fail:
+>  	if (rc)
+> diff --git a/drivers/net/ethernet/sfc/siena/siena.c b/drivers/net/ethernet/sfc/siena/siena.c
+> index 741313aff1d1..32467782e8ef 100644
+> --- a/drivers/net/ethernet/sfc/siena/siena.c
+> +++ b/drivers/net/ethernet/sfc/siena/siena.c
+> @@ -943,6 +943,11 @@ static int siena_mtd_probe(struct efx_nic *efx)
+>  		nvram_types >>= 1;
+>  	}
+>  
+> +	if (n_parts == 0) {
+> +		kfree(parts);
+> +		return 0;
+> +	}
+> +
+>  	rc = siena_mtd_get_fw_subtypes(efx, parts, n_parts);
+>  	if (rc)
+>  		goto fail;
+> -- 
+> 2.34.1
