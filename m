@@ -2,131 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F67C523593
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 16:33:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 560A95235AB
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 16:36:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241146AbiEKOdK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 10:33:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54550 "EHLO
+        id S244758AbiEKOga (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 10:36:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238685AbiEKOdG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 10:33:06 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 475EF5AEEC
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 07:33:05 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id c9so2079212plh.2
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 07:33:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:subject:from:to:date:in-reply-to:references:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=i2EByjGZ9HI2c2OzDKOZTrB+hBnpluOldry07PZevUg=;
-        b=SmaF9bFKBqMRmF3lhfm0cRxAdhuoAyfQO6hfpBu9aYxYTvKKbQ0GfYFmNNzE7zp/SA
-         zMyKxy14VvELOCeLbGJKW186BQCjdLSDB0gLO+mxZ0nMv1ez4IkX3yqfTtZmp+asiCez
-         Y8LoFwsv54QZbjJJZ8V59jnhCcGnmk80r7Rqk+dBza1VwNDTySQyKgqode0tr+xlA4h2
-         FWa0YgwiFziqcNnGBs/GO1bCAh34y74N1OSgIEfVbyYwXst20FIsQNO3JvDMoxnbHBUe
-         +SdzGTHWmLy86vw3ebdCF0sk13Y3YdAmm/PnQ8MsEm8ye56c0f92qLacy1g3v5KmZixC
-         6r+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=i2EByjGZ9HI2c2OzDKOZTrB+hBnpluOldry07PZevUg=;
-        b=39sifgdUwqpXLbJNMuvDWrbqE38Hv38zixCpEYaS5HwTOTpWDyg5k5LvPI30jjHmJq
-         j0wds4BudGCSnRXeap7hIBwGsva6UQCc9jkWOxPOgMC/z+AzlO6nHqLyYaXxfEOK7sCr
-         N9Uw7P1JmFzCLZU9ovS1zM3Y6ilx9bNqitchNrCykKAsb6PthiInOBALAnC5Py+68+IW
-         UUtTcsEah7Xrb7SrGiGQ1giWWyJzO69SfKEPk8Md5Ux3K89DHzrdAIi7SOdiahXQBEoI
-         oYaZgVcucA+Rr7RgIH5Jts0kiy7JansHvjGYq3fS3pr9nqC9I0IjJH1slsepRogo3Rap
-         Tn1A==
-X-Gm-Message-State: AOAM533qTER77eNwNKgQ1pjD2pnO61TyaWu8QAFuEHhLzC9DX/iS5qTW
-        PDxBIeVE1BbZyDrtNxrljmE=
-X-Google-Smtp-Source: ABdhPJyWeMZ2KvoN0ZXm05z9fjpBXCpc59SjKzvIi+KH1ZaBXhaAL5UtR8FrN1PwGJ+i4sVwjGplxA==
-X-Received: by 2002:a17:90b:3ecb:b0:1dc:5401:bea with SMTP id rm11-20020a17090b3ecb00b001dc54010beamr5680019pjb.20.1652279584581;
-        Wed, 11 May 2022 07:33:04 -0700 (PDT)
-Received: from [192.168.0.128] ([98.97.39.30])
-        by smtp.googlemail.com with ESMTPSA id o6-20020a17090a420600b001cd498dc153sm2704554pjg.3.2022.05.11.07.33.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 07:33:03 -0700 (PDT)
-Message-ID: <ad8cf673c8e9e21cb2e7afeb5c7e66cc76a36995.camel@gmail.com>
-Subject: Re: [PATCH] =?UTF-8?Q?igb=5Fmain=EF=BC=9AAdded?= invalid mac
- address handling in igb_probe
-From:   Alexander H Duyck <alexander.duyck@gmail.com>
-To:     lixue liang <lianglixue@greatwall.com.cn>,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        kuba@kernel.org, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-Date:   Wed, 11 May 2022 07:33:02 -0700
-In-Reply-To: <20220511080716.10054-1-lianglixue@greatwall.com.cn>
-References: <20220511080716.10054-1-lianglixue@greatwall.com.cn>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.4 (3.40.4-5.fc34) 
+        with ESMTP id S244764AbiEKOg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 10:36:29 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2BD403C1
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 07:36:28 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nonRu-0002Lv-Bs; Wed, 11 May 2022 16:36:22 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D8B317BDD4;
+        Wed, 11 May 2022 14:36:20 +0000 (UTC)
+Date:   Wed, 11 May 2022 16:36:20 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
+Message-ID: <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
+References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
+ <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
+ <20220511132421.7o5a3po32l3w2wcr@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ljoxgzahuknnbyf5"
+Content-Disposition: inline
+In-Reply-To: <20220511132421.7o5a3po32l3w2wcr@pengutronix.de>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-05-11 at 08:07 +0000, lixue liang wrote:
-> In some cases, when the user uses igb_set_eeprom to modify
-> the mac address to be invalid, the igb driver will fail to load.
-> If there is no network card device, the user must modify it to
-> a valid mac address by other means. It is only the invalid
-> mac address that causes the driver The fatal problem of
-> loading failure will cause most users no choice but to trouble.
-> 
-> Since the mac address may be changed to be invalid, it must
-> also be changed to a valid mac address, then add a random
-> valid mac address to replace the invalid mac address in the
-> driver, continue to load the igb network card driver,
-> and output the relevant log reminder. vital to the user.
-> 
-> Signed-off-by: lixue liang <lianglixue@greatwall.com.cn>
-> ---
->  drivers/net/ethernet/intel/igb/igb_main.c | 7 ++++---
->  1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 34b33b21e0dc..a513570c2ad6 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -3359,9 +3359,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->  	eth_hw_addr_set(netdev, hw->mac.addr);
->  
->  	if (!is_valid_ether_addr(netdev->dev_addr)) {
 
-It might make sense to look at adding a module parameter to control
-this behavior similar to what was done for ixgbe for
-"allow_unsupported_sfp". 
-Otherwise such a failure is likely to end up causing other issues and
-be harder to debug if it is just being automatically worked around as
-the user may not see the issue as it is only being reported as 
+--ljoxgzahuknnbyf5
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Basically you could check for it here and either run the old code, or
-allow the new code that would assign a random MAC address.
+On 11.05.2022 15:24:21, Marc Kleine-Budde wrote:
+> On 11.05.2022 14:38:32, Oliver Hartkopp wrote:
+> > IMO this patch does not work as intended.
+> >=20
+> > You probably need to revisit every place where can_skb_reserve() is use=
+d,
+> > e.g. in raw_sendmsg().
+>=20
+> And the loopback for devices that don't support IFF_ECHO:
+>=20
+> | https://elixir.bootlin.com/linux/latest/source/net/can/af_can.c#L257
 
-> -		dev_err(&pdev->dev, "Invalid MAC Address\n");
-> -		err = -EIO;
-> -		goto err_eeprom;
-> +		eth_random_addr(netdev->dev_addr);
-> +		memcpy(hw->mac.addr, netdev->dev_addr, netdev->addr_len);
-> +		dev_info(&pdev->dev,
-> +			 "Invalid Mac Address, already got random Mac Address\n");
+BTW: There is a bug with interfaces that don't support IFF_ECHO.
 
-We would probably want to make this a dev_err instead of just a
-dev_info since the MAC address failing is pretty signficant. Also the
-message may be better as "Invalid MAC address. Assigned random MAC
-address". That way if somebody were to be parsing for the message they
-would still find it since "MAC" hasn't been changed.
+Assume an invalid CAN frame is passed to can_send() on an interface that
+doesn't support IFF_ECHO. The above mentioned code does happily generate
+an echo frame and it's send, even if the driver drops it, due to
+can_dropped_invalid_skb(dev, skb).
 
->  	}
->  
->  	igb_set_default_mac_filter(adapter);
+The echoed back CAN frame is treated in raw_rcv() as if the headroom is val=
+id:
 
+| https://elixir.bootlin.com/linux/v5.17.6/source/net/can/raw.c#L138
 
+But as far as I can see the can_skb_headroom_valid() check never has
+been done. What about this patch?
 
+index 1fb49d51b25d..fda4807ad165 100644
+--- a/net/can/af_can.c
++++ b/net/can/af_can.c
+@@ -255,6 +255,9 @@ int can_send(struct sk_buff *skb, int loop)
+                 */
+=20
+                if (!(skb->dev->flags & IFF_ECHO)) {
++                       if (can_dropped_invalid_skb(dev, skb))
++                               return -EINVAL;
++
+                        /* If the interface is not capable to do loopback
+                         * itself, we do it here.
+                         */
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--ljoxgzahuknnbyf5
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ7yeEACgkQrX5LkNig
+013sQgf9GZiV+J8h1BBY78BuX+q12pFS6uA1Ocl8Xx+dHF//nkU2y9FuYXbn8+fi
+fBFXw7jdhwMMfjSQPLHCbTXbLdrwEONAkQ1QQ6Db5M450W/8wisOgf+JqjDNM3iU
+tvZ1x3l3U/xFkFTdCm2A3IE/UMG7kaxeb/5v3Fk283gZNZ6FBhymRrxxofTfUtRJ
+G9Mn3Bhge8BFZ84kJZcYqhbAspY4MWoDKRDSysEjt0hxq37TxJw4M0JL4cPVH6s/
+8/HjzP5MZBh4Ep+dp4g5Y/KjEoLTLvbCtVHXcnJaLYJwW0vDvAKMG6dA8dQnc8fl
+9gmOJe5ZtenWSw87iMOsTEekkDFy2A==
+=sDfU
+-----END PGP SIGNATURE-----
+
+--ljoxgzahuknnbyf5--
