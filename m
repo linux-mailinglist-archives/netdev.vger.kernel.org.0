@@ -2,122 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 470BA52363D
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 16:54:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 59FAD523645
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 16:54:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245153AbiEKOyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 10:54:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
+        id S245175AbiEKOyu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 10:54:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245135AbiEKOyE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 10:54:04 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A5F1FC2DC
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 07:53:59 -0700 (PDT)
-Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id E944F61E6478B;
-        Wed, 11 May 2022 16:53:56 +0200 (CEST)
-Message-ID: <f486b0a0-2f6b-13e9-e905-8ad9163020a7@molgen.mpg.de>
-Date:   Wed, 11 May 2022 16:53:56 +0200
+        with ESMTP id S245176AbiEKOyt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 10:54:49 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22002206054
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 07:54:48 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nonjb-0004hJ-8l; Wed, 11 May 2022 16:54:39 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 0DC5C7BE0D;
+        Wed, 11 May 2022 14:54:38 +0000 (UTC)
+Date:   Wed, 11 May 2022 16:54:37 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
+Message-ID: <20220511145437.oezwkcprqiv5lfda@pengutronix.de>
+References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
+ <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
+ <20220511132421.7o5a3po32l3w2wcr@pengutronix.de>
+ <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
+ <002d234f-a7d6-7b1a-72f4-157d7a283446@hartkopp.net>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: =?UTF-8?B?UmU6IFtJbnRlbC13aXJlZC1sYW5dIFtQQVRDSF0gaWdiX21haW7vvJpB?=
- =?UTF-8?Q?dded_invalid_mac_address_handling_in_igb=5fprobe?=
-Content-Language: en-US
-To:     lixue liang <lianglixue@greatwall.com.cn>
-References: <20220511080716.10054-1-lianglixue@greatwall.com.cn>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        kuba@kernel.org, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-In-Reply-To: <20220511080716.10054-1-lianglixue@greatwall.com.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="vyh5zz5idfblqisk"
+Content-Disposition: inline
+In-Reply-To: <002d234f-a7d6-7b1a-72f4-157d7a283446@hartkopp.net>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Lixue,
 
+--vyh5zz5idfblqisk
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thank you for the patch. Please tag patch iterations with a version. 
-(Use `-v 2` in `git send-email` for example.)
+On 11.05.2022 16:50:06, Oliver Hartkopp wrote:
+>=20
+>=20
+> On 5/11/22 16:36, Marc Kleine-Budde wrote:
+> > On 11.05.2022 15:24:21, Marc Kleine-Budde wrote:
+> > > On 11.05.2022 14:38:32, Oliver Hartkopp wrote:
+> > > > IMO this patch does not work as intended.
+> > > >=20
+> > > > You probably need to revisit every place where can_skb_reserve() is=
+ used,
+> > > > e.g. in raw_sendmsg().
+> > >=20
+> > > And the loopback for devices that don't support IFF_ECHO:
+> > >=20
+> > > | https://elixir.bootlin.com/linux/latest/source/net/can/af_can.c#L257
+> >=20
+> > BTW: There is a bug with interfaces that don't support IFF_ECHO.
+> >=20
+> > Assume an invalid CAN frame is passed to can_send() on an interface that
+> > doesn't support IFF_ECHO. The above mentioned code does happily generate
+> > an echo frame and it's send, even if the driver drops it, due to
+> > can_dropped_invalid_skb(dev, skb).
+> >=20
+> > The echoed back CAN frame is treated in raw_rcv() as if the headroom is=
+ valid:
+> >=20
+> > | https://elixir.bootlin.com/linux/v5.17.6/source/net/can/raw.c#L138
+> >=20
+> > But as far as I can see the can_skb_headroom_valid() check never has
+> > been done. What about this patch?
+> >=20
+> > index 1fb49d51b25d..fda4807ad165 100644
+> > --- a/net/can/af_can.c
+> > +++ b/net/can/af_can.c
+> > @@ -255,6 +255,9 @@ int can_send(struct sk_buff *skb, int loop)
+> >                   */
+> >                  if (!(skb->dev->flags & IFF_ECHO)) {
+> > +                       if (can_dropped_invalid_skb(dev, skb))
+> > +                               return -EINVAL;
+> > +
+>=20
+> Good point!
+>=20
+> But please check the rest of the code.
+> You need 'goto inval_skb;' instead of the return ;-)
 
-Am 11.05.22 um 10:07 schrieb lixue liang:
+Why? To free the skb? That's what can_dropped_invalid_skb() does, too:
 
-Please use the normal colon : in the summary.
+| https://elixir.bootlin.com/linux/v5.17.6/source/include/linux/can/skb.h#L=
+130
 
-Also, please use imperative mood in present tense: Add …
+Marc
 
-But, in this case
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
-Handle invalid MAC address …
+--vyh5zz5idfblqisk
+Content-Type: application/pgp-signature; name="signature.asc"
 
-is shorter. Or:
+-----BEGIN PGP SIGNATURE-----
 
-Assign random MAC address instead of fail in case of invalid one
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ7zioACgkQrX5LkNig
+012WlwgArROLPgtUfP+HtShqIokTztQc8dLjiIYQFXgtmhtezGcgbl16AC+H3PHt
+V5jAyFvWWtgB43ckZHOouRPWzt6ZfkGodr30p2svwBJaYG5DXzqI5jzJtaJToMhY
+alvKFCii+g+Bx26r1RCl/3r/+JcoYBFQeZx3HmrhMcekmN0RMYx44Fl2A26YFowC
+WfrK/tVp37vxSll/HGEs88EQ5FkhVswBgwbdLRWgV+5DoygvufYn3kuxlSN568+j
+ChLjzbk24hZ8EQp3oOveLUgDm5CymM8wub2av8tJAzdBwoHeJ2SY5L3M6w+T3WnA
+jrO7jfTDEbnDUY8QhvsefTYIgTHuWw==
+=kJDD
+-----END PGP SIGNATURE-----
 
-> In some cases, when the user uses igb_set_eeprom to modify
-> the mac address to be invalid, the igb driver will fail to load.
-> If there is no network card device, the user must modify it to
-> a valid mac address by other means. It is only the invalid
-> mac address that causes the driver The fatal problem of
-
-… MAC address causing the driver to failure. The fatal …
-
-> loading failure will cause most users no choice but to trouble.
-
-Maybe remove this sentence, or rephrase.
-
-> Since the mac address may be changed to be invalid, it must
-> also be changed to a valid mac address, then add a random
-> valid mac address to replace the invalid mac address in the
-> driver, continue to load the igb network card driver,
-> and output the relevant log reminder. vital to the user.
-
-Please reflow for 75 characters per line. (More words fit in one line.)
-
-> Signed-off-by: lixue liang <lianglixue@greatwall.com.cn>
-> ---
->   drivers/net/ethernet/intel/igb/igb_main.c | 7 ++++---
->   1 file changed, 4 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index 34b33b21e0dc..a513570c2ad6 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -3359,9 +3359,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->   	eth_hw_addr_set(netdev, hw->mac.addr);
->   
->   	if (!is_valid_ether_addr(netdev->dev_addr)) {
-> -		dev_err(&pdev->dev, "Invalid MAC Address\n");
-> -		err = -EIO;
-> -		goto err_eeprom;
-> +		eth_random_addr(netdev->dev_addr);
-> +		memcpy(hw->mac.addr, netdev->dev_addr, netdev->addr_len);
-> +		dev_info(&pdev->dev,
-> +			 "Invalid Mac Address, already got random Mac Address\n");
-
-Is there a valid MAC address that should be only used for testing. Maybe 
-that can be used. Maybe also log the address.
-
-Lastly, please fully capitalize MAC.
-
->   	}
->   
->   	igb_set_default_mac_filter(adapter);
-
-
-Kind regards,
-
-Paul
+--vyh5zz5idfblqisk--
