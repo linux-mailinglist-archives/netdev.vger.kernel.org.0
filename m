@@ -2,34 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A2FF52331D
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:29:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8306952331F
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 14:29:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242024AbiEKM3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 08:29:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44106 "EHLO
+        id S242359AbiEKM3O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 08:29:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229927AbiEKM3J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:29:09 -0400
+        with ESMTP id S237854AbiEKM3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 08:29:12 -0400
 Received: from smtp-relay-canonical-1.canonical.com (smtp-relay-canonical-1.canonical.com [185.125.188.121])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95B551FD847;
-        Wed, 11 May 2022 05:29:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 667081FD843;
+        Wed, 11 May 2022 05:29:11 -0700 (PDT)
 Received: from localhost.localdomain (unknown [10.101.196.174])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id E29D83F616;
-        Wed, 11 May 2022 12:28:56 +0000 (UTC)
+        by smtp-relay-canonical-1.canonical.com (Postfix) with ESMTPSA id 908F44151F;
+        Wed, 11 May 2022 12:29:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1652272143;
-        bh=BmDFlIfQNeKeHtrDmolTavZYGTvT+TUesJSYirKtAaI=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=ERQih4Y3mFWFLZjpVZZlfw3n4PzKo5NAB/s8126P5SHo+sXYQ1blcPlSPNR+suBUM
-         Za5ott4oG9OtIZkfIXF0/pPjYbhu2qIvRiRCush0P4RWmhsgQNmOAFbD7Qt4l4cTEn
-         tQVLI8nyCBY8uYzamON/EI/TX1jPYhosRV2hxfBnCUxJ1UfWrMln9V/3Fy+f9IVqap
-         5EDnPcKXnCyKtsEN5xrzmVCVgI9SoHNrwLqYlswCgKpLyr3RuK8fio3CqV+zyhf5X4
-         lnOACtB0VjI033GbmDPLeHlVcIC1eSzVFpz/OcHg2G9qYjd6gKCR2GbUNojGCryHoL
-         laBC9RbMCbMLA==
+        s=20210705; t=1652272150;
+        bh=RvRGkbmZwsRxXLTPfCg6GAIzFml3B5IBzVyodoZxRPM=;
+        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+         MIME-Version;
+        b=CIVeKnEBZvBtlQK7YFRYChmtSflJc+taUo5CkdUoDIrMySSjaOq5hcSq4ZPwANPjB
+         AF+JgQCEVLMX8d0UtT4XL8caObBTCBQqYCsUwKpsXM4JoXFrWY7tvELe0cAGb9j6Fm
+         OOyJ0OhjCB59X/S/PFeIWDCYjOo7DizbRLza76FUZYv9i7JoZxp0YhL1KccvIWGGM5
+         lowfpiR/D7RqVczva4hZ5FN4kEFyzVFwlJABJJ2ZR6vNLEP/ebjX7N1bri5JmPrRLe
+         s2RELGwMK77FZnQNjTXPYc57Nz05UGJTDQwSgsc0j8GdddTUPKOH6vNmRwi8RCClwL
+         YB6NzKQEweRxQ==
 From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
 To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com
 Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
@@ -39,10 +40,12 @@ Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
         Paolo Abeni <pabeni@redhat.com>,
         intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/2] igb: Remove duplicate defines
-Date:   Wed, 11 May 2022 20:28:04 +0800
-Message-Id: <20220511122806.2146847-1-kai.heng.feng@canonical.com>
+Subject: [PATCH 2/2] igb: Make DMA faster when CPU is active on the PCIe link
+Date:   Wed, 11 May 2022 20:28:05 +0800
+Message-Id: <20220511122806.2146847-2-kai.heng.feng@canonical.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220511122806.2146847-1-kai.heng.feng@canonical.com>
+References: <20220511122806.2146847-1-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -55,40 +58,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's no need to define same thing twice.
+We found Intel I210 can only achieve ~750Mbps Tx speed on some
+platforms. The RR2DCDELAY shows around 0x2xxx DMA delay, which will be
+significantly lower when 1) ASPM is disabled or 2) SoC package c-state
+stays above PC3. When the RR2DCDELAY is around 0x1xxx the Tx speed can
+reach to ~950Mbps.
+
+According to the I210 datasheet "8.26.1 PCIe Misc. Register - PCIEMISC",
+"DMA Idle Indication" doesn't seem to tie to DMA coalesce anymore, so
+set it to 1b for "DMA is considered idle when there is no Rx or Tx AND
+when there are no TLPs indicating that CPU is active detected on the
+PCIe link (such as the host executes CSR or Configuration register read
+or write operation)" and performing Tx should also fall under "active
+CPU on PCIe link" case.
+
+In addition to that, commit b6e0c419f040 ("igb: Move DMA Coalescing init
+code to separate function.") seems to wrongly changed from enabling
+E1000_PCIEMISC_LX_DECISION to disabling it, also fix that.
 
 Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
 ---
- drivers/net/ethernet/intel/igb/e1000_defines.h | 3 ---
- drivers/net/ethernet/intel/igb/e1000_regs.h    | 1 -
- 2 files changed, 4 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/e1000_defines.h b/drivers/net/ethernet/intel/igb/e1000_defines.h
-index ca5429774994e..fa028928482fc 100644
---- a/drivers/net/ethernet/intel/igb/e1000_defines.h
-+++ b/drivers/net/ethernet/intel/igb/e1000_defines.h
-@@ -1033,9 +1033,6 @@
- #define E1000_VFTA_ENTRY_MASK                0x7F
- #define E1000_VFTA_ENTRY_BIT_SHIFT_MASK      0x1F
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 34b33b21e0dcd..eca797dded429 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -9897,11 +9897,10 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
+ 	struct e1000_hw *hw = &adapter->hw;
+ 	u32 dmac_thr;
+ 	u16 hwm;
++	u32 reg;
  
--/* DMA Coalescing register fields */
--#define E1000_PCIEMISC_LX_DECISION      0x00000080 /* Lx power on DMA coal */
+ 	if (hw->mac.type > e1000_82580) {
+ 		if (adapter->flags & IGB_FLAG_DMAC) {
+-			u32 reg;
 -
- /* Tx Rate-Scheduler Config fields */
- #define E1000_RTTBCNRC_RS_ENA		0x80000000
- #define E1000_RTTBCNRC_RF_DEC_MASK	0x00003FFF
-diff --git a/drivers/net/ethernet/intel/igb/e1000_regs.h b/drivers/net/ethernet/intel/igb/e1000_regs.h
-index 9cb49980ec2d1..eb9f6da9208a6 100644
---- a/drivers/net/ethernet/intel/igb/e1000_regs.h
-+++ b/drivers/net/ethernet/intel/igb/e1000_regs.h
-@@ -116,7 +116,6 @@
- #define E1000_DMCRTRH	0x05DD0 /* Receive Packet Rate Threshold */
- #define E1000_DMCCNT	0x05DD4 /* Current Rx Count */
- #define E1000_FCRTC	0x02170 /* Flow Control Rx high watermark */
--#define E1000_PCIEMISC	0x05BB8 /* PCIE misc config register */
+ 			/* force threshold to 0. */
+ 			wr32(E1000_DMCTXTH, 0);
  
- /* TX Rate Limit Registers */
- #define E1000_RTTDQSEL	0x3604 /* Tx Desc Plane Queue Select - WO */
+@@ -9934,7 +9933,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
+ 			/* Disable BMC-to-OS Watchdog Enable */
+ 			if (hw->mac.type != e1000_i354)
+ 				reg &= ~E1000_DMACR_DC_BMC2OSW_EN;
+-
+ 			wr32(E1000_DMACR, reg);
+ 
+ 			/* no lower threshold to disable
+@@ -9951,12 +9949,12 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
+ 			 */
+ 			wr32(E1000_DMCTXTH, (IGB_MIN_TXPBSIZE -
+ 			     (IGB_TX_BUF_4096 + adapter->max_frame_size)) >> 6);
++		}
+ 
+-			/* make low power state decision controlled
+-			 * by DMA coal
+-			 */
++		if (hw->mac.type >= e1000_i210 ||
++		    (adapter->flags & IGB_FLAG_DMAC)) {
+ 			reg = rd32(E1000_PCIEMISC);
+-			reg &= ~E1000_PCIEMISC_LX_DECISION;
++			reg |= E1000_PCIEMISC_LX_DECISION;
+ 			wr32(E1000_PCIEMISC, reg);
+ 		} /* endif adapter->dmac is not disabled */
+ 	} else if (hw->mac.type == e1000_82580) {
 -- 
 2.34.1
 
