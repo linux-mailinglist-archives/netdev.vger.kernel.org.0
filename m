@@ -2,94 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D3A5F522E57
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 10:28:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 218F1522E98
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 10:42:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243654AbiEKI2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 04:28:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46040 "EHLO
+        id S244122AbiEKImN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 04:42:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235054AbiEKI2l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 04:28:41 -0400
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0F35170F2A;
-        Wed, 11 May 2022 01:28:38 -0700 (PDT)
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2f7ca2ce255so12175137b3.7;
-        Wed, 11 May 2022 01:28:38 -0700 (PDT)
+        with ESMTP id S244059AbiEKIlm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 04:41:42 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB2BD63BD2
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 01:41:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652258497;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=BPS2gEzpHpA65x1YUF542svpx6qrA/jIISHdop4pxU8=;
+        b=W+LQ7JA3PqNjZxinPLOmH2Gl2No+4pOCgwcwp7AzwFvd6LElDy7+bpVnIfVKRpYw3cPXMi
+        vwIzYWqK21NhRM970Eq8skLDxnPw62Tm+mfN385Wf4/YWi5wfuPiwUMgb9+Gxxribzhopk
+        7OaCCkKMHD8MW/BkxKaHCxoNMMkUcY8=
+Received: from mail-io1-f72.google.com (mail-io1-f72.google.com
+ [209.85.166.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-595-tAULofPfPzG_L9I1rD2Paw-1; Wed, 11 May 2022 04:41:34 -0400
+X-MC-Unique: tAULofPfPzG_L9I1rD2Paw-1
+Received: by mail-io1-f72.google.com with SMTP id ay38-20020a5d9da6000000b0065adc1f932bso777418iob.11
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 01:41:34 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Cr6Do/TDm+VJ0R4NXV674tpi+dJjugQTOmccea4yw04=;
-        b=0U9xaAHMfrhiGbDAOKbD7r+IHTHlrWC1tAWZEJoHZ1F8/Oky8j1HjhN387eB2vqYKe
-         0gY1bqLoYkqtAgYf1SU4uOQygHUwQlTlBWOFA12bP3OdEKlLKZXlN1IcacuADY8UkR0G
-         /Nc/uJVJlmn8W47FC7uo07p+IkofYZy1d1x0O4GXpvj1leXAgHE5NL+cvUS4HlLzLKGk
-         3eqBScZESOCDXi6FtHnzfczDIXx6WiwCHcTZtP1oGrwLv7XAOblXha+i2+rucSFB7abo
-         dSsmQUdbDgeVJ2F4XCKbh0UEaKS+X92w+rXgSdK+e529AMVosJiKtAlezNzFtkfQO477
-         KvZg==
-X-Gm-Message-State: AOAM532TfL8Kb/ES+77rlJNC7iD9KvuMxYy60DLNkAVEtWsQWgMGQ7g+
-        ew4EGVpgF5jOisjzi8AdDwmF+bR5aoMSDlrZUKQ=
-X-Google-Smtp-Source: ABdhPJzeYQGMvBhE1nU1RquNSVPuKz41BjQqSGfswleYfqAENsfPxVjWWp0KdTJcrd2vNXmaSco53vBAFa247cMhopI=
-X-Received: by 2002:a81:3d43:0:b0:2f9:7d:f320 with SMTP id k64-20020a813d43000000b002f9007df320mr24659563ywa.191.1652257717437;
- Wed, 11 May 2022 01:28:37 -0700 (PDT)
+         :message-id:subject:to:content-transfer-encoding;
+        bh=BPS2gEzpHpA65x1YUF542svpx6qrA/jIISHdop4pxU8=;
+        b=i5Q4AXoqStZcRb80s7B7Zop4escFORA79INLNNPHHfM7dCARfMD9Emwk0pqwDCrwsm
+         Fl5utay9WQkCGwFOmYS+F1XFhaagXOLXw/iU3pWCg75DuoFW6uor85TaFzJgRzK6vbvL
+         MsKWvK1aec1xjNjbJoRsRj0G0ILKYV9XABDlkG39h3FhBvL+E8E9g4bWLDOJHh0NpQDd
+         Q7akZLfyhZWVY4hiCjRmnU1ad1zB9yAOvfNpZO13QwjBVMCcui/TH7CreznfKMQeLDAj
+         KB6bJ/LsJFN/tVbYmGKzpN6tHQxUBIywcjU9IQGvCM7qEbg2ZFV89Qw6KW9Z4bOZJaan
+         /RWQ==
+X-Gm-Message-State: AOAM533DV2Ej/egB6hwbxV7I91iChkhqUDmr98d+8rBG1wx+ssUJ7gyP
+        c7K4pMpbKXbAyLsYuaPft0gRlfcKJV7hUwhZDxPZvXSPtuJpsW3TLz1vds1b7pgojzhOuC/wVIt
+        VuY6dPlScXu3OM+jZ9rPTmfwUdMqgh81s
+X-Received: by 2002:a92:cccb:0:b0:2c2:7641:ed49 with SMTP id u11-20020a92cccb000000b002c27641ed49mr11211357ilq.271.1652258493974;
+        Wed, 11 May 2022 01:41:33 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJydQJBkSlun5AyBMPN2WFi4eptGVYctsB1/DO6Jdl9GwRoWrwbuUAIuIdECLXT1pLJI/8zAYH9nAzY0/IvJc7E=
+X-Received: by 2002:a92:cccb:0:b0:2c2:7641:ed49 with SMTP id
+ u11-20020a92cccb000000b002c27641ed49mr11211343ilq.271.1652258493702; Wed, 11
+ May 2022 01:41:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220511063850.649012-1-zhaojunkui2008@126.com>
- <20220511064450.phisxc7ztcc3qkpj@pengutronix.de> <4986975d.3de3.180b1f57189.Coremail.zhaojunkui2008@126.com>
-In-Reply-To: <4986975d.3de3.180b1f57189.Coremail.zhaojunkui2008@126.com>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 11 May 2022 17:28:26 +0900
-Message-ID: <CAMZ6RqKHs4gdcNjVONfOTsHh6ZFEt0qpbEaKqDM7c1Cbc1OLdQ@mail.gmail.com>
-Subject: Re: Re: [PATCH] usb/peak_usb: cleanup code
-To:     z <zhaojunkui2008@126.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
+References: <20220510084443.14473-1-ihuguet@redhat.com> <20220510084443.14473-2-ihuguet@redhat.com>
+ <20220511071945.46o3hlfnhppkqoro@gmail.com>
+In-Reply-To: <20220511071945.46o3hlfnhppkqoro@gmail.com>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Wed, 11 May 2022 10:41:22 +0200
+Message-ID: <CACT4oueVVo5UEk0x_+j03MYRjEgDdLp-sox+fHaEVj7ZXOY6FQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/5] sfc: add new helper macros to iterate
+ channels by type
+To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
+        Edward Cree <ecree.xilinx@gmail.com>, ap420073@gmail.com,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bernard@vivo.com
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Dinan Gunawardena <dinang@xilinx.com>,
+        Pablo Cascon <pabloc@xilinx.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed. 11 May 2022 at 16:11, z <zhaojunkui2008@126.com> wrote:
-> At 2022-05-11 14:44:50, "Marc Kleine-Budde" <mkl@pengutronix.de> wrote:
-> >On 10.05.2022 23:38:38, Bernard Zhao wrote:
-> >> The variable fi and bi only used in branch if (!dev->prev_siblings)
-> >> , fi & bi not kmalloc in else branch, so move kfree into branch
-> >> if (!dev->prev_siblings),this change is to cleanup the code a bit.
+On Wed, May 11, 2022 at 9:19 AM Martin Habets <habetsm.xilinx@gmail.com> wr=
+ote:
+>
+> Hi =E5=A9=89igo,
+>
+> On Tue, May 10, 2022 at 10:44:39AM +0200, =E5=A9=89igo Huguet wrote:
+> > Sometimes in the driver it's needed to iterate a subset of the channels
+> > depending on whether it is an rx, tx or xdp channel. Now it's done
+> > iterating over all channels and checking if it's of the desired type,
+> > leading to too much nested and a bit complex to understand code.
 > >
-> >Please move the variable declaration into that scope, too. Adjust the
-> >error handling accordingly.
+> > Add new iterator macros to allow iterating only over a single type of
+> > channel.
 >
-> Hi Marc:
+> We have similar code we'll be upstreaming soon, once we've managed to
+> split off Siena. The crucial part of that seems to have been done
+> today.
 >
-> I am not sure if there is some gap.
-> If we move the variable declaration into that scope, then each error branch has to do the kfree job, like:
-> if (err) {
->                         dev_err(dev->netdev->dev.parent,
->                                 "unable to read %s firmware info (err %d)\n",
->                                 pcan_usb_pro.name, err);
->                         kfree(bi);
->                         kfree(fi);
->                         kfree(usb_if);
+> > Signed-off-by: =E5=A9=89igo Huguet <ihuguet@redhat.com>
+> > ---
+> >  drivers/net/ethernet/sfc/net_driver.h | 21 +++++++++++++++++++++
+> >  1 file changed, 21 insertions(+)
+> >
+> > diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethern=
+et/sfc/net_driver.h
+> > index 318db906a154..7f665ba6a082 100644
+> > --- a/drivers/net/ethernet/sfc/net_driver.h
+> > +++ b/drivers/net/ethernet/sfc/net_driver.h
+> > @@ -1501,6 +1501,27 @@ efx_get_channel(struct efx_nic *efx, unsigned in=
+dex)
+> >            _channel =3D (_channel->channel + 1 < (_efx)->n_channels) ? =
+ \
+> >                    (_efx)->channel[_channel->channel + 1] : NULL)
+> >
+> > +#define efx_for_each_rx_channel(_channel, _efx)                       =
+           \
+> > +     for (_channel =3D (_efx)->channel[0];                            =
+     \
+> > +          _channel;                                                   =
+   \
+> > +          _channel =3D (_channel->channel + 1 < (_efx)->n_rx_channels)=
+ ?   \
+> > +                  (_efx)->channel[_channel->channel + 1] : NULL)
+> > +#define efx_for_each_tx_channel(_channel, _efx)                       =
+           \
+> > +     for (_channel =3D (_efx)->channel[efx->tx_channel_offset];       =
+     \
+> > +          _channel;                                                   =
+   \
+> > +          _channel =3D (_channel->channel + 1 <                       =
+     \
+> > +                  (_efx)->tx_channel_offset + (_efx)->n_tx_channels) ?=
+   \
+> > +                  (_efx)->channel[_channel->channel + 1] : NULL)
 >
->                        return err;
->                 }
-> I am not sure if this looks a little less clear?
-> Thanks!
+> We've chosen a different naming conventions here, and we're also removing
+> the channel array.
+> Also not every channel has RX queues and not every channel has TX queues.
+>
+> Sounds like it's time we have another call.
 
-A cleaner way would be to move all the content of the if
-(!dev->prev_siblings) to a new function.
+I saw you were already upstreaming the siena split, probably it had
+been a good idea to wait for it to be merged before sending this.
+
+I'm going to be on PTO the rest of the week and the next one, maybe we
+can talk when I'm back, and hopefully you will have made more
+progress. Then I can resubmit this series adapted to the new state of
+the code, if it's still useful.
+
+> Martin
+>
+> > +#define efx_for_each_xdp_channel(_channel, _efx)                      =
+   \
+> > +     for (_channel =3D ((_efx)->n_xdp_channels > 0) ?                 =
+     \
+> > +                  (_efx)->channel[efx->xdp_channel_offset] : NULL;    =
+   \
+> > +          _channel;                                                   =
+   \
+> > +          _channel =3D (_channel->channel + 1 <                       =
+     \
+> > +                  (_efx)->xdp_channel_offset + (_efx)->n_xdp_channels)=
+ ? \
+> > +                  (_efx)->channel[_channel->channel + 1] : NULL)
+> > +
+> >  /* Iterate over all used channels in reverse */
+> >  #define efx_for_each_channel_rev(_channel, _efx)                     \
+> >       for (_channel =3D (_efx)->channel[(_efx)->n_channels - 1];       =
+ \
+> > --
+> > 2.34.1
+>
 
 
-Yours sincerely,
-Vincent Mailhol
+--=20
+=C3=8D=C3=B1igo Huguet
+
