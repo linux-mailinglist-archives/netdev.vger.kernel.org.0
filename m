@@ -2,175 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9593C5233A9
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 15:04:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B72752339D
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 15:04:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243196AbiEKNEj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 09:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51878 "EHLO
+        id S233798AbiEKNEG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 09:04:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243223AbiEKNE2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 09:04:28 -0400
-Received: from m15112.mail.126.com (m15112.mail.126.com [220.181.15.112])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2CC1423725D;
-        Wed, 11 May 2022 06:04:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=cA20v
-        jSQc0xTB5lj5GoeWHAPefqE6IHlE3Nbb8SvDhw=; b=eHhPo9MMLFFQdNOxPzh4R
-        dHDDNEJiYPWGiEIA/opcQbywOmTnsgv8An0DrOvcPjpt6/0guDU/RBEBF7Efdhpy
-        9BHQFyxEAGbhGNcX4VU1HX/Z5CtV00J6rOLs5ty0x1WLp5UBYxjcaLG2a16YAqif
-        PjWeOKI+AHBYdFy7rY5LPs=
-Received: from ubuntu.localdomain (unknown [58.213.83.157])
-        by smtp2 (Coremail) with SMTP id DMmowACXi_3xs3tivSKkBQ--.64503S4;
-        Wed, 11 May 2022 21:02:43 +0800 (CST)
-From:   Bernard Zhao <zhaojunkui2008@126.com>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Bernard Zhao <zhaojunkui2008@126.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     bernard@vivo.com
-Subject: [PATCH v2] usb/peak_usb: cleanup code
-Date:   Wed, 11 May 2022 06:02:38 -0700
-Message-Id: <20220511130240.790771-1-zhaojunkui2008@126.com>
-X-Mailer: git-send-email 2.33.1
+        with ESMTP id S229454AbiEKNEF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 09:04:05 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C423A232773
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 06:04:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652274243;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pinb/em9ISqaN/ggUqq9o9xe3fwXzrQO5qBY9zBva64=;
+        b=Bu3592Uu/wVzc7BlvEXLpBN6iKSxLmpJIlizCRra7PTg/QdS5ykNuT2+aC7o2BeYnq0wwt
+        3EkD9fRJSQBju+Q43FqMolLJE4+vfwYA6gbBwQ7fcyxYmTOKVYVboY2vnLAWQErbDZtnUr
+        M8xy11yewlQitE1rckTlmHi3RhfSj9o=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-627-8u0p9AQcO_-5XXk9hhJ7tQ-1; Wed, 11 May 2022 09:04:02 -0400
+X-MC-Unique: 8u0p9AQcO_-5XXk9hhJ7tQ-1
+Received: by mail-il1-f197.google.com with SMTP id j5-20020a056e020ee500b002cbc90840ecso1313079ilk.23
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 06:04:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=pinb/em9ISqaN/ggUqq9o9xe3fwXzrQO5qBY9zBva64=;
+        b=FG2WoiiRaREUYa7HR9vxN0QWNqJs8q5XHqwn3c9JrjKVpP+ho57u85o7nUSkTLfWZe
+         tm0OtTBNCHmqwsj6kZ7CEzU0P+1VcrnUYvxIggAVnU7B2iVqJwhM6vOn0t3iJ7OQHwn1
+         1Zi2SrXqCI+JLEB+LPGGMpBg+z4ESTCa4xl/XB1ROubBYzi2S9XwSmwPBR+pQt6cFI9O
+         HqqWBQ1fMC+zgzrVjr/vJkpWncR60nA6ZWPSqr2gpqCK3zHBgK9cqgFAmluPy+5vNxWg
+         321URQ4nvG2PYuqeJtAUHCDLMC6XQi01fIsqbd4i1Jg3yEiJ6ICZpWJfi7oyMkadePct
+         amiw==
+X-Gm-Message-State: AOAM531/04fITpOuXJciYjvONBT4OJCL10yx73KZ67zEzNaLAc6Pfq4R
+        5ZlHw0tdGzzVAGP7WAfBlLJSEvqxbmzZF1cZIO3k4gAZxj1dJ7JoQDDhMNwC2r//+p3Q3keEhMC
+        Nkstus2Y44xBNzGm0AY+j95BFkOnwv8zH
+X-Received: by 2002:a02:aa94:0:b0:32a:e769:af1 with SMTP id u20-20020a02aa94000000b0032ae7690af1mr11798141jai.0.1652274240658;
+        Wed, 11 May 2022 06:04:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy01vRY/G7ehYrNqKKq9hDNjGA8R7dXzFOdqqrFGnHcZbrBqvvfa757akpfds5dn+rJxmJwdnHw/2ZnG0R6Hnk=
+X-Received: by 2002:a02:aa94:0:b0:32a:e769:af1 with SMTP id
+ u20-20020a02aa94000000b0032ae7690af1mr11798119jai.0.1652274240201; Wed, 11
+ May 2022 06:04:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: DMmowACXi_3xs3tivSKkBQ--.64503S4
-X-Coremail-Antispam: 1Uf129KBjvJXoWxZr4DCry7tFWxJr45Zr4xZwb_yoW5KrWDpa
-        1rAFW7Kr4UKF1rG348tr1ku3Way3W8Ka4Skryqqw1F9r1qg393XF95CFySvrs7Z39ru3Wa
-        qa1Utr18Ar1UGr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEv388UUUUU=
-X-Originating-IP: [58.213.83.157]
-X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiLRT9qlpD935HVQAAss
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220511103604.37962-1-ihuguet@redhat.com> <20220511103604.37962-2-ihuguet@redhat.com>
+ <20220511125819.nz6ethnd2yyljdj6@gmail.com>
+In-Reply-To: <20220511125819.nz6ethnd2yyljdj6@gmail.com>
+From:   =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>
+Date:   Wed, 11 May 2022 15:03:49 +0200
+Message-ID: <CACT4ouczOjY9xUgDh4FbXGz_Q-4j24M+CJqrB0jrtTYbYMjFdg@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] sfc: fix memory leak on mtd_probe
+To:     =?UTF-8?B?w43DsWlnbyBIdWd1ZXQ=?= <ihuguet@redhat.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        Liang Li <liali@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The variable fi and bi only used in branch if (!dev->prev_siblings)
-, fi & bi not kmalloc in else branch, so move kfree into branch
-if (!dev->prev_siblings),this change is to cleanup the code a bit.
+On Wed, May 11, 2022 at 2:58 PM Martin Habets <habetsm.xilinx@gmail.com> wr=
+ote:
+>
+> The same patch was submitted earlier, see
+> https://lore.kernel.org/netdev/20220510153619.32464-1-ap420073@gmail.com/
 
-Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
+Seriously? It has been there for 9 years and 2 persons find it and
+send the fix with hours of difference? Is someone spying me?
 
----
-Changes since V1:
-* move all the content of the if (!dev->prev_siblings) to a new
-function.
----
- drivers/net/can/usb/peak_usb/pcan_usb_pro.c | 57 +++++++++++++--------
- 1 file changed, 36 insertions(+), 21 deletions(-)
+Please review the other one and if it's OK, I will send it alone.
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-index ebe087f258e3..5e472fe086a8 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_pro.c
-@@ -841,32 +841,28 @@ static int pcan_usb_pro_stop(struct peak_usb_device *dev)
- 	return 0;
- }
- 
--/*
-- * called when probing to initialize a device object.
-- */
--static int pcan_usb_pro_init(struct peak_usb_device *dev)
-+static int pcan_usb_pro_init_first_channel(struct peak_usb_device *dev, struct pcan_usb_pro_interface **usb_if)
- {
--	struct pcan_usb_pro_device *pdev =
--			container_of(dev, struct pcan_usb_pro_device, dev);
--	struct pcan_usb_pro_interface *usb_if = NULL;
--	struct pcan_usb_pro_fwinfo *fi = NULL;
--	struct pcan_usb_pro_blinfo *bi = NULL;
-+	struct pcan_usb_pro_interface *pusb_if = NULL;
- 	int err;
- 
- 	/* do this for 1st channel only */
- 	if (!dev->prev_siblings) {
-+		struct pcan_usb_pro_fwinfo *fi = NULL;
-+		struct pcan_usb_pro_blinfo *bi = NULL;
-+
- 		/* allocate netdevices common structure attached to first one */
--		usb_if = kzalloc(sizeof(struct pcan_usb_pro_interface),
-+		pusb_if = kzalloc(sizeof(struct pcan_usb_pro_interface),
- 				 GFP_KERNEL);
- 		fi = kmalloc(sizeof(struct pcan_usb_pro_fwinfo), GFP_KERNEL);
- 		bi = kmalloc(sizeof(struct pcan_usb_pro_blinfo), GFP_KERNEL);
--		if (!usb_if || !fi || !bi) {
-+		if (!pusb_if || !fi || !bi) {
- 			err = -ENOMEM;
- 			goto err_out;
- 		}
- 
- 		/* number of ts msgs to ignore before taking one into account */
--		usb_if->cm_ignore_count = 5;
-+		pusb_if->cm_ignore_count = 5;
- 
- 		/*
- 		 * explicit use of dev_xxx() instead of netdev_xxx() here:
-@@ -903,18 +899,14 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
- 		     pcan_usb_pro.name,
- 		     bi->hw_rev, bi->serial_num_hi, bi->serial_num_lo,
- 		     pcan_usb_pro.ctrl_count);
-+
-+		kfree(bi);
-+		kfree(fi);
- 	} else {
--		usb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
-+		pusb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
- 	}
- 
--	pdev->usb_if = usb_if;
--	usb_if->dev[dev->ctrl_idx] = dev;
--
--	/* set LED in default state (end of init phase) */
--	pcan_usb_pro_set_led(dev, PCAN_USBPRO_LED_DEVICE, 1);
--
--	kfree(bi);
--	kfree(fi);
-+	*usb_if = pusb_if;
- 
- 	return 0;
- 
-@@ -926,6 +918,29 @@ static int pcan_usb_pro_init(struct peak_usb_device *dev)
- 	return err;
- }
- 
-+/*
-+ * called when probing to initialize a device object.
-+ */
-+static int pcan_usb_pro_init(struct peak_usb_device *dev)
-+{
-+	struct pcan_usb_pro_device *pdev =
-+			container_of(dev, struct pcan_usb_pro_device, dev);
-+	struct pcan_usb_pro_interface *usb_if = NULL;
-+	int err;
-+
-+	err = pcan_usb_pro_init_first_channel(dev, &usb_if);
-+	if (err)
-+		return err;
-+
-+	pdev->usb_if = usb_if;
-+	usb_if->dev[dev->ctrl_idx] = dev;
-+
-+	/* set LED in default state (end of init phase) */
-+	pcan_usb_pro_set_led(dev, PCAN_USBPRO_LED_DEVICE, 1);
-+
-+	return 0;
-+}
-+
- static void pcan_usb_pro_exit(struct peak_usb_device *dev)
- {
- 	struct pcan_usb_pro_device *pdev =
--- 
-2.33.1
+>
+> Martin
+>
+> On Wed, May 11, 2022 at 12:36:03PM +0200, =C3=8D=C3=B1igo Huguet wrote:
+> > In some cases there is no mtd partitions that can be probed, so the mtd
+> > partitions list stays empty. This happens, for example, in SFC9220
+> > devices on the second port of the NIC.
+> >
+> > The memory for the mtd partitions is deallocated in efx_mtd_remove,
+> > recovering the address of the first element of efx->mtd_list and then
+> > deallocating it. But if the list is empty, the address passed to kfree
+> > doesn't point to the memory allocated for the mtd partitions, but to th=
+e
+> > list head itself. Despite this hasn't caused other problems other than
+> > the memory leak, this is obviously incorrect.
+> >
+> > This patch deallocates the memory during mtd_probe in the case that
+> > there are no probed partitions, avoiding the leak.
+> >
+> > This was detected with kmemleak, output example:
+> > unreferenced object 0xffff88819cfa0000 (size 46560):
+> >   comm "kworker/0:2", pid 48435, jiffies 4364987018 (age 45.924s)
+> >   hex dump (first 32 bytes):
+> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> >     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+> >   backtrace:
+> >     [<000000000f8e92d9>] kmalloc_order_trace+0x19/0x130
+> >     [<0000000042a03844>] efx_ef10_mtd_probe+0x12d/0x320 [sfc]
+> >     [<000000004555654f>] efx_pci_probe.cold+0x4e1/0x6db [sfc]
+> >     [<00000000b03d5126>] local_pci_probe+0xde/0x170
+> >     [<00000000376cc8d9>] work_for_cpu_fn+0x51/0xa0
+> >     [<00000000141f8de9>] process_one_work+0x8cb/0x1590
+> >     [<00000000cb2d8065>] worker_thread+0x707/0x1010
+> >     [<000000001ef4b9f6>] kthread+0x364/0x420
+> >     [<0000000014767137>] ret_from_fork+0x22/0x30
+> >
+> > Fixes: 8127d661e77f ("sfc: Add support for Solarflare SFC9100 family")
+> > Reported-by: Liang Li <liali@redhat.com>
+> > Signed-off-by: =C3=8D=C3=B1igo Huguet <ihuguet@redhat.com>
+> > ---
+> >  drivers/net/ethernet/sfc/ef10.c        | 5 +++++
+> >  drivers/net/ethernet/sfc/siena/siena.c | 5 +++++
+> >  2 files changed, 10 insertions(+)
+> >
+> > diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc=
+/ef10.c
+> > index c9ee5011803f..15a229731296 100644
+> > --- a/drivers/net/ethernet/sfc/ef10.c
+> > +++ b/drivers/net/ethernet/sfc/ef10.c
+> > @@ -3579,6 +3579,11 @@ static int efx_ef10_mtd_probe(struct efx_nic *ef=
+x)
+> >               n_parts++;
+> >       }
+> >
+> > +     if (n_parts =3D=3D 0) {
+> > +             kfree(parts);
+> > +             return 0;
+> > +     }
+> > +
+> >       rc =3D efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts)=
+);
+> >  fail:
+> >       if (rc)
+> > diff --git a/drivers/net/ethernet/sfc/siena/siena.c b/drivers/net/ether=
+net/sfc/siena/siena.c
+> > index 741313aff1d1..32467782e8ef 100644
+> > --- a/drivers/net/ethernet/sfc/siena/siena.c
+> > +++ b/drivers/net/ethernet/sfc/siena/siena.c
+> > @@ -943,6 +943,11 @@ static int siena_mtd_probe(struct efx_nic *efx)
+> >               nvram_types >>=3D 1;
+> >       }
+> >
+> > +     if (n_parts =3D=3D 0) {
+> > +             kfree(parts);
+> > +             return 0;
+> > +     }
+> > +
+> >       rc =3D siena_mtd_get_fw_subtypes(efx, parts, n_parts);
+> >       if (rc)
+> >               goto fail;
+> > --
+> > 2.34.1
+>
+
+
+--=20
+=C3=8D=C3=B1igo Huguet
 
