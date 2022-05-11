@@ -2,141 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C4E5D523207
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 13:45:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E21752321C
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 13:48:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237527AbiEKLps (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 07:45:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49366 "EHLO
+        id S239062AbiEKLsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 07:48:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiEKLpq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 07:45:46 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AC661D33A;
-        Wed, 11 May 2022 04:45:44 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 3223521B63;
-        Wed, 11 May 2022 11:45:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652269543; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=0Q+AKogAFqrapMhSKhemsZfgkWqWDsARusHusUCyiK4=;
-        b=iY95HDQGs4qC23cq77bOCFTEdU/S8O5CyJ+RlnRZnMkkUzmn+I2Mm5/bPWA2BvWJDPDEv9
-        JwfZEqzAICGf45PeIFuZlFjlIC7fxZJfv9Ryxp3gi9axon0On+MdUW3HdUoK9u0ccTLMhL
-        Yjmk7zW6CuGXpaXXuOUQvYlsrSO1r9M=
-Received: from suse.cz (pathway.suse.cz [10.100.12.24])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 043992C141;
-        Wed, 11 May 2022 11:45:41 +0000 (UTC)
-Date:   Wed, 11 May 2022 13:45:41 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     akpm@linux-foundation.org, bhe@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
-        dave.hansen@linux.intel.com, dyoung@redhat.com,
-        feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-Subject: Re: [PATCH 17/30] tracing: Improve panic/die notifiers
-Message-ID: <20220511114541.GC26047@pathway.suse.cz>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-18-gpiccoli@igalia.com>
+        with ESMTP id S237383AbiEKLsY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 07:48:24 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0859724310B
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 04:48:22 -0700 (PDT)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nokp7-00048f-28; Wed, 11 May 2022 13:48:09 +0200
+Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nokp4-0000Cy-Ci; Wed, 11 May 2022 13:48:06 +0200
+Date:   Wed, 11 May 2022 13:48:06 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
+Cc:     Robin van der Gracht <robin@protonic.nl>, kernel@pengutronix.de,
+        linux-can@vger.kernel.org, Oleksij Rempel <linux@rempel-privat.de>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Maxime Jayat <maxime.jayat@mobile-devices.fr>,
+        kbuild test robot <lkp@intel.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND 0/2] j1939: make sure that sent DAT/CTL frames are
+ marked as TX
+Message-ID: <20220511114806.GA12398@pengutronix.de>
+References: <20220509170746.29893-1-devid.filoni@egluetechnologies.com>
+ <20220510043406.GB10669@pengutronix.de>
+ <a8ea7199230682f3fd53e0b5975afa7287bd5ac0.camel@egluetechnologies.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220427224924.592546-18-gpiccoli@igalia.com>
+In-Reply-To: <a8ea7199230682f3fd53e0b5975afa7287bd5ac0.camel@egluetechnologies.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 13:45:31 up 42 days, 15 min, 82 users,  load average: 0.20, 0.23,
+ 0.20
 User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham
-        autolearn_force=no version=3.4.6
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 2022-04-27 19:49:11, Guilherme G. Piccoli wrote:
-> Currently the tracing dump_on_oops feature is implemented
-> through separate notifiers, one for die/oops and the other
-> for panic. With the addition of panic notifier "id", this
-> patch makes use of such "id" to unify both functions.
+Hi Devid,
+
+On Tue, May 10, 2022 at 08:12:32PM +0200, Devid Antonio Filoni wrote:
+> Hi Oleksij,
 > 
-> It also comments the function and changes the priority of the
-> notifier blocks, in order they run early compared to other
-> notifiers, to prevent useless trace data (like the callback
-> names for the other notifiers). Finally, we also removed an
-> unnecessary header inclusion.
+> On Tue, 2022-05-10 at 06:34 +0200, Oleksij Rempel wrote:
+> > Hi Devid,
+> > 
+> > On Mon, May 09, 2022 at 07:07:44PM +0200, Devid Antonio Filoni wrote:
+> > > Hello,
+> > > 
+> > > If candump -x is used to dump CAN bus traffic on an interface while a J1939
+> > > socket is sending multi-packet messages, then the DAT and CTL frames
+> > > show up as RX instead of TX.
+> > > 
+> > > This patch series sets to generated struct sk_buff the owning struct sock
+> > > pointer so that the MSG_DONTROUTE flag can be set by recv functions.
+> > > 
+> > > I'm not sure that j1939_session_skb_get is needed, I think that session->sk
+> > > could be directly passed as can_skb_set_owner parameter. This patch
+> > > is based on j1939_simple_txnext function which uses j1939_session_skb_get.
+> > > I can provide an additional patch to remove the calls to
+> > > j1939_session_skb_get function if you think they are not needed.
+> > 
+> > Thank you for your patches. By testing it I noticed that there is a memory
+> > leak in current kernel and it seems to be even worse after this patches.
+> > Found by this test:
+> > https://github.com/linux-can/can-tests/blob/master/j1939/run_all.sh#L13
+> > 
+> > 
+> > Can you please investigate it (or wait until I get time to do it).
+> > 
+> > Regards,
+> > Oleksij
+> > 
 > 
-> --- a/kernel/trace/trace.c
-> +++ b/kernel/trace/trace.c
-> @@ -9767,38 +9766,46 @@ static __init int tracer_init_tracefs(void)
->  
->  fs_initcall(tracer_init_tracefs);
->  
-> -static int trace_panic_handler(struct notifier_block *this,
-> -			       unsigned long event, void *unused)
-> +/*
-> + * The idea is to execute the following die/panic callback early, in order
-> + * to avoid showing irrelevant information in the trace (like other panic
-> + * notifier functions); we are the 2nd to run, after hung_task/rcu_stall
-> + * warnings get disabled (to prevent potential log flooding).
-> + */
-> +static int trace_die_panic_handler(struct notifier_block *self,
-> +				unsigned long ev, void *unused)
->  {
-> -	if (ftrace_dump_on_oops)
-> +	int do_dump;
-> +
-> +	if (!ftrace_dump_on_oops)
-> +		return NOTIFY_DONE;
-> +
-> +	switch (ev) {
-> +	case DIE_OOPS:
-> +		do_dump = 1;
-> +		break;
-> +	case PANIC_NOTIFIER:
-> +		do_dump = 1;
-> +		break;
+> I checked the test you linked and I can see that the number of the
+> instances of the can_j1939 module increases on each
+> j1939_ac_100k_dual_can.sh test execution (then the script exits),
+> however this doesn't seem to be worse with my patches, I have the same
+> results with the original kernel. Did you execute a particular test to
+> verify that the memory leak is worse with my patches?
+> I tried to take a look at all code that I changed in my patches but the
+> used ref counters seem to be handled correctly in called functions. I
+> suspected that the issue may be caused by the ref counter increased
+> in can_skb_set_owner() function but, even if I remove that call from the
+> j1939_simple_txnext() function in original kernel, I can still reproduce
+> the memory leak.
+> I think the issue is somewhere else, I'll try to give another look but I
+> can't assure nothing.
 
-DIE_OOPS and PANIC_NOTIFIER are from different enum.
-It feels like comparing apples with oranges here.
+Suddenly detecting local frames by skb->sk will not work for all control
+packets. I'll send different patch solving it for all j1939 and raw
+variants.
 
-IMHO, the proper way to unify the two notifiers is
-a check of the @self parameter. Something like:
-
-static int trace_die_panic_handler(struct notifier_block *self,
-				unsigned long ev, void *unused)
-{
-	if (self == trace_die_notifier && val != DIE_OOPS)
-		goto out;
-
-	ftrace_dump(ftrace_dump_on_oops);
-out:
-	return NOTIFY_DONE;
-}
-
-Best Regards,
-Petr
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
