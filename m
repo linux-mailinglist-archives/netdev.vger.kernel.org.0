@@ -2,103 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 758E35239EA
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:20:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8ECE5238C9
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245090AbiEKQU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 12:20:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48626 "EHLO
+        id S1344631AbiEKQUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 12:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47790 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344655AbiEKQU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:20:26 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 081BC2380E2
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:20:24 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id y21so3211527edo.2
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:20:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=svG1L/bGhyxGAlocPxyHJusAcsDTJHaGb4g7JRnLN34=;
-        b=SLYn3yafpxhPinrhVN+KvALYpBdGm6IPDJeU17IYRguThw4zYzuAUMO+wgE8mES8b4
-         TAvhOMEIzlAjl54FO2fajRhHHQdSYqfX00mqyItYDD3jbYNbNda6kImAMtKkUrF3hSa2
-         naE7anfld7oOW69AFhZbUG91usyzFIculkTzI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=svG1L/bGhyxGAlocPxyHJusAcsDTJHaGb4g7JRnLN34=;
-        b=Rh4yAm1nJ2sB3nKdAXLmN1UqU9djadOK74xNmRieKEpJ2Z25olDDb/AYORwUi6bW/e
-         sjaXS8SGKqPNZNLw7D5bJGVXb4ZpIshltb3fEgAKkcY6LeHPedvUozAx0p4751Dw5e4n
-         j7yyKA05LG+nUddPFKJc+ut12CPHFIKsxXKcn4Jo8RSN4eS7CP7phFvBVTnexJOR2bj7
-         NKJfspmPTpU6MzRkctp2/JWe2QUv0pALr3Xtp3EdYJKhp9x28EkJAE3lhyG3KcB7JWfc
-         IoeR3vWnfw3B1gDElgc4drEh5n9cAvqlcywy1xPNV2n43x5EuGO1Sr+omh+anTbjE6l+
-         E5mA==
-X-Gm-Message-State: AOAM530GDDmw+BvNu6MlcaNZa0v7Z6V9aXvez9Z2OPDLi/AbX//SDKSg
-        BTLyLbvGQE7/VAWF1CsSRjM2tV6BtQ3pNQgNBM0=
-X-Google-Smtp-Source: ABdhPJzwd1V8XZikOLj6D3ILnxVooOhmB3dC1IfAfM/n5eAVfZHIDaXZ5TjK7T93rjPemYTxb3CY/g==
-X-Received: by 2002:a05:6402:34cd:b0:428:1043:6231 with SMTP id w13-20020a05640234cd00b0042810436231mr29932889edc.274.1652286022318;
-        Wed, 11 May 2022 09:20:22 -0700 (PDT)
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com. [209.85.221.52])
-        by smtp.gmail.com with ESMTPSA id bu17-20020a170906a15100b006f3ef214e24sm1148571ejb.138.2022.05.11.09.20.20
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 09:20:20 -0700 (PDT)
-Received: by mail-wr1-f52.google.com with SMTP id i5so3683890wrc.13
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:20:20 -0700 (PDT)
-X-Received: by 2002:a05:6000:2c2:b0:20c:7329:7c10 with SMTP id
- o2-20020a05600002c200b0020c73297c10mr23431402wry.193.1652286020296; Wed, 11
- May 2022 09:20:20 -0700 (PDT)
+        with ESMTP id S1344628AbiEKQUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:20:15 -0400
+Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9BDA6237240
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:20:14 -0700 (PDT)
+Received: from palantir17.mph.net (unknown [192.168.0.4])
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id E46183200F2;
+        Wed, 11 May 2022 17:20:13 +0100 (BST)
+Received: from localhost ([::1] helo=palantir17.mph.net)
+        by palantir17.mph.net with esmtp (Exim 4.89)
+        (envelope-from <habetsm.xilinx@gmail.com>)
+        id 1nop4P-0000Dd-NJ; Wed, 11 May 2022 17:20:13 +0100
+Subject: [PATCH net-next 5/6] sfc/siena: Make PTP and reset support specific
+ for Siena
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
+Date:   Wed, 11 May 2022 17:20:13 +0100
+Message-ID: <165228601357.696.10361036152437614572.stgit@palantir17.mph.net>
+In-Reply-To: <165228589518.696.7119477411428288875.stgit@palantir17.mph.net>
+References: <165228589518.696.7119477411428288875.stgit@palantir17.mph.net>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-References: <20220510082351-mutt-send-email-mst@kernel.org>
- <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com> <87czgk8jjo.fsf@mpe.ellerman.id.au>
-In-Reply-To: <87czgk8jjo.fsf@mpe.ellerman.id.au>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 11 May 2022 09:20:03 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wj9zKJGA_6SJOMPiQEoYke6cKX-FV3X_5zNXOcFJX1kOQ@mail.gmail.com>
-Message-ID: <CAHk-=wj9zKJGA_6SJOMPiQEoYke6cKX-FV3X_5zNXOcFJX1kOQ@mail.gmail.com>
-Subject: Re: [GIT PULL] virtio: last minute fixup
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=1.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,KHOP_HELO_FCRDNS,MAY_BE_FORGED,
+        NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: *
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 11, 2022 at 3:12 AM Michael Ellerman <mpe@ellerman.id.au> wrote:
->
-> Which I read as you endorsing Link: tags :)
+Change the clock name and work queue names to differentiate them from
+the names used in sfc.ko.
 
-I absolutely adore "Link:" tags. They've been great.
+Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
+---
+ drivers/net/ethernet/sfc/siena/efx_common.c |    2 +-
+ drivers/net/ethernet/sfc/siena/ptp.c        |    7 ++++---
+ 2 files changed, 5 insertions(+), 4 deletions(-)
 
-But they've been great for links that are *usedful*.
+diff --git a/drivers/net/ethernet/sfc/siena/efx_common.c b/drivers/net/ethernet/sfc/siena/efx_common.c
+index a615bffcbad4..954daf464abb 100644
+--- a/drivers/net/ethernet/sfc/siena/efx_common.c
++++ b/drivers/net/ethernet/sfc/siena/efx_common.c
+@@ -112,7 +112,7 @@ static struct workqueue_struct *reset_workqueue;
+ 
+ int efx_siena_create_reset_workqueue(void)
+ {
+-	reset_workqueue = create_singlethread_workqueue("sfc_reset");
++	reset_workqueue = create_singlethread_workqueue("sfc_siena_reset");
+ 	if (!reset_workqueue) {
+ 		printk(KERN_ERR "Failed to create reset workqueue\n");
+ 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/sfc/siena/ptp.c b/drivers/net/ethernet/sfc/siena/ptp.c
+index 8e18da096595..7c46752e6eae 100644
+--- a/drivers/net/ethernet/sfc/siena/ptp.c
++++ b/drivers/net/ethernet/sfc/siena/ptp.c
+@@ -1422,7 +1422,7 @@ static void efx_ptp_worker(struct work_struct *work)
+ 
+ static const struct ptp_clock_info efx_phc_clock_info = {
+ 	.owner		= THIS_MODULE,
+-	.name		= "sfc",
++	.name		= "sfc_siena",
+ 	.max_adj	= MAX_PPB,
+ 	.n_alarm	= 0,
+ 	.n_ext_ts	= 0,
+@@ -1458,7 +1458,7 @@ static int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
+ 
+ 	skb_queue_head_init(&ptp->rxq);
+ 	skb_queue_head_init(&ptp->txq);
+-	ptp->workwq = create_singlethread_workqueue("sfc_ptp");
++	ptp->workwq = create_singlethread_workqueue("sfc_siena_ptp");
+ 	if (!ptp->workwq) {
+ 		rc = -ENOMEM;
+ 		goto fail2;
+@@ -1502,7 +1502,8 @@ static int efx_ptp_probe(struct efx_nic *efx, struct efx_channel *channel)
+ 			goto fail3;
+ 		} else if (ptp->phc_clock) {
+ 			INIT_WORK(&ptp->pps_work, efx_ptp_pps_worker);
+-			ptp->pps_workwq = create_singlethread_workqueue("sfc_pps");
++			ptp->pps_workwq =
++				create_singlethread_workqueue("sfc_siena_pps");
+ 			if (!ptp->pps_workwq) {
+ 				rc = -ENOMEM;
+ 				goto fail4;
 
-They are wonderful when they link to the original problem.
-
-They are *really* wonderful when they link to some long discussion
-about how to solve the problem.
-
-They are completely useless when they link to "this is the patch
-submission of the SAME DAMN PATCH THAT THE COMMIT IS".
-
-See the difference?
-
-The two first links add actual new information.
-
-That last link adds absolutely nothing. It's a link to the same email
-that was just applied.
-
-                   Linus
