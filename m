@@ -2,218 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C2F2522D2F
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 09:24:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 638A7522D39
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 09:25:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242878AbiEKHYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 03:24:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45038 "EHLO
+        id S241389AbiEKHZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 03:25:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242867AbiEKHY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 03:24:29 -0400
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFCD1C0F25;
-        Wed, 11 May 2022 00:24:27 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id D7A8930322EA;
-        Wed, 11 May 2022 09:23:55 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
-        :content-type:date:from:from:in-reply-to:message-id:mime-version
-        :references:reply-to:subject:subject:to:to; s=felkmail; bh=noksS
-        6avucQChdNExBN5UJBtftQ5wnHW8uU3NUv5UFE=; b=PE6+UwTWyGs26TfPsDLKq
-        a0T3t7uh5yN/A69uWtzKAAaKnjZwpSreGL3ooSQLpImH/Uq9EFSpkudO9f9JlK4Z
-        Vw13M+68LotaYaytGCnuqQSzvAnHL7POSZfEEolfyz2VBRDobJNVqyqZMf0sObk0
-        RB8ij9cnj+qfE4wKYZA2hMVS6J7YiXw72OMBPoCABD3U6fkOHjHobBv98lI4VS0r
-        FgnbwlVq0Eqmv4oFfdGqIzihd6gH81+QF22iwFdWMXbiUTy+wAKZLQR/vEoeFd8a
-        qBUQoB8AwFxOKGHq0iJW33FiEvNUQ9yJJtxDwm+0xKi8Gh23e88N3w5ECgQQVn2r
-        Q==
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id DDF8F30322D3;
-        Wed, 11 May 2022 09:23:54 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 24B7NsBG027064;
-        Wed, 11 May 2022 09:23:54 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 24B7Nshg027063;
-        Wed, 11 May 2022 09:23:54 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     Akira Yokosawa <akiyks@gmail.com>
-Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive instead of 'figure'
-Date:   Wed, 11 May 2022 09:23:24 +0200
-User-Agent: KMail/1.9.10
-Cc:     "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        Martin Jerabek <martin.jerabek01@gmail.com>,
-        Ondrej Ille <ondrej.ille@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com> <202205101825.15126.pisa@cmp.felk.cvut.cz> <268372a9-2f6a-74f3-29ea-c51536a73dba@gmail.com>
-In-Reply-To: <268372a9-2f6a-74f3-29ea-c51536a73dba@gmail.com>
-X-KMail-QuotePrefix: > 
+        with ESMTP id S229561AbiEKHZh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 03:25:37 -0400
+Received: from m15113.mail.126.com (m15113.mail.126.com [220.181.15.113])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A64821C94EC;
+        Wed, 11 May 2022 00:25:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
+        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=C7Z/r
+        x32c/cR9tT2PP2QxCWlQz3jKgGCRgpp9g7dDHM=; b=Ze0dgM1umeB5q9cYf6OHN
+        7TL9RN4hFO5KAbE16H0j0NgFECHQV7O/8Cp/E2mrtu+PYBXzy7CGwrbnWDTsxG7b
+        Bno/Bw695u+SEASpWMc3QQgyuI74xvXlTy318FuzgRbnRsKF3LXZTyOCkRWLYhyW
+        xpQcdjW0McG+cA2TXmIG1o=
+Received: from ubuntu.localdomain (unknown [58.213.83.157])
+        by smtp3 (Coremail) with SMTP id DcmowAAHA5zaZHti+k_FBQ--.16427S4;
+        Wed, 11 May 2022 15:25:15 +0800 (CST)
+From:   Bernard Zhao <zhaojunkui2008@126.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Bernard Zhao <zhaojunkui2008@126.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Bernard Zhao <bernard@vivo.com>
+Subject: [PATCH] ethernet/ti: delete if NULL check befort devm_kfree
+Date:   Wed, 11 May 2022 00:25:10 -0700
+Message-Id: <20220511072512.666863-1-zhaojunkui2008@126.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-Message-Id: <202205110923.24202.pisa@cmp.felk.cvut.cz>
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: DcmowAAHA5zaZHti+k_FBQ--.16427S4
+X-Coremail-Antispam: 1Uf129KBjvJXoW7ZFW7JryDWw4DAr1kAryUtrb_yoW8AFW3pa
+        93GF1UtFy7Zw4fGanrZF4rX345Wa1Sk3yDCry8CryfAw4Fyw1rtF18uFWDuFy5WrWkAay5
+        AF4DAa4xXr1q9F7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEt8nnUUUUU=
+X-Originating-IP: [58.213.83.157]
+X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiuRz9qlpD857i+QAAsd
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Akira,
+devm_kfree check the point, there is no need to check before
+devm_kfree call.
+This change is to cleanup the code a bit.
 
-On Wednesday 11 of May 2022 01:34:58 Akira Yokosawa wrote:
-> On Tue, 10 May 2022 18:25:15 +0200,
->
-> Pavel Pisa wrote:
-> > Hello Akira,
-=2E..
-> > I have not noticed that there is kernel-figure
-> > option. We have setup own Sphinx 1.4.9 based build for driver
-> > documentation out of the tree compilation, I am not sure if that
-> > would work with this option but if not we keep this version
-> > modified. There are required modification for sources location anyway...
-> >
-> > https://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/linux_driver/buil=
-d/
-> >ctucanfd-driver.html
->
-> You might want to see kernel's doc-guide at
->
->     https://www.kernel.org/doc/html/latest/doc-guide/sphinx.html
->
-> , or its source
->
->     Documentation/doc-guide/sphinx.rst
+Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
+Signed-off-by: Bernard Zhao <bernard@vivo.com>
+---
+ drivers/net/ethernet/ti/am65-cpsw-qos.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-I think I have read it in 2019 when I have managed to switch
-to kernel format documentation in out of the tree driver build
-
-https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core/-/commit/09983d11ab34977=
-104d2be0b1376d4c93d9a01cb
-
-Then I have enhanced documentation text and picture
-from Martin Jerabek's thesis etc..
-
-> >> The directive of "code:: raw" causes a warning from both
-> >> "make htmldocs" and "make pdfdocs", which reads:
-> >>
-> >>     [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name
-> >>     'raw' is not known
-> >
-> > Strange I have not seen any warning when building htmldocs
-> > in my actual linux kernel tree. I have cleaned docs to be warnings
-> > free, but it is possible that I have another tools versions.
->
-> Well, I don't think "make htmldocs" runs with Sphinx 1.4.9.
-
-This is Sphinx version reported by out of tree documentation build.
-It can be hidden in one of dockers which are used by gitlabrunner
-for CI. When I find some time I can look for update.
-
-> You mean 1.7.9?
-
-My local net-next make htmldocs generated pages report Sphinx version 1.8.4.
-
-So this seems to be a mix, but I agree that it is important to clean
-docs in the state when it works for each not totally archaic setup.
-
-Thanks for the feedback,
-
-                Pavel
-=2D-=20
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://control.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
-
-=20
-
-> Then the above mentioned warning is not shown.
-> I see the warning with Sphinx versions 2.4.4. and 4.5.0.
->
-> I'll amend the changelog to mention the Sphinx versions and
-> post as v2.
->
->         Thanks, Akira
->
-> > Anyway thanks for cleanup.
-> >
-> >> A plain literal-block marker should suffice where no syntax
-> >> highlighting is intended.
-> >>
-> >> Fix the issues by using suitable directive and marker.
-> >>
-> >> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
-> >> Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
-> >> documentation.") Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-> >> Cc: Martin Jerabek <martin.jerabek01@gmail.com>
-> >> Cc: Ondrej Ille <ondrej.ille@gmail.com>
-> >> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
-> >
-> > Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
-> >
-> >> ---
-> >>  .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++--
-> >>  1 file changed, 2 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git
-> >> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-> >> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-> >> index 2fde5551e756..40c92ea272af 100644
-> >> ---
-> >> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
-> >> +++
-> >> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst =
-@@
-> >> -72,7 +72,7 @@ it is reachable (on which bus it resides) and its
-> >> configuration =E2=80=93 registers address, interrupts and so on. An ex=
-ample of
-> >> such a device tree is given in .
-> >>
-> >> -.. code:: raw
-> >> +::
-> >>
-> >>             / {
-> >>                 /* ... */
-> >> @@ -451,7 +451,7 @@ the FIFO is maintained, together with priority
-> >> rotation, is depicted in
-> >>
-> >>
-> >>
-> >> -.. figure:: fsm_txt_buffer_user.svg
-> >> +.. kernel-figure:: fsm_txt_buffer_user.svg
-> >>
-> >>     TX Buffer states with possible transitions
-
-
-=2D-=20
-Yours sincerely
-
-                Pavel Pisa
-    phone:      +420 603531357
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://control.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
+diff --git a/drivers/net/ethernet/ti/am65-cpsw-qos.c b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+index ebcc6386cc34..16b8794cb13c 100644
+--- a/drivers/net/ethernet/ti/am65-cpsw-qos.c
++++ b/drivers/net/ethernet/ti/am65-cpsw-qos.c
+@@ -164,8 +164,7 @@ static void am65_cpsw_admin_to_oper(struct net_device *ndev)
+ {
+ 	struct am65_cpsw_port *port = am65_ndev_to_port(ndev);
+ 
+-	if (port->qos.est_oper)
+-		devm_kfree(&ndev->dev, port->qos.est_oper);
++	devm_kfree(&ndev->dev, port->qos.est_oper);
+ 
+ 	port->qos.est_oper = port->qos.est_admin;
+ 	port->qos.est_admin = NULL;
+@@ -432,11 +431,8 @@ static void am65_cpsw_purge_est(struct net_device *ndev)
+ 
+ 	am65_cpsw_stop_est(ndev);
+ 
+-	if (port->qos.est_admin)
+-		devm_kfree(&ndev->dev, port->qos.est_admin);
+-
+-	if (port->qos.est_oper)
+-		devm_kfree(&ndev->dev, port->qos.est_oper);
++	devm_kfree(&ndev->dev, port->qos.est_admin);
++	devm_kfree(&ndev->dev, port->qos.est_oper);
+ 
+ 	port->qos.est_oper = NULL;
+ 	port->qos.est_admin = NULL;
+@@ -522,8 +518,7 @@ static int am65_cpsw_set_taprio(struct net_device *ndev, void *type_data)
+ 	ret = am65_cpsw_configure_taprio(ndev, est_new);
+ 	if (!ret) {
+ 		if (taprio->enable) {
+-			if (port->qos.est_admin)
+-				devm_kfree(&ndev->dev, port->qos.est_admin);
++			devm_kfree(&ndev->dev, port->qos.est_admin);
+ 
+ 			port->qos.est_admin = est_new;
+ 		} else {
+-- 
+2.33.1
 
