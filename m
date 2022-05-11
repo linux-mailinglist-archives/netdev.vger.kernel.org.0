@@ -2,101 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 66A37523197
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 13:29:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72F145231A1
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 13:31:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235616AbiEKL26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 07:28:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42460 "EHLO
+        id S234328AbiEKLaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 07:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233763AbiEKL24 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 07:28:56 -0400
-Received: from mxout01.lancloud.ru (mxout01.lancloud.ru [45.84.86.81])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2D211CFF3;
-        Wed, 11 May 2022 04:28:50 -0700 (PDT)
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru 53A1F20CDA45
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH] Additions to the list of devices that can be used for
- Lenovo Pass-thru feature
-To:     David Ober <dober6023@gmail.com>, <linux-usb@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <davem@davemloft.net>,
-        <hayeswang@realtek.com>, <aaron.ma@canonical.com>
-CC:     <mpearson@lenovo.com>, <dober@lenovo.com>
-References: <20220511093826.245118-1-dober6023@gmail.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <472e0ce0-b18a-c2b7-f7d2-288993962f45@omp.ru>
-Date:   Wed, 11 May 2022 14:28:45 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
-MIME-Version: 1.0
-In-Reply-To: <20220511093826.245118-1-dober6023@gmail.com>
+        with ESMTP id S231946AbiEKLaQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 07:30:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4760C21E20;
+        Wed, 11 May 2022 04:30:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D16A61882;
+        Wed, 11 May 2022 11:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D07D3C340F3;
+        Wed, 11 May 2022 11:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652268613;
+        bh=39CRATfpjuCjHAa2PbIoSrt715Y4+38r0j0d01uPD4k=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=P4qznh5VKtagjojaCavJmje0gInPrmoKyCAw2G4C9OY2VH2L4ye9Qz+cy9AXCujVX
+         bBu+PLaZffF7m++Rcpae7gFIpzEaZWDEk0TmJSh8jvj3PqdWS+QFY/3okVoj+0AyDB
+         YEsqHUfzIlbF6fXOphQRbf/vAtHLCOrEAD9Z6R3sebDDGCVAztR5phEX92WljwWggD
+         Et6WfXETdtbnjwdgUrBFnwXfcVMl81d8iPB22EODs17Gs6OsCtvvD+EhnIc0aBJm6D
+         K7LMd1NTYz8aJKhFIjLs18FiSjZZsw/wi1ABijl3mPRumhRNwypbwC7XQO9YYp2PuF
+         ITBGhCSRNTzDQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A679DF03931;
+        Wed, 11 May 2022 11:30:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=ham autolearn_force=no version=3.4.6
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 0/4 V2] net: atlantic: more fuzzing fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165226861367.11801.13863078014011642254.git-patchwork-notify@kernel.org>
+Date:   Wed, 11 May 2022 11:30:13 +0000
+References: <20220510022826.2388423-1-grundler@chromium.org>
+In-Reply-To: <20220510022826.2388423-1-grundler@chromium.org>
+To:     Grant Grundler <grundler@chromium.org>
+Cc:     irusskikh@marvell.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, aashay@google.com, yich@google.com,
+        enlightened@google.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Hello:
 
-On 5/11/22 12:38 PM, David Ober wrote:
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-> net: usb: r8152: Add in new Devices that are supported for Mac-Passthru
-
-   This should be in the subject.
-
-> Lenovo Thunderbolt 4 Dock, and other Lenovo USB Docks are using the original
-> Realtek USB ethernet Vendor and Product IDs
-> If the Network device is Realtek verify that it is on a Lenovo USB hub
-> before enabling the passthru feature
+On Mon,  9 May 2022 19:28:22 -0700 you wrote:
+> The Chrome OS fuzzing team posted a "Fuzzing" report for atlantic driver
+> in Q4 2021 using Chrome OS v5.4 kernel and "Cable Matters
+> Thunderbolt 3 to 10 Gb Ethernet" (b0 version):
+>     https://docs.google.com/document/d/e/2PACX-1vT4oCGNhhy_AuUqpu6NGnW0N9HF_jxf2kS7raOpOlNRqJNiTHAtjiHRthXYSeXIRTgfeVvsEt0qK9qK/pub
 > 
-> This also adds in the device IDs for the Lenovo USB Dongle and one other
-> USB-C dock
+> It essentially describes four problems:
+> 1) validate rxd_wb->next_desc_ptr before populating buff->next
+> 2) "frag[0] not initialized" case in aq_ring_rx_clean()
+> 3) limit iterations handling fragments in aq_ring_rx_clean()
+> 4) validate hw_head_ in hw_atl_b0_hw_ring_tx_head_update()
 > 
-> Signed-off-by: David Ober <dober6023@gmail.com>
-> ---
->  drivers/net/usb/r8152.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-> index c2da3438387c..7d43c772b85d 100644
-> --- a/drivers/net/usb/r8152.c
-> +++ b/drivers/net/usb/r8152.c
-[...]
-> @@ -9644,10 +9647,19 @@ static int rtl8152_probe(struct usb_interface *intf,
->  
->  	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO) {
->  		switch (le16_to_cpu(udev->descriptor.idProduct)) {
-> +		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3:
-> +		case DEVICE_ID_THINKPAD_USB_C_DONGLE:
->  		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
->  		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
->  			tp->lenovo_macpassthru = 1;
->  		}
-> +        }
+> [...]
 
-   Indent with tabs please.
+Here is the summary with links:
+  - [1/4] net: atlantic: fix "frag[0] not initialized"
+    https://git.kernel.org/netdev/net/c/62e0ae0f4020
+  - [2/4] net: atlantic: reduce scope of is_rsc_complete
+    https://git.kernel.org/netdev/net/c/79784d77ebbd
+  - [3/4] net: atlantic: add check for MAX_SKB_FRAGS
+    https://git.kernel.org/netdev/net/c/6aecbba12b5c
+  - [4/4] net: atlantic: verify hw_head_ lies within TX buffer ring
+    https://git.kernel.org/netdev/net/c/2120b7f4d128
 
-> +	else if ((le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_REALTEK) &&
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-   The preceding } should be on the same line.
 
-> +                 (le16_to_cpu(udev->parent->descriptor.idVendor) == VENDOR_ID_LENOVO)) {
-
-   Indent with tabs please.
-
-[...]
-
-MBR, Sergey
