@@ -2,141 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 17603522D06
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 09:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C2F2522D2F
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 09:24:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238972AbiEKHTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 03:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58354 "EHLO
+        id S242878AbiEKHYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 03:24:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232103AbiEKHTx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 03:19:53 -0400
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A0D1B7740
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 00:19:50 -0700 (PDT)
-Received: by mail-wr1-x42b.google.com with SMTP id x18so1680197wrc.0
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 00:19:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=QNdwt0NdxCv1Dly1YYM/Cz5H8DA0BxRoShFJqPNL0dE=;
-        b=Fq1h6Jk5Ta08WpHv44UYq69Z6LIkWCjAAsOMLeEwXqQ9tKxN/W3stHKnErSuXa5aFX
-         9nOmZjYvQcpsucH/C2Vxe5dh9zstTnaSeQ4DoBwjNnMFykudvmYBEW6/+mqz+bTYgxtU
-         gLKSE5bmFCA1oaOfGoMKL4TPrsxcOp677EKwgigSMcMu5YTDXpkJuuSo+TPdomYtl+Oy
-         IkhSgWtjSlQsItnCD0Nakb6IdNGUQN/7XapSY6jsxpa1PrSlnzfEwObBlZOPKsXE9ZPw
-         swVQCKBLhx43ozZJLUXTJezptPPSIfYxKnjHWWsNn314X6xQMUo/pOIxh28vZeTMaHlc
-         52Mw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to:user-agent;
-        bh=QNdwt0NdxCv1Dly1YYM/Cz5H8DA0BxRoShFJqPNL0dE=;
-        b=pRyIslh6Awp7m3xLJ/XDilpfF1T4ijr5CIG5P6DD3xOfbtktzL+bMLERsyNSLv2oJ8
-         kgV7ACQqjUlMUgMSMLxIMxz66hA2vK6ZDUqFoRsq83FJA/KhBzBlcs5k1LM1nuGgMxpi
-         8d1E6GVOhU9+dXo0LaNwlOK+DuMOb3rQRikMKC2kKSu/CSECv25d7LnuuCR37o16d6/n
-         Su0erpLWLcmfqmgiG+P3+JKxWUQVdPwIwMiawrWIwWyaFJRweSd3HwFM+O4qiVt2B1Oo
-         3LRHlRoyLO8+JO2WcWpJM8iD8NVi6YhWmqG6ihsUdnvZ0T68psHEdLszIDxZJrhz7npD
-         TB2A==
-X-Gm-Message-State: AOAM532Wax55kj7IGUfehddeOHO4Q24c0D0qH3YLa4X9pdEZIHe2CcLQ
-        veqoPSsC9m4BXasCMjcgtpg=
-X-Google-Smtp-Source: ABdhPJxFO7/SGfSM8SqpswdYVB5TPK5CtYvs+LasZ806fnChPpz7TViOCcQa1JMZkYOkZHiywBYOMg==
-X-Received: by 2002:a5d:5954:0:b0:20c:4d55:1388 with SMTP id e20-20020a5d5954000000b0020c4d551388mr21454933wri.90.1652253588771;
-        Wed, 11 May 2022 00:19:48 -0700 (PDT)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id d10-20020a5d6dca000000b0020cd0762f37sm869802wrz.107.2022.05.11.00.19.47
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 11 May 2022 00:19:48 -0700 (PDT)
-Date:   Wed, 11 May 2022 08:19:45 +0100
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
-Cc:     ecree.xilinx@gmail.com, ap420073@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, dinang@xilinx.com, pabloc@xilinx.com
-Subject: Re: [PATCH net-next 1/5] sfc: add new helper macros to iterate
- channels by type
-Message-ID: <20220511071945.46o3hlfnhppkqoro@gmail.com>
-Mail-Followup-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
-        ecree.xilinx@gmail.com, ap420073@gmail.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, dinang@xilinx.com, pabloc@xilinx.com
-References: <20220510084443.14473-1-ihuguet@redhat.com>
- <20220510084443.14473-2-ihuguet@redhat.com>
+        with ESMTP id S242867AbiEKHY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 03:24:29 -0400
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FFCD1C0F25;
+        Wed, 11 May 2022 00:24:27 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id D7A8930322EA;
+        Wed, 11 May 2022 09:23:55 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
+        :content-type:date:from:from:in-reply-to:message-id:mime-version
+        :references:reply-to:subject:subject:to:to; s=felkmail; bh=noksS
+        6avucQChdNExBN5UJBtftQ5wnHW8uU3NUv5UFE=; b=PE6+UwTWyGs26TfPsDLKq
+        a0T3t7uh5yN/A69uWtzKAAaKnjZwpSreGL3ooSQLpImH/Uq9EFSpkudO9f9JlK4Z
+        Vw13M+68LotaYaytGCnuqQSzvAnHL7POSZfEEolfyz2VBRDobJNVqyqZMf0sObk0
+        RB8ij9cnj+qfE4wKYZA2hMVS6J7YiXw72OMBPoCABD3U6fkOHjHobBv98lI4VS0r
+        FgnbwlVq0Eqmv4oFfdGqIzihd6gH81+QF22iwFdWMXbiUTy+wAKZLQR/vEoeFd8a
+        qBUQoB8AwFxOKGHq0iJW33FiEvNUQ9yJJtxDwm+0xKi8Gh23e88N3w5ECgQQVn2r
+        Q==
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id DDF8F30322D3;
+        Wed, 11 May 2022 09:23:54 +0200 (CEST)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 24B7NsBG027064;
+        Wed, 11 May 2022 09:23:54 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 24B7Nshg027063;
+        Wed, 11 May 2022 09:23:54 +0200
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     Akira Yokosawa <akiyks@gmail.com>
+Subject: Re: [PATCH net-next] docs: ctucanfd: Use 'kernel-figure' directive instead of 'figure'
+Date:   Wed, 11 May 2022 09:23:24 +0200
+User-Agent: KMail/1.9.10
+Cc:     "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        Martin Jerabek <martin.jerabek01@gmail.com>,
+        Ondrej Ille <ondrej.ille@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <05d491d4-c498-9bab-7085-9c892b636d68@gmail.com> <202205101825.15126.pisa@cmp.felk.cvut.cz> <268372a9-2f6a-74f3-29ea-c51536a73dba@gmail.com>
+In-Reply-To: <268372a9-2f6a-74f3-29ea-c51536a73dba@gmail.com>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220510084443.14473-2-ihuguet@redhat.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Message-Id: <202205110923.24202.pisa@cmp.felk.cvut.cz>
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Íñigo,
+Hello Akira,
 
-On Tue, May 10, 2022 at 10:44:39AM +0200, Íñigo Huguet wrote:
-> Sometimes in the driver it's needed to iterate a subset of the channels
-> depending on whether it is an rx, tx or xdp channel. Now it's done
-> iterating over all channels and checking if it's of the desired type,
-> leading to too much nested and a bit complex to understand code.
-> 
-> Add new iterator macros to allow iterating only over a single type of
-> channel.
+On Wednesday 11 of May 2022 01:34:58 Akira Yokosawa wrote:
+> On Tue, 10 May 2022 18:25:15 +0200,
+>
+> Pavel Pisa wrote:
+> > Hello Akira,
+=2E..
+> > I have not noticed that there is kernel-figure
+> > option. We have setup own Sphinx 1.4.9 based build for driver
+> > documentation out of the tree compilation, I am not sure if that
+> > would work with this option but if not we keep this version
+> > modified. There are required modification for sources location anyway...
+> >
+> > https://canbus.pages.fel.cvut.cz/ctucanfd_ip_core/doc/linux_driver/buil=
+d/
+> >ctucanfd-driver.html
+>
+> You might want to see kernel's doc-guide at
+>
+>     https://www.kernel.org/doc/html/latest/doc-guide/sphinx.html
+>
+> , or its source
+>
+>     Documentation/doc-guide/sphinx.rst
 
-We have similar code we'll be upstreaming soon, once we've managed to
-split off Siena. The crucial part of that seems to have been done
-today.
+I think I have read it in 2019 when I have managed to switch
+to kernel format documentation in out of the tree driver build
 
-> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
-> ---
->  drivers/net/ethernet/sfc/net_driver.h | 21 +++++++++++++++++++++
->  1 file changed, 21 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
-> index 318db906a154..7f665ba6a082 100644
-> --- a/drivers/net/ethernet/sfc/net_driver.h
-> +++ b/drivers/net/ethernet/sfc/net_driver.h
-> @@ -1501,6 +1501,27 @@ efx_get_channel(struct efx_nic *efx, unsigned index)
->  	     _channel = (_channel->channel + 1 < (_efx)->n_channels) ?	\
->  		     (_efx)->channel[_channel->channel + 1] : NULL)
->  
-> +#define efx_for_each_rx_channel(_channel, _efx)				    \
-> +	for (_channel = (_efx)->channel[0];				    \
-> +	     _channel;							    \
-> +	     _channel = (_channel->channel + 1 < (_efx)->n_rx_channels) ?   \
-> +		     (_efx)->channel[_channel->channel + 1] : NULL)
-> +#define efx_for_each_tx_channel(_channel, _efx)				    \
-> +	for (_channel = (_efx)->channel[efx->tx_channel_offset];	    \
-> +	     _channel;							    \
-> +	     _channel = (_channel->channel + 1 <			    \
-> +		     (_efx)->tx_channel_offset + (_efx)->n_tx_channels) ?   \
-> +		     (_efx)->channel[_channel->channel + 1] : NULL)
+https://gitlab.fel.cvut.cz/canbus/ctucanfd_ip_core/-/commit/09983d11ab34977=
+104d2be0b1376d4c93d9a01cb
 
-We've chosen a different naming conventions here, and we're also removing
-the channel array.
-Also not every channel has RX queues and not every channel has TX queues.
+Then I have enhanced documentation text and picture
+from Martin Jerabek's thesis etc..
 
-Sounds like it's time we have another call.
-Martin
+> >> The directive of "code:: raw" causes a warning from both
+> >> "make htmldocs" and "make pdfdocs", which reads:
+> >>
+> >>     [...]/can/ctu/ctucanfd-driver.rst:75: WARNING: Pygments lexer name
+> >>     'raw' is not known
+> >
+> > Strange I have not seen any warning when building htmldocs
+> > in my actual linux kernel tree. I have cleaned docs to be warnings
+> > free, but it is possible that I have another tools versions.
+>
+> Well, I don't think "make htmldocs" runs with Sphinx 1.4.9.
 
-> +#define efx_for_each_xdp_channel(_channel, _efx)			    \
-> +	for (_channel = ((_efx)->n_xdp_channels > 0) ?			    \
-> +		     (_efx)->channel[efx->xdp_channel_offset] : NULL;	    \
-> +	     _channel;							    \
-> +	     _channel = (_channel->channel + 1 <			    \
-> +		     (_efx)->xdp_channel_offset + (_efx)->n_xdp_channels) ? \
-> +		     (_efx)->channel[_channel->channel + 1] : NULL)
-> +
->  /* Iterate over all used channels in reverse */
->  #define efx_for_each_channel_rev(_channel, _efx)			\
->  	for (_channel = (_efx)->channel[(_efx)->n_channels - 1];	\
-> -- 
-> 2.34.1
+This is Sphinx version reported by out of tree documentation build.
+It can be hidden in one of dockers which are used by gitlabrunner
+for CI. When I find some time I can look for update.
+
+> You mean 1.7.9?
+
+My local net-next make htmldocs generated pages report Sphinx version 1.8.4.
+
+So this seems to be a mix, but I agree that it is important to clean
+docs in the state when it works for each not totally archaic setup.
+
+Thanks for the feedback,
+
+                Pavel
+=2D-=20
+                Pavel Pisa
+    phone:      +420 603531357
+    e-mail:     pisa@cmp.felk.cvut.cz
+    Department of Control Engineering FEE CVUT
+    Karlovo namesti 13, 121 35, Prague 2
+    university: http://control.fel.cvut.cz/
+    personal:   http://cmp.felk.cvut.cz/~pisa
+    projects:   https://www.openhub.net/accounts/ppisa
+    CAN related:http://canbus.pages.fel.cvut.cz/
+    Open Technologies Research Education and Exchange Services
+    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
+
+=20
+
+> Then the above mentioned warning is not shown.
+> I see the warning with Sphinx versions 2.4.4. and 4.5.0.
+>
+> I'll amend the changelog to mention the Sphinx versions and
+> post as v2.
+>
+>         Thanks, Akira
+>
+> > Anyway thanks for cleanup.
+> >
+> >> A plain literal-block marker should suffice where no syntax
+> >> highlighting is intended.
+> >>
+> >> Fix the issues by using suitable directive and marker.
+> >>
+> >> Signed-off-by: Akira Yokosawa <akiyks@gmail.com>
+> >> Fixes: c3a0addefbde ("docs: ctucanfd: CTU CAN FD open-source IP core
+> >> documentation.") Cc: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+> >> Cc: Martin Jerabek <martin.jerabek01@gmail.com>
+> >> Cc: Ondrej Ille <ondrej.ille@gmail.com>
+> >> Cc: Marc Kleine-Budde <mkl@pengutronix.de>
+> >
+> > Acked-by: Pavel Pisa <pisa@cmp.felk.cvut.cz>
+> >
+> >> ---
+> >>  .../networking/device_drivers/can/ctu/ctucanfd-driver.rst     | 4 ++--
+> >>  1 file changed, 2 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git
+> >> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> >> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> >> index 2fde5551e756..40c92ea272af 100644
+> >> ---
+> >> a/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst
+> >> +++
+> >> b/Documentation/networking/device_drivers/can/ctu/ctucanfd-driver.rst =
+@@
+> >> -72,7 +72,7 @@ it is reachable (on which bus it resides) and its
+> >> configuration =E2=80=93 registers address, interrupts and so on. An ex=
+ample of
+> >> such a device tree is given in .
+> >>
+> >> -.. code:: raw
+> >> +::
+> >>
+> >>             / {
+> >>                 /* ... */
+> >> @@ -451,7 +451,7 @@ the FIFO is maintained, together with priority
+> >> rotation, is depicted in
+> >>
+> >>
+> >>
+> >> -.. figure:: fsm_txt_buffer_user.svg
+> >> +.. kernel-figure:: fsm_txt_buffer_user.svg
+> >>
+> >>     TX Buffer states with possible transitions
+
+
+=2D-=20
+Yours sincerely
+
+                Pavel Pisa
+    phone:      +420 603531357
+    e-mail:     pisa@cmp.felk.cvut.cz
+    Department of Control Engineering FEE CVUT
+    Karlovo namesti 13, 121 35, Prague 2
+    university: http://control.fel.cvut.cz/
+    personal:   http://cmp.felk.cvut.cz/~pisa
+    projects:   https://www.openhub.net/accounts/ppisa
+    CAN related:http://canbus.pages.fel.cvut.cz/
+    Open Technologies Research Education and Exchange Services
+    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
+
