@@ -2,477 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6484B523CBF
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 20:41:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94FBF523CC9
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 20:45:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346436AbiEKSlT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 14:41:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32824 "EHLO
+        id S1346452AbiEKSpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 14:45:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346456AbiEKSlI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 14:41:08 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 355FE39683
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 11:41:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652294466; x=1683830466;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PBPW/R7LolV8l25x98xuJPopNE4DDLi4nJfTAPsgG70=;
-  b=YLNnKBvhhGwwlCyyWukEpiIxtRLumnwDFaEAcq0casI2Mb6x7o/v5kIt
-   ceDslMq8lMJBSMBSQ+ym99qDGdScfoJPcFXB6mLrqLbcF0QhT0WGRPXfB
-   ig1NSXtTAGoocsngl2ULAqTROHUllhVDXF5JTs4sBWkT5KzXoLxsYzO0b
-   Yarlks4wN8wyfyfYsvCFeZWoOc7kU1LLVAznbtrOEJBXYg1fSzm2vhppT
-   izij//gtrpQb62AOxUaHt9xefGTf1JE+isz7VZ1tw+lbhR339qo48CW+N
-   0K9LFsk4ehPBXW9n5NQb4yWErtRt42/nSruij7O69aDnTAaHG1obfRgx/
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="330384704"
-X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="330384704"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 11:41:05 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
-   d="scan'208";a="711603590"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 11 May 2022 11:41:03 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1norGh-000JPg-4H;
-        Wed, 11 May 2022 18:41:03 +0000
-Date:   Thu, 12 May 2022 02:40:17 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     lixue liang <lianglixue@greatwall.com.cn>,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        kuba@kernel.org, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, lixue liang <lianglixue@greatwall.com.cn>
-Subject: Re: [PATCH] =?utf-8?B?aWdiX21haW7vvJpBZGRl?= =?utf-8?Q?d?= invalid
- mac address handling in igb_probe
-Message-ID: <202205120241.e57SFKBu-lkp@intel.com>
-References: <20220511080716.10054-1-lianglixue@greatwall.com.cn>
+        with ESMTP id S243335AbiEKSpR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 14:45:17 -0400
+Received: from mx0c-0054df01.pphosted.com (mx0c-0054df01.pphosted.com [67.231.159.91])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE5FF6129C
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 11:45:16 -0700 (PDT)
+Received: from pps.filterd (m0208999.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24BBKUFE030957;
+        Wed, 11 May 2022 14:44:55 -0400
+Received: from can01-qb1-obe.outbound.protection.outlook.com (mail-qb1can01lp2055.outbound.protection.outlook.com [104.47.60.55])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3g02p2rnjq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 14:44:55 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=L9ziqoq2rHAAv8MRtPwGkDpKlnZa5k8/Mjyx2Hc52QKJRvPptl9m0NFchrW8TThqWUj0TWekYmmyCsAx7ATP6k1bqntWDQ7VZoCxdDTZHCBDhdtPrSJwcrO/WRSsfZS6PU88sZuWw6OHf8UhT+RuBzmO+7eRREPrDmOyMayAs5mFmMj53/GoYeoO5WNhvSJTWtqLOzIJZuhYg2MM/esMluFPN1kdHkx7gmD1Ae9VpKhSJ7OwI38UHNsviH56cKl1eDQGzPSqsPMrnms3A47febpvttdM4c4CpwM6YTvrQPzcDH/ISxmWhzgUxFg9aVTNR6CJ+xNEG2A6NRrmGv0fmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=qP5ECFm02p4WJJCd4NcLSW8Fj5E/ohUbhyArFNgxQr4=;
+ b=AGLdR7jw87RD1OUFg6SYEifsKdLpewc0TNnp7Jsklm16xLDCHvWkANOHSe1+PddkWWqDLZqn6G/xZjg348rgdQ/8SfdFLX2e/Rhsqdd5VN5dYkZAu+60SFLf8cWYUx2O89PITKs3/Rq3mQq2884FvVbuARnAedATlfbJucxbT3mBZIeXqhKpHktNJ0QJH/BibdwDNjrsWC1yZFY1HjJcmms9G+zPhHkorMFmjHOFqgRZCIKIZE1tOJOoOE1jAAMgpFnGlRQZtIX8f31RfKqSu5Un+jl0XUfYkG/PnXDfNhW4WVRT/xYPHUgMBJfFpW+5W9XtKleHeohFfbiA+51FIQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qP5ECFm02p4WJJCd4NcLSW8Fj5E/ohUbhyArFNgxQr4=;
+ b=IssfQjf3x8b8neS2/97T4PUqNgSdVP/cvK1XDI8B6AIRFZK8f81RwqIdkSoZf3SIjJ8D3bnO4Gc+whEP7m02FpssdGb9KpTSg3H0AwxNWQ/gQY2H6dJxfn6cGbKPGNtOPZ/70d4HGgarlHVq16EIPOc1MxBCyKiodbsWh3JgTa0=
+Received: from YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:b9::6)
+ by YT2PR01MB5427.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:52::5) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.22; Wed, 11 May
+ 2022 18:44:53 +0000
+Received: from YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::29ae:d7fe:b717:1fc4]) by YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::29ae:d7fe:b717:1fc4%6]) with mapi id 15.20.5227.023; Wed, 11 May 2022
+ 18:44:53 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     netdev@vger.kernel.org
+Cc:     radhey.shyam.pandey@xilinx.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        michal.simek@xilinx.com, linux-arm-kernel@lists.infradead.org,
+        Robert Hancock <robert.hancock@calian.com>
+Subject: [PATCH net-next v6 0/2] axienet NAPI improvements
+Date:   Wed, 11 May 2022 12:44:30 -0600
+Message-Id: <20220511184432.1131256-1-robert.hancock@calian.com>
+X-Mailer: git-send-email 2.31.1
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: YT1PR01CA0139.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:2f::18) To YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+ (2603:10b6:b01:b9::6)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511080716.10054-1-lianglixue@greatwall.com.cn>
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 57608bef-1240-4258-360e-08da337e55fe
+X-MS-TrafficTypeDiagnostic: YT2PR01MB5427:EE_
+X-Microsoft-Antispam-PRVS: <YT2PR01MB5427044C03DC030B72335387ECC89@YT2PR01MB5427.CANPRD01.PROD.OUTLOOK.COM>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PJWBQ2vMhWLn76cw4MpFGkFtRdsUtcwW/IVbJntkJbt79kPzHEoKuoHLeFzposoebnvGkU9TGQ6MBti2x06E8T1bJ1gi+GyUNQYoj/1LG+nqBCgpcqPOYa2MCWwjA3HYFr5xCwoTlS3Ph3Wuidovx7UgzX4bC7npRaFyWwK1jFwjPy9VF4u23jdzbSwEhorospnkHuZksLZU3+yYUq2zvjMm1rxqnfz6j4uxCt1Zu8maU3T8FDnX343sZbHdcFrmUq7+jC6NzQFbHj1zrt3uhRK8Uc2qAg7rrd2YrnPleaISfHZBHZB2/vR+hsXYtd10N4uQ0nj6SskNJDvp0JUlhttjGihvF4feYE6JbNjHDqtvMnhvxF3XWvjzvXrlmVyM1U/jYEMtrsSOewb+7a237qKTykpG4G54tnhlcJt8rfdB1GP5Mz/PvtqiXYNCfrrfo2O+ceabFRH3sb/wc5TkujlhDUA7MPK22cVZEPD3xAmLnE3JEzJZtiNLIkMLFEmU6Y0f+6Ojy5wYSYVKU0YAh5PXWGFEyP5a2y+EWyGLM4d59b4hUpp3Xt4qIlDJyTvXkqGx9ByHygqXn1in8I1s97dJWWUEaVsg/pKrI6Y3L81zhbnZfHIQeHCh0DGwVw5DSvQnuJLbzvhOeM1cGbghI82CJWTgrjFjpTRGqDHUjt6XlcGEqzwNzBKGN0M61+gmhrzafbWYu1Pu+0T3+ci6wA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(83380400001)(44832011)(36756003)(8936002)(2616005)(66476007)(6916009)(8676002)(66946007)(4326008)(66556008)(38350700002)(38100700002)(26005)(107886003)(6512007)(6486002)(316002)(508600001)(2906002)(5660300002)(186003)(6666004)(52116002)(1076003)(6506007)(86362001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jSgmS14MgrzVndG8mGFI7iaLShrKUnKigvurvADQK1GQK9UKhgqXkm3VKidK?=
+ =?us-ascii?Q?Hn6cCSHChq3bvIVIawkeG4Ot+HB0kxqqFAxKZa6WA01zc3I55eq1J8OcVtLp?=
+ =?us-ascii?Q?ZnQGbUCPGqR/Q77mVKBT1J7V2jPQW9hJDvT69QrjCCbmBY7Y0PYLoagI9SVi?=
+ =?us-ascii?Q?Q3h969cYx9dVx2DR22tnQPkDHpkiPTDudvzoXS9SFTVD51HVdhYc11ZQWvcT?=
+ =?us-ascii?Q?rq7ySz8W9pt4LdWlHKDqyFoijF+9Cj7XhRPcSnv+0A4cXrwHi3ipe/aqAmtI?=
+ =?us-ascii?Q?BC5IzRkkG+1Wx1LKSHh7I638/knjd2EwmJj7yHAEFc7XPWBYU7z8WuljBGAv?=
+ =?us-ascii?Q?wWC52vU+tZ37eIIBv1fy+vQSkSVjUsqiMZLN4+88+GGKY0M5kLgIGzvWn797?=
+ =?us-ascii?Q?NCtMp8GrcETDkHu7egRk6vfNS3PcLopNvGKWc8UZbndaSnjf/Vc+GLuBPbqs?=
+ =?us-ascii?Q?6JDOYJGw6rgoM3hFaNhsSEcYjxRnTncn7tlETYMSYKrGcra33fuNlPIetWun?=
+ =?us-ascii?Q?1mDaxXSFyOIzYNl8vU0X+jmiMD8JviR4U6+U3Gyg4RqsDyza989us+RmDdOp?=
+ =?us-ascii?Q?d+m2pCyJvsg37nj2+4PBfjU6UCvZJ1Yzz7CKO4fp8orkCpZSouK3Zl9t5VI3?=
+ =?us-ascii?Q?Fjp4kM6Lp7eb+OnlcE0fQUa42jDSgizTHavrdVISdVcf2d73UH9lMb+DKVbL?=
+ =?us-ascii?Q?qOjzxAlPt6jrNbikkV6foZm08H+arTE7JULUns4PUi/xeuyK9QQU65616wQP?=
+ =?us-ascii?Q?9jmobjUj8yalq/XMDsvhNAyFtUnCS9hMWWx2T6J8d1nQAtPPbulGmQRF5DxZ?=
+ =?us-ascii?Q?/C/YLDbIGoZ6e9GOHaQVLpWHy9G5lGeLfN2Z+gGFVcIl2flcYjFMjDKOA1dh?=
+ =?us-ascii?Q?PKkXMVLeZwAHOOnu1P8qh2QHyPYC5dPbn1cpu+kwRGrj+u+tr8nKOs+DppkW?=
+ =?us-ascii?Q?HKguKVA2GyVOyiTKfcuPa8aDBg9N6BaSD9vGQ5v7eC50WvpsYsRE1V9qvJGo?=
+ =?us-ascii?Q?mS/jwqLuhUsCUheNkpehAxw9QV7KlmQQtfBuI9B6k3IgiPekIIRf57GzFj4m?=
+ =?us-ascii?Q?IHyb928hICNHfucuESOQXX8+oMSccJKf/dicO5t2j9lIV0b1AP/R0exVG53T?=
+ =?us-ascii?Q?bkDeWgCyWM0H/k2/q/Y0fbjY+gnbpu46Ar9GxeyPTDylIKB56gKpuZsfWHzx?=
+ =?us-ascii?Q?TJzI2wPUW45z8AGiBWIQ6dZoBLsKjDNLQnXUkZoB99XYvHUC/+kqQi/dAhSc?=
+ =?us-ascii?Q?DK5km8hQarv+WDw69eGRxqWcJf41e48qS8aPTDXsj/JGRLdkjf8d7bbappFF?=
+ =?us-ascii?Q?HBQY3m+R/guy+EB31SzUeaTq7GpJxQX4ndgkUjd2I8KBw1G188Rz7xhoQc/p?=
+ =?us-ascii?Q?KhinjE3n0FSg9K2W8yqXWWOCauVp9w8mnzTfpPBVuX16qyJVI4/YWki+Ii9h?=
+ =?us-ascii?Q?Yv/rvorZEymWJjE54XuloN1LJJcNJW7t3a2TGWpBNY/rmzToj5DUrodPyjSO?=
+ =?us-ascii?Q?HExLFzUHHy6Gu0kz+OwJWHQj3Qn5cuBwM9Vg42eMtpa+3CVzAXrpdRWZq8CC?=
+ =?us-ascii?Q?9FAGxOLkPdlwHgsAuUs/ZEt9loa8yHpQl3hfhin95vesESP80f15tsgbWONt?=
+ =?us-ascii?Q?H0a22t/5DeK5NTyOvw64i9zrOtqqF5Mre1X6igG7e6IZ8F5y2+3Zqkn+brEa?=
+ =?us-ascii?Q?w/ouzHaUDjAzfx2lwXbIBfUzZdVRKnSejLmeZT/WC8nBC7tsbX/J3Fiv2nWO?=
+ =?us-ascii?Q?ApgyerA5Lju/wZ3cRlSOdqtmShF/gug=3D?=
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 57608bef-1240-4258-360e-08da337e55fe
+X-MS-Exchange-CrossTenant-AuthSource: YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 18:44:52.9684
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: CFdGAumK2STDkU6IfHmsT9/yeMQ8daNacIA+fSCQEm5SE3nGLedPSBTOZ0/q6Tv8XCvmzicx/x7Rx7b8ADBZj4yEGJ8B+/ZB/i3mMqMdPdY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT2PR01MB5427
+X-Proofpoint-ORIG-GUID: -KMm1tidzzZQeEj5a4sbC5Tqn-bbaG21
+X-Proofpoint-GUID: -KMm1tidzzZQeEj5a4sbC5Tqn-bbaG21
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-11_07,2022-05-11_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=26 mlxlogscore=46
+ impostorscore=0 bulkscore=0 adultscore=0 priorityscore=1501 suspectscore=0
+ malwarescore=0 mlxscore=26 spamscore=26 lowpriorityscore=0 phishscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205110081
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi lixue,
+Changes to support TX NAPI in the axienet driver, as well as fixing
+a potential concurrency issue in the TX ring pointer handling.
 
-Thank you for the patch! Perhaps something to improve:
+Supersedes v5 of the individual patch
+"net: axienet: Use NAPI for TX completion path".
 
-[auto build test WARNING on tnguy-next-queue/dev-queue]
-[also build test WARNING on v5.18-rc6 next-20220511]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Changed since v5: Replaced spinlock with fixes to the way the TX ring
+tail pointer is updated, and broke those changes into a separate patch.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/lixue-liang/igb_main-Added-invalid-mac-address-handling-in-igb_probe/20220511-162855
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue.git dev-queue
-config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220512/202205120241.e57SFKBu-lkp@intel.com/config)
-compiler: ia64-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/6237ad497b2c8063fe59ba165d5ab87ae15aad0d
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review lixue-liang/igb_main-Added-invalid-mac-address-handling-in-igb_probe/20220511-162855
-        git checkout 6237ad497b2c8063fe59ba165d5ab87ae15aad0d
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/ethernet/intel/igb/
+Changed since v4: Added locking to protect TX ring tail pointer against
+concurrent access by TX transmit and TX poll paths.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Changed since v3: Fixed references to renamed function in comments
 
-All warnings (new ones prefixed by >>):
+Changed since v2: Use separate TX and RX NAPI poll handlers to keep
+completion handling on same CPU as TX/RX IRQ. Added hard/soft IRQ
+benchmark information to commit message.
 
-   drivers/net/ethernet/intel/igb/igb_main.c: In function 'igb_probe':
->> drivers/net/ethernet/intel/igb/igb_main.c:3362:39: warning: passing argument 1 of 'eth_random_addr' discards 'const' qualifier from pointer target type [-Wdiscarded-qualifiers]
-    3362 |                 eth_random_addr(netdev->dev_addr);
-         |                                 ~~~~~~^~~~~~~~~~
-   In file included from include/linux/if_vlan.h:11,
-                    from include/net/pkt_sched.h:7,
-                    from drivers/net/ethernet/intel/igb/igb_main.c:17:
-   include/linux/etherdevice.h:230:40: note: expected 'u8 *' {aka 'unsigned char *'} but argument is of type 'const unsigned char *'
-     230 | static inline void eth_random_addr(u8 *addr)
-         |                                    ~~~~^~~~
-   {standard input}: Assembler messages:
-   {standard input}:45068: Error: Register number out of range 0..4
-   {standard input}:45069: Error: Register number out of range 0..4
-   {standard input}:45069: Warning: Use of 'mov' violates WAW dependency 'GR%, % in 1 - 127' (impliedf), specific resource number is 45
-   {standard input}:45069: Warning: Only the first path encountering the conflict is reported
-   {standard input}:45068: Warning: This is the location of the conflicting usage
-   {standard input}:45073: Error: Register number out of range 0..4
+Changed since v1: Added benchmark information to commit message, no
+code changes.
 
+Robert Hancock (2):
+  net: axienet: Be more careful about updating tx_bd_tail
+  net: axienet: Use NAPI for TX completion path
 
-vim +3362 drivers/net/ethernet/intel/igb/igb_main.c
-
-  3146	
-  3147	/**
-  3148	 *  igb_probe - Device Initialization Routine
-  3149	 *  @pdev: PCI device information struct
-  3150	 *  @ent: entry in igb_pci_tbl
-  3151	 *
-  3152	 *  Returns 0 on success, negative on failure
-  3153	 *
-  3154	 *  igb_probe initializes an adapter identified by a pci_dev structure.
-  3155	 *  The OS initialization, configuring of the adapter private structure,
-  3156	 *  and a hardware reset occur.
-  3157	 **/
-  3158	static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
-  3159	{
-  3160		struct net_device *netdev;
-  3161		struct igb_adapter *adapter;
-  3162		struct e1000_hw *hw;
-  3163		u16 eeprom_data = 0;
-  3164		s32 ret_val;
-  3165		static int global_quad_port_a; /* global quad port a indication */
-  3166		const struct e1000_info *ei = igb_info_tbl[ent->driver_data];
-  3167		u8 part_str[E1000_PBANUM_LENGTH];
-  3168		int err;
-  3169	
-  3170		/* Catch broken hardware that put the wrong VF device ID in
-  3171		 * the PCIe SR-IOV capability.
-  3172		 */
-  3173		if (pdev->is_virtfn) {
-  3174			WARN(1, KERN_ERR "%s (%x:%x) should not be a VF!\n",
-  3175				pci_name(pdev), pdev->vendor, pdev->device);
-  3176			return -EINVAL;
-  3177		}
-  3178	
-  3179		err = pci_enable_device_mem(pdev);
-  3180		if (err)
-  3181			return err;
-  3182	
-  3183		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
-  3184		if (err) {
-  3185			dev_err(&pdev->dev,
-  3186				"No usable DMA configuration, aborting\n");
-  3187			goto err_dma;
-  3188		}
-  3189	
-  3190		err = pci_request_mem_regions(pdev, igb_driver_name);
-  3191		if (err)
-  3192			goto err_pci_reg;
-  3193	
-  3194		pci_enable_pcie_error_reporting(pdev);
-  3195	
-  3196		pci_set_master(pdev);
-  3197		pci_save_state(pdev);
-  3198	
-  3199		err = -ENOMEM;
-  3200		netdev = alloc_etherdev_mq(sizeof(struct igb_adapter),
-  3201					   IGB_MAX_TX_QUEUES);
-  3202		if (!netdev)
-  3203			goto err_alloc_etherdev;
-  3204	
-  3205		SET_NETDEV_DEV(netdev, &pdev->dev);
-  3206	
-  3207		pci_set_drvdata(pdev, netdev);
-  3208		adapter = netdev_priv(netdev);
-  3209		adapter->netdev = netdev;
-  3210		adapter->pdev = pdev;
-  3211		hw = &adapter->hw;
-  3212		hw->back = adapter;
-  3213		adapter->msg_enable = netif_msg_init(debug, DEFAULT_MSG_ENABLE);
-  3214	
-  3215		err = -EIO;
-  3216		adapter->io_addr = pci_iomap(pdev, 0, 0);
-  3217		if (!adapter->io_addr)
-  3218			goto err_ioremap;
-  3219		/* hw->hw_addr can be altered, we'll use adapter->io_addr for unmap */
-  3220		hw->hw_addr = adapter->io_addr;
-  3221	
-  3222		netdev->netdev_ops = &igb_netdev_ops;
-  3223		igb_set_ethtool_ops(netdev);
-  3224		netdev->watchdog_timeo = 5 * HZ;
-  3225	
-  3226		strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
-  3227	
-  3228		netdev->mem_start = pci_resource_start(pdev, 0);
-  3229		netdev->mem_end = pci_resource_end(pdev, 0);
-  3230	
-  3231		/* PCI config space info */
-  3232		hw->vendor_id = pdev->vendor;
-  3233		hw->device_id = pdev->device;
-  3234		hw->revision_id = pdev->revision;
-  3235		hw->subsystem_vendor_id = pdev->subsystem_vendor;
-  3236		hw->subsystem_device_id = pdev->subsystem_device;
-  3237	
-  3238		/* Copy the default MAC, PHY and NVM function pointers */
-  3239		memcpy(&hw->mac.ops, ei->mac_ops, sizeof(hw->mac.ops));
-  3240		memcpy(&hw->phy.ops, ei->phy_ops, sizeof(hw->phy.ops));
-  3241		memcpy(&hw->nvm.ops, ei->nvm_ops, sizeof(hw->nvm.ops));
-  3242		/* Initialize skew-specific constants */
-  3243		err = ei->get_invariants(hw);
-  3244		if (err)
-  3245			goto err_sw_init;
-  3246	
-  3247		/* setup the private structure */
-  3248		err = igb_sw_init(adapter);
-  3249		if (err)
-  3250			goto err_sw_init;
-  3251	
-  3252		igb_get_bus_info_pcie(hw);
-  3253	
-  3254		hw->phy.autoneg_wait_to_complete = false;
-  3255	
-  3256		/* Copper options */
-  3257		if (hw->phy.media_type == e1000_media_type_copper) {
-  3258			hw->phy.mdix = AUTO_ALL_MODES;
-  3259			hw->phy.disable_polarity_correction = false;
-  3260			hw->phy.ms_type = e1000_ms_hw_default;
-  3261		}
-  3262	
-  3263		if (igb_check_reset_block(hw))
-  3264			dev_info(&pdev->dev,
-  3265				"PHY reset is blocked due to SOL/IDER session.\n");
-  3266	
-  3267		/* features is initialized to 0 in allocation, it might have bits
-  3268		 * set by igb_sw_init so we should use an or instead of an
-  3269		 * assignment.
-  3270		 */
-  3271		netdev->features |= NETIF_F_SG |
-  3272				    NETIF_F_TSO |
-  3273				    NETIF_F_TSO6 |
-  3274				    NETIF_F_RXHASH |
-  3275				    NETIF_F_RXCSUM |
-  3276				    NETIF_F_HW_CSUM;
-  3277	
-  3278		if (hw->mac.type >= e1000_82576)
-  3279			netdev->features |= NETIF_F_SCTP_CRC | NETIF_F_GSO_UDP_L4;
-  3280	
-  3281		if (hw->mac.type >= e1000_i350)
-  3282			netdev->features |= NETIF_F_HW_TC;
-  3283	
-  3284	#define IGB_GSO_PARTIAL_FEATURES (NETIF_F_GSO_GRE | \
-  3285					  NETIF_F_GSO_GRE_CSUM | \
-  3286					  NETIF_F_GSO_IPXIP4 | \
-  3287					  NETIF_F_GSO_IPXIP6 | \
-  3288					  NETIF_F_GSO_UDP_TUNNEL | \
-  3289					  NETIF_F_GSO_UDP_TUNNEL_CSUM)
-  3290	
-  3291		netdev->gso_partial_features = IGB_GSO_PARTIAL_FEATURES;
-  3292		netdev->features |= NETIF_F_GSO_PARTIAL | IGB_GSO_PARTIAL_FEATURES;
-  3293	
-  3294		/* copy netdev features into list of user selectable features */
-  3295		netdev->hw_features |= netdev->features |
-  3296				       NETIF_F_HW_VLAN_CTAG_RX |
-  3297				       NETIF_F_HW_VLAN_CTAG_TX |
-  3298				       NETIF_F_RXALL;
-  3299	
-  3300		if (hw->mac.type >= e1000_i350)
-  3301			netdev->hw_features |= NETIF_F_NTUPLE;
-  3302	
-  3303		netdev->features |= NETIF_F_HIGHDMA;
-  3304	
-  3305		netdev->vlan_features |= netdev->features | NETIF_F_TSO_MANGLEID;
-  3306		netdev->mpls_features |= NETIF_F_HW_CSUM;
-  3307		netdev->hw_enc_features |= netdev->vlan_features;
-  3308	
-  3309		/* set this bit last since it cannot be part of vlan_features */
-  3310		netdev->features |= NETIF_F_HW_VLAN_CTAG_FILTER |
-  3311				    NETIF_F_HW_VLAN_CTAG_RX |
-  3312				    NETIF_F_HW_VLAN_CTAG_TX;
-  3313	
-  3314		netdev->priv_flags |= IFF_SUPP_NOFCS;
-  3315	
-  3316		netdev->priv_flags |= IFF_UNICAST_FLT;
-  3317	
-  3318		/* MTU range: 68 - 9216 */
-  3319		netdev->min_mtu = ETH_MIN_MTU;
-  3320		netdev->max_mtu = MAX_STD_JUMBO_FRAME_SIZE;
-  3321	
-  3322		adapter->en_mng_pt = igb_enable_mng_pass_thru(hw);
-  3323	
-  3324		/* before reading the NVM, reset the controller to put the device in a
-  3325		 * known good starting state
-  3326		 */
-  3327		hw->mac.ops.reset_hw(hw);
-  3328	
-  3329		/* make sure the NVM is good , i211/i210 parts can have special NVM
-  3330		 * that doesn't contain a checksum
-  3331		 */
-  3332		switch (hw->mac.type) {
-  3333		case e1000_i210:
-  3334		case e1000_i211:
-  3335			if (igb_get_flash_presence_i210(hw)) {
-  3336				if (hw->nvm.ops.validate(hw) < 0) {
-  3337					dev_err(&pdev->dev,
-  3338						"The NVM Checksum Is Not Valid\n");
-  3339					err = -EIO;
-  3340					goto err_eeprom;
-  3341				}
-  3342			}
-  3343			break;
-  3344		default:
-  3345			if (hw->nvm.ops.validate(hw) < 0) {
-  3346				dev_err(&pdev->dev, "The NVM Checksum Is Not Valid\n");
-  3347				err = -EIO;
-  3348				goto err_eeprom;
-  3349			}
-  3350			break;
-  3351		}
-  3352	
-  3353		if (eth_platform_get_mac_address(&pdev->dev, hw->mac.addr)) {
-  3354			/* copy the MAC address out of the NVM */
-  3355			if (hw->mac.ops.read_mac_addr(hw))
-  3356				dev_err(&pdev->dev, "NVM Read Error\n");
-  3357		}
-  3358	
-  3359		eth_hw_addr_set(netdev, hw->mac.addr);
-  3360	
-  3361		if (!is_valid_ether_addr(netdev->dev_addr)) {
-> 3362			eth_random_addr(netdev->dev_addr);
-  3363			memcpy(hw->mac.addr, netdev->dev_addr, netdev->addr_len);
-  3364			dev_info(&pdev->dev,
-  3365				 "Invalid Mac Address, already got random Mac Address\n");
-  3366		}
-  3367	
-  3368		igb_set_default_mac_filter(adapter);
-  3369	
-  3370		/* get firmware version for ethtool -i */
-  3371		igb_set_fw_version(adapter);
-  3372	
-  3373		/* configure RXPBSIZE and TXPBSIZE */
-  3374		if (hw->mac.type == e1000_i210) {
-  3375			wr32(E1000_RXPBS, I210_RXPBSIZE_DEFAULT);
-  3376			wr32(E1000_TXPBS, I210_TXPBSIZE_DEFAULT);
-  3377		}
-  3378	
-  3379		timer_setup(&adapter->watchdog_timer, igb_watchdog, 0);
-  3380		timer_setup(&adapter->phy_info_timer, igb_update_phy_info, 0);
-  3381	
-  3382		INIT_WORK(&adapter->reset_task, igb_reset_task);
-  3383		INIT_WORK(&adapter->watchdog_task, igb_watchdog_task);
-  3384	
-  3385		/* Initialize link properties that are user-changeable */
-  3386		adapter->fc_autoneg = true;
-  3387		hw->mac.autoneg = true;
-  3388		hw->phy.autoneg_advertised = 0x2f;
-  3389	
-  3390		hw->fc.requested_mode = e1000_fc_default;
-  3391		hw->fc.current_mode = e1000_fc_default;
-  3392	
-  3393		igb_validate_mdi_setting(hw);
-  3394	
-  3395		/* By default, support wake on port A */
-  3396		if (hw->bus.func == 0)
-  3397			adapter->flags |= IGB_FLAG_WOL_SUPPORTED;
-  3398	
-  3399		/* Check the NVM for wake support on non-port A ports */
-  3400		if (hw->mac.type >= e1000_82580)
-  3401			hw->nvm.ops.read(hw, NVM_INIT_CONTROL3_PORT_A +
-  3402					 NVM_82580_LAN_FUNC_OFFSET(hw->bus.func), 1,
-  3403					 &eeprom_data);
-  3404		else if (hw->bus.func == 1)
-  3405			hw->nvm.ops.read(hw, NVM_INIT_CONTROL3_PORT_B, 1, &eeprom_data);
-  3406	
-  3407		if (eeprom_data & IGB_EEPROM_APME)
-  3408			adapter->flags |= IGB_FLAG_WOL_SUPPORTED;
-  3409	
-  3410		/* now that we have the eeprom settings, apply the special cases where
-  3411		 * the eeprom may be wrong or the board simply won't support wake on
-  3412		 * lan on a particular port
-  3413		 */
-  3414		switch (pdev->device) {
-  3415		case E1000_DEV_ID_82575GB_QUAD_COPPER:
-  3416			adapter->flags &= ~IGB_FLAG_WOL_SUPPORTED;
-  3417			break;
-  3418		case E1000_DEV_ID_82575EB_FIBER_SERDES:
-  3419		case E1000_DEV_ID_82576_FIBER:
-  3420		case E1000_DEV_ID_82576_SERDES:
-  3421			/* Wake events only supported on port A for dual fiber
-  3422			 * regardless of eeprom setting
-  3423			 */
-  3424			if (rd32(E1000_STATUS) & E1000_STATUS_FUNC_1)
-  3425				adapter->flags &= ~IGB_FLAG_WOL_SUPPORTED;
-  3426			break;
-  3427		case E1000_DEV_ID_82576_QUAD_COPPER:
-  3428		case E1000_DEV_ID_82576_QUAD_COPPER_ET2:
-  3429			/* if quad port adapter, disable WoL on all but port A */
-  3430			if (global_quad_port_a != 0)
-  3431				adapter->flags &= ~IGB_FLAG_WOL_SUPPORTED;
-  3432			else
-  3433				adapter->flags |= IGB_FLAG_QUAD_PORT_A;
-  3434			/* Reset for multiple quad port adapters */
-  3435			if (++global_quad_port_a == 4)
-  3436				global_quad_port_a = 0;
-  3437			break;
-  3438		default:
-  3439			/* If the device can't wake, don't set software support */
-  3440			if (!device_can_wakeup(&adapter->pdev->dev))
-  3441				adapter->flags &= ~IGB_FLAG_WOL_SUPPORTED;
-  3442		}
-  3443	
-  3444		/* initialize the wol settings based on the eeprom settings */
-  3445		if (adapter->flags & IGB_FLAG_WOL_SUPPORTED)
-  3446			adapter->wol |= E1000_WUFC_MAG;
-  3447	
-  3448		/* Some vendors want WoL disabled by default, but still supported */
-  3449		if ((hw->mac.type == e1000_i350) &&
-  3450		    (pdev->subsystem_vendor == PCI_VENDOR_ID_HP)) {
-  3451			adapter->flags |= IGB_FLAG_WOL_SUPPORTED;
-  3452			adapter->wol = 0;
-  3453		}
-  3454	
-  3455		/* Some vendors want the ability to Use the EEPROM setting as
-  3456		 * enable/disable only, and not for capability
-  3457		 */
-  3458		if (((hw->mac.type == e1000_i350) ||
-  3459		     (hw->mac.type == e1000_i354)) &&
-  3460		    (pdev->subsystem_vendor == PCI_VENDOR_ID_DELL)) {
-  3461			adapter->flags |= IGB_FLAG_WOL_SUPPORTED;
-  3462			adapter->wol = 0;
-  3463		}
-  3464		if (hw->mac.type == e1000_i350) {
-  3465			if (((pdev->subsystem_device == 0x5001) ||
-  3466			     (pdev->subsystem_device == 0x5002)) &&
-  3467					(hw->bus.func == 0)) {
-  3468				adapter->flags |= IGB_FLAG_WOL_SUPPORTED;
-  3469				adapter->wol = 0;
-  3470			}
-  3471			if (pdev->subsystem_device == 0x1F52)
-  3472				adapter->flags |= IGB_FLAG_WOL_SUPPORTED;
-  3473		}
-  3474	
-  3475		device_set_wakeup_enable(&adapter->pdev->dev,
-  3476					 adapter->flags & IGB_FLAG_WOL_SUPPORTED);
-  3477	
-  3478		/* reset the hardware with the new settings */
-  3479		igb_reset(adapter);
-  3480	
-  3481		/* Init the I2C interface */
-  3482		err = igb_init_i2c(adapter);
-  3483		if (err) {
-  3484			dev_err(&pdev->dev, "failed to init i2c interface\n");
-  3485			goto err_eeprom;
-  3486		}
-  3487	
-  3488		/* let the f/w know that the h/w is now under the control of the
-  3489		 * driver.
-  3490		 */
-  3491		igb_get_hw_control(adapter);
-  3492	
-  3493		strcpy(netdev->name, "eth%d");
-  3494		err = register_netdev(netdev);
-  3495		if (err)
-  3496			goto err_register;
-  3497	
-  3498		/* carrier off reporting is important to ethtool even BEFORE open */
-  3499		netif_carrier_off(netdev);
-  3500	
+ drivers/net/ethernet/xilinx/xilinx_axienet.h  |  54 +++---
+ .../net/ethernet/xilinx/xilinx_axienet_main.c | 165 ++++++++++--------
+ 2 files changed, 124 insertions(+), 95 deletions(-)
 
 -- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+2.31.1
+
