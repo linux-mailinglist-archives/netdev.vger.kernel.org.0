@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B20635231F1
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 13:39:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7A625231F3
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 13:40:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231749AbiEKLjt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 07:39:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
+        id S232517AbiEKLkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 07:40:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229975AbiEKLjs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 07:39:48 -0400
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2100.outbound.protection.outlook.com [40.107.244.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC6A92415D9
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 04:39:47 -0700 (PDT)
+        with ESMTP id S232149AbiEKLjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 07:39:52 -0400
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (mail-mw2nam12on2117.outbound.protection.outlook.com [40.107.244.117])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A153B2415EF
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 04:39:51 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fFvaVusNnoqqc9xzF0ZnCPI3ksNCVnVOWVhE3HTOJx7kANdeG+t/iK2mnwdJSummnrmWUNPNKJUhTRR49YZerX2K/vH6ZuF1cn6WnaALHkKe2u1In2IZAuiST+y9ZCXTpCsB/9Bnv/M5Poe9WyEaJjwBaC/Ovr6VPwH1TqD2rFMAsRKFmyuni4bXKLYpYjcgxlHqsrdjRSRzuL3OYWOLCkDMiLl41sqpVpCz4/1JkSW9dkv8PjXfQZJRG9Gp79jSZfx6hrOj8KJtUbib8RpprKxwFJWCaXMrLoGVYfEpl6ezlDc1ffc4s0lfrxqNPpHUkF80g/oU1AICQvK4I6iMZw==
+ b=BcPyL/0f0JhWMalqh7bArRmp4HGwctMxC5Rup3RXGn/BKP/a+EQysKSO2Za/fpFakLaf4hZTWkS6+uuSvNY5wWKHbWKiGL69M4z/Eou7Mcg2soD9XdGu0JoBtm2QKNDFo9/NM2Dkd++SHTWPjQ/EwwvP9/eYi7QEnFS7cGH8CN7HonU0egdBI70geAHTj7za4AHHNPK2E7RdBv4mvLJSpW+AX72MtjWB/SP8/ygHqkS/LV9tQgCoTK9OkUc7aZt+mdB6haOhtMQUS1a7hA/zA5CHkxbO9Hfu788I+8/p7Ei2CALx99GERcJqEDoypP8adrtoSwN6Y6KkFxG64w+e2g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=UD8JUBXtuOzT442mdVYvqQBcI0P85Hw7Wue1ZWqEB/E=;
- b=NMwjcljBz51Jceb0cG40U8YvqoAYG9nZFty+xCWLJ55Ka2dl0MWkkIitir/JyH1mqc/GLjofn9EwQQEWV4jrK6a9N+9kIIrc0Z6NfRvU603PMyDS3xjjYnQgjwwvRwsqk47y5gkaR0/PK7klEgNqBgCbNSDOjGIzlOlNWVIKVH6JBgKpbROKX3ijRM/GnCmdblu/N3s83IGX7HlOVlZDq1BjiYTi+ZojBgCQ/AxBZV7FiuVU4LC6OJ6SKC4L3M1ceCO1aeAyJZUoR/1AsBF4XYPgVytvmbYyLGtLVdkTumgRt2e+GuEEou0P2yIz6oT47tLcVMgTrjbwb/QElmrqdg==
+ bh=QrBMgqr416+ZL4uNfJKoIOnZbLMK9w/iGZWDF9V7ORY=;
+ b=eaxyLZjmS7F8cuFGJws91laoOPBHFRXtFF+1QmHchPmtykbdkSofKavq5uNzDAVhX59w6MhaTX0R/TmTcUTGGIkFUCljZqQLJSPITCVkTp4e1U49f0lAGBZHWOts9kx2UbiFziHh7oa+NTyc/TUAXHMcKqr2AXJL4KxiQUeTxQuCdRsIn3reAuXkT77To+m9wcWCx7S1tFpAxmPFWeQHSEkZuQOMI01DTHL1cnMNTNgRIgr5aTYOT+quUQGIEOmRqKi1wQYUWZxlXe9hoViGtxPVpoL9zANj7T8bOZdNBDqhOEsh32Bcp1ibwkO708kmEbLS5MVT3SaezbqPD3L4KA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=corigine.com; dmarc=pass action=none header.from=corigine.com;
  dkim=pass header.d=corigine.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=corigine.onmicrosoft.com; s=selector2-corigine-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UD8JUBXtuOzT442mdVYvqQBcI0P85Hw7Wue1ZWqEB/E=;
- b=B0QLXM+YHMpE91/y6am25onCrlRWEr+m0DuRPuUG+J+YYoqP1HyuoN1QBc/L2q9SAokc2E3VIghvwu+xzp/9f8RMdDCMlcXH9lVNprOs8j8jAX3k6n9o2KMEHpEHu1+/+lpFvpg0XvxpRtv1oY0py5uOUAmH/e7JIofUba5oTAA=
+ bh=QrBMgqr416+ZL4uNfJKoIOnZbLMK9w/iGZWDF9V7ORY=;
+ b=TB+gLrcI0PDPU3GZXLnj81MklFNkk89XjCMEjTGbnFl88WHgcr06DjEtw5IIhxcKcMY/5Y9+syIYZ86KUylV2gsBIAEXn7mHfysfs6hKeYg0k/fYj/17/HZqouNkR3SB+iga2PYGL+JHtACWX71v/bTNOECLl0zLPtbQQTfYCr8=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=corigine.com;
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com (2603:10b6:510:78::6)
- by DM6PR13MB2972.namprd13.prod.outlook.com (2603:10b6:5:19a::27) with
+ by BN6PR1301MB1988.namprd13.prod.outlook.com (2603:10b6:405:33::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.12; Wed, 11 May
- 2022 11:39:46 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.4; Wed, 11 May
+ 2022 11:39:47 +0000
 Received: from PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::8808:1c60:e9cb:1f94]) by PH0PR13MB4842.namprd13.prod.outlook.com
  ([fe80::8808:1c60:e9cb:1f94%3]) with mapi id 15.20.5250.012; Wed, 11 May 2022
- 11:39:46 +0000
+ 11:39:47 +0000
 From:   Simon Horman <simon.horman@corigine.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, oss-drivers@corigine.com,
         Bin Chen <bin.chen@corigine.com>
-Subject: [PATCH v2 net-next 1/2] rtnetlink: verify rate parameters for calls to ndo_set_vf_rate
-Date:   Wed, 11 May 2022 13:39:31 +0200
-Message-Id: <20220511113932.92114-2-simon.horman@corigine.com>
+Subject: [PATCH v2 net-next 2/2] nfp: VF rate limit support
+Date:   Wed, 11 May 2022 13:39:32 +0200
+Message-Id: <20220511113932.92114-3-simon.horman@corigine.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220511113932.92114-1-simon.horman@corigine.com>
 References: <20220511113932.92114-1-simon.horman@corigine.com>
@@ -58,57 +58,57 @@ X-ClientProxiedBy: AM0PR10CA0054.EURPRD10.PROD.OUTLOOK.COM
  (2603:10b6:510:78::6)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f1f89618-c9e6-4ff8-ad77-08da3342f2d2
-X-MS-TrafficTypeDiagnostic: DM6PR13MB2972:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR13MB2972E48055E48D8246F37E57E8C89@DM6PR13MB2972.namprd13.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 1ba9144b-28dd-4bb1-0502-08da3342f3b3
+X-MS-TrafficTypeDiagnostic: BN6PR1301MB1988:EE_
+X-Microsoft-Antispam-PRVS: <BN6PR1301MB1988BD21EADB747A06653CC8E8C89@BN6PR1301MB1988.namprd13.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4TJvui7Q8x8TwJ/bNs/OU44Nasse/WE45pYd2qk6oFNkIOvCOodL6U9INi5lygXr6+PAHVqhYq4viLk0cEYfzsdnqzJYwfByoC8GkaV5GgMBoY5BFKNdX5ZFxluiteuOrOC3k2qeEg740+zqM2vsoE2fBsD7YUP9jP0Iu8lHbUXYSLuLlt8LKaZ688Zweoe6dqi2m4ysqKbFyGYNh+jNwANCoUNJDaFuDYJ8PniXdCGgPLZMqv3F/0SGDpHl9DwwMfQ7+hDU2x11ngotORuNp2oOUisPbseEf6f8c5b7ELdDMKiTVuK4rKya4troVqVvngD7xrwhiN06pA/YnekkFAlGw8zgZck2QzTg9O9FjHsd4W1G1aMlBaCCJ0V/QGbs0bjxcSNMygskayIK+dC2iRBNueHB5UeozppzDw+v7noTjliykY+grrlPS+8KjObvsB+E6pBOFE4LQCL8fYVOsNoCA4KE4E3KeTTyqvPdvQrFd5tu5SVnhpk+OUnKW+0JOBhxMFKQ3/Md7eI3WxHmq1yEabIyh/sph++xUdX2MoX6t4/qd4N/tUrki+ombvnlyXeK/3xYqYgePnWNOxo8WuGu4k+PvpbYXRYc8RVLNCTPxC613ZKHvtQBT1+NN+0txMGeuuZXVXWSjAB/pLQ2tA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(376002)(346002)(366004)(136003)(396003)(39840400004)(15650500001)(38100700002)(1076003)(508600001)(107886003)(6486002)(83380400001)(110136005)(316002)(186003)(8676002)(52116002)(6666004)(6506007)(36756003)(2906002)(6512007)(66556008)(66476007)(44832011)(66946007)(2616005)(5660300002)(86362001)(8936002)(4326008);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: nl29gWwiS2V+vDDXC32rZrEPqkkTd0Y1gNIq64hUvCxQ49dhkHIpetYktF0mrs4E6vMjZ3qNYkBzFt7RpxSUdgbRd2QO9vwngMX8HdsHgQOXmo0LqLgODjUh3CbG88re14Zj8dqvUu38BsTgQNXpy7o4h+0MOq/G1mqxpxjL6xReVyXMyCMkyKwXzb2M9sJA9lPjkt8G3jq5dpanQpuumJsNw0ElUGAlmipxhuDqGjkAMkdiUC2/5Wihh5oyomX90521hq8LLpXNT5yJLsRn54LxMeY06fyVHkWVCOK2ThJnOuj9kaBUooFvTAYvHOWApiJsi+kz4nbTtutZ0RGJhD/5G3oWYT3kUAJH1F+2TFhFqYEmEofpYnW7l7TtnGg7E2Z0fe3TOAsJmPovufdNOOt/THfGVePMXntffEwZ/aOxbZ97hXXxMeV/bfNPqbr6G97+cn4nlZdFsiz1/DOBLkaaR3jMedJ7gMr7eEiPcRuNOAkW/NZL4m6PEDHIPnvkRoOJXHycywYze6UGzQkl/YzI6b5oHiNF5hwxIDiWACX3I6jlPRgQTXqqpnzOOILsReESbrtQVuQI5oRw0fik+A7AVWnlqYdOuqWy1JEfxvDVPKxJ65dmG1GT4ij/kt3ZuISw17HBKI+yYcm2Uc+L7A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR13MB4842.namprd13.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(376002)(396003)(39840400004)(346002)(136003)(6486002)(4326008)(6666004)(66946007)(66476007)(66556008)(508600001)(52116002)(83380400001)(2906002)(36756003)(8676002)(8936002)(44832011)(1076003)(107886003)(186003)(6512007)(316002)(5660300002)(2616005)(6506007)(38100700002)(86362001)(110136005);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?DMyJRQgy/D/ST0IhKsiKZHVHP3LhW72w7PD3L/XrVXW89slwCNE4c+FYWr7g?=
- =?us-ascii?Q?ujgR3Uzv8ax4Crt1Cq3vQb5QqAnFkiPYecriUhs1yqnCCjwBOaCSYKAeC0ar?=
- =?us-ascii?Q?VHff9gfclTwrNC59k2gSYXXas0k6jP8hSLoztfLR2rjWDzkW5o1mfhz4aZmf?=
- =?us-ascii?Q?0HQN1bSTaE7qPEt6imJv2bMWfhLPp1axiDD0aYvIVeM9lI4P38m2eP6WHv5V?=
- =?us-ascii?Q?9xiquOwN27NrqgqeNUTxX4VZVOR3dpifWTuoVZRfJu6Fn4odc1JUa9j9Q5hv?=
- =?us-ascii?Q?tfmwr2k2PWLVJ+qDcQwyyfI+O2O3n+SjLAswMZcI5Y8q3Z0eRZ/N3S8lWq2j?=
- =?us-ascii?Q?yuC0OV1bqi/4QHVwn9t07rQToIDwQYeaaGmU58+VMloyMYlFlMY+hFeXrshO?=
- =?us-ascii?Q?EonY6KiqWeHnMcGMDuVKEii7oogUivYGJFQHH84k9mGuleCaf4baiicC62V4?=
- =?us-ascii?Q?H/skoFOZAoIgHFdIj150XpY8dkGxNXHPDymMqxCg61bJ50FiHFFW+M9l0de8?=
- =?us-ascii?Q?wwwnTsGcIGIgAgqoo2Tvswh+q7sWY2okuPwgoOFppDNc5y0PzA2ibgzMBHhY?=
- =?us-ascii?Q?TMsIFNMlW62FPIThnQ8o86p9xay/FlRkksxts5OoP0UuHj70mkGO6uJ7ca/p?=
- =?us-ascii?Q?rTCLUmUdeBIiUWcVdRFBalVTJwsYaXPfmvwQA406eHGULD27YCAEnqkhaqAd?=
- =?us-ascii?Q?H7gjxG0oF9k3S/HxYx+oux3HjjDDfPrFdIGROfAyDdJaN0zT6dXK5pON4/IZ?=
- =?us-ascii?Q?QB75+xFmTI3g+nxF9M+OPKoy4o4dTuuQ8QhxQYI3pq/E/BsFIkiU07FGlU06?=
- =?us-ascii?Q?waC91ZsgrgF4IIFwAosYt/6JWHM77iVtXFLynLTfTCyaCSkpvy2ol+OohdDl?=
- =?us-ascii?Q?T4vs3MOTtVAQs1IN5URlm8Qb7mCyiIQe2sNMSeSdKY9qVsSZiiRiePRaC5lp?=
- =?us-ascii?Q?YtyLF6i6kjBZasl8xqCw9eUScLPmd1/ZLvxFMrN1oLfOF7cxFRHnS4ANbo2m?=
- =?us-ascii?Q?A7n+JswsdhF0UKiD6nxwksOaTF/h/kL3EtJz24u6vrWFGRbU30S63I7tPJp/?=
- =?us-ascii?Q?E4WwnkE5gGpVeVt9AgHB+OMoDwLABVj8E3R2mB6jnhWXqE3DPoBIh/Tbf/dr?=
- =?us-ascii?Q?q9KT2xvqdE7ze6PgeGPKzor0jtKn2mL5nyV0PlctHRPWDOte/Big29I4kf4+?=
- =?us-ascii?Q?XkdJSoP/sGmEyU5nxWzy+pv7fzqVd6iuuufmMczBjP+SLzsLD54vrTEiBkCc?=
- =?us-ascii?Q?2rJsemBf3LltL1Q/McZHOeYNp/qOan4i4ogHNpsjgfVvh5J2sKRBzYCc2apo?=
- =?us-ascii?Q?0DVjfThEtXwOrVWdpOPnoTE9gyCCc8lCGTWkGJYBx9gVAm165MWM73U3SLry?=
- =?us-ascii?Q?chkyB0LogLCGUaQwDBybvwUYmxo40fBmTIKbKw/XistPk4Eg54FQngSwa5XL?=
- =?us-ascii?Q?vEL29RRPZpUdgL9hjIPXbOczYLre+QFiF1A6kBuKaAQ6r2vrGAAumRl8qa4C?=
- =?us-ascii?Q?HXsGpVds1sMIB7hybNEuVUmjkMgK35880qI9QsWRbL34VW6EPCgYcufWxp1B?=
- =?us-ascii?Q?pCStMT+zXOW7R8oF05BBQfmcIIiDTz3BmOcDInCLYjsGM1U0Vv1afdaAe5Zn?=
- =?us-ascii?Q?Xj7MnqHhVMeInXSyKjvjDnW+Ly8QhUvtyeX52RUy8cdjPv4AWOhIuy5u0j1r?=
- =?us-ascii?Q?X8tKOmPJoMbYajIM5QvFtiJytF37E8fzTOoqBhJLs3EP7+JgoR2LRULuI8vR?=
- =?us-ascii?Q?wesTMM7IjMr/UbRqIF+0rSwgvpdHEYtSGTLRJJyianHy5gPuTW4xJKOl6fix?=
-X-MS-Exchange-AntiSpam-MessageData-1: ZiyKlzIZYo4gYwQDGq54GFsecyRRq+0na74=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?jiw1a9ly6SQEmOBVKapsxNm5uc6xqtCr9xayOq2tprN5OiPjxbQXQT83VArU?=
+ =?us-ascii?Q?9ykFj+6lgw1LtFtWSEwhWyqxHQ16pECpIo+5JPM8gCpjvdgvPWD++hr44nB/?=
+ =?us-ascii?Q?Qr93eE29ISEwvQvESzt9JkDB/cvCtxwJ4w4dtcwpPei5yACf0RTH4zYn+ocA?=
+ =?us-ascii?Q?iezjo1OisQLBUbFizER/4mXGIS2uTf+Hb6fyFbI3khR1uHr2V+9/8+EblatA?=
+ =?us-ascii?Q?18QOLYBBslQy1ucSGbzO4UcLJMcBvur+MZ2C6cpLV5DcLgKzfrCKGPbC3tcL?=
+ =?us-ascii?Q?cTa1D/Y7KOP3Mn5ZQcsErxJ88UAHBm3s6K+r8OgwpD1/Ww0ZuHQoYGobwqg8?=
+ =?us-ascii?Q?NdH57pc4Uf9j41oUmTRGVdirpD+SotE4A/zmvbRxRRF/PZdhFVKLFtkeko3B?=
+ =?us-ascii?Q?6EC4/z4+g/+VyBTOHH5LDygNSqVmGWJulJhWByRHKg7KwcVNg8A2dSDp4efo?=
+ =?us-ascii?Q?aoEzG3W+6Dewup52TiA0Ff7abyGfNK7XrhWDEkLYDfqukPLV4aPYh4uroP/Z?=
+ =?us-ascii?Q?cvPBVWDPKaYDiFtCdXnVDiLwKbB6KZJlQH7Rkb2nU/TU11jwg/xpE2vzbN/r?=
+ =?us-ascii?Q?xYEAcmcBBfQ/TgxS25ca1ks/7R4d8x7XyKvMn8cU39w7gPTGn/RkZnTb+rXM?=
+ =?us-ascii?Q?YELVT7f3kDs+0PF5L8JzeZDCvWPLX1F5qcTjS9qxvYMkKfbVkQIqoKpiUKKt?=
+ =?us-ascii?Q?Rmy/VObo1pwnSPvEUcK+k+RhhrYG8hQphW/9lTi7GEUI99h3bU/6CF14yq35?=
+ =?us-ascii?Q?wjN7YttgUWOKFX8/IbUUlAX/izfkhI4lHV5EnBpWgizDH6N1mdiGNu2A0r44?=
+ =?us-ascii?Q?qlYhR2+G7z+UVw0RVBokVpE2zNP971UcDpLgKDkEgqXmb3x76CvySw/HzgPe?=
+ =?us-ascii?Q?Pgo8v0tQAiWJznM6jj4UkEV/NRIUEYDdEgJXzXkymYTcEBY7UvahJRKg0eO7?=
+ =?us-ascii?Q?NUIyj4x9i8AN3QYZt086KrmSdbVNxnn2e8XQih9V3QvwG3Ax0gLS2hk9BY2Z?=
+ =?us-ascii?Q?at4MvdJ6LnMbfjGvTIsPcbS1mbfbH4KJcPrvbEq6RdIFOy8Tt0lb6JwveVnq?=
+ =?us-ascii?Q?EuhEkOUWOZSsxgx70ks4TrNSKb7mvsItP84rKpx6Ga4gPlQtcHvhUZJYxKlm?=
+ =?us-ascii?Q?jWnPUWe519UyiM0FCtUV3jZtktByZcfB521ylxA1D49DSsbD4c5kjEdSTAP+?=
+ =?us-ascii?Q?3nmPlTsFJO1eRzX74mwD54OksLjJBw7PjUdi34AsW0+svwfbnHx86o27UkMj?=
+ =?us-ascii?Q?sdl4MBCG+YCdNtSbFMdwMMpLmYwG5EZqrtQ7l80ZAuPXISSyJCYqfDEYwRnk?=
+ =?us-ascii?Q?1uLxqIexcRdz7IG7N5cOMr53VSl6Y3kRO37qH24FXR0yUwaclmbUsCOPb78j?=
+ =?us-ascii?Q?a1Qm7085hvrdzaJ+Gno1/C2PEZ4cfIrIlDXg+pidGysX2UXD6r+o5712PbSa?=
+ =?us-ascii?Q?olEpDDmHC2G36mskdKANT9FdYrA7cpCvZUz0pGGRKK4foy1taPa7iugG3zje?=
+ =?us-ascii?Q?DaLuMT26rOnHgu8H4KHjKg+pe9GdSp9xsqqeMtFavukJbMZGonozbDljw9n+?=
+ =?us-ascii?Q?8fxSz3ZYaBkBW89zP2tBq1tm+e7lUP0jAjJteNu+tXgPRVWFEpZcPtSFY/1n?=
+ =?us-ascii?Q?wtQd5/aEHhEoBPUbxppPx/vefLwnEFpw7OuZ6CT/eLxhQt6ZlZahY4uKtzGo?=
+ =?us-ascii?Q?AFA7sxgvMjCbeimNraSkZWbyxNId77zAGzWIgdIyypnIlwToV6hgFl2weZFI?=
+ =?us-ascii?Q?YyR5TIiI4ywcwznvIBPAcpUzewmj4+52Fa3polNfLhY6TLV4UKZljdx+bGw3?=
+X-MS-Exchange-AntiSpam-MessageData-1: J/7edkECwyBdbgQn3eiwFMSYkTZFlOARDpE=
 X-OriginatorOrg: corigine.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1f89618-c9e6-4ff8-ad77-08da3342f2d2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1ba9144b-28dd-4bb1-0502-08da3342f3b3
 X-MS-Exchange-CrossTenant-AuthSource: PH0PR13MB4842.namprd13.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 11:39:46.3771
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 11:39:47.7050
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: fe128f2c-073b-4c20-818e-7246a585940c
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Bj1NwwKCZWyOV5AbKOmFECRUh/Z5a8B8VSEoXCPyDZzEi5s7BLkoq84zeW2cvG2YwOw+LfqZtZzYP4am1//ioq8TIoKW0ksB1oN4KEuti6E=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR13MB2972
+X-MS-Exchange-CrossTenant-UserPrincipalName: BtP/BYSu63ALND6xCQEavLApRQzmKccaZHmj/VaXxdD+mvuqeejEUIC1duUqpPhhzChF/p0C1fWlT43Mz+VAADnMPvlcpLwFNjuWwfB+kc8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR1301MB1988
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -120,75 +120,156 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Bin Chen <bin.chen@corigine.com>
 
-When calling ndo_set_vf_rate() the max_tx_rate parameter may be zero,
-in which case the setting is cleared, or it must be greater or equal to
-min_tx_rate.
+Add VF rate limit feature
 
-Enforce this requirement on all calls to ndo_set_vf_rate via a wrapper
-which also only calls ndo_set_vf_rate() if defined by the driver.
+This patch enhances the NFP driver to supports assignment of
+both max_tx_rate and min_tx_rate to VFs
 
-Based on work by Jakub Kicinski <kuba@kernel.org>
+The template of configurations below is all supported.
+e.g.
+ # ip link set $DEV vf $VF_NUM max_tx_rate $RATE_VALUE
+ # ip link set $DEV vf $VF_NUM min_tx_rate $RATE_VALUE
+ # ip link set $DEV vf $VF_NUM max_tx_rate $RATE_VALUE \
+			       min_tx_rate $RATE_VALUE
+ # ip link set $DEV vf $VF_NUM min_tx_rate $RATE_VALUE \
+			       max_tx_rate $RATE_VALUE
+
+The max RATE_VALUE is limited to 0xFFFF which is about
+63Gbps (using 1024 for 1G)
 
 Signed-off-by: Bin Chen <bin.chen@corigine.com>
+Signed-off-by: Louis Peens <louis.peens@corigine.com>
 Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
 Signed-off-by: Simon Horman <simon.horman@corigine.com>
 ---
- net/core/rtnetlink.c | 28 ++++++++++++++++++----------
- 1 file changed, 18 insertions(+), 10 deletions(-)
+ .../ethernet/netronome/nfp/nfp_net_common.c   |  1 +
+ .../ethernet/netronome/nfp/nfp_net_sriov.c    | 48 ++++++++++++++++++-
+ .../ethernet/netronome/nfp/nfp_net_sriov.h    |  9 ++++
+ 3 files changed, 56 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 6aff02df9ba5..bdc891326102 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2306,6 +2306,19 @@ static int rtnl_ensure_unique_netns(struct nlattr *tb[],
- 	return -EINVAL;
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+index e3594a5c2a85..4e56a99087fa 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_common.c
+@@ -1903,6 +1903,7 @@ const struct net_device_ops nfp_nfd3_netdev_ops = {
+ 	.ndo_vlan_rx_kill_vid	= nfp_net_vlan_rx_kill_vid,
+ 	.ndo_set_vf_mac         = nfp_app_set_vf_mac,
+ 	.ndo_set_vf_vlan        = nfp_app_set_vf_vlan,
++	.ndo_set_vf_rate	= nfp_app_set_vf_rate,
+ 	.ndo_set_vf_spoofchk    = nfp_app_set_vf_spoofchk,
+ 	.ndo_set_vf_trust	= nfp_app_set_vf_trust,
+ 	.ndo_get_vf_config	= nfp_app_get_vf_config,
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_sriov.c b/drivers/net/ethernet/netronome/nfp/nfp_net_sriov.c
+index 4627715a5e32..54af30961351 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_sriov.c
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_sriov.c
+@@ -142,6 +142,37 @@ int nfp_app_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan, u8 qos,
+ 	return nfp_net_sriov_update(app, vf, update, "vlan");
  }
  
-+static	int rtnl_set_vf_rate(struct net_device *dev, int vf, int min_tx_rate,
-+			     int max_tx_rate)
++int nfp_app_set_vf_rate(struct net_device *netdev, int vf,
++			int min_tx_rate, int max_tx_rate)
 +{
-+	const struct net_device_ops *ops = dev->netdev_ops;
++	struct nfp_app *app = nfp_app_from_netdev(netdev);
++	u32 vf_offset, ratevalue;
++	int err;
 +
-+	if (!ops->ndo_set_vf_rate)
-+		return -EOPNOTSUPP;
-+	if (max_tx_rate && max_tx_rate < min_tx_rate)
++	err = nfp_net_sriov_check(app, vf, NFP_NET_VF_CFG_MB_CAP_RATE, "rate");
++	if (err)
++		return err;
++
++	if (max_tx_rate >= NFP_NET_VF_RATE_MAX ||
++	    min_tx_rate >= NFP_NET_VF_RATE_MAX) {
++		nfp_warn(app->cpp, "tx-rate exceeds %d.\n",
++			 NFP_NET_VF_RATE_MAX);
 +		return -EINVAL;
++	}
 +
-+	return ops->ndo_set_vf_rate(dev, vf, min_tx_rate, max_tx_rate);
++	vf_offset = NFP_NET_VF_CFG_MB_SZ + vf * NFP_NET_VF_CFG_SZ;
++	ratevalue = FIELD_PREP(NFP_NET_VF_CFG_MAX_RATE,
++			       max_tx_rate ? max_tx_rate :
++			       NFP_NET_VF_RATE_MAX) |
++		    FIELD_PREP(NFP_NET_VF_CFG_MIN_RATE, min_tx_rate);
++
++	writel(ratevalue,
++	       app->pf->vfcfg_tbl2 + vf_offset + NFP_NET_VF_CFG_RATE);
++
++	return nfp_net_sriov_update(app, vf, NFP_NET_VF_CFG_MB_UPD_RATE,
++				    "rate");
 +}
 +
- static int validate_linkmsg(struct net_device *dev, struct nlattr *tb[],
- 			    struct netlink_ext_ack *extack)
+ int nfp_app_set_vf_spoofchk(struct net_device *netdev, int vf, bool enable)
  {
-@@ -2443,11 +2456,8 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 		if (err < 0)
- 			return err;
+ 	struct nfp_app *app = nfp_app_from_netdev(netdev);
+@@ -228,9 +259,8 @@ int nfp_app_get_vf_config(struct net_device *netdev, int vf,
+ 			  struct ifla_vf_info *ivi)
+ {
+ 	struct nfp_app *app = nfp_app_from_netdev(netdev);
+-	unsigned int vf_offset;
++	u32 vf_offset, mac_hi, rate;
+ 	u32 vlan_tag;
+-	u32 mac_hi;
+ 	u16 mac_lo;
+ 	u8 flags;
+ 	int err;
+@@ -261,5 +291,19 @@ int nfp_app_get_vf_config(struct net_device *netdev, int vf,
+ 	ivi->trusted = FIELD_GET(NFP_NET_VF_CFG_CTRL_TRUST, flags);
+ 	ivi->linkstate = FIELD_GET(NFP_NET_VF_CFG_CTRL_LINK_STATE, flags);
  
--		err = -EOPNOTSUPP;
--		if (ops->ndo_set_vf_rate)
--			err = ops->ndo_set_vf_rate(dev, ivt->vf,
--						   ivf.min_tx_rate,
--						   ivt->rate);
-+		err = rtnl_set_vf_rate(dev, ivt->vf,
-+				       ivf.min_tx_rate, ivt->rate);
- 		if (err < 0)
- 			return err;
- 	}
-@@ -2457,11 +2467,9 @@ static int do_setvfinfo(struct net_device *dev, struct nlattr **tb)
- 
- 		if (ivt->vf >= INT_MAX)
- 			return -EINVAL;
--		err = -EOPNOTSUPP;
--		if (ops->ndo_set_vf_rate)
--			err = ops->ndo_set_vf_rate(dev, ivt->vf,
--						   ivt->min_tx_rate,
--						   ivt->max_tx_rate);
++	err = nfp_net_sriov_check(app, vf, NFP_NET_VF_CFG_MB_CAP_RATE, "rate");
++	if (!err) {
++		rate = readl(app->pf->vfcfg_tbl2 + vf_offset +
++			     NFP_NET_VF_CFG_RATE);
 +
-+		err = rtnl_set_vf_rate(dev, ivt->vf,
-+				       ivt->min_tx_rate, ivt->max_tx_rate);
- 		if (err < 0)
- 			return err;
- 	}
++		ivi->max_tx_rate = FIELD_GET(NFP_NET_VF_CFG_MAX_RATE, rate);
++		ivi->min_tx_rate = FIELD_GET(NFP_NET_VF_CFG_MIN_RATE, rate);
++
++		if (ivi->max_tx_rate == NFP_NET_VF_RATE_MAX)
++			ivi->max_tx_rate = 0;
++		if (ivi->min_tx_rate == NFP_NET_VF_RATE_MAX)
++			ivi->min_tx_rate = 0;
++	}
++
+ 	return 0;
+ }
+diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_sriov.h b/drivers/net/ethernet/netronome/nfp/nfp_net_sriov.h
+index 7b72cc083476..2d445fa199dc 100644
+--- a/drivers/net/ethernet/netronome/nfp/nfp_net_sriov.h
++++ b/drivers/net/ethernet/netronome/nfp/nfp_net_sriov.h
+@@ -20,6 +20,7 @@
+ #define   NFP_NET_VF_CFG_MB_CAP_LINK_STATE		  (0x1 << 3)
+ #define   NFP_NET_VF_CFG_MB_CAP_TRUST			  (0x1 << 4)
+ #define   NFP_NET_VF_CFG_MB_CAP_VLAN_PROTO		  (0x1 << 5)
++#define   NFP_NET_VF_CFG_MB_CAP_RATE			  (0x1 << 6)
+ #define NFP_NET_VF_CFG_MB_RET				0x2
+ #define NFP_NET_VF_CFG_MB_UPD				0x4
+ #define   NFP_NET_VF_CFG_MB_UPD_MAC			  (0x1 << 0)
+@@ -28,6 +29,7 @@
+ #define   NFP_NET_VF_CFG_MB_UPD_LINK_STATE		  (0x1 << 3)
+ #define   NFP_NET_VF_CFG_MB_UPD_TRUST			  (0x1 << 4)
+ #define   NFP_NET_VF_CFG_MB_UPD_VLAN_PROTO		  (0x1 << 5)
++#define   NFP_NET_VF_CFG_MB_UPD_RATE			  (0x1 << 6)
+ #define NFP_NET_VF_CFG_MB_VF_NUM			0x7
+ 
+ /* VF config entry
+@@ -48,10 +50,17 @@
+ #define   NFP_NET_VF_CFG_VLAN_PROT			  0xffff0000
+ #define   NFP_NET_VF_CFG_VLAN_QOS			  0xe000
+ #define   NFP_NET_VF_CFG_VLAN_VID			  0x0fff
++#define NFP_NET_VF_CFG_RATE				0xc
++#define   NFP_NET_VF_CFG_MIN_RATE			0x0000ffff
++#define   NFP_NET_VF_CFG_MAX_RATE			0xffff0000
++
++#define NFP_NET_VF_RATE_MAX			0xffff
+ 
+ int nfp_app_set_vf_mac(struct net_device *netdev, int vf, u8 *mac);
+ int nfp_app_set_vf_vlan(struct net_device *netdev, int vf, u16 vlan, u8 qos,
+ 			__be16 vlan_proto);
++int nfp_app_set_vf_rate(struct net_device *netdev, int vf, int min_tx_rate,
++			int max_tx_rate);
+ int nfp_app_set_vf_spoofchk(struct net_device *netdev, int vf, bool setting);
+ int nfp_app_set_vf_trust(struct net_device *netdev, int vf, bool setting);
+ int nfp_app_set_vf_link_state(struct net_device *netdev, int vf,
 -- 
 2.30.2
 
