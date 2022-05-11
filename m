@@ -2,208 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2FF8523FC9
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 23:57:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D30524020
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 00:15:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348395AbiEKV5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 17:57:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58610 "EHLO
+        id S1344499AbiEKWPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 18:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348381AbiEKV5g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 17:57:36 -0400
-Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49F7D5DA37
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 14:57:33 -0700 (PDT)
-Received: (qmail 13976 invoked from network); 11 May 2022 21:57:24 -0000
-Received: from p200300cf0714e800cc89edd9cd300843.dip0.t-ipconnect.de ([2003:cf:714:e800:cc89:edd9:cd30:843]:36750 HELO daneel.sf-tec.de) (auth=eike@sf-mail.de)
-        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
-        for <kuba@kernel.org>; Wed, 11 May 2022 23:57:24 +0200
-From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        netdev@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        davem@davemloft.net, edumazet@google.com
-Subject: [PATCH] net: tulip: convert to devres
-Date:   Wed, 11 May 2022 23:57:30 +0200
-Message-ID: <2240900.ElGaqSPkdT@daneel.sf-tec.de>
+        with ESMTP id S232825AbiEKWPs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 18:15:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51FD41DA49;
+        Wed, 11 May 2022 15:15:46 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0376AB82407;
+        Wed, 11 May 2022 22:15:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A821C34114;
+        Wed, 11 May 2022 22:15:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652307343;
+        bh=Jy+GNKoYXetk1xzhnIVDe4VbS9tRmYBZe7B0thR0kgA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=a5qn8kuzw4AXMwZ0WhiQzdQ6N2N38UCH0NgsVxN48KAtEka1RiCCNanN+uJi4nq+m
+         CbR0aLtp6SytpkY6ixhoWKT3/PABj2n3ZE5HAFujSLW0VNo9fLb+Jsy9DDcgduRbQF
+         MHSiVp2FgYoA2wnLxk030YyMDocjyIpD1jQDe/0R8951GeryWu6FXsqG7TMEPrIl95
+         S0OmpyKRyAzdWUDZunDYKNAK3Cpcam+jbRx1AQ+FVi3c/zCOnMLfPFhqfGgwf12+j4
+         WGzqZv4L//x7kDr/f0ibLEIR6021v5buNwzL0d/w/MEAhHJ2aftiGrQ71oL9SbpxQQ
+         vKREJ8RKG/Cxg==
+Date:   Wed, 11 May 2022 15:15:42 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Christoph Hellwig <hch@infradead.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Al Viro <viro@zeniv.linux.org.uk>, netdev@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] af_unix: Silence randstruct GCC plugin warning
+Message-ID: <20220511151542.4cb3ff17@kernel.org>
+In-Reply-To: <20220511000109.3628404-1-keescook@chromium.org>
+References: <20220511000109.3628404-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Works fine on my HP C3600:
+On Tue, 10 May 2022 17:01:09 -0700 Kees Cook wrote:
+> While preparing for Clang randstruct support (which duplicated many of
+> the warnings the randstruct GCC plugin warned about), one strange one
+> remained only for the randstruct GCC plugin. Eliminating this rids
+> the plugin of the last exception.
+> 
+> It seems the plugin is happy to dereference individual members of
+> a cross-struct cast, but it is upset about casting to a whole object
+> pointer. This only manifests in one place in the kernel, so just replace
+> the variable with individual member accesses. There is no change in
+> executable instruction output.
+> 
+> Drop the last exception from the randstruct GCC plugin.
+> 
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Christoph Hellwig <hch@infradead.org>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Cong Wang <cong.wang@bytedance.com>
+> Cc: Al Viro <viro@zeniv.linux.org.uk>
+> Cc: netdev@vger.kernel.org
+> Cc: linux-hardening@vger.kernel.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+> ---
+> If someone can Ack this, I can carry it in the gcc-plugins tree,
+> as I'm trying to remove all its exceptions so I can drop that code.
 
-[  274.452394] tulip0: no phy info, aborting mtable build
-[  274.499041] tulip0:  MII transceiver #1 config 1000 status 782d advertising 01e1
-[  274.750691] net eth0: Digital DS21142/43 Tulip rev 65 at MMIO 0xf4008000, 00:30:6e:08:7d:21, IRQ 17
-[  283.104520] net eth0: Setting full-duplex based on MII#1 link partner capability of c1e1
-
-Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
----
- drivers/net/ethernet/dec/tulip/eeprom.c     |  7 +--
- drivers/net/ethernet/dec/tulip/tulip_core.c | 59 ++++++---------------
- 2 files changed, 19 insertions(+), 47 deletions(-)
-
-diff --git a/drivers/net/ethernet/dec/tulip/eeprom.c b/drivers/net/ethernet/dec/tulip/eeprom.c
-index ba0a69b363f8..67a67cb78dbb 100644
---- a/drivers/net/ethernet/dec/tulip/eeprom.c
-+++ b/drivers/net/ethernet/dec/tulip/eeprom.c
-@@ -117,8 +117,8 @@ static void tulip_build_fake_mediatable(struct tulip_private *tp)
- 			  0x00, 0x06  /* ttm bit map */
- 			};
- 
--		tp->mtable = kmalloc(sizeof(struct mediatable) +
--				     sizeof(struct medialeaf), GFP_KERNEL);
-+		tp->mtable = devm_kmalloc(&tp->pdev->pdev, sizeof(struct mediatable) +
-+					  sizeof(struct medialeaf), GFP_KERNEL);
- 
- 		if (tp->mtable == NULL)
- 			return; /* Horrible, impossible failure. */
-@@ -224,7 +224,8 @@ void tulip_parse_eeprom(struct net_device *dev)
- 		        return;
- 		}
- 
--		mtable = kmalloc(struct_size(mtable, mleaf, count), GFP_KERNEL);
-+		mtable = devm_kmalloc(&tp->pdev->dev, struct_size(mtable, mleaf, count),
-+				      GFP_KERNEL);
- 		if (mtable == NULL)
- 			return;				/* Horrible, impossible failure. */
- 		last_mediatable = tp->mtable = mtable;
-diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
-index 79df5a72877b..1a09d3753073 100644
---- a/drivers/net/ethernet/dec/tulip/tulip_core.c
-+++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
-@@ -1389,7 +1389,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	 *	And back to business
- 	 */
- 
--	i = pci_enable_device(pdev);
-+	i = pcim_enable_device(pdev);
- 	if (i) {
- 		pr_err("Cannot enable tulip board #%d, aborting\n", board_idx);
- 		return i;
-@@ -1398,7 +1398,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	irq = pdev->irq;
- 
- 	/* alloc_etherdev ensures aligned and zeroed private structures */
--	dev = alloc_etherdev (sizeof (*tp));
-+	dev = devm_alloc_etherdev(&pdev->dev, sizeof(*tp));
- 	if (!dev)
- 		return -ENOMEM;
- 
-@@ -1408,18 +1408,18 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		       pci_name(pdev),
- 		       (unsigned long long)pci_resource_len (pdev, 0),
- 		       (unsigned long long)pci_resource_start (pdev, 0));
--		goto err_out_free_netdev;
-+		return -ENODEV;
- 	}
- 
- 	/* grab all resources from both PIO and MMIO regions, as we
- 	 * don't want anyone else messing around with our hardware */
--	if (pci_request_regions (pdev, DRV_NAME))
--		goto err_out_free_netdev;
-+	if (pci_request_regions(pdev, DRV_NAME))
-+		return -ENODEV;
- 
--	ioaddr =  pci_iomap(pdev, TULIP_BAR, tulip_tbl[chip_idx].io_size);
-+	ioaddr = pcim_iomap(pdev, TULIP_BAR, tulip_tbl[chip_idx].io_size);
- 
- 	if (!ioaddr)
--		goto err_out_free_res;
-+		return -ENODEV;
- 
- 	/*
- 	 * initialize private data structure 'tp'
-@@ -1428,12 +1428,12 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tp = netdev_priv(dev);
- 	tp->dev = dev;
- 
--	tp->rx_ring = dma_alloc_coherent(&pdev->dev,
--					 sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
--					 sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
--					 &tp->rx_ring_dma, GFP_KERNEL);
-+	tp->rx_ring = dmam_alloc_coherent(&pdev->dev,
-+					  sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
-+					  sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
-+					  &tp->rx_ring_dma, GFP_KERNEL);
- 	if (!tp->rx_ring)
--		goto err_out_mtable;
-+		return -ENODEV;
- 	tp->tx_ring = (struct tulip_tx_desc *)(tp->rx_ring + RX_RING_SIZE);
- 	tp->tx_ring_dma = tp->rx_ring_dma + sizeof(struct tulip_rx_desc) * RX_RING_SIZE;
- 
-@@ -1693,8 +1693,9 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- #endif
- 	dev->ethtool_ops = &ops;
- 
--	if (register_netdev(dev))
--		goto err_out_free_ring;
-+	i = register_netdev(dev);
-+	if (i)
-+		return i;
- 
- 	pci_set_drvdata(pdev, dev);
- 
-@@ -1769,23 +1770,6 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tulip_set_power_state (tp, 0, 1);
- 
- 	return 0;
--
--err_out_free_ring:
--	dma_free_coherent(&pdev->dev,
--			  sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
--			  sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
--			  tp->rx_ring, tp->rx_ring_dma);
--
--err_out_mtable:
--	kfree (tp->mtable);
--	pci_iounmap(pdev, ioaddr);
--
--err_out_free_res:
--	pci_release_regions (pdev);
--
--err_out_free_netdev:
--	free_netdev (dev);
--	return -ENODEV;
- }
- 
- 
-@@ -1885,24 +1869,11 @@ static int __maybe_unused tulip_resume(struct device *dev_d)
- static void tulip_remove_one(struct pci_dev *pdev)
- {
- 	struct net_device *dev = pci_get_drvdata (pdev);
--	struct tulip_private *tp;
- 
- 	if (!dev)
- 		return;
- 
--	tp = netdev_priv(dev);
- 	unregister_netdev(dev);
--	dma_free_coherent(&pdev->dev,
--			  sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
--			  sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
--			  tp->rx_ring, tp->rx_ring_dma);
--	kfree (tp->mtable);
--	pci_iounmap(pdev, tp->base_addr);
--	free_netdev (dev);
--	pci_release_regions (pdev);
--	pci_disable_device(pdev);
--
--	/* pci_power_off (pdev, -1); */
- }
- 
- #ifdef CONFIG_NET_POLL_CONTROLLER
--- 
-2.35.3
-
-
-
-
+Acked-by: Jakub Kicinski <kuba@kernel.org>
