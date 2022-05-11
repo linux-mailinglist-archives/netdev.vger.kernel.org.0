@@ -2,64 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 812AE523B20
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 19:08:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EC81523B26
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 19:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345311AbiEKRIS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 13:08:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50652 "EHLO
+        id S1345325AbiEKRKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 13:10:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229967AbiEKRIR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 13:08:17 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55F936C57B;
-        Wed, 11 May 2022 10:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652288896; x=1683824896;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=29BTgKun/aHDSBPi2/2G5XjBcLcLO8+CqMmRCWxs1NM=;
-  b=VKqzGxHCFU+9+nLmU/QHD01OXDR9pelRdH1BBqysNc1IR2PpV211fX/K
-   NN4ISS1CSLG11bCiAS6CNs2EVTZ+AU6ybwhST0L2hfGV7pwqvTY3byIjt
-   LXKrBJPNmyprxie6YwmdPqrlQVTvjk1rmuIjprFgJMM7SWYlnYGayak5j
-   2Ez3R2+ktQdZlpSsxPM6SAoPyOZrzfxmIEQsl0yhuHqg9o4msYgSVogO0
-   qf7CW53nZ+6ihqW3E658aXSLhQ5LU6xBR6zuvbKjNCJ+NzWoI+7oT6nZK
-   oBz3du8meucST5WknndYLEzBPyOEO7RDY5gVjSLTLc9D+mqzhQpenn5B4
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="332795298"
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="332795298"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 10:08:03 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,217,1647327600"; 
-   d="scan'208";a="636490787"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 11 May 2022 10:08:01 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nopoe-000JLM-D2;
-        Wed, 11 May 2022 17:08:00 +0000
-Date:   Thu, 12 May 2022 01:07:55 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Martin Habets <habetsm.xilinx@gmail.com>
-Cc:     kbuild-all@lists.01.org,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Erik Ekman <erik@kryo.se>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [linux-next:master 10569/11094]
- drivers/net/ethernet/sfc/siena/siena_sriov.c:1578:5: sparse: sparse: symbol
- 'efx_init_sriov' was not declared. Should it be static?
-Message-ID: <202205120012.rvs9fZKN-lkp@intel.com>
+        with ESMTP id S229967AbiEKRKm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 13:10:42 -0400
+Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B705414B668
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 10:10:38 -0700 (PDT)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id A81E522205;
+        Wed, 11 May 2022 19:10:36 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1652289037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=pHdonhKGgeVyX5fKQ0pIziCHJ/pItisk1uGLdrmScnU=;
+        b=UxN0VLPUvj827CDtPV7pa50AXZLyt3HlUKxLff7JKc8dnh4tMnjTw7vmaC7VbQMnzNq2YL
+        bJTvPvzKxpqkNkoV4wSx5Um+5JpF06A4Qhh2SXmc3LjBGz8GOwWG+t5F5O0uVfxmA0Mls+
+        wsNYo1l7UVH499Ky4rtCHo1vbdfyGdM=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 11 May 2022 19:10:36 +0200
+From:   Michael Walle <michael@walle.cc>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     alexandru.ardelean@analog.com, alvaro.karsz@solid-run.com,
+        davem@davemloft.net, edumazet@google.com, josua@solid-run.com,
+        krzysztof.kozlowski+dt@linaro.org, michael.hennerich@analog.com,
+        netdev@vger.kernel.org, pabeni@redhat.com, robh+dt@kernel.org
+Subject: Re: [PATCH v4 1/3] dt-bindings: net: adin: document phy clock
+In-Reply-To: <20220511091136.34dade9b@kernel.org>
+References: <20220510133928.6a0710dd@kernel.org>
+ <20220511125855.3708961-1-michael@walle.cc>
+ <20220511091136.34dade9b@kernel.org>
+User-Agent: Roundcube Webmail/1.4.13
+Message-ID: <c457047dd2af8fc0db69d815db981d61@walle.cc>
+X-Sender: michael@walle.cc
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,LOTS_OF_MONEY,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,36 +58,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Martin,
+Am 2022-05-11 18:11, schrieb Jakub Kicinski:
+> On Wed, 11 May 2022 14:58:55 +0200 Michael Walle wrote:
+>> > I'm still not convinced that exposing the free running vs recovered
+>> > distinction from the start is a good idea. Intuitively it'd seem that
+>> > it's better to use the recovered clock to feed the wire side of the MAC,
+>> > this patch set uses the free running. So I'd personally strip the last
+>> > part off and add it later if needed.
+>> 
+>> FWIW, the recovered clock only works if there is a link. AFAIR on the
+>> AR8031 you can have the free-running one enabled even if there is no
+>> link, which might sometimes be useful.
+> 
+> Is that true for all PHYs? I've seen "larger" devices mention holdover
+> or some other form of automatic fallback in the DPLL if input clock is
+> lost.
 
-First bad commit (maybe != root cause):
+I certainly can't speak of 'all' PHYs, who can ;) But how is the
+switchover for example? hitless? will there be a brief period of
+no clock at all?
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-head:   6107040c99d5dfc920721c198d45ed2d639b113a
-commit: c5a13c319e10e795850b61bc7e3447b08024be2e [10569/11094] sfc: Add a basic Siena module
-config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220512/202205120012.rvs9fZKN-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=c5a13c319e10e795850b61bc7e3447b08024be2e
-        git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
-        git fetch --no-tags linux-next master
-        git checkout c5a13c319e10e795850b61bc7e3447b08024be2e
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ethernet/sfc/siena/
+The point I wanted to add is that the user should have the choice or
+at least you should clearly mention that. If you drop the suffix and 
+just
+use "25mhz" is that now the recovered one or the free-running one. And
+why is that one preferred over the other? Eg. if I were a designer for a
+cheapo board and I'd need a 125MHz clock and want to save some bucks
+for the 125MHz osc and the PHY could supply one, I'd use the
+free-running mode. Just to avoid any surprises with a switchover
+or whatever.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> I thought that's the case here, too:
+> 
+>> > > +      The phy can also automatically switch between the reference and the
+>> > > +      respective 125MHz clocks based on its internal state.
 
+I read "reference" as being the 25MHz (maybe when the PHY is in 10Mbit
+mode? I didn't read the datasheet) because the first mode is called
+25mhz-reference. So it might be switching between 25MHz and 125MHz?
+I don't know.
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/net/ethernet/sfc/siena/siena_sriov.c:1578:5: sparse: sparse: symbol 'efx_init_sriov' was not declared. Should it be static?
->> drivers/net/ethernet/sfc/siena/siena_sriov.c:1590:6: sparse: sparse: symbol 'efx_fini_sriov' was not declared. Should it be static?
-
-Please review and possibly fold the followup patch.
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+-michael
