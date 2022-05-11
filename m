@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D92F522FE7
+	by mail.lfdr.de (Postfix) with ESMTP id B8363522FE8
 	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 11:52:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231679AbiEKJvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 05:51:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45068 "EHLO
+        id S234253AbiEKJvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 05:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236604AbiEKJvK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 05:51:10 -0400
+        with ESMTP id S237794AbiEKJvM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 05:51:12 -0400
 Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60077.outbound.protection.outlook.com [40.107.6.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A006324
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 02:50:45 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACF1B193CB
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 02:50:50 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=asdSrvCWb92uipQPwOSVghgM9AGAssm0KetNIDPeAueSKmULW7bJu48F49CzePw4Ft3npTQMU9XLXKBVru+98yu9Srvub96IXw3T6ql7UBnho15PH2FLyu1dqjZUsjO34ZkvCJZBGt9n+ZzmVyoW6PhYOM6i0um8qNzN/UfmdEi+xpwPbIGIDTdJfm7a5+oOXcEd6GaPPDQwcB3OZuDnq2iUvncHeiDR+10f2sLDYlIVlIjz6c3rhm2jz2OEkBNwoTWiDVyqe9yrhohQSaYcG3GPh0RmzrERnuM+0sWLnb3GSQ8SyNOz4x3uABYhfJzNFOG+kj5xACz9tQszuecz9Q==
+ b=Kmsmdk34ubYwUkoeAAaPpo6fr1OnRkQ652AporZVRipW+J3NwWNGGB6YuWa2PDC7T8mmgHYhldUmG/xXoF3sar/rph3msRReHR2ItT6Os9F1Dx2unpre7ICoT0zvWMSJwOlO3EYk4ywqoNl5x2cYE/7XvMAnjpRIw6jbzn9lHvnFtzx1iklImtklXXl1gw2hYgEEDiwxb0JlvcW6est1DruoBTs7gPciIr+Hkc+6LdxK3lJ97yXUo8H3KR6IIaR5/WoeIoN9mMQsbBlRy7bKuZo4yPStyiectkh4yZ5rmJgsj4+0KDDFP8JeBveI+vN6wt0obTLkhWrnvTxOE/b1aw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IsIjrbNRHEv0QMzHJoekyaYHsZORoM247/IutFo4WIM=;
- b=VSDY0OfA1cwfcRlX7zNOVxiMvIkYGtyHqXw2UdjOPUYIW1wXJjlPapQOnoHOR3n3aK81driuaal4fvOEq3xDtZAdAhsr7gYeK3TH5BB9ZeGGEab8hw8RByUkJXT083I6eoqhEX/2gr6YiiQjvD5dBMr3HcVD5nuD+APAGP6Q4aJo6lovqF4MaDJTvqhi5oT2yNduCUR9xmndOU+KpafXB2aeM48XJDw8FwbpTAvaYBwJOnP+j2FZmTXOP4qyT6CySJ/7TjlScTML9JmMW9nwzBL2eVpqyrCNQQh5FaWGu5FlBIv0ts25huAbKZglXI4oQ9AJJMnBFxCRxrnnCjz/FQ==
+ bh=QdtJnW9SUIglGHsc8kngW7WxdRtiuVpVZg/pW3tyHro=;
+ b=kQ/5qKhrBRgD5U9q39AJi+9+etEyyNhROH6gfymk/UwFls/LErH3kh3g63gOEixILPCqr5T8DRfduMmYDpHx/s8Ex4JtoZRNMKb/h5F9/ad7lqOiiCIHoGh8d/Ndpoej3gnvhdvN6DBuWNHjoeph2a6UQL/BuqJkU6Sx7wWeKIGrh5/13OU39/Uzxf7j/2PvJoWzoCh8isFOlUUXUFUw9Y0mkheFu2ozB0sSASirdv3Wp5O6GRvkGVFCJoYQy5qosYJnMdQYDhKTbxC8maDQ79sbXh/7GYfnS5WSMeEgYTtce2uTtv61rDpRFHWUzCreIBMYz8kqwEk1iha8dLhD1A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IsIjrbNRHEv0QMzHJoekyaYHsZORoM247/IutFo4WIM=;
- b=PAEvPDUV7mPtew1qpCDLxXJ9MjwbmvuuW3b7hPuBe4yTnvn+7ifVl1DHdhqXmlkOaEGABq6TtQUGucGXaX2rTxUdsq3z5bfbGUBIWONvI8tWdgRZnfMsVrUQ2LdnJbEv1Exg8x3m4A5/6Jd2ygXG4hQX5zWh17BAX3Jh1msvwjc=
+ bh=QdtJnW9SUIglGHsc8kngW7WxdRtiuVpVZg/pW3tyHro=;
+ b=P56tAyh6KJMrXG06XXz+TRLB+86pR0qGhDYhYKzJBMRdeCC8RysyoKIhlolBDf0owRiJG7DbiiZd4N0MOaW1BVEzf0uPOAWeFMEXKzvqMhdslgt64VN3g41ZRbl7EOyRcw2U/JE+b602sVScWkdJSgVohazBoscA/srNqcUBTi0=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=nxp.com;
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
  by AM0PR04MB4964.eurprd04.prod.outlook.com (2603:10a6:208:c8::11) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Wed, 11 May
- 2022 09:50:43 +0000
+ 2022 09:50:45 +0000
 Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::fd1f:cc16:dafe:4bf5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
  ([fe80::fd1f:cc16:dafe:4bf5%5]) with mapi id 15.20.5250.013; Wed, 11 May 2022
- 09:50:43 +0000
+ 09:50:44 +0000
 From:   Vladimir Oltean <vladimir.oltean@nxp.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -60,9 +60,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Colin Foster <colin.foster@in-advantage.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Subject: [PATCH v2 net-next 5/8] net: dsa: felix: manage host flooding using a specific driver callback
-Date:   Wed, 11 May 2022 12:50:17 +0300
-Message-Id: <20220511095020.562461-6-vladimir.oltean@nxp.com>
+Subject: [PATCH v2 net-next 6/8] net: dsa: remove port argument from ->change_tag_protocol()
+Date:   Wed, 11 May 2022 12:50:18 +0300
+Message-Id: <20220511095020.562461-7-vladimir.oltean@nxp.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220511095020.562461-1-vladimir.oltean@nxp.com>
 References: <20220511095020.562461-1-vladimir.oltean@nxp.com>
@@ -73,55 +73,55 @@ X-ClientProxiedBy: AS9PR06CA0158.eurprd06.prod.outlook.com
  (2603:10a6:803:55::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c33311eb-d566-40a3-31fc-08da3333b69d
+X-MS-Office365-Filtering-Correlation-Id: 6ddd7a6a-522b-4619-bbc2-08da3333b7d0
 X-MS-TrafficTypeDiagnostic: AM0PR04MB4964:EE_
-X-Microsoft-Antispam-PRVS: <AM0PR04MB4964390AFBFE435B6F7ED053E0C89@AM0PR04MB4964.eurprd04.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <AM0PR04MB4964FF2D66F452AA3E217BC9E0C89@AM0PR04MB4964.eurprd04.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: CVsxwcZ/uzhnSNVyzA3J1GQMtzlRZUz/Av9o75T657OffNWkUFj3IJr1A0gsc1FNUv2TQ8w7/r2lO2vpaefj8996OS5oCFuGpTZhldsNtTC9v8Z58P9UO5BUBCi9hcCxRZrRNnEtFTH7MD/rYMFEm63ZjX1XxB/FpcPYT7aAF+Ck+fjHnRzoO6qUHBAqHv3b+D48dVRTvujQABY+fs/Arxhk+ee2UorIcPHBWprGm4Ga6YcqToVsvizDsFT0xcGL6E3VgBuhYi/77icBgL6XEq6i0+GcIQPi4PL5KU1NMfxjfetvq1mV32rIsp1yChCWxkvURfBvPYGEorXv8/LkYRsp4tGc1Ewo0585HKjWPZrV+xHoD9gJwsPPNGYU8gxVnyEV5pMuKDK5OADf4h5T1EQXdz7IGQe7JiaIkQtcZiWUgKz1MRnBPkazDNBJHd3jAkzjzUVhWO/cQ+Tuxx81/SAlhCAaBNoPBNzGWqSHgwID45Wdgxhlu8ImPQsAYwmEAvBo41Eq1mqXhGkT8iAVoIzaMlF2AOqHZOq/decsMXfPneU+ArR461dELolnIPv2EFAcbW7ZPgN05No5ggRGuoNyPPmEcEG9VseHDkc4+hIXwtVE6d/aDsieLt0mcaTNUkvOmWyEXwjMa7UNPVk2Zk+3oisIXFEpB+K9izhDCmf5M7Wr70VJqbzJkL2ec2Gxn+C6NAKTVr4jC0lLzabisQ==
+X-Microsoft-Antispam-Message-Info: 49JYiVXtqpBoJwZBueWgxT/5s6XGAFlsXUhN1+qbdoyl4CB3vUMCBEbVrpwBQMWQ8tIlmg3qELXItUcVLkgXjS7vk/zdjMuMk/Jrh61/HEoizyTMoOOrR5vSKov2qE/kA8jNquRx9Sc+Zjq4YZq6TYw85DNuB4MzqPCh+SVbr+yYMSpbTosHzqzqBhlcGaAd44pbDbuAbfTFBM4ykqLI0qMDTWP7chwE+Gi470XiYI+/l+5EwoCR59HNsgaNZVz+wLlAL2QnPDzPW7j66KPbIMHTWStdkOEarSll0mztjsC5/EYuT97B6fUh+rG/Y7QHMX3NXBDl/CjxCuiSC09c04SjB3U9ppeOXlLACXUM3vH35Wpeo68s/cJCgkO/JMjncwu5J6j3ZV7ueE91i94gzw2YChZJ77hc3HERROqOCJkKD/OW/O5vY5nPhsOTn5VOixxiFZq9C0NVb/FtMdaXmsqHIVjoE/3DhjVT+2Rh561TscjqRBwyo5QfOtVREEAwUje5ORQFMC8MDj89zZGU08sIKM8F+Kfr/khMgqzhtrSVj0gfEE4BpO+J1xSydwzqf51gyBzPW5lfPe4hT//cBWyTgkJWgVmakENt+ehiVaBA2r/nhCyhKTGIQDM9H1iHgYlRq7zS8ExcBHoklH0BWEZh3pQk6x3cHoGWyzO5gdIjWOQpNwGqckWY2GzARhyq3Ovp85qvwABdadlvtxMU0g==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(54906003)(38350700002)(66946007)(6916009)(508600001)(66476007)(8676002)(66556008)(186003)(1076003)(316002)(83380400001)(36756003)(2906002)(44832011)(86362001)(6512007)(5660300002)(2616005)(7416002)(8936002)(6486002)(6666004)(4326008)(6506007)(26005)(52116002);DIR:OUT;SFP:1101;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?L0/6cSv7Pjtp82z9Iztas9nNNVp6RVzQ2vN+5PAGCqgh69jD31wAo3ZP6GX+?=
- =?us-ascii?Q?hdmo8M7ENpbFq6tOk1tTCfRRf8gZwAQ4EGL+biQffhIBg7Zf58bCYjqqVGdO?=
- =?us-ascii?Q?ij261aivUy1hZPMR/CkL9tWMh7RSyJXrOjz7dylss+iyeLe8uBO2SznUQAuv?=
- =?us-ascii?Q?xzZiQRhUuRVeyngNu9CPh/lADipBQC8Fv0CjimJbuBEOTbUUk6AbUEel4Dy7?=
- =?us-ascii?Q?AChbua3x2UM730KUKxtrY8g4mrdD5KTupxLMnTM/0BGmAwayvIyQH+N9ncxu?=
- =?us-ascii?Q?gL6mQZbfpf80HYoEKO+jIUJ5mFpPUDoDXRTwcrxXd0qcw+Ah5TkVSIABGV9D?=
- =?us-ascii?Q?uG52L5xm85WUt1y/NqBMWxDOa2UvU/vmJuDqi8vg49O7L4j6SHfvgZFC4ibn?=
- =?us-ascii?Q?P31gGib2qrhuzbjEjDlPC+0uZG+xuiflWFtvPJYVC5LqUe+wPjl4zz4EfPsM?=
- =?us-ascii?Q?F8pyMSJ1nga43ZWrRcZQrrClRYxrcPiWWJiP1h7YRUofvUvp5Mjsvx/r72fq?=
- =?us-ascii?Q?D6Gv1tnHbEt8cSawEth9lrvQdoKPLRPflikTG3yFQ9gyXrU49qgD/p2PV4Z3?=
- =?us-ascii?Q?QenuJ+zpEMukX7Esl69kbAK5Gdf7E/GuVSM6/eSSq6THqeXzIhSnwVIdB3O6?=
- =?us-ascii?Q?0ekRWrZKN+4a+yuiph5tCoIAIV/7YqFuChSS/cpueknZRrQgM3SkiE+wbLg7?=
- =?us-ascii?Q?WBVzj4+qBTu2NPAfWuagcdsnld74mznuJsU0gz1d5D3YcyFyKdyNcGjYZ9il?=
- =?us-ascii?Q?tLHjTvVYg1ZfzpbeEaf1KwdhLvQtk7ytQXYueTNTqw0DVxDD7dvhBdbkc2bD?=
- =?us-ascii?Q?3vdu46n0qqp7amFr4/BA/78Zw58EgrRdfxFcaJvM4RqE5nfQvDflkT2khJUb?=
- =?us-ascii?Q?/Bql/0ymJs1dEyRUh/SeAJ1fx6qgpYCNGyX05wXT+1GTSvXg0iWxR2zT1Ud6?=
- =?us-ascii?Q?WaLU2S4f2g1IKJBtOesstyzzop53pMs06TRapPWtZ86IDcjCsF4eeyrFmDc5?=
- =?us-ascii?Q?mij0BqGNYSrPb9TyJ6J3q1R5Hzg1zNPljyuPohYABwsNjqFwXzzvlpUohgV4?=
- =?us-ascii?Q?VLlrK13BPL5LdjyVOz/UNITEhbIHUJKlt3tVCCnvR5Twq6Nt3I1V4gsgAqmc?=
- =?us-ascii?Q?20V/NDprfyMpUemufLt0jncg8niK00BozuCwko1LZ81ZacYDkw2gnUVgDiFX?=
- =?us-ascii?Q?JWHDtPhO78jeryyVTDyyy6tNx47YAJDQHBAaCgXFX0gppW8LEyGRhHUe+AlN?=
- =?us-ascii?Q?KbUtDDjLPhaA97Ib2FWpuouO/Qghhk11VgV1/SGv16KghzGg3J9UmVPmvZVq?=
- =?us-ascii?Q?axYEoCxusjiJUNuGpG5yj7J7SLZj9+QnTjSMRPNmCsR3IflMc5hh1XNec7Gs?=
- =?us-ascii?Q?5xfssqYO1sWmGat64mYJS3nGgCbY/lzPfkR8MikEnkVdJkZlrD7umc7lYjqZ?=
- =?us-ascii?Q?VVgEtF0WOGCMkC7ehKTcvgQt36WSndJoWqeCQmRE2K+mCPKgRAJwqLF+5slQ?=
- =?us-ascii?Q?AYLbqqzzG7i/O4wjUzM4jeUwmuZ6NmiMAOhRy14TH6qG5nuufrkNYodpandZ?=
- =?us-ascii?Q?mlDsj77o2+o1djChTKOe9aUYRBYgcJzXdV8Rbd/JBKrb7XG24WKNImU3TY2C?=
- =?us-ascii?Q?MEXlFhE+qPZ/Hz4e8B9YrVS1F6P/AS46Wmiqo9VARi6nUHkPL9aWXiMmJz70?=
- =?us-ascii?Q?u1Kmx67+XGkZH6JqS8LEzld56R7BGyUZNNuJtdI84JQyrAnGnejQFCqYGzdO?=
- =?us-ascii?Q?r7zhDgLYJh6oYw/8jEMvrXQ2+d/BiQo=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?G31v1D8s60rah7VY+T7HfSqR2eucnhd0c5EEf42UVnolq/BJ6J3qFoaKAMD2?=
+ =?us-ascii?Q?zSBQeim1+F2Jps1ttNmC/fE2Ts+Dw4KJFRbx7UpKTwNG45UflX7OaitvzHTz?=
+ =?us-ascii?Q?tUqQd6s6WY5VkNEqnU+pt1XjjmNXePLqKDIf2wVd96L3fEA7216tF8rXsm8Y?=
+ =?us-ascii?Q?RZGFCov2TsZDF19zWNFj5bIxvLRicXQuqD8GyzJi3NZlUfE1ZHvYfAzRq31U?=
+ =?us-ascii?Q?LNx9xTmQKKRV/Cx/kufo8xf4VURecBb79KMUoeIRNKC9i2qNLOW4lkrgPFQq?=
+ =?us-ascii?Q?WRKY7A6V+iBbY1SSQgxVCxCUWteAAA8kJNe14Np7a/uxUC8RNvZ9FPIdp7Av?=
+ =?us-ascii?Q?mIWhNUW87IC1QEFBB1E6ACyiQQ8Nwl+4d8qIpkPDLNPZt64S/9TJp6npx1O4?=
+ =?us-ascii?Q?3As1tWt/wad2L+ZtS55gzbzLAe5R0XYY9xeennM5Mzk0mSYFBHl7jT9EVCWb?=
+ =?us-ascii?Q?i7OSX60rp8x94JWmFt7hWNXzgbZ1j11+5vE+Bg+s7KRJAkqyKI+3PjDKdbuc?=
+ =?us-ascii?Q?UG2ZnYi8M+FgW5zRGqWnkteTmMTMEsKO+MkuN1GPHih53q4YUoGAReMvBT9y?=
+ =?us-ascii?Q?/eTBIY/xSMJ3xRkE3UoN9JNas4CMBFZeQ+nvivdSsfXzuEyxt+HNrdO6KSW6?=
+ =?us-ascii?Q?sa/4AWnUjNOpVqXBYx8HIY9cLJvK7x1UUEhhWcd3UEsROSTzXoMO3enXnJd1?=
+ =?us-ascii?Q?DBeLZlCT1Xaa/L8GxDTQReumYphQOX49xCmMCfRe3WR4gV52UkRuTEJbyRdH?=
+ =?us-ascii?Q?CfCosZR9ZHJTpbKD67imfgWW5t5NYCLTZNUUG8qLJ1xnEfw6Jpp6Ps3Su8Yx?=
+ =?us-ascii?Q?H3xXnSAFxPqt3Bze3k+1g7Gz1dzy7phVjv02CwMYcsj1isaZkrOtYJmRi6SY?=
+ =?us-ascii?Q?JFeaUCYw0GW+bd844WzaydRnBNzHo8SHi0Ln+2ySo7sj4mcCOmICGGpX/EI7?=
+ =?us-ascii?Q?q98+juaSrto8/xgV0lsoTUxXL0Q2xMyXY1EneZe5aOL2t+NxDUBWruMcd5La?=
+ =?us-ascii?Q?oVpfJxpGYuW0FyZyVLI3Z+Be0khc+9wcXDIxpevIB6yksae96V0wMQqKBVnh?=
+ =?us-ascii?Q?uBNWM1yKiqRwp98HP2Peff5tZJl/zKG+27tSb51Qik4ChIojr+yLhhhSq0gu?=
+ =?us-ascii?Q?uMbS73umYW/Alqdldxb8QkpVPIdSyl+5HPBlZMZrarf8cw6dPCWuDJQY9V85?=
+ =?us-ascii?Q?9iTc3Ff71KaWxehrSRIA/sdSLQ6bIoipYEqznBUIBWs1nmU6Byj7EqrXAazJ?=
+ =?us-ascii?Q?3TJDrV/cv9oRvl8pukJtN9YyN4q0YxomTmjW4+TJqYMNr/qOta/KknF7N169?=
+ =?us-ascii?Q?UQDe489PVare1+sZB9f+5k7A1jMmNA9mvknGIs5NHQlcMg5cto7sNSUtaJnS?=
+ =?us-ascii?Q?qhpRsJSGLo/EZy0djlPCcM2oq8JWbCiUBBCByq+lahfxyRqLieArnU4fJuo4?=
+ =?us-ascii?Q?5+qvB7HPg9k9odHTKXwIbdoD8PkhY35MM/CQHCmlJF/+sPqw4KOGUXiDXytA?=
+ =?us-ascii?Q?FBGf2PaXlQOY3v2AtXqDPY56NJyLr17s/zAgfHt+zqEeahRQrcy9MjTvckSW?=
+ =?us-ascii?Q?fNPjVsCHN5Ej/8x9R65n0cSMm4KiNubTMbeSa8KRte7DX358nnu5UKC5Fau5?=
+ =?us-ascii?Q?zxVEaMKSPnW5VvK26NzrlJd6KYREE64ZrrR+lLYYFsU++tVfHPt0maeJWc0J?=
+ =?us-ascii?Q?2g7dXQWLmsoyYFIn9I8nrRJI7IyMyQlWxLgcTE6QaMpJ1WuylfaUjv6qsqBh?=
+ =?us-ascii?Q?W+uMLikRtrdP47oy5QubagbA+HRTv1Y=3D?=
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c33311eb-d566-40a3-31fc-08da3333b69d
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6ddd7a6a-522b-4619-bbc2-08da3333b7d0
 X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 09:50:42.8637
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 May 2022 09:50:44.8480
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nyRCt/BKgH2erfT65uRDaPcoHih3CXfb+Bw9tljOx1v0MEmdNPkdXEIuu0q2m/4VZFFgxfyYLt+iBgyld2Hg1w==
+X-MS-Exchange-CrossTenant-UserPrincipalName: JzOOLx2nnXWbJVgrA1gUZXspt4VgllZRibOf/jkWppUs3FMbNASQWwIt5s+LAHPrxRrZ/LQNbSMb0nds0Vz2TQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB4964
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -133,219 +133,239 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At the time - commit 7569459a52c9 ("net: dsa: manage flooding on the CPU
-ports") - not introducing a dedicated switch callback for host flooding
-made sense, because for the only user, the felix driver, there was
-nothing different to do for the CPU port than set the flood flags on the
-CPU port just like on any other bridge port.
+DSA has not supported (and probably will not support in the future
+either) independent tagging protocols per CPU port.
 
-There are 2 reasons why this approach is not good enough, however.
+Different switch drivers have different requirements, some may need to
+replicate some settings for each CPU port, some may need to apply some
+settings on a single CPU port, while some may have to configure some
+global settings and then some per-CPU-port settings.
 
-(1) Other drivers, like sja1105, support configuring flooding as a
-    function of {ingress port, egress port}, whereas the DSA
-    ->port_bridge_flags() function only operates on an egress port.
-    So with that driver we'd have useless host flooding from user ports
-    which don't need it.
+In any case, the current model where DSA calls ->change_tag_protocol for
+each CPU port turns out to be impractical for drivers where there are
+global things to be done. For example, felix calls dsa_tag_8021q_register(),
+which makes no sense per CPU port, so it suppresses the second call.
 
-(2) Even with the felix driver, support for multiple CPU ports makes it
-    difficult to piggyback on ->port_bridge_flags(). The way in which
-    the felix driver is going to support host-filtered addresses with
-    multiple CPU ports is that it will direct these addresses towards
-    both CPU ports (in a sort of multicast fashion), then restrict the
-    forwarding to only one of the two using the forwarding masks.
-    Consequently, flooding will also be enabled towards both CPU ports.
-    However, ->port_bridge_flags() gets passed the index of a single CPU
-    port, and that leaves the flood settings out of sync between the 2
-    CPU ports.
-
-This is to say, it's better to have a specific driver method for host
-flooding, which takes the user port as argument. This solves problem (1)
-by allowing the driver to do different things for different user ports,
-and problem (2) by abstracting the operation and letting the driver do
-whatever, rather than explicitly making the DSA core point to the CPU
-port it thinks needs to be touched.
-
-This new method also creates a problem, which is that cross-chip setups
-are not handled. However I don't have hardware right now where I can
-test what is the proper thing to do, and there isn't hardware compatible
-with multi-switch trees that supports host flooding. So it remains a
-problem to be tackled in the future.
+Let drivers deal with replication towards all CPU ports, and remove the
+CPU port argument from the function prototype.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Acked-by: Luiz Angelo Daros de Luca <luizluca@gmail.com>
 ---
 v1->v2: none
 
- drivers/net/dsa/ocelot/felix.c | 32 ++++++++++++++++++++++++++++++
- drivers/net/dsa/ocelot/felix.h |  2 ++
- include/net/dsa.h              |  2 ++
- net/dsa/dsa_priv.h             |  1 +
- net/dsa/port.c                 |  8 ++++++++
- net/dsa/slave.c                | 36 ++++++----------------------------
- 6 files changed, 51 insertions(+), 30 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c    | 22 +++++++++++++---
+ drivers/net/dsa/ocelot/felix.c      | 39 ++++++++---------------------
+ drivers/net/dsa/realtek/rtl8365mb.c |  2 +-
+ include/net/dsa.h                   |  6 ++++-
+ net/dsa/dsa2.c                      | 18 ++++++-------
+ net/dsa/switch.c                    | 10 +++-----
+ 6 files changed, 46 insertions(+), 51 deletions(-)
 
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 53fd12e7a21c..5d2c57a7c708 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -6329,11 +6329,12 @@ static enum dsa_tag_protocol mv88e6xxx_get_tag_protocol(struct dsa_switch *ds,
+ 	return chip->tag_protocol;
+ }
+ 
+-static int mv88e6xxx_change_tag_protocol(struct dsa_switch *ds, int port,
++static int mv88e6xxx_change_tag_protocol(struct dsa_switch *ds,
+ 					 enum dsa_tag_protocol proto)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	enum dsa_tag_protocol old_protocol;
++	struct dsa_port *cpu_dp;
+ 	int err;
+ 
+ 	switch (proto) {
+@@ -6358,11 +6359,24 @@ static int mv88e6xxx_change_tag_protocol(struct dsa_switch *ds, int port,
+ 	chip->tag_protocol = proto;
+ 
+ 	mv88e6xxx_reg_lock(chip);
+-	err = mv88e6xxx_setup_port_mode(chip, port);
++	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
++		err = mv88e6xxx_setup_port_mode(chip, cpu_dp->index);
++		if (err) {
++			mv88e6xxx_reg_unlock(chip);
++			goto unwind;
++		}
++	}
+ 	mv88e6xxx_reg_unlock(chip);
+ 
+-	if (err)
+-		chip->tag_protocol = old_protocol;
++	return 0;
++
++unwind:
++	chip->tag_protocol = old_protocol;
++
++	mv88e6xxx_reg_lock(chip);
++	dsa_switch_for_each_cpu_port_continue_reverse(cpu_dp, ds)
++		mv88e6xxx_setup_port_mode(chip, cpu_dp->index);
++	mv88e6xxx_reg_unlock(chip);
+ 
+ 	return err;
+ }
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 59221d838a45..6b67ab4e05ab 100644
+index 6b67ab4e05ab..0edec7c2b847 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -634,6 +634,37 @@ static enum dsa_tag_protocol felix_get_tag_protocol(struct dsa_switch *ds,
- 	return felix->tag_proto;
- }
- 
-+static void felix_port_set_host_flood(struct dsa_switch *ds, int port,
-+				      bool uc, bool mc)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	unsigned long mask, val;
-+
-+	if (uc)
-+		felix->host_flood_uc_mask |= BIT(port);
-+	else
-+		felix->host_flood_uc_mask &= ~BIT(port);
-+
-+	if (mc)
-+		felix->host_flood_mc_mask |= BIT(port);
-+	else
-+		felix->host_flood_mc_mask &= ~BIT(port);
-+
-+	if (felix->tag_proto == DSA_TAG_PROTO_OCELOT_8021Q)
-+		mask = dsa_cpu_ports(ds);
-+	else
-+		mask = BIT(ocelot->num_phys_ports);
-+
-+	val = (felix->host_flood_uc_mask) ? mask : 0;
-+	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_UC);
-+
-+	val = (felix->host_flood_mc_mask) ? mask : 0;
-+	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_MC);
-+	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_MCIPV4);
-+	ocelot_rmw_rix(ocelot, val, mask, ANA_PGID_PGID, PGID_MCIPV6);
-+}
-+
- static int felix_set_ageing_time(struct dsa_switch *ds,
- 				 unsigned int ageing_time)
+@@ -575,14 +575,13 @@ static void felix_del_tag_protocol(struct dsa_switch *ds, int cpu,
+  * tag_8021q setup can fail, the NPI setup can't. So either the change is made,
+  * or the restoration is guaranteed to work.
+  */
+-static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
++static int felix_change_tag_protocol(struct dsa_switch *ds,
+ 				     enum dsa_tag_protocol proto)
  {
-@@ -1876,6 +1907,7 @@ const struct dsa_switch_ops felix_switch_ops = {
- 	.port_get_dscp_prio		= felix_port_get_dscp_prio,
- 	.port_add_dscp_prio		= felix_port_add_dscp_prio,
- 	.port_del_dscp_prio		= felix_port_del_dscp_prio,
-+	.port_set_host_flood		= felix_port_set_host_flood,
- };
+ 	struct ocelot *ocelot = ds->priv;
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	enum dsa_tag_protocol old_proto = felix->tag_proto;
+-	bool cpu_port_active = false;
+-	struct dsa_port *dp;
++	struct dsa_port *cpu_dp;
+ 	int err;
  
- struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index a5e570826773..b34bde43f11b 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -72,6 +72,8 @@ struct felix {
- 	resource_size_t			imdio_base;
- 	enum dsa_tag_protocol		tag_proto;
- 	struct kthread_worker		*xmit_worker;
-+	unsigned long			host_flood_uc_mask;
-+	unsigned long			host_flood_mc_mask;
- };
+ 	if (proto != DSA_TAG_PROTO_SEVILLE &&
+@@ -590,33 +589,17 @@ static int felix_change_tag_protocol(struct dsa_switch *ds, int cpu,
+ 	    proto != DSA_TAG_PROTO_OCELOT_8021Q)
+ 		return -EPROTONOSUPPORT;
  
- struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port);
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 76257a9f0e1b..cfb287b0d311 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -978,6 +978,8 @@ struct dsa_switch_ops {
- 	int	(*port_bridge_flags)(struct dsa_switch *ds, int port,
- 				     struct switchdev_brport_flags flags,
- 				     struct netlink_ext_ack *extack);
-+	void	(*port_set_host_flood)(struct dsa_switch *ds, int port,
-+				       bool uc, bool mc);
- 
- 	/*
- 	 * VLAN support
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 7c9abd5a0ab9..d9722e49864b 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -291,6 +291,7 @@ int dsa_port_hsr_join(struct dsa_port *dp, struct net_device *hsr);
- void dsa_port_hsr_leave(struct dsa_port *dp, struct net_device *hsr);
- int dsa_port_tag_8021q_vlan_add(struct dsa_port *dp, u16 vid, bool broadcast);
- void dsa_port_tag_8021q_vlan_del(struct dsa_port *dp, u16 vid, bool broadcast);
-+void dsa_port_set_host_flood(struct dsa_port *dp, bool uc, bool mc);
- 
- /* slave.c */
- extern const struct dsa_device_ops notag_netdev_ops;
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 075a8db536c6..e1bc41654e35 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -920,6 +920,14 @@ int dsa_port_bridge_flags(struct dsa_port *dp,
- 	return 0;
- }
- 
-+void dsa_port_set_host_flood(struct dsa_port *dp, bool uc, bool mc)
-+{
-+	struct dsa_switch *ds = dp->ds;
-+
-+	if (ds->ops->port_set_host_flood)
-+		ds->ops->port_set_host_flood(ds, dp->index, uc, mc);
-+}
-+
- int dsa_port_vlan_msti(struct dsa_port *dp,
- 		       const struct switchdev_vlan_msti *msti)
- {
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 5ee0aced9410..801a5d445833 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -262,37 +262,13 @@ static int dsa_slave_close(struct net_device *dev)
- 	return 0;
- }
- 
--/* Keep flooding enabled towards this port's CPU port as long as it serves at
-- * least one port in the tree that requires it.
-- */
--static void dsa_port_manage_cpu_flood(struct dsa_port *dp)
-+static void dsa_slave_manage_host_flood(struct net_device *dev)
- {
--	struct switchdev_brport_flags flags = {
--		.mask = BR_FLOOD | BR_MCAST_FLOOD,
--	};
--	struct dsa_switch_tree *dst = dp->ds->dst;
--	struct dsa_port *cpu_dp = dp->cpu_dp;
--	struct dsa_port *other_dp;
--	int err;
--
--	list_for_each_entry(other_dp, &dst->ports, list) {
--		if (!dsa_port_is_user(other_dp))
--			continue;
--
--		if (other_dp->cpu_dp != cpu_dp)
--			continue;
--
--		if (other_dp->slave->flags & IFF_ALLMULTI)
--			flags.val |= BR_MCAST_FLOOD;
--		if (other_dp->slave->flags & IFF_PROMISC)
--			flags.val |= BR_FLOOD | BR_MCAST_FLOOD;
+-	/* We don't support multiple CPU ports, yet the DT blob may have
+-	 * multiple CPU ports defined. The first CPU port is the active one,
+-	 * the others are inactive. In this case, DSA will call
+-	 * ->change_tag_protocol() multiple times, once per CPU port.
+-	 * Since we implement the tagging protocol change towards "ocelot" or
+-	 * "seville" as effectively initializing the NPI port, what we are
+-	 * doing is effectively changing who the NPI port is to the last @cpu
+-	 * argument passed, which is an unused DSA CPU port and not the one
+-	 * that should actively pass traffic.
+-	 * Suppress DSA's calls on CPU ports that are inactive.
+-	 */
+-	dsa_switch_for_each_user_port(dp, ds) {
+-		if (dp->cpu_dp->index == cpu) {
+-			cpu_port_active = true;
+-			break;
+-		}
 -	}
 -
--	err = dsa_port_pre_bridge_flags(dp, flags, NULL);
--	if (err)
--		return;
-+	bool mc = dev->flags & (IFF_PROMISC | IFF_ALLMULTI);
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	bool uc = dev->flags & IFF_PROMISC;
+-	if (!cpu_port_active)
+-		return 0;
++	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
++		felix_del_tag_protocol(ds, cpu_dp->index, old_proto);
  
--	dsa_port_bridge_flags(cpu_dp, flags, NULL);
-+	dsa_port_set_host_flood(dp, uc, mc);
+-	felix_del_tag_protocol(ds, cpu, old_proto);
++		err = felix_set_tag_protocol(ds, cpu_dp->index, proto);
++		if (err) {
++			felix_set_tag_protocol(ds, cpu_dp->index, old_proto);
++			return err;
++		}
+ 
+-	err = felix_set_tag_protocol(ds, cpu, proto);
+-	if (err) {
+-		felix_set_tag_protocol(ds, cpu, old_proto);
+-		return err;
++		/* Stop at first CPU port */
++		break;
+ 	}
+ 
+ 	felix->tag_proto = proto;
+diff --git a/drivers/net/dsa/realtek/rtl8365mb.c b/drivers/net/dsa/realtek/rtl8365mb.c
+index 3d70e8a77ecf..3bb42a9f236d 100644
+--- a/drivers/net/dsa/realtek/rtl8365mb.c
++++ b/drivers/net/dsa/realtek/rtl8365mb.c
+@@ -1778,7 +1778,7 @@ static int rtl8365mb_cpu_config(struct realtek_priv *priv)
+ 	return 0;
  }
  
- static void dsa_slave_change_rx_flags(struct net_device *dev, int change)
-@@ -310,7 +286,7 @@ static void dsa_slave_change_rx_flags(struct net_device *dev, int change)
+-static int rtl8365mb_change_tag_protocol(struct dsa_switch *ds, int cpu_index,
++static int rtl8365mb_change_tag_protocol(struct dsa_switch *ds,
+ 					 enum dsa_tag_protocol proto)
+ {
+ 	struct realtek_priv *priv = ds->priv;
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index cfb287b0d311..14f07275852b 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -579,6 +579,10 @@ static inline bool dsa_is_user_port(struct dsa_switch *ds, int p)
+ 	dsa_switch_for_each_port((_dp), (_ds)) \
+ 		if (dsa_port_is_cpu((_dp)))
  
- 	if (dsa_switch_supports_uc_filtering(ds) &&
- 	    dsa_switch_supports_mc_filtering(ds))
--		dsa_port_manage_cpu_flood(dp);
-+		dsa_slave_manage_host_flood(dev);
- }
++#define dsa_switch_for_each_cpu_port_continue_reverse(_dp, _ds) \
++	dsa_switch_for_each_port_continue_reverse((_dp), (_ds)) \
++		if (dsa_port_is_cpu((_dp)))
++
+ static inline u32 dsa_user_ports(struct dsa_switch *ds)
+ {
+ 	struct dsa_port *dp;
+@@ -803,7 +807,7 @@ struct dsa_switch_ops {
+ 	enum dsa_tag_protocol (*get_tag_protocol)(struct dsa_switch *ds,
+ 						  int port,
+ 						  enum dsa_tag_protocol mprot);
+-	int	(*change_tag_protocol)(struct dsa_switch *ds, int port,
++	int	(*change_tag_protocol)(struct dsa_switch *ds,
+ 				       enum dsa_tag_protocol proto);
+ 	/*
+ 	 * Method for switch drivers to connect to the tagging protocol driver
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index cf933225df32..d0a2452a1e24 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -809,22 +809,18 @@ static int dsa_switch_setup_tag_protocol(struct dsa_switch *ds)
+ {
+ 	const struct dsa_device_ops *tag_ops = ds->dst->tag_ops;
+ 	struct dsa_switch_tree *dst = ds->dst;
+-	struct dsa_port *cpu_dp;
+ 	int err;
  
- static void dsa_slave_set_rx_mode(struct net_device *dev)
+ 	if (tag_ops->proto == dst->default_proto)
+ 		goto connect;
+ 
+-	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
+-		rtnl_lock();
+-		err = ds->ops->change_tag_protocol(ds, cpu_dp->index,
+-						   tag_ops->proto);
+-		rtnl_unlock();
+-		if (err) {
+-			dev_err(ds->dev, "Unable to use tag protocol \"%s\": %pe\n",
+-				tag_ops->name, ERR_PTR(err));
+-			return err;
+-		}
++	rtnl_lock();
++	err = ds->ops->change_tag_protocol(ds, tag_ops->proto);
++	rtnl_unlock();
++	if (err) {
++		dev_err(ds->dev, "Unable to use tag protocol \"%s\": %pe\n",
++			tag_ops->name, ERR_PTR(err));
++		return err;
+ 	}
+ 
+ connect:
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 704975e5c1c2..2b56218fc57c 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -809,14 +809,12 @@ static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
+ 
+ 	ASSERT_RTNL();
+ 
+-	dsa_switch_for_each_cpu_port(cpu_dp, ds) {
+-		err = ds->ops->change_tag_protocol(ds, cpu_dp->index,
+-						   tag_ops->proto);
+-		if (err)
+-			return err;
++	err = ds->ops->change_tag_protocol(ds, tag_ops->proto);
++	if (err)
++		return err;
+ 
++	dsa_switch_for_each_cpu_port(cpu_dp, ds)
+ 		dsa_port_set_tag_protocol(cpu_dp, tag_ops);
+-	}
+ 
+ 	/* Now that changing the tag protocol can no longer fail, let's update
+ 	 * the remaining bits which are "duplicated for faster access", and the
 -- 
 2.25.1
 
