@@ -2,32 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A5F252389A
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:19:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2574E5238C8
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:20:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344581AbiEKQTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 12:19:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46312 "EHLO
+        id S1344627AbiEKQUF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 12:20:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344627AbiEKQTw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:19:52 -0400
+        with ESMTP id S1344628AbiEKQUE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:20:04 -0400
 Received: from mint-fitpc2.mph.net (unknown [81.168.73.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 35C23237BA4
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:19:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 14B302380C0
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:20:02 -0700 (PDT)
 Received: from palantir17.mph.net (unknown [192.168.0.4])
-        by mint-fitpc2.mph.net (Postfix) with ESMTP id 77DE93200F2;
-        Wed, 11 May 2022 17:19:49 +0100 (BST)
+        by mint-fitpc2.mph.net (Postfix) with ESMTP id B46923200F2;
+        Wed, 11 May 2022 17:20:01 +0100 (BST)
 Received: from localhost ([::1] helo=palantir17.mph.net)
         by palantir17.mph.net with esmtp (Exim 4.89)
         (envelope-from <habetsm.xilinx@gmail.com>)
-        id 1nop41-0000D9-8r; Wed, 11 May 2022 17:19:49 +0100
-Subject: [PATCH net-next 3/6] siena: Make HWMON support specific for Siena
+        id 1nop4D-0000DO-GD; Wed, 11 May 2022 17:20:01 +0100
+Subject: [PATCH net-next 4/6] sfc/siena: Make MCDI logging support specific
+ for Siena
 From:   Martin Habets <habetsm.xilinx@gmail.com>
 To:     kuba@kernel.org, edumazet@google.com, pabeni@redhat.com,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, ecree.xilinx@gmail.com
-Date:   Wed, 11 May 2022 17:19:49 +0100
-Message-ID: <165228598913.696.2878212343054461064.stgit@palantir17.mph.net>
+Date:   Wed, 11 May 2022 17:20:01 +0100
+Message-ID: <165228600135.696.1243231411252975277.stgit@palantir17.mph.net>
 In-Reply-To: <165228589518.696.7119477411428288875.stgit@palantir17.mph.net>
 References: <165228589518.696.7119477411428288875.stgit@palantir17.mph.net>
 User-Agent: StGit/0.17.1-dirty
@@ -46,93 +47,173 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Add a Siena Kconfig option and use it in stead of the sfc one.
+Rename the internal variable for the 'mcdi_logging_default' module
+parameter to avoid a naming conflict with the one in sfc.ko.
 
 Signed-off-by: Martin Habets <habetsm.xilinx@gmail.com>
 ---
- drivers/net/ethernet/sfc/siena/Kconfig    |    7 +++++++
- drivers/net/ethernet/sfc/siena/mcdi.h     |    6 +++---
- drivers/net/ethernet/sfc/siena/mcdi_mon.c |    4 ++--
- 3 files changed, 12 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/sfc/siena/Kconfig      |   10 ++++++++++
+ drivers/net/ethernet/sfc/siena/efx_common.c |    2 +-
+ drivers/net/ethernet/sfc/siena/efx_common.h |    2 +-
+ drivers/net/ethernet/sfc/siena/mcdi.c       |   23 ++++++++++++-----------
+ drivers/net/ethernet/sfc/siena/mcdi.h       |    2 +-
+ 5 files changed, 25 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/net/ethernet/sfc/Kconfig b/drivers/net/ethernet/sfc/Kconfig
-index 4c85b26279c5..dac2f09702aa 100644
+index dac2f09702aa..0950e6b0508f 100644
 --- a/drivers/net/ethernet/sfc/Kconfig
 +++ b/drivers/net/ethernet/sfc/Kconfig
-@@ -40,7 +40,7 @@ config SFC_MTD
- 	  (e.g. /dev/mtd1).  This is required to update the firmware or
- 	  the boot configuration under Linux.
- config SFC_MCDI_MON
--	bool "Solarflare SFC9000/SFC9100-family hwmon support"
-+	bool "Solarflare SFC9100-family hwmon support"
- 	depends on SFC && HWMON && !(SFC=y && HWMON=m)
+@@ -55,7 +55,7 @@ config SFC_SRIOV
+ 	  features, allowing accelerated network performance in
+ 	  virtualized environments.
+ config SFC_MCDI_LOGGING
+-	bool "Solarflare SFC9000/SFC9100-family MCDI logging support"
++	bool "Solarflare SFC9100-family MCDI logging support"
+ 	depends on SFC
  	default y
  	help
 diff --git a/drivers/net/ethernet/sfc/siena/Kconfig b/drivers/net/ethernet/sfc/siena/Kconfig
-index 26a8cb838d47..4eb6801ff3c0 100644
+index 4eb6801ff3c0..cb3c5cb42a53 100644
 --- a/drivers/net/ethernet/sfc/siena/Kconfig
 +++ b/drivers/net/ethernet/sfc/siena/Kconfig
-@@ -18,6 +18,13 @@ config SFC_SIENA_MTD
- 	  This exposes the on-board flash and/or EEPROM as MTD devices
- 	  (e.g. /dev/mtd1).  This is required to update the firmware or
- 	  the boot configuration under Linux.
-+config SFC_SIENA_MCDI_MON
-+	bool "Solarflare SFC9000-family hwmon support"
-+	depends on SFC_SIENA && HWMON && !(SFC_SIENA=y && HWMON=m)
+@@ -33,3 +33,13 @@ config SFC_SIENA_SRIOV
+ 	  This enables support for the Single Root I/O Virtualization
+ 	  features, allowing accelerated network performance in
+ 	  virtualized environments.
++config SFC_SIENA_MCDI_LOGGING
++	bool "Solarflare SFC9000-family MCDI logging support"
++	depends on SFC_SIENA
 +	default y
 +	help
-+	  This exposes the on-board firmware-managed sensors as a
-+	  hardware monitor device.
- config SFC_SIENA_SRIOV
- 	bool "Solarflare SFC9000-family SR-IOV support"
- 	depends on SFC_SIENA && PCI_IOV
++	  This enables support for tracing of MCDI (Management-Controller-to-
++	  Driver-Interface) commands and responses, allowing debugging of
++	  driver/firmware interaction.  The tracing is actually enabled by
++	  a sysfs file 'mcdi_logging' under the PCI device, or via module
++	  parameter mcdi_logging_default.
+diff --git a/drivers/net/ethernet/sfc/siena/efx_common.c b/drivers/net/ethernet/sfc/siena/efx_common.c
+index 3aef8d216f95..a615bffcbad4 100644
+--- a/drivers/net/ethernet/sfc/siena/efx_common.c
++++ b/drivers/net/ethernet/sfc/siena/efx_common.c
+@@ -1170,7 +1170,7 @@ void efx_siena_fini_io(struct efx_nic *efx)
+ 		pci_disable_device(efx->pci_dev);
+ }
+ 
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ static ssize_t mcdi_logging_show(struct device *dev,
+ 				 struct device_attribute *attr,
+ 				 char *buf)
+diff --git a/drivers/net/ethernet/sfc/siena/efx_common.h b/drivers/net/ethernet/sfc/siena/efx_common.h
+index 470033611436..aeb92f4e34b7 100644
+--- a/drivers/net/ethernet/sfc/siena/efx_common.h
++++ b/drivers/net/ethernet/sfc/siena/efx_common.h
+@@ -88,7 +88,7 @@ static inline void efx_schedule_channel_irq(struct efx_channel *channel)
+ 	efx_schedule_channel(channel);
+ }
+ 
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ void efx_siena_init_mcdi_logging(struct efx_nic *efx);
+ void efx_siena_fini_mcdi_logging(struct efx_nic *efx);
+ #else
+diff --git a/drivers/net/ethernet/sfc/siena/mcdi.c b/drivers/net/ethernet/sfc/siena/mcdi.c
+index b767e29cfe92..3df0f0eca3b7 100644
+--- a/drivers/net/ethernet/sfc/siena/mcdi.c
++++ b/drivers/net/ethernet/sfc/siena/mcdi.c
+@@ -51,9 +51,10 @@ static int efx_mcdi_drv_attach(struct efx_nic *efx, bool driver_operating,
+ static bool efx_mcdi_poll_once(struct efx_nic *efx);
+ static void efx_mcdi_abandon(struct efx_nic *efx);
+ 
+-#ifdef CONFIG_SFC_MCDI_LOGGING
+-static bool mcdi_logging_default;
+-module_param(mcdi_logging_default, bool, 0644);
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
++static bool efx_siena_mcdi_logging_default;
++module_param_named(mcdi_logging_default, efx_siena_mcdi_logging_default,
++		   bool, 0644);
+ MODULE_PARM_DESC(mcdi_logging_default,
+ 		 "Enable MCDI logging on newly-probed functions");
+ #endif
+@@ -70,12 +71,12 @@ int efx_siena_mcdi_init(struct efx_nic *efx)
+ 
+ 	mcdi = efx_mcdi(efx);
+ 	mcdi->efx = efx;
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ 	/* consuming code assumes buffer is page-sized */
+ 	mcdi->logging_buffer = (char *)__get_free_page(GFP_KERNEL);
+ 	if (!mcdi->logging_buffer)
+ 		goto fail1;
+-	mcdi->logging_enabled = mcdi_logging_default;
++	mcdi->logging_enabled = efx_siena_mcdi_logging_default;
+ #endif
+ 	init_waitqueue_head(&mcdi->wq);
+ 	init_waitqueue_head(&mcdi->proxy_rx_wq);
+@@ -114,7 +115,7 @@ int efx_siena_mcdi_init(struct efx_nic *efx)
+ 
+ 	return 0;
+ fail2:
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ 	free_page((unsigned long)mcdi->logging_buffer);
+ fail1:
+ #endif
+@@ -140,7 +141,7 @@ void efx_siena_mcdi_fini(struct efx_nic *efx)
+ 	if (!efx->mcdi)
+ 		return;
+ 
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ 	free_page((unsigned long)efx->mcdi->iface.logging_buffer);
+ #endif
+ 
+@@ -151,7 +152,7 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
+ 				  const efx_dword_t *inbuf, size_t inlen)
+ {
+ 	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ 	char *buf = mcdi->logging_buffer; /* page-sized */
+ #endif
+ 	efx_dword_t hdr[2];
+@@ -198,7 +199,7 @@ static void efx_mcdi_send_request(struct efx_nic *efx, unsigned cmd,
+ 		hdr_len = 8;
+ 	}
+ 
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ 	if (mcdi->logging_enabled && !WARN_ON_ONCE(!buf)) {
+ 		int bytes = 0;
+ 		int i;
+@@ -266,7 +267,7 @@ static void efx_mcdi_read_response_header(struct efx_nic *efx)
+ {
+ 	struct efx_mcdi_iface *mcdi = efx_mcdi(efx);
+ 	unsigned int respseq, respcmd, error;
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ 	char *buf = mcdi->logging_buffer; /* page-sized */
+ #endif
+ 	efx_dword_t hdr;
+@@ -286,7 +287,7 @@ static void efx_mcdi_read_response_header(struct efx_nic *efx)
+ 			EFX_DWORD_FIELD(hdr, MC_CMD_V2_EXTN_IN_ACTUAL_LEN);
+ 	}
+ 
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ 	if (mcdi->logging_enabled && !WARN_ON_ONCE(!buf)) {
+ 		size_t hdr_len, data_len;
+ 		int bytes = 0;
 diff --git a/drivers/net/ethernet/sfc/siena/mcdi.h b/drivers/net/ethernet/sfc/siena/mcdi.h
-index 64990f398e67..03810c570a33 100644
+index 03810c570a33..06f38e5e6832 100644
 --- a/drivers/net/ethernet/sfc/siena/mcdi.h
 +++ b/drivers/net/ethernet/sfc/siena/mcdi.h
-@@ -118,7 +118,7 @@ struct efx_mcdi_mtd_partition {
-  */
- struct efx_mcdi_data {
- 	struct efx_mcdi_iface iface;
--#ifdef CONFIG_SFC_MCDI_MON
-+#ifdef CONFIG_SFC_SIENA_MCDI_MON
- 	struct efx_mcdi_mon hwmon;
+@@ -80,7 +80,7 @@ struct efx_mcdi_iface {
+ 	spinlock_t async_lock;
+ 	struct list_head async_list;
+ 	struct timer_list async_timer;
+-#ifdef CONFIG_SFC_MCDI_LOGGING
++#ifdef CONFIG_SFC_SIENA_MCDI_LOGGING
+ 	char *logging_buffer;
+ 	bool logging_enabled;
  #endif
- 	u32 fn_flags;
-@@ -130,7 +130,7 @@ static inline struct efx_mcdi_iface *efx_mcdi(struct efx_nic *efx)
- 	return &efx->mcdi->iface;
- }
- 
--#ifdef CONFIG_SFC_MCDI_MON
-+#ifdef CONFIG_SFC_SIENA_MCDI_MON
- static inline struct efx_mcdi_mon *efx_mcdi_mon(struct efx_nic *efx)
- {
- 	EFX_WARN_ON_PARANOID(!efx->mcdi);
-@@ -365,7 +365,7 @@ void efx_siena_mcdi_mac_pull_stats(struct efx_nic *efx);
- enum reset_type efx_siena_mcdi_map_reset_reason(enum reset_type reason);
- int efx_siena_mcdi_reset(struct efx_nic *efx, enum reset_type method);
- 
--#ifdef CONFIG_SFC_MCDI_MON
-+#ifdef CONFIG_SFC_SIENA_MCDI_MON
- int efx_siena_mcdi_mon_probe(struct efx_nic *efx);
- void efx_siena_mcdi_mon_remove(struct efx_nic *efx);
- #else
-diff --git a/drivers/net/ethernet/sfc/siena/mcdi_mon.c b/drivers/net/ethernet/sfc/siena/mcdi_mon.c
-index d0c25dfda0d7..c7ea703c5d7a 100644
---- a/drivers/net/ethernet/sfc/siena/mcdi_mon.c
-+++ b/drivers/net/ethernet/sfc/siena/mcdi_mon.c
-@@ -130,7 +130,7 @@ void efx_siena_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev)
- 		  type, name, state_txt, value, unit);
- }
- 
--#ifdef CONFIG_SFC_MCDI_MON
-+#ifdef CONFIG_SFC_SIENA_MCDI_MON
- 
- struct efx_mcdi_mon_attribute {
- 	struct device_attribute dev_attr;
-@@ -528,4 +528,4 @@ void efx_siena_mcdi_mon_remove(struct efx_nic *efx)
- 	efx_siena_free_buffer(efx, &hwmon->dma_buf);
- }
- 
--#endif /* CONFIG_SFC_MCDI_MON */
-+#endif /* CONFIG_SFC_SIENA_MCDI_MON */
 
