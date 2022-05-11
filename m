@@ -2,126 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 047BA5234C4
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 15:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A1B35234F4
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 16:03:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244249AbiEKNzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 09:55:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34346 "EHLO
+        id S244333AbiEKODd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 10:03:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244231AbiEKNze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 09:55:34 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEE0737016
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 06:55:30 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nomoF-0004ZM-Uv; Wed, 11 May 2022 15:55:23 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id AFAD17BD65;
-        Wed, 11 May 2022 13:55:22 +0000 (UTC)
-Date:   Wed, 11 May 2022 15:55:22 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Jander <david@protonic.nl>
-Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
-Message-ID: <20220511135522.2qvhtokb4j5qvr3j@pengutronix.de>
-References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
- <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
- <20220511130540.yowjdvzftq2jutiw@pengutronix.de>
- <6f541d66-f52e-13e0-bfe9-91918af11503@hartkopp.net>
+        with ESMTP id S239915AbiEKODb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 10:03:31 -0400
+Received: from louie.mork.no (louie.mork.no [IPv6:2001:41c8:51:8a:feff:ff:fe00:e5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BBDA6222A;
+        Wed, 11 May 2022 07:03:25 -0700 (PDT)
+Received: from canardo.dyn.mork.no ([IPv6:2a01:799:c9d:7e00:0:0:0:1])
+        (authenticated bits=0)
+        by louie.mork.no (8.15.2/8.15.2) with ESMTPSA id 24BE2s8Q339080
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 15:02:56 +0100
+Received: from miraculix.mork.no ([IPv6:2a01:799:c9d:7e02:9be5:c549:1a72:4709])
+        (authenticated bits=0)
+        by canardo.dyn.mork.no (8.15.2/8.15.2) with ESMTPSA id 24BE2mkY1776500
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 16:02:48 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1652277769; bh=DHWph95rimkwGjzf97VFn8lFh4hE7zrtoxEu4vReoe0=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=BBzpCAY9guLewJjoSiJcAJIlQFnkS63/PJ7y9EogVY0fa5Xcw5OFNB7VsgvboMcRP
+         21IRRZKzYjuYNMx10pHLaFN/KMyrAeYdHkkkMWbQ/Tjpy00kGEnvMYS8g/uz5iLU4H
+         WvTIh5Uu9PKj9E8dQTUlozOa3kOI0vfA2oCMgID0=
+Received: (nullmailer pid 343687 invoked by uid 1000);
+        Wed, 11 May 2022 14:02:48 -0000
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     David Ober <dober6023@gmail.com>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, hayeswang@realtek.com, aaron.ma@canonical.com,
+        mpearson@lenovo.com, dober@lenovo.com
+Subject: Re: [PATCH v2] net: usb: r8152: Add in new Devices that are
+ supported for Mac-Passthru
+Organization: m
+References: <20220511133926.246464-1-dober6023@gmail.com>
+Date:   Wed, 11 May 2022 16:02:48 +0200
+In-Reply-To: <20220511133926.246464-1-dober6023@gmail.com> (David Ober's
+        message of "Wed, 11 May 2022 09:39:26 -0400")
+Message-ID: <874k1wdv5j.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="khciasqr7ullk2e4"
-Content-Disposition: inline
-In-Reply-To: <6f541d66-f52e-13e0-bfe9-91918af11503@hartkopp.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Virus-Scanned: clamav-milter 0.103.5 at canardo
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+David Ober <dober6023@gmail.com> writes:
 
---khciasqr7ullk2e4
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Lenovo Thunderbolt 4 Dock, and other Lenovo USB Docks are using the origi=
+nal
+> Realtek USB ethernet Vendor and Product IDs
+> If the Network device is Realtek verify that it is on a Lenovo USB hub
+> before enabling the passthru feature
+>
+> This also adds in the device IDs for the Lenovo USB Dongle and one other
+> USB-C dock
+>
+> Signed-off-by: David Ober <dober6023@gmail.com>
+> ---
+>  drivers/net/usb/r8152.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index c2da3438387c..c32b9bf90baa 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -771,6 +771,9 @@ enum rtl8152_flags {
+>  };
+>=20=20
+>  #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
+> +#define DEVICE_ID_THINKPAD_THUNDERBOLT4_DOCK_GEN1	0x8153
 
-On 11.05.2022 15:24:00, Oliver Hartkopp wrote:
-> > Another use where skb->sk breaks is sending CAN frames with SO_TXTIME
-> > with the sched_etf.
-> >=20
-> > I have a patched version of cangen that uses SO_TXTIME. It attaches a
-> > time to transmit to a CAN frame when sending it. If you send 10 frames,
-> > each 100ms after the other and then exit the program, the first CAN
-> > frames show up as TX'ed while the others (after closing the socket) show
-> > up as RX'ed CAN frames in candump.
->=20
-> Hm, this could be an argument for the origin flag.
->=20
-> But I'm more scared about your described behaviour. What happens if
-> the socket is still open?
 
-SO_TXTIME makes an existing race window really, really, really wide.
+We used to have a macro named PRODUCT_ID_RTL8153 for this magic number,
+but it was removed in 2014:
 
-The race window is between sendmsg() returning to user space and
-can_put_echo_skb() -> can_create_echo_skb() -> can_skb_set_owner(). In
-can_skb_set_owner() a reference to the socket is taken, if the socket is
-not closed:
+commit 662412d14bfa6a672626e4470cab73b75c8b42f0
+Author: hayeswang <hayeswang@realtek.com>
+Date:   Thu Nov 6 12:47:40 2014 +0800
 
-| https://elixir.bootlin.com/linux/v5.17.6/source/include/linux/can/skb.h#L=
-75
+    r8152: remove the definitions of the PID
+=20=20=20=20
+    The PIDs are only used in the id table, so the definitions are
+    unnacessary. Remove them wouldn't have confusion.
+=20=20=20=20
+    Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
 
-If the socket closes _after_ sendmsg(), but _before_ the driver calls
-can_put_echo_skb() the CAN frame will have no socket reference and show
-up as RX'ed.
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index cf1b8a7a4c77..66b139a8b6ca 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -461,11 +461,7 @@ enum rtl8152_flags {
+=20
+ /* Define these values to match your device */
+ #define VENDOR_ID_REALTEK              0x0bda
+-#define PRODUCT_ID_RTL8152             0x8152
+-#define PRODUCT_ID_RTL8153             0x8153
+-
+ #define VENDOR_ID_SAMSUNG              0x04e8
+-#define PRODUCT_ID_SAMSUNG             0xa101
+=20
+ #define MCU_TYPE_PLA                   0x0100
+ #define MCU_TYPE_USB                   0x0000
+@@ -3898,9 +3894,9 @@ static void rtl8152_disconnect(struct usb_interface *=
+intf)
+=20
+ /* table of devices that work with this driver */
+ static struct usb_device_id rtl8152_table[] =3D {
+-       {USB_DEVICE(VENDOR_ID_REALTEK, PRODUCT_ID_RTL8152)},
+-       {USB_DEVICE(VENDOR_ID_REALTEK, PRODUCT_ID_RTL8153)},
+-       {USB_DEVICE(VENDOR_ID_SAMSUNG, PRODUCT_ID_SAMSUNG)},
++       {USB_DEVICE(VENDOR_ID_REALTEK, 0x8152)},
++       {USB_DEVICE(VENDOR_ID_REALTEK, 0x8153)},
++       {USB_DEVICE(VENDOR_ID_SAMSUNG, 0xa101)},
+        {}
+ };
+=20
 
-> There obviously must be some instance removing the sk reference, right??
 
-No. That's all fine. We fixes that in:
+Re-introducing it as  DEVICE_ID_THINKPAD_THUNDERBOLT4_DOCK_GEN1 is
+confusing/obfuscating in several ways:
 
-| https://lore.kernel.org/all/20210226092456.27126-1-o.rempel@pengutronix.d=
-e/
+ - the same value is now used two places in the driver, but only one of
+   those places use the macro
+=20=20
+ - the name indicates that this is somehow unique to a specific Thinkpad
+   product, which it obviously isn't.  It's one of the most common
+   device IDs for ethernet USB dongles at the moment, used by any number
+   of vendors
 
-Marc
+ - the attempt to treat these devices differently based on the parent
+   vendor will cause confusion for anyone connecting any of these
+   dongles to a Lenovo hub.  This will match so much more than one
+   specific dock product
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
---khciasqr7ullk2e4
-Content-Type: application/pgp-signature; name="signature.asc"
+I beleive I've said this before, but these policies would have been much
+better handled in userspace with the system mac address being a resource
+made available by some acpi driver. But whatever.  I look forward to
+seeing the FCC unlock logic for Lenovo X55 modems added to the
+drivers/bus/mhi/host/pci_generic.c driver.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ7wEcACgkQrX5LkNig
-0105rAf/QPg7zb8QkTDLqj1iZbifsl8tCH6+c1va4al8KU+2e3N/+c+3RnUDWMdv
-ZoQuH7xMhwp2EbWkz7dWtuJa3TCwUk6YdLrBeQrUM5hHJP9KPR9tSolTgdBQTNaS
-U54XE/8kTB+aeMqVwuUlql0GhoRbEPTXPeLEdM1R7cHDhgM0y/O++na6w+DkeFgD
-WwJvKuCjCdpL+spbYr1hhk87BC66ScPkLu0amIlfyRalf2sPFXxfWQ0VjVTbKjeO
-4ltvGceoZi+SIXIgTHiys5rXcjlQTr++CnUf2/6LWyYwgZJeBCeIznn15VEDEoqB
-Ha4GZtxGwjAOpMAsevwZDsOt/27uwQ==
-=PeBy
------END PGP SIGNATURE-----
-
---khciasqr7ullk2e4--
+=20=20
+Bj=C3=B8rn
