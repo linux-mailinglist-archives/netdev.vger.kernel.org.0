@@ -2,123 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E46D7522A99
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 05:56:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C251D522B59
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 06:41:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241894AbiEKDzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 10 May 2022 23:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36720 "EHLO
+        id S241658AbiEKElg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 00:41:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241887AbiEKDzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 10 May 2022 23:55:46 -0400
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75EFD116
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 20:55:39 -0700 (PDT)
-Received: by mail-pl1-x62a.google.com with SMTP id n18so675216plg.5
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 20:55:39 -0700 (PDT)
+        with ESMTP id S241124AbiEKEkd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 00:40:33 -0400
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48C5014CA12
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 21:40:31 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id d25so943021pfo.10
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 21:40:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=8Oj5fYgOyP9r6j4Oo2YFgfJ89J2j62xWeof0Jo9AY3w=;
-        b=v9w+8OSo8NSVmDmBQbc8obXr4Wi1nhD7MIDl5mmowMNt72/kNMxqluqzW8jS3Kp7UB
-         /7VISt6MIJKtVD9o0A7m6LzNO5Lqp9ow+x5B9kBGB7t7PtEZGsvXfcXksfmbNr4z51g2
-         LTzKHBx8TvH8VwSw5qQxFSvqLW2aYGDGcyTCY=
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=s3Cdswvtyrq8qHVwuRB9YRoTAIoD9G/2//h6WeFZHzo=;
+        b=CpCECsPeifPt5spOY+hxF3SPXEjo/w6hty7zyWfoD7x9Q0r+hx23YMWQhTm8eOw7HH
+         dvTnDs0/6cvkIxXvhw4qZKhOmeoleRgjjIA5RBu3s+gZeHpHgRib+NQqB0f7Rq1esj1J
+         f9Fw2ZGyhylxsHzxTt03Hg8cvTdX2sMZs/2thSR3A0SR4njfPezKqxaQUsVj81B/eefB
+         Vwj2HyNoTLjPPCBmqYpXxwJ4lOaoKqeQg5eDXmVTYbAPYxHYA2A+tLCM/M8mR7SMpYgj
+         U1CjSMy1LA2jdSzKe3q5foQHZsYLdD6YbJPsHgbhhPgoEYcX/ShGIgvc1LxLQTsLx6MV
+         oG6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=8Oj5fYgOyP9r6j4Oo2YFgfJ89J2j62xWeof0Jo9AY3w=;
-        b=1+kBaCJRc8nAW/DCaYP2rGe/CGKjXDzF3heg2UpOB0ZuaqGDwJWLzionC0FnlfmUyo
-         bBu4g3f9Ycfx7rlw8FTCRhvemO3riIyoTudiH9aiopziyMLs7fLZ+bNucCrmT7nUZCsi
-         xypT3BlvWru+ehk5xoCNikEcbQTrXphfcso75JACNfbm4S/F4ePhgGuUOgcHdbDQ1fll
-         PiwY4XskHmsp56J9gt1nBoHSD73wtjVcdJh2Nf5kArcjnEn3XGxAcv1s32r7u3P6+DC9
-         MnZGZz/M9NsCNS8Q1UPiI55zjh1YCCvm0xT9Ng4uoOjh5dKvTNTY6CqqHJJBvu5O7Cfe
-         +Etg==
-X-Gm-Message-State: AOAM5323CPoA90WQ78iX/5vq4Eb7RLjyJsJeZZfX9AP5YkZ7+PqjBdIG
-        V4y3wPbEa8cZ6fzpvbYS1Iaudmkw3euZSKsLlaB0X4gghYlvmj4nk8yiasZPYYWds6xv7bWVr4S
-        CPn7+bbswyZaF9usHc47ZOSSvt2Wd2ofHCx/B741cqW9f06A0wtrD94au5NNmc0OEcW6W
-X-Google-Smtp-Source: ABdhPJzDBQpUZk7W8Mq0NWHrteV9nx9UH/BVPj5fyK4gC7QCMNmi9ReuRK03KcV0ElJJJiZ8qW3FTA==
-X-Received: by 2002:a17:902:8644:b0:153:9f01:2090 with SMTP id y4-20020a170902864400b001539f012090mr22917397plt.101.1652241338601;
-        Tue, 10 May 2022 20:55:38 -0700 (PDT)
-Received: from localhost.localdomain (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id d7-20020a170903230700b0015e8d4eb1f7sm442789plh.65.2022.05.10.20.55.37
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 10 May 2022 20:55:38 -0700 (PDT)
-From:   Joe Damato <jdamato@fastly.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, x86@kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     Joe Damato <jdamato@fastly.com>
-Subject: [RFC,net-next 6/6] net: unix: Add MSG_NTCOPY
-Date:   Tue, 10 May 2022 20:54:27 -0700
-Message-Id: <1652241268-46732-7-git-send-email-jdamato@fastly.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
-References: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=s3Cdswvtyrq8qHVwuRB9YRoTAIoD9G/2//h6WeFZHzo=;
+        b=HBMu/ifouu2SgzYxeHAj1YqnXLxMGs+J3n+fmpZwKWqvYLKnAfgPUCZyd3u/pfaIDc
+         TRQsfE2MuBj1u72Fgzq+RNtM3RltaGeiIDz6IpBvLS14bBo1LN6i+vFkMnrpAPumAP8/
+         s6Ed5RrtVttUQ9lPrD7DCqqH7i9PyTvYymnena73oCobkQ2/0ThxsnEguZDjqdhmCHuO
+         54at8X9kLNXwypAuacjAe5YaCYCxh/EwywgoVzVISftZBYLq3lM2bb3N8fJ1KrPeqSfZ
+         fxyL7OZTNDjRopHIRrpWT6t85tzgwFZ1bsjzplboXiBnJC/l027EPWOTfiFFfSdFmqmv
+         9OOQ==
+X-Gm-Message-State: AOAM530xy7q+LtVHTslrlCrP/470tZozAPpaDvJqxq2/yybIDEqxI9fn
+        9xtWWH7IJiwISUyV0uWTewdxnpGLPyf9dMN/2pI=
+X-Google-Smtp-Source: ABdhPJz6VOsq6tHEcJde7ze9Mwk8S/rcQCgVu5HGY72mYvCggXhNNJjlSk4uemHnGcPUzQVOuhhFYUqdwWTW5cbuyMk=
+X-Received: by 2002:a65:694a:0:b0:3db:141c:6db2 with SMTP id
+ w10-20020a65694a000000b003db141c6db2mr2414148pgq.198.1652244025817; Tue, 10
+ May 2022 21:40:25 -0700 (PDT)
+MIME-Version: 1.0
+Received: by 2002:a05:6a10:319:0:0:0:0 with HTTP; Tue, 10 May 2022 21:40:25
+ -0700 (PDT)
+From:   Private Mail <privatemail1961@gmail.com>
+Date:   Tue, 10 May 2022 21:40:25 -0700
+Message-ID: <CANjAOAjARYVC6Qk-Fnsn0bf7TP8Boo=pjYW5wBup0tWw9ZzxDA@mail.gmail.com>
+Subject: Have you had this? It is for your Benefit
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=4.3 required=5.0 tests=ADVANCE_FEE_4_NEW_MONEY,
+        BAYES_50,DEAR_BENEFICIARY,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,
+        DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,FREEMAIL_REPLY,
+        LOTS_OF_MONEY,MONEY_FRAUD_5,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a new sendmsg flag, MSG_NTCOPY, which user programs can use to signal
-to the kernel that data copied into the kernel during sendmsg should be
-done so using nontemporal copies, if it is supported by the architecture.
+Our Ref: BG/WA0151/2022
 
-Signed-off-by: Joe Damato <jdamato@fastly.com>
----
- include/linux/socket.h |  1 +
- net/unix/af_unix.c     | 13 +++++++++++--
- 2 files changed, 12 insertions(+), 2 deletions(-)
+Dear Beneficiary
 
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 12085c9..c9b10aa 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -318,6 +318,7 @@ struct ucred {
- 					  * plain text and require encryption
- 					  */
- 
-+#define MSG_NTCOPY	0x2000000	/* Use a non-temporal copy */
- #define MSG_ZEROCOPY	0x4000000	/* Use user data in kernel path */
- #define MSG_FASTOPEN	0x20000000	/* Send data in TCP SYN */
- #define MSG_CMSG_CLOEXEC 0x40000000	/* Set close_on_exec for file
-diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-index e1dd9e9..ccbd643 100644
---- a/net/unix/af_unix.c
-+++ b/net/unix/af_unix.c
-@@ -1907,7 +1907,11 @@ static int unix_dgram_sendmsg(struct socket *sock, struct msghdr *msg,
- 	skb_put(skb, len - data_len);
- 	skb->data_len = data_len;
- 	skb->len = len;
--	err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, len);
-+	if (msg->msg_flags & MSG_NTCOPY)
-+		err = skb_copy_datagram_from_iter_nocache(skb, 0, &msg->msg_iter, len);
-+	else
-+		err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, len);
-+
- 	if (err)
- 		goto out_free;
- 
-@@ -2167,7 +2171,12 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
- 		skb_put(skb, size - data_len);
- 		skb->data_len = data_len;
- 		skb->len = size;
--		err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, size);
-+
-+		if (msg->msg_flags & MSG_NTCOPY)
-+			err = skb_copy_datagram_from_iter_nocache(skb, 0, &msg->msg_iter, size);
-+		else
-+			err = skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, size);
-+
- 		if (err) {
- 			kfree_skb(skb);
- 			goto out_err;
--- 
-2.7.4
+Subject: An Estate of US$15.8 Million
 
+Blount and Griffin Genealogical Investigators specializes in probate
+research to locate missing heirs and beneficiaries to estates in the
+United Kingdom and Europe.
+
+We can also help you find wills, obtain copies of certificates, help
+you to administer an estate, as well as calculating how an estate,
+intestacy or trust should be distributed.
+
+You may be entitled to a large pay out for an inheritance in Europe
+worth US$15.8 million. We have discovered an estate belonging to the
+late Depositor has remained unclaimed since he died in 2011 and we
+have strong reasons to believe you are the closest living relative to
+the deceased we can find.
+
+You may unknowingly be the heir of this person who died without
+leaving a will (intestate). We will conduct a probate research to
+prove your entitlement, and can submit a claim on your behalf all at
+no risk to yourselves.
+
+Our service fee of 10% will be paid to us after you have received the estate.
+
+The estate transfer process should take just a matter of days as we
+have the mechanism and expertise to get this done very quickly. This
+message may come to you as a shock, however we hope to work with you
+to transfer the estate to you as quickly as possible.
+
+Feel free to email our senior case worker Mr. Malcolm Casey on email:
+malcolmcasey68@yahoo.com for further discussions.
+
+With warm regards,
+
+Mr. Blount W. Gort, CEO.
+Blount and Griffin Associates Inc
