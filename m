@@ -2,70 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B7C0523DBA
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 21:41:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 931D3523DBE
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 21:42:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347197AbiEKTl2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 15:41:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39444 "EHLO
+        id S1347078AbiEKTmT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 15:42:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347091AbiEKTkx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 15:40:53 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CA1B2624;
-        Wed, 11 May 2022 12:40:47 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id 202so2647546pgc.9;
-        Wed, 11 May 2022 12:40:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dPkym92MRzXkOG2DANEgEY8jF++hFd92UjLpouQ6HRo=;
-        b=ELOhNhmzQI79EeKD2P3pxVlOXNal8uOWHF6idOc6NJle6dWEMkR3wpDqyidgRHzBda
-         zrWe+vC/BFIuSb3BDBBQsHcURfQ1yUw6vT0j/RavE6iCbOtkh7frLTkTFJ/4ldmZE//5
-         9edY1mkJB+Whg490YbGA+BlHC8KBjzEJXrkx+MgBzzUd9RgnxDZix7ZJROcbXdbCeNNJ
-         RbQt6CHarl4a1TmSZWaLnDzRwjGWcf656mjezstD8HMVY6d7KQfFqcfSGVInKF83sUe/
-         xLVoJ7QuMYtK+8SOPSxFxZ4unjs1rkTdgDj16ALFVoGGMfnU4Gz5/YdzLGVVXr2lWgKB
-         KbFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dPkym92MRzXkOG2DANEgEY8jF++hFd92UjLpouQ6HRo=;
-        b=Qmrvdcu6DwlCsNv9BdcJzwc1H3748on1tqmUryCWpVS2n8qRkYOssqseIM25DAGC4J
-         5ErnNQLXnaz9wDVCATEwHnB4dXlmlAhohv1zbYQx/owO6gZntsJzPkurF4f4Vk2amorc
-         FZx0ip7oq01eM8LPi0kFzmfKpdkxT0zb0q7SveIXZoWlESM8SJryhJC9rBq6c7t1x32Q
-         fV6o3FS5py+2+/x2uJozOS3stHvXy8vxujidl/CZ5TMIVwHsOH9VgWnLms7VbvQgjiNi
-         +OjeHKu0WLSE9oWN/722o4dedrlGwxdaTIUjCKeKwnnyWMH6mpSJbEGgLf3KlX/LEpNb
-         Cttw==
-X-Gm-Message-State: AOAM533FirYTvANdQXK+rXHsiVsedZRZgA7blZ9M6h+iaQsJHInG77A6
-        q6I68bv89agmqXtsxg2t8AA=
-X-Google-Smtp-Source: ABdhPJzQGLl6yt3isM5vp9paIKLPgl8O5HCZi4v+47KJGreOq+CSAdX1iqOfWQ25rYwGztVX7g8RlQ==
-X-Received: by 2002:a62:484:0:b0:50d:a020:88e5 with SMTP id 126-20020a620484000000b0050da02088e5mr26518715pfe.51.1652298047355;
-        Wed, 11 May 2022 12:40:47 -0700 (PDT)
-Received: from localhost ([112.79.166.171])
-        by smtp.gmail.com with ESMTPSA id 32-20020a631560000000b003c14af5060esm260825pgv.38.2022.05.11.12.40.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 12:40:47 -0700 (PDT)
-Date:   Thu, 12 May 2022 01:11:23 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com
-Subject: Re: [PATCH bpf-next] net: netfilter: add kfunc helper to update ct
- timeout
-Message-ID: <20220511194123.g3grzln5cjwtmhb3@apollo.legion>
-References: <1327f8f5696ff2bc60400e8f3b79047914ccc837.1651595019.git.lorenzo@kernel.org>
+        with ESMTP id S1347077AbiEKTmS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 15:42:18 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1996658E74;
+        Wed, 11 May 2022 12:42:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652298136; x=1683834136;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=W1LEOjeMf20ykeEuno05hGbHzFwRpyP1Us2mcBeNWL0=;
+  b=nxzX7lePE2qZIhECiL/GEm0WGWDbmNQUG3V88yW0vS3sTaP5hYfXKgBS
+   QQ5SqHh0o8/BdJTHasfYTI7RLYl9rssd5fhSlr3SB/YdQL+lNmaKaev+5
+   u8tcE+ALfnHGDMCVbQXyWDudrelWQI7ukyJbKEx8RSIRNDEk4/C1g7tvA
+   5aoXRbXeUCao8Gu+ZVLL9mnV7c2hL7e8whNjN8PpxfVKL6CIIi/ICZlzB
+   NeYSSeQTCVWFf9W0NARjuNFiUUuHdZZFXXWRA9eKgpBTxHCGnh5Tk+1tH
+   D3dzmecrq/KGrlnpNRuQQfZgkUSMW7R8bp/8xX+zPvHlSCQUcPb0+3/mi
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="356220582"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="356220582"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 12:42:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="594294825"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 11 May 2022 12:42:11 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nosDq-000JVE-Bc;
+        Wed, 11 May 2022 19:42:10 +0000
+Date:   Thu, 12 May 2022 03:42:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Bernard Zhao <zhaojunkui2008@126.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?iso-8859-1?Q?M=E4tje?= <stefan.maetje@esd.eu>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org, bernard@vivo.com
+Subject: Re: [PATCH v2] usb/peak_usb: cleanup code
+Message-ID: <202205120331.JrfCulTC-lkp@intel.com>
+References: <20220511130240.790771-1-zhaojunkui2008@126.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1327f8f5696ff2bc60400e8f3b79047914ccc837.1651595019.git.lorenzo@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <20220511130240.790771-1-zhaojunkui2008@126.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,122 +70,129 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 03, 2022 at 09:59:14PM IST, Lorenzo Bianconi wrote:
-> Introduce bpf_ct_refresh_timeout kfunc helper in order to update time
-> nf_conn lifetime. Move timeout update logic in nf_ct_refresh_timeout
-> utility routine.
->
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
+Hi Bernard,
 
-Acked-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Thank you for the patch! Yet something to improve:
 
-The sparse error can be ignored, kfunc is meant to be global without a
-prototype.
+[auto build test ERROR on mkl-can-next/testing]
+[also build test ERROR on v5.18-rc6 next-20220511]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
->  include/net/netfilter/nf_conntrack.h |  1 +
->  net/netfilter/nf_conntrack_bpf.c     | 20 ++++++++++++++++++++
->  net/netfilter/nf_conntrack_core.c    | 21 +++++++++++++--------
->  3 files changed, 34 insertions(+), 8 deletions(-)
->
-> diff --git a/include/net/netfilter/nf_conntrack.h b/include/net/netfilter/nf_conntrack.h
-> index 69e6c6a218be..02b7115b92d0 100644
-> --- a/include/net/netfilter/nf_conntrack.h
-> +++ b/include/net/netfilter/nf_conntrack.h
-> @@ -205,6 +205,7 @@ bool nf_ct_get_tuplepr(const struct sk_buff *skb, unsigned int nhoff,
->  		       u_int16_t l3num, struct net *net,
->  		       struct nf_conntrack_tuple *tuple);
->
-> +void nf_ct_refresh_timeout(struct nf_conn *ct, u32 extra_jiffies);
->  void __nf_ct_refresh_acct(struct nf_conn *ct, enum ip_conntrack_info ctinfo,
->  			  const struct sk_buff *skb,
->  			  u32 extra_jiffies, bool do_acct);
-> diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-> index bc4d5cd63a94..d6dcadf0e016 100644
-> --- a/net/netfilter/nf_conntrack_bpf.c
-> +++ b/net/netfilter/nf_conntrack_bpf.c
-> @@ -217,16 +217,36 @@ void bpf_ct_release(struct nf_conn *nfct)
->  	nf_ct_put(nfct);
->  }
->
-> +/* bpf_ct_refresh_timeout - Refresh nf_conn object
-> + *
-> + * Refresh timeout associated to the provided connection tracking entry.
-> + * This must be invoked for referenced PTR_TO_BTF_ID.
-> + *
-> + * Parameters:
-> + * @nf_conn      - Pointer to referenced nf_conn object, obtained using
-> + *		   bpf_xdp_ct_lookup or bpf_skb_ct_lookup.
-> + * @timeout      - delta time in msecs used to increase the ct entry lifetime.
-> + */
-> +void bpf_ct_refresh_timeout(struct nf_conn *nfct, u32 timeout)
-> +{
-> +	if (!nfct)
-> +		return;
-> +
-> +	nf_ct_refresh_timeout(nfct, msecs_to_jiffies(timeout));
-> +}
-> +
->  __diag_pop()
->
->  BTF_SET_START(nf_ct_xdp_check_kfunc_ids)
->  BTF_ID(func, bpf_xdp_ct_lookup)
->  BTF_ID(func, bpf_ct_release)
-> +BTF_ID(func, bpf_ct_refresh_timeout);
->  BTF_SET_END(nf_ct_xdp_check_kfunc_ids)
->
->  BTF_SET_START(nf_ct_tc_check_kfunc_ids)
->  BTF_ID(func, bpf_skb_ct_lookup)
->  BTF_ID(func, bpf_ct_release)
-> +BTF_ID(func, bpf_ct_refresh_timeout);
->  BTF_SET_END(nf_ct_tc_check_kfunc_ids)
->
->  BTF_SET_START(nf_ct_acquire_kfunc_ids)
-> diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> index 0164e5f522e8..f43e743728bd 100644
-> --- a/net/netfilter/nf_conntrack_core.c
-> +++ b/net/netfilter/nf_conntrack_core.c
-> @@ -2030,16 +2030,11 @@ void nf_conntrack_alter_reply(struct nf_conn *ct,
->  }
->  EXPORT_SYMBOL_GPL(nf_conntrack_alter_reply);
->
-> -/* Refresh conntrack for this many jiffies and do accounting if do_acct is 1 */
-> -void __nf_ct_refresh_acct(struct nf_conn *ct,
-> -			  enum ip_conntrack_info ctinfo,
-> -			  const struct sk_buff *skb,
-> -			  u32 extra_jiffies,
-> -			  bool do_acct)
-> +void nf_ct_refresh_timeout(struct nf_conn *ct, u32 extra_jiffies)
->  {
->  	/* Only update if this is not a fixed timeout */
->  	if (test_bit(IPS_FIXED_TIMEOUT_BIT, &ct->status))
-> -		goto acct;
-> +		return;
->
->  	/* If not in hash table, timer will not be active yet */
->  	if (nf_ct_is_confirmed(ct))
-> @@ -2047,7 +2042,17 @@ void __nf_ct_refresh_acct(struct nf_conn *ct,
->
->  	if (READ_ONCE(ct->timeout) != extra_jiffies)
->  		WRITE_ONCE(ct->timeout, extra_jiffies);
-> -acct:
-> +}
-> +
-> +/* Refresh conntrack for this many jiffies and do accounting if do_acct is 1 */
-> +void __nf_ct_refresh_acct(struct nf_conn *ct,
-> +			  enum ip_conntrack_info ctinfo,
-> +			  const struct sk_buff *skb,
-> +			  u32 extra_jiffies,
-> +			  bool do_acct)
-> +{
-> +	nf_ct_refresh_timeout(ct, extra_jiffies);
-> +
->  	if (do_acct)
->  		nf_ct_acct_update(ct, CTINFO2DIR(ctinfo), skb->len);
->  }
-> --
-> 2.35.1
->
+url:    https://github.com/intel-lab-lkp/linux/commits/Bernard-Zhao/usb-peak_usb-cleanup-code/20220511-210544
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git testing
+config: ia64-allmodconfig (https://download.01.org/0day-ci/archive/20220512/202205120331.JrfCulTC-lkp@intel.com/config)
+compiler: ia64-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/126e94285ae6302c0b5ef6ec5174ebc2685ff220
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Bernard-Zhao/usb-peak_usb-cleanup-code/20220511-210544
+        git checkout 126e94285ae6302c0b5ef6ec5174ebc2685ff220
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=ia64 SHELL=/bin/bash drivers/net/can/usb/peak_usb/
 
---
-Kartikeya
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/net/can/usb/peak_usb/pcan_usb_pro.c: In function 'pcan_usb_pro_init_first_channel':
+>> drivers/net/can/usb/peak_usb/pcan_usb_pro.c:914:15: error: 'bi' undeclared (first use in this function); did you mean 'bio'?
+     914 |         kfree(bi);
+         |               ^~
+         |               bio
+   drivers/net/can/usb/peak_usb/pcan_usb_pro.c:914:15: note: each undeclared identifier is reported only once for each function it appears in
+>> drivers/net/can/usb/peak_usb/pcan_usb_pro.c:915:15: error: 'fi' undeclared (first use in this function); did you mean 'fd'?
+     915 |         kfree(fi);
+         |               ^~
+         |               fd
+
+
+vim +914 drivers/net/can/usb/peak_usb/pcan_usb_pro.c
+
+d8a199355f8f8a Stephane Grosjean 2012-03-02  843  
+126e94285ae630 Bernard Zhao      2022-05-11  844  static int pcan_usb_pro_init_first_channel(struct peak_usb_device *dev, struct pcan_usb_pro_interface **usb_if)
+d8a199355f8f8a Stephane Grosjean 2012-03-02  845  {
+126e94285ae630 Bernard Zhao      2022-05-11  846  	struct pcan_usb_pro_interface *pusb_if = NULL;
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  847  	int err;
+d8a199355f8f8a Stephane Grosjean 2012-03-02  848  
+d8a199355f8f8a Stephane Grosjean 2012-03-02  849  	/* do this for 1st channel only */
+d8a199355f8f8a Stephane Grosjean 2012-03-02  850  	if (!dev->prev_siblings) {
+126e94285ae630 Bernard Zhao      2022-05-11  851  		struct pcan_usb_pro_fwinfo *fi = NULL;
+126e94285ae630 Bernard Zhao      2022-05-11  852  		struct pcan_usb_pro_blinfo *bi = NULL;
+126e94285ae630 Bernard Zhao      2022-05-11  853  
+d8a199355f8f8a Stephane Grosjean 2012-03-02  854  		/* allocate netdevices common structure attached to first one */
+126e94285ae630 Bernard Zhao      2022-05-11  855  		pusb_if = kzalloc(sizeof(struct pcan_usb_pro_interface),
+d8a199355f8f8a Stephane Grosjean 2012-03-02  856  				 GFP_KERNEL);
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  857  		fi = kmalloc(sizeof(struct pcan_usb_pro_fwinfo), GFP_KERNEL);
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  858  		bi = kmalloc(sizeof(struct pcan_usb_pro_blinfo), GFP_KERNEL);
+126e94285ae630 Bernard Zhao      2022-05-11  859  		if (!pusb_if || !fi || !bi) {
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  860  			err = -ENOMEM;
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  861  			goto err_out;
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  862  		}
+d8a199355f8f8a Stephane Grosjean 2012-03-02  863  
+d8a199355f8f8a Stephane Grosjean 2012-03-02  864  		/* number of ts msgs to ignore before taking one into account */
+126e94285ae630 Bernard Zhao      2022-05-11  865  		pusb_if->cm_ignore_count = 5;
+d8a199355f8f8a Stephane Grosjean 2012-03-02  866  
+d8a199355f8f8a Stephane Grosjean 2012-03-02  867  		/*
+d8a199355f8f8a Stephane Grosjean 2012-03-02  868  		 * explicit use of dev_xxx() instead of netdev_xxx() here:
+d8a199355f8f8a Stephane Grosjean 2012-03-02  869  		 * information displayed are related to the device itself, not
+d8a199355f8f8a Stephane Grosjean 2012-03-02  870  		 * to the canx netdevices.
+d8a199355f8f8a Stephane Grosjean 2012-03-02  871  		 */
+d8a199355f8f8a Stephane Grosjean 2012-03-02  872  		err = pcan_usb_pro_send_req(dev, PCAN_USBPRO_REQ_INFO,
+d8a199355f8f8a Stephane Grosjean 2012-03-02  873  					    PCAN_USBPRO_INFO_FW,
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  874  					    fi, sizeof(*fi));
+d8a199355f8f8a Stephane Grosjean 2012-03-02  875  		if (err) {
+d8a199355f8f8a Stephane Grosjean 2012-03-02  876  			dev_err(dev->netdev->dev.parent,
+d8a199355f8f8a Stephane Grosjean 2012-03-02  877  				"unable to read %s firmware info (err %d)\n",
+d8a199355f8f8a Stephane Grosjean 2012-03-02  878  				pcan_usb_pro.name, err);
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  879  			goto err_out;
+d8a199355f8f8a Stephane Grosjean 2012-03-02  880  		}
+d8a199355f8f8a Stephane Grosjean 2012-03-02  881  
+d8a199355f8f8a Stephane Grosjean 2012-03-02  882  		err = pcan_usb_pro_send_req(dev, PCAN_USBPRO_REQ_INFO,
+d8a199355f8f8a Stephane Grosjean 2012-03-02  883  					    PCAN_USBPRO_INFO_BL,
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  884  					    bi, sizeof(*bi));
+d8a199355f8f8a Stephane Grosjean 2012-03-02  885  		if (err) {
+d8a199355f8f8a Stephane Grosjean 2012-03-02  886  			dev_err(dev->netdev->dev.parent,
+d8a199355f8f8a Stephane Grosjean 2012-03-02  887  				"unable to read %s bootloader info (err %d)\n",
+d8a199355f8f8a Stephane Grosjean 2012-03-02  888  				pcan_usb_pro.name, err);
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  889  			goto err_out;
+d8a199355f8f8a Stephane Grosjean 2012-03-02  890  		}
+d8a199355f8f8a Stephane Grosjean 2012-03-02  891  
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  892  		/* tell the device the can driver is running */
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  893  		err = pcan_usb_pro_drv_loaded(dev, 1);
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  894  		if (err)
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  895  			goto err_out;
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  896  
+d8a199355f8f8a Stephane Grosjean 2012-03-02  897  		dev_info(dev->netdev->dev.parent,
+d8a199355f8f8a Stephane Grosjean 2012-03-02  898  		     "PEAK-System %s hwrev %u serial %08X.%08X (%u channels)\n",
+d8a199355f8f8a Stephane Grosjean 2012-03-02  899  		     pcan_usb_pro.name,
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  900  		     bi->hw_rev, bi->serial_num_hi, bi->serial_num_lo,
+d8a199355f8f8a Stephane Grosjean 2012-03-02  901  		     pcan_usb_pro.ctrl_count);
+d8a199355f8f8a Stephane Grosjean 2012-03-02  902  
+20fb4eb96fb035 Marc Kleine-Budde 2013-12-14  903  		kfree(bi);
+20fb4eb96fb035 Marc Kleine-Budde 2013-12-14  904  		kfree(fi);
+126e94285ae630 Bernard Zhao      2022-05-11  905  	} else {
+126e94285ae630 Bernard Zhao      2022-05-11  906  		pusb_if = pcan_usb_pro_dev_if(dev->prev_siblings);
+126e94285ae630 Bernard Zhao      2022-05-11  907  	}
+126e94285ae630 Bernard Zhao      2022-05-11  908  
+126e94285ae630 Bernard Zhao      2022-05-11  909  	*usb_if = pusb_if;
+20fb4eb96fb035 Marc Kleine-Budde 2013-12-14  910  
+d8a199355f8f8a Stephane Grosjean 2012-03-02  911  	return 0;
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  912  
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  913   err_out:
+f14e22435a27ef Marc Kleine-Budde 2013-05-16 @914  	kfree(bi);
+f14e22435a27ef Marc Kleine-Budde 2013-05-16 @915  	kfree(fi);
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  916  	kfree(usb_if);
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  917  
+f14e22435a27ef Marc Kleine-Budde 2013-05-16  918  	return err;
+d8a199355f8f8a Stephane Grosjean 2012-03-02  919  }
+d8a199355f8f8a Stephane Grosjean 2012-03-02  920  
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
