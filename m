@@ -2,64 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CBD1A523625
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 16:50:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 470BA52363D
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 16:54:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245068AbiEKOuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 10:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35766 "EHLO
+        id S245153AbiEKOyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 10:54:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245089AbiEKOuR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 10:50:17 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9A819FF7E;
-        Wed, 11 May 2022 07:50:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652280607;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=8O2cVCTEJiG9Saz5teTiN4WXvdQwaPKShwXqV7miEQ0=;
-    b=YSLKyPN6Sd0+VEfc2S2yHINv1+Ju8pKU/iEVr3u90zFzO0Doo5quDHDg7pg0zbS/Nu
-    /XoO1exFah7ICoJgRWLicD9cmpbo4+eqDRK0Xl3iQc7xG69mpjR12SZZK5zF3jOiVFGT
-    cxqsQt9zMkde8V049NT3mah45mkMjkhuS82wTIWbvVzdh5uMnTJkfwX281h5ZS2EvioR
-    QDbWal9ysPSdaGdQuPCZGwh7E184uLto9rn2YymEe+4pDwd48XLqqtSkc1Y6TI8SDtEW
-    oSXtEy7YjvSRMt2HxCJ5rrvLz4HbZBtTx2qKfj7hxmA111cj7UW7oD27MSqmgIfamjlY
-    OakQ==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2koeKQvJnLjhchY2TXGXhEF98MlNg=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b00:9642:f755:5daa:777e]
-    by smtp.strato.de (RZmta 47.42.2 AUTH)
-    with ESMTPSA id 4544c9y4BEo7yaU
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Wed, 11 May 2022 16:50:07 +0200 (CEST)
-Message-ID: <002d234f-a7d6-7b1a-72f4-157d7a283446@hartkopp.net>
-Date:   Wed, 11 May 2022 16:50:06 +0200
+        with ESMTP id S245135AbiEKOyE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 10:54:04 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A5F1FC2DC
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 07:53:59 -0700 (PDT)
+Received: from [141.14.220.45] (g45.guest.molgen.mpg.de [141.14.220.45])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id E944F61E6478B;
+        Wed, 11 May 2022 16:53:56 +0200 (CEST)
+Message-ID: <f486b0a0-2f6b-13e9-e905-8ad9163020a7@molgen.mpg.de>
+Date:   Wed, 11 May 2022 16:53:56 +0200
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
+Subject: =?UTF-8?B?UmU6IFtJbnRlbC13aXJlZC1sYW5dIFtQQVRDSF0gaWdiX21haW7vvJpB?=
+ =?UTF-8?Q?dded_invalid_mac_address_handling_in_igb=5fprobe?=
 Content-Language: en-US
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Jander <david@protonic.nl>
-References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
- <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
- <20220511132421.7o5a3po32l3w2wcr@pengutronix.de>
- <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
+To:     lixue liang <lianglixue@greatwall.com.cn>
+References: <20220511080716.10054-1-lianglixue@greatwall.com.cn>
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        kuba@kernel.org, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org
+In-Reply-To: <20220511080716.10054-1-lianglixue@greatwall.com.cn>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE,URIBL_BLOCKED
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,56 +47,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Dear Lixue,
 
 
-On 5/11/22 16:36, Marc Kleine-Budde wrote:
-> On 11.05.2022 15:24:21, Marc Kleine-Budde wrote:
->> On 11.05.2022 14:38:32, Oliver Hartkopp wrote:
->>> IMO this patch does not work as intended.
->>>
->>> You probably need to revisit every place where can_skb_reserve() is used,
->>> e.g. in raw_sendmsg().
->>
->> And the loopback for devices that don't support IFF_ECHO:
->>
->> | https://elixir.bootlin.com/linux/latest/source/net/can/af_can.c#L257
+Thank you for the patch. Please tag patch iterations with a version. 
+(Use `-v 2` in `git send-email` for example.)
+
+Am 11.05.22 um 10:07 schrieb lixue liang:
+
+Please use the normal colon : in the summary.
+
+Also, please use imperative mood in present tense: Add …
+
+But, in this case
+
+Handle invalid MAC address …
+
+is shorter. Or:
+
+Assign random MAC address instead of fail in case of invalid one
+
+> In some cases, when the user uses igb_set_eeprom to modify
+> the mac address to be invalid, the igb driver will fail to load.
+> If there is no network card device, the user must modify it to
+> a valid mac address by other means. It is only the invalid
+> mac address that causes the driver The fatal problem of
+
+… MAC address causing the driver to failure. The fatal …
+
+> loading failure will cause most users no choice but to trouble.
+
+Maybe remove this sentence, or rephrase.
+
+> Since the mac address may be changed to be invalid, it must
+> also be changed to a valid mac address, then add a random
+> valid mac address to replace the invalid mac address in the
+> driver, continue to load the igb network card driver,
+> and output the relevant log reminder. vital to the user.
+
+Please reflow for 75 characters per line. (More words fit in one line.)
+
+> Signed-off-by: lixue liang <lianglixue@greatwall.com.cn>
+> ---
+>   drivers/net/ethernet/intel/igb/igb_main.c | 7 ++++---
+>   1 file changed, 4 insertions(+), 3 deletions(-)
 > 
-> BTW: There is a bug with interfaces that don't support IFF_ECHO.
-> 
-> Assume an invalid CAN frame is passed to can_send() on an interface that
-> doesn't support IFF_ECHO. The above mentioned code does happily generate
-> an echo frame and it's send, even if the driver drops it, due to
-> can_dropped_invalid_skb(dev, skb).
-> 
-> The echoed back CAN frame is treated in raw_rcv() as if the headroom is valid:
-> 
-> | https://elixir.bootlin.com/linux/v5.17.6/source/net/can/raw.c#L138
-> 
-> But as far as I can see the can_skb_headroom_valid() check never has
-> been done. What about this patch?
-> 
-> index 1fb49d51b25d..fda4807ad165 100644
-> --- a/net/can/af_can.c
-> +++ b/net/can/af_can.c
-> @@ -255,6 +255,9 @@ int can_send(struct sk_buff *skb, int loop)
->                   */
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index 34b33b21e0dc..a513570c2ad6 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -3359,9 +3359,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>   	eth_hw_addr_set(netdev, hw->mac.addr);
 >   
->                  if (!(skb->dev->flags & IFF_ECHO)) {
-> +                       if (can_dropped_invalid_skb(dev, skb))
-> +                               return -EINVAL;
-> +
+>   	if (!is_valid_ether_addr(netdev->dev_addr)) {
+> -		dev_err(&pdev->dev, "Invalid MAC Address\n");
+> -		err = -EIO;
+> -		goto err_eeprom;
+> +		eth_random_addr(netdev->dev_addr);
+> +		memcpy(hw->mac.addr, netdev->dev_addr, netdev->addr_len);
+> +		dev_info(&pdev->dev,
+> +			 "Invalid Mac Address, already got random Mac Address\n");
 
-Good point!
+Is there a valid MAC address that should be only used for testing. Maybe 
+that can be used. Maybe also log the address.
 
-But please check the rest of the code.
-You need 'goto inval_skb;' instead of the return ;-)
+Lastly, please fully capitalize MAC.
 
-Best,
-Oliver
+>   	}
+>   
+>   	igb_set_default_mac_filter(adapter);
 
->                          /* If the interface is not capable to do loopback
->                           * itself, we do it here.
->                           */
-> 
-> Marc
-> 
+
+Kind regards,
+
+Paul
