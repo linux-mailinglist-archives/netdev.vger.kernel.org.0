@@ -2,63 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB09523A7C
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:40:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3D7A523AA8
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 18:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344879AbiEKQkX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 12:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38144 "EHLO
+        id S1345006AbiEKQsG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 12:48:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38230 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230454AbiEKQkW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:40:22 -0400
-Received: from mail-io1-f72.google.com (mail-io1-f72.google.com [209.85.166.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE1B81FE1DB
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:40:21 -0700 (PDT)
-Received: by mail-io1-f72.google.com with SMTP id h17-20020a056602155100b0065aa0081429so1467272iow.10
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 09:40:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Zd7VaJ+t20Ip39Sfs4fMNAc8bfbYqGcyc9hWSuHpp9U=;
-        b=E/YHpyGbwL4kSJ6rdKP0Gmqcb1Bv7wzsxf26LHhuycXOWrSMVnNKD+0KK1SQa0/jOp
-         VES5q8lVkC40cbTjyu29EMVHhcGrp6EilPz+uhbOvndBqg/Vy+Yl3gjJpxshEt7frMzO
-         xu03qAQ7h4YmE+SfozJD93eqtHC/pttEjqj0+fFJKYh/zdlRTE4qv3+JwWnHTh7f3pYz
-         0T8PrHGmVONuD8cotHV/6yVJWaT/138/iHM5LaIWLKupsiHre6hwq2uXkoA3cj1z5eoN
-         ZL+d735uSLSrUC3HcX7DdatnfS8k7MKwRIIhjwlWqjx9qsfcPQmMnpGXlcvPPY+KEKhw
-         bEeg==
-X-Gm-Message-State: AOAM530srmRCireginy+ZRvNGAMNFhOPiQuTBvjeYinblUYk8gT/dPgz
-        Mu7bsOFzFbbKb3m0vVAt94ZkSmYP3mhM2lQa9mNoiGMinwid
-X-Google-Smtp-Source: ABdhPJxpDKFr2qFtoKE0bFOelRySco0CrSfRQHwnpEEtvMC60H+c4vbp8d0h4MoPp5WG8UlxLu/OtRDgBXAPie4D3JazSj1FTMRE
+        with ESMTP id S233496AbiEKQsA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 12:48:00 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DCDE6B7DB;
+        Wed, 11 May 2022 09:47:58 -0700 (PDT)
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24BESoKr028080;
+        Wed, 11 May 2022 16:46:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=tjIW4ViQYza/lnoDnWyOhboEO5kjiPdt7taCyynzKFw=;
+ b=lxUbqAEO3GqUpU+Tuw2IWXF1fzXIGSDn1j9FVHjMmFIPrrH/+bQrVN9PaaYcbEJhBJIr
+ 7d0t++ZFM6UKMdcnwcUF0YasHW2SP51KwmfPJnRgOou9+kRarIXLa3hIMjmu5cX5t3FO
+ 6rItwaIor28IfP+e6c0HY1HIerMLLjGg06tg70umpoMhCUKjDu0piWYCrZz/VisJ+s0b
+ 0DuyX+X+ttOZsVNhvwPdzqfPCbp/RA3MDqZWBEVZBj0PN/wvhGTqQYzQ4imgN+k8TjhU
+ NC3v9IrNMZOoN56TSdKZo20ktYuMVwJV19grssXUZ/JxpGndCu9D0HmYa5fO310s9Ten QA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0etx3406-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 16:46:00 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24BGebih023228;
+        Wed, 11 May 2022 16:45:59 GMT
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0etx33y1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 16:45:59 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24BGgY6p030999;
+        Wed, 11 May 2022 16:45:56 GMT
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
+        by ppma03ams.nl.ibm.com with ESMTP id 3fwgd8wsc9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 16:45:55 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24BGjqsM27197764
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 16:45:52 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BA0B35204E;
+        Wed, 11 May 2022 16:45:52 +0000 (GMT)
+Received: from osiris (unknown [9.145.80.86])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id B9FCE52050;
+        Wed, 11 May 2022 16:45:50 +0000 (GMT)
+Date:   Wed, 11 May 2022 18:45:49 +0200
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-edac@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-leds@vger.kernel.org, pmladek@suse.com, bhe@redhat.com,
+        akpm@linux-foundation.org, linux-mips@vger.kernel.org,
+        linux-parisc@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        kexec@lists.infradead.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org
+Subject: Re: [PATCH 22/30] panic: Introduce the panic post-reboot notifier
+ list
+Message-ID: <YnvoPe2cTS31qbjb@osiris>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-23-gpiccoli@igalia.com>
+ <7017c234-7c73-524a-11b6-fefdd5646f59@igalia.com>
 MIME-Version: 1.0
-X-Received: by 2002:a6b:2c46:0:b0:65a:4d2f:53 with SMTP id s67-20020a6b2c46000000b0065a4d2f0053mr11130775ios.149.1652287221059;
- Wed, 11 May 2022 09:40:21 -0700 (PDT)
-Date:   Wed, 11 May 2022 09:40:21 -0700
-In-Reply-To: <0000000000009962dc05d7a6b27f@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000e0d41905debf1844@google.com>
-Subject: Re: [syzbot] WARNING in mroute_clean_tables
-From:   syzbot <syzbot+a7c030a05218db921de5@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dsahern@kernel.org, erdnetdev@gmail.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
-        yoshfuji@linux-ipv6.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7017c234-7c73-524a-11b6-fefdd5646f59@igalia.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: P8jYmW-Xe3lS0Lxn9LfjJuLQx8-pWyu5
+X-Proofpoint-ORIG-GUID: 3EoVOe4XNkWaSjwGnBLNECSOqY142ccD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-11_07,2022-05-11_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ clxscore=1015 malwarescore=0 phishscore=0 mlxscore=0 adultscore=0
+ suspectscore=0 mlxlogscore=429 bulkscore=0 impostorscore=0
+ priorityscore=1501 spamscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2202240000 definitions=main-2205110076
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This bug is marked as fixed by commit:
-ipmr,ip6mr: acquire RTNL before calling ip[6]mr_free_table()
-But I can't find it in any tested tree for more than 90 days.
-Is it a correct commit? Please update it by replying:
-#syz fix: exact-commit-title
-Until then the bug is still considered open and
-new crashes with the same signature are ignored.
+On Mon, May 09, 2022 at 11:16:10AM -0300, Guilherme G. Piccoli wrote:
+> On 27/04/2022 19:49, Guilherme G. Piccoli wrote:
+> > Currently we have 3 notifier lists in the panic path, which will
+> > be wired in a way to allow the notifier callbacks to run in
+> > different moments at panic time, in a subsequent patch.
+> > 
+> > But there is also an odd set of architecture calls hardcoded in
+> > the end of panic path, after the restart machinery. They're
+> > responsible for late time tunings / events, like enabling a stop
+> > button (Sparc) or effectively stopping the machine (s390).
+> > 
+> > This patch introduces yet another notifier list to offer the
+> > architectures a way to add callbacks in such late moment on
+> > panic path without the need of ifdefs / hardcoded approaches.
+> > 
+> > Cc: Alexander Gordeev <agordeev@linux.ibm.com>
+> > Cc: Christian Borntraeger <borntraeger@linux.ibm.com>
+> > Cc: "David S. Miller" <davem@davemloft.net>
+> > Cc: Heiko Carstens <hca@linux.ibm.com>
+> > Cc: Sven Schnelle <svens@linux.ibm.com>
+> > Cc: Vasily Gorbik <gor@linux.ibm.com>
+> > Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
+> 
+> Hey S390/SPARC folks, sorry for the ping!
+> 
+> Any reviews on this V1 would be greatly appreciated, I'm working on V2
+> and seeking feedback in the non-reviewed patches.
+
+Sorry, missed that this is quite s390 specific. So, yes, this looks
+good to me and nice to see that one of the remaining CONFIG_S390 in
+common code will be removed!
+
+For the s390 bits:
+Acked-by: Heiko Carstens <hca@linux.ibm.com>
