@@ -2,130 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1D2A522C42
-	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51581522C47
+	for <lists+netdev@lfdr.de>; Wed, 11 May 2022 08:27:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241622AbiEKGZK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 02:25:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57040 "EHLO
+        id S236788AbiEKG1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 02:27:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240066AbiEKGZI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:25:08 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 227F622442D
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:25:07 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id t6so1465996wra.4
-        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:25:07 -0700 (PDT)
+        with ESMTP id S233219AbiEKG1K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 02:27:10 -0400
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E26C122EA71
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:27:08 -0700 (PDT)
+Received: by mail-pj1-x1033.google.com with SMTP id qe3-20020a17090b4f8300b001dc24e4da73so3126213pjb.1
+        for <netdev@vger.kernel.org>; Tue, 10 May 2022 23:27:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ObCZ7MnpdBI4o7emrmzCT2A3YCoOsYeRw9ONlu1emLE=;
-        b=pHaJelVfxLeXa3UViuuV2NFr62eO3WSW0QZjjXGklVMsXicw4tQICpTsWlSS7M43/2
-         j9zfzGryCZskyIVrbNceE07w0Aany8T40QP5owuxlh6LiQRGY3jD37dh/pxw9RSjK52o
-         Pece9wctfOh0JfkxsnzlFaXosx0tXVy48eShEnumTU227ePT/uGQAfaS4O89dKEeHS70
-         YKiFFtCHBrU0In3Rr0m1T5X26OS0343A4PuPhjLUoFOpHhCVzOhnxbbbeIs6/C0Mc4CR
-         2+m7RkdmS6P3e0eiQ7kB+i1RxbJZbPlwSGZKTy93c6H5ceQ4+tviTwNHF6P3ipXyiG+X
-         lXWQ==
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=x1zLYmhBeI9VQ2C3yYg/lgfsb9MaFzisQ7CwqFC2jmg=;
+        b=hHaUp+j61WDKc8GZukvFRmcrez5Eo+p29rj/DmGz267KV5ynjQbVgbh78lQEejCpdp
+         mOQ+f7MW2xbOnb3vWbjQqUZaaa6Wu7W8fN8Ne1An/+zU4exu6yCWQdBJkslVUhZvow74
+         XgF0E1YZlPM5JPTeiXucJhumMPm2ysvAuizPp8WvCz4lZ2yKKVj4iWjLLTG7746zSJKc
+         l0Y3VmyURfFp973dWkCtZLl4u7dxiAwihJqC2dQSvqa6eZdXdIaGr9RYFqk56M0WnFjR
+         gUOKo3URBEN0mlkzJKZGe61NlbFOn0VqXYDKl2miH/MNSD3ftSDTJ/aAgs1uAf56ktXs
+         YYlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=ObCZ7MnpdBI4o7emrmzCT2A3YCoOsYeRw9ONlu1emLE=;
-        b=Oa/AvouxYdtVMTQfucnhpul1j/pGlBi+P+4i8nW/wHRvJGHEtmnEJSQMAOKSBEPxlG
-         YgMmoLB1fwLmTE8FChGgGy4IGDQ7xYlb+DS8uEEHhT+meQ222ZcB7sUcTeqLWpliINuv
-         fiOu+RJeqg7V23nN5PbEn/v7BDfGUnaZ4kQbJ3egzYTrPPdZtxB+ejT4VshOOfdWKX/+
-         L1KMGld9RcnM6PRDpaQy6tqSxr9PpGdB6ojn0EhKI/lIO8908M5hiqhTz4FL15MIUB/2
-         yLSK67CqU2sT2NOMYvtWdrOvBqkskVE5rbRF+EfAa9OME+jaMkemjwmneVoXbf1j9/pn
-         jMkg==
-X-Gm-Message-State: AOAM532gkWtT09byxbW6dM1Vc8Lfra0glsxOoMoqvwetV9Z9nXSoulX6
-        mIIsgqy4E+9zzRCPpbh/Fs8=
-X-Google-Smtp-Source: ABdhPJzU69kOeS5zdS0Bn+YCeb95zOhydE9ibDTbcFIQpb/nA/VKSkDxZDqUOuL1YSCQFhLoX8T60w==
-X-Received: by 2002:a05:6000:18ac:b0:20c:ba84:1260 with SMTP id b12-20020a05600018ac00b0020cba841260mr15735984wri.379.1652250305771;
-        Tue, 10 May 2022 23:25:05 -0700 (PDT)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id m3-20020adffe43000000b0020c7fb81b0fsm776642wrs.46.2022.05.10.23.25.04
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 10 May 2022 23:25:05 -0700 (PDT)
-Date:   Wed, 11 May 2022 07:25:03 +0100
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Taehee Yoo <ap420073@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, ecree.xilinx@gmail.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net 2/2] net: sfc: siena: fix memory leak in
- siena_mtd_probe()
-Message-ID: <20220511062503.s7ndwcvzxzkyyniq@gmail.com>
-Mail-Followup-To: Taehee Yoo <ap420073@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        ecree.xilinx@gmail.com, netdev@vger.kernel.org
-References: <20220510153619.32464-1-ap420073@gmail.com>
- <20220510153619.32464-3-ap420073@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220510153619.32464-3-ap420073@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=x1zLYmhBeI9VQ2C3yYg/lgfsb9MaFzisQ7CwqFC2jmg=;
+        b=iQRdUvBVUHfaW8dB73PuR8MxXeP0JCAumwKJURicWD5lmfzbiABg55GFajM9k2/ALK
+         KEb2n/y9++9fwWmqrSNqkAj+Kt49fe0fCXLQZcsaX9UKWM0gKIZVdKfKCMTn91TqHEVr
+         nIStio74evpu0jsSChysziY46oPWVAx426UP8G3toHgkyFIzWuwioS9blr8OItWqVdub
+         ocBVZp4I22MrzVr3CNx6xQ0GxJ6TfMIifES4/ORdhLEW+7sdAQkwb4UgY66+j2VT8BL4
+         kslrLmJnI1qG8BOCrbGgWqKZWr+w5wjpI9lxv7ERgO+m4ozP+ggfJ2ZFhKc2YTov8Kgd
+         sHlQ==
+X-Gm-Message-State: AOAM532VhtyFohR1ZNS3ZPZdPpXoF9vymIBFH/lzv58qKr5ZyMIx5h3M
+        ed9DNX/dHzrhCy7atkiFVpc45iRa2Yg2BkYg
+X-Google-Smtp-Source: ABdhPJwi9mUk6axdi6D2408McpV1dtefei+41H+UbmGqouDOCcK9NQYGojl152WiHURwgqbET1uz+w==
+X-Received: by 2002:a17:903:20f:b0:158:d86a:f473 with SMTP id r15-20020a170903020f00b00158d86af473mr23969735plh.92.1652250428373;
+        Tue, 10 May 2022 23:27:08 -0700 (PDT)
+Received: from smtpclient.apple ([223.104.68.106])
+        by smtp.gmail.com with ESMTPSA id a18-20020a17090a481200b001d90c8b6141sm808592pjh.53.2022.05.10.23.27.05
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 10 May 2022 23:27:08 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
+Subject: Re: [PATCH] igb_ethtool: fix efficiency issues in igb_set_eeprom
+From:   lixue liang <lixue.liang5086@gmail.com>
+In-Reply-To: <7963e252-05cb-349e-5902-c4e38f7e9405@intel.com>
+Date:   Wed, 11 May 2022 14:26:45 +0800
+Cc:     anthony.l.nguyen@intel.com, Jakub Kicinski <kuba@kernel.org>,
+        intel-wired-lan@lists.osuosl.org, Netdev <netdev@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <AD31AFC0-2621-4671-986A-8BCE2AA9F514@gmail.com>
+References: <20220510012159.8924-1-lianglixue@greatwall.com.cn>
+ <7963e252-05cb-349e-5902-c4e38f7e9405@intel.com>
+To:     Jesse Brandeburg <jesse.brandeburg@intel.com>
+X-Mailer: Apple Mail (2.3696.80.82.1.1)
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 03:36:19PM +0000, Taehee Yoo wrote:
-> In the NIC ->probe callback, ->mtd_probe() callback is called.
-> If NIC has 2 ports, ->probe() is called twice and ->mtd_probe() too.
-> In the ->mtd_probe(), which is siena_mtd_probe() it allocates and
-> initializes mtd partiion.
-> But mtd partition for sfc is shared data.
-> So that allocated mtd partition data from last called
-> siena_mtd_probe() will not be used.
+Thank you very much for replying to my question and for suggesting =
+corrections.
 
-On Siena the 2nd port does have MTD partitions. In the output
-from /proc/mtd below eth3 is the 1st port and eth4 is the 2nd
-port:
+Since the interface (igb_set_eeprom) for arbitrarily modifying the mac =
+address is provided,=20
+it is equivalent to providing a way to modify the mac address =
+arbitrarily and cause the igb=20
+driver to fail to load. Therefore, a way to restore a valid mac address =
+should also be reserved,=20
+so as to prevent most users from being helpless in the case of an =
+invalid mac address.
 
-mtd12: 00030000 00010000 "eth3 sfc_mcfw:0b"
-mtd13: 00010000 00010000 "eth3 sfc_dynamic_cfg:00"
-mtd14: 00030000 00010000 "eth3 sfc_exp_rom:01"
-mtd15: 00010000 00010000 "eth3 sfc_exp_rom_cfg:00"
-mtd16: 00120000 00010000 "eth3 sfc_fpga:01"
-mtd17: 00010000 00010000 "eth4 sfc_dynamic_cfg:00"
-mtd18: 00010000 00010000 "eth4 sfc_exp_rom_cfg:00"
+Except by using tools to flash the firmware or modify the igb driver to =
+continue loading under=20
+an invalid mac address, however most users do not have this ability. In =
+the case of invalidity,=20
+the invalid mac address must be changed to a legal address, so it is =
+always better to use a=20
+valid mac address to continue pretending to be a network card driver =
+when the mac address is invalid,
+ which is always better than not being able to load the driver, such as =
+the microchip network card (lan743x) driver .
 
-So this patch is not needed, and efx_mtd_remove() will free
-the memory for both ports.
+I think it is worthwhile to replace the invalid mac address with a =
+random valid mac address to=20
+complete the igb driver loading. In response to the above problem, I =
+will provide a patch on igb_main.c again..
 
-Martin
+Thank you for taking the time.
 
-> Therefore it must be freed.
-> But it doesn't free a not used mtd partition data in siena_mtd_probe().
-> 
-> Fixes: 8880f4ec21e6 ("sfc: Add support for SFC9000 family (2)")
-> Signed-off-by: Taehee Yoo <ap420073@gmail.com>
-> ---
->  drivers/net/ethernet/sfc/siena.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/sfc/siena.c b/drivers/net/ethernet/sfc/siena.c
-> index ce3060e15b54..8b42951e34d6 100644
-> --- a/drivers/net/ethernet/sfc/siena.c
-> +++ b/drivers/net/ethernet/sfc/siena.c
-> @@ -939,6 +939,11 @@ static int siena_mtd_probe(struct efx_nic *efx)
->  		nvram_types >>= 1;
->  	}
->  
-> +	if (!n_parts) {
-> +		kfree(parts);
-> +		return 0;
-> +	}
-> +
->  	rc = siena_mtd_get_fw_subtypes(efx, parts, n_parts);
->  	if (rc)
->  		goto fail;
-> -- 
-> 2.17.1
+> 2022=E5=B9=B45=E6=9C=8811=E6=97=A5 03:43=EF=BC=8CJesse Brandeburg =
+<jesse.brandeburg@intel.com> =E5=86=99=E9=81=93=EF=BC=9A
+>=20
+> Please include netdev mailing list when mailing the maintainers of =
+netdev.
+
