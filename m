@@ -2,100 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2CFA52545B
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 20:01:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D8C45254F0
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 20:35:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357431AbiELSBO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 14:01:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36530 "EHLO
+        id S1357681AbiELSfI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 14:35:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357488AbiELSBN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 14:01:13 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F01612DAA8;
-        Thu, 12 May 2022 11:01:11 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id k2so8352544wrd.5;
-        Thu, 12 May 2022 11:01:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
-         :subject:content-transfer-encoding;
-        bh=cJnjugKrgdrJmqtsA8GvHLwluSC6FXfzUUPGSlEcivE=;
-        b=qPUMUcm/abZSYEgcqqyPZr0HgYbcfPxuQOzKdDv7kDhAL/1WUobxuxwqth5mbVsgSu
-         kvQj/IJtKdilmYRYJ4Jzc3ZPtbnGR8yIXwwD9KBSQilm7QlGIS3bgWIYQG9715seIuNb
-         82+3h9ftKyqS+TaNHxJQJeqcqM/pshT+bS3nIfsAky8JGKfOtSuTbChrPybD6qa4Rntj
-         C6kHT4meX/mmxIzRQKj3RHf8cjOLRJd56dI9VA8Gwc5dBlIdhMLZnoCkvUnPAm/tbM0W
-         GVMGILHKnlu7z0uSi2gi6++7xoTfFGMUO1qgccpSKAE64BFhzmri4nJwzkTXs8MVcEbT
-         PzFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:from:subject:content-transfer-encoding;
-        bh=cJnjugKrgdrJmqtsA8GvHLwluSC6FXfzUUPGSlEcivE=;
-        b=3DV0JvKmK6nayK2Itl1zqxlTZUX8uMcpq5mJHpz3HzOfi3sSN6jWlIwJwc3AdYmwy6
-         bVMm7/E5WIPdTT5VLkX7s43CdhAu35FPsZ5n4pUX92Wzz9dguqVo64b8UeZlxQrcUTeJ
-         KWpWNQ/zlGRn2F/Vcf0hZbylukl233wAHRuOE0zQVYjKUmwYxjQ4sW6pRAcU6LReQ5/s
-         zc/KTjrWPqu7BiRLKE0SMWCal49+DS6ZU6m+rMWIGVzdTzqnfIm5ivxrUT/D3R8gYy/F
-         oYcbYIsNQlRQcwCwj2m+2Ae46nHVr5hwjg7/2QtbMw2m6x28npeZgQvNK3GNjCD8dMHQ
-         rfjA==
-X-Gm-Message-State: AOAM531W8Qj75fyw6u1SQwJ0h/LHrCBH47RysXOoqsPj5w9k1te+mwzs
-        TsJk595TUSXQ5EOfzJ9k8RUcTGnWnd5VnA==
-X-Google-Smtp-Source: ABdhPJxoToamSOfhGh9lH0yr5QWOZvlt8q07M4v3o1V4D5RWM1VFWqEEPS6QbYcg05kvZVU4IY9tPA==
-X-Received: by 2002:adf:d230:0:b0:20a:da1f:aaaf with SMTP id k16-20020adfd230000000b0020ada1faaafmr705729wrh.616.1652378470507;
-        Thu, 12 May 2022 11:01:10 -0700 (PDT)
-Received: from ?IPV6:2a04:241e:502:a09c:2fa1:a00:fe93:7863? ([2a04:241e:502:a09c:2fa1:a00:fe93:7863])
-        by smtp.gmail.com with ESMTPSA id d25-20020adf9b99000000b0020c5253d8c4sm217015wrc.16.2022.05.12.11.01.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 11:01:09 -0700 (PDT)
-Message-ID: <93323bba-476e-f821-045c-9fe942143da9@gmail.com>
-Date:   Thu, 12 May 2022 21:01:08 +0300
+        with ESMTP id S1350956AbiELSfG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 14:35:06 -0400
+X-Greylist: delayed 1320 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 11:35:03 PDT
+Received: from carlson.workingcode.com (carlson.workingcode.com [50.78.21.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 668C569487;
+        Thu, 12 May 2022 11:35:03 -0700 (PDT)
+Received: from [50.78.21.49] (carlson [50.78.21.49])
+        (authenticated bits=0)
+        by carlson.workingcode.com (8.17.0.3/8.17.0.3/SUSE Linux 0.8) with ESMTPSA id 24CIBt8t021385
+        (version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NO);
+        Thu, 12 May 2022 14:11:56 -0400
+DKIM-Filter: OpenDKIM Filter v2.11.0 carlson.workingcode.com 24CIBt8t021385
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=workingcode.com;
+        s=carlson; t=1652379117;
+        bh=fRLMsd/sUWYsl3gSss7SMn/poCCV3dWb8TFq8WtRz9s=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=vuudb8HLwzFiPoaejTPIwz5siefmhEK7MK7mi9bUPAMgP4GbhqNhYO3oFjeTAyk3N
+         CDHjPiRFe4eN1TgPiKPzRA7Jk3EMwDXkELCU6x5wWdwdbH5tYtcONOqjl+5vrSK+Bh
+         CIAF5oQzSCLoAYTM1YiR+di9wfFOUmbddWc94AF4=
+Message-ID: <0078ff43-f9fa-1deb-b64d-170d3d93ee6f@workingcode.com>
+Date:   Thu, 12 May 2022 14:11:55 -0400
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
+ Thunderbird/91.3.2
+Subject: Re: [PATCH net-next] net: appletalk: remove Apple/Farallon LocalTalk
+ PC support
 Content-Language: en-US
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     David Ahern <dsahern@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-From:   Leonard Crestez <cdleonard@gmail.com>
-Subject: BUG: TCP timewait sockets survive across namespace creation in
- net-next
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Arnd Bergmann <arnd@arndb.de>, Doug Brown <doug@schmorgal.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org
+References: <20220509150130.1047016-1-kuba@kernel.org>
+ <CAK8P3a0FVM8g0LG3_mHJ1xX3Bs9cxae8ez7b9qvGOD+aJdc8Dw@mail.gmail.com>
+ <20220509103216.180be080@kernel.org>
+ <9cac4fbd-9557-b0b8-54fa-93f0290a6fb8@schmorgal.com>
+ <CAK8P3a1AA181LqQSxnToSVx0e5wmneUsOKfmnxVMsUNh465C_Q@mail.gmail.com>
+ <d7076f95-b25b-3694-1ec2-9b9ff93633b7@schmorgal.com>
+ <CAK8P3a3Tj=aJM_-x17uw1yJ-5+DgKX6APgEaO0sa=aRBKya1XQ@mail.gmail.com>
+From:   James Carlson <carlsonj@workingcode.com>
+In-Reply-To: <CAK8P3a3Tj=aJM_-x17uw1yJ-5+DgKX6APgEaO0sa=aRBKya1XQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-DCC--Metrics: carlson 1102; Body=12 Fuz1=12 Fuz2=12
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,NICE_REPLY_A,RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 5/11/22 04:23, Arnd Bergmann wrote:
+> indication of appletalk ever being supported there, this all looks
+> IPv4/IPv6 specific. There was support for PPP_IPX until it was
+> dropped this year (the kernel side got removed in 2018), but never
+> for PPP_AT.
+> Adding Paul Mackerras to Cc, he might know more about it.
 
-It appears that in recent net-next versions it is possible for sockets 
-in the timewait state to survive across namespace add/del. Timewait 
-sockets are inserted into a global hash and only the sock_net value is 
-compared when they are enumerated from interfaces like /proc/net/tcp and 
-inet_diag. Old TW sockets are not cleared after namespace delete and 
-namespaces are allocated from a slab and thus their pointers get reused 
-a lot, when that happens timewait sockets from an old namespace will 
-show up in the new one.
+I waited a bit before chipping in, as I think Paul would know more.
 
-This can be reproduced by establishing a TCP connection over a veth pair 
-between two namespaces, closing and then recreating those namespaces. 
-Old timewait sockets will be visible and it happens quite reliably, 
-often on the first iteration. I can try to provide a script for this.
+The ATCP stuff was in at least a few vendor branches, but I don't think
+it ever made it into the main distribution. These commits seem to be
+where the (disabled by default) references to it first appeared:
 
-I can't point to specific bugs outside of tests that explicitly 
-enumerate timewait sockets but letting sk_net be a dangling pointer 
-seems very dangerous. It also violates the idea of network namespaces 
-being independent and isolated.
+commit 50c9469f0f683c7bf8ebad9b7f97bfc03c6a4122
+Author: Paul Mackerras <paulus@samba.org>
+Date:   Tue Mar 4 03:32:37 1997 +0000
 
-This does not happen in 5.17, I bisected this behavior to commit 
-0dad4087a86a ("tcp/dccp: get rid of inet_twsk_purge()")
+    add defs for appletalk
 
---
-Regards,
-Leonard
+commit 01548ef15e0f41f9f6af33860fb459a7f578f004
+Author: Paul Mackerras <paulus@samba.org>
+Date:   Tue Mar 4 03:41:17 1997 +0000
+
+    connect time stuff gone to auth.c,
+    don't die on EINTR from opening tty,
+    ignore NCP packets during authentication,
+    fix recursive signal problem in kill_my_pg
+
+The disabled-by-default parts were likely support contributions for
+those other distributions. (Very likely in BSD.)
+
+I would've thought AppleTalk was completely gone by now, and I certainly
+would not be sad to see the dregs removed from pppd, but there was a
+patch release on the netatalk package just last month, so what do I know?
+
+(The only possible reason I can see to keep any ATCP bits around at all
+is to make sure we can write nice-looking log messages -- to say we're
+rejecting "AppleTalk Control Protocol" rather than "unknown 8029." But
+that'd be a very minor feature.)
+
+-- 
+James Carlson     42.703N 71.076W FN42lq08    <carlsonj@workingcode.com>
