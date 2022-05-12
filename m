@@ -2,122 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BA07752470C
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:34:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE89052476D
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:53:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343519AbiELHdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 03:33:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
+        id S1351195AbiELHxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 03:53:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237649AbiELHdx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:33:53 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D4244A22
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:33:52 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id b19so5930820wrh.11
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:33:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VJgiP3JRpo82lgLLITvlw0SadokFXlQXqrzQP/PcIVM=;
-        b=V3NAfn8NjL+SSwG0q2RB1Mg4d+ZG8CkEpm7fqYJpzwaYpu24OpJW6/K+iAWupNywBK
-         pEtgDro1oPFjxgX1mZEZ12ZIUz70yKKKDJYfJa3lX3OSr5iMh8R/A3CbPtsL2lnBATxc
-         ByoiPRhGirNu0fWZI8vORXTCvrgo1XoKHYZL+CDzHt40gDrSiYIvPtv2EVgSfJVJ2eT7
-         BHFKYWnWwAFV/bYrqzX0llyn5GlV86naOo7rbY0sXCmb4GJRdjBDPdnRhGR3NfR+Anp1
-         2Mh9LoeZV64QimFBLimkz1bumLvPhtzUhKDlhb+W8sepjoSYUmRB6UGD5k044uFw+Jwr
-         lC0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=VJgiP3JRpo82lgLLITvlw0SadokFXlQXqrzQP/PcIVM=;
-        b=YnRQoQi87jS8LHTQC+oWZ/jRgitmtomXVqDHb3d3hI2kyLI84vcch+rIQjGOvhcvB1
-         GLSlZKIVJb6u1xEzqx8X2JicHEOC5PWCNDJmCSaPFdChqKtBWmwIBvCRTvoKPLzp8MNL
-         92y96UPZD/TU+h1kvl7ddRZ4B1xUnTa7tQv+QzldxGmgAK8BLTxh8xbYhT0oy50+gBdM
-         KouTgu9shiC9EI9jqbycuGgQNfceqfezzjP+++0jORukGfcfhomvgtLn6tB2qNp6oXPM
-         3nTHrLHusbGinEl8rMgk4vZBDmzAVuiXQGc4/EPujAIxH3fJCo9ZL+QHgt0H7ep+yTkd
-         rHPA==
-X-Gm-Message-State: AOAM533mOmgB9f4Noc40MtHsKZyhoQrk2yNpCLoSWF6fqiizNf9S2Dad
-        7JkNO4dMD9+125311fZ2vtNPUoAw6vs=
-X-Google-Smtp-Source: ABdhPJx1XKNXNOwztaS1ggKJAFeowZUSnvqgBBcW/al6icdOYk1P3hxIFP141RmQYec7FfreGhrxVw==
-X-Received: by 2002:adf:f18e:0:b0:20c:e053:ef4e with SMTP id h14-20020adff18e000000b0020ce053ef4emr4842691wro.360.1652340830737;
-        Thu, 12 May 2022 00:33:50 -0700 (PDT)
-Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id bh8-20020a05600c3d0800b003942a244f45sm1917662wmb.30.2022.05.12.00.33.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 12 May 2022 00:33:49 -0700 (PDT)
-Date:   Thu, 12 May 2022 08:33:47 +0100
-From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     kernel test robot <lkp@intel.com>
-Cc:     kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, Erik Ekman <erik@kryo.se>,
-        netdev@vger.kernel.org
-Subject: Re: [linux-next:master 10569/11094]
- drivers/net/ethernet/sfc/siena/siena_sriov.c:1578:5: sparse: sparse: symbol
- 'efx_init_sriov' was not declared. Should it be static?
-Message-ID: <20220512073347.36go3nikzf6m4du2@gmail.com>
-Mail-Followup-To: kernel test robot <lkp@intel.com>,
-        kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
-        Edward Cree <ecree.xilinx@gmail.com>,
-        Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
-        Erik Ekman <erik@kryo.se>, netdev@vger.kernel.org
-References: <202205120012.rvs9fZKN-lkp@intel.com>
+        with ESMTP id S1346458AbiELHxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:53:05 -0400
+X-Greylist: delayed 476 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 00:53:04 PDT
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C46E252B4
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:53:03 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id E5A742060D;
+        Thu, 12 May 2022 09:45:05 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id GUncMoDAUZUE; Thu, 12 May 2022 09:45:05 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 05520205E7;
+        Thu, 12 May 2022 09:45:05 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id E981B80004A;
+        Thu, 12 May 2022 09:45:04 +0200 (CEST)
+Received: from mbx-essen-02.secunet.de (10.53.40.198) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 12 May 2022 09:45:04 +0200
+Received: from moon.secunet.de (172.18.149.1) by mbx-essen-02.secunet.de
+ (10.53.40.198) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
+ 2022 09:45:04 +0200
+Date:   Thu, 12 May 2022 09:44:57 +0200
+From:   Antony Antony <antony.antony@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+CC:     <netdev@vger.kernel.org>, Tobias Brunner <tobias@strongswan.org>
+Subject: [PATCH RFC ipsec] xfrm: fix panic in xfrm_delete from userspace on
+ ARM 32
+Message-ID: <00959f33ee52c4b3b0084d42c430418e502db554.1652340703.git.antony.antony@secunet.com>
+Reply-To: <antony.antony@secunet.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <202205120012.rvs9fZKN-lkp@intel.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Organization: secunet
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-02.secunet.de (10.53.40.198)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This will be fixed by:
+A kernel panic was reported on ARM 32 architecture.
+In spite of initialization, x = kmem_cache_zalloc(xfrm_state_cache, GFP_ATOMIC),
+x->mapping_maxage appears to be nozero and cause kernel panic in
+xfrm_state_delete().
 
-https://patchwork.kernel.org/project/netdevbpf/patch/165228602579.696.13026076797222373028.stgit@palantir17.mph.net/
+https://github.com/strongswan/strongswan/issues/992
 
-Martin
+(__xfrm_state_delete) from [<c091ad58>] (xfrm_state_delete+0x24/0x44)
+(xfrm_state_delete) from [<bf4c31e4>] (xfrm_del_sa+0x94/0xe4 [xfrm_user])
+(xfrm_del_sa [xfrm_user]) from [<bf4c2180>] (xfrm_user_rcv_msg+0xe0/0x1d0 [xfrm_user])
+(xfrm_user_rcv_msg [xfrm_user]) from [<c0878da4>] (netlink_rcv_skb+0xd8/0x148)
+(netlink_rcv_skb) from [<bf4c1724>] (xfrm_netlink_rcv+0x2c/0x48 [xfrm_user])
+(xfrm_netlink_rcv [xfrm_user]) from [<c0878408>] (netlink_unicast+0x208/0x31c)
+(netlink_unicast) from [<c0878710>] (netlink_sendmsg+0x1f4/0x468)
+(netlink_sendmsg) from [<c07e1408>] (__sys_sendto+0xd4/0x13c)
 
-On Thu, May 12, 2022 at 01:07:55AM +0800, kernel test robot wrote:
-> Hi Martin,
-> 
-> First bad commit (maybe != root cause):
-> 
-> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-> head:   6107040c99d5dfc920721c198d45ed2d639b113a
-> commit: c5a13c319e10e795850b61bc7e3447b08024be2e [10569/11094] sfc: Add a basic Siena module
-> config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220512/202205120012.rvs9fZKN-lkp@intel.com/config)
-> compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-> reproduce:
->         # apt-get install sparse
->         # sparse version: v0.6.4-dirty
->         # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=c5a13c319e10e795850b61bc7e3447b08024be2e
->         git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
->         git fetch --no-tags linux-next master
->         git checkout c5a13c319e10e795850b61bc7e3447b08024be2e
->         # save the config file
->         mkdir build_dir && cp config build_dir/.config
->         make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ethernet/sfc/siena/
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> 
-> sparse warnings: (new ones prefixed by >>)
-> >> drivers/net/ethernet/sfc/siena/siena_sriov.c:1578:5: sparse: sparse: symbol 'efx_init_sriov' was not declared. Should it be static?
-> >> drivers/net/ethernet/sfc/siena/siena_sriov.c:1590:6: sparse: sparse: symbol 'efx_fini_sriov' was not declared. Should it be static?
-> 
-> Please review and possibly fold the followup patch.
-> 
-> -- 
-> 0-DAY CI Kernel Test Service
-> https://01.org/lkp
+Even if x->mapping_maxage is non zero I can't explain the cause of panic.
+However, roth-m reports setting  x->mapping_maxage = 0 fix the panic!
+
+I am still not sure of the cause. So I proposing the fix as an RFC.
+Anyone has experience with nondeterministic kmem_cache_zalloc() on 32 bit ARM hardware?
+Note other initializations in xfrm_state_alloc() x->replay_maxage = 0. I
+wonder why those were added when there is kmem_cache_zalloc call above.
+
+The bug report mentioned OpenWRT tool chain and OpenWRT kernel.
+
+Fixes: 4e484b3e969b ("xfrm: rate limit SA mapping change message to user space")
+Reported-by: https://github.com/roth-m
+Suggested-by: Tobias Brunner <tobias@strongswan.org>
+Signed-off-by: Antony Antony <antony.antony@secunet.com>
+---
+ net/xfrm/xfrm_state.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
+index b749935152ba..1724a9bd232e 100644
+--- a/net/xfrm/xfrm_state.c
++++ b/net/xfrm/xfrm_state.c
+@@ -654,6 +654,9 @@ struct xfrm_state *xfrm_state_alloc(struct net *net)
+ 		x->lft.hard_packet_limit = XFRM_INF;
+ 		x->replay_maxage = 0;
+ 		x->replay_maxdiff = 0;
++		x->mapping_maxage = 0;
++		x->new_mapping = 0;
++		x->new_mapping_sport = 0;
+ 		spin_lock_init(&x->lock);
+ 	}
+ 	return x;
+--
+2.30.2
+
