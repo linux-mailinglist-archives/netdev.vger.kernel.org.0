@@ -2,227 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C9E14525325
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 19:03:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD1FE52532F
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 19:05:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356562AbiELRCY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 13:02:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54882 "EHLO
+        id S1356835AbiELRFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 13:05:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356839AbiELRCK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 13:02:10 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.54])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF19E6D4DA
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:02:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652374924;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=7O5qzx9scmGvP0wa5Nf4FuXPmPkk+zLJ1JtCKXEkxSk=;
-    b=UAzRgSgsPvw+U8Diah1vrax/0+63PnteVRWtzWPtZw3QvLkOCSPT5EcH+5SQdqZUbl
-    d1lOL0EKuqOj4y5N3nvfCQv6Wk1cqvYAlgneXjJTjAoFdz6V+I9OEWueNwG9hWujqwzt
-    ev3xKb4KcNHRrvVDEgINBu2SV+8xzzn/mDlkt4GaR2v/LE1gSvm2UB5XaS/uE4+SU6xt
-    zcO7Va3Od11kW/0GrvBcpJ4k0YlplP9x3qNLUNkL0a7i63qaNdnPlgPHeb8fqy22zaNZ
-    knjyBOgDVFHssqSrHsrQbWfos0A35+5mbHHOP6J7CXZqEs5t8jaa1bdI4J1NBFnlrOR4
-    DG0Q==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOug2krLFRKxw=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b04::b82]
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id R0691fy4CH230Ac
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Thu, 12 May 2022 19:02:03 +0200 (CEST)
-Message-ID: <09dae83a-b716-3a0c-cc18-39e6e9afa6cc@hartkopp.net>
-Date:   Thu, 12 May 2022 19:02:03 +0200
+        with ESMTP id S1356839AbiELRF3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 13:05:29 -0400
+Received: from mail-qt1-f182.google.com (mail-qt1-f182.google.com [209.85.160.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA159269EFD;
+        Thu, 12 May 2022 10:05:26 -0700 (PDT)
+Received: by mail-qt1-f182.google.com with SMTP id p4so4906023qtq.12;
+        Thu, 12 May 2022 10:05:26 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+6B2p5x2MsdiGQqOHTdj/jEV/QOhWbmjHIG+C1y2HyI=;
+        b=HVddJcFC1vwFoH8Vz9W+YE8WP8SAZuUOcUt9Ej4BteJZh6FgiF99kmT/9ZYBL+usw1
+         qiib83DDdL3aaBc1OxTZz+gS8aZ9qYwWiW1KNbxaKdkB/MXSUYFvxRPawj61yo1s/iC3
+         sluENUT3lt3xWc2IrBI8zHt+VBLFlvb12a3nUADTZlDSRJXXpIwpjnuEx9z66IgpoB23
+         7fTqwO+QNedSMl6lLYFToYW9czCtAvOVIw7VzkJV5AHxSgCJ7OZpc8q0QZRDPNx+6NOC
+         nuDjbHKJID9PUeZ/iEIc4R6gYMsrYrahz6qxOI2IzDFXHNidQZvuYkxWCEdxdpHptsJK
+         jKpA==
+X-Gm-Message-State: AOAM5309LOmoBo9Dexjibc8PFz0yAGzNOXUne+5GZjtInjzPLxndkkib
+        9LLu6Oz6e3dwBoJbYmRuwws=
+X-Google-Smtp-Source: ABdhPJyerLlG0Vc9EMfOfjsIemvOVeJd5Nd6Zc4QkNV1NHFFQZtrSBUY2HOMiIDSb+A1DVnZY5rbVg==
+X-Received: by 2002:ac8:5896:0:b0:2f3:d231:58a9 with SMTP id t22-20020ac85896000000b002f3d23158a9mr741939qta.131.1652375125492;
+        Thu, 12 May 2022 10:05:25 -0700 (PDT)
+Received: from dev0025.ash9.facebook.com (fwdproxy-ash-011.fbsv.net. [2a03:2880:20ff:b::face:b00c])
+        by smtp.gmail.com with ESMTPSA id t80-20020a374653000000b0069fc13ce231sm3183117qka.98.2022.05.12.10.05.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 10:05:25 -0700 (PDT)
+Date:   Thu, 12 May 2022 10:05:22 -0700
+From:   David Vernet <void@manifault.com>
+To:     Wan Jiabing <wanjiabing@vivo.com>
+Cc:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] bpf: use 'error_xxx' tags in
+ bpf_kprobe_multi_link_attach
+Message-ID: <20220512170522.3e47hwj53plhr4qq@dev0025.ash9.facebook.com>
+References: <20220512141710.116135-1-wanjiabing@vivo.com>
+ <20220512141710.116135-2-wanjiabing@vivo.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2 net-next] inet: add READ_ONCE(sk->sk_bound_dev_if) in
- INET_MATCH()
-Content-Language: en-US
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>
-References: <20220512165601.2326659-1-eric.dumazet@gmail.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220512165601.2326659-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220512141710.116135-2-wanjiabing@vivo.com>
+User-Agent: NeoMutt/20211029
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 12, 2022 at 10:17:08PM +0800, Wan Jiabing wrote:
+> Use 'error_addrs', 'error_cookies' and 'error_link' tags to make error
+> handling more efficient.
 
+Can you add a bit more context to this commit summary? The added goto
+labels aren't what make the code more performant, it's the avoidance of
+unnecessary free calls on NULL pointers that (supposedly) does.
 
-On 12.05.22 18:56, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
 > 
-> INET_MATCH() runs without holding a lock on the socket.
-> 
-> We probably need to annotate most reads.
-> 
-> This patch makes INET_MATCH() an inline function
-> to ease our changes.
-> 
-> v2:
-> 
-> We remove the 32bit version of it, as modern compilers
-> should generate the same code really, no need to
-> try to be smarter.
-> 
-> Also make 'struct net *net' the first argument.
-> 
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
 > ---
+>  kernel/trace/bpf_trace.c | 20 +++++++++++---------
+>  1 file changed, 11 insertions(+), 9 deletions(-)
 > 
-> Sent as a standalone patch to not spam netdev@ list.
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 2eaac094caf8..3a8b69ef9a0d 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -2467,20 +2467,20 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  	if (uaddrs) {
+>  		if (copy_from_user(addrs, uaddrs, size)) {
+>  			err = -EFAULT;
+> -			goto error;
+> +			goto error_addrs;
+>  		}
+>  	} else {
+>  		struct user_syms us;
+>  
+>  		err = copy_user_syms(&us, usyms, cnt);
+>  		if (err)
+> -			goto error;
+> +			goto error_addrs;
+>  
+>  		sort(us.syms, cnt, sizeof(*us.syms), symbols_cmp, NULL);
+>  		err = ftrace_lookup_symbols(us.syms, cnt, addrs);
+>  		free_user_syms(&us);
+>  		if (err)
+> -			goto error;
+> +			goto error_addrs;
+>  	}
+>  
+>  	ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
+> @@ -2488,18 +2488,18 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  		cookies = kvmalloc(size, GFP_KERNEL);
+>  		if (!cookies) {
+>  			err = -ENOMEM;
+> -			goto error;
+> +			goto error_addrs;
+>  		}
+>  		if (copy_from_user(cookies, ucookies, size)) {
+>  			err = -EFAULT;
+> -			goto error;
+> +			goto error_cookies;
+>  		}
+>  	}
+>  
+>  	link = kzalloc(sizeof(*link), GFP_KERNEL);
+>  	if (!link) {
+>  		err = -ENOMEM;
+> -		goto error;
+> +		goto error_cookies;
+>  	}
+>  
+>  	bpf_link_init(&link->link, BPF_LINK_TYPE_KPROBE_MULTI,
+> @@ -2507,7 +2507,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  
+>  	err = bpf_link_prime(&link->link, &link_primer);
+>  	if (err)
+> -		goto error;
+> +		goto error_link;
+>  
+>  	if (flags & BPF_F_KPROBE_MULTI_RETURN)
+>  		link->fp.exit_handler = kprobe_multi_link_handler;
+> @@ -2539,10 +2539,12 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  
+>  	return bpf_link_settle(&link_primer);
+>  
+> -error:
+> +error_link:
+>  	kfree(link);
+> -	kvfree(addrs);
+> +error_cookies:
+>  	kvfree(cookies);
+> +error_addrs:
+> +	kvfree(addrs);
+>  	return err;
+>  }
+>  #else /* !CONFIG_FPROBE */
+> -- 
+> 2.35.1
 > 
->   include/net/inet_hashtables.h | 33 +++++++++++++++------------------
->   include/net/sock.h            |  3 ---
->   net/ipv4/inet_hashtables.c    | 15 +++++----------
->   net/ipv4/udp.c                |  3 +--
->   4 files changed, 21 insertions(+), 33 deletions(-)
-> 
-> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> index 98e1ec1a14f0382d1f4f8e85fe5ac2a056d2d6bc..e44e410813d0f469131f54cf3372458a0340d5cf 100644
-> --- a/include/net/inet_hashtables.h
-> +++ b/include/net/inet_hashtables.h
-> @@ -295,7 +295,6 @@ static inline struct sock *inet_lookup_listener(struct net *net,
->   	((__force __portpair)(((__u32)(__dport) << 16) | (__force __u32)(__be16)(__sport)))
->   #endif
->   
-> -#if (BITS_PER_LONG == 64)
->   #ifdef __BIG_ENDIAN
->   #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
->   	const __addrpair __name = (__force __addrpair) ( \
-> @@ -307,24 +306,22 @@ static inline struct sock *inet_lookup_listener(struct net *net,
->   				   (((__force __u64)(__be32)(__daddr)) << 32) | \
->   				   ((__force __u64)(__be32)(__saddr)))
->   #endif /* __BIG_ENDIAN */
-> -#define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif, __sdif) \
-> -	(((__sk)->sk_portpair == (__ports))			&&	\
-> -	 ((__sk)->sk_addrpair == (__cookie))			&&	\
-> -	 (((__sk)->sk_bound_dev_if == (__dif))			||	\
-> -	  ((__sk)->sk_bound_dev_if == (__sdif)))		&&	\
-> -	 net_eq(sock_net(__sk), (__net)))
-> -#else /* 32-bit arch */
-> -#define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
-> -	const int __name __deprecated __attribute__((unused))
->   
-> -#define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif, __sdif) \
-> -	(((__sk)->sk_portpair == (__ports))		&&		\
-> -	 ((__sk)->sk_daddr	== (__saddr))		&&		\
-> -	 ((__sk)->sk_rcv_saddr	== (__daddr))		&&		\
-> -	 (((__sk)->sk_bound_dev_if == (__dif))		||		\
-> -	  ((__sk)->sk_bound_dev_if == (__sdif)))	&&		\
-> -	 net_eq(sock_net(__sk), (__net)))
-> -#endif /* 64-bit arch */
-> +static inline bool INET_MATCH(struct net *net, const struct sock *sk,
 
-When you convert the #define into an inline function, wouldn't it be 
-more natural to name it lower caps?
+Could you clarify what performance gains you observed from doing this? I
+wouldn't have expected avoiding a couple of calls and NULL checks to have a
+measurable impact on performance, and I'm wondering whether the complexity
+from having multiple goto labels is really worth any supposed performance
+gains.
 
-static inline bool inet_match(struct net *net, ... )
-
-
-Best,
-Oliver
-
-> +			      const __addrpair cookie, const __portpair ports,
-> +			      int dif, int sdif)
-> +{
-> +	int bound_dev_if;
-> +
-> +	if (!net_eq(sock_net(sk), net) ||
-> +	    sk->sk_portpair != ports ||
-> +	    sk->sk_addrpair != cookie)
-> +	        return false;
-> +
-> +	/* Paired with WRITE_ONCE() from sock_bindtoindex_locked() */
-> +	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-> +	return bound_dev_if == dif || bound_dev_if == sdif;
-> +}
->   
->   /* Sockets in TCP_CLOSE state are _always_ taken out of the hash, so we need
->    * not check it for lookups anymore, thanks Alexey. -DaveM
-> diff --git a/include/net/sock.h b/include/net/sock.h
-> index 73063c88a2499b31c1e8d25dc157d21f93b02bf5..01edfde4257d697f2a2c88ef704a3849af4e5305 100644
-> --- a/include/net/sock.h
-> +++ b/include/net/sock.h
-> @@ -161,9 +161,6 @@ typedef __u64 __bitwise __addrpair;
->    *	for struct sock and struct inet_timewait_sock.
->    */
->   struct sock_common {
-> -	/* skc_daddr and skc_rcv_saddr must be grouped on a 8 bytes aligned
-> -	 * address on 64bit arches : cf INET_MATCH()
-> -	 */
->   	union {
->   		__addrpair	skc_addrpair;
->   		struct {
-> diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-> index a5d57fa679caa47ec31ea4b1de3c45f93be4cd13..16a8440083f7e4bebd5de51ddb41b3d886b233cd 100644
-> --- a/net/ipv4/inet_hashtables.c
-> +++ b/net/ipv4/inet_hashtables.c
-> @@ -410,13 +410,11 @@ struct sock *__inet_lookup_established(struct net *net,
->   	sk_nulls_for_each_rcu(sk, node, &head->chain) {
->   		if (sk->sk_hash != hash)
->   			continue;
-> -		if (likely(INET_MATCH(sk, net, acookie,
-> -				      saddr, daddr, ports, dif, sdif))) {
-> +		if (likely(INET_MATCH(net, sk, acookie, ports, dif, sdif))) {
->   			if (unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
->   				goto out;
-> -			if (unlikely(!INET_MATCH(sk, net, acookie,
-> -						 saddr, daddr, ports,
-> -						 dif, sdif))) {
-> +			if (unlikely(!INET_MATCH(net, sk, acookie,
-> +						 ports, dif, sdif))) {
->   				sock_gen_put(sk);
->   				goto begin;
->   			}
-> @@ -465,8 +463,7 @@ static int __inet_check_established(struct inet_timewait_death_row *death_row,
->   		if (sk2->sk_hash != hash)
->   			continue;
->   
-> -		if (likely(INET_MATCH(sk2, net, acookie,
-> -					 saddr, daddr, ports, dif, sdif))) {
-> +		if (likely(INET_MATCH(net, sk2, acookie, ports, dif, sdif))) {
->   			if (sk2->sk_state == TCP_TIME_WAIT) {
->   				tw = inet_twsk(sk2);
->   				if (twsk_unique(sk, sk2, twp))
-> @@ -532,9 +529,7 @@ static bool inet_ehash_lookup_by_sk(struct sock *sk,
->   		if (esk->sk_hash != sk->sk_hash)
->   			continue;
->   		if (sk->sk_family == AF_INET) {
-> -			if (unlikely(INET_MATCH(esk, net, acookie,
-> -						sk->sk_daddr,
-> -						sk->sk_rcv_saddr,
-> +			if (unlikely(INET_MATCH(net, esk, acookie,
->   						ports, dif, sdif))) {
->   				return true;
->   			}
-> diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-> index 9d5071c79c9599aa973b80869b7768a68a508cc2..53342ce17172722d51a5db34ca9f1d5c61fb82de 100644
-> --- a/net/ipv4/udp.c
-> +++ b/net/ipv4/udp.c
-> @@ -2563,8 +2563,7 @@ static struct sock *__udp4_lib_demux_lookup(struct net *net,
->   	struct sock *sk;
->   
->   	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
-> -		if (INET_MATCH(sk, net, acookie, rmt_addr,
-> -			       loc_addr, ports, dif, sdif))
-> +		if (INET_MATCH(net, sk, acookie, ports, dif, sdif))
->   			return sk;
->   		/* Only check first socket in chain */
->   		break;
+Thanks,
+David
