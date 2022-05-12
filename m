@@ -2,94 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AD53524839
+	by mail.lfdr.de (Postfix) with ESMTP id 8FB2252483A
 	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 10:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350396AbiELIro (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 04:47:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59496 "EHLO
+        id S1351673AbiELIsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 04:48:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240801AbiELIrk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 04:47:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5030554F98
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 01:47:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652345259;
+        with ESMTP id S237092AbiELIsC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 04:48:02 -0400
+Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6B55C765;
+        Thu, 12 May 2022 01:47:58 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 26C271C0007;
+        Thu, 12 May 2022 08:47:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652345277;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ezHtnkHFSmSnp4Ra5qJG3CnHU6zqF6Z+8VJf976ZCAw=;
-        b=biwK0MJxBcA7Q2kId4bz69lEE1M9DPgzCY/34MqBsnXyenuJvnzmDS8eA29QczNVcmTMBD
-        rbC+RyG3+aMA4gLxIP5kg8g4c6fZcBfPwLc7h4KmyjHTXgOqIL4SBp/6Po1xi/q1jsZSJ+
-        fXHpxNe+KLyXNvsZgXEtt/z8QXHlynU=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-578-TyoeMhRWPVWpakWmsnDZ8A-1; Thu, 12 May 2022 04:47:37 -0400
-X-MC-Unique: TyoeMhRWPVWpakWmsnDZ8A-1
-Received: by mail-wm1-f72.google.com with SMTP id bg7-20020a05600c3c8700b0039468585269so1371466wmb.3
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 01:47:37 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=ezHtnkHFSmSnp4Ra5qJG3CnHU6zqF6Z+8VJf976ZCAw=;
-        b=TianSOny6qHfkq2x2Q7oF44Rt3S4Hx0KlLj0Vb6hnkTe9PljSFM0bwkhOkYkSkHUg4
-         dhfvOlZJQBF+YVNDr9bOd+DOvwKGFWdzYX6C5+dLKZkDjaSAPdB0be87F2yGEAFyaqR+
-         fPR+6Xr8Lquhiznz8pmJWIpNMfwir+WBiKmujm7KEL0VkQbluuOe2e8eiA4imMzymXBc
-         31TQXM1RIUMFp0fYOG+ZjUEsYYVhM0QXo0Vt5fIg1zfO4jB2YmLrXqchjsme6Rt8rllE
-         nulKOmBTdMmG54i9kQHIk5vlmL4ZnoR+S6nSXdBq/2gjkTLUqtFC9AK5Bx7gVSJE12uH
-         V+DA==
-X-Gm-Message-State: AOAM530NLvoaDhE5pgVcN5uA8j1CvW5/xoKpjfBio7hF5en6tjDxuVx7
-        ioGYc92SS3ICUoOlps8Rsi2PJ1ovNDuyIs5Si8zzxMdvyRoMmIjF0ss50dK8W+WJps4U2UYVmoP
-        XCVEltMnmwS8vPLQY
-X-Received: by 2002:a05:6000:1843:b0:20c:57b2:472c with SMTP id c3-20020a056000184300b0020c57b2472cmr25923933wri.142.1652345256709;
-        Thu, 12 May 2022 01:47:36 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxH4NRXiKJzWEh+1ly9sKXQ7EGmetg3l/XxolUOl+eJ/zUJw2GeFLWVgwMq/hSQUHDVhESJCQ==
-X-Received: by 2002:a05:6000:1843:b0:20c:57b2:472c with SMTP id c3-20020a056000184300b0020c57b2472cmr25923921wri.142.1652345256525;
-        Thu, 12 May 2022 01:47:36 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
-        by smtp.gmail.com with ESMTPSA id j32-20020a05600c1c2000b00394832af31csm2248228wms.0.2022.05.12.01.47.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 01:47:36 -0700 (PDT)
-Message-ID: <58c647040b4a9500c687f9a3dd3d8ca8fc1c4cbb.camel@redhat.com>
-Subject: Re: [PATCH] ethernet/ti: delete if NULL check befort devm_kfree
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Bernard Zhao <zhaojunkui2008@126.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Bernard Zhao <bernard@vivo.com>
-Date:   Thu, 12 May 2022 10:47:35 +0200
-In-Reply-To: <20220511072512.666863-1-zhaojunkui2008@126.com>
-References: <20220511072512.666863-1-zhaojunkui2008@126.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        bh=MHDErb2Vw0nQ2xCx9+Ah6ILpUdH4/NR5Ddf2E2382Fk=;
+        b=MgoOXadftUHvAdzKcmjzxqnUpzRTOXOZIopJD6Geg9pOcekSVQUTONqiY5IcSUD4CFg1qm
+        q7FuXxRVCzusjZcNjyZWQv71h1PqxKjOruR5u+ZIQK0mQQIOCuwSbhfn/OvfNm8cCEuUzH
+        T4HokJF0eJcnWhH/uWo8HmszoK4/jtZMFJkYirP5prEGVcrVoCzCKiyMI00N8J+bx+7nb7
+        2K8FJ49w1DXjN9o86DFrASXO1F+epwwN0VLw9LrVo9AezcVl0pAg9O+ex3zJ9OVkP4/qgx
+        hkh8CReYrSRfiZTWzYHdYrDFDlsFK/+oRzygdCHXgfAJBwUFg+6MWoty0CAHAg==
+Date:   Thu, 12 May 2022 10:47:53 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
+        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>
+Subject: Re: [PATCH net-next v4 06/12] net: dsa: rzn1-a5psw: add Renesas
+ RZ/N1 advanced 5 port switch driver
+Message-ID: <20220512104753.075f2120@xps-bootlin>
+In-Reply-To: <20220511093638.kc32n6ldtaqfwupi@skbuf>
+References: <20220509131900.7840-1-clement.leger@bootlin.com>
+        <20220509131900.7840-7-clement.leger@bootlin.com>
+        <20220509160813.stfqb4c2houmfn2g@skbuf>
+        <20220510103458.381aaee2@xps-bootlin>
+        <20220511093638.kc32n6ldtaqfwupi@skbuf>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-05-11 at 00:25 -0700, Bernard Zhao wrote:
-> devm_kfree check the point, there is no need to check before
-> devm_kfree call.
-> This change is to cleanup the code a bit.
-> 
-> Signed-off-by: Bernard Zhao <zhaojunkui2008@126.com>
-> Signed-off-by: Bernard Zhao <bernard@vivo.com>
+Le Wed, 11 May 2022 12:36:38 +0300,
+Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-The patch looks good, but the somewhat strange From: header is
-confusing pw and you probably want to drop one of the SoB above, please
-re-send, thanks!
+> On Tue, May 10, 2022 at 10:34:58AM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
+> > > By the way, does this switch pass
+> > > tools/testing/selftests/drivers/net/dsa/no_forwarding.sh? =20
+> >=20
+> > Unfortunately, the board I have only has 2 ports availables and
+> > thus, I can only test one bridge or two separated ports at a
+> > time... I *should* receive a 4 ports one in a near future but that
+> > not yet sure. =20
+>=20
+> 2 switch ports or 2 ports in total? h1 and h2 can be non-switch ports
+> (should work with USB-Ethernet adapters etc).
 
-Paolo
+2 switchs ports only but I now have a board with 2 switch ports + 2
+non-switch ports so I'll try that on that new board.
+
+Cl=C3=A9ment
+
 
