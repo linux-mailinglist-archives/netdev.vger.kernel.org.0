@@ -2,89 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C8A105258BC
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8458B5258C3
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:53:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359646AbiELXuS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 19:50:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36304 "EHLO
+        id S1359656AbiELXxf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 19:53:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352431AbiELXuQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:50:16 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31851289BF4
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 16:50:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDEAA62097
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 23:50:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2A1F5C34113;
-        Thu, 12 May 2022 23:50:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652399415;
-        bh=GvhIe0Ec8LNqbbphTTex85xsc83W2uDjZPN/Y+7b83I=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Cz+xcLIXrm4WoSLwzt+ebz4djqvaWFq7xln5z3l9CApzeUNFoOwt9EBuWjWjjnh1k
-         zd8JOvC4ptytVd1FFjI3Vf65Av1oeH3xL/JCKOvkdyECh8zJRmdaoIBZnOB9rPkjFU
-         zjgRrvxHTbobS3M1UQ/XQE1x8mOUUilgj08PoSlmOYkDZMO3A1KU1WmREazPEfRM0P
-         QOhB3dSk/ne02oQY4P7W/XxJpJ+5+LMrzyN0zK91/gjYQE54fnTPEje+E8Vg7mBGRz
-         PwBbwDsFg4L7sWeuOOCCvBwqWPC5z2rk+p0s3+3/4oRv/wIlns7BswRC+G+uN+LaqE
-         kriWP67UOiPBA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 06559F0392C;
-        Thu, 12 May 2022 23:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1359652AbiELXxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:53:33 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BEE6289BEC
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 16:53:32 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2fb965b34easo74379637b3.1
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 16:53:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=uhq4ya9xMklJArQ5M6XpMXqCdudCMNIUXQuFqsQyCsQ=;
+        b=UTGN2VdZXEMXwGEbxJjf++SztOH2q/oKnmHmg/ErIIRsbJjLFtK1MZ4QXV8vh70YST
+         LMr7FpE1WZxhV2l7fvcdX5/+kj9QQTyOE5LaBE4AV4cq1CkyEA1JFITNyRyUN7hh3uVO
+         PvrfM5Fd6RNp5S2OkRnCm9seRmC3Haq01sKHHga2x9Tp2sotZl6tHpV9vbi3r9qhAc63
+         7gesz/BZ02SgkNVcDWNR3ITkWqxV+ADQZfICJsmkYB74fb15L1GQBDjOA/ozTxflqLx8
+         QsVmczy/yx1AppjC3JvEPRP13FptT6SqXl1MNEMWHuyL6wb5ok9eNMNAILNToaJyljia
+         4mew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uhq4ya9xMklJArQ5M6XpMXqCdudCMNIUXQuFqsQyCsQ=;
+        b=ZngsHVmgMGngU3dSE/CiHLYwoqvarM3DDztInl6tQ29uhSbB9bxlwrGz2bLakta3Nm
+         8StPORLhPgwffF7eOBYSUsdtfRs7EXnWSwFhC/ncg0xeRUhgj5dHVvnvo2pAohAxntM2
+         rFI30eJDCDGK2rCkVnWKEEPv8JkfVMFjwQl2uH7Lv4FTIbjfJ2Wxl/ZaCLA/LiYjf43R
+         pJhxFgYvpa8cIoINjOmlMyTJeSCPX8UOsyFQWweVBnxdQ6xJTAYX5AIbigF6OdyIEMhV
+         tPACD2L6lJBZSqKStCoj9zOncergnzejnEqQFO8jLmkQWckkzvUntY/EXiWSElmDY9T8
+         KINw==
+X-Gm-Message-State: AOAM530oTCMogYHc7uTqOcFNZ8IT12/ZulFpT30Xts/12+OAnLaavmmi
+        U7Ggp7Y2yRhDY+LWV4dl0ROKRNPsjHTH5sDp/IkMxg==
+X-Google-Smtp-Source: ABdhPJxoK2lh3f0jskM3unr9zg4jpxpAXX2hXYSWdYU7TuB+VAnDEoW2oM6/cBBvO4ZKyecZDL+/x/UQzutiRIfdQLo=
+X-Received: by 2002:a81:5603:0:b0:2f8:3187:f37a with SMTP id
+ k3-20020a815603000000b002f83187f37amr2712263ywb.255.1652399611138; Thu, 12
+ May 2022 16:53:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/3] Restructure struct ocelot_port
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165239941502.20203.13113516324001358297.git-patchwork-notify@kernel.org>
-Date:   Thu, 12 May 2022 23:50:15 +0000
-References: <20220511100637.568950-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220511100637.568950-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, colin.foster@in-advantage.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <0000000000005f1a8805ded719cc@google.com> <CANn89i+XHh1An6fDA0CH1Fb2k_-G8_CCzEmXGKqB4tRAMH9s4w@mail.gmail.com>
+ <20220512155136.70554388@kernel.org>
+In-Reply-To: <20220512155136.70554388@kernel.org>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 12 May 2022 16:53:19 -0700
+Message-ID: <CANn89i+xqQafpRrF7=G0FqJNZkQUBCt_sKsSbhG64bq0iCnztQ@mail.gmail.com>
+Subject: Re: [syzbot] UBSAN: shift-out-of-bounds in tcf_pedit_init
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     syzbot <syzbot+8ed8fc4c57e9dcf23ca6@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, May 12, 2022 at 3:51 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Thu, 12 May 2022 14:19:51 -0700 Eric Dumazet wrote:
+> > On Thu, May 12, 2022 at 2:18 PM syzbot
+> > > This report is generated by a bot. It may contain errors.
+> > > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> > >
+> > > syzbot will keep track of this issue. See:
+> > > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > > syzbot can test patches for this issue, for details see:
+> > > https://goo.gl/tpsmEJ#testing-patches
+> >
+> > As mentioned earlier, this came with
+> >
+> > commit 8b796475fd7882663a870456466a4fb315cc1bd6
+> > Author: Paolo Abeni <pabeni@redhat.com>
+> > Date:   Tue May 10 16:57:34 2022 +0200
+> >
+> >     net/sched: act_pedit: really ensure the skb is writable
+>
+> Came in as in new stack trace for an old/existing bug, right?
+> Nothing checks the shift so it'd have already tripped UBSAN
+> later on in tcf_pedit_act(), anyway.
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Maybe a prior syzbot was reported, and nobody cared.
 
-On Wed, 11 May 2022 13:06:34 +0300 you wrote:
-> This patch set represents preparation for further work. It adds an
-> "index" field to struct ocelot_port, and populates it from the Felix DSA
-> driver and Ocelot switchdev driver.
-> 
-> The users of struct ocelot_port :: index are the same users as those of
-> struct ocelot_port_private :: chip_port.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/3] net: mscc: ocelot: delete ocelot_port :: xmit_template
-    https://git.kernel.org/netdev/net-next/c/15f6d01e4829
-  - [net-next,2/3] net: mscc: ocelot: minimize holes in struct ocelot_port
-    https://git.kernel.org/netdev/net-next/c/6d0be6004770
-  - [net-next,3/3] net: mscc: ocelot: move ocelot_port_private :: chip_port to ocelot_port :: index
-    https://git.kernel.org/netdev/net-next/c/7e708760fc11
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Or maybe syzbot got its way into this path only recently.
