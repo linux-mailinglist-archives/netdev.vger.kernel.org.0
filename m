@@ -2,109 +2,342 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E806C5246B9
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:19:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F14935246BD
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350869AbiELHS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 03:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38022 "EHLO
+        id S1350879AbiELHTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 03:19:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350879AbiELHSt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:18:49 -0400
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7B1C5E48;
-        Thu, 12 May 2022 00:18:44 -0700 (PDT)
-Received: by mail-pg1-x535.google.com with SMTP id 7so3808495pga.12;
-        Thu, 12 May 2022 00:18:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6UxEmmuG1N0Iwm83q5/mJkqiaq+2A/J4A3rU7XGWf4o=;
-        b=QzfF6VRn+PtiqILq7UWQRU7Axj4yufoeYfPInxBX51q6ughZBRyL9y5OxlmnWB8VSl
-         M1wqaRGIyhCFmeXWLPiM4/No7e9N5K8A+Ol23ys7+6HieRhL32gIWKFoAEBqEWeC0wn6
-         D43q9QbGLGudqgJzOD+06D+gC9NCfBgHR3h/fETyv66GirlkWzWJI1qaaSvdtAHnw/z5
-         TTtXUMCPdDLPs6oSE9+v1vD56PL/eZuGQTZEbdadKh3qhjII57SdGdDTvJFxHNfHUubC
-         Hldl4fGicdsscSX9siHY/wItIKmsG5wGf4a7rzlOpoUN+KHvjXc146wRKKmFJ+zWn9+J
-         xRPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6UxEmmuG1N0Iwm83q5/mJkqiaq+2A/J4A3rU7XGWf4o=;
-        b=wHyZBs/K+mAi6rQPFdCS9VWAs3IzmpaGMjvHYJPXlTv/guGVjcfAWUYRg9cRLPCHWd
-         ZpQ5mJanDkKE85GQCt/U24Opxrd3J1Z9PB1qW+5lE8pPl3xa6QXtVwtrdNhWoa2KUNL6
-         /1HNRHBPlp0OPLQpTa3QMmfWUPhNZ1/rs8Wn0fpYYjxI40Qf7L0FZoPl3LrRKnKlCgzM
-         SO2VyPdnaRo0GvYtltoCNXKG0QWzTZoi/fPWzqau8ifEuQKdmgoafVS8Mo4YiK5IiUof
-         Capdh/lTHB10VHvY1K0DCnEVX78K8MO6wOPaoyg/ez5ADscyJmrIGaNri8X9hlBg6W69
-         mJ7w==
-X-Gm-Message-State: AOAM533Wp3xYo0s0M+5e1A8ZRLqisWh/uNj/fqE3b/Oh5JYPsWvfuBkD
-        1sB14UFO/OROmcGgw/bl6Snp31NKt7BxZQ==
-X-Google-Smtp-Source: ABdhPJx75txHssOaqCjfGXODpikDMzECnWJ48mJvru2gYqIsztZyRWVG9hvJ7GlnfWu3Q+3yFIKP7A==
-X-Received: by 2002:a63:7e11:0:b0:3c6:84e3:9c59 with SMTP id z17-20020a637e11000000b003c684e39c59mr18812328pgc.615.1652339923413;
-        Thu, 12 May 2022 00:18:43 -0700 (PDT)
-Received: from Laptop-X1.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id w17-20020a170902e89100b0015e8d4eb2b4sm3244533plg.254.2022.05.12.00.18.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 00:18:42 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        linux-kselftest@vger.kernel.org, bpf@vger.kernel.org,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net 2/2] selftests/bpf: add missed ima_setup.sh in Makefile
-Date:   Thu, 12 May 2022 15:18:19 +0800
-Message-Id: <20220512071819.199873-3-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220512071819.199873-1-liuhangbin@gmail.com>
-References: <20220512071819.199873-1-liuhangbin@gmail.com>
+        with ESMTP id S1350877AbiELHTb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:19:31 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFE7C5E4B
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:19:29 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24C6UN2Z031114;
+        Thu, 12 May 2022 00:19:21 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=vFYeF6FpKFGesGN7AGJP+3L8haInml5sl4GmHwAZXug=;
+ b=hpV8vghfHV+UNaQQ1vSBA2fxDk2fbU3KCe2fxGlAcwVBM3haa9c3aeEnZZuPbB7pgoa8
+ P4Z86lPoqB8AZMCDSU+tulevYF35d6vo4u9ZaHQ7m4l3XZP7qf8tTK5k3S+yo7nekT36
+ 4wm7FDtTecQ6J9jUGWMscgo3oiOQiia7nu/WtXXiN72RKzvQy0yRmbLGodtq9In8AhYa
+ HBi7mNW1xwZJ0TWiazMOrkkoJGCmdCoTxXOCktuLGUOkaSA5DheRfp21Uxig/k6pEtmM
+ odERQUPuzfgzcdbxh01XHA5M5dbmqyK+e90wDezssNGms1xXtGIUw0atihWVqiLIF10Y jQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3g0at24k2g-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 00:19:21 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 12 May
+ 2022 00:19:18 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Thu, 12 May 2022 00:19:18 -0700
+Received: from localhost.localdomain (unknown [10.28.48.95])
+        by maili.marvell.com (Postfix) with ESMTP id 648E03F707D;
+        Thu, 12 May 2022 00:19:15 -0700 (PDT)
+From:   Suman Ghosh <sumang@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <sgoutham@marvell.com>, <sbhatta@marvell.com>,
+        <gakula@marvell.com>, <Sunil.Goutham@cavium.com>,
+        <hkelam@marvell.com>, <colin.king@intel.com>,
+        <netdev@vger.kernel.org>
+CC:     Suman Ghosh <sumang@marvell.com>
+Subject: [net-next PATCH] octeontx2-pf: Add support for adaptive interrupt coalescing
+Date:   Thu, 12 May 2022 12:49:12 +0530
+Message-ID: <20220512071912.672009-1-sumang@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: h9cqWZ9HwIyyeyoCh0LuWsQWbtHgndSr
+X-Proofpoint-GUID: h9cqWZ9HwIyyeyoCh0LuWsQWbtHgndSr
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-11_07,2022-05-12_01,2022-02-23_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When build bpf test and install it to another folder, e.g.
+Added support for adaptive IRQ coalescing. It uses net_dim
+algorithm to find the suitable delay/IRQ count based on the
+current packet rate.
 
-  make -j10 install -C tools/testing/selftests/ TARGETS="bpf" \
-	SKIP_TARGETS="" INSTALL_PATH=/tmp/kselftests
-
-The ima_setup.sh is missed in target folder, which makes test_ima failed.
-
-Fix it by adding ima_setup.sh to TEST_PROGS_EXTENDED.
-
-Fixes: 34b82d3ac105 ("bpf: Add a selftest for bpf_ima_inode_hash")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+Signed-off-by: Suman Ghosh <sumang@marvell.com>
+Reviewed-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
 ---
- tools/testing/selftests/bpf/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../net/ethernet/marvell/octeontx2/Kconfig    |  1 +
+ .../marvell/octeontx2/nic/otx2_common.c       |  5 ---
+ .../marvell/octeontx2/nic/otx2_common.h       | 10 ++++++
+ .../marvell/octeontx2/nic/otx2_ethtool.c      | 36 +++++++++++++++++--
+ .../ethernet/marvell/octeontx2/nic/otx2_pf.c  | 22 ++++++++++++
+ .../marvell/octeontx2/nic/otx2_txrx.c         | 25 ++++++++++++-
+ .../marvell/octeontx2/nic/otx2_txrx.h         |  1 +
+ 7 files changed, 92 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 5944d3a8fff6..b4fd1352a2ac 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -75,7 +75,7 @@ TEST_PROGS := test_kmod.sh \
- 	test_xsk.sh
+diff --git a/drivers/net/ethernet/marvell/octeontx2/Kconfig b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+index 639893d87055..e1036b0eb6b1 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/Kconfig
++++ b/drivers/net/ethernet/marvell/octeontx2/Kconfig
+@@ -33,6 +33,7 @@ config OCTEONTX2_PF
+ 	select OCTEONTX2_MBOX
+ 	select NET_DEVLINK
+ 	depends on (64BIT && COMPILE_TEST) || ARM64
++	select DIMLIB
+ 	depends on PCI
+ 	depends on PTP_1588_CLOCK_OPTIONAL
+ 	help
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+index b9d7601138ca..fb8db5888d2f 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
+@@ -97,11 +97,6 @@ void otx2_get_dev_stats(struct otx2_nic *pfvf)
+ {
+ 	struct otx2_dev_stats *dev_stats = &pfvf->hw.dev_stats;
  
- TEST_PROGS_EXTENDED := with_addr.sh \
--	with_tunnels.sh \
-+	with_tunnels.sh ima_setup.sh \
- 	test_xdp_vlan.sh test_bpftool.py
+-#define OTX2_GET_RX_STATS(reg) \
+-	 otx2_read64(pfvf, NIX_LF_RX_STATX(reg))
+-#define OTX2_GET_TX_STATS(reg) \
+-	 otx2_read64(pfvf, NIX_LF_TX_STATX(reg))
+-
+ 	dev_stats->rx_bytes = OTX2_GET_RX_STATS(RX_OCTS);
+ 	dev_stats->rx_drops = OTX2_GET_RX_STATS(RX_DROP);
+ 	dev_stats->rx_bcast_frames = OTX2_GET_RX_STATS(RX_BCAST);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+index c587c14ac2a3..ce2766317c0b 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
+@@ -18,6 +18,7 @@
+ #include <net/pkt_cls.h>
+ #include <net/devlink.h>
+ #include <linux/time64.h>
++#include <linux/dim.h>
  
- # Compile but not part of 'make run_tests'
+ #include <mbox.h>
+ #include <npc.h>
+@@ -54,6 +55,11 @@ enum arua_mapped_qtypes {
+ /* Send skid of 2000 packets required for CQ size of 4K CQEs. */
+ #define SEND_CQ_SKID	2000
+ 
++#define OTX2_GET_RX_STATS(reg) \
++	otx2_read64(pfvf, NIX_LF_RX_STATX(reg))
++#define OTX2_GET_TX_STATS(reg) \
++	otx2_read64(pfvf, NIX_LF_TX_STATX(reg))
++
+ struct otx2_lmt_info {
+ 	u64 lmt_addr;
+ 	u16 lmt_id;
+@@ -351,6 +357,7 @@ struct otx2_nic {
+ #define OTX2_FLAG_TC_MATCHALL_EGRESS_ENABLED	BIT_ULL(12)
+ #define OTX2_FLAG_TC_MATCHALL_INGRESS_ENABLED	BIT_ULL(13)
+ #define OTX2_FLAG_DMACFLTR_SUPPORT		BIT_ULL(14)
++#define OTX2_FLAG_ADPTV_INT_COAL_ENABLED BIT_ULL(16)
+ 	u64			flags;
+ 	u64			*cq_op_addr;
+ 
+@@ -408,6 +415,9 @@ struct otx2_nic {
+ 	u8			pfc_en;
+ 	u8			*queue_to_pfc_map;
+ #endif
++
++	/* napi event count. It is needed for adaptive irq coalescing. */
++	u32 napi_events;
+ };
+ 
+ static inline bool is_otx2_lbkvf(struct pci_dev *pdev)
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+index fc328de5345e..6d51e2921cf3 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+@@ -455,6 +455,14 @@ static int otx2_get_coalesce(struct net_device *netdev,
+ 	cmd->rx_max_coalesced_frames = hw->cq_ecount_wait;
+ 	cmd->tx_coalesce_usecs = hw->cq_time_wait;
+ 	cmd->tx_max_coalesced_frames = hw->cq_ecount_wait;
++	if ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) ==
++			OTX2_FLAG_ADPTV_INT_COAL_ENABLED) {
++		cmd->use_adaptive_rx_coalesce = 1;
++		cmd->use_adaptive_tx_coalesce = 1;
++	} else {
++		cmd->use_adaptive_rx_coalesce = 0;
++		cmd->use_adaptive_tx_coalesce = 0;
++	}
+ 
+ 	return 0;
+ }
+@@ -466,11 +474,24 @@ static int otx2_set_coalesce(struct net_device *netdev,
+ {
+ 	struct otx2_nic *pfvf = netdev_priv(netdev);
+ 	struct otx2_hw *hw = &pfvf->hw;
++	u8 priv_coalesce_status;
+ 	int qidx;
+ 
+ 	if (!ec->rx_max_coalesced_frames || !ec->tx_max_coalesced_frames)
+ 		return 0;
+ 
++	/* Check and update coalesce status */
++	if ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) ==
++			OTX2_FLAG_ADPTV_INT_COAL_ENABLED) {
++		priv_coalesce_status = 1;
++		if (!ec->use_adaptive_rx_coalesce || !ec->use_adaptive_tx_coalesce)
++			pfvf->flags &= ~OTX2_FLAG_ADPTV_INT_COAL_ENABLED;
++	} else {
++		priv_coalesce_status = 0;
++		if (ec->use_adaptive_rx_coalesce || ec->use_adaptive_tx_coalesce)
++			pfvf->flags |= OTX2_FLAG_ADPTV_INT_COAL_ENABLED;
++	}
++
+ 	/* 'cq_time_wait' is 8bit and is in multiple of 100ns,
+ 	 * so clamp the user given value to the range of 1 to 25usec.
+ 	 */
+@@ -494,9 +515,9 @@ static int otx2_set_coalesce(struct net_device *netdev,
+ 	 * so clamp the user given value to the range of 1 to 64k.
+ 	 */
+ 	ec->rx_max_coalesced_frames = clamp_t(u32, ec->rx_max_coalesced_frames,
+-					      1, U16_MAX);
++					      1, NAPI_POLL_WEIGHT);
+ 	ec->tx_max_coalesced_frames = clamp_t(u32, ec->tx_max_coalesced_frames,
+-					      1, U16_MAX);
++					      1, NAPI_POLL_WEIGHT);
+ 
+ 	/* Rx and Tx are mapped to same CQ, check which one
+ 	 * is changed, if both then choose the min.
+@@ -509,6 +530,17 @@ static int otx2_set_coalesce(struct net_device *netdev,
+ 		hw->cq_ecount_wait = min_t(u16, ec->rx_max_coalesced_frames,
+ 					   ec->tx_max_coalesced_frames);
+ 
++	/* Reset 'cq_time_wait' and 'cq_ecount_wait' to
++	 * default values if coalesce status changed from
++	 * 'on' to 'off'.
++	 */
++	if (priv_coalesce_status &&
++	    ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) !=
++	     OTX2_FLAG_ADPTV_INT_COAL_ENABLED)) {
++		hw->cq_time_wait = CQ_TIMER_THRESH_DEFAULT;
++		hw->cq_ecount_wait = CQ_CQE_THRESH_DEFAULT;
++	}
++
+ 	if (netif_running(netdev)) {
+ 		for (qidx = 0; qidx < pfvf->hw.cint_cnt; qidx++)
+ 			otx2_config_irq_coalescing(pfvf, qidx);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 53b2706d65a1..a7e919b81a2e 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1254,6 +1254,7 @@ static irqreturn_t otx2_cq_intr_handler(int irq, void *cq_irq)
+ 	otx2_write64(pf, NIX_LF_CINTX_ENA_W1C(qidx), BIT_ULL(0));
+ 
+ 	/* Schedule NAPI */
++	pf->napi_events++;
+ 	napi_schedule_irqoff(&cq_poll->napi);
+ 
+ 	return IRQ_HANDLED;
+@@ -1267,6 +1268,7 @@ static void otx2_disable_napi(struct otx2_nic *pf)
+ 
+ 	for (qidx = 0; qidx < pf->hw.cint_cnt; qidx++) {
+ 		cq_poll = &qset->napi[qidx];
++		cancel_work_sync(&cq_poll->dim.work);
+ 		napi_disable(&cq_poll->napi);
+ 		netif_napi_del(&cq_poll->napi);
+ 	}
+@@ -1546,6 +1548,24 @@ static void otx2_do_set_rx_mode(struct otx2_nic *pf)
+ 	mutex_unlock(&pf->mbox.lock);
+ }
+ 
++static void otx2_dim_work(struct work_struct *w)
++{
++	struct dim_cq_moder cur_moder;
++	struct otx2_cq_poll *cq_poll;
++	struct otx2_nic *pfvf;
++	struct dim *dim;
++
++	dim = container_of(w, struct dim, work);
++	cur_moder = net_dim_get_rx_moderation(dim->mode, dim->profile_ix);
++	cq_poll = container_of(dim, struct otx2_cq_poll, dim);
++	pfvf = (struct otx2_nic *)cq_poll->dev;
++	pfvf->hw.cq_time_wait = (cur_moder.usec > CQ_TIMER_THRESH_MAX) ?
++		CQ_TIMER_THRESH_MAX : cur_moder.usec;
++	pfvf->hw.cq_ecount_wait = (cur_moder.pkts > NAPI_POLL_WEIGHT) ?
++		NAPI_POLL_WEIGHT : cur_moder.pkts;
++	dim->state = DIM_START_MEASURE;
++}
++
+ int otx2_open(struct net_device *netdev)
+ {
+ 	struct otx2_nic *pf = netdev_priv(netdev);
+@@ -1612,6 +1632,8 @@ int otx2_open(struct net_device *netdev)
+ 			cq_poll->cq_ids[CQ_XDP] = CINT_INVALID_CQ;
+ 
+ 		cq_poll->dev = (void *)pf;
++		cq_poll->dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_CQE;
++		INIT_WORK(&cq_poll->dim.work, otx2_dim_work);
+ 		netif_napi_add(netdev, &cq_poll->napi,
+ 			       otx2_napi_handler, NAPI_POLL_WEIGHT);
+ 		napi_enable(&cq_poll->napi);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+index c26de15b2ac3..3cd35a4dfa3c 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
+@@ -484,6 +484,18 @@ static int otx2_tx_napi_handler(struct otx2_nic *pfvf,
+ 	return 0;
+ }
+ 
++static void otx2_adjust_adaptive_coalese(struct otx2_nic *pfvf, struct otx2_cq_poll *cq_poll)
++{
++	struct dim_sample dim_sample;
++	u64 rx_frames, rx_bytes;
++
++	rx_frames = OTX2_GET_RX_STATS(RX_BCAST) + OTX2_GET_RX_STATS(RX_MCAST) +
++		OTX2_GET_RX_STATS(RX_UCAST);
++	rx_bytes = OTX2_GET_RX_STATS(RX_OCTS);
++	dim_update_sample(pfvf->napi_events, rx_frames, rx_bytes, &dim_sample);
++	net_dim(&cq_poll->dim, dim_sample);
++}
++
+ int otx2_napi_handler(struct napi_struct *napi, int budget)
+ {
+ 	struct otx2_cq_queue *rx_cq = NULL;
+@@ -521,9 +533,20 @@ int otx2_napi_handler(struct napi_struct *napi, int budget)
+ 		if (pfvf->flags & OTX2_FLAG_INTF_DOWN)
+ 			return workdone;
+ 
++		/* Check for adaptive interrupt coalesce */
++		if (workdone != 0 &&
++		    ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) ==
++		     OTX2_FLAG_ADPTV_INT_COAL_ENABLED)) {
++			/* Adjust irq coalese using net_dim */
++			otx2_adjust_adaptive_coalese(pfvf, cq_poll);
++			/* Update irq coalescing */
++			for (i = 0; i < pfvf->hw.cint_cnt; i++)
++				otx2_config_irq_coalescing(pfvf, i);
++		}
++
+ 		/* Re-enable interrupts */
+ 		otx2_write64(pfvf, NIX_LF_CINTX_ENA_W1S(cq_poll->cint_idx),
+-			     BIT_ULL(0));
++				BIT_ULL(0));
+ 	}
+ 	return workdone;
+ }
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+index f1a04cf9210c..c88e8a436029 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
+@@ -109,6 +109,7 @@ struct otx2_cq_poll {
+ #define CINT_INVALID_CQ		255
+ 	u8			cint_idx;
+ 	u8			cq_ids[CQS_PER_CINT];
++	struct dim		dim;
+ 	struct napi_struct	napi;
+ };
+ 
 -- 
-2.35.1
+2.25.1
 
