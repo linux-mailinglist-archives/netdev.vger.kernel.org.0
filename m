@@ -2,67 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 406A6524BBB
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 13:34:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 118BA524BED
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 13:43:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353313AbiELLdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 07:33:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60156 "EHLO
+        id S1353394AbiELLnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 07:43:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353267AbiELLd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 07:33:26 -0400
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF4811C15E4
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 04:33:25 -0700 (PDT)
-Received: by mail-lj1-x229.google.com with SMTP id m23so6150436ljc.0
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 04:33:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AuhXnTyXYfvNbLOGsXvQgDXjLOOfx+AfDHJa0gr2Q8A=;
-        b=e/NKJfA0K3TVh2Uqqes8Fg6Z0r2h5rdevnONjrKcIbdfkj32ctf6vWieQiM2iNM0ve
-         jlsoNaxpzQNSTeGfXF1xckXcKIlmKBHG7B/SulZth7jNS0kFG/Pxh9wGjH53ks8fpkAi
-         ePuZRaOVxGFoNjIiGrhuvLNoNL9w6aND2iTpY1lO3SK76sZZmfjJVuqs1RX2HCVN9VCw
-         4ZXSmCNyRtn5/xqrzSvgv8I1wET3wo/vDSgB2F+PRw0jG7/TV9n/zqkaPin4vQ9aL8LK
-         efFxugQHftyB5jB7VyCChE1nUuORIYIeLOQS6v+XH1C8bBjTz+PRvO7yrXgp7hG6ERxJ
-         hgMw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AuhXnTyXYfvNbLOGsXvQgDXjLOOfx+AfDHJa0gr2Q8A=;
-        b=lYy7iKNqPgzavD7Ig5MIyryecZo3bgZv/Lm8iLioFRYvyp1xS3nMEgQMKZ1mSlIUUS
-         Chyxnswn65oelJx8rU9nrxPAdhjTJ9Ec5bVI6NDrjT57DcmTzhxvuH5Qa60/1EJzk3mQ
-         MNRCmQSCmTlA1m9nx1dDiMffgrv7nb0u0Bazp+VRwHRwq5amEZ89EjlRYGosmtKoL++l
-         kkHoCdtecQXHhRx6fg9zths3KuAYSFErqK94xkjMkahnavHpb+s9nGCFOJXkzpFvHzb9
-         UEbNBy/7bOcDY0cqcI9g43pQXVccOyCy7XIl1v7WSiM4B9spN85ret4CrlEzQTEDgMs/
-         De9Q==
-X-Gm-Message-State: AOAM531vvzsjYdx9XDrRMu40fMa7awU06DEwOtUdDC4XJ/nfgDUkjoWO
-        ULrz1Wyu9kT/Cr+4wLYxfAj3Zw==
-X-Google-Smtp-Source: ABdhPJwOHf2aNvhc0cKjwxuR/gjiWUyFUU8LZPUO4MjSQClRg+GqK0Z8piXa6I+W2Y/Uroj3iNEMGw==
-X-Received: by 2002:a2e:9dca:0:b0:24f:2924:9295 with SMTP id x10-20020a2e9dca000000b0024f29249295mr20745904ljj.480.1652355204073;
-        Thu, 12 May 2022 04:33:24 -0700 (PDT)
-Received: from localhost.localdomain (host-188-190-49-235.la.net.ua. [188.190.49.235])
-        by smtp.gmail.com with ESMTPSA id r29-20020ac25a5d000000b0047255d211a6sm741758lfn.213.2022.05.12.04.33.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 04:33:23 -0700 (PDT)
-From:   Andrew Melnychenko <andrew@daynix.com>
-To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mst@redhat.com, jasowang@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-Cc:     yan@daynix.com, yuri.benditovich@daynix.com
-Subject: [RFC PATCH v2 5/5] drivers/net/virtio_net.c: Added USO support.
-Date:   Thu, 12 May 2022 14:23:47 +0300
-Message-Id: <20220512112347.18717-6-andrew@daynix.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220512112347.18717-1-andrew@daynix.com>
-References: <20220512112347.18717-1-andrew@daynix.com>
+        with ESMTP id S1353390AbiELLnS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 07:43:18 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563615C378
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 04:43:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Zvj2IkZhYmgXT2ru/vacYWt4sfIek4C6ZSW1nkKf0iw=; b=QYNGQ4p3/yzkMgpzP+OKPR6m97
+        5xcSE/nw2+eet7YOgeT4Nhk4Sa73LCxxIjPG7irxqPUQwJOd7ZzCWpwC/HA0GZ+VeQkrJfVPsiPHv
+        UU7A8XLPqv03iAqqMKWZN4SyP53E0P9R6tHiTtrIh64O8NnvddSetWAP3lu3Ul4Ebl9A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1np7Dt-002Rbz-6p; Thu, 12 May 2022 13:43:13 +0200
+Date:   Thu, 12 May 2022 13:43:13 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 14/14] net: txgbe: Support sysfs file system
+Message-ID: <Ynzy0ZOJh68nI3dx@lunn.ch>
+References: <20220511032659.641834-1-jiawenwu@trustnetic.com>
+ <20220511032659.641834-15-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511032659.641834-15-jiawenwu@trustnetic.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,76 +46,16 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now, it possible to enable GSO_UDP_L4("tx-udp-segmentation") for VirtioNet.
+On Wed, May 11, 2022 at 11:26:59AM +0800, Jiawen Wu wrote:
+> Add support for sysfs file system.
 
-Signed-off-by: Andrew Melnychenko <andrew@daynix.com>
----
- drivers/net/virtio_net.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+Please always Cc: the hwmon maintainers for hwmon patches.
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index cbba9d2e8f32..17fb8be7e4f7 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -60,13 +60,17 @@ static const unsigned long guest_offloads[] = {
- 	VIRTIO_NET_F_GUEST_TSO6,
- 	VIRTIO_NET_F_GUEST_ECN,
- 	VIRTIO_NET_F_GUEST_UFO,
--	VIRTIO_NET_F_GUEST_CSUM
-+	VIRTIO_NET_F_GUEST_CSUM,
-+	VIRTIO_NET_F_GUEST_USO4,
-+	VIRTIO_NET_F_GUEST_USO6
- };
- 
- #define GUEST_OFFLOAD_GRO_HW_MASK ((1ULL << VIRTIO_NET_F_GUEST_TSO4) | \
- 				(1ULL << VIRTIO_NET_F_GUEST_TSO6) | \
- 				(1ULL << VIRTIO_NET_F_GUEST_ECN)  | \
--				(1ULL << VIRTIO_NET_F_GUEST_UFO))
-+				(1ULL << VIRTIO_NET_F_GUEST_UFO)  | \
-+				(1ULL << VIRTIO_NET_F_GUEST_USO4) | \
-+				(1ULL << VIRTIO_NET_F_GUEST_USO6))
- 
- struct virtnet_stat_desc {
- 	char desc[ETH_GSTRING_LEN];
-@@ -2867,7 +2871,9 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_TSO6) ||
- 	        virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_ECN) ||
- 		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_UFO) ||
--		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM))) {
-+		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_CSUM) ||
-+		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO4) ||
-+		virtio_has_feature(vi->vdev, VIRTIO_NET_F_GUEST_USO6))) {
- 		NL_SET_ERR_MSG_MOD(extack, "Can't set XDP while host is implementing GRO_HW/CSUM, disable GRO_HW/CSUM first");
- 		return -EOPNOTSUPP;
- 	}
-@@ -3507,6 +3513,8 @@ static int virtnet_probe(struct virtio_device *vdev)
- 			dev->hw_features |= NETIF_F_TSO6;
- 		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_ECN))
- 			dev->hw_features |= NETIF_F_TSO_ECN;
-+		if (virtio_has_feature(vdev, VIRTIO_NET_F_HOST_USO))
-+			dev->hw_features |= NETIF_F_GSO_UDP_L4;
- 
- 		dev->features |= NETIF_F_GSO_ROBUST;
- 
-@@ -3552,7 +3560,9 @@ static int virtnet_probe(struct virtio_device *vdev)
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO4) ||
- 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_TSO6) ||
- 	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_ECN) ||
--	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO))
-+	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_UFO) ||
-+	    (virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO4) &&
-+	    virtio_has_feature(vdev, VIRTIO_NET_F_GUEST_USO6)))
- 		vi->big_packets = true;
- 
- 	if (virtio_has_feature(vdev, VIRTIO_NET_F_MRG_RXBUF))
-@@ -3780,6 +3790,7 @@ static struct virtio_device_id id_table[] = {
- 	VIRTIO_NET_F_HOST_TSO4, VIRTIO_NET_F_HOST_UFO, VIRTIO_NET_F_HOST_TSO6, \
- 	VIRTIO_NET_F_HOST_ECN, VIRTIO_NET_F_GUEST_TSO4, VIRTIO_NET_F_GUEST_TSO6, \
- 	VIRTIO_NET_F_GUEST_ECN, VIRTIO_NET_F_GUEST_UFO, \
-+	VIRTIO_NET_F_HOST_USO, VIRTIO_NET_F_GUEST_USO4, VIRTIO_NET_F_GUEST_USO6, \
- 	VIRTIO_NET_F_MRG_RXBUF, VIRTIO_NET_F_STATUS, VIRTIO_NET_F_CTRL_VQ, \
- 	VIRTIO_NET_F_CTRL_RX, VIRTIO_NET_F_CTRL_VLAN, \
- 	VIRTIO_NET_F_GUEST_ANNOUNCE, VIRTIO_NET_F_MQ, \
--- 
-2.35.1
+> +	txgbe_hwmon->device =
+> +			hwmon_device_register(pci_dev_to_dev(adapter->pdev));
 
+I _think_ the preferred interface is
+hwmon_device_register_with_groups() or
+hwmon_device_register_with_info(). The hwmon maintainer will tell you.
+
+	Andrew
