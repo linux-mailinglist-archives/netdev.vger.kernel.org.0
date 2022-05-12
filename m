@@ -2,76 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FB2252483A
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 10:48:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BDB652484B
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 10:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351673AbiELIsD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 04:48:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32806 "EHLO
+        id S1351724AbiELIvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 04:51:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237092AbiELIsC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 04:48:02 -0400
-Received: from relay5-d.mail.gandi.net (relay5-d.mail.gandi.net [217.70.183.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6B55C765;
-        Thu, 12 May 2022 01:47:58 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 26C271C0007;
-        Thu, 12 May 2022 08:47:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652345277;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=MHDErb2Vw0nQ2xCx9+Ah6ILpUdH4/NR5Ddf2E2382Fk=;
-        b=MgoOXadftUHvAdzKcmjzxqnUpzRTOXOZIopJD6Geg9pOcekSVQUTONqiY5IcSUD4CFg1qm
-        q7FuXxRVCzusjZcNjyZWQv71h1PqxKjOruR5u+ZIQK0mQQIOCuwSbhfn/OvfNm8cCEuUzH
-        T4HokJF0eJcnWhH/uWo8HmszoK4/jtZMFJkYirP5prEGVcrVoCzCKiyMI00N8J+bx+7nb7
-        2K8FJ49w1DXjN9o86DFrASXO1F+epwwN0VLw9LrVo9AezcVl0pAg9O+ex3zJ9OVkP4/qgx
-        hkh8CReYrSRfiZTWzYHdYrDFDlsFK/+oRzygdCHXgfAJBwUFg+6MWoty0CAHAg==
-Date:   Thu, 12 May 2022 10:47:53 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        with ESMTP id S1351742AbiELIvT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 04:51:19 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A1356F96;
+        Thu, 12 May 2022 01:51:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
+        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=xx9m5dm8MmD9z6KyI04KVvncdp5gOEhfIk9XzqJfOxg=; b=eRgiK+ggyPqj6IGjUVzf59mDDq
+        XpWwjL7Vau9dZb/Lwy3EXBhz8YWsnZ62iBAo3kpWt03/kIwEeOr/fw48fHnUimA0TGDpB6J0e0F0Y
+        2HTjAmNI2g5ljskIURDyyufHxpJCi6dSKIuH6K+GETZqT/FG/Bp+6ikLtW9SniX5egb4=;
+Received: from p200300daa70ef20035fe11ecec42601a.dip0.t-ipconnect.de ([2003:da:a70e:f200:35fe:11ec:ec42:601a] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1np4XI-0001va-5j; Thu, 12 May 2022 10:51:04 +0200
+Message-ID: <0ef1e0c2-1623-070d-fbf5-e7f09fc199ca@nbd.name>
+Date:   Thu, 12 May 2022 10:51:03 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
+Cc:     Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org,
-        Jean-Pierre Geslin <jean-pierre.geslin@non.se.com>,
-        Phil Edworthy <phil.edworthy@renesas.com>
-Subject: Re: [PATCH net-next v4 06/12] net: dsa: rzn1-a5psw: add Renesas
- RZ/N1 advanced 5 port switch driver
-Message-ID: <20220512104753.075f2120@xps-bootlin>
-In-Reply-To: <20220511093638.kc32n6ldtaqfwupi@skbuf>
-References: <20220509131900.7840-1-clement.leger@bootlin.com>
-        <20220509131900.7840-7-clement.leger@bootlin.com>
-        <20220509160813.stfqb4c2houmfn2g@skbuf>
-        <20220510103458.381aaee2@xps-bootlin>
-        <20220511093638.kc32n6ldtaqfwupi@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220510094014.68440-1-nbd@nbd.name>
+ <20220510123724.i2xqepc56z4eouh2@skbuf>
+ <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
+ <20220510165233.yahsznxxb5yq6rai@skbuf>
+ <bc4bde22-c2d6-1ded-884a-69465b9d1dc7@nbd.name>
+ <20220510222101.od3n7gk3cofwhbks@skbuf>
+ <376b13ac-d90b-24e0-37ed-a96d8e5f80da@nbd.name>
+ <20220511093245.3266lqdze2b4odh5@skbuf> <YnvJFmX+BRscJOtm@lunn.ch>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
+In-Reply-To: <YnvJFmX+BRscJOtm@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -79,24 +70,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Wed, 11 May 2022 12:36:38 +0300,
-Vladimir Oltean <olteanv@gmail.com> a =C3=A9crit :
 
-> On Tue, May 10, 2022 at 10:34:58AM +0200, Cl=C3=A9ment L=C3=A9ger wrote:
-> > > By the way, does this switch pass
-> > > tools/testing/selftests/drivers/net/dsa/no_forwarding.sh? =20
-> >=20
-> > Unfortunately, the board I have only has 2 ports availables and
-> > thus, I can only test one bridge or two separated ports at a
-> > time... I *should* receive a 4 ports one in a near future but that
-> > not yet sure. =20
->=20
-> 2 switch ports or 2 ports in total? h1 and h2 can be non-switch ports
-> (should work with USB-Ethernet adapters etc).
+On 11.05.22 16:32, Andrew Lunn wrote:
+>> Let's see what others have to say. I've been wanting to make the policy
+>> of whether to call __skb_put_padto() standardized for all tagging protocol
+>> drivers (similar to what is done in dsa_realloc_skb() and below it).
+>> We pad for tail taggers, maybe we can always pad and this removes a
+>> conditional, and simplifies taggers. Side note, I already dislike that
+>> the comment in tag_brcm.c is out of sync with the code. It says that
+>> padding up to ETH_ZLEN is necessary, but proceeds to pad up until
+>> ETH_ZLEN + tag len, only to add the tag len once more below via skb_push().
+>> It would be nice if we could use the simple eth_skb_pad().
+> 
+> There are some master devices which will perform padding on their own,
+> in hardware. So for taggers which insert the header at the head,
+> forcing such padding would be a waste of CPU time.
+> 
+> For tail taggers, padding short packets by default does however make
+> sense. The master device is probably going to pad in the wrong way if
+> it does padding.
+I just ran some more tests, here's what I found:
+The switch automatically pads all forwarded packets to 64 bytes.
+When packets are forwarded from one external port to another, the 
+padding is all zero.
+Only when packets are sent from a CPU port to an external port, the last 
+4 bytes contain garbage. The garbage bytes are different for every 
+packet, and I can't tell if it's leaking contents of previous packets or 
+what else is in there.
+Based on that, I'm pretty sure that the hardware simply has a quirk 
+where it does not account for the special tag when generating its own 
+padding internally.
 
-2 switchs ports only but I now have a board with 2 switch ports + 2
-non-switch ports so I'll try that on that new board.
+I found that replacing my __skb_put_padto call with eth_skb_pad also 
+works, so I'm going to send v3 with that and an updated comment.
 
-Cl=C3=A9ment
-
-
+- Felix
