@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9F3E5257EF
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 00:45:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72F21525800
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 00:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359269AbiELWo7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 18:44:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44838 "EHLO
+        id S1359310AbiELWvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 18:51:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244764AbiELWo6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 18:44:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56C95283A06
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 15:44:58 -0700 (PDT)
+        with ESMTP id S1359296AbiELWvl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 18:51:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9859B7092B;
+        Thu, 12 May 2022 15:51:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DBCBE61F5E
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 22:44:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C64BEC385B8;
-        Thu, 12 May 2022 22:44:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 598F3B82910;
+        Thu, 12 May 2022 22:51:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADD30C34113;
+        Thu, 12 May 2022 22:51:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652395497;
-        bh=SJ9KKf3X0A3qSjpOWGQ7rE4nBIiL22fmA+EBVYjNj04=;
+        s=k20201202; t=1652395898;
+        bh=l9FI+xPaIYCA8qXMiCGdIY4O2JO8Tx/QE9A+vCNwMaI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=St1IJgkV3Y1Dpwd5vsBwhEx0BkN3WW1W+vGNpwSU6y7Ke0ljfr6iPX89tin00zOA1
-         EZt1yV8Gr45NA76YwoNlqaoiXU9w3qBBBdwL6nvC4trW4+vVn8VARYhPQ4/KnnPKIs
-         cIEdSn7jyJ9/N/H8tOuiH1XW/ShFihfQp1XPYxIQX9daWfGZBL710blulWv1mT/BQc
-         bcy7N8RqiUHf8hi3M99YU2/WsLLVRJeR3k6euwBtKVH5NPEp+6NyTgF+3O0TSaQP7f
-         s6eG4G3GSCopHsOMqWcM/Wm1VIJy602SWGnl+LcsZhP69PNSC1rdKbyEZ362njBlQg
-         TDehYCKqaJTig==
-Date:   Thu, 12 May 2022 15:44:55 -0700
+        b=bKdcoXdlVkkR807/3DKbIpUXM0kRj7bK/6xqRTYNYrKtZtY66CPaQZnCZElkKD3D0
+         xsqMpqxVorjEG3ouvDe+jzVleXiRYq8a+N2iXdxk7jUPwv1aL2BQJkWtg7vkmvlgNU
+         vBGFaYNZrVODJWagbw/PvBUrCd31PdADHUJjKwIiLA9z424EjV7LwHgJi8aVUGemP6
+         DcQNq69erTsz5h3KQiqAfirCAkbMa1Gyr/wxTod2SjRBK39JKOBRROea959Hdg8YGL
+         0TSR2vblyQAwIvvHyoQ8tQSRF27rvvtPJVkAQz3X15PX91a8ixQgIvfPXJ3ETcnhf/
+         Z+IttVBhP7ruQ==
+Date:   Thu, 12 May 2022 15:51:36 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Michael Walle <michael@walle.cc>
-Cc:     alexandru.ardelean@analog.com, alvaro.karsz@solid-run.com,
-        davem@davemloft.net, edumazet@google.com, josua@solid-run.com,
-        krzysztof.kozlowski+dt@linaro.org, michael.hennerich@analog.com,
-        netdev@vger.kernel.org, pabeni@redhat.com, robh+dt@kernel.org
-Subject: Re: [PATCH v4 1/3] dt-bindings: net: adin: document phy clock
-Message-ID: <20220512154455.31515ead@kernel.org>
-In-Reply-To: <bfe71846f940be3c410ae987569ddfbf@walle.cc>
-References: <20220510133928.6a0710dd@kernel.org>
-        <20220511125855.3708961-1-michael@walle.cc>
-        <20220511091136.34dade9b@kernel.org>
-        <c457047dd2af8fc0db69d815db981d61@walle.cc>
-        <20220511124241.7880ef52@kernel.org>
-        <bfe71846f940be3c410ae987569ddfbf@walle.cc>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     syzbot <syzbot+8ed8fc4c57e9dcf23ca6@syzkaller.appspotmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Subject: Re: [syzbot] UBSAN: shift-out-of-bounds in tcf_pedit_init
+Message-ID: <20220512155136.70554388@kernel.org>
+In-Reply-To: <CANn89i+XHh1An6fDA0CH1Fb2k_-G8_CCzEmXGKqB4tRAMH9s4w@mail.gmail.com>
+References: <0000000000005f1a8805ded719cc@google.com>
+        <CANn89i+XHh1An6fDA0CH1Fb2k_-G8_CCzEmXGKqB4tRAMH9s4w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,18 +60,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 May 2022 23:20:18 +0200 Michael Walle wrote:
-> > It's pure speculation on my side. I don't even know if PHYs use
-> > the recovered clock to clock its output towards the MAC or that's
-> > a different clock domain.
-> > 
-> > My concern is that people will start to use DT to configure SyncE which
-> > is entirely a runtime-controllable thing, and doesn't belong. Hence
-> > my preference to hide the recovered vs free-running detail if we can
-> > pick one that makes most sense for now.  
+On Thu, 12 May 2022 14:19:51 -0700 Eric Dumazet wrote:
+> On Thu, May 12, 2022 at 2:18 PM syzbot
+> > This report is generated by a bot. It may contain errors.
+> > See https://goo.gl/tpsmEJ for more information about syzbot.
+> > syzbot engineers can be reached at syzkaller@googlegroups.com.
+> >
+> > syzbot will keep track of this issue. See:
+> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> > syzbot can test patches for this issue, for details see:
+> > https://goo.gl/tpsmEJ#testing-patches  
 > 
-> I see. That makes sense, but then wouldn't it make more sense to pick
-> the (simple) free-running one? As for SyncE you'd need the recovered
-> clock.
+> As mentioned earlier, this came with
+> 
+> commit 8b796475fd7882663a870456466a4fb315cc1bd6
+> Author: Paolo Abeni <pabeni@redhat.com>
+> Date:   Tue May 10 16:57:34 2022 +0200
+> 
+>     net/sched: act_pedit: really ensure the skb is writable
 
-Sounds good.
+Came in as in new stack trace for an old/existing bug, right?
+Nothing checks the shift so it'd have already tripped UBSAN 
+later on in tcf_pedit_act(), anyway.
