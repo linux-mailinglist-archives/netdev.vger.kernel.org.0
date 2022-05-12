@@ -2,90 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AC44652423F
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 03:58:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DDFF524254
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 04:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234413AbiELB6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 21:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
+        id S237117AbiELCIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 22:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234018AbiELB6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 21:58:38 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB702393DE;
-        Wed, 11 May 2022 18:58:36 -0700 (PDT)
-Received: from kwepemi500018.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KzFJx1NKNz1JBmt;
-        Thu, 12 May 2022 09:57:21 +0800 (CST)
-Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
- kwepemi500018.china.huawei.com (7.221.188.213) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 12 May 2022 09:58:34 +0800
-Received: from [10.174.176.245] (10.174.176.245) by
- kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 12 May 2022 09:58:33 +0800
-Message-ID: <f7a73d6e-b5aa-269f-2251-4148bb35d655@huawei.com>
-Date:   Thu, 12 May 2022 09:58:32 +0800
+        with ESMTP id S234973AbiELCIA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 22:08:00 -0400
+Received: from outgoing.mit.edu (outgoing-auth-1.mit.edu [18.9.28.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC476D38C;
+        Wed, 11 May 2022 19:07:58 -0700 (PDT)
+Received: from cwcc.thunk.org (pool-108-7-220-252.bstnma.fios.verizon.net [108.7.220.252])
+        (authenticated bits=0)
+        (User authenticated as tytso@ATHENA.MIT.EDU)
+        by outgoing.mit.edu (8.14.7/8.12.4) with ESMTP id 24C27abX015835
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 22:07:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mit.edu; s=outgoing;
+        t=1652321259; bh=N0RrHZICQeD+jMKffmiVOPCX1VOHVXkmF2unBxL2MJo=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=ICSnAYgUceKKXsBKoRVPVEIQKsCW0KTrDhONUN31qeHKplZYIzPxqs8r+P+6YnX6x
+         abGDraN6I6t1+6cpTxV+pX/G3fEwMzr4yTmbUKBr0T0taRo1DJimXKf5Gg79Ohpl3X
+         JpMubQ0WlA6eF0LKDzQNgnOqe3puzHfHVqCXvtBW3+YG7uyHfHolbIovUtrn+rdOwy
+         JRr9Qa2HfVEUQ+aQ+EAp9AyaK7SPZhtHVsCbScLn15PNFhEYvE1xXltNl0sfjvJCFF
+         uoPI6+2MP/NnYrl1D9pLkyRIkK7Nn5W9/l5pldeyIP7y4GsgumtbbEERrnA1b/cRhh
+         9OGVUNr2s3ldg==
+Received: by cwcc.thunk.org (Postfix, from userid 15806)
+        id 0BBB915C3F2A; Wed, 11 May 2022 22:07:36 -0400 (EDT)
+Date:   Wed, 11 May 2022 22:07:36 -0400
+From:   "Theodore Ts'o" <tytso@mit.edu>
+To:     Konstantin Ryabitsev <konstantin@linuxfoundation.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Nathan Chancellor <nathan@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mie@igel.co.jp
+Subject: Re: [GIT PULL] virtio: last minute fixup
+Message-ID: <Ynxr6JNczWFTwxVw@mit.edu>
+References: <20220510082351-mutt-send-email-mst@kernel.org>
+ <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
+ <YnrxTMVRtDnGA/EK@dev-arch.thelio-3990X>
+ <CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com>
+ <20220511125140.ormw47yluv4btiey@meerkat.local>
+ <87a6bo89w4.fsf@mpe.ellerman.id.au>
+ <20220511163116.fpw2lvrkjbxmiesz@meerkat.local>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH 0/3] Refix the socket leak in xs_setup_local()
-To:     Trond Myklebust <trondmy@hammerspace.com>,
-        "bfields@fieldses.org" <bfields@fieldses.org>,
-        "anna@kernel.org" <anna@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
-        "kuba@kernel.org" <kuba@kernel.org>
-CC:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20220511132232.4030-1-wanghai38@huawei.com>
- <2125358c4fbdcf2e9f84017a2f6b27830ffcb8f2.camel@hammerspace.com>
-From:   "wanghai (M)" <wanghai38@huawei.com>
-In-Reply-To: <2125358c4fbdcf2e9f84017a2f6b27830ffcb8f2.camel@hammerspace.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.176.245]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600001.china.huawei.com (7.193.23.3)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511163116.fpw2lvrkjbxmiesz@meerkat.local>
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, May 11, 2022 at 12:31:16PM -0400, Konstantin Ryabitsev wrote:
+> > But my mailer, editor and terminal don't know what to do with a Message-Id.
+> > 
+> > Whereas they can all open an https link.
+> > 
+> > Making people paste message ids into lore to see the original submission
+> > is not a win. People make enough fun of us already for still using email
+> > to submit patches, let's not make their job any easier :)
+> 
+> Okay, I'm fine with using a dedicated trailer for this purpose, perhaps an
+> "Archived-At"? That's a real header that was proposed by IETF for similar
+> purposes. E.g.:
+> 
+>     Archived-at: https://lore.kernel.org/r/CAHk-=wgAk3NEJ2PHtb0jXzCUOGytiHLq=rzjkFKfpiuH-SROgA@mail.gmail.com
+>
 
-在 2022/5/12 0:14, Trond Myklebust 写道:
-> On Wed, 2022-05-11 at 21:22 +0800, Wang Hai wrote:
->> Patch1 and patch2 roll back the wrong solution to fix socket leaks.
->>
->> Patch3 adds safe teardown mechanism to re-fix socket leaks.
->>
->> Wang Hai (3):
->>    Revert "SUNRPC: Ensure gss-proxy connects on setup"
->>    Revert "Revert "SUNRPC: attempt AF_LOCAL connect on setup""
->>    SUNRPC: Fix local socket leak in xs_setup_local()
->>
->>   include/linux/sunrpc/clnt.h          |  1 -
->>   net/sunrpc/auth_gss/gss_rpc_upcall.c |  2 +-
->>   net/sunrpc/clnt.c                    |  3 ---
->>   net/sunrpc/xprtsock.c                | 19 ++++++++++++++++++-
->>   4 files changed, 19 insertions(+), 6 deletions(-)
->>
-> Thanks, but there is already a fix for this queued up in the linux-next
-> branch.
-Thanks, sorry to bother you, I found it.
+I'd suggest is "Patch-Link".  Then we can also have "Bug-Link:",
+"Test-Link:", etc.
 
-I only subscribed to the linux-kernel@vger.kernel.org mailing list,
-not the linux-nfs@vger.kernel.org mailing list separately. So I
-didn't notice it was fixed.
+"Patch-Link" is a tad bit shorter "Archived-at", and ultimately, it's
+not actually not the patch which is being archived.  It's the fact
+that it's a pointer to the patch review which is of most interest.
 
--- 
-Wang Hai
-
+					- Ted
