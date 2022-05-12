@@ -2,143 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08FFD524EAC
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 15:48:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65C97524EE8
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 15:56:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354636AbiELNsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 09:48:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49312 "EHLO
+        id S1354761AbiELN40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 09:56:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354631AbiELNsg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 09:48:36 -0400
-Received: from mail.toke.dk (mail.toke.dk [45.145.95.4])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE310644D3;
-        Thu, 12 May 2022 06:48:31 -0700 (PDT)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=toke.dk; s=20161023;
-        t=1652363309; bh=blX63fNBGtPLVWob9X9ETslO5YPtKIw3mZLNDG9ks5o=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=hiHqRnVtYx6ket6hb/L9fydLguY2ye051mhuoiXDA5jDZFBfKkkJ1KeAoonLIjgCH
-         WTj4ARFuwPxQhjuHT/+6cwgbtQK0/oLt0Pav9QO4DzESWOOLir93VPSQKQm2wkrrcX
-         hMPCtLTOfWNeRe4F+wUoE6NEPGJdHIAvgzyh/ldeUivozBfMmt1rjATTBWWvMpiqC3
-         BGPwUWvOjKW4r9f9+Yq3xDpJDTN+r/KAttVWMAaT4EIL+6IL/KP0/GMqvSWPYUgJia
-         jIl3k+snTsfi4XPG7jMj6GyADw0GFACFO51PoeJK8A07kykVrMdzhYLqx06udRGz4R
-         Xu1ZUqg8PbXiw==
-To:     Pavel Skripkin <paskripkin@gmail.com>,
-        ath9k-devel@qca.qualcomm.com, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+03110230a11411024147@syzkaller.appspotmail.com,
-        syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotmail.com
-Subject: Re: [PATCH v3 1/2] ath9k: fix use-after-free in ath9k_hif_usb_rx_cb
-In-Reply-To: <246ba9d2-2afd-c6c0-9cc2-9e5598407c70@gmail.com>
-References: <80962aae265995d1cdb724f5362c556d494c7566.1644265120.git.paskripkin@gmail.com>
- <87r14yhq4q.fsf@toke.dk> <246ba9d2-2afd-c6c0-9cc2-9e5598407c70@gmail.com>
-Date:   Thu, 12 May 2022 15:48:29 +0200
-X-Clacks-Overhead: GNU Terry Pratchett
-Message-ID: <87ilqahnf6.fsf@toke.dk>
+        with ESMTP id S1352058AbiELN4B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 09:56:01 -0400
+Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4627026AE1
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 06:55:57 -0700 (PDT)
+Received: from [192.168.0.7] (ip5f5aeace.dynamic.kabel-deutschland.de [95.90.234.206])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 4ECAF61EA1923;
+        Thu, 12 May 2022 15:55:54 +0200 (CEST)
+Message-ID: <d50b23b1-38b5-2522-cbf4-c360c0ed05cd@molgen.mpg.de>
+Date:   Thu, 12 May 2022 15:55:53 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [Intel-wired-lan] [PATCH v2 2/2] igb_main: Assign random MAC
+ address instead of fail in case of invalid one
+Content-Language: en-US
+To:     lixue liang <lianglixue@greatwall.com.cn>
+References: <20220512093918.86084-1-lianglixue@greatwall.com.cn>
+Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
+        kuba@kernel.org, intel-wired-lan@lists.osuosl.org,
+        netdev@vger.kernel.org
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+In-Reply-To: <20220512093918.86084-1-lianglixue@greatwall.com.cn>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pavel Skripkin <paskripkin@gmail.com> writes:
+Dear Lixue,
 
-> Hi Toke,
->
-> On 5/12/22 15:49, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Pavel Skripkin <paskripkin@gmail.com> writes:
->>=20
->>> Syzbot reported use-after-free Read in ath9k_hif_usb_rx_cb(). The
->>> problem was in incorrect htc_handle->drv_priv initialization.
->>>
->>> Probable call trace which can trigger use-after-free:
->>>
->>> ath9k_htc_probe_device()
->>>   /* htc_handle->drv_priv =3D priv; */
->>>   ath9k_htc_wait_for_target()      <--- Failed
->>>   ieee80211_free_hw()		   <--- priv pointer is freed
->>>
->>> <IRQ>
->>> ...
->>> ath9k_hif_usb_rx_cb()
->>>   ath9k_hif_usb_rx_stream()
->>>    RX_STAT_INC()		<--- htc_handle->drv_priv access
->>>
->>> In order to not add fancy protection for drv_priv we can move
->>> htc_handle->drv_priv initialization at the end of the
->>> ath9k_htc_probe_device() and add helper macro to make
->>> all *_STAT_* macros NULL save.
->>>
->>> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
->>> Reported-and-tested-by: syzbot+03110230a11411024147@syzkaller.appspotma=
-il.com
->>> Reported-and-tested-by: syzbot+c6dde1f690b60e0b9fbe@syzkaller.appspotma=
-il.com
->>> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
->>=20
->> Could you link the original syzbot report in the commit message as well,
->
-> Sure! See links below
->
-> use-after-free bug:
-> https://syzkaller.appspot.com/bug?id=3D6ead44e37afb6866ac0c7dd121b4ce07cb=
-665f60
->
-> NULL deref bug:
-> https://syzkaller.appspot.com/bug?id=3Db8101ffcec107c0567a0cd8acbbacec91e=
-9ee8de
->
-> I can add them in commit message if you want :)
 
-Yes, please do!
+Thank you for sending version 2. Some more minor nits.
 
->> please? Also that 'tested-by' implies that syzbot run-tested this? How
->> does it do that; does it have ath9k_htc hardware?
->>=20
->
-> No, it uses CONFIG_USB_RAW_GADGET and CONFIG_USB_DUMMY_HCD for gadgets=20
-> for emulating usb devices.
->
-> Basically these things "connect" fake USB device with random usb ids=20
-> from hardcoded table and try to do various things with usb driver
+Am 12.05.22 um 11:39 schrieb lixue liang:
+> In some cases, when the user uses igb_set_eeprom to modify the MAC
+> address to be invalid, the igb driver will fail to load. If there is no
+> network card device, the user must modify it to a valid MAC address by
+> other means.
+> 
+> Since the MAC address can be modified ,then add a random valid MAC address
+> to replace the invalid MAC address in the driver can be workable, it can
+> continue to finish the loading ,and output the relevant log reminder.
 
-Ah, right, hence the failures I suppose? Makes sense.
+Please add the space after the comma.
 
-> [snip]
->
->>> -#define TX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.tx_stats.=
-c++)
->>> -#define TX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.tx_sta=
-ts.c +=3D a)
->>> -#define RX_STAT_INC(c) (hif_dev->htc_handle->drv_priv->debug.skbrx_sta=
-ts.c++)
->>> -#define RX_STAT_ADD(c, a) (hif_dev->htc_handle->drv_priv->debug.skbrx_=
-stats.c +=3D a)
->>> +#define __STAT_SAVE(expr) (hif_dev->htc_handle->drv_priv ? (expr) : 0)
->>> +#define TX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debu=
-g.tx_stats.c++)
->>> +#define TX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->d=
-ebug.tx_stats.c +=3D a)
->>> +#define RX_STAT_INC(c) __STAT_SAVE(hif_dev->htc_handle->drv_priv->debu=
-g.skbrx_stats.c++)
->>> +#define RX_STAT_ADD(c, a) __STAT_SAVE(hif_dev->htc_handle->drv_priv->d=
-ebug.skbrx_stats.c +=3D a)
->>>  #define CAB_STAT_INC   priv->debug.tx_stats.cab_queued++
->>=20
->> s/SAVE/SAFE/ here and in the next patch (and the commit message).
->>=20
->
-> Oh, sorry about that! Will update in next version
+> Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks! Other than that, I think the patch looks reasonable...
+This line is confusing. Maybe add that to the version change-log below 
+the `---`.
 
--Toke
+> Signed-off-by: lixue liang <lianglixue@greatwall.com.cn>
+> ---
+>   drivers/net/ethernet/intel/igb/igb_main.c | 8 ++++----
+>   1 file changed, 4 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+> index a513570c2ad6..746233befade 100644
+> --- a/drivers/net/ethernet/intel/igb/igb_main.c
+> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
+> @@ -3359,10 +3359,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>   	eth_hw_addr_set(netdev, hw->mac.addr);
+>   
+>   	if (!is_valid_ether_addr(netdev->dev_addr)) {
+> -		eth_random_addr(netdev->dev_addr);
+> -		memcpy(hw->mac.addr, netdev->dev_addr, netdev->addr_len);
+> -		dev_info(&pdev->dev,
+> -			 "Invalid Mac Address, already got random Mac Address\n");
+> +		eth_hw_addr_random(netdev);
+> +		ether_addr_copy(hw->mac.addr, netdev->dev_addr);
+> +		dev_err(&pdev->dev,
+> +			"Invalid MAC Address, already assigned random MAC Address\n");
+
+Please spell it MAC address.
+
+>   	}
+>   
+>   	igb_set_default_mac_filter(adapter);
+
+
+Kind regards,
+
+Paul
