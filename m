@@ -2,60 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC570525180
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 17:45:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D5D0525196
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 17:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244212AbiELPp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 11:45:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47820 "EHLO
+        id S1348964AbiELPtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 11:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355771AbiELPpY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 11:45:24 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD1C264734;
-        Thu, 12 May 2022 08:45:23 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23C6D61F0A;
-        Thu, 12 May 2022 15:45:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0C54C385B8;
-        Thu, 12 May 2022 15:45:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652370322;
-        bh=DD2xdLhXWSgHygwViWrC+JPg+DvdP1KdqEAZISrgsLE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=E8fLQzpQszdxSpiGQ65QWq7DvwYlrfrN47FGDOwRSWFRCpif0/oQv3+gCXv+DvGJm
-         EBmLeUXRee/dc3a/he7JT/2pfQYXgOqFwKLF19OsVLLcThSKuXz9XMWbjvqTJIkD2x
-         ZLJZjt18/H342ovoSBtczpldKaMPL/SyAFhq7eoNcvL0+TebKMar7wdG9l24vRtXLm
-         kI/wd7HW5xHeusx2PaUCMnV6wdt9vVpxKjTZ234Ahv+UtsdXdY/7fCpgChEWR1hE9S
-         EFkTI8sM9+Qg+zBnruAucNiukrziCEPWGO2zZRVtQhkJDCV6LOkPOmbIHO7gzqFiqt
-         E1Cm2XFMayXhQ==
-Date:   Thu, 12 May 2022 08:45:20 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Harini Katakam <harinik@xilinx.com>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        David Miller <davem@davemloft.net>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        dumazet@google.com, Paolo Abeni <pabeni@redhat.com>,
+        with ESMTP id S1346355AbiELPti (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 11:49:38 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1D85E52B4
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 08:49:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652370576; x=1683906576;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=56NGd/S3wyd8nrG+XjJF8hnfs1wOWj6NGs9wjgCkwIo=;
+  b=JVjCp8kjkifZYMXFrxY8vLNaibSqAjm5rCI8ZV76IGaX7zRt6PlzOSFS
+   0wRzcNX5qhLQWhc1bkaN71AFG1JPJOB8wYtCnty/8+toJl2tzlNV2Fduu
+   oc8lBlI1qr0ycp23mdPwZsH3WqWVhy9bew9HOJRchPHsaWZbNTYx6TQGP
+   A7Z7eZZnK0XY8O8VzRqTcLUE07n7U4PyMOG9b3etuKLG4/3aHxNFeZ2Uw
+   w/nQevbXnYrEF2AiiRpFTkyhI2XDc8Vk2LwS7RlEFCdniNwMHOliMPBEi
+   KEkU/Y++eee+4EvQcGmmywAzNfMcSV0tdn9b8Hu/hCPTZqZcD0l2B4sVt
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="249935588"
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="249935588"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 08:49:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
+   d="scan'208";a="553818982"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 12 May 2022 08:49:34 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1npB4H-000KdU-8I;
+        Thu, 12 May 2022 15:49:33 +0000
+Date:   Thu, 12 May 2022 23:48:49 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Subject: Re: [PATCH v2] net: macb: Disable macb pad and fcs for fragmented
- packets
-Message-ID: <20220512084520.0cdb9dd1@kernel.org>
-In-Reply-To: <CAFcVECK2gARjppHjALg4w2v94FPgo6BvqNrZvCY-4x_mJbh7oQ@mail.gmail.com>
-References: <20220510162809.5511-1-harini.katakam@xilinx.com>
-        <20220511154024.5e231704@kernel.org>
-        <CAFcVECK2gARjppHjALg4w2v94FPgo6BvqNrZvCY-4x_mJbh7oQ@mail.gmail.com>
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 09/10] ipv6: add READ_ONCE(sk->sk_bound_dev_if)
+ in INET6_MATCH()
+Message-ID: <202205122338.qp5zlcyC-lkp@intel.com>
+References: <20220511233757.2001218-10-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511233757.2001218-10-eric.dumazet@gmail.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,49 +68,137 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 12 May 2022 12:26:15 +0530 Harini Katakam wrote:
-> On Thu, May 12, 2022 at 4:10 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> > On Tue, 10 May 2022 21:58:09 +0530 Harini Katakam wrote:  
-> > > data_len in skbuff represents bytes resident in fragment lists or
-> > > unmapped page buffers. For such packets, when data_len is non-zero,
-> > > skb_put cannot be used - this will throw a kernel bug. Hence do not
-> > > use macb_pad_and_fcs for such fragments.
-> > >
-> > > Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
-> > > Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-> > > Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-> > > Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> > > Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>  
-> >
-> > I'm confused. When do we *have to* compute the FCS?
-> >
-> > This commit seems to indicate that we can't put the FCS so it's okay to
-> > ask the HW to do it. But that's backwards. We should ask the HW to
-> > compute the FCS whenever possible, to save the CPU cycles.
-> >
-> > Is there an unstated HW limitation here?  
-> 
-> Thanks for the review. The top level summary is that there CSUM
-> offload is enabled by
-> via NETIF_F_HW_CSUM (and universally in IP registers) and then
-> selectively disabled for
-> certain packets (using NOCRC bit in buffer descriptors) where the
-> application intentionally
-> performs CSUM and HW should not replace it, for ex. forwarding usecases.
-> I'm modifying this list of exceptions with this patch.
-> 
-> This was due to HW limitation (see
-> https://www.spinics.net/lists/netdev/msg505065.html).
-> Further to this, Claudiu added macb_pad_and_fcs support. Please see
-> comment starting
-> with "It was reported in" below:
-> https://lists.openwall.net/netdev/2018/10/30/76
-> 
-> Hope this helps.
-> I'll fix the nit and send another version.
+Hi Eric,
 
-So the NOCRC bit controls both ethernet and transport protocol
-checksums? The CRC in the name is a little confusing.
+I love your patch! Yet something to improve:
 
-Are you sure commit 403dc16796f5 ("cadence: force nonlinear buffers to
-be cloned") does not fix the case you're trying to address?
+[auto build test ERROR on net-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-add-annotations-for-sk-sk_bound_dev_if/20220512-073914
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b57c7e8b76c646cf77ce4353a779a8b781592209
+config: riscv-randconfig-r032-20220512 (https://download.01.org/0day-ci/archive/20220512/202205122338.qp5zlcyC-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/ba3ce839eb3de33511aa07e29cabb8e7ed4e0cf0
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Eric-Dumazet/net-add-annotations-for-sk-sk_bound_dev_if/20220512-073914
+        git checkout ba3ce839eb3de33511aa07e29cabb8e7ed4e0cf0
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash net/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from net/core/filter.c:26:
+   In file included from include/linux/sock_diag.h:5:
+   In file included from include/linux/netlink.h:7:
+   In file included from include/linux/skbuff.h:17:
+   In file included from include/linux/bvec.h:10:
+   In file included from include/linux/highmem.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:37:51: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) ((__force __u16)(__le16)(x))
+                                                     ^
+   In file included from net/core/filter.c:26:
+   In file included from include/linux/sock_diag.h:5:
+   In file included from include/linux/netlink.h:7:
+   In file included from include/linux/skbuff.h:17:
+   In file included from include/linux/bvec.h:10:
+   In file included from include/linux/highmem.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/little_endian.h:35:51: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) ((__force __u32)(__le32)(x))
+                                                     ^
+   In file included from net/core/filter.c:26:
+   In file included from include/linux/sock_diag.h:5:
+   In file included from include/linux/netlink.h:7:
+   In file included from include/linux/skbuff.h:17:
+   In file included from include/linux/bvec.h:10:
+   In file included from include/linux/highmem.h:11:
+   In file included from include/linux/hardirq.h:11:
+   In file included from ./arch/riscv/include/generated/asm/hardirq.h:1:
+   In file included from include/asm-generic/hardirq.h:17:
+   In file included from include/linux/irq.h:20:
+   In file included from include/linux/io.h:13:
+   In file included from arch/riscv/include/asm/io.h:136:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:1024:55: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           return (port > MMIO_UPPER_LIMIT) ? NULL : PCI_IOBASE + port;
+                                                     ~~~~~~~~~~ ^
+   In file included from net/core/filter.c:64:
+>> include/net/inet6_hashtables.h:119:28: error: no member named 'skc_v6_daddr' in 'struct sock_common'; did you mean 'skc_daddr'?
+               !ipv6_addr_equal(&sk->sk_v6_daddr, saddr) ||
+                                     ^
+   include/net/sock.h:388:34: note: expanded from macro 'sk_v6_daddr'
+   #define sk_v6_daddr             __sk_common.skc_v6_daddr
+                                               ^
+   include/net/sock.h:170:11: note: 'skc_daddr' declared here
+                           __be32  skc_daddr;
+                                   ^
+   In file included from net/core/filter.c:64:
+>> include/net/inet6_hashtables.h:120:28: error: no member named 'skc_v6_rcv_saddr' in 'struct sock_common'; did you mean 'skc_rcv_saddr'?
+               !ipv6_addr_equal(&sk->sk_v6_rcv_saddr, daddr))
+                                     ^
+   include/net/sock.h:389:37: note: expanded from macro 'sk_v6_rcv_saddr'
+   #define sk_v6_rcv_saddr __sk_common.skc_v6_rcv_saddr
+                                       ^
+   include/net/sock.h:171:11: note: 'skc_rcv_saddr' declared here
+                           __be32  skc_rcv_saddr;
+                                   ^
+   7 warnings and 2 errors generated.
+
+
+vim +119 include/net/inet6_hashtables.h
+
+   107	
+   108	static inline bool INET6_MATCH(const struct sock *sk, struct net *net,
+   109				       const struct in6_addr *saddr,
+   110				       const struct in6_addr *daddr,
+   111				       const __portpair ports,
+   112				       const int dif, const int sdif)
+   113	{
+   114		int bound_dev_if;
+   115	
+   116		if (!net_eq(sock_net(sk), net) ||
+   117		    sk->sk_family != AF_INET6 ||
+   118		    sk->sk_portpair != ports ||
+ > 119		    !ipv6_addr_equal(&sk->sk_v6_daddr, saddr) ||
+ > 120		    !ipv6_addr_equal(&sk->sk_v6_rcv_saddr, daddr))
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
