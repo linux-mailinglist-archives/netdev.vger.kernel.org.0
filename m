@@ -2,38 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C81F352431B
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 05:13:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D4AD52431D
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 05:13:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245187AbiELDMP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 23:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34360 "EHLO
+        id S245308AbiELDMU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 23:12:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245064AbiELDMK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 23:12:10 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF016A060;
-        Wed, 11 May 2022 20:12:08 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guangguan.wang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VCysWCI_1652325125;
-Received: from localhost.localdomain(mailfrom:guangguan.wang@linux.alibaba.com fp:SMTPD_---0VCysWCI_1652325125)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Thu, 12 May 2022 11:12:06 +0800
-From:   Guangguan Wang <guangguan.wang@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, tonylu@linux.alibaba.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 2/2] net/smc: align the connect behaviour with TCP
-Date:   Thu, 12 May 2022 11:11:56 +0800
-Message-Id: <20220512031156.74054-3-guangguan.wang@linux.alibaba.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-In-Reply-To: <20220512031156.74054-1-guangguan.wang@linux.alibaba.com>
-References: <20220512031156.74054-1-guangguan.wang@linux.alibaba.com>
+        with ESMTP id S229940AbiELDMQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 23:12:16 -0400
+Received: from JPN01-TYC-obe.outbound.protection.outlook.com (mail-tycjpn01on2094.outbound.protection.outlook.com [40.107.114.94])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E75A6A060;
+        Wed, 11 May 2022 20:12:15 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YE3l+ZXXk/IZwUVKN+A5dXx1d3wDGzYbMtksEYjh5fzyHtZ6JZkKQhBQuoBGvPdvT52BCi6FMlr3kkV6ijbgzeDavbeci1DyQeqt3macqj3btYid3XPPqWhG69I8KqMGIdiXnvgCXkLpREFjCJx5mEts8WmY8EBfK3RJr3o9yt72kPtLFgtd9y6Kcyjx6jfNhH+f2a5tmtppY1w5XaGnyukLfAk7Q0Q/pKpzt6hgA2/Us/ApYZ/SQeLWmRItnekESh+bYoKA0hvo98wtCg+5j6zdN1uVKt3RN4NvqdQKM9XgGw4Q2jLoglogmIH7gT6e0QzzyhSI/F/xaeTExrEJRQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+voINXgt9rpBiFV2kPnG8rpwbCNsm33jn6gsuEyVX2Y=;
+ b=Li+e75FaLvAGoeuLm3KCN7VZivUJ7Ga4IIFqo+UPQ0YX0q97g+EWWDYH4iziqMtG3EK1yNEnbemqr3R0xL+AZ9eoLEun0XF6qOQdoGiXdHw9QzqvZXzT5PPJwKVOxA/atAiG2sG4om9HYzjaSkVnTdomzv5SItdusa8T5LXF7KaQT8ItMJKaJuFhXJ8KiFAOKHtMNiWEKj43hgrMAoxvGZd7nEv+wGFaJ/gCJpqwHjQik+S0S5DjteoAQlALGrqAcmiDhrfIMA/+fcGrz3dFfCkqmGH3UBNKs+S5u63B8YQX7T75//XxYsit52KNAvNT29/WQvhodZV8HzCxNxrWdA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+voINXgt9rpBiFV2kPnG8rpwbCNsm33jn6gsuEyVX2Y=;
+ b=OkcigOuJ1Q9ZxTxDv53l3CCNjP02DaxafmRcvdg6uUEyrVWOmoKyAMMTvr/3jz3fb9qSI5bdtg5Rvdq09V9DfmycryIvrVyhrlryL/AY3ql04jYaxG/oG7ZjMjeftViZC0s717m4/VPkRIgI6n8VVHHpXOjxJ/nAH0yEUfw+UzA=
+Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com (2603:1096:604:101::7)
+ by OS3PR01MB9606.jpnprd01.prod.outlook.com (2603:1096:604:1c8::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Thu, 12 May
+ 2022 03:12:13 +0000
+Received: from OS3PR01MB6593.jpnprd01.prod.outlook.com
+ ([fe80::a07c:4b38:65f3:6663]) by OS3PR01MB6593.jpnprd01.prod.outlook.com
+ ([fe80::a07c:4b38:65f3:6663%9]) with mapi id 15.20.5250.014; Thu, 12 May 2022
+ 03:12:13 +0000
+From:   Min Li <min.li.xe@renesas.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "lee.jones@linaro.org" <lee.jones@linaro.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net v5 3/3] ptp: clockmatrix: miscellaneous cosmetic
+ change
+Thread-Topic: [PATCH net v5 3/3] ptp: clockmatrix: miscellaneous cosmetic
+ change
+Thread-Index: AQHYZUL8ldsZ7eBi5U+Dt1LHv3Avg60aZmgAgAAq2yA=
+Date:   Thu, 12 May 2022 03:12:13 +0000
+Message-ID: <OS3PR01MB659312F189453925868225B2BACB9@OS3PR01MB6593.jpnprd01.prod.outlook.com>
+References: <1652279114-25939-1-git-send-email-min.li.xe@renesas.com>
+        <1652279114-25939-3-git-send-email-min.li.xe@renesas.com>
+ <20220511173732.7988807e@kernel.org>
+In-Reply-To: <20220511173732.7988807e@kernel.org>
+Accept-Language: en-CA, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d215f45c-46f1-433f-d9bf-08da33c535f5
+x-ms-traffictypediagnostic: OS3PR01MB9606:EE_
+x-microsoft-antispam-prvs: <OS3PR01MB96062A5D03715AC21BFA2583BACB9@OS3PR01MB9606.jpnprd01.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Wh6P5AOKCGEaX926mqzQjl/YRTbykbI7Gz/7b9a3Wc87Yf6PURxKw0K88pB/jYoKpHmTcfOr9vgelgWO9cGGv3vJPRd92f58sCyMcOAvtMo/BGblrbv+uA6JRRfi1XOrczJdtmk2JR3OOwUYR9NGWsHgf7lsRxbcNjJAqPJF95W7IoDvGZim142da86F5vn6KFomGlo+8CrCH1eTc4lcS1QCCSG/6KNUyhd7vr86aXs8J5Hkhidfkz7jP0C0VFhR24aSHGnl8wHB7G9j3gdshBetGDwufeEoKJ98wYXOtM8cVLnfK0DQsMBkYw8M9ofFIb6JAIvkRrbHSwUAydievEWPgx/uvbwCG3qVP/s94hyWp0O0ez9zejnTQWQJZrdYHd8tIUdghRV/LsNksGVGCetdOJLwfHatxuFt/YFSkYYyxmq7ueHndcS3IcUMTiwPfLCfg3kJj3jcpYD7CeAPg4zHuCe/1Sn7dpRaxPhqj4iY05SpqjzhnD3XyIUobUl2NZZaQcDVw3ZcflHoo2NzqtTOqBTESzd1fZt9v9RvAdKbxGa15TSie4a8uEFUwdFQP1noOePKbp3oZYjvrwj7Y2Sf3gGt3aMXMflI6o0SrpBca+It97wyyPkfKQgMEYssc4xf+KS4j0Qo8jXIHuhl1Zg4ul638bYCpKEmu05OCCoNAyjAWx1IbzHK2fZ/RXd/48zgakcGMoY9eV6eKPEBmQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OS3PR01MB6593.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(52536014)(2906002)(122000001)(38070700005)(38100700002)(5660300002)(508600001)(4326008)(33656002)(186003)(66476007)(66556008)(8676002)(64756008)(66946007)(66446008)(76116006)(54906003)(316002)(6916009)(6506007)(7696005)(71200400001)(558084003)(26005)(9686003)(86362001)(55016003)(8936002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?QcNLs0embVhL2zo4bERrz87nO8kdXQ2r+dDmm71Ml4efGxd9hllewcPp+XnG?=
+ =?us-ascii?Q?NuH6/EkywCPtutQ21p5NwOYoOckp9Py/+dPP8WdkmEAw5dXKQtjxbjTSkyt8?=
+ =?us-ascii?Q?3xihdy/fDjRE7j1mZOJPKc45lcnfDNIjsDwjP1ahHjUrK1eP30E2610Nrluv?=
+ =?us-ascii?Q?tsQKg/s7sLvpTqDrMNlL7Sci6Fc/kUnUEOJ87L6DbTlb07cMaWtvSCuxmOSL?=
+ =?us-ascii?Q?gHxMzIa/SIyfKJryITEtUg5Yea3eHNTuUyekT2DxLeLMoxso80ZVJ+sinLcU?=
+ =?us-ascii?Q?6lGD7a65+delhEGJaf8PO5XcItWJRP5G6SYRk0XCMYF5uEqWvEm/EREclGSr?=
+ =?us-ascii?Q?zIIg8U/2Qd+Y25As3Xn2kVRqUz3CiVuOtirEzEZU4AunaHzp5B1SDW9pkaHO?=
+ =?us-ascii?Q?uJYtSgATNM/0J/vzsuXCdcV8SR6DejSYYdL366ijOseZ2U87TYzYT66M0A5/?=
+ =?us-ascii?Q?RP1wgcIohmnqE45Ur41Uz0Nq3mqXkF+jn/PqTM6vRXVfwL5AtSY0CLfnp2PO?=
+ =?us-ascii?Q?8eVI+Kv/s1fipehchtC0EiXwK8e2QQ+jGrHQxJIs2tIKvd+9BFpMelJMtGJO?=
+ =?us-ascii?Q?4dahaOEPM4qmf5If8hBGb5nLqFG3lhTmXMKj33jZ10hhOGZk0rZ1LLTVF/B8?=
+ =?us-ascii?Q?627Jp1V3qEIsDvhgKVmkpewj7sMjYZxGo0dJ+zbBCQCWuaXQnA8Fpi9k4VBG?=
+ =?us-ascii?Q?Zfl1odFxnzM4VphwuWnScOH0UTcyEmhUKWFzeEh2BNWA+SswrHgG25OXl0X2?=
+ =?us-ascii?Q?2b4qHFzLvEA1YWF/3h/g0c3TRuUrVbbiTw5V4G3KETS/3HTcg0WlHauECzr5?=
+ =?us-ascii?Q?Mktzo1wXGI2MysdhnX9v0Mvj6x7KgOGx07ZXk+qA9wGpABZFzPgrLj+H0bSW?=
+ =?us-ascii?Q?mTVZcZetGmBdgJ0qjcOrCON/cUzhD9GZlveyiq6rGjd31MJSGb4OmF1uC6b0?=
+ =?us-ascii?Q?oifjPD/D39MlxlVN8tSLQuOJRPBIJBtKyRqzes0FQwCfr9CsL6iQr5Jh/P8X?=
+ =?us-ascii?Q?ExhpTz8PKM6lIPhi6G5QRNk5sAGpM9eoJy9YqtXIIOwacFQPvDGIBYubvjhs?=
+ =?us-ascii?Q?EEsRiUg4GVnZINL3gom9FkrqCLlO1gxst21mPjfEhPbkF5q5iXhCIxlJLbnW?=
+ =?us-ascii?Q?U7IZOdxR5DPWnwX133uyE9C18PkFKe1MnEmtmAXrBep3nOPLnLl3RYPTvJeo?=
+ =?us-ascii?Q?63zQSIJad5T7+rpVDl89LdxbCrI//h4X4jWtynSbCAfqyzY02K6X/dmnASiL?=
+ =?us-ascii?Q?ZJ57dNroADI9yR5RSCyY5KQFFv8kE+8T0s42CqTX0UBfaM9xsJKQTUqVqK/P?=
+ =?us-ascii?Q?lubCiCUoMtemYnRY8EeFDdPgjMrM+hqFlwA6VjdyWgzqSrTazXYSPgpFCNPg?=
+ =?us-ascii?Q?0wBKn8gNgL02z1I2nVwt+zPoduanIodMg5HslM/+QQ+UTPNj+h86aSFD6+03?=
+ =?us-ascii?Q?3GB1O1F1mlU4kbV3FursxbqZMNGhdaTNj0IRL9XFfPdg+Nea2V+wlXtoQm0e?=
+ =?us-ascii?Q?XKeCpGU83h7mehqFAqLnVrlWnyB/CVws6O0s5sSsNm8Y9pmYShHX2qCQfIba?=
+ =?us-ascii?Q?d+s4Prhybsh1ZbrXhIU+eWJHyT0KIGg0c53xlUQNx+iudXqMJKfVBy91HXPE?=
+ =?us-ascii?Q?gYfnLB1WshYmEmSjjto3L7IXqsb1/MF6d/mK1MpuSpP7EGL5UMlQcbp6yEMB?=
+ =?us-ascii?Q?tZELjXcPSzj+T5Gohj9RCvIU0cfSRILH5j2XymiuElPjPZk2qT1jbOB17nx5?=
+ =?us-ascii?Q?Uoykkrgkug=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OS3PR01MB6593.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d215f45c-46f1-433f-d9bf-08da33c535f5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2022 03:12:13.2756
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: oMRsobx+0YTkHfeRFwKDmIJoFJ5xETIiRg51teZeGIR2M0zKPKYjfSYIlB6AAtWGBdE8OtmcdB2ySxFI65yB8A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB9606
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -41,143 +125,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Connect with O_NONBLOCK will not be completed immediately
-and returns -EINPROGRESS. It is possible to use selector/poll
-for completion by selecting the socket for writing. After select
-indicates writability, a second connect function call will return
-0 to indicate connected successfully as TCP does, but smc returns
--EISCONN. Use socket state for smc to indicate connect state, which
-can help smc aligning the connect behaviour with TCP.
+> Not what I meant. I guess you don't speak English so no point trying to
+> explain. Please resend v4 and we'll merge that. v5 is not better.
 
-Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
----
- net/smc/af_smc.c | 50 ++++++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 46 insertions(+), 4 deletions(-)
-
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index fce16b9d6e1a..5f70642a8044 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -1544,9 +1544,29 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
- 		goto out_err;
- 
- 	lock_sock(sk);
-+	switch (sock->state) {
-+	default:
-+		rc = -EINVAL;
-+		goto out;
-+	case SS_CONNECTED:
-+		rc = sk->sk_state == SMC_ACTIVE ? -EISCONN : -EINVAL;
-+		goto out;
-+	case SS_CONNECTING:
-+		if (sk->sk_state == SMC_ACTIVE)
-+			goto connected;
-+		break;
-+	case SS_UNCONNECTED:
-+		sock->state = SS_CONNECTING;
-+		break;
-+	}
-+
- 	switch (sk->sk_state) {
- 	default:
- 		goto out;
-+	case SMC_CLOSED:
-+		rc = sock_error(sk) ? : -ECONNABORTED;
-+		sock->state = SS_UNCONNECTED;
-+		goto out;
- 	case SMC_ACTIVE:
- 		rc = -EISCONN;
- 		goto out;
-@@ -1565,20 +1585,24 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
- 		goto out;
- 
- 	sock_hold(&smc->sk); /* sock put in passive closing */
--	if (smc->use_fallback)
-+	if (smc->use_fallback) {
-+		sock->state = rc ? SS_CONNECTING : SS_CONNECTED;
- 		goto out;
-+	}
- 	if (flags & O_NONBLOCK) {
- 		if (queue_work(smc_hs_wq, &smc->connect_work))
- 			smc->connect_nonblock = 1;
- 		rc = -EINPROGRESS;
-+		goto out;
- 	} else {
- 		rc = __smc_connect(smc);
- 		if (rc < 0)
- 			goto out;
--		else
--			rc = 0; /* success cases including fallback */
- 	}
- 
-+connected:
-+	rc = 0;
-+	sock->state = SS_CONNECTED;
- out:
- 	release_sock(sk);
- out_err:
-@@ -1693,6 +1717,7 @@ struct sock *smc_accept_dequeue(struct sock *parent,
- 		}
- 		if (new_sock) {
- 			sock_graft(new_sk, new_sock);
-+			new_sock->state = SS_CONNECTED;
- 			if (isk->use_fallback) {
- 				smc_sk(new_sk)->clcsock->file = new_sock->file;
- 				isk->clcsock->file->private_data = isk->clcsock;
-@@ -2424,7 +2449,7 @@ static int smc_listen(struct socket *sock, int backlog)
- 
- 	rc = -EINVAL;
- 	if ((sk->sk_state != SMC_INIT && sk->sk_state != SMC_LISTEN) ||
--	    smc->connect_nonblock)
-+	    smc->connect_nonblock || sock->state != SS_UNCONNECTED)
- 		goto out;
- 
- 	rc = 0;
-@@ -2716,6 +2741,17 @@ static int smc_shutdown(struct socket *sock, int how)
- 
- 	lock_sock(sk);
- 
-+	if (sock->state == SS_CONNECTING) {
-+		if (sk->sk_state == SMC_ACTIVE)
-+			sock->state = SS_CONNECTED;
-+		else if (sk->sk_state == SMC_PEERCLOSEWAIT1 ||
-+			 sk->sk_state == SMC_PEERCLOSEWAIT2 ||
-+			 sk->sk_state == SMC_APPCLOSEWAIT1 ||
-+			 sk->sk_state == SMC_APPCLOSEWAIT2 ||
-+			 sk->sk_state == SMC_APPFINCLOSEWAIT)
-+			sock->state = SS_DISCONNECTING;
-+	}
-+
- 	rc = -ENOTCONN;
- 	if ((sk->sk_state != SMC_ACTIVE) &&
- 	    (sk->sk_state != SMC_PEERCLOSEWAIT1) &&
-@@ -2729,6 +2765,7 @@ static int smc_shutdown(struct socket *sock, int how)
- 		sk->sk_shutdown = smc->clcsock->sk->sk_shutdown;
- 		if (sk->sk_shutdown == SHUTDOWN_MASK) {
- 			sk->sk_state = SMC_CLOSED;
-+			sk->sk_socket->state = SS_UNCONNECTED;
- 			sock_put(sk);
- 		}
- 		goto out;
-@@ -2754,6 +2791,10 @@ static int smc_shutdown(struct socket *sock, int how)
- 	/* map sock_shutdown_cmd constants to sk_shutdown value range */
- 	sk->sk_shutdown |= how + 1;
- 
-+	if (sk->sk_state == SMC_CLOSED)
-+		sock->state = SS_UNCONNECTED;
-+	else
-+		sock->state = SS_DISCONNECTING;
- out:
- 	release_sock(sk);
- 	return rc ? rc : rc1;
-@@ -3139,6 +3180,7 @@ static int __smc_create(struct net *net, struct socket *sock, int protocol,
- 
- 	rc = -ENOBUFS;
- 	sock->ops = &smc_sock_ops;
-+	sock->state = SS_UNCONNECTED;
- 	sk = smc_sock_alloc(net, sock, protocol);
- 	if (!sk)
- 		goto out;
--- 
-2.24.3 (Apple Git-128)
-
+Where do you want me to do it then? PATCH 2?
