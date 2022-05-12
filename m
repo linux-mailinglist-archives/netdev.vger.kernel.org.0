@@ -2,87 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9831E525506
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 20:40:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8C5525509
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 20:41:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357756AbiELSkU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 14:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57532 "EHLO
+        id S1357684AbiELSlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 14:41:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357733AbiELSkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 14:40:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21EF0270C9C;
-        Thu, 12 May 2022 11:40:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA41BB82AD2;
-        Thu, 12 May 2022 18:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4A916C36AE5;
-        Thu, 12 May 2022 18:40:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652380813;
-        bh=DIkBcwiBP7eLnXH/EArwAiEEFxkhnx85Yfb5gtm5f8o=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=PDfFObaFtUVfU1gyRN4PP0oeaP0eEe5d3UHsZ5okr+c30QraSe0apJoAn6PoYTpbg
-         WyMDoNq2AhDRp4I7YHh6XOF0NeBMwF5z7gqR8Na7sX0ITcIpqUKEFUBTf1fqkMjh85
-         HE/yHPLh3Vs6QKtFyWZDA9qS8hIc6FIFlVXl5AwLWNjXEjOvglL+KDA64Bxl11Jokk
-         HusWQT0l7ABffPiu/EjJn09uxCmRvLmOsOgJyKkpiJ+0TS8fYvmPLKx5dH/t5l9TPe
-         xlwDertn92bhw3I/mtNl5O9IODXcFUrA+QNSJ3MKpV58NxI40L9C5CQesqxMSiKjt6
-         JTmOB+FoHf5AQ==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 21660F0393D;
-        Thu, 12 May 2022 18:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1357805AbiELSlC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 14:41:02 -0400
+Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D4392B1A6;
+        Thu, 12 May 2022 11:41:00 -0700 (PDT)
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1npDk7-000CtV-Cb; Thu, 12 May 2022 20:40:55 +0200
+Received: from [85.1.206.226] (helo=linux.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1npDk6-000UcN-U2; Thu, 12 May 2022 20:40:54 +0200
+Subject: Re: [PATCH 0/5] Atomics support for eBPF on powerpc
+To:     Hari Bathini <hbathini@linux.ibm.com>, bpf@vger.kernel.org,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        netdev@vger.kernel.org,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jordan Niethe <jniethe5@gmail.com>
+References: <20220512074546.231616-1-hbathini@linux.ibm.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <21577e77-9860-7746-235e-8c241b4a8a7a@iogearbox.net>
+Date:   Thu, 12 May 2022 20:40:54 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2] net/smc: non blocking recvmsg() return -EAGAIN when no
- data and signal_pending
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165238081313.29516.9624732494315218204.git-patchwork-notify@kernel.org>
-Date:   Thu, 12 May 2022 18:40:13 +0000
-References: <20220512030820.73848-1-guangguan.wang@linux.alibaba.com>
-In-Reply-To: <20220512030820.73848-1-guangguan.wang@linux.alibaba.com>
-To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
-        tonylu@linux.alibaba.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220512074546.231616-1-hbathini@linux.ibm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.103.5/26539/Thu May 12 10:04:41 2022)
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 12 May 2022 11:08:20 +0800 you wrote:
-> Non blocking sendmsg will return -EAGAIN when any signal pending
-> and no send space left, while non blocking recvmsg return -EINTR
-> when signal pending and no data received. This may makes confused.
-> As TCP returns -EAGAIN in the conditions described above. Align the
-> behavior of smc with TCP.
+On 5/12/22 9:45 AM, Hari Bathini wrote:
+> This patchset adds atomic operations to the eBPF instruction set on
+> powerpc. The instructions that are added here can be summarised with
+> this list of kernel operations for ppc64:
 > 
-> Fixes: 846e344eb722 ("net/smc: add receive timeout check")
-> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
-> Reviewed-by: Tony Lu <tonylu@linux.alibaba.com>
+> * atomic[64]_[fetch_]add
+> * atomic[64]_[fetch_]and
+> * atomic[64]_[fetch_]or
+> * atomic[64]_[fetch_]xor
+> * atomic[64]_xchg
+> * atomic[64]_cmpxchg
 > 
-> [...]
+> and this list of kernel operations for ppc32:
+> 
+> * atomic_[fetch_]add
+> * atomic_[fetch_]and
+> * atomic_[fetch_]or
+> * atomic_[fetch_]xor
+> * atomic_xchg
+> * atomic_cmpxchg
+> 
+> The following are left out of scope for this effort:
+> 
+> * 64 bit operations on ppc32.
+> * Explicit memory barriers, 16 and 8 bit operations on both ppc32
+>    & ppc64.
+> 
+> The first patch adds support for bitwsie atomic operations on ppc64.
+> The next patch adds fetch variant support for these instructions. The
+> third patch adds support for xchg and cmpxchg atomic operations on
+> ppc64. Patch #4 adds support for 32-bit atomic bitwise operations on
+> ppc32. patch #5 adds support for xchg and cmpxchg atomic operations
+> on ppc32.
 
-Here is the summary with links:
-  - [net,v2] net/smc: non blocking recvmsg() return -EAGAIN when no data and signal_pending
-    https://git.kernel.org/netdev/net/c/f3c46e41b32b
+Thanks for adding these, Hari! I presume they'll get routed via Michael,
+right? One thing that may be worth adding to the commit log as well is
+the test result from test_bpf.ko given it has an extensive suite around
+atomics useful for testing corner cases in JITs.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+> Hari Bathini (5):
+>    bpf ppc64: add support for BPF_ATOMIC bitwise operations
+>    bpf ppc64: add support for atomic fetch operations
+>    bpf ppc64: Add instructions for atomic_[cmp]xchg
+>    bpf ppc32: add support for BPF_ATOMIC bitwise operations
+>    bpf ppc32: Add instructions for atomic_[cmp]xchg
+> 
+>   arch/powerpc/net/bpf_jit_comp32.c | 62 +++++++++++++++++-----
+>   arch/powerpc/net/bpf_jit_comp64.c | 87 +++++++++++++++++++++----------
+>   2 files changed, 108 insertions(+), 41 deletions(-)
+> 
 
