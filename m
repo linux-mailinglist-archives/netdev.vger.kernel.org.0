@@ -2,99 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C2C524DB9
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 15:05:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED47A524DD3
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 15:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354103AbiELNFC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 09:05:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40176 "EHLO
+        id S1354136AbiELNI2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 09:08:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51842 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353889AbiELNE6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 09:04:58 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062CD20F4F1
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 06:04:58 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-d6e29fb3d7so6519229fac.7
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 06:04:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gY8yqmt9rxkC+ri2Ow7GDfEYtHoKglmDH8I5xpIy23Q=;
-        b=ADpqkG9doKwUsc2LA9+EP89xf5epAj1JdS+aGo5Zrx6Qjhy1+9z12j6axoi1D7N8pP
-         j5MPI8LHRl25VmP0YWDwcOvUljfz7zFN+T5KRq5k4QW1HzdbR0mn9KtRF984ON3xOCVS
-         luoUDlDMJtzpEE63WPru580akeR2pEVyyjZatWRrCeLk3MtI92o/kj+CEfIsL1TBKnhh
-         JQXeat3XGirEezl53fv73s2SaVAqndebq7SZVPIfRb2MmA8w7oHsH9aUpOgGOIk+PKVq
-         CEZZlNyibbpA7DdUhqWQzkpgXsaqtnbQV1MEeGEz9TzHf2vgldKvmavne0U/nXyBh0wX
-         blfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gY8yqmt9rxkC+ri2Ow7GDfEYtHoKglmDH8I5xpIy23Q=;
-        b=oVCqTO5YDuo0aKirGat+iV3n9AQfhc/s6OAbsiXAeXehucuXi6gsjQeLy/flyXm8OG
-         xs3xTHi+iYjtJrpsAV948scx2FIT+DLmN/vhiotG/7ZbX3Qn0Ffu4OIvXCGRd1VaKW8Q
-         w+FJNcOiUVwCyF/zl1aXJZtaO54TZJT82x4ZUcVU9owdQ6MjU4G3hgAUdVPbYEccgtyw
-         EeyDFmwb+2h9RBAPhkpXdMCldhXQWBMJsxgj46zYhpvbc4+1QDVhB4j4hmxAxmEf++CE
-         m2McWQPd6NKs+4gxseyYhWk9kT7XtL/dUFl+xk5Z3+LDNGTTOoUA9r4Sa6+dIPdbBrbx
-         aGvA==
-X-Gm-Message-State: AOAM531TyJiIR/C8XlaRuChVE5+ifRN5OMWAq5KhXLbROxzH5xigZ2EE
-        ZxCor+tmFwp7RQtsdukgcDc4dDPxEMie8e9se8ts8g==
-X-Google-Smtp-Source: ABdhPJzaulsL4XHDnNpsA86HUhuwXPgr1/5bnMGQ21WysXS3sKlBemJ2mSIgjARKM8KTcg5ulG2p5CpHPxip4kjLq6g=
-X-Received: by 2002:a05:6870:b61e:b0:ec:a426:bab5 with SMTP id
- cm30-20020a056870b61e00b000eca426bab5mr5441769oab.163.1652360697130; Thu, 12
- May 2022 06:04:57 -0700 (PDT)
+        with ESMTP id S238311AbiELNI0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 09:08:26 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AAC87CDFA;
+        Thu, 12 May 2022 06:08:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
+        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=DTcXjqwJcyjxDHHFvu33WWIok7d6H0qQBE5Az94H2hs=; b=F+dc79CQLfiu3sCXC1DvRCCc56
+        gc13CemRbwM8NUWT2JkFc8aghwDjlOZBCMjq2Ke7cioqZ4wYe9Oz3nn/5ch8GaRsv4cum9PLmXZ7K
+        ojCob5fiIRKPxbCg3TZ/Ou7LbuC3cePSKi64PXfsXQtk3ZcxGk5oXsiVYTGZGumILHHk=;
+Received: from [217.114.218.27] (helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1np8Y2-0004Eq-7W; Thu, 12 May 2022 15:08:06 +0200
+Message-ID: <987a1cd5-6f35-d3ac-1d42-5346be7ecb1a@nbd.name>
+Date:   Thu, 12 May 2022 15:08:05 +0200
 MIME-Version: 1.0
-References: <00000000000076ecf305b9f8efb1@google.com> <000000000000ef073a05bdf398e0@google.com>
-In-Reply-To: <000000000000ef073a05bdf398e0@google.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 12 May 2022 15:04:46 +0200
-Message-ID: <CACT4Y+aydumbVJARxkeQuD5k8jowUwOehfQ9CEw8Uq+boOunUA@mail.gmail.com>
-Subject: Re: [syzbot] KASAN: slab-out-of-bounds Read in add_adv_patterns_monitor
-To:     syzbot <syzbot+3ed6361bf59830ca9138@syzkaller.appspotmail.com>
-Cc:     apusaka@chromium.org, dan.carpenter@oracle.com,
-        davem@davemloft.net, finanzas1@logisticaenlinea.net,
-        hdanton@sina.com, howardchung@google.com, johan.hedberg@gmail.com,
-        johan.hedberg@intel.com, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org, mcchou@chromium.org,
-        mmandlik@chromium.org, netdev@vger.kernel.org, sashal@kernel.org,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Content-Language: en-US
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Vladimir Oltean <olteanv@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220510094014.68440-1-nbd@nbd.name>
+ <20220510123724.i2xqepc56z4eouh2@skbuf>
+ <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
+ <20220510165233.yahsznxxb5yq6rai@skbuf>
+ <bc4bde22-c2d6-1ded-884a-69465b9d1dc7@nbd.name>
+ <20220510222101.od3n7gk3cofwhbks@skbuf>
+ <376b13ac-d90b-24e0-37ed-a96d8e5f80da@nbd.name>
+ <20220511093245.3266lqdze2b4odh5@skbuf> <YnvJFmX+BRscJOtm@lunn.ch>
+ <0ef1e0c2-1623-070d-fbf5-e7f09fc199ca@nbd.name> <Ynz/7Wh6vDjR7ljs@lunn.ch>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
+In-Reply-To: <Ynz/7Wh6vDjR7ljs@lunn.ch>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 20 Mar 2021 at 09:27, syzbot
-<syzbot+3ed6361bf59830ca9138@syzkaller.appspotmail.com> wrote:
->
-> syzbot suspects this issue was fixed by commit:
->
-> commit b4a221ea8a1f890b50838ef389d016c7ff280abc
-> Author: Archie Pusaka <apusaka@chromium.org>
-> Date:   Fri Jan 22 08:36:11 2021 +0000
->
->     Bluetooth: advmon offload MSFT add rssi support
->
-> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14ef5ad6d00000
-> start commit:   b491e6a7 net: lapb: Add locking to the lapb module
-> git tree:       net
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=be33d8015c9de024
-> dashboard link: https://syzkaller.appspot.com/bug?extid=3ed6361bf59830ca9138
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10628ae8d00000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12964b80d00000
->
-> If the result looks correct, please mark the issue as fixed by replying with:
->
-> #syz fix: Bluetooth: advmon offload MSFT add rssi support
 
-That commit touches the crashed function:
+Hi Andrew,
 
-#syz fix: Bluetooth: advmon offload MSFT add rssi support
+On 12.05.22 14:39, Andrew Lunn wrote:
+>> I just ran some more tests, here's what I found:
+>> The switch automatically pads all forwarded packets to 64 bytes.
+>> When packets are forwarded from one external port to another, the padding is
+>> all zero.
+>> Only when packets are sent from a CPU port to an external port, the last 4
+>> bytes contain garbage. The garbage bytes are different for every packet, and
+>> I can't tell if it's leaking contents of previous packets or what else is in
+>> there.
+>> Based on that, I'm pretty sure that the hardware simply has a quirk where it
+>> does not account for the special tag when generating its own padding
+>> internally.
+> 
+> This does not yet explain why your receiver is dropping the frame. As
+> Vladimir pointed out, the contents of the pad should not matter.
+> 
+> Is it also getting the FCS wrong when it pads? That would cause the
+> receiver to drop the frame.
+> 
+> Or do we have an issue in the receiver where it is looking at the
+> contents of the pad?
+On the devices that I used for testing before, FCS wasn't reported in my 
+captures. Since I can't reproduce the issue of the receiver dropping 
+frames anymore, I currently have no way of figuring out what went wrong.
+
+When I was able to reproduce the issue, I'm sure that I switched between 
+patched and unpatched builds a few times to make sure that my change 
+actually made a difference, which it did.
+
+I do agree that having the garbage bytes in there is technically 
+compliant with the spec. On the other hand, based on my observations I 
+believe that the hardware's behavior of filling the last 4 bytes with 
+seemingly random values only in the case of small frames being sent with 
+a CPU special tag is clearly not intentional nor by design.
+
+The issue is also clearly limited to processing packets with the tag 
+(which can only come from the CPU), so in my opinion the tag driver is 
+the right place to deal with it.
+
+So I guess it comes down to whether you guys think that this is worth 
+fixing.
+
+I still consider it worth fixing, because:
+- It looks like a hardware bug to me with potentially unknown consequences.
+- If it caused issues in my setup, it might do so in other people's 
+setups as well.
+- I can't rule out potential information leakage from those 4 bytes
+
+I guess if you guys don't think the issue is worth the price of a very 
+small performance hit from padding the packets, I will just have to keep 
+this as an out-of-tree patch.
+
+- Felix
