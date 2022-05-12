@@ -2,72 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 823CF524CDE
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 14:31:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8AD2524CEC
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 14:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353757AbiELMbc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 08:31:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57122 "EHLO
+        id S1353786AbiELMd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 08:33:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353748AbiELMba (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 08:31:30 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E25C644A34;
-        Thu, 12 May 2022 05:31:27 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id ba17so6059451edb.5;
-        Thu, 12 May 2022 05:31:27 -0700 (PDT)
+        with ESMTP id S1353778AbiELMd4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 08:33:56 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBA2562CC3;
+        Thu, 12 May 2022 05:33:52 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id l11so4444272pgt.13;
+        Thu, 12 May 2022 05:33:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Bq27qi36uNFUZk8ZL5NHNoP0jxC4Lj73Ft3Qq22TL74=;
-        b=Qk8rV4hBpcnrZIIFrzc/vy+LEr0x/YF0jGYVH/2JoeLnlhcEkoEyW6u7MCYVLBpTwW
-         0UumpuhBgXYujASXv6zPNQZE/t+l0dy7fEFjfdVJgM4hX1FP1FiLxVdPW93dDS05NOz9
-         Va5lU5hHPLCevXlTLXD7RuJ4W/qoEQU3bPLWhxTP3kEnRp8HN8hdzpZm3j+WsSWN8R2S
-         yFH9GuhpHb3xXHpWdtMMIUuPlFhk8sajKQ2vum+CAhDPwsEtrkmP3SiIxzTHM/dkjixI
-         MzjhrM/YG+Brra4Rn5sGf0fpAa545XCgKJEwAuQu/gWEx4/k2Ou5DzGO5noNhyqVxsX3
-         Gh+g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Gb3yCMXjkJI3+/JdjwFtXR6lgNAbIQCRTIXFBT2FkvU=;
+        b=ElAs+DxFqXkJuHRHsQbaryOMx9dKJ5C4GmzY+xHi0RPDRLKXxYvj/4SQTL39jj5l6G
+         pMtM4bcCpoVh4TPBUAxsRdDWDkvIEDevlKtbtLU2+/JQ7TtBah50NYR5m9TH6TO9FhBn
+         Dz3GIlxkNG9uqxplLgQDGZNnH5/8+GiH9Rqzb5xd6Md0hUkyYIaetlk+nSOqjHay9xhd
+         hYivK0ffOdlz79Pr5nvKr0diOIH37zuRFwKDBgFekwJyyWnHpd621XMCRdTPdKQNdpjR
+         SeP3HW82fsnl7fnIqcsp1Dt1nr1uHI8w+IwO5Ca0YOo1ccykKFnrfYZSG0tgTBTdHETP
+         Fp8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Bq27qi36uNFUZk8ZL5NHNoP0jxC4Lj73Ft3Qq22TL74=;
-        b=NtvvU7Oe2c80eFjC3Rqz5Q2IjDljxviiXkUaBlJzY5kILB2chNJCLxUSjXisKKBNg1
-         vfa3Qf3mEEAJgi58y3wzeej4RkJ/8aFC3RV5i11Ie+0FNSAQjErz94GIsq7bVEt4QdyI
-         ZCJHrGRLnQ/WdDwl9dbgT/mYhKZYUhdPUpT7g7LHSQacbUsWvH3G5+UTk4gI1w8R1w99
-         QDz+AYeX2kUcfyXAAKyYOYlsTXndd73Z0WiqsW01T5UY5N3mAxCece8dJcZcuaFx1pfM
-         UuXwX6AAThrZFf4oVTv9jZfTjDQBRS3uDP/uwjDTgvMMpWrUfyPIDhTGKbdLZnI81I5x
-         uvZQ==
-X-Gm-Message-State: AOAM531TTTht5FCHOq4dd4aGewwPNWSevE4X7fgeP21XotR/Jth5RQQD
-        pxF604HFBvE9kBXH0N38kE7hOmv6K/nAgRsDTAE=
-X-Google-Smtp-Source: ABdhPJxgS+gzIYhIWSduRKTHnDYBo2Hhbf1EvSfO1rLZIPmd6sXvnqror3k4ncBq1qt3HJCjLcuDwDS5zZN3zQDyQPM=
-X-Received: by 2002:a05:6402:1f0b:b0:427:b390:2020 with SMTP id
- b11-20020a0564021f0b00b00427b3902020mr34676701edb.70.1652358686409; Thu, 12
- May 2022 05:31:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Gb3yCMXjkJI3+/JdjwFtXR6lgNAbIQCRTIXFBT2FkvU=;
+        b=ozmLq5Q4Dc7CoQ18idP1kuqM0kU3PhWoNpLc/BYpEQHExbOOg8Yo7dgzllnzmhcJRm
+         yXqYw3pz+kDvCXUfbXw7kA0E3R+Uy/KZcWGevmIRXbvHOWehqqU1wfdZaK3we9AAmIe8
+         0K8AltZiwpClXm0TSRltcCPPaIMi2CRmyMe53RO6DdD93LVLp0tU34qHyec4stxs4MUV
+         mpXTR5ZBADLKfb9QMc3Cl7B2gL66vC7w+T9c2t9ovYPilBhxWC8YQmJVQEqFo9koW7QD
+         BQvSUv3eCld3D3CJeea5nPnapRowgk1jFb0y+vrKK3XGSZvKmeymaDcXipp5ThWlqPri
+         lSvA==
+X-Gm-Message-State: AOAM533mRx2LaAWd817k4DqHLFdgq0V9rWhy/AlDf+E2yHtjGj6T6jpe
+        8DoCYWamw3SKTEtwaD7vusY2ZrCF0gA/hw==
+X-Google-Smtp-Source: ABdhPJzr+56PnXBNQeGVzO7lKfSS6xc5F3BOBoi7cpAGcE5WEj4ippPAZ73wvkKzuxD8AsQZKEyIMA==
+X-Received: by 2002:a65:6c06:0:b0:3c2:81e1:fd72 with SMTP id y6-20020a656c06000000b003c281e1fd72mr24987226pgu.209.1652358832440;
+        Thu, 12 May 2022 05:33:52 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.112])
+        by smtp.gmail.com with ESMTPSA id y24-20020a63de58000000b003c14af50643sm1738130pgi.91.2022.05.12.05.33.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 05:33:51 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     kuba@kernel.org
+Cc:     nhorman@tuxdriver.com, davem@davemloft.net, edumazet@google.com,
+        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        imagedong@tencent.com, kafai@fb.com, talalahmad@google.com,
+        keescook@chromium.org, asml.silence@gmail.com, willemb@google.com,
+        vasily.averin@linux.dev, ilias.apalodimas@linaro.org,
+        luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/4] net: skb: check the boundrary of skb drop reason
+Date:   Thu, 12 May 2022 20:33:09 +0800
+Message-Id: <20220512123313.218063-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220512062629.10286-1-imagedong@tencent.com>
-In-Reply-To: <20220512062629.10286-1-imagedong@tencent.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Thu, 12 May 2022 20:31:14 +0800
-Message-ID: <CADxym3Zqe=9TA_JBYCEX2tqeVxLN_LbH_F_zQuoXBG4XK=mc7g@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/4] net: skb: check the boundrary of skb drop reason
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Neil Horman <nhorman@tuxdriver.com>,
-        David Miller <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Menglong Dong <imagedong@tencent.com>,
-        Martin Lau <kafai@fb.com>, Talal Ahmad <talalahmad@google.com>,
-        Kees Cook <keescook@chromium.org>, asml.silence@gmail.com,
-        Willem de Bruijn <willemb@google.com>,
-        vasily.averin@linux.dev,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -78,37 +73,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 12, 2022 at 2:26 PM <menglong8.dong@gmail.com> wrote:
->
-> From: Menglong Dong <imagedong@tencent.com>
->
-> In the commit 1330b6ef3313 ("skb: make drop reason booleanable"),
-> SKB_NOT_DROPPED_YET is added to the enum skb_drop_reason, which makes
-> the invalid drop reason SKB_NOT_DROPPED_YET can leak to the kfree_skb
-> tracepoint. Once this happen (it happened, as 4th patch says), it can
-> cause NULL pointer in drop monitor and result in kernel panic.
->
-> Therefore, check the boundrary of drop reason in both kfree_skb_reason
-> (2th patch) and drop monitor (1th patch).
->
-> Meanwhile, fix the invalid drop reason passed to kfree_skb_reason() in
-> tcp_v4_rcv().
->
+From: Menglong Dong <imagedong@tencent.com>
 
-tcp_v6_rcv() is forgeted, I'll send a V2 :/
+In the commit 1330b6ef3313 ("skb: make drop reason booleanable"),
+SKB_NOT_DROPPED_YET is added to the enum skb_drop_reason, which makes
+the invalid drop reason SKB_NOT_DROPPED_YET can leak to the kfree_skb
+tracepoint. Once this happen (it happened, as 4th patch says), it can
+cause NULL pointer in drop monitor and result in kernel panic.
 
-> Menglong Dong (4):
->   net: dm: check the boundary of skb drop reasons
->   net: skb: check the boundrary of drop reason in kfree_skb_reason()
->   net: skb: change the definition SKB_DR_SET()
->   net: tcp: reset skb drop reason to NOT_SPCIFIED in tcp_v4_rcv()
->
->  include/linux/skbuff.h  | 3 ++-
->  net/core/drop_monitor.c | 2 +-
->  net/core/skbuff.c       | 5 +++++
->  net/ipv4/tcp_ipv4.c     | 1 +
->  4 files changed, 9 insertions(+), 2 deletions(-)
->
-> --
-> 2.36.1
->
+Therefore, check the boundrary of drop reason in both kfree_skb_reason
+(2th patch) and drop monitor (1th patch) to prevent such case happens
+again.
+
+Meanwhile, fix the invalid drop reason passed to kfree_skb_reason() in
+tcp_v4_rcv() and tcp_v6_rcv().
+
+Changes since v1:
+- consider tcp_v6_rcv() in the 4th patch
+
+Menglong Dong (4):
+  net: dm: check the boundary of skb drop reasons
+  net: skb: check the boundrary of drop reason in kfree_skb_reason()
+  net: skb: change the definition SKB_DR_SET()
+  net: tcp: reset 'drop_reason' to NOT_SPCIFIED in tcp_v{4,6}_rcv()
+
+ include/linux/skbuff.h  | 3 ++-
+ net/core/drop_monitor.c | 2 +-
+ net/core/skbuff.c       | 5 +++++
+ net/ipv4/tcp_ipv4.c     | 1 +
+ net/ipv6/tcp_ipv6.c     | 1 +
+ 5 files changed, 10 insertions(+), 2 deletions(-)
+
+-- 
+2.36.1
+
