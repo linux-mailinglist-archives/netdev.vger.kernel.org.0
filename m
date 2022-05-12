@@ -2,219 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E7AC524AC7
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 12:49:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D036524AD5
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 12:53:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352824AbiELKt0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 06:49:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55468 "EHLO
+        id S1352866AbiELKx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 06:53:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352820AbiELKtT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 06:49:19 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E025922A8AF
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 03:49:16 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id t6so6692145wra.4
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 03:49:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0HzdyfQNWW1X5XUsM4czbpgQTMCq9lkSY4z5qYOvIIU=;
-        b=q6yKR70RC8SGImxhGxiCRWeJwFCdlusYXO8ez4aporOW00K0mpI+OjmPWZLv3NjpWU
-         Isqgkt9zaOa8BYTrQVnrgiSJg5Sc8MCV/JR1QQisw21SDSyP2DO/34RLb0SLxUcvRmP8
-         bhGBbaaOTwYg8iMu/mV3dslq1pQCdFm8elBD7z9fCpfs+3ZLKoRnjqKTxEcjac9VY4gk
-         wqlWB6lGvWx4VgzbEtKD3WN0Wx+PIZo5zNISQkZm4RBLgjvyvUbmIeM73UYTku99d72N
-         /QhsJ6gd1B5kIDmmCWhdW8mq5puWIAEJ8DhiTErGTX4GoJlmBh3BJtaZrkQIAdUyu5bA
-         syTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0HzdyfQNWW1X5XUsM4czbpgQTMCq9lkSY4z5qYOvIIU=;
-        b=ikkXkka8i9kgY0VJNwf4SJJjeadn6zTk8SHXSJVrV6YcwgNUIul1c5PnOpmCKcU2pB
-         jSdAU9MwRORiXa+XAkjKLwd9ATFp4aPjz1Uxsm5nmCTF8ZVwCBMxEoJtu0UJEHothKcc
-         Z9qpzt1Oxl1c0cNbHirSev6Rlds76/aNmTC6jEnbBsHDsH4/mEIpX+KwLo82NKjWXgbU
-         26AjY1HK7BxVSb7D8rGff9bpSSv8GLh8BKDvd6S0B4fVyPbgx7+abiIZeN3cW64hqa3z
-         cHzwIlgLsWffDAr6ayluRId6DS1vtacugzj5FOzgIInMFDYZeWrHaYeZ3CZB566AFBnz
-         pJzg==
-X-Gm-Message-State: AOAM530bi5Nki0CGka91Nke54MwgV5HcmHsod0syafB2lWm2PLdksc/Q
-        RLSjCcWtpRRXX++bXp3oZ00=
-X-Google-Smtp-Source: ABdhPJxz9H50J9mNpu8vgH2+ee2nHyTH0r4N3e9g5ZjN7qgNA4PiblkdNK+oLmK/svHn4+MYmBO6Rw==
-X-Received: by 2002:adf:f3cb:0:b0:20a:e4e6:6633 with SMTP id g11-20020adff3cb000000b0020ae4e66633mr27118494wrp.512.1652352555183;
-        Thu, 12 May 2022 03:49:15 -0700 (PDT)
-Received: from jimi.localdomain ([213.57.189.88])
-        by smtp.gmail.com with ESMTPSA id z22-20020a7bc156000000b003942a244f30sm2757409wmi.9.2022.05.12.03.49.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 03:49:14 -0700 (PDT)
-From:   Eyal Birger <eyal.birger@gmail.com>
-To:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        steffen.klassert@secunet.com, herbert@gondor.apana.org.au
-Cc:     netdev@vger.kernel.org, Eyal Birger <eyal.birger@gmail.com>,
-        Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Subject: [PATCH ipsec] xfrm: fix "disable_policy" flag use when arriving from different devices
-Date:   Thu, 12 May 2022 13:48:31 +0300
-Message-Id: <20220512104831.976553-1-eyal.birger@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S1352864AbiELKx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 06:53:26 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045226B0AD;
+        Thu, 12 May 2022 03:53:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652352805; x=1683888805;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=6ifFaegiTB9Q0i3bgblKyi5ZOfuvn61D6W5A4GL/iY0=;
+  b=AxxVUpHhy/vEWE4Sg29MDdmMCTYnC6btFfngca25+RMHCaD0UdSHbbj1
+   d1hPkOjHPtI9f/fJ06KBiOxmxa/Cf5V/i1M5WoB4AmO8AlOaW3IYsPH2c
+   5a2RS0+LThd2DBZqxZK9ir6F5UfVJhUqHLe+YqWdyXX35nE/JXhvQ3SdM
+   tO01xKDX/Yu9TWZu0Pq7ehpqtZTwpYXPOowdcV/sB9sAuMDPurxAi+t9B
+   N4Bv60bnkGDzgw126YEcPd6Q5MKajbT3ncVmlHvm9KzSPOKK2YiqFSIW6
+   uZ54WzQs9oY/ssAfGGayTCi7xmzipakzt/L3MqdsmJELYs5DsP/afuEl+
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="257512369"
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="257512369"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 03:53:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
+   d="scan'208";a="711871629"
+Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
+  by fmsmga001.fm.intel.com with ESMTP; 12 May 2022 03:53:22 -0700
+Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
+ ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 12 May 2022 03:53:22 -0700
+Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
+ ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Thu, 12 May 2022 03:53:21 -0700
+Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
+ orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Thu, 12 May 2022 03:53:21 -0700
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.173)
+ by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Thu, 12 May 2022 03:53:21 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XzTlW/YLaHbu7DVuJEAXqNpoH/WPKqprH3EVdjdvwaCiwlDVg6Lic4DjaKbgYJLveu2fCB1TOfXCQTESAptfp4UU7cyFoVDS6NqqCYl8l9r2dGosVgEQrxKkwo5ev+ukfUWi5HOiyXLzwjU2JGbuQ3Wx+Z7Bg3HiCu4iaYp4D1guoJAnr8lL/q3lwUuhA1oIs+H78W2HR/yYezwB3ipvCkc44+esPolUvNyKXJD29rkgolLYvxxN9uTgmQh3LPtWy6joG4adV8SW6CgQEwPKLU2ZIuA2j5yHxHNYchJB42Aary1tJYQhTtH5dxTMWj2cXWAX2fQq4HscxQ/BKvoCSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=6ifFaegiTB9Q0i3bgblKyi5ZOfuvn61D6W5A4GL/iY0=;
+ b=BZ0oBLQN56WRY+bUisy0RImPAlYLJvd0O5WeaGpfcOYkEMrstb4Ns5uNLy2UDSyeYC6aI4NtIoiyl8RsGvvqCcy6O/x8JafyDycOEr7EKoTS7MgBeT782vuQH0035q0vg6q+6VUqLzL48U7w8pHt7QwEu6bOpOnlVWZ4FNlSI1fS2OF9YA3YkKQPeJ75f/ITFEXrlD+CKnejRyypzjYg5o10bjOzsYh2hEabTsBZRr+CUPYot7HG2kTR7e6+3IGM4kIXhuK+jBWs9Nbgj698d7McEl35FEGSYkPtTzFu1kXG7QHK/Z5O8NRHfUDyyKJpyG6FbMWESpjsv0xCz5ZPRQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW3PR11MB4554.namprd11.prod.outlook.com (2603:10b6:303:5d::7)
+ by BYAPR11MB2583.namprd11.prod.outlook.com (2603:10b6:a02:c6::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Thu, 12 May
+ 2022 10:53:20 +0000
+Received: from MW3PR11MB4554.namprd11.prod.outlook.com
+ ([fe80::c0e3:dade:6afd:ec6b]) by MW3PR11MB4554.namprd11.prod.outlook.com
+ ([fe80::c0e3:dade:6afd:ec6b%5]) with mapi id 15.20.5250.014; Thu, 12 May 2022
+ 10:53:19 +0000
+From:   "Penigalapati, Sandeep" <sandeep.penigalapati@intel.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "toke@redhat.com" <toke@redhat.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "jbrouer@redhat.com" <jbrouer@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Subject: RE: [Intel-wired-lan] [PATCH v2 net-next] ixgbe: add xdp frags
+ support to ndo_xdp_xmit
+Thread-Topic: [Intel-wired-lan] [PATCH v2 net-next] ixgbe: add xdp frags
+ support to ndo_xdp_xmit
+Thread-Index: AQHYWW/TiqvSVLq/qEegoKpFJzMLna0bKaoA
+Date:   Thu, 12 May 2022 10:53:19 +0000
+Message-ID: <MW3PR11MB455432D1387610945334C1BF9CCB9@MW3PR11MB4554.namprd11.prod.outlook.com>
+References: <e36724d3cdfbedf9af1a2a7f47ebd60aa7932f83.1650978540.git.lorenzo@kernel.org>
+In-Reply-To: <e36724d3cdfbedf9af1a2a7f47ebd60aa7932f83.1650978540.git.lorenzo@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-reaction: no-action
+dlp-version: 11.6.401.20
+dlp-product: dlpe-windows
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fc21545f-e86e-4779-72a2-08da3405a08a
+x-ms-traffictypediagnostic: BYAPR11MB2583:EE_
+x-microsoft-antispam-prvs: <BYAPR11MB2583AD2E19F3830A5D6450259CCB9@BYAPR11MB2583.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: I9OQZ5f6sIJla2HmH6ipV7yxBmp8F3GY43GrGg7bnl9O7Tjo5lkjmN73mSBHPvB/NJh6CpJIb1LItRzDiQaq8YIS3aAzhoAK/UI5MOfRnXK0fputm/6drhe/R9/fcauDHr5t6gKcpLcaN+LHkulblV5VtmV1UQoGyPXiIyYHgJTHzFGQm5ppYTWk0+JByGNN6HLa3N08Pu7rssKPHWDaDFJgvada9nLgY0egmns/q05Z8iu0M8aHPb4bRS5sS1/g8RrVD5HsVuTKWMJvDHmSs2OfveJk6BYeHOGuF7Cx4EMEKijMhjQ3MQTj7wqGTJ14m2D+U1iLmvIQTXcnXomnz2NCDKAcO7mObEPttz0TAImuwIwSgPhxPRmv/SSPz8kzR/UWlXfbsih0uw0xRHtgiqEek3AALqcq3QFiuGlJRo39cIdrQz3BdYq3RL6hdU9p2kClorPc4Eyk59ngYIIF5Lan328LrvLPWB2raliyYSwTqS5F+RThX6g9IWJrp7b2iNtR9Mr/DNIgpsqYMkjx2GIZGU46UJImFsi7RgM32vY4X+R97ii4ZscBhvs360weIzxyHf2nUxXZ+WeY5ChaMRyym4dbGQV8Ksv9WQjF+I4SOt3lmgyXvrEs0V7L8Iu583HFj49UD398yoYwiY/9hv7kadPyCq0UXKsBWyLEyfpZD9gZxUmiXlJUsAgHMFH34tjmMjk36ccvWMoTbevDtg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4554.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(52536014)(6506007)(55016003)(2906002)(86362001)(316002)(33656002)(5660300002)(186003)(107886003)(4744005)(66476007)(66556008)(66446008)(8936002)(76116006)(83380400001)(66946007)(7696005)(54906003)(8676002)(26005)(64756008)(4326008)(82960400001)(7416002)(110136005)(71200400001)(38070700005)(508600001)(38100700002)(122000001)(9686003);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RccQEym2rCt8SAttp2rG9/5TXrqfHkLqJKSMzepHj/i5jf6uhUiBrLVCIgr9?=
+ =?us-ascii?Q?09oois7ysWRMdEPSqWmfPzf5kLSVFKX1GJgXP2WrDZlqLx15batVtg7DPrF3?=
+ =?us-ascii?Q?ycxNcpLsrK/VNQFqhFz9tK+1nfflnnNijCdbOSkhC9DnMq6Id9PvZ28yE7E3?=
+ =?us-ascii?Q?ecAEBMZEau2A5HORAyMa6SCPmwYhyiCsMbCKRlRtaGTsuejX72EQyDjs7zQa?=
+ =?us-ascii?Q?oHqldx+kl7U+/HNsHQ7gzE/YiR1x3lxj7/ONoosKR9IRNwhoE3eo9Q0D11s4?=
+ =?us-ascii?Q?PWMPfJAzsA7fBQl/58gJMobNFiae4KerX6sNitksF0+BnCWQR4OetM9Ty06U?=
+ =?us-ascii?Q?kiVWulEjgt90ecPPdhhldh3zhimM4n5zhLHDPZ9hV7iAJeM4OmR4iBb1To0V?=
+ =?us-ascii?Q?ZjccADO9xL867RJhwhOwGP3IC0jhcUGR6zeRIAxK8daQ56yg0LX1cZZaDdRK?=
+ =?us-ascii?Q?AhFARxMjETzI/shDkmKNw7TMzVsd4SH13okXkKvcmp4ypSqHOtpqLtq+riS4?=
+ =?us-ascii?Q?D9pc5w+7K3BYXSDnBVYwSePqYvDcMkRPVFNZRGVbqUgu2+eIQxtjdX7WAVke?=
+ =?us-ascii?Q?f+aHsTO7Ms7StkeK3kUexrJvRS3sYwYmN+8awl4AQ50Rn/3vMVp7Xl0ZedJi?=
+ =?us-ascii?Q?FBPEq60Tsl0FlxwFlRBRpmUa+xkOX5atRnZwH3pfPnbNB1uTQgELZTxUQ62y?=
+ =?us-ascii?Q?npTpDMM/nIRLoHii5C52tvJi4GSniTEI+Bf7o/DqDX+8zBdZULo3cVA9iIzI?=
+ =?us-ascii?Q?J9KoFd+23JFDSH2rnCTXWeQWHwbiBnFQQRqknfLMuajTH0GYf15ZeSW46mYo?=
+ =?us-ascii?Q?eudo29SHAps9EDTQKKvpVUnSdai2hza8jqzTrU9UssPem7yDfzSh7Aa9RxtN?=
+ =?us-ascii?Q?gp8hv5Z6Yp6+lGqCF/jIn53ECYgCHCI8cR9sSKLuSvyqaW0IHDGyMMQG8K1r?=
+ =?us-ascii?Q?CaOFzYu8UEray5pzfFV5XqXH6F9UkNoOHRvZVinIyrKx+f5n/DNHT2t5exsQ?=
+ =?us-ascii?Q?jkiBV1wN+N/zERSW2TGQ04n0DeNUX/j/ytm5vqDMY42l6XAiI2phxQGWX3K9?=
+ =?us-ascii?Q?XXTYrzcGRjggz2z8eDvKVjy8jliR9zeLJhsRuBWtlvQFzTYVTrYlI/5mmz6U?=
+ =?us-ascii?Q?u1/VYXMBm9wj7JoplBHDVQYKr9DyFEhjKXsirwINImLvRyQNezK6IROhZlYI?=
+ =?us-ascii?Q?kl0UlrstZsziOPINse5cX/135WZ4qHZI7eXZQx8MbDY2aoEj5/ykNlQqhbz1?=
+ =?us-ascii?Q?kwms1Sap1p7wz4SmrkZi+E/b3nsVdAMiffxpIr8dRqSZMPO6XtBRfNXljVGi?=
+ =?us-ascii?Q?JgtbwxUwpANjzfRPF+OFmwfNMVgOOT2GfW7OPqR3ptEJnZ6NiND09AOMM4PJ?=
+ =?us-ascii?Q?EbsbH4CVdKhZPEmn5WwJJ/NQyusNgVUaCZ2uj7ckhVR2zLR2INNSbVm75s9T?=
+ =?us-ascii?Q?HseFqGWDcFN5MvwtG9N+qeKuirbWOCi8kAhBOKlyzvKK0UsJsi0kcrqJ16oc?=
+ =?us-ascii?Q?7m6xC8lxOvPcVaJle4rbaeYwvZ9zSQ2QtjZAFxvBN2exNuJsYU3tAkppkMvm?=
+ =?us-ascii?Q?VG8+zJuV4xPK8Cn5o+TEo7C81/ZvmHq47cPaF1amJNt7CNDp6IrWhrF5FDmv?=
+ =?us-ascii?Q?kDsdb6JhlnIfeldBrIBbTR8SiubrPnO7bVfFMuLZvAQvM/ULbSu3nox9ghvH?=
+ =?us-ascii?Q?OZt4+gtwGl2qUgnxrAUo8bM3Jdt48OT+SputWwfxvScetnRkgIuPHZ7Fi4tb?=
+ =?us-ascii?Q?1O9KvXeOTP/u4I7eWB+zBNUUaqHW+HQ=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4554.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fc21545f-e86e-4779-72a2-08da3405a08a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2022 10:53:19.8630
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: kIyOtfvVVd5bjVk0VyzvnW5fpxCGDULq/vlblrXwdLbxRwzDhVpCrOqoOeBrwzH6wSnVlxIqztZ5t1KVLN/6TBJWT3lPZ2Miym3yf9HEXXU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2583
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In IPv4 setting the "disable_policy" flag on a device means no policy
-should be enforced for traffic originating from the device. This was
-implemented by seting the DST_NOPOLICY flag in the dst based on the
-originating device.
-
-However, dsts are cached in nexthops regardless of the originating
-devices, in which case, the DST_NOPOLICY flag value may be incorrect.
-
-Consider the following setup:
-
-                     +------------------------------+
-                     | ROUTER                       |
-  +-------------+    | +-----------------+          |
-  | ipsec src   |----|-|ipsec0           |          |
-  +-------------+    | |disable_policy=0 |   +----+ |
-                     | +-----------------+   |eth1|-|-----
-  +-------------+    | +-----------------+   +----+ |
-  | noipsec src |----|-|eth0             |          |
-  +-------------+    | |disable_policy=1 |          |
-                     | +-----------------+          |
-                     +------------------------------+
-
-Where ROUTER has a default route towards eth1.
-
-dst entries for traffic arriving from eth0 would have DST_NOPOLICY
-and would be cached and therefore can be reused by traffic originating
-from ipsec0, skipping policy check.
-
-Fix by setting a IPSKB_NOPOLICY flag in IPCB and observing it instead
-of the DST in IN/FWD IPv4 policy checks.
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
-Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
----
- include/net/ip.h   |  1 +
- include/net/xfrm.h | 14 +++++++++++++-
- net/ipv4/route.c   | 16 ++++++++++++----
- 3 files changed, 26 insertions(+), 5 deletions(-)
-
-diff --git a/include/net/ip.h b/include/net/ip.h
-index 3984f2c39c4b..0161137914cf 100644
---- a/include/net/ip.h
-+++ b/include/net/ip.h
-@@ -56,6 +56,7 @@ struct inet_skb_parm {
- #define IPSKB_DOREDIRECT	BIT(5)
- #define IPSKB_FRAG_PMTU		BIT(6)
- #define IPSKB_L3SLAVE		BIT(7)
-+#define IPSKB_NOPOLICY		BIT(8)
- 
- 	u16			frag_max_size;
- };
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index 6fb899ff5afc..d2efddce65d4 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1093,6 +1093,18 @@ static inline bool __xfrm_check_nopolicy(struct net *net, struct sk_buff *skb,
- 	return false;
- }
- 
-+static inline bool __xfrm_check_dev_nopolicy(struct sk_buff *skb,
-+					     int dir, unsigned short family)
-+{
-+	if (dir != XFRM_POLICY_OUT && family == AF_INET) {
-+		/* same dst may be used for traffic originating from
-+		 * devices with different policy settings.
-+		 */
-+		return IPCB(skb)->flags & IPSKB_NOPOLICY;
-+	}
-+	return skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY);
-+}
-+
- static inline int __xfrm_policy_check2(struct sock *sk, int dir,
- 				       struct sk_buff *skb,
- 				       unsigned int family, int reverse)
-@@ -1104,7 +1116,7 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
- 		return __xfrm_policy_check(sk, ndir, skb, family);
- 
- 	return __xfrm_check_nopolicy(net, skb, dir) ||
--	       (skb_dst(skb) && (skb_dst(skb)->flags & DST_NOPOLICY)) ||
-+	       __xfrm_check_dev_nopolicy(skb, dir, family) ||
- 	       __xfrm_policy_check(sk, ndir, skb, family);
- }
- 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 98c6f3429593..ea81e93c8c20 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -1795,7 +1795,7 @@ static int __mkroute_input(struct sk_buff *skb,
- 	struct rtable *rth;
- 	int err;
- 	struct in_device *out_dev;
--	bool do_cache;
-+	bool do_cache, no_policy;
- 	u32 itag = 0;
- 
- 	/* get a working reference to the output device */
-@@ -1840,6 +1840,10 @@ static int __mkroute_input(struct sk_buff *skb,
- 		}
- 	}
- 
-+	no_policy = IN_DEV_ORCONF(in_dev, NOPOLICY);
-+	if (no_policy)
-+		IPCB(skb)->flags |= IPSKB_NOPOLICY;
-+
- 	fnhe = find_exception(nhc, daddr);
- 	if (do_cache) {
- 		if (fnhe)
-@@ -1852,8 +1856,7 @@ static int __mkroute_input(struct sk_buff *skb,
- 		}
- 	}
- 
--	rth = rt_dst_alloc(out_dev->dev, 0, res->type,
--			   IN_DEV_ORCONF(in_dev, NOPOLICY),
-+	rth = rt_dst_alloc(out_dev->dev, 0, res->type, no_policy,
- 			   IN_DEV_ORCONF(out_dev, NOXFRM));
- 	if (!rth) {
- 		err = -ENOBUFS;
-@@ -2228,6 +2231,7 @@ static int ip_route_input_slow(struct sk_buff *skb, __be32 daddr, __be32 saddr,
- 	struct rtable	*rth;
- 	struct flowi4	fl4;
- 	bool do_cache = true;
-+	bool no_policy;
- 
- 	/* IP on this device is disabled. */
- 
-@@ -2346,6 +2350,10 @@ out:	return err;
- 	RT_CACHE_STAT_INC(in_brd);
- 
- local_input:
-+	no_policy = IN_DEV_ORCONF(in_dev, NOPOLICY);
-+	if (no_policy)
-+		IPCB(skb)->flags |= IPSKB_NOPOLICY;
-+
- 	do_cache &= res->fi && !itag;
- 	if (do_cache) {
- 		struct fib_nh_common *nhc = FIB_RES_NHC(*res);
-@@ -2360,7 +2368,7 @@ out:	return err;
- 
- 	rth = rt_dst_alloc(ip_rt_get_dev(net, res),
- 			   flags | RTCF_LOCAL, res->type,
--			   IN_DEV_ORCONF(in_dev, NOPOLICY), false);
-+			   no_policy, false);
- 	if (!rth)
- 		goto e_nobufs;
- 
--- 
-2.34.1
-
+>-----Original Message-----
+>From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+>Lorenzo Bianconi
+>Sent: Tuesday, April 26, 2022 6:45 PM
+>To: netdev@vger.kernel.org
+>Cc: daniel@iogearbox.net; intel-wired-lan@lists.osuosl.org;
+>toke@redhat.com; ast@kernel.org; andrii@kernel.org; jbrouer@redhat.com;
+>kuba@kernel.org; bpf@vger.kernel.org; pabeni@redhat.com;
+>davem@davemloft.net; Karlsson, Magnus <magnus.karlsson@intel.com>
+>Subject: [Intel-wired-lan] [PATCH v2 net-next] ixgbe: add xdp frags suppor=
+t to
+>ndo_xdp_xmit
+>
+>Add the capability to map non-linear xdp frames in XDP_TX and ndo_xdp_xmit
+>callback.
+>
+>Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>---
+>Changes since v1:
+>- rebase on top of net-next
+>---
+> drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 99 ++++++++++++-------
+> 1 file changed, 63 insertions(+), 36 deletions(-)
+>
+Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
