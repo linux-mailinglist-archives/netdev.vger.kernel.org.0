@@ -2,75 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D2DE525671
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 22:38:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACF02525693
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 22:52:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357126AbiELUiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 16:38:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
+        id S1355856AbiELUvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 16:51:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354353AbiELUiK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 16:38:10 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C2CC483A5
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 13:38:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=S/UI/eN4HwCCiWLOZ1UqE0EVsAjwaLVp/H45PVQBemM=; b=iz0EavQxhypRm4Zsnq7107JJrz
-        tvZaMj0jceqW8uPxBqWzA/GCljz7vWfRAWorUuOYwQsPkF01lPm2Cgqm8VGvS0CbOKZWFdea6Tth3
-        l3XIJ91Hv327qn1J5kFTumo78GwXSpcDX74djDySbpqZoFWoUNx+c1WNS2GesReapZ8E=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1npFZT-002VEf-27; Thu, 12 May 2022 22:38:03 +0200
-Date:   Thu, 12 May 2022 22:38:03 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ido Schimmel <idosch@nvidia.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        netdev <netdev@vger.kernel.org>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>
-Subject: Re: [PATCH RFC] net: bridge: Clear offload_fwd_mark when passing
- frame up bridge interface.
-Message-ID: <Yn1wK78zKzcgzg15@lunn.ch>
-References: <20220505225904.342388-1-andrew@lunn.ch>
- <20220506143644.mzfffht44t3glwci@skbuf>
- <Ynd213m/0uXfjArm@shredder>
+        with ESMTP id S1352959AbiELUvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 16:51:54 -0400
+Received: from 69-171-232-181.mail-mxout.facebook.com (69-171-232-181.mail-mxout.facebook.com [69.171.232.181])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDB9663390
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 13:51:51 -0700 (PDT)
+Received: by devbig010.atn6.facebook.com (Postfix, from userid 115148)
+        id CAFEBC464758; Thu, 12 May 2022 13:51:36 -0700 (PDT)
+From:   Joanne Koong <joannelkoong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     edumazet@google.com, kafai@fb.com, kuba@kernel.org,
+        davem@davemloft.net, Joanne Koong <joannelkoong@gmail.com>
+Subject: [PATCH net-next v4 0/2] Add a bhash2 table hashed by port + address
+Date:   Thu, 12 May 2022 13:50:39 -0700
+Message-Id: <20220512205041.1208962-1-joannelkoong@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Ynd213m/0uXfjArm@shredder>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=4.0 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RDNS_DYNAMIC,
+        SPF_HELO_PASS,SPF_SOFTFAIL,SPOOFED_FREEMAIL,SPOOF_GMAIL_MID,
+        TVD_RCVD_IP,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Level: ***
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> I like Andrew's patch because it is the Rx equivalent of
-> br_switchdev_frame_unmark() in br_dev_xmit(). However, if we go with the
-> second option, it should allow us to remove the clearing of the mark in
-> the Tx path as the control block is cleared in the Tx path since commit
-> fd65e5a95d08 ("net: bridge: clear bridge's private skb space on xmit").
-> 
-> I don't know how far back Nik's patch was backported and I don't know
-> how far back Andrew's patch will be backported, so it might be best to
-> submit Andrew's patch to net as-is and then in net-next change
-> nbp_switchdev_allowed_egress() and remove br_switchdev_frame_unmark()
-> from both the Rx and Tx paths.
-> 
-> Anyway, I have applied this patch to our tree for testing. Will report
-> tomorrow in case there are any regressions.
+This patchset proposes adding a bhash2 table that hashes by port and addr=
+ess.
+The motivation behind bhash2 is to expedite bind requests in situations w=
+here
+the port has many sockets in its bhash table entry, which makes checking =
+bind
+conflicts costly especially given that we acquire the table entry spinloc=
+k
+while doing so, which can cause softirq cpu lockups and can prevent new t=
+cp
+connections.
 
-Hi Ido
+We ran into this problem at Meta where the traffic team binds a large num=
+ber
+of IPs to port 443 and the bind() call took a significant amount of time
+which led to cpu softirq lockups, which caused packet drops and other fai=
+lures
+on the machine
 
-Did your testing find any issues?
+The patches are as follows:
+1/2 - Adds a second bhash table (bhash2) hashed by port and address
+2/2 - Adds a test for timing how long an additional bind request takes wh=
+en
+the bhash entry is populated
 
-Thanks
-	Andrew
+When experimentally testing this on a local server for ~24k sockets bound=
+ to
+the port, the results seen were:
+
+ipv4:
+before - 0.002317 seconds
+with bhash2 - 0.000018 seconds
+
+ipv6:
+before - 0.002431 seconds
+with bhash2 - 0.000021 seconds
+
+v3 -> v4:
+v3:
+https://lore.kernel.org/netdev/20220511000424.2223932-1-joannelkoong@gmai=
+l.com/
+
+* Fix the fix for the dccp bhash2 allocation
+
+v2 -> v3:
+v2:
+https://lore.kernel.org/netdev/20220510005316.3967597-1-joannelkoong@gmai=
+l.com/
+
+* Fix bhash2 allocation error handling for dccp
+* Rebase onto net-next/master
+
+v1 -> v2:
+v1:
+https://lore.kernel.org/netdev/20220421221449.1817041-1-joannelkoong@gmai=
+l.com/
+
+* Attached test for timing bind request
+
+Joanne Koong (2):
+  net: Add a second bind table hashed by port and address
+  selftests: Add test for timing a bind request to a port with a
+    populated bhash entry
+
+ include/net/inet_connection_sock.h            |   3 +
+ include/net/inet_hashtables.h                 |  56 ++++-
+ include/net/sock.h                            |  14 ++
+ net/dccp/proto.c                              |  33 ++-
+ net/ipv4/inet_connection_sock.c               | 227 +++++++++++++-----
+ net/ipv4/inet_hashtables.c                    | 188 ++++++++++++++-
+ net/ipv4/tcp.c                                |  14 +-
+ tools/testing/selftests/net/.gitignore        |   1 +
+ tools/testing/selftests/net/Makefile          |   2 +
+ tools/testing/selftests/net/bind_bhash_test.c | 119 +++++++++
+ 10 files changed, 575 insertions(+), 82 deletions(-)
+ create mode 100644 tools/testing/selftests/net/bind_bhash_test.c
+
+--=20
+2.30.2
+
