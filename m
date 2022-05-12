@@ -2,200 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0071B524E05
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 15:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02FFD524E13
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 15:19:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354102AbiELNQj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 09:16:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55796 "EHLO
+        id S1354282AbiELNTw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 09:19:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354107AbiELNQi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 09:16:38 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0B08246422
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 06:16:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652361396; x=1683897396;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ogSFe5+N4nfpX2ISTaJnUttdGEDRDowhdMQWekK35GQ=;
-  b=kLI4OnOV/JT4uDpk46qel489qFFNYRCWfAKSBMZpzlPQ002VYVvIaSTr
-   U7dyeI0UkzNFYS2k/eSgzBP/jk9AGIhbwP42R49WZ5z4XszrVqUeCz4ME
-   gl+zjhUTD+ltn9pSHHcpoc8p2EhRrpTv4RolwDgbb8fdro9WFo67wzwNa
-   TKuDnvdDdVm6nJQsxBHM8kqi0y/tIBbjIJo+aiT56md04cBVylxrFsfpa
-   rSOFStu7M07EyVfRqY+vKGPDen5VV9QoC705nx1fiy/TzhtwFDKYvN9jq
-   i91EAkQCr2zexSPbt5b9jnDN3JafJ5Sm4V9q9P6mdpD4/e8bsGiykeNDo
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="295246340"
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
-   d="scan'208";a="295246340"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 06:15:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
-   d="scan'208";a="711912032"
-Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
-  by fmsmga001.fm.intel.com with ESMTP; 12 May 2022 06:15:21 -0700
-Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1np8f2-000KSQ-Ho;
-        Thu, 12 May 2022 13:15:20 +0000
-Date:   Thu, 12 May 2022 21:15:18 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Subject: Re: [PATCH net-next 10/10] inet: add READ_ONCE(sk->sk_bound_dev_if)
- in INET_MATCH()
-Message-ID: <202205122132.HUrst9JA-lkp@intel.com>
-References: <20220511233757.2001218-11-eric.dumazet@gmail.com>
+        with ESMTP id S1354278AbiELNTv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 09:19:51 -0400
+Received: from mail-oa1-x30.google.com (mail-oa1-x30.google.com [IPv6:2001:4860:4864:20::30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7949252DC0
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 06:19:46 -0700 (PDT)
+Received: by mail-oa1-x30.google.com with SMTP id 586e51a60fabf-edf3b6b0f2so6552320fac.9
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 06:19:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rnW1lNdXaHOrseNx+8VZQkCoh4hVp7eYD17JDIqBNtY=;
+        b=oi7x1SH011n4JulssPJJ4GDfjqKYhSYQ0T1tiXB9tvhOy5Mdy+Z2PCzNAsF/7iEFCB
+         ukYsBCXrB1SmnFjtouzUbdnGqEvBkCgNZ6K2pDdf9JUPG+14CPagbSXalfyEgPFuJ4Bq
+         mXBGFNv1v8gnl+euHb+kBd3WEpGNNxHVvhWTyHlBXlUdlUsadWCM/Y6QowcbTg+Ijk7U
+         rJVnJVj8st0ixwA+ZgS20uf/eDSDjA/9RKZXa8/aFYaMNnd/cdcNMU+eXVXdez2BFjaO
+         adWE499AXKAD9+6tdp+EsvjFRq0Gtr3Ctt7xvI4uC8zJ9UXKQYgVs00vMMHTwynaf55c
+         RNcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rnW1lNdXaHOrseNx+8VZQkCoh4hVp7eYD17JDIqBNtY=;
+        b=NR/7KNrCsMpq8ZhUOdHgM0Rr8MRVtez++GmJ4idDqKt6jmVC9Pmx8eQFf7oaikWpry
+         2hnmWx03bbflNDZ9zYOWhrBxHxfpASVo4m3j0CRmemtb9nRYOsmtOhtwVFS1qvL/ERvC
+         bfx+08W6otvN4w6Lf+uUOntNp0QXfJMrG7n5HQFEfFa4a7SlRgP+2twIZALLnH4+0lcj
+         Iiy5KJ9FLAGPI3rHmGsqOIP4mknGT7OwGM1pHN5V+Q4pmdKoPFoB/QBWgBsgxK/esJWB
+         UuuGlrFk1fACwztL9MoulGAJ52X1tkTqPQZGdiXJ7/smDOpwIhWCzDv4M2YkiT3rhSCF
+         wMtw==
+X-Gm-Message-State: AOAM532nc0e0aN8Fih/dis5ugAutX8xlJZuxxfZgsNao4WBe9OAyBrfC
+        j92YXFaYqTB0LvUNLbTc9U+DKfvE3Ve1xfYMGOU5dQ==
+X-Google-Smtp-Source: ABdhPJzJ9UCZzyIr9uCRxfqtNYldmP9u2JwxV1+G+hxFwMYyTA5WI0Koxn2yjLH38Pjz4Dugu1UDn8pxJ9yV+0b+L+A=
+X-Received: by 2002:a05:6870:b61e:b0:ec:a426:bab5 with SMTP id
+ cm30-20020a056870b61e00b000eca426bab5mr5478149oab.163.1652361585876; Thu, 12
+ May 2022 06:19:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511233757.2001218-11-eric.dumazet@gmail.com>
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <0000000000004c57c005b0fc4114@google.com> <000000000000b15b3505d7d9e8ca@google.com>
+In-Reply-To: <000000000000b15b3505d7d9e8ca@google.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Thu, 12 May 2022 15:19:34 +0200
+Message-ID: <CACT4Y+YOJU91CLaNhFosG7koHPpz8U38nurXyboXb_9gGw=Fgg@mail.gmail.com>
+Subject: Re: [syzbot] INFO: task hung in usb_get_descriptor
+To:     syzbot <syzbot+31ae6d17d115e980fd14@syzkaller.appspotmail.com>
+Cc:     brouer@redhat.com, coreteam@netfilter.org, davem@davemloft.net,
+        edumazet@google.com, eman.mohamed@rofaidarealestate.com,
+        gregkh@linuxfoundation.org, gustavoars@kernel.org,
+        hdanton@sina.com, ingrassia@epigenesys.com, johan@kernel.org,
+        kaber@trash.net, kadlec@blackhole.kfki.hu,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        mathias.nyman@linux.intel.com, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, pablo@netfilter.org,
+        skhan@linuxfoundation.org, stern@rowland.harvard.edu,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-15.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SORTED_RECIPS,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+On Sat, 12 Feb 2022 at 23:43, syzbot
+<syzbot+31ae6d17d115e980fd14@syzkaller.appspotmail.com> wrote:
+>
+> syzbot suspects this issue was fixed by commit:
+>
+> commit 363eaa3a450abb4e63bd6e3ad79d1f7a0f717814
+> Author: Shuah Khan <skhan@linuxfoundation.org>
+> Date:   Tue Mar 30 01:36:51 2021 +0000
+>
+>     usbip: synchronize event handler with sysfs code paths
+>
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=1616e872700000
+> start commit:   4fa56ad0d12e Merge tag 'for-linus' of git://git.kernel.org..
+> git tree:       upstream
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=144ecdb0be3abc07
+> dashboard link: https://syzkaller.appspot.com/bug?extid=31ae6d17d115e980fd14
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=12548d11d00000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13ec77e9d00000
+>
+> If the result looks correct, please mark the issue as fixed by replying with:
+>
+> #syz fix: usbip: synchronize event handler with sysfs code paths
 
-I love your patch! Perhaps something to improve:
+Based on subsystem and commit subject looks legit:
 
-[auto build test WARNING on net-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-add-annotations-for-sk-sk_bound_dev_if/20220512-073914
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b57c7e8b76c646cf77ce4353a779a8b781592209
-config: hexagon-randconfig-r035-20220512 (https://download.01.org/0day-ci/archive/20220512/202205122132.HUrst9JA-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/c92cfd9f3ecb483ff055edb02f7498494b96ba68
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eric-Dumazet/net-add-annotations-for-sk-sk_bound_dev_if/20220512-073914
-        git checkout c92cfd9f3ecb483ff055edb02f7498494b96ba68
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/ipv4/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> net/ipv4/inet_hashtables.c:413:34: warning: variable 'acookie' is uninitialized when used here [-Wuninitialized]
-                   if (likely(INET_MATCH(sk, net, acookie,
-                                                  ^~~~~~~
-   include/linux/compiler.h:77:40: note: expanded from macro 'likely'
-   # define likely(x)      __builtin_expect(!!(x), 1)
-                                               ^
-   net/ipv4/inet_hashtables.c:398:2: note: variable 'acookie' is declared here
-           INET_ADDR_COOKIE(acookie, saddr, daddr);
-           ^
-   include/net/inet_hashtables.h:330:2: note: expanded from macro 'INET_ADDR_COOKIE'
-           const int __name __deprecated __always_unused
-           ^
-   net/ipv4/inet_hashtables.c:468:35: warning: variable 'acookie' is uninitialized when used here [-Wuninitialized]
-                   if (likely(INET_MATCH(sk2, net, acookie,
-                                                   ^~~~~~~
-   include/linux/compiler.h:77:40: note: expanded from macro 'likely'
-   # define likely(x)      __builtin_expect(!!(x), 1)
-                                               ^
-   net/ipv4/inet_hashtables.c:452:2: note: variable 'acookie' is declared here
-           INET_ADDR_COOKIE(acookie, saddr, daddr);
-           ^
-   include/net/inet_hashtables.h:330:2: note: expanded from macro 'INET_ADDR_COOKIE'
-           const int __name __deprecated __always_unused
-           ^
-   net/ipv4/inet_hashtables.c:535:38: warning: variable 'acookie' is uninitialized when used here [-Wuninitialized]
-                           if (unlikely(INET_MATCH(esk, net, acookie,
-                                                             ^~~~~~~
-   include/linux/compiler.h:78:42: note: expanded from macro 'unlikely'
-   # define unlikely(x)    __builtin_expect(!!(x), 0)
-                                               ^
-   net/ipv4/inet_hashtables.c:529:2: note: variable 'acookie' is declared here
-           INET_ADDR_COOKIE(acookie, sk->sk_daddr, sk->sk_rcv_saddr);
-           ^
-   include/net/inet_hashtables.h:330:2: note: expanded from macro 'INET_ADDR_COOKIE'
-           const int __name __deprecated __always_unused
-           ^
-   3 warnings generated.
---
->> net/ipv4/udp.c:2566:27: warning: variable 'acookie' is uninitialized when used here [-Wuninitialized]
-                   if (INET_MATCH(sk, net, acookie, rmt_addr,
-                                           ^~~~~~~
-   net/ipv4/udp.c:2561:2: note: variable 'acookie' is declared here
-           INET_ADDR_COOKIE(acookie, rmt_addr, loc_addr);
-           ^
-   include/net/inet_hashtables.h:330:2: note: expanded from macro 'INET_ADDR_COOKIE'
-           const int __name __deprecated __always_unused
-           ^
-   1 warning generated.
-
-
-vim +/acookie +413 net/ipv4/inet_hashtables.c
-
-2c13270b441054 Eric Dumazet     2015-03-15  391  
-c67499c0e77206 Pavel Emelyanov  2008-01-31  392  struct sock *__inet_lookup_established(struct net *net,
-c67499c0e77206 Pavel Emelyanov  2008-01-31  393  				  struct inet_hashinfo *hashinfo,
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  394  				  const __be32 saddr, const __be16 sport,
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  395  				  const __be32 daddr, const u16 hnum,
-3fa6f616a7a4d0 David Ahern      2017-08-07  396  				  const int dif, const int sdif)
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  397  {
-c7228317441f4d Joe Perches      2014-05-13  398  	INET_ADDR_COOKIE(acookie, saddr, daddr);
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  399  	const __portpair ports = INET_COMBINED_PORTS(sport, hnum);
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  400  	struct sock *sk;
-3ab5aee7fe840b Eric Dumazet     2008-11-16  401  	const struct hlist_nulls_node *node;
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  402  	/* Optimize here for direct hit, only listening connections can
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  403  	 * have wildcards anyways.
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  404  	 */
-9f26b3add3783c Pavel Emelyanov  2008-06-16  405  	unsigned int hash = inet_ehashfn(net, daddr, hnum, saddr, sport);
-f373b53b5fe67a Eric Dumazet     2009-10-09  406  	unsigned int slot = hash & hashinfo->ehash_mask;
-3ab5aee7fe840b Eric Dumazet     2008-11-16  407  	struct inet_ehash_bucket *head = &hashinfo->ehash[slot];
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  408  
-3ab5aee7fe840b Eric Dumazet     2008-11-16  409  begin:
-3ab5aee7fe840b Eric Dumazet     2008-11-16  410  	sk_nulls_for_each_rcu(sk, node, &head->chain) {
-ce43b03e888947 Eric Dumazet     2012-11-30  411  		if (sk->sk_hash != hash)
-ce43b03e888947 Eric Dumazet     2012-11-30  412  			continue;
-ce43b03e888947 Eric Dumazet     2012-11-30 @413  		if (likely(INET_MATCH(sk, net, acookie,
-3fa6f616a7a4d0 David Ahern      2017-08-07  414  				      saddr, daddr, ports, dif, sdif))) {
-41c6d650f6537e Reshetova, Elena 2017-06-30  415  			if (unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
-05dbc7b59481ca Eric Dumazet     2013-10-03  416  				goto out;
-ce43b03e888947 Eric Dumazet     2012-11-30  417  			if (unlikely(!INET_MATCH(sk, net, acookie,
-3fa6f616a7a4d0 David Ahern      2017-08-07  418  						 saddr, daddr, ports,
-3fa6f616a7a4d0 David Ahern      2017-08-07  419  						 dif, sdif))) {
-05dbc7b59481ca Eric Dumazet     2013-10-03  420  				sock_gen_put(sk);
-3ab5aee7fe840b Eric Dumazet     2008-11-16  421  				goto begin;
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  422  			}
-05dbc7b59481ca Eric Dumazet     2013-10-03  423  			goto found;
-3ab5aee7fe840b Eric Dumazet     2008-11-16  424  		}
-3ab5aee7fe840b Eric Dumazet     2008-11-16  425  	}
-3ab5aee7fe840b Eric Dumazet     2008-11-16  426  	/*
-3ab5aee7fe840b Eric Dumazet     2008-11-16  427  	 * if the nulls value we got at the end of this lookup is
-3ab5aee7fe840b Eric Dumazet     2008-11-16  428  	 * not the expected one, we must restart lookup.
-3ab5aee7fe840b Eric Dumazet     2008-11-16  429  	 * We probably met an item that was moved to another chain.
-3ab5aee7fe840b Eric Dumazet     2008-11-16  430  	 */
-3ab5aee7fe840b Eric Dumazet     2008-11-16  431  	if (get_nulls_value(node) != slot)
-3ab5aee7fe840b Eric Dumazet     2008-11-16  432  		goto begin;
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  433  out:
-05dbc7b59481ca Eric Dumazet     2013-10-03  434  	sk = NULL;
-05dbc7b59481ca Eric Dumazet     2013-10-03  435  found:
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  436  	return sk;
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  437  }
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  438  EXPORT_SYMBOL_GPL(__inet_lookup_established);
-77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  439  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+#syz fix: usbip: synchronize event handler with sysfs code paths
