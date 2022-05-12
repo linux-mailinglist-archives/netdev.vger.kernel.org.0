@@ -2,122 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B234652570E
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 23:32:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35CA952571B
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 23:35:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358729AbiELVcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 17:32:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54118 "EHLO
+        id S1357935AbiELVf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 17:35:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358743AbiELVcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 17:32:02 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 073B120F74A
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 14:32:01 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id i38so12066146ybj.13
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 14:32:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qP8x7MUO3Uu37I6lovdAXd3voCCKfRiLq82HFRhMPMs=;
-        b=Kplc09E4S/2dbuxcXjM62BKCcgoUDUa3W6vtuOLIK+pmB60FnSLrqgZFHHcXsrROHz
-         0ftSTKDMuLcwioiSk/jyrRtd3aYiH0CFysLg06dQS1x6v7XwC1QVBUmuYS4m/cCt2QGm
-         Z99AeZbhMuOeU3i4+v3+ETnSyv8MdvnZWxck8Ig1RAl7SSfsFoOScsMPeaZm9pTUoW0M
-         A0Qigywdfgl0/AlJEEPTKEUYjCWn8rjocrJo45QUFBdV0Vc6zxIbJiK4DMtVNxvEU0Xx
-         m1TP3ZzWFpl9tlk5z3USjv8ThN7ozhK8XhpqTHZJqgPPtBHS6F7geiDW6SoUkNj+ooB4
-         KL1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qP8x7MUO3Uu37I6lovdAXd3voCCKfRiLq82HFRhMPMs=;
-        b=b1pGaYnRUEjUEWaywIcnmywn6G1oqndcZt1xOn559EupWRVT6jdHF6uGX7ABHXma48
-         LkjLPpM88AG8gQHYuYMPvRulYpJkP9Jk14Pli4iuvPtcyK0otrUgK9roTpVOqw7W1/wD
-         jHGgv1SzuHtgsQtkKs5DqgfZBKEfxGcFQEZGbERE8n6GCfZN0FwCtF5YlOKSFj0Rc/9I
-         p29E+D2E9iY5YF2YT9/iCAnVTKpNV5q3ZG8B3zgq3c2P2K+D57idttuPnBYZDH75AHuo
-         C6hSnGrztJTCjh+OWlZS6m8/P8J9O8VFpe6PLTUDSUVY3bIG9v7PFiB75Mn0ZZG4KZXO
-         1N/w==
-X-Gm-Message-State: AOAM532oa0I7DVrxsyRsWPH2gTomkNSN0BpCEMfNNUYnxNuXSVt1Jksy
-        d3AzewuF1AFZFqDgY4lUV5atEVrjR9y/5FpyvNbjWg==
-X-Google-Smtp-Source: ABdhPJwC7glJ4rfuuAy9qZ2O1j2dwGqNFULn699DHOnGq4mz/2+NODz6siqEBR/m4hd8zL0aFMd//xboRFIMLbXNSCs=
-X-Received: by 2002:a05:6902:1007:b0:649:7745:d393 with SMTP id
- w7-20020a056902100700b006497745d393mr1846772ybt.407.1652391119968; Thu, 12
- May 2022 14:31:59 -0700 (PDT)
+        with ESMTP id S239064AbiELVfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 17:35:55 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5611FA67
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 14:35:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652391353; x=1683927353;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RtF7CNpfkWSTUyqk8QRGJ5aPbyTaid/AcUjnRhgwQFM=;
+  b=SvbfrXXfHq/o6Tv2zM2ZJoTvy5mCW4l8Mr1uh5TQOmjSHSCWVcQHJaRh
+   f8CeZAZm3keYDrxRcNkCTbdd89RBcgK/QyovtHv651QyUBuhRrFHBcxp8
+   bbKnsU2hjW03+Cmsd/DpL3vGmNEMd8S7XJSFXCIerjEj5B1F15jiHaHQI
+   8hbJdyTSwZZl8yGUUN79MlC/aApksOMQjCaAOb9Xk/wSQ6B4aO0faT8vW
+   s/83NfetXNLXzzqz2j4OTyDRk4xDT+aPdzFiavyspqmqZe/RJuZAlAV5c
+   sMl7V1fetqiHLdv8fkVrrmR6E/l1ZNMoiA3Q2mC4YXVfEu4vQEuF8oTqG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="250673224"
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="250673224"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 14:35:53 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="895971315"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga005.fm.intel.com with ESMTP; 12 May 2022 14:35:53 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
+        sudheer.mogilappagari@intel.com, amritha.nambiar@intel.com,
+        Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Subject: [PATCH net-next 1/1] ice: Expose RSS indirection tables for queue groups via ethtool
+Date:   Thu, 12 May 2022 14:32:49 -0700
+Message-Id: <20220512213249.3747424-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220512103322.380405-1-liujian56@huawei.com> <CANn89iJ7Lo7NNi4TrpKsaxzFrcVXdgbyopqTRQEveSzsDL7CFA@mail.gmail.com>
- <CANpmjNPRB-4f3tUZjycpFVsDBAK_GEW-vxDbTZti+gtJaEx2iw@mail.gmail.com>
-In-Reply-To: <CANpmjNPRB-4f3tUZjycpFVsDBAK_GEW-vxDbTZti+gtJaEx2iw@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 12 May 2022 14:31:48 -0700
-Message-ID: <CANn89iKJ+9=ug79V_bd8LSsLaSu0VLtzZdDLC87rcvQ6UYieHQ@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: Add READ_ONCE() to read tcp_orphan_count
-To:     Marco Elver <elver@google.com>
-Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Liu Jian <liujian56@huawei.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 12, 2022 at 2:18 PM Marco Elver <elver@google.com> wrote:
+From: Sridhar Samudrala <sridhar.samudrala@intel.com>
 
->
-> I guess the question is, is it the norm that per_cpu() retrieves data
-> that can legally be modified concurrently, or not. If not, and in most
-> cases it's a bug, the annotations should be here.
->
-> Paul, was there any guidance/documentation on this, but I fail to find
-> it right now? (access-marking.txt doesn't say much about per-CPU
-> data.)
+When ADQ queue groups (TCs) are created via tc mqprio command,
+RSS contexts and associated RSS indirection tables are configured
+automatically per TC based on the queue ranges specified for
+each traffic class.
 
-Normally, whenever we add a READ_ONCE(), we are supposed to add a comment.
+For ex:
+tc qdisc add dev enp175s0f0 root mqprio num_tc 3 map 0 1 2 \
+	queues 2@0 8@2 4@10 hw 1 mode channel
 
-We could make an exception for per_cpu_once(), because the comment
-would be centralized
-at per_cpu_once() definition.
+will create 3 queue groups (TC 0-2) with queue ranges 2, 8 and 4
+in 3 queue groups. Each queue group is associated with its
+own RSS context and RSS indirection table.
 
-We will be stuck with READ_ONCE() in places we are using
-per_cpu_ptr(), for example
-in dev_fetch_sw_netstats()
+Add support to expose RSS indirection tables for all ADQ queue
+groups using ethtool RSS contexts interface.
+	ethtool -x enp175s0f0 context <tc-num>
 
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 1461c2d9dec8099a9a2d43a704b4c6cb0375f480..b66470291d7b7e6c33161093d71e40587f9ed838
-100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10381,10 +10381,13 @@ void dev_fetch_sw_netstats(struct
-rtnl_link_stats64 *s,
-                stats = per_cpu_ptr(netstats, cpu);
-                do {
-                        start = u64_stats_fetch_begin_irq(&stats->syncp);
--                       tmp.rx_packets = stats->rx_packets;
--                       tmp.rx_bytes   = stats->rx_bytes;
--                       tmp.tx_packets = stats->tx_packets;
--                       tmp.tx_bytes   = stats->tx_bytes;
-+                       /* These values can change under us.
-+                        * READ_ONCE() pair with too many write sides...
-+                        */
-+                       tmp.rx_packets = READ_ONCE(stats->rx_packets);
-+                       tmp.rx_bytes   = READ_ONCE(stats->rx_bytes);
-+                       tmp.tx_packets = READ_ONCE(stats->tx_packets);
-+                       tmp.tx_bytes   = READ_ONCE(stats->tx_bytes);
-                } while (u64_stats_fetch_retry_irq(&stats->syncp, start));
+Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
+Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
+Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+---
+ drivers/net/ethernet/intel/ice/ice_ethtool.c | 69 +++++++++++++++-----
+ 1 file changed, 51 insertions(+), 18 deletions(-)
 
-                s->rx_packets += tmp.rx_packets;
+diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+index 476bd1c83c87..1e71b70f0e52 100644
+--- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
++++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
+@@ -3111,36 +3111,47 @@ static u32 ice_get_rxfh_indir_size(struct net_device *netdev)
+ 	return np->vsi->rss_table_size;
+ }
+ 
+-/**
+- * ice_get_rxfh - get the Rx flow hash indirection table
+- * @netdev: network interface device structure
+- * @indir: indirection table
+- * @key: hash key
+- * @hfunc: hash function
+- *
+- * Reads the indirection table directly from the hardware.
+- */
+ static int
+-ice_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key, u8 *hfunc)
++ice_get_rxfh_context(struct net_device *netdev, u32 *indir,
++		     u8 *key, u8 *hfunc, u32 rss_context)
+ {
+ 	struct ice_netdev_priv *np = netdev_priv(netdev);
+ 	struct ice_vsi *vsi = np->vsi;
+ 	struct ice_pf *pf = vsi->back;
+-	int err, i;
++	u16 qcount, offset;
++	int err, num_tc, i;
+ 	u8 *lut;
+ 
++	if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags)) {
++		netdev_warn(netdev, "RSS is not supported on this VSI!\n");
++		return -EOPNOTSUPP;
++	}
++
++	if (rss_context && !ice_is_adq_active(pf)) {
++		netdev_err(netdev, "RSS context cannot be non-zero when ADQ is not configured.\n");
++		return -EINVAL;
++	}
++
++	qcount = vsi->mqprio_qopt.qopt.count[rss_context];
++	offset = vsi->mqprio_qopt.qopt.offset[rss_context];
++
++	if (rss_context && ice_is_adq_active(pf)) {
++		num_tc = vsi->mqprio_qopt.qopt.num_tc;
++		if (rss_context >= num_tc) {
++			netdev_err(netdev, "RSS context:%d  > num_tc:%d\n",
++				   rss_context, num_tc);
++			return -EINVAL;
++		}
++		/* Use channel VSI of given TC */
++		vsi = vsi->tc_map_vsi[rss_context];
++	}
++
+ 	if (hfunc)
+ 		*hfunc = ETH_RSS_HASH_TOP;
+ 
+ 	if (!indir)
+ 		return 0;
+ 
+-	if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags)) {
+-		/* RSS not supported return error here */
+-		netdev_warn(netdev, "RSS is not configured on this VSI!\n");
+-		return -EIO;
+-	}
+-
+ 	lut = kzalloc(vsi->rss_table_size, GFP_KERNEL);
+ 	if (!lut)
+ 		return -ENOMEM;
+@@ -3153,14 +3164,35 @@ ice_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key, u8 *hfunc)
+ 	if (err)
+ 		goto out;
+ 
++	if (ice_is_adq_active(pf)) {
++		for (i = 0; i < vsi->rss_table_size; i++)
++			indir[i] = offset + lut[i] % qcount;
++		goto out;
++	}
++
+ 	for (i = 0; i < vsi->rss_table_size; i++)
+-		indir[i] = (u32)(lut[i]);
++		indir[i] = lut[i];
+ 
+ out:
+ 	kfree(lut);
+ 	return err;
+ }
+ 
++/**
++ * ice_get_rxfh - get the Rx flow hash indirection table
++ * @netdev: network interface device structure
++ * @indir: indirection table
++ * @key: hash key
++ * @hfunc: hash function
++ *
++ * Reads the indirection table directly from the hardware.
++ */
++static int
++ice_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key, u8 *hfunc)
++{
++	return ice_get_rxfh_context(netdev, indir, key, hfunc, 0);
++}
++
+ /**
+  * ice_set_rxfh - set the Rx flow hash indirection table
+  * @netdev: network interface device structure
+@@ -4102,6 +4134,7 @@ static const struct ethtool_ops ice_ethtool_ops = {
+ 	.set_pauseparam		= ice_set_pauseparam,
+ 	.get_rxfh_key_size	= ice_get_rxfh_key_size,
+ 	.get_rxfh_indir_size	= ice_get_rxfh_indir_size,
++	.get_rxfh_context	= ice_get_rxfh_context,
+ 	.get_rxfh		= ice_get_rxfh,
+ 	.set_rxfh		= ice_set_rxfh,
+ 	.get_channels		= ice_get_channels,
+-- 
+2.35.1
+
