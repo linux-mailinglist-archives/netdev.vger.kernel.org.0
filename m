@@ -2,239 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DA8852551C
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 20:48:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7D85255A3
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 21:22:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356601AbiELSsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 14:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50386 "EHLO
+        id S1357971AbiELTWP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 15:22:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351937AbiELSsA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 14:48:00 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929B25C65A
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 11:47:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652381279; x=1683917279;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=hg+MaUeFopVOr37uYSJSiYmfEvnQShrQCbPUoeGgO3Q=;
-  b=N1/3aFfmQvHZA9ZbhNXmnoZM+S1/BLjWt/o5KEzsi6jBDMYZyn8/NDTr
-   enf5LtuiHz2kCVjQp59Tv+QexHJ6otXAnAm8GBKBsVS10iwuW4Kr5PkXU
-   lp6DZtqwJp2rZct551ALyLzHwquLxbsexbomikvwz6JYb7caZwJou3yYj
-   WXr924DYF9bYRo8ImgXy267X0URLjFid8ERAzc8sP8ID0YgMiGUw6Tcr4
-   GbubswNnSZWj7UFjUu1gBuL/2Vwtq4rL7zzfCqgVWDBSM57cuyydzAzuA
-   DR8TEPv/Oh8r/jl2PEKtqXU8FzHwHQMVaZJ32rtWuZv+wKNA4/6a8Yqbz
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="257652769"
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="257652769"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 11:47:59 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,220,1647327600"; 
-   d="scan'208";a="624531156"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by fmsmga008.fm.intel.com with ESMTP; 12 May 2022 11:47:58 -0700
-Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 12 May 2022 11:47:58 -0700
-Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
- fmsmsx612.amr.corp.intel.com (10.18.126.92) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 12 May 2022 11:47:57 -0700
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 12 May 2022 11:47:57 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.57.44) by
- edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 12 May 2022 11:47:57 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZvuOUf8QRCtVoTjx8Ct84c/m32sYktUjYlUXS71vBlndCpnfxlwtyDc15LTuh0lwJK12NqdZoQIU5M/5FRpUujGDadyV2n+6WN5/HDQGon8DvybCKtY4Df4jkVtdBQ2hMVDlEQIbYsJU2T7b8AKJYC4k88QWY3Bx+IzBY2YruFpTnt75wxBXs3uArGSeaisj2APG0CX448TmM+IcM4nTz0A2Z+OZXBhA9399OJnAoHp+OthB/KS90uWYzbWYM/dyuu87B3WFfMmbH1ZVGsmrsSFdDxdKXRX0ud0a3hHVHwAdYbnCHVrunGq8EMMb3u/I7rJhXvYsQDa0iB5fw2iqDg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Y32H6GbTrj9eSXhqrPmXZhHCn+ExRMOXVpF7SfdPUls=;
- b=A07OLBZ0IJ59lfnlLfi/mlwnboeEhP8R52QoDuYYZNhCiXMiyOO1Z0+5J//gZwjR3Q8mLNuosO6JumS8YwkJtPX7WtAF9sc2zKuRwxZDGz+XS97XXi8mFQ3TVCFeeMn73lF9xa8i+YZxlriPsdUhzlQV+TY6DD/fvsD7qqOhOLODNTQiJxcwryo1ghU7KCBM9lFgo6rfyjy8X0zQ3jAHAP71QO7RvJ+dI27z1m/EgRwD5NXc0Px5rMPTDxhYiqiWwepky8SHLl6i7BTB1baVxTuNFPaCWGuy1+b4AH8XOG9cRBDNkikPzAFKeAJ7P+e4+oHcVwZSYkbF8Dl3XTStiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BYAPR11MB3224.namprd11.prod.outlook.com (2603:10b6:a03:77::24)
- by SA2PR11MB4874.namprd11.prod.outlook.com (2603:10b6:806:f9::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Thu, 12 May
- 2022 18:47:56 +0000
-Received: from BYAPR11MB3224.namprd11.prod.outlook.com
- ([fe80::99e4:a24a:d119:5660]) by BYAPR11MB3224.namprd11.prod.outlook.com
- ([fe80::99e4:a24a:d119:5660%7]) with mapi id 15.20.5227.023; Thu, 12 May 2022
- 18:47:56 +0000
-Message-ID: <5581f364-a0bb-7bfb-afb8-6a8986234eec@intel.com>
-Date:   Thu, 12 May 2022 11:47:53 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH] igb: Convert a series of if statements to switch case
-Content-Language: en-US
-To:     David Laight <David.Laight@ACULAB.COM>,
-        'xiaolinkui' <xiaolinkui@gmail.com>,
-        "pmenzel@molgen.mpg.de" <pmenzel@molgen.mpg.de>,
-        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Linkui Xiao <xiaolinkui@kylinos.cn>
-References: <20220511092004.30173-1-xiaolinkui@kylinos.cn>
- <3a5a6467b24a46ce8e05fb8a422baa51@AcuMS.aculab.com>
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-In-Reply-To: <3a5a6467b24a46ce8e05fb8a422baa51@AcuMS.aculab.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: BYAPR08CA0032.namprd08.prod.outlook.com
- (2603:10b6:a03:100::45) To BYAPR11MB3224.namprd11.prod.outlook.com
- (2603:10b6:a03:77::24)
+        with ESMTP id S229503AbiELTWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 15:22:13 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.126.135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5A1468F95;
+        Thu, 12 May 2022 12:22:10 -0700 (PDT)
+Received: from mail-yb1-f169.google.com ([209.85.219.169]) by
+ mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
+ 1Mj8a5-1oIluv3iCL-00fElD; Thu, 12 May 2022 21:22:09 +0200
+Received: by mail-yb1-f169.google.com with SMTP id m128so11591007ybm.5;
+        Thu, 12 May 2022 12:22:08 -0700 (PDT)
+X-Gm-Message-State: AOAM5331aHptf+lw3AX9aPXN0HrSnFIWobeG8UJsbDTHryfTGoVWFcFL
+        HMTQLwEiD1BCZkGEteQN6KWwCJrZbXK4HlRqfQY=
+X-Google-Smtp-Source: ABdhPJzoF6z4JQCWRSwljX3/FJlSLwjXIkDzitEtgdhb7tvIxKk1FfPhJUdb+6KPaTTEYn0vEU7vm15YINajDJQHVl4=
+X-Received: by 2002:a25:c604:0:b0:645:d969:97a7 with SMTP id
+ k4-20020a25c604000000b00645d96997a7mr1319828ybf.134.1652383327455; Thu, 12
+ May 2022 12:22:07 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d520dcfd-e54b-4ab0-5a9a-08da3447edaf
-X-MS-TrafficTypeDiagnostic: SA2PR11MB4874:EE_
-X-Microsoft-Antispam-PRVS: <SA2PR11MB487485D8E8186FBC4E89DD5DC6CB9@SA2PR11MB4874.namprd11.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: QDW4BMRzU638K4r+dJbbRG1OMxJojzkTrqyT4Aw3KLRSdEQs0mM2aajCpsA81ZqMA4UwgCJtjzGs9gahEq01qIOwnNGS3v8rokevfqdfqftv+OSwD00qJM+n+nzUXXhGxb0y4Q9mOlG5xybXg3AmbzglmwSQQ5nNoIs6SGs0cyUmrBmZzvdpxH/2vPrCavmPAcHbplebfRQHOZgSpQDJQcmzhc8y6aCQiIYpKrrD4tb99vOId8KUNwxbzqizRH9iZPdzjkuBdjwPCSXyEhlFGYa0MYCgkAzUUrSaZUoqhjac+h84SDudwNn7SngLK6qO7uAU2oOR0Mx8EJhGS3jVD7Njfv2PN2dNdn4z71etRVlHeAvPZpW28+6rZeRjNWk6AXH+K3Ke25s77Gb/BWNvRMncPp57QQIVeeiA06mMWAkNGJ5oClYpr0jkE1xAehFKjezfvDbpRtbRPS1fuFgyeUrwp3hskPT+794tZNgNypl5de8fidZKiJZZ+EF8OVchk3AoH2FbekBRSpk+4NC+kgRJE/5NTr555TYcWKNyooYN8pGTtghVOHC/SMl8dFyo1WjikKqh4KxRff9fKJ2T/UsV1nYi5GoDswA7R8uymI3DgEWwc9bWj5pVXJ1XEfx/C0hH7lVQ312x8VpxrGlvHGIhKvq2fWWmVMA5f+etIWJl50zS3GzkoxTO2kQutIoQrQ9Ouji29krdtaM+GxvFFqrRDEPvi3jc0dOxr552tLMKpvoIMKulUe6OldwVejo+
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB3224.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(7416002)(31696002)(82960400001)(186003)(83380400001)(508600001)(6666004)(2906002)(8936002)(38100700002)(6486002)(26005)(6512007)(316002)(110136005)(2616005)(6636002)(54906003)(53546011)(66946007)(66476007)(66556008)(6506007)(86362001)(8676002)(36756003)(31686004)(4326008)(5660300002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VWd0WXlWWDBEcGh2aHZndXVvbTNTaWdvYm9FMmcwYlB0OTRZN3lmV0htVllm?=
- =?utf-8?B?VzRjT3Z4cXVnaVhIWTNQdWc3Uk03RTVUUHREd3ZhSGc1Q0FyNVhaSFh5VVhp?=
- =?utf-8?B?VlRwSWc4Vlc3bUhQNTBsdE4vc0VxcGdPMWVHWHhlaHd2ZzVtSnBrMENxUUtY?=
- =?utf-8?B?TUE3engyejhwTXBnYXR4ZzZ1aWRsc0JBTk5WOUplODIraFAwcHFlejkva2Vt?=
- =?utf-8?B?UG1kZVdpeWtwZFJoeW1tOTJOaVpQQTgvMHRiMy8yT1pFc3JXVHMwQXVOTnEw?=
- =?utf-8?B?bnpXREFaSU1LSVFDK2cwd2hKY2ZmdzRDSnNiVElUTnNhc2tvTlk5cWRzZHYr?=
- =?utf-8?B?aFBNZjFpTGYzV0tZKzdkcktOcGpmdkRXaEIya2JjSFc4NnFTV1A2OThvSkV4?=
- =?utf-8?B?QXZJVnZJSEVpOEU5N0JwbU5UWldsZjRTbkh6cXV5ZmYwZ0YzV1BXVHVyR2xI?=
- =?utf-8?B?eldURVFyOXllTzRSZjlrWWRtV1hid3JER0g4WE12Wjg1aWMyVUUyVXQ2REJq?=
- =?utf-8?B?bG4zSGtjaFh2R1BhU0tXK2VrNWk5NjJpYnBxYUcvaFFOL3BkZjVVelFEMUt5?=
- =?utf-8?B?QXN3dmI5d2tLbUt4eXRidzRvRUphVlFQSXh2VlBMVmxOY1pIQ29FUUplcURL?=
- =?utf-8?B?dW50WjZxRk4yZDN2bVJhYUZQZjIxVE1nV1FwMGlzdVNjbjF1MnpHYWxsVjFE?=
- =?utf-8?B?U01vbjMxMi9WVHVJd0pvZzA0Vk1GK0MzaFlCcks5Y1hNSm9Ud1lYNENnLzdZ?=
- =?utf-8?B?WEs0ZmkzLzZ2T1VJUzZVSVp4RmZHM3FncCtTRE9CUm9seEhnaFYreG9LdDQ5?=
- =?utf-8?B?QTgwSU9kTHkvZzdJbUNrUVhFemZ4VjNDdksvc0FQamFwRHZlN3h2YjZoNDFl?=
- =?utf-8?B?SlBodzVmZkoxemJYejNDaVZuTXlOQnVuLzhuRjN3Ukl5RE5KNVJRMFRJYU9B?=
- =?utf-8?B?ZitRNUlrb1gxekZYSTkxNlkydS9FaE0vSG5uRERYaFh2dSt3aDBxaEIxaWJF?=
- =?utf-8?B?akwzUEhUUDlzZVo0Ui8zK1R2ZHFaWWJTcUNXVjdHV2YxL01LRy9LTHFJTHBT?=
- =?utf-8?B?NHBmdzFkNklvdXgyaXJwSldKTERYNU1RYU1WWk8rUlBXVnVJZitnZHJnN1d2?=
- =?utf-8?B?eWd4YndnUnpmQlZyL0VXaVJ6eUU0am1rU3c4aGdJNGp0MXo5blJxaFNyZFBs?=
- =?utf-8?B?TU52d1BER3dsRjZ4ODdRWlpGdmV4elhUdkU2c21UeGZtZU5sWEJ2czNHdGpa?=
- =?utf-8?B?Z3VEandlZVpRMUpybnZxUnh2UjA4TisyNkxIS1pCaGFTUHQxSkpZQWlUaDR1?=
- =?utf-8?B?WFU5NW1tS1pOQzFxVk94MkZOWGF6K0Fady85M0hMZlowUVc5V0ZMa29NM0x1?=
- =?utf-8?B?ajJjRUlleGl4bnhFS0t0MEJaQUJLb0U3d0RvaElrSHowZlZQcmltRWlaaGNo?=
- =?utf-8?B?R0RNcm1lMHF2Smw3ZXR4SGxPOERWY3lyNmVBclBuUHQ0SUUxSWprcFcrZGRx?=
- =?utf-8?B?MGJTWWdCUTA3MFBMc05ldm1lbjM5RW5xS3VxZXh1YmxBK0J3TC8yeVoxU20y?=
- =?utf-8?B?QVl5Vi9CSml5MUhCeGRqVmY5TzBIbjBuaVI5dVpITHFoaUdZZEp6WXJSS1hv?=
- =?utf-8?B?b2hZRmRWUEZaTTVOWG1BT3NYc3d6WHI3NTlBSnpWSnlERVhaMjhtU3NFRVda?=
- =?utf-8?B?bzNiUlFDNW8xd3RoaHpvWTl1Z0huNlV5bW9ZRmFZM2NCbmxwTnh2SnQreG9z?=
- =?utf-8?B?WmpYZFNDalczVUpiWVRPV3NrcHBrN05XdGhaOGZFRkVZY1NKM1o1TTVNUGd5?=
- =?utf-8?B?M04vT1ZldG81djhPczhSWFNGOVYycUdMcS9lci9TWWhUQnhpYTNKQk5YVTJ3?=
- =?utf-8?B?Z0hkZHV5VTVQZEd6QWJLNkV3ME52Wkhka0VQc0ZpRFpCUUhlS1dhbUs3S0Mz?=
- =?utf-8?B?SFRBY3dlWmlrY3NERXZJc1FPaXNnSHlHREV6NHlOZklPMFNtb24vZWE0VkQ4?=
- =?utf-8?B?L0kydkVZbk5obFhuTWxLTkxHV29vS1EzTUx3emlJUGdET3hjUm9OVVRwUmRZ?=
- =?utf-8?B?Z3FNUEFpSVFwTmN2UnFPVnFsZjB4UW8vVkViNkgyNHVCcW9iRUlBUGE3OHlP?=
- =?utf-8?B?U1ZCNmNYREFPbXVLNWdqWXZKUGFQbHRCZTBYVi9XcHFaKzVZeHJJNi9pekpG?=
- =?utf-8?B?K3llTVUwTmtyQXphT21HRkpxWmUyZjZNRm05TlcwMjRNWHp6RFhVUmphNGlr?=
- =?utf-8?B?b2xTclBqSDZ2Q1hhY0k4MTQ4aUQ0cGl3Qzl2elNsblRJMkVKVjJtN3VMOHZL?=
- =?utf-8?B?UitkSWt1NTdaaVl5NVlwdi8vVWNHQjVkYnNUNzYwUmRqckVNblZmSU9uWjM3?=
- =?utf-8?Q?r/hH441m+Qia++Yw=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: d520dcfd-e54b-4ab0-5a9a-08da3447edaf
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB3224.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 18:47:56.3235
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: CU029iT2DKM5fjtD+VTGv8/z0LIynmOjWBT5UKk9bMRIKkuJvGQuptKUn3RbxvIcPKA7tyXwHkWzr93XskmSiK8EwvA5128p7oGX/KeWpJQ=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB4874
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-7.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220509150130.1047016-1-kuba@kernel.org> <CAK8P3a0FVM8g0LG3_mHJ1xX3Bs9cxae8ez7b9qvGOD+aJdc8Dw@mail.gmail.com>
+ <20220509103216.180be080@kernel.org> <9cac4fbd-9557-b0b8-54fa-93f0290a6fb8@schmorgal.com>
+ <CAK8P3a1AA181LqQSxnToSVx0e5wmneUsOKfmnxVMsUNh465C_Q@mail.gmail.com>
+ <d7076f95-b25b-3694-1ec2-9b9ff93633b7@schmorgal.com> <CAK8P3a3Tj=aJM_-x17uw1yJ-5+DgKX6APgEaO0sa=aRBKya1XQ@mail.gmail.com>
+ <0078ff43-f9fa-1deb-b64d-170d3d93ee6f@workingcode.com>
+In-Reply-To: <0078ff43-f9fa-1deb-b64d-170d3d93ee6f@workingcode.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 12 May 2022 21:21:50 +0200
+X-Gmail-Original-Message-ID: <CAK8P3a0xmXYU5iNki3BX25J73jcy+xJ=bf67G6PqAHjRwckFRA@mail.gmail.com>
+Message-ID: <CAK8P3a0xmXYU5iNki3BX25J73jcy+xJ=bf67G6PqAHjRwckFRA@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: appletalk: remove Apple/Farallon LocalTalk
+ PC support
+To:     James Carlson <carlsonj@workingcode.com>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Doug Brown <doug@schmorgal.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:5HAwyDECutgGFX3S3eiyWYePbhjvOXDKRx/s5A+2yM9OIhaG+u2
+ EuseHFdgzz5T2p51sSiKYQ/Wr6HmzPHOew06e7LYCcQ/urGbshpc4DAUQrckDvE/S+fmA4L
+ lymbH2NHZCztC4P22O4ZaLjLYTcBNnMd1/WQfMUJGMLS64PKPt0A5gRxHMNN2T2hVlDgRBp
+ LXvmB8qOO6jqayIKyPgHA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:VqJ9cU6dS1A=:2I5LodyTyEBJq0MrsjXMdi
+ FIuYLPWU49B189L+E89Gbi38OyiSWad3+8gX+0yQmT/l0PN5T/BAkof6Y5tt89QaFlyiBkI7k
+ ffCm/wUmBoncf2fjhkJ86STAguwFnt6sFppr30gdXecxz1CjIalUT6HTWh0xllNWYWQ8+KPyQ
+ RIeAeHPFY6n0Zk3wX0agmfAychF7JHFwPLGuxb+KC2k+XdztYKcBlWopJF80SYf5zcp9QMcxQ
+ HEDzniGxs1lFaWsnX6TPNoNlXWaTMlmAqyhDM1w0afkA5GIsBepnbX67zj1dXxJTDKnVleWCu
+ 3o0J3oE2+ARialzCJZUoK+AkibrXYVXcq/ZOuMJRSRoxaZvHqY6J0xjNvVXgNEgLU8QafdvR3
+ 1xM1IUK7SA1GsscuyZk/I623VZ6o7eMnG3nMxL6IhdVd334MSHO/ztdp7bNZ8RBeh51JH6cLd
+ 4Eysvb4P4lnKcXVGxij88qwmWM8zGB3n5gnRNsyuzEzjA8vUZxh6rNMjiY6iw2gWG4EVV7o/S
+ GHJxvIvFVQmFNNQSCIt+W7Y26jcZvPxkRpYFmFRbsR4LYGpgxWJXYY/Fi9wzZjKLt4lvcdYLO
+ /hkeVqI01nPQu0DdbTBo0MRIFwpWSTEAFB8tT7+J/kbnbnVe6pHLDoajl6LXfA1qDZSC7FWqT
+ 49zkemvtfjmOZpGoCqoUBhCXw3frJ3A66ykXXJM0cL+uUDFrJz+yPASQrWfc4bo7XeHOZ16NE
+ gm5iIgDTSIM+KDG8+TeSVASOuym6+v663ihMgu16j/05pIcOUf7byrdHCRG01XqcOQa6YFyH4
+ 2cDTniUAEElxitYzRH739LFH4IkSvYippwqGZR0MoKugGNiCEA=
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 12, 2022 at 8:11 PM James Carlson <carlsonj@workingcode.com> wrote:
+>
+> On 5/11/22 04:23, Arnd Bergmann wrote:
+> > indication of appletalk ever being supported there, this all looks
+> > IPv4/IPv6 specific. There was support for PPP_IPX until it was
+> > dropped this year (the kernel side got removed in 2018), but never
+> > for PPP_AT.
+> > Adding Paul Mackerras to Cc, he might know more about it.
+>
+> I waited a bit before chipping in, as I think Paul would know more.
+>
+> The ATCP stuff was in at least a few vendor branches, but I don't think
+> it ever made it into the main distribution. These commits seem to be
+> where the (disabled by default) references to it first appeared:
+>
+> commit 50c9469f0f683c7bf8ebad9b7f97bfc03c6a4122
+> Author: Paul Mackerras <paulus@samba.org>
+> Date:   Tue Mar 4 03:32:37 1997 +0000
+>
+>     add defs for appletalk
+>
+> commit 01548ef15e0f41f9f6af33860fb459a7f578f004
+> Author: Paul Mackerras <paulus@samba.org>
+> Date:   Tue Mar 4 03:41:17 1997 +0000
+>
+>     connect time stuff gone to auth.c,
+>     don't die on EINTR from opening tty,
+>     ignore NCP packets during authentication,
+>     fix recursive signal problem in kill_my_pg
 
+Right, I had seen those in the git history, but neither of them actually
+does anything with appletak.
 
-On 5/12/2022 6:14 AM, David Laight wrote:
->> From: Linkui Xiao <xiaolinkui@kylinos.cn>
->>
->> Convert a series of if statements that handle different events to a switch
->> case statement to simplify the code.
->>
->> V2: fix patch description and email format.
->>
->> Signed-off-by: Linkui Xiao <xiaolinkui@kylinos.cn>
->> ---
->>   drivers/net/ethernet/intel/igb/igb_main.c | 12 ++++++++----
->>   1 file changed, 8 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
->> index 34b33b21e0dc..4ce0718eeff6 100644
->> --- a/drivers/net/ethernet/intel/igb/igb_main.c
->> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
->> @@ -4588,13 +4588,17 @@ static inline void igb_set_vf_vlan_strip(struct igb_adapter *adapter,
->>        struct e1000_hw *hw = &adapter->hw;
->>        u32 val, reg;
->>
->> -     if (hw->mac.type < e1000_82576)
->> +     switch (hw->mac.type) {
->> +     case e1000_undefined:
->> +     case e1000_82575:
->>                return;
->> -
->> -     if (hw->mac.type == e1000_i350)
->> +     case e1000_i350:
->>                reg = E1000_DVMOLR(vfn);
->> -     else
->> +             break;
->> +     default:
->>                reg = E1000_VMOLR(vfn);
->> +             break;
->> +     }
->>
->>        val = rd32(reg);
->>        if (enable)
->> --
->> 2.17.1
-> 
-> Are you sure that generates reasonable code?
-> The compiler could generate something completely different
-> for the two versions.
-> 
-> It isn't even obvious they are equivalent.
+> The disabled-by-default parts were likely support contributions for
+> those other distributions. (Very likely in BSD.)
+>
+> I would've thought AppleTalk was completely gone by now, and I certainly
+> would not be sad to see the dregs removed from pppd, but there was a
+> patch release on the netatalk package just last month, so what do I know?
 
-It seems like these just happen to line up this way and appear to be two 
-different checks; one as the bail out for unsupported MACs and the other 
-for register reads for supported ones. Combining them seems to muddy 
-that distinction.
+I think netatalk 3.0 dropped all appletalk protocol stuff a long time ago and
+only supports AFP over IP.
 
-Thanks,
-Tony
-
-> 
-> 	David
-> 
-> -
-> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-> Registration No: 1397386 (Wales)
-> 
+         Arnd
