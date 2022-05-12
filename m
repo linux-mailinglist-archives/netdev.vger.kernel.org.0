@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E35A524C87
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 14:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7900524C9A
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 14:21:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353591AbiELMTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 08:19:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48472 "EHLO
+        id S1353636AbiELMVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 08:21:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353588AbiELMTS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 08:19:18 -0400
-Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D14D2469FB
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 05:19:17 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [83.223.95.28])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout3.hostsharing.net (Postfix) with ESMTPS id 0484A100AFDA6;
-        Thu, 12 May 2022 14:19:16 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id D2A482E6CC9; Thu, 12 May 2022 14:19:15 +0200 (CEST)
-Date:   Thu, 12 May 2022 14:19:15 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>
-Subject: Re: [PATCH net-next v3 7/7] net: phy: smsc: Cope with hot-removal in
- interrupt handler
-Message-ID: <20220512121915.GE4703@wunner.de>
-References: <cover.1652343655.git.lukas@wunner.de>
- <4a90661372af73e056f7b243df9c039945715a3b.1652343655.git.lukas@wunner.de>
+        with ESMTP id S1353627AbiELMV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 08:21:29 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93A406210E
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 05:21:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=FzhW+Y1FZk1iDi0szaAes3U+QpFm1ViZzMpTZTfXIt4=; b=1v20yNIWmQ3gvY56SGEEG9QBYX
+        de9hj5pnypTDMO5lDaFunmDz/0j4Jf4xWr2WRpV01N8vac72v/Ivgqo8h7aLiHF9kSryOTNqUhvqQ
+        1rl0jO+0LxxY9rNJuUh/ihAqOw9URsw0JG7jJb9AwmM0JYuM1gMnBTAEsqYkUhr/YbYM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1np7ot-002Rrf-0r; Thu, 12 May 2022 14:21:27 +0200
+Date:   Thu, 12 May 2022 14:21:27 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 04/14] net: txgbe: Add PHY interface support
+Message-ID: <Ynz7x85dmUrk1smo@lunn.ch>
+References: <20220511032659.641834-1-jiawenwu@trustnetic.com>
+ <20220511032659.641834-5-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4a90661372af73e056f7b243df9c039945715a3b.1652343655.git.lukas@wunner.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
+In-Reply-To: <20220511032659.641834-5-jiawenwu@trustnetic.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -46,22 +46,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 12, 2022 at 10:42:07AM +0200, Lukas Wunner wrote:
-> If reading the Interrupt Source Flag register fails with -ENODEV, then
-> the PHY has been hot-removed and the correct response is to bail out
-> instead of throwing a WARN splat and attempting to suspend the PHY.
-> The PHY should be stopped in due course anyway as the kernel
-> asynchronously tears down the device.
-> 
-> Tested-by: Oleksij Rempel <o.rempel@pengutronix.de> # LAN9514/9512/9500
-> Tested-by: Ferry Toth <fntoth@gmail.com> # LAN9514
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
+> -s32 txgbe_reset_hw(struct txgbe_hw *hw)
+> +s32 txgbe_set_link_to_kr(struct txgbe_hw *hw, bool autoneg)
+>  {
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-Andrew kindly provided this tag here:
-https://lore.kernel.org/netdev/YnGsKQC1WxihasYs@lunn.ch/
+> +	if (1) {
+> +		/* 2. Disable xpcs AN-73 */
 
-Forgot to add it to the commit.
-Sending it in separately so patchwork picks it up.
-My apologies for the inconvenience.
+You don't use if (1) in kernel quality code.
+
+    Andrew
