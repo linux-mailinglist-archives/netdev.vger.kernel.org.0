@@ -2,157 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A905525362
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 19:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C190752536A
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 19:19:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356930AbiELRTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 13:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
+        id S1356958AbiELRTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 13:19:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346013AbiELRTM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 13:19:12 -0400
-Received: from NAM10-BN7-obe.outbound.protection.outlook.com (mail-bn7nam10on2088.outbound.protection.outlook.com [40.107.92.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15962269EF6;
-        Thu, 12 May 2022 10:19:11 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=W6mw8HxH78uY4NwRj0MoTw4jxrr0ZVpwmF8cwlRJyRXtJrWYEQLnVzxGPqjFZQwPLMOqoqevRjZCzfTBOb0Easgi86BqXVPGbONBH22UEDMXjrMMGp5WajYEp6bWN4b0tbvfUF9vMKV/8Q+40sCQKHyf431B3TADn8CcHQSjjU844PuV/75BFEjyjWdG18hJGmwRYptX494IigycexNAHY+WK93YZM8nQrMxPgIqnxqfRZz9SnBcF6X9r5a/iX+8mDxlMK0n/V1L6Uto4gSiRiLkYQ67DB0kE9XqBev+8M1FkyEsdv+t4M0bd40JJjTD46MgdRe6tcmD+e6irsKUYg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PTIpCzzFkH3+WvwGyQL0rWLAyo/cJ4CAU3SIJ9P1Jg4=;
- b=jpZktSsixc4pZAcG9X/872en2I97SNp7S8GgKDXu/e+U8cFK5jEKUBLmvp4H07p76uB9SsXqsQph3kdGUOZ54q0rYYJwL2JPTNk6onDceRLjhIFUtE4rhtcIJCT4qdVhGz5a4p4X7uHR7DJUYmC/hAQHwMNaqrlFQRNiEbM/52QcW4VJqGcpxxNuRg9sFXbHFRQv53vm3ATJSMChNFDllUmw1iNNEfjLmgmxVAXRxnRyCBGU4DJIoUHEb8SQIcwxRUGae6KBTuBdFlsB0pF3/KJXLE7EGkyuxyDJd20jjnV7DeWhHAHZOq0qa2TzzNiDnHSfvdcQbgJb3OjQ/4m6Iw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=microchip.com smtp.mailfrom=xilinx.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
- dkim=none (message not signed); arc=none
+        with ESMTP id S1356945AbiELRTr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 13:19:47 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B4B26AD8C
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:19:46 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id w24so7082068edx.3
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:19:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PTIpCzzFkH3+WvwGyQL0rWLAyo/cJ4CAU3SIJ9P1Jg4=;
- b=OXCWpFuUobzJd+40esiPRCQ0SIlrtiacppZ/6lX1i+SgEe0XrLm9Skvzm1+PG6AGOD5O34+BJqBEiJQtElHGvCRSpaBLHz4CAnvXrH7tmN5jAn41Ed8+KiS20TOma4zuuSh6Cnwj8VlylAKpxvZTF3URKi39JFe8Z0dqRY7uU7g=
-Received: from BN8PR07CA0027.namprd07.prod.outlook.com (2603:10b6:408:ac::40)
- by SJ0PR02MB7774.namprd02.prod.outlook.com (2603:10b6:a03:323::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14; Thu, 12 May
- 2022 17:19:07 +0000
-Received: from BN1NAM02FT060.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:ac:cafe::13) by BN8PR07CA0027.outlook.office365.com
- (2603:10b6:408:ac::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14 via Frontend
- Transport; Thu, 12 May 2022 17:19:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- BN1NAM02FT060.mail.protection.outlook.com (10.13.3.168) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.5250.13 via Frontend Transport; Thu, 12 May 2022 17:19:06 +0000
-Received: from xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.14; Thu, 12 May 2022 10:19:03 -0700
-Received: from smtp.xilinx.com (172.19.127.96) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server id
- 15.1.2176.14 via Frontend Transport; Thu, 12 May 2022 10:19:03 -0700
-Envelope-to: nicolas.ferre@microchip.com,
- davem@davemloft.net,
- claudiu.beznea@microchip.com,
- kuba@kernel.org,
- pabeni@redhat.com,
- netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- harinikatakamlinux@gmail.com
-Received: from [10.140.6.13] (port=35344 helo=xhdharinik40.xilinx.com)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <harini.katakam@xilinx.com>)
-        id 1npCSt-0009hD-FI; Thu, 12 May 2022 10:19:03 -0700
-From:   Harini Katakam <harini.katakam@xilinx.com>
-To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
-        <claudiu.beznea@microchip.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <michal.simek@xilinx.com>, <harinikatakamlinux@gmail.com>,
-        <harini.katakam@xilinx.com>, <radhey.shyam.pandey@xilinx.com>
-Subject: [PATCH v2] net: macb: Increment rx bd head after allocating skb and buffer
-Date:   Thu, 12 May 2022 22:49:00 +0530
-Message-ID: <20220512171900.32593-1-harini.katakam@xilinx.com>
-X-Mailer: git-send-email 2.17.1
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jDHOqKOOly/u6UGesDlSvrOYIRtvk+Gi75eJQoAcvU8=;
+        b=ajie93GkyM3bMzgPSyr9+zDuLO8qmNsBGOmDLDAYe2chL7Y1Dex40FgP7wpA+YsFVS
+         PbCwBPFRrhD1wKMyrktSA2hu4sY+A8Snezdkh2Pl31GtbbWKUVs17izWFz1kX+D2q2GT
+         3Kh1nj3RjFExJpH9SEac2MgWbeFHQCaqrxqgg=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jDHOqKOOly/u6UGesDlSvrOYIRtvk+Gi75eJQoAcvU8=;
+        b=xChv8InDcxLnvIstOcqYGHKBVQGBJa7f6xbA+B9XRgagY7k/1S3nmVMjYOT+cJ++z2
+         sn8L1NgBpTgDKvta4jUDk4gDSp3T6GV3vr1v2uAzVKP+Qtu+7f6a0Gn0Xcn11JloMSC5
+         1nAfY322oZEzFRLait/Boyl/RBr7e/axwhs6oP7bMPkVDdgSBokxOuoPhZMXtrMbjCh5
+         mQzV71LrzvyuNWcnVVmtpsGWSYOkFFdtf2CTYrwMt8qAften+SxZMfYgkXE1YGK/DeuG
+         cN5U/AF5XJvTtecM0wGcOsTFXGmbAt7KvVmb2f1TwNiG0D3zjX9q+p3OjlC7XuKHRT8x
+         V87Q==
+X-Gm-Message-State: AOAM532gJVO/p4M8XpJ+KN+eET+GYSW5Fp/wCclf+j/j/MTp//VOA+LK
+        brzLmN6lfbY+2mX1MK4y0RZ/4fWnoSqSVyahp4w=
+X-Google-Smtp-Source: ABdhPJycAjODf+Asp4SXkq/HSraZcqSxYiEo6OOnjITHEyuccGr4g68m4YMDVZIsXLysZkwA+Eooaw==
+X-Received: by 2002:a05:6402:28b1:b0:425:c39e:b773 with SMTP id eg49-20020a05640228b100b00425c39eb773mr35542555edb.237.1652375984307;
+        Thu, 12 May 2022 10:19:44 -0700 (PDT)
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
+        by smtp.gmail.com with ESMTPSA id rk6-20020a170907214600b006f3ef214dd9sm2255908ejb.63.2022.05.12.10.19.41
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 12 May 2022 10:19:41 -0700 (PDT)
+Received: by mail-wr1-f45.google.com with SMTP id b19so8166125wrh.11
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:19:41 -0700 (PDT)
+X-Received: by 2002:a5d:6dad:0:b0:20c:4dc1:e247 with SMTP id
+ u13-20020a5d6dad000000b0020c4dc1e247mr629061wrs.274.1652375980629; Thu, 12
+ May 2022 10:19:40 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e6c52e93-1357-4f00-640a-08da343b853d
-X-MS-TrafficTypeDiagnostic: SJ0PR02MB7774:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR02MB777430DAC50AB0B1B06F471FC9CB9@SJ0PR02MB7774.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: xEVSxJErTt8EpJ2MmZvhasFFhAE6cy7DZIazH291HnJneywRLU5EAof5yoz4yXMUv48oo2vjaOi0lwesBUgGviaaDOrrf8cBZ8SZx3RZe5XiDuJ791LWZWz9sExdP3pbMqBmVWh7+8pqb0z97GOhnZuR8tqoN3pVGp++biwEmMwkzBW4RvT5JRO7Vjbsgr2YrDQ1S2q8GqNzdIpFcKHEtRsmwUYixnq+RMg58SXKD2rBjkt//HvvgZ1THUtrUGH+ygdhpSNIy3kEoYO2UhGWfp8oQTOzUvzlL217j1Vyo/6luyvqbTwuDFh/e0V/822/mQIakRLVJMq2p+HvrMR9zrkt0S1gzbClGSGf6FDsmB6eWDjb1O6hVi7VpS0JHpUObSoEElAKbWzLNYIuFrrq+Rc0BZT+WXVzpNKQVllGpNje2o1IHtZD9FqSWyzHJevcLC6CIH6SfUwvr3NZipoZN4FSvy4sHq9hDCLa8C8qTd4IoXxt8RcwRe0VNPFiyzKY1CxpWhhjG1wohBR84cQF+OLVPLriZr5PNZ0OV5Wsgr7ygQqEJBNuTKtAn4x6gHcNQiqGoHzWr3ZcLKiHtstNeU8ZsQf0UvHEq5A3iEO7Ovjb1JMGfUtj/1LcUIZl/7S3AesyAssTDKgP99a8CkavBG+RofKHoQpXf2gWATihqsNWSssDl/FREkFgfxa/jzLUmfu8nhreASG2GMne/cMnCw==
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(7636003)(336012)(40460700003)(426003)(82310400005)(47076005)(36756003)(316002)(83380400001)(7696005)(4326008)(8676002)(36860700001)(2906002)(186003)(107886003)(508600001)(44832011)(1076003)(9786002)(8936002)(2616005)(70586007)(70206006)(26005)(5660300002)(356005)(54906003)(110136005)(102446001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 May 2022 17:19:06.8048
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e6c52e93-1357-4f00-640a-08da343b853d
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT060.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR02MB7774
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220510082351-mutt-send-email-mst@kernel.org>
+ <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
+ <87czgk8jjo.fsf@mpe.ellerman.id.au> <CAHk-=wj9zKJGA_6SJOMPiQEoYke6cKX-FV3X_5zNXOcFJX1kOQ@mail.gmail.com>
+ <87mtfm7uag.fsf@mpe.ellerman.id.au> <CAHk-=wgnYGY=10sRDzXCC2bmappjBTRNNbr8owvGLEW-xuV7Vw@mail.gmail.com>
+In-Reply-To: <CAHk-=wgnYGY=10sRDzXCC2bmappjBTRNNbr8owvGLEW-xuV7Vw@mail.gmail.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Thu, 12 May 2022 10:19:24 -0700
+X-Gmail-Original-Message-ID: <CAHk-=wg=jfhgTkYBtY3LPPcUP=8A2bqH_iFezwOCDivuovE41w@mail.gmail.com>
+Message-ID: <CAHk-=wg=jfhgTkYBtY3LPPcUP=8A2bqH_iFezwOCDivuovE41w@mail.gmail.com>
+Subject: Re: [GIT PULL] virtio: last minute fixup
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
+        KVM list <kvm@vger.kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        Netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        mie@igel.co.jp
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In gem_rx_refill rx_prepared_head is incremented at the beginning of
-the while loop preparing the skb and data buffers. If the skb or data
-buffer allocation fails, this BD will be unusable BDs until the head
-loops back to the same BD (and obviously buffer allocation succeeds).
-In the unlikely event that there's a string of allocation failures,
-there will be an equal number of unusable BDs and an inconsistent RX
-BD chain. Hence increment the head at the end of the while loop to be
-clean.
+On Thu, May 12, 2022 at 10:10 AM Linus Torvalds
+<torvalds@linux-foundation.org> wrote:
+>
+> And most definitely not just random data that can be trivially
+> auto-generated after-the-fact.
 
-Fixes: 4df95131ea80 ("net/macb: change RX path for GEM")
-Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
----
-v2:
-Add Fixes tag and Reviewed-by tag
+Put another way: when people asked for change ID's and I said "we have
+links", I by no means meant that "you can just add random worthless
+links to commits".
 
- drivers/net/ethernet/cadence/macb_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+For example, if you have a (public-facing) Gerrit system that tracks a
+patch before it gets committed, BY ALL MEANS add a link to that as the
+"change ID" that you tracked in Gerrit.
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 0b03305ad6a0..9c7d590c0188 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -1215,7 +1215,6 @@ static void gem_rx_refill(struct macb_queue *queue)
- 		/* Make hw descriptor updates visible to CPU */
- 		rmb();
- 
--		queue->rx_prepared_head++;
- 		desc = macb_rx_desc(queue, entry);
- 
- 		if (!queue->rx_skbuff[entry]) {
-@@ -1254,6 +1253,7 @@ static void gem_rx_refill(struct macb_queue *queue)
- 			dma_wmb();
- 			desc->addr &= ~MACB_BIT(RX_USED);
- 		}
-+		queue->rx_prepared_head++;
- 	}
- 
- 	/* Make descriptor updates visible to hardware */
--- 
-2.17.1
+That's a Link: that actually adds *information*. It shows some real
+history to the commit, and shows who approved it and when, and gives
+you all the Gerrit background.
 
+But a link to the email on lkml that just contains the patch and the
+same commentary that was introduced into the commit? Useless garbage.
+It adds no actual information.
+
+THAT is my argument. Why do people think I'm arguing against the Link:
+tag? No. I'm arguing against adding links with no relevant new
+information behind them.
+
+I don't argue against links to lore. Not at all. If those links are
+about the background that caused the patch, they are great. Maybe they
+are to a long thread about the original problem and how to solve it.
+Thats WONDERFUL.
+
+But here's the deal: when I look at a commit that I wonder "why is it
+doing this, it seems wrong" (possibly after there's been a bug report
+about it, but possibly just because I'm reviewing it as part of doing
+the pull), and I see a "Link:" tag, and it just points back to the
+SAME DAMN DATA that I already have in the commit, then that Link: tag
+not only wasn't helpful, it was ACTIVELY DETRIMENTAL and made me waste
+time and just get irritated.
+
+And if you waste my time with useless links, why would you expect me
+to be supportive of that behavior?
+
+                      Linus
