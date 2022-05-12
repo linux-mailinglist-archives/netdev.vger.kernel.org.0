@@ -2,73 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C60F5244BC
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 07:15:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 471115244C2
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 07:16:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349359AbiELFPm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 01:15:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43238 "EHLO
+        id S1349501AbiELFQo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 01:16:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344371AbiELFPi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 01:15:38 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B22F515C1BF;
-        Wed, 11 May 2022 22:15:34 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id D39C05FD06;
-        Thu, 12 May 2022 08:15:32 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1652332532;
-        bh=Izj6qmaDftSm7vCIdQAAbOT+b+SthQ6rdLkGKpOl1fI=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=so8ZFNggqp6OjX1gvmCVO/4aRAuI6+YyHs2LS/j0EP3v8SRTm/YJnoPxrjxJGqurw
-         GNo25wlS0BXmWATUTjFG6V3RqmrjTEPwSgw0qGLGQUduiH+IjlNMs1mLH3CYOQaZuL
-         oTN13QtXZHmQHO4DLjHzAXTlo0FWJ8gT9KHtryZbEvxNksWMtpM1mGjC+If9RjGWGi
-         MREsvDTqxMs3iJ9bT9ysGjFTKEHjpE6KFxGsyfPsl34FTRNIUQsJpnyHl20tiZIZC2
-         kGeqricGCcSkEf2czCdJyPOi3Fw/enrWg0CXyNdnWIO4KTOgTCbkwM58ONL5ixus7J
-         Or4Wgc5UdvJBg==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Thu, 12 May 2022 08:15:32 +0300 (MSK)
-From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        Krasnov Arseniy <oxffffaa@gmail.com>,
-        Arseniy Krasnov <AVKrasnov@sberdevices.ru>
-Subject: [RFC PATCH v1 4/8] virtio/vsock: add transport zerocopy callback
-Thread-Topic: [RFC PATCH v1 4/8] virtio/vsock: add transport zerocopy callback
-Thread-Index: AQHYZb800Rp4tFVLaEqKpJtt6b7xqQ==
-Date:   Thu, 12 May 2022 05:14:49 +0000
-Message-ID: <9c1fa0ba-76b3-6214-4b9f-879bf932fa9c@sberdevices.ru>
-In-Reply-To: <7cdcb1e1-7c97-c054-19cf-5caeacae981d@sberdevices.ru>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <86554AE6F041E6488D96A4C79387CA1A@sberdevices.ru>
-Content-Transfer-Encoding: base64
+        with ESMTP id S1349490AbiELFQl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 01:16:41 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AABF21FCC0
+        for <netdev@vger.kernel.org>; Wed, 11 May 2022 22:16:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652332599; x=1683868599;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Cu222JPcutWUglrp4QqmdELzi4FjMw/DwJoWUn+mHAU=;
+  b=DwKdWaaxg2RLyKQAmPR8USq9CJLIQezJJEFR1TR5S4LXE9H6A9ZyOp3/
+   dYZ+fOhkkz4XOC7FHN5dVIIt9zIYopKZ1xisiQ2JSDHXxXc+eb6JtbY1/
+   lM1rfVTGERYl4X4Gt9RzddVrK+0nDblo0jFzquR4fu/NAfuZeGebHAGKE
+   UHdp9FmmOMtogA1uq5ETtE/5CpDb28exymP3sG1VcNC8d36fYipbxwAtB
+   lEEL3GicOWstrnS8sD4TQ2w/0efBXY/uRVJd7hTxdOZoZMfiHoiNelShr
+   44Tx7ARQmSTyHq+cuAoyjdyDzLHo2q0iSCEPrKm8YdZt/NNarUx0D79If
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="257441356"
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="257441356"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2022 22:16:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,218,1647327600"; 
+   d="scan'208";a="542613854"
+Received: from lkp-server01.sh.intel.com (HELO 5056e131ad90) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 11 May 2022 22:16:34 -0700
+Received: from kbuild by 5056e131ad90 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1np1Bi-000Jxw-2t;
+        Thu, 12 May 2022 05:16:34 +0000
+Date:   Thu, 12 May 2022 13:15:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>, netdev@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Jiawen Wu <jiawenwu@trustnetic.com>
+Subject: Re: [PATCH net-next 02/14] net: txgbe: Add hardware initialization
+Message-ID: <202205121354.BKT9ZuVB-lkp@intel.com>
+References: <20220511032659.641834-3-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/12 02:55:00 #19424207
-X-KSMG-AntiVirus-Status: Clean, skipped
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511032659.641834-3-jiawenwu@trustnetic.com>
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -76,142 +62,237 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-VGhpcyBhZGRzIHRyYW5zcG9ydCBjYWxsYmFjayB3aGljaCBwcm9jZXNzZXMgcngNCnF1ZXVlIG9m
-IHNvY2tldCBhbmQgaW5zdGVhZCBvZiBjb3B5aW5nIGRhdGEgdG8NCnVzZXIgcHJvdmlkZWQgYnVm
-ZmVyLCBpdCBpbnNlcnRzIGRhdGEgcGFnZXMgb2YNCmVhY2ggcGFja2V0IHRvIHVzZXIncyB2bSBh
-cmVhLg0KDQpTaWduZWQtb2ZmLWJ5OiBBcnNlbml5IEtyYXNub3YgPEFWS3Jhc25vdkBzYmVyZGV2
-aWNlcy5ydT4NCi0tLQ0KIGluY2x1ZGUvbGludXgvdmlydGlvX3Zzb2NrLmggICAgICAgICAgICB8
-ICAgNCArDQogaW5jbHVkZS91YXBpL2xpbnV4L3ZpcnRpb192c29jay5oICAgICAgIHwgICA1ICsN
-CiBuZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMgfCAxOTUgKysrKysrKysr
-KysrKysrKysrKysrKystDQogMyBmaWxlcyBjaGFuZ2VkLCAyMDEgaW5zZXJ0aW9ucygrKSwgMyBk
-ZWxldGlvbnMoLSkNCg0KZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvdmlydGlvX3Zzb2NrLmgg
-Yi9pbmNsdWRlL2xpbnV4L3ZpcnRpb192c29jay5oDQppbmRleCBkMDJjYjdhYTkyMmYuLjQ3YTY4
-YTJlYTgzOCAxMDA2NDQNCi0tLSBhL2luY2x1ZGUvbGludXgvdmlydGlvX3Zzb2NrLmgNCisrKyBi
-L2luY2x1ZGUvbGludXgvdmlydGlvX3Zzb2NrLmgNCkBAIC01MSw2ICs1MSw3IEBAIHN0cnVjdCB2
-aXJ0aW9fdnNvY2tfcGt0IHsNCiAJYm9vbCByZXBseTsNCiAJYm9vbCB0YXBfZGVsaXZlcmVkOw0K
-IAlib29sIHNsYWJfYnVmOw0KKwlib29sIHNwbGl0Ow0KIH07DQogDQogc3RydWN0IHZpcnRpb192
-c29ja19wa3RfaW5mbyB7DQpAQCAtMTMxLDYgKzEzMiw5IEBAIGludCB2aXJ0aW9fdHJhbnNwb3J0
-X2RncmFtX2JpbmQoc3RydWN0IHZzb2NrX3NvY2sgKnZzaywNCiAJCQkJc3RydWN0IHNvY2thZGRy
-X3ZtICphZGRyKTsNCiBib29sIHZpcnRpb190cmFuc3BvcnRfZGdyYW1fYWxsb3codTMyIGNpZCwg
-dTMyIHBvcnQpOw0KIA0KK2ludCB2aXJ0aW9fdHJhbnNwb3J0X3plcm9jb3B5X2RlcXVldWUoc3Ry
-dWN0IHZzb2NrX3NvY2sgKnZzaywNCisJCQkJICAgICAgc3RydWN0IHZtX2FyZWFfc3RydWN0ICp2
-bWEsDQorCQkJCSAgICAgIHVuc2lnbmVkIGxvbmcgYWRkcik7DQogaW50IHZpcnRpb190cmFuc3Bv
-cnRfY29ubmVjdChzdHJ1Y3QgdnNvY2tfc29jayAqdnNrKTsNCiANCiBpbnQgdmlydGlvX3RyYW5z
-cG9ydF9zaHV0ZG93bihzdHJ1Y3QgdnNvY2tfc29jayAqdnNrLCBpbnQgbW9kZSk7DQpkaWZmIC0t
-Z2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L3ZpcnRpb192c29jay5oIGIvaW5jbHVkZS91YXBpL2xp
-bnV4L3ZpcnRpb192c29jay5oDQppbmRleCA2NDczODgzOGJlZTUuLjIxNGFjOTcyNzMwNyAxMDA2
-NDQNCi0tLSBhL2luY2x1ZGUvdWFwaS9saW51eC92aXJ0aW9fdnNvY2suaA0KKysrIGIvaW5jbHVk
-ZS91YXBpL2xpbnV4L3ZpcnRpb192c29jay5oDQpAQCAtNjYsNiArNjYsMTEgQEAgc3RydWN0IHZp
-cnRpb192c29ja19oZHIgew0KIAlfX2xlMzIJZndkX2NudDsNCiB9IF9fYXR0cmlidXRlX18oKHBh
-Y2tlZCkpOw0KIA0KK3N0cnVjdCB2aXJ0aW9fdnNvY2tfdXNyX2hkciB7DQorCXUzMiBmbGFnczsN
-CisJdTMyIGxlbjsNCit9IF9fYXR0cmlidXRlX18oKHBhY2tlZCkpOw0KKw0KIGVudW0gdmlydGlv
-X3Zzb2NrX3R5cGUgew0KIAlWSVJUSU9fVlNPQ0tfVFlQRV9TVFJFQU0gPSAxLA0KIAlWSVJUSU9f
-VlNPQ0tfVFlQRV9TRVFQQUNLRVQgPSAyLA0KZGlmZiAtLWdpdCBhL25ldC92bXdfdnNvY2svdmly
-dGlvX3RyYW5zcG9ydF9jb21tb24uYyBiL25ldC92bXdfdnNvY2svdmlydGlvX3RyYW5zcG9ydF9j
-b21tb24uYw0KaW5kZXggMjc4NTY3Zjc0OGYyLi4zYzdhYzQ3YTg2NzIgMTAwNjQ0DQotLS0gYS9u
-ZXQvdm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnRfY29tbW9uLmMNCisrKyBiL25ldC92bXdfdnNv
-Y2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYw0KQEAgLTEyLDYgKzEyLDcgQEANCiAjaW5jbHVk
-ZSA8bGludXgvY3R5cGUuaD4NCiAjaW5jbHVkZSA8bGludXgvbGlzdC5oPg0KICNpbmNsdWRlIDxs
-aW51eC92aXJ0aW9fdnNvY2suaD4NCisjaW5jbHVkZSA8bGludXgvbW0uaD4NCiAjaW5jbHVkZSA8
-dWFwaS9saW51eC92c29ja21vbi5oPg0KIA0KICNpbmNsdWRlIDxuZXQvc29jay5oPg0KQEAgLTM0
-Nyw2ICszNDgsMTgzIEBAIHZpcnRpb190cmFuc3BvcnRfc3RyZWFtX2RvX3BlZWsoc3RydWN0IHZz
-b2NrX3NvY2sgKnZzaywNCiAJcmV0dXJuIGVycjsNCiB9DQogDQorI2RlZmluZSBNQVhfUEFHRVNf
-VE9fTUFQIDI1Ng0KKw0KK2ludCB2aXJ0aW9fdHJhbnNwb3J0X3plcm9jb3B5X2RlcXVldWUoc3Ry
-dWN0IHZzb2NrX3NvY2sgKnZzaywNCisJCQkJICAgICAgc3RydWN0IHZtX2FyZWFfc3RydWN0ICp2
-bWEsDQorCQkJCSAgICAgIHVuc2lnbmVkIGxvbmcgYWRkcikNCit7DQorCXN0cnVjdCB2aXJ0aW9f
-dnNvY2tfc29jayAqdnZzID0gdnNrLT50cmFuczsNCisJc3RydWN0IHZpcnRpb192c29ja191c3Jf
-aGRyICp1c3JfaGRyX2J1ZmZlcjsNCisJdW5zaWduZWQgbG9uZyBtYXhfcGFnZXNfdG9faW5zZXJ0
-Ow0KKwl1bnNpZ25lZCBsb25nIHRtcF9wYWdlc19pbnNlcnRlZDsNCisJdW5zaWduZWQgbG9uZyBw
-YWdlc190b19pbnNlcnQ7DQorCXN0cnVjdCBwYWdlICp1c3JfaGRyX3BhZ2U7DQorCXVuc2lnbmVk
-IGxvbmcgdm1hX3NpemU7DQorCXN0cnVjdCBwYWdlICoqcGFnZXM7DQorCWludCBtYXhfdm1hX3Bh
-Z2VzOw0KKwlpbnQgbWF4X3Vzcl9oZHJzOw0KKwlpbnQgcmVzOw0KKwlpbnQgZXJyOw0KKwlpbnQg
-aTsNCisNCisJLyogT25seSB1c2UgVk1BIGZyb20gZmlyc3QgcGFnZS4gKi8NCisJaWYgKHZtYS0+
-dm1fc3RhcnQgIT0gYWRkcikNCisJCXJldHVybiAtRUZBVUxUOw0KKw0KKwl2bWFfc2l6ZSA9IHZt
-YS0+dm1fZW5kIC0gdm1hLT52bV9zdGFydDsNCisNCisJLyogVG9vIHNtYWxsIHZtYShhdCBsZWFz
-dCBvbmUgcGFnZSBmb3IgaGVhZGVycw0KKwkgKiBhbmQgb25lIHBhZ2UgZm9yIGRhdGEpLg0KKwkg
-Ki8NCisJaWYgKHZtYV9zaXplIDwgMiAqIFBBR0VfU0laRSkNCisJCXJldHVybiAtRUZBVUxUOw0K
-Kw0KKwkvKiBQYWdlIGZvciBtZXRhIGRhdGEuICovDQorCXVzcl9oZHJfcGFnZSA9IGFsbG9jX3Bh
-Z2UoR0ZQX0tFUk5FTCk7DQorDQorCWlmICghdXNyX2hkcl9wYWdlKQ0KKwkJcmV0dXJuIC1FRkFV
-TFQ7DQorDQorCXBhZ2VzID0ga21hbGxvY19hcnJheShNQVhfUEFHRVNfVE9fTUFQLCBzaXplb2Yo
-cGFnZXNbMF0pLCBHRlBfS0VSTkVMKTsNCisNCisJaWYgKCFwYWdlcykNCisJCXJldHVybiAtRUZB
-VUxUOw0KKw0KKwlwYWdlc1twYWdlc190b19pbnNlcnQrK10gPSB1c3JfaGRyX3BhZ2U7DQorDQor
-CXVzcl9oZHJfYnVmZmVyID0gcGFnZV90b192aXJ0KHVzcl9oZHJfcGFnZSk7DQorDQorCWVyciA9
-IDA7DQorDQorCS8qIEFzIHdlIHVzZSBmaXJzdCBwYWdlIGZvciBoZWFkZXJzLCBzbyB0b3RhbCBu
-dW1iZXIgb2YNCisJICogcGFnZXMgZm9yIHVzZXIgaXMgbWluIGJldHdlZW4gbnVtYmVyIG9mIGhl
-YWRlcnMgaW4NCisJICogZmlyc3QgcGFnZSBhbmQgc2l6ZSBvZiB2bWEoaW4gcGFnZXMsIGV4Y2Vw
-dCBmaXJzdCBwYWdlKS4NCisJICovDQorCW1heF91c3JfaGRycyA9IFBBR0VfU0laRSAvIHNpemVv
-ZigqdXNyX2hkcl9idWZmZXIpOw0KKwltYXhfdm1hX3BhZ2VzID0gKHZtYV9zaXplIC8gUEFHRV9T
-SVpFKSAtIDE7DQorCW1heF9wYWdlc190b19pbnNlcnQgPSBtaW4obWF4X3Vzcl9oZHJzLCBtYXhf
-dm1hX3BhZ2VzKTsNCisNCisJaWYgKG1heF9wYWdlc190b19pbnNlcnQgPiBNQVhfUEFHRVNfVE9f
-TUFQKQ0KKwkJbWF4X3BhZ2VzX3RvX2luc2VydCA9IE1BWF9QQUdFU19UT19NQVA7DQorDQorCXNw
-aW5fbG9ja19iaCgmdnZzLT5yeF9sb2NrKTsNCisNCisJd2hpbGUgKCFsaXN0X2VtcHR5KCZ2dnMt
-PnJ4X3F1ZXVlKSAmJg0KKwkgICAgICAgcGFnZXNfdG9faW5zZXJ0IDwgbWF4X3BhZ2VzX3RvX2lu
-c2VydCkgew0KKwkJc3RydWN0IHZpcnRpb192c29ja19wa3QgKnBrdDsNCisJCXNzaXplX3QgcmVz
-dF9kYXRhX2J5dGVzOw0KKwkJc2l6ZV90IG1vdmVkX2RhdGFfYnl0ZXM7DQorCQl1bnNpZ25lZCBs
-b25nIHBnX29mZnM7DQorDQorCQlwa3QgPSBsaXN0X2ZpcnN0X2VudHJ5KCZ2dnMtPnJ4X3F1ZXVl
-LA0KKwkJCQkgICAgICAgc3RydWN0IHZpcnRpb192c29ja19wa3QsIGxpc3QpOw0KKw0KKwkJLyog
-VGhpcyBjb3VsZCBoYXBwZW4sIHdoZW4gcGFja2V0IHdhcyBkZXF1ZXVlZCBiZWZvcmUNCisJCSAq
-IGJ5IGFuIG9yZGluYXJ5ICdyZWFkKCknIGNhbGwuIFdlIGNhbid0IGhhbmRsZSBzdWNoDQorCQkg
-KiBwYWNrZXQuIERyb3AgaXQuDQorCQkgKi8NCisJCWlmIChwa3QtPm9mZiAlIFBBR0VfU0laRSkg
-ew0KKwkJCWxpc3RfZGVsKCZwa3QtPmxpc3QpOw0KKwkJCXZpcnRpb190cmFuc3BvcnRfZGVjX3J4
-X3BrdCh2dnMsIHBrdCk7DQorCQkJdmlydGlvX3RyYW5zcG9ydF9mcmVlX3BrdChwa3QpOw0KKwkJ
-CWNvbnRpbnVlOw0KKwkJfQ0KKw0KKwkJcmVzdF9kYXRhX2J5dGVzID0gbGUzMl90b19jcHUocGt0
-LT5oZHIubGVuKSAtIHBrdC0+b2ZmOw0KKw0KKwkJLyogRm9yIHBhY2tldHMsIGJpZ2dlciB0aGFu
-IG9uZSBwYWdlLCBzcGxpdCBpdCdzDQorCQkgKiBoaWdoIG9yZGVyIGFsbG9jYXRlZCBidWZmZXIg
-dG8gMCBvcmRlciBwYWdlcy4NCisJCSAqIE90aGVyd2lzZSAndm1faW5zZXJ0X3BhZ2VzKCknIHdp
-bGwgZmFpbCwgZm9yDQorCQkgKiBhbGwgcGFnZXMgZXhjZXB0IGZpcnN0Lg0KKwkJICovDQorCQlp
-ZiAocmVzdF9kYXRhX2J5dGVzID4gUEFHRV9TSVpFKSB7DQorCQkJLyogSGlnaCBvcmRlciBidWZm
-ZXIgbm90IHNwbGl0IHlldC4gKi8NCisJCQlpZiAoIXBrdC0+c3BsaXQpIHsNCisJCQkJc3BsaXRf
-cGFnZSh2aXJ0X3RvX3BhZ2UocGt0LT5idWYpLA0KKwkJCQkJICAgZ2V0X29yZGVyKGxlMzJfdG9f
-Y3B1KHBrdC0+aGRyLmxlbikpKTsNCisJCQkJcGt0LT5zcGxpdCA9IHRydWU7DQorCQkJfQ0KKwkJ
-fQ0KKw0KKwkJcGdfb2ZmcyA9IHBrdC0+b2ZmOw0KKwkJbW92ZWRfZGF0YV9ieXRlcyA9IDA7DQor
-DQorCQl3aGlsZSAocmVzdF9kYXRhX2J5dGVzICYmDQorCQkgICAgICAgcGFnZXNfdG9faW5zZXJ0
-IDwgbWF4X3BhZ2VzX3RvX2luc2VydCkgew0KKwkJCXN0cnVjdCBwYWdlICpidWZfcGFnZTsNCisN
-CisJCQlidWZfcGFnZSA9IHZpcnRfdG9fcGFnZShwa3QtPmJ1ZiArIHBnX29mZnMpOw0KKw0KKwkJ
-CXBhZ2VzW3BhZ2VzX3RvX2luc2VydCsrXSA9IGJ1Zl9wYWdlOw0KKwkJCS8qIEdldCByZWZlcmVu
-Y2UgdG8gcHJldmVudCB0aGlzIHBhZ2UgYmVpbmcNCisJCQkgKiByZXR1cm5lZCB0byBwYWdlIGFs
-bG9jYXRvciB3aGVuIHBhY2tldCB3aWxsDQorCQkJICogYmUgZnJlZWQuIFJlZiBjb3VudCB3aWxs
-IGJlIDIuDQorCQkJICovDQorCQkJZ2V0X3BhZ2UoYnVmX3BhZ2UpOw0KKwkJCXBnX29mZnMgKz0g
-UEFHRV9TSVpFOw0KKw0KKwkJCWlmIChyZXN0X2RhdGFfYnl0ZXMgPj0gUEFHRV9TSVpFKSB7DQor
-CQkJCW1vdmVkX2RhdGFfYnl0ZXMgKz0gUEFHRV9TSVpFOw0KKwkJCQlyZXN0X2RhdGFfYnl0ZXMg
-LT0gUEFHRV9TSVpFOw0KKwkJCX0gZWxzZSB7DQorCQkJCW1vdmVkX2RhdGFfYnl0ZXMgKz0gcmVz
-dF9kYXRhX2J5dGVzOw0KKwkJCQlyZXN0X2RhdGFfYnl0ZXMgPSAwOw0KKwkJCX0NCisJCX0NCisN
-CisJCXVzcl9oZHJfYnVmZmVyLT5mbGFncyA9IGxlMzJfdG9fY3B1KHBrdC0+aGRyLmZsYWdzKTsN
-CisJCXVzcl9oZHJfYnVmZmVyLT5sZW4gPSBtb3ZlZF9kYXRhX2J5dGVzOw0KKwkJdXNyX2hkcl9i
-dWZmZXIrKzsNCisNCisJCXBrdC0+b2ZmID0gcGdfb2ZmczsNCisNCisJCWlmIChyZXN0X2RhdGFf
-Ynl0ZXMgPT0gMCkgew0KKwkJCWxpc3RfZGVsKCZwa3QtPmxpc3QpOw0KKwkJCXZpcnRpb190cmFu
-c3BvcnRfZGVjX3J4X3BrdCh2dnMsIHBrdCk7DQorCQkJdmlydGlvX3RyYW5zcG9ydF9mcmVlX3Br
-dChwa3QpOw0KKwkJfQ0KKw0KKwkJLyogTm93IHJlZiBjb3VudCBmb3IgYWxsIHBhZ2VzIG9mIHBh
-Y2tldCBpcyAxLiAqLw0KKwl9DQorDQorCS8qIFNldCBsYXN0IGJ1ZmZlciBlbXB0eShpZiB3ZSBo
-YXZlIG9uZSkuICovDQorCWlmIChwYWdlc190b19pbnNlcnQgLSAxIDwgbWF4X3Vzcl9oZHJzKQ0K
-KwkJdXNyX2hkcl9idWZmZXItPmxlbiA9IDA7DQorDQorCXNwaW5fdW5sb2NrX2JoKCZ2dnMtPnJ4
-X2xvY2spOw0KKw0KKwl0bXBfcGFnZXNfaW5zZXJ0ZWQgPSBwYWdlc190b19pbnNlcnQ7DQorDQor
-CXJlcyA9IHZtX2luc2VydF9wYWdlcyh2bWEsIGFkZHIsIHBhZ2VzLCAmdG1wX3BhZ2VzX2luc2Vy
-dGVkKTsNCisNCisJaWYgKHJlcyB8fCB0bXBfcGFnZXNfaW5zZXJ0ZWQpIHsNCisJCS8qIEZhaWxl
-ZCB0byBpbnNlcnQgc29tZSBwYWdlcywgd2UgaGF2ZSAicGFydGlhbGx5Ig0KKwkJICogbWFwcGVk
-IHZtYS4gRG8gbm90IHJldHVybiwgc2V0IGVycm9yIGNvZGUuIFRoaXMNCisJCSAqIGNvZGUgd2ls
-bCBiZSByZXR1cm5lZCB0byB1c2VyLiBVc2VyIG5lZWRzIHRvIGNhbGwNCisJCSAqICdtYWR2aXNl
-KCkvbW1hcCgpJyB0byBjbGVhciB0aGlzIHZtYS4gQW55d2F5LA0KKwkJICogcmVmZXJlbmNlcyB0
-byBhbGwgcGFnZXMgd2lsbCB0byBiZSBkcm9wcGVkIGJlbG93Lg0KKwkJICovDQorCQllcnIgPSAt
-RUZBVUxUOw0KKwl9DQorDQorCS8qIFB1dCByZWZlcmVuY2UgZm9yIGV2ZXJ5IHBhZ2UuICovDQor
-CWZvciAoaSA9IDA7IGkgPCBwYWdlc190b19pbnNlcnQ7IGkrKykgew0KKwkJLyogUmVmIGNvdW50
-IGlzIDIgKCdnZXRfcGFnZSgpJyArICd2bV9pbnNlcnRfcGFnZXMoKScgYWJvdmUpLg0KKwkJICog
-UHV0IHJlZmVyZW5jZSBvbmNlLCBwYWdlIHdpbGwgYmUgcmV0dXJuZWQgdG8gYWxsb2NhdG9yDQor
-CQkgKiBhZnRlciB1c2VyJ3MgJ21hZHZpY2UoKS9tdW5tYXAoKScgY2FsbChvciBpdCB3YXNuJ3Qg
-bWFwcGVkDQorCQkgKiBpZiAndm1faW5zZXJ0X3BhZ2VzKCknIGZhaWxlZCkuDQorCQkgKi8NCisJ
-CXB1dF9wYWdlKHBhZ2VzW2ldKTsNCisJfQ0KKw0KKwl2aXJ0aW9fdHJhbnNwb3J0X3NlbmRfY3Jl
-ZGl0X3VwZGF0ZSh2c2spOw0KKwlrZnJlZShwYWdlcyk7DQorDQorCXJldHVybiBlcnI7DQorfQ0K
-K0VYUE9SVF9TWU1CT0xfR1BMKHZpcnRpb190cmFuc3BvcnRfemVyb2NvcHlfZGVxdWV1ZSk7DQor
-DQogc3RhdGljIHNzaXplX3QNCiB2aXJ0aW9fdHJhbnNwb3J0X3N0cmVhbV9kb19kZXF1ZXVlKHN0
-cnVjdCB2c29ja19zb2NrICp2c2ssDQogCQkJCSAgIHN0cnVjdCBtc2doZHIgKm1zZywNCkBAIC0x
-MzQ0LDEwICsxNTIyLDIxIEBAIEVYUE9SVF9TWU1CT0xfR1BMKHZpcnRpb190cmFuc3BvcnRfcmVj
-dl9wa3QpOw0KIHZvaWQgdmlydGlvX3RyYW5zcG9ydF9mcmVlX3BrdChzdHJ1Y3QgdmlydGlvX3Zz
-b2NrX3BrdCAqcGt0KQ0KIHsNCiAJaWYgKHBrdC0+YnVmX2xlbikgew0KLQkJaWYgKHBrdC0+c2xh
-Yl9idWYpDQorCQlpZiAocGt0LT5zbGFiX2J1Zikgew0KIAkJCWtmcmVlKHBrdC0+YnVmKTsNCi0J
-CWVsc2UNCi0JCQlmcmVlX3BhZ2VzKGJ1ZiwgZ2V0X29yZGVyKHBrdC0+YnVmX2xlbikpOw0KKwkJ
-fSBlbHNlIHsNCisJCQl1bnNpZ25lZCBpbnQgb3JkZXIgPSBnZXRfb3JkZXIocGt0LT5idWZfbGVu
-KTsNCisJCQl1bnNpZ25lZCBsb25nIGJ1ZiA9ICh1bnNpZ25lZCBsb25nKXBrdC0+YnVmOw0KKw0K
-KwkJCWlmIChwa3QtPnNwbGl0KSB7DQorCQkJCWludCBpOw0KKw0KKwkJCQlmb3IgKGkgPSAwOyBp
-IDwgKDEgPDwgb3JkZXIpOyBpKyspDQorCQkJCQlmcmVlX3BhZ2UoYnVmICsgaSAqIFBBR0VfU0la
-RSk7DQorCQkJfSBlbHNlIHsNCisJCQkJZnJlZV9wYWdlcyhidWYsIG9yZGVyKTsNCisJCQl9DQor
-CQl9DQogCX0NCiANCiAJa2ZyZWUocGt0KTsNCi0tIA0KMi4yNS4xDQo=
+Hi Jiawen,
+
+I love your patch! Perhaps something to improve:
+
+[auto build test WARNING on horms-ipvs/master]
+[cannot apply to net-next/master net/master linus/master v5.18-rc6 next-20220511]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Jiawen-Wu/Wangxun-10-Gigabit-Ethernet-Driver/20220511-113032
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/horms/ipvs.git master
+config: arc-allyesconfig (https://download.01.org/0day-ci/archive/20220512/202205121354.BKT9ZuVB-lkp@intel.com/config)
+compiler: arceb-elf-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/f33cce2ea458796311d5925beaf78c01546f36ce
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jiawen-Wu/Wangxun-10-Gigabit-Ethernet-Driver/20220511-113032
+        git checkout f33cce2ea458796311d5925beaf78c01546f36ce
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=arc SHELL=/bin/bash drivers/net/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/net/ethernet/wangxun/txgbe/txgbe_main.c:98:6: warning: no previous prototype for 'txgbe_service_event_schedule' [-Wmissing-prototypes]
+      98 | void txgbe_service_event_schedule(struct txgbe_adapter *adapter)
+         |      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/wangxun/txgbe/txgbe_main.c:178:6: warning: no previous prototype for 'txgbe_reset' [-Wmissing-prototypes]
+     178 | void txgbe_reset(struct txgbe_adapter *adapter)
+         |      ^~~~~~~~~~~
+>> drivers/net/ethernet/wangxun/txgbe/txgbe_main.c:208:6: warning: no previous prototype for 'txgbe_disable_device' [-Wmissing-prototypes]
+     208 | void txgbe_disable_device(struct txgbe_adapter *adapter)
+         |      ^~~~~~~~~~~~~~~~~~~~
+>> drivers/net/ethernet/wangxun/txgbe/txgbe_main.c:264:5: warning: no previous prototype for 'txgbe_init_shared_code' [-Wmissing-prototypes]
+     264 | s32 txgbe_init_shared_code(struct txgbe_hw *hw)
+         |     ^~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/wangxun/txgbe/txgbe_main.c: In function 'txgbe_probe':
+   drivers/net/ethernet/wangxun/txgbe/txgbe_main.c:460:18: warning: variable 'pci_using_dac' set but not used [-Wunused-but-set-variable]
+     460 |         int err, pci_using_dac, expected_gts;
+         |                  ^~~~~~~~~~~~~
+--
+   drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c:205: warning: Function parameter or member 'pools' not described in 'txgbe_set_rar'
+   drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c:205: warning: Excess function parameter 'vmdq' description in 'txgbe_set_rar'
+>> drivers/net/ethernet/wangxun/txgbe/txgbe_hw.c:444: warning: This comment starts with '/**', but isn't a kernel-doc comment. Refer Documentation/doc-guide/kernel-doc.rst
+    *  This function should only be involved in the IOV mode.
+
+
+vim +/txgbe_disable_device +208 drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
+
+    97	
+  > 98	void txgbe_service_event_schedule(struct txgbe_adapter *adapter)
+    99	{
+   100		if (!test_bit(__TXGBE_DOWN, &adapter->state) &&
+   101		    !test_bit(__TXGBE_REMOVING, &adapter->state) &&
+   102		    !test_and_set_bit(__TXGBE_SERVICE_SCHED, &adapter->state))
+   103			queue_work(txgbe_wq, &adapter->service_task);
+   104	}
+   105	
+   106	static void txgbe_service_event_complete(struct txgbe_adapter *adapter)
+   107	{
+   108		BUG_ON(!test_bit(__TXGBE_SERVICE_SCHED, &adapter->state));
+   109	
+   110		/* flush memory to make sure state is correct before next watchdog */
+   111		smp_mb__before_atomic();
+   112		clear_bit(__TXGBE_SERVICE_SCHED, &adapter->state);
+   113	}
+   114	
+   115	static void txgbe_remove_adapter(struct txgbe_hw *hw)
+   116	{
+   117		struct txgbe_adapter *adapter = hw->back;
+   118	
+   119		if (!hw->hw_addr)
+   120			return;
+   121		hw->hw_addr = NULL;
+   122		txgbe_dev_err("Adapter removed\n");
+   123		if (test_bit(__TXGBE_SERVICE_INITED, &adapter->state))
+   124			txgbe_service_event_schedule(adapter);
+   125	}
+   126	
+   127	static void txgbe_sync_mac_table(struct txgbe_adapter *adapter)
+   128	{
+   129		struct txgbe_hw *hw = &adapter->hw;
+   130		int i;
+   131	
+   132		for (i = 0; i < hw->mac.num_rar_entries; i++) {
+   133			if (adapter->mac_table[i].state & TXGBE_MAC_STATE_MODIFIED) {
+   134				if (adapter->mac_table[i].state &
+   135						TXGBE_MAC_STATE_IN_USE) {
+   136					TCALL(hw, mac.ops.set_rar, i,
+   137					      adapter->mac_table[i].addr,
+   138					      adapter->mac_table[i].pools,
+   139					      TXGBE_PSR_MAC_SWC_AD_H_AV);
+   140				} else {
+   141					TCALL(hw, mac.ops.clear_rar, i);
+   142				}
+   143				adapter->mac_table[i].state &=
+   144					~(TXGBE_MAC_STATE_MODIFIED);
+   145			}
+   146		}
+   147	}
+   148	
+   149	/* this function destroys the first RAR entry */
+   150	static void txgbe_mac_set_default_filter(struct txgbe_adapter *adapter,
+   151						 u8 *addr)
+   152	{
+   153		struct txgbe_hw *hw = &adapter->hw;
+   154	
+   155		memcpy(&adapter->mac_table[0].addr, addr, ETH_ALEN);
+   156		adapter->mac_table[0].pools = 1ULL;
+   157		adapter->mac_table[0].state = (TXGBE_MAC_STATE_DEFAULT |
+   158					       TXGBE_MAC_STATE_IN_USE);
+   159		TCALL(hw, mac.ops.set_rar, 0, adapter->mac_table[0].addr,
+   160		      adapter->mac_table[0].pools,
+   161		      TXGBE_PSR_MAC_SWC_AD_H_AV);
+   162	}
+   163	
+   164	static void txgbe_flush_sw_mac_table(struct txgbe_adapter *adapter)
+   165	{
+   166		u32 i;
+   167		struct txgbe_hw *hw = &adapter->hw;
+   168	
+   169		for (i = 0; i < hw->mac.num_rar_entries; i++) {
+   170			adapter->mac_table[i].state |= TXGBE_MAC_STATE_MODIFIED;
+   171			adapter->mac_table[i].state &= ~TXGBE_MAC_STATE_IN_USE;
+   172			memset(adapter->mac_table[i].addr, 0, ETH_ALEN);
+   173			adapter->mac_table[i].pools = 0;
+   174		}
+   175		txgbe_sync_mac_table(adapter);
+   176	}
+   177	
+   178	void txgbe_reset(struct txgbe_adapter *adapter)
+   179	{
+   180		struct txgbe_hw *hw = &adapter->hw;
+   181		struct net_device *netdev = adapter->netdev;
+   182		int err;
+   183		u8 old_addr[ETH_ALEN];
+   184	
+   185		if (TXGBE_REMOVED(hw->hw_addr))
+   186			return;
+   187	
+   188		err = TCALL(hw, mac.ops.init_hw);
+   189		switch (err) {
+   190		case 0:
+   191			break;
+   192		case TXGBE_ERR_MASTER_REQUESTS_PENDING:
+   193			txgbe_dev_err("master disable timed out\n");
+   194			break;
+   195		default:
+   196			txgbe_dev_err("Hardware Error: %d\n", err);
+   197		}
+   198	
+   199		/* do not flush user set addresses */
+   200		memcpy(old_addr, &adapter->mac_table[0].addr, netdev->addr_len);
+   201		txgbe_flush_sw_mac_table(adapter);
+   202		txgbe_mac_set_default_filter(adapter, old_addr);
+   203	
+   204		/* update SAN MAC vmdq pool selection */
+   205		TCALL(hw, mac.ops.set_vmdq_san_mac, 0);
+   206	}
+   207	
+ > 208	void txgbe_disable_device(struct txgbe_adapter *adapter)
+   209	{
+   210		struct net_device *netdev = adapter->netdev;
+   211		struct txgbe_hw *hw = &adapter->hw;
+   212		u32 i;
+   213	
+   214		/* signal that we are down to the interrupt handler */
+   215		if (test_and_set_bit(__TXGBE_DOWN, &adapter->state))
+   216			return; /* do nothing if already down */
+   217	
+   218		txgbe_disable_pcie_master(hw);
+   219		/* disable receives */
+   220		TCALL(hw, mac.ops.disable_rx);
+   221	
+   222		/* call carrier off first to avoid false dev_watchdog timeouts */
+   223		netif_carrier_off(netdev);
+   224		netif_tx_disable(netdev);
+   225	
+   226		del_timer_sync(&adapter->service_timer);
+   227	
+   228		if (hw->bus.lan_id == 0)
+   229			wr32m(hw, TXGBE_MIS_PRB_CTL, TXGBE_MIS_PRB_CTL_LAN0_UP, 0);
+   230		else if (hw->bus.lan_id == 1)
+   231			wr32m(hw, TXGBE_MIS_PRB_CTL, TXGBE_MIS_PRB_CTL_LAN1_UP, 0);
+   232		else
+   233			txgbe_dev_err("%s: invalid bus lan id %d\n", __func__,
+   234				      hw->bus.lan_id);
+   235	
+   236		if (!(((hw->subsystem_device_id & TXGBE_NCSI_MASK) == TXGBE_NCSI_SUP) ||
+   237		      ((hw->subsystem_device_id & TXGBE_WOL_MASK) == TXGBE_WOL_SUP))) {
+   238			/* disable mac transmiter */
+   239			wr32m(hw, TXGBE_MAC_TX_CFG, TXGBE_MAC_TX_CFG_TE, 0);
+   240		}
+   241		/* disable transmits in the hardware now that interrupts are off */
+   242		for (i = 0; i < adapter->num_tx_queues; i++) {
+   243			u8 reg_idx = adapter->tx_ring[i]->reg_idx;
+   244	
+   245			wr32(hw, TXGBE_PX_TR_CFG(reg_idx), TXGBE_PX_TR_CFG_SWFLSH);
+   246		}
+   247	
+   248		/* Disable the Tx DMA engine */
+   249		wr32m(hw, TXGBE_TDM_CTL, TXGBE_TDM_CTL_TE, 0);
+   250	}
+   251	
+   252	void txgbe_down(struct txgbe_adapter *adapter)
+   253	{
+   254		txgbe_disable_device(adapter);
+   255		txgbe_reset(adapter);
+   256	}
+   257	
+   258	/**
+   259	 *  txgbe_init_shared_code - Initialize the shared code
+   260	 *  @hw: pointer to hardware structure
+   261	 *
+   262	 *  This will assign function pointers and assign the MAC type and PHY code.
+   263	 **/
+ > 264	s32 txgbe_init_shared_code(struct txgbe_hw *hw)
+   265	{
+   266		s32 status;
+   267	
+   268		status = txgbe_init_ops(hw);
+   269		return status;
+   270	}
+   271	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
