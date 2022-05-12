@@ -2,102 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 65C97524EE8
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 15:56:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A51F524EEB
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 15:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354761AbiELN40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 09:56:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48788 "EHLO
+        id S1354763AbiELN43 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 09:56:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352058AbiELN4B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 09:56:01 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4627026AE1
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 06:55:57 -0700 (PDT)
-Received: from [192.168.0.7] (ip5f5aeace.dynamic.kabel-deutschland.de [95.90.234.206])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 4ECAF61EA1923;
-        Thu, 12 May 2022 15:55:54 +0200 (CEST)
-Message-ID: <d50b23b1-38b5-2522-cbf4-c360c0ed05cd@molgen.mpg.de>
-Date:   Thu, 12 May 2022 15:55:53 +0200
+        with ESMTP id S1354799AbiELN4U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 09:56:20 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91DCE68F91
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 06:56:19 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso5002962pjg.0
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 06:56:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=BKTUsOZXurokKw93pDZ/qCH4rd2yh1Ne8HUq4b8wchY=;
+        b=qh7b7feyfcMWz/6/DqLn/0Qe85dfxTcsxJv2Ev8Qa+flLiQty+wFxE8Xkrhn9wvTQi
+         8BmD3CcamGPeH2URq9zbMx85VDe/+JDDc1aGDF+VRaS5B6OKesNXwbWnkFvzKg/B4Kda
+         +FcVKmDzN5qNMUOJbHyxhQ91H2UTwkzxJztSObNaaxPM348kpQuucV2R2+xE+jON9MzC
+         z68BLscdY4Bw1iZWRpo/UoIC0pEcTrqicN11YWIttow/UUDvYoCOQCige40EsWjM75SD
+         JXQ2aG2kVFNjV0oOv58wUowa15XElvYJbHdvmGwLR32dJJGFEaKj5wcra+Z3F+BX4eYW
+         fmnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=BKTUsOZXurokKw93pDZ/qCH4rd2yh1Ne8HUq4b8wchY=;
+        b=R+7uGefTKhrw+oBtMXFduzquLhRh52nBiGIa3dV06cdCgBCjcPEeACS86awX/5iBmF
+         qDkO1lRlHim1563h1CJXAM5vBmc1Sfu8uJaWX1rU1H70VikrRE15Mrnm/YTy+c2VscwP
+         a0FyBpPAuGoG8QacFvxLmiYIMUxRFdIYXEqGeNYWFbQXfoYP7Fue37m5/6UCxvuvM2EB
+         5mu4IoaW2nqHSdNUEM3TbeP5pYv18zQwxdQdhatzETbQ4+v3MO9a2q4rOe/bcQdrJLhL
+         MCgFe1tiAODj6LzFcCrwrq5suOTKmrBI8cjtN7i8xfeMCZvfpVUHIIpsGe+IRwvAcbzR
+         PDkA==
+X-Gm-Message-State: AOAM530iajjJd3a/LRiS4ZJcTDYIVPRcPr1Mrf+WZwRHaJUpu8JxBElq
+        A4d77G4zoG1bcmb8APlIEAZwoKtj+n3v6X4lYZM=
+X-Google-Smtp-Source: ABdhPJz3B08ERMgvBUNTccjI0r2pvEVMzC31+ppaWQR3VpS+CR/heyBlPeG1ARgDWbmLQ2uunyHEo/NiwD7kPqYKa5M=
+X-Received: by 2002:a17:903:40c3:b0:15e:9d4a:5d24 with SMTP id
+ t3-20020a17090340c300b0015e9d4a5d24mr88037pld.77.1652363779017; Thu, 12 May
+ 2022 06:56:19 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [Intel-wired-lan] [PATCH v2 2/2] igb_main: Assign random MAC
- address instead of fail in case of invalid one
-Content-Language: en-US
-To:     lixue liang <lianglixue@greatwall.com.cn>
-References: <20220512093918.86084-1-lianglixue@greatwall.com.cn>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        kuba@kernel.org, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220512093918.86084-1-lianglixue@greatwall.com.cn>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:a05:6a20:3e0c:b0:7f:499d:4df6 with HTTP; Thu, 12 May 2022
+ 06:56:18 -0700 (PDT)
+Reply-To: musadosseh1@gmail.com
+From:   David Randal <barr.musabame9@gmail.com>
+Date:   Thu, 12 May 2022 15:56:18 +0200
+Message-ID: <CACXnS-4=2ye-3VtPYkXQiaCL4onpJnMK5FT2mUVvEZnYp==Azw@mail.gmail.com>
+Subject: Hello
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.6 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:1035 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4998]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [barr.musabame9[at]gmail.com]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [barr.musabame9[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [musadosseh1[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.5 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Lixue,
+My name is DAVID Randal from africa construction equipment operator I
+want you to work with me as an overseas partner to do business GOLD.
+If you are interested answer me.
 
-
-Thank you for sending version 2. Some more minor nits.
-
-Am 12.05.22 um 11:39 schrieb lixue liang:
-> In some cases, when the user uses igb_set_eeprom to modify the MAC
-> address to be invalid, the igb driver will fail to load. If there is no
-> network card device, the user must modify it to a valid MAC address by
-> other means.
-> 
-> Since the MAC address can be modified ,then add a random valid MAC address
-> to replace the invalid MAC address in the driver can be workable, it can
-> continue to finish the loading ,and output the relevant log reminder.
-
-Please add the space after the comma.
-
-> Reported-by: kernel test robot <lkp@intel.com>
-
-This line is confusing. Maybe add that to the version change-log below 
-the `---`.
-
-> Signed-off-by: lixue liang <lianglixue@greatwall.com.cn>
-> ---
->   drivers/net/ethernet/intel/igb/igb_main.c | 8 ++++----
->   1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index a513570c2ad6..746233befade 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -3359,10 +3359,10 @@ static int igb_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
->   	eth_hw_addr_set(netdev, hw->mac.addr);
->   
->   	if (!is_valid_ether_addr(netdev->dev_addr)) {
-> -		eth_random_addr(netdev->dev_addr);
-> -		memcpy(hw->mac.addr, netdev->dev_addr, netdev->addr_len);
-> -		dev_info(&pdev->dev,
-> -			 "Invalid Mac Address, already got random Mac Address\n");
-> +		eth_hw_addr_random(netdev);
-> +		ether_addr_copy(hw->mac.addr, netdev->dev_addr);
-> +		dev_err(&pdev->dev,
-> +			"Invalid MAC Address, already assigned random MAC Address\n");
-
-Please spell it MAC address.
-
->   	}
->   
->   	igb_set_default_mac_filter(adapter);
-
-
-Kind regards,
-
-Paul
+Ms.David
