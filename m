@@ -2,84 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D598E5255B7
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 21:28:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 265A05255D0
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 21:36:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358024AbiELT21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 15:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
+        id S1358099AbiELTfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 15:35:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44584 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242644AbiELT2Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 15:28:25 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA43A5548E
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 12:28:24 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id l11-20020a17090a49cb00b001d923a9ca99so5783475pjm.1
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 12:28:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=schmorgal.com; s=google;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=nKxpnVl899oy/IAu6ozQa8OO5A9+iaoFiGQ+KlFa3pg=;
-        b=RN/2RvCPfSVh0Ss3FKdr/sXPSL2YgBmG2DqZVftlw5XDPW+4Yb5/ec7lTIpAh50mhX
-         t/GDRTIyvTlopXm4F5ZU7wP5gh8ndahBOxCTu1Niw4gAngDOJoblAW/1bKKV8C211Lvl
-         D2GLxya5eDlseqMacSL5LcKjzStrXQQoAVHn4=
+        with ESMTP id S1358095AbiELTf3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 15:35:29 -0400
+Received: from mail-il1-f198.google.com (mail-il1-f198.google.com [209.85.166.198])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E687F260865
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 12:35:28 -0700 (PDT)
+Received: by mail-il1-f198.google.com with SMTP id j4-20020a92c204000000b002caad37af3fso3855615ilo.22
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 12:35:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=nKxpnVl899oy/IAu6ozQa8OO5A9+iaoFiGQ+KlFa3pg=;
-        b=RtbbK6uKYomf/YVRGV6acmIUc3xYv2XYfgk/zRRzfpjJyJ8v6R0KHje2VgP/WagyMd
-         NDc/drbOO7Vm2oOlkpO+hzb7dXllNf7IG4ZATsMr9w1tLA+VOKag6mg03DnqHfFYQc5O
-         9tY7e2D1SWlVYy8YNAgN6KBdRBslS8quC/8It7WtUjNod0+etEalTbwYXNof6GEOw+SJ
-         256RcMizCOkuAGMV46+ncrH/0Jk7tVd1nULlxMdt+IxdyBWyZ9kvgoJXXsfwAP1jxt2h
-         hXhKJyPwUQRf+CA4IV/6iybYW17+VOBxUlux5Wuoy26AbzTmHY5trzPoBZqjDMwYF9KV
-         27Hw==
-X-Gm-Message-State: AOAM533u9UD01xgH8+fpYpTxtfkBxDmFsm7hCSZ90ui84g31lBjnCVkK
-        rFbXS4zIY3GuewUSdcas8mL4ig==
-X-Google-Smtp-Source: ABdhPJxVA4yLHYiqPT41XDD2HjRvEp2U/uSwQgn4R7Xk6v/oLSpRSAAfQRPi2s6lRdXNqE1gWUs5WA==
-X-Received: by 2002:a17:903:290:b0:15c:1c87:e66c with SMTP id j16-20020a170903029000b0015c1c87e66cmr1176000plr.61.1652383703956;
-        Thu, 12 May 2022 12:28:23 -0700 (PDT)
-Received: from [192.168.1.33] ([50.45.132.243])
-        by smtp.googlemail.com with ESMTPSA id t4-20020a170902e84400b0015eb690bee9sm257876plg.196.2022.05.12.12.28.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 12:28:23 -0700 (PDT)
-Message-ID: <dc47ac41-c9d8-7952-1ad3-bd651db0c254@schmorgal.com>
-Date:   Thu, 12 May 2022 12:28:21 -0700
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=vnBY0HzgcdQ5Va+zEnq5HjFQ0qe5vbnNzeKtvYL+KTM=;
+        b=2WG6LGRx13fbS9yEywM8Z6ckWX2FPR1gltyaqtiK6hFwFqs9KtDEzEqXJUsENIOKfx
+         pGMwdXGIceVthQ5OZY76wTJ37EA3injCOVh3BEbvghItakJFKwZtYTJplGSwixk1pHnM
+         T5PGY4GCZnzvZOxruN1Rzn8ywouAhM1G8utGitLHPFWULP7RHLyP59SIyTCHEvO0774Z
+         U8du11QH8ZgqSyKHQLZd5qZDhQwiC2vpfaoR2+y45AJ5CkrJ4ZoeQ0RLtb2+E6dLgg9f
+         ybyjeGtnvjI/2TPgEQ4b+A7cA/lVpk8j3l5/HoQW9Ft3GeaMO6319udJ6DCmkJrPqxpI
+         n4Hg==
+X-Gm-Message-State: AOAM531zvUzp8W2kJDDcUkSLicTgiFUFidyW08KD6boyaCIMexIMyS71
+        dyMvwpyBcYkamoSOhxklD9YxfibL1EfZW7nlLH59yoCS2IRq
+X-Google-Smtp-Source: ABdhPJyv1FM7UI0nrMJNmcePkouONIWR1m2g431a3Tqc+Z2iBZjMpy4slL2YQ4f+e2cevHFMw4W5JLLgDe1Y4ou86OuY3PJhPPDk
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>,
-        James Carlson <carlsonj@workingcode.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        Paul Mackerras <paulus@samba.org>, linux-ppp@vger.kernel.org
-References: <20220509150130.1047016-1-kuba@kernel.org>
- <CAK8P3a0FVM8g0LG3_mHJ1xX3Bs9cxae8ez7b9qvGOD+aJdc8Dw@mail.gmail.com>
- <20220509103216.180be080@kernel.org>
- <9cac4fbd-9557-b0b8-54fa-93f0290a6fb8@schmorgal.com>
- <CAK8P3a1AA181LqQSxnToSVx0e5wmneUsOKfmnxVMsUNh465C_Q@mail.gmail.com>
- <d7076f95-b25b-3694-1ec2-9b9ff93633b7@schmorgal.com>
- <CAK8P3a3Tj=aJM_-x17uw1yJ-5+DgKX6APgEaO0sa=aRBKya1XQ@mail.gmail.com>
- <0078ff43-f9fa-1deb-b64d-170d3d93ee6f@workingcode.com>
- <CAK8P3a0xmXYU5iNki3BX25J73jcy+xJ=bf67G6PqAHjRwckFRA@mail.gmail.com>
-From:   Doug Brown <doug@schmorgal.com>
-Subject: Re: [PATCH net-next] net: appletalk: remove Apple/Farallon LocalTalk
- PC support
-In-Reply-To: <CAK8P3a0xmXYU5iNki3BX25J73jcy+xJ=bf67G6PqAHjRwckFRA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+X-Received: by 2002:a05:6638:258b:b0:32d:b5e8:b282 with SMTP id
+ s11-20020a056638258b00b0032db5e8b282mr872153jat.16.1652384128139; Thu, 12 May
+ 2022 12:35:28 -0700 (PDT)
+Date:   Thu, 12 May 2022 12:35:28 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fd857805ded5a88e@google.com>
+Subject: [syzbot] WARNING: suspicious RCU usage in bond_ethtool_get_ts_info
+From:   syzbot <syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, andy@greyhouse.net, ast@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        edumazet@google.com, hawk@kernel.org, j.vosburgh@gmail.com,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        liuhangbin@gmail.com, netdev@vger.kernel.org, pabeni@redhat.com,
+        songliubraving@fb.com, syzkaller-bugs@googlegroups.com,
+        vfalico@gmail.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -87,21 +58,81 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/12/2022 12:21 PM, Arnd Bergmann wrote:
-> On Thu, May 12, 2022 at 8:11 PM James Carlson <carlsonj@workingcode.com> wrote:
->>
->> I would've thought AppleTalk was completely gone by now, and I certainly
->> would not be sad to see the dregs removed from pppd, but there was a
->> patch release on the netatalk package just last month, so what do I know?
-> 
-> I think netatalk 3.0 dropped all appletalk protocol stuff a long time ago and
-> only supports AFP over IP.
-That's right. The older netatalk 2.x branch has a few different branches 
-on GitHub that are being maintained to allow AppleTalk connectivity with 
-older Macs through Ethernet (or LocalTalk-to-Ethernet bridges), so 
-people are still actively using AppleTalk with Ethernet.
+Hello,
 
-BTW, I messed up my quoting in my previous message so it was hard to see 
-part of my reply -- but I agree that everything in drivers/net/appletalk 
-could go away except for the Kconfig entry for CONFIG_ATALK. And dev.c 
-and the other LocalTalk-specific bits in net/appletalk could go away.
+syzbot found the following issue on:
+
+HEAD commit:    01f4685797a5 eth: amd: remove NI6510 support (ni65)
+git tree:       net-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=16391d99f00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c04cc4641789ea51
+dashboard link: https://syzkaller.appspot.com/bug?extid=92beb3d46aab498710fa
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17df03e1f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=12159cbef00000
+
+The issue was bisected to:
+
+commit aa6034678e873db8bd5c5a4b73f8b88c469374d6
+Author: Hangbin Liu <liuhangbin@gmail.com>
+Date:   Fri Jan 21 08:25:18 2022 +0000
+
+    bonding: use rcu_dereference_rtnl when get bonding active slave
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=16fce349f00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=15fce349f00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=11fce349f00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com
+Fixes: aa6034678e87 ("bonding: use rcu_dereference_rtnl when get bonding active slave")
+
+=============================
+WARNING: suspicious RCU usage
+5.18.0-rc5-syzkaller-01392-g01f4685797a5 #0 Not tainted
+-----------------------------
+include/net/bonding.h:353 suspicious rcu_dereference_check() usage!
+
+other info that might help us debug this:
+
+
+rcu_scheduler_active = 2, debug_locks = 1
+1 lock held by syz-executor317/3599:
+ #0: ffff88801de78130 (sk_lock-AF_INET){+.+.}-{0:0}, at: lock_sock include/net/sock.h:1680 [inline]
+ #0: ffff88801de78130 (sk_lock-AF_INET){+.+.}-{0:0}, at: sock_setsockopt+0x1e3/0x2ec0 net/core/sock.c:1066
+
+stack backtrace:
+CPU: 0 PID: 3599 Comm: syz-executor317 Not tainted 5.18.0-rc5-syzkaller-01392-g01f4685797a5 #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ <TASK>
+ __dump_stack lib/dump_stack.c:88 [inline]
+ dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+ bond_option_active_slave_get_rcu include/net/bonding.h:353 [inline]
+ bond_ethtool_get_ts_info+0x32c/0x3a0 drivers/net/bonding/bond_main.c:5595
+ __ethtool_get_ts_info+0x173/0x240 net/ethtool/common.c:554
+ ethtool_get_phc_vclocks+0x99/0x110 net/ethtool/common.c:568
+ sock_timestamping_bind_phc net/core/sock.c:869 [inline]
+ sock_set_timestamping+0x3a3/0x7e0 net/core/sock.c:916
+ sock_setsockopt+0x543/0x2ec0 net/core/sock.c:1221
+ __sys_setsockopt+0x55e/0x6a0 net/socket.c:2223
+ __do_sys_setsockopt net/socket.c:2238 [inline]
+ __se_sys_setsockopt net/socket.c:2235 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2235
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f8902c8eb39
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
