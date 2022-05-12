@@ -2,78 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A787B5247E7
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 10:30:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2FF524825
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 10:45:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351461AbiELI2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 04:28:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48356 "EHLO
+        id S1351553AbiELInF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 04:43:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351438AbiELI17 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 04:27:59 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1064E9B18E;
-        Thu, 12 May 2022 01:27:58 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4KzPwL5cztzGpSV;
-        Thu, 12 May 2022 16:25:06 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
- 2022 16:27:55 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
-Subject: [PATCH -next] net: hinic: add missing destroy_workqueue in hinic_pf_to_mgmt_init
-Date:   Thu, 12 May 2022 16:41:48 +0800
-Message-ID: <20220512084148.1027481-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        with ESMTP id S1346555AbiELInB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 04:43:01 -0400
+Received: from mailout1.hostsharing.net (mailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5fcc:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E053ED2D;
+        Thu, 12 May 2022 01:42:59 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by mailout1.hostsharing.net (Postfix) with ESMTPS id 52EC8101917A2;
+        Thu, 12 May 2022 10:42:57 +0200 (CEST)
+Received: from localhost (unknown [89.246.108.87])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by h08.hostsharing.net (Postfix) with ESMTPSA id 3042761C2B10;
+        Thu, 12 May 2022 10:42:57 +0200 (CEST)
+X-Mailbox-Line: From 4a90661372af73e056f7b243df9c039945715a3b Mon Sep 17 00:00:00 2001
+Message-Id: <cover.1652343655.git.lukas@wunner.de>
+From:   Lukas Wunner <lukas@wunner.de>
+Date:   Thu, 12 May 2022 10:42:00 +0200
+Subject: [PATCH net-next v3 0/7] Polling be gone on LAN95xx
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-hinic_pf_to_mgmt_init misses destroy_workqueue in error path,
-this patch fixes that.
+Do away with link status polling on LAN95xx USB Ethernet
+and rely on interrupts instead, thereby reducing bus traffic,
+CPU overhead and improving interface bringup latency.
 
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
----
- drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c | 2 ++
- 1 file changed, 2 insertions(+)
+Link to v2:
+https://lore.kernel.org/netdev/cover.1651574194.git.lukas@wunner.de/
 
-diff --git a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-index ebc77771f5da..4aa1f433ed24 100644
---- a/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-+++ b/drivers/net/ethernet/huawei/hinic/hinic_hw_mgmt.c
-@@ -643,6 +643,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = alloc_msg_buf(pf_to_mgmt);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to allocate msg buffers\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
-@@ -650,6 +651,7 @@ int hinic_pf_to_mgmt_init(struct hinic_pf_to_mgmt *pf_to_mgmt,
- 	err = hinic_api_cmd_init(pf_to_mgmt->cmd_chain, hwif);
- 	if (err) {
- 		dev_err(&pdev->dev, "Failed to initialize cmd chains\n");
-+		destroy_workqueue(pf_to_mgmt->workq);
- 		hinic_health_reporters_destroy(hwdev->devlink_dev);
- 		return err;
- 	}
---
-2.31.1
+Only change since v2:
+
+* Patch [5/7]:
+  * Drop call to __irq_enter_raw() which worked around a warning in
+    generic_handle_domain_irq().  That warning is gone since
+    792ea6a074ae (queued on tip.git/irq/urgent).
+    (Marc Zyngier, Thomas Gleixner)
+
+
+Lukas Wunner (7):
+  usbnet: Run unregister_netdev() before unbind() again
+  usbnet: smsc95xx: Don't clear read-only PHY interrupt
+  usbnet: smsc95xx: Don't reset PHY behind PHY driver's back
+  usbnet: smsc95xx: Avoid link settings race on interrupt reception
+  usbnet: smsc95xx: Forward PHY interrupts to PHY driver to avoid
+    polling
+  net: phy: smsc: Cache interrupt mask
+  net: phy: smsc: Cope with hot-removal in interrupt handler
+
+ drivers/net/phy/smsc.c         |  28 +++---
+ drivers/net/usb/asix_devices.c |   6 +-
+ drivers/net/usb/smsc95xx.c     | 152 +++++++++++++++------------------
+ drivers/net/usb/usbnet.c       |   6 +-
+ 4 files changed, 88 insertions(+), 104 deletions(-)
+
+-- 
+2.35.2
 
