@@ -2,168 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CEE0525804
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 00:53:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A6E152580C
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:00:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359325AbiELWxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 18:53:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43964 "EHLO
+        id S1359336AbiELXA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 19:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350110AbiELWxM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 18:53:12 -0400
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A997626865A
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 15:53:08 -0700 (PDT)
-Received: by mail-pg1-x52f.google.com with SMTP id v10so5841558pgl.11
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 15:53:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fastly.com; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=+VaX5bEkt76Upj3MV7wwCv/6t4DebBt0Na7sEL1aFWk=;
-        b=RLIUxCf7DyHsfTc9r+srDbeWsNAe7EbL+jFZYOZRR4BWW+qLVAuoHKGuWgN/hyuWSh
-         XqGnKskIo2YPhI43QZSG0tP+o/2rDa+mHXKqbquaFpk5J+QzlCr+uiLn2DlvD54vaeol
-         RRsMufH6It/H/btgUCKnq7wQ4dOP5Bq0BUSjA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=+VaX5bEkt76Upj3MV7wwCv/6t4DebBt0Na7sEL1aFWk=;
-        b=Xfr9DhVBvUZoVF1ZV3sdfOvrC7QAtquxYnKPouK3Okd0xAmnKvLQMv20iZT9m37GiL
-         HEYmrFVJ0yCwNIYga3iCNGzLqeGt0cG7elj0MfaCgQQkbbDMUQQJMovsQhGIqSuJwuMm
-         oLYzgM/XP3yVus7APYtAVvDtp11EpQitxqaUw3NrSshZ99eHVP5qMBA1r1HfLGY9/HE2
-         rcLj9Sk20bYmabvk0Avbkb3jMLWCwJ7wb4hZDTbvfPX9+33NK1yi5jBng9j9HZPxnUGa
-         DzD+10hjqXpKcK80gbuKsmAY0nRi6jpxXKOIZpJPWZ4n+cxuKyxG8lvewZzs2a8kjZmB
-         JZCA==
-X-Gm-Message-State: AOAM530hFckXGUd7sjEpfKcKpBM1qkTf5/e65V4PVMcEeyYqDSZ5MhG6
-        WY4RRgOvwArPMB9nqpF6nGhomg==
-X-Google-Smtp-Source: ABdhPJw8D9Yn2NvhdDbwVV4UNIZuZQOhxhAbXeSXhinVOmBc47nuHD4rdSNx10K2su40x/WsCjhq2Q==
-X-Received: by 2002:a63:a553:0:b0:3db:48a0:f506 with SMTP id r19-20020a63a553000000b003db48a0f506mr1444062pgu.456.1652395988124;
-        Thu, 12 May 2022 15:53:08 -0700 (PDT)
-Received: from fastly.com (c-73-223-190-181.hsd1.ca.comcast.net. [73.223.190.181])
-        by smtp.gmail.com with ESMTPSA id w20-20020a170902ca1400b0015f391f56b7sm358600pld.305.2022.05.12.15.53.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 12 May 2022 15:53:07 -0700 (PDT)
-Date:   Thu, 12 May 2022 15:53:05 -0700
-From:   Joe Damato <jdamato@fastly.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, x86@kernel.org
-Subject: Re: [RFC,net-next,x86 0/6] Nontemporal copies in unix socket write
- path
-Message-ID: <20220512225302.GA74948@fastly.com>
-References: <1652241268-46732-1-git-send-email-jdamato@fastly.com>
- <20220511162520.6174f487@kernel.org>
- <20220512010153.GA74055@fastly.com>
- <20220512124608.452d3300@kernel.org>
+        with ESMTP id S1356737AbiELXA0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:00:26 -0400
+Received: from mx0d-0054df01.pphosted.com (mx0d-0054df01.pphosted.com [67.231.150.19])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAB4A27EB8A
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 16:00:24 -0700 (PDT)
+Received: from pps.filterd (m0209000.ppops.net [127.0.0.1])
+        by mx0c-0054df01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CI8BZg022432;
+        Thu, 12 May 2022 19:00:04 -0400
+Received: from can01-yt3-obe.outbound.protection.outlook.com (mail-yt3can01lp2176.outbound.protection.outlook.com [104.47.75.176])
+        by mx0c-0054df01.pphosted.com (PPS) with ESMTPS id 3g02sg1dph-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 19:00:04 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SbaJlt53h18kE0UYr5Os0NUOtbC4ckKXbyyWsYL+w7PR6lsUVdYetLNh62BnrLdpxbEYN6XVQ+FSSSW2Ze5OP2njN/C09bp62Qjucu5zDcrOwRG+1q2RyskZeEbxAFZ6tKJ8GJUpXeOnhwGPolhiP5D+QAFzC/fuJcHGmNH2RFsyLdIRQgn1kG0nXuPM43LdKmtU0SuAAJN92sxl2kBTOR0zGSzMLLDnz1/wfuzkrZtZ8U/gYjQt9QVQF/aQcDMANcXMlxS/stqSJrNg9ebVG3UbEyHbwUhkN8mkukDVxr+pHi6m6iswp63aHpXoA9+09gQx1z4ef0X8HyZvzrtzcw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=2d+LvPRpDpUcfLupG9fuqlFHNYTC/oKL9Th+47gjTp8=;
+ b=AKKLJsb+fDyXROfWzvFbiLm+lgratkJHtRZwoI+4y+FpKg7pnojs3tAkqZR+N0cYZaimOjOXzhgVMJVV3gZCEvQ4eIIsmsyNvL8u6gVWOaX3Lq1IwAEVtw3bIPEKRjhZGapU8oD2NiLzPzzx3JP2I8vBWvqafzDBQDFUOYu3C+oSsJBl2yuVCh6PQLVisJrAKnDDEKWhEPpy/31BT/UBChJ7llh4OIoZdT10qdAnCzA6bqyRQpFYC5TsJs4qSv/ZKozJd0q29bjGITggSYNQm2CbIGiK+wNrNFgFM2H97CMbn5YnOV8oWJBOF8YJwPPzgdETbM2tZyb1AuYiLJbSBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=calian.com; dmarc=pass action=none header.from=calian.com;
+ dkim=pass header.d=calian.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=calian.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2d+LvPRpDpUcfLupG9fuqlFHNYTC/oKL9Th+47gjTp8=;
+ b=LaiXdR/it9Eb1NmG1wHfze2UcpXtIb0d4uAIZyweVQO8NzgIQllhc+Azt7UJr7nrO2GqHvxvACVQG2J4uiRRkhxc0pmUkY7qk95y/Ezxuii+USKj/hsx42gVSxOoX4IFWizuUcRwRk1SaeUeDQYRDjxjsRbok486rASHteEFmBM=
+Received: from YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:b9::6)
+ by YT1PR01MB8329.CANPRD01.PROD.OUTLOOK.COM (2603:10b6:b01:c0::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Thu, 12 May
+ 2022 23:00:03 +0000
+Received: from YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::29ae:d7fe:b717:1fc4]) by YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+ ([fe80::29ae:d7fe:b717:1fc4%5]) with mapi id 15.20.5250.014; Thu, 12 May 2022
+ 23:00:03 +0000
+From:   Robert Hancock <robert.hancock@calian.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "pabeni@redhat.com" <pabeni@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "michal.simek@xilinx.com" <michal.simek@xilinx.com>,
+        "radhey.shyam.pandey@xilinx.com" <radhey.shyam.pandey@xilinx.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH net-next v7 0/2] axienet NAPI improvements
+Thread-Topic: [PATCH net-next v7 0/2] axienet NAPI improvements
+Thread-Index: AQHYZiRxw9X988dUd0a/NujqhIynda0b27wA
+Date:   Thu, 12 May 2022 23:00:02 +0000
+Message-ID: <6f1c104d118c55b6903a0557ddba223d3e2843b1.camel@calian.com>
+References: <20220512171853.4100193-1-robert.hancock@calian.com>
+In-Reply-To: <20220512171853.4100193-1-robert.hancock@calian.com>
+Accept-Language: en-CA, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cd98a365-e5ce-4f46-c122-08da346b2602
+x-ms-traffictypediagnostic: YT1PR01MB8329:EE_
+x-microsoft-antispam-prvs: <YT1PR01MB8329581F1924F55A617590EBECCB9@YT1PR01MB8329.CANPRD01.PROD.OUTLOOK.COM>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: n4P8/F6Z5aoWtNvGpsxAxxrL6AHHM99jZcPZyEUL+71DSSUGOnSyF4MNARGT3IrN1i46MIg8IG7Ri+HjM4JB5b9PBVC0PT9YfvFpIDCCUudlWLO+tZzEf88xOE0djXdr/RVhgJRfp4dXJrkZP2LDCVIrLP9ViZxUV42WY1JaB9KLk4qc5kQaLq7Sc7SxTTjqTCA78m/VFh0iJROeRdtIf1aHzbBl4gosIDzp5uMFzrM6/H8Uab8pQld14K7ldajZGAAkTisMCoQ1h8NxBsI3EsjwAFRLuMpvV0h1gLbvTblYw/44NphxWu1D9yz2u4bJnXS2D4IzG66ba6oqXpo1y3XBF0ockgxrpzgi2Fdb91bOEEkNTnlnSkFRKANrASbluC2PzH02Mps4DoLgzFC6Gg2Edz/vtF6F7tZP/8Go8ex1GRZs6weSJcmbnCetTgNXZXU+4lDp+De8+F+x2K+L9pYQ9HFqzqa2Fp90JcPPry5X4BKnJaC/c0rmCKGBR/i+Gm/blYh7ejlAyUlr3yA1ZKZVcsci/YNcJRBZ8tVZDpu3K90APx9n76oGO8pS1dHzIuw5hHNAL80tAiz7hAvxbvT0vWi0u2I+orlxywXTivrWAxetQ71lGeYf3CQcp92ubXWqmrDnQwQw1Z/wDCEf2dbaTlZK+CFoZjhVVtVMiTRKOmVdQZDZt44lMAB450OIsFxo0yCohWqej6eoo7n4w3IzrU7Qq1/7pNozLpr3kzmlInwoxmNoVDu+3zStkgmOB/JV2rXa1RXDYl9sVomByOr3u3iFSz7n1wljTiWaZDSTfx4OAt6RU4psoJ8uR6d9KPXSixha1KC7I3fUkWDBRQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(8936002)(5660300002)(122000001)(38100700002)(38070700005)(6506007)(66556008)(86362001)(15974865002)(71200400001)(6916009)(6486002)(54906003)(8676002)(4326008)(66476007)(66946007)(316002)(76116006)(66446008)(64756008)(508600001)(36756003)(83380400001)(2906002)(2616005)(186003)(44832011)(6512007)(26005)(99106002)(18886075002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?utf-8?B?bWVrVmx2REl0NWpsY2xmNlVjdGVhMmN6eUl5WWtxOG9pVjdWeE5CWXpuc1l1?=
+ =?utf-8?B?dElFVDdIRjROeWhMTitLeXVua2VoTWhzaWlCNTNpL0hWclE0YVVqNHZWYXhE?=
+ =?utf-8?B?ZmNmUnc0NTlKMFdJWXUrdHVvT01Cd1BVcmxidmdWWk1PaWE2TFUvdE9obFV3?=
+ =?utf-8?B?OUVyMHhQd3VEdURwU0dHZ053a2pYYS9vdU9MbUdjK0xkL1JaM0ZqRFRHU2lu?=
+ =?utf-8?B?NWNoa3k4Y0IxVVR6UHlmYzc0dnN3SjZNaVVxT3hCdk9WRHhXNzdRS25GU3l1?=
+ =?utf-8?B?ZmYxd0d2Y0R6OWFIQ1oySGVTVXhJbXdTU0xuRW9KMnlqbTFiSHVKeU9id2Zz?=
+ =?utf-8?B?dFBFZE9jZHlrdVNJalIwNkpvSG9zdDFMdXRPS2IvWjkrYVhjZURCNVBpNVAx?=
+ =?utf-8?B?SFBRdDJSdkhHODh4VlJaQ1BvSXI4Z1J6UHBPQnViLzZaUGpPY0cyM3FXU3JQ?=
+ =?utf-8?B?VGtwRFlBTmRibGZzencrR0VOZTgvRjcvdDA5bEtBbnhrU01DM0kydDZOajY5?=
+ =?utf-8?B?aWkrdmI5YTRobThZVXhsRzQzNjhmMkZOWXdaZTdRMjNwODRuSVpacVhPc1ht?=
+ =?utf-8?B?UlBlRGZlV2x6ZEIyKzdYOEVRVjk0Q1R6V0RQWTg1REp0UW9RTDR5Z2poTVdN?=
+ =?utf-8?B?eEtNNXJvQmppRTZyYTY5THhlazhBc1pDc2RhRlhVSUNCY0NLRElYS1BxMlZl?=
+ =?utf-8?B?Z2NRTjUzYnBUeng2Z05YZkdOdHBEdUNWMFNsaHpHelQ2VGViaEQvMGRnaThE?=
+ =?utf-8?B?anRiaFVWUlNhVWw3UC9qTU0rTGJjWm9rSVVleXd2SVk2SlNnNkdUMTdjZi9u?=
+ =?utf-8?B?NnBGd0VwTmRYMGY5eDVwMHFZNUZsV0FOcFNpM0JBaGJQSXdWdWdWazRhZjdu?=
+ =?utf-8?B?SEVFWTNoYjFCUVdoelk1ejVRbXB4aEthSDNZZkg1MEU1ZGljMnI0TVVsa3Bi?=
+ =?utf-8?B?YnlURE84dE93VDc3SVhHRzBhenBPR1lCekF2dDV3KzkyOHY4UUNmM1gwcU9s?=
+ =?utf-8?B?QVFITDFFNGVFNk9NajllRmYwNFdYVjFUM05vN3lPck43eHp6N0UwT3IxWXl6?=
+ =?utf-8?B?clhrMWFNbGMxUytnb08wZEM5cENBZUhPdU81Ymg5a1M1M3FTaHIrMFJTN2hM?=
+ =?utf-8?B?VjMvOHdFK1M2ckM4SDQ1ZDNwdW0zbEgybmc1TVgyajVpZWpvVWZ0YjRGYTFU?=
+ =?utf-8?B?UDNIWDdBVmRnN295S29GVWQvZXpBMWZMSHBGaUVqNU9yOUQ2dWNaNERMMHhS?=
+ =?utf-8?B?NnpYSE4xWTBUSk5nQzRxSU1DZ1Byb285a3ZyWEVucUkyYlpkdVZ5TGdyQ2J0?=
+ =?utf-8?B?Q1B1UHI1N2RoUDZtOFBKQ3FJa3ZQWVVtT3ZrdFRTQkxlL3g0SmtWdlFJMC9r?=
+ =?utf-8?B?bE5pdWIwdjJKMHhkZVIxci9FQ09tVXo5czNXRkxWQldmY1MzV1RLUFJEVUlu?=
+ =?utf-8?B?aTYvM3VsVk0vNytTeFFzcXZRMHpGWWtKTjAydjBiUlJmWlhLR0JDOWlkaStO?=
+ =?utf-8?B?elBjRDZnczZYVEdQOS9tTE5OMkJTOHR6WXVVeXdPazA0ZXJGTGY5SzE4dEMw?=
+ =?utf-8?B?MUNzaXpPQTZWMVVpM1VTZ3dLbWtzNFYxK0VXaU9MWExpU3lRUGdPaEN2dGNw?=
+ =?utf-8?B?OTBIVWlpZFRPTmt3M2psbkxzcnhjd2VCRnFLUC9oVmZvNVoyZ3RIKzc1cWVM?=
+ =?utf-8?B?L0NPZHprZnUva2J1SGlOdmxrUWV6SWRML2diekUrWTRvcjI5RXFNeUkvY1pE?=
+ =?utf-8?B?bkNITjV4cy9LVThQL2JqNU1kK1dHM1I2Q0NUWjd1SDYzczk5c090RmhzZGh4?=
+ =?utf-8?B?UHhQL2lFNHl2dHRmTDFBVExtdmZ4OW5WT2hSTEgybFFWQjR4Z1pXTFVlaGFW?=
+ =?utf-8?B?a3Roa3lsa0pRSzNZMG5OaGRuQWx4U3hpTXp5WE1DZm1hdG9ReWpmZExiMlc1?=
+ =?utf-8?B?RDNoclZDRmtNUGR6TmRMdmhiZTBhSCtXSDJlUDZDOG1EcjMwZGhrLzFCSjg4?=
+ =?utf-8?B?RXRzNXQ4bUFMT2JuWjJFNm1JbEV4T2RIS25iR1F6Q21PanNVMVU0QnF6RTlT?=
+ =?utf-8?B?ZTdDOGZPS0pJblgvc2s4WkFKekNOcGdCV2g0MjMxQVF2US94N2ZGR2c1VmVP?=
+ =?utf-8?B?cklhQ09VS01YMEdMTlVpZ1hqdjhoQ0xTRjM2RXo1SWR6SStadW1ZRnNLeTRS?=
+ =?utf-8?B?Q2hIRTlQU0pjSW9zTGo3VHRLWlU1b01icVZlSjB1YWdidy9Eck8xTm1HOFZ2?=
+ =?utf-8?B?S0NKNGg0ODZSUTVkZU1kWFZoOGVWbE1WUmJHOG9JWHZlK3JkZXYrdVNlM1dS?=
+ =?utf-8?B?ZFRMOFNjUkNjeHNleTgrQ3ZtOGdJWStmcXhRazF4YjFXeG1RSWE4VDFlMGxi?=
+ =?utf-8?Q?a9/q3aIqOA8pfipAJAiTQqdF6R1x1ATQprjpE?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <2A4B507906EC5D49BFD869906C2E7ABF@CANPRD01.PROD.OUTLOOK.COM>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220512124608.452d3300@kernel.org>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+X-OriginatorOrg: calian.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: YT2PR01MB8838.CANPRD01.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: cd98a365-e5ce-4f46-c122-08da346b2602
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2022 23:00:03.0050
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 23b57807-562f-49ad-92c4-3bb0f07a1fdf
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 7rICVP7G6Ni79QWPgqVJp5H0Pj7vOOrjPjJhO8qpIuCoVS4cy7zozcPmR2vssle8vargTGXCILFZUJ2MNIGuahtOHQ0bUdvxJkJ9paHNZKE=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: YT1PR01MB8329
+X-Proofpoint-GUID: 1E_N2c581im5gabBJDySv-nx45mG_KrW
+X-Proofpoint-ORIG-GUID: 1E_N2c581im5gabBJDySv-nx45mG_KrW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-12_19,2022-05-12_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=1 malwarescore=0 spamscore=1
+ clxscore=1015 impostorscore=0 mlxscore=1 bulkscore=0 mlxlogscore=185
+ lowpriorityscore=0 priorityscore=1501 adultscore=0 suspectscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205120097
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 12, 2022 at 12:46:08PM -0700, Jakub Kicinski wrote:
-> On Wed, 11 May 2022 18:01:54 -0700 Joe Damato wrote:
-> > > Is there a practical use case?  
-> > 
-> > Yes; for us there seems to be - especially with AMD Zen2. I'll try to
-> > describe such a setup and my synthetic HTTP benchmark results.
-> > 
-> > Imagine a program, call it storageD, which is responsible for storing and
-> > retrieving data from a data store. Other programs can request data from
-> > storageD via communicating with it on a Unix socket.
-> > 
-> > One such program that could request data via the Unix socket is an HTTP
-> > daemon. For some client connections that the HTTP daemon receives, the
-> > daemon may determine that responses can be sent in plain text.
-> > 
-> > In this case, the HTTP daemon can use splice to move data from the unix
-> > socket connection with storageD directly to the client TCP socket via a
-> > pipe. splice saves CPU cycles and avoids incurring any memory access
-> > latency since the data itself is not accessed.
-> > 
-> > Because we'll use splice (instead of accessing the data and potentially
-> > affecting the CPU cache) it is advantageous for storageD to use NT copies
-> > when it writes to the Unix socket to avoid evicting hot data from the CPU
-> > cache. After all, once the data is copied into the kernel on the unix
-> > socket write path, it won't be touched again; only spliced.
-> > 
-> > In my synthetic HTTP benchmarks for this setup, we've been able to increase
-> > network throughput of the the HTTP daemon by roughly 30% while reducing
-> > the system time of storageD. We're still collecting data on production
-> > workloads.
-> > 
-> > The motivation, IMHO, is very similar to the motivation for
-> > NETIF_F_NOCACHE_COPY, as far I understand.
-> > 
-> > In some cases, when an application writes to a network socket the data
-> > written to the socket won't be accessed again once it is copied into the
-> > kernel. In these cases, NETIF_F_NOCACHE_COPY can improve performance and
-> > helps to preserve the CPU cache and avoid evicting hot data.
-> > 
-> > We get a sizable benefit from this option, too, in situations where we
-> > can't use splice and have to call write to transmit data to client
-> > connections. We want to get the same benefit of NETIF_F_NOCACHE_COPY, but
-> > when writing to Unix sockets as well.
-> > 
-> > Let me know if that makes it more clear.
-> 
-> Makes sense, thanks for the explainer.
-> 
-> > > The patches look like a lot of extra indirect calls.  
-> > 
-> > Yup. As I mentioned in the cover letter this was mostly a PoC that seems to
-> > work and increases network throughput in a real world scenario.
-> > 
-> > If this general line of thinking (NT copies on write to a Unix socket) is
-> > acceptable, I'm happy to refactor the code however you (and others) would
-> > like to get it to an acceptable state.
-> 
-> My only concern is that in post-spectre world the indirect calls are
-> going to be more expensive than an branch would be. But I'm not really
-> a mirco-optimization expert :)
-
-Makes sense; neither am I, FWIW :)
-
-For whatever reason, on AMD Zen2 it seems that using non-temporal
-instructions when copying data sizes above the L2 size is a huge
-performance win (compared to the kernel's normal temporal copy code) even
-if that size fits in L3.
-
-This is why both NETIF_F_NOCACHE_COPY and MSG_NTCOPY from this series seem
-to have such a large, measurable impact in the contrived benchmark I
-included in the cover letter and also in synthetic HTTP workloads.
-
-I'll plan on including numbers from the benchmark program on a few other
-CPUs I have access to in the cover letter for any follow-up RFCs or
-revisions.
-
-As a data point, there has been similar-ish work done in glibc [1] to
-determine when non-temporal copies should be used on Zen2 based on the size
-of the copy. I'm certainly not a micro-arch expert by any stretch, but the
-glibc work plus the benchmark results I've measured seem to suggest that
-NT-copies can be very helpful on Zen2.
-
-Two questions for you:
-
- 1. Do you have any strong opinions on the sendmsg flag vs a socket option?
-
- 2. If I can think of a way to avoid the indirect calls, do you think this
-    series is ready for a v1? I'm not sure if there's anything major that
-    needs to be addressed aside from the indirect calls.
-
-I'll include some documentation and cosmetic cleanup in the v1, as well.
-
-Thanks,
-Joe
-
-[1]: https://sourceware.org/pipermail/libc-alpha/2020-October/118895.html
+T24gVGh1LCAyMDIyLTA1LTEyIGF0IDExOjE4IC0wNjAwLCBSb2JlcnQgSGFuY29jayB3cm90ZToN
+Cj4gQ2hhbmdlcyB0byBzdXBwb3J0IFRYIE5BUEkgaW4gdGhlIGF4aWVuZXQgZHJpdmVyLCBhcyB3
+ZWxsIGFzIGZpeGluZw0KPiBhIHBvdGVudGlhbCBjb25jdXJyZW5jeSBpc3N1ZSBpbiB0aGUgVFgg
+cmluZyBwb2ludGVyIGhhbmRsaW5nLg0KPiANCj4gU3VwZXJzZWRlcyB2NSBvZiB0aGUgaW5kaXZp
+ZHVhbCBwYXRjaA0KPiAibmV0OiBheGllbmV0OiBVc2UgTkFQSSBmb3IgVFggY29tcGxldGlvbiBw
+YXRoIi4NCj4gDQo+IENoYW5nZWQgc2luY2UgdjY6IFVzZSBSRUFEX09OQ0Ugd2hlcmUgdGhlIHZh
+bHVlIGFjdHVhbGx5IGRvZXMgbmVlZCB0bw0KPiBiZSByZWFkIG9uY2UsIGluIGF4aWVuZXRfY2hl
+Y2tfdHhfYmRfc3BhY2UsIG5vdCBpbiBheGllbmV0X3N0YXJ0X3htaXQNCj4gd2hlcmUgaXQgZG9l
+c24ndC4NCj4gDQo+IENoYW5nZWQgc2luY2UgdjU6IFJlcGxhY2VkIHNwaW5sb2NrIHdpdGggZml4
+ZXMgdG8gdGhlIHdheSB0aGUgVFggcmluZw0KPiB0YWlsIHBvaW50ZXIgaXMgdXBkYXRlZCwgYW5k
+IGJyb2tlIHRob3NlIGNoYW5nZXMgaW50byBhIHNlcGFyYXRlIHBhdGNoLg0KPiANCj4gQ2hhbmdl
+ZCBzaW5jZSB2NDogQWRkZWQgbG9ja2luZyB0byBwcm90ZWN0IFRYIHJpbmcgdGFpbCBwb2ludGVy
+IGFnYWluc3QNCj4gY29uY3VycmVudCBhY2Nlc3MgYnkgVFggdHJhbnNtaXQgYW5kIFRYIHBvbGwg
+cGF0aHMuDQo+IA0KPiBDaGFuZ2VkIHNpbmNlIHYzOiBGaXhlZCByZWZlcmVuY2VzIHRvIHJlbmFt
+ZWQgZnVuY3Rpb24gaW4gY29tbWVudHMNCj4gDQo+IENoYW5nZWQgc2luY2UgdjI6IFVzZSBzZXBh
+cmF0ZSBUWCBhbmQgUlggTkFQSSBwb2xsIGhhbmRsZXJzIHRvIGtlZXANCj4gY29tcGxldGlvbiBo
+YW5kbGluZyBvbiBzYW1lIENQVSBhcyBUWC9SWCBJUlEuIEFkZGVkIGhhcmQvc29mdCBJUlENCj4g
+YmVuY2htYXJrIGluZm9ybWF0aW9uIHRvIGNvbW1pdCBtZXNzYWdlLg0KPiANCj4gQ2hhbmdlZCBz
+aW5jZSB2MTogQWRkZWQgYmVuY2htYXJrIGluZm9ybWF0aW9uIHRvIGNvbW1pdCBtZXNzYWdlLCBu
+bw0KPiBjb2RlIGNoYW5nZXMuDQo+IA0KPiBSb2JlcnQgSGFuY29jayAoMik6DQo+ICAgbmV0OiBh
+eGllbmV0OiBCZSBtb3JlIGNhcmVmdWwgYWJvdXQgdXBkYXRpbmcgdHhfYmRfdGFpbA0KPiAgIG5l
+dDogYXhpZW5ldDogVXNlIE5BUEkgZm9yIFRYIGNvbXBsZXRpb24gcGF0aA0KPiANCj4gIGRyaXZl
+cnMvbmV0L2V0aGVybmV0L3hpbGlueC94aWxpbnhfYXhpZW5ldC5oICB8ICA1NCArKystLS0NCj4g
+IC4uLi9uZXQvZXRoZXJuZXQveGlsaW54L3hpbGlueF9heGllbmV0X21haW4uYyB8IDE2OCArKysr
+KysrKysrLS0tLS0tLS0NCj4gIDIgZmlsZXMgY2hhbmdlZCwgMTI2IGluc2VydGlvbnMoKyksIDk2
+IGRlbGV0aW9ucygtKQ0KPiANCg0KTG9va2luZyBhdCBQYXRjaHdvcmsgYW5kIExvcmUsIHNlZW1z
+IGxpa2UgdGhpcyBjb3ZlciBsZXR0ZXIgbWF5IG5vdCBoYXZlIG1hZGUNCml0IHRvIHRoZSBsaXN0
+LCB0aG91Z2ggdGhlIHR3byBwYXRjaGVzIGRpZD8gQ2FuIHJlc2VuZCBpZiBpdCBkb2Vzbid0IGV2
+ZW50dWFsbHkNCnNob3cgdXAuLg0KDQotLSANClJvYmVydCBIYW5jb2NrDQpTZW5pb3IgSGFyZHdh
+cmUgRGVzaWduZXIsIENhbGlhbiBBZHZhbmNlZCBUZWNobm9sb2dpZXMNCnd3dy5jYWxpYW4uY29t
+DQo=
