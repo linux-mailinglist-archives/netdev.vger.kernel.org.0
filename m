@@ -2,52 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C923C52585D
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:35:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BE36525887
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:40:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359509AbiELXfE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 19:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46712 "EHLO
+        id S1359544AbiELXkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 19:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357948AbiELXfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:35:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BE5285EFB
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 16:35:02 -0700 (PDT)
+        with ESMTP id S1357968AbiELXkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:40:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 453FF286FF5
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 16:40:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34BCDB80CD2
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 23:35:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77F51C385B8;
-        Thu, 12 May 2022 23:34:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3D5F6205A
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 23:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 40D36C34114;
+        Thu, 12 May 2022 23:40:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652398499;
-        bh=EdWAWUtqEtTcxI862DK5Hs+afELmBAYtkaH/EPm0Hqc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AmjuW34libr6vf4Oilst3IIIwZELwdFOxCKhVmDt0PZVFqWp2MkLL7SVrmElyeAqx
-         0u+7COJtZJO91VFbkDUMnUsOx5iW/mAkVWLcRwqjno0SzddF+3QDj/IG8YGpjmiaEZ
-         blvLEyOxxKezM5cN9WSDUi4JLQQcHtWRSyDczXKYKi1J7uWNGi/nI69Q5ccc2nSxuW
-         pIyaPj5IBx7lYPQk5hruD74ei4eNu3OQPjYtbsITiyO4Lfxr+89bu98MVz2Efvlx9b
-         Cq77H5Xk/uxzba7Jn6VnMPqOhqi1nUqO1XA4faSy+vuWinsvi101LwnJKJKV1RvKxT
-         IEa4we0d/4ZIQ==
-Date:   Thu, 12 May 2022 16:34:58 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maxim Mikityanskiy <maximmi@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        "Saeed Mahameed" <saeedm@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2] tls: Add opt-in zerocopy mode of sendfile()
-Message-ID: <20220512163458.31ae2d13@kernel.org>
-In-Reply-To: <20220511121525.624059-1-maximmi@nvidia.com>
-References: <20220511121525.624059-1-maximmi@nvidia.com>
+        s=k20201202; t=1652398813;
+        bh=FR4BGl93Ko0XfQBP9+SIGD3NAQS200IjnHLUOhWGPaI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rD7fc/rOFQvYZ/oSPxPijfg2Qwc938+MzIeLuqekoBObDPvJI0xgAX4Lgh+yQJvZd
+         tauwqSIumfdpvCsR9n385GUzd3/Le/+ETGNVd65NEhzvKuKLXoT+b7yeMzyJHuMF/X
+         iL2P9VuqgCTsrr3qn08RX6GPEfey++7okEd2JTs6P58JLbXBb/CwOjw5YMmuV1uuaH
+         EeOsoLJD6/Eqh94lBvArwof4z0bAs5YldjVwyH/XYsw43M4A9j6qwhq0nv+2MH3ZP7
+         wY5Yd8j4o73Pzko8NNemKPI64wN5caFbd8hfmUmUOFod0ffIuN1kLhGWY107drjIZW
+         IWI2+6Rg5IYQQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 13D6DF03934;
+        Thu, 12 May 2022 23:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] skbuff: replace a BUG_ON() with the new
+ DEBUG_NET_WARN_ON_ONCE()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165239881307.13563.7314812134449396223.git-patchwork-notify@kernel.org>
+Date:   Thu, 12 May 2022 23:40:13 +0000
+References: <20220511172305.1382810-1-kuba@kernel.org>
+In-Reply-To: <20220511172305.1382810-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, imagedong@tencent.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -58,34 +57,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 May 2022 15:15:25 +0300 Maxim Mikityanskiy wrote:
-> TLS device offload copies sendfile data to a bounce buffer before
-> transmitting. It allows to maintain the valid MAC on TLS records when
-> the file contents change and a part of TLS record has to be
-> retransmitted on TCP level.
-> 
-> In many common use cases (like serving static files over HTTPS) the file
-> contents are not changed on the fly. In many use cases breaking the
-> connection is totally acceptable if the file is changed during
-> transmission, because it would be received corrupted in any case.
-> 
-> This commit allows to optimize performance for such use cases to
-> providing a new optional mode of TLS sendfile(), in which the extra copy
-> is skipped. Removing this copy improves performance significantly, as
-> TLS and TCP sendfile perform the same operations, and the only overhead
-> is TLS header/trailer insertion.
-> 
-> The new mode can only be enabled with the new socket option named
-> TLS_TX_ZEROCOPY_SENDFILE on per-socket basis. It preserves backwards
-> compatibility with existing applications that rely on the copying
-> behavior.
-> 
-> The new mode is safe, meaning that unsolicited modifications of the file
-> being sent can't break integrity of the kernel. The worst thing that can
-> happen is sending a corrupted TLS record, which is in any case not
-> forbidden when using regular TCP sockets.
-> 
-> Sockets other than TLS device offload are not affected by the new socket
-> option.
+Hello:
 
-What about the reporting via sock diag? Am I misremembering something? 
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 11 May 2022 10:23:05 -0700 you wrote:
+> Very few drivers actually have Kconfig knobs for adding
+> -DDEBUG. 8 according to a quick grep, while there are
+> 93 users of skb_checksum_none_assert(). Switch to the
+> new DEBUG_NET_WARN_ON_ONCE() to catch bad skbs.
+> 
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] skbuff: replace a BUG_ON() with the new DEBUG_NET_WARN_ON_ONCE()
+    https://git.kernel.org/netdev/net-next/c/0df65743537d
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
