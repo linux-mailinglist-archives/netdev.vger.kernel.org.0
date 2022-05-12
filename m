@@ -2,164 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC0852444F
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 06:36:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD8F45244A9
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 07:05:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347244AbiELEgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 00:36:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
+        id S1348850AbiELFFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 01:05:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346868AbiELEf7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 00:35:59 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B088A645E;
-        Wed, 11 May 2022 21:35:55 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso3808482pjb.5;
-        Wed, 11 May 2022 21:35:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=HYujfKEE4FRBcffvvm/ENwPqr1+X2EgAq7QQ3ImY+bQ=;
-        b=jHNmqQtI3JjAQf13WCLhhUg/GhvEmfOIM1kfRhBNBgNtmAi51zl+XJnGjcL7McS6Ar
-         LMPr3XQlMh4JzZi1rdWCZAhI5l6Uv75+2ApXs/spGXnT1ggSZHiU+55cGnCngn8WuC7a
-         iqwyqc8GO4v2p8VDLew+kKz0NybCB6ZqT0P6zdu72hakXr8XvtfpAj5QfIb+hd3C3PQd
-         lxsAOJ2j7YonNfXBAVbpqRLMmL/JGPRt1TtVwU2BeRfPEqRLnolMs/lT1golpwTxKWZy
-         unZtCk7SkTT8aMzo2xP30tsjDyU52WBzQfyh7KpKe6ECaApQHggr0x0IuXbuXHCIZ9mV
-         XRtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=HYujfKEE4FRBcffvvm/ENwPqr1+X2EgAq7QQ3ImY+bQ=;
-        b=471YYjuUEqKmHdLqZiXCMpnAhFSdFUP6/KHddyFLxwicnhKiTGSG40r1HmTMarSDCi
-         uZkA6oohJOIanthFT+JaWq8N2M00yK7OJ5h0KcIgBno4zbJeZcmTCGHFpHj2XawJAN8G
-         1TsJ9yCmi9nRp/8cvfbzsxtfpIkUkcnMKnjpgtK0OgBXd3IYExpCZSPAl7tfQtGwIfvD
-         xr00WQBd5dFzlkMrQEmDNdPeHLDqkICPpiT+wR7vzfSFU+zjqv/NBZYPLIyEuGOPVd00
-         uY+M7ym52Nr09/Kcyt1I6LlP3GhROEhEOuAtfNscjZ+xy4eSewrOj96GEgY/nbHBmKoY
-         p5vw==
-X-Gm-Message-State: AOAM530LFaGt4eck6CO+9+1ZajWAXfQYvFhUoO5ptVYOjMGuAQmVVbSq
-        bFKQgwtj2oEHbkr8x01AwlrdE4xr7rWhpfN/nMQ=
-X-Google-Smtp-Source: ABdhPJxE1V9btljZ/t5/qYQ28xGw+YiKTMw49we5zx+AI0AipeCM011JF7Jcpuq8Ml06bzMykWZ5YQyq6i+Rpf0FXGc=
-X-Received: by 2002:a17:902:7487:b0:15f:330:5022 with SMTP id
- h7-20020a170902748700b0015f03305022mr21498706pll.18.1652330155178; Wed, 11
- May 2022 21:35:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220509140403.1.I28d2ec514ad3b612015b28b8de861b8955033a19@changeid>
- <CABBYNZ+qpWTX-FQ8QCiey0kf_rghDMnfQi3tt8zsv-5cuudbtg@mail.gmail.com> <CAGPPCLBTec4SuL+UiFPkvq9=Bz8UY_3nQa5JjjHZ_415yt7KjA@mail.gmail.com>
-In-Reply-To: <CAGPPCLBTec4SuL+UiFPkvq9=Bz8UY_3nQa5JjjHZ_415yt7KjA@mail.gmail.com>
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-Date:   Wed, 11 May 2022 21:35:44 -0700
-Message-ID: <CABBYNZKU5TFYv14bNLksWV7Y5fOdLxdWPWm-bv7qeq0uXApiXg@mail.gmail.com>
-Subject: Re: [PATCH] Bluetooth: Fix Adv Monitor msft_add/remove_monitor_sync()
-To:     Manish Mandlik <mmandlik@google.com>
-Cc:     Marcel Holtmann <marcel@holtmann.org>,
-        ChromeOS Bluetooth Upstreaming 
-        <chromeos-bluetooth-upstreaming@chromium.org>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        with ESMTP id S236464AbiELFFH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 01:05:07 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A520D14087C;
+        Wed, 11 May 2022 22:05:02 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id D26425FD06;
+        Thu, 12 May 2022 08:04:58 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1652331898;
+        bh=x3Ld9hhwHt3EwHD9XwjXm2KtR9IgofkD8pcsQl49PRA=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=qlAhRJhTEhSAN4sbZqCzUetKuta3mC6xnX78KsSKywdEYyRzzuhOTM7AJ2TYYBuXS
+         PIDTfS8nfW4ryWkeUlxVQdsFDwBFBlDOh0JwEVmf09F/nHaysYRiNgSqhCh3sZVw2M
+         U+STg3Muxm5IAonIccu5n4srN69+6C+X0T2pvUUrAUGCIlr0/D6DdqyXNy67hmJcKb
+         py+DxU0gSkgPYGYnUFztkCN8hhJ7BIsmrfucF1gTLa+AKI4S9NABUMHo57EIUigGZ/
+         2QXfHGfun0SY+0pJcOQ6em/HgRkkIV87IcTJxur13Udb0RpGPRdufLEg1co2xvX90Q
+         9BhRry3Y6vFoQ==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Thu, 12 May 2022 08:04:55 +0300 (MSK)
+From:   Arseniy Krasnov <AVKrasnov@sberdevices.ru>
+To:     Stefano Garzarella <sgarzare@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        "Jakub Kicinski" <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>
+Subject: [RFC PATCH v1 0/8] virtio/vsock: experimental zerocopy receive
+Thread-Topic: [RFC PATCH v1 0/8] virtio/vsock: experimental zerocopy receive
+Thread-Index: AQHYZb23ItH0dwyJNkOi7nYOIXQV0g==
+Date:   Thu, 12 May 2022 05:04:11 +0000
+Message-ID: <7cdcb1e1-7c97-c054-19cf-5caeacae981d@sberdevices.ru>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <15BDC85DC2AFB548BECA3F4A640D3205@sberdevices.ru>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/12 02:55:00 #19424207
+X-KSMG-AntiVirus-Status: Clean, skipped
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Manish,
-
-On Wed, May 11, 2022 at 5:56 PM Manish Mandlik <mmandlik@google.com> wrote:
->
-> Hi Luiz,
->
-> On Wed, May 11, 2022 at 2:23 PM Luiz Augusto von Dentz <luiz.dentz@gmail.=
-com> wrote:
->>
->> Hi Manish,
->>
->> On Mon, May 9, 2022 at 2:05 PM Manish Mandlik <mmandlik@google.com> wrot=
-e:
->> >
->> > Do not call skb_pull() in msft_add_monitor_sync() as
->> > msft_le_monitor_advertisement_cb() expects 'status' to be
->> > part of the skb.
->> >
->> > Same applies for msft_remove_monitor_sync().
->> >
->> > Signed-off-by: Manish Mandlik <mmandlik@google.com>
->> > ---
->> >
->> >  net/bluetooth/msft.c | 2 --
->> >  1 file changed, 2 deletions(-)
->> >
->> > diff --git a/net/bluetooth/msft.c b/net/bluetooth/msft.c
->> > index f43994523b1f..9990924719aa 100644
->> > --- a/net/bluetooth/msft.c
->> > +++ b/net/bluetooth/msft.c
->> > @@ -387,7 +387,6 @@ static int msft_remove_monitor_sync(struct hci_dev=
- *hdev,
->> >                 return PTR_ERR(skb);
->> >
->> >         status =3D skb->data[0];
->> > -       skb_pull(skb, 1);
->> >
->> >         msft_le_cancel_monitor_advertisement_cb(hdev, status, hdev->ms=
-ft_opcode,
->> >                                                 skb);
->> > @@ -506,7 +505,6 @@ static int msft_add_monitor_sync(struct hci_dev *h=
-dev,
->> >                 return PTR_ERR(skb);
->> >
->> >         status =3D skb->data[0];
->> > -       skb_pull(skb, 1);
->>
->> Well if it expects it to be part of the skb then there is no reason to
->> pass it as argument in addition to the skb itself.
->
-> The problem is msft_le_monitor_advertisement_cb() is invoked directly via=
- msft_add_monitor_sync() and also from __msft_add_monitor_pattern() as a ca=
-llback from hci_req_run_skb(). So, when it is invoked from hci_req_run_skb(=
-) it sends status separately as an argument along with the skb and that's w=
-hy that argument is required.
->
-> Looks like some parts of msft.c still use the old way i.e. hci_req_run_sk=
-b() instead of __hci_cmd_sync() after hci_sync related refactoring. I am wo=
-ndering if it was left like this intentionally? If not, then we probably ne=
-ed to refactor msft.c to use __hci_cmd_sync() for all hci requests. In that=
- case, I can work on refactoring and we can discard this patch altogether. =
-Please let me know.
-
-Yes, if you have time please convert it to use hci_sync.c since we
-would like to completely deprecate/remove hci_request.c eventually, if
-you think that will take some time we can perhaps merge this changes
-first though.
-
->>
->> >         msft_le_monitor_advertisement_cb(hdev, status, hdev->msft_opco=
-de, skb);
->> >
->> > --
->> > 2.36.0.512.ge40c2bad7a-goog
->> >
->>
->>
->> --
->> Luiz Augusto von Dentz
->
-> Regards,
-> Manish.
-
-
-
---=20
-Luiz Augusto von Dentz
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgSU5UUk9EVUNUSU9ODQoNCglIZWxsbywgdGhp
+cyBpcyBleHBlcmltZW50YWwgaW1wbGVtZW50YXRpb24gb2YgdmlydGlvIHZzb2NrIHplcm9jb3B5
+DQpyZWNlaXZlLiBJdCB3YXMgaW5zcGlyZWQgYnkgVENQIHplcm9jb3B5IHJlY2VpdmUgYnkgRXJp
+YyBEdW1hemV0LiBUaGlzIEFQSSB1c2VzDQpzYW1lIGlkZWE6IGNhbGwgJ21tYXAoKScgb24gc29j
+a2V0J3MgZGVzY3JpcHRvciwgdGhlbiBldmVyeSAnZ2V0c29ja29wdCgpJyB3aWxsDQpmaWxsIHBy
+b3ZpZGVkIHZtYSBhcmVhIHdpdGggcGFnZXMgb2YgdmlydGlvIFJYIGJ1ZmZlcnMuIEFmdGVyIHJl
+Y2VpdmVkIGRhdGEgd2FzDQpwcm9jZXNzZWQgYnkgdXNlciwgcGFnZXMgbXVzdCBiZSBmcmVlZCBi
+eSAnbWFkdmlzZSgpJyAgY2FsbCB3aXRoIE1BRFZfRE9OVE5FRUQNCmZsYWcgc2V0KGlmIHVzZXIg
+d29uJ3QgY2FsbCAnbWFkdmlzZSgpJywgbmV4dCAnZ2V0c29ja29wdCgpJyB3aWxsIGZhaWwpLg0K
+DQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBERVRBSUxTDQoNCglIZXJlIGlzIGhv
+dyBtYXBwaW5nIHdpdGggbWFwcGVkIHBhZ2VzIGxvb2tzIGV4YWN0bHk6IGZpcnN0IHBhZ2UgbWFw
+cGluZw0KY29udGFpbnMgYXJyYXkgb2YgdHJpbW1lZCB2aXJ0aW8gdnNvY2sgcGFja2V0IGhlYWRl
+cnMgKGluIGNvbnRhaW5zIG9ubHkgbGVuZ3RoDQpvZiBkYXRhIG9uIHRoZSBjb3JyZXNwb25kaW5n
+IHBhZ2UgYW5kICdmbGFncycgZmllbGQpOg0KDQoJc3RydWN0IHZpcnRpb192c29ja191c3JfaGRy
+IHsNCgkJdWludDMyX3QgbGVuZ3RoOw0KCQl1aW50MzJfdCBmbGFnczsNCgl9Ow0KDQpGaWVsZCAg
+J2xlbmd0aCcgYWxsb3dzIHVzZXIgdG8ga25vdyBleGFjdCBzaXplIG9mIHBheWxvYWQgd2l0aGlu
+IGVhY2ggc2VxdWVuY2UNCm9mIHBhZ2VzIGFuZCAnZmxhZ3MnIGFsbG93cyB1c2VyIHRvIGhhbmRs
+ZSBTT0NLX1NFUVBBQ0tFVCBmbGFncyhzdWNoIGFzIG1lc3NhZ2UNCmJvdW5kcyBvciByZWNvcmQg
+Ym91bmRzKS4gQWxsIG90aGVyIHBhZ2VzIGFyZSBkYXRhIHBhZ2VzIGZyb20gUlggcXVldWUuDQoN
+CiAgICAgICAgICAgICBQYWdlIDAgICAgICBQYWdlIDEgICAgICBQYWdlIE4NCg0KCVsgaGRyMSAu
+LiBoZHJOIF1bIGRhdGEgXSAuLiBbIGRhdGEgXQ0KICAgICAgICAgICB8ICAgICAgICB8ICAgICAg
+IF4gICAgICAgICAgIF4NCiAgICAgICAgICAgfCAgICAgICAgfCAgICAgICB8ICAgICAgICAgICB8
+DQogICAgICAgICAgIHwgICAgICAgICotLS0tLS0tLS0tLS0tLS0tLS0tKg0KICAgICAgICAgICB8
+ICAgICAgICAgICAgICAgIHwNCiAgICAgICAgICAgfCAgICAgICAgICAgICAgICB8DQogICAgICAg
+ICAgICotLS0tLS0tLS0tLS0tLS0tKg0KDQoJT2YgY291cnNlLCBzaW5nbGUgaGVhZGVyIGNvdWxk
+IHJlcHJlc2VudCBhcnJheSBvZiBwYWdlcyAod2hlbiBwYWNrZXQncw0KYnVmZmVyIGlzIGJpZ2dl
+ciB0aGFuIG9uZSBwYWdlKS5TbyBoZXJlIGlzIGV4YW1wbGUgb2YgZGV0YWlsZWQgbWFwcGluZyBs
+YXlvdXQNCmZvciBzb21lIHNldCBvZiBwYWNrYWdlcy4gTGV0cyBjb25zaWRlciB0aGF0IHdlIGhh
+dmUgdGhlIGZvbGxvd2luZyBzZXF1ZW5jZSAgb2YNCnBhY2thZ2VzOiA1NiBieXRlcywgNDA5NiBi
+eXRlcyBhbmQgODIwMCBieXRlcy4gQWxsIHBhZ2VzOiAwLDEsMiwzLDQgYW5kIDUgd2lsbA0KYmUg
+aW5zZXJ0ZWQgdG8gdXNlcidzIHZtYSh2bWEgaXMgbGFyZ2UgZW5vdWdoKS4NCg0KCVBhZ2UgMDog
+W1sgaGRyMCBdWyBoZHIgMSBdWyBoZHIgMiBdWyBoZHIgMyBdIC4uLiBdDQoJUGFnZSAxOiBbIDU2
+IF0NCglQYWdlIDI6IFsgNDA5NiBdDQoJUGFnZSAzOiBbIDQwOTYgXQ0KCVBhZ2UgNDogWyA0MDk2
+IF0NCglQYWdlIDU6IFsgOCBdDQoNCglQYWdlIDAgY29udGFpbnMgb25seSBhcnJheSBvZiBoZWFk
+ZXJzOg0KCSdoZHIwJyBoYXMgNTYgaW4gbGVuZ3RoIGZpZWxkLg0KCSdoZHIxJyBoYXMgNDA5NiBp
+biBsZW5ndGggZmllbGQuDQoJJ2hkcjInIGhhcyA4MjAwIGluIGxlbmd0aCBmaWVsZC4NCgknaGRy
+MycgaGFzIDAgaW4gbGVuZ3RoIGZpZWxkKHRoaXMgaXMgZW5kIG9mIGRhdGEgbWFya2VyKS4NCg0K
+CVBhZ2UgMSBjb3JyZXNwb25kcyB0byAnaGRyMCcgYW5kIGhhcyBvbmx5IDU2IGJ5dGVzIG9mIGRh
+dGEuDQoJUGFnZSAyIGNvcnJlc3BvbmRzIHRvICdoZHIxJyBhbmQgZmlsbGVkIHdpdGggZGF0YS4N
+CglQYWdlIDMgY29ycmVzcG9uZHMgdG8gJ2hkcjInIGFuZCBmaWxsZWQgd2l0aCBkYXRhLg0KCVBh
+Z2UgNCBjb3JyZXNwb25kcyB0byAnaGRyMicgYW5kIGZpbGxlZCB3aXRoIGRhdGEuDQoJUGFnZSA1
+IGNvcnJlc3BvbmRzIHRvICdoZHIyJyBhbmQgaGFzIG9ubHkgOCBieXRlcyBvZiBkYXRhLg0KDQoJ
+VGhpcyBwYXRjaHNldCBhbHNvIGNoYW5nZXMgcGFja2V0cyBhbGxvY2F0aW9uIHdheTogdG9kYXkg
+aW1wbGVtZW50YXRpb24NCnVzZXMgb25seSAna21hbGxvYygpJyB0byBjcmVhdGUgZGF0YSBidWZm
+ZXIuIFByb2JsZW0gaGFwcGVucyB3aGVuIHdlIHRyeSB0byBtYXANCnN1Y2ggYnVmZmVycyB0byB1
+c2VyJ3Mgdm1hIC0ga2VybmVsIGZvcmJpZHMgdG8gbWFwIHNsYWIgcGFnZXMgdG8gdXNlcidzIHZt
+YShhcw0KcGFnZXMgb2YgIm5vdCBsYXJnZSIgJ2ttYWxsb2MoKScgYWxsb2NhdGlvbnMgYXJlIG1h
+cmtlZCB3aXRoIFBhZ2VTbGFiIGZsYWcgYW5kDQoibm90IGxhcmdlIiBjb3VsZCBiZSBiaWdnZXIg
+dGhhbiBvbmUgcGFnZSkuIFNvIHRvIGF2b2lkIHRoaXMsIGRhdGEgYnVmZmVycyBub3cNCmFsbG9j
+YXRlZCB1c2luZyAnYWxsb2NfcGFnZXMoKScgY2FsbC4NCg0KICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICBURVNUUw0KDQoJVGhpcyBwYXRjaHNldCB1cGRhdGVzICd2c29ja190ZXN0
+JyB1dGlsaXR5OiB0d28gdGVzdHMgZm9yIG5ldyBmZWF0dXJlDQp3ZXJlIGFkZGVkLiBGaXJzdCB0
+ZXN0IGNvdmVycyBpbnZhbGlkIGNhc2VzLiBTZWNvbmQgY2hlY2tzIHZhbGlkIHRyYW5zbWlzc2lv
+bg0KY2FzZS4NCg0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBCRU5DSE1BUktJTkcN
+Cg0KCUZvciBiZW5jaG1ha3JpbmcgSSd2ZSBhZGRlZCBzbWFsbCB1dGlsaXR5ICdyeF96ZXJvY29w
+eScuIEl0IHdvcmtzIGluDQpjbGllbnQvc2VydmVyIG1vZGUuIFdoZW4gY2xpZW50IGNvbm5lY3Rz
+IHRvIHNlcnZlciwgc2VydmVyIHN0YXJ0cyBzZW5kaW5nIGV4YWN0DQphbW91bnQgb2YgZGF0YSB0
+byBjbGllbnQoYW1vdW50IGlzIHNldCBhcyBpbnB1dCBhcmd1bWVudCkuQ2xpZW50IHJlYWRzIGRh
+dGEgYW5kDQp3YWl0cyBmb3IgbmV4dCBwb3J0aW9uIG9mIGl0LiBDbGllbnQgd29ya3MgaW4gdHdv
+IG1vZGVzOiBjb3B5IGFuZCB6ZXJvLWNvcHkuIEluDQpjb3B5IG1vZGUgY2xpZW50IHVzZXMgJ3Jl
+YWQoKScgY2FsbCB3aGlsZSBpbiB6ZXJvY29weSBtb2RlIHNlcXVlbmNlIG9mICdtbWFwKCknDQov
+J2dldHNvY2tvcHQoKScvJ21hZHZpc2UoKScgYXJlIHVzZWQuIFNtYWxsZXIgYW1vdW50IG9mIHRp
+bWUgZm9yIHRyYW5zbWlzc2lvbiANCmlzIGJldHRlci4gRm9yIHNlcnZlciwgd2UgY2FuIHNldCBz
+aXplIG9mIHR4IGJ1ZmZlciBhbmQgZm9yIGNsaWVudCB3ZSBjYW4gc2V0DQpzaXplIG9mIHJ4IGJ1
+ZmZlciBvciByeCBtYXBwaW5nIHNpemUoaW4gemVyb2NvcHkgbW9kZSkuIFVzYWdlIG9mIHRoaXMg
+dXRpbGl0eQ0KaXMgcXVpZXQgc2ltcGxlOg0KDQpGb3IgY2xpZW50IG1vZGU6DQoNCi4vcnhfemVy
+b2NvcHkgLS1tb2RlIGNsaWVudCBbLS16ZXJvY29weV0gWy0tcnhdDQoNCkZvciBzZXJ2ZXIgbW9k
+ZToNCg0KLi9yeF96ZXJvY29weSAtLW1vZGUgc2VydmVyIFstLW1iXSBbLS10eF0NCg0KWy0tbWJd
+IHNldHMgbnVtYmVyIG9mIG1lZ2FieXRlcyB0byB0cmFuc2Zlci4NClstLXJ4XSBzZXRzIHNpemUg
+b2YgcmVjZWl2ZSBidWZmZXIvbWFwcGluZyBpbiBwYWdlcy4NClstLXR4XSBzZXRzIHNpemUgb2Yg
+dHJhbnNtaXQgYnVmZmVyIGluIHBhZ2VzLg0KDQpJIGNoZWNrZWQgZm9yIHRyYW5zbWlzc2lvbiBv
+ZiA0MDAwbWIgb2YgZGF0YS4gSGVyZSBhcmUgc29tZSByZXN1bHRzOg0KDQogICAgICAgICAgICAg
+ICAgICAgICAgICAgICBzaXplIG9mIHJ4L3R4IGJ1ZmZlcnMgaW4gcGFnZXMNCiAgICAgICAgICAg
+ICAgICotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0q
+DQogICAgICAgICAgICAgICB8ICAgIDggICB8ICAgIDMyICAgIHwgICAgNjQgICB8ICAgMjU2ICAg
+IHwgICA1MTIgICAgfA0KKi0tLS0tLS0tLS0tLS0tKi0tLS0tLS0tKi0tLS0tLS0tLS0qLS0tLS0t
+LS0tKi0tLS0tLS0tLS0qLS0tLS0tLS0tLSoNCnwgICB6ZXJvY29weSAgIHwgICAyNCAgIHwgICAx
+MC42ICAgfCAgMTIuMiAgIHwgICAyMy42ICAgfCAgICAyMSAgICB8IHNlY3MgdG8NCiotLS0tLS0t
+LS0tLS0tLSotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0t
+LS0tIHByb2Nlc3MNCnwgbm9uLXplcm9jb3B5IHwgICAxMyAgIHwgICAxNi40ICAgfCAgMjQuNyAg
+IHwgICAyNy4yICAgfCAgIDIzLjkgICB8IDQwMDAgbWINCiotLS0tLS0tLS0tLS0tLSotLS0tLS0t
+LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQoNCkkgdGhpbmss
+IHRoYXQgcmVzdWx0cyBhcmUgbm90IHNvIGltcHJlc3NpdmUsIGJ1dCBhdCBsZWFzdCBpdCBpcyBu
+b3Qgd29yc2UgdGhhbg0KY29weSBtb2RlIGFuZCB0aGVyZSBpcyBubyBuZWVkIHRvIGFsbG9jYXRl
+IG1lbW9yeSBmb3IgcHJvY2Vzc2luZyBkYXRlLg0KDQogICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBQUk9CTEVNUw0KDQoJVXBkYXRlZCBwYWNrZXQncyBhbGxvY2F0aW9uIGxvZ2ljIGNy
+ZWF0ZXMgc29tZSBwcm9ibGVtOiB3aGVuIGhvc3QgZ2V0cw0KZGF0YSBmcm9tIGd1ZXN0KGluIHZo
+b3N0LXZzb2NrKSwgaXQgYWxsb2NhdGVzIGF0IGxlYXN0IG9uZSBwYWdlIGZvciBlYWNoIHBhY2tl
+dA0KKGV2ZW4gaWYgcGFja2V0IGhhcyAxIGJ5dGUgcGF5bG9hZCkuIEkgdGhpbmsgdGhpcyBjb3Vs
+ZCBiZSByZXNvbHZlZCBpbiBzZXZlcmFsDQp3YXlzOg0KCTEpIE1ha2UgemVyb2NvcHkgcnggbW9k
+ZSBkaXNhYmxlZCBieSBkZWZhdWx0LCBzbyBpZiB1c2VyIGRpZG4ndCBlbmFibGUNCml0LCBjdXJy
+ZW50ICdrbWFsbG9jKCknIHdheSB3aWxsIGJlIHVzZWQuDQoJMikgVXNlICdrbWFsbG9jKCknIGZv
+ciAic21hbGwiIHBhY2tldHMsIGVsc2UgY2FsbCBwYWdlIGFsbG9jYXRvci4gQnV0DQppbiB0aGlz
+IGNhc2UsIHdlIGhhdmUgbWl4IG9mIHBhY2tldHMsIGFsbG9jYXRlZCBpbiB0d28gZGlmZmVyZW50
+IHdheXMgdGh1cw0KZHVyaW5nIHplcm9jb3B5aW5nIHRvIHVzZXIoZS5nLiBtYXBwaW5nIHBhZ2Vz
+IHRvIHZtYSksIHN1Y2ggc21hbGwgcGFja2V0cyB3aWxsDQpiZSBoYW5kbGVkIGluIHNvbWUgc3R1
+cGlkIHdheTogd2UgbmVlZCB0byBhbGxvY2F0ZSBvbmUgcGFnZSBmb3IgdXNlciwgY29weSBkYXRh
+DQp0byBpdCBhbmQgdGhlbiBpbnNlcnQgcGFnZSB0byB1c2VyJ3Mgdm1hLg0KDQpQLlM6IG9mIGNv
+dXJzZSB0aGlzIGlzIGV4cGVyaW1lbnRhbCBSRkMsIHNvIHdoYXQgZG8gWW91IHRoaW5rIGd1eXM/
+DQoNCkFyc2VuaXkgS3Jhc25vdig4KQ0KIHZpcnRpby92c29jazogcmV3b3JrIHBhY2tldCBhbGxv
+Y2F0aW9uIGxvZ2ljDQogdmhvc3QvdnNvY2s6IHJld29yayBwYWNrZXQgYWxsb2NhdGlvbiBsb2dp
+Yw0KIGFmX3Zzb2NrOiBhZGQgemVyb2NvcHkgcmVjZWl2ZSBsb2dpYw0KIHZpcnRpby92c29jazog
+YWRkIHRyYW5zcG9ydCB6ZXJvY29weSBjYWxsYmFjaw0KIHZob3N0L3Zzb2NrOiBlbmFibGUgemVy
+b2NvcHkgY2FsbGJhY2suDQogdmlydGlvL3Zzb2NrOiBlbmFibGUgemVyb2NvcHkgY2FsbGJhY2su
+DQogdGVzdC92c29jazogYWRkIHJlY2VpdmUgemVyb2NvcHkgdGVzdHMNCiB0ZXN0L3Zzb2NrOiB2
+c29jayByeCB6ZXJvY29weSB1dGlsaXR5DQoNCiBkcml2ZXJzL3Zob3N0L3Zzb2NrLmMgICAgICAg
+ICAgICAgICAgICAgfCAgNTAgKysrKy0NCiBpbmNsdWRlL2xpbnV4L3ZpcnRpb192c29jay5oICAg
+ICAgICAgICAgfCAgIDQgKw0KIGluY2x1ZGUvbmV0L2FmX3Zzb2NrLmggICAgICAgICAgICAgICAg
+ICB8ICAgNCArDQogaW5jbHVkZS91YXBpL2xpbnV4L3ZpcnRpb192c29jay5oICAgICAgIHwgICA1
+ICsNCiBpbmNsdWRlL3VhcGkvbGludXgvdm1fc29ja2V0cy5oICAgICAgICAgfCAgIDIgKw0KIG5l
+dC92bXdfdnNvY2svYWZfdnNvY2suYyAgICAgICAgICAgICAgICB8ICA2MSArKysrKysNCiBuZXQv
+dm13X3Zzb2NrL3ZpcnRpb190cmFuc3BvcnQuYyAgICAgICAgfCAgIDEgKw0KIG5ldC92bXdfdnNv
+Y2svdmlydGlvX3RyYW5zcG9ydF9jb21tb24uYyB8IDE5NSArKysrKysrKysrKysrKysrLQ0KIHRv
+b2xzL2luY2x1ZGUvdWFwaS9saW51eC92aXJ0aW9fdnNvY2suaCB8ICAxMCArDQogdG9vbHMvaW5j
+bHVkZS91YXBpL2xpbnV4L3ZtX3NvY2tldHMuaCAgIHwgICA3ICsNCiB0b29scy90ZXN0aW5nL3Zz
+b2NrL01ha2VmaWxlICAgICAgICAgICAgfCAgIDEgKw0KIHRvb2xzL3Rlc3RpbmcvdnNvY2svY29u
+dHJvbC5jICAgICAgICAgICB8ICAzNCArKysNCiB0b29scy90ZXN0aW5nL3Zzb2NrL2NvbnRyb2wu
+aCAgICAgICAgICAgfCAgIDIgKw0KIHRvb2xzL3Rlc3RpbmcvdnNvY2svcnhfemVyb2NvcHkuYyAg
+ICAgICB8IDM1NiArKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKw0KIHRvb2xzL3Rlc3Rp
+bmcvdnNvY2svdnNvY2tfdGVzdC5jICAgICAgICB8IDI4NCArKysrKysrKysrKysrKysrKysrKysr
+KysrDQogMTUgZmlsZXMgY2hhbmdlZCwgMTAwNSBpbnNlcnRpb25zKCspLCAxMSBkZWxldGlvbnMo
+LSkNCg0KLS0gDQoyLjI1LjENCg==
