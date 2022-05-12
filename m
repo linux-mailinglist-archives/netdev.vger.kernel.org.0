@@ -2,111 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5694E524C68
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 14:08:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7C03524C75
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 14:12:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353553AbiELMIi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 08:08:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40700 "EHLO
+        id S1353584AbiELMMF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 08:12:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351652AbiELMIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 08:08:37 -0400
-Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72E6033E9A;
-        Thu, 12 May 2022 05:08:36 -0700 (PDT)
-Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CBuOU2027358;
-        Thu, 12 May 2022 12:08:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=UpinVejisDsY3s3pfI6xdVEtuuplzdK+4Ga9n1LdEpw=;
- b=I5hyYD+hL9952MKtiyBfQQdIHpJM4wRw+VJMKoQ4ONnB75gP3FHy8QwzJCWDrrVxXibT
- aG7YOXRwhYHlaXEFYyb2jsZP/oMrns+a35nGTaEdWVmGkNEd2hppJMlaCIKgYavMFJzz
- BQhZc8xMEQIFver8w/QkBDg0YN/MxHSbW7stWpWLcfp66s4ZAZqcnm3KPIioK4qyILZ8
- BRFvgo+gGWzad+ZknbKGpX5zSPdwlh8nhSCTPIwwz8i4+D/e5ize/XvrwYIF+2gGurvV
- rWtHPnxqFQpc28ZqjS3w/0MSNbfoEopCghkhagzNH1/jarStaQQjkKDE6+rDGI616SNx cQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g11t9087q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 12:08:26 +0000
-Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24CBxSWc005111;
-        Thu, 12 May 2022 12:08:26 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g11t9086r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 12:08:26 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24CC7QCO009910;
-        Thu, 12 May 2022 12:08:24 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3fwgd8y08c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 12:08:24 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24CC80gH35193266
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 12:08:00 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EE4115204F;
-        Thu, 12 May 2022 12:08:21 +0000 (GMT)
-Received: from [9.152.222.250] (unknown [9.152.222.250])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id A772452050;
-        Thu, 12 May 2022 12:08:21 +0000 (GMT)
-Message-ID: <ba81cf0c-08c5-76e9-bfc8-369887454e52@linux.ibm.com>
-Date:   Thu, 12 May 2022 14:08:23 +0200
+        with ESMTP id S1353577AbiELMMD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 08:12:03 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45D33DDF0
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 05:12:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=LVYox6TUjikfM1g8DCrpsqL5vDrC5VjkI/gscOyZbsI=; b=h7K+RjsCnELaFYgCxVNtDNzVWu
+        LcYBGH5pRNJhWanUhKWy9q5P5F7sJ2ddj7j3fu3qtKKBr9QS6oX8OcmJK6kkDsLsJyAoZ6IMsafCi
+        72I+0GnYRE2fcJeCLtSr6fLkMyp189DyaD5Z9gQAyHEvHHB37IiUXUktdr8TRGF9QJEM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1np7fh-002RnL-6v; Thu, 12 May 2022 14:11:57 +0200
+Date:   Thu, 12 May 2022 14:11:57 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiawen Wu <jiawenwu@trustnetic.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 10/14] net: txgbe: Add ethtool support
+Message-ID: <Ynz5jZUQorkPmJ/o@lunn.ch>
+References: <20220511032659.641834-1-jiawenwu@trustnetic.com>
+ <20220511032659.641834-11-jiawenwu@trustnetic.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH net-next v2 2/2] net/smc: align the connect behaviour with
- TCP
-Content-Language: en-US
-To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>,
-        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        tonylu@linux.alibaba.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220512031156.74054-1-guangguan.wang@linux.alibaba.com>
- <20220512031156.74054-3-guangguan.wang@linux.alibaba.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20220512031156.74054-3-guangguan.wang@linux.alibaba.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: 2oaO-gE-6SnHAkJOjUibTWsqLRitPRID
-X-Proofpoint-ORIG-GUID: nMgKDzK2wHDukIK4NrGJp_FNDdIxk9g-
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-12_02,2022-05-12_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 suspectscore=0 clxscore=1015 mlxlogscore=999 bulkscore=0
- malwarescore=0 spamscore=0 mlxscore=0 lowpriorityscore=0 impostorscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205120052
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220511032659.641834-11-jiawenwu@trustnetic.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/05/2022 05:11, Guangguan Wang wrote:
-> Connect with O_NONBLOCK will not be completed immediately
-> and returns -EINPROGRESS. It is possible to use selector/poll
-> for completion by selecting the socket for writing. After select
-> indicates writability, a second connect function call will return
-> 0 to indicate connected successfully as TCP does, but smc returns
-> -EISCONN. Use socket state for smc to indicate connect state, which
-> can help smc aligning the connect behaviour with TCP.
-> 
-> Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
-> ---
+> +int txgbe_get_link_ksettings(struct net_device *netdev,
+> +			     struct ethtool_link_ksettings *cmd)
+> +{
+> +	struct txgbe_adapter *adapter = netdev_priv(netdev);
+> +	struct txgbe_hw *hw = &adapter->hw;
+> +	u32 supported_link;
+> +	u32 link_speed = 0;
+> +	bool autoneg = false;
+> +	u32 supported, advertising;
+> +	bool link_up;
 
-Acked-by: Karsten Graul <kgraul@linux.ibm.com>
 
-Thank you.
+
+> +
+> +	if (!in_interrupt()) {
+> +		TCALL(hw, mac.ops.check_link, &link_speed, &link_up, false);
+> +	} else {
+> +		/* this case is a special workaround for RHEL5 bonding
+> +		 * that calls this routine from interrupt context
+> +		 */
+> +		link_speed = adapter->link_speed;
+> +		link_up = adapter->link_up;
+> +	}
+
+Does mainline do this? You are contributing this driver to mainline,
+not a vendor kernel. Don't work around vendor issues.
+
+    Andrew
