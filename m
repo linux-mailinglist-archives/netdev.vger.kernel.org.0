@@ -2,57 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35CA952571B
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 23:35:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44C35525728
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 23:41:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357935AbiELVf4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 17:35:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40970 "EHLO
+        id S241237AbiELVld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 17:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59764 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239064AbiELVfz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 17:35:55 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5611FA67
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 14:35:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652391353; x=1683927353;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=RtF7CNpfkWSTUyqk8QRGJ5aPbyTaid/AcUjnRhgwQFM=;
-  b=SvbfrXXfHq/o6Tv2zM2ZJoTvy5mCW4l8Mr1uh5TQOmjSHSCWVcQHJaRh
-   f8CeZAZm3keYDrxRcNkCTbdd89RBcgK/QyovtHv651QyUBuhRrFHBcxp8
-   bbKnsU2hjW03+Cmsd/DpL3vGmNEMd8S7XJSFXCIerjEj5B1F15jiHaHQI
-   8hbJdyTSwZZl8yGUUN79MlC/aApksOMQjCaAOb9Xk/wSQ6B4aO0faT8vW
-   s/83NfetXNLXzzqz2j4OTyDRk4xDT+aPdzFiavyspqmqZe/RJuZAlAV5c
-   sMl7V1fetqiHLdv8fkVrrmR6E/l1ZNMoiA3Q2mC4YXVfEu4vQEuF8oTqG
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="250673224"
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="250673224"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 14:35:53 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="895971315"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga005.fm.intel.com with ESMTP; 12 May 2022 14:35:53 -0700
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com
-Cc:     Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        netdev@vger.kernel.org, anthony.l.nguyen@intel.com,
-        sudheer.mogilappagari@intel.com, amritha.nambiar@intel.com,
-        Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Subject: [PATCH net-next 1/1] ice: Expose RSS indirection tables for queue groups via ethtool
-Date:   Thu, 12 May 2022 14:32:49 -0700
-Message-Id: <20220512213249.3747424-1-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1344669AbiELVlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 17:41:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 299B3703F6
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 14:41:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652391687;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YX4qZOz+9WbIDFanSGeueshT1smpwyQHiwCB0mvZIgg=;
+        b=ibSrfcx6HjydueExqniMVnPHrkga2kXz2Okjj88BWs2u8IITmlpPBvmehr68AMnljkxyK+
+        uFPyGa5hspRrBJzx7Ufi7IW/Bll1lBpB06zM5RaOL8t7PI1SdyR16QJkKGP6uA+GjkdXU2
+        2sReapi7XbOS3NqAaYh29ZfRHGTHgd4=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-316--9sq3rMhP6iZqr34jl7IjA-1; Thu, 12 May 2022 17:41:24 -0400
+X-MC-Unique: -9sq3rMhP6iZqr34jl7IjA-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E950F8038E3;
+        Thu, 12 May 2022 21:41:22 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.37.67])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0E2C7416156;
+        Thu, 12 May 2022 21:41:05 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220504014440.3697851-20-keescook@chromium.org>
+References: <20220504014440.3697851-20-keescook@chromium.org> <20220504014440.3697851-1-keescook@chromium.org>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        David Howells <dhowells@redhat.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, Alexei Starovoitov <ast@kernel.org>,
+        alsa-devel@alsa-project.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bradley Grove <linuxdrivers@attotech.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Christian Brauner <brauner@kernel.org>,
+        Christian =?utf-8?Q?G=C3=B6ttsche?= <cgzones@googlemail.com>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Chris Zankel <chris@zankel.net>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        David Gow <davidgow@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        Eli Cohen <elic@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hulk Robot <hulkci@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        James Morris <jmorris@namei.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        John Keeping <john@metanate.com>,
+        Juergen Gross <jgross@suse.com>, Kalle Valo <kvalo@kernel.org>,
+        Keith Packard <keithp@keithp.com>, keyrings@vger.kernel.org,
+        kunit-dev@googlegroups.com,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux1394-devel@lists.sourceforge.net,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, llvm@lists.linux.dev,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Louis Peens <louis.peens@corigine.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
+        Rich Felker <dalias@aerifal.cx>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        SHA-cyfmac-dev-list@infineon.com,
+        Simon Horman <simon.horman@corigine.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Takashi Iwai <tiwai@suse.com>, Tom Rix <trix@redhat.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        wcn36xx@lists.infradead.org, Wei Liu <wei.liu@kernel.org>,
+        xen-devel@lists.xenproject.org,
+        Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>
+Subject: Re: [PATCH 19/32] afs: Use mem_to_flex_dup() with struct afs_acl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+Date:   Thu, 12 May 2022 22:41:05 +0100
+Message-ID: <898803.1652391665@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,147 +164,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Sridhar Samudrala <sridhar.samudrala@intel.com>
 
-When ADQ queue groups (TCs) are created via tc mqprio command,
-RSS contexts and associated RSS indirection tables are configured
-automatically per TC based on the queue ranges specified for
-each traffic class.
+Kees Cook <keescook@chromium.org> wrote:
 
-For ex:
-tc qdisc add dev enp175s0f0 root mqprio num_tc 3 map 0 1 2 \
-	queues 2@0 8@2 4@10 hw 1 mode channel
+>  struct afs_acl {
+> -	u32	size;
+> -	u8	data[];
+> +	DECLARE_FLEX_ARRAY_ELEMENTS_COUNT(u32, size);
+> +	DECLARE_FLEX_ARRAY_ELEMENTS(u8, data);
+>  };
 
-will create 3 queue groups (TC 0-2) with queue ranges 2, 8 and 4
-in 3 queue groups. Each queue group is associated with its
-own RSS context and RSS indirection table.
+Oof...  That's really quite unpleasant syntax.  Is it not possible to have
+mem_to_flex_dup() and friends work without that?  You are telling them the
+fields they have to fill in.
 
-Add support to expose RSS indirection tables for all ADQ queue
-groups using ethtool RSS contexts interface.
-	ethtool -x enp175s0f0 context <tc-num>
+> +	struct afs_acl *acl = NULL;
+>  
+> -	acl = kmalloc(sizeof(*acl) + size, GFP_KERNEL);
+> -	if (!acl) {
+> +	if (mem_to_flex_dup(&acl, buffer, size, GFP_KERNEL)) {
 
-Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
-Signed-off-by: Sudheer Mogilappagari <sudheer.mogilappagari@intel.com>
-Tested-by: Bharathi Sreenivas <bharathi.sreenivas@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/ice/ice_ethtool.c | 69 +++++++++++++++-----
- 1 file changed, 51 insertions(+), 18 deletions(-)
+Please don't do that.  Either do:
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_ethtool.c b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-index 476bd1c83c87..1e71b70f0e52 100644
---- a/drivers/net/ethernet/intel/ice/ice_ethtool.c
-+++ b/drivers/net/ethernet/intel/ice/ice_ethtool.c
-@@ -3111,36 +3111,47 @@ static u32 ice_get_rxfh_indir_size(struct net_device *netdev)
- 	return np->vsi->rss_table_size;
- }
- 
--/**
-- * ice_get_rxfh - get the Rx flow hash indirection table
-- * @netdev: network interface device structure
-- * @indir: indirection table
-- * @key: hash key
-- * @hfunc: hash function
-- *
-- * Reads the indirection table directly from the hardware.
-- */
- static int
--ice_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key, u8 *hfunc)
-+ice_get_rxfh_context(struct net_device *netdev, u32 *indir,
-+		     u8 *key, u8 *hfunc, u32 rss_context)
- {
- 	struct ice_netdev_priv *np = netdev_priv(netdev);
- 	struct ice_vsi *vsi = np->vsi;
- 	struct ice_pf *pf = vsi->back;
--	int err, i;
-+	u16 qcount, offset;
-+	int err, num_tc, i;
- 	u8 *lut;
- 
-+	if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags)) {
-+		netdev_warn(netdev, "RSS is not supported on this VSI!\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	if (rss_context && !ice_is_adq_active(pf)) {
-+		netdev_err(netdev, "RSS context cannot be non-zero when ADQ is not configured.\n");
-+		return -EINVAL;
-+	}
-+
-+	qcount = vsi->mqprio_qopt.qopt.count[rss_context];
-+	offset = vsi->mqprio_qopt.qopt.offset[rss_context];
-+
-+	if (rss_context && ice_is_adq_active(pf)) {
-+		num_tc = vsi->mqprio_qopt.qopt.num_tc;
-+		if (rss_context >= num_tc) {
-+			netdev_err(netdev, "RSS context:%d  > num_tc:%d\n",
-+				   rss_context, num_tc);
-+			return -EINVAL;
-+		}
-+		/* Use channel VSI of given TC */
-+		vsi = vsi->tc_map_vsi[rss_context];
-+	}
-+
- 	if (hfunc)
- 		*hfunc = ETH_RSS_HASH_TOP;
- 
- 	if (!indir)
- 		return 0;
- 
--	if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags)) {
--		/* RSS not supported return error here */
--		netdev_warn(netdev, "RSS is not configured on this VSI!\n");
--		return -EIO;
--	}
--
- 	lut = kzalloc(vsi->rss_table_size, GFP_KERNEL);
- 	if (!lut)
- 		return -ENOMEM;
-@@ -3153,14 +3164,35 @@ ice_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key, u8 *hfunc)
- 	if (err)
- 		goto out;
- 
-+	if (ice_is_adq_active(pf)) {
-+		for (i = 0; i < vsi->rss_table_size; i++)
-+			indir[i] = offset + lut[i] % qcount;
-+		goto out;
-+	}
-+
- 	for (i = 0; i < vsi->rss_table_size; i++)
--		indir[i] = (u32)(lut[i]);
-+		indir[i] = lut[i];
- 
- out:
- 	kfree(lut);
- 	return err;
- }
- 
-+/**
-+ * ice_get_rxfh - get the Rx flow hash indirection table
-+ * @netdev: network interface device structure
-+ * @indir: indirection table
-+ * @key: hash key
-+ * @hfunc: hash function
-+ *
-+ * Reads the indirection table directly from the hardware.
-+ */
-+static int
-+ice_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key, u8 *hfunc)
-+{
-+	return ice_get_rxfh_context(netdev, indir, key, hfunc, 0);
-+}
-+
- /**
-  * ice_set_rxfh - set the Rx flow hash indirection table
-  * @netdev: network interface device structure
-@@ -4102,6 +4134,7 @@ static const struct ethtool_ops ice_ethtool_ops = {
- 	.set_pauseparam		= ice_set_pauseparam,
- 	.get_rxfh_key_size	= ice_get_rxfh_key_size,
- 	.get_rxfh_indir_size	= ice_get_rxfh_indir_size,
-+	.get_rxfh_context	= ice_get_rxfh_context,
- 	.get_rxfh		= ice_get_rxfh,
- 	.set_rxfh		= ice_set_rxfh,
- 	.get_channels		= ice_get_channels,
--- 
-2.35.1
+	acl = mem_to_flex_dup(buffer, size, GFP_KERNEL);
+	if (!acl)
+
+or:
+
+	acl = mem_to_flex_dup(buffer, size, GFP_KERNEL);
+	if (IS_ERR(acl))
+
+Please especially don't make it that an apparent 'true' return indicates an
+error.  If you absolutely must return the acl pointer through the argument
+list (presumably because it's actually a macro), make it return false on
+failure:
+
+	if (!mem_to_flex_dup(&acl, buffer, size, GFP_KERNEL))
+
+or return and explicitly check for an error code:
+
+	if (mem_to_flex_dup(&acl, buffer, size, GFP_KERNEL) < 0)
+
+or:
+
+	ret = mem_to_flex_dup(&acl, buffer, size, GFP_KERNEL);
+	if (ret < 0)
+
+(or use != 0 rather than < 0)
+
+David
 
