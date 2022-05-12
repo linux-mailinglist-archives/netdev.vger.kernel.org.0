@@ -2,148 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E0C852474E
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:47:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDC2C52477D
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:58:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351168AbiELHra (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 03:47:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50138 "EHLO
+        id S1351266AbiELH6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 03:58:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351181AbiELHrX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:47:23 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E37C91B57A0;
-        Thu, 12 May 2022 00:47:18 -0700 (PDT)
-Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24C4tf1p011245;
-        Thu, 12 May 2022 07:46:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=sJNqtW7ebykqIJ6MGEZr6hWe/bMGGF1zGAs008xihKQ=;
- b=U7qpwa6FFc9DwyTK5ybiNdjGISAEZUA9ayUluK9WVY6jih3efRrAToAKpI24Hf2wE4De
- 2zSdIjIaHa2uRa/vFwsv120UOekDU8AtOUZ+nceOQxPwvJBUqL+ku7Affz4cdoDMjHn5
- +eTOS68WeLAGKR6Kup5yzbsRTTPTeuLCj+dIiy8x88/29QY9bLYgZHakITdVSuNbeJF4
- UKd2KSGGrbu3L2MSp0orpG5VL+uWDw0+a6SfDkEfyH1cVc5Vys/E/a/d4xbHOK10rQUy
- UyipFFpkbq7RpjZp9fxLpRWPSZEJy92wiNDSsOfWA4Z2NE9OuCOHMWNCdgHKwyxi/dEO zA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0un2jxek-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 07:46:48 +0000
-Received: from m0098404.ppops.net (m0098404.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24C7Ia6b022328;
-        Thu, 12 May 2022 07:46:48 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0un2jxd8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 07:46:47 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24C7bckD028290;
-        Thu, 12 May 2022 07:46:44 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3fwgd8n500-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 07:46:44 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24C7kKCb29360470
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 12 May 2022 07:46:20 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9DAC7A4051;
-        Thu, 12 May 2022 07:46:41 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6BC89A4040;
-        Thu, 12 May 2022 07:46:33 +0000 (GMT)
-Received: from hbathini-workstation.ibm.com.com (unknown [9.211.109.30])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Thu, 12 May 2022 07:46:33 +0000 (GMT)
-From:   Hari Bathini <hbathini@linux.ibm.com>
-To:     bpf@vger.kernel.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        netdev@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jordan Niethe <jniethe5@gmail.com>
-Subject: [PATCH 5/5] bpf ppc32: Add instructions for atomic_[cmp]xchg
-Date:   Thu, 12 May 2022 13:15:46 +0530
-Message-Id: <20220512074546.231616-6-hbathini@linux.ibm.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220512074546.231616-1-hbathini@linux.ibm.com>
-References: <20220512074546.231616-1-hbathini@linux.ibm.com>
+        with ESMTP id S241283AbiELH6R (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:58:17 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80436899C
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:58:16 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1np3i7-0001Rg-3t; Thu, 12 May 2022 09:58:11 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id D10C37C670;
+        Thu, 12 May 2022 07:58:08 +0000 (UTC)
+Date:   Thu, 12 May 2022 09:58:08 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
+Message-ID: <20220512075808.urlptf4d3wiu4kwh@pengutronix.de>
+References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
+ <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
+ <20220511132421.7o5a3po32l3w2wcr@pengutronix.de>
+ <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
+ <002d234f-a7d6-7b1a-72f4-157d7a283446@hartkopp.net>
+ <20220511145437.oezwkcprqiv5lfda@pengutronix.de>
+ <3c6bf83c-0d91-ea43-1a5d-27df7db1fb08@hartkopp.net>
+ <f6cb7e44-226b-cffb-d907-9014075cdcb5@hartkopp.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: r8QtyRJIHN0NPICWmDmD1c4VvQ9qLDwN
-X-Proofpoint-ORIG-GUID: DS3bfz7Bz7Ook08vLsStW7dHE20VY3uT
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-11_07,2022-05-12_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 adultscore=0
- impostorscore=0 mlxscore=0 suspectscore=0 priorityscore=1501 clxscore=1015
- lowpriorityscore=0 bulkscore=0 malwarescore=0 spamscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
- definitions=main-2205120034
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7ajn64kwg73u2oir"
+Content-Disposition: inline
+In-Reply-To: <f6cb7e44-226b-cffb-d907-9014075cdcb5@hartkopp.net>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds two atomic opcodes BPF_XCHG and BPF_CMPXCHG on ppc32, both
-of which include the BPF_FETCH flag.  The kernel's atomic_cmpxchg
-operation fundamentally has 3 operands, but we only have two register
-fields. Therefore the operand we compare against (the kernel's API
-calls it 'old') is hard-coded to be BPF_REG_R0. Also, kernel's
-atomic_cmpxchg returns the previous value at dst_reg + off. JIT the
-same for BPF too with return value put in BPF_REG_0.
 
-  BPF_REG_R0 = atomic_cmpxchg(dst_reg + off, BPF_REG_R0, src_reg);
+--7ajn64kwg73u2oir
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
----
- arch/powerpc/net/bpf_jit_comp32.c | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+On 12.05.2022 08:23:26, Oliver Hartkopp wrote:
+> > > > > BTW: There is a bug with interfaces that don't support IFF_ECHO.
+> > > > >=20
+> > > > > Assume an invalid CAN frame is passed to can_send() on an
+> > > > > interface that doesn't support IFF_ECHO. The above mentioned
+> > > > > code does happily generate an echo frame and it's send, even
+> > > > > if the driver drops it, due to can_dropped_invalid_skb(dev,
+> > > > > skb).
+> > > > >=20
+> > > > > The echoed back CAN frame is treated in raw_rcv() as if the
+> > > > > headroom is valid:
 
-diff --git a/arch/powerpc/net/bpf_jit_comp32.c b/arch/powerpc/net/bpf_jit_comp32.c
-index 5604ae1b60ab..4690fd6e9e52 100644
---- a/arch/powerpc/net/bpf_jit_comp32.c
-+++ b/arch/powerpc/net/bpf_jit_comp32.c
-@@ -829,6 +829,23 @@ int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, struct codegen_context *
- 				/* we're done if this succeeded */
- 				PPC_BCC_SHORT(COND_NE, tmp_idx);
- 				break;
-+			case BPF_CMPXCHG:
-+				/* Compare with old value in BPF_REG_0 */
-+				EMIT(PPC_RAW_CMPW(bpf_to_ppc(BPF_REG_0), _R0));
-+				/* Don't set if different from old value */
-+				PPC_BCC_SHORT(COND_NE, (ctx->idx + 3) * 4);
-+				fallthrough;
-+			case BPF_XCHG:
-+				/* store new value */
-+				EMIT(PPC_RAW_STWCX(src_reg, tmp_reg, dst_reg));
-+				PPC_BCC_SHORT(COND_NE, tmp_idx);
-+				/*
-+				 * Return old value in src_reg for BPF_XCHG &
-+				 * BPF_REG_0 for BPF_CMPXCHG.
-+				 */
-+				EMIT(PPC_RAW_MR(imm == BPF_XCHG ? src_reg : bpf_to_ppc(BPF_REG_0),
-+						_R0));
-+				break;
- 			default:
- 				pr_err_ratelimited("eBPF filter atomic op code %02x (@%d) unsupported\n",
- 						   code, i);
--- 
-2.35.1
+> I double checked that code and when I didn't miss anything all the callers
+> of can_send() (e.g. raw_sendmsg()) are creating valid skbs.
 
+ACK - I haven't checked, but I assume that all current callers of
+can_send() are sound, this I why I started the description with: "Assume
+an invalid CAN frame is passed to can_send()". But we can argue that we
+trust all callers.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--7ajn64kwg73u2oir
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ8vg0ACgkQrX5LkNig
+0123iAf9ErX08AbRVn9w0Yc3/EK4BXK/wG8D+Qc4T3MK+m6wTUWjEozDpbcdT9Xf
+7KwXqMctUdH/G3YvAHSD0dM0qFv6PL9BSO+Cj7TX2itOe6ME1r2/Ym8fodHtZIv9
+FSfySMHM8/+kN1v2xyfL8VlOsBuaXaQzTHv/Oj+O3cdKZnFS2qG2SFlXhPvmTdLE
+j29aIQakN+nCJCcmXoimM5Bn9DftyXbbNLa14hN93bfNIktuveaKKgSjH36hZ96S
+JjCDRfpG16DnxyYAuk+grsThKZGFeylRtV8TC4E53aumG/zoDNZpmkV+/FtPa/VS
+QoLahTJiU4vJphpbic4F7MHlTwaSFQ==
+=epSY
+-----END PGP SIGNATURE-----
+
+--7ajn64kwg73u2oir--
