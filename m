@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5D8852501B
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 16:34:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EB1B525020
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 16:34:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355331AbiELOd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 10:33:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52546 "EHLO
+        id S1355336AbiELOda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 10:33:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355339AbiELOd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 10:33:26 -0400
+        with ESMTP id S1355344AbiELOd1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 10:33:27 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E690925E78D;
-        Thu, 12 May 2022 07:33:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F0EF25F782;
+        Thu, 12 May 2022 07:33:22 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3C8B0FF80B;
-        Thu, 12 May 2022 14:33:18 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id D7DFAFF807;
+        Thu, 12 May 2022 14:33:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652365999;
+        t=1652366001;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ru7f6zDo127swMcyKVqCUc/U4VW+RvBLHSqyL/bVPt8=;
-        b=UKRlBlSVTBpCiwrHgRhY5bmwLsiFCxIYNeVON2E1uuDe1BHWKxyCFgqc0E6i7fsVX7kaQ1
-        mVUsmUburP9Yg/wohNHp1zFpofkOVAvbKKr9MPk9IkQuP2lcde3/yG/9M6ZnAiWOiGGyAv
-        kKahswJBOterWuJgmJcMr0miHR5++n+wrnL6GLmX7ayi6uBV94akcpjZAIukj5qmY8F0R5
-        BD7QyrtRzf6vNZNaouDYQcyh5d0Qs3ORwIeuT/68CE6N6A39MzwiS9pUc6yo/IeJJqadTz
-        ev/cLmIWhFvA/7GCYavpf8Y+JSnwCqN7C3alKW6pBpAc+qUfsvoxs5F6SvjupQ==
+        bh=ttDrG4qw6SDOuy2M/qcCiT5g7kF3QW/2JFjFobWonPY=;
+        b=i1XHLxfgRZpl1UCh5567p5mtoMNaZf4KeyUjqC1QW1EmaTmJz44LAjnZtzJj4NKod3KoX+
+        2hkDch66rE3Nn9Jvm63LTsZjKRPJ+dLfGt4/mmyTj7MM4NGJCo5J6sdkGcdseiu9wR/B0Q
+        OCSccOHAtYpFVgPbKwdCECzGv9NTLFThBewQ/vQFoupnK7cM0cKjp6adw9sAFFrSaZ9RMf
+        I9F3/XVSI27t26UKxdulUttqCRSByEVTT30FrISvt33GQN5rUSK2mnY/r7LNmF9vL3RIjv
+        rPFsxSDve6adNEDLCjapogXHWKAhF/Y5aoLXKHjVrMTlR4NDaGdsoAImWyLbAA==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -42,9 +42,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 01/11] net: mac802154: Rename the synchronous xmit worker
-Date:   Thu, 12 May 2022 16:33:04 +0200
-Message-Id: <20220512143314.235604-2-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v2 02/11] net: mac802154: Rename the main tx_work struct
+Date:   Thu, 12 May 2022 16:33:05 +0200
+Message-Id: <20220512143314.235604-3-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220512143314.235604-1-miquel.raynal@bootlin.com>
 References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
@@ -61,61 +61,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are currently two driver hooks: one is synchronous, the other is
-not. We cannot rely on driver implementations to provide a synchronous
-API (which is related to the bus medium more than a wish to have a
-synchronized implementation) so we are going to introduce a sync API
-above any kind of driver transmit function. In order to clarify what
-this worker is for (synchronous driver implementation), let's rename it
-so that people don't get bothered by the fact that their driver does not
-make use of the "xmit worker" which is a too generic name.
+This entry is dedicated to synchronous transmissions done by drivers
+without async hook. Make this clearer that this is not a work that any
+driver can use by at least prefixing it with "sync_". While at it, let's
+enhance the comment explaining why we choose one or the other.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
  net/mac802154/ieee802154_i.h | 2 +-
  net/mac802154/main.c         | 2 +-
- net/mac802154/tx.c           | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ net/mac802154/tx.c           | 9 ++++++---
+ 3 files changed, 8 insertions(+), 5 deletions(-)
 
 diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
-index 1381e6a5e180..d7632c6d225f 100644
+index d7632c6d225f..a8b7b9049f14 100644
 --- a/net/mac802154/ieee802154_i.h
 +++ b/net/mac802154/ieee802154_i.h
-@@ -123,7 +123,7 @@ ieee802154_sdata_running(struct ieee802154_sub_if_data *sdata)
- extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
+@@ -55,7 +55,7 @@ struct ieee802154_local {
+ 	struct sk_buff_head skb_queue;
  
- void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
--void ieee802154_xmit_worker(struct work_struct *work);
-+void ieee802154_xmit_sync_worker(struct work_struct *work);
- netdev_tx_t
- ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
- netdev_tx_t
+ 	struct sk_buff *tx_skb;
+-	struct work_struct tx_work;
++	struct work_struct sync_tx_work;
+ 	/* A negative Linux error code or a null/positive MLME error status */
+ 	int tx_result;
+ };
 diff --git a/net/mac802154/main.c b/net/mac802154/main.c
-index bd7bdb1219dd..392771bba9dd 100644
+index 392771bba9dd..40fab08df24b 100644
 --- a/net/mac802154/main.c
 +++ b/net/mac802154/main.c
 @@ -95,7 +95,7 @@ ieee802154_alloc_hw(size_t priv_data_len, const struct ieee802154_ops *ops)
  
  	skb_queue_head_init(&local->skb_queue);
  
--	INIT_WORK(&local->tx_work, ieee802154_xmit_worker);
-+	INIT_WORK(&local->tx_work, ieee802154_xmit_sync_worker);
+-	INIT_WORK(&local->tx_work, ieee802154_xmit_sync_worker);
++	INIT_WORK(&local->sync_tx_work, ieee802154_xmit_sync_worker);
  
  	/* init supported flags with 802.15.4 default ranges */
  	phy->supported.max_minbe = 8;
 diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-index c829e4a75325..97df5985b830 100644
+index 97df5985b830..a01689ddd547 100644
 --- a/net/mac802154/tx.c
 +++ b/net/mac802154/tx.c
-@@ -22,7 +22,7 @@
- #include "ieee802154_i.h"
- #include "driver-ops.h"
- 
--void ieee802154_xmit_worker(struct work_struct *work)
-+void ieee802154_xmit_sync_worker(struct work_struct *work)
+@@ -25,7 +25,7 @@
+ void ieee802154_xmit_sync_worker(struct work_struct *work)
  {
  	struct ieee802154_local *local =
- 		container_of(work, struct ieee802154_local, tx_work);
+-		container_of(work, struct ieee802154_local, tx_work);
++		container_of(work, struct ieee802154_local, sync_tx_work);
+ 	struct sk_buff *skb = local->tx_skb;
+ 	struct net_device *dev = skb->dev;
+ 	int res;
+@@ -76,7 +76,10 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
+ 	/* Stop the netif queue on each sub_if_data object. */
+ 	ieee802154_stop_queue(&local->hw);
+ 
+-	/* async is priority, otherwise sync is fallback */
++	/* Drivers should preferably implement the async callback. In some rare
++	 * cases they only provide a sync callback which we will use as a
++	 * fallback.
++	 */
+ 	if (local->ops->xmit_async) {
+ 		unsigned int len = skb->len;
+ 
+@@ -90,7 +93,7 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
+ 		dev->stats.tx_bytes += len;
+ 	} else {
+ 		local->tx_skb = skb;
+-		queue_work(local->workqueue, &local->tx_work);
++		queue_work(local->workqueue, &local->sync_tx_work);
+ 	}
+ 
+ 	return NETDEV_TX_OK;
 -- 
 2.27.0
 
