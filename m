@@ -2,198 +2,343 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93F4A525C92
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 09:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD5C1525DF2
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 11:18:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377897AbiEMHuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 03:50:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37316 "EHLO
+        id S1378349AbiEMIja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 04:39:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377891AbiEMHuF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 03:50:05 -0400
-Received: from FRA01-MR2-obe.outbound.protection.outlook.com (mail-eopbgr90073.outbound.protection.outlook.com [40.107.9.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC4FA13C4D6;
-        Fri, 13 May 2022 00:50:03 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BYN6+3ZlFZpm1WE8BFlPJIaviEI7kpVlgdqQtfBHFZ6yUjwZmCu6k4nADhZWrxZuUuQFEU5dMokExfMsJMsLAfTBNPYWvo34dUHytfI8f628mIZ69NaYO1F9YjhgkoAPamqD1DFJpRAa4VQHNUAW5hLj1Wt18eXUSUVd+eCQPwizBNkP7yNRfjM7T+CcjFxkGBp8ze+kOxT050C3NPsslat5UUZz9YQc8PZr+lIXv8q4yNC64SpDrDeFmcOtGpoTyGrOLrFq2wx7vPgpQDSLcLinZjSjpyOzm2RTlvXaMTbi89kjVsfmlYcO/9o0xbmp37g2QBfS1tYSTpwNvHJQtg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XQo8fAgwrnHsHkpMXBaXL6Ng8iYev3/4tJxYzHxDHAA=;
- b=lxrmuDydv7ptvqrcglPrF1j8415dJfQ60jT9mW0wuOOLpWcRcyl2WDwig86pLUDbyy6WKFhPB4N4Em2xCjmW/12bENPki8cXVxnKhmaLVsluXtiRrTxoDHbnw9tUMCeXaJfhhq5nzD/JVEz+bDjVBX+jbsmVyeO6SlalRQMCyatNv8XjNu8Hq4W+cbcH/DslZ+4wgretXE5ivlgfncZmJslEbKvjrlPaV5sBdMk/v2TiYjTtL3lHOPuP8Aji3gE2eBQgTu8eupPBeRUXvnGnzTMAmEfZMMJ1XT0cTF5cf6engLOdCoIcjiZEV80YmWd9yGUDr6gjB8TnMhLNh+YGbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by PR1P264MB1904.FRAP264.PROD.OUTLOOK.COM (2603:10a6:102:193::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14; Fri, 13 May
- 2022 07:50:01 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::ad4e:c157:e9ac:385d]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::ad4e:c157:e9ac:385d%6]) with mapi id 15.20.5250.015; Fri, 13 May 2022
- 07:50:01 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Hari Bathini <hbathini@linux.ibm.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
-CC:     Michael Ellerman <mpe@ellerman.id.au>,
-        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jordan Niethe <jniethe5@gmail.com>
-Subject: Re: [PATCH 5/5] bpf ppc32: Add instructions for atomic_[cmp]xchg
-Thread-Topic: [PATCH 5/5] bpf ppc32: Add instructions for atomic_[cmp]xchg
-Thread-Index: AQHYZdRx9aF2Tal9R0y7FgKMrFNStq0ccG2A
-Date:   Fri, 13 May 2022 07:50:01 +0000
-Message-ID: <025e9a60-46d9-bc3d-224e-1d92bc05f857@csgroup.eu>
-References: <20220512074546.231616-1-hbathini@linux.ibm.com>
- <20220512074546.231616-6-hbathini@linux.ibm.com>
-In-Reply-To: <20220512074546.231616-6-hbathini@linux.ibm.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 88197431-e37c-45c8-03ca-08da34b52f45
-x-ms-traffictypediagnostic: PR1P264MB1904:EE_
-x-microsoft-antispam-prvs: <PR1P264MB190402568783980E879A8C12EDCA9@PR1P264MB1904.FRAP264.PROD.OUTLOOK.COM>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: oSvaZ+0sO081iTF9ClQCCe+W+/4IdCl6GAA845NDRbfm4MSG4DJ6ngPyxAR3Odb9yUGYNaPCZnRVGntE+jNu17ESFxa5e6jJowxy4mY0bvQVRDY1Z8DJXPTiIPZWtxCAUIdWxCstmfMfRn8IoSguFDS+03LrzeeMO6dl7GOY0w+EHTKytSbQHxGJreqlhhEPwYFBQdhXo7E7nXGTxjQ/o8ayycfwkOfw64JTj7O3GoOt4IDiBhg9tvAAMOcRtXWkd+pSupmoqzjgab0qMvIbFr512ngI/UEkiDwt56FbfCi0nfHKOJ9h85bLLkz6T1WtvluZ1ZUmej5HPNkkVIkGdEcwnkjXZsxugSyBzRjVaz05QoTcnqC3wJEFDjxVcRVpJQbsbzLXP84Lke3JhulnmyAAWu5W2kRyLtKHdkm31RDg1FIVYS3xJCuE04oZL/KVTZ9oWpjqz+s2COyGwOtwnaQBd5ryd5YJKo9LCFGEzMV9qUM+824pyRIhHehKfmEthHA9TiKK3fODPOhIVkD26tMZ1g8aHg9vz0jr69cNYfTkn6mJgEzoot6CCSGRxz8lsv4BWDbWt4eFqegIozxy+WrPuYqO0C4vQ6nq8V5Lvu/MIbBceYu4CW4RcsGxlC3J98ZBtYkkClvL9pfM8IEV+wEMN8OAtoAaer2bEK2/LwfyPBXlCdThDl0PayBUGYSlsnv2ubIt0qeK/tpkc4uIrkNYHbwKkO4wxKbOzbnXS8+71UlgEabwYdZDkQ/WnAt8EU2uP5t2uRHN0hRSmv7qiQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(76116006)(64756008)(66446008)(66476007)(66556008)(8676002)(31696002)(4326008)(91956017)(86362001)(54906003)(110136005)(122000001)(316002)(38100700002)(38070700005)(6512007)(26005)(6506007)(186003)(71200400001)(2616005)(83380400001)(508600001)(6486002)(2906002)(5660300002)(7416002)(44832011)(8936002)(36756003)(31686004)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?WjRheWxvSkNrWHQ1MDBCSTBieTFyaUlUaURJaTdWOUltRzR0TTRiM0JueFdu?=
- =?utf-8?B?TE1qTmpiZ3NwMzlEdHNQUkZ0UUt3L3JxTTd4d2pPWXlDS0ZVT2J2QjVVbDll?=
- =?utf-8?B?ZGcvVWVmekVjaitlK2R3Zjl5dEh0SjhIeHhielM4MUdEZVpFeFF1L3RqNHZp?=
- =?utf-8?B?SVhwUlNnclBmVjlwT0NRNjNnQXZUaUJvN3JhYUVHSXBLL09malNZVVlQNmJw?=
- =?utf-8?B?Umd6OVBBTGZYNDdKNkRoSWY1M3ZqRE4xVE5mcktubDQrZ0w0N2N3ZVlYY1Zi?=
- =?utf-8?B?aVRzcURHM3JkaE0zWVpoN25LNldvMmpDWkNNdTJTeEFTYjVMa0dDam5MTCtQ?=
- =?utf-8?B?dzc1VEV6bUNYUCtJUHVKQ3lBZHRHcXgvais0YXBDL002ZFZJdk5CWjVERUpL?=
- =?utf-8?B?Vm0xTU9qTGtrSmFpNlViRG1OSnBGZm84aTlUeGJHS29lNWsvUWpPek1lVlA2?=
- =?utf-8?B?M0tHWlo0MHNDN05EaHYxVEwzaHV0VjRZcUVMSXAyN21IMHZTMGtUTnl5MmJx?=
- =?utf-8?B?bVV0RjRVTEdCM0RsZFlxaGlDNWVPOFp5OE1XdkJWcWo3MFNmOXJ5UnJXdkZ1?=
- =?utf-8?B?d3l1cnRqREFVN3U0TTZabHQ5TksvQXg1VWYrS1gxOVdyT0FkWHFnLzJEUUNR?=
- =?utf-8?B?djZQU0ZVZWo0YitYK2RBbmdDa1FJaXFwaGF3aEVjODZkdGw3aTdEUlJEeXlp?=
- =?utf-8?B?Y1BzMjRpYXZuOHVYSFBpVjFUV3pTVGdoS2hETHVWVUY5elR3K3YyZXJqTi9U?=
- =?utf-8?B?R0llRUxGZGJzQmJZTEVzbkU3UWZJb3NpWTdlckFWRy9yOG5PZ080VTBVYitT?=
- =?utf-8?B?WXhveTVMa3RBUlNDSTNDbEIzQnZFNlhDL3JyZEM4WXlIay9ZS3c2SUJWdFB4?=
- =?utf-8?B?U1hkbzdmUUpEcDRjYWRMZ0xYUS9ZMkF2bHRhcEZUUjd0TFNJczdWc25UcTMy?=
- =?utf-8?B?cndTRDNDbUY1dHc4RXMrMTcvczdDK1JrRExTWkduZk1Sb0hCZytuOFd5ZkFI?=
- =?utf-8?B?NERaQWw2Y0tiMlhlYWNObmRSb1I0dkpaQTFwVFQ4TU9Da3p2OUczTTk2VCsz?=
- =?utf-8?B?Sk1mZUJxcUd4am1aeWlUMEZZR2ZvQzR2MnE3R2owSm8xbHhYUGEyUFdWMGtI?=
- =?utf-8?B?Vjl4QnU5eFhmWENzaGNQNm9pUE9hQnNhQklCazk4Ukx2Y3RpTHJQRHpTOXRK?=
- =?utf-8?B?OFR5clFmazdJV1RKQk9CemhzRlhwYi9zZitycWlhMmE1SUVGYjhOb2xxM1FM?=
- =?utf-8?B?b0NVMHlOOFdrNGFaeW11RWM2Q1NlU0JzQ055Z0ZpYlNSdWkvSGRlWUo3WTNo?=
- =?utf-8?B?QnNrMWJ1dTdiVUw1QTdSaVF1Nm1UMG83ZW1VTkQ1NEUxRGJxS3ZlajFNNS9x?=
- =?utf-8?B?bmx5cGxFaC9hMmU2dU5tNlJiU0tUelhTZTB6N3JZaTNMVkRnZXNSSmtqYnFu?=
- =?utf-8?B?ZkVZOXprcHRia2FFUXRsODY5b3JKOCswWjBMWXcrRkNPUTJxWUpSQ1QzTHF2?=
- =?utf-8?B?M0VoQ1dsNlNCSWxwWmN0S3ZDQlNmdFV5QzhPL0VvWDM1cVlPcVAyQng4Nzlu?=
- =?utf-8?B?YmdOT3pWdWEvZUVwbE9URDVNdDBuSTVzOVlOUGVlWWdNdjJWVWxaOTVDNjVP?=
- =?utf-8?B?Y0dybzRESC9UR2J4S0pseXEvcEpQQkNHZkVhN1c2RkpzbEZkVHlCWHR2OEJS?=
- =?utf-8?B?TUIySnRrN1pCTTBtQ0QyOERuYm16d1Zxam05aXBlaXlEczQwUkQxb3Bhd1FP?=
- =?utf-8?B?QjVBZlkxRVZhaFNxZG1YZy9xRld2TllTa2VqWG0zZFBUYnB5UG5KWm96SC8v?=
- =?utf-8?B?Rmoyd0d4dWcyeUhCNHZvUDVMMzlLWXZWUzIzTHdkcmtRWW9nTEd0OGQzcG0v?=
- =?utf-8?B?VG9aREpnVTIxRDRrOGc3M3FSaFRid3g5TkhpQVo0Wkw2R2Z1VmtXb041R2hJ?=
- =?utf-8?B?RDBZRkRIQzVxYWsvQWNVQk1WRmlvdm9zMzhzd3p2T3AxZ1p6NUIyNEtlUmtp?=
- =?utf-8?B?QUk5THNWZ256aWlwZEN2VURUQWMwUy9pd1llUVQrc2lsVXlVUGxQYVdnVE9H?=
- =?utf-8?B?c2xTb21BTGhXd21IT3pXMmhmOFE0bk1ubXRva1hlbGZRODhxMk1tTVVpMzUr?=
- =?utf-8?B?a3pXOXE5Y3VMRnlmTDVLWWdHd0lyODFRUGdFeUFmZWFnS2Vqdkx0d2h0aEVJ?=
- =?utf-8?B?T0lVUkttNDVVZmJ0Ky8raXVITTZpV0N2aUd6OXA0cENBNXp0bm05Si9aRGVx?=
- =?utf-8?B?MTB5WVprcVFQdVd4Y1R3Y2J4R2NIVkdmKzhwUkExRWY4MlE2R3JOekJabldV?=
- =?utf-8?B?alZUVnQ2WWhDcHNuQ040cDIzZFNJRUdUelBhZFlldnNIUmhUdXRrTzlRUzdi?=
- =?utf-8?Q?bMYXQowW40h+eAiqjC/KIN8i17VlgdmTYQ+29?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <679746C24E293145934AEB137DCB228E@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        with ESMTP id S1378346AbiEMIj1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 04:39:27 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51B242631E5
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 01:39:23 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1npQpW-0007di-A4
+        for netdev@vger.kernel.org; Fri, 13 May 2022 10:39:22 +0200
+Received: from [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400] (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id AC05F7D752
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:39:21 +0000 (UTC)
+Received: from bjornoya.blackshift.org
+        by bjornoya with LMTP
+        id I8qPBQsbfWJ2HwYAs6a69A
+        (envelope-from <david@protonic.nl>)
+        for <mkl-all@blackshift.org>; Thu, 12 May 2022 14:34:51 +0000
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 02D967CAD4
+        for <mkl-all@blackshift.org>; Thu, 12 May 2022 14:34:51 +0000 (UTC)
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id E954F7CAD3
+        for <ptx@kleine-budde.de>; Thu, 12 May 2022 14:34:50 +0000 (UTC)
+Received: from smtp15.bhosted.nl ([2a02:9e0:8000::26])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <david@protonic.nl>)
+        id 1np9tw-0006WR-Ul
+        for mkl@pengutronix.de; Thu, 12 May 2022 16:34:49 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=protonic.nl; s=202111;
+        h=content-transfer-encoding:content-type:mime-version:message-id:subject:cc:to:
+         from:date:from;
+        bh=9ekpzF3jYn/kEujr+rEe+H+oidDP0NgfPGgN82Dz238=;
+        b=J6GgBiuJJc/IzGC4H6D11R7b2DYPyyWVzaEPZSPnBj+LjCLUfQm4gH+2aPag79sirG0lpxGNONSRc
+         ol1YEe9DyPn8Env8gqi2Bq5lglzgR5dOUWJBXOfrbNCdeOdxi+ySePN/EZNOB+YsnDPJFxtkzfidyR
+         P2E25IFAQ6cbQqlckCO+JIfW72YtSEjwuCZ6O0QkOT79WYGi+d4StwI2TIJ6eZaJcpKizCyMbO4r3H
+         apGs4RuA0JxKOA8qWCTNOVpI2RnQ/CBF0ZwvEcUgo7bz9lUnAPaxqEjhksS9/qvAC26frT50ssRwNk
+         +xVAYRmVfDRRKWgTbumpZGKfOmAbOsA==
+X-MSG-ID: ab9cffcd-d200-11ec-b450-0050569d3a82
+Date:   Thu, 12 May 2022 16:34:45 +0200
+From:   David Jander <david@protonic.nl>
+To:     linux-spi@vger.kernel.org
+Cc:     Mark Brown <broonie@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Oleksij Rempel <ore@pengutronix.de>
+Message-ID: <20220512163445.6dcca126@erd992>
+Organization: Protonic Holland
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 88197431-e37c-45c8-03ca-08da34b52f45
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 May 2022 07:50:01.1717
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0Y/2nVxcMtyx8hUMkaGHWiUgXLa+0jWej/wVz7PyVkZocWPt9IlKLbm4DuRB2cxj3cmAMkM6Zj3/BrZvhcYeZAgeXr83Ugj5MlE1joYP2JY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR1P264MB1904
-X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+X-Spam-Level: 
+X-Spam-Status: No, score=-4.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
+Subject: [RFC] A new SPI API for fast, low-latency regmap peripheral access
+X-PTX-Original-Recipient: mkl@pengutronix.de
+X-PTX-Original-Recipient: ptx@kleine-budde.de
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCkxlIDEyLzA1LzIwMjIgw6AgMDk6NDUsIEhhcmkgQmF0aGluaSBhIMOpY3JpdMKgOg0KPiBU
-aGlzIGFkZHMgdHdvIGF0b21pYyBvcGNvZGVzIEJQRl9YQ0hHIGFuZCBCUEZfQ01QWENIRyBvbiBw
-cGMzMiwgYm90aA0KPiBvZiB3aGljaCBpbmNsdWRlIHRoZSBCUEZfRkVUQ0ggZmxhZy4gIFRoZSBr
-ZXJuZWwncyBhdG9taWNfY21weGNoZw0KPiBvcGVyYXRpb24gZnVuZGFtZW50YWxseSBoYXMgMyBv
-cGVyYW5kcywgYnV0IHdlIG9ubHkgaGF2ZSB0d28gcmVnaXN0ZXINCj4gZmllbGRzLiBUaGVyZWZv
-cmUgdGhlIG9wZXJhbmQgd2UgY29tcGFyZSBhZ2FpbnN0ICh0aGUga2VybmVsJ3MgQVBJDQo+IGNh
-bGxzIGl0ICdvbGQnKSBpcyBoYXJkLWNvZGVkIHRvIGJlIEJQRl9SRUdfUjAuIEFsc28sIGtlcm5l
-bCdzDQo+IGF0b21pY19jbXB4Y2hnIHJldHVybnMgdGhlIHByZXZpb3VzIHZhbHVlIGF0IGRzdF9y
-ZWcgKyBvZmYuIEpJVCB0aGUNCj4gc2FtZSBmb3IgQlBGIHRvbyB3aXRoIHJldHVybiB2YWx1ZSBw
-dXQgaW4gQlBGX1JFR18wLg0KPiANCj4gICAgQlBGX1JFR19SMCA9IGF0b21pY19jbXB4Y2hnKGRz
-dF9yZWcgKyBvZmYsIEJQRl9SRUdfUjAsIHNyY19yZWcpOw0KDQoNCkFoLCBub3cgd2UgbWl4IHRo
-ZSB4Y2hnJ3Mgd2l0aCB0aGUgYml0d2lzZSBvcGVyYXRpb25zLiBPayBJIHVuZGVyc3RhbmQgDQpi
-ZXR0ZXIgdGhhdCBnb3RvIGF0b21pY19vcHMgaW4gdGhlIHByZXZpb3VzIHBhdGNoIHRoZW4uIEJ1
-dCBpdCBub3cgDQpiZWNvbWVzIHVuZWFzeSB0byByZWFkIGFuZCBmb2xsb3cuDQoNCkkgdGhpbmsg
-aXQgd291bGQgYmUgY2xlYW5lciB0byBzZXBhcmF0ZSBjb21wbGV0ZWx5IHRoZSBiaXR3aXNlIA0K
-b3BlcmF0aW9ucyBhbmQgdGhpcywgZXZlbiBpZiBpdCBkdXBsaWNhdGVzIGhhbGYgYSBkb3plbiBv
-ZiBsaW5lcy4NCg0KPiANCj4gU2lnbmVkLW9mZi1ieTogSGFyaSBCYXRoaW5pIDxoYmF0aGluaUBs
-aW51eC5pYm0uY29tPg0KPiAtLS0NCj4gICBhcmNoL3Bvd2VycGMvbmV0L2JwZl9qaXRfY29tcDMy
-LmMgfCAxNyArKysrKysrKysrKysrKysrKw0KPiAgIDEgZmlsZSBjaGFuZ2VkLCAxNyBpbnNlcnRp
-b25zKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvYXJjaC9wb3dlcnBjL25ldC9icGZfaml0X2NvbXAz
-Mi5jIGIvYXJjaC9wb3dlcnBjL25ldC9icGZfaml0X2NvbXAzMi5jDQo+IGluZGV4IDU2MDRhZTFi
-NjBhYi4uNDY5MGZkNmU5ZTUyIDEwMDY0NA0KPiAtLS0gYS9hcmNoL3Bvd2VycGMvbmV0L2JwZl9q
-aXRfY29tcDMyLmMNCj4gKysrIGIvYXJjaC9wb3dlcnBjL25ldC9icGZfaml0X2NvbXAzMi5jDQo+
-IEBAIC04MjksNiArODI5LDIzIEBAIGludCBicGZfaml0X2J1aWxkX2JvZHkoc3RydWN0IGJwZl9w
-cm9nICpmcCwgdTMyICppbWFnZSwgc3RydWN0IGNvZGVnZW5fY29udGV4dCAqDQo+ICAgCQkJCS8q
-IHdlJ3JlIGRvbmUgaWYgdGhpcyBzdWNjZWVkZWQgKi8NCj4gICAJCQkJUFBDX0JDQ19TSE9SVChD
-T05EX05FLCB0bXBfaWR4KTsNCj4gICAJCQkJYnJlYWs7DQo+ICsJCQljYXNlIEJQRl9DTVBYQ0hH
-Og0KPiArCQkJCS8qIENvbXBhcmUgd2l0aCBvbGQgdmFsdWUgaW4gQlBGX1JFR18wICovDQo+ICsJ
-CQkJRU1JVChQUENfUkFXX0NNUFcoYnBmX3RvX3BwYyhCUEZfUkVHXzApLCBfUjApKTsNCj4gKwkJ
-CQkvKiBEb24ndCBzZXQgaWYgZGlmZmVyZW50IGZyb20gb2xkIHZhbHVlICovDQo+ICsJCQkJUFBD
-X0JDQ19TSE9SVChDT05EX05FLCAoY3R4LT5pZHggKyAzKSAqIDQpOw0KPiArCQkJCWZhbGx0aHJv
-dWdoOw0KPiArCQkJY2FzZSBCUEZfWENIRzoNCj4gKwkJCQkvKiBzdG9yZSBuZXcgdmFsdWUgKi8N
-Cj4gKwkJCQlFTUlUKFBQQ19SQVdfU1RXQ1goc3JjX3JlZywgdG1wX3JlZywgZHN0X3JlZykpOw0K
-PiArCQkJCVBQQ19CQ0NfU0hPUlQoQ09ORF9ORSwgdG1wX2lkeCk7DQo+ICsJCQkJLyoNCj4gKwkJ
-CQkgKiBSZXR1cm4gb2xkIHZhbHVlIGluIHNyY19yZWcgZm9yIEJQRl9YQ0hHICYNCj4gKwkJCQkg
-KiBCUEZfUkVHXzAgZm9yIEJQRl9DTVBYQ0hHLg0KPiArCQkJCSAqLw0KPiArCQkJCUVNSVQoUFBD
-X1JBV19NUihpbW0gPT0gQlBGX1hDSEcgPyBzcmNfcmVnIDogYnBmX3RvX3BwYyhCUEZfUkVHXzAp
-LA0KPiArCQkJCQkJX1IwKSk7DQoNCklmIHRoZSBsaW5lIHNwcmVhZHMgaW50byB0d28gbGluZXMs
-IGNvbXBhY3QgZm9ybSBpcyBwcm9iYWJseSBub3Qgd29ydGggDQppdC4gV291bGQgYmUgbW9yZSBy
-ZWFkYWJsZSBhcw0KDQoJaWYgKGltbSA9PSBCUEZfWENIRykNCgkJRU1JVF9QUENfUkFXX01SKHNy
-Y19yZWcsIF9SMCkpOw0KCWVsc2UNCgkJRU1JVF9QUENfUkFXX01SKHNyY19yZWcsIGJwZl90b19w
-cGMoQlBGX1JFR18wKSkpOw0KDQoNCkF0IHRoZSBlbmQsIGl0J3MgcHJvYmFibHkgZXZlbiBtb3Jl
-IHJlYWRhYmxlIGlmIHlvdSBzZXBhcmF0ZSBib3RoIGNhc2VzIA0KY29tcGxldGVseToNCg0KCWNh
-c2UgQlBGX0NNUFhDSEc6DQoJCS8qIENvbXBhcmUgd2l0aCBvbGQgdmFsdWUgaW4gQlBGX1JFR18w
-ICovDQoJCUVNSVQoUFBDX1JBV19DTVBXKGJwZl90b19wcGMoQlBGX1JFR18wKSwgX1IwKSk7DQoJ
-CS8qIERvbid0IHNldCBpZiBkaWZmZXJlbnQgZnJvbSBvbGQgdmFsdWUgKi8NCgkJUFBDX0JDQ19T
-SE9SVChDT05EX05FLCAoY3R4LT5pZHggKyAzKSAqIDQpOw0KCQkvKiBzdG9yZSBuZXcgdmFsdWUg
-Ki8NCgkJRU1JVChQUENfUkFXX1NUV0NYKHNyY19yZWcsIHRtcF9yZWcsIGRzdF9yZWcpKTsNCgkJ
-UFBDX0JDQ19TSE9SVChDT05EX05FLCB0bXBfaWR4KTsNCgkJLyogUmV0dXJuIG9sZCB2YWx1ZSBp
-biBCUEZfUkVHXzAgKi8NCgkJRU1JVF9QUENfUkFXX01SKHNyY19yZWcsIGJwZl90b19wcGMoQlBG
-X1JFR18wKSkpOw0KCQlicmVhazsNCgljYXNlIEJQRl9YQ0hHOg0KCQkvKiBzdG9yZSBuZXcgdmFs
-dWUgKi8NCgkJRU1JVChQUENfUkFXX1NUV0NYKHNyY19yZWcsIHRtcF9yZWcsIGRzdF9yZWcpKTsN
-CgkJUFBDX0JDQ19TSE9SVChDT05EX05FLCB0bXBfaWR4KTsNCgkJLyogUmV0dXJuIG9sZCB2YWx1
-ZSBpbiBzcmNfcmVnICovDQoJCUVNSVRfUFBDX1JBV19NUihzcmNfcmVnLCBfUjApKTsNCgkJYnJl
-YWs7DQoNCg0KPiArCQkJCWJyZWFrOw0KPiAgIAkJCWRlZmF1bHQ6DQo+ICAgCQkJCXByX2Vycl9y
-YXRlbGltaXRlZCgiZUJQRiBmaWx0ZXIgYXRvbWljIG9wIGNvZGUgJTAyeCAoQCVkKSB1bnN1cHBv
-cnRlZFxuIiwNCj4gICAJCQkJCQkgICBjb2RlLCBpKTs=
+
+Hi Mark, all,
+
+Sorry for sending an RFC without actual patches. What I am about to propose
+would require a lot of work, and I am sure I will not get it right without
+first asking for comments. I also assume that I might not be the only one
+asking/proposing this, and may ignore the existence of discussions that may
+have happened in the past. If I am committing a crime, please accept my
+apologies and let me know.
+
+TL;DR: drivers/spi/spi.c API has too much overhead for some use cases.
+
+1. How did I get here?
+----------------------
+
+Software involved: Linux v5.18-rc1:
+ drivers/spi/spi.c
+ drivers/spi/spi-imx.c (note in text for extra patches)
+ drivers/net/can/spi/mcp251xfd/*
+
+Hardware involved:
+ i.MX8MP SoC with external SPI CAN controller MCP2518FD.
+
+Using an i.MX8MP SoC with an external CAN interface via SPI, the mcp2518fd
+controller, I noticed suspiciously high latency when running a simple tool that
+would just echo CAN messages back. After applying Marc Kleine-Budde's patches
+here [1], things got a lot better, but I was already looking too close.
+Analyzing the SPI/CAN timing on a scope, I noticed at first a big delay from
+CS to the start of the actual SPI transfer and started digging to find out
+what caused this delay.
+
+2. What did I do?
+-----------------
+
+Looking at spi.c, I noticed a lot of code that is being executed even for the
+SYNC code-path, that should avoid the workqueue, doing statistics mainly,
+involving quite a few spinlocks. I wanted to know what the impact of all of
+that code was, so I hacked together a new API postfixed with *_fast that did
+roughly the same as the spi_sync_* API, but without all of this accounting
+code. Specifically, I created substitutes for the following functions, which
+are all SPI API calls used by the MCP2518FD driver:
+
+ spi_sync()
+ spi_sync_transfer()
+ spi_write()
+ spi_write_then_read()
+ spi_async() (replaced with a sync equivalent)
+
+3. Measurement results
+----------------------
+
+I distinguish between 3 different kernels in the following measurement results:
+
+ kernel A: Vanilla Linux 5.18-rc1
+ kernel B: Linux 5.18-rc1 with Marc's polling patches from linux-next applied
+ to spi-imx.c [1]
+ kernel C: Linux 5.18-rc1 with polling patches and hacked *_fast SPI API.
+
+The measurements were conducted by running "canecho.c" [2] on the target
+board, while executing the following command on another machine connected via
+CAN (baud-rate 250kBaud):
+
+$ cangen can0 -g 10 -n 1000 -p 2 -I 0x077 -L 8 -D r
+
+For CPU load measurements, the following command was used instead:
+
+$ cangen can0 -g 0 -n 50000 -p 2 -I 0x077 -L 8 -D r
+
+The machine running cangen is able to load the CAN bus to 100% capacity
+consistently this way.
+
+3.1. SPI signal timing measurements
+
+Scope images are available on request.
+
+3.1.1. Gap between RX CAN frame EOF and TX echo response SOF:
+
+Kernel A: 380us
+Kernel B: 310us
+Kernel C: 152us
+
+3.1.2. Total time the SPI controller IRQ line is low:
+
+Kernel A: 160us
+Kernel B: 144us
+Kernel C: 55us
+
+3.1.3. Time from SPI CS active to actual start of transfer:
+
+Kernel A: ca. 10us
+Kernel B: 9.8us
+Kernel C: 2.6us
+
+3.1.4. Time of CS high between 1st and 2nd SPI sync access from IRQ thread:
+
+kernel A: ca 25us
+kernel B: ca 30us
+kernel C: 5us
+
+3.2. CPU usage measurements with 100% bus load running canecho at 250kBaud:
+
+kernel A: 13.3% [irq/210-spi2.0], 78.5% idle
+kernel B: 10.2% [irq/210-spi2.0], 81.6% idle
+kernel C: 4.4%  [irq/210-spi2.0], 92.9% idle
+
+Overall performance improvements from kernel B to kernel C:
+
+CAN message round trip time: 50% faster
+CPU load: 61% less
+
+4. Rationale
+------------
+
+There are many use-cases for SPI in the Linux kernel, and they all have
+special requirements and trade-offs: On one side one wants to transfer large
+amount of data to the peripheral efficiently (FLASH memory) and without
+blocking. On the opposite side there is the need to modify registers in a
+SPI-mapped peripheral, ideally using regmap.
+There are two APIs already: sync and async, that should cover these use-cases.
+Unfortunately both share a large portion of the code path, which causes the
+sync use-case for small, fast register manipulation to be bogged down by all
+the accounting and statistics code. There's also sometimes memcpy()'s involved
+to put buffers into DMA space (driver dependent), even though DMA isn't used.
+
+So a "peripheral" driver (the P from SPI coincidentally), that accesses a
+SPI-based regmap doing register manipulation, leading to several very short
+and small, fast transfers end's up with an unreasonable CPU load and access
+latency, even when using the *sync* API.
+
+Assuming the *sync* API cannot be changed, this leads to the need to introduce
+a new API optimized specifically for this use-case. IMHO it is also reasonable
+to say that when accessing registers on a peripheral device, the whole
+statistics and accounting machinery in spi.c isn't really so valuable, and
+definitely not worth its overhead in a production system.
+
+5. Details of the SPI transfers involved
+----------------------------------------
+
+The MCP2518FD CAN driver does a series of small SPI transfers when running a
+single CAN message from cangen to canecho and back:
+
+ 1. CAN message RX, IRQ line asserted
+ 2. Hard IRQ empty, starts IRQ thread
+ 3. IRQ thread interrogates MCP2518FD via register access:
+ 3.1. SPI transfer 1: CS low, 72bit xfer, CS high
+ 3.2. SPI transfer 2: CS low, 200bit xfer, CS high
+ 3.3. SPI transfer 3: CS low, 72bit xfer, CS high
+ 3.4. SPI transfer 4: CS low, 104bit xfer, CS high
+ 4. IRQ thread ended, RX message gets delivered to user-space
+ 5. canecho.c recv()
+ 6. canecho.c send()
+ 7. TX message gets delivered to CAN driver
+ 8. CAN driver does spi_async to queue 2 xfers (replace by spi_sync equivalent
+ in kernel C):
+ 8.1. SPI message 1: CS low, 168bit xfer, CS high, CS low, 48bit xfer, CS high
+ 9. CAN message SOF starts appearing on the bus just before last CS high.
+
+6. Some regions of code that were inspected
+-------------------------------------------
+
+The code in spi.c that gets executed contains a lot of ifs and foresees a lot
+of different situations, so it might not be trivial to look at a single place
+and find a smoking gun. It is more the sum of everything that just takes a
+long time to execute, even on this relatively fast ARM Cortex-A53 running at
+1.2GHz.
+Some places I tried to single out:
+
+6.1. Accounting spinlocks:
+
+Spinlocks are supposed to be fast, especially for the case that they are not
+contested, but in such critical paths their impact shouldn't be neglected.
+
+SPI_STATISTICS_ADD_TO_FIELD: This macro defined in spi.h has a spinlock, and
+it is used 4 times directly in __spi_sync(). It is also used in
+spi_transfer_one_message() which is called from there. Removing the spinlocks
+(thus introducing races) makes the code measurably faster (several us).
+
+spi_statistics_add_transfer_stats(): Called twice from
+spi_transfer_one_message(), and also contains a spinlock. Removing these again
+has a measurable impact of several us.
+
+6.2. Misc other places:
+
+ptp_read_system_prets(): Called once, since the hardware lacks a usable TS
+counter. Removing this did not have a significant impact, although it was
+still detectable, but barely so.
+
+spi_set_cs(): Removing all delay code and leaving the bare minimum for GPIO
+based CS activation again has a measurable impact. Most (all?) simple SPI
+peripheral chips don't have any special CS->clock->CS timing requirements, so
+it might be a good idea to have a simpler version of this function.
+
+7. Requirements and compromises for the new API
+-----------------------------------------------
+
+Since this hypothetical new API would be used only for very short, very fast
+transfers where latency and overhead should be minimized, the best way to do
+it is obviate all scheduling work and do it strictly synchronous and based on
+polling. The context switch of even a hard-IRQ can quickly cost a lot more CPU
+cycles than busy waiting for 48 bits to be shifted through the transmitter at
+20+MHz clock. This requires that SPI drivers offer low-level functions that do
+such simple transfers on polling basis. The patches [1] from Marc Kleine-Budde
+already do this, but it is the SPI driver that choses whether to use polling or
+IRQ based transfers based on heuristics calculating the theoretical transfer
+time given the clock frequency and its size. While it improves the performance
+in a lot of cases already, peripheral drivers have no choice but to still go
+through all the heavy code in spi.c.
+Since these are low-latency applications, chances are very high that the
+hardware is also designed for low-latency access, which implies that CS
+control via GPIO most probably uses local GPIO controllers instead of I2C GPIO
+expanders for example, so CS access can be assumed to be fast and direct and
+not involve any context switches. It could be argued that it might even be
+beneficial to have an API that can be called from hard IRQ context, but
+experiments in this case showed that the gain of doing the CAN message read
+out directly in hard-IRQ and removing the IRQ thread is minimal. But better
+use-cases could be conceived, so this possibility might need consideration
+also.
+Obviously all statistics accounting should be skipped for this API, since it
+simply impacts performance far too much.
+Care should be taken to solve locking in such a way, that it doesn't impact
+performance for the fast API, while still allowing safe concurrency with
+spi_sync and spi_async. I did not go as far as to solve this issue. I just
+used a simple spinlock and carefully avoided using any call to the old API for
+doing these proof-of-concept measurements.
+
+8. Conclusion
+-------------
+
+Performance of spi.c API for the specified use-cases is not ideal.
+Unfortunately there is no single smoking gun to be pointed at, but instead
+many different bits which are not needed for the given use-case that add to
+the bloat and ultimately have a big combined performance impact.
+The stated usage scenario is fairly common in the Linux kernel. A simple
+investigation counted 60+ IIO drivers and 9 input drivers alone that use
+spi_sync*() for example, up to a total of 171 .c files. In contrast only 11 .c
+files use the spi_async*() calls. This does not account for all users of
+regmap_spi.
+Due to this, IMHO one can ask for a better, simpler, more efficient API for
+these use-cases, am I want to propose to create it.
+
+Thanks a lot if you read this far. Please let me know if such a thing is even
+thinkable in mainline Linux.
+
+
+[1] https://lore.kernel.org/all/20220502175457.1977983-9-mkl@pengutronix.de/
+[2] https://github.com/linux-can/can-tests/blob/master/raw/canecho.c
+
+Best regards,
+
+-- 
+David Jander
+Protonic Holland.
+
