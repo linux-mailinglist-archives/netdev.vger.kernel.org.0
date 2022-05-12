@@ -2,99 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80BE8525759
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 23:50:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A153525757
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 23:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358914AbiELVu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 17:50:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36746 "EHLO
+        id S1358922AbiELVu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 17:50:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358913AbiELVuZ (ORCPT
+        with ESMTP id S1358915AbiELVuZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 17:50:25 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3D664B1C7
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 14:50:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652392223; x=1683928223;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gcfzZ3fpl14cUvzl9ndtmSAWGzZi2hTfIUfuJ5kfmq4=;
-  b=SPbG/aKSb5LSMA/HaABsSkf49d5m+Blc3QmBXcHggdjr3Bd3RF79hmJJ
-   /YtUfj9VV3+Ccz4ntNC5QN9fJhnWxb2Qh+F2iC2K7BvDvcTi/WUBB3T9N
-   iIFoRVqcXlHam5IdFmYXQWRMZIqoDumKAAS+Kqga8DEGXuPYBizsDLm+A
-   QtX5ZHOY2F6FKaBptz40dPtEf0Cuk0HkT/hJ4z2+Ebp2AqzWqn5RWJ2cH
-   8H3hmT45FjA/O+3NY0NdLFYYf4IbzDSfaXkjG7i0H9CC/Z2gB/GFPvWQE
-   bV/zNeeRwlQtGrxnFj5BjxAuhOt7nAgTQlyus3IBzWpTnQIOkvit2nZHW
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="257689569"
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="257689569"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 14:50:22 -0700
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="658813593"
-Received: from ccmincem-mobl1.amr.corp.intel.com (HELO kdpelton-desk.amr.corp.intel.com) ([10.212.163.26])
-  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 14:50:20 -0700
-From:   Kyle Pelton <kyle.d.pelton@linux.intel.com>
-To:     netdev@vger.kernel.org, davem@davemloft.net, hayeswang@realtek.com,
-        aaron.ma@canonical.com
-Cc:     Kyle Pelton <kyle.d.pelton@linux.intel.com>
-Subject: [PATCH] net: usb: r8152: Set default WOL options
-Date:   Thu, 12 May 2022 14:50:13 -0700
-Message-Id: <20220512215013.230647-1-kyle.d.pelton@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E6249F94;
+        Thu, 12 May 2022 14:50:24 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 73894B82B9D;
+        Thu, 12 May 2022 21:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 04193C34100;
+        Thu, 12 May 2022 21:50:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652392222;
+        bh=ukC2TkV3m/5BoYkGkPmQ7P8sXWSu20o32d8ZWw030Rc=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=sXAzJNnytvKUE4bN5sMjKtNuRFEu/GHcbsWTaSF0PqccQaUcUHtpC/UlCXEDdH+sw
+         m3VJkeqM2nQC0W4PU6mcRZfFF/JHDtq+WJm8g594L7ine5WRFK5xbLVBq7bMJYigsi
+         DH0YVCpG9LBl9CXkDr7T04YFBYd6g7/Bx3xZ53WNRy+BeRZPBr0WKZ/mgMJVlP3iuC
+         oxJe/S6VkFlnTjFvAAZ4CICmUDB8SFIyShONtJU7V+VkVqLKw0J3jDV5W4q7PBugxQ
+         +W7IE+OSLvrfFwQssBGHSC66SBCOshvaxbNqnrtRL8dlt/3UH2hayRvVF3rzdILDVd
+         zf8nD8gCV/8pg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DBCD9F03935;
+        Thu, 12 May 2022 21:50:21 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [GIT PULL] Networking for 5.18-rc7
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165239222189.26664.10781901289968383138.git-patchwork-notify@kernel.org>
+Date:   Thu, 12 May 2022 21:50:21 +0000
+References: <20220512183952.3455585-1-kuba@kernel.org>
+In-Reply-To: <20220512183952.3455585-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set default wake-on-lan options on probe to avoid state from previous
-boot.
+Hello:
 
-Fixes issue on some boots where wake-on-lan settings are incorrectly set
-due to previous runtime-suspend activity. This causes spurious wakeups
-while in suspend.
+This pull request was applied to netdev/net.git (master)
+by Linus Torvalds <torvalds@linux-foundation.org>:
 
-Signed-off-by: Kyle Pelton <kyle.d.pelton@linux.intel.com>
----
- drivers/net/usb/r8152.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+On Thu, 12 May 2022 11:39:52 -0700 you wrote:
+> Hi Linus!
+> 
+> The following changes since commit 68533eb1fb197a413fd8612ebb88e111ade3beac:
+> 
+>   Merge tag 'net-5.18-rc6' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2022-05-05 09:45:12 -0700)
+> 
+> are available in the Git repository at:
+> 
+> [...]
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index ee41088c5251..a2b3c398beee 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -3269,6 +3269,7 @@ static int rtl8152_set_features(struct net_device *dev,
- }
- 
- #define WAKE_ANY (WAKE_PHY | WAKE_MAGIC | WAKE_UCAST | WAKE_BCAST | WAKE_MCAST)
-+#define WAKE_DEFAULT (WAKE_PHY << 5)
- 
- static u32 __rtl_get_wol(struct r8152 *tp)
- {
-@@ -9717,10 +9718,12 @@ static int rtl8152_probe(struct usb_interface *intf,
- 
- 	intf->needs_remote_wakeup = 1;
- 
--	if (!rtl_can_wakeup(tp))
-+	if (!rtl_can_wakeup(tp)) {
- 		__rtl_set_wol(tp, 0);
--	else
-+	} else {
-+		__rtl_set_wol(tp, WAKE_DEFAULT);
- 		tp->saved_wolopts = __rtl_get_wol(tp);
-+	}
- 
- 	tp->rtl_ops.init(tp);
- #if IS_BUILTIN(CONFIG_USB_RTL8152)
+Here is the summary with links:
+  - [GIT,PULL] Networking for 5.18-rc7
+    https://git.kernel.org/netdev/net/c/f3f19f939c11
+
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
