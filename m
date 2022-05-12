@@ -2,70 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74EE95246C8
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:21:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D8E5246D5
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:23:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350838AbiELHVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 03:21:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
+        id S1350942AbiELHXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 03:23:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350931AbiELHVG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:21:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F12A61AD90
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:21:03 -0700 (PDT)
+        with ESMTP id S1350867AbiELHWy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:22:54 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5903F69723
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:22:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652340062;
+        s=mimecast20190719; t=1652340172;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=v7bOQidy2XKacFQoEFC88TIIvZuaoizz8bbPSOsrMVU=;
-        b=efNDyvHsuWYCRwkqcw5i1p+edZkOtDnQ6xndvyRLBM+PDIhtTMaR/8mXvY653J2xqLXebs
-        RtdBASBXBcD1knWLF/maDjYZfyko+OaxYtl6cRm8IvmIsK/4RWNydVykZsjxJRwgNU4LVR
-        1gKDQF2jzoECNalHHH/g7m8LZKBfMbc=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=kseTB5nEdb0NBMdde4rHbkMWqkdFBH/zYnlVhau93BU=;
+        b=ahcR3uv0SqRmdd2vBNlXfaR9kqK01uZx66qaMDyhaB5ZGI6tHEdrFCy+hbeZV6LGE3n8Y7
+        nClHpV8yQZEvCwz+p9h5RqdvIJBGDwDfVTOzu9P7ocQLwD0GC76PXnlkY3Qlt/F+hincwv
+        G8JBDkoexmki9XaJ4w6+VTYfYdGoKfg=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-265-R9FHAYJDMAyzgcpiYj_S2g-1; Thu, 12 May 2022 03:21:01 -0400
-X-MC-Unique: R9FHAYJDMAyzgcpiYj_S2g-1
-Received: by mail-wm1-f69.google.com with SMTP id p24-20020a1c5458000000b003945d2ffc6eso1288435wmi.5
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:21:01 -0700 (PDT)
+ us-mta-246-c6E2U9rGPlyKtEwMXXXieg-1; Thu, 12 May 2022 03:22:51 -0400
+X-MC-Unique: c6E2U9rGPlyKtEwMXXXieg-1
+Received: by mail-wm1-f70.google.com with SMTP id v191-20020a1cacc8000000b0038ce818d2efso1292190wme.1
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:22:50 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
          :references:user-agent:mime-version:content-transfer-encoding;
-        bh=v7bOQidy2XKacFQoEFC88TIIvZuaoizz8bbPSOsrMVU=;
-        b=3CVrWqb90sdnql/WkVGk18XY0PqOmjT5B2K1OvUwVGM1VXq8YdZb/W6fGcb6g9VnGB
-         lmtcLjfpJMWQ1hMRPwBO5tvAYyVdhTMkSiVPv9eOuTvawrbmrH5sCKPN7zJxpQUqX9C/
-         YuTguJEhddjYOg3hTg5V7ek4/0pkaUAtpNawYmIwhweTR7GRXeH/XwRCDKZVQ1ZcbIBj
-         KsFeTDoZO/uBwzTGu37wrTYJ+bSvbIWFlCSnCQvtFX/u0wJLCFVQusc40Sv7of6UhtVc
-         Gbf4fJCmQPmBwu/FC9z4bxb5258iL/TMHodSnJvGB6TIOfQPu6yfLD9Rc/2jh10lwaC2
-         QKyQ==
-X-Gm-Message-State: AOAM531LjKH9HvUHJv6O3RNQ/1pnXKqqXV9adcPwGpe93HYtaWwcgztQ
-        ozGfcysMialn/xlkY5hVPIyKfb5uTTrP5PH+TUmV6qt/borWMgcKZFsSHTHF3JtkxaEIImf3Ic3
-        zpC1AEdqXvKV2R2/p
-X-Received: by 2002:a05:600c:4ba1:b0:394:9ae3:ee98 with SMTP id e33-20020a05600c4ba100b003949ae3ee98mr8594965wmp.160.1652340060399;
-        Thu, 12 May 2022 00:21:00 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwkID2x3/1z0/wYtZX175tGSUkmgETVETXT7EhcZbVjxfbCqFPAOMIbsG17vOktA4lTMY16mg==
-X-Received: by 2002:a05:600c:4ba1:b0:394:9ae3:ee98 with SMTP id e33-20020a05600c4ba100b003949ae3ee98mr8594952wmp.160.1652340060137;
-        Thu, 12 May 2022 00:21:00 -0700 (PDT)
+        bh=kseTB5nEdb0NBMdde4rHbkMWqkdFBH/zYnlVhau93BU=;
+        b=LN6fiIFRfNqLhYVAHn+/WEcNmU/9KWpDDHGxMDUbdfOGMSSF2xLaJitQxvX//NK9Nq
+         l3X49Dp3lNFzrpqu0UXmwMmjjH+uKrBN/gL/nMiGK664V+mOxNT37ruQ/YjTCkpyLChS
+         qcPY7SJ9kAgF49Gu8SfzITKGp4x7IdBqPvAhwxpaa+vtg+GENsoPWxascseie5d/xblv
+         zlQ25dQG5DhQAI9C+anL7OSrfYzv7GdoukQEhXgWtQyq15n3kd8FpHTQb/UZ23y0WriM
+         H5SzoaoV/LXDAdcRVl7iSi6nQdGKQHwtvZEApPuIWMg2tf5h8CRNeWyoNLdjskYOipct
+         rLAA==
+X-Gm-Message-State: AOAM530/4NYm+ZigCuDHlugBr7ga1RDPk7/v5h+ULdJmi0c53Vc7Nd+l
+        4ust19nvbEpGRFDQDEmvhLqe3+8FLlGXbZIfioeayKUhAQI6jt+mAqeaTi0tbxwU5cIhvU1NCTB
+        LTU0SqeqVV94teoCK
+X-Received: by 2002:a05:600c:5008:b0:394:533c:54a1 with SMTP id n8-20020a05600c500800b00394533c54a1mr8661637wmr.15.1652340169935;
+        Thu, 12 May 2022 00:22:49 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzfDIyJS163A7troAixDhGyY3D0Z1myKH8iDS+VN/nsVAAT0KBLGPCXQS7L9r7bFwizbHtLgA==
+X-Received: by 2002:a05:600c:5008:b0:394:533c:54a1 with SMTP id n8-20020a05600c500800b00394533c54a1mr8661622wmr.15.1652340169675;
+        Thu, 12 May 2022 00:22:49 -0700 (PDT)
 Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
-        by smtp.gmail.com with ESMTPSA id l16-20020a5d4bd0000000b0020c5253d8d8sm4000061wrt.36.2022.05.12.00.20.59
+        by smtp.gmail.com with ESMTPSA id r5-20020adfdc85000000b0020c5253d8d2sm3279125wrj.30.2022.05.12.00.22.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 00:20:59 -0700 (PDT)
-Message-ID: <87124d7a213f14eec98bbeb80836c20ea1a33352.camel@redhat.com>
-Subject: Re: [PATCH v2] drivers: net: vmxnet3: fix possible use-after-free
- bugs in vmxnet3_rq_alloc_rx_buf()
+        Thu, 12 May 2022 00:22:49 -0700 (PDT)
+Message-ID: <dd7641f326b63211c3a749341e905cca90c9e124.camel@redhat.com>
+Subject: Re: [PATCH v2]  drivers: net: vmxnet3: fix possible NULL pointer
+ dereference in vmxnet3_rq_cleanup()
 From:   Paolo Abeni <pabeni@redhat.com>
 To:     Zixuan Fu <r33s3n6@gmail.com>, doshir@vmware.com,
         pv-drivers@vmware.com, davem@davemloft.net, edumazet@google.com,
         kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         baijiaju1990@gmail.com, TOTE Robot <oslab@tsinghua.edu.cn>
-Date:   Thu, 12 May 2022 09:20:58 +0200
-In-Reply-To: <20220510131716.929387-1-r33s3n6@gmail.com>
-References: <20220510131716.929387-1-r33s3n6@gmail.com>
+Date:   Thu, 12 May 2022 09:22:48 +0200
+In-Reply-To: <20220510131727.929547-1-r33s3n6@gmail.com>
+References: <20220510131727.929547-1-r33s3n6@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
@@ -80,70 +80,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
-
 On Tue, 2022-05-10 at 21:17 +0800, Zixuan Fu wrote:
-> In vmxnet3_rq_alloc_rx_buf(), when dma_map_single() fails, rbi->skb is
-> freed immediately. Similarly, in another branch, when dma_map_page() fails,
-> rbi->page is also freed. In the two cases, vmxnet3_rq_alloc_rx_buf()
-> returns an error to its callers vmxnet3_rq_init() -> vmxnet3_rq_init_all()
-> -> vmxnet3_activate_dev(). Then vmxnet3_activate_dev() calls
-> vmxnet3_rq_cleanup_all() in error handling code, and rbi->skb or rbi->page
-> are freed again in vmxnet3_rq_cleanup_all(), causing use-after-free bugs.
+> In vmxnet3_rq_create(), when dma_alloc_coherent() fails, 
+> vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
+> vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
+> -> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls 
+> vmxnet3_force_close() -> dev_close() in error handling code. And the driver
+> calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
+> -> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(), 
+> rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
+> a NULL pointer dereference.
 > 
-> To fix these possible bugs, rbi->skb and rbi->page should be cleared after
-> they are freed.
+> To fix this possible bug, an if statement is added to check whether 
+> rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
 > 
 > The error log in our fault-injection testing is shown as follows:
 > 
-> [   14.319016] BUG: KASAN: use-after-free in consume_skb+0x2f/0x150
+> [   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
 > ...
-> [   14.321586] Call Trace:
+> [   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
 > ...
-> [   14.325357]  consume_skb+0x2f/0x150
-> [   14.325671]  vmxnet3_rq_cleanup_all+0x33a/0x4e0 [vmxnet3]
-> [   14.326150]  vmxnet3_activate_dev+0xb9d/0x2ca0 [vmxnet3]
-> [   14.326616]  vmxnet3_open+0x387/0x470 [vmxnet3]
+> [   65.227977] Call Trace:
 > ...
-> [   14.361675] Allocated by task 351:
-> ...
-> [   14.362688]  __netdev_alloc_skb+0x1b3/0x6f0
-> [   14.362960]  vmxnet3_rq_alloc_rx_buf+0x1b0/0x8d0 [vmxnet3]
-> [   14.363317]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-> [   14.363661]  vmxnet3_open+0x387/0x470 [vmxnet3]
-> ...
-> [   14.367309] 
-> [   14.367412] Freed by task 351:
-> ...
-> [   14.368932]  __dev_kfree_skb_any+0xd2/0xe0
-> [   14.369193]  vmxnet3_rq_alloc_rx_buf+0x71e/0x8d0 [vmxnet3]
-> [   14.369544]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
-> [   14.369883]  vmxnet3_open+0x387/0x470 [vmxnet3]
-> [   14.370174]  __dev_open+0x28a/0x420
-> [   14.370399]  __dev_change_flags+0x192/0x590
-> [   14.370667]  dev_change_flags+0x7a/0x180
-> [   14.370919]  do_setlink+0xb28/0x3570
-> [   14.371150]  rtnl_newlink+0x1160/0x1740
-> [   14.371399]  rtnetlink_rcv_msg+0x5bf/0xa50
-> [   14.371661]  netlink_rcv_skb+0x1cd/0x3e0
-> [   14.371913]  netlink_unicast+0x5dc/0x840
-> [   14.372169]  netlink_sendmsg+0x856/0xc40
-> [   14.372420]  ____sys_sendmsg+0x8a7/0x8d0
-> [   14.372673]  __sys_sendmsg+0x1c2/0x270
-> [   14.372914]  do_syscall_64+0x41/0x90
-> [   14.373145]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> [   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
+> [   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
+> [   65.228866]  __dev_close_many+0x288/0x350
+> [   65.229607]  dev_close_many+0xa4/0x480
+> [   65.231124]  dev_close+0x138/0x230
+> [   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
+> [   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
 > ...
 > 
 > Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
 > Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
 
-This looks like targeting the 'net' tree. You should specify that in
-the patch subj. More importantly you should provide a 'Fixes' tag
-pointing to commit introducing the issue.
-
-Please provide a new version addressing the above.
-
-Thanks,
+Same remarks here, please provide a new version with a suitable fixes
+tag, thanks!
 
 Paolo
 
