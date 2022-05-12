@@ -2,60 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 118BA524BED
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 13:43:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58C2E524BFF
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 13:47:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353394AbiELLnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 07:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37560 "EHLO
+        id S1353410AbiELLrj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 07:47:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353390AbiELLnS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 07:43:18 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 563615C378
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 04:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=Zvj2IkZhYmgXT2ru/vacYWt4sfIek4C6ZSW1nkKf0iw=; b=QYNGQ4p3/yzkMgpzP+OKPR6m97
-        5xcSE/nw2+eet7YOgeT4Nhk4Sa73LCxxIjPG7irxqPUQwJOd7ZzCWpwC/HA0GZ+VeQkrJfVPsiPHv
-        UU7A8XLPqv03iAqqMKWZN4SyP53E0P9R6tHiTtrIh64O8NnvddSetWAP3lu3Ul4Ebl9A=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1np7Dt-002Rbz-6p; Thu, 12 May 2022 13:43:13 +0200
-Date:   Thu, 12 May 2022 13:43:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 14/14] net: txgbe: Support sysfs file system
-Message-ID: <Ynzy0ZOJh68nI3dx@lunn.ch>
-References: <20220511032659.641834-1-jiawenwu@trustnetic.com>
- <20220511032659.641834-15-jiawenwu@trustnetic.com>
+        with ESMTP id S1353404AbiELLri (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 07:47:38 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 95F734A3EE;
+        Thu, 12 May 2022 04:47:36 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.91,219,1647270000"; 
+   d="scan'208";a="120774498"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 12 May 2022 20:47:36 +0900
+Received: from localhost.localdomain (unknown [10.226.93.50])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 16BFC4006191;
+        Thu, 12 May 2022 20:47:29 +0900 (JST)
+From:   Phil Edworthy <phil.edworthy@renesas.com>
+To:     Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     Phil Edworthy <phil.edworthy@renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Chris Paterson <Chris.Paterson2@renesas.com>,
+        Magnus Damm <magnus.damm@gmail.com>, linux-clk@vger.kernel.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v4 0/5] Add Renesas RZ/V2M Ethernet support
+Date:   Thu, 12 May 2022 12:47:17 +0100
+Message-Id: <20220512114722.35965-1-phil.edworthy@renesas.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220511032659.641834-15-jiawenwu@trustnetic.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 11, 2022 at 11:26:59AM +0800, Jiawen Wu wrote:
-> Add support for sysfs file system.
+The RZ/V2M Ethernet is very similar to R-Car Gen3 Ethernet-AVB, though
+some small parts are the same as R-Car Gen2.
+Other differences are:
+* It has separate data (DI), error (Line 1) and management (Line 2) irqs
+  rather than one irq for all three.
+* Instead of using the High-speed peripheral bus clock for gPTP, it has
+  a separate gPTP reference clock.
 
-Please always Cc: the hwmon maintainers for hwmon patches.
+v4:
+ * Add clk_disable_unprepare() for gptp ref clk
 
-> +	txgbe_hwmon->device =
-> +			hwmon_device_register(pci_dev_to_dev(adapter->pdev));
+v3:
+ * Really renamed irq_en_dis_regs to irq_en_dis this time
+ * Modified ravb_ptp_extts() to use irq_en_dis
+ * Added Reviewed-by tags
 
-I _think_ the preferred interface is
-hwmon_device_register_with_groups() or
-hwmon_device_register_with_info(). The hwmon maintainer will tell you.
+v2:
+ * Just net patches in this series
+ * Instead of reusing ch22 and ch24 interrupt names, use the proper names
+ * Renamed irq_en_dis_regs to irq_en_dis
+ * Squashed use of GIC reg versus GIE/GID and got rid of separate gptp_ptm_gic feature.
+ * Move err_mgmt_irqs code under multi_irqs
+ * Minor editing of the commit msgs
 
-	Andrew
+
+Phil Edworthy (5):
+  dt-bindings: net: renesas,etheravb: Document RZ/V2M SoC
+  ravb: Separate handling of irq enable/disable regs into feature
+  ravb: Support separate Line0 (Desc), Line1 (Err) and Line2 (Mgmt) irqs
+  ravb: Use separate clock for gPTP
+  ravb: Add support for RZ/V2M
+
+ .../bindings/net/renesas,etheravb.yaml        |  82 +++++++++----
+ drivers/net/ethernet/renesas/ravb.h           |   6 +
+ drivers/net/ethernet/renesas/ravb_main.c      | 109 ++++++++++++++++--
+ drivers/net/ethernet/renesas/ravb_ptp.c       |   6 +-
+ 4 files changed, 168 insertions(+), 35 deletions(-)
+
+-- 
+2.34.1
+
