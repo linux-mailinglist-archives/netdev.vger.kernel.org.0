@@ -2,115 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDC2C52477D
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:58:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3B1F524780
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:59:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351266AbiELH6S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 03:58:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35436 "EHLO
+        id S1351270AbiELH7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 03:59:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241283AbiELH6R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:58:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A80436899C
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:58:16 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1np3i7-0001Rg-3t; Thu, 12 May 2022 09:58:11 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id D10C37C670;
-        Thu, 12 May 2022 07:58:08 +0000 (UTC)
-Date:   Thu, 12 May 2022 09:58:08 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Jander <david@protonic.nl>
-Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
-Message-ID: <20220512075808.urlptf4d3wiu4kwh@pengutronix.de>
-References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
- <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net>
- <20220511132421.7o5a3po32l3w2wcr@pengutronix.de>
- <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
- <002d234f-a7d6-7b1a-72f4-157d7a283446@hartkopp.net>
- <20220511145437.oezwkcprqiv5lfda@pengutronix.de>
- <3c6bf83c-0d91-ea43-1a5d-27df7db1fb08@hartkopp.net>
- <f6cb7e44-226b-cffb-d907-9014075cdcb5@hartkopp.net>
+        with ESMTP id S1351196AbiELH7K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:59:10 -0400
+Received: from mxout02.lancloud.ru (mxout02.lancloud.ru [45.84.86.82])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7640168318;
+        Thu, 12 May 2022 00:59:07 -0700 (PDT)
+Received: from LanCloud
+DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru 4A00E20566BC
+Received: from LanCloud
+Received: from LanCloud
+Received: from LanCloud
+Subject: Re: [PATCH v3 4/5] ravb: Use separate clock for gPTP
+To:     Paolo Abeni <pabeni@redhat.com>,
+        Phil Edworthy <phil.edworthy@renesas.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Eric Dumazet" <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        <netdev@vger.kernel.org>, <linux-renesas-soc@vger.kernel.org>
+References: <20220510090336.14272-1-phil.edworthy@renesas.com>
+ <20220510090336.14272-5-phil.edworthy@renesas.com>
+ <041789819aa163907ef27fed537dfca16d293f4d.camel@redhat.com>
+From:   Sergey Shtylyov <s.shtylyov@omp.ru>
+Organization: Open Mobile Platform
+Message-ID: <99c49555-8dc6-5eaa-4f1b-b2d17562ddf4@omp.ru>
+Date:   Thu, 12 May 2022 10:59:02 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7ajn64kwg73u2oir"
-Content-Disposition: inline
-In-Reply-To: <f6cb7e44-226b-cffb-d907-9014075cdcb5@hartkopp.net>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <041789819aa163907ef27fed537dfca16d293f4d.camel@redhat.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [192.168.11.198]
+X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
+ LFEX1907.lancloud.ru (fd00:f066::207)
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 5/12/22 10:02 AM, Paolo Abeni wrote:
 
---7ajn64kwg73u2oir
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+>> RZ/V2M has a separate gPTP reference clock that is used when the
+>> AVB-DMAC Mode Register (CCC) gPTP Clock Select (CSEL) bits are
+>> set to "01: High-speed peripheral bus clock".
+>> Therefore, add a feature that allows this clock to be used for
+>> gPTP.
+>>
+>> Signed-off-by: Phil Edworthy <phil.edworthy@renesas.com>
+>> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+>> Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-On 12.05.2022 08:23:26, Oliver Hartkopp wrote:
-> > > > > BTW: There is a bug with interfaces that don't support IFF_ECHO.
-> > > > >=20
-> > > > > Assume an invalid CAN frame is passed to can_send() on an
-> > > > > interface that doesn't support IFF_ECHO. The above mentioned
-> > > > > code does happily generate an echo frame and it's send, even
-> > > > > if the driver drops it, due to can_dropped_invalid_skb(dev,
-> > > > > skb).
-> > > > >=20
-> > > > > The echoed back CAN frame is treated in raw_rcv() as if the
-> > > > > headroom is valid:
+[...]
+>> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+>> index 8ccc817b8b5d..ef6967731263 100644
+>> --- a/drivers/net/ethernet/renesas/ravb_main.c
+>> +++ b/drivers/net/ethernet/renesas/ravb_main.c
+[...]
+>> @@ -2721,6 +2725,15 @@ static int ravb_probe(struct platform_device *pdev)
+>>  	}
+>>  	clk_prepare_enable(priv->refclk);
+>>  
+>> +	if (info->gptp_ref_clk) {
+>> +		priv->gptp_clk = devm_clk_get(&pdev->dev, "gptp");
+>> +		if (IS_ERR(priv->gptp_clk)) {
+>> +			error = PTR_ERR(priv->gptp_clk);
+>> +			goto out_release;
+>> +		}
+>> +		clk_prepare_enable(priv->gptp_clk);
+>> +	}
+>> +
+> 
+> I guess you need to a conditional
+> 
+> 	clk_disable_unprepare(info->gptp_ref_clk)
+> 
+> in the error path? And even in ravb_remove()?
 
-> I double checked that code and when I didn't miss anything all the callers
-> of can_send() (e.g. raw_sendmsg()) are creating valid skbs.
+   Indeed! How could I miss it? :-/
 
-ACK - I haven't checked, but I assume that all current callers of
-can_send() are sound, this I why I started the description with: "Assume
-an invalid CAN frame is passed to can_send()". But we can argue that we
-trust all callers.
+[...]
 
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---7ajn64kwg73u2oir
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmJ8vg0ACgkQrX5LkNig
-0123iAf9ErX08AbRVn9w0Yc3/EK4BXK/wG8D+Qc4T3MK+m6wTUWjEozDpbcdT9Xf
-7KwXqMctUdH/G3YvAHSD0dM0qFv6PL9BSO+Cj7TX2itOe6ME1r2/Ym8fodHtZIv9
-FSfySMHM8/+kN1v2xyfL8VlOsBuaXaQzTHv/Oj+O3cdKZnFS2qG2SFlXhPvmTdLE
-j29aIQakN+nCJCcmXoimM5Bn9DftyXbbNLa14hN93bfNIktuveaKKgSjH36hZ96S
-JjCDRfpG16DnxyYAuk+grsThKZGFeylRtV8TC4E53aumG/zoDNZpmkV+/FtPa/VS
-QoLahTJiU4vJphpbic4F7MHlTwaSFQ==
-=epSY
------END PGP SIGNATURE-----
-
---7ajn64kwg73u2oir--
+MBR, Sergey
