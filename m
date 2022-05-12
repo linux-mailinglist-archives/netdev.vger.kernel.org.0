@@ -2,158 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAB0752583C
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5911E525842
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:28:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359454AbiELX05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 19:26:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46486 "EHLO
+        id S1359469AbiELX2W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 19:28:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359452AbiELX0x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:26:53 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CEC31907
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 16:26:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652398011; x=1683934011;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=y8Kff7elEMZUNQ5A0JvdNuSLQhIb8zXMDvwIJO0oxHs=;
-  b=GkZjmt2SeJ1/tUAkwq6Z6ONIqieFhkujgQVVXfoM8qzCt7g11nrwK9l2
-   F5w6fNs+Qkp7R+iuYNSm6XOqyk2vsBSBF/ZoxDJf01WO6y+MQCNV7iQ6u
-   BZ9i5ZpCROk4BDX0lU6Xnw2yPiWR1PPgiQs3rJ7j5KJucKdjKtF0ZM9C0
-   GKNVnLygaQeykUTdM7dT5fsP8jZrk63zdCVpyGjLDTN4h3umA4OJCZyDF
-   6y+W7TliijvD85wwczXZ6csUD0eGDknDwGPdl9gAFmPqUaEd5rW72+Bl+
-   3+l6glbas8T23eASahLiruBbxHOIWA4FSPslIbBOdujDlofidcl0++Fkm
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="270097025"
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="270097025"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 16:26:48 -0700
-X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="739919555"
-Received: from cmokhtar-mobl1.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.36.250])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 16:26:47 -0700
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, edumazet@google.com, matthieu.baerts@tessares.net,
-        mptcp@lists.linux.dev,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net 2/2] selftests: mptcp: add subflow limits test-cases
-Date:   Thu, 12 May 2022 16:26:42 -0700
-Message-Id: <20220512232642.541301-3-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220512232642.541301-1-mathew.j.martineau@linux.intel.com>
-References: <20220512232642.541301-1-mathew.j.martineau@linux.intel.com>
+        with ESMTP id S1359468AbiELX2W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:28:22 -0400
+Received: from mxd2.seznam.cz (mxd2.seznam.cz [IPv6:2a02:598:2::210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BEB25D5C3;
+        Thu, 12 May 2022 16:28:19 -0700 (PDT)
+Received: from email.seznam.cz
+        by email-smtpc12b.ng.seznam.cz (email-smtpc12b.ng.seznam.cz [10.23.14.105])
+        id 37d74adad37b99e4360aebb4;
+        Fri, 13 May 2022 01:28:09 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=beta;
+        t=1652398089; bh=AN1Ebqidtw04jZtRI8UuItFChCdPVEmjmNzRgnKjwFQ=;
+        h=Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:X-szn-frgn:X-szn-frgc;
+        b=Tk7oTHNnEEeklfYav34ODYOyQmjGVFYqWh064DybJqTGVlRcu9n62DoHObRvu2NFT
+         GgAPNGSgkW+b90MnNEHRigeg5n1Qk55ayv9c4ZRspsmCsh2282Xz0zhkncMWJU7MiO
+         wlkoumAW576tBRkrYAzKV53jHCLJdzcKiWuSE3ec=
+Received: from localhost.localdomain (ip-89-176-234-80.net.upcbroadband.cz [89.176.234.80])
+        by email-relay29.ng.seznam.cz (Seznam SMTPD 1.3.136) with ESMTP;
+        Fri, 13 May 2022 01:28:03 +0200 (CEST)  
+From:   Matej Vasilevski <matej.vasilevski@seznam.cz>
+To:     linux-can@vger.kernel.org, mkl@pengutronix.de,
+        pisa@cmp.felk.cvut.cz
+Cc:     devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        ondrej.ille@gmail.com, martin.jerabek01@gmail.com,
+        matej.vasilevski@seznam.cz
+Subject: [RFC] can: ctucanfd: RX timestamping implementation
+Date:   Fri, 13 May 2022 01:27:04 +0200
+Message-Id: <20220512232706.24575-1-matej.vasilevski@seznam.cz>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-szn-frgn: <b50df9af-4ecf-4bac-a186-9da2c845e65c>
+X-szn-frgc: <0>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+Hello,
 
-Add and delete a bunch of endpoints and verify the
-respect of configured limits.
+I would like to upstream my timestamping patch for CTU CAN FD IP core,
+but I guess it won't be that easy, so this is only an RFC.
 
-This covers the codepath introduced by the previous patch.
+I'm using the timecounter/cyclecounter structures as has been recommended
+(basically copied from the mcp251xfd). But the hard part here is passing
+information to the driver, because the timestaping counter width and
+frequency isn't defined in the IP core specs.
 
-Fixes: 69c6ce7b6eca ("selftests: mptcp: add implicit endpoint test case")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- .../testing/selftests/net/mptcp/mptcp_join.sh | 48 ++++++++++++++++++-
- 1 file changed, 46 insertions(+), 2 deletions(-)
+So currently I take both the counter width and frequency from Device Tree.
+The frequency can be specified in the form of second clock in "clocks"
+property (which seems good to me, because then the timestamping clock
+would be initialized and managed automatically, in case the clock isn't
+the same as the main clock). Or directly in "ts-frequency" property.
+Counter bit width is specified in the "ts-bit-width" property.
+This means that PCI devices currently can't report timestamps (because
+Device Tree isn't used for PCI devices).
+Alternatively, I could use module parameters, but those are frowned
+upon. Module_param also uses static variables, which means one parameter
+would be shared across multiple ctucanfd devices, which isn't great
+either.
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 7314257d248a..48ef112f42c2 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -1444,6 +1444,33 @@ chk_prio_nr()
- 	[ "${dump_stats}" = 1 ] && dump_stats
- }
- 
-+chk_subflow_nr()
-+{
-+	local need_title="$1"
-+	local msg="$2"
-+	local subflow_nr=$3
-+	local cnt1
-+	local cnt2
-+
-+	if [ -n "${need_title}" ]; then
-+		printf "%03u %-36s %s" "${TEST_COUNT}" "${TEST_NAME}" "${msg}"
-+	else
-+		printf "%-${nr_blank}s %s" " " "${msg}"
-+	fi
-+
-+	cnt1=$(ss -N $ns1 -tOni | grep -c token)
-+	cnt2=$(ss -N $ns2 -tOni | grep -c token)
-+	if [ "$cnt1" != "$subflow_nr" -o "$cnt2" != "$subflow_nr" ]; then
-+		echo "[fail] got $cnt1:$cnt2 subflows expected $subflow_nr"
-+		fail_test
-+		dump_stats=1
-+	else
-+		echo "[ ok ]"
-+	fi
-+
-+	[ "${dump_stats}" = 1 ] && ( ss -N $ns1 -tOni ; ss -N $ns1 -tOni | grep token; ip -n $ns1 mptcp endpoint )
-+}
-+
- chk_link_usage()
- {
- 	local ns=$1
-@@ -2556,7 +2583,7 @@ fastclose_tests()
- 	fi
- }
- 
--implicit_tests()
-+endpoint_tests()
- {
- 	# userspace pm type prevents add_addr
- 	if reset "implicit EP"; then
-@@ -2578,6 +2605,23 @@ implicit_tests()
- 			$ns2 10.0.2.2 id 1 flags signal
- 		wait
- 	fi
-+
-+	if reset "delete and re-add"; then
-+		pm_nl_set_limits $ns1 1 1
-+		pm_nl_set_limits $ns2 1 1
-+		pm_nl_add_endpoint $ns2 10.0.2.2 id 2 dev ns2eth2 flags subflow
-+		run_tests $ns1 $ns2 10.0.1.1 4 0 0 slow &
-+
-+		wait_mpj $ns2
-+		pm_nl_del_endpoint $ns2 2 10.0.2.2
-+		sleep 0.5
-+		chk_subflow_nr needtitle "after delete" 1
-+
-+		pm_nl_add_endpoint $ns2 10.0.2.2 dev ns2eth2 flags subflow
-+		wait_mpj $ns2
-+		chk_subflow_nr "" "after re-add" 2
-+		wait
-+	fi
- }
- 
- # [$1: error message]
-@@ -2624,7 +2668,7 @@ all_tests_sorted=(
- 	d@deny_join_id0_tests
- 	m@fullmesh_tests
- 	z@fastclose_tests
--	I@implicit_tests
-+	I@endpoint_tests
- )
- 
- all_tests_args=""
--- 
-2.36.1
+This patch also introduces another Kconfig option:
+CAN_CTUCANFD_PLATFORM_ENABLE_HW_TIMESTAMPS to control whether timestamps
+are enabled by default. I've done this for cases when somebody would
+like to disable timestamping (be it for performance reasons or
+whatever). Seems to me better than having to run some script after
+startup which would disable timestamping. I don't know which tool does
+can do this (ethtool/ip-link?), but I guess it would require the
+.ndo_eth_ioctl callback in the driver.
+
+Looking forward to some comments/feedback.
+
+Thank you, yours sincerely,
+Matej Vasilevski
+
+
 
