@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4025D525013
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 16:34:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82C3852502A
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 16:34:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352822AbiELOdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1344450AbiELOdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 12 May 2022 10:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54134 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355334AbiELOdr (ORCPT
+        with ESMTP id S1355349AbiELOdr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 10:33:47 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25ACA24F0CF;
-        Thu, 12 May 2022 07:33:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD8D825D138;
+        Thu, 12 May 2022 07:33:31 -0700 (PDT)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A35FFFF819;
-        Thu, 12 May 2022 14:33:27 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 0C5D1FF807;
+        Thu, 12 May 2022 14:33:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652366008;
+        t=1652366010;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=FHoEGkhiwRbRsVPuC1ORFUGK/a2x2h+Fwau/qhtF2Lk=;
-        b=PHEF6JxtqEQtHz/bGSFn00C4o860es87RJLw10KiDyXRkvSgMR9Qe/dejM6203Ec2y4dLe
-        9v/ortbZlIu6Q03i2RlUW5j9w5r8d1T383bb0tTk3PQwPgh1+8OMqqTNCAhtxll9AC+h2k
-        /1LgowMOwtSegX2IGx31zuP+ErKPLqmRqP/O2akotkKAwMptv/Bppu/7pSTB/rXbiB2BBb
-        O8xIlvf94uykwAmJEJnPL4j64xJKvASh0pv+X7DzcfJznLK1iTL4maLX+Sx89+CfCqCRud
-        V/Jy2vtSYwzDzFO5+zw7Miq6A/5GK4sSKMxs0ACL1/idyNQ0EZiMUyOfa16b2Q==
+        bh=H1Jk/rGVduymQxyh9VsmeMc7F/Zhl9eUygH1fj6WYKU=;
+        b=m2BT+9HP2leTcEQEnpHjwiozUB2cAGCDXI5sjGV7eMKKzxzpXcBk8Y53aT8DB1C1aTId0w
+        qt16J36h7ww+cnFS2DqTMfmJmUJLPtZ8+nvDhUw0gAqsZqXrMQLKVjNNnBqSkQjsoaByvR
+        ScuyjBrs5cvVDOvm120ucwmNis1YtXEk4XTPE8oHC9WmAOKw1Jx4HofkNCV3PxSnXMUqHL
+        rIdabBXRGfhkBFcwiRetoQRYfRIy3TmcY/OkukpAiR+2Bg715b0k2Gy93d9iR/zV/GkXHb
+        BcmehYLBxCm5ZELrp5Q+cGrD7VKjVTo0EGS8a+C9NRF3+TFGawyi/6EpbwiAhQ==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -42,9 +42,9 @@ Cc:     "David S. Miller" <davem@davemloft.net>,
         Nicolas Schodet <nico@ni.fr.eu.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH wpan-next v2 07/11] net: mac802154: Introduce a helper to disable the queue
-Date:   Thu, 12 May 2022 16:33:10 +0200
-Message-Id: <20220512143314.235604-8-miquel.raynal@bootlin.com>
+Subject: [PATCH wpan-next v2 08/11] net: mac802154: Introduce a tx queue flushing mechanism
+Date:   Thu, 12 May 2022 16:33:11 +0200
+Message-Id: <20220512143314.235604-9-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220512143314.235604-1-miquel.raynal@bootlin.com>
 References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
@@ -61,67 +61,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sometimes calling the stop queue helper is not enough because it does
-not hold any lock. In order to be safe and avoid racy situations when
-trying to (soon) sync the Tx queue, for instance before sending an MLME
-frame, let's now introduce an helper which actually hold the necessary
-locks when doing so.
+Right now we are able to stop a queue but we have no indication if a
+transmission is ongoing or not.
 
-Suggested-by: Alexander Aring <alex.aring@gmail.com>
+Thanks to recent additions, we can track the number of ongoing
+transmissions so we know if the last transmission is over. Adding on top
+of it an internal wait queue also allows to be woken up asynchronously
+when this happens. If, beforehands, we marked the queue to be held and
+stopped it, we end up flushing and stopping the tx queue.
+
+Thanks to this feature, we will soon be able to introduce a synchronous
+transmit API.
+
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- net/mac802154/ieee802154_i.h | 12 ++++++++++++
- net/mac802154/util.c         | 14 ++++++++++++++
- 2 files changed, 26 insertions(+)
+ include/net/cfg802154.h      |  1 +
+ net/ieee802154/core.c        |  1 +
+ net/mac802154/cfg.c          |  2 +-
+ net/mac802154/ieee802154_i.h |  1 +
+ net/mac802154/tx.c           | 26 ++++++++++++++++++++++++--
+ net/mac802154/util.c         |  6 ++++--
+ 6 files changed, 32 insertions(+), 5 deletions(-)
 
+diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+index ad3f438e4583..8b6326aa2d42 100644
+--- a/include/net/cfg802154.h
++++ b/include/net/cfg802154.h
+@@ -218,6 +218,7 @@ struct wpan_phy {
+ 	struct mutex queue_lock;
+ 	atomic_t ongoing_txs;
+ 	atomic_t hold_txs;
++	wait_queue_head_t sync_txq;
+ 
+ 	char priv[] __aligned(NETDEV_ALIGN);
+ };
+diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
+index d81b7301e013..f13e3082d988 100644
+--- a/net/ieee802154/core.c
++++ b/net/ieee802154/core.c
+@@ -129,6 +129,7 @@ wpan_phy_new(const struct cfg802154_ops *ops, size_t priv_size)
+ 	wpan_phy_net_set(&rdev->wpan_phy, &init_net);
+ 
+ 	init_waitqueue_head(&rdev->dev_wait);
++	init_waitqueue_head(&rdev->wpan_phy.sync_txq);
+ 
+ 	mutex_init(&rdev->wpan_phy.queue_lock);
+ 
+diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
+index b51100fd9e3f..93df24f75572 100644
+--- a/net/mac802154/cfg.c
++++ b/net/mac802154/cfg.c
+@@ -46,7 +46,7 @@ static int ieee802154_suspend(struct wpan_phy *wpan_phy)
+ 	if (!local->open_count)
+ 		goto suspend;
+ 
+-	ieee802154_hold_queue(local);
++	ieee802154_sync_and_hold_queue(local);
+ 	synchronize_net();
+ 
+ 	/* stop hardware - this must stop RX */
 diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
-index 0c7ff9e0b632..e34db1d49ef4 100644
+index e34db1d49ef4..a057827fc48a 100644
 --- a/net/mac802154/ieee802154_i.h
 +++ b/net/mac802154/ieee802154_i.h
-@@ -149,6 +149,18 @@ void ieee802154_hold_queue(struct ieee802154_local *local);
-  */
- void ieee802154_release_queue(struct ieee802154_local *local);
+@@ -124,6 +124,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
  
-+/**
-+ * ieee802154_disable_queue - disable ieee802154 queue
-+ * @local: main mac object
-+ *
-+ * When trying to sync the Tx queue, we cannot just stop the queue
-+ * (which is basically a bit being set without proper lock handling)
-+ * because it would be racy. We actually need to call netif_tx_disable()
-+ * instead, which is done by this helper. Restarting the queue can
-+ * however still be done with a regular wake call.
-+ */
-+void ieee802154_disable_queue(struct ieee802154_local *local);
-+
- /* MIB callbacks */
- void mac802154_dev_set_page_channel(struct net_device *dev, u8 page, u8 chan);
+ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
+ void ieee802154_xmit_sync_worker(struct work_struct *work);
++int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
+ netdev_tx_t
+ ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
+ netdev_tx_t
+diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+index 607019b8f8ab..38f74b8b6740 100644
+--- a/net/mac802154/tx.c
++++ b/net/mac802154/tx.c
+@@ -44,7 +44,8 @@ void ieee802154_xmit_sync_worker(struct work_struct *work)
+ err_tx:
+ 	/* Restart the netif queue on each sub_if_data object. */
+ 	ieee802154_release_queue(local);
+-	atomic_dec(&local->phy->ongoing_txs);
++	if (!atomic_dec_and_test(&local->phy->ongoing_txs))
++		wake_up(&local->phy->sync_txq);
+ 	kfree_skb(skb);
+ 	netdev_dbg(dev, "transmission failed\n");
+ }
+@@ -100,12 +101,33 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
  
-diff --git a/net/mac802154/util.c b/net/mac802154/util.c
-index b629c94cfd1b..31b53b3165ec 100644
---- a/net/mac802154/util.c
-+++ b/net/mac802154/util.c
-@@ -79,6 +79,20 @@ void ieee802154_release_queue(struct ieee802154_local *local)
- 	mutex_unlock(&local->phy->queue_lock);
+ err_wake_netif_queue:
+ 	ieee802154_release_queue(local);
+-	atomic_dec(&local->phy->ongoing_txs);
++	if (!atomic_dec_and_test(&local->phy->ongoing_txs))
++		wake_up(&local->phy->sync_txq);
+ err_free_skb:
+ 	kfree_skb(skb);
+ 	return NETDEV_TX_OK;
  }
  
-+void ieee802154_disable_queue(struct ieee802154_local *local)
++static int ieee802154_sync_queue(struct ieee802154_local *local)
 +{
-+	struct ieee802154_sub_if_data *sdata;
++	int ret;
 +
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(sdata, &local->interfaces, list) {
-+		if (!sdata->dev)
-+			continue;
++	ieee802154_hold_queue(local);
++	ieee802154_disable_queue(local);
++	wait_event(local->phy->sync_txq, !atomic_read(&local->phy->ongoing_txs));
++	ret = local->tx_result;
++	ieee802154_release_queue(local);
 +
-+		netif_tx_disable(sdata->dev);
-+	}
-+	rcu_read_unlock();
++	return ret;
 +}
 +
- enum hrtimer_restart ieee802154_xmit_ifs_timer(struct hrtimer *timer)
++int ieee802154_sync_and_hold_queue(struct ieee802154_local *local)
++{
++	ieee802154_hold_queue(local);
++
++	return ieee802154_sync_queue(local);
++}
++
+ static netdev_tx_t
+ ieee802154_hot_tx(struct ieee802154_local *local, struct sk_buff *skb)
  {
- 	struct ieee802154_local *local =
+diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+index 31b53b3165ec..65a9127a41ea 100644
+--- a/net/mac802154/util.c
++++ b/net/mac802154/util.c
+@@ -136,7 +136,8 @@ void ieee802154_xmit_complete(struct ieee802154_hw *hw, struct sk_buff *skb,
+ 	}
+ 
+ 	dev_consume_skb_any(skb);
+-	atomic_dec(&hw->phy->ongoing_txs);
++	if (!atomic_dec_and_test(&hw->phy->ongoing_txs))
++		wake_up(&hw->phy->sync_txq);
+ }
+ EXPORT_SYMBOL(ieee802154_xmit_complete);
+ 
+@@ -148,7 +149,8 @@ void ieee802154_xmit_error(struct ieee802154_hw *hw, struct sk_buff *skb,
+ 	local->tx_result = reason;
+ 	ieee802154_release_queue(local);
+ 	dev_kfree_skb_any(skb);
+-	atomic_dec(&hw->phy->ongoing_txs);
++	if (!atomic_dec_and_test(&hw->phy->ongoing_txs))
++		wake_up(&hw->phy->sync_txq);
+ }
+ EXPORT_SYMBOL(ieee802154_xmit_error);
+ 
 -- 
 2.27.0
 
