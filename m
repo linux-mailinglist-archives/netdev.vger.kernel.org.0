@@ -2,67 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB675524222
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 03:39:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC44652423F
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 03:58:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231487AbiELBjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 21:39:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41640 "EHLO
+        id S234413AbiELB6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 21:58:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229615AbiELBjS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 21:39:18 -0400
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3321BADED
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 18:39:16 -0700 (PDT)
-Received: by mail-yb1-xb2a.google.com with SMTP id j2so7287158ybu.0
-        for <netdev@vger.kernel.org>; Wed, 11 May 2022 18:39:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fFj3zTRqPz6qgPmLgoj9A7MJ+Yxz/7b7l1r37/Uh1pU=;
-        b=OtbtggIT9wxaBBASc9D9VEEEswA/MYz7jWczkEJ2j77Xc/TjckbbXIf6esUo7ETkb8
-         kAxvVRf3KqCcVnN0qrBL1DgK+fXbzKJ3qfCBxfYSlctUDBFoJghBSKC5mr8JgYN2Bt5A
-         9/orbaoTQsFe/5NMacqE4PjYA/oTo4gNRzu2Pvi+RXzXBqwCOIZaXM1nvihdIm95+CM1
-         jii9RS6sGYV2N+V9B3DAWm+HaJbQUU9CAzACqYlucWXm92nNgvu3Z/3QtUZL6y6JzFsf
-         m/S1i8TucXKG3uwkwBOzxt1fy/LHy/w0D1Ht8CQKZ0fDvFqHenQB54jFZ0Y63K+7dqKg
-         0urg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fFj3zTRqPz6qgPmLgoj9A7MJ+Yxz/7b7l1r37/Uh1pU=;
-        b=pXf7LsUtSV2A1R3HVG6kd2nj79ltXa3xQlNFq1O6FpAT3isChLHgSzsJy/HPDzUegQ
-         8nPjbK5anphziZf42G/Csgu9hvY58czisjR4AY5fOae1xXYYZasLZiP+O8IEnhukHUJ5
-         2g5y9RrzM9+fuSA+eoN/8JltQyGn86lQ87PYoBZOmXBwuHPqOnwf0ZRFHXv75WjpnapA
-         edp5mn+tDmgMiAdsYc2C5rPAGgUCcVWBqXZCimvO7gQQLnSmQfpOXptOJpJcJ8agsW6n
-         ibkjPQ2rLQ3B0lIobAUdgse/URqDsz9cptr9giTF2d0kKiO/D00C6q6xflKK9qXy5pBU
-         RG0w==
-X-Gm-Message-State: AOAM5319aJtS1fFbmPZMBLqo6gboxf0ZiHy7tuHX9+lMP70t44tJzLvZ
-        ZDit1AiQYB5r6PPCecC7QUlbMq3B8AgyzrMqiKoP8A==
-X-Google-Smtp-Source: ABdhPJz2WQnoKR4ccRUeXk7ZI9i0dn91M4qxEvpcOa6bGQiHid26APTKphfLm6xOfJ5mYnuxDA8XBUJo454XcgFXxKM=
-X-Received: by 2002:a25:3157:0:b0:649:b216:bb4e with SMTP id
- x84-20020a253157000000b00649b216bb4emr26667281ybx.387.1652319555506; Wed, 11
- May 2022 18:39:15 -0700 (PDT)
+        with ESMTP id S234018AbiELB6i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 21:58:38 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB702393DE;
+        Wed, 11 May 2022 18:58:36 -0700 (PDT)
+Received: from kwepemi500018.china.huawei.com (unknown [172.30.72.54])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4KzFJx1NKNz1JBmt;
+        Thu, 12 May 2022 09:57:21 +0800 (CST)
+Received: from kwepemm600001.china.huawei.com (7.193.23.3) by
+ kwepemi500018.china.huawei.com (7.221.188.213) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 12 May 2022 09:58:34 +0800
+Received: from [10.174.176.245] (10.174.176.245) by
+ kwepemm600001.china.huawei.com (7.193.23.3) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 12 May 2022 09:58:33 +0800
+Message-ID: <f7a73d6e-b5aa-269f-2251-4148bb35d655@huawei.com>
+Date:   Thu, 12 May 2022 09:58:32 +0800
 MIME-Version: 1.0
-References: <20220511000424.2223932-1-joannelkoong@gmail.com>
- <20220511000424.2223932-2-joannelkoong@gmail.com> <CANn89i+nAZAYB+VcrO3fAW9F7RmbFcKzmFUr=-dSvL-v61DJEQ@mail.gmail.com>
- <CAJnrk1Z+33HXn+5UGF-3146QfUGnLjNxmU60QbCsm=yYtitRZA@mail.gmail.com>
-In-Reply-To: <CAJnrk1Z+33HXn+5UGF-3146QfUGnLjNxmU60QbCsm=yYtitRZA@mail.gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 11 May 2022 18:39:04 -0700
-Message-ID: <CANn89iL-9jMLLOQe9i4SzcYFad=sRi_juBGQ9FP7zQ7bn+kbyg@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 1/2] net: Add a second bind table hashed by
- port and address
-To:     Joanne Koong <joannelkoong@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: [PATCH 0/3] Refix the socket leak in xs_setup_local()
+To:     Trond Myklebust <trondmy@hammerspace.com>,
+        "bfields@fieldses.org" <bfields@fieldses.org>,
+        "anna@kernel.org" <anna@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "chuck.lever@oracle.com" <chuck.lever@oracle.com>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20220511132232.4030-1-wanghai38@huawei.com>
+ <2125358c4fbdcf2e9f84017a2f6b27830ffcb8f2.camel@hammerspace.com>
+From:   "wanghai (M)" <wanghai38@huawei.com>
+In-Reply-To: <2125358c4fbdcf2e9f84017a2f6b27830ffcb8f2.camel@hammerspace.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.176.245]
+X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
+ kwepemm600001.china.huawei.com (7.193.23.3)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,9 +60,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 11, 2022 at 6:09 PM Joanne Koong <joannelkoong@gmail.com> wrote:
 
-> Ah I see. Thanks for your feedback - I really like your suggestion. Do
-> you want me to fix this and send another version or wait a bit?
+在 2022/5/12 0:14, Trond Myklebust 写道:
+> On Wed, 2022-05-11 at 21:22 +0800, Wang Hai wrote:
+>> Patch1 and patch2 roll back the wrong solution to fix socket leaks.
+>>
+>> Patch3 adds safe teardown mechanism to re-fix socket leaks.
+>>
+>> Wang Hai (3):
+>>    Revert "SUNRPC: Ensure gss-proxy connects on setup"
+>>    Revert "Revert "SUNRPC: attempt AF_LOCAL connect on setup""
+>>    SUNRPC: Fix local socket leak in xs_setup_local()
+>>
+>>   include/linux/sunrpc/clnt.h          |  1 -
+>>   net/sunrpc/auth_gss/gss_rpc_upcall.c |  2 +-
+>>   net/sunrpc/clnt.c                    |  3 ---
+>>   net/sunrpc/xprtsock.c                | 19 ++++++++++++++++++-
+>>   4 files changed, 19 insertions(+), 6 deletions(-)
+>>
+> Thanks, but there is already a fix for this queued up in the linux-next
+> branch.
+Thanks, sorry to bother you, I found it.
 
-You can send a new version at your convenience, thank you.
+I only subscribed to the linux-kernel@vger.kernel.org mailing list,
+not the linux-nfs@vger.kernel.org mailing list separately. So I
+didn't notice it was fixed.
+
+-- 
+Wang Hai
+
