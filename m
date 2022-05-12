@@ -2,88 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BE1D525885
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE873525892
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:43:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359560AbiELXkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 19:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59736 "EHLO
+        id S1359587AbiELXni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 19:43:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359045AbiELXkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:40:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69F02286FFC;
-        Thu, 12 May 2022 16:40:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F29EE62059;
-        Thu, 12 May 2022 23:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5513FC34118;
-        Thu, 12 May 2022 23:40:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652398813;
-        bh=fxawoRZm7HHdnOAKqA+Ar1XQM5WiZ0dq7/qFO9WM5V4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=qbVVE7oQuyJjtfMWimCXYqsa3PPlu4nfaaW1dXJ9omOyVwUZmIUITAzOuX1xNMAoa
-         UUG9809mxy7NhRCna4o92nD2FDe3JL0NrVHgro3JR7OAKROEJrcTvjU6p0kLvBDuoT
-         JXg4sB4J1DS52SKw+rqR2cWEOKREvM1YLecoUezf+Zs8mCeIGjoJpTOB0/uHeBZH/W
-         CE/WehS1G+wPHcaxaN1Xd71M9OTLgLhtXwRLKYgsFkSUBwgnJt90JxgeGby3a/a3qZ
-         Tbx+7rJL46UEEL9HdQ3AYko7g0RDBW0KgtZwSOGhP+CfgaxLO+TuAIxaYiLes4ly2A
-         plL9FFZYsjTVg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2F482F03935;
-        Thu, 12 May 2022 23:40:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S1359584AbiELXng (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:43:36 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FADA289BCA
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 16:43:34 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-2ebf4b91212so74000427b3.8
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 16:43:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=N+MpLUlaVpHkuuiUc6lyGjVUiffHSHmuxB6NPv5ECyw=;
+        b=AAjsICelOCN6C8Ie6MZZxEzH/C5JKJPXQlS1LQ0jKkjgg3Vsvl15ahTuEBNuLn5Nxn
+         ab+wWatKgnTKxYqqaLYGrGrctF/hKc0adsJZAp4kjARYCbmYbw52gDKXhnMYegj+9lEO
+         SPIAZLywPhby5tO6eE4dB+RfIR4saw7mHbqqaw522A4RGuwiQONsZI2ZmGBGpO/SO6PN
+         rX9ShC6U6MokvWDOU1VQsPhAkrLnuRnqFiYrMOA0PKjD5HjqFzG5yKoG+KrIVQyg403e
+         jojpBJ331bmvL2k9vLvJ2Nlyod9tic6Y7xKDnY6mDqi9JTGjeT3M79ZI4UKkDHl0mvO0
+         Pdlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=N+MpLUlaVpHkuuiUc6lyGjVUiffHSHmuxB6NPv5ECyw=;
+        b=ZiHkcK/GHMfbqPKhxGG27B5iW8nm8mCan2aSCfWdhTWFXnR/U4N5Cip5sDtiXk2kWE
+         BxkTf5mPdrUhtk3qau0ZKqdXq+l+O47FUhErvPUTezJUk972BwxtcvdEoXIYniXSRtbb
+         SkFf/wy7c2Ugj4nbr6KCR7PTpV80jMXZKe+4IOPXvYEFdowETt6b8+eqpwmM5cheyuXk
+         40f3OQGvOaZYBvIZEDa4rd5aQi+QeymMrQAu22Z6MEk1rGXuN3h5etqEIr/AAjtRm12S
+         8TjCPde1kv7QSPEo0hBrDwSMUzfdu7lvbtmWe0+ctiWhOnKQOSzHEfM+/uwv6fR31NhV
+         bfWw==
+X-Gm-Message-State: AOAM533FKEiV/i7syTLPEWXTXxxOWJtc5r0/5oZoHDZ0DF3HePNcv3/a
+        D5uZ18ZsgHTcZD5N6UnHt9NGX5omwt2yS7TtTXF9Xg==
+X-Google-Smtp-Source: ABdhPJzjbu/RnzqVTRYp0k727mM1ACmM32pBiQjimcGPlHUXFIkkbnwgoBjXIOjciFpNfJnHmMa8QuYN7FVHJ7Rb4wE=
+X-Received: by 2002:a81:234b:0:b0:2f8:4082:bbd3 with SMTP id
+ j72-20020a81234b000000b002f84082bbd3mr2742677ywj.47.1652399011564; Thu, 12
+ May 2022 16:43:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] net: lan966x: Fix use of pointer after being freed
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165239881318.13563.9379638810266990590.git-patchwork-notify@kernel.org>
-Date:   Thu, 12 May 2022 23:40:13 +0000
-References: <20220511204059.2689199-1-horatiu.vultur@microchip.com>
-In-Reply-To: <20220511204059.2689199-1-horatiu.vultur@microchip.com>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        UNGLinuxDriver@microchip.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        dan.carpenter@oracle.com
-X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220512103322.380405-1-liujian56@huawei.com> <CANn89iJ7Lo7NNi4TrpKsaxzFrcVXdgbyopqTRQEveSzsDL7CFA@mail.gmail.com>
+ <CANpmjNPRB-4f3tUZjycpFVsDBAK_GEW-vxDbTZti+gtJaEx2iw@mail.gmail.com>
+ <CANn89iKJ+9=ug79V_bd8LSsLaSu0VLtzZdDLC87rcvQ6UYieHQ@mail.gmail.com> <20220512231031.GT1790663@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20220512231031.GT1790663@paulmck-ThinkPad-P17-Gen-1>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 12 May 2022 16:43:20 -0700
+Message-ID: <CANn89iKiTiGwMvV6K+Zbr_9+knaR-x1N3tOeMX+2No2=4zn6pA@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: Add READ_ONCE() to read tcp_orphan_count
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Marco Elver <elver@google.com>, Liu Jian <liujian56@huawei.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, May 12, 2022 at 4:10 PM Paul E. McKenney <paulmck@kernel.org> wrote:
+>
+> On Thu, May 12, 2022 at 02:31:48PM -0700, Eric Dumazet wrote:
+> > On Thu, May 12, 2022 at 2:18 PM Marco Elver <elver@google.com> wrote:
+> >
+> > >
+> > > I guess the question is, is it the norm that per_cpu() retrieves data
+> > > that can legally be modified concurrently, or not. If not, and in most
+> > > cases it's a bug, the annotations should be here.
+> > >
+> > > Paul, was there any guidance/documentation on this, but I fail to find
+> > > it right now? (access-marking.txt doesn't say much about per-CPU
+> > > data.)
+> >
+> > Normally, whenever we add a READ_ONCE(), we are supposed to add a comment.
+>
+> I am starting to think that comments are even more necessary for unmarked
+> accesses to shared variables, with the comments setting out why the
+> compiler cannot mess things up.  ;-)
+>
+> > We could make an exception for per_cpu_once(), because the comment
+> > would be centralized
+> > at per_cpu_once() definition.
+>
+> This makes a lot of sense to me.
+>
+> > We will be stuck with READ_ONCE() in places we are using
+> > per_cpu_ptr(), for example
+> > in dev_fetch_sw_netstats()
+>
+> If this is strictly statistics, data_race() is another possibility.
+> But it does not constrain the compiler at all.
 
-This patch was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Statistics are supposed to be monotonically increasing ;)
 
-On Wed, 11 May 2022 22:40:59 +0200 you wrote:
-> The smatch found the following warning:
-> 
-> drivers/net/ethernet/microchip/lan966x/lan966x_fdma.c:736 lan966x_fdma_reload()
-> warn: 'rx_dcbs' was already freed.
-> 
-> This issue can happen when changing the MTU on one of the ports and once
-> the RX buffers are allocated and then the TX buffer allocation fails.
-> In that case the RX buffers should not be restore. This fix this issue
-> such that the RX buffers will not be restored if the TX buffers failed
-> to be allocated.
-> 
-> [...]
+Some SNMP agents would be very confused if they could observe 'garbage' there.
 
-Here is the summary with links:
-  - [net-next] net: lan966x: Fix use of pointer after being freed
-    https://git.kernel.org/netdev/net-next/c/f0a65f815f64
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+I sense that we are going to add thousands of READ_ONCE() soon :/
