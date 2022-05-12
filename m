@@ -2,101 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B42B525480
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 20:14:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 814F352549F
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 20:21:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357350AbiELSOA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 14:14:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        id S1357562AbiELSVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 14:21:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352415AbiELSN7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 14:13:59 -0400
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2D4E25F7B2
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 11:13:58 -0700 (PDT)
-Received: by mail-yb1-xb35.google.com with SMTP id j84so449554ybc.3
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 11:13:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cfuve+c5Cwa7UJ0vQNcacC+/40JGpfLbjA8g3t9eIqQ=;
-        b=NZHWcKJjdxGhGeikxnkOyvDffaXBl4vKuicdYIsXaTBG2teHtca2Fd1CjL4dr0p4r/
-         SvpxexJECOuPNbkgeXDSwdkXpodxbGttPU3Kaci3pcsdLf2jEwK61kGImtNXRXYPgqU3
-         WNUD+ic2R0CXvMB+k4ApzwMxZsPVGQ+uaEWtCAsgw40To+8srzWnDv3luZ+MYVEXJiAS
-         VtQrPHcUd0rrtZgelUdW8hafe8DlNNz9fEy1aKh5rJWDNceP9RwH/LBq2pLButUTjICb
-         WupTbkYqQRJdPAfNOjruetejDsm8NzIcHVZcPBy+3V7amKui0xMwNj4JxDG8TqcegZvp
-         Igiw==
+        with ESMTP id S1357571AbiELSVk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 14:21:40 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CCB6E50465
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 11:21:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652379694;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JQehALh0Jx7o9GOk+RBlCmR7brUtli8lBPEjRk+xLZ4=;
+        b=NpO9ogdyTrCOCG6JB9Zj7gd9ZRqbBZJT7wesrBl9o9AqFn6xyg6JVUUCKtk8XphmvcwZZt
+        B7W2xUVdNOcJp8SKsgGIzCJWL1yBzIcS8Nl1ltDdwK5/yvlefIzfyTDCQReEOu9t2KgPCJ
+        79C3FNzNZJ+y9cXmfSdKBvnXJbdkhPk=
+Received: from mail-il1-f197.google.com (mail-il1-f197.google.com
+ [209.85.166.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-636-2rwWp6PmNa2cL8gZrLsBHg-1; Thu, 12 May 2022 14:21:33 -0400
+X-MC-Unique: 2rwWp6PmNa2cL8gZrLsBHg-1
+Received: by mail-il1-f197.google.com with SMTP id d9-20020a056e02214900b002d0f136e101so593417ilv.11
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 11:21:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cfuve+c5Cwa7UJ0vQNcacC+/40JGpfLbjA8g3t9eIqQ=;
-        b=rgF7d1UugKJfQ/YXzEmxFEAYdcBFQPVq+CCZe9tpwodq+Oj6/PF89789nRA52L86y2
-         1rkW/2xk9ApGKYZUdqppoRvJQsKdm2xJRzmrCkUosCCVPy2WZ9Mb7fyg7HXXrEgZeAXn
-         mp/KhhKnIopH+xnH74KmPg5xP++CErqKAje7Z11grYqsDPsEeY+OzpnQo7X2UvO0PP6l
-         VyfhJPEnFJ3sf9wl82lazbWK2XbeP7TJW7c3RQmXTy+0P708/Y3myxcx9/H6ahOxmTjs
-         JRCmZnEhDUitUthrE2z3om6rsitHZdVBd/3HPzTQ8gBXhrvkVg5uDaMt7R+U4qDbWBkk
-         XdnA==
-X-Gm-Message-State: AOAM531Kv1Vqb/Z9XJXHxUWcCjHDqSn0EUimkk9486Y4N4H3RmkciBF7
-        uP+swhLWQbxPmPOEA++oqRDsXRjRtQhlEhgQCRR/Fg==
-X-Google-Smtp-Source: ABdhPJz5a/C03+Ye4a57gqvTMVgbBIihW4avWA5q3KyzdtF9EIDzbqQSeka3lH0aMt0bRVYWn7CcyUoK6mImJaYRlsU=
-X-Received: by 2002:a25:3157:0:b0:649:b216:bb4e with SMTP id
- x84-20020a253157000000b00649b216bb4emr1062269ybx.387.1652379237164; Thu, 12
- May 2022 11:13:57 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=JQehALh0Jx7o9GOk+RBlCmR7brUtli8lBPEjRk+xLZ4=;
+        b=gOC2gwmFLrLXhfndawoJFnfS82ZdDS1h5hN3ZaUTyscUX5WDKhQRuqAqArpjmDE+do
+         KXXwfWwvNZEg3i3NtZhY3yNzScUEWN4lV/S0WPAtFcwvnsyiLGYcFtha4GiFkCiWQbDI
+         rVxXvUdQ6bXVYjG1f6csDAk4d2Y/uXym1qFTR5P4NTmohJ9hPtVQRhEoMXYIq05LjhLT
+         ARIKuL8EwZ0WNLrem/d8ifYU7vglKnT8ozD1KAlmyaydGOa+FpbQTjLD/YGap3lbsu6Z
+         FNdoOar9s7MSd0yWiBI/uuE81v6j2/M1eYW/lZCrwEcH2ye8SFVyRg5zduG6gqr5Kc6k
+         88mQ==
+X-Gm-Message-State: AOAM5333cbyRolhtQEQCzj0Dvt3MbMAA4v90AJW+b4INvbxQqLrlCKuM
+        fN/XKUOabhwy/+LK4J+/4BtsswkopRE6vJLptt2WEUnEajGlMtx/i0iH5oVp+4tZUi2iEOOA71A
+        edHNw0Y13vvTk+/W0
+X-Received: by 2002:a05:6e02:2162:b0:2cf:2f70:e8e with SMTP id s2-20020a056e02216200b002cf2f700e8emr712608ilv.148.1652379692145;
+        Thu, 12 May 2022 11:21:32 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyDOG3POaOwmN7RPhnD3yF1II+ZnJefBH0XMNF01/MUw/8Bjjr9whEtDHPh+Malkf+KCAyZSw==
+X-Received: by 2002:a05:6e02:2162:b0:2cf:2f70:e8e with SMTP id s2-20020a056e02216200b002cf2f700e8emr712592ilv.148.1652379691904;
+        Thu, 12 May 2022 11:21:31 -0700 (PDT)
+Received: from redhat.com ([38.15.36.239])
+        by smtp.gmail.com with ESMTPSA id f21-20020a02b795000000b0032b3a781771sm64668jam.53.2022.05.12.11.21.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 11:21:31 -0700 (PDT)
+Date:   Thu, 12 May 2022 12:21:30 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Yishai Hadas <yishaih@nvidia.com>, jgg@nvidia.com,
+        saeedm@nvidia.com, kvm@vger.kernel.org, netdev@vger.kernel.org,
+        kuba@kernel.org, maorg@nvidia.com, cohuck@redhat.com
+Subject: Re: [PATCH V2 mlx5-next 0/4] Improve mlx5 live migration driver
+Message-ID: <20220512122130.48181ada.alex.williamson@redhat.com>
+In-Reply-To: <YntaZcd+Qv5UiQRN@unreal>
+References: <20220510090206.90374-1-yishaih@nvidia.com>
+        <YnploMZRI9jXMXAi@unreal>
+        <20220510090053.56efd550.alex.williamson@redhat.com>
+        <YntaZcd+Qv5UiQRN@unreal>
+Organization: Red Hat
 MIME-Version: 1.0
-References: <93323bba-476e-f821-045c-9fe942143da9@gmail.com>
-In-Reply-To: <93323bba-476e-f821-045c-9fe942143da9@gmail.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Thu, 12 May 2022 11:13:46 -0700
-Message-ID: <CANn89iKjt1wpGk1dqqnYYx3r9UzEc3rwNtvBQ1O2dVToY_7rBQ@mail.gmail.com>
-Subject: Re: BUG: TCP timewait sockets survive across namespace creation in net-next
-To:     Leonard Crestez <cdleonard@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 12, 2022 at 11:01 AM Leonard Crestez <cdleonard@gmail.com> wrote:
->
-> Hello,
->
-> It appears that in recent net-next versions it is possible for sockets
-> in the timewait state to survive across namespace add/del. Timewait
-> sockets are inserted into a global hash and only the sock_net value is
-> compared when they are enumerated from interfaces like /proc/net/tcp and
-> inet_diag. Old TW sockets are not cleared after namespace delete and
-> namespaces are allocated from a slab and thus their pointers get reused
-> a lot, when that happens timewait sockets from an old namespace will
-> show up in the new one.
->
-> This can be reproduced by establishing a TCP connection over a veth pair
-> between two namespaces, closing and then recreating those namespaces.
-> Old timewait sockets will be visible and it happens quite reliably,
-> often on the first iteration. I can try to provide a script for this.
->
-> I can't point to specific bugs outside of tests that explicitly
-> enumerate timewait sockets but letting sk_net be a dangling pointer
-> seems very dangerous. It also violates the idea of network namespaces
-> being independent and isolated.
->
-> This does not happen in 5.17, I bisected this behavior to commit
-> 0dad4087a86a ("tcp/dccp: get rid of inet_twsk_purge()")
->
+On Wed, 11 May 2022 09:40:37 +0300
+Leon Romanovsky <leon@kernel.org> wrote:
 
-Thanks for the report.
+> On Tue, May 10, 2022 at 09:00:53AM -0600, Alex Williamson wrote:
+> > On Tue, 10 May 2022 16:16:16 +0300
+> > Leon Romanovsky <leon@kernel.org> wrote:
+> >   
+> > > On Tue, May 10, 2022 at 12:02:02PM +0300, Yishai Hadas wrote:  
+> > > > This series improves mlx5 live migration driver in few aspects as of
+> > > > below.
+> > > > 
+> > > > Refactor to enable running migration commands in parallel over the PF
+> > > > command interface.
+> > > > 
+> > > > To achieve that we exposed from mlx5_core an API to let the VF be
+> > > > notified before that the PF command interface goes down/up. (e.g. PF
+> > > > reload upon health recovery).
+> > > > 
+> > > > Once having the above functionality in place mlx5 vfio doesn't need any
+> > > > more to obtain the global PF lock upon using the command interface but
+> > > > can rely on the above mechanism to be in sync with the PF.
+> > > > 
+> > > > This can enable parallel VFs migration over the PF command interface
+> > > > from kernel driver point of view.
+> > > > 
+> > > > In addition,
+> > > > Moved to use the PF async command mode for the SAVE state command.
+> > > > This enables returning earlier to user space upon issuing successfully
+> > > > the command and improve latency by let things run in parallel.
+> > > > 
+> > > > Alex, as this series touches mlx5_core we may need to send this in a
+> > > > pull request format to VFIO to avoid conflicts before acceptance.    
+> > > 
+> > > The PR was sent.
+> > > https://lore.kernel.org/netdev/20220510131236.1039430-1-leon@kernel.org/T/#u  
+> > 
+> > For patches 2-4, please add:
+> > 
+> > Reviewed-by: Alex Williamson <alex.williamson@redhat.com>  
+> 
+> Done, I force pushed same branch and tag, so previous PR is still valid
+> to be pulled.
+> https://lore.kernel.org/kvm/20220510131236.1039430-1-leon@kernel.org/T/#u
 
-I guess we will need to store the (struct net)->net_cookie to
-disambiguate the case
-where a new 'struct net' is reusing the same storage than an old one.
+Merged to vfio next branch for v5.19.  Thanks,
+
+Alex
+
