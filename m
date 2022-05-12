@@ -2,71 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B6E895246ED
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:28:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA07752470C
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351007AbiELH2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 03:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
+        id S1343519AbiELHdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 03:33:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351018AbiELH15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:27:57 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20FF13C1F0
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:27:56 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id m62so2464477wme.5
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:27:56 -0700 (PDT)
+        with ESMTP id S237649AbiELHdx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:33:53 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30D4244A22
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:33:52 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id b19so5930820wrh.11
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:33:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:mail-followup-to:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=H9VXncE+DRnUhXlSN0UZUREZ/aLnoqDFeoFK5grlT8s=;
-        b=bL+CTsqaTjYlxSq0nJtEbHVQZ4uCnHEcZIVe13dQNJ77OQFSRMVKXEHr+JfAopQD8Z
-         SaUNRkPz15p0rMKmfWN5Y5sqf4kJ3hvI1PIY9JH7/nn5QsZynDomKcGNGK1pJJMjCtZp
-         diqfjXhzCxMyiYzP1Xq9Z2A0w8ZnGebKXy7cSvZ1fsTSvlpokOlxNHgHYO3o9lq+MnSK
-         +Jt82uTchTU5s0h2lgow9mQKpgJqnru4ShVYlSEEA51u+/j70IWAeU/XxIZErCkq35jF
-         ycWq5f92J1NmHv6llR8a2JBvf0HCtLuKqo5J5BRtdGhyA68H0XZePKX7Iq2cCCDxGeMZ
-         giag==
+        bh=VJgiP3JRpo82lgLLITvlw0SadokFXlQXqrzQP/PcIVM=;
+        b=V3NAfn8NjL+SSwG0q2RB1Mg4d+ZG8CkEpm7fqYJpzwaYpu24OpJW6/K+iAWupNywBK
+         pEtgDro1oPFjxgX1mZEZ12ZIUz70yKKKDJYfJa3lX3OSr5iMh8R/A3CbPtsL2lnBATxc
+         ByoiPRhGirNu0fWZI8vORXTCvrgo1XoKHYZL+CDzHt40gDrSiYIvPtv2EVgSfJVJ2eT7
+         BHFKYWnWwAFV/bYrqzX0llyn5GlV86naOo7rbY0sXCmb4GJRdjBDPdnRhGR3NfR+Anp1
+         2Mh9LoeZV64QimFBLimkz1bumLvPhtzUhKDlhb+W8sepjoSYUmRB6UGD5k044uFw+Jwr
+         lC0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id
          :mail-followup-to:references:mime-version:content-disposition
          :in-reply-to:user-agent;
-        bh=H9VXncE+DRnUhXlSN0UZUREZ/aLnoqDFeoFK5grlT8s=;
-        b=F06o9E+NxINDEhS7cuSWNRyxiHaNeOiV1zwKTakeKmAXl71Mpas8mP/NL4dyQqsMQY
-         DLiZ+Vu/xD9S//rcbK7FJ4EKVaxzyeVA6gAEYz2pzZ6gRMR+VzZG3pPHpNyPS0XqIlG0
-         rAvafpv31Xe86on1UJiUVysnlOYp4xr9POKeQb2o3yp9jdZiBrxFtdOav8ksL45bIi/T
-         2Rt5Kvjl49VGK76gsVTYA9WULav+psqjSqc750il+eI2UycmnLjBQHn7KJdrQ5nT+0I8
-         OIK5lmvs4VFY/bQHyTxFzpnAUWwru3wbolIfOmOAdGwJGmsHyEbMUaXfO7EX5lS3sKxS
-         qucg==
-X-Gm-Message-State: AOAM530kjC5eJ8OBKM+Wt0e5sCMNK0nAXfGfLHbWVqnpnAI2/KfyoFmz
-        Cw404A4zerfIadk84I7mYfY=
-X-Google-Smtp-Source: ABdhPJwODapeVfLkcgJGNzaE5AOte8UsQjyA4DBae9z8mwy/hizN2zPQ+MEqxkL7TFzuJHe6fmoDWg==
-X-Received: by 2002:a7b:c095:0:b0:393:fd2e:9191 with SMTP id r21-20020a7bc095000000b00393fd2e9191mr8579665wmh.137.1652340475010;
-        Thu, 12 May 2022 00:27:55 -0700 (PDT)
+        bh=VJgiP3JRpo82lgLLITvlw0SadokFXlQXqrzQP/PcIVM=;
+        b=YnRQoQi87jS8LHTQC+oWZ/jRgitmtomXVqDHb3d3hI2kyLI84vcch+rIQjGOvhcvB1
+         GLSlZKIVJb6u1xEzqx8X2JicHEOC5PWCNDJmCSaPFdChqKtBWmwIBvCRTvoKPLzp8MNL
+         92y96UPZD/TU+h1kvl7ddRZ4B1xUnTa7tQv+QzldxGmgAK8BLTxh8xbYhT0oy50+gBdM
+         KouTgu9shiC9EI9jqbycuGgQNfceqfezzjP+++0jORukGfcfhomvgtLn6tB2qNp6oXPM
+         3nTHrLHusbGinEl8rMgk4vZBDmzAVuiXQGc4/EPujAIxH3fJCo9ZL+QHgt0H7ep+yTkd
+         rHPA==
+X-Gm-Message-State: AOAM533mOmgB9f4Noc40MtHsKZyhoQrk2yNpCLoSWF6fqiizNf9S2Dad
+        7JkNO4dMD9+125311fZ2vtNPUoAw6vs=
+X-Google-Smtp-Source: ABdhPJx1XKNXNOwztaS1ggKJAFeowZUSnvqgBBcW/al6icdOYk1P3hxIFP141RmQYec7FfreGhrxVw==
+X-Received: by 2002:adf:f18e:0:b0:20c:e053:ef4e with SMTP id h14-20020adff18e000000b0020ce053ef4emr4842691wro.360.1652340830737;
+        Thu, 12 May 2022 00:33:50 -0700 (PDT)
 Received: from gmail.com ([81.168.73.77])
-        by smtp.gmail.com with ESMTPSA id o42-20020a05600c512a00b003942a244f49sm1944477wms.34.2022.05.12.00.27.54
+        by smtp.gmail.com with ESMTPSA id bh8-20020a05600c3d0800b003942a244f45sm1917662wmb.30.2022.05.12.00.33.49
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 12 May 2022 00:27:54 -0700 (PDT)
-Date:   Thu, 12 May 2022 08:27:52 +0100
+        Thu, 12 May 2022 00:33:49 -0700 (PDT)
+Date:   Thu, 12 May 2022 08:33:47 +0100
 From:   Martin Habets <habetsm.xilinx@gmail.com>
-To:     Edward Cree <ecree.xilinx@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com
-Subject: Re: [PATCH net-next 3/6] eth: switch to netif_napi_add_weight()
-Message-ID: <20220512072752.wb5rgtlkar4oyni6@gmail.com>
-Mail-Followup-To: Edward Cree <ecree.xilinx@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com
-References: <20220506170751.822862-1-kuba@kernel.org>
- <20220506170751.822862-4-kuba@kernel.org>
- <d61cf1ea-94bc-6f71-77b6-939ba9e115c4@gmail.com>
- <20220511124551.1766aa66@kernel.org>
- <86183449-cb7f-2804-89ad-5c714d99ff5b@gmail.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Erik Ekman <erik@kryo.se>,
+        netdev@vger.kernel.org
+Subject: Re: [linux-next:master 10569/11094]
+ drivers/net/ethernet/sfc/siena/siena_sriov.c:1578:5: sparse: sparse: symbol
+ 'efx_init_sriov' was not declared. Should it be static?
+Message-ID: <20220512073347.36go3nikzf6m4du2@gmail.com>
+Mail-Followup-To: kernel test robot <lkp@intel.com>,
+        kbuild-all@lists.01.org, Jakub Kicinski <kuba@kernel.org>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Eric Dumazet <edumazet@google.com>, Paolo Abeni <pabeni@redhat.com>,
+        Erik Ekman <erik@kryo.se>, netdev@vger.kernel.org
+References: <202205120012.rvs9fZKN-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <86183449-cb7f-2804-89ad-5c714d99ff5b@gmail.com>
+In-Reply-To: <202205120012.rvs9fZKN-lkp@intel.com>
 User-Agent: NeoMutt/20170113 (1.7.2)
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -78,27 +81,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 11, 2022 at 10:02:44PM +0100, Edward Cree wrote:
-> On 11/05/2022 20:45, Jakub Kicinski wrote:
-> > On Wed, 11 May 2022 18:57:53 +0100 Edward Cree wrote:
-> >> This isn't really a custom weight; napi_weight is initialised to
-> >>  64 and never changed, so probably we ought to be just using
-> >>  NAPI_POLL_WEIGHT here and end up on the non-_weight API.
-> >> Same goes for Falcon.
-> > 
-> > Ack, I wanted to be nice. I figured this must be a stub for a module
-> > param in your our of tree driver.
-> 
-> I mean, it *is*... but there's almost certainly a better way.  Configuring
->  NAPI weight for tuning purposes (as opposed to some kind of correctness
->  limitation in a driver) probably ought to be left to generic infrastructure
->  rather than vendor-specific modparams in driver code.
-> 
-> > Should I send a patch to remove
-> > the non-const static napi_weight globals and switch back to non-_weight?
-> 
-> Yes please, unless Martin has any objections...?
+This will be fixed by:
 
-Fine for me.
+https://patchwork.kernel.org/project/netdevbpf/patch/165228602579.696.13026076797222373028.stgit@palantir17.mph.net/
 
 Martin
+
+On Thu, May 12, 2022 at 01:07:55AM +0800, kernel test robot wrote:
+> Hi Martin,
+> 
+> First bad commit (maybe != root cause):
+> 
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> head:   6107040c99d5dfc920721c198d45ed2d639b113a
+> commit: c5a13c319e10e795850b61bc7e3447b08024be2e [10569/11094] sfc: Add a basic Siena module
+> config: i386-allmodconfig (https://download.01.org/0day-ci/archive/20220512/202205120012.rvs9fZKN-lkp@intel.com/config)
+> compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+> reproduce:
+>         # apt-get install sparse
+>         # sparse version: v0.6.4-dirty
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=c5a13c319e10e795850b61bc7e3447b08024be2e
+>         git remote add linux-next https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+>         git fetch --no-tags linux-next master
+>         git checkout c5a13c319e10e795850b61bc7e3447b08024be2e
+>         # save the config file
+>         mkdir build_dir && cp config build_dir/.config
+>         make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash drivers/net/ethernet/sfc/siena/
+> 
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
+> 
+> 
+> sparse warnings: (new ones prefixed by >>)
+> >> drivers/net/ethernet/sfc/siena/siena_sriov.c:1578:5: sparse: sparse: symbol 'efx_init_sriov' was not declared. Should it be static?
+> >> drivers/net/ethernet/sfc/siena/siena_sriov.c:1590:6: sparse: sparse: symbol 'efx_fini_sriov' was not declared. Should it be static?
+> 
+> Please review and possibly fold the followup patch.
+> 
+> -- 
+> 0-DAY CI Kernel Test Service
+> https://01.org/lkp
