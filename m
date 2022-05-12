@@ -2,275 +2,224 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6F6352530C
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 18:55:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 24F7F525314
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 18:56:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356729AbiELQzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 12:55:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33352 "EHLO
+        id S1356832AbiELQ4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 12:56:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356716AbiELQy7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 12:54:59 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.53])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFB26E8D9;
-        Thu, 12 May 2022 09:54:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652374492;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=eAQXUzlWzcYdtIbYzAy+zzfzGdBbbE6oDDURF63/Bm4=;
-    b=Ic5/BJ12Dyot6yj5OM5YnnUqlOmaYV5MelMg/rKgjgPmYwmTWjZXL6DYp7s7kraFmH
-    xwL6wakcIWESYsQL4vNN+g+GW72SKbzJwXzo+6p+arKx6Y3tuXIBezhYDowx4SCBKWjg
-    PoX9maNxgMBkl0NqkReecDOVqgnHTZlHM4isMntyiUq0hOX85UC1CfXK40h59TapIpIR
-    ke/dFxxXKtSm7VHT+ekRLjxNph3YM+fb/Y9/UsDA/0yn/+4eomQOo7/swfrTduk/FJsY
-    iT5+fhWQyEGBu/szu9Bz7AEBc3SjG6Xx10q1ocpT+wST2RYpZhV2ALgjPV0X/XyC/XyT
-    l/TA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOug2krLFRKxw=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b04::b82]
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id R0691fy4CGsq0A1
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Thu, 12 May 2022 18:54:52 +0200 (CEST)
-Message-ID: <2cc53d1b-2e16-803f-f528-6b94a812d2d7@hartkopp.net>
-Date:   Thu, 12 May 2022 18:54:46 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v2] can: skb: add extended skb support
-Content-Language: en-US
-To:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S1356764AbiELQ4J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 12:56:09 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 272762BCE
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 09:56:07 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id q18so5447436pln.12
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 09:56:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WBgcATWUNDcFr4pm0D/otzLtgH6+iEUvIQJx2JEg2IE=;
+        b=QOSEMzCvxoEU8VUSppZAhjBwbW6TXx+3umPqVbr5plmJwozfbXCUHV1fwp06WuJybv
+         dADNaJu7Ujr4uYm9cpDdsDGAGju6ruoB6FxXg9kUkJtd5D5TTylxCiimabyI7YFCtEMX
+         2DdIWnYWFkfIiHNUIPDXNtJx/gt0XD0B25hZLSAC30DL6RVDasPTYEPKZFlMDVPUmDYw
+         vEPZaTWwrw3a/Yzg5LPgLobeIKai3W3rTHb9kv141zMZqb9nhKX8X42N+T5m2gjrPSlL
+         2jKWyO6sgsBRDL7n24k/GCkO+xbF4BNCYvWm8A2YPnayenoCPf+WyjRPMCugSvvyIizf
+         90KA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=WBgcATWUNDcFr4pm0D/otzLtgH6+iEUvIQJx2JEg2IE=;
+        b=zRLjh3uJXavx4GAgVo6DNvXZ4Wzuq1ZGCWg031Dh3qjwQCopOyUQnyJlEr5QrJ9rj4
+         A6MnF3ZDhIkBtSx7Ih11zPoqbNiG5m8s0bO7EOlzNevau2WcJK1KVH42Qf5zkgeitvHd
+         6axiI70U2KqcIeuyeb5711EVXVQu0AhUZ7RaVRNcWsSV8zXxIkBsd4nmM0/mvzcbx5f0
+         lq5PFokWOG7LychHBkQlcRsR8jwWmbnpqVguZsaglSs2A4SURmj2Ay9DDH0W3/iTjWr0
+         YU0/hTnWDkI/d8b+yM3LJYIHhaEG8f03ETn6yf1f5KghhQL2/5b6I+muvBs3FVzCHi4+
+         GWPQ==
+X-Gm-Message-State: AOAM531k82fZgfAizwWi08r05UWDxAnqrt/QyxlrtRTj4ZJhulcYmWef
+        AFOCzGeI/eYnQOMuhzBjd+Y=
+X-Google-Smtp-Source: ABdhPJzw0gvtcnDRmAa3u+JyepUvJpdf9w23xlHge6Gb9RXVc/tocToOtS85NMWUIVuS7dznhZTL8A==
+X-Received: by 2002:a17:903:41c9:b0:15e:ae15:294f with SMTP id u9-20020a17090341c900b0015eae15294fmr820843ple.44.1652374566607;
+        Thu, 12 May 2022 09:56:06 -0700 (PDT)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c0b4:779e:76dd:6916])
+        by smtp.gmail.com with ESMTPSA id f125-20020a62db83000000b0050dc762812csm91362pfg.6.2022.05.12.09.56.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 09:56:05 -0700 (PDT)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
-Cc:     Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
-        kernel@pengutronix.de, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        David Jander <david@protonic.nl>
-References: <20220512125934.774836-1-o.rempel@pengutronix.de>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220512125934.774836-1-o.rempel@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next] inet: add READ_ONCE(sk->sk_bound_dev_if) in INET_MATCH()
+Date:   Thu, 12 May 2022 09:56:01 -0700
+Message-Id: <20220512165601.2326659-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Oleksij,
+From: Eric Dumazet <edumazet@google.com>
 
-On 12.05.22 14:59, Oleksij Rempel wrote:
-> Add CAN specific skb extension support and add first currently needed
-> local_origin variable.
-> 
-> On the CAN stack we push same skb data in different direction depending
-> on the interface type:
-> - to the HW egress and at same time back to the stack as echo
-> - over virtual vcan/vxcan interfaces as egress on one side and ingress on other
->    side of the vxcan tunnel.
-> We can't use skb->sk as marker of the origin, because not all packets
-> not all packets with local_origin are assigned to some socket. Some of
-> them are generate from the kernel, for example like J1939 control messages.
-> So, to properly detect flow direction is is better to store this information
-> as part of the SKB.
-> 
-> The advantage of using skb_ext is that it is options and extendable
-> without affecting other skb users. It can be shared between cloned skbs and
-> duplicated only if needed.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Cc: Devid Antonio Filoni <devid.filoni@egluetechnologies.com>
-> ---
-> changes v2:
-> - migrate it to SKB_EXT
+INET_MATCH() runs without holding a lock on the socket.
 
-The use of SKB_EXT seems to be very costly to just store a boolean value.
+We probably need to annotate most reads.
 
-What I could see from some of the other SKB_EXT users this extension 
-(which performs alloc & COW) is used in special circumstances.
+This patch makes INET_MATCH() an inline function
+to ease our changes.
 
-With your suggestion this additional effort is needed for every CAN 
-related skb.
+v2:
 
-So at least for this use-case extending struct can_skb_priv seems to be 
-more efficient.
+We remove the 32bit version of it, as modern compilers
+should generate the same code really, no need to
+try to be smarter.
 
-https://elixir.bootlin.com/linux/latest/source/include/linux/can/skb.h#L44
+Also make 'struct net *net' the first argument.
 
-We might get into problems with PF_PACKET sockets when extending the 
-can_skb_priv length beyond HH_DATA_MOD, see:
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
 
-https://elixir.bootlin.com/linux/latest/source/include/linux/can/skb.h#L99
+Sent as a standalone patch to not spam netdev@ list.
 
-But for now I'm not sure that SKB_EXT isn't too heavy to store that 
-single flag.
+ include/net/inet_hashtables.h | 33 +++++++++++++++------------------
+ include/net/sock.h            |  3 ---
+ net/ipv4/inet_hashtables.c    | 15 +++++----------
+ net/ipv4/udp.c                |  3 +--
+ 4 files changed, 21 insertions(+), 33 deletions(-)
 
-Best regards,
-Oliver
+diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
+index 98e1ec1a14f0382d1f4f8e85fe5ac2a056d2d6bc..e44e410813d0f469131f54cf3372458a0340d5cf 100644
+--- a/include/net/inet_hashtables.h
++++ b/include/net/inet_hashtables.h
+@@ -295,7 +295,6 @@ static inline struct sock *inet_lookup_listener(struct net *net,
+ 	((__force __portpair)(((__u32)(__dport) << 16) | (__force __u32)(__be16)(__sport)))
+ #endif
+ 
+-#if (BITS_PER_LONG == 64)
+ #ifdef __BIG_ENDIAN
+ #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
+ 	const __addrpair __name = (__force __addrpair) ( \
+@@ -307,24 +306,22 @@ static inline struct sock *inet_lookup_listener(struct net *net,
+ 				   (((__force __u64)(__be32)(__daddr)) << 32) | \
+ 				   ((__force __u64)(__be32)(__saddr)))
+ #endif /* __BIG_ENDIAN */
+-#define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif, __sdif) \
+-	(((__sk)->sk_portpair == (__ports))			&&	\
+-	 ((__sk)->sk_addrpair == (__cookie))			&&	\
+-	 (((__sk)->sk_bound_dev_if == (__dif))			||	\
+-	  ((__sk)->sk_bound_dev_if == (__sdif)))		&&	\
+-	 net_eq(sock_net(__sk), (__net)))
+-#else /* 32-bit arch */
+-#define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
+-	const int __name __deprecated __attribute__((unused))
+ 
+-#define INET_MATCH(__sk, __net, __cookie, __saddr, __daddr, __ports, __dif, __sdif) \
+-	(((__sk)->sk_portpair == (__ports))		&&		\
+-	 ((__sk)->sk_daddr	== (__saddr))		&&		\
+-	 ((__sk)->sk_rcv_saddr	== (__daddr))		&&		\
+-	 (((__sk)->sk_bound_dev_if == (__dif))		||		\
+-	  ((__sk)->sk_bound_dev_if == (__sdif)))	&&		\
+-	 net_eq(sock_net(__sk), (__net)))
+-#endif /* 64-bit arch */
++static inline bool INET_MATCH(struct net *net, const struct sock *sk,
++			      const __addrpair cookie, const __portpair ports,
++			      int dif, int sdif)
++{
++	int bound_dev_if;
++
++	if (!net_eq(sock_net(sk), net) ||
++	    sk->sk_portpair != ports ||
++	    sk->sk_addrpair != cookie)
++	        return false;
++
++	/* Paired with WRITE_ONCE() from sock_bindtoindex_locked() */
++	bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
++	return bound_dev_if == dif || bound_dev_if == sdif;
++}
+ 
+ /* Sockets in TCP_CLOSE state are _always_ taken out of the hash, so we need
+  * not check it for lookups anymore, thanks Alexey. -DaveM
+diff --git a/include/net/sock.h b/include/net/sock.h
+index 73063c88a2499b31c1e8d25dc157d21f93b02bf5..01edfde4257d697f2a2c88ef704a3849af4e5305 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -161,9 +161,6 @@ typedef __u64 __bitwise __addrpair;
+  *	for struct sock and struct inet_timewait_sock.
+  */
+ struct sock_common {
+-	/* skc_daddr and skc_rcv_saddr must be grouped on a 8 bytes aligned
+-	 * address on 64bit arches : cf INET_MATCH()
+-	 */
+ 	union {
+ 		__addrpair	skc_addrpair;
+ 		struct {
+diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
+index a5d57fa679caa47ec31ea4b1de3c45f93be4cd13..16a8440083f7e4bebd5de51ddb41b3d886b233cd 100644
+--- a/net/ipv4/inet_hashtables.c
++++ b/net/ipv4/inet_hashtables.c
+@@ -410,13 +410,11 @@ struct sock *__inet_lookup_established(struct net *net,
+ 	sk_nulls_for_each_rcu(sk, node, &head->chain) {
+ 		if (sk->sk_hash != hash)
+ 			continue;
+-		if (likely(INET_MATCH(sk, net, acookie,
+-				      saddr, daddr, ports, dif, sdif))) {
++		if (likely(INET_MATCH(net, sk, acookie, ports, dif, sdif))) {
+ 			if (unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
+ 				goto out;
+-			if (unlikely(!INET_MATCH(sk, net, acookie,
+-						 saddr, daddr, ports,
+-						 dif, sdif))) {
++			if (unlikely(!INET_MATCH(net, sk, acookie,
++						 ports, dif, sdif))) {
+ 				sock_gen_put(sk);
+ 				goto begin;
+ 			}
+@@ -465,8 +463,7 @@ static int __inet_check_established(struct inet_timewait_death_row *death_row,
+ 		if (sk2->sk_hash != hash)
+ 			continue;
+ 
+-		if (likely(INET_MATCH(sk2, net, acookie,
+-					 saddr, daddr, ports, dif, sdif))) {
++		if (likely(INET_MATCH(net, sk2, acookie, ports, dif, sdif))) {
+ 			if (sk2->sk_state == TCP_TIME_WAIT) {
+ 				tw = inet_twsk(sk2);
+ 				if (twsk_unique(sk, sk2, twp))
+@@ -532,9 +529,7 @@ static bool inet_ehash_lookup_by_sk(struct sock *sk,
+ 		if (esk->sk_hash != sk->sk_hash)
+ 			continue;
+ 		if (sk->sk_family == AF_INET) {
+-			if (unlikely(INET_MATCH(esk, net, acookie,
+-						sk->sk_daddr,
+-						sk->sk_rcv_saddr,
++			if (unlikely(INET_MATCH(net, esk, acookie,
+ 						ports, dif, sdif))) {
+ 				return true;
+ 			}
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 9d5071c79c9599aa973b80869b7768a68a508cc2..53342ce17172722d51a5db34ca9f1d5c61fb82de 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -2563,8 +2563,7 @@ static struct sock *__udp4_lib_demux_lookup(struct net *net,
+ 	struct sock *sk;
+ 
+ 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
+-		if (INET_MATCH(sk, net, acookie, rmt_addr,
+-			       loc_addr, ports, dif, sdif))
++		if (INET_MATCH(net, sk, acookie, ports, dif, sdif))
+ 			return sk;
+ 		/* Only check first socket in chain */
+ 		break;
+-- 
+2.36.0.550.gb090851708-goog
 
-
-> 
->   drivers/net/can/vxcan.c |  4 ++++
->   include/linux/can/skb.h |  4 ++++
->   include/linux/skbuff.h  |  3 +++
->   net/can/Kconfig         |  1 +
->   net/can/af_can.c        |  5 +++++
->   net/can/raw.c           | 10 ++++++++--
->   net/core/skbuff.c       |  7 +++++++
->   7 files changed, 32 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/can/vxcan.c b/drivers/net/can/vxcan.c
-> index 577a80300514..93701a698008 100644
-> --- a/drivers/net/can/vxcan.c
-> +++ b/drivers/net/can/vxcan.c
-> @@ -39,6 +39,7 @@ static netdev_tx_t vxcan_xmit(struct sk_buff *oskb, struct net_device *dev)
->   	struct net_device *peer;
->   	struct canfd_frame *cfd = (struct canfd_frame *)oskb->data;
->   	struct net_device_stats *peerstats, *srcstats = &dev->stats;
-> +	struct can_skb_ext *can_ext;
->   	struct sk_buff *skb;
->   	u8 len;
->   
-> @@ -66,6 +67,9 @@ static netdev_tx_t vxcan_xmit(struct sk_buff *oskb, struct net_device *dev)
->   	skb->pkt_type   = PACKET_BROADCAST;
->   	skb->dev        = peer;
->   	skb->ip_summed  = CHECKSUM_UNNECESSARY;
-> +	can_ext = skb_ext_add(skb, SKB_EXT_CAN);
-> +	if (can_ext)
-> +		can_ext->local_origin = false;
->   
->   	len = cfd->can_id & CAN_RTR_FLAG ? 0 : cfd->len;
->   	if (netif_rx(skb) == NET_RX_SUCCESS) {
-> diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
-> index fdb22b00674a..401b08890d74 100644
-> --- a/include/linux/can/skb.h
-> +++ b/include/linux/can/skb.h
-> @@ -55,6 +55,10 @@ struct can_skb_priv {
->   	struct can_frame cf[];
->   };
->   
-> +struct can_skb_ext {
-> +	bool local_origin;
-> +};
-> +
->   static inline struct can_skb_priv *can_skb_prv(struct sk_buff *skb)
->   {
->   	return (struct can_skb_priv *)(skb->head);
-> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> index 3270cb72e4d8..d39e70e5f7f2 100644
-> --- a/include/linux/skbuff.h
-> +++ b/include/linux/skbuff.h
-> @@ -4563,6 +4563,9 @@ enum skb_ext_id {
->   #endif
->   #if IS_ENABLED(CONFIG_MCTP_FLOWS)
->   	SKB_EXT_MCTP,
-> +#endif
-> +#if IS_ENABLED(CONFIG_CAN)
-> +	SKB_EXT_CAN,
->   #endif
->   	SKB_EXT_NUM, /* must be last */
->   };
-> diff --git a/net/can/Kconfig b/net/can/Kconfig
-> index a9ac5ffab286..eb826e3771fe 100644
-> --- a/net/can/Kconfig
-> +++ b/net/can/Kconfig
-> @@ -5,6 +5,7 @@
->   
->   menuconfig CAN
->   	tristate "CAN bus subsystem support"
-> +	select SKB_EXTENSIONS
->   	help
->   	  Controller Area Network (CAN) is a slow (up to 1Mbit/s) serial
->   	  communications protocol. Development of the CAN bus started in
-> diff --git a/net/can/af_can.c b/net/can/af_can.c
-> index 1fb49d51b25d..329c540d3ddf 100644
-> --- a/net/can/af_can.c
-> +++ b/net/can/af_can.c
-> @@ -201,6 +201,7 @@ int can_send(struct sk_buff *skb, int loop)
->   	struct sk_buff *newskb = NULL;
->   	struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
->   	struct can_pkg_stats *pkg_stats = dev_net(skb->dev)->can.pkg_stats;
-> +	struct can_skb_ext *can_ext;
->   	int err = -EINVAL;
->   
->   	if (skb->len == CAN_MTU) {
-> @@ -240,6 +241,10 @@ int can_send(struct sk_buff *skb, int loop)
->   	skb_reset_network_header(skb);
->   	skb_reset_transport_header(skb);
->   
-> +	can_ext = skb_ext_add(skb, SKB_EXT_CAN);
-> +	if (can_ext)
-> +		can_ext->local_origin = true;
-> +
->   	if (loop) {
->   		/* local loopback of sent CAN frames */
->   
-> diff --git a/net/can/raw.c b/net/can/raw.c
-> index b7dbb57557f3..cba18cdf017f 100644
-> --- a/net/can/raw.c
-> +++ b/net/can/raw.c
-> @@ -121,6 +121,7 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
->   {
->   	struct sock *sk = (struct sock *)data;
->   	struct raw_sock *ro = raw_sk(sk);
-> +	struct can_skb_ext *can_ext;
->   	struct sockaddr_can *addr;
->   	struct sk_buff *skb;
->   	unsigned int *pflags;
-> @@ -173,8 +174,13 @@ static void raw_rcv(struct sk_buff *oskb, void *data)
->   	/* add CAN specific message flags for raw_recvmsg() */
->   	pflags = raw_flags(skb);
->   	*pflags = 0;
-> -	if (oskb->sk)
-> -		*pflags |= MSG_DONTROUTE;
-> +
-> +	can_ext = skb_ext_find(oskb, SKB_EXT_CAN);
-> +	if (can_ext) {
-> +		if (can_ext->local_origin)
-> +			*pflags |= MSG_DONTROUTE;
-> +	}
-> +
->   	if (oskb->sk == sk)
->   		*pflags |= MSG_CONFIRM;
->   
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 475183f37891..5a5409ccb767 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -61,6 +61,7 @@
->   #include <linux/if_vlan.h>
->   #include <linux/mpls.h>
->   #include <linux/kcov.h>
-> +#include <linux/can/skb.h>
->   
->   #include <net/protocol.h>
->   #include <net/dst.h>
-> @@ -4338,6 +4339,9 @@ static const u8 skb_ext_type_len[] = {
->   #if IS_ENABLED(CONFIG_MCTP_FLOWS)
->   	[SKB_EXT_MCTP] = SKB_EXT_CHUNKSIZEOF(struct mctp_flow),
->   #endif
-> +#if IS_ENABLED(CONFIG_CAN)
-> +	[SKB_EXT_CAN] = SKB_EXT_CHUNKSIZEOF(struct can_skb_ext),
-> +#endif
->   };
->   
->   static __always_inline unsigned int skb_ext_total_length(void)
-> @@ -4357,6 +4361,9 @@ static __always_inline unsigned int skb_ext_total_length(void)
->   #endif
->   #if IS_ENABLED(CONFIG_MCTP_FLOWS)
->   		skb_ext_type_len[SKB_EXT_MCTP] +
-> +#endif
-> +#if IS_ENABLED(CONFIG_CAN)
-> +		skb_ext_type_len[SKB_EXT_CAN] +
->   #endif
->   		0;
->   }
