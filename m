@@ -2,114 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BE89052476D
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:53:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C149C524743
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351195AbiELHxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 03:53:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44256 "EHLO
+        id S1351086AbiELHqu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 03:46:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346458AbiELHxF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:53:05 -0400
-X-Greylist: delayed 476 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 12 May 2022 00:53:04 PDT
-Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C46E252B4
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:53:03 -0700 (PDT)
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id E5A742060D;
-        Thu, 12 May 2022 09:45:05 +0200 (CEST)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id GUncMoDAUZUE; Thu, 12 May 2022 09:45:05 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 05520205E7;
-        Thu, 12 May 2022 09:45:05 +0200 (CEST)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id E981B80004A;
-        Thu, 12 May 2022 09:45:04 +0200 (CEST)
-Received: from mbx-essen-02.secunet.de (10.53.40.198) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 12 May 2022 09:45:04 +0200
-Received: from moon.secunet.de (172.18.149.1) by mbx-essen-02.secunet.de
- (10.53.40.198) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
- 2022 09:45:04 +0200
-Date:   Thu, 12 May 2022 09:44:57 +0200
-From:   Antony Antony <antony.antony@secunet.com>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-CC:     <netdev@vger.kernel.org>, Tobias Brunner <tobias@strongswan.org>
-Subject: [PATCH RFC ipsec] xfrm: fix panic in xfrm_delete from userspace on
- ARM 32
-Message-ID: <00959f33ee52c4b3b0084d42c430418e502db554.1652340703.git.antony.antony@secunet.com>
-Reply-To: <antony.antony@secunet.com>
+        with ESMTP id S1351132AbiELHqt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:46:49 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305E148E45;
+        Thu, 12 May 2022 00:46:48 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24C3saF9023733;
+        Thu, 12 May 2022 07:46:03 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=u/HX+YIQDemSbo0tofUx+It043BrUiawINxAJnsesf0=;
+ b=EUPTfN/Qwj6fXPZuHJ7NxzBywDvwNAm5f/pNKgPvL1/uhB+nybwvpgIgJ6mpsYidM9kG
+ D2z8qye3q1yvA8wsTvGHX2Lf9F1XjO8xE3SWB53nixSbHDic9VWC3ibLR6lALoIJR5Kr
+ HVG2wB3NJJjwvNkAmP+lxUaOGRXoISRBb8MItIOJXaKX+iq7YuHdFotJzhydRNd7hwnL
+ +mEVhzfsqgT54PuZn0JIDDyR/QG6PHwMj73TB8wvsQAgp9YuTZ2wI5ulyrM5sSxFZHOt
+ 3T1NZrggfjvTsZdPtsQKJ9e1Ac9zErFn1pIScWewZQlu8ZDnlcr54rW91BYpQOQhbmd/ ZA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0tre3rga-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 07:46:03 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24C7YXou012661;
+        Thu, 12 May 2022 07:46:02 GMT
+Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0tre3rfh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 07:46:02 +0000
+Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
+        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24C7bbh7015479;
+        Thu, 12 May 2022 07:45:59 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma03fra.de.ibm.com with ESMTP id 3g0kn78h57-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 07:45:59 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24C7jun936962584
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 12 May 2022 07:45:57 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DA89CA4055;
+        Thu, 12 May 2022 07:45:56 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C4873A404D;
+        Thu, 12 May 2022 07:45:48 +0000 (GMT)
+Received: from hbathini-workstation.ibm.com.com (unknown [9.211.109.30])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 12 May 2022 07:45:48 +0000 (GMT)
+From:   Hari Bathini <hbathini@linux.ibm.com>
+To:     bpf@vger.kernel.org, linuxppc-dev <linuxppc-dev@lists.ozlabs.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        netdev@vger.kernel.org,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jordan Niethe <jniethe5@gmail.com>
+Subject: [PATCH 0/5] Atomics support for eBPF on powerpc
+Date:   Thu, 12 May 2022 13:15:41 +0530
+Message-Id: <20220512074546.231616-1-hbathini@linux.ibm.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-Organization: secunet
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-essen-02.secunet.de (10.53.40.198)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: omjGLebeLYNhEoo0IG3X2s8bSLP1n9Eu
+X-Proofpoint-ORIG-GUID: hSg7q-ZNvNhzsiuXlMeeVPo83_4_SAXe
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-11_07,2022-05-12_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ malwarescore=0 clxscore=1011 bulkscore=0 adultscore=0 mlxlogscore=683
+ priorityscore=1501 suspectscore=0 phishscore=0 spamscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205120034
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A kernel panic was reported on ARM 32 architecture.
-In spite of initialization, x = kmem_cache_zalloc(xfrm_state_cache, GFP_ATOMIC),
-x->mapping_maxage appears to be nozero and cause kernel panic in
-xfrm_state_delete().
+This patchset adds atomic operations to the eBPF instruction set on
+powerpc. The instructions that are added here can be summarised with
+this list of kernel operations for ppc64:
 
-https://github.com/strongswan/strongswan/issues/992
+* atomic[64]_[fetch_]add
+* atomic[64]_[fetch_]and
+* atomic[64]_[fetch_]or
+* atomic[64]_[fetch_]xor
+* atomic[64]_xchg
+* atomic[64]_cmpxchg
 
-(__xfrm_state_delete) from [<c091ad58>] (xfrm_state_delete+0x24/0x44)
-(xfrm_state_delete) from [<bf4c31e4>] (xfrm_del_sa+0x94/0xe4 [xfrm_user])
-(xfrm_del_sa [xfrm_user]) from [<bf4c2180>] (xfrm_user_rcv_msg+0xe0/0x1d0 [xfrm_user])
-(xfrm_user_rcv_msg [xfrm_user]) from [<c0878da4>] (netlink_rcv_skb+0xd8/0x148)
-(netlink_rcv_skb) from [<bf4c1724>] (xfrm_netlink_rcv+0x2c/0x48 [xfrm_user])
-(xfrm_netlink_rcv [xfrm_user]) from [<c0878408>] (netlink_unicast+0x208/0x31c)
-(netlink_unicast) from [<c0878710>] (netlink_sendmsg+0x1f4/0x468)
-(netlink_sendmsg) from [<c07e1408>] (__sys_sendto+0xd4/0x13c)
+and this list of kernel operations for ppc32:
 
-Even if x->mapping_maxage is non zero I can't explain the cause of panic.
-However, roth-m reports setting  x->mapping_maxage = 0 fix the panic!
+* atomic_[fetch_]add
+* atomic_[fetch_]and
+* atomic_[fetch_]or
+* atomic_[fetch_]xor
+* atomic_xchg
+* atomic_cmpxchg
 
-I am still not sure of the cause. So I proposing the fix as an RFC.
-Anyone has experience with nondeterministic kmem_cache_zalloc() on 32 bit ARM hardware?
-Note other initializations in xfrm_state_alloc() x->replay_maxage = 0. I
-wonder why those were added when there is kmem_cache_zalloc call above.
+The following are left out of scope for this effort:
 
-The bug report mentioned OpenWRT tool chain and OpenWRT kernel.
+* 64 bit operations on ppc32.
+* Explicit memory barriers, 16 and 8 bit operations on both ppc32
+  & ppc64.
 
-Fixes: 4e484b3e969b ("xfrm: rate limit SA mapping change message to user space")
-Reported-by: https://github.com/roth-m
-Suggested-by: Tobias Brunner <tobias@strongswan.org>
-Signed-off-by: Antony Antony <antony.antony@secunet.com>
----
- net/xfrm/xfrm_state.c | 3 +++
- 1 file changed, 3 insertions(+)
+The first patch adds support for bitwsie atomic operations on ppc64.
+The next patch adds fetch variant support for these instructions. The
+third patch adds support for xchg and cmpxchg atomic operations on
+ppc64. Patch #4 adds support for 32-bit atomic bitwise operations on
+ppc32. patch #5 adds support for xchg and cmpxchg atomic operations
+on ppc32.
 
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index b749935152ba..1724a9bd232e 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -654,6 +654,9 @@ struct xfrm_state *xfrm_state_alloc(struct net *net)
- 		x->lft.hard_packet_limit = XFRM_INF;
- 		x->replay_maxage = 0;
- 		x->replay_maxdiff = 0;
-+		x->mapping_maxage = 0;
-+		x->new_mapping = 0;
-+		x->new_mapping_sport = 0;
- 		spin_lock_init(&x->lock);
- 	}
- 	return x;
---
-2.30.2
+
+Hari Bathini (5):
+  bpf ppc64: add support for BPF_ATOMIC bitwise operations
+  bpf ppc64: add support for atomic fetch operations
+  bpf ppc64: Add instructions for atomic_[cmp]xchg
+  bpf ppc32: add support for BPF_ATOMIC bitwise operations
+  bpf ppc32: Add instructions for atomic_[cmp]xchg
+
+ arch/powerpc/net/bpf_jit_comp32.c | 62 +++++++++++++++++-----
+ arch/powerpc/net/bpf_jit_comp64.c | 87 +++++++++++++++++++++----------
+ 2 files changed, 108 insertions(+), 41 deletions(-)
+
+-- 
+2.35.1
 
