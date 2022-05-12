@@ -2,165 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD945241EB
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 03:18:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BA452420E
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 03:30:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349844AbiELBSU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 11 May 2022 21:18:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58900 "EHLO
+        id S232155AbiELBaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 11 May 2022 21:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348697AbiELBST (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 21:18:19 -0400
-Received: from m1522.mail.126.com (m1522.mail.126.com [220.181.15.22])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6D669663F5;
-        Wed, 11 May 2022 18:18:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=126.com;
-        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=TY4hf
-        9oZjRQcpUBwi+TDCUxkP/XLrKI2Cg97mkJRFgY=; b=O/Jr93P44meDWT9jD8dCF
-        Ldnf87Qtvs0vgCNL/vNrjOxhY4tKiy7he/AYK0F/qVyb9CYyUvc/569FZV8vU1mM
-        ea41XrPR4Y6qx58mtllA6cuPQP3SLb0opwTxHu2pigFlMAJcBpELV3hEcsikUdt/
-        +83OgJ0miJ5sXn4AQoMxpw=
-Received: from zhaojunkui2008$126.com ( [112.80.34.205] ) by
- ajax-webmail-wmsvr22 (Coremail) ; Thu, 12 May 2022 09:15:53 +0800 (CST)
-X-Originating-IP: [112.80.34.205]
-Date:   Thu, 12 May 2022 09:15:53 +0800 (CST)
-From:   z <zhaojunkui2008@126.com>
-To:     "Vincent MAILHOL" <mailhol.vincent@wanadoo.fr>
-Cc:     "Wolfgang Grandegger" <wg@grandegger.com>,
-        "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jakub Kicinski" <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        =?UTF-8?Q?Stefan_M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bernard@vivo.com
-Subject: Re:Re: [PATCH v2] usb/peak_usb: cleanup code
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20220113(9671e152)
- Copyright (c) 2002-2022 www.mailtech.cn 126com
-In-Reply-To: <CAMZ6RqJpgUkr0i4X4w5GxYKgiu9aX8KvQ3fJ9OB0Ob3kbL2abw@mail.gmail.com>
-References: <20220511130240.790771-1-zhaojunkui2008@126.com>
- <CAMZ6RqJpgUkr0i4X4w5GxYKgiu9aX8KvQ3fJ9OB0Ob3kbL2abw@mail.gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S230274AbiELBaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 11 May 2022 21:30:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8601B174E;
+        Wed, 11 May 2022 18:30:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 3A812CE27DD;
+        Thu, 12 May 2022 01:30:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9579CC34117;
+        Thu, 12 May 2022 01:30:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652319013;
+        bh=m5acg99mSq3zpG/3PXvxW8EnYwk4V14uo7lZl0qIYx0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=aVhYB4aesnC2yqwl7d20vjBh++kf35nLMMDnXTVV3ORIsvHPPS9ggTYycIqaZu+1x
+         eyGkEXrfG9WRVuGHbTg30K0+ZD8BSURYyj+RbI3Q0h2v+VLKUJwlmeuQS7ladgE/Py
+         lUvvgq9ks1NedWXkIjCMNXZi4gH+EylIKwrlgIySHFQiKgMbU1JPE57n3iigh8KTLA
+         n4QctZLYA7eX4eG7m92l53lvcccI5hUdwX/WqPXo8rhsdknvIG5sraCq2mLuiTcSpN
+         vyvdPRUHOVfyhejXPT/USs8VzMkHSCCBeb4PQLjmYbHHidNLW38KFQEFJr/kfxSAtB
+         XbZ0KvrPpPp4g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 72E93E8DBDA;
+        Thu, 12 May 2022 01:30:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Message-ID: <4df6dfee.a5b.180b5d62b98.Coremail.zhaojunkui2008@126.com>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: FsqowACntmLKX3xiYagpAA--.6818W
-X-CM-SenderInfo: p2kd0y5xqn3xasqqmqqrswhudrp/1tbiYAr+qlpEHVXu+QAAs-
-X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_INVALID,
-        DKIM_SIGNED,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v2 0/2] Introduce access remote cpu elem support in
+ BPF percpu map
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165231901346.29050.11394051230756915389.git-patchwork-notify@kernel.org>
+Date:   Thu, 12 May 2022 01:30:13 +0000
+References: <20220511093854.411-1-zhoufeng.zf@bytedance.com>
+In-Reply-To: <20220511093854.411-1-zhoufeng.zf@bytedance.com>
+To:     Feng zhou <zhoufeng.zf@bytedance.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, jolsa@kernel.org, davemarchevsky@fb.com,
+        joannekoong@fb.com, geliang.tang@suse.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        duanxiongchun@bytedance.com, songmuchun@bytedance.com,
+        wangdongdong.6@bytedance.com, cong.wang@bytedance.com,
+        zhouchengming@bytedance.com, yosryahmed@google.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CgpBdCAyMDIyLTA1LTExIDIyOjI4OjQ3LCAiVmluY2VudCBNQUlMSE9MIiA8bWFpbGhvbC52aW5j
-ZW50QHdhbmFkb28uZnI+IHdyb3RlOgo+T24gV2VkLiAxMSBNYXkgMjAyMiBhdCAyMjowMiwgQmVy
-bmFyZCBaaGFvIDx6aGFvanVua3VpMjAwOEAxMjYuY29tPiB3cm90ZToKPj4gVGhlIHZhcmlhYmxl
-IGZpIGFuZCBiaSBvbmx5IHVzZWQgaW4gYnJhbmNoIGlmICghZGV2LT5wcmV2X3NpYmxpbmdzKQo+
-PiAsIGZpICYgYmkgbm90IGttYWxsb2MgaW4gZWxzZSBicmFuY2gsIHNvIG1vdmUga2ZyZWUgaW50
-byBicmFuY2gKPj4gaWYgKCFkZXYtPnByZXZfc2libGluZ3MpLHRoaXMgY2hhbmdlIGlzIHRvIGNs
-ZWFudXAgdGhlIGNvZGUgYSBiaXQuCj4+Cj4+IFNpZ25lZC1vZmYtYnk6IEJlcm5hcmQgWmhhbyA8
-emhhb2p1bmt1aTIwMDhAMTI2LmNvbT4KPj4KPj4gLS0tCj4+IENoYW5nZXMgc2luY2UgVjE6Cj4+
-ICogbW92ZSBhbGwgdGhlIGNvbnRlbnQgb2YgdGhlIGlmICghZGV2LT5wcmV2X3NpYmxpbmdzKSB0
-byBhIG5ldwo+PiBmdW5jdGlvbi4KPj4gLS0tCj4+ICBkcml2ZXJzL25ldC9jYW4vdXNiL3BlYWtf
-dXNiL3BjYW5fdXNiX3Byby5jIHwgNTcgKysrKysrKysrKysrKy0tLS0tLS0tCj4+ICAxIGZpbGUg
-Y2hhbmdlZCwgMzYgaW5zZXJ0aW9ucygrKSwgMjEgZGVsZXRpb25zKC0pCj4+Cj4+IGRpZmYgLS1n
-aXQgYS9kcml2ZXJzL25ldC9jYW4vdXNiL3BlYWtfdXNiL3BjYW5fdXNiX3Byby5jIGIvZHJpdmVy
-cy9uZXQvY2FuL3VzYi9wZWFrX3VzYi9wY2FuX3VzYl9wcm8uYwo+PiBpbmRleCBlYmUwODdmMjU4
-ZTMuLjVlNDcyZmUwODZhOCAxMDA2NDQKPj4gLS0tIGEvZHJpdmVycy9uZXQvY2FuL3VzYi9wZWFr
-X3VzYi9wY2FuX3VzYl9wcm8uYwo+PiArKysgYi9kcml2ZXJzL25ldC9jYW4vdXNiL3BlYWtfdXNi
-L3BjYW5fdXNiX3Byby5jCj4+IEBAIC04NDEsMzIgKzg0MSwyOCBAQCBzdGF0aWMgaW50IHBjYW5f
-dXNiX3Byb19zdG9wKHN0cnVjdCBwZWFrX3VzYl9kZXZpY2UgKmRldikKPj4gICAgICAgICByZXR1
-cm4gMDsKPj4gIH0KPj4KPj4gLS8qCj4+IC0gKiBjYWxsZWQgd2hlbiBwcm9iaW5nIHRvIGluaXRp
-YWxpemUgYSBkZXZpY2Ugb2JqZWN0Lgo+PiAtICovCj4+IC1zdGF0aWMgaW50IHBjYW5fdXNiX3By
-b19pbml0KHN0cnVjdCBwZWFrX3VzYl9kZXZpY2UgKmRldikKPj4gK3N0YXRpYyBpbnQgcGNhbl91
-c2JfcHJvX2luaXRfZmlyc3RfY2hhbm5lbChzdHJ1Y3QgcGVha191c2JfZGV2aWNlICpkZXYsIHN0
-cnVjdCBwY2FuX3VzYl9wcm9faW50ZXJmYWNlICoqdXNiX2lmKQo+PiAgewo+PiAtICAgICAgIHN0
-cnVjdCBwY2FuX3VzYl9wcm9fZGV2aWNlICpwZGV2ID0KPj4gLSAgICAgICAgICAgICAgICAgICAg
-ICAgY29udGFpbmVyX29mKGRldiwgc3RydWN0IHBjYW5fdXNiX3Byb19kZXZpY2UsIGRldik7Cj4+
-IC0gICAgICAgc3RydWN0IHBjYW5fdXNiX3Byb19pbnRlcmZhY2UgKnVzYl9pZiA9IE5VTEw7Cj4+
-IC0gICAgICAgc3RydWN0IHBjYW5fdXNiX3Byb19md2luZm8gKmZpID0gTlVMTDsKPj4gLSAgICAg
-ICBzdHJ1Y3QgcGNhbl91c2JfcHJvX2JsaW5mbyAqYmkgPSBOVUxMOwo+PiArICAgICAgIHN0cnVj
-dCBwY2FuX3VzYl9wcm9faW50ZXJmYWNlICpwdXNiX2lmID0gTlVMTDsKPgo+Tml0cGljayBidXQg
-SSB3b3VsZCBleHBlY3QgdGhlIGFyZ3VtZW50IG9mIHRoZSBmdW5jdGlvbiB0byBiZSBuYW1lZCBw
-dXNiX2lmOgo+Cj5zdHJ1Y3QgcGNhbl91c2JfcHJvX2ludGVyZmFjZSAqKnB1c2JfaWYKPgo+QW5k
-IHRoaXMgdmFyaWFibGUgdG8gYmUgY2FsbCB1c2JfaWY6Cj4KPnN0cnVjdCBwY2FuX3VzYl9wcm9f
-aW50ZXJmYWNlICp1c2JfaWYgPSBOVUxMOwo+Cj5UaGlzIGlzIHRvIGJlIGNvbnNpc3RlbnQgd2l0
-aCBwY2FuX3VzYl9wcm9faW5pdCgpIHdoZXJlIHRoZSBzaW5nbGUKPnBvaW50ZXIgaXMgYWxzbyBu
-YW1lZCB1c2JfaWYgKGFuZCBub3QgcHVzYl9pZikuCj4KPkFsc28sIHlvdSBtaWdodCBhcyB3ZWxs
-IGNvbnNpZGVyIG5vdCB1c2luZyBhbmQgaW50ZXJtZWRpYXRlIHZhcmlhYmxlCj5hbmQganVzdCBk
-byAqcHVzYl9pZiB0aHJvdWdob3V0IGFsbCB0aGlzIGhlbHBlciBmdW5jdGlvbiBpbnN0ZWFkLgo+
-Cj4+ICAgICAgICAgaW50IGVycjsKPj4KPj4gICAgICAgICAvKiBkbyB0aGlzIGZvciAxc3QgY2hh
-bm5lbCBvbmx5ICovCj4+ICAgICAgICAgaWYgKCFkZXYtPnByZXZfc2libGluZ3MpIHsKPj4gKyAg
-ICAgICAgICAgICAgIHN0cnVjdCBwY2FuX3VzYl9wcm9fZndpbmZvICpmaSA9IE5VTEw7Cj4+ICsg
-ICAgICAgICAgICAgICBzdHJ1Y3QgcGNhbl91c2JfcHJvX2JsaW5mbyAqYmkgPSBOVUxMOwo+PiAr
-Cj4+ICAgICAgICAgICAgICAgICAvKiBhbGxvY2F0ZSBuZXRkZXZpY2VzIGNvbW1vbiBzdHJ1Y3R1
-cmUgYXR0YWNoZWQgdG8gZmlyc3Qgb25lICovCj4+IC0gICAgICAgICAgICAgICB1c2JfaWYgPSBr
-emFsbG9jKHNpemVvZihzdHJ1Y3QgcGNhbl91c2JfcHJvX2ludGVyZmFjZSksCj4+ICsgICAgICAg
-ICAgICAgICBwdXNiX2lmID0ga3phbGxvYyhzaXplb2Yoc3RydWN0IHBjYW5fdXNiX3Byb19pbnRl
-cmZhY2UpLAo+PiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBHRlBfS0VSTkVMKTsK
-Pj4gICAgICAgICAgICAgICAgIGZpID0ga21hbGxvYyhzaXplb2Yoc3RydWN0IHBjYW5fdXNiX3By
-b19md2luZm8pLCBHRlBfS0VSTkVMKTsKPj4gICAgICAgICAgICAgICAgIGJpID0ga21hbGxvYyhz
-aXplb2Yoc3RydWN0IHBjYW5fdXNiX3Byb19ibGluZm8pLCBHRlBfS0VSTkVMKTsKPj4gLSAgICAg
-ICAgICAgICAgIGlmICghdXNiX2lmIHx8ICFmaSB8fCAhYmkpIHsKPj4gKyAgICAgICAgICAgICAg
-IGlmICghcHVzYl9pZiB8fCAhZmkgfHwgIWJpKSB7Cj4+ICAgICAgICAgICAgICAgICAgICAgICAg
-IGVyciA9IC1FTk9NRU07Cj4+ICAgICAgICAgICAgICAgICAgICAgICAgIGdvdG8gZXJyX291dDsK
-Pgo+RGlkIHlvdSB0ZXN0IHRoYXQgY29kZT8gSGVyZSwgeW91IGFyZSBrZWVwaW5nIHRoZSBvcmln
-aW5hbCBlcnJfb3V0Cj5sYWJlbCwgY29ycmVjdD8gQXJlbid0IHRoZSB2YXJpYWJsZXMgZmkgYW5k
-IGJpIG91dCBvZiBzY29wZSBhZnRlciB0aGUKPmVycl9vdXQgbGFiZWw/Cj4KPj4gICAgICAgICAg
-ICAgICAgIH0KPj4KPj4gICAgICAgICAgICAgICAgIC8qIG51bWJlciBvZiB0cyBtc2dzIHRvIGln
-bm9yZSBiZWZvcmUgdGFraW5nIG9uZSBpbnRvIGFjY291bnQgKi8KPj4gLSAgICAgICAgICAgICAg
-IHVzYl9pZi0+Y21faWdub3JlX2NvdW50ID0gNTsKPj4gKyAgICAgICAgICAgICAgIHB1c2JfaWYt
-PmNtX2lnbm9yZV9jb3VudCA9IDU7Cj4+Cj4+ICAgICAgICAgICAgICAgICAvKgo+PiAgICAgICAg
-ICAgICAgICAgICogZXhwbGljaXQgdXNlIG9mIGRldl94eHgoKSBpbnN0ZWFkIG9mIG5ldGRldl94
-eHgoKSBoZXJlOgo+PiBAQCAtOTAzLDE4ICs4OTksMTQgQEAgc3RhdGljIGludCBwY2FuX3VzYl9w
-cm9faW5pdChzdHJ1Y3QgcGVha191c2JfZGV2aWNlICpkZXYpCj4+ICAgICAgICAgICAgICAgICAg
-ICAgIHBjYW5fdXNiX3Byby5uYW1lLAo+PiAgICAgICAgICAgICAgICAgICAgICBiaS0+aHdfcmV2
-LCBiaS0+c2VyaWFsX251bV9oaSwgYmktPnNlcmlhbF9udW1fbG8sCj4+ICAgICAgICAgICAgICAg
-ICAgICAgIHBjYW5fdXNiX3Byby5jdHJsX2NvdW50KTsKPj4gKwo+PiArICAgICAgICAgICAgICAg
-a2ZyZWUoYmkpOwo+PiArICAgICAgICAgICAgICAga2ZyZWUoZmkpOwo+PiAgICAgICAgIH0gZWxz
-ZSB7Cj4+IC0gICAgICAgICAgICAgICB1c2JfaWYgPSBwY2FuX3VzYl9wcm9fZGV2X2lmKGRldi0+
-cHJldl9zaWJsaW5ncyk7Cj4+ICsgICAgICAgICAgICAgICBwdXNiX2lmID0gcGNhbl91c2JfcHJv
-X2Rldl9pZihkZXYtPnByZXZfc2libGluZ3MpOwo+PiAgICAgICAgIH0KPgo+U29ycnkgaWYgSSB3
-YXMgbm90IGNsZWFyIGJ1dCBJIHdhcyB0aGlua2luZyBvZiBqdXN0IG1vdmluZyB0aGUgaWYKPmJs
-b2NrIGluIGEgbmV3IGZ1bmN0aW9uIGFuZCBsZWF2aW5nIHRoZSBlbHNlIHBhcnQgb2YgdGhlIG9y
-aWdpbmFsIG9uZQo+KGMuZi4gYmVsb3cpLiBUaGlzIHdheSwgeW91IGxvc2Ugb25lIGxldmVsIG9u
-IGluZGVudGF0aW9uIGFuZCB5b3UgY2FuCj5oYXZlIHRoZSBkZWNsYXJhdGlvbiwgdGhlIGttYWxs
-b2MoKSBhbmQgdGhlIGVycl9vdXQgbGFiZWwgYWxsIGF0IHRoZQo+c2FtZSBpbmRlbnRhdGlvbiBs
-ZXZlbCBpbiB0aGUgZnVuY3Rpb24ncyBtYWluIGJsb2NrLgo+Cj4+IC0gICAgICAgcGRldi0+dXNi
-X2lmID0gdXNiX2lmOwo+PiAtICAgICAgIHVzYl9pZi0+ZGV2W2Rldi0+Y3RybF9pZHhdID0gZGV2
-Owo+PiAtCj4+IC0gICAgICAgLyogc2V0IExFRCBpbiBkZWZhdWx0IHN0YXRlIChlbmQgb2YgaW5p
-dCBwaGFzZSkgKi8KPj4gLSAgICAgICBwY2FuX3VzYl9wcm9fc2V0X2xlZChkZXYsIFBDQU5fVVNC
-UFJPX0xFRF9ERVZJQ0UsIDEpOwo+PiAtCj4+IC0gICAgICAga2ZyZWUoYmkpOwo+PiAtICAgICAg
-IGtmcmVlKGZpKTsKPj4gKyAgICAgICAqdXNiX2lmID0gcHVzYl9pZjsKPj4KPj4gICAgICAgICBy
-ZXR1cm4gMDsKPj4KPj4gQEAgLTkyNiw2ICs5MTgsMjkgQEAgc3RhdGljIGludCBwY2FuX3VzYl9w
-cm9faW5pdChzdHJ1Y3QgcGVha191c2JfZGV2aWNlICpkZXYpCj4+ICAgICAgICAgcmV0dXJuIGVy
-cjsKPj4gIH0KPj4KPj4gKy8qCj4+ICsgKiBjYWxsZWQgd2hlbiBwcm9iaW5nIHRvIGluaXRpYWxp
-emUgYSBkZXZpY2Ugb2JqZWN0Lgo+PiArICovCj4+ICtzdGF0aWMgaW50IHBjYW5fdXNiX3Byb19p
-bml0KHN0cnVjdCBwZWFrX3VzYl9kZXZpY2UgKmRldikKPj4gK3sKPj4gKyAgICAgICBzdHJ1Y3Qg
-cGNhbl91c2JfcHJvX2RldmljZSAqcGRldiA9Cj4+ICsgICAgICAgICAgICAgICAgICAgICAgIGNv
-bnRhaW5lcl9vZihkZXYsIHN0cnVjdCBwY2FuX3VzYl9wcm9fZGV2aWNlLCBkZXYpOwo+PiArICAg
-ICAgIHN0cnVjdCBwY2FuX3VzYl9wcm9faW50ZXJmYWNlICp1c2JfaWYgPSBOVUxMOwo+PiArICAg
-ICAgIGludCBlcnI7Cj4+ICsKPj4gKyAgICAgICBlcnIgPSBwY2FuX3VzYl9wcm9faW5pdF9maXJz
-dF9jaGFubmVsKGRldiwgJnVzYl9pZik7Cj4+ICsgICAgICAgaWYgKGVycikKPj4gKyAgICAgICAg
-ICAgICAgIHJldHVybiBlcnI7Cj4KPkkgd2FzIHRoaW5raW5nIG9mIHRoaXM6Cj4KPiAgICAgICAg
-aWYgKCFkZXYtPnByZXZfc2libGluZ3MpIHsKPiAgICAgICAgICAgICAgZXJyID0gcGNhbl91c2Jf
-cHJvX2luaXRfZmlyc3RfY2hhbm5lbChkZXYsICZ1c2JfaWYpOwo+ICAgICAgICAgICAgICBpZiAo
-ZXJyKQo+ICAgICAgICAgICAgICAgICAgICAgcmV0dXJuIGVycjsKPiAgICAgICB9IGVsc2Ugewo+
-ICAgICAgICAgICAgICAgdXNiX2lmID0gcGNhbl91c2JfcHJvX2Rldl9pZihkZXYtPnByZXZfc2li
-bGluZ3MpOwo+ICAgICAgICB9CgpIaSBWaW5jZW50IE1haWxob2w6CgpTb3JyeSB0aGF0IEkgbWFk
-ZSBhIG1pc3Rha2UsIEkgd2lsbCB2ZXJpZnkgaXQgbG9jYWxseSwgYW5kIHRoZW4gdXBsb2FkIGl0
-IGFnYWluIGFmdGVyIHRoZSB2ZXJpZmljYXRpb24gaXMgT0suClRoYW5rcyEKCkJSLy9CZXJuYXJk
-Cgo+PiArCj4+ICsgICAgICAgcGRldi0+dXNiX2lmID0gdXNiX2lmOwo+PiArICAgICAgIHVzYl9p
-Zi0+ZGV2W2Rldi0+Y3RybF9pZHhdID0gZGV2Owo+PiArCj4+ICsgICAgICAgLyogc2V0IExFRCBp
-biBkZWZhdWx0IHN0YXRlIChlbmQgb2YgaW5pdCBwaGFzZSkgKi8KPj4gKyAgICAgICBwY2FuX3Vz
-Yl9wcm9fc2V0X2xlZChkZXYsIFBDQU5fVVNCUFJPX0xFRF9ERVZJQ0UsIDEpOwo+PiArCj4+ICsg
-ICAgICAgcmV0dXJuIDA7Cj4+ICt9Cj4+ICsKPj4gIHN0YXRpYyB2b2lkIHBjYW5fdXNiX3Byb19l
-eGl0KHN0cnVjdCBwZWFrX3VzYl9kZXZpY2UgKmRldikKPj4gIHsKPj4gICAgICAgICBzdHJ1Y3Qg
-cGNhbl91c2JfcHJvX2RldmljZSAqcGRldiA9Cj4+IC0tCj4+IDIuMzMuMQo+Pgo=
+Hello:
+
+This series was applied to bpf/bpf-next.git (master)
+by Alexei Starovoitov <ast@kernel.org>:
+
+On Wed, 11 May 2022 17:38:52 +0800 you wrote:
+> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+> 
+> Trace some functions, such as enqueue_task_fair, need to access the
+> corresponding cpu, not the current cpu, and bpf_map_lookup_elem percpu map
+> cannot do it. So add bpf_map_lookup_percpu_elem to accomplish it for
+> percpu_array_map, percpu_hash_map, lru_percpu_hash_map.
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next,v2,1/2] bpf: add bpf_map_lookup_percpu_elem for percpu map
+    https://git.kernel.org/bpf/bpf-next/c/07343110b293
+  - [bpf-next,v2,2/2] selftests/bpf: add test case for bpf_map_lookup_percpu_elem
+    https://git.kernel.org/bpf/bpf-next/c/ed7c13776e20
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
