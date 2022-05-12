@@ -2,194 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D036524AD5
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 12:53:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 90476524ADF
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 12:55:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352866AbiELKx2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 06:53:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39346 "EHLO
+        id S1352854AbiELKzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 06:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352864AbiELKx0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 06:53:26 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 045226B0AD;
-        Thu, 12 May 2022 03:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652352805; x=1683888805;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=6ifFaegiTB9Q0i3bgblKyi5ZOfuvn61D6W5A4GL/iY0=;
-  b=AxxVUpHhy/vEWE4Sg29MDdmMCTYnC6btFfngca25+RMHCaD0UdSHbbj1
-   d1hPkOjHPtI9f/fJ06KBiOxmxa/Cf5V/i1M5WoB4AmO8AlOaW3IYsPH2c
-   5a2RS0+LThd2DBZqxZK9ir6F5UfVJhUqHLe+YqWdyXX35nE/JXhvQ3SdM
-   tO01xKDX/Yu9TWZu0Pq7ehpqtZTwpYXPOowdcV/sB9sAuMDPurxAi+t9B
-   N4Bv60bnkGDzgw126YEcPd6Q5MKajbT3ncVmlHvm9KzSPOKK2YiqFSIW6
-   uZ54WzQs9oY/ssAfGGayTCi7xmzipakzt/L3MqdsmJELYs5DsP/afuEl+
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10344"; a="257512369"
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
-   d="scan'208";a="257512369"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 May 2022 03:53:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,219,1647327600"; 
-   d="scan'208";a="711871629"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by fmsmga001.fm.intel.com with ESMTP; 12 May 2022 03:53:22 -0700
-Received: from orsmsx612.amr.corp.intel.com (10.22.229.25) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 12 May 2022 03:53:22 -0700
-Received: from orsmsx605.amr.corp.intel.com (10.22.229.18) by
- ORSMSX612.amr.corp.intel.com (10.22.229.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Thu, 12 May 2022 03:53:21 -0700
-Received: from ORSEDG602.ED.cps.intel.com (10.7.248.7) by
- orsmsx605.amr.corp.intel.com (10.22.229.18) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Thu, 12 May 2022 03:53:21 -0700
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.173)
- by edgegateway.intel.com (134.134.137.103) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Thu, 12 May 2022 03:53:21 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XzTlW/YLaHbu7DVuJEAXqNpoH/WPKqprH3EVdjdvwaCiwlDVg6Lic4DjaKbgYJLveu2fCB1TOfXCQTESAptfp4UU7cyFoVDS6NqqCYl8l9r2dGosVgEQrxKkwo5ev+ukfUWi5HOiyXLzwjU2JGbuQ3Wx+Z7Bg3HiCu4iaYp4D1guoJAnr8lL/q3lwUuhA1oIs+H78W2HR/yYezwB3ipvCkc44+esPolUvNyKXJD29rkgolLYvxxN9uTgmQh3LPtWy6joG4adV8SW6CgQEwPKLU2ZIuA2j5yHxHNYchJB42Aary1tJYQhTtH5dxTMWj2cXWAX2fQq4HscxQ/BKvoCSw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6ifFaegiTB9Q0i3bgblKyi5ZOfuvn61D6W5A4GL/iY0=;
- b=BZ0oBLQN56WRY+bUisy0RImPAlYLJvd0O5WeaGpfcOYkEMrstb4Ns5uNLy2UDSyeYC6aI4NtIoiyl8RsGvvqCcy6O/x8JafyDycOEr7EKoTS7MgBeT782vuQH0035q0vg6q+6VUqLzL48U7w8pHt7QwEu6bOpOnlVWZ4FNlSI1fS2OF9YA3YkKQPeJ75f/ITFEXrlD+CKnejRyypzjYg5o10bjOzsYh2hEabTsBZRr+CUPYot7HG2kTR7e6+3IGM4kIXhuK+jBWs9Nbgj698d7McEl35FEGSYkPtTzFu1kXG7QHK/Z5O8NRHfUDyyKJpyG6FbMWESpjsv0xCz5ZPRQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from MW3PR11MB4554.namprd11.prod.outlook.com (2603:10b6:303:5d::7)
- by BYAPR11MB2583.namprd11.prod.outlook.com (2603:10b6:a02:c6::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Thu, 12 May
- 2022 10:53:20 +0000
-Received: from MW3PR11MB4554.namprd11.prod.outlook.com
- ([fe80::c0e3:dade:6afd:ec6b]) by MW3PR11MB4554.namprd11.prod.outlook.com
- ([fe80::c0e3:dade:6afd:ec6b%5]) with mapi id 15.20.5250.014; Thu, 12 May 2022
- 10:53:19 +0000
-From:   "Penigalapati, Sandeep" <sandeep.penigalapati@intel.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "toke@redhat.com" <toke@redhat.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "jbrouer@redhat.com" <jbrouer@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Subject: RE: [Intel-wired-lan] [PATCH v2 net-next] ixgbe: add xdp frags
- support to ndo_xdp_xmit
-Thread-Topic: [Intel-wired-lan] [PATCH v2 net-next] ixgbe: add xdp frags
- support to ndo_xdp_xmit
-Thread-Index: AQHYWW/TiqvSVLq/qEegoKpFJzMLna0bKaoA
-Date:   Thu, 12 May 2022 10:53:19 +0000
-Message-ID: <MW3PR11MB455432D1387610945334C1BF9CCB9@MW3PR11MB4554.namprd11.prod.outlook.com>
-References: <e36724d3cdfbedf9af1a2a7f47ebd60aa7932f83.1650978540.git.lorenzo@kernel.org>
-In-Reply-To: <e36724d3cdfbedf9af1a2a7f47ebd60aa7932f83.1650978540.git.lorenzo@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-reaction: no-action
-dlp-version: 11.6.401.20
-dlp-product: dlpe-windows
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: fc21545f-e86e-4779-72a2-08da3405a08a
-x-ms-traffictypediagnostic: BYAPR11MB2583:EE_
-x-microsoft-antispam-prvs: <BYAPR11MB2583AD2E19F3830A5D6450259CCB9@BYAPR11MB2583.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: I9OQZ5f6sIJla2HmH6ipV7yxBmp8F3GY43GrGg7bnl9O7Tjo5lkjmN73mSBHPvB/NJh6CpJIb1LItRzDiQaq8YIS3aAzhoAK/UI5MOfRnXK0fputm/6drhe/R9/fcauDHr5t6gKcpLcaN+LHkulblV5VtmV1UQoGyPXiIyYHgJTHzFGQm5ppYTWk0+JByGNN6HLa3N08Pu7rssKPHWDaDFJgvada9nLgY0egmns/q05Z8iu0M8aHPb4bRS5sS1/g8RrVD5HsVuTKWMJvDHmSs2OfveJk6BYeHOGuF7Cx4EMEKijMhjQ3MQTj7wqGTJ14m2D+U1iLmvIQTXcnXomnz2NCDKAcO7mObEPttz0TAImuwIwSgPhxPRmv/SSPz8kzR/UWlXfbsih0uw0xRHtgiqEek3AALqcq3QFiuGlJRo39cIdrQz3BdYq3RL6hdU9p2kClorPc4Eyk59ngYIIF5Lan328LrvLPWB2raliyYSwTqS5F+RThX6g9IWJrp7b2iNtR9Mr/DNIgpsqYMkjx2GIZGU46UJImFsi7RgM32vY4X+R97ii4ZscBhvs360weIzxyHf2nUxXZ+WeY5ChaMRyym4dbGQV8Ksv9WQjF+I4SOt3lmgyXvrEs0V7L8Iu583HFj49UD398yoYwiY/9hv7kadPyCq0UXKsBWyLEyfpZD9gZxUmiXlJUsAgHMFH34tjmMjk36ccvWMoTbevDtg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW3PR11MB4554.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(52536014)(6506007)(55016003)(2906002)(86362001)(316002)(33656002)(5660300002)(186003)(107886003)(4744005)(66476007)(66556008)(66446008)(8936002)(76116006)(83380400001)(66946007)(7696005)(54906003)(8676002)(26005)(64756008)(4326008)(82960400001)(7416002)(110136005)(71200400001)(38070700005)(508600001)(38100700002)(122000001)(9686003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?RccQEym2rCt8SAttp2rG9/5TXrqfHkLqJKSMzepHj/i5jf6uhUiBrLVCIgr9?=
- =?us-ascii?Q?09oois7ysWRMdEPSqWmfPzf5kLSVFKX1GJgXP2WrDZlqLx15batVtg7DPrF3?=
- =?us-ascii?Q?ycxNcpLsrK/VNQFqhFz9tK+1nfflnnNijCdbOSkhC9DnMq6Id9PvZ28yE7E3?=
- =?us-ascii?Q?ecAEBMZEau2A5HORAyMa6SCPmwYhyiCsMbCKRlRtaGTsuejX72EQyDjs7zQa?=
- =?us-ascii?Q?oHqldx+kl7U+/HNsHQ7gzE/YiR1x3lxj7/ONoosKR9IRNwhoE3eo9Q0D11s4?=
- =?us-ascii?Q?PWMPfJAzsA7fBQl/58gJMobNFiae4KerX6sNitksF0+BnCWQR4OetM9Ty06U?=
- =?us-ascii?Q?kiVWulEjgt90ecPPdhhldh3zhimM4n5zhLHDPZ9hV7iAJeM4OmR4iBb1To0V?=
- =?us-ascii?Q?ZjccADO9xL867RJhwhOwGP3IC0jhcUGR6zeRIAxK8daQ56yg0LX1cZZaDdRK?=
- =?us-ascii?Q?AhFARxMjETzI/shDkmKNw7TMzVsd4SH13okXkKvcmp4ypSqHOtpqLtq+riS4?=
- =?us-ascii?Q?D9pc5w+7K3BYXSDnBVYwSePqYvDcMkRPVFNZRGVbqUgu2+eIQxtjdX7WAVke?=
- =?us-ascii?Q?f+aHsTO7Ms7StkeK3kUexrJvRS3sYwYmN+8awl4AQ50Rn/3vMVp7Xl0ZedJi?=
- =?us-ascii?Q?FBPEq60Tsl0FlxwFlRBRpmUa+xkOX5atRnZwH3pfPnbNB1uTQgELZTxUQ62y?=
- =?us-ascii?Q?npTpDMM/nIRLoHii5C52tvJi4GSniTEI+Bf7o/DqDX+8zBdZULo3cVA9iIzI?=
- =?us-ascii?Q?J9KoFd+23JFDSH2rnCTXWeQWHwbiBnFQQRqknfLMuajTH0GYf15ZeSW46mYo?=
- =?us-ascii?Q?eudo29SHAps9EDTQKKvpVUnSdai2hza8jqzTrU9UssPem7yDfzSh7Aa9RxtN?=
- =?us-ascii?Q?gp8hv5Z6Yp6+lGqCF/jIn53ECYgCHCI8cR9sSKLuSvyqaW0IHDGyMMQG8K1r?=
- =?us-ascii?Q?CaOFzYu8UEray5pzfFV5XqXH6F9UkNoOHRvZVinIyrKx+f5n/DNHT2t5exsQ?=
- =?us-ascii?Q?jkiBV1wN+N/zERSW2TGQ04n0DeNUX/j/ytm5vqDMY42l6XAiI2phxQGWX3K9?=
- =?us-ascii?Q?XXTYrzcGRjggz2z8eDvKVjy8jliR9zeLJhsRuBWtlvQFzTYVTrYlI/5mmz6U?=
- =?us-ascii?Q?u1/VYXMBm9wj7JoplBHDVQYKr9DyFEhjKXsirwINImLvRyQNezK6IROhZlYI?=
- =?us-ascii?Q?kl0UlrstZsziOPINse5cX/135WZ4qHZI7eXZQx8MbDY2aoEj5/ykNlQqhbz1?=
- =?us-ascii?Q?kwms1Sap1p7wz4SmrkZi+E/b3nsVdAMiffxpIr8dRqSZMPO6XtBRfNXljVGi?=
- =?us-ascii?Q?JgtbwxUwpANjzfRPF+OFmwfNMVgOOT2GfW7OPqR3ptEJnZ6NiND09AOMM4PJ?=
- =?us-ascii?Q?EbsbH4CVdKhZPEmn5WwJJ/NQyusNgVUaCZ2uj7ckhVR2zLR2INNSbVm75s9T?=
- =?us-ascii?Q?HseFqGWDcFN5MvwtG9N+qeKuirbWOCi8kAhBOKlyzvKK0UsJsi0kcrqJ16oc?=
- =?us-ascii?Q?7m6xC8lxOvPcVaJle4rbaeYwvZ9zSQ2QtjZAFxvBN2exNuJsYU3tAkppkMvm?=
- =?us-ascii?Q?VG8+zJuV4xPK8Cn5o+TEo7C81/ZvmHq47cPaF1amJNt7CNDp6IrWhrF5FDmv?=
- =?us-ascii?Q?kDsdb6JhlnIfeldBrIBbTR8SiubrPnO7bVfFMuLZvAQvM/ULbSu3nox9ghvH?=
- =?us-ascii?Q?OZt4+gtwGl2qUgnxrAUo8bM3Jdt48OT+SputWwfxvScetnRkgIuPHZ7Fi4tb?=
- =?us-ascii?Q?1O9KvXeOTP/u4I7eWB+zBNUUaqHW+HQ=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S1352562AbiELKz2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 06:55:28 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 207A5694A4
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 03:55:27 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id bv19so9418939ejb.6
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 03:55:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=Iwqqdpj/sCrfAf59NaNACtGSTRtAyJeA5sSf5Q8LpGQ=;
+        b=RD/cJqYlBYTnZgehRgve3MmDT02PYH0d0jFIKcdNePCxuFtfrzHeL8I0dT95rbUGLD
+         jaSKkMYjaWTSLcQ+lPaD98uG4IUjWd8v9P/2ImVWe7cvfWDZnjacKKm+1TIzpX3PPCJb
+         u51vcrC2TjaM7nDHHN4Qc/5yuUUyZCZP2wB8k=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=Iwqqdpj/sCrfAf59NaNACtGSTRtAyJeA5sSf5Q8LpGQ=;
+        b=FQrRdRdEd9WLfn5iLZ1hkuhAveleloJ1QUL8JPuSI7TNAZPN4HhTpWOJ0QqZwIR5X2
+         I3tlA+JoRfLjGar+FnPN16QtijUR2lNROgrZqN2YP2LSIl6VPf4SyJl3ZyHFzy1nj4Lm
+         IsmTX+3Qy8eU6nKsVL0Zalv/BALGwOeyGxngEOyGM0i9MhWUWHatV9Duiu9ABvWyWyYq
+         vbRFKosX4bBCTZBFRaxajmpr6XpRdP9kfiL4Uh5J933gecR0tGq9KQmPaqFQx4o4Jzbe
+         bpcSW72Vx0omiMz8IVZK9QZD5ExAooHAI2USbwGB5ZX/LhLcg+wIyjWPIk9FUbi7aIrt
+         lG/A==
+X-Gm-Message-State: AOAM532kgBq+PDszpxCSjM88NuXZprgu7+th3Va83mjlMJMOEmbjigH7
+        knpqDk7lTpJn9q5c4vTSIcD31Q==
+X-Google-Smtp-Source: ABdhPJyMEDJyGYlUhPgucEhy64Eh9s0++xx90SftrGOnxuQHSGFNdfGoGpgBQc0SpQTahAATxncZkw==
+X-Received: by 2002:a17:906:cb97:b0:6f3:c671:a337 with SMTP id mf23-20020a170906cb9700b006f3c671a337mr29293611ejb.93.1652352925651;
+        Thu, 12 May 2022 03:55:25 -0700 (PDT)
+Received: from cloudflare.com (79.184.128.236.ipv4.supernova.orange.pl. [79.184.128.236])
+        by smtp.gmail.com with ESMTPSA id s4-20020a170906a18400b006f52dbc192bsm2043862ejy.37.2022.05.12.03.55.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 03:55:25 -0700 (PDT)
+References: <20220424154028.1698685-1-xukuohai@huawei.com>
+ <20220424154028.1698685-6-xukuohai@huawei.com>
+ <87ilqdobl1.fsf@cloudflare.com>
+ <5fb30cc0-dcf6-75ec-b6fa-38be3e99dca6@huawei.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH bpf-next v3 5/7] bpf, arm64: Support to poke bpf prog
+Date:   Thu, 12 May 2022 12:54:07 +0200
+In-reply-to: <5fb30cc0-dcf6-75ec-b6fa-38be3e99dca6@huawei.com>
+Message-ID: <87wneryq8z.fsf@cloudflare.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW3PR11MB4554.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fc21545f-e86e-4779-72a2-08da3405a08a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 May 2022 10:53:19.8630
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kIyOtfvVVd5bjVk0VyzvnW5fpxCGDULq/vlblrXwdLbxRwzDhVpCrOqoOeBrwzH6wSnVlxIqztZ5t1KVLN/6TBJWT3lPZ2Miym3yf9HEXXU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2583
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->-----Original Message-----
->From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
->Lorenzo Bianconi
->Sent: Tuesday, April 26, 2022 6:45 PM
->To: netdev@vger.kernel.org
->Cc: daniel@iogearbox.net; intel-wired-lan@lists.osuosl.org;
->toke@redhat.com; ast@kernel.org; andrii@kernel.org; jbrouer@redhat.com;
->kuba@kernel.org; bpf@vger.kernel.org; pabeni@redhat.com;
->davem@davemloft.net; Karlsson, Magnus <magnus.karlsson@intel.com>
->Subject: [Intel-wired-lan] [PATCH v2 net-next] ixgbe: add xdp frags suppor=
-t to
->ndo_xdp_xmit
+On Wed, May 11, 2022 at 11:12 AM +08, Xu Kuohai wrote:
+> On 5/10/2022 5:36 PM, Jakub Sitnicki wrote:
+>> On Sun, Apr 24, 2022 at 11:40 AM -04, Xu Kuohai wrote:
+
+[...]
+
+>>> @@ -281,12 +290,15 @@ static int build_prologue(struct jit_ctx *ctx, bool ebpf_from_cbpf)
+>>>  	 *
+>>>  	 */
+>>>  
+>>> +	if (IS_ENABLED(CONFIG_ARM64_BTI_KERNEL))
+>>> +		emit(A64_BTI_C, ctx);
+>> 
+>> I'm no arm64 expert, but this looks like a fix for BTI.
+>> 
+>> Currently we never emit BTI because ARM64_BTI_KERNEL depends on
+>> ARM64_PTR_AUTH_KERNEL, while BTI must be the first instruction for the
+>> jump target [1]. Am I following correctly?
+>> 
+>> [1] https://lwn.net/Articles/804982/
+>> 
 >
->Add the capability to map non-linear xdp frames in XDP_TX and ndo_xdp_xmit
->callback.
+> Not quite correct. When the jump target is a PACIASP instruction, no
+> Branch Target Exception is generated, so there is no need to insert a
+> BTI before PACIASP [2].
 >
->Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->---
->Changes since v1:
->- rebase on top of net-next
->---
-> drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 99 ++++++++++++-------
-> 1 file changed, 63 insertions(+), 36 deletions(-)
+> In order to attach trampoline to bpf prog, a MOV and NOP are inserted
+> before the PACIASP, so BTI instruction is required to avoid Branch
+> Target Exception.
 >
-Tested-by: Sandeep Penigalapati <sandeep.penigalapati@intel.com>
+> The reason for inserting NOP before PACIASP instead of after PACIASP is
+> that no call frame is built before entering trampoline, so there is no
+> return address on the stack and nothing to be protected by PACIASP.
+>
+> [2]
+> https://developer.arm.com/documentation/ddi0596/2021-12/Base-Instructions/BTI--Branch-Target-Identification-?lang=en
+
+That makes sense. Thanks for the explanation!
