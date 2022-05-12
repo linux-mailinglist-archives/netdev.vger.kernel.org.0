@@ -2,120 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 33D8E5246D5
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:23:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6E895246ED
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:28:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350942AbiELHXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 03:23:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
+        id S1351007AbiELH2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 03:28:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350867AbiELHWy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:22:54 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5903F69723
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:22:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652340172;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kseTB5nEdb0NBMdde4rHbkMWqkdFBH/zYnlVhau93BU=;
-        b=ahcR3uv0SqRmdd2vBNlXfaR9kqK01uZx66qaMDyhaB5ZGI6tHEdrFCy+hbeZV6LGE3n8Y7
-        nClHpV8yQZEvCwz+p9h5RqdvIJBGDwDfVTOzu9P7ocQLwD0GC76PXnlkY3Qlt/F+hincwv
-        G8JBDkoexmki9XaJ4w6+VTYfYdGoKfg=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-246-c6E2U9rGPlyKtEwMXXXieg-1; Thu, 12 May 2022 03:22:51 -0400
-X-MC-Unique: c6E2U9rGPlyKtEwMXXXieg-1
-Received: by mail-wm1-f70.google.com with SMTP id v191-20020a1cacc8000000b0038ce818d2efso1292190wme.1
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:22:50 -0700 (PDT)
+        with ESMTP id S1351018AbiELH15 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:27:57 -0400
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A20FF13C1F0
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:27:56 -0700 (PDT)
+Received: by mail-wm1-x32e.google.com with SMTP id m62so2464477wme.5
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:27:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=H9VXncE+DRnUhXlSN0UZUREZ/aLnoqDFeoFK5grlT8s=;
+        b=bL+CTsqaTjYlxSq0nJtEbHVQZ4uCnHEcZIVe13dQNJ77OQFSRMVKXEHr+JfAopQD8Z
+         SaUNRkPz15p0rMKmfWN5Y5sqf4kJ3hvI1PIY9JH7/nn5QsZynDomKcGNGK1pJJMjCtZp
+         diqfjXhzCxMyiYzP1Xq9Z2A0w8ZnGebKXy7cSvZ1fsTSvlpokOlxNHgHYO3o9lq+MnSK
+         +Jt82uTchTU5s0h2lgow9mQKpgJqnru4ShVYlSEEA51u+/j70IWAeU/XxIZErCkq35jF
+         ycWq5f92J1NmHv6llR8a2JBvf0HCtLuKqo5J5BRtdGhyA68H0XZePKX7Iq2cCCDxGeMZ
+         giag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=kseTB5nEdb0NBMdde4rHbkMWqkdFBH/zYnlVhau93BU=;
-        b=LN6fiIFRfNqLhYVAHn+/WEcNmU/9KWpDDHGxMDUbdfOGMSSF2xLaJitQxvX//NK9Nq
-         l3X49Dp3lNFzrpqu0UXmwMmjjH+uKrBN/gL/nMiGK664V+mOxNT37ruQ/YjTCkpyLChS
-         qcPY7SJ9kAgF49Gu8SfzITKGp4x7IdBqPvAhwxpaa+vtg+GENsoPWxascseie5d/xblv
-         zlQ25dQG5DhQAI9C+anL7OSrfYzv7GdoukQEhXgWtQyq15n3kd8FpHTQb/UZ23y0WriM
-         H5SzoaoV/LXDAdcRVl7iSi6nQdGKQHwtvZEApPuIWMg2tf5h8CRNeWyoNLdjskYOipct
-         rLAA==
-X-Gm-Message-State: AOAM530/4NYm+ZigCuDHlugBr7ga1RDPk7/v5h+ULdJmi0c53Vc7Nd+l
-        4ust19nvbEpGRFDQDEmvhLqe3+8FLlGXbZIfioeayKUhAQI6jt+mAqeaTi0tbxwU5cIhvU1NCTB
-        LTU0SqeqVV94teoCK
-X-Received: by 2002:a05:600c:5008:b0:394:533c:54a1 with SMTP id n8-20020a05600c500800b00394533c54a1mr8661637wmr.15.1652340169935;
-        Thu, 12 May 2022 00:22:49 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzfDIyJS163A7troAixDhGyY3D0Z1myKH8iDS+VN/nsVAAT0KBLGPCXQS7L9r7bFwizbHtLgA==
-X-Received: by 2002:a05:600c:5008:b0:394:533c:54a1 with SMTP id n8-20020a05600c500800b00394533c54a1mr8661622wmr.15.1652340169675;
-        Thu, 12 May 2022 00:22:49 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
-        by smtp.gmail.com with ESMTPSA id r5-20020adfdc85000000b0020c5253d8d2sm3279125wrj.30.2022.05.12.00.22.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 00:22:49 -0700 (PDT)
-Message-ID: <dd7641f326b63211c3a749341e905cca90c9e124.camel@redhat.com>
-Subject: Re: [PATCH v2]  drivers: net: vmxnet3: fix possible NULL pointer
- dereference in vmxnet3_rq_cleanup()
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Zixuan Fu <r33s3n6@gmail.com>, doshir@vmware.com,
-        pv-drivers@vmware.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, TOTE Robot <oslab@tsinghua.edu.cn>
-Date:   Thu, 12 May 2022 09:22:48 +0200
-In-Reply-To: <20220510131727.929547-1-r33s3n6@gmail.com>
-References: <20220510131727.929547-1-r33s3n6@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :in-reply-to:user-agent;
+        bh=H9VXncE+DRnUhXlSN0UZUREZ/aLnoqDFeoFK5grlT8s=;
+        b=F06o9E+NxINDEhS7cuSWNRyxiHaNeOiV1zwKTakeKmAXl71Mpas8mP/NL4dyQqsMQY
+         DLiZ+Vu/xD9S//rcbK7FJ4EKVaxzyeVA6gAEYz2pzZ6gRMR+VzZG3pPHpNyPS0XqIlG0
+         rAvafpv31Xe86on1UJiUVysnlOYp4xr9POKeQb2o3yp9jdZiBrxFtdOav8ksL45bIi/T
+         2Rt5Kvjl49VGK76gsVTYA9WULav+psqjSqc750il+eI2UycmnLjBQHn7KJdrQ5nT+0I8
+         OIK5lmvs4VFY/bQHyTxFzpnAUWwru3wbolIfOmOAdGwJGmsHyEbMUaXfO7EX5lS3sKxS
+         qucg==
+X-Gm-Message-State: AOAM530kjC5eJ8OBKM+Wt0e5sCMNK0nAXfGfLHbWVqnpnAI2/KfyoFmz
+        Cw404A4zerfIadk84I7mYfY=
+X-Google-Smtp-Source: ABdhPJwODapeVfLkcgJGNzaE5AOte8UsQjyA4DBae9z8mwy/hizN2zPQ+MEqxkL7TFzuJHe6fmoDWg==
+X-Received: by 2002:a7b:c095:0:b0:393:fd2e:9191 with SMTP id r21-20020a7bc095000000b00393fd2e9191mr8579665wmh.137.1652340475010;
+        Thu, 12 May 2022 00:27:55 -0700 (PDT)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id o42-20020a05600c512a00b003942a244f49sm1944477wms.34.2022.05.12.00.27.54
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 12 May 2022 00:27:54 -0700 (PDT)
+Date:   Thu, 12 May 2022 08:27:52 +0100
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     Edward Cree <ecree.xilinx@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com
+Subject: Re: [PATCH net-next 3/6] eth: switch to netif_napi_add_weight()
+Message-ID: <20220512072752.wb5rgtlkar4oyni6@gmail.com>
+Mail-Followup-To: Edward Cree <ecree.xilinx@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org, pabeni@redhat.com, edumazet@google.com
+References: <20220506170751.822862-1-kuba@kernel.org>
+ <20220506170751.822862-4-kuba@kernel.org>
+ <d61cf1ea-94bc-6f71-77b6-939ba9e115c4@gmail.com>
+ <20220511124551.1766aa66@kernel.org>
+ <86183449-cb7f-2804-89ad-5c714d99ff5b@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <86183449-cb7f-2804-89ad-5c714d99ff5b@gmail.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-05-10 at 21:17 +0800, Zixuan Fu wrote:
-> In vmxnet3_rq_create(), when dma_alloc_coherent() fails, 
-> vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
-> vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
-> -> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls 
-> vmxnet3_force_close() -> dev_close() in error handling code. And the driver
-> calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
-> -> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(), 
-> rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
-> a NULL pointer dereference.
+On Wed, May 11, 2022 at 10:02:44PM +0100, Edward Cree wrote:
+> On 11/05/2022 20:45, Jakub Kicinski wrote:
+> > On Wed, 11 May 2022 18:57:53 +0100 Edward Cree wrote:
+> >> This isn't really a custom weight; napi_weight is initialised to
+> >>  64 and never changed, so probably we ought to be just using
+> >>  NAPI_POLL_WEIGHT here and end up on the non-_weight API.
+> >> Same goes for Falcon.
+> > 
+> > Ack, I wanted to be nice. I figured this must be a stub for a module
+> > param in your our of tree driver.
 > 
-> To fix this possible bug, an if statement is added to check whether 
-> rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
+> I mean, it *is*... but there's almost certainly a better way.  Configuring
+>  NAPI weight for tuning purposes (as opposed to some kind of correctness
+>  limitation in a driver) probably ought to be left to generic infrastructure
+>  rather than vendor-specific modparams in driver code.
 > 
-> The error log in our fault-injection testing is shown as follows:
+> > Should I send a patch to remove
+> > the non-const static napi_weight globals and switch back to non-_weight?
 > 
-> [   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
-> ...
-> [   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
-> ...
-> [   65.227977] Call Trace:
-> ...
-> [   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
-> [   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
-> [   65.228866]  __dev_close_many+0x288/0x350
-> [   65.229607]  dev_close_many+0xa4/0x480
-> [   65.231124]  dev_close+0x138/0x230
-> [   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
-> [   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
-> ...
-> 
-> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-> Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
+> Yes please, unless Martin has any objections...?
 
-Same remarks here, please provide a new version with a suitable fixes
-tag, thanks!
+Fine for me.
 
-Paolo
-
+Martin
