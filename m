@@ -2,342 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F14935246BD
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:19:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74EE95246C8
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 09:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350879AbiELHTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 03:19:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41532 "EHLO
+        id S1350838AbiELHVN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 03:21:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350877AbiELHTb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:19:31 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCFE7C5E4B
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:19:29 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24C6UN2Z031114;
-        Thu, 12 May 2022 00:19:21 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=vFYeF6FpKFGesGN7AGJP+3L8haInml5sl4GmHwAZXug=;
- b=hpV8vghfHV+UNaQQ1vSBA2fxDk2fbU3KCe2fxGlAcwVBM3haa9c3aeEnZZuPbB7pgoa8
- P4Z86lPoqB8AZMCDSU+tulevYF35d6vo4u9ZaHQ7m4l3XZP7qf8tTK5k3S+yo7nekT36
- 4wm7FDtTecQ6J9jUGWMscgo3oiOQiia7nu/WtXXiN72RKzvQy0yRmbLGodtq9In8AhYa
- HBi7mNW1xwZJ0TWiazMOrkkoJGCmdCoTxXOCktuLGUOkaSA5DheRfp21Uxig/k6pEtmM
- odERQUPuzfgzcdbxh01XHA5M5dbmqyK+e90wDezssNGms1xXtGIUw0atihWVqiLIF10Y jQ== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3g0at24k2g-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 12 May 2022 00:19:21 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 12 May
- 2022 00:19:18 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 12 May 2022 00:19:18 -0700
-Received: from localhost.localdomain (unknown [10.28.48.95])
-        by maili.marvell.com (Postfix) with ESMTP id 648E03F707D;
-        Thu, 12 May 2022 00:19:15 -0700 (PDT)
-From:   Suman Ghosh <sumang@marvell.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <sgoutham@marvell.com>, <sbhatta@marvell.com>,
-        <gakula@marvell.com>, <Sunil.Goutham@cavium.com>,
-        <hkelam@marvell.com>, <colin.king@intel.com>,
-        <netdev@vger.kernel.org>
-CC:     Suman Ghosh <sumang@marvell.com>
-Subject: [net-next PATCH] octeontx2-pf: Add support for adaptive interrupt coalescing
-Date:   Thu, 12 May 2022 12:49:12 +0530
-Message-ID: <20220512071912.672009-1-sumang@marvell.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1350931AbiELHVG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 03:21:06 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F12A61AD90
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:21:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652340062;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=v7bOQidy2XKacFQoEFC88TIIvZuaoizz8bbPSOsrMVU=;
+        b=efNDyvHsuWYCRwkqcw5i1p+edZkOtDnQ6xndvyRLBM+PDIhtTMaR/8mXvY653J2xqLXebs
+        RtdBASBXBcD1knWLF/maDjYZfyko+OaxYtl6cRm8IvmIsK/4RWNydVykZsjxJRwgNU4LVR
+        1gKDQF2jzoECNalHHH/g7m8LZKBfMbc=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-265-R9FHAYJDMAyzgcpiYj_S2g-1; Thu, 12 May 2022 03:21:01 -0400
+X-MC-Unique: R9FHAYJDMAyzgcpiYj_S2g-1
+Received: by mail-wm1-f69.google.com with SMTP id p24-20020a1c5458000000b003945d2ffc6eso1288435wmi.5
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 00:21:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=v7bOQidy2XKacFQoEFC88TIIvZuaoizz8bbPSOsrMVU=;
+        b=3CVrWqb90sdnql/WkVGk18XY0PqOmjT5B2K1OvUwVGM1VXq8YdZb/W6fGcb6g9VnGB
+         lmtcLjfpJMWQ1hMRPwBO5tvAYyVdhTMkSiVPv9eOuTvawrbmrH5sCKPN7zJxpQUqX9C/
+         YuTguJEhddjYOg3hTg5V7ek4/0pkaUAtpNawYmIwhweTR7GRXeH/XwRCDKZVQ1ZcbIBj
+         KsFeTDoZO/uBwzTGu37wrTYJ+bSvbIWFlCSnCQvtFX/u0wJLCFVQusc40Sv7of6UhtVc
+         Gbf4fJCmQPmBwu/FC9z4bxb5258iL/TMHodSnJvGB6TIOfQPu6yfLD9Rc/2jh10lwaC2
+         QKyQ==
+X-Gm-Message-State: AOAM531LjKH9HvUHJv6O3RNQ/1pnXKqqXV9adcPwGpe93HYtaWwcgztQ
+        ozGfcysMialn/xlkY5hVPIyKfb5uTTrP5PH+TUmV6qt/borWMgcKZFsSHTHF3JtkxaEIImf3Ic3
+        zpC1AEdqXvKV2R2/p
+X-Received: by 2002:a05:600c:4ba1:b0:394:9ae3:ee98 with SMTP id e33-20020a05600c4ba100b003949ae3ee98mr8594965wmp.160.1652340060399;
+        Thu, 12 May 2022 00:21:00 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwkID2x3/1z0/wYtZX175tGSUkmgETVETXT7EhcZbVjxfbCqFPAOMIbsG17vOktA4lTMY16mg==
+X-Received: by 2002:a05:600c:4ba1:b0:394:9ae3:ee98 with SMTP id e33-20020a05600c4ba100b003949ae3ee98mr8594952wmp.160.1652340060137;
+        Thu, 12 May 2022 00:21:00 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
+        by smtp.gmail.com with ESMTPSA id l16-20020a5d4bd0000000b0020c5253d8d8sm4000061wrt.36.2022.05.12.00.20.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 00:20:59 -0700 (PDT)
+Message-ID: <87124d7a213f14eec98bbeb80836c20ea1a33352.camel@redhat.com>
+Subject: Re: [PATCH v2] drivers: net: vmxnet3: fix possible use-after-free
+ bugs in vmxnet3_rq_alloc_rx_buf()
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Zixuan Fu <r33s3n6@gmail.com>, doshir@vmware.com,
+        pv-drivers@vmware.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        baijiaju1990@gmail.com, TOTE Robot <oslab@tsinghua.edu.cn>
+Date:   Thu, 12 May 2022 09:20:58 +0200
+In-Reply-To: <20220510131716.929387-1-r33s3n6@gmail.com>
+References: <20220510131716.929387-1-r33s3n6@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: h9cqWZ9HwIyyeyoCh0LuWsQWbtHgndSr
-X-Proofpoint-GUID: h9cqWZ9HwIyyeyoCh0LuWsQWbtHgndSr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-11_07,2022-05-12_01,2022-02-23_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added support for adaptive IRQ coalescing. It uses net_dim
-algorithm to find the suitable delay/IRQ count based on the
-current packet rate.
+Hello,
 
-Signed-off-by: Suman Ghosh <sumang@marvell.com>
-Reviewed-by: Sunil Kovvuri Goutham <sgoutham@marvell.com>
----
- .../net/ethernet/marvell/octeontx2/Kconfig    |  1 +
- .../marvell/octeontx2/nic/otx2_common.c       |  5 ---
- .../marvell/octeontx2/nic/otx2_common.h       | 10 ++++++
- .../marvell/octeontx2/nic/otx2_ethtool.c      | 36 +++++++++++++++++--
- .../ethernet/marvell/octeontx2/nic/otx2_pf.c  | 22 ++++++++++++
- .../marvell/octeontx2/nic/otx2_txrx.c         | 25 ++++++++++++-
- .../marvell/octeontx2/nic/otx2_txrx.h         |  1 +
- 7 files changed, 92 insertions(+), 8 deletions(-)
+On Tue, 2022-05-10 at 21:17 +0800, Zixuan Fu wrote:
+> In vmxnet3_rq_alloc_rx_buf(), when dma_map_single() fails, rbi->skb is
+> freed immediately. Similarly, in another branch, when dma_map_page() fails,
+> rbi->page is also freed. In the two cases, vmxnet3_rq_alloc_rx_buf()
+> returns an error to its callers vmxnet3_rq_init() -> vmxnet3_rq_init_all()
+> -> vmxnet3_activate_dev(). Then vmxnet3_activate_dev() calls
+> vmxnet3_rq_cleanup_all() in error handling code, and rbi->skb or rbi->page
+> are freed again in vmxnet3_rq_cleanup_all(), causing use-after-free bugs.
+> 
+> To fix these possible bugs, rbi->skb and rbi->page should be cleared after
+> they are freed.
+> 
+> The error log in our fault-injection testing is shown as follows:
+> 
+> [   14.319016] BUG: KASAN: use-after-free in consume_skb+0x2f/0x150
+> ...
+> [   14.321586] Call Trace:
+> ...
+> [   14.325357]  consume_skb+0x2f/0x150
+> [   14.325671]  vmxnet3_rq_cleanup_all+0x33a/0x4e0 [vmxnet3]
+> [   14.326150]  vmxnet3_activate_dev+0xb9d/0x2ca0 [vmxnet3]
+> [   14.326616]  vmxnet3_open+0x387/0x470 [vmxnet3]
+> ...
+> [   14.361675] Allocated by task 351:
+> ...
+> [   14.362688]  __netdev_alloc_skb+0x1b3/0x6f0
+> [   14.362960]  vmxnet3_rq_alloc_rx_buf+0x1b0/0x8d0 [vmxnet3]
+> [   14.363317]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
+> [   14.363661]  vmxnet3_open+0x387/0x470 [vmxnet3]
+> ...
+> [   14.367309] 
+> [   14.367412] Freed by task 351:
+> ...
+> [   14.368932]  __dev_kfree_skb_any+0xd2/0xe0
+> [   14.369193]  vmxnet3_rq_alloc_rx_buf+0x71e/0x8d0 [vmxnet3]
+> [   14.369544]  vmxnet3_activate_dev+0x3e3/0x2ca0 [vmxnet3]
+> [   14.369883]  vmxnet3_open+0x387/0x470 [vmxnet3]
+> [   14.370174]  __dev_open+0x28a/0x420
+> [   14.370399]  __dev_change_flags+0x192/0x590
+> [   14.370667]  dev_change_flags+0x7a/0x180
+> [   14.370919]  do_setlink+0xb28/0x3570
+> [   14.371150]  rtnl_newlink+0x1160/0x1740
+> [   14.371399]  rtnetlink_rcv_msg+0x5bf/0xa50
+> [   14.371661]  netlink_rcv_skb+0x1cd/0x3e0
+> [   14.371913]  netlink_unicast+0x5dc/0x840
+> [   14.372169]  netlink_sendmsg+0x856/0xc40
+> [   14.372420]  ____sys_sendmsg+0x8a7/0x8d0
+> [   14.372673]  __sys_sendmsg+0x1c2/0x270
+> [   14.372914]  do_syscall_64+0x41/0x90
+> [   14.373145]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+> ...
+> 
+> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
+> Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/Kconfig b/drivers/net/ethernet/marvell/octeontx2/Kconfig
-index 639893d87055..e1036b0eb6b1 100644
---- a/drivers/net/ethernet/marvell/octeontx2/Kconfig
-+++ b/drivers/net/ethernet/marvell/octeontx2/Kconfig
-@@ -33,6 +33,7 @@ config OCTEONTX2_PF
- 	select OCTEONTX2_MBOX
- 	select NET_DEVLINK
- 	depends on (64BIT && COMPILE_TEST) || ARM64
-+	select DIMLIB
- 	depends on PCI
- 	depends on PTP_1588_CLOCK_OPTIONAL
- 	help
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-index b9d7601138ca..fb8db5888d2f 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-@@ -97,11 +97,6 @@ void otx2_get_dev_stats(struct otx2_nic *pfvf)
- {
- 	struct otx2_dev_stats *dev_stats = &pfvf->hw.dev_stats;
- 
--#define OTX2_GET_RX_STATS(reg) \
--	 otx2_read64(pfvf, NIX_LF_RX_STATX(reg))
--#define OTX2_GET_TX_STATS(reg) \
--	 otx2_read64(pfvf, NIX_LF_TX_STATX(reg))
--
- 	dev_stats->rx_bytes = OTX2_GET_RX_STATS(RX_OCTS);
- 	dev_stats->rx_drops = OTX2_GET_RX_STATS(RX_DROP);
- 	dev_stats->rx_bcast_frames = OTX2_GET_RX_STATS(RX_BCAST);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-index c587c14ac2a3..ce2766317c0b 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.h
-@@ -18,6 +18,7 @@
- #include <net/pkt_cls.h>
- #include <net/devlink.h>
- #include <linux/time64.h>
-+#include <linux/dim.h>
- 
- #include <mbox.h>
- #include <npc.h>
-@@ -54,6 +55,11 @@ enum arua_mapped_qtypes {
- /* Send skid of 2000 packets required for CQ size of 4K CQEs. */
- #define SEND_CQ_SKID	2000
- 
-+#define OTX2_GET_RX_STATS(reg) \
-+	otx2_read64(pfvf, NIX_LF_RX_STATX(reg))
-+#define OTX2_GET_TX_STATS(reg) \
-+	otx2_read64(pfvf, NIX_LF_TX_STATX(reg))
-+
- struct otx2_lmt_info {
- 	u64 lmt_addr;
- 	u16 lmt_id;
-@@ -351,6 +357,7 @@ struct otx2_nic {
- #define OTX2_FLAG_TC_MATCHALL_EGRESS_ENABLED	BIT_ULL(12)
- #define OTX2_FLAG_TC_MATCHALL_INGRESS_ENABLED	BIT_ULL(13)
- #define OTX2_FLAG_DMACFLTR_SUPPORT		BIT_ULL(14)
-+#define OTX2_FLAG_ADPTV_INT_COAL_ENABLED BIT_ULL(16)
- 	u64			flags;
- 	u64			*cq_op_addr;
- 
-@@ -408,6 +415,9 @@ struct otx2_nic {
- 	u8			pfc_en;
- 	u8			*queue_to_pfc_map;
- #endif
-+
-+	/* napi event count. It is needed for adaptive irq coalescing. */
-+	u32 napi_events;
- };
- 
- static inline bool is_otx2_lbkvf(struct pci_dev *pdev)
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index fc328de5345e..6d51e2921cf3 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -455,6 +455,14 @@ static int otx2_get_coalesce(struct net_device *netdev,
- 	cmd->rx_max_coalesced_frames = hw->cq_ecount_wait;
- 	cmd->tx_coalesce_usecs = hw->cq_time_wait;
- 	cmd->tx_max_coalesced_frames = hw->cq_ecount_wait;
-+	if ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) ==
-+			OTX2_FLAG_ADPTV_INT_COAL_ENABLED) {
-+		cmd->use_adaptive_rx_coalesce = 1;
-+		cmd->use_adaptive_tx_coalesce = 1;
-+	} else {
-+		cmd->use_adaptive_rx_coalesce = 0;
-+		cmd->use_adaptive_tx_coalesce = 0;
-+	}
- 
- 	return 0;
- }
-@@ -466,11 +474,24 @@ static int otx2_set_coalesce(struct net_device *netdev,
- {
- 	struct otx2_nic *pfvf = netdev_priv(netdev);
- 	struct otx2_hw *hw = &pfvf->hw;
-+	u8 priv_coalesce_status;
- 	int qidx;
- 
- 	if (!ec->rx_max_coalesced_frames || !ec->tx_max_coalesced_frames)
- 		return 0;
- 
-+	/* Check and update coalesce status */
-+	if ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) ==
-+			OTX2_FLAG_ADPTV_INT_COAL_ENABLED) {
-+		priv_coalesce_status = 1;
-+		if (!ec->use_adaptive_rx_coalesce || !ec->use_adaptive_tx_coalesce)
-+			pfvf->flags &= ~OTX2_FLAG_ADPTV_INT_COAL_ENABLED;
-+	} else {
-+		priv_coalesce_status = 0;
-+		if (ec->use_adaptive_rx_coalesce || ec->use_adaptive_tx_coalesce)
-+			pfvf->flags |= OTX2_FLAG_ADPTV_INT_COAL_ENABLED;
-+	}
-+
- 	/* 'cq_time_wait' is 8bit and is in multiple of 100ns,
- 	 * so clamp the user given value to the range of 1 to 25usec.
- 	 */
-@@ -494,9 +515,9 @@ static int otx2_set_coalesce(struct net_device *netdev,
- 	 * so clamp the user given value to the range of 1 to 64k.
- 	 */
- 	ec->rx_max_coalesced_frames = clamp_t(u32, ec->rx_max_coalesced_frames,
--					      1, U16_MAX);
-+					      1, NAPI_POLL_WEIGHT);
- 	ec->tx_max_coalesced_frames = clamp_t(u32, ec->tx_max_coalesced_frames,
--					      1, U16_MAX);
-+					      1, NAPI_POLL_WEIGHT);
- 
- 	/* Rx and Tx are mapped to same CQ, check which one
- 	 * is changed, if both then choose the min.
-@@ -509,6 +530,17 @@ static int otx2_set_coalesce(struct net_device *netdev,
- 		hw->cq_ecount_wait = min_t(u16, ec->rx_max_coalesced_frames,
- 					   ec->tx_max_coalesced_frames);
- 
-+	/* Reset 'cq_time_wait' and 'cq_ecount_wait' to
-+	 * default values if coalesce status changed from
-+	 * 'on' to 'off'.
-+	 */
-+	if (priv_coalesce_status &&
-+	    ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) !=
-+	     OTX2_FLAG_ADPTV_INT_COAL_ENABLED)) {
-+		hw->cq_time_wait = CQ_TIMER_THRESH_DEFAULT;
-+		hw->cq_ecount_wait = CQ_CQE_THRESH_DEFAULT;
-+	}
-+
- 	if (netif_running(netdev)) {
- 		for (qidx = 0; qidx < pfvf->hw.cint_cnt; qidx++)
- 			otx2_config_irq_coalescing(pfvf, qidx);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 53b2706d65a1..a7e919b81a2e 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1254,6 +1254,7 @@ static irqreturn_t otx2_cq_intr_handler(int irq, void *cq_irq)
- 	otx2_write64(pf, NIX_LF_CINTX_ENA_W1C(qidx), BIT_ULL(0));
- 
- 	/* Schedule NAPI */
-+	pf->napi_events++;
- 	napi_schedule_irqoff(&cq_poll->napi);
- 
- 	return IRQ_HANDLED;
-@@ -1267,6 +1268,7 @@ static void otx2_disable_napi(struct otx2_nic *pf)
- 
- 	for (qidx = 0; qidx < pf->hw.cint_cnt; qidx++) {
- 		cq_poll = &qset->napi[qidx];
-+		cancel_work_sync(&cq_poll->dim.work);
- 		napi_disable(&cq_poll->napi);
- 		netif_napi_del(&cq_poll->napi);
- 	}
-@@ -1546,6 +1548,24 @@ static void otx2_do_set_rx_mode(struct otx2_nic *pf)
- 	mutex_unlock(&pf->mbox.lock);
- }
- 
-+static void otx2_dim_work(struct work_struct *w)
-+{
-+	struct dim_cq_moder cur_moder;
-+	struct otx2_cq_poll *cq_poll;
-+	struct otx2_nic *pfvf;
-+	struct dim *dim;
-+
-+	dim = container_of(w, struct dim, work);
-+	cur_moder = net_dim_get_rx_moderation(dim->mode, dim->profile_ix);
-+	cq_poll = container_of(dim, struct otx2_cq_poll, dim);
-+	pfvf = (struct otx2_nic *)cq_poll->dev;
-+	pfvf->hw.cq_time_wait = (cur_moder.usec > CQ_TIMER_THRESH_MAX) ?
-+		CQ_TIMER_THRESH_MAX : cur_moder.usec;
-+	pfvf->hw.cq_ecount_wait = (cur_moder.pkts > NAPI_POLL_WEIGHT) ?
-+		NAPI_POLL_WEIGHT : cur_moder.pkts;
-+	dim->state = DIM_START_MEASURE;
-+}
-+
- int otx2_open(struct net_device *netdev)
- {
- 	struct otx2_nic *pf = netdev_priv(netdev);
-@@ -1612,6 +1632,8 @@ int otx2_open(struct net_device *netdev)
- 			cq_poll->cq_ids[CQ_XDP] = CINT_INVALID_CQ;
- 
- 		cq_poll->dev = (void *)pf;
-+		cq_poll->dim.mode = DIM_CQ_PERIOD_MODE_START_FROM_CQE;
-+		INIT_WORK(&cq_poll->dim.work, otx2_dim_work);
- 		netif_napi_add(netdev, &cq_poll->napi,
- 			       otx2_napi_handler, NAPI_POLL_WEIGHT);
- 		napi_enable(&cq_poll->napi);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-index c26de15b2ac3..3cd35a4dfa3c 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.c
-@@ -484,6 +484,18 @@ static int otx2_tx_napi_handler(struct otx2_nic *pfvf,
- 	return 0;
- }
- 
-+static void otx2_adjust_adaptive_coalese(struct otx2_nic *pfvf, struct otx2_cq_poll *cq_poll)
-+{
-+	struct dim_sample dim_sample;
-+	u64 rx_frames, rx_bytes;
-+
-+	rx_frames = OTX2_GET_RX_STATS(RX_BCAST) + OTX2_GET_RX_STATS(RX_MCAST) +
-+		OTX2_GET_RX_STATS(RX_UCAST);
-+	rx_bytes = OTX2_GET_RX_STATS(RX_OCTS);
-+	dim_update_sample(pfvf->napi_events, rx_frames, rx_bytes, &dim_sample);
-+	net_dim(&cq_poll->dim, dim_sample);
-+}
-+
- int otx2_napi_handler(struct napi_struct *napi, int budget)
- {
- 	struct otx2_cq_queue *rx_cq = NULL;
-@@ -521,9 +533,20 @@ int otx2_napi_handler(struct napi_struct *napi, int budget)
- 		if (pfvf->flags & OTX2_FLAG_INTF_DOWN)
- 			return workdone;
- 
-+		/* Check for adaptive interrupt coalesce */
-+		if (workdone != 0 &&
-+		    ((pfvf->flags & OTX2_FLAG_ADPTV_INT_COAL_ENABLED) ==
-+		     OTX2_FLAG_ADPTV_INT_COAL_ENABLED)) {
-+			/* Adjust irq coalese using net_dim */
-+			otx2_adjust_adaptive_coalese(pfvf, cq_poll);
-+			/* Update irq coalescing */
-+			for (i = 0; i < pfvf->hw.cint_cnt; i++)
-+				otx2_config_irq_coalescing(pfvf, i);
-+		}
-+
- 		/* Re-enable interrupts */
- 		otx2_write64(pfvf, NIX_LF_CINTX_ENA_W1S(cq_poll->cint_idx),
--			     BIT_ULL(0));
-+				BIT_ULL(0));
- 	}
- 	return workdone;
- }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-index f1a04cf9210c..c88e8a436029 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_txrx.h
-@@ -109,6 +109,7 @@ struct otx2_cq_poll {
- #define CINT_INVALID_CQ		255
- 	u8			cint_idx;
- 	u8			cq_ids[CQS_PER_CINT];
-+	struct dim		dim;
- 	struct napi_struct	napi;
- };
- 
--- 
-2.25.1
+This looks like targeting the 'net' tree. You should specify that in
+the patch subj. More importantly you should provide a 'Fixes' tag
+pointing to commit introducing the issue.
+
+Please provide a new version addressing the above.
+
+Thanks,
+
+Paolo
 
