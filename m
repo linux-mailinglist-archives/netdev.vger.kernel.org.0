@@ -2,65 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 782A452534C
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 19:12:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED6E952535C
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 19:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344416AbiELRLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 13:11:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36504 "EHLO
+        id S1356722AbiELROi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 13:14:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245709AbiELRLl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 13:11:41 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3941B522DB
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:11:40 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id h16so7473992wrb.2
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:11:40 -0700 (PDT)
+        with ESMTP id S1356911AbiELROg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 13:14:36 -0400
+Received: from mail-yw1-x112b.google.com (mail-yw1-x112b.google.com [IPv6:2607:f8b0:4864:20::112b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE6926A70C
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:14:35 -0700 (PDT)
+Received: by mail-yw1-x112b.google.com with SMTP id 00721157ae682-2f863469afbso64926517b3.0
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:14:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qbaBo0tTt+Cva9G8P4T0fup/a/USRSsQXGBn/3A6eC0=;
-        b=HQIXePWzK3skOxKo/WNkTK2qMSDJPBP7ZTiW6GpWMo5ot3PH9jcBtSbQakdOq1+8PK
-         Nv/W1gTFzrm+wqtvXoxXUfmvI6i+D5hiraP8BmfgXOg0fV2sgS8iEBDHqvWCXNAicsd6
-         lv3DK0fSyQ/eYq4uJrljbZQPK1hbIlgz5Gi8Qwj6ng9yj9cRScA6HQExLepn3+HKBNVR
-         SHmN5sYsOWBPqcd/VRkW97yDJgX6MmHZQg3gWTpr6mTsZMQS8VJ3fAdvGeMkHldFK1/Q
-         f8AFs5ceXMcnSJ/b0p9U94xzgDNIxSkx/xjko260QBfwiFWL3GW1bkTYO1vzi5bD2gGV
-         XteA==
+        bh=xT5a/I0cxR9Jf9/vuNNWYbKwVDl4cBhbZvh4/qXTA+U=;
+        b=jNQCetTu2M1NnWioumR67a6Fbigi/AYq/zP4mW+TKDYTUPpVsU4z1U4eBq3B0RJvaE
+         +zcUkGyuKkDuwMnh12b/vmSx3jbjY83nrWrspg7l9uLoOA/C6razMtX+6GnPbWtYuFK8
+         rf567CNomp/jNKuU2zvm4/lu31cRatA/v6QzONVM5ZyNmd1rDKQWjD6Ip2i2YSFHEtRC
+         yDfHZaxBZR1gOMl430JjHSPgAakngXhMUQ1RGLqCkRpjOHDT61X48YVgygXQQMnXVUCR
+         q8UNlVd5lIRKwiZVww0+tLXw1HoYB9rNv6Lj/4FNSHKUW19yEnEOfN/gJ34Iybb1ffdN
+         pHfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qbaBo0tTt+Cva9G8P4T0fup/a/USRSsQXGBn/3A6eC0=;
-        b=GtS93+H9lUyxtoJ0zW5kvdTpJT/7QQMaw62UQCYmpxDLCsbQaTFh4N8l7RyuDvimQc
-         h9wUxaUoqpOiI72+lV5K/N9/cCXt8hEoBBqs8sBYbiRyaBnSNm2O+gkeQJSBODn/By0H
-         cre/zCwoHZ8g8753Og96ewuQoGr9YZTW8MX3eU1KRpGmFPKX4uVOsso0WxCE+3KhTl0x
-         /SXHAXLxkMo9JvZTpvVVK4SeHKc4CYEkoPN+8CSRt1hzdx2ZmmQQUfoE/wxZMOHQFhLv
-         IxXpOS1j7qXUqBMFcjRIzWKJ/XKLidlSD/uwUVOQgXcBJwFuThe+oVbdZKE5Z51K0/eR
-         kSUQ==
-X-Gm-Message-State: AOAM531uUaYVA1qyjd+l8QWv1opukHMaz+aVHmdeNkHBAeTfS4YgSxvr
-        KsEtz/oBlYuiEnFfM8PhGnm8cqkJwdbLg/1oSavcDA==
-X-Google-Smtp-Source: ABdhPJzS+KHIFt2i4JcT0YHnxCuNXi9kSQ8vsl2ND840iQcH8/sNqHLdoyfBphDmnoVI5uzOcn1EX6cFthwylISyqxE=
-X-Received: by 2002:a05:6000:1682:b0:20c:588c:7dfa with SMTP id
- y2-20020a056000168200b0020c588c7dfamr582305wrd.15.1652375498513; Thu, 12 May
- 2022 10:11:38 -0700 (PDT)
+        bh=xT5a/I0cxR9Jf9/vuNNWYbKwVDl4cBhbZvh4/qXTA+U=;
+        b=aoAAlCzr3WnIYVzKyGDVjMyveJcs+wBuBLdNtSrs9Ud/iYuBwrUXfSXGuZwK81CgF7
+         08o7i/zvc5/AylZC95S4isi4zYTAo43wch24lGwpnUlPqCl+0ziwo/RfjFYGu/x8svVt
+         gDNhCMD7v4L3jw/zKi23ZqfYwORrZVr5K/APUD28eKoVtVZcyYfm9NOD5zHblnc9waKw
+         eP+jkdy+PP/+2Ve2qvODlgwmNY3O3i4iG6STp3hkxOP1RzYA5fdP9txVCRtHNfUn6Z8Z
+         QD15oOsKFUlGkb9M+XmLzPleluFeGKCe79uAuifsunc8AaKf3lSWteqgioRn0Po5RqAi
+         BrmA==
+X-Gm-Message-State: AOAM5312LZ1YNHAy/7ZT89pBatYFGMitv8LBu2Ez2+ipBOfUbCqrpAJc
+        svvVTO+yMY48KQQ0xDMGPK943h2urc1s57WrtiZTDA==
+X-Google-Smtp-Source: ABdhPJyapEZOR+amb5dANr9MAvusdP1GS33OPr5tRS/3gjWbIA5xeq2Zvdgf/9FufsNhYNAF+MSJYl3//cJO7fA8OCI=
+X-Received: by 2002:a81:234b:0:b0:2f8:4082:bbd3 with SMTP id
+ j72-20020a81234b000000b002f84082bbd3mr1147160ywj.47.1652375674449; Thu, 12
+ May 2022 10:14:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220429211540.715151-1-sdf@google.com> <20220429211540.715151-11-sdf@google.com>
- <CAEf4BzY3Nd2pi+O-x4bp41=joFgPXU2+UFqBusdjR08ME62k5g@mail.gmail.com>
- <CAKH8qBtk6CpR-29R6sWicz_zW=RCYUrXZqBZbgF9eqt4XGgNqQ@mail.gmail.com>
- <CAEf4BzZvVzHd9Sb=uH+614fq0wrht1wBAyG1zh6ZJg-_Qz0-rA@mail.gmail.com>
- <CAKH8qBv401RBdiouFD71JGZScG_oFD+3fUNav68JpzA=VWLkiA@mail.gmail.com> <CAEf4Bzb0Dnh49rwy8eFwoZK1ThOn-YQjcwXJiKbT-p7aATqEQw@mail.gmail.com>
-In-Reply-To: <CAEf4Bzb0Dnh49rwy8eFwoZK1ThOn-YQjcwXJiKbT-p7aATqEQw@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 12 May 2022 10:11:27 -0700
-Message-ID: <CAKH8qBuHU7OAjTMk-6GU08Nmwnn6J7Cw1TzP6GwCEq0x1Wwd9w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 10/10] selftests/bpf: verify lsm_cgroup struct
- sock access
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>
+References: <20220512165601.2326659-1-eric.dumazet@gmail.com> <09dae83a-b716-3a0c-cc18-39e6e9afa6cc@hartkopp.net>
+In-Reply-To: <09dae83a-b716-3a0c-cc18-39e6e9afa6cc@hartkopp.net>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 12 May 2022 10:14:23 -0700
+Message-ID: <CANn89i+V+ZW3qjb=OycX5vsEdcymdsn9-HF379QFqL3T2_a0Ag@mail.gmail.com>
+Subject: Re: [PATCH v2 net-next] inet: add READ_ONCE(sk->sk_bound_dev_if) in INET_MATCH()
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
@@ -73,112 +69,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 11, 2022 at 8:38 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Tue, May 10, 2022 at 10:31 AM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > On Mon, May 9, 2022 at 4:44 PM Andrii Nakryiko
-> > <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > On Mon, May 9, 2022 at 4:38 PM Stanislav Fomichev <sdf@google.com> wrote:
-> > > >
-> > > > On Mon, May 9, 2022 at 2:54 PM Andrii Nakryiko
-> > > > <andrii.nakryiko@gmail.com> wrote:
-> > > > >
-> > > > > On Fri, Apr 29, 2022 at 2:16 PM Stanislav Fomichev <sdf@google.com> wrote:
-> > > > > >
-> > > > > > sk_priority & sk_mark are writable, the rest is readonly.
-> > > > > >
-> > > > > > Add new ldx_offset fixups to lookup the offset of struct field.
-> > > > > > Allow using test.kfunc regardless of prog_type.
-> > > > > >
-> > > > > > One interesting thing here is that the verifier doesn't
-> > > > > > really force me to add NULL checks anywhere :-/
-> > > > > >
-> > > > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > > > > ---
-> > > > > >  tools/testing/selftests/bpf/test_verifier.c   | 54 ++++++++++++++++++-
-> > > > > >  .../selftests/bpf/verifier/lsm_cgroup.c       | 34 ++++++++++++
-> > > > > >  2 files changed, 87 insertions(+), 1 deletion(-)
-> > > > > >  create mode 100644 tools/testing/selftests/bpf/verifier/lsm_cgroup.c
-> > > > > >
-> > > > >
-> > > > > [...]
-> > > > >
-> > > > > > diff --git a/tools/testing/selftests/bpf/verifier/lsm_cgroup.c b/tools/testing/selftests/bpf/verifier/lsm_cgroup.c
-> > > > > > new file mode 100644
-> > > > > > index 000000000000..af0efe783511
-> > > > > > --- /dev/null
-> > > > > > +++ b/tools/testing/selftests/bpf/verifier/lsm_cgroup.c
-> > > > > > @@ -0,0 +1,34 @@
-> > > > > > +#define SK_WRITABLE_FIELD(tp, field, size, res) \
-> > > > > > +{ \
-> > > > > > +       .descr = field, \
-> > > > > > +       .insns = { \
-> > > > > > +               /* r1 = *(u64 *)(r1 + 0) */ \
-> > > > > > +               BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, 0), \
-> > > > > > +               /* r1 = *(u64 *)(r1 + offsetof(struct socket, sk)) */ \
-> > > > > > +               BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, 0), \
-> > > > > > +               /* r2 = *(u64 *)(r1 + offsetof(struct sock, <field>)) */ \
-> > > > > > +               BPF_LDX_MEM(size, BPF_REG_2, BPF_REG_1, 0), \
-> > > > > > +               /* *(u64 *)(r1 + offsetof(struct sock, <field>)) = r2 */ \
-> > > > > > +               BPF_STX_MEM(size, BPF_REG_1, BPF_REG_2, 0), \
-> > > > > > +               BPF_MOV64_IMM(BPF_REG_0, 1), \
-> > > > > > +               BPF_EXIT_INSN(), \
-> > > > > > +       }, \
-> > > > > > +       .result = res, \
-> > > > > > +       .errstr = res ? "no write support to 'struct sock' at off" : "", \
-> > > > > > +       .prog_type = BPF_PROG_TYPE_LSM, \
-> > > > > > +       .expected_attach_type = BPF_LSM_CGROUP, \
-> > > > > > +       .kfunc = "socket_post_create", \
-> > > > > > +       .fixup_ldx = { \
-> > > > > > +               { "socket", "sk", 1 }, \
-> > > > > > +               { tp, field, 2 }, \
-> > > > > > +               { tp, field, 3 }, \
-> > > > > > +       }, \
-> > > > > > +}
-> > > > > > +
-> > > > > > +SK_WRITABLE_FIELD("sock_common", "skc_family", BPF_H, REJECT),
-> > > > > > +SK_WRITABLE_FIELD("sock", "sk_sndtimeo", BPF_DW, REJECT),
-> > > > > > +SK_WRITABLE_FIELD("sock", "sk_priority", BPF_W, ACCEPT),
-> > > > > > +SK_WRITABLE_FIELD("sock", "sk_mark", BPF_W, ACCEPT),
-> > > > > > +SK_WRITABLE_FIELD("sock", "sk_pacing_rate", BPF_DW, REJECT),
-> > > > > > +
-> > > > >
-> > > > > have you tried writing it as C program and adding the test to
-> > > > > test_progs? Does something not work there?
-> > > >
-> > > > Seems like it should work, I don't see any issues with writing 5
-> > > > programs to test each field.
-> > > > But test_verified still feels like a better fit? Any reason in
-> > > > particular you'd prefer test_progs over test_verifier?
-> > >
-> > > Adding that fixup_ldx->strct special handling didn't feel like the
-> > > best fit, tbh. test_progs is generally much nicer to deal with in
-> > > terms of CI and in terms of comprehending what's going on and
-> > > supporting the code longer term.
-> >
-> > This is not new, right? We already have a bunch of fixup_xxx things.
->
-> I'm not saying it's wrong, but we don't have to keep adding extra
-> custom fixup_xxx things and having hand crafted assembly test cases if
-> we can do C tests, right? BPF assembly tests are sometimes necessary
-> if we need to craft some special conditions which are hard to
-> guarantee from Clang side during C to BPF assembly translation. But
-> this one doesn't seem to be the case.
->
-> > I can try to move this into test_progs in largely the same manner if
-> > you prefer, having a C file per field seems like an overkill.
->
-> You don't need a separate C file for each case. See what Joanne does
-> with SEC("?...") for dynptr tests, or what Kumar did for his kptr
-> tests. You can put multiple negative tests as separate BPF programs in
-> one file with auto-load disabled through SEC("?...") and then
-> open/load skeleton each time for each program, one at a time.
+On Thu, May 12, 2022 at 10:02 AM Oliver Hartkopp <socketcan@hartkopp.net> wrote:
 
-I'm gonna start with keeping the assembly, but moving it into
-test_progs. I think it looks a bit nicer than the fixup stuff I'm
-currently doing and I like how everything is in the same place. So
-please yell at me if you still don't like it next time I send it out
-and I'll try to explore SEC("?...").
+> When you convert the #define into an inline function, wouldn't it be
+> more natural to name it lower caps?
+>
+> static inline bool inet_match(struct net *net, ... )
+
+Sure, it is only a matter for us to remember all the past/present
+names, based on implementation details, especially at backport times.
