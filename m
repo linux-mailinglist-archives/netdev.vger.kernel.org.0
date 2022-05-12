@@ -2,247 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37CC25243DF
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 06:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0C4C5243F7
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 06:13:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345843AbiELEII (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 00:08:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48608 "EHLO
+        id S1346372AbiELENV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 00:13:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230419AbiELEIF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 00:08:05 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB761C194A;
-        Wed, 11 May 2022 21:07:59 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso3764960pjb.5;
-        Wed, 11 May 2022 21:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3a4YxQ/WF7oORdxUbgy4gguqjUrbBoNLgvefwmvTIag=;
-        b=el1LkYqGyx9AddWKsiV4y734Zg4kv9p2L5IIYG9GwWWT7hOOujXKPujBZFmkRR/ff2
-         gLzLQO0ZPQg77NI5LZcMdV/S2oi+CtS6MDiJf7SPvp2kLj3TWUU+of5V2D0GPrqHmw+W
-         hKiWmZIFuHbp3IR2bLFhSKgEyf/KelPWdljGZr7zOA8tv37EyHt0/tbUeT+4ugex4cQW
-         peAWIHoCeiK9Eqzm0muh+I8qakIaYiA4qhEmO1glm6/GxqKMK0OWj6XKMRmSWBOQEtGx
-         jbxfhOYZZ4pMZ79qVUmZcR8edzuNyFkS95yaQLe4scCqM7l88S+WVZoWRwoXSz2Bji7U
-         6z5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3a4YxQ/WF7oORdxUbgy4gguqjUrbBoNLgvefwmvTIag=;
-        b=k0mzAPUtScjNVDSJQWpLtuQM1b+WX2ERCwmwHTsQkZuNJESxtaAJojkJc7hmUbjHua
-         Or3JjRk98UR5tXL8e0cEwK3MoVhaOkjzkXfUvsbPEbw033xG+1jevmbhVoOuOWLW+RUO
-         dgKR2OC8TMtb5euUESg3dl3ggwols0SE6IoK1lVAF2ePkFfcXHh16PksSfNdWPspv7Bx
-         pNm9cWTwtFubeKB8S4zDf8MTuIw7hWFjlVo6iBYOvmD4SwCgOxgaEXNuYRZc0wwIwDbd
-         GoR5qn6eT2DtMY1efAQhzqNJyYB5PIrn3Y9cJdkVI/RVZzmXkATpiktb7j0a2rsCTX46
-         ffJg==
-X-Gm-Message-State: AOAM530ZB8ISVUGq/QofavXfKimO01KLf1ieqGMIjwFfhRfA5JgjF9UC
-        aMhDRBWJJZ8n/XpxgZ5OeDlB4CqFNzs=
-X-Google-Smtp-Source: ABdhPJzxrLyLxheZ40sv8LueFEVbUd4ds3KJWW0ZG7Yg3Ned3l2RU1PdBfyixx7N48/FevMw+FGmNA==
-X-Received: by 2002:a17:902:82c8:b0:15c:f7c7:ef9d with SMTP id u8-20020a17090282c800b0015cf7c7ef9dmr28359778plz.44.1652328479202;
-        Wed, 11 May 2022 21:07:59 -0700 (PDT)
-Received: from MBP-98dd607d3435.dhcp.thefacebook.com ([2620:10d:c090:400::4:6b86])
-        by smtp.gmail.com with ESMTPSA id d11-20020aa7868b000000b0050dc7628196sm2528110pfo.112.2022.05.11.21.07.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 21:07:58 -0700 (PDT)
-Date:   Wed, 11 May 2022 21:07:56 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     sdf@google.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Subject: Re: [PATCH bpf-next v6 04/10] bpf: minimize number of allocated lsm
- slots per program
-Message-ID: <20220512040756.gmwhvnikmta2zdc3@MBP-98dd607d3435.dhcp.thefacebook.com>
-References: <20220429211540.715151-1-sdf@google.com>
- <20220429211540.715151-5-sdf@google.com>
- <20220510050546.tpuslkld4rlrqexp@MBP-98dd607d3435.dhcp.thefacebook.com>
- <YnqhWTshFLqMY9kl@google.com>
+        with ESMTP id S1346361AbiELENN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 00:13:13 -0400
+Received: from wout1-smtp.messagingengine.com (wout1-smtp.messagingengine.com [64.147.123.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698441E5EC8;
+        Wed, 11 May 2022 21:13:10 -0700 (PDT)
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailout.west.internal (Postfix) with ESMTP id 2E9B8320095C;
+        Thu, 12 May 2022 00:13:06 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute5.internal (MEProxy); Thu, 12 May 2022 00:13:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:in-reply-to
+        :message-id:mime-version:references:reply-to:sender:subject
+        :subject:to:to; s=fm1; t=1652328785; x=1652415185; bh=++9cjqTrJI
+        qEH8YtpOmDN60mAdRnMXZTS8IHv1/ADcs=; b=L1hyfQpF8Men26wyTDvTc/dzjm
+        4JuARr2MOwOL+av3HTtphEnMBQTYWSzs2NRE5iDynW5valvCWx3GqSipXhwYJTJy
+        TCxC9DpH7p7+NRfy46K8t1bv/MZ6vGOGI27Zk9vE9vfn2+ufFSAoyNHeVcb/P2d2
+        fzFPEs6mwgT/lcT0m50IJeeM7TBS+wuZhqkiVKvaGRL4WBJRJqdk6J3Xa3gw7sS+
+        wFilpLhb8LiUaku9tiatELwUpbwlh9eEL5wpU36BPYxXRiLVyRjZCfOi+ovvgXeU
+        oJ9sv3nCWEsst0Sl89aOfzSnEx8pEuVmMBQ4b1kJRomRje8UIXYdcBOFf3BQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm1; t=1652328785; x=
+        1652415185; bh=++9cjqTrJIqEH8YtpOmDN60mAdRnMXZTS8IHv1/ADcs=; b=v
+        bA3T8Ma8YQLMs6W59OHH3pBfAaQCebZSszHDBYaR0cZXN2rLStWTvYjDz4U7+cOi
+        DzS2Gs314yxOybPSCBXmHlMBYOiJMbnh1icAC0T2uqgfLHz3cpQeFwf9vwlrv3e2
+        dEBJQUkfK93Nf/i8nwFqMRu0vQenn+/gZHluiNRc0Wkcrz8ZUvQIPp4QwGGNme/G
+        o1xK2mnhdXed11RJhratjbaTPRix1+58kEfz6XLp6RPLzr2QJZi7WdcBfJiA7Bdh
+        qHot5EQPqfA6zFqFwgK9ByYWsBNHZZerw9LKW8MHI8dbArEzK9MTGWRhof6RuSGq
+        kMPtFSS4Kysq5r0HNIrhg==
+X-ME-Sender: <xms:UIl8Ykgos9QtlPKgTyhgnMoELD9W9ABtB2Vf2hRl9WNeRGy3khe4rw>
+    <xme:UIl8YtDyzmC-sQ16ncKfGwuIN3xv6q5Q894ybyOHWED50kRAo8_F7KMITea3zyOkj
+    RX_a52DVSbMPw>
+X-ME-Received: <xmr:UIl8YsGaZFX-Mk9kACLZRSTSisC0KirTFsJsxlotzmwnyOk4Ydkf-VrDhuDxkd3fJvu0QeLFkC0SJzOfIzrYk7tz65iqZDYq>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrgeeigdektdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvvefukfhfgggtuggjsehttdortddttddvnecuhfhrohhmpefirhgvghcu
+    mffjuceoghhrvghgsehkrhhorghhrdgtohhmqeenucggtffrrghtthgvrhhnpeejhfelff
+    ejkeejheetgfeigeekueeuuddvveekjeekueeggfdvhfefteelgefgvdenucevlhhushht
+    vghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhh
+    drtghomh
+X-ME-Proxy: <xmx:UIl8YlS2rgsrlK9k3Ev8Pz1WmtfqGTNneHoGv5BUvnCYTuZ-7ZrHLQ>
+    <xmx:UIl8Yhze5hrKNidZ_Bex1WpkCDWE-TTZCO__inSPmFADvMxu_zYnbQ>
+    <xmx:UIl8Yj5WkGov7dYi6dK78WLKKegQo8bWIbkq8KOdI5sO11D5fkc4mA>
+    <xmx:UYl8YmIfhxUo8puFeVoHbhM263xvPcGVGM_YOK_DBbuPkz85Po5OJQ>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Thu,
+ 12 May 2022 00:13:04 -0400 (EDT)
+Date:   Thu, 12 May 2022 06:13:00 +0200
+From:   Greg KH <greg@kroah.com>
+To:     David Ober <dober6023@gmail.com>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, hayeswang@realtek.com, aaron.ma@canonical.com,
+        markpearson@lenovo.com, dober@lenovo.com
+Subject: Re: [PATCH v3] net: usb: r8152: Add in new Devices that are
+ supported for Mac-Passthru
+Message-ID: <YnyJTLOdhAXJGxzG@kroah.com>
+References: <20220511193015.248364-1-dober6023@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YnqhWTshFLqMY9kl@google.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220511193015.248364-1-dober6023@gmail.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_PASS,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 10:31:05AM -0700, sdf@google.com wrote:
-> On 05/09, Alexei Starovoitov wrote:
-> > On Fri, Apr 29, 2022 at 02:15:34PM -0700, Stanislav Fomichev wrote:
-> > > Previous patch adds 1:1 mapping between all 211 LSM hooks
-> > > and bpf_cgroup program array. Instead of reserving a slot per
-> > > possible hook, reserve 10 slots per cgroup for lsm programs.
-> > > Those slots are dynamically allocated on demand and reclaimed.
-> > >
-> > > It should be possible to eventually extend this idea to all hooks if
-> > > the memory consumption is unacceptable and shrink overall effective
-> > > programs array.
-> > >
-> > > struct cgroup_bpf {
-> > > 	struct bpf_prog_array *    effective[33];        /*     0   264 */
-> > > 	/* --- cacheline 4 boundary (256 bytes) was 8 bytes ago --- */
-> > > 	struct hlist_head          progs[33];            /*   264   264 */
-> > > 	/* --- cacheline 8 boundary (512 bytes) was 16 bytes ago --- */
-> > > 	u8                         flags[33];            /*   528    33 */
-> > >
-> > > 	/* XXX 7 bytes hole, try to pack */
-> > >
-> > > 	struct list_head           storages;             /*   568    16 */
-> > > 	/* --- cacheline 9 boundary (576 bytes) was 8 bytes ago --- */
-> > > 	struct bpf_prog_array *    inactive;             /*   584     8 */
-> > > 	struct percpu_ref          refcnt;               /*   592    16 */
-> > > 	struct work_struct         release_work;         /*   608    72 */
-> > >
-> > > 	/* size: 680, cachelines: 11, members: 7 */
-> > > 	/* sum members: 673, holes: 1, sum holes: 7 */
-> > > 	/* last cacheline: 40 bytes */
-> > > };
-> > >
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >  include/linux/bpf-cgroup-defs.h |   3 +-
-> > >  include/linux/bpf_lsm.h         |   6 --
-> > >  kernel/bpf/bpf_lsm.c            |   5 --
-> > >  kernel/bpf/cgroup.c             | 107 +++++++++++++++++++++++++++-----
-> > >  4 files changed, 94 insertions(+), 27 deletions(-)
-> > >
-> > > diff --git a/include/linux/bpf-cgroup-defs.h
-> > b/include/linux/bpf-cgroup-defs.h
-> > > index d5a70a35dace..359d3f16abea 100644
-> > > --- a/include/linux/bpf-cgroup-defs.h
-> > > +++ b/include/linux/bpf-cgroup-defs.h
-> > > @@ -10,7 +10,8 @@
-> > >
-> > >  struct bpf_prog_array;
-> > >
-> > > -#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
-> > > +/* Maximum number of concurrently attachable per-cgroup LSM hooks. */
-> > > +#define CGROUP_LSM_NUM 10
-> > >
-> > >  enum cgroup_bpf_attach_type {
-> > >  	CGROUP_BPF_ATTACH_TYPE_INVALID = -1,
-> > > diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
-> > > index 7f0e59f5f9be..613de44aa429 100644
-> > > --- a/include/linux/bpf_lsm.h
-> > > +++ b/include/linux/bpf_lsm.h
-> > > @@ -43,7 +43,6 @@ extern const struct bpf_func_proto
-> > bpf_inode_storage_delete_proto;
-> > >  void bpf_inode_storage_free(struct inode *inode);
-> > >
-> > >  int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t
-> > *bpf_func);
-> > > -int bpf_lsm_hook_idx(u32 btf_id);
-> > >
-> > >  #else /* !CONFIG_BPF_LSM */
-> > >
-> > > @@ -74,11 +73,6 @@ static inline int bpf_lsm_find_cgroup_shim(const
-> > struct bpf_prog *prog,
-> > >  	return -ENOENT;
-> > >  }
-> > >
-> > > -static inline int bpf_lsm_hook_idx(u32 btf_id)
-> > > -{
-> > > -	return -EINVAL;
-> > > -}
-> > > -
-> > >  #endif /* CONFIG_BPF_LSM */
-> > >
-> > >  #endif /* _LINUX_BPF_LSM_H */
-> > > diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
-> > > index a0e68ef5dfb1..1079c747e061 100644
-> > > --- a/kernel/bpf/bpf_lsm.c
-> > > +++ b/kernel/bpf/bpf_lsm.c
-> > > @@ -91,11 +91,6 @@ int bpf_lsm_find_cgroup_shim(const struct bpf_prog
-> > *prog,
-> > >  	return 0;
-> > >  }
-> > >
-> > > -int bpf_lsm_hook_idx(u32 btf_id)
-> > > -{
-> > > -	return btf_id_set_index(&bpf_lsm_hooks, btf_id);
-> > > -}
-> > > -
-> > >  int bpf_lsm_verify_prog(struct bpf_verifier_log *vlog,
-> > >  			const struct bpf_prog *prog)
-> > >  {
-> > > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> > > index 9cc38454e402..787ff6cf8d42 100644
-> > > --- a/kernel/bpf/cgroup.c
-> > > +++ b/kernel/bpf/cgroup.c
-> > > @@ -79,10 +79,13 @@ unsigned int __cgroup_bpf_run_lsm_sock(const void
-> > *ctx,
-> > >  	shim_prog = (const struct bpf_prog *)((void *)insn - offsetof(struct
-> > bpf_prog, insnsi));
-> > >
-> > >  	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-> > > -	if (likely(cgrp))
-> > > +	if (likely(cgrp)) {
-> > > +		rcu_read_lock(); /* See bpf_lsm_attach_type_get(). */
+On Wed, May 11, 2022 at 03:30:15PM -0400, David Ober wrote:
+> Lenovo Thunderbolt 4 Dock, and other Lenovo USB Docks are using the
+> original Realtek USB ethernet Vendor and Product IDs
+> If the Network device is Realtek verify that it is on a Lenovo USB hub
+> before enabling the passthru feature
 > 
-> > I've looked at bpf_lsm_attach_type_get/put, but still don't get it :)
-> > shim_prog->aux->cgroup_atype stays the same for the life of shim_prog.
-> > atype_usecnt will go up and down, but atype_usecnt == 0 is the only
-> > interesting one from the pov of selecting atype in _get().
-> > And there shim_prog will be detached and trampoline destroyed.
-> > The shim_prog->aux->cgroup_atype deref below cannot be happening on
-> > freed shim_prog.
-> > So what is the point of this critical section and sync_rcu() ?
-> > It seems none of it is necessary.
+> This also adds in the device IDs for the Lenovo USB Dongle and one other
+> USB-C dock
 > 
-> I was trying to guard against the reuse of the same cgroup_atype:
+> Signed-off-by: David Ober <dober6023@gmail.com>
+> ---
+>  drivers/net/usb/r8152.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
 > 
-> CPU0                                     CPU1
-> __cgroup_bpf_run_lsm_socket:
-> atype = shim_prog->aux->cgroup_atype
->                                          __cgroup_bpf_detach
->                                          bpf_lsm_attach_type_put(shim_prog
-> attach_btf_id)
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index c2da3438387c..482f54625411 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -771,6 +771,8 @@ enum rtl8152_flags {
+>  };
+>  
+>  #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
+> +#define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3		0x3062
+> +#define DEVICE_ID_THINKPAD_USB_C_DONGLE			0x720c
+>  #define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2		0xa387
+>  
+>  struct tally_counter {
+> @@ -9644,10 +9646,18 @@ static int rtl8152_probe(struct usb_interface *intf,
+>  
+>  	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO) {
+>  		switch (le16_to_cpu(udev->descriptor.idProduct)) {
+> +		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3:
+> +		case DEVICE_ID_THINKPAD_USB_C_DONGLE:
+>  		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
+>  		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
+>  			tp->lenovo_macpassthru = 1;
+>  		}
+> +	} else if ((le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_REALTEK) &&
+> +		   (le16_to_cpu(udev->parent->descriptor.idVendor) == VENDOR_ID_LENOVO)) {
+> +		switch (le16_to_cpu(udev->descriptor.idProduct)) {
+> +		case 0x8153:
+> +			tp->lenovo_macpassthru = 1;
+> +		}
+>  	}
+>  
+>  	if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial &&
+> -- 
+> 2.30.2
+> 
 
-but inbetween the two ops on CPU1 you're doing:
-bpf_trampoline_unlink_cgroup_shim
-which will go through the trampoline update.
-I guess it CPU0 runs sleepable prog for long time
-there is a chance...
-Maybe put bpf_lsm_attach_type_put in shim_prog free path?
+Hi,
 
->                                          __cgroup_bpf_attach(another hook)
->                                          bpf_lsm_attach_type_get(another
-> btf_id)
->                                          ^^^ can reuse the same cgroup_atype
-> array = cgrp->effective[atype]
-> ^^^ run effective from another btf_id?
-> 
-> So I added that sync_rcu to wait for existing shim_prog users to exit.
-> Am I too paranoid? Maybe if I move bpf_lsm_attach_type_put deep into
-> bpf_prog_put (deferred path) that won't be an issue and we can drop
-> rcu_sync+read lock?
+This is the friendly patch-bot of Greg Kroah-Hartman.  You have sent him
+a patch that has triggered this response.  He used to manually respond
+to these common problems, but in order to save his sanity (he kept
+writing the same thing over and over, yet to different people), I was
+created.  Hopefully you will not take offence and will fix the problem
+in your patch and resubmit it so that it can be accepted into the Linux
+kernel tree.
 
-Mainly not excited about sync_rcu. It was causing latency issues in the past.
-Please use call_rcu whenever possible.
+You are receiving this message because of the following common error(s)
+as indicated below:
 
-> > > It should be possible to eventually extend this idea to all hooks if
-> > > the memory consumption is unacceptable and shrink overall effective
-> > > programs array.
-> 
-> > if BPF_LSM_CGROUP do atype differently looks too special.
-> > Why not to do this generalization right now?
-> > Do atype_get for all cgroup hooks and get rid of
-> > to_cgroup_bpf_attach_type ?
-> > Combine ranges of attach_btf_id for lsm_cgroup and enum bpf_attach_type
-> > for traditional cgroup hooks into single _get() method that returns a slot
-> > in effective[] array ?
-> > attach/detach/query apis won't notice this internal implementation detail.
-> 
-> I'm being extra cautious by using this new allocation scheme for LSM only.
-> If there is no general pushback, I can try to convert everything at the
-> same time.
+- This looks like a new version of a previously submitted patch, but you
+  did not list below the --- line any changes from the previous version.
+  Please read the section entitled "The canonical patch format" in the
+  kernel file, Documentation/SubmittingPatches for what needs to be done
+  here to properly describe this.
 
-Hopefully generalization of the mechanism will move atype_get/put logic
-into a path that is clearly race free.
+If you wish to discuss this problem further, or you have questions about
+how to resolve this issue, please feel free to respond to this email and
+Greg will reply once he has dug out from the pending patches received
+from other developers.
+
+thanks,
+
+greg k-h's patch email bot
