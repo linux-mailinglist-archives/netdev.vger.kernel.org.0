@@ -2,106 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BDB652484B
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 10:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE84A524881
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 11:02:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351724AbiELIvf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 04:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41754 "EHLO
+        id S1351748AbiELJC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 05:02:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351742AbiELIvT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 04:51:19 -0400
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1A1356F96;
-        Thu, 12 May 2022 01:51:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
-        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
-        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
-        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
-        :List-Post:List-Owner:List-Archive;
-        bh=xx9m5dm8MmD9z6KyI04KVvncdp5gOEhfIk9XzqJfOxg=; b=eRgiK+ggyPqj6IGjUVzf59mDDq
-        XpWwjL7Vau9dZb/Lwy3EXBhz8YWsnZ62iBAo3kpWt03/kIwEeOr/fw48fHnUimA0TGDpB6J0e0F0Y
-        2HTjAmNI2g5ljskIURDyyufHxpJCi6dSKIuH6K+GETZqT/FG/Bp+6ikLtW9SniX5egb4=;
-Received: from p200300daa70ef20035fe11ecec42601a.dip0.t-ipconnect.de ([2003:da:a70e:f200:35fe:11ec:ec42:601a] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1np4XI-0001va-5j; Thu, 12 May 2022 10:51:04 +0200
-Message-ID: <0ef1e0c2-1623-070d-fbf5-e7f09fc199ca@nbd.name>
-Date:   Thu, 12 May 2022 10:51:03 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Content-Language: en-US
-To:     Andrew Lunn <andrew@lunn.ch>, Vladimir Oltean <olteanv@gmail.com>
-Cc:     Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S235555AbiELJC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 05:02:26 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 078D037AB5
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 02:02:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652346144;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=aiyKQYemSTtBVw0MoWjhk0ljF2zV+oylz2KWEb6PUpE=;
+        b=MwK5knf+x2W6b/qWOhIhiTrki4BzZhnO3tabUCa/Zrz5rvd6r5YWpGziOoAUmHDStvYemT
+        1S1Hyh4TxFuI02NSoDKp67Q0edBDK8OSxIBnES1RisWnxW91Q6XSKzfM1RlhaQE7Slb2aO
+        ygwuPghNbFG3Ai324vRDR3Qo39iu5lY=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-27-mE9xzZwUONyCVLCjnrF4xg-1; Thu, 12 May 2022 05:02:22 -0400
+X-MC-Unique: mE9xzZwUONyCVLCjnrF4xg-1
+Received: by mail-wr1-f70.google.com with SMTP id j21-20020adfa555000000b0020adb9ac14fso1813529wrb.13
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 02:02:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=aiyKQYemSTtBVw0MoWjhk0ljF2zV+oylz2KWEb6PUpE=;
+        b=3VrtRe9vt7IBFv6K6RmhbeNUL80Qz2BY16t49pjaf9X6BmueUbcV9Vec/5rbRehYfZ
+         GS3d/4Ut3ikoNVwJ3PFY/9zNqDwMBZXJR/9IQw2pdOd1ASdtec7xi134B5zRZNXbPsqY
+         W4nC1Zl/dRvUvpQBDRVk45p0Um6EGOUwtjcdxIw4SjZD9ylKNzmC/gctY+/D7N+K+VHn
+         P1yd8dezTxv4Z7mYO4U/5bSWbR2hLzgrD/IQkM700XzqQfx61y1+GjV+XBXd6x25Lutm
+         ZeZrSD7DNEyC7/wjXemxOdz63QeKWv1K1z1o+fDc7cD4MRRxHZgzm8ludE+KXystmRqW
+         RszQ==
+X-Gm-Message-State: AOAM531c2on3W/CO3aSpQDXoXqpG5D+ZtjhrV0bwnZNORbBN2McjSUOy
+        oCIUDi7JVPOANlGw9Aj3HAkW8MrZ7iuwBe/pC4gDx72bFaDlmT1+zIct/4wKVQUQkRhrjRYYs43
+        /HoCPblYH6aHsWuz5
+X-Received: by 2002:a5d:5051:0:b0:20c:884b:2347 with SMTP id h17-20020a5d5051000000b0020c884b2347mr26531025wrt.224.1652346141763;
+        Thu, 12 May 2022 02:02:21 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzltmgxEPTjSbLxx5Q+qHJZ3y25HcxLx6cYMLQmgDQkL3DcskA3NNyCqVGf1aBsyNLV7/8FDg==
+X-Received: by 2002:a5d:5051:0:b0:20c:884b:2347 with SMTP id h17-20020a5d5051000000b0020c884b2347mr26531015wrt.224.1652346141568;
+        Thu, 12 May 2022 02:02:21 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-113-89.dyn.eolo.it. [146.241.113.89])
+        by smtp.gmail.com with ESMTPSA id c6-20020a056000104600b0020c6fa5a797sm3539018wrx.91.2022.05.12.02.02.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 May 2022 02:02:20 -0700 (PDT)
+Message-ID: <51bc118ff452c42fef489818422f278ab79e6dd4.camel@redhat.com>
+Subject: Re: [PATCH v6 net-next 13/13] mlx5: support BIG TCP packets
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Saeed Mahameed <saeedm@nvidia.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220510094014.68440-1-nbd@nbd.name>
- <20220510123724.i2xqepc56z4eouh2@skbuf>
- <5959946d-1d34-49b9-1abe-9f9299cc194e@nbd.name>
- <20220510165233.yahsznxxb5yq6rai@skbuf>
- <bc4bde22-c2d6-1ded-884a-69465b9d1dc7@nbd.name>
- <20220510222101.od3n7gk3cofwhbks@skbuf>
- <376b13ac-d90b-24e0-37ed-a96d8e5f80da@nbd.name>
- <20220511093245.3266lqdze2b4odh5@skbuf> <YnvJFmX+BRscJOtm@lunn.ch>
-From:   Felix Fietkau <nbd@nbd.name>
-Subject: Re: [PATCH v2] net: dsa: tag_mtk: add padding for tx packets
-In-Reply-To: <YnvJFmX+BRscJOtm@lunn.ch>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Coco Li <lixiaoyan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Date:   Thu, 12 May 2022 11:02:19 +0200
+In-Reply-To: <20220512084023.tgjcecnu6vfuh7ry@LT-SAEEDM-5760.attlocal.net>
+References: <20220510033219.2639364-1-eric.dumazet@gmail.com>
+         <20220510033219.2639364-14-eric.dumazet@gmail.com>
+         <20220512084023.tgjcecnu6vfuh7ry@LT-SAEEDM-5760.attlocal.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 11.05.22 16:32, Andrew Lunn wrote:
->> Let's see what others have to say. I've been wanting to make the policy
->> of whether to call __skb_put_padto() standardized for all tagging protocol
->> drivers (similar to what is done in dsa_realloc_skb() and below it).
->> We pad for tail taggers, maybe we can always pad and this removes a
->> conditional, and simplifies taggers. Side note, I already dislike that
->> the comment in tag_brcm.c is out of sync with the code. It says that
->> padding up to ETH_ZLEN is necessary, but proceeds to pad up until
->> ETH_ZLEN + tag len, only to add the tag len once more below via skb_push().
->> It would be nice if we could use the simple eth_skb_pad().
+On Thu, 2022-05-12 at 01:40 -0700, Saeed Mahameed wrote:
+> On 09 May 20:32, Eric Dumazet wrote:
+> > From: Coco Li <lixiaoyan@google.com>
+> > 
+> > mlx5 supports LSOv2.
+> > 
+> > IPv6 gro/tcp stacks insert a temporary Hop-by-Hop header
+> > with JUMBO TLV for big packets.
+> > 
+> > We need to ignore/skip this HBH header when populating TX descriptor.
+> > 
 > 
-> There are some master devices which will perform padding on their own,
-> in hardware. So for taggers which insert the header at the head,
-> forcing such padding would be a waste of CPU time.
+> Sorry i didn't go through all the documentations or previous discussions,
+> please bare with me, so why not clear HBH just before calling the
+> driver xmit ndo ? 
+
+I guess this way is more efficient: the driver copies IP hdr and TCP
+hdr directly in the correct/final location into the tx descriptor,
+otherwise the caller would have to memmove L2/L3 just before the driver
+copies them again.
 > 
-> For tail taggers, padding short packets by default does however make
-> sense. The master device is probably going to pad in the wrong way if
-> it does padding.
-I just ran some more tests, here's what I found:
-The switch automatically pads all forwarded packets to 64 bytes.
-When packets are forwarded from one external port to another, the 
-padding is all zero.
-Only when packets are sent from a CPU port to an external port, the last 
-4 bytes contain garbage. The garbage bytes are different for every 
-packet, and I can't tell if it's leaking contents of previous packets or 
-what else is in there.
-Based on that, I'm pretty sure that the hardware simply has a quirk 
-where it does not account for the special tag when generating its own 
-padding internally.
+> Or if HBH has to stick, 
 
-I found that replacing my __skb_put_padto call with eth_skb_pad also 
-works, so I'm going to send v3 with that and an updated comment.
+My understanding is that this is not the case.
 
-- Felix
+Cheers,
+
+Paolo
+
