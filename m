@@ -2,47 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB9B6525816
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:05:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC3C52581F
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 01:10:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359356AbiELXFs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 19:05:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57590 "EHLO
+        id S1349139AbiELXKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 19:10:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359343AbiELXFr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:05:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 023AABE1;
-        Thu, 12 May 2022 16:05:42 -0700 (PDT)
+        with ESMTP id S1343976AbiELXKg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 19:10:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB57D1FCC7;
+        Thu, 12 May 2022 16:10:34 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C11162013;
-        Thu, 12 May 2022 23:05:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98E2CC385B8;
-        Thu, 12 May 2022 23:05:41 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 267E4CE2A77;
+        Thu, 12 May 2022 23:10:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75B61C385B8;
+        Thu, 12 May 2022 23:10:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652396741;
-        bh=7mTtf2SBQWjuZujeQe3659n0cchdS+tb6XYeZbaFeDw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=C2zCxyvSsJFuOMCEyiESWPfaL0YeizXzOmkmRanVacrMbqvxRqnhuWUwZsqRJwkcE
-         JsVEWzBTkBkR5o6LFEGxlA/g+LQCYrCXs76JJaA5kYjyLRz9P3NtjqHSxit5WpJZ5I
-         RNQGNxR+nh/gMzLKzd+zeb9VT9XaVlPQhL91QRmwRq0w6NXjcS1C26C7ddaZAr4F1o
-         RORpcwJ1aZxnXPVW7rkU5PA1lkUlWMyluPyBK6bbNni4Y6s/UdOaWv+zxCGo9NgJ35
-         wOV0kmwYT1CUbmPhlbla84Y0qvPbqxoLas8P2Vm41ak/3InIm6bL9Z3i229e5c6PRH
-         tgZZuPOXBpMow==
-Date:   Thu, 12 May 2022 16:05:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH] random32: use real rng for non-deterministic randomness
-Message-ID: <20220512160540.255ddd88@kernel.org>
-In-Reply-To: <20220511143257.88442-1-Jason@zx2c4.com>
-References: <20220511143257.88442-1-Jason@zx2c4.com>
+        s=k20201202; t=1652397031;
+        bh=AOiw8wF4PdvBa3YU1oidYvIy6PmC88xLHJ48WAyDw/g=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=fOjNoVb2DXO/8uT9kYs+2duTISnPYmvsKGh1NfBbeYk8RoEHe2vPQ4I2faPjYGWZ6
+         GhU6GCNVWXgCqIzCdsDqL1dcNFYqrSJUnFvAmJAIpzZYLTYolsTMC5/zt0SOi5YJs3
+         d1/tOilo94RhD9qzHPZLq/8r99XYbyVoa6P6ZfDN/G26PCjjp+gPBBaude5RJEhAQF
+         s7VmBmNdeKhfgXu2M7Gk829iXDp8N5U5Nh8qIRw0G8NIw/R0QLqEyobvR00yAEZGLp
+         mtue47JeO3OBaocT/qfyB0Y5/YBj+0OmnO3V1P/diGGr4IQDqFh0fRY+d7OrQ3J8Uf
+         CFkoxRfGXu/Ag==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id 1635E5C051B; Thu, 12 May 2022 16:10:31 -0700 (PDT)
+Date:   Thu, 12 May 2022 16:10:31 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Marco Elver <elver@google.com>, Liu Jian <liujian56@huawei.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net] tcp: Add READ_ONCE() to read tcp_orphan_count
+Message-ID: <20220512231031.GT1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220512103322.380405-1-liujian56@huawei.com>
+ <CANn89iJ7Lo7NNi4TrpKsaxzFrcVXdgbyopqTRQEveSzsDL7CFA@mail.gmail.com>
+ <CANpmjNPRB-4f3tUZjycpFVsDBAK_GEW-vxDbTZti+gtJaEx2iw@mail.gmail.com>
+ <CANn89iKJ+9=ug79V_bd8LSsLaSu0VLtzZdDLC87rcvQ6UYieHQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANn89iKJ+9=ug79V_bd8LSsLaSu0VLtzZdDLC87rcvQ6UYieHQ@mail.gmail.com>
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -53,50 +67,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 11 May 2022 16:32:57 +0200 Jason A. Donenfeld wrote:
-> random32.c has two RNGs in it: one that is meant to be used
-> deterministically, with some predefined seed, and one that does the same
-> exact thing as random.c, except does it poorly. The first one has some
-> use cases. The second one no longer does and can be replaced with calls
-> to random.c's proper random number generator.
->=20
-> The relatively recent siphash-based bad random32.c code was added in
-> response to concerns that the prior random32.c was too deterministic.
-> Out of fears that random.c was (at the time) too slow, this code was
-> anonymously contributed by somebody who was likely reusing the alias of
-> long time anonymous contributor George Spelvin. Then out of that emerged
-> a kind of shadow entropy gathering system, with its own tentacles
-> throughout various net code, added willy nilly.
->=20
-> Stop=F0=9F=91=8Fmaking=F0=9F=91=8Fcrappy=F0=9F=91=8Fbespoke=F0=9F=91=8Fra=
-ndom=F0=9F=91=8Fnumber=F0=9F=91=8Fgenerators=F0=9F=91=8F.
->=20
-> Fortunately, recently advances in random.c mean that we can stop playing
-> with this sketchiness, and just use get_random_u32(), which is now fast
-> enough. In micro benchmarks using RDPMC, I'm seeing the same median
-> cycle count between the two functions, with the mean being _slightly_
-> higher due to batches refilling (which we can optimize further need be).
-> However, when doing *real* benchmarks of the net functions that actually
-> use these random numbers, the mean cycles actually *decreased* slightly
-> (with the median still staying the same), likely because the additional
-> prandom code means icache misses and complexity, whereas random.c is
-> generally already being used by something else nearby.
->=20
-> The biggest benefit of this is that there are many users of prandom who
-> probably should be using cryptographically secure random numbers. This
-> makes all of those accidental cases become secure by just flipping a
-> switch. Later on, we can do a tree-wide cleanup to remove the static
-> inline wrapper functions that this commit adds.
->=20
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: Theodore Ts'o <tytso@mit.edu>
-> Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
-> Jakub - If there are no objections to this plan, I intend on taking this
-> through the random.git tree, which is what this commit is based on, with
-> its recent siphash changes and such. -Jason
+On Thu, May 12, 2022 at 02:31:48PM -0700, Eric Dumazet wrote:
+> On Thu, May 12, 2022 at 2:18 PM Marco Elver <elver@google.com> wrote:
+> 
+> >
+> > I guess the question is, is it the norm that per_cpu() retrieves data
+> > that can legally be modified concurrently, or not. If not, and in most
+> > cases it's a bug, the annotations should be here.
+> >
+> > Paul, was there any guidance/documentation on this, but I fail to find
+> > it right now? (access-marking.txt doesn't say much about per-CPU
+> > data.)
+> 
+> Normally, whenever we add a READ_ONCE(), we are supposed to add a comment.
 
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+I am starting to think that comments are even more necessary for unmarked
+accesses to shared variables, with the comments setting out why the
+compiler cannot mess things up.  ;-)
 
-I wish there was a good way to anycast to subsystem maintainers.
-With 4 netdev maintainers now even name smooshing won't work.
+> We could make an exception for per_cpu_once(), because the comment
+> would be centralized
+> at per_cpu_once() definition.
+
+This makes a lot of sense to me.
+
+> We will be stuck with READ_ONCE() in places we are using
+> per_cpu_ptr(), for example
+> in dev_fetch_sw_netstats()
+
+If this is strictly statistics, data_race() is another possibility.
+But it does not constrain the compiler at all.
+
+							Thanx, Paul
+
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 1461c2d9dec8099a9a2d43a704b4c6cb0375f480..b66470291d7b7e6c33161093d71e40587f9ed838
+> 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -10381,10 +10381,13 @@ void dev_fetch_sw_netstats(struct
+> rtnl_link_stats64 *s,
+>                 stats = per_cpu_ptr(netstats, cpu);
+>                 do {
+>                         start = u64_stats_fetch_begin_irq(&stats->syncp);
+> -                       tmp.rx_packets = stats->rx_packets;
+> -                       tmp.rx_bytes   = stats->rx_bytes;
+> -                       tmp.tx_packets = stats->tx_packets;
+> -                       tmp.tx_bytes   = stats->tx_bytes;
+> +                       /* These values can change under us.
+> +                        * READ_ONCE() pair with too many write sides...
+> +                        */
+> +                       tmp.rx_packets = READ_ONCE(stats->rx_packets);
+> +                       tmp.rx_bytes   = READ_ONCE(stats->rx_bytes);
+> +                       tmp.tx_packets = READ_ONCE(stats->tx_packets);
+> +                       tmp.tx_bytes   = READ_ONCE(stats->tx_bytes);
+>                 } while (u64_stats_fetch_retry_irq(&stats->syncp, start));
+> 
+>                 s->rx_packets += tmp.rx_packets;
