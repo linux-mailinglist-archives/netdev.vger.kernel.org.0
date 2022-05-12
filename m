@@ -2,124 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C190752536A
-	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 19:19:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32CF852536F
+	for <lists+netdev@lfdr.de>; Thu, 12 May 2022 19:20:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356958AbiELRTu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 13:19:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34998 "EHLO
+        id S1356967AbiELRUe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 13:20:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356945AbiELRTr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 13:19:47 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02B4B26AD8C
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:19:46 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id w24so7082068edx.3
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:19:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jDHOqKOOly/u6UGesDlSvrOYIRtvk+Gi75eJQoAcvU8=;
-        b=ajie93GkyM3bMzgPSyr9+zDuLO8qmNsBGOmDLDAYe2chL7Y1Dex40FgP7wpA+YsFVS
-         PbCwBPFRrhD1wKMyrktSA2hu4sY+A8Snezdkh2Pl31GtbbWKUVs17izWFz1kX+D2q2GT
-         3Kh1nj3RjFExJpH9SEac2MgWbeFHQCaqrxqgg=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jDHOqKOOly/u6UGesDlSvrOYIRtvk+Gi75eJQoAcvU8=;
-        b=xChv8InDcxLnvIstOcqYGHKBVQGBJa7f6xbA+B9XRgagY7k/1S3nmVMjYOT+cJ++z2
-         sn8L1NgBpTgDKvta4jUDk4gDSp3T6GV3vr1v2uAzVKP+Qtu+7f6a0Gn0Xcn11JloMSC5
-         1nAfY322oZEzFRLait/Boyl/RBr7e/axwhs6oP7bMPkVDdgSBokxOuoPhZMXtrMbjCh5
-         mQzV71LrzvyuNWcnVVmtpsGWSYOkFFdtf2CTYrwMt8qAften+SxZMfYgkXE1YGK/DeuG
-         cN5U/AF5XJvTtecM0wGcOsTFXGmbAt7KvVmb2f1TwNiG0D3zjX9q+p3OjlC7XuKHRT8x
-         V87Q==
-X-Gm-Message-State: AOAM532gJVO/p4M8XpJ+KN+eET+GYSW5Fp/wCclf+j/j/MTp//VOA+LK
-        brzLmN6lfbY+2mX1MK4y0RZ/4fWnoSqSVyahp4w=
-X-Google-Smtp-Source: ABdhPJycAjODf+Asp4SXkq/HSraZcqSxYiEo6OOnjITHEyuccGr4g68m4YMDVZIsXLysZkwA+Eooaw==
-X-Received: by 2002:a05:6402:28b1:b0:425:c39e:b773 with SMTP id eg49-20020a05640228b100b00425c39eb773mr35542555edb.237.1652375984307;
-        Thu, 12 May 2022 10:19:44 -0700 (PDT)
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com. [209.85.221.45])
-        by smtp.gmail.com with ESMTPSA id rk6-20020a170907214600b006f3ef214dd9sm2255908ejb.63.2022.05.12.10.19.41
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 May 2022 10:19:41 -0700 (PDT)
-Received: by mail-wr1-f45.google.com with SMTP id b19so8166125wrh.11
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:19:41 -0700 (PDT)
-X-Received: by 2002:a5d:6dad:0:b0:20c:4dc1:e247 with SMTP id
- u13-20020a5d6dad000000b0020c4dc1e247mr629061wrs.274.1652375980629; Thu, 12
- May 2022 10:19:40 -0700 (PDT)
+        with ESMTP id S1356968AbiELRUa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 13:20:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF4C26ADA7
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 10:20:18 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D633AB82A77
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 17:20:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 98A77C34100;
+        Thu, 12 May 2022 17:20:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652376015;
+        bh=6LhL7KZNIaS4rxxO5MgAJK76FV17a/Q2w5I5O2lWps4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=P0DCwMGqG38UU7GHYVNaUlCYJsVXl+dvIjtdqfPZbYqxtTPeYLp8ct+NmPK72gQxX
+         5IKfEOw5NltPJ+62ex9HM8OezbMcuztJvSfLIVeO4bo2o3z8eSpC6ptCcrdP0ft6G9
+         gwCb83QhaTo7AsUutaikEW0rsdI6PMcseHpHR2JYKjROwimjcn49zZJQvqjoZEbM8b
+         6OeYFy9Fztzxt/52+kec5X+20epB1l69IroVv0+YQRutQdNL9CkJvhWl1yCDS8Txb+
+         bN7JPopBFhbc1oJtDlqArzbCzplR/tmgD4Y2YWCespA0XN8d6fU/MfBcXnNHjDc7Jy
+         1ZjMIVO23DQpQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7842DF03937;
+        Thu, 12 May 2022 17:20:15 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220510082351-mutt-send-email-mst@kernel.org>
- <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
- <87czgk8jjo.fsf@mpe.ellerman.id.au> <CAHk-=wj9zKJGA_6SJOMPiQEoYke6cKX-FV3X_5zNXOcFJX1kOQ@mail.gmail.com>
- <87mtfm7uag.fsf@mpe.ellerman.id.au> <CAHk-=wgnYGY=10sRDzXCC2bmappjBTRNNbr8owvGLEW-xuV7Vw@mail.gmail.com>
-In-Reply-To: <CAHk-=wgnYGY=10sRDzXCC2bmappjBTRNNbr8owvGLEW-xuV7Vw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Thu, 12 May 2022 10:19:24 -0700
-X-Gmail-Original-Message-ID: <CAHk-=wg=jfhgTkYBtY3LPPcUP=8A2bqH_iFezwOCDivuovE41w@mail.gmail.com>
-Message-ID: <CAHk-=wg=jfhgTkYBtY3LPPcUP=8A2bqH_iFezwOCDivuovE41w@mail.gmail.com>
-Subject: Re: [GIT PULL] virtio: last minute fixup
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH iproute2-next 00/10] ip stats: Support for xstats and afstats
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165237601548.19682.8195185427370630562.git-patchwork-notify@kernel.org>
+Date:   Thu, 12 May 2022 17:20:15 +0000
+References: <cover.1652104101.git.petrm@nvidia.com>
+In-Reply-To: <cover.1652104101.git.petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, idosch@nvidia.com
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 12, 2022 at 10:10 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
->
-> And most definitely not just random data that can be trivially
-> auto-generated after-the-fact.
+Hello:
 
-Put another way: when people asked for change ID's and I said "we have
-links", I by no means meant that "you can just add random worthless
-links to commits".
+This series was applied to iproute2/iproute2-next.git (main)
+by David Ahern <dsahern@kernel.org>:
 
-For example, if you have a (public-facing) Gerrit system that tracks a
-patch before it gets committed, BY ALL MEANS add a link to that as the
-"change ID" that you tracked in Gerrit.
+On Mon, 9 May 2022 15:59:53 +0200 you wrote:
+> The RTM_GETSTATS response attributes IFLA_STATS_LINK_XSTATS and
+> IFLA_STATS_LINK_XSTATS_SLAVE are used to carry statistics related to,
+> respectively, netdevices of a certain type, and netdevices enslaved to
+> netdevices of a certain type. IFLA_STATS_AF_SPEC are similarly used to
+> carry statistics specific to a certain address family.
+> 
+> In this patch set, add support for three new stats groups that cover the
+> above attributes: xstats, xstats_slave and afstats. Add bridge and bond
+> subgroups to the former two groups, and mpls subgroup to the latter one.
+> 
+> [...]
 
-That's a Link: that actually adds *information*. It shows some real
-history to the commit, and shows who approved it and when, and gives
-you all the Gerrit background.
+Here is the summary with links:
+  - [iproute2-next,01/10] iplink: Fix formatting of MPLS stats
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=72623b73c4ea
+  - [iproute2-next,02/10] iplink: Publish a function to format MPLS stats
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=dff392fd86ee
+  - [iproute2-next,03/10] ipstats: Add a group "afstats", subgroup "mpls"
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=5ed8fd9d5144
+  - [iproute2-next,04/10] iplink: Add JSON support to MPLS stats formatter
+    (no matching commit)
+  - [iproute2-next,05/10] ipstats: Add a third level of stats hierarchy, a "suite"
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=c6900b79b13d
+  - [iproute2-next,06/10] ipstats: Add groups "xstats", "xstats_slave"
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=1247ed51e924
+  - [iproute2-next,07/10] iplink_bridge: Split bridge_print_stats_attr()
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=79f5ad95c17c
+  - [iproute2-next,08/10] ipstats: Expose bridge stats in ipstats
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=36e10429dafc
+  - [iproute2-next,09/10] ipstats: Expose bond stats in ipstats
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=d9976d671c37
+  - [iproute2-next,10/10] man: ip-stats.8: Describe groups xstats, xstats_slave and afstats
+    https://git.kernel.org/pub/scm/network/iproute2/iproute2-next.git/commit/?id=5a1ad9f8c1e6
 
-But a link to the email on lkml that just contains the patch and the
-same commentary that was introduced into the commit? Useless garbage.
-It adds no actual information.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-THAT is my argument. Why do people think I'm arguing against the Link:
-tag? No. I'm arguing against adding links with no relevant new
-information behind them.
 
-I don't argue against links to lore. Not at all. If those links are
-about the background that caused the patch, they are great. Maybe they
-are to a long thread about the original problem and how to solve it.
-Thats WONDERFUL.
-
-But here's the deal: when I look at a commit that I wonder "why is it
-doing this, it seems wrong" (possibly after there's been a bug report
-about it, but possibly just because I'm reviewing it as part of doing
-the pull), and I see a "Link:" tag, and it just points back to the
-SAME DAMN DATA that I already have in the commit, then that Link: tag
-not only wasn't helpful, it was ACTIVELY DETRIMENTAL and made me waste
-time and just get irritated.
-
-And if you waste my time with useless links, why would you expect me
-to be supportive of that behavior?
-
-                      Linus
