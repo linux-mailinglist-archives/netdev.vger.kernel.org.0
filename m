@@ -2,171 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D069B526C77
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 23:44:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35E13526CA8
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 23:58:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384785AbiEMVoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 17:44:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59480 "EHLO
+        id S1384787AbiEMV6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 17:58:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384749AbiEMVny (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 17:43:54 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 33C212F006;
-        Fri, 13 May 2022 14:43:53 -0700 (PDT)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        pabeni@redhat.com
-Subject: [PATCH net-next 17/17] netfilter: conntrack: skip verification of zero UDP checksum
-Date:   Fri, 13 May 2022 23:43:29 +0200
-Message-Id: <20220513214329.1136459-18-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220513214329.1136459-1-pablo@netfilter.org>
-References: <20220513214329.1136459-1-pablo@netfilter.org>
+        with ESMTP id S1359385AbiEMV6S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 17:58:18 -0400
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E818AE58;
+        Fri, 13 May 2022 14:58:17 -0700 (PDT)
+Received: by mail-il1-x131.google.com with SMTP id s12so4042621iln.11;
+        Fri, 13 May 2022 14:58:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/g4X8dMOGR02D0Dhp9783zdhT0HlLns9M8X2Oitrueg=;
+        b=mxeZcdbjVVQ8DTsYW4qwUbmMwcr1XucBA+TjZIPlFB8/LaRfi+Y79xfu/UkIKI3b/n
+         gu4iNsOTBKnqW0XWFAP9rRW2iDru0KaKlwmC/LZYYtr2RqB1se5pqBnQ9R+C9h5F1HlA
+         1oYxP3x4snzMkZd/l36R2JBXKLER449AmBfolkJBzyffWSAvuUe8jh76Ceuv8yp24Qes
+         ymCbc0Eb3DuJZFYtghNoIKf5yLDDz5I0DF6geD1zecuf9JMlKyzKF6ezwLiGb2eZ/l59
+         nL09RVMcV9WsCaMyyYiWrTp/Ez25lm2noiw9BvF/JqpY4ezUX3pnn8r3Dr44E+Y5jI1T
+         +/iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/g4X8dMOGR02D0Dhp9783zdhT0HlLns9M8X2Oitrueg=;
+        b=fcMeZ9fEUq1eo2JW5m6sr95T/kWEQHAToFzY2lv8devtja0j12DoEB2BZgPS6q8BoF
+         2m0nmlRDcL1wQdjWXWw/sAPUNJ992CwQX44nO99VRF9QX5jPW9XRorBSpbzQ53Eh6s64
+         2sB3tI4TCDN8sdETG2XHH1o8DmjeWXvJuYmoXJO5v/p0iDCzmO+OEr+zJJCnSdAojwpU
+         ltMcX6EBiU2IEdl9GWSyjWyXXEUus4Fh4LtYNqgULni2KsjKUdnTTNs9ctVBuvq/kRtm
+         XzAkvnd3pt+nKCfY+nREwMJvM64USlgPyYx1MmAr/r5tuvMqztPh8sHOhqCxHEd9//lv
+         IjTg==
+X-Gm-Message-State: AOAM530GD3WjXg84HfSpKrfg0Ch1mT3RDU7eRTYSlhZfNGXwHxNu3TZ2
+        +vrMCvejtTnw8Ih1CCHorh/4EoLFO4PxlOIQe6Of36Mv5Ig=
+X-Google-Smtp-Source: ABdhPJwB2MtVMHKp1kgPnzr9W/wcbFqKVrUBGmBrhpBnZO7r0P1CzeRTxATakJ38UOewG0eV8SedjxRxotVaTubWrhk=
+X-Received: by 2002:a92:d250:0:b0:2d0:f240:d5f5 with SMTP id
+ v16-20020a92d250000000b002d0f240d5f5mr3213225ilg.252.1652479096525; Fri, 13
+ May 2022 14:58:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+References: <20220512071819.199873-1-liuhangbin@gmail.com> <20220512071819.199873-2-liuhangbin@gmail.com>
+In-Reply-To: <20220512071819.199873-2-liuhangbin@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 13 May 2022 14:58:05 -0700
+Message-ID: <CAEf4BzZuj90MFaXci3av2BF+=m-P26Y3Zer8TogBiZ8fYsYP=g@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] selftests/bpf: Fix build error with ima_setup.sh
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kevin Mitchell <kevmitch@arista.com>
+On Thu, May 12, 2022 at 12:18 AM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> KP fixed ima_setup.sh missing issue when build test_progs separately with
+> commit 854055c0cf30 ("selftests/bpf: Fix flavored variants of
+> test_ima"). But the fix is incorrect because the build will failed with
+> error:
+>
+>   $ OUTPUT="/tmp/bpf" make test_progs
+>     [...]
+>   make: *** No rule to make target '/tmp/bpf/ima_setup.sh', needed by 'ima_setup.sh'.  Stop.
+>
+> Fix it by adding a new variable TRUNNER_EXTRA_BUILD to build extra binaries.
+> Left TRUNNER_EXTRA_FILES only for copying files
+>
+> Fixes: 854055c0cf30 ("selftests/bpf: Fix flavored variants of test_ima")
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  tools/testing/selftests/bpf/Makefile | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 3820608faf57..5944d3a8fff6 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -466,10 +466,10 @@ $(TRUNNER_EXTRA_OBJS): $(TRUNNER_OUTPUT)/%.o:                             \
+>
+>  # non-flavored in-srctree builds receive special treatment, in particular, we
+>  # do not need to copy extra resources (see e.g. test_btf_dump_case())
+> -$(TRUNNER_BINARY)-extras: $(TRUNNER_EXTRA_FILES) | $(TRUNNER_OUTPUT)
+> +$(TRUNNER_BINARY)-extras: $(TRUNNER_EXTRA_BUILD) | $(TRUNNER_OUTPUT)
+>  ifneq ($2:$(OUTPUT),:$(shell pwd))
+>         $$(call msg,EXT-COPY,$(TRUNNER_BINARY),$(TRUNNER_EXTRA_FILES))
+> -       $(Q)rsync -aq $$^ $(TRUNNER_OUTPUT)/
+> +       $(Q)rsync -aq $(TRUNNER_EXTRA_FILES) $(TRUNNER_OUTPUT)/
+>  endif
+>
+>  $(OUTPUT)/$(TRUNNER_BINARY): $(TRUNNER_TEST_OBJS)                      \
+> @@ -490,9 +490,9 @@ TRUNNER_EXTRA_SOURCES := test_progs.c cgroup_helpers.c trace_helpers.c      \
+>                          network_helpers.c testing_helpers.c            \
+>                          btf_helpers.c flow_dissector_load.h            \
+>                          cap_helpers.c
+> -TRUNNER_EXTRA_FILES := $(OUTPUT)/urandom_read $(OUTPUT)/bpf_testmod.ko \
+> -                      ima_setup.sh                                     \
+> +TRUNNER_EXTRA_BUILD := $(OUTPUT)/urandom_read $(OUTPUT)/bpf_testmod.ko \
+>                        $(wildcard progs/btf_dump_test_case_*.c)
 
-The checksum is optional for UDP packets. However nf_reject would
-previously require a valid checksum to elicit a response such as
-ICMP_DEST_UNREACH.
 
-Add some logic to nf_reject_verify_csum to determine if a UDP packet has
-a zero checksum and should therefore not be verified.
+note that progs/btf_dump_test_case_*.c are not built, they are just
+copied over (C source files), so I don't think this fix is necessary.
 
-Signed-off-by: Kevin Mitchell <kevmitch@arista.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- include/net/netfilter/nf_reject.h   | 21 +++++++++++++++++----
- net/ipv4/netfilter/nf_reject_ipv4.c | 10 +++++++---
- net/ipv6/netfilter/nf_reject_ipv6.c |  4 ++--
- 3 files changed, 26 insertions(+), 9 deletions(-)
+btw, I tried running `OUTPUT="/tmp/bpf" make test_progs` and it didn't
+error out. But tbh, I'd recommend building everything instead of
+building individual targets.
 
-diff --git a/include/net/netfilter/nf_reject.h b/include/net/netfilter/nf_reject.h
-index 9051c3a0c8e7..7c669792fb9c 100644
---- a/include/net/netfilter/nf_reject.h
-+++ b/include/net/netfilter/nf_reject.h
-@@ -5,12 +5,28 @@
- #include <linux/types.h>
- #include <uapi/linux/in.h>
- 
--static inline bool nf_reject_verify_csum(__u8 proto)
-+static inline bool nf_reject_verify_csum(struct sk_buff *skb, int dataoff,
-+					  __u8 proto)
- {
- 	/* Skip protocols that don't use 16-bit one's complement checksum
- 	 * of the entire payload.
- 	 */
- 	switch (proto) {
-+		/* Protocols with optional checksums. */
-+		case IPPROTO_UDP: {
-+			const struct udphdr *udp_hdr;
-+			struct udphdr _udp_hdr;
-+
-+			udp_hdr = skb_header_pointer(skb, dataoff,
-+						     sizeof(_udp_hdr),
-+						     &_udp_hdr);
-+			if (!udp_hdr || udp_hdr->check)
-+				return true;
-+
-+			return false;
-+		}
-+		case IPPROTO_GRE:
-+
- 		/* Protocols with other integrity checks. */
- 		case IPPROTO_AH:
- 		case IPPROTO_ESP:
-@@ -19,9 +35,6 @@ static inline bool nf_reject_verify_csum(__u8 proto)
- 		/* Protocols with partial checksums. */
- 		case IPPROTO_UDPLITE:
- 		case IPPROTO_DCCP:
--
--		/* Protocols with optional checksums. */
--		case IPPROTO_GRE:
- 			return false;
- 	}
- 	return true;
-diff --git a/net/ipv4/netfilter/nf_reject_ipv4.c b/net/ipv4/netfilter/nf_reject_ipv4.c
-index 4eed5afca392..918c61fda0f3 100644
---- a/net/ipv4/netfilter/nf_reject_ipv4.c
-+++ b/net/ipv4/netfilter/nf_reject_ipv4.c
-@@ -80,6 +80,7 @@ struct sk_buff *nf_reject_skb_v4_unreach(struct net *net,
- 	struct iphdr *niph;
- 	struct icmphdr *icmph;
- 	unsigned int len;
-+	int dataoff;
- 	__wsum csum;
- 	u8 proto;
- 
-@@ -99,10 +100,11 @@ struct sk_buff *nf_reject_skb_v4_unreach(struct net *net,
- 	if (pskb_trim_rcsum(oldskb, ntohs(ip_hdr(oldskb)->tot_len)))
- 		return NULL;
- 
-+	dataoff = ip_hdrlen(oldskb);
- 	proto = ip_hdr(oldskb)->protocol;
- 
- 	if (!skb_csum_unnecessary(oldskb) &&
--	    nf_reject_verify_csum(proto) &&
-+	    nf_reject_verify_csum(oldskb, dataoff, proto) &&
- 	    nf_ip_checksum(oldskb, hook, ip_hdrlen(oldskb), proto))
- 		return NULL;
- 
-@@ -311,6 +313,7 @@ EXPORT_SYMBOL_GPL(nf_send_reset);
- void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
- {
- 	struct iphdr *iph = ip_hdr(skb_in);
-+	int dataoff = ip_hdrlen(skb_in);
- 	u8 proto = iph->protocol;
- 
- 	if (iph->frag_off & htons(IP_OFFSET))
-@@ -320,12 +323,13 @@ void nf_send_unreach(struct sk_buff *skb_in, int code, int hook)
- 	    nf_reject_fill_skb_dst(skb_in) < 0)
- 		return;
- 
--	if (skb_csum_unnecessary(skb_in) || !nf_reject_verify_csum(proto)) {
-+	if (skb_csum_unnecessary(skb_in) ||
-+	    !nf_reject_verify_csum(skb_in, dataoff, proto)) {
- 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
- 		return;
- 	}
- 
--	if (nf_ip_checksum(skb_in, hook, ip_hdrlen(skb_in), proto) == 0)
-+	if (nf_ip_checksum(skb_in, hook, dataoff, proto) == 0)
- 		icmp_send(skb_in, ICMP_DEST_UNREACH, code, 0);
- }
- EXPORT_SYMBOL_GPL(nf_send_unreach);
-diff --git a/net/ipv6/netfilter/nf_reject_ipv6.c b/net/ipv6/netfilter/nf_reject_ipv6.c
-index dffeaaaadcde..f61d4f18e1cf 100644
---- a/net/ipv6/netfilter/nf_reject_ipv6.c
-+++ b/net/ipv6/netfilter/nf_reject_ipv6.c
-@@ -31,7 +31,7 @@ static bool nf_reject_v6_csum_ok(struct sk_buff *skb, int hook)
- 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
- 		return false;
- 
--	if (!nf_reject_verify_csum(proto))
-+	if (!nf_reject_verify_csum(skb, thoff, proto))
- 		return true;
- 
- 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
-@@ -388,7 +388,7 @@ static bool reject6_csum_ok(struct sk_buff *skb, int hook)
- 	if (thoff < 0 || thoff >= skb->len || (fo & htons(~0x7)) != 0)
- 		return false;
- 
--	if (!nf_reject_verify_csum(proto))
-+	if (!nf_reject_verify_csum(skb, thoff, proto))
- 		return true;
- 
- 	return nf_ip6_checksum(skb, hook, thoff, proto) == 0;
--- 
-2.30.2
 
+> +TRUNNER_EXTRA_FILES := $(TRUNNER_EXTRA_BUILD) ima_setup.sh
+>  TRUNNER_BPF_BUILD_RULE := CLANG_BPF_BUILD_RULE
+>  TRUNNER_BPF_CFLAGS := $(BPF_CFLAGS) $(CLANG_CFLAGS) -DENABLE_ATOMICS_TESTS
+>  $(eval $(call DEFINE_TEST_RUNNER,test_progs))
+> @@ -513,6 +513,7 @@ endif
+>  TRUNNER_TESTS_DIR := map_tests
+>  TRUNNER_BPF_PROGS_DIR := progs
+>  TRUNNER_EXTRA_SOURCES := test_maps.c
+> +TRUNNER_EXTRA_BUILD :=
+>  TRUNNER_EXTRA_FILES :=
+>  TRUNNER_BPF_BUILD_RULE := $$(error no BPF objects should be built)
+>  TRUNNER_BPF_CFLAGS :=
+> --
+> 2.35.1
+>
