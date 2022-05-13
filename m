@@ -2,218 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 44B4C526845
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 19:25:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23AA052687D
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 19:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382968AbiEMRYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 13:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36018 "EHLO
+        id S1383080AbiEMRaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 13:30:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382971AbiEMRYK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 13:24:10 -0400
-Received: from mail.sf-mail.de (mail.sf-mail.de [IPv6:2a01:4f8:1c17:6fae:616d:6c69:616d:6c69])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 058FF703E3
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 10:24:05 -0700 (PDT)
-Received: (qmail 5299 invoked from network); 13 May 2022 17:23:55 -0000
-Received: from p200300cf07132b0076d435fffeb7be92.dip0.t-ipconnect.de ([2003:cf:713:2b00:76d4:35ff:feb7:be92]:43442 HELO eto.sf-tec.de) (auth=eike@sf-mail.de)
-        by mail.sf-mail.de (Qsmtpd 0.38dev) with (TLS_AES_256_GCM_SHA384 encrypted) ESMTPSA
-        for <kuba@kernel.org>; Fri, 13 May 2022 19:23:55 +0200
-From:   Rolf Eike Beer <eike-kernel@sf-tec.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-parisc@vger.kernel.org,
-        netdev@vger.kernel.org, Yang Yingliang <yangyingliang@huawei.com>,
-        davem@davemloft.net, edumazet@google.com
-Subject: [PATCH v2] net: tulip: convert to devres
-Date:   Fri, 13 May 2022 19:23:59 +0200
-Message-ID: <2630407.mvXUDI8C0e@eto.sf-tec.de>
-In-Reply-To: <2240900.ElGaqSPkdT@daneel.sf-tec.de>
-References: <2240900.ElGaqSPkdT@daneel.sf-tec.de>
+        with ESMTP id S1383092AbiEMRaR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 13:30:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEAAB7222B;
+        Fri, 13 May 2022 10:30:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97E67B83128;
+        Fri, 13 May 2022 17:30:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 5201AC34100;
+        Fri, 13 May 2022 17:30:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652463012;
+        bh=p6JNG7AOQ3fv1hDszD1l1tbLXZYZtdhcr16krCpZb1c=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZMEapzJT1OpGoablwjUpkyNiAxDB+y8bGMMC69AORuuGvj9Yxsz4JgDBBT+VI9ZUE
+         K01WnisDzkw4wq7QkGxJfARxXjJZVBl07/cm9WPSSzKR8D6dk4sVAJ30fC0E39OpWq
+         Sfs0m3IJXK9ZdOa3TQ3b79wVO8yKjnwYoE1s3xxH1LXYlIHAN3b/EOsAcRmfQb1N4g
+         yOmI2pR+aZjFRiQy932pb3j9qdLh6DKHF8oxVYsghUxpCMHMwZZkSdrkqeInPs83EE
+         7wBU2TCp2ekizs6wBPJk0915LrUFb/ExTlwRW44dqt60tRV7jFthoQQaKg00hAxLxM
+         mVKgR9cWyCEnQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 33DC2F03936;
+        Fri, 13 May 2022 17:30:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH -next] sfc: siena: Fix Kconfig dependencies
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165246301220.15380.9977189278947403618.git-patchwork-notify@kernel.org>
+Date:   Fri, 13 May 2022 17:30:12 +0000
+References: <20220513012721.140871-1-renzhijie2@huawei.com>
+In-Reply-To: <20220513012721.140871-1-renzhijie2@huawei.com>
+To:     Ren Zhijie <renzhijie2@huawei.com>
+Cc:     ecree.xilinx@gmail.com, habetsm.xilinx@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Works fine on my HP C3600:
+Hello:
 
-[  274.452394] tulip0: no phy info, aborting mtable build
-[  274.499041] tulip0:  MII transceiver #1 config 1000 status 782d advertising 01e1
-[  274.750691] net eth0: Digital DS21142/43 Tulip rev 65 at MMIO 0xf4008000, 00:30:6e:08:7d:21, IRQ 17
-[  283.104520] net eth0: Setting full-duplex based on MII#1 link partner capability of c1e1
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
----
- drivers/net/ethernet/dec/tulip/eeprom.c     |  7 ++-
- drivers/net/ethernet/dec/tulip/tulip_core.c | 64 ++++++---------------
- 2 files changed, 20 insertions(+), 51 deletions(-)
+On Fri, 13 May 2022 09:27:21 +0800 you wrote:
+> If CONFIG_PTP_1588_CLOCK=m and CONFIG_SFC_SIENA=y, the siena driver will fail to link:
+> 
+> drivers/net/ethernet/sfc/siena/ptp.o: In function `efx_ptp_remove_channel':
+> ptp.c:(.text+0xa28): undefined reference to `ptp_clock_unregister'
+> drivers/net/ethernet/sfc/siena/ptp.o: In function `efx_ptp_probe_channel':
+> ptp.c:(.text+0x13a0): undefined reference to `ptp_clock_register'
+> ptp.c:(.text+0x1470): undefined reference to `ptp_clock_unregister'
+> drivers/net/ethernet/sfc/siena/ptp.o: In function `efx_ptp_pps_worker':
+> ptp.c:(.text+0x1d29): undefined reference to `ptp_clock_event'
+> drivers/net/ethernet/sfc/siena/ptp.o: In function `efx_siena_ptp_get_ts_info':
+> ptp.c:(.text+0x301b): undefined reference to `ptp_clock_index'
+> 
+> [...]
 
-v2: rebased
+Here is the summary with links:
+  - [-next] sfc: siena: Fix Kconfig dependencies
+    https://git.kernel.org/netdev/net-next/c/f9a210c72d70
 
-diff --git a/drivers/net/ethernet/dec/tulip/eeprom.c b/drivers/net/ethernet/dec/tulip/eeprom.c
-index ba0a69b363f8..67a67cb78dbb 100644
---- a/drivers/net/ethernet/dec/tulip/eeprom.c
-+++ b/drivers/net/ethernet/dec/tulip/eeprom.c
-@@ -117,8 +117,8 @@ static void tulip_build_fake_mediatable(struct tulip_private *tp)
- 			  0x00, 0x06  /* ttm bit map */
- 			};
- 
--		tp->mtable = kmalloc(sizeof(struct mediatable) +
--				     sizeof(struct medialeaf), GFP_KERNEL);
-+		tp->mtable = devm_kmalloc(&tp->pdev->pdev, sizeof(struct mediatable) +
-+					  sizeof(struct medialeaf), GFP_KERNEL);
- 
- 		if (tp->mtable == NULL)
- 			return; /* Horrible, impossible failure. */
-@@ -224,7 +224,8 @@ void tulip_parse_eeprom(struct net_device *dev)
- 		        return;
- 		}
- 
--		mtable = kmalloc(struct_size(mtable, mleaf, count), GFP_KERNEL);
-+		mtable = devm_kmalloc(&tp->pdev->dev, struct_size(mtable, mleaf, count),
-+				      GFP_KERNEL);
- 		if (mtable == NULL)
- 			return;				/* Horrible, impossible failure. */
- 		last_mediatable = tp->mtable = mtable;
-diff --git a/drivers/net/ethernet/dec/tulip/tulip_core.c b/drivers/net/ethernet/dec/tulip/tulip_core.c
-index 0040dcaab945..1a09d3753073 100644
---- a/drivers/net/ethernet/dec/tulip/tulip_core.c
-+++ b/drivers/net/ethernet/dec/tulip/tulip_core.c
-@@ -1389,7 +1389,7 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	 *	And back to business
- 	 */
- 
--	i = pci_enable_device(pdev);
-+	i = pcim_enable_device(pdev);
- 	if (i) {
- 		pr_err("Cannot enable tulip board #%d, aborting\n", board_idx);
- 		return i;
-@@ -1398,11 +1398,9 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	irq = pdev->irq;
- 
- 	/* alloc_etherdev ensures aligned and zeroed private structures */
--	dev = alloc_etherdev (sizeof (*tp));
--	if (!dev) {
--		pci_disable_device(pdev);
-+	dev = devm_alloc_etherdev(&pdev->dev, sizeof(*tp));
-+	if (!dev)
- 		return -ENOMEM;
--	}
- 
- 	SET_NETDEV_DEV(dev, &pdev->dev);
- 	if (pci_resource_len (pdev, 0) < tulip_tbl[chip_idx].io_size) {
-@@ -1410,18 +1408,18 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		       pci_name(pdev),
- 		       (unsigned long long)pci_resource_len (pdev, 0),
- 		       (unsigned long long)pci_resource_start (pdev, 0));
--		goto err_out_free_netdev;
-+		return -ENODEV;
- 	}
- 
- 	/* grab all resources from both PIO and MMIO regions, as we
- 	 * don't want anyone else messing around with our hardware */
--	if (pci_request_regions (pdev, DRV_NAME))
--		goto err_out_free_netdev;
-+	if (pci_request_regions(pdev, DRV_NAME))
-+		return -ENODEV;
- 
--	ioaddr =  pci_iomap(pdev, TULIP_BAR, tulip_tbl[chip_idx].io_size);
-+	ioaddr = pcim_iomap(pdev, TULIP_BAR, tulip_tbl[chip_idx].io_size);
- 
- 	if (!ioaddr)
--		goto err_out_free_res;
-+		return -ENODEV;
- 
- 	/*
- 	 * initialize private data structure 'tp'
-@@ -1430,12 +1428,12 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tp = netdev_priv(dev);
- 	tp->dev = dev;
- 
--	tp->rx_ring = dma_alloc_coherent(&pdev->dev,
--					 sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
--					 sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
--					 &tp->rx_ring_dma, GFP_KERNEL);
-+	tp->rx_ring = dmam_alloc_coherent(&pdev->dev,
-+					  sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
-+					  sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
-+					  &tp->rx_ring_dma, GFP_KERNEL);
- 	if (!tp->rx_ring)
--		goto err_out_mtable;
-+		return -ENODEV;
- 	tp->tx_ring = (struct tulip_tx_desc *)(tp->rx_ring + RX_RING_SIZE);
- 	tp->tx_ring_dma = tp->rx_ring_dma + sizeof(struct tulip_rx_desc) * RX_RING_SIZE;
- 
-@@ -1695,8 +1693,9 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- #endif
- 	dev->ethtool_ops = &ops;
- 
--	if (register_netdev(dev))
--		goto err_out_free_ring;
-+	i = register_netdev(dev);
-+	if (i)
-+		return i;
- 
- 	pci_set_drvdata(pdev, dev);
- 
-@@ -1771,24 +1770,6 @@ static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	tulip_set_power_state (tp, 0, 1);
- 
- 	return 0;
--
--err_out_free_ring:
--	dma_free_coherent(&pdev->dev,
--			  sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
--			  sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
--			  tp->rx_ring, tp->rx_ring_dma);
--
--err_out_mtable:
--	kfree (tp->mtable);
--	pci_iounmap(pdev, ioaddr);
--
--err_out_free_res:
--	pci_release_regions (pdev);
--
--err_out_free_netdev:
--	free_netdev (dev);
--	pci_disable_device(pdev);
--	return -ENODEV;
- }
- 
- 
-@@ -1888,24 +1869,11 @@ static int __maybe_unused tulip_resume(struct device *dev_d)
- static void tulip_remove_one(struct pci_dev *pdev)
- {
- 	struct net_device *dev = pci_get_drvdata (pdev);
--	struct tulip_private *tp;
- 
- 	if (!dev)
- 		return;
- 
--	tp = netdev_priv(dev);
- 	unregister_netdev(dev);
--	dma_free_coherent(&pdev->dev,
--			  sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
--			  sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
--			  tp->rx_ring, tp->rx_ring_dma);
--	kfree (tp->mtable);
--	pci_iounmap(pdev, tp->base_addr);
--	free_netdev (dev);
--	pci_release_regions (pdev);
--	pci_disable_device(pdev);
--
--	/* pci_power_off (pdev, -1); */
- }
- 
- #ifdef CONFIG_NET_POLL_CONTROLLER
+You are awesome, thank you!
 -- 
-2.35.3
-
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
