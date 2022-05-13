@@ -2,195 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 02A92526D44
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 01:00:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30CC0526D54
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 01:06:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384927AbiEMXAB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 19:00:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57984 "EHLO
+        id S238009AbiEMXGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 19:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384920AbiEMW7v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 18:59:51 -0400
-Received: from smtp3.emailarray.com (smtp3.emailarray.com [65.39.216.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA29B1DA76
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 15:59:45 -0700 (PDT)
-Received: (qmail 80948 invoked by uid 89); 13 May 2022 22:59:39 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
-  by smtp3.emailarray.com with SMTP; 13 May 2022 22:59:39 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     richardcochran@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, kernel-team@fb.com
-Subject: [PATCH net-next v3 10/10] ptp: ocp: change sysfs attr group handling
-Date:   Fri, 13 May 2022 15:59:24 -0700
-Message-Id: <20220513225924.1655-11-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220513225924.1655-1-jonathan.lemon@gmail.com>
-References: <20220513225924.1655-1-jonathan.lemon@gmail.com>
+        with ESMTP id S233399AbiEMXF6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 19:05:58 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB09A2550B1
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 16:05:41 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id bd25-20020a05600c1f1900b0039485220e16so6006462wmb.0
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 16:05:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mivRpjYlnos8QyfKIL0ZlkiTUotRjXBDBCX8TH+HQXY=;
+        b=UdpAoUQiU4hPu5EZSLJ8meLqynbM8mfTp+3iZ4wqmp60lDxYlq+Dcw1+Ai9ZPbh8ZX
+         U/Aq0aRqY/wfdxyeVYaddvYyhr6KOlKipGwchEWqzXXtwH+V1D/bwmimJaudRW74KvYi
+         n7BcZtD0heaYjzouHmBVcq80K1BhxMVLRbJJK2vSosuf5Ngif2YKfjFcT51VRnKgunBb
+         erAORUPdaJGYpkIL2cxy+KFLpeguRkmjCXl0VzUbty3RILRMx4FyPrKpl9iLwzRuXPaG
+         9alDHlC1KCZiMq7cx4G0Fojxg9XUTGxfcwoe93D6yJxceY2giRQBLPsIKFOVfUy+0kB4
+         ox2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mivRpjYlnos8QyfKIL0ZlkiTUotRjXBDBCX8TH+HQXY=;
+        b=vJ4j/qOWG0QWFxlk9Cc3aFMkiCX5uZ/hfHmRGJp3PeZatZt7txbrHMHAvfIxBSPsW8
+         Xki40F4ok9A0kWQ/lDojcy9vM6ovplvblaO2uMioMPMzv0K4/dsOQuzcFS0eMHcP+Ctz
+         WqbZK0f7a2bpxWB+oTlDMbO1mLY058AuxlIrwG4gxYPt36jzZOuTNLsaSok/zx73tvbl
+         0lVXZuPhBOuBjotDS2KwFDj/t3V39kwluBdl/nBRW/tEVdqwQVV8oPPOtVRTlWhwR6/y
+         2vDMColROLbOvOEkuSrWpu1t4R7eaxcwQeiOASIMM/J5E/iPbxoCv87r8z7o+Y4ol/E2
+         WAXw==
+X-Gm-Message-State: AOAM530wp1ou8KrhX3Y4Ly+jvkwxHmDpawU8rMVFsVaIHQJXQuNPFViR
+        DvvQjRstXWUrRHAC5iNfOHVbvg1dcfUnsZ9XEaEnbg==
+X-Google-Smtp-Source: ABdhPJzikMn1ioZfFD/3RZTSrR9mKVOzqPyMJYhF22HzLQV38UOOS2ThlqrYZYhQ/gQg474rfsrRF934XUb40E0b8gU=
+X-Received: by 2002:a05:600c:4ecc:b0:394:790d:5f69 with SMTP id
+ g12-20020a05600c4ecc00b00394790d5f69mr6625363wmq.196.1652483139965; Fri, 13
+ May 2022 16:05:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY autolearn=no
-        autolearn_force=no version=3.4.6
+References: <20220513004117.364577-1-yosryahmed@google.com> <CAEf4BzYiuBaCBcF6T9JRJ=fB=PWtDb9p-5CJAi164F4_h5fQPw@mail.gmail.com>
+In-Reply-To: <CAEf4BzYiuBaCBcF6T9JRJ=fB=PWtDb9p-5CJAi164F4_h5fQPw@mail.gmail.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Fri, 13 May 2022 16:05:03 -0700
+Message-ID: <CAJD7tkaxHKUrb44-J5Zxm6x1KH-XnPVXDgZyu4+Rc094D7MEhA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] selftests/bpf: fix building bpf selftests statically
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the detach path, the driver calls sysfs_remove_group() for the
-groups it believes has been registered.  However, if the group was
-never previously registered, then this causes a splat.
+On Fri, May 13, 2022 at 3:57 PM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, May 12, 2022 at 5:41 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+> >
+> > bpf selftests can no longer be built with CFLAGS=-static with
+> > liburandom_read.so and its dependent target.
+> >
+> > Filter out -static for liburandom_read.so and its dependent target.
+> >
+> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> > ---
+> >  tools/testing/selftests/bpf/Makefile | 9 ++++++---
+> >  1 file changed, 6 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> > index 6bbc03161544..4eaefc187d5b 100644
+> > --- a/tools/testing/selftests/bpf/Makefile
+> > +++ b/tools/testing/selftests/bpf/Makefile
+> > @@ -168,14 +168,17 @@ $(OUTPUT)/%:%.c
+> >         $(call msg,BINARY,,$@)
+> >         $(Q)$(LINK.c) $^ $(LDLIBS) -o $@
+> >
+> > +# If the tests are being built statically, exclude dynamic libraries defined
+> > +# in this Makefile and their dependencies.
+> > +DYNAMIC_CFLAGS := $(filter-out -static,$(CFLAGS))
+>
+> I don't particularly like yet another CFLAGS global variable, but also
+> you are not filtering out -static from LDFLAGS, which would be
+> problematic if you try to do
+>
+> make SAN_FLAGS=-static
+>
+> which otherwise would work (and is probably better than overriding all of CFLAGS
+>
+> How about something like this
 
-Instead, compute the groups that should be registered in advance,
-and then use sysfs_create_groups(), which registers them all at once.
-Update the error handling appropriately.
+Yeah this looks good, thanks for pointing out the problem with LDFLAGS.
 
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- drivers/ptp/ptp_ocp.c | 67 ++++++++++++++++++++++++++++++++++---------
- 1 file changed, 53 insertions(+), 14 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/Makefile
+> b/tools/testing/selftests/bpf/Makefile
+> index 6bbc03161544..2e8eddf240af 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -170,11 +170,11 @@ $(OUTPUT)/%:%.c
+>
+>  $(OUTPUT)/liburandom_read.so: urandom_read_lib1.c urandom_read_lib2.c
+>         $(call msg,LIB,,$@)
+> -       $(Q)$(CC) $(CFLAGS) -fPIC $(LDFLAGS) $^ $(LDLIBS) --shared -o $@
+> +       $(Q)$(CC) $(filter-out -static,$(CFLAGS) $(LDFLAGS)) $^
+> $(LDLIBS) -fPIC -shared -o $@
+>
+>  $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c
+> $(OUTPUT)/liburandom_read.so
+>         $(call msg,BINARY,,$@)
+> -       $(Q)$(CC) $(CFLAGS) $(LDFLAGS) $(filter %.c,$^)                        \
+> +       $(Q)$(CC) $(filter-out -static,$(CFLAGS) $(LDFLAGS)) $(filter %.c,$^)  \
+>                   liburandom_read.so $(LDLIBS)                                 \
+>                   -Wl,-rpath=. -Wl,--build-id=sha1 -o $@
+>
+> ?
+>
+>
+> But I also have a question, this leaves urandom_read relying on
+> system-wide shared libraries, isn't that still a problem for you? Or
+> you intend to just ignore urandom_read-related tests?
+>
 
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 4ff7f16242cf..6772b1e7e6d2 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -321,7 +321,7 @@ struct ptp_ocp {
- 	struct platform_device	*spi_flash;
- 	struct clk_hw		*i2c_clk;
- 	struct timer_list	watchdog;
--	const struct ocp_attr_group *attr_tbl;
-+	const struct attribute_group **attr_group;
- 	const struct ptp_ocp_eeprom_map *eeprom_map;
- 	struct dentry		*debug_root;
- 	time64_t		gnss_lost;
-@@ -1946,6 +1946,30 @@ ptp_ocp_signal_init(struct ptp_ocp *bp)
- 					     bp->signal_out[i]->mem);
- }
- 
-+static int
-+ptp_ocp_build_attr_group(struct ptp_ocp *bp,
-+			 const struct ocp_attr_group *attr_tbl)
-+{
-+	int count, i;
-+
-+	count = 0;
-+	for (i = 0; attr_tbl[i].cap; i++)
-+		if (attr_tbl[i].cap & bp->fw_cap)
-+			count++;
-+
-+	bp->attr_group = kcalloc(count + 1, sizeof(struct attribute_group *),
-+				 GFP_KERNEL);
-+	if (!bp->attr_group)
-+		return -ENOMEM;
-+
-+	count = 0;
-+	for (i = 0; attr_tbl[i].cap; i++)
-+		if (attr_tbl[i].cap & bp->fw_cap)
-+			bp->attr_group[count++] = attr_tbl[i].group;
-+
-+	return 0;
-+}
-+
- static void
- ptp_ocp_enable_fpga(u32 __iomem *reg, u32 bit, bool enable)
- {
-@@ -2184,7 +2208,6 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
- 	bp->flash_start = 1024 * 4096;
- 	bp->eeprom_map = fb_eeprom_map;
- 	bp->fw_version = ioread32(&bp->image->version);
--	bp->attr_tbl = fb_timecard_groups;
- 	bp->sma_op = &ocp_fb_sma_op;
- 
- 	ptp_ocp_fb_set_version(bp);
-@@ -2194,6 +2217,10 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
- 	ptp_ocp_sma_init(bp);
- 	ptp_ocp_signal_init(bp);
- 
-+	err = ptp_ocp_build_attr_group(bp, fb_timecard_groups);
-+	if (err)
-+		return err;
-+
- 	err = ptp_ocp_fb_set_pins(bp);
- 	if (err)
- 		return err;
-@@ -3539,12 +3566,31 @@ ptp_ocp_link_child(struct ptp_ocp *bp, const char *name, const char *link)
- 	put_device(child);
- }
- 
-+static void
-+ptp_ocp_attr_group_del(struct ptp_ocp *bp)
-+{
-+	sysfs_remove_groups(&bp->dev.kobj, bp->attr_group);
-+	kfree(bp->attr_group);
-+}
-+
-+static int
-+ptp_ocp_attr_group_add(struct ptp_ocp *bp)
-+{
-+	int err;
-+
-+	err = sysfs_create_groups(&bp->dev.kobj, bp->attr_group);
-+	if (err)
-+		bp->attr_group[0] = NULL;
-+
-+	return err;
-+}
-+
- static int
- ptp_ocp_complete(struct ptp_ocp *bp)
- {
- 	struct pps_device *pps;
- 	char buf[32];
--	int i, err;
-+	int err;
- 
- 	if (bp->gnss_port != -1) {
- 		sprintf(buf, "ttyS%d", bp->gnss_port);
-@@ -3569,13 +3615,9 @@ ptp_ocp_complete(struct ptp_ocp *bp)
- 	if (pps)
- 		ptp_ocp_symlink(bp, pps->dev, "pps");
- 
--	for (i = 0; bp->attr_tbl[i].cap; i++) {
--		if (!(bp->attr_tbl[i].cap & bp->fw_cap))
--			continue;
--		err = sysfs_create_group(&bp->dev.kobj, bp->attr_tbl[i].group);
--		if (err)
--			return err;
--	}
-+	err = ptp_ocp_attr_group_add(bp);
-+	if (err)
-+		return err;
- 
- 	ptp_ocp_debugfs_add_device(bp);
- 
-@@ -3640,15 +3682,11 @@ static void
- ptp_ocp_detach_sysfs(struct ptp_ocp *bp)
- {
- 	struct device *dev = &bp->dev;
--	int i;
- 
- 	sysfs_remove_link(&dev->kobj, "ttyGNSS");
- 	sysfs_remove_link(&dev->kobj, "ttyMAC");
- 	sysfs_remove_link(&dev->kobj, "ptp");
- 	sysfs_remove_link(&dev->kobj, "pps");
--	if (bp->attr_tbl)
--		for (i = 0; bp->attr_tbl[i].cap; i++)
--			sysfs_remove_group(&dev->kobj, bp->attr_tbl[i].group);
- }
- 
- static void
-@@ -3658,6 +3696,7 @@ ptp_ocp_detach(struct ptp_ocp *bp)
- 
- 	ptp_ocp_debugfs_remove_device(bp);
- 	ptp_ocp_detach_sysfs(bp);
-+	ptp_ocp_attr_group_del(bp);
- 	if (timer_pending(&bp->watchdog))
- 		del_timer_sync(&bp->watchdog);
- 	if (bp->ts0)
--- 
-2.31.1
+I wasn't running those tests, and I thought having most tests compile
+statically is better than nothing. Maybe this can be fixed by defining
+a static target for liburandom_read? I am honestly not sure, I have
+little experience with Makefiles/compilation.
 
+>
+> $ ldd urandom_read
+>         linux-vdso.so.1 (0x00007ffd0d5e5000)
+>         liburandom_read.so (0x00007fc7f7d76000)
+>         libelf.so.1 => /lib64/libelf.so.1 (0x00007fc7f7937000)
+>         libz.so.1 => /lib64/libz.so.1 (0x00007fc7f7720000)
+>         librt.so.1 => /lib64/librt.so.1 (0x00007fc7f7518000)
+>         libpthread.so.0 => /lib64/libpthread.so.0 (0x00007fc7f72f8000)
+>         libc.so.6 => /lib64/libc.so.6 (0x00007fc7f6f33000)
+>         /lib64/ld-linux-x86-64.so.2 (0x00007fc7f7b50000)
+>
+>
+>
+>
+> >  $(OUTPUT)/liburandom_read.so: urandom_read_lib1.c urandom_read_lib2.c
+> >         $(call msg,LIB,,$@)
+> > -       $(Q)$(CC) $(CFLAGS) -fPIC $(LDFLAGS) $^ $(LDLIBS) --shared -o $@
+> > +       $(Q)$(CC) $(DYNAMIC_CFLAGS) -fPIC $(LDFLAGS) $^ $(LDLIBS) --shared -o $@
+> >
+> >  $(OUTPUT)/urandom_read: urandom_read.c urandom_read_aux.c $(OUTPUT)/liburandom_read.so
+> >         $(call msg,BINARY,,$@)
+> > -       $(Q)$(CC) $(CFLAGS) $(LDFLAGS) $(filter %.c,$^)                        \
+> > -                 liburandom_read.so $(LDLIBS)                                 \
+> > +       $(Q)$(CC) $(DYNAMIC_CFLAGS) $(LDFLAGS) $(filter %.c,$^)                 \
+> > +                 liburandom_read.so $(LDLIBS)                                  \
+> >                   -Wl,-rpath=. -Wl,--build-id=sha1 -o $@
+> >
+> >  $(OUTPUT)/bpf_testmod.ko: $(VMLINUX_BTF) $(wildcard bpf_testmod/Makefile bpf_testmod/*.[ch])
+> > --
+> > 2.36.0.550.gb090851708-goog
+> >
