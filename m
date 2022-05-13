@@ -2,118 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91570525A5E
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 05:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF3C1525AC9
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 06:36:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376882AbiEMDsH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 12 May 2022 23:48:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39732 "EHLO
+        id S1358254AbiEMEaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 00:30:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376758AbiEMDsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 23:48:03 -0400
-Received: from spamsz.greatwall.com.cn (spamfw.greatwall.com.cn [111.48.58.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B3FAB5FF01
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 20:48:00 -0700 (PDT)
-X-ASG-Debug-ID: 1652413678-0ec57242fe11fa0001-BZBGGp
-Received: from greatwall.com.cn (mailsz.greatwall.com.cn [10.46.20.97]) by spamsz.greatwall.com.cn with ESMTP id OWopBpAiFrT4lzIJ for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:47:58 +0800 (CST)
-X-Barracuda-Envelope-From: lianglixue@greatwall.com.cn
-X-Barracuda-RBL-Trusted-Forwarder: 10.46.20.97
-Received: from smtpclient.apple (unknown [223.104.68.8])
-        by mailsz.greatwall.com.cn (Coremail) with SMTP id YRQuCgCnBFJZ031iULQUAA--.33972S2;
-        Fri, 13 May 2022 11:41:14 +0800 (CST)
-Content-Type: text/plain;
-        charset=utf-8
-X-Barracuda-RBL-IP: 223.104.68.8
-X-Barracuda-Effective-Source-IP: UNKNOWN[223.104.68.8]
-X-Barracuda-Apparent-Source-IP: 223.104.68.8
-Mime-Version: 1.0 (Mac OS X Mail 16.0 \(3696.80.82.1.1\))
-Subject: Re: [Intel-wired-lan] [PATCH v2 2/2] igb_main: Assign random MAC
- address instead of fail in case of invalid one
-From:   =?utf-8?B?5qKB56S85a2m?= <lianglixue@greatwall.com.cn>
-X-ASG-Orig-Subj: Re: [Intel-wired-lan] [PATCH v2 2/2] igb_main: Assign random MAC
- address instead of fail in case of invalid one
-In-Reply-To: <d50b23b1-38b5-2522-cbf4-c360c0ed05cd@molgen.mpg.de>
-Date:   Fri, 13 May 2022 11:47:56 +0800
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        anthony.l.nguyen@intel.com, Jakub Kicinski <kuba@kernel.org>,
-        intel-wired-lan@lists.osuosl.org, Netdev <netdev@vger.kernel.org>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <2F78D699-8D54-4E3B-9D1E-DD869715D67F@greatwall.com.cn>
-References: <20220512093918.86084-1-lianglixue@greatwall.com.cn>
- <d50b23b1-38b5-2522-cbf4-c360c0ed05cd@molgen.mpg.de>
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-X-Mailer: Apple Mail (2.3696.80.82.1.1)
-X-CM-TRANSID: YRQuCgCnBFJZ031iULQUAA--.33972S2
-X-Coremail-Antispam: 1UD129KBjvJXoWruF4DCFy3Ww17Jr1rKw43GFg_yoW8Jry8pF
-        s5WanFkryDGwsFyaykXr1IvFyru39Yg3Z8Gr9xtr1fuwnI9rW29ry8KrnxtF98Z3s7G3yj
-        yw4UArs5Za15JaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyab7Iv0xC_Zr1lb4IE77IF4wAFF20E14v26r1j6r4UM7CY07I2
-        0VC2zVCF04k26cxKx2IYs7xG6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rw
-        A2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2Ix0cI8IcVAFwI0_Xr0_Ar1l84ACjcxK6xII
-        jxv20xvEc7CjxVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4
-        vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xv
-        F2IEw4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r
-        4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCF04k20xvY0x0EwIxGrwCF
-        x2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14
-        v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY
-        67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2
-        IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_
-        Jr0_GrUvcSsGvfC2KfnxnUUI43ZEXa7IU8pnQUUUUUU==
-X-CM-SenderInfo: xold0w5ol03v46juvthwzdzzoofrzhdfq/
-X-Barracuda-Connect: mailsz.greatwall.com.cn[10.46.20.97]
-X-Barracuda-Start-Time: 1652413678
-X-Barracuda-URL: https://spamfw.greatwall.com.cn:443/cgi-mod/mark.cgi
-X-Virus-Scanned: by bsmtpd at greatwall.com.cn
-X-Barracuda-Scan-Msg-Size: 1299
-X-Barracuda-BRTS-Status: 1
-X-Barracuda-Bayes: INNOCENT GLOBAL 0.5073 1.0000 0.7500
-X-Barracuda-Spam-Score: 0.75
-X-Barracuda-Spam-Status: No, SCORE=0.75 using global scores of TAG_LEVEL=1000.0 QUARANTINE_LEVEL=1000.0 KILL_LEVEL=9.0 tests=BSF_SC0_MISMATCH_TO
-X-Barracuda-Spam-Report: Code version 3.2, rules version 3.2.3.97972
-        Rule breakdown below
-         pts rule name              description
-        ---- ---------------------- --------------------------------------------------
-        0.00 BSF_SC0_MISMATCH_TO    Envelope rcpt doesn't match header
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S1346255AbiEMEaA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 00:30:00 -0400
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2040.outbound.protection.outlook.com [40.107.237.40])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6951C28F1F8
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 21:29:59 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=E7qTIpM/anGx2ybQ5RT/tJ4nKONPaMgCc/WNpm50jiqvDqH70o2ACoOUdAdhtEvKSaQgslhx8NI/hJ41k7i9x1HJxTdk8ej/7VwsW3IRTwIDO+vduH2azsX4gBZaYWvbE6brXAmaHpH5i1EYU182cnG9bGMlFNUbvlrpdE4Q9qEmJAwAaqALZwfsYO6bOmffMaUP0JCRiSg+XqiEpQLdvt6nyEBC+8ecoFa4s/dSj8hz3x9bGHRPS99Zfcozn7wrGjQxRb91pzGD3WD2JzrZ6YYdr+TWbi1ZXnitgXoEZjKiYbO0mjARDonUcwvPrUPm2gPs6PcI/bGehnuahl4ctA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8YGBkI42bthDF6Qaw64DhTGmFm2iksOa2eFmXTtwWJg=;
+ b=R5WdJD18NUL4COEuQ4gX4M5JsdeM9Xatn3gd3uJQiQzm10qkahbKM/5rFmQ4J/vkHq/3QZRF0uAgI7hM03RFiQWK6y4nHY3g1/d/eCO1QS3dTOzjlE4NLBG6c/AM8h5ucIheJG1DHvR+vk4pd1gJXxtUrRdDFzGiNipd7gq0LhuHwWf2MVzV0FF+/XYSdEy6Owe21NTywtTHj3Mr8cfTgnanfckEAiX6/RFGqaucX+/undTAGbYImQb7DoV6sJBNdgK7AiMo2wFcLRhTkTsKgMUL7ubdOHV0ylJhqMfms23J5md8AO2XzZyLXNT/TDiR9x1Pln58O71uCaVVcYEP7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8YGBkI42bthDF6Qaw64DhTGmFm2iksOa2eFmXTtwWJg=;
+ b=nDmgnKTah0ve1fKMZ4quemsmv4qGPWFf0K0YhK1rz3xvrKEjbmm2ptABpEEwQloaHkLv+bCxib/oZdiY7Xbab727eVQSE55NUKl2C3Qeu8kZbL9rMHRzwkkhEbVwgzqwu+WPr2+k4mt2aYfE5iGUj+FTYrQFrz2aolYQmdhPO0XUECQUf5vFihWpltPscoLj1t9Isy3eG4pr0fbYxzzactZopzfLxW3BD4rBufcpPZdV1kw3Dzm+GgJHMJ8DvnvqlPFUzxa8LQkk/X5w8JDlA6bLHp2he3gf0kYzJyciF7eo3w6RTt6Jk7UN+RiThqVnC/b3NdeexduxvLdI9CfqTw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nvidia.com;
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com (2603:10b6:a03:20d::22)
+ by BL1PR12MB5378.namprd12.prod.outlook.com (2603:10b6:208:31d::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Fri, 13 May
+ 2022 04:29:57 +0000
+Received: from BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::bcda:499a:1cc1:abca]) by BY5PR12MB4209.namprd12.prod.outlook.com
+ ([fe80::bcda:499a:1cc1:abca%4]) with mapi id 15.20.5250.015; Fri, 13 May 2022
+ 04:29:56 +0000
+Date:   Thu, 12 May 2022 21:29:55 -0700
+From:   Saeed Mahameed <saeedm@nvidia.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Coco Li <lixiaoyan@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>
+Subject: Re: [PATCH v6 net-next 13/13] mlx5: support BIG TCP packets
+Message-ID: <20220513042955.rnid4776hwp556vr@fedora>
+References: <20220510033219.2639364-1-eric.dumazet@gmail.com>
+ <20220510033219.2639364-14-eric.dumazet@gmail.com>
+ <20220512084023.tgjcecnu6vfuh7ry@LT-SAEEDM-5760.attlocal.net>
+ <51bc118ff452c42fef489818422f278ab79e6dd4.camel@redhat.com>
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <51bc118ff452c42fef489818422f278ab79e6dd4.camel@redhat.com>
+X-ClientProxiedBy: SJ0P220CA0006.NAMP220.PROD.OUTLOOK.COM
+ (2603:10b6:a03:41b::29) To BY5PR12MB4209.namprd12.prod.outlook.com
+ (2603:10b6:a03:20d::22)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7049d9fe-1051-41a4-2ba3-08da34993bbf
+X-MS-TrafficTypeDiagnostic: BL1PR12MB5378:EE_
+X-Microsoft-Antispam-PRVS: <BL1PR12MB5378E2E2EA60A9BDB8CA29BFB3CA9@BL1PR12MB5378.namprd12.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gZIr+0xVsNfrUzUX2dSz/9A9US7V043+NWckN4j8sK96qbCuS5mWPQExwi7ZMd3Zqz3XmgtqzvNpBrBkblpw9kVP39OrwndhOZ7J/YuaNYQnCtZDOXQNBNJIeSjWRKpCni8joUgmwveE5HW5LCA50CUtoIJPo6MNTkSzBQ20uekcvvBwP2ohiLX03BOZGm9X1yIepiDNWKHaKklVwJL4jYiLQ/ZEvovxBpRyMVL5fT1O+8ZVICJbKyhbnweqp+qoMjewt2J3S1AhEGipALjXzS73qI+YDNdZF1UTInvVtSE1ohEGf8HnhdpQwRNm4Xk0KBt+JkkySHStDzDPSmPCGweARk/JHNto0klbLlvwI4nlsPsR4IGgmdUdIq7p1nw721184XOkLKQcJfxVo5Bpv2ZCheWcyHHv340PNPzrR39ZQkRQs0CK9KVywNqKOCrVslLNW5MiGWhTQssAD9NhfFpFSTP9yo6GnkOxE1NRbHlXXoEbDNoU4rdJn65Vic8IrO3stzEHX0R97U5iGH97whgIHHEHaIMkMYfoi+t06w3eWGl4TpY09m2y/kHZJgf6wL45jdkKbihaOvUysWpNo+Ar5CG9ddfKaFOx3bctvurDuram+UGo1I8BTovN+7AKysUblyEnJMqEJOqTImOtcA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4209.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(86362001)(6512007)(6916009)(4326008)(9686003)(8676002)(6486002)(33716001)(316002)(54906003)(508600001)(38100700002)(6506007)(1076003)(186003)(5660300002)(8936002)(2906002)(66476007)(66556008)(66946007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?iso-8859-1?Q?1ZQu1QdMIOD0skwHaYTRGuqnKE/58qYhS4iYYsQ5r1OVqgnHMGAB0KtxlP?=
+ =?iso-8859-1?Q?mxeo1aTuZtk2YzrHzige0kFxdvxFnjMu4kksefWp20/ZDagNN0Dl7zx12A?=
+ =?iso-8859-1?Q?YU51R5DIWtIHAsg6Y+r7++f65ja/qv6Z3s8Fkyo2jVyr8aCewfjgKFBOYe?=
+ =?iso-8859-1?Q?grVY69jgIpMk7AqKtEIx+woNsnZgeZLoimoBJF+T+leYT7qs2MV4IGJyx8?=
+ =?iso-8859-1?Q?yXd7nvnnyxBHGy8eDiRuJ/a/BnO6JLx0hvDoaz3T26eLz5mMkolgmj1ZAd?=
+ =?iso-8859-1?Q?KQFD3lpISA2VbCz9JuYzQnb/dva16Ls+z0jT/+bZtW28n9UyqceLpAEGDT?=
+ =?iso-8859-1?Q?MeoF0mJdhzsozakDQj5cE6HUZZ5XhJseMLdymQI1T0gBbmI3gKGXtVvO7I?=
+ =?iso-8859-1?Q?oUZ3nQF3AfW6wGGd4UsD9Kh8oR0/Y4dVfd/T35uSu+pFcv6lR2jeD2fGDX?=
+ =?iso-8859-1?Q?b/19Dwjoh9h7Hk5fG8imYE4VdQMTCP3NGBm+gVF49U4TH+USLl2QMUw14T?=
+ =?iso-8859-1?Q?4879H9VeMez2wuMYoLgyySdiGp3fq6bP/9FfqV40a3zmUuvB2ptB/uL7ds?=
+ =?iso-8859-1?Q?ZnJ5PxEI1iDyfg4r2LcXox6H2aYSLy2Wehc2FKxvnzrIxp7r6WW9oxTru1?=
+ =?iso-8859-1?Q?nT2fkhT94FWZriG/xiAPQcwTBo4SY6bl75JLpEybYPP59Fu0q8qw4ek1h/?=
+ =?iso-8859-1?Q?LQy00P+8dF7HkEnWda/vbGRJM6paa3VC/q711Zs75Hm5/+iwfhzmVr1Abn?=
+ =?iso-8859-1?Q?cKdgCBJhlBWT+g1bTs7QLv0A8QH6+lRwL5DcQsaUL0qvow0Eqry1hrq0/V?=
+ =?iso-8859-1?Q?p+nfILw/qTnXlTBvry/Ft48S819KDBT7dKzhVgaKsZrSeZwmMwr3/Mly/v?=
+ =?iso-8859-1?Q?w8oJC45iU/6sHHkJXlb2TdhhW2FMWUwvydtUoU7VSn66HFoRuOf5OxhCZD?=
+ =?iso-8859-1?Q?ysRQrE0aL9yBbQIIp12wCUYhR4bPmK4EdqUUyO8smLQaw5SSOoSr9khFuV?=
+ =?iso-8859-1?Q?rY5/Cbs/WMv2l742wQ8FcCinUfTZdSSxYrofFhZ+CZPIAmt+N8G2BDKuNy?=
+ =?iso-8859-1?Q?3yWYZvyrAptQMTo+ELcUqDi8hKqAZvnecbUpcEtiFQ/vBlUORDTgXXk92g?=
+ =?iso-8859-1?Q?2Hr0Wq6ifkLdYJ/sCbccCKYXQdKXJ6bM4gku/BzsAZPEtxg30ZqY5b/otr?=
+ =?iso-8859-1?Q?df4Nt5TCBZJIyB9fYCHGUBn9yDLPNq3oJes7++iJeitJJdIP37hJU4LNfY?=
+ =?iso-8859-1?Q?cxDojMLfXoLdBjJljO6mNNAO4u96mdcETEKJ14ZABsw3ZR1y7NGwBCmQJ8?=
+ =?iso-8859-1?Q?YZP2FEx2SKclZhSszP4yL2lWznqfKM4WzOacLXufVKOAWX//a5E6OkCV5Y?=
+ =?iso-8859-1?Q?wKHNkAWR8mUUYPDvu1Gkm/HmFy4Tm7HpHAPYy0KVEbkP7CzPfDoBzUBEze?=
+ =?iso-8859-1?Q?ND9aPFdtLV1reEAxNOlWHqbxNdVZw0Li1PBnUEEtj72WMVXu+lqWo/woEV?=
+ =?iso-8859-1?Q?dYxO1hfXqqY7vLcnHcdR7uLqtTwyb27HMpvwXrgoEdmWzly18hjPl8mi2q?=
+ =?iso-8859-1?Q?icG4ebX3CDa9r8SGjprN9sVH8Sa00MLK9AQCQOywRjWWb9Yri0rcAOgfSq?=
+ =?iso-8859-1?Q?WiSr3VjmayPmf1B6ECev8BUO8AKlzu1YSZDeZCXGVttwOAw8cYTc6e023Y?=
+ =?iso-8859-1?Q?us787lMg6WXyk87F2DhfyTTQEwbLVv3+nOwhH93BCKmW0LUGSqTRkuRVwM?=
+ =?iso-8859-1?Q?9sh/tPjk6vIL+QyL2s7IcVnNYevDd3Dokq6fY3RHxTt19RWAwpA2PGXual?=
+ =?iso-8859-1?Q?lmHSMd2XNUXBRb48qaQyHpdEqXVUJMw=3D?=
+X-OriginatorOrg: Nvidia.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7049d9fe-1051-41a4-2ba3-08da34993bbf
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4209.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 04:29:56.7432
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: qWlBJHPcKRBlN6r4q7GQ/DDHKDpEE5fjdiGMypXk8YACVp/0pAYTt6PDP7O85EEQpV8U7KOxKb9u/TZkPPeI6A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR12MB5378
+X-Spam-Status: No, score=-0.7 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Paul,
+On 12 May 11:02, Paolo Abeni wrote:
+>On Thu, 2022-05-12 at 01:40 -0700, Saeed Mahameed wrote:
+>> On 09 May 20:32, Eric Dumazet wrote:
+>> > From: Coco Li <lixiaoyan@google.com>
+>> >
+>> > mlx5 supports LSOv2.
+>> >
+>> > IPv6 gro/tcp stacks insert a temporary Hop-by-Hop header
+>> > with JUMBO TLV for big packets.
+>> >
+>> > We need to ignore/skip this HBH header when populating TX descriptor.
+>> >
+>>
+>> Sorry i didn't go through all the documentations or previous discussions,
+>> please bare with me, so why not clear HBH just before calling the
+>> driver xmit ndo ?
+>
+>I guess this way is more efficient: the driver copies IP hdr and TCP
+>hdr directly in the correct/final location into the tx descriptor,
+>otherwise the caller would have to memmove L2/L3 just before the driver
+>copies them again.
+>>
 
-Thank you so much for taking so much time to provide guidance,
-I've fixed the other two issues, but the "Reported by" tag issue I don’t quite understand.
+memmove(sizeof(L2/L3)) is not that bad when done only every 64KB+.
+it's going to be hard to repeat this and maintain this across all drivers
+only to get this micro optimization that I doubt it will be even measurable.
 
-> 2022年5月12日 21:55，Paul Menzel <pmenzel@molgen.mpg.de> 写道：
-> 
-> Dear Lixue,
-> 
-> 
-> Thank you for sending version 2. Some more minor nits.
-> 
-> Am 12.05.22 um 11:39 schrieb lixue liang:
->> In some cases, when the user uses igb_set_eeprom to modify the MAC
->> address to be invalid, the igb driver will fail to load. If there is no
->> network card device, the user must modify it to a valid MAC address by
->> other means.
->> Since the MAC address can be modified ,then add a random valid MAC address
->> to replace the invalid MAC address in the driver can be workable, it can
->> continue to finish the loading ,and output the relevant log reminder.
-> 
-> Please add the space after the comma.
-> 
->> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> This line is confusing. Maybe add that to the version change-log below the `---`.
-> 
-
-I add it in the form of cmmit message. I understand that you mean to add 
-"Reported by" under '---‘, but I don't know how to add it. Please give me 
-further guidance. I'm so sorry to trouble you.Sincerely waiting for your response.
-
-Thank you!
-
+>> Or if HBH has to stick,�
+>
+>My understanding is that this is not the case.
+>
+>Cheers,
+>
+>Paolo
+>
