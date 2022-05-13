@@ -2,139 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 303A3526601
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:25:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3EC7526605
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:26:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381957AbiEMPZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 11:25:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51050 "EHLO
+        id S1381967AbiEMP0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 11:26:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233504AbiEMPZT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:25:19 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C46E0CD;
-        Fri, 13 May 2022 08:25:18 -0700 (PDT)
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24DFBouj023613;
-        Fri, 13 May 2022 15:24:54 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=Rs/HrYaFsVOG7pHzpWHMzkvZ8QnbJVdvVi9OpbPAeQ8=;
- b=XquKzgjsrizj4CfhcryNFVGqew5wyyd7HPiDR9cLxA/QDQCBSyzQ3d4A+o5zkXiaJAUX
- uYdgcRXvAXKhfn14LipL3IDS6QPy1nl0ZpHRDmTYSdxaIsp+oDlqKWhgnTlhW0H0VegT
- 6f0XP/GtHdx6033jI2pf54HAI+TZSN4C3+345s1KBUw6ygzjiQtQ9G12DROr/KIURWcp
- D8q/7hu9aO6VxzekJS98QeVeeVOaIr4tucAriBBjecxgt93rSWsQKCL+HGFo3ASZMOGY
- TW1XRuw2FsM1iiOi/3UQZqTFaiytFNegAdnmqbnOuPgqG7yextuGnwf6US7V4/aJuhsp DA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g1srpr8pk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 13 May 2022 15:24:54 +0000
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24DFFQbg008263;
-        Fri, 13 May 2022 15:24:53 GMT
-Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g1srpr8nk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 13 May 2022 15:24:53 +0000
-Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
-        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24DFOp4I014120;
-        Fri, 13 May 2022 15:24:51 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma06ams.nl.ibm.com with ESMTP id 3fyrkk4r9r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 13 May 2022 15:24:50 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24DFOOJ914549438
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 13 May 2022 15:24:24 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 96179A4053;
-        Fri, 13 May 2022 15:24:48 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2D701A404D;
-        Fri, 13 May 2022 15:24:46 +0000 (GMT)
-Received: from sig-9-65-91-25.ibm.com (unknown [9.65.91.25])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Fri, 13 May 2022 15:24:46 +0000 (GMT)
-Message-ID: <06062b288d675dc060f33041e9b2009c151698e6.camel@linux.ibm.com>
-Subject: Re: [PATCH v7] efi: Do not import certificates from UEFI Secure
- Boot for T2 Macs
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Aditya Garg <gargaditya08@live.com>,
-        "jarkko@kernel.org" <jarkko@kernel.org>,
-        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
-        "jmorris@namei.org" <jmorris@namei.org>,
-        "serge@hallyn.com" <serge@hallyn.com>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "kafai@fb.com" <kafai@fb.com>,
-        "songliubraving@fb.com" <songliubraving@fb.com>,
-        "yhs@fb.com" <yhs@fb.com>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@kernel.org" <kpsingh@kernel.org>
-Cc:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
-        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
-        "linux-security-module@vger.kernel.org" 
-        <linux-security-module@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Orlando Chamberlain <redecorating@protonmail.com>,
-        "admin@kodeit.net" <admin@kodeit.net>,
-        "stable@vger.kernel.org" <stable@vger.kernel.org>
-Date:   Fri, 13 May 2022 11:24:45 -0400
-In-Reply-To: <958B8D22-F11E-4B5D-9F44-6F0626DBCB63@live.com>
-References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
-         <94DD0D83-8FDE-4A61-AAF0-09A0175A0D0D@live.com>
-         <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
-         <E9C28706-2546-40BF-B32C-66A047BE9EFB@live.com>
-         <02125722-91FC-43D3-B63C-1B789C2DA8C3@live.com>
-         <958B8D22-F11E-4B5D-9F44-6F0626DBCB63@live.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: nSTyBu9TLw378bJvOtb7YdyATbWM_IHn
-X-Proofpoint-ORIG-GUID: cEKFVC3VVbEMtznL2Syom3um3gN35hor
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-13_04,2022-05-13_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- suspectscore=0 bulkscore=0 adultscore=0 spamscore=0 clxscore=1011
- phishscore=0 mlxlogscore=793 impostorscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205130067
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S233504AbiEMP0s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:26:48 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E2E1658A;
+        Fri, 13 May 2022 08:26:47 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id z2so16958770ejj.3;
+        Fri, 13 May 2022 08:26:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vRuutjdRJtG/Bb6H7ojUi4zmCk2FQZReoeZCIJzw81M=;
+        b=LkEgXf2w6UMjPRp+EEKOMcgP18cf7ck6G6vrxTCsOWGNrB0CoG9LVg9CJD08Q/YPu7
+         Ydg431ZCdjoZN8VdlWcJCD/nyByOpEKWPM8PSiu5CVPEgu4s0d36agUYedtEaQbS/wMq
+         oZQgC42ce6hpd0Z1tpVNHwCutdsyZgYgSbJaLOuHxgZwl3t+AVjnBaxRVB4NDTxzdr2b
+         lEK8hSVn/qJC6+SsSFOAo+bklvXFoSqzjur1wPqvMrs7F0R0LDPsl099ouNsG3OMQsP5
+         kC0id9t3+f4dqzbOsN53xUVSSVDRzm3ihjvNUahjW/t8dw5GxN2UesijyUoXe4KdtFGS
+         2fxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=vRuutjdRJtG/Bb6H7ojUi4zmCk2FQZReoeZCIJzw81M=;
+        b=i9qemb1VtvzoZmXD8ZfEw+S67scD1o1Y9KL3JZ3cwYYecul+VR9X0GphN+ZS/vrEi/
+         NQs1wMezmhlKyvfM9dfzEelpAEXeYxiCFqgU2U3CC9YWYz094lKRZnkVUYn2c02sDcj5
+         aw4xNoBfQ3x9p0RzVzVBjIAjuluPi8sCBMxRlkrE2IlDNt0QQPKKwAw05OGC7wmGWd1a
+         G2vCKnWofm7f/p/4QPfeKFNbAnB0rN9ljh5c7XY7zetombAUEb5vjisc56UXh+QhqR4D
+         G1b7wkP8oPlEKKgZTK3S4rQrN3A90PgMJ6HUNaD66BKEWb6aEeCo5whFgBZe4V161jf4
+         W93Q==
+X-Gm-Message-State: AOAM532TuuTf/nsTtlClE72j2OPNBDzYepfrZR4iXkckUvJtBIryvSrX
+        gytlVL9SfvWaGwYWIe0b5qFkDO/+cv0=
+X-Google-Smtp-Source: ABdhPJyM/9MZZET5coTyt+GBl5zb4UJ8tl+qeDPYXiJMe64X4i/VKkyKiFHry68DV+r56JbtDco8Rg==
+X-Received: by 2002:a17:907:608f:b0:6f6:1155:99ab with SMTP id ht15-20020a170907608f00b006f6115599abmr4580865ejc.306.1652455605710;
+        Fri, 13 May 2022 08:26:45 -0700 (PDT)
+Received: from 127.0.0.1localhost ([185.69.144.161])
+        by smtp.gmail.com with ESMTPSA id j13-20020a508a8d000000b0042617ba63cbsm1015351edj.85.2022.05.13.08.26.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 08:26:45 -0700 (PDT)
+From:   Pavel Begunkov <asml.silence@gmail.com>
+To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org,
+        Pavel Begunkov <asml.silence@gmail.com>
+Subject: [PATCH net-next v3 00/10] UDP/IPv6 refactoring
+Date:   Fri, 13 May 2022 16:26:05 +0100
+Message-Id: <cover.1652368648.git.asml.silence@gmail.com>
+X-Mailer: git-send-email 2.36.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Aditya,
+Refactor UDP/IPv6 and especially udpv6_sendmsg() paths. The end result looks
+cleaner than it was before and the series also removes a bunch of instructions
+and other overhead from the hot path positively affecting performance.
 
-On Fri, 2022-04-15 at 17:02 +0000, Aditya Garg wrote:
-> From: Aditya Garg <gargaditya08@live.com>
-> 
-> On Apple T2 Macs, when Linux attempts to read the db and dbx efi variables
-> at early boot to load UEFI Secure Boot certificates, a page fault occurs
-> in Apple firmware code and EFI runtime services are disabled with the
-> following logs:
+Testing over dummy netdev with 16 byte packets yields 2240481 tx/s,
+comparing to 2203417 tx/s previously, which is around +1.6%
 
-Are there directions for installing Linux on a Mac with Apple firmware
-code?  Are you dual booting Linux and Mac, or just Linux?  While in
-secure boot mode, without being able to read the keys to verify the
-kernel image signature, the signature verification should fail.
+v2: no code changes, just resending properly
+v3: remove patch moving getfrag callback assignment
+    add benchmark numbers
 
-Has anyone else tested this patch?
+Pavel Begunkov (10):
+  ipv6: optimise ipcm6 cookie init
+  udp/ipv6: move pending section of udpv6_sendmsg
+  udp/ipv6: prioritise the ip6 path over ip4 checks
+  udp/ipv6: optimise udpv6_sendmsg() daddr checks
+  udp/ipv6: optimise out daddr reassignment
+  udp/ipv6: clean up udpv6_sendmsg's saddr init
+  ipv6: partially inline fl6_update_dst()
+  ipv6: refactor opts push in __ip6_make_skb()
+  ipv6: improve opt-less __ip6_make_skb()
+  ipv6: clean up ip6_setup_cork
 
-thanks,
+ include/net/ipv6.h    |  24 +++----
+ net/ipv6/datagram.c   |   4 +-
+ net/ipv6/exthdrs.c    |  15 ++---
+ net/ipv6/ip6_output.c |  53 +++++++--------
+ net/ipv6/raw.c        |   8 +--
+ net/ipv6/udp.c        | 153 ++++++++++++++++++++----------------------
+ net/l2tp/l2tp_ip6.c   |   8 +--
+ 7 files changed, 120 insertions(+), 145 deletions(-)
 
-Mimi
-
+-- 
+2.36.0
 
