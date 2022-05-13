@@ -2,105 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BC747526151
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 13:46:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E0852615A
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 13:50:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380005AbiEMLqe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 07:46:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55964 "EHLO
+        id S1380041AbiEMLuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 07:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbiEMLq3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 07:46:29 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D55491CB22
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 04:46:25 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id j12so9833055oie.1
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 04:46:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4N1T/RG64MaJ9K2EPr9r4NPNoZ7d/jiFoWOLU7hUaCk=;
-        b=mK3Nnsy+szG2jzQB2ofRgVA69xXzHyPm0DWHvJ6cxgma6eixU6APn5VTy2131BbbXJ
-         6EO3jsSj/eY9U106SaOCt+JdfrgEHJzjlVGNJyiZ3ul5+MgcUbw+2lhVQlJJEp9jo0AI
-         rwkitiSwnpNnt1MGzSsyVJAeeJ6AFCUtnSFmFCNL0F8Sd4RpcbghnzoPlVpfiTUPLXbm
-         Zp5E04PjT0M3fQX69R1F45/KrqtFlKqCtm/BzMbW2jwnzg96TL4WigdZn2TRMXzAaj8p
-         ZXYJRCXhE8pC5L6G88FfVYbrH/vEQl7D7hOIjHCPTACcRPzsOSKvOPZCC+ToMXiV9jqZ
-         8qmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4N1T/RG64MaJ9K2EPr9r4NPNoZ7d/jiFoWOLU7hUaCk=;
-        b=DlMz0yfj7IKGbtN04eNwP5gvT7FJEsqX2V+kkFV3VniGyF826s8Nw1G+y9qRVXfvOE
-         8LsqN9TsvfxZTNWOkDIiVXK85eH6oZuROl1m6dWZgIy9f+BEFE9g65MyjV0QOaPGIsqv
-         cw+g9iemvF+XiUxuClQkHgFPwsrO8dk/xNIxEs/4+qhPoh1Nwe95qgN9Wd6jUp/ki2ep
-         AAkq1m7ZJ+Qc9k4HNiYZ1QHfaL5MU2HGKwPQ57gw5Ob59arlDwLQbwa0g9BCe2nEBma2
-         22fvE5I0WS/t2V+4E48BGFxYDASO177fV9BtwarjioNDA//RSzrN4gv9MbEg1CjvfeQf
-         u0hQ==
-X-Gm-Message-State: AOAM5312t1SKpCOTzHDBw5O6I6PZnjtzHir6gSxawQ2EwEdulaVu70G2
-        8XuZPxnmKv8EiyskaHJCJJ+pm6te8XuOMw==
-X-Google-Smtp-Source: ABdhPJwCD9oxyyklkqXdpIxJl/0d/ctsVYIblkgBfSgjnEBAEj0nfkF62bwsx1Sun0geRRFO8NlTAA==
-X-Received: by 2002:a05:6808:1155:b0:326:795e:1e07 with SMTP id u21-20020a056808115500b00326795e1e07mr7474017oiu.296.1652442385217;
-        Fri, 13 May 2022 04:46:25 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:485:4b69:7c3a:c7b:fd8a:c501])
-        by smtp.gmail.com with ESMTPSA id b18-20020a9d6b92000000b00606b1f72fcbsm872458otq.31.2022.05.13.04.46.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 04:46:24 -0700 (PDT)
-From:   Fabio Estevam <festevam@gmail.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, andrew@lunn.ch, netdev@vger.kernel.org,
-        Fabio Estevam <festevam@denx.de>
-Subject: [PATCH net-next 2/2] net: phy: micrel: Use the kszphy probe/suspend/resume
-Date:   Fri, 13 May 2022 08:46:13 -0300
-Message-Id: <20220513114613.762810-2-festevam@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220513114613.762810-1-festevam@gmail.com>
-References: <20220513114613.762810-1-festevam@gmail.com>
+        with ESMTP id S1345668AbiEMLuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 07:50:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FB831F8F0B;
+        Fri, 13 May 2022 04:50:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CEBB261E7A;
+        Fri, 13 May 2022 11:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 293FFC34115;
+        Fri, 13 May 2022 11:50:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652442614;
+        bh=yugmZY7XqMULlQ7Zh5SgMzY+/uUNBV0Y4MAJUB4rGAg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZuonmleOqUW0whDG5F3YhSyUHs/cQTQTeRHI01aavwmYzzhWYwPu5jNfCkSwOakFh
+         mJbXzuhPUBB0Zn7mSLXtbqGsIOp/E3Lqw7SuMLJY3gIWNmGxymZSEEuT2wTfxnWMhC
+         HO9yj3nSYFuZsKNJR/pM/ofii/VoSAcpE0O6jvcsNIZnG2ECNbDFOvrr9jSk+mAN+4
+         TMbpp1m0VN883w6khTCO00J8bx5qCH7ycBACgF7qD/ERpUY5ukMHjQup3AvfyONkHu
+         EGQxsef8SBSFdnSidCzqJPeVOLz6DIpP5qqFz6lJLOpVgcmZD0iaHilY1GhJSZWKuR
+         Pk58BhjdanVAg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0BFAAF03935;
+        Fri, 13 May 2022 11:50:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH net 0/3] net: ipa: three bug fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165244261404.26306.8745512907039550643.git-patchwork-notify@kernel.org>
+Date:   Fri, 13 May 2022 11:50:14 +0000
+References: <20220512151033.211592-1-elder@linaro.org>
+In-Reply-To: <20220512151033.211592-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        lkp@intel.com, mka@chromium.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Fabio Estevam <festevam@denx.de>
+Hello:
 
-Now that it is possible to use .probe without having .driver_data, let
-KSZ8061 use the kszphy specific hooks for probe,suspend and resume,
-which is preferred.
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Switch to using the dedicated kszphy probe/suspend/resume functions.
+On Thu, 12 May 2022 10:10:30 -0500 you wrote:
+> This series contains three somewhat unrelated minor bug fixes.
+> 
+> 					-Alex
+> 
+> Alex Elder (3):
+>   net: ipa: certain dropped packets aren't accounted for
+>   net: ipa: record proper RX transaction count
+>   net: ipa: get rid of a duplicate initialization
+> 
+> [...]
 
-Signed-off-by: Fabio Estevam <festevam@denx.de>
----
- drivers/net/phy/micrel.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Here is the summary with links:
+  - [net,1/3] net: ipa: certain dropped packets aren't accounted for
+    https://git.kernel.org/netdev/net/c/30b338ff7998
+  - [net,2/3] net: ipa: record proper RX transaction count
+    https://git.kernel.org/netdev/net/c/d8290cbe1111
+  - [net,3/3] net: ipa: get rid of a duplicate initialization
+    https://git.kernel.org/netdev/net/c/8d017efb1eaa
 
-diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
-index 5e356e23c1b7..22139901f01c 100644
---- a/drivers/net/phy/micrel.c
-+++ b/drivers/net/phy/micrel.c
-@@ -3019,11 +3019,12 @@ static struct phy_driver ksphy_driver[] = {
- 	.name		= "Micrel KSZ8061",
- 	.phy_id_mask	= MICREL_PHY_ID_MASK,
- 	/* PHY_BASIC_FEATURES */
-+	.probe		= kszphy_probe,
- 	.config_init	= ksz8061_config_init,
- 	.config_intr	= kszphy_config_intr,
- 	.handle_interrupt = kszphy_handle_interrupt,
--	.suspend	= genphy_suspend,
--	.resume		= genphy_resume,
-+	.suspend	= kszphy_suspend,
-+	.resume		= kszphy_resume,
- }, {
- 	.phy_id		= PHY_ID_KSZ9021,
- 	.phy_id_mask	= 0x000ffffe,
+You are awesome, thank you!
 -- 
-2.25.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
