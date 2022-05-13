@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3DF95259E1
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 05:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D826D5259E7
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 05:08:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376647AbiEMDFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 23:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48782 "EHLO
+        id S1376654AbiEMDFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 23:05:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358809AbiEMDFE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 23:05:04 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A351228ED02;
-        Thu, 12 May 2022 20:04:59 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id v11so6524248pff.6;
-        Thu, 12 May 2022 20:04:59 -0700 (PDT)
+        with ESMTP id S1376661AbiEMDFN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 23:05:13 -0400
+Received: from mail-pl1-x642.google.com (mail-pl1-x642.google.com [IPv6:2607:f8b0:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 161AC28ED02;
+        Thu, 12 May 2022 20:05:06 -0700 (PDT)
+Received: by mail-pl1-x642.google.com with SMTP id m12so6722741plb.4;
+        Thu, 12 May 2022 20:05:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=i20mAFU7NrHSI3GzXENtfgmQUTPKqxrlvWBJ4mCwr9c=;
-        b=joiLveGVf3AJvcPBN/LqMUAK0HIU3rBu0aMekWowF8XK+DwlD4XjYdYc7vGUYAB+ba
-         GvU/tgViuBZYutmEgCuF2fN6UbDtPHcGXYEHTZJdA2nccLQDTbnvSOcG7Vs6x20xa37d
-         OVtL0csbLTpmzXQfiLTW1ya/Nl4jA+1dpRu73J9zYN+8FB7++Pz7L09fdXQQtFrKppo8
-         oLTZops//4KpZMuyaAg7T31FxYVQ6pvtM37pHZ868ibKlT1tpA/Be1kDMFxQmT8FLYKg
-         yBfC4EE4Uy4f6vduQdvlFL0F0L1cCQWpFp1es8z9bHwmGtoY22gFQWdTHNdLgKax3W1h
-         wd9A==
+        bh=HDu0z3UNTUmPRRo575SlQWaiiOZEc5TgsbPLrsF6F5E=;
+        b=XM05gpTuaLNiPbmcDzOGEpLg3H7KYY/vEcUvDQu5ZtfbQucAiN14eegoAUY7qAUDoj
+         hgJ4/mX2nm6czn81tJ6Wa6qjGZJDXUBdvknkqaF/sxhMMXtefI7jNLT7MfEcVxoDVG7I
+         XcDMgjjbQkBCEY1pzYzdOHHmCFIF/GJxlS5GxHzIM4eS4jYL8sr2KkQ5Jb55XPu4Xkid
+         PnOodOG3iDzvS2F5WORd8Px8ne5YDsCJCCzKOiFldIDODIKrl90iYp5CXQibIpnNRFqV
+         bmE7MUxp9gXvER2qnAgdMzNyzeoXVI8QxsFikYKbcf4JRwxperZxj2e499hoeyZYuxTI
+         WkJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=i20mAFU7NrHSI3GzXENtfgmQUTPKqxrlvWBJ4mCwr9c=;
-        b=jBYEYSa9ZObT1OjaSc8q3RYtJ+lL2wp93eW2gaO0NA3pmnJrpnjpCrPOflsxrI3O4g
-         edzZsYDYatGVuQYKlwNfKotPa8RQkVhIXiv/7lVexq3U0plVoPqHBYTwY008D1zWwa64
-         3DRMw4Cuidpz2oKW1Wwp2ff/vdJNig2w4rLJk/jCL0RJ6+8z7YBw1WrAstMBYlvXjbXq
-         u5mFdo0J4xXJJKQrPyl18I1B8gO2WKCU16EY9DRf+BFwUlm4i4KSLER1WGYErNHUjwKZ
-         7nAA4ffUS7hFdN/CC6nojPguLC9tpMPWR75ewtPzMcfpJ8sgL//I+6e2eai26t9GK9Oh
-         AV1g==
-X-Gm-Message-State: AOAM532bNAnJpu24aSGFff1kpic7r5ZPeQ42QWGC+/Fv2kE/47PjHOtR
-        C3s3zxs/XB24GF8EAcK/RIE=
-X-Google-Smtp-Source: ABdhPJyJnmaidAHX0E8/Nd4wSwXKJOzOqNRl2z0ABpT0KruYsD2fC7cnf8jrVtFiwuezqjXXxF41zA==
-X-Received: by 2002:a63:c112:0:b0:3c6:b835:2043 with SMTP id w18-20020a63c112000000b003c6b8352043mr2209742pgf.528.1652411099200;
-        Thu, 12 May 2022 20:04:59 -0700 (PDT)
+        bh=HDu0z3UNTUmPRRo575SlQWaiiOZEc5TgsbPLrsF6F5E=;
+        b=g2BzpE8CmAvpPMFkefHw5bsAIHyRapZtR0lwk/CuzKmC9/wUEBpm+QX0SOnQ9mPujV
+         DqQkQl4LB9BRSs7xoExa3R8zG+Yz+OMK6U5ktiF/+UxYmxmvmxIWUcuDJwlUHu4d0A5+
+         vV3ZiytB3usnyQUD1dzlMxAw56yniM9ITACJuNWgtDipgwtWnBeX+ABU0hKbIxrgh0rI
+         st2ZmCXKhkpDA29mCpkWCCJL3nAy8gDuilcYbtVnaqNB3yyhp85EFHZFIdIrhITdnQok
+         sPkJJtnd0L4jPVb+laxBcWSyoHdhA+sgHAIpNDwJicMBQJNn4JapmfaTrq5A4R7LNjmA
+         k0kQ==
+X-Gm-Message-State: AOAM531mi33Rc79js6pSVkFJegxFbBOwxBtJz8Sey765QhXrV9cTdC7i
+        tiojbKS1fZtP5DOtBxGAJRU=
+X-Google-Smtp-Source: ABdhPJxvEagH5pqXuRunEPMlbOlkdX8lEFUheBpWfF12/LSGhjF739dwmFECeFlNij2SlrVWPs96wA==
+X-Received: by 2002:a17:90b:1e53:b0:1dc:5cdf:565e with SMTP id pi19-20020a17090b1e5300b001dc5cdf565emr2692081pjb.78.1652411105651;
+        Thu, 12 May 2022 20:05:05 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.26])
-        by smtp.gmail.com with ESMTPSA id b7-20020a170903228700b0015e8d4eb1f8sm638693plh.66.2022.05.12.20.04.52
+        by smtp.gmail.com with ESMTPSA id b7-20020a170903228700b0015e8d4eb1f8sm638693plh.66.2022.05.12.20.04.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 20:04:58 -0700 (PDT)
+        Thu, 12 May 2022 20:05:05 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     kuba@kernel.org
@@ -58,9 +58,9 @@ Cc:     nhorman@tuxdriver.com, davem@davemloft.net, edumazet@google.com,
         luiz.von.dentz@intel.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
         Hao Peng <flyingpeng@tencent.com>
-Subject: [PATCH net-next v3 2/4] net: skb: check the boundrary of drop reason in kfree_skb_reason()
-Date:   Fri, 13 May 2022 11:03:37 +0800
-Message-Id: <20220513030339.336580-3-imagedong@tencent.com>
+Subject: [PATCH net-next v3 3/4] net: skb: change the definition SKB_DR_SET()
+Date:   Fri, 13 May 2022 11:03:38 +0800
+Message-Id: <20220513030339.336580-4-imagedong@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220513030339.336580-1-imagedong@tencent.com>
 References: <20220513030339.336580-1-imagedong@tencent.com>
@@ -78,37 +78,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-Sometimes, we may forget to reset skb drop reason to NOT_SPECIFIED after
-we make it the return value of the functions with return type of enum
-skb_drop_reason, such as tcp_inbound_md5_hash. Therefore, its value can
-be SKB_NOT_DROPPED_YET(0), which is invalid for kfree_skb_reason().
-
-So we check the range of drop reason in kfree_skb_reason() with
-DEBUG_NET_WARN_ON_ONCE().
+The SKB_DR_OR() is used to set the drop reason to a value when it is
+not set or specified yet. SKB_NOT_DROPPED_YET should also be considered
+as not set.
 
 Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
-v3:
-- don't reset the reason and print the debug warning only (Jakub Kicinski)
----
- net/core/skbuff.c | 2 ++
- 1 file changed, 2 insertions(+)
+ include/linux/skbuff.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 15f7b6f99a8f..fab791b0c59e 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -771,6 +771,8 @@ void kfree_skb_reason(struct sk_buff *skb, enum skb_drop_reason reason)
- 	if (!skb_unref(skb))
- 		return;
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index b91d225fdc13..4db3f4a33580 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -510,7 +510,8 @@ enum skb_drop_reason {
+ 	(name = SKB_DROP_REASON_##reason)
+ #define SKB_DR_OR(name, reason)					\
+ 	do {							\
+-		if (name == SKB_DROP_REASON_NOT_SPECIFIED)	\
++		if (name == SKB_DROP_REASON_NOT_SPECIFIED ||	\
++		    name == SKB_NOT_DROPPED_YET)		\
+ 			SKB_DR_SET(name, reason);		\
+ 	} while (0)
  
-+	DEBUG_NET_WARN_ON_ONCE(reason <= 0 || reason >= SKB_DROP_REASON_MAX);
-+
- 	trace_kfree_skb(skb, __builtin_return_address(0), reason);
- 	__kfree_skb(skb);
- }
 -- 
 2.36.1
 
