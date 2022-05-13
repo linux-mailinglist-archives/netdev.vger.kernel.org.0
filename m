@@ -2,61 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D84AF5265A4
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:07:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C27E35265B0
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:12:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229496AbiEMPHH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 11:07:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43398 "EHLO
+        id S244328AbiEMPMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 11:12:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380804AbiEMPHG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:07:06 -0400
+        with ESMTP id S234263AbiEMPMa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:12:30 -0400
 Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A50C24F21
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:07:05 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2605F53709
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:12:28 -0700 (PDT)
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 1CDFA20688;
-        Fri, 13 May 2022 17:07:04 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTP id 54F44206A0;
+        Fri, 13 May 2022 17:12:27 +0200 (CEST)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Kijfz3vBxqn8; Fri, 13 May 2022 17:07:03 +0200 (CEST)
-Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        with ESMTP id jER09sIb9_Ql; Fri, 13 May 2022 17:12:26 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 9F3C42065D;
-        Fri, 13 May 2022 17:07:03 +0200 (CEST)
+        by a.mx.secunet.com (Postfix) with ESMTPS id C5CEE20685;
+        Fri, 13 May 2022 17:12:26 +0200 (CEST)
 Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        by mailout1.secunet.com (Postfix) with ESMTP id 96C1D80004A;
-        Fri, 13 May 2022 17:07:03 +0200 (CEST)
+        by mailout2.secunet.com (Postfix) with ESMTP id B501680004A;
+        Fri, 13 May 2022 17:12:26 +0200 (CEST)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 13 May 2022 17:07:03 +0200
+ 15.1.2375.24; Fri, 13 May 2022 17:12:26 +0200
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 13 May
- 2022 17:07:03 +0200
+ 2022 17:12:26 +0200
 Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id 01E293180A74; Fri, 13 May 2022 17:07:02 +0200 (CEST)
-Date:   Fri, 13 May 2022 17:07:02 +0200
+        id 24DA13180A74; Fri, 13 May 2022 17:12:26 +0200 (CEST)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Leon Romanovsky <leon@kernel.org>
-CC:     Leon Romanovsky <leonro@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        <netdev@vger.kernel.org>, Raed Salem <raeds@nvidia.com>,
-        ipsec-devel <devel@linux-ipsec.org>
-Subject: Re: [PATCH ipsec-next 6/6] xfrm: enforce separation between
- priorities of HW/SW policies
-Message-ID: <20220513150702.GN680067@gauss3.secunet.de>
-References: <cover.1652176932.git.leonro@nvidia.com>
- <3d81ef1171c464d3bad05c7d9a741e12c4c160a7.1652176932.git.leonro@nvidia.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        <netdev@vger.kernel.org>
+Subject: [PATCH 0/8] pull request (net-next): ipsec-next 2022-05-13
+Date:   Fri, 13 May 2022 17:12:10 +0200
+Message-ID: <20220513151218.4010119-1-steffen.klassert@secunet.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <3d81ef1171c464d3bad05c7d9a741e12c4c160a7.1652176932.git.leonro@nvidia.com>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
  mbx-essen-01.secunet.de (10.53.40.197)
 X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
@@ -68,19 +64,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 10, 2022 at 01:36:57PM +0300, Leon Romanovsky wrote:
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Devices that implement IPsec full offload mode offload policies too.
-> In RX path, it causes to the situation that HW can't effectively handle
-> mixed SW and HW priorities unless users make sure that HW offloaded
-> policies have higher priorities.
-> 
-> In order to make sure that users have coherent picture, let's require to
-> make sure that HW offloaded policies have always (both RX and TX) higher
-> priorities than SW ones.
+1) Cleanups for the code behind the XFRM offload API. This is a
+   preparation for the extension of the API for policy offload.
+   From Leon Romanovsky.
 
-I'm still not sure whether splitting priorities in software and hardware
-is the right way to go. I fear we can get problems with corner cases we
-don't think about now. But OTOH I don't have a better idea. So maybe
-someone on the list has an opinion on that.
+Please pull or let me know if there are problems.
+
+Thanks!
+
+The following changes since commit 949dfdcf343c1646d26ee0ef320d6b2a4a39af28:
+
+  Merge branch 'mptcp-improve-mptcp-level-window-tracking' (2022-05-05 19:00:20 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/klassert/ipsec-next.git master
+
+for you to fetch changes up to 0f9008e5c5103e32e788d260558d170c2fc9c2be:
+
+  Merge  branch 'Be explicit with XFRM offload direction' (2022-05-07 09:19:47 +0200)
+
+----------------------------------------------------------------
+Leon Romanovsky (8):
+      xfrm: free not used XFRM_ESP_NO_TRAILER flag
+      xfrm: delete not used number of external headers
+      xfrm: rename xfrm_state_offload struct to allow reuse
+      xfrm: store and rely on direction to construct offload flags
+      ixgbe: propagate XFRM offload state direction instead of flags
+      netdevsim: rely on XFRM state direction instead of flags
+      net/mlx5e: Use XFRM state direction instead of flags
+      xfrm: drop not needed flags variable in XFRM offload struct
+
+Steffen Klassert (1):
+      Merge  branch 'Be explicit with XFRM offload direction'
+
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.c       |  9 ++++-----
+ drivers/net/ethernet/intel/ixgbe/ixgbe_ipsec.h       |  2 +-
+ drivers/net/ethernet/intel/ixgbevf/ipsec.c           |  6 +++---
+ drivers/net/ethernet/intel/ixgbevf/ipsec.h           |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/en_accel/ipsec.c | 10 +++++-----
+ drivers/net/netdevsim/ipsec.c                        |  2 +-
+ include/net/xfrm.h                                   | 20 ++++++++++++--------
+ net/ipv4/esp4.c                                      |  6 ------
+ net/ipv6/esp6.c                                      |  6 ------
+ net/xfrm/xfrm_device.c                               | 15 ++++++++-------
+ net/xfrm/xfrm_state.c                                |  4 ++--
+ net/xfrm/xfrm_user.c                                 |  5 +++--
+ 12 files changed, 40 insertions(+), 47 deletions(-)
