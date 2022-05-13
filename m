@@ -2,186 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E260526C61
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 23:38:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CAA2526C6B
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 23:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354092AbiEMViZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 17:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49388 "EHLO
+        id S1384727AbiEMVnt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 17:43:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232968AbiEMViY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 17:38:24 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D827F3AF
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 14:38:22 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id b18so16588407lfv.9
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 14:38:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sYCfXOYsHg4pPGmrCxYBDnmeWJzPRY2LbbOpiAnKw5w=;
-        b=YJukoUXF/H/IL4no7mG/bpXLEfTJIF1mykYD9RnrxIfH8vqu/AidBSsOX7l2wNbDsV
-         BMdCqTM6cvX/DxOoJOEFU4u0W3DFQg0OaGo/GtGO5P6SiWgDY++FuipGIKx25d+rMPqI
-         YBhsmz/0cNCWrCsLIIT0s0I6NHyzobpHZ4t6zF2wrFrb0QO9a9qC92GRqeSTeJkcxrkf
-         lSPg30uejWqEX1MstwFGd6CEmKEROqsf/hjdLnU3N22Nksxm/N/IOxbg2GG0ExaevR53
-         0TbloWhVjqURN3dTMusjNOxyR1AtlcxzjhOtxL7l80RglWfKDrfI4lCsLeCTdChgu2hi
-         +xwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sYCfXOYsHg4pPGmrCxYBDnmeWJzPRY2LbbOpiAnKw5w=;
-        b=WvOIGDXX3Av2bZe1uflkbZ06LFJEboo9N7ZIfgLFITcYtjMdTH+NObnKZ7zCCdJuyo
-         aJS8q0utLllzaU5jTGtDa1l2VOvMvQu/uzk5491CSh6vwzXgwBa6KjIzjF3edI7sFq4t
-         ijeI/6v/TUz5rjbEXbyOu9UfiafSsaScsf1IL5cA5Cdo7cI+77OYpN+4un9rLG1Wg7pL
-         SKsoRYs1BepntvwDakNWnsP91PtsXpmd29kBmi9LVKGU7prl8gabZv4dJJXolpSjQGi/
-         JzdS3ueisS31rG23Kln6pPdRCMlYkzxjYWyD5JZasg3G3IxB8sIAg9jUMGvwnMcp/t9z
-         2fmw==
-X-Gm-Message-State: AOAM532l8IQHkcbBGN5BBIA583/JWPV4D/ax/JmnPdrOhPML4GHks5bf
-        kvJqhfDpcRgfxV11F1rXBruvvQ==
-X-Google-Smtp-Source: ABdhPJyipDNOCeXlLAfuQwpRdvmaWCiujCdOhTBjxQ+71JSWBTkDs3V8dO2KTLrj50PU4i2Vb4UL9g==
-X-Received: by 2002:a19:7015:0:b0:473:d75a:7a3d with SMTP id h21-20020a197015000000b00473d75a7a3dmr4524985lfc.525.1652477900920;
-        Fri, 13 May 2022 14:38:20 -0700 (PDT)
-Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id x2-20020a19f602000000b0047255d21126sm503773lfe.85.2022.05.13.14.38.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 14:38:20 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        kernel test robot <lkp@intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH net-next v3] net: dsa: realtek: rtl8366rb: Serialize indirect PHY register access
-Date:   Fri, 13 May 2022 23:36:18 +0200
-Message-Id: <20220513213618.2742895-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S1378197AbiEMVnr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 17:43:47 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F25169FF6;
+        Fri, 13 May 2022 14:43:41 -0700 (PDT)
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        pabeni@redhat.com
+Subject: [PATCH net-next 00/17] Netfilter updates for net-next
+Date:   Fri, 13 May 2022 23:43:12 +0200
+Message-Id: <20220513214329.1136459-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alvin Šipraga <alsi@bang-olufsen.dk>
+Hi,
 
-Lock the regmap during the whole PHY register access routines in
-rtl8366rb.
+This is v2 including deadlock fix in conntrack ecache rework
+reported by Jakub Kicinski.
 
-Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v2->v3:
-- Explicitly target net-next
-ChangeLog v1->v2:
-- Make sure to always return a properly assigned error
-  code on the error path in rtl8366rb_phy_read()
-  found by the kernel test robot.
+The following patchset contains Netfilter updates for net-next,
+mostly updates to conntrack from Florian Westphal.
 
-I have tested that this does not create any regressions,
-it makes more sense to have this applied than not. First
-it is related to the same family as the other ASICs, also
-it makes perfect logical sense to enforce serialization
-of these reads/writes.
----
- drivers/net/dsa/realtek/rtl8366rb.c | 37 +++++++++++++++++++----------
- 1 file changed, 25 insertions(+), 12 deletions(-)
+1) Add a dedicated list for conntrack event redelivery.
 
-diff --git a/drivers/net/dsa/realtek/rtl8366rb.c b/drivers/net/dsa/realtek/rtl8366rb.c
-index 1a3406b9e64c..25f88022b9e4 100644
---- a/drivers/net/dsa/realtek/rtl8366rb.c
-+++ b/drivers/net/dsa/realtek/rtl8366rb.c
-@@ -1653,29 +1653,37 @@ static int rtl8366rb_phy_read(struct realtek_priv *priv, int phy, int regnum)
- 	if (phy > RTL8366RB_PHY_NO_MAX)
- 		return -EINVAL;
- 
--	ret = regmap_write(priv->map, RTL8366RB_PHY_ACCESS_CTRL_REG,
-+	mutex_lock(&priv->map_lock);
-+
-+	ret = regmap_write(priv->map_nolock, RTL8366RB_PHY_ACCESS_CTRL_REG,
- 			   RTL8366RB_PHY_CTRL_READ);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	reg = 0x8000 | (1 << (phy + RTL8366RB_PHY_NO_OFFSET)) | regnum;
- 
--	ret = regmap_write(priv->map, reg, 0);
-+	ret = regmap_write(priv->map_nolock, reg, 0);
- 	if (ret) {
- 		dev_err(priv->dev,
- 			"failed to write PHY%d reg %04x @ %04x, ret %d\n",
- 			phy, regnum, reg, ret);
--		return ret;
-+		goto out;
- 	}
- 
--	ret = regmap_read(priv->map, RTL8366RB_PHY_ACCESS_DATA_REG, &val);
-+	ret = regmap_read(priv->map_nolock, RTL8366RB_PHY_ACCESS_DATA_REG,
-+			  &val);
- 	if (ret)
--		return ret;
-+		goto out;
-+
-+	ret = val;
- 
- 	dev_dbg(priv->dev, "read PHY%d register 0x%04x @ %08x, val <- %04x\n",
- 		phy, regnum, reg, val);
- 
--	return val;
-+out:
-+	mutex_unlock(&priv->map_lock);
-+
-+	return ret;
- }
- 
- static int rtl8366rb_phy_write(struct realtek_priv *priv, int phy, int regnum,
-@@ -1687,21 +1695,26 @@ static int rtl8366rb_phy_write(struct realtek_priv *priv, int phy, int regnum,
- 	if (phy > RTL8366RB_PHY_NO_MAX)
- 		return -EINVAL;
- 
--	ret = regmap_write(priv->map, RTL8366RB_PHY_ACCESS_CTRL_REG,
-+	mutex_lock(&priv->map_lock);
-+
-+	ret = regmap_write(priv->map_nolock, RTL8366RB_PHY_ACCESS_CTRL_REG,
- 			   RTL8366RB_PHY_CTRL_WRITE);
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	reg = 0x8000 | (1 << (phy + RTL8366RB_PHY_NO_OFFSET)) | regnum;
- 
- 	dev_dbg(priv->dev, "write PHY%d register 0x%04x @ %04x, val -> %04x\n",
- 		phy, regnum, reg, val);
- 
--	ret = regmap_write(priv->map, reg, val);
-+	ret = regmap_write(priv->map_nolock, reg, val);
- 	if (ret)
--		return ret;
-+		goto out;
- 
--	return 0;
-+out:
-+	mutex_unlock(&priv->map_lock);
-+
-+	return ret;
- }
- 
- static int rtl8366rb_dsa_phy_read(struct dsa_switch *ds, int phy, int regnum)
--- 
-2.35.1
+2) Include event redelivery list in conntrack dumps of dying type.
 
+3) Remove per-cpu dying list for event redelivery, not used anymore.
+
+4) Add netns .pre_exit to cttimeout to zap timeout objects before
+   synchronize_rcu() call.
+
+5) Remove nf_ct_unconfirmed_destroy.
+
+6) Add generation id for conntrack extensions for conntrack
+   timeout and helpers.
+
+7) Detach timeout policy from conntrack on cttimeout module removal.
+
+8) Remove __nf_ct_unconfirmed_destroy.
+
+9) Remove unconfirmed list.
+
+10) Remove unconditional local_bh_disable in init_conntrack().
+
+11) Consolidate conntrack iterator nf_ct_iterate_cleanup().
+
+12) Detect if ctnetlink listeners exist to short-circuit event
+    path early.
+
+13) Un-inline nf_ct_ecache_ext_add().
+
+14) Add nf_conntrack_events autodetect ctnetlink listener mode
+    and make it default.
+
+15) Add nf_ct_ecache_exist() to check for event cache extension.
+
+16) Extend flowtable reverse route lookup to include source, iif,
+    tos and mark, from Sven Auhagen.
+
+17) Do not verify zero checksum UDP packets in nf_reject,
+    from Kevin Mitchell.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit a997157e42e3119b13c644549a3d8381a1d825d6:
+
+  docs: net: dsa: describe issues with checksum offload (2022-04-18 13:29:02 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netfilter/nf-next.git HEAD
+
+for you to fetch changes up to 4f9bd53084d18c2f9f1ec68fa56587b99a2cef00:
+
+  netfilter: conntrack: skip verification of zero UDP checksum (2022-05-13 18:56:28 +0200)
+
+----------------------------------------------------------------
+Florian Westphal (14):
+      netfilter: ecache: use dedicated list for event redelivery
+      netfilter: conntrack: include ecache dying list in dumps
+      netfilter: conntrack: remove the percpu dying list
+      netfilter: cttimeout: decouple unlink and free on netns destruction
+      netfilter: remove nf_ct_unconfirmed_destroy helper
+      netfilter: extensions: introduce extension genid count
+      netfilter: cttimeout: decouple unlink and free on netns destruction
+      netfilter: conntrack: remove __nf_ct_unconfirmed_destroy
+      netfilter: conntrack: remove unconfirmed list
+      netfilter: conntrack: avoid unconditional local_bh_disable
+      netfilter: nfnetlink: allow to detect if ctnetlink listeners exist
+      netfilter: conntrack: un-inline nf_ct_ecache_ext_add
+      netfilter: conntrack: add nf_conntrack_events autodetect mode
+      netfilter: prefer extension check to pointer check
+
+Kevin Mitchell (1):
+      netfilter: conntrack: skip verification of zero UDP checksum
+
+Pablo Neira Ayuso (1):
+      netfilter: conntrack: add nf_ct_iter_data object for nf_ct_iterate_cleanup*()
+
+Sven Auhagen (1):
+      netfilter: flowtable: nft_flow_route use more data for reverse route
+
+ Documentation/networking/nf_conntrack-sysctl.rst |   5 +-
+ include/net/netfilter/nf_conntrack.h             |  17 +-
+ include/net/netfilter/nf_conntrack_core.h        |   2 +-
+ include/net/netfilter/nf_conntrack_ecache.h      |  53 ++--
+ include/net/netfilter/nf_conntrack_extend.h      |  31 +--
+ include/net/netfilter/nf_conntrack_labels.h      |  10 +-
+ include/net/netfilter/nf_conntrack_timeout.h     |   8 -
+ include/net/netfilter/nf_reject.h                |  21 +-
+ include/net/netns/conntrack.h                    |   8 +-
+ net/ipv4/netfilter/nf_reject_ipv4.c              |  10 +-
+ net/ipv6/netfilter/nf_reject_ipv6.c              |   4 +-
+ net/netfilter/nf_conntrack_core.c                | 304 ++++++++++-------------
+ net/netfilter/nf_conntrack_ecache.c              | 165 +++++++-----
+ net/netfilter/nf_conntrack_extend.c              |  32 ++-
+ net/netfilter/nf_conntrack_helper.c              |   5 -
+ net/netfilter/nf_conntrack_netlink.c             |  86 ++++---
+ net/netfilter/nf_conntrack_proto.c               |  10 +-
+ net/netfilter/nf_conntrack_standalone.c          |   2 +-
+ net/netfilter/nf_conntrack_timeout.c             |   7 +-
+ net/netfilter/nf_nat_masquerade.c                |   5 +-
+ net/netfilter/nfnetlink.c                        |  40 ++-
+ net/netfilter/nfnetlink_cttimeout.c              |  47 +++-
+ net/netfilter/nft_flow_offload.c                 |   8 +
+ 23 files changed, 494 insertions(+), 386 deletions(-)
