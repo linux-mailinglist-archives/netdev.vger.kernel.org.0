@@ -2,386 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C74526660
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:42:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14589526670
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346128AbiEMPmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 11:42:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60226 "EHLO
+        id S1382187AbiEMPop (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 11:44:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382182AbiEMPmb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:42:31 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 65E0E2FFDD
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:42:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652456549;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Qt51KmMEp2p5kZHKW2/GzlR6XIOdTGRJtza/WZphhNw=;
-        b=BCyCKR/BKaTTr/3Ki48uFAVrZ7bwJG1t66mH9L6PVf1twHubYyGPi/xMExh9RZICGoyQ/S
-        D+Cr7TiOftJ5VAxarIExvCeQJNVICIuhxxOC1ahOecXPlFoFQwttoT/UuiqE1DypbKt8HW
-        nf19vdqB9q1vYcQhcdWimMDEwUXg9hg=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-597-Wr2oXhRjNnK2r4JR6qdsZg-1; Fri, 13 May 2022 11:42:28 -0400
-X-MC-Unique: Wr2oXhRjNnK2r4JR6qdsZg-1
-Received: by mail-qt1-f197.google.com with SMTP id w21-20020a05622a135500b002f3b801f51eso6570554qtk.23
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:42:28 -0700 (PDT)
+        with ESMTP id S1382189AbiEMPol (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:44:41 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FE73A735
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:44:38 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso8108383pjb.5
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:44:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=ptf+f5eGDE5JGEu9b++jcke6m+bu7vV+b5hUvmlYQQo=;
+        b=SjhK1c9Qotr1qDOqwKlBj3Rw1mlIdcXMiMnONLsDWXIlWQego7JtnDd+2u8lNhcb5o
+         VntS/+cGhwP5NiXqFa0xo4Eurcd+QW1c6ntV0GvlsEyq5axRcQY1ctFnycyCWVGns4We
+         RoLfLtxqMSNKYzeck8DbrFFmqTXggtzGcj49k=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Qt51KmMEp2p5kZHKW2/GzlR6XIOdTGRJtza/WZphhNw=;
-        b=N3YXUsZ3i3a+/FEoPmt3nQlZE0Wc+SzIUjMcPXr9OLNTWNllQkgdLa1QIuU2pWDKZU
-         xFQO+y2qQ1flVKrHwJGRzC81UkKNs6i8sHQ5pFxSlklc4z8UETC0AusN7IFeJ1kvlOgg
-         QI0/BhEMMgrHyIjpof/WCXhopOemcX/0RELImiK98//4PjCWltGINj2Seq6563LhJ3A7
-         9LY721TOCElGu1hQVISaHaB2kPseGyvazsyzlwy8/4RH1196bY/0ZAD+KLLnzsBXzgAU
-         69Y2z2vBOdE2huZEG+KDYQ9LwqC/djYT2zofU7uTYwmN5tkAE4RIpGOtVYRIoYPPlxts
-         PWdQ==
-X-Gm-Message-State: AOAM533FVD9HBg7y6J+XYdfBEAHzARnONhztCQXwFh18zAbLgX6N6PPU
-        AW+mLIfXfgKSZKQoyu7LnLAd7AiDk0IExn1+8zBgv2trFxvUMGOFtNwr0NrclE3o8BuWyiohqf9
-        Q6AzSb/tGL+5TsaVX
-X-Received: by 2002:ac8:5e0c:0:b0:2f3:adfd:bd30 with SMTP id h12-20020ac85e0c000000b002f3adfdbd30mr5067544qtx.277.1652456547221;
-        Fri, 13 May 2022 08:42:27 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyKaXPR/x6m9eRtDhITZ/mgkh3K8v85o3GPEiQQ767o63X5SoQJyaXZc+UC5jRKP4V4ZeURSA==
-X-Received: by 2002:ac8:5e0c:0:b0:2f3:adfd:bd30 with SMTP id h12-20020ac85e0c000000b002f3adfdbd30mr5067495qtx.277.1652456546522;
-        Fri, 13 May 2022 08:42:26 -0700 (PDT)
-Received: from [192.168.98.18] ([107.15.110.69])
-        by smtp.gmail.com with ESMTPSA id f10-20020ac8498a000000b002f39b99f6b9sm1599192qtq.83.2022.05.13.08.42.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 May 2022 08:42:25 -0700 (PDT)
-Message-ID: <d2696dab-2490-feb5-ccb2-96906fc652f0@redhat.com>
-Date:   Fri, 13 May 2022 11:42:24 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH net-next v2] bond: add mac filter option for balance-xor
-Content-Language: en-US
-To:     Nikolay Aleksandrov <razor@blackwall.org>, netdev@vger.kernel.org
-Cc:     Long Xin <lxin@redhat.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=ptf+f5eGDE5JGEu9b++jcke6m+bu7vV+b5hUvmlYQQo=;
+        b=4RPR8/biVOolojE5FLM2M85T9yy8E7O3PAuazoNmgGv39bDgzaCKIE88QWZjZR8xLI
+         qOFLStmYoGzygBhEebcUqoj3r6PA7tzpGvMDcguUHGH8YnNBE90FHT6jDgZbqa9kyoAp
+         Bzh0U5HRMBJ7lt4aoQoqg+1OwIbZralyXYWJkQ5R/ZT0lGC9je1jHL1O9VRoCudNp2ms
+         aPUN/yehTEDp/Mm3hg5WAqYb6bQIUH4cPf1aiNI1oqhFGabMF35EYIHaqYVaJ2SOmFy6
+         JUinlT1uLsTmJ+h8rmaxsuCa8gD8erLghEy5rIO/SlfL2XeSih8KQJEuGHMpvS2dfRJz
+         9obQ==
+X-Gm-Message-State: AOAM532rzVwjTYjwO1ul0hUBM4D+TsndJ6/VZTIY1eXHLOaoBxNzuoxy
+        k6WH0OZSkUbZmY7X3wUeG21jtA==
+X-Google-Smtp-Source: ABdhPJxasBICZO798rz+17+y+t9nZitCCqENVQI5RwTabPKWbsVJ7C2OmZDJ+yTA2ILgpXFaCw37jw==
+X-Received: by 2002:a17:902:ecc8:b0:15e:9e46:cb7e with SMTP id a8-20020a170902ecc800b0015e9e46cb7emr5389423plh.111.1652456677896;
+        Fri, 13 May 2022 08:44:37 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b0015e8d4eb1c9sm2059662plb.19.2022.05.13.08.44.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 08:44:37 -0700 (PDT)
+Date:   Fri, 13 May 2022 08:44:33 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     David Howells <dhowells@redhat.com>
+Cc:     "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, Alexei Starovoitov <ast@kernel.org>,
+        alsa-devel@alsa-project.org, Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Gross <agross@kernel.org>,
+        Andy Lavr <andy.lavr@gmail.com>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bradley Grove <linuxdrivers@attotech.com>,
+        brcm80211-dev-list.pdl@broadcom.com,
+        Christian Brauner <brauner@kernel.org>,
+        Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Chris Zankel <chris@zankel.net>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Daniel Axtens <dja@axtens.net>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        David Gow <davidgow@google.com>,
         "David S. Miller" <davem@davemloft.net>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
+        Eli Cohen <elic@nvidia.com>,
         Eric Dumazet <edumazet@google.com>,
+        Eric Paris <eparis@parisplace.org>,
+        Eugeniu Rosca <erosca@de.adit-jv.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Gregory Greenman <gregory.greenman@intel.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Hulk Robot <hulkci@huawei.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        James Morris <jmorris@namei.org>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        John Keeping <john@metanate.com>,
+        Juergen Gross <jgross@suse.com>, Kalle Valo <kvalo@kernel.org>,
+        Keith Packard <keithp@keithp.com>, keyrings@vger.kernel.org,
+        kunit-dev@googlegroups.com,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Lee Jones <lee.jones@linaro.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux1394-devel@lists.sourceforge.net,
+        linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-integrity@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
+        linux-xtensa@linux-xtensa.org, llvm@lists.linux.dev,
+        Loic Poulain <loic.poulain@linaro.org>,
+        Louis Peens <louis.peens@corigine.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Mark Brown <broonie@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-References: <6227427ef3b57d7de6d4d95e9dd7c9b222a37bf6.1651689665.git.jtoppins@redhat.com>
- <f85a0a66-d3b8-9d20-9abb-fc9fa5e84eab@blackwall.org>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <f85a0a66-d3b8-9d20-9abb-fc9fa5e84eab@blackwall.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        Paul Moore <paul@paul-moore.com>,
+        Rich Felker <dalias@aerifal.cx>,
+        Rob Herring <robh+dt@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
+        "Serge E. Hallyn" <serge@hallyn.com>,
+        SHA-cyfmac-dev-list@infineon.com,
+        Simon Horman <simon.horman@corigine.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stefan Richter <stefanr@s5r6.in-berlin.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Stephen Smalley <stephen.smalley.work@gmail.com>,
+        Tadeusz Struk <tadeusz.struk@linaro.org>,
+        Takashi Iwai <tiwai@suse.com>, Tom Rix <trix@redhat.com>,
+        Udipto Goswami <quic_ugoswami@quicinc.com>,
+        Vincenzo Frascino <vincenzo.frascino@arm.com>,
+        wcn36xx@lists.infradead.org, Wei Liu <wei.liu@kernel.org>,
+        xen-devel@lists.xenproject.org,
+        Xiu Jianfeng <xiujianfeng@huawei.com>,
+        Yang Yingliang <yangyingliang@huawei.com>
+Subject: Re: [PATCH 19/32] afs: Use mem_to_flex_dup() with struct afs_acl
+Message-ID: <202205130841.686F21B64@keescook>
+References: <20220504014440.3697851-20-keescook@chromium.org>
+ <20220504014440.3697851-1-keescook@chromium.org>
+ <898803.1652391665@warthog.procyon.org.uk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <898803.1652391665@warthog.procyon.org.uk>
+X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Nik, thanks for the review. Responses below.
-
-On 5/5/22 08:14, Nikolay Aleksandrov wrote:
-> On 04/05/2022 21:47, Jonathan Toppins wrote:
->> Implement a MAC filter that prevents duplicate frame delivery when
->> handling BUM traffic. This attempts to partially replicate OvS SLB
->> Bonding[1] like functionality without requiring significant change
->> in the Linux bridging code.
->>
->> A typical network setup for this feature would be:
->>
->>              .--------------------------------------------.
->>              |         .--------------------.             |
->>              |         |                    |             |
->>         .-------------------.               |             |
->>         |    | Bond 0  |    |               |             |
->>         | .--'---. .---'--. |               |             |
->>    .----|-| eth0 |-| eth1 |-|----.    .-----+----.   .----+------.
->>    |    | '------' '------' |    |    | Switch 1 |   | Switch 2  |
->>    |    '---,---------------'    |    |          +---+           |
->>    |       /                     |    '----+-----'   '----+------'
->>    |  .---'---.    .------.      |         |              |
->>    |  |  br0  |----| VM 1 |      |      ~~~~~~~~~~~~~~~~~~~~~
->>    |  '-------'    '------'      |     (                     )
->>    |      |        .------.      |     ( Rest of Network     )
->>    |      '--------| VM # |      |     (_____________________)
->>    |               '------'      |
->>    |  Host 1                     |
->>    '-----------------------------'
->>
->> Where 'VM1' and 'VM#' are hosts connected to a Linux bridge, br0, with
->> bond0 and its associated links, eth0 & eth1, provide ingress/egress. One
->> can assume bond0, br1, and hosts VM1 to VM# are all contained in a
->> single box, as depicted. Interfaces eth0 and eth1 provide redundant
->> connections to the data center with the requirement to use all bandwidth
->> when the system is functioning normally. Switch 1 and Switch 2 are
->> physical switches that do not implement any advanced L2 management
->> features such as MLAG, Cisco's VPC, or LACP.
->>
->> Combining this feature with vlan+srcmac hash policy allows a user to
->> create an access network without the need to use expensive switches that
->> support features like Cisco's VCP.
->>
->> [1] https://docs.openvswitch.org/en/latest/topics/bonding/#slb-bonding
->>
->> Co-developed-by: Long Xin <lxin@redhat.com>
->> Signed-off-by: Long Xin <lxin@redhat.com>
->> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
->> ---
->>
->> Notes:
->>      v2:
->>       * dropped needless abstraction functions and put code in module init
->>       * renamed variable "rc" to "ret" to stay consistent with most of the
->>         code
->>       * fixed parameter setting management, when arp-monitor is turned on
->>         this feature will be turned off similar to how miimon and arp-monitor
->>         interact
->>       * renamed bond_xor_recv to bond_mac_filter_recv for a little more
->>         clarity
->>       * it appears the implied default return code for any bonding recv probe
->>         must be `RX_HANDLER_ANOTHER`. Changed the default return code of
->>         bond_mac_filter_recv to use this return value to not break skb
->>         processing when the skb dev is switched to the bond dev:
->>           `skb->dev = bond->dev`
->>
->>   Documentation/networking/bonding.rst  |  19 +++
->>   drivers/net/bonding/Makefile          |   2 +-
->>   drivers/net/bonding/bond_mac_filter.c | 201 ++++++++++++++++++++++++++
->>   drivers/net/bonding/bond_mac_filter.h |  39 +++++
->>   drivers/net/bonding/bond_main.c       |  27 ++++
->>   drivers/net/bonding/bond_netlink.c    |  13 ++
->>   drivers/net/bonding/bond_options.c    |  86 ++++++++++-
->>   drivers/net/bonding/bonding_priv.h    |   1 +
->>   include/net/bond_options.h            |   1 +
->>   include/net/bonding.h                 |   3 +
->>   include/uapi/linux/if_link.h          |   1 +
->>   11 files changed, 390 insertions(+), 3 deletions(-)
->>   create mode 100644 drivers/net/bonding/bond_mac_filter.c
->>   create mode 100644 drivers/net/bonding/bond_mac_filter.h
->>
+On Thu, May 12, 2022 at 10:41:05PM +0100, David Howells wrote:
 > 
-> Hi Jonathan,
-> I must mention that this is easily solvable with two very simple ebpf programs, one on egress
-> to track source macs and one on ingress to filter them, it can also easily be solved by a
-> user-space agent that adds macs for filtering in many different ways, after all these VMs
-> run on the host and you don't need bond-specific knowledge to do this. Also you have no visibility
-> into what is currently being filtered, so it will be difficult to debug. With the above solutions
-> you already have that. I don't think the bond should be doing any learning or filtering, this is
-> deviating a lot from its purpose and adds unnecessary complexity.
-> That being said, if you decide to continue with the set, comments are below...
-
-This is an excellent observation, it does appear this could likely be 
-done with eBPF. However, the delivery of such a solution to a user would 
-be the difficult part. There appears to be no standard way for attaching 
-a program to an interface, it still seems customary to write your own 
-custom loader. Where would the user run this loader? In Debian likely in 
-a post up hook with ifupdown, in Fedora one would have to write a 
-locally custom dispatcher script (assuming Network Manager) that only 
-ran the loader for a given interface. In short I do not see a reasonably 
-appropriate way to deploy an eBPF program to users with the current 
-infrastructure. Also, I am not aware of the bpf syscall supporting 
-signed program loading. Signing kernel modules seems popular with some 
-distros to identify limits of support and authentication of an 
-unmodified system. I suspect similar bpf support might be needed to 
-identify support and authentication for deployed programs.
-
-[...]
-
->> diff --git a/drivers/net/bonding/bond_mac_filter.c b/drivers/net/bonding/bond_mac_filter.c
->> new file mode 100644
->> index 000000000000..e86b2b475df3
->> --- /dev/null
->> +++ b/drivers/net/bonding/bond_mac_filter.c
->> @@ -0,0 +1,201 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Filter received frames based on MAC addresses "behind" the bond.
->> + */
->> +
->> +#include "bonding_priv.h"
->> +
->> +static const struct rhashtable_params bond_rht_params = {
->> +	.head_offset         = offsetof(struct bond_mac_cache_entry, rhnode),
->> +	.key_offset          = offsetof(struct bond_mac_cache_entry, key),
->> +	.key_len             = sizeof(struct mac_addr),
->> +	.automatic_shrinking = true,
->> +};
->> +
->> +static inline unsigned long hold_time(const struct bonding *bond)
+> Kees Cook <keescook@chromium.org> wrote:
 > 
-> no inlines in .c files, let the compiler do its job
+> >  struct afs_acl {
+> > -	u32	size;
+> > -	u8	data[];
+> > +	DECLARE_FLEX_ARRAY_ELEMENTS_COUNT(u32, size);
+> > +	DECLARE_FLEX_ARRAY_ELEMENTS(u8, data);
+> >  };
 > 
->> +{
->> +	return msecs_to_jiffies(5000);
->> +}
->> +
->> +static bool has_expired(const struct bonding *bond,
->> +			struct bond_mac_cache_entry *mac)
->> +{
->> +	return time_before_eq(mac->used + hold_time(bond), jiffies);
->> +}
->> +
->> +static void mac_delete_rcu(struct callback_head *head)
->> +{
->> +	kmem_cache_free(bond_mac_cache,
->> +			container_of(head, struct bond_mac_cache_entry, rcu));
->> +}
->> +
->> +static int mac_delete(struct bonding *bond,
->> +		      struct bond_mac_cache_entry *entry)
->> +{
->> +	int ret;
->> +
->> +	ret = rhashtable_remove_fast(bond->mac_filter_tbl,
->> +				     &entry->rhnode,
->> +				     bond->mac_filter_tbl->p);
->> +	set_bit(BOND_MAC_DEAD, &entry->flags);
+> Oof...  That's really quite unpleasant syntax.  Is it not possible to have
+> mem_to_flex_dup() and friends work without that?  You are telling them the
+> fields they have to fill in.
+
+Other threads discussed this too. I'm hoping to have something more
+flexible (pardon the pun) in v2.
+
+> [...]
+> or:
 > 
-> you don't need the atomic bitops, these flags are all modified and checked
-> under the entry lock
-
-I need to keep the atomic set_bit if I remove the [use-after-free] 
-idiomatic issue later in the file.
-
+> 	ret = mem_to_flex_dup(&acl, buffer, size, GFP_KERNEL);
+> 	if (ret < 0)
 > 
->> +	call_rcu(&entry->rcu, mac_delete_rcu);
-> 
-> all of these entries are queued to be freed, what happens if we unload the bonding
-> driver before that?
+> (or use != 0 rather than < 0)
 
-[...]
+Sure, I can make the tests more explicit. The kerndoc, etc all shows it's
+using < 0 for errors.
 
-> 
->> +
->> +	rhashtable_walk_enter(bond->mac_filter_tbl, &iter);
->> +	rhashtable_walk_start(&iter);
->> +	while ((entry = rhashtable_walk_next(&iter)) != NULL) {
->> +		if (IS_ERR(entry))
->> +			continue;
->> +
->> +		spin_lock_irqsave(&entry->lock, flags);
->> +		if (has_expired(bond, entry))
->> +			mac_delete(bond, entry);
->> +		spin_unlock_irqrestore(&entry->lock, flags);
-> 
-> deleting entries while holding their own lock is not very idiomatic
-
-[use-after-free] To fix this I made has_expired take the lock, making 
-has_expired atomic. Now there is no need to have the critical section 
-above and mac_delete can be outside the critical section. This also 
-removed the use-after-free bug that would appear if the code were not 
-using RCU and cache malloc.
-
-> 
->> +	bond->mac_filter_tbl = kzalloc(sizeof(*bond->mac_filter_tbl),
->> +				       GFP_KERNEL);
->> +	if (!bond->mac_filter_tbl)
->> +		return -ENOMEM;
->> +
->> +	ret = rhashtable_init(bond->mac_filter_tbl, &bond_rht_params);
->> +	if (ret)
->> +		kfree(bond->mac_filter_tbl);
-> 
-> on error this is freed, but the pointer is stale and on bond destruction
-> will be accessed and potentially freed again
-
-set to NULL.
-
-[...]
-
->> +static int mac_create(struct bonding *bond, const u8 *addr)
->> +{
->> +	struct bond_mac_cache_entry *entry;
->> +	int ret;
->> +
->> +	entry = kmem_cache_alloc(bond_mac_cache, GFP_ATOMIC);
->> +	if (!entry)
->> +		return -ENOMEM;
->> +	spin_lock_init(&entry->lock);
->> +	memcpy(&entry->key, addr, sizeof(entry->key));
->> +	entry->used = jiffies;
-> 
-> you must zero the old fields, otherwise you can find stale values from old
-> structs which were freed
-
-good point, have done.
-
-[...]
-
->> diff --git a/drivers/net/bonding/bond_mac_filter.h b/drivers/net/bonding/bond_mac_filter.h
->> new file mode 100644
->> index 000000000000..7c968d41b456
->> --- /dev/null
->> +++ b/drivers/net/bonding/bond_mac_filter.h
->> @@ -0,0 +1,39 @@
->> +/* SPDX-License-Identifier: GPL-2.0-only
->> + *
->> + * Filter received frames based on MAC addresses "behind" the bond.
->> + */
->> +
->> +#ifndef _BOND_MAC_FILTER_H
->> +#define _BOND_MAC_FILTER_H
->> +#include <net/bonding.h>
->> +#include <linux/spinlock.h>
->> +#include <linux/rhashtable.h>
->> +
->> +enum {
->> +	BOND_MAC_DEAD,
->> +	BOND_MAC_LOCKED,
->> +	BOND_MAC_STATIC,
-> 
-> What are BOND_MAC_LOCKED or STATIC ? I didn't see them used anywhere.
-
-Stale, was going to use them to allow the user to manually add entries 
-but never got around to it. Removed.
-
-[...]
-
->> diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
->> index 64f7db2627ce..d295903a525b 100644
->> --- a/drivers/net/bonding/bond_options.c
->> +++ b/drivers/net/bonding/bond_options.c
-
-[...]
-
->> @@ -1035,6 +1075,44 @@ static int bond_option_use_carrier_set(struct bonding *bond,
->>   	return 0;
->>   }
->>   
->> +static int bond_option_mac_filter_set(struct bonding *bond,
->> +				      const struct bond_opt_value *newval)
->> +{
->> +	int rc = 0;
->> +	u8 prev = bond->params.mac_filter;
-> 
-> reverse xmas tree
-> 
->> +
->> +	if (newval->value && bond->params.arp_interval) {
-> 
-> what happens if we set arp_interval after enabling this, the table will be
-> freed while the bond is up and is using it, also the queued work is still enabled
-
-This is a good observation. To simplify the option setting I moved the 
-init/destroy of the hash table to bond_open/close respectively. This 
-allowed me to simply set the value of mac_filter. The only catch is in 
-bond_option_arp_interval_set() if mac_filter is set and the interface is 
-up, the user will receive an -EBUSY. This was the minimal amount of 
-configuration behavioral change I could think of.
-
-Thanks,
--Jon
-
+-- 
+Kees Cook
