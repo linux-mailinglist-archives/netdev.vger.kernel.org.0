@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB0BD52660A
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:27:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5D6E52660C
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:27:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381996AbiEMP1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 11:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54096 "EHLO
+        id S1382022AbiEMP1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 11:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381973AbiEMP0v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:26:51 -0400
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 799AA1EAC6;
-        Fri, 13 May 2022 08:26:50 -0700 (PDT)
-Received: by mail-ej1-x62b.google.com with SMTP id ks9so16963943ejb.2;
-        Fri, 13 May 2022 08:26:50 -0700 (PDT)
+        with ESMTP id S1381980AbiEMP0w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:26:52 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAA241C930;
+        Fri, 13 May 2022 08:26:51 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id a21so10412972edb.1;
+        Fri, 13 May 2022 08:26:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DZu1vGyRJvfMSB/s4tV6H7jpwGcGvBtFQ856IXndPcQ=;
-        b=ivSAc5Ss+bwVCXF2o/taX96YkXq4gte9BeFc7Rg2VFgcIsWH0dGBSYhGIygnmoPm4i
-         XBFXk7J3W6zhPuPpUWYCL8lwFoA4nfiUY30cKBtVylzK1kkhMv18WLHqE82jA1e6fzkD
-         ONRqucgLp/mzwCtmbW9+dby4B2iget/2OY4gm/m2QTysSpMNG0Qt+yVYbfqS06tATnW5
-         rA4a9hT2t4ff73cnRLegbL0FrxjSpwkYJDhahPtQ3mp6IlD31fS6vrrRbY6spahqUQPp
-         wAEGmI72MBVrYd0A/KrQQ+GyQgMXqd8NLJZkkyXu9Yq+8R4RkwtXaT6GOrLhyL7q/JBo
-         UTwg==
+        bh=fJZZgrjkTi2qnW8nR0govA2RNr4bkeylxJH5h6SSPcI=;
+        b=itkRUtaB+7FjBPttdl0q8s0A4s4kv4P0zhXHnCuqdVsRxaeDYz3rPP9k7hy6icPm/4
+         tSc7YmJ4nW+nlYxa2ptt14VEjpSmAA66L49IF4mKyB0uPaGRt/4zEFBT31GjztTtpKnL
+         oVcZ4lHBh7tmqGbOx0W/PyoQl+C2UX4lfOK8I07tTFprYXYLaZ1HUpW+P/6N9qePUa9V
+         RSm0H2iNyDn5mnPJyz0QsJ4EgyDEWjFYFUPac1fUY50MwnXTLXUewxHTbjAkpJAjIvv2
+         yoHJYEm9s0e3gvjV0oa5shrPMBoiQcYryax4FSg3FKNssv2VK4R+f8ALd6q2Xgh+dKOX
+         3cng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DZu1vGyRJvfMSB/s4tV6H7jpwGcGvBtFQ856IXndPcQ=;
-        b=BlwXdJ4n3zVlgvEgdw37d26MVuVoLBCVI8ZuSQIp4wb85Mew3ECjMHC46MPnXP8On+
-         us6gSh8D2wX80b05XG9q+VNgbmQM9+K+oVctnke94S3vaLZuPElNEwjPQwLYwjwhaVkK
-         V9jw9pfc1alMzcRBBO71QKiTShDESgvEWoVBrB/IW71mlsylvimgV30wF26gjArynPoe
-         w6RPW4LvAkaNnYo/Uk07FMwK46apcZT9FOM21nR6r6u6sE+5GLfwbhhrcyZIWxIiYa/y
-         WgBCYwguSdEaosnfL+fCPAuqmqCX6aSE1wx7Jj3McevXNh+rE7MmDKcCnPwqIJ+jRDft
-         SvUg==
-X-Gm-Message-State: AOAM533NcA2Y5B6DJiRdG7McIC8RzOqz7Z076VaoN5Sbq9t8ZVRnjhLM
-        eVXPk78KfVMkW3otPbjze7bbtT5kUH8=
-X-Google-Smtp-Source: ABdhPJwlCuJ5+0i7mNICVTNVdzBucflX4ovUlHMkVIj9lonecTBKgYbn0Id03159P+EQdmMkaogrbQ==
-X-Received: by 2002:a17:907:960d:b0:6f4:3b68:8d55 with SMTP id gb13-20020a170907960d00b006f43b688d55mr4671925ejc.105.1652455608549;
-        Fri, 13 May 2022 08:26:48 -0700 (PDT)
+        bh=fJZZgrjkTi2qnW8nR0govA2RNr4bkeylxJH5h6SSPcI=;
+        b=IeUP+N7XZ9BgoaoEnUuWyo9baUKmoiqXcgysig1O7wZ1QWsufWY6eaRG0Al6S49ktV
+         4e+F3Fu+NQ5WHl9+0inSbEDUNpl9l0dibGw54NvAXTl6AsCsPQQAoKr9x9rSheoi8s00
+         kzvvxVnvtTcvkUJ+TyyWsmhy+iGPSLG3dc8lelJ5vQC/F3cxBNqqYHQdmr0C1u19jv5+
+         NQUxgHRtiP4WDbXxsgDlvalN0R5VWz9s552OgKPELbK90DKedx6LavLFPVQgtlEYkNzP
+         K3YHnGcH8tmbgSmzRj1L6NNAOlDN6NWfU8u3jAWaEFg56OQ1tU9VebKcB6D9FxePf3db
+         79yQ==
+X-Gm-Message-State: AOAM5328MADDziXG2SkI1tO31p5+E+39xPOalP2mo3Nlpq3hUIby5raZ
+        8Qc42FhiacROiAKTXJTO6zzbVjLRCt4=
+X-Google-Smtp-Source: ABdhPJwmO9sZAnEMkpE4QPhtI+gyLA3gKGVloOSQ5aZeKl8rdXstyfkRpHodqot7vd/FsYBjVzfMWw==
+X-Received: by 2002:a05:6402:4304:b0:427:cb08:b085 with SMTP id m4-20020a056402430400b00427cb08b085mr41024752edc.194.1652455610076;
+        Fri, 13 May 2022 08:26:50 -0700 (PDT)
 Received: from 127.0.0.1localhost ([185.69.144.161])
-        by smtp.gmail.com with ESMTPSA id j13-20020a508a8d000000b0042617ba63cbsm1015351edj.85.2022.05.13.08.26.47
+        by smtp.gmail.com with ESMTPSA id j13-20020a508a8d000000b0042617ba63cbsm1015351edj.85.2022.05.13.08.26.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:26:48 -0700 (PDT)
+        Fri, 13 May 2022 08:26:49 -0700 (PDT)
 From:   Pavel Begunkov <asml.silence@gmail.com>
 To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -55,9 +55,9 @@ Cc:     David Ahern <dsahern@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         linux-kernel@vger.kernel.org,
         Pavel Begunkov <asml.silence@gmail.com>
-Subject: [PATCH net-next v3 02/10] udp/ipv6: move pending section of udpv6_sendmsg
-Date:   Fri, 13 May 2022 16:26:07 +0100
-Message-Id: <a0e7477985ef08c5f08f35b8c7336587c8adce12.1652368648.git.asml.silence@gmail.com>
+Subject: [PATCH net-next v3 03/10] udp/ipv6: prioritise the ip6 path over ip4 checks
+Date:   Fri, 13 May 2022 16:26:08 +0100
+Message-Id: <50cca375d8730b5bf74b975d0fede64b1a3744c4.1652368648.git.asml.silence@gmail.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <cover.1652368648.git.asml.silence@gmail.com>
 References: <cover.1652368648.git.asml.silence@gmail.com>
@@ -73,114 +73,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move up->pending section of udpv6_sendmsg() to the beginning of the
-function. Even though it require some code duplication for sin6 parsing,
-it clearly localises the pending handling in one place, removes an extra
-if and more importantly will prepare the code for further patches.
+For AF_INET6 sockets we care the most about ipv6 but not ip4 mappings as
+it's requires some extra hops anyway. Take AF_INET6 case from the address
+parsing switch and add an explicit path for it. It removes some extra
+ifs from the path and removes the switch overhead.
 
 Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
 ---
- net/ipv6/udp.c | 70 ++++++++++++++++++++++++++++++--------------------
- 1 file changed, 42 insertions(+), 28 deletions(-)
+ net/ipv6/udp.c | 37 +++++++++++++++++--------------------
+ 1 file changed, 17 insertions(+), 20 deletions(-)
 
 diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index 11d44ed46953..85bff1252f5c 100644
+index 85bff1252f5c..e0b1bea998ce 100644
 --- a/net/ipv6/udp.c
 +++ b/net/ipv6/udp.c
-@@ -1318,6 +1318,46 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 	ipc6.sockc.tsflags = sk->sk_tsflags;
- 	ipc6.sockc.mark = sk->sk_mark;
+@@ -1360,30 +1360,27 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
  
-+	/* Rough check on arithmetic overflow,
-+	   better check is made in ip6_append_data().
-+	   */
-+	if (unlikely(len > INT_MAX - sizeof(struct udphdr)))
-+		return -EMSGSIZE;
-+
-+	getfrag  =  is_udplite ?  udplite_getfrag : ip_generic_getfrag;
-+
-+	/* There are pending frames. */
-+	if (up->pending) {
-+		if (up->pending == AF_INET)
-+			return udp_sendmsg(sk, msg, len);
-+
-+		/* Do a quick destination sanity check before corking. */
-+		if (sin6) {
-+			if (msg->msg_namelen < offsetof(struct sockaddr, sa_data))
-+				return -EINVAL;
-+			if (sin6->sin6_family == AF_INET6) {
-+				if (msg->msg_namelen < SIN6_LEN_RFC2133)
-+					return -EINVAL;
-+				if (ipv6_addr_any(&sin6->sin6_addr) &&
-+				    ipv6_addr_v4mapped(&np->saddr))
-+					return -EINVAL;
-+			} else if (sin6->sin6_family != AF_UNSPEC) {
-+				return -EINVAL;
-+			}
-+		}
-+
-+		/* The socket lock must be held while it's corked. */
-+		lock_sock(sk);
-+		if (unlikely(up->pending != AF_INET6)) {
-+			/* Just now it was seen corked, userspace is buggy */
-+			err = up->pending ? -EAFNOSUPPORT : -EINVAL;
-+			release_sock(sk);
-+			return err;
-+		}
-+		dst = NULL;
-+		goto do_append_data;
-+	}
-+
  	/* destination address check */
  	if (sin6) {
- 		if (addr_len < offsetof(struct sockaddr, sa_data))
-@@ -1343,12 +1383,11 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		default:
- 			return -EINVAL;
+-		if (addr_len < offsetof(struct sockaddr, sa_data))
+-			return -EINVAL;
++		if (addr_len < SIN6_LEN_RFC2133 || sin6->sin6_family != AF_INET6) {
++			if (addr_len < offsetof(struct sockaddr, sa_data))
++				return -EINVAL;
+ 
+-		switch (sin6->sin6_family) {
+-		case AF_INET6:
+-			if (addr_len < SIN6_LEN_RFC2133)
++			switch (sin6->sin6_family) {
++			case AF_INET:
++				goto do_udp_sendmsg;
++			case AF_UNSPEC:
++				msg->msg_name = sin6 = NULL;
++				msg->msg_namelen = addr_len = 0;
++				goto no_daddr;
++			default:
+ 				return -EINVAL;
+-			daddr = &sin6->sin6_addr;
+-			if (ipv6_addr_any(daddr) &&
+-			    ipv6_addr_v4mapped(&np->saddr))
+-				ipv6_addr_set_v4mapped(htonl(INADDR_LOOPBACK),
+-						       daddr);
+-			break;
+-		case AF_INET:
+-			goto do_udp_sendmsg;
+-		case AF_UNSPEC:
+-			msg->msg_name = sin6 = NULL;
+-			msg->msg_namelen = addr_len = 0;
+-			daddr = NULL;
+-			break;
+-		default:
+-			return -EINVAL;
++			}
  		}
--	} else if (!up->pending) {
-+	} else {
++
++		daddr = &sin6->sin6_addr;
++		if (ipv6_addr_any(daddr) && ipv6_addr_v4mapped(&np->saddr))
++			ipv6_addr_set_v4mapped(htonl(INADDR_LOOPBACK), daddr);
+ 	} else {
++no_daddr:
  		if (sk->sk_state != TCP_ESTABLISHED)
  			return -EDESTADDRREQ;
  		daddr = &sk->sk_v6_daddr;
--	} else
--		daddr = NULL;
-+	}
- 
- 	if (daddr) {
- 		if (ipv6_addr_v4mapped(daddr)) {
-@@ -1365,31 +1404,6 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		}
- 	}
- 
--	/* Rough check on arithmetic overflow,
--	   better check is made in ip6_append_data().
--	   */
--	if (len > INT_MAX - sizeof(struct udphdr))
--		return -EMSGSIZE;
--
--	getfrag  =  is_udplite ?  udplite_getfrag : ip_generic_getfrag;
--	if (up->pending) {
--		if (up->pending == AF_INET)
--			return udp_sendmsg(sk, msg, len);
--		/*
--		 * There are pending frames.
--		 * The socket lock must be held while it's corked.
--		 */
--		lock_sock(sk);
--		if (likely(up->pending)) {
--			if (unlikely(up->pending != AF_INET6)) {
--				release_sock(sk);
--				return -EAFNOSUPPORT;
--			}
--			dst = NULL;
--			goto do_append_data;
--		}
--		release_sock(sk);
--	}
- 	ulen += sizeof(struct udphdr);
- 
- 	memset(fl6, 0, sizeof(*fl6));
 -- 
 2.36.0
 
