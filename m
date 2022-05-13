@@ -2,167 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ACBFA525E50
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 11:19:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39559525E17
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 11:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244331AbiEMIwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 04:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57548 "EHLO
+        id S1378728AbiEMJJ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 05:09:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378479AbiEMIwr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 04:52:47 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13DA1237BA5
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 01:52:46 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id p189so4409422wmp.3
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 01:52:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=vxOaJmhjH8YfZIQgKyqCCSLbPOKdrfGtpJAlkONHxog=;
-        b=GGJwKVeDzH7KEj2fuqdiuUJEd++CsSPJSNO//C3THrrQb3nwOv3EW6+PIZQRjmMhK2
-         HXaJvvUY4jZ0322WWhNHFWNkrNz70aGRa03TL5xF/LA2d3d0KKhH5KmT8CUKjxB+41Gg
-         e7C/7U9OGQvFDT2ZC4RSTDdSl4fKoO8VLKXUyATSDpji1CTdUyK207hajqPBqpXxsk4I
-         4PsGLN2JWObqq2X+3YyWihOuIm0ZjEfNNPGGnkL5USgUM0UsBnxUnhKrzEO0+ZFy38G4
-         x0cv0OiahC8GeZPS0gGaMI7zd3AT3AHxa4iqRPtI+d+E6ZVm/uX/OMAHMhhBob3rmFgN
-         Q4Jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=vxOaJmhjH8YfZIQgKyqCCSLbPOKdrfGtpJAlkONHxog=;
-        b=dGwvVye1qMW2J/64fs8I7xh9YBr9YL0h+3Qi5UcFBo0stahhi5Z9wdDV5uYxxPKFJ+
-         ge3R0VWW4UOorH40+6yX4chIURvi/4ncf84oTZhf0gLD6zReW0uJW4485kFUx6bHbfoN
-         Pmzj9idl2YpOZHQRjx82FzzjAjCMhzX/ejo2ELccxFeHEh3wIPVXbIvIrUrkfebtbyVD
-         x1PbjkHjNeCF7YfAZO6a/7GSc59EbxWzfwDSeW+U8/mWHt3D1XvSO9S56ZYhR6EUiVxh
-         IZVfNHUov2Kixy/CCaMjsZloOSS6BxzRLdnHuJBnhzQIRnjsZIg6CMiVx8XRNoJ2eZrt
-         rBjA==
-X-Gm-Message-State: AOAM533I+4gUI/Cbw4prgAI0BjyT2zcF6f0qXvCnmO5cXYXcOhq+OKP9
-        PkO65zK+Rx9E39AEmJx43AVmpSZhkpO1sNiq
-X-Google-Smtp-Source: ABdhPJwB5E1AU8zrdU9CCG/fjfh2BsS7a4F0VMUcpJiVYYFQPquanL1yleesfXtFvnZRlXmz+6Ht8A==
-X-Received: by 2002:a05:600c:1e13:b0:394:5cdd:e8e6 with SMTP id ay19-20020a05600c1e1300b003945cdde8e6mr13753489wmb.108.1652431964605;
-        Fri, 13 May 2022 01:52:44 -0700 (PDT)
-Received: from [192.168.0.169] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id v3-20020adf8b43000000b0020c5253d8c2sm1627008wra.14.2022.05.13.01.52.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 May 2022 01:52:44 -0700 (PDT)
-Message-ID: <8b441f8f-7aa2-0fab-9b90-6618a1e8c899@linaro.org>
-Date:   Fri, 13 May 2022 10:52:42 +0200
+        with ESMTP id S1358383AbiEMJJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 05:09:55 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FA216A5C4;
+        Fri, 13 May 2022 02:09:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:Subject:
+        From:References:Cc:To:MIME-Version:Date:Message-ID:Sender:Reply-To:Content-ID
+        :Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:
+        Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe
+        :List-Post:List-Owner:List-Archive;
+        bh=3U+GKVWVVieM5BCte0/UQ+iZa5RQpeyFhWbAlOz3aXA=; b=TdL31caCb5Fwvit2w4hepVTGEb
+        TF1w5lCjdn074ogWuPO+5/kPsSI5QcSa+OnJc2/EmBgIWV/D+xODWstOL83MIj2kqmiDVwpnYd26z
+        V6dK8aGEqr3m0xgMaKQRWr/dx3CY/U96I4W7nAIO+Y2ql4qcIbViHx1azH13Cjfgp5xs=;
+Received: from p200300daa70ef2007c2a1ceaba82ff54.dip0.t-ipconnect.de ([2003:da:a70e:f200:7c2a:1cea:ba82:ff54] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1npRJ1-00074J-KQ; Fri, 13 May 2022 11:09:51 +0200
+Message-ID: <88da25b7-0cd0-49df-c09e-8271618ba50f@nbd.name>
+Date:   Fri, 13 May 2022 11:09:51 +0200
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC net-next] dt-bindings: net: xilinx: document xilinx emaclite
- driver binding
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
 Content-Language: en-US
-To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, harini.katakam@xilinx.com
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, git@xilinx.com
-References: <1652373596-5994-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <1652373596-5994-1-git-send-email-radhey.shyam.pandey@xilinx.com>
-Content-Type: text/plain; charset=UTF-8
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        Jo-Philipp Wich <jo@mein.io>
+References: <20220510202739.67068-1-nbd@nbd.name> <Yn4NnwAkoVryQtCK@salvia>
+ <b1fd2a80-f629-48a3-7466-0e04f2c531df@nbd.name> <Yn4TmdzQPUQ4TRUr@salvia>
+From:   Felix Fietkau <nbd@nbd.name>
+Subject: Re: [RFC] netfilter: nf_tables: ignore errors on flowtable device hw
+ offload setup
+In-Reply-To: <Yn4TmdzQPUQ4TRUr@salvia>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12/05/2022 18:39, Radhey Shyam Pandey wrote:
-> Add basic description for the xilinx emaclite driver DT bindings.
+
+On 13.05.22 10:15, Pablo Neira Ayuso wrote:
+> On Fri, May 13, 2022 at 10:03:13AM +0200, Felix Fietkau wrote:
+>> 
+>> On 13.05.22 09:49, Pablo Neira Ayuso wrote:
+>> > Hi,
+>> > 
+>> > On Tue, May 10, 2022 at 10:27:39PM +0200, Felix Fietkau wrote:
+>> > > In many cases, it's not easily possible for user space to know, which
+>> > > devices properly support hardware offload.
+>> > 
+>> > Then, it is a matter of extending the netlink interface to expose this
+>> > feature? Probably add a FLOW_BLOCK_PROBE or similar which allow to
+>> > consult if this feature is available?
+>> > 
+>> > > Even if a device supports hardware flow offload, it is not
+>> > > guaranteed that it will actually be able to handle the flows for
+>> > > which hardware offload is requested.
+>> > 
+>> > When might this happen?
+>>
+>> I think there are many possible reasons: The flow might be using features
+>> not supported by the offload driver. Maybe it doesn't have any space left in
+>> the offload table. I'm sure there are many other possible reasons it could
+>> fail.
 > 
-> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> ---
->  .../bindings/net/xlnx,emaclite.yaml           | 60 +++++++++++++++++++
->  1 file changed, 60 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> This fallback to software flowtable path for partial scenarios already
+> exists.
+I know. All I meant was to point out that hardware offload is not 
+guaranteed in one place, so I don't think bailing out with an error 
+because flow block bind didn't work for one of the flowtable devices is 
+justified.
 
-Why is this RFC? Do you expect DT maintainers review or not? Maybe there
-is no point for us to review something which is not going to be applied?
-
+>> > > Ignoring errors on the FLOW_BLOCK_BIND makes it a lot easier to set up
+>> > > configurations that use hardware offload where possible and gracefully
+>> > > fall back to software offload for everything else.
+>> > 
+>> > I understand this might be useful from userspace perspective, because
+>> > forcing the user to re-try is silly.
+>> > 
+>> > However, on the other hand, the user should have some way to know from
+>> > the control plane that the feature (hardware offload) that they
+>> > request is not available for their setup.
+>>
+>> In my opinion, most users of this API probably don't care and just want to
+>> have offload on a best effort basis.
 > 
-> diff --git a/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
-> new file mode 100644
-> index 000000000000..a3e2a0e89b24
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
-> @@ -0,0 +1,60 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/xlnx,emaclite.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Xilinx Emaclite Ethernet controller
-> +
-> +maintainers:
-> +  - Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> +  - Harini Katakam <harini.katakam@xilinx.com>
-> +
+> OK, but if the setup does not support hardware offload at all, why
+> should the control plane accept this? I think user should know in
+> first place that no one single flow is going to be offloaded to
+> hardware.
+It makes for a much cleaner configuration if you can just create a 
+single hw-offload enabled flowtable containing multiple devices, some of 
+which support hardware offload and some of which don't.
 
-You should include ethernet controller schema.
+>> Assuming that is the case, wouldn't it be better if we simply have
+>> an API that indicates, which flowtable members hardware offload was
+>> actually enabled for?
+> 
+> What are you proposing?
+> 
+> I think it would be good to expose through netlink interface what the
+> device can actually do according to the existing supported flowtable
+> software datapath features.
+In addition to the NFTA_FLOWTABLE_HOOK_DEVS array, the netlink API could 
+also return another array, e.g. NFTA_FLOWTABLE_HOOK_OFFLOAD_DEVS which 
+indicates devices for which hw offload is enabled.
 
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - xlnx,opb-ethernetlite-1.01.a
-> +      - xlnx,opb-ethernetlite-1.01.b
-> +      - xlnx,xps-ethernetlite-1.00.a
-> +      - xlnx,xps-ethernetlite-2.00.a
-> +      - xlnx,xps-ethernetlite-2.01.a
-> +      - xlnx,xps-ethernetlite-3.00.a
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  phy-handle: true
-> +
-> +  local-mac-address: true
-> +
-> +  xlnx,tx-ping-pong:
-> +    type: boolean
-> +    description: hardware supports tx ping pong buffer.
-> +
-> +  xlnx,rx-ping-pong:
-> +    type: boolean
-> +    description: hardware supports rx ping pong buffer.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - phy-handle
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    axi_ethernetlite_1: ethernet@40e00000 {
-> +            compatible = "xlnx,xps-ethernetlite-3.00.a";
+What I really don't like about the current state of the flowtable 
+offload API is the (in my opinion completely unnecessary) complexity 
+that is required for the simple use case of enabling hw/sw flow 
+offloading on a best effort basis for all devices.
+What I like even less is the number of implementation details that it 
+has to consider.
 
-4-space indentation for DTS, please.
+For example: Let's assume we have a machine with several devices, some 
+of which support hw offload, some of which don't. We have a mix of VLANs 
+and bridges in there as well, maybe even PPPoE.
+Now the admin of that machine wants to enable best-effort hardware + 
+software flow offloading for that configuration.
+Now he (or a piece of user space software dealing with the config) has 
+to do these things:
+- figure out which devices could support hw offload, create a separate 
+flow table for them
+- be aware of which of these devices are actually used by looking at the 
+stack of bridges, vlans, dsa devices, etc.
+- if an error occurs, test them individually just to see which one 
+actually failed and leave it out of the flowtable
+- for sw offload be aware that there is limited support for offloading 
+decap of vlans/pppoe, count the number of decaps and figure out the 
+right input device to add based on the behavior of nft_dev_path_info, so 
+that the 'indev' it selects matches the device you put in the flow table.
 
-> +            interrupt-parent = <&axi_intc_1>;
-> +            interrupts = <1 0>;
-> +            local-mac-address = [00 0a 35 00 00 00];
-> +            phy-handle = <&phy0>;
-> +            reg = <0x40e00000 0x10000>;
-> +            xlnx,rx-ping-pong;
-> +            xlnx,tx-ping-pong;
-> +    };
+So I'm asking you: Am I getting any of this completely wrong? Do you 
+consider it to be a reasonable trade-off to force the admin (or 
+intermediate user space layer) to jump through these hoops for such a 
+simple use case, just because somebody might want more fine grained control?
 
+I consider this patch to be a first step towards making simple use cases 
+easier to configure. I'd also be fine with adding a flag to make the 
+fallback behavior opt-in, even though I think it would make a much 
+better default.
 
-Best regards,
-Krzysztof
+Eventually I'd also like to add a flag that makes it unnecessary to even 
+specify the devices in the flow table by making the code auto-create 
+hooks for devices with active flows, just like I did in my xtables target.
+You correctly pointed out to me in the past that this comes at the cost 
+of a few packets delay before offloading kicks in, but I'm still 
+wondering: who actually cares about that?
+
+If I'm completely off-base with this, please let me know. I'm simply 
+trying to make sense of all of this...
+
+- Felix
