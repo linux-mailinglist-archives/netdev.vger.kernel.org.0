@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC968525E26
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 11:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0705F525E62
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 11:19:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378551AbiEMIsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 04:48:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37928 "EHLO
+        id S1378544AbiEMIsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 04:48:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348408AbiEMIsR (ORCPT
+        with ESMTP id S1378374AbiEMIsR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 04:48:17 -0400
 Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D3613C4F8
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B7786A044
         for <netdev@vger.kernel.org>; Fri, 13 May 2022 01:48:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1652431696; x=1683967696;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=SJaPkf8Mk7kpG7XQCleu+n6NzoT1H5nVd6tbpV/3If8=;
-  b=XtbDPAsJznzEKIoISy5EEjC26CX/kaxlcMXSip0Alvm9My3EQCyMzgCl
-   SzNmuG0dQIA++PJDvTkjvH3KXfMxoFaxxYRtNcznGa2FQ/XL+NfFhN6np
-   efeUPPziPPyOztVvGOeFDQBbgIbVi9F09wTpo6GixpEFuql6KejXv6M66
-   7N005mOItf/P27Pa+4/QjIIM0uDgOJWsBkJ5bdLwDlggrQPGzcesduAqp
-   bydDkrhGpR1mozWFc33uR9EFKx1h8vUhNmZBgtoDLhFh97H94uhTLUdpq
-   oO30X7yFvhVR/iBnI7LMusWYhQk+av1ugIF1oyiZ+hZil9C8SosguDIMe
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="356682846"
+  bh=zjM2lpnVEzgr9EqxgfBHSEFdupKbJYQ6DivWQeNJjbk=;
+  b=kKfW8OjlD1WV3bQpAN6VsNWtg+SitPb0RZPFHSwWX5cWwXYs8W1DBv+l
+   nwtuQV84AZKKPyuB+JuRosRtSHJn4XDr22/mScTtHydEnRhkIEK/Vl1/f
+   QDpHKI+gz4KaRKuB1tjK8q7nvLyWcCXhHcEE1Qj9GfwtfS/UE/STWgu19
+   9fzGTEJZx+4dPkOpOVOoLN/DR0uBp5bUmaoH+ccpSVD5bxAEYof+SzuxK
+   NPjDn2Da4OPxaJSmTKnkD99uOMbq+/F6wHALI8aOB2YP8nMoGQLhVYVP5
+   H4fWrDdxA9iNfCDHsL1bdBrEWMfwxTqkLQf7nBJuA8rkWp2cxNIB4iAZ4
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10345"; a="356682848"
 X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="356682846"
+   d="scan'208";a="356682848"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 01:48:05 -0700
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 01:48:07 -0700
 X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
-   d="scan'208";a="595122609"
+   d="scan'208";a="595122619"
 Received: from unknown (HELO ocsbesrhlrepo01.amr.corp.intel.com) ([10.240.193.73])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 01:48:03 -0700
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 May 2022 01:48:05 -0700
 From:   Zhu Lingshan <lingshan.zhu@intel.com>
 To:     jasowang@redhat.com, mst@redhat.com
 Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         Zhu Lingshan <lingshan.zhu@intel.com>
-Subject: [RFC 1/6] vDPA/ifcvf: get_config_size should return a value no greater than dev implementation
-Date:   Fri, 13 May 2022 16:39:30 +0800
-Message-Id: <20220513083935.1253031-2-lingshan.zhu@intel.com>
+Subject: [RFC 2/6] vDPA/ifcvf: support userspace to query features and MQ of a management device
+Date:   Fri, 13 May 2022 16:39:31 +0800
+Message-Id: <20220513083935.1253031-3-lingshan.zhu@intel.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220513083935.1253031-1-lingshan.zhu@intel.com>
 References: <20220513083935.1253031-1-lingshan.zhu@intel.com>
@@ -58,64 +58,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ifcvf_get_config_size() should return a virtio device type specific value,
-however the ret_value should not be greater than the onboard size of
-the device implementation. E.g., for virtio_net, config_size should be
-the minimum value of sizeof(struct virtio_net_config) and the onboard
-cap size.
+Adapting to current netlink interfaces, this commit allows userspace
+to query feature bits and MQ capability of a management device.
 
 Signed-off-by: Zhu Lingshan <lingshan.zhu@intel.com>
 ---
- drivers/vdpa/ifcvf/ifcvf_base.c | 8 ++++++--
- drivers/vdpa/ifcvf/ifcvf_base.h | 2 ++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ drivers/vdpa/ifcvf/ifcvf_base.c | 12 ++++++++++++
+ drivers/vdpa/ifcvf/ifcvf_base.h |  1 +
+ drivers/vdpa/ifcvf/ifcvf_main.c |  3 +++
+ 3 files changed, 16 insertions(+)
 
 diff --git a/drivers/vdpa/ifcvf/ifcvf_base.c b/drivers/vdpa/ifcvf/ifcvf_base.c
-index 48c4dadb0c7c..6bccc8291c26 100644
+index 6bccc8291c26..7be703b5d1f4 100644
 --- a/drivers/vdpa/ifcvf/ifcvf_base.c
 +++ b/drivers/vdpa/ifcvf/ifcvf_base.c
-@@ -128,6 +128,7 @@ int ifcvf_init_hw(struct ifcvf_hw *hw, struct pci_dev *pdev)
- 			break;
- 		case VIRTIO_PCI_CAP_DEVICE_CFG:
- 			hw->dev_cfg = get_cap_addr(hw, &cap);
-+			hw->cap_dev_config_size = le32_to_cpu(cap.length);
- 			IFCVF_DBG(pdev, "hw->dev_cfg = %p\n", hw->dev_cfg);
- 			break;
- 		}
-@@ -233,15 +234,18 @@ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features)
- u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
- {
- 	struct ifcvf_adapter *adapter;
-+	u32 net_config_size = sizeof(struct virtio_net_config);
-+	u32 blk_config_size = sizeof(struct virtio_blk_config);
-+	u32 cap_size = hw->cap_dev_config_size;
- 	u32 config_size;
+@@ -341,6 +341,18 @@ int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num)
+ 	return 0;
+ }
  
- 	adapter = vf_to_adapter(hw);
- 	switch (hw->dev_type) {
- 	case VIRTIO_ID_NET:
--		config_size = sizeof(struct virtio_net_config);
-+		config_size = cap_size >= net_config_size ? net_config_size : cap_size;
- 		break;
- 	case VIRTIO_ID_BLOCK:
--		config_size = sizeof(struct virtio_blk_config);
-+		config_size = cap_size >= blk_config_size ? blk_config_size : cap_size;
- 		break;
- 	default:
- 		config_size = 0;
++u16 ifcvf_get_max_vq_pairs(struct ifcvf_hw *hw)
++{
++	struct virtio_net_config __iomem *config;
++	u16 val, mq;
++
++	config  = (struct virtio_net_config __iomem *)hw->dev_cfg;
++	val = vp_ioread16((__le16 __iomem *)&config->max_virtqueue_pairs);
++	mq = le16_to_cpu((__force __le16)val);
++
++	return mq;
++}
++
+ static int ifcvf_hw_enable(struct ifcvf_hw *hw)
+ {
+ 	struct virtio_pci_common_cfg __iomem *cfg;
 diff --git a/drivers/vdpa/ifcvf/ifcvf_base.h b/drivers/vdpa/ifcvf/ifcvf_base.h
-index 115b61f4924b..f5563f665cc6 100644
+index f5563f665cc6..d54a1bed212e 100644
 --- a/drivers/vdpa/ifcvf/ifcvf_base.h
 +++ b/drivers/vdpa/ifcvf/ifcvf_base.h
-@@ -87,6 +87,8 @@ struct ifcvf_hw {
- 	int config_irq;
- 	int vqs_reused_irq;
- 	u16 nr_vring;
-+	/* VIRTIO_PCI_CAP_DEVICE_CFG size */
-+	u32 cap_dev_config_size;
- };
+@@ -130,6 +130,7 @@ u64 ifcvf_get_hw_features(struct ifcvf_hw *hw);
+ int ifcvf_verify_min_features(struct ifcvf_hw *hw, u64 features);
+ u16 ifcvf_get_vq_state(struct ifcvf_hw *hw, u16 qid);
+ int ifcvf_set_vq_state(struct ifcvf_hw *hw, u16 qid, u16 num);
++u16 ifcvf_get_max_vq_pairs(struct ifcvf_hw *hw);
+ struct ifcvf_adapter *vf_to_adapter(struct ifcvf_hw *hw);
+ int ifcvf_probed_virtio_net(struct ifcvf_hw *hw);
+ u32 ifcvf_get_config_size(struct ifcvf_hw *hw);
+diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+index 4366320fb68d..0c3af30b297e 100644
+--- a/drivers/vdpa/ifcvf/ifcvf_main.c
++++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+@@ -786,6 +786,9 @@ static int ifcvf_vdpa_dev_add(struct vdpa_mgmt_dev *mdev, const char *name,
+ 	vf->hw_features = ifcvf_get_hw_features(vf);
+ 	vf->config_size = ifcvf_get_config_size(vf);
  
- struct ifcvf_adapter {
++	ifcvf_mgmt_dev->mdev.max_supported_vqs = ifcvf_get_max_vq_pairs(vf);
++	ifcvf_mgmt_dev->mdev.supported_features = vf->hw_features;
++
+ 	adapter->vdpa.mdev = &ifcvf_mgmt_dev->mdev;
+ 	ret = _vdpa_register_device(&adapter->vdpa, vf->nr_vring);
+ 	if (ret) {
 -- 
 2.31.1
 
