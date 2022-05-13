@@ -2,92 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75EFA525EFE
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 12:07:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4805D525F8B
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 12:08:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379143AbiEMJwu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 05:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33978 "EHLO
+        id S1379249AbiEMKH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 06:07:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351638AbiEMJws (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 05:52:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C97ED6A42A
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 02:52:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652435566;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=QhMj9dRMHoO9LZCNH8LqQ27GRVAk0pG5E3kR76KvUgk=;
-        b=bQnz04g6zw51KOhi73U7N0UNtdzRcn3GT+5rggICZqKXvi5Otr9QHHfzvjSN7HEmHKtEzG
-        QXW98sKqus079iiTFCMGbkK0yX6U1j8XPDBZSVg7/N0eFV1qybF7zgmPMhZgvEIWqSrzc8
-        zPXsiEBbDMlJIhYM5PvVz0Atmki7Qk8=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-92-IsPUjOmLNdKMWUCVtdJZHQ-1; Fri, 13 May 2022 05:52:45 -0400
-X-MC-Unique: IsPUjOmLNdKMWUCVtdJZHQ-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S1359219AbiEMKHz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 06:07:55 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23E66AA46;
+        Fri, 13 May 2022 03:07:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5FCA83C0D19B;
-        Fri, 13 May 2022 09:52:45 +0000 (UTC)
-Received: from renaissance-vector.redhat.com (unknown [10.39.194.252])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 41AE140D2820;
-        Fri, 13 May 2022 09:52:44 +0000 (UTC)
-From:   Andrea Claudi <aclaudi@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com, lucien.xin@gmail.com
-Subject: [PATCH iproute2] tipc: fix keylen check
-Date:   Fri, 13 May 2022 11:52:30 +0200
-Message-Id: <9e21220e872dc70dbcd8d4dcba38c3a607052d6e.1652435398.git.aclaudi@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 636066222D;
+        Fri, 13 May 2022 10:07:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D07AC34100;
+        Fri, 13 May 2022 10:07:53 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LwDOuIuH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1652436471;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7N1zyXIi+oMbfwTrQnEnFevk7qISh3+9W8x85t6Q8bY=;
+        b=LwDOuIuHymjucObEZc6dI/e+wZ50PeYNASM60HYX9wYpZsJIZvBVBqAtCFcZsR844wLYPa
+        rCG3RtG3UnuMYyVc6ym4HNSTqGtQD7PeAmohnOeVmGeqSWOj+uHuBU/DUldfXPFlyIREl7
+        S5KBsIdtQEDxVpxILA3yK/51DIhVYMY=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ae4f983b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Fri, 13 May 2022 10:07:51 +0000 (UTC)
+Date:   Fri, 13 May 2022 12:07:49 +0200
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+To:     Dominik Brodowski <linux@dominikbrodowski.net>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Theodore Ts'o <tytso@mit.edu>
+Subject: Re: [PATCH] random32: use real rng for non-deterministic randomness
+Message-ID: <Yn4t9S71LhI8W0ek@zx2c4.com>
+References: <20220511143257.88442-1-Jason@zx2c4.com>
+ <Yn34Tf4CpSaZBlGi@owl.dominikbrodowski.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yn34Tf4CpSaZBlGi@owl.dominikbrodowski.net>
+X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Key length check in str2key() is wrong for hex. Fix this using the
-proper hex key length.
+Hi Dominik,
 
-Fixes: 28ee49e5153b ("tipc: bail out if key is abnormally long")
-Suggested-by: Xin Long <lucien.xin@gmail.com>
-Signed-off-by: Andrea Claudi <aclaudi@redhat.com>
----
- tipc/misc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+On Fri, May 13, 2022 at 08:18:53AM +0200, Dominik Brodowski wrote:
+> Nice! However, wouldn't it be much better to clean up the indirection
+> introduced here as well? prandom_u32() as wrapper for get_random_u32() and
+> prandom_bytes() as wrapper for get_random_bytes() seems unnecessary...
 
-diff --git a/tipc/misc.c b/tipc/misc.c
-index 909975d8..6175bf07 100644
---- a/tipc/misc.c
-+++ b/tipc/misc.c
-@@ -113,16 +113,15 @@ int str2key(char *str, struct tipc_aead_key *key)
- 	    }
- 	}
- 
--	if (len > TIPC_AEAD_KEYLEN_MAX)
-+	key->keylen = ishex ? (len + 1) / 2 : len;
-+	if (key->keylen > TIPC_AEAD_KEYLEN_MAX)
- 		return -1;
- 
- 	/* Obtain key: */
- 	if (!ishex) {
--		key->keylen = len;
- 		memcpy(key->key, str, len);
- 	} else {
- 		/* Convert hex string to key */
--		key->keylen = (len + 1) / 2;
- 		for (i = 0; i < key->keylen; i++) {
- 			if (i == 0 && len % 2 != 0) {
- 				if (sscanf(str, "%1hhx", &key->key[0]) != 1)
--- 
-2.35.3
+Yes; we can look at tree-wide changes for 5.20. The first step in making
+tree-wide changes is filling in the old function with an inline wrapper,
+which then gets removed as part of the last step after all the other
+patches have landed. That's a huge process, so this is just step one.
 
+Jason
