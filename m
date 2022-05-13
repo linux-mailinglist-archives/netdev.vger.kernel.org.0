@@ -2,201 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14589526670
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:44:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8195952667A
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382187AbiEMPop (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 11:44:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36384 "EHLO
+        id S1381391AbiEMPr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 11:47:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42990 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382189AbiEMPol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:44:41 -0400
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65FE73A735
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:44:38 -0700 (PDT)
-Received: by mail-pj1-x1032.google.com with SMTP id cq17-20020a17090af99100b001dc0386cd8fso8108383pjb.5
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:44:38 -0700 (PDT)
+        with ESMTP id S1346700AbiEMPr4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:47:56 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADA9B36FD
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:47:55 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id dv4so6922577qvb.13
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:47:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ptf+f5eGDE5JGEu9b++jcke6m+bu7vV+b5hUvmlYQQo=;
-        b=SjhK1c9Qotr1qDOqwKlBj3Rw1mlIdcXMiMnONLsDWXIlWQego7JtnDd+2u8lNhcb5o
-         VntS/+cGhwP5NiXqFa0xo4Eurcd+QW1c6ntV0GvlsEyq5axRcQY1ctFnycyCWVGns4We
-         RoLfLtxqMSNKYzeck8DbrFFmqTXggtzGcj49k=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZVPMWm25zOhHcKK3aV2ODKA4z42m9j9F3+XivUMKUKM=;
+        b=YGKh+SU34NkzMQcCAzKbJ04fSlI1JfgG5iMYeSxt2tifmnjFafQTf5kbjXYDyT8JRc
+         7udqoWKoPDjPKf04SRiOJHOW/S8cGv117YuPbRPIVVwEG5Q3bn48LwkgViLXdnRiwjhb
+         cltmzzXgtJe2pyoamKOo5VlvmUBsOiAPQZpSdZo/2RsJiaQn7YBMONEhqyOLc9rqad9m
+         lw1HL1zxgIF8J7xLa+I2qTzf69rLML7bLO0oS6e0dVNWic4SsYBXk5rT6Bal/ZpnFkap
+         GOHQVorL+lecf5bmfcwNb1W5Y+hwgJsFiqxDUz+rMwAsuJFnABp5fkDUeeD6rljMv5Fj
+         77SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ptf+f5eGDE5JGEu9b++jcke6m+bu7vV+b5hUvmlYQQo=;
-        b=4RPR8/biVOolojE5FLM2M85T9yy8E7O3PAuazoNmgGv39bDgzaCKIE88QWZjZR8xLI
-         qOFLStmYoGzygBhEebcUqoj3r6PA7tzpGvMDcguUHGH8YnNBE90FHT6jDgZbqa9kyoAp
-         Bzh0U5HRMBJ7lt4aoQoqg+1OwIbZralyXYWJkQ5R/ZT0lGC9je1jHL1O9VRoCudNp2ms
-         aPUN/yehTEDp/Mm3hg5WAqYb6bQIUH4cPf1aiNI1oqhFGabMF35EYIHaqYVaJ2SOmFy6
-         JUinlT1uLsTmJ+h8rmaxsuCa8gD8erLghEy5rIO/SlfL2XeSih8KQJEuGHMpvS2dfRJz
-         9obQ==
-X-Gm-Message-State: AOAM532rzVwjTYjwO1ul0hUBM4D+TsndJ6/VZTIY1eXHLOaoBxNzuoxy
-        k6WH0OZSkUbZmY7X3wUeG21jtA==
-X-Google-Smtp-Source: ABdhPJxasBICZO798rz+17+y+t9nZitCCqENVQI5RwTabPKWbsVJ7C2OmZDJ+yTA2ILgpXFaCw37jw==
-X-Received: by 2002:a17:902:ecc8:b0:15e:9e46:cb7e with SMTP id a8-20020a170902ecc800b0015e9e46cb7emr5389423plh.111.1652456677896;
-        Fri, 13 May 2022 08:44:37 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q6-20020a170902a3c600b0015e8d4eb1c9sm2059662plb.19.2022.05.13.08.44.36
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZVPMWm25zOhHcKK3aV2ODKA4z42m9j9F3+XivUMKUKM=;
+        b=5VVYTmemKveHGG1K0OH/O5ZJMEmzbOJWKXy2CksDpFw71zVTNG2ZechmjJSGCY6bTf
+         P5Sm+UhP7OLlwSdDw8BmQ2uNWI2KL7ilE53KIDQyF9loZscaldaW6tkY+MusLB6CrQjo
+         NgVUAq2y0ckYYFvOa0KcQnzBvAJxV62pFdmQ+/D+S92k8skiQJlntNhDo4z4mnGf5lnM
+         RiUS9i8LlMMvHTLTjARkxOH0p66ZyYyK/RC7vA7rSnWPbm2/w24Volai1+Yz8WcCY2CA
+         xPsItT273QYGOYbCQ8KXNGUH0GFsPEIoszRQJTVWtWLCf/m9J54LWjxaKiQEAzOCcg4M
+         P04g==
+X-Gm-Message-State: AOAM533PDnNsIS7X0a768TSRVl+Yf+GeJ3RR9BNsLG+KZiSFsMP7me6O
+        NT0YyCc8Y6MpOF9Mkht4/20dtyhFxT2bsQ==
+X-Google-Smtp-Source: ABdhPJwO61hyMqTHL1HH0oaeepWKWLAGICoQY6cUJ+SScqSMI4SSS2E95S8h2liXG/h3labSWluM/A==
+X-Received: by 2002:a0c:9c08:0:b0:45a:a2a1:62e4 with SMTP id v8-20020a0c9c08000000b0045aa2a162e4mr4850203qve.114.1652456874599;
+        Fri, 13 May 2022 08:47:54 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id a66-20020a37b145000000b0069fc13ce231sm1533762qkf.98.2022.05.13.08.47.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:44:37 -0700 (PDT)
-Date:   Fri, 13 May 2022 08:44:33 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, Alexei Starovoitov <ast@kernel.org>,
-        alsa-devel@alsa-project.org, Al Viro <viro@zeniv.linux.org.uk>,
-        Andrew Gabbasov <andrew_gabbasov@mentor.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Gross <agross@kernel.org>,
-        Andy Lavr <andy.lavr@gmail.com>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Bradley Grove <linuxdrivers@attotech.com>,
-        brcm80211-dev-list.pdl@broadcom.com,
-        Christian Brauner <brauner@kernel.org>,
-        Christian =?iso-8859-1?Q?G=F6ttsche?= <cgzones@googlemail.com>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Chris Zankel <chris@zankel.net>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Daniel Axtens <dja@axtens.net>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Dan Williams <dan.j.williams@intel.com>,
-        David Gow <davidgow@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
-        devicetree@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        Dmitry Kasatkin <dmitry.kasatkin@gmail.com>,
-        Eli Cohen <elic@nvidia.com>,
+        Fri, 13 May 2022 08:47:54 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
         Eric Dumazet <edumazet@google.com>,
-        Eric Paris <eparis@parisplace.org>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Gregory Greenman <gregory.greenman@intel.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Hulk Robot <hulkci@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        James Morris <jmorris@namei.org>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        John Keeping <john@metanate.com>,
-        Juergen Gross <jgross@suse.com>, Kalle Valo <kvalo@kernel.org>,
-        Keith Packard <keithp@keithp.com>, keyrings@vger.kernel.org,
-        kunit-dev@googlegroups.com,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Leon Romanovsky <leon@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux1394-devel@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-hardening@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-scsi@vger.kernel.org, linux-security-module@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-xtensa@linux-xtensa.org, llvm@lists.linux.dev,
-        Loic Poulain <loic.poulain@linaro.org>,
-        Louis Peens <louis.peens@corigine.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Mark Brown <broonie@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Nathan Chancellor <nathan@kernel.org>, netdev@vger.kernel.org,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Rich Felker <dalias@aerifal.cx>,
-        Rob Herring <robh+dt@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, selinux@vger.kernel.org,
-        "Serge E. Hallyn" <serge@hallyn.com>,
-        SHA-cyfmac-dev-list@infineon.com,
-        Simon Horman <simon.horman@corigine.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stefan Richter <stefanr@s5r6.in-berlin.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Stephen Smalley <stephen.smalley.work@gmail.com>,
-        Tadeusz Struk <tadeusz.struk@linaro.org>,
-        Takashi Iwai <tiwai@suse.com>, Tom Rix <trix@redhat.com>,
-        Udipto Goswami <quic_ugoswami@quicinc.com>,
-        Vincenzo Frascino <vincenzo.frascino@arm.com>,
-        wcn36xx@lists.infradead.org, Wei Liu <wei.liu@kernel.org>,
-        xen-devel@lists.xenproject.org,
-        Xiu Jianfeng <xiujianfeng@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>
-Subject: Re: [PATCH 19/32] afs: Use mem_to_flex_dup() with struct afs_acl
-Message-ID: <202205130841.686F21B64@keescook>
-References: <20220504014440.3697851-20-keescook@chromium.org>
- <20220504014440.3697851-1-keescook@chromium.org>
- <898803.1652391665@warthog.procyon.org.uk>
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCH ipsec] xfrm: set dst dev to blackhole_netdev instead of loopback_dev in ifdown
+Date:   Fri, 13 May 2022 11:47:53 -0400
+Message-Id: <01a8af8654b87058ecd421e471d760a43784ab96.1652456873.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <898803.1652391665@warthog.procyon.org.uk>
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 12, 2022 at 10:41:05PM +0100, David Howells wrote:
-> 
-> Kees Cook <keescook@chromium.org> wrote:
-> 
-> >  struct afs_acl {
-> > -	u32	size;
-> > -	u8	data[];
-> > +	DECLARE_FLEX_ARRAY_ELEMENTS_COUNT(u32, size);
-> > +	DECLARE_FLEX_ARRAY_ELEMENTS(u8, data);
-> >  };
-> 
-> Oof...  That's really quite unpleasant syntax.  Is it not possible to have
-> mem_to_flex_dup() and friends work without that?  You are telling them the
-> fields they have to fill in.
+The global blackhole_netdev has replaced pernet loopback_dev to become the
+one given to the object that holds an netdev when ifdown in many places of
+ipv4 and ipv6 since commit 8d7017fd621d ("blackhole_netdev: use
+blackhole_netdev to invalidate dst entries").
 
-Other threads discussed this too. I'm hoping to have something more
-flexible (pardon the pun) in v2.
+Especially after commit faab39f63c1f ("net: allow out-of-order netdev
+unregistration"), it's no longer safe to use loopback_dev that may be
+freed before other netdev.
 
-> [...]
-> or:
-> 
-> 	ret = mem_to_flex_dup(&acl, buffer, size, GFP_KERNEL);
-> 	if (ret < 0)
-> 
-> (or use != 0 rather than < 0)
+This patch is to set dst dev to blackhole_netdev instead of loopback_dev
+in ifdown.
 
-Sure, I can make the tests more explicit. The kerndoc, etc all shows it's
-using < 0 for errors.
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/xfrm/xfrm_policy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 00bd0ecff5a1..f1876ea61fdc 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3744,7 +3744,7 @@ static int stale_bundle(struct dst_entry *dst)
+ void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev)
+ {
+ 	while ((dst = xfrm_dst_child(dst)) && dst->xfrm && dst->dev == dev) {
+-		dst->dev = dev_net(dev)->loopback_dev;
++		dst->dev = blackhole_netdev;
+ 		dev_hold(dst->dev);
+ 		dev_put(dev);
+ 	}
 -- 
-Kees Cook
+2.31.1
+
