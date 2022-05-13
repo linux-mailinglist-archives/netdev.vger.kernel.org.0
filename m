@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D95A05269AB
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 20:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AF805269A6
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 20:56:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383459AbiEMS4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 14:56:15 -0400
+        id S1383444AbiEMS4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 14:56:20 -0400
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383447AbiEMS4E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 14:56:04 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE3986BFCB
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:01 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id 137so8299177pgb.5
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:01 -0700 (PDT)
+        with ESMTP id S1383454AbiEMS4N (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 14:56:13 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B38E6B7F6
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:03 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id p12so8492441pfn.0
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=81G4T+QmKwuwMVNq2fbxbqAa3jbgn5JPe3T0rgFTknQ=;
-        b=I6J6i4CU+WxNHLNysJLLGudVxa1buZIIWqgN4YB7eS21LdrSPMLDBQTuzS5TdGFKk7
-         +Vl5bDAieSUM5X4jl7mbuHf1443gn8aK7FJ63Y3tA2hhZZQoDWtfvuEdR+4LDbumF6jb
-         z1OEUFEE3fIrsbqw2fKfOCSlw89LLkUO1bbmWEdlHFlEidKhHYPM8aVNMtocUl/N8TUZ
-         rgRZFptWhyl6EdavxKKB6TkK1eY6NdKaG/IyrtQ3dviiSkgVdskH/f1BOCvY1D0lzswz
-         ing5qWv+ybzFdkzt7aoKG3r8WRlpVfy/99xs5gggKKV7H6BYh8nWy8RPBcpR167cKtyB
-         CPxg==
+        bh=A19XDJDBYsixko11EpPg6VqehJxYk2XrmEZVWrbhfVk=;
+        b=gBrPj/tZbX/3GK5iRqyczckOTmNGHak2YxDw3OeWDRhPZgVQUNy72l33XAmlO7Y1NY
+         xycLKoxfXLtzglmE8YaaTK+pOQwVPGJGpb4K7JRsx+Z8G1K0jbdrhtO82mCwQdK3Lzap
+         N0pA7As2f1XkE7Cb1b5KEEy2epUGbz9OXRK4dTRGEc7TgJtSyjgrRQRYtuzYP8nsQuS9
+         OrL9+IEX8dLzfA8/88VeSd56KowEqLaroeGk8hQOz9c4+BnwUQdkaslOxP8xKa7itYj0
+         MV/i/HODdDvEmj7S4iowaEa3N8xRVYAGCyAwTrxGvUrjt/L08RtVdcqDq48t+YfA1ScB
+         ucvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=81G4T+QmKwuwMVNq2fbxbqAa3jbgn5JPe3T0rgFTknQ=;
-        b=ogUsl9f3eqLW7wuKOSprDza1KDUuI1F05Rdfv+3ariJ5K7Xlo4xIfdlF16m78UbP5V
-         ROQec1LLU0rZI00T2bJVWA8lAoTJPOytNbu6sG/mEsb4OsTyr/luLSWOaC7sBIcTOi84
-         bylbx/6bj0ZKqOcqMHkEwkvju56uojL+u9VVscCTodqvGWr/6SYT98vsG+5Q8oNcsenH
-         rElDg/+qTedM1xLjJU1+aPcX4zUMXu1PqpuwlPBAy8jbT47ybvJY9CNJ85/OxX8FIJbM
-         pSkqq/miRf+6Zrmoehvy17eb1r/R7Ue89BH1ZO2jhyZ58fK3Z5nZ5O0hEvsA1A9eTd8p
-         4l7Q==
-X-Gm-Message-State: AOAM531vKaCkj10ju/tDPCSjZJzGFmIHLUDXHu8bntaNx+8ET6/y9spo
-        j4VgKS/4KDRVKvW5Kr36AuxbyEOYO84=
-X-Google-Smtp-Source: ABdhPJxMHHtG59pPGpruuB1htwux8AZfFavR7849v5iFFP9N+w6JQJJ2HzQUulxJ5hn4aMjBOIIBiw==
-X-Received: by 2002:a62:e80f:0:b0:50d:3693:43df with SMTP id c15-20020a62e80f000000b0050d369343dfmr6067466pfi.36.1652468161390;
-        Fri, 13 May 2022 11:56:01 -0700 (PDT)
+        bh=A19XDJDBYsixko11EpPg6VqehJxYk2XrmEZVWrbhfVk=;
+        b=w7Y0k5TmKtjSmHBEPptQ5vsj3C+I5qrMb5/3twRTHbm+dnxgzGqmq3u7JPSibEKRSp
+         Ua1QoCkXSLLQVR2aaV908SV9aKXEzPyFqmx2FlTF8xM1n1grvQdrj5g2PKv/MDQxVkzD
+         4X2vR0xfhWBRP5hPgW25+ZLlf1GNJbEFoeDgZ03X4pwcf4j4OQ6Z6s4h+1smBmj9a72n
+         98+CNHUUDJLysBY27GQYS/lU4JCHRc0OYgz+NDM8rEuFTQ7hc6PbAprYAebWdiuh9z70
+         u3VOX/IKXProQR5nEblmvIYr6bN6e5sqyyhY90yj6dVIPX/X0KOwb/lPpFe4dVcZriue
+         OjpQ==
+X-Gm-Message-State: AOAM5300+7cRQpGtJFSuxt8efVOkwQd11og9bki8zSPjSq8vCBk5A9fQ
+        ssMrG8sNqKnt4LIYIwCnI1U=
+X-Google-Smtp-Source: ABdhPJzceOAS1blBMRSvLjlJcqY1SP0aUEgz7A5H6nSmVvHnsSDd3DVGADEuAvYxxQDYCtGSEilMMA==
+X-Received: by 2002:a63:8ac7:0:b0:3aa:fa62:5a28 with SMTP id y190-20020a638ac7000000b003aafa625a28mr5117082pgd.400.1652468162665;
+        Fri, 13 May 2022 11:56:02 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c436:3fa3:479f:a7a])
-        by smtp.gmail.com with ESMTPSA id 2-20020a170902c10200b0015e8d4eb2absm2159537pli.245.2022.05.13.11.56.00
+        by smtp.gmail.com with ESMTPSA id 2-20020a170902c10200b0015e8d4eb2absm2159537pli.245.2022.05.13.11.56.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 11:56:01 -0700 (PDT)
+        Fri, 13 May 2022 11:56:02 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,9 +54,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 05/10] dccp: use READ_ONCE() to read sk->sk_bound_dev_if
-Date:   Fri, 13 May 2022 11:55:45 -0700
-Message-Id: <20220513185550.844558-6-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 06/10] inet: add READ_ONCE(sk->sk_bound_dev_if) in inet_csk_bind_conflict()
+Date:   Fri, 13 May 2022 11:55:46 -0700
+Message-Id: <20220513185550.844558-7-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
 In-Reply-To: <20220513185550.844558-1-eric.dumazet@gmail.com>
 References: <20220513185550.844558-1-eric.dumazet@gmail.com>
@@ -74,45 +74,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-When reading listener sk->sk_bound_dev_if locklessly,
-we must use READ_ONCE().
+inet_csk_bind_conflict() can access sk->sk_bound_dev_if for
+unlocked sockets.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/dccp/ipv4.c | 2 +-
- net/dccp/ipv6.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ net/ipv4/inet_connection_sock.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
-index 82696ab86f74fd61aae5f60a3e14e769fb21abf9..3074248721607541a707d2e27dc0dfb9ff68463f 100644
---- a/net/dccp/ipv4.c
-+++ b/net/dccp/ipv4.c
-@@ -628,7 +628,7 @@ int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
- 	sk_daddr_set(req_to_sk(req), ip_hdr(skb)->saddr);
- 	ireq->ir_mark = inet_request_mark(sk, skb);
- 	ireq->ireq_family = AF_INET;
--	ireq->ir_iif = sk->sk_bound_dev_if;
-+	ireq->ir_iif = READ_ONCE(sk->sk_bound_dev_if);
+diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
+index 1e5b53c2bb2670fc90b789e853458f5c86a00c27..53f5f956d9485df5cb863c8287c1fa9989bb29c9 100644
+--- a/net/ipv4/inet_connection_sock.c
++++ b/net/ipv4/inet_connection_sock.c
+@@ -155,10 +155,14 @@ static int inet_csk_bind_conflict(const struct sock *sk,
+ 	 */
  
- 	/*
- 	 * Step 3: Process LISTEN state
-diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
-index 4d95b6400915db56e1058099e6d7015d2d64647e..d717ef0def64a9f3321fc53107f421b70a21bd16 100644
---- a/net/dccp/ipv6.c
-+++ b/net/dccp/ipv6.c
-@@ -374,10 +374,10 @@ static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
- 		refcount_inc(&skb->users);
- 		ireq->pktopts = skb;
- 	}
--	ireq->ir_iif = sk->sk_bound_dev_if;
-+	ireq->ir_iif = READ_ONCE(sk->sk_bound_dev_if);
- 
- 	/* So that link locals have meaning */
--	if (!sk->sk_bound_dev_if &&
-+	if (!ireq->ir_iif &&
- 	    ipv6_addr_type(&ireq->ir_v6_rmt_addr) & IPV6_ADDR_LINKLOCAL)
- 		ireq->ir_iif = inet6_iif(skb);
- 
+ 	sk_for_each_bound(sk2, &tb->owners) {
+-		if (sk != sk2 &&
+-		    (!sk->sk_bound_dev_if ||
+-		     !sk2->sk_bound_dev_if ||
+-		     sk->sk_bound_dev_if == sk2->sk_bound_dev_if)) {
++		int bound_dev_if2;
++
++		if (sk == sk2)
++			continue;
++		bound_dev_if2 = READ_ONCE(sk2->sk_bound_dev_if);
++		if ((!sk->sk_bound_dev_if ||
++		     !bound_dev_if2 ||
++		     sk->sk_bound_dev_if == bound_dev_if2)) {
+ 			if (reuse && sk2->sk_reuse &&
+ 			    sk2->sk_state != TCP_LISTEN) {
+ 				if ((!relax ||
 -- 
 2.36.0.550.gb090851708-goog
 
