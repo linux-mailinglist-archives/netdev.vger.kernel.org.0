@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B7B35269A9
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 20:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9A235269AE
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 20:56:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383464AbiEMS4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 14:56:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43346 "EHLO
+        id S1383450AbiEMS4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 14:56:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383455AbiEMS4N (ORCPT
+        with ESMTP id S1383463AbiEMS4N (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 14:56:13 -0400
-Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7975C6BFDC
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:04 -0700 (PDT)
-Received: by mail-pg1-x534.google.com with SMTP id 202so8278443pgc.9
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:04 -0700 (PDT)
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7846BFFB
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:05 -0700 (PDT)
+Received: by mail-pf1-x436.google.com with SMTP id y41so8416643pfw.12
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=d5D8Q+LOxDZKyXKyV0E9bG7L/yCxQeBI9J1yCtvXJSs=;
-        b=GgZS4fFANbszLsJCc7K5kbqv27tdOgwjsTQg+1U6biokOUtdqTjVcc8FHF74uT2OWv
-         9baz9t7Av9ytiYaOFdXxXCYJpyGOPBgm5/AVw7qGTGucCX3HXfSIs1XVkb31AlKfbRAf
-         qPC8KB8ZlzIBQgCm8zKFNZNZOo9byLZGqDlf3QzI1W9lXIkQ5ABhD2VX5oFBl0LbelJl
-         A7i/18WXXtmQEX0Ts92Bmw8wMa2ZJ3C1WH/+lcTydFO5jYb9e7h249jk0AuAjUsJgs3f
-         SODrjeQ13UTn+CsogTjH6ac+g/Le4rC5QomeY2uysaEdDaPww4DujCv32K6wYkQn/InO
-         jQkA==
+        bh=bbzJfH0PErMCbd5F/OJ6qwc9WUXsd3JJD9CMV2tx8VI=;
+        b=J2zQ4e75hegVgqM2zyZZ6BPdnRgLY/8f70HMgTRyHfxd1bLe0y73pi4rAdJ/QZsInm
+         3AQykfUMMjhAnLfoJkn+GtNQEKoTeCBIaaDMl8FcJTFHC6vmgzq8lpwMdsAeVbw4hvdS
+         WkBDR2+rd3zzANjsEeciLsKeW/ZOMC2O5aLyBb+eLKiIHMuoqTwoU2yjcXsPI421xWK0
+         TZJw0qwvMl/qCbhMHUDUZtXwf7ZtDfVPfjl6yV6AwYvb4QyfXRHA3QIZe6ivQk3PPRVU
+         i5kxPMdQxtEogxHHfDVkMu5o1kq5HVf2naIhfVYbijtR/vo8yxMsT0sgeMMnDqB/u8jN
+         mIXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=d5D8Q+LOxDZKyXKyV0E9bG7L/yCxQeBI9J1yCtvXJSs=;
-        b=jRJVdG6C8/SxS+rmk90ywouZ5QzeW6mHiAUttRwGWHKRu4yFdk16jFuvOvon0rHsz0
-         xKnRHjrF5Jed731arhl2Ky1m3jRAFxeVa8ppDvJ3vbFz4+PF5X6shR90F5qh7QkLI9jm
-         x0t3HhZXvdNC6Lr6CigSW33UrMe/rWwpJUPheAO7OVFCFCvfDUrITkEQb9ez7azAIqgk
-         vodgZ4iA7WOgWNOMtscVN2nOjtaUGv0xh9tpfCeJxdNoDRMfDpOHDVh6NgCG6CBJ4lf6
-         cPeorLtQd+sKO1bRlO1o9vK/D3oyx4L6bm6cls3magkTx61il1l0iTYoWyEcROXvmIqM
-         xyUw==
-X-Gm-Message-State: AOAM530oXADyWaGzFghBDbV2KbBhmW1+2JVaPuemOmaXe9jPF7dSPDFu
-        r3LdbiyWFqaNAwNG+6HnAV0=
-X-Google-Smtp-Source: ABdhPJwhMfrR2M7qu9ddY2U+G2f77d6APb2MpxAVy0+EQcBYvIT2LcL0tVqzGP2zyc6Fbzs4nIBaag==
-X-Received: by 2002:a05:6a00:10cc:b0:4fe:3f1c:2d1 with SMTP id d12-20020a056a0010cc00b004fe3f1c02d1mr5802765pfu.0.1652468163998;
-        Fri, 13 May 2022 11:56:03 -0700 (PDT)
+        bh=bbzJfH0PErMCbd5F/OJ6qwc9WUXsd3JJD9CMV2tx8VI=;
+        b=w4+iWlB0JjNZEPbEzMIYooyScyKhHTgL6LoRnOTkSZl0bJUIxkvVXYOGa2C9PmZjLj
+         POXgYVWlLI+oP5CUzDNqsqAUK82RrQ7Z73IdvEb5QFpVpwlLwS4OLFFB/0+nTyKzxGcD
+         dYb3j/YZiqhsrYICCG6NMJW2bFW5507g/Iyl4auBHxa8PjcycdNEHBKV+n4P736VZA8E
+         LBHoMD6QX+JSXbvZLjuSb3Kbmm+k2OzvXDP5CDZFSiWYQiNolmx0n9I0jHdD1KmS0Skw
+         CxttG9HBG6i+yDo4VPuK1sd1yy6UJGsxvUhYM4CFmgAPaM/Q7/gRtZLkyn0Wrbki36EQ
+         8fgQ==
+X-Gm-Message-State: AOAM533ytPS+GAlwBodLB5khRBm2khJiLeFRSuDYZ9TkfQQ5I6X+iJhn
+        hoStHAKuE8Ggg4Xb0Ip3Xpw=
+X-Google-Smtp-Source: ABdhPJz6vv1A4SkqwzHkSys+zcoj7DX5OMSwXNHCGdP438h85ajeW79sajzMRo8WghhpkFZK2tWR7g==
+X-Received: by 2002:a05:6a00:882:b0:510:a043:d4bc with SMTP id q2-20020a056a00088200b00510a043d4bcmr6010337pfj.64.1652468165292;
+        Fri, 13 May 2022 11:56:05 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c436:3fa3:479f:a7a])
-        by smtp.gmail.com with ESMTPSA id 2-20020a170902c10200b0015e8d4eb2absm2159537pli.245.2022.05.13.11.56.03
+        by smtp.gmail.com with ESMTPSA id 2-20020a170902c10200b0015e8d4eb2absm2159537pli.245.2022.05.13.11.56.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 11:56:03 -0700 (PDT)
+        Fri, 13 May 2022 11:56:05 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,9 +54,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 07/10] net_sched: em_meta: add READ_ONCE() in var_sk_bound_if()
-Date:   Fri, 13 May 2022 11:55:47 -0700
-Message-Id: <20220513185550.844558-8-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 08/10] l2tp: use add READ_ONCE() to fetch sk->sk_bound_dev_if
+Date:   Fri, 13 May 2022 11:55:48 -0700
+Message-Id: <20220513185550.844558-9-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
 In-Reply-To: <20220513185550.844558-1-eric.dumazet@gmail.com>
 References: <20220513185550.844558-1-eric.dumazet@gmail.com>
@@ -74,43 +74,70 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-sk->sk_bound_dev_if can change under us, use READ_ONCE() annotation.
+Use READ_ONCE() in paths not holding the socket lock.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/sched/em_meta.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ net/l2tp/l2tp_ip.c  | 4 +++-
+ net/l2tp/l2tp_ip6.c | 8 +++++---
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/net/sched/em_meta.c b/net/sched/em_meta.c
-index 0a04468b73145546097788db0645ef9e5b459bca..49bae3d5006b0f83330b4cbe30344c0741743575 100644
---- a/net/sched/em_meta.c
-+++ b/net/sched/em_meta.c
-@@ -311,12 +311,15 @@ META_COLLECTOR(int_sk_bound_if)
+diff --git a/net/l2tp/l2tp_ip.c b/net/l2tp/l2tp_ip.c
+index 6af09e188e52cfd84defb42ad34aea25f66f1e25..4db5a554bdbd9e80eb697a88cb7208e15d7931bc 100644
+--- a/net/l2tp/l2tp_ip.c
++++ b/net/l2tp/l2tp_ip.c
+@@ -50,11 +50,13 @@ static struct sock *__l2tp_ip_bind_lookup(const struct net *net, __be32 laddr,
+ 	sk_for_each_bound(sk, &l2tp_ip_bind_table) {
+ 		const struct l2tp_ip_sock *l2tp = l2tp_ip_sk(sk);
+ 		const struct inet_sock *inet = inet_sk(sk);
++		int bound_dev_if;
  
- META_COLLECTOR(var_sk_bound_if)
- {
-+	int bound_dev_if;
-+
- 	if (skip_nonlocal(skb)) {
- 		*err = -1;
- 		return;
+ 		if (!net_eq(sock_net(sk), net))
+ 			continue;
+ 
+-		if (sk->sk_bound_dev_if && dif && sk->sk_bound_dev_if != dif)
++		bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
++		if (bound_dev_if && dif && bound_dev_if != dif)
+ 			continue;
+ 
+ 		if (inet->inet_rcv_saddr && laddr &&
+diff --git a/net/l2tp/l2tp_ip6.c b/net/l2tp/l2tp_ip6.c
+index 217c7192691e160e9727afd78126006aba3736b4..c6ff8bf9b55f916e80380bb2e4ea81b11e544a32 100644
+--- a/net/l2tp/l2tp_ip6.c
++++ b/net/l2tp/l2tp_ip6.c
+@@ -62,11 +62,13 @@ static struct sock *__l2tp_ip6_bind_lookup(const struct net *net,
+ 		const struct in6_addr *sk_laddr = inet6_rcv_saddr(sk);
+ 		const struct in6_addr *sk_raddr = &sk->sk_v6_daddr;
+ 		const struct l2tp_ip6_sock *l2tp = l2tp_ip6_sk(sk);
++		int bound_dev_if;
+ 
+ 		if (!net_eq(sock_net(sk), net))
+ 			continue;
+ 
+-		if (sk->sk_bound_dev_if && dif && sk->sk_bound_dev_if != dif)
++		bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
++		if (bound_dev_if && dif && bound_dev_if != dif)
+ 			continue;
+ 
+ 		if (sk_laddr && !ipv6_addr_any(sk_laddr) &&
+@@ -445,7 +447,7 @@ static int l2tp_ip6_getname(struct socket *sock, struct sockaddr *uaddr,
+ 		lsa->l2tp_conn_id = lsk->conn_id;
+ 	}
+ 	if (ipv6_addr_type(&lsa->l2tp_addr) & IPV6_ADDR_LINKLOCAL)
+-		lsa->l2tp_scope_id = sk->sk_bound_dev_if;
++		lsa->l2tp_scope_id = READ_ONCE(sk->sk_bound_dev_if);
+ 	return sizeof(*lsa);
+ }
+ 
+@@ -560,7 +562,7 @@ static int l2tp_ip6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
  	}
  
--	if (skb->sk->sk_bound_dev_if == 0) {
-+	bound_dev_if = READ_ONCE(skb->sk->sk_bound_dev_if);
-+	if (bound_dev_if == 0) {
- 		dst->value = (unsigned long) "any";
- 		dst->len = 3;
- 	} else {
-@@ -324,7 +327,7 @@ META_COLLECTOR(var_sk_bound_if)
+ 	if (fl6.flowi6_oif == 0)
+-		fl6.flowi6_oif = sk->sk_bound_dev_if;
++		fl6.flowi6_oif = READ_ONCE(sk->sk_bound_dev_if);
  
- 		rcu_read_lock();
- 		dev = dev_get_by_index_rcu(sock_net(skb->sk),
--					   skb->sk->sk_bound_dev_if);
-+					   bound_dev_if);
- 		*err = var_dev(dev, dst);
- 		rcu_read_unlock();
- 	}
+ 	if (msg->msg_controllen) {
+ 		opt = &opt_space;
 -- 
 2.36.0.550.gb090851708-goog
 
