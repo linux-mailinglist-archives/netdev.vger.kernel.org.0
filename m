@@ -2,73 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CCC0525C16
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 09:07:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B45F5525C3A
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 09:19:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377539AbiEMG4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 02:56:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60396 "EHLO
+        id S1377610AbiEMHQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 03:16:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377531AbiEMG4b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 02:56:31 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F05E49F1B;
-        Thu, 12 May 2022 23:56:29 -0700 (PDT)
-Received: from kwepemi500015.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Kzzt90LMkz1JBn5;
-        Fri, 13 May 2022 14:55:13 +0800 (CST)
-Received: from huawei.com (10.175.127.227) by kwepemi500015.china.huawei.com
- (7.221.188.92) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 13 May
- 2022 14:56:26 +0800
-From:   Zheng Bin <zhengbin13@huawei.com>
-To:     <vburru@marvell.com>, <aayarekar@marvell.com>,
-        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <zhengbin13@huawei.com>, <gaochao49@huawei.com>
-Subject: [PATCH v2 -next] octeon_ep: add missing destroy_workqueue in octep_init_module
-Date:   Fri, 13 May 2022 15:10:18 +0800
-Message-ID: <20220513071018.3279210-1-zhengbin13@huawei.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S234175AbiEMHQH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 03:16:07 -0400
+Received: from out30-130.freemail.mail.aliyun.com (out30-130.freemail.mail.aliyun.com [115.124.30.130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A903AA63;
+        Fri, 13 May 2022 00:16:02 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R171e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=guangguan.wang@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0VD2I.iE_1652426158;
+Received: from localhost.localdomain(mailfrom:guangguan.wang@linux.alibaba.com fp:SMTPD_---0VD2I.iE_1652426158)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 13 May 2022 15:15:59 +0800
+From:   Guangguan Wang <guangguan.wang@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/2] net/smc: send and write inline optimization for smc
+Date:   Fri, 13 May 2022 15:15:49 +0800
+Message-Id: <20220513071551.22065-1-guangguan.wang@linux.alibaba.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.127.227]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- kwepemi500015.china.huawei.com (7.221.188.92)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-octep_init_module misses destroy_workqueue in error path,
-this patch fixes that.
+Send cdc msgs and write data inline if qp has sufficent inline
+space, helps latency reducing. 
 
-Fixes: 862cd659a6fb ("octeon_ep: Add driver framework and device initialization")
-Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
----
-v1->v2: add Fixes tag
- drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 1 +
- 1 file changed, 1 insertion(+)
+In my test environment, which are 2 VMs running on the same
+physical host and whose NICs(ConnectX-4Lx) are working on
+SR-IOV mode, qperf shows 0.4us-1.3us improvement in latency.
 
-diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-index e020c81f3455..ebf78f6ca82b 100644
---- a/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-+++ b/drivers/net/ethernet/marvell/octeon_ep/octep_main.c
-@@ -1149,6 +1149,7 @@ static int __init octep_init_module(void)
- 	if (ret < 0) {
- 		pr_err("%s: Failed to register PCI driver; err=%d\n",
- 		       OCTEP_DRV_NAME, ret);
-+		destroy_workqueue(octep_wq);
- 		return ret;
- 	}
+Test command:
+server: smc_run taskset -c 1 qperf
+client: smc_run taskset -c 1 qperf <server ip> -oo \
+		msg_size:1:2K:*2 -t 30 -vu tcp_lat
 
---
-2.31.1
+The results shown below:
+msgsize     before       after
+1B          11.9 us      10.6 us (-1.3 us)
+2B          11.7 us      10.7 us (-1.0 us)
+4B          11.7 us      10.7 us (-1.0 us)
+8B          11.6 us      10.6 us (-1.0 us)
+16B         11.7 us      10.7 us (-1.0 us)
+32B         11.7 us      10.6 us (-1.1 us)
+64B         11.7 us      11.2 us (-0.5 us)
+128B        11.6 us      11.2 us (-0.4 us)
+256B        11.8 us      11.2 us (-0.6 us)
+512B        11.8 us      11.3 us (-0.5 us)
+1KB         11.9 us      11.5 us (-0.4 us)
+2KB         12.1 us      11.5 us (-0.6 us)
+
+
+Guangguan Wang (2):
+  net/smc: send cdc msg inline if qp has sufficient inline space
+  net/smc: rdma write inline if qp has sufficient inline space
+
+ net/smc/smc_ib.c |  1 +
+ net/smc/smc_tx.c | 17 ++++++++++++-----
+ net/smc/smc_wr.c |  5 ++++-
+ 3 files changed, 17 insertions(+), 6 deletions(-)
+
+-- 
+2.24.3 (Apple Git-128)
 
