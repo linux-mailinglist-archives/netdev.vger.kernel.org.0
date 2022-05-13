@@ -2,182 +2,310 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DDE43525CB0
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 10:03:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DABA1525CB9
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 10:03:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347283AbiEMH5V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 03:57:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33758 "EHLO
+        id S1377998AbiEMIC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 04:02:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377966AbiEMH5T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 03:57:19 -0400
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (mail-bn8nam12on2056.outbound.protection.outlook.com [40.107.237.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE86E66690
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 00:57:18 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CdLqTtULfPAftyEN94ffc2gkCJtpo5oW7ytKoP2SgANzowvDlqbS+w/Q1bc+feBc/oAySpoHcNFyq87/y52yRs94KWopcqBCJjXKxqDEecTalEDIlDQlM2IuWcXqTEdj2MpMvbpIv3wbHQqJGvCb0z3eGnc8s+7NWhQRKVkAyNqOHB9UY3dJII/qHrpwYdPpx36D7/3a56k3YSiKan2cAJEPCkR0117wG4tgOmBD9LnK20OYJDff5fve6+f9GUclZYt/28B4KWdM4vsJuWqxSgiIei90E03bNtkwMm2ubbaOI3Neq8NlCbt1qkNn7w1a6R/gvdGHyWhGjGnyUAabXw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=nCQeAEk8GURrJJIAhxz3F0TpqvkibUUQMxsqW44j0Js=;
- b=cJgJdnn06LXvaxQFT8xxTw4xLGtNKO6Cnl4gF/e3PPvi3y3A0HGD1BUa1zvUZbpJY0fHIpCqR/Rt089hws0yRgprM2VSiNfoe81UaLuu7YazQd+6bpUVBO7QhPnlklJvzYEIZl6YmPWXQIu/2YASwT5m34PSFHNQ18MxVWFGBejmdTtqzj7Wnm8r4XyUNpeRVOss81sYyHvZTeZkLMLK/US7Gk173OzzXqv6hSJdfBYPT8WSTvagG61hkEfMh4o2lTpiVRNWKvac/+e/haYK99agpQpEAwyvWLU7omkedkuURm77hv6LGclMId3VxheQ+6FXxJ2rPybkESkBdyDfYQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nCQeAEk8GURrJJIAhxz3F0TpqvkibUUQMxsqW44j0Js=;
- b=KFZJqFQCZhkOMH0dkNaQIvLsUXjdBcKGap0Hkl6Ziv531sX3aXVa6tlC7y7d+ySA+4QPqN/VBCfdLsHvzEjk0xB/NVHZhlRfki6IweYtt1ROdk/BF2aTQ2GuNbQpHzy0uq5fWU27DAXQiX/26U4u8N3KOuAcFzZOYvOzX//4wHu3t4llDJiWOXyL1UEJ0msKBib3o48ZwXyECld8I1IbdL1I1Z5iY+suzuIU9JPMzgcMis6PqAhbBIQ8m7yeCEh/nPcnOAVGIqOW9BgKdRi1HEBYWpMoTqd23DIlr0T2SEsf6jJRYuAuuCuwt0C88SwDrQHfgj5nRufnAhBOeZEWiQ==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nvidia.com;
-Received: from DM4PR12MB5150.namprd12.prod.outlook.com (2603:10b6:5:391::23)
- by DS7PR12MB5984.namprd12.prod.outlook.com (2603:10b6:8:7f::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13; Fri, 13 May
- 2022 07:57:16 +0000
-Received: from DM4PR12MB5150.namprd12.prod.outlook.com
- ([fe80::a186:70f2:4280:14df]) by DM4PR12MB5150.namprd12.prod.outlook.com
- ([fe80::a186:70f2:4280:14df%7]) with mapi id 15.20.5250.014; Fri, 13 May 2022
- 07:57:16 +0000
-Message-ID: <507d2140-1f22-174d-f55e-16ebcf03f249@nvidia.com>
-Date:   Fri, 13 May 2022 10:57:06 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH net-next v2] tls: Add opt-in zerocopy mode of sendfile()
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Gal Pressman <gal@nvidia.com>, netdev@vger.kernel.org
-References: <20220511121525.624059-1-maximmi@nvidia.com>
- <20220512163458.31ae2d13@kernel.org>
-From:   Maxim Mikityanskiy <maximmi@nvidia.com>
-In-Reply-To: <20220512163458.31ae2d13@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO2P265CA0495.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:13a::20) To DM4PR12MB5150.namprd12.prod.outlook.com
- (2603:10b6:5:391::23)
+        with ESMTP id S1377930AbiEMICX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 04:02:23 -0400
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 433063DDC4
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 01:02:21 -0700 (PDT)
+Received: by mail-wm1-x336.google.com with SMTP id r188-20020a1c44c5000000b003946c466c17so3824106wma.4
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 01:02:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=7qyah3LrCPT+TcTTbQqxNbiu+ZZNJZh+ApOT8XIC0qg=;
+        b=ZaGh2u2pAkeMP29vfbT0P8BYpnvtq47+EFyFmd2GDU3tQt7bfOu8fuE1hoVFBiLF8C
+         yF6k+m9gqbxJyak3Unco3ruIlbZLsS1x+Ty2TGMPxY+JBJnvNhbXblBYKDlBGsRVDCCI
+         RfPupehQIQHDcAnEKhbemIK6b8GRxpheBeSGR9IbmeyyjBaZNiYroJKdvkvhZ2rVxyZY
+         KBoVv4Se4IIAmQAP0do4A0BHNuEWbdwZLBmMMk8Fah8uMws5AyF7RS2NEnbsZhOJmUGT
+         GKU5vH2yIXg/fiKogsywGW+HHU/27UBNbXBiPjNGFgEl27x/DKF1FaTPbsvxTW0GwL2I
+         XynA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to:user-agent;
+        bh=7qyah3LrCPT+TcTTbQqxNbiu+ZZNJZh+ApOT8XIC0qg=;
+        b=gYBx/09/EZTnFH1BRcSvBlWR5DC5v6bEF9xT4/ZgQtqhdiiVpKfQZuCYliz033OiAA
+         RQvIggNc7RjkVdvST/wKuaE2zp125KuhD43Kv3ynDFZsxL+rE49c95PfPMQwIMVVezIu
+         CMEF3RgtpkdBERTGKvND26ZYxeQCyU5VgfsK2m0UzxGQHfSTfuIENCzYBBsoOo8m70qh
+         QeNNMcuApCuTNXWHf645sOdoJYp/79FVU8c5E44f6eyFeoqurYGAbnEEQyZ8z3l+0qjw
+         XctT50Y+8f6nnvnjbuZ9FdAomNx2nIHXjTaGDgPcHtbQPvgYC/qQgo0CYirPg8rGJQMd
+         RqgA==
+X-Gm-Message-State: AOAM530B8iF+RZwNShhs80C6har3l+o8hFwtcghGoC6yuW/pBtY8weOR
+        V4jMl3dBkQzJULRgcf1uni0=
+X-Google-Smtp-Source: ABdhPJzHW8vtjrsDVcc1zceESz5alTZQq5nGV4nGyryqL4Ho2z6Cne9jXm2Q6+CKXR4EOapT8uXdwA==
+X-Received: by 2002:a05:600c:4ec9:b0:394:7d73:325e with SMTP id g9-20020a05600c4ec900b003947d73325emr13584243wmq.61.1652428939674;
+        Fri, 13 May 2022 01:02:19 -0700 (PDT)
+Received: from gmail.com ([81.168.73.77])
+        by smtp.gmail.com with ESMTPSA id h12-20020adf9ccc000000b0020adc114136sm1888232wre.0.2022.05.13.01.02.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 13 May 2022 01:02:19 -0700 (PDT)
+Date:   Fri, 13 May 2022 09:02:17 +0100
+From:   Martin Habets <habetsm.xilinx@gmail.com>
+To:     =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>
+Cc:     ecree.xilinx@gmail.com, bhutchings@solarflare.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/2] sfc: simplify mtd partitions list handling
+Message-ID: <20220513080216.liqtvnu3twnmvrtu@gmail.com>
+Mail-Followup-To: =?iso-8859-1?B?zfFpZ28=?= Huguet <ihuguet@redhat.com>,
+        ecree.xilinx@gmail.com, bhutchings@solarflare.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org
+References: <20220511103604.37962-1-ihuguet@redhat.com>
+ <20220511103604.37962-3-ihuguet@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d892d83d-7f44-4640-82f6-08da34b632a2
-X-MS-TrafficTypeDiagnostic: DS7PR12MB5984:EE_
-X-Microsoft-Antispam-PRVS: <DS7PR12MB59844CDCE3E1023F9356047FDCCA9@DS7PR12MB5984.namprd12.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: C/jP9XBOgVnccdMlLRDmKqs1QFb1kVkcml+D7aSoHtFv0wbOEzAgKiwEzZizdnl6EeW/rsQDJfjV2+otEMua1hNZPxbmN4PdbNqglg+nSEs8F/PdtP8zK5oUfLLG/7/Z6D1BI2gRCHPYJoZW61lf+74sa9B3xYka5GnOfZjsR+jOhBG6xjsaDx07K9ZWorL8QrMq68e9W8wPWcxKkEx0NO0UwGbeH0dVXaIjnpD6NmRzaOSLCxnVVwoaiKmekWK7heVvHE21ENIPgeHQctUJ743bnQZW0eBAkJUmVdD9ARx5DFqGWCbUJegIjvVa9tulPn9jhe8Rc2HZ2NnbV/ZKnMn06btSTjeJVX540LUgFhLUuWuAuMIDkU4rAAtG4wZG320GZCqvBFghmDwltQZX7Pfbk78fSfectd7lAFCyD0Gs8Vl+iQNEcxsgoDCbqcoMsa/iBtdn25It6CC2eZtOQXRxKTSI539t21r1tb2HMQ3gNlw2452/zsgfrnoyNvjHpMhQVJdchqsx9Tt7EiRjhTW4jA9UgYC2WZRJOEmvFqh1N5BQiHM+fkRlNG3WIkpzejKCQgNJIL+EO9Z1z4p7S4btnpTWmYoS5W6LIJ9sJ7aWFr0j56eSXVijKAvwqJ0agIMxvDpaCVrvUYb5/RS2pvY0MtauKv2YIrQdVnB9aPx1xucSIcGRJmmpwE432DlOtpS9i8PemjO7sQE+mr8JfH/nIieuybHmtp4MBWIrqWs=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM4PR12MB5150.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(31696002)(36756003)(2616005)(66556008)(6512007)(6486002)(186003)(5660300002)(31686004)(4326008)(66946007)(6506007)(53546011)(6666004)(66476007)(316002)(6916009)(26005)(54906003)(83380400001)(8676002)(8936002)(508600001)(2906002)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?NkZQaFlaUnp3TTBmNjZKbkRLRXdUOVVWZm1iWTN4Z1hhSXE0SmtRcXBwSWFE?=
- =?utf-8?B?blFIMmRvb1lnU0k3NS9WMzlGUk40eHBvSzlIYktYWXE3MHJiVmxZdVJqOTRP?=
- =?utf-8?B?eThXMW1tQ2tUaXc3NXJBeGtSMDVqOE1tZENiMDhJVlRmR2JVREttUDhTc0la?=
- =?utf-8?B?bHhnclIvbkVYUFpMeXc0QWkwRU9vMVhOaThVVytzaE1jSEpKNDZKNTZURlJo?=
- =?utf-8?B?NWhqOFdUeklZYlBEdGkvTDlLTk96a1ZwM3NnbUxsUmIyZXdocnRHUXhEOVB1?=
- =?utf-8?B?N3NWaWdnRUR4Vk01dFgzdDVFS1VEd1U0Y3BYOTdyb0tGblU3TStIQ0srWHZ5?=
- =?utf-8?B?MVFBR042YzUrTlZGai9QWmhTb21KOWQxYUJIWVQ4UTFHVXNHQVZFeWdlMzVS?=
- =?utf-8?B?UlRDSHNCWE1kWldJODVpdEdwUE9mQVZHd3JFTU45MFM1b3dkNHd1TU9WWkdx?=
- =?utf-8?B?VHBZTHlIQ2NnT0pOZ1hYa2txT3A1YjlvelVHY0Z6d1NNTnlpZzRZeDZOMTRW?=
- =?utf-8?B?YTFRZnVBZkQybTJ4cEFBWG5HN0Y5blhIK0dIQ3NFVHNyNVJnditGUC9OSDJP?=
- =?utf-8?B?eGh2bFVJUmVobURMTVpkYzBBQTFXVmF3VjNna2FrTkdpK0J6c3d5ZTZvdG1a?=
- =?utf-8?B?VEFTbWsybHJVU3F0TEZnNitBMFNmQ0NuQXozb2kzdXNueEFwUjZiNFpBK2Rl?=
- =?utf-8?B?UjN6Q1RVelVTTGdXZ2lxcHFjMUpVVGtxZkl4a3JTUEl0VWFKSERMblFmWDNW?=
- =?utf-8?B?dW10Z2Fzd1ZVL0l3RTMxK1hRWCt2KzY4a1FBR0pKSjdhYVNHV1NEMmxUWTE3?=
- =?utf-8?B?Q1NmUzh5N2xpZ3F6aGtUaitlRmVrNFVWZ1BWbURjZ0dNV0pIbGlRYmFxcFRS?=
- =?utf-8?B?bVlZd3VnYi9JNGtMUCtaMEJDd3NrLzRNQ0wyQVhZNkdCU0FVYzcySnU4S09R?=
- =?utf-8?B?TXRTd0QwS0o3WWJ1ZCs3WDRvczQzTEVUampHQkxidUFDTEI4aUVoeHlvd0Nm?=
- =?utf-8?B?U2NBdUpscGJhd2lPY1NoRlZjazUvSWoxaG9SZC9JaU9KSXNOSmhLTTdOL2pW?=
- =?utf-8?B?U1l2WFgyZVRXTVpwSDVWMVRGVU0yWCtCeFIydHNEUzRWenlaUXdSRDZqQU5s?=
- =?utf-8?B?VkFab0VmdHhOdXMzay9Ka2JZV0Z5R2FsU2k0MnA4MWVsNmdjeDk2eDZlMmt0?=
- =?utf-8?B?VzYwV1pTNU9mTVR4YW1sY3h3bUpiQXV1b21hK0FETnk2UXQ1VTdndnBVWlpG?=
- =?utf-8?B?MDZiWWF5Mm5ldEhkR3hzdWhaV1NRcGhiQ3FxUTJObDVJQUxKR3N6ekNjaU1p?=
- =?utf-8?B?K004bGx4OFk4aU1VeFVaU0U3ZFFmMDJLQzExNDZYTlZXY0Z5WGI4RXFneUxC?=
- =?utf-8?B?M1EwQWQ4Z3kvdStabjlVc2M2YkVxTnRmT0l0WElPejJBRXFZcm5vSlRnU25v?=
- =?utf-8?B?WDJQRVYxS2tsOHphZ0w5eWEvend1WlFOYlk3TXhUTHZMTGRnMzZmTHpzYWxZ?=
- =?utf-8?B?cW51SHlhNTcwTmpkdDlUYjFWQWNCL29SajNWTXhCTXlVeXRrL1NzM0UxbzEr?=
- =?utf-8?B?bDVxL3VJNjFjNDJtY3hyaTRXMjd3bE9OR2h6aUJwcEZoN0EvSU53UG9ybEdv?=
- =?utf-8?B?MjF5T1kwbjFNQzN4Z1o0dUxWaFlmQVdWWWVqeEZpY3lqQWFGdUxGOHlKMmxC?=
- =?utf-8?B?alMvdTI5Y3B4d29OM0cwcUZjc2grWE9mZGJNanA0SkUvQmpLOUV0akYyaUpw?=
- =?utf-8?B?cEFqemZhVk4zOVVndUxpZFBzeHE4Rkl4dWNMdG9POWVOUERtRTYyWmpyRmo4?=
- =?utf-8?B?T241MGgyZ3VRZlBreEFIaHdLdnhTREFxUTEybHVHY0JnZmpXS0ZabUFhazVS?=
- =?utf-8?B?OUtiekIrYUZtZE5Ud0swUGFmSURaSktDNHpjWlJjZTBGYjY2Sk5XZzFRMGZa?=
- =?utf-8?B?TjVpN3J0cHBlMnN5T0NjVjRHYU52TkFJUWpBM2lnUExsREVTZ3E5ZjFveUN0?=
- =?utf-8?B?VlNjQzZhbEdXQ0RxUU44UWNteGhwRXNNOGFLdUNQcjVEbW5YYW9zSjEvQ1JQ?=
- =?utf-8?B?Mm9YQkNJdWR3VThEWDZkRXRobkpYYkkyVTk4SktydDd6aDZ5eTl1NnAxWHN3?=
- =?utf-8?B?dnI3UjNQL1h5U05SeUhUWlRjQ0hlU1IwNzFNeG14VmpsK0c5S2M3RlJCeXdS?=
- =?utf-8?B?cVJyVVdrM0trL3ZNdkZSQStwRU5WTHlPYVRYVlhxamMxV01yYjRJVUoxdWtG?=
- =?utf-8?B?c0lwUjRGb1BKL3FnQ0ZLb0k0TURka3pRczZONlphR1BhRTEwdlBaL2JvSFhh?=
- =?utf-8?B?N0J3S2NQclAzZDBOSkR3M3RSRmR4U1R5c2FXMFpxS1V5NkpFTUZSUT09?=
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d892d83d-7f44-4640-82f6-08da34b632a2
-X-MS-Exchange-CrossTenant-AuthSource: DM4PR12MB5150.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 07:57:16.7518
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: EL1re44+FZbC5PzHgkNrNBGTlgK+yP359jZiQvDm9dqWLpKZgTvpmHSHZN0D/Sfx98kg9FCGpL0drNtDI6I/1w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DS7PR12MB5984
-X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
-        NICE_REPLY_A,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220511103604.37962-3-ihuguet@redhat.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022-05-13 02:34, Jakub Kicinski wrote:
-> On Wed, 11 May 2022 15:15:25 +0300 Maxim Mikityanskiy wrote:
->> TLS device offload copies sendfile data to a bounce buffer before
->> transmitting. It allows to maintain the valid MAC on TLS records when
->> the file contents change and a part of TLS record has to be
->> retransmitted on TCP level.
->>
->> In many common use cases (like serving static files over HTTPS) the file
->> contents are not changed on the fly. In many use cases breaking the
->> connection is totally acceptable if the file is changed during
->> transmission, because it would be received corrupted in any case.
->>
->> This commit allows to optimize performance for such use cases to
->> providing a new optional mode of TLS sendfile(), in which the extra copy
->> is skipped. Removing this copy improves performance significantly, as
->> TLS and TCP sendfile perform the same operations, and the only overhead
->> is TLS header/trailer insertion.
->>
->> The new mode can only be enabled with the new socket option named
->> TLS_TX_ZEROCOPY_SENDFILE on per-socket basis. It preserves backwards
->> compatibility with existing applications that rely on the copying
->> behavior.
->>
->> The new mode is safe, meaning that unsolicited modifications of the file
->> being sent can't break integrity of the kernel. The worst thing that can
->> happen is sending a corrupted TLS record, which is in any case not
->> forbidden when using regular TCP sockets.
->>
->> Sockets other than TLS device offload are not affected by the new socket
->> option.
+On Wed, May 11, 2022 at 12:36:04PM +0200, Íñigo Huguet wrote:
+> efx_mtd_partitions are embedded inside efx_mcdi_mtd_partition structs.
+> They contain a list entry that is appended to efx->mtd_list, which is
+> traversed to perform add/remove/rename/etc operations over all
+> efx_mtd_partitions.
 > 
-> What about the reporting via sock diag? Am I misremembering something?
+> However, almost all operations done on a efx_mtd_partition asume that it
+> is actually embedded inside an efx_mcdi_mtd_partition, and the
+> deallocation asume that the first member of the list is located at the
+> beginning of the allocated memory.
+> 
+> Given all that asumptions, the possibility of having an
+> efx_mtd_partition not embedded in an efx_mcdi_efx_partition doesn't
+> exist. Neither it does the possibility of being in a memory position
+> other the one allocated for the efx_mcdi_mtd_partition array. Also, they
+> never need to be reordered.
+> 
+> Given all that, it is better to get rid of the list and use directly the
+> efx_mcdi_mtd_partition array. This shows more clearly how they lay
+> in memory, list traversal is more obvious and it save a small amount
+> of memory on the list nodes.
 
-I recall we discussed that "zerocopy is active" can be restored as 
-"hardware offload && setsockopt flag requested", and I saw that 
-tls_get_info exposes the hardware offload state for the socket, so I 
-thought the existing information in sock_diag was enough.
+I like this. Just 1 comment below.
 
-If you think, though, that it will be better to have an explicit 
-indication of the zerocopy flag to sock_diag, I can add it, it's not a 
-problem.
+> Signed-off-by: Íñigo Huguet <ihuguet@redhat.com>
+> ---
+>  drivers/net/ethernet/sfc/ef10.c       | 12 ++++++--
+>  drivers/net/ethernet/sfc/efx.h        |  4 +--
+>  drivers/net/ethernet/sfc/efx_common.c |  3 --
+>  drivers/net/ethernet/sfc/mtd.c        | 42 ++++++++++-----------------
+>  drivers/net/ethernet/sfc/net_driver.h |  9 ++++--
+>  5 files changed, 33 insertions(+), 37 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/sfc/ef10.c b/drivers/net/ethernet/sfc/ef10.c
+> index 15a229731296..b5284fa529b7 100644
+> --- a/drivers/net/ethernet/sfc/ef10.c
+> +++ b/drivers/net/ethernet/sfc/ef10.c
+> @@ -3584,10 +3584,16 @@ static int efx_ef10_mtd_probe(struct efx_nic *efx)
+>  		return 0;
+>  	}
+>  
+> -	rc = efx_mtd_add(efx, &parts[0].common, n_parts, sizeof(*parts));
+> -fail:
+> +	rc = efx_mtd_add(efx, parts, n_parts);
+>  	if (rc)
+> -		kfree(parts);
+> +		goto fail;
+> +	efx->mcdi_mtd_parts = parts;
+> +	efx->n_mcdi_mtd_parts = n_parts;
+> +
+> +	return 0;
+> +
+> +fail:
+> +	kfree(parts);
+>  	return rc;
+>  }
+>  
+> diff --git a/drivers/net/ethernet/sfc/efx.h b/drivers/net/ethernet/sfc/efx.h
+> index c05a83da9e44..2ab9ba691b0d 100644
+> --- a/drivers/net/ethernet/sfc/efx.h
+> +++ b/drivers/net/ethernet/sfc/efx.h
+> @@ -181,8 +181,8 @@ void efx_update_sw_stats(struct efx_nic *efx, u64 *stats);
+>  
+>  /* MTD */
+>  #ifdef CONFIG_SFC_MTD
+> -int efx_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
+> -		size_t n_parts, size_t sizeof_part);
+> +int efx_mtd_add(struct efx_nic *efx, struct efx_mcdi_mtd_partition *parts,
+> +		size_t n_parts);
+>  static inline int efx_mtd_probe(struct efx_nic *efx)
+>  {
+>  	return efx->type->mtd_probe(efx);
+> diff --git a/drivers/net/ethernet/sfc/efx_common.c b/drivers/net/ethernet/sfc/efx_common.c
+> index f6577e74d6e6..8802790403e9 100644
+> --- a/drivers/net/ethernet/sfc/efx_common.c
+> +++ b/drivers/net/ethernet/sfc/efx_common.c
+> @@ -987,9 +987,6 @@ int efx_init_struct(struct efx_nic *efx,
+>  	INIT_LIST_HEAD(&efx->node);
+>  	INIT_LIST_HEAD(&efx->secondary_list);
+>  	spin_lock_init(&efx->biu_lock);
+> -#ifdef CONFIG_SFC_MTD
+> -	INIT_LIST_HEAD(&efx->mtd_list);
+> -#endif
+>  	INIT_WORK(&efx->reset_work, efx_reset_work);
+>  	INIT_DELAYED_WORK(&efx->monitor_work, efx_monitor);
+>  	efx_selftest_async_init(efx);
+> diff --git a/drivers/net/ethernet/sfc/mtd.c b/drivers/net/ethernet/sfc/mtd.c
+> index 273c08e5455f..4d06e8a9a729 100644
+> --- a/drivers/net/ethernet/sfc/mtd.c
+> +++ b/drivers/net/ethernet/sfc/mtd.c
+> @@ -12,6 +12,7 @@
+>  
+>  #include "net_driver.h"
+>  #include "efx.h"
+> +#include "mcdi.h"
+>  
+>  #define to_efx_mtd_partition(mtd)				\
+>  	container_of(mtd, struct efx_mtd_partition, mtd)
+> @@ -48,18 +49,16 @@ static void efx_mtd_remove_partition(struct efx_mtd_partition *part)
+>  		ssleep(1);
+>  	}
+>  	WARN_ON(rc);
+> -	list_del(&part->node);
+>  }
+>  
+> -int efx_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
+> -		size_t n_parts, size_t sizeof_part)
+> +int efx_mtd_add(struct efx_nic *efx, struct efx_mcdi_mtd_partition *parts,
+> +		size_t n_parts)
+>  {
+>  	struct efx_mtd_partition *part;
+>  	size_t i;
+>  
+>  	for (i = 0; i < n_parts; i++) {
+> -		part = (struct efx_mtd_partition *)((char *)parts +
+> -						    i * sizeof_part);
+> +		part = &parts[i].common;
+>  
+>  		part->mtd.writesize = 1;
+>  
+> @@ -78,47 +77,38 @@ int efx_mtd_add(struct efx_nic *efx, struct efx_mtd_partition *parts,
+>  
+>  		if (mtd_device_register(&part->mtd, NULL, 0))
+>  			goto fail;
+> -
+> -		/* Add to list in order - efx_mtd_remove() depends on this */
+> -		list_add_tail(&part->node, &efx->mtd_list);
+>  	}
+>  
+>  	return 0;
+>  
+>  fail:
+> -	while (i--) {
+> -		part = (struct efx_mtd_partition *)((char *)parts +
+> -						    i * sizeof_part);
+> -		efx_mtd_remove_partition(part);
+> -	}
+> +	while (i--)
+> +		efx_mtd_remove_partition(&parts[i].common);
+> +
+>  	/* Failure is unlikely here, but probably means we're out of memory */
+>  	return -ENOMEM;
+>  }
+>  
+>  void efx_mtd_remove(struct efx_nic *efx)
+>  {
+> -	struct efx_mtd_partition *parts, *part, *next;
+> +	int i;
+>  
+>  	WARN_ON(efx_dev_registered(efx));
+>  
+> -	if (list_empty(&efx->mtd_list))
+> -		return;
+> -
+> -	parts = list_first_entry(&efx->mtd_list, struct efx_mtd_partition,
+> -				 node);
+> +	for (i = 0; i < efx->n_mcdi_mtd_parts; i++)
+> +		efx_mtd_remove_partition(&efx->mcdi_mtd_parts[i].common);
+>  
+> -	list_for_each_entry_safe(part, next, &efx->mtd_list, node)
+> -		efx_mtd_remove_partition(part);
+> -
+> -	kfree(parts);
+> +	kfree(efx->mcdi_mtd_parts);
+> +	efx->mcdi_mtd_parts = NULL;
+> +	efx->n_mcdi_mtd_parts = 0;
 
-Does the rest of the patch look good to you?
+It is safer to first set to NULL/0 before freeing the memory.
+With this sequence bad things can happen if the thread gets descheduled
+right after the kfree.
 
-Thanks,
-Max
+Martin
+
+>  }
+>  
+>  void efx_mtd_rename(struct efx_nic *efx)
+>  {
+> -	struct efx_mtd_partition *part;
+> +	int i;
+>  
+>  	ASSERT_RTNL();
+>  
+> -	list_for_each_entry(part, &efx->mtd_list, node)
+> -		efx->type->mtd_rename(part);
+> +	for (i = 0; i < efx->n_mcdi_mtd_parts; i++)
+> +		efx->type->mtd_rename(&efx->mcdi_mtd_parts[i].common);
+>  }
+> diff --git a/drivers/net/ethernet/sfc/net_driver.h b/drivers/net/ethernet/sfc/net_driver.h
+> index 318db906a154..5d20b25b0e82 100644
+> --- a/drivers/net/ethernet/sfc/net_driver.h
+> +++ b/drivers/net/ethernet/sfc/net_driver.h
+> @@ -107,6 +107,8 @@ struct hwtstamp_config;
+>  
+>  struct efx_self_tests;
+>  
+> +struct efx_mcdi_mtd_partition;
+> +
+>  /**
+>   * struct efx_buffer - A general-purpose DMA buffer
+>   * @addr: host base address of the buffer
+> @@ -865,7 +867,8 @@ enum efx_xdp_tx_queues_mode {
+>   * @irq_zero_count: Number of legacy IRQs seen with queue flags == 0
+>   * @irq_level: IRQ level/index for IRQs not triggered by an event queue
+>   * @selftest_work: Work item for asynchronous self-test
+> - * @mtd_list: List of MTDs attached to the NIC
+> + * @mcdi_mtd_parts: Array of MTDs attached to the NIC
+> + * @n_mcdi_mtd_parts: Number of MTDs attached to the NIC
+>   * @nic_data: Hardware dependent state
+>   * @mcdi: Management-Controller-to-Driver Interface state
+>   * @mac_lock: MAC access lock. Protects @port_enabled, @phy_mode,
+> @@ -1033,7 +1036,8 @@ struct efx_nic {
+>  	struct delayed_work selftest_work;
+>  
+>  #ifdef CONFIG_SFC_MTD
+> -	struct list_head mtd_list;
+> +	struct efx_mcdi_mtd_partition *mcdi_mtd_parts;
+> +	unsigned int n_mcdi_mtd_parts;
+>  #endif
+>  
+>  	void *nic_data;
+> @@ -1134,7 +1138,6 @@ static inline unsigned int efx_port_num(struct efx_nic *efx)
+>  }
+>  
+>  struct efx_mtd_partition {
+> -	struct list_head node;
+>  	struct mtd_info mtd;
+>  	const char *dev_type_name;
+>  	const char *type_name;
+> -- 
+> 2.34.1
