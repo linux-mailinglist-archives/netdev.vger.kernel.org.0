@@ -2,107 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B58C8526594
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:03:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A95EC526598
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:04:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381703AbiEMPDI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 11:03:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34558 "EHLO
+        id S1358229AbiEMPDh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 11:03:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381823AbiEMPCx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:02:53 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 818D54DF73
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:02:38 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id h3so7024037qtn.4
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:02:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8o2AIqylfLZkog3xkyjBPBeF8N+IzHoGrC+frJH1aPY=;
-        b=J3P2ravViG3MxBAvV+R+gEvIjCvzkGjAOAyhkUSsqSQGCxPyWmJLN8fhwHkGhjFi4v
-         e8onmX7tSTRs+6ferLVSCzoC8hJso+SkpxQB6P1c64/OuAeW++NHblGRq1Llh/zt3dSj
-         O24Z3ScZwACs/29AIqkb5LjSQNAk5CZhFsOcCTArEbgjlI1kpjDpy8FGppywBURhINbj
-         zd18/x/IfDztrWtsWDm5JLVqWIRhZkBeFfe/HibYzjShTYIdDeE8d8IumKr57jcZRtF8
-         a/H6ORs66fyNRCCNn5JVIPBVZR8Ho4B2aOsGRGq/EdLSUtRLMMzoQl3FqI9DcfqnwMEn
-         PrUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8o2AIqylfLZkog3xkyjBPBeF8N+IzHoGrC+frJH1aPY=;
-        b=Hdv67kYfJkVmeYpeP45xXsjOrah1ySFPwUlIl/6YrQoLzg7ra1IvkemHU67Nw1CXMl
-         04DYnUlHQynl3C4EhifcOMbxN7WPbNQEku0m0tqc2GB4ibqLlOUkhk4RS/bzUhqZ9Yaq
-         /GTxQn/bBP4IQmdpxwQKC+Ka22nS15LUPZZg8uNOZF+/pUG0ifokevYIfRyZRV7vUbCd
-         YyySYWKbfysEnuMXz+gQ1uMwJKdUGmrL1wspRf+1v+bsSuOSvL0oHQ+l1DjVZy0nyYnf
-         eHVO2RjsboDE9+5HN87wIFRa4Kag9WC67lxd3Z3V8yubJE00w7K8YPuJ2yQjPOyDS4C0
-         gn7A==
-X-Gm-Message-State: AOAM5325N7D53tqW3bHDG9z7fd/odPjT+su/aDHT0odoFAe3Tl2vwUjn
-        1268vkIDPy3y+fKy56magMrwJ+dv5HY=
-X-Google-Smtp-Source: ABdhPJzYyZAqyq7sM72rlSQSeXgY21DYgt/vchKV0vOVUrCSk5+wmDcSRcRfJAGeWCK32tACLG9jfg==
-X-Received: by 2002:ac8:5fd3:0:b0:2f3:c522:1369 with SMTP id k19-20020ac85fd3000000b002f3c5221369mr4814443qta.225.1652454157038;
-        Fri, 13 May 2022 08:02:37 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id bs41-20020a05620a472900b0069fe1fc72e7sm1514984qkb.90.2022.05.13.08.02.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:02:36 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        Edward Cree <ecree@solarflare.com>
-Subject: [PATCHv2 net] Documentation: add description for net.core.gro_normal_batch
-Date:   Fri, 13 May 2022 11:02:35 -0400
-Message-Id: <21572bb1e0cc55596965148b8fdf31120606480f.1652454155.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S1381781AbiEMPDA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:03:00 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A651446143
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:02:56 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 6F5DC20688;
+        Fri, 13 May 2022 17:02:55 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id Jts-qx35MQnX; Fri, 13 May 2022 17:02:54 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id E12812050A;
+        Fri, 13 May 2022 17:02:54 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id DBB4C80004A;
+        Fri, 13 May 2022 17:02:54 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 13 May 2022 17:02:54 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Fri, 13 May
+ 2022 17:02:54 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 27AEE3180A74; Fri, 13 May 2022 17:02:54 +0200 (CEST)
+Date:   Fri, 13 May 2022 17:02:54 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     Leon Romanovsky <leonro@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        <netdev@vger.kernel.org>, Raed Salem <raeds@nvidia.com>,
+        ipsec-devel <devel@linux-ipsec.org>
+Subject: Re: [PATCH ipsec-next 5/6] xfrm: add RX datapath protection for
+ IPsec full offload mode
+Message-ID: <20220513150254.GM680067@gauss3.secunet.de>
+References: <cover.1652176932.git.leonro@nvidia.com>
+ <ff459f4de434def4a1d7ab989a17577f19a67f45.1652176932.git.leonro@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <ff459f4de434def4a1d7ab989a17577f19a67f45.1652176932.git.leonro@nvidia.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Describe it in admin-guide/sysctl/net.rst like other Network core options.
-Users need to know gro_normal_batch for performance tuning.
+On Tue, May 10, 2022 at 01:36:56PM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Traffic received by device with enabled IPsec full offload should be
+> forwarded to the stack only after decryption, packet headers and
+> trailers removed.
+> 
+> Such packets are expected to be seen as normal (non-XFRM) ones, while
+> not-supported packets should be dropped by the HW.
+> 
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  include/net/xfrm.h | 55 +++++++++++++++++++++++++++-------------------
+>  1 file changed, 32 insertions(+), 23 deletions(-)
+> 
+> diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+> index 21be19ece4f7..9f9250fe1c4d 100644
+> --- a/include/net/xfrm.h
+> +++ b/include/net/xfrm.h
+> @@ -1094,6 +1094,29 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
+>  	return !0;
+>  }
+>  
+> +#ifdef CONFIG_XFRM
+> +static inline struct xfrm_state *xfrm_input_state(struct sk_buff *skb)
+> +{
+> +	struct sec_path *sp = skb_sec_path(skb);
+> +
+> +	return sp->xvec[sp->len - 1];
+> +}
+> +#endif
+> +
+> +static inline struct xfrm_offload *xfrm_offload(struct sk_buff *skb)
+> +{
+> +#ifdef CONFIG_XFRM
+> +	struct sec_path *sp = skb_sec_path(skb);
+> +
+> +	if (!sp || !sp->olen || sp->len != sp->olen)
+> +		return NULL;
+> +
+> +	return &sp->ovec[sp->olen - 1];
+> +#else
+> +	return NULL;
+> +#endif
+> +}
+> +
+>  #ifdef CONFIG_XFRM
+>  int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb,
+>  			unsigned short family);
+> @@ -1113,6 +1136,15 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
+>  {
+>  	struct net *net = dev_net(skb->dev);
+>  	int ndir = dir | (reverse ? XFRM_POLICY_MASK + 1 : 0);
+> +	struct xfrm_offload *xo = xfrm_offload(skb);
+> +	struct xfrm_state *x;
+> +
+> +	if (xo) {
+> +		x = xfrm_input_state(skb);
+> +		if (x->xso.type == XFRM_DEV_OFFLOAD_FULL)
+> +			return (xo->flags & CRYPTO_DONE) &&
+> +			       (xo->status & CRYPTO_SUCCESS);
+> +	}
 
-v1->v2:
-  - Improved the description according to the suggestion from Edward and
-    Jakub.
-
-Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
-Reported-by: Prijesh Patel <prpatel@redhat.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- Documentation/admin-guide/sysctl/net.rst | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
-index f86b5e1623c6..5cb99403bf03 100644
---- a/Documentation/admin-guide/sysctl/net.rst
-+++ b/Documentation/admin-guide/sysctl/net.rst
-@@ -374,6 +374,17 @@ option is set to SOCK_TXREHASH_DEFAULT (i. e. not overridden by setsockopt).
- If set to 1 (default), hash rethink is performed on listening socket.
- If set to 0, hash rethink is not performed.
- 
-+gro_normal_batch
-+----------------
-+
-+Maximum number of the segments to batch up for GRO list-RX. When a packet exits
-+GRO, either as a coalesced superframe or as an original packet which GRO has
-+decided not to coalesce, it is placed on a per-NAPI list. This list is then
-+passed to the stack when the segments in this list count towards the
-+gro_normal_batch limit.
-+
-+Default : 8
-+
- 2. /proc/sys/net/unix - Parameters for Unix domain sockets
- ----------------------------------------------------------
- 
--- 
-2.31.1
-
+We can not exit without doing the policy check here. The inner
+packet could still match a block policy in software. Maybe
+we can reset the secpath and do the policy check.
