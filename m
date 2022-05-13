@@ -2,240 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D5B7B5269CE
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 21:03:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D0AA5269E1
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 21:09:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383488AbiEMTDo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 15:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
+        id S1383552AbiEMTIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 15:08:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241084AbiEMTDo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 15:03:44 -0400
-Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6445591365;
-        Fri, 13 May 2022 12:03:41 -0700 (PDT)
-Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id AD69530322D9;
-        Fri, 13 May 2022 21:03:08 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
-        :content-type:date:from:from:in-reply-to:message-id:mime-version
-        :references:reply-to:subject:subject:to:to; s=felkmail; bh=Qk9Ud
-        NR/JbQ6ZZ7ow3QrjSj7tcRhytNN46abF/0M+ps=; b=TMpKdgd7v36g4y04OgECJ
-        gfmZ/zoREyfNiC4pR1ZeCyLAueFrZtYSSFobRpkoIBIHhW5M114bR6cAINsHUidd
-        Xqko7sr0ikQNHxPJiCvreJTLLuVxlOdvHj5f7EwlBZoKIUyiSKMBIcqkl7EfqTPf
-        s7ka+h7DpjKPoUX99aPmSWZuKv91QvdpAKrff4FxfiQ+HOqifF1p0MsJBUV9E09J
-        yItYXcgnPsWmWWy8hzIyJiDVcd7+dykgBD8mxm3j66j2SM6YDXmwA1YCGpxB16I5
-        nwBM9SSi8U+uSvavSJ0LuhQ7dvn6PsMCCMbRVmlZH0QgDqjdBBMH4LRk1aYuj84B
-        w==
-Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
-        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id 8E16230322D3;
-        Fri, 13 May 2022 21:03:06 +0200 (CEST)
-Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
-        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 24DJ36fb031780;
-        Fri, 13 May 2022 21:03:06 +0200
-Received: (from pisa@localhost)
-        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 24DJ36Qr031779;
-        Fri, 13 May 2022 21:03:06 +0200
-X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
-From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
-To:     "Marc Kleine-Budde" <mkl@pengutronix.de>,
-        Matej Vasilevski <matej.vasilevski@seznam.cz>,
-        ondrej.ille@gmail.com, Jiri Novak <jnovak@fel.cvut.cz>
-Subject: Re: [RFC PATCH 1/3] can: ctucanfd: add HW timestamps to RX and error CAN frames
-Date:   Fri, 13 May 2022 21:02:58 +0200
-User-Agent: KMail/1.9.10
-Cc:     linux-can@vger.kernel.org, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, martin.jerabek01@gmail.com
-References: <20220512232706.24575-1-matej.vasilevski@seznam.cz> <20220512232706.24575-2-matej.vasilevski@seznam.cz> <20220513114135.lgbda6armyiccj3o@pengutronix.de>
-In-Reply-To: <20220513114135.lgbda6armyiccj3o@pengutronix.de>
-X-KMail-QuotePrefix: > 
+        with ESMTP id S1383549AbiEMTIr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 15:08:47 -0400
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA3B056F81
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 12:08:45 -0700 (PDT)
+Received: by mail-pj1-x1035.google.com with SMTP id a15-20020a17090ad80f00b001dc2e23ad84so11610323pjv.4
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 12:08:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=EzjGRanVFJwRnOyFB5bsr0UVElbIvg6LgT11yCg+N3M=;
+        b=ss5GJYfHPQaNwqrKhr6tbvMUjMLuarNHrQDLGQ8pLgxAb2Nm0f5ncRzjYSI2Jug0pM
+         DpqCDF798MF/A1Wwt0HR7db2DjEAZOLoxepKD7ipJeZ3tbn6RPTjFQrfzoErEAEQtVZr
+         l/sIDk/ToOD+knR2vC0wKg+GaUqhEMTt8sP2QchJB9K8F/4eWK0reiVtsIpW+sXYyE4o
+         K+tiniiA2zDZ16msptDnM2yo2XW3A53IHJiK0f8p+RaaT/RlS5IEoyY2tvpor8AICa0u
+         HPjvwJQnx0SFw5LpdCkMmvd3UZsvyRmjwV8FuvEusT+fWljQFcSslNfdoHryonkZzZ50
+         brKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=EzjGRanVFJwRnOyFB5bsr0UVElbIvg6LgT11yCg+N3M=;
+        b=0hjUuQCLsIppS885myMeFqASVHPdTCAEaGk1Vfi+WHEhVEHhih6qAr1PXhwWQNCHn8
+         cL9FI15ijzFLRgZGFv4xRrfSbrWUdHENNRsDQ/7XgqUdgduMmXkPEsSZxuhL6m2LZVXv
+         IBlAnn1C6t21EaKm8355iiPsB2aizms+nVQ2CjUp/6/xUd3RQGoT0I1HRHYLFqzPcI/P
+         zB+NpqxpWp8ukGq6VoMovkej0kz4//1U4AjQPeseLxL9j2Ks7qdo7I342Y+0Bxo0iPnn
+         7fEVsPEWYS7aPNWlfhJBUGIATrFKxYNUKK86sS1jX3ofSw9mQGvTsQkD6TGL7NNkpgFV
+         a0Ww==
+X-Gm-Message-State: AOAM530yKAhb2dqkPHMx5CLrLlzzvo64/FCsGXQKamU1yKqSa3DxkFcr
+        ssj/FjVgpCKodj3zNcC9MmcrmQ==
+X-Google-Smtp-Source: ABdhPJxjT/S/GGJcrjyiN98cpunUOAk8dmuGyazrbmW7Cv3+M62T06kVWsQdFGqdRn6fRzzpgRc3Wg==
+X-Received: by 2002:a17:902:82c7:b0:161:4936:f068 with SMTP id u7-20020a17090282c700b001614936f068mr26519plz.145.1652468925184;
+        Fri, 13 May 2022 12:08:45 -0700 (PDT)
+Received: from localhost.localdomain ([50.39.160.154])
+        by smtp.gmail.com with ESMTPSA id b5-20020a170902e94500b0015e8d4eb2cfsm2148036pll.281.2022.05.13.12.08.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 13 May 2022 12:08:44 -0700 (PDT)
+From:   Tadeusz Struk <tadeusz.struk@linaro.org>
+To:     andrii.nakryiko@gmail.com
+Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Andrii Nakryiko" <andrii@kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>,
+        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
+        "John Fastabend" <john.fastabend@gmail.com>,
+        "KP Singh" <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, stable@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
+Subject: [PATCH v3] bpf: Fix KASAN use-after-free Read in compute_effective_progs
+Date:   Fri, 13 May 2022 12:08:21 -0700
+Message-Id: <20220513190821.431762-1-tadeusz.struk@linaro.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <CAEf4Bzah9K7dEa_7sXE4TnkuMTRHypMU9DxiLezgRvLjcqE_YA@mail.gmail.com>
+References: <CAEf4Bzah9K7dEa_7sXE4TnkuMTRHypMU9DxiLezgRvLjcqE_YA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: Text/Plain;
-  charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: inline
-Message-Id: <202205132102.58109.pisa@cmp.felk.cvut.cz>
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Marc,
+Syzbot found a Use After Free bug in compute_effective_progs().
+The reproducer creates a number of BPF links, and causes a fault
+injected alloc to fail, while calling bpf_link_detach on them.
+Link detach triggers the link to be freed by bpf_link_free(),
+which calls __cgroup_bpf_detach() and update_effective_progs().
+If the memory allocation in this function fails, the function restores
+the pointer to the bpf_cgroup_link on the cgroup list, but the memory
+gets freed just after it returns. After this, every subsequent call to
+update_effective_progs() causes this already deallocated pointer to be
+dereferenced in prog_list_length(), and triggers KASAN UAF error.
 
-thanks for the fast feedback.
+To fix this issue don't preserve the pointer to the prog or link in the
+list, but remove it and replace it with a dummy prog without shrinking
+the table. The subsequent call to __cgroup_bpf_detach() or
+__cgroup_bpf_detach() will correct it.
 
-On Friday 13 of May 2022 13:41:35 Marc Kleine-Budde wrote:
-> On 13.05.2022 01:27:05, Matej Vasilevski wrote:
-> > This patch adds support for retrieving hardware timestamps to RX and
-> > error CAN frames for platform devices. It uses timecounter and
-> > cyclecounter structures, because the timestamping counter width depends
-> > on the IP core implementation (it might not always be 64-bit).
-> > To enable HW timestamps, you have to enable it in the kernel config
-> > and provide the following properties in device tree:
->
-> Please no Kconfig option. There is a proper interface to enable/disable
-> time stamps form the user space. IIRC it's an ioctl. But I think the
-> overhead is neglectable here.
+Cc: "Alexei Starovoitov" <ast@kernel.org>
+Cc: "Daniel Borkmann" <daniel@iogearbox.net>
+Cc: "Andrii Nakryiko" <andrii@kernel.org>
+Cc: "Martin KaFai Lau" <kafai@fb.com>
+Cc: "Song Liu" <songliubraving@fb.com>
+Cc: "Yonghong Song" <yhs@fb.com>
+Cc: "John Fastabend" <john.fastabend@gmail.com>
+Cc: "KP Singh" <kpsingh@kernel.org>
+Cc: <netdev@vger.kernel.org>
+Cc: <bpf@vger.kernel.org>
+Cc: <stable@vger.kernel.org>
+Cc: <linux-kernel@vger.kernel.org>
 
-thanks for suggestion
+Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
+Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
+Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
+Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+---
+v2: Add a fall back path that removes a prog from the effective progs
+    table in case detach fails to allocate memory in compute_effective_progs().
 
-> > - ts-used-bits
->
-> A property with "width"
+v3: Implement the fallback in a separate function purge_effective_progs
+---
+ kernel/bpf/cgroup.c | 64 +++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 56 insertions(+), 8 deletions(-)
 
-agree
-
-> in the name seems to be more common. You 
-> probably have to add the "ctu" vendor prefix. BTW: the bindings document
-> update should come before changing the driver.
-
-this is RFC and not a final.
-
-In general and long term, I vote and prefer to have number of the
-most significant active timestamp bit to be encoded in some
-CTU CAN FD IP core info register same as for the number of the Tx
-buffers. We will discuss that internally. The the solution is the
-same for platform as well as for PCI. But the possible second clock
-frequency same as the bitrate clock source should stay to be provided
-from platform and some table based on vendor and device ID in the PCI
-case. Or at least it is my feeling about the situation.
-
-> > - add second clock phandle to 'clocks' property
-> > - create 'clock-names' property and name the second clock 'ts_clk'
-> >
-> > Alternatively, you can set property 'ts-frequency' directly with
-> > the timestamping frequency, instead of setting second clock.
->
-> For now, please use a clock property only. If you need ACPI bindings add
-> them later.
-
-I would be happy if I would never need to think about ACPI...
-or if somebody else does it for us...
-
-> > Signed-off-by: Matej Vasilevski <matej.vasilevski@seznam.cz>
-> > ---
-> >  drivers/net/can/ctucanfd/Kconfig              |  10 ++
-> >  drivers/net/can/ctucanfd/Makefile             |   2 +-
-> >  drivers/net/can/ctucanfd/ctucanfd.h           |  25 ++++
-> >  drivers/net/can/ctucanfd/ctucanfd_base.c      | 123 +++++++++++++++++-
-> >  drivers/net/can/ctucanfd/ctucanfd_timestamp.c | 113 ++++++++++++++++
-> >  5 files changed, 267 insertions(+), 6 deletions(-)
-> >  create mode 100644 drivers/net/can/ctucanfd/ctucanfd_timestamp.c
-> >
-> > diff --git a/drivers/net/can/ctucanfd/Kconfig
-> > b/drivers/net/can/ctucanfd/Kconfig index 48963efc7f19..d75931525ce7
-> > 100644
-> > --- a/drivers/net/can/ctucanfd/Kconfig
-> > +++ b/drivers/net/can/ctucanfd/Kconfig
-> > @@ -32,3 +32,13 @@ config CAN_CTUCANFD_PLATFORM
-> >  	  company. FPGA design
-> > https://gitlab.fel.cvut.cz/canbus/zynq/zynq-can-sja1000-top. The kit
-> > description at the Computer Architectures course pages
-> > https://cw.fel.cvut.cz/wiki/courses/b35apo/documentation/mz_apo/start . +
-> > +config CAN_CTUCANFD_PLATFORM_ENABLE_HW_TIMESTAMPS
-> > +	bool "CTU CAN-FD IP core platform device hardware timestamps"
-> > +	depends on CAN_CTUCANFD_PLATFORM
-> > +	default n
-> > +	help
-> > +	  Enables reading hardware timestamps from the IP core for platform
-> > +	  devices by default. You will have to provide ts-bit-size and
-> > +	  ts-frequency/timestaping clock in device tree for CTU CAN-FD IP
-> > cores, +	  see device tree bindings for more details.
->
-> Please no Kconfig option, see above.
-
-It is only my feeling, but I would keep driver for one or two releases
-with timestamps code really disabled by default and make option visible
-only when CONFIG_EXPERIMENTAL is set. This would could allow possible
-incompatible changes and settle of the situation on IP core side...
-Other options is to keep feature for while out of the tree. But review
-by community is really important and I am open to suggestions...
-
-> > diff --git a/drivers/net/can/ctucanfd/Makefile
-> > b/drivers/net/can/ctucanfd/Makefile index 8078f1f2c30f..78b7d9830098
-> > 100644
-> > --- a/drivers/net/can/ctucanfd/Makefile
-> > +++ b/drivers/net/can/ctucanfd/Makefile
-> > --- /dev/null
-> > +++ b/drivers/net/can/ctucanfd/ctucanfd_timestamp.c
-> > @@ -0,0 +1,113 @@
-> > +// SPDX-License-Identifier: GPL-2.0-or-later
-> > +/***********************************************************************
-> >******** + *
-> > + * CTU CAN FD IP Core
-> > + *
-> > + * Copyright (C) 2022 Matej Vasilevski <matej.vasilevski@seznam.cz> FEE
-> > CTU + *
-> > + * Project advisors:
-> > + *     Jiri Novak <jnovak@fel.cvut.cz>
-> > + *     Pavel Pisa <pisa@cmp.felk.cvut.cz>
-> > + *
-> > + * Department of Measurement         (http://meas.fel.cvut.cz/)
-> > + * Faculty of Electrical Engineering (http://www.fel.cvut.cz)
-> > + * Czech Technical University        (http://www.cvut.cz/)
-> > + *
-> > + * This program is free software; you can redistribute it and/or
-> > + * modify it under the terms of the GNU General Public License
-> > + * as published by the Free Software Foundation; either version 2
-> > + * of the License, or (at your option) any later version.
-> > + *
-> > + * This program is distributed in the hope that it will be useful,
-> > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> > + * GNU General Public License for more details.
->
-> With the SPDX-License-Identifier you can skip this.
-
-OK, Matej Vasilevski started his work on out of the tree code.
-
-Please, model header according to actual net-next CTU CAN FD
-files header.
-
-
-> > +int ctucan_timestamp_init(struct ctucan_priv *priv)
-> > +{
-> > +	struct cyclecounter *cc = &priv->cc;
-> > +
-> > +	cc->read = ctucan_timestamp_read;
-> > +	cc->mask = CYCLECOUNTER_MASK(priv->timestamp_bit_size);
-> > +	cc->shift = 10;
-> > +	cc->mult = clocksource_hz2mult(priv->timestamp_freq, cc->shift);
->
-> If you frequency and width is not known, it's probably better not to
->
-> hard code the shift and use clocks_calc_mult_shift() instead:
-> | https://elixir.bootlin.com/linux/v5.17.7/source/kernel/time/clocksource.c
-> |#L47
-
-Thanks for the pointer. I have suggested dynamic shift approach used actually
-in calculate_and_set_work_delay. May it be it can be replaced by some 
-cloksource function as well.
-
-> There's no need to do the above init on open(), especially in your case.
-> I know the mcp251xfd does it this way....In your case, as you parse data
-> from DT, it's better to do the parsing in probe and directly do all
-> needed calculations and fill the struct cyclecounter there.
-
-OK
-
-Best wishes and thanks Matej Vasilevski for the great work and Marc
-for the help to get it into the shape,
-
-                Pavel
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index 128028efda64..9d3af4d6c055 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -681,6 +681,57 @@ static struct bpf_prog_list *find_detach_entry(struct list_head *progs,
+ 	return ERR_PTR(-ENOENT);
+ }
+ 
++/**
++ * purge_effective_progs() - After compute_effective_progs fails to alloc new
++ *                           cgrp->bpf.inactive table we can recover by
++ *                           recomputing the array in place.
++ *
++ * @cgrp: The cgroup which descendants to traverse
++ * @link: A link to detach
++ * @atype: Type of detach operation
++ */
++static void purge_effective_progs(struct cgroup *cgrp, struct bpf_prog *prog,
++				  enum cgroup_bpf_attach_type atype)
++{
++	struct cgroup_subsys_state *css;
++	struct bpf_prog_array_item *item;
++	struct bpf_prog *tmp;
++	struct bpf_prog_array *array;
++	int index = 0, index_purge = -1;
++
++	if (!prog)
++		return;
++
++	/* recompute effective prog array in place */
++	css_for_each_descendant_pre(css, &cgrp->self) {
++		struct cgroup *desc = container_of(css, struct cgroup, self);
++
++		array = desc->bpf.effective[atype];
++		item = &array->items[0];
++
++		/* Find the index of the prog to purge */
++		while ((tmp = READ_ONCE(item->prog))) {
++			if (tmp == prog) {
++				index_purge = index;
++				break;
++			}
++			item++;
++			index++;
++		}
++
++		/* Check if we found what's needed for removing the prog */
++		if (index_purge == -1 || index_purge == index - 1)
++			continue;
++
++		/* Remove the program from the array */
++		WARN_ONCE(bpf_prog_array_delete_safe_at(array, index_purge),
++			  "Failed to purge a prog from array at index %d", index_purge);
++
++		index = 0;
++		index_purge = -1;
++	}
++}
++
+ /**
+  * __cgroup_bpf_detach() - Detach the program or link from a cgroup, and
+  *                         propagate the change to descendants
+@@ -723,8 +774,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 	pl->link = NULL;
+ 
+ 	err = update_effective_progs(cgrp, atype);
+-	if (err)
+-		goto cleanup;
++	if (err) {
++		struct bpf_prog *prog_purge = prog ? prog : link->link.prog;
++
++		purge_effective_progs(cgrp, prog_purge, atype);
++	}
+ 
+ 	/* now can actually delete it from this cgroup list */
+ 	list_del(&pl->node);
+@@ -736,12 +790,6 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 		bpf_prog_put(old_prog);
+ 	static_branch_dec(&cgroup_bpf_enabled_key[atype]);
+ 	return 0;
+-
+-cleanup:
+-	/* restore back prog or link */
+-	pl->prog = old_prog;
+-	pl->link = link;
+-	return err;
+ }
+ 
+ static int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
 -- 
-                Pavel Pisa
-    e-mail:     pisa@cmp.felk.cvut.cz
-    Department of Control Engineering FEE CVUT
-    Karlovo namesti 13, 121 35, Prague 2
-    university: http://control.fel.cvut.cz/
-    personal:   http://cmp.felk.cvut.cz/~pisa
-    projects:   https://www.openhub.net/accounts/ppisa
-    CAN related:http://canbus.pages.fel.cvut.cz/
-    Open Technologies Research Education and Exchange Services
-    https://gitlab.fel.cvut.cz/otrees/org/-/wikis/home
+2.36.1
 
