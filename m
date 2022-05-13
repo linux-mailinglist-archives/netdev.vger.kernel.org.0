@@ -2,123 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 757175265CB
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:15:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 303A3526601
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:25:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381803AbiEMPPo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 11:15:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58262 "EHLO
+        id S1381957AbiEMPZV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 11:25:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381202AbiEMPPd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:15:33 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 054D0541AD
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:15:31 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id i5so11833294wrc.13
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:15:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4kMBq3ML8i4Cw0yoGEU+fJc6+bgjz8wLr/JmgXqi+0Y=;
-        b=sSPnHzKsfAMHfdJZEceCGudvpiXtlhgaJ1KH/jFERZw+Cwc4GNQJYDOsKkIwlRr1SG
-         zkWovpQQtEag6AdaxK7LyAXiyW4g8aA5dcLn+9igMe8Z3FYGQlwHPZ1wvRN/wEYYdiHu
-         hMkkGjyQ+Tg2fqdGTUSLDTrNDPk2ljGdh5zd3aZlkZJpJe6aTklZSUiwHBRbGGHQYQGu
-         ok9S/0Q9HjL69n9v7eso0j2N64NbQr2B6Zd/FL9ssgXm67yxf6bgcK+dfcKAnLT9EwdE
-         5ObekqAsaYhfBzkthbhzG+YTC8/USyXkFJr1R21N2xOWBQa1TszxvMOXXJCCK3dpGgXF
-         HzhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4kMBq3ML8i4Cw0yoGEU+fJc6+bgjz8wLr/JmgXqi+0Y=;
-        b=oW38qZviQMmXg5hJ65Go0f80GYJW8l1wyWBRNK0bB72XwLqW8pRy5yFHDvy1YRjw6m
-         crBC4SLgtvu6AjBe1eJpAQJXpTfCH0x/mYYZX5GKkZ1MDwQYWIi4eos6NK48WIA9i4lP
-         Ee9kJlb38rZB3bh9fKz1yaJ7N6nqRhL5894e2EIZBUJfTll7UOK1LniZAr4t3O5i6IDG
-         Uw1zEXk25vEjsnmSbebv4pPZP0PJ237Lll509c7qCQeLUrS2Aykqfp8mjB58raIk6/MP
-         tyiTxRI7BXl/pjl7+AHP2ZqJ+2dE/Bz+7C3wDd3yuli9kQcWQE++c4TbKMDzZpM7IkWO
-         Xeuw==
-X-Gm-Message-State: AOAM532SraLOcbvvGB40zx0iEHkVgoYza1WgkQ4QKWhHkJBLguyIV+NT
-        wSnB7DMSXEN4LE23a63blsn0lCicUbfhQx4l
-X-Google-Smtp-Source: ABdhPJxYzFSnDNuHEGkraj3axUSnYZQ3NLj17U3JhPBsXfiJv7WzEL40kF+makqi7xt9BaGY90jGXw==
-X-Received: by 2002:a05:6000:86:b0:20a:d7be:e09b with SMTP id m6-20020a056000008600b0020ad7bee09bmr4325701wrx.398.1652454929639;
-        Fri, 13 May 2022 08:15:29 -0700 (PDT)
-Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id y15-20020a05600c364f00b003945237fea1sm2741440wmq.0.2022.05.13.08.15.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:15:29 -0700 (PDT)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Govind Singh <govinds@codeaurora.org>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH] ath10k: do not enforce interrupt trigger type
-Date:   Fri, 13 May 2022 17:15:16 +0200
-Message-Id: <20220513151516.357549-1-krzysztof.kozlowski@linaro.org>
-X-Mailer: git-send-email 2.32.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        with ESMTP id S233504AbiEMPZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:25:19 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7C46E0CD;
+        Fri, 13 May 2022 08:25:18 -0700 (PDT)
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24DFBouj023613;
+        Fri, 13 May 2022 15:24:54 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
+ from : to : cc : date : in-reply-to : references : content-type :
+ mime-version : content-transfer-encoding; s=pp1;
+ bh=Rs/HrYaFsVOG7pHzpWHMzkvZ8QnbJVdvVi9OpbPAeQ8=;
+ b=XquKzgjsrizj4CfhcryNFVGqew5wyyd7HPiDR9cLxA/QDQCBSyzQ3d4A+o5zkXiaJAUX
+ uYdgcRXvAXKhfn14LipL3IDS6QPy1nl0ZpHRDmTYSdxaIsp+oDlqKWhgnTlhW0H0VegT
+ 6f0XP/GtHdx6033jI2pf54HAI+TZSN4C3+345s1KBUw6ygzjiQtQ9G12DROr/KIURWcp
+ D8q/7hu9aO6VxzekJS98QeVeeVOaIr4tucAriBBjecxgt93rSWsQKCL+HGFo3ASZMOGY
+ TW1XRuw2FsM1iiOi/3UQZqTFaiytFNegAdnmqbnOuPgqG7yextuGnwf6US7V4/aJuhsp DA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g1srpr8pk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 13 May 2022 15:24:54 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24DFFQbg008263;
+        Fri, 13 May 2022 15:24:53 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g1srpr8nk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 13 May 2022 15:24:53 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24DFOp4I014120;
+        Fri, 13 May 2022 15:24:51 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma06ams.nl.ibm.com with ESMTP id 3fyrkk4r9r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 13 May 2022 15:24:50 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24DFOOJ914549438
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 13 May 2022 15:24:24 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 96179A4053;
+        Fri, 13 May 2022 15:24:48 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2D701A404D;
+        Fri, 13 May 2022 15:24:46 +0000 (GMT)
+Received: from sig-9-65-91-25.ibm.com (unknown [9.65.91.25])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 13 May 2022 15:24:46 +0000 (GMT)
+Message-ID: <06062b288d675dc060f33041e9b2009c151698e6.camel@linux.ibm.com>
+Subject: Re: [PATCH v7] efi: Do not import certificates from UEFI Secure
+ Boot for T2 Macs
+From:   Mimi Zohar <zohar@linux.ibm.com>
+To:     Aditya Garg <gargaditya08@live.com>,
+        "jarkko@kernel.org" <jarkko@kernel.org>,
+        "dmitry.kasatkin@gmail.com" <dmitry.kasatkin@gmail.com>,
+        "jmorris@namei.org" <jmorris@namei.org>,
+        "serge@hallyn.com" <serge@hallyn.com>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@kernel.org" <kpsingh@kernel.org>
+Cc:     "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Orlando Chamberlain <redecorating@protonmail.com>,
+        "admin@kodeit.net" <admin@kodeit.net>,
+        "stable@vger.kernel.org" <stable@vger.kernel.org>
+Date:   Fri, 13 May 2022 11:24:45 -0400
+In-Reply-To: <958B8D22-F11E-4B5D-9F44-6F0626DBCB63@live.com>
+References: <652C3E9E-CB97-4C70-A961-74AF8AEF9E39@live.com>
+         <94DD0D83-8FDE-4A61-AAF0-09A0175A0D0D@live.com>
+         <590ED76A-EE91-4ED1-B524-BC23419C051E@live.com>
+         <E9C28706-2546-40BF-B32C-66A047BE9EFB@live.com>
+         <02125722-91FC-43D3-B63C-1B789C2DA8C3@live.com>
+         <958B8D22-F11E-4B5D-9F44-6F0626DBCB63@live.com>
+Content-Type: text/plain; charset="ISO-8859-15"
+X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: nSTyBu9TLw378bJvOtb7YdyATbWM_IHn
+X-Proofpoint-ORIG-GUID: cEKFVC3VVbEMtznL2Syom3um3gN35hor
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-13_04,2022-05-13_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
+ suspectscore=0 bulkscore=0 adultscore=0 spamscore=0 clxscore=1011
+ phishscore=0 mlxlogscore=793 impostorscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205130067
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Interrupt line can be configured on different hardware in different way,
-even inverted.  Therefore driver should not enforce specific trigger
-type - edge rising - but instead rely on Devicetree to configure it.
+Hi Aditya,
 
-All Qualcomm DTSI with WCN3990 define the interrupt type as level high,
-so the mismatch between DTSI and driver causes rebind issues:
+On Fri, 2022-04-15 at 17:02 +0000, Aditya Garg wrote:
+> From: Aditya Garg <gargaditya08@live.com>
+> 
+> On Apple T2 Macs, when Linux attempts to read the db and dbx efi variables
+> at early boot to load UEFI Secure Boot certificates, a page fault occurs
+> in Apple firmware code and EFI runtime services are disabled with the
+> following logs:
 
-  $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/unbind
-  $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/bind
-  [   44.763114] irq: type mismatch, failed to map hwirq-446 for interrupt-controller@17a00000!
-  [   44.763130] ath10k_snoc 18800000.wifi: error -ENXIO: IRQ index 0 not found
-  [   44.763140] ath10k_snoc 18800000.wifi: failed to initialize resource: -6
+Are there directions for installing Linux on a Mac with Apple firmware
+code?  Are you dual booting Linux and Mac, or just Linux?  While in
+secure boot mode, without being able to read the keys to verify the
+kernel image signature, the signature verification should fail.
 
-Fixes: c963a683e701 ("ath10k: add resource init and deinit for WCN3990")
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Has anyone else tested this patch?
 
----
+thanks,
 
-Separate question is whether DTS has a proper interrupt type (level
-high) configured...
----
- drivers/net/wireless/ath/ath10k/snoc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Mimi
 
-diff --git a/drivers/net/wireless/ath/ath10k/snoc.c b/drivers/net/wireless/ath/ath10k/snoc.c
-index 607e8164bf98..5576ad9fd116 100644
---- a/drivers/net/wireless/ath/ath10k/snoc.c
-+++ b/drivers/net/wireless/ath/ath10k/snoc.c
-@@ -1249,13 +1249,12 @@ static void ath10k_snoc_init_napi(struct ath10k *ar)
- static int ath10k_snoc_request_irq(struct ath10k *ar)
- {
- 	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
--	int irqflags = IRQF_TRIGGER_RISING;
- 	int ret, id;
- 
- 	for (id = 0; id < CE_COUNT_MAX; id++) {
- 		ret = request_irq(ar_snoc->ce_irqs[id].irq_line,
--				  ath10k_snoc_per_engine_handler,
--				  irqflags, ce_name[id], ar);
-+				  ath10k_snoc_per_engine_handler, 0,
-+				  ce_name[id], ar);
- 		if (ret) {
- 			ath10k_err(ar,
- 				   "failed to register IRQ handler for CE %d: %d\n",
--- 
-2.32.0
 
