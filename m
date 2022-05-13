@@ -2,67 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2665269AA
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 20:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8CF55269B0
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 20:57:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383453AbiEMS4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 14:56:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43844 "EHLO
+        id S1383451AbiEMS5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 14:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383469AbiEMS4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 14:56:14 -0400
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E80986C0DA
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:08 -0700 (PDT)
-Received: by mail-pf1-x42d.google.com with SMTP id p8so8424980pfh.8
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:08 -0700 (PDT)
+        with ESMTP id S1383418AbiEMS5G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 14:57:06 -0400
+Received: from mail-oo1-xc2e.google.com (mail-oo1-xc2e.google.com [IPv6:2607:f8b0:4864:20::c2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC1266B7E6
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:57:01 -0700 (PDT)
+Received: by mail-oo1-xc2e.google.com with SMTP id q73-20020a4a334c000000b0035eb110dd0dso2884813ooq.10
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:57:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1eVW6kVW/vGRNhMVNOqzUJcLuY6jXULfLVuE7Ejkm8I=;
-        b=TQ+rh0C4qL2yBrrhDpjW6U+pmT/+rOn3u89TsXUCCq2oeMw57GrtpiGTtuFUrmwwjF
-         maxpvcBhMGpYW5FQ36VYW0tESGYykReN8lck4XxiyMAlUx2IJNl+z8kblgbUSKveKbtL
-         L/Ejv524NhkuOvxirfoS/CdpfNe/LBU9OrLpdGjw+7apvFxF7fJsQAoT/kOAf+j3R429
-         tHkeRvGQzc9ReL7G7dlZKSCBtwdqXVlgQzMMPmMoY3PNZ2n8xscTCS/4LcuvjWOFML5q
-         RlhR7dt/tDsJ9g4glDDHCPRT039Yt0YIIboRLSRPQsqTKs6bFgDntT8n7BiLE+rEHsLx
-         DDsA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Wum7m/AWYrADrVd3nYIP1zeEUmvEHouw2DspDSjzyyI=;
+        b=VVwk/4AifqQYGpAdkZ4ifDF4cObtc7AOim47EWqAysMphAOW1j1bYnm2+VdsAfvfVf
+         PB0V2qBowsq6sRTU6p/wBQYzuQunRIbPdHReRB5C+t0YowC6Blu3n4vE8CIaMSZt1Bd/
+         zlAINbyxSkWMRDxF+EkFPzIbVk1JKMmzTTTiETJ1oT278wAGr1eHNrohjvxwG5A/Vh7I
+         uyWiyEH2XyRjoSVRWS7N4LUQpuqt2XtxcAgaoNoKWizx0o5CHTg+qsqzeFhEv1AZUEHY
+         TXHJ9+Bugt4EgC041baDfkC7jahSJODFveRMjGR58YizYr68I7PpR/BJ+1i/uqpk//6G
+         BA+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1eVW6kVW/vGRNhMVNOqzUJcLuY6jXULfLVuE7Ejkm8I=;
-        b=HSHWKok5y+yXXkEBiNuOEMxsA4M/TEnNkfmEZrSpvWzlT0cVmy+uHYrp+KyEgV1sWY
-         0/21gZBR/Mb3h27PtNDewK9UmGxMySd5xcM3sppqc7U17U2XMEysSoC/pd5mGven22g2
-         KONzXCXSfgqud4jggzrQoygl9rurxWgWGMAZt51bPfkpcYsXqKEBFyR+KdrwRir4sJMg
-         G1xAuF9ueq6qoMInmr3KBmEsnUcJjBFTV8/UZALWiSHkJLg4jFNHwioDT8s8OeH2Dnri
-         ekWVfczcJb3V8tRt6OLycYk4b8lBvC2afG6eiZRYHVNG3Tfds1vmkptwPNYoh4ZkVl+S
-         v5yg==
-X-Gm-Message-State: AOAM530n+QX7o0KvM/PUQ9GOdBm2oOoODFzApCHIt8YyBQOAGyWPXUrT
-        5+HqbOMdxTafusIzbHHcHZY=
-X-Google-Smtp-Source: ABdhPJxrfNM3wXFQ9Rh3eg8eJj6ifdkwTN6lMYA4rEwbITmYGpdrwv3mHvuGNly86csev8EHtQJOvA==
-X-Received: by 2002:a63:5510:0:b0:3db:8bb3:6059 with SMTP id j16-20020a635510000000b003db8bb36059mr4964316pgb.328.1652468168237;
-        Fri, 13 May 2022 11:56:08 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c436:3fa3:479f:a7a])
-        by smtp.gmail.com with ESMTPSA id 2-20020a170902c10200b0015e8d4eb2absm2159537pli.245.2022.05.13.11.56.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 11:56:07 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Olivier Hartkopp <socketcan@hartkopp.net>
-Subject: [PATCH v2 net-next 10/10] inet: rename INET_MATCH()
-Date:   Fri, 13 May 2022 11:55:50 -0700
-Message-Id: <20220513185550.844558-11-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-In-Reply-To: <20220513185550.844558-1-eric.dumazet@gmail.com>
-References: <20220513185550.844558-1-eric.dumazet@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Wum7m/AWYrADrVd3nYIP1zeEUmvEHouw2DspDSjzyyI=;
+        b=foFxxz9PQIyZVpVzuJiKaJpNiArvp3p3Pdi92Fo7Wg3H621ZXJBJN7S+nVwobP3ZN4
+         vi/h95vCxaTpdeHqTtDGesVCyT6UEkJrKv5ojG02+iGJzbb8kxXgCpO4ox3O9IIT2w1S
+         fV2CetlEaw0Y0Oqx9mQrlTsTa+I9S/KBrbI9pOz8U+L/Q525w0iPUBgUIE5EYsvS3c0V
+         x/niMQKHNMZrLspwaHUpHCqz+LFPJQCjbqvBCm3A2uX8/mlsY7cl0mdlDeqnI+ZilPNT
+         AqUMXCYF6ChljXdQrm0f3+IQ5QFcwrOawAu75NvTMM5VJLcIRpP9tNanw1K2vzasIj8t
+         jp4Q==
+X-Gm-Message-State: AOAM532ZqqPSZJVBK6mmY8JYt2T0eP/ASe1pXzv7Dt/LgpWsjRw/cKww
+        GgeYHJa7Fq9Lunb1ySfMtlRRjmhUEPfPRIoq5vOtBx6MX/nytg==
+X-Google-Smtp-Source: ABdhPJzrtYgrdlPCX7WbJr8lLXwTqW2xY9t0qr184w2an30VL7p3S7frxKky0IrCob6pdc2J39Xt0cQEN3yK4p82YXk=
+X-Received: by 2002:a4a:95c6:0:b0:35f:7f11:7055 with SMTP id
+ p6-20020a4a95c6000000b0035f7f117055mr2445597ooi.87.1652468221329; Fri, 13 May
+ 2022 11:57:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <01a8af8654b87058ecd421e471d760a43784ab96.1652456873.git.lucien.xin@gmail.com>
+ <CANn89iJxkikxKmN7JM_-1dohhb7TvH0Ok7CWxAajz_Lqi3y3Dw@mail.gmail.com>
+In-Reply-To: <CANn89iJxkikxKmN7JM_-1dohhb7TvH0Ok7CWxAajz_Lqi3y3Dw@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Fri, 13 May 2022 14:56:20 -0400
+Message-ID: <CADvbK_csbGvLsAPpk+fZcE0APeNz26iwTSCYZTK9=RDNRV2E5Q@mail.gmail.com>
+Subject: Re: [PATCH ipsec] xfrm: set dst dev to blackhole_netdev instead of
+ loopback_dev in ifdown
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -73,82 +69,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Fri, May 13, 2022 at 12:22 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Fri, May 13, 2022 at 8:47 AM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > The global blackhole_netdev has replaced pernet loopback_dev to become the
+> > one given to the object that holds an netdev when ifdown in many places of
+> > ipv4 and ipv6 since commit 8d7017fd621d ("blackhole_netdev: use
+> > blackhole_netdev to invalidate dst entries").
+> >
+> > Especially after commit faab39f63c1f ("net: allow out-of-order netdev
+> > unregistration"), it's no longer safe to use loopback_dev that may be
+> > freed before other netdev.
+>
+> Maybe add it formally in Fixes: tag.
+>
+Sure. :)
 
-This is no longer a macro, but an inlined function.
+Fixes: faab39f63c1f ("net: allow out-of-order netdev unregistration")
 
-INET_MATCH() -> inet_match()
+> >
+> > This patch is to set dst dev to blackhole_netdev instead of loopback_dev
+> > in ifdown.
+> >
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  net/xfrm/xfrm_policy.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+> > index 00bd0ecff5a1..f1876ea61fdc 100644
+> > --- a/net/xfrm/xfrm_policy.c
+> > +++ b/net/xfrm/xfrm_policy.c
+> > @@ -3744,7 +3744,7 @@ static int stale_bundle(struct dst_entry *dst)
+> >  void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev)
+> >  {
+> >         while ((dst = xfrm_dst_child(dst)) && dst->xfrm && dst->dev == dev) {
+> > -               dst->dev = dev_net(dev)->loopback_dev;
+> > +               dst->dev = blackhole_netdev;
+>
+> I assume the XFRM layer is ready to deal with dst->dev set to blackhole ?
+>
+> No initial setup needed ?
+I don't see why it's not ready, since it's been using loopback_dev.
+In early time, commit 8d7017fd621d replaced loopback_dev quite straightforward
+for ipv4/6.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Suggested-by: Olivier Hartkopp <socketcan@hartkopp.net>
-Suggested-by: Jakub Kicinski <kuba@kernel.org>
----
- include/net/inet_hashtables.h | 2 +-
- net/ipv4/inet_hashtables.c    | 8 ++++----
- net/ipv4/udp.c                | 2 +-
- 3 files changed, 6 insertions(+), 6 deletions(-)
+BTW, there's still another one left in dn_dst_ifdown(), I will fix it
+in another patch.
 
-diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-index 59d72024ad1d6fe34342309191b46fbb247b125b..ebfa3df6f8dc365b4ce5f4c4fb573c37193492ab 100644
---- a/include/net/inet_hashtables.h
-+++ b/include/net/inet_hashtables.h
-@@ -267,7 +267,7 @@ static inline struct sock *inet_lookup_listener(struct net *net,
- 				   ((__force __u64)(__be32)(__saddr)))
- #endif /* __BIG_ENDIAN */
- 
--static inline bool INET_MATCH(struct net *net, const struct sock *sk,
-+static inline bool inet_match(struct net *net, const struct sock *sk,
- 			      const __addrpair cookie, const __portpair ports,
- 			      int dif, int sdif)
- {
-diff --git a/net/ipv4/inet_hashtables.c b/net/ipv4/inet_hashtables.c
-index acec83ef8220025f129194dee83c3a465bf3915e..87354e20009a6e03c9efdca9c0b51dea17ad71d5 100644
---- a/net/ipv4/inet_hashtables.c
-+++ b/net/ipv4/inet_hashtables.c
-@@ -373,10 +373,10 @@ struct sock *__inet_lookup_established(struct net *net,
- 	sk_nulls_for_each_rcu(sk, node, &head->chain) {
- 		if (sk->sk_hash != hash)
- 			continue;
--		if (likely(INET_MATCH(net, sk, acookie, ports, dif, sdif))) {
-+		if (likely(inet_match(net, sk, acookie, ports, dif, sdif))) {
- 			if (unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
- 				goto out;
--			if (unlikely(!INET_MATCH(net, sk, acookie,
-+			if (unlikely(!inet_match(net, sk, acookie,
- 						 ports, dif, sdif))) {
- 				sock_gen_put(sk);
- 				goto begin;
-@@ -426,7 +426,7 @@ static int __inet_check_established(struct inet_timewait_death_row *death_row,
- 		if (sk2->sk_hash != hash)
- 			continue;
- 
--		if (likely(INET_MATCH(net, sk2, acookie, ports, dif, sdif))) {
-+		if (likely(inet_match(net, sk2, acookie, ports, dif, sdif))) {
- 			if (sk2->sk_state == TCP_TIME_WAIT) {
- 				tw = inet_twsk(sk2);
- 				if (twsk_unique(sk, sk2, twp))
-@@ -492,7 +492,7 @@ static bool inet_ehash_lookup_by_sk(struct sock *sk,
- 		if (esk->sk_hash != sk->sk_hash)
- 			continue;
- 		if (sk->sk_family == AF_INET) {
--			if (unlikely(INET_MATCH(net, esk, acookie,
-+			if (unlikely(inet_match(net, esk, acookie,
- 						ports, dif, sdif))) {
- 				return true;
- 			}
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 53342ce17172722d51a5db34ca9f1d5c61fb82de..aa9f2ec3dc4681f767e8be9d580096ba8b439327 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2563,7 +2563,7 @@ static struct sock *__udp4_lib_demux_lookup(struct net *net,
- 	struct sock *sk;
- 
- 	udp_portaddr_for_each_entry_rcu(sk, &hslot2->head) {
--		if (INET_MATCH(net, sk, acookie, ports, dif, sdif))
-+		if (inet_match(net, sk, acookie, ports, dif, sdif))
- 			return sk;
- 		/* Only check first socket in chain */
- 		break;
--- 
-2.36.0.550.gb090851708-goog
+Thanks.
 
+>
+> Thanks
+>
+> >                 dev_hold(dst->dev);
+> >                 dev_put(dev);
+> >         }
+> > --
+> > 2.31.1
+> >
