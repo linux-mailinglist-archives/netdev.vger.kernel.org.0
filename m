@@ -2,292 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76853526F55
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:15:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 95910526F8C
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:16:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbiENByJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 21:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49204 "EHLO
+        id S229741AbiENByd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 21:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiENByH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 21:54:07 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA5A3E9044;
-        Fri, 13 May 2022 16:56:19 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id p12so9039639pfn.0;
-        Fri, 13 May 2022 16:56:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=rNVk9YDEQR+xtvNydQUUbuQjMkViiEzhXCU73eGldY8=;
-        b=GtOgBYsHjz8fWeluuBd2/RbUxS13aaMfZAKmP2jjQWF1BobR2tuD8CykQgf6CCsQFl
-         ExoJdEHODDUYD27rjr1m2JNEPyvf3wMSys3MgPHy98rSAshIJEXaYYki8vByR+95LKsi
-         hT1oP7r0HXKGEX0y1h1KbR3x/NUksQk8kzAsbviF6jhzoJt8/soHFJkrZA0ehg2vNGiw
-         lTTKv6KlMbbUAYDklf0K+BwKNSMe7+I5JhSJEp3dy7KXNanWk/1dbiBJjXXNQaxf1BgH
-         tDyyAxgZNc5pXX43xF/xGjIiL0HLZqzm90oHG92G/XEjr5ODGjNtVJm8+BU2b9xxK8Zh
-         RIzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rNVk9YDEQR+xtvNydQUUbuQjMkViiEzhXCU73eGldY8=;
-        b=MPc5yDvlA5F8x8aRxQMi0Rc9tr2kBo2/kbdqEAGlS+8lMbAv/L9tBMCs0+VcKTDWhO
-         BLeRbLBoC1o13u8tYITUoetl0eQec/USg9MBtF5gl9wpEicAlqy7vVHDNovRkFwtmoXZ
-         62wtIMsuC75ma3aykLFRBj/gxOb5fhCwGOHrgm8myUX+p8fqp6MH5ZWmf5mWxz6t+e1E
-         NT1fCv0NKzabFHou8fy1eG34Vzc/kQsFgoZnY3oYSUqu7JfgPzSExH770uJDgrM8zb7D
-         VhrNbE2sDr6iJlXWHgRmnAbEoZTUhKbTEULxcPsnXznMU/fFch6DwkhigVN7b9HmSbqZ
-         h+Mw==
-X-Gm-Message-State: AOAM532P80JiyhdoF85toqz3djRDY/dwEYBhze1UU+WyzegvbCeNrEEe
-        GMOwa6DTCtsjkE1vtjCRKY/17yv/pB2wIjn4Jjc=
-X-Google-Smtp-Source: ABdhPJw6HF52OEgBlLp4vI9wJpNliFr+bRP1D9H7WO1lYtvQm28N5CilvEWQlUI8wsNSnYDxNTyWYmq32wFlUh/dAss=
-X-Received: by 2002:a05:6a00:1a08:b0:510:a1db:1a91 with SMTP id
- g8-20020a056a001a0800b00510a1db1a91mr6616285pfv.69.1652486018354; Fri, 13 May
- 2022 16:53:38 -0700 (PDT)
+        with ESMTP id S229733AbiENByb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 21:54:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A63883E96F8;
+        Fri, 13 May 2022 16:56:32 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DC33E61886;
+        Fri, 13 May 2022 23:55:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD0BFC385AA;
+        Fri, 13 May 2022 23:55:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652486149;
+        bh=CJKAmPqm12fVzfJjZZGPW/HI/KKYeiwMgwg0OgeyvWs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cChnpewBc6oesIl+tdA8nJedFkjYaJaBfUZx0xBI+TY3y7esVgVYqZsx4wrYzXONw
+         oCVF/gO/sKHbardb0WtqQsTIhmTbDdbGjO4dpMsXjtrekwVOUbl0Hx/HYOIoIqgXec
+         /aRrgsJAqPIDDvc6vxXExViSE268lGrsOjkZlHFOQwP2Jq43SnK/XB8bVd+VQLtpcq
+         vyOp80+wt8MjpoQevvueNn8eGz0tagpN3STqopBrBkLG7VYAZRWSNJGNm6XHptiqaF
+         xpHsNZMdiYh7+BtNfm8fQDAaqZnHj+5CQbr0erLu9asipwqsnIWAjfoYh8ywgsHq0+
+         cfQfBABfZDAnA==
+Date:   Fri, 13 May 2022 16:55:47 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ober <dober6023@gmail.com>
+Cc:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, hayeswang@realtek.com, aaron.ma@canonical.com,
+        markpearson@lenovo.com, dober@lenovo.com
+Subject: Re: [PATCH v4] net: usb: r8152: Add in new Devices that are
+ supported for Mac-Passthru
+Message-ID: <20220513165547.03d1c778@kernel.org>
+In-Reply-To: <20220513124906.402630-1-dober6023@gmail.com>
+References: <20220513124906.402630-1-dober6023@gmail.com>
 MIME-Version: 1.0
-References: <20220513224827.662254-1-mathew.j.martineau@linux.intel.com> <20220513224827.662254-5-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20220513224827.662254-5-mathew.j.martineau@linux.intel.com>
-From:   Geliang Tang <geliangtang@gmail.com>
-Date:   Sat, 14 May 2022 07:53:36 +0800
-Message-ID: <CA+WQbwtN6KS0KzNKVp-7gioDR+DJ6Ks_kC-TB5viUb60HqHwuQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 4/7] selftests/bpf: test bpf_skc_to_mptcp_sock
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        MPTCP Upstream <mptcp@lists.linux.dev>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mat Martineau <mathew.j.martineau@linux.intel.com> =E4=BA=8E2022=E5=B9=B45=
-=E6=9C=8814=E6=97=A5=E5=91=A8=E5=85=AD 06:48=E5=86=99=E9=81=93=EF=BC=9A
->
-> From: Geliang Tang <geliang.tang@suse.com>
->
-> This patch extends the MPTCP test base, to test the new helper
-> bpf_skc_to_mptcp_sock().
->
-> Define struct mptcp_sock in bpf_tcp_helpers.h, use bpf_skc_to_mptcp_sock
-> to get the msk socket in progs/mptcp_sock.c and store the infos in
-> socket_storage_map.
->
-> Get the infos from socket_storage_map in prog_tests/mptcp.c. Add a new
-> function verify_msk() to verify the infos of MPTCP socket, and rename
-> verify_sk() to verify_tsk() to verify TCP socket only.
->
-> v2: Add CONFIG_MPTCP check for clearer error messages
-> v4:
->  - use ASSERT_* instead of CHECK_FAIL (Andrii)
->  - drop bpf_mptcp_helpers.h (Andrii)
->
-> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Signed-off-by: Geliang Tang <geliang.tang@suse.com>
-> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+On Fri, 13 May 2022 08:49:06 -0400 David Ober wrote:
+> Lenovo Thunderbolt 4 Dock, and other Lenovo USB Docks are using the
+> original Realtek USB ethernet Vendor and Product IDs
+> If the Network device is Realtek verify that it is on a Lenovo USB hub
+> before enabling the passthru feature
+>=20
+> This also adds in the device IDs for the Lenovo USB Dongle and one other
+> USB-C dock
+>=20
+> V2 fix formating of code
+> V3 remove Generic define for Device ID 0x8153 and change it to use value
+> V4 rearrange defines and case statement to put them in better order
+>=20
+> Signed-off-by: David Ober <dober6023@gmail.com>
 > ---
->  tools/testing/selftests/bpf/bpf_tcp_helpers.h |  5 +++
->  .../testing/selftests/bpf/prog_tests/mptcp.c  | 45 ++++++++++++++-----
->  .../testing/selftests/bpf/progs/mptcp_sock.c  | 23 ++++++++--
->  3 files changed, 58 insertions(+), 15 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testin=
-g/selftests/bpf/bpf_tcp_helpers.h
-> index 22e0c8849a17..90fecafc493d 100644
-> --- a/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-> +++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
-> @@ -226,4 +226,9 @@ static __always_inline bool tcp_cc_eq(const char *a, =
-const char *b)
->  extern __u32 tcp_slow_start(struct tcp_sock *tp, __u32 acked) __ksym;
->  extern void tcp_cong_avoid_ai(struct tcp_sock *tp, __u32 w, __u32 acked)=
- __ksym;
->
-> +struct mptcp_sock {
-> +       struct inet_connection_sock     sk;
-> +
-> +} __attribute__((preserve_access_index));
-> +
->  #endif
-> diff --git a/tools/testing/selftests/bpf/prog_tests/mptcp.c b/tools/testi=
-ng/selftests/bpf/prog_tests/mptcp.c
-> index cb0389ca8690..02e7fd8918e6 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/mptcp.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/mptcp.c
-> @@ -11,14 +11,12 @@ struct mptcp_storage {
->         __u32 is_mptcp;
+>  drivers/net/usb/r8152.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+>=20
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index c2da3438387c..d8f2d4b85db4 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -771,7 +771,9 @@ enum rtl8152_flags {
 >  };
->
-> -static int verify_sk(int map_fd, int client_fd, const char *msg, __u32 i=
-s_mptcp)
-> +static int verify_tsk(int map_fd, int client_fd)
->  {
-> +       char *msg =3D "plain TCP socket";
->         int err, cfd =3D client_fd;
->         struct mptcp_storage val;
->
-> -       if (is_mptcp =3D=3D 1)
-> -               return 0;
-> -
->         err =3D bpf_map_lookup_elem(map_fd, &cfd, &val);
->         if (!ASSERT_OK(err, "bpf_map_lookup_elem"))
->                 return err;
-> @@ -38,6 +36,31 @@ static int verify_sk(int map_fd, int client_fd, const =
-char *msg, __u32 is_mptcp)
->         return err;
->  }
->
-> +static int verify_msk(int map_fd, int client_fd)
-> +{
-> +       char *msg =3D "MPTCP subflow socket";
-> +       int err, cfd =3D client_fd;
-> +       struct mptcp_storage val;
-> +
-> +       err =3D bpf_map_lookup_elem(map_fd, &cfd, &val);
-> +       if (!ASSERT_OK(err, "bpf_map_lookup_elem"))
-> +               return err;
-> +
-> +       if (val.invoked !=3D 1) {
-> +               log_err("%s: unexpected invoked count %d !=3D 1",
-> +                       msg, val.invoked);
-> +               err++;
-> +       }
-> +
-> +       if (val.is_mptcp !=3D 1) {
-> +               log_err("%s: unexpected bpf_tcp_sock.is_mptcp %d !=3D 1",
-> +                       msg, val.is_mptcp);
-> +               err++;
-> +       }
-> +
-> +       return err;
-> +}
-> +
->  static int run_test(int cgroup_fd, int server_fd, bool is_mptcp)
->  {
->         int client_fd, prog_fd, map_fd, err;
-> @@ -88,8 +111,8 @@ static int run_test(int cgroup_fd, int server_fd, bool=
- is_mptcp)
->                 goto out;
->         }
->
-> -       err +=3D is_mptcp ? verify_sk(map_fd, client_fd, "MPTCP subflow s=
-ocket", 1) :
-> -                         verify_sk(map_fd, client_fd, "plain TCP socket"=
-, 0);
-> +       err +=3D is_mptcp ? verify_msk(map_fd, client_fd) :
-> +                         verify_tsk(map_fd, client_fd);
->
->         close(client_fd);
->
+> =20
+>  #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
+> +#define DEVICE_ID_THINKPAD_USB_C_DONGLE			0x720c
+>  #define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2		0xa387
+> +#define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3		0x3062
+> =20
+>  struct tally_counter {
+>  	__le64	tx_packets;
+> @@ -9646,6 +9648,14 @@ static int rtl8152_probe(struct usb_interface *int=
+f,
+>  		switch (le16_to_cpu(udev->descriptor.idProduct)) {
+>  		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
+>  		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
+> +		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3:
+> +		case DEVICE_ID_THINKPAD_USB_C_DONGLE:
+> +			tp->lenovo_macpassthru =3D 1;
+> +		}
+> +	} else if ((le16_to_cpu(udev->descriptor.idVendor) =3D=3D VENDOR_ID_REA=
+LTEK) &&
+> +		   (le16_to_cpu(udev->parent->descriptor.idVendor) =3D=3D VENDOR_ID_LE=
+NOVO)) {
 
+The parenthesis around the condition are unnecessary. If the compiler
+does not warn it's okay to skip parenthesis. checkpatch should warn
+about this. We assume kernel developers know the C operator precedence.
 
-''''
-> @@ -103,25 +126,25 @@ void test_base(void)
->         int server_fd, cgroup_fd;
->
->         cgroup_fd =3D test__join_cgroup("/mptcp");
-> -       if (CHECK_FAIL(cgroup_fd < 0))
-> +       if (!ASSERT_GE(cgroup_fd, 0, "test__join_cgroup"))
->                 return;
->
->         /* without MPTCP */
->         server_fd =3D start_server(AF_INET, SOCK_STREAM, NULL, 0, 0);
-> -       if (CHECK_FAIL(server_fd < 0))
-> +       if (!ASSERT_GE(server_fd, 0, "start_server"))
->                 goto with_mptcp;
->
-> -       CHECK_FAIL(run_test(cgroup_fd, server_fd, false));
-> +       ASSERT_OK(run_test(cgroup_fd, server_fd, false), "run_test tcp");
->
->         close(server_fd);
->
->  with_mptcp:
->         /* with MPTCP */
->         server_fd =3D start_mptcp_server(AF_INET, NULL, 0, 0);
-> -       if (CHECK_FAIL(server_fd < 0))
-> +       if (!ASSERT_GE(server_fd, 0, "start_mptcp_server"))
->                 goto close_cgroup_fd;
->
-> -       CHECK_FAIL(run_test(cgroup_fd, server_fd, true));
-> +       ASSERT_OK(run_test(cgroup_fd, server_fd, true), "run_test mptcp")=
-;
-'''
+I think you should factor these checks out to a separate helper tho.
+Create a helper like:
 
-Sorry Mat, this code using ASSERT_* instead of CHECK_FAIL should be
-squash into patch #3, it shouldn't in this patch. I'll send a v5 to
-MPTCP ML to fix this.
+static bool rtl8152_needs_lenovo_macpassthru(dev)
 
-Thanks,
--Geliang
+that can use local variables to avoid the tediously long and repeated
+le16_to_cpu(...) lines. Then just assign:
 
->
->         close(server_fd);
->
-> diff --git a/tools/testing/selftests/bpf/progs/mptcp_sock.c b/tools/testi=
-ng/selftests/bpf/progs/mptcp_sock.c
-> index bc09dba0b078..3feb7ff578e2 100644
-> --- a/tools/testing/selftests/bpf/progs/mptcp_sock.c
-> +++ b/tools/testing/selftests/bpf/progs/mptcp_sock.c
-> @@ -7,6 +7,7 @@
->  #include "bpf_tcp_helpers.h"
->
->  char _license[] SEC("license") =3D "GPL";
-> +extern bool CONFIG_MPTCP __kconfig;
->
->  struct mptcp_storage {
->         __u32 invoked;
-> @@ -24,6 +25,7 @@ SEC("sockops")
->  int _sockops(struct bpf_sock_ops *ctx)
->  {
->         struct mptcp_storage *storage;
-> +       struct mptcp_sock *msk;
->         int op =3D (int)ctx->op;
->         struct tcp_sock *tsk;
->         struct bpf_sock *sk;
-> @@ -41,11 +43,24 @@ int _sockops(struct bpf_sock_ops *ctx)
->                 return 1;
->
->         is_mptcp =3D bpf_core_field_exists(tsk->is_mptcp) ? tsk->is_mptcp=
- : 0;
-> -       storage =3D bpf_sk_storage_get(&socket_storage_map, sk, 0,
-> -                                    BPF_SK_STORAGE_GET_F_CREATE);
-> -       if (!storage)
-> -               return 1;
-> +       if (!is_mptcp) {
-> +               storage =3D bpf_sk_storage_get(&socket_storage_map, sk, 0=
-,
-> +                                            BPF_SK_STORAGE_GET_F_CREATE)=
-;
-> +               if (!storage)
-> +                       return 1;
-> +       } else {
-> +               if (!CONFIG_MPTCP)
-> +                       return 1;
-> +
-> +               msk =3D bpf_skc_to_mptcp_sock(sk);
-> +               if (!msk)
-> +                       return 1;
->
-> +               storage =3D bpf_sk_storage_get(&socket_storage_map, msk, =
-0,
-> +                                            BPF_SK_STORAGE_GET_F_CREATE)=
-;
-> +               if (!storage)
-> +                       return 1;
-> +       }
->         storage->invoked++;
->         storage->is_mptcp =3D is_mptcp;
->
-> --
-> 2.36.1
->
->
+	tp->lenovo_macpassthru =3D rtl8152_needs_lenovo_macpassthru(dev);
+
+Please CC Bj=C3=B8rn Mork <bjorn@mork.no> since he commented on the previous
+version. I'd personally also love to see this solved in user space...
+but have no clear idea how.
+
+> +		switch (le16_to_cpu(udev->descriptor.idProduct)) {
+> +		case 0x8153:
+>  			tp->lenovo_macpassthru =3D 1;
+>  		}
+>  	}
+
