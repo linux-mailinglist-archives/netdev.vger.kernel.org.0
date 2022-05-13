@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C5F32526969
+	by mail.lfdr.de (Postfix) with ESMTP id 2D3F9526967
 	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 20:34:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383325AbiEMSe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 14:34:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59508 "EHLO
+        id S1383346AbiEMSe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 14:34:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383324AbiEMSeW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 14:34:22 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 627F55F8C2
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:34:20 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id 137so8253196pgb.5
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:34:20 -0700 (PDT)
+        with ESMTP id S1383345AbiEMSeZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 14:34:25 -0400
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D83215F8FF
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:34:21 -0700 (PDT)
+Received: by mail-pl1-x635.google.com with SMTP id s14so8748735plk.8
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:34:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=VZhpx/FGEW1OaLwor8s7JhCvivBheRqqSUtOtvys+ZM=;
-        b=a630ZBZz6gaETu6JWjteb1IKdVflHU4tGAJQJs8VZUut/mYy/h21Q6wNU7TB1QhA/J
-         M6oI0nLCkuvxtaTzILonFpLCRfggQ+yS85Bd9qfr0MMFKNA952vulTEF0FjA6Ftw8s9q
-         O97L1Zak7XCly3rr69FIT4bA7rWxpRi1SSNU3Auu5uaDYA5hOKDiQXV6F4VPQ5vUuuBI
-         Tw4/JInILtN4ZVzgDKGDg454saVothHN46f1AmGmxh8EwnSp8XD4HGTAQAKS5h6jvx1u
-         w/psxXdGyEGh+6b6kT7rfb6TJIcOEeQAkoa+/zeKaTLXMrv79dh4a9Rsrf2Q7KRfKqej
-         kxvw==
+        bh=4mCUiYHwTe1k2DvRUcqVgRV+hPCBIC0DZOn3oTaUIRk=;
+        b=HJkGQQNpfdl0O39fi+/P0H7bQOiwgF2oYqb07pb+AfLx21tLKS/NMr8QTbl9FtyB7Y
+         FRq4RKBpAdfA60/B1BeyzI5I81l02t2CbBoQCYT3bH+6TD1eyxyjadAetOYziGSTMqDz
+         evliorCzxonoEgEIoyPjf1908GeHX2F5ktCvoqvF3pVGgKVzrGa5Trmzo7aiHTADBKCi
+         WNyAN+eAyEWD9Qf8KjnBE1//D8my7EhUGpQsWNiamSpbJtrfPdNolAXyo/yXSsDDkJYr
+         aHOFXYRYJM91jbj+lYYwefJlO/HfCN+O/N6VljTT2MtOcXxXXVImMw/NVRYLtgLt6W3G
+         wckQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=VZhpx/FGEW1OaLwor8s7JhCvivBheRqqSUtOtvys+ZM=;
-        b=0HeqRa1xkzpIM+9Hgce64etGndPLidk+jDVOrXZYE02ynSyl+ZcDkuxpc9qMQ5fTKT
-         OBfbMRVOZQrDnY07yhevyCCO+Yh0EyDhXYXCsFAsl+vEDsm+HT5KQQPeiORbgnBts/Xh
-         +WwiuReqv4z5YnGzMQqQ5Inflty38wVkF9oSf1PFsWOmFf/3rXBL+kCGAWa3A0CADGZX
-         pbzVUoyS28l0LJHoAI+YdxTHBHEh3KGgKOQ27pEb1iJvKATwiQ+i2Hgfb6cnhhDOWMTR
-         utiSOIbVuCfO1pAjO2tR7qdJwbFHEteYmibygnUyjXUzQoLHeZbTPmjGOEXQ3Cu3K3YF
-         KAag==
-X-Gm-Message-State: AOAM5309wPMm0jFxkmkF8XHAy493rd3D+BiBteCZsW1Ty2IKgxIce7HK
-        ZyAsBU9+XJftd3gVj1oL16Y=
-X-Google-Smtp-Source: ABdhPJy9ADgN39mNor6aCT1CNoIuYLmpA6b+xOhlU+vAryH2T6X4xQuAUTO7PMRuv0oPxXPA3Nu5DA==
-X-Received: by 2002:a65:49c1:0:b0:3db:6979:ca6f with SMTP id t1-20020a6549c1000000b003db6979ca6fmr5034926pgs.76.1652466859949;
-        Fri, 13 May 2022 11:34:19 -0700 (PDT)
+        bh=4mCUiYHwTe1k2DvRUcqVgRV+hPCBIC0DZOn3oTaUIRk=;
+        b=KzU83wGvViiFVgr211HkUgNSpcTxKPcAC2zguyZS9lWCJwZsRd+9XX35oslonLtpSV
+         L62+qWJKPpdsPe16cD2GojozXe0eWGF8HsTNVZDedfB2QmEqPwQhfhQb1cA/LNX4qc/G
+         DZVn0O0B04J92IoQM5WrL+ojVX+pzjvcjOVqUTjkuS0UbLAGBtWxiExB3dSDv+oDWrGp
+         Ud590bkXAXdeyqLXJtE5Pdy3ka7Q4g+TEzw82dw9Mgg1Aib2C7r06XOfdoV3AZaVDR1N
+         f80cdSqMzGQbZvYbV/LtBEw3NECf/EH8e6M8BCgBwXCfFMB3QdQ1XCDP6jicZbOuCm2H
+         gNjA==
+X-Gm-Message-State: AOAM5302G31OecYFe19iskFueAolHDVukMYENCsCBMBtLsGYlBTI2TsT
+        TTnajmXoWfyqNUoasCBqWao=
+X-Google-Smtp-Source: ABdhPJzNpPnBh7fRXm6XM2DcaYER5tUa4Z+jRgt/sC6T7KW2lj8UMPn/aVzEWVo1xkVbbCJsXKOqZQ==
+X-Received: by 2002:a17:90b:350d:b0:1dc:6680:6f1d with SMTP id ls13-20020a17090b350d00b001dc66806f1dmr17446570pjb.27.1652466861340;
+        Fri, 13 May 2022 11:34:21 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c436:3fa3:479f:a7a])
-        by smtp.gmail.com with ESMTPSA id q13-20020aa7842d000000b0050dc76281cesm2053566pfn.168.2022.05.13.11.34.19
+        by smtp.gmail.com with ESMTPSA id q13-20020aa7842d000000b0050dc76281cesm2053566pfn.168.2022.05.13.11.34.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 11:34:19 -0700 (PDT)
+        Fri, 13 May 2022 11:34:21 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -56,9 +56,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Coco Li <lixiaoyan@google.com>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v7 net-next 03/13] net: limit GSO_MAX_SIZE to 524280 bytes
-Date:   Fri, 13 May 2022 11:33:58 -0700
-Message-Id: <20220513183408.686447-4-eric.dumazet@gmail.com>
+Subject: [PATCH v7 net-next 04/13] tcp_cubic: make hystart_ack_delay() aware of BIG TCP
+Date:   Fri, 13 May 2022 11:33:59 -0700
+Message-Id: <20220513183408.686447-5-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
 In-Reply-To: <20220513183408.686447-1-eric.dumazet@gmail.com>
 References: <20220513183408.686447-1-eric.dumazet@gmail.com>
@@ -76,44 +76,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-Make sure we will not overflow shinfo->gso_segs
+hystart_ack_delay() had the assumption that a TSO packet
+would not be bigger than GSO_MAX_SIZE.
 
-Minimal TCP MSS size is 8 bytes, and shinfo->gso_segs
-is a 16bit field.
+This will no longer be true.
 
-TCP_MIN_GSO_SIZE is currently defined in include/net/tcp.h,
-it seems cleaner to not bring tcp details into include/linux/netdevice.h
+We should use sk->sk_gso_max_size instead.
+
+This reduces chances of spurious Hystart ACK train detections.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Acked-by: Alexander Duyck <alexanderduyck@fb.com>
 ---
- include/linux/netdevice.h | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ net/ipv4/tcp_cubic.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index ce780e352f439afc9eec97fcf6e0a4cda5480331..fd38847d0dc7e2c985646ac427d0131995e9c827 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2272,14 +2272,17 @@ struct net_device {
- 	const struct rtnl_link_ops *rtnl_link_ops;
+diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
+index b0918839bee7cf0264ec3bbcdfc1417daa86d197..68178e7280ce24c26a48e48a51518d759e4d1718 100644
+--- a/net/ipv4/tcp_cubic.c
++++ b/net/ipv4/tcp_cubic.c
+@@ -372,7 +372,7 @@ static void cubictcp_state(struct sock *sk, u8 new_state)
+  * We apply another 100% factor because @rate is doubled at this point.
+  * We cap the cushion to 1ms.
+  */
+-static u32 hystart_ack_delay(struct sock *sk)
++static u32 hystart_ack_delay(const struct sock *sk)
+ {
+ 	unsigned long rate;
  
- 	/* for setting kernel sock attribute on TCP connection setup */
-+#define GSO_MAX_SEGS		65535u
- #define GSO_LEGACY_MAX_SIZE	65536u
--#define GSO_MAX_SIZE		UINT_MAX
-+/* TCP minimal MSS is 8 (TCP_MIN_GSO_SIZE),
-+ * and shinfo->gso_segs is a 16bit field.
-+ */
-+#define GSO_MAX_SIZE		(8 * GSO_MAX_SEGS)
+@@ -380,7 +380,7 @@ static u32 hystart_ack_delay(struct sock *sk)
+ 	if (!rate)
+ 		return 0;
+ 	return min_t(u64, USEC_PER_MSEC,
+-		     div64_ul((u64)GSO_MAX_SIZE * 4 * USEC_PER_SEC, rate));
++		     div64_ul((u64)sk->sk_gso_max_size * 4 * USEC_PER_SEC, rate));
+ }
  
- 	unsigned int		gso_max_size;
- #define TSO_LEGACY_MAX_SIZE	65536
- #define TSO_MAX_SIZE		UINT_MAX
- 	unsigned int		tso_max_size;
--#define GSO_MAX_SEGS		65535
- 	u16			gso_max_segs;
- #define TSO_MAX_SEGS		U16_MAX
- 	u16			tso_max_segs;
+ static void hystart_update(struct sock *sk, u32 delay)
 -- 
 2.36.0.550.gb090851708-goog
 
