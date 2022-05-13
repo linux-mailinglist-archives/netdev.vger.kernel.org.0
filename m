@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD8725259BD
+	by mail.lfdr.de (Postfix) with ESMTP id 3CE0C5259BC
 	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 04:41:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376554AbiEMCkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 22:40:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46550 "EHLO
+        id S1352236AbiEMClF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 22:41:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376547AbiEMCkn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 22:40:43 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89402F3E
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 19:40:42 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id bo5so6488359pfb.4
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 19:40:42 -0700 (PDT)
+        with ESMTP id S1376553AbiEMCkq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 22:40:46 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C75B22637
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 19:40:43 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id 202so6237303pgc.9
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 19:40:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dJfM4xY0ValZDkQBdAKToJEmNp3Cvvvaep2zjmO7YLI=;
-        b=GJlUOwLkfT9gd3ymUgd4umJ11dr/DFotJt96TUskHr1KzCpaN/nNr+NFhyGDpKcDcZ
-         zM4Q+09eslSqnpUJw6YAbBB8DHgKrw0m9VMfjuNTMbT5qvP214z+ncvFXtlI6M1rD77g
-         ML9Wh5fnhZ6kZC949Uv96J9xeQZSHEKq3Dh8E=
+        bh=WOacpN3GvprRtwIPAxNK5HUbMVMpQt+V5GmVqQngSOg=;
+        b=Rs5OxDgo1ZnFU+JlVzYBAkAUbEh7QQOUcnKtkFcYoA4AYthjIWALWCc/U2xEjIFRVw
+         MGGeaHlIaShJme+LGp8pdPnF2g7HpKC+YjYw+uWZqP0asqTET9arSWFhJ+FEejrrbtlQ
+         joK+nxW4nfKt82lPKVwLQgXxRCmO6p8ZPVkl4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=dJfM4xY0ValZDkQBdAKToJEmNp3Cvvvaep2zjmO7YLI=;
-        b=zaV0D2V/ywaGoGeKBiYGOGzv905/NuVWqyXN90xZ1ig5L06vFwUq0z49vfU+EPyr9V
-         SbWCcmm88gHWzLhZj7ju/W6tCZEf4HSvmsdmop6a0OanjQp/Vg4AwKlI070wrA7pdmbl
-         j5U5ePX4Tx4tWMoSbhqZ/UIxg/iTHJTUNAk4uu0oAD7sbhCRqQn8M1+dUfd9espdriWC
-         aducRHG2RBN4mu+DRpLg5m9FfYhkPQepG4NdLGjxs3HRJktcpQ1LmcImqUlJJ0idA1Sx
-         w+MUUBJJb1Yx+edkwaheoFwbH9eo4YTqMbAm5aKrqLu+RbsTsvZQwVrMHoqdgYnewrWP
-         3Zxw==
-X-Gm-Message-State: AOAM530hzeJuSAnuQ9WLrhiQEbzOmcDRs6AHm/ojXopcBtRo6+vbUHjQ
-        Y+loQJSlKyLAx20fEcrIyN8/cQ==
-X-Google-Smtp-Source: ABdhPJyKAIYGJ9MWU9zMeMavTrDNl3iZRvpeg+xsuEYcLztjrZmedWp9SmS6N26o+3Qd/wFtQT5MtQ==
-X-Received: by 2002:a63:4e61:0:b0:3c6:9e14:5511 with SMTP id o33-20020a634e61000000b003c69e145511mr2142346pgl.446.1652409641441;
-        Thu, 12 May 2022 19:40:41 -0700 (PDT)
+        bh=WOacpN3GvprRtwIPAxNK5HUbMVMpQt+V5GmVqQngSOg=;
+        b=YKZAhuhOSLIQ9Y6WBfyh48NW22Uavs3JREKXikHjyi5+HifN7usLGeO9IxIpwSHcQb
+         BHIPTwAINB+5z+PaCvSTNUR855PcYrPG1j/7vCL2mgWMljk+FyZ20xmdJZFK++yl3ya6
+         Cz54fIs4sS5y3f607f8xAx6EaF2LDJCIA6Ptkj8pIiJvji5AKOTvFPyHW885bEbGXi6k
+         VSFsrZRrW3aRSCprkV9YmmCeZvYog+Trb/AKMar+Oj0gbO/aMygUzsEvCiy8ig+uYWmy
+         cuvaY0g7yVKCsI+WG2DCbngGy1qK1xBHHKNWEMokCcSMbsQTgjSAEjk1zK45+BIRSLX6
+         LsLg==
+X-Gm-Message-State: AOAM531qPb98Hqw7rHwzr+sjgAvhUMHK7XXf99GjC9L+FRe1/ojv4OXq
+        1UlzzQ1OwjvFcmBCJ+8fuwVC5sH51lFiHA==
+X-Google-Smtp-Source: ABdhPJzQsw52Jrzt1ClLFEcto+Y46/O6HC+nYRAamzopnFEDv9i0SqscmuNV1MrW5/U3k9Mcj3V0vQ==
+X-Received: by 2002:a63:2265:0:b0:3db:6362:184b with SMTP id t37-20020a632265000000b003db6362184bmr2106378pgm.529.1652409642560;
+        Thu, 12 May 2022 19:40:42 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t3-20020a1709027fc300b0015e8da1fb07sm587212plb.127.2022.05.12.19.40.40
+        by smtp.gmail.com with ESMTPSA id t3-20020a1709027fc300b0015e8da1fb07sm587212plb.127.2022.05.12.19.40.41
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 12 May 2022 19:40:41 -0700 (PDT)
+        Thu, 12 May 2022 19:40:42 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
-        Pavan Chebbi <pavan.chebbi@broadcom.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH net-next 3/4] bnxt_en: Enable packet timestamping for all RX packets
-Date:   Thu, 12 May 2022 22:40:23 -0400
-Message-Id: <1652409624-8731-4-git-send-email-michael.chan@broadcom.com>
+        Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
+Subject: [PATCH net-next 4/4] bnxt_en: parse and report result field when NVRAM package install fails
+Date:   Thu, 12 May 2022 22:40:24 -0400
+Message-Id: <1652409624-8731-5-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1652409624-8731-1-git-send-email-michael.chan@broadcom.com>
 References: <1652409624-8731-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000c1047d05dedb995b"
+        boundary="000000000000d317d505dedb99e2"
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -67,157 +66,227 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000c1047d05dedb995b
+--000000000000d317d505dedb99e2
 
-From: Pavan Chebbi <pavan.chebbi@broadcom.com>
+From: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 
-Add driver support to enable timestamping on all RX packets
-that are received by the NIC. This capability can be requested
-by the applications using SIOCSHWTSTAMP ioctl with filter type
-HWTSTAMP_FILTER_ALL.
+Instead of always returning -ENOPKG, decode the firmware error
+code further when the HWRM_NVM_INSTALL_UPDATE firmware call fails.
+Return a more suitable error code to userspace and log an error
+in dmesg.
 
-Cc: Richard Cochran <richardcochran@gmail.com>
-Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+This is version 2 of the earlier patch that was reverted:
+
+02acd399533e ("bnxt_en: parse result field when NVRAM package install fails")
+
+In this new version, if the call is made through devlink instead of
+ethtool, we'll also set the error message in extack.
+
+Link: https://lore.kernel.org/netdev/20220307141358.4d52462e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com/
+Reviewed-by: Somnath Kotur <somnath.kotur@broadcom.com>
+Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
+Signed-off-by: Kalesh AP <kalesh-anakkur.purayil@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  8 ++++--
- drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 ++
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  3 +++
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 26 ++++++++++++++++++-
- 4 files changed, 36 insertions(+), 3 deletions(-)
+ .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |  2 +-
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 81 ++++++++++++++++---
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.h |  2 +-
+ 3 files changed, 72 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index bcb3c16bf915..56b46b8206a7 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2040,7 +2040,7 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index 0c17f90d44a2..3528ce9849e6 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -45,7 +45,7 @@ bnxt_dl_flash_update(struct devlink *dl,
  	}
  
- 	if (unlikely((flags & RX_CMP_FLAGS_ITYPES_MASK) ==
--		     RX_CMP_FLAGS_ITYPE_PTP_W_TS)) {
-+		     RX_CMP_FLAGS_ITYPE_PTP_W_TS) || bp->ptp_all_rx_tstamp) {
- 		if (bp->flags & BNXT_FLAG_CHIP_P5) {
- 			u32 cmpl_ts = le32_to_cpu(rxcmp1->rx_cmp_timestamp);
- 			u64 ns, ts;
-@@ -7659,7 +7659,7 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
- 	struct hwrm_func_qcaps_output *resp;
- 	struct hwrm_func_qcaps_input *req;
- 	struct bnxt_hw_resc *hw_resc = &bp->hw_resc;
--	u32 flags, flags_ext;
-+	u32 flags, flags_ext, flags_ext2;
- 	int rc;
- 
- 	rc = hwrm_req_init(bp, req, HWRM_FUNC_QCAPS);
-@@ -7704,6 +7704,10 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
- 	if (BNXT_PF(bp) && (flags_ext & FUNC_QCAPS_RESP_FLAGS_EXT_FW_LIVEPATCH_SUPPORTED))
- 		bp->fw_cap |= BNXT_FW_CAP_LIVEPATCH;
- 
-+	flags_ext2 = le32_to_cpu(resp->flags_ext2);
-+	if (flags_ext2 & FUNC_QCAPS_RESP_FLAGS_EXT2_RX_ALL_PKTS_TIMESTAMPS_SUPPORTED)
-+		bp->fw_cap |= BNXT_FW_CAP_RX_ALL_PKT_TS;
-+
- 	bp->tx_push_thresh = 0;
- 	if ((flags & FUNC_QCAPS_RESP_FLAGS_PUSH_MODE_SUPPORTED) &&
- 	    BNXT_FW_MAJ(bp) > 217)
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index a498ee297946..a1dca8c58f54 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1968,6 +1968,7 @@ struct bnxt {
- 	#define BNXT_FW_CAP_ERR_RECOVER_RELOAD		0x00100000
- 	#define BNXT_FW_CAP_HOT_RESET			0x00200000
- 	#define BNXT_FW_CAP_PTP_RTC			0x00400000
-+	#define BNXT_FW_CAP_RX_ALL_PKT_TS		0x00800000
- 	#define BNXT_FW_CAP_VLAN_RX_STRIP		0x01000000
- 	#define BNXT_FW_CAP_VLAN_TX_INSERT		0x02000000
- 	#define BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED	0x04000000
-@@ -2131,6 +2132,7 @@ struct bnxt {
- 	struct bpf_prog		*xdp_prog;
- 
- 	struct bnxt_ptp_cfg	*ptp_cfg;
-+	u8			ptp_all_rx_tstamp;
- 
- 	/* devlink interface and vf-rep structs */
- 	struct devlink		*dl;
+ 	devlink_flash_update_status_notify(dl, "Preparing to flash", NULL, 0, 0);
+-	rc = bnxt_flash_package_from_fw_obj(bp->dev, params->fw, 0);
++	rc = bnxt_flash_package_from_fw_obj(bp->dev, params->fw, 0, extack);
+ 	if (!rc)
+ 		devlink_flash_update_status_notify(dl, "Flashing done", NULL, 0, 0);
+ 	else
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index b3a48d6675fe..8a7f3f02ed90 100644
+index 8a7f3f02ed90..7191e5d74208 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3759,6 +3759,9 @@ static int bnxt_get_ts_info(struct net_device *dev,
- 	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
- 			   (1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
- 			   (1 << HWTSTAMP_FILTER_PTP_V2_L4_EVENT);
+@@ -23,6 +23,7 @@
+ #include <linux/ptp_clock_kernel.h>
+ #include <linux/net_tstamp.h>
+ #include <linux/timecounter.h>
++#include <net/netlink.h>
+ #include "bnxt_hsi.h"
+ #include "bnxt.h"
+ #include "bnxt_hwrm.h"
+@@ -34,6 +35,13 @@
+ #include "bnxt_fw_hdr.h"	/* Firmware hdr constant and structure defs */
+ #include "bnxt_coredump.h"
+ 
++#define BNXT_NVM_ERR_MSG(dev, extack, msg)			\
++	do {							\
++		if (extack)					\
++			NL_SET_ERR_MSG_MOD(extack, msg);	\
++		netdev_err(dev, "%s\n", msg);			\
++	} while (0)
 +
-+	if (bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS)
-+		info->rx_filters |= (1 << HWTSTAMP_FILTER_ALL);
- 	return 0;
+ static u32 bnxt_get_msglevel(struct net_device *dev)
+ {
+ 	struct bnxt *bp = netdev_priv(dev);
+@@ -2499,12 +2507,65 @@ static int bnxt_flash_firmware_from_file(struct net_device *dev,
+ 	return rc;
  }
  
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index f9c94e5fe718..562f8f68a47d 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -305,14 +305,27 @@ void bnxt_ptp_cfg_tstamp_filters(struct bnxt *bp)
- 
- 	if (hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG))
- 		goto out;
++#define MSG_INTEGRITY_ERR "PKG install error : Data integrity on NVM"
++#define MSG_INVALID_PKG "PKG install error : Invalid package"
++#define MSG_AUTHENTICATION_ERR "PKG install error : Authentication error"
++#define MSG_INVALID_DEV "PKG install error : Invalid device"
++#define MSG_INTERNAL_ERR "PKG install error : Internal error"
++#define MSG_NO_PKG_UPDATE_AREA_ERR "PKG update area not created in nvram"
++#define MSG_NO_SPACE_ERR "PKG insufficient update area in nvram"
++#define MSG_ANTI_ROLLBACK_ERR "HWRM_NVM_INSTALL_UPDATE failure due to Anti-rollback detected"
++#define MSG_GENERIC_FAILURE_ERR "HWRM_NVM_INSTALL_UPDATE failure"
 +
-+	if (!(bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS) && (ptp->tstamp_filters &
-+	    (PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE |
-+	     PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE))) {
-+		ptp->tstamp_filters &= ~(PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE |
-+					 PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE);
-+		netdev_warn(bp->dev, "Unsupported FW for all RX pkts timestamp filter\n");
-+	}
-+
- 	req->flags = cpu_to_le32(ptp->tstamp_filters);
- 	req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_RX_TS_CAPTURE_PTP_MSG_TYPE);
- 	req->rx_ts_capture_ptp_msg_type = cpu_to_le16(ptp->rxctl);
- 
--	if (!hwrm_req_send(bp, req))
-+	if (!hwrm_req_send(bp, req)) {
-+		bp->ptp_all_rx_tstamp = !!(ptp->tstamp_filters &
-+					   PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE);
- 		return;
-+	}
- 	ptp->tstamp_filters = 0;
- out:
-+	bp->ptp_all_rx_tstamp = 0;
- 	netdev_warn(bp->dev, "Failed to configure HW packet timestamp filters\n");
- }
- 
-@@ -460,8 +473,13 @@ static int bnxt_hwrm_ptp_cfg(struct bnxt *bp)
- 	int rc = 0;
- 
- 	switch (ptp->rx_filter) {
-+	case HWTSTAMP_FILTER_ALL:
-+		flags = PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE;
-+		break;
- 	case HWTSTAMP_FILTER_NONE:
- 		flags = PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE;
-+		if (bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS)
-+			flags |= PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_DISABLE;
- 		break;
- 	case HWTSTAMP_FILTER_PTP_V2_EVENT:
- 	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-@@ -516,6 +534,12 @@ int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
- 		ptp->rxctl = 0;
- 		ptp->rx_filter = HWTSTAMP_FILTER_NONE;
- 		break;
-+	case HWTSTAMP_FILTER_ALL:
-+		if (bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS) {
-+			ptp->rx_filter = HWTSTAMP_FILTER_ALL;
-+			break;
-+		}
++static int nvm_update_err_to_stderr(struct net_device *dev, u8 result,
++				    struct netlink_ext_ack *extack)
++{
++	switch (result) {
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_TYPE_PARAMETER:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_INDEX_PARAMETER:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INSTALL_DATA_ERROR:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INSTALL_CHECKSUM_ERROR:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_ITEM_NOT_FOUND:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_ITEM_LOCKED:
++		BNXT_NVM_ERR_MSG(dev, extack, MSG_INTEGRITY_ERR);
++		return -EINVAL;
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_PREREQUISITE:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_FILE_HEADER:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_SIGNATURE:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_PROP_STREAM:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_PROP_LENGTH:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_MANIFEST:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_TRAILER:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_CHECKSUM:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_ITEM_CHECKSUM:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_DATA_LENGTH:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INVALID_DIRECTIVE:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_DUPLICATE_ITEM:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_ZERO_LENGTH_ITEM:
++		BNXT_NVM_ERR_MSG(dev, extack, MSG_INVALID_PKG);
++		return -ENOPKG;
++	case NVM_INSTALL_UPDATE_RESP_RESULT_INSTALL_AUTHENTICATION_ERROR:
++		BNXT_NVM_ERR_MSG(dev, extack, MSG_AUTHENTICATION_ERR);
++		return -EPERM;
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_CHIP_REV:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_DEVICE_ID:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_SUBSYS_VENDOR:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_SUBSYS_ID:
++	case NVM_INSTALL_UPDATE_RESP_RESULT_UNSUPPORTED_PLATFORM:
++		BNXT_NVM_ERR_MSG(dev, extack, MSG_INVALID_DEV);
 +		return -EOPNOTSUPP;
- 	case HWTSTAMP_FILTER_PTP_V2_EVENT:
- 	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
- 	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
++	default:
++		BNXT_NVM_ERR_MSG(dev, extack, MSG_INTERNAL_ERR);
++		return -EIO;
++	}
++}
++
+ #define BNXT_PKG_DMA_SIZE	0x40000
+ #define BNXT_NVM_MORE_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_MODE))
+ #define BNXT_NVM_LAST_FLAG	(cpu_to_le16(NVM_MODIFY_REQ_FLAGS_BATCH_LAST))
+ 
+ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware *fw,
+-				   u32 install_type)
++				   u32 install_type, struct netlink_ext_ack *extack)
+ {
+ 	struct hwrm_nvm_install_update_input *install;
+ 	struct hwrm_nvm_install_update_output *resp;
+@@ -2567,12 +2628,11 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 					  BNX_DIR_EXT_NONE,
+ 					  &index, &item_len, NULL);
+ 		if (rc) {
+-			netdev_err(dev, "PKG update area not created in nvram\n");
++			BNXT_NVM_ERR_MSG(dev, extack, MSG_NO_PKG_UPDATE_AREA_ERR);
+ 			break;
+ 		}
+ 		if (fw->size > item_len) {
+-			netdev_err(dev, "PKG insufficient update area in nvram: %lu\n",
+-				   (unsigned long)fw->size);
++			BNXT_NVM_ERR_MSG(dev, extack, MSG_NO_SPACE_ERR);
+ 			rc = -EFBIG;
+ 			break;
+ 		}
+@@ -2613,7 +2673,7 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 
+ 		switch (cmd_err) {
+ 		case NVM_INSTALL_UPDATE_CMD_ERR_CODE_ANTI_ROLLBACK:
+-			netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure Anti-rollback detected\n");
++			BNXT_NVM_ERR_MSG(dev, extack, MSG_ANTI_ROLLBACK_ERR);
+ 			rc = -EALREADY;
+ 			break;
+ 		case NVM_INSTALL_UPDATE_CMD_ERR_CODE_FRAG_ERR:
+@@ -2641,8 +2701,7 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 			}
+ 			fallthrough;
+ 		default:
+-			netdev_err(dev, "HWRM_NVM_INSTALL_UPDATE failure rc :%x cmd_err :%x\n",
+-				   rc, cmd_err);
++			BNXT_NVM_ERR_MSG(dev, extack, MSG_GENERIC_FAILURE_ERR);
+ 		}
+ 	} while (defrag_attempted && !rc);
+ 
+@@ -2653,7 +2712,7 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ 	if (resp->result) {
+ 		netdev_err(dev, "PKG install error = %d, problem_item = %d\n",
+ 			   (s8)resp->result, (int)resp->problem_item);
+-		rc = -ENOPKG;
++		rc = nvm_update_err_to_stderr(dev, resp->result, extack);
+ 	}
+ 	if (rc == -EACCES)
+ 		bnxt_print_admin_err(bp);
+@@ -2661,7 +2720,7 @@ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware
+ }
+ 
+ static int bnxt_flash_package_from_file(struct net_device *dev, const char *filename,
+-					u32 install_type)
++					u32 install_type, struct netlink_ext_ack *extack)
+ {
+ 	const struct firmware *fw;
+ 	int rc;
+@@ -2673,7 +2732,7 @@ static int bnxt_flash_package_from_file(struct net_device *dev, const char *file
+ 		return rc;
+ 	}
+ 
+-	rc = bnxt_flash_package_from_fw_obj(dev, fw, install_type);
++	rc = bnxt_flash_package_from_fw_obj(dev, fw, install_type, extack);
+ 
+ 	release_firmware(fw);
+ 
+@@ -2691,7 +2750,7 @@ static int bnxt_flash_device(struct net_device *dev,
+ 	if (flash->region == ETHTOOL_FLASH_ALL_REGIONS ||
+ 	    flash->region > 0xffff)
+ 		return bnxt_flash_package_from_file(dev, flash->data,
+-						    flash->region);
++						    flash->region, NULL);
+ 
+ 	return bnxt_flash_firmware_from_file(dev, flash->region, flash->data);
+ }
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+index 6aa44840f13a..a59284215e78 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.h
+@@ -54,7 +54,7 @@ int bnxt_hwrm_nvm_get_dev_info(struct bnxt *bp,
+ int bnxt_hwrm_firmware_reset(struct net_device *dev, u8 proc_type,
+ 			     u8 self_reset, u8 flags);
+ int bnxt_flash_package_from_fw_obj(struct net_device *dev, const struct firmware *fw,
+-				   u32 install_type);
++				   u32 install_type, struct netlink_ext_ack *extack);
+ int bnxt_get_pkginfo(struct net_device *dev, char *ver, int size);
+ void bnxt_ethtool_init(struct bnxt *bp);
+ void bnxt_ethtool_free(struct bnxt *bp);
 -- 
 2.18.1
 
 
---000000000000c1047d05dedb995b
+--000000000000d317d505dedb99e2
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -288,13 +357,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICI5bsn4LMAKsiR0Afo/srfhkBWTv1NB
-Rk6luuoSazB0MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDUx
-MzAyNDA0MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEIC5aRUeOWmlVdt6GxeA6kd4F2s+qnFsh
+v8adbACdbpBtMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDUx
+MzAyNDA0M1owaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQDTfmbW88d9yyIH+Y8hsnG/uktxl1tmdfNUxu1vFHqTaojlYb/v
-PWJ56Uq1TqeouroKQrcV8zOeWKe4jTJx7nBHHQ5n9/l30WSUPnH/F2jBD3/laRZv0xU5bqcL8lj7
-ZnUFl2Nn/94nuBovEbouDdCxW8RLr1kZwFeWCrz1D4iAGqn+ywp3gBJB3vZVJHQLtL+SqsqWlP6M
-o0zX//EUhvl1zHhNcnpvLzxtHSicx/vNY+Jhey6JJKDenEJld6968EmMKvx8Bn8jgpJe4lsniPBP
-uS7SXwGDnDpOIHJ0irn3CshfgTWzxYfK2TSknoHEg7F3VnGn6WExeT6Ia3tv2Hl6
---000000000000c1047d05dedb995b--
+ATANBgkqhkiG9w0BAQEFAASCAQCxa2lyJpl3zScm9xLLK0+i3d9RatXAlZ+nJVKSeziH5+T8PS/+
+/VvYj1D3ejWWH7QmLxVxgJtoVqB51DtuTWzUzU6/N/x4ZoJ/x13khb1wUakjwhjqPsPRqutyI6t+
+8Nl9qLuj46DBIPyHbYVPcRvTXWoVGoGm1SzU3xDK/yKPmveQ0fyKq/Q9qtOYLfSCHkNr1Y5UMNBm
+G1OwXfGMDMRgvZUEBSOUDgPw2dEXvyPdtvwgtr68+A6bXGr82kJfZeznltnorljrDwaieTTGzq7Z
+gO5YTP6TQYv6vWwoP31jpTv8ooSA4oS3aAINoI12ZJ7Xtfc9jf90U2FHFANNiPi6
+--000000000000d317d505dedb99e2--
