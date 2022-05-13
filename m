@@ -2,162 +2,228 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 75A0D52638D
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 16:15:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45227526410
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 16:27:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243956AbiEMOPB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 10:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42912 "EHLO
+        id S1377509AbiEMO05 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 10:26:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243521AbiEMOO7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 10:14:59 -0400
-Received: from out01.mta.xmission.com (out01.mta.xmission.com [166.70.13.231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33DBF58E72;
-        Fri, 13 May 2022 07:14:58 -0700 (PDT)
-Received: from in02.mta.xmission.com ([166.70.13.52]:54854)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1npW4F-007lqp-Uy; Fri, 13 May 2022 08:14:56 -0600
-Received: from ip68-227-174-4.om.om.cox.net ([68.227.174.4]:38036 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1npW4D-00BRmA-PN; Fri, 13 May 2022 08:14:55 -0600
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Konstantin Ryabitsev <konstantin@linuxfoundation.org>,
-        KVM list <kvm@vger.kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        mie@igel.co.jp
-References: <20220510082351-mutt-send-email-mst@kernel.org>
-        <CAHk-=wjPR+bj7P1O=MAQWXp0Mx2hHuNQ1acn6gS+mRo_kbo5Lg@mail.gmail.com>
-        <87czgk8jjo.fsf@mpe.ellerman.id.au>
-        <CAHk-=wj9zKJGA_6SJOMPiQEoYke6cKX-FV3X_5zNXOcFJX1kOQ@mail.gmail.com>
-        <87mtfm7uag.fsf@mpe.ellerman.id.au>
-        <CAHk-=wgnYGY=10sRDzXCC2bmappjBTRNNbr8owvGLEW-xuV7Vw@mail.gmail.com>
-        <CAHk-=wg=jfhgTkYBtY3LPPcUP=8A2bqH_iFezwOCDivuovE41w@mail.gmail.com>
-Date:   Fri, 13 May 2022 09:14:46 -0500
-In-Reply-To: <CAHk-=wg=jfhgTkYBtY3LPPcUP=8A2bqH_iFezwOCDivuovE41w@mail.gmail.com>
-        (Linus Torvalds's message of "Thu, 12 May 2022 10:19:24 -0700")
-Message-ID: <87bkw1ecyx.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S1381088AbiEMO0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 10:26:31 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D679A590A0
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 07:26:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652451981;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=eZ45apDUMX59uVWHQlr04EzDEa2G03GHNP4WpRjWO68=;
+        b=AR5BCEukzBA+NUJ83IqZvPLcvWxivYXtiaMwBR4NUqC2ClUG4+dhhUJsQBEiw2DFM5r1N3
+        iKMb023heucvhpGUy837kklX7zPtEhaL4MmAP7WcNj31teiSIPCr+4MfEGdAFRSHaaQS13
+        HILpJlL3y7+I0PuKjPfiOPR5WPasFJA=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-197-9qpul7BOO16aK3uLQU6URQ-1; Fri, 13 May 2022 10:26:20 -0400
+X-MC-Unique: 9qpul7BOO16aK3uLQU6URQ-1
+Received: by mail-qt1-f200.google.com with SMTP id d4-20020a05622a15c400b002f3bd4b80f7so6443998qty.3
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 07:26:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eZ45apDUMX59uVWHQlr04EzDEa2G03GHNP4WpRjWO68=;
+        b=1Z+ji0dbV5nF5SLtmIMKfDLnXB8aQQitGL2I3d5IbOmQJ3bjz7HUrYgdFyRsHUtWgW
+         2y3LLqtMaJZOiXFqZshMdLHS3B7+/n6dM107YEzUozqGdTYYFIefQAy3h95fFkKl22hu
+         O0d7mPzMi0JkCfHpGZ7vHLNjsyzCOjAqhXhM/hwv7uudUBKkDyVh1GU7I6N0M/JqmN5E
+         +zUHRR1MSdiYBd6oU/V5i9w+MHQCm+QCRJI04qDDAmmrMb8oPgKw95f7sHNae7ntzUs0
+         ys0g7jOttGa6LqHceUsq3OM8Fc19OuHMXnCzbYnbdFT1bO1FTi/qlF6OlbkuhRrjDd66
+         tkDA==
+X-Gm-Message-State: AOAM532+sgYIxrRt1jWnp8y/DsZoIVsNI69iiXO25F7zAFqnfpdJQni+
+        +vWuLbuhyYeMpevplmJb7ZcMG+iBk2elBxkQgUr0GcQRqlCVLWHGzsf6cBV9A9nertHv/g7kKYa
+        ots55M4I+A06JijF4/zleuf5pMJmIwa40
+X-Received: by 2002:a05:6214:c29:b0:45a:fedd:7315 with SMTP id a9-20020a0562140c2900b0045afedd7315mr4607918qvd.59.1652451979779;
+        Fri, 13 May 2022 07:26:19 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwPkxhAf96t9d5nOpBcWImYrvg8LbZxsB5Eqn0nc42WMToWRBZiHA3DPgJe1Lgq8S2wv9wLR1gbHt1OF2Uv7iE=
+X-Received: by 2002:a05:6214:c29:b0:45a:fedd:7315 with SMTP id
+ a9-20020a0562140c2900b0045afedd7315mr4607897qvd.59.1652451979443; Fri, 13 May
+ 2022 07:26:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1npW4D-00BRmA-PN;;;mid=<87bkw1ecyx.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.227.174.4;;;frm=ebiederm@xmission.com;;;spf=softfail
-X-XM-AID: U2FsdGVkX1+P1XTvzh2gWV+avxp7O0g4DyqAEC77CWU=
-X-SA-Exim-Connect-IP: 68.227.174.4
-X-SA-Exim-Mail-From: ebiederm@xmission.com
+References: <20220427164659.106447-1-miquel.raynal@bootlin.com>
+ <20220427164659.106447-9-miquel.raynal@bootlin.com> <CAB_54W7NWEYgmLfowvyXtKEsKhBaVrPzpkB1kasYpAst98mKNA@mail.gmail.com>
+ <20220428095848.34582df4@xps13> <CAB_54W6nrNaXouN2LkEtzSpYNSmXT+WUbr4Y9rETyATznAbkEg@mail.gmail.com>
+ <20220512163304.34fa5c35@xps13>
+In-Reply-To: <20220512163304.34fa5c35@xps13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Fri, 13 May 2022 10:26:08 -0400
+Message-ID: <CAK-6q+hO__T1XujGZNHtrfD4WM5PzxqzjyrRTL-pCw-fMFm3QA@mail.gmail.com>
+Subject: Re: [PATCH wpan-next 08/11] net: mac802154: Add a warning in the hot path
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
-X-Spam-DCC: XMission; sa05 1397; Body=1 Fuz1=1 Fuz2=1 
-X-Spam-Combo: ****;Linus Torvalds <torvalds@linux-foundation.org>
-X-Spam-Relay-Country: 
-X-Spam-Timing: total 1573 ms - load_scoreonly_sql: 0.48 (0.0%),
-        signal_user_changed: 13 (0.8%), b_tie_ro: 10 (0.6%), parse: 1.68
-        (0.1%), extract_message_metadata: 17 (1.1%), get_uri_detail_list: 2.9
-        (0.2%), tests_pri_-1000: 18 (1.1%), tests_pri_-950: 1.53 (0.1%),
-        tests_pri_-900: 1.19 (0.1%), tests_pri_-90: 119 (7.6%), check_bayes:
-        117 (7.4%), b_tokenize: 10 (0.6%), b_tok_get_all: 18 (1.1%),
-        b_comp_prob: 4.1 (0.3%), b_tok_touch_all: 81 (5.1%), b_finish: 1.36
-        (0.1%), tests_pri_0: 1365 (86.8%), check_dkim_signature: 1.09 (0.1%),
-        check_dkim_adsp: 3.5 (0.2%), poll_dns_idle: 0.79 (0.1%), tests_pri_10:
-        4.2 (0.3%), tests_pri_500: 28 (1.8%), rewrite_mail: 0.00 (0.0%)
-Subject: Re: [GIT PULL] virtio: last minute fixup
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+Hi,
 
-> On Thu, May 12, 2022 at 10:10 AM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
->>
->> And most definitely not just random data that can be trivially
->> auto-generated after-the-fact.
+On Thu, May 12, 2022 at 10:33 AM Miquel Raynal
+<miquel.raynal@bootlin.com> wrote:
 >
-> Put another way: when people asked for change ID's and I said "we have
-> links", I by no means meant that "you can just add random worthless
-> links to commits".
+> Hi Alexander,
 >
-> For example, if you have a (public-facing) Gerrit system that tracks a
-> patch before it gets committed, BY ALL MEANS add a link to that as the
-> "change ID" that you tracked in Gerrit.
+> alex.aring@gmail.com wrote on Sun, 1 May 2022 20:21:18 -0400:
 >
-> That's a Link: that actually adds *information*. It shows some real
-> history to the commit, and shows who approved it and when, and gives
-> you all the Gerrit background.
+> > Hi,
+> >
+> > On Thu, Apr 28, 2022 at 3:58 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > >
+> > > Hi Alexander,
+> > >
+> > > alex.aring@gmail.com wrote on Wed, 27 Apr 2022 14:01:25 -0400:
+> > >
+> > > > Hi,
+> > > >
+> > > > On Wed, Apr 27, 2022 at 12:47 PM Miquel Raynal
+> > > > <miquel.raynal@bootlin.com> wrote:
+> > > > >
+> > > > > We should never start a transmission after the queue has been stopped.
+> > > > >
+> > > > > But because it might work we don't kill the function here but rather
+> > > > > warn loudly the user that something is wrong.
+> > > > >
+> > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > > > ---
+> > >
+> > > [...]
+> > >
+> > > > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > > > > index a8a83f0167bf..021dddfea542 100644
+> > > > > --- a/net/mac802154/tx.c
+> > > > > +++ b/net/mac802154/tx.c
+> > > > > @@ -124,6 +124,8 @@ bool ieee802154_queue_is_held(struct ieee802154_local *local)
+> > > > >  static netdev_tx_t
+> > > > >  ieee802154_hot_tx(struct ieee802154_local *local, struct sk_buff *skb)
+> > > > >  {
+> > > > > +       WARN_ON_ONCE(ieee802154_queue_is_stopped(local));
+> > > > > +
+> > > > >         return ieee802154_tx(local, skb);
+> > > > >  }
+> > > > >
+> > > > > diff --git a/net/mac802154/util.c b/net/mac802154/util.c
+> > > > > index 847e0864b575..cfd17a7db532 100644
+> > > > > --- a/net/mac802154/util.c
+> > > > > +++ b/net/mac802154/util.c
+> > > > > @@ -44,6 +44,24 @@ void ieee802154_stop_queue(struct ieee802154_local *local)
+> > > > >         rcu_read_unlock();
+> > > > >  }
+> > > > >
+> > > > > +bool ieee802154_queue_is_stopped(struct ieee802154_local *local)
+> > > > > +{
+> > > > > +       struct ieee802154_sub_if_data *sdata;
+> > > > > +       bool stopped = true;
+> > > > > +
+> > > > > +       rcu_read_lock();
+> > > > > +       list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+> > > > > +               if (!sdata->dev)
+> > > > > +                       continue;
+> > > > > +
+> > > > > +               if (!netif_queue_stopped(sdata->dev))
+> > > > > +                       stopped = false;
+> > > > > +       }
+> > > > > +       rcu_read_unlock();
+> > > > > +
+> > > > > +       return stopped;
+> > > > > +}
+> > > >
+> > > > sorry this makes no sense, you using net core functionality to check
+> > > > if a queue is stopped in a net core netif callback. Whereas the sense
+> > > > here for checking if the queue is really stopped is when 802.15.4
+> > > > thinks the queue is stopped vs net core netif callback running. It
+> > > > means for MLME-ops there are points we want to make sure that net core
+> > > > is not handling any xmit and we should check this point and not
+> > > > introducing net core functionality checks.
+> > >
+> > > I think I've mixed two things, your remark makes complete sense. I
+> > > should instead here just check a 802.15.4 internal variable.
+> > >
+> >
+> > I am thinking about this patch series... and I think it still has bugs
+> > or at least it's easy to have bugs when the context is not right
+> > prepared to call a synchronized transmission. We leave here the netdev
+> > state machine world for transmit vs e.g. start/stop netif callback...
+> > We have a warning here if there is a core netif xmit callback running
+> > when 802.15.4 thinks it shouldn't (because we take control of it) but
+> > I also think about a kind of the other way around. A warning if
+> > 802.15.4 transmits something but the netdev core logic "thinks" it
+> > shouldn't.
+> >
+> > That requires some checks (probably from netcore functionality) to
+> > check if we call a 802.15.4 sync xmit but netif core already called
+> > stop() callback. The last stop() callback - means the driver_ops
+> > stop() callback was called, we have some "open_count" counter there
+> > which MUST be incremented before doing any looping of one or several
+> > sync transmissions. All I can say is if we call xmit() but the driver
+> > is in stop() state... it will break things.
+> >
+> > My concern is also here that e.g. calling netif down or device
+> > suspend() are only two examples I have in my mind right now. I don't
+> > know all cases which can occur, that's why we should introduce another
+> > WARN_ON_ONCE() for the case that 802.15.4 transmits something but we
+> > are in a state where we can't transmit something according to netif
+> > state (driver ops called stop()).
+> >
+> > Can you add such a check as well?
 >
-> But a link to the email on lkml that just contains the patch and the
-> same commentary that was introduced into the commit? Useless garbage.
-> It adds no actual information.
+> That is a good idea, I have added such a check: if the interface is
+> supposed to be down I'll warn and return because I don't think there is
+> much we can do in this situation besides avoiding trying to transmit
+> anything.
 >
-> THAT is my argument. Why do people think I'm arguing against the Link:
-> tag? No. I'm arguing against adding links with no relevant new
-> information behind them.
+
+ok...
+
+> > And please keep in mind to increment
+> > the open count when implementing MLME-ops (or at least handle it
+> > somehow), otherwise I guess it's easy to hit the warning. If another
+> > user reports warnings and tells us what they did we might know more
+> > other "cases" to fix.
 >
-> I don't argue against links to lore. Not at all. If those links are
-> about the background that caused the patch, they are great. Maybe they
-> are to a long thread about the original problem and how to solve it.
-> Thats WONDERFUL.
+> I don't think incrementing the open_count counter is the right solution
+> here just because the stop call is not supposed to fail and has no
+> straightforward ways to be deferred. In particular, just keeping the
+> open_count incremented will just avoid the actual driver stop operation
+> to be executed and the core will not notice it.
 >
-> But here's the deal: when I look at a commit that I wonder "why is it
-> doing this, it seems wrong" (possibly after there's been a bug report
-> about it, but possibly just because I'm reviewing it as part of doing
-> the pull), and I see a "Link:" tag, and it just points back to the
-> SAME DAMN DATA that I already have in the commit, then that Link: tag
-> not only wasn't helpful, it was ACTIVELY DETRIMENTAL and made me waste
-> time and just get irritated.
->
-> And if you waste my time with useless links, why would you expect me
-> to be supportive of that behavior?
 
-You know.  I have exactly the same reaction about your proposal to
-remove the Link tag.
+the stop callback can sleep, it's the job of the driver to synchronize
+it somehow with the transceiver state.
 
-I hate it when v1, v2, v3, v4, etc are not part of the same thread.
+> I came out with another solution: acquiring the rtnl when performing a
+> MLME Tx operation to serialize these operations. We can easily have a
+> version which just checks the rtnl was acquired as well for situations
+> when the MLME operations are called by eg. the nl layer (and thus, with
+> the rtnl lock taken automatically).
 
-I find it very useful to go directly to the patch submission by
-following a single url and see the whole entire conversation right
-there.
+The rtnl lock needs definitely to be held during such operation.
 
-I don't relish the need to instead perform a search and waste my time
-filtering through similar submissions just to find the thread where
-things happened and what people were thinking.
-
-It is human and messy and unstructured so we probably need a search
-engine to find parts of historical conversations, but gosh darn search
-engines can take a lot of work to get useful results out of.
-
-
-As for finding the original problem that can be very hard.  I recently
-had someone report a problem in code that had not changed in a decade or
-so that had just appeared.  They had just happened to run ltp on a big
-enough machine where a poorly written test stressed the hardware on a
-large enough machine in just the right way that things started falling
-over.
-
-It took asking several times to find that out.
-
-
-So sure let's aim at getting more and better information in commits and
-in the urls that we place in commits.  But let's not throw the baby out
-with the bath water and stop doing the part we can automate, because
-we have done such a good job of automating the indexing that we can
-usually find it with a simple search.
-
-Let's instead aim to keep the conversation connected, and the threads
-not broken so that following the url that is the easy thing to create
-gives us much more information.
-
-Eric
+- Alex
 
