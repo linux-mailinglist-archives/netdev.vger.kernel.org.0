@@ -2,60 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 054D95259BE
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 04:41:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD8725259BD
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 04:41:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376548AbiEMCkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 12 May 2022 22:40:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46478 "EHLO
+        id S1376554AbiEMCkr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 12 May 2022 22:40:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376549AbiEMCkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 22:40:42 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA61329
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 19:40:41 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso6572922pjg.0
-        for <netdev@vger.kernel.org>; Thu, 12 May 2022 19:40:41 -0700 (PDT)
+        with ESMTP id S1376547AbiEMCkn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 12 May 2022 22:40:43 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89402F3E
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 19:40:42 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id bo5so6488359pfb.4
+        for <netdev@vger.kernel.org>; Thu, 12 May 2022 19:40:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5/NHMg5xeP+VCkddN27t3wlq4hzoZyay0WSgFAS6+B8=;
-        b=d3yyiR405yMSU43FerJWt8yiJBpRjLB+Dm6DjvU4UWqvblIeE9PDjL0QTKsq5hixRq
-         v2qBY2b1OuqXL6rHM/kH0Y5kWEI16alO7/g7Hx5+yYBfH9o8YYGzY0p0D/lrAuRq71Ku
-         l/JcX+MXJ/aSz1inb7Aw0Aj/xn3o22m535sDI=
+        bh=dJfM4xY0ValZDkQBdAKToJEmNp3Cvvvaep2zjmO7YLI=;
+        b=GJlUOwLkfT9gd3ymUgd4umJ11dr/DFotJt96TUskHr1KzCpaN/nNr+NFhyGDpKcDcZ
+         zM4Q+09eslSqnpUJw6YAbBB8DHgKrw0m9VMfjuNTMbT5qvP214z+ncvFXtlI6M1rD77g
+         ML9Wh5fnhZ6kZC949Uv96J9xeQZSHEKq3Dh8E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=5/NHMg5xeP+VCkddN27t3wlq4hzoZyay0WSgFAS6+B8=;
-        b=BGUrzuvtZ7gpE9xMMel+24Pk8akz7GsvRySOm8Zm4BZeufoNjV5NVgv6PoAoyM5F/+
-         9frQPv9EovJDtkniQ4y+nCrz3ZP1JF7zr0WBdZGeZ/BYcBwtnJ1vhnD9BY/Eht+9hsH1
-         6ZEsausv6B/KSNRdXQSwTRHhGNkD2ZvI9OlssoWLOD1bboaMtOsnxPdXntaxYEH/76HF
-         Hy6eKuqWXhca+x30AC/XduPf3QNGYYB79Ry5wQNjGptZOAzhBzD/1gx2Fr48snLZVjpy
-         BUY2ffWlnTMIXSVfQfUqUTR9QIbIZmbcfY/ZKsTzw95BBv/7mLGPJ+iHzlTb0KwUWK2s
-         QxhA==
-X-Gm-Message-State: AOAM531apEOszkmQLiFZcexMYygehiVmOOSdDawitkkfiBf+LMkPw/vF
-        vlMpO452grTN4KVX/Rk7DT76NQ==
-X-Google-Smtp-Source: ABdhPJzGOSymFXIRo3uy60jjXq7V2th/eBXgJTFPr3c80Wzvj4zOAJRavHtz2XaJdtiYmWBdlJ+R+A==
-X-Received: by 2002:a17:90b:50b:b0:1dc:a0b1:c783 with SMTP id r11-20020a17090b050b00b001dca0b1c783mr13983369pjz.49.1652409640226;
-        Thu, 12 May 2022 19:40:40 -0700 (PDT)
+        bh=dJfM4xY0ValZDkQBdAKToJEmNp3Cvvvaep2zjmO7YLI=;
+        b=zaV0D2V/ywaGoGeKBiYGOGzv905/NuVWqyXN90xZ1ig5L06vFwUq0z49vfU+EPyr9V
+         SbWCcmm88gHWzLhZj7ju/W6tCZEf4HSvmsdmop6a0OanjQp/Vg4AwKlI070wrA7pdmbl
+         j5U5ePX4Tx4tWMoSbhqZ/UIxg/iTHJTUNAk4uu0oAD7sbhCRqQn8M1+dUfd9espdriWC
+         aducRHG2RBN4mu+DRpLg5m9FfYhkPQepG4NdLGjxs3HRJktcpQ1LmcImqUlJJ0idA1Sx
+         w+MUUBJJb1Yx+edkwaheoFwbH9eo4YTqMbAm5aKrqLu+RbsTsvZQwVrMHoqdgYnewrWP
+         3Zxw==
+X-Gm-Message-State: AOAM530hzeJuSAnuQ9WLrhiQEbzOmcDRs6AHm/ojXopcBtRo6+vbUHjQ
+        Y+loQJSlKyLAx20fEcrIyN8/cQ==
+X-Google-Smtp-Source: ABdhPJyKAIYGJ9MWU9zMeMavTrDNl3iZRvpeg+xsuEYcLztjrZmedWp9SmS6N26o+3Qd/wFtQT5MtQ==
+X-Received: by 2002:a63:4e61:0:b0:3c6:9e14:5511 with SMTP id o33-20020a634e61000000b003c69e145511mr2142346pgl.446.1652409641441;
+        Thu, 12 May 2022 19:40:41 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id t3-20020a1709027fc300b0015e8da1fb07sm587212plb.127.2022.05.12.19.40.39
+        by smtp.gmail.com with ESMTPSA id t3-20020a1709027fc300b0015e8da1fb07sm587212plb.127.2022.05.12.19.40.40
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 12 May 2022 19:40:39 -0700 (PDT)
+        Thu, 12 May 2022 19:40:41 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com,
         Pavan Chebbi <pavan.chebbi@broadcom.com>,
         Richard Cochran <richardcochran@gmail.com>
-Subject: [PATCH net-next 2/4] bnxt_en: Configure ptp filters during bnxt open
-Date:   Thu, 12 May 2022 22:40:22 -0400
-Message-Id: <1652409624-8731-3-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 3/4] bnxt_en: Enable packet timestamping for all RX packets
+Date:   Thu, 12 May 2022 22:40:23 -0400
+Message-Id: <1652409624-8731-4-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1652409624-8731-1-git-send-email-michael.chan@broadcom.com>
 References: <1652409624-8731-1-git-send-email-michael.chan@broadcom.com>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000b2c14c05dedb993a"
+        boundary="000000000000c1047d05dedb995b"
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
         MIME_HEADER_CTYPE_ONLY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
@@ -67,146 +67,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000b2c14c05dedb993a
+--000000000000c1047d05dedb995b
 
 From: Pavan Chebbi <pavan.chebbi@broadcom.com>
 
-For correctness, we need to configure the packet filters for timestamping
-during bnxt_open.  This way they are always configured after firmware
-reset or chip reset.  We should not assume that the filters will always
-be retained across resets.
-
-This patch modifies the ioctl handler and always configures the PTP
-filters in the bnxt_open() path.
+Add driver support to enable timestamping on all RX packets
+that are received by the NIC. This capability can be requested
+by the applications using SIOCSHWTSTAMP ioctl with filter type
+HWTSTAMP_FILTER_ALL.
 
 Cc: Richard Cochran <richardcochran@gmail.com>
 Signed-off-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  1 +
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 56 ++++++++++++++-----
- drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h |  2 +
- 3 files changed, 46 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c     |  8 ++++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  2 ++
+ .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c |  3 +++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c | 26 ++++++++++++++++++-
+ 4 files changed, 36 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 082518e68579..bcb3c16bf915 100644
+index bcb3c16bf915..56b46b8206a7 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -10508,6 +10508,7 @@ static int __bnxt_open_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
- 	if (BNXT_PF(bp))
- 		bnxt_vf_reps_open(bp);
- 	bnxt_ptp_init_rtc(bp, true);
-+	bnxt_ptp_cfg_tstamp_filters(bp);
- 	return 0;
+@@ -2040,7 +2040,7 @@ static int bnxt_rx_pkt(struct bnxt *bp, struct bnxt_cp_ring_info *cpr,
+ 	}
  
- open_err_irq:
+ 	if (unlikely((flags & RX_CMP_FLAGS_ITYPES_MASK) ==
+-		     RX_CMP_FLAGS_ITYPE_PTP_W_TS)) {
++		     RX_CMP_FLAGS_ITYPE_PTP_W_TS) || bp->ptp_all_rx_tstamp) {
+ 		if (bp->flags & BNXT_FLAG_CHIP_P5) {
+ 			u32 cmpl_ts = le32_to_cpu(rxcmp1->rx_cmp_timestamp);
+ 			u64 ns, ts;
+@@ -7659,7 +7659,7 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
+ 	struct hwrm_func_qcaps_output *resp;
+ 	struct hwrm_func_qcaps_input *req;
+ 	struct bnxt_hw_resc *hw_resc = &bp->hw_resc;
+-	u32 flags, flags_ext;
++	u32 flags, flags_ext, flags_ext2;
+ 	int rc;
+ 
+ 	rc = hwrm_req_init(bp, req, HWRM_FUNC_QCAPS);
+@@ -7704,6 +7704,10 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
+ 	if (BNXT_PF(bp) && (flags_ext & FUNC_QCAPS_RESP_FLAGS_EXT_FW_LIVEPATCH_SUPPORTED))
+ 		bp->fw_cap |= BNXT_FW_CAP_LIVEPATCH;
+ 
++	flags_ext2 = le32_to_cpu(resp->flags_ext2);
++	if (flags_ext2 & FUNC_QCAPS_RESP_FLAGS_EXT2_RX_ALL_PKTS_TIMESTAMPS_SUPPORTED)
++		bp->fw_cap |= BNXT_FW_CAP_RX_ALL_PKT_TS;
++
+ 	bp->tx_push_thresh = 0;
+ 	if ((flags & FUNC_QCAPS_RESP_FLAGS_PUSH_MODE_SUPPORTED) &&
+ 	    BNXT_FW_MAJ(bp) > 217)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index a498ee297946..a1dca8c58f54 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1968,6 +1968,7 @@ struct bnxt {
+ 	#define BNXT_FW_CAP_ERR_RECOVER_RELOAD		0x00100000
+ 	#define BNXT_FW_CAP_HOT_RESET			0x00200000
+ 	#define BNXT_FW_CAP_PTP_RTC			0x00400000
++	#define BNXT_FW_CAP_RX_ALL_PKT_TS		0x00800000
+ 	#define BNXT_FW_CAP_VLAN_RX_STRIP		0x01000000
+ 	#define BNXT_FW_CAP_VLAN_TX_INSERT		0x02000000
+ 	#define BNXT_FW_CAP_EXT_HW_STATS_SUPPORTED	0x04000000
+@@ -2131,6 +2132,7 @@ struct bnxt {
+ 	struct bpf_prog		*xdp_prog;
+ 
+ 	struct bnxt_ptp_cfg	*ptp_cfg;
++	u8			ptp_all_rx_tstamp;
+ 
+ 	/* devlink interface and vf-rep structs */
+ 	struct devlink		*dl;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+index b3a48d6675fe..8a7f3f02ed90 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
+@@ -3759,6 +3759,9 @@ static int bnxt_get_ts_info(struct net_device *dev,
+ 	info->rx_filters = (1 << HWTSTAMP_FILTER_NONE) |
+ 			   (1 << HWTSTAMP_FILTER_PTP_V2_L2_EVENT) |
+ 			   (1 << HWTSTAMP_FILTER_PTP_V2_L4_EVENT);
++
++	if (bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS)
++		info->rx_filters |= (1 << HWTSTAMP_FILTER_ALL);
+ 	return 0;
+ }
+ 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-index 00f2f80c0073..f9c94e5fe718 100644
+index f9c94e5fe718..562f8f68a47d 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.c
-@@ -295,6 +295,27 @@ static int bnxt_ptp_cfg_event(struct bnxt *bp, u8 event)
- 	return hwrm_req_send(bp, req);
- }
+@@ -305,14 +305,27 @@ void bnxt_ptp_cfg_tstamp_filters(struct bnxt *bp)
  
-+void bnxt_ptp_cfg_tstamp_filters(struct bnxt *bp)
-+{
-+	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
-+	struct hwrm_port_mac_cfg_input *req;
+ 	if (hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG))
+ 		goto out;
 +
-+	if (!ptp || !ptp->tstamp_filters)
-+		return;
-+
-+	if (hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG))
-+		goto out;
-+	req->flags = cpu_to_le32(ptp->tstamp_filters);
-+	req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_RX_TS_CAPTURE_PTP_MSG_TYPE);
-+	req->rx_ts_capture_ptp_msg_type = cpu_to_le16(ptp->rxctl);
-+
-+	if (!hwrm_req_send(bp, req))
-+		return;
-+	ptp->tstamp_filters = 0;
-+out:
-+	netdev_warn(bp->dev, "Failed to configure HW packet timestamp filters\n");
-+}
-+
- void bnxt_ptp_reapply_pps(struct bnxt *bp)
- {
- 	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
-@@ -435,27 +456,36 @@ static int bnxt_ptp_enable(struct ptp_clock_info *ptp_info,
- static int bnxt_hwrm_ptp_cfg(struct bnxt *bp)
- {
- 	struct bnxt_ptp_cfg *ptp = bp->ptp_cfg;
--	struct hwrm_port_mac_cfg_input *req;
- 	u32 flags = 0;
--	int rc;
-+	int rc = 0;
- 
--	rc = hwrm_req_init(bp, req, HWRM_PORT_MAC_CFG);
--	if (rc)
--		return rc;
-+	switch (ptp->rx_filter) {
-+	case HWTSTAMP_FILTER_NONE:
-+		flags = PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE;
-+		break;
-+	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-+		flags = PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_ENABLE;
-+		break;
-+	}
- 
--	if (ptp->rx_filter)
--		flags |= PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_ENABLE;
--	else
--		flags |= PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE;
- 	if (ptp->tx_tstamp_en)
- 		flags |= PORT_MAC_CFG_REQ_FLAGS_PTP_TX_TS_CAPTURE_ENABLE;
- 	else
- 		flags |= PORT_MAC_CFG_REQ_FLAGS_PTP_TX_TS_CAPTURE_DISABLE;
--	req->flags = cpu_to_le32(flags);
--	req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_RX_TS_CAPTURE_PTP_MSG_TYPE);
--	req->rx_ts_capture_ptp_msg_type = cpu_to_le16(ptp->rxctl);
- 
--	return hwrm_req_send(bp, req);
-+	ptp->tstamp_filters = flags;
-+
-+	if (netif_running(bp->dev)) {
-+		rc = bnxt_close_nic(bp, false, false);
-+		if (!rc)
-+			rc = bnxt_open_nic(bp, false, false);
-+		if (!rc && !ptp->tstamp_filters)
-+			rc = -EIO;
++	if (!(bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS) && (ptp->tstamp_filters &
++	    (PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE |
++	     PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE))) {
++		ptp->tstamp_filters &= ~(PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE |
++					 PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE);
++		netdev_warn(bp->dev, "Unsupported FW for all RX pkts timestamp filter\n");
 +	}
 +
-+	return rc;
+ 	req->flags = cpu_to_le32(ptp->tstamp_filters);
+ 	req->enables = cpu_to_le32(PORT_MAC_CFG_REQ_ENABLES_RX_TS_CAPTURE_PTP_MSG_TYPE);
+ 	req->rx_ts_capture_ptp_msg_type = cpu_to_le16(ptp->rxctl);
+ 
+-	if (!hwrm_req_send(bp, req))
++	if (!hwrm_req_send(bp, req)) {
++		bp->ptp_all_rx_tstamp = !!(ptp->tstamp_filters &
++					   PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE);
+ 		return;
++	}
+ 	ptp->tstamp_filters = 0;
+ out:
++	bp->ptp_all_rx_tstamp = 0;
+ 	netdev_warn(bp->dev, "Failed to configure HW packet timestamp filters\n");
  }
  
- int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-index 530b9922608c..4ce0a14c1e23 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ptp.h
-@@ -113,6 +113,7 @@ struct bnxt_ptp_cfg {
- 					 BNXT_PTP_MSG_PDELAY_RESP)
- 	u8			tx_tstamp_en:1;
- 	int			rx_filter;
-+	u32			tstamp_filters;
+@@ -460,8 +473,13 @@ static int bnxt_hwrm_ptp_cfg(struct bnxt *bp)
+ 	int rc = 0;
  
- 	u32			refclk_regs[2];
- 	u32			refclk_mapped_regs[2];
-@@ -133,6 +134,7 @@ do {						\
- int bnxt_ptp_parse(struct sk_buff *skb, u16 *seq_id, u16 *hdr_off);
- void bnxt_ptp_update_current_time(struct bnxt *bp);
- void bnxt_ptp_pps_event(struct bnxt *bp, u32 data1, u32 data2);
-+void bnxt_ptp_cfg_tstamp_filters(struct bnxt *bp);
- void bnxt_ptp_reapply_pps(struct bnxt *bp);
- int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr);
- int bnxt_hwtstamp_get(struct net_device *dev, struct ifreq *ifr);
+ 	switch (ptp->rx_filter) {
++	case HWTSTAMP_FILTER_ALL:
++		flags = PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_ENABLE;
++		break;
+ 	case HWTSTAMP_FILTER_NONE:
+ 		flags = PORT_MAC_CFG_REQ_FLAGS_PTP_RX_TS_CAPTURE_DISABLE;
++		if (bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS)
++			flags |= PORT_MAC_CFG_REQ_FLAGS_ALL_RX_TS_CAPTURE_DISABLE;
+ 		break;
+ 	case HWTSTAMP_FILTER_PTP_V2_EVENT:
+ 	case HWTSTAMP_FILTER_PTP_V2_SYNC:
+@@ -516,6 +534,12 @@ int bnxt_hwtstamp_set(struct net_device *dev, struct ifreq *ifr)
+ 		ptp->rxctl = 0;
+ 		ptp->rx_filter = HWTSTAMP_FILTER_NONE;
+ 		break;
++	case HWTSTAMP_FILTER_ALL:
++		if (bp->fw_cap & BNXT_FW_CAP_RX_ALL_PKT_TS) {
++			ptp->rx_filter = HWTSTAMP_FILTER_ALL;
++			break;
++		}
++		return -EOPNOTSUPP;
+ 	case HWTSTAMP_FILTER_PTP_V2_EVENT:
+ 	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
+ 	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
 -- 
 2.18.1
 
 
---000000000000b2c14c05dedb993a
+--000000000000c1047d05dedb995b
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -277,13 +288,13 @@ FSWQptLx+kiu63idTII4r3k/7+dJ5AhLRr4WCoXEme2GZkfSbYC3fEL46tb1w7w+25OEFCv1MtDZ
 DauX1eWVM+KepL7zoSNzVbTipc65WuZFLR8ngOwkpknqvS9n/nKd885m23oIocC+GA4xggJtMIIC
 aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
 EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgwQeU+Y6hbenPzRMJsw
-DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICF6zq33MS9xRK247LSb/xRhq9gMb8tn
-qOFE30yLsRXsMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDUx
-MzAyNDA0MVowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICI5bsn4LMAKsiR0Afo/srfhkBWTv1NB
+Rk6luuoSazB0MBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDUx
+MzAyNDA0MlowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
 SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
-ATANBgkqhkiG9w0BAQEFAASCAQAeDdHwQ+2ZgK74JwUTTddiuHcxVERMJ6AlG3X/NEenlHZM6cEX
-JFTMl6lZO/LJ3dSo6v0vRjjqaes0rBy7Xsu9WgKIIShwO8yHfIVhpnzAPgdkHQsJ4/T0QwIZyMlM
-H8FWXze9DeATMGz4G2oli0JO7S2sI0n3UmOHAYzwyJ2Tk8Acc2RqToN8xJiEWPdC4LuGytRo8882
-USVXoQuCNmfPvcK5wOOv1LjfUPSTMTtm28Rn5eglYhaBDf887+Fxw5uKHb5VhRUJotPjaB+69tuB
-ifnrn2f10uhZidM9eQXx4w2WvSL+f9eci7Qrv7rrtYANGUZLeOfNJVLPYoPOCQ2O
---000000000000b2c14c05dedb993a--
+ATANBgkqhkiG9w0BAQEFAASCAQDTfmbW88d9yyIH+Y8hsnG/uktxl1tmdfNUxu1vFHqTaojlYb/v
+PWJ56Uq1TqeouroKQrcV8zOeWKe4jTJx7nBHHQ5n9/l30WSUPnH/F2jBD3/laRZv0xU5bqcL8lj7
+ZnUFl2Nn/94nuBovEbouDdCxW8RLr1kZwFeWCrz1D4iAGqn+ywp3gBJB3vZVJHQLtL+SqsqWlP6M
+o0zX//EUhvl1zHhNcnpvLzxtHSicx/vNY+Jhey6JJKDenEJld6968EmMKvx8Bn8jgpJe4lsniPBP
+uS7SXwGDnDpOIHJ0irn3CshfgTWzxYfK2TSknoHEg7F3VnGn6WExeT6Ia3tv2Hl6
+--000000000000c1047d05dedb995b--
