@@ -2,72 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4805D525F8B
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 12:08:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2D31525FC1
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 12:39:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379249AbiEMKH6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 06:07:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
+        id S1379360AbiEMKWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 06:22:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359219AbiEMKHz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 06:07:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E23E66AA46;
-        Fri, 13 May 2022 03:07:54 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 636066222D;
-        Fri, 13 May 2022 10:07:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D07AC34100;
-        Fri, 13 May 2022 10:07:53 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="LwDOuIuH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1652436471;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7N1zyXIi+oMbfwTrQnEnFevk7qISh3+9W8x85t6Q8bY=;
-        b=LwDOuIuHymjucObEZc6dI/e+wZ50PeYNASM60HYX9wYpZsJIZvBVBqAtCFcZsR844wLYPa
-        rCG3RtG3UnuMYyVc6ym4HNSTqGtQD7PeAmohnOeVmGeqSWOj+uHuBU/DUldfXPFlyIREl7
-        S5KBsIdtQEDxVpxILA3yK/51DIhVYMY=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ae4f983b (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Fri, 13 May 2022 10:07:51 +0000 (UTC)
-Date:   Fri, 13 May 2022 12:07:49 +0200
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Dominik Brodowski <linux@dominikbrodowski.net>
-Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Theodore Ts'o <tytso@mit.edu>
-Subject: Re: [PATCH] random32: use real rng for non-deterministic randomness
-Message-ID: <Yn4t9S71LhI8W0ek@zx2c4.com>
-References: <20220511143257.88442-1-Jason@zx2c4.com>
- <Yn34Tf4CpSaZBlGi@owl.dominikbrodowski.net>
+        with ESMTP id S1344326AbiEMKWi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 06:22:38 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469E13BA76;
+        Fri, 13 May 2022 03:22:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1652437357; x=1683973357;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=1Jzj+aQ33go3hSLqDabpCzxtCzXLj+yMhrRH8wus34o=;
+  b=CxiD39g7Xu64BxUQmriuw6+99GqGuk/fc5cvV2LsiZPmIpmw0rGuKUls
+   s9LTphQzD7WdXUO0Z0YOucD6zbjR2LomPRX5w2fQ1Fk2hp4MNLYIgYr/w
+   NctVVY/mNqOCVJOoU0Br1Q4NEH3Ogv6zCR6Jh/ElTK0saoLyVEOtPuFVO
+   h8JsVXRF8Z9itFJR/LgN+V12dx6StzW/aLN4bXGLXln3E7qlPpBewDibY
+   PtRzIZUAgBC9SIMB9Z6u4LtKuxsiL8lyRS6teuhy3obUCohlXGTDP312d
+   8VZs7//wFpW27S6WbTXoEkKoAtDYKIuFvCdYHAp7ys20Errn5C6bkyokC
+   g==;
+X-IronPort-AV: E=Sophos;i="5.91,221,1647327600"; 
+   d="scan'208";a="163926052"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 13 May 2022 03:22:36 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Fri, 13 May 2022 03:22:36 -0700
+Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Fri, 13 May 2022 03:22:31 -0700
+From:   Arun Ramadoss <arun.ramadoss@microchip.com>
+To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
+CC:     Russell King <linux@armlinux.org.uk>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        <UNGLinuxDriver@microchip.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Marek Vasut <marex@denx.de>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Eric Dumazet <edumazet@google.com>
+Subject: [RFC Patch net-next v2 0/9] net: dsa: microchip: refactor the ksz switch init function
+Date:   Fri, 13 May 2022 15:52:10 +0530
+Message-ID: <20220513102219.30399-1-arun.ramadoss@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Yn34Tf4CpSaZBlGi@owl.dominikbrodowski.net>
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dominik,
+During the ksz_switch_register function, it calls the individual switches init
+functions (ksz8795.c and ksz9477.c). Both these functions have few things in
+common like, copying the chip specific data to struct ksz_dev, allocating
+ksz_port memory and mib_names memory & cnt. And to add the new LAN937x series
+switch, these allocations has to be replicated.
+Based on the review feedback of LAN937x part support patch, refactored the
+switch init function to move allocations to switch register.
 
-On Fri, May 13, 2022 at 08:18:53AM +0200, Dominik Brodowski wrote:
-> Nice! However, wouldn't it be much better to clean up the indirection
-> introduced here as well? prandom_u32() as wrapper for get_random_u32() and
-> prandom_bytes() as wrapper for get_random_bytes() seems unnecessary...
+Link:https://patchwork.kernel.org/project/netdevbpf/patch/20220504151755.11737-8-arun.ramadoss@microchip.com/
 
-Yes; we can look at tree-wide changes for 5.20. The first step in making
-tree-wide changes is filling in the old function with an inline wrapper,
-which then gets removed as part of the last step after all the other
-patches have landed. That's a huge process, so this is just step one.
+Changes in RFC v2
+- Fixed the compilation issue
 
-Jason
+Arun Ramadoss (8):
+  net: dsa: microchip: ksz8795: update the port_cnt value in
+    ksz_chip_data
+  net: dsa: microchip: move ksz_chip_data to ksz_common
+  net: dsa: microchip: perform the compatibility check for dev probed
+  net: dsa: microchip: move port memory allocation to ksz_common
+  net: dsa: microchip: move struct mib_names to ksz_chip_data
+  net: dsa: microchip: move get_strings to ksz_common
+  net: dsa: microchip: add the phylink get_caps
+  net: dsa: microchip: remove unused members in ksz_device
+
+Prasanna Vengateshan (1):
+  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
+
+ drivers/net/dsa/microchip/ksz8795.c     | 252 +-----------
+ drivers/net/dsa/microchip/ksz8795_spi.c |  37 +-
+ drivers/net/dsa/microchip/ksz9477.c     | 200 ++--------
+ drivers/net/dsa/microchip/ksz9477_i2c.c |  30 +-
+ drivers/net/dsa/microchip/ksz9477_spi.c |  30 +-
+ drivers/net/dsa/microchip/ksz_common.c  | 485 +++++++++++++++++++++++-
+ drivers/net/dsa/microchip/ksz_common.h  |  63 ++-
+ 7 files changed, 642 insertions(+), 455 deletions(-)
+
+-- 
+2.33.0
+
