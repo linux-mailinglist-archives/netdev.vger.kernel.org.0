@@ -2,131 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 41858526F34
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:15:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 76853526F55
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:15:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229566AbiENBaV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 21:30:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40736 "EHLO
+        id S229702AbiENByJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 21:54:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiENBaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 21:30:20 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50079.outbound.protection.outlook.com [40.107.5.79])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9878E373C6C;
-        Fri, 13 May 2022 16:37:05 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QGKNT66ie6usLRrfXRfLbvdaBzBuSPlyiqigHCOt+2I2nrJ3bJQOfNKajFVRN5eQtsrWvM7pXhhOXe2OlCAUmv3qbtfuU4kS7RumnVyhar7kC/YEF/foszLTouJ0gSoWMZmtK2pPasekULxKlsFomypgMRlRKFkPnV7T7To6pxcmu5egdV0AsAGdaegV+PgZ90Yz3gUF93dWK1VwxICudCttgZA9lyy1eo+snNFd7RBpFNygHJ39aP95bt2wNpZjpzyzPMRJjSqE8iyKJGRiDiRpXpeT7PtjSpM0TUtS6c3CbJ2YwqWAy3+FO1KAKFGgIrcqNCPZ/ZX/rsw7kw5ErA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=tJnvsok4/O5C43WNG34rhSOKBJdmEiD4Y+CyjcACWKM=;
- b=P2AHxhGJjqjn9w2nolDp3PYPav9J2XUcv56T1H8+wmnhb6ttWPhbMsrxobGJDhD6KjxVxDHAl1Mh6BnbVAWyy1gmvRCT+24qmbWllbpdCv2TLPnmNXPNT7f7sry7YsCQCJHv+xNeOOJ6ZQjKseOy4sUw9D8oHepQs5cgoB/sISwFDO1/lnSw/+mcks+DddKgfQDrYaCECXF5oFL0ax4B1fniae6H+lV98RpRZ5Ndbgqm3/W1M2w5U4+WKavHuh27UXylQMFlgkUZ4ujW+2eKrJNQIUe5b2Pvdi3d4/aoB1a674w9oI2tkOjA+cyjVGtjTfDjfGJNkHZ3CTgHKg2GGA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tJnvsok4/O5C43WNG34rhSOKBJdmEiD4Y+CyjcACWKM=;
- b=J5RS7rF8SrqgHyF4F4daH2RcRtNw7p9dveW563vIFNX6cFmG+UestUUUkJh3J1m7TGxGjJsxcDtD8PCnS/vDjyYNzvYUm47gO2Tb7q/U10mcHN7peSga9/c4BRvxJTeMbW8LPTNndjK7VYUtPED8SJRdOXDxSi8rYJZvKUf30ow=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB7PR04MB4972.eurprd04.prod.outlook.com (2603:10a6:10:1c::11) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.17; Fri, 13 May
- 2022 23:36:59 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::fd1f:cc16:dafe:4bf5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::fd1f:cc16:dafe:4bf5%5]) with mapi id 15.20.5250.014; Fri, 13 May 2022
- 23:36:59 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Saravana Kannan <saravanak@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        John Stultz <jstultz@google.com>,
-        =?UTF-8?q?Alvin=20=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [RFC PATCH net 2/2] net: dsa: wait for PHY to defer probe
-Date:   Sat, 14 May 2022 02:36:40 +0300
-Message-Id: <20220513233640.2518337-3-vladimir.oltean@nxp.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
-References: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: AM6PR08CA0027.eurprd08.prod.outlook.com
- (2603:10a6:20b:c0::15) To VI1PR04MB5136.eurprd04.prod.outlook.com
- (2603:10a6:803:55::19)
+        with ESMTP id S229628AbiENByH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 21:54:07 -0400
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA5A3E9044;
+        Fri, 13 May 2022 16:56:19 -0700 (PDT)
+Received: by mail-pf1-x433.google.com with SMTP id p12so9039639pfn.0;
+        Fri, 13 May 2022 16:56:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=rNVk9YDEQR+xtvNydQUUbuQjMkViiEzhXCU73eGldY8=;
+        b=GtOgBYsHjz8fWeluuBd2/RbUxS13aaMfZAKmP2jjQWF1BobR2tuD8CykQgf6CCsQFl
+         ExoJdEHODDUYD27rjr1m2JNEPyvf3wMSys3MgPHy98rSAshIJEXaYYki8vByR+95LKsi
+         hT1oP7r0HXKGEX0y1h1KbR3x/NUksQk8kzAsbviF6jhzoJt8/soHFJkrZA0ehg2vNGiw
+         lTTKv6KlMbbUAYDklf0K+BwKNSMe7+I5JhSJEp3dy7KXNanWk/1dbiBJjXXNQaxf1BgH
+         tDyyAxgZNc5pXX43xF/xGjIiL0HLZqzm90oHG92G/XEjr5ODGjNtVJm8+BU2b9xxK8Zh
+         RIzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=rNVk9YDEQR+xtvNydQUUbuQjMkViiEzhXCU73eGldY8=;
+        b=MPc5yDvlA5F8x8aRxQMi0Rc9tr2kBo2/kbdqEAGlS+8lMbAv/L9tBMCs0+VcKTDWhO
+         BLeRbLBoC1o13u8tYITUoetl0eQec/USg9MBtF5gl9wpEicAlqy7vVHDNovRkFwtmoXZ
+         62wtIMsuC75ma3aykLFRBj/gxOb5fhCwGOHrgm8myUX+p8fqp6MH5ZWmf5mWxz6t+e1E
+         NT1fCv0NKzabFHou8fy1eG34Vzc/kQsFgoZnY3oYSUqu7JfgPzSExH770uJDgrM8zb7D
+         VhrNbE2sDr6iJlXWHgRmnAbEoZTUhKbTEULxcPsnXznMU/fFch6DwkhigVN7b9HmSbqZ
+         h+Mw==
+X-Gm-Message-State: AOAM532P80JiyhdoF85toqz3djRDY/dwEYBhze1UU+WyzegvbCeNrEEe
+        GMOwa6DTCtsjkE1vtjCRKY/17yv/pB2wIjn4Jjc=
+X-Google-Smtp-Source: ABdhPJw6HF52OEgBlLp4vI9wJpNliFr+bRP1D9H7WO1lYtvQm28N5CilvEWQlUI8wsNSnYDxNTyWYmq32wFlUh/dAss=
+X-Received: by 2002:a05:6a00:1a08:b0:510:a1db:1a91 with SMTP id
+ g8-20020a056a001a0800b00510a1db1a91mr6616285pfv.69.1652486018354; Fri, 13 May
+ 2022 16:53:38 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 132ca0b2-9473-4f6f-5e84-08da35397953
-X-MS-TrafficTypeDiagnostic: DB7PR04MB4972:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR04MB497242DADC20DE50E8A367E4E0CA9@DB7PR04MB4972.eurprd04.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ExITxyUAVxaqYIx6yab7WMcZC1eggdOhpeZAiU4zZF2OwVWCfwQFPg+cJAd2pSy/1PkX86tvH0yrftgT67itLgpmKpPvq9TMx/qhf4DXFEjqUCf8kuNhX/1eN3BPwBKtTDyJY655lMZN9P4gOCCRzHI3EX8gYObn6nU0o8h9578iWrfXxwUBqvBuKbdx6glHpImtHqJQozdMXmRjV18wFg84kqAB+1Q+2XaJ1aCr427+0ltkn9+3RJrwHuH7qFOZcwGxRtatEhEeknqdmbp5Q9y/SE2MNi46ovUO9JjOf+uDn1tTQABBcmmnTcEmTt0Vrv54x8gMjpy4GRr1Cr8er/Bgw1UTfDTvlijfpW01EzmfoEvtHSVHgHQUuxigRn7s5hs47MQepbEEpLHfWY8dQj3Doly/GbPcW5JYjahwM+MUw6fSLva9y019qUEKyDemG2ykAQ5fRWTt802onc9+dcbz+0Dr02YvWW/5XIdz7E2Ri9/IHRu5up/K1hnrQbQuZHWbZMsoqQOROBbE997/rUUteyJAlFES4oQ4nzU1RECcImHrnsPhXQIVe8GhhBwJq1OkXHDMen319Gsmq4JZnyYdWGqiTmhjdgPyp0XbQouA4wBzCyZnoEJNPevbjtuXjWq14lPB3X66hmKDh8dhWKTAi6lBNT+/+soNlreucZKyOHmEIAly/LvN5CczqK0nb8T97VOfZLHZybppinzncQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66476007)(508600001)(38100700002)(38350700002)(6486002)(66556008)(8676002)(66946007)(4326008)(6916009)(83380400001)(54906003)(86362001)(186003)(316002)(1076003)(2616005)(6666004)(6506007)(52116002)(26005)(6512007)(36756003)(2906002)(5660300002)(7416002)(44832011)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?Du5F/45MFvWvDB/+tWI5kyFPb4of/sUIUGBGEyMo06GLKD23dbgWpEnIc0Wc?=
- =?us-ascii?Q?TeHCxm7x/idjh4ikN9keO5k+pbXOMJ1zAF+fhjgrP2oeA3JiePZ3zQFx2W/w?=
- =?us-ascii?Q?j4Jtvl7Sb55+h/xhj3/W5ccdZzOsjNhgyaBx6uIXGUUW/3vJCBmZu+tl96Hk?=
- =?us-ascii?Q?PjQ5o+ArhfWeCMxUbpeLMMQfWYfjyFrHP/WhpgzDn0iMoNQgyiMCAYNpbyeY?=
- =?us-ascii?Q?+Ov2CG9Xm+wmRUH6Qk1/gXHO4jmRnWAV7Pxhy+w9E82W7QS5QKBumoMSa+ZL?=
- =?us-ascii?Q?AhOptXnbRccPqn2TvEL0E6xyIosfbDyFnfl3Z9sIaz3dWnRAxymaT6+a5K7o?=
- =?us-ascii?Q?AyNPXRPuBjvxM2xbau0sDfnhwhKuw+3K+KEI/T9ncqWwfEubvbpzhw7H+mY7?=
- =?us-ascii?Q?68BlMERjj879y/5fl4rvrZvvJSDWHLWdU+hBHaAYJE3HIvJNRoMQqx8QrEpe?=
- =?us-ascii?Q?1+Lepxs7FVUYvG+/I4JJEfZjwk27Q/o9bL79jWF5dsRA/b7oRp54IBeikDzx?=
- =?us-ascii?Q?rZvGj6KjerlmwDqIlLAf0FxsxeC/GkI9UYa/eDZSi3aa7f0N151/xUZeAsgp?=
- =?us-ascii?Q?eUlITDDVyLZ6Fo2o/vyeF4UHMC6LB3BBfnArKdSI2lGf5IErIvhcXHnaIhdx?=
- =?us-ascii?Q?GCbkZLRnXdFWedIQYHaSJPOhyBP60LIH5LGLPDMSnkYa9yYdjhnFZ6ruGCxb?=
- =?us-ascii?Q?jU/1zBskdvJhH6Sd5axx5jJY5TRD/a3ZX2ztxnEyQipv8J7KJiBIVUSNGwTz?=
- =?us-ascii?Q?JZq7CNPn4MshOxfGxKDVYvCbPu20/fSaMUbGfHKGM9R6JIooOpxmpV/tTM3R?=
- =?us-ascii?Q?9o1DM3e7tOpsYkltqJE/ErxrA4Kt7D+rxc1DMEHV98PRJh9gGRKvCN4XwU4o?=
- =?us-ascii?Q?JAZOXmIYnhG4i0GI+xfDoU6CBr7I0382iQfmBGxcO6J8x27Kd/0d1TxSRVSm?=
- =?us-ascii?Q?0ChkArrfEfLVym2o7ok6IA73XaN2FT889dgOLpum4zzFTu7ofHfLFErCgZ1w?=
- =?us-ascii?Q?0Dhsk8CyWFptwxm2TYmh3u/8ixpAaKjmMhgrj4dkfqq3blyzzmbl8jpEtpRf?=
- =?us-ascii?Q?Cg48ClRdDD+QVt6kRFKMqv3ExOQ3oq5Lxf9DAOHwG/XrC2asbOMVjpmU5E2h?=
- =?us-ascii?Q?77asEN6RKWGVQLTNRVezZEuTEMY5YQTWdzpJJVtRhaGKxRasMDZcGDwyUj4g?=
- =?us-ascii?Q?uGh55D4N5LpmGXxB1SQWIybuxbg9v4MW5/Q4uy0eo4c7s3FzL4XRwCoJXQf4?=
- =?us-ascii?Q?ctvggglpwoaT3IAxcK582mBUQ0Pa7mtVlkdu+DsFsR/rb+eE5M5bn66FYLH5?=
- =?us-ascii?Q?/0SBd/zP7aHKI2MEows7Ju6DfrFZVB+rvMO3Kz2d/LT4kEfX8QaY0Fn+e5N/?=
- =?us-ascii?Q?KBMNN1cwh9Lke29gJRj/Prnwqa8HlSnErgVOjQHegcyhOCzovG6nFJNS2Wi6?=
- =?us-ascii?Q?If5Lab6X5a92uUgI/7Ywe1Huh50OYbPvlUGTOWDMLoLOjCCVH7MqOOuUNAt5?=
- =?us-ascii?Q?sUeioncQk0wKCDegFaIBqX/uNr+ft0s5iOVuwCx7L2Hugso0mL6VX1za71iB?=
- =?us-ascii?Q?KjV0duTE8yN/36/GNUHB/MtvV5iv20ulf4OqcIXWpjc7wvMLsrBSvnM1zHaT?=
- =?us-ascii?Q?pZxLylSGL1c/d73yUdcRVCw79KQs49EHLkMOXMwZCISTZRlTxrkFU5ECPaLR?=
- =?us-ascii?Q?BjQUiEX4mrsebRTJC5t+g9am3Kk4wzVrVYTFyZZmXLujjPpnAkJ4o8eeOd6g?=
- =?us-ascii?Q?CvOWlj8+SONCFDA3STBwQr7iPa3zsas=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 132ca0b2-9473-4f6f-5e84-08da35397953
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 May 2022 23:36:59.4857
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: V80YeT44aY3cJ3QePlENJgftsoymZkTajWdCd4me7BAwbxss90GFIqVN+Z1DgaMFZsrKjo6ET7JJXmmetNl48Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4972
+References: <20220513224827.662254-1-mathew.j.martineau@linux.intel.com> <20220513224827.662254-5-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20220513224827.662254-5-mathew.j.martineau@linux.intel.com>
+From:   Geliang Tang <geliangtang@gmail.com>
+Date:   Sat, 14 May 2022 07:53:36 +0800
+Message-ID: <CA+WQbwtN6KS0KzNKVp-7gioDR+DJ6Ks_kC-TB5viUb60HqHwuQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 4/7] selftests/bpf: test bpf_skc_to_mptcp_sock
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        MPTCP Upstream <mptcp@lists.linux.dev>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -134,101 +71,223 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DSA is among the 3 drivers which call phylink.*phy_connect() during
-probe time (vs 11 doing so during ndo_open). So there is no guarantee
-that the PHY driver will have finished probing by the time we connect to
-it.
+Mat Martineau <mathew.j.martineau@linux.intel.com> =E4=BA=8E2022=E5=B9=B45=
+=E6=9C=8814=E6=97=A5=E5=91=A8=E5=85=AD 06:48=E5=86=99=E9=81=93=EF=BC=9A
+>
+> From: Geliang Tang <geliang.tang@suse.com>
+>
+> This patch extends the MPTCP test base, to test the new helper
+> bpf_skc_to_mptcp_sock().
+>
+> Define struct mptcp_sock in bpf_tcp_helpers.h, use bpf_skc_to_mptcp_sock
+> to get the msk socket in progs/mptcp_sock.c and store the infos in
+> socket_storage_map.
+>
+> Get the infos from socket_storage_map in prog_tests/mptcp.c. Add a new
+> function verify_msk() to verify the infos of MPTCP socket, and rename
+> verify_sk() to verify_tsk() to verify TCP socket only.
+>
+> v2: Add CONFIG_MPTCP check for clearer error messages
+> v4:
+>  - use ASSERT_* instead of CHECK_FAIL (Andrii)
+>  - drop bpf_mptcp_helpers.h (Andrii)
+>
+> Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
+> Signed-off-by: Geliang Tang <geliang.tang@suse.com>
+> Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+> ---
+>  tools/testing/selftests/bpf/bpf_tcp_helpers.h |  5 +++
+>  .../testing/selftests/bpf/prog_tests/mptcp.c  | 45 ++++++++++++++-----
+>  .../testing/selftests/bpf/progs/mptcp_sock.c  | 23 ++++++++--
+>  3 files changed, 58 insertions(+), 15 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/bpf_tcp_helpers.h b/tools/testin=
+g/selftests/bpf/bpf_tcp_helpers.h
+> index 22e0c8849a17..90fecafc493d 100644
+> --- a/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> +++ b/tools/testing/selftests/bpf/bpf_tcp_helpers.h
+> @@ -226,4 +226,9 @@ static __always_inline bool tcp_cc_eq(const char *a, =
+const char *b)
+>  extern __u32 tcp_slow_start(struct tcp_sock *tp, __u32 acked) __ksym;
+>  extern void tcp_cong_avoid_ai(struct tcp_sock *tp, __u32 w, __u32 acked)=
+ __ksym;
+>
+> +struct mptcp_sock {
+> +       struct inet_connection_sock     sk;
+> +
+> +} __attribute__((preserve_access_index));
+> +
+>  #endif
+> diff --git a/tools/testing/selftests/bpf/prog_tests/mptcp.c b/tools/testi=
+ng/selftests/bpf/prog_tests/mptcp.c
+> index cb0389ca8690..02e7fd8918e6 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/mptcp.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/mptcp.c
+> @@ -11,14 +11,12 @@ struct mptcp_storage {
+>         __u32 is_mptcp;
+>  };
+>
+> -static int verify_sk(int map_fd, int client_fd, const char *msg, __u32 i=
+s_mptcp)
+> +static int verify_tsk(int map_fd, int client_fd)
+>  {
+> +       char *msg =3D "plain TCP socket";
+>         int err, cfd =3D client_fd;
+>         struct mptcp_storage val;
+>
+> -       if (is_mptcp =3D=3D 1)
+> -               return 0;
+> -
+>         err =3D bpf_map_lookup_elem(map_fd, &cfd, &val);
+>         if (!ASSERT_OK(err, "bpf_map_lookup_elem"))
+>                 return err;
+> @@ -38,6 +36,31 @@ static int verify_sk(int map_fd, int client_fd, const =
+char *msg, __u32 is_mptcp)
+>         return err;
+>  }
+>
+> +static int verify_msk(int map_fd, int client_fd)
+> +{
+> +       char *msg =3D "MPTCP subflow socket";
+> +       int err, cfd =3D client_fd;
+> +       struct mptcp_storage val;
+> +
+> +       err =3D bpf_map_lookup_elem(map_fd, &cfd, &val);
+> +       if (!ASSERT_OK(err, "bpf_map_lookup_elem"))
+> +               return err;
+> +
+> +       if (val.invoked !=3D 1) {
+> +               log_err("%s: unexpected invoked count %d !=3D 1",
+> +                       msg, val.invoked);
+> +               err++;
+> +       }
+> +
+> +       if (val.is_mptcp !=3D 1) {
+> +               log_err("%s: unexpected bpf_tcp_sock.is_mptcp %d !=3D 1",
+> +                       msg, val.is_mptcp);
+> +               err++;
+> +       }
+> +
+> +       return err;
+> +}
+> +
+>  static int run_test(int cgroup_fd, int server_fd, bool is_mptcp)
+>  {
+>         int client_fd, prog_fd, map_fd, err;
+> @@ -88,8 +111,8 @@ static int run_test(int cgroup_fd, int server_fd, bool=
+ is_mptcp)
+>                 goto out;
+>         }
+>
+> -       err +=3D is_mptcp ? verify_sk(map_fd, client_fd, "MPTCP subflow s=
+ocket", 1) :
+> -                         verify_sk(map_fd, client_fd, "plain TCP socket"=
+, 0);
+> +       err +=3D is_mptcp ? verify_msk(map_fd, client_fd) :
+> +                         verify_tsk(map_fd, client_fd);
+>
+>         close(client_fd);
+>
 
-Use the newly introduced phylink_of_phy_connect_probe() to wait for this
-to happen, and propagate the error code all the way to dsa_register_switch(),
-which switch drivers call from their own probe function.
 
-Notably, in dsa_tree_setup_ports() we treat errors on slave interface
-registration as "soft" and continue probing the ports that didn't fail.
-This is useful on systems which have riser cards with PHYs, and some of
-these cards can be missing. But this logic needs to be adapted, since
--EPROBE_DEFER is an error we want to propagate regardless.
+''''
+> @@ -103,25 +126,25 @@ void test_base(void)
+>         int server_fd, cgroup_fd;
+>
+>         cgroup_fd =3D test__join_cgroup("/mptcp");
+> -       if (CHECK_FAIL(cgroup_fd < 0))
+> +       if (!ASSERT_GE(cgroup_fd, 0, "test__join_cgroup"))
+>                 return;
+>
+>         /* without MPTCP */
+>         server_fd =3D start_server(AF_INET, SOCK_STREAM, NULL, 0, 0);
+> -       if (CHECK_FAIL(server_fd < 0))
+> +       if (!ASSERT_GE(server_fd, 0, "start_server"))
+>                 goto with_mptcp;
+>
+> -       CHECK_FAIL(run_test(cgroup_fd, server_fd, false));
+> +       ASSERT_OK(run_test(cgroup_fd, server_fd, false), "run_test tcp");
+>
+>         close(server_fd);
+>
+>  with_mptcp:
+>         /* with MPTCP */
+>         server_fd =3D start_mptcp_server(AF_INET, NULL, 0, 0);
+> -       if (CHECK_FAIL(server_fd < 0))
+> +       if (!ASSERT_GE(server_fd, 0, "start_mptcp_server"))
+>                 goto close_cgroup_fd;
+>
+> -       CHECK_FAIL(run_test(cgroup_fd, server_fd, true));
+> +       ASSERT_OK(run_test(cgroup_fd, server_fd, true), "run_test mptcp")=
+;
+'''
 
-Fixes: 25396f680dd6 ("net: phylink: introduce phylink_fwnode_phy_connect()")
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- net/dsa/dsa2.c  |  2 ++
- net/dsa/port.c  |  6 ++++--
- net/dsa/slave.c | 10 +++++-----
- 3 files changed, 11 insertions(+), 7 deletions(-)
+Sorry Mat, this code using ASSERT_* instead of CHECK_FAIL should be
+squash into patch #3, it shouldn't in this patch. I'll send a v5 to
+MPTCP ML to fix this.
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index cf933225df32..3a2983a1a7dd 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -1011,6 +1011,8 @@ static int dsa_tree_setup_ports(struct dsa_switch_tree *dst)
- 	list_for_each_entry(dp, &dst->ports, list) {
- 		if (dsa_port_is_user(dp) || dsa_port_is_unused(dp)) {
- 			err = dsa_port_setup(dp);
-+			if (err == -EPROBE_DEFER)
-+				goto teardown;
- 			if (err) {
- 				err = dsa_port_reinit_as_unused(dp);
- 				if (err)
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 075a8db536c6..8a2fc99ca0ad 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -1628,9 +1628,11 @@ static int dsa_port_phylink_register(struct dsa_port *dp)
- 	if (err)
- 		return err;
- 
--	err = phylink_of_phy_connect(dp->pl, port_dn, 0);
-+	err = phylink_of_phy_connect_probe(dp->pl, port_dn, 0);
- 	if (err && err != -ENODEV) {
--		pr_err("could not attach to PHY: %d\n", err);
-+		dev_err_probe(ds->dev, err,
-+			      "DSA/CPU port %d could not attach to PHY: %pe\n",
-+			      dp->index, ERR_PTR(err));
- 		goto err_phy_connect;
- 	}
- 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 5ee0aced9410..a5407e717c68 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2252,18 +2252,18 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
- 	if (ds->ops->get_phy_flags)
- 		phy_flags = ds->ops->get_phy_flags(ds, dp->index);
- 
--	ret = phylink_of_phy_connect(dp->pl, port_dn, phy_flags);
-+	ret = phylink_of_phy_connect_probe(dp->pl, port_dn, phy_flags);
- 	if (ret == -ENODEV && ds->slave_mii_bus) {
- 		/* We could not connect to a designated PHY or SFP, so try to
- 		 * use the switch internal MDIO bus instead
- 		 */
- 		ret = dsa_slave_phy_connect(slave_dev, dp->index, phy_flags);
- 	}
--	if (ret) {
-+	if (ret && ret != -EPROBE_DEFER)
- 		netdev_err(slave_dev, "failed to connect to PHY: %pe\n",
- 			   ERR_PTR(ret));
-+	if (ret)
- 		phylink_destroy(dp->pl);
--	}
- 
- 	return ret;
- }
-@@ -2386,12 +2386,12 @@ int dsa_slave_create(struct dsa_port *port)
- 	netif_carrier_off(slave_dev);
- 
- 	ret = dsa_slave_phy_setup(slave_dev);
--	if (ret) {
-+	if (ret && ret != -EPROBE_DEFER)
- 		netdev_err(slave_dev,
- 			   "error %d setting up PHY for tree %d, switch %d, port %d\n",
- 			   ret, ds->dst->index, ds->index, port->index);
-+	if (ret)
- 		goto out_gcells;
--	}
- 
- 	rtnl_lock();
- 
--- 
-2.25.1
+Thanks,
+-Geliang
 
+>
+>         close(server_fd);
+>
+> diff --git a/tools/testing/selftests/bpf/progs/mptcp_sock.c b/tools/testi=
+ng/selftests/bpf/progs/mptcp_sock.c
+> index bc09dba0b078..3feb7ff578e2 100644
+> --- a/tools/testing/selftests/bpf/progs/mptcp_sock.c
+> +++ b/tools/testing/selftests/bpf/progs/mptcp_sock.c
+> @@ -7,6 +7,7 @@
+>  #include "bpf_tcp_helpers.h"
+>
+>  char _license[] SEC("license") =3D "GPL";
+> +extern bool CONFIG_MPTCP __kconfig;
+>
+>  struct mptcp_storage {
+>         __u32 invoked;
+> @@ -24,6 +25,7 @@ SEC("sockops")
+>  int _sockops(struct bpf_sock_ops *ctx)
+>  {
+>         struct mptcp_storage *storage;
+> +       struct mptcp_sock *msk;
+>         int op =3D (int)ctx->op;
+>         struct tcp_sock *tsk;
+>         struct bpf_sock *sk;
+> @@ -41,11 +43,24 @@ int _sockops(struct bpf_sock_ops *ctx)
+>                 return 1;
+>
+>         is_mptcp =3D bpf_core_field_exists(tsk->is_mptcp) ? tsk->is_mptcp=
+ : 0;
+> -       storage =3D bpf_sk_storage_get(&socket_storage_map, sk, 0,
+> -                                    BPF_SK_STORAGE_GET_F_CREATE);
+> -       if (!storage)
+> -               return 1;
+> +       if (!is_mptcp) {
+> +               storage =3D bpf_sk_storage_get(&socket_storage_map, sk, 0=
+,
+> +                                            BPF_SK_STORAGE_GET_F_CREATE)=
+;
+> +               if (!storage)
+> +                       return 1;
+> +       } else {
+> +               if (!CONFIG_MPTCP)
+> +                       return 1;
+> +
+> +               msk =3D bpf_skc_to_mptcp_sock(sk);
+> +               if (!msk)
+> +                       return 1;
+>
+> +               storage =3D bpf_sk_storage_get(&socket_storage_map, msk, =
+0,
+> +                                            BPF_SK_STORAGE_GET_F_CREATE)=
+;
+> +               if (!storage)
+> +                       return 1;
+> +       }
+>         storage->invoked++;
+>         storage->is_mptcp =3D is_mptcp;
+>
+> --
+> 2.36.1
+>
+>
