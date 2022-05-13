@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AF805269A6
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 20:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7B35269A9
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 20:56:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383444AbiEMS4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 14:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43318 "EHLO
+        id S1383464AbiEMS4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 14:56:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383454AbiEMS4N (ORCPT
+        with ESMTP id S1383455AbiEMS4N (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 14:56:13 -0400
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B38E6B7F6
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:03 -0700 (PDT)
-Received: by mail-pf1-x433.google.com with SMTP id p12so8492441pfn.0
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:03 -0700 (PDT)
+Received: from mail-pg1-x534.google.com (mail-pg1-x534.google.com [IPv6:2607:f8b0:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7975C6BFDC
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:04 -0700 (PDT)
+Received: by mail-pg1-x534.google.com with SMTP id 202so8278443pgc.9
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 11:56:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=A19XDJDBYsixko11EpPg6VqehJxYk2XrmEZVWrbhfVk=;
-        b=gBrPj/tZbX/3GK5iRqyczckOTmNGHak2YxDw3OeWDRhPZgVQUNy72l33XAmlO7Y1NY
-         xycLKoxfXLtzglmE8YaaTK+pOQwVPGJGpb4K7JRsx+Z8G1K0jbdrhtO82mCwQdK3Lzap
-         N0pA7As2f1XkE7Cb1b5KEEy2epUGbz9OXRK4dTRGEc7TgJtSyjgrRQRYtuzYP8nsQuS9
-         OrL9+IEX8dLzfA8/88VeSd56KowEqLaroeGk8hQOz9c4+BnwUQdkaslOxP8xKa7itYj0
-         MV/i/HODdDvEmj7S4iowaEa3N8xRVYAGCyAwTrxGvUrjt/L08RtVdcqDq48t+YfA1ScB
-         ucvw==
+        bh=d5D8Q+LOxDZKyXKyV0E9bG7L/yCxQeBI9J1yCtvXJSs=;
+        b=GgZS4fFANbszLsJCc7K5kbqv27tdOgwjsTQg+1U6biokOUtdqTjVcc8FHF74uT2OWv
+         9baz9t7Av9ytiYaOFdXxXCYJpyGOPBgm5/AVw7qGTGucCX3HXfSIs1XVkb31AlKfbRAf
+         qPC8KB8ZlzIBQgCm8zKFNZNZOo9byLZGqDlf3QzI1W9lXIkQ5ABhD2VX5oFBl0LbelJl
+         A7i/18WXXtmQEX0Ts92Bmw8wMa2ZJ3C1WH/+lcTydFO5jYb9e7h249jk0AuAjUsJgs3f
+         SODrjeQ13UTn+CsogTjH6ac+g/Le4rC5QomeY2uysaEdDaPww4DujCv32K6wYkQn/InO
+         jQkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=A19XDJDBYsixko11EpPg6VqehJxYk2XrmEZVWrbhfVk=;
-        b=w7Y0k5TmKtjSmHBEPptQ5vsj3C+I5qrMb5/3twRTHbm+dnxgzGqmq3u7JPSibEKRSp
-         Ua1QoCkXSLLQVR2aaV908SV9aKXEzPyFqmx2FlTF8xM1n1grvQdrj5g2PKv/MDQxVkzD
-         4X2vR0xfhWBRP5hPgW25+ZLlf1GNJbEFoeDgZ03X4pwcf4j4OQ6Z6s4h+1smBmj9a72n
-         98+CNHUUDJLysBY27GQYS/lU4JCHRc0OYgz+NDM8rEuFTQ7hc6PbAprYAebWdiuh9z70
-         u3VOX/IKXProQR5nEblmvIYr6bN6e5sqyyhY90yj6dVIPX/X0KOwb/lPpFe4dVcZriue
-         OjpQ==
-X-Gm-Message-State: AOAM5300+7cRQpGtJFSuxt8efVOkwQd11og9bki8zSPjSq8vCBk5A9fQ
-        ssMrG8sNqKnt4LIYIwCnI1U=
-X-Google-Smtp-Source: ABdhPJzceOAS1blBMRSvLjlJcqY1SP0aUEgz7A5H6nSmVvHnsSDd3DVGADEuAvYxxQDYCtGSEilMMA==
-X-Received: by 2002:a63:8ac7:0:b0:3aa:fa62:5a28 with SMTP id y190-20020a638ac7000000b003aafa625a28mr5117082pgd.400.1652468162665;
-        Fri, 13 May 2022 11:56:02 -0700 (PDT)
+        bh=d5D8Q+LOxDZKyXKyV0E9bG7L/yCxQeBI9J1yCtvXJSs=;
+        b=jRJVdG6C8/SxS+rmk90ywouZ5QzeW6mHiAUttRwGWHKRu4yFdk16jFuvOvon0rHsz0
+         xKnRHjrF5Jed731arhl2Ky1m3jRAFxeVa8ppDvJ3vbFz4+PF5X6shR90F5qh7QkLI9jm
+         x0t3HhZXvdNC6Lr6CigSW33UrMe/rWwpJUPheAO7OVFCFCvfDUrITkEQb9ez7azAIqgk
+         vodgZ4iA7WOgWNOMtscVN2nOjtaUGv0xh9tpfCeJxdNoDRMfDpOHDVh6NgCG6CBJ4lf6
+         cPeorLtQd+sKO1bRlO1o9vK/D3oyx4L6bm6cls3magkTx61il1l0iTYoWyEcROXvmIqM
+         xyUw==
+X-Gm-Message-State: AOAM530oXADyWaGzFghBDbV2KbBhmW1+2JVaPuemOmaXe9jPF7dSPDFu
+        r3LdbiyWFqaNAwNG+6HnAV0=
+X-Google-Smtp-Source: ABdhPJwhMfrR2M7qu9ddY2U+G2f77d6APb2MpxAVy0+EQcBYvIT2LcL0tVqzGP2zyc6Fbzs4nIBaag==
+X-Received: by 2002:a05:6a00:10cc:b0:4fe:3f1c:2d1 with SMTP id d12-20020a056a0010cc00b004fe3f1c02d1mr5802765pfu.0.1652468163998;
+        Fri, 13 May 2022 11:56:03 -0700 (PDT)
 Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:c436:3fa3:479f:a7a])
-        by smtp.gmail.com with ESMTPSA id 2-20020a170902c10200b0015e8d4eb2absm2159537pli.245.2022.05.13.11.56.02
+        by smtp.gmail.com with ESMTPSA id 2-20020a170902c10200b0015e8d4eb2absm2159537pli.245.2022.05.13.11.56.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 11:56:02 -0700 (PDT)
+        Fri, 13 May 2022 11:56:03 -0700 (PDT)
 From:   Eric Dumazet <eric.dumazet@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -54,9 +54,9 @@ To:     "David S . Miller" <davem@davemloft.net>,
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH v2 net-next 06/10] inet: add READ_ONCE(sk->sk_bound_dev_if) in inet_csk_bind_conflict()
-Date:   Fri, 13 May 2022 11:55:46 -0700
-Message-Id: <20220513185550.844558-7-eric.dumazet@gmail.com>
+Subject: [PATCH v2 net-next 07/10] net_sched: em_meta: add READ_ONCE() in var_sk_bound_if()
+Date:   Fri, 13 May 2022 11:55:47 -0700
+Message-Id: <20220513185550.844558-8-eric.dumazet@gmail.com>
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
 In-Reply-To: <20220513185550.844558-1-eric.dumazet@gmail.com>
 References: <20220513185550.844558-1-eric.dumazet@gmail.com>
@@ -74,37 +74,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Eric Dumazet <edumazet@google.com>
 
-inet_csk_bind_conflict() can access sk->sk_bound_dev_if for
-unlocked sockets.
+sk->sk_bound_dev_if can change under us, use READ_ONCE() annotation.
 
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 ---
- net/ipv4/inet_connection_sock.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+ net/sched/em_meta.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 1e5b53c2bb2670fc90b789e853458f5c86a00c27..53f5f956d9485df5cb863c8287c1fa9989bb29c9 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -155,10 +155,14 @@ static int inet_csk_bind_conflict(const struct sock *sk,
- 	 */
+diff --git a/net/sched/em_meta.c b/net/sched/em_meta.c
+index 0a04468b73145546097788db0645ef9e5b459bca..49bae3d5006b0f83330b4cbe30344c0741743575 100644
+--- a/net/sched/em_meta.c
++++ b/net/sched/em_meta.c
+@@ -311,12 +311,15 @@ META_COLLECTOR(int_sk_bound_if)
  
- 	sk_for_each_bound(sk2, &tb->owners) {
--		if (sk != sk2 &&
--		    (!sk->sk_bound_dev_if ||
--		     !sk2->sk_bound_dev_if ||
--		     sk->sk_bound_dev_if == sk2->sk_bound_dev_if)) {
-+		int bound_dev_if2;
+ META_COLLECTOR(var_sk_bound_if)
+ {
++	int bound_dev_if;
 +
-+		if (sk == sk2)
-+			continue;
-+		bound_dev_if2 = READ_ONCE(sk2->sk_bound_dev_if);
-+		if ((!sk->sk_bound_dev_if ||
-+		     !bound_dev_if2 ||
-+		     sk->sk_bound_dev_if == bound_dev_if2)) {
- 			if (reuse && sk2->sk_reuse &&
- 			    sk2->sk_state != TCP_LISTEN) {
- 				if ((!relax ||
+ 	if (skip_nonlocal(skb)) {
+ 		*err = -1;
+ 		return;
+ 	}
+ 
+-	if (skb->sk->sk_bound_dev_if == 0) {
++	bound_dev_if = READ_ONCE(skb->sk->sk_bound_dev_if);
++	if (bound_dev_if == 0) {
+ 		dst->value = (unsigned long) "any";
+ 		dst->len = 3;
+ 	} else {
+@@ -324,7 +327,7 @@ META_COLLECTOR(var_sk_bound_if)
+ 
+ 		rcu_read_lock();
+ 		dev = dev_get_by_index_rcu(sock_net(skb->sk),
+-					   skb->sk->sk_bound_dev_if);
++					   bound_dev_if);
+ 		*err = var_dev(dev, dst);
+ 		rcu_read_unlock();
+ 	}
 -- 
 2.36.0.550.gb090851708-goog
 
