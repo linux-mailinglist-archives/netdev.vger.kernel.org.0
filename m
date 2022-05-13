@@ -2,102 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8195952667A
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:48:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 670825266A5
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 17:57:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381391AbiEMPr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 11:47:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42990 "EHLO
+        id S234867AbiEMP5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 11:57:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346700AbiEMPr4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:47:56 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BADA9B36FD
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:47:55 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id dv4so6922577qvb.13
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 08:47:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZVPMWm25zOhHcKK3aV2ODKA4z42m9j9F3+XivUMKUKM=;
-        b=YGKh+SU34NkzMQcCAzKbJ04fSlI1JfgG5iMYeSxt2tifmnjFafQTf5kbjXYDyT8JRc
-         7udqoWKoPDjPKf04SRiOJHOW/S8cGv117YuPbRPIVVwEG5Q3bn48LwkgViLXdnRiwjhb
-         cltmzzXgtJe2pyoamKOo5VlvmUBsOiAPQZpSdZo/2RsJiaQn7YBMONEhqyOLc9rqad9m
-         lw1HL1zxgIF8J7xLa+I2qTzf69rLML7bLO0oS6e0dVNWic4SsYBXk5rT6Bal/ZpnFkap
-         GOHQVorL+lecf5bmfcwNb1W5Y+hwgJsFiqxDUz+rMwAsuJFnABp5fkDUeeD6rljMv5Fj
-         77SQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZVPMWm25zOhHcKK3aV2ODKA4z42m9j9F3+XivUMKUKM=;
-        b=5VVYTmemKveHGG1K0OH/O5ZJMEmzbOJWKXy2CksDpFw71zVTNG2ZechmjJSGCY6bTf
-         P5Sm+UhP7OLlwSdDw8BmQ2uNWI2KL7ilE53KIDQyF9loZscaldaW6tkY+MusLB6CrQjo
-         NgVUAq2y0ckYYFvOa0KcQnzBvAJxV62pFdmQ+/D+S92k8skiQJlntNhDo4z4mnGf5lnM
-         RiUS9i8LlMMvHTLTjARkxOH0p66ZyYyK/RC7vA7rSnWPbm2/w24Volai1+Yz8WcCY2CA
-         xPsItT273QYGOYbCQ8KXNGUH0GFsPEIoszRQJTVWtWLCf/m9J54LWjxaKiQEAzOCcg4M
-         P04g==
-X-Gm-Message-State: AOAM533PDnNsIS7X0a768TSRVl+Yf+GeJ3RR9BNsLG+KZiSFsMP7me6O
-        NT0YyCc8Y6MpOF9Mkht4/20dtyhFxT2bsQ==
-X-Google-Smtp-Source: ABdhPJwO61hyMqTHL1HH0oaeepWKWLAGICoQY6cUJ+SScqSMI4SSS2E95S8h2liXG/h3labSWluM/A==
-X-Received: by 2002:a0c:9c08:0:b0:45a:a2a1:62e4 with SMTP id v8-20020a0c9c08000000b0045aa2a162e4mr4850203qve.114.1652456874599;
-        Fri, 13 May 2022 08:47:54 -0700 (PDT)
-Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id a66-20020a37b145000000b0069fc13ce231sm1533762qkf.98.2022.05.13.08.47.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 08:47:54 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, kuba@kernel.org,
+        with ESMTP id S234346AbiEMP5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 11:57:33 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 674CA21E3E;
+        Fri, 13 May 2022 08:57:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B85161D80;
+        Fri, 13 May 2022 15:57:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2D57C34100;
+        Fri, 13 May 2022 15:57:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652457450;
+        bh=inFWBKZ2hLGY2XuT1PW3OLXnYsuMwC9oDE6tzFgnnbY=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=l3lnbu8RQyakdlKidWtlRtKUk/OPBmDr34NuMgc+l/K8Yv7KoZfFFfox58XAvT00O
+         V0+5mFRHSXYwOihOKacp9N37ZyNHgX3PQXgMM0xn2F/mdm+9Tdj3vi57mcg5TxtlQ3
+         TBBZ5ZvzAHg/3CX+3HGFb8fYD6HQgm0A7jd5dAP9rgbHTk0JdpodmuCJzx8pjG+XpD
+         /woHIaW9aNAvclnuUKfLUQt9IQiYBLlR/4iAEv16eP8uIBRsZXwSqnrV9xM3HnqGHe
+         j+0Nap862r7n2MEtSxO+LFc1fs/rB9YRY/MCvuTFdbvL97lmO/rwcX8AUCDrYzfmt4
+         wS0SU6x/ey6Bg==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Eric Dumazet <edumazet@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH ipsec] xfrm: set dst dev to blackhole_netdev instead of loopback_dev in ifdown
-Date:   Fri, 13 May 2022 11:47:53 -0400
-Message-Id: <01a8af8654b87058ecd421e471d760a43784ab96.1652456873.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Govind Singh <govinds@codeaurora.org>,
+        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH] ath10k: do not enforce interrupt trigger type
+References: <20220513151516.357549-1-krzysztof.kozlowski@linaro.org>
+Date:   Fri, 13 May 2022 18:57:22 +0300
+In-Reply-To: <20220513151516.357549-1-krzysztof.kozlowski@linaro.org>
+        (Krzysztof Kozlowski's message of "Fri, 13 May 2022 17:15:16 +0200")
+Message-ID: <87zgjl4e8t.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The global blackhole_netdev has replaced pernet loopback_dev to become the
-one given to the object that holds an netdev when ifdown in many places of
-ipv4 and ipv6 since commit 8d7017fd621d ("blackhole_netdev: use
-blackhole_netdev to invalidate dst entries").
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> writes:
 
-Especially after commit faab39f63c1f ("net: allow out-of-order netdev
-unregistration"), it's no longer safe to use loopback_dev that may be
-freed before other netdev.
+> Interrupt line can be configured on different hardware in different way,
+> even inverted.  Therefore driver should not enforce specific trigger
+> type - edge rising - but instead rely on Devicetree to configure it.
+>
+> All Qualcomm DTSI with WCN3990 define the interrupt type as level high,
+> so the mismatch between DTSI and driver causes rebind issues:
+>
+>   $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/unbind
+>   $ echo 18800000.wifi > /sys/bus/platform/drivers/ath10k_snoc/bind
+>   [   44.763114] irq: type mismatch, failed to map hwirq-446 for interrupt-controller@17a00000!
+>   [   44.763130] ath10k_snoc 18800000.wifi: error -ENXIO: IRQ index 0 not found
+>   [   44.763140] ath10k_snoc 18800000.wifi: failed to initialize resource: -6
 
-This patch is to set dst dev to blackhole_netdev instead of loopback_dev
-in ifdown.
+So you tested on WCN3990? On what firmware version? I can add the
+Tested-on tag if you provide that.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/xfrm/xfrm_policy.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 00bd0ecff5a1..f1876ea61fdc 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3744,7 +3744,7 @@ static int stale_bundle(struct dst_entry *dst)
- void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev)
- {
- 	while ((dst = xfrm_dst_child(dst)) && dst->xfrm && dst->dev == dev) {
--		dst->dev = dev_net(dev)->loopback_dev;
-+		dst->dev = blackhole_netdev;
- 		dev_hold(dst->dev);
- 		dev_put(dev);
- 	}
 -- 
-2.31.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
