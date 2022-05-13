@@ -2,125 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEEAA5262F5
-	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 15:23:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE3CA526346
+	for <lists+netdev@lfdr.de>; Fri, 13 May 2022 15:52:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380659AbiEMNXi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 09:23:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
+        id S230026AbiEMNt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 09:49:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346448AbiEMNXh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 09:23:37 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1AE566CB9
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 06:23:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652448214;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Iisd9q2NnwATRjWoBLNVvckMIlB3CVM0go/7xFp8Gmk=;
-        b=F4GXvgV2vr+Z+5nWeZDxLpy11h+cP5DfDgRF1z4mXmfUfzM6TUU+IMDR4UitnEX3nYOASv
-        OZiCS+5KR1YHDQ7x2/SOXaVTv2huZtoWphF8zHMFf0uYBpqZNLJnDdoieiqtRGVs8fLnX0
-        hSNugYs8Ni7cIOJVvRytuBkfeEatdZM=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-441-vnFfHLB8Me-yyF2KRBZkIA-1; Fri, 13 May 2022 09:23:33 -0400
-X-MC-Unique: vnFfHLB8Me-yyF2KRBZkIA-1
-Received: by mail-qt1-f197.google.com with SMTP id b20-20020ac85bd4000000b002f3bb93df03so6267749qtb.16
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 06:23:33 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Iisd9q2NnwATRjWoBLNVvckMIlB3CVM0go/7xFp8Gmk=;
-        b=7HhGIdUACPS3JxB/+VFG0xvmujstzAYYmYH5HC6m458ge7tuQy4ujWnRTNdxdmP6q6
-         x+amJeND3JnUkeVhxltL2cd0HGc3mw4FrzgnkYsIyJFWTEnTvnDP8fE3bB1Bvq6/UmqF
-         W7CRYY1xQxPQwlwAvNkPH+CUDPL0T22V7MOdkyOy1KFY0PK+q3CxProRL9xZJuanMLI9
-         Kx/ul2YMX2x+D9clw0d/UQS7YEHeaVdN4ENcgCXT61U6koVKsy6wOkSjgsvN2b6p74Ug
-         /51PZjf6cgy6R5EtrxtMoa1N6NIhhcL66ox1kIOh/0y3L6xrCxMe8zqphNNfaDpVwtKv
-         8KhA==
-X-Gm-Message-State: AOAM531pNbbClDkiVwSZdjwvsA9aB8UTdHHqWbUNPddb8a/LvrQMfo3C
-        OkNwh9V+toQH6rLn1OOyzxp30yuUw8oHo/ChbwHrKQMXEz94E9y55r8eYjsvZMvXYpcpzn+Xxp2
-        +x2MlxH/mEIvheNWF
-X-Received: by 2002:a05:622a:494:b0:2f3:c0b0:599c with SMTP id p20-20020a05622a049400b002f3c0b0599cmr4529298qtx.95.1652448213277;
-        Fri, 13 May 2022 06:23:33 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwGiO9n+5iPCv+NJsLCllyAa9EHW1ILwmpHsC5hfvksbz5U9ndISSgoRwBbHeIuZvddpgtoug==
-X-Received: by 2002:a05:622a:494:b0:2f3:c0b0:599c with SMTP id p20-20020a05622a049400b002f3c0b0599cmr4529278qtx.95.1652448213068;
-        Fri, 13 May 2022 06:23:33 -0700 (PDT)
-Received: from [192.168.98.18] ([107.15.110.69])
-        by smtp.gmail.com with ESMTPSA id d19-20020a05620a167300b0069fc13ce250sm1333029qko.129.2022.05.13.06.23.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 13 May 2022 06:23:32 -0700 (PDT)
-Message-ID: <4e8f5bc4-4322-a0b3-35d9-bfd6c42696a2@redhat.com>
-Date:   Fri, 13 May 2022 09:23:30 -0400
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH RESEND net] bonding: fix missed rcu protection
-Content-Language: en-US
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Ahern <dsahern@gmail.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20220513103350.384771-1-liuhangbin@gmail.com>
-From:   Jonathan Toppins <jtoppins@redhat.com>
-In-Reply-To: <20220513103350.384771-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1381309AbiEMNe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 09:34:58 -0400
+Received: from zg8tmty1ljiyny4xntqumjca.icoremail.net (zg8tmty1ljiyny4xntqumjca.icoremail.net [165.227.154.27])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 0A0DC10F0;
+        Fri, 13 May 2022 06:34:54 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [218.12.19.27])
+        by mail-app2 (Coremail) with SMTP id by_KCgD3nEFEXn5ixqcfAA--.44066S2;
+        Fri, 13 May 2022 21:34:15 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     netdev@vger.kernel.org, krzysztof.kozlowski@linaro.org
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
+        broonie@kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH net] NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
+Date:   Fri, 13 May 2022 21:33:55 +0800
+Message-Id: <20220513133355.113222-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgD3nEFEXn5ixqcfAA--.44066S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7tr1xWrW5XF1xKr45tw1UZFb_yoW8tr43pF
+        WSgFWDZF48Jr1UXFWvvw4vqw4YywnYg3yDKa9ruws5J3sYqrn5ta10yFyYvFZ3ZrWkAF4a
+        qr4Y9r17uFnrt3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvj14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4
+        xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43
+        MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I
+        0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY6I8E87Iv67AKxVWU
+        JVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoO
+        J5UUUUU
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkIAVZdtZqDiwAgsO
+X-Spam-Status: No, score=-1.3 required=5.0 tests=BAYES_00,
+        RCVD_IN_BL_SPAMCOP_NET,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/13/22 06:33, Hangbin Liu wrote:
-> When removing the rcu_read_lock in bond_ethtool_get_ts_info(), I didn't
-> notice it could be called via setsockopt, which doesn't hold rcu lock,
-> as syzbot pointed:
-> 
->    stack backtrace:
->    CPU: 0 PID: 3599 Comm: syz-executor317 Not tainted 5.18.0-rc5-syzkaller-01392-g01f4685797a5 #0
->    Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
->    Call Trace:
->     <TASK>
->     __dump_stack lib/dump_stack.c:88 [inline]
->     dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
->     bond_option_active_slave_get_rcu include/net/bonding.h:353 [inline]
->     bond_ethtool_get_ts_info+0x32c/0x3a0 drivers/net/bonding/bond_main.c:5595
->     __ethtool_get_ts_info+0x173/0x240 net/ethtool/common.c:554
->     ethtool_get_phc_vclocks+0x99/0x110 net/ethtool/common.c:568
->     sock_timestamping_bind_phc net/core/sock.c:869 [inline]
->     sock_set_timestamping+0x3a3/0x7e0 net/core/sock.c:916
->     sock_setsockopt+0x543/0x2ec0 net/core/sock.c:1221
->     __sys_setsockopt+0x55e/0x6a0 net/socket.c:2223
->     __do_sys_setsockopt net/socket.c:2238 [inline]
->     __se_sys_setsockopt net/socket.c:2235 [inline]
->     __x64_sys_setsockopt+0xba/0x150 net/socket.c:2235
->     do_syscall_x64 arch/x86/entry/common.c:50 [inline]
->     do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
->     entry_SYSCALL_64_after_hwframe+0x44/0xae
->    RIP: 0033:0x7f8902c8eb39
-> 
-> Fix it by adding rcu_read_lock during the whole slave dev get_ts_info period.
-> 
-> Reported-by: syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com
-> Fixes: aa6034678e87 ("bonding: use rcu_dereference_rtnl when get bonding active slave")
-> Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Acked-by: Jonathan Toppins <jtoppins@redhat.com>
+There are sleep in atomic context bugs when the request to secure
+element of st-nci is timeout. The root cause is that nci_skb_alloc
+with GFP_KERNEL parameter is called in st_nci_se_wt_timeout which is
+a timer handler. The call paths that could trigger bugs are shown below:
+
+    (interrupt context 1)
+st_nci_se_wt_timeout
+  nci_hci_send_event
+    nci_hci_send_data
+      nci_skb_alloc(..., GFP_KERNEL) //may sleep
+
+   (interrupt context 2)
+st_nci_se_wt_timeout
+  nci_hci_send_event
+    nci_hci_send_data
+      nci_send_data
+        nci_queue_tx_data_frags
+          nci_skb_alloc(..., GFP_KERNEL) //may sleep
+
+This patch changes allocation mode of nci_skb_alloc from GFP_KERNEL to
+GFP_ATOMIC in order to prevent atomic context sleeping. The GFP_ATOMIC
+flag makes memory allocation operation could be used in atomic context.
+
+Fixes: 6a2968aaf50c ("NFC: basic NCI protocol implementation ")
+Fixes: 11f54f228643 ("NFC: nci: Add HCI over NCI protocol support")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+---
+ net/nfc/nci/data.c | 2 +-
+ net/nfc/nci/hci.c  | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/nfc/nci/data.c b/net/nfc/nci/data.c
+index 6055dc9a82a..aa5e712adf0 100644
+--- a/net/nfc/nci/data.c
++++ b/net/nfc/nci/data.c
+@@ -118,7 +118,7 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
+ 
+ 		skb_frag = nci_skb_alloc(ndev,
+ 					 (NCI_DATA_HDR_SIZE + frag_len),
+-					 GFP_KERNEL);
++					 GFP_ATOMIC);
+ 		if (skb_frag == NULL) {
+ 			rc = -ENOMEM;
+ 			goto free_exit;
+diff --git a/net/nfc/nci/hci.c b/net/nfc/nci/hci.c
+index 19703a649b5..78c4b6addf1 100644
+--- a/net/nfc/nci/hci.c
++++ b/net/nfc/nci/hci.c
+@@ -153,7 +153,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
+ 
+ 	i = 0;
+ 	skb = nci_skb_alloc(ndev, conn_info->max_pkt_payload_len +
+-			    NCI_DATA_HDR_SIZE, GFP_KERNEL);
++			    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
+ 	if (!skb)
+ 		return -ENOMEM;
+ 
+@@ -184,7 +184,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
+ 		if (i < data_len) {
+ 			skb = nci_skb_alloc(ndev,
+ 					    conn_info->max_pkt_payload_len +
+-					    NCI_DATA_HDR_SIZE, GFP_KERNEL);
++					    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
+ 			if (!skb)
+ 				return -ENOMEM;
+ 
+-- 
+2.17.1
 
