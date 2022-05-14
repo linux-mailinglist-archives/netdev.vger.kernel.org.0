@@ -2,127 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B56575271D9
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 16:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1BA6527215
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 16:36:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233193AbiENOSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 May 2022 10:18:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57498 "EHLO
+        id S233383AbiENOgZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 May 2022 10:36:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233188AbiENOR4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 10:17:56 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F37E0DFE9;
-        Sat, 14 May 2022 07:17:42 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id b12so1138365pju.3;
-        Sat, 14 May 2022 07:17:42 -0700 (PDT)
+        with ESMTP id S233357AbiENOgH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 10:36:07 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F1220F67;
+        Sat, 14 May 2022 07:35:56 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id r71so9736098pgr.0;
+        Sat, 14 May 2022 07:35:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ZEhSGoMoojYAD36SANNLcism31dWp4f4Nf5+aItJuTY=;
-        b=jbklFPhslW+4+HkKyrtVXePxSFmMiySYB9NlkM82qwUxV8msgdLqyTMXdM5J1D4Sj3
-         ee47pqFiYwtIU5YThhtubn4Xepiuv3+7H1I83C3XZV6H1nFWvUm3RnPZ5TNjUj+hfoq9
-         G4W+V62LmFEBFcc8Qkn2M8/ai4vSycDl7R/rfvkYvg359NOM7aUrW7kYA6QVM8vebaH8
-         0c2kVrNGpB5WMhFGulffw2N8wwhSTwgZpJYTsgVVKocnLBinHyXR4PLcc1lc6rvbY+gp
-         kc9tWTnBCojyNcT41fq6r6eRMfexRZ9Bqf+WdfcICVefWdyxaVwJNOis3qhjbbxMltva
-         BN2g==
+        bh=LH2DY0hZRjZwSZkfIfm9MKqf607rYpniX8kvWvJ5SrQ=;
+        b=mw06+rVjOxYyMVI9ZYHSM7zutkN/daoJ+ZPCLOPb+TLfw8lg6K8BuiR8uzrcVROl09
+         AsNQc+iPKPirvKtWpjTT/sRNBrcdsJUZy7XpZZbaeOqMTfWEYKQvfXlWH0ygoDCRZk0R
+         73C7NWBRYR/VrhJTuuy5zdK3q5r0raNIjRA3LpFOJcsWCwmeSWAhDZi4fH8FKY/bcKj8
+         18cqNVN3mKEO6DhnlqmvSALKyzBcN99OdKViA8U6WUK0y4u6SdUAKQLArpmZPtbfG/7d
+         PXP4NkaDJv2KYo48mP5IDxZSOu56qdB1PlUBTxwwhhQm0Ad5c/Dm/kNHOFPpcLqLWdBS
+         2LLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=ZEhSGoMoojYAD36SANNLcism31dWp4f4Nf5+aItJuTY=;
-        b=PRZAyr4lvlZ9TTPN6qoNbCAL0dz9enMw0R7T9V2qzBi1ZVZJJDglZkBBaJKmz4KMQ7
-         fclA4oEbIAI/qfQ3E/CrE76TgazbaP7DbbXT649b5El/QaFXJ334S4ET1psw+EvkbKiv
-         ujSR6mTykx55WoPCCQxnpLddK4NiZ+vvvssX9OrVyjkhbMsr/FijPAxRyZVP/prVZ38d
-         Q4r6Z+gTSjZ7aiEWxqMjcRPAJyF5NXaBVtVsWpm4UxfcKPRbMxBbbRn3OUgfBcsMvMK/
-         G9YPtNZfVhUUXAI/HmcrF6JdWmJyNdJoNk0MRwfvfgGgrleDXZ1HWiSc7NRLqmCSctrR
-         GmQQ==
-X-Gm-Message-State: AOAM531NPEa234VDX+YOWkNWHZbeOlGUHYYHm/vxFaMJKmiAVB2dEaO7
-        1KIfwNactg+GYttW5om0lGE=
-X-Google-Smtp-Source: ABdhPJzUSRBGx8S6BfJhi0bU2llugcyFbguZzUWUlbDGCnMW6DC9OHT0oX2pZFcdesE+mCKW/C6CxA==
-X-Received: by 2002:a17:90b:4a4a:b0:1dc:4731:31a4 with SMTP id lb10-20020a17090b4a4a00b001dc473131a4mr10171413pjb.19.1652537862493;
-        Sat, 14 May 2022 07:17:42 -0700 (PDT)
-Received: from localhost.localdomain (124x33x176x97.ap124.ftth.ucom.ne.jp. [124.33.176.97])
-        by smtp.gmail.com with ESMTPSA id x8-20020a17090a530800b001cd4989feccsm5298541pjh.24.2022.05.14.07.17.40
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=LH2DY0hZRjZwSZkfIfm9MKqf607rYpniX8kvWvJ5SrQ=;
+        b=4bncuKi6bZ8i94TsFDBJ1cvV510COx1K/FIKkXWDv4yElTIX5kmQfhLfDQgAlOlClI
+         oVQvIrll0EHQ9kRHpZAQxuxHGr6aIztSRw5Vzg7MC6Iqzm+RXD9SWy+fjEqs6qXlXTPw
+         xTgfD2I5MjKTahCx32tsIk8oWT3TD6q0Y1bkESlUp3w2pSUQAf0n8sQgkmMJ4u8BPIMN
+         qs6DZwZvJ8aWcBicv9ppldjZ+I/CugBsMZzXP/Db/alFg1XZQtqvJDgU3fX8cku0RVZ0
+         oaEEGrchy7RzZ1OdK6SxmKsg8Ndgh23xVAI/7FBu54p7tLQ93aySpVKOyVdmr5JptZ35
+         V8wA==
+X-Gm-Message-State: AOAM5303iusnw6U8fYFXR6Jo9/eY8wqzp91hXs5Moj6YlM3qZX+4YkoC
+        eu4c/wMswqNlUC0Vr/aYQ64TrwHv93sIjsTbWOg=
+X-Google-Smtp-Source: ABdhPJw39KpoHqB64KBC1ErT7ywfn8ZQK5im1sJJlXNIo+GgE31vYY8bNkRUc0UNVycNarWC+7aHPw==
+X-Received: by 2002:a63:89c8:0:b0:3db:9da:797e with SMTP id v191-20020a6389c8000000b003db09da797emr8041421pgd.358.1652538955947;
+        Sat, 14 May 2022 07:35:55 -0700 (PDT)
+Received: from localhost.localdomain ([49.37.196.1])
+        by smtp.gmail.com with ESMTPSA id ay4-20020a17090b030400b001df263f30e8sm595645pjb.3.2022.05.14.07.35.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 May 2022 07:17:42 -0700 (PDT)
-Sender: Vincent Mailhol <vincent.mailhol@gmail.com>
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v3 4/4] can: dev: drop tx skb if in listen only mode
-Date:   Sat, 14 May 2022 23:16:50 +0900
-Message-Id: <20220514141650.1109542-5-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
+        Sat, 14 May 2022 07:35:55 -0700 (PDT)
+From:   Saranya Panjarathina <plsaranya@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        g_balaji1@dell.com, Saranya_Panjarathina@dell.com,
+        linux-kernel@vger.kernel.org, Saranya_PL <plsaranya@gmail.com>
+Subject: [patch netdev] net: PIM register decapsulation and Forwarding.
+Date:   Sat, 14 May 2022 07:33:42 -0700
+Message-Id: <20220514143342.2600-1-plsaranya@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220512070138.19170-1-plsaranya@gmail.com>
+References: <20220512070138.19170-1-plsaranya@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Frames can be directly injected to a can driver via the packet
-socket. By doing that, it is possible to reach the
-net_device_ops::ndo_start_xmit function even if the driver is
-configured in listen only mode.
+From: Saranya_PL <plsaranya@gmail.com>
 
-Add a check in can_dropped_invalid_skb() to discard the skb if
-CAN_CTRLMODE_LISTENONLY is set.
+PIM register packet is decapsulated but not forwarded in RP
 
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+__pim_rcv decapsulates the PIM register packet and reinjects for forwarding
+after replacing the skb->dev to reg_dev (vif with VIFF_Register)
+
+Ideally the incoming device should be same as skb->dev where the
+original PIM register packet is received. mcache would not have
+reg_vif as IIF. Decapsulated packet forwarding is failing
+because of IIF mismatch. In RP for this S,G RPF interface would be
+skb->dev vif only, so that would be IIF for the cache entry.
+
+Signed-off-by: Saranya Panjarathina <plsaranya@gmail.com>
 ---
- drivers/net/can/dev/skb.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ net/ipv4/ipmr.c  | 2 +-
+ net/ipv6/ip6mr.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
-index 8b1991130de5..f7420fc43b99 100644
---- a/drivers/net/can/dev/skb.c
-+++ b/drivers/net/can/dev/skb.c
-@@ -5,6 +5,7 @@
-  */
+diff --git a/net/ipv4/ipmr.c b/net/ipv4/ipmr.c
+index 13e6329784fb..7b9586335fb7 100644
+--- a/net/ipv4/ipmr.c
++++ b/net/ipv4/ipmr.c
+@@ -598,7 +598,7 @@ static int __pim_rcv(struct mr_table *mrt, struct sk_buff *skb,
+ 	skb->protocol = htons(ETH_P_IP);
+ 	skb->ip_summed = CHECKSUM_NONE;
  
- #include <linux/can/dev.h>
-+#include <linux/can/netlink.h>
+-	skb_tunnel_rx(skb, reg_dev, dev_net(reg_dev));
++	skb_tunnel_rx(skb, skb->dev, dev_net(skb->dev));
  
- /* Local echo of CAN messages
-  *
-@@ -286,6 +287,7 @@ static bool can_skb_headroom_valid(struct net_device *dev, struct sk_buff *skb)
- bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb)
- {
- 	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
-+	struct can_priv *priv = netdev_priv(dev);
+ 	netif_rx(skb);
  
- 	if (skb->protocol == htons(ETH_P_CAN)) {
- 		if (unlikely(skb->len != CAN_MTU ||
-@@ -299,8 +301,13 @@ bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb)
- 		goto inval_skb;
- 	}
+diff --git a/net/ipv6/ip6mr.c b/net/ipv6/ip6mr.c
+index 4e74bc61a3db..147e29a818ca 100644
+--- a/net/ipv6/ip6mr.c
++++ b/net/ipv6/ip6mr.c
+@@ -566,7 +566,7 @@ static int pim6_rcv(struct sk_buff *skb)
+ 	skb->protocol = htons(ETH_P_IPV6);
+ 	skb->ip_summed = CHECKSUM_NONE;
  
--	if (!can_skb_headroom_valid(dev, skb))
-+	if (!can_skb_headroom_valid(dev, skb)) {
-+		goto inval_skb;
-+	} else if (priv->ctrlmode & CAN_CTRLMODE_LISTENONLY) {
-+		netdev_info_once(dev,
-+				 "interface in listen only mode, dropping skb\n");
- 		goto inval_skb;
-+	}
+-	skb_tunnel_rx(skb, reg_dev, dev_net(reg_dev));
++	skb_tunnel_rx(skb, skb->dev, net);
  
- 	return false;
+ 	netif_rx(skb);
  
 -- 
-2.35.1
+2.20.1
 
