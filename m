@@ -2,45 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 46470527052
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 11:37:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 002A6527061
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 11:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231479AbiENJhC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 May 2022 05:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51790 "EHLO
+        id S231572AbiENJtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 May 2022 05:49:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231331AbiENJhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 05:37:01 -0400
-Received: from out199-17.us.a.mail.aliyun.com (out199-17.us.a.mail.aliyun.com [47.90.199.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A6C61B8;
-        Sat, 14 May 2022 02:36:58 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R751e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=guangguan.wang@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VD6nEFN_1652521014;
-Received: from 30.15.218.194(mailfrom:guangguan.wang@linux.alibaba.com fp:SMTPD_---0VD6nEFN_1652521014)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 14 May 2022 17:36:55 +0800
-Message-ID: <8a2be07b-acf6-1148-e299-8196c18cfeed@linux.alibaba.com>
-Date:   Sat, 14 May 2022 17:36:53 +0800
+        with ESMTP id S231543AbiENJto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 05:49:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB5FF4F445;
+        Sat, 14 May 2022 02:49:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8C9860C7B;
+        Sat, 14 May 2022 09:49:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AF9C340EE;
+        Sat, 14 May 2022 09:49:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652521769;
+        bh=fD/mkjvdISC77Cf8PGTHsmA88B804TFZMCm5qN7kBaw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Mth4RYLvGgdhMR5tuXBLbTq9kQvo7gu/aJbiEjaVb1PfJv/gwmvhneXxPihIQyUGK
+         GxnY32AjxfObxp3T71hJpIQH+sqByeFgxr6USZdLcxGJiWZignGK/SWi/76Hd9sp/O
+         6fMXgoeS5+pf/V8nCpOgTz0EGwInsRYn4yq1lFQKNtZhZEW8s6sGEeSl7zjJG1osMl
+         VMwgn2Pu/v24gC/feiB+/Xc5HEC7QMq7oOZhferowDQx7OJA2nlUuctB/yKM2qCUxh
+         4zmD76z6jbH5zgcvwUcOT1AFZR/Q/iy5pCGdMQma6HEnsg/kebfw+F0Dn2AB/n5hEk
+         9Mlg+dSVkZrhA==
+Date:   Sat, 14 May 2022 11:49:14 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
+        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, Sam.Shih@mediatek.com,
+        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
+        robh@kernel.org, landen.chao@mediatek.com
+Subject: Re: [PATCH net-next 01/14] arm64: dts: mediatek: mt7986: introduce
+ ethernet nodes
+Message-ID: <Yn97GqujwYlljkdH@lore-desk>
+References: <cover.1651839494.git.lorenzo@kernel.org>
+ <1d555fbbac820e9b580da3e8c0db30e7d003c4b6.1651839494.git.lorenzo@kernel.org>
+ <YnZ8o46pPdKMCbUF@lunn.ch>
+ <YnlC3jvYarpV6BP1@lore-desk>
+ <YnlFBr1wgb/hlduy@lunn.ch>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.8.1
-Subject: Re: [PATCH net-next 1/2] net/smc: send cdc msg inline if qp has
- sufficient inline space
-Content-Language: en-US
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220513071551.22065-1-guangguan.wang@linux.alibaba.com>
- <20220513071551.22065-2-guangguan.wang@linux.alibaba.com>
- <Yn9GB3QwHiY/vtdc@unreal>
-From:   Guangguan Wang <guangguan.wang@linux.alibaba.com>
-In-Reply-To: <Yn9GB3QwHiY/vtdc@unreal>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-10.7 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="57sKd9UZFq0yO9gn"
+Content-Disposition: inline
+In-Reply-To: <YnlFBr1wgb/hlduy@lunn.ch>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -48,46 +64,72 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--57sKd9UZFq0yO9gn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-On 2022/5/14 14:02, Leon Romanovsky wrote:
->> diff --git a/net/smc/smc_wr.c b/net/smc/smc_wr.c
->> index 24be1d03fef9..8a2f9a561197 100644
->> --- a/net/smc/smc_wr.c
->> +++ b/net/smc/smc_wr.c
->> @@ -554,10 +554,11 @@ void smc_wr_remember_qp_attr(struct smc_link *lnk)
->>  static void smc_wr_init_sge(struct smc_link *lnk)
->>  {
->>  	int sges_per_buf = (lnk->lgr->smc_version == SMC_V2) ? 2 : 1;
->> +	bool send_inline = (lnk->qp_attr.cap.max_inline_data >= SMC_WR_TX_SIZE);
-> 
-> When will it be false? You are creating QPs with max_inline_data == SMC_WR_TX_SIZE?
-> 
->>  	u32 i;
->>  
->>  	for (i = 0; i < lnk->wr_tx_cnt; i++) {
->> -		lnk->wr_tx_sges[i].addr =
->> +		lnk->wr_tx_sges[i].addr = send_inline ? (u64)(&lnk->wr_tx_bufs[i]) :
->>  			lnk->wr_tx_dma_addr + i * SMC_WR_BUF_SIZE;
->>  		lnk->wr_tx_sges[i].length = SMC_WR_TX_SIZE;
->>  		lnk->wr_tx_sges[i].lkey = lnk->roce_pd->local_dma_lkey;
->> @@ -575,6 +576,8 @@ static void smc_wr_init_sge(struct smc_link *lnk)
->>  		lnk->wr_tx_ibs[i].opcode = IB_WR_SEND;
->>  		lnk->wr_tx_ibs[i].send_flags =
->>  			IB_SEND_SIGNALED | IB_SEND_SOLICITED;
->> +		if (send_inline)
->> +			lnk->wr_tx_ibs[i].send_flags |= IB_SEND_INLINE;
-> 
-> If you try to transfer data == SMC_WR_TX_SIZE, you will get -ENOMEM error.
-> IB drivers check that length < qp->max_inline_data.
-> 
-> Thanks
-> 
+> On Mon, May 09, 2022 at 06:35:42PM +0200, Lorenzo Bianconi wrote:
+> > > > +&eth {
+> > > > +	status =3D "okay";
+> > > > +
+> > > > +	gmac0: mac@0 {
+> > > > +		compatible =3D "mediatek,eth-mac";
+> > > > +		reg =3D <0>;
+> > > > +		phy-mode =3D "2500base-x";
+> > > > +
+> > > > +		fixed-link {
+> > > > +			speed =3D <2500>;
+> > > > +			full-duplex;
+> > > > +			pause;
+> > > > +		};
+> > > > +	};
+> > > > +
+> > > > +	gmac1: mac@1 {
+> > > > +		compatible =3D "mediatek,eth-mac";
+> > > > +		reg =3D <1>;
+> > > > +		phy-mode =3D "2500base-x";
+> > > > +
+> > > > +		fixed-link {
+> > > > +			speed =3D <2500>;
+> > > > +			full-duplex;
+> > > > +			pause;
+> > > > +		};
+> > > > +	};
+> > >=20
+> > > Are both connected to the switch? It just seems unusual two have two
+> > > fixed-link ports.
+> >=20
+> > afaik mac design supports autoneg only in 10M/100M/1G mode and mt7986 g=
+mac1
+> > is connected to a 2.5Gbps phy on mt7986-ref board.
+>=20
+> The MAC does not normally perform autoneg, the PHY
+> does. phylib/phylink then tells the MAC the result of the
+> negotiation. If there is a SERDES/PCS involved, and it is performing
+> the autoneg, phylink should get told about the result of the autoneg
+> and it will tell the MAC the result.
+>=20
+> So the gmac1 should just have phy-handle pointing to the PHY, not a
+> fixed link.
+>=20
+>       Andrew
 
-Got it. 
+adding Landen to the discussion to provide more hw details.
+@Landen: any inputs on it?
 
-I should create qps with max_inline_data == 0, and get the actual max_inline_data by query_qp.
-And I should use lnk->qp_attr.cap.max_inline_data > SMC_WR_TX_SIZE to decide whether to send inline or not.
+Regards,
+Lorenzo
 
-Thank you.
+--57sKd9UZFq0yO9gn
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYn97GgAKCRA6cBh0uS2t
+rJi/AQCb9dTLYZ7YoVsaSg9/eM2xO1giATwmWgDgvu7ornUl/wD+Im8XM086QT4k
+wTWJpsrIZkt3aACNIfiY34472b6ohAw=
+=ZZRY
+-----END PGP SIGNATURE-----
+
+--57sKd9UZFq0yO9gn--
