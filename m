@@ -2,69 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35F0A526F6D
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:15:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FC5F526E74
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:14:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230035AbiENCxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 22:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54162 "EHLO
+        id S229547AbiENBXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 21:23:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230018AbiENCxt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 22:53:49 -0400
-Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 630B5361E11
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 17:59:41 -0700 (PDT)
-Received: by mail-oo1-xc29.google.com with SMTP id i6-20020a4ab246000000b00362214ddc1cso1099081ooo.2
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 17:59:41 -0700 (PDT)
+        with ESMTP id S229543AbiENBXN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 21:23:13 -0400
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBBD508F33
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 17:52:52 -0700 (PDT)
+Received: by mail-ua1-x92f.google.com with SMTP id y2so1139135uan.4
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 17:52:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=py2sBia6KCgnjUPnf4BnYoNjPVjFUOkjSMfyVSuwTa4=;
-        b=Zuhm1QP5kn11DK5lpcZ6HgHrw52uvK16p/JqfBw3k70ts6FU7xn1WeYAhPcGT1Qtwl
-         8d2fj00zlfDLMC3A+DbJcT7xDGL5CbPvb6IcG4juzSUsZ2dKFgzSPg0C/xczcwX2djkF
-         vEy08oX1KZBuO2tf0pAFUyZXQqgw+LK1K/6uVgM4xMHgWV4HTYVEy1Z4RPcnxrgkwPwH
-         3dIwO1DQkPGO1RHhj8e0P0hHQJvClAK2UszoeZTasTtf38UDBNKMqTYN4KEmA+suaI0z
-         Hu8KZI7/mW6j+xRt7Yx7KZGwAgNY6goVFeZoJikDYihGSSuXUM1RfZ9MiXvCgg13QpYm
-         5y+A==
+        bh=Gh7lyMR/wwSZPN8VM7Gm13nBDOjOCSeBHsdtAIxkzG8=;
+        b=V/0/Z8mBX//e4K3r0ItRdb+QOez5W2XQln5EnRm9IolusnHAblUXo5tTq1gXrjgaOQ
+         h2uOoGmdQlAWavWoSg7h1u45GIg701NSi5498nSXOq4rOpruJ/GAKqNcnk1nUGSwdlUH
+         KF/Jd1j27FhvkKRcNt+VDQDHFUXXZrlRDIyEPE51WCxWNi4RlSDQBmEsIkT8VjxxBV0b
+         bDPbYNoTE5Wm/8XlRiWLjhfWSbYoG/1p+MWkOJdk68z8KRjORJleBHix1Qr33jg0oxdF
+         eFtoXAqEfV7XKe02t4strhNLtYX/5/rc/0uVvjb2X05Tuys7X0VuVPMAtMSbS1+/HUec
+         eX7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=py2sBia6KCgnjUPnf4BnYoNjPVjFUOkjSMfyVSuwTa4=;
-        b=XXdTpDqw8ndf3Ad2sRMxdOgYWjI5NTjsiEhUWmV/UxK7D/656KHmESVR50dB4a1L0X
-         Kclocja6fzKmbvUhIbNbDIpdxLL88cSJDxmnmeIbNGqlSQCd5CZdPjOYpil60Ya1H454
-         iE/noL7qzhVPtnaIxfqDuzC7v4FRugIU7nyd3yvwT0HynSvuxJMvAPFlgUYHJxj0+9GZ
-         ALwS0wFOfukGbDYJo97cdbspKF6IMwOgmgTYcbsRJ0ZmRDeQKuLJLDc15ZOIIP5tVOoW
-         nNxcezek7u+mehVWXS0zftnw4YtAA07myhpVBd6lmKbHBTU2P8FZF2tB5tA0GVulZQUq
-         tW5g==
-X-Gm-Message-State: AOAM533ROsJX3aWxhnrWXCuJPL4mefTDrkEmrQ8B5g+nA3jIHOP57svK
-        iBo/FtA1bnUeZEoYbPbkUnzA27g2m9rd5fq+jgdMEb/nWp8=
-X-Google-Smtp-Source: ABdhPJyYXDXmPRwsG4uGpbG+svQYxJMo3bACygxmD2ctNbvlZzIp+bvDIoDk+YyNUuTEK9Y4msMJHBFJia4AYJzRhss=
-X-Received: by 2002:a81:2414:0:b0:2f4:e1d8:810a with SMTP id
- k20-20020a812414000000b002f4e1d8810amr8892836ywk.80.1652488015279; Fri, 13
- May 2022 17:26:55 -0700 (PDT)
+        bh=Gh7lyMR/wwSZPN8VM7Gm13nBDOjOCSeBHsdtAIxkzG8=;
+        b=bnTmb6uv9cGXzCBJR3Mh1nu8l4nycy7TO0DzCxpGAVaq+HOoc7NsXpIpYpYsK/dzjY
+         foarLW6j6rlekkrxKuTW4hIK3GXNORXjgG5r36a8R2UYphCVtsPvPoI96enaQqbVKENq
+         BRnBxCGmNTI4v6M1ZcDZWgrGcf/oFC3cUnZ9bhSPHo/rl6WMYHLfZzDDkMPDGPhJVskL
+         yynJz66aA6cYybUDAnf/8DZ6i7U0lzwBpwTkFEWsS7mxAkWZevdt28EEgOp1uYPzbho+
+         NZm2wdk+YsVzxOguSyNsj5FQ4ACnwYHYN2MAcTsvW7dkHa7OYrSKTCL8kesYRggmAasO
+         F2wQ==
+X-Gm-Message-State: AOAM5313o+0jzkyz6hIMSMde3ps3IxSoXLSV7xxtsraa8AI85iFwdRRr
+        9bUMct/bvZ2fXEvsTH56e7TWlK3BaFaU4UqwvYE67+7QBmQ=
+X-Google-Smtp-Source: ABdhPJzCWv0a5whfDvG5f1fLXqD8nN3mfB3Ex3KVjsax4u4aVTZ/7ict9ABMT/pHleIA0/+WB0eCT0OjzJ1BqwVO5x8=
+X-Received: by 2002:a25:504c:0:b0:64b:979c:1bae with SMTP id
+ e73-20020a25504c000000b0064b979c1baemr5408913ybb.563.1652488799877; Fri, 13
+ May 2022 17:39:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220513201243.2381133-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220513201243.2381133-1-vladimir.oltean@nxp.com>
+References: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
+In-Reply-To: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
 From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 13 May 2022 17:26:19 -0700
-Message-ID: <CAGETcx9vjrh_ORhGq0g5oH5kUE8MbcyEW4Mv9i=S8m9PLzBkhA@mail.gmail.com>
-Subject: Re: [RFC PATCH devicetree] of: property: mark "interrupts" as
- optional for fw_devlink
+Date:   Fri, 13 May 2022 17:39:24 -0700
+Message-ID: <CAGETcx9Q-yXpdai+Ujg+-gMGyHbSO=ws+e7ejqDSmJs5tQRLNQ@mail.gmail.com>
+Subject: Re: [RFC PATCH net 0/2] Make phylink and DSA wait for PHY driver that
+ defers probe
 To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         Robin Murphy <robin.murphy@arm.com>,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Rob Herring <robh+dt@kernel.org>,
         Frank Rowand <frowand.list@gmail.com>,
-        John Stultz <john.stultz@linaro.org>,
+        John Stultz <jstultz@google.com>,
         =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
         Russell King <rmk+kernel@armlinux.org.uk>,
         Heiner Kallweit <hkallweit1@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
@@ -79,143 +84,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 13, 2022 at 1:13 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Fri, May 13, 2022 at 4:37 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
 >
-> I have a board with an Ethernet PHY whose driver currently works in poll
-> mode. I am in the process of making some changes through which it will
-> be updated to use interrupts. The changes are twofold.
+> This patch set completes the picture described by
+> '[RFC,devicetree] of: property: mark "interrupts" as optional for fw_devlink'
+> https://patchwork.kernel.org/project/netdevbpf/patch/20220513201243.2381133-1-vladimir.oltean@nxp.com/
+
+I replied to that patch. I don't think we can pull that in.
+
+> I've CCed non-networking maintainers just in case they want to gain a
+> better understanding. If not, apologies and please ignore the rest.
 >
-> First, an irqchip driver needs to be written, and device trees need to
-> be updated. But old kernels need to work with the updated device trees
-> as well. From their perspective, the interrupt-parent is a missing
-> supplier, so fw_devlink will block the consumer from probing.
 >
-> Second, proper interrupt support is only expected to be fulfilled on a
-> subset of boards on which this irqchip driver runs. The driver detects
-> this and fails to probe on unsatisfied requirements, which should allow
-> the consumer driver to fall back to poll mode. But fw_devlink treats a
-> supplier driver that failed to probe the same as a supplier driver that
-> did not probe at all, so again, it blocks the consumer.
+>
+> My use case is to migrate a PHY driver from poll mode to interrupt mode
+> without breaking compatibility between new device trees and old kernels
+> which did not have a driver for that IRQ parent, and therefore (for
+> things to work) did not even have that interrupt listed in the "vintage
+> correct" DT blobs. Note that current kernels as of today are also
+> "old kernels" in this description.
+>
+> Creating some degree of compatibility has multiple components.
+>
+> 1. A PHY driver must eventually give up waiting for an IRQ provider,
+>    since the dependency is optional and it can fall back to poll mode.
+>    This is currently supported thanks to commit 74befa447e68 ("net:
+>    mdio: don't defer probe forever if PHY IRQ provider is missing").
+>
+> 2. Before it finally gives up, the PHY driver has a transient phase of
+>    returning -EPROBE_DEFER. That transient phase causes some breakage
+>    which is handled by this patch set, details below.
+>
+> 3. PHY device probing and Ethernet controller finding it and connecting
+>    to it are async events. When both happen during probing, the problem
+>    is that finding the PHY fails if the PHY defers probe, which results
+>    in a missing PHY rather than waiting for it. Unfortunately there is
+>    no universal way to address this problem, because the majority of
+>    Ethernet drivers do not connect to the PHY during probe. So the
+>    problem is fixed only for the driver that is of interest to me in
+>    this context, DSA, and with special API exported by phylink
+>    specifically for this purpose, to limit the impact on other drivers.
 
-This is easy to fix. I can send a patch for this soon. So, if the
-driver matches the supplier and then fails the probe (except
-EPROBE_DEFER), we can stop blocking the consumer on that supplier.
-
-> According to Saravana's commit a9dd8f3c2cf3 ("of: property: Add
-> fw_devlink support for optional properties"), the way to deal with this
-> issues is to mark the struct supplier_bindings associated with
-> "interrupts" and "interrupts-extended" as "optional". Optional actually
-> means that fw_devlink will no longer create a fwnode link to the
-> interrupt parent, unless we boot with "fw_devlink.strict".
-
-The optional flag is really meant for DT properties where even if the
-supplier is present, the consumer might not use it. With that
-reasoning, fw_devlink doesn't wait for those suppliers to probe even
-if the driver is present. fw_devlink outright ignores those properties
-unless fw_devlink.strict=1 (default is = 0).
-For some more context on why I added the optional flag, see Greet's
-last paragraph in this email explaining IOMMUs:
-https://lore.kernel.org/lkml/CAMuHMdXft=pJXXqY-i_GQTr8FtFJePQ_drVHRMPAFUqSy4aNKA@mail.gmail.com/#t
-
-I'm still not fully sold if the "optional" flag was the right way to
-fix it and honestly might just delete it.
-
-> So practically speaking, interrupts are now not "handled as optional",
-> but rather "not handled" by fw_devlink. This has quite wide ranging
-> side effects,
-
-Yeah, and a lot of other boards/systems might be depending on
-enforcing "interrupts" dependency. So this patch really won't work for
-those cases.
-
-So, I have to Nack this patch. But I tried to address your use case
-and other similar cases with this recent patch:
+I'll take a closer look at this later this week, but once we add
+phy-handle support to fw_devlink (the device_bind_driver() is making
+it hard to add support), I think we can address most/all of these
+problems automatically. So hopefully we can work towards that?
+Actually this patch might already fix this for you:
 https://lore.kernel.org/lkml/20220429220933.1350374-1-saravanak@google.com/
 
-If the time out is too long (10s) then you can reduce it for your
-board (set it to 1), but by default every device that could probe will
-probe and fw_devlink will no longer block those probes. Btw, I talked
-about this in LPC2021 but only finally got around to sending out this
-patch. Can you give it a shot please?
-
-> for example it happens to fix the case (linked below)
-> where we have a cyclic dependency between a parent being an interrupt
-> supplier to a child, fw_devlink blocking the child from probing, and the
-> parent waiting for the child to probe before the parent itself finishes
-> probing successfully. This isn't really the main thing I'm intending
-> with this change, but rather a side observation.
->
-> The reason why I'm blaming the commit below is because old kernels
-> should work with updated device trees, and that commit is practically
-> where the support was added. IMHO it should have been backported to
-> older kernels exactly for DT compatibility reasons, but it wasn't.
->
-> Fixes: a9dd8f3c2cf3 ("of: property: Add fw_devlink support for optional properties")
-> Link: https://lore.kernel.org/netdev/20210826074526.825517-2-saravanak@google.com/
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
-> Technically this patch targets the devicetree git tree, but I think it
-> needs an ack from device core maintainers and/or people who contributed
-> to the device links and fw_devlink, or deferred probing in general.
->
-> With this patch in place, the way in which things will work is that:
-> - of_irq_get() will return -EPROBE_DEFER a number of times.
-> - fwnode_mdiobus_phy_device_register(), through
->   driver_deferred_probe_check_state(), will wait until the initcall
->   stage is over (simplifying a bit), then fall back to poll mode.
-> - The PHY driver will now finally probe successfully
-> - The PHY driver might defer probe for so long, that the Ethernet
->   controller might actually get an -EPROBE_DEFER when calling
->   phy_attach_direct() or one of the many of its derivatives.
->   This happens because "phy-handle" support was removed from fw_devlink
->   in commit 3782326577d4 ("Revert "of: property: fw_devlink: Add support
->   for "phy-handle" property"").
-
-The next DT property I add support to would be phy-handle. But to do
-so, I need to make sure Generic PHYs are probed through the normal
-binding process but still try to handle the case where the PHY
-framework calls device_bind_driver() directly. I've spent a lot of
-time thinking about this. I have had a tab open with the phy_device.c
-code for months in my laptop. It's still there :)
-
-Once I add support for this, I can then add support for some of the
-other mdio-* properties and then finally try to enable default async
-boot for DT based systems.
+Before fw_devlink, we'd give up on waiting on all suppliers, whether
+they had a driver (but hadn't yet probed for a multitude of reasons)
+or not. fw_devlink is smart about allowing consumers to probe without
+their suppliers only if the supplier has no driver or the driver fails
+(I'll send a patch for this). The deferred_probe_timeout is what's
+used to decide when to give up waiting for drivers.
 
 -Saravana
 
-> - Until the PHY probes, the Ethernet controller may call
->   phylink_fwnode_phy_connect() -> fwnode_phy_find_device(), and this
->   will return NULL with an unspecified reason. This needs to be patched
->   to return -EPROBE_DEFER instead of -ENODEV until
->   driver_deferred_probe_check_state() says otherwise
-> - Even so, some drivers like DSA treat PHY connection errors as "soft"
->   and continue probing. This is problematic because an -EPROBE_DEFER
->   coming from the PHY will result in a missing net_device. What we want
->   is to fix the backpressure all the way to the Ethernet controller
->   probing.
 >
-> This is to say, don't expect that all things start working just with
-> this single change. I'm copying some Ethernet driver maintainers as a
-> heads up about this fact, and my plan to address the other issues until
-> the above works.
+> Note that drivers that connect to the PHY at ndo_open are superficially
+> "fixed" by the patch at step 1 alone, and therefore don't need the
+> mechanism introduced in phylink here. This is because of the larger span
+> of time between PHY probe and opening the network interface (typically
+> initiated by user space). But this is the catch, nfsroot and other
+> in-kernel networking users can also open the net device, and this will
+> still expose the EPROBE_DEFER as a hard error for this second kind of
+> drivers. I don't know how to fix that. From this POV, it's better to do
+> what DSA does (connect to the PHY on probe).
 >
->  drivers/of/property.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Vladimir Oltean (2):
+>   net: phylink: allow PHY driver to defer probe when connecting via OF
+>     node
+>   net: dsa: wait for PHY to defer probe
 >
-> diff --git a/drivers/of/property.c b/drivers/of/property.c
-> index 8e90071de6ed..a9ceb02e00d9 100644
-> --- a/drivers/of/property.c
-> +++ b/drivers/of/property.c
-> @@ -1393,7 +1393,7 @@ static const struct supplier_bindings of_supplier_bindings[] = {
->         { .parse_prop = parse_leds, },
->         { .parse_prop = parse_backlight, },
->         { .parse_prop = parse_gpio_compat, },
-> -       { .parse_prop = parse_interrupts, },
-> +       { .parse_prop = parse_interrupts, .optional = true, },
->         { .parse_prop = parse_regulators, },
->         { .parse_prop = parse_gpio, },
->         { .parse_prop = parse_gpios, },
+>  drivers/net/phy/phylink.c | 73 ++++++++++++++++++++++++++++++---------
+>  include/linux/phylink.h   |  2 ++
+>  net/dsa/dsa2.c            |  2 ++
+>  net/dsa/port.c            |  6 ++--
+>  net/dsa/slave.c           | 10 +++---
+>  5 files changed, 70 insertions(+), 23 deletions(-)
+>
 > --
 > 2.25.1
 >
