@@ -2,117 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED0535270AB
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 12:28:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6449D5270BA
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 12:40:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230441AbiENK2L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 May 2022 06:28:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
+        id S231852AbiENKkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 May 2022 06:40:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232116AbiENK2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 06:28:00 -0400
-Received: from out30-43.freemail.mail.aliyun.com (out30-43.freemail.mail.aliyun.com [115.124.30.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D89C33917B;
-        Sat, 14 May 2022 03:27:57 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=guangguan.wang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VD6nQif_1652524074;
-Received: from localhost.localdomain(mailfrom:guangguan.wang@linux.alibaba.com fp:SMTPD_---0VD6nQif_1652524074)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 14 May 2022 18:27:54 +0800
-From:   Guangguan Wang <guangguan.wang@linux.alibaba.com>
-To:     kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, leon@kernel.org
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v2 2/2] net/smc: rdma write inline if qp has sufficient inline space
-Date:   Sat, 14 May 2022 18:27:39 +0800
-Message-Id: <20220514102739.41252-3-guangguan.wang@linux.alibaba.com>
-X-Mailer: git-send-email 2.24.3 (Apple Git-128)
-In-Reply-To: <20220514102739.41252-1-guangguan.wang@linux.alibaba.com>
-References: <20220514102739.41252-1-guangguan.wang@linux.alibaba.com>
+        with ESMTP id S230011AbiENKkK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 06:40:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 364152EE;
+        Sat, 14 May 2022 03:40:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8C3860DE0;
+        Sat, 14 May 2022 10:40:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91419C340EE;
+        Sat, 14 May 2022 10:40:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652524808;
+        bh=4B87Dg5JEAiRvyLZbJTaN/WeL9pNY+QGuStUoeJtY1g=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dPtKMtXNytmIKKo1oUxAIsPREfJ317GRHL/kAOcQykFNOokYbXVLJvD2DUKO7kNFj
+         +RJGfPYl5sJzSAPS7UoKXXQjuvLA9DvNdJRzmjqlJUTMEVp8z4R/9rVP0d1u2jNU08
+         4vmzlBI41/Plw1krjFHj/HxjUzM3DFQZ7v9jjtojXs9GX91Z7+9izAO9Fm8rAmoqG9
+         F9QSguVrQnfuhtcvXxV9Oryu0EcudMhy7JUeIJcboLnIfyP4l8yCmvzDEuefoQsNnq
+         jAqt/FfHwvCAyJ1GRWrHb8fixqWaHB8rrGtPVJTjs/pEzNu87MpkW9/dvXgIujuCkC
+         JyNhlBi3g5Pjg==
+Date:   Sat, 14 May 2022 12:40:04 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/2] selftests/bpf: add selftest for
+ bpf_ct_refresh_timeout kfunc
+Message-ID: <Yn+HBKbo5eoYBPzj@lore-desk>
+References: <cover.1652372970.git.lorenzo@kernel.org>
+ <4841edea5de2ce5898092c057f61d45dec3d9a34.1652372970.git.lorenzo@kernel.org>
+ <CAADnVQKys77rY+FLkGJwdmdww+h2pGosx08RxVvYwwkjZLSwEQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="4yjOvuKC16P+H2Ce"
+Content-Disposition: inline
+In-Reply-To: <CAADnVQKys77rY+FLkGJwdmdww+h2pGosx08RxVvYwwkjZLSwEQ@mail.gmail.com>
+X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rdma write with inline flag when sending small packages,
-whose length is shorter than the qp's max_inline_data, can
-help reducing latency.
 
-In my test environment, which are 2 VMs running on the same
-physical host and whose NICs(ConnectX-4Lx) are working on
-SR-IOV mode, qperf shows 0.5us-0.7us improvement in latency.
+--4yjOvuKC16P+H2Ce
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Test command:
-server: smc_run taskset -c 1 qperf
-client: smc_run taskset -c 1 qperf <server ip> -oo \
-		msg_size:1:2K:*2 -t 30 -vu tcp_lat
+> On Thu, May 12, 2022 at 9:34 AM Lorenzo Bianconi <lorenzo@kernel.org> wro=
+te:
+> >
+> > Install a new ct entry in order to perform a successful lookup and
+> > test bpf_ct_refresh_timeout kfunc helper.
+> >
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>=20
+> CI is failing:
+> test_bpf_nf_ct:FAIL:flush ct entries unexpected error: 32512 (errno 2)
+> test_bpf_nf_ct:FAIL:create ct entry unexpected error: 32512 (errno 2)
+>=20
+> Please follow the links from patchwork for details.
 
-The results shown below:
-msgsize     before       after
-1B          11.2 us      10.6 us (-0.6 us)
-2B          11.2 us      10.7 us (-0.5 us)
-4B          11.3 us      10.7 us (-0.6 us)
-8B          11.2 us      10.6 us (-0.6 us)
-16B         11.3 us      10.7 us (-0.6 us)
-32B         11.3 us      10.6 us (-0.7 us)
-64B         11.2 us      11.2 us (0 us)
-128B        11.2 us      11.2 us (0 us)
-256B        11.2 us      11.2 us (0 us)
-512B        11.4 us      11.3 us (-0.1 us)
-1KB         11.4 us      11.5 us (0.1 us)
-2KB         11.5 us      11.5 us (0 us)
+Hi Alexei,
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Guangguan Wang <guangguan.wang@linux.alibaba.com>
----
- net/smc/smc_tx.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+tests failed because conntrack is not installed on the system:
 
-diff --git a/net/smc/smc_tx.c b/net/smc/smc_tx.c
-index 98ca9229fe87..805a546e8c04 100644
---- a/net/smc/smc_tx.c
-+++ b/net/smc/smc_tx.c
-@@ -391,12 +391,20 @@ static int smcr_tx_rdma_writes(struct smc_connection *conn, size_t len,
- 	int rc;
- 
- 	for (dstchunk = 0; dstchunk < 2; dstchunk++) {
--		struct ib_sge *sge =
--			wr_rdma_buf->wr_tx_rdma[dstchunk].wr.sg_list;
-+		struct ib_rdma_wr *wr = &wr_rdma_buf->wr_tx_rdma[dstchunk];
-+		struct ib_sge *sge = wr->wr.sg_list;
-+		u64 base_addr = dma_addr;
-+
-+		if (dst_len < link->qp_attr.cap.max_inline_data) {
-+			base_addr = (uintptr_t)conn->sndbuf_desc->cpu_addr;
-+			wr->wr.send_flags |= IB_SEND_INLINE;
-+		} else {
-+			wr->wr.send_flags &= ~IB_SEND_INLINE;
-+		}
- 
- 		num_sges = 0;
- 		for (srcchunk = 0; srcchunk < 2; srcchunk++) {
--			sge[srcchunk].addr = dma_addr + src_off;
-+			sge[srcchunk].addr = base_addr + src_off;
- 			sge[srcchunk].length = src_len;
- 			num_sges++;
- 
-@@ -410,8 +418,7 @@ static int smcr_tx_rdma_writes(struct smc_connection *conn, size_t len,
- 			src_len = dst_len - src_len; /* remainder */
- 			src_len_sum += src_len;
- 		}
--		rc = smc_tx_rdma_write(conn, dst_off, num_sges,
--				       &wr_rdma_buf->wr_tx_rdma[dstchunk]);
-+		rc = smc_tx_rdma_write(conn, dst_off, num_sges, wr);
- 		if (rc)
- 			return rc;
- 		if (dst_len_sum == len)
--- 
-2.24.3 (Apple Git-128)
+2022-05-14T00:12:09.0799053Z sh: line 1: conntrack: command not found
 
+Is it ok to just skip the test if conntrack is not installed on the system
+or do you prefer to directly send netlink messages to ct in order to add a
+new ct entry?
+
+Regards,
+Lorenzo
+
+--4yjOvuKC16P+H2Ce
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYn+HAwAKCRA6cBh0uS2t
+rKTbAP9DKc0/cw1Wwk0okYUArRS3CB76jUusRG+O1E/vh6PHwgD/U4jnv/4OqKe/
+I2lAS247dHiSVbyUHgdqAqdNvs+FfQU=
+=jA6b
+-----END PGP SIGNATURE-----
+
+--4yjOvuKC16P+H2Ce--
