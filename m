@@ -2,114 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D72FE5270A0
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 12:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 335945270A6
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 12:28:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbiENKV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 May 2022 06:21:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
+        id S232089AbiENK17 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 May 2022 06:27:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbiENKV0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 06:21:26 -0400
-Received: from dvalin.narfation.org (dvalin.narfation.org [213.160.73.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E2A32C101
-        for <netdev@vger.kernel.org>; Sat, 14 May 2022 03:21:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1652523679;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=1qYOvynL+5sTqjSmhPCidw3mtZFTa6T3CLaHzQSVFZk=;
-        b=S6FV7EyHzgSpDnKkPkC6q+MPkTqmHaiu5WlxA1ofSd7eaQH+xeOmKx2coW/QoojAxNASBM
-        z8C81VwjYQgjSqCnFHklskXijiV0w8yM3EkV6QFChgrw43DisPCL8lT/0DgX4X5X3b7Oj9
-        m+M5P9hSu5ws9WrmssaT4jArSYI1oDk=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     Marek Lindner <mareklindner@neomailbox.ch>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Antonio Quartulli <a@unstable.cc>,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net 11/12] batman-adv: fix iflink detection in batadv_is_on_batman_iface
-Date:   Sat, 14 May 2022 12:21:16 +0200
-Message-ID: <1754593.qx6Pg7X6uG@sven-desktop>
-In-Reply-To: <afa206858a88910691bdb917d0956cea3f32f667.1600770261.git.sd@queasysnail.net>
-References: <cover.1600770261.git.sd@queasysnail.net> <afa206858a88910691bdb917d0956cea3f32f667.1600770261.git.sd@queasysnail.net>
+        with ESMTP id S231826AbiENK16 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 06:27:58 -0400
+Received: from out30-45.freemail.mail.aliyun.com (out30-45.freemail.mail.aliyun.com [115.124.30.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0117A39144;
+        Sat, 14 May 2022 03:27:55 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=guangguan.wang@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0VD6nQiA_1652524072;
+Received: from localhost.localdomain(mailfrom:guangguan.wang@linux.alibaba.com fp:SMTPD_---0VD6nQiA_1652524072)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Sat, 14 May 2022 18:27:53 +0800
+From:   Guangguan Wang <guangguan.wang@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, leon@kernel.org
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/2] net/smc: send and write inline optimization for smc
+Date:   Sat, 14 May 2022 18:27:37 +0800
+Message-Id: <20220514102739.41252-1-guangguan.wang@linux.alibaba.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart41320831.pHRkKXBtVs"; micalg="pgp-sha512"; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart41320831.pHRkKXBtVs
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-To: Sabrina Dubroca <sd@queasysnail.net>
-Cc: Marek Lindner <mareklindner@neomailbox.ch>, Simon Wunderlich <sw@simonwunderlich.de>, Antonio Quartulli <a@unstable.cc>, b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net 11/12] batman-adv: fix iflink detection in batadv_is_on_batman_iface
-Date: Sat, 14 May 2022 12:21:16 +0200
-Message-ID: <1754593.qx6Pg7X6uG@sven-desktop>
-In-Reply-To: <afa206858a88910691bdb917d0956cea3f32f667.1600770261.git.sd@queasysnail.net>
-References: <cover.1600770261.git.sd@queasysnail.net> <afa206858a88910691bdb917d0956cea3f32f667.1600770261.git.sd@queasysnail.net>
+Send cdc msgs and write data inline if qp has sufficent inline
+space, helps latency reducing. 
 
-On Thursday, 1 October 2020 09:59:35 CEST Sabrina Dubroca wrote:
-> device has the same ifindex as its link. Let's use the presence of a
-> ndo_get_iflink operation, rather than the value it returns, to detect
-> a device without a link.
+In my test environment, which are 2 VMs running on the same
+physical host and whose NICs(ConnectX-4Lx) are working on
+SR-IOV mode, qperf shows 0.4us-1.3us improvement in latency.
 
-There wasn't any activity in this patchset since a while, it doesn't apply
-anymore and the assumptions made here doesn't seem to be reflect the current
-situation in the kernel. See commit 6c1f41afc1db ("batman-adv: Don't expect
-inter-netns unique iflink indices"):
+Test command:
+server: smc_run taskset -c 1 qperf
+client: smc_run taskset -c 1 qperf <server ip> -oo \
+		msg_size:1:2K:*2 -t 30 -vu tcp_lat
 
-> But only checking for dev->netdev_ops->ndo_get_iflink is also not an option
-> because ipoib_get_iflink implements it even when it sometimes returns an
-> iflink != ifindex and sometimes iflink == ifindex. The caller must
-> therefore make sure itself to check both netns and iflink + ifindex for
-> equality. Only when they are equal, a "physical" interface was detected
-> which should stop the traversal. On the other hand, vxcan_get_iflink can
-> also return 0 in case there was currently no valid peer. In this case, it
-> is still necessary to stop.
+The results shown below:
+msgsize     before       after
+1B          11.9 us      10.6 us (-1.3 us)
+2B          11.7 us      10.7 us (-1.0 us)
+4B          11.7 us      10.7 us (-1.0 us)
+8B          11.6 us      10.6 us (-1.0 us)
+16B         11.7 us      10.7 us (-1.0 us)
+32B         11.7 us      10.6 us (-1.1 us)
+64B         11.7 us      11.2 us (-0.5 us)
+128B        11.6 us      11.2 us (-0.4 us)
+256B        11.8 us      11.2 us (-0.6 us)
+512B        11.8 us      11.3 us (-0.5 us)
+1KB         11.9 us      11.5 us (-0.4 us)
+2KB         12.1 us      11.5 us (-0.6 us)
 
-It would would be nice when the situation would be better but the proposed 
-patches don't solve it. So I will mark the two patches as "Rejected" (from 
-"Changes requested") in batadv's patchwork. It is not meant as sign of
-disapproval of someone working in this area to improve the situation - I just
-don't want to wait for the v2 [1] anymore.
+Guangguan Wang (2):
+  net/smc: send cdc msg inline if qp has sufficient inline space
+  net/smc: rdma write inline if qp has sufficient inline space
 
-Kind regards,
-	Sven
+ net/smc/smc_ib.c |  1 +
+ net/smc/smc_tx.c | 17 ++++++++++++-----
+ net/smc/smc_wr.c |  5 ++++-
+ 3 files changed, 17 insertions(+), 6 deletions(-)
 
-[1] https://lore.kernel.org/all/20201002090703.GD3565727@bistromath.localdomain/
---nextPart41320831.pHRkKXBtVs
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmJ/gpwACgkQXYcKB8Em
-e0b8bg//cTQcj0L6HvTbt3v4eZIOw1E9xQVtfh3w7zKEagsEIyz8fPapiqG4uHOd
-aZukT6tVDAyxT6ce+1sm07hVcBfMEeMf+a6BrobdVJ6cvKXt31O+juUEiAl8qex1
-8begZbq/5tTZmKkgiHUbvZeW8lBDwrlvvSwYLXTwqbjJoIKVfvFucOSHnYD/N7Ho
-XN9wfHcZng5Q/XFGuu6Ki5cvX1j/ygzW1MH6bHzat7+RCDxt3ri7CuFAHQ6cnf33
-bZPoFStCjgJLZ+5VZcTPNVHe6bZv1uwGxniSyaPi4T3HNoIWnGsPUndY7us/jBtl
-LLyObHy9Tli2ARjL599L2e/fTayDKwro/DTGYSpuXTvz9FgIG4wZiwoSQK2TVx2I
-sAPfkspDbB3MPG+Os0XBfDrB3plZeFZgFyLYYDf9DmCQxm1XKLUm8sZa6G7s3Wjf
-xlBqB4JwLjXxltnbTsHyUgu4PewMCIrJglau/uL3/03WDMO+eGhtVa4ZsISdP3rM
-rnibmZ46GS7c4Nr5gNC00ecjr/36dTn6sc//ZBbbFEm+FZVXixJ6P1Zzcg4rqdKV
-xv6a3z8hLUtvh9Gxxt8jwH4XSWtufTe+RG5mu+QDEy5prxCUWoAReJRQsO1hGJG1
-y/ZQMvW3aXzyCA27wyCgsbLACX0W3tD7O7ponxGV3o7XfI0wssU=
-=97Bw
------END PGP SIGNATURE-----
-
---nextPart41320831.pHRkKXBtVs--
-
-
+-- 
+2.24.3 (Apple Git-128)
 
