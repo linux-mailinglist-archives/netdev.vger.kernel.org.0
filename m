@@ -2,168 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5FC5F526E74
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:14:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 934D6526E6C
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:14:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229547AbiENBXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 21:23:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58292 "EHLO
+        id S231599AbiENDoG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 23:44:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229543AbiENBXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 21:23:13 -0400
-Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEBBD508F33
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 17:52:52 -0700 (PDT)
-Received: by mail-ua1-x92f.google.com with SMTP id y2so1139135uan.4
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 17:52:52 -0700 (PDT)
+        with ESMTP id S231588AbiENDoE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 23:44:04 -0400
+Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85F8811459;
+        Fri, 13 May 2022 20:44:00 -0700 (PDT)
+Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2fb9a85a124so104383377b3.13;
+        Fri, 13 May 2022 20:44:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Gh7lyMR/wwSZPN8VM7Gm13nBDOjOCSeBHsdtAIxkzG8=;
-        b=V/0/Z8mBX//e4K3r0ItRdb+QOez5W2XQln5EnRm9IolusnHAblUXo5tTq1gXrjgaOQ
-         h2uOoGmdQlAWavWoSg7h1u45GIg701NSi5498nSXOq4rOpruJ/GAKqNcnk1nUGSwdlUH
-         KF/Jd1j27FhvkKRcNt+VDQDHFUXXZrlRDIyEPE51WCxWNi4RlSDQBmEsIkT8VjxxBV0b
-         bDPbYNoTE5Wm/8XlRiWLjhfWSbYoG/1p+MWkOJdk68z8KRjORJleBHix1Qr33jg0oxdF
-         eFtoXAqEfV7XKe02t4strhNLtYX/5/rc/0uVvjb2X05Tuys7X0VuVPMAtMSbS1+/HUec
-         eX7A==
+        bh=sJzlF99MMJ/4VRi/5NrL6Jp0J+n+hynsI8EUWbxr3us=;
+        b=fTANJ+/WK7bsKQwvKUHQRV4wA+acsDpY2tuK2pyYJAxkynd59svNWPKUwZH2V6NW8z
+         GL9wpaqBs+bpJzK9mnA6bD+MbbH221zV6U7cIWZNWqqjwYxhpyWa/fRnOt1MFlTWZ9k9
+         aDl9ScNCvqLqu0WVFjSS0SWCRPTIxF4Y44r82FLlKodhu2PFVnkNiBVwAiSUoAzDSspX
+         eMmQjAravcS19tDiDafxdZvdRPP8Z79RIIJPFM8LoWJ6nLdIjZJrQf+8oVC9DXf1Vqn6
+         Z9Q12S4exeMiACWDbGqvrP32bByRNpZbAGs1WyaO7AGtGyfRuW9V+Sj4q2e+bo9Osqk/
+         2/gA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Gh7lyMR/wwSZPN8VM7Gm13nBDOjOCSeBHsdtAIxkzG8=;
-        b=bnTmb6uv9cGXzCBJR3Mh1nu8l4nycy7TO0DzCxpGAVaq+HOoc7NsXpIpYpYsK/dzjY
-         foarLW6j6rlekkrxKuTW4hIK3GXNORXjgG5r36a8R2UYphCVtsPvPoI96enaQqbVKENq
-         BRnBxCGmNTI4v6M1ZcDZWgrGcf/oFC3cUnZ9bhSPHo/rl6WMYHLfZzDDkMPDGPhJVskL
-         yynJz66aA6cYybUDAnf/8DZ6i7U0lzwBpwTkFEWsS7mxAkWZevdt28EEgOp1uYPzbho+
-         NZm2wdk+YsVzxOguSyNsj5FQ4ACnwYHYN2MAcTsvW7dkHa7OYrSKTCL8kesYRggmAasO
-         F2wQ==
-X-Gm-Message-State: AOAM5313o+0jzkyz6hIMSMde3ps3IxSoXLSV7xxtsraa8AI85iFwdRRr
-        9bUMct/bvZ2fXEvsTH56e7TWlK3BaFaU4UqwvYE67+7QBmQ=
-X-Google-Smtp-Source: ABdhPJzCWv0a5whfDvG5f1fLXqD8nN3mfB3Ex3KVjsax4u4aVTZ/7ict9ABMT/pHleIA0/+WB0eCT0OjzJ1BqwVO5x8=
-X-Received: by 2002:a25:504c:0:b0:64b:979c:1bae with SMTP id
- e73-20020a25504c000000b0064b979c1baemr5408913ybb.563.1652488799877; Fri, 13
- May 2022 17:39:59 -0700 (PDT)
+        bh=sJzlF99MMJ/4VRi/5NrL6Jp0J+n+hynsI8EUWbxr3us=;
+        b=M56TniF6pmSf0sHy4R/UdeIEpbORpQe3LSd/ENtS53Exm5RhAWsfcyAkbaz34OnUhW
+         881k3UksTywgQOh/mhc/tgr0ttOd232f6FdmvhLvVlmcPqL/YrMxKiYfNSCAmVqpqZEQ
+         t9nL2AeCFRCpgxUioDCoeKnmvUtzt0ZAYzf76L7mHxM1IJwZpob7ENMWm/mapdmvjjm1
+         /6P1kWdirdamCxyReMbQRexS5QMCLHPUBM1BfH4jwEtlzymK2FgjWpDfnugRmJqZ06+L
+         97ustL+Eg1HjJQ2Oi2s6NgtbSIkO/FJRN76SC3I4lVBaUDriv9Lg+N7bI2Ll2MhbDrkn
+         1c5g==
+X-Gm-Message-State: AOAM5314+K06e8XsJGnwazRPkeuWCABsR1TSpWLswNWcIx3TG+2sLuiI
+        OtlDei3sl59NA9h4MHOn0hWIoAgJ7BfiXBEB1785CcAOKNoY4Q==
+X-Google-Smtp-Source: ABdhPJzmix6rDFK5h3SwvbkKf0znC1BWS4iJESrC8+ST33B0hDFl9FnY/gGZ7lNI9THPgdODYfEI/44xYMJzteee+XA=
+X-Received: by 2002:a81:ff12:0:b0:2db:2d8a:9769 with SMTP id
+ k18-20020a81ff12000000b002db2d8a9769mr9224115ywn.172.1652499839751; Fri, 13
+ May 2022 20:43:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
-From:   Saravana Kannan <saravanak@google.com>
-Date:   Fri, 13 May 2022 17:39:24 -0700
-Message-ID: <CAGETcx9Q-yXpdai+Ujg+-gMGyHbSO=ws+e7ejqDSmJs5tQRLNQ@mail.gmail.com>
-Subject: Re: [RFC PATCH net 0/2] Make phylink and DSA wait for PHY driver that
- defers probe
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        John Stultz <jstultz@google.com>,
-        =?UTF-8?Q?Alvin_=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
+References: <20220511121913.2696181-1-o.rempel@pengutronix.de>
+ <b631b022-72d5-9160-fd13-f33c80dbbe59@hartkopp.net> <20220511132421.7o5a3po32l3w2wcr@pengutronix.de>
+ <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
+In-Reply-To: <20220511143620.kphwgp2vhjyoecs5@pengutronix.de>
+From:   Vincent Mailhol <vincent.mailhol@gmail.com>
+Date:   Sat, 14 May 2022 12:43:48 +0900
+Message-ID: <CAMZ6RqL7p2Thks2RNX3CYB9XxXPJB2f5=NArzrT3O2-BjmH_dg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] can: skb: add and set local_origin flag
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Devid Antonio Filoni <devid.filoni@egluetechnologies.com>,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        David Jander <david@protonic.nl>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 13, 2022 at 4:37 PM Vladimir Oltean <vladimir.oltean@nxp.com> wrote:
+On Sat. 14 May 2022 at 12:29, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> On 11.05.2022 15:24:21, Marc Kleine-Budde wrote:
+> > On 11.05.2022 14:38:32, Oliver Hartkopp wrote:
+> > > IMO this patch does not work as intended.
+> > >
+> > > You probably need to revisit every place where can_skb_reserve() is used,
+> > > e.g. in raw_sendmsg().
+> >
+> > And the loopback for devices that don't support IFF_ECHO:
+> >
+> > | https://elixir.bootlin.com/linux/latest/source/net/can/af_can.c#L257
 >
-> This patch set completes the picture described by
-> '[RFC,devicetree] of: property: mark "interrupts" as optional for fw_devlink'
-> https://patchwork.kernel.org/project/netdevbpf/patch/20220513201243.2381133-1-vladimir.oltean@nxp.com/
+> BTW: There is a bug with interfaces that don't support IFF_ECHO.
+>
+> Assume an invalid CAN frame is passed to can_send() on an interface that
+> doesn't support IFF_ECHO. The above mentioned code does happily generate
+> an echo frame and it's send, even if the driver drops it, due to
+> can_dropped_invalid_skb(dev, skb).
+>
+> The echoed back CAN frame is treated in raw_rcv() as if the headroom is valid:
+>
+> | https://elixir.bootlin.com/linux/v5.17.6/source/net/can/raw.c#L138
+>
+> But as far as I can see the can_skb_headroom_valid() check never has
+> been done. What about this patch?
+>
+> index 1fb49d51b25d..fda4807ad165 100644
+> --- a/net/can/af_can.c
+> +++ b/net/can/af_can.c
+> @@ -255,6 +255,9 @@ int can_send(struct sk_buff *skb, int loop)
+>                  */
+>
+>                 if (!(skb->dev->flags & IFF_ECHO)) {
+> +                       if (can_dropped_invalid_skb(dev, skb))
+> +                               return -EINVAL;
+> +
 
-I replied to that patch. I don't think we can pull that in.
+This means that can_dropped_invalid_skb() would be called twice: one
+time in can_send() and one time in the driver's xmit() function,
+right?
+It would be nice to find a trick to detect whether the skb was
+injected through the packet socket or not in order not to execute
+can_dropped_invalid_skb() twice. I guess the information of the
+provenance of the skb is available somewhere, just not sure where (not
+familiar with the packet socket).
 
-> I've CCed non-networking maintainers just in case they want to gain a
-> better understanding. If not, apologies and please ignore the rest.
->
->
->
-> My use case is to migrate a PHY driver from poll mode to interrupt mode
-> without breaking compatibility between new device trees and old kernels
-> which did not have a driver for that IRQ parent, and therefore (for
-> things to work) did not even have that interrupt listed in the "vintage
-> correct" DT blobs. Note that current kernels as of today are also
-> "old kernels" in this description.
->
-> Creating some degree of compatibility has multiple components.
->
-> 1. A PHY driver must eventually give up waiting for an IRQ provider,
->    since the dependency is optional and it can fall back to poll mode.
->    This is currently supported thanks to commit 74befa447e68 ("net:
->    mdio: don't defer probe forever if PHY IRQ provider is missing").
->
-> 2. Before it finally gives up, the PHY driver has a transient phase of
->    returning -EPROBE_DEFER. That transient phase causes some breakage
->    which is handled by this patch set, details below.
->
-> 3. PHY device probing and Ethernet controller finding it and connecting
->    to it are async events. When both happen during probing, the problem
->    is that finding the PHY fails if the PHY defers probe, which results
->    in a missing PHY rather than waiting for it. Unfortunately there is
->    no universal way to address this problem, because the majority of
->    Ethernet drivers do not connect to the PHY during probe. So the
->    problem is fixed only for the driver that is of interest to me in
->    this context, DSA, and with special API exported by phylink
->    specifically for this purpose, to limit the impact on other drivers.
 
-I'll take a closer look at this later this week, but once we add
-phy-handle support to fw_devlink (the device_bind_driver() is making
-it hard to add support), I think we can address most/all of these
-problems automatically. So hopefully we can work towards that?
-Actually this patch might already fix this for you:
-https://lore.kernel.org/lkml/20220429220933.1350374-1-saravanak@google.com/
-
-Before fw_devlink, we'd give up on waiting on all suppliers, whether
-they had a driver (but hadn't yet probed for a multitude of reasons)
-or not. fw_devlink is smart about allowing consumers to probe without
-their suppliers only if the supplier has no driver or the driver fails
-(I'll send a patch for this). The deferred_probe_timeout is what's
-used to decide when to give up waiting for drivers.
-
--Saravana
-
->
-> Note that drivers that connect to the PHY at ndo_open are superficially
-> "fixed" by the patch at step 1 alone, and therefore don't need the
-> mechanism introduced in phylink here. This is because of the larger span
-> of time between PHY probe and opening the network interface (typically
-> initiated by user space). But this is the catch, nfsroot and other
-> in-kernel networking users can also open the net device, and this will
-> still expose the EPROBE_DEFER as a hard error for this second kind of
-> drivers. I don't know how to fix that. From this POV, it's better to do
-> what DSA does (connect to the PHY on probe).
->
-> Vladimir Oltean (2):
->   net: phylink: allow PHY driver to defer probe when connecting via OF
->     node
->   net: dsa: wait for PHY to defer probe
->
->  drivers/net/phy/phylink.c | 73 ++++++++++++++++++++++++++++++---------
->  include/linux/phylink.h   |  2 ++
->  net/dsa/dsa2.c            |  2 ++
->  net/dsa/port.c            |  6 ++--
->  net/dsa/slave.c           | 10 +++---
->  5 files changed, 70 insertions(+), 23 deletions(-)
->
-> --
-> 2.25.1
->
+Yours sincerely,
+Vincent Mailhol
