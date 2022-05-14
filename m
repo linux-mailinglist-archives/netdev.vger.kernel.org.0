@@ -2,145 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AFF4A527275
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 17:08:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C6365272AD
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 17:37:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233902AbiENPHh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 May 2022 11:07:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38668 "EHLO
+        id S233980AbiENPhG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 May 2022 11:37:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233760AbiENPHg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 11:07:36 -0400
-Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [217.70.183.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18529BCA9;
-        Sat, 14 May 2022 08:07:10 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id E632AC0014;
-        Sat, 14 May 2022 15:07:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652540829;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=oioTQWxtec+lTDMdLAC/e7vnn3p17HifwpG1OTnINv4=;
-        b=AcgJ09xZ4e+zg7/UmOi0sFyCRaSdje5F0p8i1vR0nMZXkUsc1hrpzCBlrgQin7zodGmfNZ
-        aTLoYQZ7Yba8rJrNiebFwg6t5+YH2rTM4HhH5sBCnTyBSIz0fctZYBFLbhdWyv2op3ah3b
-        I9NrHXJp93o9cgpk/nwqPqgMFY3MxluYkhUWWWQNcm8SPCCP5LUpmx5YENva3W8xOgsJNz
-        txhZsJHbsr1tIXFoT+0ukCmwzPy7GE+7fcdllhLgK0JMnStAl/PDy1EV+ZmVKrtUeojQFZ
-        nsfUyvi8sZS/5KEDzonLXmasWbF2yv1ev2VkIC2CQZDjhtDmaH8ANh/BM4vIdg==
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
-Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: [PATCH net-next v2 5/5] ARM: dts: qcom: ipq4019: Add description for the IPQESS Ethernet controller
-Date:   Sat, 14 May 2022 17:06:56 +0200
-Message-Id: <20220514150656.122108-6-maxime.chevallier@bootlin.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220514150656.122108-1-maxime.chevallier@bootlin.com>
-References: <20220514150656.122108-1-maxime.chevallier@bootlin.com>
+        with ESMTP id S232396AbiENPhF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 11:37:05 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570F7CDC
+        for <netdev@vger.kernel.org>; Sat, 14 May 2022 08:37:03 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id e19so11295139vsu.12
+        for <netdev@vger.kernel.org>; Sat, 14 May 2022 08:37:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=ejmbDSRtrvmXLPtD7L18FmBC6JgH3lWpgMvMBM820Rg=;
+        b=VrKKzLHrLGFNolRe2xfeh7n1A6YOna2dcUCVS5nT4xkF3WKxwdfoIUA5l9xlonV40b
+         H7GgXUV/Nn1x+7SALI/H82ew238piQ/mbZzJHXQV9P3J63kurw7z64lKi15yGtpgdIAI
+         I43iMW1jAZDlTN3k5w6Fr54/cAnjHj6GwSwQYo/4+b0l4OZXlr6FBqLkyIMjiJnJzkiN
+         3dfOebR2weL2V1OkZwnLbZjao34aMv6O2ocqnkMm7rOM/PQrfP2OGMfSuKI7hNAJzh/W
+         BjhtBSW2YKgdny1GjXA7eTl9kVLMT1bJBuPhZQza6Ksf0mci+xWJhRkfkOpfk96dC/sc
+         ujcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=ejmbDSRtrvmXLPtD7L18FmBC6JgH3lWpgMvMBM820Rg=;
+        b=qu62WGitYz0Q7faNMpgy/p2Hu67VnbfJHGBOGFGJou15LCnUND8jXZwrus0Npsihkj
+         iCT2PB+1GSpowPTQvXy8g087LXkXcQGxzF6uFgJ1MfOEZx0MHZ7WfKytvxxuyZWc4Zid
+         iG7q8l8WmTlW+Gh1qjMWzWbphFdU/QiuSHVcDwV8+6CwhuOzVAoD2+n/YtY45cZgAy6z
+         DjH5n+9AA4w5I4uqBcwmckYYDOi0swoPe+Py3Z+TStkfUnxNJsjZvKtfA2nQtWX0LZqZ
+         nsm0IiLye2y3Wr1uAwIqo95tR+4KFe6xPug6nRpJnkQqYC0B9eUZxeoLOFbECPpQ2VQ/
+         +T/g==
+X-Gm-Message-State: AOAM530BmbgsyMfsae5oH6EyLn8ckGzsYWytX8+OtAub5ukCN7rIaGkH
+        xR3DYDclNfjjf8ZWQjdRPb/WYsci67LsgPGSr88=
+X-Google-Smtp-Source: ABdhPJzJEXHPcYrG7Jw4JncRmeg5ANLh2ByrzS25cVD1/tWLq24UXzs8QGY0TPSGEaFyaHev7yQtGsZK10jLoChfzC0=
+X-Received: by 2002:a67:d78b:0:b0:32d:c0f:f6fe with SMTP id
+ q11-20020a67d78b000000b0032d0c0ff6femr4063841vsj.51.1652542622335; Sat, 14
+ May 2022 08:37:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Received: by 2002:a05:6102:3e8f:0:0:0:0 with HTTP; Sat, 14 May 2022 08:37:01
+ -0700 (PDT)
+Reply-To: douglaselix23@gmail.com
+From:   "Mr. Douglas Felix" <kekererukayatoux@gmail.com>
+Date:   Sat, 14 May 2022 15:37:01 +0000
+Message-ID: <CAN5qXwG6KK-22PWAmRZUjJfy4=O56N+wWQkoGrz98VxDrSQHAg@mail.gmail.com>
+Subject: Greetings
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.8 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,HK_NAME_FM_MR_MRS,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
+        autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2607:f8b0:4864:20:0:0:0:e2e listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5014]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [kekererukayatoux[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [douglaselix23[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  1.5 HK_NAME_FM_MR_MRS No description available.
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.5 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Qualcomm IPQ4019 includes an internal 5 ports switch, which is
-connected to the CPU through the internal IPQESS Ethernet controller.
-
-This commit adds support for this internal interface, which is
-internally connected to a modified version of the QCA8K Ethernet switch.
-
-This Ethernet controller only support a specific internal interface mode
-for connection to the switch.
-
-Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
----
-V1->V2:
- - Added clock and resets
-
- arch/arm/boot/dts/qcom-ipq4019.dtsi | 46 +++++++++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
-
-diff --git a/arch/arm/boot/dts/qcom-ipq4019.dtsi b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-index cac92dde040f..1afabee37fc6 100644
---- a/arch/arm/boot/dts/qcom-ipq4019.dtsi
-+++ b/arch/arm/boot/dts/qcom-ipq4019.dtsi
-@@ -38,6 +38,7 @@ aliases {
- 		spi1 = &blsp1_spi2;
- 		i2c0 = &blsp1_i2c3;
- 		i2c1 = &blsp1_i2c4;
-+		ethernet0 = &gmac;
- 	};
- 
- 	cpus {
-@@ -668,6 +669,51 @@ swport5: port@5 { /* MAC5 */
- 			};
- 		};
- 
-+		gmac: ethernet@c080000 {
-+			compatible = "qcom,ipq4019-ess-edma";
-+			reg = <0xc080000 0x8000>;
-+			resets = <&gcc ESS_RESET>;
-+			reset-names = "ess";
-+			clocks = <&gcc GCC_ESS_CLK>;
-+			clock-names = "ess";
-+			interrupts = <GIC_SPI  65 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  66 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  67 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  68 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  69 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  70 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  71 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  72 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  73 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  74 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  75 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  76 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  77 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  78 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  79 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI  80 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 240 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 241 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 242 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 243 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 244 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 245 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 246 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 247 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 248 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 249 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 250 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 251 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 252 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 253 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 254 IRQ_TYPE_EDGE_RISING>,
-+				     <GIC_SPI 255 IRQ_TYPE_EDGE_RISING>;
-+
-+			status = "disabled";
-+
-+			phy-mode = "internal";
-+		};
-+
- 		mdio: mdio@90000 {
- 			#address-cells = <1>;
- 			#size-cells = <0>;
 -- 
-2.36.1
+A mail was sent to you sometime last week with the expectation of
+having a retune mail from you but to my surprise you never bothered to replied.
+Kindly reply for further explanations.
 
+Respectfully yours,
+Mr. Douglas Felix
