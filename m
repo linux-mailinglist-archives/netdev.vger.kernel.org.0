@@ -2,66 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A15F526F3D
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:15:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12821526F3F
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:15:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231907AbiENFH0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 May 2022 01:07:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57488 "EHLO
+        id S231821AbiENFKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 May 2022 01:10:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231734AbiENFHS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 01:07:18 -0400
-Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23A7511459;
-        Fri, 13 May 2022 22:07:16 -0700 (PDT)
-Received: by mail-pg1-x533.google.com with SMTP id a19so9083004pgw.6;
-        Fri, 13 May 2022 22:07:16 -0700 (PDT)
+        with ESMTP id S231784AbiENFKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 01:10:18 -0400
+Received: from mail-vk1-xa2f.google.com (mail-vk1-xa2f.google.com [IPv6:2607:f8b0:4864:20::a2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2D8813DFE
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 22:10:16 -0700 (PDT)
+Received: by mail-vk1-xa2f.google.com with SMTP id e144so5133566vke.9
+        for <netdev@vger.kernel.org>; Fri, 13 May 2022 22:10:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H2vPjy+h7Y8GUV/wp9Zv2KNgoVls+M4vPazMSA3baUA=;
-        b=lZb8z0XiAUTqwdC/VVUzZQTLh/PGfvDXeR0rR794bcPhRSpYzLVfWIWo21le5pWRgp
-         Z40y5ok0WwmbQqOMfUbOIIY19HO5H8gig0eTIdiWYbU2W0/8DnbLRgLD8DWzdCKPYjLf
-         umO3bH7hIdfiuPH6DF2ZgdaCvVRSIKqpZIVesJ3iL2bthMiTZIXg6x+w7hEYlULaY5LT
-         M7gR0qB6KS9yYFPYlXRMSIvzPZOiJlth4ec14rpTYM720haFoImtfXVOWrNtmNTVWMkz
-         zBCHmWb+OY5RVsa4cGqD5Dew9v4FG21o/iZWID3i6y5oDMBiTNJmETRINq60ZPtkuMJj
-         GnWA==
+        d=zappem-net.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=am2KApHZvCvnte7d2uFo4dA9WFvK9puOECj/ULVMy50=;
+        b=GmiFygQXU+gjLKohNxmOYyTi3fO5NPt3JQzXEFcnX8AZRbYm9aPzvayuRG75fYEVT/
+         p28ihmnEefFnhk1KnXRt6iEG5C/oVqIUlZbODiRPPOzwai8jNWXoqVVc1c7wsHmRZey7
+         LFSvjNJSEQGBAgZwyaJsvSaSSwZfiNIfeqnuzgYgO+1J7APyhxGX0mZFVh4VBktKQoYF
+         RKvsfEUDW5A4vVmicJXdeGtVIpEj2IQQvJ2CBnbEoM9v0ykP0QDMih94bPhyoLBysVdf
+         HGjefZi4gpZ3D7+09ibpCLx7NHz7jma41pfusqdVW/wcyeAKd0fYhd4GHTC3KN7vz073
+         hrBg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=H2vPjy+h7Y8GUV/wp9Zv2KNgoVls+M4vPazMSA3baUA=;
-        b=juKAPcqD/v4OWUJ8l/kzBCEpnjEt+Dsu1lxHYZiT+/77YmHCB8hAOM8Zh6myg6b8KY
-         Zpw56mwBDbW83vJPO8utPtEdx+YuGfPpbNSPpkt3CfmgSQX8SWt3kfiCfk8jIDMjlwa0
-         80beYOTC6bC4uAzQV0pgi6GV58EYK+12UjisUSNNNBhVXt1yLR3DbfU9FNSWjr9moyXr
-         7yL1xwU0OPYivih5U037+mZpCluBPFSZn0n3WSLdotAjE7jHuz53Q7fDbL7fLq8nufwy
-         AnMbBj4/Si6YmfZhkQdyREcgj+udUZMX6qP4CX3tB0JqL+Ljw3n0HLaJorwXg0HfRIaH
-         K4PA==
-X-Gm-Message-State: AOAM533VGQQtqQecznlviTGDjXXobpBYZZ7tzT3gXeUL7slvHHO2wLut
-        MceO9UXkP+mZW/m4HJtkhew=
-X-Google-Smtp-Source: ABdhPJwarltTZOBUl9PmMmibemLHJjSdFDWHcXaGIewR1h+LNsnrpUESg1D8sL7Ml+1jTGT4cuaTzg==
-X-Received: by 2002:a63:2b01:0:b0:3c2:4b0b:e1c6 with SMTP id r1-20020a632b01000000b003c24b0be1c6mr6523935pgr.288.1652504835592;
-        Fri, 13 May 2022 22:07:15 -0700 (PDT)
-Received: from localhost ([166.111.139.123])
-        by smtp.gmail.com with ESMTPSA id t10-20020a62d14a000000b0050dc7628155sm2614731pfl.47.2022.05.13.22.07.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 22:07:15 -0700 (PDT)
-From:   Zixuan Fu <r33s3n6@gmail.com>
-To:     doshir@vmware.com, pv-drivers@vmware.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        baijiaju1990@gmail.com, Zixuan Fu <r33s3n6@gmail.com>,
-        TOTE Robot <oslab@tsinghua.edu.cn>
-Subject: [PATCH v3] net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
-Date:   Sat, 14 May 2022 13:07:11 +0800
-Message-Id: <20220514050711.2636709-1-r33s3n6@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=am2KApHZvCvnte7d2uFo4dA9WFvK9puOECj/ULVMy50=;
+        b=n01wYwqZ6b6KqYTxqL+C8FMHF8T/koTWQyPlEExsSVPhOdBk3ZMMiNw7yoDAKx3Hly
+         SZc5bbyebEiMwwSdK2CN+AKQ9pQj2ZEAxMaU7G3qmGc/zjWgRVtXGtpqB6D7MSXos/uP
+         GoElTxo5RyGUOoP1kE4SEYEwFoNQgQtfSLcv/Dqx/NKeJ/YjbQ9xjJp5IlFSPmbGM7rW
+         YsS+3XQchVnvlFmFT62LpOisTQUA8sJNWnYBBPw3RbyjYWguaxP2Duuyv6xiXr7tY6Zl
+         OsuN2ZogY3bvznWsZpfAixnZA3k8Md9BkJNspFUEC0khOh2iDjqm6UG/296ZjPWUEHZH
+         LyZw==
+X-Gm-Message-State: AOAM530R5b5UG2X7HojvhuI2sTwuYaPOqY9+dVmG5DXnjCCfsNew5XIA
+        eXTpQQNP8Bd4hMn/mSBQMEig9s+EHPyD46WTQiV1kd7lrqY=
+X-Google-Smtp-Source: ABdhPJxSZajqz/reul0kNezZy6zRnqKmFPbAjVOsPWJOBYlc5GNde7sevc9dsRfCA3EHSg+vwIu4Vff8u8IxNWowsik=
+X-Received: by 2002:ac5:ca0b:0:b0:34d:82ac:27cf with SMTP id
+ c11-20020ac5ca0b000000b0034d82ac27cfmr3253575vkm.13.1652505015949; Fri, 13
+ May 2022 22:10:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CABCx3R0QbN2anNX5mO1iPGZNgS=wdWr+Rb=bYGwf24o6jxjnaQ@mail.gmail.com>
+ <fac8b95ce32c4b57e7ea00596cbf01aaf966c7ef.camel@debian.org> <CABCx3R0qyFjt5KUUdJ+e_RPTyLUz264WXWxQ1ECZznq4Chb4LA@mail.gmail.com>
+In-Reply-To: <CABCx3R0qyFjt5KUUdJ+e_RPTyLUz264WXWxQ1ECZznq4Chb4LA@mail.gmail.com>
+From:   Tinkerer One <tinkerer@zappem.net>
+Date:   Fri, 13 May 2022 22:10:04 -0700
+Message-ID: <CABCx3R3tCEcvnSC5ZvsYh=R0eZ5JMZJT0u-O4pkDmRzwY6hcJQ@mail.gmail.com>
+Subject: Re: Simplify ambient capability dropping in iproute2:ip tool.
+To:     Luca Boccassi <bluca@debian.org>
+Cc:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,66 +64,175 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In vmxnet3_rq_create(), when dma_alloc_coherent() fails, 
-vmxnet3_rq_destroy() is called. It sets rq->rx_ring[i].base to NULL. Then
-vmxnet3_rq_create() returns an error to its callers mxnet3_rq_create_all()
--> vmxnet3_change_mtu(). Then vmxnet3_change_mtu() calls 
-vmxnet3_force_close() -> dev_close() in error handling code. And the driver
-calls vmxnet3_close() -> vmxnet3_quiesce_dev() -> vmxnet3_rq_cleanup_all()
--> vmxnet3_rq_cleanup(). In vmxnet3_rq_cleanup(), 
-rq->rx_ring[ring_idx].base is accessed, but this variable is NULL, causing
-a NULL pointer dereference.
+Any further thoughts?
 
-To fix this possible bug, an if statement is added to check whether 
-rq->rx_ring[0].base is NULL in vmxnet3_rq_cleanup() and exit early if so.
+Thanks
 
-The error log in our fault-injection testing is shown as follows:
-
-[   65.220135] BUG: kernel NULL pointer dereference, address: 0000000000000008
-...
-[   65.222633] RIP: 0010:vmxnet3_rq_cleanup_all+0x396/0x4e0 [vmxnet3]
-...
-[   65.227977] Call Trace:
-...
-[   65.228262]  vmxnet3_quiesce_dev+0x80f/0x8a0 [vmxnet3]
-[   65.228580]  vmxnet3_close+0x2c4/0x3f0 [vmxnet3]
-[   65.228866]  __dev_close_many+0x288/0x350
-[   65.229607]  dev_close_many+0xa4/0x480
-[   65.231124]  dev_close+0x138/0x230
-[   65.231933]  vmxnet3_force_close+0x1f0/0x240 [vmxnet3]
-[   65.232248]  vmxnet3_change_mtu+0x75d/0x920 [vmxnet3]
-...
-
-Fixes: d1a890fa37f27 ("net: VMware virtual Ethernet NIC driver: vmxnet3")
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Signed-off-by: Zixuan Fu <r33s3n6@gmail.com>
----
-v2:
-* Move check to the front and exit early if rq->rx_ring[0].base is NULL.
-  Thank Jakub Kicinski for helpful advice.
----
-v3:
-* Change targeting tree and add Fixes tag.
-  Thank Paolo Abeni for helpful advice.
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index d9d90baac72a..6b8f3aaa313f 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -1666,6 +1666,10 @@ vmxnet3_rq_cleanup(struct vmxnet3_rx_queue *rq,
- 	u32 i, ring_idx;
- 	struct Vmxnet3_RxDesc *rxd;
- 
-+	/* ring has already been cleaned up */
-+	if (!rq->rx_ring[0].base)
-+		return;
-+
- 	for (ring_idx = 0; ring_idx < 2; ring_idx++) {
- 		for (i = 0; i < rq->rx_ring[ring_idx].size; i++) {
- #ifdef __BIG_ENDIAN_BITFIELD
--- 
-2.25.1
-
+On Fri, Apr 29, 2022 at 9:26 PM Tinkerer One <tinkerer@zappem.net> wrote:
+>
+> On Fri, Apr 29, 2022 at 2:56 AM Luca Boccassi <bluca@debian.org> wrote:
+> >
+> > On Thu, 2022-04-28 at 20:17 -0700, Tinkerer One wrote:
+> > > Hi,
+> > >
+> > > This is expanded from https://github.com/shemminger/iproute2/issues/62
+> > > which I'm told is not the way to report issues and offer fixes to
+> > > iproute2 etc.
+> > >
+> > > [I'm not subscribed to the netdev list, so please cc: me if you need more info.]
+> > >
+> > > The original change that added the drop_cap() code was:
+> > >
+> > > https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=ba2fc55b99f8363c80ce36681bc1ec97690b66f5
+> > >
+> > > In an attempt to address some user feedback, the code was further
+> > > complicated by:
+> > >
+> > > https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=9b13cc98f5952f62b825461727c8170d37a4037d
+> > >
+> > > Another user issue was asked about here (a couple days ago):
+> > >
+> > > https://stackoverflow.com/questions/72015197/allow-non-root-user-of-container-to-execute-binaries-that-need-capabilities
+> > >
+> > > I looked into what was going on and found that lib/utils.c contains
+> > > some complicated code that seems to be trying to prevent Ambient
+> > > capabilities from being inherited except in specific cases
+> > > (ip/ip.c:main() calls drop_cap() except in the ip vrf exec case.). The
+> > > code clears all capabilities in order to prevent Ambient capabilities
+> > > from being available. The following change achieves suppression of
+> > > Ambient capabilities much more precisely. It also permits ip to not
+> > > need to be setuid-root or executed under sudo since it can now be
+> > > optionally empowered by file capabilities:
+> > >
+> > > diff --git a/lib/utils.c b/lib/utils.c
+> > > index 53d31006..681e4aee 100644
+> > > --- a/lib/utils.c
+> > > +++ b/lib/utils.c
+> > > @@ -1555,25 +1555,10 @@ void drop_cap(void)
+> > >  #ifdef HAVE_LIBCAP
+> > >         /* don't harmstring root/sudo */
+> > >         if (getuid() != 0 && geteuid() != 0) {
+> > > -               cap_t capabilities;
+> > > -               cap_value_t net_admin = CAP_NET_ADMIN;
+> > > -               cap_flag_t inheritable = CAP_INHERITABLE;
+> > > -               cap_flag_value_t is_set;
+> > > -
+> > > -               capabilities = cap_get_proc();
+> > > -               if (!capabilities)
+> > > -                       exit(EXIT_FAILURE);
+> > > -               if (cap_get_flag(capabilities, net_admin, inheritable,
+> > > -                   &is_set) != 0)
+> > > +               /* prevent any ambient capabilities from being inheritable */
+> > > +               if (cap_reset_ambient() != 0) {
+> > >                         exit(EXIT_FAILURE);
+> > > -               /* apps with ambient caps can fork and call ip */
+> > > -               if (is_set == CAP_CLEAR) {
+> > > -                       if (cap_clear(capabilities) != 0)
+> > > -                               exit(EXIT_FAILURE);
+> > > -                       if (cap_set_proc(capabilities) != 0)
+> > > -                               exit(EXIT_FAILURE);
+> > >                 }
+> > > -               cap_free(capabilities);
+> > >         }
+> > >  #endif
+> > >  }
+> >
+> > The current setup is necessary, as the commit message says:
+> >
+> > "Users have reported a regression due to ip now dropping capabilities
+> > unconditionally.
+> > zerotier-one VPN and VirtualBox use ambient capabilities in their
+> > binary and then fork out to ip to set routes and links, and this
+> > does not work anymore.
+> >
+> > As a workaround, do not drop caps if CAP_NET_ADMIN (the most common
+> > capability used by ip) is set with the INHERITABLE flag.
+> > Users that want ip vrf exec to work do not need to set INHERITABLE,
+> > which will then only set when the calling program had privileges to
+> > give itself the ambient capability."
+>
+> That doesn't explain why my simplification isn't an improvement.
+>
+> As I see it, there are 4 different ways 'ip' can get invoked that
+> could potentially relate to capabilities:
+>
+> - the uid != 0 && euid !=0 test means the code is perfectly happy to
+> run via sudo or if the 'ip' program is setuid-root. The setuid-root
+> way is the workaround used in the stackoverflow post I referenced. In
+> this case, if you try it with sudo, or via setuid-root you'll find the
+> 'ip' program runs without any Inheritable process capabilities at all.
+> I'm guessing this is why the code needs that if () { .. } protection
+> to not "harmstring root/sudo".
+>
+> - the drop_cap() function isn't even called in the case of 'ip vrf
+> exec' so in that one case ambient capabilities (or any other form of
+> capability) are not dropped and ambient capabilities can be passed on
+> to any invoked child.
+>
+> - should drop_cap() be called for a non-root user it can inherit
+> capabilities in one of two ways: via the ambient setup referred to in
+> that commit message (manually achievable by:
+>
+>     $ sudo capsh --user=`whoami` --inh=cap_net_admin --addamb=cap_net_admin --
+>     $ ./ip ...
+>     $ exit       # needed to escape capsh's ambient setup after the test
+>
+> ), or if the 'ip' program is given a file-inheritable capabilities and
+> the invoker of 'ip' has the corresponding process-inheritable
+> capabilities (like this:
+>
+>     $ sudo setcap cap_net_admin=ie ./ip
+>     $ sudo capsh --inh=cap_net_admin --user=`whoami` --
+>     $ ./ip ...
+>     $ exit      # needed to escape capsh's inheritable setup after the test
+>
+> ).
+>
+> All three of the above are preserved by my simplification because
+> cap_reset_ambient() doesn't drop permitted or effective capabilities
+> from the running program, ip.
+>
+> The fourth case, the one the upstream code doesn't support (which was
+> the case the stackoverflow poster cares about) is if the admin sets
+> permitted+effective file capabilities on their copy of 'ip' (inside
+> their docker container, or outside such a container for that matter).
+> In this case, the 'ip' program when run doesn't have any inheritable
+> capabilities, so in spite of the fact the 'ip' program starts running
+> with permitted and effective process capabilities (directly obtained
+> from those file capabilities) of CAP_NET_ADMIN, this particular code
+> inside drop_cap() causes the program to drop all capabilities and not
+> work.
+>
+> What the code I am attempting to simplify does is permits ip to be set
+> via this fourth method with:
+>
+>     $ sudo setcap cap_net_admin=ep ip
+>
+> and it will then, just like the setuid-root case, run with permitted
+> and effective capabilities - which are the "real capabilities" after
+> all.
+>
+> Dropping ambient capabilities with the cap_reset_ambient() call,
+> preserves the permitted and effective capabilities, but prevents any
+> process exec'd by 'ip' itself from passing any non-root real
+> capabilities on to such a child. I was thinking this was why that
+> capability dropping code was there at all. However, using this
+> simplification, "sudo setcap cap_net_admin=ep ip" can be used to make
+> ip work.
+>
+> Is it really the intention that this fourth capability setup is not be
+> supported?
+>
+> Thanks for helping me understand.
+>
+> >
+> > Besides, giving setuid to ip itself would be very dangerous, and should
+> > definitely not be supported. I am not aware of any distribution that
+> > does it. If there is any, it should be removed. Even for the vrf exec
+> > case, on Debian/Ubuntu I've set it up so that the caps are not
+> > configured by default, but require admin action at install time to
+> > enable, with a clear warning about the possible risks and tradeoffs.
+> >
+> > --
+> > Kind regards,
+> > Luca Boccassi
