@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3899526F78
-	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:15:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D490E526F4D
+	for <lists+netdev@lfdr.de>; Sat, 14 May 2022 09:15:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229475AbiENBDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 13 May 2022 21:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55720 "EHLO
+        id S229833AbiENCr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 13 May 2022 22:47:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbiENBC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 21:02:58 -0400
+        with ESMTP id S229781AbiENCr5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 13 May 2022 22:47:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8DA3EBA96
-        for <netdev@vger.kernel.org>; Fri, 13 May 2022 17:38:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 139584F6133;
+        Fri, 13 May 2022 17:49:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1F129B8324D
-        for <netdev@vger.kernel.org>; Sat, 14 May 2022 00:10:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D661AC34115;
-        Sat, 14 May 2022 00:10:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6728AB8324C;
+        Sat, 14 May 2022 00:20:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 258A4C34100;
+        Sat, 14 May 2022 00:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652487013;
-        bh=GDukE55xZSBDyz+lx1K1PGwEk3oc+CKe4624F5ANekQ=;
+        s=k20201202; t=1652487612;
+        bh=VbH6Eye7rDprrBdwdIeqL7tRQ78t85laQ8YSPwhSV1g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=op9P8bVf+M99zXj2q0eD8/SX/nPE0EzL/KZkQuSqg1sGdyX+nQrbjqnwde5RG18BZ
-         uzE9+GGi+sft0tLB1OsS6gSN9EQt1r2VuGKkR8Wylt7FE+Pj9hbf87toIo6bOTCS7k
-         phC9EHOEp4ZJKVfo5ZDjUlKh1/BxgIF1Eb5M5OwZf12XVa1kGuIL1mr2ORnwiYn/W+
-         zDuksmv25DeCHWvE6ew9+zagEMa5QsFbFiEaIhc6Jj5PE4nYmK1hkbOSCIJpF6KovD
-         ZfZKX36cxzdkoLt+Afq8tLk0BO3ck28aD+yIVRyQKY8ynzXgXkWZ9ouj94N1ma+ZjF
-         4ycUulHJAK4zQ==
+        b=I2XyV2+sHI8TA9wcJNxT+5veFxwxzCz6kr4ib/sqAPVTZSnlQJr7LoIULCQwDHawP
+         nZFFYmtBjh6jhN8d8a3gQFpEe0mu1WKaOLZjvCPsnt60zGNwt62C4yp5Yyb8Kpk8IR
+         tqvMOYUH6WNq1Eb97oaJ1SAGayzg9Sw2wRGVdaS6zLTU9y4wrpwXHuU5IR3NGF8SG5
+         ScflNvtOuq3Rw7o0q/Flwqf1kaxoPknVMMI+AFKOmT4u2qIdhNZXU6pL8kLLdZPDSb
+         hWufMt9mInN3DMIbNS5+uzge+JlZOAifYLgZSP2NQHBMU/FpGJkMdu1HbI0Z5My0Q3
+         NEl7oBPrCNWqQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C052DF03934;
-        Sat, 14 May 2022 00:10:13 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 0A830F03934;
+        Sat, 14 May 2022 00:20:12 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next] eth: sfc: remove remnants of the out-of-tree
- napi_weight module param
+Subject: Re: [PATCH v2] net: macb: Increment rx bd head after allocating skb and
+ buffer
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165248701378.14999.8863916795598626983.git-patchwork-notify@kernel.org>
-Date:   Sat, 14 May 2022 00:10:13 +0000
-References: <20220512205603.1536771-1-kuba@kernel.org>
-In-Reply-To: <20220512205603.1536771-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, ecree.xilinx@gmail.com,
-        habetsm.xilinx@gmail.com, hkallweit1@gmail.com, ihuguet@redhat.com
+Message-Id: <165248761203.19970.11604393560078071280.git-patchwork-notify@kernel.org>
+Date:   Sat, 14 May 2022 00:20:12 +0000
+References: <20220512171900.32593-1-harini.katakam@xilinx.com>
+In-Reply-To: <20220512171900.32593-1-harini.katakam@xilinx.com>
+To:     Harini Katakam <harini.katakam@xilinx.com>
+Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
+        claudiu.beznea@microchip.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
+        radhey.shyam.pandey@xilinx.com
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -60,25 +62,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This patch was applied to netdev/net-next.git (master)
+This patch was applied to netdev/net.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Thu, 12 May 2022 13:56:03 -0700 you wrote:
-> Remove napi_weight statics which are set to 64 and never modified,
-> remnants of the out-of-tree napi_weight module param.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: ecree.xilinx@gmail.com
-> CC: habetsm.xilinx@gmail.com
-> CC: hkallweit1@gmail.com
-> CC: ihuguet@redhat.com
+On Thu, 12 May 2022 22:49:00 +0530 you wrote:
+> In gem_rx_refill rx_prepared_head is incremented at the beginning of
+> the while loop preparing the skb and data buffers. If the skb or data
+> buffer allocation fails, this BD will be unusable BDs until the head
+> loops back to the same BD (and obviously buffer allocation succeeds).
+> In the unlikely event that there's a string of allocation failures,
+> there will be an equal number of unusable BDs and an inconsistent RX
+> BD chain. Hence increment the head at the end of the while loop to be
+> clean.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next] eth: sfc: remove remnants of the out-of-tree napi_weight module param
-    https://git.kernel.org/netdev/net-next/c/c28678162b33
+  - [v2] net: macb: Increment rx bd head after allocating skb and buffer
+    https://git.kernel.org/netdev/net/c/9500acc631db
 
 You are awesome, thank you!
 -- 
