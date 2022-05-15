@@ -2,116 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E97EC527636
-	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 09:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58200527682
+	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 11:08:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235909AbiEOHQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 03:16:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42464 "EHLO
+        id S236027AbiEOJIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 05:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235908AbiEOHQy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 03:16:54 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C7812D04
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 00:16:52 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id w4so16603191wrg.12
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 00:16:51 -0700 (PDT)
+        with ESMTP id S232473AbiEOJIT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 05:08:19 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35EED1A059
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 02:08:18 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id 125-20020a1c1983000000b003941f354c62so7074943wmz.0
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 02:08:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=Gt3/CziA2U5T74PRbPc3Ihm2smim4IbHRf3PjKzYKFI=;
-        b=a8ENmtQxA26cb5puth6IGElmry9ak+2SK0FKfmtln62H5zmomnqv2DupJBQxD2+Xi6
-         J3TsenEg5Lln/yxYLvlqN708WAVax0Jt9ekOuau47+6ShGmeqkphRyS+P2GPqyTKxq23
-         MCF7HmsWCsk912+bxsXDllCxds+1XigoyiUgN/9FM7xpVyLCt3kg0nZwcdSZPnDzbYR5
-         k9D/fFG6SkZA26vQPg8BUMShcm4DPTKBP+vYl488j++4KPJw5dRAyq7ziJvCGB7d2J6g
-         lDeh9CN/hiIOUzReeu8+eD3yuQZfS3sO0qTDbhAFyZI1BWyIqyJFVEN3Emu6CucVQf3W
-         eRrg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4UPlHLLMHUIw4lCwKqytRf70kgAzZVqEMbwMAZTs8QI=;
+        b=eDigYPY7ZRSUS7IKjWCTISNXs1Mys0oeAvOEd5+sNlqwpX/dS2dJLe2BoeGzOeZQkq
+         sUcSBmdYkVkjREcbeEEv72lz4QsNrMpGz9mOQhhXyrQpv0JIjo9XV+tqyVWAtFxDAFpI
+         fNlNnlVdMUgm5Mn3stDJyOZBPJ0u7gI8r6mXz/bkfOGeSSSNK1Tstp8bUrvWh4EZkZ4W
+         ID3H65U+HKbAcs/n1WlOg25czuxfIHpZtmV5poPiYVNi9iPigGWfvCe2vCcb+1NWTQAa
+         XZV0cRmMCXEyyTV7kYBQs/i91pSuUC+zwwJ8CHtdKulK4395d1OQn4p7KP/utLJpZvQJ
+         PhuQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=Gt3/CziA2U5T74PRbPc3Ihm2smim4IbHRf3PjKzYKFI=;
-        b=356sI6Qnl/zlinq3/kYQ9VAFViGMAIWmfME5Xbiw57380c8a2RD+T6f8nX+ZqjKPQJ
-         p9GVVCWuLd9XzVjaG/2TmIgIs+qkrgXp8z87nJOi/KCmD9mXBWJ1TGsTaT6vEW/0rvat
-         QZjrt0lwdj4IpyBleC7VvUCy26sM+f5FB7FtQ5oSSFkrzA3/ZS8rojxaTpNWUAFkoH2e
-         +Gm+QTPYYiaGVKEiyIxGSmiFEATsV4JltRIe+6BXeMiKTARLLFDn9ojqU58kI1TQ+GUd
-         BPU2ZIKIIrDi2fSHBzHdrBvR+7t9om6c3NSylTf1eJ9XOytmYtBNr8CDClVvoLJs1kUY
-         7wKA==
-X-Gm-Message-State: AOAM531HaZ31kQCQf9dbrzC2ZgRO2rtupdaE0B0Q9FJmictlJrUt9OWa
-        3uGBwsn5JW8y2MJbRJjmEgjJUw==
-X-Google-Smtp-Source: ABdhPJyILOQwapkNSyMwNx3FKkAfQloPogxeg9v1kzK9Uh3lN/cz95fwpG1HRZq6yVB9VvgWh1jc+Q==
-X-Received: by 2002:a5d:4b89:0:b0:20c:52e3:3073 with SMTP id b9-20020a5d4b89000000b0020c52e33073mr10230104wrt.140.1652599010133;
-        Sun, 15 May 2022 00:16:50 -0700 (PDT)
-Received: from [192.168.17.225] (bzq-82-81-222-124.cablep.bezeqint.net. [82.81.222.124])
-        by smtp.gmail.com with ESMTPSA id p15-20020a7bcdef000000b00394517e7d98sm7013642wmj.25.2022.05.15.00.16.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 May 2022 00:16:49 -0700 (PDT)
-Message-ID: <072a773c-2e42-1b82-9fe7-63c9a3dc9c7d@solid-run.com>
-Date:   Sun, 15 May 2022 10:16:47 +0300
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4UPlHLLMHUIw4lCwKqytRf70kgAzZVqEMbwMAZTs8QI=;
+        b=4lXCN4zneB96Lhgpmcx7W5oJqaiROu0ZDRsnojBTFPiax+LFbxOjQ4l68rSN0yaA1z
+         K1teCeECIHOqZAbJwEPnXZOuVKdvnJ0cpCC6T++DPSGQjeue8gpxHSPyLf1Ktcsmr6xC
+         Lor0CPZ+7AFTO9kmMEDy1XiDbuul3H3ih8AVQIJ9+NpjI4+bWuPc6mK1hom3PUPsBuFc
+         yZiekAdiUoz+wGaqXjX+BwNSLHf2W9p+hocmK6C0zz8JVsAKw5BXgpHxYTBLqKmYFDHV
+         F1pk0FPrR/+rIQrNYtqr+I9NcnhJs/+MIcuuCLu4sn4CMAldcLWXGH40gVFiavrdOqVq
+         skmQ==
+X-Gm-Message-State: AOAM533q84axuInWrNSNXh9sx+qiMrCgKNI7GdP9IH7lXHUFyjdfrxmO
+        9akjHZ4FK3LIVIgSLLP1FOCTZkC58rPPvEq6vL3/fA==
+X-Google-Smtp-Source: ABdhPJz9ONQSxakxMZXfP3VzMmYw2QEzxC32G/LK7q2wOgqvmlcLcPLMQv3BfxhBR402cK+g90Fl6xzpUljK0keHiyQ=
+X-Received: by 2002:a05:600c:1908:b0:394:867d:66c4 with SMTP id
+ j8-20020a05600c190800b00394867d66c4mr22018729wmq.152.1652605696605; Sun, 15
+ May 2022 02:08:16 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v4 1/3] dt-bindings: net: adin: document phy clock
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, Michael Walle <michael@walle.cc>
-Cc:     alexandru.ardelean@analog.com, alvaro.karsz@solid-run.com,
-        davem@davemloft.net, edumazet@google.com,
-        krzysztof.kozlowski+dt@linaro.org, michael.hennerich@analog.com,
-        netdev@vger.kernel.org, pabeni@redhat.com, robh+dt@kernel.org
-References: <20220510133928.6a0710dd@kernel.org>
- <20220511125855.3708961-1-michael@walle.cc>
- <20220511091136.34dade9b@kernel.org>
- <c457047dd2af8fc0db69d815db981d61@walle.cc>
- <20220511124241.7880ef52@kernel.org>
- <bfe71846f940be3c410ae987569ddfbf@walle.cc>
- <20220512154455.31515ead@kernel.org>
-From:   Josua Mayer <josua@solid-run.com>
-In-Reply-To: <20220512154455.31515ead@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220515023504.1823463-1-yosryahmed@google.com> <20220515023504.1823463-4-yosryahmed@google.com>
+In-Reply-To: <20220515023504.1823463-4-yosryahmed@google.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Sun, 15 May 2022 02:07:40 -0700
+Message-ID: <CAJD7tkaCEcabywFGyeiM9zggx2Tw-e=Qa2UArgxXN8j7vJR-fA@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next v2 3/7] libbpf: Add support for rstat flush progs
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-\o/
+On Sat, May 14, 2022 at 7:35 PM Yosry Ahmed <yosryahmed@google.com> wrote:
+>
+> Add support to attach RSTAT_FLUSH programs.
+>
+> Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> ---
+>  tools/lib/bpf/bpf.c      |  1 -
+>  tools/lib/bpf/libbpf.c   | 40 ++++++++++++++++++++++++++++++++++++++++
+>  tools/lib/bpf/libbpf.h   |  3 +++
+>  tools/lib/bpf/libbpf.map |  1 +
+>  4 files changed, 44 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/lib/bpf/bpf.c b/tools/lib/bpf/bpf.c
+> index 5660268e103f..9e3cb0d1eb99 100644
+> --- a/tools/lib/bpf/bpf.c
+> +++ b/tools/lib/bpf/bpf.c
+> @@ -870,7 +870,6 @@ int bpf_link_create(int prog_fd, int target_fd,
+>                 attr.link_create.tracing.cookie = OPTS_GET(opts, tracing.cookie, 0);
+>                 if (!OPTS_ZEROED(opts, tracing))
+>                         return libbpf_err(-EINVAL);
+> -               break;
 
-I am not sure I can follow your conversation here ...
+This is a mistake, a remnant of RFC V1. Will remove it in the next version.
 
-Am 13.05.22 um 01:44 schrieb Jakub Kicinski:
-> On Thu, 12 May 2022 23:20:18 +0200 Michael Walle wrote:
->>> It's pure speculation on my side. I don't even know if PHYs use
->>> the recovered clock to clock its output towards the MAC or that's
->>> a different clock domain.
->>>
->>> My concern is that people will start to use DT to configure SyncE which
->>> is entirely a runtime-controllable thing, and doesn't belong.
-Okay.
-However phy drivers do not seem to implement runtime control of those 
-clock output pins currently, so they are configured once in DT.
->>> Hence
->>> my preference to hide the recovered vs free-running detail if we can
->>> pick one that makes most sense for now.
-I am not a fan of hiding information. The clock configuration register 
-clearly supports this distinction.
-
-Is this a political stance to say users may not "accidentally" enable 
-SyncE by patching DT?
-If so we should print a warning message when someone selects it?
->>
->> I see. That makes sense, but then wouldn't it make more sense to pick
->> the (simple) free-running one? As for SyncE you'd need the recovered
->> clock.
-> 
-> Sounds good.
-
-Yep, it seems recovered clock is only for SyncE - and only if there is a 
-master clock on the network. Sadly however documentation is sparse and I 
-do not know if the adi phys would fall back to using their internal 
-clock, or just refuse to operate at all.
+>         default:
+>                 if (!OPTS_ZEROED(opts, flags))
+>                         return libbpf_err(-EINVAL);
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 4867a930628b..b7fc64ebf8dd 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -8998,6 +8998,7 @@ static int attach_trace(const struct bpf_program *prog, long cookie, struct bpf_
+>  static int attach_kprobe_multi(const struct bpf_program *prog, long cookie, struct bpf_link **link);
+>  static int attach_lsm(const struct bpf_program *prog, long cookie, struct bpf_link **link);
+>  static int attach_iter(const struct bpf_program *prog, long cookie, struct bpf_link **link);
+> +static int attach_rstat(const struct bpf_program *prog, long cookie, struct bpf_link **link);
+>
+>  static const struct bpf_sec_def section_defs[] = {
+>         SEC_DEF("socket",               SOCKET_FILTER, 0, SEC_NONE | SEC_SLOPPY_PFX),
+> @@ -9078,6 +9079,7 @@ static const struct bpf_sec_def section_defs[] = {
+>         SEC_DEF("cgroup/setsockopt",    CGROUP_SOCKOPT, BPF_CGROUP_SETSOCKOPT, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
+>         SEC_DEF("struct_ops+",          STRUCT_OPS, 0, SEC_NONE),
+>         SEC_DEF("sk_lookup",            SK_LOOKUP, BPF_SK_LOOKUP, SEC_ATTACHABLE | SEC_SLOPPY_PFX),
+> +       SEC_DEF("rstat/flush",          RSTAT_FLUSH, 0, SEC_NONE, attach_rstat),
+>  };
+>
+>  static size_t custom_sec_def_cnt;
+> @@ -11784,6 +11786,44 @@ static int attach_iter(const struct bpf_program *prog, long cookie, struct bpf_l
+>         return libbpf_get_error(*link);
+>  }
+>
+> +struct bpf_link *bpf_program__attach_rstat(const struct bpf_program *prog)
+> +{
+> +       struct bpf_link *link = NULL;
+> +       char errmsg[STRERR_BUFSIZE];
+> +       int err, prog_fd, link_fd;
+> +
+> +       prog_fd = bpf_program__fd(prog);
+> +       if (prog_fd < 0) {
+> +               pr_warn("prog '%s': can't attach before loaded\n", prog->name);
+> +               return libbpf_err_ptr(-EINVAL);
+> +       }
+> +
+> +       link = calloc(1, sizeof(*link));
+> +       if (!link)
+> +               return libbpf_err_ptr(-ENOMEM);
+> +       link->detach = &bpf_link__detach_fd;
+> +
+> +       /* rstat flushers are currently the only supported rstat programs */
+> +       link_fd = bpf_link_create(prog_fd, 0, BPF_RSTAT_FLUSH, NULL);
+> +       if (link_fd < 0) {
+> +               err = -errno;
+> +               pr_warn("prog '%s': failed to attach: %s\n",
+> +                       prog->name, libbpf_strerror_r(err, errmsg,
+> +                                                     sizeof(errmsg)));
+> +               free(link);
+> +               return libbpf_err_ptr(err);
+> +       }
+> +
+> +       link->fd = link_fd;
+> +       return link;
+> +}
+> +
+> +static int attach_rstat(const struct bpf_program *prog, long cookie, struct bpf_link **link)
+> +{
+> +       *link = bpf_program__attach_rstat(prog);
+> +       return libbpf_get_error(*link);
+> +}
+> +
+>  struct bpf_link *bpf_program__attach(const struct bpf_program *prog)
+>  {
+>         struct bpf_link *link = NULL;
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index 21984dcd6dbe..f8b6827d5550 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -662,6 +662,9 @@ LIBBPF_API struct bpf_link *
+>  bpf_program__attach_iter(const struct bpf_program *prog,
+>                          const struct bpf_iter_attach_opts *opts);
+>
+> +LIBBPF_API struct bpf_link *
+> +bpf_program__attach_rstat(const struct bpf_program *prog);
+> +
+>  /*
+>   * Libbpf allows callers to adjust BPF programs before being loaded
+>   * into kernel. One program in an object file can be transformed into
+> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> index 008da8db1d94..f945c6265cb5 100644
+> --- a/tools/lib/bpf/libbpf.map
+> +++ b/tools/lib/bpf/libbpf.map
+> @@ -449,6 +449,7 @@ LIBBPF_0.8.0 {
+>                 bpf_program__attach_kprobe_multi_opts;
+>                 bpf_program__attach_trace_opts;
+>                 bpf_program__attach_usdt;
+> +               bpf_program__attach_rstat;
+>                 bpf_program__set_insns;
+>                 libbpf_register_prog_handler;
+>                 libbpf_unregister_prog_handler;
+> --
+> 2.36.0.550.gb090851708-goog
+>
