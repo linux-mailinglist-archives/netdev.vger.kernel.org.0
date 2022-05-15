@@ -2,144 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BB5E5277B0
-	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 15:08:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61E1D5277D0
+	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 15:25:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236647AbiEONIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 09:08:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
+        id S236937AbiEONYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 09:24:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231362AbiEONIM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 09:08:12 -0400
-Received: from mailgw01.mediatek.com (unknown [60.244.123.138])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 472BB13F49;
-        Sun, 15 May 2022 06:08:07 -0700 (PDT)
-X-UUID: 7a5406948e69413292efc437d23df727-20220515
-X-CID-P-RULE: Release_Ham
-X-CID-O-INFO: VERSION:1.1.5,REQID:21012914-c164-469e-95ba-7f2c76832842,OB:0,LO
-        B:0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACT
-        ION:release,TS:51
-X-CID-INFO: VERSION:1.1.5,REQID:21012914-c164-469e-95ba-7f2c76832842,OB:0,LOB:
-        0,IP:0,URL:0,TC:0,Content:0,EDM:0,RT:0,SF:51,FILE:0,RULE:Release_Ham,ACTIO
-        N:release,TS:51
-X-CID-META: VersionHash:2a19b09,CLOUDID:34cf5ba7-eab7-4b74-a74d-5359964535a9,C
-        OID:ea623f10d9f5,Recheck:0,SF:28|17|19|48,TC:nil,Content:0,EDM:-3,IP:nil,U
-        RL:0,File:nil,QS:0,BEC:nil
-X-UUID: 7a5406948e69413292efc437d23df727-20220515
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 18405378; Sun, 15 May 2022 21:08:01 +0800
-Received: from mtkmbs11n2.mediatek.inc (172.21.101.187) by
- mtkmbs11n2.mediatek.inc (172.21.101.187) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.792.3;
- Sun, 15 May 2022 21:08:00 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkmbs11n2.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.2.792.3 via Frontend
- Transport; Sun, 15 May 2022 21:08:00 +0800
-Message-ID: <8366aa6336e268490eba5cf4aa7a8d5049185956.camel@mediatek.com>
-Subject: Re: [PATCH net-next 01/14] arm64: dts: mediatek: mt7986: introduce
- ethernet nodes
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "nbd@nbd.name" <nbd@nbd.name>,
-        "john@phrozen.org" <john@phrozen.org>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        Mark-MC Lee =?UTF-8?Q?=28=E6=9D=8E=E6=98=8E=E6=98=8C=29?= 
-        <Mark-MC.Lee@mediatek.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        Sam Shih =?UTF-8?Q?=28=E5=8F=B2=E7=A2=A9=E4=B8=89=29?= 
-        <Sam.Shih@mediatek.com>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>
-Date:   Sun, 15 May 2022 21:08:00 +0800
-In-Reply-To: <Yn97GqujwYlljkdH@lore-desk>
-References: <cover.1651839494.git.lorenzo@kernel.org>
-         <1d555fbbac820e9b580da3e8c0db30e7d003c4b6.1651839494.git.lorenzo@kernel.org>
-         <YnZ8o46pPdKMCbUF@lunn.ch> <YnlC3jvYarpV6BP1@lore-desk>
-         <YnlFBr1wgb/hlduy@lunn.ch> <Yn97GqujwYlljkdH@lore-desk>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        with ESMTP id S236868AbiEONYy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 09:24:54 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80397186C3
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 06:24:53 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id m20so24039291ejj.10
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 06:24:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=wX4BMjOypo5d/OsLI8Sw4NpZ7scgBV3K3bt0u2CQOQc=;
+        b=Nb9rKJ3APiCKBhBDroCBDjbB+pisJ/u380hoc/bf6HN0lS108z+ZtrXkGS4so8KcWq
+         zBdXkEiG7Qf5ZwubSVEmw8vUNqfqq9bXviDUWe6N4qwWItvpw0P74eKa9qFzCi87zWcB
+         i0UOcTpUT9SKPVHe0AlUxfCyWLa73fgPYDFbFbBaPbcqI0322oCRcyerKgCZYr01meZN
+         Yvi0iYfJOtXtv9/7nvGyleto5S6F7OCLPY0rutLfG863U5GDZIrZXHRC7QlpZp/w9bAJ
+         zKi4CI9VuwSIxoKsOfoyDiXtxL/dg0vsr+9ZWjUqOeZjF9rzmEJqn6MumL2GN8rTHHKL
+         UvqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=wX4BMjOypo5d/OsLI8Sw4NpZ7scgBV3K3bt0u2CQOQc=;
+        b=HNMzBqwpflzNN3u7jDt/7uRaNHLkyt4Xx+5WdYTD4hYKZV2rvmORIt8wM+nMo8RrCN
+         dt/PkkM7tkBv9SwKHTk7NQKc9nLosnI4IjavLz/VX2vnbz+d5YkaBbFtEFzb/Fleqwzn
+         +4WWFGrWlo8aW/pNmFmI35hTYmMb7XAyc6dieUmC2klleA3mD6XJsb3E5HLvjyPl0Ngs
+         HTFH7hLXVVFCUGxHiYtdHxvstIynyo1Q5193LKQe+YbquTzVcO3cebR445FZ8/LVwU+P
+         MR8bWFxof60KqyGl1hYl8ineAa/DAUb0SIlhsqhgwXWRnGJUqCR0h/dcl+WjqWKQ2fTV
+         ENsQ==
+X-Gm-Message-State: AOAM533WvauOPWQM3foJZCDM5RQs/B53azat36vianvobkslqVF1BjHV
+        y491B1aDclojG0eQQuwoFQJe2suDr4NWGuJY3Pc=
+X-Google-Smtp-Source: ABdhPJzJuh2xYSRUL2lIPsEzYuoUiG594NNXfudvZ+xPn+ahIEHF6DZrOiH2Pzd/PJ4vmBVwvvW8T7u/3uqyMW/GVUA=
+X-Received: by 2002:a17:906:58cf:b0:6f4:4fe8:6092 with SMTP id
+ e15-20020a17090658cf00b006f44fe86092mr11465312ejs.160.1652621092055; Sun, 15
+ May 2022 06:24:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        T_SCC_BODY_TEXT_LINE,T_SPF_TEMPERROR,UNPARSEABLE_RELAY autolearn=ham
-        autolearn_force=no version=3.4.6
+Received: by 2002:a17:906:4343:0:0:0:0 with HTTP; Sun, 15 May 2022 06:24:51
+ -0700 (PDT)
+From:   uago kabo <uagok2356@gmail.com>
+Date:   Sun, 15 May 2022 13:24:51 +0000
+Message-ID: <CAB8re48H0QmKj_DPo1cLa38aqhO7uyYayVoYtUPDvJg=9hJTKA@mail.gmail.com>
+Subject: GOOD MORNING !
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=7.3 required=5.0 tests=ADVANCE_FEE_2_NEW_MONEY,
+        BAYES_50,DEAR_FRIEND,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,
+        DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,LOTS_OF_MONEY,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:630 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5334]
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [uagok2356[at]gmail.com]
+        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [uagok2356[at]gmail.com]
+        *  2.6 DEAR_FRIEND BODY: Dear Friend? That's not very dear!
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  1.3 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+        *  2.0 ADVANCE_FEE_2_NEW_MONEY Advance Fee fraud and lots of money
+X-Spam-Level: *******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2022-05-14 at 17:49 +0800, Lorenzo Bianconi wrote:
-> > On Mon, May 09, 2022 at 06:35:42PM +0200, Lorenzo Bianconi wrote:
-> > > > > +&eth {
-> > > > > +	status = "okay";
-> > > > > +
-> > > > > +	gmac0: mac@0 {
-> > > > > +		compatible = "mediatek,eth-mac";
-> > > > > +		reg = <0>;
-> > > > > +		phy-mode = "2500base-x";
-> > > > > +
-> > > > > +		fixed-link {
-> > > > > +			speed = <2500>;
-> > > > > +			full-duplex;
-> > > > > +			pause;
-> > > > > +		};
-> > > > > +	};
-> > > > > +
-> > > > > +	gmac1: mac@1 {
-> > > > > +		compatible = "mediatek,eth-mac";
-> > > > > +		reg = <1>;
-> > > > > +		phy-mode = "2500base-x";
-> > > > > +
-> > > > > +		fixed-link {
-> > > > > +			speed = <2500>;
-> > > > > +			full-duplex;
-> > > > > +			pause;
-> > > > > +		};
-> > > > > +	};
-> > > > 
-> > > > Are both connected to the switch? It just seems unusual two
-> > > > have two
-> > > > fixed-link ports.
-> > > 
-> > > afaik mac design supports autoneg only in 10M/100M/1G mode and
-> > > mt7986 gmac1
-> > > is connected to a 2.5Gbps phy on mt7986-ref board.
-> > 
-> > The MAC does not normally perform autoneg, the PHY
-> > does. phylib/phylink then tells the MAC the result of the
-> > negotiation. If there is a SERDES/PCS involved, and it is
-> > performing
-> > the autoneg, phylink should get told about the result of the
-> > autoneg
-> > and it will tell the MAC the result.
-> > 
-> > So the gmac1 should just have phy-handle pointing to the PHY, not a
-> > fixed link.
-> > 
-> >       Andrew
-> 
-> adding Landen to the discussion to provide more hw details.
-> @Landen: any inputs on it?
-
-The 2.5Gbps phy on mt7986-ref board enables the HW "rate adaption"
-function which phy fixes 2.5Gbps to MAC as well. If the link rate of
-Ethernet phy side is less than 2.5G, the 2.5Gbps phy HW will send pause
-frame to MAC to adapt the real Tx rate. By the way, the 2.5Gbps phy
-advertise all rates to link partner in HW default setting.
+Dear Friend,
+My name is Mr.Kabo Uago, I have an inheritance fund of $13.5 Million
+Dollars for you, contact me  for more details.
 
 Regards,
-Landen
-> 
-> Regards,
-> Lorenzo
-
+Mr.Kabo Uago
