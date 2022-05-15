@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 699E9527ACF
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 00:56:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08DFF527AD5
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 01:04:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234031AbiEOW4X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 18:56:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59216 "EHLO
+        id S231549AbiEOXEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 19:04:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229737AbiEOW4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 18:56:22 -0400
+        with ESMTP id S229597AbiEOXEI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 19:04:08 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0BC9CDF6C
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:56:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 406233617B
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 16:04:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652655378;
+        s=mimecast20190719; t=1652655846;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=W8jihZqsmnF0KMPdwjssLfaNbHl50i9BdsMYBRqa0ZA=;
-        b=hB/qxl139MzOn5OK7nYoeC5Wiq1ldbqfuD7E74jpFi5IC3OXeyYhfnWyFYUdaBzqY3+OLr
-        wTW4dol8E4hlYHH8+Wa76nD8l/uSQKcaeu9v/IgGdNEoUztBlIEofxX3iUi/zygXGmbrDd
-        hZsqlAr9MYZk7zArULjGuPctq8ozIIE=
-Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
- [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=HED6sqrRMHt5M94sg8hRTn2o/jwlXD/g70Ops+h6TfM=;
+        b=NRtKCOlLOkrNVf1RmfSR6MDSvOY0PE4AY4T/vFbMG0bt8g8CJaLIiaXa86XNROKBGxQBa/
+        0kH72Z/tiASOUFWfSXVk/91oQGTjguox2Sf91NJNb9Isv05CHgGpBIZ272beWzj/nXcFo0
+        c5di/KYMFzXnaVVrl5yemu1X7PYY6BA=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-486--B7pRz6NN7-OpGH6HweqyA-1; Sun, 15 May 2022 18:56:17 -0400
-X-MC-Unique: -B7pRz6NN7-OpGH6HweqyA-1
-Received: by mail-qk1-f198.google.com with SMTP id 63-20020a370c42000000b006a063777620so10067379qkm.21
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:56:17 -0700 (PDT)
+ us-mta-554-cG2j2b_APSu6uSSRGI2kIg-1; Sun, 15 May 2022 19:04:05 -0400
+X-MC-Unique: cG2j2b_APSu6uSSRGI2kIg-1
+Received: by mail-qk1-f200.google.com with SMTP id j12-20020ae9c20c000000b0069e8ac6b244so10135446qkg.1
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 16:04:05 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=W8jihZqsmnF0KMPdwjssLfaNbHl50i9BdsMYBRqa0ZA=;
-        b=zqlZqkxvGIvQ7guPahjZc8ieIi1B7nFJjKkgGsOMvqkdfCOPPvSnTDJKblsMlkCVRq
-         gRU4nzzTPVkJFTYeEMqEMi13pRz4Eohi2c+/IfQb87NHVEJniHCxU+8slAq+Az9khbP/
-         F5+ibtGDbJo2fR7x/I+XD8waXGCwdJUuzPNHm6vt++67znTcsvudVy5x3ZwmRyLKNxXr
-         nAlEjjORniK9yj1dBoICCThhs6u0wNisKJXJZNh/g+Q6ULTfZbs6fa3hXnJnVOxkKJkd
-         qTReGWvv8/I6zuRKjO/OF/TS3ie+S6yk2DkWr2+5TDoYRfb60vhHBYN4/Jx7/kSCM/y5
-         oK1w==
-X-Gm-Message-State: AOAM532AVf6FSCyzqPWHAgEQrygsdeyLtyZapPo+4+sqRmXk0SIC4z2O
-        etFLRiZge+7Oyy44kS6E5oAzAUKwrdb7yaN8StYiCqdvhOPCAG8DixP33noPZrGUgFCz7AAQa96
-        SpMfwSF8QWJulSuGhTTqQu6vNGCuA7oDO
-X-Received: by 2002:a05:620a:4403:b0:6a0:5093:1742 with SMTP id v3-20020a05620a440300b006a050931742mr10521531qkp.691.1652655377058;
-        Sun, 15 May 2022 15:56:17 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzcmfziaShgyFbkoo5M2L5AciQaXrdHp6uz3PIqh90PF4gm8hy73Lf6yjPFlz1WN18rBr/Ia9rKQpxiF409ajA=
-X-Received: by 2002:a05:620a:4403:b0:6a0:5093:1742 with SMTP id
- v3-20020a05620a440300b006a050931742mr10521526qkp.691.1652655376867; Sun, 15
- May 2022 15:56:16 -0700 (PDT)
+        bh=HED6sqrRMHt5M94sg8hRTn2o/jwlXD/g70Ops+h6TfM=;
+        b=0ZahP9EhN2s1SEfu14w7w2TWD3pynzVYg6pBLuxieROCcsyo9ENyKHb/J5MGm3VrH1
+         D8j1B860o5In3zc3Fzk3sLsQc6ybfv1L3kUjWX73dWsjuBugBN6p6RyPkQlG1jI8yCI3
+         lve44dhaGBH/rLMEKeTAyyVkTOG2vDF+YJ56iBiesT5JMnkjcCQq6uS2z4pohvx2Li3X
+         spaulOly+sKDau9etkdqFgXnBuxC4jOvQHdeL7br2dp3EZO5TXam+areji1P2uAuupsS
+         dONKBoq+yaMBzj0fHy34b4oAzuG1hUeen0julwiyVuo5hDkO1uDRZxrENecsHTjqeTqW
+         p2DQ==
+X-Gm-Message-State: AOAM530PsTXg2+S/wzSZ3X72x28z8NdSsi6ugXK+5P8knSgEgjyn3HR2
+        UoL9vP6ojq6olUhYnJ5zeNaFcqgo91x5GK1zYERxn/Zn+lpOhWrCQ4JCt8WD0/Mx7FnWDFEm9oq
+        7u9MctRRRuPyG32rr0KFZjRmksFzPAB31
+X-Received: by 2002:a05:620a:919:b0:69f:e373:3de8 with SMTP id v25-20020a05620a091900b0069fe3733de8mr10431659qkv.27.1652655844638;
+        Sun, 15 May 2022 16:04:04 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxVzzoy/qyjeaBmM2f/mbn7p3QjZ3CLZ+xk+5lleqUjWBiKRiluPA00va3+zN49cME8YcJnOEtooTr3RySqlk4=
+X-Received: by 2002:a05:620a:919:b0:69f:e373:3de8 with SMTP id
+ v25-20020a05620a091900b0069fe3733de8mr10431642qkv.27.1652655844437; Sun, 15
+ May 2022 16:04:04 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
  <20220512143314.235604-10-miquel.raynal@bootlin.com> <CAK-6q+ipHdD=NJB2N7SHQ0TUvNpc0GQXZ7dWM9nDxqyqNgxdSA@mail.gmail.com>
 In-Reply-To: <CAK-6q+ipHdD=NJB2N7SHQ0TUvNpc0GQXZ7dWM9nDxqyqNgxdSA@mail.gmail.com>
 From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sun, 15 May 2022 18:56:05 -0400
-Message-ID: <CAK-6q+ivVCJOEF+MN-y64K1M-nf2ak0CUqjj0tiiyinaNCAE5w@mail.gmail.com>
+Date:   Sun, 15 May 2022 19:03:53 -0400
+Message-ID: <CAK-6q+i_T+FaK0tX6tF38VjyEfSzDi-QC85MTU2=4soepAag8g@mail.gmail.com>
 Subject: Re: [PATCH wpan-next v2 09/11] net: mac802154: Introduce a
  synchronous API for MLME commands
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
@@ -75,7 +75,7 @@ Cc:     Alexander Aring <alex.aring@gmail.com>,
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -135,16 +135,19 @@ On Sun, May 15, 2022 at 6:28 PM Alexander Aring <aahringo@redhat.com> wrote:
 >
 > I think we should make an ASSERT_RTNL() here, the lock needs to be
 > earlier than that over the whole MLME op. MLME can trigger more than
+
+not over the whole MLME_op, that's terrible to hold the rtnl lock so
+long... so I think this is fine that some netdev call will interfere
+with this transmission.
+So forget about the ASSERT_RTNL() here, it's fine (I hope).
+
 > one message, the whole sync_hold/release queue should be earlier than
 > that... in my opinion is it not right to allow other messages so far
 > an MLME op is going on? I am not sure what the standard says to this,
 > but I think it should be stopped the whole time? All those sequence
-> diagrams show only some specific frames, also remember that on the
-> receive side we drop all other frames if MLME op (e.g. scan) is going
-> on?
 
-Maybe some mlme_op_pre(), ... mlme_tx(), ..., mlme_tx(), ...,
-mlme_op_post() handling?
+Whereas the stop of the netdev queue makes sense for the whole mlme-op
+(in my opinion).
 
 - Alex
 
