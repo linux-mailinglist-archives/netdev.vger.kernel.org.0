@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 472B3527AAC
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 00:23:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 766C0527AB0
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 00:29:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235162AbiEOWXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 18:23:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56894 "EHLO
+        id S235563AbiEOW3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 18:29:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229824AbiEOWXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 18:23:19 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7A046E08B
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:23:18 -0700 (PDT)
+        with ESMTP id S229824AbiEOW3D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 18:29:03 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 401A5DF0C
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:29:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652653397;
+        s=mimecast20190719; t=1652653741;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=VyHLqP2a1cOGNPMyTkzdR2ELmMdeIuv3NZdOMZeRAr4=;
-        b=LNmQquRvFWgO/sgplE83N3s5c33R3Rld9Ul9HVJukNAW/sP2Fdxc70A5BZiFDUxHpZ2Quk
-        hH2U4p0gSU9PZ6hOcIZMcDNP4sZPuhgsQCWAEUKD6KF4TFVYTF+//zshkknJq+DOcq9A8X
-        PZIcXG5BQ82FxaAZlnr7ZgR3b4hFcQQ=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=rPiXGxvB043ZSjvpXVuJ8kp1cvd5Znu1YEXZQlc2cCg=;
+        b=JuqcKKzTJQkLlKmZqzajkvdTMcZ28yLpNqPYvKrBkP6Dw0nV5Z4tIsO5+MQNOEI67ZvyU/
+        RPMaT6W7uMcIht9bags69HS9YmrojZkwdlzMFbiOhGYrSNDgmfLLutA5j34UoRn3zHHV+4
+        72Q72w7d60w0ejAU5Y1GLrMcEKQAboY=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-78-m6DiDGsoMJyPUJGeC7Xq-w-1; Sun, 15 May 2022 18:23:16 -0400
-X-MC-Unique: m6DiDGsoMJyPUJGeC7Xq-w-1
-Received: by mail-qt1-f197.google.com with SMTP id d15-20020ac85d8f000000b002f3b3b7e0adso10323372qtx.20
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:23:16 -0700 (PDT)
+ us-mta-79-4hYBFCHWOQq5ooW2qSjEDg-1; Sun, 15 May 2022 18:29:00 -0400
+X-MC-Unique: 4hYBFCHWOQq5ooW2qSjEDg-1
+Received: by mail-qv1-f69.google.com with SMTP id ke27-20020a056214301b00b0045a82079370so10841076qvb.20
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:28:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VyHLqP2a1cOGNPMyTkzdR2ELmMdeIuv3NZdOMZeRAr4=;
-        b=ayYaQr4yc4HxTgX4EUW7xDT/uF0RkVdr11F/7P3XsWdJNtoL9F0hU2/9nrVxstMOKf
-         mIuBjU4tFXLj0ON/khu6m1tpEJnA/I2A2eVks54kncEFiSC+7ahdZG5yzWgoHcdvmPvz
-         QJCSS1xx+ADWvUMXdd/zNjax1fN2hWtMM7BeCx8AzMSr3bZC34FqrIWX1eo5rO9Xj1Q6
-         tn8xJx6HGZFnU6VpJax4A5QtmS/6p6q0p8pbPJCK8W5FeoEUPgg6vbnEXbdCrRI1pOfa
-         ckU45mBOtvgFPJdCht6F5E1pGXFHvauphbiV1efbchzuuG80eEfydab6C192wBEMS+/Y
-         yZIQ==
-X-Gm-Message-State: AOAM532zK3G5LDWNJwQpoDCtGHopWV0FbiTCNVZV/OdPukbWL/s2Z1wx
-        GIiBJzxLVkGf8ZB4awREjzdbR8gYadX9XV3oR+xoZaxRdfwPsT2JJJjeIF7GSTTSmJ+dCIAgFZE
-        Yy8i3amUFQHKY4nrgsZWp8zQCSiLW96s7
-X-Received: by 2002:a05:622a:46:b0:2f3:d16c:8053 with SMTP id y6-20020a05622a004600b002f3d16c8053mr13217553qtw.339.1652653395813;
-        Sun, 15 May 2022 15:23:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJw71sgEz9iEiQ02MD075uyDjyArqZqNGVBTkeUfu7Cd0pRe756stawtje40UndHaQMA5EyP8sSRy4PkoSCGxP8=
-X-Received: by 2002:a05:622a:46:b0:2f3:d16c:8053 with SMTP id
- y6-20020a05622a004600b002f3d16c8053mr13217534qtw.339.1652653395594; Sun, 15
- May 2022 15:23:15 -0700 (PDT)
+        bh=rPiXGxvB043ZSjvpXVuJ8kp1cvd5Znu1YEXZQlc2cCg=;
+        b=1mIjoJlRoZGNz9x0aQSXon+GhdJlY7hfG98SVnKvhJFfBeUwrCRiG9tmfN52drPQ5T
+         PBK1uLNya6uAwuYuMZOWPCsmIWwV40+ohz9FkBpcz/W1NiqqB8o4ludKx2J0oFrmye69
+         3yGsyqpJyjcDwTe4aucWlr8vwovjZVjd2+pgb0bezBA6PmeorpeqLzvhwzIy+ndJKAlR
+         oXF6VZx+gf5nu7NPHIuGFMqprQXPNuGi5MXObYa5bmW4T8UdKY4BgNVRct7h18qhdmtj
+         MEHNXrjHzgOj9wqAJTBVvJ/D5U5aNeop0MSLiKqEFQOTTb+3SK4pcpI69ZhOqdPWSxEO
+         mvgw==
+X-Gm-Message-State: AOAM531FOZwkYMtf9L1lP4r3cusAUYZhE2HVEOW++kEXMbjF4hIyJsfh
+        FB9bFBTCxai9pO8jQ3uh6CuK/XSLPw1F2KHvGgtbZFzA4Fks0DHEX1q6GRH2SgKIwA4HxBjzBAl
+        oX3Q4gWXdvZoVvwpkO1FDmZeFKdSgWz3N
+X-Received: by 2002:a05:622a:351:b0:2f3:d8e4:529f with SMTP id r17-20020a05622a035100b002f3d8e4529fmr13386688qtw.123.1652653739455;
+        Sun, 15 May 2022 15:28:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwzN1V1g6z450TKZD/3TQsykdXoozq5Y8cuGJSffdR7VbZUfKZvdKyuAuBdrLols3zzQRtslo34iuHJPIuEBos=
+X-Received: by 2002:a05:622a:351:b0:2f3:d8e4:529f with SMTP id
+ r17-20020a05622a035100b002f3d8e4529fmr13386676qtw.123.1652653739263; Sun, 15
+ May 2022 15:28:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220512143314.235604-1-miquel.raynal@bootlin.com> <20220512143314.235604-9-miquel.raynal@bootlin.com>
-In-Reply-To: <20220512143314.235604-9-miquel.raynal@bootlin.com>
+References: <20220512143314.235604-1-miquel.raynal@bootlin.com> <20220512143314.235604-10-miquel.raynal@bootlin.com>
+In-Reply-To: <20220512143314.235604-10-miquel.raynal@bootlin.com>
 From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sun, 15 May 2022 18:23:04 -0400
-Message-ID: <CAK-6q+iazXHZmf2vteXGEEpSXLLp9279g5JD2whBn-_FPL0piw@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v2 08/11] net: mac802154: Introduce a tx queue
- flushing mechanism
+Date:   Sun, 15 May 2022 18:28:48 -0400
+Message-ID: <CAK-6q+ipHdD=NJB2N7SHQ0TUvNpc0GQXZ7dWM9nDxqyqNgxdSA@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 09/11] net: mac802154: Introduce a
+ synchronous API for MLME commands
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -87,114 +87,56 @@ Hi,
 On Thu, May 12, 2022 at 10:34 AM Miquel Raynal
 <miquel.raynal@bootlin.com> wrote:
 >
-> Right now we are able to stop a queue but we have no indication if a
-> transmission is ongoing or not.
->
-> Thanks to recent additions, we can track the number of ongoing
-> transmissions so we know if the last transmission is over. Adding on top
-> of it an internal wait queue also allows to be woken up asynchronously
-> when this happens. If, beforehands, we marked the queue to be held and
-> stopped it, we end up flushing and stopping the tx queue.
->
-> Thanks to this feature, we will soon be able to introduce a synchronous
-> transmit API.
+> This is the slow path, we need to wait for each command to be processed
+> before continuing so let's introduce an helper which does the
+> transmission and blocks until it gets notified of its asynchronous
+> completion. This helper is going to be used when introducing scan
+> support.
 >
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  include/net/cfg802154.h      |  1 +
->  net/ieee802154/core.c        |  1 +
->  net/mac802154/cfg.c          |  2 +-
 >  net/mac802154/ieee802154_i.h |  1 +
->  net/mac802154/tx.c           | 26 ++++++++++++++++++++++++--
->  net/mac802154/util.c         |  6 ++++--
->  6 files changed, 32 insertions(+), 5 deletions(-)
+>  net/mac802154/tx.c           | 25 +++++++++++++++++++++++++
+>  2 files changed, 26 insertions(+)
 >
-> diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> index ad3f438e4583..8b6326aa2d42 100644
-> --- a/include/net/cfg802154.h
-> +++ b/include/net/cfg802154.h
-> @@ -218,6 +218,7 @@ struct wpan_phy {
->         struct mutex queue_lock;
->         atomic_t ongoing_txs;
->         atomic_t hold_txs;
-> +       wait_queue_head_t sync_txq;
->
->         char priv[] __aligned(NETDEV_ALIGN);
->  };
-> diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
-> index d81b7301e013..f13e3082d988 100644
-> --- a/net/ieee802154/core.c
-> +++ b/net/ieee802154/core.c
-> @@ -129,6 +129,7 @@ wpan_phy_new(const struct cfg802154_ops *ops, size_t priv_size)
->         wpan_phy_net_set(&rdev->wpan_phy, &init_net);
->
->         init_waitqueue_head(&rdev->dev_wait);
-> +       init_waitqueue_head(&rdev->wpan_phy.sync_txq);
->
->         mutex_init(&rdev->wpan_phy.queue_lock);
->
-> diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
-> index b51100fd9e3f..93df24f75572 100644
-> --- a/net/mac802154/cfg.c
-> +++ b/net/mac802154/cfg.c
-> @@ -46,7 +46,7 @@ static int ieee802154_suspend(struct wpan_phy *wpan_phy)
->         if (!local->open_count)
->                 goto suspend;
->
-> -       ieee802154_hold_queue(local);
-> +       ieee802154_sync_and_hold_queue(local);
->         synchronize_net();
->
->         /* stop hardware - this must stop RX */
 > diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
-> index e34db1d49ef4..a057827fc48a 100644
+> index a057827fc48a..f8b374810a11 100644
 > --- a/net/mac802154/ieee802154_i.h
 > +++ b/net/mac802154/ieee802154_i.h
-> @@ -124,6 +124,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
->
+> @@ -125,6 +125,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
 >  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
 >  void ieee802154_xmit_sync_worker(struct work_struct *work);
-> +int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
+>  int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
+> +int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb);
 >  netdev_tx_t
 >  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
 >  netdev_tx_t
 > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> index 607019b8f8ab..38f74b8b6740 100644
+> index 38f74b8b6740..ec8d872143ee 100644
 > --- a/net/mac802154/tx.c
 > +++ b/net/mac802154/tx.c
-> @@ -44,7 +44,8 @@ void ieee802154_xmit_sync_worker(struct work_struct *work)
->  err_tx:
->         /* Restart the netif queue on each sub_if_data object. */
->         ieee802154_release_queue(local);
-> -       atomic_dec(&local->phy->ongoing_txs);
-> +       if (!atomic_dec_and_test(&local->phy->ongoing_txs))
-> +               wake_up(&local->phy->sync_txq);
->         kfree_skb(skb);
->         netdev_dbg(dev, "transmission failed\n");
->  }
-> @@ -100,12 +101,33 @@ ieee802154_tx(struct ieee802154_local *local, struct sk_buff *skb)
->
->  err_wake_netif_queue:
->         ieee802154_release_queue(local);
-> -       atomic_dec(&local->phy->ongoing_txs);
-> +       if (!atomic_dec_and_test(&local->phy->ongoing_txs))
-> +               wake_up(&local->phy->sync_txq);
->  err_free_skb:
->         kfree_skb(skb);
->         return NETDEV_TX_OK;
+> @@ -128,6 +128,31 @@ int ieee802154_sync_and_hold_queue(struct ieee802154_local *local)
+>         return ieee802154_sync_queue(local);
 >  }
 >
-> +static int ieee802154_sync_queue(struct ieee802154_local *local)
+> +int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb)
 > +{
 > +       int ret;
 > +
-> +       ieee802154_hold_queue(local);
-> +       ieee802154_disable_queue(local);
-> +       wait_event(local->phy->sync_txq, !atomic_read(&local->phy->ongoing_txs));
-> +       ret = local->tx_result;
-> +       ieee802154_release_queue(local);
+> +       /* Avoid possible calls to ->ndo_stop() when we asynchronously perform
+> +        * MLME transmissions.
+> +        */
+> +       rtnl_lock();
 
-I am curious, why this extra hold, release here?
+I think we should make an ASSERT_RTNL() here, the lock needs to be
+earlier than that over the whole MLME op. MLME can trigger more than
+one message, the whole sync_hold/release queue should be earlier than
+that... in my opinion is it not right to allow other messages so far
+an MLME op is going on? I am not sure what the standard says to this,
+but I think it should be stopped the whole time? All those sequence
+diagrams show only some specific frames, also remember that on the
+receive side we drop all other frames if MLME op (e.g. scan) is going
+on?
 
 - Alex
 
