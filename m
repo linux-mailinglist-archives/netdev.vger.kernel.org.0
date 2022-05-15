@@ -2,243 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 28BDB527965
-	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 21:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23B815279AE
+	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 21:59:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238074AbiEOTRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 15:17:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48316 "EHLO
+        id S237385AbiEOT7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 15:59:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229587AbiEOTRS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 15:17:18 -0400
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AC311C31;
-        Sun, 15 May 2022 12:17:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652642231;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=I0+5ZSWUjQAWtF8svedENW4Xdn6ychKP+GBcBBTY7oI=;
-    b=Y10uMY+mZUS9DkBdjioTHnY9+6MLxLxKZkRU0uVZi1xkaugjNWDK1C1sNSmwkwstmO
-    S9I4aEElqFxwxVqN6BJEqOxbXTO12inYGhpUAO306oPEVLVtgEbYiCgG6yzVhjWrt+IU
-    X9YVLZGUimSbImwp8U9NGZAC/nVrrERZ3DBQX4+8/rzAdgLZk96Znj4T3Lez/bPU8+y8
-    ZxQkGG4bjNPwJ7nyHiltm7XBoKM+H8eiFBLsSPoU2PNZms5Z1jCUqoP2LtSrMXYmzbQ0
-    vYw4bWwuKQuYgjfNbPm7vE2GXvfrSrZAIuAyc1wop+5l+CODYnJYOGLuA0cBH9G5tjsi
-    Xp4g==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOug2krLFRKxw=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b04::b82]
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id R0691fy4FJHA713
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Sun, 15 May 2022 21:17:10 +0200 (CEST)
-Message-ID: <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
-Date:   Sun, 15 May 2022 21:17:04 +0200
+        with ESMTP id S229623AbiEOT7p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 15:59:45 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7985938B3
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 12:59:44 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id h29so22675630lfj.2
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 12:59:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
+        b=V4IkW0742iDDCblH6TKQehjLzwt2/mXIWc67I+JadRb573v995Cs0eXBZF2QtmfbqC
+         GJh8O9Z2pcNlBaEjuKNyweCUk3TsV5xxO+t39JP4fY8+42SenZH4KM4aOv25h9iIDOfr
+         I4A77NMpZk0lITscJc1zu2UpPgJcrdPIoNDM+MuwLb3G7zkEeQoPKQOyzfn8Mzc4HUSl
+         H6My8jXIe692cAg3pGkGc1CbNYAWna9Apa9PsjcWmSAu+mbRPNQd0Z9qGGqHVsr6SMqd
+         hy5VpubJKmzksHHbaJqTpqA2mZxL834i2xZycq11DajBu8QD8dzInf/Trul+J9LPo4cd
+         ltOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
+        b=PyLH1XRBTpuJTMsscoyL3QT30JXtqq3zt38v96t3044uMtDYiAIGKA2H8BRo8KDudz
+         YNK9bnLNDTxTQgl0+bgFS3wpH4TxYdaZVz2w2bWjoNu9Ix53gl2PEVrVoImrrtnTLdvM
+         ZfIMCKHiTIfyyqGcOkmZm5RMHUl/DmA04iFvv3t+1EoZUSYVVnVqFMmVoARW27R04JZy
+         Naf+bb91iuWY7Z5Z+bPYrY/l4CHaGHEnUsacIWoDj+gJXObJHL8USxZMK3UgCTbjfLUW
+         Gh8iBS5TaVcAgkn7FRAfEXWEakBV3xVTqizau3RYOT+1ApKaThCY0LE49hBD9I2eAeRp
+         80HQ==
+X-Gm-Message-State: AOAM531ABHgx9v4YkG3FwN826Frg99CmhjTpK8Htu5E9eH+/HzBAiQdb
+        5+bJHQUquLjRr02OQ9mvvKhTnjX3EK1CXTywRUk=
+X-Google-Smtp-Source: ABdhPJw3JaKLceTz2X3nXibHZwP0RpP9oiofC4uv6HCaLBwZUSPM6RS8bIymRQ8D7yZ34A4RVOU9IicFASGIH/QY51Y=
+X-Received: by 2002:a19:7114:0:b0:473:e3f5:c7ba with SMTP id
+ m20-20020a197114000000b00473e3f5c7bamr10831793lfc.9.1652644782614; Sun, 15
+ May 2022 12:59:42 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-Content-Language: en-US
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>, netdev@vger.kernel.org
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.7 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Received: by 2002:ac2:44da:0:0:0:0:0 with HTTP; Sun, 15 May 2022 12:59:41
+ -0700 (PDT)
+Reply-To: dravasmith27@gmail.com
+From:   Dr Ava Smith <raqsacrx@gmail.com>
+Date:   Sun, 15 May 2022 12:59:41 -0700
+Message-ID: <CAP7=Wk4kmnOaO6fLs8afE8OOZ9XqRO7PhrieSfazjL3T3LC6KA@mail.gmail.com>
+Subject: GREETINGS FROM DR AVA SMITH
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
         autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:136 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4999]
+        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [dravasmith27[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [raqsacrx[at]gmail.com]
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.4 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vincent,
-
-On 14.05.22 16:16, Vincent Mailhol wrote:
-> The functions can_dropped_invalid_skb() and can_skb_headroom_valid()
-> grew a lot over the years to a point which it does not make much sense
-> to have them defined as static inline in header files. Move those two
-> functions to the .c counterpart of skb.h.
-> 
-> can_skb_headroom_valid() only caller being can_dropped_invalid_skb(),
-> the declaration is removed from the header. Only
-> can_dropped_invalid_skb() gets its symbol exported.
-
-I can see your point but the need for can-dev was always given for 
-hardware specific stuff like bitrates, TDC, transceivers, whatever.
-
-As there would be more things in slcan (e.g. dev_alloc_skb() could be 
-unified with alloc_can_skb()) - would it probably make sense to 
-introduce a new can-skb module that could be used by all CAN 
-virtual/software interfaces?
-
-Or some other split-up ... any idea?
-
-Best regards,
-Oliver
-
-> 
-> While doing so, do a small cleanup: add brackets around the else block
-> in can_dropped_invalid_skb().
-> 
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> ---
->   drivers/net/can/dev/skb.c | 58 ++++++++++++++++++++++++++++++++++++++
->   include/linux/can/skb.h   | 59 +--------------------------------------
->   2 files changed, 59 insertions(+), 58 deletions(-)
-> 
-> diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
-> index 61660248c69e..8b1991130de5 100644
-> --- a/drivers/net/can/dev/skb.c
-> +++ b/drivers/net/can/dev/skb.c
-> @@ -252,3 +252,61 @@ struct sk_buff *alloc_can_err_skb(struct net_device *dev, struct can_frame **cf)
->   	return skb;
->   }
->   EXPORT_SYMBOL_GPL(alloc_can_err_skb);
-> +
-> +/* Check for outgoing skbs that have not been created by the CAN subsystem */
-> +static bool can_skb_headroom_valid(struct net_device *dev, struct sk_buff *skb)
-> +{
-> +	/* af_packet creates a headroom of HH_DATA_MOD bytes which is fine */
-> +	if (WARN_ON_ONCE(skb_headroom(skb) < sizeof(struct can_skb_priv)))
-> +		return false;
-> +
-> +	/* af_packet does not apply CAN skb specific settings */
-> +	if (skb->ip_summed == CHECKSUM_NONE) {
-> +		/* init headroom */
-> +		can_skb_prv(skb)->ifindex = dev->ifindex;
-> +		can_skb_prv(skb)->skbcnt = 0;
-> +
-> +		skb->ip_summed = CHECKSUM_UNNECESSARY;
-> +
-> +		/* perform proper loopback on capable devices */
-> +		if (dev->flags & IFF_ECHO)
-> +			skb->pkt_type = PACKET_LOOPBACK;
-> +		else
-> +			skb->pkt_type = PACKET_HOST;
-> +
-> +		skb_reset_mac_header(skb);
-> +		skb_reset_network_header(skb);
-> +		skb_reset_transport_header(skb);
-> +	}
-> +
-> +	return true;
-> +}
-> +
-> +/* Drop a given socketbuffer if it does not contain a valid CAN frame. */
-> +bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb)
-> +{
-> +	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
-> +
-> +	if (skb->protocol == htons(ETH_P_CAN)) {
-> +		if (unlikely(skb->len != CAN_MTU ||
-> +			     cfd->len > CAN_MAX_DLEN))
-> +			goto inval_skb;
-> +	} else if (skb->protocol == htons(ETH_P_CANFD)) {
-> +		if (unlikely(skb->len != CANFD_MTU ||
-> +			     cfd->len > CANFD_MAX_DLEN))
-> +			goto inval_skb;
-> +	} else {
-> +		goto inval_skb;
-> +	}
-> +
-> +	if (!can_skb_headroom_valid(dev, skb))
-> +		goto inval_skb;
-> +
-> +	return false;
-> +
-> +inval_skb:
-> +	kfree_skb(skb);
-> +	dev->stats.tx_dropped++;
-> +	return true;
-> +}
-> +EXPORT_SYMBOL_GPL(can_dropped_invalid_skb);
-> diff --git a/include/linux/can/skb.h b/include/linux/can/skb.h
-> index fdb22b00674a..182749e858b3 100644
-> --- a/include/linux/can/skb.h
-> +++ b/include/linux/can/skb.h
-> @@ -31,6 +31,7 @@ struct sk_buff *alloc_canfd_skb(struct net_device *dev,
->   				struct canfd_frame **cfd);
->   struct sk_buff *alloc_can_err_skb(struct net_device *dev,
->   				  struct can_frame **cf);
-> +bool can_dropped_invalid_skb(struct net_device *dev, struct sk_buff *skb);
->   
->   /*
->    * The struct can_skb_priv is used to transport additional information along
-> @@ -96,64 +97,6 @@ static inline struct sk_buff *can_create_echo_skb(struct sk_buff *skb)
->   	return nskb;
->   }
->   
-> -/* Check for outgoing skbs that have not been created by the CAN subsystem */
-> -static inline bool can_skb_headroom_valid(struct net_device *dev,
-> -					  struct sk_buff *skb)
-> -{
-> -	/* af_packet creates a headroom of HH_DATA_MOD bytes which is fine */
-> -	if (WARN_ON_ONCE(skb_headroom(skb) < sizeof(struct can_skb_priv)))
-> -		return false;
-> -
-> -	/* af_packet does not apply CAN skb specific settings */
-> -	if (skb->ip_summed == CHECKSUM_NONE) {
-> -		/* init headroom */
-> -		can_skb_prv(skb)->ifindex = dev->ifindex;
-> -		can_skb_prv(skb)->skbcnt = 0;
-> -
-> -		skb->ip_summed = CHECKSUM_UNNECESSARY;
-> -
-> -		/* perform proper loopback on capable devices */
-> -		if (dev->flags & IFF_ECHO)
-> -			skb->pkt_type = PACKET_LOOPBACK;
-> -		else
-> -			skb->pkt_type = PACKET_HOST;
-> -
-> -		skb_reset_mac_header(skb);
-> -		skb_reset_network_header(skb);
-> -		skb_reset_transport_header(skb);
-> -	}
-> -
-> -	return true;
-> -}
-> -
-> -/* Drop a given socketbuffer if it does not contain a valid CAN frame. */
-> -static inline bool can_dropped_invalid_skb(struct net_device *dev,
-> -					  struct sk_buff *skb)
-> -{
-> -	const struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
-> -
-> -	if (skb->protocol == htons(ETH_P_CAN)) {
-> -		if (unlikely(skb->len != CAN_MTU ||
-> -			     cfd->len > CAN_MAX_DLEN))
-> -			goto inval_skb;
-> -	} else if (skb->protocol == htons(ETH_P_CANFD)) {
-> -		if (unlikely(skb->len != CANFD_MTU ||
-> -			     cfd->len > CANFD_MAX_DLEN))
-> -			goto inval_skb;
-> -	} else
-> -		goto inval_skb;
-> -
-> -	if (!can_skb_headroom_valid(dev, skb))
-> -		goto inval_skb;
-> -
-> -	return false;
-> -
-> -inval_skb:
-> -	kfree_skb(skb);
-> -	dev->stats.tx_dropped++;
-> -	return true;
-> -}
-> -
->   static inline bool can_is_canfd_skb(const struct sk_buff *skb)
->   {
->   	/* the CAN specific type of skb is identified by its data length */
+-- 
+Hello Dear,
+how are you today?hope you are fine
+My name is Dr Ava Smith ,Am an English and French nationalities.
+I will give you pictures and more details about me as soon as i hear from you
+Thanks
+Ava
