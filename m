@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D6A1527AB3
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 00:30:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B386527AB5
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 00:30:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235877AbiEOWaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 18:30:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42046 "EHLO
+        id S236398AbiEOWao (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 18:30:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235596AbiEOWac (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 18:30:32 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CA41EDF14
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:30:28 -0700 (PDT)
+        with ESMTP id S235663AbiEOWan (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 18:30:43 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 633F6E08
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:30:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652653827;
+        s=mimecast20190719; t=1652653840;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=dNOJjfT5TRUPaCz6oz9ahXU+hrVa4PXoiSsuweG0pE0=;
-        b=ah7gyAn1FWii3tC5FLhjDRGcRpjHQoUGQoEgI4ikJvo44c9YCQ5mk7Nx6ygwEAnr8DeZ7U
-        GNKgyrNUux6bWsiHRaCVoDNINXRL1CbIL7yuWub6RDixbF0HVQUq6owpvWc5atznN7tkm0
-        potQToFUpvCaiOI6cocK9aLTqtgnZrA=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Z2afwjIDkeUQKVDWAoCYxsLx7BdV4+9UcZrmq3nNKUg=;
+        b=Jfj2bFW4NdfV8TvzMKphfoh0k2zwZuGNejcR/swCIooNOv+I6vqI3CWnOtnRIuWjapL8TK
+        paljanxWakx+XNVRGe8tVCsE/ara7KfoMfuNbixYTEExT3CAU6/dmTI3qx31fuPo33SnYX
+        xQxXaPTMKaElitGzs7sYWp+T1WbqSe0=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-454-skztCsafNM2w02LC6bN5CA-1; Sun, 15 May 2022 18:30:26 -0400
-X-MC-Unique: skztCsafNM2w02LC6bN5CA-1
-Received: by mail-qt1-f199.google.com with SMTP id br6-20020a05622a1e0600b002f3d470aa4dso10328351qtb.21
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:30:26 -0700 (PDT)
+ us-mta-447-GWhC8iESPs6vg4mBnUQKUQ-1; Sun, 15 May 2022 18:30:39 -0400
+X-MC-Unique: GWhC8iESPs6vg4mBnUQKUQ-1
+Received: by mail-qv1-f70.google.com with SMTP id w6-20020a05621404a600b00461c740f357so1833431qvz.6
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 15:30:39 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=dNOJjfT5TRUPaCz6oz9ahXU+hrVa4PXoiSsuweG0pE0=;
-        b=E4u+gGdrsL0/3EsmMub2ILoq+WjFNBumxQrFE48i/eiH3HI3U8BHFn0BT/mlXoZ0F6
-         rYRQNKIQU7oU4u4W1HsEqRQi0ENhuvgzM+jvvqQHDvnDGg82XG7Yk61dElYvoghHwLth
-         n7czhJ0lQN+FTf8jPhpShAerWWHYBGtzG+SlBu6bFaVrb5qOk8Z5mv3zA+SU7S9t7K0k
-         gFdt8aqkNbsMM3BbGbTVXe6LRlUddvFFLfMR/86Fr7ng2tKNFxhOHGyI5eh2aWLGWh3/
-         nZS8aXKfsAesJtd0crQBnhz2Q0bxmXHRZOf4yIaxTQTUNPoPZ/1HNjbZP8dWFpa4+O18
-         oC8w==
-X-Gm-Message-State: AOAM530GTU03RWAbTZjcCm+i5JRu9RzD+fVQjgi0vARCfMibNgCw88xl
-        kwUwCRYHfM+kNGxZdoz9/CwGYrAvZvUndq48ouvfh3DVV+CKa9WRd9BRXfnUYTZeEEPJdRAh6rr
-        v9HonogpIGo0uE97XfP3s6ZECDARC+csA
-X-Received: by 2002:a05:6214:f64:b0:45b:955:84a5 with SMTP id iy4-20020a0562140f6400b0045b095584a5mr13077737qvb.2.1652653826459;
-        Sun, 15 May 2022 15:30:26 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwurA33+UVORZOkm63/xFqkRTjb6WYNLouBoePnslHeEpYr8sSC8jRCKvQufsm2AW1iz+0NDXTQ8L8LOK5VxnQ=
-X-Received: by 2002:a05:6214:f64:b0:45b:955:84a5 with SMTP id
- iy4-20020a0562140f6400b0045b095584a5mr13077729qvb.2.1652653826273; Sun, 15
- May 2022 15:30:26 -0700 (PDT)
+        bh=Z2afwjIDkeUQKVDWAoCYxsLx7BdV4+9UcZrmq3nNKUg=;
+        b=laM4NebIylbofYfr9F0oAttEodrDuQHVyNTAFsW5HK/F2XUyzyLBaVdpqJIntgR5sf
+         gF7rKgOKFP9AxQt90xBYzdecgaHG2qQYUqGB8uEXEl6QbJ9x+Rt3Cw2bsmpfeSRt2fAJ
+         dCpd90gegYUojls6XOwKy0Jdlv234ibvjON1OOisPr4pzhSgMpoNJp0R6q68Gg1N157w
+         IQTUNOmO4Up3Km5/994j6LAUNvkIH5wrCYHGOeR+p2GJziqzk1asOSs9OMltbzTWqCHU
+         E0krYgTD0xlaHWQh3uwbaFY7sbAPcTK56reOXXqWnP0PnUiaj8NaqZnhLhCV7Mr0gcDX
+         ULTg==
+X-Gm-Message-State: AOAM532z2Xom4Xsqro5EUEUP6Z99164V3GO5wgYK7ZaGt2XTd8vpzFMK
+        YKTmvzlPI4VrGaXBp3BkujpBMadEAlSoQcy/ixihZ3kR59X1r8vTNgr9qIg2tTHLeLL65tSz1ER
+        U3nC0J2bzXPQeU00JPfB5qUWZ3YE170ef
+X-Received: by 2002:ac8:5a8d:0:b0:2f3:e201:33ab with SMTP id c13-20020ac85a8d000000b002f3e20133abmr13155291qtc.470.1652653838942;
+        Sun, 15 May 2022 15:30:38 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxxFsibATT1VNZCLVowjtCcxtN44a/jk9k8zqDWQ8pDqnfc9UMiHUpXkyZ5g3FVLv/PCjl+bguwIFYDuIu50b0=
+X-Received: by 2002:ac8:5a8d:0:b0:2f3:e201:33ab with SMTP id
+ c13-20020ac85a8d000000b002f3e20133abmr13155285qtc.470.1652653838785; Sun, 15
+ May 2022 15:30:38 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220512143314.235604-1-miquel.raynal@bootlin.com> <20220512143314.235604-11-miquel.raynal@bootlin.com>
-In-Reply-To: <20220512143314.235604-11-miquel.raynal@bootlin.com>
+References: <20220512143314.235604-1-miquel.raynal@bootlin.com> <20220512143314.235604-12-miquel.raynal@bootlin.com>
+In-Reply-To: <20220512143314.235604-12-miquel.raynal@bootlin.com>
 From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sun, 15 May 2022 18:30:15 -0400
-Message-ID: <CAK-6q+jYb7A2RzG3u7PJYKZU9D5A=vben-Wnu-3EsUU-rqGT2Q@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v2 10/11] net: mac802154: Add a warning in the
- hot path
+Date:   Sun, 15 May 2022 18:30:28 -0400
+Message-ID: <CAK-6q+iuB4kFOP7RwwaFQ9AbQTijrmXBzDis7wXo2Pat=cW6kA@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 11/11] net: mac802154: Add a warning in the
+ slow path
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Alexander Aring <alex.aring@gmail.com>,
         Stefan Schmidt <stefan@datenfreihafen.org>,
@@ -87,33 +87,42 @@ Hi,
 On Thu, May 12, 2022 at 10:34 AM Miquel Raynal
 <miquel.raynal@bootlin.com> wrote:
 >
-> We should never start a transmission after the queue has been stopped.
+> In order to be able to detect possible conflicts between the net
+> interface core and the ieee802154 core, let's add a warning in the slow
+> path: we want to be sure that whenever we start an asynchronous MLME
+> transmission (which can be fully asynchronous) the net core somehow
+> agrees that this transmission is possible, ie. the device was not
+> stopped. Warning in this case would allow us to track down more easily
+> possible issues with the MLME logic if we ever get reports.
 >
-> But because it might work we don't kill the function here but rather
-> warn loudly the user that something is wrong.
->
-> Set an atomic when the queue will remain stopped. Reset this atomic when
-> the queue actually gets restarded. Just check this atomic to know if the
-> transmission is legitimate, warn if it is not.
+> Unlike in the hot path, such a situation cannot be handled.
 >
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  include/net/cfg802154.h |  1 +
->  net/mac802154/tx.c      | 16 +++++++++++++++-
->  net/mac802154/util.c    |  1 +
->  3 files changed, 17 insertions(+), 1 deletion(-)
+>  net/mac802154/tx.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
 >
-> diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> index 8b6326aa2d42..a1370e87233e 100644
-> --- a/include/net/cfg802154.h
-> +++ b/include/net/cfg802154.h
-> @@ -218,6 +218,7 @@ struct wpan_phy {
->         struct mutex queue_lock;
->         atomic_t ongoing_txs;
->         atomic_t hold_txs;
-> +       atomic_t queue_stopped;
+> diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> index a3c9f194c025..d61b076239c3 100644
+> --- a/net/mac802154/tx.c
+> +++ b/net/mac802154/tx.c
+> @@ -132,6 +132,25 @@ int ieee802154_sync_and_hold_queue(struct ieee802154_local *local)
+>         return ret;
+>  }
+>
+> +static bool ieee802154_netif_is_down(struct ieee802154_local *local)
+> +{
+> +       struct ieee802154_sub_if_data *sdata;
+> +       bool is_down = false;
+> +
+> +       rcu_read_lock();
+> +       list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+> +               if (!sdata->dev)
+> +                       continue;
+> +
+> +               is_down = !(sdata->dev->flags & IFF_UP);
 
-Maybe some test_bit()/set_bit() is better there?
+Is there not a helper for this flag?
 
 - Alex
 
