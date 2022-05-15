@@ -2,99 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 23B815279AE
-	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 21:59:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4A7E5279ED
+	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 22:37:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237385AbiEOT7q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 15:59:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42370 "EHLO
+        id S238625AbiEOUhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 16:37:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229623AbiEOT7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 15:59:45 -0400
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7985938B3
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 12:59:44 -0700 (PDT)
-Received: by mail-lf1-x136.google.com with SMTP id h29so22675630lfj.2
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 12:59:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
-        b=V4IkW0742iDDCblH6TKQehjLzwt2/mXIWc67I+JadRb573v995Cs0eXBZF2QtmfbqC
-         GJh8O9Z2pcNlBaEjuKNyweCUk3TsV5xxO+t39JP4fY8+42SenZH4KM4aOv25h9iIDOfr
-         I4A77NMpZk0lITscJc1zu2UpPgJcrdPIoNDM+MuwLb3G7zkEeQoPKQOyzfn8Mzc4HUSl
-         H6My8jXIe692cAg3pGkGc1CbNYAWna9Apa9PsjcWmSAu+mbRPNQd0Z9qGGqHVsr6SMqd
-         hy5VpubJKmzksHHbaJqTpqA2mZxL834i2xZycq11DajBu8QD8dzInf/Trul+J9LPo4cd
-         ltOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=/rL+TycpMQLfB5P4Zn9xgGfUWg8yPCNTwrE46ZNldMM=;
-        b=PyLH1XRBTpuJTMsscoyL3QT30JXtqq3zt38v96t3044uMtDYiAIGKA2H8BRo8KDudz
-         YNK9bnLNDTxTQgl0+bgFS3wpH4TxYdaZVz2w2bWjoNu9Ix53gl2PEVrVoImrrtnTLdvM
-         ZfIMCKHiTIfyyqGcOkmZm5RMHUl/DmA04iFvv3t+1EoZUSYVVnVqFMmVoARW27R04JZy
-         Naf+bb91iuWY7Z5Z+bPYrY/l4CHaGHEnUsacIWoDj+gJXObJHL8USxZMK3UgCTbjfLUW
-         Gh8iBS5TaVcAgkn7FRAfEXWEakBV3xVTqizau3RYOT+1ApKaThCY0LE49hBD9I2eAeRp
-         80HQ==
-X-Gm-Message-State: AOAM531ABHgx9v4YkG3FwN826Frg99CmhjTpK8Htu5E9eH+/HzBAiQdb
-        5+bJHQUquLjRr02OQ9mvvKhTnjX3EK1CXTywRUk=
-X-Google-Smtp-Source: ABdhPJw3JaKLceTz2X3nXibHZwP0RpP9oiofC4uv6HCaLBwZUSPM6RS8bIymRQ8D7yZ34A4RVOU9IicFASGIH/QY51Y=
-X-Received: by 2002:a19:7114:0:b0:473:e3f5:c7ba with SMTP id
- m20-20020a197114000000b00473e3f5c7bamr10831793lfc.9.1652644782614; Sun, 15
- May 2022 12:59:42 -0700 (PDT)
+        with ESMTP id S230463AbiEOUhF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 16:37:05 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FEF211C31;
+        Sun, 15 May 2022 13:37:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16B5CB80E11;
+        Sun, 15 May 2022 20:37:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38A05C385B8;
+        Sun, 15 May 2022 20:36:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652647019;
+        bh=GrCoDmkEGZhrFkRwhSQwfYPPWhwhCDYMWQ8Z6at6QAI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EQ3ICpYy6jfWgWmBpV4ItsGmja6AVNh1JNSf7Vb+tTCCYV3NO20oXIo5sQQ8lnBrQ
+         0Ww9D62uD8n/jh6QR+M86Nql6+e2twSa//3MkdaJDF3XfmAjdI5hhS9zBWWPeLOZTW
+         dZImeLoqFQbBm8PBlG9TyTM1G0dQEN3L8KUrqD5mM5bq/U+pgwH7UllN/DriFHnWOl
+         b1bghyhM9ZoKnWee1E9yTDOy5uEWMcmlk9ZPMR8VOYWlQqweU627zKXF/C0OOphqr5
+         LbWflqpT5UW1TOjEopiiUPHYQjQDuRDn9T00f29o2x/RYyZLIFey/a4TkGm/Fxlg1I
+         cTDBRbTqfOJhg==
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: [PATCH bpf-next 1/2] cpuidle/rcu: Making arch_cpu_idle and rcu_idle_exit noinstr
+Date:   Sun, 15 May 2022 22:36:52 +0200
+Message-Id: <20220515203653.4039075-1-jolsa@kernel.org>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Received: by 2002:ac2:44da:0:0:0:0:0 with HTTP; Sun, 15 May 2022 12:59:41
- -0700 (PDT)
-Reply-To: dravasmith27@gmail.com
-From:   Dr Ava Smith <raqsacrx@gmail.com>
-Date:   Sun, 15 May 2022 12:59:41 -0700
-Message-ID: <CAP7=Wk4kmnOaO6fLs8afE8OOZ9XqRO7PhrieSfazjL3T3LC6KA@mail.gmail.com>
-Subject: GREETINGS FROM DR AVA SMITH
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,FREEMAIL_REPLYTO,
-        FREEMAIL_REPLYTO_END_DIGIT,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE,UNDISC_FREEM autolearn=no
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:136 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4999]
-        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [dravasmith27[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [raqsacrx[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.4 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Making arch_cpu_idle and rcu_idle_exit noinstr. Both functions run
+in rcu 'not watching' context and if there's tracer attached to
+them, which uses rcu (e.g. kprobe multi interface) it will hit RCU
+warning like:
+
+  [    3.017540] WARNING: suspicious RCU usage
+  ...
+  [    3.018363]  kprobe_multi_link_handler+0x68/0x1c0
+  [    3.018364]  ? kprobe_multi_link_handler+0x3e/0x1c0
+  [    3.018366]  ? arch_cpu_idle_dead+0x10/0x10
+  [    3.018367]  ? arch_cpu_idle_dead+0x10/0x10
+  [    3.018371]  fprobe_handler.part.0+0xab/0x150
+  [    3.018374]  0xffffffffa00080c8
+  [    3.018393]  ? arch_cpu_idle+0x5/0x10
+  [    3.018398]  arch_cpu_idle+0x5/0x10
+  [    3.018399]  default_idle_call+0x59/0x90
+  [    3.018401]  do_idle+0x1c3/0x1d0
+
+The call path is following:
+
+default_idle_call
+  rcu_idle_enter
+  arch_cpu_idle
+  rcu_idle_exit
+
+The arch_cpu_idle and rcu_idle_exit are the only ones from above
+path that are traceble and cause this problem on my setup.
+
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ arch/x86/kernel/process.c | 2 +-
+ kernel/rcu/tree.c         | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+index b370767f5b19..1345cb0124a6 100644
+--- a/arch/x86/kernel/process.c
++++ b/arch/x86/kernel/process.c
+@@ -720,7 +720,7 @@ void arch_cpu_idle_dead(void)
+ /*
+  * Called from the generic idle code.
+  */
+-void arch_cpu_idle(void)
++void noinstr arch_cpu_idle(void)
+ {
+ 	x86_idle();
+ }
+diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+index a4b8189455d5..20d529722f51 100644
+--- a/kernel/rcu/tree.c
++++ b/kernel/rcu/tree.c
+@@ -896,7 +896,7 @@ static void noinstr rcu_eqs_exit(bool user)
+  * If you add or remove a call to rcu_idle_exit(), be sure to test with
+  * CONFIG_RCU_EQS_DEBUG=y.
+  */
+-void rcu_idle_exit(void)
++void noinstr rcu_idle_exit(void)
+ {
+ 	unsigned long flags;
+ 
 -- 
-Hello Dear,
-how are you today?hope you are fine
-My name is Dr Ava Smith ,Am an English and French nationalities.
-I will give you pictures and more details about me as soon as i hear from you
-Thanks
-Ava
+2.35.3
+
