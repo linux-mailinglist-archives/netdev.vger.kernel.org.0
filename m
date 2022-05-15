@@ -2,52 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C7FA35274F6
-	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 04:35:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D4D5274F2
+	for <lists+netdev@lfdr.de>; Sun, 15 May 2022 04:35:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233072AbiEOCfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 14 May 2022 22:35:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56494 "EHLO
+        id S233780AbiEOCfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 14 May 2022 22:35:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232211AbiEOCfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 22:35:14 -0400
+        with ESMTP id S233677AbiEOCfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 14 May 2022 22:35:15 -0400
 Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1341BF49
-        for <netdev@vger.kernel.org>; Sat, 14 May 2022 19:35:12 -0700 (PDT)
-Received: by mail-pg1-x54a.google.com with SMTP id x190-20020a6386c7000000b003d82199c4fdso5664285pgd.16
-        for <netdev@vger.kernel.org>; Sat, 14 May 2022 19:35:12 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA79FBF55
+        for <netdev@vger.kernel.org>; Sat, 14 May 2022 19:35:13 -0700 (PDT)
+Received: by mail-pg1-x54a.google.com with SMTP id x190-20020a6386c7000000b003d82199c4fdso5664303pgd.16
+        for <netdev@vger.kernel.org>; Sat, 14 May 2022 19:35:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=IU+Vi4Ob23fwiLlYzh8GDnN8SnUFyY7qicvCIYHwbGE=;
-        b=oMG9OdYMWUdI4I+WvEwgmsD0xEUwkGfpPPUHciAB7L3RnbthLqYsqlu5mU4QEUXP3K
-         Vwa1QKalIW2DZa0FQ9ua5g/pJo8H/Cw3YfJmFCCi5/QtFUmSnVlcyMGmYFHNjRSNZ2vS
-         T4Fb9ChrCveZr4AsuzIzsOpOFJvIuBWkTOZlZ7JoL/ZT/skItTjOjIoEHL98uGIR7LVs
-         gaSDgtX++wRa+31pnL3ME4QUszBq3ap2PHIJasDRsM3DdikIMbWZipsTNhPmB2O2LW1A
-         tBdMCye4/b9s6BYSWSNV33QOUstdG7CJo7ra6MnMMnlmB8W8zL+zr+mS/NAxxECz5Puj
-         bcoA==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=YC2InFXwdRtQDPboyxfsyUWhY4pdSELhBce0hzw3bTk=;
+        b=S+1kFWym/zN0rJudekoPvUvDDe7UznkyF8SCOJE4pOoY6ys9Cjzha6SrMSikpVNITA
+         qMVIV+5G8bo4Eo+4tW+WsKUJR1Gi3b4QZj+BMMXcGIbuiXOdS6E/zhC9KNrtrJfsD7NF
+         jZFfJNKlJlPYn8fXmpsZvFdJcQwpjhyOfQQPvEmmkNNhkAMz7Khtdpm6AsOcR513IN1m
+         wfYwXH25ptqUui06Q9CjTBDKmb7BRUkvzInP8gx0BJw2j3IlZ4Wt3WjISXP1ndUrf2WJ
+         6pjikGNl/J5x4KW89rpGiU/BqnoOmHf/4+xGLZttCoJFfqU+Fs2YuiXg8zRsDsUsj6hm
+         8xfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=IU+Vi4Ob23fwiLlYzh8GDnN8SnUFyY7qicvCIYHwbGE=;
-        b=HeXhKzcnWSw5EW4eyQUHkkaTkqRe47XfIuAsJfLyMNCeH0vQRw2lc8VrtrbojKlJpv
-         EFgK6kFd0KugzHpjUwhjpR/3H8TguU7f2HsyP9k3vs1AAOe5CGOe6IZvOhK1X6I2Wjt3
-         mDWoT4c7hBZ/qI0KzxopRkyraIID/np1StVgw7OjkMr8ZL5LWfeSMRYM2tQ8iUihekup
-         SrwcMTt2o/+TJJ5V2AQqmgcyVpu/YM3vxHCY1uZomZNhy2V4hqcis+F9QzFgP9cxYcR4
-         OcJi9h6Z6RM1i/qEPFtB/ptapmpe5ywApk+eXJqNQMZhNm/PmiSSJQg59N3EWtzaYuwu
-         tN6Q==
-X-Gm-Message-State: AOAM531WeDJPtS+v7HcvCoMz8SGJYJFGcdfz2AREg4w7yzq5nF87+yeH
-        vBDqdASfy/uDSl72JpvBbLX27URXZp17j4Sz
-X-Google-Smtp-Source: ABdhPJzaMCzLNX2WZCU2aLHDM5R9d54wMaYfRdNDWi1SjGhqU+OJpdMKNv8qtu3yLZztiXmhf7w+R1aT4wzWEshm
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=YC2InFXwdRtQDPboyxfsyUWhY4pdSELhBce0hzw3bTk=;
+        b=pHS5Iu/FDPVW8QmtjRSuVFCn1JoLVGzofSmIAuCD5I+pGhuq7BrWzjdTgGh6JjdKYw
+         1gY1rvPvU8qVqm2QYEBqTetuFKQTl9RUvdC53rxaXen/7vd6GRAN8Yigq+QoAxGrpvdu
+         7bfDgKsgYkxp/E1wHPuVYoN1M5zXMCEL0bwgVM6augKftOGIrpFOlmZlbJwiqD6uAxM2
+         iCfNLNwTmMzCX8V1qmwZeXBTHBWtM3//viYWhl3O30PwinEJbeXDWtrbDr2xBefjtw+f
+         KWwdBUvFaCNvF2humuFH84GdSbiBfqQDRCJQvgVfacqhJzN4tkasGySyX0xvuB55eUpy
+         UtvQ==
+X-Gm-Message-State: AOAM532q8V8c/uqP8Mtmk8lo2jYds82m86R4tnEUqV/3XSZUW3911zHe
+        JJ50E140tWr972uv0oqAUXYcxVEfWn4kRduN
+X-Google-Smtp-Source: ABdhPJwqr95MHkBE6vkF0FYJcNxo4nTNVNVgGU6dH9U7Nz3DXXdajDF+Tp0ZOs5jRbpk6+zaGyVlGvaV19h1ibTF
 X-Received: from yosry.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:2327])
- (user=yosryahmed job=sendgmr) by 2002:a17:90a:8d83:b0:1dd:258c:7c55 with SMTP
- id d3-20020a17090a8d8300b001dd258c7c55mr319038pjo.1.1652582111328; Sat, 14
- May 2022 19:35:11 -0700 (PDT)
-Date:   Sun, 15 May 2022 02:34:57 +0000
-Message-Id: <20220515023504.1823463-1-yosryahmed@google.com>
+ (user=yosryahmed job=sendgmr) by 2002:a17:902:d88a:b0:156:1609:1e62 with SMTP
+ id b10-20020a170902d88a00b0015616091e62mr11370656plz.143.1652582113258; Sat,
+ 14 May 2022 19:35:13 -0700 (PDT)
+Date:   Sun, 15 May 2022 02:34:58 +0000
+In-Reply-To: <20220515023504.1823463-1-yosryahmed@google.com>
+Message-Id: <20220515023504.1823463-2-yosryahmed@google.com>
 Mime-Version: 1.0
+References: <20220515023504.1823463-1-yosryahmed@google.com>
 X-Mailer: git-send-email 2.36.0.550.gb090851708-goog
-Subject: [RFC PATCH bpf-next v2 0/7] bpf: rstat: cgroup hierarchical stats
+Subject: [RFC PATCH bpf-next v2 1/7] bpf: introduce RSTAT_FLUSH program type
 From:   Yosry Ahmed <yosryahmed@google.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -72,129 +76,381 @@ Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-9.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch series allows for using bpf to collect hierarchical cgroup
-stats efficiently by integrating with the rstat framework. The rstat
-framework provides an efficient way to collect cgroup stats and
-propagate them through the cgroup hierarchy.
+This patch introduces a new bpf program type, RSTAT_FLUSH,
+with new corresponding link and attach types.
 
-* Background on rstat (I am using a subscriber analogy that is not
-commonly used):
+These programs acts as a callback for the rstat framework to call when a
+stats flush is ongoing. It allows BPF programs to collect and maintain
+hierarchical stats cgroup stats efficiently by integrating with the rstat
+framework.
 
-The rstat framework maintains a tree of cgroups that have updates and
-which cpus have updates. A subscriber to the rstat framework maintains
-their own stats. The framework is used to tell the subscriber when
-and what to flush, for the most efficient stats propagation. The
-workflow is as follows:
+See the selftest in the final patch for a practical example.
 
-- When a subscriber updates a cgroup on a cpu, it informs the rstat
-  framework by calling cgroup_rstat_updated(cgrp, cpu).
-
-- When a subscriber wants to read some stats for a cgroup, it asks
-  the rstat framework to initiate a stats flush (propagation) by calling
-  cgroup_rstat_flush(cgrp).
-
-- When the rstat framework initiates a flush, it makes callbacks to
-  subscribers to aggregate stats on cpus that have updates, and
-  propagate updates to their parent.
-
-Currently, the main subscribers to the rstat framework are cgroup
-subsystems (e.g. memory, block). This patch series allow bpf programs to
-become subscribers as well.
-
-The first three patches introduce a new bpf program type, RSTAT_FLUSH,
-which is a callback that rstat makes to bpf when a stats flush is
-ongoing.
-
-The fourth patch adds bpf_cgroup_rstat_updated() and
-bpf_cgroup_rstat_flush() helpers, to allow bpf stat collectors and
-readers to communicate with rstat.
-
-The fifth patch is actually v2 of a previously submitted patch [1]
-by Hao Luo. We agreed that it fits better as a part of this series. It
-introduces cgroup_iter programs that can dump stats for cgroups to
-userspace.
-v1 - > v2:
-- Getting the cgroup's reference at the time at attaching, instead of
-  at the time when iterating. (Yonghong) (context [1])
-- Remove .init_seq_private and .fini_seq_private callbacks for
-  cgroup_iter. They are not needed now. (Yonghong)
-
-The sixth patch extends bpf selftests cgroup helpers, as necessary for
-the following patch.
-
-The seventh patch is a selftest that demonstrates the entire workflow.
-It includes programs that collect, aggregate, and dump per-cgroup stats
-by fully integrating with the rstat framework.
-
-[1]https://lore.kernel.org/lkml/20220225234339.2386398-9-haoluo@google.com/
-
-RFC v1 -> RFC v2:
-- Instead of rstat flush programs attach to subsystems, they now attach
-  to rstat (global flushers, not per-subsystem), based on discussions
-  with Tejun. The first patch is entirely rewritten.
-- Pass cgroup pointers to rstat flushers instead of cgroup ids. This is
-  much more flexibility and less likely to need a uapi update later.
-- rstat helpers are now only defined if CGROUP_CONFIG.
-- Most of the code is now only defined if CGROUP_CONFIG and
-  CONFIG_BPF_SYSCALL.
-- Move rstat helper protos from bpf_base_func_proto() to
-  tracing_prog_func_proto().
-- rstat helpers argument (cgroup pointer) is now ARG_PTR_TO_BTF_ID, not
-  ARG_ANYTHING.
-- Rewrote the selftest to use the cgroup helpers.
-- Dropped bpf_map_lookup_percpu_elem (already added by Feng).
-- Dropped patch to support cgroup v1 for cgroup_iter.
-- Dropped patch to define some cgroup_put() when !CONFIG_CGROUP. The
-  code that calls it is no longer compiled when !CONFIG_CGROUP.
-
-
-Hao Luo (1):
-  bpf: Introduce cgroup iter
-
-Yosry Ahmed (6):
-  bpf: introduce RSTAT_FLUSH program type
-  cgroup: bpf: flush bpf stats on rstat flush
-  libbpf: Add support for rstat flush progs
-  bpf: add bpf rstat helpers
-  selftests/bpf: extend cgroup helpers
-  bpf: add a selftest for cgroup hierarchical stats collection
-
- include/linux/bpf-rstat.h                     |  31 ++
- include/linux/bpf.h                           |   4 +
- include/linux/bpf_types.h                     |   4 +
- include/uapi/linux/bpf.h                      |  33 ++
- kernel/bpf/Makefile                           |   3 +
- kernel/bpf/cgroup_iter.c                      | 148 ++++++++
- kernel/bpf/helpers.c                          |  30 ++
- kernel/bpf/rstat.c                            | 187 ++++++++++
- kernel/bpf/syscall.c                          |   6 +
- kernel/cgroup/rstat.c                         |   2 +
- kernel/trace/bpf_trace.c                      |   4 +
- scripts/bpf_doc.py                            |   2 +
- tools/include/uapi/linux/bpf.h                |  33 ++
- tools/lib/bpf/bpf.c                           |   1 -
- tools/lib/bpf/libbpf.c                        |  40 +++
- tools/lib/bpf/libbpf.h                        |   3 +
- tools/lib/bpf/libbpf.map                      |   1 +
- tools/testing/selftests/bpf/cgroup_helpers.c  | 158 +++++---
- tools/testing/selftests/bpf/cgroup_helpers.h  |  14 +-
- .../test_cgroup_hierarchical_stats.c          | 339 ++++++++++++++++++
- tools/testing/selftests/bpf/progs/bpf_iter.h  |   7 +
- .../selftests/bpf/progs/cgroup_vmscan.c       | 222 ++++++++++++
- 22 files changed, 1225 insertions(+), 47 deletions(-)
+Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+---
+ include/linux/bpf-rstat.h      |  25 +++++
+ include/linux/bpf_types.h      |   4 +
+ include/uapi/linux/bpf.h       |   9 ++
+ kernel/bpf/Makefile            |   3 +
+ kernel/bpf/rstat.c             | 166 +++++++++++++++++++++++++++++++++
+ kernel/bpf/syscall.c           |   6 ++
+ tools/include/uapi/linux/bpf.h |   9 ++
+ 7 files changed, 222 insertions(+)
  create mode 100644 include/linux/bpf-rstat.h
- create mode 100644 kernel/bpf/cgroup_iter.c
  create mode 100644 kernel/bpf/rstat.c
- create mode 100644 tools/testing/selftests/bpf/prog_tests/test_cgroup_hierarchical_stats.c
- create mode 100644 tools/testing/selftests/bpf/progs/cgroup_vmscan.c
 
+diff --git a/include/linux/bpf-rstat.h b/include/linux/bpf-rstat.h
+new file mode 100644
+index 000000000000..23cad23b5fc2
+--- /dev/null
++++ b/include/linux/bpf-rstat.h
+@@ -0,0 +1,25 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++/*
++ * Copyright 2022 Google LLC.
++ */
++#ifndef _BPF_RSTAT_H_
++#define _BPF_RSTAT_H_
++
++#include <linux/bpf.h>
++
++#if defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_CGROUPS)
++
++int bpf_rstat_link_attach(const union bpf_attr *attr,
++				 struct bpf_prog *prog);
++
++#else /* defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_CGROUPS) */
++
++static inline int bpf_rstat_link_attach(const union bpf_attr *attr,
++					struct bpf_prog *prog)
++{
++	return -ENOTSUPP;
++}
++
++#endif /* defined(CONFIG_BPF_SYSCALL) && defined(CONFIG_CGROUPS) */
++
++#endif  /* _BPF_RSTAT */
+diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+index 2b9112b80171..ff92299f76a9 100644
+--- a/include/linux/bpf_types.h
++++ b/include/linux/bpf_types.h
+@@ -77,6 +77,10 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_LSM, lsm,
+ 	       void *, void *)
+ #endif /* CONFIG_BPF_LSM */
+ #endif
++#ifdef CONFIG_CGROUPS
++BPF_PROG_TYPE(BPF_PROG_TYPE_RSTAT_FLUSH, rstat_flush,
++	      struct bpf_rstat_flush_ctx, struct bpf_rstat_flush_ctx)
++#endif /* CONFIG_CGROUPS */
+ BPF_PROG_TYPE(BPF_PROG_TYPE_SYSCALL, bpf_syscall,
+ 	      void *, void *)
+ 
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 0210f85131b3..968e3cb02580 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -952,6 +952,7 @@ enum bpf_prog_type {
+ 	BPF_PROG_TYPE_LSM,
+ 	BPF_PROG_TYPE_SK_LOOKUP,
+ 	BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
++	BPF_PROG_TYPE_RSTAT_FLUSH,
+ };
+ 
+ enum bpf_attach_type {
+@@ -998,6 +999,7 @@ enum bpf_attach_type {
+ 	BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
+ 	BPF_PERF_EVENT,
+ 	BPF_TRACE_KPROBE_MULTI,
++	BPF_RSTAT_FLUSH,
+ 	__MAX_BPF_ATTACH_TYPE
+ };
+ 
+@@ -1014,6 +1016,7 @@ enum bpf_link_type {
+ 	BPF_LINK_TYPE_PERF_EVENT = 7,
+ 	BPF_LINK_TYPE_KPROBE_MULTI = 8,
+ 	BPF_LINK_TYPE_STRUCT_OPS = 9,
++	BPF_LINK_TYPE_RSTAT = 10,
+ 
+ 	MAX_BPF_LINK_TYPE,
+ };
+@@ -6359,6 +6362,12 @@ struct bpf_cgroup_dev_ctx {
+ 	__u32 minor;
+ };
+ 
++struct bpf_rstat_flush_ctx {
++	__bpf_md_ptr(struct cgroup *, cgrp);
++	__bpf_md_ptr(struct cgroup *, parent);
++	__s32 cpu;
++};
++
+ struct bpf_raw_tracepoint_args {
+ 	__u64 args[0];
+ };
+diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
+index 057ba8e01e70..0487133b799f 100644
+--- a/kernel/bpf/Makefile
++++ b/kernel/bpf/Makefile
+@@ -36,6 +36,9 @@ obj-$(CONFIG_BPF_SYSCALL) += bpf_struct_ops.o
+ obj-${CONFIG_BPF_LSM} += bpf_lsm.o
+ endif
+ obj-$(CONFIG_BPF_PRELOAD) += preload/
++ifeq ($(CONFIG_CGROUPS),y)
++obj-$(CONFIG_BPF_SYSCALL) += rstat.o
++endif
+ 
+ obj-$(CONFIG_BPF_SYSCALL) += relo_core.o
+ $(obj)/relo_core.o: $(srctree)/tools/lib/bpf/relo_core.c FORCE
+diff --git a/kernel/bpf/rstat.c b/kernel/bpf/rstat.c
+new file mode 100644
+index 000000000000..5f529002d4b9
+--- /dev/null
++++ b/kernel/bpf/rstat.c
+@@ -0,0 +1,166 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Functions to manage eBPF programs attached to cgroup subsystems
++ *
++ * Copyright 2022 Google LLC.
++ */
++
++#include <linux/bpf-rstat.h>
++#include <linux/btf_ids.h>
++#include <linux/cgroup.h>
++#include <linux/filter.h>
++
++static LIST_HEAD(bpf_rstat_flushers);
++static DEFINE_SPINLOCK(bpf_rstat_flushers_lock);
++
++
++struct bpf_rstat_flusher {
++	struct bpf_prog *prog;
++	/* List of BPF rtstat flushers, anchored at subsys->bpf */
++	struct list_head list;
++};
++
++struct bpf_rstat_link {
++	struct bpf_link link;
++	struct bpf_rstat_flusher *flusher;
++};
++
++static int bpf_rstat_flush_attach(struct bpf_prog *prog,
++				  struct bpf_rstat_link *rlink)
++{
++	struct bpf_rstat_flusher *flusher;
++
++	flusher = kmalloc(sizeof(*flusher), GFP_KERNEL);
++	if (!flusher)
++		return -ENOMEM;
++
++	flusher->prog = prog;
++	rlink->flusher = flusher;
++
++	spin_lock(&bpf_rstat_flushers_lock);
++	list_add(&flusher->list, &bpf_rstat_flushers);
++	spin_unlock(&bpf_rstat_flushers_lock);
++
++	return 0;
++}
++
++static void bpf_rstat_flush_detach(struct bpf_rstat_link *rstat_link)
++{
++	struct bpf_rstat_flusher *flusher = rstat_link->flusher;
++
++	if (!flusher)
++		return;
++
++	spin_lock(&bpf_rstat_flushers_lock);
++	list_del(&flusher->list);
++	bpf_prog_put(flusher->prog);
++	kfree(flusher);
++	spin_unlock(&bpf_rstat_flushers_lock);
++}
++
++static const struct bpf_func_proto *
++bpf_rstat_flush_func_proto(enum bpf_func_id func_id,
++			   const struct bpf_prog *prog)
++{
++	return bpf_base_func_proto(func_id);
++}
++
++BTF_ID_LIST_SINGLE(bpf_cgroup_btf_ids, struct, cgroup)
++
++static bool bpf_rstat_flush_is_valid_access(int off, int size,
++					    enum bpf_access_type type,
++					    const struct bpf_prog *prog,
++					    struct bpf_insn_access_aux *info)
++{
++	if (type == BPF_WRITE)
++		return false;
++
++	if (off < 0 || off + size > sizeof(struct bpf_rstat_flush_ctx))
++		return false;
++	/* The verifier guarantees that size > 0 */
++	if (off % size != 0)
++		return false;
++
++	switch (off) {
++	case bpf_ctx_range_ptr(struct bpf_rstat_flush_ctx, cgrp):
++		info->reg_type = PTR_TO_BTF_ID;
++		info->btf_id = bpf_cgroup_btf_ids[0];
++		info->btf = bpf_get_btf_vmlinux();
++		return !IS_ERR(info->btf) && info->btf && size == sizeof(__u64);
++	case bpf_ctx_range_ptr(struct bpf_rstat_flush_ctx, parent):
++		info->reg_type = PTR_TO_BTF_ID_OR_NULL;
++		info->btf_id = bpf_cgroup_btf_ids[0];
++		info->btf = bpf_get_btf_vmlinux();
++		return !IS_ERR(info->btf) && info->btf && size == sizeof(__u64);
++	case bpf_ctx_range(struct bpf_rstat_flush_ctx, cpu):
++		return size == sizeof(__s32);
++	default:
++		return false;
++	}
++}
++
++const struct bpf_prog_ops rstat_flush_prog_ops = {
++};
++
++const struct bpf_verifier_ops rstat_flush_verifier_ops = {
++	.get_func_proto         = bpf_rstat_flush_func_proto,
++	.is_valid_access        = bpf_rstat_flush_is_valid_access,
++};
++
++static void bpf_rstat_link_release(struct bpf_link *link)
++{
++	struct bpf_rstat_link *rlink;
++
++	rlink = container_of(link,
++			     struct bpf_rstat_link,
++			     link);
++
++	/* rstat flushers are currently the only supported rstat programs */
++	bpf_rstat_flush_detach(rlink);
++}
++
++static void bpf_rstat_link_dealloc(struct bpf_link *link)
++{
++	struct bpf_rstat_link *rlink = container_of(link,
++						    struct bpf_rstat_link,
++						    link);
++	kfree(rlink);
++}
++
++static const struct bpf_link_ops bpf_rstat_link_lops = {
++	.release = bpf_rstat_link_release,
++	.dealloc = bpf_rstat_link_dealloc,
++};
++
++int bpf_rstat_link_attach(const union bpf_attr *attr,
++			  struct bpf_prog *prog)
++{
++	struct bpf_link_primer link_primer;
++	struct bpf_rstat_link *link;
++	int err;
++
++	if (attr->link_create.target_fd || attr->link_create.flags)
++		return -EINVAL;
++
++	link = kzalloc(sizeof(*link), GFP_USER);
++	if (!link)
++		return -ENOMEM;
++
++	bpf_link_init(&link->link, BPF_LINK_TYPE_RSTAT,
++		      &bpf_rstat_link_lops, prog);
++
++	err = bpf_link_prime(&link->link, &link_primer);
++	if (err) {
++		kfree(link);
++		return err;
++	}
++
++	/* rstat flushers are currently the only supported rstat programs */
++	err = bpf_rstat_flush_attach(prog, link);
++	if (err) {
++		bpf_link_cleanup(&link_primer);
++		return err;
++	}
++
++	return bpf_link_settle(&link_primer);
++}
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 72e53489165d..ffeed8379b35 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -3,6 +3,7 @@
+  */
+ #include <linux/bpf.h>
+ #include <linux/bpf-cgroup.h>
++#include <linux/bpf-rstat.h>
+ #include <linux/bpf_trace.h>
+ #include <linux/bpf_lirc.h>
+ #include <linux/bpf_verifier.h>
+@@ -3416,6 +3417,8 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
+ 		return BPF_PROG_TYPE_SK_LOOKUP;
+ 	case BPF_XDP:
+ 		return BPF_PROG_TYPE_XDP;
++	case BPF_RSTAT_FLUSH:
++		return BPF_PROG_TYPE_RSTAT_FLUSH;
+ 	default:
+ 		return BPF_PROG_TYPE_UNSPEC;
+ 	}
+@@ -4564,6 +4567,9 @@ static int link_create(union bpf_attr *attr, bpfptr_t uattr)
+ 		else
+ 			ret = bpf_kprobe_multi_link_attach(attr, prog);
+ 		break;
++	case BPF_PROG_TYPE_RSTAT_FLUSH:
++		ret = bpf_rstat_link_attach(attr, prog);
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
+index 0210f85131b3..968e3cb02580 100644
+--- a/tools/include/uapi/linux/bpf.h
++++ b/tools/include/uapi/linux/bpf.h
+@@ -952,6 +952,7 @@ enum bpf_prog_type {
+ 	BPF_PROG_TYPE_LSM,
+ 	BPF_PROG_TYPE_SK_LOOKUP,
+ 	BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
++	BPF_PROG_TYPE_RSTAT_FLUSH,
+ };
+ 
+ enum bpf_attach_type {
+@@ -998,6 +999,7 @@ enum bpf_attach_type {
+ 	BPF_SK_REUSEPORT_SELECT_OR_MIGRATE,
+ 	BPF_PERF_EVENT,
+ 	BPF_TRACE_KPROBE_MULTI,
++	BPF_RSTAT_FLUSH,
+ 	__MAX_BPF_ATTACH_TYPE
+ };
+ 
+@@ -1014,6 +1016,7 @@ enum bpf_link_type {
+ 	BPF_LINK_TYPE_PERF_EVENT = 7,
+ 	BPF_LINK_TYPE_KPROBE_MULTI = 8,
+ 	BPF_LINK_TYPE_STRUCT_OPS = 9,
++	BPF_LINK_TYPE_RSTAT = 10,
+ 
+ 	MAX_BPF_LINK_TYPE,
+ };
+@@ -6359,6 +6362,12 @@ struct bpf_cgroup_dev_ctx {
+ 	__u32 minor;
+ };
+ 
++struct bpf_rstat_flush_ctx {
++	__bpf_md_ptr(struct cgroup *, cgrp);
++	__bpf_md_ptr(struct cgroup *, parent);
++	__s32 cpu;
++};
++
+ struct bpf_raw_tracepoint_args {
+ 	__u64 args[0];
+ };
 -- 
 2.36.0.550.gb090851708-goog
 
