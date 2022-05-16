@@ -2,95 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B59A528DD4
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 21:21:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F418528DDE
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 21:21:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345356AbiEPTVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 15:21:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49672 "EHLO
+        id S1345382AbiEPTVz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 15:21:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345352AbiEPTUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 15:20:55 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7178D10E4;
-        Mon, 16 May 2022 12:20:53 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9943ECE177A;
-        Mon, 16 May 2022 19:20:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CF39C385AA;
-        Mon, 16 May 2022 19:20:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652728849;
-        bh=7dUSBEaVamNeH7xckM86EZ0E5ZnTZzdD58oA2l0UR3s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VJ7OGTc52LlV1ISiugEC2mc7JmkPYUHU9OJljdPL20C9+c4WADQlABss11pQKlmo1
-         kpnKMpqghOyA0WK8OdDpzqKwonl8XTsQTDbUOzLF3liCLKarJ+Qp5ZpgPdWfhuYu29
-         LV86wvCPO+CqHu4Eumw8WtfxvhO0Z5V19nhm3Tz77ZAxi/wA+r8j4QfZwWHZ+xU1yd
-         EmyEMbazGyMjF/5jMsLqchJD+KZTUAxIa3wqAQw9bMMJPzMGZIXtej6dO62ejWs+up
-         MuEvpp/O8Ty24E+KKTQc7ARAlK42mOyti6GUMCtzItWqSikGZodQknV0Ixscyill6f
-         s+n/vF1Pyk9pw==
-Date:   Mon, 16 May 2022 12:20:48 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v2 2/5] net: dsa: add out-of-band tagging
- protocol
-Message-ID: <20220516122048.70e238a2@kernel.org>
-In-Reply-To: <20220514150656.122108-3-maxime.chevallier@bootlin.com>
-References: <20220514150656.122108-1-maxime.chevallier@bootlin.com>
-        <20220514150656.122108-3-maxime.chevallier@bootlin.com>
+        with ESMTP id S1345352AbiEPTVz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 15:21:55 -0400
+Received: from mailgw.felk.cvut.cz (mailgw.felk.cvut.cz [147.32.82.15])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF9CF19FA3;
+        Mon, 16 May 2022 12:21:51 -0700 (PDT)
+Received: from mailgw.felk.cvut.cz (localhost.localdomain [127.0.0.1])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTP id 6327030B2943;
+        Mon, 16 May 2022 21:21:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        cmp.felk.cvut.cz; h=cc:cc:content-transfer-encoding:content-type
+        :content-type:date:from:from:in-reply-to:message-id:mime-version
+        :references:reply-to:subject:subject:to:to; s=felkmail; bh=D25+b
+        sYPPdD75osljot245ly0xJRX+XEY5UOuZmKOpc=; b=geG4M6+JzNolfnKk+mVPV
+        61e/Q86dMa0avgUlWzXALoQsKdJ6B2c8m+ZQ/mFgxMiiBlGGwL8pWJCKT0lAx3pW
+        N66Di9bprba+Tq1g6C2F+3D8f/aoPF6TouA3WZExfQ4O9pS2t8pHila22OGTVXYA
+        Zd5fAjTk+1oCzuNe4nOFqoTFN7rHVDQ4rwKHm6h2qPgITmXEz6x5QsVRBHSALvaT
+        f4UP0R0iL1x2NqUrUrJ/jLkF2XFnn+5YjMFkcfV65krf4VqFELin4e5Btig1BUB0
+        jlZLOyB1F+3IO0knR2z5NXw71GkWgYUxznVyKDl+x2PhC43nEcMqdczqxO8wW9XX
+        g==
+Received: from cmp.felk.cvut.cz (haar.felk.cvut.cz [147.32.84.19])
+        by mailgw.felk.cvut.cz (Proxmox) with ESMTPS id B38D730B2941;
+        Mon, 16 May 2022 21:21:48 +0200 (CEST)
+Received: from haar.felk.cvut.cz (localhost [127.0.0.1])
+        by cmp.felk.cvut.cz (8.14.0/8.12.3/SuSE Linux 0.6) with ESMTP id 24GJLm6n031667;
+        Mon, 16 May 2022 21:21:48 +0200
+Received: (from pisa@localhost)
+        by haar.felk.cvut.cz (8.14.0/8.13.7/Submit) id 24GJLmNC031666;
+        Mon, 16 May 2022 21:21:48 +0200
+X-Authentication-Warning: haar.felk.cvut.cz: pisa set sender to pisa@cmp.felk.cvut.cz using -f
+From:   Pavel Pisa <pisa@cmp.felk.cvut.cz>
+To:     "Marc Kleine-Budde" <mkl@pengutronix.de>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [RFC PATCH 2/3] dt-bindings: can: ctucanfd: add properties for HW timestamping
+Date:   Mon, 16 May 2022 21:21:42 +0200
+User-Agent: KMail/1.9.10
+Cc:     Matej Vasilevski <matej.vasilevski@seznam.cz>,
+        linux-can@vger.kernel.org, devicetree@vger.kernel.org,
+        netdev@vger.kernel.org, ondrej.ille@gmail.com,
+        martin.jerabek01@gmail.com
+References: <20220512232706.24575-1-matej.vasilevski@seznam.cz> <20220516160250.GA2724701-robh@kernel.org> <20220516163445.qxz3xlohuquqwbwl@pengutronix.de>
+In-Reply-To: <20220516163445.qxz3xlohuquqwbwl@pengutronix.de>
+X-KMail-QuotePrefix: > 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: Text/Plain;
+  charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Disposition: inline
+Message-Id: <202205162121.42800.pisa@cmp.felk.cvut.cz>
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,NICE_REPLY_A,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 14 May 2022 17:06:53 +0200 Maxime Chevallier wrote:
-> This tagging protocol is designed for the situation where the link
-> between the MAC and the Switch is designed such that the Destination
-> Port, which is usually embedded in some part of the Ethernet Header, is
-> sent out-of-band, and isn't present at all in the Ethernet frame.
-> 
-> This can happen when the MAC and Switch are tightly integrated on an
-> SoC, as is the case with the Qualcomm IPQ4019 for example, where the DSA
-> tag is inserted directly into the DMA descriptors. In that case,
-> the MAC driver is responsible for sending the tag to the switch using
-> the out-of-band medium. To do so, the MAC driver needs to have the
-> information of the destination port for that skb.
-> 
-> This out-of-band tagging protocol is using the very beggining of the skb
-> headroom to store the tag. The drawback of this approch is that the
-> headroom isn't initialized upon allocating it, therefore we have a
-> chance that the garbage data that lies there at allocation time actually
-> ressembles a valid oob tag. This is only problematic if we are
-> sending/receiving traffic on the master port, which isn't a valid DSA
-> use-case from the beggining. When dealing from traffic to/from a slave
-> port, then the oob tag will be initialized properly by the tagger or the
-> mac driver through the use of the dsa_oob_tag_push() call.
-> 
-> Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>
+Hello Rob and Marc,
 
-This must had been asked on v1 but there's no trace of it in the
-current submission afaict...
+thanks for comment and help.
 
-If the tag is passed in the descriptor how is this not a pure switchdev
-driver? The explanation must be preserved somehow.
+This patch is marked as RFC and not intended for direct
+application. We plan to gather feetback, adjust code
+and probably even IP core HDL based on suggestions,
+then we plan more testing and when we will be ready and
+time allows, new version with plea for merge will provided. 
+
+On Monday 16 of May 2022 18:34:45 Marc Kleine-Budde wrote:
+> On 16.05.2022 11:02:50, Rob Herring wrote:
+> > On Fri, May 13, 2022 at 01:27:06AM +0200, Matej Vasilevski wrote:
+> > > Extend dt-bindings for CTU CAN-FD IP core with necessary properties
+> > > to enable HW timestamping for platform devices. Since the timestamping
+> > > counter is provided by the system integrator usign those IP cores in
+> > > their FPGA design, we need to have the properties specified in device
+> > > tree.
+> > >
+> > > Signed-off-by: Matej Vasilevski <matej.vasilevski@seznam.cz>
+> > > ---
+> > >  .../bindings/net/can/ctu,ctucanfd.yaml        | 34 +++++++++++++++++--
+> > >  1 file changed, 31 insertions(+), 3 deletions(-)
+> >
+> > What's the base for this patch? Doesn't apply for me.
+
+It is based on the series of complete CTU CAN FD support
+which has been accepted into net-next.
+The DTC part has gone through your review and has been
+ACKed longer time ago. We have spent considerable time
+to resolve suggested driver changes - headers files generation
+from HDL tool chain, etc.
+
+We inline to version when most of the info will be directly
+provided by the core HW except for optional second clocks
+probably.
+
+Best wishes,
+
+Pavel
+
+> > > diff --git
+> > > a/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
+> > > b/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml index
+> > > fb34d971dcb3..c3693dadbcd8 100644
+> > > --- a/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
+> > > +++ b/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
+> > > @@ -41,9 +41,35 @@ properties:
+> > >
+> > >    clocks:
+> > >      description: |
+> > > -      phandle of reference clock (100 MHz is appropriate
+> > > -      for FPGA implementation on Zynq-7000 system).
+> > > +      Phandle of reference clock (100 MHz is appropriate for FPGA
+> > > +      implementation on Zynq-7000 system). If you wish to use
+> > > timestamps +      from the core, add a second phandle with the clock
+> > > used for timestamping +      (can be the same as the first clock).
+> > > +    maxItems: 2
+> >
+> > With more than 1, you have to define what each entry is. IOW, use
+> > 'items'.
+> >
+> > > +
+> > > +  clock-names:
+> > > +    description: |
+> > > +      Specify clock names for the "clocks" property. The first clock
+> > > name +      doesn't matter, the second has to be "ts_clk". Timestamping
+> > > frequency +      is then obtained from the "ts_clk" clock. This takes
+> > > precedence over +      the ts-frequency property.
+> > > +      You can omit this property if you don't need timestamps.
+> > > +    maxItems: 2
+> >
+> > You must define what the names are as a schema.
+> >
+> > > +
+> > > +  ts-used-bits:
+> > > +    description: width of the timestamping counter
+> > > +    maxItems: 1
+> > > +    items:
+> >
+> > Not an array, so you don't need maxItems nor items.
+> >
+> > > +      minimum: 8
+> > > +      maximum: 64
+> > > +
+> > > +  ts-frequency:
+> >
+> > Use a standard unit suffix.
+> >
+> > > +    description: |
+> > > +      Frequency of the timestamping counter. Set this if you want to
+> > > get +      timestamps, but you didn't set the timestamping clock in
+> > > clocks property. maxItems: 1
+> > > +    items:
+> >
+> > Not an array.
+> >
+> >
+> > Is timestamping a common feature for CAN or is this specific to this
+> > controller? In the latter case, you need vendor prefixes on these
+> > properties. In the former case, you need to define them in a common
+> > schema.
+>
+> This property describes the usable with of the free running timer and
+> the timestamps generated by it. This is similar to the free running
+> timer and time stamps as found on PTP capable Ethernet NICs. But the
+> ctucanfd comes in a hardware description language that can be
+> parametrized and synthesized into your own FPGA.
+>
+> To answer your question, timestamping is common in newer CAN cores, but
+> the width of the timestamping register is usually fixed and thus hard
+> coded in the driver.
+>
+> regards,
+> Marc
+
