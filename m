@@ -2,52 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 482AF527B59
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 03:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBD8A527B68
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 03:37:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239040AbiEPBTZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 21:19:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41544 "EHLO
+        id S236889AbiEPBhc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 21:37:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236470AbiEPBTX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 21:19:23 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363F72E9EC;
-        Sun, 15 May 2022 18:19:22 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L1hHB6gh5z4xLb;
-        Mon, 16 May 2022 11:19:18 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652663960;
-        bh=YerwPDpR6NiGitLx1rHAaKW6WOaVHQI2JQUt6Kc7awE=;
-        h=Date:From:To:Cc:Subject:From;
-        b=sO/buOP2+lmZQdCPJqktK+zxNbcIOHit47Yov6le0nWJbIhBr3QWZNvcZT3roCQ6r
-         XoliTlx8XBs6z7t28/CtO3JeFfEj9iNajwUQl99lWOVZ9pmka3er6QmEkfp49jdS74
-         Jo/TOcsVj3xEaHEU1XOJtGrlWNH3FWXBimSVJzLRG9CA7qmry89bjSK9h/vVcS6TBE
-         WR5t8hiKEHYYhm3ahuZ3PyoydigGmBGAEmZXT6FT1sqaVOnqMHBMoY5g7Fy6MaR2WF
-         Ib/VBksG1HuxpqHpRDyTlMOzCiPxIgpfkYn0+Dv3ZrzOyGx1KEWWZCGXLj8Io2JtzK
-         OrQ4LETRyWjYA==
-Date:   Mon, 16 May 2022 11:19:18 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20220516111918.366d747f@canb.auug.org.au>
+        with ESMTP id S229923AbiEPBhb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 21:37:31 -0400
+Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9276013F2E
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 18:37:30 -0700 (PDT)
+Received: by mail-qk1-x72c.google.com with SMTP id a76so11309642qkg.12
+        for <netdev@vger.kernel.org>; Sun, 15 May 2022 18:37:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J/DdmzrMlcg3mU74L3fubFKVXHzEFCLzLBdMOpUzAss=;
+        b=p3yaBGOImdBq3pEwIbnRy4c+HdkkVD2QHRk82+0xcaQrB84Dedq9SAJu4lqZ3gW00v
+         ofuP/9Yzzi017wU6HAB8PSgGwHtVDbak6zCsw9MEXi1c0e1u8TJvnEuFPe3+S6foSgP8
+         ZgmZE/EkmMG8LG7/k0tmvBMeiT9bq/ms+XU7SnW23P13/rGTYVK2cBtfTTvI+hBZaGts
+         mhEuE7rovPZTaWHWLu9v4IoYAApMw+1DUURMXjPs0m89BCFcCLgnDKqF1g2k4hIb28VQ
+         1c0e5QPyzWY2xu2VhPH4vgAlfBJO3S0tDnNKsPUPNchUo/BYpy/x2xkOqXdE9Ojk65t+
+         P8Qg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J/DdmzrMlcg3mU74L3fubFKVXHzEFCLzLBdMOpUzAss=;
+        b=owv9D5vsOFhL3TVjPTeYeCpcU63nEJQj2s4VGT7T1FEyU4axbKQfJ5oGQEqsA/5KBt
+         WTzAM7Ri9l0BAy4nuKpHLKCMfI/Icnk80tfRf0fJb6UI5FSIE0Z/PJ3YU71XiLyzwo2i
+         Wf+I1j7Nj9DDKa0vv4WYZkeTh60C5njyRlzXYSw/6EcffXHZLkQReQyJ3/yms8t57Kzm
+         0J4KbcD0H5+9XAHZhWK6C1/Uw3PUVmWkcHI+T7qJ0ZjMWopkJ9BnGBK336v/B04w2cKB
+         FdYE4yvG/Vj2y+Y/DKuPZr4IydnWLGzivtDVU9AYWfNvSKektPWE1yqy1Pq8dT4usULz
+         uU3A==
+X-Gm-Message-State: AOAM532XpBft01Or2x1lpbeeKFgIDtGHgPr78Wp65we8grrS9JBqX5Pp
+        qfVGfzV5elOpPs+TD4jkpXPNJEoUgSkR7g==
+X-Google-Smtp-Source: ABdhPJyjgyhCPYABO+lO62+Kul1JZd6jcEFqiMF7egwtsU0yZHLezUW6n2DxlICSF8IHmYVwQUm3rA==
+X-Received: by 2002:a05:620a:170d:b0:6a0:8983:a697 with SMTP id az13-20020a05620a170d00b006a08983a697mr10612400qkb.411.1652665049065;
+        Sun, 15 May 2022 18:37:29 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id h20-20020ac87d54000000b002f8f406338fsm931891qtb.42.2022.05.15.18.37.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 May 2022 18:37:28 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>
+Subject: [PATCHv2 ipsec] xfrm: set dst dev to blackhole_netdev instead of loopback_dev in ifdown
+Date:   Sun, 15 May 2022 21:37:27 -0400
+Message-Id: <e8c87482998ca6fcdab214f5a9d582899ec0c648.1652665047.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/oG9G.D4Cl_PQSJ2xzIU8OBo";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,161 +68,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/oG9G.D4Cl_PQSJ2xzIU8OBo
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+The global blackhole_netdev has replaced pernet loopback_dev to become the
+one given to the object that holds an netdev when ifdown in many places of
+ipv4 and ipv6 since commit 8d7017fd621d ("blackhole_netdev: use
+blackhole_netdev to invalidate dst entries").
 
-Hi all,
+Especially after commit faab39f63c1f ("net: allow out-of-order netdev
+unregistration"), it's no longer safe to use loopback_dev that may be
+freed before other netdev.
 
-Today's linux-next merge of the net-next tree got a conflict in:
+This patch is to set dst dev to blackhole_netdev instead of loopback_dev
+in ifdown.
 
-  tools/testing/selftests/net/mptcp/mptcp_join.sh
+v1->v2:
+  - add Fixes tag as Eric suggested.
 
-between commit:
+Fixes: faab39f63c1f ("net: allow out-of-order netdev unregistration")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/xfrm/xfrm_policy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-  e274f7154008 ("selftests: mptcp: add subflow limits test-cases")
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 00bd0ecff5a1..f1876ea61fdc 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3744,7 +3744,7 @@ static int stale_bundle(struct dst_entry *dst)
+ void xfrm_dst_ifdown(struct dst_entry *dst, struct net_device *dev)
+ {
+ 	while ((dst = xfrm_dst_child(dst)) && dst->xfrm && dst->dev == dev) {
+-		dst->dev = dev_net(dev)->loopback_dev;
++		dst->dev = blackhole_netdev;
+ 		dev_hold(dst->dev);
+ 		dev_put(dev);
+ 	}
+-- 
+2.31.1
 
-from the net tree and commits:
-
-  b6e074e171bc ("selftests: mptcp: add infinite map testcase")
-  5ac1d2d63451 ("selftests: mptcp: Add tests for userspace PM type")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc tools/testing/selftests/net/mptcp/mptcp_join.sh
-index 48ef112f42c2,d1de1e7702fb..000000000000
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@@ -2583,7 -2690,91 +2717,91 @@@ fastclose_tests(
-  	fi
-  }
- =20
-+ pedit_action_pkts()
-+ {
-+ 	tc -n $ns2 -j -s action show action pedit index 100 | \
-+ 		sed 's/.*"packets":\([0-9]\+\),.*/\1/'
-+ }
-+=20
-+ fail_tests()
-+ {
-+ 	# single subflow
-+ 	if reset_with_fail "Infinite map" 1; then
-+ 		run_tests $ns1 $ns2 10.0.1.1 128
-+ 		chk_join_nr 0 0 0 +1 +0 1 0 1 "$(pedit_action_pkts)"
-+ 		chk_fail_nr 1 -1 invert
-+ 	fi
-+ }
-+=20
-+ userspace_tests()
-+ {
-+ 	# userspace pm type prevents add_addr
-+ 	if reset "userspace pm type prevents add_addr"; then
-+ 		set_userspace_pm $ns1
-+ 		pm_nl_set_limits $ns1 0 2
-+ 		pm_nl_set_limits $ns2 0 2
-+ 		pm_nl_add_endpoint $ns1 10.0.2.1 flags signal
-+ 		run_tests $ns1 $ns2 10.0.1.1
-+ 		chk_join_nr 0 0 0
-+ 		chk_add_nr 0 0
-+ 	fi
-+=20
-+ 	# userspace pm type does not echo add_addr without daemon
-+ 	if reset "userspace pm no echo w/o daemon"; then
-+ 		set_userspace_pm $ns2
-+ 		pm_nl_set_limits $ns1 0 2
-+ 		pm_nl_set_limits $ns2 0 2
-+ 		pm_nl_add_endpoint $ns1 10.0.2.1 flags signal
-+ 		run_tests $ns1 $ns2 10.0.1.1
-+ 		chk_join_nr 0 0 0
-+ 		chk_add_nr 1 0
-+ 	fi
-+=20
-+ 	# userspace pm type rejects join
-+ 	if reset "userspace pm type rejects join"; then
-+ 		set_userspace_pm $ns1
-+ 		pm_nl_set_limits $ns1 1 1
-+ 		pm_nl_set_limits $ns2 1 1
-+ 		pm_nl_add_endpoint $ns2 10.0.3.2 flags subflow
-+ 		run_tests $ns1 $ns2 10.0.1.1
-+ 		chk_join_nr 1 1 0
-+ 	fi
-+=20
-+ 	# userspace pm type does not send join
-+ 	if reset "userspace pm type does not send join"; then
-+ 		set_userspace_pm $ns2
-+ 		pm_nl_set_limits $ns1 1 1
-+ 		pm_nl_set_limits $ns2 1 1
-+ 		pm_nl_add_endpoint $ns2 10.0.3.2 flags subflow
-+ 		run_tests $ns1 $ns2 10.0.1.1
-+ 		chk_join_nr 0 0 0
-+ 	fi
-+=20
-+ 	# userspace pm type prevents mp_prio
-+ 	if reset "userspace pm type prevents mp_prio"; then
-+ 		set_userspace_pm $ns1
-+ 		pm_nl_set_limits $ns1 1 1
-+ 		pm_nl_set_limits $ns2 1 1
-+ 		pm_nl_add_endpoint $ns2 10.0.3.2 flags subflow
-+ 		run_tests $ns1 $ns2 10.0.1.1 0 0 0 slow backup
-+ 		chk_join_nr 1 1 0
-+ 		chk_prio_nr 0 0
-+ 	fi
-+=20
-+ 	# userspace pm type prevents rm_addr
-+ 	if reset "userspace pm type prevents rm_addr"; then
-+ 		set_userspace_pm $ns1
-+ 		set_userspace_pm $ns2
-+ 		pm_nl_set_limits $ns1 0 1
-+ 		pm_nl_set_limits $ns2 0 1
-+ 		pm_nl_add_endpoint $ns2 10.0.3.2 flags subflow
-+ 		run_tests $ns1 $ns2 10.0.1.1 0 0 -1 slow
-+ 		chk_join_nr 0 0 0
-+ 		chk_rm_nr 0 0
-+ 	fi
-+ }
-+=20
- -implicit_tests()
- +endpoint_tests()
-  {
-  	# userspace pm type prevents add_addr
-  	if reset "implicit EP"; then
-@@@ -2668,7 -2842,9 +2886,9 @@@ all_tests_sorted=3D
-  	d@deny_join_id0_tests
-  	m@fullmesh_tests
-  	z@fastclose_tests
-+ 	F@fail_tests
-+ 	u@userspace_tests
- -	I@implicit_tests
- +	I@endpoint_tests
-  )
- =20
-  all_tests_args=3D""
-
---Sig_/oG9G.D4Cl_PQSJ2xzIU8OBo
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKBppYACgkQAVBC80lX
-0Gxgwgf/ZOg3OUe/tGNvEUpX/7+4cegAp0wYQomddeAqdrQoUnOonqXFfwiYu10L
-Z/0tv66w45GXJm9T9fffmgHIA+zZnKqUuJ1EmaFO/IK1FNm3rUotuiBZBDQpJQH+
-sd/GQKm1mbD3GrBBf2yWBdQSeaSGBf88szedCeMDXHqmS2n1HxnBnS2kBxYvDX3w
-+SpXRix70Bw4/0LjwJ495oaoek4uQVL/Axo7LeZl2xIJICQ7ozLDiaQ6y7sxcLfA
-DlrB3nIOJ8kzopucPH6KUSrE+z1zUjfNymtzNsvYQgc0sDBI9vIb2i/ri1UJMAbY
-zYfmZ3vBt6v7GDKyMNvJ4Kt0oILJBQ==
-=IgLR
------END PGP SIGNATURE-----
-
---Sig_/oG9G.D4Cl_PQSJ2xzIU8OBo--
