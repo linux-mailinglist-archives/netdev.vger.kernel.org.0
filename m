@@ -2,99 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B85DC527FAB
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 10:29:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF2C3527FE8
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 10:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239634AbiEPI3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 04:29:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47926 "EHLO
+        id S241904AbiEPImh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 04:42:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233226AbiEPI3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 04:29:08 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9B2DE027
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 01:29:07 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id n10so13780963pjh.5
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 01:29:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=o0qudJChmRvhx2giXx5fvIT+yx8UdlmNUYCGDDspMcA=;
-        b=mTE1B3n4QnfzlkX5aVAovaqmtE+aMaVSb0je8RcOdNCdHBQYuwZjnDBME8kqVUlt3V
-         94MJVbSkiMdc5Oh0lZ5YKGoZBKnPWb47wtm64FTJRCHnBaeetk5o49dYCoEm1Dci1jUc
-         1lxorlrKP1h6/NGVALbUN0sRNQeaf0/OHInzA5qF4KZDOmY9unSNinEYCGzqPlWe4M6L
-         +/YG+GNzAZ57kb4oV96L67kb666LlSG6CIwLSGflZ0Q6FK7GVAIamIl3AbaQt0ZFTMBd
-         pSv7135JOCsYWwR8Wj021gzOkr3ML2nkuC90rIEeFlCxXBnAGncXMesNssteA3lHGefH
-         QtPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=o0qudJChmRvhx2giXx5fvIT+yx8UdlmNUYCGDDspMcA=;
-        b=ouLcanJUqBwHPCopx9hSuCP0G44o0N3VXfoAlMikXpXaEWBfZoJQS4KqAOP7J4suJ0
-         B9J88cjdCPgGZ3uTby5L9j2vOhncventk6t+Ts92LTrwOOdN7ca++X6T2+OmWJ4VYcP5
-         vdaYaoGY4KG3UGWHC6uC4VG3HLNkb8B9u2WDE7dZ9Pbe8sMMkmhnW462qDABDgYGo27I
-         yZ1ZD+RtH4shq2uQzk8WwbhYDV8lKZI8GOqE0pu3Htkm+AycQ1jMPgocU2lUPnWue6cw
-         Ju9iZF/K/XJtP/druiqQujAxCNUFAIgnIA4oO6Zpex5cqhmNnEb/eaJrBUhSm7p2/xoW
-         2RDg==
-X-Gm-Message-State: AOAM533sy9aQ0CPBkOTwMtVaGuHFEVVv2smzSZGTbtXmd7ucr7zQSKce
-        CCOyDf7bd4clVkKxBdKnda4Gc+UKWefans9yVdE=
-X-Google-Smtp-Source: ABdhPJwvY5nKLevmymAuaEubqk6cqT1MhbeG+hdXKdGEGawMSegIuGrjyf02dlKsExvLznHJWMVgyxkiOl1T3S/ghQg=
-X-Received: by 2002:a17:902:ea46:b0:15d:dbc:34f2 with SMTP id
- r6-20020a170902ea4600b0015d0dbc34f2mr16150120plg.60.1652689747347; Mon, 16
- May 2022 01:29:07 -0700 (PDT)
+        with ESMTP id S241438AbiEPImd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 04:42:33 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 31242B870
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 01:42:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652690542;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=zsjSQ0E4x4apOOovvgvIeCzdF5L3Muj7tY5Ce1u0fFA=;
+        b=fETIvEMNWNPYITmsLFpP5oAUXqxQIBsYX34NBd97UwTAt+FFuJPDCV060wcsPG5B1h6mpJ
+        ehkIsMl6V/Zm5GTD8crIiHvPaPT8i79qFlbJAaDg3DfIZwb/oDgoH+xCq9DqBU8rro1XWe
+        NSxQToJBAezWy6hPJfjaFPQduQFUsww=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-644-hrKwPFoVP6as52qPJiqDgw-1; Mon, 16 May 2022 04:42:20 -0400
+X-MC-Unique: hrKwPFoVP6as52qPJiqDgw-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4A4BF29AB44D;
+        Mon, 16 May 2022 08:42:20 +0000 (UTC)
+Received: from localhost.localdomain (ovpn-13-125.pek2.redhat.com [10.72.13.125])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6111A7C52;
+        Mon, 16 May 2022 08:42:16 +0000 (UTC)
+From:   Jason Wang <jasowang@redhat.com>
+To:     viro@zeniv.linux.org.uk, mst@redhat.com, jasowang@redhat.com,
+        kvm@vger.kernel.org
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        ebiggers@kernel.org, davem@davemloft.net
+Subject: [PATCH] vhost_net: fix double fget()
+Date:   Mon, 16 May 2022 16:42:13 +0800
+Message-Id: <20220516084213.26854-1-jasowang@redhat.com>
 MIME-Version: 1.0
-Received: by 2002:a05:6a06:1e8c:b0:4b8:c638:ee8e with HTTP; Mon, 16 May 2022
- 01:29:06 -0700 (PDT)
-Reply-To: jean.micheal33@yahoo.com
-From:   Jean Michael <teresitar725@gmail.com>
-Date:   Mon, 16 May 2022 01:29:06 -0700
-Message-ID: <CACe6KOPg3KZOZr6gkOx19Yvr1bcDaQFuDZdf=LdcrjtZVzCbtg@mail.gmail.com>
-Subject: Hi dear
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:102a listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4617]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [teresitar725[at]gmail.com]
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [jean.micheal33[at]yahoo.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [teresitar725[at]gmail.com]
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.4 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-type: text/plain
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Al Viro <viro@zeniv.linux.org.uk>
+
+Here's another piece of code assuming that repeated fget() will yield the
+same opened file: in vhost_net_set_backend() we have
+
+        sock = get_socket(fd);
+        if (IS_ERR(sock)) {
+                r = PTR_ERR(sock);
+                goto err_vq;
+        }
+
+        /* start polling new socket */
+        oldsock = vhost_vq_get_backend(vq);
+        if (sock != oldsock) {
+...
+                vhost_vq_set_backend(vq, sock);
+...
+                if (index == VHOST_NET_VQ_RX)
+                        nvq->rx_ring = get_tap_ptr_ring(fd);
+
+with
+static struct socket *get_socket(int fd)
+{
+        struct socket *sock;
+
+        /* special case to disable backend */
+        if (fd == -1)
+                return NULL;
+        sock = get_raw_socket(fd);
+        if (!IS_ERR(sock))
+                return sock;
+        sock = get_tap_socket(fd);
+        if (!IS_ERR(sock))
+                return sock;
+        return ERR_PTR(-ENOTSOCK);
+}
+and
+static struct ptr_ring *get_tap_ptr_ring(int fd)
+{
+        struct ptr_ring *ring;
+        struct file *file = fget(fd);
+
+        if (!file)
+                return NULL;
+        ring = tun_get_tx_ring(file);
+        if (!IS_ERR(ring))
+                goto out;
+        ring = tap_get_ptr_ring(file);
+        if (!IS_ERR(ring))
+                goto out;
+        ring = NULL;
+out:
+        fput(file);
+        return ring;
+}
+
+Again, there is no promise that fd will resolve to the same thing for
+lookups in get_socket() and in get_tap_ptr_ring().  I'm not familiar
+enough with the guts of drivers/vhost to tell how easy it is to turn
+into attack, but it looks like trouble.  If nothing else, the pointer
+returned by tun_get_tx_ring() is not guaranteed to be pinned down by
+anything - the reference to sock will _usually_ suffice, but that
+doesn't help any if we get a different socket on that second fget().
+
+One possible way to fix it would be the patch below; objections?
+
+Signed-off-by: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: Jason Wang <jasowang@redhat.com>
+---
+ drivers/vhost/net.c | 15 +++++++--------
+ 1 file changed, 7 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+index 28ef323882fb..0bd7d91de792 100644
+--- a/drivers/vhost/net.c
++++ b/drivers/vhost/net.c
+@@ -1449,13 +1449,9 @@ static struct socket *get_raw_socket(int fd)
+ 	return ERR_PTR(r);
+ }
+ 
+-static struct ptr_ring *get_tap_ptr_ring(int fd)
++static struct ptr_ring *get_tap_ptr_ring(struct file *file)
+ {
+ 	struct ptr_ring *ring;
+-	struct file *file = fget(fd);
+-
+-	if (!file)
+-		return NULL;
+ 	ring = tun_get_tx_ring(file);
+ 	if (!IS_ERR(ring))
+ 		goto out;
+@@ -1464,7 +1460,6 @@ static struct ptr_ring *get_tap_ptr_ring(int fd)
+ 		goto out;
+ 	ring = NULL;
+ out:
+-	fput(file);
+ 	return ring;
+ }
+ 
+@@ -1551,8 +1546,12 @@ static long vhost_net_set_backend(struct vhost_net *n, unsigned index, int fd)
+ 		r = vhost_net_enable_vq(n, vq);
+ 		if (r)
+ 			goto err_used;
+-		if (index == VHOST_NET_VQ_RX)
+-			nvq->rx_ring = get_tap_ptr_ring(fd);
++		if (index == VHOST_NET_VQ_RX) {
++			if (sock)
++				nvq->rx_ring = get_tap_ptr_ring(sock->file);
++			else
++				nvq->rx_ring = NULL;
++		}
+ 
+ 		oldubufs = nvq->ubufs;
+ 		nvq->ubufs = ubufs;
 -- 
-Please did you receive my email if yes get back to me for  more
-    details about myself
-    Thanks
-    Jean
+2.25.1
+
