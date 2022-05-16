@@ -2,110 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5442152955C
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 01:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9B5D529576
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 01:46:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350410AbiEPXjT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 19:39:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35676 "EHLO
+        id S1346697AbiEPXqK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 19:46:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350404AbiEPXjQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 19:39:16 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DBFF42EFE;
-        Mon, 16 May 2022 16:39:13 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L2G166yl7z4xZ2;
-        Tue, 17 May 2022 09:39:06 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
-        s=201909; t=1652744351;
-        bh=shMAgr3KnLfduKB2nfq7HCfF2fOXsMLLY0bGSFIz4Ms=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=QLY2t/FKtddLoKYu8LG0sSKbrlIDbQb907F8fJRC5dkfgoQ4VcE8ZYWVwVOoK7EM4
-         xzfu8+So2JKiaEzF7GSQJ9gueS9zaiy8W0ZSlhez0VFXy4Wb0j8KP+yhCabzAY1A+C
-         0FgNnaqMk20UWxmOM3R6jumDaJQD3hLDqa2kTOU3pR8ceSVpLscdB0G74mWPjxfypW
-         1YbJXhatDs5+BG95Jjxs9mw7zFQliQ6Q027nffmAN+9od+JVIb8Te0z/N9Z2mv7B/v
-         RTBKi84QByAmv5PC2z6tmhRB7b8jCnaApdBNfdiJ8XpCmLW2Ws4btTP6KU81mSwIaj
-         LQs8XWcGd88vg==
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Mark Brown <broonie@kernel.org>,
-        chris.packham@alliedtelesis.co.nz,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>
-Subject: Re: [PATCH v2 4/4] powerpc/52xx: Convert to use fwnode API
-In-Reply-To: <YoJbaTNJFV2A1Etw@smile.fi.intel.com>
-References: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
- <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
- <877d6l7fmy.fsf@mpe.ellerman.id.au> <YoJaGGwfoSYhaT13@smile.fi.intel.com>
- <YoJbaTNJFV2A1Etw@smile.fi.intel.com>
-Date:   Tue, 17 May 2022 09:38:56 +1000
-Message-ID: <874k1p6oa7.fsf@mpe.ellerman.id.au>
+        with ESMTP id S232582AbiEPXqJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 19:46:09 -0400
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4A621E32;
+        Mon, 16 May 2022 16:46:07 -0700 (PDT)
+Received: by mail-io1-xd31.google.com with SMTP id e194so17668271iof.11;
+        Mon, 16 May 2022 16:46:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NGmqOSoM/D/mlnC6zemgOPjMPqkvgQ6nvvptywkIkBQ=;
+        b=LUNfwdi8TjvvTwcSOEgYdD/CjULEhvBRWPbzoOorGdAgxNpqegtZbi3YapReYWF1uC
+         zhByIgHMeTEcEuzaBYbRLj1YEj9hJV06WVRvF29S9CLENehMxIwwM+ZIQAmGpBbIhz65
+         iyEqytk5wROHHWSkk1DYeo4IwVgupQEU/FWPfsGNnNr/xoHNbCyIaogVnULZqhhDZh0B
+         vTwkZv9tfLhaeM8pi+Ylj5NVHUvmi+XG9COEpF6gB7jIjv5G9cbWb+KNbdBy9D1KGK6N
+         kmflUrHLR3SFhZNU5NIy8E064V93c5PE1d/L2ZaU2RBpnk2SC+9ALUYa8E0KIJwP7rO3
+         VOIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NGmqOSoM/D/mlnC6zemgOPjMPqkvgQ6nvvptywkIkBQ=;
+        b=WIsyIrxDHhAPcP+KTGCUJ6VXRi8/dKNmbKPKXdIuw0UZWvPmLuvcu5dTpwGScNVDnm
+         /Jo9GL+GKrTNQZdCn8gomPrWBPYj1pkVQ1t2+e1T1oNOBIAz0sZUB7zJ5mz0RdKx9Owf
+         A8CJIprxyfN36W4VxmNaKGpDyfVbUllql83hCn+0jz1I8GjsxQHuPFvj7BeTjjBuuEXR
+         PyMxnnc+DJ/DAoeXRXzRBEldz6/75tocjQsvT9Ft7Fq5h6yDmF1cVP4XR7tnXcDs7RJx
+         DSUugmcaJddlJDnkuG1LmmVe9TwnoZ3Y6LLys+a2CRcU2Gc4rjW8FosOvGBa1/fw4u9O
+         OfZg==
+X-Gm-Message-State: AOAM532t6XIOG+BjsdYOIDrcMi3V+lT9B7qcYRU0gyLvZlAg8t6hEDsN
+        RoaOFYe+n+rb9L1DiG1grhW11VQPKgU4RCx5QKE=
+X-Google-Smtp-Source: ABdhPJx8vwSSxGyeZm7P5K9XJwN8Ufh6yWvDl4kzldAdJFHxSoLSzr2MrRLxy6rVWceYE43yCXVi+3OPsrtxvceSiX8=
+X-Received: by 2002:a05:6638:468e:b0:32b:fe5f:d73f with SMTP id
+ bq14-20020a056638468e00b0032bfe5fd73fmr10812141jab.234.1652744767089; Mon, 16
+ May 2022 16:46:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CAEf4Bzah9K7dEa_7sXE4TnkuMTRHypMU9DxiLezgRvLjcqE_YA@mail.gmail.com>
+ <20220513190821.431762-1-tadeusz.struk@linaro.org> <CAEf4BzY-p13huoqo6N7LJRVVj8rcjPeP3Cp=KDX4N2x9BkC9Zw@mail.gmail.com>
+ <2fcdbecf-5352-ea81-ee42-ee10fbe2f72e@linaro.org>
+In-Reply-To: <2fcdbecf-5352-ea81-ee42-ee10fbe2f72e@linaro.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 16 May 2022 16:45:56 -0700
+Message-ID: <CAEf4BzZSb7z=c+dqsO4rTBet7jUzqCXOG-mVxFxqX9y0y05cEw@mail.gmail.com>
+Subject: Re: [PATCH v3] bpf: Fix KASAN use-after-free Read in compute_effective_progs
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux- stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
-> On Mon, May 16, 2022 at 05:05:12PM +0300, Andy Shevchenko wrote:
->> On Mon, May 16, 2022 at 11:48:05PM +1000, Michael Ellerman wrote:
->> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
->> > > We may convert the GPT driver to use fwnode API for the sake
->> > > of consistency of the used APIs inside the driver.
->> > 
->> > I'm not sure about this one.
->> > 
->> > It's more consistent to use fwnode in this driver, but it's very
->> > inconsistent with the rest of the powerpc code. We have basically no
->> > uses of the fwnode APIs at the moment.
->> 
->> Fair point!
->> 
->> > It seems like a pretty straight-forward conversion, but there could
->> > easily be a bug in there, I don't have any way to test it. Do you?
->> 
->> Nope, only compile testing. The important part of this series is to
->> clean up of_node from GPIO library, so since here it's a user of
->> it I want to do that. This patch is just ad-hoc conversion that I
->> noticed is possible. But there is no any requirement to do so.
->> 
->> Lemme drop this from v3.
+On Mon, May 16, 2022 at 4:35 PM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
 >
-> I just realize that there is no point to send a v3. You can just apply
-> first 3 patches. Or is your comment against entire series?
+> On 5/16/22 16:16, Andrii Nakryiko wrote:
+> > On Fri, May 13, 2022 at 12:08 PM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
+> >>   kernel/bpf/cgroup.c | 64 +++++++++++++++++++++++++++++++++++++++------
+> >>   1 file changed, 56 insertions(+), 8 deletions(-)
+> >>
+> >> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> >> index 128028efda64..9d3af4d6c055 100644
+> >> --- a/kernel/bpf/cgroup.c
+> >> +++ b/kernel/bpf/cgroup.c
+> >> @@ -681,6 +681,57 @@ static struct bpf_prog_list *find_detach_entry(struct list_head *progs,
+> >>          return ERR_PTR(-ENOENT);
+> >>   }
+> >>
+> >> +/**
+> >> + * purge_effective_progs() - After compute_effective_progs fails to alloc new
+> >> + *                           cgrp->bpf.inactive table we can recover by
+> >> + *                           recomputing the array in place.
+> >> + *
+> >> + * @cgrp: The cgroup which descendants to traverse
+> >> + * @link: A link to detach
+> >> + * @atype: Type of detach operation
+> >> + */
+> >> +static void purge_effective_progs(struct cgroup *cgrp, struct bpf_prog *prog,
+> >> +                                 enum cgroup_bpf_attach_type atype)
+> >> +{
+> >> +       struct cgroup_subsys_state *css;
+> >> +       struct bpf_prog_array_item *item;
+> >> +       struct bpf_prog *tmp;
+> >> +       struct bpf_prog_array *array;
+> >> +       int index = 0, index_purge = -1;
+> >> +
+> >> +       if (!prog)
+> >> +               return;
+> >> +
+> >> +       /* recompute effective prog array in place */
+> >> +       css_for_each_descendant_pre(css, &cgrp->self) {
+> >> +               struct cgroup *desc = container_of(css, struct cgroup, self);
+> >> +
+> >> +               array = desc->bpf.effective[atype];
+> >
+> > ../kernel/bpf/cgroup.c:748:23: warning: incorrect type in assignment
+> > (different address spaces)
+> > ../kernel/bpf/cgroup.c:748:23:    expected struct bpf_prog_array *array
+> > ../kernel/bpf/cgroup.c:748:23:    got struct bpf_prog_array [noderef] __rcu *
+> >
+> >
+> > you need rcu_dereference here? but also see suggestions below to avoid
+> > iterating effective directly (it's ambiguous to search by prog only)
+>
+> I didn't check it with sparse so I didn't see this warning.
+> Will fix in the next version.
+>
+> >
+> >> +               item = &array->items[0];
+> >> +
+> >> +               /* Find the index of the prog to purge */
+> >> +               while ((tmp = READ_ONCE(item->prog))) {
+> >> +                       if (tmp == prog) {
+> >
+> > I think comparing just prog isn't always correct, as the same program
+> > can be in effective array multiple times if attached through bpf_link.
+> >
+> > Looking at replace_effective_prog() I think we can do a very similar
+> > (and tested) approach:
+> >
+> > 1. restore original pl state in __cgroup_bpf_detach (so we can find it
+> > by comparing pl->prog == prog && pl->link == link)
+> > 2. use replace_effective_prog's approach to find position of pl in
+> > effective array (using this nested for loop over cgroup parents and
+> > list_for_each_entry inside)
+> > 3. then instead of replacing one prog with another do
+> > bpf_prog_array_delete_safe_at ?
+> >
+> > I'd feel more comfortable using the same tested overall approach of
+> > replace_effective_prog.
+>
+> Ok, I can try that.
+>
+> >
+> >> +                               index_purge = index;
+> >> +                               break;
+> >> +                       }
+> >> +                       item++;
+> >> +                       index++;
+> >> +               }
+> >> +
+> >> +               /* Check if we found what's needed for removing the prog */
+> >> +               if (index_purge == -1 || index_purge == index - 1)
+> >> +                       continue;
+> >
+> > the search shouldn't fail, should it?
+>
+> I wasn't if the prog will be present in all parents so I decided to add this
+> check to make sure it is found.
 
-No, my comment is just about this patch.
+Looking at replace_effective_prog (it's been a while since I touched
+this code) it has to be present, otherwise it's a bug
 
-I don't mind converting to new APIs when it's blocking some other
-cleanup. But given the age of this code I think it's probably better to
-just leave the rest of it as-is, unless someone volunteers to test it.
-
-So yeah I'll just take patches 1-3 of this v2 series, no need to resend.
-
-cheers
+>
+> >
+> >> +
+> >> +               /* Remove the program from the array */
+> >> +               WARN_ONCE(bpf_prog_array_delete_safe_at(array, index_purge),
+> >> +                         "Failed to purge a prog from array at index %d", index_purge);
+> >> +
+> >> +               index = 0;
+> >> +               index_purge = -1;
+> >> +       }
+> >> +}
+> >> +
+> >>   /**
+> >>    * __cgroup_bpf_detach() - Detach the program or link from a cgroup, and
+> >>    *                         propagate the change to descendants
+> >> @@ -723,8 +774,11 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+> >>          pl->link = NULL;
+> >>
+> >>          err = update_effective_progs(cgrp, atype);
+> >> -       if (err)
+> >> -               goto cleanup;
+> >> +       if (err) {
+> >> +               struct bpf_prog *prog_purge = prog ? prog : link->link.prog;
+> >> +
+> >
+> > so here we shouldn't forget link, instead pass both link and prog (one
+> > of them will have to be NULL) into purge_effective_progs
+>
+> ok, I will pass in both.
+>
+> --
+> Thanks,
+> Tadeusz
