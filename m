@@ -2,231 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E0E5528363
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 13:37:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 168E8528382
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 13:49:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243217AbiEPLhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 07:37:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
+        id S239810AbiEPLtb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 07:49:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236194AbiEPLhm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 07:37:42 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C92EDF51;
-        Mon, 16 May 2022 04:37:41 -0700 (PDT)
-Date:   Mon, 16 May 2022 13:37:38 +0200
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Sven Auhagen <sven.auhagen@voleatech.de>
-Cc:     Oz Shlomo <ozsh@nvidia.com>, Felix Fietkau <nbd@nbd.name>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
-        Florian Westphal <fw@strlen.de>, Paul Blakey <paulb@nvidia.com>
-Subject: Re: [PATCH net v2] netfilter: nf_flow_table: fix teardown flow
- timeout
-Message-ID: <YoI3gliaYc250Vnb@salvia>
-References: <20220512182803.6353-1-ozsh@nvidia.com>
- <YoIt5rHw4Xwl1zgY@salvia>
- <20220516111817.2jic2qnij2dvkp5i@Svens-MacBookPro.local>
+        with ESMTP id S229890AbiEPLt3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 07:49:29 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B2FDF8D;
+        Mon, 16 May 2022 04:49:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 72A1660FFC;
+        Mon, 16 May 2022 11:49:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5281AC385B8;
+        Mon, 16 May 2022 11:49:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652701765;
+        bh=1UjUf9qgR8mCHZ9pO5ibdXOTkA+2CnwKyYDerjjSjGA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gMkYxYwaD2K0qgkQWrvFjMbEes4kia98EUUVJ/06WXfRTmnyYFI3+clNVoLAQu0/F
+         x+63icf6hFCM/xsO/+YqetIoB4x1gBd+Q0z+jkU58s/KBV5u+gOj1DguI8HjQPFHZJ
+         vvpflzD8mQqRkZEtvS5uJxpZqREmSgXWpzXkSehLhvHWGXMoA0snQrvlWtBU+MRVd8
+         Io7mXMB4rZKJVMePun91CFyq/qLWre8LzQ/Tr8EnQ5HwsN8K0vwCBskWRAyJi2LT75
+         IWBDOZ/t+kz0pTa6dUeW24jK/LLmqV9hPJLuMxUa4YMiCFSYw1elIzxapFohDrxy+r
+         75pBVqDXWPFjg==
+Date:   Mon, 16 May 2022 13:49:22 +0200
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH bpf-next 1/2] cpuidle/rcu: Making arch_cpu_idle and
+ rcu_idle_exit noinstr
+Message-ID: <20220516114922.GA349949@lothringen>
+References: <20220515203653.4039075-1-jolsa@kernel.org>
+ <20220516042535.GV1790663@paulmck-ThinkPad-P17-Gen-1>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220516111817.2jic2qnij2dvkp5i@Svens-MacBookPro.local>
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+In-Reply-To: <20220516042535.GV1790663@paulmck-ThinkPad-P17-Gen-1>
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 16, 2022 at 01:18:17PM +0200, Sven Auhagen wrote:
-> On Mon, May 16, 2022 at 12:56:38PM +0200, Pablo Neira Ayuso wrote:
-> > On Thu, May 12, 2022 at 09:28:03PM +0300, Oz Shlomo wrote:
-> > > Connections leaving the established state (due to RST / FIN TCP packets)
-> > > set the flow table teardown flag. The packet path continues to set lower
-> > > timeout value as per the new TCP state but the offload flag remains set.
-> > >
-> > > Hence, the conntrack garbage collector may race to undo the timeout
-> > > adjustment of the packet path, leaving the conntrack entry in place with
-> > > the internal offload timeout (one day).
-> > >
-> > > Avoid ct gc timeout overwrite by flagging teared down flowtable
-> > > connections.
-> > >
-> > > On the nftables side we only need to allow established TCP connections to
-> > > create a flow offload entry. Since we can not guaruantee that
-> > > flow_offload_teardown is called by a TCP FIN packet we also need to make
-> > > sure that flow_offload_fixup_ct is also called in flow_offload_del
-> > > and only fixes up established TCP connections.
-> > [...]
-> > > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> > > index 0164e5f522e8..324fdb62c08b 100644
-> > > --- a/net/netfilter/nf_conntrack_core.c
-> > > +++ b/net/netfilter/nf_conntrack_core.c
-> > > @@ -1477,7 +1477,8 @@ static void gc_worker(struct work_struct *work)
-> > >  			tmp = nf_ct_tuplehash_to_ctrack(h);
-> > >  
-> > >  			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
-> > > -				nf_ct_offload_timeout(tmp);
+On Sun, May 15, 2022 at 09:25:35PM -0700, Paul E. McKenney wrote:
+> On Sun, May 15, 2022 at 10:36:52PM +0200, Jiri Olsa wrote:
+> > Making arch_cpu_idle and rcu_idle_exit noinstr. Both functions run
+> > in rcu 'not watching' context and if there's tracer attached to
+> > them, which uses rcu (e.g. kprobe multi interface) it will hit RCU
+> > warning like:
 > > 
-> > Hm, it is the trick to avoid checking for IPS_OFFLOAD from the packet
-> > path that triggers the race, ie. nf_ct_is_expired()
+> >   [    3.017540] WARNING: suspicious RCU usage
+> >   ...
+> >   [    3.018363]  kprobe_multi_link_handler+0x68/0x1c0
+> >   [    3.018364]  ? kprobe_multi_link_handler+0x3e/0x1c0
+> >   [    3.018366]  ? arch_cpu_idle_dead+0x10/0x10
+> >   [    3.018367]  ? arch_cpu_idle_dead+0x10/0x10
+> >   [    3.018371]  fprobe_handler.part.0+0xab/0x150
+> >   [    3.018374]  0xffffffffa00080c8
+> >   [    3.018393]  ? arch_cpu_idle+0x5/0x10
+> >   [    3.018398]  arch_cpu_idle+0x5/0x10
+> >   [    3.018399]  default_idle_call+0x59/0x90
+> >   [    3.018401]  do_idle+0x1c3/0x1d0
 > > 
-> > The flowtable ct fixup races with conntrack gc collector.
+> > The call path is following:
 > > 
-> > Clearing IPS_OFFLOAD might result in offloading the entry again for
-> > the closing packets.
+> > default_idle_call
+> >   rcu_idle_enter
+> >   arch_cpu_idle
+> >   rcu_idle_exit
 > > 
-> > Probably clear IPS_OFFLOAD from teardown, and skip offload if flow is
-> > in a TCP state that represent closure?
->
-> >   		if (unlikely(!tcph || tcph->fin || tcph->rst))
-> >   			goto out;
+> > The arch_cpu_idle and rcu_idle_exit are the only ones from above
+> > path that are traceble and cause this problem on my setup.
 > > 
-> > this is already the intention in the existing code.
-> > 
-> > If this does work, could you keep IPS_OFFLOAD_TEARDOWN_BIT internal,
-> > ie. no in uapi? Define it at include/net/netfilter/nf_conntrack.h and
-> > add a comment regarding this to avoid an overlap in the future.
-> > 
-> > > +				if (!test_bit(IPS_OFFLOAD_TEARDOWN_BIT, &tmp->status))
-> > > +					nf_ct_offload_timeout(tmp);
-> > >  				continue;
-> > >  			}
-> > >  
-> > > diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-> > > index 3db256da919b..aaed1a244013 100644
-> > > --- a/net/netfilter/nf_flow_table_core.c
-> > > +++ b/net/netfilter/nf_flow_table_core.c
-> > > @@ -177,14 +177,8 @@ int flow_offload_route_init(struct flow_offload *flow,
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(flow_offload_route_init);
-> > >  
-> > > -static void flow_offload_fixup_tcp(struct ip_ct_tcp *tcp)
-> > > -{
-> > > -	tcp->state = TCP_CONNTRACK_ESTABLISHED;
-> > > -	tcp->seen[0].td_maxwin = 0;
-> > > -	tcp->seen[1].td_maxwin = 0;
-> > > -}
-> > >  
-> > > -static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
-> > > +static void flow_offload_fixup_ct(struct nf_conn *ct)
-> > >  {
-> > >  	struct net *net = nf_ct_net(ct);
-> > >  	int l4num = nf_ct_protonum(ct);
-> > > @@ -192,8 +186,12 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
-> > >  
-> > >  	if (l4num == IPPROTO_TCP) {
-> > >  		struct nf_tcp_net *tn = nf_tcp_pernet(net);
-> > > +		struct ip_ct_tcp *tcp = &ct->proto.tcp;
-> > > +
-> > > +		tcp->seen[0].td_maxwin = 0;
-> > > +		tcp->seen[1].td_maxwin = 0;
-> > >  
-> > > -		timeout = tn->timeouts[TCP_CONNTRACK_ESTABLISHED];
-> > > +		timeout = tn->timeouts[ct->proto.tcp.state];
-> > >  		timeout -= tn->offload_timeout;
-> > >  	} else if (l4num == IPPROTO_UDP) {
-> > >  		struct nf_udp_net *tn = nf_udp_pernet(net);
-> > > @@ -211,18 +209,6 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
-> > >  		WRITE_ONCE(ct->timeout, nfct_time_stamp + timeout);
-> > >  }
-> > >  
-> > > -static void flow_offload_fixup_ct_state(struct nf_conn *ct)
-> > > -{
-> > > -	if (nf_ct_protonum(ct) == IPPROTO_TCP)
-> > > -		flow_offload_fixup_tcp(&ct->proto.tcp);
-> > > -}
-> > > -
-> > > -static void flow_offload_fixup_ct(struct nf_conn *ct)
-> > > -{
-> > > -	flow_offload_fixup_ct_state(ct);
-> > > -	flow_offload_fixup_ct_timeout(ct);
-> > > -}
-> > > -
-> > >  static void flow_offload_route_release(struct flow_offload *flow)
-> > >  {
-> > >  	nft_flow_dst_release(flow, FLOW_OFFLOAD_DIR_ORIGINAL);
-> > > @@ -353,6 +339,10 @@ static inline bool nf_flow_has_expired(const struct flow_offload *flow)
-> > >  static void flow_offload_del(struct nf_flowtable *flow_table,
-> > >  			     struct flow_offload *flow)
-> > >  {
-> > > +	struct nf_conn *ct = flow->ct;
-> > > +
-> > > +	set_bit(IPS_OFFLOAD_TEARDOWN_BIT, &flow->ct->status);
-> > > +
-> > >  	rhashtable_remove_fast(&flow_table->rhashtable,
-> > >  			       &flow->tuplehash[FLOW_OFFLOAD_DIR_ORIGINAL].node,
-> > >  			       nf_flow_offload_rhash_params);
-> > > @@ -360,12 +350,11 @@ static void flow_offload_del(struct nf_flowtable *flow_table,
-> > >  			       &flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].node,
-> > >  			       nf_flow_offload_rhash_params);
-> > >  
-> > > -	clear_bit(IPS_OFFLOAD_BIT, &flow->ct->status);
-> > > -
-> > >  	if (nf_flow_has_expired(flow))
-> > > -		flow_offload_fixup_ct(flow->ct);
-> > > -	else
-> > > -		flow_offload_fixup_ct_timeout(flow->ct);
-> > > +		flow_offload_fixup_ct(ct);
-> > 
-> > Very unlikely, but race might still happen between fixup and
-> > clear IPS_OFFLOAD_BIT with gc below?
-> > 
-> > Without checking from the packet path, the conntrack gc might race to
-> > refresh the timeout, I don't see a 100% race free solution.
-> > 
-> > Probably update the nf_ct_offload_timeout to a shorter value than a
-> > day would mitigate this issue too.
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
 > 
-> This section of the code is now protected by IPS_OFFLOAD_TEARDOWN_BIT
-> which will prevent the update via nf_ct_offload_timeout.
-> We set it at the beginning of flow_offload_del and flow_offload_teardown.
+> From an RCU viewpoint:
 > 
-> Since flow_offload_teardown is only called on TCP packets
-> we also need to set it at flow_offload_del to prevent the race.
+> Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
 > 
-> This should prevent the race at this point.
+> [ I considered asking for an instrumentation_on() in rcu_idle_exit(),
+> but there is no point given that local_irq_restore() isn't something
+> you instrument anyway. ]
 
-OK.
+So local_irq_save() in the beginning of rcu_idle_exit() is unsafe because
+it is instrumentable by the function (graph)  tracers and the irqsoff tracer.
 
-> > > +	clear_bit(IPS_OFFLOAD_BIT, &ct->status);
-> > > +	clear_bit(IPS_OFFLOAD_TEARDOWN_BIT, &ct->status);
-> > >  
-> > >  	flow_offload_free(flow);
-> > >  }
-> > > @@ -373,8 +362,9 @@ static void flow_offload_del(struct nf_flowtable *flow_table,
-> > >  void flow_offload_teardown(struct flow_offload *flow)
-> > >  {
-> > >  	set_bit(NF_FLOW_TEARDOWN, &flow->flags);
-> > > +	set_bit(IPS_OFFLOAD_TEARDOWN_BIT, &flow->ct->status);
-> > >  
-> > > -	flow_offload_fixup_ct_state(flow->ct);
-> > > +	flow_offload_fixup_ct(flow->ct);
-> > >  }
-> > >  EXPORT_SYMBOL_GPL(flow_offload_teardown);
-> > >  
-> > > diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-> > > index 900d48c810a1..9cc3ea08eb3a 100644
-> > > --- a/net/netfilter/nft_flow_offload.c
-> > > +++ b/net/netfilter/nft_flow_offload.c
-> > > @@ -295,6 +295,8 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
-> > >  					  sizeof(_tcph), &_tcph);
-> > >  		if (unlikely(!tcph || tcph->fin || tcph->rst))
-> > >  			goto out;
-> > > +		if (unlikely(!nf_conntrack_tcp_established(ct)))
-> > > +			goto out;
-> > 
-> > This chunk is not required, from ruleset users can do
-> > 
-> >         ... ct status assured ...
-> > 
-> > instead.
+Also it calls into lockdep that might make use of RCU.
+
+That's why rcu_idle_exit() is not noinstr yet. See this patch:
+
+https://lore.kernel.org/lkml/20220503100051.2799723-4-frederic@kernel.org/
+
+Thanks.
+
 > 
-> Maybe this should be mentioned in the manual or wiki if
-> it is not necessary in the flow offload code.
-
-Yes, documentation and wiki can be updated.
-
-Users might want to offload the flow at a later stage in the TCP
-connection.
+> > ---
+> >  arch/x86/kernel/process.c | 2 +-
+> >  kernel/rcu/tree.c         | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+> > index b370767f5b19..1345cb0124a6 100644
+> > --- a/arch/x86/kernel/process.c
+> > +++ b/arch/x86/kernel/process.c
+> > @@ -720,7 +720,7 @@ void arch_cpu_idle_dead(void)
+> >  /*
+> >   * Called from the generic idle code.
+> >   */
+> > -void arch_cpu_idle(void)
+> > +void noinstr arch_cpu_idle(void)
+> >  {
+> >  	x86_idle();
+> >  }
+> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> > index a4b8189455d5..20d529722f51 100644
+> > --- a/kernel/rcu/tree.c
+> > +++ b/kernel/rcu/tree.c
+> > @@ -896,7 +896,7 @@ static void noinstr rcu_eqs_exit(bool user)
+> >   * If you add or remove a call to rcu_idle_exit(), be sure to test with
+> >   * CONFIG_RCU_EQS_DEBUG=y.
+> >   */
+> > -void rcu_idle_exit(void)
+> > +void noinstr rcu_idle_exit(void)
+> >  {
+> >  	unsigned long flags;
+> >  
+> > -- 
+> > 2.35.3
+> > 
