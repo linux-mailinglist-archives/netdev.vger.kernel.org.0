@@ -2,183 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CACE9528AA0
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 18:35:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 182F4528B6D
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 18:59:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343727AbiEPQfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 12:35:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37020 "EHLO
+        id S1344040AbiEPQ66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 12:58:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343723AbiEPQe7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 12:34:59 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452FB3B3CD
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 09:34:58 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nqdgF-000191-Fx; Mon, 16 May 2022 18:34:47 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id E6C9E7F95E;
-        Mon, 16 May 2022 16:34:45 +0000 (UTC)
-Date:   Mon, 16 May 2022 18:34:45 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Matej Vasilevski <matej.vasilevski@seznam.cz>,
-        linux-can@vger.kernel.org, pisa@cmp.felk.cvut.cz,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        ondrej.ille@gmail.com, martin.jerabek01@gmail.com
-Subject: Re: [RFC PATCH 2/3] dt-bindings: can: ctucanfd: add properties for
- HW timestamping
-Message-ID: <20220516163445.qxz3xlohuquqwbwl@pengutronix.de>
-References: <20220512232706.24575-1-matej.vasilevski@seznam.cz>
- <20220512232706.24575-3-matej.vasilevski@seznam.cz>
- <20220516160250.GA2724701-robh@kernel.org>
+        with ESMTP id S1344061AbiEPQ6v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 12:58:51 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 744A1198;
+        Mon, 16 May 2022 09:58:31 -0700 (PDT)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24GGIWij007719;
+        Mon, 16 May 2022 16:58:26 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=aVzUp1Bdiwo6CVinfyFYrysYi3uvBEDaynhoTyH4Rjs=;
+ b=Uzjvg0bNRguteZvUKLcK03PE3wwOlvWy2V4CSCi5Aajd+hwzIUWOggszRcFRnqetuH5Q
+ zAUvmEjbyOzzcGMQInqBMqX4YmAMbwiGCbcf1ENFV/m6Ja2JTbb+/Rf58mNYUlBSMr0S
+ XQqw/yv7s4akqZEEviG/szyt6Qwx4lkZtu/bRVnISR7Jr5b9tPpNQOpjLFP0AEcovaWQ
+ ef8DPY7wG7Z4QWpGUe3685cPoLFmjR9jjBDIaEGWpICWAT+G4GESkZDG9m6QFv/8mKoC
+ e0nWjL0HMoh7s76MNFpqUIggtN1VejfHUp/FMLcL9V8B8v8Gw6Vv5KjDZ2WmOYfkPfSL /Q== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3t11gnn8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 16:58:26 +0000
+Received: from m0098393.ppops.net (m0098393.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24GGSPWY010605;
+        Mon, 16 May 2022 16:58:26 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g3t11gnm2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 16:58:25 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24GGruFW029831;
+        Mon, 16 May 2022 16:58:23 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma04fra.de.ibm.com with ESMTP id 3g2428tcf1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 May 2022 16:58:23 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24GGvo6N28574030
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 16 May 2022 16:57:50 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2637111C05B;
+        Mon, 16 May 2022 16:58:21 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8F81011C04C;
+        Mon, 16 May 2022 16:58:20 +0000 (GMT)
+Received: from [9.171.85.194] (unknown [9.171.85.194])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 16 May 2022 16:58:20 +0000 (GMT)
+Message-ID: <63039789-839c-865e-27b3-1f843c87de9b@linux.ibm.com>
+Date:   Mon, 16 May 2022 18:58:20 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="lqr77j4ug2nnwbfa"
-Content-Disposition: inline
-In-Reply-To: <20220516160250.GA2724701-robh@kernel.org>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH net-next v3 0/2] net/smc: send and write inline
+ optimization for smc
+Content-Language: en-US
+To:     Guangguan Wang <guangguan.wang@linux.alibaba.com>,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, leon@kernel.org, tonylu@linux.alibaba.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220516055137.51873-1-guangguan.wang@linux.alibaba.com>
+From:   Karsten Graul <kgraul@linux.ibm.com>
+Organization: IBM Deutschland Research & Development GmbH
+In-Reply-To: <20220516055137.51873-1-guangguan.wang@linux.alibaba.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 9q07apO6WGDWethuOTZKU76-3kK4fbuc
+X-Proofpoint-GUID: 6DlRkI7CZBAkWIxZa-wLpYcoVFrHp4SB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-16_15,2022-05-16_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ lowpriorityscore=0 phishscore=0 clxscore=1015 malwarescore=0
+ impostorscore=0 suspectscore=0 mlxlogscore=999 adultscore=0 mlxscore=0
+ bulkscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205160092
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 16/05/2022 07:51, Guangguan Wang wrote:
+> Send cdc msgs and write data inline if qp has sufficent inline
+> space, helps latency reducing. 
+> 
+> In my test environment, which are 2 VMs running on the same
+> physical host and whose NICs(ConnectX-4Lx) are working on
+> SR-IOV mode, qperf shows 0.4us-1.3us improvement in latency.
+> 
+> Test command:
+> server: smc_run taskset -c 1 qperf
+> client: smc_run taskset -c 1 qperf <server ip> -oo \
+> 		msg_size:1:2K:*2 -t 30 -vu tcp_lat
+> 
+> The results shown below:
+> msgsize     before       after
+> 1B          11.9 us      10.6 us (-1.3 us)
+> 2B          11.7 us      10.7 us (-1.0 us)
+> 4B          11.7 us      10.7 us (-1.0 us)
+> 8B          11.6 us      10.6 us (-1.0 us)
+> 16B         11.7 us      10.7 us (-1.0 us)
+> 32B         11.7 us      10.6 us (-1.1 us)
+> 64B         11.7 us      11.2 us (-0.5 us)
+> 128B        11.6 us      11.2 us (-0.4 us)
+> 256B        11.8 us      11.2 us (-0.6 us)
+> 512B        11.8 us      11.3 us (-0.5 us)
+> 1KB         11.9 us      11.5 us (-0.4 us)
+> 2KB         12.1 us      11.5 us (-0.6 us)
+> 
+> Guangguan Wang (2):
+>   net/smc: send cdc msg inline if qp has sufficient inline space
+>   net/smc: rdma write inline if qp has sufficient inline space
+> 
+>  net/smc/smc_ib.c |  1 +
+>  net/smc/smc_tx.c | 17 ++++++++++++-----
+>  net/smc/smc_wr.c |  5 ++++-
+>  3 files changed, 17 insertions(+), 6 deletions(-)
+> 
 
---lqr77j4ug2nnwbfa
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I like that change, thank you!
 
-On 16.05.2022 11:02:50, Rob Herring wrote:
-> On Fri, May 13, 2022 at 01:27:06AM +0200, Matej Vasilevski wrote:
-> > Extend dt-bindings for CTU CAN-FD IP core with necessary properties
-> > to enable HW timestamping for platform devices. Since the timestamping
-> > counter is provided by the system integrator usign those IP cores in
-> > their FPGA design, we need to have the properties specified in device t=
-ree.
-> >=20
-> > Signed-off-by: Matej Vasilevski <matej.vasilevski@seznam.cz>
-> > ---
-> >  .../bindings/net/can/ctu,ctucanfd.yaml        | 34 +++++++++++++++++--
-> >  1 file changed, 31 insertions(+), 3 deletions(-)
->=20
-> What's the base for this patch? Doesn't apply for me.
->=20
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yam=
-l b/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
-> > index fb34d971dcb3..c3693dadbcd8 100644
-> > --- a/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
-> > +++ b/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
-> > @@ -41,9 +41,35 @@ properties:
-> > =20
-> >    clocks:
-> >      description: |
-> > -      phandle of reference clock (100 MHz is appropriate
-> > -      for FPGA implementation on Zynq-7000 system).
-> > +      Phandle of reference clock (100 MHz is appropriate for FPGA
-> > +      implementation on Zynq-7000 system). If you wish to use timestam=
-ps
-> > +      from the core, add a second phandle with the clock used for time=
-stamping
-> > +      (can be the same as the first clock).
-> > +    maxItems: 2
->=20
-> With more than 1, you have to define what each entry is. IOW, use=20
-> 'items'.
->=20
-> > +
-> > +  clock-names:
-> > +    description: |
-> > +      Specify clock names for the "clocks" property. The first clock n=
-ame
-> > +      doesn't matter, the second has to be "ts_clk". Timestamping freq=
-uency
-> > +      is then obtained from the "ts_clk" clock. This takes precedence =
-over
-> > +      the ts-frequency property.
-> > +      You can omit this property if you don't need timestamps.
-> > +    maxItems: 2
->=20
-> You must define what the names are as a schema.
->=20
-> > +
-> > +  ts-used-bits:
-> > +    description: width of the timestamping counter
-> > +    maxItems: 1
-> > +    items:
->=20
-> Not an array, so you don't need maxItems nor items.
->=20
-> > +      minimum: 8
-> > +      maximum: 64
-> > +
-> > +  ts-frequency:
->=20
-> Use a standard unit suffix.
->=20
-> > +    description: |
-> > +      Frequency of the timestamping counter. Set this if you want to g=
-et
-> > +      timestamps, but you didn't set the timestamping clock in clocks =
-property.
-> >      maxItems: 1
-> > +    items:
->=20
-> Not an array.
->=20
->=20
-> Is timestamping a common feature for CAN or is this specific to this=20
-> controller? In the latter case, you need vendor prefixes on these=20
-> properties. In the former case, you need to define them in a common=20
-> schema.
+For the series:
 
-This property describes the usable with of the free running timer and
-the timestamps generated by it. This is similar to the free running
-timer and time stamps as found on PTP capable Ethernet NICs. But the
-ctucanfd comes in a hardware description language that can be
-parametrized and synthesized into your own FPGA.
+Acked-by: Karsten Graul <kgraul@linux.ibm.com>
 
-To answer your question, timestamping is common in newer CAN cores, but
-the width of the timestamping register is usually fixed and thus hard
-coded in the driver.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---lqr77j4ug2nnwbfa
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKCfSMACgkQrX5LkNig
-011vewgAuA1Sw18Cas3A6qb/P1pIqTIiUQirJ5dTpO30ukpTNRklS+3Ea6rZBjlX
-43x/xFB7xsE6ib+GBvP/V8N6RNpOGW7pJb0gHfS/XF9NR1hZZuHxqP5twhOJcQnv
-QWNZ43/nZaCaLZtr2XXcV7JZ1Ojh559z8m+WaYOymAiiYtWWKz4CuChEU+VndYYl
-7pLCwypfb2fxJ++DTsYT45/elS+szphh1He1O8zEa8SwVE5aVwXcy8Rx2bCJKwNc
-smRBqkQ82SlXnKgAEoNOFQx+Yz4JblsAk++wE9mHKDKBEYk2+Mo2ChtlEIPP4jPQ
-sLhx4+omh/YCIwzluS+QOS49Y1A7Qg==
-=qzlR
------END PGP SIGNATURE-----
-
---lqr77j4ug2nnwbfa--
