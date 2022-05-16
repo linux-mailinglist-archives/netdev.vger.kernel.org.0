@@ -2,45 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1923B5283FB
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 14:17:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F766528419
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 14:23:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240563AbiEPMRL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 08:17:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44096 "EHLO
+        id S236236AbiEPMXK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 08:23:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58548 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiEPMRK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 08:17:10 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2095.outbound.protection.outlook.com [40.107.20.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A47C82BB20;
-        Mon, 16 May 2022 05:17:08 -0700 (PDT)
+        with ESMTP id S233525AbiEPMXJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 08:23:09 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70138.outbound.protection.outlook.com [40.107.7.138])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 764482D1C0;
+        Mon, 16 May 2022 05:23:08 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FpteFF0ipqwk62pn0b9BdtxXHLybGmPHEu9D3vrwlBKtgrlNd5VfpbVn6NQWfCHtjqZFlmSF4lE0KicrCeyFFkipZXI6X2VZX0bVmFuOZhvmloWR8fAapNp6PJ3HWzsLAQu4wYpWeBkBW9cI4livb1l9hWEMsREidMDZoAlNyz7Cq6RV+JnQX7dnKCuMnEiGR/TVHECBkE3oJkfKcV97/vejcgzsZt5OdNTYs7pUL3RAKqhgk95RmpO3kTq3CKF+J9pbZl3QWORqvz5mTD2bcnztDktHyH7k4fAIINwdLABCExAdmJ83i2hCD3+nHT7a+d6UoTTDUddX+M+yG6Yr9g==
+ b=IQx7bekqcp7huDC7NiXig1UudP94+bVZ2A5WGLfDrPl486ffZjf2MgeqAnXEKHxAAj/jUYw/jE0/E+ezi/NtUNNCqhCEUXIyS4IsGHyiTH4UtNh7UhRl2gYwyTqZTuv3jrszGiYfdSVnBXsDR6fefzg4ggwkYCRP4ClMDDdr8ZwJ4U3AmPHleNHImxeZ1fZo2NRomkTxnctPsKz8hneJQqV8u/DNId2vZVJkS6UppoRHNGxKgD8q65tgsT22sF8n4CbgOZ+qdj7EUb3Xx5f1ONI/0qNDg7mB7AWPxbonxROQ0vKGjJqR/ZGA2W0N0kTtqNpDOmTi4DUwV/+kApYmtg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=kthyUfzbO5i39Vvmq+VTbK88b5uT2+SIdtv7gB88FfU=;
- b=CQSG0xlYHyqizLvWHG32CzV4VDx+hT3YQXAg7p0IRAoTL6DdMCStL3suvbQ8uWlnKHS1U06zYav5BALUPl7NO7XLR4opofYGlRAHUKDJfw90Rgco/4vDtaA3a0E16EQS5S5Bqx8l8qpYnWt+OShEthky7itIf65Bnu51oBcCTbmkr0QgvcRFLoVfvY1BV9PxnUc59/qccjtPR/XAQkYLC2xEmMHPntagnE3p31kbxiCyoGblf2Fk5JnXm1Epv4bxaXVHOgO7I469B2lNm6LsL55RAzS0PTjo9LKz2cUPLz9LQmScqn90pVEqEvz9ZBXw1pxweqAa1cy1PhJZ0HhisA==
+ bh=9yK8zFjWzFE3r5PwHbPXMKPFzHoWl/lyrQNdRquDE+E=;
+ b=EwMCPLF6jjFyvSBroZGCoYAX2AaNg9iuwX8TXmv5Ga4a5q/yOq1IvmMYsyIAQAH8l47oKoaEgHFSHOZfGei86Z8uA2w/kA2FUkBSWKSk6mMzdWOIkVAx2Fw+Ilkm2fFMXd/JdQPQSuVjvSA52m1WhLS3fUyAUJeYUuH5OjQp3YhJ7KN3y0e+W5fKUux03LduEoPLjjVspNFHy3YnGZnoMHfGdE2yLwwUmdqs70hh+sB42t53OheiMTItNzPd5tdNoJfQJYUEMjt8k6UGfFVX9kbJDwjc/fsnXJazBObS524hz3odhWpKVQc+18yxKXcKEp3e2mvuEmUlK0noX8tCSA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=voleatech.de; dmarc=pass action=none header.from=voleatech.de;
  dkim=pass header.d=voleatech.de; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=voleatech.de;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=kthyUfzbO5i39Vvmq+VTbK88b5uT2+SIdtv7gB88FfU=;
- b=S/R/QlcUHhyLI9dznr6jpNLFktC2m2UPDGxFjtpetGrZnpPnbV2pl15TpqGFH1+IvqSWowSkyL/OjcjGOUN765t8tx5B/p0jRhpMMREq85MI1LJIBRDf9yTV8cZRGUFbXO888cTG/SO5PsJ9mSrSDueKbrAAxMUc1bj1pSsY/TI=
+ bh=9yK8zFjWzFE3r5PwHbPXMKPFzHoWl/lyrQNdRquDE+E=;
+ b=OL7bUF3IU2V9VlOZyAmNc/1Bf4zjPI7U+kwKpOsIyzwrgXrysuwpFMkivHLbm3oE/xmOZH4+qLr6uxbiGTdi2b5xGvqUYEktHXuYQyMlNn3noC+F2dK3c9Px39DAE01Vj6b6OwhulTdFXE1dSxvC5MBThFqbrL6VkPVVmD5beOM=
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=voleatech.de;
 Received: from PA4PR05MB8996.eurprd05.prod.outlook.com (2603:10a6:102:2a7::10)
- by AM9PR05MB8767.eurprd05.prod.outlook.com (2603:10a6:20b:41c::21) with
+ by AS1PR05MB9697.eurprd05.prod.outlook.com (2603:10a6:20b:478::13) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Mon, 16 May
- 2022 12:17:05 +0000
+ 2022 12:23:05 +0000
 Received: from PA4PR05MB8996.eurprd05.prod.outlook.com
  ([fe80::b1f3:359c:a4dd:2594]) by PA4PR05MB8996.eurprd05.prod.outlook.com
  ([fe80::b1f3:359c:a4dd:2594%7]) with mapi id 15.20.5250.018; Mon, 16 May 2022
- 12:17:05 +0000
-Date:   Mon, 16 May 2022 14:17:00 +0200
+ 12:23:05 +0000
+Date:   Mon, 16 May 2022 14:23:00 +0200
 From:   Sven Auhagen <sven.auhagen@voleatech.de>
 To:     Pablo Neira Ayuso <pablo@netfilter.org>
 Cc:     Oz Shlomo <ozsh@nvidia.com>, Felix Fietkau <nbd@nbd.name>,
@@ -48,70 +48,68 @@ Cc:     Oz Shlomo <ozsh@nvidia.com>, Felix Fietkau <nbd@nbd.name>,
         Florian Westphal <fw@strlen.de>, Paul Blakey <paulb@nvidia.com>
 Subject: Re: [PATCH net v2] netfilter: nf_flow_table: fix teardown flow
  timeout
-Message-ID: <20220516121700.ug2fwqyqgsd3rmsz@SvensMacbookPro.hq.voleatech.com>
+Message-ID: <20220516122300.6gwrlmun4w3ynz7s@SvensMacbookPro.hq.voleatech.com>
 References: <20220512182803.6353-1-ozsh@nvidia.com>
  <YoIt5rHw4Xwl1zgY@salvia>
- <20220516111817.2jic2qnij2dvkp5i@Svens-MacBookPro.local>
- <YoI3gliaYc250Vnb@salvia>
- <YoI+RGnrHbTJJqxB@salvia>
+ <YoI/z+aWkmAAycR3@salvia>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YoI+RGnrHbTJJqxB@salvia>
-X-ClientProxiedBy: AS8PR04CA0208.eurprd04.prod.outlook.com
- (2603:10a6:20b:2f3::33) To PA4PR05MB8996.eurprd05.prod.outlook.com
+In-Reply-To: <YoI/z+aWkmAAycR3@salvia>
+X-ClientProxiedBy: AM6PR0202CA0071.eurprd02.prod.outlook.com
+ (2603:10a6:20b:3a::48) To PA4PR05MB8996.eurprd05.prod.outlook.com
  (2603:10a6:102:2a7::10)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d96a3d9b-0013-4d19-bdd2-08da3735fd76
-X-MS-TrafficTypeDiagnostic: AM9PR05MB8767:EE_
-X-Microsoft-Antispam-PRVS: <AM9PR05MB8767C557AC1104F96F59B775EFCF9@AM9PR05MB8767.eurprd05.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 7dfaf81a-f9e4-42fa-92ee-08da3736d3d8
+X-MS-TrafficTypeDiagnostic: AS1PR05MB9697:EE_
+X-Microsoft-Antispam-PRVS: <AS1PR05MB969745E7E44B45506DFA3C3EEFCF9@AS1PR05MB9697.eurprd05.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gT5SWpJOSkIX8i/4bSb4mGk42oXiQ/9EOZ1v3PQ7XdHhOYfbR9HCSOsosnX6FWZvx4YFl4o7H98gC1pbxNQrGWkNEv1RVeCFfjsOHjvNBo8pFW+QCZUHYimt+1iWFpSJztx5WZjF+A0PuPRwV/bocsXcau+bbrpAFX/Y+G9p8tKjfkNxgDkk2EhELCFw3s3nOle4JCQ2ieQokmp5xR1VEO11XwEvSYFz3hHsurKPtc8VS7Ueu3yILEXnu7U8qUNH5iplTVVvdGAPIF85HHyDQa4Ut3yc2BdLqUN8Pd92pokSEp+ItALS4F23ha9uXhNR1zho1eGgCuYbwuNapsVcUlwDPy6fWshTQ22t4tXpeHEWWu0mTVuczQ+jIfV52YRMsgzLklFBsfIUU0Mm9dOhqA2MACeU+0nrx9AbWPxYiGHxRbh7u6EszZFXGs+bYZEPIQyNlhUxcTVRpM82j2g9FRU+A0CDlzpEJQicjkB32idrAc8xGs+O1zgaW2pM2KKCvv/oOquVAaxG+UNF8OweGoo6f4fplOXZr95Uh+fKnchjh8GSWC+OTtJ3XK5HZat/51U1JvnR5Uat07aOqAkl06VTa1EQ0an6xbZpaifGrU0UGoPnaQDVpPx689IrCl+Qp/MwWGkeA7OA2SAbgCyBM+EVnMHlITuFXGAmlbXnw+JsJdQmG6UU8nLCTZiBfx7I4yPtlODCDkWFEJPsaaGhNg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR05MB8996.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(346002)(366004)(136003)(396003)(39830400003)(376002)(6506007)(186003)(316002)(2906002)(508600001)(54906003)(6916009)(6486002)(26005)(6512007)(9686003)(44832011)(1076003)(38100700002)(6666004)(66946007)(8676002)(4326008)(66556008)(66476007)(5660300002)(8936002)(83380400001)(41300700001)(86362001)(557034005);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: DaN0l7pC4fcKg76FVsrFjygpKVdIvzy/KAqkz5eO6PHh8j9kSr1aNFwQZjZ3X79moGGUyTtgF5jhblFvOvfFCOu7/qsSDVRj2BUD8sU0XHeHRMzqFKdhii7ZCS3e4JKuTeRKVDkLd+CabRtYLf36xCPRco/Yh/wp4uXQG8LhaPvZ+HpaPnGX+CYN7ON9k+BB1U+ODMP+E80RxuFEByA1JkWB7oF2/oU3m7Cdwa+V8UFhZSlYgylYhlEzKgQb6zYrOkqtrDGV5v5g9JSGbuu+cQNerDAkkfBTArR4bp+JnFah50v7YtZEPm77rhmMbpb5MvrCgkpq45l/RkxlId6ekP84ap4McH/QcRYbXIOZXOp/33QhNAXel1MiJOefXde21VzZ8nqhxTwZqhnz1uoUmCag7mzj9WHbNlLuNAQ4hlMzspugPpFnIpuvAbJNUj2gtk+VODELrZ1q2mhsyHr25NqKWFJH+/7hSc/krF8X5S1mT9N5nvp6HvYGhPBs32fPf2+ZU3lD1QyDhKNJer6NV6UssDIyoRohLt58iUeGZ41TnHkWfUraoCa35PS9wttVCgA9v2fDQW6a5BZ/o8gQ9oam/zoS/ajFBgd4i6qWTaL3SQlkaXHQOFrW7KB3jGgVv4wAXA/afphb447TLQ21sw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PA4PR05MB8996.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(376002)(39830400003)(366004)(396003)(346002)(136003)(316002)(6916009)(186003)(44832011)(5660300002)(54906003)(508600001)(6486002)(4326008)(41300700001)(86362001)(66946007)(66556008)(66476007)(2906002)(8936002)(1076003)(8676002)(6512007)(38100700002)(83380400001)(26005)(6506007)(6666004)(9686003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?j/7y4FzsqNhNNRx+17OyHJf8EK9HAinYOwTK1wefsLzAlr0e+i2zw4AW/Vxq?=
- =?us-ascii?Q?JHPSR9SjxGDSyKib0Sq2WwaFkeQZ9+zmMcPbLTPg6qtIAE8bQAxYbqMwcUf8?=
- =?us-ascii?Q?5Hm+fmj/siilMUHSuvY7d8nj4zAKBKSSY6wErv6A/OAM60ntymdPl4WlM9c7?=
- =?us-ascii?Q?YE1vIP+aLnBlcRELivZybV0CrB06COUW/aGoepW0QjC3/HSwLELdAx2Wcrw5?=
- =?us-ascii?Q?qzvXUIXuZ+b9n1BXQwUCZkDH4d3mvcHgQRMY+50KqqPLWSEDZ2qlmNQ7a056?=
- =?us-ascii?Q?pxG98y81yJ8LQ6e7lUAvuDodt7AfAu2VNu9eHTftj9onpg0JfDcl8rJsvwtu?=
- =?us-ascii?Q?9zCdWkIwvvoFJNuPJq4lYDaiIMOs9MQXF5vIYc1YF2J3rqBCwoeZMxclZquM?=
- =?us-ascii?Q?L5R143m0RsO08XissIbTW5yGo74QuWdGwVdBNENMlPxCegKZq6Ey99EwsX2v?=
- =?us-ascii?Q?NCqoCZjurfX9tTZk6EFVYqWx+oJrdv1XdXQk/0E3Xv+SmakUI+B3dzb+Ur8+?=
- =?us-ascii?Q?PcC7prr8n9rPWfJvlmKhwiUdHWrlkqhFZn3n31PzBofF9Bj2FNdstqzX7LCl?=
- =?us-ascii?Q?EK5Qm+9mConhdlSh/klgafSgFBQBTfVEkXxDr6dJgcyy+oVIU8ljO9NkmSLq?=
- =?us-ascii?Q?2Rjojs7q6QCO+tM5oJT7sZUIIleLr4+/fbHmfIbazjXmB/J6CiHFI+x0adBv?=
- =?us-ascii?Q?FBRb1dRB2G4lbYB3xe2UYb9M5gj3h1qBkCCBQdwl5Tq+ZYxTxMM1vPsZZYIo?=
- =?us-ascii?Q?ksKjFC7EHjGHaYOFpFCdZDnml7qL1jscJuyEDdvyqp4eLX+vYYqsSow5VMg3?=
- =?us-ascii?Q?iZLpu1mqwAtfZIoINDQCotnUiruDV4cvadnIDrB5moQzKEwkMtdzPL3S+JPZ?=
- =?us-ascii?Q?pA08MblYDNapKzK4jAt02/AVBTFSrBXMbPZY9Ri60JMApxzY/lA+rTT3k/Dm?=
- =?us-ascii?Q?VmxQTwuNodkl64afysTuzKY0+tNXRtLIGEvDwRwaBNZDDZykUpLSa8PsLoHa?=
- =?us-ascii?Q?Te/KSze0S1FI03+qgGma2/BbeSahXVDHxbNrGZniG9BPHDtbHBXlUQ9Ozlx8?=
- =?us-ascii?Q?AaOGMbtcjZRVQb8Zd6BrPi1MpN56dCZH5Wc8jXnHc2ijzXP1Csbxoc+r99eW?=
- =?us-ascii?Q?ofrawmP/PnBBFNDDxYOSGpk9bOyCu/46qnGvxlSQzywtwbCkGTzGP5JvhnFH?=
- =?us-ascii?Q?XnDuXc3oux4eBMlwExqlBhWRfZNdn/DzmRX67NU6h8roHKOzg+pRHESzPo+x?=
- =?us-ascii?Q?EjK2neLo+Jc0s8973/UsfANCxJYZJIhfyqlDyQZSdJv1jAtTgnIUiT8QF83F?=
- =?us-ascii?Q?oTGrHWisrUyp8C8LSdCPbQNl0gBXbV7NxIh0YbfB4XblL2KSuMDdjcVNbGwx?=
- =?us-ascii?Q?rqfN9cD2jfRpv8kHs8yRAhsPQj2itCywT0H7/566RpN0Av8YODSqqICttsVb?=
- =?us-ascii?Q?pwE9SaiWNdM94oRZxiBzwRenyPeVocqIphv0cXDSYrRjeZwrvVzGLBIGTwie?=
- =?us-ascii?Q?0sTahjwnnoY6CblfgOFyJdbbl0CJl6PEoyfNfBE0AMXAhYugXGW29EuTuAjv?=
- =?us-ascii?Q?Gtrt11ZoWbgT95uvYnb7eTkzFTGHaZsucOQO2kaMM0o/xN2mZsEbpuLNJCP8?=
- =?us-ascii?Q?LnSR7EVNUgp24hzX09cgphQZ/m00v9xBSoy6jDGg2jmE8VOgghqqHRdkHKz6?=
- =?us-ascii?Q?XLRSi9m1C6bWi9rulbIPhwziC30ytIh7k/agSiURbrwtqoBJEIs4ROf0Yuqi?=
- =?us-ascii?Q?WVGX3ckUcdCQ29FU6Oo0ekevU4K1dOc=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?EiDM/knbDzlv9dpiVJzoXy0dKCCvU2GLQWdAeW8Wn6p2n1VHBjDPKG+DdGH7?=
+ =?us-ascii?Q?A2+rg8EGDDjplKK2ikSQ48OzGqcpyDlxN3Rm6xP7hIqmAFTIuBhfDeISAdB3?=
+ =?us-ascii?Q?AsI9ykmQiveL5y+5490EmIu8MJz9a6J+HOBapfzGd2VLGaYlI2FtWDYWW9e9?=
+ =?us-ascii?Q?giASR3IWkNZ2negcI2hgxD+nmk+Uvwj6m/J90/tICJTUrn4XgGs66tanbh08?=
+ =?us-ascii?Q?WSKZIvdwrgf9GcALXhzs5QUnbvfTSd/5hhrCM0WsJUCVjQpA01EUoT8AeG1b?=
+ =?us-ascii?Q?2dXLD6X2khZe85riLRJoTXbEGZpNXPUvO9m/uzMaDikm7AN3tgMMsMtqX+dM?=
+ =?us-ascii?Q?U506rcWD2Bz76aEX5IaGnwXGLcC7tuDcvZGyc0oDOL8sayYlVxPtygtlbGq4?=
+ =?us-ascii?Q?XKDBDbHrGKUAWMhVH72nh1l2qHCpWpPum0mv5uzgwoVxxue8/CAtXwDjmP3h?=
+ =?us-ascii?Q?JBR5+IeEwAIaffs+q4KtZnjCKgRPXqqk68iNq0/6hI7zP0Dbu/EnR8O39pwO?=
+ =?us-ascii?Q?WPgJ+bcVLRkUo2EHBqxDfbvPbbe6nEwS2Y3vvW/BmsGwf90qxwLIZx30jvJs?=
+ =?us-ascii?Q?i+Z2sfYb2u3v3F2tF/TRg/bkdZ6h6U9o4D+ylbDDL3Y+ikkJakfeCtqrCCr1?=
+ =?us-ascii?Q?jHjEDKjzThpxdZbDZ0QDazz9G4w0rH5q60rtyCW0QeutcAr8WHimF6g+Cugk?=
+ =?us-ascii?Q?oTIlv43bglIrXBEgJturTGdZcgDAGidVsDXokhUyDlkTX/PS30TTmdYxcCtj?=
+ =?us-ascii?Q?+KmjDw0CHQyWuuHtGhAbQ9DhbKoJIuQtlrmIYfaHlGd+7CJtgDeD8q0uZpo8?=
+ =?us-ascii?Q?Uz4XjpPWj2pAZFhcnuYdrbZ+ZfxfyREGp/qxAlRovSEDzRJXPoWUxh6RbKnm?=
+ =?us-ascii?Q?ZTpwg49ne+bNn+hRQSjgf2ijMsANZp1uRIlRS32a16WJcQnI4WUQxjz2R6qg?=
+ =?us-ascii?Q?bSFHkx48rGxQ+fvjXH3FkErGU/fV364ED0ERqeVWdFlfP7f8erO4kfxcL+ev?=
+ =?us-ascii?Q?NiZHqM1fC7QVKFYIu791rGwPxMrrsG4AU4KjvuaQVJKTPVrxTpg31vjB8UKc?=
+ =?us-ascii?Q?AjTqwlBBvvoTyz+9y3UWWPlmYVX5DcWM/vU+v8m9jnF2gXySttgrslo18Rdx?=
+ =?us-ascii?Q?eaqLXQuFC9Spj+0uYSWdcQG45BpN3ITdGxEt7GL0U19oQSWqBo+yQRAujEF3?=
+ =?us-ascii?Q?WGWmovNIwOrgryHs+e/jG5QtESwv8vDEjwRoV/ZdRPHzzIiO/DjVWS7XMvp8?=
+ =?us-ascii?Q?WzcBrPcB4qe3Oc365I4ibnPFgDmRHC2Ve2nbDDna7TvQhLPeI1AzDRLNRhLj?=
+ =?us-ascii?Q?k+Pfxu+9dOb2osvZjRdGhqPIN9dxeVo8CUn+8KFZvzMjpUYsiUNIKXgAjgti?=
+ =?us-ascii?Q?3+38RWFuR1wnRZV5/sXa/HMWkcOaaxvO02hFBpMShmcf1BnVvTboQiD+KoAP?=
+ =?us-ascii?Q?5GpsSxUCIPmkzVUi5+P3hmbwgDmIhwYkImSYd+0ULHYURL5033JyscL5UjwY?=
+ =?us-ascii?Q?0NXxo9ClYtEGnwyV3NADC58OGWAarwyCaIoNGVqufIoibBlTF3+ZZQ4kaSRx?=
+ =?us-ascii?Q?4chHDD3/z2EoVOZBYvGUb0EoDAgAy3vwkY10QCzz4JUyfX9ihhrA6g903ToP?=
+ =?us-ascii?Q?Ep16jTe+V1wle0zfHNQY7HFj2rFssSdgTGjpw7Zt3WBJytjT4ZpzNyp274dt?=
+ =?us-ascii?Q?r6u8Y0SAgDqgwdjdvu52eaT+JC+ZAYJq08D9LsMU2yRAK15SCbGuTddT8J+3?=
+ =?us-ascii?Q?SkdPLoBxfDUS0EY8QmglakzpefBF4oM=3D?=
 X-OriginatorOrg: voleatech.de
-X-MS-Exchange-CrossTenant-Network-Message-Id: d96a3d9b-0013-4d19-bdd2-08da3735fd76
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7dfaf81a-f9e4-42fa-92ee-08da3736d3d8
 X-MS-Exchange-CrossTenant-AuthSource: PA4PR05MB8996.eurprd05.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 12:17:05.3589
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 12:23:04.9856
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: b82a99f6-7981-4a72-9534-4d35298f847b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: JBSugDmPp40HsF7XLoagoJtDhx9ELzkQu2vSO9Yy+g+oH83e/ckh0HBWCkPUKUwoUqhP+t25fq2wtSU7DDLadeHYKDP47rCMACfdkpfDupc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR05MB8767
+X-MS-Exchange-CrossTenant-UserPrincipalName: YgXGDH8m8Gn93GmumXPI9TMntvyMzPemBIg4y9b5TMLTo0G6koG8dUaG3FZrSuVAcCdlEVqoSYMLKR5qrglpwan2H4gHscVCF1tHmw1HLbs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS1PR05MB9697
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
         RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -122,219 +120,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 16, 2022 at 02:06:28PM +0200, Pablo Neira Ayuso wrote:
-> On Mon, May 16, 2022 at 01:37:40PM +0200, Pablo Neira Ayuso wrote:
-> > On Mon, May 16, 2022 at 01:18:17PM +0200, Sven Auhagen wrote:
-> > > On Mon, May 16, 2022 at 12:56:38PM +0200, Pablo Neira Ayuso wrote:
-> > > > On Thu, May 12, 2022 at 09:28:03PM +0300, Oz Shlomo wrote:
-> > > > > Connections leaving the established state (due to RST / FIN TCP packets)
-> > > > > set the flow table teardown flag. The packet path continues to set lower
-> > > > > timeout value as per the new TCP state but the offload flag remains set.
-> > > > >
-> > > > > Hence, the conntrack garbage collector may race to undo the timeout
-> > > > > adjustment of the packet path, leaving the conntrack entry in place with
-> > > > > the internal offload timeout (one day).
-> > > > >
-> > > > > Avoid ct gc timeout overwrite by flagging teared down flowtable
-> > > > > connections.
-> > > > >
-> > > > > On the nftables side we only need to allow established TCP connections to
-> > > > > create a flow offload entry. Since we can not guaruantee that
-> > > > > flow_offload_teardown is called by a TCP FIN packet we also need to make
-> > > > > sure that flow_offload_fixup_ct is also called in flow_offload_del
-> > > > > and only fixes up established TCP connections.
-> > > > [...]
-> > > > > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
-> > > > > index 0164e5f522e8..324fdb62c08b 100644
-> > > > > --- a/net/netfilter/nf_conntrack_core.c
-> > > > > +++ b/net/netfilter/nf_conntrack_core.c
-> > > > > @@ -1477,7 +1477,8 @@ static void gc_worker(struct work_struct *work)
-> > > > >  			tmp = nf_ct_tuplehash_to_ctrack(h);
-> > > > >  
-> > > > >  			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
-> > > > > -				nf_ct_offload_timeout(tmp);
-> > > > 
-> > > > Hm, it is the trick to avoid checking for IPS_OFFLOAD from the packet
-> > > > path that triggers the race, ie. nf_ct_is_expired()
-> > > > 
-> > > > The flowtable ct fixup races with conntrack gc collector.
-> > > > 
-> > > > Clearing IPS_OFFLOAD might result in offloading the entry again for
-> > > > the closing packets.
-> > > > 
-> > > > Probably clear IPS_OFFLOAD from teardown, and skip offload if flow is
-> > > > in a TCP state that represent closure?
+On Mon, May 16, 2022 at 02:13:03PM +0200, Pablo Neira Ayuso wrote:
+> On Mon, May 16, 2022 at 12:56:41PM +0200, Pablo Neira Ayuso wrote:
+> > On Thu, May 12, 2022 at 09:28:03PM +0300, Oz Shlomo wrote:
+> > > Connections leaving the established state (due to RST / FIN TCP packets)
+> > > set the flow table teardown flag. The packet path continues to set lower
+> > > timeout value as per the new TCP state but the offload flag remains set.
 > > >
-> > > >   		if (unlikely(!tcph || tcph->fin || tcph->rst))
-> > > >   			goto out;
-> > > > 
-> > > > this is already the intention in the existing code.
-> > > > 
-> > > > If this does work, could you keep IPS_OFFLOAD_TEARDOWN_BIT internal,
-> > > > ie. no in uapi? Define it at include/net/netfilter/nf_conntrack.h and
-> > > > add a comment regarding this to avoid an overlap in the future.
-> > > > 
-> > > > > +				if (!test_bit(IPS_OFFLOAD_TEARDOWN_BIT, &tmp->status))
-> > > > > +					nf_ct_offload_timeout(tmp);
-> > > > >  				continue;
-> > > > >  			}
-> > > > >  
-> > > > > diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-> > > > > index 3db256da919b..aaed1a244013 100644
-> > > > > --- a/net/netfilter/nf_flow_table_core.c
-> > > > > +++ b/net/netfilter/nf_flow_table_core.c
-> > > > > @@ -177,14 +177,8 @@ int flow_offload_route_init(struct flow_offload *flow,
-> > > > >  }
-> > > > >  EXPORT_SYMBOL_GPL(flow_offload_route_init);
-> > > > >  
-> > > > > -static void flow_offload_fixup_tcp(struct ip_ct_tcp *tcp)
-> > > > > -{
-> > > > > -	tcp->state = TCP_CONNTRACK_ESTABLISHED;
-> > > > > -	tcp->seen[0].td_maxwin = 0;
-> > > > > -	tcp->seen[1].td_maxwin = 0;
-> > > > > -}
-> > > > >  
-> > > > > -static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
-> > > > > +static void flow_offload_fixup_ct(struct nf_conn *ct)
-> > > > >  {
-> > > > >  	struct net *net = nf_ct_net(ct);
-> > > > >  	int l4num = nf_ct_protonum(ct);
-> > > > > @@ -192,8 +186,12 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
-> > > > >  
-> > > > >  	if (l4num == IPPROTO_TCP) {
-> > > > >  		struct nf_tcp_net *tn = nf_tcp_pernet(net);
-> > > > > +		struct ip_ct_tcp *tcp = &ct->proto.tcp;
-> > > > > +
-> > > > > +		tcp->seen[0].td_maxwin = 0;
-> > > > > +		tcp->seen[1].td_maxwin = 0;
-> > > > >  
-> > > > > -		timeout = tn->timeouts[TCP_CONNTRACK_ESTABLISHED];
-> > > > > +		timeout = tn->timeouts[ct->proto.tcp.state];
-> > > > >  		timeout -= tn->offload_timeout;
-> > > > >  	} else if (l4num == IPPROTO_UDP) {
-> > > > >  		struct nf_udp_net *tn = nf_udp_pernet(net);
-> > > > > @@ -211,18 +209,6 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
-> > > > >  		WRITE_ONCE(ct->timeout, nfct_time_stamp + timeout);
-> > > > >  }
-> > > > >  
-> > > > > -static void flow_offload_fixup_ct_state(struct nf_conn *ct)
-> > > > > -{
-> > > > > -	if (nf_ct_protonum(ct) == IPPROTO_TCP)
-> > > > > -		flow_offload_fixup_tcp(&ct->proto.tcp);
-> > > > > -}
-> > > > > -
-> > > > > -static void flow_offload_fixup_ct(struct nf_conn *ct)
-> > > > > -{
-> > > > > -	flow_offload_fixup_ct_state(ct);
-> > > > > -	flow_offload_fixup_ct_timeout(ct);
-> > > > > -}
-> > > > > -
-> > > > >  static void flow_offload_route_release(struct flow_offload *flow)
-> > > > >  {
-> > > > >  	nft_flow_dst_release(flow, FLOW_OFFLOAD_DIR_ORIGINAL);
-> > > > > @@ -353,6 +339,10 @@ static inline bool nf_flow_has_expired(const struct flow_offload *flow)
-> > > > >  static void flow_offload_del(struct nf_flowtable *flow_table,
-> > > > >  			     struct flow_offload *flow)
-> > > > >  {
-> > > > > +	struct nf_conn *ct = flow->ct;
-> > > > > +
-> > > > > +	set_bit(IPS_OFFLOAD_TEARDOWN_BIT, &flow->ct->status);
-> > > > > +
-> > > > >  	rhashtable_remove_fast(&flow_table->rhashtable,
-> > > > >  			       &flow->tuplehash[FLOW_OFFLOAD_DIR_ORIGINAL].node,
-> > > > >  			       nf_flow_offload_rhash_params);
-> > > > > @@ -360,12 +350,11 @@ static void flow_offload_del(struct nf_flowtable *flow_table,
-> > > > >  			       &flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].node,
-> > > > >  			       nf_flow_offload_rhash_params);
-> > > > >  
-> > > > > -	clear_bit(IPS_OFFLOAD_BIT, &flow->ct->status);
-> > > > > -
-> > > > >  	if (nf_flow_has_expired(flow))
-> > > > > -		flow_offload_fixup_ct(flow->ct);
-> > > > > -	else
-> > > > > -		flow_offload_fixup_ct_timeout(flow->ct);
-> > > > > +		flow_offload_fixup_ct(ct);
-> > > > 
-> > > > Very unlikely, but race might still happen between fixup and
-> > > > clear IPS_OFFLOAD_BIT with gc below?
-> > > > 
-> > > > Without checking from the packet path, the conntrack gc might race to
-> > > > refresh the timeout, I don't see a 100% race free solution.
-> > > > 
-> > > > Probably update the nf_ct_offload_timeout to a shorter value than a
-> > > > day would mitigate this issue too.
-> > > 
-> > > This section of the code is now protected by IPS_OFFLOAD_TEARDOWN_BIT
-> > > which will prevent the update via nf_ct_offload_timeout.
-> > > We set it at the beginning of flow_offload_del and flow_offload_teardown.
-> > > 
-> > > Since flow_offload_teardown is only called on TCP packets
-> > > we also need to set it at flow_offload_del to prevent the race.
-> > > 
-> > > This should prevent the race at this point.
+> > > Hence, the conntrack garbage collector may race to undo the timeout
+> > > adjustment of the packet path, leaving the conntrack entry in place with
+> > > the internal offload timeout (one day).
+> > >
+> > > Avoid ct gc timeout overwrite by flagging teared down flowtable
+> > > connections.
+> > >
+> > > On the nftables side we only need to allow established TCP connections to
+> > > create a flow offload entry. Since we can not guaruantee that
+> > > flow_offload_teardown is called by a TCP FIN packet we also need to make
+> > > sure that flow_offload_fixup_ct is also called in flow_offload_del
+> > > and only fixes up established TCP connections.
+> > [...]
+> > > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> > > index 0164e5f522e8..324fdb62c08b 100644
+> > > --- a/net/netfilter/nf_conntrack_core.c
+> > > +++ b/net/netfilter/nf_conntrack_core.c
+> > > @@ -1477,7 +1477,8 @@ static void gc_worker(struct work_struct *work)
+> > >  			tmp = nf_ct_tuplehash_to_ctrack(h);
+> > >  
+> > >  			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
+> > > -				nf_ct_offload_timeout(tmp);
 > > 
-> > OK.
+> > Hm, it is the trick to avoid checking for IPS_OFFLOAD from the packet
+> > path that triggers the race, ie. nf_ct_is_expired()
 > > 
-> > > > > +	clear_bit(IPS_OFFLOAD_BIT, &ct->status);
-> > > > > +	clear_bit(IPS_OFFLOAD_TEARDOWN_BIT, &ct->status);
-> > > > >  
-> > > > >  	flow_offload_free(flow);
-> > > > >  }
-> > > > > @@ -373,8 +362,9 @@ static void flow_offload_del(struct nf_flowtable *flow_table,
-> > > > >  void flow_offload_teardown(struct flow_offload *flow)
-> > > > >  {
-> > > > >  	set_bit(NF_FLOW_TEARDOWN, &flow->flags);
-> > > > > +	set_bit(IPS_OFFLOAD_TEARDOWN_BIT, &flow->ct->status);
-> > > > >  
-> > > > > -	flow_offload_fixup_ct_state(flow->ct);
-> > > > > +	flow_offload_fixup_ct(flow->ct);
-> > > > >  }
-> > > > >  EXPORT_SYMBOL_GPL(flow_offload_teardown);
-> > > > >  
-> > > > > diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-> > > > > index 900d48c810a1..9cc3ea08eb3a 100644
-> > > > > --- a/net/netfilter/nft_flow_offload.c
-> > > > > +++ b/net/netfilter/nft_flow_offload.c
-> > > > > @@ -295,6 +295,8 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
-> > > > >  					  sizeof(_tcph), &_tcph);
-> > > > >  		if (unlikely(!tcph || tcph->fin || tcph->rst))
-> > > > >  			goto out;
-> > > > > +		if (unlikely(!nf_conntrack_tcp_established(ct)))
-> > > > > +			goto out;
-> > > > 
-> > > > This chunk is not required, from ruleset users can do
-> > > > 
-> > > >         ... ct status assured ...
-> > > > 
-> > > > instead.
-> > > 
-> > > Maybe this should be mentioned in the manual or wiki if
-> > > it is not necessary in the flow offload code.
+> > The flowtable ct fixup races with conntrack gc collector.
 > > 
-> > Yes, documentation and wiki can be updated.
+> > Clearing IPS_OFFLOAD might result in offloading the entry again for
+> > the closing packets.
 > > 
-> > Users might want to offload the flow at a later stage in the TCP
-> > connection.
+> > Probably clear IPS_OFFLOAD from teardown, and skip offload if flow is
+> > in a TCP state that represent closure?
+> > 
+> >   		if (unlikely(!tcph || tcph->fin || tcph->rst))
+> >   			goto out;
+> > 
+> > this is already the intention in the existing code.
 > 
-> Well, actually there is not later stage than established, anything
-> after established are TCP teardown states.
-> 
-> What's the issue with allowing to offload from SYN_RECV state?
+> I'm attaching an incomplete sketch patch. My goal is to avoid the
+> extra IPS_ bit.
 
-There were multiple problem in general with the code.
-flow_offload_fixup_tcp always moves a TCP connection
-to established even if it is in FIN or CLOSE.
+You might create a race with ct gc that will remove the ct
+if it is in close or end of close and before flow offload teardown is running
+so flow offload teardown might access memory that was freed.
+It is not a very likely scenario but never the less it might happen now
+since the IPS_OFFLOAD_BIT is not set and the state might just time out.
 
-The flowoffload_del function was always setting the TCP timeout
-to ESTABLISHED timeout even when the state was in CLOSE and therefore
-creating a very long lasting dead state.
+If someone sets a very small TCP CLOSE timeout it gets more likely.
 
-Since we might miss or bump packets to slow path, we do not know
-what will happen there when we are still in SYN_RECV.
+So Oz and myself were debatting about three possible cases/problems:
 
-We will have a better knowledge of the TCP state when we are in 
-established first and we know that we are either still in it or
-we have moved past it to a closing state.
+1. ct gc sets timeout even though the state is in CLOSE/FIN because the
+IPS_OFFLOAD is still set but the flow is in teardown
+2. ct gc removes the ct because the IPS_OFFLOAD is not set and
+the CLOSE timeout is reached before the flow offload del
+3. tcp ct is always set to ESTABLISHED with a very long timeout
+in flow offload teardown/delete even though the state is already
+CLOSED.
 
+Also as a remark we can not assume that the FIN or RST packet is hitting
+flow table teardown as the packet might get bumped to the slow path in
+nftables.
+
+Best
+Sven
 
 
