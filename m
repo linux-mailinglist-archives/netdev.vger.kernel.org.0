@@ -2,79 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CDD4D5281CB
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 12:22:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53CEA528250
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 12:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232593AbiEPKWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 06:22:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
+        id S242749AbiEPKkW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 06:40:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242467AbiEPKWZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 06:22:25 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25656DEF4;
-        Mon, 16 May 2022 03:22:09 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L1wKT0QDXz67Zm5;
-        Mon, 16 May 2022 18:22:05 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 16 May 2022 12:22:06 +0200
-Message-ID: <c263544e-2ed7-dda0-845a-65a3f3bcd184@huawei.com>
-Date:   Mon, 16 May 2022 13:22:04 +0300
+        with ESMTP id S242710AbiEPKkS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 06:40:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3ED923BFC;
+        Mon, 16 May 2022 03:40:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66D0BB81095;
+        Mon, 16 May 2022 10:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 18AB2C34116;
+        Mon, 16 May 2022 10:40:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652697614;
+        bh=Y6hxtYOR0XmRhsmlJDZ1vs1lnO++NYaI1tisxd71by8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=pkSoOexawVRnmAg30AS9iRwT3Dxx/oVtp4QAt6D+HAVZIX9sIc8xTZQLtdiM7rQ5V
+         /DSRPWhJdo86gO7qiZ5HNvX74eEzwzF202ATYTSy66UjgxeSNpCU2umxCZxfDPDrK6
+         3cAKGJWn5dsROw1w0fuAJjOkxF9P4lzaqt/UlLssZQmJSmzwqSS31gtTtdGl3dy/3o
+         rNZj78zcGz1NLW2YXGplf49zKUqr2HhjETOGnSWhDPjuQ8r5N8kfMXKT+zXUDu93Rz
+         OyrA3A3p/nKeif8b3xF9pLJwE+C04bQWZX9GVTpVnZaOUodUcbRM5atg2+RMeFd/f5
+         S3evtcMXF5moA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA577F0392C;
+        Mon, 16 May 2022 10:40:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [RFC PATCH v4 10/15] seltest/landlock: add tests for bind() hooks
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <artem.kuzin@huawei.com>, <anton.sirazetdinov@huawei.com>
-References: <20220309134459.6448-1-konstantin.meskhidze@huawei.com>
- <20220309134459.6448-11-konstantin.meskhidze@huawei.com>
- <d3340ed0-fe61-3f00-d7ba-44ece235a319@digikod.net>
- <78882640-70ff-9610-1eda-5917550f0ab8@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <78882640-70ff-9610-1eda-5917550f0ab8@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml751-chm.china.huawei.com (10.201.108.201) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Subject: Re: [PATCH v2 -next] octeon_ep: add missing destroy_workqueue in
+ octep_init_module
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165269761395.8728.8751910697744909015.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 May 2022 10:40:13 +0000
+References: <20220513071018.3279210-1-zhengbin13@huawei.com>
+In-Reply-To: <20220513071018.3279210-1-zhengbin13@huawei.com>
+To:     Zheng Bin <zhengbin13@huawei.com>
+Cc:     vburru@marvell.com, aayarekar@marvell.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gaochao49@huawei.com
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This patch was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-5/16/2022 1:10 PM, Mickaël Salaün пишет:
+On Fri, 13 May 2022 15:10:18 +0800 you wrote:
+> octep_init_module misses destroy_workqueue in error path,
+> this patch fixes that.
 > 
-> On 01/04/2022 18:52, Mickaël Salaün wrote:
->> You need to update tools/testing/selftests/landlock/config to enable 
->> CONFIG_NET and CONFIG_INET.
->>
->>
->> On 09/03/2022 14:44, Konstantin Meskhidze wrote:
->>> Adds two selftests for bind socket action.
->>> The one is with no landlock restrictions:
->>>      - bind_no_restrictions;
->>> The second one is with mixed landlock rules:
->>>      - bind_with_restrictions;
->>
->> Some typos (that propagated to all selftest patches):
->>
->> selftest/landlock: Add tests for bind hook
+> Fixes: 862cd659a6fb ("octeon_ep: Add driver framework and device initialization")
+> Signed-off-by: Zheng Bin <zhengbin13@huawei.com>
+> ---
+> v1->v2: add Fixes tag
+>  drivers/net/ethernet/marvell/octeon_ep/octep_main.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> I did some typo myself, it should be "selftests/landlock:"
-> .
+> [...]
 
-   Thanks, cause I was ready to send a patch V5. I will fix it.
+Here is the summary with links:
+  - [v2,-next] octeon_ep: add missing destroy_workqueue in octep_init_module
+    https://git.kernel.org/netdev/net-next/c/e68372efb9fe
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
