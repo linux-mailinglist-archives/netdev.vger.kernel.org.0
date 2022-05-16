@@ -2,66 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 783DD529213
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 23:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB29C52928D
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 23:19:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349209AbiEPVGq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 17:06:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53298 "EHLO
+        id S1348754AbiEPVJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 17:09:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348776AbiEPVGd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 17:06:33 -0400
-Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D6AD3389A
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 13:43:35 -0700 (PDT)
-Received: by mail-yb1-xb31.google.com with SMTP id q135so9865323ybg.10
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 13:43:35 -0700 (PDT)
+        with ESMTP id S1349201AbiEPVIN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 17:08:13 -0400
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C07D84A3F2;
+        Mon, 16 May 2022 13:50:04 -0700 (PDT)
+Received: by mail-ed1-x531.google.com with SMTP id j28so5867876eda.13;
+        Mon, 16 May 2022 13:50:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SWGK+KTkisZs3C9bpsTAI0RXU+XBBpI5GfJ2Y1m5tyc=;
-        b=hOehNX6QH9tf4lx/ThE1sqy/2wL6wKWhDSeCIriioTBRNZCxC7tSJBk2UFgr2bE7Wc
-         8erEAOXeZ/kNcy3OvVftcP28FwlNjTM/gXGI/J8Dhk0a4zbUwW5Lqhfy1BcgFzPLgt4W
-         vRxxIYyGVQuDSwMOncm6OvYwZOQg9oPIe72OO69C5hj6B9c0KO/zMMpyrQiQ0EjNwGAd
-         Y6DFjooJm+HMIY/uCV6J7o/Dox7XPDd1KHOZGvgy7rhycF7RzDkZ5nYZ9iUXcbYRlopK
-         5qGOQx8UOPG8E8fxPJvZ3z3Ivn0hEiiu238QEiPbTmDFlgHoRJAVUUw4kVqGVViSh7hD
-         rqYA==
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=MfY1a6o6LRsipUi6Oijv1/30tnszerh5iJfHfrszphM=;
+        b=HXCoMAoc53CH06c5TEuusqJXTGrlUt2VdqVGKB5lfJbhmEPPWp9HR6Dnyqc/DfmV7L
+         Su8cjxcCGeU8dPA2kBVA8ha8yaB3hf1ElZfRFAn8kNIZdEBFGwz8YvI7sE2lYsDJrFzr
+         a8WOfU7PNsseJdhf3loYxl6FkL4uJJ2THSUtbNFfuDwITDN3Miy3L0437UHFEdFxAlJW
+         LBTD/JW0ECrTidnG0ITqaGuzSnJmq8X6pN3qFM/CGuAvUB3QrgCOA0MMFnfw6e1Sw6Xs
+         +MqxtMeuvvdbX/jy4DRSbREuPnERScrhcsrxMVa1XmHl32QD/v1WgMlfWZK7lFpVnsCT
+         mCYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SWGK+KTkisZs3C9bpsTAI0RXU+XBBpI5GfJ2Y1m5tyc=;
-        b=qsdwEaDSc9pKqSL04MwpPkgWa0108BIkdKqxQYyDwiMNDt7nJbifqBTvShF75kpYxX
-         5Ps0xnErgpm4PxOWsvhiJyCs204N5RVmKyNcUeRrY7ujya2Rt8p8XKFCZ3yCA2IbT2WG
-         1m/Y0NtXThyFdx4eqeAWECHC1IVK85NY1jtGqqMV+gvBC3rLCZm2yM+lY9HiQg2CRpsq
-         g5q7New2P5rn2rSIStfTz2DoVAMewTbwGWJFfKQPESb1i0YwH5QAfTwyUpxT5e64UCF0
-         FT3jx1aPO7sG/dMRbFTuH4bN+O/f3+pmIYIHXI1MHjWQEBvHNndPw1wtPdXJKbTGmf47
-         eI+w==
-X-Gm-Message-State: AOAM530WOI0WWtKg0ik1moU21PjAg3FV+7FSxnRmJ2efUsdNY3agcg5b
-        pBC0GsGYOEEhF5xtLfKMZ/8osh2n7vcGDCJx3pjWwi9njYD9upEo
-X-Google-Smtp-Source: ABdhPJy1EksE+mmZs3jIcAdB7zUiJTxCrKktkz17lIglO/MOSW1K1TETXtIDtL8iWAlWNg29QaQ6/2ijSAHWLIH4544=
-X-Received: by 2002:a05:6902:c9:b0:641:1998:9764 with SMTP id
- i9-20020a05690200c900b0064119989764mr19367439ybs.427.1652733814140; Mon, 16
- May 2022 13:43:34 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=MfY1a6o6LRsipUi6Oijv1/30tnszerh5iJfHfrszphM=;
+        b=jWSOmcupHka+jp3E2e/mpVjZ/gv1dNAEWpWdmB2+oSGitmSLaPlk1DowW22unZLrnv
+         cgE2X82XH2OCA58fLDE5cniY+HQO7oy3YBM8gMyLF6Cts3u/ZtW4sexLQPjnzw5FXGP7
+         PUE/ktUJJsYRjVpW+RrUHcrkavybZGvJQjvQVVPq4WeZbBPlHgUi15fqyh99CKi4Oebz
+         JkNX0h+LrvxEbQg8fuiPZm5cgFXw41zYaVxRMpqpD1dq7oAyOtoX1LqT3GKdl+LsjwQO
+         hK21f3usN+jr6xXm8FkVbjDQ07YYHTQVkMFHj8UDz0r2C+RP1wX1Hdz8i9+EOKY3KdZK
+         PiBw==
+X-Gm-Message-State: AOAM531KmLQnlMdkDFVRY5uvLfiUWsS8UsWaBfQQETeE2/MmRLFJBI6Z
+        4TIaLl3kAo9cDZNIHJK+GPo=
+X-Google-Smtp-Source: ABdhPJwIpOzi7l6lLCM7TPf+IYhZrYJ9g0Gna0wLZavYvqZJBYFGgt9gp9+fD8TF4d8iq/yRn2za7Q==
+X-Received: by 2002:a05:6402:4414:b0:419:28bc:55dc with SMTP id y20-20020a056402441400b0041928bc55dcmr15461714eda.130.1652734203375;
+        Mon, 16 May 2022 13:50:03 -0700 (PDT)
+Received: from [192.168.8.198] ([85.255.232.74])
+        by smtp.gmail.com with ESMTPSA id mm8-20020a170906cc4800b006f3ef214df0sm165586ejb.86.2022.05.16.13.50.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 May 2022 13:50:02 -0700 (PDT)
+Message-ID: <212de77f-6ad1-e012-9b49-8b5cebaded63@gmail.com>
+Date:   Mon, 16 May 2022 21:48:58 +0100
 MIME-Version: 1.0
-References: <20220516042456.3014395-1-eric.dumazet@gmail.com>
- <20220516042456.3014395-4-eric.dumazet@gmail.com> <20220516133941.7da6bac7@kernel.org>
-In-Reply-To: <20220516133941.7da6bac7@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 16 May 2022 13:43:22 -0700
-Message-ID: <CANn89iLmkpmuoLMHUkaigd2V6G6se-0Lj-UwhcaRZow_4fwhow@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/4] net: add skb_defer_max sysctl
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next v3 00/10] UDP/IPv6 refactoring
+Content-Language: en-US
+To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     David Ahern <dsahern@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org
+References: <cover.1652368648.git.asml.silence@gmail.com>
+ <b9025eb4d8a1efefbcd04013cbe8e55e98ef66e1.camel@redhat.com>
+From:   Pavel Begunkov <asml.silence@gmail.com>
+In-Reply-To: <b9025eb4d8a1efefbcd04013cbe8e55e98ef66e1.camel@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -69,55 +77,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 16, 2022 at 1:39 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Sun, 15 May 2022 21:24:55 -0700 Eric Dumazet wrote:
-> > @@ -6494,16 +6495,21 @@ void skb_attempt_defer_free(struct sk_buff *skb)
-> >       int cpu = skb->alloc_cpu;
-> >       struct softnet_data *sd;
-> >       unsigned long flags;
-> > +     unsigned int defer_max;
-> >       bool kick;
-> >
-> >       if (WARN_ON_ONCE(cpu >= nr_cpu_ids) ||
-> >           !cpu_online(cpu) ||
-> >           cpu == raw_smp_processor_id()) {
-> > -             __kfree_skb(skb);
-> > +nodefer:     __kfree_skb(skb);
-> >               return;
-> >       }
-> >
-> >       sd = &per_cpu(softnet_data, cpu);
-> > +     defer_max = READ_ONCE(sysctl_skb_defer_max);
-> > +     if (READ_ONCE(sd->defer_count) >= defer_max)
-> > +             goto nodefer;
-> > +
-> >       /* We do not send an IPI or any signal.
-> >        * Remote cpu will eventually call skb_defer_free_flush()
-> >        */
-> > @@ -6513,11 +6519,8 @@ void skb_attempt_defer_free(struct sk_buff *skb)
-> >       WRITE_ONCE(sd->defer_list, skb);
-> >       sd->defer_count++;
-> >
-> > -     /* kick every time queue length reaches 128.
-> > -      * This condition should hardly be hit under normal conditions,
-> > -      * unless cpu suddenly stopped to receive NIC interrupts.
-> > -      */
-> > -     kick = sd->defer_count == 128;
-> > +     /* Send an IPI every time queue reaches half capacity. */
-> > +     kick = sd->defer_count == (defer_max >> 1);
->
-> nit: it will behave a little strangely for defer_max == 1
-> we'll let one skb get onto the list and free the subsequent
-> skbs directly but we'll never kick the IPI
+On 5/16/22 14:48, Paolo Abeni wrote:
+> Hello,
+> 
+> On Fri, 2022-05-13 at 16:26 +0100, Pavel Begunkov wrote:
+>> Refactor UDP/IPv6 and especially udpv6_sendmsg() paths. The end result looks
+>> cleaner than it was before and the series also removes a bunch of instructions
+>> and other overhead from the hot path positively affecting performance.
+>>
+>> Testing over dummy netdev with 16 byte packets yields 2240481 tx/s,
+>> comparing to 2203417 tx/s previously, which is around +1.6%
+> 
+> I personally feel that some patches in this series have a relevant
+> chance of introducing functional regressions and e.g. syzbot will not
+> help to catch them. That risk is IMHO relevant considered that the
+> performance gain here looks quite limited.
 
-Yes, I was aware of this, but decided it was not a big deal.
+I can't say I agree with that. First, I do think the code is much
+cleaner having just one block checking corking instead of a couple
+of random ifs in different places. Same for sin6. Not to mention
+negative line count.
 
-Presumably people will be interested to disable the thing completely,
-I am not sure about defer_max == 1
+Also, assuming this 1.6% translates to ~0.5-1% with fast NICs, that's
+still huge, especially when we get >5GB/s in single core zc tests b/w
+servers.
 
->
-> Moving the sd->defer_count++; should fix it and have no significant
-> side effects. I think.
+If maintainers are not merging it, I think I'll delay the series until
+I get another batch of planned optimisations implemented on top.
 
-SGTM, thanks !
+
+> There are a few individual changes that IMHO looks like nice cleanup
+> e.g. patch 5, 6, 8, 9 and possibly even patch 1.
+> 
+> I suggest to reduce the patchset scope to them.
+
+-- 
+Pavel Begunkov
