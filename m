@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D621527F87
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 10:22:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 56A6E527F8F
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 10:23:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241601AbiEPIVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 04:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34012 "EHLO
+        id S241596AbiEPIXA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 04:23:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241645AbiEPIVw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 04:21:52 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BAFF3701D;
-        Mon, 16 May 2022 01:21:47 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id i24so13382554pfa.7;
-        Mon, 16 May 2022 01:21:47 -0700 (PDT)
+        with ESMTP id S241640AbiEPIW5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 04:22:57 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE08536E23;
+        Mon, 16 May 2022 01:22:56 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id x23so13387718pff.9;
+        Mon, 16 May 2022 01:22:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=O0TiBO73BII/MzrCAHzOpYtsDk7KXOAsa2LtIBAC5Gk=;
-        b=IfOuW2vin7vUKjzYAtKuWx2/rWr6p3AXqn3rBg76roBvgX+1zBMK29EOlS1E3qiHpb
-         xL5CL9VfcV5nWVMkLXSd881MjeEUjC41OB8vb8j9G8dmgaCoUpmb6V63mMs4v20nH/W0
-         xP/Y3ue7XdZd5U6fmdg+sAUQlaEj5ihJY6wlmyBpdJz1kzCbRS61nJLJy6Q9STyAmoml
-         0k+0rQrrKGC2M03sjPtB8Dz5z/WMgsWZ9pXHk235nsONG7EH25HcMEWis5XNTceZykXL
-         Y23vqOH+xmahcOcset+zy28sJXNygyNKhD5wSdXCkk3Sxgm+1oyIUoWE4lKnNl5ux1Vx
-         kwpA==
+        bh=+bSaI8+EI0dfOI3Aer2Hoi7m3c1d964/k77ZGGtERDI=;
+        b=NgoDKcu5iRK9Gn+pad3Kc6BB5m9B8PP8Fmtge1dr3QfoCjfk1nJjPca3O5n08Jo00A
+         wnPP/O+eei7VivqGXtUNiCEZazH4rvTj43bjyuGCPAeVG218C+q3supJWe/ttbRNOYpI
+         zirCTnGS2Jl1sgYr1wMEOm7uZaAa9y8pPRkCMbzrGmkxxOkZ5hhE+T5V2yNh9YTXvcLM
+         DP+JexYTVCR4rCYNjVLsGTqDcM58ddre05ORaMspvpuUX4ANU+pzoS1Ju0XG1YviNPCB
+         T3zUbZucOq64s1QlEleSFF78tMf+1tjJLi9p2FsA5pT/BW1RR1WLJAOMWNE5hdAXAEjr
+         2Aaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=O0TiBO73BII/MzrCAHzOpYtsDk7KXOAsa2LtIBAC5Gk=;
-        b=l4ueP27tJyKDrhDWaEKLHfTG2eju5P6pvGR1/COmAASlY4qBL4IOBwM4r+j6FbTD4Z
-         wPu33e6mYg12w8hd+ym567Lcre8S9gX3xw+JuaPqHfPDNxL0GDPdAwIiGWljJt1DSg5K
-         EoJ1d4Ncn2+2LVW650eqxYQcINO0CtfAa+Vz3TrmsfQ3PtjALU9YAJeWiTUGRxX79nr+
-         fOs/WZmEOLBNVDaGrKweIagL/rZTY6WI66Uwl4ve3tA6UzIOlhkpv6XTg0zvG6Gun/mr
-         FCuEsFiKGPWurnsNjh1xYjnvspmFJRgNA+Sgq1E2IDiEoUDwQv3MXGxilYOs+depNJIu
-         PzFg==
-X-Gm-Message-State: AOAM530ar1NYokS9o5+SJRVwTFveI1OOqYkVDD2oINsDCGUKc9tzTAMz
-        x0JVpuAs5l6dWvpCtMLvIiQ=
-X-Google-Smtp-Source: ABdhPJwCdHCi69vYPF4Tu88drOWDnyUagdmB6DmuUma7AAp9Sjw9bPvMfiVYx7G0Sp02lxVPuq4FiA==
-X-Received: by 2002:a05:6a00:1d8f:b0:510:9430:8021 with SMTP id z15-20020a056a001d8f00b0051094308021mr16421305pfw.55.1652689306559;
-        Mon, 16 May 2022 01:21:46 -0700 (PDT)
+        bh=+bSaI8+EI0dfOI3Aer2Hoi7m3c1d964/k77ZGGtERDI=;
+        b=NJjBPn6dACAUukHSdf4SQgJ8gQV/rewnVtPixXlPacL1k3OyVr0+u89UGoq9HePTnB
+         6HyMLKQF9zDSvkDAAtRisQ4nFBWu5e/i7MGt4tSPGYcR2H+xNfk/sGOuP1FZbBeauL8k
+         pCtaLQupPbPJYDHUxTPqTNhQJqaw0i4bnfNNQxxbvwZCsYEEJUzt//VsvT/XoOOFdWN+
+         Z7IYxLwxqHOW0t4/n8PJ3x2wO2ZUxotl0i26jnUb32f/9el9Zv/eS2roH5muz7Z1bZvC
+         xlyClrjLkgDV1c2vdQTolpayzJ4mycrv0x2LfqhE+rQXRU1FdcK3hdqCEL5pqFRxgyYR
+         sb0Q==
+X-Gm-Message-State: AOAM532rr/VHZhvoMMy+zH+Gfn0KPlEzN4f1f8RjMgAQV6sw1bFqfv8z
+        eLJmeAwEgA8dfwM/Fpum0hc=
+X-Google-Smtp-Source: ABdhPJzEdaqHUBSPDSixGZaw86d1w3v/f7fIwSaGdgI4HHnX9fkYPoC144Ox1MSRDcDZSA4f5W7zmQ==
+X-Received: by 2002:a05:6a00:16d2:b0:512:c652:a2f7 with SMTP id l18-20020a056a0016d200b00512c652a2f7mr16529365pfc.9.1652689376369;
+        Mon, 16 May 2022 01:22:56 -0700 (PDT)
 Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id m9-20020a17090a7f8900b001cd4989fee6sm7858711pjl.50.2022.05.16.01.21.44
+        by smtp.gmail.com with ESMTPSA id m11-20020a62f20b000000b00517c84fd24asm4221035pfh.172.2022.05.16.01.22.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 01:21:46 -0700 (PDT)
+        Mon, 16 May 2022 01:22:56 -0700 (PDT)
 From:   cgel.zte@gmail.com
 X-Google-Original-From: chi.minghao@zte.com.cn
-To:     jdmason@kudzu.us
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
+To:     aelior@marvell.com
+Cc:     manishc@marvell.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
         Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] net: vxge: Remove unnecessary synchronize_irq() before free_irq()
-Date:   Mon, 16 May 2022 08:19:14 +0000
-Message-Id: <20220516081914.1651281-1-chi.minghao@zte.com.cn>
+Subject: [PATCH] net: qede: Remove unnecessary synchronize_irq() before free_irq()
+Date:   Mon, 16 May 2022 08:22:51 +0000
+Message-Id: <20220516082251.1651350-1-chi.minghao@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -80,29 +80,21 @@ condition free way), before any state associated with the IRQ is freed.
 Reported-by: Zeal Robot <zealci@zte.com.cn>
 Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
 ---
- drivers/net/ethernet/neterion/vxge/vxge-main.c | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/qlogic/qede/qede_main.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/neterion/vxge/vxge-main.c b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-index d2de8ac44f72..fa5d4ddf429b 100644
---- a/drivers/net/ethernet/neterion/vxge/vxge-main.c
-+++ b/drivers/net/ethernet/neterion/vxge/vxge-main.c
-@@ -2405,7 +2405,6 @@ static void vxge_rem_msix_isr(struct vxgedev *vdev)
- 	for (intr_cnt = 0; intr_cnt < (vdev->no_of_vpath * 2 + 1);
- 		intr_cnt++) {
- 		if (vdev->vxge_entries[intr_cnt].in_use) {
--			synchronize_irq(vdev->entries[intr_cnt].vector);
- 			free_irq(vdev->entries[intr_cnt].vector,
- 				vdev->vxge_entries[intr_cnt].arg);
- 			vdev->vxge_entries[intr_cnt].in_use = 0;
-@@ -2427,7 +2426,6 @@ static void vxge_rem_isr(struct vxgedev *vdev)
- 	    vdev->config.intr_type == MSI_X) {
- 		vxge_rem_msix_isr(vdev);
- 	} else if (vdev->config.intr_type == INTA) {
--			synchronize_irq(vdev->pdev->irq);
- 			free_irq(vdev->pdev->irq, vdev);
- 	}
- }
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_main.c b/drivers/net/ethernet/qlogic/qede/qede_main.c
+index b4e5a15e308b..f56b679adb4b 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_main.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_main.c
+@@ -1916,7 +1916,6 @@ static void qede_sync_free_irqs(struct qede_dev *edev)
+ 
+ 	for (i = 0; i < edev->int_info.used_cnt; i++) {
+ 		if (edev->int_info.msix_cnt) {
+-			synchronize_irq(edev->int_info.msix[i].vector);
+ 			free_irq(edev->int_info.msix[i].vector,
+ 				 &edev->fp_array[i]);
+ 		} else {
 -- 
 2.25.1
 
