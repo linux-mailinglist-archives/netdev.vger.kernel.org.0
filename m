@@ -2,162 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E86A7528AA3
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 18:35:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CACE9528AA0
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 18:35:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343720AbiEPQez (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 12:34:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36926 "EHLO
+        id S1343727AbiEPQfG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 12:35:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37020 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231615AbiEPQev (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 12:34:51 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73C763B3CD;
-        Mon, 16 May 2022 09:34:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=XzoH5iutkh5O9t0pH+ypA1lIfMmiHtlRHdYp+UCsrGU=; b=WepOMKgEKhpR+t0vOgpE/YwZDW
-        g57IfgGh3nzpJ2ZtHEZUcsTnwsDP6I2/FDZ4vnLGZ0Qw7F/Mn84yHkJf4BXJ/OpxzJ1p70t/N3EaQ
-        3PmdLprDUfYS48zPyb3blZ6UPVVkXH0bl8D3dn+A0vPKMKqgzgV2PkJylwkbN3xzE2jIxJLk5t9Xh
-        Ean6ag10EMxBmLMIVJGXD8wgUW7usVSQYiFjIPvG61RcLN+veFIRifMeScPdiuTNjKo2kRxG2B83U
-        8p8XJXLR0CD8m0oqdI8PKIctIPo5el7u/X3BJM63/kcmCM4vsP6tEoNCn+7qkwfuh6KJplRNa4LRS
-        5jGHUhPQ==;
-Received: from [177.183.162.244] (helo=[192.168.0.5])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nqdg0-006uIN-Pp; Mon, 16 May 2022 18:34:32 +0200
-Message-ID: <e895ce94-e6b9-caf6-e5d3-06bf0149445c@igalia.com>
-Date:   Mon, 16 May 2022 13:33:51 -0300
+        with ESMTP id S1343723AbiEPQe7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 12:34:59 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452FB3B3CD
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 09:34:58 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1nqdgF-000191-Fx; Mon, 16 May 2022 18:34:47 +0200
+Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id E6C9E7F95E;
+        Mon, 16 May 2022 16:34:45 +0000 (UTC)
+Date:   Mon, 16 May 2022 18:34:45 +0200
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Matej Vasilevski <matej.vasilevski@seznam.cz>,
+        linux-can@vger.kernel.org, pisa@cmp.felk.cvut.cz,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        ondrej.ille@gmail.com, martin.jerabek01@gmail.com
+Subject: Re: [RFC PATCH 2/3] dt-bindings: can: ctucanfd: add properties for
+ HW timestamping
+Message-ID: <20220516163445.qxz3xlohuquqwbwl@pengutronix.de>
+References: <20220512232706.24575-1-matej.vasilevski@seznam.cz>
+ <20220512232706.24575-3-matej.vasilevski@seznam.cz>
+ <20220516160250.GA2724701-robh@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 21/30] panic: Introduce the panic pre-reboot notifier list
-Content-Language: en-US
-To:     "Luck, Tony" <tony.luck@intel.com>, Petr Mladek <pmladek@suse.com>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "bhe@redhat.com" <bhe@redhat.com>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "openipmi-developer@lists.sourceforge.net" 
-        <openipmi-developer@lists.sourceforge.net>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kernel-dev@igalia.com" <kernel-dev@igalia.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
-        "halves@canonical.com" <halves@canonical.com>,
-        "fabiomirmar@gmail.com" <fabiomirmar@gmail.com>,
-        "alejandro.j.jimenez@oracle.com" <alejandro.j.jimenez@oracle.com>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "bp@alien8.de" <bp@alien8.de>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "d.hatayama@jp.fujitsu.com" <d.hatayama@jp.fujitsu.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "dyoung@redhat.com" <dyoung@redhat.com>,
-        "Tang, Feng" <feng.tang@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "mikelley@microsoft.com" <mikelley@microsoft.com>,
-        "hidehiro.kawai.ez@hitachi.com" <hidehiro.kawai.ez@hitachi.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "john.ogness@linutronix.de" <john.ogness@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "paulmck@kernel.org" <paulmck@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "vgoyal@redhat.com" <vgoyal@redhat.com>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "will@kernel.org" <will@kernel.org>, Alex Elder <elder@kernel.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Chris Zankel <chris@zankel.net>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Corey Minyard <minyard@acm.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        James Morse <james.morse@arm.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matt Turner <mattst88@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
-        Richard Weinberger <richard@nod.at>,
-        Robert Richter <rric@kernel.org>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, Wei Liu <wei.liu@kernel.org>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-22-gpiccoli@igalia.com> <YoJgcC8c6LaKADZV@alley>
- <63a74b56-89ef-8d1f-d487-cdb986aab798@igalia.com>
- <bed66b9467254a5a8bafc1983dad643a@intel.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <bed66b9467254a5a8bafc1983dad643a@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lqr77j4ug2nnwbfa"
+Content-Disposition: inline
+In-Reply-To: <20220516160250.GA2724701-robh@kernel.org>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 16/05/2022 13:18, Luck, Tony wrote:
->> [...]
-> Would it be possible to have some global "kdump is configured + enabled" flag?
-> 
-> Then notifiers could make an informed choice on whether to deep dive to
-> get all the possible details (when there is no kdump) or just skim the high
-> level stuff (to maximize chance of getting a successful kdump).
-> 
-> -Tony
 
-Good idea Tony! What if I wire a kexec_crash_loaded() in the notifier?
+--lqr77j4ug2nnwbfa
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-With that, are you/Petr/Dinh OK in moving it for the info list?
-Cheers,
+On 16.05.2022 11:02:50, Rob Herring wrote:
+> On Fri, May 13, 2022 at 01:27:06AM +0200, Matej Vasilevski wrote:
+> > Extend dt-bindings for CTU CAN-FD IP core with necessary properties
+> > to enable HW timestamping for platform devices. Since the timestamping
+> > counter is provided by the system integrator usign those IP cores in
+> > their FPGA design, we need to have the properties specified in device t=
+ree.
+> >=20
+> > Signed-off-by: Matej Vasilevski <matej.vasilevski@seznam.cz>
+> > ---
+> >  .../bindings/net/can/ctu,ctucanfd.yaml        | 34 +++++++++++++++++--
+> >  1 file changed, 31 insertions(+), 3 deletions(-)
+>=20
+> What's the base for this patch? Doesn't apply for me.
+>=20
+> >=20
+> > diff --git a/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yam=
+l b/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
+> > index fb34d971dcb3..c3693dadbcd8 100644
+> > --- a/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
+> > +++ b/Documentation/devicetree/bindings/net/can/ctu,ctucanfd.yaml
+> > @@ -41,9 +41,35 @@ properties:
+> > =20
+> >    clocks:
+> >      description: |
+> > -      phandle of reference clock (100 MHz is appropriate
+> > -      for FPGA implementation on Zynq-7000 system).
+> > +      Phandle of reference clock (100 MHz is appropriate for FPGA
+> > +      implementation on Zynq-7000 system). If you wish to use timestam=
+ps
+> > +      from the core, add a second phandle with the clock used for time=
+stamping
+> > +      (can be the same as the first clock).
+> > +    maxItems: 2
+>=20
+> With more than 1, you have to define what each entry is. IOW, use=20
+> 'items'.
+>=20
+> > +
+> > +  clock-names:
+> > +    description: |
+> > +      Specify clock names for the "clocks" property. The first clock n=
+ame
+> > +      doesn't matter, the second has to be "ts_clk". Timestamping freq=
+uency
+> > +      is then obtained from the "ts_clk" clock. This takes precedence =
+over
+> > +      the ts-frequency property.
+> > +      You can omit this property if you don't need timestamps.
+> > +    maxItems: 2
+>=20
+> You must define what the names are as a schema.
+>=20
+> > +
+> > +  ts-used-bits:
+> > +    description: width of the timestamping counter
+> > +    maxItems: 1
+> > +    items:
+>=20
+> Not an array, so you don't need maxItems nor items.
+>=20
+> > +      minimum: 8
+> > +      maximum: 64
+> > +
+> > +  ts-frequency:
+>=20
+> Use a standard unit suffix.
+>=20
+> > +    description: |
+> > +      Frequency of the timestamping counter. Set this if you want to g=
+et
+> > +      timestamps, but you didn't set the timestamping clock in clocks =
+property.
+> >      maxItems: 1
+> > +    items:
+>=20
+> Not an array.
+>=20
+>=20
+> Is timestamping a common feature for CAN or is this specific to this=20
+> controller? In the latter case, you need vendor prefixes on these=20
+> properties. In the former case, you need to define them in a common=20
+> schema.
 
+This property describes the usable with of the free running timer and
+the timestamps generated by it. This is similar to the free running
+timer and time stamps as found on PTP capable Ethernet NICs. But the
+ctucanfd comes in a hardware description language that can be
+parametrized and synthesized into your own FPGA.
 
-Guilherme
+To answer your question, timestamping is common in newer CAN cores, but
+the width of the timestamping register is usually fixed and thus hard
+coded in the driver.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--lqr77j4ug2nnwbfa
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKCfSMACgkQrX5LkNig
+011vewgAuA1Sw18Cas3A6qb/P1pIqTIiUQirJ5dTpO30ukpTNRklS+3Ea6rZBjlX
+43x/xFB7xsE6ib+GBvP/V8N6RNpOGW7pJb0gHfS/XF9NR1hZZuHxqP5twhOJcQnv
+QWNZ43/nZaCaLZtr2XXcV7JZ1Ojh559z8m+WaYOymAiiYtWWKz4CuChEU+VndYYl
+7pLCwypfb2fxJ++DTsYT45/elS+szphh1He1O8zEa8SwVE5aVwXcy8Rx2bCJKwNc
+smRBqkQ82SlXnKgAEoNOFQx+Yz4JblsAk++wE9mHKDKBEYk2+Mo2ChtlEIPP4jPQ
+sLhx4+omh/YCIwzluS+QOS49Y1A7Qg==
+=qzlR
+-----END PGP SIGNATURE-----
+
+--lqr77j4ug2nnwbfa--
