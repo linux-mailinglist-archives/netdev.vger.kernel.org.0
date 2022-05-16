@@ -2,51 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0C37528C3D
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 19:44:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53626528C46
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 19:50:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344355AbiEPRns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 13:43:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57722 "EHLO
+        id S1344348AbiEPRuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 13:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242642AbiEPRnq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 13:43:46 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55DDD377D2;
-        Mon, 16 May 2022 10:43:43 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L262l6t4Wz6GD7c;
-        Tue, 17 May 2022 01:39:59 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 16 May 2022 19:43:39 +0200
-Message-ID: <8c272564-1033-f100-23b6-db6579085fd0@huawei.com>
-Date:   Mon, 16 May 2022 20:43:37 +0300
+        with ESMTP id S229874AbiEPRuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 13:50:15 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DEF2B37AAA;
+        Mon, 16 May 2022 10:50:13 -0700 (PDT)
+Date:   Mon, 16 May 2022 19:50:09 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Sven Auhagen <sven.auhagen@voleatech.de>
+Cc:     Oz Shlomo <ozsh@nvidia.com>, Felix Fietkau <nbd@nbd.name>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Florian Westphal <fw@strlen.de>, Paul Blakey <paulb@nvidia.com>
+Subject: Re: [PATCH net v2] netfilter: nf_flow_table: fix teardown flow
+ timeout
+Message-ID: <YoKO0dPJs+VjbTXP@salvia>
+References: <20220512182803.6353-1-ozsh@nvidia.com>
+ <YoIt5rHw4Xwl1zgY@salvia>
+ <YoI/z+aWkmAAycR3@salvia>
+ <20220516122300.6gwrlmun4w3ynz7s@SvensMacbookPro.hq.voleatech.com>
+ <YoJG2j0w551KM17k@salvia>
+ <20220516130213.bedrzjmvgvdzuzdc@SvensMacbookPro.hq.voleatech.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v5 04/15] landlock: helper functions refactoring
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <anton.sirazetdinov@huawei.com>
-References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
- <20220516152038.39594-5-konstantin.meskhidze@huawei.com>
- <ce1201e9-8493-8387-9df4-f0f8b75011c9@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <ce1201e9-8493-8387-9df4-f0f8b75011c9@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-3.0 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/mixed; boundary="0v25dMcke3Xqi3FJ"
+Content-Disposition: inline
+In-Reply-To: <20220516130213.bedrzjmvgvdzuzdc@SvensMacbookPro.hq.voleatech.com>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -54,586 +43,242 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--0v25dMcke3Xqi3FJ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-5/16/2022 8:14 PM, Mickaël Salaün пишет:
+On Mon, May 16, 2022 at 03:02:13PM +0200, Sven Auhagen wrote:
+> On Mon, May 16, 2022 at 02:43:06PM +0200, Pablo Neira Ayuso wrote:
+> > On Mon, May 16, 2022 at 02:23:00PM +0200, Sven Auhagen wrote:
+> > > On Mon, May 16, 2022 at 02:13:03PM +0200, Pablo Neira Ayuso wrote:
+> > > > On Mon, May 16, 2022 at 12:56:41PM +0200, Pablo Neira Ayuso wrote:
+> > > > > On Thu, May 12, 2022 at 09:28:03PM +0300, Oz Shlomo wrote:
+[...]
+> > > > > [...]
+> > > > > > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> > > > > > index 0164e5f522e8..324fdb62c08b 100644
+> > > > > > --- a/net/netfilter/nf_conntrack_core.c
+> > > > > > +++ b/net/netfilter/nf_conntrack_core.c
+> > > > > > @@ -1477,7 +1477,8 @@ static void gc_worker(struct work_struct *work)
+> > > > > >  			tmp = nf_ct_tuplehash_to_ctrack(h);
+> > > > > >  
+> > > > > >  			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
+> > > > > > -				nf_ct_offload_timeout(tmp);
+> > > > > 
+> > > > > Hm, it is the trick to avoid checking for IPS_OFFLOAD from the packet
+> > > > > path that triggers the race, ie. nf_ct_is_expired()
+> > > > > 
+> > > > > The flowtable ct fixup races with conntrack gc collector.
+> > > > > 
+> > > > > Clearing IPS_OFFLOAD might result in offloading the entry again for
+> > > > > the closing packets.
+> > > > > 
+> > > > > Probably clear IPS_OFFLOAD from teardown, and skip offload if flow is
+> > > > > in a TCP state that represent closure?
+> > > > > 
+> > > > >   		if (unlikely(!tcph || tcph->fin || tcph->rst))
+> > > > >   			goto out;
+> > > > > 
+> > > > > this is already the intention in the existing code.
+> > > > 
+> > > > I'm attaching an incomplete sketch patch. My goal is to avoid the
+> > > > extra IPS_ bit.
+> > > 
+> > > You might create a race with ct gc that will remove the ct
+> > > if it is in close or end of close and before flow offload teardown is running
+> > > so flow offload teardown might access memory that was freed.
+> > 
+> > flow object holds a reference to the ct object until it is released,
+> > no use-after-free can happen.
+> > 
 > 
-> On 16/05/2022 17:20, Konstantin Meskhidze wrote:
->> Unmask_layers(), init_layer_masks() and
->> get_handled_accesses() helper functions move to
->> ruleset.c and rule_type argument is added.
->> This modification supports implementing new rule
->> types into next landlock versions.
->>
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->>
->> Changes since v3:
->> * Splits commit.
->> * Refactoring landlock_unmask_layers functions.
->>
-> 
-> Please sort changes in antichronological order. It is easier to look at 
-> the first lines to get the last changes.
+> Also if nf_ct_delete is called before flowtable delete?
+> Can you let me know why?
 
-  Ok. I will. Thanks
-> 
->> Changes since v4:
->> * Refactoring init_layer_masks(), get_handled_accesses()
->> and unmask_layers() functions to support multiple rule types.
->> * Refactoring landlock_get_fs_access_mask() function with
->> LANDLOCK_MASK_ACCESS_FS mask. >
->> ---
->>   security/landlock/fs.c      | 158 ++++++++----------------------------
->>   security/landlock/ruleset.c | 152 +++++++++++++++++++++++++++++++---
->>   security/landlock/ruleset.h |  17 +++-
->>   3 files changed, 192 insertions(+), 135 deletions(-)
->>
->> diff --git a/security/landlock/fs.c b/security/landlock/fs.c
->> index 5de24d4dd74c..3506e182b23e 100644
->> --- a/security/landlock/fs.c
->> +++ b/security/landlock/fs.c
->> @@ -211,60 +211,6 @@ find_rule(const struct landlock_ruleset *const 
->> domain,
->>       return rule;
->>   }
->>
->> -/*
->> - * @layer_masks is read and may be updated according to the access 
->> request and
->> - * the matching rule.
->> - *
->> - * Returns true if the request is allowed (i.e. relevant layer masks 
->> for the
->> - * request are empty).
->> - */
->> -static inline bool
->> -unmask_layers(const struct landlock_rule *const rule,
->> -          const access_mask_t access_request,
->> -          layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
-> 
-> Moving these entire blocks of code make the review/diff impossible. Why 
-> moving these helpers?
+nf_ct_delete() removes the conntrack object from lists and it
+decrements the reference counter by one.
 
-   Cause these helpers are going to be used both for filesystem and 
-network. I moved them into ruleset.c/h
-> 
->> -{
->> -    size_t layer_level;
->> -
->> -    if (!access_request || !layer_masks)
->> -        return true;
->> -    if (!rule)
->> -        return false;
->> -
->> -    /*
->> -     * An access is granted if, for each policy layer, at least one rule
->> -     * encountered on the pathwalk grants the requested access,
->> -     * regardless of its position in the layer stack.  We must then 
->> check
->> -     * the remaining layers for each inode, from the first added 
->> layer to
->> -     * the last one.  When there is multiple requested accesses, for 
->> each
->> -     * policy layer, the full set of requested accesses may not be 
->> granted
->> -     * by only one rule, but by the union (binary OR) of multiple rules.
->> -     * E.g. /a/b <execute> + /a <read> => /a/b <execute + read>
->> -     */
->> -    for (layer_level = 0; layer_level < rule->num_layers; 
->> layer_level++) {
->> -        const struct landlock_layer *const layer =
->> -            &rule->layers[layer_level];
->> -        const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
->> -        const unsigned long access_req = access_request;
->> -        unsigned long access_bit;
->> -        bool is_empty;
->> -
->> -        /*
->> -         * Records in @layer_masks which layer grants access to each
->> -         * requested access.
->> -         */
->> -        is_empty = true;
->> -        for_each_set_bit(access_bit, &access_req,
->> -                 ARRAY_SIZE(*layer_masks)) {
->> -            if (layer->access & BIT_ULL(access_bit))
->> -                (*layer_masks)[access_bit] &= ~layer_bit;
->> -            is_empty = is_empty && !(*layer_masks)[access_bit];
->> -        }
->> -        if (is_empty)
->> -            return true;
->> -    }
->> -    return false;
->> -}
->> -
->>   /*
->>    * Allows access to pseudo filesystems that will never be mountable 
->> (e.g.
->>    * sockfs, pipefs), but can still be reachable through
->> @@ -277,59 +223,6 @@ static inline bool is_nouser_or_private(const 
->> struct dentry *dentry)
->>           unlikely(IS_PRIVATE(d_backing_inode(dentry))));
->>   }
->>
->> -static inline access_mask_t
->> -get_handled_accesses(const struct landlock_ruleset *const domain)
->> -{
->> -    access_mask_t access_dom = 0;
->> -    unsigned long access_bit;
->> -
->> -    for (access_bit = 0; access_bit < LANDLOCK_NUM_ACCESS_FS;
->> -         access_bit++) {
->> -        size_t layer_level;
->> -
->> -        for (layer_level = 0; layer_level < domain->num_layers;
->> -                layer_level++) {
->> -            if (landlock_get_fs_access_mask(domain, layer_level) &
->> -                    BIT_ULL(access_bit)) {
->> -                access_dom |= BIT_ULL(access_bit);
->> -                break;
->> -            }
->> -        }
->> -    }
->> -    return access_dom;
->> -}
->> -
->> -static inline access_mask_t
->> -init_layer_masks(const struct landlock_ruleset *const domain,
->> -         const access_mask_t access_request,
->> -         layer_mask_t (*const layer_masks)[LANDLOCK_NUM_ACCESS_FS])
->> -{
->> -    access_mask_t handled_accesses = 0;
->> -    size_t layer_level;
->> -
->> -    memset(layer_masks, 0, sizeof(*layer_masks));
->> -    /* An empty access request can happen because of O_WRONLY | 
->> O_RDWR. */
->> -    if (!access_request)
->> -        return 0;
->> -
->> -    /* Saves all handled accesses per layer. */
->> -    for (layer_level = 0; layer_level < domain->num_layers; 
->> layer_level++) {
->> -        const unsigned long access_req = access_request;
->> -        unsigned long access_bit;
->> -
->> -        for_each_set_bit(access_bit, &access_req,
->> -                ARRAY_SIZE(*layer_masks)) {
->> -            if (landlock_get_fs_access_mask(domain, layer_level) &
->> -                    BIT_ULL(access_bit)) {
->> -                (*layer_masks)[access_bit] |=
->> -                    BIT_ULL(layer_level);
->> -                handled_accesses |= BIT_ULL(access_bit);
->> -            }
->> -        }
->> -    }
->> -    return handled_accesses;
->> -}
->> -
->>   /*
->>    * Check that a destination file hierarchy has more restrictions 
->> than a source
->>    * file hierarchy.  This is only used for link and rename actions.
->> @@ -506,7 +399,8 @@ static int check_access_path_dual(
->>            * a superset of the meaningful requested accesses).
->>            */
->>           access_masked_parent1 = access_masked_parent2 =
->> -            get_handled_accesses(domain);
->> +            get_handled_accesses(domain, LANDLOCK_RULE_PATH_BENEATH,
->> +                         LANDLOCK_NUM_ACCESS_FS);
->>           is_dom_check = true;
->>       } else {
->>           if (WARN_ON_ONCE(dentry_child1 || dentry_child2))
->> @@ -519,17 +413,25 @@ static int check_access_path_dual(
->>
->>       if (unlikely(dentry_child1)) {
->>           unmask_layers(find_rule(domain, dentry_child1),
->> -                  init_layer_masks(domain, LANDLOCK_MASK_ACCESS_FS,
->> -                           &_layer_masks_child1),
->> -                  &_layer_masks_child1);
->> +                init_layer_masks(domain,
->> +                    LANDLOCK_MASK_ACCESS_FS,
->> +                    &_layer_masks_child1,
->> +                    sizeof(_layer_masks_child1),
->> +                    LANDLOCK_RULE_PATH_BENEATH),
->> +                &_layer_masks_child1,
->> +                ARRAY_SIZE(_layer_masks_child1));
-> 
-> There is a lot of formatting diff and that makes the review difficult. 
-> Please format everything with clang-format-14.
+flow_offload_free() also calls nf_ct_put(). flow_offload_alloc() bumps
+the reference count on the conntrack object before creating the flow.
 
-   Ok. Do you have some tool that helps you with editing code with clang 
-format?
+> > > It is not a very likely scenario but never the less it might happen now
+> > > since the IPS_OFFLOAD_BIT is not set and the state might just time out.
+> > > 
+> > > If someone sets a very small TCP CLOSE timeout it gets more likely.
+> > > 
+> > > So Oz and myself were debatting about three possible cases/problems:
+> > > 
+> > > 1. ct gc sets timeout even though the state is in CLOSE/FIN because the
+> > > IPS_OFFLOAD is still set but the flow is in teardown
+> > > 2. ct gc removes the ct because the IPS_OFFLOAD is not set and
+> > > the CLOSE timeout is reached before the flow offload del
+> > 
+> > OK.
+> > 
+> > > 3. tcp ct is always set to ESTABLISHED with a very long timeout
+> > > in flow offload teardown/delete even though the state is already
+> > > CLOSED.
+> > >
+> > > Also as a remark we can not assume that the FIN or RST packet is hitting
+> > > flow table teardown as the packet might get bumped to the slow path in
+> > > nftables.
+> > 
+> > I assume this remark is related to 3.?
 > 
->>           layer_masks_child1 = &_layer_masks_child1;
->>           child1_is_directory = d_is_dir(dentry_child1);
->>       }
->>       if (unlikely(dentry_child2)) {
->>           unmask_layers(find_rule(domain, dentry_child2),
->> -                  init_layer_masks(domain, LANDLOCK_MASK_ACCESS_FS,
->> -                           &_layer_masks_child2),
->> -                  &_layer_masks_child2);
->> +                init_layer_masks(domain,
->> +                    LANDLOCK_MASK_ACCESS_FS,
->> +                    &_layer_masks_child2,
->> +                    sizeof(_layer_masks_child2),
->> +                    LANDLOCK_RULE_PATH_BENEATH),
->> +                &_layer_masks_child2,
->> +                ARRAY_SIZE(_layer_masks_child2));
->>           layer_masks_child2 = &_layer_masks_child2;
->>           child2_is_directory = d_is_dir(dentry_child2);
->>       }
->> @@ -582,14 +484,15 @@ static int check_access_path_dual(
->>
->>           rule = find_rule(domain, walker_path.dentry);
->>           allowed_parent1 = unmask_layers(rule, access_masked_parent1,
->> -                        layer_masks_parent1);
->> +                layer_masks_parent1,
->> +                ARRAY_SIZE(*layer_masks_parent1));
->>           allowed_parent2 = unmask_layers(rule, access_masked_parent2,
->> -                        layer_masks_parent2);
->> +                layer_masks_parent2,
->> +                ARRAY_SIZE(*layer_masks_parent2));
->>
->>           /* Stops when a rule from each layer grants access. */
->>           if (allowed_parent1 && allowed_parent2)
->>               break;
->> -
+> Yes, exactly.
 > 
-> There is no place for such formatting/whitespace patches.
+> > if IPS_OFFLOAD is unset, then conntrack would update the state
+> > according to this FIN or RST.
 > 
-   I missed that. scripts/checkpatch.pl did not show any problem here.
-   I will fix it. Thanks.
-> 
->>   jump_up:
->>           if (walker_path.dentry == walker_path.mnt->mnt_root) {
->>               if (follow_up(&walker_path)) {
->> @@ -645,7 +548,9 @@ static inline int check_access_path(const struct 
->> landlock_ruleset *const domain,
->>   {
->>       layer_mask_t layer_masks[LANDLOCK_NUM_ACCESS_FS] = {};
->>
->> -    access_request = init_layer_masks(domain, access_request, 
->> &layer_masks);
->> +    access_request = init_layer_masks(domain, access_request,
->> +            &layer_masks, sizeof(layer_masks),
->> +            LANDLOCK_RULE_PATH_BENEATH);
->>       return check_access_path_dual(domain, path, access_request,
->>                         &layer_masks, NULL, 0, NULL, NULL);
->>   }
->> @@ -729,7 +634,8 @@ static bool collect_domain_accesses(
->>           return true;
->>
->>       access_dom = init_layer_masks(domain, LANDLOCK_MASK_ACCESS_FS,
->> -                      layer_masks_dom);
->> +            layer_masks_dom, sizeof(*layer_masks_dom),
->> +            LANDLOCK_RULE_PATH_BENEATH);
->>
->>       dget(dir);
->>       while (true) {
->> @@ -737,7 +643,8 @@ static bool collect_domain_accesses(
->>
->>           /* Gets all layers allowing all domain accesses. */
->>           if (unmask_layers(find_rule(domain, dir), access_dom,
->> -                  layer_masks_dom)) {
->> +                    layer_masks_dom,
->> +                    ARRAY_SIZE(*layer_masks_dom))) {
->>               /*
->>                * Stops when all handled accesses are allowed by at
->>                * least one rule in each layer.
->> @@ -851,9 +758,10 @@ static int current_check_refer_path(struct dentry 
->> *const old_dentry,
->>            * The LANDLOCK_ACCESS_FS_REFER access right is not required
->>            * for same-directory referer (i.e. no reparenting).
->>            */
->> -        access_request_parent1 = init_layer_masks(
->> -            dom, access_request_parent1 | access_request_parent2,
->> -            &layer_masks_parent1);
->> +        access_request_parent1 = init_layer_masks(dom,
->> +                access_request_parent1 | access_request_parent2,
->> +                &layer_masks_parent1, sizeof(layer_masks_parent1),
->> +                LANDLOCK_RULE_PATH_BENEATH);
->>           return check_access_path_dual(dom, new_dir,
->>                             access_request_parent1,
->>                             &layer_masks_parent1, NULL, 0,
->> @@ -861,7 +769,9 @@ static int current_check_refer_path(struct dentry 
->> *const old_dentry,
->>       }
->>
->>       /* Backward compatibility: no reparenting support. */
->> -    if (!(get_handled_accesses(dom) & LANDLOCK_ACCESS_FS_REFER))
->> +    if (!(get_handled_accesses(dom, LANDLOCK_RULE_PATH_BENEATH,
->> +                   LANDLOCK_NUM_ACCESS_FS) &
->> +                        LANDLOCK_ACCESS_FS_REFER))
->>           return -EXDEV;
->>
->>       access_request_parent1 |= LANDLOCK_ACCESS_FS_REFER;
->> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
->> index 4b4c9953bb32..c4ed783d655b 100644
->> --- a/security/landlock/ruleset.c
->> +++ b/security/landlock/ruleset.c
->> @@ -233,7 +233,8 @@ static int insert_rule(struct landlock_ruleset 
->> *const ruleset,
->>                              &(*layers)[0]);
->>               if (IS_ERR(new_rule))
->>                   return PTR_ERR(new_rule);
->> -            rb_replace_node(&this->node, &new_rule->node, 
->> &ruleset->root_inode);
->> +            rb_replace_node(&this->node, &new_rule->node,
->> +                    &ruleset->root_inode);
-> 
-> This is a pure formatting hunk. :/
-> 
-   Thats strange, cause in my editor I have normal aligment of arguments.
-   Could please share clang-format-14 tab size and other format 	parameters?
-> 
->>               free_rule(this, rule_type);
->>               break;
->>           }
->> @@ -246,7 +247,8 @@ static int insert_rule(struct landlock_ruleset 
->> *const ruleset,
->>           return -E2BIG;
->>       switch (rule_type) {
->>       case LANDLOCK_RULE_PATH_BENEATH:
->> -        new_rule = create_rule(object_ptr, 0, layers, num_layers, NULL);
->> +        new_rule = create_rule(object_ptr, 0, layers,
->> +                       num_layers, NULL);
->>           if (IS_ERR(new_rule))
->>               return PTR_ERR(new_rule);
->>           rb_link_node(&new_rule->node, parent_node, walker_node);
->> @@ -281,8 +283,8 @@ int landlock_insert_rule(struct landlock_ruleset 
->> *const ruleset,
->>       } };
->>
->>       build_check_layer();
->> -    return insert_rule(ruleset, object_ptr, object_data, rule_type, 
->> &layers,
->> -               ARRAY_SIZE(layers));
->> +    return insert_rule(ruleset, object_ptr, object_data, rule_type,
->> +               &layers, ARRAY_SIZE(layers));
->>   }
->>
->>   static inline void get_hierarchy(struct landlock_hierarchy *const 
->> hierarchy)
->> @@ -335,8 +337,9 @@ static int tree_merge(struct landlock_ruleset 
->> *const src,
->>
->>           switch (rule_type) {
->>           case LANDLOCK_RULE_PATH_BENEATH:
->> -            err = insert_rule(dst, walker_rule->object.ptr, 0, 
->> rule_type,
->> -                      &layers, ARRAY_SIZE(layers));
->> +            err = insert_rule(dst, walker_rule->object.ptr, 0,
->> +                      rule_type, &layers,
->> +                      ARRAY_SIZE(layers));
->>               break;
->>           }
->>           if (err)
->> @@ -433,9 +436,13 @@ static int inherit_ruleset(struct 
->> landlock_ruleset *const parent,
->>           err = -EINVAL;
->>           goto out_unlock;
->>       }
->> -    /* Copies the parent layer stack and leaves a space for the new 
->> layer. */
->> +    /*
->> +     * Copies the parent layer stack and leaves a space
->> +     * for the new layer.
->> +     */
->>       memcpy(child->access_masks, parent->access_masks,
->> -            flex_array_size(parent, access_masks, parent->num_layers));
->> +            flex_array_size(parent, access_masks,
->> +                    parent->num_layers));
->>
->>       if (WARN_ON_ONCE(!parent->hierarchy)) {
->>           err = -EINVAL;
->> @@ -455,8 +462,9 @@ static void free_ruleset(struct landlock_ruleset 
->> *const ruleset)
->>       struct landlock_rule *freeme, *next;
->>
->>       might_sleep();
->> -    rbtree_postorder_for_each_entry_safe(freeme, next, 
->> &ruleset->root_inode,
->> -            node)
->> +    rbtree_postorder_for_each_entry_safe(freeme, next,
->> +                         &ruleset->root_inode,
->> +                         node)
->>           free_rule(freeme, LANDLOCK_RULE_PATH_BENEATH);
->>       put_hierarchy(ruleset->hierarchy);
->>       kfree(ruleset);
->> @@ -577,3 +585,127 @@ const struct landlock_rule *landlock_find_rule(
->>       }
->>       return NULL;
->>   }
->> +
->> +access_mask_t get_handled_accesses(
->> +        const struct landlock_ruleset *const domain,
->> +        u16 rule_type, u16 num_access)
->> +{
->> +    access_mask_t access_dom = 0;
->> +    unsigned long access_bit;
->> +
->> +    switch (rule_type) {
->> +    case LANDLOCK_RULE_PATH_BENEATH:
->> +        for (access_bit = 0; access_bit < LANDLOCK_NUM_ACCESS_FS;
->> +            access_bit++) {
->> +            size_t layer_level;
->> +
->> +            for (layer_level = 0; layer_level < domain->num_layers;
->> +                    layer_level++) {
->> +                if (landlock_get_fs_access_mask(domain,
->> +                                layer_level) &
->> +                        BIT_ULL(access_bit)) {
->> +                    access_dom |= BIT_ULL(access_bit);
->> +                    break;
->> +                }
->> +            }
->> +        }
->> +        break;
->> +    default:
->> +        break;
->> +    }
->> +    return access_dom;
->> +}
->> +
->> +/*
->> + * @layer_masks is read and may be updated according to the access 
->> request and
->> + * the matching rule.
->> + *
->> + * Returns true if the request is allowed (i.e. relevant layer masks 
->> for the
->> + * request are empty).
->> + */
->> +bool unmask_layers(const struct landlock_rule *const rule,
->> +        const access_mask_t access_request,
->> +        layer_mask_t (*const layer_masks)[], size_t masks_array_size)
->> +{
->> +    size_t layer_level;
->> +
->> +    if (!access_request || !layer_masks)
->> +        return true;
->> +    if (!rule)
->> +        return false;
->> +
->> +    /*
->> +     * An access is granted if, for each policy layer, at least one rule
->> +     * encountered on the pathwalk grants the requested access,
->> +     * regardless of its position in the layer stack.  We must then 
->> check
->> +     * the remaining layers for each inode, from the first added 
->> layer to
->> +     * the last one.  When there is multiple requested accesses, for 
->> each
->> +     * policy layer, the full set of requested accesses may not be 
->> granted
->> +     * by only one rule, but by the union (binary OR) of multiple rules.
->> +     * E.g. /a/b <execute> + /a <read> => /a/b <execute + read>
->> +     */
->> +    for (layer_level = 0; layer_level < rule->num_layers; 
->> layer_level++) {
->> +        const struct landlock_layer *const layer =
->> +            &rule->layers[layer_level];
->> +        const layer_mask_t layer_bit = BIT_ULL(layer->level - 1);
->> +        const unsigned long access_req = access_request;
->> +        unsigned long access_bit;
->> +        bool is_empty;
->> +
->> +        /*
->> +         * Records in @layer_masks which layer grants access to each
->> +         * requested access.
->> +         */
->> +        is_empty = true;
->> +        for_each_set_bit(access_bit, &access_req, masks_array_size) {
->> +            if (layer->access & BIT_ULL(access_bit))
->> +                (*layer_masks)[access_bit] &= ~layer_bit;
->> +            is_empty = is_empty && !(*layer_masks)[access_bit];
->> +        }
->> +        if (is_empty)
->> +            return true;
->> +    }
->> +    return false;
->> +}
->> +
->> +access_mask_t init_layer_masks(const struct landlock_ruleset *const 
->> domain,
->> +                   const access_mask_t access_request,
->> +                   layer_mask_t (*const layer_masks)[],
->> +                   size_t masks_size,
->> +                   u16 rule_type)
->> +{
->> +    access_mask_t handled_accesses = 0;
->> +    size_t layer_level;
->> +
->> +    memset(layer_masks, 0, masks_size);
->> +
->> +    /* An empty access request can happen because of O_WRONLY | 
->> O_RDWR. */
->> +    if (!access_request)
->> +        return 0;
->> +
->> +    /* Saves all handled accesses per layer. */
->> +    for (layer_level = 0; layer_level < domain->num_layers;
->> +            layer_level++) {
->> +        const unsigned long access_req = access_request;
->> +        unsigned long access_bit;
->> +
->> +        switch (rule_type) {
->> +        case LANDLOCK_RULE_PATH_BENEATH:
->> +            for_each_set_bit(access_bit, &access_req,
->> +                    LANDLOCK_NUM_ACCESS_FS) {
->> +                if (landlock_get_fs_access_mask(domain,
->> +                                layer_level) &
->> +                        BIT_ULL(access_bit)) {
->> +                    (*layer_masks)[access_bit] |=
->> +                        BIT_ULL(layer_level);
->> +                    handled_accesses |=
->> +                               BIT_ULL(access_bit);
->> +                }
->> +            }
->> +            break;
->> +        default:
->> +            return 0;
->> +        }
->> +    }
->> +    return handled_accesses;
->> +}
->> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
->> index 3066e5d7180c..f3cd890d0348 100644
->> --- a/security/landlock/ruleset.h
->> +++ b/security/landlock/ruleset.h
->> @@ -195,7 +195,22 @@ static inline u32 landlock_get_fs_access_mask(
->>                       const struct landlock_ruleset *ruleset,
->>                       u16 mask_level)
->>   {
->> -    return ruleset->access_masks[mask_level];
->> +    return (ruleset->access_masks[mask_level] & 
->> LANDLOCK_MASK_ACCESS_FS);
->>   }
->>
->> +access_mask_t get_handled_accesses(
->> +        const struct landlock_ruleset *const domain,
->> +        u16 rule_type, u16 num_access);
->> +
->> +bool unmask_layers(const struct landlock_rule *const rule,
->> +           const access_mask_t access_request,
->> +           layer_mask_t (*const layer_masks)[],
->> +           size_t masks_array_size);
->> +
->> +access_mask_t init_layer_masks(const struct landlock_ruleset *const 
->> domain,
->> +                   const access_mask_t access_request,
->> +                   layer_mask_t (*const layer_masks)[],
->> +                   size_t masks_size,
->> +                   u16 rule_type);
-> 
-> These declarations are useless.
+> It will move to a different TCP state anyways only the ct state
+> will be at IPS_OFFLOAD_BIT and prevent it from beeing garbage collected.
+> The timeout will be bumped back up as long as IPS_OFFLOAD_BIT is set
+> even though TCP might already be CLOSED.
 
-   I moved helpers in rulset.c/h to use them both for filesystem
-and network.
-> 
->> +
->>   #endif /* _SECURITY_LANDLOCK_RULESET_H */
->> -- 
->> 2.25.1
->>
-> .
+If teardown fixes the ct state and timeout to established, and IPS_OFFLOAD is
+unset, then the packet is passed up in a consistent state.
+
+I made a patch, it is based on yours, it's attached:
+
+- If flow timeout expires or rst/fin is seen, ct state and timeout is
+  fixed up (to established state) and IPS_OFFLOAD is unset.
+
+- If rst/fin packet is seen, ct state and timeout is fixed up (to
+  established state) and IPS_OFFLOAD is unset. The packet continues
+  its travel up to the classic path, so conntrack triggers the
+  transition from established to one of the close states.
+
+For the case 1., IPS_OFFLOAD is not set anymore, so conntrack gc
+cannot race to reset the ct timeout anymore.
+
+For the case 2., if gc conntrack ever removes the ct entry, then the
+IPS_DYING bit is set, which implicitly triggers the teardown state
+from the flowtable gc. The flowtable still holds a reference to the
+ct object, so no UAF can happen.
+
+For the case 3. the conntrack is set to ESTABLISHED with a long
+timeout, yes. This is to deal with the two possible cases:
+
+a) flowtable timeout expired, so conntrack recovers control on the
+   flow.
+b) tcp rst/fin will take back the packet to slow path. The ct has been
+   fixed up to established state so it will trasition to one of the
+   close states.
+
+Am I missing anything?
+
+--0v25dMcke3Xqi3FJ
+Content-Type: text/x-diff; charset=utf-8
+Content-Disposition: attachment; filename="fix-pickup.patch"
+
+commit f11b613b1f63a70e4dacae7ff73ce1895c96c6d1
+Author: Pablo Neira Ayuso <pablo@netfilter.org>
+Date:   Mon May 16 18:44:19 2022 +0200
+
+    x
+
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index 20b4a14e5d4e..85796082a4ac 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -184,7 +184,7 @@ static void flow_offload_fixup_tcp(struct ip_ct_tcp *tcp)
+ 	tcp->seen[1].td_maxwin = 0;
+ }
+ 
+-static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
++static void flow_offload_fixup_ct(struct nf_conn *ct)
+ {
+ 	struct net *net = nf_ct_net(ct);
+ 	int l4num = nf_ct_protonum(ct);
+@@ -193,6 +193,8 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
+ 	if (l4num == IPPROTO_TCP) {
+ 		struct nf_tcp_net *tn = nf_tcp_pernet(net);
+ 
++		flow_offload_fixup_tcp(&ct->proto.tcp);
++
+ 		timeout = tn->timeouts[TCP_CONNTRACK_ESTABLISHED];
+ 		timeout -= tn->offload_timeout;
+ 	} else if (l4num == IPPROTO_UDP) {
+@@ -211,18 +213,6 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
+ 		WRITE_ONCE(ct->timeout, nfct_time_stamp + timeout);
+ }
+ 
+-static void flow_offload_fixup_ct_state(struct nf_conn *ct)
+-{
+-	if (nf_ct_protonum(ct) == IPPROTO_TCP)
+-		flow_offload_fixup_tcp(&ct->proto.tcp);
+-}
+-
+-static void flow_offload_fixup_ct(struct nf_conn *ct)
+-{
+-	flow_offload_fixup_ct_state(ct);
+-	flow_offload_fixup_ct_timeout(ct);
+-}
+-
+ static void flow_offload_route_release(struct flow_offload *flow)
+ {
+ 	nft_flow_dst_release(flow, FLOW_OFFLOAD_DIR_ORIGINAL);
+@@ -361,14 +351,6 @@ static void flow_offload_del(struct nf_flowtable *flow_table,
+ 	rhashtable_remove_fast(&flow_table->rhashtable,
+ 			       &flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].node,
+ 			       nf_flow_offload_rhash_params);
+-
+-	clear_bit(IPS_OFFLOAD_BIT, &flow->ct->status);
+-
+-	if (nf_flow_has_expired(flow))
+-		flow_offload_fixup_ct(flow->ct);
+-	else
+-		flow_offload_fixup_ct_timeout(flow->ct);
+-
+ 	flow_offload_free(flow);
+ }
+ 
+@@ -376,7 +358,9 @@ void flow_offload_teardown(struct flow_offload *flow)
+ {
+ 	set_bit(NF_FLOW_TEARDOWN, &flow->flags);
+ 
+-	flow_offload_fixup_ct_state(flow->ct);
++	flow_offload_fixup_ct(flow->ct);
++
++	clear_bit(IPS_OFFLOAD_BIT, &flow->ct->status);
+ }
+ EXPORT_SYMBOL_GPL(flow_offload_teardown);
+ 
+@@ -466,7 +450,7 @@ static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
+ 	if (nf_flow_has_expired(flow) ||
+ 	    nf_ct_is_dying(flow->ct) ||
+ 	    nf_flow_has_stale_dst(flow))
+-		set_bit(NF_FLOW_TEARDOWN, &flow->flags);
++		flow_offload_teardown(flow);
+ 
+ 	if (test_bit(NF_FLOW_TEARDOWN, &flow->flags)) {
+ 		if (test_bit(NF_FLOW_HW, &flow->flags)) {
+diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
+index 187b8cb9a510..a22bb238926d 100644
+--- a/net/netfilter/nft_flow_offload.c
++++ b/net/netfilter/nft_flow_offload.c
+@@ -273,6 +273,12 @@ static bool nft_flow_offload_skip(struct sk_buff *skb, int family)
+ 	return false;
+ }
+ 
++static bool flow_offload_teardown_state(const struct ip_ct_tcp *state)
++{
++	return state->state > TCP_CONNTRACK_ESTABLISHED &&
++	       state->state <= TCP_CONNTRACK_CLOSE;
++}
++
+ static void nft_flow_offload_eval(const struct nft_expr *expr,
+ 				  struct nft_regs *regs,
+ 				  const struct nft_pktinfo *pkt)
+@@ -298,7 +304,8 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
+ 	case IPPROTO_TCP:
+ 		tcph = skb_header_pointer(pkt->skb, nft_thoff(pkt),
+ 					  sizeof(_tcph), &_tcph);
+-		if (unlikely(!tcph || tcph->fin || tcph->rst))
++		if (unlikely(!tcph || tcph->fin || tcph->rst ||
++			     flow_offload_teardown_state(&ct->proto.tcp)))
+ 			goto out;
+ 		break;
+ 	case IPPROTO_UDP:
+
+--0v25dMcke3Xqi3FJ--
