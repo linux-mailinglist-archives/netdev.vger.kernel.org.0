@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B24C6528999
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 18:08:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DFF952899A
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 18:08:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245641AbiEPQH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 12:07:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32944 "EHLO
+        id S245652AbiEPQIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 12:08:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245738AbiEPQHu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 12:07:50 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C36B37A90;
-        Mon, 16 May 2022 09:07:48 -0700 (PDT)
+        with ESMTP id S245260AbiEPQHx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 12:07:53 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC1037A90;
+        Mon, 16 May 2022 09:07:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 705A2CE16C9;
-        Mon, 16 May 2022 16:07:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1524FC3411A;
-        Mon, 16 May 2022 16:07:42 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BF6BECE16E4;
+        Mon, 16 May 2022 16:07:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5873EC34113;
+        Mon, 16 May 2022 16:07:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652717265;
-        bh=aSYMxoghmBGi6PfPfKaZsOsTEC8kXQeaqa+ZGO11hk8=;
+        s=k20201202; t=1652717269;
+        bh=zo+PQVFuA+GxPo/d6/CtXgd7jFrLzi0gI150KZBcaLA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ahRiq8qzeZmvXj2gpcyNfY6uxf8QpCXe5OUzQac4DziIFYOwhGI5U8rvF0Qm0JKaH
-         ZnbgP+VtopvVLZ3z7tlItBnq5hI2NpgDBpH+QdT6LW1SH7Tkz3CHENfkKWUFAnUtpV
-         JSaE2Z5YIRDm4UJVqhJZtAddLvBWssWoTDjlF3KGbSpD31QyVar2repVofv/TzA9If
-         M+0hLSdCypvI4wg0K/mQtsSsN/jTclJuYdKIhz6VYyFw45eEqZCu0DFgCLYdVB6zac
-         ah7x8kepn7jhM+bn00CP+/74Kzf4cB0Pq2zvt2pPbtcsXa2uMMPkHvKQbKC3dpHpg9
-         WwEK5X0qJI1Xg==
+        b=FUjrw4Hx8KjxReUXnNdcEyzFAfRLwM59ktxCL724Q6Pm3d6WPZ3pf/ceINM+NVUym
+         NkAXEX+CuiKec6gxClNPld9HxIl+hVX7yXCMQtIdWNBOF10JILmFlgiRkSEp1TYakl
+         6iF+t3ZsmUKV7gHY9n+EZ86FlzAJHRxtbyBcyvrKoP3eUGoNWLSmJ6QE81HU9D4nj/
+         tJ9FvyTZqmToUwswqYKPVDA55AiAIYxLs+VQ7S1/VLJpofPjNz5U7EuFmp9jku3Gsv
+         QH4bOKRRpIet5686a8sREg9FN6S1dAobGXDL26vDVZ6/Q1itCu2cAL37Nq024YqlSs
+         BxgvNDcuALvJg==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
@@ -38,9 +38,9 @@ Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
         kuba@kernel.org, pabeni@redhat.com, Sam.Shih@mediatek.com,
         linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         robh@kernel.org, lorenzo.bianconi@redhat.com
-Subject: [PATCH v2 net-next 02/15] dt-bindings: net: mediatek,net: add mt7986-eth binding
-Date:   Mon, 16 May 2022 18:06:29 +0200
-Message-Id: <aa934c3185c9e04893d9c285ed655495a049fa4f.1652716741.git.lorenzo@kernel.org>
+Subject: [PATCH v2 net-next 03/15] net: ethernet: mtk_eth_soc: move tx dma desc configuration in mtk_tx_set_dma_desc
+Date:   Mon, 16 May 2022 18:06:30 +0200
+Message-Id: <56f87927844502969dd6929e9137c47e54c99c00.1652716741.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <cover.1652716741.git.lorenzo@kernel.org>
 References: <cover.1652716741.git.lorenzo@kernel.org>
@@ -56,211 +56,213 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce dts bindings for mt7986 soc in mediatek,net.yaml.
+Move tx dma descriptor configuration in mtk_tx_set_dma_desc routine.
+This is a preliminary patch to introduce mt7986 ethernet support since
+it relies on a different tx dma descriptor layout.
 
+Tested-by: Sam Shih <sam.shih@mediatek.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- .../devicetree/bindings/net/mediatek,net.yaml | 141 +++++++++++++++++-
- 1 file changed, 139 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 105 +++++++++++---------
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h |  11 ++
+ 2 files changed, 67 insertions(+), 49 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/net/mediatek,net.yaml b/Documentation/devicetree/bindings/net/mediatek,net.yaml
-index 43cc4024ef98..699164dd1295 100644
---- a/Documentation/devicetree/bindings/net/mediatek,net.yaml
-+++ b/Documentation/devicetree/bindings/net/mediatek,net.yaml
-@@ -21,6 +21,7 @@ properties:
-       - mediatek,mt7623-eth
-       - mediatek,mt7622-eth
-       - mediatek,mt7629-eth
-+      - mediatek,mt7986-eth
-       - ralink,rt5350-eth
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 31c5da5d6b72..085c740779de 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -918,18 +918,51 @@ static void setup_tx_buf(struct mtk_eth *eth, struct mtk_tx_buf *tx_buf,
+ 	}
+ }
  
-   reg:
-@@ -28,7 +29,7 @@ properties:
++static void mtk_tx_set_dma_desc(struct net_device *dev, struct mtk_tx_dma *desc,
++				struct mtk_tx_dma_desc_info *info)
++{
++	struct mtk_mac *mac = netdev_priv(dev);
++	u32 data;
++
++	WRITE_ONCE(desc->txd1, info->addr);
++
++	data = TX_DMA_SWC | TX_DMA_PLEN0(info->size);
++	if (info->last)
++		data |= TX_DMA_LS0;
++	WRITE_ONCE(desc->txd3, data);
++
++	data = (mac->id + 1) << TX_DMA_FPORT_SHIFT; /* forward port */
++	if (info->first) {
++		if (info->gso)
++			data |= TX_DMA_TSO;
++		/* tx checksum offload */
++		if (info->csum)
++			data |= TX_DMA_CHKSUM;
++		/* vlan header offload */
++		if (info->vlan)
++			data |= TX_DMA_INS_VLAN | info->vlan_tci;
++	}
++	WRITE_ONCE(desc->txd4, data);
++}
++
+ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
+ 		      int tx_num, struct mtk_tx_ring *ring, bool gso)
+ {
++	struct mtk_tx_dma_desc_info txd_info = {
++		.size = skb_headlen(skb),
++		.gso = gso,
++		.csum = skb->ip_summed == CHECKSUM_PARTIAL,
++		.vlan = skb_vlan_tag_present(skb),
++		.vlan_tci = skb_vlan_tag_get(skb),
++		.first = true,
++		.last = !skb_is_nonlinear(skb),
++	};
+ 	struct mtk_mac *mac = netdev_priv(dev);
+ 	struct mtk_eth *eth = mac->hw;
+ 	struct mtk_tx_dma *itxd, *txd;
+ 	struct mtk_tx_dma *itxd_pdma, *txd_pdma;
+ 	struct mtk_tx_buf *itx_buf, *tx_buf;
+-	dma_addr_t mapped_addr;
+-	unsigned int nr_frags;
+ 	int i, n_desc = 1;
+-	u32 txd4 = 0, fport;
+ 	int k = 0;
  
-   interrupts:
-     minItems: 3
--    maxItems: 3
-+    maxItems: 4
+ 	itxd = ring->next_free;
+@@ -937,49 +970,32 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
+ 	if (itxd == ring->last_free)
+ 		return -ENOMEM;
  
-   power-domains:
-     maxItems: 1
-@@ -88,6 +89,9 @@ allOf:
-               - mediatek,mt7623-eth
-     then:
-       properties:
-+        interrupts:
-+          maxItems: 3
-+
-         clocks:
-           minItems: 4
-           maxItems: 4
-@@ -112,6 +116,9 @@ allOf:
-             const: mediatek,mt7622-eth
-     then:
-       properties:
-+        interrupts:
-+          maxItems: 3
-+
-         clocks:
-           minItems: 11
-           maxItems: 11
-@@ -155,6 +162,9 @@ allOf:
-             const: mediatek,mt7629-eth
-     then:
-       properties:
-+        interrupts:
-+          maxItems: 3
-+
-         clocks:
-           minItems: 17
-           maxItems: 17
-@@ -189,6 +199,42 @@ allOf:
-           minItems: 2
-           maxItems: 2
+-	/* set the forward port */
+-	fport = (mac->id + 1) << TX_DMA_FPORT_SHIFT;
+-	txd4 |= fport;
+-
+ 	itx_buf = mtk_desc_to_tx_buf(ring, itxd);
+ 	memset(itx_buf, 0, sizeof(*itx_buf));
  
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: mediatek,mt7986-eth
-+    then:
-+      properties:
-+        interrupts:
-+          minItems: 4
-+
-+        clocks:
-+          minItems: 15
-+          maxItems: 15
-+
-+        clock-names:
-+          items:
-+            - const: fe
-+            - const: gp2
-+            - const: gp1
-+            - const: wocpu1
-+            - const: wocpu0
-+            - const: sgmii_tx250m
-+            - const: sgmii_rx250m
-+            - const: sgmii_cdr_ref
-+            - const: sgmii_cdr_fb
-+            - const: sgmii2_tx250m
-+            - const: sgmii2_rx250m
-+            - const: sgmii2_cdr_ref
-+            - const: sgmii2_cdr_fb
-+            - const: netsys0
-+            - const: netsys1
-+
-+        mediatek,sgmiisys:
-+          minItems: 2
-+          maxItems: 2
-+
- patternProperties:
-   "^mac@[0-1]$":
-     type: object
-@@ -219,7 +265,6 @@ required:
-   - interrupts
-   - clocks
-   - clock-names
--  - power-domains
-   - mediatek,ethsys
+-	if (gso)
+-		txd4 |= TX_DMA_TSO;
+-
+-	/* TX Checksum offload */
+-	if (skb->ip_summed == CHECKSUM_PARTIAL)
+-		txd4 |= TX_DMA_CHKSUM;
+-
+-	/* VLAN header offload */
+-	if (skb_vlan_tag_present(skb))
+-		txd4 |= TX_DMA_INS_VLAN | skb_vlan_tag_get(skb);
+-
+-	mapped_addr = dma_map_single(eth->dma_dev, skb->data,
+-				     skb_headlen(skb), DMA_TO_DEVICE);
+-	if (unlikely(dma_mapping_error(eth->dma_dev, mapped_addr)))
++	txd_info.addr = dma_map_single(eth->dma_dev, skb->data, txd_info.size,
++				       DMA_TO_DEVICE);
++	if (unlikely(dma_mapping_error(eth->dma_dev, txd_info.addr)))
+ 		return -ENOMEM;
  
- unevaluatedProperties: false
-@@ -295,3 +340,95 @@ examples:
-         };
-       };
-     };
+-	WRITE_ONCE(itxd->txd1, mapped_addr);
++	mtk_tx_set_dma_desc(dev, itxd, &txd_info);
 +
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/clock/mt7622-clk.h>
+ 	itx_buf->flags |= MTK_TX_FLAGS_SINGLE0;
+ 	itx_buf->flags |= (!mac->id) ? MTK_TX_FLAGS_FPORT0 :
+ 			  MTK_TX_FLAGS_FPORT1;
+-	setup_tx_buf(eth, itx_buf, itxd_pdma, mapped_addr, skb_headlen(skb),
++	setup_tx_buf(eth, itx_buf, itxd_pdma, txd_info.addr, txd_info.size,
+ 		     k++);
+ 
+ 	/* TX SG offload */
+ 	txd = itxd;
+ 	txd_pdma = qdma_to_pdma(ring, txd);
+-	nr_frags = skb_shinfo(skb)->nr_frags;
+ 
+-	for (i = 0; i < nr_frags; i++) {
++	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
+ 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+ 		unsigned int offset = 0;
+ 		int frag_size = skb_frag_size(frag);
+ 
+ 		while (frag_size) {
+-			bool last_frag = false;
+-			unsigned int frag_map_size;
+ 			bool new_desc = true;
+ 
+ 			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA) ||
+@@ -994,23 +1010,17 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
+ 				new_desc = false;
+ 			}
+ 
+-
+-			frag_map_size = min(frag_size, MTK_TX_DMA_BUF_LEN);
+-			mapped_addr = skb_frag_dma_map(eth->dma_dev, frag, offset,
+-						       frag_map_size,
+-						       DMA_TO_DEVICE);
+-			if (unlikely(dma_mapping_error(eth->dma_dev, mapped_addr)))
++			memset(&txd_info, 0, sizeof(struct mtk_tx_dma_desc_info));
++			txd_info.size = min(frag_size, MTK_TX_DMA_BUF_LEN);
++			txd_info.last = i == skb_shinfo(skb)->nr_frags - 1 &&
++					!(frag_size - txd_info.size);
++			txd_info.addr = skb_frag_dma_map(eth->dma_dev, frag,
++							 offset, txd_info.size,
++							 DMA_TO_DEVICE);
++			if (unlikely(dma_mapping_error(eth->dma_dev, txd_info.addr)))
+ 				goto err_dma;
+ 
+-			if (i == nr_frags - 1 &&
+-			    (frag_size - frag_map_size) == 0)
+-				last_frag = true;
+-
+-			WRITE_ONCE(txd->txd1, mapped_addr);
+-			WRITE_ONCE(txd->txd3, (TX_DMA_SWC |
+-					       TX_DMA_PLEN0(frag_map_size) |
+-					       last_frag * TX_DMA_LS0));
+-			WRITE_ONCE(txd->txd4, fport);
++			mtk_tx_set_dma_desc(dev, txd, &txd_info);
+ 
+ 			tx_buf = mtk_desc_to_tx_buf(ring, txd);
+ 			if (new_desc)
+@@ -1020,20 +1030,17 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
+ 			tx_buf->flags |= (!mac->id) ? MTK_TX_FLAGS_FPORT0 :
+ 					 MTK_TX_FLAGS_FPORT1;
+ 
+-			setup_tx_buf(eth, tx_buf, txd_pdma, mapped_addr,
+-				     frag_map_size, k++);
++			setup_tx_buf(eth, tx_buf, txd_pdma, txd_info.addr,
++				     txd_info.size, k++);
+ 
+-			frag_size -= frag_map_size;
+-			offset += frag_map_size;
++			frag_size -= txd_info.size;
++			offset += txd_info.size;
+ 		}
+ 	}
+ 
+ 	/* store skb to cleanup */
+ 	itx_buf->skb = skb;
+ 
+-	WRITE_ONCE(itxd->txd4, txd4);
+-	WRITE_ONCE(itxd->txd3, (TX_DMA_SWC | TX_DMA_PLEN0(skb_headlen(skb)) |
+-				(!nr_frags * TX_DMA_LS0)));
+ 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {
+ 		if (k & 0x1)
+ 			txd_pdma->txd2 |= TX_DMA_LS0;
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+index b04977fa84f6..5d940315c7ba 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+@@ -844,6 +844,17 @@ enum mkt_eth_capabilities {
+ 		      MTK_MUX_U3_GMAC2_TO_QPHY | \
+ 		      MTK_MUX_GMAC12_TO_GEPHY_SGMII | MTK_QDMA)
+ 
++struct mtk_tx_dma_desc_info {
++	dma_addr_t addr;
++	u32 size;
++	u16 vlan_tci;
++	u8 gso:1;
++	u8 csum:1;
++	u8 vlan:1;
++	u8 first:1;
++	u8 last:1;
++};
 +
-+    soc {
-+      #address-cells = <2>;
-+      #size-cells = <2>;
-+
-+      eth: ethernet@15100000 {
-+        #define CLK_ETH_FE_EN               0
-+        #define CLK_ETH_WOCPU1_EN           3
-+        #define CLK_ETH_WOCPU0_EN           4
-+        #define CLK_TOP_NETSYS_SEL          43
-+        #define CLK_TOP_NETSYS_500M_SEL     44
-+        #define CLK_TOP_NETSYS_2X_SEL       46
-+        #define CLK_TOP_SGM_325M_SEL        47
-+        #define CLK_APMIXED_NET2PLL         1
-+        #define CLK_APMIXED_SGMPLL          3
-+
-+        compatible = "mediatek,mt7986-eth";
-+        reg = <0 0x15100000 0 0x80000>;
-+        interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 197 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 198 IRQ_TYPE_LEVEL_HIGH>,
-+                     <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH>;
-+        clocks = <&ethsys CLK_ETH_FE_EN>,
-+                 <&ethsys CLK_ETH_GP2_EN>,
-+                 <&ethsys CLK_ETH_GP1_EN>,
-+                 <&ethsys CLK_ETH_WOCPU1_EN>,
-+                 <&ethsys CLK_ETH_WOCPU0_EN>,
-+                 <&sgmiisys0 CLK_SGMII_TX250M_EN>,
-+                 <&sgmiisys0 CLK_SGMII_RX250M_EN>,
-+                 <&sgmiisys0 CLK_SGMII_CDR_REF>,
-+                 <&sgmiisys0 CLK_SGMII_CDR_FB>,
-+                 <&sgmiisys1 CLK_SGMII_TX250M_EN>,
-+                 <&sgmiisys1 CLK_SGMII_RX250M_EN>,
-+                 <&sgmiisys1 CLK_SGMII_CDR_REF>,
-+                 <&sgmiisys1 CLK_SGMII_CDR_FB>,
-+                 <&topckgen CLK_TOP_NETSYS_SEL>,
-+                 <&topckgen CLK_TOP_NETSYS_SEL>;
-+        clock-names = "fe", "gp2", "gp1", "wocpu1", "wocpu0",
-+                      "sgmii_tx250m", "sgmii_rx250m",
-+                      "sgmii_cdr_ref", "sgmii_cdr_fb",
-+                      "sgmii2_tx250m", "sgmii2_rx250m",
-+                      "sgmii2_cdr_ref", "sgmii2_cdr_fb",
-+                      "netsys0", "netsys1";
-+        mediatek,ethsys = <&ethsys>;
-+        mediatek,sgmiisys = <&sgmiisys0>, <&sgmiisys1>;
-+        assigned-clocks = <&topckgen CLK_TOP_NETSYS_2X_SEL>,
-+                          <&topckgen CLK_TOP_SGM_325M_SEL>;
-+        assigned-clock-parents = <&apmixedsys CLK_APMIXED_NET2PLL>,
-+                                 <&apmixedsys CLK_APMIXED_SGMPLL>;
-+
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        mdio: mdio-bus {
-+          #address-cells = <1>;
-+          #size-cells = <0>;
-+
-+          phy5: ethernet-phy@0 {
-+            compatible = "ethernet-phy-id67c9.de0a";
-+            phy-mode = "2500base-x";
-+            reset-gpios = <&pio 6 1>;
-+            reset-deassert-us = <20000>;
-+            reg = <5>;
-+          };
-+
-+          phy6: ethernet-phy@1 {
-+            compatible = "ethernet-phy-id67c9.de0a";
-+            phy-mode = "2500base-x";
-+            reg = <6>;
-+          };
-+        };
-+
-+        mac0: mac@0 {
-+          compatible = "mediatek,eth-mac";
-+          phy-mode = "2500base-x";
-+          phy-handle = <&phy5>;
-+          reg = <0>;
-+        };
-+
-+        mac1: mac@1 {
-+          compatible = "mediatek,eth-mac";
-+          phy-mode = "2500base-x";
-+          phy-handle = <&phy6>;
-+          reg = <1>;
-+        };
-+      };
-+    };
+ /* struct mtk_eth_data -	This is the structure holding all differences
+  *				among various plaforms
+  * @ana_rgc3:                   The offset for register ANA_RGC3 related to
 -- 
 2.35.3
 
