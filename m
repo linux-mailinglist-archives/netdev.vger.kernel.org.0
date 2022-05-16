@@ -2,50 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB8FB528D8A
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 20:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 377D4528DB4
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 21:06:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345220AbiEPS4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 14:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55378 "EHLO
+        id S1345284AbiEPTGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 15:06:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345213AbiEPS4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 14:56:38 -0400
+        with ESMTP id S1345325AbiEPTGK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 15:06:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F36BA10FFE
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 11:56:36 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F31920BD8;
+        Mon, 16 May 2022 12:06:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8EC65614B5
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 18:56:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE3DDC385AA;
-        Mon, 16 May 2022 18:56:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBB50614CB;
+        Mon, 16 May 2022 19:06:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83024C385AA;
+        Mon, 16 May 2022 19:06:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652727396;
-        bh=1Jrsisefyx7gryXCMtEMpdeXmuU04Tn09BK0UktrJ1A=;
+        s=k20201202; t=1652727967;
+        bh=2Resw6p+2SXUmxtcyRn6SOdYMRyAbxOVblDDKJZfhuk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UTUh/aFGjy5gCSBIYqjesAU+SzGhQ3eHPdOZzo2M3M1ApNb3X48QUEg9e+dCbczIR
-         3dz/EQYummQYrtoEklncpzGcaf3RsUo749rAU0u9m8xowz3TsTSmMcoA29WEjcleWI
-         tbWDJZk2btbeG2snpioorA3/4a//1bvouF2uOjxOasZKy1F06F6y6s8tejMwJixfEU
-         c+dX6KGaR9TudQZqkVv/4fGsCK/UOMXKDn2b2rf5XBnr2qUN6x5FpZHm86ylu3zkcd
-         MdjlqSp5Rk0wSCQ71rAN2xglCtFLIM5nK4TRogAwsydRIJCzKAAujVqU+Q3FFAtHbt
-         slvFmLaJhyIgg==
-Date:   Mon, 16 May 2022 11:56:34 -0700
+        b=BSfKI3ipMdkFD4rYZrdaySQegpDAWsCAylzId9ynBGOuOqecfeWt14fH5AoEc7BHS
+         V8gAZ8FUYAWZ7+5K/4PIDrD6pGIIdrV0O2Jn6D6ulUbwttrVFEhG/G9b0Md4pdqADY
+         53Xfp2wtiTvaziCmhPIFbYVTjPjsMkMemaBd4jPHGp7NQtU+tEhOGlW+KsaU0+Uy//
+         GqydFI+z4tPURPZqkSW3aoa95B2I32CoYGYQEgbbShn5S4SKud+VDFCFP1PSKk/hrU
+         wBLkQLJ+Vw6ANisqhMcgiJZpjptSCT72a9hpW4OU0IhEEp1d+2ZA0FAxOElhbv5Pqe
+         BtFm85iRWxmGA==
+Date:   Mon, 16 May 2022 12:06:05 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 4/4] net: call skb_defer_free_flush() before
- each napi_poll()
-Message-ID: <20220516115634.4417e3eb@kernel.org>
-In-Reply-To: <CANn89iL9xw83hEGA4=K-F1qkjyRhvAJ85c9W5nY1Fsmq777V0A@mail.gmail.com>
-References: <20220516042456.3014395-1-eric.dumazet@gmail.com>
-        <20220516042456.3014395-5-eric.dumazet@gmail.com>
-        <20220516112140.0f088427@kernel.org>
-        <CANn89iL9xw83hEGA4=K-F1qkjyRhvAJ85c9W5nY1Fsmq777V0A@mail.gmail.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, netdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-sh@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-mm@kvack.org,
+        linux-mips@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, kvm@vger.kernel.org,
+        kunit-dev@googlegroups.com, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, bpf@vger.kernel.org,
+        amd-gfx@lists.freedesktop.org
+Subject: Re: [linux-next:master] BUILD REGRESSION
+ 1e1b28b936aed946122b4e0991e7144fdbbfd77e
+Message-ID: <20220516120605.7a6bb562@kernel.org>
+In-Reply-To: <6280f965.kTCPpIEVY9TwoNre%lkp@intel.com>
+References: <6280f965.kTCPpIEVY9TwoNre%lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,19 +62,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 May 2022 11:26:14 -0700 Eric Dumazet wrote:
-> On Mon, May 16, 2022 at 11:21 AM Jakub Kicinski <kuba@kernel.org> wrote:
-> >
-> > On Sun, 15 May 2022 21:24:56 -0700 Eric Dumazet wrote:  
-> > > -end:
-> > > -     skb_defer_free_flush(sd);
-> > > +end:;  
-> >
-> > Sorry for the nit pick but can I remove this and just return like we
-> > did before f3412b3879b4? Is there a reason such "label:;}" is good?  
+On Sun, 15 May 2022 21:00:21 +0800 kernel test robot wrote:
+> tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
+> branch HEAD: 1e1b28b936aed946122b4e0991e7144fdbbfd77e  Add linux-next specific files for 20220513
 > 
-> I thought that having a return in the middle of this function would
-> hurt us at some point.
+> Error/Warning reports:
+> 
+> https://lore.kernel.org/linux-mm/202204181931.klAC6fWo-lkp@intel.com
+> https://lore.kernel.org/linux-mm/202204291924.vTGZmerI-lkp@intel.com
+> https://lore.kernel.org/linux-mm/202205031017.4TwMan3l-lkp@intel.com
+> https://lore.kernel.org/linux-mm/202205041248.WgCwPcEV-lkp@intel.com
+> https://lore.kernel.org/linux-mm/202205122113.uLKzd3SZ-lkp@intel.com
+> https://lore.kernel.org/linux-mm/202205150051.3RzuooAG-lkp@intel.com
+> https://lore.kernel.org/linux-mm/202205150117.sd6HzBVm-lkp@intel.com
+> https://lore.kernel.org/lkml/202205100617.5UUm3Uet-lkp@intel.com
+> https://lore.kernel.org/llvm/202204210555.DNvfHvIb-lkp@intel.com
+> https://lore.kernel.org/llvm/202205060132.uhqyUx1l-lkp@intel.com
+> https://lore.kernel.org/llvm/202205120010.zWBednzM-lkp@intel.com
+> https://lore.kernel.org/llvm/202205141122.qihFGUem-lkp@intel.com
+> 
+> Error/Warning: (recently discovered and may have been fixed)
+> 
+> <command-line>: fatal error: ./include/generated/utsrelease.h: No such file or directory
+> arch/arm/mach-versatile/versatile.c:56:14: warning: no previous prototype for function 'mmc_status' [-Wmissing-prototypes]
+> arch/x86/kvm/pmu.h:20:32: warning: 'vmx_icl_pebs_cpu' defined but not used [-Wunused-const-variable=]
+> drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:5102:7: warning: variable 'allow_lttpr_non_transparent_mode' set but not used [-Wunused-but-set-variable]
+> drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc_link_dp.c:5147:6: warning: no previous prototype for function 'dp_parse_lttpr_mode' [-Wmissing-prototypes]
+> drivers/gpu/drm/amd/amdgpu/amdgpu_discovery.c:1364:5: warning: no previous prototype for 'amdgpu_discovery_get_mall_info' [-Wmissing-prototypes]
+> drivers/gpu/drm/amd/amdgpu/gfx_v11_0.c:1983:6: warning: no previous prototype for function 'gfx_v11_0_rlc_stop' [-Wmissing-prototypes]
+> drivers/gpu/drm/amd/amdgpu/soc21.c:171:6: warning: no previous prototype for 'soc21_grbm_select' [-Wmissing-prototypes]
+> drivers/gpu/drm/solomon/ssd130x-spi.c:154:35: warning: 'ssd130x_spi_table' defined but not used [-Wunused-const-variable=]
+> drivers/hwmon/nct6775-platform.c:199:9: sparse:    unsigned char
+> drivers/hwmon/nct6775-platform.c:199:9: sparse:    void
+> drivers/video/fbdev/omap/hwa742.c:492:5: warning: no previous prototype for 'hwa742_update_window_async' [-Wmissing-prototypes]
+> fs/buffer.c:2254:5: warning: stack frame size (2144) exceeds limit (1024) in 'block_read_full_folio' [-Wframe-larger-than]
+> fs/ntfs/aops.c:378:12: warning: stack frame size (2224) exceeds limit (1024) in 'ntfs_read_folio' [-Wframe-larger-than]
+> kernel/trace/fgraph.c:37:12: warning: no previous prototype for 'ftrace_enable_ftrace_graph_caller' [-Wmissing-prototypes]
+> kernel/trace/fgraph.c:46:12: warning: no previous prototype for 'ftrace_disable_ftrace_graph_caller' [-Wmissing-prototypes]
 
-I guess personal preference. Let's leave it unless someone else shares
-my disregard for pointlessly jumping to the closing bracket :)
+Is this report CCed everywhere or there's a reason why netdev@ is CCed?
+I'm trying to figure out we need to care and it's not obvious..
