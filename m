@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60B5352889D
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 17:23:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68F8952888E
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 17:23:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245213AbiEPPVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 11:21:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58084 "EHLO
+        id S245251AbiEPPVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 11:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58272 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245199AbiEPPVE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 11:21:04 -0400
+        with ESMTP id S245227AbiEPPVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 11:21:05 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE31E3BA74;
-        Mon, 16 May 2022 08:20:55 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L22yB6mHvz6H6sk;
-        Mon, 16 May 2022 23:20:50 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABE613BF81;
+        Mon, 16 May 2022 08:20:57 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L22t25XvXz67Klm;
+        Mon, 16 May 2022 23:17:14 +0800 (CST)
 Received: from mscphispre00059.huawei.com (10.123.71.64) by
  fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 16 May 2022 17:20:53 +0200
+ 15.1.2375.24; Mon, 16 May 2022 17:20:54 +0200
 From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
 To:     <mic@digikod.net>
 CC:     <willemdebruijn.kernel@gmail.com>,
         <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
         <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
         <anton.sirazetdinov@huawei.com>
-Subject: [PATCH v5 05/15] landlock: landlock_add_rule syscall refactoring
-Date:   Mon, 16 May 2022 23:20:28 +0800
-Message-ID: <20220516152038.39594-6-konstantin.meskhidze@huawei.com>
+Subject: [PATCH v5 06/15] landlock: user space API network support
+Date:   Mon, 16 May 2022 23:20:29 +0800
+Message-ID: <20220516152038.39594-7-konstantin.meskhidze@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
 References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
@@ -49,183 +49,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Landlock_add_rule syscall was refactored to support new
-rule types in future Landlock versions. Add_rule_path_beneath()
-helper was added to support current filesystem rules. It is called
-by the switch case.
+User space API was refactored to support
+network actions. New network access flags,
+network rule and network attributes were
+added.
 
 Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
 ---
 
 Changes since v3:
 * Split commit.
-* Refactoring landlock_add_rule syscall.
+* Refactoring User API for network rule type.
 
 Changes since v4:
-* Refactoring add_rule_path_beneath() and landlock_add_rule() functions
-to optimize code usage.
-* Refactoring base_test.c seltest: adds LANDLOCK_RULE_PATH_BENEATH
-rule type in landlock_add_rule() call.
+* None
 
 ---
- security/landlock/syscalls.c                 | 105 ++++++++++---------
- tools/testing/selftests/landlock/base_test.c |   4 +-
- 2 files changed, 59 insertions(+), 50 deletions(-)
+ include/uapi/linux/landlock.h | 48 +++++++++++++++++++++++++++++++++++
+ security/landlock/syscalls.c  |  3 ++-
+ 2 files changed, 50 insertions(+), 1 deletion(-)
 
-diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
-index 1db799d1a50b..412ced6c512f 100644
---- a/security/landlock/syscalls.c
-+++ b/security/landlock/syscalls.c
-@@ -274,67 +274,23 @@ static int get_path_from_fd(const s32 fd, struct path *const path)
- 	return err;
- }
-
--/**
-- * sys_landlock_add_rule - Add a new rule to a ruleset
-- *
-- * @ruleset_fd: File descriptor tied to the ruleset that should be extended
-- *		with the new rule.
-- * @rule_type: Identify the structure type pointed to by @rule_attr (only
-- *             LANDLOCK_RULE_PATH_BENEATH for now).
-- * @rule_attr: Pointer to a rule (only of type &struct
-- *             landlock_path_beneath_attr for now).
-- * @flags: Must be 0.
-- *
-- * This system call enables to define a new rule and add it to an existing
-- * ruleset.
-- *
-- * Possible returned errors are:
-- *
-- * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
-- * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
-- *   &landlock_path_beneath_attr.allowed_access is not a subset of the
-- *   ruleset handled accesses);
-- * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
-- * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
-- *   member of @rule_attr is not a file descriptor as expected;
-- * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
-- *   @rule_attr is not the expected file descriptor type;
-- * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
-- * - EFAULT: @rule_attr inconsistency.
-- */
--SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
--		const enum landlock_rule_type, rule_type,
--		const void __user *const, rule_attr, const __u32, flags)
-+static int add_rule_path_beneath(const int ruleset_fd, const void *const rule_attr)
- {
- 	struct landlock_path_beneath_attr path_beneath_attr;
- 	struct path path;
- 	struct landlock_ruleset *ruleset;
- 	int res, err;
-
--	if (!landlock_initialized)
--		return -EOPNOTSUPP;
--
--	/* No flag for now. */
--	if (flags)
--		return -EINVAL;
--
- 	/* Gets and checks the ruleset. */
- 	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
- 	if (IS_ERR(ruleset))
- 		return PTR_ERR(ruleset);
-
--	if (rule_type != LANDLOCK_RULE_PATH_BENEATH) {
--		err = -EINVAL;
--		goto out_put_ruleset;
--	}
--
- 	/* Copies raw user space buffer, only one type for now. */
- 	res = copy_from_user(&path_beneath_attr, rule_attr,
--			     sizeof(path_beneath_attr));
--	if (res) {
--		err = -EFAULT;
--		goto out_put_ruleset;
--	}
-+				sizeof(path_beneath_attr));
-+	if (res)
-+		return -EFAULT;
-
- 	/*
- 	 * Informs about useless rule: empty allowed_access (i.e. deny rules)
-@@ -370,6 +326,59 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
- 	return err;
- }
-
-+/**
-+ * sys_landlock_add_rule - Add a new rule to a ruleset
-+ *
-+ * @ruleset_fd: File descriptor tied to the ruleset that should be extended
-+ *		with the new rule.
-+ * @rule_type: Identify the structure type pointed to by @rule_attr (only
-+ *             LANDLOCK_RULE_PATH_BENEATH for now).
-+ * @rule_attr: Pointer to a rule (only of type &struct
-+ *             landlock_path_beneath_attr for now).
-+ * @flags: Must be 0.
-+ *
-+ * This system call enables to define a new rule and add it to an existing
-+ * ruleset.
-+ *
-+ * Possible returned errors are:
-+ *
-+ * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at boot time;
-+ * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
-+ *   &landlock_path_beneath_attr.allowed_access is not a subset of the rule's
-+ *   accesses);
-+ * - ENOMSG: Empty accesses (e.g. &landlock_path_beneath_attr.allowed_access);
-+ * - EBADF: @ruleset_fd is not a file descriptor for the current thread, or a
-+ *   member of @rule_attr is not a file descriptor as expected;
-+ * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a member of
-+ *   @rule_attr is not the expected file descriptor type (e.g. file open
-+ *   without O_PATH);
-+ * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
-+ * - EFAULT: @rule_attr inconsistency.
-+ */
-+SYSCALL_DEFINE4(landlock_add_rule,
-+		const int, ruleset_fd, const enum landlock_rule_type, rule_type,
-+		const void __user *const, rule_attr, const __u32, flags)
-+{
-+	int err;
+diff --git a/include/uapi/linux/landlock.h b/include/uapi/linux/landlock.h
+index 23df4e0e8ace..91d6cb359bf8 100644
+--- a/include/uapi/linux/landlock.h
++++ b/include/uapi/linux/landlock.h
+@@ -31,6 +31,13 @@ struct landlock_ruleset_attr {
+ 	 * this access right.
+ 	 */
+ 	__u64 handled_access_fs;
 +
-+	if (!landlock_initialized)
-+		return -EOPNOTSUPP;
-+
-+	/* No flag for now. */
-+	if (flags)
-+		return -EINVAL;
-+
-+	switch (rule_type) {
-+	case LANDLOCK_RULE_PATH_BENEATH:
-+		err = add_rule_path_beneath(ruleset_fd, rule_attr);
-+		break;
-+	default:
-+		err = -EINVAL;
-+		break;
-+	}
-+	return err;
-+}
-+
- /* Enforcement */
++	/**
++	 * @handled_access_net: Bitmask of actions (cf. `Network flags`_)
++	 * that is handled by this ruleset and should then be forbidden if no
++	 * rule explicitly allow them.
++	 */
++	__u64 handled_access_net;
+ };
+
+ /*
+@@ -54,6 +61,11 @@ enum landlock_rule_type {
+ 	 * landlock_path_beneath_attr .
+ 	 */
+ 	LANDLOCK_RULE_PATH_BENEATH = 1,
++	/**
++	 * @LANDLOCK_RULE_NET_SERVICE: Type of a &struct
++	 * landlock_net_service_attr .
++	 */
++	LANDLOCK_RULE_NET_SERVICE = 2,
+ };
 
  /**
-diff --git a/tools/testing/selftests/landlock/base_test.c b/tools/testing/selftests/landlock/base_test.c
-index da9290817866..0c4c3a538d54 100644
---- a/tools/testing/selftests/landlock/base_test.c
-+++ b/tools/testing/selftests/landlock/base_test.c
-@@ -156,11 +156,11 @@ TEST(add_rule_checks_ordering)
- 	ASSERT_LE(0, ruleset_fd);
+@@ -79,6 +91,24 @@ struct landlock_path_beneath_attr {
+ 	 */
+ } __attribute__((packed));
 
- 	/* Checks invalid flags. */
--	ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 1));
-+	ASSERT_EQ(-1, landlock_add_rule(-1, LANDLOCK_RULE_PATH_BENEATH, NULL, 1));
- 	ASSERT_EQ(EINVAL, errno);
++/**
++ * struct landlock_net_service_attr - TCP subnet definition
++ *
++ * Argument of sys_landlock_add_rule().
++ */
++struct landlock_net_service_attr {
++	/**
++	 * @allowed_access: Bitmask of allowed access network for services
++	 * (cf. `Network flags`_).
++	 */
++	__u64 allowed_access;
++	/**
++	 * @port: Network port
++	 */
++	__u16 port;
++
++} __attribute__((packed));
++
+ /**
+  * DOC: fs_access
+  *
+@@ -162,4 +192,22 @@ struct landlock_path_beneath_attr {
+ #define LANDLOCK_ACCESS_FS_REFER			(1ULL << 13)
+ /* clang-format on */
 
- 	/* Checks invalid ruleset FD. */
--	ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 0));
-+	ASSERT_EQ(-1, landlock_add_rule(-1, LANDLOCK_RULE_PATH_BENEATH, NULL, 0));
- 	ASSERT_EQ(EBADF, errno);
++/**
++ * DOC: net_access
++ *
++ * Network flags
++ * ~~~~~~~~~~~~~~~~
++ *
++ * These flags enable to restrict a sandboxed process to a set of network
++ * actions.
++ *
++ * TCP sockets with allowed actions:
++ *
++ * - %LANDLOCK_ACCESS_NET_BIND_TCP: Bind a TCP socket to a local port.
++ * - %LANDLOCK_ACCESS_NET_CONNECT_TCP: Connect an active TCP socket to
++ *   a remote port.
++ */
++#define LANDLOCK_ACCESS_NET_BIND_TCP			(1ULL << 0)
++#define LANDLOCK_ACCESS_NET_CONNECT_TCP			(1ULL << 1)
++
+ #endif /* _UAPI_LINUX_LANDLOCK_H */
+diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
+index 412ced6c512f..31f9facec123 100644
+--- a/security/landlock/syscalls.c
++++ b/security/landlock/syscalls.c
+@@ -82,8 +82,9 @@ static void build_check_abi(void)
+ 	 * struct size.
+ 	 */
+ 	ruleset_size = sizeof(ruleset_attr.handled_access_fs);
++	ruleset_size += sizeof(ruleset_attr.handled_access_net);
+ 	BUILD_BUG_ON(sizeof(ruleset_attr) != ruleset_size);
+-	BUILD_BUG_ON(sizeof(ruleset_attr) != 8);
++	BUILD_BUG_ON(sizeof(ruleset_attr) != 16);
 
- 	/* Checks invalid rule type. */
+ 	path_beneath_size = sizeof(path_beneath_attr.allowed_access);
+ 	path_beneath_size += sizeof(path_beneath_attr.parent_fd);
 --
 2.25.1
 
