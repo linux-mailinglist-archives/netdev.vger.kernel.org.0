@@ -2,117 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2E785286B2
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 16:14:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63958528697
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 16:11:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243193AbiEPONR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 10:13:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40312 "EHLO
+        id S244462AbiEPOLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 10:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244080AbiEPONN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 10:13:13 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9D832066;
-        Mon, 16 May 2022 07:13:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652710392; x=1684246392;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=q8T0jBh7cGQQ4AUWl+1aBVbwpP+Txn2+ZD1GDsXUmwY=;
-  b=M49qI2RJYNeFyww4GpPEloAJZf3RvDjzRG/yy1d94WdKvwT70eNfFVah
-   rHztlRV/mWPf6deUpgZmot8zsEE3Sy4c/WuAal94+s7f8JXFx2DBmFSEJ
-   LJ/nAuUNJhgdsbdkTnhBU+aPmZqkuYbowLgerMOOuCzCnpZ7+BFG4OOUG
-   E5oQgCkYYpvy3ZH2pI4dWq1GLRVAS14Mc3vr9ZJme/SJAHxU9qCXD4JuQ
-   BDOOW2soJYlGtKzCHw7/1xW9gkEGPhH/YmvpaVjd9dorsFmN8inO1eeib
-   YgU4SB2U0qnzuooP5UuyHm64U2EzZu1f37bbqi0xs4zewgcHeRUaZ5voi
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10348"; a="252906637"
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="252906637"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 07:13:11 -0700
-X-IronPort-AV: E=Sophos;i="5.91,230,1647327600"; 
-   d="scan'208";a="638258613"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 May 2022 07:13:05 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nqbQv-0006ib-VU;
-        Mon, 16 May 2022 17:10:49 +0300
-Date:   Mon, 16 May 2022 17:10:49 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     Wolfram Sang <wsa@kernel.org>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
-        Mark Brown <broonie@kernel.org>,
-        chris.packham@alliedtelesis.co.nz,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        with ESMTP id S244479AbiEPOLL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 10:11:11 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3778F2AF7;
+        Mon, 16 May 2022 07:11:10 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 8469521F6D;
+        Mon, 16 May 2022 14:11:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652710268; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=dmHPB9vjv1LBmNrF4zaonBMXasUoClA4XRHwK4fdG3Q=;
+        b=uHHoYScC3vOzAq1rF/GezErIJTTCAnG26YueVBaMYGI4KIiBuE4CJEi5I5FkSHuHNJvOhi
+        jBbeahpPdNTqQb9qWzy8wQwtiwj/B2njZ1Svs0P1iMsaZXkpVlpc6Bgj/6IAHlnD6RNRY+
+        7obFqakfVm+qw0H2R1BXYJwwfwabCHA=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id C9CB72C141;
+        Mon, 16 May 2022 14:11:06 +0000 (UTC)
+Date:   Mon, 16 May 2022 16:11:06 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Joel Fernandes <joel@joelfernandes.org>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Lai Jiangshan <jiangshanlai@gmail.com>,
+        Leo Yan <leo.yan@linaro.org>,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mike Leach <mike.leach@linaro.org>,
+        Mikko Perttunen <mperttunen@nvidia.com>,
+        Neeraj Upadhyay <quic_neeraju@quicinc.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
         Paul Mackerras <paulus@samba.org>,
-        Anatolij Gustschin <agust@denx.de>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>
-Subject: Re: [PATCH v2 4/4] powerpc/52xx: Convert to use fwnode API
-Message-ID: <YoJbaTNJFV2A1Etw@smile.fi.intel.com>
-References: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
- <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
- <877d6l7fmy.fsf@mpe.ellerman.id.au>
- <YoJaGGwfoSYhaT13@smile.fi.intel.com>
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Subject: Re: [PATCH 20/30] panic: Add the panic informational notifier list
+Message-ID: <YoJbeuTNBXOIypSH@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-21-gpiccoli@igalia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YoJaGGwfoSYhaT13@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220427224924.592546-21-gpiccoli@igalia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 16, 2022 at 05:05:12PM +0300, Andy Shevchenko wrote:
-> On Mon, May 16, 2022 at 11:48:05PM +1000, Michael Ellerman wrote:
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
-> > > We may convert the GPT driver to use fwnode API for the sake
-> > > of consistency of the used APIs inside the driver.
-> > 
-> > I'm not sure about this one.
-> > 
-> > It's more consistent to use fwnode in this driver, but it's very
-> > inconsistent with the rest of the powerpc code. We have basically no
-> > uses of the fwnode APIs at the moment.
+On Wed 2022-04-27 19:49:14, Guilherme G. Piccoli wrote:
+> The goal of this new panic notifier is to allow its users to
+> register callbacks to run earlier in the panic path than they
+> currently do. This aims at informational mechanisms, like dumping
+> kernel offsets and showing device error data (in case it's simple
+> registers reading, for example) as well as mechanisms to disable
+> log flooding (like hung_task detector / RCU warnings) and the
+> tracing dump_on_oops (when enabled).
 > 
-> Fair point!
+> Any (non-invasive) information that should be provided before
+> kmsg_dump() as well as log flooding preventing code should fit
+> here, as long it offers relatively low risk for kdump.
 > 
-> > It seems like a pretty straight-forward conversion, but there could
-> > easily be a bug in there, I don't have any way to test it. Do you?
+> For now, the patch is almost a no-op, although it changes a bit
+> the ordering in which some panic notifiers are executed - specially
+> affected by this are the notifiers responsible for disabling the
+> hung_task detector / RCU warnings, which now run first. In a
+> subsequent patch, the panic path will be refactored, then the
+> panic informational notifiers will effectively run earlier,
+> before ksmg_dump() (and usually before kdump as well).
 > 
-> Nope, only compile testing. The important part of this series is to
-> clean up of_node from GPIO library, so since here it's a user of
-> it I want to do that. This patch is just ad-hoc conversion that I
-> noticed is possible. But there is no any requirement to do so.
+> We also defer documenting it all properly in the subsequent
+> refactor patch. Finally, while at it, we removed some useless
+> header inclusions too.
 > 
-> Lemme drop this from v3.
+> Signed-off-by: Guilherme G. Piccoli <gpiccoli@igalia.com>
 
-I just realize that there is no point to send a v3. You can just apply
-first 3 patches. Or is your comment against entire series?
+All notifiers moved in this patch seems to fit well the "info"
+notifier list. The patch looks good from this POV.
 
--- 
-With Best Regards,
-Andy Shevchenko
+I still have to review the rest of the patches to see if it
+is complete.
 
-
+Best Regards,
+Petr
