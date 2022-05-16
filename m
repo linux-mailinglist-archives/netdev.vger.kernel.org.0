@@ -2,125 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1386529066
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 22:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D361528FC5
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 22:43:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347756AbiEPUaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 16:30:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50184 "EHLO
+        id S1346889AbiEPUaR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 16:30:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347571AbiEPU3F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 16:29:05 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4EA1D31C;
-        Mon, 16 May 2022 13:12:02 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id j28so5757889eda.13;
-        Mon, 16 May 2022 13:12:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ZCX9ZXrfBYFo8ppmGdS4vsd39cre5IyNg8Ul5W4QUOM=;
-        b=eY32+6QDOlX8sByrQ94OB6LdTcAwBGHjmkm7W4QoadC0WKyeoFc/FzBFsNFG/pekQh
-         1mB1HBgORPUarS13FEJNf06Xe7XbNHCqA/+O9kgoMIt9RfFUcpbKgsDoi1tCtVhH9uOZ
-         te2KmBASqNxltCbskYTG2ZCk4S6I/Ozv8mV1Ir7t+OPfTsgV+I3H7mlvScofOhPJwuzP
-         sFe9rWmvSQQ8t0JBigZRcUk4qupj3FwU585+BU4nm05vZrl+uRtQNlSbQFagmIDRgAXM
-         8JGZ/xiR+C6wuZ74bgWM5scodqIyXzyCK31IYs6Gfz25Cfn8oL9TvoUlKVaJ3hcTMrKu
-         Cdsw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZCX9ZXrfBYFo8ppmGdS4vsd39cre5IyNg8Ul5W4QUOM=;
-        b=2UZoFgHw1oN1Du+6pMWwvnPMCS+AzGZe3z6u3Jk/POHcY0PSmhNcezwFi40Mj1/rBW
-         cm9IH5XkVvhHhfYm8VefdFf2nK/cSTZV9GBdYTFD+NnVsAkGyjJcJPmVuyGCgrkEWsQT
-         PtQjkfYf3PnuDcq4GwpHNdkLsnuowqVQrcPMKK74nU7KwAyimjuVcIgkR8xe+sOXGcDM
-         67/fq8XKcacNWUYViw1d2obfPAdgMy2ELmIuNVqi4+oUGWsDcp83RfRMuWx2y33hiY+S
-         rXKXduX8vGw8oeqGhF0e85vnp9Wz5TK4FkLHhbLgHJUg8As7v5wv/xlV7gr6cBfumbJq
-         CTzQ==
-X-Gm-Message-State: AOAM533ucZLkICWffpfDJfrtCRxSNSntroZ9FGYJQ6kymcOwpuM5YQUC
-        l9RRS9bigg4GebXZ3UuG1cc=
-X-Google-Smtp-Source: ABdhPJw0xaAds0qvtZ2horG5tUebFQY1UPZglOEYJu4PHfUnAhPU4JhfKfcmBH6586nh9Ug3gG1K7Q==
-X-Received: by 2002:a05:6402:4492:b0:428:a206:8912 with SMTP id er18-20020a056402449200b00428a2068912mr15185437edb.279.1652731921518;
-        Mon, 16 May 2022 13:12:01 -0700 (PDT)
-Received: from [192.168.8.198] ([85.255.232.74])
-        by smtp.gmail.com with ESMTPSA id es16-20020a056402381000b0042a96c77e9esm3807434edb.91.2022.05.16.13.11.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 May 2022 13:12:01 -0700 (PDT)
-Message-ID: <cc171828-8ea8-bf5a-cdd8-b769f6beb7a1@gmail.com>
-Date:   Mon, 16 May 2022 21:10:59 +0100
+        with ESMTP id S1347707AbiEPU3V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 16:29:21 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98E60101ED
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 13:13:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51FC5B81610
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 20:13:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97104C3411A;
+        Mon, 16 May 2022 20:13:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652732028;
+        bh=k/Cm/E4xWEUeNGgA2/1xf97UCGr4/HBsqqLaIesDpf8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=La/Prt5pq9zOhf9Aj0P8v7avGc51ESLbFSPxxj2esFMpg52hCJ4LjWknOQJMgemjj
+         b1yky1VMtgkn+tQPh2L+4FuUhGghFOLnxSmIR8Je8vhWYmJkrzezxdKWI6u1KAVgQn
+         Ojoev5Omc8Z0zPcy2IW8kKL90WlRR0vGF8Hh7aYj8UhB1uYeCU0YPfiOscuJir5lP+
+         xk9qJ/8jKIkwcRbbW70/XS2/7FvGnYLymkeT4mDq3kqZuAmw7HDyoFzU/HHB9B1BZY
+         NjS48LCzDjzy9FcfgwtrFk3SQK7NmBah89tO/EEGANcPBXzJFcEwkL0RIZRaVTGWAK
+         0Kw39OaF9NvkQ==
+Date:   Mon, 16 May 2022 13:13:46 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Geliang Tang <geliang.tang@suse.com>,
+        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
+Subject: Re: [PATCH net-next 1/3] selftests: mptcp: fix a mp_fail test
+ warning
+Message-ID: <20220516131346.1f1f95d9@kernel.org>
+In-Reply-To: <20220514002115.725976-2-mathew.j.martineau@linux.intel.com>
+References: <20220514002115.725976-1-mathew.j.martineau@linux.intel.com>
+        <20220514002115.725976-2-mathew.j.martineau@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next v3 03/10] udp/ipv6: prioritise the ip6 path over
- ip4 checks
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     David Ahern <dsahern@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org
-References: <cover.1652368648.git.asml.silence@gmail.com>
- <50cca375d8730b5bf74b975d0fede64b1a3744c4.1652368648.git.asml.silence@gmail.com>
- <f0fb2ffbde15b2939ed76545b549bdcd33b92ae8.camel@redhat.com>
-From:   Pavel Begunkov <asml.silence@gmail.com>
-In-Reply-To: <f0fb2ffbde15b2939ed76545b549bdcd33b92ae8.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/16/22 14:14, Paolo Abeni wrote:
-> On Fri, 2022-05-13 at 16:26 +0100, Pavel Begunkov wrote:
->> For AF_INET6 sockets we care the most about ipv6 but not ip4 mappings as
->> it's requires some extra hops anyway. Take AF_INET6 case from the address
->> parsing switch and add an explicit path for it. It removes some extra
->> ifs from the path and removes the switch overhead.
->>
->> Signed-off-by: Pavel Begunkov <asml.silence@gmail.com>
->> ---
->>   net/ipv6/udp.c | 37 +++++++++++++++++--------------------
->>   1 file changed, 17 insertions(+), 20 deletions(-)
->>
->> diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
->> index 85bff1252f5c..e0b1bea998ce 100644
->> --- a/net/ipv6/udp.c
->> +++ b/net/ipv6/udp.c
->> @@ -1360,30 +1360,27 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
->>   
->>   	/* destination address check */
->>   	if (sin6) {
->> -		if (addr_len < offsetof(struct sockaddr, sa_data))
->> -			return -EINVAL;
->> +		if (addr_len < SIN6_LEN_RFC2133 || sin6->sin6_family != AF_INET6) {
->> +			if (addr_len < offsetof(struct sockaddr, sa_data))
->> +				return -EINVAL;
-> 
-> I think you can't access 'sin6->sin6_family' before validating the
-> socket address len, that is before doing:
+On Fri, 13 May 2022 17:21:13 -0700 Mat Martineau wrote:
+>  	tc -n $ns2 -j -s action show action pedit index 100 | \
+> +		grep "packets" | \
+>  		sed 's/.*"packets":\([0-9]\+\),.*/\1/'
 
-Paolo, thanks for reviewing it!
+sed can do the grepping for you:
 
+sed -n 's/.*"packets":\([0-9]\+\),.*/\1/p'
 
-sin6_family is protected by
-
-if (addr_len < SIN6_LEN_RFC2133 ...)
-
-on the previous line. I can add a BUILD_BUG_ON() if that
-would be more reassuring.
-
-
-> 
-> if (addr_len < offsetof(struct sockaddr, sa_data))
-
--- 
-Pavel Begunkov
+But really grepping JSON output seems weird. Why not use jq?
