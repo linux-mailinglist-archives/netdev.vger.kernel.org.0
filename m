@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC0E52889E
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 17:23:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F25C5288A0
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 17:23:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245300AbiEPPVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 11:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
+        id S245232AbiEPPVr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 11:21:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245272AbiEPPVJ (ORCPT
+        with ESMTP id S245275AbiEPPVJ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 11:21:09 -0400
 Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9F3B10571;
-        Mon, 16 May 2022 08:21:04 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L22t94pCJz685ZG;
-        Mon, 16 May 2022 23:17:21 +0800 (CST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4CE43BA67;
+        Mon, 16 May 2022 08:21:05 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L22tz3lCvz6H7Ht;
+        Mon, 16 May 2022 23:18:03 +0800 (CST)
 Received: from mscphispre00059.huawei.com (10.123.71.64) by
  fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Mon, 16 May 2022 17:21:01 +0200
+ 15.1.2375.24; Mon, 16 May 2022 17:21:03 +0200
 From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
 To:     <mic@digikod.net>
 CC:     <willemdebruijn.kernel@gmail.com>,
         <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
         <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
         <anton.sirazetdinov@huawei.com>
-Subject: [PATCH v5 11/15] seltests/landlock: connect() with AF_UNSPEC tests
-Date:   Mon, 16 May 2022 23:20:34 +0800
-Message-ID: <20220516152038.39594-12-konstantin.meskhidze@huawei.com>
+Subject: [PATCH v5 12/15] seltests/landlock: rules overlapping test
+Date:   Mon, 16 May 2022 23:20:35 +0800
+Message-ID: <20220516152038.39594-13-konstantin.meskhidze@huawei.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
 References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
@@ -49,114 +49,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adds two selftests for connect() action with
-AF_UNSPEC family flag.
-The one is with no landlock restrictions
-allows to disconnect already conneted socket
-with connect(..., AF_UNSPEC, ...):
-    - connect_afunspec_no_restictions;
-The second one refuses landlocked process
-to disconnect already connected socket:
-    - connect_afunspec_with_restictions;
+This patch adds overlapping rules for one port.
+First rule adds just bind() access right for a port.
+The second one adds both bind() and connect()
+access rights for the same port.
 
 Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
 ---
 
 Changes since v3:
-* Add connect_afunspec_no_restictions test.
-* Add connect_afunspec_with_restictions test.
+* Add ruleset_overlap test.
 
 Changes since v4:
 * Refactoring code with self->port, self->addr4 variables.
-* Adds bind() hook check for with AF_UNSPEC family.
 
 ---
- tools/testing/selftests/landlock/net_test.c | 121 ++++++++++++++++++++
- 1 file changed, 121 insertions(+)
+ tools/testing/selftests/landlock/net_test.c | 51 +++++++++++++++++++++
+ 1 file changed, 51 insertions(+)
 
 diff --git a/tools/testing/selftests/landlock/net_test.c b/tools/testing/selftests/landlock/net_test.c
-index cf914d311eb3..bf8e49466d1d 100644
+index bf8e49466d1d..1d8c9dfdbd48 100644
 --- a/tools/testing/selftests/landlock/net_test.c
 +++ b/tools/testing/selftests/landlock/net_test.c
-@@ -449,6 +449,7 @@ TEST_F_FORK(socket_test, connect_with_restrictions_ip6) {
- 	int new_fd;
- 	int sockfd_1, sockfd_2;
- 	pid_t child_1, child_2;
-+
- 	int status;
-
- 	struct landlock_ruleset_attr ruleset_attr = {
-@@ -467,10 +468,12 @@ TEST_F_FORK(socket_test, connect_with_restrictions_ip6) {
-
- 	const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
- 			sizeof(ruleset_attr), 0);
-+
- 	ASSERT_LE(0, ruleset_fd);
-
- 	/* Allows connect and bind operations to the port[0] socket */
- 	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-+
- 				&net_service_1, 0));
- 	/* Allows connect and deny bind operations to the port[1] socket */
- 	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
-@@ -480,6 +483,7 @@ TEST_F_FORK(socket_test, connect_with_restrictions_ip6) {
- 	enforce_ruleset(_metadata, ruleset_fd);
-
- 	/* Creates a server socket 1 */
-+
- 	sockfd_1 = create_socket(_metadata, true, false);
- 	ASSERT_LE(0, sockfd_1);
-
-@@ -556,4 +560,121 @@ TEST_F_FORK(socket_test, connect_with_restrictions_ip6) {
+@@ -677,4 +677,55 @@ TEST_F_FORK(socket_test, connect_afunspec_with_restictions) {
  	ASSERT_EQ(1, WIFEXITED(status));
  	ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
  }
 +
-+TEST_F_FORK(socket_test, connect_afunspec_no_restictions) {
++TEST_F_FORK(socket_test, ruleset_overlap) {
 +
 +	int sockfd;
-+	pid_t child;
-+	int status;
 +
-+	/* Creates a server socket 1 */
-+	sockfd = create_socket(_metadata, false, false);
-+	ASSERT_LE(0, sockfd);
-+
-+	/* Binds the socket 1 to address with port[0] with AF_UNSPEC family */
-+	self->addr4[0].sin_family = AF_UNSPEC;
-+	ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr4[0], sizeof(self->addr4[0])));
-+
-+	/* Makes connection to socket with port[0] */
-+	ASSERT_EQ(0, connect(sockfd, (struct sockaddr *)&self->addr4[0],
-+						   sizeof(self->addr4[0])));
-+
-+	child = fork();
-+	ASSERT_LE(0, child);
-+	if (child == 0) {
-+		struct sockaddr addr_unspec = {.sa_family = AF_UNSPEC};
-+
-+		/* Child tries to disconnect already connected socket */
-+		ASSERT_EQ(0, connect(sockfd, (struct sockaddr *)&addr_unspec,
-+						sizeof(addr_unspec)));
-+		_exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
-+		return;
-+	}
-+	/* Closes listening socket 1 for the parent*/
-+	ASSERT_EQ(0, close(sockfd));
-+
-+	ASSERT_EQ(child, waitpid(child, &status, 0));
-+	ASSERT_EQ(1, WIFEXITED(status));
-+	ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
-+}
-+
-+TEST_F_FORK(socket_test, connect_afunspec_with_restictions) {
-+
-+	int sockfd;
-+	pid_t child;
-+	int status;
-+
-+	struct landlock_ruleset_attr ruleset_attr_1 = {
-+		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP,
++	struct landlock_ruleset_attr ruleset_attr = {
++		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
++				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
 +	};
 +	struct landlock_net_service_attr net_service_1 = {
 +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
@@ -164,70 +90,42 @@ index cf914d311eb3..bf8e49466d1d 100644
 +		.port = self->port[0],
 +	};
 +
-+	struct landlock_ruleset_attr ruleset_attr_2 = {
-+		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
-+				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
-+	};
-+	struct landlock_net_service_attr net_service_2 = {
++		struct landlock_net_service_attr net_service_2 = {
 +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
 +				  LANDLOCK_ACCESS_NET_CONNECT_TCP,
 +
 +		.port = self->port[0],
 +	};
 +
-+	const int ruleset_fd_1 = landlock_create_ruleset(&ruleset_attr_1,
-+					sizeof(ruleset_attr_1), 0);
-+	ASSERT_LE(0, ruleset_fd_1);
++	const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
++					sizeof(ruleset_attr), 0);
++	ASSERT_LE(0, ruleset_fd);
 +
 +	/* Allows bind operations to the port[0] socket */
-+	ASSERT_EQ(0, landlock_add_rule(ruleset_fd_1, LANDLOCK_RULE_NET_SERVICE,
++	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
 +				       &net_service_1, 0));
++	/* Allows connect and bind operations to the port[0] socket */
++	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
++				       &net_service_2, 0));
 +
 +	/* Enforces the ruleset. */
-+	enforce_ruleset(_metadata, ruleset_fd_1);
++	enforce_ruleset(_metadata, ruleset_fd);
 +
-+	/* Creates a server socket 1 */
++	/* Creates a server socket */
 +	sockfd = create_socket(_metadata, false, false);
 +	ASSERT_LE(0, sockfd);
 +
-+	/* Binds the socket 1 to address with port[0] with AF_UNSPEC family */
-+	self->addr4[0].sin_family = AF_UNSPEC;
++	/* Binds the socket to address with port[0] */
 +	ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr4[0], sizeof(self->addr4[0])));
 +
 +	/* Makes connection to socket with port[0] */
 +	ASSERT_EQ(0, connect(sockfd, (struct sockaddr *)&self->addr4[0],
 +						   sizeof(self->addr4[0])));
 +
-+	const int ruleset_fd_2 = landlock_create_ruleset(&ruleset_attr_2,
-+					sizeof(ruleset_attr_2), 0);
-+	ASSERT_LE(0, ruleset_fd_2);
-+
-+	/* Allows connect and bind operations to the port[0] socket */
-+	ASSERT_EQ(0, landlock_add_rule(ruleset_fd_2, LANDLOCK_RULE_NET_SERVICE,
-+				       &net_service_2, 0));
-+
-+	/* Enforces the ruleset. */
-+	enforce_ruleset(_metadata, ruleset_fd_2);
-+
-+	child = fork();
-+	ASSERT_LE(0, child);
-+	if (child == 0) {
-+		struct sockaddr addr_unspec = {.sa_family = AF_UNSPEC};
-+
-+		/* Child tries to disconnect already connected socket */
-+		ASSERT_EQ(-1, connect(sockfd, (struct sockaddr *)&addr_unspec,
-+						sizeof(addr_unspec)));
-+		ASSERT_EQ(EACCES, errno);
-+		_exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
-+		return;
-+	}
-+	/* Closes listening socket 1 for the parent*/
++	/* Closes socket */
 +	ASSERT_EQ(0, close(sockfd));
-+
-+	ASSERT_EQ(child, waitpid(child, &status, 0));
-+	ASSERT_EQ(1, WIFEXITED(status));
-+	ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
 +}
++
  TEST_HARNESS_MAIN
 --
 2.25.1
