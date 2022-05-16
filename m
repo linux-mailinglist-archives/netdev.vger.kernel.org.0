@@ -2,107 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 471B3528355
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 13:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E0E5528363
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 13:37:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243229AbiEPLeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 07:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36240 "EHLO
+        id S243217AbiEPLhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 07:37:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243176AbiEPLdz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 07:33:55 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E35F38D9A
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 04:33:53 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id gh6so28148983ejb.0
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 04:33:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=5RmYQNjMaDXtg0d2ywKtVBJLck9qQ3g81Ehrxp1OiOo=;
-        b=EDxSsTPpXZOFKHkEMpLT6zecVMOn9f20Bq9PqsKtfMlf2S6Z8JCJf7HfZ57xfpocCW
-         5Spld9fRluI1UaEiDMdAS28c2lL9m/nvxo7UCG/K437i+EF8XULHqqJvwIL0Ojgas0s5
-         aOFKF/UVMWgLDdvimP5wr55t7sSVKzZjfDL4pp0DjUd6dINSE6ZlBiDkzTuYuw1rvRZu
-         KBauXIyrqZ6tq7ZoMWkMjl8x3j6+/1V6RhDt6VpYBEDWS28VDFraSXv4XyLUhCjFVy2s
-         KvxjRARLnIWU90QExd7q7Rc/6z0NBL184X1oRLq4B916ZYh5n77vostZw12N0ilV9lYx
-         9f4w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=5RmYQNjMaDXtg0d2ywKtVBJLck9qQ3g81Ehrxp1OiOo=;
-        b=V2k2M8Cx/pXYRWyFLQQeLNANos0V5/XdXRI9scN1050QMnBDt373iTItdxw0YF3WHM
-         EYivFeutZovHS9OKH3AWqwvZNEMU81oGcwbK8supwyhrlx8A54J9/OArqVlvzZ0JtyEi
-         XK04hZ1IySw9+3iFAgPWFap3/rQ0Rao3Bpl5cM2p9cqgvX/RzpaH72SYZu7+yPExZ4mv
-         DzmbQirHLXQHj/A3cYcsZLhpk9Hi6ytJrxCy9p9SpPPUaQ3WiJJ0wMMKFW11NvgbYMVk
-         vdgmPpgIS/kQWEHwPdyrmGf5umFWUBrzQRtOGLMPAFmBIIgts2XBcagdPu8wxIxxHFS3
-         ngxQ==
-X-Gm-Message-State: AOAM533GJrsGuiCoe8K9UmZW9q5RK3bIp9+gJH3WvAw/XRoEsZGi8UC1
-        fum9qNDaTKSllnqon4mQaak=
-X-Google-Smtp-Source: ABdhPJzqLRLuAmuQx+Z5ywo/PsNQUHYyaxC9dPOrvYIOIe18OzD7NdaQN1F5QVWoxaZ97nszdCawng==
-X-Received: by 2002:a17:906:7954:b0:6f4:dfbe:acd3 with SMTP id l20-20020a170906795400b006f4dfbeacd3mr15127331ejo.416.1652700831644;
-        Mon, 16 May 2022 04:33:51 -0700 (PDT)
-Received: from skbuf ([188.25.160.86])
-        by smtp.gmail.com with ESMTPSA id j5-20020aa7c0c5000000b0042617ba63c7sm5004924edp.81.2022.05.16.04.33.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 04:33:50 -0700 (PDT)
-Date:   Mon, 16 May 2022 14:33:49 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH net-next v3] net: dsa: realtek: rtl8366rb: Serialize
- indirect PHY register access
-Message-ID: <20220516113349.766fky6yyqadv7e5@skbuf>
-References: <20220513213618.2742895-1-linus.walleij@linaro.org>
+        with ESMTP id S236194AbiEPLhm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 07:37:42 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1C92EDF51;
+        Mon, 16 May 2022 04:37:41 -0700 (PDT)
+Date:   Mon, 16 May 2022 13:37:38 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Sven Auhagen <sven.auhagen@voleatech.de>
+Cc:     Oz Shlomo <ozsh@nvidia.com>, Felix Fietkau <nbd@nbd.name>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Florian Westphal <fw@strlen.de>, Paul Blakey <paulb@nvidia.com>
+Subject: Re: [PATCH net v2] netfilter: nf_flow_table: fix teardown flow
+ timeout
+Message-ID: <YoI3gliaYc250Vnb@salvia>
+References: <20220512182803.6353-1-ozsh@nvidia.com>
+ <YoIt5rHw4Xwl1zgY@salvia>
+ <20220516111817.2jic2qnij2dvkp5i@Svens-MacBookPro.local>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220513213618.2742895-1-linus.walleij@linaro.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <20220516111817.2jic2qnij2dvkp5i@Svens-MacBookPro.local>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 13, 2022 at 11:36:18PM +0200, Linus Walleij wrote:
-> From: Alvin Šipraga <alsi@bang-olufsen.dk>
+On Mon, May 16, 2022 at 01:18:17PM +0200, Sven Auhagen wrote:
+> On Mon, May 16, 2022 at 12:56:38PM +0200, Pablo Neira Ayuso wrote:
+> > On Thu, May 12, 2022 at 09:28:03PM +0300, Oz Shlomo wrote:
+> > > Connections leaving the established state (due to RST / FIN TCP packets)
+> > > set the flow table teardown flag. The packet path continues to set lower
+> > > timeout value as per the new TCP state but the offload flag remains set.
+> > >
+> > > Hence, the conntrack garbage collector may race to undo the timeout
+> > > adjustment of the packet path, leaving the conntrack entry in place with
+> > > the internal offload timeout (one day).
+> > >
+> > > Avoid ct gc timeout overwrite by flagging teared down flowtable
+> > > connections.
+> > >
+> > > On the nftables side we only need to allow established TCP connections to
+> > > create a flow offload entry. Since we can not guaruantee that
+> > > flow_offload_teardown is called by a TCP FIN packet we also need to make
+> > > sure that flow_offload_fixup_ct is also called in flow_offload_del
+> > > and only fixes up established TCP connections.
+> > [...]
+> > > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> > > index 0164e5f522e8..324fdb62c08b 100644
+> > > --- a/net/netfilter/nf_conntrack_core.c
+> > > +++ b/net/netfilter/nf_conntrack_core.c
+> > > @@ -1477,7 +1477,8 @@ static void gc_worker(struct work_struct *work)
+> > >  			tmp = nf_ct_tuplehash_to_ctrack(h);
+> > >  
+> > >  			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
+> > > -				nf_ct_offload_timeout(tmp);
+> > 
+> > Hm, it is the trick to avoid checking for IPS_OFFLOAD from the packet
+> > path that triggers the race, ie. nf_ct_is_expired()
+> > 
+> > The flowtable ct fixup races with conntrack gc collector.
+> > 
+> > Clearing IPS_OFFLOAD might result in offloading the entry again for
+> > the closing packets.
+> > 
+> > Probably clear IPS_OFFLOAD from teardown, and skip offload if flow is
+> > in a TCP state that represent closure?
+>
+> >   		if (unlikely(!tcph || tcph->fin || tcph->rst))
+> >   			goto out;
+> > 
+> > this is already the intention in the existing code.
+> > 
+> > If this does work, could you keep IPS_OFFLOAD_TEARDOWN_BIT internal,
+> > ie. no in uapi? Define it at include/net/netfilter/nf_conntrack.h and
+> > add a comment regarding this to avoid an overlap in the future.
+> > 
+> > > +				if (!test_bit(IPS_OFFLOAD_TEARDOWN_BIT, &tmp->status))
+> > > +					nf_ct_offload_timeout(tmp);
+> > >  				continue;
+> > >  			}
+> > >  
+> > > diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+> > > index 3db256da919b..aaed1a244013 100644
+> > > --- a/net/netfilter/nf_flow_table_core.c
+> > > +++ b/net/netfilter/nf_flow_table_core.c
+> > > @@ -177,14 +177,8 @@ int flow_offload_route_init(struct flow_offload *flow,
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(flow_offload_route_init);
+> > >  
+> > > -static void flow_offload_fixup_tcp(struct ip_ct_tcp *tcp)
+> > > -{
+> > > -	tcp->state = TCP_CONNTRACK_ESTABLISHED;
+> > > -	tcp->seen[0].td_maxwin = 0;
+> > > -	tcp->seen[1].td_maxwin = 0;
+> > > -}
+> > >  
+> > > -static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
+> > > +static void flow_offload_fixup_ct(struct nf_conn *ct)
+> > >  {
+> > >  	struct net *net = nf_ct_net(ct);
+> > >  	int l4num = nf_ct_protonum(ct);
+> > > @@ -192,8 +186,12 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
+> > >  
+> > >  	if (l4num == IPPROTO_TCP) {
+> > >  		struct nf_tcp_net *tn = nf_tcp_pernet(net);
+> > > +		struct ip_ct_tcp *tcp = &ct->proto.tcp;
+> > > +
+> > > +		tcp->seen[0].td_maxwin = 0;
+> > > +		tcp->seen[1].td_maxwin = 0;
+> > >  
+> > > -		timeout = tn->timeouts[TCP_CONNTRACK_ESTABLISHED];
+> > > +		timeout = tn->timeouts[ct->proto.tcp.state];
+> > >  		timeout -= tn->offload_timeout;
+> > >  	} else if (l4num == IPPROTO_UDP) {
+> > >  		struct nf_udp_net *tn = nf_udp_pernet(net);
+> > > @@ -211,18 +209,6 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
+> > >  		WRITE_ONCE(ct->timeout, nfct_time_stamp + timeout);
+> > >  }
+> > >  
+> > > -static void flow_offload_fixup_ct_state(struct nf_conn *ct)
+> > > -{
+> > > -	if (nf_ct_protonum(ct) == IPPROTO_TCP)
+> > > -		flow_offload_fixup_tcp(&ct->proto.tcp);
+> > > -}
+> > > -
+> > > -static void flow_offload_fixup_ct(struct nf_conn *ct)
+> > > -{
+> > > -	flow_offload_fixup_ct_state(ct);
+> > > -	flow_offload_fixup_ct_timeout(ct);
+> > > -}
+> > > -
+> > >  static void flow_offload_route_release(struct flow_offload *flow)
+> > >  {
+> > >  	nft_flow_dst_release(flow, FLOW_OFFLOAD_DIR_ORIGINAL);
+> > > @@ -353,6 +339,10 @@ static inline bool nf_flow_has_expired(const struct flow_offload *flow)
+> > >  static void flow_offload_del(struct nf_flowtable *flow_table,
+> > >  			     struct flow_offload *flow)
+> > >  {
+> > > +	struct nf_conn *ct = flow->ct;
+> > > +
+> > > +	set_bit(IPS_OFFLOAD_TEARDOWN_BIT, &flow->ct->status);
+> > > +
+> > >  	rhashtable_remove_fast(&flow_table->rhashtable,
+> > >  			       &flow->tuplehash[FLOW_OFFLOAD_DIR_ORIGINAL].node,
+> > >  			       nf_flow_offload_rhash_params);
+> > > @@ -360,12 +350,11 @@ static void flow_offload_del(struct nf_flowtable *flow_table,
+> > >  			       &flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].node,
+> > >  			       nf_flow_offload_rhash_params);
+> > >  
+> > > -	clear_bit(IPS_OFFLOAD_BIT, &flow->ct->status);
+> > > -
+> > >  	if (nf_flow_has_expired(flow))
+> > > -		flow_offload_fixup_ct(flow->ct);
+> > > -	else
+> > > -		flow_offload_fixup_ct_timeout(flow->ct);
+> > > +		flow_offload_fixup_ct(ct);
+> > 
+> > Very unlikely, but race might still happen between fixup and
+> > clear IPS_OFFLOAD_BIT with gc below?
+> > 
+> > Without checking from the packet path, the conntrack gc might race to
+> > refresh the timeout, I don't see a 100% race free solution.
+> > 
+> > Probably update the nf_ct_offload_timeout to a shorter value than a
+> > day would mitigate this issue too.
 > 
-> Lock the regmap during the whole PHY register access routines in
-> rtl8366rb.
+> This section of the code is now protected by IPS_OFFLOAD_TEARDOWN_BIT
+> which will prevent the update via nf_ct_offload_timeout.
+> We set it at the beginning of flow_offload_del and flow_offload_teardown.
 > 
-> Signed-off-by: Alvin Šipraga <alsi@bang-olufsen.dk>
-> Reported-by: kernel test robot <lkp@intel.com>
-
-I don't think I would have added this tag.
-
-> Tested-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> ChangeLog v2->v3:
-> - Explicitly target net-next
-> ChangeLog v1->v2:
-> - Make sure to always return a properly assigned error
->   code on the error path in rtl8366rb_phy_read()
->   found by the kernel test robot.
+> Since flow_offload_teardown is only called on TCP packets
+> we also need to set it at flow_offload_del to prevent the race.
 > 
-> I have tested that this does not create any regressions,
-> it makes more sense to have this applied than not. First
-> it is related to the same family as the other ASICs, also
-> it makes perfect logical sense to enforce serialization
-> of these reads/writes.
-> ---
+> This should prevent the race at this point.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+OK.
+
+> > > +	clear_bit(IPS_OFFLOAD_BIT, &ct->status);
+> > > +	clear_bit(IPS_OFFLOAD_TEARDOWN_BIT, &ct->status);
+> > >  
+> > >  	flow_offload_free(flow);
+> > >  }
+> > > @@ -373,8 +362,9 @@ static void flow_offload_del(struct nf_flowtable *flow_table,
+> > >  void flow_offload_teardown(struct flow_offload *flow)
+> > >  {
+> > >  	set_bit(NF_FLOW_TEARDOWN, &flow->flags);
+> > > +	set_bit(IPS_OFFLOAD_TEARDOWN_BIT, &flow->ct->status);
+> > >  
+> > > -	flow_offload_fixup_ct_state(flow->ct);
+> > > +	flow_offload_fixup_ct(flow->ct);
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(flow_offload_teardown);
+> > >  
+> > > diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
+> > > index 900d48c810a1..9cc3ea08eb3a 100644
+> > > --- a/net/netfilter/nft_flow_offload.c
+> > > +++ b/net/netfilter/nft_flow_offload.c
+> > > @@ -295,6 +295,8 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
+> > >  					  sizeof(_tcph), &_tcph);
+> > >  		if (unlikely(!tcph || tcph->fin || tcph->rst))
+> > >  			goto out;
+> > > +		if (unlikely(!nf_conntrack_tcp_established(ct)))
+> > > +			goto out;
+> > 
+> > This chunk is not required, from ruleset users can do
+> > 
+> >         ... ct status assured ...
+> > 
+> > instead.
+> 
+> Maybe this should be mentioned in the manual or wiki if
+> it is not necessary in the flow offload code.
+
+Yes, documentation and wiki can be updated.
+
+Users might want to offload the flow at a later stage in the TCP
+connection.
