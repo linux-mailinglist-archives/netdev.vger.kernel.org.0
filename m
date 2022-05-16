@@ -2,82 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 96A1F528CDB
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 20:26:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74209528CDF
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 20:27:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344733AbiEPS0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 14:26:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
+        id S1344760AbiEPS1W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 14:27:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229692AbiEPS01 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 14:26:27 -0400
-Received: from mail-yw1-x1133.google.com (mail-yw1-x1133.google.com [IPv6:2607:f8b0:4864:20::1133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 997D433A1A
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 11:26:26 -0700 (PDT)
-Received: by mail-yw1-x1133.google.com with SMTP id 00721157ae682-2fee010f509so47169657b3.11
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 11:26:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vqz28oPOm5kqxRAz+u916rMNvSOP2zDlq24IvOghaNo=;
-        b=rmijvm5pS3xWuUdIusdf8VlZu/6uKDUUEvVHLOhE+0zhG3VgvXxvR1V2NBCAFbJ+ey
-         aJ8HPasDfZJfsPp+jTbn9oKy99Q9lzUXy/WzoVIX8EnDl34pMjOon3jNIbsyr90HsmNN
-         GYvaEiyN0akfMPxY0/zkTbSTwMRr8LIlAtkCFEQaJEJxu+cerkJQYWu/Cc8PbPteKz8O
-         7yPOeEnsHrLYVelqUkQkexvPzlJFOmokfymx4RMqQvwFXInpMiSjcqGTuVBmZNcHi63h
-         64lHIY71rJe3JhhIJDLbivrnmfEHsw8+A5YzDmO1WlMvYj0cDKy8i7sjkNF1mDNmBO6V
-         53jA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vqz28oPOm5kqxRAz+u916rMNvSOP2zDlq24IvOghaNo=;
-        b=VMx1C4kA00xlsxgJo6bNWBhsL3FcgBtVSzV/eqE5CUaYmF6g4JS0jwJmpOZzTAvuBA
-         d3PYDRbj4wQN7whS5YZ9gw6N6w6dn2fs4LzrRfGtAx61vRxDrMdz841xRxJ+BmX7LUS2
-         AUB0sjbgJPDmc9fqK1fDhIk/iPEOiLq/1mTXOKfOpK2rlxy67aek4a+x12NEldpozUGx
-         2qaRkXwwbHX4aBPggRLFSnuR5qPqX0QmsP6KFSSzZn0Pwp4UttaK7oKHveIjhxbGXm8T
-         1gX+hhQCHcuo+EwKr2D4eA6sl/dI0tM8qALV7FJKBJ6LysILm+A3qyDn2+Wu8VnGYH99
-         X+Jw==
-X-Gm-Message-State: AOAM532aDFYTmYe9z2FaPJ7VTlA1FwclrjU4DlCzJ3k8JYVPdlfNVP9A
-        oLK01xN2IOEWQiIBRQoUXrzTBfFSugEq9tXiqsbV/A==
-X-Google-Smtp-Source: ABdhPJy6wE2bzBc6VuIzpRHChEqABHYbmTgoR3ifDqrV83n3HXrln0o3AN5XqEEL2gE53wY3oFKN2oPD/0phzFSv+2Y=
-X-Received: by 2002:a81:12c2:0:b0:2ff:13ba:c5aa with SMTP id
- 185-20020a8112c2000000b002ff13bac5aamr3444986yws.332.1652725585109; Mon, 16
- May 2022 11:26:25 -0700 (PDT)
+        with ESMTP id S1344755AbiEPS1T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 14:27:19 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 52A9B3DA7E
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 11:27:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652725636;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=id00oVYTmyhqPqdSLuA7jfzPXEfe8AjRZdJymH4RAy0=;
+        b=XGKI4KMCU82ymnvnqyw2x4IfJLKH2WsmkGtdQQTmYiW8LpqhX2XO9pZ4DMIhzR1UB6bPOt
+        SBRtauWabedmbHyBTjPtnU3c8sjfJdRcq3cyKxUqltK1y+D2JSzrhzHd6VqR+lnR/1LSjm
+        bb+FWqbYO107w0a6zqspTDHVBm8if2A=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-29-hkLDBe64NLOiL3uXQ0xXTA-1; Mon, 16 May 2022 14:27:12 -0400
+X-MC-Unique: hkLDBe64NLOiL3uXQ0xXTA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6B4561DC245E;
+        Mon, 16 May 2022 18:27:04 +0000 (UTC)
+Received: from asgard.redhat.com (unknown [10.36.110.3])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 02FC4155F652;
+        Mon, 16 May 2022 18:26:59 +0000 (UTC)
+Date:   Mon, 16 May 2022 20:26:57 +0200
+From:   Eugene Syromiatnikov <esyr@redhat.com>
+To:     Jiri Olsa <jolsa@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: [PATCH bpf 0/4] Fix 32-bit arch and compat support for the
+ kprobe_multi attach type
+Message-ID: <20220516182657.GA28596@asgard.redhat.com>
 MIME-Version: 1.0
-References: <20220516042456.3014395-1-eric.dumazet@gmail.com>
- <20220516042456.3014395-5-eric.dumazet@gmail.com> <20220516112140.0f088427@kernel.org>
-In-Reply-To: <20220516112140.0f088427@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 16 May 2022 11:26:14 -0700
-Message-ID: <CANn89iL9xw83hEGA4=K-F1qkjyRhvAJ85c9W5nY1Fsmq777V0A@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/4] net: call skb_defer_free_flush() before each napi_poll()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.23 (2014-03-12)
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 16, 2022 at 11:21 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Sun, 15 May 2022 21:24:56 -0700 Eric Dumazet wrote:
-> > -end:
-> > -     skb_defer_free_flush(sd);
-> > +end:;
->
-> Sorry for the nit pick but can I remove this and just return like we
-> did before f3412b3879b4? Is there a reason such "label:;}" is good?
+As suggested in [1], the kprobe_multi interface is to be fixed for 32-bit
+architectures and compat, rather then disabled.  As it turned out,
+there are a couple of additional problems that are to be addressed:
+ - the absence of size overflow checks, leading to possible
+   out-of-bounds writes (addressed by the first patch);
+ - the assumption that long has the same size as u64, which would make
+   cookies arrays size calculation incorrect on 32-bit architectures
+   (addressed by the second patch);
+ - the addrs array passing API, that is incompatible with compat and has
+   to be changed (addressed in the fourth patch): those are kernel
+   addresses and not user ones (as was incorrectly stated in [2]);
+   this change is only semantical for 64-bit user/kernelspace,
+   so it shouldn't impact ABI there, at least.
 
-I thought that having a return in the middle of this function would
-hurt us at some point.
+[1] https://lore.kernel.org/lkml/CAADnVQ+2gwhcMht4PuDnDOFKY68Wsq8QFz4Y69NBX_TLaSexQQ@mail.gmail.com/
+[2] https://lore.kernel.org/lkml/20220510184155.GA8295@asgard.redhat.com/
+
+Eugene Syromiatnikov (4):
+  bpf_trace: check size for overflow in bpf_kprobe_multi_link_attach
+  bpf_trace: support 32-bit kernels in bpf_kprobe_multi_link_attach
+  bpf_trace: handle compat in kprobe_multi_resolve_syms
+  bpf_trace: pass array of u64 values in kprobe_multi.addrs
+
+ kernel/trace/bpf_trace.c                           | 63 ++++++++++++++++------
+ tools/lib/bpf/bpf.h                                |  2 +-
+ tools/lib/bpf/libbpf.c                             |  8 +--
+ tools/lib/bpf/libbpf.h                             |  2 +-
+ .../testing/selftests/bpf/prog_tests/bpf_cookie.c  |  2 +-
+ .../selftests/bpf/prog_tests/kprobe_multi_test.c   |  2 +-
+ 6 files changed, 54 insertions(+), 25 deletions(-)
+
+-- 
+2.1.4
+
