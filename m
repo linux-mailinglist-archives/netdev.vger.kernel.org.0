@@ -2,127 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC130527D21
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 07:45:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 88A27527D2F
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 07:52:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236196AbiEPFpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 01:45:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36870 "EHLO
+        id S239938AbiEPFvw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 01:51:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239877AbiEPFpP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 01:45:15 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 020D6E0E7
-        for <netdev@vger.kernel.org>; Sun, 15 May 2022 22:45:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7178660F13
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 05:45:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03B45C385B8;
-        Mon, 16 May 2022 05:45:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652679912;
-        bh=WExA2xvzjGg/gmYBGvhmJzb/aELmIcIhMb1Kq+R5T8I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=qjktuBwEBpqeCE75Fak+/dWkXpNl79dOSixG6pOmpXONOTNrwPSeGIz/kM9kVI9m3
-         uswgZ6IqYYM229KUcaDyNQ+z4Wsrbrtksh5+Qoncig3AUyFHcXYHA42lpH5PuGRkwk
-         X7pOZzV8BgN95ymxA1WTq7cG7/CldVS0HYeTbWdjbh2Pfg5DTA8hAgq4MYR55ZHH/Y
-         AsteJEFHMdZIentng0M+bKainyyoIA6WRPHWtY8YQiseXaZxfZVdffM1IAO17JZvex
-         7eYJryTgBDdKiNUC5deAFXpANl7vdBafzw2eAZTVFMppw+Zy+Ji757yoRXsEvHBT4o
-         gNgPSkdHr97Sg==
-Date:   Mon, 16 May 2022 08:44:58 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Steffen Klassert <steffen.klassert@secunet.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        netdev@vger.kernel.org, Raed Salem <raeds@nvidia.com>,
-        ipsec-devel <devel@linux-ipsec.org>
-Subject: Re: [PATCH ipsec-next 4/6] xfrm: add TX datapath support for IPsec
- full offload mode
-Message-ID: <YoHk2jiostIWIHn5@unreal>
-References: <cover.1652176932.git.leonro@nvidia.com>
- <905b8e8032d5cdb48ef63cb153fd86552c8a6a7d.1652176932.git.leonro@nvidia.com>
- <20220513145658.GL680067@gauss3.secunet.de>
+        with ESMTP id S239918AbiEPFvv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 01:51:51 -0400
+Received: from out30-44.freemail.mail.aliyun.com (out30-44.freemail.mail.aliyun.com [115.124.30.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D7715714;
+        Sun, 15 May 2022 22:51:49 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=guangguan.wang@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VDEQJf7_1652680304;
+Received: from localhost.localdomain(mailfrom:guangguan.wang@linux.alibaba.com fp:SMTPD_---0VDEQJf7_1652680304)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 16 May 2022 13:51:46 +0800
+From:   Guangguan Wang <guangguan.wang@linux.alibaba.com>
+To:     kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, leon@kernel.org,
+        tonylu@linux.alibaba.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3 0/2] net/smc: send and write inline optimization for smc
+Date:   Mon, 16 May 2022 13:51:35 +0800
+Message-Id: <20220516055137.51873-1-guangguan.wang@linux.alibaba.com>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220513145658.GL680067@gauss3.secunet.de>
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 13, 2022 at 04:56:58PM +0200, Steffen Klassert wrote:
-> On Tue, May 10, 2022 at 01:36:55PM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> > 
-> > In IPsec full mode, the device is going to encrypt and encapsulate
-> > packets that are associated with offloaded policy. After successful
-> > policy lookup to indicate if packets should be offloaded or not,
-> > the stack forwards packets to the device to do the magic.
-> > 
-> > Signed-off-by: Raed Salem <raeds@nvidia.com>
-> > Signed-off-by: Huy Nguyen <huyn@nvidia.com>
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  net/xfrm/xfrm_output.c | 19 +++++++++++++++++++
-> >  1 file changed, 19 insertions(+)
-> > 
-> > diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-> > index d4935b3b9983..2599f3dbac08 100644
-> > --- a/net/xfrm/xfrm_output.c
-> > +++ b/net/xfrm/xfrm_output.c
-> > @@ -718,6 +718,25 @@ int xfrm_output(struct sock *sk, struct sk_buff *skb)
-> >  		break;
-> >  	}
-> >  
-> > +	if (x->xso.type == XFRM_DEV_OFFLOAD_FULL) {
-> > +		struct dst_entry *dst = skb_dst_pop(skb);
-> > +
-> > +		if (!dst) {
-> > +			XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTERROR);
-> > +			return -EHOSTUNREACH;
-> > +		}
-> > +
-> > +		skb_dst_set(skb, dst);
-> > +		err = skb_dst(skb)->ops->local_out(net, skb->sk, skb);
-> > +		if (unlikely(err != 1))
-> > +			return err;
-> > +
-> > +		if (!skb_dst(skb)->xfrm)
-> > +			return dst_output(net, skb->sk, skb);
-> > +
-> > +		return 0;
-> > +	}
-> > +
-> 
-> How do we know that we send the packet really to a device that
-> supports this type of offload? For crypto offload, we check that
-> in xfrm_dev_offload_ok() and I think something similar is required
-> here too.
+Send cdc msgs and write data inline if qp has sufficent inline
+space, helps latency reducing. 
 
-I think that function is needed to make sure that we will have SW
-fallback. It is not needed in full offload, anything that is not
-supported/wrong should be dropped by HW.
+In my test environment, which are 2 VMs running on the same
+physical host and whose NICs(ConnectX-4Lx) are working on
+SR-IOV mode, qperf shows 0.4us-1.3us improvement in latency.
 
-> 
-> Also, the offload type still requires software policies and states.
-> What if a device comes up that can do a real full offload, i.e.
-> in a way that the kernel acts just as a stub layer between IKE
-> and the device. Are we going to create XFRM_DEV_OFFLOAD_FULL_2
-> then? We need to make sure that this case cann be supported with
-> the new API too.
+Test command:
+server: smc_run taskset -c 1 qperf
+client: smc_run taskset -c 1 qperf <server ip> -oo \
+		msg_size:1:2K:*2 -t 30 -vu tcp_lat
 
-Yes, I think that it is supported by this API.
+The results shown below:
+msgsize     before       after
+1B          11.9 us      10.6 us (-1.3 us)
+2B          11.7 us      10.7 us (-1.0 us)
+4B          11.7 us      10.7 us (-1.0 us)
+8B          11.6 us      10.6 us (-1.0 us)
+16B         11.7 us      10.7 us (-1.0 us)
+32B         11.7 us      10.6 us (-1.1 us)
+64B         11.7 us      11.2 us (-0.5 us)
+128B        11.6 us      11.2 us (-0.4 us)
+256B        11.8 us      11.2 us (-0.6 us)
+512B        11.8 us      11.3 us (-0.5 us)
+1KB         11.9 us      11.5 us (-0.4 us)
+2KB         12.1 us      11.5 us (-0.6 us)
 
-From user perspective, all flavours of full offload are the same, the
-difference is in-kernel API, where we will be able differentiate with
-some sort of features flag.
+Guangguan Wang (2):
+  net/smc: send cdc msg inline if qp has sufficient inline space
+  net/smc: rdma write inline if qp has sufficient inline space
 
-Thanks
+ net/smc/smc_ib.c |  1 +
+ net/smc/smc_tx.c | 17 ++++++++++++-----
+ net/smc/smc_wr.c |  5 ++++-
+ 3 files changed, 17 insertions(+), 6 deletions(-)
+
+-- 
+2.24.3 (Apple Git-128)
+
