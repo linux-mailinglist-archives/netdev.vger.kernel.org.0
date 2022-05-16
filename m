@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DFF952899A
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 18:08:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D91335289A3
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 18:08:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245652AbiEPQIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 12:08:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33174 "EHLO
+        id S237279AbiEPQIB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 12:08:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245260AbiEPQHx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 12:07:53 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC1037A90;
-        Mon, 16 May 2022 09:07:52 -0700 (PDT)
+        with ESMTP id S245614AbiEPQHy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 12:07:54 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6842537AAF;
+        Mon, 16 May 2022 09:07:53 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id BF6BECE16E4;
-        Mon, 16 May 2022 16:07:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5873EC34113;
-        Mon, 16 May 2022 16:07:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F17960FFC;
+        Mon, 16 May 2022 16:07:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CA28C385AA;
+        Mon, 16 May 2022 16:07:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652717269;
-        bh=zo+PQVFuA+GxPo/d6/CtXgd7jFrLzi0gI150KZBcaLA=;
+        s=k20201202; t=1652717272;
+        bh=a3XU0e49ixn1FJ0IrvFS5xrudvBm8/hSAT0hJzRlaqs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FUjrw4Hx8KjxReUXnNdcEyzFAfRLwM59ktxCL724Q6Pm3d6WPZ3pf/ceINM+NVUym
-         NkAXEX+CuiKec6gxClNPld9HxIl+hVX7yXCMQtIdWNBOF10JILmFlgiRkSEp1TYakl
-         6iF+t3ZsmUKV7gHY9n+EZ86FlzAJHRxtbyBcyvrKoP3eUGoNWLSmJ6QE81HU9D4nj/
-         tJ9FvyTZqmToUwswqYKPVDA55AiAIYxLs+VQ7S1/VLJpofPjNz5U7EuFmp9jku3Gsv
-         QH4bOKRRpIet5686a8sREg9FN6S1dAobGXDL26vDVZ6/Q1itCu2cAL37Nq024YqlSs
-         BxgvNDcuALvJg==
+        b=tVMW0n2ZJuDDcaqWRaEFU7oRXI20dQn3aj4KCwUH0MCKizNkVddTxMiJCc1654EXR
+         xpieU9dmDdiP5BzOq6ObqJL34gcDsSaB1zkdY6omvjKE65hjI7vaIk8JxRl0yNw0Is
+         PGnI6Ayz9R1ifIwFbS1PJykhgaJWpM+AexAl+sEXbZemq6WTbrz15z/tQwseSy1j45
+         A3Q7kdIOA9sZfx0r1G7niA3SGCcdbGoBt+x44Q6jSrCIqCov4NZcyM8KTepWNtoNQk
+         sGeWaUKV6xLLGRPGTfYTwdzUQ7ceksU8DdNEyj28jukYTctVsgUvu9AA94q5PTMDnT
+         UoWX19heEZbWA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
@@ -38,9 +38,9 @@ Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
         kuba@kernel.org, pabeni@redhat.com, Sam.Shih@mediatek.com,
         linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         robh@kernel.org, lorenzo.bianconi@redhat.com
-Subject: [PATCH v2 net-next 03/15] net: ethernet: mtk_eth_soc: move tx dma desc configuration in mtk_tx_set_dma_desc
-Date:   Mon, 16 May 2022 18:06:30 +0200
-Message-Id: <56f87927844502969dd6929e9137c47e54c99c00.1652716741.git.lorenzo@kernel.org>
+Subject: [PATCH v2 net-next 04/15] net: ethernet: mtk_eth_soc: add txd_size to mtk_soc_data
+Date:   Mon, 16 May 2022 18:06:31 +0200
+Message-Id: <22bd1bd88c09205b9bf83ea4c3ab030d5dc6e670.1652716741.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <cover.1652716741.git.lorenzo@kernel.org>
 References: <cover.1652716741.git.lorenzo@kernel.org>
@@ -56,213 +56,175 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move tx dma descriptor configuration in mtk_tx_set_dma_desc routine.
-This is a preliminary patch to introduce mt7986 ethernet support since
-it relies on a different tx dma descriptor layout.
+In order to remove mtk_tx_dma size dependency, introduce txd_size in
+mtk_soc_data data structure. Rely on txd_size in mtk_init_fq_dma() and
+mtk_dma_free() routines.
+This is a preliminary patch to add mt7986 ethernet support.
 
 Tested-by: Sam Shih <sam.shih@mediatek.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 105 +++++++++++---------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  11 ++
- 2 files changed, 67 insertions(+), 49 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 47 +++++++++++++++------
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h |  4 ++
+ 2 files changed, 38 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 31c5da5d6b72..085c740779de 100644
+index 085c740779de..cde66463bf98 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -918,18 +918,51 @@ static void setup_tx_buf(struct mtk_eth *eth, struct mtk_tx_buf *tx_buf,
- 	}
- }
- 
-+static void mtk_tx_set_dma_desc(struct net_device *dev, struct mtk_tx_dma *desc,
-+				struct mtk_tx_dma_desc_info *info)
-+{
-+	struct mtk_mac *mac = netdev_priv(dev);
-+	u32 data;
-+
-+	WRITE_ONCE(desc->txd1, info->addr);
-+
-+	data = TX_DMA_SWC | TX_DMA_PLEN0(info->size);
-+	if (info->last)
-+		data |= TX_DMA_LS0;
-+	WRITE_ONCE(desc->txd3, data);
-+
-+	data = (mac->id + 1) << TX_DMA_FPORT_SHIFT; /* forward port */
-+	if (info->first) {
-+		if (info->gso)
-+			data |= TX_DMA_TSO;
-+		/* tx checksum offload */
-+		if (info->csum)
-+			data |= TX_DMA_CHKSUM;
-+		/* vlan header offload */
-+		if (info->vlan)
-+			data |= TX_DMA_INS_VLAN | info->vlan_tci;
-+	}
-+	WRITE_ONCE(desc->txd4, data);
-+}
-+
- static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
- 		      int tx_num, struct mtk_tx_ring *ring, bool gso)
+@@ -784,20 +784,20 @@ static inline bool mtk_rx_get_desc(struct mtk_rx_dma *rxd,
+ /* the qdma core needs scratch memory to be setup */
+ static int mtk_init_fq_dma(struct mtk_eth *eth)
  {
-+	struct mtk_tx_dma_desc_info txd_info = {
-+		.size = skb_headlen(skb),
-+		.gso = gso,
-+		.csum = skb->ip_summed == CHECKSUM_PARTIAL,
-+		.vlan = skb_vlan_tag_present(skb),
-+		.vlan_tci = skb_vlan_tag_get(skb),
-+		.first = true,
-+		.last = !skb_is_nonlinear(skb),
-+	};
- 	struct mtk_mac *mac = netdev_priv(dev);
- 	struct mtk_eth *eth = mac->hw;
- 	struct mtk_tx_dma *itxd, *txd;
- 	struct mtk_tx_dma *itxd_pdma, *txd_pdma;
- 	struct mtk_tx_buf *itx_buf, *tx_buf;
--	dma_addr_t mapped_addr;
--	unsigned int nr_frags;
- 	int i, n_desc = 1;
--	u32 txd4 = 0, fport;
- 	int k = 0;
++	const struct mtk_soc_data *soc = eth->soc;
+ 	dma_addr_t phy_ring_tail;
+ 	int cnt = MTK_DMA_SIZE;
+ 	dma_addr_t dma_addr;
+ 	int i;
  
- 	itxd = ring->next_free;
-@@ -937,49 +970,32 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
- 	if (itxd == ring->last_free)
+ 	eth->scratch_ring = dma_alloc_coherent(eth->dma_dev,
+-					       cnt * sizeof(struct mtk_tx_dma),
++					       cnt * soc->txrx.txd_size,
+ 					       &eth->phy_scratch_ring,
+ 					       GFP_ATOMIC);
+ 	if (unlikely(!eth->scratch_ring))
  		return -ENOMEM;
  
--	/* set the forward port */
--	fport = (mac->id + 1) << TX_DMA_FPORT_SHIFT;
--	txd4 |= fport;
--
- 	itx_buf = mtk_desc_to_tx_buf(ring, itxd);
- 	memset(itx_buf, 0, sizeof(*itx_buf));
- 
--	if (gso)
--		txd4 |= TX_DMA_TSO;
--
--	/* TX Checksum offload */
--	if (skb->ip_summed == CHECKSUM_PARTIAL)
--		txd4 |= TX_DMA_CHKSUM;
--
--	/* VLAN header offload */
--	if (skb_vlan_tag_present(skb))
--		txd4 |= TX_DMA_INS_VLAN | skb_vlan_tag_get(skb);
--
--	mapped_addr = dma_map_single(eth->dma_dev, skb->data,
--				     skb_headlen(skb), DMA_TO_DEVICE);
--	if (unlikely(dma_mapping_error(eth->dma_dev, mapped_addr)))
-+	txd_info.addr = dma_map_single(eth->dma_dev, skb->data, txd_info.size,
-+				       DMA_TO_DEVICE);
-+	if (unlikely(dma_mapping_error(eth->dma_dev, txd_info.addr)))
+-	eth->scratch_head = kcalloc(cnt, MTK_QDMA_PAGE_SIZE,
+-				    GFP_KERNEL);
++	eth->scratch_head = kcalloc(cnt, MTK_QDMA_PAGE_SIZE, GFP_KERNEL);
+ 	if (unlikely(!eth->scratch_head))
  		return -ENOMEM;
  
--	WRITE_ONCE(itxd->txd1, mapped_addr);
-+	mtk_tx_set_dma_desc(dev, itxd, &txd_info);
+@@ -807,16 +807,19 @@ static int mtk_init_fq_dma(struct mtk_eth *eth)
+ 	if (unlikely(dma_mapping_error(eth->dma_dev, dma_addr)))
+ 		return -ENOMEM;
+ 
+-	phy_ring_tail = eth->phy_scratch_ring +
+-			(sizeof(struct mtk_tx_dma) * (cnt - 1));
++	phy_ring_tail = eth->phy_scratch_ring + soc->txrx.txd_size * (cnt - 1);
+ 
+ 	for (i = 0; i < cnt; i++) {
+-		eth->scratch_ring[i].txd1 =
+-					(dma_addr + (i * MTK_QDMA_PAGE_SIZE));
++		struct mtk_tx_dma *txd;
 +
- 	itx_buf->flags |= MTK_TX_FLAGS_SINGLE0;
- 	itx_buf->flags |= (!mac->id) ? MTK_TX_FLAGS_FPORT0 :
- 			  MTK_TX_FLAGS_FPORT1;
--	setup_tx_buf(eth, itx_buf, itxd_pdma, mapped_addr, skb_headlen(skb),
-+	setup_tx_buf(eth, itx_buf, itxd_pdma, txd_info.addr, txd_info.size,
- 		     k++);
- 
- 	/* TX SG offload */
- 	txd = itxd;
- 	txd_pdma = qdma_to_pdma(ring, txd);
--	nr_frags = skb_shinfo(skb)->nr_frags;
- 
--	for (i = 0; i < nr_frags; i++) {
-+	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++) {
- 		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
- 		unsigned int offset = 0;
- 		int frag_size = skb_frag_size(frag);
- 
- 		while (frag_size) {
--			bool last_frag = false;
--			unsigned int frag_map_size;
- 			bool new_desc = true;
- 
- 			if (MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA) ||
-@@ -994,23 +1010,17 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
- 				new_desc = false;
- 			}
- 
--
--			frag_map_size = min(frag_size, MTK_TX_DMA_BUF_LEN);
--			mapped_addr = skb_frag_dma_map(eth->dma_dev, frag, offset,
--						       frag_map_size,
--						       DMA_TO_DEVICE);
--			if (unlikely(dma_mapping_error(eth->dma_dev, mapped_addr)))
-+			memset(&txd_info, 0, sizeof(struct mtk_tx_dma_desc_info));
-+			txd_info.size = min(frag_size, MTK_TX_DMA_BUF_LEN);
-+			txd_info.last = i == skb_shinfo(skb)->nr_frags - 1 &&
-+					!(frag_size - txd_info.size);
-+			txd_info.addr = skb_frag_dma_map(eth->dma_dev, frag,
-+							 offset, txd_info.size,
-+							 DMA_TO_DEVICE);
-+			if (unlikely(dma_mapping_error(eth->dma_dev, txd_info.addr)))
- 				goto err_dma;
- 
--			if (i == nr_frags - 1 &&
--			    (frag_size - frag_map_size) == 0)
--				last_frag = true;
--
--			WRITE_ONCE(txd->txd1, mapped_addr);
--			WRITE_ONCE(txd->txd3, (TX_DMA_SWC |
--					       TX_DMA_PLEN0(frag_map_size) |
--					       last_frag * TX_DMA_LS0));
--			WRITE_ONCE(txd->txd4, fport);
-+			mtk_tx_set_dma_desc(dev, txd, &txd_info);
- 
- 			tx_buf = mtk_desc_to_tx_buf(ring, txd);
- 			if (new_desc)
-@@ -1020,20 +1030,17 @@ static int mtk_tx_map(struct sk_buff *skb, struct net_device *dev,
- 			tx_buf->flags |= (!mac->id) ? MTK_TX_FLAGS_FPORT0 :
- 					 MTK_TX_FLAGS_FPORT1;
- 
--			setup_tx_buf(eth, tx_buf, txd_pdma, mapped_addr,
--				     frag_map_size, k++);
-+			setup_tx_buf(eth, tx_buf, txd_pdma, txd_info.addr,
-+				     txd_info.size, k++);
- 
--			frag_size -= frag_map_size;
--			offset += frag_map_size;
-+			frag_size -= txd_info.size;
-+			offset += txd_info.size;
- 		}
++		txd = (void *)eth->scratch_ring + i * soc->txrx.txd_size;
++		txd->txd1 = dma_addr + i * MTK_QDMA_PAGE_SIZE;
+ 		if (i < cnt - 1)
+-			eth->scratch_ring[i].txd2 = (eth->phy_scratch_ring +
+-				((i + 1) * sizeof(struct mtk_tx_dma)));
+-		eth->scratch_ring[i].txd3 = TX_DMA_SDL(MTK_QDMA_PAGE_SIZE);
++			txd->txd2 = eth->phy_scratch_ring +
++				    (i + 1) * soc->txrx.txd_size;
++
++		txd->txd3 = TX_DMA_PLEN0(MTK_QDMA_PAGE_SIZE);
++		txd->txd4 = 0;
  	}
  
- 	/* store skb to cleanup */
- 	itx_buf->skb = skb;
+ 	mtk_w32(eth, eth->phy_scratch_ring, MTK_QDMA_FQ_HEAD);
+@@ -2108,6 +2111,7 @@ static int mtk_dma_init(struct mtk_eth *eth)
  
--	WRITE_ONCE(itxd->txd4, txd4);
--	WRITE_ONCE(itxd->txd3, (TX_DMA_SWC | TX_DMA_PLEN0(skb_headlen(skb)) |
--				(!nr_frags * TX_DMA_LS0)));
- 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_QDMA)) {
- 		if (k & 0x1)
- 			txd_pdma->txd2 |= TX_DMA_LS0;
+ static void mtk_dma_free(struct mtk_eth *eth)
+ {
++	const struct mtk_soc_data *soc = eth->soc;
+ 	int i;
+ 
+ 	for (i = 0; i < MTK_MAC_COUNT; i++)
+@@ -2115,9 +2119,8 @@ static void mtk_dma_free(struct mtk_eth *eth)
+ 			netdev_reset_queue(eth->netdev[i]);
+ 	if (eth->scratch_ring) {
+ 		dma_free_coherent(eth->dma_dev,
+-				  MTK_DMA_SIZE * sizeof(struct mtk_tx_dma),
+-				  eth->scratch_ring,
+-				  eth->phy_scratch_ring);
++				  MTK_DMA_SIZE * soc->txrx.txd_size,
++				  eth->scratch_ring, eth->phy_scratch_ring);
+ 		eth->scratch_ring = NULL;
+ 		eth->phy_scratch_ring = 0;
+ 	}
+@@ -3353,6 +3356,9 @@ static const struct mtk_soc_data mt2701_data = {
+ 	.hw_features = MTK_HW_FEATURES,
+ 	.required_clks = MT7623_CLKS_BITMAP,
+ 	.required_pctl = true,
++	.txrx = {
++		.txd_size = sizeof(struct mtk_tx_dma),
++	},
+ };
+ 
+ static const struct mtk_soc_data mt7621_data = {
+@@ -3361,6 +3367,9 @@ static const struct mtk_soc_data mt7621_data = {
+ 	.required_clks = MT7621_CLKS_BITMAP,
+ 	.required_pctl = false,
+ 	.offload_version = 2,
++	.txrx = {
++		.txd_size = sizeof(struct mtk_tx_dma),
++	},
+ };
+ 
+ static const struct mtk_soc_data mt7622_data = {
+@@ -3370,6 +3379,9 @@ static const struct mtk_soc_data mt7622_data = {
+ 	.required_clks = MT7622_CLKS_BITMAP,
+ 	.required_pctl = false,
+ 	.offload_version = 2,
++	.txrx = {
++		.txd_size = sizeof(struct mtk_tx_dma),
++	},
+ };
+ 
+ static const struct mtk_soc_data mt7623_data = {
+@@ -3378,6 +3390,9 @@ static const struct mtk_soc_data mt7623_data = {
+ 	.required_clks = MT7623_CLKS_BITMAP,
+ 	.required_pctl = true,
+ 	.offload_version = 2,
++	.txrx = {
++		.txd_size = sizeof(struct mtk_tx_dma),
++	},
+ };
+ 
+ static const struct mtk_soc_data mt7629_data = {
+@@ -3386,6 +3401,9 @@ static const struct mtk_soc_data mt7629_data = {
+ 	.hw_features = MTK_HW_FEATURES,
+ 	.required_clks = MT7629_CLKS_BITMAP,
+ 	.required_pctl = false,
++	.txrx = {
++		.txd_size = sizeof(struct mtk_tx_dma),
++	},
+ };
+ 
+ static const struct mtk_soc_data rt5350_data = {
+@@ -3393,6 +3411,9 @@ static const struct mtk_soc_data rt5350_data = {
+ 	.hw_features = MTK_HW_FEATURES_MT7628,
+ 	.required_clks = MT7628_CLKS_BITMAP,
+ 	.required_pctl = false,
++	.txrx = {
++		.txd_size = sizeof(struct mtk_tx_dma),
++	},
+ };
+ 
+ const struct of_device_id of_mtk_match[] = {
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index b04977fa84f6..5d940315c7ba 100644
+index 5d940315c7ba..495f623b62ef 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -844,6 +844,17 @@ enum mkt_eth_capabilities {
- 		      MTK_MUX_U3_GMAC2_TO_QPHY | \
- 		      MTK_MUX_GMAC12_TO_GEPHY_SGMII | MTK_QDMA)
+@@ -865,6 +865,7 @@ struct mtk_tx_dma_desc_info {
+  *				the target SoC
+  * @required_pctl		A bool value to show whether the SoC requires
+  *				the extra setup for those pins used by GMAC.
++ * @txd_size			TX DMA descriptor size.
+  */
+ struct mtk_soc_data {
+ 	u32             ana_rgc3;
+@@ -873,6 +874,9 @@ struct mtk_soc_data {
+ 	bool		required_pctl;
+ 	u8		offload_version;
+ 	netdev_features_t hw_features;
++	struct {
++		u32	txd_size;
++	} txrx;
+ };
  
-+struct mtk_tx_dma_desc_info {
-+	dma_addr_t addr;
-+	u32 size;
-+	u16 vlan_tci;
-+	u8 gso:1;
-+	u8 csum:1;
-+	u8 vlan:1;
-+	u8 first:1;
-+	u8 last:1;
-+};
-+
- /* struct mtk_eth_data -	This is the structure holding all differences
-  *				among various plaforms
-  * @ana_rgc3:                   The offset for register ANA_RGC3 related to
+ /* currently no SoC has more than 2 macs */
 -- 
 2.35.3
 
