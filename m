@@ -2,289 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 27F8B5286FD
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 16:29:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B2A3D52872E
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 16:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234915AbiEPO3c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 10:29:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42974 "EHLO
+        id S244589AbiEPOdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 10:33:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230467AbiEPO3a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 10:29:30 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D8C523B295
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 07:29:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652711369;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
+        with ESMTP id S231847AbiEPOdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 10:33:44 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B2482AF8;
+        Mon, 16 May 2022 07:33:43 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C33171F9F3;
+        Mon, 16 May 2022 14:33:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652711621; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=6U9eCDRT0RJ2mTUi/DWAJnJHeUFBHG8OhgCSLn72XHs=;
-        b=gxVF94si2a+KjbEE+WyukKC0gLYo1rox16wxt02qM5K2iYIfqFr6S2B0PDrYKvGAS9fWHJ
-        2fzAx8CPXWfxX9PaqoDA9Tnpwu9cOxhdzfsR9NKZhceAnSZ+jvR+fRdtp3bzyDmiavfrvE
-        s5RAb/ApwoYlAS1ktozxDePd77hA3I8=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-613-ABSWEu71PyychQ9_rFLbQA-1; Mon, 16 May 2022 10:29:27 -0400
-X-MC-Unique: ABSWEu71PyychQ9_rFLbQA-1
-Received: by mail-wm1-f69.google.com with SMTP id r186-20020a1c44c3000000b00393f52ed5ceso10437699wma.7
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 07:29:27 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=6U9eCDRT0RJ2mTUi/DWAJnJHeUFBHG8OhgCSLn72XHs=;
-        b=1MODniGnAknSIUTgnMoCaRMCfhIXosBKsgRKkZwgHNjfMt4WQO/Q+pCcbzf9BHFKqc
-         A8D8OMqZuZQWPoxzLR0lYGLvEPyq+ZXmWeWa1qj+03Cd9ARtd+Wocv1i6X4PASHphibU
-         T6eSGZSbEcmJwXkNSxvS4Whtb22BoiFWbLQk2PWYqA+zdG8ixMDwzxqnnS3XecUK060v
-         Q7XySdnyNPMT6Gdg36Svq46Atg0BOU/pcRiTqvSxP/91AP52A9tJqbfsTh6NdsK+1Qyg
-         mnFEn/95wQ9KqQitd8Vuwdh6yuFcEB108VUaB+nQTckgvMaEHdwDm+pTsWH/5Y+IacwA
-         TT9w==
-X-Gm-Message-State: AOAM530yTuJz5mKK3wkoU+/emg8gKupK2p1B2zogi+wHP+NOMILD0WHx
-        9exSGai1wvbjJ8zYl87EbadF3c6QvipAMAIwqrY34RpmC+8ILz5+p5yubBctebzm+opKZ0sfOK3
-        mUd+kNUNdo9RSdP9F
-X-Received: by 2002:adf:f787:0:b0:20d:8e3:9439 with SMTP id q7-20020adff787000000b0020d08e39439mr4287403wrp.425.1652711366154;
-        Mon, 16 May 2022 07:29:26 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxOdBaBNUTHCqilOtJw2hA4W5ERgnt+B7+iBQ7qcheNxX0qMuNQgLimlPFzsS6jT/aHi03KBQ==
-X-Received: by 2002:adf:f787:0:b0:20d:8e3:9439 with SMTP id q7-20020adff787000000b0020d08e39439mr4287389wrp.425.1652711365897;
-        Mon, 16 May 2022 07:29:25 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id e2-20020adf9bc2000000b0020d069148bcsm4125728wrc.110.2022.05.16.07.29.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 07:29:25 -0700 (PDT)
-Message-ID: <ca1ade8ae0f20695c687580b2e1fbb75bf8a5d4b.camel@redhat.com>
-Subject: Re: UDP receive performance drop since 3.10
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Date:   Mon, 16 May 2022 16:29:24 +0200
-In-Reply-To: <d11a2ce6ed394acd8c6da29d0358f7ce@AcuMS.aculab.com>
-References: <d11a2ce6ed394acd8c6da29d0358f7ce@AcuMS.aculab.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        bh=fVjlG4/dfH2RJ8QOIc+qrGCmgCcjOpZB+KPjtLQbhUo=;
+        b=g7zXCdiW66+ZORh6/+b42qlwXs71YIm78eBo2DkB+6yci0VblhfjN32vYqq5tvyFP+a35V
+        4IQbZk+eZ8m4N7dIzfRZvRcjGflhdk2pzgpwxTPHHTNBIE+W9GZV3Zj3ggNIRkQibkb0ZX
+        yDFspItfCnZ03JfIlqNkkDR8LZU/GbA=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 5E6F32C141;
+        Mon, 16 May 2022 14:33:41 +0000 (UTC)
+Date:   Mon, 16 May 2022 16:33:41 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, coresight@lists.linaro.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, d.hatayama@jp.fujitsu.com,
+        dave.hansen@linux.intel.com, dyoung@redhat.com,
+        feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Alex Elder <elder@kernel.org>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Chris Zankel <chris@zankel.net>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Corey Minyard <minyard@acm.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Helge Deller <deller@gmx.de>,
+        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
+        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
+        James Morse <james.morse@arm.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Matt Turner <mattst88@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Max Filippov <jcmvbkbc@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Richard Weinberger <richard@nod.at>,
+        Robert Richter <rric@kernel.org>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Vasily Gorbik <gor@linux.ibm.com>, Wei Liu <wei.liu@kernel.org>
+Subject: Re: [PATCH 21/30] panic: Introduce the panic pre-reboot notifier list
+Message-ID: <YoJgcC8c6LaKADZV@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-22-gpiccoli@igalia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220427224924.592546-22-gpiccoli@igalia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-05-16 at 12:58 +0000, David Laight wrote:
-> I've noticed a doubling in the cpu cost of udp processing
-> between a RHEL 3.10 kernel and a 5.18-rc6 one.
+On Wed 2022-04-27 19:49:15, Guilherme G. Piccoli wrote:
+> This patch renames the panic_notifier_list to panic_pre_reboot_list;
+> the idea is that a subsequent patch will refactor the panic path
+> in order to better split the notifiers, running some of them very
+> early, some of them not so early [but still before kmsg_dump()] and
+> finally, the rest should execute late, after kdump. The latter ones
+> are now in the panic pre-reboot list - the name comes from the idea
+> that these notifiers execute before panic() attempts rebooting the
+> machine (if that option is set).
 > 
-> This is (probably) all within ip_rcv().
+> We also took the opportunity to clean-up useless header inclusions,
+> improve some notifier block declarations (e.g. in ibmasm/heartbeat.c)
+> and more important, change some priorities - we hereby set 2 notifiers
+> to run late in the list [iss_panic_event() and the IPMI panic_event()]
+> due to the risks they offer (may not return, for example).
+> Proper documentation is going to be provided in a subsequent patch,
+> that effectively refactors the panic path.
 > 
-> I'm testing very high rate UDP receive of RTP audio.
-> (The target is 500000 udp/sec.)
-> I've enable RPS so that ip_rcv() runs on different multiple
-> cpus from the ethernet code.
-> (RSS on the BCM5720 (tg3) doesn't seem to work very well.)
-> 
-> On the 3.10 kernel the 'RPS' cpu show about 5% 'soft int' time.
-> With 5.10 this has doubled to 10% for much the same test.
-> 
-> The ftrace for a single packet shows a lot of extra code.
-> With a RHEL 3.10 kernel the trace is quite short:
-> 
->                  /* netif_receive_skb: dev=em2 skbaddr=ffff99c3ee5ae000 len=200 */
->                  ip_rcv() {
->                    ip_rcv_finish() {
->     0.483 us         udp_v4_early_demux();
->                      ip_route_input_noref() {
->                        ip_route_input_slow() {
->     2.036 us             fib_table_lookup();
->                          fib_validate_source() {
->                            __fib_validate_source.isra.13() {
->     0.646 us                 fib_table_lookup();
->     1.589 us               }
->     2.610 us             }
->     6.820 us           }
->     7.755 us         }
->                      ip_local_deliver() {
->                        ip_local_deliver_finish() {
->     0.250 us             raw_local_deliver();
->                          udp_rcv() {
->                            __udp4_lib_rcv() {
->                              __udp4_lib_lookup() {
->     0.063 us                   compute_score();
->     0.097 us                   compute_score();
->     1.496 us                 }
->                              udp_queue_rcv_skb() {
->                                sk_filter_trim_cap() {
->                                  security_sock_rcv_skb() {
->     0.066 us                       cap_socket_sock_rcv_skb();
->     1.024 us                     }
->     1.836 us                   }
->     0.093 us                   ipv4_pktinfo_prepare();
->                                __udp_enqueue_schedule_skb() {
->     0.066 us                     _raw_spin_lock();
->                                  sock_def_readable() {
->                                    __wake_up_sync_key() {
->                                      __wake_up_common_lock() {
->     0.194 us                           _raw_spin_lock_irqsave();
->                                        __wake_up_common() {
->                                          ep_poll_callback() {
->     0.184 us                               _raw_spin_lock_irqsave();
->     0.084 us                               _raw_spin_unlock_irqrestore();
->     2.009 us                             }
->     3.264 us                           }
->     0.087 us                           _raw_spin_unlock_irqrestore();
->     5.579 us                         }
->     6.311 us                       }
->     7.241 us                     }
->     8.833 us                   }
->   + 12.948 us                }
->   + 16.365 us              }
->   + 17.280 us            }
->   + 19.900 us          }
->   + 20.673 us        }
->   + 31.519 us      }
->   + 32.534 us    }
-> 
-> Whereas 5.18 has a much longer trace:
->                 ip_rcv() {
->    0.668 us       ip_rcv_core();
->                   ip_rcv_finish_core.constprop.0() {
->    1.155 us         udp_v4_early_demux();
->                     ip_route_input_noref() {
->    0.306 us           __rcu_read_lock();
->                       ip_route_input_rcu() {
->                         ip_route_input_slow() {
->                           make_kuid() {
->    0.441 us                 map_id_range_down();
->    1.231 us               }
->    0.307 us               __rcu_read_lock();
->                           fib_table_lookup() {
->    1.268 us                 fib_lookup_good_nhc();
->    2.736 us               }
->    0.307 us               __rcu_read_unlock();
->                           fib_validate_source() {
->                             __fib_validate_source() {
->                               make_kuid() {
->    0.304 us                     map_id_range_down();
->    0.931 us                   }
->    0.304 us                   __rcu_read_lock();
->                               fib_table_lookup() {
->    0.493 us                     fib_lookup_good_nhc();
->    1.405 us                   }
->    0.393 us                   __rcu_read_unlock();
->    0.390 us                   fib_info_nh_uses_dev();
->    5.457 us                 }
->    6.327 us               }
->  + 13.726 us            }
->  + 14.727 us          }
->    0.407 us           __rcu_read_unlock();
->  + 16.673 us        }
->  + 19.389 us      }
->                   ip_local_deliver() {
->                     ip_local_deliver_finish() {
->    0.376 us           __rcu_read_lock();
->                       ip_protocol_deliver_rcu() {
->    0.434 us             raw_local_deliver();
->                         udp_rcv() {
->                           __udp4_lib_rcv() {
->                             __udp4_lib_lookup() {
->    0.326 us                   udp4_lib_lookup2.isra.0();
->    0.928 us                   udp4_lib_lookup2.isra.0();
->    2.413 us                 }
->                             udp_unicast_rcv_skb() {
->                               udp_queue_rcv_skb() {
->                                 udp_queue_rcv_one_skb() {
->                                   sk_filter_trim_cap() {
->    0.440 us                         security_sock_rcv_skb();
->                                     sk_filter_trim_cap.part.0() {
->    0.297 us                           __rcu_read_lock();
->    0.310 us                           __rcu_read_unlock();
->    1.531 us                         }
->    3.277 us                       }
->    0.334 us                       skb_pull_rcsum();
->    0.310 us                       ipv4_pktinfo_prepare();
->                                   __udp_enqueue_schedule_skb() {
->                                     _raw_spin_lock() {
->    0.334 us                           preempt_count_add();
->    0.938 us                         }
->                                     _raw_spin_unlock() {
->    0.303 us                           preempt_count_sub();
->    0.908 us                         }
->                                     sock_def_readable() {
->    0.307 us                           __rcu_read_lock();
->                                       __wake_up_sync_key() {
->                                         __wake_up_common_lock() {
->                                           _raw_spin_lock_irqsave() {
->    0.326 us                                 preempt_count_add();
->    0.951 us                               }
->                                           __wake_up_common() {
->                                             ep_poll_callback() {
->                                               _raw_read_lock_irqsave() {
->    0.330 us                                     preempt_count_add();
->    1.152 us                                   }
->    0.614 us                                   __rcu_read_lock();
->    0.323 us                                   __rcu_read_unlock();
->                                               _raw_read_unlock_irqrestore() {
->    0.380 us                                     preempt_count_sub();
->    0.995 us                                   }
->    5.410 us                                 }
->    6.741 us                               }
->                                           _raw_spin_unlock_irqrestore() {
->    0.317 us                                 preempt_count_sub();
->    1.094 us                               }
->    9.994 us                             }
->  + 10.806 us                          }
->    0.327 us                           __rcu_read_unlock();
->  + 12.809 us                        }
->  + 16.182 us                      }
->  + 22.153 us                    }
->  + 22.769 us                  }
->  + 23.528 us                }
->  + 27.878 us              }
->  + 28.646 us            }
->  + 30.476 us          }
->    0.324 us           __rcu_read_unlock();
->  + 32.398 us        }
->  + 33.168 us      }
->  + 54.976 us    }
-> 
-> Now I know the cost of ftrace is significant (and seems to be
-> higher in 5.18) but there also seems to be a lot more code.
-> As well as the extra rcu locks (which are probably mostly ftrace
-> overhead, a few other things stick out:
-> 
-> 1) The sock_net_uid(net, NULL) calls.
->    These are make_kuid(net->user_ns, 0) - so pretty much constant.
->    They seem to end up in a loop in map_id_range_down_base().
->    All looks expensive in the default network namespace where
->    0 maps to 0.
-> 
-> 2) Extra code in fib_lookup().
-> 
-> 3) A lot more locking in ep_poll_callback().
-> 
-> The 5.18 kernel also seems to have CONFIG_DEBUG_PREEMPT set.
-> I can't find the Kconfig entry for it.
-> It doesn't exist in the old .config at all.
-> So I'm not sure why 'make oldconfig' picked it up.
-> 
-> The other possibility is that the extra code is tick_nohz_idle_exit().
-> The 3.10 trace is from a non-RPS config so I can't compare it.
-> 
-> I'm going to disable CONFIG_DEBUG_PREEMPT to see how much
-> difference it makes.
-> Any idea if any other debug options will have got picked up?
+> --- a/drivers/edac/altera_edac.c
+> +++ b/drivers/edac/altera_edac.c
+> @@ -2163,7 +2162,7 @@ static int altr_edac_a10_probe(struct platform_device *pdev)
+>  		int dberror, err_addr;
+>  
+>  		edac->panic_notifier.notifier_call = s10_edac_dberr_handler;
+> -		atomic_notifier_chain_register(&panic_notifier_list,
+> +		atomic_notifier_chain_register(&panic_pre_reboot_list,
 
-Do you have CONFIG_PREEMPT_DYNAMIC in your config? That was not
-available in 3.10 and apparently it pulls quite a bit of stuff, which
-in the end should be quite measurable. The preempt count alone adds
-~7us to the above sample.
+My understanding is that this notifier first prints info about ECC
+errors and then triggers reboot. It might make sense to split it
+into two notifiers.
 
-Cheers,
 
-Paolo
+>  					       &edac->panic_notifier);
+>  
+>  		/* Printout a message if uncorrectable error previously. */
+> --- a/drivers/leds/trigger/ledtrig-panic.c
+> +++ b/drivers/leds/trigger/ledtrig-panic.c
+> @@ -64,7 +63,7 @@ static long led_panic_blink(int state)
+>  
+>  static int __init ledtrig_panic_init(void)
+>  {
+> -	atomic_notifier_chain_register(&panic_notifier_list,
+> +	atomic_notifier_chain_register(&panic_pre_reboot_list,
+>  				       &led_trigger_panic_nb);
 
+Blinking => should go to the last "post_reboot/loop" list.
+
+
+>  
+>  	led_trigger_register_simple("panic", &trigger);
+> --- a/drivers/misc/ibmasm/heartbeat.c
+> +++ b/drivers/misc/ibmasm/heartbeat.c
+> @@ -32,20 +31,23 @@ static int suspend_heartbeats = 0;
+>  static int panic_happened(struct notifier_block *n, unsigned long val, void *v)
+>  {
+>  	suspend_heartbeats = 1;
+> -	return 0;
+> +	return NOTIFY_DONE;
+>  }
+>  
+> -static struct notifier_block panic_notifier = { panic_happened, NULL, 1 };
+> +static struct notifier_block panic_notifier = {
+> +	.notifier_call = panic_happened,
+> +};
+>  
+>  void ibmasm_register_panic_notifier(void)
+>  {
+> -	atomic_notifier_chain_register(&panic_notifier_list, &panic_notifier);
+> +	atomic_notifier_chain_register(&panic_pre_reboot_list,
+> +					&panic_notifier);
+
+Same here. Blinking => should go to the last "post_reboot/loop" list.
+
+
+>  }
+>  
+>  void ibmasm_unregister_panic_notifier(void)
+>  {
+> -	atomic_notifier_chain_unregister(&panic_notifier_list,
+> -			&panic_notifier);
+> +	atomic_notifier_chain_unregister(&panic_pre_reboot_list,
+> +					&panic_notifier);
+>  }
+
+
+The rest of the moved notifiers seem to fit well this "pre_reboot"
+list.
+
+Best Regards,
+Petr
