@@ -2,68 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 513CB527E89
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 09:27:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F30A1527EFE
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 09:59:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240989AbiEPH1X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 03:27:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41456 "EHLO
+        id S241392AbiEPH6v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 03:58:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231971AbiEPH1W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 03:27:22 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229D81CFD9;
-        Mon, 16 May 2022 00:27:22 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id l11so13283048pgt.13;
-        Mon, 16 May 2022 00:27:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=u+W9UG3urbjXC8PxMREWcyEMwSpmJo1lO2QpcyV4GJA=;
-        b=bUwN9FJ1tvzObWLZhKZyhk05Mv5aWPx7Rrz2U3JzJD76QnZ8VASQCrcA/uYYSFFB/G
-         HAu4eS2x0W6htIcEeFH4z07Tnraij70WIWPR/EvZ3QlD7HtOicNZATmG6AJRfROPhT9L
-         m2kJPRwPG9ElapEjIhV9ZX+P2aO/YByO1GEArt4FCLEaE3h6O9N9+eEKkXBMTWLoVKYQ
-         KwH31w/JJRLFDCHcU+zIkPEADzytK9ginM/OaeELkOzKicFgLBfkR12sssPVL+1g7u3g
-         5LncGuzkPAo3TBEWPC04mLGC7bKhdwM+uaXbngNyxPIu58UQfsMBtzihiFv2sTY3pYTw
-         jhxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=u+W9UG3urbjXC8PxMREWcyEMwSpmJo1lO2QpcyV4GJA=;
-        b=tahHv2rh+yTq5FasMtWHxMO/6Ut4ioOYcp0HM6MCGT+1xBv0Yk3BFEL0jdkdIsiEbP
-         ODjBhc3rQwuI9tHMEIVPAvRi1e0HE9SzWeZMl95R/tPDb2IYYfCcUrs5IEwYMkt9N4wz
-         CttPOgzIo0JoTCy5RPLTLOKjEC++1LihehLpM2nmwOOJs1DklDC5PCGyfWB8K/Y3NxaC
-         Jm4LRWLtg18140v6p2Qq0fzVR2/g1t1Iw5sPKH5TtSWRzSq0lwGoaC5PCY7E15ThU+u4
-         SIe9CAxrVaF8zTUWj7Zf3jTFclDUjxCdBmZYNBFyvxAc9NiBV7rSuFDAMJu68T9q7K/3
-         zh/Q==
-X-Gm-Message-State: AOAM533EPOzmtyuCdrAoDlYJHz0sIH7clb/diKdvpPv8IQPkUs3uWVim
-        Cw9fsuHQkZc81OkAMZNH8BM=
-X-Google-Smtp-Source: ABdhPJwDFhCAO1aZWNa+FCSEiVvYi70Z0JfWXHcUmqy1lHX0hkU2Hxy5x90O+JKL8MQDfHzVZrqYDA==
-X-Received: by 2002:a63:1519:0:b0:3f2:5439:b0fc with SMTP id v25-20020a631519000000b003f25439b0fcmr6614341pgl.52.1652686041726;
-        Mon, 16 May 2022 00:27:21 -0700 (PDT)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id o15-20020a170902d4cf00b0015e8d4eb27csm6331750plg.198.2022.05.16.00.27.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 00:27:21 -0700 (PDT)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     jesse.brandeburg@intel.com
-Cc:     anthony.l.nguyen@intel.com, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] i40e: Remove unnecessary synchronize_irq() before free_irq()
-Date:   Mon, 16 May 2022 07:27:17 +0000
-Message-Id: <20220516072717.1651178-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S232688AbiEPH6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 03:58:44 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 653D22AC4F;
+        Mon, 16 May 2022 00:58:41 -0700 (PDT)
+Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L1s2L3zc3zCskB;
+        Mon, 16 May 2022 15:53:46 +0800 (CST)
+Received: from [10.67.111.192] (10.67.111.192) by
+ kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 16 May 2022 15:58:38 +0800
+Message-ID: <06b33393-8af5-9faa-6faa-acb5111865f6@huawei.com>
+Date:   Mon, 16 May 2022 15:58:37 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH bpf-next v3 4/7] bpf, arm64: Impelment
+ bpf_arch_text_poke() for arm64
+Content-Language: en-US
+To:     Mark Rutland <mark.rutland@arm.com>
+CC:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kselftest@vger.kernel.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
+        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+References: <20220424154028.1698685-1-xukuohai@huawei.com>
+ <20220424154028.1698685-5-xukuohai@huawei.com> <Yn5yb9F4uYkio4Xe@lakrids>
+ <264ecbe1-4514-d6c8-182b-3af4babb457e@huawei.com>
+ <YoH6yAtmzPQtWiFM@FVFF77S0Q05N>
+From:   Xu Kuohai <xukuohai@huawei.com>
+In-Reply-To: <YoH6yAtmzPQtWiFM@FVFF77S0Q05N>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.67.111.192]
+X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
+ kwepemi500013.china.huawei.com (7.221.188.120)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.8 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,40 +85,150 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+On 5/16/2022 3:18 PM, Mark Rutland wrote:
+> On Mon, May 16, 2022 at 02:55:46PM +0800, Xu Kuohai wrote:
+>> On 5/13/2022 10:59 PM, Mark Rutland wrote:
+>>> On Sun, Apr 24, 2022 at 11:40:25AM -0400, Xu Kuohai wrote:
+>>>> Impelment bpf_arch_text_poke() for arm64, so bpf trampoline code can use
+>>>> it to replace nop with jump, or replace jump with nop.
+>>>>
+>>>> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+>>>> Acked-by: Song Liu <songliubraving@fb.com>
+>>>> ---
+>>>>  arch/arm64/net/bpf_jit_comp.c | 63 +++++++++++++++++++++++++++++++++++
+>>>>  1 file changed, 63 insertions(+)
+>>>>
+>>>> diff --git a/arch/arm64/net/bpf_jit_comp.c b/arch/arm64/net/bpf_jit_comp.c
+>>>> index 8ab4035dea27..3f9bdfec54c4 100644
+>>>> --- a/arch/arm64/net/bpf_jit_comp.c
+>>>> +++ b/arch/arm64/net/bpf_jit_comp.c
+>>>> @@ -9,6 +9,7 @@
+>>>>  
+>>>>  #include <linux/bitfield.h>
+>>>>  #include <linux/bpf.h>
+>>>> +#include <linux/memory.h>
+>>>>  #include <linux/filter.h>
+>>>>  #include <linux/printk.h>
+>>>>  #include <linux/slab.h>
+>>>> @@ -18,6 +19,7 @@
+>>>>  #include <asm/cacheflush.h>
+>>>>  #include <asm/debug-monitors.h>
+>>>>  #include <asm/insn.h>
+>>>> +#include <asm/patching.h>
+>>>>  #include <asm/set_memory.h>
+>>>>  
+>>>>  #include "bpf_jit.h"
+>>>> @@ -1529,3 +1531,64 @@ void bpf_jit_free_exec(void *addr)
+>>>>  {
+>>>>  	return vfree(addr);
+>>>>  }
+>>>> +
+>>>> +static int gen_branch_or_nop(enum aarch64_insn_branch_type type, void *ip,
+>>>> +			     void *addr, u32 *insn)
+>>>> +{
+>>>> +	if (!addr)
+>>>> +		*insn = aarch64_insn_gen_nop();
+>>>> +	else
+>>>> +		*insn = aarch64_insn_gen_branch_imm((unsigned long)ip,
+>>>> +						    (unsigned long)addr,
+>>>> +						    type);
+>>>> +
+>>>> +	return *insn != AARCH64_BREAK_FAULT ? 0 : -EFAULT;
+>>>> +}
+>>>> +
+>>>> +int bpf_arch_text_poke(void *ip, enum bpf_text_poke_type poke_type,
+>>>> +		       void *old_addr, void *new_addr)
+>>>> +{
+>>>> +	int ret;
+>>>> +	u32 old_insn;
+>>>> +	u32 new_insn;
+>>>> +	u32 replaced;
+>>>> +	enum aarch64_insn_branch_type branch_type;
+>>>> +
+>>>> +	if (!is_bpf_text_address((long)ip))
+>>>> +		/* Only poking bpf text is supported. Since kernel function
+>>>> +		 * entry is set up by ftrace, we reply on ftrace to poke kernel
+>>>> +		 * functions. For kernel funcitons, bpf_arch_text_poke() is only
+>>>> +		 * called after a failed poke with ftrace. In this case, there
+>>>> +		 * is probably something wrong with fentry, so there is nothing
+>>>> +		 * we can do here. See register_fentry, unregister_fentry and
+>>>> +		 * modify_fentry for details.
+>>>> +		 */
+>>>> +		return -EINVAL;
+>>>
+>>> If you rely on ftrace to poke functions, why do you need to patch text
+>>> at all? Why does the rest of this function exist?
+>>>
+>>> I really don't like having another piece of code outside of ftrace
+>>> patching the ftrace patch-site; this needs a much better explanation.
+>>>
+>>
+>> Sorry for the incorrect explaination in the comment. I don't think it's
+>> reasonable to patch ftrace patch-site without ftrace code either.
+>>
+>> The patching logic in register_fentry, unregister_fentry and
+>> modify_fentry is as follows:
+>>
+>> if (tr->func.ftrace_managed)
+>>         ret = register_ftrace_direct((long)ip, (long)new_addr);
+>> else
+>>         ret = bpf_arch_text_poke(ip, BPF_MOD_CALL, NULL, new_addr,
+>>                                  true);
+>>
+>> ftrace patch-site is patched by ftrace code. bpf_arch_text_poke() is
+>> only used to patch bpf prog and bpf trampoline, which are not managed by
+>> ftrace.
+> 
+> Sorry, I had misunderstood. Thanks for the correction!
+> 
+> I'll have another look with that in mind.
+>>>>> +
+>>>> +	if (poke_type == BPF_MOD_CALL)
+>>>> +		branch_type = AARCH64_INSN_BRANCH_LINK;
+>>>> +	else
+>>>> +		branch_type = AARCH64_INSN_BRANCH_NOLINK;
+>>>> +
+>>>> +	if (gen_branch_or_nop(branch_type, ip, old_addr, &old_insn) < 0)
+>>>> +		return -EFAULT;
+>>>> +
+>>>> +	if (gen_branch_or_nop(branch_type, ip, new_addr, &new_insn) < 0)
+>>>> +		return -EFAULT;
+>>>> +
+>>>> +	mutex_lock(&text_mutex);
+>>>> +	if (aarch64_insn_read(ip, &replaced)) {
+>>>> +		ret = -EFAULT;
+>>>> +		goto out;
+>>>> +	}
+>>>> +
+>>>> +	if (replaced != old_insn) {
+>>>> +		ret = -EFAULT;
+>>>> +		goto out;
+>>>> +	}
+>>>> +
+>>>> +	ret = aarch64_insn_patch_text_nosync((void *)ip, new_insn);
+>>>
+>>> ... and where does the actual synchronization come from in this case?
+>>
+>> aarch64_insn_patch_text_nosync() replaces an instruction atomically, so
+>> no other CPUs will fetch a half-new and half-old instruction.
+>>
+>> The scenario here is that there is a chance that another CPU fetches the
+>> old instruction after bpf_arch_text_poke() finishes, that is, different
+>> CPUs may execute different versions of instructions at the same time.
+>>
+>> 1. When a new trampoline is attached, it doesn't seem to be an issue for
+>> different CPUs to jump to different trampolines temporarily.
+>>
+>> 2. When an old trampoline is freed, we should wait for all other CPUs to
+>> exit the trampoline and make sure the trampoline is no longer reachable,
+>> IIUC, bpf_tramp_image_put() function already uses percpu_ref and rcu
+>> tasks to do this.
+> 
+> It would be good to have a comment for these points>
 
-Calling synchronize_irq() right before free_irq() is quite useless. On one
-hand the IRQ can easily fire again before free_irq() is entered, on the
-other hand free_irq() itself calls synchronize_irq() internally (in a race
-condition free way), before any state associated with the IRQ is freed.
+will add a comment for this in v4, thanks!
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
----
- drivers/net/ethernet/intel/i40e/i40e_main.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 332a608dbaa6..2b654a53a3f0 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -4037,7 +4037,6 @@ static void i40e_free_misc_vector(struct i40e_pf *pf)
- 	i40e_flush(&pf->hw);
- 
- 	if (pf->flags & I40E_FLAG_MSIX_ENABLED && pf->msix_entries) {
--		synchronize_irq(pf->msix_entries[0].vector);
- 		free_irq(pf->msix_entries[0].vector, pf);
- 		clear_bit(__I40E_MISC_IRQ_REQUESTED, pf->state);
- 	}
-@@ -4776,7 +4775,6 @@ static void i40e_vsi_free_irq(struct i40e_vsi *vsi)
- 			irq_set_affinity_notifier(irq_num, NULL);
- 			/* remove our suggested affinity mask for this IRQ */
- 			irq_update_affinity_hint(irq_num, NULL);
--			synchronize_irq(irq_num);
- 			free_irq(irq_num, vsi->q_vectors[i]);
- 
- 			/* Tear down the interrupt queue link list
--- 
-2.25.1
-
+> Thanks,
+> Mark.
+> .
 
