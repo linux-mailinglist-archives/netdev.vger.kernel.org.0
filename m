@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 416755293BC
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 00:45:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 814B65293BF
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 00:47:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346673AbiEPWpa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 18:45:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46024 "EHLO
+        id S1347829AbiEPWrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 18:47:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52954 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345766AbiEPWp2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 18:45:28 -0400
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1DF23EF12;
-        Mon, 16 May 2022 15:45:26 -0700 (PDT)
-Received: by mail-io1-xd35.google.com with SMTP id s23so17550281iog.13;
-        Mon, 16 May 2022 15:45:26 -0700 (PDT)
+        with ESMTP id S240965AbiEPWrq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 18:47:46 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A00EC40E52;
+        Mon, 16 May 2022 15:47:45 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id m6so17618847iob.4;
+        Mon, 16 May 2022 15:47:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=9E7RpF3kV6uZXouTfZrM1fmjZpic/OFFP4Rr3o2bqnA=;
-        b=LPzyDwK1mHDDhjjzL6eMFYzavfB/+fZqNoysv+PK+BKBqU1s9j6pVjsIslmdAO88fW
-         rxzsz4AjZmwzgp9HAIfj5hopHnLycaTWqL2S8kG0quEcq35z5b8Gb2uQwyUxHnQPEDiY
-         wyU+A3WmFFkJbSxSM1g+jzBCc/A0ms8mGu2wQAIZYImZZh/AKDQYGHKzwWj2GW/BUQl9
-         95s2G5fN8DBb1VcIDYaW9xeXvDlkaHmVSGV8uuxxgDR6AZX0m0XBzjSXf98r2UyKOxKZ
-         OcJltAsd9tAn6kwbQYic2BZUOGWHJJPMPx5xUxHkzzTxqWO5foj1MBWpiHYvqrg+T2fq
-         7bGA==
+        bh=iXCsccIRv/oRQ4k5XyZPds/zrCr9HYqlNJkf3+MT3ZU=;
+        b=knKjM4jo64KbuqHxsCnj3gpGu9VJneQCaN/SMPJVzUdVIFcgWg83759h0w0wdNO+3B
+         U0ZgDckE0iPZK33pREqfzhWhxcrn4DtQM0y5f+Xsn6aDDXBP8alnnVeNB3rXlMeOT8vu
+         l0fFvEcDHo82KCMnXpGfh5ebaoGHRrn6cCsYDuJyutcq0QCIgaGbFXaCjxdqz/ynpZqf
+         ECZ7fRLV9JcdM50DsAmFeXE3LxGLXyxEDKW8ZyVcAA+B3RgSfSLf9qBMdvky4PaFwILW
+         E9sXd5flvwfaGCyVQpdOtxIKwPPR3EIlqHj6NV4widqVc0GMC9dRF3tfjbc0/1gzklgx
+         nv7A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=9E7RpF3kV6uZXouTfZrM1fmjZpic/OFFP4Rr3o2bqnA=;
-        b=rcRMfi+Vdbdf/pWB6CS2hadz1MiXyTuA7fli76aUPzroY9jLnD1UeXckH7pAkFL1+U
-         gvviofGHk1dZuYCTfRGjspBd3RJltCQ1bcPDENU5Np0h2vf95jeBGkc7Z/7pgolWxDb2
-         Ozc5/xtFmKPK2vRXzdlKSHcHBU9bzX1Nkzz2fVXgbuy0gUIUT7ugXuz2yQNZzSZpZJox
-         7D5Y6GOXPGh4EmNopr9Ty5UELsXqKN7NjtoGu8lcgp31oDicrZaHU9T2MD0wgtWVk6xg
-         ATjQrkQiD60jwQMHDSJ1wllI3VfTcSmld7v2wRT1B5YJ50USEeZOQFIISOInXXE5yoqj
-         ATug==
-X-Gm-Message-State: AOAM533glyJPnIVhhfu2kxdzD+am82qtmXdnH5Pe8f2Q4Hzhc8BNPJfi
-        oJBX3wbcjNDN6QpV7Xmrp/lo7ejY42VqYHk4r70=
-X-Google-Smtp-Source: ABdhPJw7Fg0ClVP+XC5GPYevvUVOxVKp0UvEXx/7+mToohzRfuFsiF+HjkMYUgcNp8fngXAb8ZOVnj44mK2FXEsEQiE=
-X-Received: by 2002:a5e:8e42:0:b0:657:bc82:64e5 with SMTP id
- r2-20020a5e8e42000000b00657bc8264e5mr8838937ioo.112.1652741126084; Mon, 16
- May 2022 15:45:26 -0700 (PDT)
+        bh=iXCsccIRv/oRQ4k5XyZPds/zrCr9HYqlNJkf3+MT3ZU=;
+        b=R6N/xkIqMyXKWTVx6TwHEhSll1MDmZMy2UxJrItKtvKqjBK0PhG7LROoHiyDw4yJFL
+         GYlyTt+a4hlJMMvY1/T1Cy6wGj1npoFjKNUoO2/C5dWrydyodrDkMrGZuMmDcUZ8IdZM
+         9/sCTsfIeXJdX4yy/F3u7z2edCTINhk2KhXCLw0H/UjQ+pTpd0t+IPBcZfyOFElXTRiC
+         nvudDOkLJmQIecyrF47EbJDfrvCfo0s60ODuqoJzT0kQPjZsnyUvZ8fazLN+82FtasP9
+         wx4Ago/VSG16YbREyjfxdKs/UW/cqn+8fdnwRmOY4fwm6aijGSHSMwgKpXabzDauXrvf
+         Dg+w==
+X-Gm-Message-State: AOAM531zs1NgT5Pd6Pcvq8g4fwKZ4SL1TBigUJJxsZNiS9rJMKxWH1df
+        qK2TXAgMnce4OiK2uHQUXf6py73p05vEDUGw8Yo=
+X-Google-Smtp-Source: ABdhPJzXurvnQTVLbZLmRa1uP13vbh/prUlGz7ViD6y8C0tp2etwbsn1aznZEMOq6h06dLG0px8JjzIx9JhL0kBP7qA=
+X-Received: by 2002:a05:6638:468e:b0:32b:fe5f:d73f with SMTP id
+ bq14-20020a056638468e00b0032bfe5fd73fmr10707056jab.234.1652741265081; Mon, 16
+ May 2022 15:47:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220513224827.662254-1-mathew.j.martineau@linux.intel.com> <20220513224827.662254-6-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20220513224827.662254-6-mathew.j.martineau@linux.intel.com>
+References: <20220513224827.662254-1-mathew.j.martineau@linux.intel.com> <20220513224827.662254-5-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20220513224827.662254-5-mathew.j.martineau@linux.intel.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 16 May 2022 15:45:15 -0700
-Message-ID: <CAEf4BzbsK9C1=h=7s25Ezh8HFo7=+vA1XSuLjbQA2Bi16W4kvg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 5/7] selftests/bpf: verify token of struct mptcp_sock
+Date:   Mon, 16 May 2022 15:47:34 -0700
+Message-ID: <CAEf4BzaMz=CR5H=_BXgQ8UfDC6mDawgNbGb5XyYBOBqkkS83Hg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 4/7] selftests/bpf: test bpf_skc_to_mptcp_sock
 To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Geliang Tang <geliang.tang@suse.com>,
@@ -74,78 +74,65 @@ On Fri, May 13, 2022 at 3:48 PM Mat Martineau
 >
 > From: Geliang Tang <geliang.tang@suse.com>
 >
-> This patch verifies the struct member token of struct mptcp_sock. Add a
-> new function get_msk_token() to parse the msk token from the output of
-> the command 'ip mptcp monitor', and verify it in verify_msk().
+> This patch extends the MPTCP test base, to test the new helper
+> bpf_skc_to_mptcp_sock().
 >
+> Define struct mptcp_sock in bpf_tcp_helpers.h, use bpf_skc_to_mptcp_sock
+> to get the msk socket in progs/mptcp_sock.c and store the infos in
+> socket_storage_map.
+>
+> Get the infos from socket_storage_map in prog_tests/mptcp.c. Add a new
+> function verify_msk() to verify the infos of MPTCP socket, and rename
+> verify_sk() to verify_tsk() to verify TCP socket only.
+>
+> v2: Add CONFIG_MPTCP check for clearer error messages
 > v4:
 >  - use ASSERT_* instead of CHECK_FAIL (Andrii)
->  - skip the test if 'ip mptcp monitor' is not supported (Mat)
+>  - drop bpf_mptcp_helpers.h (Andrii)
 >
 > Acked-by: Matthieu Baerts <matthieu.baerts@tessares.net>
 > Signed-off-by: Geliang Tang <geliang.tang@suse.com>
 > Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
 > ---
->  tools/testing/selftests/bpf/bpf_tcp_helpers.h |  1 +
->  .../testing/selftests/bpf/prog_tests/mptcp.c  | 64 +++++++++++++++++++
->  .../testing/selftests/bpf/progs/mptcp_sock.c  |  5 ++
->  3 files changed, 70 insertions(+)
+>  tools/testing/selftests/bpf/bpf_tcp_helpers.h |  5 +++
+>  .../testing/selftests/bpf/prog_tests/mptcp.c  | 45 ++++++++++++++-----
+>  .../testing/selftests/bpf/progs/mptcp_sock.c  | 23 ++++++++--
+>  3 files changed, 58 insertions(+), 15 deletions(-)
 >
 
 [...]
 
-> +       fd = open(monitor_log_path, O_RDONLY);
-> +       if (!ASSERT_GE(fd, 0, "Failed to open monitor_log_path"))
-> +               return token;
+> +static int verify_msk(int map_fd, int client_fd)
+> +{
+> +       char *msg = "MPTCP subflow socket";
+> +       int err, cfd = client_fd;
+> +       struct mptcp_storage val;
 > +
-> +       len = read(fd, buf, sizeof(buf));
-> +       if (!ASSERT_GT(len, 0, "Failed to read monitor_log_path"))
-> +               goto err;
+> +       err = bpf_map_lookup_elem(map_fd, &cfd, &val);
+> +       if (!ASSERT_OK(err, "bpf_map_lookup_elem"))
+> +               return err;
 > +
-> +       if (strncmp(buf, prefix, strlen(prefix))) {
-
-ASSERT_STRNEQ ?
-
-> +               log_err("Invalid prefix %s", buf);
-> +               goto err;
-> +       }
-> +
-> +       token = strtol(buf + strlen(prefix), NULL, 16);
-> +
-> +err:
-> +       close(fd);
-> +       return token;
-> +}
-> +
->  static int verify_msk(int map_fd, int client_fd)
->  {
->         char *msg = "MPTCP subflow socket";
->         int err, cfd = client_fd;
->         struct mptcp_storage val;
-> +       __u32 token;
-> +
-> +       token = get_msk_token();
-> +       if (!ASSERT_GT(token, 0, "Unexpected token"))
-> +               return -1;
->
->         err = bpf_map_lookup_elem(map_fd, &cfd, &val);
->         if (!ASSERT_OK(err, "bpf_map_lookup_elem"))
-> @@ -58,6 +102,12 @@ static int verify_msk(int map_fd, int client_fd)
->                 err++;
->         }
->
-> +       if (val.token != token) {
-
-
-ASSERT_NEQ
-
-> +               log_err("Unexpected mptcp_sock.token %x != %x",
-> +                       val.token, token);
+> +       if (val.invoked != 1) {
+> +               log_err("%s: unexpected invoked count %d != 1",
+> +                       msg, val.invoked);
 > +               err++;
 > +       }
 > +
->         return err;
->  }
->
+> +       if (val.is_mptcp != 1) {
+> +               log_err("%s: unexpected bpf_tcp_sock.is_mptcp %d != 1",
+> +                       msg, val.is_mptcp);
+> +               err++;
+> +       }
+
+any reason to not use ASSERT_NEQ ?
+
+
+> +
+> +       return err;
+> +}
+> +
+>  static int run_test(int cgroup_fd, int server_fd, bool is_mptcp)
+>  {
+>         int client_fd, prog_fd, map_fd, err;
 
 [...]
