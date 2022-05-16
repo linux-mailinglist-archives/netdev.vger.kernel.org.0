@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68B91527C82
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 05:47:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5405527C80
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 05:47:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239893AbiEPDqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 23:46:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
+        id S239769AbiEPDqs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 23:46:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239802AbiEPDqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 23:46:17 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BC235A9A;
-        Sun, 15 May 2022 20:45:59 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id c11so13244914plg.13;
-        Sun, 15 May 2022 20:45:59 -0700 (PDT)
+        with ESMTP id S239815AbiEPDqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 23:46:40 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3387D35DCE;
+        Sun, 15 May 2022 20:46:03 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so13133297pjq.2;
+        Sun, 15 May 2022 20:46:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0SkwE7BtienOsXtLAXbao8++DFmn5xtmncAv1lNe8cg=;
-        b=lsfQB/F6AiLdnC1aTrNIp+6yqA/uNJDY9QOqivFXaR25FXpTbkqVtTYk6s29Tjv6HJ
-         7vN3FoIPN9U1LqY7p8V7azfTdu6YbNJem1F9c7huIaaaDKaAdxH1LQHJ84FL8q+3Rx6B
-         TeQl8W+L8z9U256+F0IcvG56weBZvCL5XswBC9OZi0ebfR+jRjU1fRnKfxgqzQtu9L/X
-         kZIQP4x5ibVb+p+F+ZMeVeHJlukrfp8F4bdfSrS3z4oTUJmaaw9eiJe/vFvBnxoyI2vu
-         AYyWsn7l+QcRNbM9N2QKD12KhlNjBhfwHu9I1HL1XYTyTd4CV8wkIaWeuiVy+XREL8bl
-         I8NQ==
+        bh=gJWrE+ScdUB+FGwXMcStVdPkZQiEkenelJsjAXFavM0=;
+        b=g+A1Bb523cKPVseEUEjtqS1T4U9SPczhD8xk5Hxh8jbD515jXjiCShOzCQOHbC9dcC
+         vuwRXKFviF/xF0Z+t2KZnWgofdJEpx+Z8U5wVtsDaTcHrtAdx39gwUDmdZxUfobXWVTA
+         eH3dulevHIy1rEdtc/OBevRkSGNcih/DbYl0f9baomSrhzxQc2S+v/9/joyIXOydJbDL
+         FwEAhfrhr7efSIF8kl0zuOD9nC+h2ziCHS8dfzqzptzjCd5rreu3061h0rNrt7CNozop
+         wGD/NEbCoTy5WdFPsCmfJi6XFilD0jm5eIaU85qraGtB79vvvDUr2YH1M5wYMN5I9oym
+         BBJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0SkwE7BtienOsXtLAXbao8++DFmn5xtmncAv1lNe8cg=;
-        b=BDKVhQaXVj9ekn0QEPgxg1ku0B2WFsDq++/gms1j4N2KEBOT9rN1ixFg6z/oZow3/c
-         m/VK9iSokkuWv8iC0rL42fg5jyP7hvwjYTOyp7JMg2AlKNaOqtmSkfIY8aQexwheXvYh
-         ONvA31gJhVrEv9e1A/a9fl6N+EuXtNKabTRN0t2jzcl2oyI7kLjROlK/zwewoxEYGDsl
-         TapDdsiACY00JZ5TsyXGLkhSBt+hWh0PhtG4M29yH3JNDNhdH/9zIrNmetteoRyO39MT
-         L2MemYyhEVPRs8lJ1mTn9Q5vatQRPuoyz78E72FDMhgwR9fqL9K8P/W1c+LyXphCgl5D
-         hAsg==
-X-Gm-Message-State: AOAM532W9AG6TpV+RUDjSHeXziEpQF9NFICDU4L1UeXfgNEvhf+DmBd6
-        b/xnJMSPW63foUAxSNJNPfw=
-X-Google-Smtp-Source: ABdhPJxucF+5S8I8GvShfpRmYqehs4xjYg69XWU2Rjh7JfGWWVOlk0RJseCZLPFe8mVIv0bkupUgWA==
-X-Received: by 2002:a17:90b:3b8d:b0:1dc:7637:91c3 with SMTP id pc13-20020a17090b3b8d00b001dc763791c3mr28328121pjb.186.1652672758913;
-        Sun, 15 May 2022 20:45:58 -0700 (PDT)
+        bh=gJWrE+ScdUB+FGwXMcStVdPkZQiEkenelJsjAXFavM0=;
+        b=dtdCBmzQvgG/UknHQrokCyz9KJTMqnULPLVqGkpJM/YGuwI7c8iMYh6GHrmAqmnYvG
+         rHZFtdQdQz68xssmgZiIFGfWyS8fFF2zbUbI2HLzZFCv68xcfKH8PEiKYlxD6EErtOyX
+         nmwQ8o7IC46KyVtW+zTqF3x0AWevZ+a5lCY+OxdMYntIHEiO3PRaUXSeiAh0rOiCU+S1
+         4JVdoY3VR3K96tu7ANcsDueQRJY8VAAh+VNRwSK3oEgzA/aFaPyMAd11bWkp4M5W6DEZ
+         gpxZ9CZrOaVNjj0A0HMOjpTx1++Ol2T2PVuFUSjDBv/540WOgdrHlOD4+B/WJbJ1oaUj
+         cxyw==
+X-Gm-Message-State: AOAM53232WsTBcFxrE2xRuuuy5Qju6tJd963OlvY3xqNHpsUwNXaBjKu
+        +ijyu/7aGqeE876PTnnP7hOY+FFE5IBIXQ==
+X-Google-Smtp-Source: ABdhPJwiRuLEmw1ovw2SC1NcLIdkxwuAr4HQY9Jgaqdf6KgU4oPVQD9QuhhuMqbAcH2byV5zGTMo7g==
+X-Received: by 2002:a17:90b:4cc7:b0:1dc:18c5:adb2 with SMTP id nd7-20020a17090b4cc700b001dc18c5adb2mr17116319pjb.121.1652672762769;
+        Sun, 15 May 2022 20:46:02 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.24])
-        by smtp.gmail.com with ESMTPSA id x184-20020a6286c1000000b0050dc762819bsm5636854pfd.117.2022.05.15.20.45.55
+        by smtp.gmail.com with ESMTPSA id x184-20020a6286c1000000b0050dc762819bsm5636854pfd.117.2022.05.15.20.45.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 May 2022 20:45:58 -0700 (PDT)
+        Sun, 15 May 2022 20:46:02 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     edumazet@google.com
@@ -56,9 +56,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         talalahmad@google.com, keescook@chromium.org,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH net-next 5/9] net: tcp: make tcp_rcv_synsent_state_process() return drop reasons
-Date:   Mon, 16 May 2022 11:45:15 +0800
-Message-Id: <20220516034519.184876-6-imagedong@tencent.com>
+Subject: [PATCH net-next 6/9] net: tcp: make tcp_rcv_state_process() return drop reason
+Date:   Mon, 16 May 2022 11:45:16 +0800
+Message-Id: <20220516034519.184876-7-imagedong@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516034519.184876-1-imagedong@tencent.com>
 References: <20220516034519.184876-1-imagedong@tencent.com>
@@ -76,68 +76,286 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-The return value of tcp_rcv_synsent_state_process() can be -1, 0 or 1:
+For now, the return value of tcp_rcv_state_process() is treated as bool.
+Therefore, we can make it return the reasons of the skb drops.
 
-- -1: free skb silently
-- 0: success and skb is already freed
-- 1: drop packet and send a RST
-
-Therefore, we can make it return skb drop reasons on 'reset_and_undo'
-path, which will not impact the caller.
-
-The new reason 'TCP_PAWSACTIVEREJECTED' is added, which is corresponding
-to LINUX_MIB_PAWSACTIVEREJECTED.
+Meanwhile, the return value of tcp_child_process() comes from
+tcp_rcv_state_process(), make it drop reasons by the way.
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/linux/skbuff.h | 1 +
- net/ipv4/tcp_input.c   | 7 ++++++-
- 2 files changed, 7 insertions(+), 1 deletion(-)
+ include/linux/skbuff.h   |  1 +
+ include/net/tcp.h        |  8 +++++---
+ net/ipv4/tcp_input.c     | 22 +++++++++++-----------
+ net/ipv4/tcp_ipv4.c      | 20 +++++++++++++-------
+ net/ipv4/tcp_minisocks.c | 11 ++++++-----
+ net/ipv6/tcp_ipv6.c      | 19 ++++++++++++-------
+ 6 files changed, 48 insertions(+), 33 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 3c7b1e9aabbb..36e0971f4cc9 100644
+index 36e0971f4cc9..736899cc6a13 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -619,6 +619,7 @@ struct sk_buff;
- 	FN(IP_INNOROUTES)		\
+@@ -620,6 +620,7 @@ struct sk_buff;
  	FN(PKT_TOO_BIG)			\
  	FN(SOCKET_DESTROYED)		\
-+	FN(TCP_PAWSACTIVEREJECTED)	\
+ 	FN(TCP_PAWSACTIVEREJECTED)	\
++	FN(TCP_ABORTONDATA)		\
  	FN(MAX)
  
  /* The reason of skb drop, which is used in kfree_skb_reason().
+diff --git a/include/net/tcp.h b/include/net/tcp.h
+index 1e99f5c61f84..ea0eb2d4a743 100644
+--- a/include/net/tcp.h
++++ b/include/net/tcp.h
+@@ -339,7 +339,8 @@ void tcp_wfree(struct sk_buff *skb);
+ void tcp_write_timer_handler(struct sock *sk);
+ void tcp_delack_timer_handler(struct sock *sk);
+ int tcp_ioctl(struct sock *sk, int cmd, unsigned long arg);
+-int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb);
++enum skb_drop_reason tcp_rcv_state_process(struct sock *sk,
++					   struct sk_buff *skb);
+ void tcp_rcv_established(struct sock *sk, struct sk_buff *skb);
+ void tcp_rcv_space_adjust(struct sock *sk);
+ int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp);
+@@ -385,8 +386,9 @@ enum tcp_tw_status tcp_timewait_state_process(struct inet_timewait_sock *tw,
+ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
+ 			   struct request_sock *req, bool fastopen,
+ 			   bool *lost_race);
+-int tcp_child_process(struct sock *parent, struct sock *child,
+-		      struct sk_buff *skb);
++enum skb_drop_reason tcp_child_process(struct sock *parent,
++				       struct sock *child,
++				       struct sk_buff *skb);
+ void tcp_enter_loss(struct sock *sk);
+ void tcp_cwnd_reduction(struct sock *sk, int newly_acked_sacked, int newly_lost, int flag);
+ void tcp_clear_retrans(struct tcp_sock *tp);
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index 97cfcd85f84e..e8d26a68bc45 100644
+index e8d26a68bc45..4717af0eaea7 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -6174,6 +6174,10 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 				inet_csk_reset_xmit_timer(sk,
- 						ICSK_TIME_RETRANS,
- 						TCP_TIMEOUT_MIN, TCP_RTO_MAX);
-+			if (after(TCP_SKB_CB(skb)->ack_seq, tp->snd_nxt))
-+				SKB_DR_SET(reason, TCP_ACK_UNSENT_DATA);
-+			else
-+				SKB_DR_SET(reason, TCP_TOO_OLD_ACK);
- 			goto reset_and_undo;
+@@ -6422,7 +6422,7 @@ static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
+  *	address independent.
+  */
+ 
+-int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
++enum skb_drop_reason tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct tcp_sock *tp = tcp_sk(sk);
+ 	struct inet_connection_sock *icsk = inet_csk(sk);
+@@ -6439,7 +6439,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 
+ 	case TCP_LISTEN:
+ 		if (th->ack)
+-			return 1;
++			return SKB_DROP_REASON_TCP_FLAGS;
+ 
+ 		if (th->rst) {
+ 			SKB_DR_SET(reason, TCP_RESET);
+@@ -6460,9 +6460,9 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			rcu_read_unlock();
+ 
+ 			if (!acceptable)
+-				return 1;
++				return SKB_DROP_REASON_NOT_SPECIFIED;
+ 			consume_skb(skb);
+-			return 0;
++			return SKB_NOT_DROPPED_YET;
+ 		}
+ 		SKB_DR_SET(reason, TCP_FLAGS);
+ 		goto discard;
+@@ -6472,13 +6472,13 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 		tcp_mstamp_refresh(tp);
+ 		queued = tcp_rcv_synsent_state_process(sk, skb, th);
+ 		if (queued >= 0)
+-			return queued;
++			return (enum skb_drop_reason)queued;
+ 
+ 		/* Do step6 onward by hand. */
+ 		tcp_urg(sk, skb, th);
+ 		__kfree_skb(skb);
+ 		tcp_data_snd_check(sk);
+-		return 0;
++		return SKB_NOT_DROPPED_YET;
+ 	}
+ 
+ 	tcp_mstamp_refresh(tp);
+@@ -6582,7 +6582,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 		if (tp->linger2 < 0) {
+ 			tcp_done(sk);
+ 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
+-			return 1;
++			return SKB_DROP_REASON_TCP_ABORTONDATA;
+ 		}
+ 		if (TCP_SKB_CB(skb)->end_seq != TCP_SKB_CB(skb)->seq &&
+ 		    after(TCP_SKB_CB(skb)->end_seq - th->fin, tp->rcv_nxt)) {
+@@ -6591,7 +6591,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 				tcp_fastopen_active_disable(sk);
+ 			tcp_done(sk);
+ 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
+-			return 1;
++			return SKB_DROP_REASON_TCP_ABORTONDATA;
  		}
  
-@@ -6182,6 +6186,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- 			     tcp_time_stamp(tp))) {
- 			NET_INC_STATS(sock_net(sk),
- 					LINUX_MIB_PAWSACTIVEREJECTED);
-+			SKB_DR_SET(reason, TCP_PAWSACTIVEREJECTED);
- 			goto reset_and_undo;
+ 		tmo = tcp_fin_time(sk);
+@@ -6656,7 +6656,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			    after(TCP_SKB_CB(skb)->end_seq - th->fin, tp->rcv_nxt)) {
+ 				NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
+ 				tcp_reset(sk, skb);
+-				return 1;
++				return SKB_DROP_REASON_TCP_ABORTONDATA;
+ 			}
  		}
+ 		fallthrough;
+@@ -6676,11 +6676,11 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ discard:
+ 		tcp_drop_reason(sk, skb, reason);
+ 	}
+-	return 0;
++	return SKB_NOT_DROPPED_YET;
  
-@@ -6375,7 +6380,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
- reset_and_undo:
- 	tcp_clear_options(&tp->rx_opt);
- 	tp->rx_opt.mss_clamp = saved_clamp;
--	return 1;
+ consume:
+ 	__kfree_skb(skb);
+-	return 0;
++	return SKB_NOT_DROPPED_YET;
+ }
+ EXPORT_SYMBOL(tcp_rcv_state_process);
+ 
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 24eb42497a71..12a18c5035f4 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1670,7 +1670,8 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 		if (!nsk)
+ 			goto discard;
+ 		if (nsk != sk) {
+-			if (tcp_child_process(sk, nsk, skb)) {
++			reason = tcp_child_process(sk, nsk, skb);
++			if (reason) {
+ 				rsk = nsk;
+ 				goto reset;
+ 			}
+@@ -1679,7 +1680,8 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 	} else
+ 		sock_rps_save_rxhash(sk, skb);
+ 
+-	if (tcp_rcv_state_process(sk, skb)) {
++	reason = tcp_rcv_state_process(sk, skb);
++	if (reason) {
+ 		rsk = sk;
+ 		goto reset;
+ 	}
+@@ -1688,6 +1690,7 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
+ reset:
+ 	tcp_v4_send_reset(rsk, skb);
+ discard:
++	SKB_DR_OR(reason, NOT_SPECIFIED);
+ 	kfree_skb_reason(skb, reason);
+ 	/* Be careful here. If this function gets more complicated and
+ 	 * gcc suffers from register pressure on the x86, sk (in %ebx)
+@@ -2019,12 +2022,15 @@ int tcp_v4_rcv(struct sk_buff *skb)
+ 		if (nsk == sk) {
+ 			reqsk_put(req);
+ 			tcp_v4_restore_cb(skb);
+-		} else if (tcp_child_process(sk, nsk, skb)) {
+-			tcp_v4_send_reset(nsk, skb);
+-			goto discard_and_relse;
+ 		} else {
+-			sock_put(sk);
+-			return 0;
++			drop_reason = tcp_child_process(sk, nsk, skb);
++			if (drop_reason) {
++				tcp_v4_send_reset(nsk, skb);
++				goto discard_and_relse;
++			} else {
++				sock_put(sk);
++				return 0;
++			}
+ 		}
+ 	}
+ 
+diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
+index 6854bb1fb32b..1a21018f6f64 100644
+--- a/net/ipv4/tcp_minisocks.c
++++ b/net/ipv4/tcp_minisocks.c
+@@ -821,11 +821,12 @@ EXPORT_SYMBOL(tcp_check_req);
+  * be created.
+  */
+ 
+-int tcp_child_process(struct sock *parent, struct sock *child,
+-		      struct sk_buff *skb)
++enum skb_drop_reason tcp_child_process(struct sock *parent,
++				       struct sock *child,
++				       struct sk_buff *skb)
+ 	__releases(&((child)->sk_lock.slock))
+ {
+-	int ret = 0;
++	enum skb_drop_reason reason = SKB_NOT_DROPPED_YET;
+ 	int state = child->sk_state;
+ 
+ 	/* record sk_napi_id and sk_rx_queue_mapping of child. */
+@@ -833,7 +834,7 @@ int tcp_child_process(struct sock *parent, struct sock *child,
+ 
+ 	tcp_segs_in(tcp_sk(child), skb);
+ 	if (!sock_owned_by_user(child)) {
+-		ret = tcp_rcv_state_process(child, skb);
++		reason = tcp_rcv_state_process(child, skb);
+ 		/* Wakeup parent, send SIGIO */
+ 		if (state == TCP_SYN_RECV && child->sk_state != state)
+ 			parent->sk_data_ready(parent);
+@@ -847,6 +848,6 @@ int tcp_child_process(struct sock *parent, struct sock *child,
+ 
+ 	bh_unlock_sock(child);
+ 	sock_put(child);
+-	return ret;
 +	return reason;
  }
+ EXPORT_SYMBOL(tcp_child_process);
+diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
+index 636ed23d9af0..d8236d51dd47 100644
+--- a/net/ipv6/tcp_ipv6.c
++++ b/net/ipv6/tcp_ipv6.c
+@@ -1489,7 +1489,8 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 			goto discard;
  
- static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
+ 		if (nsk != sk) {
+-			if (tcp_child_process(sk, nsk, skb))
++			reason = tcp_child_process(sk, nsk, skb);
++			if (reason)
+ 				goto reset;
+ 			if (opt_skb)
+ 				__kfree_skb(opt_skb);
+@@ -1498,7 +1499,8 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
+ 	} else
+ 		sock_rps_save_rxhash(sk, skb);
+ 
+-	if (tcp_rcv_state_process(sk, skb))
++	reason = tcp_rcv_state_process(sk, skb);
++	if (reason)
+ 		goto reset;
+ 	if (opt_skb)
+ 		goto ipv6_pktoptions;
+@@ -1685,12 +1687,15 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
+ 		if (nsk == sk) {
+ 			reqsk_put(req);
+ 			tcp_v6_restore_cb(skb);
+-		} else if (tcp_child_process(sk, nsk, skb)) {
+-			tcp_v6_send_reset(nsk, skb);
+-			goto discard_and_relse;
+ 		} else {
+-			sock_put(sk);
+-			return 0;
++			drop_reason = tcp_child_process(sk, nsk, skb);
++			if (drop_reason) {
++				tcp_v6_send_reset(nsk, skb);
++				goto discard_and_relse;
++			} else {
++				sock_put(sk);
++				return 0;
++			}
+ 		}
+ 	}
+ 
 -- 
 2.36.1
 
