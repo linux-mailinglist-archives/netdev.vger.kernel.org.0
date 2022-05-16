@@ -2,121 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC6D15285A7
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 15:41:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E04E05285C8
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 15:48:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243387AbiEPNlp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 09:41:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39626 "EHLO
+        id S239626AbiEPNsT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 09:48:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244306AbiEPNl0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 09:41:26 -0400
-Received: from APC01-SG2-obe.outbound.protection.outlook.com (mail-sgaapc01on2123.outbound.protection.outlook.com [40.107.215.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0901E08;
-        Mon, 16 May 2022 06:41:24 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AnRqGWWbH2Fmgge4gKSr+Wi2remwpT/YQtuYHVdMz4oDqwpLkuPITcdGfB3CyfnxYon+2Q2885TGVBxJEM9Bidi+lAE3AW8A+QdE+QdvsLEBHWGy4jUSLBaUy0hYwV1AuYVKyzYn5QOkQ4O9giuBO9+DkYb5ioNl+3Ch3m6L02mFRcVdfhvm3UgsTxGXG5l/L2qE/ug+vLIdk4QQGdKxUPG70AitRsFBIfndeETAszMQDPjilXOa0DnrwB8YfItvvJ/H27aCMKe49+epp1dgny2/eBuUothprCDjmBdpL3cR9j/jUa3wDa7m6H6dH+dvOefxFNX3JmX4BpdazYlW/w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=T9wclu+zmrPpOXIE0qU/WX8Lxywkg3ZJOX3NOn6R/as=;
- b=NjkEW3F1vt3VwVU8V0w92hKntWzsOmSK6CGOuPvTsTwqyQzSXZPQk9QtaS7jzeN8X7J4HrKKh6qz15oYuwo9VEgvas8yYxqjnN4PM08sd9MUWbdTXkXOD7BV5lcNajyJyJxNklSJ9To7Zhme3T3/9h9v4sL6OCxeWfGh/P0PLySCaRWWCF9e7x25a1eVenBxy+CI2xhVMwxXBoei71ReJHb1evFcQH/3YCcZiNmC9Fp9fFpUe+WjC4HM9xU6CGJOY1ewwLdlEgHAlLW0cHK/O2y+qW1AIqvWW2mSY4WD3jMxIuLkJeuGJD0Ql391p+udWMRHrbOr4+6nMwe7TAESfQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vivo.com; dmarc=pass action=none header.from=vivo.com;
- dkim=pass header.d=vivo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vivo0.onmicrosoft.com;
- s=selector2-vivo0-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T9wclu+zmrPpOXIE0qU/WX8Lxywkg3ZJOX3NOn6R/as=;
- b=HrxVeZuLu6WYAGlTIXTDA/xxKgkyQQOd8Cb6b04X5UwIe0TH0wQA0z/UyCn26yUegSXyCm4sj2ozcmbdxA7ucnEHT31YTX/DkZb1HTFb1rga+8KxwRFWruyAe0EE0I+Wrpxjtom5hh7mUcbuh+97Jlp440TiABlt3pDThj2HAIg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vivo.com;
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com (2603:1096:202:2f::10)
- by SG2PR06MB3419.apcprd06.prod.outlook.com (2603:1096:4:a1::12) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.14; Mon, 16 May
- 2022 13:41:22 +0000
-Received: from HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::88e1:dc04:6851:ad08]) by HK2PR06MB3492.apcprd06.prod.outlook.com
- ([fe80::88e1:dc04:6851:ad08%7]) with mapi id 15.20.5250.018; Mon, 16 May 2022
- 13:41:22 +0000
-From:   Guo Zhengkui <guozhengkui@vivo.com>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
+        with ESMTP id S237525AbiEPNsR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 09:48:17 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A34883914C;
+        Mon, 16 May 2022 06:48:15 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L20vB6skwz4xZ5;
+        Mon, 16 May 2022 23:48:06 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1652708890;
+        bh=IoEgFN1b2dRBNPBgpQ3TrV8TAD3LrZl3dnKWhxyBcE8=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=eOCT8tTgO0HB3LTSAxu5VPZmIDCja3jmYMxo19810CBMQQW4VUwng4Vi307xbkQp3
+         NtGdL+eJoxbZnFWifwb7kCOChKLsaCuGHJ7kenALzxiy/5D+lDIzS/Pa9H71ujoCuJ
+         1PcimRASMi9dPMp1ajYEAnJJ845+xdMAWXVLExUxp7rHLl+PjV+9dDRmB7YTQb3gCn
+         dg31DcWS+4zmI+yfmKkMWaecSijwxwHugdByRa5Px62h2UGh7tUSMCsI1YSl6uu9u9
+         OL7ZW1+kKqSCaifOCHd32fjcMBnXMDsj8J86SFvZdwAx4giXzsNaNy7F1zFwFwAeyT
+         iQLit7nUMYGng==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Damien Le Moal <damien.lemoal@opensource.wdc.com>,
+        Mark Brown <broonie@kernel.org>,
+        chris.packham@alliedtelesis.co.nz,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
         "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        linux-ide@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-serial@vger.kernel.org
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Anatolij Gustschin <agust@denx.de>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Eric Dumazet <edumazet@google.com>,
         Paolo Abeni <pabeni@redhat.com>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
-        linux-wireless@vger.kernel.org (open list:ATHEROS ATH5K WIRELESS DRIVER),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     zhengkui_guo@outlook.com, Guo Zhengkui <guozhengkui@vivo.com>
-Subject: [PATCH linux-next] net: ath: fix minmax.cocci warnings
-Date:   Mon, 16 May 2022 21:40:57 +0800
-Message-Id: <20220516134057.72365-1-guozhengkui@vivo.com>
-X-Mailer: git-send-email 2.20.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: TYCPR01CA0071.jpnprd01.prod.outlook.com
- (2603:1096:405:2::35) To HK2PR06MB3492.apcprd06.prod.outlook.com
- (2603:1096:202:2f::10)
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>
+Subject: Re: [PATCH v2 4/4] powerpc/52xx: Convert to use fwnode API
+In-Reply-To: <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
+References: <20220507100147.5802-1-andriy.shevchenko@linux.intel.com>
+ <20220507100147.5802-4-andriy.shevchenko@linux.intel.com>
+Date:   Mon, 16 May 2022 23:48:05 +1000
+Message-ID: <877d6l7fmy.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 193e4d9b-9dda-4b36-cd45-08da3741c360
-X-MS-TrafficTypeDiagnostic: SG2PR06MB3419:EE_
-X-Microsoft-Antispam-PRVS: <SG2PR06MB3419F782F9015FE7EB61D6B3C7CF9@SG2PR06MB3419.apcprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VGGp/PFN/aH/1pC7Z6URjt0nZdDhCHEZB5oWp9bbl+dE7Hp+M5YL18iQIsHBzX3HREpta5ERNk8T8hhbEBEM+qq7XMIeP0jgk5Z+kpNkyH69KgM+KW4t8fj41Xu/V7/cF8zs2eWO3/so1jeydq+7KFBue62Yt71VhlRAMHloa9IRXUEazY9rdqnDTTms0cfxWoGffXHPhRDUS+gtf74M1wPK7LR9SgzL4jELda4djGxdkgCuKAVlsmAM08eleNL3EloN4I8PL78gmRqyORDhs3Ngj2IY/MNrTzM//QlFl2l6V+W81SK56XbOe+rhxpBgyM0wgGfdwUIXp9SF+U4MgejxC9jAAPM7nmqqJqRT3B4UJfHy5xZ4OXQJ/VYWoQpwQKZz5RXWsnAjxg8FAt9il7D5IgONP2vBEAjvCGF9uAbJK18esu46RO4NmiGmJ1U1wxmfgE3/OAaLZG83SKZK3IIgFCEMPALvVPv4ciob+PwhZ10ZUVvJ4cYBzFNA19z5jcgWbasTsP763aUuqzx7ZkS54e31h7LgJ23zZ9R+sAYpeOcqsdudfdqwpThiMnEiz8Sy8PTavl1B6uenjDRm3rXBp4TJuqCcFyTgGFWWaBpQkj6AGs5DZgfFmlQiqU8fYDRNqWt0zEmO5UFbgStFyNcW3+ve+C/USuZoVeNFsUUTqUjxRgwjnsVnmDfb+avezkjWZuTSt+CWpDWNnJgkO3TDaY70ql4kUCYj9S9spzY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HK2PR06MB3492.apcprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66476007)(66556008)(7416002)(66946007)(8936002)(4326008)(8676002)(86362001)(186003)(1076003)(5660300002)(508600001)(6486002)(26005)(6506007)(36756003)(2616005)(107886003)(921005)(6666004)(38350700002)(2906002)(38100700002)(83380400001)(6512007)(52116002)(110136005)(316002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?/yLEsw6E1sl6KIf7F5qi65Q1z0CjCu9L30xQqBV+E8MOkBQtOXbkWdKhJM1T?=
- =?us-ascii?Q?KMELZ1jWDJV4MjCgKlninOAC9oqsLnj4m7LAQlMP1spfxQ3w7NenV6ZyFEi7?=
- =?us-ascii?Q?UfPyfLC5Kuf5f9LChzB2qjlfXiij0+e7z62GE+TPZhS0rdTq2Th1Oj9cJZez?=
- =?us-ascii?Q?7gM2LoMmoQ2i/5gZ7u64ChbxVj8sPU7gK+sDyYVHj9Qs97VEqwkIyJ4MEmB6?=
- =?us-ascii?Q?D/vQHLCo2aknBrwzC7T49M5k4pqJ588+WULdodJd3LEx8Fv6EavVt0BsWF7h?=
- =?us-ascii?Q?w0awpCjLCnjAhYCoLgaoEkz6kebLUfX86w5TuLMuPjeZFlcehIlP/DfLBl7j?=
- =?us-ascii?Q?g+X1wptHz7j93LknxnSMJTnvCOE7KsnpKr1OSCJOhS5oR7X4ZYE+CjfQXuLP?=
- =?us-ascii?Q?uW0C4cL4S4rj9RiXakqd5v40yG7LgcBBq9rLr9lM5pp+Zem3shRmG8HUK8xk?=
- =?us-ascii?Q?FeEi27U27dLg3oibY+Rlb/CIni0F12JL/aLc13QViu4qUMDjDgnMJN6cdNln?=
- =?us-ascii?Q?d1rKBtlh4vd+eL58zdK3yFpJA8H1Nq4KdTN0+cejrcGPLACBW/2rqMSWgI28?=
- =?us-ascii?Q?GisZ0xo5+SipBVm9LLM5N5V/VyE0JiUyzUbDj7QHFHEdOo9YKRATls3JvCUw?=
- =?us-ascii?Q?YQ95NdDwUaiNlHb87fnz7g5y4pFO7MEgK/YacN55WuIDJK5eUnAaO5nRUHIz?=
- =?us-ascii?Q?meJkvcABU4pyUFMfx1GhVOA99AMbgTaMPdE8x4YhC3ywjIK2DUVNPLKpWXp5?=
- =?us-ascii?Q?EHE0G4J495MLq/X+2T4H5BmUIzx0V73mbtbhIGf6i4jznKAo+mPySeubH223?=
- =?us-ascii?Q?1IKVFz7JWPx6pFe8VuR/XGg/6dsvk9s78fFFu4jHDvMJyEWNM1+i0VPM6ZTV?=
- =?us-ascii?Q?/DF0AkXX6qtoiunb8l2WzjPcgfKZflPnwuMKyptgEs0A5wz18FV1Qgaan73E?=
- =?us-ascii?Q?KsoyIXX0UhamNktX5luUVxN2JPLliVX7ViKi7OjwV0Cxx7mRG4GcNGb9kU6a?=
- =?us-ascii?Q?IzSK0OHBcsEM7TIMTadQqavPrw8D9iICgNz1JTLjBqN3h0br8xUj737MN+cd?=
- =?us-ascii?Q?fQ0IbKSwwOaBQ08cl8zvv8od8PTSL5pgbIqXbIYTP7ok7Y2v8UsUe1mA41Kb?=
- =?us-ascii?Q?Qqhvxfur5A13vEkvwX4ZQsWCtdKkMGdGJU1sFVLllR9sN6SuiB1pThpC7p/k?=
- =?us-ascii?Q?GqRVnyOgkACWulg0sbPiqabxzPC1QwMb4MiWfTYYV6oNdjYHbAXIQ8zLbjWV?=
- =?us-ascii?Q?R0138O464BTxuYSdxCPEyaLXVnsDtAxRKleauw37qqHJvHnLI8x3YUjm3Ezy?=
- =?us-ascii?Q?tc4mAoYlHM+o2g10SLZV2MbM6oZ89QKefb9fAg8HP88LURLoPfU3ccROuOF/?=
- =?us-ascii?Q?FPqpXSp1uxTFDDM0nTEsAQpeHWsA2i4+KbZYDZAfyVjXJrkUws2ro+mKz7AV?=
- =?us-ascii?Q?xiTr9xSk3XFVKUaBKWDHp3mStK5iqADeqW5OTZBj0+pOf4Njt1pZXrX35xi0?=
- =?us-ascii?Q?3Yw2PbGs88nXKGSb4i8QnJT8ZPvStSmuUeByN8udrKcmleFpJNPmERxL4TOq?=
- =?us-ascii?Q?djSI8JYfHYMJ7mf9xDzansG4WfGI7q5I3iF+9DOuwgfpCYr23PYvcgIcJk1Z?=
- =?us-ascii?Q?VEvxT6Vrme3fig5pZC9A5CYOI504P5r3ZS+vntRxDPq3GUg9N1ix500YCB3l?=
- =?us-ascii?Q?c9Fb9hlk6hrOuLV2U6ala/WWC/wpgWcWBWX8h5BnrH1DRjr8Xvhvhf+mi7Ec?=
- =?us-ascii?Q?DYbxqNjpKA=3D=3D?=
-X-OriginatorOrg: vivo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 193e4d9b-9dda-4b36-cd45-08da3741c360
-X-MS-Exchange-CrossTenant-AuthSource: HK2PR06MB3492.apcprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 May 2022 13:41:21.9461
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 923e42dc-48d5-4cbe-b582-1a797a6412ed
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UnW5c7u8oc7BjwoRIUyQ7PTfg3EAjHaauld/U1UQyFlD9V7WjdPm9qn26F+/WKs7rw484D/ue/fMp/YGzO5IBg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SG2PR06MB3419
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -124,45 +71,145 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warnings:
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> writes:
+> We may convert the GPT driver to use fwnode API for the sake
+> of consistency of the used APIs inside the driver.
 
-drivers/net/wireless/ath/ath5k/phy.c:3139:62-63: WARNING
-opportunity for min()
-drivers/net/wireless/ath/ath9k/dfs.c:249:28-30: WARNING
-opportunity for max()
+I'm not sure about this one.
 
-Signed-off-by: Guo Zhengkui <guozhengkui@vivo.com>
----
- drivers/net/wireless/ath/ath5k/phy.c | 2 +-
- drivers/net/wireless/ath/ath9k/dfs.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+It's more consistent to use fwnode in this driver, but it's very
+inconsistent with the rest of the powerpc code. We have basically no
+uses of the fwnode APIs at the moment.
 
-diff --git a/drivers/net/wireless/ath/ath5k/phy.c b/drivers/net/wireless/ath/ath5k/phy.c
-index 00f9e347d414..5797ef9c73d7 100644
---- a/drivers/net/wireless/ath/ath5k/phy.c
-+++ b/drivers/net/wireless/ath/ath5k/phy.c
-@@ -3136,7 +3136,7 @@ ath5k_combine_pwr_to_pdadc_curves(struct ath5k_hw *ah,
- 		pdadc_n = gain_boundaries[pdg] + pd_gain_overlap - pwr_min[pdg];
- 		/* Limit it to be inside pwr range */
- 		table_size = pwr_max[pdg] - pwr_min[pdg];
--		max_idx = (pdadc_n < table_size) ? pdadc_n : table_size;
-+		max_idx = min(pdadc_n, table_size);
- 
- 		/* Fill pdadc_out table */
- 		while (pdadc_0 < max_idx && pdadc_i < 128)
-diff --git a/drivers/net/wireless/ath/ath9k/dfs.c b/drivers/net/wireless/ath/ath9k/dfs.c
-index acb9602aa464..11349218bc21 100644
---- a/drivers/net/wireless/ath/ath9k/dfs.c
-+++ b/drivers/net/wireless/ath/ath9k/dfs.c
-@@ -246,7 +246,7 @@ ath9k_postprocess_radar_event(struct ath_softc *sc,
- 		DFS_STAT_INC(sc, dc_phy_errors);
- 
- 		/* when both are present use stronger one */
--		rssi = (ard->rssi < ard->ext_rssi) ? ard->ext_rssi : ard->rssi;
-+		rssi = max(ard->rssi, ard->ext_rssi);
- 		break;
- 	default:
- 		/*
--- 
-2.20.1
+It seems like a pretty straight-forward conversion, but there could
+easily be a bug in there, I don't have any way to test it. Do you?
 
+cheers
+
+
+
+> diff --git a/arch/powerpc/platforms/52xx/mpc52xx_gpt.c b/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
+> index ae47fdcc8a96..58c3651034bd 100644
+> --- a/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
+> +++ b/arch/powerpc/platforms/52xx/mpc52xx_gpt.c
+> @@ -53,10 +53,9 @@
+>  #include <linux/interrupt.h>
+>  #include <linux/io.h>
+>  #include <linux/list.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/module.h>
+>  #include <linux/mutex.h>
+> -#include <linux/of.h>
+> -#include <linux/of_platform.h>
+> -#include <linux/of_gpio.h>
+>  #include <linux/kernel.h>
+>  #include <linux/property.h>
+>  #include <linux/slab.h>
+> @@ -64,7 +63,7 @@
+>  #include <linux/watchdog.h>
+>  #include <linux/miscdevice.h>
+>  #include <linux/uaccess.h>
+> -#include <linux/module.h>
+> +
+>  #include <asm/div64.h>
+>  #include <asm/mpc52xx.h>
+>  
+> @@ -235,18 +234,17 @@ static const struct irq_domain_ops mpc52xx_gpt_irq_ops = {
+>  	.xlate = mpc52xx_gpt_irq_xlate,
+>  };
+>  
+> -static void
+> -mpc52xx_gpt_irq_setup(struct mpc52xx_gpt_priv *gpt, struct device_node *node)
+> +static void mpc52xx_gpt_irq_setup(struct mpc52xx_gpt_priv *gpt)
+>  {
+>  	int cascade_virq;
+>  	unsigned long flags;
+>  	u32 mode;
+>  
+> -	cascade_virq = irq_of_parse_and_map(node, 0);
+> -	if (!cascade_virq)
+> +	cascade_virq = platform_get_irq(to_platform_device(gpt->dev), 0);
+> +	if (cascade_virq < 0)
+>  		return;
+>  
+> -	gpt->irqhost = irq_domain_add_linear(node, 1, &mpc52xx_gpt_irq_ops, gpt);
+> +	gpt->irqhost = irq_domain_create_linear(dev_fwnode(gpt->dev), 1, &mpc52xx_gpt_irq_ops, gpt);
+>  	if (!gpt->irqhost) {
+>  		dev_err(gpt->dev, "irq_domain_add_linear() failed\n");
+>  		return;
+> @@ -670,8 +668,7 @@ static int mpc52xx_gpt_wdt_init(void)
+>  	return err;
+>  }
+>  
+> -static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+> -				 const u32 *period)
+> +static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt, const u32 period)
+>  {
+>  	u64 real_timeout;
+>  
+> @@ -679,14 +676,14 @@ static int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+>  	mpc52xx_gpt_wdt = gpt;
+>  
+>  	/* configure the wdt if the device tree contained a timeout */
+> -	if (!period || *period == 0)
+> +	if (period == 0)
+>  		return 0;
+>  
+> -	real_timeout = (u64) *period * 1000000000ULL;
+> +	real_timeout = (u64)period * 1000000000ULL;
+>  	if (mpc52xx_gpt_do_start(gpt, real_timeout, 0, 1))
+>  		dev_warn(gpt->dev, "starting as wdt failed\n");
+>  	else
+> -		dev_info(gpt->dev, "watchdog set to %us timeout\n", *period);
+> +		dev_info(gpt->dev, "watchdog set to %us timeout\n", period);
+>  	return 0;
+>  }
+>  
+> @@ -697,8 +694,7 @@ static int mpc52xx_gpt_wdt_init(void)
+>  	return 0;
+>  }
+>  
+> -static inline int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt,
+> -					const u32 *period)
+> +static inline int mpc52xx_gpt_wdt_setup(struct mpc52xx_gpt_priv *gpt, const u32 period)
+>  {
+>  	return 0;
+>  }
+> @@ -726,25 +722,26 @@ static int mpc52xx_gpt_probe(struct platform_device *ofdev)
+>  	dev_set_drvdata(&ofdev->dev, gpt);
+>  
+>  	mpc52xx_gpt_gpio_setup(gpt);
+> -	mpc52xx_gpt_irq_setup(gpt, ofdev->dev.of_node);
+> +	mpc52xx_gpt_irq_setup(gpt);
+>  
+>  	mutex_lock(&mpc52xx_gpt_list_mutex);
+>  	list_add(&gpt->list, &mpc52xx_gpt_list);
+>  	mutex_unlock(&mpc52xx_gpt_list_mutex);
+>  
+>  	/* check if this device could be a watchdog */
+> -	if (of_get_property(ofdev->dev.of_node, "fsl,has-wdt", NULL) ||
+> -	    of_get_property(ofdev->dev.of_node, "has-wdt", NULL)) {
+> -		const u32 *on_boot_wdt;
+> +	if (device_property_present(gpt->dev, "fsl,has-wdt") ||
+> +	    device_property_present(gpt->dev, "has-wdt")) {
+> +		u32 on_boot_wdt = 0;
+> +		int ret;
+>  
+>  		gpt->wdt_mode = MPC52xx_GPT_CAN_WDT;
+> -		on_boot_wdt = of_get_property(ofdev->dev.of_node,
+> -					      "fsl,wdt-on-boot", NULL);
+> -		if (on_boot_wdt) {
+> +		ret = device_property_read_u32(gpt->dev, "fsl,wdt-on-boot", &on_boot_wdt);
+> +		if (ret) {
+> +			dev_info(gpt->dev, "can function as watchdog\n");
+> +		} else {
+>  			dev_info(gpt->dev, "used as watchdog\n");
+>  			gpt->wdt_mode |= MPC52xx_GPT_IS_WDT;
+> -		} else
+> -			dev_info(gpt->dev, "can function as watchdog\n");
+> +		}
+>  		mpc52xx_gpt_wdt_setup(gpt, on_boot_wdt);
+>  	}
+>  
+> -- 
+> 2.35.1
