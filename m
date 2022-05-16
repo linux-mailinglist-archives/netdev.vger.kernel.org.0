@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B020E527C7F
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 05:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68B91527C82
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 05:47:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236401AbiEPDqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 15 May 2022 23:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55366 "EHLO
+        id S239893AbiEPDqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 15 May 2022 23:46:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239769AbiEPDp7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 23:45:59 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 986CA35AA4;
-        Sun, 15 May 2022 20:45:55 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id l7-20020a17090aaa8700b001dd1a5b9965so13133297pjq.2;
-        Sun, 15 May 2022 20:45:55 -0700 (PDT)
+        with ESMTP id S239802AbiEPDqR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 15 May 2022 23:46:17 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BC235A9A;
+        Sun, 15 May 2022 20:45:59 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id c11so13244914plg.13;
+        Sun, 15 May 2022 20:45:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=U7T9ABi/lyv33O2wKAV10AuAP6ZlcwjeiLt7GF6NrYk=;
-        b=FoI82rDuePUnrn6bwxpTOv/bPed6Z/cRB2m0EY3b9tDvfIhjSxvvhausJoDd+Wyrep
-         BlUvBUE3GLhd0U6uDp2VOS4Cxs4a8iMF9WejSn0tSuUBA+1AnNMYrxbVILXmwI7kunKW
-         0+HL6nHdVnAwO6bwQIyL84myXKAy40WIrzyTKpOlUnLwDl+Jgruz1jER+4M8Qd/rBK63
-         EvgUqStwKWGbsJ5jMl3NoxAWjIPFn5Q2uGbACOkOZy0c47j0OwNzpkRvqn/FYVf9zt2T
-         c7qWvKlgC49+Sq3sopp0ATB5kG3dfHmEQ/JcX7gxahBHO2OqfhdvpnU5CCqdfvw7YfJg
-         48MQ==
+        bh=0SkwE7BtienOsXtLAXbao8++DFmn5xtmncAv1lNe8cg=;
+        b=lsfQB/F6AiLdnC1aTrNIp+6yqA/uNJDY9QOqivFXaR25FXpTbkqVtTYk6s29Tjv6HJ
+         7vN3FoIPN9U1LqY7p8V7azfTdu6YbNJem1F9c7huIaaaDKaAdxH1LQHJ84FL8q+3Rx6B
+         TeQl8W+L8z9U256+F0IcvG56weBZvCL5XswBC9OZi0ebfR+jRjU1fRnKfxgqzQtu9L/X
+         kZIQP4x5ibVb+p+F+ZMeVeHJlukrfp8F4bdfSrS3z4oTUJmaaw9eiJe/vFvBnxoyI2vu
+         AYyWsn7l+QcRNbM9N2QKD12KhlNjBhfwHu9I1HL1XYTyTd4CV8wkIaWeuiVy+XREL8bl
+         I8NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=U7T9ABi/lyv33O2wKAV10AuAP6ZlcwjeiLt7GF6NrYk=;
-        b=ucE5R/BBk1UfK6iyAVUkQtSzfhEdR3oESVCIWCq8hLFfAYHz2QoerLoDjW42NykQrt
-         gfKGclYxz9cGPgYw24jfuyK2DGs/J4doNZc9HpBdtLT2fwPtUkbiFefR5S0Pc5fIuDYR
-         rBMN/MWuNzcw/N0lP6Eaj4vS/5P8gBBfJY7mNYKUpnI5Z9+8YSAg2Fft9RYueTD2AgFQ
-         Jd6aUIHuoi99mgvyjKJ9Uhecb/rImTNRTVzJNOeblR4AU12V/KrErtIL4u1CuM31ZSy6
-         AdPwr6B94A34uJGCS3l6yD5eitICRE+7kxOVdAUE6640zKhJIuBEdxDkFUIT09coAZ5x
-         0lPA==
-X-Gm-Message-State: AOAM53327AahgGJD6vLxdHd9b4gdnkNuK5kF0xXovJgWg3SeeSfMlkYb
-        1JNF2SF/CIAnlGYsgf20Nho=
-X-Google-Smtp-Source: ABdhPJyYty0+X3J2vB0+0Kdy8mmLAStYqkjrhp1zBu1m21gpclyZ9KtBNcQMg99DTspRlG9tld6vgA==
-X-Received: by 2002:a17:90a:4417:b0:1ca:a861:3fbf with SMTP id s23-20020a17090a441700b001caa8613fbfmr28686346pjg.80.1652672755125;
-        Sun, 15 May 2022 20:45:55 -0700 (PDT)
+        bh=0SkwE7BtienOsXtLAXbao8++DFmn5xtmncAv1lNe8cg=;
+        b=BDKVhQaXVj9ekn0QEPgxg1ku0B2WFsDq++/gms1j4N2KEBOT9rN1ixFg6z/oZow3/c
+         m/VK9iSokkuWv8iC0rL42fg5jyP7hvwjYTOyp7JMg2AlKNaOqtmSkfIY8aQexwheXvYh
+         ONvA31gJhVrEv9e1A/a9fl6N+EuXtNKabTRN0t2jzcl2oyI7kLjROlK/zwewoxEYGDsl
+         TapDdsiACY00JZ5TsyXGLkhSBt+hWh0PhtG4M29yH3JNDNhdH/9zIrNmetteoRyO39MT
+         L2MemYyhEVPRs8lJ1mTn9Q5vatQRPuoyz78E72FDMhgwR9fqL9K8P/W1c+LyXphCgl5D
+         hAsg==
+X-Gm-Message-State: AOAM532W9AG6TpV+RUDjSHeXziEpQF9NFICDU4L1UeXfgNEvhf+DmBd6
+        b/xnJMSPW63foUAxSNJNPfw=
+X-Google-Smtp-Source: ABdhPJxucF+5S8I8GvShfpRmYqehs4xjYg69XWU2Rjh7JfGWWVOlk0RJseCZLPFe8mVIv0bkupUgWA==
+X-Received: by 2002:a17:90b:3b8d:b0:1dc:7637:91c3 with SMTP id pc13-20020a17090b3b8d00b001dc763791c3mr28328121pjb.186.1652672758913;
+        Sun, 15 May 2022 20:45:58 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.24])
-        by smtp.gmail.com with ESMTPSA id x184-20020a6286c1000000b0050dc762819bsm5636854pfd.117.2022.05.15.20.45.51
+        by smtp.gmail.com with ESMTPSA id x184-20020a6286c1000000b0050dc762819bsm5636854pfd.117.2022.05.15.20.45.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 May 2022 20:45:54 -0700 (PDT)
+        Sun, 15 May 2022 20:45:58 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     edumazet@google.com
@@ -56,9 +56,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         talalahmad@google.com, keescook@chromium.org,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH net-next 4/9] net: inet: add skb drop reason to inet_csk_destroy_sock()
-Date:   Mon, 16 May 2022 11:45:14 +0800
-Message-Id: <20220516034519.184876-5-imagedong@tencent.com>
+Subject: [PATCH net-next 5/9] net: tcp: make tcp_rcv_synsent_state_process() return drop reasons
+Date:   Mon, 16 May 2022 11:45:15 +0800
+Message-Id: <20220516034519.184876-6-imagedong@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220516034519.184876-1-imagedong@tencent.com>
 References: <20220516034519.184876-1-imagedong@tencent.com>
@@ -76,52 +76,68 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-skb dropping in inet_csk_destroy_sock() seems to be a common case. Add
-the new drop reason 'SKB_DROP_REASON_SOCKET_DESTROIED' and apply it to
-inet_csk_destroy_sock() to stop confusing users with 'NOT_SPECIFIED'.
+The return value of tcp_rcv_synsent_state_process() can be -1, 0 or 1:
+
+- -1: free skb silently
+- 0: success and skb is already freed
+- 1: drop packet and send a RST
+
+Therefore, we can make it return skb drop reasons on 'reset_and_undo'
+path, which will not impact the caller.
+
+The new reason 'TCP_PAWSACTIVEREJECTED' is added, which is corresponding
+to LINUX_MIB_PAWSACTIVEREJECTED.
 
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/linux/skbuff.h          | 5 +++++
- net/ipv4/inet_connection_sock.c | 2 +-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ include/linux/skbuff.h | 1 +
+ net/ipv4/tcp_input.c   | 7 ++++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index e9659a63961a..3c7b1e9aabbb 100644
+index 3c7b1e9aabbb..36e0971f4cc9 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -548,6 +548,10 @@ struct sk_buff;
-  *
-  * SKB_DROP_REASON_PKT_TOO_BIG
-  *	packet size is too big (maybe exceed the MTU)
-+ *
-+ * SKB_DROP_REASON_SOCKET_DESTROYED
-+ *	socket is destroyed and the skb in its receive or send queue
-+ *	are all dropped
-  */
- #define __DEFINE_SKB_DROP_REASON(FN)	\
- 	FN(NOT_SPECIFIED)		\
-@@ -614,6 +618,7 @@ struct sk_buff;
- 	FN(IP_INADDRERRORS)		\
+@@ -619,6 +619,7 @@ struct sk_buff;
  	FN(IP_INNOROUTES)		\
  	FN(PKT_TOO_BIG)			\
-+	FN(SOCKET_DESTROYED)		\
+ 	FN(SOCKET_DESTROYED)		\
++	FN(TCP_PAWSACTIVEREJECTED)	\
  	FN(MAX)
  
  /* The reason of skb drop, which is used in kfree_skb_reason().
-diff --git a/net/ipv4/inet_connection_sock.c b/net/ipv4/inet_connection_sock.c
-index 1e5b53c2bb26..6775cc8c42e1 100644
---- a/net/ipv4/inet_connection_sock.c
-+++ b/net/ipv4/inet_connection_sock.c
-@@ -1006,7 +1006,7 @@ void inet_csk_destroy_sock(struct sock *sk)
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index 97cfcd85f84e..e8d26a68bc45 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6174,6 +6174,10 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ 				inet_csk_reset_xmit_timer(sk,
+ 						ICSK_TIME_RETRANS,
+ 						TCP_TIMEOUT_MIN, TCP_RTO_MAX);
++			if (after(TCP_SKB_CB(skb)->ack_seq, tp->snd_nxt))
++				SKB_DR_SET(reason, TCP_ACK_UNSENT_DATA);
++			else
++				SKB_DR_SET(reason, TCP_TOO_OLD_ACK);
+ 			goto reset_and_undo;
+ 		}
  
- 	sk->sk_prot->destroy(sk);
+@@ -6182,6 +6186,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ 			     tcp_time_stamp(tp))) {
+ 			NET_INC_STATS(sock_net(sk),
+ 					LINUX_MIB_PAWSACTIVEREJECTED);
++			SKB_DR_SET(reason, TCP_PAWSACTIVEREJECTED);
+ 			goto reset_and_undo;
+ 		}
  
--	sk_stream_kill_queues(sk);
-+	sk_stream_kill_queues_reason(sk, SKB_DROP_REASON_SOCKET_DESTROYED);
+@@ -6375,7 +6380,7 @@ static int tcp_rcv_synsent_state_process(struct sock *sk, struct sk_buff *skb,
+ reset_and_undo:
+ 	tcp_clear_options(&tp->rx_opt);
+ 	tp->rx_opt.mss_clamp = saved_clamp;
+-	return 1;
++	return reason;
+ }
  
- 	xfrm_sk_free_policy(sk);
- 
+ static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
 -- 
 2.36.1
 
