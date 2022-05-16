@@ -2,142 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 531B15280DB
-	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 11:28:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C6685280F0
+	for <lists+netdev@lfdr.de>; Mon, 16 May 2022 11:40:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229606AbiEPJ2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 05:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42270 "EHLO
+        id S237942AbiEPJkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 05:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38240 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235786AbiEPJ0G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 05:26:06 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD2BB212
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 02:26:01 -0700 (PDT)
+        with ESMTP id S229997AbiEPJkW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 05:40:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F1262FE7A
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 02:40:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48A9961275
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 09:26:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AF09C385AA;
-        Mon, 16 May 2022 09:25:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B84F7B81031
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 09:40:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 55F1EC34100;
+        Mon, 16 May 2022 09:40:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652693160;
-        bh=h2BbS+9SvL4VsMlHgvZCCpsBsXkHzRPWk2kMp1zh4J8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IWnVlYPEQVHnAqYrTt7fuBANKHViO7nl8LzIem/UZGOppDbH1SW4IY0A702pljBCo
-         MOsZ3GY1VWjhgM+d+gEQ6oVDbLxjYCJXJn1XdqVPaNxFaYdlNbyey3du29Rxa7z30v
-         mmr5JFO0JIYM5Y/TmV43347lVmDtNmo2NVLTe8LvazCWHtLqF5ieoQtIvBuDjR94HB
-         Cm1n4ANz7z5q9wH5g0KPxJy7lDFpXknjvXnb0ipWDfxdikf0nO5AB68KabsQ3iSBRI
-         FpXFqRQqn2LbWrVzJF2CiRiDxHOzZb5vfBYCg4K8GpVd0d/TVXRtbf6PDgoirjJ8Ax
-         igqw1c5LROeNw==
-Date:   Mon, 16 May 2022 11:25:55 +0200
-From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
-To:     Stefan Roese <sr@denx.de>
-Cc:     netdev@vger.kernel.org, Leszek Polak <lpolak@arri.de>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2] net: phy: marvell: Add errata section 5.1 for Alaska
- PHY
-Message-ID: <20220516112555.3ed37e74@thinkpad>
-In-Reply-To: <20220516070859.549170-1-sr@denx.de>
-References: <20220516070859.549170-1-sr@denx.de>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        s=k20201202; t=1652694018;
+        bh=d76AP1NTa6KJ6SEKdPD7enIqDn3waSC1+t9D1Oj8hWQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=t2Jc0IRVzPuTOtg957f5U6DjxxmnxxzEdwKyXUG1HzWtXgwoFb4c+jk6RsGrrZ6gO
+         am02RVTgag2EwP6jI/iRaE5A20FzjyVzteZqwqfK81u21qd+Zo6Z+q/aV0neOODAl+
+         QTui2WAliEI0dwGUZiqKMNsy27nGC8DnN2UBU9YSVsVbrnHT4nhVwyCp0JhE/7dOKm
+         wQ70cFCFzRH5NJkqA2KqA7Kp0S/RyV2xu6Ktgru/AmYjIKF68hCVe3nEOK/ZbMtsUC
+         hc39+tFzDD8XFxLcYfFizMKxvslyy3eYj27RVRBksGPXbzFgRUlqbGaExxs+HSeNza
+         xl67jxgeg/oKQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 2EAFAE8DBDA;
+        Mon, 16 May 2022 09:40:18 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net-next 00/10]
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165269401818.10450.10175337460901334408.git-patchwork-notify@kernel.org>
+Date:   Mon, 16 May 2022 09:40:18 +0000
+References: <20220513185550.844558-1-eric.dumazet@gmail.com>
+In-Reply-To: <20220513185550.844558-1-eric.dumazet@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, edumazet@google.com
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 May 2022 09:08:59 +0200
-Stefan Roese <sr@denx.de> wrote:
+Hello:
 
-> From: Leszek Polak <lpolak@arri.de>
->=20
-> As per Errata Section 5.1, if EEE is intended to be used, some register
-> writes must be done once after every hardware reset. This patch now adds
-> the necessary register writes as listed in the Marvell errata.
->=20
-> Without this fix we experience ethernet problems on some of our boards
-> equipped with a new version of this ethernet PHY (different supplier).
->=20
-> The fix applies to Marvell Alaska 88E1510/88E1518/88E1512/88E1514
-> Rev. A0.
->=20
-> Signed-off-by: Leszek Polak <lpolak@arri.de>
-> Signed-off-by: Stefan Roese <sr@denx.de>
-> Cc: Marek Beh=C3=BAn <kabel@kernel.org>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: David S. Miller <davem@davemloft.net>
-> ---
-> v2:
-> - Implement struct with errata reg values and loop over this
->   struct instead of using single phy_write() call for each PHY
->   reg value, as suggested by Marek
->=20
->  drivers/net/phy/marvell.c | 37 +++++++++++++++++++++++++++++++++++++
->  1 file changed, 37 insertions(+)
->=20
-> diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-> index 2702faf7b0f6..41353f615a66 100644
-> --- a/drivers/net/phy/marvell.c
-> +++ b/drivers/net/phy/marvell.c
-> @@ -1177,7 +1177,44 @@ static int m88e1318_config_init(struct phy_device =
-*phydev)
-> =20
->  static int m88e1510_config_init(struct phy_device *phydev)
->  {
-> +	static const struct {
-> +		u16 reg17, reg16;
-> +	} errata_vals[] =3D {
-> +		{ 0x214b, 0x2144 },
-> +		{ 0x0c28, 0x2146 },
-> +		{ 0xb233, 0x214d },
-> +		{ 0xcc0c, 0x2159 },
-> +	};
->  	int err;
-> +	int i;
-> +
-> +	/* As per Marvell Release Notes - Alaska 88E1510/88E1518/88E1512/
-> +	 * 88E1514 Rev A0, Errata Section 5.1:
-> +	 * If EEE is intended to be used, the following register writes
-> +	 * must be done once after every hardware reset.
-> +	 */
-> +	err =3D marvell_set_page(phydev, 0x00FF);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	for (i =3D 0; i < ARRAY_SIZE(errata_vals); ++i) {
-> +		err =3D phy_write(phydev, 17, errata_vals[i].reg17);
-> +		if (err)
-> +			return err;
-> +		err =3D phy_write(phydev, 16, errata_vals[i].reg16);
-> +		if (err)
-> +			return err;
-> +	}
-> +
-> +	err =3D marvell_set_page(phydev, 0x00FB);
-> +	if (err < 0)
-> +		return err;
-> +	err =3D phy_write(phydev, 07, 0xC00D);
-> +	if (err < 0)
-> +		return err;
-> +	err =3D marvell_set_page(phydev, MII_MARVELL_COPPER_PAGE);
-> +	if (err < 0)
-> +		return err;
-> =20
->  	/* SGMII-to-Copper mode initialization */
->  	if (phydev->interface =3D=3D PHY_INTERFACE_MODE_SGMII) {
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
+On Fri, 13 May 2022 11:55:40 -0700 you wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> net: add annotations for sk->sk_bound_dev_if
+> 
+> While writes on sk->sk_bound_dev_if are protected by socket lock,
+> we have many lockless reads all over the places.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net-next,01/10] net: annotate races around sk->sk_bound_dev_if
+    https://git.kernel.org/netdev/net-next/c/4c971d2f3548
+  - [v2,net-next,02/10] sctp: read sk->sk_bound_dev_if once in sctp_rcv()
+    https://git.kernel.org/netdev/net-next/c/a20ea298071f
+  - [v2,net-next,03/10] tcp: sk->sk_bound_dev_if once in inet_request_bound_dev_if()
+    https://git.kernel.org/netdev/net-next/c/fdb5fd7f736e
+  - [v2,net-next,04/10] net: core: add READ_ONCE/WRITE_ONCE annotations for sk->sk_bound_dev_if
+    https://git.kernel.org/netdev/net-next/c/e5fccaa1eb7f
+  - [v2,net-next,05/10] dccp: use READ_ONCE() to read sk->sk_bound_dev_if
+    https://git.kernel.org/netdev/net-next/c/36f7cec4f3af
+  - [v2,net-next,06/10] inet: add READ_ONCE(sk->sk_bound_dev_if) in inet_csk_bind_conflict()
+    https://git.kernel.org/netdev/net-next/c/d2c135619cb8
+  - [v2,net-next,07/10] net_sched: em_meta: add READ_ONCE() in var_sk_bound_if()
+    https://git.kernel.org/netdev/net-next/c/70f87de9fa0d
+  - [v2,net-next,08/10] l2tp: use add READ_ONCE() to fetch sk->sk_bound_dev_if
+    https://git.kernel.org/netdev/net-next/c/ff0094030f14
+  - [v2,net-next,09/10] ipv6: add READ_ONCE(sk->sk_bound_dev_if) in INET6_MATCH()
+    (no matching commit)
+  - [v2,net-next,10/10] inet: rename INET_MATCH()
+    https://git.kernel.org/netdev/net-next/c/eda090c31fe9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
