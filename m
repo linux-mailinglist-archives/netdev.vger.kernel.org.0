@@ -2,179 +2,274 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8486352AA60
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 20:15:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 298BD52AA68
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 20:16:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352133AbiEQSOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 14:14:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
+        id S240899AbiEQSQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 14:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40408 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351992AbiEQSN4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 14:13:56 -0400
-Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05D2E50E0D;
-        Tue, 17 May 2022 11:13:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=6MSK1Z4Nv/e1GFKFinCP8P3dIYao0CoLyUe3quXpDhY=; b=cRMrVSVTR+3cn6FVG65SC4Au0y
-        UkLE3SVfqGk36g/jG1E9IomGRvED5Awi+eOSCTntuGE0jPXl5+kfHlbKsvhvVjaCNf8y4mBWXGPlT
-        8r/o/CMKhbUaIdrKhLkt446cgXa07HTSiorku/w0xJvIn3aE4uqi2qj8QGi7eb4Kmsg0/Wh5BR8Vi
-        YCGb8f9djqv6fWXVwjRpFQtg+9b6W6H4TQisr9ZwQKSIB4SsmfEWL196/jrcNQFL2lm66S4LfYE8s
-        uZ+fz2jSIIuBy2Np//l8BP/gbXHu+JyZVeJsb8IAXoZSlvi3RYMR9sSIMXj8sSzR7kYxeP4KKKokk
-        nGGtp5Zg==;
-Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nr1gv-008nSU-6m; Tue, 17 May 2022 20:13:05 +0200
-Message-ID: <62a63fc2-346f-f375-043a-fa21385279df@igalia.com>
-Date:   Tue, 17 May 2022 15:12:25 -0300
+        with ESMTP id S230408AbiEQSQV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 14:16:21 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A24712ACC;
+        Tue, 17 May 2022 11:16:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=XmFrttRHC7A2sfjVP/M8VOMUAvKSPoICYVyZyP2NXPg=;
+        t=1652811380; x=1654020980; b=XdPE/WjuGOxcI+nO4e4/02XdAt6QHFJUcoEFIeBMoCJJB6x
+        4T/4xXUtgqFO9rMVawexpxv5p88kzDwU13FkoD8rRmduVttI8Mz4sNcsFS7Et6Zg2ghBxV9afHt1G
+        L95wdVK/WyGn6QWGRpKUVRSF5dWnBZJ/ZNsz4Y39609py40f6fWThJS7svkLzDLB7XPufb1JYlIMC
+        ct36EMbHXIkgFlo+RKjzbW+8eqq2Gd2lO53EaulTF8x6QRVFtWqtMlNE0uYIVMeLaP6LgROAs4iAi
+        xDwl5umG5gDw2YHCwGjAuwvVhGcD4d15oOV3v1YbwDz6PzqvpbpzG7mZSozJvZrQ==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nr1jr-00EVfZ-9s;
+        Tue, 17 May 2022 20:16:07 +0200
+Message-ID: <e1bf7cc3d42481e8e073ac278bab499f31236f97.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next] net: ifdefy the wireless pointers in struct
+ net_device
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        alex.aring@gmail.com, stefan@datenfreihafen.org,
+        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        sven@narfation.org, linux-wireless@vger.kernel.org,
+        linux-wpan@vger.kernel.org
+Date:   Tue, 17 May 2022 20:16:06 +0200
+In-Reply-To: <20220517103758.353c2476@kernel.org>
+References: <20220516215638.1787257-1-kuba@kernel.org>
+         <8e9f1b04-d17b-2812-22bb-e62b5560aa6e@gmail.com>
+         <74bdbec0580ed05d0f18533eae9af50bc0a4a0ef.camel@sipsolutions.net>
+         <20220517103758.353c2476@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH 21/30] panic: Introduce the panic pre-reboot notifier list
-Content-Language: en-US
-To:     "Luck, Tony" <tony.luck@intel.com>, Petr Mladek <pmladek@suse.com>,
-        Dinh Nguyen <dinguyen@kernel.org>
-Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "bhe@redhat.com" <bhe@redhat.com>,
-        "kexec@lists.infradead.org" <kexec@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "bcm-kernel-feedback-list@broadcom.com" 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "linux-alpha@vger.kernel.org" <linux-alpha@vger.kernel.org>,
-        "linux-edac@vger.kernel.org" <linux-edac@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-leds@vger.kernel.org" <linux-leds@vger.kernel.org>,
-        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
-        "linux-parisc@vger.kernel.org" <linux-parisc@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
-        "linux-s390@vger.kernel.org" <linux-s390@vger.kernel.org>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "linux-xtensa@linux-xtensa.org" <linux-xtensa@linux-xtensa.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "openipmi-developer@lists.sourceforge.net" 
-        <openipmi-developer@lists.sourceforge.net>,
-        "rcu@vger.kernel.org" <rcu@vger.kernel.org>,
-        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
-        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "kernel-dev@igalia.com" <kernel-dev@igalia.com>,
-        "kernel@gpiccoli.net" <kernel@gpiccoli.net>,
-        "halves@canonical.com" <halves@canonical.com>,
-        "fabiomirmar@gmail.com" <fabiomirmar@gmail.com>,
-        "alejandro.j.jimenez@oracle.com" <alejandro.j.jimenez@oracle.com>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "arnd@arndb.de" <arnd@arndb.de>, "bp@alien8.de" <bp@alien8.de>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "d.hatayama@jp.fujitsu.com" <d.hatayama@jp.fujitsu.com>,
-        "dave.hansen@linux.intel.com" <dave.hansen@linux.intel.com>,
-        "dyoung@redhat.com" <dyoung@redhat.com>,
-        "Tang, Feng" <feng.tang@intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "mikelley@microsoft.com" <mikelley@microsoft.com>,
-        "hidehiro.kawai.ez@hitachi.com" <hidehiro.kawai.ez@hitachi.com>,
-        "jgross@suse.com" <jgross@suse.com>,
-        "john.ogness@linutronix.de" <john.ogness@linutronix.de>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "luto@kernel.org" <luto@kernel.org>,
-        "mhiramat@kernel.org" <mhiramat@kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "paulmck@kernel.org" <paulmck@kernel.org>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "rostedt@goodmis.org" <rostedt@goodmis.org>,
-        "senozhatsky@chromium.org" <senozhatsky@chromium.org>,
-        "stern@rowland.harvard.edu" <stern@rowland.harvard.edu>,
-        "tglx@linutronix.de" <tglx@linutronix.de>,
-        "vgoyal@redhat.com" <vgoyal@redhat.com>,
-        "vkuznets@redhat.com" <vkuznets@redhat.com>,
-        "will@kernel.org" <will@kernel.org>, Alex Elder <elder@kernel.org>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Chris Zankel <chris@zankel.net>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Corey Minyard <minyard@acm.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Helge Deller <deller@gmx.de>,
-        Ivan Kokshaysky <ink@jurassic.park.msu.ru>,
-        "James E.J. Bottomley" <James.Bottomley@hansenpartnership.com>,
-        James Morse <james.morse@arm.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Matt Turner <mattst88@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Max Filippov <jcmvbkbc@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
-        Richard Weinberger <richard@nod.at>,
-        Robert Richter <rric@kernel.org>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Vasily Gorbik <gor@linux.ibm.com>, Wei Liu <wei.liu@kernel.org>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-22-gpiccoli@igalia.com> <YoJgcC8c6LaKADZV@alley>
- <63a74b56-89ef-8d1f-d487-cdb986aab798@igalia.com>
- <bed66b9467254a5a8bafc1983dad643a@intel.com>
- <e895ce94-e6b9-caf6-e5d3-06bf0149445c@igalia.com> <YoOs9GJ5Ovq63u5Q@alley>
- <599b72f6-76a4-8e6d-5432-56fb1ffd7e0b@igalia.com>
- <06d85642fef24bc482642d669242654b@intel.com>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <06d85642fef24bc482642d669242654b@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 17/05/2022 14:02, Luck, Tony wrote:
->> Tony / Dinh - can I just *skip* this notifier *if kdump* is set or else
->> we run the code as-is? Does that make sense to you?
-> 
-> The "skip" option sounds like it needs some special flag associated with
-> an entry on the notifier chain. But there are other notifier chains ... so that
-> sounds messy to me.
-> 
-> Just all the notifiers in priority order. If any want to take different actions
-> based on kdump status, change the code. That seems more flexible than
-> an "all or nothing" approach by skipping.
-> 
-> -Tony
+On Tue, 2022-05-17 at 10:37 -0700, Jakub Kicinski wrote:
+> >=20
+> > Then at the very least we'd need some kind of type that we can assign t=
+o
+> > disambiguate, because today e.g. we have a netdev notifier (and other
+> > code) that could get a non-wireless netdev and check like this:
+> >=20
+> > static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
+> >                                          unsigned long state, void *ptr=
+)
+> > {
+> >         struct net_device *dev =3D netdev_notifier_info_to_dev(ptr);
+> >         struct wireless_dev *wdev =3D dev->ieee80211_ptr;
+> > [...]
+> >         if (!wdev)
+> >                 return NOTIFY_DONE;
+>=20
+> Can we use enum netdev_ml_priv_type netdev::ml_priv and
+> netdev::ml_priv_type for this?
+>=20
+Hm, yeah, I guess we can. I think I'd prefer something along the lines
+of the below, then we don't even need the ifdef.
 
-I guess I've expressed myself in a poor way - sorry!
+johannes
 
-What I'm planning to do in the altera_edac notifier is:
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index eaf66e57d891..4bd81767c058 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -1702,6 +1702,7 @@ enum netdev_priv_flags {
+ enum netdev_ml_priv_type {
+ 	ML_PRIV_NONE,
+ 	ML_PRIV_CAN,
++	ML_PRIV_WIFI,
+ };
+=20
+ /**
+@@ -2127,7 +2128,6 @@ struct net_device {
+ #if IS_ENABLED(CONFIG_AX25)
+ 	void			*ax25_ptr;
+ #endif
+-	struct wireless_dev	*ieee80211_ptr;
+ 	struct wpan_dev		*ieee802154_ptr;
+ #if IS_ENABLED(CONFIG_MPLS_ROUTING)
+ 	struct mpls_dev __rcu	*mpls_ptr;
+@@ -2235,7 +2235,10 @@ struct net_device {
+ 	possible_net_t			nd_net;
+=20
+ 	/* mid-layer private */
+-	void				*ml_priv;
++	union {
++		void			*ml_priv;
++		struct wireless_dev	*ieee80211_ptr;
++	};
+ 	enum netdev_ml_priv_type	ml_priv_type;
+=20
+ 	union {
+diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interfac=
+e.c
+index 83fb51b6e299..7b063adacaa6 100644
+--- a/net/batman-adv/hard-interface.c
++++ b/net/batman-adv/hard-interface.c
+@@ -307,11 +307,7 @@ static bool batadv_is_cfg80211_netdev(struct net_devic=
+e *net_device)
+ 	if (!net_device)
+ 		return false;
+=20
+-	/* cfg80211 drivers have to set ieee80211_ptr */
+-	if (net_device->ieee80211_ptr)
+-		return true;
+-
+-	return false;
++	return netdev_get_ml_priv(net_device, ML_PRIV_WIFI);
+ }
+=20
+ /**
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 4980c3a50475..50154f7879b6 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1997,7 +1997,7 @@ int netdev_register_kobject(struct net_device *ndev)
+ 	*groups++ =3D &netstat_group;
+=20
+ #if IS_ENABLED(CONFIG_WIRELESS_EXT) || IS_ENABLED(CONFIG_CFG80211)
+-	if (ndev->ieee80211_ptr)
++	if (netdev_get_ml_priv(ndev, ML_PRIV_WIFI))
+ 		*groups++ =3D &wireless_group;
+ #if IS_ENABLED(CONFIG_WIRELESS_EXT)
+ 	else if (ndev->wireless_handlers)
+diff --git a/net/wireless/core.c b/net/wireless/core.c
+index 3e5d12040726..9024bd9f7d46 100644
+--- a/net/wireless/core.c
++++ b/net/wireless/core.c
+@@ -1369,6 +1369,12 @@ int cfg80211_register_netdevice(struct net_device *d=
+ev)
+=20
+ 	lockdep_assert_held(&rdev->wiphy.mtx);
+=20
++	/*
++	 * This lets us identify our netdevs in the future,
++	 * the driver already set dev->ieee80211_ptr.
++	 */
++	netdev_set_ml_priv(dev, wdev, ML_PRIV_WIFI);
++
+ 	/* we'll take care of this */
+ 	wdev->registered =3D true;
+ 	wdev->registering =3D true;
+@@ -1390,7 +1396,7 @@ static int cfg80211_netdev_notifier_call(struct notif=
+ier_block *nb,
+ 					 unsigned long state, void *ptr)
+ {
+ 	struct net_device *dev =3D netdev_notifier_info_to_dev(ptr);
+-	struct wireless_dev *wdev =3D dev->ieee80211_ptr;
++	struct wireless_dev *wdev =3D netdev_get_ml_priv(dev, ML_PRIV_WIFI);
+ 	struct cfg80211_registered_device *rdev;
+ 	struct cfg80211_sched_scan_request *pos, *tmp;
+=20
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 8d528b5945d0..3a5a7183b959 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -182,9 +182,12 @@ __cfg80211_rdev_from_attrs(struct net *netns, struct n=
+lattr **attrs)
+=20
+ 		netdev =3D __dev_get_by_index(netns, ifindex);
+ 		if (netdev) {
+-			if (netdev->ieee80211_ptr)
+-				tmp =3D wiphy_to_rdev(
+-					netdev->ieee80211_ptr->wiphy);
++			struct wireless_dev *wdev;
++
++			wdev =3D netdev_get_ml_priv(netdev, ML_PRIV_WIFI);
++
++			if (wdev)
++				tmp =3D wiphy_to_rdev(wdev->wiphy);
+ 			else
+ 				tmp =3D NULL;
+=20
+@@ -2972,15 +2975,17 @@ static int nl80211_dump_wiphy_parse(struct sk_buff =
+*skb,
+ 		struct net_device *netdev;
+ 		struct cfg80211_registered_device *rdev;
+ 		int ifidx =3D nla_get_u32(tb[NL80211_ATTR_IFINDEX]);
++		struct wireless_dev *wdev;
+=20
+ 		netdev =3D __dev_get_by_index(sock_net(skb->sk), ifidx);
+ 		if (!netdev) {
+ 			ret =3D -ENODEV;
+ 			goto out;
+ 		}
+-		if (netdev->ieee80211_ptr) {
+-			rdev =3D wiphy_to_rdev(
+-				netdev->ieee80211_ptr->wiphy);
++
++		wdev =3D netdev_is_wireless(netdev, ML_PRIV_WIFI);
++		if (wdev) {
++			rdev =3D wiphy_to_rdev(wdev->wiphy);
+ 			state->filter_wiphy =3D rdev->wiphy_idx;
+ 		}
+ 	}
+@@ -3364,8 +3369,9 @@ static int nl80211_set_wiphy(struct sk_buff *skb, str=
+uct genl_info *info)
+ 		int ifindex =3D nla_get_u32(info->attrs[NL80211_ATTR_IFINDEX]);
+=20
+ 		netdev =3D __dev_get_by_index(genl_info_net(info), ifindex);
+-		if (netdev && netdev->ieee80211_ptr)
+-			rdev =3D wiphy_to_rdev(netdev->ieee80211_ptr->wiphy);
++		wdev =3D netdev_is_wireless(netdev);
++		if (wdev)
++			rdev =3D wiphy_to_rdev(wdev->wiphy);
+ 		else
+ 			netdev =3D NULL;
+ 	}
+diff --git a/net/wireless/scan.c b/net/wireless/scan.c
+index b9678801d848..e1bd3f624e1b 100644
+--- a/net/wireless/scan.c
++++ b/net/wireless/scan.c
+@@ -2715,6 +2715,7 @@ static struct cfg80211_registered_device *
+ cfg80211_get_dev_from_ifindex(struct net *net, int ifindex)
+ {
+ 	struct cfg80211_registered_device *rdev;
++	struct wireless_dev *wdev;
+ 	struct net_device *dev;
+=20
+ 	ASSERT_RTNL();
+@@ -2722,8 +2723,9 @@ cfg80211_get_dev_from_ifindex(struct net *net, int if=
+index)
+ 	dev =3D dev_get_by_index(net, ifindex);
+ 	if (!dev)
+ 		return ERR_PTR(-ENODEV);
+-	if (dev->ieee80211_ptr)
+-		rdev =3D wiphy_to_rdev(dev->ieee80211_ptr->wiphy);
++	wdev =3D netdev_get_ml_priv(dev, ML_PRIV_WIFI);
++	if (wdev)
++		rdev =3D wiphy_to_rdev(wdev->wiphy);
+ 	else
+ 		rdev =3D ERR_PTR(-ENODEV);
+ 	dev_put(dev);
+diff --git a/net/wireless/wext-proc.c b/net/wireless/wext-proc.c
+index cadcf8613af2..a7d903729d2e 100644
+--- a/net/wireless/wext-proc.c
++++ b/net/wireless/wext-proc.c
+@@ -40,7 +40,7 @@ static void wireless_seq_printf_stats(struct seq_file *se=
+q,
+ 			stats =3D &nullstats;
+ #endif
+ #ifdef CONFIG_CFG80211
+-		if (dev->ieee80211_ptr)
++		if (netdev_get_ml_priv(dev, ML_PRIV_WIFI))
+ 			stats =3D &nullstats;
+ #endif
+ 	}
 
-if (kdump_is_set)
- return;
-
-/* regular code */
-
-In other words: if the kdump is set, this notifier will be effectively a
-nop (although it's gonna be called).
-
-Lemme know your thoughts Tony, if that makes sense.
-Thanks,
-
-
-Guilherme
