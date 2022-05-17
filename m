@@ -2,145 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 51E5852ADAA
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 23:49:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F23352ADB2
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 23:52:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229716AbiEQVt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 17:49:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
+        id S229732AbiEQVwc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 17:52:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229703AbiEQVtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 17:49:22 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7331252B2E
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:49:21 -0700 (PDT)
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4563F3F5EF
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 21:49:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1652824160;
-        bh=EeAYup7Z3kKQDD2Qh4K59WMf8Pu+/T4wgl2l9cAZtmE=;
-        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
-         Content-Type:Date:Message-ID;
-        b=OVNI4q65qmtOEXZ660B2H/Ox99KeYZK59Hhh4GeMyYxNcMvEMSSBVyJX0eJMvy2zF
-         hv2nszcGSD+blbfokx4UNwsEBzIIlZaaPUW57MaVxBmAK1dnXgejvsk3o+sTyLTwgf
-         kmYObVHgrDDSH5rp8L+RVBpMFrt9ueQXA7eTVsN36waPbczRMYqzZvBXsmfH0j6MN1
-         qqjPzxX4bwGH9WQrEYM/z9pxILV+X4VZpImIK81woioCOW/aBtHpwU8+bkTCFk2n4B
-         3YFp3KRe6Z/vFngd8VGKMyMs4/s45qF2GRkA3wqaJUEOYAZ9CmhvOM9AWAru4vM+Ep
-         cZlNhZiFIGQoQ==
-Received: by mail-pf1-f199.google.com with SMTP id p18-20020aa78612000000b0050d1c170018so139417pfn.15
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:49:20 -0700 (PDT)
+        with ESMTP id S229706AbiEQVw3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 17:52:29 -0400
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E3F74E3AE
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:52:27 -0700 (PDT)
+Received: by mail-wr1-x431.google.com with SMTP id m1so117050wrb.8
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:52:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aMzWkBZQL9aXbZvmMQEZqAkqSC2fGMMdXYlck3K8ttk=;
+        b=lRZ5GxxxrkWxHuTV9nhyvyTmdpz78TOI1zQA1xl82f7kTLOB3C3gakvuMQbXDJXl2J
+         fogZI6IRq2L0TyIBR/A2xVS650k799Zw2lpmLrIq6BDVqOgi8hE7V6afS8zj/ASXKIML
+         hBwLR1q4KHyqWqK02TMxkkTUfiMmnIqO/KZQUBnZY7i4cpePrAZ7IcaqWfDjdYjhsEuv
+         CETs/qZ6oMbCJA3bXYsZ1e739HI5xqLkrgtNhwmuDCLZtqFcXquVY4QfqTGpKwF+W/p1
+         5Nqm7UL1nc1wjchOez5kkQqqyoXFBp6pKjpGucj3YGrBFFJ489gN2zLQOxiFk0KMwXRv
+         IEIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
-         :comments:mime-version:content-id:date:message-id;
-        bh=EeAYup7Z3kKQDD2Qh4K59WMf8Pu+/T4wgl2l9cAZtmE=;
-        b=x0TalixOPteILYsZRXR13rDbG9/p3WrGIYXP4kX9ujeflOMqTGdO5fH7W2rxFBcfpB
-         0xgk9CltEN8+UBYvw//D3Y+Vcyfw1wVyyZdROs7gwp4mg6aSOQsoBBKsiqsvzz5Rnppx
-         s3PYJUNHb+ldkGd2Pz7HHe1iJhfJCE4yuaFR1Entf+hapu1Ic6mouJTjIgODbKppFSJl
-         0x0oSE3EUG8oHfUOrr6u8a1tmrdjyrFdvKtTz+p60K9tTUaRysPEhEZrllDiT7VYixXb
-         oy9lB1a6GFdgzxhmGu9eo3O221AQLBfiq51urO72pSdDQVqK7y50CpgSQVm9G9WpmiVV
-         hXXA==
-X-Gm-Message-State: AOAM531h1Hij4jKasDAm+BuWN9ALg/NjS4e2dLKCLfyzuNYo6V3QxvC+
-        InJVsJRqu6EwTdKwBxhwXofou6ihFuokJZmj/2XlNk/9wSZyZHwZgoe2qXoMeCwRxWjLdYqGM90
-        I4kpK1euBrX/ry3vkypTzyjO1cpvZ1oI+Ew==
-X-Received: by 2002:a63:28c:0:b0:3c1:6f72:7288 with SMTP id 134-20020a63028c000000b003c16f727288mr20944597pgc.564.1652824158752;
-        Tue, 17 May 2022 14:49:18 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwFRaJHRhJXW+NlcWgRYb1ZX8nbWLYzxvz7dw+TpR3frqC/TXLT78HphRw94kHWN9sl0aOfQA==
-X-Received: by 2002:a63:28c:0:b0:3c1:6f72:7288 with SMTP id 134-20020a63028c000000b003c16f727288mr20944580pgc.564.1652824158489;
-        Tue, 17 May 2022 14:49:18 -0700 (PDT)
-Received: from famine.localdomain ([50.125.80.157])
-        by smtp.gmail.com with ESMTPSA id p186-20020a62d0c3000000b005180c127200sm232127pfg.24.2022.05.17.14.49.18
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 17 May 2022 14:49:18 -0700 (PDT)
-Received: by famine.localdomain (Postfix, from userid 1000)
-        id A0D765FDEE; Tue, 17 May 2022 14:49:17 -0700 (PDT)
-Received: from famine (localhost [127.0.0.1])
-        by famine.localdomain (Postfix) with ESMTP id 97521A0B21;
-        Tue, 17 May 2022 14:49:17 -0700 (PDT)
-From:   Jay Vosburgh <jay.vosburgh@canonical.com>
-To:     Jonathan Toppins <jtoppins@redhat.com>
-cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Subject: Re: [question] bonding: should assert dormant for active protocols like LACP?
-In-reply-to: <de8d8ca4-4ead-0cef-1315-8764d93503c1@redhat.com>
-References: <de8d8ca4-4ead-0cef-1315-8764d93503c1@redhat.com>
-Comments: In-reply-to Jonathan Toppins <jtoppins@redhat.com>
-   message dated "Tue, 17 May 2022 17:17:19 -0400."
-X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aMzWkBZQL9aXbZvmMQEZqAkqSC2fGMMdXYlck3K8ttk=;
+        b=z5Dg+FLOxBKau4EJ9CRfmNfaWGOtmDVs7KirSrn6xDmN+WXjZvEhShkcFZm2Xp9Zn8
+         sGjO0dAgiynfmwwK5g+5SAmzo8jOJNLHwamxVdU43UJEz9vIqiLhrtTpovWNf2UEHh11
+         0aQT6ZGi1/WmjIKAz+syTAnnORk08/5nkkc4svUuExBShPZzO+8lrV+xmgdh2lyzZKxl
+         v5baywP1mSOoJgaApDp4wOuMT2PBiSBLWfnyXEpVn6UKAPDdFDYxs7Z0ARfl+8PaiELt
+         GO2VXPcXMKjhqbb9PGHUvU6WtoKuMVBxo8G71RsBp8RhZAydMJJOzEEjMbHZhbkY4QJ9
+         XWew==
+X-Gm-Message-State: AOAM530PufelgicdZLOZzyFdbE/v0RkQftuArE4J2S/oIpJ4x+moXRII
+        IAqv0QUswe2ITCBd2cg8Z4X6me6Q/XXj1xjHbQYEKw==
+X-Google-Smtp-Source: ABdhPJwkD4NBCsYJCrEGudQHrl3n4XCoQFQunN5fD0Av9+UeGss5C/xYh6EoMYvlQ2BTtWl6HgiteKNolpbFPYtmWKA=
+X-Received: by 2002:adf:fb05:0:b0:20a:e113:8f3f with SMTP id
+ c5-20020adffb05000000b0020ae1138f3fmr20501121wrr.534.1652824345517; Tue, 17
+ May 2022 14:52:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <4195.1652824157.1@famine>
-Date:   Tue, 17 May 2022 14:49:17 -0700
-Message-ID: <4196.1652824157@famine>
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220515023504.1823463-1-yosryahmed@google.com>
+ <20220515023504.1823463-3-yosryahmed@google.com> <20220517020840.vyfp5cit66fs2k2o@MBP-98dd607d3435.dhcp.thefacebook.com>
+In-Reply-To: <20220517020840.vyfp5cit66fs2k2o@MBP-98dd607d3435.dhcp.thefacebook.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Tue, 17 May 2022 14:51:49 -0700
+Message-ID: <CAJD7tkbDtO=wDXFDDmnPLDnEeXG6JQXr=xqqeim+OEC6xTOCew@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next v2 2/7] cgroup: bpf: flush bpf stats on rstat flush
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        cgroups@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jonathan Toppins <jtoppins@redhat.com> wrote:
-
->So running the following script:
+On Mon, May 16, 2022 at 7:08 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
->--%<-----
-> ip link add name link-bond0 type veth peer name link-end0
-> ip link add bond0 type bond mode 4 miimon 100
-> ip link set link-bond0 master bond0 down
-> ip netns add n1
-> ip link set link-end0 netns n1 up
-> ip link set bond0 up
-> cat /sys/class/net/bond0/bonding/ad_partner_mac
-> cat /sys/class/net/bond0/operstate
->--%<-----
+> On Sun, May 15, 2022 at 02:34:59AM +0000, Yosry Ahmed wrote:
+> > +
+> > +void bpf_rstat_flush(struct cgroup *cgrp, int cpu)
+> > +{
+> > +     struct bpf_rstat_flusher *flusher;
+> > +     struct bpf_rstat_flush_ctx ctx = {
+> > +             .cgrp = cgrp,
+> > +             .parent = cgroup_parent(cgrp),
+> > +             .cpu = cpu,
+> > +     };
+> > +
+> > +     rcu_read_lock();
+> > +     migrate_disable();
+> > +     spin_lock(&bpf_rstat_flushers_lock);
+> > +
+> > +     list_for_each_entry(flusher, &bpf_rstat_flushers, list)
+> > +             (void) bpf_prog_run(flusher->prog, &ctx);
+> > +
+> > +     spin_unlock(&bpf_rstat_flushers_lock);
+> > +     migrate_enable();
+> > +     rcu_read_unlock();
+> > +}
+> > diff --git a/kernel/cgroup/rstat.c b/kernel/cgroup/rstat.c
+> > index 24b5c2ab5598..0285d496e807 100644
+> > --- a/kernel/cgroup/rstat.c
+> > +++ b/kernel/cgroup/rstat.c
+> > @@ -2,6 +2,7 @@
+> >  #include "cgroup-internal.h"
+> >
+> >  #include <linux/sched/cputime.h>
+> > +#include <linux/bpf-rstat.h>
+> >
+> >  static DEFINE_SPINLOCK(cgroup_rstat_lock);
+> >  static DEFINE_PER_CPU(raw_spinlock_t, cgroup_rstat_cpu_lock);
+> > @@ -168,6 +169,7 @@ static void cgroup_rstat_flush_locked(struct cgroup *cgrp, bool may_sleep)
+> >                       struct cgroup_subsys_state *css;
+> >
+> >                       cgroup_base_stat_flush(pos, cpu);
+> > +                     bpf_rstat_flush(pos, cpu);
 >
->The bond reports its operstate to be "up" even though the bond will never
->be able to establish an LACP partner. Should bonding for active protocols,
->LACP, assert dormant[0] until the protocol has established and frames
->actually are passed?
+> Please use the following approach instead:
 >
->Having a predictable operstate where up actually means frames will attempt
->to be delivered would make management applications, f.e. Network Manager,
->easier to write. I have developers asking me what detailed states for LACP
->should they be looking for to determine when an LACP bond is "up". This
->seems like an incorrect implementation of operstate and RFC2863 3.1.12.
+> __weak noinline void bpf_rstat_flush(struct cgroup *cgrp, struct cgroup *parent, int cpu)
+> {
+> }
 >
->Does anyone see why this would be a bad idea?
-
-	The catch with LACP is that it has a fallback, in that ports
-that don't complete LACP negotiation go to "Solitary" state (I believe
-this was called "Individual" in older versions of the 802.1AX / 802.3ad
-standard; bonding calls this "is_individual" internally).
-
-	If there is no suitable partnered port, then a Solitary port is
-made active.  This permits connectivity if one end is set for LACP but
-the other end is not (e.g., PXE boot to a switch port set for LACP).
-For reference, I'm looking at 6.3.5 and 6.3.6 of IEEE 802.1AX-2020.
-
-	So, how should operstate be set if "has LACP partner" isn't
-really the test for whether or not the interface is (to use RCC 2863
-language) "in a condition to pass packets"?  In your example above, I
-believe the bond should be able to pass packets just fine, the packets
-just won't go anywhere after they leave the bond.
-
-	-J
-
->-Jon
+> and change above line to:
+>   bpf_rstat_flush(pos, cgroup_parent(pos), cpu);
 >
->[0] Documentation/networking/operstates.rst
+> Then tracing bpf fentry progs will be able to attach to bpf_rstat_flush.
+> Pretty much the patches 1, 2, 3 are not necessary.
+> In patch 4 add bpf_cgroup_rstat_updated/flush as two kfuncs instead of stable helpers.
 >
+> This way patches 1,2,3,4 will become 2 trivial patches and we will be
+> able to extend the interface between cgroup rstat and bpf whenever we need
+> without worrying about uapi stability.
+>
+> We had similar discusison with HID subsystem that plans to use bpf in HID
+> with the same approach.
+> See this patch set:
+> https://lore.kernel.org/bpf/20220421140740.459558-2-benjamin.tissoires@redhat.com/
+> You'd need patch 1 from it to enable kfuncs for tracing.
+>
+> Your patch 5 is needed as-is.
+> Yonghong,
+> please review it.
+> Different approach for patch 1-4 won't affect patch 5.
+> Patches 6 and 7 look good.
+>
+> With this approach that patch 7 will mostly stay as-is. Instead of:
+> +SEC("rstat/flush")
+> +int vmscan_flush(struct bpf_rstat_flush_ctx *ctx)
+> +{
+> +       struct vmscan_percpu *pcpu_stat;
+> +       struct vmscan *total_stat, *parent_stat;
+> +       struct cgroup *cgrp = ctx->cgrp, *parent = ctx->parent;
+>
+> it will become
+>
+> SEC("fentry/bpf_rstat_flush")
+> int BPF_PROG(vmscan_flush, struct cgroup *cgrp, struct cgroup *parent, int cpu)
 
----
-	-Jay Vosburgh, jay.vosburgh@canonical.com
+Thanks so much for taking the time to look into this.
+
+Indeed, this approach looks cleaner and simpler. I will incorporate
+that into a V1 and send it. Thanks!
