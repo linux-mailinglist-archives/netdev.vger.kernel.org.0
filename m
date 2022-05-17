@@ -2,116 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0026B529629
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 02:47:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFDDD529651
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 02:58:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235091AbiEQArL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 20:47:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44466 "EHLO
+        id S234290AbiEQA6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 20:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234427AbiEQArJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 20:47:09 -0400
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A00A13E29;
-        Mon, 16 May 2022 17:47:07 -0700 (PDT)
-Received: by mail-oi1-f180.google.com with SMTP id r1so20666995oie.4;
-        Mon, 16 May 2022 17:47:07 -0700 (PDT)
+        with ESMTP id S239719AbiEQAzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 20:55:53 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62042DEA3;
+        Mon, 16 May 2022 17:55:46 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso958517pjj.4;
+        Mon, 16 May 2022 17:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=oszu+rft9ZMt8hn3XlfQBiWXh4vkWerpEVjVpNGVwQE=;
+        b=GmR3175J1QJA++Kl/bkM18GAR0pdIOR/nKTuYJ02O2yIkNWXEOJPq5w2+cfh2DL/TI
+         +jpF745GD82YqiM0gAdhkEKWSc1XbAzth44QQ+UornMYJ4amJjWzRY33tQN2cmVR4ZWe
+         aUt8vVXkkVq0g7off74SJU92u11TirCMvQligM3DUzTK7LwzvsjXzY8jNQyQTQVHUY6G
+         Wl/ZlIgB8DVF8oJQKkNjJGtI74NFgq2+9SOhSvo8bQx38xZOaKs6snbLQD2nvg3DT4wT
+         j7yJRDZp4nZL3LnHSNNdGMqGRVp+SBRs8NMW1exWDQAv5MMUkn6s4sPJL4eNLfA873eH
+         Wwzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=iJgSIj5Vbgqm2lP3FwW0wvqzkGV+5Vch0R+WtavPeG0=;
-        b=W6Iaxo2tTFnThXN2NtnFkpzgiSOSvv5Irqvx6XBdsnSbQcR4kQ1Q2l/rO+o76W0Ky6
-         Ncv5M4w6c/XHLsbqcUbZkd9CJb1/y+awEgq/Dd06FPkUwbCoqJaIteTFNyAzUmbv3sJU
-         AhPzCeQ0p8AThNuf8Epc7ax6dfQkKIlunk61k3ShWNTbs3oHQXuiaXzSjMj58o1qN4pb
-         YyJ9fKLbxqDzmRgpqEpfeiKR2+XxU93/sJwuP4vtAp3c48qvTaO2tkjG3HRUR2h6hrwX
-         yu8IAaz72LGJPRq/jEq/1Pec8LFVRFqi3tqtnNWZ/DZyng5jm7+oJc2fv6WNCGriPMxW
-         C3kA==
-X-Gm-Message-State: AOAM531qgZP4KLzD2R3a+N1zBPKPTaHFp/obln92Vq8pKQaBeEzaY9Xt
-        PFzxpn8zxYEuZpMNtjWKwQ==
-X-Google-Smtp-Source: ABdhPJzxUe7lRWwSsk4LYTIlf0trAXfo6l1O3t5y3u2IE0dc+3FfnlSJCRjFtF4GffGFbK7487ochw==
-X-Received: by 2002:a05:6808:1585:b0:326:6477:64b2 with SMTP id t5-20020a056808158500b00326647764b2mr9172703oiw.173.1652748426873;
-        Mon, 16 May 2022 17:47:06 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id g9-20020a05683030a900b0060603221248sm4499696ots.24.2022.05.16.17.47.05
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=oszu+rft9ZMt8hn3XlfQBiWXh4vkWerpEVjVpNGVwQE=;
+        b=veYIC+h+A4zg0b7UWqwWJlDCvLPIpRUv/1yxy+CU1IYSF6NNZ8psnOmMAveYLobQna
+         5WV24ZS0mQzhki7NoxQ/CSCZUNa2HfiPkLNtnwaGg9a2xfCBPJDmgxTEPJItSaxvEkWW
+         K71kzgFbEyGKo14lwtb8sts5GoBhkIRc0NZ3VVy/FHFBLAoz0JkpQ8B5MMvMYq/gGH/a
+         uyX11BztmYu/rl67yBhXt3wOsrRO8/VXqo+vDaFiZhQpDhE93VfX9hBmu5lInyKzX5mG
+         o8R9OOJfSY8az1n+iWoFxzUJW1r6KZATradB2fy0TcCK/2TxxjI9vzgXHvSZCjGF1VSK
+         7VJQ==
+X-Gm-Message-State: AOAM532+XcaJnOvigQUJUa3x3O8MimYT/47q0OUDwva7KQPenxFg8CwX
+        rewvzBJenoF+SUXxSBhkAMzaV8OeOgEElw==
+X-Google-Smtp-Source: ABdhPJx6yIrIZNvt4OMM4DykP/blCEK67dJ+2zkDI1WzYEMFAxHoTyKI6A15UXJyEq9tmctm+aFOgQ==
+X-Received: by 2002:a17:902:ce11:b0:15f:4acc:f1fb with SMTP id k17-20020a170902ce1100b0015f4accf1fbmr19520857plg.76.1652748945576;
+        Mon, 16 May 2022 17:55:45 -0700 (PDT)
+Received: from localhost ([2409:10:24a0:4700:e8ad:216a:2a9d:6d0c])
+        by smtp.gmail.com with ESMTPSA id p26-20020a62b81a000000b0050dc7628177sm7474333pfe.81.2022.05.16.17.55.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 17:47:06 -0700 (PDT)
-Received: (nullmailer pid 3682863 invoked by uid 1000);
-        Tue, 17 May 2022 00:47:04 -0000
-Date:   Mon, 16 May 2022 19:47:04 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Mark Brown <broonie@kernel.org>,
-        LABBE Corentin <clabbe@baylibre.com>,
-        alexandre.torgue@foss.st.com, calvin.johnson@oss.nxp.com,
-        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, joabreu@synopsys.com,
-        krzysztof.kozlowski+dt@linaro.org, kuba@kernel.org,
-        lgirdwood@gmail.com, linux@armlinux.org.uk, pabeni@redhat.com,
-        peppe.cavallaro@st.com, samuel@sholland.org, wens@csie.org,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev
-Subject: Re: [PATCH 3/6] dt-bindings: net: Add documentation for phy-supply
-Message-ID: <20220517004704.GA3654797-robh@kernel.org>
-References: <20220509074857.195302-1-clabbe@baylibre.com>
- <20220509074857.195302-4-clabbe@baylibre.com>
- <YnkGV8DyTlCuT92R@lunn.ch>
- <YnkWl+xYCX8r9DE7@Red>
- <Ynk7L07VH/RFVzl6@lunn.ch>
- <Ynk9ccoVh32Deg45@sirena.org.uk>
- <YnlDbbegQ1IbbaHy@lunn.ch>
+        Mon, 16 May 2022 17:55:44 -0700 (PDT)
+From:   Stafford Horne <shorne@gmail.com>
+To:     LKML <linux-kernel@vger.kernel.org>
+Cc:     Openrisc <openrisc@lists.librecores.org>,
+        Stafford Horne <shorne@gmail.com>,
+        Jonas Bonn <jonas@southpole.se>,
+        Stefan Kristiansson <stefan.kristiansson@saunalahti.fi>,
+        Karol Gugala <kgugala@antmicro.com>,
+        Mateusz Holenko <mholenko@antmicro.com>,
+        Gabriel Somlo <gsomlo@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH v2 06/13] openrisc: Update litex defconfig to support glibc userland
+Date:   Tue, 17 May 2022 09:55:03 +0900
+Message-Id: <20220517005510.3500105-7-shorne@gmail.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220517005510.3500105-1-shorne@gmail.com>
+References: <20220517005510.3500105-1-shorne@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnlDbbegQ1IbbaHy@lunn.ch>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UPPERCASE_50_75 autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 09, 2022 at 06:38:05PM +0200, Andrew Lunn wrote:
-> > No, that's not a thing - the supplies are individual, named properties
-> > and even if there were a list we'd still want them to be named so it's
-> > clear what's going on.
-> 
-> So we have a collection of regulators, varying in numbers between
-> different PHYs, with different vendor names and purposes. In general,
-> they all should be turned on. Yet we want them named so it is clear
-> what is going on.
+I have been using a litex SoC for glibc verification.  Update the
+default litex config to support required userspace API's needed for the
+full glibc testsuite to pass.
 
-In what order do we turn the supplies on? How much time in between each 
-one? Does an external clock need to be running before or after (and how 
-long after). Oh, and what about resets and the order and timing of them 
-relative to everything else?
+This includes enabling the litex mmc driver and filesystems used
+in a typical litex environment.
 
-This always happens in the same order. First, it's just one resource 
-like a regulator or reset. Then one more. Then another device with some 
-timing constraints. If we wanted a generic solution in DT, it would need 
-to be able to describe any power sequencing waveform. But we don't have 
-that because we don't want it. 
+Signed-off-by: Stafford Horne <shorne@gmail.com>
+---
+ arch/openrisc/configs/or1klitex_defconfig | 33 +++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-> Is there a generic solution here so that the phylib core can somehow
-> enumerate them and turn them on, without actually knowing what they
-> are called because they have vendor specific names in order to be
-> clear what they are?
+diff --git a/arch/openrisc/configs/or1klitex_defconfig b/arch/openrisc/configs/or1klitex_defconfig
+index d695879a4d26..4c0138340bd9 100644
+--- a/arch/openrisc/configs/or1klitex_defconfig
++++ b/arch/openrisc/configs/or1klitex_defconfig
+@@ -1,22 +1,55 @@
++CONFIG_SYSVIPC=y
++CONFIG_POSIX_MQUEUE=y
++CONFIG_CGROUPS=y
++CONFIG_NAMESPACES=y
++CONFIG_USER_NS=y
+ CONFIG_BLK_DEV_INITRD=y
+ CONFIG_CC_OPTIMIZE_FOR_SIZE=y
++CONFIG_SGETMASK_SYSCALL=y
+ CONFIG_EMBEDDED=y
+ CONFIG_OPENRISC_BUILTIN_DTB="or1klitex"
++# CONFIG_OPENRISC_HAVE_INST_RORI is not set
+ CONFIG_HZ_100=y
++CONFIG_OPENRISC_HAVE_SHADOW_GPRS=y
+ CONFIG_NET=y
+ CONFIG_PACKET=y
++CONFIG_PACKET_DIAG=y
+ CONFIG_UNIX=y
++CONFIG_UNIX_DIAG=y
+ CONFIG_INET=y
++CONFIG_IP_MULTICAST=y
++CONFIG_IP_ADVANCED_ROUTER=y
++CONFIG_INET_UDP_DIAG=y
++CONFIG_INET_RAW_DIAG=y
++# CONFIG_WIRELESS is not set
++# CONFIG_ETHTOOL_NETLINK is not set
+ CONFIG_DEVTMPFS=y
+ CONFIG_DEVTMPFS_MOUNT=y
+ CONFIG_OF_OVERLAY=y
+ CONFIG_NETDEVICES=y
+ CONFIG_LITEX_LITEETH=y
++# CONFIG_WLAN is not set
+ CONFIG_SERIAL_LITEUART=y
+ CONFIG_SERIAL_LITEUART_CONSOLE=y
+ CONFIG_TTY_PRINTK=y
++# CONFIG_GPIO_CDEV is not set
++CONFIG_MMC=y
++CONFIG_MMC_LITEX=y
++# CONFIG_VHOST_MENU is not set
++# CONFIG_IOMMU_SUPPORT is not set
+ CONFIG_LITEX_SOC_CONTROLLER=y
++CONFIG_EXT2_FS=y
++CONFIG_EXT3_FS=y
++CONFIG_MSDOS_FS=y
++CONFIG_VFAT_FS=y
++CONFIG_EXFAT_FS=y
+ CONFIG_TMPFS=y
++CONFIG_NFS_FS=y
++CONFIG_NFS_V3_ACL=y
++CONFIG_NFS_V4=y
++CONFIG_NLS_CODEPAGE_437=y
++CONFIG_NLS_ISO8859_1=y
++CONFIG_LSM="lockdown,yama,loadpin,safesetid,integrity,bpf"
+ CONFIG_PRINTK_TIME=y
+ CONFIG_PANIC_ON_OOPS=y
+ CONFIG_SOFTLOCKUP_DETECTOR=y
+-- 
+2.31.1
 
-Other devices have specific compatibles so that the device can be 
-identified and powered up. Once again, MDIO should not be special here.
-
-> There must be a solution to this, phylib cannot be the first subsystem
-> to have this requirement, so if you could point to an example, that
-> would be great.
-
-Well, no one seems to want to make non-discoverable devices on 
-'discoverable' buses work. Still an issue for PCI and USB. I thought 
-MDIO had a solution here to probe any devices in the DT even if not 
-discovered.
-
-Rob
