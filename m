@@ -2,64 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 72EF6529903
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 07:19:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 26F74529906
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 07:26:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235406AbiEQFTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 01:19:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
+        id S236528AbiEQF03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 01:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229553AbiEQFTi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 01:19:38 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 482394248F;
-        Mon, 16 May 2022 22:19:37 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so1392496pjb.2;
-        Mon, 16 May 2022 22:19:37 -0700 (PDT)
+        with ESMTP id S229553AbiEQF01 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 01:26:27 -0400
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C53DE6580;
+        Mon, 16 May 2022 22:26:25 -0700 (PDT)
+Received: by mail-pl1-x62a.google.com with SMTP id i8so2458216plr.13;
+        Mon, 16 May 2022 22:26:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=HGxZBKb/3ekC1p29+M5pY+8bLNl1xB/+3c3RkyhR34k=;
-        b=XdRNsZ2twmwVx7hhoVomoZWNcrZ3pcblOIVKVaS1N/vWQqBgcmmrqzJKNEz4OoZhoQ
-         mhJDqdpbSvEWyzzfgz8bcwggIiqCTiZCqUpqOUaCMb40Iwlx3xmFbwK9TmkiV2fYKInD
-         S/9BCGENGHC12h4/5KgYPbcnduPfIyG+zYq/jCcYArziQ319vOHeoXHP7/bGi3Od4PAW
-         1QJY6fb8Og/7gQ4050RJwtS43uTzOVRnLIisjuK1Jd2b1Pb8LGCJEnBEj6sOw0bg6fcl
-         oJD6RfEhMmYdGmcuKRO2EWpHsUvIugO1iV9+r6Zs4bSGD7NEp50gPU2Gwa6fNDVExZ2Q
-         e8og==
+        bh=2WVonoFPACFUipe4NbRFbFN0nIUqkUG23uCq63i0slg=;
+        b=kWZOdkG/WGjrNsg4LLI2XmwxAcqNqCArzdhqe6iMtZ69KhpjYOk6+iLNRtw4FykbJW
+         umAmEN1y/7dY+S2CpIK5IDV3KFRO/D/VoKoAOF5x7rtB7+knZFi/IbSax8K+zOLTJ8Sy
+         j8Jdgmnq4lmjtczodGEUHEaAWpFA4QLQjYzPzhdNnmb+RVi4rmwULabWH18XkTgam++L
+         2+5++P4tk66RWklGfQ0bbgxya3lFy2QuVkK2VMiq3i7vpvGdU+nZ3+7t7Dqrx0sA8n2O
+         k08NdQ3RhIEEqne4RqD952G79A2HidPPhIP7VPiErqQA62wzMo5XEvwGFzmA+ibCBq9I
+         gXHg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=HGxZBKb/3ekC1p29+M5pY+8bLNl1xB/+3c3RkyhR34k=;
-        b=h3yi8LVw4Las7bJ9aiYxfqIJjbuUFw6gIC5VOLHQt4LmJ8ZEggUTQsVgT2QaaOzS/e
-         CSAtSpFsw7l4lVPbGA19QRXP2/kFrAIPbJz5VKLhA13EQLT9EizmgUDj0+stMPD8Owb5
-         rliLsuUXUJ4XBVfO9kI12YWE4myM/qiHLbbXc+a6DJUqnbZqff1gGlcE7pqtqrvmAW2e
-         2gVRIMcIOJ4A4j2ZFzXoJ+NPExC+aaHw42zRdPyXKtVvhZg7oj1l/6E+AytKYAZ9mRx/
-         b6yOw+qCTljB8vW8l8DoaSn2wXc0m1n4Bh5Ff+a6hQDFj0fNwZ5hLur3Lk6n4pOJ3QZu
-         QWpA==
-X-Gm-Message-State: AOAM5339voiMvcGLgzgcTA0eRCvefTtNhnsLWllP/3e9fgTGZztJKyg1
-        iemePxNrnEcnBkqqqaR9ShcOwp8uJeg+ICRctsb1hQcTBGhZhw==
-X-Google-Smtp-Source: ABdhPJxdl1+BkSItOx4mfYPN2Pq1PxPcjJ5hqIyGIaMFzzXpudrP61PO2Lp6hc4mA2FM5gGX4atQsc8Xeg3liu2s+7Q=
-X-Received: by 2002:a17:902:8203:b0:15f:4423:6e9c with SMTP id
- x3-20020a170902820300b0015f44236e9cmr21038627pln.25.1652764776757; Mon, 16
- May 2022 22:19:36 -0700 (PDT)
+        bh=2WVonoFPACFUipe4NbRFbFN0nIUqkUG23uCq63i0slg=;
+        b=nauF18OdH/OSO0x4uCF6DaEGqDi5OTD5QrDHvZLztJMw6v3T7jhJbVRTFgwWCm2JL2
+         ojH+RMOltb7Rby8VaTzzrCyqGjAUlH+FJcBMLATTeWTVIGv4lnqanClBBcOutxfhcoCi
+         R8w72XNr9HL0LblCqEWgRJlwabtRKyXpqdNffrjifY2C1yMri2dymQHE0B+L1LTgVufD
+         91Si8v7waPGCsK482kWfXy5FVjX5gd/+AGioMXxVGbWYXU5+EYu9Eyd/7u1fePpm4YRs
+         lx9q4ueczggRjP2a5ALtlZOUy91CH4Segy5PD4XNXQiGcsdDr0dts6UrN/6finFcKKdk
+         uOaA==
+X-Gm-Message-State: AOAM530y5f6W7xiomkFkPc/dzYfrRPZ7HmwB+i5041CwdFIEudloxmuw
+        52OnbnEVnxl0FYxAbi0L8mSz3hTDF1Lu7UwaWec=
+X-Google-Smtp-Source: ABdhPJxK1Sb9OABVsqLNuytHUY1ylQaSlSN1Hel7uikdJalz39L2h+1JgEOmorQh2bp5PA3zlxmdvjWvP0sIBL27BX4=
+X-Received: by 2002:a17:902:8c8f:b0:15e:ab1c:591b with SMTP id
+ t15-20020a1709028c8f00b0015eab1c591bmr21116189plo.171.1652765185372; Mon, 16
+ May 2022 22:26:25 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220513224827.662254-1-mathew.j.martineau@linux.intel.com>
- <20220513224827.662254-6-mathew.j.martineau@linux.intel.com> <20220517013217.oxbpwjilwr4fzvuv@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20220517013217.oxbpwjilwr4fzvuv@kafai-mbp.dhcp.thefacebook.com>
+ <20220513224827.662254-2-mathew.j.martineau@linux.intel.com> <20220517010730.mmv6u2h25xyz4uwl@kafai-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20220517010730.mmv6u2h25xyz4uwl@kafai-mbp.dhcp.thefacebook.com>
 From:   Geliang Tang <geliangtang@gmail.com>
-Date:   Tue, 17 May 2022 13:19:38 +0800
-Message-ID: <CA+WQbwuenfY9Pxet6g0Tvo++JOAmU98+QymuWVsi-2iRpPq3oQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 5/7] selftests/bpf: verify token of struct mptcp_sock
+Date:   Tue, 17 May 2022 13:26:27 +0800
+Message-ID: <CA+WQbwvHidwt0ua=g67CJfmjtCow8SCvZp4Sz=2AZa+ocDxnpg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/7] bpf: add bpf_skc_to_mptcp_sock_proto
 To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Geliang Tang <geliang.tang@suse.com>,
+Cc:     Geliang Tang <geliang.tang@suse.com>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         MPTCP Upstream <mptcp@lists.linux.dev>,
+        Nicolas Rybowski <nicolas.rybowski@tessares.net>,
         Matthieu Baerts <matthieu.baerts@tessares.net>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
@@ -74,70 +75,73 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Martin KaFai Lau <kafai@fb.com> =E4=BA=8E2022=E5=B9=B45=E6=9C=8817=E6=97=A5=
-=E5=91=A8=E4=BA=8C 09:32=E5=86=99=E9=81=93=EF=BC=9A
+=E5=91=A8=E4=BA=8C 09:07=E5=86=99=E9=81=93=EF=BC=9A
 >
-> On Fri, May 13, 2022 at 03:48:25PM -0700, Mat Martineau wrote:
+> On Fri, May 13, 2022 at 03:48:21PM -0700, Mat Martineau wrote:
 > [ ... ]
 >
-> > +/*
-> > + * Parse the token from the output of 'ip mptcp monitor':
-> > + *
-> > + * [       CREATED] token=3D3ca933d3 remid=3D0 locid=3D0 saddr4=3D127.=
-0.0.1 ...
-> > + * [       CREATED] token=3D2ab57040 remid=3D0 locid=3D0 saddr4=3D127.=
-0.0.1 ...
-> How stable is the string format ?
+> > diff --git a/include/net/mptcp.h b/include/net/mptcp.h
+> > index 8b1afd6f5cc4..2ba09de955c7 100644
+> > --- a/include/net/mptcp.h
+> > +++ b/include/net/mptcp.h
+> > @@ -284,4 +284,10 @@ static inline int mptcpv6_init(void) { return 0; }
+> >  static inline void mptcpv6_handle_mapped(struct sock *sk, bool mapped)=
+ { }
+> >  #endif
+> >
+> > +#if defined(CONFIG_MPTCP) && defined(CONFIG_BPF_SYSCALL)
+> > +struct mptcp_sock *bpf_mptcp_sock_from_subflow(struct sock *sk);
+> Can this be inline ?
+
+This function can't be inline since it uses struct mptcp_subflow_context.
+
+mptcp_subflow_context is defined in net/mptcp/protocol.h, and we don't
+want to export it to user space in net/mptcp/protocol.h.
+
 >
-> If it happens to have some unrelated mptcp connection going on, will the =
-test
-> break ?
+> > +#else
+> > +static inline struct mptcp_sock *bpf_mptcp_sock_from_subflow(struct so=
+ck *sk) { return NULL; }
+> > +#endif
+> > +
+> >  #endif /* __NET_MPTCP_H */
+>
+> [ ... ]
+>
+> > diff --git a/net/mptcp/bpf.c b/net/mptcp/bpf.c
+> > new file mode 100644
+> > index 000000000000..535602ba2582
+> > --- /dev/null
+> > +++ b/net/mptcp/bpf.c
+> > @@ -0,0 +1,22 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +/* Multipath TCP
+> > + *
+> > + * Copyright (c) 2020, Tessares SA.
+> > + * Copyright (c) 2022, SUSE.
+> > + *
+> > + * Author: Nicolas Rybowski <nicolas.rybowski@tessares.net>
+> > + */
+> > +
+> > +#define pr_fmt(fmt) "MPTCP: " fmt
+> > +
+> > +#include <linux/bpf.h>
+> > +#include "protocol.h"
+> > +
+> > +struct mptcp_sock *bpf_mptcp_sock_from_subflow(struct sock *sk)
+> > +{
+> > +     if (sk && sk_fullsock(sk) && sk->sk_protocol =3D=3D IPPROTO_TCP &=
+& sk_is_mptcp(sk))
+> > +             return mptcp_sk(mptcp_subflow_ctx(sk)->conn);
+> > +
+> > +     return NULL;
+> > +}
+> > +EXPORT_SYMBOL(bpf_mptcp_sock_from_subflow);
+> Is EXPORT_SYMBOL needed ?
 
-Hi Martin,
-
-Yes, it will break in that case. How can I fix this? Should I run the
-test in a special net namespace?
-
-'ip mptcp monitor' can easily run in a special net namespace:
-
-ip -net ns1 mptcp monitor
-
-But I don't know how to run start_server() and connect_to_fd() in a
-special namespace. Could you please give me some suggestions about
-this?
+Will drop in v5.
 
 Thanks,
 -Geliang
 
->
-> > + */
-> > +static __u32 get_msk_token(void)
-> > +{
-> > +     char *prefix =3D "[       CREATED] token=3D";
-> > +     char buf[BUFSIZ] =3D {};
-> > +     __u32 token =3D 0;
-> > +     ssize_t len;
-> > +     int fd;
-> > +
-> > +     sync();
-> > +
-> > +     fd =3D open(monitor_log_path, O_RDONLY);
-> > +     if (!ASSERT_GE(fd, 0, "Failed to open monitor_log_path"))
-> > +             return token;
-> > +
-> > +     len =3D read(fd, buf, sizeof(buf));
-> > +     if (!ASSERT_GT(len, 0, "Failed to read monitor_log_path"))
-> > +             goto err;
-> > +
-> > +     if (strncmp(buf, prefix, strlen(prefix))) {
-> > +             log_err("Invalid prefix %s", buf);
-> > +             goto err;
-> > +     }
-> > +
-> > +     token =3D strtol(buf + strlen(prefix), NULL, 16);
-> > +
-> > +err:
-> > +     close(fd);
-> > +     return token;
-> > +}
-> > +
 >
