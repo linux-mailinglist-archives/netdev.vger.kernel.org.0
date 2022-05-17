@@ -2,205 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9807F529B66
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:49:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CE26529B68
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:49:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239678AbiEQHtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 03:49:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
+        id S239194AbiEQHtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 03:49:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241923AbiEQHss (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:48:48 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617F447395;
-        Tue, 17 May 2022 00:48:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=4SmYl2RiNkyBTO0IZCn4bqjgH7FQHbYOmBz1wzQ8Kb8=;
-        t=1652773725; x=1653983325; b=qTSHjAypA8UgsIHAbwfUcX3HQsNZpvXLLCXfzOM2bhWIgJH
-        nQmFBBjSHxN+c2UXTaREVkAmRZvbiEntkXsbMe5pV+t/KEW6wpIBDXeC4CEseAdPbjGet13OrhOUm
-        C6k6xq7PzwnApBsjhud0oE8Yg1DoWHC5yHTQ2yly1Wow9YUPloM1QvHtuNHTPJ8UjxVWnQUuqewC9
-        aGZkqHPY3ysUQS5F9g26Gi1idXluB8zJ3+Dfa8IyY2vUNgA69VhTuXi+Tr30NNRZMKepJgSox0xkX
-        vDkGx+tRSzYkgSCIIJfBHuO7vBaa4z1qPw1+mk7J3Au2NbtQ3K4SBAqaUbb74zaA==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nqrwP-00EGby-In;
-        Tue, 17 May 2022 09:48:25 +0200
-Message-ID: <74bdbec0580ed05d0f18533eae9af50bc0a4a0ef.camel@sipsolutions.net>
-Subject: Re: [PATCH net-next] net: ifdefy the wireless pointers in struct
- net_device
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        alex.aring@gmail.com, stefan@datenfreihafen.org,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        sven@narfation.org, linux-wireless@vger.kernel.org,
-        linux-wpan@vger.kernel.org
-Date:   Tue, 17 May 2022 09:48:24 +0200
-In-Reply-To: <8e9f1b04-d17b-2812-22bb-e62b5560aa6e@gmail.com>
-References: <20220516215638.1787257-1-kuba@kernel.org>
-         <8e9f1b04-d17b-2812-22bb-e62b5560aa6e@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+        with ESMTP id S240976AbiEQHtj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:49:39 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80A5445042;
+        Tue, 17 May 2022 00:49:38 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id r30so5799973wra.13;
+        Tue, 17 May 2022 00:49:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WTGEJWoQ+KMazLH3yrW+72dqg/PgbNlHkEqCaVYjBog=;
+        b=S3tFYVXPftNGoe5TTjpXm86BtSRghMjVlXdOUH2GD46ypvT1ThoEiwVTzn7hgCGpJk
+         +nHv0D//dyxLGIkqyM81f3shdBf/VjFq0DIkE9F9u2HKyakKyu/E+jPaM3Z/3vskPz9z
+         CGZmze3XBYZgRhfGtTfYZjC01r8YvACZ9Gb9j6c81Uy9iRMyFcqaPIcPOP5hIoGVePTW
+         dFewKBjJ38Ksu+dAIpzjG2FomSnV8cEFnnXxyMf5qbB0BBSK2O/Dhl2GsowhnjvunWpW
+         tx3yeC92V1dHnI4zakpxXu8sJtW4pnncqdJNE28QdzM2I2bFkORTcquXiL3OeNiVxnql
+         tl1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WTGEJWoQ+KMazLH3yrW+72dqg/PgbNlHkEqCaVYjBog=;
+        b=iL6buniMRSDpD2xPO5RjodaB9AYGzA0MIVtAWmdhuj82DMnJiujvz+Yp4iGpPaUQvh
+         GvsDA75HIHSq8xnY/9cRI6DGEq5J15NRKedpWHERfe6KchdTaonPFrLTMDu42G1p5/Kv
+         d3p9muqnUgsy0+mfhLK1pNdDMaOnSzOvJH/estgGQAdnYEAy78nwAQrov5ToIryetXFI
+         WJxr0V7Xkp9MNRV6h9SgnpBUU6GEd3KSZl+4vdFOdeBQfb0XeCZBy4wdzZorp9ChCNsX
+         N4EGPYBtZOdtcUq5mfBxrgn7q3Rrg4dlXyzX+O0F4LRVckzMYHKqTasKXr2FnLSSpa5X
+         9iTw==
+X-Gm-Message-State: AOAM532TTcurBjozB4OYhATmKnItdFGfhqz5jOZ32RBADQBlCulnBAFY
+        esacUuQCoJrX0dZ3J2JeL4A=
+X-Google-Smtp-Source: ABdhPJwJinC9xx8aL+n7AyfzFJtP5Esjdc5ojELdSIdDtMIUyooc4KUFhKwdwVHaXenKsX4dnQ61gA==
+X-Received: by 2002:a5d:4988:0:b0:20d:9b8:e560 with SMTP id r8-20020a5d4988000000b0020d09b8e560mr6820985wrq.33.1652773776628;
+        Tue, 17 May 2022 00:49:36 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id m26-20020a7bce1a000000b003942a244f3fsm1200543wmc.24.2022.05.17.00.49.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 00:49:36 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Tue, 17 May 2022 09:49:33 +0200
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH bpf-next 1/2] cpuidle/rcu: Making arch_cpu_idle and
+ rcu_idle_exit noinstr
+Message-ID: <YoNTjXBDLQe9xj27@krava>
+References: <20220515203653.4039075-1-jolsa@kernel.org>
+ <5b4bd044-ba88-649b-9b85-e08e175691f9@fb.com>
 MIME-Version: 1.0
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5b4bd044-ba88-649b-9b85-e08e175691f9@fb.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-05-16 at 19:12 -0700, Florian Fainelli wrote:
->=20
-> On 5/16/2022 2:56 PM, Jakub Kicinski wrote:
-> > Most protocol-specific pointers in struct net_device are under
-> > a respective ifdef. Wireless is the notable exception. Since
-> > there's a sizable number of custom-built kernels for datacenter
-> > workloads which don't build wireless it seems reasonable to
-> > ifdefy those pointers as well.
-> >=20
-> > While at it move IPv4 and IPv6 pointers up, those are special
-> > for obvious reasons.
-> >=20
-> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
->=20
-> Could not we move to an union of pointers in the future since in many=20
-> cases a network device can only have one of those pointers at any given=
-=20
-> time?
+On Mon, May 16, 2022 at 07:54:37PM -0700, Yonghong Song wrote:
+> 
+> 
+> On 5/15/22 1:36 PM, Jiri Olsa wrote:
+> > Making arch_cpu_idle and rcu_idle_exit noinstr. Both functions run
+> > in rcu 'not watching' context and if there's tracer attached to
+> > them, which uses rcu (e.g. kprobe multi interface) it will hit RCU
+> > warning like:
+> > 
+> >    [    3.017540] WARNING: suspicious RCU usage
+> >    ...
+> >    [    3.018363]  kprobe_multi_link_handler+0x68/0x1c0
+> >    [    3.018364]  ? kprobe_multi_link_handler+0x3e/0x1c0
+> >    [    3.018366]  ? arch_cpu_idle_dead+0x10/0x10
+> >    [    3.018367]  ? arch_cpu_idle_dead+0x10/0x10
+> >    [    3.018371]  fprobe_handler.part.0+0xab/0x150
+> >    [    3.018374]  0xffffffffa00080c8
+> >    [    3.018393]  ? arch_cpu_idle+0x5/0x10
+> >    [    3.018398]  arch_cpu_idle+0x5/0x10
+> >    [    3.018399]  default_idle_call+0x59/0x90
+> >    [    3.018401]  do_idle+0x1c3/0x1d0
+> > 
+> > The call path is following:
+> > 
+> > default_idle_call
+> >    rcu_idle_enter
+> >    arch_cpu_idle
+> >    rcu_idle_exit
+> > 
+> > The arch_cpu_idle and rcu_idle_exit are the only ones from above
+> > path that are traceble and cause this problem on my setup.
+> > 
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> >   arch/x86/kernel/process.c | 2 +-
+> >   kernel/rcu/tree.c         | 2 +-
+> >   2 files changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/arch/x86/kernel/process.c b/arch/x86/kernel/process.c
+> > index b370767f5b19..1345cb0124a6 100644
+> > --- a/arch/x86/kernel/process.c
+> > +++ b/arch/x86/kernel/process.c
+> > @@ -720,7 +720,7 @@ void arch_cpu_idle_dead(void)
+> >   /*
+> >    * Called from the generic idle code.
+> >    */
+> > -void arch_cpu_idle(void)
+> > +void noinstr arch_cpu_idle(void)
+> 
+> noinstr includes a lot of attributes:
+> 
+> #define noinstr                                                         \
+>         noinline notrace __attribute((__section__(".noinstr.text")))    \
+>         __no_kcsan __no_sanitize_address __no_profile __no_sanitize_coverage
+> 
+> should we use notrace here?
 
-Then at the very least we'd need some kind of type that we can assign to
-disambiguate, because today e.g. we have a netdev notifier (and other
-code) that could get a non-wireless netdev and check like this:
+hm right, so notrace should be enough for our case (kprobe_multi)
+which is based on ftrace/fprobe jump
 
-static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
-                                         unsigned long state, void *ptr)
-{
-        struct net_device *dev =3D netdev_notifier_info_to_dev(ptr);
-        struct wireless_dev *wdev =3D dev->ieee80211_ptr;
-[...]
-        if (!wdev)
-                return NOTIFY_DONE;
+noinstr (among other things) adds the function also the kprobes
+blacklist, which will prevent standard kprobes to attach
 
+ASAICS standard kprobes use rcu in probe path as well, like in
+opt_pre_handler function
 
+so I think we should go with noinstr
 
-We could probably use the netdev->dev.type for this though, that's just
-a pointer we can compare to. We'd have to set it differently (today
-cfg80211 sets it based on whether or not you have ieee80211_ptr, we'd
-have to turn that around), but that's not terribly hard, especially
-since wireless drivers now have to call cfg80211_register_netdevice()
-anyway, rather than register_netdevice() directly.
+jirka
 
-
-Something like the patch below might do that, but I haven't carefully
-checked it yet, nor checked if there are any paths in mac80211/drivers
-that might be doing this check - and it looks from Jakub's patch that
-batman code would like to check this too.
-
-johannes
-
-diff --git a/net/wireless/core.c b/net/wireless/core.c
-index 3e5d12040726..6ea2a597f4ca 100644
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -1192,7 +1192,7 @@ void cfg80211_unregister_wdev(struct wireless_dev *wd=
-ev)
- }
- EXPORT_SYMBOL(cfg80211_unregister_wdev);
-=20
--static const struct device_type wiphy_type =3D {
-+const struct device_type wiphy_type =3D {
- 	.name	=3D "wlan",
- };
-=20
-@@ -1369,6 +1369,9 @@ int cfg80211_register_netdevice(struct net_device *de=
-v)
-=20
- 	lockdep_assert_held(&rdev->wiphy.mtx);
-=20
-+	/* this lets us identify our netdevs in the future */
-+	SET_NETDEV_DEVTYPE(dev, &wiphy_type);
-+
- 	/* we'll take care of this */
- 	wdev->registered =3D true;
- 	wdev->registering =3D true;
-@@ -1394,7 +1397,7 @@ static int cfg80211_netdev_notifier_call(struct notif=
-ier_block *nb,
- 	struct cfg80211_registered_device *rdev;
- 	struct cfg80211_sched_scan_request *pos, *tmp;
-=20
--	if (!wdev)
-+	if (!netdev_is_wireless(dev))
- 		return NOTIFY_DONE;
-=20
- 	rdev =3D wiphy_to_rdev(wdev->wiphy);
-@@ -1403,7 +1406,6 @@ static int cfg80211_netdev_notifier_call(struct notif=
-ier_block *nb,
-=20
- 	switch (state) {
- 	case NETDEV_POST_INIT:
--		SET_NETDEV_DEVTYPE(dev, &wiphy_type);
- 		wdev->netdev =3D dev;
- 		/* can only change netns with wiphy */
- 		dev->features |=3D NETIF_F_NETNS_LOCAL;
-diff --git a/net/wireless/core.h b/net/wireless/core.h
-index 2c195067ddff..e256ea5caf49 100644
---- a/net/wireless/core.h
-+++ b/net/wireless/core.h
-@@ -219,6 +219,13 @@ void cfg80211_init_wdev(struct wireless_dev *wdev);
- void cfg80211_register_wdev(struct cfg80211_registered_device *rdev,
- 			    struct wireless_dev *wdev);
-=20
-+extern const struct device_type wiphy_type;
-+
-+static inline bool netdev_is_wireless(struct net_device *dev)
-+{
-+	return dev && dev->dev.type =3D=3D &wiphy_type && dev->ieee80211_ptr;
-+}
-+
- static inline void wdev_lock(struct wireless_dev *wdev)
- 	__acquires(wdev)
- {
-diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
-index 342dfefb6eca..58bc3750c380 100644
---- a/net/wireless/nl80211.c
-+++ b/net/wireless/nl80211.c
-@@ -182,7 +182,7 @@ __cfg80211_rdev_from_attrs(struct net *netns, struct nl=
-attr **attrs)
-=20
- 		netdev =3D __dev_get_by_index(netns, ifindex);
- 		if (netdev) {
--			if (netdev->ieee80211_ptr)
-+			if (netdev_is_wireless(netdev))
- 				tmp =3D wiphy_to_rdev(
- 					netdev->ieee80211_ptr->wiphy);
- 			else
-@@ -2978,7 +2978,7 @@ static int nl80211_dump_wiphy_parse(struct sk_buff *s=
-kb,
- 			ret =3D -ENODEV;
- 			goto out;
- 		}
--		if (netdev->ieee80211_ptr) {
-+		if (netdev_is_wireless(netdev)) {
- 			rdev =3D wiphy_to_rdev(
- 				netdev->ieee80211_ptr->wiphy);
- 			state->filter_wiphy =3D rdev->wiphy_idx;
-@@ -3364,7 +3364,7 @@ static int nl80211_set_wiphy(struct sk_buff *skb, str=
-uct genl_info *info)
- 		int ifindex =3D nla_get_u32(info->attrs[NL80211_ATTR_IFINDEX]);
-=20
- 		netdev =3D __dev_get_by_index(genl_info_net(info), ifindex);
--		if (netdev && netdev->ieee80211_ptr)
-+		if (netdev_is_wireless(netdev))
- 			rdev =3D wiphy_to_rdev(netdev->ieee80211_ptr->wiphy);
- 		else
- 			netdev =3D NULL;
-
+> 
+> >   {
+> >   	x86_idle();
+> >   }
+> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> > index a4b8189455d5..20d529722f51 100644
+> > --- a/kernel/rcu/tree.c
+> > +++ b/kernel/rcu/tree.c
+> > @@ -896,7 +896,7 @@ static void noinstr rcu_eqs_exit(bool user)
+> >    * If you add or remove a call to rcu_idle_exit(), be sure to test with
+> >    * CONFIG_RCU_EQS_DEBUG=y.
+> >    */
+> > -void rcu_idle_exit(void)
+> > +void noinstr rcu_idle_exit(void)
+> >   {
+> >   	unsigned long flags;
