@@ -2,62 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D35DA52A951
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 19:33:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBD7552A968
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 19:38:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351458AbiEQRd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 13:33:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50368 "EHLO
+        id S1351510AbiEQRiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 13:38:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351442AbiEQRd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 13:33:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 28FE839BB5
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 10:33:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652808805;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LGLIFlTQ2OG0Nit+kOZYpbPmMvBDDMh/ziDLpygha+E=;
-        b=KBbmCrv9WTPTOcjPakXpF6KSzgonfWP/F9PjRhEhHWjFCiq3q1wCfh+lqGFlM5L8ytqHdj
-        qGKB30e2QIfH5naTWX+hWa8dUNLDTyF3HWY2vaBPaYQUgXvPays8jO6odgJzwvHvzdoSYg
-        BHDmIOcp5nlHZ1IrpVhv/kCmDFk2Ubw=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-296-IzFfBergOc-7ZtGOxWWsKg-1; Tue, 17 May 2022 13:33:22 -0400
-X-MC-Unique: IzFfBergOc-7ZtGOxWWsKg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S1351501AbiEQRiD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 13:38:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EC2D3A18E;
+        Tue, 17 May 2022 10:38:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3462685A5BE;
-        Tue, 17 May 2022 17:33:21 +0000 (UTC)
-Received: from jtoppins.rdu.csb (unknown [10.22.8.76])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F570492C14;
-        Tue, 17 May 2022 17:33:19 +0000 (UTC)
-From:   Jonathan Toppins <jtoppins@redhat.com>
-To:     liuhangbin@gmail.com
-Cc:     andy@greyhouse.net, davem@davemloft.net, dsahern@gmail.com,
-        eric.dumazet@gmail.com, j.vosburgh@gmail.com, jtoppins@redhat.com,
-        kuba@kernel.org, netdev@vger.kernel.org, pabeni@redhat.com,
-        syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com,
-        vfalico@gmail.com, vladimir.oltean@nxp.com,
-        Eric Dumazet <edumazet@google.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCHv2 net] bonding: fix missed rcu protection
-Date:   Tue, 17 May 2022 13:32:58 -0400
-Message-Id: <a4ed2a83d38a58b0984edb519382c867204b7ea2.1652804144.git.jtoppins@redhat.com>
-In-Reply-To: <20220517082312.805824-1-liuhangbin@gmail.com>
-References: <20220517082312.805824-1-liuhangbin@gmail.com>
+        by ams.source.kernel.org (Postfix) with ESMTPS id 343A6B81B18;
+        Tue, 17 May 2022 17:38:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82BF6C385B8;
+        Tue, 17 May 2022 17:37:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652809080;
+        bh=eHifGayDG02quoV3KcJSM+PxEDMZbY8lAV/ptLfgFvM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=I5kAF3I/AUbaMnhhKAimpquiSrx5qPouEKWy+HiK6ll1MuFC+ZQ/CRNvNLRMxWWiv
+         OrdhZaLWneMrYP8oaN1bqO29C0RQCkLY2a7BsSB+/lAn9UcZpJ+8ExeBuA45n0Y2Ui
+         LlEFcrQ1rI34YVg7s100GRSK9jDE7hNzV/X1rUBUHpZmLBADNzm6w4hVP9/cl0KZwP
+         8XNxUeLUfyuUO9mb5zFChF3PvCVunKudgTXZltGi3atXRWlqYLRLzFrttc4JNZuRma
+         F/pxcMYztZPQOHcwCvnX4d/HKYKGnEkVRax6QUemNClmKfA95fQP+fZfa/VEV7dFZr
+         sv8ohsqoDSuPw==
+Date:   Tue, 17 May 2022 10:37:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Johannes Berg <johannes@sipsolutions.net>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, davem@davemloft.net,
+        netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        alex.aring@gmail.com, stefan@datenfreihafen.org,
+        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        sven@narfation.org, linux-wireless@vger.kernel.org,
+        linux-wpan@vger.kernel.org
+Subject: Re: [PATCH net-next] net: ifdefy the wireless pointers in struct
+ net_device
+Message-ID: <20220517103758.353c2476@kernel.org>
+In-Reply-To: <74bdbec0580ed05d0f18533eae9af50bc0a4a0ef.camel@sipsolutions.net>
+References: <20220516215638.1787257-1-kuba@kernel.org>
+        <8e9f1b04-d17b-2812-22bb-e62b5560aa6e@gmail.com>
+        <74bdbec0580ed05d0f18533eae9af50bc0a4a0ef.camel@sipsolutions.net>
 MIME-Version: 1.0
-Content-Type: text/plain
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,68 +60,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
----
-RESEND, list still didn't receive my last version
+On Tue, 17 May 2022 09:48:24 +0200 Johannes Berg wrote:
+> On Mon, 2022-05-16 at 19:12 -0700, Florian Fainelli wrote:
+> > 
+> > On 5/16/2022 2:56 PM, Jakub Kicinski wrote:  
+> > > Most protocol-specific pointers in struct net_device are under
+> > > a respective ifdef. Wireless is the notable exception. Since
+> > > there's a sizable number of custom-built kernels for datacenter
+> > > workloads which don't build wireless it seems reasonable to
+> > > ifdefy those pointers as well.
+> > > 
+> > > While at it move IPv4 and IPv6 pointers up, those are special
+> > > for obvious reasons.
+> > > 
+> > > Signed-off-by: Jakub Kicinski <kuba@kernel.org>  
+> > 
+> > Could not we move to an union of pointers in the future since in many 
+> > cases a network device can only have one of those pointers at any given 
+> > time?  
+> 
+> Then at the very least we'd need some kind of type that we can assign to
+> disambiguate, because today e.g. we have a netdev notifier (and other
+> code) that could get a non-wireless netdev and check like this:
+> 
+> static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
+>                                          unsigned long state, void *ptr)
+> {
+>         struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>         struct wireless_dev *wdev = dev->ieee80211_ptr;
+> [...]
+>         if (!wdev)
+>                 return NOTIFY_DONE;
 
-The diffstat is slightly larger but IMO a slightly more readable version.
-When I was reading v2 I found myself jumping around.
-I only compile tested it, so YMMV.
-
-If this amount of change is too much v2 from Hangbin looks correct to
-me.
-
- drivers/net/bonding/bond_main.c | 31 ++++++++++++++++++++-----------
- 1 file changed, 20 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 38e152548126..f9d27b63c454 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -5591,23 +5591,32 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
- 	const struct ethtool_ops *ops;
- 	struct net_device *real_dev;
- 	struct phy_device *phydev;
-+	int ret = 0;
- 
-+	rcu_read_lock();
- 	real_dev = bond_option_active_slave_get_rcu(bond);
--	if (real_dev) {
--		ops = real_dev->ethtool_ops;
--		phydev = real_dev->phydev;
--
--		if (phy_has_tsinfo(phydev)) {
--			return phy_ts_info(phydev, info);
--		} else if (ops->get_ts_info) {
--			return ops->get_ts_info(real_dev, info);
--		}
--	}
-+	if (real_dev)
-+		dev_hold(real_dev);
-+	rcu_read_unlock();
-+
-+	if (!real_dev)
-+		goto software;
- 
-+	ops = real_dev->ethtool_ops;
-+	phydev = real_dev->phydev;
-+
-+	if (phy_has_tsinfo(phydev))
-+		ret = phy_ts_info(phydev, info);
-+	else if (ops->get_ts_info)
-+		ret = ops->get_ts_info(real_dev, info);
-+
-+	dev_put(real_dev);
-+	return ret;
-+
-+software:
- 	info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
- 				SOF_TIMESTAMPING_SOFTWARE;
- 	info->phc_index = -1;
--
- 	return 0;
- }
- 
--- 
-2.27.0
-
+Can we use enum netdev_ml_priv_type netdev::ml_priv and
+netdev::ml_priv_type for this?
