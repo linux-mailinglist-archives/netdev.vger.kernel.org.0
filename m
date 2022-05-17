@@ -2,108 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1216752A684
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 17:26:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6768E52A681
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 17:26:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349959AbiEQP0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 11:26:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38948 "EHLO
+        id S1350073AbiEQP03 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 11:26:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245611AbiEQP0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 11:26:02 -0400
-X-Greylist: delayed 104799 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 08:25:57 PDT
-Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 62533B1CE;
-        Tue, 17 May 2022 08:25:55 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Tue, 17 May 2022 23:25:39
- +0800 (GMT+08:00)
-X-Originating-IP: [220.246.124.53]
-Date:   Tue, 17 May 2022 23:25:39 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] NFC: hci: fix sleep in atomic context bugs in
- nfc_hci_hcp_message_tx
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <2ce7a871-3e55-ae50-955c-bf04a443aba3@linaro.org>
-References: <20220517105526.114421-1-duoming@zju.edu.cn>
- <2ce7a871-3e55-ae50-955c-bf04a443aba3@linaro.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S1349958AbiEQP0D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 11:26:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1077B1F4
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 08:26:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BE10B818F3
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 15:26:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE7A4C34113;
+        Tue, 17 May 2022 15:25:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652801160;
+        bh=q25BolVy5ttopK3U2L5/6mkE0COeBu9MkPrZYCImf6A=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qQwYHJ/QMXiXuSf+FDir1v3GwBH8N5cqQ0i14u5uTx+tngTBcfF2FLAQWBRLEx4qy
+         TvkcXQtNUV6hl3zCAt484GJusCQ/5L0JhceKAxIB/SG3hUf4n1Uy1uHeVZ/1rxpIcG
+         oEI+s/Iqn2v6LgyVp3eGUfWtHVl95/RuWjWDUxUyRrn+C3WG3QC7fQ5XHBv743Sko4
+         9qAuh3i+tQkLSlS2qLNzwnonq8PBEHlZZmZigOhIr/uDDaola2RXyi0/WRxhlLW106
+         WPzNv96nfmK0jf4Cn5C/44bZBT3yhTQHop/xSMlHfgp2SsGlcVr9Ug88yS7rEsHhrv
+         y1SX+OjXC/ktA==
+Date:   Tue, 17 May 2022 08:25:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
+        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        kernel-team@fb.com
+Subject: Re: [PATCH net-next v3 02/10] ptp: ocp: add Celestica timecard PCI
+ ids
+Message-ID: <20220517082558.59991355@kernel.org>
+In-Reply-To: <20220517014644.4jxm4evud46ybsh3@bsd-mbp.dhcp.thefacebook.com>
+References: <20220513225924.1655-1-jonathan.lemon@gmail.com>
+        <20220513225924.1655-3-jonathan.lemon@gmail.com>
+        <20220516174303.73de08ae@kernel.org>
+        <20220517014644.4jxm4evud46ybsh3@bsd-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Message-ID: <71c24f38.1a1f4.180d29ff1fd.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgC3PiFzvoNifCNdAA--.9211W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgwNAVZdtZvNEQAAs7
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBUdWUsIDE3IE1heSAyMDIyIDEzOjQyOjQxICswMjAwIEtyenlzenRvZiB3cm90
-ZToKCj4gT24gMTcvMDUvMjAyMiAxMjo1NSwgRHVvbWluZyBaaG91IHdyb3RlOgo+ID4gVGhlcmUg
-YXJlIHNsZWVwIGluIGF0b21pYyBjb250ZXh0IGJ1Z3Mgd2hlbiB0aGUgcmVxdWVzdCB0byBzZWN1
-cmUKPiA+IGVsZW1lbnQgb2Ygc3QyMW5mY2EgaXMgdGltZW91dC4gVGhlIHJvb3QgY2F1c2UgaXMg
-dGhhdCBremFsbG9jIGFuZAo+ID4gYWxsb2Nfc2tiIHdpdGggR0ZQX0tFUk5FTCBwYXJhbWV0ZXIg
-YW5kIG11dGV4X2xvY2sgYXJlIGNhbGxlZCBpbgo+ID4gc3QyMW5mY2Ffc2Vfd3RfdGltZW91dCB3
-aGljaCBpcyBhIHRpbWVyIGhhbmRsZXIuIFRoZSBjYWxsIHRyZWUgc2hvd3MKPiA+IHRoZSBleGVj
-dXRpb24gcGF0aHMgdGhhdCBjb3VsZCBsZWFkIHRvIGJ1Z3M6Cj4gPiAKPiA+ICAgIChJbnRlcnJ1
-cHQgY29udGV4dCkKPiA+IHN0MjFuZmNhX3NlX3d0X3RpbWVvdXQKPiA+ICAgbmZjX2hjaV9zZW5k
-X2V2ZW50Cj4gPiAgICAgbmZjX2hjaV9oY3BfbWVzc2FnZV90eAo+ID4gICAgICAga3phbGxvYygu
-Li4sIEdGUF9LRVJORUwpIC8vbWF5IHNsZWVwCj4gPiAgICAgICBhbGxvY19za2IoLi4uLCBHRlBf
-S0VSTkVMKSAvL21heSBzbGVlcAo+ID4gICAgICAgbXV0ZXhfbG9jaygpIC8vbWF5IHNsZWVwCj4g
-PiAKPiA+IFRoaXMgcGF0Y2ggY2hhbmdlcyBhbGxvY2F0aW9uIG1vZGUgb2Yga3phbGxvYyBhbmQg
-YWxsb2Nfc2tiIGZyb20KPiA+IEdGUF9LRVJORUwgdG8gR0ZQX0FUT01JQyBhbmQgY2hhbmdlcyBt
-dXRleF9sb2NrIHRvIHNwaW5fbG9jayBpbgo+ID4gb3JkZXIgdG8gcHJldmVudCBhdG9taWMgY29u
-dGV4dCBmcm9tIHNsZWVwaW5nLgo+ID4gCj4gPiBGaXhlczogMjEzMGZiOTdmZWNmICgiTkZDOiBz
-dDIxbmZjYTogQWRkaW5nIHN1cHBvcnQgZm9yIHNlY3VyZSBlbGVtZW50IikKPiA+IFNpZ25lZC1v
-ZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgo+ID4gLS0tCj4gPiBDaGFu
-Z2VzIGluIHYyOgo+ID4gICAtIENoYW5nZSBtdXRleF9sb2NrIHRvIHNwaW5fbG9jay4KPiA+IAo+
-ID4gIGluY2x1ZGUvbmV0L25mYy9oY2kuaCB8ICAzICsrLQo+ID4gIG5ldC9uZmMvaGNpL2NvcmUu
-YyAgICB8IDE4ICsrKysrKysrKy0tLS0tLS0tLQo+ID4gIG5ldC9uZmMvaGNpL2hjcC5jICAgICB8
-IDEwICsrKysrLS0tLS0KPiA+ICAzIGZpbGVzIGNoYW5nZWQsIDE2IGluc2VydGlvbnMoKyksIDE1
-IGRlbGV0aW9ucygtKQo+ID4gCj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9uZXQvbmZjL2hjaS5o
-IGIvaW5jbHVkZS9uZXQvbmZjL2hjaS5oCj4gPiBpbmRleCA3NTZjMTEwODRmNi4uOGY2NmU2ZTZi
-OTEgMTAwNjQ0Cj4gPiAtLS0gYS9pbmNsdWRlL25ldC9uZmMvaGNpLmgKPiA+ICsrKyBiL2luY2x1
-ZGUvbmV0L25mYy9oY2kuaAo+ID4gQEAgLTEwMyw3ICsxMDMsOCBAQCBzdHJ1Y3QgbmZjX2hjaV9k
-ZXYgewo+ID4gIAo+ID4gIAlib29sIHNodXR0aW5nX2Rvd247Cj4gPiAgCj4gPiAtCXN0cnVjdCBt
-dXRleCBtc2dfdHhfbXV0ZXg7Cj4gPiArCS8qIFRoZSBzcGlubG9jayBpcyB1c2VkIHRvIHByb3Rl
-Y3QgcmVzb3VyY2VzIHJlbGF0ZWQgd2l0aCBoY2kgbWVzc2FnZSBUWCAqLwo+ID4gKwlzcGlubG9j
-a190IG1zZ190eF9zcGluOwo+ID4gIAo+ID4gIAlzdHJ1Y3QgbGlzdF9oZWFkIG1zZ190eF9xdWV1
-ZTsKPiA+ICAKPiA+IGRpZmYgLS1naXQgYS9uZXQvbmZjL2hjaS9jb3JlLmMgYi9uZXQvbmZjL2hj
-aS9jb3JlLmMKPiA+IGluZGV4IGNlYjg3ZGI1N2NkLi5mYTIyZjlmZTVmYyAxMDA2NDQKPiA+IC0t
-LSBhL25ldC9uZmMvaGNpL2NvcmUuYwo+ID4gKysrIGIvbmV0L25mYy9oY2kvY29yZS5jCj4gPiBA
-QCAtNjgsNyArNjgsNyBAQCBzdGF0aWMgdm9pZCBuZmNfaGNpX21zZ190eF93b3JrKHN0cnVjdCB3
-b3JrX3N0cnVjdCAqd29yaykKPiA+ICAJc3RydWN0IHNrX2J1ZmYgKnNrYjsKPiA+ICAJaW50IHIg
-PSAwOwo+ID4gIAo+ID4gLQltdXRleF9sb2NrKCZoZGV2LT5tc2dfdHhfbXV0ZXgpOwo+ID4gKwlz
-cGluX2xvY2soJmhkZXYtPm1zZ190eF9zcGluKTsKPiA+ICAJaWYgKGhkZXYtPnNodXR0aW5nX2Rv
-d24pCj4gPiAgCQlnb3RvIGV4aXQ7Cj4gCj4gSG93IGRpZCB5b3UgdGVzdCB5b3VyIHBhdGNoPwo+
-IAo+IERpZCB5b3UgY2hlY2ssIHJlYWxseSBjaGVjaywgdGhhdCB0aGlzIGNhbiBiZSBhbiBhdG9t
-aWMgKG5vbi1zbGVlcGluZykKPiBzZWN0aW9uPwo+IAo+IEkgaGF2ZSBkb3VidHMgYmVjYXVzZSBJ
-IGZvdW5kIGF0IGxlYXN0IG9uZSBwYXRoIGxlYWRpbmcgdG8gZGV2aWNlX2xvY2sKPiAod2hpY2gg
-aXMgYSBtdXRleCkgY2FsbGVkIHdpdGhpbiB5b3VyIG5ldyBjb2RlLgoKVGhlIG5mY19oY2lfaGNw
-X21lc3NhZ2VfdHgoKSBpcyBjYWxsZWQgYnkgYm90aCBwcm9jZXNzIGNvbnRleHQoaGNpX2Rldl91
-cCBhbmQgc28gb24pCmFuZCBpbnRlcnJ1cHQgY29udGV4dChzdDIxbmZjYV9zZV93dF90aW1lb3V0
-KCkpLiBUaGUgcHJvY2VzcyBjb250ZXh0KGhjaV9kZXZfdXAgYW5kIHNvIG9uKQpjYWxscyBkZXZp
-Y2VfbG9jaywgYnV0IEkgdGhpbmsgY2FsbGluZyBzcGluX2xvY2soKSB3aXRoaW4gZGV2aWNlX2xv
-Y2soKSBpcyBvay4gVGhlcmUgaXMKbm8gZGV2aWNlX2xvY2soKSBjYWxsZWQgd2l0aGluIHNwaW5f
-bG9jaygpLiAKClRoZSBzcGlubG9jayBjb3VsZCBhbHNvIGltcHJvdmUgdGhlIHBlcmZvcm1hbmNl
-IG9mIHRoZSBwcm9ncmFtLCBiZWNhdXNlIHByb2Nlc3NpbmcgdGhlCmhjaSBtZXNzYWdlcyBzaG91
-bGQgYmUgZmluaXNoZWQgaW4gYSBzaG9ydCB0aW1lLgoKPiBCZWZvcmUgc2VuZGluZyBhIG5ldyB2
-ZXJzaW9uLCBwbGVhc2Ugd2FpdCBmb3IgZGlzY3Vzc2lvbiB0byByZWFjaCBzb21lCj4gY29uc2Vu
-c3VzLiBUaGUgcXVhbGl0eSBvZiB0aGVzZSBmaXhlcyBpcyByZWFsbHkgcG9vci4gOigKCk9rLCBJ
-IHdpbGwgd2FpdCBmb3IgZGlzY3Vzc2lvbiB0byByZWFjaCBjb25zZW5zdXMuCgpCZXN0IHJlZ2Fy
-ZHMsCkR1b21pbmcgWmhvdQo=
+On Mon, 16 May 2022 18:46:44 -0700 Jonathan Lemon wrote:
+> On Mon, May 16, 2022 at 05:43:03PM -0700, Jakub Kicinski wrote:
+> > On Fri, 13 May 2022 15:59:16 -0700 Jonathan Lemon wrote:  
+> > > +#ifndef PCI_VENDOR_ID_CELESTICA
+> > > +#define PCI_VENDOR_ID_CELESTICA 0x18d4
+> > > +#endif
+> > > +
+> > > +#ifndef PCI_DEVICE_ID_CELESTICA_TIMECARD
+> > > +#define PCI_DEVICE_ID_CELESTICA_TIMECARD 0x1008
+> > > +#endif  
+> > 
+> > The ifdefs are unnecessary, these kind of constructs are often used out
+> > of tree when one does not control the headers, but not sure what purpose
+> > they'd serve upstream?  
+> 
+> include/linux/pci_ids.h says:
+> 
+>  *      Do not add new entries to this file unless the definitions
+>  *      are shared between multiple drivers.
+> 
+> Neither FACEBOOK (0x1d9b) nor CELESTICA (0x18d4) are present
+> in this file.  This seems to a common idiom in several other
+> drivers.  Picking one at random:
+> 
+>    gve.h:#define PCI_VENDOR_ID_GOOGLE 0x1ae0
+> 
+> 
+> So these #defines are needed.
+
+Indeed, but also I'm not complaining about defines but the ifdefs 
+in which they are wrapped :)
