@@ -2,57 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C58452A697
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 17:30:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 079F952A6A6
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 17:32:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349986AbiEQPaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 11:30:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50754 "EHLO
+        id S1349205AbiEQPcs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 11:32:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57246 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239158AbiEQPaF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 11:30:05 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7D884F9C8;
-        Tue, 17 May 2022 08:30:04 -0700 (PDT)
+        with ESMTP id S1350036AbiEQPcq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 11:32:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 659E541615
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 08:32:40 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50BAF60B8B;
-        Tue, 17 May 2022 15:30:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFEE1C385B8;
-        Tue, 17 May 2022 15:30:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E3C1CB819A4
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 15:32:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6BBF0C34113;
+        Tue, 17 May 2022 15:32:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652801403;
-        bh=1z4+aRsUje0J9eCxSE/M8CluHxB3pLVHNWKNJDnanBs=;
-        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=AtX2dguJhHE0cWfPqNxTyEl527o65mrW8uGIQLSoSByEwEkHoN+xUvBif11Nc+5sb
-         L1dDX2lRuP9K/R0S9ozPqImQ6dG0BYv/RdJHZROn5m/YDbTQ5v6yzsVCPaFPSGRUi0
-         VmnUIhSneeyFkyToUIESoeo8mWKyLWGbjZqIZBiezHu0PDpe81gicQRpUpz7aB8tJF
-         07RJn0E6rS7awqbtnceGH8iQJjgwqQc6EKC3bL6xojZILxpPJAEGhb7A8MEdVzbyPp
-         dISVdIZ9ix7xQ9U0IXq4k0BTNjmu57dlH9AIVSE81giPElk6+iyl0S0FmvX3a5wN2y
-         Nh0bKIn+VhRTA==
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1652801557;
+        bh=mMIf+15wOIxsjWlDWfnTEaFz7gsZkz0RdS9z2VPneBc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XxE4idqxI2MCiGIdXnsuyx0dX3Pyccfk4eiDOK5W48+8lJl0d7H+WPH037FqlOsCD
+         ZMUnozOyrc14XI5K3qXpUEo+s0IMPnyYSjtzrnX3ErAN2LeEB7S6DwbOYK1VLNFNvV
+         FQmpEyDcdE0tikVvLieDkzPqG8UAalB/BZ+6phZIrTb+gxnmCZZswdY9XCqZvistcV
+         vLzZdzY2CIZsfDleaBu9mUizGvtQHoljCUrNZs/S01v2ifNXeyJkLoW8BzppHZ8a6d
+         luWqjc0l3AmH6xUIVQI87kI2kIyWXE3/vXfU978muBO3RPBQJESeypSr8jdc27a1f6
+         wslO5RPr+06eQ==
+Date:   Tue, 17 May 2022 08:32:36 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
+        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        kernel-team@fb.com
+Subject: Re: [PATCH net-next v3 08/10] ptp: ocp: fix PPS source selector
+ reporting
+Message-ID: <20220517083236.68f0d010@kernel.org>
+In-Reply-To: <20220517015428.l6ttuht3ufrl2deb@bsd-mbp.dhcp.thefacebook.com>
+References: <20220513225924.1655-1-jonathan.lemon@gmail.com>
+        <20220513225924.1655-9-jonathan.lemon@gmail.com>
+        <20220516174317.457ec2d1@kernel.org>
+        <20220517015428.l6ttuht3ufrl2deb@bsd-mbp.dhcp.thefacebook.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] wireless: Fix Makefile to be in alphabetical order
-From:   Kalle Valo <kvalo@kernel.org>
-In-Reply-To: <MA1PR01MB26992E104B006B340C3C3A84C1CA9@MA1PR01MB2699.INDPRD01.PROD.OUTLOOK.COM>
-References: <MA1PR01MB26992E104B006B340C3C3A84C1CA9@MA1PR01MB2699.INDPRD01.PROD.OUTLOOK.COM>
-To:     Srinivasan R <srinir@outlook.com>
-Cc:     unlisted-recipients:; (no To-header on input)
-        Srinivasan R <srinir@outlook.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        linux-wireless@vger.kernel.org (open list:NETWORKING DRIVERS (WIRELESS)),
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Illegal-Object: Syntax error in Cc: address found on vger.kernel.org:
-        Cc:     unlisted-recipients:; (no To-header on input)Srinivasan R <srinir@outlook.com>
-                                                                     ^-missing end of address
-User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
-Message-ID: <165280139864.3650.6325168867367666102.kvalo@kernel.org>
-Date:   Tue, 17 May 2022 15:30:01 +0000 (UTC)
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -63,18 +58,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Srinivasan R <srinir@outlook.com> wrote:
-
-> Fix quantenna to be in the right order
+On Mon, 16 May 2022 18:54:28 -0700 Jonathan Lemon wrote:
+> On Mon, May 16, 2022 at 05:43:17PM -0700, Jakub Kicinski wrote:
+> > On Fri, 13 May 2022 15:59:22 -0700 Jonathan Lemon wrote:  
+> > > The NTL timecard design has a PPS1 selector which selects the
+> > > the PPS source automatically, according to Section 1.9 of the
+> > > documentation.
+> > > 
+> > >   If there is a SMA PPS input detected:
+> > >      - send signal to MAC and PPS slave selector.
+> > > 
+> > >   If there is a MAC PPS input detected:
+> > >      - send GNSS1 to the MAC
+> > >      - send MAC to the PPS slave
+> > > 
+> > >   If there is a GNSS1 input detected:
+> > >      - send GNSS1 to the MAC
+> > >      - send GNSS1 to the PPS slave.MAC
+> > > 
+> > > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>  
+> > 
+> > This one and patch 10 need Fixes tags  
 > 
-> Signed-off-by: Srinivasan R <srinir@outlook.com>
+> This is for a debugfs entry.  I disagree that a Fixes: tag
+> is needed here.
+> 
+> I'll do it for patch 10 if you insist, but this only happens
+> if ptp_clock_register() fails, which not normally seen.
 
-Patch applied to wireless-next.git, thanks.
-
-8762246c7b23 wireless: Fix Makefile to be in alphabetical order
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/MA1PR01MB26992E104B006B340C3C3A84C1CA9@MA1PR01MB2699.INDPRD01.PROD.OUTLOOK.COM/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Fixes need a fixes tag and need to target the right tree.
