@@ -2,126 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ADFFD5296B0
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 03:26:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 197C95296BA
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 03:30:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236069AbiEQB00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 21:26:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48524 "EHLO
+        id S233014AbiEQBad (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 21:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231737AbiEQBZy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 21:25:54 -0400
-Received: from azure-sdnproxy-2.icoremail.net (azure-sdnproxy.icoremail.net [52.175.55.52])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id A843664DE;
-        Mon, 16 May 2022 18:25:49 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [124.236.130.193])
-        by mail-app3 (Coremail) with SMTP id cC_KCgB37k2L+YJikKJdAA--.2429S2;
-        Tue, 17 May 2022 09:25:40 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org, kuba@kernel.org
-Cc:     krzysztof.kozlowski@linaro.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        netdev@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net v2] NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc
-Date:   Tue, 17 May 2022 09:25:30 +0800
-Message-Id: <20220517012530.75714-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgB37k2L+YJikKJdAA--.2429S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7tr1xWrW5XF1xKr45tw1UZFb_yoW8try7pF
-        WSgFyDZF48Jr1UXFWvvw4ktw4YywnYg34qka9ruw4rJ3sYqrn5tw40yFyYvFWfZrZ7JF42
-        qF4Ykr129FnrJ3JanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvl14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
-        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_KwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJV
-        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
-        1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
-        IIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
-        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvj
-        DU0xZFpf9x0JUHpB-UUUUU=
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAg0NAVZdtZtoKQAAsn
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S229615AbiEQBac (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 21:30:32 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACD845AD1
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 18:30:32 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id ej7so1378052qvb.13
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 18:30:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oiJDKckqHYmWe5sIgItdbM+eYa/JdgHnsnbYaNGv7BQ=;
+        b=Iil+/oLC9IVEVOXCx8AOjbsAcAlKHNV73ssEQzUkEorvcsut9eJtuxs4wpvX80SAkf
+         +jmFX6IvWCzVDbrms8wuet5/O3HX2h/NLFqX5pHXRZkgYlS8qjcGCUYBzTDqRSvSiOJz
+         vEcrPiFOeznLduSNxzFj1xjfrw4xNZrwtNkoasKagEDkyAX5/WCr03a8wWVFY8HWX38f
+         Buruyyj5ONNsoQlUAFbyCo6z1Ph7z8WUW1gF31PMloTnUx4gpYhEHFP5Ywep7IpkLMEy
+         bL1MojtLk2fPNozsbeAhb17GM2Fm2BZltiU4pyceccez9lO8Yk81jcIMesbI6wSCCr6d
+         8+aA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oiJDKckqHYmWe5sIgItdbM+eYa/JdgHnsnbYaNGv7BQ=;
+        b=r80vmFv3zMqsnMiVg3YlWJXz38MRYJifCEIlhfiIULSNiQN9M8/NjK3Q123nO1toSa
+         Uchs6p7yYEPhMGRbLpa1+rSSTvhZmekFBkgq6/SIH2EFVnOgpTmjWA+Qr2fC35M4tTKp
+         uql/Rh9SEMg5dfzEUdd0QonN/apaTqHurdkw4tMWMhLRtJjWeC2vL+rLFnzfDsgMot70
+         rJS0i24HGfdP2QCrFvzXAeQkzEkOxyqPQ7mQVe4Xyz2JFV2mSIGjSMdCozCMfxi0smL9
+         x8avEsxxuWurKKvotJ1SDEVpxK8w4HcMSY5bdyYeBDswp0C1panoBrDk+2VxSfg2OFII
+         4XCw==
+X-Gm-Message-State: AOAM533F+jg3BhhoY0vzMrLrk4gAt+JwDg7jS8wnhP9+ML0W7kThVJqI
+        PMoefe+4IaB8UVXmwMxEj3DesUJPmp4QAg==
+X-Google-Smtp-Source: ABdhPJwFen3g1b+Y+USWnJhDWjLL/IgShtGJUiHCJHPrDvLZXMJujbo3aJwSKGCsyj4vG56LI2Pvtg==
+X-Received: by 2002:a05:6214:21af:b0:45b:ab2:6cf7 with SMTP id t15-20020a05621421af00b0045b0ab26cf7mr18070715qvc.0.1652751030998;
+        Mon, 16 May 2022 18:30:30 -0700 (PDT)
+Received: from wsfd-netdev15.ntdv.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id g23-20020a05620a109700b0069fc13ce1e9sm6844454qkk.26.2022.05.16.18.30.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 18:30:30 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        Eric Dumazet <edumazet@google.com>
+Subject: [PATCHv2 net-next] dn_route: set rt neigh to blackhole_netdev instead of loopback_dev in ifdown
+Date:   Mon, 16 May 2022 21:30:29 -0400
+Message-Id: <0cdf10e5a4af509024f08644919121fb71645bc2.1652751029.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.31.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are sleep in atomic context bugs when the request to secure
-element of st-nci is timeout. The root cause is that nci_skb_alloc
-with GFP_KERNEL parameter is called in st_nci_se_wt_timeout which is
-a timer handler. The call paths that could trigger bugs are shown below:
+Like other places in ipv4/6 dst ifdown, change to use blackhole_netdev
+instead of pernet loopback_dev in dn dst ifdown.
 
-    (interrupt context 1)
-st_nci_se_wt_timeout
-  nci_hci_send_event
-    nci_hci_send_data
-      nci_skb_alloc(..., GFP_KERNEL) //may sleep
+v1->v2:
+  - remove the improper fixes tag as Eric noticed.
+  - aim at net-next.
 
-   (interrupt context 2)
-st_nci_se_wt_timeout
-  nci_hci_send_event
-    nci_hci_send_data
-      nci_send_data
-        nci_queue_tx_data_frags
-          nci_skb_alloc(..., GFP_KERNEL) //may sleep
-
-This patch changes allocation mode of nci_skb_alloc from GFP_KERNEL to
-GFP_ATOMIC in order to prevent atomic context sleeping. The GFP_ATOMIC
-flag makes memory allocation operation could be used in atomic context.
-
-Fixes: ed06aeefdac3 ("nfc: st-nci: Rename st21nfcb to st-nci")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
-Changes in v2:
-  - Change the Fixes tag to commit st_nci_se_wt_timeout was added.
+ net/decnet/dn_route.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- net/nfc/nci/data.c | 2 +-
- net/nfc/nci/hci.c  | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/net/nfc/nci/data.c b/net/nfc/nci/data.c
-index 6055dc9a82a..aa5e712adf0 100644
---- a/net/nfc/nci/data.c
-+++ b/net/nfc/nci/data.c
-@@ -118,7 +118,7 @@ static int nci_queue_tx_data_frags(struct nci_dev *ndev,
+diff --git a/net/decnet/dn_route.c b/net/decnet/dn_route.c
+index d1d78a463a06..552a53f1d5d0 100644
+--- a/net/decnet/dn_route.c
++++ b/net/decnet/dn_route.c
+@@ -159,7 +159,7 @@ static void dn_dst_ifdown(struct dst_entry *dst, struct net_device *dev, int how
+ 		struct neighbour *n = rt->n;
  
- 		skb_frag = nci_skb_alloc(ndev,
- 					 (NCI_DATA_HDR_SIZE + frag_len),
--					 GFP_KERNEL);
-+					 GFP_ATOMIC);
- 		if (skb_frag == NULL) {
- 			rc = -ENOMEM;
- 			goto free_exit;
-diff --git a/net/nfc/nci/hci.c b/net/nfc/nci/hci.c
-index 19703a649b5..78c4b6addf1 100644
---- a/net/nfc/nci/hci.c
-+++ b/net/nfc/nci/hci.c
-@@ -153,7 +153,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
- 
- 	i = 0;
- 	skb = nci_skb_alloc(ndev, conn_info->max_pkt_payload_len +
--			    NCI_DATA_HDR_SIZE, GFP_KERNEL);
-+			    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
- 	if (!skb)
- 		return -ENOMEM;
- 
-@@ -184,7 +184,7 @@ static int nci_hci_send_data(struct nci_dev *ndev, u8 pipe,
- 		if (i < data_len) {
- 			skb = nci_skb_alloc(ndev,
- 					    conn_info->max_pkt_payload_len +
--					    NCI_DATA_HDR_SIZE, GFP_KERNEL);
-+					    NCI_DATA_HDR_SIZE, GFP_ATOMIC);
- 			if (!skb)
- 				return -ENOMEM;
- 
+ 		if (n && n->dev == dev) {
+-			n->dev = dev_net(dev)->loopback_dev;
++			n->dev = blackhole_netdev;
+ 			dev_hold(n->dev);
+ 			dev_put(dev);
+ 		}
 -- 
-2.17.1
+2.31.1
 
