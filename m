@@ -2,74 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 20D18529BB6
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 10:05:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3501529BE8
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 10:12:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231225AbiEQIFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 04:05:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49014 "EHLO
+        id S242559AbiEQIMG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 04:12:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242278AbiEQIFE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:05:04 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C02EA43AC6
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 01:05:02 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id i1so16671264plg.7
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 01:05:02 -0700 (PDT)
+        with ESMTP id S242881AbiEQILs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:11:48 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2AAA3CA57;
+        Tue, 17 May 2022 01:11:47 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id c14so16247566pfn.2;
+        Tue, 17 May 2022 01:11:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=x8+fl7ePwuiiUgMo5eXBIBD8OY9rBhYCwDeJff3SYxc=;
-        b=iGV83ZxDu0bRrnvIXsECDceF4okSVt4V3VCtLiJNCVUtSGyBtd+XZR5rUI7gje43zE
-         6u/6PKOhJF4tI2nBL/rlXvH9kzF3sXpGAEgdR6BkovLTkxsWSP7oeJKKdqH0i7ktz9Nx
-         iVz9q8S1BsgUjaTP4d02/URXenXuJSHKylzgomPZSzV5BI1BqY0korELHinLgV7u7tLd
-         kPv0gapSlEiAGOIZ5OmEL9MCwqPwvPHcssZQFR+kEwLne8296H9B5n7tHG5SFZIaIpg2
-         9ZuPRZJrwrBmGibQU0hEWGVDZQEDDZHx7W5t1oHtCdUr1LSVYuVKPkt2e8QHmYoJ4YRV
-         WE+Q==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KaVA8k5Psvv7+eoSfgoNw+H8JyuA0Kach9rgrgx4BUQ=;
+        b=YIszghxceyWCmAKXujx2etXlWewZX9+eCJFqQ/DgVzY1WyMfgIcCXV4JqtrVxTaaHu
+         3jTocN/gSJBbIXaWCT4AOPAWghimrZlsrDeyw/dBc/yStB5t37EZ3s3LEQx2rOYd4V9x
+         2gvnEjY4SSQicBFSwCUoAUIavO8V87D8rzVX73EAo/I/OAfgP8zgbivljQssuDFKl9iK
+         lfWZ6zm329NxabRLDRePSwGFuj/8wkrqKLzalYm99Jei7CtEXJNaGul2rNXK4QR9Vyy4
+         PoqrFVN387jhL8/YbigEJrG34K5p3Q2jo1q6rovQjtw9xbQHSwslkVHwsi6qN1Qcgk9f
+         asng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=x8+fl7ePwuiiUgMo5eXBIBD8OY9rBhYCwDeJff3SYxc=;
-        b=RAbdAOzr9x8U1WwvVdMuzB49OXNSF91dWo7lSUb3PU4eDC51sCnxesgStEAdK49R6x
-         zxJq77kVphu5zXJJbHeeAY9do9kbXK4MZQu4ApBX9ny4sLDanPTrT28A6tnD2+hxjqtL
-         2o47wCmaWx5+dyet31u+jA+mKMUTYzLt97XvvqxBr2u2qvLTt632ouQ11IQhpmeVLLXz
-         /WQ6fFhujmCG/DNaxaL8CKY709u8e9vyQS6bujtjja3OJnv2Tf46253tZDrL9rauBwL+
-         rwP57K+OxCW49nKzs1zrv1sCnJt0DDoWB1S3NjzNtPwF0KW/qDo5kbArYTG0ZCFnBcWj
-         Dlew==
-X-Gm-Message-State: AOAM530U77fLLZVkgebFjac0QqI9BjyisUM1vkFP8ncRDOvXDFEhseUT
-        rLlIA5L9jB5rspHoTD9NuXQ=
-X-Google-Smtp-Source: ABdhPJyhjY+bo5Uxqg6UD1YjdrA1KD1C2qBYUA0DVydwt+1QUzE7YtdEuJKW0BUbZwDXtDnb7IQ0HA==
-X-Received: by 2002:a17:902:cac4:b0:161:7729:4a65 with SMTP id y4-20020a170902cac400b0016177294a65mr9289271pld.35.1652774702151;
-        Tue, 17 May 2022 01:05:02 -0700 (PDT)
-Received: from Laptop-X1 ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id x18-20020a17090abc9200b001cd4989feccsm997983pjr.24.2022.05.17.01.04.57
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=KaVA8k5Psvv7+eoSfgoNw+H8JyuA0Kach9rgrgx4BUQ=;
+        b=sNJI6m+Th96DsCSFU31mo9ZWLEBn7cMU1Jk13X09oU8Zac+QjX5KzhCVuvqtAMxXbN
+         U/ubBQ9DHNktnC8e0XquzMBORN541oPhaV1ZgI2UNFGf185/9gtwWK4uD4SJp852SNO5
+         AHuV26Na2k83ibUL76lWmRtMAJPT8vCi8YdyFrU+WsL3FAQBFDBZ61DaOdbBg96sqlWo
+         KO4auv0b3ba20C0tfqg2oZEtgw1SNG6BmIN6i756tUN/kiA9+ZIRoPPxOdEMGgCJ318+
+         UCzBdhqHs/Y+6hWtHL7lLzxdj6a0VzcmQ/bhcRnNwfAUz4Nljpi0kVzE8ZBQkpUrJ9Bk
+         Kxag==
+X-Gm-Message-State: AOAM530jxfi7KvsjdiYRB4a7h6cnoUW6gYgpaj67VbQn39jLksQ5+eu8
+        NGID2THBG+7PL1eBw69dk9Q=
+X-Google-Smtp-Source: ABdhPJyPKFchqOkLd64LDqu1zjukIygemahvdluabS+VPne5kGdgZ3AEERVHKuhULPhYOAxOubHzWw==
+X-Received: by 2002:a63:ea0c:0:b0:3f5:d221:1f2f with SMTP id c12-20020a63ea0c000000b003f5d2211f2fmr647708pgi.125.1652775107222;
+        Tue, 17 May 2022 01:11:47 -0700 (PDT)
+Received: from localhost.localdomain ([203.205.141.20])
+        by smtp.gmail.com with ESMTPSA id c14-20020a170902c2ce00b0015e8d4eb2easm8336306pla.308.2022.05.17.01.11.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 01:05:01 -0700 (PDT)
-Date:   Tue, 17 May 2022 16:04:55 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        David Ahern <dsahern@gmail.com>,
-        Jonathan Toppins <jtoppins@redhat.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: Re: [PATCH RESEND net] bonding: fix missed rcu protection
-Message-ID: <YoNXJ0XGY2csweTj@Laptop-X1>
-References: <20220513103350.384771-1-liuhangbin@gmail.com>
- <20220516181028.7dbbf918@kernel.org>
- <YoMZvrPcgIm8k2b6@Laptop-X1>
- <0c47e205ee226bb539ec649c5dc866301c710b9d.camel@redhat.com>
+        Tue, 17 May 2022 01:11:46 -0700 (PDT)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: imagedong@tencent.com
+To:     edumazet@google.com
+Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dsahern@kernel.org, kuba@kernel.org,
+        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v2 0/9] net: tcp: add skb drop reasons to tcp state change
+Date:   Tue, 17 May 2022 16:09:59 +0800
+Message-Id: <20220517081008.294325-1-imagedong@tencent.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0c47e205ee226bb539ec649c5dc866301c710b9d.camel@redhat.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -80,31 +72,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 17, 2022 at 09:24:00AM +0200, Paolo Abeni wrote:
-> On Tue, 2022-05-17 at 11:42 +0800, Hangbin Liu wrote:
-> > On Mon, May 16, 2022 at 06:10:28PM -0700, Jakub Kicinski wrote:
-> > > Can't ->get_ts_info sleep now? It'd be a little sad to force it 
-> > > to be atomic just because of one upper dev trying to be fancy.
-> > > Maybe all we need to do is to take a ref on the real_dev?
-> > 
-> > Do you mean
-> > 
-> > diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-> > index 38e152548126..b60450211579 100644
-> > --- a/drivers/net/bonding/bond_main.c
-> > +++ b/drivers/net/bonding/bond_main.c
-> > @@ -5591,16 +5591,20 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
-> >  	const struct ethtool_ops *ops;
-> >  	struct net_device *real_dev;
-> >  	struct phy_device *phydev;
-> > +	int ret = 0;
-> >  
-> 
-> You additionally need something alike the following:
-> 
-> 	rcu_read_lock();
+From: Menglong Dong <imagedong@tencent.com>
 
-Thanks Paolo, I only thought the real_dev ref and forgot the initial problem
-is the rcu warning...
+In this series patches, skb drop reasons are add to code path of TCP
+state change, which we have not done before. It is hard to pass these
+reasons from the function to its caller, where skb is dropped. In order
+to do this, we have to make some functions return skb drop reasons, or
+pass the pointer of 'reason' to these function as an new function
+argument.
 
-Hangbin
+=============================
+We change the type of the return value of tcp_rcv_synsent_state_process()
+and tcp_rcv_state_process() to 'enum skb_drop_reason' and make them
+return skb drop reasons in 5th and 6th patch.
+
+=============================
+In order to get skb drop reasons during tcp connect requesting code path,
+we have to pass the pointer of the 'reason' as a new function argument of
+conn_request() in 'struct inet_connection_sock_af_ops'. As the return
+value of conn_request() can be positive or negative or 0, it's not
+flexible to make it return drop reasons. This work is done in the 7th
+patch, and functions that used as conn_request() is also modified:
+
+  dccp_v4_conn_request()
+  dccp_v6_conn_request()
+  tcp_v4_conn_request()
+  tcp_v6_conn_request()
+  subflow_v4_conn_request()
+  subflow_v6_conn_request()
+
+As our target is TCP, dccp and mptcp are not handled more.
+
+=============================
+In the 8th patch, skb drop reasons are add to
+tcp_timewait_state_process() by adding a function argument to it. In the
+origin code, all skb are dropped for tw socket. In order to make less
+noise, use consume_skb() for the 'good' skb. This can be checked by the
+caller of tcp_timewait_state_process() from the value of drop reason.
+If the drop reason is SKB_NOT_DROPPED_YET, it means this skb should not
+be dropped.
+
+=============================
+In the 9th patch, skb drop reasons are add to the route_req() in struct
+tcp_request_sock_ops. Following functions are involved:
+
+  tcp_v4_route_req()
+  tcp_v6_route_req()
+  subflow_v4_route_req()
+  subflow_v6_route_req()
+
+In this series patches, following new drop reasons are added:
+
+  SOCKET_DESTROYED
+  TCP_PAWSACTIVEREJECTED
+  TCP_ABORTONDATA
+  LISTENOVERFLOWS
+  TCP_REQQFULLDROP
+  TIMEWAIT
+  LSM
+
+Changes since v1:
+7/9 - fix the compile errors of dccp and mptcp (kernel test robot)
+8/9 - skb is not freed on TCP_TW_ACK and 'ret' is not initizalized, fix
+      it (Eric Dumazet)
+
+Menglong Dong (9):
+  net: skb: introduce __DEFINE_SKB_DROP_REASON() to simply the code
+  net: skb: introduce __skb_queue_purge_reason()
+  net: sock: introduce sk_stream_kill_queues_reason()
+  net: inet: add skb drop reason to inet_csk_destroy_sock()
+  net: tcp: make tcp_rcv_synsent_state_process() return drop reasons
+  net: tcp: make tcp_rcv_state_process() return drop reason
+  net: tcp: add skb drop reasons to tcp connect requesting
+  net: tcp: add skb drop reasons to tcp tw code path
+  net: tcp: add skb drop reasons to route_req()
+
+ include/linux/skbuff.h             | 482 +++++++++++++++++++----------
+ include/net/inet_connection_sock.h |   3 +-
+ include/net/sock.h                 |   8 +-
+ include/net/tcp.h                  |  27 +-
+ include/trace/events/skb.h         |  89 +-----
+ net/core/drop_monitor.c            |  13 -
+ net/core/skbuff.c                  |  10 +
+ net/core/stream.c                  |   7 +-
+ net/dccp/dccp.h                    |   3 +-
+ net/dccp/input.c                   |   3 +-
+ net/dccp/ipv4.c                    |   3 +-
+ net/dccp/ipv6.c                    |   5 +-
+ net/ipv4/inet_connection_sock.c    |   2 +-
+ net/ipv4/tcp_input.c               |  56 ++--
+ net/ipv4/tcp_ipv4.c                |  54 +++-
+ net/ipv4/tcp_minisocks.c           |  35 ++-
+ net/ipv6/tcp_ipv6.c                |  56 +++-
+ net/mptcp/subflow.c                |  18 +-
+ 18 files changed, 522 insertions(+), 352 deletions(-)
+
+-- 
+2.36.1
+
