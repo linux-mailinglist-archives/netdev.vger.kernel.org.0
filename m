@@ -2,71 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 63A2952A380
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 15:35:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12B9752A394
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 15:37:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347891AbiEQNfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 09:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55588 "EHLO
+        id S1347921AbiEQNhD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 09:37:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243021AbiEQNfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 09:35:15 -0400
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6F34C795;
-        Tue, 17 May 2022 06:35:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652794510;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=Rp91Wk++k/5LeCAt8Q1r8LuSJbklfuV4ylHC92VYA90=;
-    b=DW4ijKfudIAgDozIFv2qZffi5LDTuKJTgTGws3OZ74RJTi6xxFMNeQoTrBEfvH2hEM
-    bBgOsv9Z9ck0JEmBCZAEvSKOlr78fs1bVrbREopwb6yQdcW2RQPPwWyg24t6cezEQyoU
-    WABEvnuQpuefPFCLF3fXzUwMaHo9FNHz4U+fIAOwUKfkesxdecMaEgFt5ew+9fSrT3Rb
-    KtwyBMGnMqnfJ/cvBTRvM9IVIe9IjKpOLRhEpx+4gg7J6YeN4udmrNl4UAxDO0cDUZ8/
-    CTujr0kclnJ49+h5HBdTSyF8iBpJtUKlVAI7BaFZEQ2C6WlGMRDokcZV08lcOTYWZxOP
-    wdjg==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2kie+Xl80LlDzEQtkFfeVo6PFYN7Q=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b00:35f3:7c7f:af09:932d]
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id R0691fy4HDZ9EHF
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 17 May 2022 15:35:09 +0200 (CEST)
-Message-ID: <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
-Date:   Tue, 17 May 2022 15:35:03 +0200
+        with ESMTP id S1346853AbiEQNhB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 09:37:01 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F82813F1E;
+        Tue, 17 May 2022 06:36:59 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6D2E8C0003;
+        Tue, 17 May 2022 13:36:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652794618;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Gs+93tEqOiIRId+H3tx8QpHdCxarKpqDBp7PI2qHNtY=;
+        b=axifmMX/aGAptNFGfAhj7Nw3NhhJpa/B4CWUCYwvJOdWg9F15JGSi+7Df2NOCIdjUtFhOl
+        86YAmmOlHJoaRHpR9z6zXgp/issATQbgvOH+lGcz6NChYOhKgtCml2Xq4dE5vkK8k0ckW9
+        Iq+buJpd4JAqfFgwAJLXspVz/yyzVnIS3VkUMddVIywxZDM7VGThTlbjtrx5LhuVomh6yW
+        7kOOced79amPblZcgQiOrp/8aw6Vpp3YD+ERSB16ICHxgYsb4B+38u86qUfhupG2gN2xK8
+        tdDUdhgLUDqlaHvRVH+FqgNv35q791y7vPmBBJ9QnScZTYv4zG1XSHrQuX0jsA==
+Date:   Tue, 17 May 2022 15:36:55 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next v2 10/11] net: mac802154: Add a warning in the
+ hot path
+Message-ID: <20220517153655.155ba311@xps-13>
+In-Reply-To: <CAK-6q+jYb7A2RzG3u7PJYKZU9D5A=vben-Wnu-3EsUU-rqGT2Q@mail.gmail.com>
+References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
+        <20220512143314.235604-11-miquel.raynal@bootlin.com>
+        <CAK-6q+jYb7A2RzG3u7PJYKZU9D5A=vben-Wnu-3EsUU-rqGT2Q@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-Content-Language: en-US
-To:     Max Staudt <max@enpas.org>, Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
- <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
- <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
- <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
- <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
- <20220517104545.eslountqjppvcnz2@pengutronix.de>
- <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
- <20220517141404.578d188a.max@enpas.org>
- <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
- <20220517143921.08458f2c.max@enpas.org>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220517143921.08458f2c.max@enpas.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -74,58 +67,41 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+aahringo@redhat.com wrote on Sun, 15 May 2022 18:30:15 -0400:
 
-On 5/17/22 14:39, Max Staudt wrote:
-> On Tue, 17 May 2022 14:21:53 +0200
-> Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> Hi,
 > 
->> On 17.05.2022 14:14:04, Max Staudt wrote:
->>>> After looking through drivers/net/can/Kconfig I would probably
->>>> phrase it like this:
->>>>
->>>> Select CAN devices (hw/sw) -> we compile a can_dev module. E.g.
->>>> to handle the skb stuff for vcan's.
->>>>
->>>> Select hardware CAN devices -> we compile the netlink stuff into
->>>> can_dev and offer CAN_CALC_BITTIMING and CAN_LEDS to be compiled
->>>> into can_dev too.
->>>>
->>>> In the latter case: The selection of flexcan, ti_hecc and
->>>> mcp251xfd automatically selects CAN_RX_OFFLOAD which is then also
->>>> compiled into can_dev.
->>>>
->>>> Would that fit in terms of complexity?
->>>
->>> IMHO these should always be compiled into can-dev. Out of tree
->>> drivers are fairly common here, and having to determine which kind
->>> of can-dev (stripped or not) the user has on their system is a
->>> nightmare waiting to happen.
->>
->> I personally don't care about out-of-tree drivers.
+> On Thu, May 12, 2022 at 10:34 AM Miquel Raynal
+> <miquel.raynal@bootlin.com> wrote:
+> >
+> > We should never start a transmission after the queue has been stopped.
+> >
+> > But because it might work we don't kill the function here but rather
+> > warn loudly the user that something is wrong.
+> >
+> > Set an atomic when the queue will remain stopped. Reset this atomic when
+> > the queue actually gets restarded. Just check this atomic to know if the
+> > transmission is legitimate, warn if it is not.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  include/net/cfg802154.h |  1 +
+> >  net/mac802154/tx.c      | 16 +++++++++++++++-
+> >  net/mac802154/util.c    |  1 +
+> >  3 files changed, 17 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+> > index 8b6326aa2d42..a1370e87233e 100644
+> > --- a/include/net/cfg802154.h
+> > +++ b/include/net/cfg802154.h
+> > @@ -218,6 +218,7 @@ struct wpan_phy {
+> >         struct mutex queue_lock;
+> >         atomic_t ongoing_txs;
+> >         atomic_t hold_txs;
+> > +       atomic_t queue_stopped;  
 > 
-> I know that this is the official stance in the kernel.
-> 
-> But out-of-tree drivers do happen on a regular basis, even when
-> developing with the aim of upstreaming. And if a developer builds a
-> minimal kernel to host a CAN driver, without building in-tree hardware
-> CAN drivers, then can-dev will be there but behave differently from
-> can-dev in a full distro. Leading to heisenbugs and wasting time. The
-> source of heisenbugs really are the suggested *hidden* Kconfigs.
-> 
-> 
-> On another note, is the module accounting overhead in the kernel for
-> two new modules with relatively little code in each, code that almost
-> always is loaded when CAN is used, really worth it?
+> Maybe some test_bit()/set_bit() is better there?
 
-Oh, I didn't want to introduce two new kernel modules but to have 
-can_dev in different 'feature levels'.
+What do you mean? Shall I change the atomic_t type of queue_stopped?
+Isn't the atomic_t preferred in this situation?
 
-I would assume a distro kernel to have everything enabled with a full 
-featured can_dev - which is likely the base for out-of-tree drivers too.
-
-But e.g. the people that are running Linux instances in a cloud only 
-using vcan and vxcan would not need to carry the entire infrastructure 
-of CAN hardware support and rx-offload.
-
-Best regards,
-Oliver
