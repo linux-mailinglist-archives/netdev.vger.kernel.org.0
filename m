@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D4577529E5A
+	by mail.lfdr.de (Postfix) with ESMTP id 87B3D529E59
 	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 11:45:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245237AbiEQJow (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 05:44:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
+        id S245199AbiEQJox (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 05:44:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230420AbiEQJoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 05:44:34 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C639F47AE2;
-        Tue, 17 May 2022 02:43:58 -0700 (PDT)
+        with ESMTP id S245143AbiEQJof (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 05:44:35 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B75C47ACF;
+        Tue, 17 May 2022 02:44:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1652780639; x=1684316639;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=yxwu1RG/SJB6geBmDmU/Fy5j+HhC1vUjbaAaw1C400I=;
-  b=yfKOD+XgqXzY07xoIslZT86DJzzEg66I7RNtjsIERmE+3LooUneCGiGi
-   3qcLNafq95sFc0+KhLtS1JshDpTO8Ku4bNVHu8UA+VAvfoqSRUf7GQGqH
-   wS2OH/KHWHxcLwHwXwPlj5kQSZRl/ckvyZzU1zZ/c3vh18aE/Nl0nXXTQ
-   aHgQvbLq8XeQSzrCBwEOw+A0WJWM9VxarJl01P7twCUJRIVzri9Y+M1l0
-   lhUQlLBwCzXDiYXnjGCy+TJSLTAuJdiTd+xsyimGLzE/E3mD84WaRgTJ0
-   ugSTAJpbvm4iBN02T4gPx8cyBV0XV89OTeS7+CTSpEi52H77p2Rll+aKD
-   w==;
+  t=1652780650; x=1684316650;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=MY73mTxaNzmfINOX3HHpRcVnHeDiQGinOqwrS6cKUFM=;
+  b=qQXstknZEc4ib8wVv7QQedC5lCsf7bH8brgk8nNLVDYC+1C2ERZgKi9k
+   RcMfFzUoGuast4Ce+AvsCMrqAaxPQHGMNZO5jkmBZbdE+4RwwNIvegPbh
+   VmMaOfvB7jg+4SwxoIiPPmVIuXteBkPQcUjuYeChDgdLVeZ3NrSeFvDUN
+   3xKU66s4sqOL7pIkLe4LNozRlobEJ5B1EoHmEiAV9qxq4F2g0SnoMMhQt
+   iNREF6Ozyui4OzeaHluQhumuGzCYDWJH6sTACPyoNYLOpNTmeoJ1XTgsa
+   vMOzxNRlsY3DYnWNlfwshDialFVjGNv0TWG5+zmUxh4TgQKlXqfV5Drv/
+   g==;
 X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
-   d="scan'208";a="156360855"
+   d="scan'208";a="173714678"
 Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 May 2022 02:43:57 -0700
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 May 2022 02:44:08 -0700
 Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 17 May 2022 02:43:57 -0700
+ 15.1.2375.17; Tue, 17 May 2022 02:44:08 -0700
 Received: from CHE-LT-I17769U.microchip.com (10.10.115.15) by
  chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 17 May 2022 02:43:51 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 17 May 2022 02:44:02 -0700
 From:   Arun Ramadoss <arun.ramadoss@microchip.com>
 To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
 CC:     Russell King <linux@armlinux.org.uk>,
@@ -53,10 +53,12 @@ CC:     Russell King <linux@armlinux.org.uk>,
         Marek Vasut <marex@denx.de>,
         Michael Grzeschik <m.grzeschik@pengutronix.de>,
         Eric Dumazet <edumazet@google.com>
-Subject: [Patch net-next 0/9] net: dsa: microchip: refactor the ksz switch init function
-Date:   Tue, 17 May 2022 15:13:24 +0530
-Message-ID: <20220517094333.27225-1-arun.ramadoss@microchip.com>
+Subject: [Patch net-next 1/9] net: dsa: microchip: ksz8795: update the port_cnt value in ksz_chip_data
+Date:   Tue, 17 May 2022 15:13:25 +0530
+Message-ID: <20220517094333.27225-2-arun.ramadoss@microchip.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220517094333.27225-1-arun.ramadoss@microchip.com>
+References: <20220517094333.27225-1-arun.ramadoss@microchip.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -70,50 +72,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During the ksz_switch_register function, it calls the individual switches init
-functions (ksz8795.c and ksz9477.c). Both these functions have few things in
-common like, copying the chip specific data to struct ksz_dev, allocating
-ksz_port memory and mib_names memory & cnt. And to add the new LAN937x series
-switch, these allocations has to be replicated.
-Based on the review feedback of LAN937x part support patch, refactored the
-switch init function to move allocations to switch register.
+The port_cnt value in the structure is not used in the switch_init.
+Instead it uses the fls(chip->cpu_port), this is due to one of port in
+the ksz8794 unavailable. The cpu_port for the 8794 is 0x10, fls(0x10) =
+5, hence updating it directly in the ksz_chip_data structure in order to
+same with all the other switches in ksz8795.c and ksz9477.c files.
 
-Link:https://patchwork.kernel.org/project/netdevbpf/patch/20220504151755.11737-8-arun.ramadoss@microchip.com/
+Signed-off-by: Arun Ramadoss <arun.ramadoss@microchip.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/dsa/microchip/ksz8795.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Changes in Patch v1
-- Added the macros for the chip id
-- Updated the ksz8863_smi of_device_id data
-- Moved the patch 4 port allocation after the patch on mib_names to ksz_common
-
-Changes in RFC v2
-- Fixed the compilation issue
-
-Arun Ramadoss (8):
-  net: dsa: microchip: ksz8795: update the port_cnt value in
-    ksz_chip_data
-  net: dsa: microchip: move ksz_chip_data to ksz_common
-  net: dsa: microchip: perform the compatibility check for dev probed
-  net: dsa: microchip: move struct mib_names to ksz_chip_data
-  net: dsa: microchip: move port memory allocation to ksz_common
-  net: dsa: microchip: move get_strings to ksz_common
-  net: dsa: microchip: add the phylink get_caps
-  net: dsa: microchip: remove unused members in ksz_device
-
-Prasanna Vengateshan (1):
-  net: dsa: move mib->cnt_ptr reset code to ksz_common.c
-
- drivers/net/dsa/microchip/ksz8795.c     | 252 +-----------
- drivers/net/dsa/microchip/ksz8795_spi.c |  35 +-
- drivers/net/dsa/microchip/ksz8863_smi.c |  10 +-
- drivers/net/dsa/microchip/ksz9477.c     | 200 ++--------
- drivers/net/dsa/microchip/ksz9477_i2c.c |  30 +-
- drivers/net/dsa/microchip/ksz9477_spi.c |  30 +-
- drivers/net/dsa/microchip/ksz_common.c  | 485 +++++++++++++++++++++++-
- drivers/net/dsa/microchip/ksz_common.h  |  79 +++-
- 8 files changed, 664 insertions(+), 457 deletions(-)
-
-
-base-commit: 6251264fedde83ade6f0f1f7049037469dd4de0b
+diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+index f91deea9368e..83bcabf2dc54 100644
+--- a/drivers/net/dsa/microchip/ksz8795.c
++++ b/drivers/net/dsa/microchip/ksz8795.c
+@@ -1607,6 +1607,7 @@ static const struct ksz_chip_data ksz8_switch_chips[] = {
+ 		 * KSZ8794   0,1,2      4
+ 		 * KSZ8795   0,1,2,3    4
+ 		 * KSZ8765   0,1,2,3    4
++		 * port_cnt is configured as 5, even though it is 4
+ 		 */
+ 		.chip_id = 0x8794,
+ 		.dev_name = "KSZ8794",
+@@ -1614,7 +1615,7 @@ static const struct ksz_chip_data ksz8_switch_chips[] = {
+ 		.num_alus = 0,
+ 		.num_statics = 8,
+ 		.cpu_ports = 0x10,	/* can be configured as cpu port */
+-		.port_cnt = 4,		/* total cpu and user ports */
++		.port_cnt = 5,		/* total cpu and user ports */
+ 		.ksz87xx_eee_link_erratum = true,
+ 	},
+ 	{
+@@ -1653,7 +1654,7 @@ static int ksz8_switch_init(struct ksz_device *dev)
+ 			dev->num_vlans = chip->num_vlans;
+ 			dev->num_alus = chip->num_alus;
+ 			dev->num_statics = chip->num_statics;
+-			dev->port_cnt = fls(chip->cpu_ports);
++			dev->port_cnt = chip->port_cnt;
+ 			dev->cpu_port = fls(chip->cpu_ports) - 1;
+ 			dev->phy_port_cnt = dev->port_cnt - 1;
+ 			dev->cpu_ports = chip->cpu_ports;
 -- 
 2.33.0
 
