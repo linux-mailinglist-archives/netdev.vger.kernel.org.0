@@ -2,47 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9114752A050
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 13:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6521D52A05A
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 13:25:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245548AbiEQLV2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 07:21:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46882 "EHLO
+        id S1344263AbiEQLZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 07:25:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345215AbiEQLV1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 07:21:27 -0400
-X-Greylist: delayed 101540 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 04:21:25 PDT
-Received: from mout-u-107.mailbox.org (mout-u-107.mailbox.org [91.198.250.252])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D79D17AA4
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 04:21:25 -0700 (PDT)
-Received: from smtp2.mailbox.org (unknown [91.198.250.124])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-u-107.mailbox.org (Postfix) with ESMTPS id 4L2YbP3jc2z9sRX;
-        Tue, 17 May 2022 13:21:21 +0200 (CEST)
-Message-ID: <c8e782cb-49cc-e792-9573-8fd2e5515c50@denx.de>
-Date:   Tue, 17 May 2022 13:21:19 +0200
+        with ESMTP id S229760AbiEQLZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 07:25:43 -0400
+Received: from Chamillionaire.breakpoint.cc (Chamillionaire.breakpoint.cc [IPv6:2a0a:51c0:0:12e:520::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532AF4BBB5;
+        Tue, 17 May 2022 04:25:40 -0700 (PDT)
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
+        (envelope-from <fw@strlen.de>)
+        id 1nqvKW-0000ij-Fb; Tue, 17 May 2022 13:25:32 +0200
+Date:   Tue, 17 May 2022 13:25:32 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the net-next tree
+Message-ID: <20220517112532.GE5118@breakpoint.cc>
+References: <20220517110303.723a7148@canb.auug.org.au>
+ <20220517190332.4506f7e8@canb.auug.org.au>
 MIME-Version: 1.0
-Subject: Re: [PATCH v2] net: phy: marvell: Add errata section 5.1 for Alaska
- PHY
-Content-Language: en-US
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     Leszek Polak <lpolak@arri.de>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20220516070859.549170-1-sr@denx.de>
- <163e90e736803c670ce88f2b2b1174eddc1060a2.camel@redhat.com>
-From:   Stefan Roese <sr@denx.de>
-In-Reply-To: <163e90e736803c670ce88f2b2b1174eddc1060a2.camel@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Rspamd-Queue-Id: 4L2YbP3jc2z9sRX
-X-Spam-Status: No, score=-1.8 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NEUTRAL,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517190332.4506f7e8@canb.auug.org.au>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,39 +44,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Paolo,
-
-On 17.05.22 13:01, Paolo Abeni wrote:
-> Hello,
+Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> Hi all,
 > 
-> On Mon, 2022-05-16 at 09:08 +0200, Stefan Roese wrote:
->> From: Leszek Polak <lpolak@arri.de>
->>
->> As per Errata Section 5.1, if EEE is intended to be used, some register
->> writes must be done once after every hardware reset. This patch now adds
->> the necessary register writes as listed in the Marvell errata.
->>
->> Without this fix we experience ethernet problems on some of our boards
->> equipped with a new version of this ethernet PHY (different supplier).
->>
->> The fix applies to Marvell Alaska 88E1510/88E1518/88E1512/88E1514
->> Rev. A0.
->>
->> Signed-off-by: Leszek Polak <lpolak@arri.de>
->> Signed-off-by: Stefan Roese <sr@denx.de>
->> Cc: Marek Behún <kabel@kernel.org>
->> Cc: Andrew Lunn <andrew@lunn.ch>
->> Cc: Heiner Kallweit <hkallweit1@gmail.com>
->> Cc: Russell King <linux@armlinux.org.uk>
->> Cc: David S. Miller <davem@davemloft.net>
+> On Tue, 17 May 2022 11:03:03 +1000 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> >
+> > After merging the net-next tree, today's linux-next build (powerpc
+> > ppc64_defconfig) produced this warning:
+> > 
+> > net/netfilter/nf_conntrack_netlink.c:1717:12: warning: 'ctnetlink_dump_one_entry' defined but not used [-Wunused-function]
+> >  1717 | static int ctnetlink_dump_one_entry(struct sk_buff *skb,
+> >       |            ^~~~~~~~~~~~~~~~~~~~~~~~
+> > 
+> > Introduced by commit
+> > 
+> >   8a75a2c17410 ("netfilter: conntrack: remove unconfirmed list")
 > 
-> It's not clear to me if you are targeting -net or net-next, could you
-> please clarify? In case this is for -net, please add a suitable fixes
-> tag, thanks!
+> So for my i386 defconfig build this became on error, so I have applied
+> the following patch for today.
+> 
+> From: Stephen Rothwell <sfr@canb.auug.org.au>
+> Date: Tue, 17 May 2022 18:58:43 +1000
+> Subject: [PATCH] fix up for "netfilter: conntrack: remove unconfirmed list"
+> 
+> Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
 
-Sorry for not being clear on this. net-next is good AFAICT.
+Thanks Stephen.
 
-Should I re-submit to net-next?
-
-Thanks,
-Stefan
+Acked-by: Florian Westphal <fw@strlen.de>
