@@ -2,231 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C32A52AE46
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 00:48:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16C3052AE42
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 00:44:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231416AbiEQWsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 18:48:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47276 "EHLO
+        id S231364AbiEQWoZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 18:44:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38490 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231219AbiEQWse (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 18:48:34 -0400
-X-Greylist: delayed 554 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 15:48:33 PDT
-Received: from einhorn-mail-out.in-berlin.de (einhorn.in-berlin.de [192.109.42.8])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C1352E6E
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 15:48:33 -0700 (PDT)
-X-Envelope-From: thomas@x-berg.in-berlin.de
-Received: from x-berg.in-berlin.de (x-change.in-berlin.de [217.197.86.40])
-        by einhorn.in-berlin.de  with ESMTPS id 24HMcbtL364300
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 00:38:37 +0200
-Received: from thomas by x-berg.in-berlin.de with local (Exim 4.94.2)
-        (envelope-from <thomas@x-berg.in-berlin.de>)
-        id 1nr5pt-0007Y6-GD; Wed, 18 May 2022 00:38:37 +0200
-Date:   Wed, 18 May 2022 00:38:37 +0200
-From:   Thomas Osterried <thomas@osterried.de>
-To:     Lu Wei <luwei32@huawei.com>
-Cc:     jreuter@yaina.de, ralf@linux-mips.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-hams@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] ax25: merge repeat codes in
- ax25_dev_device_down()
-Message-ID: <YoQj7eND7/2KSBFs@x-berg.in-berlin.de>
-References: <20220516062804.254742-1-luwei32@huawei.com>
+        with ESMTP id S231348AbiEQWoY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 18:44:24 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EC3D45AFF
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 15:44:23 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id j21so304658pga.13
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 15:44:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8U1UMJO6lMuPvxVoVzvgi2MLyng4q5uGVH6c9a5w1Bw=;
+        b=gOnMTaEdFttEm6/q8XtGmPklahi2Ik82IJeay691COcljHc/LzBEOEZ+QVt5k3HkLF
+         UnL/oGGGW2/VFzZgtbsSAur2VSqGY+QcnetKELX4zENMxP2HF4AD0pYpvRUUnfx5QxJJ
+         /NYylHnGAula72P6fk/YTbEvjagUiN1WY+5HPfUadvcw/S7lMRuvf3B/RrMmhU6ZgDHg
+         0rBZ2xIkZ3i89x5tTMwUXfLT9vrslj1/p4kUQ4Lkfb9kV57oIL17dphdh2ka/Dw05b6q
+         qUrM6QxLItmWu8bqC4Z9casbE/DLbJUeElEtqSO36fYxetMDZr4cbiCjhETywSexSnUx
+         v8ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8U1UMJO6lMuPvxVoVzvgi2MLyng4q5uGVH6c9a5w1Bw=;
+        b=YeG9vG3lEtZQQyQ2qdA3sViY0HXpMiMtz1L5eYg0UDAZm1jUDYaTHCt7Tk2DNnh7ze
+         UWo3akWUf+oer/SFrVHd09RnPxS0fmFzOXO6CBJP5y3dZBCi4mbH9G+i0ySyLv1ILiez
+         3A9QQA/7GpsFodzlYCTDMHvBZ07sJf4evt1DLqSzf7oUMnJjIR0poTg9HFACdj0b6mya
+         z7TOvzvyjbgd2TbuRiWgGRt+DQUegpVR303W8xh0rWgQoX1cFRQhdOTuCNbeJSco3mg5
+         fjgvOMqas/ybp7pJjJl9usxRgJQ3ZdYGE8ll0zBgTnz3nAjkKkgI7Y0RNXZ/vb9S9pmC
+         j/Xg==
+X-Gm-Message-State: AOAM5306oi8n+34r1jq3lRVe1h0Dj7I4TiKeRHgOjHiebJcUB7PvNNtu
+        1QZrvnnGXgG72h+BNA4SuwlK3w==
+X-Google-Smtp-Source: ABdhPJzLuFFNqxfqGKiJ0TkzxI3fsKb53qCzXi0B6fJhZIeZBQremcpXYRvvdsFyH6ad2jVYDhxf+A==
+X-Received: by 2002:a63:1645:0:b0:3c2:4706:f62b with SMTP id 5-20020a631645000000b003c24706f62bmr21634955pgw.11.1652827462116;
+        Tue, 17 May 2022 15:44:22 -0700 (PDT)
+Received: from hermes.local (204-195-112-199.wavecable.com. [204.195.112.199])
+        by smtp.gmail.com with ESMTPSA id i24-20020a056a00225800b0050dc7628168sm257134pfu.66.2022.05.17.15.44.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 15:44:21 -0700 (PDT)
+Date:   Tue, 17 May 2022 15:44:19 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [RFC net-next] bonding: netlink error message support for
+ options
+Message-ID: <20220517154419.44a1cb6a@hermes.local>
+In-Reply-To: <5a6ba6f14b0fad6d4ba077a5230ee71cbf970934.1652819479.git.jtoppins@redhat.com>
+References: <5a6ba6f14b0fad6d4ba077a5230ee71cbf970934.1652819479.git.jtoppins@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220516062804.254742-1-luwei32@huawei.com>
-Sender: Thomas Osterried <thomas@x-berg.in-berlin.de>
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Tue, 17 May 2022 16:31:19 -0400
+Jonathan Toppins <jtoppins@redhat.com> wrote:
 
-three comments.
+>     This is an RFC because the current NL_SET_ERR_MSG() macros do not support
+>     printf like semantics so I rolled my own buffer setting in __bond_opt_set().
+>     The issue is I could not quite figure out the life-cycle of the buffer, if
+>     rtnl lock is held until after the text buffer is copied into the packet
+>     then we are ok, otherwise, some other type of buffer management scheme will
+>     be needed as this could result in corrupted error messages when modifying
+>     multiple bonds.
 
+Might be better for others in long term if NL_SET_ERR_MSG() had printf like
+semantics. Surely this isn't going to be first or last case.
 
-1. We need time for questions and discussions
-
-In the past, we had several problems with patches that went upstream which
-obviously not have been tested.
-We have several requests by our community at linux-hams, that we need
-to have a chance to read a patch proposal, and have time to test it,
-before things become worse.
-
-
-2. Due to some patches that went in the current torwalds-tree, ax25 became
-unusable in a production environment (!).
-
-I'll come to this in another mail, with description and proposal for a fix.
-We are currently testing it and like to send it on linux-hams with request
-to comment and test.
-
-
-3. About this patch for ax25_dev_device_down() which reached netdev-next:
-
-Looks good regarding the changes.
-
-But when looking at it, it raises a question due to an older patch, that introduced
-dev_put_track().
-It's just a question of comprehension:
-  If the position of the device that has to be removed is
-    - at the head of the device list: do dev_put_track()
-    - in the the device list or at the end: dev_put_track()
-    - not in the device list: do _not_ dev_put_track().
-      Why? - Not obviously clear. I think, because an interface could exist,
-      but is set to down and thus is not part of the list (-> then you can't see
-      it as /proc/sys/net/ax25/<name>).
-
-
--> Personally, I'd consider
-
-- this better readable:
-
-	int found = 0;
-
-	if (ax25_dev_list == ax25_dev) {
-		ax25_dev_list = s->next;
-		found = 1;
-	} else {
-		for (s = ax25_dev_list; s != NULL && s->next != NULL; s = s->next) {
-			if (s->next == ax25_dev) {
-				s->next = s->next->next;
-				found = 1;
-				break;
-			}
-		}
-	}
-
-	spin_unlock_bh(&ax25_dev_lock);
-	ax25_dev_put(ax25_dev);
-	dev->ax25_ptr = NULL;
-	if (found)
-		dev_put_track(dev, &ax25_dev->dev_tracker);
-	ax25_dev_put(ax25_dev);
-
-
-- ..or with goto:
-
-	int found = 1;
-
-	if (ax25_dev_list == ax25_dev) {
-		ax25_dev_list = s->next;
-		goto out;
-	}
-	for (s = ax25_dev_list; s != NULL && s->next != NULL; s = s->next) {
-		if (s->next == ax25_dev) {
-			s->next = s->next->next;
-			goto out;
-		}
-	}
-	found = 0;
-
-out:
-	spin_unlock_bh(&ax25_dev_lock);
-	ax25_dev_put(ax25_dev);
-	dev->ax25_ptr = NULL;
-	if (found)
-		dev_put_track(dev, &ax25_dev->dev_tracker);
-	ax25_dev_put(ax25_dev);
-
-
-
-- ..than this:
-
-	if ((s = ax25_dev_list) == ax25_dev) {
-		ax25_dev_list = s->next;
-		goto unlock_put;
-	}
-
-	while (s != NULL && s->next != NULL) {
-		if (s->next == ax25_dev) {
-			s->next = ax25_dev->next;
-			goto unlock_put;
-		}
-
-		s = s->next;
-	}
-	spin_unlock_bh(&ax25_dev_lock);
-	dev->ax25_ptr = NULL;
-	ax25_dev_put(ax25_dev);
-	return;
-
-unlock_put:
-	spin_unlock_bh(&ax25_dev_lock);
-	ax25_dev_put(ax25_dev);
-	dev->ax25_ptr = NULL;
-	dev_put_track(dev, &ax25_dev->dev_tracker);
-	ax25_dev_put(ax25_dev);
-
-
-
-vy 73,
-	- Thomas  dl9sau
-
-
-On Mon, May 16, 2022 at 02:28:04PM +0800, Lu Wei wrote:
-> Merge repeat codes to reduce the duplication.
-> 
-> Signed-off-by: Lu Wei <luwei32@huawei.com>
-> ---
->  net/ax25/ax25_dev.c | 22 ++++++++++------------
->  1 file changed, 10 insertions(+), 12 deletions(-)
-> 
-> diff --git a/net/ax25/ax25_dev.c b/net/ax25/ax25_dev.c
-> index d2a244e1c260..b80fccbac62a 100644
-> --- a/net/ax25/ax25_dev.c
-> +++ b/net/ax25/ax25_dev.c
-> @@ -115,23 +115,13 @@ void ax25_dev_device_down(struct net_device *dev)
->  
->  	if ((s = ax25_dev_list) == ax25_dev) {
->  		ax25_dev_list = s->next;
-> -		spin_unlock_bh(&ax25_dev_lock);
-> -		ax25_dev_put(ax25_dev);
-> -		dev->ax25_ptr = NULL;
-> -		dev_put_track(dev, &ax25_dev->dev_tracker);
-> -		ax25_dev_put(ax25_dev);
-> -		return;
-> +		goto unlock_put;
->  	}
->  
->  	while (s != NULL && s->next != NULL) {
->  		if (s->next == ax25_dev) {
->  			s->next = ax25_dev->next;
-> -			spin_unlock_bh(&ax25_dev_lock);
-> -			ax25_dev_put(ax25_dev);
-> -			dev->ax25_ptr = NULL;
-> -			dev_put_track(dev, &ax25_dev->dev_tracker);
-> -			ax25_dev_put(ax25_dev);
-> -			return;
-> +			goto unlock_put;
->  		}
->  
->  		s = s->next;
-> @@ -139,6 +129,14 @@ void ax25_dev_device_down(struct net_device *dev)
->  	spin_unlock_bh(&ax25_dev_lock);
->  	dev->ax25_ptr = NULL;
->  	ax25_dev_put(ax25_dev);
-> +	return;
-> +
-> +unlock_put:
-> +	spin_unlock_bh(&ax25_dev_lock);
-> +	ax25_dev_put(ax25_dev);
-> +	dev->ax25_ptr = NULL;
-> +	dev_put_track(dev, &ax25_dev->dev_tracker);
-> +	ax25_dev_put(ax25_dev);
->  }
->  
->  int ax25_fwd_ioctl(unsigned int cmd, struct ax25_fwd_struct *fwd)
-> -- 
-> 2.17.1
-> 
-> 
+Then internally, it could print right to the netlink message.
