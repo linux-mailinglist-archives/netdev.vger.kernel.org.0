@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53650529BF8
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 10:13:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0965529BFB
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 10:14:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242560AbiEQIN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 04:13:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
+        id S242682AbiEQINl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 04:13:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242616AbiEQINM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:13:12 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55B2D45051;
-        Tue, 17 May 2022 01:12:14 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id nr2-20020a17090b240200b001df2b1bfc40so1699415pjb.5;
-        Tue, 17 May 2022 01:12:14 -0700 (PDT)
+        with ESMTP id S242638AbiEQINX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:13:23 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B0A847388;
+        Tue, 17 May 2022 01:12:18 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id nr2-20020a17090b240200b001df2b1bfc40so1699358pjb.5;
+        Tue, 17 May 2022 01:12:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rBPzBYMrWsFKbZByuHnQrLDMtrzPNzPI3nX7MvL+UmA=;
-        b=Sli0Pc2oXjsj4zfQ0xsmoNUgH8yHp1UQzAy+bRy7MVM2k6R0HYJDheixZm4P9qoxPW
-         rJtuc3CG8PETWqpE3AREb6C/DOW64n0taJEcJnA5kAHEy00OGRTgina0NamU3ry1Et0u
-         qWOah4KacW+4QUb1c4Iu0uZFYrW+txSix/OUVClyjBKbseOG77Z8a9fswY1T8mFZ24am
-         Ef9myRLwjEUzrqoVYWsNuRNWnsYRXbxcmHRqrNvHi7FpNaJWxoY5Ntdmo8uFdSWoo0Y/
-         s63DxOeYFdbu4PHjl8ZggxvaFH5ZF6wxIjC/KAWxDBvgu9tprJoUuIVQMpFI9ejfDvMu
-         3t3g==
+        bh=yrWgjLmB2iiLiA7VGVIElFdh/U/JN3XyMku/hPoh75g=;
+        b=F8nWqU6wBagVndxWEMZOW9+XWf3p+WASC4vIulv5sc9MqMwfIq4X7ojrJqqv8g6DhP
+         iz+KFYHBbX0w1xrBRxMAgvdLUJv2QmejU2EBN0e4Jc3n3HBNodXN3sPLO0rhxQHD2ujI
+         E86kChI6JEFkovNNfps75DpUjqNLimlDCiv7OTDRk+31nQ7glQ4FtT8TCtV17SsJBl7w
+         CTCkAj67BxXkGsp9t2bP5PWWhoqc/ihsqCMJ+NDZAu03Efsv6waZqWPfm2f8HHooNIy7
+         bYPaAkaXuObc46NpNX8GDJpBbMpjr75iaDyPh44Ma6enSuOWHhTorkG/Fbf7B2o1EHSN
+         +K9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rBPzBYMrWsFKbZByuHnQrLDMtrzPNzPI3nX7MvL+UmA=;
-        b=lHrR5vuEdv4wzPUXsqpOp9J2uHWOfaty8ec72F+aoDbNALiH6DJoSmaL85MocYUHiA
-         WK0gm1awHajZOgZzRGRjgZh+Tc7/7ukuKYt+OM+fKpgxAxfCFSMXakm9wx2UGXzLjJF9
-         UjKpkYyq6yF+/omGbthjUiVexWsSYfOQqyh08FdMqVDEdbbLhg++sB7CBPGuMtXtHzj5
-         bvy3sJe9j2TabjPmO4tNurPXDKlMv0rGPMVsO6hf+DdCtslevt1yPl7+hPJdXJJlbe3k
-         zm1DyStLGNBWQrJxLajcTufuNhQoj0dwhhMg6+K9iKg+mKOHGHkf7K23Tom0HO2SYXwv
-         J6Tg==
-X-Gm-Message-State: AOAM533Dwe7wDeC6uwLMhQlbOqpxSuca05MV50waqSNh0wyv825GnLGg
-        tVEtUMg4KvtWFbtGeF0xCEo=
-X-Google-Smtp-Source: ABdhPJxvv8vKZPlVirSw5NowsPTUwdlt8HNK4TE370QM74w8I9Gljp29gX9NfLRht0y1fvntYsCeMw==
-X-Received: by 2002:a17:90a:778c:b0:1df:56a5:8474 with SMTP id v12-20020a17090a778c00b001df56a58474mr9546929pjk.63.1652775133589;
-        Tue, 17 May 2022 01:12:13 -0700 (PDT)
+        bh=yrWgjLmB2iiLiA7VGVIElFdh/U/JN3XyMku/hPoh75g=;
+        b=E3N9V1KeGYQm3yk+lz6tlv1Ut2M+LgKBAHVEqqDBcQaauoKQoMmC3T2aNhHV3mbg5F
+         ymQKBL9btT1ovZwb42HpQkNCskBEtrZFvaidwj6Y8hc3SzsMJmgVkn9V71P+i6OOn9eL
+         rz4dU45bEzxYqEcJxw5gyRdltQpBBS6PiSNG4yhtZu5tzpg62oeRae5anKOz0ZkKtSQ/
+         eb6/oTB+wfp3vdc8LKYiGosRNZJg8uByKPEytfYIYm4BYE5R0HLMARx4Eh06e7etJIV7
+         YcuKw85946sSHAGU7luTnOmN/WowZ7bYv8uxgeWXimTjuSrFKP6asSowtwrHc9fooAT9
+         n2VA==
+X-Gm-Message-State: AOAM531hFP3u+tOd8day7FxDXz2d3swlCaDbhyVhEF0he2C1VdXwo7XF
+        amE0JzlYZVUI2iKn41ljH70=
+X-Google-Smtp-Source: ABdhPJxaZNlXl44yTcz+JZuwhnHZB2oWRnrTHW2zdV05/u3sf9qptAZiW0J7V2EUb05G76iH9pGujg==
+X-Received: by 2002:a17:90b:4f91:b0:1cd:3a73:3a5d with SMTP id qe17-20020a17090b4f9100b001cd3a733a5dmr23586988pjb.98.1652775138075;
+        Tue, 17 May 2022 01:12:18 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.20])
-        by smtp.gmail.com with ESMTPSA id c14-20020a170902c2ce00b0015e8d4eb2easm8336306pla.308.2022.05.17.01.12.09
+        by smtp.gmail.com with ESMTPSA id c14-20020a170902c2ce00b0015e8d4eb2easm8336306pla.308.2022.05.17.01.12.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 01:12:13 -0700 (PDT)
+        Tue, 17 May 2022 01:12:17 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     edumazet@google.com
@@ -57,9 +57,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
         Hao Peng <flyingpeng@tencent.com>
-Subject: [PATCH net-next v2 6/9] net: tcp: make tcp_rcv_state_process() return drop reason
-Date:   Tue, 17 May 2022 16:10:05 +0800
-Message-Id: <20220517081008.294325-7-imagedong@tencent.com>
+Subject: [PATCH net-next v2 7/9] net: tcp: add skb drop reasons to tcp connect requesting
+Date:   Tue, 17 May 2022 16:10:06 +0800
+Message-Id: <20220517081008.294325-8-imagedong@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220517081008.294325-1-imagedong@tencent.com>
 References: <20220517081008.294325-1-imagedong@tencent.com>
@@ -77,288 +77,361 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-For now, the return value of tcp_rcv_state_process() is treated as bool.
-Therefore, we can make it return the reasons of the skb drops.
+In order to get skb drop reasons during tcp connect requesting code path,
+we have to pass the pointer of the 'reason' as a new function argument of
+conn_request() in 'struct inet_connection_sock_af_ops'. As the return
+value of conn_request() can be positive or negative or 0, it's not
+flexible to make it return drop reasons.
 
-Meanwhile, the return value of tcp_child_process() comes from
-tcp_rcv_state_process(), make it drop reasons by the way.
+As the return value of tcp_conn_request() is 0, so we can treat it as bool
+and make it return the skb drop reasons.
+
+The new drop reasons 'LISTENOVERFLOWS' and 'TCP_REQQFULLDROP' are added,
+which are used for 'accept queue' and 'request queue' full.
 
 Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
- include/linux/skbuff.h   |  1 +
- include/net/tcp.h        |  8 +++++---
- net/ipv4/tcp_input.c     | 22 +++++++++++-----------
- net/ipv4/tcp_ipv4.c      | 20 +++++++++++++-------
- net/ipv4/tcp_minisocks.c | 11 ++++++-----
- net/ipv6/tcp_ipv6.c      | 19 ++++++++++++-------
- 6 files changed, 48 insertions(+), 33 deletions(-)
+ include/linux/skbuff.h             | 10 ++++++++++
+ include/net/inet_connection_sock.h |  3 ++-
+ include/net/tcp.h                  |  9 +++++----
+ net/dccp/dccp.h                    |  3 ++-
+ net/dccp/input.c                   |  3 ++-
+ net/dccp/ipv4.c                    |  3 ++-
+ net/dccp/ipv6.c                    |  5 +++--
+ net/ipv4/tcp_input.c               | 27 ++++++++++++++++++---------
+ net/ipv4/tcp_ipv4.c                |  9 ++++++---
+ net/ipv6/tcp_ipv6.c                | 12 ++++++++----
+ net/mptcp/subflow.c                |  8 +++++---
+ 11 files changed, 63 insertions(+), 29 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 36e0971f4cc9..736899cc6a13 100644
+index 736899cc6a13..4578bbab5a3e 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -620,6 +620,7 @@ struct sk_buff;
- 	FN(PKT_TOO_BIG)			\
+@@ -552,6 +552,14 @@ struct sk_buff;
+  * SKB_DROP_REASON_SOCKET_DESTROYED
+  *	socket is destroyed and the skb in its receive or send queue
+  *	are all dropped
++ *
++ * SKB_DROP_REASON_LISTENOVERFLOWS
++ *	accept queue of the listen socket is full, corresponding to
++ *	LINUX_MIB_LISTENOVERFLOWS
++ *
++ * SKB_DROP_REASON_TCP_REQQFULLDROP
++ *	request queue of the listen socket is full, corresponding to
++ *	LINUX_MIB_TCPREQQFULLDROP
+  */
+ #define __DEFINE_SKB_DROP_REASON(FN)	\
+ 	FN(NOT_SPECIFIED)		\
+@@ -621,6 +629,8 @@ struct sk_buff;
  	FN(SOCKET_DESTROYED)		\
  	FN(TCP_PAWSACTIVEREJECTED)	\
-+	FN(TCP_ABORTONDATA)		\
+ 	FN(TCP_ABORTONDATA)		\
++	FN(LISTENOVERFLOWS)		\
++	FN(TCP_REQQFULLDROP)		\
  	FN(MAX)
  
  /* The reason of skb drop, which is used in kfree_skb_reason().
+diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
+index 3908296d103f..0600280f308e 100644
+--- a/include/net/inet_connection_sock.h
++++ b/include/net/inet_connection_sock.h
+@@ -36,7 +36,8 @@ struct inet_connection_sock_af_ops {
+ 	void	    (*send_check)(struct sock *sk, struct sk_buff *skb);
+ 	int	    (*rebuild_header)(struct sock *sk);
+ 	void	    (*sk_rx_dst_set)(struct sock *sk, const struct sk_buff *skb);
+-	int	    (*conn_request)(struct sock *sk, struct sk_buff *skb);
++	int	    (*conn_request)(struct sock *sk, struct sk_buff *skb,
++				    enum skb_drop_reason *reason);
+ 	struct sock *(*syn_recv_sock)(const struct sock *sk, struct sk_buff *skb,
+ 				      struct request_sock *req,
+ 				      struct dst_entry *dst,
 diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 1e99f5c61f84..ea0eb2d4a743 100644
+index ea0eb2d4a743..082dd0627e2e 100644
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -339,7 +339,8 @@ void tcp_wfree(struct sk_buff *skb);
- void tcp_write_timer_handler(struct sock *sk);
- void tcp_delack_timer_handler(struct sock *sk);
- int tcp_ioctl(struct sock *sk, int cmd, unsigned long arg);
--int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb);
-+enum skb_drop_reason tcp_rcv_state_process(struct sock *sk,
-+					   struct sk_buff *skb);
- void tcp_rcv_established(struct sock *sk, struct sk_buff *skb);
- void tcp_rcv_space_adjust(struct sock *sk);
- int tcp_twsk_unique(struct sock *sk, struct sock *sktw, void *twp);
-@@ -385,8 +386,9 @@ enum tcp_tw_status tcp_timewait_state_process(struct inet_timewait_sock *tw,
- struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 			   struct request_sock *req, bool fastopen,
- 			   bool *lost_race);
--int tcp_child_process(struct sock *parent, struct sock *child,
--		      struct sk_buff *skb);
-+enum skb_drop_reason tcp_child_process(struct sock *parent,
-+				       struct sock *child,
-+				       struct sk_buff *skb);
- void tcp_enter_loss(struct sock *sk);
- void tcp_cwnd_reduction(struct sock *sk, int newly_acked_sacked, int newly_lost, int flag);
- void tcp_clear_retrans(struct tcp_sock *tp);
+@@ -445,7 +445,8 @@ void tcp_v4_send_check(struct sock *sk, struct sk_buff *skb);
+ void tcp_v4_mtu_reduced(struct sock *sk);
+ void tcp_req_err(struct sock *sk, u32 seq, bool abort);
+ void tcp_ld_RTO_revert(struct sock *sk, u32 seq);
+-int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb);
++int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++			enum skb_drop_reason *reason);
+ struct sock *tcp_create_openreq_child(const struct sock *sk,
+ 				      struct request_sock *req,
+ 				      struct sk_buff *skb);
+@@ -2036,9 +2037,9 @@ void tcp4_proc_exit(void);
+ #endif
+ 
+ int tcp_rtx_synack(const struct sock *sk, struct request_sock *req);
+-int tcp_conn_request(struct request_sock_ops *rsk_ops,
+-		     const struct tcp_request_sock_ops *af_ops,
+-		     struct sock *sk, struct sk_buff *skb);
++enum skb_drop_reason tcp_conn_request(struct request_sock_ops *rsk_ops,
++				      const struct tcp_request_sock_ops *af_ops,
++				      struct sock *sk, struct sk_buff *skb);
+ 
+ /* TCP af-specific functions */
+ struct tcp_sock_af_ops {
+diff --git a/net/dccp/dccp.h b/net/dccp/dccp.h
+index 7dfc00c9fb32..8c1241ae8449 100644
+--- a/net/dccp/dccp.h
++++ b/net/dccp/dccp.h
+@@ -255,7 +255,8 @@ void dccp_done(struct sock *sk);
+ int dccp_reqsk_init(struct request_sock *rq, struct dccp_sock const *dp,
+ 		    struct sk_buff const *skb);
+ 
+-int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb);
++int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++			 enum skb_drop_reason *reason);
+ 
+ struct sock *dccp_create_openreq_child(const struct sock *sk,
+ 				       const struct request_sock *req,
+diff --git a/net/dccp/input.c b/net/dccp/input.c
+index 2cbb757a894f..e12baa56ca59 100644
+--- a/net/dccp/input.c
++++ b/net/dccp/input.c
+@@ -576,6 +576,7 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
+ 	const int old_state = sk->sk_state;
+ 	bool acceptable;
+ 	int queued = 0;
++	SKB_DR(reason);
+ 
+ 	/*
+ 	 *  Step 3: Process LISTEN state
+@@ -606,7 +607,7 @@ int dccp_rcv_state_process(struct sock *sk, struct sk_buff *skb,
+ 			 */
+ 			rcu_read_lock();
+ 			local_bh_disable();
+-			acceptable = inet_csk(sk)->icsk_af_ops->conn_request(sk, skb) >= 0;
++			acceptable = inet_csk(sk)->icsk_af_ops->conn_request(sk, skb, &reason) >= 0;
+ 			local_bh_enable();
+ 			rcu_read_unlock();
+ 			if (!acceptable)
+diff --git a/net/dccp/ipv4.c b/net/dccp/ipv4.c
+index 82696ab86f74..c689385229f0 100644
+--- a/net/dccp/ipv4.c
++++ b/net/dccp/ipv4.c
+@@ -581,7 +581,8 @@ static struct request_sock_ops dccp_request_sock_ops __read_mostly = {
+ 	.syn_ack_timeout = dccp_syn_ack_timeout,
+ };
+ 
+-int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
++int dccp_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++			 enum skb_drop_reason *reason)
+ {
+ 	struct inet_request_sock *ireq;
+ 	struct request_sock *req;
+diff --git a/net/dccp/ipv6.c b/net/dccp/ipv6.c
+index 4d95b6400915..d32fbdf45012 100644
+--- a/net/dccp/ipv6.c
++++ b/net/dccp/ipv6.c
+@@ -314,7 +314,8 @@ static struct request_sock_ops dccp6_request_sock_ops = {
+ 	.syn_ack_timeout = dccp_syn_ack_timeout,
+ };
+ 
+-static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
++static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb,
++				enum skb_drop_reason *reason)
+ {
+ 	struct request_sock *req;
+ 	struct dccp_request_sock *dreq;
+@@ -324,7 +325,7 @@ static int dccp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
+ 	struct dccp_skb_cb *dcb = DCCP_SKB_CB(skb);
+ 
+ 	if (skb->protocol == htons(ETH_P_IP))
+-		return dccp_v4_conn_request(sk, skb);
++		return dccp_v4_conn_request(sk, skb, reason);
+ 
+ 	if (!ipv6_unicast_destination(skb))
+ 		return 0;	/* discard, don't send a reset here */
 diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index e8d26a68bc45..4717af0eaea7 100644
+index 4717af0eaea7..be6275c56b59 100644
 --- a/net/ipv4/tcp_input.c
 +++ b/net/ipv4/tcp_input.c
-@@ -6422,7 +6422,7 @@ static void tcp_rcv_synrecv_state_fastopen(struct sock *sk)
-  *	address independent.
-  */
- 
--int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
-+enum skb_drop_reason tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	struct inet_connection_sock *icsk = inet_csk(sk);
-@@ -6439,7 +6439,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 
- 	case TCP_LISTEN:
- 		if (th->ack)
--			return 1;
-+			return SKB_DROP_REASON_TCP_FLAGS;
- 
- 		if (th->rst) {
- 			SKB_DR_SET(reason, TCP_RESET);
-@@ -6460,9 +6460,9 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+@@ -6455,13 +6455,17 @@ enum skb_drop_reason tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
+ 			 */
+ 			rcu_read_lock();
+ 			local_bh_disable();
+-			acceptable = icsk->icsk_af_ops->conn_request(sk, skb) >= 0;
++			reason = SKB_NOT_DROPPED_YET;
++			acceptable = icsk->icsk_af_ops->conn_request(sk, skb, &reason) >= 0;
+ 			local_bh_enable();
  			rcu_read_unlock();
  
  			if (!acceptable)
--				return 1;
-+				return SKB_DROP_REASON_NOT_SPECIFIED;
- 			consume_skb(skb);
--			return 0;
-+			return SKB_NOT_DROPPED_YET;
+-				return SKB_DROP_REASON_NOT_SPECIFIED;
+-			consume_skb(skb);
++				return reason ?: SKB_DROP_REASON_NOT_SPECIFIED;
++			if (reason)
++				kfree_skb_reason(skb, reason);
++			else
++				consume_skb(skb);
+ 			return SKB_NOT_DROPPED_YET;
  		}
  		SKB_DR_SET(reason, TCP_FLAGS);
- 		goto discard;
-@@ -6472,13 +6472,13 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 		tcp_mstamp_refresh(tp);
- 		queued = tcp_rcv_synsent_state_process(sk, skb, th);
- 		if (queued >= 0)
--			return queued;
-+			return (enum skb_drop_reason)queued;
- 
- 		/* Do step6 onward by hand. */
- 		tcp_urg(sk, skb, th);
- 		__kfree_skb(skb);
- 		tcp_data_snd_check(sk);
--		return 0;
-+		return SKB_NOT_DROPPED_YET;
- 	}
- 
- 	tcp_mstamp_refresh(tp);
-@@ -6582,7 +6582,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 		if (tp->linger2 < 0) {
- 			tcp_done(sk);
- 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
--			return 1;
-+			return SKB_DROP_REASON_TCP_ABORTONDATA;
- 		}
- 		if (TCP_SKB_CB(skb)->end_seq != TCP_SKB_CB(skb)->seq &&
- 		    after(TCP_SKB_CB(skb)->end_seq - th->fin, tp->rcv_nxt)) {
-@@ -6591,7 +6591,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 				tcp_fastopen_active_disable(sk);
- 			tcp_done(sk);
- 			NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
--			return 1;
-+			return SKB_DROP_REASON_TCP_ABORTONDATA;
- 		}
- 
- 		tmo = tcp_fin_time(sk);
-@@ -6656,7 +6656,7 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- 			    after(TCP_SKB_CB(skb)->end_seq - th->fin, tp->rcv_nxt)) {
- 				NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPABORTONDATA);
- 				tcp_reset(sk, skb);
--				return 1;
-+				return SKB_DROP_REASON_TCP_ABORTONDATA;
- 			}
- 		}
- 		fallthrough;
-@@ -6676,11 +6676,11 @@ int tcp_rcv_state_process(struct sock *sk, struct sk_buff *skb)
- discard:
- 		tcp_drop_reason(sk, skb, reason);
- 	}
--	return 0;
-+	return SKB_NOT_DROPPED_YET;
- 
- consume:
- 	__kfree_skb(skb);
--	return 0;
-+	return SKB_NOT_DROPPED_YET;
+@@ -6881,9 +6885,9 @@ u16 tcp_get_syncookie_mss(struct request_sock_ops *rsk_ops,
  }
- EXPORT_SYMBOL(tcp_rcv_state_process);
+ EXPORT_SYMBOL_GPL(tcp_get_syncookie_mss);
  
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 24eb42497a71..12a18c5035f4 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1670,7 +1670,8 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- 		if (!nsk)
- 			goto discard;
- 		if (nsk != sk) {
--			if (tcp_child_process(sk, nsk, skb)) {
-+			reason = tcp_child_process(sk, nsk, skb);
-+			if (reason) {
- 				rsk = nsk;
- 				goto reset;
- 			}
-@@ -1679,7 +1680,8 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- 	} else
- 		sock_rps_save_rxhash(sk, skb);
+-int tcp_conn_request(struct request_sock_ops *rsk_ops,
+-		     const struct tcp_request_sock_ops *af_ops,
+-		     struct sock *sk, struct sk_buff *skb)
++enum skb_drop_reason tcp_conn_request(struct request_sock_ops *rsk_ops,
++				      const struct tcp_request_sock_ops *af_ops,
++				      struct sock *sk, struct sk_buff *skb)
+ {
+ 	struct tcp_fastopen_cookie foc = { .len = -1 };
+ 	__u32 isn = TCP_SKB_CB(skb)->tcp_tw_isn;
+@@ -6895,6 +6899,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	bool want_cookie = false;
+ 	struct dst_entry *dst;
+ 	struct flowi fl;
++	SKB_DR(reason);
  
--	if (tcp_rcv_state_process(sk, skb)) {
-+	reason = tcp_rcv_state_process(sk, skb);
-+	if (reason) {
- 		rsk = sk;
- 		goto reset;
+ 	/* TW buckets are converted to open requests without
+ 	 * limitations, they conserve resources and peer is
+@@ -6903,12 +6908,15 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	if ((net->ipv4.sysctl_tcp_syncookies == 2 ||
+ 	     inet_csk_reqsk_queue_is_full(sk)) && !isn) {
+ 		want_cookie = tcp_syn_flood_action(sk, rsk_ops->slab_name);
+-		if (!want_cookie)
++		if (!want_cookie) {
++			SKB_DR_SET(reason, TCP_REQQFULLDROP);
+ 			goto drop;
++		}
  	}
-@@ -1688,6 +1690,7 @@ int tcp_v4_do_rcv(struct sock *sk, struct sk_buff *skb)
- reset:
- 	tcp_v4_send_reset(rsk, skb);
- discard:
-+	SKB_DR_OR(reason, NOT_SPECIFIED);
- 	kfree_skb_reason(skb, reason);
- 	/* Be careful here. If this function gets more complicated and
- 	 * gcc suffers from register pressure on the x86, sk (in %ebx)
-@@ -2019,12 +2022,15 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 		if (nsk == sk) {
- 			reqsk_put(req);
- 			tcp_v4_restore_cb(skb);
--		} else if (tcp_child_process(sk, nsk, skb)) {
--			tcp_v4_send_reset(nsk, skb);
--			goto discard_and_relse;
- 		} else {
--			sock_put(sk);
--			return 0;
-+			drop_reason = tcp_child_process(sk, nsk, skb);
-+			if (drop_reason) {
-+				tcp_v4_send_reset(nsk, skb);
-+				goto discard_and_relse;
-+			} else {
-+				sock_put(sk);
-+				return 0;
-+			}
+ 
+ 	if (sk_acceptq_is_full(sk)) {
+ 		NET_INC_STATS(sock_net(sk), LINUX_MIB_LISTENOVERFLOWS);
++		SKB_DR_SET(reason, LISTENOVERFLOWS);
+ 		goto drop;
+ 	}
+ 
+@@ -6964,6 +6972,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 			 */
+ 			pr_drop_req(req, ntohs(tcp_hdr(skb)->source),
+ 				    rsk_ops->family);
++			SKB_DR_SET(reason, TCP_REQQFULLDROP);
+ 			goto drop_and_release;
+ 		}
+ 
+@@ -7016,7 +7025,7 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
  		}
  	}
+ 	reqsk_put(req);
+-	return 0;
++	return SKB_NOT_DROPPED_YET;
  
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 6854bb1fb32b..1a21018f6f64 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -821,11 +821,12 @@ EXPORT_SYMBOL(tcp_check_req);
-  * be created.
-  */
- 
--int tcp_child_process(struct sock *parent, struct sock *child,
--		      struct sk_buff *skb)
-+enum skb_drop_reason tcp_child_process(struct sock *parent,
-+				       struct sock *child,
-+				       struct sk_buff *skb)
- 	__releases(&((child)->sk_lock.slock))
- {
--	int ret = 0;
-+	enum skb_drop_reason reason = SKB_NOT_DROPPED_YET;
- 	int state = child->sk_state;
- 
- 	/* record sk_napi_id and sk_rx_queue_mapping of child. */
-@@ -833,7 +834,7 @@ int tcp_child_process(struct sock *parent, struct sock *child,
- 
- 	tcp_segs_in(tcp_sk(child), skb);
- 	if (!sock_owned_by_user(child)) {
--		ret = tcp_rcv_state_process(child, skb);
-+		reason = tcp_rcv_state_process(child, skb);
- 		/* Wakeup parent, send SIGIO */
- 		if (state == TCP_SYN_RECV && child->sk_state != state)
- 			parent->sk_data_ready(parent);
-@@ -847,6 +848,6 @@ int tcp_child_process(struct sock *parent, struct sock *child,
- 
- 	bh_unlock_sock(child);
- 	sock_put(child);
--	return ret;
+ drop_and_release:
+ 	dst_release(dst);
+@@ -7024,6 +7033,6 @@ int tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	__reqsk_free(req);
+ drop:
+ 	tcp_listendrop(sk);
+-	return 0;
 +	return reason;
  }
- EXPORT_SYMBOL(tcp_child_process);
+ EXPORT_SYMBOL(tcp_conn_request);
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 12a18c5035f4..708f92b03f42 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1458,17 +1458,20 @@ const struct tcp_request_sock_ops tcp_request_sock_ipv4_ops = {
+ 	.send_synack	=	tcp_v4_send_synack,
+ };
+ 
+-int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb)
++int tcp_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++			enum skb_drop_reason *reason)
+ {
+ 	/* Never answer to SYNs send to broadcast or multicast */
+ 	if (skb_rtable(skb)->rt_flags & (RTCF_BROADCAST | RTCF_MULTICAST))
+ 		goto drop;
+ 
+-	return tcp_conn_request(&tcp_request_sock_ops,
+-				&tcp_request_sock_ipv4_ops, sk, skb);
++	*reason = tcp_conn_request(&tcp_request_sock_ops,
++				   &tcp_request_sock_ipv4_ops, sk, skb);
++	return *reason;
+ 
+ drop:
+ 	tcp_listendrop(sk);
++	*reason = SKB_DROP_REASON_IP_INADDRERRORS;
+ 	return 0;
+ }
+ EXPORT_SYMBOL(tcp_v4_conn_request);
 diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 636ed23d9af0..d8236d51dd47 100644
+index d8236d51dd47..27c51991bd54 100644
 --- a/net/ipv6/tcp_ipv6.c
 +++ b/net/ipv6/tcp_ipv6.c
-@@ -1489,7 +1489,8 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- 			goto discard;
+@@ -1148,24 +1148,28 @@ u16 tcp_v6_get_syncookie(struct sock *sk, struct ipv6hdr *iph,
+ 	return mss;
+ }
  
- 		if (nsk != sk) {
--			if (tcp_child_process(sk, nsk, skb))
-+			reason = tcp_child_process(sk, nsk, skb);
-+			if (reason)
- 				goto reset;
- 			if (opt_skb)
- 				__kfree_skb(opt_skb);
-@@ -1498,7 +1499,8 @@ int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- 	} else
- 		sock_rps_save_rxhash(sk, skb);
+-static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb)
++static int tcp_v6_conn_request(struct sock *sk, struct sk_buff *skb,
++			       enum skb_drop_reason *reason)
+ {
+ 	if (skb->protocol == htons(ETH_P_IP))
+-		return tcp_v4_conn_request(sk, skb);
++		return tcp_v4_conn_request(sk, skb, reason);
  
--	if (tcp_rcv_state_process(sk, skb))
-+	reason = tcp_rcv_state_process(sk, skb);
-+	if (reason)
- 		goto reset;
- 	if (opt_skb)
- 		goto ipv6_pktoptions;
-@@ -1685,12 +1687,15 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 		if (nsk == sk) {
- 			reqsk_put(req);
- 			tcp_v6_restore_cb(skb);
--		} else if (tcp_child_process(sk, nsk, skb)) {
--			tcp_v6_send_reset(nsk, skb);
--			goto discard_and_relse;
- 		} else {
--			sock_put(sk);
--			return 0;
-+			drop_reason = tcp_child_process(sk, nsk, skb);
-+			if (drop_reason) {
-+				tcp_v6_send_reset(nsk, skb);
-+				goto discard_and_relse;
-+			} else {
-+				sock_put(sk);
-+				return 0;
-+			}
- 		}
+ 	if (!ipv6_unicast_destination(skb))
+ 		goto drop;
+ 
+ 	if (ipv6_addr_v4mapped(&ipv6_hdr(skb)->saddr)) {
+ 		__IP6_INC_STATS(sock_net(sk), NULL, IPSTATS_MIB_INHDRERRORS);
++		*reason = SKB_DROP_REASON_IP_INADDRERRORS;
+ 		return 0;
  	}
  
+-	return tcp_conn_request(&tcp6_request_sock_ops,
+-				&tcp_request_sock_ipv6_ops, sk, skb);
++	*reason = tcp_conn_request(&tcp6_request_sock_ops,
++				   &tcp_request_sock_ipv6_ops, sk, skb);
++	return *reason;
+ 
+ drop:
+ 	tcp_listendrop(sk);
++	*reason = SKB_DROP_REASON_IP_INADDRERRORS;
+ 	return 0; /* don't send reset */
+ }
+ 
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 6d59336a8e1e..58c1f056213b 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -532,7 +532,8 @@ static int subflow_v6_rebuild_header(struct sock *sk)
+ struct request_sock_ops mptcp_subflow_request_sock_ops;
+ static struct tcp_request_sock_ops subflow_request_sock_ipv4_ops __ro_after_init;
+ 
+-static int subflow_v4_conn_request(struct sock *sk, struct sk_buff *skb)
++static int subflow_v4_conn_request(struct sock *sk, struct sk_buff *skb,
++				   enum skb_drop_reason *reason)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+ 
+@@ -556,14 +557,15 @@ static struct inet_connection_sock_af_ops subflow_v6_specific __ro_after_init;
+ static struct inet_connection_sock_af_ops subflow_v6m_specific __ro_after_init;
+ static struct proto tcpv6_prot_override;
+ 
+-static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb)
++static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb,
++				   enum skb_drop_reason *reason)
+ {
+ 	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(sk);
+ 
+ 	pr_debug("subflow=%p", subflow);
+ 
+ 	if (skb->protocol == htons(ETH_P_IP))
+-		return subflow_v4_conn_request(sk, skb);
++		return subflow_v4_conn_request(sk, skb, reason);
+ 
+ 	if (!ipv6_unicast_destination(skb))
+ 		goto drop;
 -- 
 2.36.1
 
