@@ -2,150 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B59E52A9FD
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 20:07:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7749A52A9F9
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 20:07:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351799AbiEQSGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 14:06:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40072 "EHLO
+        id S1351778AbiEQSGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 14:06:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352077AbiEQSGG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 14:06:06 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A40205EB;
-        Tue, 17 May 2022 11:05:45 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id m1so15135517qkn.10;
-        Tue, 17 May 2022 11:05:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QJvn9WfhnrgL8FC+HsHuSt0YniyvHyUoKSjuV9Lcy6w=;
-        b=YRGcj8jCZoitIt1Vhq2gVwOwSuyhbzpHJmi5UuabdP9QIngUp9OvmX6qobj69Gvx+K
-         S7n0FIw0zF+icZ+RS8m/pnJecvfNZQYSJTIlS4tKcCQ0bhEvfL3Xzug0Msd5BpnVAa/8
-         Dbzqq4HH+lirqhY7f4509VTU3aJlgevdr15YqCU00k8D3mUx9Ay8yCnqkaSgObC+j7wC
-         36GIXSG9UOzlrF05rYxI5SzRDT6cz4zHuoc2ExPpAI3rPwodQHL9jSwuWLxlVs5b8Gaa
-         y5mEpZBN4FlMCw7LS0X78Ag3A+ukIwUN36SZmyIOrPsr0AMsTuSRMaKx6w5l98MKAFrL
-         QXug==
+        with ESMTP id S1352115AbiEQSGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 14:06:09 -0400
+Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4D850B3B;
+        Tue, 17 May 2022 11:05:59 -0700 (PDT)
+Received: by mail-oi1-f171.google.com with SMTP id q8so23234342oif.13;
+        Tue, 17 May 2022 11:05:59 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QJvn9WfhnrgL8FC+HsHuSt0YniyvHyUoKSjuV9Lcy6w=;
-        b=0xf8+36txkPUewL8V+o/HDE/+zaW2TKvOXKDMb4ud3Vn/prNMH3DcbvESirjNmPDae
-         WiLrji5ytp1i3v1riSjO9udFaYg99yp29lmJy2hda+PrfXhWWPlAMu6xgwGK/ZQY6VU8
-         qcMZAbTj2MFdAjqcRw9fsHYpe399+eE7iWgL+61o20S8kO/VWWc6a6i9zyxP12odtLaz
-         RSRCoG0XQ6XKjRtBgrKWwKqh/cCtvcFT2QnYNzfNUqeoFRDRX503swU38kvCK3/8LbV0
-         HRZO1OJp39Zsp7oL/Qi+n/Fuumj/MvG6b8Sj8P1/k4iUkSFfhPgIhh06NG6/Oh6t0zC3
-         9yDg==
-X-Gm-Message-State: AOAM530zv2nmElkV9H5tFIrB2DWsH4ZkICKxWxYO5HGUh07AKcWvntno
-        6GOa6HjZJXtNS8t00AfjJDfVfTKuZzNnWJRV
-X-Google-Smtp-Source: ABdhPJyaK8jp7X1zmXNtTzFbibFhP544mTrLSTejJK/3gQb6CF+ZbcyHpDnpR0hNUR4+7Bdm5mrAPQ==
-X-Received: by 2002:a05:620a:666:b0:69f:bbd4:b9af with SMTP id a6-20020a05620a066600b0069fbbd4b9afmr17078451qkh.11.1652810744473;
-        Tue, 17 May 2022 11:05:44 -0700 (PDT)
-Received: from debian.lan ([98.97.182.10])
-        by smtp.gmail.com with ESMTPSA id a66-20020a37b145000000b0069fc13ce231sm8115835qkf.98.2022.05.17.11.05.43
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=F9oiFXagRBRMM/DebPuqOfAkO2xPh1J2DfBuF2wn6jY=;
+        b=xe0XXT8brVgXGzTlap6H9xDOe+SauHmHwoRsb3chtKGz50eKcMYlZ10fpxrAFA36nN
+         I1SlAehf9IupWTZqKnQjXK2CsEuJUmdvSjJmE0IjhQl/KndxwMfeLd4MCMuTAxmieg6f
+         eUacQIMaYrjMYbg7EE/8uaAYYu1MhmTThOeAJCQjDZQ7i4+OBbL0o2tKCq9GErs7lvLv
+         4RuF7bVHnn6JV4CYXDDtT4t5Pqwae2w3Nq1TIjbeabHsW55xczkkXl7KkPVahZA8Yv6b
+         NguktNhBynQYLCFjYJ9b3d3F0IyokHJbHneFGt2+j90VKEjdxbIMKURXgt4RGFJissOq
+         MhkQ==
+X-Gm-Message-State: AOAM532Gvy+Ys+O+rjBcXlpYFastoN+ZZC3b8M42t9GpG/VJsY3Lfhq6
+        5ebazOSkzHyTeXpvSDyenw==
+X-Google-Smtp-Source: ABdhPJxfNzSDtx7hJ9IWeiR8Ju1BV+067OaqdyKqHEUUyEgP39xyDh5erKxEC5PILhcugCzNVYADaw==
+X-Received: by 2002:a05:6808:b19:b0:325:d028:7681 with SMTP id s25-20020a0568080b1900b00325d0287681mr16804320oij.195.1652810758556;
+        Tue, 17 May 2022 11:05:58 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id r4-20020aca4404000000b00325cda1ff87sm20013oia.6.2022.05.17.11.05.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 11:05:44 -0700 (PDT)
-From:   David Ober <dober6023@gmail.com>
-To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        davem@davemloft.net, hayeswang@realtek.com, aaron.ma@canonical.com,
-        bjorn@mork.no
-Cc:     markpearson@lenovo.com, dober@lenovo.com,
-        David Ober <dober6023@gmail.com>
-Subject: [PATCH v5] net: usb: r8152: Add in new Devices that are supported for Mac-Passthru
-Date:   Tue, 17 May 2022 14:05:39 -0400
-Message-Id: <20220517180539.25839-1-dober6023@gmail.com>
-X-Mailer: git-send-email 2.30.2
+        Tue, 17 May 2022 11:05:57 -0700 (PDT)
+Received: (nullmailer pid 1337742 invoked by uid 1000);
+        Tue, 17 May 2022 18:05:56 -0000
+Date:   Tue, 17 May 2022 13:05:56 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        kernel@pengutronix.de, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 0/3] document dt-schema for some USB Ethernet
+ controllers
+Message-ID: <20220517180556.GA1327859-robh@kernel.org>
+References: <20220517111505.929722-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220517111505.929722-1-o.rempel@pengutronix.de>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lenovo Thunderbolt 4 Dock, and other Lenovo USB Docks are using the
-original Realtek USB ethernet Vendor and Product IDs
-If the Network device is Realtek verify that it is on a Lenovo USB hub
-before enabling the passthru feature
+On Tue, May 17, 2022 at 01:15:02PM +0200, Oleksij Rempel wrote:
+> changes v6:
+> - remove USB hub example from microchip,lan95xx.yaml. We care only about
+>   ethernet node.
+> - use only documented USD ID in example.
+> - add Reviewed-by
+> - drop board patches, all of them are taken by different subsystem
+>   maintainers.
+> 
+> changes v5:
+> - move compatible string changes to a separate patch
+> - add note about possible regressions
+> 
+> changes v4:
+> - reword commit logs.
+> - add note about compatible fix
+> 
+> Oleksij Rempel (3):
+>   dt-bindings: net: add schema for ASIX USB Ethernet controllers
+>   dt-bindings: net: add schema for Microchip/SMSC LAN95xx USB Ethernet
+>     controllers
+>   dt-bindings: usb: ci-hdrc-usb2: fix node node for ethernet controller
 
-This also adds in the device IDs for the Lenovo USB Dongle and one other
-USB-C dock
+Series applied, thanks.
 
-V2 fix formating of code
-V3 remove Generic define for Device ID 0x8153 and change it to use value
-V4 rearrange defines and case statement to put them in better order
-v5 create helper function to do the testing work as suggested
-
-Signed-off-by: David Ober <dober6023@gmail.com>
----
- drivers/net/usb/r8152.c | 33 ++++++++++++++++++++++++++-------
- 1 file changed, 26 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index c2da3438387c..7389d6ef8569 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -771,7 +771,9 @@ enum rtl8152_flags {
- };
- 
- #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
-+#define DEVICE_ID_THINKPAD_USB_C_DONGLE			0x720c
- #define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2		0xa387
-+#define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3		0x3062
- 
- struct tally_counter {
- 	__le64	tx_packets;
-@@ -9562,6 +9564,29 @@ u8 rtl8152_get_version(struct usb_interface *intf)
- }
- EXPORT_SYMBOL_GPL(rtl8152_get_version);
- 
-+static bool rtl8152_supports_lenovo_macpassthru(struct usb_device *udev)
-+{
-+	int parent_vendor_id = le16_to_cpu(udev->parent->descriptor.idVendor);
-+	int product_id = le16_to_cpu(udev->descriptor.idProduct);
-+	int vendor_id = le16_to_cpu(udev->descriptor.idVendor);
-+
-+	if (vendor_id == VENDOR_ID_LENOVO) {
-+		switch (product_id) {
-+		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
-+		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
-+		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3:
-+		case DEVICE_ID_THINKPAD_USB_C_DONGLE:
-+			return 1;
-+		}
-+	} else if (vendor_id == VENDOR_ID_REALTEK && parent_vendor_id == VENDOR_ID_LENOVO) {
-+		switch (product_id) {
-+		case 0x8153:
-+			return 1;
-+		}
-+	}
-+	return 0;
-+}
-+
- static int rtl8152_probe(struct usb_interface *intf,
- 			 const struct usb_device_id *id)
- {
-@@ -9642,13 +9667,7 @@ static int rtl8152_probe(struct usb_interface *intf,
- 		netdev->hw_features &= ~NETIF_F_RXCSUM;
- 	}
- 
--	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO) {
--		switch (le16_to_cpu(udev->descriptor.idProduct)) {
--		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
--		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
--			tp->lenovo_macpassthru = 1;
--		}
--	}
-+	tp->lenovo_macpassthru = rtl8152_supports_lenovo_macpassthru(udev);
- 
- 	if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial &&
- 	    (!strcmp(udev->serial, "000001000000") ||
--- 
-2.30.2
-
+Rob
