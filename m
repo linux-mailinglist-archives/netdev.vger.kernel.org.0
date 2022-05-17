@@ -2,49 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A0DC55299B2
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 08:45:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93721529997
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 08:31:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240073AbiEQGou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 02:44:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52520 "EHLO
+        id S239914AbiEQGbE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 02:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240105AbiEQGop (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 02:44:45 -0400
-X-Greylist: delayed 73528 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 23:44:41 PDT
-Received: from zg8tndyumtaxlji0oc4xnzya.icoremail.net (zg8tndyumtaxlji0oc4xnzya.icoremail.net [46.101.248.176])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 7B2103FBED;
-        Mon, 16 May 2022 23:44:41 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Tue, 17 May 2022 14:44:08
- +0800 (GMT+08:00)
-X-Originating-IP: [124.236.130.193]
-Date:   Tue, 17 May 2022 14:44:08 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] NFC: nci: fix sleep in atomic context bugs
- caused by nci_skb_alloc
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <4889a6cd-ef96-595e-a117-2965aab97a54@linaro.org>
-References: <20220517012530.75714-1-duoming@zju.edu.cn>
- <4889a6cd-ef96-595e-a117-2965aab97a54@linaro.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S240105AbiEQGaz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 02:30:55 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A7F8D4F
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 23:30:46 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L2R6X1RLQzbc1x;
+        Tue, 17 May 2022 14:29:24 +0800 (CST)
+Received: from container.huawei.com (10.175.104.82) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 17 May 2022 14:30:43 +0800
+From:   Ziyang Xuan <william.xuanziyang@huawei.com>
+To:     <chandrashekar.devegowda@intel.com>, <linuxwwan@intel.com>,
+        <chiranjeevi.rapolu@linux.intel.com>, <haijun.liu@mediatek.com>,
+        <m.chetan.kumar@linux.intel.com>,
+        <ricardo.martinez@linux.intel.com>, <loic.poulain@linaro.org>,
+        <ryazanov.s.a@gmail.com>, <johannes@sipsolutions.net>,
+        <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <netdev@vger.kernel.org>
+Subject: [PATCH net-next v2] net: wwan: t7xx: fix GFP_KERNEL usage in spin_lock context
+Date:   Tue, 17 May 2022 14:48:21 +0800
+Message-ID: <20220517064821.3966990-1-william.xuanziyang@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Message-ID: <71f3cea1.18444.180d0c27b1a.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgC3COE4RINimSVXAA--.6312W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgkNAVZdtZuKGAAAsw
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -53,36 +49,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBUdWUsIDE3IE1heSAyMDIyIDA4OjI1OjA0ICswMjAwIEtyenlzenRvZiB3cm90
-ZToKCj4gT24gMTcvMDUvMjAyMiAwMzoyNSwgRHVvbWluZyBaaG91IHdyb3RlOgo+ID4gVGhlcmUg
-YXJlIHNsZWVwIGluIGF0b21pYyBjb250ZXh0IGJ1Z3Mgd2hlbiB0aGUgcmVxdWVzdCB0byBzZWN1
-cmUKPiA+IGVsZW1lbnQgb2Ygc3QtbmNpIGlzIHRpbWVvdXQuIFRoZSByb290IGNhdXNlIGlzIHRo
-YXQgbmNpX3NrYl9hbGxvYwo+ID4gd2l0aCBHRlBfS0VSTkVMIHBhcmFtZXRlciBpcyBjYWxsZWQg
-aW4gc3RfbmNpX3NlX3d0X3RpbWVvdXQgd2hpY2ggaXMKPiA+IGEgdGltZXIgaGFuZGxlci4gVGhl
-IGNhbGwgcGF0aHMgdGhhdCBjb3VsZCB0cmlnZ2VyIGJ1Z3MgYXJlIHNob3duIGJlbG93Ogo+ID4g
-Cj4gPiAgICAgKGludGVycnVwdCBjb250ZXh0IDEpCj4gPiBzdF9uY2lfc2Vfd3RfdGltZW91dAo+
-ID4gICBuY2lfaGNpX3NlbmRfZXZlbnQKPiA+ICAgICBuY2lfaGNpX3NlbmRfZGF0YQo+ID4gICAg
-ICAgbmNpX3NrYl9hbGxvYyguLi4sIEdGUF9LRVJORUwpIC8vbWF5IHNsZWVwCj4gPiAKPiA+ICAg
-IChpbnRlcnJ1cHQgY29udGV4dCAyKQo+ID4gc3RfbmNpX3NlX3d0X3RpbWVvdXQKPiA+ICAgbmNp
-X2hjaV9zZW5kX2V2ZW50Cj4gPiAgICAgbmNpX2hjaV9zZW5kX2RhdGEKPiA+ICAgICAgIG5jaV9z
-ZW5kX2RhdGEKPiA+ICAgICAgICAgbmNpX3F1ZXVlX3R4X2RhdGFfZnJhZ3MKPiA+ICAgICAgICAg
-ICBuY2lfc2tiX2FsbG9jKC4uLiwgR0ZQX0tFUk5FTCkgLy9tYXkgc2xlZXAKPiA+IAo+ID4gVGhp
-cyBwYXRjaCBjaGFuZ2VzIGFsbG9jYXRpb24gbW9kZSBvZiBuY2lfc2tiX2FsbG9jIGZyb20gR0ZQ
-X0tFUk5FTCB0bwo+ID4gR0ZQX0FUT01JQyBpbiBvcmRlciB0byBwcmV2ZW50IGF0b21pYyBjb250
-ZXh0IHNsZWVwaW5nLiBUaGUgR0ZQX0FUT01JQwo+ID4gZmxhZyBtYWtlcyBtZW1vcnkgYWxsb2Nh
-dGlvbiBvcGVyYXRpb24gY291bGQgYmUgdXNlZCBpbiBhdG9taWMgY29udGV4dC4KPiA+IAo+ID4g
-Rml4ZXM6IGVkMDZhZWVmZGFjMyAoIm5mYzogc3QtbmNpOiBSZW5hbWUgc3QyMW5mY2IgdG8gc3Qt
-bmNpIikKPiA+IFNpZ25lZC1vZmYtYnk6IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNu
-Pgo+ID4gLS0tCj4gPiBDaGFuZ2VzIGluIHYyOgo+ID4gICAtIENoYW5nZSB0aGUgRml4ZXMgdGFn
-IHRvIGNvbW1pdCBzdF9uY2lfc2Vfd3RfdGltZW91dCB3YXMgYWRkZWQuCj4gCj4gUGxlYXNlIGFk
-ZCBBY2tlZC1ieS9SZXZpZXdlZC1ieSB0YWdzIHdoZW4gcG9zdGluZyBuZXcgdmVyc2lvbnMuIEhv
-d2V2ZXIsCj4gdGhlcmUncyBubyBuZWVkIHRvIHJlcG9zdCBwYXRjaGVzICpvbmx5KiB0byBhZGQg
-dGhlIHRhZ3MuIFRoZSB1cHN0cmVhbQo+IG1haW50YWluZXIgd2lsbCBkbyB0aGF0IGZvciBhY2tz
-IHJlY2VpdmVkIG9uIHRoZSB2ZXJzaW9uIHRoZXkgYXBwbHkuCj4gCj4gaHR0cHM6Ly9lbGl4aXIu
-Ym9vdGxpbi5jb20vbGludXgvdjUuMTMvc291cmNlL0RvY3VtZW50YXRpb24vcHJvY2Vzcy9zdWJt
-aXR0aW5nLXBhdGNoZXMucnN0I0w1NDMKPiAKPiBJZiBhIHRhZyB3YXMgbm90IGFkZGVkIG9uIHB1
-cnBvc2UsIHBsZWFzZSBzdGF0ZSB3aHkgYW5kIHdoYXQgY2hhbmdlZC4KClRoYW5rIHlvdSB2ZXJ5
-IG11Y2gsIEkgd2lsbCByZWFkIHRoZSBkb2N1bWVudGF0aW9uIGNhcmVmdWxseS4KSSdtIHNvcnJ5
-LCBJIGZvcmdvdCB0aGUgUmV2aWV3ZWQtYnkgdGFnLgogCj4gUmV2aWV3ZWQtYnk6IEtyenlzenRv
-ZiBLb3psb3dza2kgPGtyenlzenRvZi5rb3psb3dza2lAbGluYXJvLm9yZz4KCkJlc3QgcmVnYXJk
-cywKRHVvbWluZyBaaG91
+t7xx_cldma_clear_rxq() call t7xx_cldma_alloc_and_map_skb() in spin_lock
+context, But __dev_alloc_skb() in t7xx_cldma_alloc_and_map_skb() uses
+GFP_KERNEL, that will introduce scheduling factor in spin_lock context.
+
+Because t7xx_cldma_clear_rxq() is called after stopping CLDMA, so we can
+remove the spin_lock from t7xx_cldma_clear_rxq().
+
+Fixes: 39d439047f1d ("net: wwan: t7xx: Add control DMA interface")
+Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+---
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+index 46066dcd2607..7493285a9606 100644
+--- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
++++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+@@ -782,10 +782,12 @@ static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
+ 	struct cldma_queue *rxq = &md_ctrl->rxq[qnum];
+ 	struct cldma_request *req;
+ 	struct cldma_gpd *gpd;
+-	unsigned long flags;
+ 	int ret = 0;
+ 
+-	spin_lock_irqsave(&rxq->ring_lock, flags);
++	/* CLDMA has been stopped. There is not any CLDMA IRQ, holding
++	 * ring_lock is not needed. Thus we can use functions that may
++	 * introduce scheduling.
++	 */
+ 	t7xx_cldma_q_reset(rxq);
+ 	list_for_each_entry(req, &rxq->tr_ring->gpd_ring, entry) {
+ 		gpd = req->gpd;
+@@ -808,7 +810,6 @@ static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
+ 
+ 		t7xx_cldma_gpd_set_data_ptr(req->gpd, req->mapped_buff);
+ 	}
+-	spin_unlock_irqrestore(&rxq->ring_lock, flags);
+ 
+ 	return ret;
+ }
+-- 
+2.25.1
+
