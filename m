@@ -2,213 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18A9D529A6B
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:07:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 771B4529A69
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:06:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233865AbiEQHGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 03:06:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
+        id S236942AbiEQHG3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 03:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235637AbiEQHFy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:05:54 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8F76356
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:05:52 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id i1so16561128plg.7
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:05:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:to:cc:references
-         :from:in-reply-to:content-transfer-encoding;
-        bh=wuqROjGK5NGFVKd47141nF0XHj01jigssNIAbAq8B7w=;
-        b=TwiatshiqLTe6R9OtUH8skwX03a0UE77zNGTyfDoIfR/3ZEerC9XS/Lx4GoMYbPfU5
-         zntS8jK5Kj2ShMWTd7YYBr40HJ5nfaRudQDZAwBUGt0h6gcuHbAP8LRMld+osh8H63E4
-         zqbAfe7+MxBOF+IpX6Q9+PGuodYki5I7YJ/h0CVqDXbB8TrWlJ7s734aY35SyxkksWvc
-         bGnJdFwau8UVSQuu7GSTCE2ZqzVuh42u/1rcPIh9B4VSTj/k7h9hjEB9xMwpzW41NEIP
-         wuwEJs7wsQ/fSh5SYdITgfW+3gu+vWWNSTIE7kssIk8izpsn/fnWCwgUWAmhxdjKC6tv
-         k43Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :to:cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=wuqROjGK5NGFVKd47141nF0XHj01jigssNIAbAq8B7w=;
-        b=Q2675syzGKqOVNjnGa9zudayeOSMaf/Gi27sLi1sSMSqeXpvJD9/V/w4oj3dI91pxp
-         ld//ofJ7HZ7fLFz8YFPKVwsjgQdREihNuhmjy8wr/VISGsxe24tL9Guj+ZCd3mxZs7RW
-         vTh2adSCfyHIp5qh1fD7VE5XHF9xMJBbbxCgKTiF4n/z68G2nk/MCJ4cw0h8NZ9PMR8a
-         ZWmoIfsAw4UvUYeDPH5/+rE5450ayJ5Eb8UwtWbnxoSWT7Ef12JWdZqUUR+z7v0LD8sR
-         oxHDNHZpYMMRCGsoGkpbxyiehaDoI6ZdRxWV766dtXFhF/HMdGQ8wit5TSPQtI2lloQe
-         KgRg==
-X-Gm-Message-State: AOAM533h/U4UH+YGUD5kMgO3V3DSmUSDRa0PN3B7DhJllXsBKaPN8KLJ
-        zd7kjGWnI6/jpJUFwYl+UatfdQ==
-X-Google-Smtp-Source: ABdhPJxOxQjsL6w9g0OLpHPCjF+bnU3XWXaFNVPHygxmeypO7lQGstrEd7PdWU4Q87yKtJNiFpHfmg==
-X-Received: by 2002:a17:90b:48c6:b0:1df:99d9:997f with SMTP id li6-20020a17090b48c600b001df99d9997fmr35838pjb.242.1652771151939;
-        Tue, 17 May 2022 00:05:51 -0700 (PDT)
-Received: from [10.71.57.194] ([139.177.225.225])
-        by smtp.gmail.com with ESMTPSA id e17-20020a62ee11000000b0050dc76281b8sm8188698pfi.146.2022.05.17.00.05.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 00:05:51 -0700 (PDT)
-Message-ID: <44a30595-6a50-6ded-5ecc-18fd1e56abda@bytedance.com>
-Date:   Tue, 17 May 2022 15:05:42 +0800
+        with ESMTP id S237414AbiEQHG0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:06:26 -0400
+Received: from relay8-d.mail.gandi.net (relay8-d.mail.gandi.net [217.70.183.201])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 199464705F;
+        Tue, 17 May 2022 00:06:21 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 8621F1BF208;
+        Tue, 17 May 2022 07:06:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652771180;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=2rLEx70yzvrqG4/Ise9vI9V8nSXM1Frwmx1mdqkERhE=;
+        b=duFvGAKbqh8rXUz9MaAsmD2XkaLfk9AQ5INJEpHN1wo+gAxBYSo/EC6zn530l08SZtSwOI
+        YQK8mHSettKoXun/6Gr/EpxQSmED83Nr5AtL5ORYQSu3uvaAiWfnaM5mLTMClfyGN7igYy
+        6HLGet6HPuZHsaHJRqzr3JPDhTS6aQNHRyzLHOPXyp3bakoaJ98u2fhf0X5Cfsad7aTvHj
+        BCQmYd+Nfto7XLYfLTvN0dIq0jJA8RRbzwwXaxshZbBPxAUy9Pkdo1mUx2B4OY3YWs9tZO
+        lV/eDq148g6Le/C9p5D8EjicLAP9GIbcv9qatxYrpQedwxmlmmberSFBF0uGTg==
+Date:   Tue, 17 May 2022 09:06:15 +0200
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Luka Perkov <luka.perkov@sartura.hr>,
+        Robert Marko <robert.marko@sartura.hr>
+Subject: Re: [PATCH net-next v2 2/5] net: dsa: add out-of-band tagging
+ protocol
+Message-ID: <20220517090615.34b82d28@pc-20.home>
+In-Reply-To: <89c52305-71da-843e-b6c5-77648fb2f4d3@gmail.com>
+References: <20220514150656.122108-1-maxime.chevallier@bootlin.com>
+        <20220514150656.122108-3-maxime.chevallier@bootlin.com>
+        <89c52305-71da-843e-b6c5-77648fb2f4d3@gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.3.2
-Subject: Re: [External] Re: [PATCH bpf-next] selftests/bpf: fix some bugs in
- map_lookup_percpu_elem testcase
-To:     Yonghong Song <yhs@fb.com>, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, rostedt@goodmis.org,
-        mingo@redhat.com, jolsa@kernel.org, davemarchevsky@fb.com,
-        joannekoong@fb.com, geliang.tang@suse.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
-        cong.wang@bytedance.com, zhouchengming@bytedance.com,
-        yosryahmed@google.com
-References: <20220516022453.68420-1-zhoufeng.zf@bytedance.com>
- <80ab09cf-6072-a75a-082d-2721f6f907ef@fb.com>
-From:   Feng Zhou <zhoufeng.zf@bytedance.com>
-In-Reply-To: <80ab09cf-6072-a75a-082d-2721f6f907ef@fb.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2022/5/17 上午11:09, Yonghong Song 写道:
->
->
-> On 5/15/22 7:24 PM, Feng zhou wrote:
->> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->>
->> comments from Andrii Nakryiko, details in here:
->> https://lore.kernel.org/lkml/20220511093854.411-1-zhoufeng.zf@bytedance.com/T/ 
->>
->>
->> use /* */ instead of //
->> use libbpf_num_possible_cpus() instead of sysconf(_SC_NPROCESSORS_ONLN)
->> use 8 bytes for value size
->> fix memory leak
->> use ASSERT_EQ instead of ASSERT_OK
->> add bpf_loop to fetch values on each possible CPU
->>
->> Fixes: ed7c13776e20c74486b0939a3c1de984c5efb6aa ("selftests/bpf: add 
->> test case for bpf_map_lookup_percpu_elem")
->> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
->
-> LGTM with a few nits below.
-> Acked-by: Yonghong Song <yhs@fb.com>
->
-Ok, will do. Thanks.
+Hi Florian,
 
->> ---
->>   .../bpf/prog_tests/map_lookup_percpu_elem.c   | 49 +++++++++------
->>   .../bpf/progs/test_map_lookup_percpu_elem.c   | 61 ++++++++++++-------
->>   2 files changed, 70 insertions(+), 40 deletions(-)
->>
->> diff --git 
->> a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c 
->> b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
->> index 58b24c2112b0..89ca170f1c25 100644
->> --- a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
->> +++ b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
->> @@ -1,30 +1,39 @@
->> -// SPDX-License-Identifier: GPL-2.0
->> -// Copyright (c) 2022 Bytedance
->> +/* SPDX-License-Identifier: GPL-2.0 */
->> +/* Copyright (c) 2022 Bytedance */
->>     #include <test_progs.h>
->
-> The above empty line is unnecessary.
->
->>   #include "test_map_lookup_percpu_elem.skel.h"
->>   -#define TEST_VALUE  1
->> -
->>   void test_map_lookup_percpu_elem(void)
->>   {
->>       struct test_map_lookup_percpu_elem *skel;
->> -    int key = 0, ret;
->> -    int nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
->> -    int *buf;
->> +    __u64 key = 0, sum;
->> +    int ret, i;
->> +    int nr_cpus = libbpf_num_possible_cpus();
->> +    __u64 *buf;
->>   -    buf = (int *)malloc(nr_cpus*sizeof(int));
->> +    buf = (__u64 *)malloc(nr_cpus*sizeof(__u64));
->>       if (!ASSERT_OK_PTR(buf, "malloc"))
->>           return;
->> -    memset(buf, 0, nr_cpus*sizeof(int));
->> -    buf[0] = TEST_VALUE;
->>   -    skel = test_map_lookup_percpu_elem__open_and_load();
->> -    if (!ASSERT_OK_PTR(skel, 
->> "test_map_lookup_percpu_elem__open_and_load"))
->> -        return;
->> +    for (i=0; i<nr_cpus; i++)
->> +        buf[i] = i;
->> +    sum = (nr_cpus-1)*nr_cpus/2;
->> +
->> +    skel = test_map_lookup_percpu_elem__open();
->> +    if (!ASSERT_OK_PTR(skel, "test_map_lookup_percpu_elem__open"))
->> +        goto exit;
->> +
->> +    skel->rodata->nr_cpus = nr_cpus;
->> +
->> +    ret = test_map_lookup_percpu_elem__load(skel);
->> +    if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__load"))
->> +        goto cleanup;
->> +
->>       ret = test_map_lookup_percpu_elem__attach(skel);
->> -    ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach");
->> +    if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach"))
->> +        goto cleanup;
->>         ret = 
->> bpf_map_update_elem(bpf_map__fd(skel->maps.percpu_array_map), &key, 
->> buf, 0);
->>       ASSERT_OK(ret, "percpu_array_map update");
->> @@ -37,10 +46,14 @@ void test_map_lookup_percpu_elem(void)
->>         syscall(__NR_getuid);
->>   -    ret = skel->bss->percpu_array_elem_val == TEST_VALUE &&
->> -          skel->bss->percpu_hash_elem_val == TEST_VALUE &&
->> -          skel->bss->percpu_lru_hash_elem_val == TEST_VALUE;
->> -    ASSERT_OK(!ret, "bpf_map_lookup_percpu_elem success");
->> +    test_map_lookup_percpu_elem__detach(skel);
->> +
->> +    ASSERT_EQ(skel->bss->percpu_array_elem_sum, sum, "percpu_array 
->> lookup percpu elem");
->> +    ASSERT_EQ(skel->bss->percpu_hash_elem_sum, sum, "percpu_hash 
->> lookup percpu elem");
->> +    ASSERT_EQ(skel->bss->percpu_lru_hash_elem_sum, sum, 
->> "percpu_lru_hash lookup percpu elem");
->>   +cleanup:
->>       test_map_lookup_percpu_elem__destroy(skel);
->> +exit:
->> +    free(buf);
->>   }
-> [...]
->> +struct read_percpu_elem_ctx {
->> +    void *map;
->> +    __u64 sum;
->> +};
->> +
->> +static int read_percpu_elem_callback(__u32 index, struct 
->> read_percpu_elem_ctx *ctx)
->> +{
->> +    __u64 key = 0;
->> +    __u64 *value;
->
-> Please add an empty line here.
->
->> +    value = bpf_map_lookup_percpu_elem(ctx->map, &key, index);
->> +    if (value)
->> +        ctx->sum += *value;
->> +    return 0;
->> +}
->> +
-> [...]
+On Sat, 14 May 2022 09:33:44 -0700
+Florian Fainelli <f.fainelli@gmail.com> wrote:
 
+> Hi Maxime,
+> 
+> On 5/14/2022 8:06 AM, Maxime Chevallier wrote:
+> > This tagging protocol is designed for the situation where the link
+> > between the MAC and the Switch is designed such that the Destination
+> > Port, which is usually embedded in some part of the Ethernet
+> > Header, is sent out-of-band, and isn't present at all in the
+> > Ethernet frame.
+> > 
+> > This can happen when the MAC and Switch are tightly integrated on an
+> > SoC, as is the case with the Qualcomm IPQ4019 for example, where
+> > the DSA tag is inserted directly into the DMA descriptors. In that
+> > case, the MAC driver is responsible for sending the tag to the
+> > switch using the out-of-band medium. To do so, the MAC driver needs
+> > to have the information of the destination port for that skb.
+> > 
+> > This out-of-band tagging protocol is using the very beggining of
+> > the skb headroom to store the tag. The drawback of this approch is
+> > that the headroom isn't initialized upon allocating it, therefore
+> > we have a chance that the garbage data that lies there at
+> > allocation time actually ressembles a valid oob tag. This is only
+> > problematic if we are sending/receiving traffic on the master port,
+> > which isn't a valid DSA use-case from the beggining. When dealing
+> > from traffic to/from a slave port, then the oob tag will be
+> > initialized properly by the tagger or the mac driver through the
+> > use of the dsa_oob_tag_push() call.  
+> 
+> What I like about your approach is that you have aligned the way an
+> out of band switch tag is communicated to the networking stack the
+> same way that an "in-band" switch tag would be communicated. I think
+> this is a good way forward to provide the out of band tag and I don't
+> think it creates a performance problem because the Ethernet frame is
+> hot in the cache (dma_unmap_single()) and we already have an
+> "expensive" read of the DMA descriptor in coherent memory anyway.
+> 
+> You could possibly optimize the data flow a bit to limit the amount
+> of sk_buff data movement by asking your Ethernet controller to DMA
+> into the data buffer N bytes into the beginning of the data buffer.
+> That way, if you have reserved say, 2 bytes at the front data buffer
+> you can deposit the QCA tag there and you do not need to push,
+> process the tag, then pop it, just process and pop. Consider using
+> the 2byte stuffing that the Ethernet controller might be adding to
+> the beginning of the Ethernet frame to align the IP header on a
+> 4-byte boundary to provide the tag in there?
+> 
+> If we want to have a generic out of band tagger like you propose, it 
+> seems to me that we will need to invent a synthetic DSA tagging
+> format which is the largest common denominator of the out of band
+> tags that we want to support. We could imagine being more compact in
+> the representation for instance by using an u8 for storing a bitmask
+> of ports (works for both RX and TX then) and another u8 for various
+> packet forwarding reasons.
+
+Thanks, that was my initial idea indeed. Having a generic tagger that
+can be re-used would be great IMO. I'll modify the format as you
+propose, and also give a try to you approach of DMA'ing 2 bytes forward
+so that the tag location is already allocated, that's a nice idea.
+
+> Then we would request the various Ethernet MAC drivers to marshall
+> their proprietary tag into the DSA synthetic one on receive, and
+> unmarshall it on transmit.
+> 
+> Another approach IMHO which maybe helps the maintainability of the
+> code moving forward as well as ensuring that all Ethernet switch
+> tagging code lives in one place, is to teach each tagger driver how
+> to optimize their data paths to minimize the amount of data movements
+> and checksum re-calculations, this is what I had in mind a few years
+> ago:
+> 
+> https://lore.kernel.org/lkml/1438322920.20182.144.camel@edumazet-glaptop2.roam.corp.google.com/T/
+> 
+> This might scale a little less well, and maybe this makes too many 
+> assumptions as to where and how the checksums are calculated on the 
+> packet contents, but at least, you don't have logic processing the
+> same type of switch tag scattered between the Ethernet MAC drivers
+> (beyond copying/pushing) and DSA switch taggers.
+
+That would definitely fit well with this tagger, I didn't know about
+that series !
+
+Thanks for the review,
+
+Maxime
+
+> I would like to hear other's opinion on this.
 
