@@ -2,130 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FA8F52A4FE
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 16:35:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F014352A50B
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 16:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349068AbiEQOfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 10:35:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34424 "EHLO
+        id S1349168AbiEQOgv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 10:36:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39304 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348989AbiEQOfP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 10:35:15 -0400
-Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.160])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9020D4FC77;
-        Tue, 17 May 2022 07:35:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652798110;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=J4Lj0h3j4UiNNQppf5MxuIa77BYo4dAXtQP4Rxpu7fw=;
-    b=QZqk9E23590GTpmbxMTUuk5j4tRFRmOkyDwSOSmdsJ7dv1/lJ++cHBy1oG5QI+50zH
-    HOP6jI27BwViVGeT4QJLCiEkdLR19qtY0bIUWaj2KE4c7Vh9hkC3Jw9YHUdALYLI8Jqi
-    pXAjmVDTMYAnIzZr0mkS5Hjo8ZGGxD6yS/JH8+JXA7ptnAJV2TH38uPdrkF99Va2pIRY
-    S2vxTvAswIvcHAPlZK5zrR1MCfGDIabQ96qj832DoAdTS6zXaP6tjSraN8banBk5ewcS
-    zIxGFe5obSEBY2Afik6QUeYwqzHf5salqYWWhYprOslJWUhOlp3hvI9JZnaGR6oGRNTS
-    lgZA==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b00::b82]
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id R0691fy4HEZAEW5
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 17 May 2022 16:35:10 +0200 (CEST)
-Message-ID: <22590a57-c7c6-39c6-06d5-11c6e4e1534b@hartkopp.net>
-Date:   Tue, 17 May 2022 16:35:05 +0200
+        with ESMTP id S1349160AbiEQOgs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 10:36:48 -0400
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967E840E6E;
+        Tue, 17 May 2022 07:36:47 -0700 (PDT)
+Received: by mail-oi1-f173.google.com with SMTP id i66so22462658oia.11;
+        Tue, 17 May 2022 07:36:47 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Q5lBuzj7jrTo1bfrQUEvnoU3RNCjBwv86AZJ0JkzGd8=;
+        b=iNhJkGORKDj395Y1+YKeTy6eUzfk/hngMFV/li8SzUN9jwvow0t6C63+VddzjWpOKK
+         6MTitN79+LmWf5oIQgtPX5NU9SwJobc1knM5OwLljFMWO+v4JqhhgZe4AqEyPj5UE8r7
+         cwy75RmKRNkdmeMR01+Ro+KTSXrYYhP8X/3FB21wGxS+37wtevMfAcK9U5UM3YRcFMHK
+         7RcAobaaE4ZcBp2Ugw2cRPTHLwcjZR44hj2YAac2PSMpAF9BoxuAxvk7FHxkHtjeVyE6
+         rLDAVpLxJPXNiMBR9xdOz36fmjdasBSuCA5uIvar8Z0pXkyYT8nrdY8HlSXe5nyORFkD
+         gVDg==
+X-Gm-Message-State: AOAM532J6ZWrWUkTDbOKMMjjgq1ODUOV7pcin6RfucjbveadeMv2g7hD
+        Nd5nYeHFoQIJGJHhEhRY0A==
+X-Google-Smtp-Source: ABdhPJzIcHczmuF3hxxob2E68B85dmbZb4/C/nUn+ACeqTvaX7o7FfPdMwzAISFHxfP0xQ77wLofQA==
+X-Received: by 2002:a05:6808:218c:b0:326:955e:f39 with SMTP id be12-20020a056808218c00b00326955e0f39mr10911612oib.237.1652798206877;
+        Tue, 17 May 2022 07:36:46 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id a18-20020a056870469200b000f18cae8c0esm4282088oap.30.2022.05.17.07.36.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 07:36:46 -0700 (PDT)
+Received: (nullmailer pid 988925 invoked by uid 1000);
+        Tue, 17 May 2022 14:36:45 -0000
+Date:   Tue, 17 May 2022 09:36:45 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     davem@davemloft.net, linux-mediatek@lists.infradead.org,
+        Sam.Shih@mediatek.com, pabeni@redhat.com,
+        lorenzo.bianconi@redhat.com, Mark-MC.Lee@mediatek.com,
+        kuba@kernel.org, nbd@nbd.name, sean.wang@mediatek.com,
+        edumazet@google.com, netdev@vger.kernel.org, john@phrozen.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 02/15] dt-bindings: net: mediatek,net: add
+ mt7986-eth binding
+Message-ID: <20220517143645.GA986163-robh@kernel.org>
+References: <cover.1652716741.git.lorenzo@kernel.org>
+ <aa934c3185c9e04893d9c285ed655495a049fa4f.1652716741.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-Content-Language: en-US
-To:     Max Staudt <max@enpas.org>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
- <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
- <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
- <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
- <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
- <20220517104545.eslountqjppvcnz2@pengutronix.de>
- <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
- <20220517141404.578d188a.max@enpas.org>
- <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
- <20220517143921.08458f2c.max@enpas.org>
- <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
- <20220517154301.5bf99ba9.max@enpas.org>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <20220517154301.5bf99ba9.max@enpas.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aa934c3185c9e04893d9c285ed655495a049fa4f.1652716741.git.lorenzo@kernel.org>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 17.05.22 15:43, Max Staudt wrote:
-> On Tue, 17 May 2022 15:35:03 +0200
-> Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+On Mon, 16 May 2022 18:06:29 +0200, Lorenzo Bianconi wrote:
+> Introduce dts bindings for mt7986 soc in mediatek,net.yaml.
 > 
->> Oh, I didn't want to introduce two new kernel modules but to have
->> can_dev in different 'feature levels'.
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  .../devicetree/bindings/net/mediatek,net.yaml | 141 +++++++++++++++++-
+>  1 file changed, 139 insertions(+), 2 deletions(-)
 > 
-> Which I agree is a nice idea, as long as heisenbugs can be avoided :)
-> 
-> (as for the separate modules vs. feature levels of can-dev - sorry, my
-> two paragraphs were each referring to a different idea. I mixed them
-> into one single email...)
-> 
-> 
-> Maybe the can-skb and rx-offload parts could be a *visible* sub-option
-> of can-dev in Kconfig, which is normally optional, but immediately
-> force-selected once a CAN HW driver is selected?
 
-I think it should be even more simple.
+Doesn't apply for me, so not tested, but:
 
-When you enter the current Kconfig page of "CAN Device Drivers" every 
-selection of vcan/vxcan/slcan should directly select CAN_DEV_SW.
-
-The rest could stay the same, e.g. selecting CAN_DEV "Platform CAN 
-drivers with Netlink support" which then enables CAN_CALC_BITTIMING and 
-CAN_LEDS to be selectable. Which also makes sure the old .config files 
-still apply.
-
-And finally the selection of flexcan, ti_hecc and
-mcp251xfd automatically selects CAN_DEV_RX_OFFLOAD.
-
-Then only some more Makefile magic has to be done to build can-dev.ko 
-accordingly.
-
-Best regards,
-Oliver
-
-
-
-> 
-> 
->> But e.g. the people that are running Linux instances in a cloud only
->> using vcan and vxcan would not need to carry the entire
->> infrastructure of CAN hardware support and rx-offload.
-> 
-> Out of curiosity, do you have an example use case for this vcan cloud
-> setup? I can't dream one up...
-> 
-> 
-> 
-> Max
+Reviewed-by: Rob Herring <robh@kernel.org>
