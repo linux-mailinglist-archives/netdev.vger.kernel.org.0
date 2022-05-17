@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DCE2D529D5C
+	by mail.lfdr.de (Postfix) with ESMTP id 92530529D5B
 	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 11:06:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244051AbiEQJFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 05:05:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53132 "EHLO
+        id S244018AbiEQJFe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 05:05:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244006AbiEQJEw (ORCPT
+        with ESMTP id S244065AbiEQJEw (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 05:04:52 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4B3053F89C;
-        Tue, 17 May 2022 02:04:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 123B14832A;
+        Tue, 17 May 2022 02:04:47 -0700 (PDT)
 Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id 24C3F20F3D18; Tue, 17 May 2022 02:04:46 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 24C3F20F3D18
+        id 2F77320F3D1A; Tue, 17 May 2022 02:04:47 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2F77320F3D1A
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-        s=default; t=1652778286;
-        bh=IxR+n7UNCA9UQ4z8c+/nGV0tNIIicHDV8zjt8VJkApk=;
+        s=default; t=1652778287;
+        bh=0dsZ0bZFwegjOW5xJagkjlSAdsffEmIkK2SaE7ckO08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
-        b=oWPbxGzM1oYOeRGpWdScuz8JJjqBv7C6aW+ZmPjQfw9iYVcaAUA4eMJG7upI9hO67
-         uaF2YK6ZxNtnIz5Rg1RW5EtM8zehGrReBT8RtejTAjHC4+AEkYx0UKZ2f+1nVAYpOY
-         z0FBynVFPBoC/ALX/SPYeoy+Wjkfu3mWJl5203NQ=
+        b=egE5OchiO0fxF84xVynNCRfmpjAyZZxAOuUpEmtbfS/X0EtWtzESK702X5qy/4yCu
+         IKvDTmbpNzW9Own9TOgvYS3tLEAGwWL/8llSb4GThHVIWVYncZAklLbYoeKJt3bZuT
+         gdEyvGSGSfOYKWrJt6D55ZvIOwmmS5b2ibTe0fgI=
 From:   longli@linuxonhyperv.com
 To:     "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -37,9 +37,9 @@ To:     "K. Y. Srinivasan" <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         Long Li <longli@microsoft.com>
-Subject: [PATCH 01/12] net: mana: Add support for auxiliary device
-Date:   Tue, 17 May 2022 02:04:25 -0700
-Message-Id: <1652778276-2986-2-git-send-email-longli@linuxonhyperv.com>
+Subject: [PATCH 02/12] net: mana: Record the physical address for doorbell page region
+Date:   Tue, 17 May 2022 02:04:26 -0700
+Message-Id: <1652778276-2986-3-git-send-email-longli@linuxonhyperv.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
 References: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
@@ -56,174 +56,54 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Long Li <longli@microsoft.com>
 
-In preparation for supporting MANA RDMA driver, add support for auxiliary
-device in the Ethernet driver. The RDMA device is modeled as an auxiliary
-device to the Ethernet device.
+For supporting RDMA device with multiple user contexts with their
+individual doorbell pages, record the start address of doorbell page
+region for use by the RDMA driver to allocate user context doorbell IDs.
 
 Signed-off-by: Long Li <longli@microsoft.com>
 ---
- drivers/net/ethernet/microsoft/mana/gdma.h    |  2 +
- drivers/net/ethernet/microsoft/mana/mana.h    |  6 ++
- drivers/net/ethernet/microsoft/mana/mana_en.c | 83 ++++++++++++++++++-
- 3 files changed, 90 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/microsoft/mana/gdma.h      | 2 ++
+ drivers/net/ethernet/microsoft/mana/gdma_main.c | 4 ++++
+ 2 files changed, 6 insertions(+)
 
 diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h b/drivers/net/ethernet/microsoft/mana/gdma.h
-index 41ecd156e95f..d815d323be87 100644
+index d815d323be87..c724ca410fcb 100644
 --- a/drivers/net/ethernet/microsoft/mana/gdma.h
 +++ b/drivers/net/ethernet/microsoft/mana/gdma.h
-@@ -204,6 +204,8 @@ struct gdma_dev {
+@@ -350,9 +350,11 @@ struct gdma_context {
+ 	struct completion	eq_test_event;
+ 	u32			test_event_eq_id;
  
- 	/* GDMA driver specific pointer */
- 	void *driver_data;
++	phys_addr_t		bar0_pa;
+ 	void __iomem		*bar0_va;
+ 	void __iomem		*shm_base;
+ 	void __iomem		*db_page_base;
++	phys_addr_t		phys_db_page_base;
+ 	u32 db_page_size;
+ 
+ 	/* Shared memory chanenl (used to bootstrap HWC) */
+diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+index 49b85ca578b0..9fafaa0c8e76 100644
+--- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
++++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
+@@ -27,6 +27,9 @@ static void mana_gd_init_registers(struct pci_dev *pdev)
+ 	gc->db_page_base = gc->bar0_va +
+ 				mana_gd_r64(gc, GDMA_REG_DB_PAGE_OFFSET);
+ 
++	gc->phys_db_page_base = gc->bar0_pa +
++				mana_gd_r64(gc, GDMA_REG_DB_PAGE_OFFSET);
 +
-+	struct auxiliary_device *adev;
- };
- 
- #define MINIMUM_SUPPORTED_PAGE_SIZE PAGE_SIZE
-diff --git a/drivers/net/ethernet/microsoft/mana/mana.h b/drivers/net/ethernet/microsoft/mana/mana.h
-index d36405af9432..51bff91b63ee 100644
---- a/drivers/net/ethernet/microsoft/mana/mana.h
-+++ b/drivers/net/ethernet/microsoft/mana/mana.h
-@@ -6,6 +6,7 @@
- 
- #include "gdma.h"
- #include "hw_channel.h"
-+#include <linux/auxiliary_bus.h>
- 
- /* Microsoft Azure Network Adapter (MANA)'s definitions
-  *
-@@ -561,4 +562,9 @@ struct mana_tx_package {
- 	struct gdma_posted_wqe_info wqe_info;
- };
- 
-+struct mana_adev {
-+	struct auxiliary_device adev;
-+	struct gdma_dev *mdev;
-+};
-+
- #endif /* _MANA_H */
-diff --git a/drivers/net/ethernet/microsoft/mana/mana_en.c b/drivers/net/ethernet/microsoft/mana/mana_en.c
-index b7d3ba1b4d17..c706bf943e49 100644
---- a/drivers/net/ethernet/microsoft/mana/mana_en.c
-+++ b/drivers/net/ethernet/microsoft/mana/mana_en.c
-@@ -13,6 +13,18 @@
- 
- #include "mana.h"
- 
-+static DEFINE_IDA(mana_adev_ida);
-+
-+int mana_adev_idx_alloc(void)
-+{
-+	return ida_alloc(&mana_adev_ida, GFP_KERNEL);
-+}
-+
-+void mana_adev_idx_free(int idx)
-+{
-+	ida_free(&mana_adev_ida, idx);
-+}
-+
- /* Microsoft Azure Network Adapter (MANA) functions */
- 
- static int mana_open(struct net_device *ndev)
-@@ -1960,6 +1972,70 @@ static int mana_probe_port(struct mana_context *ac, int port_idx,
- 	return err;
+ 	gc->shm_base = gc->bar0_va + mana_gd_r64(gc, GDMA_REG_SHM_OFFSET);
  }
  
-+static void adev_release(struct device *dev)
-+{
-+	struct mana_adev *madev = container_of(dev, struct mana_adev, adev.dev);
-+
-+	kfree(madev);
-+}
-+
-+static void remove_adev(struct gdma_dev *gd)
-+{
-+	struct auxiliary_device *adev = gd->adev;
-+	int id = adev->id;
-+
-+	auxiliary_device_delete(adev);
-+	auxiliary_device_uninit(adev);
-+
-+	mana_adev_idx_free(id);
-+	gd->adev = NULL;
-+}
-+
-+static int add_adev(struct gdma_dev *gd)
-+{
-+	int ret = 0;
-+	struct mana_adev *madev;
-+	struct auxiliary_device *adev;
-+
-+	madev = kzalloc(sizeof(*madev), GFP_KERNEL);
-+	if (!madev)
-+		return -ENOMEM;
-+
-+	adev = &madev->adev;
-+	adev->id = mana_adev_idx_alloc();
-+	if (adev->id < 0) {
-+		ret = adev->id;
-+		goto idx_fail;
-+	}
-+
-+	adev->name = "rdma";
-+	adev->dev.parent = gd->gdma_context->dev;
-+	adev->dev.release = adev_release;
-+	madev->mdev = gd;
-+
-+	ret = auxiliary_device_init(adev);
-+	if (ret)
-+		goto init_fail;
-+
-+	ret = auxiliary_device_add(adev);
-+	if (ret)
-+		goto add_fail;
-+
-+	gd->adev = adev;
-+	return 0;
-+
-+add_fail:
-+	auxiliary_device_uninit(adev);
-+
-+init_fail:
-+	mana_adev_idx_free(adev->id);
-+
-+idx_fail:
-+	kfree(madev);
-+
-+	return ret;
-+}
-+
- int mana_probe(struct gdma_dev *gd, bool resuming)
- {
- 	struct gdma_context *gc = gd->gdma_context;
-@@ -2027,6 +2103,8 @@ int mana_probe(struct gdma_dev *gd, bool resuming)
- 				break;
- 		}
- 	}
-+
-+	err = add_adev(gd);
- out:
- 	if (err)
- 		mana_remove(gd, false);
-@@ -2043,6 +2121,10 @@ void mana_remove(struct gdma_dev *gd, bool suspending)
- 	int err;
- 	int i;
+@@ -1335,6 +1338,7 @@ static int mana_gd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
  
-+	/* adev currently doesn't support suspending, always remove it */
-+	if (gd->adev)
-+		remove_adev(gd);
-+
- 	for (i = 0; i < ac->num_ports; i++) {
- 		ndev = ac->ports[i];
- 		if (!ndev) {
-@@ -2075,7 +2157,6 @@ void mana_remove(struct gdma_dev *gd, bool suspending)
- 	}
+ 	mutex_init(&gc->eq_test_event_mutex);
+ 	pci_set_drvdata(pdev, gc);
++	gc->bar0_pa = pci_resource_start(pdev, 0);
  
- 	mana_destroy_eq(ac);
--
- out:
- 	mana_gd_deregister_device(gd);
- 
+ 	bar0_va = pci_iomap(pdev, bar, 0);
+ 	if (!bar0_va)
 -- 
 2.17.1
 
