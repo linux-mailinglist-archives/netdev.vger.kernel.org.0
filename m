@@ -2,191 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 12124529DC0
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 11:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C91BC529DCF
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 11:20:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242107AbiEQJTN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 05:19:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57190 "EHLO
+        id S244719AbiEQJTi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 05:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244596AbiEQJTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 05:19:02 -0400
-Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A011A2AE13;
-        Tue, 17 May 2022 02:18:35 -0700 (PDT)
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     ozsh@nvidia.com, fw@strlen.de, sven.auhagen@voleatech.de,
-        nbd@nbd.name, netdev@vger.kernel.org
-Subject: [PATCH nf] netfilter: flowtable: fix TCP flow teardown
-Date:   Tue, 17 May 2022 11:18:30 +0200
-Message-Id: <20220517091830.7276-1-pablo@netfilter.org>
-X-Mailer: git-send-email 2.30.2
+        with ESMTP id S244485AbiEQJTV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 05:19:21 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022112A714;
+        Tue, 17 May 2022 02:19:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652779160; x=1684315160;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=grGQ9QQpYMfdTvHJAab0dxyFSKeeJ8ndipTrOFgXDeQ=;
+  b=h867A+GufgBdkh2Dau+6XLqJEsWf7iXM9EhwEI2G2foOmgvlb1AfpRzq
+   gGeRiS7fA+m4k2eqfuOH007iTLnZTT+uIAIZbnBOB/pPc40HhwoZRGi/b
+   6N1vVgUTHbbYpmzuOHbtU+gUagAzAmLpoyZ29xZ8bXEimFiDzJIjhr2z6
+   0hh8Dt2gjObr4IHyrOQzWBMPY3q8NUd1oDiYGL+3vsNsc8fUxI1ViFCiU
+   fLplN1+3yDlUb59EJ8daI21esXjYTQN1K4NHPoqcL5RKDQa96rB+I53h7
+   rf6D2N5N2CdLuNCkoER4pwcoLMLn4HlvX6whkxXqxn6y1l7ZwYGysh9nv
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10349"; a="270814915"
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="270814915"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 02:19:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,232,1647327600"; 
+   d="scan'208";a="555694551"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga002.jf.intel.com with ESMTP; 17 May 2022 02:19:15 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nqtMJ-0000nV-73;
+        Tue, 17 May 2022 09:19:15 +0000
+Date:   Tue, 17 May 2022 17:19:04 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH bpf-next 1/2] cpuidle/rcu: Making arch_cpu_idle and
+ rcu_idle_exit noinstr
+Message-ID: <202205171711.hqxFhp5l-lkp@intel.com>
+References: <20220515203653.4039075-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220515203653.4039075-1-jolsa@kernel.org>
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch addresses three possible problems:
+Hi Jiri,
 
-1. ct gc may race to undo the timeout adjustment of the packet path, leaving
-   the conntrack entry in place with the internal offload timeout (one day).
+I love your patch! Perhaps something to improve:
 
-2. ct gc removes the ct because the IPS_OFFLOAD_BIT is not set and the CLOSE
-   timeout is reached before the flow offload del.
+[auto build test WARNING on bpf-next/master]
 
-3. tcp ct is always set to ESTABLISHED with a very long timeout
-   in flow offload teardown/delete even though the state might be already
-   CLOSED. Also as a remark we cannot assume that the FIN or RST packet
-   is hitting flow table teardown as the packet might get bumped to the
-   slow path in nftables.
+url:    https://github.com/intel-lab-lkp/linux/commits/Jiri-Olsa/cpuidle-rcu-Making-arch_cpu_idle-and-rcu_idle_exit-noinstr/20220516-043752
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: x86_64-randconfig-a014-20220516 (https://download.01.org/0day-ci/archive/20220517/202205171711.hqxFhp5l-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/0b6fee32d730f621f2bfc4d8d9f0729814398415
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jiri-Olsa/cpuidle-rcu-Making-arch_cpu_idle-and-rcu_idle_exit-noinstr/20220516-043752
+        git checkout 0b6fee32d730f621f2bfc4d8d9f0729814398415
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-This patch resets IPS_OFFLOAD_BIT from flow_offload_teardown(), so
-conntrack handles the tcp rst/fin packet which triggers the CLOSE/FIN
-state transition.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Moreover, teturn the connection's ownership to conntrack upon teardown
-by clearing the offload flag and fixing the established timeout value.
-The flow table GC thread will asynchonrnously free the flow table and
-hardware offload entries.
+All warnings (new ones prefixed by >>):
 
-Before this patch, the IPS_OFFLOAD_BIT remained set for expired flows on
-which is also misleading since the flow is back to classic conntrack
-path.
+   vmlinux.o: warning: objtool: vmx_l1d_flush()+0x13: call to static_key_count() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: vmx_vcpu_enter_exit()+0x29: call to static_key_count() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: vmx_update_host_rsp()+0x3e: call to static_key_count() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: arch_cpu_idle()+0xb: call to {dynamic}() leaves .noinstr.text section
+>> vmlinux.o: warning: objtool: rcu_idle_exit()+0x25: call to trace_hardirqs_on() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: enter_from_user_mode()+0x1c: call to __kcsan_check_access() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: syscall_enter_from_user_mode()+0x21: call to __kcsan_check_access() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: syscall_enter_from_user_mode_prepare()+0x1c: call to __kcsan_check_access() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: exit_to_user_mode()+0x1b: call to static_key_count() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: syscall_exit_to_user_mode()+0x36: call to static_key_count() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: irqentry_enter_from_user_mode()+0x1c: call to __kcsan_check_access() leaves .noinstr.text section
+   vmlinux.o: warning: objtool: irqentry_exit_to_user_mode()+0x22: call to static_key_count() leaves .noinstr.text section
 
-If nf_ct_delete() removes the entry from the conntrack table, then it
-calls nf_ct_put() which decrements the refcnt. This is not a problem
-because the flowtable holds a reference to the conntrack object from
-flow_offload_alloc() path which is released via flow_offload_free().
-
-This patch also updates nft_flow_offload to skip packets in SYN_RECV
-state. Since we might miss or bump packets to slow path, we do not know
-what will happen there while we are still in SYN_RECV, this patch
-postpones offload up to the next packet which also aligns to the
-existing behaviour in tc-ct.
-
-flow_offload_teardown() does not reset the existing tcp state from
-flow_offload_fixup_tcp() to ESTABLISHED anymore, packets bump to slow
-path might have already update the state to CLOSE/FIN.
-
-Joint work with Oz and Sven.
-
-Fixes: 1e5b2471bcc4 ("netfilter: nf_flow_table: teardown flow timeout race")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-Everyone happy with this? Please add your Signed-off-by tag.
-
-I'm showing as the author in this patch, but this is basically a mix and
-match of Oz's and Sven's patches.
-
-Thanks a lot for your patience !
-
- net/netfilter/nf_flow_table_core.c | 33 +++++++-----------------------
- net/netfilter/nft_flow_offload.c   |  3 ++-
- 2 files changed, 9 insertions(+), 27 deletions(-)
-
-diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
-index 20b4a14e5d4e..ebdf5332e838 100644
---- a/net/netfilter/nf_flow_table_core.c
-+++ b/net/netfilter/nf_flow_table_core.c
-@@ -179,12 +179,11 @@ EXPORT_SYMBOL_GPL(flow_offload_route_init);
- 
- static void flow_offload_fixup_tcp(struct ip_ct_tcp *tcp)
- {
--	tcp->state = TCP_CONNTRACK_ESTABLISHED;
- 	tcp->seen[0].td_maxwin = 0;
- 	tcp->seen[1].td_maxwin = 0;
- }
- 
--static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
-+static void flow_offload_fixup_ct(struct nf_conn *ct)
- {
- 	struct net *net = nf_ct_net(ct);
- 	int l4num = nf_ct_protonum(ct);
-@@ -193,7 +192,9 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
- 	if (l4num == IPPROTO_TCP) {
- 		struct nf_tcp_net *tn = nf_tcp_pernet(net);
- 
--		timeout = tn->timeouts[TCP_CONNTRACK_ESTABLISHED];
-+		flow_offload_fixup_tcp(&ct->proto.tcp);
-+
-+		timeout = tn->timeouts[ct->proto.tcp.state];
- 		timeout -= tn->offload_timeout;
- 	} else if (l4num == IPPROTO_UDP) {
- 		struct nf_udp_net *tn = nf_udp_pernet(net);
-@@ -211,18 +212,6 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
- 		WRITE_ONCE(ct->timeout, nfct_time_stamp + timeout);
- }
- 
--static void flow_offload_fixup_ct_state(struct nf_conn *ct)
--{
--	if (nf_ct_protonum(ct) == IPPROTO_TCP)
--		flow_offload_fixup_tcp(&ct->proto.tcp);
--}
--
--static void flow_offload_fixup_ct(struct nf_conn *ct)
--{
--	flow_offload_fixup_ct_state(ct);
--	flow_offload_fixup_ct_timeout(ct);
--}
--
- static void flow_offload_route_release(struct flow_offload *flow)
- {
- 	nft_flow_dst_release(flow, FLOW_OFFLOAD_DIR_ORIGINAL);
-@@ -361,22 +350,14 @@ static void flow_offload_del(struct nf_flowtable *flow_table,
- 	rhashtable_remove_fast(&flow_table->rhashtable,
- 			       &flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].node,
- 			       nf_flow_offload_rhash_params);
--
--	clear_bit(IPS_OFFLOAD_BIT, &flow->ct->status);
--
--	if (nf_flow_has_expired(flow))
--		flow_offload_fixup_ct(flow->ct);
--	else
--		flow_offload_fixup_ct_timeout(flow->ct);
--
- 	flow_offload_free(flow);
- }
- 
- void flow_offload_teardown(struct flow_offload *flow)
- {
-+	clear_bit(IPS_OFFLOAD_BIT, &flow->ct->status);
- 	set_bit(NF_FLOW_TEARDOWN, &flow->flags);
--
--	flow_offload_fixup_ct_state(flow->ct);
-+	flow_offload_fixup_ct(flow->ct);
- }
- EXPORT_SYMBOL_GPL(flow_offload_teardown);
- 
-@@ -466,7 +447,7 @@ static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
- 	if (nf_flow_has_expired(flow) ||
- 	    nf_ct_is_dying(flow->ct) ||
- 	    nf_flow_has_stale_dst(flow))
--		set_bit(NF_FLOW_TEARDOWN, &flow->flags);
-+		flow_offload_teardown(flow);
- 
- 	if (test_bit(NF_FLOW_TEARDOWN, &flow->flags)) {
- 		if (test_bit(NF_FLOW_HW, &flow->flags)) {
-diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index 187b8cb9a510..6612ad8f1565 100644
---- a/net/netfilter/nft_flow_offload.c
-+++ b/net/netfilter/nft_flow_offload.c
-@@ -298,7 +298,8 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
- 	case IPPROTO_TCP:
- 		tcph = skb_header_pointer(pkt->skb, nft_thoff(pkt),
- 					  sizeof(_tcph), &_tcph);
--		if (unlikely(!tcph || tcph->fin || tcph->rst))
-+		if (unlikely(!tcph || tcph->fin || tcph->rst ||
-+			     !nf_conntrack_tcp_established(&ct->proto.tcp)))
- 			goto out;
- 		break;
- 	case IPPROTO_UDP:
 -- 
-2.30.2
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
