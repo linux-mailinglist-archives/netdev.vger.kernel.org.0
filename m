@@ -2,95 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CAB3052A986
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 19:44:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEE9352A992
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 19:48:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351577AbiEQRos (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 13:44:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48364 "EHLO
+        id S1351604AbiEQRs4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 13:48:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237818AbiEQRoq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 13:44:46 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD84C4EDD0;
-        Tue, 17 May 2022 10:44:45 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 77C5B6146C;
-        Tue, 17 May 2022 17:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72A92C385B8;
-        Tue, 17 May 2022 17:44:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652809484;
-        bh=a6ecI+YK6t5cM5g7o9lfYB2kOKuzTjQtsmRTgpCAMUk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vPoGzwlwklp8BToV5DpNv2Q8z6R4acgEa0G/iiyIE32cKrbYlsWJsQReWD3nnqrUB
-         tS5mVetCpQDsk/oi+zFixfG7wCgo64IRlI2s1LnK4RkGt9SZBcl8A5xE7Yley13X1l
-         zp91STWC1iC4pgBXQ9cTFVvw9bBIhtpg5hWYicUv9bkSVAeIoKZXjCySLpfvSG9Oi8
-         Nb2lEH7hsAPxYQf81Se0ZLqft7pF7CmCrQ4DXX7K8c1FnwSa/B0OEZWPU+NLAuMw3X
-         gJslbqT/wZtyxAttNCqvqU/ixmGWgg7ZXEjnxKtEFNrgmYhByweGFRYVOTnjC9kzzP
-         P/KdrwnKFMKfQ==
-Date:   Tue, 17 May 2022 10:44:43 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, alex.aring@gmail.com, stefan@datenfreihafen.org,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        sven@narfation.org, linux-wireless@vger.kernel.org,
-        linux-wpan@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ifdefy the wireless pointers in struct
- net_device
-Message-ID: <20220517104443.68756db3@kernel.org>
-In-Reply-To: <8b9d18e351cc58aed65c4a4c7f12f167984ee088.camel@sipsolutions.net>
-References: <20220516215638.1787257-1-kuba@kernel.org>
-        <8b9d18e351cc58aed65c4a4c7f12f167984ee088.camel@sipsolutions.net>
+        with ESMTP id S234922AbiEQRsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 13:48:52 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0908F5006E
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 10:48:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652809730; x=1684345730;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=PPxU/RzMZUDNchyeAcKf6P7VkZUT00MSl2HYoFL/3d4=;
+  b=cKhdU4Ir2OxUmbRNa5+/u1Wt/i/SFgcV2KIKGYPHBmrhUCoqeBaRvxT/
+   WlOWC+BZdIHzuLu4w8oBlrxJ0XuF8XVooufYFJWKH4QbfA/zBF7d/3aOL
+   HEpwXgVd42w2Y1THAp6SilwgKlTgqFMWEClB7DoY/ujw5alUNE5Dfu1TV
+   /cfWzBBa84wRTZrE2UfRGPvYnOy/XINOqIzBEVeDLELe1KNrvYvffM+Jp
+   3yEocC6lYfXnFe2yGIN+7AOp70IXTDIoHs8B4juV7f22B18KrGK3LH/2P
+   cljAgakY9oP2q+s/uoCgN1Cy676YgTt/2Gzgmf8m3KhT3hKmJjb/RaUR0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="253316421"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="253316421"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 10:48:50 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="545015272"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga006.jf.intel.com with ESMTP; 17 May 2022 10:48:50 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        richardcochran@gmail.com
+Subject: [PATCH net 0/3][pull request] Intel Wired LAN Driver Updates 2022-05-17
+Date:   Tue, 17 May 2022 10:45:44 -0700
+Message-Id: <20220517174547.1757401-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 May 2022 09:51:31 +0200 Johannes Berg wrote:
-> On Mon, 2022-05-16 at 14:56 -0700, Jakub Kicinski wrote:
-> > 
-> > +#if IS_ENABLED(CONFIG_WIRELESS)
-> >  	struct wireless_dev	*ieee80211_ptr;
-> > +#endif  
-> 
-> Technically, you should be able to use CONFIG_CFG80211 here, but in
-> practice I'd really hope nobody enables WIRELESS without CFG80211 :)
+This series contains updates to ice driver only.
 
-ack
+Arkadiusz prevents writing of timestamps when rings are being
+configured to resolve null pointer dereference.
 
-> > +++ b/include/net/cfg80211.h
-> > @@ -8004,10 +8004,7 @@ int cfg80211_register_netdevice(struct net_device *dev);
-> >   *
-> >   * Requires the RTNL and wiphy mutex to be held.
-> >   */
-> > -static inline void cfg80211_unregister_netdevice(struct net_device *dev)
-> > -{
-> > -	cfg80211_unregister_wdev(dev->ieee80211_ptr);
-> > -}
-> > +void cfg80211_unregister_netdevice(struct net_device *dev);  
-> 
-> Exported functions aren't free either - I think in this case I'd
-> (slightly) prefer the extra ifdef.
+Paul changes a delayed call to baseline statistics to occur immediately
+which was causing misreporting of statistics due to the delay.
 
-fine
+Michal fixes incorrect restoration of interrupt moderation settings.
 
-> Anyway, we can do this, but I also like Florian's suggestion about the
-> union, and sent an attempt at a disambiguation patch there.
+The following are changes since commit edf410cb74dc612fd47ef5be319c5a0bcd6e6ccd:
+  net: vmxnet3: fix possible NULL pointer dereference in vmxnet3_rq_cleanup()
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
 
-Would you be willing to do that as a follow up? Are you talking about
-wifi only or all the proto pointers?
+Arkadiusz Kubalewski (1):
+  ice: fix crash when writing timestamp on RX rings
 
-As a netdev maintainer I'd like to reduce the divergence in whether 
-the proto pointers are ifdef'd or not.
+Michal Wilczynski (1):
+  ice: Fix interrupt moderation settings getting cleared
+
+Paul Greenwalt (1):
+  ice: fix possible under reporting of ethtool Tx and Rx statistics
+
+ drivers/net/ethernet/intel/ice/ice_lib.c  | 16 ++++++++--------
+ drivers/net/ethernet/intel/ice/ice_main.c |  7 ++++---
+ drivers/net/ethernet/intel/ice/ice_ptp.c  | 19 +++++++++++++++----
+ drivers/net/ethernet/intel/ice/ice_txrx.h | 11 ++++++++---
+ 4 files changed, 35 insertions(+), 18 deletions(-)
+
+-- 
+2.35.1
+
