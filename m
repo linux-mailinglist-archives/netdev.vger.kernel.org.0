@@ -2,220 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DA7A252A9EE
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 20:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B59E52A9FD
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 20:07:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241974AbiEQSGb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 14:06:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
+        id S1351799AbiEQSGf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 14:06:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352133AbiEQSGN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 14:06:13 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BC1050B08
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 11:06:11 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id fw21-20020a17090b129500b001df9f62edd6so739091pjb.0
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 11:06:11 -0700 (PDT)
+        with ESMTP id S1352077AbiEQSGG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 14:06:06 -0400
+Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56A40205EB;
+        Tue, 17 May 2022 11:05:45 -0700 (PDT)
+Received: by mail-qk1-x72d.google.com with SMTP id m1so15135517qkn.10;
+        Tue, 17 May 2022 11:05:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=uIitL07LK0k850ajz6+8lfu5spWDwMgSk+A3BueQxNA=;
-        b=KHtt2vWHU6kZ9pH1SCH86CyKfw1zEp0NmXtgICisUwjK8zr7Insg5zZB4aeYbN4HAp
-         gcdRPVte0tTh9wp0OpzcFMKYxe9ecm+31v6RkScxkpx5mabf5tu33sSIBNLRVwFJqqfm
-         lzCQ0/ML22EDn8YkDrXIzskqt8JD7NWAJuTjOMCY8IVGllaaSKIQjH/ekiBxRZFkSYoX
-         lg5/FbF+pC9AgaqNNlW+nAUUv63Vj+GASvIK+PLE1qBLZ/HUe6qTs2G2WponrjNZewjI
-         +Q7oh5W0zk77vqryRwr3zbOmZhwPkawTikWYWdzD21/5MOO0dTU03aOGvsnEzfy1759e
-         RiyQ==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QJvn9WfhnrgL8FC+HsHuSt0YniyvHyUoKSjuV9Lcy6w=;
+        b=YRGcj8jCZoitIt1Vhq2gVwOwSuyhbzpHJmi5UuabdP9QIngUp9OvmX6qobj69Gvx+K
+         S7n0FIw0zF+icZ+RS8m/pnJecvfNZQYSJTIlS4tKcCQ0bhEvfL3Xzug0Msd5BpnVAa/8
+         Dbzqq4HH+lirqhY7f4509VTU3aJlgevdr15YqCU00k8D3mUx9Ay8yCnqkaSgObC+j7wC
+         36GIXSG9UOzlrF05rYxI5SzRDT6cz4zHuoc2ExPpAI3rPwodQHL9jSwuWLxlVs5b8Gaa
+         y5mEpZBN4FlMCw7LS0X78Ag3A+ukIwUN36SZmyIOrPsr0AMsTuSRMaKx6w5l98MKAFrL
+         QXug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=uIitL07LK0k850ajz6+8lfu5spWDwMgSk+A3BueQxNA=;
-        b=wIc83cWOe1nGFirgtZ4LmlDhUxj1XC6+pwWjVmBFrqWKchoH8qbOZPB2VbfvVxBzwd
-         MiKa8JxFCm5QJPaAeRLTCSFHO2dzHMP3lfcvw0JeCE6wOyQAOVZX5qA9GYIdLldegumi
-         xbNJpRo6IJKTl2GetgnDnyShYA5822BR/0EJYQwXVugblERdJ7ZYE5WlEz+km2A5ZVvW
-         bkAHpwZrqWTFJrF0w4AkJxHvhKpmmqkN4O/mbj5bO3HuuPg5MlVX/l1y9xYPRsoYVhBq
-         up+vlnzjO0RK3wJjuikIJsKoMaTrA4kZokWLa4nYdappwuNYk7/HOAW79I5TtsRG/mdz
-         IiMg==
-X-Gm-Message-State: AOAM530IJSVEVW6+zMZdd/ulMey58G2TkNmrXJhgNCGobnT/CHGc1ZGw
-        qNcdUARyolYReMefuecFmNHEYA==
-X-Google-Smtp-Source: ABdhPJyxTDE3qUWOdndVfYN9Y9POy917sjTZcXNmsHowuoVHsWMdu/gc3rF8V92A3Xa6ojAGOrEJTQ==
-X-Received: by 2002:a17:902:b413:b0:15e:e6a8:b3e with SMTP id x19-20020a170902b41300b0015ee6a80b3emr23390640plr.24.1652810770573;
-        Tue, 17 May 2022 11:06:10 -0700 (PDT)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id g11-20020a17090a7d0b00b001ded0506655sm1952086pjl.51.2022.05.17.11.06.09
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QJvn9WfhnrgL8FC+HsHuSt0YniyvHyUoKSjuV9Lcy6w=;
+        b=0xf8+36txkPUewL8V+o/HDE/+zaW2TKvOXKDMb4ud3Vn/prNMH3DcbvESirjNmPDae
+         WiLrji5ytp1i3v1riSjO9udFaYg99yp29lmJy2hda+PrfXhWWPlAMu6xgwGK/ZQY6VU8
+         qcMZAbTj2MFdAjqcRw9fsHYpe399+eE7iWgL+61o20S8kO/VWWc6a6i9zyxP12odtLaz
+         RSRCoG0XQ6XKjRtBgrKWwKqh/cCtvcFT2QnYNzfNUqeoFRDRX503swU38kvCK3/8LbV0
+         HRZO1OJp39Zsp7oL/Qi+n/Fuumj/MvG6b8Sj8P1/k4iUkSFfhPgIhh06NG6/Oh6t0zC3
+         9yDg==
+X-Gm-Message-State: AOAM530zv2nmElkV9H5tFIrB2DWsH4ZkICKxWxYO5HGUh07AKcWvntno
+        6GOa6HjZJXtNS8t00AfjJDfVfTKuZzNnWJRV
+X-Google-Smtp-Source: ABdhPJyaK8jp7X1zmXNtTzFbibFhP544mTrLSTejJK/3gQb6CF+ZbcyHpDnpR0hNUR4+7Bdm5mrAPQ==
+X-Received: by 2002:a05:620a:666:b0:69f:bbd4:b9af with SMTP id a6-20020a05620a066600b0069fbbd4b9afmr17078451qkh.11.1652810744473;
+        Tue, 17 May 2022 11:05:44 -0700 (PDT)
+Received: from debian.lan ([98.97.182.10])
+        by smtp.gmail.com with ESMTPSA id a66-20020a37b145000000b0069fc13ce231sm8115835qkf.98.2022.05.17.11.05.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 11:06:10 -0700 (PDT)
-From:   Tadeusz Struk <tadeusz.struk@linaro.org>
-To:     andrii.nakryiko@gmail.com
-Cc:     Tadeusz Struk <tadeusz.struk@linaro.org>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>,
-        "Martin KaFai Lau" <kafai@fb.com>,
-        "Song Liu" <songliubraving@fb.com>, "Yonghong Song" <yhs@fb.com>,
-        "John Fastabend" <john.fastabend@gmail.com>,
-        "KP Singh" <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, stable@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
-Subject: [PATCH v4] bpf: Fix KASAN use-after-free Read in compute_effective_progs
-Date:   Tue, 17 May 2022 11:04:20 -0700
-Message-Id: <20220517180420.87954-1-tadeusz.struk@linaro.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <CAEf4BzY-p13huoqo6N7LJRVVj8rcjPeP3Cp=KDX4N2x9BkC9Zw@mail.gmail.com>
-References: <CAEf4BzY-p13huoqo6N7LJRVVj8rcjPeP3Cp=KDX4N2x9BkC9Zw@mail.gmail.com>
+        Tue, 17 May 2022 11:05:44 -0700 (PDT)
+From:   David Ober <dober6023@gmail.com>
+To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        davem@davemloft.net, hayeswang@realtek.com, aaron.ma@canonical.com,
+        bjorn@mork.no
+Cc:     markpearson@lenovo.com, dober@lenovo.com,
+        David Ober <dober6023@gmail.com>
+Subject: [PATCH v5] net: usb: r8152: Add in new Devices that are supported for Mac-Passthru
+Date:   Tue, 17 May 2022 14:05:39 -0400
+Message-Id: <20220517180539.25839-1-dober6023@gmail.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Syzbot found a Use After Free bug in compute_effective_progs().
-The reproducer creates a number of BPF links, and causes a fault
-injected alloc to fail, while calling bpf_link_detach on them.
-Link detach triggers the link to be freed by bpf_link_free(),
-which calls __cgroup_bpf_detach() and update_effective_progs().
-If the memory allocation in this function fails, the function restores
-the pointer to the bpf_cgroup_link on the cgroup list, but the memory
-gets freed just after it returns. After this, every subsequent call to
-update_effective_progs() causes this already deallocated pointer to be
-dereferenced in prog_list_length(), and triggers KASAN UAF error.
+Lenovo Thunderbolt 4 Dock, and other Lenovo USB Docks are using the
+original Realtek USB ethernet Vendor and Product IDs
+If the Network device is Realtek verify that it is on a Lenovo USB hub
+before enabling the passthru feature
 
-To fix this issue don't preserve the pointer to the prog or link in the
-list, but remove it and replace it with a dummy prog without shrinking
-the table. The subsequent call to __cgroup_bpf_detach() or
-__cgroup_bpf_detach() will correct it.
+This also adds in the device IDs for the Lenovo USB Dongle and one other
+USB-C dock
 
-Cc: "Alexei Starovoitov" <ast@kernel.org>
-Cc: "Daniel Borkmann" <daniel@iogearbox.net>
-Cc: "Andrii Nakryiko" <andrii@kernel.org>
-Cc: "Martin KaFai Lau" <kafai@fb.com>
-Cc: "Song Liu" <songliubraving@fb.com>
-Cc: "Yonghong Song" <yhs@fb.com>
-Cc: "John Fastabend" <john.fastabend@gmail.com>
-Cc: "KP Singh" <kpsingh@kernel.org>
-Cc: <netdev@vger.kernel.org>
-Cc: <bpf@vger.kernel.org>
-Cc: <stable@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+V2 fix formating of code
+V3 remove Generic define for Device ID 0x8153 and change it to use value
+V4 rearrange defines and case statement to put them in better order
+v5 create helper function to do the testing work as suggested
 
-Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
-Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
-Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
-Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+Signed-off-by: David Ober <dober6023@gmail.com>
 ---
-v2: Add a fall back path that removes a prog from the effective progs
-    table in case detach fails to allocate memory in compute_effective_progs().
+ drivers/net/usb/r8152.c | 33 ++++++++++++++++++++++++++-------
+ 1 file changed, 26 insertions(+), 7 deletions(-)
 
-v3: Implement the fallback in a separate function purge_effective_progs
-
-v4: Changed purge_effective_progs() to manipulate the array in a similar way
-    how replace_effective_prog() does it.
----
- kernel/bpf/cgroup.c | 68 +++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 60 insertions(+), 8 deletions(-)
-
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 128028efda64..6f1a6160c99e 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -681,6 +681,60 @@ static struct bpf_prog_list *find_detach_entry(struct list_head *progs,
- 	return ERR_PTR(-ENOENT);
- }
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index c2da3438387c..7389d6ef8569 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -771,7 +771,9 @@ enum rtl8152_flags {
+ };
  
-+/**
-+ * purge_effective_progs() - After compute_effective_progs fails to alloc new
-+ *                           cgrp->bpf.inactive table we can recover by
-+ *                           recomputing the array in place.
-+ *
-+ * @cgrp: The cgroup which descendants to travers
-+ * @prog: A program to detach or NULL
-+ * @link: A link to detach or NULL
-+ * @atype: Type of detach operation
-+ */
-+static void purge_effective_progs(struct cgroup *cgrp, struct bpf_prog *prog,
-+				  struct bpf_cgroup_link *link,
-+				  enum cgroup_bpf_attach_type atype)
+ #define DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2	0x3082
++#define DEVICE_ID_THINKPAD_USB_C_DONGLE			0x720c
+ #define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2		0xa387
++#define DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3		0x3062
+ 
+ struct tally_counter {
+ 	__le64	tx_packets;
+@@ -9562,6 +9564,29 @@ u8 rtl8152_get_version(struct usb_interface *intf)
+ }
+ EXPORT_SYMBOL_GPL(rtl8152_get_version);
+ 
++static bool rtl8152_supports_lenovo_macpassthru(struct usb_device *udev)
 +{
-+	struct cgroup_subsys_state *css;
-+	struct bpf_prog_array *progs;
-+	struct bpf_prog_list *pl;
-+	struct list_head *head;
-+	struct cgroup *cg;
-+	int pos;
++	int parent_vendor_id = le16_to_cpu(udev->parent->descriptor.idVendor);
++	int product_id = le16_to_cpu(udev->descriptor.idProduct);
++	int vendor_id = le16_to_cpu(udev->descriptor.idVendor);
 +
-+	/* recompute effective prog array in place */
-+	css_for_each_descendant_pre(css, &cgrp->self) {
-+		struct cgroup *desc = container_of(css, struct cgroup, self);
-+
-+		if (percpu_ref_is_zero(&desc->bpf.refcnt))
-+			continue;
-+
-+		/* find position of link or prog in effective progs array */
-+		for (pos = 0, cg = desc; cg; cg = cgroup_parent(cg)) {
-+			if (pos && !(cg->bpf.flags[atype] & BPF_F_ALLOW_MULTI))
-+				continue;
-+
-+			head = &cg->bpf.progs[atype];
-+			list_for_each_entry(pl, head, node) {
-+				if (!prog_list_prog(pl))
-+					continue;
-+				if (pl->prog == prog && pl->link == link)
-+					goto found;
-+				pos++;
-+			}
++	if (vendor_id == VENDOR_ID_LENOVO) {
++		switch (product_id) {
++		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
++		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
++		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3:
++		case DEVICE_ID_THINKPAD_USB_C_DONGLE:
++			return 1;
 +		}
-+found:
-+		BUG_ON(!cg);
-+		progs = rcu_dereference_protected(
-+				desc->bpf.effective[atype],
-+				lockdep_is_held(&cgroup_mutex));
-+
-+		/* Remove the program from the array */
-+		WARN_ONCE(bpf_prog_array_delete_safe_at(progs, pos),
-+			  "Failed to purge a prog from array at index %d", pos);
++	} else if (vendor_id == VENDOR_ID_REALTEK && parent_vendor_id == VENDOR_ID_LENOVO) {
++		switch (product_id) {
++		case 0x8153:
++			return 1;
++		}
 +	}
++	return 0;
 +}
 +
- /**
-  * __cgroup_bpf_detach() - Detach the program or link from a cgroup, and
-  *                         propagate the change to descendants
-@@ -723,8 +777,12 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 	pl->link = NULL;
+ static int rtl8152_probe(struct usb_interface *intf,
+ 			 const struct usb_device_id *id)
+ {
+@@ -9642,13 +9667,7 @@ static int rtl8152_probe(struct usb_interface *intf,
+ 		netdev->hw_features &= ~NETIF_F_RXCSUM;
+ 	}
  
- 	err = update_effective_progs(cgrp, atype);
--	if (err)
--		goto cleanup;
-+	if (err) {
-+		/* If update affective array failed replace the prog with a dummy prog*/
-+		pl->prog = old_prog;
-+		pl->link = link;
-+		purge_effective_progs(cgrp, old_prog, link, atype);
-+	}
+-	if (le16_to_cpu(udev->descriptor.idVendor) == VENDOR_ID_LENOVO) {
+-		switch (le16_to_cpu(udev->descriptor.idProduct)) {
+-		case DEVICE_ID_THINKPAD_THUNDERBOLT3_DOCK_GEN2:
+-		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
+-			tp->lenovo_macpassthru = 1;
+-		}
+-	}
++	tp->lenovo_macpassthru = rtl8152_supports_lenovo_macpassthru(udev);
  
- 	/* now can actually delete it from this cgroup list */
- 	list_del(&pl->node);
-@@ -736,12 +794,6 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 		bpf_prog_put(old_prog);
- 	static_branch_dec(&cgroup_bpf_enabled_key[atype]);
- 	return 0;
--
--cleanup:
--	/* restore back prog or link */
--	pl->prog = old_prog;
--	pl->link = link;
--	return err;
- }
- 
- static int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+ 	if (le16_to_cpu(udev->descriptor.bcdDevice) == 0x3011 && udev->serial &&
+ 	    (!strcmp(udev->serial, "000001000000") ||
 -- 
-2.36.1
+2.30.2
 
