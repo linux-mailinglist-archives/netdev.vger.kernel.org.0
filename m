@@ -2,135 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85484529D2F
+	by mail.lfdr.de (Postfix) with ESMTP id 3993F529D2E
 	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 11:03:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243989AbiEQJDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 05:03:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52228 "EHLO
+        id S243966AbiEQJDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 05:03:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236567AbiEQJDp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 05:03:45 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 427B53EF1C;
-        Tue, 17 May 2022 02:03:37 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L2VXQ6sSBz4xLb;
-        Tue, 17 May 2022 19:03:34 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652778216;
-        bh=PvHKH9C7qcFJ1DB3vXvZC31uK1pYg4dsP3wXn6Ovzp0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=P51d5V9sgBiwjmwO1K5WJzcx62IPxOQ2S2JU0qSlIpKdEA/xzGCKUDJcT5skrUPxu
-         dBlIMAMxSyfoYUhRgiUV/xvaTsuMf5uqwfXuOzRwel8ulOIbatPs+rWkJ0wHWJYwJG
-         kwTVwK2GezuuChZT0WOoRlq8b+BD6GUugcQWNKktls4k2DtNLYzvm69kzO2OOxPNXg
-         g5wlSTJFyNqK0DIIGqtv07THAZTdXqP9bYINi6tgRSbcxt426h6Rq6VYJH7rtlEavU
-         xldVyJG/9Z/Z6Yce7s3skw8b7qG0hd93ktwzKgA0gyrpGlRoetKuQ/xeYzAQVLPs8P
-         UgOS1J4oMjXkQ==
-Date:   Tue, 17 May 2022 19:03:32 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: Re: linux-next: build warning after merge of the net-next tree
-Message-ID: <20220517190332.4506f7e8@canb.auug.org.au>
-In-Reply-To: <20220517110303.723a7148@canb.auug.org.au>
-References: <20220517110303.723a7148@canb.auug.org.au>
+        with ESMTP id S243986AbiEQJDm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 05:03:42 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD30440A31
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 02:03:36 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id z2so33373188ejj.3
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 02:03:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=SUWQMmwZSct1NUq5pHL/uGOr0m/f9iWjJQkP63QJuAY=;
+        b=WoHexTFIk6XvLoXULKjPGbTETCghLna08089veT2icXrfqMA1A90fkYUMxjEo62Gy0
+         qqbmfyUrfC8Q3G2yVTYkjrXDU6KeRlcKVvzyQawQ5YkSfaITZeUSntxYqno5vmNI9KaL
+         8/fZ7/sV8LbsQD0RLhwe2GW5ms2ISNlm74TANd5+vNsd7BV8uLg5Mw6WhyffNBlRUvBs
+         NIAhzalNhSGTQK4dj4KfpuXsxdH40/ZQ2Vv3owFKTUtoc21cQhQpay3P0vy0wp8XhvSl
+         KmYuJdlDymKnkinhxD4Y3qDVYgSrV6YCww+J8SP6/+zOcIvtBdMGTYcO/xMXoBDAEPil
+         QY2A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=SUWQMmwZSct1NUq5pHL/uGOr0m/f9iWjJQkP63QJuAY=;
+        b=WFo6VOFZQw6NrSLj4XSUbMy/ks+C9Nv+ZzUwVAxaZBLMnE5zyZy8zxmffX+G6k/0qa
+         zxPuZ96U1NIHfWke/pZwitZ1MfVvAPW2HTeu41MYMc8wdQ5BUsIuSJnkPzky0MCKxfLj
+         L4v5R4ixZ4yqCP3JXR3RvbTf75joWDZAHTjk8/56mljqRp1jZOA4MbOwCdLzgCotQGU3
+         QtRcQCzJBFJ1ICud3x/9vWys3rxOS2jhJ2rZAebTKsoG7WFo0Xftp+ycQme0Lsko0gsg
+         KxEkD2pQzFYSw2LMMda2vxpozO+CBjb1f8g9Ha1g1bU9/xa8NG49rQWKUh7F30ExKaiF
+         qXHg==
+X-Gm-Message-State: AOAM5330yjHpvJq3lpsSDI5hE/UgHO6dtCal1aq/jnafn8pcyLTzf4E4
+        K7j+njfH9i21uKW+vf7JqQNmP7Jxy3tJjZTrnrQ=
+X-Google-Smtp-Source: ABdhPJzDNwdd77Y57XF98BrDNEPiLd0s9kELdiLD/I4Pl9IzamQ9m0V09cCrMmDAF2ttk0sGlPEgw7qGltsaNWnizcE=
+X-Received: by 2002:a17:906:699:b0:6f3:a7a3:d3 with SMTP id
+ u25-20020a170906069900b006f3a7a300d3mr19181990ejb.650.1652778215372; Tue, 17
+ May 2022 02:03:35 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/MVHAGlvNapLv1B+3dFq=KEu";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Received: by 2002:ab4:924a:0:0:0:0:0 with HTTP; Tue, 17 May 2022 02:03:34
+ -0700 (PDT)
+Reply-To: jub47823@gmail.com
+From:   Julian Bikram <kodjoadannou123@gmail.com>
+Date:   Tue, 17 May 2022 09:03:34 +0000
+Message-ID: <CAOtKoZ9fkz2=-8Y-8LCR0U+D14+oMm4qKfde-N4c=3+3toboOA@mail.gmail.com>
+Subject: Please can i have your attention
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:635 listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.4971]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [kodjoadannou123[at]gmail.com]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [kodjoadannou123[at]gmail.com]
+        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
+        *      digit
+        *      [jub47823[at]gmail.com]
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  3.4 UNDISC_FREEM Undisclosed recipients + freemail reply-to
+        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
+        *      different freemails
+X-Spam-Level: *****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/MVHAGlvNapLv1B+3dFq=KEu
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Dear ,
 
-Hi all,
 
-On Tue, 17 May 2022 11:03:03 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> After merging the net-next tree, today's linux-next build (powerpc
-> ppc64_defconfig) produced this warning:
->=20
-> net/netfilter/nf_conntrack_netlink.c:1717:12: warning: 'ctnetlink_dump_on=
-e_entry' defined but not used [-Wunused-function]
->  1717 | static int ctnetlink_dump_one_entry(struct sk_buff *skb,
->       |            ^~~~~~~~~~~~~~~~~~~~~~~~
->=20
-> Introduced by commit
->=20
->   8a75a2c17410 ("netfilter: conntrack: remove unconfirmed list")
+Please can I have your attention and possibly help me for humanity's
+sake please. I am writing this message with a heavy heart filled with
+sorrows and sadness.
 
-So for my i386 defconfig build this became on error, so I have applied
-the following patch for today.
+Please if you can respond, i have an issue that i will be most
+grateful if you could help me deal with it please.
 
-From: Stephen Rothwell <sfr@canb.auug.org.au>
-Date: Tue, 17 May 2022 18:58:43 +1000
-Subject: [PATCH] fix up for "netfilter: conntrack: remove unconfirmed list"
-
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
----
- net/netfilter/nf_conntrack_netlink.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntr=
-ack_netlink.c
-index e768f59741a6..722af5e309ba 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -1714,6 +1714,7 @@ static int ctnetlink_done_list(struct netlink_callbac=
-k *cb)
- 	return 0;
- }
-=20
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
- static int ctnetlink_dump_one_entry(struct sk_buff *skb,
- 				    struct netlink_callback *cb,
- 				    struct nf_conn *ct,
-@@ -1754,6 +1755,7 @@ static int ctnetlink_dump_one_entry(struct sk_buff *s=
-kb,
-=20
- 	return res;
- }
-+#endif
-=20
- static int
- ctnetlink_dump_unconfirmed(struct sk_buff *skb, struct netlink_callback *c=
-b)
---=20
-2.35.1
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/MVHAGlvNapLv1B+3dFq=KEu
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKDZOQACgkQAVBC80lX
-0GwWtwf9Gym5VoAzMup2/OcuiIuikDIJdyDG8Nm8Y14zQRJLVgm2fMv8NnqwpTMJ
-ojQMTM5JYY/2u+Tn4O1KqetkDN8mmHEtRmG/vpZZqU1QP1E2Ie7zrd+nf74Qa1en
-Y4ECWgRK6LY1zSel3VgvSu0gippdWe7F3bmyztCbRkWhmeqg81TLQK6agf+Wzp9Y
-6sCzF+f3/Y2BjP9a93ADeqnPtmAVIpWpO1iOzRr9SA4N+MrXsZ+qtb6nCA2vuDn5
-3IUd56Jp1jPvPo74trHN1I6V923g0Ahs53afh3Nd1+sAo3lH3NANuFvAVzko1cbO
-Cch90NdSTwmN/kSpNPQtltxkVRjT0Q==
-=fni1
------END PGP SIGNATURE-----
-
---Sig_/MVHAGlvNapLv1B+3dFq=KEu--
+Julian
