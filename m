@@ -2,52 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1B90529C66
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 10:28:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04C8F529C8A
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 10:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243474AbiEQI2K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 04:28:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
+        id S242909AbiEQIcK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 04:32:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243098AbiEQI2D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:28:03 -0400
-Received: from smtp-bc0a.mail.infomaniak.ch (smtp-bc0a.mail.infomaniak.ch [45.157.188.10])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19E034666
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 01:27:48 -0700 (PDT)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4L2Tl72wK9zMqqRh;
-        Tue, 17 May 2022 10:27:47 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4L2Tl65j5Kzlj4cM;
-        Tue, 17 May 2022 10:27:46 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1652776067;
-        bh=afmbVEkyvcEtvwP5YaNl66s/+oCadWch65cC7X4u8YM=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=cZgC9gXhDeyXNKS7x3G8rGKK86bAqqb1TPFiNJ5IixdOSySiZG7HYd90A1nlNSj19
-         uCBmlVQO2oo7WS+MT3tDPpwddGpddXqAFPrCOmnVcOCZDxPN6QuHqLFjxcw9Txku3l
-         iLc77aYOpUR3E2JqVS3/kV5jGz8Vmho2yn6QheGA=
-Message-ID: <544f0edb-0b5a-17c3-57a1-a373723ef37f@digikod.net>
-Date:   Tue, 17 May 2022 10:27:45 +0200
+        with ESMTP id S237104AbiEQIcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:32:09 -0400
+Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C1A0D427E9;
+        Tue, 17 May 2022 01:32:06 -0700 (PDT)
+Date:   Tue, 17 May 2022 10:32:03 +0200
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Sven Auhagen <sven.auhagen@voleatech.de>
+Cc:     Oz Shlomo <ozsh@nvidia.com>, Felix Fietkau <nbd@nbd.name>,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        Florian Westphal <fw@strlen.de>, Paul Blakey <paulb@nvidia.com>
+Subject: Re: [PATCH net v2] netfilter: nf_flow_table: fix teardown flow
+ timeout
+Message-ID: <YoNdg/5IBucYJ+hi@salvia>
+References: <20220512182803.6353-1-ozsh@nvidia.com>
+ <YoIt5rHw4Xwl1zgY@salvia>
+ <YoI/z+aWkmAAycR3@salvia>
+ <20220516122300.6gwrlmun4w3ynz7s@SvensMacbookPro.hq.voleatech.com>
+ <YoJG2j0w551KM17k@salvia>
+ <20220516130213.bedrzjmvgvdzuzdc@SvensMacbookPro.hq.voleatech.com>
+ <YoKO0dPJs+VjbTXP@salvia>
+ <20220516182310.iiufw3exfy2xmb2l@Svens-MacBookPro.local>
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        anton.sirazetdinov@huawei.com
-References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
- <20220516152038.39594-8-konstantin.meskhidze@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v5 07/15] landlock: add support network rules
-In-Reply-To: <20220516152038.39594-8-konstantin.meskhidze@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Type: multipart/mixed; boundary="KyuGcuBaevpz6L97"
+Content-Disposition: inline
+In-Reply-To: <20220516182310.iiufw3exfy2xmb2l@Svens-MacBookPro.local>
+X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
+        RCVD_IN_VALIDITY_RPBL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -55,453 +45,281 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--KyuGcuBaevpz6L97
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-On 16/05/2022 17:20, Konstantin Meskhidze wrote:
-> This modification adds network rules support
-> in internal landlock functions (presented in ruleset.c)
-> and landlock_create_ruleset syscall.
-> 
-> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-> ---
-> 
-> Changes since v3:
-> * Split commit.
-> * Add network rule support for internal landlock functions.
-> * Add set_mask and get_mask for network.
-> * Add rb_root root_net_port.
-> 
-> Changes since v4:
-> * Refactoring landlock_create_ruleset() - splits ruleset and
-> masks checks.
-> * Refactoring landlock_create_ruleset() and landlock mask
-> setters/getters to support two rule types.
-> * Refactoring landlock_add_rule syscall add_rule_path_beneath
-> function by factoring out get_ruleset_from_fd() and
-> landlock_put_ruleset().
-> 
-> ---
->   security/landlock/limits.h   |  8 +++-
->   security/landlock/ruleset.c  | 82 +++++++++++++++++++++++++++++++-----
->   security/landlock/ruleset.h  | 34 +++++++++++++--
->   security/landlock/syscalls.c | 45 +++++++++++---------
->   4 files changed, 132 insertions(+), 37 deletions(-)
-> 
-> diff --git a/security/landlock/limits.h b/security/landlock/limits.h
-> index b54184ab9439..23694bf05cb7 100644
-> --- a/security/landlock/limits.h
-> +++ b/security/landlock/limits.h
-> @@ -22,6 +22,12 @@
->   #define LANDLOCK_MASK_ACCESS_FS		((LANDLOCK_LAST_ACCESS_FS << 1) - 1)
->   #define LANDLOCK_NUM_ACCESS_FS		__const_hweight64(LANDLOCK_MASK_ACCESS_FS)
-> 
-> -/* clang-format on */
-> +#define LANDLOCK_LAST_ACCESS_NET	LANDLOCK_ACCESS_NET_CONNECT_TCP
-> +#define LANDLOCK_MASK_ACCESS_NET	((LANDLOCK_LAST_ACCESS_NET << 1) - 1)
-> +#define LANDLOCK_NUM_ACCESS_NET		__const_hweight64(LANDLOCK_MASK_ACCESS_NET)
-> +#define LANDLOCK_MASK_SHIFT_NET		16
-> +
-> +#define LANDLOCK_RULE_TYPE_NUM		LANDLOCK_RULE_NET_SERVICE
-> 
-> +/* clang-format on */
->   #endif /* _SECURITY_LANDLOCK_LIMITS_H */
-> diff --git a/security/landlock/ruleset.c b/security/landlock/ruleset.c
-> index c4ed783d655b..ea9ecb3f471a 100644
-> --- a/security/landlock/ruleset.c
-> +++ b/security/landlock/ruleset.c
-> @@ -36,6 +36,7 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
->   	refcount_set(&new_ruleset->usage, 1);
->   	mutex_init(&new_ruleset->lock);
->   	new_ruleset->root_inode = RB_ROOT;
-> +	new_ruleset->root_net_port = RB_ROOT;
->   	new_ruleset->num_layers = num_layers;
->   	/*
->   	 * hierarchy = NULL
-> @@ -46,17 +47,21 @@ static struct landlock_ruleset *create_ruleset(const u32 num_layers)
->   }
-> 
->   struct landlock_ruleset *landlock_create_ruleset(
-> -		const access_mask_t access_mask)
-> +					const access_mask_t access_mask_fs,
-> +					const access_mask_t access_mask_net)
->   {
->   	struct landlock_ruleset *new_ruleset;
-> 
->   	/* Informs about useless ruleset. */
-> -	if (!access_mask)
-> +	if (!access_mask_fs && !access_mask_net)
->   		return ERR_PTR(-ENOMSG);
->   	new_ruleset = create_ruleset(1);
-> -	if (!IS_ERR(new_ruleset))
-> -		landlock_set_fs_access_mask(new_ruleset, access_mask, 0);
-> -
-> +	if (IS_ERR(new_ruleset))
-> +		return new_ruleset;
-> +	if (access_mask_fs)
-> +		landlock_set_fs_access_mask(new_ruleset, access_mask_fs, 0);
-> +	if (access_mask_net)
-> +		landlock_set_net_access_mask(new_ruleset, access_mask_net, 0);
->   	return new_ruleset;
->   }
-> 
-> @@ -94,9 +99,11 @@ static struct landlock_rule *create_rule(
->   		return ERR_PTR(-ENOMEM);
->   	RB_CLEAR_NODE(&new_rule->node);
-> 
-> -	if (object_ptr) {
-> +	if (object_ptr && !object_data) {
->   		landlock_get_object(object_ptr);
->   		new_rule->object.ptr = object_ptr;
-> +	} else if (object_data && !object_ptr) {
-> +		new_rule->object.data = object_data;
->   	} else if (object_ptr && object_data) {
->   		WARN_ON_ONCE(1);
->   		return ERR_PTR(-EINVAL);
-> @@ -132,10 +139,12 @@ static void build_check_ruleset(void)
->   		.num_layers = ~0,
->   	};
->   	typeof(ruleset.access_masks[0]) fs_access_mask = ~0;
-> +	typeof(ruleset.access_masks[0]) net_access_mask = ~0;
-> 
->   	BUILD_BUG_ON(ruleset.num_rules < LANDLOCK_MAX_NUM_RULES);
->   	BUILD_BUG_ON(ruleset.num_layers < LANDLOCK_MAX_NUM_LAYERS);
->   	BUILD_BUG_ON(fs_access_mask < LANDLOCK_MASK_ACCESS_FS);
-> +	BUILD_BUG_ON(net_access_mask < LANDLOCK_MASK_ACCESS_NET);
->   }
-> 
->   /**
-> @@ -183,6 +192,11 @@ static int insert_rule(struct landlock_ruleset *const ruleset,
->   		object_data = (uintptr_t)object_ptr;
->   		root = &ruleset->root_inode;
->   		break;
-> +	case LANDLOCK_RULE_NET_SERVICE:
-> +		if (WARN_ON_ONCE(object_ptr))
-> +			return -EINVAL;
-> +		root = &ruleset->root_net_port;
-> +		break;
->   	default:
->   		WARN_ON_ONCE(1);
->   		return -EINVAL;
-> @@ -237,6 +251,16 @@ static int insert_rule(struct landlock_ruleset *const ruleset,
->   					&ruleset->root_inode);
->   			free_rule(this, rule_type);
->   			break;
-> +		case LANDLOCK_RULE_NET_SERVICE:
-> +			new_rule = create_rule(NULL, object_data,
-> +					       &this->layers, this->num_layers,
-> +					       &(*layers)[0]);
-> +			if (IS_ERR(new_rule))
-> +				return PTR_ERR(new_rule);
-> +			rb_replace_node(&this->node, &new_rule->node,
-> +					&ruleset->root_net_port);
-> +			free_rule(this, rule_type);
-> +			break;
->   		}
->   		return 0;
->   	}
-> @@ -254,6 +278,15 @@ static int insert_rule(struct landlock_ruleset *const ruleset,
->   		rb_link_node(&new_rule->node, parent_node, walker_node);
->   		rb_insert_color(&new_rule->node, &ruleset->root_inode);
->   		break;
-> +	case LANDLOCK_RULE_NET_SERVICE:
-> +		new_rule = create_rule(NULL, object_data, layers,
-> +				       num_layers, NULL);
-> +		if (IS_ERR(new_rule))
-> +			return PTR_ERR(new_rule);
-> +		rb_link_node(&new_rule->node, parent_node, walker_node);
-> +		rb_insert_color(&new_rule->node, &ruleset->root_net_port);
-> +		ruleset->num_rules++;
-> +		break;
->   	}
->   	return 0;
->   }
-> @@ -315,6 +348,9 @@ static int tree_merge(struct landlock_ruleset *const src,
->   	case LANDLOCK_RULE_PATH_BENEATH:
->   		src_root = &src->root_inode;
->   		break;
-> +	case LANDLOCK_RULE_NET_SERVICE:
-> +		src_root = &src->root_net_port;
-> +		break;
->   	default:
->   		return -EINVAL;
->   	}
-> @@ -341,6 +377,11 @@ static int tree_merge(struct landlock_ruleset *const src,
->   					  rule_type, &layers,
->   					  ARRAY_SIZE(layers));
->   			break;
-> +		case LANDLOCK_RULE_NET_SERVICE:
-> +			err = insert_rule(dst, NULL, walker_rule->object.data,
-> +					  rule_type, &layers,
-> +					  ARRAY_SIZE(layers));
-> +			break;
->   		}
->   		if (err)
->   			return err;
-> @@ -376,6 +417,10 @@ static int merge_ruleset(struct landlock_ruleset *const dst,
->   	err = tree_merge(src, dst, LANDLOCK_RULE_PATH_BENEATH);
->   	if (err)
->   		goto out_unlock;
-> +	/* Merges the @src network tree. */
-> +	err = tree_merge(src, dst, LANDLOCK_RULE_NET_SERVICE);
-> +	if (err)
-> +		goto out_unlock;
-> 
->   out_unlock:
->   	mutex_unlock(&src->lock);
-> @@ -395,6 +440,9 @@ static int tree_copy(struct landlock_ruleset *const parent,
->   	case LANDLOCK_RULE_PATH_BENEATH:
->   		parent_root = &parent->root_inode;
->   		break;
-> +	case LANDLOCK_RULE_NET_SERVICE:
-> +		parent_root = &parent->root_net_port;
-> +		break;
->   	default:
->   		return -EINVAL;
->   	}
-> @@ -407,6 +455,12 @@ static int tree_copy(struct landlock_ruleset *const parent,
->   					  rule_type, &walker_rule->layers,
->   					  walker_rule->num_layers);
->   			break;
-> +		case LANDLOCK_RULE_NET_SERVICE:
-> +			err = insert_rule(child, NULL,
-> +					  walker_rule->object.data, rule_type,
-> +					  &walker_rule->layers,
-> +					  walker_rule->num_layers);
-> +			break;
->   		}
->   		if (err)
->   			return err;
-> @@ -429,6 +483,10 @@ static int inherit_ruleset(struct landlock_ruleset *const parent,
-> 
->   	/* Copies the @parent inode tree. */
->   	err = tree_copy(parent, child, LANDLOCK_RULE_PATH_BENEATH);
-> +	if (err)
-> +		goto out_unlock;
-> +	/* Copies the @parent inode tree. */
+On Mon, May 16, 2022 at 08:23:10PM +0200, Sven Auhagen wrote:
+> On Mon, May 16, 2022 at 07:50:09PM +0200, Pablo Neira Ayuso wrote:
+> > On Mon, May 16, 2022 at 03:02:13PM +0200, Sven Auhagen wrote:
+> > > On Mon, May 16, 2022 at 02:43:06PM +0200, Pablo Neira Ayuso wrote:
+> > > > On Mon, May 16, 2022 at 02:23:00PM +0200, Sven Auhagen wrote:
+> > > > > On Mon, May 16, 2022 at 02:13:03PM +0200, Pablo Neira Ayuso wrote:
+> > > > > > On Mon, May 16, 2022 at 12:56:41PM +0200, Pablo Neira Ayuso wrote:
+> > > > > > > On Thu, May 12, 2022 at 09:28:03PM +0300, Oz Shlomo wrote:
+> > [...]
+> > > > > > > [...]
+> > > > > > > > diff --git a/net/netfilter/nf_conntrack_core.c b/net/netfilter/nf_conntrack_core.c
+> > > > > > > > index 0164e5f522e8..324fdb62c08b 100644
+> > > > > > > > --- a/net/netfilter/nf_conntrack_core.c
+> > > > > > > > +++ b/net/netfilter/nf_conntrack_core.c
+> > > > > > > > @@ -1477,7 +1477,8 @@ static void gc_worker(struct work_struct *work)
+> > > > > > > >  			tmp = nf_ct_tuplehash_to_ctrack(h);
+> > > > > > > >
+> > > > > > > >  			if (test_bit(IPS_OFFLOAD_BIT, &tmp->status)) {
+> > > > > > > > -				nf_ct_offload_timeout(tmp);
+> > > > > > >
+> > > > > > > Hm, it is the trick to avoid checking for IPS_OFFLOAD from the packet
+> > > > > > > path that triggers the race, ie. nf_ct_is_expired()
+> > > > > > >
+> > > > > > > The flowtable ct fixup races with conntrack gc collector.
+> > > > > > >
+> > > > > > > Clearing IPS_OFFLOAD might result in offloading the entry again for
+> > > > > > > the closing packets.
+> > > > > > >
+> > > > > > > Probably clear IPS_OFFLOAD from teardown, and skip offload if flow is
+> > > > > > > in a TCP state that represent closure?
+> > > > > > >
+> > > > > > >   		if (unlikely(!tcph || tcph->fin || tcph->rst))
+> > > > > > >   			goto out;
+> > > > > > >
+> > > > > > > this is already the intention in the existing code.
+> > > > > >
+> > > > > > I'm attaching an incomplete sketch patch. My goal is to avoid the
+> > > > > > extra IPS_ bit.
+> > > > >
+> > > > > You might create a race with ct gc that will remove the ct
+> > > > > if it is in close or end of close and before flow offload teardown is running
+> > > > > so flow offload teardown might access memory that was freed.
+> > > >
+> > > > flow object holds a reference to the ct object until it is released,
+> > > > no use-after-free can happen.
+> > > >
+> > >
+> > > Also if nf_ct_delete is called before flowtable delete?
+> > > Can you let me know why?
+> >
+> > nf_ct_delete() removes the conntrack object from lists and it
+> > decrements the reference counter by one.
+> >
+> > flow_offload_free() also calls nf_ct_put(). flow_offload_alloc() bumps
+> > the reference count on the conntrack object before creating the flow.
+> >
+> > > > > It is not a very likely scenario but never the less it might happen now
+> > > > > since the IPS_OFFLOAD_BIT is not set and the state might just time out.
+> > > > >
+> > > > > If someone sets a very small TCP CLOSE timeout it gets more likely.
+> > > > >
+> > > > > So Oz and myself were debatting about three possible cases/problems:
+> > > > >
+> > > > > 1. ct gc sets timeout even though the state is in CLOSE/FIN because the
+> > > > > IPS_OFFLOAD is still set but the flow is in teardown
+> > > > > 2. ct gc removes the ct because the IPS_OFFLOAD is not set and
+> > > > > the CLOSE timeout is reached before the flow offload del
+> > > >
+> > > > OK.
+> > > >
+> > > > > 3. tcp ct is always set to ESTABLISHED with a very long timeout
+> > > > > in flow offload teardown/delete even though the state is already
+> > > > > CLOSED.
+> > > > >
+> > > > > Also as a remark we can not assume that the FIN or RST packet is hitting
+> > > > > flow table teardown as the packet might get bumped to the slow path in
+> > > > > nftables.
+> > > >
+> > > > I assume this remark is related to 3.?
+> > >
+> > > Yes, exactly.
+> > >
+> > > > if IPS_OFFLOAD is unset, then conntrack would update the state
+> > > > according to this FIN or RST.
+> > >
+> > > It will move to a different TCP state anyways only the ct state
+> > > will be at IPS_OFFLOAD_BIT and prevent it from beeing garbage collected.
+> > > The timeout will be bumped back up as long as IPS_OFFLOAD_BIT is set
+> > > even though TCP might already be CLOSED.
+>
+> I see what you are trying to do here, I have some remarks:
+>
+> >
+> > If teardown fixes the ct state and timeout to established, and IPS_OFFLOAD is
+> > unset, then the packet is passed up in a consistent state.
+> >
+> > I made a patch, it is based on yours, it's attached:
+> >
+> > - If flow timeout expires or rst/fin is seen, ct state and timeout is
+> >   fixed up (to established state) and IPS_OFFLOAD is unset.
+> >
+> > - If rst/fin packet is seen, ct state and timeout is fixed up (to
+> >   established state) and IPS_OFFLOAD is unset. The packet continues
+> >   its travel up to the classic path, so conntrack triggers the
+> >   transition from established to one of the close states.
+> >
+> > For the case 1., IPS_OFFLOAD is not set anymore, so conntrack gc
+> > cannot race to reset the ct timeout anymore.
+> >
+> > For the case 2., if gc conntrack ever removes the ct entry, then the
+> > IPS_DYING bit is set, which implicitly triggers the teardown state
+> > from the flowtable gc. The flowtable still holds a reference to the
+> > ct object, so no UAF can happen.
+> >
+> > For the case 3. the conntrack is set to ESTABLISHED with a long
+> > timeout, yes. This is to deal with the two possible cases:
+> >
+> > a) flowtable timeout expired, so conntrack recovers control on the
+> >    flow.
+> > b) tcp rst/fin will take back the packet to slow path. The ct has been
+> >    fixed up to established state so it will trasition to one of the
+> >    close states.
+> >
+> > Am I missing anything?
+>
+> You should not fixup the tcp state back to established.
+> If flow_offload_teardown is not called because a packet got bumped up to the slow path
+> and you call flow_offload_teardown from nf_flow_offload_gc_step, the tcp state might already
+> be in CLOSE state and you just moved it back to established.
 
-Not the inode tree this time.
+OK.
 
+> The entire function flow_offload_fixup_tcp can go away if we only allow established tcp states
+> in the flowtable.
 
-> +	err = tree_copy(parent, child, LANDLOCK_RULE_NET_SERVICE);
->   	if (err)
->   		goto out_unlock;
-> 
-> @@ -463,9 +521,11 @@ static void free_ruleset(struct landlock_ruleset *const ruleset)
-> 
->   	might_sleep();
->   	rbtree_postorder_for_each_entry_safe(freeme, next,
-> -					     &ruleset->root_inode,
-> -					     node)
-> +					     &ruleset->root_inode, node)
->   		free_rule(freeme, LANDLOCK_RULE_PATH_BENEATH);
-> +	rbtree_postorder_for_each_entry_safe(freeme, next,
-> +					     &ruleset->root_net_port, node)
-> +		free_rule(freeme, LANDLOCK_RULE_NET_SERVICE);
->   	put_hierarchy(ruleset->hierarchy);
->   	kfree(ruleset);
->   }
-> @@ -560,13 +620,13 @@ const struct landlock_rule *landlock_find_rule(
->   {
->   	const struct rb_node *node;
-> 
-> -	if (!object_data)
-> -		return NULL;
-> -
->   	switch (rule_type) {
->   	case LANDLOCK_RULE_PATH_BENEATH:
->   		node = ruleset->root_inode.rb_node;
->   		break;
-> +	case LANDLOCK_RULE_NET_SERVICE:
-> +		node = ruleset->root_net_port.rb_node;
-> +		break;
->   	default:
->   		WARN_ON_ONCE(1);
->   		return NULL;
-> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
-> index f3cd890d0348..916b30b31c06 100644
-> --- a/security/landlock/ruleset.h
-> +++ b/security/landlock/ruleset.h
-> @@ -102,6 +102,12 @@ struct landlock_ruleset {
->   	 * tree is immutable until @usage reaches zero.
->   	 */
->   	struct rb_root root_inode;
-> +	/**
-> +	 * @root_net_port: Root of a red-black tree containing object nodes
-> +	 * for network port. Once a ruleset is tied to a process (i.e. as a domain),
-> +	 * this tree is immutable until @usage reaches zero.
-> +	 */
-> +	struct rb_root root_net_port;
->   	/**
->   	 * @hierarchy: Enables hierarchy identification even when a parent
->   	 * domain vanishes.  This is needed for the ptrace protection.
-> @@ -157,7 +163,8 @@ struct landlock_ruleset {
->   };
-> 
->   struct landlock_ruleset *landlock_create_ruleset(
-> -		const access_mask_t access_mask);
-> +					const access_mask_t access_mask_fs,
-> +					const access_mask_t access_mask_net);
-> 
->   void landlock_put_ruleset(struct landlock_ruleset *const ruleset);
->   void landlock_put_ruleset_deferred(struct landlock_ruleset *const ruleset);
-> @@ -183,11 +190,12 @@ static inline void landlock_get_ruleset(struct landlock_ruleset *const ruleset)
->   }
-> 
->   /* A helper function to set a filesystem mask */
-> -static inline void landlock_set_fs_access_mask(struct landlock_ruleset *ruleset,
-> -				 const access_mask_t access_maskset,
-> +static inline void landlock_set_fs_access_mask(
-> +				 struct landlock_ruleset *ruleset,
-> +				 const access_mask_t access_mask_fs,
->   				 u16 mask_level)
->   {
-> -	ruleset->access_masks[mask_level] = access_maskset;
-> +	ruleset->access_masks[mask_level] = access_mask_fs;
->   }
-> 
->   /* A helper function to get a filesystem mask */
-> @@ -198,6 +206,24 @@ static inline u32 landlock_get_fs_access_mask(
->   	return (ruleset->access_masks[mask_level] & LANDLOCK_MASK_ACCESS_FS);
->   }
-> 
-> +/* A helper function to set a network mask */
-> +static inline void landlock_set_net_access_mask(
-> +				  struct landlock_ruleset *ruleset,
-> +				  const access_mask_t access_mask_net,
-> +				  u16 mask_level)
-> +{
-> +	ruleset->access_masks[mask_level] |= (access_mask_net <<
-> +					      LANDLOCK_MASK_SHIFT_NET);
-> +}
-> +
-> +/* A helper function to get a network mask */
-> +static inline u32 landlock_get_net_access_mask(
-> +				const struct landlock_ruleset *ruleset,
-> +				u16 mask_level)
-> +{
-> +	return (ruleset->access_masks[mask_level] >> LANDLOCK_MASK_SHIFT_NET);
-> +}
-> +
->   access_mask_t get_handled_accesses(
->   		const struct landlock_ruleset *const domain,
->   		u16 rule_type, u16 num_access);
-> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
-> index 31f9facec123..812541f4e155 100644
-> --- a/security/landlock/syscalls.c
-> +++ b/security/landlock/syscalls.c
-> @@ -189,8 +189,14 @@ SYSCALL_DEFINE3(landlock_create_ruleset,
->   	    LANDLOCK_MASK_ACCESS_FS)
->   		return -EINVAL;
-> 
-> +	/* Checks network content (and 32-bits cast). */
-> +	if ((ruleset_attr.handled_access_net | LANDLOCK_MASK_ACCESS_NET) !=
-> +			LANDLOCK_MASK_ACCESS_NET)
-> +		return -EINVAL;
-> +
->   	/* Checks arguments and transforms to kernel struct. */
-> -	ruleset = landlock_create_ruleset(ruleset_attr.handled_access_fs);
-> +	ruleset = landlock_create_ruleset(ruleset_attr.handled_access_fs,
-> +					  ruleset_attr.handled_access_net);
->   	if (IS_ERR(ruleset))
->   		return PTR_ERR(ruleset);
-> 
-> @@ -275,21 +281,17 @@ static int get_path_from_fd(const s32 fd, struct path *const path)
->   	return err;
->   }
-> 
-> -static int add_rule_path_beneath(const int ruleset_fd, const void *const rule_attr)
-> +static int add_rule_path_beneath(struct landlock_ruleset *const ruleset,
-> +				 const void *const rule_attr)
->   {
->   	struct landlock_path_beneath_attr path_beneath_attr;
->   	struct path path;
-> -	struct landlock_ruleset *ruleset;
->   	int res, err;
-> -
-> -	/* Gets and checks the ruleset. */
-> -	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
-> -	if (IS_ERR(ruleset))
-> -		return PTR_ERR(ruleset);
-> +	u32 mask;
-> 
->   	/* Copies raw user space buffer, only one type for now. */
->   	res = copy_from_user(&path_beneath_attr, rule_attr,
-> -				sizeof(path_beneath_attr));
-> +			sizeof(path_beneath_attr));
->   	if (res)
->   		return -EFAULT;
-> 
-> @@ -298,32 +300,26 @@ static int add_rule_path_beneath(const int ruleset_fd, const void *const rule_at
->   	 * are ignored in path walks.
->   	 */
->   	if (!path_beneath_attr.allowed_access) {
-> -		err = -ENOMSG;
-> -		goto out_put_ruleset;
-> +		return -ENOMSG;
->   	}
->   	/*
->   	 * Checks that allowed_access matches the @ruleset constraints
->   	 * (ruleset->access_masks[0] is automatically upgraded to 64-bits).
->   	 */
-> -	if ((path_beneath_attr.allowed_access |
-> -		landlock_get_fs_access_mask(ruleset, 0)) !=
-> -				landlock_get_fs_access_mask(ruleset, 0)) {
-> -		err = -EINVAL;
-> -		goto out_put_ruleset;
-> -	}
-> +	mask = landlock_get_fs_access_mask(ruleset, 0);
-> +	if ((path_beneath_attr.allowed_access | mask) != mask)
-> +		return -EINVAL;
-> 
->   	/* Gets and checks the new rule. */
->   	err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
->   	if (err)
-> -		goto out_put_ruleset;
-> +		return err;
-> 
->   	/* Imports the new rule. */
->   	err = landlock_append_fs_rule(ruleset, &path,
->   				      path_beneath_attr.allowed_access);
->   	path_put(&path);
-> 
-> -out_put_ruleset:
-> -	landlock_put_ruleset(ruleset);
->   	return err;
->   }
-> 
-> @@ -360,6 +356,7 @@ SYSCALL_DEFINE4(landlock_add_rule,
->   		const int, ruleset_fd, const enum landlock_rule_type, rule_type,
->   		const void __user *const, rule_attr, const __u32, flags)
->   {
-> +	struct landlock_ruleset *ruleset;
->   	int err;
-> 
->   	if (!landlock_initialized)
-> @@ -369,14 +366,20 @@ SYSCALL_DEFINE4(landlock_add_rule,
->   	if (flags)
->   		return -EINVAL;
-> 
-> +	/* Gets and checks the ruleset. */
-> +	ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
-> +	if (IS_ERR(ruleset))
-> +		return PTR_ERR(ruleset);
+I'm keeping it, but I remove the reset of the tcp state.
 
-This shouldn't be part of this patch.
+> Same goes for the timeout. The timeout should really be set to the current tcp state
+> ct->proto.tcp->state which might not be established anymore.
 
+OK.
 
-> +
->   	switch (rule_type) {
->   	case LANDLOCK_RULE_PATH_BENEATH:
-> -		err = add_rule_path_beneath(ruleset_fd, rule_attr);
-> +		err = add_rule_path_beneath(ruleset, rule_attr);
->   		break;
->   	default:
->   		err = -EINVAL;
->   		break;
->   	}
-> +	landlock_put_ruleset(ruleset);
->   	return err;
->   }
-> 
-> --
-> 2.25.1
-> 
+> For me the question remains, why can the ct gc not remove the ct when nf_ct_delete
+> is called before flow_offload_del is called?
+
+nf_ct_delete() removes indeed the entry from the conntrack table, then
+it calls nf_ct_put() which decrements the refcnt. Given that the
+flowtable holds a reference to the conntrack object...
+
+ struct flow_offload *flow_offload_alloc(struct nf_conn *ct)
+ {
+        struct flow_offload *flow;
+
+        if (unlikely(nf_ct_is_dying(ct) ||
+            !refcount_inc_not_zero(&ct->ct_general.use)))
+                return NULL;
+
+... use-after-free cannot happen. Note that flow_offload_free() calls
+nf_ct_put(flow->ct), so at this point the ct object is released.
+
+Is this your concern?
+
+> Also you probably want to move the IPS_OFFLOAD_BIT to the beginning of
+> flow_offload_teardown just to make sure that the ct gc is not bumping up the ct timeout
+> while it is changed in flow_offload_fixup_ct.
+
+Done.
+
+See patch attached.
+>
+>
+
+--KyuGcuBaevpz6L97
+Content-Type: text/x-diff; charset=utf-8
+Content-Disposition: attachment; filename="fix-pickup-v2.patch"
+
+diff --git a/net/netfilter/nf_flow_table_core.c b/net/netfilter/nf_flow_table_core.c
+index 20b4a14e5d4e..ebdf5332e838 100644
+--- a/net/netfilter/nf_flow_table_core.c
++++ b/net/netfilter/nf_flow_table_core.c
+@@ -179,12 +179,11 @@ EXPORT_SYMBOL_GPL(flow_offload_route_init);
+ 
+ static void flow_offload_fixup_tcp(struct ip_ct_tcp *tcp)
+ {
+-	tcp->state = TCP_CONNTRACK_ESTABLISHED;
+ 	tcp->seen[0].td_maxwin = 0;
+ 	tcp->seen[1].td_maxwin = 0;
+ }
+ 
+-static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
++static void flow_offload_fixup_ct(struct nf_conn *ct)
+ {
+ 	struct net *net = nf_ct_net(ct);
+ 	int l4num = nf_ct_protonum(ct);
+@@ -193,7 +192,9 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
+ 	if (l4num == IPPROTO_TCP) {
+ 		struct nf_tcp_net *tn = nf_tcp_pernet(net);
+ 
+-		timeout = tn->timeouts[TCP_CONNTRACK_ESTABLISHED];
++		flow_offload_fixup_tcp(&ct->proto.tcp);
++
++		timeout = tn->timeouts[ct->proto.tcp.state];
+ 		timeout -= tn->offload_timeout;
+ 	} else if (l4num == IPPROTO_UDP) {
+ 		struct nf_udp_net *tn = nf_udp_pernet(net);
+@@ -211,18 +212,6 @@ static void flow_offload_fixup_ct_timeout(struct nf_conn *ct)
+ 		WRITE_ONCE(ct->timeout, nfct_time_stamp + timeout);
+ }
+ 
+-static void flow_offload_fixup_ct_state(struct nf_conn *ct)
+-{
+-	if (nf_ct_protonum(ct) == IPPROTO_TCP)
+-		flow_offload_fixup_tcp(&ct->proto.tcp);
+-}
+-
+-static void flow_offload_fixup_ct(struct nf_conn *ct)
+-{
+-	flow_offload_fixup_ct_state(ct);
+-	flow_offload_fixup_ct_timeout(ct);
+-}
+-
+ static void flow_offload_route_release(struct flow_offload *flow)
+ {
+ 	nft_flow_dst_release(flow, FLOW_OFFLOAD_DIR_ORIGINAL);
+@@ -361,22 +350,14 @@ static void flow_offload_del(struct nf_flowtable *flow_table,
+ 	rhashtable_remove_fast(&flow_table->rhashtable,
+ 			       &flow->tuplehash[FLOW_OFFLOAD_DIR_REPLY].node,
+ 			       nf_flow_offload_rhash_params);
+-
+-	clear_bit(IPS_OFFLOAD_BIT, &flow->ct->status);
+-
+-	if (nf_flow_has_expired(flow))
+-		flow_offload_fixup_ct(flow->ct);
+-	else
+-		flow_offload_fixup_ct_timeout(flow->ct);
+-
+ 	flow_offload_free(flow);
+ }
+ 
+ void flow_offload_teardown(struct flow_offload *flow)
+ {
++	clear_bit(IPS_OFFLOAD_BIT, &flow->ct->status);
+ 	set_bit(NF_FLOW_TEARDOWN, &flow->flags);
+-
+-	flow_offload_fixup_ct_state(flow->ct);
++	flow_offload_fixup_ct(flow->ct);
+ }
+ EXPORT_SYMBOL_GPL(flow_offload_teardown);
+ 
+@@ -466,7 +447,7 @@ static void nf_flow_offload_gc_step(struct nf_flowtable *flow_table,
+ 	if (nf_flow_has_expired(flow) ||
+ 	    nf_ct_is_dying(flow->ct) ||
+ 	    nf_flow_has_stale_dst(flow))
+-		set_bit(NF_FLOW_TEARDOWN, &flow->flags);
++		flow_offload_teardown(flow);
+ 
+ 	if (test_bit(NF_FLOW_TEARDOWN, &flow->flags)) {
+ 		if (test_bit(NF_FLOW_HW, &flow->flags)) {
+diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
+index 187b8cb9a510..06c9f72d16db 100644
+--- a/net/netfilter/nft_flow_offload.c
++++ b/net/netfilter/nft_flow_offload.c
+@@ -298,7 +298,8 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
+ 	case IPPROTO_TCP:
+ 		tcph = skb_header_pointer(pkt->skb, nft_thoff(pkt),
+ 					  sizeof(_tcph), &_tcph);
+-		if (unlikely(!tcph || tcph->fin || tcph->rst))
++		if (unlikely(!tcph || tcph->fin || tcph->rst ||
++			     nf_conntrack_tcp_established(&ct->proto.tcp)))
+ 			goto out;
+ 		break;
+ 	case IPPROTO_UDP:
+
+--KyuGcuBaevpz6L97--
