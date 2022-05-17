@@ -2,124 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CC12252994B
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 08:08:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70CF552997C
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 08:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238335AbiEQGId (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 02:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37422 "EHLO
+        id S239571AbiEQGXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 02:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237025AbiEQGI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 02:08:29 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BDD37017
-        for <netdev@vger.kernel.org>; Mon, 16 May 2022 23:08:29 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nqqNc-0006wY-Km; Tue, 17 May 2022 08:08:24 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 80C417FF92;
-        Tue, 17 May 2022 06:08:22 +0000 (UTC)
-Date:   Tue, 17 May 2022 08:08:21 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Max Staudt <max@enpas.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-Message-ID: <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
- <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
- <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+        with ESMTP id S234066AbiEQGXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 02:23:31 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0114C443E7;
+        Mon, 16 May 2022 23:23:30 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id w17-20020a17090a529100b001db302efed6so1385853pjh.4;
+        Mon, 16 May 2022 23:23:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Gla1iMtLbzTLY/WsJTFU3eSt8LbkGZm2WCyjmOZ94Mk=;
+        b=oUqRqNZ2yhI7CCtTnp1sMdkNPXffMF1OMTroSTHqZEF2VmvIE7r6pM9eCQqJIV735Q
+         M3eWTrg4Asv5/I8Kqoz9Jpu1LQq24hElZxm4WjA7ZwG29tAxAgxt7BdpFFa4LCDjpW+O
+         CnG34jWCs9wPbPhWELN0fQsNylX/8UVIrCZioPfU7CgtpZvC3gnrHkm6tmlnD5zjUVN6
+         M+GsZ+F6UG8I4Uu1udu7Quc3xlICjto/fqiv0kDAC6BkxGP7Z+N5M31+vTUHNckmdBJL
+         S5JbXyEXT6Tpwn4uQoh+0Gou6WQWpxrmkWXY++nA00SaImmRJskvKKFw3urQ+DoKKvbI
+         V0bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Gla1iMtLbzTLY/WsJTFU3eSt8LbkGZm2WCyjmOZ94Mk=;
+        b=o/VJr3GGJEZDDXPCFeZnnUSqdIex9y7vW0foX4SWiv5YPmYaCcqkyayjF2fRrCU847
+         odoPUq2i2w7L4pfwgjUtUdjx296Lb75XabDpYyyo93Iwovb515JrjKNdYsbjAbTtpjYf
+         3XN+KdLybOdIkMm4hBKv5y2HrRbEbyRJfwNtX17lp/i7elDmSpZoM8r7eRO9XUVlVJGE
+         bvw9zkxiK+NJIviFw+Sa0CcBszgwh47rKLuqf42BFnLD5U/0+PlhvfigOw3pVBn/cQ24
+         LlhxCUq5ZZ/sJAZ60FLJTgu/cuQQfVt5X2EoueFli7RTtx/OIT0fli3tPQxbp2ZFofOz
+         ipMg==
+X-Gm-Message-State: AOAM53049ZfrKSsDV5tsPFPfYn2ZZP0W2Xk9D+ZdLd98gdhWlrc4pIHK
+        B/PAEyvo/plT8NIOooObxd/OlwT+s/CkUQ==
+X-Google-Smtp-Source: ABdhPJzoPDY53Qk9T1FmCGROaeQ+Brz1cXWTJe/hN7gYGyM0WYgrK96gZNKcSmnMqK+RC1+0ZebbiA==
+X-Received: by 2002:a17:90b:4b4e:b0:1dc:74d0:c8d4 with SMTP id mi14-20020a17090b4b4e00b001dc74d0c8d4mr23340808pjb.138.1652768609438;
+        Mon, 16 May 2022 23:23:29 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id x12-20020a170902a38c00b0015e8d4eb1b6sm8111935pla.0.2022.05.16.23.23.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 May 2022 23:23:28 -0700 (PDT)
+Date:   Tue, 17 May 2022 14:23:22 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net 0/2] selftests: net: add missing tests to Makefile
+Message-ID: <YoM/Wr6FaTzgokx3@Laptop-X1>
+References: <20220428044511.227416-1-liuhangbin@gmail.com>
+ <20220429175604.249bb2fb@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3brhaeolxdtxpqfu"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220429175604.249bb2fb@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Apr 29, 2022 at 05:56:04PM -0700, Jakub Kicinski wrote:
+> On Thu, 28 Apr 2022 12:45:09 +0800 Hangbin Liu wrote:
+> > I think there need a way to notify the developer when they created a new
+> > file in selftests folder. Maybe a bot like bluez.test.bot or kernel
+> > test robot could help do that?
+> 
+> Our netdev patch checks are here:
+> 
+> https://github.com/kuba-moo/nipa/tree/master/tests/patch
+> 
+> in case you're willing to code it up and post a PR.
 
---3brhaeolxdtxpqfu
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Jakub,
 
-On 17.05.2022 10:50:16, Vincent MAILHOL wrote:
-> > would it probably make sense to
-> > introduce a new can-skb module that could be used by all CAN
-> > virtual/software interfaces?
-> >
-> > Or some other split-up ... any idea?
->=20
-> My concern is: what would be the merrit? If we do not split, the users
-> of slcan and v(x)can would have to load the can-dev module which will
-> be slightly bloated for their use, but is this really an issue?
+I checked the tools and write a draft patch. But I have a question before post
+the PR. AFAIK, This bot is only used for checking patches and adding status in
+patchwork. But it doesn't support sending a reply to developer, right?
 
-If you use modprobe all required modules are loaded automatically.
+For the selftest reminder, I think it would be good to let developer know
+via email if the file is missing in Makefile. What do you think?
 
-> I do
-> not see how this can become a performance bottleneck, so what is the
-> problem?
-> I could also argue that most of the devices do not depend on
-> rx-offload.o. So should we also split this one out of can-dev on the
-> same basis and add another module dependency?
+Here is the draft patch:
 
-We can add a non user visible Kconfig symbol for rx-offload and let the
-drivers that need it do a "select" on it. If selected the rx-offload
-would be compiled into to can-dev module.
-
-> The benefit (not having to load a bloated module for three drivers)
-> does not outweigh the added complexity: all hardware modules will have
-> one additional modprobe dependency on the tiny can-skb module.
->
-> But as said above, I am not fully opposed to the split, I am just
-> strongly divided. If we go for the split, creating a can-skb module is
-> the natural and only option I see.
-> If the above argument does not convince you, I will send a v3 with that s=
-plit.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---3brhaeolxdtxpqfu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKDO9MACgkQrX5LkNig
-013nNQgAs6sXnBTJ3oYKGxGuF0zVVmtQc7oenY5YfI2tsw0mDOYsyaPSrvt5hSwV
-MYGVyp3pFx5D6wQJlmZnjK3ZLStPm6nw9wuHcrZDcSazZVOGwTm6+DNI0neUfjI1
-kjEXywoc5taDm47he6CnHSc0dvXzgXQLuCrJRsi7P2zUcPdmhgQL1L+0QmuC6dJD
-biLKlIt5LxE2iiGB87k1r5qak8x3qO9EpomYM68Od0wfIKEQo+ivpFYFClBROxbT
-HdQcAKxpH8D8oYR967690GN9lbpJgzrOfTy+sgeSfb/MnirmJOUFppTd+TJat1tW
-LWPcfpQ6aXMwU5eD6+W7iMLMOpN9HA==
-=ZwuT
------END PGP SIGNATURE-----
-
---3brhaeolxdtxpqfu--
+diff --git a/tests/patch/check_selftest/check_selftest.sh b/tests/patch/check_selftest/check_selftest.sh
+new file mode 100755
+index 0000000..ad7c608
+--- /dev/null
++++ b/tests/patch/check_selftest/check_selftest.sh
+@@ -0,0 +1,28 @@
++#!/bin/bash
++# SPDX-License-Identifier: GPL-2.0
++
++rt=0
++if ! git show --name-status --oneline | \
++	grep -P '^A\ttools/testing/selftests/net/' | \
++	grep '\.sh$'; then
++	echo "No new net selftests script" >&$DESC_FD
++	exit 0
++fi
++
++files=$(git show --name-status --oneline | grep -P '^A\ttools/testing/selftests/net/' | grep '\.sh$' | sed 's@A\ttools/testing/selftests/net/@@')
++for file in $files; do
++	if echo $file | grep forwarding; then
++		file=$(echo $file | sed 's/forwarding\///')
++		if ! grep -P "[\t| ]$file" tools/testing/selftests/net/forwarding/Makefile;then
++			echo "new test $file not in selftests/net/forwarding/Makefile" >&$DESC_FD
++			rc=1
++		fi
++	else
++		if ! grep -P "[\t| ]$file" tools/testing/selftests/net/Makefile;then
++			echo "new test $file not in selftests/net/Makefile" >&$DESC_FD
++			rc=1
++		fi
++	fi
++done
++
++exit $rc
+diff --git a/tests/patch/check_selftest/info.json b/tests/patch/check_selftest/info.json
+new file mode 100644
+index 0000000..615779f
+--- /dev/null
++++ b/tests/patch/check_selftest/info.json
+@@ -0,0 +1,3 @@
++{
++  "run": ["check_selftest.sh"]
++}
+-- 
+2.35.1
