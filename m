@@ -2,65 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B2C7D52A36F
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 15:31:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63A2952A380
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 15:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347813AbiEQNbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 09:31:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45468 "EHLO
+        id S1347891AbiEQNfQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 09:35:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347847AbiEQNay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 09:30:54 -0400
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [IPv6:2001:4b98:dc4:8::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F2E0DFD0;
-        Tue, 17 May 2022 06:30:50 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 56CC8240012;
-        Tue, 17 May 2022 13:30:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652794249;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PMfOpTgcEbu3EpZVSKfpa5HDynTgAT8/eYq8vW0Qg0w=;
-        b=Kksfx9sL7zOWrnb2cgknIEscypRaYPv7+qWkollCVn8QqxIgIizjUswXGjYGzZHJmiaabL
-        7jcJksId8F8EohJ34M336M5PSpMqBf/sHkA/wrmiARWIedQFq4x+cRHh4Yoro1QOhVJAz0
-        4+3lrtcLs0bml2+ECMiCDFUFbYF3/5z2AWQRqxL9SyMtoxTg9ohfggp9V15FqnUO3CeB/9
-        eg+SjCmXTSEsnXIlJxdbr0EnuPzJt9e5VYLx8pOFW61onTXzxu/DQuSWBQy198BTH1L/mc
-        eHMyKCPUiKA9z67yQlfoJYEmLoOj9tfH5RLmNVpzJJQP++Jx0bH6em/rJK5K2w==
-Date:   Tue, 17 May 2022 15:30:45 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v2 09/11] net: mac802154: Introduce a
- synchronous API for MLME commands
-Message-ID: <20220517153045.73fda4ee@xps-13>
-In-Reply-To: <CAK-6q+i_T+FaK0tX6tF38VjyEfSzDi-QC85MTU2=4soepAag8g@mail.gmail.com>
-References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
-        <20220512143314.235604-10-miquel.raynal@bootlin.com>
-        <CAK-6q+ipHdD=NJB2N7SHQ0TUvNpc0GQXZ7dWM9nDxqyqNgxdSA@mail.gmail.com>
-        <CAK-6q+i_T+FaK0tX6tF38VjyEfSzDi-QC85MTU2=4soepAag8g@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S243021AbiEQNfP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 09:35:15 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC6F34C795;
+        Tue, 17 May 2022 06:35:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652794510;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=Rp91Wk++k/5LeCAt8Q1r8LuSJbklfuV4ylHC92VYA90=;
+    b=DW4ijKfudIAgDozIFv2qZffi5LDTuKJTgTGws3OZ74RJTi6xxFMNeQoTrBEfvH2hEM
+    bBgOsv9Z9ck0JEmBCZAEvSKOlr78fs1bVrbREopwb6yQdcW2RQPPwWyg24t6cezEQyoU
+    WABEvnuQpuefPFCLF3fXzUwMaHo9FNHz4U+fIAOwUKfkesxdecMaEgFt5ew+9fSrT3Rb
+    KtwyBMGnMqnfJ/cvBTRvM9IVIe9IjKpOLRhEpx+4gg7J6YeN4udmrNl4UAxDO0cDUZ8/
+    CTujr0kclnJ49+h5HBdTSyF8iBpJtUKlVAI7BaFZEQ2C6WlGMRDokcZV08lcOTYWZxOP
+    wdjg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2kie+Xl80LlDzEQtkFfeVo6PFYN7Q=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00:35f3:7c7f:af09:932d]
+    by smtp.strato.de (RZmta 47.45.0 AUTH)
+    with ESMTPSA id R0691fy4HDZ9EHF
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 17 May 2022 15:35:09 +0200 (CEST)
+Message-ID: <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
+Date:   Tue, 17 May 2022 15:35:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
+ can_skb_headroom_valid to skb.c
+Content-Language: en-US
+To:     Max Staudt <max@enpas.org>, Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
+ <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
+ <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
+ <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+ <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+ <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+ <20220517104545.eslountqjppvcnz2@pengutronix.de>
+ <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+ <20220517141404.578d188a.max@enpas.org>
+ <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
+ <20220517143921.08458f2c.max@enpas.org>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220517143921.08458f2c.max@enpas.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -68,91 +74,58 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-aahringo@redhat.com wrote on Sun, 15 May 2022 19:03:53 -0400:
 
-> Hi,
->=20
-> On Sun, May 15, 2022 at 6:28 PM Alexander Aring <aahringo@redhat.com> wro=
-te:
-> >
-> > Hi,
-> >
-> > On Thu, May 12, 2022 at 10:34 AM Miquel Raynal
-> > <miquel.raynal@bootlin.com> wrote: =20
-> > >
-> > > This is the slow path, we need to wait for each command to be process=
-ed
-> > > before continuing so let's introduce an helper which does the
-> > > transmission and blocks until it gets notified of its asynchronous
-> > > completion. This helper is going to be used when introducing scan
-> > > support.
-> > >
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > ---
-> > >  net/mac802154/ieee802154_i.h |  1 +
-> > >  net/mac802154/tx.c           | 25 +++++++++++++++++++++++++
-> > >  2 files changed, 26 insertions(+)
-> > >
-> > > diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_=
-i.h
-> > > index a057827fc48a..f8b374810a11 100644
-> > > --- a/net/mac802154/ieee802154_i.h
-> > > +++ b/net/mac802154/ieee802154_i.h
-> > > @@ -125,6 +125,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_=
-wpan;
-> > >  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *s=
-kb);
-> > >  void ieee802154_xmit_sync_worker(struct work_struct *work);
-> > >  int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
-> > > +int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buf=
-f *skb);
-> > >  netdev_tx_t
-> > >  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device=
- *dev);
-> > >  netdev_tx_t
-> > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> > > index 38f74b8b6740..ec8d872143ee 100644
-> > > --- a/net/mac802154/tx.c
-> > > +++ b/net/mac802154/tx.c
-> > > @@ -128,6 +128,31 @@ int ieee802154_sync_and_hold_queue(struct ieee80=
-2154_local *local)
-> > >         return ieee802154_sync_queue(local);
-> > >  }
-> > >
-> > > +int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buf=
-f *skb)
-> > > +{
-> > > +       int ret;
-> > > +
-> > > +       /* Avoid possible calls to ->ndo_stop() when we asynchronousl=
-y perform
-> > > +        * MLME transmissions.
-> > > +        */
-> > > +       rtnl_lock(); =20
-> >
-> > I think we should make an ASSERT_RTNL() here, the lock needs to be
-> > earlier than that over the whole MLME op. MLME can trigger more than =20
->=20
-> not over the whole MLME_op, that's terrible to hold the rtnl lock so
-> long... so I think this is fine that some netdev call will interfere
-> with this transmission.
-> So forget about the ASSERT_RTNL() here, it's fine (I hope).
->=20
-> > one message, the whole sync_hold/release queue should be earlier than
-> > that... in my opinion is it not right to allow other messages so far
-> > an MLME op is going on? I am not sure what the standard says to this,
-> > but I think it should be stopped the whole time? All those sequence =20
->=20
-> Whereas the stop of the netdev queue makes sense for the whole mlme-op
-> (in my opinion).
+On 5/17/22 14:39, Max Staudt wrote:
+> On Tue, 17 May 2022 14:21:53 +0200
+> Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> 
+>> On 17.05.2022 14:14:04, Max Staudt wrote:
+>>>> After looking through drivers/net/can/Kconfig I would probably
+>>>> phrase it like this:
+>>>>
+>>>> Select CAN devices (hw/sw) -> we compile a can_dev module. E.g.
+>>>> to handle the skb stuff for vcan's.
+>>>>
+>>>> Select hardware CAN devices -> we compile the netlink stuff into
+>>>> can_dev and offer CAN_CALC_BITTIMING and CAN_LEDS to be compiled
+>>>> into can_dev too.
+>>>>
+>>>> In the latter case: The selection of flexcan, ti_hecc and
+>>>> mcp251xfd automatically selects CAN_RX_OFFLOAD which is then also
+>>>> compiled into can_dev.
+>>>>
+>>>> Would that fit in terms of complexity?
+>>>
+>>> IMHO these should always be compiled into can-dev. Out of tree
+>>> drivers are fairly common here, and having to determine which kind
+>>> of can-dev (stripped or not) the user has on their system is a
+>>> nightmare waiting to happen.
+>>
+>> I personally don't care about out-of-tree drivers.
+> 
+> I know that this is the official stance in the kernel.
+> 
+> But out-of-tree drivers do happen on a regular basis, even when
+> developing with the aim of upstreaming. And if a developer builds a
+> minimal kernel to host a CAN driver, without building in-tree hardware
+> CAN drivers, then can-dev will be there but behave differently from
+> can-dev in a full distro. Leading to heisenbugs and wasting time. The
+> source of heisenbugs really are the suggested *hidden* Kconfigs.
+> 
+> 
+> On another note, is the module accounting overhead in the kernel for
+> two new modules with relatively little code in each, code that almost
+> always is loaded when CAN is used, really worth it?
 
-I might still implement an MLME pre/post helper and do the queue
-hold/release calls there, while only taking the rtnl from the _tx.
+Oh, I didn't want to introduce two new kernel modules but to have 
+can_dev in different 'feature levels'.
 
-And I might create an mlme_tx_one() which does the pre/post calls as
-well.
+I would assume a distro kernel to have everything enabled with a full 
+featured can_dev - which is likely the base for out-of-tree drivers too.
 
-Would something like this fit?
+But e.g. the people that are running Linux instances in a cloud only 
+using vcan and vxcan would not need to carry the entire infrastructure 
+of CAN hardware support and rx-offload.
 
-Thanks,
-Miqu=C3=A8l
+Best regards,
+Oliver
