@@ -2,166 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08AAD52A0B4
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 13:49:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8024D52A0BC
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 13:52:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345440AbiEQLtX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 07:49:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53184 "EHLO
+        id S1344669AbiEQLwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 07:52:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59430 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229884AbiEQLtW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 07:49:22 -0400
-Received: from dvalin.narfation.org (dvalin.narfation.org [213.160.73.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BF4E377E0
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 04:49:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1652788156;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yjDZzYRlOEXaTeXKeiZ3BoDk5vWbzSf4BpCkz7w3naQ=;
-        b=jZbXTZ3/5SfUMbKEfhbQrWkTEcL8yFUx+ikl6g30Nlu2m76LUTuOUBnBpqHhSbtDX1D8Vv
-        vfDNbfsov68KP3/VLLSrOoMwgnaJrVRC6b/qSLdN1/Y89pk6cLuAgkNXUIH2Isg1WeIDQD
-        5ns148IgTVYW9qR130PUOy7zoApyzx8=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, johannes@sipsolutions.net,
-        alex.aring@gmail.com, stefan@datenfreihafen.org,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        linux-wireless@vger.kernel.org, linux-wpan@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ifdefy the wireless pointers in struct net_device
-Date:   Tue, 17 May 2022 13:49:13 +0200
-Message-ID: <2780967.JztxfRx3z1@ripper>
-In-Reply-To: <20220516215638.1787257-1-kuba@kernel.org>
-References: <20220516215638.1787257-1-kuba@kernel.org>
+        with ESMTP id S230254AbiEQLwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 07:52:09 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [85.215.255.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B08CE0E;
+        Tue, 17 May 2022 04:52:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652788322;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=v4GkYgTTABh4HPSdojrqVvE6+lNCX1q0yeD6U3RA25Q=;
+    b=Hxe9PyozAcYw2b678Pt2M8Dqa4rBFAZ2vIug+BOA/nO2j+W8XHdnvY+DyFSRv8mTu6
+    BpqPOWQ5YXDHavWBs9bJpHAI9J8iTHhmt0YCkP2QH+WGZFsLDGLP7bquZEpm1JdR38Qt
+    uqBuJx1DxKWGZDb9eQhUVcZfHwiZUw7aUOc+3mA7gHOxCLDhK5y9y+GPUM8p2Id4lThf
+    TO2grjmERUqGu5H8Mwn7u+vmUGe0umbf4ac0NSHMpeKSVTNsMNolcRaazpfVb31863xS
+    3xgg1bwGLTR3jyTLnWxdcHP8kgvmItaQzbaQZl/U4ng+N05clGNKihw0rcPEuhPYmh16
+    9XHw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00::b82]
+    by smtp.strato.de (RZmta 47.45.0 AUTH)
+    with ESMTPSA id R0691fy4HBq1Dq4
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 17 May 2022 13:52:01 +0200 (CEST)
+Message-ID: <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+Date:   Tue, 17 May 2022 13:51:57 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart53318918.RGKOpMJsdz"; micalg="pgp-sha512"; protocol="application/pgp-signature"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
+ can_skb_headroom_valid to skb.c
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Max Staudt <max@enpas.org>, netdev@vger.kernel.org
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
+ <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
+ <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
+ <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+ <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+ <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+ <20220517104545.eslountqjppvcnz2@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220517104545.eslountqjppvcnz2@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart53318918.RGKOpMJsdz
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-To: davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com, Jakub Kicinski <kuba@kernel.org>, johannes@sipsolutions.net, alex.aring@gmail.com, stefan@datenfreihafen.org, mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc, linux-wireless@vger.kernel.org, linux-wpan@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ifdefy the wireless pointers in struct net_device
-Date: Tue, 17 May 2022 13:49:13 +0200
-Message-ID: <2780967.JztxfRx3z1@ripper>
-In-Reply-To: <20220516215638.1787257-1-kuba@kernel.org>
-References: <20220516215638.1787257-1-kuba@kernel.org>
-
-On Monday, 16 May 2022 23:56:38 CEST Jakub Kicinski wrote:
-> diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
-> index 83fb51b6e299..15d2bb4cd301 100644
-> --- a/net/batman-adv/hard-interface.c
-> +++ b/net/batman-adv/hard-interface.c
-> @@ -307,9 +307,11 @@ static bool batadv_is_cfg80211_netdev(struct net_device *net_device)
->         if (!net_device)
->                 return false;
->  
-> +#if IS_ENABLED(CONFIG_WIRELESS)
->         /* cfg80211 drivers have to set ieee80211_ptr */
->         if (net_device->ieee80211_ptr)
->                 return true;
-> +#endif
->  
->         return false;
->  }
-
-Acked-by: Sven Eckelmann <sven@narfation.org>
 
 
-On Tuesday, 17 May 2022 09:48:24 CEST Johannes Berg wrote:
-> Something like the patch below might do that, but I haven't carefully
-> checked it yet, nor checked if there are any paths in mac80211/drivers
-> that might be doing this check - and it looks from Jakub's patch that
-> batman code would like to check this too.
+On 17.05.22 12:45, Marc Kleine-Budde wrote:
+> On 17.05.2022 16:04:53, Vincent MAILHOL wrote:
+>> So slcan, v(x)can and can-dev will select can-skb, and some of the
+>> hardware drivers (still have to figure out the list) will select
+>> can-rx-offload (other dependencies will stay as it is today).
+> 
+> For rx-offload that's flexcan, ti_hecc and mcp251xfd
+> 
+>> I think that splitting the current can-dev into can-skb + can-dev +
+>> can-rx-offload is enough. Please let me know if you see a need for
+>> more.
 
-Yes, if something like netdev_is_wireless would be available then we could 
-change it to:
+After looking through drivers/net/can/Kconfig I would probably phrase it 
+like this:
 
-diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
-index 35fadb924849..50a53e3364bf 100644
---- a/net/batman-adv/hard-interface.c
-+++ b/net/batman-adv/hard-interface.c
-@@ -294,26 +294,6 @@ static bool batadv_is_wext_netdev(struct net_device *net_device)
- 	return false;
- }
- 
--/**
-- * batadv_is_cfg80211_netdev() - check if the given net_device struct is a
-- *  cfg80211 wifi interface
-- * @net_device: the device to check
-- *
-- * Return: true if the net device is a cfg80211 wireless device, false
-- *  otherwise.
-- */
--static bool batadv_is_cfg80211_netdev(struct net_device *net_device)
--{
--	if (!net_device)
--		return false;
--
--	/* cfg80211 drivers have to set ieee80211_ptr */
--	if (net_device->ieee80211_ptr)
--		return true;
--
--	return false;
--}
--
- /**
-  * batadv_wifi_flags_evaluate() - calculate wifi flags for net_device
-  * @net_device: the device to check
-@@ -328,7 +308,7 @@ static u32 batadv_wifi_flags_evaluate(struct net_device *net_device)
- 	if (batadv_is_wext_netdev(net_device))
- 		wifi_flags |= BATADV_HARDIF_WIFI_WEXT_DIRECT;
- 
--	if (batadv_is_cfg80211_netdev(net_device))
-+	if (netdev_is_wireless(net_device))
- 		wifi_flags |= BATADV_HARDIF_WIFI_CFG80211_DIRECT;
- 
- 	real_netdev = batadv_get_real_netdevice(net_device);
-@@ -341,7 +321,7 @@ static u32 batadv_wifi_flags_evaluate(struct net_device *net_device)
- 	if (batadv_is_wext_netdev(real_netdev))
- 		wifi_flags |= BATADV_HARDIF_WIFI_WEXT_INDIRECT;
- 
--	if (batadv_is_cfg80211_netdev(real_netdev))
-+	if (netdev_is_wireless(real_netdev))
- 		wifi_flags |= BATADV_HARDIF_WIFI_CFG80211_INDIRECT;
- 
- out:
+Select CAN devices (hw/sw) -> we compile a can_dev module. E.g. to 
+handle the skb stuff for vcan's.
 
---nextPart53318918.RGKOpMJsdz
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
+Select hardware CAN devices -> we compile the netlink stuff into can_dev 
+and offer CAN_CALC_BITTIMING and CAN_LEDS to be compiled into can_dev too.
 
------BEGIN PGP SIGNATURE-----
+In the latter case: The selection of flexcan, ti_hecc and mcp251xfd 
+automatically selects CAN_RX_OFFLOAD which is then also compiled into 
+can_dev.
 
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmKDi7kACgkQXYcKB8Em
-e0bh6g//ZaUMB74zvBCKHql+pln4FQ/wyUsj7/HF3gSU9MNG1qlDgzZn0kfAXplR
-ZlfIXj566nw7fezMDYzMoeJ+U4qrmAoa5gg1W2+4QlLXi08Z/7JjqoQjMgGpFWpS
-EqCT3L/qFpMkbV+iqSD9fsRC+4VWWA6quinU3tohEApW5Ibx5CDK1sDwjl+uVwJP
-eMegY4IixvtnH6xiZwZdhHIoXnAbJxnCMFpxWPzCk9DBkHtEgnS5G2iN2qVgJvlQ
-++ePF9edttDqwFeGdjuQTvyiLyVEPwlJ1VC3DvoHJmBEwLcCxYcu1Vxm3nqiDECi
-Ok6bbHn+s7P7q+tSAsnaL9NqfZmZA57RV/MHlrPgCyXEgA7zeF4PjLsaJBMVmfha
-Cv/PVf6/GmFYwk9pSQ1iM5rwgfDToh+d/UXARY+iI+iRmkNwt9+GQQIXAErYDu1d
-ryGHKhyWHzA/FEMmirpM/ZNoF/5/FPvUyBLDeu0s9am12IvWsYnFG/fmY/DO4Rbp
-/kKkX6WMpeUXz/go3THp4KReClydP322fYHfsJYtmG1Yo+cjQ3CFPhKvXqeA8jno
-aqkqN7k4nAvgRY112IExUrLeT/433y4c2vnAeFv3ShxSgbG/nFyN0puPRasqcVWk
-uoJGwGAZ5bkVzGTkRI/iY2qTj2PXxPnzMDJev6KWww7Bq+ir0U8=
-=HphN
------END PGP SIGNATURE-----
+Would that fit in terms of complexity?
 
---nextPart53318918.RGKOpMJsdz--
-
-
-
+Best,
+Oliver
