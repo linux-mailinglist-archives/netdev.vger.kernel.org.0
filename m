@@ -2,66 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A774752968C
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 03:10:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 061BC52968E
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 03:10:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230106AbiEQBKV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 16 May 2022 21:10:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39686 "EHLO
+        id S233944AbiEQBKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 16 May 2022 21:10:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229694AbiEQBKU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 21:10:20 -0400
-X-Greylist: delayed 53473 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 16 May 2022 18:10:17 PDT
-Received: from azure-sdnproxy-2.icoremail.net (azure-sdnproxy.icoremail.net [52.175.55.52])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 28A8E403F4;
-        Mon, 16 May 2022 18:10:16 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Tue, 17 May 2022 09:10:04
- +0800 (GMT+08:00)
-X-Originating-IP: [124.236.130.193]
-Date:   Tue, 17 May 2022 09:10:04 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Jakub Kicinski" <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, krzysztof.kozlowski@linaro.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org
-Subject: Re: Re: [PATCH net] NFC: nci: fix sleep in atomic context bugs
- caused by nci_skb_alloc
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <20220516130705.2d51a6cf@kernel.org>
-References: <20220513133355.113222-1-duoming@zju.edu.cn>
- <20220516130705.2d51a6cf@kernel.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S234882AbiEQBKh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 16 May 2022 21:10:37 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1058D41333
+        for <netdev@vger.kernel.org>; Mon, 16 May 2022 18:10:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 940A0B816A3
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 01:10:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0719C385AA;
+        Tue, 17 May 2022 01:10:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652749831;
+        bh=T92aBYsbopYdrt46hOAUjf92En6XUgCGbdq+vFBcEZg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q29KYDSFCA6dL038Q/lc1h1KcXydtFHNjufL9eb581g8AQA7suaUZiAqa/38sosxG
+         2yoKPCDqXJGax8bL9uQ55VqqCZreTZ/G9Y1XD9rtg71rjw49DDhXvtCOB1dU4mcQIk
+         tfohjy0RQwUL3Jw0kO3PYnnUMZk+9lnjMEjit4AqRghnE1Q091ycgu1xFrxKEWub2T
+         HCY8ETRpFRFbELGIlzsasI6fNwVfXFmb+ZFKxxm5xHTRBHNK2geW5bbzxum7vN7rp9
+         /iFSAhvnASW0yQL9HHH0FMR5F5pQAmHsf7PuduLozbdYWJ6cxjnRYn9lmcybRjE4RU
+         GmdIuxrUjQKKw==
+Date:   Mon, 16 May 2022 18:10:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: Re: [PATCH RESEND net] bonding: fix missed rcu protection
+Message-ID: <20220516181028.7dbbf918@kernel.org>
+In-Reply-To: <20220513103350.384771-1-liuhangbin@gmail.com>
+References: <20220513103350.384771-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-Message-ID: <72ac1467.16e1f.180cf90a3b6.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgC3COHs9YJibPJTAA--.5665W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgUNAVZdtZtnRQAAsM
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBNb24sIDE2IE1heSAyMDIyIDEzOjA3OjA1IC0wNzAwIEpha3ViIEtpY2luc2tp
-IHdyb3RlOgoKPiBPbiBGcmksIDEzIE1heSAyMDIyIDIxOjMzOjU1ICswODAwIER1b21pbmcgWmhv
-dSB3cm90ZToKPiA+IEZpeGVzOiA2YTI5NjhhYWY1MGMgKCJORkM6IGJhc2ljIE5DSSBwcm90b2Nv
-bCBpbXBsZW1lbnRhdGlvbiAiKQo+ID4gRml4ZXM6IDExZjU0ZjIyODY0MyAoIk5GQzogbmNpOiBB
-ZGQgSENJIG92ZXIgTkNJIHByb3RvY29sIHN1cHBvcnQiKQo+IAo+IEFyZSB0aGVyZSBtb3JlIGJh
-ZCBjYWxsZXJzPyBJZiBzdF9uY2lfc2Vfd3RfdGltZW91dCBpcyB0aGUgb25seSBzb3VyY2UKPiBv
-ZiB0cm91YmxlIHRoZW4gdGhlIGZpeGVzIHRhZyBzaG91bGQgcG9pbnQgdG8gd2hlbiBpdCB3YXMg
-YWRkZWQsIHJhdGhlcgo+IHRoYW4gd2hlbiB0aGUgY2FsbGVlIHdhcyBhZGRlZC4KClRoZSBzdF9u
-Y2lfc2Vfd3RfdGltZW91dCBpcyB0aGUgb25seSBzb3VyY2Ugb2YgdHJvdWJsZSwgaXQgd2FzIGFk
-ZGVkIGluCmVkMDZhZWVmZGFjMyAoIm5mYzogc3QtbmNpOiBSZW5hbWUgc3QyMW5mY2IgdG8gc3Qt
-bmNpIikuIEkgd2lsbCBzZW5kCnBhdGNoIHYyLgoKQmVzdCByZWdhcmRzLApEdW9taW5nIFpob3U=
+On Fri, 13 May 2022 18:33:50 +0800 Hangbin Liu wrote:
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index 38e152548126..3a6f879ad7a9 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -5591,16 +5591,20 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+>  	const struct ethtool_ops *ops;
+>  	struct net_device *real_dev;
+>  	struct phy_device *phydev;
+> +	int ret = 0;
+>  
+> +	rcu_read_lock();
+>  	real_dev = bond_option_active_slave_get_rcu(bond);
+>  	if (real_dev) {
+>  		ops = real_dev->ethtool_ops;
+>  		phydev = real_dev->phydev;
+>  
+>  		if (phy_has_tsinfo(phydev)) {
+> -			return phy_ts_info(phydev, info);
+> +			ret = phy_ts_info(phydev, info);
+> +			goto out;
+>  		} else if (ops->get_ts_info) {
+> -			return ops->get_ts_info(real_dev, info);
+> +			ret = ops->get_ts_info(real_dev, info);
+> +			goto out;
+>  		}
+>  	}
 
+Can't ->get_ts_info sleep now? It'd be a little sad to force it 
+to be atomic just because of one upper dev trying to be fancy.
+Maybe all we need to do is to take a ref on the real_dev?
+
+Also please add a Link: to the previous discussion, it'd have been
+useful to get the context in which Vladimir suggested this.
