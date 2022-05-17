@@ -2,78 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E6C152AD68
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 23:17:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFF5252AD74
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 23:22:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244097AbiEQVR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 17:17:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45972 "EHLO
+        id S231134AbiEQVWh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 17:22:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58212 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231875AbiEQVR0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 17:17:26 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BB342522E0
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:17:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652822244;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=0MMhuSzxVH8fFFuKt3ISY791VJcfxJlI8uGnfzcDavw=;
-        b=VyjicP6kuLp+BUQ6p6g6ObSnZ20adYu41/e37jUvZoBVmXhAWc68zG6i6ThiywSJ1e5/zR
-        LQY69e/zLpWdl4qaoiJ9nB5AA2z0dVc6I4RM1odQiK6yGbYexknxxOplvtJgIfUmB1tchl
-        Pkxvro5JOeKPJXG7o/QSM6VVsEXy84U=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-546-OSMCYYMuNIy4lPZxDduelw-1; Tue, 17 May 2022 17:17:23 -0400
-X-MC-Unique: OSMCYYMuNIy4lPZxDduelw-1
-Received: by mail-qv1-f71.google.com with SMTP id p4-20020a056214122400b00461c2b40243so120599qvv.8
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:17:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:from:subject:to:cc:content-transfer-encoding;
-        bh=0MMhuSzxVH8fFFuKt3ISY791VJcfxJlI8uGnfzcDavw=;
-        b=MeMS+nirikamkzMO+MmysLVKgjd8bOuKUJE0EiHcnVBGIND/vigKo+Ytol+tBKGFTW
-         5OeDm1XfNBdeMB40KK5reomNrH7OHa4N9BEMG4DWWwCP3/CTAWrmtR90MkzzVKHzcvd8
-         YYTtIgMkMry4OYORu/T4Wf8z/Td9oWu/QLduZjTdLFfHsKP3mSDvBE21HGVXTL6I7eJz
-         Eo41oiVn53k2ZCrNOGThs50Gids1D/PUjFoSYmyn+gChWfKpa9ch509DMSFdK8pwJNwm
-         MijUJza77T9ChXtUu/GTUAnVph4UUY6d9vvHUbrGfPcc6eqs2Z4y2bWd+5MfGJRJXtSs
-         bvag==
-X-Gm-Message-State: AOAM530tkAYfFMBM6SmiBUs9z/CoDtr+LCBHTL/LOPxlXn1aBktxc/pV
-        0+lsjHdPnh4xR8eTMqv1ROw9LbcGu9lcBZNxVqd6fTcI4aOAUQzC5Y5MRAE5cXocLbxuH6gqN17
-        eo3pY5YB4/wkXSXhwLhYgiEs/JkyZhQS0ry6X4PssSoRDJPD5ibwSaYbrN/8rfO/pylWn
-X-Received: by 2002:a05:622a:1aa2:b0:2f3:bad3:b506 with SMTP id s34-20020a05622a1aa200b002f3bad3b506mr21582959qtc.272.1652822242337;
-        Tue, 17 May 2022 14:17:22 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyLjKRK6l1MYW3W/VwY+81jhxT4Lm3WxoHtyjBeIbRKyuodvKCF/YndUMkYjW3SaKpEJDLBzw==
-X-Received: by 2002:a05:622a:1aa2:b0:2f3:bad3:b506 with SMTP id s34-20020a05622a1aa200b002f3bad3b506mr21582934qtc.272.1652822242025;
-        Tue, 17 May 2022 14:17:22 -0700 (PDT)
-Received: from [192.168.98.18] ([107.12.98.143])
-        by smtp.gmail.com with ESMTPSA id e4-20020a376904000000b0069fe1fc72e7sm166136qkc.90.2022.05.17.14.17.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 May 2022 14:17:21 -0700 (PDT)
-Message-ID: <de8d8ca4-4ead-0cef-1315-8764d93503c1@redhat.com>
-Date:   Tue, 17 May 2022 17:17:19 -0400
+        with ESMTP id S229532AbiEQVWh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 17:22:37 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 611353EB93
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:22:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652822556; x=1684358556;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=C8z2h7k7Vg8YpHk05GyzRFFDno0PhQMBS9KiRMnp3hw=;
+  b=Bkqi454h1QE7cPfYsJ0S5JScONCFAwVto9162Ev/ZeYbew8h/i63pjFw
+   BiNMunvN1XcoJTpLuyIxK7r7X9IT/MXvbj800IMok4aogSdBH21NikJu+
+   3yNQnVeykmyGbNKjKNpEaQJUpTUZc24dUkTNI9ICBqQvdHX+qXs9Af+Yw
+   rU8OakkW2StQLcT+0yeeFDKw1bmZIOCtAJ/MKblyx6GAjRZrlB+2WZi8Q
+   9qmePU9Y51ZNp6Vawlj9dMBd0L8423y/+1ViI/GkZ9HQZcDwXcqM48OiY
+   FYTDI/z0zhmzIWSYhApVANXDzK5xd7Jyx63OtyWs3uQIVj5Z5XERCI/SD
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="357749575"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="357749575"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 14:22:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="605546001"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by orsmga001.jf.intel.com with ESMTP; 17 May 2022 14:22:35 -0700
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        richardcochran@gmail.com
+Subject: [PATCH net-next 0/3][pull request] 100GbE Intel Wired LAN Driver Updates 2022-05-17
+Date:   Tue, 17 May 2022 14:19:32 -0700
+Message-Id: <20220517211935.1949447-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Content-Language: en-US
-From:   Jonathan Toppins <jtoppins@redhat.com>
-Subject: [question] bonding: should assert dormant for active protocols like
- LACP?
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -82,34 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-So running the following script:
+This series contains updates to ice driver only.
 
---%<-----
-  ip link add name link-bond0 type veth peer name link-end0
-  ip link add bond0 type bond mode 4 miimon 100
-  ip link set link-bond0 master bond0 down
-  ip netns add n1
-  ip link set link-end0 netns n1 up
-  ip link set bond0 up
-  cat /sys/class/net/bond0/bonding/ad_partner_mac
-  cat /sys/class/net/bond0/operstate
---%<-----
+Karol changes calculation of u16 to unsigned int for GNSS related
+calculations. He also adds implementation for GNSS write; data is
+written to the GNSS module through TTY device using u-blox UBX protocol.
 
-The bond reports its operstate to be "up" even though the bond will 
-never be able to establish an LACP partner. Should bonding for active 
-protocols, LACP, assert dormant[0] until the protocol has established 
-and frames actually are passed?
+The following are changes since commit 65a9dedc11d615d8f104a48d38b4fa226967b4ed:
+  net: phy: marvell: Add errata section 5.1 for Alaska PHY
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/next-queue 100GbE
 
-Having a predictable operstate where up actually means frames will 
-attempt to be delivered would make management applications, f.e. Network 
-Manager, easier to write. I have developers asking me what detailed 
-states for LACP should they be looking for to determine when an LACP 
-bond is "up". This seems like an incorrect implementation of operstate 
-and RFC2863 3.1.12.
+Karol Kolacinski (3):
+  ice: remove u16 arithmetic in ice_gnss
+  ice: add i2c write command
+  ice: add write functionality for GNSS TTY
 
-Does anyone see why this would be a bad idea?
+ drivers/net/ethernet/intel/ice/ice.h          |   4 +-
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   7 +-
+ drivers/net/ethernet/intel/ice/ice_common.c   |  51 +++-
+ drivers/net/ethernet/intel/ice/ice_common.h   |   4 +
+ drivers/net/ethernet/intel/ice/ice_gnss.c     | 252 +++++++++++++++---
+ drivers/net/ethernet/intel/ice/ice_gnss.h     |  26 +-
+ 6 files changed, 304 insertions(+), 40 deletions(-)
 
--Jon
-
-[0] Documentation/networking/operstates.rst
+-- 
+2.35.1
 
