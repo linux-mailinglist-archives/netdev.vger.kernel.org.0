@@ -2,163 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4997952A893
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 18:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DEA052A8B8
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 18:58:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351208AbiEQQvT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 12:51:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49820 "EHLO
+        id S1351275AbiEQQ6L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 12:58:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351207AbiEQQu7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 12:50:59 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E5AE2BE7;
-        Tue, 17 May 2022 09:50:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652806257; x=1684342257;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=9E/vttDFy0EFq5zSJDnsg0HX9OScE43/QxlsTcLOYjs=;
-  b=UJP/OC/2KaLR5AWSQouaN1Gn86vjq8OiJlF4rj4czHPCzl1W20K28/yj
-   E48d3/mnsQq9MGhMPHzQhwRhrS6Y9ylFqNVpHBMnlQzakcyonIljuzsw2
-   /Wlm3MGAXM1oMtPb2hLe8UQuNX3atEIBNZ9vkcedVhvpUGBy4ergUvyFX
-   USfbcdLREcD1wZsXsiZkkCqkqs3CEOdeqtxwb/KkLBc1nYuLP1tD28tAR
-   WclN2XblDZRwtPIi/cwTw74EfMRQWhqcVg5SJNkZoebwdvVUp/h9Mi/k8
-   UV1rn/PnmsWXLJovpJLIVBzc1DbLDpUNsAlV4eHBj+wSiX16F1JMgMiJl
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="271371030"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="271371030"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:50:57 -0700
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="672939443"
-Received: from abhuwalk-mobl1.amr.corp.intel.com (HELO spandruv-desk1.amr.corp.intel.com) ([10.212.246.60])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 09:50:55 -0700
-Message-ID: <7b1a9f3b5b5087f47bf4839858c7bfebdb60aa2f.camel@linux.intel.com>
-Subject: Re: [PATCH v2 01/14] thermal/core: Change thermal_zone_ops to
- thermal_sensor_ops
-From:   srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linexp.org>
-Cc:     Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Alexandre Bailon <abailon@baylibre.com>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>, Len Brown <lenb@kernel.org>,
-        Raju Rangoju <rajur@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Kalle Valo <kvalo@kernel.org>, Peter Kaestle <peter@piie.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Niklas =?ISO-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sumeet Pawnikar <sumeet.r.pawnikar@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Chuansheng Liu <chuansheng.liu@intel.com>,
-        Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Antoine Tenart <atenart@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        "open list:ACPI THERMAL DRIVER" <linux-acpi@vger.kernel.org>,
-        "open list:CXGB4 ETHERNET DRIVER (CXGB4)" <netdev@vger.kernel.org>,
-        "open list:INTEL WIRELESS WIFI LINK (iwlwifi)" 
-        <linux-wireless@vger.kernel.org>,
-        "open list:ACER ASPIRE ONE TEMPERATURE AND FAN DRIVER" 
-        <platform-driver-x86@vger.kernel.org>,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:RENESAS R-CAR THERMAL DRIVERS" 
-        <linux-renesas-soc@vger.kernel.org>
-Date:   Tue, 17 May 2022 09:50:54 -0700
-In-Reply-To: <CAJZ5v0ik_JQ4Awtw7iR68W4-9ZL8FRDsDd-kWmL-n09fgg3reg@mail.gmail.com>
-References: <20220507125443.2766939-1-daniel.lezcano@linexp.org>
-         <20220507125443.2766939-2-daniel.lezcano@linexp.org>
-         <CAJZ5v0ik_JQ4Awtw7iR68W4-9ZL8FRDsDd-kWmL-n09fgg3reg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S1347238AbiEQQ6J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 12:58:09 -0400
+Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69D414FC56;
+        Tue, 17 May 2022 09:58:08 -0700 (PDT)
+Received: by mail-qv1-xf34.google.com with SMTP id e20so1898337qvr.6;
+        Tue, 17 May 2022 09:58:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zag6DxyUvX35uCpSTZxUOhCfsgCuB2xeq5nyKpnfous=;
+        b=aBvv7qbEuM5NOK3+ms6RjRMvBBgwoYcmyMWEJ2iAj+Z6C4UoNLxpGtx0dTrTVKbZyI
+         0764LNEo1doQjfRHRBHMytNVoRvB+SaLNlTi2PksdbJZuZX9pJASZbAWdNz+KRZAX9S4
+         K6zeDGxpNYqm3M5ariW1ZapeflzxN9VQ2esmRbg0SMxaksjNGT4FRv4KmoxuM90r6QsS
+         72gtk9imp5a7Yf/5L72DUC+fnnV31SkMTSoo++hNq7EVJJUkUsUW5NXhiBekuINSlU9V
+         uvBhHKLGvuv9q3ORJUxP263ruNJZM/35ID3sE4gzCgw5bkJfN8RSNuKLJDRYjn7EmJCX
+         RcVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zag6DxyUvX35uCpSTZxUOhCfsgCuB2xeq5nyKpnfous=;
+        b=du4FLCdAP/dzt1OaETFN7pq6b+1oqcpz2RX9WA2QbH0rG2Pv4BcOk7v1hJ+QcPduqn
+         Rl/4BXn/Ef3cNLWtCR5mbvutkWS5skPh3GVrbkqFXGHQ7sQ0Hn6EJ5lTtWrf5eVE4KSD
+         kueYzHT6ZsW3GbXtP0zyg4oetIpHO+A41HH9cacdY2NQKBqMQDFbx8+KUK3gW3gopU/D
+         EncIXc5ZBCwJwj1eDTbiryTIi8vTJV9iMJ0LkEsJhvQsc6IyxS3ZVyHI/RQASdTZ1c5A
+         ZrYO6UtSUvs/8+gWUQEGb/0miAEYZHPMwFXEAfCFjn1pk/7z2w4Prr9IxZywCZMK4NZ+
+         krFA==
+X-Gm-Message-State: AOAM532nV/RAdv2HwfwFFG4R86PVocCsacjDcwmfFzcaR8LfQMe2HLgI
+        1GctQxvPhbRBKqeWOiE3/d1sJBrxuXWYbCGolYeaynIPhLs=
+X-Google-Smtp-Source: ABdhPJzRetzGWaJgM5Bm8XUyu7JFJUNEPNIplk6KRyI2Mbb/gbaZFn5rwik9ILly613XvLY63cw4sgsA4PSnFm+j93s=
+X-Received: by 2002:ad4:5c6e:0:b0:45a:aefd:f551 with SMTP id
+ i14-20020ad45c6e000000b0045aaefdf551mr21174026qvh.95.1652806687381; Tue, 17
+ May 2022 09:58:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220517034107.92194-1-imagedong@tencent.com>
+In-Reply-To: <20220517034107.92194-1-imagedong@tencent.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 17 May 2022 09:57:56 -0700
+Message-ID: <CAADnVQLRmv107zFL-dgB07Mf8NmR0TCAC9eG9aZ1O4DG3=ityw@mail.gmail.com>
+Subject: Re: [PATCH] bpf: add access control for map
+To:     Menglong Dong <menglong8.dong@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alan Maguire <alan.maguire@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2022-05-17 at 17:42 +0200, Rafael J. Wysocki wrote:
-> On Sat, May 7, 2022 at 2:55 PM Daniel Lezcano
-> <daniel.lezcano@linexp.org> wrote:
-> > 
-> > A thermal zone is software abstraction of a sensor associated with
-> > properties and cooling devices if any.
-> > 
-> > The fact that we have thermal_zone and thermal_zone_ops mixed is
-> > confusing and does not clearly identify the different components
-> > entering in the thermal management process. A thermal zone appears
-> > to
-> > be a sensor while it is not.
-> 
-> Well, the majority of the operations in thermal_zone_ops don't apply
-> to thermal sensors.  For example, ->set_trips(), ->get_trip_type(),
-> ->get_trip_temp().
-> 
-In past we discussed adding thermal sensor sysfs with threshold to
-notify temperature.
+On Mon, May 16, 2022 at 8:44 PM <menglong8.dong@gmail.com> wrote:
+>
+> From: Menglong Dong <imagedong@tencent.com>
+>
+> Hello,
+>
+> I have a idea about the access control of eBPF map, could you help
+> to see if it works?
+>
+> For now, only users with the CAP_SYS_ADMIN or CAP_BPF have the right
+> to access the data in eBPF maps. So I'm thinking, are there any way
+> to control the access to the maps, just like what we do to files?
 
-So sensor can have set/get_threshold() functions instead of the
-set/get_trip for zones.
+The bpf objects pinned in bpffs should always be accessible
+as files regardless of sysctl or cap-s.
 
-Like we have /sys/class/thermal_zone* we can have
-/sys/class/thermal_sensor*.
+> Therefore, we can decide who have the right to read the map and who
+> can write.
+>
+> I think it is useful in some case. For example, I made a eBPF-based
+> network statistics program, and the information is stored in an array
+> map. And I want all users can read the information in the map, without
+> changing the capacity of them. As the information is iunsensitive,
+> normal users can read it. This make publish-consume mode possible,
+> the eBPF program is publisher and the user space program is consumer.
 
-Thermal sensor(s) are bound to  thermal zones. This can also include
-multiple sensors in a zone and can create a virtual sensor also.
+Right. It is a choice of the bpf prog which data expose in the map.
 
-Thanks,
-Srinivas
+> So this aim can be achieve, if we can control the access of maps as a
+> file. There are many ways I thought, and I choosed one to implement:
+>
+> While pining the map, add the inode that is created to a list on the
+> map. root can change the permission of the inode through the pin path.
+> Therefore, we can try to find the inode corresponding to current user
+> namespace in the list, and check whether user have permission to read
+> or write.
+>
+> The steps can be:
+>
+> 1. create the map with BPF_F_UMODE flags, which imply that enable
+>    access control in this map.
+> 2. load and pin the map on /sys/fs/bpf/xxx.
+> 3. change the umode of /sys/fs/bpf/xxx with 'chmod 744 /sys/fs/bpf/xxx',
+>    therefor all user can read the map.
 
-> > In order to set the scene for multiple thermal sensors aggregated
-> > into
-> > a single thermal zone. Rename the thermal_zone_ops to
-> > thermal_sensor_ops, that will appear clearyl the thermal zone is
-> > not a
-> > sensor but an abstraction of one [or multiple] sensor(s).
-> 
-> So I'm not convinced that the renaming mentioned above is
-> particularly
-> clean either.
-> 
-> IMV the way to go would be to split the thermal sensor operations,
-> like ->get_temp(), out of thermal_zone_ops.
-> 
-> But then it is not clear what a thermal zone with multiple sensors in
-> it really means.  I guess it would require an aggregation function to
-> combine the thermal sensors in it that would produce an effective
-> temperature to check against the trip points.
-> 
-> Honestly, I don't think that setting a separate set of trips for each
-> sensor in a thermal zone would make a lot of sense.
+This behavior should be available by default.
+Only sysctl was preventing it. It's being fixed by
+the following patch. Please take a look at:
+https://patchwork.kernel.org/project/netdevbpf/patch/1652788780-25520-2-git-send-email-alan.maguire@oracle.com/
 
+Does it solve your use case?
+
+> @@ -542,14 +557,26 @@ int bpf_obj_get_user(const char __user *pathname, int flags)
+>         if (IS_ERR(raw))
+>                 return PTR_ERR(raw);
+>
+> -       if (type == BPF_TYPE_PROG)
+> +       if (type != BPF_TYPE_MAP && !bpf_capable())
+> +               return -EPERM;
+
+obj_get already implements normal ACL style access to files.
+Let's not fragment this security model with extra cap checks.
+
+> +
+> +       switch (type) {
+> +       case BPF_TYPE_PROG:
+>                 ret = bpf_prog_new_fd(raw);
+> -       else if (type == BPF_TYPE_MAP)
+> +               break;
+> +       case BPF_TYPE_MAP:
+> +               if (bpf_map_permission(raw, f_flags)) {
+> +                       bpf_any_put(raw, type);
+> +                       return -EPERM;
+> +               }
+
+bpf_obj_do_get() already does such check.
+
+> +int bpf_map_permission(struct bpf_map *map, int flags)
+> +{
+> +       struct bpf_map_inode *map_inode;
+> +       struct user_namespace *ns;
+> +
+> +       if (capable(CAP_SYS_ADMIN))
+> +               return 0;
+> +
+> +       if (!(map->map_flags & BPF_F_UMODE))
+> +               return -1;
+> +
+> +       rcu_read_lock();
+> +       list_for_each_entry_rcu(map_inode, &map->inode_list, list) {
+> +               ns = map_inode->inode->i_sb->s_user_ns;
+> +               if (ns == current_user_ns())
+> +                       goto found;
+> +       }
+> +       rcu_read_unlock();
+> +       return -1;
+> +found:
+> +       rcu_read_unlock();
+> +       return inode_permission(ns, map_inode->inode, ACC_MODE(flags));
+> +}
+
+See path_permission() in bpf_obj_do_get().
+
+>  static int bpf_map_get_fd_by_id(const union bpf_attr *attr)
+> @@ -3720,9 +3757,6 @@ static int bpf_map_get_fd_by_id(const union bpf_attr *attr)
+>             attr->open_flags & ~BPF_OBJ_FLAG_MASK)
+>                 return -EINVAL;
+>
+> -       if (!capable(CAP_SYS_ADMIN))
+> -               return -EPERM;
+> -
+
+This part we cannot relax.
+What you're trying to do is to bypass path checks
+by pointing at a map with its ID only.
+That contradicts to your official goal in the cover letter.
+
+bpf_map_get_fd_by_id() has to stay cap_sys_admin only.
+Exactly for the reason that bpf subsystem has file ACL style.
+fd_by_id is a debug interface used by tools like bpftool and
+root admin that needs to see the system as a whole.
+Normal tasks/processes need to use bpffs and pin files with
+correct permissions to pass maps from one process to another.
+Or use FD passing kernel facilities.
