@@ -2,53 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4300152A7C0
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 18:20:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC51452A7C4
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 18:21:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350844AbiEQQUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 12:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53488 "EHLO
+        id S1350838AbiEQQVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 12:21:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230062AbiEQQT7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 12:19:59 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 243C63A5FC
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 09:19:58 -0700 (PDT)
+        with ESMTP id S1350837AbiEQQVg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 12:21:36 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 187C03B01B;
+        Tue, 17 May 2022 09:21:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3494B81852
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 16:19:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32A1EC385B8;
-        Tue, 17 May 2022 16:19:55 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 71247CE1B58;
+        Tue, 17 May 2022 16:21:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D64D1C385B8;
+        Tue, 17 May 2022 16:21:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652804395;
-        bh=3k8wWNT0Qt9ysU5XABBJtcaOmbC3//qNuOYPwER9KBQ=;
+        s=k20201202; t=1652804491;
+        bh=ogeqVieUErlO67fl8/8RQ7QFaLv4bj+Gu9iPs7xs+Rg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=I4yAiIrZfwo/KC42nrXVq/+2rr4109TZ7K7t/iK6M5Z4SzY9Ro/rwTXAB4i74i4ly
-         Un1DEFw8UfTg1CZrlWRE0PCN7UCnD71O6JwMK5k4j4M+I7HEW3Ofgx1R1NI93pNxUu
-         nPSWMoOeMpa7y01QZst3q1W7IqopjbSUSHRjiaUSeEvISRNEztI+1GwxYlyZgPUdLO
-         CzBfb4OIqU/8bSy5BmX0RtnUOBVFWMwFaF3JfR9lHu5uoLopGQ/Rnwz0ri7UZEU7yE
-         avMtUiO4ARTfDL7ZYMl5w9Wfw26/jlbLaU7OI3DWv9x/x1f1PCT6tvGuw2LNa/8bLI
-         cU3yVOfIotchQ==
-Date:   Tue, 17 May 2022 09:19:53 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
-        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        kernel-team@fb.com
-Subject: Re: [PATCH net-next v3 08/10] ptp: ocp: fix PPS source selector
- reporting
-Message-ID: <20220517091953.4d9a0e4b@kernel.org>
-In-Reply-To: <20220517153942.6ze5kj7hoj7z4caq@bsd-mbp.dhcp.thefacebook.com>
-References: <20220513225924.1655-1-jonathan.lemon@gmail.com>
-        <20220513225924.1655-9-jonathan.lemon@gmail.com>
-        <20220516174317.457ec2d1@kernel.org>
-        <20220517015428.l6ttuht3ufrl2deb@bsd-mbp.dhcp.thefacebook.com>
-        <20220517153942.6ze5kj7hoj7z4caq@bsd-mbp.dhcp.thefacebook.com>
+        b=cMOGvzFPAUCwO/VpuNOyulVB6vPUQYSDbEXL1iupo0szEZzj+2R6oHb7pyROivLvl
+         ZInVO8nYWkwrCqpNM2uavJaL/E7vxKiWzRFCxlXgmMyGTfE1+NcsuruhNsKMzuJMM2
+         UbV9f0rUyHPN1Ywi2ScRkR969oavtM1Ht7b9stIsgz9sMW+uO/vY9Ml7Uvbt0RUl95
+         cZlEBdaiHuRC3v6iXxY1FqOOXJI0FTOp85O8q2WzyCZ0veft9WntygttflJKjmv1Nt
+         r7HXfdTononk65gG9geCWWEGA5X4Af+eWSEj35JLcCmTjYU5p1yPYEUdzWD5uH9IOa
+         +05Z+WE40IVIg==
+Date:   Tue, 17 May 2022 18:21:25 +0200
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Chris Packham <chris.packham@alliedtelesis.co.nz>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, andrew@lunn.ch,
+        gregory.clement@bootlin.com, sebastian.hesselbarth@gmail.com,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/2] arm64: dts: armada-3720-turris-mox: Correct reg
+ property for mdio devices
+Message-ID: <20220517182125.4cb97623@thinkpad>
+In-Reply-To: <20220516224801.1656752-2-chris.packham@alliedtelesis.co.nz>
+References: <20220516224801.1656752-1-chris.packham@alliedtelesis.co.nz>
+        <20220516224801.1656752-2-chris.packham@alliedtelesis.co.nz>
+X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,26 +60,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 May 2022 08:39:42 -0700 Jonathan Lemon wrote:
-> On Mon, May 16, 2022 at 06:54:28PM -0700, Jonathan Lemon wrote:
-> > On Mon, May 16, 2022 at 05:43:17PM -0700, Jakub Kicinski wrote:  
-> > > This one and patch 10 need Fixes tags  
-> > 
-> > This is for a debugfs entry.  I disagree that a Fixes: tag
-> > is needed here.
-> > 
-> > I'll do it for patch 10 if you insist, but this only happens
-> > if ptp_clock_register() fails, which not normally seen.  
-> 
-> Actually, patch 10 would be:
-> 
-> Fixes: c205d53c4923 ("ptp: ocp: Add firmware capability bits for feature gating")
-> 
-> Which is only in 5.18-rcX at this point.
-> 
-> Do we need a fixes tags for code which hasn't made it into a
-> full release release yet?
+On Tue, 17 May 2022 10:48:00 +1200
+Chris Packham <chris.packham@alliedtelesis.co.nz> wrote:
 
-Yup, having the Fixes tag makes it obvious to the maintainer that 
-the tree selection is correct and helps backporters figure out if 
-they need to worry that the patch didn't apply.
+> MDIO devices have #address-cells =3D <1>, #size-cells =3D <0>. Now that we
+> have a schema enforcing this for marvell,orion-mdio we can see that the
+> turris-mox has a unnecessary 2nd cell for the switch nodes reg property
+> of it's switch devices. Remove the unnecessary 2nd cell from the
+> switches reg property.
+>=20
+> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
+
+Reviewed-by: Marek Beh=C3=BAn <kabel@kernel.org>
