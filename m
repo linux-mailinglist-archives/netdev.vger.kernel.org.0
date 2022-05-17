@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84BE3529C02
+	by mail.lfdr.de (Postfix) with ESMTP id D07F5529C03
 	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 10:16:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242761AbiEQIOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 04:14:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39292 "EHLO
+        id S242801AbiEQIOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 04:14:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242895AbiEQINZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:13:25 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA2549686;
-        Tue, 17 May 2022 01:12:22 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id 202so16285060pgc.9;
-        Tue, 17 May 2022 01:12:22 -0700 (PDT)
+        with ESMTP id S242921AbiEQIN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:13:26 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BF9F496A7;
+        Tue, 17 May 2022 01:12:27 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id ev18so6059869pjb.4;
+        Tue, 17 May 2022 01:12:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LIJvlfwH+A7ChhNAlcL3A1DkFGuk0HKdruIRD+tpTeA=;
-        b=Cilti3rM3XWSD0VRpAH3Ic2xIszEp7yxpy4jd42+PPoI7rnR3zlMwLcioOGgMjuxdJ
-         v8BfyIiKgZTPXOx2uEUkQ+X0OtViCtkGEdnnc4XuUDEkqlKvRMyj8PD1caOSSHnYZLrz
-         zgWUz8rupW4j2G0hrpl9IWAm2u2100R8g31X5MH/G5sr40qKT+xHK+TteALHG0Knio5K
-         bzmxIKLhQDX1x2o118SHCtjZkJvfIPVUyGCS4MwplJSK46qc1PCjSUgzJJOTDyLTxala
-         6YFx9JWR3JLYwLL3/kMjNgyT6A8gLu874Pu0tQ/X2BDl4eUe7uVHvCMgjgPJxpHvQHzY
-         NeWQ==
+        bh=tsqLBQjRtgnyo1sQei1gpb0K6REi5TaI3JgfHkJY/jQ=;
+        b=jhHbxV5PpwiIzUsl2mEJKAtp4rc/vpdVks3HnKGxskvQ81EvZZY9jc2isPtK9Ih8Kk
+         YZy+55f6/VcQ7fEyOmjQBRlhPTr14K6auWTS/pBnarwEDMTgfSv4Iii5L4UDs1JOa5bq
+         LUT6h05vSlMuupWQY/9Zi950i/pUqxREDexrUALt7KWbCGMmA8it7uJgO+Y2nfxFEmkd
+         BJxiINsvNODG072jTl9xZYUVHOseXmKrVlTW+G3Uo18yWdKqRRmBtrINAZqyMZIjZfou
+         NPrBqvIMpD3OiGzO7id/0YwU6CuWpeZhTO8wUgl7Fc8vwPaJapQJBck7L+XOM5zbZcAe
+         uwqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LIJvlfwH+A7ChhNAlcL3A1DkFGuk0HKdruIRD+tpTeA=;
-        b=K27klrKtUgW+c4XSR6QfXrkqTol8MDeZVX8TyNLU9J2AZ9f/Aig9mN3j6y7Ax+V/EU
-         /+pmTjqJOZ1Xl0PWDVytg124e/lTUNsnjk/H89qpdQ5FoOH3DVZRmGBAMLfq5cWR+F9m
-         MJPtcjhwLXdvOWX54Os2TBXnfB4xrKneskaY9uGqengq2IsIXwZ+Et3YT00V7kEqXRLu
-         eepNOVrztBjCu8GBqzNpBFuRmTZkyXST8cs2OB2KhcqycfVUP5uvexX+7l4VFvbeWNhm
-         9c40BO/TF9LY1Gu5WYK1gYO57AggkZ2IEzcFzLUMtQxR2O/RlUXbHBPC3c7o8xMsgqj/
-         Boxg==
-X-Gm-Message-State: AOAM530V7+X9rCc2plbdw6sd/NTaE5ib14aNFESuF6Qe7P4rcWmG1cR6
-        gJQNMQMtiLuGT3MRtB9mRHo=
-X-Google-Smtp-Source: ABdhPJzt10xjhAZfHagR+V5BR5RL1J9sld/c/IRH9aARHqtTjXTNFcV8uuFigM/5rS5VgKMWt5T8EA==
-X-Received: by 2002:a05:6a00:e8e:b0:4fa:a52f:59cf with SMTP id bo14-20020a056a000e8e00b004faa52f59cfmr21306473pfb.84.1652775142413;
-        Tue, 17 May 2022 01:12:22 -0700 (PDT)
+        bh=tsqLBQjRtgnyo1sQei1gpb0K6REi5TaI3JgfHkJY/jQ=;
+        b=NCLNLU1ssrptsJCrGyhCEw7cq41f+eciM8GMW9AdSD6mA7whWlLXuK+hpFF7e7pL08
+         VpmH+Ns/ysNhMP+fNiK1yIJnQ5WHeb8WoqhBGCMWAwZBqxpJ02hf8GomLM9seuEAUDEr
+         rh+1OXozTIADKpzTt7Pcs7mfm04dIsSULJhldG2tSLEczm++5WwcZ0liXOwlScnTcyNJ
+         aItHSBw8neCYq3x8SbAcwzvDeUT9U3a/dAV/MT3aYWWJTyLkk8LH8XD2TjJJTY+pHfQM
+         gWPe2q6qgAV45ExCLgATapTim/8WPXWI65TT7e26KmJODTUtHmDyCvvll9U4kN8fsVVq
+         JT0w==
+X-Gm-Message-State: AOAM531ml0n80RzVFsroHmbbHEsYB3ZvQfUa6KoVtX+shinHdqX09urZ
+        lnTVNnV4VnYN8uL7wircURw=
+X-Google-Smtp-Source: ABdhPJwSXMOAdvAnBLa3qRqOZ9uiNSUIzx/t6id6EaaxALCZtKiNRYwDDxXAdmU7keITpCEDDawmNQ==
+X-Received: by 2002:a17:90b:1c87:b0:1ca:f4e:4fbe with SMTP id oo7-20020a17090b1c8700b001ca0f4e4fbemr35065639pjb.159.1652775146828;
+        Tue, 17 May 2022 01:12:26 -0700 (PDT)
 Received: from localhost.localdomain ([203.205.141.20])
-        by smtp.gmail.com with ESMTPSA id c14-20020a170902c2ce00b0015e8d4eb2easm8336306pla.308.2022.05.17.01.12.18
+        by smtp.gmail.com with ESMTPSA id c14-20020a170902c2ce00b0015e8d4eb2easm8336306pla.308.2022.05.17.01.12.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 01:12:21 -0700 (PDT)
+        Tue, 17 May 2022 01:12:26 -0700 (PDT)
 From:   menglong8.dong@gmail.com
 X-Google-Original-From: imagedong@tencent.com
 To:     edumazet@google.com
@@ -57,9 +57,9 @@ Cc:     rostedt@goodmis.org, mingo@redhat.com, davem@davemloft.net,
         dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
         Hao Peng <flyingpeng@tencent.com>
-Subject: [PATCH net-next v2 8/9] net: tcp: add skb drop reasons to tcp tw code path
-Date:   Tue, 17 May 2022 16:10:07 +0800
-Message-Id: <20220517081008.294325-9-imagedong@tencent.com>
+Subject: [PATCH net-next v2 9/9] net: tcp: add skb drop reasons to route_req()
+Date:   Tue, 17 May 2022 16:10:08 +0800
+Message-Id: <20220517081008.294325-10-imagedong@tencent.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220517081008.294325-1-imagedong@tencent.com>
 References: <20220517081008.294325-1-imagedong@tencent.com>
@@ -77,230 +77,180 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Menglong Dong <imagedong@tencent.com>
 
-In order to get the reasons of skb drops, add a function argument of
-type 'enum skb_drop_reason *reason' to tcp_timewait_state_process().
+Add skb drop reasons to the route_req() in struct tcp_request_sock_ops.
+Following functions are involved:
 
-In the origin code, all packets to time-wait socket are treated as
-dropping with kfree_skb(), which can make users confused. Therefore,
-we use consume_skb() for the skbs that are 'good'. We can check the
-value of 'reason' to decide use kfree_skb() or consume_skb().
+  tcp_v4_route_req()
+  tcp_v6_route_req()
+  subflow_v4_route_req()
+  subflow_v6_route_req()
 
-The new reason 'TIMEWAIT' is added for the case that the skb is dropped
-as the socket in time-wait state.
+And the new reason SKB_DROP_REASON_LSM is added, which is used when
+skb is dropped by LSM.
 
 Reviewed-by: Jiang Biao <benbjiang@tencent.com>
 Reviewed-by: Hao Peng <flyingpeng@tencent.com>
 Signed-off-by: Menglong Dong <imagedong@tencent.com>
 ---
-v2:
-- skb is not freed on TCP_TW_ACK and 'ret' is not initizalized, fix
-  it (Eric Dumazet)
----
- include/linux/skbuff.h   |  5 +++++
- include/net/tcp.h        |  7 ++++---
- net/ipv4/tcp_ipv4.c      |  9 ++++++++-
- net/ipv4/tcp_minisocks.c | 24 ++++++++++++++++++++----
- net/ipv6/tcp_ipv6.c      |  9 ++++++++-
- 5 files changed, 45 insertions(+), 9 deletions(-)
+ include/linux/skbuff.h |  4 ++++
+ include/net/tcp.h      |  3 ++-
+ net/ipv4/tcp_input.c   |  2 +-
+ net/ipv4/tcp_ipv4.c    | 14 +++++++++++---
+ net/ipv6/tcp_ipv6.c    | 14 +++++++++++---
+ net/mptcp/subflow.c    | 10 ++++++----
+ 6 files changed, 35 insertions(+), 12 deletions(-)
 
 diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index 4578bbab5a3e..8d18fc5a5af6 100644
+index 8d18fc5a5af6..fdfe54dc5ae4 100644
 --- a/include/linux/skbuff.h
 +++ b/include/linux/skbuff.h
-@@ -560,6 +560,10 @@ struct sk_buff;
-  * SKB_DROP_REASON_TCP_REQQFULLDROP
-  *	request queue of the listen socket is full, corresponding to
-  *	LINUX_MIB_TCPREQQFULLDROP
+@@ -564,6 +564,9 @@ struct sk_buff;
+  * SKB_DROP_REASON_TIMEWAIT
+  *	socket is in time-wait state and all packet that received will
+  *	be treated as 'drop', except a good 'SYN' packet
 + *
-+ * SKB_DROP_REASON_TIMEWAIT
-+ *	socket is in time-wait state and all packet that received will
-+ *	be treated as 'drop', except a good 'SYN' packet
++ * SKB_DROP_REASON_LSM
++ *	dropped by LSM
   */
  #define __DEFINE_SKB_DROP_REASON(FN)	\
  	FN(NOT_SPECIFIED)		\
-@@ -631,6 +635,7 @@ struct sk_buff;
- 	FN(TCP_ABORTONDATA)		\
+@@ -636,6 +639,7 @@ struct sk_buff;
  	FN(LISTENOVERFLOWS)		\
  	FN(TCP_REQQFULLDROP)		\
-+	FN(TIMEWAIT)			\
+ 	FN(TIMEWAIT)			\
++	FN(LSM)				\
  	FN(MAX)
  
  /* The reason of skb drop, which is used in kfree_skb_reason().
 diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 082dd0627e2e..88217b8d95ac 100644
+index 88217b8d95ac..ed57c331fdeb 100644
 --- a/include/net/tcp.h
 +++ b/include/net/tcp.h
-@@ -380,9 +380,10 @@ enum tcp_tw_status {
- };
+@@ -2075,7 +2075,8 @@ struct tcp_request_sock_ops {
+ 	struct dst_entry *(*route_req)(const struct sock *sk,
+ 				       struct sk_buff *skb,
+ 				       struct flowi *fl,
+-				       struct request_sock *req);
++				       struct request_sock *req,
++				       enum skb_drop_reason *reason);
+ 	u32 (*init_seq)(const struct sk_buff *skb);
+ 	u32 (*init_ts_off)(const struct net *net, const struct sk_buff *skb);
+ 	int (*send_synack)(const struct sock *sk, struct dst_entry *dst,
+diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+index be6275c56b59..146d22b05186 100644
+--- a/net/ipv4/tcp_input.c
++++ b/net/ipv4/tcp_input.c
+@@ -6950,7 +6950,7 @@ enum skb_drop_reason tcp_conn_request(struct request_sock_ops *rsk_ops,
+ 	/* Note: tcp_v6_init_req() might override ir_iif for link locals */
+ 	inet_rsk(req)->ir_iif = inet_request_bound_dev_if(sk, skb);
  
+-	dst = af_ops->route_req(sk, skb, &fl, req);
++	dst = af_ops->route_req(sk, skb, &fl, req, &reason);
+ 	if (!dst)
+ 		goto drop_and_free;
  
--enum tcp_tw_status tcp_timewait_state_process(struct inet_timewait_sock *tw,
--					      struct sk_buff *skb,
--					      const struct tcphdr *th);
-+enum tcp_tw_status
-+tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
-+			   const struct tcphdr *th,
-+			   enum skb_drop_reason *reason);
- struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
- 			   struct request_sock *req, bool fastopen,
- 			   bool *lost_race);
 diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 708f92b03f42..3c163b54b0f8 100644
+index 3c163b54b0f8..026a36f1598b 100644
 --- a/net/ipv4/tcp_ipv4.c
 +++ b/net/ipv4/tcp_ipv4.c
-@@ -2134,7 +2134,8 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 		inet_twsk_put(inet_twsk(sk));
- 		goto csum_error;
- 	}
--	switch (tcp_timewait_state_process(inet_twsk(sk), skb, th)) {
-+	switch (tcp_timewait_state_process(inet_twsk(sk), skb, th,
-+					   &drop_reason)) {
- 	case TCP_TW_SYN: {
- 		struct sock *sk2 = inet_lookup_listener(dev_net(skb->dev),
- 							&tcp_hashinfo, skb,
-@@ -2150,11 +2151,17 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 			refcounted = false;
- 			goto process;
- 		}
-+		/* TCP_FLAGS or NO_SOCKET? */
-+		SKB_DR_SET(drop_reason, TCP_FLAGS);
- 	}
- 		/* to ACK */
- 		fallthrough;
- 	case TCP_TW_ACK:
- 		tcp_v4_timewait_ack(sk, skb);
-+		if (!drop_reason) {
-+			consume_skb(skb);
-+			return 0;
-+		}
- 		break;
- 	case TCP_TW_RST:
- 		tcp_v4_send_reset(sk, skb);
-diff --git a/net/ipv4/tcp_minisocks.c b/net/ipv4/tcp_minisocks.c
-index 1a21018f6f64..329724118b7f 100644
---- a/net/ipv4/tcp_minisocks.c
-+++ b/net/ipv4/tcp_minisocks.c
-@@ -83,13 +83,15 @@ tcp_timewait_check_oow_rate_limit(struct inet_timewait_sock *tw,
-  */
- enum tcp_tw_status
- tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
--			   const struct tcphdr *th)
-+			   const struct tcphdr *th,
-+			   enum skb_drop_reason *reason)
+@@ -1423,14 +1423,22 @@ static void tcp_v4_init_req(struct request_sock *req,
+ static struct dst_entry *tcp_v4_route_req(const struct sock *sk,
+ 					  struct sk_buff *skb,
+ 					  struct flowi *fl,
+-					  struct request_sock *req)
++					  struct request_sock *req,
++					  enum skb_drop_reason *reason)
  {
- 	struct tcp_options_received tmp_opt;
- 	struct tcp_timewait_sock *tcptw = tcp_twsk((struct sock *)tw);
- 	bool paws_reject = false;
- 
- 	tmp_opt.saw_tstamp = 0;
-+	*reason = SKB_DROP_REASON_NOT_SPECIFIED;
- 	if (th->doff > (sizeof(*th) >> 2) && tcptw->tw_ts_recent_stamp) {
- 		tcp_parse_options(twsk_net(tw), skb, &tmp_opt, 0, NULL);
- 
-@@ -113,11 +115,16 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
- 			return tcp_timewait_check_oow_rate_limit(
- 				tw, skb, LINUX_MIB_TCPACKSKIPPEDFINWAIT2);
- 
--		if (th->rst)
-+		if (th->rst) {
-+			SKB_DR_SET(*reason, TCP_RESET);
- 			goto kill;
-+		}
- 
--		if (th->syn && !before(TCP_SKB_CB(skb)->seq, tcptw->tw_rcv_nxt))
-+		if (th->syn && !before(TCP_SKB_CB(skb)->seq,
-+				       tcptw->tw_rcv_nxt)) {
-+			SKB_DR_SET(*reason, TCP_FLAGS);
- 			return TCP_TW_RST;
-+		}
- 
- 		/* Dup ACK? */
- 		if (!th->ack ||
-@@ -143,6 +150,9 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
- 		}
- 
- 		inet_twsk_reschedule(tw, TCP_TIMEWAIT_LEN);
++	struct dst_entry *dst;
 +
-+		/* skb should be free normally on this case. */
-+		*reason = SKB_NOT_DROPPED_YET;
- 		return TCP_TW_ACK;
- 	}
+ 	tcp_v4_init_req(req, sk, skb);
  
-@@ -174,6 +184,7 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
- 			 * protocol bug yet.
- 			 */
- 			if (twsk_net(tw)->ipv4.sysctl_tcp_rfc1337 == 0) {
-+				SKB_DR_SET(*reason, TCP_RESET);
- kill:
- 				inet_twsk_deschedule_put(tw);
- 				return TCP_TW_SUCCESS;
-@@ -216,11 +227,14 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
- 		if (isn == 0)
- 			isn++;
- 		TCP_SKB_CB(skb)->tcp_tw_isn = isn;
-+		*reason = SKB_NOT_DROPPED_YET;
- 		return TCP_TW_SYN;
- 	}
- 
--	if (paws_reject)
-+	if (paws_reject) {
-+		SKB_DR_SET(*reason, TCP_RFC7323_PAWS);
- 		__NET_INC_STATS(twsk_net(tw), LINUX_MIB_PAWSESTABREJECTED);
+-	if (security_inet_conn_request(sk, skb, req))
++	if (security_inet_conn_request(sk, skb, req)) {
++		SKB_DR_SET(*reason, LSM);
+ 		return NULL;
 +	}
  
- 	if (!th->rst) {
- 		/* In this case we must reset the TIMEWAIT timer.
-@@ -232,9 +246,11 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
- 		if (paws_reject || th->ack)
- 			inet_twsk_reschedule(tw, TCP_TIMEWAIT_LEN);
- 
-+		SKB_DR_OR(*reason, TIMEWAIT);
- 		return tcp_timewait_check_oow_rate_limit(
- 			tw, skb, LINUX_MIB_TCPACKSKIPPEDTIMEWAIT);
- 	}
-+	SKB_DR_SET(*reason, TCP_RESET);
- 	inet_twsk_put(tw);
- 	return TCP_TW_SUCCESS;
+-	return inet_csk_route_req(sk, &fl->u.ip4, req);
++	dst = inet_csk_route_req(sk, &fl->u.ip4, req);
++	if (!dst)
++		SKB_DR_SET(*reason, IP_OUTNOROUTES);
++	return dst;
  }
+ 
+ struct request_sock_ops tcp_request_sock_ops __read_mostly = {
 diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 27c51991bd54..132b27763229 100644
+index 132b27763229..b859adcde756 100644
 --- a/net/ipv6/tcp_ipv6.c
 +++ b/net/ipv6/tcp_ipv6.c
-@@ -1772,6 +1772,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	}
+@@ -802,14 +802,22 @@ static void tcp_v6_init_req(struct request_sock *req,
+ static struct dst_entry *tcp_v6_route_req(const struct sock *sk,
+ 					  struct sk_buff *skb,
+ 					  struct flowi *fl,
+-					  struct request_sock *req)
++					  struct request_sock *req,
++					  enum skb_drop_reason *reason)
+ {
++	struct dst_entry *dst;
++
+ 	tcp_v6_init_req(req, sk, skb);
  
- discard_it:
-+	SKB_DR_OR(drop_reason, NOT_SPECIFIED);
- 	kfree_skb_reason(skb, drop_reason);
- 	return 0;
+-	if (security_inet_conn_request(sk, skb, req))
++	if (security_inet_conn_request(sk, skb, req)) {
++		SKB_DR_SET(*reason, LSM);
+ 		return NULL;
++	}
  
-@@ -1795,7 +1796,8 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 		goto csum_error;
- 	}
+-	return inet6_csk_route_req(sk, &fl->u.ip6, req, IPPROTO_TCP);
++	dst = inet6_csk_route_req(sk, &fl->u.ip6, req, IPPROTO_TCP);
++	if (!dst)
++		SKB_DR_SET(*reason, IP_OUTNOROUTES);
++	return dst;
+ }
  
--	switch (tcp_timewait_state_process(inet_twsk(sk), skb, th)) {
-+	switch (tcp_timewait_state_process(inet_twsk(sk), skb, th,
-+					   &drop_reason)) {
- 	case TCP_TW_SYN:
- 	{
- 		struct sock *sk2;
-@@ -1815,11 +1817,16 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 			refcounted = false;
- 			goto process;
- 		}
-+		SKB_DR_SET(drop_reason, TCP_FLAGS);
- 	}
- 		/* to ACK */
- 		fallthrough;
- 	case TCP_TW_ACK:
- 		tcp_v6_timewait_ack(sk, skb);
-+		if (!drop_reason) {
-+			consume_skb(skb);
-+			return 0;
-+		}
- 		break;
- 	case TCP_TW_RST:
- 		tcp_v6_send_reset(sk, skb);
+ struct request_sock_ops tcp6_request_sock_ops __read_mostly = {
+diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
+index 58c1f056213b..db7e6cd96d44 100644
+--- a/net/mptcp/subflow.c
++++ b/net/mptcp/subflow.c
+@@ -285,7 +285,8 @@ EXPORT_SYMBOL_GPL(mptcp_subflow_init_cookie_req);
+ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
+ 					      struct sk_buff *skb,
+ 					      struct flowi *fl,
+-					      struct request_sock *req)
++					      struct request_sock *req,
++					      enum skb_drop_reason *reason)
+ {
+ 	struct dst_entry *dst;
+ 	int err;
+@@ -293,7 +294,7 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
+ 	tcp_rsk(req)->is_mptcp = 1;
+ 	subflow_init_req(req, sk);
+ 
+-	dst = tcp_request_sock_ipv4_ops.route_req(sk, skb, fl, req);
++	dst = tcp_request_sock_ipv4_ops.route_req(sk, skb, fl, req, reason);
+ 	if (!dst)
+ 		return NULL;
+ 
+@@ -311,7 +312,8 @@ static struct dst_entry *subflow_v4_route_req(const struct sock *sk,
+ static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
+ 					      struct sk_buff *skb,
+ 					      struct flowi *fl,
+-					      struct request_sock *req)
++					      struct request_sock *req,
++					      enum skb_drop_reason *reason)
+ {
+ 	struct dst_entry *dst;
+ 	int err;
+@@ -319,7 +321,7 @@ static struct dst_entry *subflow_v6_route_req(const struct sock *sk,
+ 	tcp_rsk(req)->is_mptcp = 1;
+ 	subflow_init_req(req, sk);
+ 
+-	dst = tcp_request_sock_ipv6_ops.route_req(sk, skb, fl, req);
++	dst = tcp_request_sock_ipv6_ops.route_req(sk, skb, fl, req, reason);
+ 	if (!dst)
+ 		return NULL;
+ 
 -- 
 2.36.1
 
