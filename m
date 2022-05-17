@@ -2,180 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD42152ADA3
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 23:46:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E5852ADAA
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 23:49:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbiEQVqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 17:46:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48116 "EHLO
+        id S229716AbiEQVt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 17:49:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229624AbiEQVqG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 17:46:06 -0400
-Received: from smtp1.emailarray.com (smtp1.emailarray.com [65.39.216.14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BED61260B
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:46:03 -0700 (PDT)
-Received: (qmail 26435 invoked by uid 89); 17 May 2022 21:46:01 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
-  by smtp1.emailarray.com with SMTP; 17 May 2022 21:46:01 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     zheyuma97@gmail.com, netdev@vger.kernel.org
-Cc:     richardcochran@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com, kernel-team@fb.com
-Subject: [PATCH net] ptp: ocp: change sysfs attr group handling
-Date:   Tue, 17 May 2022 14:46:00 -0700
-Message-Id: <20220517214600.10606-1-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.31.1
+        with ESMTP id S229703AbiEQVtW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 17:49:22 -0400
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7331252B2E
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:49:21 -0700 (PDT)
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com [209.85.210.199])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 4563F3F5EF
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 21:49:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1652824160;
+        bh=EeAYup7Z3kKQDD2Qh4K59WMf8Pu+/T4wgl2l9cAZtmE=;
+        h=From:To:cc:Subject:In-reply-to:References:MIME-Version:
+         Content-Type:Date:Message-ID;
+        b=OVNI4q65qmtOEXZ660B2H/Ox99KeYZK59Hhh4GeMyYxNcMvEMSSBVyJX0eJMvy2zF
+         hv2nszcGSD+blbfokx4UNwsEBzIIlZaaPUW57MaVxBmAK1dnXgejvsk3o+sTyLTwgf
+         kmYObVHgrDDSH5rp8L+RVBpMFrt9ueQXA7eTVsN36waPbczRMYqzZvBXsmfH0j6MN1
+         qqjPzxX4bwGH9WQrEYM/z9pxILV+X4VZpImIK81woioCOW/aBtHpwU8+bkTCFk2n4B
+         3YFp3KRe6Z/vFngd8VGKMyMs4/s45qF2GRkA3wqaJUEOYAZ9CmhvOM9AWAru4vM+Ep
+         cZlNhZiFIGQoQ==
+Received: by mail-pf1-f199.google.com with SMTP id p18-20020aa78612000000b0050d1c170018so139417pfn.15
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 14:49:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references
+         :comments:mime-version:content-id:date:message-id;
+        bh=EeAYup7Z3kKQDD2Qh4K59WMf8Pu+/T4wgl2l9cAZtmE=;
+        b=x0TalixOPteILYsZRXR13rDbG9/p3WrGIYXP4kX9ujeflOMqTGdO5fH7W2rxFBcfpB
+         0xgk9CltEN8+UBYvw//D3Y+Vcyfw1wVyyZdROs7gwp4mg6aSOQsoBBKsiqsvzz5Rnppx
+         s3PYJUNHb+ldkGd2Pz7HHe1iJhfJCE4yuaFR1Entf+hapu1Ic6mouJTjIgODbKppFSJl
+         0x0oSE3EUG8oHfUOrr6u8a1tmrdjyrFdvKtTz+p60K9tTUaRysPEhEZrllDiT7VYixXb
+         oy9lB1a6GFdgzxhmGu9eo3O221AQLBfiq51urO72pSdDQVqK7y50CpgSQVm9G9WpmiVV
+         hXXA==
+X-Gm-Message-State: AOAM531h1Hij4jKasDAm+BuWN9ALg/NjS4e2dLKCLfyzuNYo6V3QxvC+
+        InJVsJRqu6EwTdKwBxhwXofou6ihFuokJZmj/2XlNk/9wSZyZHwZgoe2qXoMeCwRxWjLdYqGM90
+        I4kpK1euBrX/ry3vkypTzyjO1cpvZ1oI+Ew==
+X-Received: by 2002:a63:28c:0:b0:3c1:6f72:7288 with SMTP id 134-20020a63028c000000b003c16f727288mr20944597pgc.564.1652824158752;
+        Tue, 17 May 2022 14:49:18 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwFRaJHRhJXW+NlcWgRYb1ZX8nbWLYzxvz7dw+TpR3frqC/TXLT78HphRw94kHWN9sl0aOfQA==
+X-Received: by 2002:a63:28c:0:b0:3c1:6f72:7288 with SMTP id 134-20020a63028c000000b003c16f727288mr20944580pgc.564.1652824158489;
+        Tue, 17 May 2022 14:49:18 -0700 (PDT)
+Received: from famine.localdomain ([50.125.80.157])
+        by smtp.gmail.com with ESMTPSA id p186-20020a62d0c3000000b005180c127200sm232127pfg.24.2022.05.17.14.49.18
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 17 May 2022 14:49:18 -0700 (PDT)
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id A0D765FDEE; Tue, 17 May 2022 14:49:17 -0700 (PDT)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id 97521A0B21;
+        Tue, 17 May 2022 14:49:17 -0700 (PDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     Jonathan Toppins <jtoppins@redhat.com>
+cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Subject: Re: [question] bonding: should assert dormant for active protocols like LACP?
+In-reply-to: <de8d8ca4-4ead-0cef-1315-8764d93503c1@redhat.com>
+References: <de8d8ca4-4ead-0cef-1315-8764d93503c1@redhat.com>
+Comments: In-reply-to Jonathan Toppins <jtoppins@redhat.com>
+   message dated "Tue, 17 May 2022 17:17:19 -0400."
+X-Mailer: MH-E 8.6+git; nmh 1.6; Emacs 29.0.50
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4195.1652824157.1@famine>
+Date:   Tue, 17 May 2022 14:49:17 -0700
+Message-ID: <4196.1652824157@famine>
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the detach path, the driver calls sysfs_remove_group() for the
-groups it believes has been registered.  However, if the group was
-never previously registered, then this causes a splat.
+Jonathan Toppins <jtoppins@redhat.com> wrote:
 
-Instead, compute the groups that should be registered in advance,
-and then call sysfs_create_groups(), which registers them all at once.
+>So running the following script:
+>
+>--%<-----
+> ip link add name link-bond0 type veth peer name link-end0
+> ip link add bond0 type bond mode 4 miimon 100
+> ip link set link-bond0 master bond0 down
+> ip netns add n1
+> ip link set link-end0 netns n1 up
+> ip link set bond0 up
+> cat /sys/class/net/bond0/bonding/ad_partner_mac
+> cat /sys/class/net/bond0/operstate
+>--%<-----
+>
+>The bond reports its operstate to be "up" even though the bond will never
+>be able to establish an LACP partner. Should bonding for active protocols,
+>LACP, assert dormant[0] until the protocol has established and frames
+>actually are passed?
+>
+>Having a predictable operstate where up actually means frames will attempt
+>to be delivered would make management applications, f.e. Network Manager,
+>easier to write. I have developers asking me what detailed states for LACP
+>should they be looking for to determine when an LACP bond is "up". This
+>seems like an incorrect implementation of operstate and RFC2863 3.1.12.
+>
+>Does anyone see why this would be a bad idea?
 
-Update the error handling appropriately.
+	The catch with LACP is that it has a fallback, in that ports
+that don't complete LACP negotiation go to "Solitary" state (I believe
+this was called "Individual" in older versions of the 802.1AX / 802.3ad
+standard; bonding calls this "is_individual" internally).
 
-Fixes: c205d53c4923 ("ptp: ocp: Add firmware capability bits for feature gating")
-Reported-by: Zheyu Ma <zheyuma97@gmail.com>
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+	If there is no suitable partnered port, then a Solitary port is
+made active.  This permits connectivity if one end is set for LACP but
+the other end is not (e.g., PXE boot to a switch port set for LACP).
+For reference, I'm looking at 6.3.5 and 6.3.6 of IEEE 802.1AX-2020.
+
+	So, how should operstate be set if "has LACP partner" isn't
+really the test for whether or not the interface is (to use RCC 2863
+language) "in a condition to pass packets"?  In your example above, I
+believe the bond should be able to pass packets just fine, the packets
+just won't go anywhere after they leave the bond.
+
+	-J
+
+>-Jon
+>
+>[0] Documentation/networking/operstates.rst
+>
+
 ---
- drivers/ptp/ptp_ocp.c | 57 +++++++++++++++++++++++++++++++------------
- 1 file changed, 42 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 36c0e188216b..860672d6a03c 100644
---- a/drivers/ptp/ptp_ocp.c
-+++ b/drivers/ptp/ptp_ocp.c
-@@ -300,7 +300,7 @@ struct ptp_ocp {
- 	struct platform_device	*spi_flash;
- 	struct clk_hw		*i2c_clk;
- 	struct timer_list	watchdog;
--	const struct ocp_attr_group *attr_tbl;
-+	const struct attribute_group **attr_group;
- 	const struct ptp_ocp_eeprom_map *eeprom_map;
- 	struct dentry		*debug_root;
- 	time64_t		gnss_lost;
-@@ -1836,6 +1836,42 @@ ptp_ocp_signal_init(struct ptp_ocp *bp)
- 					     bp->signal_out[i]->mem);
- }
- 
-+static void
-+ptp_ocp_attr_group_del(struct ptp_ocp *bp)
-+{
-+	sysfs_remove_groups(&bp->dev.kobj, bp->attr_group);
-+	kfree(bp->attr_group);
-+}
-+
-+static int
-+ptp_ocp_attr_group_add(struct ptp_ocp *bp,
-+		       const struct ocp_attr_group *attr_tbl)
-+{
-+	int count, i;
-+	int err;
-+
-+	count = 0;
-+	for (i = 0; attr_tbl[i].cap; i++)
-+		if (attr_tbl[i].cap & bp->fw_cap)
-+			count++;
-+
-+	bp->attr_group = kcalloc(count + 1, sizeof(struct attribute_group *),
-+				 GFP_KERNEL);
-+	if (!bp->attr_group)
-+		return -ENOMEM;
-+
-+	count = 0;
-+	for (i = 0; attr_tbl[i].cap; i++)
-+		if (attr_tbl[i].cap & bp->fw_cap)
-+			bp->attr_group[count++] = attr_tbl[i].group;
-+
-+	err = sysfs_create_groups(&bp->dev.kobj, bp->attr_group);
-+	if (err)
-+		bp->attr_group[0] = NULL;
-+
-+	return err;
-+}
-+
- static void
- ptp_ocp_sma_init(struct ptp_ocp *bp)
- {
-@@ -1905,7 +1941,6 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
- 	bp->flash_start = 1024 * 4096;
- 	bp->eeprom_map = fb_eeprom_map;
- 	bp->fw_version = ioread32(&bp->image->version);
--	bp->attr_tbl = fb_timecard_groups;
- 	bp->fw_cap = OCP_CAP_BASIC;
- 
- 	ver = bp->fw_version & 0xffff;
-@@ -1919,6 +1954,10 @@ ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
- 	ptp_ocp_sma_init(bp);
- 	ptp_ocp_signal_init(bp);
- 
-+	err = ptp_ocp_attr_group_add(bp, fb_timecard_groups);
-+	if (err)
-+		return err;
-+
- 	err = ptp_ocp_fb_set_pins(bp);
- 	if (err)
- 		return err;
-@@ -3389,7 +3428,6 @@ ptp_ocp_complete(struct ptp_ocp *bp)
- {
- 	struct pps_device *pps;
- 	char buf[32];
--	int i, err;
- 
- 	if (bp->gnss_port != -1) {
- 		sprintf(buf, "ttyS%d", bp->gnss_port);
-@@ -3414,14 +3452,6 @@ ptp_ocp_complete(struct ptp_ocp *bp)
- 	if (pps)
- 		ptp_ocp_symlink(bp, pps->dev, "pps");
- 
--	for (i = 0; bp->attr_tbl[i].cap; i++) {
--		if (!(bp->attr_tbl[i].cap & bp->fw_cap))
--			continue;
--		err = sysfs_create_group(&bp->dev.kobj, bp->attr_tbl[i].group);
--		if (err)
--			return err;
--	}
--
- 	ptp_ocp_debugfs_add_device(bp);
- 
- 	return 0;
-@@ -3493,15 +3523,11 @@ static void
- ptp_ocp_detach_sysfs(struct ptp_ocp *bp)
- {
- 	struct device *dev = &bp->dev;
--	int i;
- 
- 	sysfs_remove_link(&dev->kobj, "ttyGNSS");
- 	sysfs_remove_link(&dev->kobj, "ttyMAC");
- 	sysfs_remove_link(&dev->kobj, "ptp");
- 	sysfs_remove_link(&dev->kobj, "pps");
--	if (bp->attr_tbl)
--		for (i = 0; bp->attr_tbl[i].cap; i++)
--			sysfs_remove_group(&dev->kobj, bp->attr_tbl[i].group);
- }
- 
- static void
-@@ -3511,6 +3537,7 @@ ptp_ocp_detach(struct ptp_ocp *bp)
- 
- 	ptp_ocp_debugfs_remove_device(bp);
- 	ptp_ocp_detach_sysfs(bp);
-+	ptp_ocp_attr_group_del(bp);
- 	if (timer_pending(&bp->watchdog))
- 		del_timer_sync(&bp->watchdog);
- 	if (bp->ts0)
--- 
-2.31.1
-
+	-Jay Vosburgh, jay.vosburgh@canonical.com
