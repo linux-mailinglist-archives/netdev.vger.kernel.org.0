@@ -2,64 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7749A52A9F9
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 20:07:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E1E352AA38
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 20:13:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351778AbiEQSGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 14:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40504 "EHLO
+        id S1351967AbiEQSMg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 14:12:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352115AbiEQSGJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 14:06:09 -0400
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E4D850B3B;
-        Tue, 17 May 2022 11:05:59 -0700 (PDT)
-Received: by mail-oi1-f171.google.com with SMTP id q8so23234342oif.13;
-        Tue, 17 May 2022 11:05:59 -0700 (PDT)
+        with ESMTP id S1351985AbiEQSMa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 14:12:30 -0400
+Received: from mail-io1-f69.google.com (mail-io1-f69.google.com [209.85.166.69])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B43575133A
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 11:12:22 -0700 (PDT)
+Received: by mail-io1-f69.google.com with SMTP id i66-20020a6bb845000000b00657bac76fb4so12897946iof.15
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 11:12:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=F9oiFXagRBRMM/DebPuqOfAkO2xPh1J2DfBuF2wn6jY=;
-        b=xe0XXT8brVgXGzTlap6H9xDOe+SauHmHwoRsb3chtKGz50eKcMYlZ10fpxrAFA36nN
-         I1SlAehf9IupWTZqKnQjXK2CsEuJUmdvSjJmE0IjhQl/KndxwMfeLd4MCMuTAxmieg6f
-         eUacQIMaYrjMYbg7EE/8uaAYYu1MhmTThOeAJCQjDZQ7i4+OBbL0o2tKCq9GErs7lvLv
-         4RuF7bVHnn6JV4CYXDDtT4t5Pqwae2w3Nq1TIjbeabHsW55xczkkXl7KkPVahZA8Yv6b
-         NguktNhBynQYLCFjYJ9b3d3F0IyokHJbHneFGt2+j90VKEjdxbIMKURXgt4RGFJissOq
-         MhkQ==
-X-Gm-Message-State: AOAM532Gvy+Ys+O+rjBcXlpYFastoN+ZZC3b8M42t9GpG/VJsY3Lfhq6
-        5ebazOSkzHyTeXpvSDyenw==
-X-Google-Smtp-Source: ABdhPJxfNzSDtx7hJ9IWeiR8Ju1BV+067OaqdyKqHEUUyEgP39xyDh5erKxEC5PILhcugCzNVYADaw==
-X-Received: by 2002:a05:6808:b19:b0:325:d028:7681 with SMTP id s25-20020a0568080b1900b00325d0287681mr16804320oij.195.1652810758556;
-        Tue, 17 May 2022 11:05:58 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id r4-20020aca4404000000b00325cda1ff87sm20013oia.6.2022.05.17.11.05.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 11:05:57 -0700 (PDT)
-Received: (nullmailer pid 1337742 invoked by uid 1000);
-        Tue, 17 May 2022 18:05:56 -0000
-Date:   Tue, 17 May 2022 13:05:56 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        kernel@pengutronix.de, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v6 0/3] document dt-schema for some USB Ethernet
- controllers
-Message-ID: <20220517180556.GA1327859-robh@kernel.org>
-References: <20220517111505.929722-1-o.rempel@pengutronix.de>
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=Aw7uWPlnCQDdmui5m+mgLu0Iob0U3Ta9YLf8ADEdGks=;
+        b=T3H8BLJ9KLGTKA8JWCjXOij3LiEC9zylTyVBJmd6ljsrVQRDcWaieWHYrRcWw+TWl7
+         Uizh9DDBivM1u82F6qPtNdP4UDZZZc3SLe8etj5bKzwstbOm27wqvndKQcsls3crVscD
+         +SlRyO2STkkTlBHEhGEfFH7SAIFKs/RqcRhCv2mb770nErfI6PwZ7nkdcB+9e/DRdevY
+         +72mErsPhvyscW2HAVbygD9jtTNtvfGUD5BaomcTd38dhCxlR4gV3uiVrmY4po4Rv8zT
+         /BBCmaeTiPKLxUNTg77A0gz4FcPdwtdFAkgc/Omsrox7MYIQKzfKsWkjDr+SM1zlD9Um
+         aoZw==
+X-Gm-Message-State: AOAM530+AlyaItF+oM4BCPCVDW8P8lDS/Sy7sJs2zRycXHDWfavlJRcc
+        oGfta2N626lwLaTYevB3gXUAYFJ+hGqvx4AlQF4MU3ZNbsC5
+X-Google-Smtp-Source: ABdhPJwCK5cHV8+sYepbR7Oy12L/Z261cSXDMON3P5HSx+Jeog9skRf1vYsCOtMs3VE/paQpDoTurjsh+fZRvYSM0UnByonVKa5J
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517111505.929722-1-o.rempel@pengutronix.de>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Received: by 2002:a02:c898:0:b0:32e:120b:cdf9 with SMTP id
+ m24-20020a02c898000000b0032e120bcdf9mr9000904jao.158.1652811141946; Tue, 17
+ May 2022 11:12:21 -0700 (PDT)
+Date:   Tue, 17 May 2022 11:12:21 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000ff239c05df391402@google.com>
+Subject: [syzbot] WARNING in nfnetlink_unbind
+From:   syzbot <syzbot+afd2d80e495f96049571@syzkaller.appspotmail.com>
+To:     ali.abdallah@suse.com, coreteam@netfilter.org, davem@davemloft.net,
+        edumazet@google.com, fw@strlen.de, kadlec@netfilter.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        ozsh@nvidia.com, pabeni@redhat.com, pablo@netfilter.org,
+        paulb@nvidia.com, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=0.8 required=5.0 tests=BAYES_00,FROM_LOCAL_HEX,
         HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
+        SORTED_RECIPS,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,29 +56,83 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 17, 2022 at 01:15:02PM +0200, Oleksij Rempel wrote:
-> changes v6:
-> - remove USB hub example from microchip,lan95xx.yaml. We care only about
->   ethernet node.
-> - use only documented USD ID in example.
-> - add Reviewed-by
-> - drop board patches, all of them are taken by different subsystem
->   maintainers.
-> 
-> changes v5:
-> - move compatible string changes to a separate patch
-> - add note about possible regressions
-> 
-> changes v4:
-> - reword commit logs.
-> - add note about compatible fix
-> 
-> Oleksij Rempel (3):
->   dt-bindings: net: add schema for ASIX USB Ethernet controllers
->   dt-bindings: net: add schema for Microchip/SMSC LAN95xx USB Ethernet
->     controllers
->   dt-bindings: usb: ci-hdrc-usb2: fix node node for ethernet controller
+Hello,
 
-Series applied, thanks.
+syzbot found the following issue on:
 
-Rob
+HEAD commit:    f7b88d9ae91e Merge tag 'linux-can-next-for-5.19-20220516' ..
+git tree:       net-next
+console+strace: https://syzkaller.appspot.com/x/log.txt?x=14f791aef00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c05eee2efc702eed
+dashboard link: https://syzkaller.appspot.com/bug?extid=afd2d80e495f96049571
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13ba8ae9f00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13ef1295f00000
+
+The issue was bisected to:
+
+commit 2794cdb0b97bfe62d25c996c8afe4832207e78bc
+Author: Florian Westphal <fw@strlen.de>
+Date:   Mon Apr 25 13:15:41 2022 +0000
+
+    netfilter: nfnetlink: allow to detect if ctnetlink listeners exist
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13cb5bbef00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=102b5bbef00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17cb5bbef00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+afd2d80e495f96049571@syzkaller.appspotmail.com
+Fixes: 2794cdb0b97b ("netfilter: nfnetlink: allow to detect if ctnetlink listeners exist")
+
+------------[ cut here ]------------
+WARNING: CPU: 0 PID: 3600 at net/netfilter/nfnetlink.c:703 nfnetlink_unbind net/netfilter/nfnetlink.c:703 [inline]
+WARNING: CPU: 0 PID: 3600 at net/netfilter/nfnetlink.c:703 nfnetlink_unbind+0x357/0x3b0 net/netfilter/nfnetlink.c:694
+Modules linked in:
+CPU: 0 PID: 3600 Comm: syz-executor186 Not tainted 5.18.0-rc6-syzkaller-01545-gf7b88d9ae91e #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:nfnetlink_unbind net/netfilter/nfnetlink.c:703 [inline]
+RIP: 0010:nfnetlink_unbind+0x357/0x3b0 net/netfilter/nfnetlink.c:694
+Code: f9 48 c7 c2 00 0d d8 8a be b7 02 00 00 48 c7 c7 60 0d d8 8a c6 05 91 3d 14 06 01 e8 38 36 9b 01 e9 6e fd ff ff e8 09 66 e8 f9 <0f> 0b 41 c7 04 24 ff ff ff ff e9 9d fe ff ff e8 a5 7a 34 fa e9 dd
+RSP: 0018:ffffc90002e8fcf8 EFLAGS: 00010293
+RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+RDX: ffff88801bd11d80 RSI: ffffffff8790d397 RDI: 0000000000000003
+RBP: ffffffff90947640 R08: 0000000000000000 R09: ffffc90002e8fc37
+R10: ffffffff8790d1e8 R11: 0000000000000001 R12: ffff8880230b4d20
+R13: ffff88814c73b000 R14: ffff888016aab518 R15: ffff888016aab000
+FS:  0000555557248300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 0000000020001280 CR3: 000000001f866000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ netlink_setsockopt+0x932/0xda0 net/netlink/af_netlink.c:1661
+ __sys_setsockopt+0x2db/0x6a0 net/socket.c:2227
+ __do_sys_setsockopt net/socket.c:2238 [inline]
+ __se_sys_setsockopt net/socket.c:2235 [inline]
+ __x64_sys_setsockopt+0xba/0x150 net/socket.c:2235
+ do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+ do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f37f8e5faf9
+Code: 28 c3 e8 2a 14 00 00 66 2e 0f 1f 84 00 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 c0 ff ff ff f7 d8 64 89 01 48
+RSP: 002b:00007ffef051fc88 EFLAGS: 00000246 ORIG_RAX: 0000000000000036
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f37f8e5faf9
+RDX: 0000000000000002 RSI: 000000000000010e RDI: 0000000000000003
+RBP: 00007f37f8e23ca0 R08: 0000000000000004 R09: 0000000000000000
+R10: 0000000020001280 R11: 0000000000000246 R12: 00007f37f8e23d30
+R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+ </TASK>
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
