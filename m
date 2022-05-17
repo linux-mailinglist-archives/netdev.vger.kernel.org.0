@@ -2,122 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ECB635299F3
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 08:54:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE9C3529A1B
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236599AbiEQGyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 02:54:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
+        id S237458AbiEQHB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 03:01:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235513AbiEQGyG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 02:54:06 -0400
-Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A82A126567;
-        Mon, 16 May 2022 23:54:03 -0700 (PDT)
-Received: (Authenticated sender: maxime.chevallier@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 68338FF803;
-        Tue, 17 May 2022 06:53:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652770440;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=LSRSBOWx0X3UM1Ake1VNIh+NUfX/y6+vqtFaURfJuPo=;
-        b=IzCag1a/2/Oiqmxyp/nm3xkf4F2qFuTTBqkI3I9j44abhdGXKoOzszw2tDuUJr0sJCgOw4
-        hSTRCZ2qu+jSA/YAlXPprl6h7o97SxaybLE9dlvZ7VKTjAVODeTiSAbQmiv4Lt2n7K0bqE
-        EbaCuMIJPWevm5/Oko/dQdJvZ7G8houWWIlPT8ZZFcetvVK52nK5mapuxjpuiYMXMuDSyX
-        +TcbKy7YOyYlJnO1PEfUkGNxqWSUuQvMSHtqzayxPzdje+U76A6hc2psOjGap3KWZd3bpj
-        HvARvrUJ0YXO8dSpf5W49+QaLWy8JjOOaO1VMFLQ1US96DeItNdgRZ+8bJeDeQ==
-Date:   Tue, 17 May 2022 08:53:55 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-arm-kernel@lists.infradead.org,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Luka Perkov <luka.perkov@sartura.hr>,
-        Robert Marko <robert.marko@sartura.hr>
-Subject: Re: [PATCH net-next v2 2/5] net: dsa: add out-of-band tagging
- protocol
-Message-ID: <20220517085355.4fab54b3@pc-20.home>
-In-Reply-To: <20220516122048.70e238a2@kernel.org>
-References: <20220514150656.122108-1-maxime.chevallier@bootlin.com>
-        <20220514150656.122108-3-maxime.chevallier@bootlin.com>
-        <20220516122048.70e238a2@kernel.org>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-redhat-linux-gnu)
+        with ESMTP id S240694AbiEQHBc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:01:32 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F08420BC9
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:01:30 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id fd25so8537723edb.3
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:01:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=tessares-net.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=DRGKs1GN7uGV/MGON3ombxJkQtTa5l08+qO7U3wn8nU=;
+        b=hr37GqZwcTl34bfUcDXbDv43lSD547/gPK3gP9hcAMulCEwmOpQd/pv2hIV/oltxrm
+         Tz4EwFb4J3IEBktK0JhsWNTU6g9OMMVoR6lOgREFHs0crVdMubphUOSSx+4mgG8hDXru
+         TDqgKTy9ac3CdLthzlUIRPABfpPK1E149d5A3UDdVsnHxnc1P1QYW1LxCIgBozUZ7bzN
+         cy3SQ8owigksOzkrJnoPkoI478/o1odxQn2QZZrQcxr6s3F9ZOrnjY2n99axIkQEO0AF
+         FlkoPuF/AEKWSQRHHxbNZkk2Jnp1mZr1tUkxJzy6FT+bAXvcMputmBH8LpluPO31nQmg
+         amHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DRGKs1GN7uGV/MGON3ombxJkQtTa5l08+qO7U3wn8nU=;
+        b=qZs4SiRNZsC5YsPilgbmfCoV1JUMXfOLVVZOwWVYn8aW578rQluSU28mWsbaeMv/sl
+         PtloP1CiGWwpowPrPctmMgn6Y1POWQjJOEcUTTM/GnpPs8J/6zhnaKBwX4P9V/gGTVdK
+         bkLbOPpCAzlZnM1FxKkARAhgHGNHm6T5uOdKd4rGdwu/BHYrxnNSHns2/9WhSElPRgzx
+         pJWiG2Tss5W4X4oZkb1OAiToj++mI8Ns8pMBUt3rLNfldMv8HlGXkU3TEB7P5qc9RZ+g
+         GBVKTBk1qz9ACUGG+9gpxFIM+//bMElhVywhQGa3RJa0Uxn0NtTCC4EkC79Y2EQRVbKn
+         X0yA==
+X-Gm-Message-State: AOAM530FSVi4fTY6WES85cXQxxaFiTb1KGOplPcwHUrL7wKiZ4bP6nwv
+        +B8PBZTLh7Q4EU3R6khc/mTz/g==
+X-Google-Smtp-Source: ABdhPJwC9pvT00blFTgIzjqRizPpW4p8jwKdqqkW4kW+Gecj3wcm9Bv6gaGyNgoQZizs2DSdugjVTA==
+X-Received: by 2002:a50:9b08:0:b0:42a:2d15:e15a with SMTP id o8-20020a509b08000000b0042a2d15e15amr16966095edi.361.1652770888308;
+        Tue, 17 May 2022 00:01:28 -0700 (PDT)
+Received: from ?IPV6:2a02:578:8593:1200:e69d:55f5:f7d9:4300? ([2a02:578:8593:1200:e69d:55f5:f7d9:4300])
+        by smtp.gmail.com with ESMTPSA id u7-20020a1709060b0700b006f3ef214dc1sm670444ejg.39.2022.05.17.00.01.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 00:01:27 -0700 (PDT)
+Message-ID: <49ee2e2e-8fd3-dedd-8aac-566b6e0e07c9@tessares.net>
+Date:   Tue, 17 May 2022 09:01:26 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH net-next 1/3] selftests: mptcp: fix a mp_fail test warning
+Content-Language: en-GB
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, Geliang Tang <geliang.tang@suse.com>,
+        davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
+        mptcp@lists.linux.dev
+References: <20220514002115.725976-1-mathew.j.martineau@linux.intel.com>
+ <20220514002115.725976-2-mathew.j.martineau@linux.intel.com>
+ <20220516131346.1f1f95d9@kernel.org>
+From:   Matthieu Baerts <matthieu.baerts@tessares.net>
+In-Reply-To: <20220516131346.1f1f95d9@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub,
+Hi Jakub,
 
-On Mon, 16 May 2022 12:20:48 -0700
-Jakub Kicinski <kuba@kernel.org> wrote:
+Thank you for the review and for having applied the patches!
 
-> On Sat, 14 May 2022 17:06:53 +0200 Maxime Chevallier wrote:
-> > This tagging protocol is designed for the situation where the link
-> > between the MAC and the Switch is designed such that the Destination
-> > Port, which is usually embedded in some part of the Ethernet
-> > Header, is sent out-of-band, and isn't present at all in the
-> > Ethernet frame.
-> > 
-> > This can happen when the MAC and Switch are tightly integrated on an
-> > SoC, as is the case with the Qualcomm IPQ4019 for example, where
-> > the DSA tag is inserted directly into the DMA descriptors. In that
-> > case, the MAC driver is responsible for sending the tag to the
-> > switch using the out-of-band medium. To do so, the MAC driver needs
-> > to have the information of the destination port for that skb.
-> > 
-> > This out-of-band tagging protocol is using the very beggining of
-> > the skb headroom to store the tag. The drawback of this approch is
-> > that the headroom isn't initialized upon allocating it, therefore
-> > we have a chance that the garbage data that lies there at
-> > allocation time actually ressembles a valid oob tag. This is only
-> > problematic if we are sending/receiving traffic on the master port,
-> > which isn't a valid DSA use-case from the beggining. When dealing
-> > from traffic to/from a slave port, then the oob tag will be
-> > initialized properly by the tagger or the mac driver through the
-> > use of the dsa_oob_tag_push() call.
-> > 
-> > Signed-off-by: Maxime Chevallier <maxime.chevallier@bootlin.com>  
+On 16/05/2022 22:13, Jakub Kicinski wrote:
+> On Fri, 13 May 2022 17:21:13 -0700 Mat Martineau wrote:
+>>  	tc -n $ns2 -j -s action show action pedit index 100 | \
+>> +		grep "packets" | \
+>>  		sed 's/.*"packets":\([0-9]\+\),.*/\1/'
 > 
-> This must had been asked on v1 but there's no trace of it in the
-> current submission afaict...
+> sed can do the grepping for you:
+> 
+> sed -n 's/.*"packets":\([0-9]\+\),.*/\1/p'
 
-No you're correct, this wasn't explained.
+Yes, thank you, that would have been shorter!
 
-> If the tag is passed in the descriptor how is this not a pure
-> switchdev driver? The explanation must be preserved somehow.
+> But really grepping JSON output seems weird. Why not use jq?
 
-The main reason is that although the MAC and switch are rightly coupled
-on that platform, the switch is actually a QC8K that can live on it's
-own, as an external switch. Here, it's just a slightly modified version
-of this IP.
+We started to use 'jq' because we originally had to extract a few values
+from this command. At the end, we only needed to extract the number of
+packets and we didn't want all MPTCP tests to depend on 'jq' just for that.
 
-The same goes for the MAC IP, but so far we don't support any other
-platform that have the MAC as a standalone controller. As far as we can
-tell, platforms that have this MAC also include a QCA8K, but the
-datasheet also mentions other modes (like outputing RGMII).
+But because 'jq' is already needed for a few other selftests, next time
+we need to parse a JSON, we should use 'jq'!
 
-Is this valid to have it as a standalone ethernet driver in that
-situation ?
-
-Thanks,
-
-Maxime
+Cheers,
+Matt
+-- 
+Tessares | Belgium | Hybrid Access Solutions
+www.tessares.net
