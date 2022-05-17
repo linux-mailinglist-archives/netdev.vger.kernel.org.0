@@ -2,122 +2,250 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C2B46529CFB
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 10:55:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B76529D06
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 10:55:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243858AbiEQIzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 04:55:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59816 "EHLO
+        id S243292AbiEQIzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 04:55:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59888 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243841AbiEQIyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:54:55 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EF4843AFF
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 01:54:53 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id w4so23716119wrg.12
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 01:54:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=solid-run-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UVdywUTBgu9XAfLc/SG8dfQa8tykDs7XjfwadMtClU0=;
-        b=BZchBGQc/GtA3wCFmG7VyrDobefRmHDj7WuZh8oYC5pFp0wodDj8SSYaxgKDFyufJU
-         Rb5iN7Yw6vMedYRrJ8q61nmRv0CCqT8yaKe0cayYW1jrvCmdCIP4FN3chIG9MiTDXtDY
-         u0FIPjUGTwvdpHbTg7CkF6VLPAr48Pt/ozR+mCwB2ZQX+AaJ0/aSdl/3DxGrhmc6Qj/e
-         vsiKISMr8bV4aTsA7saWm+eOBCuFazlRcD+oHma8yc9f/ge7k491oy7zhrDR1sD7hFrf
-         FalnO5hadudCdnySACMyUiTiYzCB7BbuyPGPLt8DiCONoRNe3GM28KnFufl6xmXspePw
-         l2lg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UVdywUTBgu9XAfLc/SG8dfQa8tykDs7XjfwadMtClU0=;
-        b=NAGcml7VcQIYOJ60nnZI9UGRFoNzNrgEVCcoKqciYcY34tlX93IzU6eITBEwM9bxlY
-         U8CwCtUgcuCP5xKpi95G4y77fkm4lAbpD+xRzFTiAuYzI4tck8TZHzl0fsd0EHust+s7
-         8u1dykiDsHbnhUJ3GO75maVS96WJYCX635UAgYeQo+Yw3MbOzETcuUJc+0R0LWPJnTcs
-         KsVEAlzPyUZOHPMTpM3GlX4ikUomrmBfDq1TolI7MXyarVnf0ZS6HQ/zKvSi/hDoGDt9
-         xXRjF3yFUtXYiOr+cw6M90HS31+ClrYVwbbV1j478brS2EB3dLP7leMu87y2vobb9NI2
-         YT4A==
-X-Gm-Message-State: AOAM532mhNDVabHy25uyO5fzAMf4T+PwkUKanIB+/2DUQt+ZQynga9BI
-        31L4lzlNjQUCS6bp8s+qgdSktfbKKn6EcSD8EIw=
-X-Google-Smtp-Source: ABdhPJwcua4z0TLg5bABdHbXhH1PCSvqbvtfzVirJ3AkRZOO0hCBazlxjzE7V5EK2NTeJ5R/D9SYLA==
-X-Received: by 2002:a5d:6802:0:b0:20d:295:cca2 with SMTP id w2-20020a5d6802000000b0020d0295cca2mr10590554wru.394.1652777691621;
-        Tue, 17 May 2022 01:54:51 -0700 (PDT)
-Received: from localhost.localdomain (bzq-82-81-54-179.red.bezeqint.net. [82.81.54.179])
-        by smtp.gmail.com with ESMTPSA id c13-20020adfa70d000000b0020c5253d8bfsm11880386wrd.11.2022.05.17.01.54.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 01:54:51 -0700 (PDT)
-From:   Josua Mayer <josua@solid-run.com>
-To:     netdev@vger.kernel.org
-Cc:     alvaro.karsz@solid-run.com, Josua Mayer <josua@solid-run.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: [PATCH v5 3/3] ARM: dts: imx6qdl-sr-som: update phy configuration for som revision 1.9
-Date:   Tue, 17 May 2022 11:54:31 +0300
-Message-Id: <20220517085431.3895-3-josua@solid-run.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220517085431.3895-1-josua@solid-run.com>
-References: <20220517085143.3749-1-josua@solid-run.com>
- <20220517085431.3895-1-josua@solid-run.com>
+        with ESMTP id S243941AbiEQIz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 04:55:29 -0400
+Received: from smtp-bc09.mail.infomaniak.ch (smtp-bc09.mail.infomaniak.ch [45.157.188.9])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 474403D1DE
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 01:55:23 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4L2VLx4cxKzMrTWd;
+        Tue, 17 May 2022 10:55:21 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4L2VLx0xYXzlhRVc;
+        Tue, 17 May 2022 10:55:21 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1652777721;
+        bh=PSakxMZa2ENrfbPThO9EjGiNwbTp6IgIWB3RwrcmPDc=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=PWyAkHJzfr+B1dmEDzucXSJgD4AXqAixOojAjNcz2R/ik4UUCI8pD5ADpSnmciyb/
+         cb7cuSrKFX6+hqoR54dy+DTxPmZ3Z/lZBfadjTpkDsM4HFUNYuCBarM3F33nBorLvY
+         0HQUPDt1WaGrbpq1Gss/7ogPOsdmWu1ZQ/BdIvtY=
+Message-ID: <e2c67180-3ec5-f710-710a-0c2644bfa54e@digikod.net>
+Date:   Tue, 17 May 2022 10:55:20 +0200
 MIME-Version: 1.0
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        anton.sirazetdinov@huawei.com
+References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
+ <20220516152038.39594-12-konstantin.meskhidze@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v5 11/15] seltests/landlock: connect() with AF_UNSPEC
+ tests
+In-Reply-To: <20220516152038.39594-12-konstantin.meskhidze@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since SoM revision 1.9 the PHY has been replaced with an ADIN1300,
-add an entry for it next to the original.
+I guess these tests would also work with IPv6. You can then use the 
+"alternative" tests I explained.
 
-As Russell King pointed out, additional phy nodes cause warnings like:
-mdio_bus 2188000.ethernet-1: MDIO device at address 1 is missing
-To avoid this the new node has its status set to disabled. U-Boot will
-be modified to enable the appropriate phy node after probing.
+On 16/05/2022 17:20, Konstantin Meskhidze wrote:
+> Adds two selftests for connect() action with
+> AF_UNSPEC family flag.
+> The one is with no landlock restrictions
+> allows to disconnect already conneted socket
+> with connect(..., AF_UNSPEC, ...):
+>      - connect_afunspec_no_restictions;
+> The second one refuses landlocked process
+> to disconnect already connected socket:
+>      - connect_afunspec_with_restictions;
+> 
+> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+> ---
+> 
+> Changes since v3:
+> * Add connect_afunspec_no_restictions test.
+> * Add connect_afunspec_with_restictions test.
+> 
+> Changes since v4:
+> * Refactoring code with self->port, self->addr4 variables.
+> * Adds bind() hook check for with AF_UNSPEC family.
+> 
+> ---
+>   tools/testing/selftests/landlock/net_test.c | 121 ++++++++++++++++++++
+>   1 file changed, 121 insertions(+)
+> 
+> diff --git a/tools/testing/selftests/landlock/net_test.c b/tools/testing/selftests/landlock/net_test.c
+> index cf914d311eb3..bf8e49466d1d 100644
+> --- a/tools/testing/selftests/landlock/net_test.c
+> +++ b/tools/testing/selftests/landlock/net_test.c
+> @@ -449,6 +449,7 @@ TEST_F_FORK(socket_test, connect_with_restrictions_ip6) {
+>   	int new_fd;
+>   	int sockfd_1, sockfd_2;
+>   	pid_t child_1, child_2;
+> +
+>   	int status;
+> 
+>   	struct landlock_ruleset_attr ruleset_attr = {
+> @@ -467,10 +468,12 @@ TEST_F_FORK(socket_test, connect_with_restrictions_ip6) {
+> 
+>   	const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
+>   			sizeof(ruleset_attr), 0);
+> +
 
-The existing ar8035 nodes have to stay enabled by default to avoid
-breaking existing systems when they update Linux only.
+Please no…
 
-Co-developed-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Signed-off-by: Alvaro Karsz <alvaro.karsz@solid-run.com>
-Signed-off-by: Josua Mayer <josua@solid-run.com>
----
-V2 -> V3: new phy node status set disabled
-V1 -> V2: changed dts property name
 
- arch/arm/boot/dts/imx6qdl-sr-som.dtsi | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+>   	ASSERT_LE(0, ruleset_fd);
+> 
+>   	/* Allows connect and bind operations to the port[0] socket */
+>   	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+> +
 
-diff --git a/arch/arm/boot/dts/imx6qdl-sr-som.dtsi b/arch/arm/boot/dts/imx6qdl-sr-som.dtsi
-index f86efd0ccc40..ce543e325cd3 100644
---- a/arch/arm/boot/dts/imx6qdl-sr-som.dtsi
-+++ b/arch/arm/boot/dts/imx6qdl-sr-som.dtsi
-@@ -83,6 +83,16 @@ ethernet-phy@4 {
- 			qca,clk-out-frequency = <125000000>;
- 			qca,smarteee-tw-us-1g = <24>;
- 		};
-+
-+		/*
-+		 * ADIN1300 (som rev 1.9 or later) is always at address 1. It
-+		 * will be enabled automatically by U-Boot if detected.
-+		 */
-+		ethernet-phy@1 {
-+			reg = <1>;
-+			adi,phy-output-clock = "125mhz-free-running";
-+			status = "disabled";
-+		};
- 	};
- };
- 
--- 
-2.35.3
+ditto
 
+>   				&net_service_1, 0));
+>   	/* Allows connect and deny bind operations to the port[1] socket */
+>   	ASSERT_EQ(0, landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+> @@ -480,6 +483,7 @@ TEST_F_FORK(socket_test, connect_with_restrictions_ip6) {
+>   	enforce_ruleset(_metadata, ruleset_fd);
+> 
+>   	/* Creates a server socket 1 */
+> +
+>   	sockfd_1 = create_socket(_metadata, true, false);
+>   	ASSERT_LE(0, sockfd_1);
+> 
+> @@ -556,4 +560,121 @@ TEST_F_FORK(socket_test, connect_with_restrictions_ip6) {
+>   	ASSERT_EQ(1, WIFEXITED(status));
+>   	ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
+>   }
+> +
+> +TEST_F_FORK(socket_test, connect_afunspec_no_restictions) {
+> +
+> +	int sockfd;
+> +	pid_t child;
+> +	int status;
+> +
+> +	/* Creates a server socket 1 */
+> +	sockfd = create_socket(_metadata, false, false);
+> +	ASSERT_LE(0, sockfd);
+> +
+> +	/* Binds the socket 1 to address with port[0] with AF_UNSPEC family */
+> +	self->addr4[0].sin_family = AF_UNSPEC;
+> +	ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr4[0], sizeof(self->addr4[0])));
+> +
+> +	/* Makes connection to socket with port[0] */
+> +	ASSERT_EQ(0, connect(sockfd, (struct sockaddr *)&self->addr4[0],
+> +						   sizeof(self->addr4[0])));
+> +
+> +	child = fork();
+> +	ASSERT_LE(0, child);
+> +	if (child == 0) {
+> +		struct sockaddr addr_unspec = {.sa_family = AF_UNSPEC};
+> +
+> +		/* Child tries to disconnect already connected socket */
+> +		ASSERT_EQ(0, connect(sockfd, (struct sockaddr *)&addr_unspec,
+> +						sizeof(addr_unspec)));
+> +		_exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
+> +		return;
+> +	}
+> +	/* Closes listening socket 1 for the parent*/
+> +	ASSERT_EQ(0, close(sockfd));
+> +
+> +	ASSERT_EQ(child, waitpid(child, &status, 0));
+> +	ASSERT_EQ(1, WIFEXITED(status));
+> +	ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
+> +}
+> +
+> +TEST_F_FORK(socket_test, connect_afunspec_with_restictions) {
+> +
+> +	int sockfd;
+> +	pid_t child;
+> +	int status;
+> +
+> +	struct landlock_ruleset_attr ruleset_attr_1 = {
+> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP,
+> +	};
+> +	struct landlock_net_service_attr net_service_1 = {
+> +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP,
+> +
+> +		.port = self->port[0],
+> +	};
+> +
+> +	struct landlock_ruleset_attr ruleset_attr_2 = {
+> +		.handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
+> +				      LANDLOCK_ACCESS_NET_CONNECT_TCP,
+> +	};
+> +	struct landlock_net_service_attr net_service_2 = {
+> +		.allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
+> +				  LANDLOCK_ACCESS_NET_CONNECT_TCP,
+> +
+> +		.port = self->port[0],
+> +	};
+> +
+> +	const int ruleset_fd_1 = landlock_create_ruleset(&ruleset_attr_1,
+> +					sizeof(ruleset_attr_1), 0);
+> +	ASSERT_LE(0, ruleset_fd_1);
+> +
+> +	/* Allows bind operations to the port[0] socket */
+> +	ASSERT_EQ(0, landlock_add_rule(ruleset_fd_1, LANDLOCK_RULE_NET_SERVICE,
+> +				       &net_service_1, 0));
+> +
+> +	/* Enforces the ruleset. */
+> +	enforce_ruleset(_metadata, ruleset_fd_1);
+> +
+> +	/* Creates a server socket 1 */
+> +	sockfd = create_socket(_metadata, false, false);
+> +	ASSERT_LE(0, sockfd);
+> +
+> +	/* Binds the socket 1 to address with port[0] with AF_UNSPEC family */
+> +	self->addr4[0].sin_family = AF_UNSPEC;
+> +	ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr4[0], sizeof(self->addr4[0])));
+> +
+> +	/* Makes connection to socket with port[0] */
+> +	ASSERT_EQ(0, connect(sockfd, (struct sockaddr *)&self->addr4[0],
+> +						   sizeof(self->addr4[0])));
+> +
+> +	const int ruleset_fd_2 = landlock_create_ruleset(&ruleset_attr_2,
+> +					sizeof(ruleset_attr_2), 0);
+> +	ASSERT_LE(0, ruleset_fd_2);
+> +
+> +	/* Allows connect and bind operations to the port[0] socket */
+> +	ASSERT_EQ(0, landlock_add_rule(ruleset_fd_2, LANDLOCK_RULE_NET_SERVICE,
+> +				       &net_service_2, 0));
+> +
+> +	/* Enforces the ruleset. */
+> +	enforce_ruleset(_metadata, ruleset_fd_2);
+> +
+> +	child = fork();
+> +	ASSERT_LE(0, child);
+> +	if (child == 0) {
+> +		struct sockaddr addr_unspec = {.sa_family = AF_UNSPEC};
+> +
+> +		/* Child tries to disconnect already connected socket */
+> +		ASSERT_EQ(-1, connect(sockfd, (struct sockaddr *)&addr_unspec,
+> +						sizeof(addr_unspec)));
+> +		ASSERT_EQ(EACCES, errno);
+> +		_exit(_metadata->passed ? EXIT_SUCCESS : EXIT_FAILURE);
+> +		return;
+> +	}
+> +	/* Closes listening socket 1 for the parent*/
+> +	ASSERT_EQ(0, close(sockfd));
+> +
+> +	ASSERT_EQ(child, waitpid(child, &status, 0));
+> +	ASSERT_EQ(1, WIFEXITED(status));
+> +	ASSERT_EQ(EXIT_SUCCESS, WEXITSTATUS(status));
+> +}
+>   TEST_HARNESS_MAIN
+> --
+> 2.25.1
+> 
