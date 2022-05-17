@@ -2,1908 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E0325529D56
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 11:06:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E23EA529D98
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 11:12:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243043AbiEQJFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 05:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53214 "EHLO
+        id S242195AbiEQJMn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 05:12:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244156AbiEQJFB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 05:05:01 -0400
-Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 467DE49243;
-        Tue, 17 May 2022 02:04:55 -0700 (PDT)
-Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id 1311020F7234; Tue, 17 May 2022 02:04:55 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 1311020F7234
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-        s=default; t=1652778295;
-        bh=Ebyp1CS2eIB2LwzQbU/+XADNWhULVBHblvKjTztu9ps=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
-        b=aMmyerRaWZjB3hMUkbqYqk1WrTVgD9FQKknM6xBpH0IwG0clPWuPhTrn/Pe/BrTPj
-         OgroyDXQDFr7YXw+NPBhQfoI+CWJ6z4QKUmL7A6oAwFcd/Pu+vlif/qUN2ufSGmojL
-         jCz9d5mbW+PqLERxcAR3rg+20sUgF7PubUHBJ4c0=
-From:   longli@linuxonhyperv.com
-To:     "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>
-Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Long Li <longli@microsoft.com>
-Subject: [PATCH 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure Network Adapter
-Date:   Tue, 17 May 2022 02:04:36 -0700
-Message-Id: <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
-References: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
-Reply-To: longli@microsoft.com
-X-Spam-Status: No, score=-11.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S236928AbiEQJMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 05:12:40 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6E83057B;
+        Tue, 17 May 2022 02:12:38 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id dk23so33408865ejb.8;
+        Tue, 17 May 2022 02:12:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=BgDU9fhsQSG+UfnfYe18eXVUWeFGjRtFkW3QUNM2fOY=;
+        b=dguU8/P7nfzqHVCkIZrjMnamO9AalalQQpGrXwoRfTvufVscFRjDtp5DvjoPZ/uwpf
+         Yj8nH/V0sPei8GfdEnedeCeLfh7gYGJ8ghSMxDtVBXp5RD+WnUQvO1D0B0xC9/Th9MXY
+         yFn8UG4SW49GOSVSzl2jhVqjLSzwxikAcMbikqSWsQPqd/Cm4x4Fn86hvCY++CZRLmcM
+         pxRUfUTSfbHirhWHZCeKmWlkMD5pS8pVjFC8VVSzVaNQ80+LW1MKZ1gBHgYg03f1y3dU
+         FPfhM4saA7a3wXTMbumzr72ypZXG0bnI0Mmj5c4w+B84Xnx3Q4bubZUISS5gtbcMql5e
+         3/Hw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BgDU9fhsQSG+UfnfYe18eXVUWeFGjRtFkW3QUNM2fOY=;
+        b=fH8+jDnteQIKjTeFmnibA/+aC62srAHzXEU/GXukU8VPNAC8QzrvWutNRj1As+v17J
+         XJpScZCkssuXY0IMztYYnPnJJBD7OaO4ZfemhK3qpjYgViE5BG+5Hp6KQNuyNGU5yzrc
+         oHM+ZoS7kF3X2JIswH5sSc84HMKHIAVvwkb6+exllIvVdlgoLtFV/30Gh38yAFcqBvPl
+         1CgkeV14NYcmfMpJ/4kWiz7fNaxoXPVY5SjJ/2fgzQ4dfPzwHDvSwr9TmDIXguDvLZkt
+         VDV+HZTouNMfOEPPmUAif8Zu0KIwAKN1h70i/P8CEg8HZzUwLr/DFrXha5ZnWi6ZeGHi
+         LYZg==
+X-Gm-Message-State: AOAM531LGfIferzZgTyg96rz8hCkVASq0ONLaCG7hTamve5KBUK1bGPW
+        oSWF7Rvrgoh04KdJL3WOUOc=
+X-Google-Smtp-Source: ABdhPJxKUMYwTEXN3NpfSfOr/9/MQXA3sElAQirl1mIYM14YxBChhAMaXIh1pSAVBPw+HDbRGkzuhg==
+X-Received: by 2002:a17:906:8585:b0:6f3:99f0:d061 with SMTP id v5-20020a170906858500b006f399f0d061mr18421335ejx.436.1652778756914;
+        Tue, 17 May 2022 02:12:36 -0700 (PDT)
+Received: from krava ([193.85.244.190])
+        by smtp.gmail.com with ESMTPSA id x12-20020aa7cd8c000000b0042aa08c7799sm4589479edv.62.2022.05.17.02.12.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 02:12:36 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Tue, 17 May 2022 11:12:34 +0200
+To:     Eugene Syromiatnikov <esyr@redhat.com>
+Cc:     Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH bpf-next v3 4/4] bpf_trace: pass array of u64 values in
+ kprobe_multi.addrs
+Message-ID: <YoNnAgDsIWef82is@krava>
+References: <cover.1652772731.git.esyr@redhat.com>
+ <6ef675aeeea442fa8fc168cd1cb4e4e474f65a3f.1652772731.git.esyr@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6ef675aeeea442fa8fc168cd1cb4e4e474f65a3f.1652772731.git.esyr@redhat.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Long Li <longli@microsoft.com>
+On Tue, May 17, 2022 at 09:36:47AM +0200, Eugene Syromiatnikov wrote:
+> With the interface as defined, it is impossible to pass 64-bit kernel
+> addresses from a 32-bit userspace process in BPF_LINK_TYPE_KPROBE_MULTI,
+> which severly limits the useability of the interface, change the ABI
+> to accept an array of u64 values instead of (kernel? user?) longs.
+> Interestingly, the rest of the libbpf infrastructure uses 64-bit values
+> for kallsyms addresses already, so this patch also eliminates
+> the sym_addr cast in tools/lib/bpf/libbpf.c:resolve_kprobe_multi_cb().
 
-Add a RDMA VF driver for Microsoft Azure Network Adapter (MANA).
+so the problem is when we have 32bit user sace on 64bit kernel right?
 
-Signed-off-by: Long Li <longli@microsoft.com>
----
- MAINTAINERS                             |   3 +
- drivers/infiniband/Kconfig              |   1 +
- drivers/infiniband/hw/Makefile          |   1 +
- drivers/infiniband/hw/mana/Kconfig      |   7 +
- drivers/infiniband/hw/mana/Makefile     |   4 +
- drivers/infiniband/hw/mana/cq.c         |  74 +++
- drivers/infiniband/hw/mana/main.c       | 679 ++++++++++++++++++++++++
- drivers/infiniband/hw/mana/mana_ib.h    | 145 +++++
- drivers/infiniband/hw/mana/mr.c         | 133 +++++
- drivers/infiniband/hw/mana/qp.c         | 466 ++++++++++++++++
- drivers/infiniband/hw/mana/wq.c         | 111 ++++
- include/linux/mana/mana.h               |   3 +
- include/uapi/rdma/ib_user_ioctl_verbs.h |   1 +
- include/uapi/rdma/mana-abi.h            |  68 +++
- 14 files changed, 1696 insertions(+)
- create mode 100644 drivers/infiniband/hw/mana/Kconfig
- create mode 100644 drivers/infiniband/hw/mana/Makefile
- create mode 100644 drivers/infiniband/hw/mana/cq.c
- create mode 100644 drivers/infiniband/hw/mana/main.c
- create mode 100644 drivers/infiniband/hw/mana/mana_ib.h
- create mode 100644 drivers/infiniband/hw/mana/mr.c
- create mode 100644 drivers/infiniband/hw/mana/qp.c
- create mode 100644 drivers/infiniband/hw/mana/wq.c
- create mode 100644 include/uapi/rdma/mana-abi.h
+I think we should keep addrs as longs in uapi and have kernel to figure out
+if it needs to read u32 or u64, like you did for symbols in previous patch
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 268c68dc40dc..5185532c0fd2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9078,6 +9078,7 @@ M:	Haiyang Zhang <haiyangz@microsoft.com>
- M:	Stephen Hemminger <sthemmin@microsoft.com>
- M:	Wei Liu <wei.liu@kernel.org>
- M:	Dexuan Cui <decui@microsoft.com>
-+M:	Long Li <longli@microsoft.com>
- L:	linux-hyperv@vger.kernel.org
- S:	Supported
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/hyperv/linux.git
-@@ -9095,6 +9096,7 @@ F:	arch/x86/kernel/cpu/mshyperv.c
- F:	drivers/clocksource/hyperv_timer.c
- F:	drivers/hid/hid-hyperv.c
- F:	drivers/hv/
-+F:	drivers/infiniband/hw/mana/
- F:	drivers/input/serio/hyperv-keyboard.c
- F:	drivers/iommu/hyperv-iommu.c
- F:	drivers/net/ethernet/microsoft/
-@@ -9110,6 +9112,7 @@ F:	include/clocksource/hyperv_timer.h
- F:	include/linux/hyperv.h
- F:	include/mana/
- F:	include/uapi/linux/hyperv.h
-+F:	include/uapi/rdma/mana-abi.h
- F:	net/vmw_vsock/hyperv_transport.c
- F:	tools/hv/
- 
-diff --git a/drivers/infiniband/Kconfig b/drivers/infiniband/Kconfig
-index 33d3ce9c888e..a062c662ecff 100644
---- a/drivers/infiniband/Kconfig
-+++ b/drivers/infiniband/Kconfig
-@@ -83,6 +83,7 @@ source "drivers/infiniband/hw/qib/Kconfig"
- source "drivers/infiniband/hw/cxgb4/Kconfig"
- source "drivers/infiniband/hw/efa/Kconfig"
- source "drivers/infiniband/hw/irdma/Kconfig"
-+source "drivers/infiniband/hw/mana/Kconfig"
- source "drivers/infiniband/hw/mlx4/Kconfig"
- source "drivers/infiniband/hw/mlx5/Kconfig"
- source "drivers/infiniband/hw/ocrdma/Kconfig"
-diff --git a/drivers/infiniband/hw/Makefile b/drivers/infiniband/hw/Makefile
-index fba0b3be903e..f62e9e00c780 100644
---- a/drivers/infiniband/hw/Makefile
-+++ b/drivers/infiniband/hw/Makefile
-@@ -4,6 +4,7 @@ obj-$(CONFIG_INFINIBAND_QIB)		+= qib/
- obj-$(CONFIG_INFINIBAND_CXGB4)		+= cxgb4/
- obj-$(CONFIG_INFINIBAND_EFA)		+= efa/
- obj-$(CONFIG_INFINIBAND_IRDMA)		+= irdma/
-+obj-$(CONFIG_MANA_INFINIBAND)		+= mana/
- obj-$(CONFIG_MLX4_INFINIBAND)		+= mlx4/
- obj-$(CONFIG_MLX5_INFINIBAND)		+= mlx5/
- obj-$(CONFIG_INFINIBAND_OCRDMA)		+= ocrdma/
-diff --git a/drivers/infiniband/hw/mana/Kconfig b/drivers/infiniband/hw/mana/Kconfig
-new file mode 100644
-index 000000000000..b3ff03a23257
---- /dev/null
-+++ b/drivers/infiniband/hw/mana/Kconfig
-@@ -0,0 +1,7 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+config MANA_INFINIBAND
-+	tristate "Microsoft Azure Network Adapter support"
-+	depends on NETDEVICES && ETHERNET && PCI && MICROSOFT_MANA
-+	help
-+	  This driver provides low-level RDMA support for
-+	  Microsoft Azure Network Adapter (MANA).
-diff --git a/drivers/infiniband/hw/mana/Makefile b/drivers/infiniband/hw/mana/Makefile
-new file mode 100644
-index 000000000000..a799fe264c5a
---- /dev/null
-+++ b/drivers/infiniband/hw/mana/Makefile
-@@ -0,0 +1,4 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+obj-$(CONFIG_MANA_INFINIBAND) += mana_ib.o
-+
-+mana_ib-y := main.o wq.o qp.o cq.o mr.o
-diff --git a/drivers/infiniband/hw/mana/cq.c b/drivers/infiniband/hw/mana/cq.c
-new file mode 100644
-index 000000000000..0eac77c97658
---- /dev/null
-+++ b/drivers/infiniband/hw/mana/cq.c
-@@ -0,0 +1,74 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/*
-+ * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
-+ */
-+
-+#include "mana_ib.h"
-+
-+int mana_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
-+		struct ib_udata *udata)
-+{
-+	struct mana_ib_create_cq ucmd = {};
-+	struct ib_device *ibdev = ibcq->device;
-+	struct mana_ib_dev *mdev =
-+		container_of(ibdev, struct mana_ib_dev, ib_dev);
-+	struct mana_ib_cq *cq = container_of(ibcq, struct mana_ib_cq, ibcq);
-+	int err;
-+
-+	err = ib_copy_from_udata(&ucmd, udata, min(sizeof(ucmd), udata->inlen));
-+	if (err) {
-+		pr_err("Failed to copy from udata for create cq, %d\n", err);
-+		return -EFAULT;
-+	}
-+
-+	if (attr->cqe > MAX_SEND_BUFFERS_PER_QUEUE) {
-+		pr_err("CQE %d exceeding limit\n", attr->cqe);
-+		return -EINVAL;
-+	}
-+	cq->cqe = attr->cqe;
-+
-+	pr_debug("ucmd buf_addr 0x%llx\n", ucmd.buf_addr);
-+
-+	cq->umem = ib_umem_get(ibdev, ucmd.buf_addr,
-+			       cq->cqe * COMP_ENTRY_SIZE,
-+			       IB_ACCESS_LOCAL_WRITE);
-+	if (IS_ERR(cq->umem)) {
-+		err = PTR_ERR(cq->umem);
-+		pr_err("Failed to get umem for create cq, err %d\n", err);
-+		return err;
-+	}
-+
-+	err = mana_ib_gd_create_dma_region(mdev, cq->umem, &cq->gdma_region,
-+					   PAGE_SIZE);
-+	if (err) {
-+		pr_err("Failed to create dma region for create cq, %d\n", err);
-+		goto err_release_umem;
-+	}
-+
-+	pr_debug("%s: mana_ib_gd_create_dma_region ret %d gdma_region 0x%llx\n",
-+		__func__, err, cq->gdma_region);
-+
-+	/*
-+	 * The CQ ID is not known at this time
-+	 * The ID is generated at create_qp
-+	 */
-+
-+	return 0;
-+
-+err_release_umem:
-+	ib_umem_release(cq->umem);
-+	return err;
-+}
-+
-+int mana_ib_destroy_cq(struct ib_cq *ibcq, struct ib_udata *udata)
-+{
-+	struct mana_ib_cq *cq = container_of(ibcq, struct mana_ib_cq, ibcq);
-+	struct ib_device *ibdev = ibcq->device;
-+	struct mana_ib_dev *mdev =
-+		container_of(ibdev, struct mana_ib_dev, ib_dev);
-+
-+	mana_ib_gd_destroy_dma_region(mdev, cq->gdma_region);
-+	ib_umem_release(cq->umem);
-+
-+	return 0;
-+}
-diff --git a/drivers/infiniband/hw/mana/main.c b/drivers/infiniband/hw/mana/main.c
-new file mode 100644
-index 000000000000..e288495e3ede
---- /dev/null
-+++ b/drivers/infiniband/hw/mana/main.c
-@@ -0,0 +1,679 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/*
-+ * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
-+ */
-+
-+#include "mana_ib.h"
-+
-+MODULE_DESCRIPTION("Microsoft Azure Network Adapter IB driver");
-+MODULE_LICENSE("Dual BSD/GPL");
-+
-+static const struct auxiliary_device_id mana_id_table[] = {
-+	{ .name = "mana.rdma", },
-+	{},
-+};
-+
-+MODULE_DEVICE_TABLE(auxiliary, mana_id_table);
-+
-+void mana_ib_uncfg_vport(struct mana_ib_dev *dev,
-+			 struct mana_ib_pd *pd, u32 port)
-+{
-+	struct gdma_dev *gd = dev->gdma_dev;
-+	struct mana_context *mc = gd->driver_data;
-+	struct net_device *ndev;
-+	struct mana_port_context *mpc;
-+
-+	ndev = mc->ports[port];
-+	mpc = netdev_priv(ndev);
-+
-+	if (atomic_dec_and_test(&pd->vport_use_count))
-+		mana_uncfg_vport(mpc);
-+}
-+
-+int mana_ib_cfg_vport(struct mana_ib_dev *dev, u32 port, struct mana_ib_pd *pd,
-+		      u32 doorbell_id)
-+{
-+	struct gdma_dev *mdev = dev->gdma_dev;
-+	struct mana_context *mc = mdev->driver_data;
-+	struct net_device *ndev = mc->ports[port];
-+	struct mana_port_context *mpc = netdev_priv(ndev);
-+
-+	int err;
-+
-+	if (atomic_inc_return(&pd->vport_use_count) > 1) {
-+		pr_debug("Skip as this PD is already configured vport\n");
-+		return 0;
-+	}
-+
-+	err = mana_cfg_vport(mpc, pd->pdn, doorbell_id);
-+	if (err) {
-+		pr_err("mana_cfg_vport err %d\n", err);
-+		atomic_dec(&pd->vport_use_count);
-+		return err;
-+	}
-+
-+	pd->tx_shortform_allowed = mpc->tx_shortform_allowed;
-+	pd->tx_vp_offset = mpc->tx_vp_offset;
-+
-+	pr_debug("vport handle %llx pdid %x doorbell_id %x "
-+		 "tx_shortform_allowed %d tx_vp_offset %u\n",
-+		 mpc->port_handle, pd->pdn, doorbell_id,
-+		 pd->tx_shortform_allowed, pd->tx_vp_offset);
-+
-+	return 0;
-+}
-+
-+static int mana_ib_alloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)
-+{
-+	struct mana_ib_pd *pd = container_of(ibpd, struct mana_ib_pd, ibpd);
-+	struct ib_device *ibdev = ibpd->device;
-+	struct mana_ib_dev *dev =
-+		container_of(ibdev, struct mana_ib_dev, ib_dev);
-+
-+	int ret;
-+	enum gdma_pd_flags flags = 0;
-+
-+	// Set flags if this is a kernel request
-+	if (ibpd->uobject == NULL)
-+		flags =  GDMA_PD_FLAG_ALLOW_GPA_MR | GDMA_PD_FLAG_ALLOW_FMR_MR;
-+
-+	ret = mana_ib_gd_create_pd(dev, &pd->pd_handle, &pd->pdn, flags);
-+	if (ret)
-+		pr_err("Failed to get pd id, err %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static int mana_ib_dealloc_pd(struct ib_pd *ibpd, struct ib_udata *udata)
-+{
-+	struct mana_ib_pd *pd = container_of(ibpd, struct mana_ib_pd, ibpd);
-+	struct ib_device *ibdev = ibpd->device;
-+	struct mana_ib_dev *dev = container_of(
-+			ibdev, struct mana_ib_dev, ib_dev);
-+
-+	return mana_ib_gd_destroy_pd(dev, pd->pd_handle);
-+}
-+
-+static int mana_ib_alloc_ucontext(struct ib_ucontext *ibcontext,
-+				  struct ib_udata *udata)
-+{
-+	struct mana_ib_ucontext *ucontext =
-+		container_of(ibcontext, struct mana_ib_ucontext, ibucontext);
-+	struct ib_device *ibdev = ibcontext->device;
-+	struct mana_ib_dev *mdev =
-+			container_of(ibdev, struct mana_ib_dev, ib_dev);
-+	struct gdma_dev *dev = mdev->gdma_dev;
-+	struct gdma_context *gc = dev->gdma_context;
-+	int doorbell_page;
-+	int ret;
-+
-+	// Allocate a doorbell page index
-+	ret = mana_gd_allocate_doorbell_page(gc, &doorbell_page);
-+	if (ret) {
-+		pr_err("Failed to allocate doorbell page %d\n", ret);
-+		return -ENOMEM;
-+	}
-+
-+	pr_debug("Doorbell page allocated %d\n", doorbell_page);
-+
-+	ucontext->doorbell = doorbell_page;
-+
-+	return 0;
-+}
-+
-+static void mana_ib_dealloc_ucontext(struct ib_ucontext *ibcontext)
-+{
-+	struct mana_ib_ucontext *mana_ucontext =
-+		container_of(ibcontext, struct mana_ib_ucontext, ibucontext);
-+	struct ib_device *ibdev = ibcontext->device;
-+	struct mana_ib_dev *mdev =
-+		container_of(ibdev, struct mana_ib_dev, ib_dev);
-+	struct gdma_context *gc = mdev->gdma_dev->gdma_context;
-+	int ret;
-+
-+	ret = mana_gd_destroy_doorbell_page(gc, mana_ucontext->doorbell);
-+	if (ret)
-+		pr_err("Failed to destroy doorbell page %d\n", ret);
-+}
-+
-+static inline enum atb_page_size mana_ib_get_atb_page_size(u64 page_sz)
-+{
-+	int pos = 0;
-+
-+	page_sz = (page_sz >> 12); //start with 4k
-+
-+	while (page_sz) {
-+		pos++;
-+		page_sz = (page_sz >> 1);
-+	}
-+	return (enum atb_page_size)(pos - 1);
-+}
-+
-+static int _mana_ib_gd_create_dma_region(struct mana_ib_dev *dev,
-+					 const dma_addr_t *page_addr_array,
-+					 size_t num_pages_total,
-+					 u64 address, u64 length,
-+					 mana_handle_t *gdma_region,
-+					 u64 page_sz)
-+{
-+	struct gdma_dev *mdev = dev->gdma_dev;
-+	struct gdma_context *gc = mdev->gdma_context;
-+	struct hw_channel_context *hwc = gc->hwc.driver_data;
-+	size_t num_pages_cur, num_pages_to_handle;
-+	unsigned int create_req_msg_size;
-+	unsigned int i;
-+	struct gdma_dma_region_add_pages_req *add_req = NULL;
-+	int err;
-+
-+	struct gdma_create_dma_region_req *create_req;
-+	struct gdma_create_dma_region_resp create_resp = {};
-+
-+	size_t max_pgs_create_cmd = (hwc->max_req_msg_size -
-+				     sizeof(*create_req)) / sizeof(u64);
-+
-+	num_pages_to_handle = min_t(size_t, num_pages_total,
-+				    max_pgs_create_cmd);
-+	create_req_msg_size = struct_size(create_req, page_addr_list,
-+					  num_pages_to_handle);
-+
-+	create_req = kzalloc(create_req_msg_size, GFP_KERNEL);
-+	if (!create_req)
-+		return -ENOMEM;
-+
-+	mana_gd_init_req_hdr(&create_req->hdr, GDMA_CREATE_DMA_REGION,
-+			     create_req_msg_size, sizeof(create_resp));
-+
-+	create_req->length = length;
-+	create_req->offset_in_page = address & (page_sz - 1);
-+	create_req->gdma_page_type = mana_ib_get_atb_page_size(page_sz);
-+	create_req->page_count = num_pages_total;
-+	create_req->page_addr_list_len = num_pages_to_handle;
-+
-+	pr_debug("size_dma_region %llu num_pages_total %lu, "
-+		 "page_sz 0x%llx offset_in_page %u\n",
-+		length, num_pages_total, page_sz, create_req->offset_in_page);
-+
-+	pr_debug("num_pages_to_handle %lu, gdma_page_type %u",
-+		 num_pages_to_handle, create_req->gdma_page_type);
-+
-+	for (i = 0; i < num_pages_to_handle; ++i) {
-+		dma_addr_t cur_addr = page_addr_array[i];
-+
-+		create_req->page_addr_list[i] = cur_addr;
-+
-+		pr_debug("page num %u cur_addr 0x%llx\n", i, cur_addr);
-+	}
-+
-+	err = mana_gd_send_request(gc, create_req_msg_size, create_req,
-+				   sizeof(create_resp), &create_resp);
-+	kfree(create_req);
-+
-+	if (err || create_resp.hdr.status) {
-+		dev_err(gc->dev, "Failed to create DMA region: %d, 0x%x\n",
-+			err, create_resp.hdr.status);
-+		goto error;
-+	}
-+
-+	*gdma_region = create_resp.dma_region_handle;
-+	pr_debug("Created DMA region with handle 0x%llx\n", *gdma_region);
-+
-+	num_pages_cur = num_pages_to_handle;
-+
-+	if (num_pages_cur < num_pages_total) {
-+
-+		unsigned int add_req_msg_size;
-+		size_t max_pgs_add_cmd = (hwc->max_req_msg_size -
-+					  sizeof(*add_req)) / sizeof(u64);
-+
-+		num_pages_to_handle = min_t(size_t,
-+					    num_pages_total - num_pages_cur,
-+					    max_pgs_add_cmd);
-+
-+		// Calculate the max num of pages that will be handled
-+		add_req_msg_size = struct_size(add_req, page_addr_list,
-+					       num_pages_to_handle);
-+
-+		add_req = kmalloc(add_req_msg_size, GFP_KERNEL);
-+		if (!add_req) {
-+			err = -ENOMEM;
-+			goto error;
-+		}
-+
-+		while (num_pages_cur < num_pages_total) {
-+			struct gdma_general_resp add_resp = {};
-+			u32 expected_status;
-+			int expected_ret;
-+
-+			if (num_pages_cur + num_pages_to_handle <
-+					num_pages_total) {
-+				// This value means that more pages are needed
-+				expected_status = GDMA_STATUS_MORE_ENTRIES;
-+				expected_ret = 0x0;
-+			} else {
-+				expected_status = 0x0;
-+				expected_ret = 0x0;
-+			}
-+
-+			memset(add_req, 0, add_req_msg_size);
-+
-+			mana_gd_init_req_hdr(&add_req->hdr,
-+					     GDMA_DMA_REGION_ADD_PAGES,
-+					     add_req_msg_size,
-+					     sizeof(add_resp));
-+			add_req->dma_region_handle = *gdma_region;
-+			add_req->page_addr_list_len = num_pages_to_handle;
-+
-+			for (i = 0; i < num_pages_to_handle; ++i) {
-+				dma_addr_t cur_addr =
-+					page_addr_array[num_pages_cur + i];
-+
-+				add_req->page_addr_list[i] = cur_addr;
-+
-+				pr_debug("page_addr_list %lu addr 0x%llx\n",
-+					 num_pages_cur + i, cur_addr);
-+			}
-+
-+			err = mana_gd_send_request(gc, add_req_msg_size,
-+						   add_req, sizeof(add_resp),
-+						   &add_resp);
-+			if (err != expected_ret ||
-+			    add_resp.hdr.status != expected_status) {
-+				dev_err(gc->dev,
-+					"Failed to put DMA pages %u: %d,0x%x\n",
-+					i, err, add_resp.hdr.status);
-+				err = -EPROTO;
-+				goto free_req;
-+			}
-+
-+			num_pages_cur += num_pages_to_handle;
-+			num_pages_to_handle = min_t(size_t,
-+						    num_pages_total -
-+							num_pages_cur,
-+						    max_pgs_add_cmd);
-+			add_req_msg_size = sizeof(*add_req) +
-+				num_pages_to_handle * sizeof(u64);
-+		}
-+free_req:
-+		kfree(add_req);
-+	}
-+
-+error:
-+	return err;
-+}
-+
-+
-+int mana_ib_gd_create_dma_region(struct mana_ib_dev *dev, struct ib_umem *umem,
-+				 mana_handle_t *dma_region_handle, u64 page_sz)
-+{
-+	size_t num_pages = ib_umem_num_dma_blocks(umem, page_sz);
-+	struct ib_block_iter biter;
-+	dma_addr_t *page_addr_array;
-+	unsigned int i = 0;
-+	int err;
-+
-+	pr_debug("num pages %lu umem->address 0x%lx\n",
-+		 num_pages, umem->address);
-+
-+	page_addr_array = kmalloc_array(num_pages,
-+					sizeof(*page_addr_array), GFP_KERNEL);
-+	if (!page_addr_array)
-+		return -ENOMEM;
-+
-+	rdma_umem_for_each_dma_block(umem, &biter, page_sz)
-+		page_addr_array[i++] = rdma_block_iter_dma_address(&biter);
-+
-+	err = _mana_ib_gd_create_dma_region(dev, page_addr_array, num_pages,
-+					    umem->address, umem->length,
-+					    dma_region_handle, page_sz);
-+
-+	kfree(page_addr_array);
-+
-+	return err;
-+}
-+
-+int mana_ib_gd_destroy_dma_region(struct mana_ib_dev *dev, u64 gdma_region)
-+{
-+	struct gdma_dev *mdev = dev->gdma_dev;
-+	struct gdma_context *gc = mdev->gdma_context;
-+
-+	pr_debug("%s: destroy dma region 0x%llx\n", __func__, gdma_region);
-+
-+	return mana_gd_destroy_dma_region(gc, gdma_region);
-+}
-+
-+int mana_ib_gd_create_pd(struct mana_ib_dev *dev, u64 *pd_handle, u32 *pd_id,
-+			 enum gdma_pd_flags flags)
-+{
-+	struct gdma_dev *mdev = dev->gdma_dev;
-+	struct gdma_context *gc = mdev->gdma_context;
-+	int err;
-+
-+	struct gdma_create_pd_req req = {};
-+	struct gdma_create_pd_resp resp = {};
-+
-+	mana_gd_init_req_hdr(&req.hdr, GDMA_CREATE_PD,
-+			     sizeof(req), sizeof(resp));
-+
-+	req.flags = flags;
-+	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
-+
-+	if (!err && !resp.hdr.status) {
-+		*pd_handle = resp.pd_handle;
-+		*pd_id = resp.pd_id;
-+		pr_debug("pd_handle 0x%llx pd_id %d\n", *pd_handle, *pd_id);
-+	} else {
-+		pr_err("Failed to get pd_id err %d status %u\n",
-+		       err, resp.hdr.status);
-+		if (!err)
-+			err = -EPROTO;
-+	}
-+	return err;
-+}
-+
-+int mana_ib_gd_destroy_pd(struct mana_ib_dev *dev, u64 pd_handle)
-+{
-+	struct gdma_dev *mdev = dev->gdma_dev;
-+	struct gdma_context *gc = mdev->gdma_context;
-+	int err;
-+
-+	struct gdma_destroy_pd_req req = {};
-+	struct gdma_destory_pd_resp resp = {};
-+
-+	mana_gd_init_req_hdr(&req.hdr, GDMA_DESTROY_PD,
-+			     sizeof(req), sizeof(resp));
-+
-+	req.pd_handle = pd_handle;
-+	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
-+
-+	if (err || resp.hdr.status) {
-+		pr_err("Failed to destroy pd_handle 0x%llx err %d status %u",
-+				pd_handle, err, resp.hdr.status);
-+		if (!err)
-+			err = -EPROTO;
-+	}
-+
-+	return err;
-+}
-+
-+int mana_ib_gd_create_mr(struct mana_ib_dev *dev, struct mana_ib_mr *mr,
-+			 struct gdma_create_mr_params *mr_params)
-+{
-+	struct gdma_dev *mdev = dev->gdma_dev;
-+	struct gdma_context *gc = mdev->gdma_context;
-+	int err;
-+
-+	struct gdma_create_mr_request req = {};
-+	struct gdma_create_mr_response resp = {};
-+
-+	mana_gd_init_req_hdr(&req.hdr, GDMA_CREATE_MR,
-+			     sizeof(req), sizeof(resp));
-+	req.pd_handle = mr_params->pd_handle;
-+
-+	switch (mr_params->mr_type) {
-+	case GDMA_MR_TYPE_GVA:
-+		req.mr_type = GDMA_MR_TYPE_GVA;
-+		req.gva.dma_region_handle = mr_params->gva.dma_region_handle;
-+		req.gva.virtual_address = mr_params->gva.virtual_address;
-+		req.gva.access_flags = mr_params->gva.access_flags;
-+		break;
-+
-+	case GDMA_MR_TYPE_GPA:
-+		req.mr_type = GDMA_MR_TYPE_GPA;
-+		req.gpa.access_flags = mr_params->gpa.access_flags;
-+		break;
-+
-+	case GDMA_MR_TYPE_FMR:
-+		req.mr_type = GDMA_MR_TYPE_FMR;
-+		req.fmr.page_size = mr_params->fmr.page_size;
-+		req.fmr.reserved_pte_count = mr_params->fmr.reserved_pte_count;
-+		break;
-+
-+	default:
-+		pr_warn("invalid param (GDMA_MR_TYPE) passed, "
-+			"req.mr_type %d\n", req.mr_type);
-+		err = -EINVAL;
-+		goto error;
-+	}
-+
-+
-+	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
-+
-+	if (err || resp.hdr.status) {
-+		pr_err("Failed to create mr %d, %u", err, resp.hdr.status);
-+		goto error;
-+	}
-+
-+	mr->ibmr.lkey = resp.lkey;
-+	mr->ibmr.rkey = resp.rkey;
-+	mr->mr_handle = resp.mr_handle;
-+
-+	return 0;
-+error:
-+	return err;
-+}
-+
-+int mana_ib_gd_destroy_mr(struct mana_ib_dev *dev, gdma_obj_handle_t mr_handle)
-+{
-+	struct gdma_dev *mdev = dev->gdma_dev;
-+	struct gdma_context *gc = mdev->gdma_context;
-+	int err;
-+
-+	struct gdma_destroy_mr_response resp = {};
-+	struct gdma_destroy_mr_request req = {};
-+
-+	mana_gd_init_req_hdr(&req.hdr, GDMA_DESTROY_MR,
-+			     sizeof(req), sizeof(resp));
-+
-+	req.mr_handle = mr_handle;
-+
-+	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
-+	if (err || resp.hdr.status) {
-+		dev_err(gc->dev, "Failed to destroy MR: %d, 0x%x\n", err,
-+			resp.hdr.status);
-+		if (!err)
-+			err = -EPROTO;
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+
-+static int mana_ib_mmap(struct ib_ucontext *ibcontext, struct vm_area_struct *vma)
-+{
-+	struct mana_ib_ucontext *mana_ucontext =
-+		container_of(ibcontext, struct mana_ib_ucontext, ibucontext);
-+	struct ib_device *ibdev = ibcontext->device;
-+	struct mana_ib_dev *mdev =
-+		container_of(ibdev, struct mana_ib_dev, ib_dev);
-+	struct gdma_context *gc = mdev->gdma_dev->gdma_context;
-+	pgprot_t prot;
-+	phys_addr_t pfn;
-+	int ret;
-+
-+	// map to the page indexed by ucontext->doorbell
-+	pfn = (gc->phys_db_page_base +
-+	       gc->db_page_size * mana_ucontext->doorbell) >> PAGE_SHIFT;
-+	prot = pgprot_writecombine(vma->vm_page_prot);
-+
-+	ret = rdma_user_mmap_io(ibcontext, vma, pfn, gc->db_page_size,
-+			prot, NULL);
-+	if (ret) {
-+		pr_err("can't rdma_user_mmap_io ret %d\n", ret);
-+	} else
-+		pr_debug("mapped I/O pfn 0x%llx page_size %u, ret %d\n",
-+			 pfn, gc->db_page_size, ret);
-+
-+	return ret;
-+}
-+
-+static int mana_ib_get_port_immutable(struct ib_device *ibdev, u32 port_num,
-+				      struct ib_port_immutable *immutable)
-+{
-+	/*
-+	 * This version only support RAW_PACKET
-+	 * other values need to be filled for other types
-+	 */
-+	immutable->core_cap_flags = RDMA_CORE_PORT_RAW_PACKET;
-+
-+	return 0;
-+}
-+
-+static int mana_ib_query_device(struct ib_device *ibdev,
-+				struct ib_device_attr *props,
-+				struct ib_udata *uhw)
-+{
-+	props->max_qp = MANA_MAX_NUM_QUEUES;
-+	props->max_qp_wr = MAX_SEND_BUFFERS_PER_QUEUE;
-+
-+	/*
-+	 * max_cqe could be potentially much bigger.
-+	 * As this version of driver only support RAW QP, set it to the same
-+	 * value as max_qp_wr
-+	 */
-+	props->max_cqe = MAX_SEND_BUFFERS_PER_QUEUE;
-+
-+	props->max_mr_size = MANA_IB_MAX_MR_SIZE;
-+	props->max_mr = INT_MAX;
-+	props->max_send_sge = MAX_TX_WQE_SGL_ENTRIES;
-+	props->max_recv_sge = MAX_RX_WQE_SGL_ENTRIES;
-+
-+	return 0;
-+}
-+
-+int mana_ib_query_port(struct ib_device *ibdev, u32 port,
-+		       struct ib_port_attr *props)
-+{
-+	/* This version doesn't return port properties */
-+	return 0;
-+}
-+
-+static int mana_ib_query_gid(struct ib_device *ibdev, u32 port, int index,
-+			     union ib_gid *gid)
-+{
-+	/* This version doesn't return GID properties */
-+	return 0;
-+}
-+
-+static void mana_ib_disassociate_ucontext(struct ib_ucontext *ibcontext)
-+{
-+}
-+
-+static const struct ib_device_ops mana_ib_dev_ops = {
-+	.owner = THIS_MODULE,
-+	.driver_id = RDMA_DRIVER_MANA,
-+	.uverbs_abi_ver = MANA_IB_UVERBS_ABI_VERSION,
-+
-+	.alloc_pd = mana_ib_alloc_pd,
-+	.dealloc_pd = mana_ib_dealloc_pd,
-+
-+	.alloc_ucontext = mana_ib_alloc_ucontext,
-+	.dealloc_ucontext = mana_ib_dealloc_ucontext,
-+
-+	.create_cq = mana_ib_create_cq,
-+	.destroy_cq = mana_ib_destroy_cq,
-+
-+	.create_qp = mana_ib_create_qp,
-+	.modify_qp = mana_ib_modify_qp,
-+	.destroy_qp = mana_ib_destroy_qp,
-+
-+	.disassociate_ucontext = mana_ib_disassociate_ucontext,
-+
-+	.mmap = mana_ib_mmap,
-+
-+	.reg_user_mr = mana_ib_reg_user_mr,
-+	.dereg_mr = mana_ib_dereg_mr,
-+
-+	.create_wq = mana_ib_create_wq,
-+	.modify_wq = mana_ib_modify_wq,
-+	.destroy_wq = mana_ib_destroy_wq,
-+
-+	.create_rwq_ind_table = mana_ib_create_rwq_ind_table,
-+	.destroy_rwq_ind_table = mana_ib_destroy_rwq_ind_table,
-+
-+	.get_port_immutable = mana_ib_get_port_immutable,
-+	.query_device = mana_ib_query_device,
-+	.query_port = mana_ib_query_port,
-+	.query_gid = mana_ib_query_gid,
-+
-+	INIT_RDMA_OBJ_SIZE(ib_cq, mana_ib_cq, ibcq),
-+	INIT_RDMA_OBJ_SIZE(ib_pd, mana_ib_pd, ibpd),
-+	INIT_RDMA_OBJ_SIZE(ib_qp, mana_ib_qp, ibqp),
-+	INIT_RDMA_OBJ_SIZE(ib_ucontext, mana_ib_ucontext, ibucontext),
-+	INIT_RDMA_OBJ_SIZE(ib_rwq_ind_table, mana_ib_rwq_ind_table,
-+			   ib_ind_table),
-+};
-+
-+static int mana_ib_probe(struct auxiliary_device *adev,
-+			 const struct auxiliary_device_id *id)
-+{
-+	struct mana_adev *madev = container_of(adev, struct mana_adev, adev);
-+	struct gdma_dev *mdev = madev->mdev;
-+	struct mana_context *mc = mdev->driver_data;
-+	struct mana_ib_dev *dev;
-+	int ret = 0;
-+
-+	dev = ib_alloc_device(mana_ib_dev, ib_dev);
-+	if (!dev)
-+		return -ENOMEM;
-+
-+
-+	ib_set_device_ops(&dev->ib_dev, &mana_ib_dev_ops);
-+
-+	dev->ib_dev.phys_port_cnt = mc->num_ports;
-+
-+	pr_debug("mdev=%p id=%d num_ports=%d\n",
-+			mdev, mdev->dev_id.as_uint32,
-+			dev->ib_dev.phys_port_cnt);
-+
-+	dev->gdma_dev = mdev;
-+	dev->ib_dev.node_type = RDMA_NODE_IB_CA;
-+
-+	/*
-+	 * num_comp_vectors needs to set to the max MSIX index
-+	 * when interrupts and event queues are implemented
-+	 */
-+	dev->ib_dev.num_comp_vectors = 1;
-+	dev->ib_dev.dev.parent = mdev->gdma_context->dev;
-+
-+	ret = ib_register_device(&dev->ib_dev, "mana_%d",
-+			mdev->gdma_context->dev);
-+	if (ret) {
-+		ib_dealloc_device(&dev->ib_dev);
-+		return ret;
-+	}
-+
-+	dev_set_drvdata(&adev->dev, dev);
-+
-+	return 0;
-+}
-+
-+static void mana_ib_remove(struct auxiliary_device *adev)
-+{
-+	struct mana_ib_dev *dev = dev_get_drvdata(&adev->dev);
-+
-+	ib_unregister_device(&dev->ib_dev);
-+	ib_dealloc_device(&dev->ib_dev);
-+}
-+
-+static struct auxiliary_driver mana_driver = {
-+	.name = "rdma",
-+	.probe = mana_ib_probe,
-+	.remove = mana_ib_remove,
-+	.id_table = mana_id_table,
-+};
-+
-+static int __init mana_ib_init(void)
-+{
-+	auxiliary_driver_register(&mana_driver);
-+
-+	return 0;
-+}
-+
-+static void __exit mana_ib_cleanup(void)
-+{
-+	auxiliary_driver_unregister(&mana_driver);
-+}
-+
-+module_init(mana_ib_init);
-+module_exit(mana_ib_cleanup);
-diff --git a/drivers/infiniband/hw/mana/mana_ib.h b/drivers/infiniband/hw/mana/mana_ib.h
-new file mode 100644
-index 000000000000..0f2ec882f0a2
---- /dev/null
-+++ b/drivers/infiniband/hw/mana/mana_ib.h
-@@ -0,0 +1,145 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/*
-+ * Copyright (c) 2022 Microsoft Corporation. All rights reserved.
-+ */
-+
-+#ifndef _MANA_IB_H_
-+#define _MANA_IB_H_
-+
-+#include <rdma/ib_verbs.h>
-+#include <rdma/ib_mad.h>
-+#include <rdma/ib_umem.h>
-+#include <linux/auxiliary_bus.h>
-+#include <rdma/mana-abi.h>
-+
-+#include <linux/mana/mana.h>
-+
-+#define PAGE_SZ_BM (SZ_4K | SZ_8K | SZ_16K | SZ_32K | SZ_64K | SZ_128K \
-+		    | SZ_256K | SZ_512K | SZ_1M | SZ_2M)
-+
-+// Maximum size of a memory registration is 1G bytes
-+#define MANA_IB_MAX_MR_SIZE	(1024 * 1024 * 1024)
-+
-+struct mana_ib_dev {
-+	struct ib_device        ib_dev;
-+	struct gdma_dev         *gdma_dev;
-+};
-+
-+struct mana_ib_wq {
-+	struct ib_wq    ibwq;
-+	struct ib_umem  *umem;
-+	int             wqe;
-+	u32		wq_buf_size;
-+	u64             gdma_region;
-+	u64             id;
-+	mana_handle_t	rx_object;
-+};
-+
-+struct mana_ib_pd {
-+	struct ib_pd	ibpd;
-+	u32		pdn;
-+	mana_handle_t	pd_handle;
-+	atomic_t	vport_use_count;
-+	bool		tx_shortform_allowed;
-+	u32		tx_vp_offset;
-+};
-+
-+struct mana_ib_mr {
-+	struct ib_mr	ibmr;
-+	struct ib_umem	*umem;
-+	mana_handle_t	mr_handle;
-+};
-+
-+struct mana_ib_cq {
-+	struct ib_cq	ibcq;
-+	struct ib_umem	*umem;
-+	int		cqe;
-+	u64		gdma_region;
-+	u64		id;
-+};
-+
-+struct mana_ib_qp {
-+	struct ib_qp ibqp;
-+
-+	// Send queue info
-+	struct ib_umem *sq_umem;
-+	int	sqe;
-+	u64	sq_gdma_region;
-+	u64	sq_id;
-+
-+	// Set if this QP uses ind_table for receive queues
-+
-+	mana_handle_t tx_object;
-+
-+	// the port on the IB device, starting with 1
-+	u32	port;
-+};
-+
-+struct mana_ib_ucontext {
-+	struct ib_ucontext	ibucontext;
-+	u32 doorbell;
-+};
-+
-+struct mana_ib_rwq_ind_table {
-+	struct ib_rwq_ind_table ib_ind_table;
-+};
-+
-+int mana_ib_gd_create_dma_region(struct mana_ib_dev *dev,
-+				 struct ib_umem *umem,
-+				 mana_handle_t *gdma_region, u64 page_sz);
-+
-+int mana_ib_gd_destroy_dma_region(struct mana_ib_dev *dev,
-+				  mana_handle_t gdma_region);
-+
-+struct ib_wq *mana_ib_create_wq(struct ib_pd *pd,
-+				struct ib_wq_init_attr *init_attr,
-+				struct ib_udata *udata);
-+
-+int mana_ib_modify_wq(struct ib_wq *wq, struct ib_wq_attr *wq_attr,
-+		      u32 wq_attr_mask, struct ib_udata *udata);
-+
-+int mana_ib_destroy_wq(struct ib_wq *ibwq, struct ib_udata *udata);
-+
-+int mana_ib_create_rwq_ind_table(struct ib_rwq_ind_table *ib_rwq_ind_table,
-+				 struct ib_rwq_ind_table_init_attr *init_attr,
-+				 struct ib_udata *udata);
-+
-+int mana_ib_destroy_rwq_ind_table(struct ib_rwq_ind_table *ib_rwq_ind_tbl);
-+
-+struct ib_mr *mana_ib_get_dma_mr(struct ib_pd *ibpd, int access_flags);
-+
-+struct ib_mr *mana_ib_reg_user_mr(struct ib_pd *pd, u64 start, u64 length,
-+				  u64 iova, int access_flags,
-+				  struct ib_udata *udata);
-+
-+int mana_ib_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata);
-+
-+int mana_ib_create_qp(struct ib_qp *qp, struct ib_qp_init_attr *qp_init_attr,
-+		      struct ib_udata *udata);
-+
-+
-+int mana_ib_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
-+		      int attr_mask, struct ib_udata *udata);
-+
-+int mana_ib_destroy_qp(struct ib_qp *ibqp, struct ib_udata *udata);
-+
-+int mana_ib_cfg_vport(struct mana_ib_dev *dev, u32 port_id,
-+		      struct mana_ib_pd *pd, u32 doorbell_id);
-+void mana_ib_uncfg_vport(struct mana_ib_dev *dev, struct mana_ib_pd *pd,
-+			 u32 port);
-+
-+int mana_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
-+		      struct ib_udata *udata);
-+
-+int mana_ib_destroy_cq(struct ib_cq *ibcq, struct ib_udata *udata);
-+
-+int mana_ib_gd_create_pd(struct mana_ib_dev *dev, u64 *pd_handle, u32 *pd_id,
-+			 enum gdma_pd_flags flags);
-+
-+int mana_ib_gd_destroy_pd(struct mana_ib_dev *dev, u64 pd_handle);
-+
-+int mana_ib_gd_create_mr(struct mana_ib_dev *dev, struct mana_ib_mr *mr,
-+			 struct gdma_create_mr_params *mr_params);
-+
-+int mana_ib_gd_destroy_mr(struct mana_ib_dev *dev, mana_handle_t mr_handle);
-+#endif
-diff --git a/drivers/infiniband/hw/mana/mr.c b/drivers/infiniband/hw/mana/mr.c
-new file mode 100644
-index 000000000000..691f9ec734c7
---- /dev/null
-+++ b/drivers/infiniband/hw/mana/mr.c
-@@ -0,0 +1,133 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/*
-+ * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
-+ */
-+
-+#include "mana_ib.h"
-+
-+#define VALID_MR_FLAGS (IB_ACCESS_LOCAL_WRITE | \
-+			IB_ACCESS_REMOTE_WRITE | \
-+			IB_ACCESS_REMOTE_READ)
-+
-+static enum gdma_mr_access_flags
-+mana_ib_verbs_to_gdma_access_flags(int access_flags)
-+{
-+	enum gdma_mr_access_flags flags = GDMA_ACCESS_FLAG_LOCAL_READ;
-+
-+	if (access_flags & IB_ACCESS_LOCAL_WRITE)
-+		flags |= GDMA_ACCESS_FLAG_LOCAL_WRITE;
-+
-+	if (access_flags & IB_ACCESS_REMOTE_WRITE)
-+		flags |= GDMA_ACCESS_FLAG_REMOTE_WRITE;
-+
-+	if (access_flags & IB_ACCESS_REMOTE_READ)
-+		flags |= GDMA_ACCESS_FLAG_REMOTE_READ;
-+
-+	return flags;
-+}
-+struct ib_mr *mana_ib_reg_user_mr(struct ib_pd *ibpd, u64 start, u64 length,
-+				  u64 iova, int access_flags,
-+				  struct ib_udata *udata)
-+{
-+	struct mana_ib_pd *pd = container_of(ibpd, struct mana_ib_pd, ibpd);
-+	struct ib_device *ibdev = ibpd->device;
-+	struct mana_ib_dev *dev = container_of(
-+			ibdev, struct mana_ib_dev, ib_dev);
-+	struct mana_ib_mr *mr;
-+	gdma_obj_handle_t dma_region_handle;
-+	struct gdma_create_mr_params mr_params = {};
-+	u64 page_sz = PAGE_SIZE;
-+	int err;
-+
-+	pr_debug("start 0x%llx, iova 0x%llx length 0x%llx access_flags 0x%x",
-+		start, iova, length, access_flags);
-+
-+	if (access_flags & ~VALID_MR_FLAGS)
-+		return ERR_PTR(-EINVAL);
-+
-+	mr = kzalloc(sizeof(*mr), GFP_KERNEL);
-+	if (!mr)
-+		return ERR_PTR(-ENOMEM);
-+
-+	mr->umem = ib_umem_get(ibdev, start, length, access_flags);
-+	if (IS_ERR(mr->umem)) {
-+		err = PTR_ERR(mr->umem);
-+		pr_err("Failed to get umem for register user-mr, %d\n", err);
-+		goto err_free;
-+	}
-+
-+	page_sz = ib_umem_find_best_pgsz(mr->umem, PAGE_SZ_BM, iova);
-+	if (unlikely(!page_sz)) {
-+		pr_err("Failed to get best page size\n");
-+		err = -EOPNOTSUPP;
-+		goto err_umem;
-+	}
-+	pr_debug("Page size chosen %llu\n", page_sz);
-+
-+	err = mana_ib_gd_create_dma_region(dev, mr->umem, &dma_region_handle,
-+					   page_sz);
-+	if (err) {
-+		pr_err("Failed to create dma region for register user-mr, %d\n",
-+		       err);
-+		goto err_umem;
-+	}
-+
-+	pr_debug("mana_ib_gd_create_dma_region ret %d gdma_region %llx\n",
-+		 err, dma_region_handle);
-+
-+	mr_params.pd_handle = pd->pd_handle;
-+	mr_params.mr_type = GDMA_MR_TYPE_GVA;
-+	mr_params.gva.dma_region_handle = dma_region_handle;
-+	mr_params.gva.virtual_address = iova;
-+	mr_params.gva.access_flags =
-+		mana_ib_verbs_to_gdma_access_flags(access_flags);
-+
-+	err = mana_ib_gd_create_mr(dev, mr, &mr_params);
-+	if (err)
-+		goto err_dma_region;
-+
-+	/*
-+	 * There is no need to keep track of dma_region_handle after MR is
-+	 * successfully created. The dma_region_handle is tracked in the PF
-+	 * as part of the lifecycle of this MR.
-+	 */
-+
-+	mr->ibmr.length = length;
-+	mr->ibmr.page_size = page_sz;
-+	return &mr->ibmr;
-+
-+err_dma_region:
-+	mana_gd_destroy_dma_region(dev->gdma_dev->gdma_context,
-+				   dma_region_handle);
-+
-+err_umem:
-+	ib_umem_release(mr->umem);
-+
-+err_free:
-+	kfree(mr);
-+	return ERR_PTR(err);
-+}
-+
-+int mana_ib_dereg_mr(struct ib_mr *ibmr, struct ib_udata *udata)
-+{
-+	struct mana_ib_mr *mr =
-+		container_of(ibmr, struct mana_ib_mr, ibmr);
-+	struct ib_device *ibdev = ibmr->device;
-+	struct mana_ib_dev *dev =
-+		container_of(ibdev, struct mana_ib_dev, ib_dev);
-+
-+	int err;
-+
-+	err = mana_ib_gd_destroy_mr(dev, mr->mr_handle);
-+	if (err)
-+		return err;
-+
-+	if (mr->umem)
-+		ib_umem_release(mr->umem);
-+
-+	kfree(mr);
-+
-+	return 0;
-+}
-+
-+
-diff --git a/drivers/infiniband/hw/mana/qp.c b/drivers/infiniband/hw/mana/qp.c
-new file mode 100644
-index 000000000000..75ab983c3f5c
---- /dev/null
-+++ b/drivers/infiniband/hw/mana/qp.c
-@@ -0,0 +1,466 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/*
-+ * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
-+ */
-+
-+#include "mana_ib.h"
-+
-+int mana_ib_cfg_vport_steering(struct mana_ib_dev *dev, struct net_device *ndev,
-+			       mana_handle_t default_rxobj,
-+			       mana_handle_t ind_table[], u32 log_ind_tbl_size,
-+			       u32 rx_hash_key_len, u8 *rx_hash_key)
-+{
-+	struct gdma_dev *mdev = dev->gdma_dev;
-+	struct gdma_context *gc = mdev->gdma_context;
-+	struct mana_port_context *mpc = netdev_priv(ndev);
-+
-+	struct mana_cfg_rx_steer_req *req = NULL;
-+	struct mana_cfg_rx_steer_resp resp = {};
-+	u32 req_buf_size;
-+	int err;
-+	mana_handle_t *req_indir_tab;
-+	int i;
-+
-+	req_buf_size = sizeof(*req) +
-+		sizeof(mana_handle_t) * MANA_INDIRECT_TABLE_SIZE;
-+	req = kzalloc(req_buf_size, GFP_KERNEL);
-+	if (!req)
-+		return -ENOMEM;
-+
-+	mana_gd_init_req_hdr(&req->hdr, MANA_CONFIG_VPORT_RX, req_buf_size,
-+			     sizeof(resp));
-+
-+	req->vport = mpc->port_handle;
-+	req->rx_enable = 1;
-+	req->update_default_rxobj = 1;
-+	req->default_rxobj = default_rxobj;
-+	req->hdr.dev_id = mdev->dev_id;
-+
-+	/* If there are more than 1 entries in indirection table, enable RSS */
-+	if (log_ind_tbl_size)
-+		req->rss_enable = true;
-+
-+	req->num_indir_entries = MANA_INDIRECT_TABLE_SIZE;
-+	req->indir_tab_offset = sizeof(*req);
-+	req->update_indir_tab = true;
-+
-+	req_indir_tab = (mana_handle_t *)(req + 1);
-+	/*
-+	 * The ind table passed to the hardware must have
-+	 * MANA_INDIRECT_TABLE_SIZE entries. Adjust the verb
-+	 * ind_table to MANA_INDIRECT_TABLE_SIZE if required
-+	 */
-+	pr_debug("ind table size %u\n", 1 << log_ind_tbl_size);
-+	for (i = 0; i < MANA_INDIRECT_TABLE_SIZE; i++) {
-+		req_indir_tab[i] = ind_table[i % (1 << log_ind_tbl_size)];
-+		pr_debug("index %u handle 0x%llx\n", i, req_indir_tab[i]);
-+	}
-+
-+	req->update_hashkey = true;
-+	if (rx_hash_key_len)
-+		memcpy(req->hashkey, rx_hash_key, rx_hash_key_len);
-+	else
-+		netdev_rss_key_fill(req->hashkey, MANA_HASH_KEY_SIZE);
-+
-+	pr_debug("vport handle %llu default_rxobj 0x%llx\n",
-+		 req->vport, default_rxobj);
-+
-+	err = mana_gd_send_request(gc, req_buf_size, req, sizeof(resp), &resp);
-+	if (err) {
-+		netdev_err(ndev, "Failed to configure vPort RX: %d\n", err);
-+		goto out;
-+	}
-+
-+	if (resp.hdr.status) {
-+		netdev_err(ndev, "vPort RX configuration failed: 0x%x\n",
-+			   resp.hdr.status);
-+		err = -EPROTO;
-+	}
-+
-+out:
-+	kfree(req);
-+	return err;
-+}
-+
-+
-+static int mana_ib_create_qp_rss(struct ib_qp *ibqp, struct ib_pd *pd,
-+			  struct ib_qp_init_attr *attr, struct ib_udata *udata)
-+{
-+	struct mana_ib_dev *mdev =
-+		container_of(pd->device, struct mana_ib_dev, ib_dev);
-+	struct gdma_dev *gd = mdev->gdma_dev;
-+	struct mana_context *mc = gd->driver_data;
-+	struct net_device *ndev;
-+	struct mana_port_context *mpc;
-+	struct ib_rwq_ind_table *ind_tbl = attr->rwq_ind_tbl;
-+	struct mana_ib_qp *qp = container_of(ibqp, struct mana_ib_qp, ibqp);
-+	struct ib_wq *ibwq;
-+	struct mana_ib_wq *wq;
-+	struct ib_cq *ibcq;
-+	struct mana_ib_cq *cq;
-+	int i = 0, ret;
-+	u32 port;
-+	mana_handle_t *mana_ind_table;
-+
-+	struct mana_ib_create_qp_rss ucmd = {};
-+	struct mana_ib_create_qp_rss_resp resp = {};
-+
-+	ret = ib_copy_from_udata(&ucmd, udata, min(sizeof(ucmd), udata->inlen));
-+	if (ret) {
-+		pr_err("Failed to copy from udata for create rss-qp, err %d\n",
-+		       ret);
-+		return -EFAULT;
-+	}
-+
-+	if (attr->cap.max_recv_wr > MAX_SEND_BUFFERS_PER_QUEUE) {
-+		pr_err("Requested max_recv_wr %d exceeding limit.\n",
-+		       attr->cap.max_recv_wr);
-+		return -EINVAL;
-+	}
-+
-+	if (attr->cap.max_recv_sge > MAX_RX_WQE_SGL_ENTRIES) {
-+		pr_err("Requested max_recv_sge %d exceeding limit.\n",
-+		       attr->cap.max_recv_sge);
-+		return -EINVAL;
-+	}
-+
-+	if (ucmd.rx_hash_function != MANA_IB_RX_HASH_FUNC_TOEPLITZ) {
-+		pr_err("RX Hash function is not supported, %d\n",
-+		       ucmd.rx_hash_function);
-+		return -EINVAL;
-+	}
-+
-+	// IB ports start with 1, MANA start with 0
-+	port = ucmd.port;
-+	if (port < 1 || port > mc->num_ports) {
-+		pr_err("Invalid port %u in creating qp\n", port);
-+		return -EINVAL;
-+	}
-+	ndev = mc->ports[port - 1];
-+	mpc = netdev_priv(ndev);
-+
-+	pr_debug("rx_hash_function %d port %d\n", ucmd.rx_hash_function, port);
-+
-+	mana_ind_table = kzalloc(sizeof(mana_handle_t) *
-+					(1 << ind_tbl->log_ind_tbl_size),
-+				 GFP_KERNEL);
-+	if (!mana_ind_table) {
-+		ret = -ENOMEM;
-+		goto fail;
-+	}
-+
-+	qp->port = port;
-+
-+	for (i = 0; i < (1 << ind_tbl->log_ind_tbl_size); i++) {
-+		struct mana_obj_spec wq_spec = {};
-+		struct mana_obj_spec cq_spec = {};
-+
-+		ibwq = ind_tbl->ind_tbl[i];
-+		wq = container_of(ibwq, struct mana_ib_wq, ibwq);
-+
-+		ibcq = ibwq->cq;
-+		cq = container_of(ibcq, struct mana_ib_cq, ibcq);
-+
-+		wq_spec.gdma_region = wq->gdma_region;
-+		wq_spec.queue_size = wq->wq_buf_size;
-+
-+		cq_spec.gdma_region = cq->gdma_region;
-+		cq_spec.queue_size = cq->cqe * COMP_ENTRY_SIZE;
-+		cq_spec.modr_ctx_id = 0;
-+		cq_spec.attached_eq = GDMA_CQ_NO_EQ;
-+
-+		ret = mana_create_wq_obj(mpc, mpc->port_handle, GDMA_RQ,
-+				&wq_spec, &cq_spec, &wq->rx_object);
-+		if (ret)
-+			goto fail;
-+
-+		/* The GDMA regions are now owned by the WQ object */
-+		wq->gdma_region = GDMA_INVALID_DMA_REGION;
-+		cq->gdma_region = GDMA_INVALID_DMA_REGION;
-+
-+		wq->id = wq_spec.queue_index;
-+		cq->id = cq_spec.queue_index;
-+
-+		pr_debug("ret %d rx_object 0x%llx wq id %llu cq id %llu\n",
-+				ret, wq->rx_object, wq->id, cq->id);
-+
-+		resp.entries[i].cqid = cq->id;
-+		resp.entries[i].wqid = wq->id;
-+
-+		mana_ind_table[i] = wq->rx_object;
-+	}
-+	resp.num_entries = i;
-+
-+	ret = mana_ib_cfg_vport_steering(mdev, ndev, wq->rx_object,
-+					 mana_ind_table,
-+					 ind_tbl->log_ind_tbl_size,
-+					 ucmd.rx_hash_key_len,
-+					 ucmd.rx_hash_key);
-+	if (ret)
-+		goto fail;
-+
-+	kfree(mana_ind_table);
-+
-+	if (udata) {
-+		ret = ib_copy_to_udata(udata, &resp, sizeof(resp));
-+		if (ret) {
-+			pr_err("Failed to copy to udata create rss-qp, %d\n",
-+			       ret);
-+			goto fail;
-+		}
-+	}
-+
-+	return 0;
-+
-+fail:
-+	while (i-- > 0) {
-+		ibwq = ind_tbl->ind_tbl[i];
-+		wq = container_of(ibwq, struct mana_ib_wq, ibwq);
-+		mana_destroy_wq_obj(mpc, GDMA_RQ, wq->rx_object);
-+	}
-+
-+	kfree(mana_ind_table);
-+
-+	return ret;
-+}
-+
-+int mana_ib_create_qp_raw(struct ib_qp *ibqp, struct ib_pd *ibpd,
-+			  struct ib_qp_init_attr *attr,
-+			  struct ib_udata *udata)
-+{
-+	struct ib_ucontext *ib_ucontext = ibpd->uobject->context;
-+	struct mana_ib_ucontext *mana_ucontext =
-+		container_of(ib_ucontext, struct mana_ib_ucontext, ibucontext);
-+	struct mana_ib_pd *pd = container_of(ibpd, struct mana_ib_pd, ibpd);
-+	struct mana_ib_create_qp ucmd = {};
-+	struct mana_ib_create_qp_resp resp = {};
-+	struct mana_ib_qp *qp = container_of(ibqp, struct mana_ib_qp, ibqp);
-+	struct mana_ib_cq *send_cq =
-+		container_of(attr->send_cq, struct mana_ib_cq, ibcq);
-+	struct mana_ib_dev *mdev =
-+		container_of(ibpd->device, struct mana_ib_dev, ib_dev);
-+	struct gdma_dev *gd = mdev->gdma_dev;
-+	struct mana_context *mc = gd->driver_data;
-+	struct net_device *ndev;
-+	struct mana_port_context *mpc;
-+	struct mana_obj_spec wq_spec = {};
-+	struct mana_obj_spec cq_spec = {};
-+	int err;
-+	u32 port;
-+
-+	struct ib_umem *umem;
-+
-+	err = ib_copy_from_udata(&ucmd, udata, min(sizeof(ucmd), udata->inlen));
-+	if (err) {
-+		pr_err("Failed to copy from udata create qp-raw, %d\n", err);
-+		return -EFAULT;
-+	}
-+
-+	// IB ports start with 1, MANA Ethernet ports start with 0
-+	port = ucmd.port;
-+	if (ucmd.port > mc->num_ports)
-+		return -EINVAL;
-+
-+	if (attr->cap.max_send_wr > MAX_SEND_BUFFERS_PER_QUEUE) {
-+		pr_err("Requested max_send_wr %d exceeding limit\n",
-+		       attr->cap.max_send_wr);
-+		return -EINVAL;
-+	}
-+
-+	if (attr->cap.max_send_sge > MAX_TX_WQE_SGL_ENTRIES) {
-+		pr_err("Requested max_send_sge %d exceeding limit\n",
-+		       attr->cap.max_send_sge);
-+		return -EINVAL;
-+	}
-+
-+	ndev = mc->ports[port - 1];
-+	mpc = netdev_priv(ndev);
-+	pr_debug("port %u ndev %p mpc %p\n", port, ndev, mpc);
-+
-+	err =  mana_ib_cfg_vport(mdev, port - 1, pd, mana_ucontext->doorbell);
-+	if (err) {
-+		pr_err("cfg vport failed err %d\n", err);
-+		return -ENODEV;
-+	}
-+
-+	qp->port = port;
-+
-+	pr_debug("ucmd sq_buf_addr 0x%llx port %u\n",
-+		 ucmd.sq_buf_addr, ucmd.port);
-+
-+	umem = ib_umem_get(ibpd->device, ucmd.sq_buf_addr, ucmd.sq_buf_size,
-+			   IB_ACCESS_LOCAL_WRITE);
-+	if (IS_ERR(umem)) {
-+		err = PTR_ERR(umem);
-+		pr_err("Failed to get umem for create qp-raw, err %d\n", err);
-+		goto err_free_vport;
-+	}
-+	qp->sq_umem = umem;
-+
-+	err = mana_ib_gd_create_dma_region(mdev, qp->sq_umem,
-+			&qp->sq_gdma_region, PAGE_SIZE);
-+	if (err) {
-+		pr_err("Failed to create dma region for create qp-raw, %d\n",
-+		       err);
-+		goto err_release_umem;
-+	}
-+
-+	pr_debug("%s: mana_ib_gd_create_dma_region ret %d gdma_region 0x%llx\n",
-+		 __func__, err, qp->sq_gdma_region);
-+
-+	// Create a WQ on the same port handle used by the Ethernet
-+	wq_spec.gdma_region = qp->sq_gdma_region;
-+	wq_spec.queue_size = ucmd.sq_buf_size;
-+
-+	cq_spec.gdma_region = send_cq->gdma_region;
-+	cq_spec.queue_size = send_cq->cqe * COMP_ENTRY_SIZE;
-+	cq_spec.modr_ctx_id = 0;
-+	cq_spec.attached_eq = GDMA_CQ_NO_EQ;
-+
-+	err = mana_create_wq_obj(mpc, mpc->port_handle, GDMA_SQ,
-+			&wq_spec, &cq_spec, &qp->tx_object);
-+	if (err) {
-+		pr_err("Failed to create wq for create raw-qp, err %d\n", err);
-+		goto err_destroy_dma_region;
-+	}
-+
-+	/* The GDMA regions are now owned by the WQ object */
-+	qp->sq_gdma_region = GDMA_INVALID_DMA_REGION;
-+	send_cq->gdma_region = GDMA_INVALID_DMA_REGION;
-+
-+	qp->sq_id = wq_spec.queue_index;
-+	send_cq->id = cq_spec.queue_index;
-+
-+	pr_debug("ret %d qp->tx_object 0x%llx sq id %llu cq id %llu\n",
-+			err, qp->tx_object, qp->sq_id, send_cq->id);
-+
-+	resp.sqid = qp->sq_id;
-+	resp.cqid = send_cq->id;
-+	resp.tx_vp_offset = pd->tx_vp_offset;
-+
-+	if (udata) {
-+		err = ib_copy_to_udata(udata, &resp, sizeof(resp));
-+		if (err) {
-+			pr_err("Failed to copy udata for create qp-raw, %d\n",
-+			       err);
-+			goto err_destroy_wq_obj;
-+		}
-+	}
-+
-+	return 0;
-+
-+err_destroy_wq_obj:
-+	mana_destroy_wq_obj(mpc, GDMA_SQ, qp->tx_object);
-+
-+err_destroy_dma_region:
-+	mana_ib_gd_destroy_dma_region(mdev, qp->sq_gdma_region);
-+
-+err_release_umem:
-+	ib_umem_release(umem);
-+
-+err_free_vport:
-+	mana_ib_uncfg_vport(mdev, pd, port - 1);
-+
-+	return err;
-+}
-+
-+int mana_ib_create_qp(struct ib_qp *ibqp, struct ib_qp_init_attr *attr,
-+		      struct ib_udata *udata)
-+{
-+	switch (attr->qp_type) {
-+
-+	case IB_QPT_RAW_PACKET:
-+		// When rwq_ind_tbl is used, it's for creating WQs for RSS
-+		if (attr->rwq_ind_tbl)
-+			return mana_ib_create_qp_rss(ibqp, ibqp->pd, attr, udata);
-+
-+		return mana_ib_create_qp_raw(ibqp, ibqp->pd, attr, udata);
-+	default:
-+		// Creating QP other than IB_QPT_RAW_PACKET is not supported
-+		pr_err("Creating QP type %u not supported\n", attr->qp_type);
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+int mana_ib_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
-+		int attr_mask, struct ib_udata *udata)
-+{
-+	// modify_qp is not supported by this version of the driver
-+	return -ENOTSUPP;
-+}
-+
-+static int mana_ib_destroy_qp_rss(struct mana_ib_qp *qp,
-+				  struct ib_rwq_ind_table *ind_tbl,
-+				  struct ib_udata *udata)
-+{
-+	struct mana_ib_dev *mdev =
-+		container_of(qp->ibqp.device, struct mana_ib_dev, ib_dev);
-+	struct gdma_dev *gd = mdev->gdma_dev;
-+	struct mana_context *mc = gd->driver_data;
-+	struct net_device *ndev;
-+	struct mana_port_context *mpc;
-+	struct ib_wq *ibwq;
-+	struct mana_ib_wq *wq;
-+	int i;
-+
-+	ndev = mc->ports[qp->port - 1];
-+	mpc = netdev_priv(ndev);
-+	pr_debug("ndev %p mpc %p\n", ndev, mpc);
-+
-+	for (i = 0; i < (1 << ind_tbl->log_ind_tbl_size); i++) {
-+		ibwq = ind_tbl->ind_tbl[i];
-+		wq = container_of(ibwq, struct mana_ib_wq, ibwq);
-+		pr_debug("wq->rx_object %llu\n", wq->rx_object);
-+		mana_destroy_wq_obj(mpc, GDMA_RQ, wq->rx_object);
-+	}
-+
-+	return 0;
-+}
-+
-+int mana_ib_destroy_qp_raw(struct mana_ib_qp *qp, struct ib_udata *udata)
-+{
-+	struct mana_ib_dev *mdev =
-+		container_of(qp->ibqp.device, struct mana_ib_dev, ib_dev);
-+	struct gdma_dev *gd = mdev->gdma_dev;
-+	struct mana_context *mc = gd->driver_data;
-+	struct net_device *ndev;
-+	struct mana_port_context *mpc;
-+	struct ib_pd *ibpd = qp->ibqp.pd;
-+	struct mana_ib_pd *pd = container_of(ibpd, struct mana_ib_pd, ibpd);
-+
-+	ndev = mc->ports[qp->port - 1];
-+	mpc = netdev_priv(ndev);
-+	pr_debug("ndev %p mpc %p qp->tx_object %llu\n",
-+			ndev, mpc, qp->tx_object);
-+
-+	mana_destroy_wq_obj(mpc, GDMA_SQ, qp->tx_object);
-+
-+	if (qp->sq_umem) {
-+		mana_ib_gd_destroy_dma_region(mdev, qp->sq_gdma_region);
-+		ib_umem_release(qp->sq_umem);
-+	}
-+
-+	mana_ib_uncfg_vport(mdev, pd, qp->port - 1);
-+
-+	return 0;
-+}
-+
-+int mana_ib_destroy_qp(struct ib_qp *ibqp, struct ib_udata *udata)
-+{
-+	struct mana_ib_qp *qp = container_of(ibqp, struct mana_ib_qp, ibqp);
-+
-+	switch (ibqp->qp_type) {
-+	case IB_QPT_RAW_PACKET:
-+		if (ibqp->rwq_ind_tbl)
-+			return mana_ib_destroy_qp_rss(qp, ibqp->rwq_ind_tbl,
-+						      udata);
-+
-+		return mana_ib_destroy_qp_raw(qp, udata);
-+
-+	default:
-+		pr_debug("Unexpected QP type %u\n", ibqp->qp_type);
-+	}
-+
-+	return -ENOENT;
-+}
-diff --git a/drivers/infiniband/hw/mana/wq.c b/drivers/infiniband/hw/mana/wq.c
-new file mode 100644
-index 000000000000..945aa163c452
---- /dev/null
-+++ b/drivers/infiniband/hw/mana/wq.c
-@@ -0,0 +1,111 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/*
-+ * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
-+ */
-+
-+#include "mana_ib.h"
-+
-+struct ib_wq *mana_ib_create_wq(struct ib_pd *pd,
-+				struct ib_wq_init_attr *init_attr,
-+				struct ib_udata *udata)
-+{
-+	struct ib_umem *umem;
-+	struct mana_ib_dev *mdev = container_of(pd->device,
-+						struct mana_ib_dev, ib_dev);
-+	struct mana_ib_create_wq ucmd = { };
-+	struct mana_ib_wq *wq;
-+	int err;
-+
-+	pr_debug("udata->inlen %lu\n", udata->inlen);
-+	err = ib_copy_from_udata(&ucmd, udata, min(sizeof(ucmd), udata->inlen));
-+	if (err) {
-+		pr_err("Failed to copy from udata for create wq, %d\n", err);
-+		return ERR_PTR(-EFAULT);
-+	}
-+
-+	wq = kzalloc(sizeof(*wq), GFP_KERNEL);
-+	if (!wq)
-+		return ERR_PTR(-ENOMEM);
-+
-+	pr_debug("ucmd wq_buf_addr 0x%llx\n", ucmd.wq_buf_addr);
-+
-+	umem = ib_umem_get(pd->device, ucmd.wq_buf_addr, ucmd.wq_buf_size,
-+			   IB_ACCESS_LOCAL_WRITE);
-+	if (IS_ERR(umem)) {
-+		err = PTR_ERR(umem);
-+		pr_err("Failed to get umem for create wq, err %d\n", err);
-+		goto err_free_wq;
-+	}
-+
-+	wq->umem = umem;
-+	wq->wqe = init_attr->max_wr;
-+	wq->wq_buf_size = ucmd.wq_buf_size;
-+	wq->rx_object = INVALID_MANA_HANDLE;
-+
-+	err = mana_ib_gd_create_dma_region(mdev, wq->umem, &wq->gdma_region,
-+					   PAGE_SIZE);
-+	if (err) {
-+		pr_err("Failed to create dma region for create wq, %d\n", err);
-+		goto err_release_umem;
-+	}
-+
-+	pr_debug("%s: mana_ib_gd_create_dma_region ret %d gdma_region 0x%llx\n",
-+			__func__, err, wq->gdma_region);
-+
-+	// WQ ID is returned at wq_create time, doesn't know the value yet
-+
-+	return &wq->ibwq;
-+
-+err_release_umem:
-+	ib_umem_release(umem);
-+
-+err_free_wq:
-+	kfree(wq);
-+
-+	return ERR_PTR(err);
-+}
-+
-+
-+int mana_ib_modify_wq(struct ib_wq *wq, struct ib_wq_attr *wq_attr,
-+		      u32 wq_attr_mask, struct ib_udata *udata)
-+{
-+	// modify_wq is not supported by this version of the driver
-+	return -ENOTSUPP;
-+}
-+
-+int mana_ib_destroy_wq(struct ib_wq *ibwq, struct ib_udata *udata)
-+{
-+	struct mana_ib_wq *wq = container_of(ibwq, struct mana_ib_wq, ibwq);
-+	struct ib_device *ib_dev = ibwq->device;
-+	struct mana_ib_dev *mdev = container_of(ib_dev, struct mana_ib_dev,
-+						ib_dev);
-+
-+	mana_ib_gd_destroy_dma_region(mdev, wq->gdma_region);
-+	ib_umem_release(wq->umem);
-+
-+	kfree(wq);
-+
-+	return 0;
-+}
-+
-+int mana_ib_create_rwq_ind_table(struct ib_rwq_ind_table *ib_rwq_ind_table,
-+				 struct ib_rwq_ind_table_init_attr *init_attr,
-+				 struct ib_udata *udata)
-+{
-+	pr_debug("udata->inlen %lu\n", udata->inlen);
-+
-+	/*
-+	 * There is no additional data in ind_table to be maintained by this
-+	 * driver, do nothing
-+	 */
-+	return 0;
-+}
-+
-+int mana_ib_destroy_rwq_ind_table(struct ib_rwq_ind_table *ib_rwq_ind_tbl)
-+{
-+	/*
-+	 * There is no additional data in ind_table to be maintained by this
-+	 * driver, do nothing
-+	 */
-+	return 0;
-+}
-diff --git a/include/linux/mana/mana.h b/include/linux/mana/mana.h
-index 1cf77a03bff2..114698f682cf 100644
---- a/include/linux/mana/mana.h
-+++ b/include/linux/mana/mana.h
-@@ -403,6 +403,9 @@ int mana_bpf(struct net_device *ndev, struct netdev_bpf *bpf);
- 
- extern const struct ethtool_ops mana_ethtool_ops;
- 
-+/* A CQ can be created not associated with any EQ */
-+#define GDMA_CQ_NO_EQ  0xffff
-+
- struct mana_obj_spec {
- 	u32 queue_index;
- 	u64 gdma_region;
-diff --git a/include/uapi/rdma/ib_user_ioctl_verbs.h b/include/uapi/rdma/ib_user_ioctl_verbs.h
-index 3072e5d6b692..081aabf536dc 100644
---- a/include/uapi/rdma/ib_user_ioctl_verbs.h
-+++ b/include/uapi/rdma/ib_user_ioctl_verbs.h
-@@ -250,6 +250,7 @@ enum rdma_driver_id {
- 	RDMA_DRIVER_QIB,
- 	RDMA_DRIVER_EFA,
- 	RDMA_DRIVER_SIW,
-+	RDMA_DRIVER_MANA,
- };
- 
- enum ib_uverbs_gid_type {
-diff --git a/include/uapi/rdma/mana-abi.h b/include/uapi/rdma/mana-abi.h
-new file mode 100644
-index 000000000000..4e40f70a0601
---- /dev/null
-+++ b/include/uapi/rdma/mana-abi.h
-@@ -0,0 +1,68 @@
-+/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR Linux-OpenIB) */
-+/*
-+ * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
-+ */
-+
-+#ifndef MANA_ABI_USER_H
-+#define MANA_ABI_USER_H
-+
-+#include <linux/types.h>
-+#include <rdma/ib_user_ioctl_verbs.h>
-+
-+#include <linux/mana/mana.h>
-+
-+/*
-+ * Increment this value if any changes that break userspace ABI
-+ * compatibility are made.
-+ */
-+
-+#define MANA_IB_UVERBS_ABI_VERSION              1
-+
-+struct mana_ib_create_cq {
-+	__aligned_u64 buf_addr;
-+};
-+
-+struct mana_ib_create_qp {
-+	__aligned_u64 sq_buf_addr;
-+	__u32	sq_buf_size;
-+	__u32	port;
-+};
-+
-+struct mana_ib_create_qp_resp {
-+	__u32 sqid;
-+	__u32 cqid;
-+	__u32 tx_vp_offset;
-+	__u32 reserved;
-+};
-+
-+struct mana_ib_create_wq {
-+	__aligned_u64 wq_buf_addr;
-+	__u32	wq_buf_size;
-+	__u32   reserved;
-+};
-+
-+/* RX Hash function flags */
-+enum mana_ib_rx_hash_function_flags {
-+	MANA_IB_RX_HASH_FUNC_TOEPLITZ	= 1 << 0,
-+};
-+
-+struct mana_ib_create_qp_rss {
-+	__aligned_u64 rx_hash_fields_mask;
-+	__u8    rx_hash_function;
-+	__u8    reserved[7];
-+	__u32	rx_hash_key_len;
-+	__u8    rx_hash_key[40];
-+	__u32	port;
-+};
-+
-+struct rss_resp_entry {
-+	__u32   cqid;
-+	__u32   wqid;
-+};
-+
-+struct mana_ib_create_qp_rss_resp {
-+	__aligned_u64 num_entries;
-+	struct rss_resp_entry entries[MANA_MAX_NUM_QUEUES];
-+};
-+
-+#endif
--- 
-2.17.1
+we'll need to fix also bpf_kprobe_multi_cookie_swap because it assumes
+64bit user space pointers
 
+would be gret if we could have selftest for this
+
+thanks,
+jirka
+
+> 
+> Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
+> Fixes: 5117c26e877352bc ("libbpf: Add bpf_link_create support for multi kprobes")
+> Fixes: ddc6b04989eb0993 ("libbpf: Add bpf_program__attach_kprobe_multi_opts function")
+> Fixes: f7a11eeccb111854 ("selftests/bpf: Add kprobe_multi attach test")
+> Fixes: 9271a0c7ae7a9147 ("selftests/bpf: Add attach test for bpf_program__attach_kprobe_multi_opts")
+> Fixes: 2c6401c966ae1fbe ("selftests/bpf: Add kprobe_multi bpf_cookie test")
+> Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+> ---
+>  kernel/trace/bpf_trace.c                           | 25 ++++++++++++++++++----
+>  tools/lib/bpf/bpf.h                                |  2 +-
+>  tools/lib/bpf/libbpf.c                             |  8 +++----
+>  tools/lib/bpf/libbpf.h                             |  2 +-
+>  .../testing/selftests/bpf/prog_tests/bpf_cookie.c  |  2 +-
+>  .../selftests/bpf/prog_tests/kprobe_multi_test.c   |  8 +++----
+>  6 files changed, 32 insertions(+), 15 deletions(-)
+> 
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 9d3028a..30a15b3 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -2454,7 +2454,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  	void __user *ucookies;
+>  	unsigned long *addrs;
+>  	u32 flags, cnt, size, cookies_size;
+> -	void __user *uaddrs;
+> +	u64 __user *uaddrs;
+>  	u64 *cookies = NULL;
+>  	void __user *usyms;
+>  	int err;
+> @@ -2486,9 +2486,26 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>  		return -ENOMEM;
+>  
+>  	if (uaddrs) {
+> -		if (copy_from_user(addrs, uaddrs, size)) {
+> -			err = -EFAULT;
+> -			goto error;
+> +		if (sizeof(*addrs) == sizeof(*uaddrs)) {
+> +			if (copy_from_user(addrs, uaddrs, size)) {
+> +				err = -EFAULT;
+> +				goto error;
+> +			}
+> +		} else {
+> +			u32 i;
+> +			u64 addr;
+> +
+> +			for (i = 0; i < cnt; i++) {
+> +				if (get_user(addr, uaddrs + i)) {
+> +					err = -EFAULT;
+> +					goto error;
+> +				}
+> +				if (addr > ULONG_MAX) {
+> +					err = -EINVAL;
+> +					goto error;
+> +				}
+> +				addrs[i] = addr;
+> +			}
+>  		}
+>  	} else {
+>  		struct user_syms us;
+> diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
+> index 2e0d373..da9c6037 100644
+> --- a/tools/lib/bpf/bpf.h
+> +++ b/tools/lib/bpf/bpf.h
+> @@ -418,7 +418,7 @@ struct bpf_link_create_opts {
+>  			__u32 flags;
+>  			__u32 cnt;
+>  			const char **syms;
+> -			const unsigned long *addrs;
+> +			const __u64 *addrs;
+>  			const __u64 *cookies;
+>  		} kprobe_multi;
+>  		struct {
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index ef7f302..35fa9c5 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -10737,7 +10737,7 @@ static bool glob_match(const char *str, const char *pat)
+>  
+>  struct kprobe_multi_resolve {
+>  	const char *pattern;
+> -	unsigned long *addrs;
+> +	__u64 *addrs;
+>  	size_t cap;
+>  	size_t cnt;
+>  };
+> @@ -10752,12 +10752,12 @@ resolve_kprobe_multi_cb(unsigned long long sym_addr, char sym_type,
+>  	if (!glob_match(sym_name, res->pattern))
+>  		return 0;
+>  
+> -	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(unsigned long),
+> +	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(__u64),
+>  				res->cnt + 1);
+>  	if (err)
+>  		return err;
+>  
+> -	res->addrs[res->cnt++] = (unsigned long) sym_addr;
+> +	res->addrs[res->cnt++] = sym_addr;
+>  	return 0;
+>  }
+>  
+> @@ -10772,7 +10772,7 @@ bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
+>  	};
+>  	struct bpf_link *link = NULL;
+>  	char errmsg[STRERR_BUFSIZE];
+> -	const unsigned long *addrs;
+> +	const __u64 *addrs;
+>  	int err, link_fd, prog_fd;
+>  	const __u64 *cookies;
+>  	const char **syms;
+> diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
+> index 9e9a3fd..76e171d 100644
+> --- a/tools/lib/bpf/libbpf.h
+> +++ b/tools/lib/bpf/libbpf.h
+> @@ -489,7 +489,7 @@ struct bpf_kprobe_multi_opts {
+>  	/* array of function symbols to attach */
+>  	const char **syms;
+>  	/* array of function addresses to attach */
+> -	const unsigned long *addrs;
+> +	const __u64 *addrs;
+>  	/* array of user-provided values fetchable through bpf_get_attach_cookie */
+>  	const __u64 *cookies;
+>  	/* number of elements in syms/addrs/cookies arrays */
+> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+> index 83ef55e3..e843840 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
+> @@ -140,7 +140,7 @@ static void kprobe_multi_link_api_subtest(void)
+>  	cookies[6] = 7;
+>  	cookies[7] = 8;
+>  
+> -	opts.kprobe_multi.addrs = (const unsigned long *) &addrs;
+> +	opts.kprobe_multi.addrs = (const __u64 *) &addrs;
+>  	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
+>  	opts.kprobe_multi.cookies = (const __u64 *) &cookies;
+>  	prog_fd = bpf_program__fd(skel->progs.test_kprobe);
+> diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+> index 586dc52..7646112 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
+> @@ -108,7 +108,7 @@ static void test_link_api_addrs(void)
+>  	GET_ADDR("bpf_fentry_test7", addrs[6]);
+>  	GET_ADDR("bpf_fentry_test8", addrs[7]);
+>  
+> -	opts.kprobe_multi.addrs = (const unsigned long*) addrs;
+> +	opts.kprobe_multi.addrs = (const __u64 *) addrs;
+>  	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
+>  	test_link_api(&opts);
+>  }
+> @@ -186,7 +186,7 @@ static void test_attach_api_addrs(void)
+>  	GET_ADDR("bpf_fentry_test7", addrs[6]);
+>  	GET_ADDR("bpf_fentry_test8", addrs[7]);
+>  
+> -	opts.addrs = (const unsigned long *) addrs;
+> +	opts.addrs = (const __u64 *) addrs;
+>  	opts.cnt = ARRAY_SIZE(addrs);
+>  	test_attach_api(NULL, &opts);
+>  }
+> @@ -244,7 +244,7 @@ static void test_attach_api_fails(void)
+>  		goto cleanup;
+>  
+>  	/* fail_2 - both addrs and syms set */
+> -	opts.addrs = (const unsigned long *) addrs;
+> +	opts.addrs = (const __u64 *) addrs;
+>  	opts.syms = syms;
+>  	opts.cnt = ARRAY_SIZE(syms);
+>  	opts.cookies = NULL;
+> @@ -258,7 +258,7 @@ static void test_attach_api_fails(void)
+>  		goto cleanup;
+>  
+>  	/* fail_3 - pattern and addrs set */
+> -	opts.addrs = (const unsigned long *) addrs;
+> +	opts.addrs = (const __u64 *) addrs;
+>  	opts.syms = NULL;
+>  	opts.cnt = ARRAY_SIZE(syms);
+>  	opts.cookies = NULL;
+> -- 
+> 2.1.4
+> 
