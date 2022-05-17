@@ -2,85 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 906E552A31A
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 15:20:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6774052A31E
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 15:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347518AbiEQNUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 09:20:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
+        id S1347537AbiEQNUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 09:20:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347537AbiEQNUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 09:20:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B6B41F94
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 06:20:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1407DB81893
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 13:20:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CF093C34116;
-        Tue, 17 May 2022 13:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652793611;
-        bh=ltA9YCYrsngQy0OC90pIC8iFfBQfdrr4fzZtejgv7oQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=RJ4VRJmoBQFpwQzqK3Htu2Llp5lEvZGATlMQlckCG0unSa5ZjCno6C4pZau9VfOjI
-         6qGbFQMCv4fOvQQjooevaegry6XacDJ1YsqGtJaw5gfBDX7AlpWTL7JQEuQ/cJzeIU
-         POlVaJ5NsQRsreDX8sLr1p22bliss72EQpPpT6lnylyVdEf3Dgi3RlvUEdCwGj3UjZ
-         nq4qnt58ZaFLTa/0R8ECpYTDgzcw3kbhPHjL/CQhmkH3InEKq97aiAs7B2O7BVl1VX
-         Q/FKHYeelKFDXksL8tGEnv5gOpxnr2q87NLmrqYrO018phkWTGIaZip2g4CtmsKbHX
-         /5ovcmwvol+VA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AC5B8F0383D;
-        Tue, 17 May 2022 13:20:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S244252AbiEQNUh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 09:20:37 -0400
+Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::224])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9DF41F94;
+        Tue, 17 May 2022 06:20:34 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 4392CE0004;
+        Tue, 17 May 2022 13:20:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652793633;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VGA1m2y8YSHz8H7uGnZBsOWObUywmlYTfnHhSOJQS5U=;
+        b=gINv2Y2kScCWE0hSptZwqibParbTB6i+tV6PFuAWfP6rbFdEeVslAbijmQH4Y5CtdTh4YX
+        2i5EXCJGDpolSj5lIAznIPSB5ajxbHHErAwyROKxG4Elz3LEvVZpjTwUCfsumCvdEmZ3GR
+        V3jmGKpngZg+9i10fYynECWcxyH37FV8xebMPq5xt1/elAVT9LE5V2bw7uGLtLoXAsEptb
+        gnWECkSqTuyqiCWInU58v/DKRt5f/EN4j0gBTCYFq4JN1QTnOLM3dU8q9wynZy4163zyPa
+        JnkCRloOKHI5uYm85mCXs50C2MHByW52y8e1jKB76nhuKi4mmbVl7+CvfETQyQ==
+Date:   Tue, 17 May 2022 15:20:29 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Subject: Re: [PATCH wpan-next v2 08/11] net: mac802154: Introduce a tx queue
+ flushing mechanism
+Message-ID: <20220517152029.792200a6@xps-13>
+In-Reply-To: <CAK-6q+iazXHZmf2vteXGEEpSXLLp9279g5JD2whBn-_FPL0piw@mail.gmail.com>
+References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
+        <20220512143314.235604-9-miquel.raynal@bootlin.com>
+        <CAK-6q+iazXHZmf2vteXGEEpSXLLp9279g5JD2whBn-_FPL0piw@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2] net: phy: marvell: Add errata section 5.1 for Alaska PHY
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165279361170.14667.8610844403745692069.git-patchwork-notify@kernel.org>
-Date:   Tue, 17 May 2022 13:20:11 +0000
-References: <20220516070859.549170-1-sr@denx.de>
-In-Reply-To: <20220516070859.549170-1-sr@denx.de>
-To:     Stefan Roese <sr@denx.de>
-Cc:     netdev@vger.kernel.org, lpolak@arri.de, kabel@kernel.org,
-        andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Alex,
 
-This patch was applied to netdev/net-next.git (master)
-by Paolo Abeni <pabeni@redhat.com>:
+aahringo@redhat.com wrote on Sun, 15 May 2022 18:23:04 -0400:
 
-On Mon, 16 May 2022 09:08:59 +0200 you wrote:
-> From: Leszek Polak <lpolak@arri.de>
-> 
-> As per Errata Section 5.1, if EEE is intended to be used, some register
-> writes must be done once after every hardware reset. This patch now adds
-> the necessary register writes as listed in the Marvell errata.
-> 
-> Without this fix we experience ethernet problems on some of our boards
-> equipped with a new version of this ethernet PHY (different supplier).
-> 
-> [...]
+> Hi,
+>=20
+> On Thu, May 12, 2022 at 10:34 AM Miquel Raynal
+> <miquel.raynal@bootlin.com> wrote:
+> >
+> > Right now we are able to stop a queue but we have no indication if a
+> > transmission is ongoing or not.
+> >
+> > Thanks to recent additions, we can track the number of ongoing
+> > transmissions so we know if the last transmission is over. Adding on top
+> > of it an internal wait queue also allows to be woken up asynchronously
+> > when this happens. If, beforehands, we marked the queue to be held and
+> > stopped it, we end up flushing and stopping the tx queue.
+> >
+> > Thanks to this feature, we will soon be able to introduce a synchronous
+> > transmit API.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  include/net/cfg802154.h      |  1 +
+> >  net/ieee802154/core.c        |  1 +
+> >  net/mac802154/cfg.c          |  2 +-
+> >  net/mac802154/ieee802154_i.h |  1 +
+> >  net/mac802154/tx.c           | 26 ++++++++++++++++++++++++--
+> >  net/mac802154/util.c         |  6 ++++--
+> >  6 files changed, 32 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+> > index ad3f438e4583..8b6326aa2d42 100644
+> > --- a/include/net/cfg802154.h
+> > +++ b/include/net/cfg802154.h
+> > @@ -218,6 +218,7 @@ struct wpan_phy {
+> >         struct mutex queue_lock;
+> >         atomic_t ongoing_txs;
+> >         atomic_t hold_txs;
+> > +       wait_queue_head_t sync_txq;
+> >
+> >         char priv[] __aligned(NETDEV_ALIGN);
+> >  };
+> > diff --git a/net/ieee802154/core.c b/net/ieee802154/core.c
+> > index d81b7301e013..f13e3082d988 100644
+> > --- a/net/ieee802154/core.c
+> > +++ b/net/ieee802154/core.c
+> > @@ -129,6 +129,7 @@ wpan_phy_new(const struct cfg802154_ops *ops, size_=
+t priv_size)
+> >         wpan_phy_net_set(&rdev->wpan_phy, &init_net);
+> >
+> >         init_waitqueue_head(&rdev->dev_wait);
+> > +       init_waitqueue_head(&rdev->wpan_phy.sync_txq);
+> >
+> >         mutex_init(&rdev->wpan_phy.queue_lock);
+> >
+> > diff --git a/net/mac802154/cfg.c b/net/mac802154/cfg.c
+> > index b51100fd9e3f..93df24f75572 100644
+> > --- a/net/mac802154/cfg.c
+> > +++ b/net/mac802154/cfg.c
+> > @@ -46,7 +46,7 @@ static int ieee802154_suspend(struct wpan_phy *wpan_p=
+hy)
+> >         if (!local->open_count)
+> >                 goto suspend;
+> >
+> > -       ieee802154_hold_queue(local);
+> > +       ieee802154_sync_and_hold_queue(local);
+> >         synchronize_net();
+> >
+> >         /* stop hardware - this must stop RX */
+> > diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
+> > index e34db1d49ef4..a057827fc48a 100644
+> > --- a/net/mac802154/ieee802154_i.h
+> > +++ b/net/mac802154/ieee802154_i.h
+> > @@ -124,6 +124,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wp=
+an;
+> >
+> >  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb=
+);
+> >  void ieee802154_xmit_sync_worker(struct work_struct *work);
+> > +int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
+> >  netdev_tx_t
+> >  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *=
+dev);
+> >  netdev_tx_t
+> > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > index 607019b8f8ab..38f74b8b6740 100644
+> > --- a/net/mac802154/tx.c
+> > +++ b/net/mac802154/tx.c
+> > @@ -44,7 +44,8 @@ void ieee802154_xmit_sync_worker(struct work_struct *=
+work)
+> >  err_tx:
+> >         /* Restart the netif queue on each sub_if_data object. */
+> >         ieee802154_release_queue(local);
+> > -       atomic_dec(&local->phy->ongoing_txs);
+> > +       if (!atomic_dec_and_test(&local->phy->ongoing_txs))
+> > +               wake_up(&local->phy->sync_txq);
+> >         kfree_skb(skb);
+> >         netdev_dbg(dev, "transmission failed\n");
+> >  }
+> > @@ -100,12 +101,33 @@ ieee802154_tx(struct ieee802154_local *local, str=
+uct sk_buff *skb)
+> >
+> >  err_wake_netif_queue:
+> >         ieee802154_release_queue(local);
+> > -       atomic_dec(&local->phy->ongoing_txs);
+> > +       if (!atomic_dec_and_test(&local->phy->ongoing_txs))
+> > +               wake_up(&local->phy->sync_txq);
+> >  err_free_skb:
+> >         kfree_skb(skb);
+> >         return NETDEV_TX_OK;
+> >  }
+> >
+> > +static int ieee802154_sync_queue(struct ieee802154_local *local)
+> > +{
+> > +       int ret;
+> > +
+> > +       ieee802154_hold_queue(local);
+> > +       ieee802154_disable_queue(local);
+> > +       wait_event(local->phy->sync_txq, !atomic_read(&local->phy->ongo=
+ing_txs));
+> > +       ret =3D local->tx_result;
+> > +       ieee802154_release_queue(local); =20
+>=20
+> I am curious, why this extra hold, release here?
 
-Here is the summary with links:
-  - [v2] net: phy: marvell: Add errata section 5.1 for Alaska PHY
-    https://git.kernel.org/netdev/net-next/c/65a9dedc11d6
+My idea was:
+- stop the queue
+- increment the hold counter to be sure the queue does not get
+  restarted asynchronously
+- wait for the last transmission to finish
+- decrement the hold counter
+- restart the queue if the hold counter is null
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+What is bothering you with it? Without the hold we cannot be sure that
+an asynchronous event will not restart the queue and possibly fail our
+logic.
 
-
+Thanks,
+Miqu=C3=A8l
