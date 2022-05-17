@@ -2,258 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CBCA529B12
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:39:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD2C0529B57
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:46:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241975AbiEQHia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 03:38:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42280 "EHLO
+        id S241122AbiEQHqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 03:46:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241612AbiEQHhB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:37:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5EF41488B7
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:36:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652773018;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Mqoy+gV+cPqf1cM9iO48i7hrZpV+uT4NBe8cPuE9DHk=;
-        b=Efe/MQJwXRg6yRoWJDBZD17vuKybNDUDiouh1DVp3XkBnPsvfgh/EXlCWc/FSr0J6l7B50
-        6546vNjPhYNA8Zo4O6WCfmMlsANaRLHCqkM698RxqBuPH3Ms8t31Hb+wAmqNtnrEuwkiEs
-        0eSrl+2J6lqTbRVxSWMl03JP+SVpTu0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-88-cZvUbg2HOE6qVtAgQLSAdg-1; Tue, 17 May 2022 03:36:55 -0400
-X-MC-Unique: cZvUbg2HOE6qVtAgQLSAdg-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 0DF6F299E751;
-        Tue, 17 May 2022 07:36:54 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.3])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2B55215687CF;
-        Tue, 17 May 2022 07:36:49 +0000 (UTC)
-Date:   Tue, 17 May 2022 09:36:47 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf-next v3 4/4] bpf_trace: pass array of u64 values in
- kprobe_multi.addrs
-Message-ID: <6ef675aeeea442fa8fc168cd1cb4e4e474f65a3f.1652772731.git.esyr@redhat.com>
-References: <cover.1652772731.git.esyr@redhat.com>
+        with ESMTP id S239758AbiEQHqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:46:40 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA94DB848
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:46:38 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id j24so8252996wrb.1
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:46:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=s/Vs2ZOYlY/JdkHXcuvqGHiQEb2zIrOSrE98Tywd5ew=;
+        b=mcUHXf3tKvTTHSet3lfw7hLN+sc92boiISSfAD5WYi/SXR5FAgCFyAJuJF24lZd8DV
+         ksMbX1PwanT0U674XOQ/ebK2PGFwc07+aXa4NH4aEwKqUrHtZNed/p1n54qe2zXXUm5W
+         TXR525tEFmioIhMSxLIkxxzv+5bgmR1ajqhKDlkF6388bFzKXEvD7yD78uW9jW+Y7YK2
+         kGfWZQEtFOALf3lMBuEwUqv3mtsNfg44yZBqwiCSiqAfQj0xk6eEm4p/YJNNE3UamnBQ
+         L+9nWosYSjArH7ZO0/kIiqTZmWn3ee6FtQP+ho57v1RFfeMYlXtb8buLdsQh1N1tQVZ3
+         RtJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=s/Vs2ZOYlY/JdkHXcuvqGHiQEb2zIrOSrE98Tywd5ew=;
+        b=oiTywr9AopDSQ4AeCI9lZNNdaN9py4pEDjZLyimkUPzbplsZQO+TXnPF84yRiALGVp
+         5V1kSNAYN1BGo2KqfqYGk0XyL17XGf1QkIxnmqg2LlQ/OoQuBjiWu9tau+ILeajKLvcU
+         psqHSpVPIGqZxIfhB42um/7z+W3CBb9Lppfm02nRVyFCb4F81rHqaG4/YGD41fcc/p5W
+         vifwc7WG7rvGQqUrL/+qVCjw9ussvKk1rHEgCHPls2F0xXXIXuYsAj8WxY2p/dbyFMls
+         8urxPLTXYgUvdhHaGcXF9MGXo5WQvtMT+/WqgRVHF0lTLg7VgOhQYsheRfJaeA+WJtzZ
+         W7jg==
+X-Gm-Message-State: AOAM5313icEXviBEWed+3IhFLJRcAPg6CGcEOBIz1D1OQZIoXRnfhdEs
+        thF/gkPnvKAnGIiwDsvWZTCJTOkoxgo7dtt8MA==
+X-Google-Smtp-Source: ABdhPJwMGf9FKTEFSaiTTp+196a474H6NA9dhcbz0RrghlkjtAv0eGzbil3T0aSRBZ2Ja32SghZgVCn6Chil0+cKz2E=
+X-Received: by 2002:adf:e444:0:b0:20d:1329:76ca with SMTP id
+ t4-20020adfe444000000b0020d132976camr3073691wrm.553.1652773597525; Tue, 17
+ May 2022 00:46:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1652772731.git.esyr@redhat.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Sender: ds8873959@gmail.com
+Received: by 2002:a05:600c:190b:0:0:0:0 with HTTP; Tue, 17 May 2022 00:46:36
+ -0700 (PDT)
+From:   "Mr. Jimmy Moore" <jimmymoore265@gmail.com>
+Date:   Tue, 17 May 2022 08:46:36 +0100
+X-Google-Sender-Auth: LGcQ5HqukgU2SyFATR3hVepue8E
+Message-ID: <CAJB8rUgWqUqMzy+u1pVydZNSs=KRX3Z-7azXGGrqPZrR_snypQ@mail.gmail.com>
+Subject: Dear Award Recipient Covid-19 Compensation Funds.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,FREEMAIL_REPLY,HK_NAME_FM_MR_MRS,LOTS_OF_MONEY,
+        LOTTO_DEPT,MILLION_USD,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
+        version=3.4.6
+X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:42d listed in]
+        [list.dnswl.org]
+        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5000]
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [jimmymoore265[at]gmail.com]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
+        *       in digit
+        *      [ds8873959[at]gmail.com]
+        *  0.1 MILLION_USD BODY: Talks about millions of dollars
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  1.5 HK_NAME_FM_MR_MRS No description available.
+        *  1.0 FREEMAIL_REPLY From and body contain different freemails
+        *  2.0 LOTTO_DEPT Claims Department
+        *  1.3 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the interface as defined, it is impossible to pass 64-bit kernel
-addresses from a 32-bit userspace process in BPF_LINK_TYPE_KPROBE_MULTI,
-which severly limits the useability of the interface, change the ABI
-to accept an array of u64 values instead of (kernel? user?) longs.
-Interestingly, the rest of the libbpf infrastructure uses 64-bit values
-for kallsyms addresses already, so this patch also eliminates
-the sym_addr cast in tools/lib/bpf/libbpf.c:resolve_kprobe_multi_cb().
+UNITED NATIONS COVID-19 OVERDUE COMPENSATION UNIT.
+REFERENCE PAYMENT CODE: 8525595
+BAILOUT AMOUNT:$10.5 MILLION USD
+ADDRESS: NEW YORK, NY 10017, UNITED STATES
 
-Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-Fixes: 5117c26e877352bc ("libbpf: Add bpf_link_create support for multi kprobes")
-Fixes: ddc6b04989eb0993 ("libbpf: Add bpf_program__attach_kprobe_multi_opts function")
-Fixes: f7a11eeccb111854 ("selftests/bpf: Add kprobe_multi attach test")
-Fixes: 9271a0c7ae7a9147 ("selftests/bpf: Add attach test for bpf_program__attach_kprobe_multi_opts")
-Fixes: 2c6401c966ae1fbe ("selftests/bpf: Add kprobe_multi bpf_cookie test")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
----
- kernel/trace/bpf_trace.c                           | 25 ++++++++++++++++++----
- tools/lib/bpf/bpf.h                                |  2 +-
- tools/lib/bpf/libbpf.c                             |  8 +++----
- tools/lib/bpf/libbpf.h                             |  2 +-
- .../testing/selftests/bpf/prog_tests/bpf_cookie.c  |  2 +-
- .../selftests/bpf/prog_tests/kprobe_multi_test.c   |  8 +++----
- 6 files changed, 32 insertions(+), 15 deletions(-)
+Dear award recipient, Covid-19 Compensation Funds.
 
-diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index 9d3028a..30a15b3 100644
---- a/kernel/trace/bpf_trace.c
-+++ b/kernel/trace/bpf_trace.c
-@@ -2454,7 +2454,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 	void __user *ucookies;
- 	unsigned long *addrs;
- 	u32 flags, cnt, size, cookies_size;
--	void __user *uaddrs;
-+	u64 __user *uaddrs;
- 	u64 *cookies = NULL;
- 	void __user *usyms;
- 	int err;
-@@ -2486,9 +2486,26 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 		return -ENOMEM;
- 
- 	if (uaddrs) {
--		if (copy_from_user(addrs, uaddrs, size)) {
--			err = -EFAULT;
--			goto error;
-+		if (sizeof(*addrs) == sizeof(*uaddrs)) {
-+			if (copy_from_user(addrs, uaddrs, size)) {
-+				err = -EFAULT;
-+				goto error;
-+			}
-+		} else {
-+			u32 i;
-+			u64 addr;
-+
-+			for (i = 0; i < cnt; i++) {
-+				if (get_user(addr, uaddrs + i)) {
-+					err = -EFAULT;
-+					goto error;
-+				}
-+				if (addr > ULONG_MAX) {
-+					err = -EINVAL;
-+					goto error;
-+				}
-+				addrs[i] = addr;
-+			}
- 		}
- 	} else {
- 		struct user_syms us;
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index 2e0d373..da9c6037 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -418,7 +418,7 @@ struct bpf_link_create_opts {
- 			__u32 flags;
- 			__u32 cnt;
- 			const char **syms;
--			const unsigned long *addrs;
-+			const __u64 *addrs;
- 			const __u64 *cookies;
- 		} kprobe_multi;
- 		struct {
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index ef7f302..35fa9c5 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10737,7 +10737,7 @@ static bool glob_match(const char *str, const char *pat)
- 
- struct kprobe_multi_resolve {
- 	const char *pattern;
--	unsigned long *addrs;
-+	__u64 *addrs;
- 	size_t cap;
- 	size_t cnt;
- };
-@@ -10752,12 +10752,12 @@ resolve_kprobe_multi_cb(unsigned long long sym_addr, char sym_type,
- 	if (!glob_match(sym_name, res->pattern))
- 		return 0;
- 
--	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(unsigned long),
-+	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(__u64),
- 				res->cnt + 1);
- 	if (err)
- 		return err;
- 
--	res->addrs[res->cnt++] = (unsigned long) sym_addr;
-+	res->addrs[res->cnt++] = sym_addr;
- 	return 0;
- }
- 
-@@ -10772,7 +10772,7 @@ bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
- 	};
- 	struct bpf_link *link = NULL;
- 	char errmsg[STRERR_BUFSIZE];
--	const unsigned long *addrs;
-+	const __u64 *addrs;
- 	int err, link_fd, prog_fd;
- 	const __u64 *cookies;
- 	const char **syms;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 9e9a3fd..76e171d 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -489,7 +489,7 @@ struct bpf_kprobe_multi_opts {
- 	/* array of function symbols to attach */
- 	const char **syms;
- 	/* array of function addresses to attach */
--	const unsigned long *addrs;
-+	const __u64 *addrs;
- 	/* array of user-provided values fetchable through bpf_get_attach_cookie */
- 	const __u64 *cookies;
- 	/* number of elements in syms/addrs/cookies arrays */
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-index 83ef55e3..e843840 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-@@ -140,7 +140,7 @@ static void kprobe_multi_link_api_subtest(void)
- 	cookies[6] = 7;
- 	cookies[7] = 8;
- 
--	opts.kprobe_multi.addrs = (const unsigned long *) &addrs;
-+	opts.kprobe_multi.addrs = (const __u64 *) &addrs;
- 	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
- 	opts.kprobe_multi.cookies = (const __u64 *) &cookies;
- 	prog_fd = bpf_program__fd(skel->progs.test_kprobe);
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index 586dc52..7646112 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -108,7 +108,7 @@ static void test_link_api_addrs(void)
- 	GET_ADDR("bpf_fentry_test7", addrs[6]);
- 	GET_ADDR("bpf_fentry_test8", addrs[7]);
- 
--	opts.kprobe_multi.addrs = (const unsigned long*) addrs;
-+	opts.kprobe_multi.addrs = (const __u64 *) addrs;
- 	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
- 	test_link_api(&opts);
- }
-@@ -186,7 +186,7 @@ static void test_attach_api_addrs(void)
- 	GET_ADDR("bpf_fentry_test7", addrs[6]);
- 	GET_ADDR("bpf_fentry_test8", addrs[7]);
- 
--	opts.addrs = (const unsigned long *) addrs;
-+	opts.addrs = (const __u64 *) addrs;
- 	opts.cnt = ARRAY_SIZE(addrs);
- 	test_attach_api(NULL, &opts);
- }
-@@ -244,7 +244,7 @@ static void test_attach_api_fails(void)
- 		goto cleanup;
- 
- 	/* fail_2 - both addrs and syms set */
--	opts.addrs = (const unsigned long *) addrs;
-+	opts.addrs = (const __u64 *) addrs;
- 	opts.syms = syms;
- 	opts.cnt = ARRAY_SIZE(syms);
- 	opts.cookies = NULL;
-@@ -258,7 +258,7 @@ static void test_attach_api_fails(void)
- 		goto cleanup;
- 
- 	/* fail_3 - pattern and addrs set */
--	opts.addrs = (const unsigned long *) addrs;
-+	opts.addrs = (const __u64 *) addrs;
- 	opts.syms = NULL;
- 	opts.cnt = ARRAY_SIZE(syms);
- 	opts.cookies = NULL;
--- 
-2.1.4
+You are receiving this correspondence because we have finally reached
+a consensus with the UN, IRS, and IMF that your total fund worth $10.5
+Million Dollars of Covid-19 Compensation payment shall be delivered to
+your nominated mode of receipt, and you are expected to pay the sum of
+$12,000 for levies owed to authorities after receiving your funds.
 
+You have a grace period of 2 weeks to pay the $12,000 levy after you
+have received your Covid-19 Compensation total sum of $10.5 Million.
+We shall proceed with the payment of your bailout grant only if you
+agree to the terms and conditions stated.
+
+Contact Dr. Mustafa Ali, for more information by email at:(
+mustafaliali180@gmail.com ) Your consent in this regard would be
+highly appreciated.
+
+Best Regards,
+Mr. Jimmy Moore.
+Undersecretary-General United Nations
+Office of Internal Oversight-UNIOS
