@@ -2,228 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFAD0529FD1
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 12:56:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A669529FD3
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 12:57:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344569AbiEQK42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 06:56:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48230 "EHLO
+        id S1343858AbiEQK5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 06:57:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344652AbiEQK4J (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 06:56:09 -0400
-Received: from azure-sdnproxy-3.icoremail.net (azure-sdnproxy.icoremail.net [20.232.28.96])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 8BE2942EDD;
-        Tue, 17 May 2022 03:56:00 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [124.236.130.193])
-        by mail-app4 (Coremail) with SMTP id cS_KCgB3yOAff4NiIzBaAA--.7931S2;
-        Tue, 17 May 2022 18:55:41 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org, krzysztof.kozlowski@linaro.org
-Cc:     kuba@kernel.org, davem@davemloft.net, edumazet@google.com,
-        pabeni@redhat.com, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        netdev@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net v2] NFC: hci: fix sleep in atomic context bugs in nfc_hci_hcp_message_tx
-Date:   Tue, 17 May 2022 18:55:26 +0800
-Message-Id: <20220517105526.114421-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cS_KCgB3yOAff4NiIzBaAA--.7931S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3AF4kGF17ZFyfArWUGw1fCrg_yoW7Cr4rpa
-        9YgFy3ArZ5Aw48WFWDZwn2vF4Y9w409Fy3C3y7C3WxK3yFvFnFqF1Ut342kFZ5ArWxAwsr
-        XF1jqw1UWF47W37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
-        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_Gw1l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
-        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
-        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
-        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
-        73UjIFyTuYvjfUonmRUUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggNAVZdtZu2IgABs2
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S1344572AbiEQK5A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 06:57:00 -0400
+Received: from zg8tndyumtaxlji0oc4xnzya.icoremail.net (zg8tndyumtaxlji0oc4xnzya.icoremail.net [46.101.248.176])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id BA67A483AA;
+        Tue, 17 May 2022 03:56:54 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Tue, 17 May 2022 18:56:31
+ +0800 (GMT+08:00)
+X-Originating-IP: [124.236.130.193]
+Date:   Tue, 17 May 2022 18:56:31 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        gregkh@linuxfoundation.org, alexander.deucher@amd.com,
+        broonie@kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net] NFC: hci: fix sleep in atomic context bugs in
+ nfc_hci_hcp_message_tx
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <ea2af2f9-002a-5681-4293-a05718ce9dcd@linaro.org>
+References: <20220516021028.54063-1-duoming@zju.edu.cn>
+ <d5fdfe27-a6de-3030-ce51-9f4f45d552f3@linaro.org>
+ <6aba1413.196eb.180cc609bf1.Coremail.duoming@zju.edu.cn>
+ <ea2af2f9-002a-5681-4293-a05718ce9dcd@linaro.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
+MIME-Version: 1.0
+Message-ID: <fc6a78c.196ab.180d1a98cc9.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgDHnyJff4NiljNaAA--.8491W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggNAVZdtZu2IgADs0
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are sleep in atomic context bugs when the request to secure
-element of st21nfca is timeout. The root cause is that kzalloc and
-alloc_skb with GFP_KERNEL parameter and mutex_lock are called in
-st21nfca_se_wt_timeout which is a timer handler. The call tree shows
-the execution paths that could lead to bugs:
-
-   (Interrupt context)
-st21nfca_se_wt_timeout
-  nfc_hci_send_event
-    nfc_hci_hcp_message_tx
-      kzalloc(..., GFP_KERNEL) //may sleep
-      alloc_skb(..., GFP_KERNEL) //may sleep
-      mutex_lock() //may sleep
-
-This patch changes allocation mode of kzalloc and alloc_skb from
-GFP_KERNEL to GFP_ATOMIC and changes mutex_lock to spin_lock in
-order to prevent atomic context from sleeping.
-
-Fixes: 2130fb97fecf ("NFC: st21nfca: Adding support for secure element")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in v2:
-  - Change mutex_lock to spin_lock.
-
- include/net/nfc/hci.h |  3 ++-
- net/nfc/hci/core.c    | 18 +++++++++---------
- net/nfc/hci/hcp.c     | 10 +++++-----
- 3 files changed, 16 insertions(+), 15 deletions(-)
-
-diff --git a/include/net/nfc/hci.h b/include/net/nfc/hci.h
-index 756c11084f6..8f66e6e6b91 100644
---- a/include/net/nfc/hci.h
-+++ b/include/net/nfc/hci.h
-@@ -103,7 +103,8 @@ struct nfc_hci_dev {
- 
- 	bool shutting_down;
- 
--	struct mutex msg_tx_mutex;
-+	/* The spinlock is used to protect resources related with hci message TX */
-+	spinlock_t msg_tx_spin;
- 
- 	struct list_head msg_tx_queue;
- 
-diff --git a/net/nfc/hci/core.c b/net/nfc/hci/core.c
-index ceb87db57cd..fa22f9fe5fc 100644
---- a/net/nfc/hci/core.c
-+++ b/net/nfc/hci/core.c
-@@ -68,7 +68,7 @@ static void nfc_hci_msg_tx_work(struct work_struct *work)
- 	struct sk_buff *skb;
- 	int r = 0;
- 
--	mutex_lock(&hdev->msg_tx_mutex);
-+	spin_lock(&hdev->msg_tx_spin);
- 	if (hdev->shutting_down)
- 		goto exit;
- 
-@@ -120,7 +120,7 @@ static void nfc_hci_msg_tx_work(struct work_struct *work)
- 		  msecs_to_jiffies(hdev->cmd_pending_msg->completion_delay));
- 
- exit:
--	mutex_unlock(&hdev->msg_tx_mutex);
-+	spin_unlock(&hdev->msg_tx_spin);
- }
- 
- static void nfc_hci_msg_rx_work(struct work_struct *work)
-@@ -165,7 +165,7 @@ static void __nfc_hci_cmd_completion(struct nfc_hci_dev *hdev, int err,
- void nfc_hci_resp_received(struct nfc_hci_dev *hdev, u8 result,
- 			   struct sk_buff *skb)
- {
--	mutex_lock(&hdev->msg_tx_mutex);
-+	spin_lock(&hdev->msg_tx_spin);
- 
- 	if (hdev->cmd_pending_msg == NULL) {
- 		kfree_skb(skb);
-@@ -175,7 +175,7 @@ void nfc_hci_resp_received(struct nfc_hci_dev *hdev, u8 result,
- 	__nfc_hci_cmd_completion(hdev, nfc_hci_result_to_errno(result), skb);
- 
- exit:
--	mutex_unlock(&hdev->msg_tx_mutex);
-+	spin_unlock(&hdev->msg_tx_spin);
- }
- 
- void nfc_hci_cmd_received(struct nfc_hci_dev *hdev, u8 pipe, u8 cmd,
-@@ -833,7 +833,7 @@ static int hci_se_io(struct nfc_dev *nfc_dev, u32 se_idx,
- 
- static void nfc_hci_failure(struct nfc_hci_dev *hdev, int err)
- {
--	mutex_lock(&hdev->msg_tx_mutex);
-+	spin_lock(&hdev->msg_tx_spin);
- 
- 	if (hdev->cmd_pending_msg == NULL) {
- 		nfc_driver_failure(hdev->ndev, err);
-@@ -843,7 +843,7 @@ static void nfc_hci_failure(struct nfc_hci_dev *hdev, int err)
- 	__nfc_hci_cmd_completion(hdev, err, NULL);
- 
- exit:
--	mutex_unlock(&hdev->msg_tx_mutex);
-+	spin_unlock(&hdev->msg_tx_spin);
- }
- 
- static void nfc_hci_llc_failure(struct nfc_hci_dev *hdev, int err)
-@@ -1009,7 +1009,7 @@ EXPORT_SYMBOL(nfc_hci_free_device);
- 
- int nfc_hci_register_device(struct nfc_hci_dev *hdev)
- {
--	mutex_init(&hdev->msg_tx_mutex);
-+	spin_lock_init(&hdev->msg_tx_spin);
- 
- 	INIT_LIST_HEAD(&hdev->msg_tx_queue);
- 
-@@ -1031,7 +1031,7 @@ void nfc_hci_unregister_device(struct nfc_hci_dev *hdev)
- {
- 	struct hci_msg *msg, *n;
- 
--	mutex_lock(&hdev->msg_tx_mutex);
-+	spin_lock(&hdev->msg_tx_spin);
- 
- 	if (hdev->cmd_pending_msg) {
- 		if (hdev->cmd_pending_msg->cb)
-@@ -1044,7 +1044,7 @@ void nfc_hci_unregister_device(struct nfc_hci_dev *hdev)
- 
- 	hdev->shutting_down = true;
- 
--	mutex_unlock(&hdev->msg_tx_mutex);
-+	spin_unlock(&hdev->msg_tx_spin);
- 
- 	del_timer_sync(&hdev->cmd_timer);
- 	cancel_work_sync(&hdev->msg_tx_work);
-diff --git a/net/nfc/hci/hcp.c b/net/nfc/hci/hcp.c
-index 05c60988f59..f7eccb4ce35 100644
---- a/net/nfc/hci/hcp.c
-+++ b/net/nfc/hci/hcp.c
-@@ -30,7 +30,7 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
- 	int hci_len, err;
- 	bool firstfrag = true;
- 
--	cmd = kzalloc(sizeof(struct hci_msg), GFP_KERNEL);
-+	cmd = kzalloc(sizeof(*cmd), GFP_ATOMIC);
- 	if (cmd == NULL)
- 		return -ENOMEM;
- 
-@@ -58,7 +58,7 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
- 			  data_link_len + ndev->tx_tailroom;
- 		hci_len -= data_link_len;
- 
--		skb = alloc_skb(skb_len, GFP_KERNEL);
-+		skb = alloc_skb(skb_len, GFP_ATOMIC);
- 		if (skb == NULL) {
- 			err = -ENOMEM;
- 			goto out_skb_err;
-@@ -90,16 +90,16 @@ int nfc_hci_hcp_message_tx(struct nfc_hci_dev *hdev, u8 pipe,
- 		skb_queue_tail(&cmd->msg_frags, skb);
- 	}
- 
--	mutex_lock(&hdev->msg_tx_mutex);
-+	spin_lock(&hdev->msg_tx_spin);
- 
- 	if (hdev->shutting_down) {
- 		err = -ESHUTDOWN;
--		mutex_unlock(&hdev->msg_tx_mutex);
-+		spin_unlock(&hdev->msg_tx_spin);
- 		goto out_skb_err;
- 	}
- 
- 	list_add_tail(&cmd->msg_l, &hdev->msg_tx_queue);
--	mutex_unlock(&hdev->msg_tx_mutex);
-+	spin_unlock(&hdev->msg_tx_spin);
- 
- 	schedule_work(&hdev->msg_tx_work);
- 
--- 
-2.17.1
-
+SGVsbG8sCgpPbiBNb24sIDE2IE1heSAyMDIyIDEyOjQzOjA3ICswMjAwIEtyenlzenRvZiB3cm90
+ZToKCj4gPj4+IFRoZXJlIGFyZSBzbGVlcCBpbiBhdG9taWMgY29udGV4dCBidWdzIHdoZW4gdGhl
+IHJlcXVlc3QgdG8gc2VjdXJlCj4gPj4+IGVsZW1lbnQgb2Ygc3QyMW5mY2EgaXMgdGltZW91dC4g
+VGhlIHJvb3QgY2F1c2UgaXMgdGhhdCBremFsbG9jIGFuZAo+ID4+PiBhbGxvY19za2Igd2l0aCBH
+RlBfS0VSTkVMIHBhcmFtZXRlciBpcyBjYWxsZWQgaW4gc3QyMW5mY2Ffc2Vfd3RfdGltZW91dAo+
+ID4+PiB3aGljaCBpcyBhIHRpbWVyIGhhbmRsZXIuIFRoZSBjYWxsIHRyZWUgc2hvd3MgdGhlIGV4
+ZWN1dGlvbiBwYXRocyB0aGF0Cj4gPj4+IGNvdWxkIGxlYWQgdG8gYnVnczoKPiA+Pj4KPiA+Pj4g
+ICAgKEludGVycnVwdCBjb250ZXh0KQo+ID4+PiBzdDIxbmZjYV9zZV93dF90aW1lb3V0Cj4gPj4+
+ICAgbmZjX2hjaV9zZW5kX2V2ZW50Cj4gPj4+ICAgICBuZmNfaGNpX2hjcF9tZXNzYWdlX3R4Cj4g
+Pj4+ICAgICAgIGt6YWxsb2MoLi4uLCBHRlBfS0VSTkVMKSAvL21heSBzbGVlcAo+ID4+PiAgICAg
+ICBhbGxvY19za2IoLi4uLCBHRlBfS0VSTkVMKSAvL21heSBzbGVlcAo+ID4+Pgo+ID4+PiBUaGlz
+IHBhdGNoIGNoYW5nZXMgYWxsb2NhdGlvbiBtb2RlIG9mIGt6YWxsb2MgYW5kIGFsbG9jX3NrYiBm
+cm9tCj4gPj4+IEdGUF9LRVJORUwgdG8gR0ZQX0FUT01JQyBpbiBvcmRlciB0byBwcmV2ZW50IGF0
+b21pYyBjb250ZXh0IGZyb20KPiA+Pj4gc2xlZXBpbmcuIFRoZSBHRlBfQVRPTUlDIGZsYWcgbWFr
+ZXMgbWVtb3J5IGFsbG9jYXRpb24gb3BlcmF0aW9uCj4gPj4+IGNvdWxkIGJlIHVzZWQgaW4gYXRv
+bWljIGNvbnRleHQuCj4gPj4+Cj4gPj4+IEZpeGVzOiA4YjhkMmUwOGJmMGQgKCJORkM6IEhDSSBz
+dXBwb3J0IikKPiA+Pj4gU2lnbmVkLW9mZi1ieTogRHVvbWluZyBaaG91IDxkdW9taW5nQHpqdS5l
+ZHUuY24+Cj4gPj4+IC0tLQo+ID4+PiAgbmV0L25mYy9oY2kvaGNwLmMgfCA0ICsrLS0KPiA+Pj4g
+IDEgZmlsZSBjaGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pCj4gPj4+Cj4g
+Pj4+IGRpZmYgLS1naXQgYS9uZXQvbmZjL2hjaS9oY3AuYyBiL25ldC9uZmMvaGNpL2hjcC5jCj4g
+Pj4+IGluZGV4IDA1YzYwOTg4ZjU5Li4xY2FmOWMyMDg2ZiAxMDA2NDQKPiA+Pj4gLS0tIGEvbmV0
+L25mYy9oY2kvaGNwLmMKPiA+Pj4gKysrIGIvbmV0L25mYy9oY2kvaGNwLmMKPiA+Pj4gQEAgLTMw
+LDcgKzMwLDcgQEAgaW50IG5mY19oY2lfaGNwX21lc3NhZ2VfdHgoc3RydWN0IG5mY19oY2lfZGV2
+ICpoZGV2LCB1OCBwaXBlLAo+ID4+PiAgCWludCBoY2lfbGVuLCBlcnI7Cj4gPj4+ICAJYm9vbCBm
+aXJzdGZyYWcgPSB0cnVlOwo+ID4+PiAgCj4gPj4+IC0JY21kID0ga3phbGxvYyhzaXplb2Yoc3Ry
+dWN0IGhjaV9tc2cpLCBHRlBfS0VSTkVMKTsKPiA+Pj4gKwljbWQgPSBremFsbG9jKHNpemVvZigq
+Y21kKSwgR0ZQX0FUT01JQyk7Cj4gPj4KPiA+PiBObywgdGhpcyBkb2VzIG5vdCBsb29rIGNvcnJl
+Y3QuIFRoaXMgZnVuY3Rpb24gY2FuIHNsZWVwLCBzbyBpdCBjYW4gdXNlCj4gPj4gR0ZQX0tFUk5F
+TC4gUGxlYXNlIGp1c3QgbG9vayBhdCB0aGUgZnVuY3Rpb24gYmVmb3JlIHJlcGxhY2luZyBhbnkg
+ZmxhZ3MuLi4KPiA+IAo+ID4gSSBhbSBzb3JyeSwgSSBkb25gdCB1bmRlcnN0YW5kIHdoeSBuZmNf
+aGNpX2hjcF9tZXNzYWdlX3R4KCkgY2FuIHNsZWVwLgo+IAo+IFdoeT8gYmVjYXVzZSBpbiBsaW5l
+IDkzIGl0IHVzZXMgYSBtdXRleCAod2hpY2ggaXMgYSBzbGVlcGluZyBwcmltaXR2ZSkuCj4gCj4g
+PiAKPiA+IEkgdGhpbmsgc3QyMW5mY2Ffc2Vfd3RfdGltZW91dCgpIGlzIGEgdGltZXIgaGFuZGxl
+ciwgd2hpY2ggaXMgaW4gaW50ZXJydXB0IGNvbnRleHQuCj4gPiBUaGUgY2FsbCB0cmVlIHNob3dz
+IHRoZSBleGVjdXRpb24gcGF0aHMgdGhhdCBjb3VsZCBsZWFkIHRvIGJ1Z3M6Cj4gPiAKPiA+IHN0
+MjFuZmNhX2hjaV9zZV9pbygpCj4gPiAgIG1vZF90aW1lcigmaW5mby0+c2VfaW5mby5id2lfdGlt
+ZXIsLi4uKQo+ID4gICAgIHN0MjFuZmNhX3NlX3d0X3RpbWVvdXQoKSAgLy90aW1lciBoYW5kbGVy
+LCBpbnRlcnJ1cHQgY29udGV4dAo+ID4gICAgICAgbmZjX2hjaV9zZW5kX2V2ZW50KCkKPiA+ICAg
+ICAgICAgbmZjX2hjaV9oY3BfbWVzc2FnZV90eCgpCj4gPiAgICAgICAgICAga3phbGxvYyguLi4s
+IEdGUF9LRVJORUwpIC8vbWF5IHNsZWVwCj4gPiAgICAgICAgICAgYWxsb2Nfc2tiKC4uLiwgR0ZQ
+X0tFUk5FTCkgLy9tYXkgc2xlZXAKPiA+IAo+ID4gV2hhdGBzIG1vcmUsIEkgdGhpbmsgdGhlICJt
+dXRleF9sb2NrKCZoZGV2LT5tc2dfdHhfbXV0ZXgpIiBjYWxsZWQgYnkgbmZjX2hjaV9oY3BfbWVz
+c2FnZV90eCgpCj4gPiBpcyBhbHNvIGltcHJvcGVyLgo+ID4gCj4gPiBQbGVhc2UgY29ycmVjdCBt
+ZSwgSWYgeW91IHRoaW5rIEkgYW0gd3JvbmcuIFRoYW5rcyBmb3IgeW91ciB0aW1lLgo+IAo+IFlv
+dXIgcGF0Y2ggaXMgbm90IGNvcnJlY3QgaW4gY3VycmVudCBzZW1hbnRpY3Mgb2YgdGhpcyBmdW5j
+dGlvbi4gVGhpcwo+IGZ1bmN0aW9uIGNhbiBzbGVlcCAoYmVjYXVzZSBpdCB1c2VzIGEgbXV0ZXgp
+LCBzbyB0aGUgbWlzdGFrZSBpcyByYXRoZXIKPiBjYWxsaW5nIGl0IGZyb20gaW50ZXJydXB0IGNv
+bnRleHQuCgpXZSBoYXZlIHRvIGNhbGwgbmZjX2hjaV9zZW5kX2V2ZW50KCkgaW4gc3QyMW5mY2Ff
+c2Vfd3RfdGltZW91dCgpLCBiZWNhdXNlIHdlIG5lZWQgdG8gc2VuZCAKYSByZXNldCByZXF1ZXN0
+IGFzIHJlY292ZXJ5IHByb2NlZHVyZS4gSSB0aGluayByZXBsYWNlIEdGUF9LRVJORUwgdG8gR0ZQ
+X0FUT01JQyBhbmQgcmVwbGFjZQptdXRleF9sb2NrIHRvIHNwaW5fbG9jayBpbiBuZmNfaGNpX2hj
+cF9tZXNzYWdlX3R4KCkgaXMgYmV0dGVyLgoKV2hhdCdzIG1vcmUsIGluIG9yZGVyIHRvIHN5bmNo
+cm9uaXplIHdpdGggb3RoZXIgZnVuY3Rpb25zIHJlbGF0ZWQgd2l0aCBoY2kgbWVzc2FnZSBUWCwg
+CldlIG5lZWQgdG8gcmVwbGFjZSB0aGUgbXV0ZXhfbG9jaygmaGRldi0+bXNnX3R4X211dGV4KSB0
+byBzcGluX2xvY2sgaW4gb3RoZXIgZnVuY3Rpb25zCmFzIHdlbGwuIEkgc2VudCAicGF0Y2ggdjIi
+IGp1c3Qgbm93LgoKQmVzdCByZWdhcmRzLApEdW9taW5nIFpob3UK
