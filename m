@@ -2,63 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01B42529A61
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:06:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18A9D529A6B
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:07:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234740AbiEQHFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 03:05:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48500 "EHLO
+        id S233865AbiEQHGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 03:06:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233790AbiEQHFo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:05:44 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2877EB9D
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:05:43 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id n8so16570174plh.1
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:05:43 -0700 (PDT)
+        with ESMTP id S235637AbiEQHFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:05:54 -0400
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8F76356
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:05:52 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id i1so16561128plg.7
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:05:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=WYJ4z7YHxeW73d4SCA9PbTBn7gV3Fnj9cuo6Jt6lL9Y=;
-        b=b9SRA64jUBEP/H955g6Z9gR4qHu3isD2yCmErvWvnbRj90J+YQ6E39LE2qWg+BgfYc
-         x4hRibF0pWkomixJGLkUx54FjhvT9VowwiI3rnSgQ85ZgtHiBl0LgNMiBjfWbwswyaWt
-         0cs8BlvBqydt8j0xo+8rU9kemirKlD/L6ocFdJYJIm+gxf7sWBWVaeZ5AOeLhwz08Bt7
-         2lefcmehEK7yEOOJmG56kdanMpcAbRkOA20eLsirgAG0tPykLCfcR7yCeqZnD8hFFAWK
-         mqy2x9yC0MJ/clrt6mZUzc/EgZAhYwdURpIKjIqypGFIrCa/HJCeuwSKDhxocf2N+Vgr
-         YfbA==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=wuqROjGK5NGFVKd47141nF0XHj01jigssNIAbAq8B7w=;
+        b=TwiatshiqLTe6R9OtUH8skwX03a0UE77zNGTyfDoIfR/3ZEerC9XS/Lx4GoMYbPfU5
+         zntS8jK5Kj2ShMWTd7YYBr40HJ5nfaRudQDZAwBUGt0h6gcuHbAP8LRMld+osh8H63E4
+         zqbAfe7+MxBOF+IpX6Q9+PGuodYki5I7YJ/h0CVqDXbB8TrWlJ7s734aY35SyxkksWvc
+         bGnJdFwau8UVSQuu7GSTCE2ZqzVuh42u/1rcPIh9B4VSTj/k7h9hjEB9xMwpzW41NEIP
+         wuwEJs7wsQ/fSh5SYdITgfW+3gu+vWWNSTIE7kssIk8izpsn/fnWCwgUWAmhxdjKC6tv
+         k43Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=WYJ4z7YHxeW73d4SCA9PbTBn7gV3Fnj9cuo6Jt6lL9Y=;
-        b=nz/udu7I0ziUj3hPorrHCo//3LaUC3tRt4cxnZkZ5IjnvSDGmTxyrUuyjz6d4QptRj
-         T/hNRewZu3jyNd3PvJUle4LS5N4KAPR3FrAdQwPTDUCGSnLjahiFzxzC9pkyKrkNRB28
-         pEoO3cAVKul0CayfcUYWPtWiTefDO7uHY3JKUNu+T1RWsnH3yNJBf+BcafRIuOO5fnzX
-         Thwzpe5x+afaYfTSIVTrDZqeboIhNuDUBZFK/1PNInUPTKfB4atJsqjz5CRQC+f0ifeP
-         HYpKACnY/t77MiTKfRVgcJ+tQRs1b5o/DF+ajr5Nq+rTfPwnvBQKidWzAohO10BN4Bzi
-         KEEw==
-X-Gm-Message-State: AOAM532NyrCraHI46PZGtYSntR3pCe8/6mS3BDsaGnSBJsQ97w1KJ2NO
-        wvW+tUmcJJv+RmBPoHAYXvc=
-X-Google-Smtp-Source: ABdhPJxsYslzfYKdk+fPDBwSxFhn+gcTc1v2KzvNfaT4FPLN4AXd1tIYNLhIMvbIIkIW02fGalwDxA==
-X-Received: by 2002:a17:90a:4a03:b0:1df:4583:cb26 with SMTP id e3-20020a17090a4a0300b001df4583cb26mr10969150pjh.173.1652771142649;
-        Tue, 17 May 2022 00:05:42 -0700 (PDT)
-Received: from localhost.localdomain ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id y23-20020a17090264d700b001619b38701bsm1680886pli.72.2022.05.17.00.05.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 May 2022 00:05:41 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net v2 2/2] amt: do not skip remaining handling of advertisement message
-Date:   Tue, 17 May 2022 07:05:27 +0000
-Message-Id: <20220517070527.10591-3-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220517070527.10591-1-ap420073@gmail.com>
-References: <20220517070527.10591-1-ap420073@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=wuqROjGK5NGFVKd47141nF0XHj01jigssNIAbAq8B7w=;
+        b=Q2675syzGKqOVNjnGa9zudayeOSMaf/Gi27sLi1sSMSqeXpvJD9/V/w4oj3dI91pxp
+         ld//ofJ7HZ7fLFz8YFPKVwsjgQdREihNuhmjy8wr/VISGsxe24tL9Guj+ZCd3mxZs7RW
+         vTh2adSCfyHIp5qh1fD7VE5XHF9xMJBbbxCgKTiF4n/z68G2nk/MCJ4cw0h8NZ9PMR8a
+         ZWmoIfsAw4UvUYeDPH5/+rE5450ayJ5Eb8UwtWbnxoSWT7Ef12JWdZqUUR+z7v0LD8sR
+         oxHDNHZpYMMRCGsoGkpbxyiehaDoI6ZdRxWV766dtXFhF/HMdGQ8wit5TSPQtI2lloQe
+         KgRg==
+X-Gm-Message-State: AOAM533h/U4UH+YGUD5kMgO3V3DSmUSDRa0PN3B7DhJllXsBKaPN8KLJ
+        zd7kjGWnI6/jpJUFwYl+UatfdQ==
+X-Google-Smtp-Source: ABdhPJxOxQjsL6w9g0OLpHPCjF+bnU3XWXaFNVPHygxmeypO7lQGstrEd7PdWU4Q87yKtJNiFpHfmg==
+X-Received: by 2002:a17:90b:48c6:b0:1df:99d9:997f with SMTP id li6-20020a17090b48c600b001df99d9997fmr35838pjb.242.1652771151939;
+        Tue, 17 May 2022 00:05:51 -0700 (PDT)
+Received: from [10.71.57.194] ([139.177.225.225])
+        by smtp.gmail.com with ESMTPSA id e17-20020a62ee11000000b0050dc76281b8sm8188698pfi.146.2022.05.17.00.05.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 00:05:51 -0700 (PDT)
+Message-ID: <44a30595-6a50-6ded-5ecc-18fd1e56abda@bytedance.com>
+Date:   Tue, 17 May 2022 15:05:42 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.3.2
+Subject: Re: [External] Re: [PATCH bpf-next] selftests/bpf: fix some bugs in
+ map_lookup_percpu_elem testcase
+To:     Yonghong Song <yhs@fb.com>, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, rostedt@goodmis.org,
+        mingo@redhat.com, jolsa@kernel.org, davemarchevsky@fb.com,
+        joannekoong@fb.com, geliang.tang@suse.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
+        songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
+        cong.wang@bytedance.com, zhouchengming@bytedance.com,
+        yosryahmed@google.com
+References: <20220516022453.68420-1-zhoufeng.zf@bytedance.com>
+ <80ab09cf-6072-a75a-082d-2721f6f907ef@fb.com>
+From:   Feng Zhou <zhoufeng.zf@bytedance.com>
+In-Reply-To: <80ab09cf-6072-a75a-082d-2721f6f907ef@fb.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,39 +79,136 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a gateway receives an advertisement message, it extracts relay
-information and then it should be deleted.
-But the advertisement handler doesn't do that.
-So, after amt_advertisement_handler(), that message should not be skipped
-remaining handling.
+在 2022/5/17 上午11:09, Yonghong Song 写道:
+>
+>
+> On 5/15/22 7:24 PM, Feng zhou wrote:
+>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+>>
+>> comments from Andrii Nakryiko, details in here:
+>> https://lore.kernel.org/lkml/20220511093854.411-1-zhoufeng.zf@bytedance.com/T/ 
+>>
+>>
+>> use /* */ instead of //
+>> use libbpf_num_possible_cpus() instead of sysconf(_SC_NPROCESSORS_ONLN)
+>> use 8 bytes for value size
+>> fix memory leak
+>> use ASSERT_EQ instead of ASSERT_OK
+>> add bpf_loop to fetch values on each possible CPU
+>>
+>> Fixes: ed7c13776e20c74486b0939a3c1de984c5efb6aa ("selftests/bpf: add 
+>> test case for bpf_map_lookup_percpu_elem")
+>> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+>
+> LGTM with a few nits below.
+> Acked-by: Yonghong Song <yhs@fb.com>
+>
+Ok, will do. Thanks.
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
+>> ---
+>>   .../bpf/prog_tests/map_lookup_percpu_elem.c   | 49 +++++++++------
+>>   .../bpf/progs/test_map_lookup_percpu_elem.c   | 61 ++++++++++++-------
+>>   2 files changed, 70 insertions(+), 40 deletions(-)
+>>
+>> diff --git 
+>> a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c 
+>> b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
+>> index 58b24c2112b0..89ca170f1c25 100644
+>> --- a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
+>> +++ b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
+>> @@ -1,30 +1,39 @@
+>> -// SPDX-License-Identifier: GPL-2.0
+>> -// Copyright (c) 2022 Bytedance
+>> +/* SPDX-License-Identifier: GPL-2.0 */
+>> +/* Copyright (c) 2022 Bytedance */
+>>     #include <test_progs.h>
+>
+> The above empty line is unnecessary.
+>
+>>   #include "test_map_lookup_percpu_elem.skel.h"
+>>   -#define TEST_VALUE  1
+>> -
+>>   void test_map_lookup_percpu_elem(void)
+>>   {
+>>       struct test_map_lookup_percpu_elem *skel;
+>> -    int key = 0, ret;
+>> -    int nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
+>> -    int *buf;
+>> +    __u64 key = 0, sum;
+>> +    int ret, i;
+>> +    int nr_cpus = libbpf_num_possible_cpus();
+>> +    __u64 *buf;
+>>   -    buf = (int *)malloc(nr_cpus*sizeof(int));
+>> +    buf = (__u64 *)malloc(nr_cpus*sizeof(__u64));
+>>       if (!ASSERT_OK_PTR(buf, "malloc"))
+>>           return;
+>> -    memset(buf, 0, nr_cpus*sizeof(int));
+>> -    buf[0] = TEST_VALUE;
+>>   -    skel = test_map_lookup_percpu_elem__open_and_load();
+>> -    if (!ASSERT_OK_PTR(skel, 
+>> "test_map_lookup_percpu_elem__open_and_load"))
+>> -        return;
+>> +    for (i=0; i<nr_cpus; i++)
+>> +        buf[i] = i;
+>> +    sum = (nr_cpus-1)*nr_cpus/2;
+>> +
+>> +    skel = test_map_lookup_percpu_elem__open();
+>> +    if (!ASSERT_OK_PTR(skel, "test_map_lookup_percpu_elem__open"))
+>> +        goto exit;
+>> +
+>> +    skel->rodata->nr_cpus = nr_cpus;
+>> +
+>> +    ret = test_map_lookup_percpu_elem__load(skel);
+>> +    if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__load"))
+>> +        goto cleanup;
+>> +
+>>       ret = test_map_lookup_percpu_elem__attach(skel);
+>> -    ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach");
+>> +    if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach"))
+>> +        goto cleanup;
+>>         ret = 
+>> bpf_map_update_elem(bpf_map__fd(skel->maps.percpu_array_map), &key, 
+>> buf, 0);
+>>       ASSERT_OK(ret, "percpu_array_map update");
+>> @@ -37,10 +46,14 @@ void test_map_lookup_percpu_elem(void)
+>>         syscall(__NR_getuid);
+>>   -    ret = skel->bss->percpu_array_elem_val == TEST_VALUE &&
+>> -          skel->bss->percpu_hash_elem_val == TEST_VALUE &&
+>> -          skel->bss->percpu_lru_hash_elem_val == TEST_VALUE;
+>> -    ASSERT_OK(!ret, "bpf_map_lookup_percpu_elem success");
+>> +    test_map_lookup_percpu_elem__detach(skel);
+>> +
+>> +    ASSERT_EQ(skel->bss->percpu_array_elem_sum, sum, "percpu_array 
+>> lookup percpu elem");
+>> +    ASSERT_EQ(skel->bss->percpu_hash_elem_sum, sum, "percpu_hash 
+>> lookup percpu elem");
+>> +    ASSERT_EQ(skel->bss->percpu_lru_hash_elem_sum, sum, 
+>> "percpu_lru_hash lookup percpu elem");
+>>   +cleanup:
+>>       test_map_lookup_percpu_elem__destroy(skel);
+>> +exit:
+>> +    free(buf);
+>>   }
+> [...]
+>> +struct read_percpu_elem_ctx {
+>> +    void *map;
+>> +    __u64 sum;
+>> +};
+>> +
+>> +static int read_percpu_elem_callback(__u32 index, struct 
+>> read_percpu_elem_ctx *ctx)
+>> +{
+>> +    __u64 key = 0;
+>> +    __u64 *value;
+>
+> Please add an empty line here.
+>
+>> +    value = bpf_map_lookup_percpu_elem(ctx->map, &key, index);
+>> +    if (value)
+>> +        ctx->sum += *value;
+>> +    return 0;
+>> +}
+>> +
+> [...]
 
-v2:
- - Separate patch
-
- drivers/net/amt.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index 2b4ce3869f08..6ce2ecd07640 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2698,9 +2698,10 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
- 				err = true;
- 				goto drop;
- 			}
--			if (amt_advertisement_handler(amt, skb))
-+			err = amt_advertisement_handler(amt, skb);
-+			if (err)
- 				amt->dev->stats.rx_dropped++;
--			goto out;
-+			break;
- 		case AMT_MSG_MULTICAST_DATA:
- 			if (iph->saddr != amt->remote_ip) {
- 				netdev_dbg(amt->dev, "Invalid Relay IP\n");
--- 
-2.17.1
 
