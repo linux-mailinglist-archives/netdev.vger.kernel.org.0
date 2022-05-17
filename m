@@ -2,122 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CD2C0529B57
-	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:46:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9807F529B66
+	for <lists+netdev@lfdr.de>; Tue, 17 May 2022 09:49:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241122AbiEQHqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 03:46:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36412 "EHLO
+        id S239678AbiEQHtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 03:49:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42102 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239758AbiEQHqk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:46:40 -0400
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA94DB848
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:46:38 -0700 (PDT)
-Received: by mail-wr1-x42d.google.com with SMTP id j24so8252996wrb.1
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 00:46:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=s/Vs2ZOYlY/JdkHXcuvqGHiQEb2zIrOSrE98Tywd5ew=;
-        b=mcUHXf3tKvTTHSet3lfw7hLN+sc92boiISSfAD5WYi/SXR5FAgCFyAJuJF24lZd8DV
-         ksMbX1PwanT0U674XOQ/ebK2PGFwc07+aXa4NH4aEwKqUrHtZNed/p1n54qe2zXXUm5W
-         TXR525tEFmioIhMSxLIkxxzv+5bgmR1ajqhKDlkF6388bFzKXEvD7yD78uW9jW+Y7YK2
-         kGfWZQEtFOALf3lMBuEwUqv3mtsNfg44yZBqwiCSiqAfQj0xk6eEm4p/YJNNE3UamnBQ
-         L+9nWosYSjArH7ZO0/kIiqTZmWn3ee6FtQP+ho57v1RFfeMYlXtb8buLdsQh1N1tQVZ3
-         RtJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=s/Vs2ZOYlY/JdkHXcuvqGHiQEb2zIrOSrE98Tywd5ew=;
-        b=oiTywr9AopDSQ4AeCI9lZNNdaN9py4pEDjZLyimkUPzbplsZQO+TXnPF84yRiALGVp
-         5V1kSNAYN1BGo2KqfqYGk0XyL17XGf1QkIxnmqg2LlQ/OoQuBjiWu9tau+ILeajKLvcU
-         psqHSpVPIGqZxIfhB42um/7z+W3CBb9Lppfm02nRVyFCb4F81rHqaG4/YGD41fcc/p5W
-         vifwc7WG7rvGQqUrL/+qVCjw9ussvKk1rHEgCHPls2F0xXXIXuYsAj8WxY2p/dbyFMls
-         8urxPLTXYgUvdhHaGcXF9MGXo5WQvtMT+/WqgRVHF0lTLg7VgOhQYsheRfJaeA+WJtzZ
-         W7jg==
-X-Gm-Message-State: AOAM5313icEXviBEWed+3IhFLJRcAPg6CGcEOBIz1D1OQZIoXRnfhdEs
-        thF/gkPnvKAnGIiwDsvWZTCJTOkoxgo7dtt8MA==
-X-Google-Smtp-Source: ABdhPJwMGf9FKTEFSaiTTp+196a474H6NA9dhcbz0RrghlkjtAv0eGzbil3T0aSRBZ2Ja32SghZgVCn6Chil0+cKz2E=
-X-Received: by 2002:adf:e444:0:b0:20d:1329:76ca with SMTP id
- t4-20020adfe444000000b0020d132976camr3073691wrm.553.1652773597525; Tue, 17
- May 2022 00:46:37 -0700 (PDT)
-MIME-Version: 1.0
-Sender: ds8873959@gmail.com
-Received: by 2002:a05:600c:190b:0:0:0:0 with HTTP; Tue, 17 May 2022 00:46:36
- -0700 (PDT)
-From:   "Mr. Jimmy Moore" <jimmymoore265@gmail.com>
-Date:   Tue, 17 May 2022 08:46:36 +0100
-X-Google-Sender-Auth: LGcQ5HqukgU2SyFATR3hVepue8E
-Message-ID: <CAJB8rUgWqUqMzy+u1pVydZNSs=KRX3Z-7azXGGrqPZrR_snypQ@mail.gmail.com>
-Subject: Dear Award Recipient Covid-19 Compensation Funds.
-To:     undisclosed-recipients:;
+        with ESMTP id S241923AbiEQHss (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 03:48:48 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617F447395;
+        Tue, 17 May 2022 00:48:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=MIME-Version:Content-Transfer-Encoding:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=4SmYl2RiNkyBTO0IZCn4bqjgH7FQHbYOmBz1wzQ8Kb8=;
+        t=1652773725; x=1653983325; b=qTSHjAypA8UgsIHAbwfUcX3HQsNZpvXLLCXfzOM2bhWIgJH
+        nQmFBBjSHxN+c2UXTaREVkAmRZvbiEntkXsbMe5pV+t/KEW6wpIBDXeC4CEseAdPbjGet13OrhOUm
+        C6k6xq7PzwnApBsjhud0oE8Yg1DoWHC5yHTQ2yly1Wow9YUPloM1QvHtuNHTPJ8UjxVWnQUuqewC9
+        aGZkqHPY3ysUQS5F9g26Gi1idXluB8zJ3+Dfa8IyY2vUNgA69VhTuXi+Tr30NNRZMKepJgSox0xkX
+        vDkGx+tRSzYkgSCIIJfBHuO7vBaa4z1qPw1+mk7J3Au2NbtQ3K4SBAqaUbb74zaA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nqrwP-00EGby-In;
+        Tue, 17 May 2022 09:48:25 +0200
+Message-ID: <74bdbec0580ed05d0f18533eae9af50bc0a4a0ef.camel@sipsolutions.net>
+Subject: Re: [PATCH net-next] net: ifdefy the wireless pointers in struct
+ net_device
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        alex.aring@gmail.com, stefan@datenfreihafen.org,
+        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        sven@narfation.org, linux-wireless@vger.kernel.org,
+        linux-wpan@vger.kernel.org
+Date:   Tue, 17 May 2022 09:48:24 +0200
+In-Reply-To: <8e9f1b04-d17b-2812-22bb-e62b5560aa6e@gmail.com>
+References: <20220516215638.1787257-1-kuba@kernel.org>
+         <8e9f1b04-d17b-2812-22bb-e62b5560aa6e@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=6.7 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLY,HK_NAME_FM_MR_MRS,LOTS_OF_MONEY,
-        LOTTO_DEPT,MILLION_USD,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:42d listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [jimmymoore265[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [ds8873959[at]gmail.com]
-        *  0.1 MILLION_USD BODY: Talks about millions of dollars
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  1.5 HK_NAME_FM_MR_MRS No description available.
-        *  1.0 FREEMAIL_REPLY From and body contain different freemails
-        *  2.0 LOTTO_DEPT Claims Department
-        *  1.3 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.1 (3.44.1-1.fc36) 
+MIME-Version: 1.0
+X-malware-bazaar: not-scanned
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UNITED NATIONS COVID-19 OVERDUE COMPENSATION UNIT.
-REFERENCE PAYMENT CODE: 8525595
-BAILOUT AMOUNT:$10.5 MILLION USD
-ADDRESS: NEW YORK, NY 10017, UNITED STATES
+On Mon, 2022-05-16 at 19:12 -0700, Florian Fainelli wrote:
+>=20
+> On 5/16/2022 2:56 PM, Jakub Kicinski wrote:
+> > Most protocol-specific pointers in struct net_device are under
+> > a respective ifdef. Wireless is the notable exception. Since
+> > there's a sizable number of custom-built kernels for datacenter
+> > workloads which don't build wireless it seems reasonable to
+> > ifdefy those pointers as well.
+> >=20
+> > While at it move IPv4 and IPv6 pointers up, those are special
+> > for obvious reasons.
+> >=20
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+>=20
+> Could not we move to an union of pointers in the future since in many=20
+> cases a network device can only have one of those pointers at any given=
+=20
+> time?
 
-Dear award recipient, Covid-19 Compensation Funds.
+Then at the very least we'd need some kind of type that we can assign to
+disambiguate, because today e.g. we have a netdev notifier (and other
+code) that could get a non-wireless netdev and check like this:
 
-You are receiving this correspondence because we have finally reached
-a consensus with the UN, IRS, and IMF that your total fund worth $10.5
-Million Dollars of Covid-19 Compensation payment shall be delivered to
-your nominated mode of receipt, and you are expected to pay the sum of
-$12,000 for levies owed to authorities after receiving your funds.
+static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
+                                         unsigned long state, void *ptr)
+{
+        struct net_device *dev =3D netdev_notifier_info_to_dev(ptr);
+        struct wireless_dev *wdev =3D dev->ieee80211_ptr;
+[...]
+        if (!wdev)
+                return NOTIFY_DONE;
 
-You have a grace period of 2 weeks to pay the $12,000 levy after you
-have received your Covid-19 Compensation total sum of $10.5 Million.
-We shall proceed with the payment of your bailout grant only if you
-agree to the terms and conditions stated.
 
-Contact Dr. Mustafa Ali, for more information by email at:(
-mustafaliali180@gmail.com ) Your consent in this regard would be
-highly appreciated.
 
-Best Regards,
-Mr. Jimmy Moore.
-Undersecretary-General United Nations
-Office of Internal Oversight-UNIOS
+We could probably use the netdev->dev.type for this though, that's just
+a pointer we can compare to. We'd have to set it differently (today
+cfg80211 sets it based on whether or not you have ieee80211_ptr, we'd
+have to turn that around), but that's not terribly hard, especially
+since wireless drivers now have to call cfg80211_register_netdevice()
+anyway, rather than register_netdevice() directly.
+
+
+Something like the patch below might do that, but I haven't carefully
+checked it yet, nor checked if there are any paths in mac80211/drivers
+that might be doing this check - and it looks from Jakub's patch that
+batman code would like to check this too.
+
+johannes
+
+diff --git a/net/wireless/core.c b/net/wireless/core.c
+index 3e5d12040726..6ea2a597f4ca 100644
+--- a/net/wireless/core.c
++++ b/net/wireless/core.c
+@@ -1192,7 +1192,7 @@ void cfg80211_unregister_wdev(struct wireless_dev *wd=
+ev)
+ }
+ EXPORT_SYMBOL(cfg80211_unregister_wdev);
+=20
+-static const struct device_type wiphy_type =3D {
++const struct device_type wiphy_type =3D {
+ 	.name	=3D "wlan",
+ };
+=20
+@@ -1369,6 +1369,9 @@ int cfg80211_register_netdevice(struct net_device *de=
+v)
+=20
+ 	lockdep_assert_held(&rdev->wiphy.mtx);
+=20
++	/* this lets us identify our netdevs in the future */
++	SET_NETDEV_DEVTYPE(dev, &wiphy_type);
++
+ 	/* we'll take care of this */
+ 	wdev->registered =3D true;
+ 	wdev->registering =3D true;
+@@ -1394,7 +1397,7 @@ static int cfg80211_netdev_notifier_call(struct notif=
+ier_block *nb,
+ 	struct cfg80211_registered_device *rdev;
+ 	struct cfg80211_sched_scan_request *pos, *tmp;
+=20
+-	if (!wdev)
++	if (!netdev_is_wireless(dev))
+ 		return NOTIFY_DONE;
+=20
+ 	rdev =3D wiphy_to_rdev(wdev->wiphy);
+@@ -1403,7 +1406,6 @@ static int cfg80211_netdev_notifier_call(struct notif=
+ier_block *nb,
+=20
+ 	switch (state) {
+ 	case NETDEV_POST_INIT:
+-		SET_NETDEV_DEVTYPE(dev, &wiphy_type);
+ 		wdev->netdev =3D dev;
+ 		/* can only change netns with wiphy */
+ 		dev->features |=3D NETIF_F_NETNS_LOCAL;
+diff --git a/net/wireless/core.h b/net/wireless/core.h
+index 2c195067ddff..e256ea5caf49 100644
+--- a/net/wireless/core.h
++++ b/net/wireless/core.h
+@@ -219,6 +219,13 @@ void cfg80211_init_wdev(struct wireless_dev *wdev);
+ void cfg80211_register_wdev(struct cfg80211_registered_device *rdev,
+ 			    struct wireless_dev *wdev);
+=20
++extern const struct device_type wiphy_type;
++
++static inline bool netdev_is_wireless(struct net_device *dev)
++{
++	return dev && dev->dev.type =3D=3D &wiphy_type && dev->ieee80211_ptr;
++}
++
+ static inline void wdev_lock(struct wireless_dev *wdev)
+ 	__acquires(wdev)
+ {
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index 342dfefb6eca..58bc3750c380 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -182,7 +182,7 @@ __cfg80211_rdev_from_attrs(struct net *netns, struct nl=
+attr **attrs)
+=20
+ 		netdev =3D __dev_get_by_index(netns, ifindex);
+ 		if (netdev) {
+-			if (netdev->ieee80211_ptr)
++			if (netdev_is_wireless(netdev))
+ 				tmp =3D wiphy_to_rdev(
+ 					netdev->ieee80211_ptr->wiphy);
+ 			else
+@@ -2978,7 +2978,7 @@ static int nl80211_dump_wiphy_parse(struct sk_buff *s=
+kb,
+ 			ret =3D -ENODEV;
+ 			goto out;
+ 		}
+-		if (netdev->ieee80211_ptr) {
++		if (netdev_is_wireless(netdev)) {
+ 			rdev =3D wiphy_to_rdev(
+ 				netdev->ieee80211_ptr->wiphy);
+ 			state->filter_wiphy =3D rdev->wiphy_idx;
+@@ -3364,7 +3364,7 @@ static int nl80211_set_wiphy(struct sk_buff *skb, str=
+uct genl_info *info)
+ 		int ifindex =3D nla_get_u32(info->attrs[NL80211_ATTR_IFINDEX]);
+=20
+ 		netdev =3D __dev_get_by_index(genl_info_net(info), ifindex);
+-		if (netdev && netdev->ieee80211_ptr)
++		if (netdev_is_wireless(netdev))
+ 			rdev =3D wiphy_to_rdev(netdev->ieee80211_ptr->wiphy);
+ 		else
+ 			netdev =3D NULL;
+
