@@ -2,47 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4248652BAEE
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:39:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E70D452BAB8
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:39:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236448AbiERM1F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 08:27:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46438 "EHLO
+        id S236461AbiERM1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236379AbiERM04 (ORCPT
+        with ESMTP id S236416AbiERM04 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:26:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30486D4D0;
-        Wed, 18 May 2022 05:26:54 -0700 (PDT)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D2D6D4DE;
+        Wed, 18 May 2022 05:26:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6A5C6B81F43;
-        Wed, 18 May 2022 12:26:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B817EC3411A;
-        Wed, 18 May 2022 12:26:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A8FF861290;
+        Wed, 18 May 2022 12:26:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE083C34100;
+        Wed, 18 May 2022 12:26:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876812;
-        bh=jpp7JaAjtpYcJypZTqEMC1XKrOHHdguJX9I0ndKgnbA=;
+        s=k20201202; t=1652876814;
+        bh=4dfSF32OTFY2vE6VRjsBQCAJkn1HMbzv2NuefqMHs+4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f1bLlc/rFCCTpcleeiaRDtN6oPm+C5AxfSu7EnFRpJdDTuJCnvQDr4ZosE0mdtqFO
-         LXUqEV1ZSuR5PSEzQ4GJbf50xdr8KuhUfzNBCYMyvDAreItSlvkn3wXHbUhsAZ5VzJ
-         4zKHxSXa0co5F2YIY0pKZlYhZ0Y+uISME/0CRm3bPtoX7xhTQbM3g//+o3/X7qTvyB
-         rArhZ2IdrXSuu7BeHELJXjsdutQlIldIawIBgVh1TUqQQZ4UKXCoGf4NykJvGF9gT9
-         m9WJM2H0AmTWb/oJo+LXx+H45C5SE6cv8m5KQYw2KLFad45GWObOPDmtB/wBTa5Mpj
-         pNIPnRmqLe5MQ==
+        b=aCPaOhj9Qli9/1Ypq6H3rmFdDkSjJjuAnpudYxlk2T5bP2Hpg6HLnkp6h5MiOutMO
+         f8O5Ij4FNj6UzjDcDr/6CyYKMZ5nESY7wKRyoyEjKxJ+TjVxerAp0Tqa5xhbJxM5Jc
+         o7cYD3EYQ3+4cQrl3NREWw1+Y2eNc69yfzsgfBb85lBPgBJh+zkcxMGW1hx/T7Q0qn
+         8kgUYP8bO+KbZ64NEivh9H8FRpMWcgDuMbILG0ADtmVol7zfLMzVaXodc1qAqT7Fph
+         ZH7ebV3Cpd0JR6L5zS72pAXvVB1atpztDkOEwgFsY5rCvlk5hC7i3lkzjp+AsjC7Z/
+         mIUNQSabaCwPA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kieran Frewen <kieran.frewen@morsemicro.com>,
-        Bassem Dawood <bassem@morsemicro.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 05/23] cfg80211: retrieve S1G operating channel number
-Date:   Wed, 18 May 2022 08:26:18 -0400
-Message-Id: <20220518122641.342120-5-sashal@kernel.org>
+Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, shuah@kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 06/23] selftests: add ping test with ping_group_range tuned
+Date:   Wed, 18 May 2022 08:26:19 -0400
+Message-Id: <20220518122641.342120-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122641.342120-1-sashal@kernel.org>
 References: <20220518122641.342120-1-sashal@kernel.org>
@@ -60,38 +59,65 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kieran Frewen <kieran.frewen@morsemicro.com>
+From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-[ Upstream commit e847ffe2d146cfd52980ca688d84358e024a6e70 ]
+[ Upstream commit e71b7f1f44d3d88c677769c85ef0171caf9fc89f ]
 
-When retrieving the S1G channel number from IEs, we should retrieve
-the operating channel instead of the primary channel. The S1G operation
-element specifies the main channel of operation as the oper channel,
-unlike for HT and HE which specify their main channel of operation as
-the primary channel.
+The 'ping' utility is able to manage two kind of sockets (raw or icmp),
+depending on the sysctl ping_group_range. By default, ping_group_range is
+set to '1 0', which forces ping to use an ip raw socket.
 
-Signed-off-by: Kieran Frewen <kieran.frewen@morsemicro.com>
-Signed-off-by: Bassem Dawood <bassem@morsemicro.com>
-Link: https://lore.kernel.org/r/20220420041321.3788789-1-kieran.frewen@morsemicro.com
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Let's replay the ping tests by allowing 'ping' to use the ip icmp socket.
+After the previous patch, ipv4 tests results are the same with both kinds
+of socket. For ipv6, there are a lot a new failures (the previous patch
+fixes only two cases).
+
+Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/wireless/scan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ tools/testing/selftests/net/fcnal-test.sh | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/net/wireless/scan.c b/net/wireless/scan.c
-index 4a6d86432910..6d82bd9eaf8c 100644
---- a/net/wireless/scan.c
-+++ b/net/wireless/scan.c
-@@ -1829,7 +1829,7 @@ int cfg80211_get_ies_channel_number(const u8 *ie, size_t ielen,
- 		if (tmp && tmp->datalen >= sizeof(struct ieee80211_s1g_oper_ie)) {
- 			struct ieee80211_s1g_oper_ie *s1gop = (void *)tmp->data;
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index 3f4c8cfe7aca..7cd9b31d0307 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -810,10 +810,16 @@ ipv4_ping()
+ 	setup
+ 	set_sysctl net.ipv4.raw_l3mdev_accept=1 2>/dev/null
+ 	ipv4_ping_novrf
++	setup
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv4_ping_novrf
  
--			return s1gop->primary_ch;
-+			return s1gop->oper_ch;
- 		}
- 	} else {
- 		tmp = cfg80211_find_elem(WLAN_EID_DS_PARAMS, ie, ielen);
+ 	log_subsection "With VRF"
+ 	setup "yes"
+ 	ipv4_ping_vrf
++	setup "yes"
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv4_ping_vrf
+ }
+ 
+ ################################################################################
+@@ -2348,10 +2354,16 @@ ipv6_ping()
+ 	log_subsection "No VRF"
+ 	setup
+ 	ipv6_ping_novrf
++	setup
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv6_ping_novrf
+ 
+ 	log_subsection "With VRF"
+ 	setup "yes"
+ 	ipv6_ping_vrf
++	setup "yes"
++	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
++	ipv6_ping_vrf
+ }
+ 
+ ################################################################################
 -- 
 2.35.1
 
