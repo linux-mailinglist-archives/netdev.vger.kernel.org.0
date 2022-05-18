@@ -2,137 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ABE4E52C561
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 23:22:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70BDF52C57E
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 23:22:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243320AbiERVGg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 17:06:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60146 "EHLO
+        id S243091AbiERVJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 17:09:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243223AbiERVGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 17:06:16 -0400
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D91C14D13
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 14:06:08 -0700 (PDT)
-Received: by mail-pg1-x529.google.com with SMTP id q76so3209125pgq.10
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 14:06:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0MYc5tA+6Kk+mImSFFJDL7iE/dnIAiygpXE+Nyj8a7Y=;
-        b=PgQlhIbYRhNtuHDufzTYVX6pyMkGW+9WugLaBTbqxueJOxfo9GnBV5ygNgv57oLb9w
-         EZYYfzSJTlDdoR4SOmxQ0WmofKN3jObox199zzTfZlZ/nvrpaL0lmxD2yQ7rJClAJFnd
-         OU0Ya9KHrqerFGxMFViJnS6mBaRJloG4zjKvr2WptY1BBKXABXHFl4DmJ/7zrX6gxV03
-         EhLl19BBwIqUM4hB5/+MIcsOJyVM+lf561/fPLCGgYDceZqWurcPJ8jyrl3h0JR0SsQT
-         lyNs8pGAujLM2AduX2XX7nm/IHmpI77dKFLDYehbyk+6OvN0OdGyh5EMnF6BTSWyy9re
-         v0ig==
+        with ESMTP id S243004AbiERVJE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 17:09:04 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 72BC21D89E1
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 14:09:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652908142;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SK3LHOwd4s7ENi68YVOL1YMs+cgWM1wV21fTUwnsebk=;
+        b=gks7RHQseBRH2GL52UPcPQG13B+vO5lPEqU1oWwDsEIGrvx0gK/3OlSYvDDkYc4zsr5vTd
+        RJTD72Yiftgj/Bi2ztKEw1cw4E2Q4oXnWK57sn+wpWIlTyj+F+VMRNxRVu3UWXnGFbpBrR
+        PZBnx98wrDE/tEduTvpoUR/nRCTDWQQ=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-673-yZZnwUgoMv-Kozbe_Chbbw-1; Wed, 18 May 2022 17:08:59 -0400
+X-MC-Unique: yZZnwUgoMv-Kozbe_Chbbw-1
+Received: by mail-wm1-f71.google.com with SMTP id h6-20020a7bc926000000b0039470bcb9easo1253849wml.1
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 14:08:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=0MYc5tA+6Kk+mImSFFJDL7iE/dnIAiygpXE+Nyj8a7Y=;
-        b=NfLYeTYQPIoQBoL+ztr4hsa77k5/SdaQzgjPBgiK0B1HZheNKqK2Nj1up2zsknYo/7
-         1kWhtAzzlv4v0UgS16lKMqpoXNNzF1bgUMqy1Iya6JtEoR76mdvmi2Dj9ZH+N27skBMW
-         +rvTl9H2gqMOO1KVGJfvVRCJGbml+x8ok6ghz1U1D0zghJEzbyWkjgzMhWgFk9XQCZmg
-         jT4FkQ3vqC4NqzzhYXZeUDxHk+YLFD8aRQTPKS+fKWZSzpB18sfo+UAjKY3wCoalNW0f
-         sjruw0H+i1rYKUqpssaRYMJtmqTNRoZBxls3fu+vz3QgV+8I9l7fBc9UEPOe4lRKGdsa
-         1zow==
-X-Gm-Message-State: AOAM531Qw7Vt6wUnRXWsm+irjBFpgSnxHsOz5gj0+0T9kIb8JgV9JwgM
-        iEiXRQ4i+i6VmTI+wyxwe88=
-X-Google-Smtp-Source: ABdhPJxo9H6cJzSrewRdNexhJiiPvy9ZffoaCdxcaoxXmgCyMvwffYySCOhKG//+KvstdKyaEE4nRg==
-X-Received: by 2002:a63:d743:0:b0:3f5:f77a:a516 with SMTP id w3-20020a63d743000000b003f5f77aa516mr1119879pgi.210.1652907967283;
-        Wed, 18 May 2022 14:06:07 -0700 (PDT)
-Received: from athina.mtv.corp.google.com ([2620:15c:211:200:c7a5:3f7a:9ca9:aa8c])
-        by smtp.gmail.com with ESMTPSA id q4-20020a170903204400b0015e8d4eb1e5sm2111625pla.47.2022.05.18.14.06.06
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SK3LHOwd4s7ENi68YVOL1YMs+cgWM1wV21fTUwnsebk=;
+        b=VPMsvX0f4jQCzY1m53Ej4wWJ6DJufEnCJ69K0Do2viZWCSs0FELV84jrIxT493oLdq
+         tCkCwrsktK6vyW2FCWJX7Y3TsQr0gtJAqpzVIFl0RXE/i3o3dyN5h078F33eY7BPUFIR
+         WbR5VtpJQIXKdIWX4NSJGXsQrVJ3pJeuUIluXhXAgfy4G/mwa16Wn8UwhSa3DCc2l7wn
+         6eIZEqx6qpF1mUo+SANs3g7crfSSSDj+2osfh8CiAzFepw2m+6bvWZn1mTBCOO1yDQIh
+         mvQsieh0mVKL/s9SdJF3PSAur2ty3Qqku6j8wZSeC1i0u+Lf3FKkPYG47X2lur+O5JcQ
+         X+aA==
+X-Gm-Message-State: AOAM5328MrWr4KnwoqTPKofwbMNv/OmMB9rv2bsjaaMupBVdsTnd5GV/
+        RlyF6reIe9p/mXhLmX53/aiSSuC2q9a/ZALOrmXcDXG+KZKBFYJ6yIV2qj2BwWJ0KdZpGoDgWLb
+        vxWC5f3TWmmGsx6LR
+X-Received: by 2002:adf:ec8b:0:b0:20d:483:f271 with SMTP id z11-20020adfec8b000000b0020d0483f271mr1268109wrn.555.1652908137809;
+        Wed, 18 May 2022 14:08:57 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJznnERUusD/tYswUCi6C74pLll6bYj/WYaSP+u6wPuCrAMipEWRrnW/fNSZ0aJJx9tlZwJWyg==
+X-Received: by 2002:adf:ec8b:0:b0:20d:483:f271 with SMTP id z11-20020adfec8b000000b0020d0483f271mr1268094wrn.555.1652908137585;
+        Wed, 18 May 2022 14:08:57 -0700 (PDT)
+Received: from localhost (net-93-71-56-156.cust.vodafonedsl.it. [93.71.56.156])
+        by smtp.gmail.com with ESMTPSA id q2-20020adfab02000000b0020c5253d8edsm3194439wrc.57.2022.05.18.14.08.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 14:06:06 -0700 (PDT)
-From:   =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <zenczykowski@gmail.com>
-To:     =?UTF-8?q?Maciej=20=C5=BBenczykowski?= <maze@google.com>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
-        Lorenzo Colitti <lorenzo@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Lina Wang <lina.wang@mediatek.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH] xfrm: do not set IPv4 DF flag when encapsulating IPv6 frames <= 1280 bytes.
-Date:   Wed, 18 May 2022 14:05:48 -0700
-Message-Id: <20220518210548.2296546-1-zenczykowski@gmail.com>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+        Wed, 18 May 2022 14:08:57 -0700 (PDT)
+Date:   Wed, 18 May 2022 23:08:55 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org, brouer@redhat.com,
+        memxor@gmail.com
+Subject: Re: [PATCH v3 bpf-next 4/5] net: netfilter: add kfunc helper to add
+ a new ct entry
+Message-ID: <YoVgZ8OHlF/OpgHq@lore-desk>
+References: <cover.1652870182.git.lorenzo@kernel.org>
+ <40e7ce4b79c86c46e5fbf22e9cafb51b9172da19.1652870182.git.lorenzo@kernel.org>
+ <87y1yy8t6j.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ijSSQFIglunMLS0I"
+Content-Disposition: inline
+In-Reply-To: <87y1yy8t6j.fsf@toke.dk>
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maciej Żenczykowski <maze@google.com>
 
-One may want to have DF set on large packets to support discovering
-path mtu and limiting the size of generated packets (hence not
-setting the XFRM_STATE_NOPMTUDISC tunnel flag), while still
-supporting networks that are incapable of carrying even minimal
-sized IPv6 frames (post encapsulation).
+--ijSSQFIglunMLS0I
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Having IPv4 Don't Frag bit set on encapsulated IPv6 frames that
-are not larger than the minimum IPv6 mtu of 1280 isn't useful,
-because the resulting ICMP Fragmentation Required error isn't
-actionable (even assuming you receive it) because IPv6 will not
-drop it's path mtu below 1280 anyway.  While the IPv4 stack
-could prefrag the packets post encap, this requires the ICMP
-error to be successfully delivered and causes a loss of the
-original IPv6 frame (thus requiring a retransmit and latency
-hit).  Luckily with IPv4 if we simply don't set the DF flag,
-we'll just make further fragmenting the packets some other
-router's problems.
+> Lorenzo Bianconi <lorenzo@kernel.org> writes:
+>=20
+> > Introduce bpf_xdp_ct_add and bpf_skb_ct_add kfunc helpers in order to
+> > add a new entry to ct map from an ebpf program.
+> > Introduce bpf_nf_ct_tuple_parse utility routine.
+> >
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  net/netfilter/nf_conntrack_bpf.c | 212 +++++++++++++++++++++++++++----
+> >  1 file changed, 189 insertions(+), 23 deletions(-)
+> >
+> > diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntr=
+ack_bpf.c
+> > index a9271418db88..3d31b602fdf1 100644
+> > --- a/net/netfilter/nf_conntrack_bpf.c
+> > +++ b/net/netfilter/nf_conntrack_bpf.c
+> > @@ -55,41 +55,114 @@ enum {
+> >  	NF_BPF_CT_OPTS_SZ =3D 12,
+> >  };
+> > =20
+> > -static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
+> > -					  struct bpf_sock_tuple *bpf_tuple,
+> > -					  u32 tuple_len, u8 protonum,
+> > -					  s32 netns_id, u8 *dir)
+> > +static int bpf_nf_ct_tuple_parse(struct bpf_sock_tuple *bpf_tuple,
+> > +				 u32 tuple_len, u8 protonum, u8 dir,
+> > +				 struct nf_conntrack_tuple *tuple)
+> >  {
+> > -	struct nf_conntrack_tuple_hash *hash;
+> > -	struct nf_conntrack_tuple tuple;
+> > -	struct nf_conn *ct;
+> > +	union nf_inet_addr *src =3D dir ? &tuple->dst.u3 : &tuple->src.u3;
+> > +	union nf_inet_addr *dst =3D dir ? &tuple->src.u3 : &tuple->dst.u3;
+> > +	union nf_conntrack_man_proto *sport =3D dir ? (void *)&tuple->dst.u
+> > +						  : &tuple->src.u;
+> > +	union nf_conntrack_man_proto *dport =3D dir ? &tuple->src.u
+> > +						  : (void *)&tuple->dst.u;
+> > =20
+> >  	if (unlikely(protonum !=3D IPPROTO_TCP && protonum !=3D IPPROTO_UDP))
+> > -		return ERR_PTR(-EPROTO);
+> > -	if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
+> > -		return ERR_PTR(-EINVAL);
+> > +		return -EPROTO;
+> > +
+> > +	memset(tuple, 0, sizeof(*tuple));
+> > =20
+> > -	memset(&tuple, 0, sizeof(tuple));
+> >  	switch (tuple_len) {
+> >  	case sizeof(bpf_tuple->ipv4):
+> > -		tuple.src.l3num =3D AF_INET;
+> > -		tuple.src.u3.ip =3D bpf_tuple->ipv4.saddr;
+> > -		tuple.src.u.tcp.port =3D bpf_tuple->ipv4.sport;
+> > -		tuple.dst.u3.ip =3D bpf_tuple->ipv4.daddr;
+> > -		tuple.dst.u.tcp.port =3D bpf_tuple->ipv4.dport;
+> > +		tuple->src.l3num =3D AF_INET;
+> > +		src->ip =3D bpf_tuple->ipv4.saddr;
+> > +		sport->tcp.port =3D bpf_tuple->ipv4.sport;
+> > +		dst->ip =3D bpf_tuple->ipv4.daddr;
+> > +		dport->tcp.port =3D bpf_tuple->ipv4.dport;
+> >  		break;
+> >  	case sizeof(bpf_tuple->ipv6):
+> > -		tuple.src.l3num =3D AF_INET6;
+> > -		memcpy(tuple.src.u3.ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ip=
+v6.saddr));
+> > -		tuple.src.u.tcp.port =3D bpf_tuple->ipv6.sport;
+> > -		memcpy(tuple.dst.u3.ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ip=
+v6.daddr));
+> > -		tuple.dst.u.tcp.port =3D bpf_tuple->ipv6.dport;
+> > +		tuple->src.l3num =3D AF_INET6;
+> > +		memcpy(src->ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr=
+));
+> > +		sport->tcp.port =3D bpf_tuple->ipv6.sport;
+> > +		memcpy(dst->ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr=
+));
+> > +		dport->tcp.port =3D bpf_tuple->ipv6.dport;
+> >  		break;
+> >  	default:
+> > -		return ERR_PTR(-EAFNOSUPPORT);
+> > +		return -EAFNOSUPPORT;
+> >  	}
+> > +	tuple->dst.protonum =3D protonum;
+> > +	tuple->dst.dir =3D dir;
+> > +
+> > +	return 0;
+> > +}
+> > =20
+> > -	tuple.dst.protonum =3D protonum;
+> > +struct nf_conn *
+> > +__bpf_nf_ct_alloc_entry(struct net *net, struct bpf_sock_tuple *bpf_tu=
+ple,
+> > +			u32 tuple_len, u8 protonum, s32 netns_id, u32 timeout)
+> > +{
+> > +	struct nf_conntrack_tuple otuple, rtuple;
+> > +	struct nf_conn *ct;
+> > +	int err;
+> > +
+> > +	if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
+> > +		return ERR_PTR(-EINVAL);
+> > +
+> > +	err =3D bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
+> > +				    IP_CT_DIR_ORIGINAL, &otuple);
+> > +	if (err < 0)
+> > +		return ERR_PTR(err);
+> > +
+> > +	err =3D bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
+> > +				    IP_CT_DIR_REPLY, &rtuple);
+> > +	if (err < 0)
+> > +		return ERR_PTR(err);
+> > +
+> > +	if (netns_id >=3D 0) {
+> > +		net =3D get_net_ns_by_id(net, netns_id);
+> > +		if (unlikely(!net))
+> > +			return ERR_PTR(-ENONET);
+> > +	}
+> > +
+> > +	ct =3D nf_conntrack_alloc(net, &nf_ct_zone_dflt, &otuple, &rtuple,
+> > +				GFP_ATOMIC);
+> > +	if (IS_ERR(ct))
+> > +		goto out;
+> > +
+> > +	ct->timeout =3D timeout * HZ + jiffies;
+> > +	ct->status |=3D IPS_CONFIRMED;
+> > +
+> > +	memset(&ct->proto, 0, sizeof(ct->proto));
+> > +	if (protonum =3D=3D IPPROTO_TCP)
+> > +		ct->proto.tcp.state =3D TCP_CONNTRACK_ESTABLISHED;
+>=20
+> Hmm, isn't it a bit limiting to hard-code this to ESTABLISHED
+> connections? Presumably for TCP you'd want to use this when you see a
+> SYN and then rely on conntrack to help with the subsequent state
+> tracking for when the SYN-ACK comes back? What's the usecase for
+> creating an entry in ESTABLISHED state, exactly?
 
-We'll still learn the correct IPv4 path mtu through encapsulation
-of larger IPv6 frames.
+I guess we can even add a parameter and pass the state from the caller.
+I was not sure if it is mandatory.
 
-I'm still not convinced this patch is entirely sufficient to make
-everything happy... but I don't see how it could possibly
-make things worse.
+Regards,
+Lorenzo
 
-See also recent:
-  4ff2980b6bd2 'xfrm: fix tunnel model fragmentation behavior'
-and friends
+>=20
+> (Of course, we'd need to be able to update the state as well, then...)
+>=20
+> -Toke
+>=20
 
-Bug: 203183943
-Cc: Lorenzo Colitti <lorenzo@google.com>
-Cc: Eric Dumazet <edumazet@google.com>
-Cc: Lina Wang <lina.wang@mediatek.com>
-Cc: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Maciej Zenczykowski <maze@google.com>
----
- net/xfrm/xfrm_output.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+--ijSSQFIglunMLS0I
+Content-Type: application/pgp-signature; name="signature.asc"
 
-diff --git a/net/xfrm/xfrm_output.c b/net/xfrm/xfrm_output.c
-index d4935b3b9983..555ab35cd119 100644
---- a/net/xfrm/xfrm_output.c
-+++ b/net/xfrm/xfrm_output.c
-@@ -273,6 +273,7 @@ static int xfrm4_beet_encap_add(struct xfrm_state *x, struct sk_buff *skb)
-  */
- static int xfrm4_tunnel_encap_add(struct xfrm_state *x, struct sk_buff *skb)
- {
-+	bool small_ipv6 = (skb->protocol == htons(ETH_P_IPV6)) && (skb->len <= IPV6_MIN_MTU);
- 	struct dst_entry *dst = skb_dst(skb);
- 	struct iphdr *top_iph;
- 	int flags;
-@@ -303,7 +304,7 @@ static int xfrm4_tunnel_encap_add(struct xfrm_state *x, struct sk_buff *skb)
- 	if (flags & XFRM_STATE_NOECN)
- 		IP_ECN_clear(top_iph);
- 
--	top_iph->frag_off = (flags & XFRM_STATE_NOPMTUDISC) ?
-+	top_iph->frag_off = (flags & XFRM_STATE_NOPMTUDISC) || small_ipv6 ?
- 		0 : (XFRM_MODE_SKB_CB(skb)->frag_off & htons(IP_DF));
- 
- 	top_iph->ttl = ip4_dst_hoplimit(xfrm_dst_child(dst));
--- 
-2.36.1.124.g0e6072fb45-goog
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYoVgZwAKCRA6cBh0uS2t
+rMM+AP9fgEsC4eSk0dP5H/I34n0fHYrQK33/GGGzkNYJON2PFAD9GGW/Ms+r0W4P
+5yZaJs1x8hd0lvUaeMM/cxhEkVhxuww=
+=WPxO
+-----END PGP SIGNATURE-----
+
+--ijSSQFIglunMLS0I--
 
