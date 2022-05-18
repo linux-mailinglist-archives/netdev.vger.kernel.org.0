@@ -2,113 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FAB552B35F
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 09:28:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD4E752B359
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 09:28:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231992AbiERHS6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 03:18:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34606 "EHLO
+        id S232085AbiERHVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 03:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231947AbiERHS5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 03:18:57 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04F24ED7AA;
-        Wed, 18 May 2022 00:18:55 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        with ESMTP id S232214AbiERHVW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 03:21:22 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5686811A31;
+        Wed, 18 May 2022 00:21:21 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 8CC0621B07;
-        Wed, 18 May 2022 07:18:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1652858334; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a12qY+sPuxs2cWzp1uE0NRguEiWR66+TeprLZ3z/42M=;
-        b=y5CkAmqEURf6tbAXLxZImR9md35Mqe2TrmGYTWbzWpXOSSE1zJFdJYGfzFAydhjYEvABl8
-        Fwf7no+A0zLDdX6gdf4kqG4CRYR8j9mMMGSA6aebGp9UhU6C7Rear/1CCeGDX2Kdaprrdv
-        uomZz+hEh0usMCSNnnQedbqwvhmJoG8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1652858334;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=a12qY+sPuxs2cWzp1uE0NRguEiWR66+TeprLZ3z/42M=;
-        b=+hBZirRiOLIhDfieYUv9yDrFJQ3+SyFh1pSv8IPBNhHByP5VVxm8siMkF41FCjMwK5h4Ly
-        HenVKb1LduOtMlDA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4B8DC133F5;
-        Wed, 18 May 2022 07:18:54 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id oPTCD96dhGJdSgAAMHmgww
-        (envelope-from <mliska@suse.cz>); Wed, 18 May 2022 07:18:54 +0000
-Message-ID: <e3cf25ce-740a-c9eb-0d30-41230672b67c@suse.cz>
-Date:   Wed, 18 May 2022 09:18:53 +0200
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E81816125B;
+        Wed, 18 May 2022 07:21:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FAD9C385A5;
+        Wed, 18 May 2022 07:21:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652858480;
+        bh=Z2Hthqp8KamMwaRyOnQgeWg8sKO8QHlR39SF4zKnXc4=;
+        h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
+        b=nGZxLw/nb7pTaCGz5xDXtFkANXc7mb2cwz2A7XO0Wy57+RabREGGiM5RRSn5mLl/J
+         FL+7390d9tF1niOyIMVnO3S8rB9I1xoYzw/p+58sQttVtFWeZFaMDWKrpa2J0nyhFq
+         cPbpQLBnk/zwGOovIjiw0jyWz2f1IwOBciTzWJA59VJOk+VJyhxYhckmYGshhwChMG
+         mitv8g8ayQhIdlF7tMX3MGcRg+DfaJkZGuakcdP6sgDNSOyyCNwrGLFdj5aSA7qioq
+         vg376YiDQvlIceWdTPYs/Pa4rNP8dqMWqN5kAApXUH5SrVzSVArM+WE6o7vsI2jWKm
+         JgMTyUmiQXc7Q==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-From:   =?UTF-8?Q?Martin_Li=c5=a1ka?= <mliska@suse.cz>
-Subject: [PATCH v2] eth: sun: cassini: remove dead code
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com,
-        linux-kernel@vger.kernel.org, mliska@suse.cz,
-        netdev@vger.kernel.org, pabeni@redhat.com
-References: <20220517185035.4ee3dd8e@kernel.org>
-Content-Language: en-US
-In-Reply-To: <20220517185035.4ee3dd8e@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] ath11k: Fix pointer dereferenced before checking
+From:   Kalle Valo <kvalo@kernel.org>
+In-Reply-To: <1652671437-20235-1-git-send-email-baihaowen@meizu.com>
+References: <1652671437-20235-1-git-send-email-baihaowen@meizu.com>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        Haowen Bai <baihaowen@meizu.com>, <ath11k@lists.infradead.org>,
+        <linux-wireless@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+User-Agent: pwcli/0.1.1-git (https://github.com/kvalo/pwcli/) Python/3.7.3
+Message-ID: <165285847598.17755.2700505085056283549.kvalo@kernel.org>
+Date:   Wed, 18 May 2022 07:21:17 +0000 (UTC)
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes the following GCC warning:
+Haowen Bai <baihaowen@meizu.com> wrote:
 
-drivers/net/ethernet/sun/cassini.c:1316:29: error: comparison between two arrays [-Werror=array-compare]
-drivers/net/ethernet/sun/cassini.c:3783:34: error: comparison between two arrays [-Werror=array-compare]
+> The pointer sspec is dereferencing pointer sar before sar is being
+> null checked. Fix this by assigning sar->sub_specs to sspec only if
+> sar is not NULL, otherwise just NULL. The code has checked sar whether
+> it is NULL or not as below, but use before checking.
+> 
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 
-Note that 2 arrays should be compared by comparing of their addresses:
-note: use ‘&cas_prog_workaroundtab[0] == &cas_prog_null[0]’ to compare the addresses
+I prefer Baochen's version:
 
-Signed-off-by: Martin Liska <mliska@suse.cz>
----
- drivers/net/ethernet/sun/cassini.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+https://patchwork.kernel.org/project/linux-wireless/patch/20220517004844.2412660-1-quic_bqiang@quicinc.com/
 
-diff --git a/drivers/net/ethernet/sun/cassini.c b/drivers/net/ethernet/sun/cassini.c
-index b04a6a7bf566..435dc00d04e5 100644
---- a/drivers/net/ethernet/sun/cassini.c
-+++ b/drivers/net/ethernet/sun/cassini.c
-@@ -1313,7 +1313,7 @@ static void cas_init_rx_dma(struct cas *cp)
- 	writel(val, cp->regs + REG_RX_PAGE_SIZE);
- 
- 	/* enable the header parser if desired */
--	if (CAS_HP_FIRMWARE == cas_prog_null)
-+	if (&CAS_HP_FIRMWARE[0] == &cas_prog_null[0])
- 		return;
- 
- 	val = CAS_BASE(HP_CFG_NUM_CPU, CAS_NCPUS > 63 ? 0 : CAS_NCPUS);
-@@ -3780,7 +3780,7 @@ static void cas_reset(struct cas *cp, int blkflag)
- 
- 	/* program header parser */
- 	if ((cp->cas_flags & CAS_FLAG_TARGET_ABORT) ||
--	    (CAS_HP_ALT_FIRMWARE == cas_prog_null)) {
-+	    (&CAS_HP_ALT_FIRMWARE[0] == &cas_prog_null[0])) {
- 		cas_load_firmware(cp, CAS_HP_FIRMWARE);
- 	} else {
- 		cas_load_firmware(cp, CAS_HP_ALT_FIRMWARE);
+Patch set to Superseded.
+
 -- 
-2.36.1
+https://patchwork.kernel.org/project/linux-wireless/patch/1652671437-20235-1-git-send-email-baihaowen@meizu.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
