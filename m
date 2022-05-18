@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 38D2352C511
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 23:03:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FC2D52C4D3
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 23:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242918AbiERU76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 16:59:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56844 "EHLO
+        id S242960AbiERVAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 17:00:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242905AbiERU7z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:59:55 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 37725254716
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:59:54 -0700 (PDT)
+        with ESMTP id S242896AbiERVAQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 17:00:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49F842550AE
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:59:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652907593;
+        s=mimecast20190719; t=1652907598;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=U+niHEoMuTDRFqut4OdKlEaLEgHKW232XIT+7USRZJg=;
-        b=df4eZodCnEj1cPvbH4bXiQqY8csZAasx89mD0LnBToowxbVRYmtB0xu/bfLxfZlrEBOBNn
-        O4L0NGS0uSInVSchjLBx2sCJYUMYTyA806iyRQIx6nUloWpGnRZ145jRKS53fv9HzLO6M5
-        TOiYXrPz7o80KjnBqUeSdy9Gpeuz4+g=
+        bh=AlA+M9AznC3l4SAV4drMKMtvnKO+BZZzFpZxWrqpDx0=;
+        b=SQF60QgKRFhRaAQ7MAoOALp+1QbvCYTWzftIYYCCa5MkPAd2M1bqMYVzeQpi8mdC3Uh5vO
+        rJG3feyjkh27qdJBPrmM1SfIsNb+r8xYU0YEkMjIGMCCkSlIshSNOepqsZ1LZtPUVzAUwK
+        SH7GDg3gLhYwj6XVgV631vZgTkFmBls=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-32-cMpIVQCjNICd9pEeRpcK1g-1; Wed, 18 May 2022 16:59:49 -0400
-X-MC-Unique: cMpIVQCjNICd9pEeRpcK1g-1
+ us-mta-191-7HM3s6NEMJ-KR3c7GhaLdA-1; Wed, 18 May 2022 16:59:54 -0400
+X-MC-Unique: 7HM3s6NEMJ-KR3c7GhaLdA-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 3F7AE811E83;
-        Wed, 18 May 2022 20:59:48 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7DA2880B90A;
+        Wed, 18 May 2022 20:59:52 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.192.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C9A402166B25;
-        Wed, 18 May 2022 20:59:43 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A21652166B25;
+        Wed, 18 May 2022 20:59:48 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v5 04/17] libbpf: add map_get_fd_by_id and map_delete_elem in light skeleton
-Date:   Wed, 18 May 2022 22:59:11 +0200
-Message-Id: <20220518205924.399291-5-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v5 05/17] HID: core: store the unique system identifier in hid_device
+Date:   Wed, 18 May 2022 22:59:12 +0200
+Message-Id: <20220518205924.399291-6-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
 References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -72,8 +72,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This allows to have a better control over maps from the kernel when
-preloading eBPF programs.
+This unique identifier is currently used only for ensuring uniqueness in
+sysfs. However, this could be handful for userspace to refer to a specific
+hid_device by this id.
+
+2 use cases are in my mind: LEDs (and their naming convention), and
+HID-BPF.
 
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
@@ -81,43 +85,41 @@ Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
 new in v5
 ---
- tools/lib/bpf/skel_internal.h | 23 +++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
+ drivers/hid/hid-core.c | 4 +++-
+ include/linux/hid.h    | 2 ++
+ 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/skel_internal.h b/tools/lib/bpf/skel_internal.h
-index bd6f4505e7b1..bc1db60ad744 100644
---- a/tools/lib/bpf/skel_internal.h
-+++ b/tools/lib/bpf/skel_internal.h
-@@ -251,6 +251,29 @@ static inline int skel_map_update_elem(int fd, const void *key,
- 	return skel_sys_bpf(BPF_MAP_UPDATE_ELEM, &attr, attr_sz);
- }
+diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
+index db925794fbe6..e78f35cfd2d1 100644
+--- a/drivers/hid/hid-core.c
++++ b/drivers/hid/hid-core.c
+@@ -2735,10 +2735,12 @@ int hid_add_device(struct hid_device *hdev)
+ 			hid_warn(hdev, "bad device descriptor (%d)\n", ret);
+ 	}
  
-+static inline int skel_map_delete_elem(int fd, const void *key)
-+{
-+	const size_t attr_sz = offsetofend(union bpf_attr, flags);
-+	union bpf_attr attr;
++	hdev->id = atomic_inc_return(&id);
 +
-+	memset(&attr, 0, attr_sz);
-+	attr.map_fd = fd;
-+	attr.key = (long)key;
+ 	/* XXX hack, any other cleaner solution after the driver core
+ 	 * is converted to allow more than 20 bytes as the device name? */
+ 	dev_set_name(&hdev->dev, "%04X:%04X:%04X.%04X", hdev->bus,
+-		     hdev->vendor, hdev->product, atomic_inc_return(&id));
++		     hdev->vendor, hdev->product, hdev->id);
+ 
+ 	hid_debug_register(hdev, dev_name(&hdev->dev));
+ 	ret = device_add(&hdev->dev);
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index 4363a63b9775..a43dd17bc78f 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -658,6 +658,8 @@ struct hid_device {							/* device report descriptor */
+ 	struct list_head debug_list;
+ 	spinlock_t  debug_list_lock;
+ 	wait_queue_head_t debug_wait;
 +
-+	return skel_sys_bpf(BPF_MAP_DELETE_ELEM, &attr, attr_sz);
-+}
-+
-+static inline int skel_map_get_fd_by_id(__u32 id)
-+{
-+	const size_t attr_sz = offsetofend(union bpf_attr, flags);
-+	union bpf_attr attr;
-+
-+	memset(&attr, 0, attr_sz);
-+	attr.map_id = id;
-+
-+	return skel_sys_bpf(BPF_MAP_GET_FD_BY_ID, &attr, attr_sz);
-+}
-+
- static inline int skel_raw_tracepoint_open(const char *name, int prog_fd)
- {
- 	const size_t attr_sz = offsetofend(union bpf_attr, raw_tracepoint.prog_fd);
++	unsigned int id;						/* system unique id */
+ };
+ 
+ #define to_hid_device(pdev) \
 -- 
 2.36.1
 
