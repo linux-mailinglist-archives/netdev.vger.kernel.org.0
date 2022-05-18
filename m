@@ -2,114 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 22CB452AFBE
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:15:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F8B352AFBA
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:15:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232002AbiERBPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 21:15:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
+        id S233327AbiERBPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 21:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45512 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233380AbiERBPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:15:18 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A6D54187;
-        Tue, 17 May 2022 18:15:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652836514; x=1684372514;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=6tM7gH4JRFS/rWl6JwkUGKCjUG1QwGkrdJ6CLSIx99k=;
-  b=BW5DDf8NhRFcwwpKiqW9KZolGfJwVscOubYrTOKqqHebUf91oDAXlarP
-   k/aN2ccibWeqLp5xycukAmpICJ/jwTPjFvlpCpn6qwsMniJcRU/JEeKty
-   MsmFB9hJw5xYSfbhiW+0ArudxZNQAVqL9+gK9QisOYmoQIvkvM+OVRxmx
-   A/9GaW+W9Qasylu3nkPgUK1yH0xijTCFJTfBfP0pSa0pwr71/THrnCWpH
-   tGiSONpmu/w8dJeAa0mwkcNADEUfEA/PLN0AJJWMBqKgxHwt/FW4SGuy2
-   hyq8XsEHR2i2iykVT8qkfxlqHyz3V2RFT+eHrrvLkE6mUrUF5l2/KqfKq
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="258979715"
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="258979715"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 18:15:14 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
-   d="scan'208";a="597448146"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga008.jf.intel.com with ESMTP; 17 May 2022 18:15:10 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nr8HN-0001d7-Md;
-        Wed, 18 May 2022 01:15:09 +0000
-Date:   Wed, 18 May 2022 09:14:38 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     longli@linuxonhyperv.com, "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Leon Romanovsky <leon@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        netdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Long Li <longli@microsoft.com>
-Subject: Re: [PATCH 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
- Network Adapter
-Message-ID: <202205180903.446J0L2Y-lkp@intel.com>
-References: <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
+        with ESMTP id S229736AbiERBPD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:15:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0A651E4C;
+        Tue, 17 May 2022 18:15:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8BDB4B81BE3;
+        Wed, 18 May 2022 01:15:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8505C385B8;
+        Wed, 18 May 2022 01:14:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652836499;
+        bh=1FAGE2F5QluYFDYsSaQPr26HXYE6L0gi0jyOY35c6uM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fceAip9tgfCYolvMzQ45mOd5P7VrLMRoiDAtJu51yZGz2G7GsjS46D3hHDyJbJmjb
+         TF6eGE9MbKzs3AGaUJg1ZGwUvkWL5IH2zmaXmiUvAj3F1MlUe4TCpjdCrFa+lpwu+6
+         hV4ntKOWewTW/LaM4V1pgPWEqp49UwoPDeEk28VQTAoktoHx6Jmi6onYaSD1zsMBjI
+         l6+Gy3nsL8eteN5Oczi2zM9XYLkj/S8U2l/FZytk393Qrjdx95pVyco71FiKQiNr7y
+         sNZgsqQtPZLD/7yE2d0z9An0/plmN/+ElsCwwy1i3BmcZ82xqnN8X778b7wVbN209X
+         ceqcTNH1DWP+A==
+Date:   Tue, 17 May 2022 18:14:57 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     menglong8.dong@gmail.com
+Cc:     edumazet@google.com, rostedt@goodmis.org, mingo@redhat.com,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
+        talalahmad@google.com, keescook@chromium.org,
+        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Subject: Re: [PATCH net-next v2 1/9] net: skb: introduce
+ __DEFINE_SKB_DROP_REASON() to simply the code
+Message-ID: <20220517181457.04c37147@kernel.org>
+In-Reply-To: <20220517081008.294325-2-imagedong@tencent.com>
+References: <20220517081008.294325-1-imagedong@tencent.com>
+        <20220517081008.294325-2-imagedong@tencent.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 17 May 2022 16:10:00 +0800 menglong8.dong@gmail.com wrote:
+> From: Menglong Dong <imagedong@tencent.com>
+> 
+> It is annoying to add new skb drop reasons to 'enum skb_drop_reason'
+> and TRACE_SKB_DROP_REASON in trace/event/skb.h, and it's easy to forget
+> to add the new reasons we added to TRACE_SKB_DROP_REASON.
+> 
+> TRACE_SKB_DROP_REASON is used to convert drop reason of type number
+> to string. For now, the string we passed to user space is exactly the
+> same as the name in 'enum skb_drop_reason' with a 'SKB_DROP_REASON_'
+> prefix. So why not make them togather by define a macro?
+> 
+> Therefore, introduce __DEFINE_SKB_DROP_REASON() and use it for 'enum
+> skb_drop_reason' definition and string converting.
+> 
+> Now, what should we with the document for the reasons? How about follow
+> __BPF_FUNC_MAPPER() and make these document togather?
 
-I love your patch! Yet something to improve:
+Hi, I know BPF does this but I really find the definition-by-macro 
+counter productive :(
 
-[auto build test ERROR on linus/master]
-[also build test ERROR on v5.18-rc7 next-20220517]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+kdoc will no longer work right because the parser will not see 
+the real values. cscope and other code indexers will struggle 
+to find definitions.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220517-170632
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 42226c989789d8da4af1de0c31070c96726d990c
-config: x86_64-randconfig-a002-20220516 (https://download.01.org/0day-ci/archive/20220518/202205180903.446J0L2Y-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/f082dc68ab65c498c978d574e62413d50286b4f9
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220517-170632
-        git checkout f082dc68ab65c498c978d574e62413d50286b4f9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+Did you investigate using auto-generation? Kernel already generates 
+a handful of headers. Maybe with a little script we could convert 
+the enum into the string thing at build time?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Also let's use this opportunity to move the enum to a standalone
+header, it's getting huge.
 
-All errors (new ones prefixed by >>):
-
-   In file included from <built-in>:1:
->> ./usr/include/rdma/mana-abi.h:12:10: fatal error: 'linux/mana/mana.h' file not found
-   #include <linux/mana/mana.h>
-            ^~~~~~~~~~~~~~~~~~~
-   1 error generated.
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+Probably worth keeping this rework separate from the TCP patches.
+Up to you which one you'd like to get done first.
