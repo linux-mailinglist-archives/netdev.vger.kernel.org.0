@@ -2,150 +2,333 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A038252C461
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:33:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 642B252C47F
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:42:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242591AbiERUbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 16:31:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54042 "EHLO
+        id S242616AbiERUjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 16:39:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242454AbiERUbp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:31:45 -0400
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1932EAD3F;
-        Wed, 18 May 2022 13:31:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652905904; x=1684441904;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=xBq3Cf7/l7VVICiNn+fUDIB0+RGgo7IdT8rhgcpuJqw=;
-  b=JirvlCP7ZRnWVPEMJH4djoPWcWY2M15Oo/askDPHX6p2e1s2ZqzA3vpU
-   DgaF0sO/X5Pz7FXWdO7QFAYJR8VUvZV5/2J0TGWgrunlxa77DPOWKUmM+
-   g3BhF1J3MOrag4t5b0jIHRPL+hibOBfDkHTXmL/+04amSPNkIXhd+0pdy
-   PHS8TE8nnANQp2gYPyvVPWFKxh1uRGY1xvwozEnyqmlMQA84sT+7EZlBO
-   lEfOWaJpyNJ9nwPnd7XmGEFR4jKpgK0hXuwsS4WQd7B9SUUAkbxtqsjmK
-   sWsiKFKd9OnptBF3hFV7sjpf36Jht6YdOFUKjdblBeT7O+uHyfhIf4okC
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="297179098"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="297179098"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 13:31:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="569725348"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by orsmga007.jf.intel.com with ESMTP; 18 May 2022 13:31:40 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrQKZ-0002bd-Fi;
-        Wed, 18 May 2022 20:31:39 +0000
-Date:   Thu, 19 May 2022 04:31:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
-        edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        johannes@sipsolutions.net, alex.aring@gmail.com,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        sven@narfation.org, linux-wireless@vger.kernel.org,
-        linux-wpan@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: ifdefy the wireless pointers in struct
- net_device
-Message-ID: <202205190456.MohbzV8M-lkp@intel.com>
-References: <20220518181807.2030747-1-kuba@kernel.org>
+        with ESMTP id S242611AbiERUi6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:38:58 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4694624AC72
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:38:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652906336;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=c2UEH33t7qis5XHqHrLUTP+pJbHyhdaTPLohO6Lqklg=;
+        b=FXTSR2pUZl3EZ5ff1uWPfuVNXVo400XaMDEsZCTZvCvHwelWPc7+d2NskQJamPJ5bcnAKw
+        Bhqetv1GaGBTpNHCa16gYrFevIw8+J8UXTrd5GDyydUCAt8w4OiXVydhZFmqRKAIvHRflv
+        nQSo0KaJnPHzhZkFC6E7szQgV8TXPc0=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-218-I7ugPBrnPeSzkjGazQ2XBw-1; Wed, 18 May 2022 16:38:54 -0400
+X-MC-Unique: I7ugPBrnPeSzkjGazQ2XBw-1
+Received: by mail-wm1-f69.google.com with SMTP id 205-20020a1c02d6000000b003928cd3853aso3407523wmc.9
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:38:54 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c2UEH33t7qis5XHqHrLUTP+pJbHyhdaTPLohO6Lqklg=;
+        b=k1xi1pJot5Jte/cgH8sy4GMqZfuhNVbSh3bQlhw0WKevTbMj/X56getUJ+zjv3bl3j
+         CYVKEJrurIDyzlED0v5HvjNsHTUuJYSYzEPmnjX9s/+HBPh6AYqL3NZCE+qTE8wFizrD
+         us+O4Gpp4vj9QmDg9ULfi57PcWTf2tYaroFFZHaC8lvbm9FlWceUiKbIkh+yxitvlgT0
+         TN5M1muIFL6pEY1cDci4QJS+t6z8+g+A4vIuOre/2TSyTIOIwfvKh26CUuTWniZW8dXt
+         I1yDKsuvI0M7ZmJLeDg4i+3E/mJfW7oqPyxNJxc82uxQJTB1df66YFVYbXPypcINdAAY
+         YnaA==
+X-Gm-Message-State: AOAM532jLGCslBOw62A09rnWos60iDoq9cw9eLGGo0c42wnoNuJRvAWF
+        eb0xmHSt83w1IqET630TjVC4/Wp0vCFJc32Hnz402mX8yk0zrmLwaaRc0G5eChSNXcRwoEYH/E1
+        XtKnSy7qVA5zZqhmL
+X-Received: by 2002:a5d:64a2:0:b0:20e:6404:b32d with SMTP id m2-20020a5d64a2000000b0020e6404b32dmr1231635wrp.202.1652906333469;
+        Wed, 18 May 2022 13:38:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwHUsIVsXgeke7g/X6ny5YZAZzlvBKCutw59SPkFd0GIbsjUnpcNO9dWIWvjU9lpta4pvb5Bg==
+X-Received: by 2002:a5d:64a2:0:b0:20e:6404:b32d with SMTP id m2-20020a5d64a2000000b0020e6404b32dmr1231609wrp.202.1652906333214;
+        Wed, 18 May 2022 13:38:53 -0700 (PDT)
+Received: from localhost (net-93-71-56-156.cust.vodafonedsl.it. [93.71.56.156])
+        by smtp.gmail.com with ESMTPSA id w10-20020a7bc10a000000b003971176b011sm2569931wmi.0.2022.05.18.13.38.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 13:38:52 -0700 (PDT)
+Date:   Wed, 18 May 2022 22:38:50 +0200
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org, brouer@redhat.com,
+        toke@redhat.com, memxor@gmail.com
+Subject: Re: [PATCH v3 bpf-next 5/5] selftests/bpf: add selftest for
+ bpf_xdp_ct_add and bpf_ct_refresh_timeout kfunc
+Message-ID: <YoVZWsiwcX3yoLAD@lore-desk>
+References: <cover.1652870182.git.lorenzo@kernel.org>
+ <e95abdd9c6fa1fa97f3ca60e8eb06799784e671a.1652870182.git.lorenzo@kernel.org>
+ <1e426140-d374-5bfc-89f8-37df9ead26ba@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="c1u5qttNp6zG7j4p"
 Content-Disposition: inline
-In-Reply-To: <20220518181807.2030747-1-kuba@kernel.org>
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <1e426140-d374-5bfc-89f8-37df9ead26ba@fb.com>
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
 
-I love your patch! Yet something to improve:
+--c1u5qttNp6zG7j4p
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-[auto build test ERROR on net-next/master]
+>=20
+>=20
+> On 5/18/22 3:43 AM, Lorenzo Bianconi wrote:
+> > Introduce selftests for the following kfunc helpers:
+> > - bpf_xdp_ct_add
+> > - bpf_skb_ct_add
+> > - bpf_ct_refresh_timeout
+> >=20
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >   .../testing/selftests/bpf/prog_tests/bpf_nf.c |  4 ++
+> >   .../testing/selftests/bpf/progs/test_bpf_nf.c | 72 +++++++++++++++----
+> >   2 files changed, 64 insertions(+), 12 deletions(-)
+> >=20
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/te=
+sting/selftests/bpf/prog_tests/bpf_nf.c
+> > index dd30b1e3a67c..be6c5650892f 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> > @@ -39,6 +39,10 @@ void test_bpf_nf_ct(int mode)
+> >   	ASSERT_EQ(skel->bss->test_enonet_netns_id, -ENONET, "Test ENONET for=
+ bad but valid netns_id");
+> >   	ASSERT_EQ(skel->bss->test_enoent_lookup, -ENOENT, "Test ENOENT for f=
+ailed lookup");
+> >   	ASSERT_EQ(skel->bss->test_eafnosupport, -EAFNOSUPPORT, "Test EAFNOSU=
+PPORT for invalid len__tuple");
+> > +	ASSERT_EQ(skel->bss->test_add_entry, 0, "Test for adding new entry");
+> > +	ASSERT_EQ(skel->bss->test_succ_lookup, 0, "Test for successful lookup=
+");
+>=20
+> The default value for test_add_entry/test_succ_lookup are 0. So even if t=
+he
+> program didn't execute, the above still succeeds. So testing with
+> a non-default value (0) might be a better choice.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jakub-Kicinski/net-ifdefy-the-wireless-pointers-in-struct-net_device/20220519-022305
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git a3641ca416a3da7cbeae5bcf1fc26ba9797a1438
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220519/202205190456.MohbzV8M-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/c6413242ee18dfc005d7ed7ccc4db9cf7883b872
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Jakub-Kicinski/net-ifdefy-the-wireless-pointers-in-struct-net_device/20220519-022305
-        git checkout c6413242ee18dfc005d7ed7ccc4db9cf7883b872
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+ack, I will fix it in v4.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+>=20
+> > +	ASSERT_TRUE(skel->bss->test_delta_timeout > 9 && skel->bss->test_delt=
+a_timeout <=3D 10,
+> > +		    "Test for ct timeout update");
+>=20
+> ASSERT_TRUE(skel->bss->test_delta_timeout =3D=3D 10, ...)? Could you add =
+some
+> comments on why the value should be 10. It is not obvious by
+> inspecting the code.
 
-All errors (new ones prefixed by >>):
+I added some tolerance to avoid races with jiffies update in test_bpf_nf.c
 
-   net/core/net-sysfs.c: In function 'netdev_register_kobject':
->> net/core/net-sysfs.c:2013:30: error: 'wireless_group' undeclared (first use in this function); did you mean 'wireless_dev'?
-    2013 |                 *groups++ = &wireless_group;
-         |                              ^~~~~~~~~~~~~~
-         |                              wireless_dev
-   net/core/net-sysfs.c:2013:30: note: each undeclared identifier is reported only once for each function it appears in
+>=20
+> >   end:
+> >   	test_bpf_nf__destroy(skel);
+> >   }
+> > diff --git a/tools/testing/selftests/bpf/progs/test_bpf_nf.c b/tools/te=
+sting/selftests/bpf/progs/test_bpf_nf.c
+> > index f00a9731930e..361430dde3f7 100644
+> > --- a/tools/testing/selftests/bpf/progs/test_bpf_nf.c
+> > +++ b/tools/testing/selftests/bpf/progs/test_bpf_nf.c
+> > @@ -1,6 +1,7 @@
+> >   // SPDX-License-Identifier: GPL-2.0
+> >   #include <vmlinux.h>
+> >   #include <bpf/bpf_helpers.h>
+> > +#include <bpf/bpf_endian.h>
+> >   #define EAFNOSUPPORT 97
+> >   #define EPROTO 71
+> > @@ -8,6 +9,8 @@
+> >   #define EINVAL 22
+> >   #define ENOENT 2
+> > +extern unsigned long CONFIG_HZ __kconfig;
+> > +
+> >   int test_einval_bpf_tuple =3D 0;
+> >   int test_einval_reserved =3D 0;
+> >   int test_einval_netns_id =3D 0;
+> > @@ -16,6 +19,9 @@ int test_eproto_l4proto =3D 0;
+> >   int test_enonet_netns_id =3D 0;
+> >   int test_enoent_lookup =3D 0;
+> >   int test_eafnosupport =3D 0;
+> > +int test_add_entry =3D 0;
+> > +int test_succ_lookup =3D 0;
+> > +u32 test_delta_timeout =3D 0;
+> >   struct nf_conn;
+> > @@ -26,31 +32,40 @@ struct bpf_ct_opts___local {
+> >   	u8 reserved[3];
+> >   } __attribute__((preserve_access_index));
+> > +struct nf_conn *bpf_xdp_ct_add(struct xdp_md *, struct bpf_sock_tuple =
+*, u32,
+> > +			       struct bpf_ct_opts___local *, u32) __ksym;
+> >   struct nf_conn *bpf_xdp_ct_lookup(struct xdp_md *, struct bpf_sock_tu=
+ple *, u32,
+> >   				  struct bpf_ct_opts___local *, u32) __ksym;
+> > +struct nf_conn *bpf_skb_ct_add(struct __sk_buff *, struct bpf_sock_tup=
+le *, u32,
+> > +			       struct bpf_ct_opts___local *, u32) __ksym;
+> >   struct nf_conn *bpf_skb_ct_lookup(struct __sk_buff *, struct bpf_sock=
+_tuple *, u32,
+> >   				  struct bpf_ct_opts___local *, u32) __ksym;
+> >   void bpf_ct_release(struct nf_conn *) __ksym;
+> > +void bpf_ct_refresh_timeout(struct nf_conn *, u32) __ksym;
+> >   static __always_inline void
+> > -nf_ct_test(struct nf_conn *(*func)(void *, struct bpf_sock_tuple *, u3=
+2,
+> > -				   struct bpf_ct_opts___local *, u32),
+> > +nf_ct_test(struct nf_conn *(*look_fn)(void *, struct bpf_sock_tuple *,=
+ u32,
+> > +				      struct bpf_ct_opts___local *, u32),
+> > +	   struct nf_conn *(*add_fn)(void *, struct bpf_sock_tuple *, u32,
+> > +				     struct bpf_ct_opts___local *, u32),
+> >   	   void *ctx)
+> >   {
+> >   	struct bpf_ct_opts___local opts_def =3D { .l4proto =3D IPPROTO_TCP, =
+=2Enetns_id =3D -1 };
+> >   	struct bpf_sock_tuple bpf_tuple;
+> >   	struct nf_conn *ct;
+> > +	int err;
+> >   	__builtin_memset(&bpf_tuple, 0, sizeof(bpf_tuple.ipv4));
+> > -	ct =3D func(ctx, NULL, 0, &opts_def, sizeof(opts_def));
+> > +	ct =3D look_fn(ctx, NULL, 0, &opts_def, sizeof(opts_def));
+> >   	if (ct)
+> >   		bpf_ct_release(ct);
+> >   	else
+> >   		test_einval_bpf_tuple =3D opts_def.error;
+> >   	opts_def.reserved[0] =3D 1;
+> > -	ct =3D func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeo=
+f(opts_def));
+> > +	ct =3D look_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
+> > +		     sizeof(opts_def));
+> >   	opts_def.reserved[0] =3D 0;
+> >   	opts_def.l4proto =3D IPPROTO_TCP;
+> >   	if (ct)
+> > @@ -59,21 +74,24 @@ nf_ct_test(struct nf_conn *(*func)(void *, struct b=
+pf_sock_tuple *, u32,
+> >   		test_einval_reserved =3D opts_def.error;
+> >   	opts_def.netns_id =3D -2;
+> > -	ct =3D func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeo=
+f(opts_def));
+> > +	ct =3D look_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
+> > +		     sizeof(opts_def));
+> >   	opts_def.netns_id =3D -1;
+> >   	if (ct)
+> >   		bpf_ct_release(ct);
+> >   	else
+> >   		test_einval_netns_id =3D opts_def.error;
+> > -	ct =3D func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeo=
+f(opts_def) - 1);
+> > +	ct =3D look_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
+> > +		     sizeof(opts_def) - 1);
+> >   	if (ct)
+> >   		bpf_ct_release(ct);
+> >   	else
+> >   		test_einval_len_opts =3D opts_def.error;
+> >   	opts_def.l4proto =3D IPPROTO_ICMP;
+> > -	ct =3D func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeo=
+f(opts_def));
+> > +	ct =3D look_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
+> > +		     sizeof(opts_def));
+> >   	opts_def.l4proto =3D IPPROTO_TCP;
+> >   	if (ct)
+> >   		bpf_ct_release(ct);
+> > @@ -81,37 +99,67 @@ nf_ct_test(struct nf_conn *(*func)(void *, struct b=
+pf_sock_tuple *, u32,
+> >   		test_eproto_l4proto =3D opts_def.error;
+> >   	opts_def.netns_id =3D 0xf00f;
+> > -	ct =3D func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeo=
+f(opts_def));
+> > +	ct =3D look_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
+> > +		     sizeof(opts_def));
+> >   	opts_def.netns_id =3D -1;
+> >   	if (ct)
+> >   		bpf_ct_release(ct);
+> >   	else
+> >   		test_enonet_netns_id =3D opts_def.error;
+> > -	ct =3D func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def, sizeo=
+f(opts_def));
+> > +	ct =3D look_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
+> > +		     sizeof(opts_def));
+> >   	if (ct)
+> >   		bpf_ct_release(ct);
+> >   	else
+> >   		test_enoent_lookup =3D opts_def.error;
+> > -	ct =3D func(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4) - 1, &opts_def, s=
+izeof(opts_def));
+> > +	ct =3D look_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4) - 1, &opts_def,
+> > +		     sizeof(opts_def));
+> >   	if (ct)
+> >   		bpf_ct_release(ct);
+> >   	else
+> >   		test_eafnosupport =3D opts_def.error;
+> > +
+> > +	bpf_tuple.ipv4.saddr =3D bpf_get_prandom_u32(); /* src IP */
+> > +	bpf_tuple.ipv4.daddr =3D bpf_get_prandom_u32(); /* dst IP */
+> > +	bpf_tuple.ipv4.sport =3D bpf_htons(bpf_get_prandom_u32()); /* src por=
+t */
+> > +	bpf_tuple.ipv4.dport =3D bpf_htons(bpf_get_prandom_u32()); /* dst por=
+t */
+>=20
+> Since it is already random number, bpf_htons is not needed here.
+> bpf_endian.h can also be removed.
 
+ack, I will fix it in v4.
 
-vim +2013 net/core/net-sysfs.c
+Regards,
+Lorenzo
 
-^1da177e4c3f41 Linus Torvalds     2005-04-16  1990  
-^1da177e4c3f41 Linus Torvalds     2005-04-16  1991  /* Create sysfs entries for network device. */
-6b53dafe23fd1f WANG Cong          2014-07-23  1992  int netdev_register_kobject(struct net_device *ndev)
-^1da177e4c3f41 Linus Torvalds     2005-04-16  1993  {
-6648c65e7ea72c stephen hemminger  2017-08-18  1994  	struct device *dev = &ndev->dev;
-6b53dafe23fd1f WANG Cong          2014-07-23  1995  	const struct attribute_group **groups = ndev->sysfs_groups;
-0a9627f2649a02 Tom Herbert        2010-03-16  1996  	int error = 0;
-^1da177e4c3f41 Linus Torvalds     2005-04-16  1997  
-a1b3f594dc5faa Eric W. Biederman  2010-05-04  1998  	device_initialize(dev);
-43cb76d91ee85f Greg Kroah-Hartman 2002-04-09  1999  	dev->class = &net_class;
-6b53dafe23fd1f WANG Cong          2014-07-23  2000  	dev->platform_data = ndev;
-43cb76d91ee85f Greg Kroah-Hartman 2002-04-09  2001  	dev->groups = groups;
-^1da177e4c3f41 Linus Torvalds     2005-04-16  2002  
-6b53dafe23fd1f WANG Cong          2014-07-23  2003  	dev_set_name(dev, "%s", ndev->name);
-^1da177e4c3f41 Linus Torvalds     2005-04-16  2004  
-8b41d1887db718 Eric W. Biederman  2007-09-26  2005  #ifdef CONFIG_SYSFS
-0c509a6c9393b2 Eric W. Biederman  2009-10-29  2006  	/* Allow for a device specific group */
-0c509a6c9393b2 Eric W. Biederman  2009-10-29  2007  	if (*groups)
-0c509a6c9393b2 Eric W. Biederman  2009-10-29  2008  		groups++;
-^1da177e4c3f41 Linus Torvalds     2005-04-16  2009  
-0c509a6c9393b2 Eric W. Biederman  2009-10-29  2010  	*groups++ = &netstat_group;
-38c1a01cf10c6e Johannes Berg      2012-11-16  2011  
-c6413242ee18df Jakub Kicinski     2022-05-18  2012  	if (wireless_group_needed(ndev))
-38c1a01cf10c6e Johannes Berg      2012-11-16 @2013  		*groups++ = &wireless_group;
-8b41d1887db718 Eric W. Biederman  2007-09-26  2014  #endif /* CONFIG_SYSFS */
-^1da177e4c3f41 Linus Torvalds     2005-04-16  2015  
-0a9627f2649a02 Tom Herbert        2010-03-16  2016  	error = device_add(dev);
-0a9627f2649a02 Tom Herbert        2010-03-16  2017  	if (error)
-8ed633b9baf9ec Wang Hai           2019-04-12  2018  		return error;
-0a9627f2649a02 Tom Herbert        2010-03-16  2019  
-6b53dafe23fd1f WANG Cong          2014-07-23  2020  	error = register_queue_kobjects(ndev);
-8ed633b9baf9ec Wang Hai           2019-04-12  2021  	if (error) {
-8ed633b9baf9ec Wang Hai           2019-04-12  2022  		device_del(dev);
-8ed633b9baf9ec Wang Hai           2019-04-12  2023  		return error;
-8ed633b9baf9ec Wang Hai           2019-04-12  2024  	}
-0a9627f2649a02 Tom Herbert        2010-03-16  2025  
-9802c8e22f6efd Ming Lei           2013-02-22  2026  	pm_runtime_set_memalloc_noio(dev, true);
-9802c8e22f6efd Ming Lei           2013-02-22  2027  
-0a9627f2649a02 Tom Herbert        2010-03-16  2028  	return error;
-^1da177e4c3f41 Linus Torvalds     2005-04-16  2029  }
-^1da177e4c3f41 Linus Torvalds     2005-04-16  2030  
+>=20
+> > +
+> > +	ct =3D add_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4), &opts_def,
+> > +		    sizeof(opts_def));
+> > +	if (ct) {
+> > +		struct nf_conn *ct_lk;
+> > +
+> > +		ct_lk =3D look_fn(ctx, &bpf_tuple, sizeof(bpf_tuple.ipv4),
+> > +				&opts_def, sizeof(opts_def));
+> > +		if (ct_lk) {
+> > +			/* update ct entry timeout */
+> > +			bpf_ct_refresh_timeout(ct_lk, 10000);
+> > +			test_delta_timeout =3D ct_lk->timeout - bpf_jiffies64();
+> > +			test_delta_timeout /=3D CONFIG_HZ;
+> > +			bpf_ct_release(ct_lk);
+> > +		} else {
+> > +			test_succ_lookup =3D opts_def.error;
+> > +		}
+> > +		bpf_ct_release(ct);
+> > +	} else {
+> > +		test_add_entry =3D opts_def.error;
+> > +		test_succ_lookup =3D opts_def.error;
+> > +	}
+> >   }
+> [...]
+>=20
 
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+--c1u5qttNp6zG7j4p
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYoVZWgAKCRA6cBh0uS2t
+rDhFAP0V9L+fb6LgkOX/R+Sa7+0SMZHAduxtMlSA/HMSxR6pNQD/Xa9ygwNi0aS/
+CQtFYYhxP0Km1YWISooyRo+LyNHPygY=
+=RwIO
+-----END PGP SIGNATURE-----
+
+--c1u5qttNp6zG7j4p--
+
