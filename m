@@ -2,153 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2294752B95A
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:13:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D98552B962
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:14:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235997AbiERL7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 07:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51682 "EHLO
+        id S236042AbiERMAU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:00:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53286 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235943AbiERL7y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 07:59:54 -0400
-Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45C58BD14;
-        Wed, 18 May 2022 04:59:52 -0700 (PDT)
-Received: by mail-lj1-x231.google.com with SMTP id q130so2236046ljb.5;
-        Wed, 18 May 2022 04:59:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8h/z95IOEEjwauf5QbXsG9VCwDDtDFcI9tc/RWrPhpc=;
-        b=R8JyENQfy4HDMNsl5wBoII7M1IFdDwgdwiLppNwyqhxuS8Q1iRyS2l4ac5LJkBsAd9
-         IN0dR1esDRlAKroABvUzt1nf0UqPoONEzm+bwGJrLs29hsJ3pMIIHNRvuJAeFSszwtkF
-         CmtYUgN84Im8C0i0Zod092pH+PMM8VgdHfLn11IpaOyjPP3r/yYIrowNihLm1V9QU415
-         UfDpEqCgWAJofBeCVS5azNomlMk7R2t95p1Yy4/4+uKtV0oZrsZM1n57qKMpX5H862eM
-         3AUiAmuXZMcmgp0H81W+b4Hz6RN9oHp3tLX/OOk29ejRvavwepbOCaAEpF2fDX3g+0Hg
-         p6vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8h/z95IOEEjwauf5QbXsG9VCwDDtDFcI9tc/RWrPhpc=;
-        b=cUWrVpD75tRbFcsX6pBT2BhjWCycBO4TSc7xce2Sjswxs9099fLaKyfqsOnn4+oqN3
-         /r6MrQ3377RHTjHc2My6GdpO6wi9+Z+BObeDJ4CGyyKus10J6LJ+W0BT+CHJ++I32svY
-         d4FfG1d+tffT4JM1B2mfBebdUExigLegrX2t2v9gvcgaqERLsJWgn/9hrR/34D0RbZK/
-         dhxotawIqZzqkNVqbYc+W447q54gub1aQOrfdmDMw35T6nT3i1owbESdD8M2u78azaeW
-         xmin9oLe67rcmuFgaZadnmTMVPMjkGAuTZ/6r4BESmYT7I0WsUAYAakYY4LxljlRR4sf
-         MqZg==
-X-Gm-Message-State: AOAM533lP7u9QXHzI6qoUPyvhM5ukxwr43lx7qeIgps1G/XKXO5/Z7fT
-        t+jy4HygwpC1Nr829qFYvNf7lZwM1m8HKbmeSyUiInNzmSBDDQ==
-X-Google-Smtp-Source: ABdhPJxG5bnk99I8hvYAMvEOU3/OM47ixg0eYd+9pD+ZMCLn28/7LnVFV3JqSKu/cr5zLgef1YgbeTOwJJcFfQkpuls=
-X-Received: by 2002:a2e:b7ca:0:b0:253:a418:59af with SMTP id
- p10-20020a2eb7ca000000b00253a41859afmr12548409ljo.397.1652875191128; Wed, 18
- May 2022 04:59:51 -0700 (PDT)
+        with ESMTP id S236012AbiERMAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:00:17 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2299B17CC87
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 05:00:17 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C042BB81F99
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 12:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 70A5DC34115;
+        Wed, 18 May 2022 12:00:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652875214;
+        bh=LXYO3ijWUbMDQT7jZuyAQJ6wH5IIM5skEanqqksZxCw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fhKm1prqxZ1fxMGs/iu85lkS3JI5DA6vyifGMzAVajlBD9xDwH1I6CSFwPytZ+SWt
+         t8+ecerzvIFMqRDD5GNNT4pIWqE0rKRKkVLhZcor/6SKflLkbV4qUruTmH8Dg3Y1Dr
+         VeTnGQN0+1PtVo/Bg/b3gK9STRnFT9tC0CeF7+5Ho/Es6On8TRgaoq/9pvmekIcB0z
+         W3RKLKYx+a2FR+rPSP4BHzudcq5QcCra5XMd5wNs9eBshqXiSq20dEdrQzK1RNARGx
+         siHi0dVA7Mm70zNT1FJKCR9+Jwoykgd8b7UlFhEPTjEVUNcSPUgla5dxB5ifRwh6xM
+         hGsiUYl+GNokA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5196FF0392C;
+        Wed, 18 May 2022 12:00:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220517163450.240299-1-miquel.raynal@bootlin.com>
- <20220517163450.240299-10-miquel.raynal@bootlin.com> <CAK-6q+jQL7cFJrL6XjuaJnNDggtO1d_sB+T+GrY9yT+Y+KC0oA@mail.gmail.com>
- <20220518104435.76f5c0d5@xps-13>
-In-Reply-To: <20220518104435.76f5c0d5@xps-13>
-From:   Alexander Aring <alex.aring@gmail.com>
-Date:   Wed, 18 May 2022 07:59:37 -0400
-Message-ID: <CAB_54W7bLZ8i7W-ZzQ2WXgMvywcC=tEDHZqbj1yWYuKoVgm1sw@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v3 09/11] net: mac802154: Introduce a
- synchronous API for MLME commands
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH 1/3] xfrm: fix "disable_policy" flag use when arriving from
+ different devices
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165287521432.18230.9855368297389701588.git-patchwork-notify@kernel.org>
+Date:   Wed, 18 May 2022 12:00:14 +0000
+References: <20220518081938.2075278-2-steffen.klassert@secunet.com>
+In-Reply-To: <20220518081938.2075278-2-steffen.klassert@secunet.com>
+To:     Steffen Klassert <steffen.klassert@secunet.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, herbert@gondor.apana.org.au,
+        netdev@vger.kernel.org
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hello:
 
-On Wed, May 18, 2022 at 4:44 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
-> Hi Alexander,
->
-> aahringo@redhat.com wrote on Tue, 17 May 2022 20:41:41 -0400:
->
-> > Hi,
-> >
-> > On Tue, May 17, 2022 at 12:35 PM Miquel Raynal
-> > <miquel.raynal@bootlin.com> wrote:
-> > >
-> > > This is the slow path, we need to wait for each command to be processed
-> > > before continuing so let's introduce an helper which does the
-> > > transmission and blocks until it gets notified of its asynchronous
-> > > completion. This helper is going to be used when introducing scan
-> > > support.
-> > >
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > ---
-> > >  net/mac802154/ieee802154_i.h |  1 +
-> > >  net/mac802154/tx.c           | 46 ++++++++++++++++++++++++++++++++++++
-> > >  2 files changed, 47 insertions(+)
-> > >
-> > > diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
-> > > index a057827fc48a..b42c6ac789f5 100644
-> > > --- a/net/mac802154/ieee802154_i.h
-> > > +++ b/net/mac802154/ieee802154_i.h
-> > > @@ -125,6 +125,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
-> > >  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
-> > >  void ieee802154_xmit_sync_worker(struct work_struct *work);
-> > >  int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
-> > > +int ieee802154_mlme_tx_one(struct ieee802154_local *local, struct sk_buff *skb);
-> > >  netdev_tx_t
-> > >  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
-> > >  netdev_tx_t
-> > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> > > index 38f74b8b6740..6cc4e5c7ba94 100644
-> > > --- a/net/mac802154/tx.c
-> > > +++ b/net/mac802154/tx.c
-> > > @@ -128,6 +128,52 @@ int ieee802154_sync_and_hold_queue(struct ieee802154_local *local)
-> > >         return ieee802154_sync_queue(local);
-> > >  }
-> > >
-> > > +static int ieee802154_mlme_op_pre(struct ieee802154_local *local)
-> > > +{
-> > > +       return ieee802154_sync_and_hold_queue(local);
-> > > +}
-> > > +
-> > > +static int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb)
-> > > +{
-> > > +       int ret;
-> > > +
-> > > +       /* Avoid possible calls to ->ndo_stop() when we asynchronously perform
-> > > +        * MLME transmissions.
-> > > +        */
-> > > +       rtnl_lock();
-> > > +
-> > > +       /* Ensure the device was not stopped, otherwise error out */
-> > > +       if (!local->open_count)
-> > > +               return -EBUSY;
-> > > +
-> >
-> > No -EBUSY here, use ?-ENETDOWN?.
->
-> Isn't it strange to return "Network is down" while we try to stop the
-> device but fail to do so because, actually, it is still being used?
->
+This series was applied to netdev/net.git (master)
+by Steffen Klassert <steffen.klassert@secunet.com>:
 
-you are right. Maybe -EPERM, in a sense of whether the netdev state
-allows it or not.
+On Wed, 18 May 2022 10:19:36 +0200 you wrote:
+> From: Eyal Birger <eyal.birger@gmail.com>
+> 
+> In IPv4 setting the "disable_policy" flag on a device means no policy
+> should be enforced for traffic originating from the device. This was
+> implemented by seting the DST_NOPOLICY flag in the dst based on the
+> originating device.
+> 
+> [...]
 
-- Alex
+Here is the summary with links:
+  - [1/3] xfrm: fix "disable_policy" flag use when arriving from different devices
+    https://git.kernel.org/netdev/net/c/e6175a2ed1f1
+  - [2/3] net: af_key: add check for pfkey_broadcast in function pfkey_process
+    https://git.kernel.org/netdev/net/c/4dc2a5a8f675
+  - [3/3] net: af_key: check encryption module availability consistency
+    https://git.kernel.org/netdev/net/c/015c44d7bff3
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
