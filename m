@@ -2,94 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 92A1552BE77
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 17:26:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CEB652BEBC
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 17:26:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239232AbiERPQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 11:16:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35370 "EHLO
+        id S239336AbiERPZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 11:25:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239190AbiERPQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 11:16:46 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91F0579BD
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 08:16:45 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id c24so4166477lfv.11
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 08:16:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version:organization
-         :content-transfer-encoding;
-        bh=g6Lk83A6divwG1I6skDkMiATloOtXTUuKSXHzb8wwME=;
-        b=dNbsn0thNSvzMJCd4pkmaTtgDWvotMTQ0ugVSbJ83qoQ1GGEGymeVYYeje7oUKfFyk
-         h3fvzeWIXiTuV9lRh002dFE87FQwUKFTqU2rZwNqaUcQ+b3/H+yx/wz7soPtIDit9clG
-         0H6seLEtjodilPYGdtmnhObvwaduxe4lPcUhHp4EOJZEXKZj/Hj1k4qev+geJs1vwxBb
-         9kiJ5Qy6TD6JJacfhdSIxRTDkmmV/R047KB8RzK5pVuxpeW7Z63fCyg3+Dt2GUofHqTs
-         wxV1GQLKViHgqqa7xYBusa4Xry2WfzS3Prp9azSIAdx2x4eqoYZhgHFrPThkSmewFCDN
-         dmZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :organization:content-transfer-encoding;
-        bh=g6Lk83A6divwG1I6skDkMiATloOtXTUuKSXHzb8wwME=;
-        b=Jz81z+2FLEkINkK4dkg6tJIa8e/JnV8U9HoIoLHDwab4tmsFDUkx0kxshjqMBcPHC5
-         gxFdi92BRFG5noq5npt4x9TzUZJJ9cy/15tectKXbUKk9MvfpNCyJb/uqpp7fhpE7ALB
-         qoPrax1ZQKPA+S6zTK0QAFBBkGHCd6MEtgmtMxsAycT8yHhdQmmN9xWFiTjP1b4R9E49
-         aAk9NgGI1mAjdzKQxlmjKzPA8WLqBnLMuy+iAmfvxN9flCePCcol43oR4gzGnqG91qMZ
-         JTFebNR8OEBx4zuge1ALUWDkPg92/2bi57QAP+4xOYo3tuh6SAJY+1UJD9ChadBglFDc
-         DDKw==
-X-Gm-Message-State: AOAM5316OzVoFeXPYp7WA5f5Q7yQJ2cawfXbIPmGh5X2/FYXRh48JkYS
-        zZvd+aZwvc8ApzwZ5gN0gLzL2FKk3fg=
-X-Google-Smtp-Source: ABdhPJxwZj/PynUuK1XP16kZ9V2kTHI4TNu9tdHgLx8K/RtW9BcJzEGkrwrAEVnuyfV2NIL1iFxYSQ==
-X-Received: by 2002:a19:5e5e:0:b0:474:fa8a:2d07 with SMTP id z30-20020a195e5e000000b00474fa8a2d07mr20437480lfi.455.1652887003680;
-        Wed, 18 May 2022 08:16:43 -0700 (PDT)
-Received: from wbg.labs.westermo.se (a124.broadband3.quicknet.se. [46.17.184.124])
-        by smtp.gmail.com with ESMTPSA id a7-20020ac25207000000b0047255d2110esm242016lfl.61.2022.05.18.08.16.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 08:16:43 -0700 (PDT)
-From:   Joachim Wiberg <troglobit@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        Joachim Wiberg <troglobit@gmail.com>
-Subject: [PATCH net-next 1/1] selftests: forwarding: fix missing backslash
-Date:   Wed, 18 May 2022 17:16:30 +0200
-Message-Id: <20220518151630.2747773-1-troglobit@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S239271AbiERPZx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 11:25:53 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF5938D9B;
+        Wed, 18 May 2022 08:25:50 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4639660D57;
+        Wed, 18 May 2022 15:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55967C385A9;
+        Wed, 18 May 2022 15:25:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652887549;
+        bh=EB+Iw7JCIoxncHMEJXgxtMfUlhqYaBpdxsilLCSagdg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Izh3lTYd8qhsqrmcFsk//dozeAm4Dqi2fVgWzfwjrUyZHgesdfk3VhzExCQavs2fG
+         emVq4SD5P+NYoSDLoUJpLHC8msjvvUJ1RKvy1KLftYTarcDDzgFtFKltlyqLvmT1H1
+         5HeWn670hCLEM1aoCbWgc+ZQ9KS0Y8vu8X1e3uB7G3pfSzvjDjXCcfsqkLrDaJ8Txa
+         jh61wJD12hCoX0FcwkmSD2mF92lL9f+vVDtFOpdAdrur5lP0iEiitccd+qsARLJB3L
+         Ls7XqYha4Ne/8nK+6ssUg+winav/JH9wHYoHInakTQYWjbkMp6O/SVmOXI/R8V8LPX
+         DzuWPsbNYmGuA==
+Date:   Wed, 18 May 2022 08:25:48 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>, Shuah Khan <shuah@kernel.org>,
+        linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH net 0/2] selftests: net: add missing tests to Makefile
+Message-ID: <20220518082548.24d63e25@kernel.org>
+In-Reply-To: <YoSLx329qjT4Vrev@Laptop-X1>
+References: <20220428044511.227416-1-liuhangbin@gmail.com>
+        <20220429175604.249bb2fb@kernel.org>
+        <YoM/Wr6FaTzgokx3@Laptop-X1>
+        <20220517124517.363445f4@kernel.org>
+        <YoSLx329qjT4Vrev@Laptop-X1>
 MIME-Version: 1.0
-Organization: Westermo Network Technologies AB
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix missing backslash, introduced in f62c5acc800ee.  Causes all tests to
-not be installed.
+On Wed, 18 May 2022 14:01:43 +0800 Hangbin Liu wrote:
+> > > +files=$(git show --name-status --oneline | grep -P '^A\ttools/testing/selftests/net/' | grep '\.sh$' | sed 's@A\ttools/testing/selftests/net/@@')
 
-Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
----
- tools/testing/selftests/net/forwarding/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+FWIW this will list just the names of bash scripts with no decoration:
 
-diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
-index b5181b5a8e29..8f481218a492 100644
---- a/tools/testing/selftests/net/forwarding/Makefile
-+++ b/tools/testing/selftests/net/forwarding/Makefile
-@@ -88,7 +88,7 @@ TEST_PROGS = bridge_igmp.sh \
- 	vxlan_bridge_1d_port_8472.sh \
- 	vxlan_bridge_1d.sh \
- 	vxlan_bridge_1q_ipv6.sh \
--	vxlan_bridge_1q_port_8472_ipv6.sh
-+	vxlan_bridge_1q_port_8472_ipv6.sh \
- 	vxlan_bridge_1q_port_8472.sh \
- 	vxlan_bridge_1q.sh \
- 	vxlan_symmetric_ipv6.sh \
--- 
-2.25.1
+  git show --pretty="" --name-only -- tools/testing/selftests/*.sh
 
+And we can get the names of the files with basename:
+
+  for f in $(git show --pretty="" --name-only); do basename $f; done
+
+> > > +for file in $files; do
+> > > +	if echo $file | grep forwarding; then
+> > > +		file=$(echo $file | sed 's/forwarding\///')
+> > > +		if ! grep -P "[\t| ]$file" tools/testing/selftests/net/forwarding/Makefile;then
+> > > +			echo "new test $file not in selftests/net/forwarding/Makefile" >&$DESC_FD
+> > > +			rc=1
+> > > +		fi
+> > > +	else
+> > > +		if ! grep -P "[\t| ]$file" tools/testing/selftests/net/Makefile;then
+> > > +			echo "new test $file not in selftests/net/Makefile" >&$DESC_FD
+> > > +			rc=1
+> > > +		fi  
+> > 
+> > Does it matter which exact selftest makefile the changes are?  
+> 
+> I only checked the tools/testing/selftests/net/Makefile and
+> tools/testing/selftests/net/forwarding/Makefile at present.
+> Maybe mptcp should also added?
+
+Right, mptcp is one example, then we also have
+tools/testing/selftests/drivers/net/
+
+There may be new directories added, then we'd need to keep updating 
+the test.
+
+> > Maybe as a first stab we should just check if there are changes 
+> > to anything in tools/testing/selftests/.*/Makefile?  
+> 
+> In my checking only shell scripts are checked, as most net net/forwarding tests
+> using shell script for testing. But other sub-component may use c binary or
+> python for testing. So I think there is no need to check all
+> tools/testing/selftests/.*/Makefile. WDYT?
+
+Not sure I understand, let me explain what I meant in more detail. 
+I think we should make it generic. For example check the Makefile 
+in the same location as the script:
+
+  grep $(basename $f) $(dirname $f)/Makefile
+
+And maybe just to be safe one directory level down?
+
+  grep $(basename $f) $(dirname $(dirname $f))/Makefile
+
+Instead of hardcoding the expected paths.
