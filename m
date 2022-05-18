@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC3B252B4F3
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 10:38:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09BBD52B4ED
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 10:38:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233170AbiERI37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 04:29:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39250 "EHLO
+        id S233263AbiERIbb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 04:31:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233182AbiERI35 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 04:29:57 -0400
+        with ESMTP id S233257AbiERIa5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 04:30:57 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 665E813D76;
-        Wed, 18 May 2022 01:29:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82A9CF1;
+        Wed, 18 May 2022 01:30:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18E6EB81EEC;
-        Wed, 18 May 2022 08:29:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 487EBC385AA;
-        Wed, 18 May 2022 08:29:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A70BB81EE6;
+        Wed, 18 May 2022 08:30:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE2B5C385A5;
+        Wed, 18 May 2022 08:30:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652862592;
-        bh=0abp1pszzsRBx5y5nc3egC4D4HkrMKsciN1YVkpNL6g=;
+        s=k20201202; t=1652862649;
+        bh=mJJb/4OQ3K+BXo8Cd+L/PAtvSVNE3XIPsK9mQ+9dwiE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=IzQG4rxQryyz4XT24Lc3jCcLIMgpq3o5cM4Kw8JjxTBlkVJpFu7k+W8D71NpvrgFJ
-         OQ/jjI3WaTLFvRI26qQ3nw1elquXdpbzm2vrzoSuo/59jHnWoD50iYgo1yQ+A3ZVNc
-         ykQwWV4ptWmohUAA62Inkgc4rFpkgqTJomn+dQhqDc9YkxgKrAsSVN7lILAQvn/AwH
-         MDByP5EQlmIr67oIZU/eVRG7k0rpwe0QqvTj1QNE/+QizdlCPUEFti+DuMBBnPryfB
-         LLrxHxcnb+mJC+LX+EEhLaih3EsAzeaIsmV9HkPQIKIIcrbK9NYIX5tAQ5qLxNO2g5
-         gxVLUGa7S5QOQ==
-Date:   Wed, 18 May 2022 10:29:48 +0200
+        b=X+zdutIv5p2k+3B4+X900Urieq9PE2vgPA5T07eaOphbN3Jm8Wt1SsLzTLuxexhBK
+         Bg2E2RQyKJHSpPZ+CVmGq+ReG9+2zvTKmFYn/3N7cOXAUtVYJT+awRHQ3FLXKhklsp
+         SDR2NugJg2Xy8XgacCJs8DShSm1sfz/Fk6AmSEAHwPGvZPMHmYW+xhj23z8+tVDW47
+         4VWlnI9yT4hnE+niavzZn4whQjvWVrsIowl0uzBRXaQXGAYsqr4XzosnKe7cVyONov
+         RFj8LKyWsqeG5oDeScqstSRsGUTC9uf/GBfGybaOYxphBUUB7HANbALWVHrJgwznqS
+         VHDv/+hxLN+iQ==
+Date:   Wed, 18 May 2022 10:30:45 +0200
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
@@ -40,17 +40,17 @@ Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
         Sam.Shih@mediatek.com, linux-mediatek@lists.infradead.org,
         devicetree@vger.kernel.org, robh@kernel.org,
         lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH v2 net-next 04/15] net: ethernet: mtk_eth_soc: add
- txd_size to mtk_soc_data
-Message-ID: <YoSufPWnGPdtVYZ+@lore-desk>
+Subject: Re: [PATCH v2 net-next 10/15] net: ethernet: mtk_eth_soc: rely on
+ rxd_size field in mtk_rx_alloc/mtk_rx_clean
+Message-ID: <YoSutfDP5CXzgFNQ@lore-desk>
 References: <cover.1652716741.git.lorenzo@kernel.org>
- <22bd1bd88c09205b9bf83ea4c3ab030d5dc6e670.1652716741.git.lorenzo@kernel.org>
- <20220517183311.3d4c76fe@kernel.org>
+ <eca56ab1af7f4bbedc4a6d0990a10ff58911d842.1652716741.git.lorenzo@kernel.org>
+ <20220517183935.6863ddc7@kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kza9CdNu8v+g1M7c"
+        protocol="application/pgp-signature"; boundary="nOj9tn/EqN8+0tSv"
 Content-Disposition: inline
-In-Reply-To: <20220517183311.3d4c76fe@kernel.org>
+In-Reply-To: <20220517183935.6863ddc7@kernel.org>
 X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -62,41 +62,43 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---kza9CdNu8v+g1M7c
+--nOj9tn/EqN8+0tSv
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-> On Mon, 16 May 2022 18:06:31 +0200 Lorenzo Bianconi wrote:
-> >  	eth->scratch_ring =3D dma_alloc_coherent(eth->dma_dev,
-> > -					       cnt * sizeof(struct mtk_tx_dma),
-> > +					       cnt * soc->txrx.txd_size,
-> >  					       &eth->phy_scratch_ring,
-> >  					       GFP_ATOMIC);
-> >  	if (unlikely(!eth->scratch_ring))
-> >  		return -ENOMEM;
+> On Mon, 16 May 2022 18:06:37 +0200 Lorenzo Bianconi wrote:
+> > +
+> > +		rxd =3D (void *)ring->dma + i * eth->soc->txrx.rxd_size;
+> > +		rxd->rxd1 =3D (unsigned int)dma_addr;
 > > =20
-> > -	eth->scratch_head =3D kcalloc(cnt, MTK_QDMA_PAGE_SIZE,
-> > -				    GFP_KERNEL);
-> > +	eth->scratch_head =3D kcalloc(cnt, MTK_QDMA_PAGE_SIZE, GFP_KERNEL);
+> >  		if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
+> > -			ring->dma[i].rxd2 =3D RX_DMA_LSO;
+> > +			rxd->rxd2 =3D RX_DMA_LSO;
+> >  		else
+> > -			ring->dma[i].rxd2 =3D RX_DMA_PLEN0(ring->buf_size);
+> > +			rxd->rxd2 =3D RX_DMA_PLEN0(ring->buf_size);
+> > +
+> > +		rxd->rxd3 =3D 0;
+> > +		rxd->rxd4 =3D 0;
 >=20
-> Unrelated, but GFP_ATOMIC right next to GFP_KERNEL caught my attention.
+> The clearing of rxd3/rxd4 should probably have been mentioned in the
+> commit message. It does not seem related to descriptor size.
 
-ack, mtk_init_fq_dma() is run by mtk_open() so it is ok to use GFP_KERNEL. I
-will fix it in v3.
+ack, I will do it in v3.
 
 Regards,
 Lorenzo
 
---kza9CdNu8v+g1M7c
+--nOj9tn/EqN8+0tSv
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYoSufAAKCRA6cBh0uS2t
-rFYlAQC2wAg1jYAWiba7EodXO/uiiufplKyBb3ecXPYBR62etAD+ND4ZonW4brDP
-P3P5htwp0JlPey9fJNA1452zhxCQOgs=
-=0Wh0
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYoSutQAKCRA6cBh0uS2t
+rDkrAPsFgjPlPYku7AlPv0qwt1GuK/wxa9vPkdKHgYEApUD5aAEA8fu7ZkWQFlby
+2oNBn54QPPhGqhBRykcs6nvv39DhpAQ=
+=EFN3
 -----END PGP SIGNATURE-----
 
---kza9CdNu8v+g1M7c--
+--nOj9tn/EqN8+0tSv--
