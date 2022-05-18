@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E5D9F52C5F0
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 00:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5E0652C5EB
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 00:05:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbiERWFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 18:05:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44062 "EHLO
+        id S229798AbiERWE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 18:04:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229986AbiERWEa (ORCPT
+        with ESMTP id S229992AbiERWEa (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 18:04:30 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC35D5DBCB;
-        Wed, 18 May 2022 15:01:20 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id wh22so6243652ejb.7;
-        Wed, 18 May 2022 15:01:20 -0700 (PDT)
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA2160DB9;
+        Wed, 18 May 2022 15:01:21 -0700 (PDT)
+Received: by mail-ed1-x536.google.com with SMTP id en5so4756776edb.1;
+        Wed, 18 May 2022 15:01:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4MA9rL+NU5i49GzNZ6NnsLkOYe+sC2puAxmvZM/H6Yo=;
-        b=mVD+sNrl71aKSE4n8i+Ev8RM54Adnlcz6sWuA9ZFr2FZZkDEt5uuWMhBO9gzTlBw2h
-         yz0oTx5CQQwEAJ09Dg4NsmTbNRmtUBc2CucdYj2JrkPCwJEZ08jZ7owIDy3Jclw8qwjQ
-         mqenCkXcmiXo7I2H/65PDRzG9Ud3KeHzsK7voIqPsiA/lnCyV4TpNAC471OpP8dWLXUY
-         g7YabD5WF5D4ygteuHCl32aH3+h3kpu65Tp+He6Vxs8F+jKp2K0LxOgA3SbxfrhpmN2o
-         bm60TghigV1VYQRPkJoyQtOW6Evs6Ic8bOL0WYx8RQW/NU2uLQHV7vwMNTuOFks0TmVx
-         P09g==
+        bh=TmqwtlizUr2sOMbeBCwgOr1QbN75jzLqPx0CYdczOAI=;
+        b=DIx6xAC8R9pmwYcP9r/UqGNcsCgx9bFGbfOXPt+A/XuOrB0c1o723rf+E//tB5fyew
+         5lYMh75OaHjK9bV5sm1TeZd7gt24kuWAmcaBGiw/Jy4Isrv6fInL6Myu1Q9KxLVwuMWV
+         Cm2IlxxWpxtVmiMbvc5+ldHc/7X2TBNYe3gmKzgUV6qB8qOe+M7i2YbJlHCuFGQOhcEp
+         uetsZmogXZaZs0WdkJNyGfvCZALPjHLLBD7xLiIt3rx14nY74K7IipqDeqCd6S/A84Gq
+         vgq20ZJ5nAfzUXP8esdhIs/Ck6gLmJbCo6+8Zqq0mJDSFV4lq05NGN6uqKZ1wMyYk0lH
+         B0CA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4MA9rL+NU5i49GzNZ6NnsLkOYe+sC2puAxmvZM/H6Yo=;
-        b=g+9MaF0W++i7ZCeRPhhmzIQJDumLft1WFofJFFOOpFx2XGmnB7p+jUKThNct3PxHm3
-         J3HjmLGVYThuEqYIC7EA0MXaVyGRkdWwCFiO2E/sWUo4OGlQROsrsIebYnJ2PAOMb00T
-         rkP9G0zIGGlqkXXP7JVDw/+ILG1VYGfXLwKEF2jYIR2oXvfKZ5yn1WkXFpFxveHm9Ctr
-         HkhYtJeDTNMx5PkUbKUV5mMYRN0jzh51HYUr60XqsafmTE8nPbAI3yAYhpBjGLRsNy/3
-         jmUYuxkuzXEOzVcqBg08psU+U2u11ESkBPYtdr1RPzMtEuFfnF1jhIsE2/R+OByYPXOB
-         gHxQ==
-X-Gm-Message-State: AOAM533BFozW+dN2MDxoIK3GeUvpY3Z/LXXYQJNko32/7DQTidR7oVNW
-        GZhqJXNRQvD4in8OH3LBG2TXduhiHDg=
-X-Google-Smtp-Source: ABdhPJxnGdDumOEIBOGw/tZktEKPXF/kbNT9UxING++0zGZRedYLoleFQNqtdgW+LV4a4oXxe+QcMg==
-X-Received: by 2002:a17:907:6d82:b0:6f4:d62e:8168 with SMTP id sb2-20020a1709076d8200b006f4d62e8168mr1506638ejc.374.1652911279202;
-        Wed, 18 May 2022 15:01:19 -0700 (PDT)
+        bh=TmqwtlizUr2sOMbeBCwgOr1QbN75jzLqPx0CYdczOAI=;
+        b=zq1tpttaxX/pw3F1RkRcyFH+bvdB+bpy/oUGkKtjRdJ6b1OMP5MQGe//tHOkHNAJpC
+         Mt7C3m3hMOxdl6kDuuP0alOb5GCSSkqDBcDs1b73zSTlFrRqAj+XkgaSSLdae4rLB1Sj
+         DbSpwWWIm1dqqkpyvgrWp4t8OX8jObU3X3V66N6ADFVawMFiK1U4wKm6Y/CsDIARcn3m
+         7Gxo5kghDinGA0baBoyn5P2syxY9TNYkYd1L9w304qCE2ID3bXbXQW1uzCYvlYx4kb4Y
+         54gSb1DyCkjGKGpp5Nzozs7uZNkocEEptFiTE7vLo3k3Tz5qkF3lmiOgw8X+Y82vmRl9
+         S3XQ==
+X-Gm-Message-State: AOAM531bosLVMPyWxw+n1jMUno5yLreBSIvVIqCWhUgWZN+0whr7Arzt
+        X/7LfrjEAvno+l6H6zbhFhBXSaF8apg=
+X-Google-Smtp-Source: ABdhPJyYWDW/lvChgZV6/YWUcLmvFEhmTGcnIQqQbpefdlCnZ375o+H0GxUCj+SvCuh01nJA+pmKXA==
+X-Received: by 2002:aa7:dad0:0:b0:42a:b250:f078 with SMTP id x16-20020aa7dad0000000b0042ab250f078mr1994958eds.21.1652911280086;
+        Wed, 18 May 2022 15:01:20 -0700 (PDT)
 Received: from localhost.localdomain (dynamic-095-118-099-170.95.118.pool.telefonica.de. [95.118.99.170])
-        by smtp.googlemail.com with ESMTPSA id ot2-20020a170906ccc200b006f3ef214dd0sm1478885ejb.54.2022.05.18.15.01.18
+        by smtp.googlemail.com with ESMTPSA id ot2-20020a170906ccc200b006f3ef214dd0sm1478885ejb.54.2022.05.18.15.01.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 15:01:18 -0700 (PDT)
+        Wed, 18 May 2022 15:01:19 -0700 (PDT)
 From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 To:     netdev@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch,
@@ -55,9 +55,9 @@ Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch,
         pabeni@redhat.com,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         Hauke Mehrtens <hauke@hauke-m.de>
-Subject: [PATCH net-next v2 1/2] net: dsa: lantiq_gswip: Fix start index in gswip_port_fdb()
-Date:   Thu, 19 May 2022 00:00:50 +0200
-Message-Id: <20220518220051.1520023-2-martin.blumenstingl@googlemail.com>
+Subject: [PATCH net-next v2 2/2] net: dsa: lantiq_gswip: Fix typo in gswip_port_fdb_dump() error print
+Date:   Thu, 19 May 2022 00:00:51 +0200
+Message-Id: <20220518220051.1520023-3-martin.blumenstingl@googlemail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220518220051.1520023-1-martin.blumenstingl@googlemail.com>
 References: <20220518220051.1520023-1-martin.blumenstingl@googlemail.com>
@@ -73,42 +73,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The first N entries in priv->vlans are reserved for managing ports which
-are not part of a bridge. Use priv->hw_info->max_ports to consistently
-access per-bridge entries at index 7. Starting at
-priv->hw_info->cpu_port (6) is harmless in this case because
-priv->vlan[6].bridge is always NULL so the comparison result is always
-false (which results in this entry being skipped).
+gswip_port_fdb_dump() reads the MAC bridge entries. The error message
+should say "failed to read mac bridge entry". While here, also add the
+index to the error print so humans can get to the cause of the problem
+easier.
 
 Fixes: 58c59ef9e930c4 ("net: dsa: lantiq: Add Forwarding Database access")
 Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- drivers/net/dsa/lantiq_gswip.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/dsa/lantiq_gswip.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 12c15da55664..0c313db23451 100644
+index 0c313db23451..8af4def38a98 100644
 --- a/drivers/net/dsa/lantiq_gswip.c
 +++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1360,7 +1360,7 @@ static int gswip_port_fdb(struct dsa_switch *ds, int port,
- 	struct net_device *bridge = dsa_port_bridge_dev_get(dsa_to_port(ds, port));
- 	struct gswip_priv *priv = ds->priv;
- 	struct gswip_pce_table_entry mac_bridge = {0,};
--	unsigned int cpu_port = priv->hw_info->cpu_port;
-+	unsigned int max_ports = priv->hw_info->max_ports;
- 	int fid = -1;
- 	int i;
- 	int err;
-@@ -1368,7 +1368,7 @@ static int gswip_port_fdb(struct dsa_switch *ds, int port,
- 	if (!bridge)
- 		return -EINVAL;
+@@ -1426,8 +1426,9 @@ static int gswip_port_fdb_dump(struct dsa_switch *ds, int port,
  
--	for (i = cpu_port; i < ARRAY_SIZE(priv->vlans); i++) {
-+	for (i = max_ports; i < ARRAY_SIZE(priv->vlans); i++) {
- 		if (priv->vlans[i].bridge == bridge) {
- 			fid = priv->vlans[i].fid;
- 			break;
+ 		err = gswip_pce_table_entry_read(priv, &mac_bridge);
+ 		if (err) {
+-			dev_err(priv->dev, "failed to write mac bridge: %d\n",
+-				err);
++			dev_err(priv->dev,
++				"failed to read mac bridge entry %d: %d\n",
++				i, err);
+ 			return err;
+ 		}
+ 
 -- 
 2.36.1
 
