@@ -2,48 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DB8E152AF55
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 02:47:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E77F52AF60
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 02:50:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232834AbiERArr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 20:47:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42592 "EHLO
+        id S232867AbiERAuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 20:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230250AbiERArp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 20:47:45 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEB204EF5F;
-        Tue, 17 May 2022 17:47:44 -0700 (PDT)
+        with ESMTP id S232680AbiERAuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 20:50:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CEEF4F473;
+        Tue, 17 May 2022 17:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31F2AB81D9B;
-        Wed, 18 May 2022 00:47:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 981BCC385B8;
-        Wed, 18 May 2022 00:47:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E6F0B81D9E;
+        Wed, 18 May 2022 00:50:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D05D5C34116;
+        Wed, 18 May 2022 00:50:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652834861;
-        bh=fNKUfV1SV9M5mI6hr0ErzfCZ0VG41xjUAwF43KZD2eY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lJr15sAUFzvzyN+kB+OMoXM6a6cHHNd/c0L51N78DhbMJgjRVZ2IUBpZfaufqIAVo
-         C3ulfncmFHe9/i09xBJRFpkjUx65GI1IO0G73+kKViaJp+Yai2ZmCKywzZdqR/Tg9S
-         GRlYXGkBiIf4/O0TvTAJlj/+ui2ZxkWwRiWxHZSLGhCGZ7lBgUSYBBkExkcSux7LpO
-         q7GC6akLEKROVHZaO/8+6qe2UvCzhOLcIkY5srNhbgwGERBahvIrdbgXCcISGzD4cn
-         T0YlHDUx+FaxyxN6fq5eqlUmneuWdUVrQvO/pYLhBqHuqc7bxgS3KGkBj7n/e2gPmI
-         rI2PW5RqLQvAA==
-Date:   Tue, 17 May 2022 17:47:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Yang Yingliang <yangyingliang@huawei.com>, <wellslutw@gmail.com>
-Cc:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <andrew@lunn.ch>, <pabeni@redhat.com>, <davem@davemloft.net>
-Subject: Re: [PATCH -next] net: ethernet: sunplus: add missing of_node_put()
- in spl2sw_mdio_init()
-Message-ID: <20220517174740.2fe90ebb@kernel.org>
-In-Reply-To: <20220516143734.1598316-1-yangyingliang@huawei.com>
-References: <20220516143734.1598316-1-yangyingliang@huawei.com>
+        s=k20201202; t=1652835011;
+        bh=jsiL5avFp8i3OqPabbhTHKKKZ+7l1rs3LYu3KC/SPjY=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=XiBZ0lqHis3ataO5ucJJGXTDvLuhHHsNej+sVtyeKSGWK0yk1YeIMvk1p6+4eeNBz
+         N3XBFm95N+gmc15Rq8hXL3gtns3BQS0K00hQfwfm3sDuTIDj33RC420I1TPBOPf9jt
+         JI604WOgQy6fEY5Eblrpmf5cQyfyC2iLseYin56uguiYpeEaBIkljhpE3iBRHg1nzf
+         IuUmvFJeS3VXLoEUHbl97kOvBOnoqEQFThlSj7OLl7/de0g6A3z2+sZGspwicUVVnA
+         EuA8/w4lZyI4bRVfKPfwxQSE1puMY1R69+o40iYve6mLUdn7EHLnIbBnBRw9sKypVH
+         rvf4smyz87vhg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id AAB62F0383D;
+        Wed, 18 May 2022 00:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: thunderx: remove null check after call container_of()
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165283501169.24421.7370839747235239114.git-patchwork-notify@kernel.org>
+Date:   Wed, 18 May 2022 00:50:11 +0000
+References: <1652696212-17516-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <1652696212-17516-1-git-send-email-baihaowen@meizu.com>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     sgoutham@marvell.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -54,18 +58,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 May 2022 22:37:34 +0800 Yang Yingliang wrote:
-> of_get_child_by_name() returns device node pointer with refcount
-> incremented. The refcount should be decremented before returning
-> from spl2sw_mdio_init().
+Hello:
+
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Mon, 16 May 2022 18:16:52 +0800 you wrote:
+> container_of() will never return NULL, so remove useless code.
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
+> ---
+>  drivers/net/ethernet/cavium/thunder/nicvf_main.c | 3 ---
+>  1 file changed, 3 deletions(-)
 
-Please add a Fixes tag, even if the change in question is only in
-linux-next.
+Here is the summary with links:
+  - net: thunderx: remove null check after call container_of()
+    https://git.kernel.org/netdev/net-next/c/ab4d6357c95f
 
-Wells Lu, the expectation for networking maintainers is that you will
-review patches for your driver without 24, max 48 hours (not counting
-weekends). Please respond with feedback or Acked-by / Reviewed-by tags
-now that your driver has been merged. Thanks.
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
