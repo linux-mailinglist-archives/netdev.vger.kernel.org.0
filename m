@@ -2,109 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 309B652B8F0
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 13:45:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E940C52B907
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 13:45:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235684AbiERLdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 07:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59420 "EHLO
+        id S235759AbiERLoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 07:44:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235652AbiERLdY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 07:33:24 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6E4A5C878;
-        Wed, 18 May 2022 04:33:20 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id i40so2584758eda.7;
-        Wed, 18 May 2022 04:33:20 -0700 (PDT)
+        with ESMTP id S235741AbiERLoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 07:44:02 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8A921796C3
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 04:44:01 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id bq30so3156637lfb.3
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 04:44:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gJ3rsnwq2b/rwZyiM+K6St2dD//MHaJRGiRZ+2rN6jw=;
-        b=boSZSG16VTmcUf9r+ZEJo1bDXBXu800Ay6RdbxwGTxtnWhZtEKXO1kS/q9r6t4Tbci
-         qL3ppu4OcqJi0yGfUQ8PEQXAM37v19+vWyt/KkmPyWYi6F0LLZnjXPCGdz/3bKRQkXZT
-         lacgus8QOEdvO43y/iK1HshJzwZ7xXyaUplatLnYfmn6pXxRT82uMM4Ni2/WHTR2II8K
-         ALtwTOzMDdk6fjrCaMfZyt2H6ggyBkfLPti/+alKhAF/HQkLqC1+TCdXR0w9sBbi7H1e
-         1GE0pCaRFMH3c9+2fLt8NFmnwIkMfkpwnJWn/kpqhAWWfbEdxxxPjRoOzTV/7SuTb4wQ
-         SHww==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=VUs/qiRUXkX7u01sNNHH5nG6z38UxD4eg1cpL+kl3IY=;
+        b=NL6N69NjUsnYgCBbK2CT7VS2GcLCktUlueSaZScu8TI9QduQ1VobJVGHSjM38FUuyN
+         svg/5Jvr9RM/i54uw89DK5BdJVd3k7bYxS4fKpNGfgzeHiu2IBBMc4/H2B5p7LBXQW/l
+         fSjbKPI6oR+Lutlwlrodtc0ejMPjEb4ELg7Sz0HPnCX9/dhG01EVYeV0/H3crVaUdqjh
+         f0moCm64ZwSM9COqEFhdyLvS3Zi7jVSzlzlVPD2xqhhr3zNskJFro2paspiFWn9X25ON
+         hO7Yvk2ts2a+8I06rySiQ2nPfQJEhwCZFLB2l69ERfJkczOkCp96X75BOrrnejjQ5OR+
+         ExYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gJ3rsnwq2b/rwZyiM+K6St2dD//MHaJRGiRZ+2rN6jw=;
-        b=buWKwSzrfJUXVJQ5jCuzZn3JGe3F6f+ajsWYfur5yGEyavNFP+JXdEwKBEps+kOxw9
-         X4gI12v03touR18QQmmv6e2WJqDegjLZJ8H3IdJrqqCOJPXS7IoszjmUm97i8JREzUWe
-         LDxxrG2DU1wvUdQsaynZ/Jqd5CUqX3KpMdA/LpiqkuMQ1RBJqXS4hGmonFdtHo3GCENi
-         LZsO+CcdrBzQOnCQy9cy+EP+H5P7njGMXwxYYNaSWdJfTh1o30RbEUWvQsLSu+0LCs25
-         f+4vH//BDp0nnUYorBTj186o6pZo+YKD9JLgxkuSU1C1Rxu0zc5QvwYDJfrliUBuvgH2
-         S0RA==
-X-Gm-Message-State: AOAM532EHBsDkXMqEt+Uoe16kOJ32QISUgnmWntyS+uvpmtggXKizjLg
-        ytfQQ2DX9mdCKesglhXwsi0=
-X-Google-Smtp-Source: ABdhPJyxtALu03Yuzdg/AfJ0FAnnybpgKbzcjrKmwL/9vAr2Byxm+xGrgpvROIgpruNaQz1AgwGHxA==
-X-Received: by 2002:a05:6402:741:b0:42a:8fad:8f67 with SMTP id p1-20020a056402074100b0042a8fad8f67mr21895251edy.285.1652873599246;
-        Wed, 18 May 2022 04:33:19 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id d19-20020a1709067a1300b006f3ef214e05sm852697ejo.107.2022.05.18.04.33.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 04:33:18 -0700 (PDT)
-Date:   Wed, 18 May 2022 14:33:15 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Hauke Mehrtens <hauke@hauke-m.de>
-Subject: Re: [PATCH net v1 2/2] net: dsa: lantiq_gswip: Fix typo in
- gswip_port_fdb_dump() error print
-Message-ID: <20220518113315.w3p6vzj3djat2abd@skbuf>
-References: <20220517194015.1081632-1-martin.blumenstingl@googlemail.com>
- <20220517194015.1081632-3-martin.blumenstingl@googlemail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VUs/qiRUXkX7u01sNNHH5nG6z38UxD4eg1cpL+kl3IY=;
+        b=R3lIVsrga2D5gE6GdGPgiDSAiMLwAjfBOaNRtc/U8wgc9zHuWCo5rFgSiBbsZLtQEZ
+         XUDzr1KF11UXZjS6LMNI9zGQh8xP9Cxm1DgwYYQcg3XgP07ISfZrHAyXKqzehvfqSy71
+         tdKp9lysBC44rjyG5VbKKzX+SnCPi1lJDJfoBKLKph58FNwkLUsO3NKBbgqqM6I0cSCB
+         URUBW54lp2sUjRgt2OAG+WMPtlMNVzB6juZooZzdo2qMAFCvAnD8zS/VJ40AZibne3jO
+         dfbsMWOpK6pW1tRf2yohhXtKU3+qpYB1AKaS6QXuYU7ppUv8RYTMdFnVpryhCyWDeYso
+         znsA==
+X-Gm-Message-State: AOAM530bBVyOl8APsd24LmemmvQfePzb9meoi6+AHMHs4h1qellXIqSy
+        n0bJ15ruzIjynCgcxTCVg55a4Q==
+X-Google-Smtp-Source: ABdhPJwlewLBeyGbH+jR6wIjAntDY4XD70LvPuqQZXZ1HYzVHqv2jEV/UgO2M8DbS0xmSByoyJGxsg==
+X-Received: by 2002:a05:6512:3f94:b0:474:68e:46c3 with SMTP id x20-20020a0565123f9400b00474068e46c3mr20754082lfa.431.1652874240015;
+        Wed, 18 May 2022 04:44:00 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id h18-20020a05651211d200b0047255d211eesm181695lfr.285.2022.05.18.04.43.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 04:43:59 -0700 (PDT)
+Message-ID: <efb99320-b0d5-11fc-cd37-2c2f1ca90ece@linaro.org>
+Date:   Wed, 18 May 2022 13:43:58 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517194015.1081632-3-martin.blumenstingl@googlemail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net v2] NFC: hci: fix sleep in atomic context bugs in
+ nfc_hci_hcp_message_tx
+Content-Language: en-US
+To:     duoming@zju.edu.cn
+Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
+        alexander.deucher@amd.com, broonie@kernel.org,
+        netdev@vger.kernel.org
+References: <20220517105526.114421-1-duoming@zju.edu.cn>
+ <2ce7a871-3e55-ae50-955c-bf04a443aba3@linaro.org>
+ <71c24f38.1a1f4.180d29ff1fd.Coremail.duoming@zju.edu.cn>
+ <68ccef70-ef30-8f53-6ec5-17ce5815089c@linaro.org>
+ <454a29ba.1b9b1.180d576985b.Coremail.duoming@zju.edu.cn>
+ <bb566eb7-c571-9a51-af51-78e36412fbfc@linaro.org>
+ <670b87a9.1d1aa.180d6d8952e.Coremail.duoming@zju.edu.cn>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <670b87a9.1d1aa.180d6d8952e.Coremail.duoming@zju.edu.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 17, 2022 at 09:40:15PM +0200, Martin Blumenstingl wrote:
-> gswip_port_fdb_dump() reads the MAC bridge entries. The error message
-> should say "failed to read mac bridge entry". While here, also add the
-> index to the error print so humans can get to the cause of the problem
-> easier.
+On 18/05/2022 13:05, duoming@zju.edu.cn wrote:
+> Hello,
 > 
-> Fixes: 58c59ef9e930c4 ("net: dsa: lantiq: Add Forwarding Database access")
-> Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> ---
+> 
+>  struct st21nfca_hci_info {
+> 
+> If you think this solution is ok, I will send "PATCH v3".
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+More or less, send entire patch, so we'll see.
 
->  drivers/net/dsa/lantiq_gswip.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-> index 0c313db23451..8af4def38a98 100644
-> --- a/drivers/net/dsa/lantiq_gswip.c
-> +++ b/drivers/net/dsa/lantiq_gswip.c
-> @@ -1426,8 +1426,9 @@ static int gswip_port_fdb_dump(struct dsa_switch *ds, int port,
->  
->  		err = gswip_pce_table_entry_read(priv, &mac_bridge);
->  		if (err) {
-> -			dev_err(priv->dev, "failed to write mac bridge: %d\n",
-> -				err);
-> +			dev_err(priv->dev,
-> +				"failed to read mac bridge entry %d: %d\n",
-> +				i, err);
->  			return err;
->  		}
->  
-> -- 
-> 2.36.1
-> 
+> Best regards,
+> Duoming Zhou
+
+
+Best regards,
+Krzysztof
