@@ -2,965 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BBAF252C66B
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 00:39:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C242652C677
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 00:42:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230123AbiERWjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 18:39:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42188 "EHLO
+        id S229894AbiERWmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 18:42:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230088AbiERWjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 18:39:43 -0400
-Received: from smtp2.emailarray.com (smtp.emailarray.com [69.28.212.198])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C491D87209
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 15:39:40 -0700 (PDT)
-Received: (qmail 47288 invoked by uid 89); 18 May 2022 22:39:39 -0000
-Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
-  by smtp2.emailarray.com with SMTP; 18 May 2022 22:39:39 -0000
-From:   Jonathan Lemon <jonathan.lemon@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     f.fainelli@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, bcm-kernel-feedback-list@broadcom.com,
-        kernel-team@fb.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net-next v5 2/2] net: phy: broadcom: Add PTP support for some Broadcom PHYs.
-Date:   Wed, 18 May 2022 15:39:35 -0700
-Message-Id: <20220518223935.2312426-3-jonathan.lemon@gmail.com>
-X-Mailer: git-send-email 2.34.3
-In-Reply-To: <20220518223935.2312426-1-jonathan.lemon@gmail.com>
-References: <20220518223935.2312426-1-jonathan.lemon@gmail.com>
+        with ESMTP id S229656AbiERWmo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 18:42:44 -0400
+Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F61B14D782;
+        Wed, 18 May 2022 15:42:43 -0700 (PDT)
+Received: by mail-pj1-x1042.google.com with SMTP id l14so3464624pjk.2;
+        Wed, 18 May 2022 15:42:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=o/5HbRUzUeishq4OoRNF2vTxxeTguE/szejcn40/RQ8=;
+        b=XL6GlW8tbi15ldh/hhco82zJ+xLlWJgXXEKw36mepVErwbWRXrPknk4m4+QR03LSQF
+         OcvYbg90vkXwmL0VMKX9siCStdsl0e55o/N1Nye5JaeGwPPiUGGxJzcRQYisRWAfgfe7
+         OP7JBxmRa+Qx3XfaNe1Ndv8JAYqqg2RYcYXegTYuGIM4yI8nR1DY+aRQKYD4LJ8mUoKu
+         kzSJvQaOR0Q0IzpJ9byM7LnKXtALM31Jr9+jDNTzq3ByT6SPzSxOPn3i7kxU+6vZbCeq
+         +C5i7ojt+z0/45D7BVISXEJ0hx5D67qwIpuinbOairOBDM86tHouDVHlcDRgzICalbaZ
+         jyfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=o/5HbRUzUeishq4OoRNF2vTxxeTguE/szejcn40/RQ8=;
+        b=Zgtt5pdeLwC7MfF0nplNiwR5cCCoGaPR1QaTiQlppfJUdzEbH8RBDMd1EA1IjpAvqj
+         hRmwyvhRswAFkYmm7ZUa6SYP/GM5fSG3MdVUmnZz7uvTR0Pe/wKqbDiWdPzhmhYCrxdh
+         NcHl80T7st7rvg1HSfAoxmX0Yn4pWxC2DOQ9Y057qIpR+HV+yMN4VHG+CWWkcp2Zoxkd
+         cDxii4rZSJRbyHXf6bVzpnLVaMsS6I7jfJhCDCAnSWNfJxrJxhbyxnFMdoIy9HUetSsQ
+         9fJwZTubw4GhBwSfcBgBqczlNIXEtndbXxYwFuNIL7NBlNG3O9gnHbjs+e7Dw6tGOqaJ
+         OhTw==
+X-Gm-Message-State: AOAM530uuLJg5965r1NZCQPpTDfi3k2KOh2XWioEhkDpyTuu4tB1WJmY
+        WciVnJxw5NZhfFy5prPX1cU=
+X-Google-Smtp-Source: ABdhPJxqrql2Mi72Vgj+Hv9WaAqmjbILCqjPcNYNfKcmZqvZIxkPzhuq/7QbRMUBgSqtHkrhFoa5qQ==
+X-Received: by 2002:a17:90b:4d90:b0:1dc:c03e:3a39 with SMTP id oj16-20020a17090b4d9000b001dcc03e3a39mr2317650pjb.116.1652913762949;
+        Wed, 18 May 2022 15:42:42 -0700 (PDT)
+Received: from localhost ([157.51.69.231])
+        by smtp.gmail.com with ESMTPSA id k11-20020aa788cb000000b0050dc76281c7sm2486111pff.161.2022.05.18.15.42.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 15:42:42 -0700 (PDT)
+Date:   Thu, 19 May 2022 04:13:30 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH v3 bpf-next 4/5] net: netfilter: add kfunc helper to add
+ a new ct entry
+Message-ID: <20220518224330.omsokbbhqoe5mc3v@apollo.legion>
+References: <cover.1652870182.git.lorenzo@kernel.org>
+ <40e7ce4b79c86c46e5fbf22e9cafb51b9172da19.1652870182.git.lorenzo@kernel.org>
+ <87y1yy8t6j.fsf@toke.dk>
+ <YoVgZ8OHlF/OpgHq@lore-desk>
+ <CAADnVQ+6-cywf0StZ_K0nKSSdXJsZ4S_ZBhGZPHDmKtaL3k9-g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=0.5 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
-        FORGED_GMAIL_RCVD,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
-        autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAADnVQ+6-cywf0StZ_K0nKSSdXJsZ4S_ZBhGZPHDmKtaL3k9-g@mail.gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds PTP support for BCM54210E Broadcom PHYs, in particular,
-the BCM54213PE, as used in the Rasperry PI CM4.  It has only been
-tested on that hardware.
+On Thu, May 19, 2022 at 03:44:58AM IST, Alexei Starovoitov wrote:
+> On Wed, May 18, 2022 at 2:09 PM Lorenzo Bianconi
+> <lorenzo.bianconi@redhat.com> wrote:
+> >
+> > > Lorenzo Bianconi <lorenzo@kernel.org> writes:
+> > >
+> > > > Introduce bpf_xdp_ct_add and bpf_skb_ct_add kfunc helpers in order to
+> > > > add a new entry to ct map from an ebpf program.
+> > > > Introduce bpf_nf_ct_tuple_parse utility routine.
+> > > >
+> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > > > ---
+> > > >  net/netfilter/nf_conntrack_bpf.c | 212 +++++++++++++++++++++++++++----
+> > > >  1 file changed, 189 insertions(+), 23 deletions(-)
+> > > >
+> > > > diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+> > > > index a9271418db88..3d31b602fdf1 100644
+> > > > --- a/net/netfilter/nf_conntrack_bpf.c
+> > > > +++ b/net/netfilter/nf_conntrack_bpf.c
+> > > > @@ -55,41 +55,114 @@ enum {
+> > > >     NF_BPF_CT_OPTS_SZ = 12,
+> > > >  };
+> > > >
+> > > > -static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
+> > > > -                                     struct bpf_sock_tuple *bpf_tuple,
+> > > > -                                     u32 tuple_len, u8 protonum,
+> > > > -                                     s32 netns_id, u8 *dir)
+> > > > +static int bpf_nf_ct_tuple_parse(struct bpf_sock_tuple *bpf_tuple,
+> > > > +                            u32 tuple_len, u8 protonum, u8 dir,
+> > > > +                            struct nf_conntrack_tuple *tuple)
+> > > >  {
+> > > > -   struct nf_conntrack_tuple_hash *hash;
+> > > > -   struct nf_conntrack_tuple tuple;
+> > > > -   struct nf_conn *ct;
+> > > > +   union nf_inet_addr *src = dir ? &tuple->dst.u3 : &tuple->src.u3;
+> > > > +   union nf_inet_addr *dst = dir ? &tuple->src.u3 : &tuple->dst.u3;
+> > > > +   union nf_conntrack_man_proto *sport = dir ? (void *)&tuple->dst.u
+> > > > +                                             : &tuple->src.u;
+> > > > +   union nf_conntrack_man_proto *dport = dir ? &tuple->src.u
+> > > > +                                             : (void *)&tuple->dst.u;
+> > > >
+> > > >     if (unlikely(protonum != IPPROTO_TCP && protonum != IPPROTO_UDP))
+> > > > -           return ERR_PTR(-EPROTO);
+> > > > -   if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
+> > > > -           return ERR_PTR(-EINVAL);
+> > > > +           return -EPROTO;
+> > > > +
+> > > > +   memset(tuple, 0, sizeof(*tuple));
+> > > >
+> > > > -   memset(&tuple, 0, sizeof(tuple));
+> > > >     switch (tuple_len) {
+> > > >     case sizeof(bpf_tuple->ipv4):
+> > > > -           tuple.src.l3num = AF_INET;
+> > > > -           tuple.src.u3.ip = bpf_tuple->ipv4.saddr;
+> > > > -           tuple.src.u.tcp.port = bpf_tuple->ipv4.sport;
+> > > > -           tuple.dst.u3.ip = bpf_tuple->ipv4.daddr;
+> > > > -           tuple.dst.u.tcp.port = bpf_tuple->ipv4.dport;
+> > > > +           tuple->src.l3num = AF_INET;
+> > > > +           src->ip = bpf_tuple->ipv4.saddr;
+> > > > +           sport->tcp.port = bpf_tuple->ipv4.sport;
+> > > > +           dst->ip = bpf_tuple->ipv4.daddr;
+> > > > +           dport->tcp.port = bpf_tuple->ipv4.dport;
+> > > >             break;
+> > > >     case sizeof(bpf_tuple->ipv6):
+> > > > -           tuple.src.l3num = AF_INET6;
+> > > > -           memcpy(tuple.src.u3.ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
+> > > > -           tuple.src.u.tcp.port = bpf_tuple->ipv6.sport;
+> > > > -           memcpy(tuple.dst.u3.ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
+> > > > -           tuple.dst.u.tcp.port = bpf_tuple->ipv6.dport;
+> > > > +           tuple->src.l3num = AF_INET6;
+> > > > +           memcpy(src->ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
+> > > > +           sport->tcp.port = bpf_tuple->ipv6.sport;
+> > > > +           memcpy(dst->ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
+> > > > +           dport->tcp.port = bpf_tuple->ipv6.dport;
+> > > >             break;
+> > > >     default:
+> > > > -           return ERR_PTR(-EAFNOSUPPORT);
+> > > > +           return -EAFNOSUPPORT;
+> > > >     }
+> > > > +   tuple->dst.protonum = protonum;
+> > > > +   tuple->dst.dir = dir;
+> > > > +
+> > > > +   return 0;
+> > > > +}
+> > > >
+> > > > -   tuple.dst.protonum = protonum;
+> > > > +struct nf_conn *
+> > > > +__bpf_nf_ct_alloc_entry(struct net *net, struct bpf_sock_tuple *bpf_tuple,
+> > > > +                   u32 tuple_len, u8 protonum, s32 netns_id, u32 timeout)
+> > > > +{
+> > > > +   struct nf_conntrack_tuple otuple, rtuple;
+> > > > +   struct nf_conn *ct;
+> > > > +   int err;
+> > > > +
+> > > > +   if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
+> > > > +           return ERR_PTR(-EINVAL);
+> > > > +
+> > > > +   err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
+> > > > +                               IP_CT_DIR_ORIGINAL, &otuple);
+> > > > +   if (err < 0)
+> > > > +           return ERR_PTR(err);
+> > > > +
+> > > > +   err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
+> > > > +                               IP_CT_DIR_REPLY, &rtuple);
+> > > > +   if (err < 0)
+> > > > +           return ERR_PTR(err);
+> > > > +
+> > > > +   if (netns_id >= 0) {
+> > > > +           net = get_net_ns_by_id(net, netns_id);
+> > > > +           if (unlikely(!net))
+> > > > +                   return ERR_PTR(-ENONET);
+> > > > +   }
+> > > > +
+> > > > +   ct = nf_conntrack_alloc(net, &nf_ct_zone_dflt, &otuple, &rtuple,
+> > > > +                           GFP_ATOMIC);
+> > > > +   if (IS_ERR(ct))
+> > > > +           goto out;
+> > > > +
+> > > > +   ct->timeout = timeout * HZ + jiffies;
+> > > > +   ct->status |= IPS_CONFIRMED;
+> > > > +
+> > > > +   memset(&ct->proto, 0, sizeof(ct->proto));
+> > > > +   if (protonum == IPPROTO_TCP)
+> > > > +           ct->proto.tcp.state = TCP_CONNTRACK_ESTABLISHED;
+> > >
+> > > Hmm, isn't it a bit limiting to hard-code this to ESTABLISHED
+> > > connections? Presumably for TCP you'd want to use this when you see a
+> > > SYN and then rely on conntrack to help with the subsequent state
+> > > tracking for when the SYN-ACK comes back? What's the usecase for
+> > > creating an entry in ESTABLISHED state, exactly?
+> >
+> > I guess we can even add a parameter and pass the state from the caller.
+> > I was not sure if it is mandatory.
+>
+> It's probably cleaner and more flexible to split
+> _alloc and _insert into two kfuncs and let bpf
+> prog populate ct directly.
 
-Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
----
- drivers/net/phy/Kconfig       |  10 +
- drivers/net/phy/Makefile      |   1 +
- drivers/net/phy/bcm-phy-ptp.c | 868 ++++++++++++++++++++++++++++++++++
- 3 files changed, 879 insertions(+)
- create mode 100644 drivers/net/phy/bcm-phy-ptp.c
+Right, so we can just whitelist a few fields and allow assignments into those.
+One small problem is that we should probably only permit this for nf_conn
+PTR_TO_BTF_ID obtained from _alloc, and make it rdonly on _insert.
 
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 9fee639ee5c8..68d3fc6beaae 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -108,6 +108,16 @@ config BROADCOM_PHY
- 	  Currently supports the BCM5411, BCM5421, BCM5461, BCM54616S, BCM5464,
- 	  BCM5481, BCM54810 and BCM5482 PHYs.
- 
-+config BCM_NET_PHYPTP
-+	tristate "Broadcom PHY PTP support"
-+	depends on NETWORK_PHY_TIMESTAMPING
-+	depends on PHYLIB
-+	depends on PTP_1588_CLOCK
-+	depends on BROADCOM_PHY
-+	depends on NET_PTP_CLASSIFY
-+	help
-+	  Supports PTP timestamping for certain Broadcom PHYs.
-+
- config BCM54140_PHY
- 	tristate "Broadcom BCM54140 PHY"
- 	depends on PHYLIB
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index b12b1d86fc99..f7138d3c896b 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -47,6 +47,7 @@ obj-$(CONFIG_BCM84881_PHY)	+= bcm84881.o
- obj-$(CONFIG_BCM87XX_PHY)	+= bcm87xx.o
- obj-$(CONFIG_BCM_CYGNUS_PHY)	+= bcm-cygnus.o
- obj-$(CONFIG_BCM_NET_PHYLIB)	+= bcm-phy-lib.o
-+obj-$(CONFIG_BCM_NET_PHYPTP)	+= bcm-phy-ptp.o
- obj-$(CONFIG_BROADCOM_PHY)	+= broadcom.o
- obj-$(CONFIG_CICADA_PHY)	+= cicada.o
- obj-$(CONFIG_CORTINA_PHY)	+= cortina.o
-diff --git a/drivers/net/phy/bcm-phy-ptp.c b/drivers/net/phy/bcm-phy-ptp.c
-new file mode 100644
-index 000000000000..62d48c58370a
---- /dev/null
-+++ b/drivers/net/phy/bcm-phy-ptp.c
-@@ -0,0 +1,868 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2022 Meta Platforms Inc.
-+ * Copyright (C) 2022 Jonathan Lemon <jonathan.lemon@gmail.com>
-+ */
-+
-+#include <asm/unaligned.h>
-+#include <linux/mii.h>
-+#include <linux/phy.h>
-+#include <linux/ptp_classify.h>
-+#include <linux/ptp_clock_kernel.h>
-+#include <linux/net_tstamp.h>
-+#include <linux/netdevice.h>
-+#include <linux/workqueue.h>
-+
-+#include "bcm-phy-lib.h"
-+
-+/* IEEE 1588 Expansion registers */
-+#define SLICE_CTRL		0x0810
-+#define  SLICE_TX_EN			BIT(0)
-+#define  SLICE_RX_EN			BIT(8)
-+#define TX_EVENT_MODE		0x0811
-+#define  MODE_TX_UPDATE_CF		BIT(0)
-+#define  MODE_TX_REPLACE_TS_CF		BIT(1)
-+#define  MODE_TX_REPLACE_TS		GENMASK(1, 0)
-+#define RX_EVENT_MODE		0x0819
-+#define  MODE_RX_UPDATE_CF		BIT(0)
-+#define  MODE_RX_INSERT_TS_48		BIT(1)
-+#define  MODE_RX_INSERT_TS_64		GENMASK(1, 0)
-+
-+#define MODE_EVT_SHIFT_SYNC		0
-+#define MODE_EVT_SHIFT_DELAY_REQ	2
-+#define MODE_EVT_SHIFT_PDELAY_REQ	4
-+#define MODE_EVT_SHIFT_PDELAY_RESP	6
-+
-+#define MODE_SEL_SHIFT_PORT		0
-+#define MODE_SEL_SHIFT_CPU		8
-+
-+#define RX_MODE_SEL(sel, evt, act) \
-+	(((MODE_RX_##act) << (MODE_EVT_SHIFT_##evt)) << (MODE_SEL_SHIFT_##sel))
-+
-+#define TX_MODE_SEL(sel, evt, act) \
-+	(((MODE_TX_##act) << (MODE_EVT_SHIFT_##evt)) << (MODE_SEL_SHIFT_##sel))
-+
-+/* needs global TS capture first */
-+#define TX_TS_CAPTURE		0x0821
-+#define  TX_TS_CAP_EN			BIT(0)
-+#define RX_TS_CAPTURE		0x0822
-+#define  RX_TS_CAP_EN			BIT(0)
-+
-+#define TIME_CODE_0		0x0854
-+#define TIME_CODE_1		0x0855
-+#define TIME_CODE_2		0x0856
-+#define TIME_CODE_3		0x0857
-+#define TIME_CODE_4		0x0858
-+
-+#define DPLL_SELECT		0x085b
-+#define  DPLL_HB_MODE2			BIT(6)
-+
-+#define SHADOW_CTRL		0x085c
-+#define SHADOW_LOAD		0x085d
-+#define  TIME_CODE_LOAD			BIT(10)
-+#define  SYNC_OUT_LOAD			BIT(9)
-+#define  NCO_TIME_LOAD			BIT(7)
-+#define  FREQ_LOAD			BIT(6)
-+#define INTR_MASK		0x085e
-+#define INTR_STATUS		0x085f
-+#define  INTC_FSYNC			BIT(0)
-+#define  INTC_SOP			BIT(1)
-+
-+#define NCO_FREQ_LSB		0x0873
-+#define NCO_FREQ_MSB		0x0874
-+
-+#define NCO_TIME_0		0x0875
-+#define NCO_TIME_1		0x0876
-+#define NCO_TIME_2_CTRL		0x0877
-+#define  FREQ_MDIO_SEL			BIT(14)
-+
-+#define SYNC_OUT_0		0x0878
-+#define SYNC_OUT_1		0x0879
-+#define SYNC_OUT_2		0x087a
-+
-+#define SYNOUT_TS_0		0x087c
-+#define SYNOUT_TS_1		0x087d
-+#define SYNOUT_TS_2		0x087e
-+
-+#define NSE_CTRL		0x087f
-+#define  NSE_GMODE_EN			GENMASK(15, 14)
-+#define  NSE_CAPTURE_EN			BIT(13)
-+#define  NSE_INIT			BIT(12)
-+#define  NSE_CPU_FRAMESYNC		BIT(5)
-+#define  NSE_FRAMESYNC_MASK		GENMASK(5, 2)
-+#define  NSE_PEROUT_EN			BIT(1)
-+#define  NSE_ONESHOT_EN			BIT(0)
-+#define  NSE_SYNC_OUT_MASK		GENMASK(1, 0)
-+
-+#define TS_READ_CTRL		0x0885
-+#define  TS_READ_START			BIT(0)
-+#define  TS_READ_END			BIT(1)
-+
-+#define HB_REG_0		0x0886
-+#define HB_REG_1		0x0887
-+#define HB_REG_2		0x0888
-+#define HB_REG_3		0x08ec
-+#define HB_REG_4		0x08ed
-+#define HB_STAT_CTRL		0x088e
-+#define  HB_READ_START			BIT(10)
-+#define  HB_READ_END			BIT(11)
-+#define  HB_READ_MASK			GENMASK(11, 10)
-+
-+#define TS_REG_0		0x0889
-+#define TS_REG_1		0x088a
-+#define TS_REG_2		0x088b
-+#define TS_REG_3		0x08c4
-+
-+#define TS_INFO_0		0x088c
-+#define TS_INFO_1		0x088d
-+
-+#define TIMECODE_CTRL		0x08c3
-+#define  TX_TIMECODE_SEL		GENMASK(7, 0)
-+#define  RX_TIMECODE_SEL		GENMASK(15, 8)
-+
-+#define TIME_SYNC		0x0ff5
-+#define  TIME_SYNC_EN			BIT(0)
-+
-+struct bcm_ptp_private {
-+	struct phy_device *phydev;
-+	struct mii_timestamper mii_ts;
-+	struct ptp_clock *ptp_clock;
-+	struct ptp_clock_info ptp_info;
-+	struct mutex mutex;
-+	struct sk_buff_head tx_queue;
-+	int tx_type;
-+	bool hwts_rx;
-+	u16 nse_ctrl;
-+
-+	struct delayed_work out_work;
-+	bool fsync_out;
-+};
-+
-+struct bcm_ptp_skb_cb {
-+	unsigned long timeout;
-+	u16 seq_id;
-+	u8 msgtype;
-+	bool discard;
-+};
-+
-+struct bcm_ptp_capture {
-+	ktime_t	hwtstamp;
-+	u16 seq_id;
-+	u8 msgtype;
-+	bool tx_dir;
-+};
-+
-+#define BCM_SKB_CB(skb)		((struct bcm_ptp_skb_cb *)(skb)->cb)
-+#define SKB_TS_TIMEOUT		10			/* jiffies */
-+
-+#define BCM_MAX_PULSE_8NS	((1U << 9) - 1)
-+#define BCM_MAX_PERIOD_8NS	((1U << 30) - 1)
-+
-+#define BRCM_PHY_MODEL(phydev) \
-+	((phydev)->drv->phy_id & (phydev)->drv->phy_id_mask)
-+
-+static struct bcm_ptp_private *mii2priv(struct mii_timestamper *mii_ts)
-+{
-+	return container_of(mii_ts, struct bcm_ptp_private, mii_ts);
-+}
-+
-+static struct bcm_ptp_private *ptp2priv(struct ptp_clock_info *info)
-+{
-+	return container_of(info, struct bcm_ptp_private, ptp_info);
-+}
-+
-+static int bcm_ptp_framesync(struct phy_device *phydev,
-+			     struct ptp_system_timestamp *sts,
-+			     u16 ctrl)
-+{
-+	u16 reg;
-+	int i;
-+
-+	/* prep for framesync */
-+	bcm_phy_write_exp(phydev, NSE_CTRL, ctrl);
-+
-+	ptp_read_system_prets(sts);
-+
-+	/* trigger framesync */
-+	bcm_phy_write_exp(phydev, NSE_CTRL, ctrl | NSE_CPU_FRAMESYNC);
-+
-+	ptp_read_system_postts(sts);
-+
-+	if ((ctrl & NSE_CAPTURE_EN) == 0)
-+		return 0;
-+
-+	/* poll for FSYNC interrupt from TS capture */
-+	for (i = 0; i < 10; i++) {
-+		reg = bcm_phy_read_exp(phydev, INTR_STATUS);
-+		if (reg & INTC_FSYNC)
-+			break;
-+	}
-+
-+	return reg & INTC_FSYNC ? 0 : -ETIMEDOUT;
-+}
-+
-+static int bcm_ptp_gettime_locked(struct bcm_ptp_private *priv,
-+				  struct timespec64 *ts,
-+				  struct ptp_system_timestamp *sts)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+	u16 hb[4];
-+	int err;
-+
-+	err = bcm_ptp_framesync(phydev, sts, priv->nse_ctrl | NSE_CAPTURE_EN);
-+	if (err)
-+		return err;
-+
-+	bcm_phy_write_exp(phydev, HB_STAT_CTRL, HB_READ_START);
-+
-+	hb[0] = bcm_phy_read_exp(phydev, HB_REG_0);
-+	hb[1] = bcm_phy_read_exp(phydev, HB_REG_1);
-+	hb[2] = bcm_phy_read_exp(phydev, HB_REG_2);
-+	hb[3] = bcm_phy_read_exp(phydev, HB_REG_3);
-+
-+	bcm_phy_write_exp(phydev, HB_STAT_CTRL, HB_READ_END);
-+	bcm_phy_write_exp(phydev, HB_STAT_CTRL, 0);
-+
-+	ts->tv_sec = (hb[3] << 16) | hb[2];
-+	ts->tv_nsec = (hb[1] << 16) | hb[0];
-+
-+	return 0;
-+}
-+
-+static int bcm_ptp_gettimex(struct ptp_clock_info *info,
-+			    struct timespec64 *ts,
-+			    struct ptp_system_timestamp *sts)
-+{
-+	struct bcm_ptp_private *priv = ptp2priv(info);
-+	int err;
-+
-+	mutex_lock(&priv->mutex);
-+	err = bcm_ptp_gettime_locked(priv, ts, sts);
-+	mutex_unlock(&priv->mutex);
-+
-+	return err;
-+}
-+
-+static int bcm_ptp_settime_locked(struct bcm_ptp_private *priv,
-+				  const struct timespec64 *ts)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+	u64 ns;
-+
-+	/* set up time code */
-+	bcm_phy_write_exp(phydev, TIME_CODE_0, ts->tv_nsec);
-+	bcm_phy_write_exp(phydev, TIME_CODE_1, ts->tv_nsec >> 16);
-+	bcm_phy_write_exp(phydev, TIME_CODE_2, ts->tv_sec);
-+	bcm_phy_write_exp(phydev, TIME_CODE_3, ts->tv_sec >> 16);
-+	bcm_phy_write_exp(phydev, TIME_CODE_4, ts->tv_sec >> 32);
-+
-+	/* set NCO counter to match */
-+	ns = timespec64_to_ns(ts);
-+	bcm_phy_write_exp(phydev, NCO_TIME_0, ns >> 4);
-+	bcm_phy_write_exp(phydev, NCO_TIME_1, ns >> 20);
-+	bcm_phy_write_exp(phydev, NCO_TIME_2_CTRL, (ns >> 36) & 0xfff);
-+
-+	/* set up load on next frame sync (auto-clears due to NSE_INIT) */
-+	bcm_phy_write_exp(phydev, SHADOW_LOAD, TIME_CODE_LOAD | NCO_TIME_LOAD);
-+
-+	/* must have NSE_INIT in order to write time code */
-+	return bcm_ptp_framesync(phydev, NULL, priv->nse_ctrl | NSE_INIT);
-+}
-+
-+static int bcm_ptp_settime(struct ptp_clock_info *info,
-+			   const struct timespec64 *ts)
-+{
-+	struct bcm_ptp_private *priv = ptp2priv(info);
-+	int err;
-+
-+	mutex_lock(&priv->mutex);
-+	err = bcm_ptp_settime_locked(priv, ts);
-+	mutex_unlock(&priv->mutex);
-+
-+	return err;
-+}
-+
-+static int bcm_ptp_adjtime_locked(struct bcm_ptp_private *priv,
-+				  s64 delta_ns)
-+{
-+	struct timespec64 ts;
-+	int err;
-+
-+	err = bcm_ptp_gettime_locked(priv, &ts, NULL);
-+	if (!err) {
-+		set_normalized_timespec64(&ts, ts.tv_sec,
-+					  ts.tv_nsec + delta_ns);
-+		err = bcm_ptp_settime_locked(priv, &ts);
-+	}
-+	return err;
-+}
-+
-+static int bcm_ptp_adjtime(struct ptp_clock_info *info, s64 delta_ns)
-+{
-+	struct bcm_ptp_private *priv = ptp2priv(info);
-+	int err;
-+
-+	mutex_lock(&priv->mutex);
-+	err = bcm_ptp_adjtime_locked(priv, delta_ns);
-+	mutex_unlock(&priv->mutex);
-+
-+	return err;
-+}
-+
-+/* A 125Mhz clock should adjust 8ns per pulse.
-+ * The frequency adjustment base is 0x8000 0000, or 8*2^28.
-+ *
-+ * Frequency adjustment is
-+ * adj = scaled_ppm * 8*2^28 / (10^6 * 2^16)
-+ *   which simplifies to:
-+ * adj = scaled_ppm * 2^9 / 5^6
-+ */
-+static int bcm_ptp_adjfine(struct ptp_clock_info *info, long scaled_ppm)
-+{
-+	struct bcm_ptp_private *priv = ptp2priv(info);
-+	int neg_adj = 0;
-+	u32 diff, freq;
-+	u64 adj;
-+
-+	if (scaled_ppm < 0) {
-+		neg_adj = 1;
-+		scaled_ppm = -scaled_ppm;
-+	}
-+
-+	adj = scaled_ppm << 9;
-+	diff = div_u64(adj, 15625);
-+	freq = (8 << 28) + (neg_adj ? -diff : diff);
-+
-+	mutex_lock(&priv->mutex);
-+
-+	bcm_phy_write_exp(priv->phydev, NCO_FREQ_LSB, freq);
-+	bcm_phy_write_exp(priv->phydev, NCO_FREQ_MSB, freq >> 16);
-+
-+	bcm_phy_write_exp(priv->phydev, NCO_TIME_2_CTRL, FREQ_MDIO_SEL);
-+
-+	/* load on next framesync */
-+	bcm_phy_write_exp(priv->phydev, SHADOW_LOAD, FREQ_LOAD);
-+
-+	bcm_ptp_framesync(priv->phydev, NULL, priv->nse_ctrl);
-+
-+	/* clear load */
-+	bcm_phy_write_exp(priv->phydev, SHADOW_LOAD, 0);
-+
-+	mutex_unlock(&priv->mutex);
-+
-+	return 0;
-+}
-+
-+/* The output pulse and period are stable, but the signal is not
-+ * synchronized to anything.
-+ */
-+static int bcm_ptp_perout_locked(struct bcm_ptp_private *priv,
-+				 struct ptp_perout_request *req, int on)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+	u64 period, pulse;
-+	u16 val;
-+
-+	if (!on) {
-+		priv->nse_ctrl &= ~NSE_SYNC_OUT_MASK;
-+		bcm_phy_write_exp(phydev, NSE_CTRL, priv->nse_ctrl);
-+		return 0;
-+	}
-+
-+	if (req->flags & PTP_PEROUT_PHASE)
-+		return -EOPNOTSUPP;
-+
-+	period = ktime_to_ns(ktime_set(req->period.sec, req->period.nsec));
-+	if (req->flags & PTP_PEROUT_DUTY_CYCLE)
-+		pulse = ktime_to_ns(ktime_set(req->on.sec, req->on.nsec));
-+	else
-+		pulse = min(period / 2, (u64)BCM_MAX_PULSE_8NS << 3);
-+
-+	/* convert to 8ns units */
-+	pulse >>= 3;
-+	period >>= 3;
-+
-+	if (!pulse || !period)
-+		return -EINVAL;
-+
-+	if (pulse > period)
-+		return -EINVAL;
-+
-+	if (pulse > BCM_MAX_PULSE_8NS || period > BCM_MAX_PERIOD_8NS)
-+		return -EINVAL;
-+
-+	bcm_phy_write_exp(phydev, SYNC_OUT_0, period);
-+
-+	val = ((pulse & 0x3) << 14) | ((period >> 16) & 0x3fff);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_1, val);
-+
-+	val = ((pulse >> 2) & 0x7f) | (pulse << 7);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_2, val);
-+
-+	/* load values on next framesync */
-+	bcm_phy_write_exp(phydev, SHADOW_LOAD, SYNC_OUT_LOAD);
-+
-+	priv->nse_ctrl |= NSE_PEROUT_EN;
-+	return bcm_ptp_framesync(phydev, NULL, priv->nse_ctrl | NSE_INIT);
-+}
-+
-+static void bcm_ptp_fsync_work(struct work_struct *out_work)
-+{
-+	struct bcm_ptp_private *priv =
-+		container_of(out_work, struct bcm_ptp_private, out_work.work);
-+	struct phy_device *phydev = priv->phydev;
-+	struct timespec64 ts;
-+	u64 ns, next;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	/* no longer running */
-+	if (!priv->fsync_out) {
-+		mutex_unlock(&priv->mutex);
-+		return;
-+	}
-+
-+	bcm_ptp_gettime_locked(priv, &ts, NULL);
-+
-+	/* this is 1PPS only */
-+	next = NSEC_PER_SEC - ts.tv_nsec;
-+	ts.tv_sec += next < NSEC_PER_MSEC ? 2 : 1;
-+	ts.tv_nsec = 0;
-+
-+	ns = timespec64_to_ns(&ts);
-+
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_0, ns & 0xfff0);
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_1, ns >> 16);
-+	bcm_phy_write_exp(phydev, SYNOUT_TS_2, ns >> 32);
-+
-+	/* load values on next framesync */
-+	bcm_phy_write_exp(phydev, SHADOW_LOAD, SYNC_OUT_LOAD);
-+
-+	/* disable existing pulse - oneshot needs toggle. */
-+	if (priv->nse_ctrl & NSE_SYNC_OUT_MASK) {
-+		priv->nse_ctrl &= ~NSE_SYNC_OUT_MASK;
-+		bcm_phy_write_exp(phydev, NSE_CTRL, priv->nse_ctrl);
-+	}
-+
-+	priv->nse_ctrl |= NSE_ONESHOT_EN;
-+	bcm_ptp_framesync(phydev, NULL, priv->nse_ctrl | NSE_INIT);
-+
-+	mutex_unlock(&priv->mutex);
-+
-+	next = next + NSEC_PER_MSEC;
-+	schedule_delayed_work(&priv->out_work, nsecs_to_jiffies(next));
-+}
-+
-+static int bcm_ptp_fsync_locked(struct bcm_ptp_private *priv,
-+				struct ptp_perout_request *req, int on)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+	u64 period, pulse;
-+	u16 val;
-+
-+	if (!on) {
-+		priv->fsync_out = false;
-+		priv->nse_ctrl &= ~NSE_SYNC_OUT_MASK;
-+		bcm_phy_write_exp(phydev, NSE_CTRL, priv->nse_ctrl);
-+		return 0;
-+	}
-+
-+	/* 1PPS for now */
-+	if (req->period.sec != 1 || req->period.nsec != 0)
-+		return -EINVAL;
-+
-+	if (req->flags & PTP_PEROUT_PHASE)
-+		return -EOPNOTSUPP;
-+
-+	period = ktime_to_ns(ktime_set(req->period.sec, req->period.nsec));
-+	if (req->flags & PTP_PEROUT_DUTY_CYCLE)
-+		pulse = ktime_to_ns(ktime_set(req->on.sec, req->on.nsec));
-+	else
-+		pulse = min(period / 2, (u64)BCM_MAX_PULSE_8NS << 3);
-+
-+	/* convert to 8ns units */
-+	pulse >>= 3;
-+	period >>= 3;
-+
-+	if (!pulse || !period)
-+		return -EINVAL;
-+
-+	if (pulse > period)
-+		return -EINVAL;
-+
-+	if (pulse > BCM_MAX_PULSE_8NS || period > BCM_MAX_PERIOD_8NS)
-+		return -EINVAL;
-+
-+	bcm_phy_write_exp(phydev, SYNC_OUT_0, period);
-+
-+	val = ((pulse & 0x3) << 14) | ((period >> 16) & 0x3fff);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_1, val);
-+
-+	val = ((pulse >> 2) & 0x7f) | (pulse << 7);
-+	bcm_phy_write_exp(phydev, SYNC_OUT_2, val);
-+
-+	priv->fsync_out = true;
-+	schedule_delayed_work(&priv->out_work, 0);
-+
-+	return 0;
-+}
-+
-+static bool bcm_ptp_rxtstamp(struct mii_timestamper *mii_ts,
-+			     struct sk_buff *skb, int type)
-+{
-+	struct bcm_ptp_private *priv = mii2priv(mii_ts);
-+	struct skb_shared_hwtstamps *hwts;
-+	struct ptp_header *header;
-+	u32 sec, nsec;
-+	u8 *data;
-+	int off;
-+
-+	if (!priv->hwts_rx)
-+		return false;
-+
-+	header = ptp_parse_header(skb, type);
-+	if (!header)
-+		return false;
-+
-+	data = (u8 *)(header + 1);
-+	sec = get_unaligned_be32(data);
-+	nsec = get_unaligned_be32(data + 4);
-+
-+	hwts = skb_hwtstamps(skb);
-+	hwts->hwtstamp = ktime_set(sec, nsec);
-+
-+	off = data - skb->data + 8;
-+	if (off < skb->len) {
-+		memmove(data, data + 8, skb->len - off);
-+		__pskb_trim(skb, skb->len - 8);
-+	}
-+
-+	return false;
-+}
-+
-+static bool bcm_ptp_get_tstamp(struct bcm_ptp_private *priv,
-+			       struct bcm_ptp_capture *capts)
-+{
-+	struct phy_device *phydev = priv->phydev;
-+	u16 ts[4], reg;
-+	u32 sec, nsec;
-+
-+	mutex_lock(&priv->mutex);
-+
-+	reg = bcm_phy_read_exp(phydev, INTR_STATUS);
-+	if ((reg & INTC_SOP) == 0) {
-+		mutex_unlock(&priv->mutex);
-+		return false;
-+	}
-+
-+	bcm_phy_write_exp(phydev, TS_READ_CTRL, TS_READ_START);
-+
-+	ts[0] = bcm_phy_read_exp(phydev, TS_REG_0);
-+	ts[1] = bcm_phy_read_exp(phydev, TS_REG_1);
-+	ts[2] = bcm_phy_read_exp(phydev, TS_REG_2);
-+	ts[3] = bcm_phy_read_exp(phydev, TS_REG_3);
-+
-+	/* not in be32 format for some reason */
-+	capts->seq_id = bcm_phy_read_exp(priv->phydev, TS_INFO_0);
-+
-+	reg = bcm_phy_read_exp(phydev, TS_INFO_1);
-+	capts->msgtype = reg >> 12;
-+	capts->tx_dir = !!(reg & BIT(11));
-+
-+	bcm_phy_write_exp(phydev, TS_READ_CTRL, TS_READ_END);
-+	bcm_phy_write_exp(phydev, TS_READ_CTRL, 0);
-+
-+	mutex_unlock(&priv->mutex);
-+
-+	sec = (ts[3] << 16) | ts[2];
-+	nsec = (ts[1] << 16) | ts[0];
-+	capts->hwtstamp = ktime_set(sec, nsec);
-+
-+	return true;
-+}
-+
-+static void bcm_ptp_match_tstamp(struct bcm_ptp_private *priv,
-+				 struct bcm_ptp_capture *capts)
-+{
-+	struct skb_shared_hwtstamps hwts;
-+	struct sk_buff *skb, *ts_skb;
-+	unsigned long flags;
-+	bool first = false;
-+
-+	ts_skb = NULL;
-+	spin_lock_irqsave(&priv->tx_queue.lock, flags);
-+	skb_queue_walk(&priv->tx_queue, skb) {
-+		if (BCM_SKB_CB(skb)->seq_id == capts->seq_id &&
-+		    BCM_SKB_CB(skb)->msgtype == capts->msgtype) {
-+			first = skb_queue_is_first(&priv->tx_queue, skb);
-+			__skb_unlink(skb, &priv->tx_queue);
-+			ts_skb = skb;
-+			break;
-+		}
-+	}
-+	spin_unlock_irqrestore(&priv->tx_queue.lock, flags);
-+
-+	/* TX captures one-step packets, discard them if needed. */
-+	if (ts_skb) {
-+		if (BCM_SKB_CB(ts_skb)->discard) {
-+			kfree_skb(ts_skb);
-+		} else {
-+			memset(&hwts, 0, sizeof(hwts));
-+			hwts.hwtstamp = capts->hwtstamp;
-+			skb_complete_tx_timestamp(ts_skb, &hwts);
-+		}
-+	}
-+
-+	/* not first match, try and expire entries */
-+	if (!first) {
-+		while ((skb = skb_dequeue(&priv->tx_queue))) {
-+			if (!time_after(jiffies, BCM_SKB_CB(skb)->timeout)) {
-+				skb_queue_head(&priv->tx_queue, skb);
-+				break;
-+			}
-+			kfree_skb(skb);
-+		}
-+	}
-+}
-+
-+static long bcm_ptp_do_aux_work(struct ptp_clock_info *info)
-+{
-+	struct bcm_ptp_private *priv = ptp2priv(info);
-+	struct bcm_ptp_capture capts;
-+	bool reschedule = false;
-+
-+	while (!skb_queue_empty_lockless(&priv->tx_queue)) {
-+		if (!bcm_ptp_get_tstamp(priv, &capts)) {
-+			reschedule = true;
-+			break;
-+		}
-+		bcm_ptp_match_tstamp(priv, &capts);
-+	}
-+
-+	return reschedule ? 1 : -1;
-+}
-+
-+static int bcm_ptp_enable(struct ptp_clock_info *info,
-+			  struct ptp_clock_request *rq, int on)
-+{
-+	struct bcm_ptp_private *priv = ptp2priv(info);
-+	int err = 0;
-+
-+	switch (rq->type) {
-+	case PTP_CLK_REQ_PEROUT:
-+		mutex_lock(&priv->mutex);
-+		if (rq->perout.index == 0)
-+			err = bcm_ptp_perout_locked(priv, &rq->perout, on);
-+		else
-+			err = bcm_ptp_fsync_locked(priv, &rq->perout, on);
-+		mutex_unlock(&priv->mutex);
-+		break;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+	return err;
-+}
-+
-+static const struct ptp_clock_info bcm_ptp_clock_info = {
-+	.owner		= THIS_MODULE,
-+	.name		= KBUILD_MODNAME,
-+	.max_adj	= 100000000,
-+	.gettimex64	= bcm_ptp_gettimex,
-+	.settime64	= bcm_ptp_settime,
-+	.adjtime	= bcm_ptp_adjtime,
-+	.adjfine	= bcm_ptp_adjfine,
-+	.enable		= bcm_ptp_enable,
-+	.do_aux_work	= bcm_ptp_do_aux_work,
-+	.n_per_out	= 2,
-+};
-+
-+static void bcm_ptp_txtstamp(struct mii_timestamper *mii_ts,
-+			     struct sk_buff *skb, int type)
-+{
-+	struct bcm_ptp_private *priv = mii2priv(mii_ts);
-+	struct ptp_header *hdr;
-+	bool discard = false;
-+	int msgtype;
-+
-+	hdr = ptp_parse_header(skb, type);
-+	if (!hdr)
-+		goto out;
-+	msgtype = ptp_get_msgtype(hdr, type);
-+
-+	switch (priv->tx_type) {
-+	case HWTSTAMP_TX_ONESTEP_P2P:
-+		if (msgtype == PTP_MSGTYPE_PDELAY_RESP)
-+			discard = true;
-+		fallthrough;
-+	case HWTSTAMP_TX_ONESTEP_SYNC:
-+		if (msgtype == PTP_MSGTYPE_SYNC)
-+			discard = true;
-+		fallthrough;
-+	case HWTSTAMP_TX_ON:
-+		BCM_SKB_CB(skb)->timeout = jiffies + SKB_TS_TIMEOUT;
-+		BCM_SKB_CB(skb)->seq_id = be16_to_cpu(hdr->sequence_id);
-+		BCM_SKB_CB(skb)->msgtype = msgtype;
-+		BCM_SKB_CB(skb)->discard = discard;
-+		skb_shinfo(skb)->tx_flags |= SKBTX_IN_PROGRESS;
-+		skb_queue_tail(&priv->tx_queue, skb);
-+		ptp_schedule_worker(priv->ptp_clock, 0);
-+		return;
-+	default:
-+		break;
-+	}
-+
-+out:
-+	kfree_skb(skb);
-+}
-+
-+static int bcm_ptp_hwtstamp(struct mii_timestamper *mii_ts,
-+			    struct ifreq *ifr)
-+{
-+	struct bcm_ptp_private *priv = mii2priv(mii_ts);
-+	struct hwtstamp_config cfg;
-+	u16 mode, ctrl;
-+
-+	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
-+		return -EFAULT;
-+
-+	switch (cfg.rx_filter) {
-+	case HWTSTAMP_FILTER_NONE:
-+		priv->hwts_rx = false;
-+		break;
-+	case HWTSTAMP_FILTER_PTP_V2_L4_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_L4_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_L2_DELAY_REQ:
-+	case HWTSTAMP_FILTER_PTP_V2_EVENT:
-+	case HWTSTAMP_FILTER_PTP_V2_SYNC:
-+	case HWTSTAMP_FILTER_PTP_V2_DELAY_REQ:
-+		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V2_EVENT;
-+		priv->hwts_rx = true;
-+		break;
-+	default:
-+		return -ERANGE;
-+	}
-+
-+	priv->tx_type = cfg.tx_type;
-+
-+	ctrl  = priv->hwts_rx ? SLICE_RX_EN : 0;
-+	ctrl |= priv->tx_type != HWTSTAMP_TX_OFF ? SLICE_TX_EN : 0;
-+
-+	mode = TX_MODE_SEL(PORT, SYNC, REPLACE_TS) |
-+	       TX_MODE_SEL(PORT, DELAY_REQ, REPLACE_TS) |
-+	       TX_MODE_SEL(PORT, PDELAY_REQ, REPLACE_TS) |
-+	       TX_MODE_SEL(PORT, PDELAY_RESP, REPLACE_TS);
-+
-+	bcm_phy_write_exp(priv->phydev, TX_EVENT_MODE, mode);
-+
-+	mode = RX_MODE_SEL(PORT, SYNC, INSERT_TS_64) |
-+	       RX_MODE_SEL(PORT, DELAY_REQ, INSERT_TS_64) |
-+	       RX_MODE_SEL(PORT, PDELAY_REQ, INSERT_TS_64) |
-+	       RX_MODE_SEL(PORT, PDELAY_RESP, INSERT_TS_64);
-+
-+	bcm_phy_write_exp(priv->phydev, RX_EVENT_MODE, mode);
-+
-+	bcm_phy_write_exp(priv->phydev, SLICE_CTRL, ctrl);
-+
-+	if (ctrl & SLICE_TX_EN)
-+		bcm_phy_write_exp(priv->phydev, TX_TS_CAPTURE, TX_TS_CAP_EN);
-+	else
-+		ptp_cancel_worker_sync(priv->ptp_clock);
-+
-+	/* purge existing data */
-+	skb_queue_purge(&priv->tx_queue);
-+
-+	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
-+}
-+
-+static int bcm_ptp_ts_info(struct mii_timestamper *mii_ts,
-+			   struct ethtool_ts_info *ts_info)
-+{
-+	struct bcm_ptp_private *priv = mii2priv(mii_ts);
-+
-+	ts_info->phc_index = ptp_clock_index(priv->ptp_clock);
-+	ts_info->so_timestamping =
-+		SOF_TIMESTAMPING_TX_HARDWARE |
-+		SOF_TIMESTAMPING_RX_HARDWARE |
-+		SOF_TIMESTAMPING_RAW_HARDWARE;
-+	ts_info->tx_types =
-+		BIT(HWTSTAMP_TX_ON) |
-+		BIT(HWTSTAMP_TX_OFF) |
-+		BIT(HWTSTAMP_TX_ONESTEP_SYNC) |
-+		BIT(HWTSTAMP_TX_ONESTEP_P2P);
-+	ts_info->rx_filters =
-+		BIT(HWTSTAMP_FILTER_NONE) |
-+		BIT(HWTSTAMP_FILTER_PTP_V2_EVENT);
-+
-+	return 0;
-+}
-+
-+void bcm_ptp_config_init(struct phy_device *phydev)
-+{
-+	/* init network sync engine */
-+	bcm_phy_write_exp(phydev, NSE_CTRL, NSE_GMODE_EN | NSE_INIT);
-+
-+	/* enable time sync (TX/RX SOP capture) */
-+	bcm_phy_write_exp(phydev, TIME_SYNC, TIME_SYNC_EN);
-+
-+	/* use sec.nsec heartbeat capture */
-+	bcm_phy_write_exp(phydev, DPLL_SELECT, DPLL_HB_MODE2);
-+
-+	/* use 64 bit timecode for TX */
-+	bcm_phy_write_exp(phydev, TIMECODE_CTRL, TX_TIMECODE_SEL);
-+
-+	/* always allow FREQ_LOAD on framesync */
-+	bcm_phy_write_exp(phydev, SHADOW_CTRL, FREQ_LOAD);
-+}
-+EXPORT_SYMBOL_GPL(bcm_ptp_config_init);
-+
-+static void bcm_ptp_init(struct bcm_ptp_private *priv)
-+{
-+	priv->nse_ctrl = NSE_GMODE_EN;
-+
-+	mutex_init(&priv->mutex);
-+	skb_queue_head_init(&priv->tx_queue);
-+
-+	priv->mii_ts.rxtstamp = bcm_ptp_rxtstamp;
-+	priv->mii_ts.txtstamp = bcm_ptp_txtstamp;
-+	priv->mii_ts.hwtstamp = bcm_ptp_hwtstamp;
-+	priv->mii_ts.ts_info = bcm_ptp_ts_info;
-+
-+	priv->phydev->mii_ts = &priv->mii_ts;
-+
-+	INIT_DELAYED_WORK(&priv->out_work, bcm_ptp_fsync_work);
-+}
-+
-+struct bcm_ptp_private *bcm_ptp_probe(struct phy_device *phydev)
-+{
-+	struct bcm_ptp_private *priv;
-+	struct ptp_clock *clock;
-+
-+	switch (BRCM_PHY_MODEL(phydev)) {
-+	case PHY_ID_BCM54210E:
-+		break;
-+	default:
-+		return NULL;
-+	}
-+
-+	priv = devm_kzalloc(&phydev->mdio.dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return ERR_PTR(-ENOMEM);
-+
-+	priv->ptp_info = bcm_ptp_clock_info;
-+
-+	clock = ptp_clock_register(&priv->ptp_info, &phydev->mdio.dev);
-+	if (IS_ERR(clock))
-+		return ERR_CAST(clock);
-+	priv->ptp_clock = clock;
-+
-+	priv->phydev = phydev;
-+	bcm_ptp_init(priv);
-+
-+	return priv;
-+}
-+EXPORT_SYMBOL_GPL(bcm_ptp_probe);
-+
-+MODULE_LICENSE("GPL");
--- 
-2.34.3
+We can do the rw->ro conversion by taking in ref from alloc, and releasing on
+_insert, then returning ref from _insert.
 
+For the other part, either return a different shadow PTR_TO_BTF_ID with only the
+fields that can be set, convert insns for it, and then on insert return the
+rdonly PTR_TO_BTF_ID of struct nf_conn, or otherwise store the source func in
+the per-register state and use that to deny BPF_WRITE for normal nf_conn.
+Thoughts?
+
+--
+Kartikeya
