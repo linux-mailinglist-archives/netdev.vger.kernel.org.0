@@ -2,138 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B3DB452B627
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 11:29:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BB3F52B5E8
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 11:29:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233949AbiERJNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 05:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51768 "EHLO
+        id S233900AbiERJOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 05:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233922AbiERJNf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 05:13:35 -0400
-Received: from relay4-d.mail.gandi.net (relay4-d.mail.gandi.net [217.70.183.196])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 850901207D7;
-        Wed, 18 May 2022 02:13:32 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 10CC7E001D;
-        Wed, 18 May 2022 09:13:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652865211;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=04jfuH5BFGccW5q5/b1RjsWpg65MB3wYyeNJmV7uelc=;
-        b=FK29SCUS/LN4YW5+LtO8rrzkY5OQ3fhFKcK+BP/Pvr7uQi6T9Tjn+4PMZ1ADt1wumrS9xX
-        zSh7h36MzGd+TtNpsyGjpasyJU51Bz7kpcMUI+gpxYJ1IpCJg49M5y/FhLrJsWFUehh5bE
-        aB66y3Odb1UelG6RLWbJmMD9EKf9gfAo9jSYFWEKv8AS2akVQDQUpWCrWYzk5YEu3/CO1o
-        PnYnFNRNHlUrBQ8EOUW/n3F41Pqk6T53FHobMaf4R4Upr3ZEjHh8MKkycgu9Gxz7Y/Ghwg
-        N7rQPWaCEAtg6SsWz6eIeWz9Loc/eWzkpIUVwpgtrQWVtodp7X6zEyIZLD82Ug==
-Date:   Wed, 18 May 2022 11:13:26 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <aahringo@redhat.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH wpan-next v2 10/11] net: mac802154: Add a warning in the
- hot path
-Message-ID: <20220518111326.243d7b45@xps-13>
-In-Reply-To: <CAK-6q+h=gNqoUHYi_2xamdGyMOYpO0GDO6--oKXSevJC9Wywag@mail.gmail.com>
-References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
-        <20220512143314.235604-11-miquel.raynal@bootlin.com>
-        <CAK-6q+jYb7A2RzG3u7PJYKZU9D5A=vben-Wnu-3EsUU-rqGT2Q@mail.gmail.com>
-        <20220517153655.155ba311@xps-13>
-        <20220517165259.52ddf6fc@xps-13>
-        <CAK-6q+h=gNqoUHYi_2xamdGyMOYpO0GDO6--oKXSevJC9Wywag@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S233869AbiERJOe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 05:14:34 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84A67146404
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 02:14:33 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id y199so1570609pfb.9
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 02:14:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=GjvQwPM1daZo8+jCqWpaTz2mh/pEzt/6tEe1yGu9dLM=;
+        b=eQ6HR9gNmBjFbYML7Gui5OzZdhQ1ZJrrout1YiW/OYAgfXojWKCDuV86ePsOqi8nHc
+         Q/zJMR8PLB4HUUvyQg60hVOtESQhHMagFOehN8Q+EZPU1tRYuO8ZMApeTCpvwtJHq/De
+         I2AeL1NGadVpwvZU+UvRBmdFjJMVp+Wyrmw8BDFcLXdZAlyrOUA74BPZYYkT1C6LuOIm
+         BOLQMyqpWZRz28NR53+azrOdFnIrUTeZ0IwvuFe0KwKlb7Q0ARYbekaBm3N4i61x5x9V
+         +Ifyw1XogMpMIz4lWf9qMZRD3kLrTlp63mTXaxQHJ+9ErEVtg26/R+1HHAPNpPO8cg9i
+         TLgg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=GjvQwPM1daZo8+jCqWpaTz2mh/pEzt/6tEe1yGu9dLM=;
+        b=bKBWdNSwuH+Kwf49d80DteWEtiIn8UI6Xof8c9Ocdww5P4mRD9W+60s1tvVuyuwUnE
+         Cwg9pPAjNRZ+2IgtAH8N4TvLiBbxtqlm9jCglEFrXzk13paOtgkXpLFwWLeQsYHQ6KsA
+         Mljb6yccLnZs7fN3EUPmZW/TbLcXCT/MCRyn5JsHNDE2hgBzLXEA28Qo1yzRbKxL8/9e
+         GWMUwc8OsYeHBVga0PcZOEv/mOXqW8AYo2QLoXtlzR+1lfnFoYQeE43s1WYYMfkpu8Ay
+         WZgYxDunHxEExdeVSYuaQlp8zUutTC4z0G0CwmPamIUK6bGNiZGFCZOoZA5UPjtBzdSU
+         MfOQ==
+X-Gm-Message-State: AOAM530mcwayFKY98WFSAkS7qcRCOKXOgkkJSFj+28AMs6vak86YR6zP
+        SwAI0FTQggNIebzPFGnJxi+zmn8dSxq/5d8YtnOCrA==
+X-Google-Smtp-Source: ABdhPJympDV8mO/7wcUhujZ0IVK8Fi+T7b+h4c4ApG6fzgAOF2agcfhcnphsmdMxge90eiicfp3r24uSzxyxcZv9/dU=
+X-Received: by 2002:a63:111f:0:b0:3da:ed0d:7623 with SMTP id
+ g31-20020a63111f000000b003daed0d7623mr23285972pgl.586.1652865272760; Wed, 18
+ May 2022 02:14:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220518090738.2694556-1-yangyingliang@huawei.com>
+In-Reply-To: <20220518090738.2694556-1-yangyingliang@huawei.com>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Wed, 18 May 2022 11:13:56 +0200
+Message-ID: <CAMZdPi9uvh4E70-AXpGrdzkgh35mfWQbhL8Kxw_o9_DsfL2gbw@mail.gmail.com>
+Subject: Re: [PATCH -next] net: wwan: t7xx: use GFP_ATOMIC under spin lock in t7xx_cldma_gpd_set_next_ptr()
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        haijun.liu@mediatek.com, chandrashekar.devegowda@intel.com,
+        ricardo.martinez@linux.intel.com, davem@davemloft.net,
+        kuba@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alex,
+Hi Yang,
 
-aahringo@redhat.com wrote on Tue, 17 May 2022 20:59:39 -0400:
+On Wed, 18 May 2022 at 10:57, Yang Yingliang <yangyingliang@huawei.com> wrote:
+>
+> Sometimes t7xx_cldma_gpd_set_next_ptr() is called under spin lock,
+> so add a parameter in t7xx_cldma_gpd_set_next_ptr() to make if it
+> use GFP_ATOMIC flag.
+>
+> Fixes: 39d439047f1d ("net: wwan: t7xx: Add control DMA interface")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/net/wwan/t7xx/t7xx_hif_cldma.c | 13 ++++++++-----
+>  1 file changed, 8 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+> index 0c52801ed0de..1fa9bb763831 100644
+> --- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+> +++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+> @@ -91,9 +91,12 @@ static void t7xx_cldma_gpd_set_next_ptr(struct cldma_gpd *gpd, dma_addr_t next_p
+>  }
+>
+>  static int t7xx_cldma_alloc_and_map_skb(struct cldma_ctrl *md_ctrl, struct cldma_request *req,
+> -                                       size_t size)
+> +                                       size_t size, bool is_atomic)
 
-> Hi,
->=20
-> On Tue, May 17, 2022 at 10:53 AM Miquel Raynal
-> <miquel.raynal@bootlin.com> wrote:
-> >
-> >
-> > miquel.raynal@bootlin.com wrote on Tue, 17 May 2022 15:36:55 +0200:
-> > =20
-> > > aahringo@redhat.com wrote on Sun, 15 May 2022 18:30:15 -0400:
-> > > =20
-> > > > Hi,
-> > > >
-> > > > On Thu, May 12, 2022 at 10:34 AM Miquel Raynal
-> > > > <miquel.raynal@bootlin.com> wrote: =20
-> > > > >
-> > > > > We should never start a transmission after the queue has been sto=
-pped.
-> > > > >
-> > > > > But because it might work we don't kill the function here but rat=
-her
-> > > > > warn loudly the user that something is wrong.
-> > > > >
-> > > > > Set an atomic when the queue will remain stopped. Reset this atom=
-ic when
-> > > > > the queue actually gets restarded. Just check this atomic to know=
- if the
-> > > > > transmission is legitimate, warn if it is not.
-> > > > >
-> > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > > ---
-> > > > >  include/net/cfg802154.h |  1 +
-> > > > >  net/mac802154/tx.c      | 16 +++++++++++++++-
-> > > > >  net/mac802154/util.c    |  1 +
-> > > > >  3 files changed, 17 insertions(+), 1 deletion(-)
-> > > > >
-> > > > > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
-> > > > > index 8b6326aa2d42..a1370e87233e 100644
-> > > > > --- a/include/net/cfg802154.h
-> > > > > +++ b/include/net/cfg802154.h
-> > > > > @@ -218,6 +218,7 @@ struct wpan_phy {
-> > > > >         struct mutex queue_lock;
-> > > > >         atomic_t ongoing_txs;
-> > > > >         atomic_t hold_txs;
-> > > > > +       atomic_t queue_stopped; =20
-> > > >
-> > > > Maybe some test_bit()/set_bit() is better there? =20
-> > >
-> > > What do you mean? Shall I change the atomic_t type of queue_stopped?
-> > > Isn't the atomic_t preferred in this situation? =20
-> >
-> > Actually I re-read the doc and that's right, a regular unsigned long =20
->=20
-> Which doc is that?
+Would be simpler to directly pass the gfp_mask as a parameter.
 
-Documentation/atomic_t.txt states [SEMANTICS chapter]:
 
-	"if you find yourself only using the Non-RMW operations of
-	atomic_t, you do not in fact need atomic_t at all and are doing it wrong."
-
-In this case, I was only using atomic_set() and atomic_read(), which are
-both non-RMW operations.
-
-Thanks,
-Miqu=C3=A8l
+>  {
+> -       req->skb = __dev_alloc_skb(size, GFP_KERNEL);
+> +       if (is_atomic)
+> +               req->skb = __dev_alloc_skb(size, GFP_ATOMIC);
+> +       else
+> +               req->skb = __dev_alloc_skb(size, GFP_KERNEL);
+>         if (!req->skb)
+>                 return -ENOMEM;
+>
+> @@ -174,7 +177,7 @@ static int t7xx_cldma_gpd_rx_from_q(struct cldma_queue *queue, int budget, bool
+>                 spin_unlock_irqrestore(&queue->ring_lock, flags);
+>                 req = queue->rx_refill;
+>
+> -               ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, queue->tr_ring->pkt_size);
+> +               ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, queue->tr_ring->pkt_size, false);
+>                 if (ret)
+>                         return ret;
+>
+> @@ -402,7 +405,7 @@ static struct cldma_request *t7xx_alloc_rx_request(struct cldma_ctrl *md_ctrl, s
+>         if (!req->gpd)
+>                 goto err_free_req;
+>
+> -       val = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, pkt_size);
+> +       val = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, pkt_size, false);
+>         if (val)
+>                 goto err_free_pool;
+>
+> @@ -801,7 +804,7 @@ static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
+>                 if (req->skb)
+>                         continue;
+>
+> -               ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, rxq->tr_ring->pkt_size);
+> +               ret = t7xx_cldma_alloc_and_map_skb(md_ctrl, req, rxq->tr_ring->pkt_size, true);
+>                 if (ret)
+>                         break;
+>
+> --
+> 2.25.1
+>
