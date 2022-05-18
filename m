@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 09C2D52BAD7
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94CC952BA84
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:39:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236666AbiERMac (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 08:30:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48496 "EHLO
+        id S236872AbiERMdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:33:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236660AbiERM3z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:29:55 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1991197F65;
-        Wed, 18 May 2022 05:28:29 -0700 (PDT)
+        with ESMTP id S236803AbiERMcs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:32:48 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21655DA59;
+        Wed, 18 May 2022 05:29:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3E4061666;
-        Wed, 18 May 2022 12:28:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12FF9C34100;
-        Wed, 18 May 2022 12:28:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00BB96164C;
+        Wed, 18 May 2022 12:28:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1499DC385AA;
+        Wed, 18 May 2022 12:28:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876908;
-        bh=rAZen7RQzLM1AtPnxO+QsytUnBXywbtMIxIy+YJqXqo=;
+        s=k20201202; t=1652876912;
+        bh=IUN29lJ+JAwPbvxgjq8dqn4ODUTyFTt6/A5kJgrGy2w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CbCiwAfSVbWZLKz1u6+5gMPTQOkXFi5pYbsgjbPVhO2/dqarCEfFGjHeLDmqX6aFI
-         cNUyVk6iZ22yWpK/IVELLw2NaYHM3rWW3NPPyF1/uziiaikP6wDLuBheNw6nkFQ1zD
-         beJOnDc7TKQ8hyfBbdXS5Y/ecXw0ROdDNE9bLcDXdSR2BJ6KG4U/SvCwLFV3gugUXT
-         Y24Y3qIS+NI1kCLshnP7a3ntahGwoaa7GZDXKYrHcpuLUq46l68p7axTGxgJXU6wHl
-         dm8sxXH/DFxyATZp3wRXHdEs0N5aTx1EbKjWoJv8VTvXY8MYibvyvzAJCxTktqK3uP
-         1HG493c0l8iag==
+        b=EKVPJ26QzvGYxde8mGPji/q82kmOJoyS6MPQqckY/K6vZSmFOd+Ed1kkgxD8BDj1g
+         rkYKqzXB4VL40LQFdYNGZLok1ooLzritr5NHRE5suCgarMnQQ10lvCJC4EaJAS7jii
+         O6M1HIsRPJXthLjhuRqsGi/agOKSevdlKW+uDf5kzwwL2aABLdxt2EQDs1ynbkXUQ7
+         Krzue4Rybgyr1ASQ12K5r9eWEcVGOQl+/Cuxf8Ea41kO48cM8DX/fNadaXOdsl3+mI
+         +QQ4yxNnkYkqgyKuo2EpekmwZ/e86wmL6oXw+RkCYNCcQJ9Zgm1AJWoZsrlY1hgK0l
+         IT7LARBt9csdw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Grant Grundler <grundler@chromium.org>,
@@ -41,9 +41,9 @@ Cc:     Grant Grundler <grundler@chromium.org>,
         Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 14/17] net: atlantic: add check for MAX_SKB_FRAGS
-Date:   Wed, 18 May 2022 08:27:48 -0400
-Message-Id: <20220518122753.342758-14-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 15/17] net: atlantic: verify hw_head_ lies within TX buffer ring
+Date:   Wed, 18 May 2022 08:27:49 -0400
+Message-Id: <20220518122753.342758-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
 References: <20220518122753.342758-1-sashal@kernel.org>
@@ -63,9 +63,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Grant Grundler <grundler@chromium.org>
 
-[ Upstream commit 6aecbba12b5c90b26dc062af3b9de8c4b3a2f19f ]
+[ Upstream commit 2120b7f4d128433ad8c5f503a9584deba0684901 ]
 
-Enforce that the CPU can not get stuck in an infinite loop.
+Bounds check hw_head index provided by NIC to verify it lies
+within the TX buffer ring.
 
 Reported-by: Aashay Shringarpure <aashay@google.com>
 Reported-by: Yi Chou <yich@google.com>
@@ -74,40 +75,27 @@ Signed-off-by: Grant Grundler <grundler@chromium.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 339efdfb1d49..e9c6f1fa0b1a 100644
---- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -362,6 +362,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 			continue;
- 
- 		if (!buff->is_eop) {
-+			unsigned int frag_cnt = 0U;
- 			buff_ = buff;
- 			do {
- 				bool is_rsc_completed = true;
-@@ -370,6 +371,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 					err = -EIO;
- 					goto err_exit;
- 				}
+diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+index 9f1b15077e7d..45c17c585d74 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
++++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
+@@ -889,6 +889,13 @@ int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
+ 		err = -ENXIO;
+ 		goto err_exit;
+ 	}
 +
-+				frag_cnt++;
- 				next_ = buff_->next,
- 				buff_ = &self->buff_ring[next_];
- 				is_rsc_completed =
-@@ -377,7 +380,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 							    next_,
- 							    self->hw_head);
++	/* Validate that the new hw_head_ is reasonable. */
++	if (hw_head_ >= ring->size) {
++		err = -ENXIO;
++		goto err_exit;
++	}
++
+ 	ring->hw_head = hw_head_;
+ 	err = aq_hw_err_from_flags(self);
  
--				if (unlikely(!is_rsc_completed)) {
-+				if (unlikely(!is_rsc_completed) ||
-+						frag_cnt > MAX_SKB_FRAGS) {
- 					err = 0;
- 					goto err_exit;
- 				}
 -- 
 2.35.1
 
