@@ -2,103 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C649552B7E4
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 12:45:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B155B52B7FC
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 12:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235138AbiERKb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 06:31:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46334 "EHLO
+        id S235198AbiERKoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 06:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235131AbiERKby (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 06:31:54 -0400
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1786813D31;
-        Wed, 18 May 2022 03:31:52 -0700 (PDT)
-Received: by mail-wr1-f48.google.com with SMTP id j24so2081728wrb.1;
-        Wed, 18 May 2022 03:31:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Eg50Z55dIlImdG91r9MKVZYSO4VE8hp0Z0PI1gXalc4=;
-        b=17GhCUPB6gzydg59s66OzUrr1Zoxx5DDbNgqWvRHniESqu/LeRsEsUJeriOWT/cH6+
-         UB1Pbxx6maO4TbrEDtpu/2Ll4WAy3tPw1khXUbtmQd88aM0sWwV4pEA4zyNvbxDsHmiy
-         Gp8ykJwSAePBafZB1N0MN2IX6ekB2DUoA4P6aU/4Dspcr7nrr2uVipjmwNSQeJvDsflC
-         wsDOGKV9lgwrhToOTYwLHijq/2stqHzX20gGC5JDE6HuVVJj+OVo+WEQgaaxqBkAzZ4f
-         JcEJ+GeqxhEHXMIVSiUBSf4+JbLP3QVIb1AojKcmAm4j4d66Seni3ENTquq4LXnagLTe
-         dZdQ==
-X-Gm-Message-State: AOAM532E4jUf/ngr9gGB90f92HP34L5elGDS/PlUdo7Rxe12EWZzMMhI
-        rkTE6jRYUuc5KjqKVa6f3wxRosY3J1FV+VvS4avvUToKv8oGDw==
-X-Google-Smtp-Source: ABdhPJxyZbgVaQyT6J8R85YfGoFx158Afu+6TaWLZEGsBFx00ecoRJUc1+YMNuYZovSDNtJL6qWAmJJtDyzoDyjUIOo=
-X-Received: by 2002:a5d:48c1:0:b0:20c:52e9:6c5b with SMTP id
- p1-20020a5d48c1000000b0020c52e96c5bmr21414633wrs.233.1652869910631; Wed, 18
- May 2022 03:31:50 -0700 (PDT)
+        with ESMTP id S235187AbiERKoO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 06:44:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A7A14EDD9;
+        Wed, 18 May 2022 03:44:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC0E461840;
+        Wed, 18 May 2022 10:44:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B28EC34100;
+        Wed, 18 May 2022 10:44:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652870650;
+        bh=PLLiBbLga9wd+holCXxY7eLtpF52hoa0jep3rUn4tDc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=f5/PBRxd3e+FPRdhvmsOAQ1ROfeY5af4bMGzyDL7UpVjQk5zDAgF28P9Wgt2hbnEq
+         jYTarpJL9oPuEV2360XpSrUpw/yHORQPlOcHuasMNCw6J2bcrzj+8e+cg7KXQWb5HU
+         fhavpl3fBfFRVhHXEQyGSrda7eTwY9phUnS4JM7yXKJnO3i8Pupprxk0rXcW1/T893
+         oM/SvKPRIlf5E6E2iAfNb2+hQRzkIFOhmEFPEWyS3OvuLmA4VQZKa5yEhP9wXE7mjm
+         +yfa86GlEedOKyihJnMlp1nSxLpdzZ6gVVcQvftdxypGf9maq3ibLVqeMQTYLiWSA2
+         ZOuZ/LDjosqyw==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com,
+        memxor@gmail.com
+Subject: [PATCH v3 bpf-next 0/5] net: netfilter: add kfunc helper to update ct timeout
+Date:   Wed, 18 May 2022 12:43:33 +0200
+Message-Id: <cover.1652870182.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-References: <20220517073259.23476-1-harini.katakam@xilinx.com>
- <20220517073259.23476-2-harini.katakam@xilinx.com> <20220517194254.015e87f3@kernel.org>
- <CAFcVEC+qdouQ+tJdBG_Vv8QsaUX99uFtjKnB5WwQawA1fxmgEQ@mail.gmail.com> <20220517220603.36eec66e@kernel.org>
-In-Reply-To: <20220517220603.36eec66e@kernel.org>
-From:   Harini Katakam <harinik@xilinx.com>
-Date:   Wed, 18 May 2022 16:01:39 +0530
-Message-ID: <CAFcVEC+K42w0eW_bCd2XaBz91bFwF9+r52m0rEziHP+MZr5TWQ@mail.gmail.com>
-Subject: Re: [PATCH 1/3] net: macb: Fix PTP one step sync support
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        David Miller <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
+Changes since v2:
+- add bpf_xdp_ct_add and bpf_ct_refresh_timeout kfunc helpers
+- remove conntrack dependency from selftests
+- add support for forcing kfunc args to be referenced and related selftests
 
-<snip>
->
-> > > > @@ -1158,13 +1192,14 @@ static int macb_tx_complete(struct macb_queue *queue, int budget)
-> > > >
-> > > >                       /* First, update TX stats if needed */
-> > > >                       if (skb) {
-> > > > -                             if (unlikely(skb_shinfo(skb)->tx_flags &
-> > > > -                                          SKBTX_HW_TSTAMP) &&
-> > > > -                                 gem_ptp_do_txstamp(queue, skb, desc) == 0) {
-> > > > -                                     /* skb now belongs to timestamp buffer
-> > > > -                                      * and will be removed later
-> > > > -                                      */
-> > > > -                                     tx_skb->skb = NULL;
-> > > > +                             if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
-> > >
-> > > ptp_oss already checks if HW_TSTAMP is set.
-> >
-> > The check for SKBTX_HW_TSTAMP is required here universally and not
-> > just inside ptp_oss.
-> > I will remove the redundant check in ptp_oss instead. Please see the
-> > reply below.
->
-> But then you need to add this check in the padding/fcs call site and
-> the place where NOCRC is set. If you wrap the check for SKBTX_HW_TSTAMP
-> in the helper with likely() and remove the inline - will the compiler
-> not split the function and inline just that check? And leave the rest
-> as a functionname.part... thing?
+Changes since v1:
+- add bpf_ct_refresh_timeout kfunc selftest
 
-Yes, I checked the disassembly and this is what's happening. This
-should be good for
-the non-PTP packet (going to "likely" branch) and the rest of ptp_oss
-is evaluated for
-PTP packets.
+Kumar Kartikeya Dwivedi (2):
+  bpf: Add support for forcing kfunc args to be referenced
+  selftests/bpf: Add verifier selftests for forced kfunc ref args
 
-Regards,
-Harini
+Lorenzo Bianconi (3):
+  net: netfilter: add kfunc helper to update ct timeout
+  net: netfilter: add kfunc helper to add a new ct entry
+  selftests/bpf: add selftest for bpf_xdp_ct_add and
+    bpf_ct_refresh_timeout kfunc
+
+ include/net/netfilter/nf_conntrack.h          |   1 +
+ kernel/bpf/btf.c                              |  40 ++-
+ net/bpf/test_run.c                            |   5 +
+ net/netfilter/nf_conntrack_bpf.c              | 232 ++++++++++++++++--
+ net/netfilter/nf_conntrack_core.c             |  21 +-
+ .../testing/selftests/bpf/prog_tests/bpf_nf.c |   4 +
+ .../testing/selftests/bpf/progs/test_bpf_nf.c |  72 +++++-
+ tools/testing/selftests/bpf/verifier/calls.c  |  53 ++++
+ 8 files changed, 375 insertions(+), 53 deletions(-)
+
+-- 
+2.35.3
+
