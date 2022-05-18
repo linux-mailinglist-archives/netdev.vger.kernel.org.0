@@ -2,49 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D44452C75E
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 01:14:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFBEF52C784
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 01:30:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231126AbiERXOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 19:14:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52198 "EHLO
+        id S231314AbiERXaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 19:30:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230325AbiERXOD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 19:14:03 -0400
-Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E817C1BF1B1;
-        Wed, 18 May 2022 16:13:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652915640; x=1684451640;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+7xC5Q1BjsTKNBVhZVtbzNmmX8AWYp8Ft3lMIBj1NRY=;
-  b=Ax5zVSZI2szv4bngM+GS+WFJ5jf5fYQA8rdZrlWXNxAKg+thdu17fA98
-   ahkijLxD4SyRtvbeaDIxq+TanPSalquWkOqkmD3f5Q6MIoVXYsGWSNygN
-   J8+tGh9BLOjTc0Z14sQvzOUjZ4qHs1z/b3N+O8kKny56mrInoUkpY/ZiY
-   JzbzdC+2Ax5ZcXPr7m1Wyo/Z4PBY/zMZh7Up99vODIb5iRB7y49CjdfAx
-   sLLZceRkhFvfkg9LPHCW4He5qw6yf0WTjXX4CWZ2l1lp/H0wT1nokBZXC
-   JJ4W46j+p/GSJjodNWedccgMo59LlfaUTHx4ukz8s2cQawc+0BvwC+iZX
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="358339175"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="358339175"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 16:13:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="898481096"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga005.fm.intel.com with ESMTP; 18 May 2022 16:13:54 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrSrZ-0002l7-Hr;
-        Wed, 18 May 2022 23:13:53 +0000
-Date:   Thu, 19 May 2022 07:13:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Greg KH <greg@kroah.com>, Jiri Kosina <jikos@kernel.org>,
+        with ESMTP id S229674AbiERXa1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 19:30:27 -0400
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34F83A453;
+        Wed, 18 May 2022 16:30:26 -0700 (PDT)
+Received: by mail-io1-xd2d.google.com with SMTP id z18so4065185iob.5;
+        Wed, 18 May 2022 16:30:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=djedkBDi+8zWqgyVt5n6pW1897poIA400VsIQL/2AmE=;
+        b=FL2Ljq88KYPj2Npog0hufOGImM6ULpu1c9P/eWxubiUrTg18JKMC2KqgoYBBWHZc9e
+         XchM9cth2XGNNfb2rIYLYnE9JHjmVCd3vtFZYIzMzwe7iApNQY40bQmQ1lL9IHeuARob
+         i0NoGfjq12ejxPKfGDuGj6Vy1wm0WLAyXVHBYBkmvRW/vv/6k4c0n8USC/c8err7podN
+         gbUbY8pPkjq3gxcME3b5nRJG7wMgEyDyiPuG0O+O1RWqXxnAx4eRWc+ZaCz09E/pesFf
+         jJ8EjNqdnS7HPWX6luztYtALBIftHW73bZf5OveElqdOoeyBwjPKCjmZfZDIQNMnrAxA
+         CUNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=djedkBDi+8zWqgyVt5n6pW1897poIA400VsIQL/2AmE=;
+        b=cQPRWN4KATYdj7PQcOmxRkqoHBqSirRqIKqBqgwlHjtcKUHXhQiznyOHxko4QPh+WD
+         GGS5y+6Pa4ZWJ2cMWXKtOwR2lljsRwMdqY2TrZcszlnNbB1C1fm9i3jBdqvEkUkmZ16i
+         rGi97YnCCCpKtJdVRcRSX/K/EJ6mabpYIZr+ySK3O7enOsFUqc2jyQ+s7yJdkJi8L1G2
+         1j2OYhTKGL8hcJmu20lEKAivuLgwMXOnDcBFMGM1hYq2+oCbETli47nruMP76dX8fAl3
+         NBVwDgErNhVnxe8lKpBIxOU5AElMd75K77C/h3JeFXSoSWZwQ9ttP8dzhebWcCrNr7Og
+         rYqw==
+X-Gm-Message-State: AOAM530ied276DmtKEdm/evWEJ7Ql1CfJlqs8/sVjzMMTO6Ut20HIsvf
+        vLpDlekCnC9r8WHBNyWPQ+ZnMqjYp0NvcPugIjqi3hif9XY=
+X-Google-Smtp-Source: ABdhPJytTZMA2W2Z3i+RuSGnuqUXeAYwr/U7M6Hf6G5aB4AGspo8jAYctj/4m/xLHXO7tRX40uAcaXYdedJEw8fHi6s=
+X-Received: by 2002:a05:6638:2393:b0:32e:319d:c7cc with SMTP id
+ q19-20020a056638239300b0032e319dc7ccmr1088400jat.103.1652916625675; Wed, 18
+ May 2022 16:30:25 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1652772731.git.esyr@redhat.com> <9e4171972a3d75e656073e0c25cd4071a6f652e4.1652772731.git.esyr@redhat.com>
+In-Reply-To: <9e4171972a3d75e656073e0c25cd4071a6f652e4.1652772731.git.esyr@redhat.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 18 May 2022 16:30:14 -0700
+Message-ID: <CAEf4BzYpNZSY+D6_QP4NE2dN25g4wD43UmJyzmqXCL=HOE9HFA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 1/4] bpf_trace: check size for overflow in bpf_kprobe_multi_link_attach
+To:     Eugene Syromiatnikov <esyr@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -52,72 +63,70 @@ To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
-Cc:     kbuild-all@lists.01.org, Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: Re: [PATCH bpf-next v5 09/17] HID: bpf: allocate data memory for
- device_event BPF programs
-Message-ID: <202205190720.TIuHyCp6-lkp@intel.com>
-References: <20220518205924.399291-10-benjamin.tissoires@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518205924.399291-10-benjamin.tissoires@redhat.com>
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Benjamin,
+On Tue, May 17, 2022 at 12:36 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
+>
+> Check that size would not overflow before calculation (and return
+> -EOVERFLOW if it will), to prevent potential out-of-bounds write
+> with the following copy_from_user.  Use kvmalloc_array
+> in copy_user_syms to prevent out-of-bounds write into syms
+> (and especially buf) as well.
+>
+> Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
+> Cc: <stable@vger.kernel.org> # 5.18
+> Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
+> ---
+>  kernel/trace/bpf_trace.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+>
+> diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> index 7141ca8..9c041be 100644
+> --- a/kernel/trace/bpf_trace.c
+> +++ b/kernel/trace/bpf_trace.c
+> @@ -2261,11 +2261,11 @@ static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32
+>         int err = -ENOMEM;
+>         unsigned int i;
+>
+> -       syms = kvmalloc(cnt * sizeof(*syms), GFP_KERNEL);
+> +       syms = kvmalloc_array(cnt, sizeof(*syms), GFP_KERNEL);
+>         if (!syms)
+>                 goto error;
+>
+> -       buf = kvmalloc(cnt * KSYM_NAME_LEN, GFP_KERNEL);
+> +       buf = kvmalloc_array(cnt, KSYM_NAME_LEN, GFP_KERNEL);
+>         if (!buf)
+>                 goto error;
+>
+> @@ -2461,7 +2461,8 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+>         if (!cnt)
+>                 return -EINVAL;
+>
+> -       size = cnt * sizeof(*addrs);
+> +       if (check_mul_overflow(cnt, (u32)sizeof(*addrs), &size))
+> +               return -EOVERFLOW;
+>         addrs = kvmalloc(size, GFP_KERNEL);
 
-I love your patch! Yet something to improve:
+any good reason not to use kvmalloc_array() here as well and delegate
+overflow to it. And then use long size (as expected by copy_from_user
+anyway) everywhere?
 
-[auto build test ERROR on bpf-next/master]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Benjamin-Tissoires/Introduce-eBPF-support-for-HID-devices/20220519-050506
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
-config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220519/202205190720.TIuHyCp6-lkp@intel.com/config)
-compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
-reproduce (this is a W=1 build):
-        # https://github.com/intel-lab-lkp/linux/commit/ce32a9c683e801ac875c4e4eece32778040ed5cc
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Benjamin-Tissoires/Introduce-eBPF-support-for-HID-devices/20220519-050506
-        git checkout ce32a9c683e801ac875c4e4eece32778040ed5cc
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   /usr/bin/ld: drivers/hid/hid-core.o: in function `hid_destroy_device':
-   hid-core.c:(.text+0x10c0): undefined reference to `hid_bpf_destroy_device'
-   /usr/bin/ld: drivers/hid/hid-core.o: in function `hid_allocate_device':
-   hid-core.c:(.text+0x15c6): undefined reference to `hid_bpf_device_init'
-   /usr/bin/ld: drivers/hid/hid-core.o: in function `hid_input_report':
-   hid-core.c:(.text+0x22f7): undefined reference to `dispatch_hid_bpf_device_event'
-   /usr/bin/ld: drivers/hid/hid-core.o: in function `hid_connect':
->> hid-core.c:(.text+0x25da): undefined reference to `hid_bpf_connect_device'
-   /usr/bin/ld: drivers/hid/hid-core.o: in function `hid_disconnect':
->> hid-core.c:(.text+0xca1): undefined reference to `hid_bpf_disconnect_device'
-   /usr/bin/ld: drivers/hid/hid-core.o: in function `hid_exit':
-   hid-core.c:(.exit.text+0x7): undefined reference to `hid_bpf_ops'
-   /usr/bin/ld: drivers/hid/hid-core.o: in function `hid_init':
-   hid-core.c:(.init.text+0x35): undefined reference to `hid_bpf_ops'
-   collect2: error: ld returned 1 exit status
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+>         if (!addrs)
+>                 return -ENOMEM;
+> --
+> 2.1.4
+>
