@@ -2,99 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4211852B048
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:57:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FC3652B068
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 04:15:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234143AbiERB5K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 21:57:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
+        id S234166AbiERCPk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 22:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234054AbiERB47 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:56:59 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5166030579;
-        Tue, 17 May 2022 18:56:56 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L2wyJ2fvlzGppJ;
-        Wed, 18 May 2022 09:54:00 +0800 (CST)
-Received: from dggpemm500007.china.huawei.com (7.185.36.183) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 09:56:54 +0800
-Received: from huawei.com (10.175.103.91) by dggpemm500007.china.huawei.com
- (7.185.36.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
- 2022 09:56:54 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     <wellslutw@gmail.com>, <andrew@lunn.ch>, <pabeni@redhat.com>,
-        <davem@davemloft.net>, <kuba@kernel.org>
-Subject: [PATCH -next v2] net: ethernet: sunplus: add missing of_node_put() in spl2sw_mdio_init()
-Date:   Wed, 18 May 2022 10:08:12 +0800
-Message-ID: <20220518020812.2626293-1-yangyingliang@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S234104AbiERCPj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 22:15:39 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4511527F5;
+        Tue, 17 May 2022 19:15:38 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id p26so1211059eds.5;
+        Tue, 17 May 2022 19:15:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JXMeiZpRbqebPZ+WeJXkCP47PB5pNo1slb1wa7BPK2k=;
+        b=mk8kGwEoLJif3jaisTdRKRB+jlaFmXApaTdep/q0RL3f4bf8Vj1yNPDdzmYnLwwT7u
+         r7Js1Zi+0Bd9/xwWBJwoIcYsOPZYYIFsfRIoPIGzFCeZIuTlOIOGCLMMfnrfhXCUmctC
+         eJqlZm7fOltVHkajDvwjIUoJWoEp4I85jRnYx86YHXrmi/Ew3xu/c7AYPEX0LZLjfjN6
+         uOgk2ctY0FdlHMoAZJ3mYQzRTiiTMbHv7YLjaHCteAa7M3ukGuJ5hf0eTdqdwZsic+Di
+         EJIQeOZgSjenh454VidOcQRB6EN1IZFJpCWFi+OF3yXAO978k87Kg6IsDbBJbYTRXcdi
+         MAVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JXMeiZpRbqebPZ+WeJXkCP47PB5pNo1slb1wa7BPK2k=;
+        b=DHxkATajn04ERcq+bmrCLxLldb5JIAiO5VvDn8K1Mcm3zkMRGkjMUYEP2GFAZwpmY+
+         CpqXlbuG3JVE6a4PoYcz07oDER6sS/EJUm/qrE0hd8ve4j58EVxykaeldJNiwKzfKmab
+         vBNS2GqOUgrl/jLyR3iIbrPL5FNybWI6bKI1v6WwksS8ewNpwbpPjuZMSzKqdewvg5Nc
+         gaK2wNbkk1FjOxDsEIzU3zrq3ysvddGDDRZJf+IBAA591D3aw4Ko/uAhYOdPUY2tH0QU
+         66xc96yzr1KhVgCrMlUXzdCJTgEJiEUtNjYlmYbQQbKhKM0qxKJAOFmc7u61f2FyEbYo
+         tqwQ==
+X-Gm-Message-State: AOAM531epalYzzbpfOOmzjUiKlRE0OkpIYp13lrBPNV4LGhKtv3jYIN/
+        ovFhNtloSj84SjyQgVPx7Cfv5EszkoXbuEYUGOw=
+X-Google-Smtp-Source: ABdhPJxsAIt9BR8uYZ8idf3uHt7ruusnp/3WSeEmVHtW7Zy7fJ0q3KYw6taXz+0C/GKpQXtilkfRO+boEEMzU7qe1m8=
+X-Received: by 2002:a50:ccd5:0:b0:42a:64da:64c8 with SMTP id
+ b21-20020a50ccd5000000b0042a64da64c8mr19994078edj.196.1652840137332; Tue, 17
+ May 2022 19:15:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.103.91]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpemm500007.china.huawei.com (7.185.36.183)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220517081008.294325-1-imagedong@tencent.com>
+ <20220517081008.294325-2-imagedong@tencent.com> <20220517181457.04c37147@kernel.org>
+In-Reply-To: <20220517181457.04c37147@kernel.org>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 18 May 2022 10:15:25 +0800
+Message-ID: <CADxym3aqSsS2WAKyHYUXvKs45zdj-4rZu8a5QYoJUf5u+fpWkA@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 1/9] net: skb: introduce __DEFINE_SKB_DROP_REASON()
+ to simply the code
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Menglong Dong <imagedong@tencent.com>,
+        Martin Lau <kafai@fb.com>, Talal Ahmad <talalahmad@google.com>,
+        Kees Cook <keescook@chromium.org>,
+        Dongli Zhang <dongli.zhang@oracle.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Jiang Biao <benbjiang@tencent.com>,
+        Hao Peng <flyingpeng@tencent.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-of_get_child_by_name() returns device node pointer with refcount
-incremented. The refcount should be decremented before returning
-from spl2sw_mdio_init().
+On Wed, May 18, 2022 at 9:15 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 17 May 2022 16:10:00 +0800 menglong8.dong@gmail.com wrote:
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > It is annoying to add new skb drop reasons to 'enum skb_drop_reason'
+> > and TRACE_SKB_DROP_REASON in trace/event/skb.h, and it's easy to forget
+> > to add the new reasons we added to TRACE_SKB_DROP_REASON.
+> >
+> > TRACE_SKB_DROP_REASON is used to convert drop reason of type number
+> > to string. For now, the string we passed to user space is exactly the
+> > same as the name in 'enum skb_drop_reason' with a 'SKB_DROP_REASON_'
+> > prefix. So why not make them togather by define a macro?
+> >
+> > Therefore, introduce __DEFINE_SKB_DROP_REASON() and use it for 'enum
+> > skb_drop_reason' definition and string converting.
+> >
+> > Now, what should we with the document for the reasons? How about follow
+> > __BPF_FUNC_MAPPER() and make these document togather?
+>
+> Hi, I know BPF does this but I really find the definition-by-macro
+> counter productive :(
+>
+> kdoc will no longer work right because the parser will not see
+> the real values. cscope and other code indexers will struggle
+> to find definitions.
+>
 
-Fixes: fd3040b9394c ("net: ethernet: Add driver for Sunplus SP7021")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
-v2:
-  add fix tag.
----
- drivers/net/ethernet/sunplus/spl2sw_mdio.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+Yeah, I found this problem too. My autocomplete in vscode never helps
+me anymore after I use this macro.
 
-diff --git a/drivers/net/ethernet/sunplus/spl2sw_mdio.c b/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-index 139ac8f2685e..733ae1704269 100644
---- a/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-+++ b/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-@@ -97,8 +97,10 @@ u32 spl2sw_mdio_init(struct spl2sw_common *comm)
- 
- 	/* Allocate and register mdio bus. */
- 	mii_bus = devm_mdiobus_alloc(&comm->pdev->dev);
--	if (!mii_bus)
--		return -ENOMEM;
-+	if (!mii_bus) {
-+		ret = -ENOMEM;
-+		goto out;
-+	}
- 
- 	mii_bus->name = "sunplus_mii_bus";
- 	mii_bus->parent = &comm->pdev->dev;
-@@ -110,10 +112,13 @@ u32 spl2sw_mdio_init(struct spl2sw_common *comm)
- 	ret = of_mdiobus_register(mii_bus, mdio_np);
- 	if (ret) {
- 		dev_err(&comm->pdev->dev, "Failed to register mdiobus!\n");
--		return ret;
-+		goto out;
- 	}
- 
- 	comm->mii_bus = mii_bus;
-+
-+out:
-+	of_node_put(mdio_np);
- 	return ret;
- }
- 
--- 
-2.25.1
+> Did you investigate using auto-generation? Kernel already generates
+> a handful of headers. Maybe with a little script we could convert
+> the enum into the string thing at build time?
+>
 
+Oh, I forgot about auto-generation, it seems it's a better choice.
+I'll try to use auto-generation.
+
+> Also let's use this opportunity to move the enum to a standalone
+> header, it's getting huge.
+>
+> Probably worth keeping this rework separate from the TCP patches.
+> Up to you which one you'd like to get done first.
+
+Ok, I'll make the enum in a standalone header in the separated
+series.
+
+Thans!
+Menglong Dong
