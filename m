@@ -2,52 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B78952B854
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 13:13:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9727B52B858
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 13:13:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235341AbiERLGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 07:06:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53984 "EHLO
+        id S235307AbiERLKU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 07:10:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235307AbiERLGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 07:06:31 -0400
-Received: from zg8tndyumtaxlji0oc4xnzya.icoremail.net (zg8tndyumtaxlji0oc4xnzya.icoremail.net [46.101.248.176])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 071676440;
-        Wed, 18 May 2022 04:06:27 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Wed, 18 May 2022 19:05:59
- +0800 (GMT+08:00)
-X-Originating-IP: [124.236.130.193]
-Date:   Wed, 18 May 2022 19:05:59 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] NFC: hci: fix sleep in atomic context bugs in
- nfc_hci_hcp_message_tx
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <bb566eb7-c571-9a51-af51-78e36412fbfc@linaro.org>
-References: <20220517105526.114421-1-duoming@zju.edu.cn>
- <2ce7a871-3e55-ae50-955c-bf04a443aba3@linaro.org>
- <71c24f38.1a1f4.180d29ff1fd.Coremail.duoming@zju.edu.cn>
- <68ccef70-ef30-8f53-6ec5-17ce5815089c@linaro.org>
- <454a29ba.1b9b1.180d576985b.Coremail.duoming@zju.edu.cn>
- <bb566eb7-c571-9a51-af51-78e36412fbfc@linaro.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S235304AbiERLKS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 07:10:18 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA303326DE
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 04:10:16 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED4C9B81F37
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 11:10:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 962A1C385A5;
+        Wed, 18 May 2022 11:10:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652872213;
+        bh=N/A6k0tnAZMWfmcRDOLOEoy3Q5m7zkCnQizl9c1BsY4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=kDxevs1fgYnY4bb2BpzRbw/FOF/zsW2+T+78PrwJ8cjh7YZXD4ibA/iY1bSncAzyv
+         /g35M0ejuw1wCtcD5UYZ8EvLS7CwDzLNeznj4y+GoN9eMpE5Z2jNzUKFmTzsTOJiE4
+         I5kBOscrWK/Jpxcdupe9B0OdP/Yx48QbEkpVKLITysqyjt7VjCFM5q0OkH4hOyNL0I
+         TCzlKiFiVKJhPALidUPZZuUwf6hEKQ5cd8fxhSHRu7tDejXLpjtNynIWJ3zeEOTTMn
+         701I4FWV7bmzgkXQIFLXI5STa2JGq2sWuqMMfXXTfVVzAS4P/5wo+ZF/tLvGUZLWad
+         sydgt2HIxon3w==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7DC8AF0392C;
+        Wed, 18 May 2022 11:10:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Message-ID: <670b87a9.1d1aa.180d6d8952e.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgC3PiEX04RidO1nAA--.10469W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgQOAVZdtZwY3gABss
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net 01/11] net/mlx5: DR,
+ Fix missing flow_source when creating multi-destination FW table
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165287221351.23187.1673878219095186610.git-patchwork-notify@kernel.org>
+Date:   Wed, 18 May 2022 11:10:13 +0000
+References: <20220518063427.123758-2-saeed@kernel.org>
+In-Reply-To: <20220518063427.123758-2-saeed@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org, maord@nvidia.com, kliteyn@nvidia.com,
+        saeedm@nvidia.com
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -56,78 +58,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpEYXRlOiBXZWQsIDE4IE1heSAyMDIyIDExOjM5OjI3ICswMjAwIEtyenlzenRvZiB3
-cm90ZToKCj4gPj4gVGhlcmUgaXMuCj4gPj4KPiA+PiBuZmNfaGNpX2ZhaWx1cmUgLT4gc3BpbiBs
-b2NrIC0+IG5mY19kcml2ZXJfZmFpbHVyZSAtPiBuZmNfdGFyZ2V0c19mb3VuZAo+ID4+IC0+IGRl
-dmljZV9sb2NrCj4gPj4KPiA+PiBJIGZvdW5kIGl0IGp1c3QgYnkgYSB2ZXJ5IHF1aWNrIGxvb2ss
-IHNvIEkgc3VzcGVjdCB0aGVyZSBhcmUgc2V2ZXJhbAo+ID4+IG90aGVyIHBsYWNlcywgbm90IHJl
-YWxseSBjaGVja2VkLgo+ID4gCj4gPiBJIGFncmVlIHdpdGggeW91LCB0aGUgc3Bpbl9sb2NrIGlz
-IG5vdCBhIGdvb2Qgc29sdXRpb24gdG8gdGhpcyBwcm9ibGVtLiBUaGVyZSBpcyBhbm90aGVyIHNv
-bHV0aW9uOgo+ID4gCj4gPiBXZSBjb3VsZCBwdXQgdGhlIG5mY19oY2lfc2VuZF9ldmVudCgpIG9m
-IHN0MjFuZmNhX3NlX3d0X3RpbWVvdXQoKSBpbiBhIHdvcmsgaXRlbSwgdGhlbiwgdXNpbmcKPiA+
-IHNjaGVkdWxlX3dvcmsoKSBpbiBzdDIxbmZjYV9zZV93dF90aW1lb3V0KCkgdG8gZXhlY3V0ZSB0
-aGUgd29yayBpdGVtLiBUaGUgc2NoZWR1bGVfd29yaygpIHdpbGwKPiA+IHdha2UgdXAgYW5vdGhl
-ciBrZXJuZWwgdGhyZWFkIHdoaWNoIGlzIGluIHByb2Nlc3MgY29udGV4dCB0byBleGVjdXRlIHRo
-ZSBib3R0b20gaGFsZiBvZiB0aGUgaW50ZXJydXB0LCAKPiA+IHNvIGl0IGFsbG93cyBzbGVlcC4K
-PiA+IAo+ID4gVGhlIGZvbGxvd2luZyBpcyB0aGUgZGV0YWlscy4KPiAKPiBZZXMsIHRoaXMgc2Vl
-bXMgZ29vZCBzb2x1dGlvbi4gWW91IG1pZ2h0IGFsc28gbmVlZCB0byBhZGQKPiBjYW5jZWxfd29y
-a19zeW5jIHRvIGFsbCBwbGFjZXMgcmVtb3ZpbmcgdGhlIHRpbWVyLgoKVGhhbmtzIGZvciB5b3Vy
-IGFwcHJvdmFsLgoKVGhlcmUgYXJlIHR3byBkZWxfdGltZXJfc3luYygpIGZ1bmN0aW9ucyByZWxh
-dGVkIHdpdGggYndpX3RpbWVyIHRpbWVyLgpJIG5lZ2xlY3Qgb25lIHNpdGUgaW4gc3QyMW5mY2Ff
-YXBkdV9yZWFkZXJfZXZlbnRfcmVjZWl2ZWQoKSwgSSBhZGQKY2FuY2VsX3dvcmtfc3luYygpIGlu
-IGl0IHRoaXMgdGltZS4gCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZmMvc3QyMW5mY2Evc2UuYyBi
-L2RyaXZlcnMvbmZjL3N0MjFuZmNhL3NlLmMKaW5kZXggYzkyMmYxMGQwZDcuLjdlMjEzZjhkZGM5
-IDEwMDY0NAotLS0gYS9kcml2ZXJzL25mYy9zdDIxbmZjYS9zZS5jCisrKyBiL2RyaXZlcnMvbmZj
-L3N0MjFuZmNhL3NlLmMKQEAgLTI0MSw3ICsyNDEsNyBAQCBpbnQgc3QyMW5mY2FfaGNpX3NlX2lv
-KHN0cnVjdCBuZmNfaGNpX2RldiAqaGRldiwgdTMyIHNlX2lkeCwKIH0KIEVYUE9SVF9TWU1CT0wo
-c3QyMW5mY2FfaGNpX3NlX2lvKTsKCi1zdGF0aWMgdm9pZCBzdDIxbmZjYV9zZV93dF90aW1lb3V0
-KHN0cnVjdCB0aW1lcl9saXN0ICp0KQorc3RhdGljIHZvaWQgc3QyMW5mY2Ffc2Vfd3Rfd29yayhz
-dHJ1Y3Qgd29ya19zdHJ1Y3QgKndvcmspCiB7CiAgICAgICAgLyogCiAgICAgICAgICogTm8gYW5z
-d2VyIGZyb20gdGhlIHNlY3VyZSBlbGVtZW50CkBAIC0yNTQsOCArMjU0LDkgQEAgc3RhdGljIHZv
-aWQgc3QyMW5mY2Ffc2Vfd3RfdGltZW91dChzdHJ1Y3QgdGltZXJfbGlzdCAqdCkKICAgICAgICAg
-Ki8KICAgICAgICAvKiBoYXJkd2FyZSByZXNldCBtYW5hZ2VkIHRocm91Z2ggVkNDX1VJQ0NfT1VU
-IHBvd2VyIHN1cHBseSAqLwogICAgICAgIHU4IHBhcmFtID0gMHgwMTsKLSAgICAgICBzdHJ1Y3Qg
-c3QyMW5mY2FfaGNpX2luZm8gKmluZm8gPSBmcm9tX3RpbWVyKGluZm8sIHQsCi0gICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzZV9pbmZvLmJ3aV90aW1l
-cik7CisgICAgICAgc3RydWN0IHN0MjFuZmNhX2hjaV9pbmZvICppbmZvID0gY29udGFpbmVyX29m
-KHdvcmssCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHN0
-cnVjdCBzdDIxbmZjYV9oY2lfaW5mbywKKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgc2VfaW5mby50aW1lb3V0X3dvcmspOwoKICAgICAgICBpbmZvLT5zZV9p
-bmZvLmJ3aV9hY3RpdmUgPSBmYWxzZTsKIApAQCAtMjcxLDYgKzI3MiwxMyBAQCBzdGF0aWMgdm9p
-ZCBzdDIxbmZjYV9zZV93dF90aW1lb3V0KHN0cnVjdCB0aW1lcl9saXN0ICp0KQogICAgICAgIGlu
-Zm8tPnNlX2luZm8uY2IoaW5mby0+c2VfaW5mby5jYl9jb250ZXh0LCBOVUxMLCAwLCAtRVRJTUUp
-OwogfQoKK3N0YXRpYyB2b2lkIHN0MjFuZmNhX3NlX3d0X3RpbWVvdXQoc3RydWN0IHRpbWVyX2xp
-c3QgKnQpCit7CisgICAgICAgc3RydWN0IHN0MjFuZmNhX2hjaV9pbmZvICppbmZvID0gZnJvbV90
-aW1lcihpbmZvLCB0LCBzZV9pbmZvLmJ3aV90aW1lcik7CisKKyAgICAgICBzY2hlZHVsZV93b3Jr
-KCZpbmZvLT5zZV9pbmZvLnRpbWVvdXRfd29yayk7Cit9CisKIHN0YXRpYyB2b2lkIHN0MjFuZmNh
-X3NlX2FjdGl2YXRpb25fdGltZW91dChzdHJ1Y3QgdGltZXJfbGlzdCAqdCkKIHsKICAgICAgICBz
-dHJ1Y3Qgc3QyMW5mY2FfaGNpX2luZm8gKmluZm8gPSBmcm9tX3RpbWVyKGluZm8sIHQsCkBAIC0z
-NjAsNiArMzY4LDcgQEAgaW50IHN0MjFuZmNhX2FwZHVfcmVhZGVyX2V2ZW50X3JlY2VpdmVkKHN0
-cnVjdCBuZmNfaGNpX2RldiAqaGRldiwKICAgICAgICBzd2l0Y2ggKGV2ZW50KSB7CiAgICAgICAg
-Y2FzZSBTVDIxTkZDQV9FVlRfVFJBTlNNSVRfREFUQToKICAgICAgICAgICAgICAgIGRlbF90aW1l
-cl9zeW5jKCZpbmZvLT5zZV9pbmZvLmJ3aV90aW1lcik7CisgICAgICAgICAgICAgICBjYW5jZWxf
-d29ya19zeW5jKCZpbmZvLT5zZV9pbmZvLnRpbWVvdXRfd29yayk7CiAgICAgICAgICAgICAgICBp
-bmZvLT5zZV9pbmZvLmJ3aV9hY3RpdmUgPSBmYWxzZTsKICAgICAgICAgICAgICAgIHIgPSBuZmNf
-aGNpX3NlbmRfZXZlbnQoaGRldiwgU1QyMU5GQ0FfREVWSUNFX01HTlRfR0FURSwKICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICBTVDIxTkZDQV9FVlRfU0VfRU5EX09GX0FQRFVfVFJBTlNG
-RVIsIE5VTEwsIDApOwpAQCAtMzg5LDYgKzM5OCw3IEBAIHZvaWQgc3QyMW5mY2Ffc2VfaW5pdChz
-dHJ1Y3QgbmZjX2hjaV9kZXYgKmhkZXYpCiAgICAgICAgc3RydWN0IHN0MjFuZmNhX2hjaV9pbmZv
-ICppbmZvID0gbmZjX2hjaV9nZXRfY2xpZW50ZGF0YShoZGV2KTsKCiAgICAgICAgaW5pdF9jb21w
-bGV0aW9uKCZpbmZvLT5zZV9pbmZvLnJlcV9jb21wbGV0aW9uKTsKKyAgICAgICBJTklUX1dPUkso
-JmluZm8tPnNlX2luZm8udGltZW91dF93b3JrLCBzdDIxbmZjYV9zZV93dF93b3JrKTsKICAgICAg
-ICAvKiBpbml0aWFsaXplIHRpbWVycyAqLwogICAgICAgIHRpbWVyX3NldHVwKCZpbmZvLT5zZV9p
-bmZvLmJ3aV90aW1lciwgc3QyMW5mY2Ffc2Vfd3RfdGltZW91dCwgMCk7CiAgICAgICAgaW5mby0+
-c2VfaW5mby5id2lfYWN0aXZlID0gZmFsc2U7CkBAIC00MTYsNiArNDI2LDcgQEAgdm9pZCBzdDIx
-bmZjYV9zZV9kZWluaXQoc3RydWN0IG5mY19oY2lfZGV2ICpoZGV2KQogICAgICAgIGlmIChpbmZv
-LT5zZV9pbmZvLnNlX2FjdGl2ZSkKICAgICAgICAgICAgICAgIGRlbF90aW1lcl9zeW5jKCZpbmZv
-LT5zZV9pbmZvLnNlX2FjdGl2ZV90aW1lcik7CgorICAgICAgIGNhbmNlbF93b3JrX3N5bmMoJmlu
-Zm8tPnNlX2luZm8udGltZW91dF93b3JrKTsKICAgICAgICBpbmZvLT5zZV9pbmZvLmJ3aV9hY3Rp
-dmUgPSBmYWxzZTsKICAgICAgICBpbmZvLT5zZV9pbmZvLnNlX2FjdGl2ZSA9IGZhbHNlOwogfQpk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9uZmMvc3QyMW5mY2Evc3QyMW5mY2EuaCBiL2RyaXZlcnMvbmZj
-L3N0MjFuZmNhL3N0MjFuZmNhLmgKaW5kZXggY2I2YWQ5MTZiZTkuLmFlNjc3MWNjOTg5IDEwMDY0
-NAotLS0gYS9kcml2ZXJzL25mYy9zdDIxbmZjYS9zdDIxbmZjYS5oCisrKyBiL2RyaXZlcnMvbmZj
-L3N0MjFuZmNhL3N0MjFuZmNhLmgKQEAgLTE0MSw2ICsxNDEsNyBAQCBzdHJ1Y3Qgc3QyMW5mY2Ff
-c2VfaW5mbyB7CgogICAgICAgIHNlX2lvX2NiX3QgY2I7CiAgICAgICAgdm9pZCAqY2JfY29udGV4
-dDsKKyAgICAgICBzdHJ1Y3Qgd29ya19zdHJ1Y3QgdGltZW91dF93b3JrOwogfTsKCiBzdHJ1Y3Qg
-c3QyMW5mY2FfaGNpX2luZm8gewoKSWYgeW91IHRoaW5rIHRoaXMgc29sdXRpb24gaXMgb2ssIEkg
-d2lsbCBzZW5kICJQQVRDSCB2MyIuCgpCZXN0IHJlZ2FyZHMsCkR1b21pbmcgWmhvdQo=
+Hello:
+
+This series was applied to netdev/net.git (master)
+by Saeed Mahameed <saeedm@nvidia.com>:
+
+On Tue, 17 May 2022 23:34:17 -0700 you wrote:
+> From: Maor Dickman <maord@nvidia.com>
+> 
+> In order to support multiple destination FTEs with SW steering
+> FW table is created with single FTE with multiple actions and
+> SW steering rule forward to it. When creating this table, flow
+> source isn't set according to the original FTE.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,01/11] net/mlx5: DR, Fix missing flow_source when creating multi-destination FW table
+    https://git.kernel.org/netdev/net/c/2c5fc6cd269a
+  - [net,02/11] net/mlx5: Initialize flow steering during driver probe
+    https://git.kernel.org/netdev/net/c/b33886971dbc
+  - [net,03/11] net/mlx5: DR, Ignore modify TTL on RX if device doesn't support it
+    https://git.kernel.org/netdev/net/c/785d7ed29551
+  - [net,04/11] net/mlx5e: Wrap mlx5e_trap_napi_poll into rcu_read_lock
+    https://git.kernel.org/netdev/net/c/379169740b0a
+  - [net,05/11] net/mlx5e: Block rx-gro-hw feature in switchdev mode
+    https://git.kernel.org/netdev/net/c/15a5078cab30
+  - [net,06/11] net/mlx5e: Properly block LRO when XDP is enabled
+    https://git.kernel.org/netdev/net/c/cf6e34c8c22f
+  - [net,07/11] net/mlx5e: Properly block HW GRO when XDP is enabled
+    https://git.kernel.org/netdev/net/c/b0617e7b3500
+  - [net,08/11] net/mlx5e: Remove HW-GRO from reported features
+    https://git.kernel.org/netdev/net/c/6bbd723035ba
+  - [net,09/11] net/mlx5e: CT: Fix support for GRE tuples
+    https://git.kernel.org/netdev/net/c/8e1dcf499a67
+  - [net,10/11] net/mlx5e: CT: Fix setting flow_source for smfs ct tuples
+    https://git.kernel.org/netdev/net/c/04c551bad371
+  - [net,11/11] net/mlx5: Drain fw_reset when removing device
+    https://git.kernel.org/netdev/net/c/16d42d313350
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
