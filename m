@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2941752AFFD
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4518C52B000
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:41:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233713AbiERBjm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 21:39:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38630 "EHLO
+        id S233694AbiERBl0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 21:41:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233710AbiERBjl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:39:41 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E71F831DF6;
-        Tue, 17 May 2022 18:39:39 -0700 (PDT)
+        with ESMTP id S233718AbiERBlZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:41:25 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 008D1369DE;
+        Tue, 17 May 2022 18:41:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AEEC0B81D97;
-        Wed, 18 May 2022 01:39:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA06C385B8;
-        Wed, 18 May 2022 01:39:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 924CB61636;
+        Wed, 18 May 2022 01:41:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74F34C34116;
+        Wed, 18 May 2022 01:41:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652837977;
-        bh=iMqRtnzqU/EqtFUtJsABiZAWBZ8H3DWHwaJYTCqmoPc=;
+        s=k20201202; t=1652838084;
+        bh=rB1qtfEoe/0j2qEt3MLBrL8NpZIg7aZNCzRuOninDXk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LYOthdjMsguNHDhpDllew202sUBsqem6OyOS0GbrCWnonf6K9Uu3C5pW8tyRvPoZx
-         B/TzqSn/pnBhzxNNZrJcBHCb6ApXgiXmA0OOf4XGdOKkOKe4N6YWB2yjzhE95brDGs
-         0M1uGPByWA1hshbo13QZKkoSVYBqWcH16MStA+a84RzqF1zBz38mfXrhNewnCOmJdi
-         yDLAZdneJu4rIVuLNPvUFNgaOMW0YI0BcUksuYpMOfPfovhfxd/GO1+BFqxhc0Nn+x
-         Rkxo1XlvzWeejnobHRxSDk675iISLzRXgJSqSVdXxd7HCJP3ike8ostVQsuqUbJcZ8
-         VKhTWnGH76wtw==
-Date:   Tue, 17 May 2022 18:39:35 -0700
+        b=kNazYk02Pz7xkmTef8YxMujGrh3rwSMmr6O7Eee2Q5tvpupO8dSHvJLhYMfFfH95y
+         HVZBXQEXdvQmusH02l+IeFM8qw1Tshh9PaR1N8t6h7UjG+HzBUEoQqKZfbVVXnSt2c
+         3POlSJAFojvg01ImeVwgaIcsLDMQz+Lmz6WMLlxnXwjFd+SXMetCbULukVKzgmRDjA
+         k9M0Os3EnfklZImmRY/DxzhqBNEEKfNpRSYFaia7yYIbCyaAMADBLXTCCcazFZvYkp
+         ilkLs667fraIxrR/u3L+MK3jFxJ4bRcC/bi+/ylFt3gMsQxsl1P/A8VyiukSjjcaj1
+         G0OnBsRMFzd5w==
+Date:   Tue, 17 May 2022 18:41:22 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>
 Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
@@ -40,12 +40,12 @@ Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
         Sam.Shih@mediatek.com, linux-mediatek@lists.infradead.org,
         devicetree@vger.kernel.org, robh@kernel.org,
         lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH v2 net-next 10/15] net: ethernet: mtk_eth_soc: rely on
- rxd_size field in mtk_rx_alloc/mtk_rx_clean
-Message-ID: <20220517183935.6863ddc7@kernel.org>
-In-Reply-To: <eca56ab1af7f4bbedc4a6d0990a10ff58911d842.1652716741.git.lorenzo@kernel.org>
+Subject: Re: [PATCH v2 net-next 11/15] net: ethernet: mtk_eth_soc: introduce
+ device register map
+Message-ID: <20220517184122.522ed708@kernel.org>
+In-Reply-To: <78e8c6ed230130b75aae77e6d05a9b35e298860a.1652716741.git.lorenzo@kernel.org>
 References: <cover.1652716741.git.lorenzo@kernel.org>
-        <eca56ab1af7f4bbedc4a6d0990a10ff58911d842.1652716741.git.lorenzo@kernel.org>
+        <78e8c6ed230130b75aae77e6d05a9b35e298860a.1652716741.git.lorenzo@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,20 +59,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 16 May 2022 18:06:37 +0200 Lorenzo Bianconi wrote:
-> +
-> +		rxd = (void *)ring->dma + i * eth->soc->txrx.rxd_size;
-> +		rxd->rxd1 = (unsigned int)dma_addr;
->  
->  		if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
-> -			ring->dma[i].rxd2 = RX_DMA_LSO;
-> +			rxd->rxd2 = RX_DMA_LSO;
->  		else
-> -			ring->dma[i].rxd2 = RX_DMA_PLEN0(ring->buf_size);
-> +			rxd->rxd2 = RX_DMA_PLEN0(ring->buf_size);
-> +
-> +		rxd->rxd3 = 0;
-> +		rxd->rxd4 = 0;
+On Mon, 16 May 2022 18:06:38 +0200 Lorenzo Bianconi wrote:
+>  /* PDMA RX Base Pointer Register */
+> -#define MTK_PRX_BASE_PTR0	0x900
+> +#define MTK_PRX_BASE_PTR0	(eth->soc->reg_map[MTK_PDMA_BASE] + 0x100)
+>  #define MTK_PRX_BASE_PTR_CFG(x)	(MTK_PRX_BASE_PTR0 + (x * 0x10))
 
-The clearing of rxd3/rxd4 should probably have been mentioned in the
-commit message. It does not seem related to descriptor size.
+Implicit macro arguments are really unpleasant for people doing
+tree-wide changes or otherwise unfamiliar with the driver.
+
+Nothing we can do to avoid this?
