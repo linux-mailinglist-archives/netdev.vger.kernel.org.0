@@ -2,69 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8468052C512
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 23:03:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45AD752C56B
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 23:22:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243068AbiERVBz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 17:01:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34736 "EHLO
+        id S243093AbiERVF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 17:05:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58242 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243091AbiERVBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 17:01:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7E58313CEF
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 14:00:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652907647;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=giY7Otcl1eOFxaYtRhGHE8IaPTXBsTDzw6ErsizqXsg=;
-        b=d/Hy9/DpaOx+xGRFbsFbGfE6MvyviJ0tiBrpodNE3NSI2/9zgxen8e+xN2/Em5S+MPq705
-        4+nPmeghwScaCP5H/Az4uULfyjjH7w2+4BLP9lBYPOrOXhKB3zP291guDP5bItY44tQRrt
-        pGTQa4hLBwBHeJ5cRIVD8LaWSgMyyNI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-231-kwtze9R2NLO_UAwLcmlYAA-1; Wed, 18 May 2022 17:00:42 -0400
-X-MC-Unique: kwtze9R2NLO_UAwLcmlYAA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C2BDC380670A;
-        Wed, 18 May 2022 21:00:40 +0000 (UTC)
-Received: from plouf.redhat.com (unknown [10.39.192.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 69ACD2166B40;
-        Wed, 18 May 2022 21:00:37 +0000 (UTC)
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-To:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>
-Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v5 17/17] Documentation: add HID-BPF docs
-Date:   Wed, 18 May 2022 22:59:24 +0200
-Message-Id: <20220518205924.399291-18-benjamin.tissoires@redhat.com>
-In-Reply-To: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
-References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
+        with ESMTP id S243062AbiERVFw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 17:05:52 -0400
+X-Greylist: delayed 54396 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 May 2022 14:05:40 PDT
+Received: from na01-obe.outbound.protection.outlook.com (unknown [52.101.57.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAAC2121;
+        Wed, 18 May 2022 14:05:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HYG/XAc30djqxIpItMsMAPNr8IR4Mtn28HnGmx5WfcwlPqL3qmwHEbK8t5rcK6HlDzRkNCkZQHZENYhccP1zDZtccXnuS1ZaOURpLOobPpcSRMcK3YlNBNicf1O3oXo2G/Ojyad+4aInOqRFndX/lJYd4ghlcFO1aPAGv+U2BQ1dGXMDjIyEtya41/4POSFgax3TctuSJW5UuD45AX6d4xTPMfKRVso9Z3tdDuc5fJTahIAAplgmaF5+uiK8Aqm07izdisI6CkKTJPUUqT+Ern9wY7SD//4XwTCC2AyvhstkZ1BhyCvi8wUbu/TT1DRHh0Ne0FGQ858uXctcEyrlkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=VDowKvb964dF9cPooB6ZyXC3VGWUadXmMgGTWKuibbc=;
+ b=e7gH1Uz31L1oskK5XymXE708/v6xpTdDdB33Ju5IpbTurzoXPeZeLDffB3GmPHmmlTbsyZooYVZk15MwVm3TBZAW+Hdhc7RFzXH4laKJAi22389/EXBrp2WxKftYsfkiPztgzaXz63tqLReV4DXklLiCcJNcmpDTY4tHPOohB/uUqJNCYfj6REJRzkF/j4Hkyyk2ykAStXvsssjGtUVrFVvHutstpdZjowxhN433qBGBgpGF4nExZcQ1F8496YweauRbqNwPtsocT3S2/Qnl7QN9drQrij72fkUvsACVvwAzc/648AzJzAvzcMNB848WPMs05uIQcI55YLCeyNbRVg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VDowKvb964dF9cPooB6ZyXC3VGWUadXmMgGTWKuibbc=;
+ b=PkaPl2B+a5I88JdxVOO9uZRoGAeHSbnZy0fY7ZpxlJxJs6hTEQnvGUfJKEoYN7Nrq8Ya/6qcIeWoIK+u2qA0HLRQMzp/lMHZHTTKd7FuETMeM/SEEmNwXIJCXoylQ41NpGrK8jCuox62g7Uq2+nQ9dAVMoQBNmLykgPaljn+VDg=
+Received: from BL1PR21MB3283.namprd21.prod.outlook.com (2603:10b6:208:39b::8)
+ by PH7PR21MB3381.namprd21.prod.outlook.com (2603:10b6:510:1dd::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.5; Wed, 18 May
+ 2022 21:05:22 +0000
+Received: from BL1PR21MB3283.namprd21.prod.outlook.com
+ ([fe80::e0d1:ed2f:325a:8393]) by BL1PR21MB3283.namprd21.prod.outlook.com
+ ([fe80::e0d1:ed2f:325a:8393%9]) with mapi id 15.20.5273.005; Wed, 18 May 2022
+ 21:05:22 +0000
+From:   Ajay Sharma <sharmaajay@microsoft.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+CC:     Long Li <longli@microsoft.com>, KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Ajay Sharma <sharmaajay@microsoft.com>
+Subject: RE: [EXTERNAL] Re: [PATCH 05/12] net: mana: Set the DMA device max
+ page size
+Thread-Topic: [EXTERNAL] Re: [PATCH 05/12] net: mana: Set the DMA device max
+ page size
+Thread-Index: AQHYac0t/cR6HA52CUOHz8pr+lzroa0jKeeAgABLXKCAAAGZgIAABm1QgABEpQCAAFjD8IAAs9+AgABQTyA=
+Date:   Wed, 18 May 2022 21:05:22 +0000
+Message-ID: <BL1PR21MB32831207F674356EAF8EE600D6D19@BL1PR21MB3283.namprd21.prod.outlook.com>
+References: <1652778276-2986-1-git-send-email-longli@linuxonhyperv.com>
+ <1652778276-2986-6-git-send-email-longli@linuxonhyperv.com>
+ <20220517145949.GH63055@ziepe.ca>
+ <PH7PR21MB3263EFA8F624F681C3B57636CECE9@PH7PR21MB3263.namprd21.prod.outlook.com>
+ <20220517193515.GN63055@ziepe.ca>
+ <PH7PR21MB3263C44368F02B8AF8521C4ACECE9@PH7PR21MB3263.namprd21.prod.outlook.com>
+ <20220518000356.GO63055@ziepe.ca>
+ <BL1PR21MB3283790E8270ED6C639AAB0DD6D19@BL1PR21MB3283.namprd21.prod.outlook.com>
+ <20220518160525.GP63055@ziepe.ca>
+In-Reply-To: <20220518160525.GP63055@ziepe.ca>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=4ba93844-31f5-48dd-aa44-7fc96505cabc;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-05-18T20:52:51Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=microsoft.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 8da95963-13fe-481e-2628-08da39121f85
+x-ms-traffictypediagnostic: PH7PR21MB3381:EE_
+x-microsoft-antispam-prvs: <PH7PR21MB33811F9CD392ADAA5CED9A14D6D19@PH7PR21MB3381.namprd21.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: yQl6IGbKM8l8Je0Yx54hVEDRK/4Syot/l6dLyA5KWqsgwn55uwRzMHWqcUioqrGELTRBqgpSAgYL5SIZRHk+H9EiWjGMj5N/p2mtcW7iKHY5JydWwA51CvNBnedhHf67S1T7SQo454InaLT/3vQuWGSSJiYDIitm8z1K5iOLg50hsbxGfYcSWBFMn2jYuctyiKWXCEFeG9mzGvQBn/OzuLuL2pqQzi7ey1c41mfZZsvOdeeMRG3lIMqPuGRpNAUH3xlju9eDRvhZn6RpNL3wzqmgxqjJjMsUWwsjW4axjE7Ba/CSSggfaaZQCCJqe1/J/Wv8Bym9CpLQOS0n4qkvY4q+lrDEB+PF3AlbwZzEyx/GEGi6szyit6RqIG3NkBmKqSTis3Tp9/8cCxmHJVK6oFT0SgfGEYxHVwL3b2yyx+3YLB+x2R6tFvbrixeh1qHuyX9FB9OTY4CFeYaTlJnkLHGrOI6mePh+oP3LxrjXIdiXbGR1c9ecSnKYWO0nLejzS2gkue3/AeSBUPIfFYBJNLgnShohf7zpkMJvBiqL5gSkRWq1xsL2NManPYkEoGfD2Sh7K/ls1GIYvObSBzJf1MHoKqQXuyVe0DYASOX/CLlLFfNZ7AgBCm5HKIj4U/SkMHBQkOiDCPppvpWZ3i3Eu26fpLJi1bXwlWZRinXuErgwpjlKVXE3guACLe3MXDBwhKtdU6QX82WB+lTBTIsUUL81kdvdCb6NvECKzB7PkF2OD6jzEdanFZmAIoFt7LX5
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL1PR21MB3283.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(451199009)(966005)(83380400001)(33656002)(7416002)(186003)(107886003)(316002)(122000001)(66556008)(76116006)(66446008)(8676002)(66476007)(64756008)(4326008)(82960400001)(66946007)(71200400001)(82950400001)(86362001)(38070700005)(38100700002)(55016003)(508600001)(52536014)(53546011)(8936002)(6506007)(6916009)(9686003)(10290500003)(54906003)(8990500004)(2906002)(7696005)(5660300002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?gqe695CfWuUVT38KzOt4J1UMEzEU7RROSWb0+oFo4YNaYx+4zDVvb2cQsmBL?=
+ =?us-ascii?Q?R1lNS3uHDcPDd7Xz96pVyK4tkrEl5sarweHPoaoRB4+6OX1Me1StnRgv/S/m?=
+ =?us-ascii?Q?WoJQnmbE6TEy90Nml83G4f3CBY7pWH7eJRa/9kPj6IEnOwfNATiqMUUQdNy9?=
+ =?us-ascii?Q?nMatT/ChFBM3TI4SdJ/6vmeablUp+ZVoa2lH6POO0pCA36hrrHN0ay1rjP2w?=
+ =?us-ascii?Q?zwDua2OkhTbc+vanBM7CnCGapKxrwo1HW0F7KcEqk8vWPAvZAhbH04bba856?=
+ =?us-ascii?Q?AmeWYi7XDbICwgEbORlBrptiu8OgZ1OnHwYgMR5W/9xgmCdZ0MFj7srZM8qu?=
+ =?us-ascii?Q?HGWqbHsq3E4ghoIpELjQXgqb6As084Aned0MFyB0tsx4ou3K2GfqDzg1mi5t?=
+ =?us-ascii?Q?bgIpzSXYliIO34LNip7X/KHZsjIxPvdF2M0pdemEXVqnUkwCz1yHqYc9/UAw?=
+ =?us-ascii?Q?DgT3vCpiZPeUN48HQWkn4owAzMsrVYBHa/3YVTbpzZO5Sn1t3M5RZbgUz3W6?=
+ =?us-ascii?Q?3WpbNihuawWRZeqA2nywVT5sp2MGQjfmMGBmKJ4p7x4fmD8PJJh6HGtQKIU5?=
+ =?us-ascii?Q?sExYdmtKwamFAi6ChRoBN3JWiPd1u4DPm7XUcun7N/ppIlCKR0IkzsZ0fUnZ?=
+ =?us-ascii?Q?4o9Sflmn/f7yHRMpe6hCd+OaG5fSot0/F3B7GM6havXqVcnpqoxh+iEnFN/X?=
+ =?us-ascii?Q?iZIAeCaAYH6E/z1qHPjOM1Atx6sK1Yx1gbXKsokc5bB4qaK2IdFf0n1f0SdJ?=
+ =?us-ascii?Q?BdQbYKTqBHbPyD4g8OKUtIvN66NKH3VpUS7II4F5s4uCz1ug26t3qrzUVKG3?=
+ =?us-ascii?Q?G2n98Mf5nUbOpVTi2GKLTg56jef1V9eem7thmLCmdoBuXh02j8J2tyt6lF7R?=
+ =?us-ascii?Q?7R5c4xcKLJ4H40HfU+dzIOayoyB2zIU4blP4RQ9rr/aX1brxZQx+YSsXqdHw?=
+ =?us-ascii?Q?xuQXyVNKrJyxnYc7CbUHpVknHYEpS0DgDSEPoq4P8PwiZbWElFGs8IZrao+V?=
+ =?us-ascii?Q?1UYzWw0n+fwVQI5V+/fZbDSA4j4cBni7/6R4OeEiC6F1QB5QoggfLQ96eX6U?=
+ =?us-ascii?Q?w7MDGtRYmz/0+VQ9KJ5w3CTegV4op0NU+kL/nz9nrWdnQh1nbMrju+kjtsUX?=
+ =?us-ascii?Q?wqIpYQ9Hz0fLlTffafOwVNcpZzx42IfhOebWQqHkIkHefqsAgbNramhuqchw?=
+ =?us-ascii?Q?BT2sDFCiTfFkAOJQOzbgG1wHXMYeSgowSZCedTbWbRpxfsTxnufXcXg1FPHL?=
+ =?us-ascii?Q?lmuVBn/e35+4bWir43wIfZyF7QQ0xaoMzvmlCZCHBiDsHUXhU5Xxjbo57ibE?=
+ =?us-ascii?Q?3A0EJflPWVtEWEW1X1OqXQMtT2F7LhLdQo0UfM2m5muQLiYiu2zkUViYAgo5?=
+ =?us-ascii?Q?r2V57BBIJWUTPAlCa45NjCZURam29CYa2r+6RxTLqx4mqDojwZdyP2rIT+2e?=
+ =?us-ascii?Q?Emx+WaJSKRDCpW2CqtT7eyMK3yhGT7rvzh+3YbLKIjC/8moer9vn7qLtJWkB?=
+ =?us-ascii?Q?bK6+LmT9bcov25g4RUssZYhP0OgjfbZJAO1ze9QwLdr6KA46vqDAyKbU0RSQ?=
+ =?us-ascii?Q?wgNcPnthp2Q5+FQNTzxn2IU5TuzB+5XWdlhN/3BpVgbtIvE2Ee4oJhxLWS+Q?=
+ =?us-ascii?Q?F8npAJqlzhQzvob0/L+7k1HmaofAMrZo5DYg5pvrlqdTluJ1oqE3byMF1F1f?=
+ =?us-ascii?Q?CLNwwVowjkDUvTApMrKedvAJsuQk7QsZNF4Un4TVISd4EAQh8zCGeGCo3jhE?=
+ =?us-ascii?Q?TwS+Cl8QsA=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL1PR21MB3283.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8da95963-13fe-481e-2628-08da39121f85
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2022 21:05:22.6311
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: cAz9dx3tBMHxabvxuNqFZx/HMFeFkQbhzapG4DqzJBsMdlw8e6kLZUdMqJfdG5j0vYCHrQ0R2vhyc1YxiOzm08ShXUb27G9m1DLCFhE34F0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH7PR21MB3381
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FORGED_SPF_HELO,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,572 +142,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Gives a primer on HID-BPF.
+Sorry , I am not able to follow. Below is the reference efa driver implemen=
+tation :
 
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+static int efa_device_init(struct efa_com_dev *edev, struct pci_dev *pdev)
+{
+	int dma_width;
+	int err;
 
----
+	err =3D efa_com_dev_reset(edev, EFA_REGS_RESET_NORMAL);
+	if (err)
+		return err;
 
-changes in v5:
-- amended for new API
-- reworded most of the sentences (thanks to Peter Hutterer for the review)
+	err =3D efa_com_validate_version(edev);
+	if (err)
+		return err;
 
-changes in v4:
-- fixed typos
+	dma_width =3D efa_com_get_dma_width(edev);
+	if (dma_width < 0) {
+		err =3D dma_width;
+		return err;
+	}
 
-new in v3
----
- Documentation/hid/hid-bpf.rst | 528 ++++++++++++++++++++++++++++++++++
- Documentation/hid/index.rst   |   1 +
- 2 files changed, 529 insertions(+)
- create mode 100644 Documentation/hid/hid-bpf.rst
+	err =3D dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(dma_width));
+	if (err) {
+		dev_err(&pdev->dev, "dma_set_mask_and_coherent failed %d\n", err);
+		return err;
+	}
 
-diff --git a/Documentation/hid/hid-bpf.rst b/Documentation/hid/hid-bpf.rst
-new file mode 100644
-index 000000000000..af05667e72bb
---- /dev/null
-+++ b/Documentation/hid/hid-bpf.rst
-@@ -0,0 +1,528 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+=======
-+HID-BPF
-+=======
-+
-+HID is a standard protocol for input devices but some devices may require
-+custom tweaks, traditionally done with a kernel driver fix. Using the eBPF
-+capabilities instead speeds up development and adds new capabilities to the
-+existing HID interfaces.
-+
-+.. contents::
-+    :local:
-+    :depth: 2
-+
-+
-+When (and why) to use HID-BPF
-+=============================
-+
-+We can enumerate several use cases for when using HID-BPF is better than
-+using a standard kernel driver fix:
-+
-+Dead zone of a joystick
-+-----------------------
-+
-+Assuming you have a joystick that is getting older, it is common to see it
-+wobbling around its neutral point. This is usually filtered at the application
-+level by adding a *dead zone* for this specific axis.
-+
-+With HID-BPF, we can apply this filtering in the kernel directly so userspace
-+does not get woken up when nothing else is happening on the input controller.
-+
-+Of course, given that this dead zone is specific to an individual device, we
-+can not create a generic fix for all of the same joysticks. Adding a custom
-+kernel API for this (e.g. by adding a sysfs entry) does not guarantee this new
-+kernel API will be broadly adopted and maintained.
-+
-+HID-BPF allows the userspace program to load the program itself, ensuring we
-+only load the custom API when we have a user.
-+
-+Simple fixup of report descriptor
-+---------------------------------
-+
-+In the HID tree, half of the drivers only fix one key or one byte
-+in the report descriptor. These fixes all require a kernel patch and the
-+subsequent shepherding into a release, a long and painful process for users.
-+
-+We can reduce this burden by providing an eBPF program instead. Once such a
-+program  has been verified by the user, we can embed the source code into the
-+kernel tree and ship the eBPF program and load it directly instead of loading
-+a specific kernel module for it.
-+
-+Note: distribution of eBPF programs and their inclusion in the kernel is not
-+yet fully implemented
-+
-+Add a new feature that requires a new kernel API
-+------------------------------------------------
-+
-+An example for such a feature are the Universal Stylus Interface (USI) pens.
-+Basically, USI pens require a new kernel API because there are new
-+channels of communication that our HID and input stack do not support.
-+Instead of using hidraw or creating new sysfs entries or ioctls, we can rely
-+on eBPF to have the kernel API controlled by the consumer and to not
-+impact the performances by waking up userspace every time there is an
-+event.
-+
-+Morph a device into something else and control that from userspace
-+------------------------------------------------------------------
-+
-+The kernel has a relatively static mapping of HID items to evdev bits.
-+It cannot decide to dynamically transform a given device into something else
-+as it does not have the required context and any such transformation cannot be
-+undone (or even discovered) by userspace.
-+
-+However, some devices are useless with that static way of defining devices. For
-+example, the Microsoft Surface Dial is a pushbutton with haptic feedback that
-+is barely usable as of today.
-+
-+With eBPF, userspace can morph that device into a mouse, and convert the dial
-+events into wheel events. Also, the userspace program can set/unset the haptic
-+feedback depending on the context. For example, if a menu is visible on the
-+screen we likely need to have a haptic click every 15 degrees. But when
-+scrolling in a web page the user experience is better when the device emits
-+events at the highest resolution.
-+
-+Firewall
-+--------
-+
-+What if we want to prevent other users to access a specific feature of a
-+device? (think a possibly broken firmware update entry point)
-+
-+With eBPF, we can intercept any HID command emitted to the device and
-+validate it or not.
-+
-+This also allows to sync the state between the userspace and the
-+kernel/bpf program because we can intercept any incoming command.
-+
-+Tracing
-+-------
-+
-+The last usage is tracing events and all the fun we can do we BPF to summarize
-+and analyze events.
-+
-+Right now, tracing relies on hidraw. It works well except for a couple
-+of issues:
-+
-+1. if the driver doesn't export a hidraw node, we can't trace anything
-+   (eBPF will be a "god-mode" there, so this may raise some eyebrows)
-+2. hidraw doesn't catch other processes' requests to the device, which
-+   means that we have cases where we need to add printks to the kernel
-+   to understand what is happening.
-+
-+High-level view of HID-BPF
-+==========================
-+
-+The main idea behind HID-BPF is that it works at an array of bytes level.
-+Thus, all of the parsing of the HID report and the HID report descriptor
-+must be implemented in the userspace component that loads the eBPF
-+program.
-+
-+For example, in the dead zone joystick from above, knowing which fields
-+in the data stream needs to be set to ``0`` needs to be computed by userspace.
-+
-+A corollary of this is that HID-BPF doesn't know about the other subsystems
-+available in the kernel. *You can not directly emit input event through the
-+input API from eBPF*.
-+
-+When a BPF program needs to emit input events, it needs to talk HID, and rely
-+on the HID kernel processing to translate the HID data into input events.
-+
-+Available types of programs
-+===========================
-+
-+HID-BPF is built "on top" of BPF, meaning that we use tracing method to
-+declare our programs.
-+
-+HID-BPF has the following attachment types available:
-+
-+1. event processing/filtering with ``SEC("fmod_ret/hid_bpf_device_event")`` in libbpf
-+2. actions coming from userspace with ``SEC("syscall")`` in libbpf
-+3. change of the report descriptor with ``SEC("fmod_ret/hid_bpf_rdesc_fixup")`` in libbpf
-+
-+A ``hid_bpf_device_event`` is calling a BPF program when an event is received from
-+the device. Thus we are in IRQ context and can act on the data or notify userspace.
-+And given that we are in IRQ context, we can not talk back to the device.
-+
-+A ``syscall`` means that userspace called the syscall ``BPF_PROG_RUN`` facility.
-+This time, we can do any operations allowed by HID-BPF, and talking to the device is
-+allowed.
-+
-+Last, ``hid_bpf_rdesc_fixup`` is different from the others as there can be only one
-+BPF program of this type. This is called on ``probe`` from the driver and allows to
-+change the report descriptor from the BPF program. Once a ``hid_bpf_rdesc_fixup``
-+program has been loaded, it is not possible to overwrite it unless the program which
-+inserted it allows us by pinning the program and closing all of its fds pointing to it.
-+
-+Developer API:
-+==============
-+
-+User API data structures available in programs:
-+-----------------------------------------------
-+
-+.. kernel-doc:: include/uapi/linux/hid_bpf.h
-+.. kernel-doc:: include/linux/hid_bpf.h
-+
-+Available tracing functions to attach a HID-BPF program:
-+--------------------------------------------------------
-+
-+.. kernel-doc:: drivers/hid/bpf/hid_bpf_dispatch.c
-+   :functions: hid_bpf_device_event hid_bpf_rdesc_fixup
-+
-+Available API that can be used in all HID-BPF programs:
-+-------------------------------------------------------
-+
-+.. kernel-doc:: drivers/hid/bpf/hid_bpf_dispatch.c
-+   :functions: hid_bpf_get_data
-+
-+Available API that can be used in syscall HID-BPF programs:
-+-----------------------------------------------------------
-+
-+.. kernel-doc:: drivers/hid/bpf/hid_bpf_dispatch.c
-+   :functions: hid_bpf_attach_prog hid_bpf_hw_request hid_bpf_allocate_context hid_bpf_release_context
-+
-+General overview of a HID-BPF program
-+=====================================
-+
-+Accessing the data attached to the context
-+------------------------------------------
-+
-+The ``struct hid_bpf_ctx`` doesn't export the ``data`` fields directly and to access
-+it, a bpf program needs to first call :c:func:`hid_bpf_get_data`.
-+
-+``offset`` can be any integer, but ``size`` needs to be constant, known at compile
-+time.
-+
-+This allows the following:
-+
-+1. for a given device, if we know that the report length will always be of a certain value,
-+   we can request the ``data`` pointer to point at the full report length.
-+
-+   The kernel will ensure we are using a correct size and offset and eBPF will ensure
-+   the code will not attempt to read or write outside of the boundaries::
-+
-+     __u8 *data = hid_bpf_get_data(ctx, 0 /* offset */, 256 /* size */);
-+
-+     if (!data)
-+         return 0; /* ensure data is correct, now the verifier knows we
-+                    * have 256 bytes available */
-+
-+     bpf_printk("hello world: %02x %02x %02x", data[0], data[128], data[255]);
-+
-+2. if the report length is variable, but we know the value of ``X`` is always a 16-bit
-+   integer, we can then have a pointer to that value only::
-+
-+      __u16 *x = hid_bpf_get_data(ctx, offset, sizeof(*x));
-+
-+      if (!x)
-+          return 0; /* something went wrong */
-+
-+      *x += 1; /* increment X by one */
-+
-+Effect of a HID-BPF program
-+---------------------------
-+
-+For all HID-BPF attachment types except for :c:func:`hid_bpf_rdesc_fixup`, several eBPF
-+programs can be attached to the same device.
-+
-+Unless ``HID_BPF_FLAG_INSERT_HEAD`` is added to the flags while attaching the
-+program, the new program is appended at the end of the list.
-+``HID_BPF_FLAG_INSERT_HEAD`` will insert the new program at the beginning of the
-+list which is useful for e.g. tracing where we need to get the unprocessed events
-+from the device.
-+
-+Note that if there are multiple programs using the ``HID_BPF_FLAG_INSERT_HEAD`` flag,
-+only the most recently loaded one is actually the first in the list.
-+
-+``SEC("fmod_ret/hid_bpf_device_event")``
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+Whenever a matching event is raised, the eBPF programs are called one after the other
-+and are working on the same data buffer.
-+
-+If a program changes the data associated with the context, the next one will see
-+the modified data but it will have *no* idea of what the original data was.
-+
-+Once all the programs are run and return ``0`` or a positive value, the rest of the
-+HID stack will work on the modified data, with the ``size`` field of the last hid_bpf_ctx
-+being the new size of the input stream of data.
-+
-+A BPF program returning a negative error discards the event, i.e. this event will not be
-+processed by the HID stack. Clients (hidraw, input, LEDs) will **not** see this event.
-+
-+``SEC("syscall")``
-+~~~~~~~~~~~~~~~~~~
-+
-+``syscall`` are not attached to a given device. To tell which device we are working
-+with, userspace needs to refer to the device by its unique system id (the last 4 numbers
-+in the sysfs path: ``/sys/bus/hid/devices/xxxx:yyyy:zzzz:0000``).
-+
-+To retrieve a context associated with the device, the program must call
-+:c:func:`hid_bpf_allocate_context` and must release it with :c:func:`hid_bpf_release_context`
-+before returning.
-+Once the context is retrieved, one can also request a pointer to kernel memory with
-+:c:func:`hid_bpf_get_data`. This memory is big enough to support all input/output/feature
-+reports of the given device.
-+
-+``SEC("fmod_ret/hid_bpf_rdesc_fixup")``
-+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-+
-+The ``hid_bpf_rdesc_fixup`` program works in a similar manner to
-+``.report_fixup`` of ``struct hid_driver``.
-+
-+When the device is probed, the kernel sets the data buffer of the context with the
-+content of the report descriptor. The memory associated with that buffer is
-+``HID_MAX_DESCRIPTOR_SIZE`` (currently 4kB).
-+
-+The eBPF program can modify the data buffer at-will and the kernel uses the
-+modified content and size as the report descriptor.
-+
-+Whenever a ``SEC("fmod_ret/hid_bpf_rdesc_fixup")`` program is attached (if no
-+program was attached before), the kernel immediately disconnects the HID device
-+and does a reprobe.
-+
-+In the same way, when the ``SEC("fmod_ret/hid_bpf_rdesc_fixup")`` program is
-+detached, the kernel issues a disconnect on the device.
-+
-+There is no ``detach`` facility in HID-BPF. Detaching a program happens when
-+all the user space file descriptors pointing at a program are closed.
-+Thus, if we need to replace a report descriptor fixup, some cooperation is
-+required from the owner of the original report descriptor fixup.
-+The previous owner will likely pin the program in the bpffs, and we can then
-+replace it through normal bpf operations.
-+
-+Attaching a bpf program to a device
-+===================================
-+
-+``libbpf`` does not export any helper to attach a HID-BPF program.
-+Users need to use a dedicated ``syscall`` program which will call
-+``hid_bpf_attach_prog(hid_id, program_fd, flags)``.
-+
-+``hid_id`` is the unique system ID of the HID device (the last 4 numbers in the
-+sysfs path: ``/sys/bus/hid/devices/xxxx:yyyy:zzzz:0000``)
-+
-+``progam_fd`` is the opened file descriptor of the program to attach.
-+
-+``flags`` is of type ``enum hid_bpf_attach_flags``.
-+
-+We can not rely on hidraw to bind a BPF program to a HID device. hidraw is an
-+artefact of the processing of the HID device, and is not stable. Some drivers
-+even disable it, so that removes the tracing capabilies on those devices
-+(where it is interesting to get the non-hidraw traces).
-+
-+On the other hand, the ``hid_id`` is stable for the entire life of the HID device,
-+even if we change its report descriptor.
-+
-+Given that hidraw is not stable when the device disconnects/reconnects, we recommend
-+accessing the current report descriptor of the device through the sysfs.
-+This is available at ``/sys/bus/hid/devices/BUS:VID:PID.000N/report_descriptor`` as a
-+binary stream.
-+
-+Parsing the report descriptor is the responsibility of the BPF programmer or the userspace
-+component that loads the eBPF program.
-+
-+An (almost) complete example of a BPF enhanced HID device
-+=========================================================
-+
-+*Foreword: for most parts, this could be implemented as a kernel driver*
-+
-+Let's imagine we have a new tablet device that has some haptic capabilities
-+to simulate the surface the user is scratching on. This device would also have
-+a specific 3 positions switch to toggle between *pencil on paper*, *cray on a wall*
-+and *brush on a painting canvas*. To make things even better, we can control the
-+physical position of the switch through a feature report.
-+
-+And of course, the switch is relying on some userspace component to control the
-+haptic feature of the device itself.
-+
-+Filtering events
-+----------------
-+
-+The first step consists in filtering events from the device. Given that the switch
-+position is actually reported in the flow of the pen events, using hidraw to implement
-+that filtering would mean that we wake up userspace for every single event.
-+
-+This is OK for libinput, but having an external library that is just interested in
-+one byte in the report is less than ideal.
-+
-+For that, we can create a basic skeleton for our BPF program::
-+
-+  #include "vmlinux.h"
-+  #include <bpf/bpf_helpers.h>
-+  #include <bpf/bpf_tracing.h>
-+
-+  /* HID programs need to be GPL */
-+  char _license[] SEC("license") = "GPL";
-+
-+  /* HID-BPF kfunc API definitions */
-+  extern __u8 *hid_bpf_get_data(struct hid_bpf_ctx *ctx,
-+			      unsigned int offset,
-+			      const size_t __sz) __ksym;
-+  extern int hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, u32 flags) __ksym;
-+
-+  struct {
-+	__uint(type, BPF_MAP_TYPE_RINGBUF);
-+	__uint(max_entries, 4096 * 64);
-+  } ringbuf SEC(".maps");
-+
-+  struct attach_prog_args {
-+	int prog_fd;
-+	unsigned int hid;
-+	unsigned int flags;
-+	int retval;
-+  };
-+
-+  SEC("syscall")
-+  int attach_prog(struct attach_prog_args *ctx)
-+  {
-+	ctx->retval = hid_bpf_attach_prog(ctx->hid,
-+					  ctx->prog_fd,
-+					  ctx->flags);
-+	return 0;
-+  }
-+
-+  __u8 current_value = 0;
-+
-+  SEC("?fmod_ret/hid_bpf_device_event")
-+  int BPF_PROG(filter_switch, struct hid_bpf_ctx *hid_ctx)
-+  {
-+	__u8 *data = hid_bpf_get_data(hid_ctx, 0 /* offset */, 192 /* size */);
-+	__u8 *buf;
-+
-+	if (!data)
-+		return 0; /* EPERM check */
-+
-+	if (current_value != data[152]) {
-+		buf = bpf_ringbuf_reserve(&ringbuf, 1, 0);
-+		if (!buf)
-+			return 0;
-+
-+		*buf = data[152];
-+
-+		bpf_ringbuf_commit(buf, 0);
-+
-+		current_value = data[152];
-+	}
-+
-+	return 0;
-+  }
-+
-+To attach ``filter_switch``, userspace needs to call the ``attach_prog`` syscall
-+program first::
-+
-+  static int attach_filter(struct hid *hid_skel, int hid_id)
-+  {
-+	int err, prog_fd;
-+	int ret = -1;
-+	struct attach_prog_args args = {
-+		.hid = hid_id,
-+	};
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattrs,
-+		.ctx_in = &args,
-+		.ctx_size_in = sizeof(args),
-+	);
-+
-+	args.prog_fd = bpf_program__fd(hid_skel->progs.filter_switch);
-+
-+	prog_fd = bpf_program__fd(hid_skel->progs.attach_prog);
-+
-+	err = bpf_prog_test_run_opts(prog_fd, &tattrs);
-+	return err;
-+  }
-+
-+Our userspace program can now listen to notifications on the ring buffer, and
-+is awaken only when the value changes.
-+
-+Controlling the device
-+----------------------
-+
-+To be able to change the haptic feedback from the tablet, the userspace program
-+needs to emit a feature report on the device itself.
-+
-+Instead of using hidraw for that, we can create a ``SEC("syscall")`` program
-+that talks to the device::
-+
-+  /* some more HID-BPF kfunc API definitions */
-+  extern struct hid_bpf_ctx *hid_bpf_allocate_context(unsigned int hid_id) __ksym;
-+  extern void hid_bpf_release_context(struct hid_bpf_ctx *ctx) __ksym;
-+  extern int hid_bpf_hw_request(struct hid_bpf_ctx *ctx,
-+			      __u8* data,
-+			      size_t len,
-+			      enum hid_report_type type,
-+			      int reqtype) __ksym;
-+
-+
-+  struct hid_send_haptics_args {
-+	/* data needs to come at offset 0 so we can do a memcpy into it */
-+	__u8 data[10];
-+	unsigned int hid;
-+  };
-+
-+  SEC("syscall")
-+  int send_haptic(struct hid_send_haptics_args *args)
-+  {
-+	struct hid_bpf_ctx *ctx;
-+	int i, ret = 0;
-+	__u8 *data;
-+
-+	ctx = hid_bpf_allocate_context(args->hid);
-+	if (!ctx)
-+		return 0; /* EPERM check */
-+
-+	/* We can not use the context data memory directly in the hid_bpf call,
-+	 * so we rely on the PTR_TO_MEM allocated in the hid_bpf_context
-+	 */
-+	data = hid_bpf_get_data(ctx, 0 /* offset */, 10 /* size */);
-+	if (!data)
-+		goto out; /* EPERM check */
-+
-+	__builtin_memcpy(data, args->data, sizeof(args->data));
-+
-+	ret = hid_bpf_hw_request(ctx,
-+				 data,
-+				 10,
-+				 HID_FEATURE_REPORT,
-+				 HID_REQ_SET_REPORT);
-+	if (ret < 0)
-+		goto out;
-+
-+	/* not strictly required here because we did a SET_REPORT */
-+	__builtin_memcpy(args->data, data, sizeof(args->data));
-+
-+    out:
-+	hid_bpf_release_context(ctx);
-+
-+	return ret;
-+  }
-+
-+And then userspace needs to call that program directly::
-+
-+  static int set_haptic(struct hid *hid_skel, int hid_id, __u8 haptic_value)
-+  {
-+	int err, prog_fd;
-+	int ret = -1;
-+	struct hid_send_haptics_args args = {
-+		.hid = hid_id,
-+	};
-+	DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattrs,
-+		.ctx_in = &args,
-+		.ctx_size_in = sizeof(args),
-+	);
-+
-+	args.data[0] = 0x02; /* report ID of the feature on our device */
-+	args.data[1] = haptic_value;
-+
-+	prog_fd = bpf_program__fd(hid_skel->progs.set_haptic);
-+
-+	err = bpf_prog_test_run_opts(prog_fd, &tattrs);
-+	return err;
-+  }
-+
-+Now our userspace program is aware of the haptic state and can control it. The
-+program could make this state further available to other userspace programs
-+(e.g. via a DBus API).
-+
-+The interesting bit here is that we did not created a new kernel API for this.
-+Which means that if there is a bug in our implementation, we can change the
-+interface with the kernel at-will, because the userspace application is
-+responsible for its own usage.
-diff --git a/Documentation/hid/index.rst b/Documentation/hid/index.rst
-index e50f513c579c..b2028f382f11 100644
---- a/Documentation/hid/index.rst
-+++ b/Documentation/hid/index.rst
-@@ -11,6 +11,7 @@ Human Interface Devices (HID)
-    hidraw
-    hid-sensor
-    hid-transport
-+   hid-bpf
- 
-    uhid
- 
--- 
-2.36.1
+	dma_set_max_seg_size(&pdev->dev, UINT_MAX);
+	return 0;
+}
 
+static int efa_register_mr(struct ib_pd *ibpd, struct efa_mr *mr, u64 start=
+,
+			   u64 length, u64 virt_addr, int access_flags)
+{
+	struct efa_dev *dev =3D to_edev(ibpd->device);
+	struct efa_com_reg_mr_params params =3D {};
+	struct efa_com_reg_mr_result result =3D {};
+	struct pbl_context pbl;
+	unsigned int pg_sz;
+	int inline_size;
+	int err;
+
+	params.pd =3D to_epd(ibpd)->pdn;
+	params.iova =3D virt_addr;
+	params.mr_length_in_bytes =3D length;
+	params.permissions =3D access_flags;
+
+	pg_sz =3D ib_umem_find_best_pgsz(mr->umem,
+				       dev->dev_attr.page_size_cap,
+				       virt_addr);
+....
+}
+
+Ideally we would like to read it from HW, but currently we are hardcoding t=
+he bitmap. I can change the commit message if you feel that is misleading .
+Something along the lines :
+RDMA/mana: Use API to get contiguous memory blocks aligned to device suppor=
+ted page size
+
+Use the ib_umem_find_best_pgsz() and rdma_for_each_block() API when
+registering an MR instead of coding it in the driver.
+
+ib_umem_find_best_pgsz() is used to find the best suitable page size
+which replaces the existing efa_cont_pages() implementation.
+rdma_for_each_block() is used to iterate the umem in aligned contiguous mem=
+ory blocks.
+
+
+Ajay=20
+
+
+-----Original Message-----
+From: Jason Gunthorpe <jgg@ziepe.ca>=20
+Sent: Wednesday, May 18, 2022 9:05 AM
+To: Ajay Sharma <sharmaajay@microsoft.com>
+Cc: Long Li <longli@microsoft.com>; KY Srinivasan <kys@microsoft.com>; Haiy=
+ang Zhang <haiyangz@microsoft.com>; Stephen Hemminger <sthemmin@microsoft.c=
+om>; Wei Liu <wei.liu@kernel.org>; Dexuan Cui <decui@microsoft.com>; David =
+S. Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Paolo Ab=
+eni <pabeni@redhat.com>; Leon Romanovsky <leon@kernel.org>; linux-hyperv@vg=
+er.kernel.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org; linux-=
+rdma@vger.kernel.org
+Subject: Re: [EXTERNAL] Re: [PATCH 05/12] net: mana: Set the DMA device max=
+ page size
+
+[You don't often get email from jgg@ziepe.ca. Learn why this is important a=
+t https://aka.ms/LearnAboutSenderIdentification.]
+
+On Wed, May 18, 2022 at 05:59:00AM +0000, Ajay Sharma wrote:
+> Thanks Long.
+> Hello Jason,
+> I am the author of the patch.
+> To your comment below :
+> " As I've already said, you are supposed to set the value that limits to =
+ib_sge and *NOT* the value that is related to ib_umem_find_best_pgsz. It is=
+ usually 2G because the ib_sge's typically work on a 32 bit length."
+>
+> The ib_sge is limited by the __sg_alloc_table_from_pages() which uses=20
+> ib_dma_max_seg_size() which is what is set by the eth driver using=20
+> dma_set_max_seg_size() . Currently our hw does not support PTEs larger=20
+> than 2M.
+
+*sigh* again it has nothing to do with *PTEs* in the HW.
+
+Jason
