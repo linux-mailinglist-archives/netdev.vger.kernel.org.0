@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B56F52C431
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:22:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CD0552C437
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242423AbiERUKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 16:10:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47356 "EHLO
+        id S242412AbiERUKK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 16:10:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242394AbiERUKA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:10:00 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 902A22375F7
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:09:51 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id e28so3571243wra.10
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:09:51 -0700 (PDT)
+        with ESMTP id S242418AbiERUKF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:10:05 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0228239789
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:09:53 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id k126-20020a1ca184000000b003943fd07180so1605398wme.3
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:09:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=OAGkT1M5jMR9soataqZ/aDlCf+slpduEKHamzxDek+k=;
-        b=nWSEVQAcxxJIiQkZxG8xgSo5vu5I9ZUHiImr8EADEL8kSkFbfVM8Z+pM6spbJA7xIS
-         x2EBkxIl74cC6FLEssPgc6edf8Kk1rhUVcEReBqLBiYH601c150gPmU22b3TeXotis0S
-         6cJ1RtsIKomQ414rySZaGUyuVcbJcHgmi3M/ScbiW0g+tnr3uixJjSARK+khNPx0Wu20
-         Da19MgE010SDvuxpfHelPqh9BNATH8CsxheYNWGZyFBmqLo5hAUbGzsbTfEHHRc2xjNg
-         InDxaIl+0rtY3n4ABjaBp9sji3I8l4Y0Fcw0mfILYcoSgry7sN6ziRIUQntFfiJ/YKmO
-         OQrw==
+        bh=gmIO/D4Ceaesv/SdaQGf7VpiPn4xB80QGFNJbqSVbYc=;
+        b=vPcmgPS1Zkav7EL8kAY3mLgR+8wgJTaoIpwtC8pZglq1poCcoa4VPa4pSJdm98yba3
+         Dc9i8L8D17fg1dDV1MciA85vi0SwtvTf0cIWWa0jaWi7FlHTh81D3xxtAYUio5a7q9yo
+         oVb1izlVGPk2k31vczCTsEvwhVj4scccR45jYEXUJzfd+kt6Y1S3y8bdLsIML35boUm4
+         D/00jIZVyCNxRNFcViiyr0lvuZb2bnlheBghCO/T6idKUPOe+w2viE9ZGodiSxZ6rPym
+         6w1tRY/kpkOqM0ShsI/anVPC7SJgVvi0Sd3tKll0sY9mdRGB6Bc1w3QjAdiKooMiMpPO
+         ODTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=OAGkT1M5jMR9soataqZ/aDlCf+slpduEKHamzxDek+k=;
-        b=l8bwE1YgCC0jbKjZw3WqC5U/4eRTdN07/dfscmOFdEr+QkLy77OMvgTqOLi++zfTV3
-         T8qlYCV2Wr9mP67QJVH3IMcn6qS0TxqBwNf/c1wF+OsYwJqoxLaq7Q9M3KOJ3xXJELTC
-         tQKrljGz2U2U3Do7nduMJWAeFf0IMbZAbY8vKZ/x0GiVhwEjRImC3D3SGxtIL+rXR+QG
-         pqxR7BtCm1/UITRCLsitUkdxn2EcTnDHTawBXg0NdNhhSdE1mi7PmAk5tOTCkP9Ot++f
-         bks2t28SLdrf1i0EGvMyz2BsjW1CehwoX/rNO5N7GCc6+OIK0TOHOwkBdwvZIqu37gp2
-         vUSg==
-X-Gm-Message-State: AOAM531NqoB7ZYu6JJUyYJbABIYQrR3vm7IIhEeJZrmf9tT/5hs3gvXB
-        z431fESB465TJ5K42tjcNFadSg==
-X-Google-Smtp-Source: ABdhPJx7027jt1OtEzgemX8nNGTw2DPHXeDkAAtNb+diLtz+l8F2qMFU1DeU5NN/nWByXPmhBkliSw==
-X-Received: by 2002:a5d:4741:0:b0:20d:2a5:6b2d with SMTP id o1-20020a5d4741000000b0020d02a56b2dmr1161260wrs.100.1652904591171;
-        Wed, 18 May 2022 13:09:51 -0700 (PDT)
+        bh=gmIO/D4Ceaesv/SdaQGf7VpiPn4xB80QGFNJbqSVbYc=;
+        b=gfXUt5ZPivVxw5W7xYjhXZhkJJV9fBQjfKOQipvWdjKGx2JJiwwdWZ6l1pEkBYi/88
+         2MZT1aNePKazYeqagkeHToNFCuvHtcdvgcM+Mz9XRdb+p93BUeWLF2lSll4Iqm0RTO5L
+         Hosl1irZkIPrbdpGb7OB1ik+WfWf5RJjoqNQx37T2NPMfmMM0QZzVxIjrA61+BCchWi2
+         V5vV4SEI+OZWVKQV6KQFFU+gTEKD+rHeTc/Tyy3jW7lGYxWTu1azUo9Hz9bjws2gyn24
+         vkrd7wBdkneUJGbH3diXP4yDIsRi2q0chJNQCi4TkPfdAZKxOW0wEbTgUVmZzVw29mYN
+         4Pug==
+X-Gm-Message-State: AOAM530KWQ7aF91wSJsFfQbGX9VdlsNfI95sMXRPchuteTl+UMTkBfGJ
+        iYeTI8YiE8o5e9DGdLiJ2+Ve7A==
+X-Google-Smtp-Source: ABdhPJwlu63b6+jK/4XJihJY2QnEy9b9pt9pGCMB3OHShfvK84RY+TPog8SwVoHsv1ZZ3Xh7i0PkEA==
+X-Received: by 2002:a05:600c:1c84:b0:394:5de0:2475 with SMTP id k4-20020a05600c1c8400b003945de02475mr888627wms.27.1652904592329;
+        Wed, 18 May 2022 13:09:52 -0700 (PDT)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id o23-20020a05600c511700b0039456c00ba7sm6859281wms.1.2022.05.18.13.09.50
+        by smtp.googlemail.com with ESMTPSA id o23-20020a05600c511700b0039456c00ba7sm6859281wms.1.2022.05.18.13.09.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 13:09:50 -0700 (PDT)
+        Wed, 18 May 2022 13:09:51 -0700 (PDT)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     andrew@lunn.ch, broonie@kernel.org, calvin.johnson@oss.nxp.com,
         davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
@@ -56,14 +56,17 @@ To:     andrew@lunn.ch, broonie@kernel.org, calvin.johnson@oss.nxp.com,
         wens@csie.org
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
-        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v2 4/5] dt-bindings: net: Add documentation for optional regulators
-Date:   Wed, 18 May 2022 20:09:38 +0000
-Message-Id: <20220518200939.689308-5-clabbe@baylibre.com>
+        netdev@vger.kernel.org,
+        =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v2 5/5] arm64: dts: allwinner: orange-pi-3: Enable ethernet
+Date:   Wed, 18 May 2022 20:09:39 +0000
+Message-Id: <20220518200939.689308-6-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220518200939.689308-1-clabbe@baylibre.com>
 References: <20220518200939.689308-1-clabbe@baylibre.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -74,33 +77,97 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add entries for the new optional regulators.
+From: Ondřej Jirman <megi@xff.cz>
 
+Orange Pi 3 has two regulators that power the Realtek RTL8211E
+PHY. According to the datasheet, both regulators need to be enabled
+at the same time, or that "phy-io" should be enabled slightly earlier
+than "phy" regulator.
+
+RTL8211E/RTL8211EG datasheet says:
+
+  Note 4: 2.5V (or 1.8/1.5V) RGMII power should be risen simultaneously
+  or slightly earlier than 3.3V power. Rising 2.5V (or 1.8/1.5V) power
+  later than 3.3V power may lead to errors.
+
+The timing is set in DT via startup-delay-us.
+
+Signed-off-by: Ondrej Jirman <megi@xff.cz>
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- Documentation/devicetree/bindings/net/ethernet-phy.yaml | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/net/ethernet-phy.yaml b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-index ed1415a4381f..bd59e5cc0a55 100644
---- a/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-+++ b/Documentation/devicetree/bindings/net/ethernet-phy.yaml
-@@ -153,6 +153,15 @@ properties:
-       used. The absence of this property indicates the muxers
-       should be configured so that the external PHY is used.
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+index c45d7b7fb39a..c3749b7302ba 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -13,6 +13,7 @@ / {
+ 	compatible = "xunlong,orangepi-3", "allwinner,sun50i-h6";
  
-+  regulators:
-+    description:
-+       List of phandle to regulators needed for the PHY
-+
-+  regulator-names:
-+    description:
-+      List of regulator name strings sorted in the same order as the
-+      regulators property.
-+
-   resets:
-     maxItems: 1
+ 	aliases {
++		ethernet0 = &emac;
+ 		serial0 = &uart0;
+ 		serial1 = &uart1;
+ 	};
+@@ -55,6 +56,15 @@ led-1 {
+ 		};
+ 	};
  
++	reg_gmac_2v5: gmac-2v5 {
++		compatible = "regulator-fixed";
++		regulator-name = "gmac-2v5";
++		regulator-min-microvolt = <2500000>;
++		regulator-max-microvolt = <2500000>;
++		enable-active-high;
++		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
++	};
++
+ 	reg_vcc5v: vcc5v {
+ 		/* board wide 5V supply directly from the DC jack */
+ 		compatible = "regulator-fixed";
+@@ -113,6 +123,33 @@ &ehci3 {
+ 	status = "okay";
+ };
+ 
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&ext_rgmii_pins>;
++	phy-mode = "rgmii-id";
++	phy-handle = <&ext_rgmii_phy>;
++	status = "okay";
++};
++
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <1>;
++		/*
++		 * The board uses 2.5V RGMII signalling. Power sequence to enable
++		 * the phy is to enable GMAC-2V5 and GMAC-3V (aldo2) power rails
++		 * at the same time and to wait 100ms. The driver enables phy-io
++		 * first. Delay is achieved with enable-ramp-delay on reg_aldo2.
++		 */
++		regulators = <&reg_gmac_2v5>, <&reg_aldo2>;
++		regulator-names = "phy-io", "phy";
++
++		reset-gpios = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
++		reset-assert-us = <15000>;
++		reset-deassert-us = <40000>;
++	};
++};
++
+ &gpu {
+ 	mali-supply = <&reg_dcdcc>;
+ 	status = "okay";
+@@ -211,6 +248,7 @@ reg_aldo2: aldo2 {
+ 				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-name = "vcc33-audio-tv-ephy-mac";
++				regulator-enable-ramp-delay = <100000>;
+ 			};
+ 
+ 			/* ALDO3 is shorted to CLDO1 */
 -- 
 2.35.1
 
