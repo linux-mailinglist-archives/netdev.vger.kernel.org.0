@@ -2,159 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C3AF852B27A
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 08:37:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF35852B2B7
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 08:50:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231366AbiERGgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 02:36:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52692 "EHLO
+        id S231574AbiERGtu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 02:49:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231191AbiERGgh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 02:36:37 -0400
-Received: from EUR05-AM6-obe.outbound.protection.outlook.com (mail-am6eur05on2113.outbound.protection.outlook.com [40.107.22.113])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0129ABC0
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 23:36:36 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jXkE8WOvWRk2R/pHvXdWpaDh9b5eQwypvqP8nwl60szVUt3YKy3qmZ8oDOJxe1hhi7uFWBoA3hryzmMdM6sAF4dyzFlaZEYdSFHc+lV0S/VhzZ+CEUJllz6O3oTI+BK9kZ8x83u9oaNS+ekkb/l+7ve5g+TEpfzY33EdLizXkYuar7bRrVObAwDdifnkia7m0sxe7H4CgQ+WhxSUcMrKXQVM8AMIKTuKzgzq5x8QUDW6jUB4chuzIJ73AGly8Pn1u9v7O2E2P5ecWFSGEXWTFZwTJECN/02N5xBmbj0PS3FP9OmHQ4/iBdCwcFFFywR4W/6VTnT0ONsOMSlwhSMUmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MnvSQG9RN7mA22NmWfveEjPQQaE6CKfk+QS9UE80Lkw=;
- b=jj/3ANRg6W4gA3LcMtzDxiyShzgjMHS/E0sq19PWe+o4+W3YpT1S6hBWkFGyWinyAwKJiCl06m66ve9W1InMzDZC77TL/B60lx8cTgNMs42zoULspUWrs/UWXrLdcOw19r3iEo/mjab7anX+ov863Wnm/wp7weCJ/XFcnW4healGtE4tijZtucNeoDJ1l4kLiYW11Fpuiwn3DxaDmRRbmRjYCrY7navhoxMuGMFb14fmXwaSnEGIsYuMTlRJ6gsG0t5XQzyUBfDynnERL9s7wMfg3qDeVS18uYTLqkAch9lIdtyDLQVGxeFG9ffYFdR9Sb+g5EpmYgpBqo974VeoIw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=cvk.de; dmarc=pass action=none header.from=cvk.de; dkim=pass
- header.d=cvk.de; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cvk.de; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MnvSQG9RN7mA22NmWfveEjPQQaE6CKfk+QS9UE80Lkw=;
- b=joW2vBPNwfJotGQt6BffZONT1EKR2dpDPdIZoLWlCYL60yKsgBD67maREMmpc9hOLI/3XAnYW5SVvE8SJlIdAQJeJ/qhx/2z8EGfS6584lZl8RMxCQfX8KDFVd4zIMv/aDt+8cddd55i/y74DBIdn2eAXTZ2znpqZMN6/fQod+M=
-Received: from AS1PR06MB8442.eurprd06.prod.outlook.com (2603:10a6:20b:4c6::15)
- by HE1PR0601MB2587.eurprd06.prod.outlook.com (2603:10a6:3:53::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Wed, 18 May
- 2022 06:36:32 +0000
-Received: from AS1PR06MB8442.eurprd06.prod.outlook.com
- ([fe80::6881:4ae2:5a06:68ee]) by AS1PR06MB8442.eurprd06.prod.outlook.com
- ([fe80::6881:4ae2:5a06:68ee%7]) with mapi id 15.20.5273.014; Wed, 18 May 2022
- 06:36:32 +0000
-From:   "Bartschies, Thomas" <Thomas.Bartschies@cvk.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: AW: [Patch] net: af_key: check encryption module availability
- consistency
-Thread-Topic: [Patch] net: af_key: check encryption module availability
- consistency
-Thread-Index: AQHYalB+9TiF+0Ik0Umk72NfBn/I8K0kKwBw
-Date:   Wed, 18 May 2022 06:36:32 +0000
-Message-ID: <AS1PR06MB8442A643D0EBE2DFD7190D208BD19@AS1PR06MB8442.eurprd06.prod.outlook.com>
-References: <20220516125730.4446D160219F3@cvk027.cvk.de>
- <20220517174447.0e596e4f@kernel.org>
-In-Reply-To: <20220517174447.0e596e4f@kernel.org>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=cvk.de;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 31c8bdbe-d7ec-472b-bfc7-08da3898bf53
-x-ms-traffictypediagnostic: HE1PR0601MB2587:EE_
-x-microsoft-antispam-prvs: <HE1PR0601MB258700E8637A2B4BEBCDB8658BD19@HE1PR0601MB2587.eurprd06.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 2kX1phfhHhwBkBfwG2VuEexh6UbEbqrM5ZeHq5xLNsONik/aOA4r36yshfMEsiJLRXveMyfagPYY/02TQQwr4ooBiAqeWQFPPMxp3kqfiXmlPYRI6SECLbhVL0JPaX1N8dIisooajIlFPM2bobLVeuP3/+hmp7zH42uazSbdrN9xsDS9Mf+5H8UCHYQPbAtSJCUzh/pqVJTFUgXCTFvSPfp+6JgFxQHLn7C6nRyuLJ+SHCa836elczVIfE1+YdQ/Yj3sa/FMta0FLVn1opGneF2OBQCW6mjLRUknS5iUvV2B9l2kyQQQM0M7lG/hiQfpNYRkVnpB95JU2d10OpLAyzI1kuWIPyTqFWDWWATWyfhh64zr92WYT6FuDENw9AdgOCr1u1Qr+ZHsTp1CGloyUxBm7XrRlmq2kTWaB8C4v4Xn+HCRfxBIlm4ZG9EutzszqY2G3mrT+pb2IguiszMTj4pWKbtUol4A/lzKOVDZPtq7VAWUHuWooh0VRvJ3pxUUQ8y3gKWPLgl/kpijpdnWXY4JDtJVpWEPVHcZRXKygFRxjg1mcDrZfhqwKmdNjYFSN/bpARpn8JPSySAc2hpQF+G7mknnHDiSOv76KBsBy7IK+4xwIYurqSBNWW6pdHQs53Fbe4Gm4H/YAF4U+jw1gyqxzSFnuu+oLsbZVXW4VG5lT3dOgPlMAeWwKlHYF2YdigwsS6oEOWCOGEynVClx+g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AS1PR06MB8442.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38070700005)(122000001)(66476007)(64756008)(66946007)(86362001)(66446008)(66556008)(4326008)(38100700002)(186003)(2906002)(9686003)(26005)(76116006)(8676002)(5660300002)(7696005)(6506007)(83380400001)(33656002)(71200400001)(8936002)(52536014)(55016003)(316002)(6916009)(508600001)(66574015);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?opnD70YnAgZdtIuDVpOUtZt46myX2FrXUsB00tsINiu9bl/X/ZDMVA6gn/?=
- =?iso-8859-1?Q?uOheGkYkFlLHTa9EzsPOc82a3sFeFcnsGvcWcrBuzoViwywjOx6bOiAVDL?=
- =?iso-8859-1?Q?/AhIdbdg16HiXzgFtG5Ezl/yLmnOsLoyJf2ONCNS7jYEYSgnUBp9vACIp1?=
- =?iso-8859-1?Q?pi7E5R7HefHzAGuUqsVtvPJ/rnk1xHXMjlZkSbTEBUERfNHfsaDK4YEACh?=
- =?iso-8859-1?Q?r2IbfUxgsdrQxAVIRPpQhL8AQ/CHbUE97sZntprX6Kmbqg33En1BCtszqq?=
- =?iso-8859-1?Q?OjLnKrWE54iM5/9Hhk/m381I92Ctse0eOI1n4yHoxiexsYsZrvicsnxaBC?=
- =?iso-8859-1?Q?mEhn/EuMMyVnZUdy8LZXfqYYZ+8pzsKtB7kN7OzptP5YLsLp9uC1hCil0w?=
- =?iso-8859-1?Q?uf7StmBD0iFexr2etkL1MJlURow5pZ2hIMXVC5AXZBQiUHL/kvgXHYjxh5?=
- =?iso-8859-1?Q?vJwwJZ8rAm8qw1G/lNErsh7GtBfR11lMH8iaDfy/OdDe+khAZz3AYlWt0m?=
- =?iso-8859-1?Q?49YLFOd9eHWd7+Z2a3lK1PUZtJX847mqlTUQMCS4moaU9pS1l9Ly2YAM1P?=
- =?iso-8859-1?Q?x6VcHwZ2bdHQUw9TxGWbI+sNMSppCbHsIo9+vR20/BKJLXH9pOD1+b+zzA?=
- =?iso-8859-1?Q?CvBoLMec91k1m78hT5PbJ3w24f5T5t9n9TbOKzVaL+46QDhB9GrtyWsyWk?=
- =?iso-8859-1?Q?UjhIiIVX3fXuJQ2OgBtt2tGdeCT6U1TKjsiJDVY7tuzlPxlXoL3axCdD12?=
- =?iso-8859-1?Q?+4dpo1wIxib2l8a4+dxZfha1OYbNeNDQXEQTZHO8Z+spUmH/DB6D1qlzPe?=
- =?iso-8859-1?Q?/iIPQ2AjCvRA6zbY1f06O3OhgV3hE+5wI0BJB4HklBTUUPSzL3H8BcKWWR?=
- =?iso-8859-1?Q?U061zwARZfppVLv8mdlf20t2baUWDnbRTVjUHOJ4ECKa/xvT+CBIPAmxFR?=
- =?iso-8859-1?Q?qINxj9eCQ9K3Ju15S6v8BBaK/WhPAYCwxLt1AEwdvBdKjlAThfnQr3N4ts?=
- =?iso-8859-1?Q?ZOg+D4kU69AY4W31SrrsHupsCAeNCYfzwgMTPMZU3cMlMstymcsVRlKUNx?=
- =?iso-8859-1?Q?IRYOf1X0aa3OEFcqq4VlH/hHaI8UfI47XjYpzS7BByIMyAdFlsHJMQp8sN?=
- =?iso-8859-1?Q?CL/wYNr8UKYP6Jo5CBoVI9x0+fZ9QIWm2aYmifMLPIiZL+G2FuzxdEmBet?=
- =?iso-8859-1?Q?v4AYKzbW17CnjrEScF9M4woa/pWJ80M+z8wIwYzRqI6O1dS28rRq0/k3eZ?=
- =?iso-8859-1?Q?oExi+cTNFomh0lw28XEegLow8G/De7z/ZlsGMlwtb6TeX1UiFAmJqC1Rzc?=
- =?iso-8859-1?Q?0WnOPnELc+K6z/V3Zl/NpMB2JKkkSp7ljjxy5xwX7c0S62SVbQQwjRYFky?=
- =?iso-8859-1?Q?U2Kmgt7fZcDIfWQwaNwl7BQjtdjz4R/hUb3+cml6KiXMBuBY75tXF1nVhe?=
- =?iso-8859-1?Q?FcJz22Jad5hNt5Uy2Jz+3fcGTjVtWDM4LzWkSMmgN8LaDexV2BF/t8pyMt?=
- =?iso-8859-1?Q?rFOxx+uomV5DYRonVy39JXujU7ui3iv03p3rw0Tz1CZffPQZb9ON20E9jx?=
- =?iso-8859-1?Q?RHIJKdx7Iwwz6sXD5EKhe+Yg/TlCk5OWLlvO+IRRVVDZ89pkBoP2ke6qEl?=
- =?iso-8859-1?Q?z8R4X8tcBfOpBoN1zSpdObYt4yZzNdwOYODkaOGfLaJThOWjUtFVpAvxrU?=
- =?iso-8859-1?Q?E/1MHP77Nr4LZrQPuGP4RVx/Bc+tpUGvZzcpK5ug3Gyb97IPLX7LZasg1h?=
- =?iso-8859-1?Q?IbmjwJPiK2bgMB8/pWkoOwoXPq2vKxxfowm7epwFlD2DzC?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S231560AbiERGtq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 02:49:46 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 715C42228A
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 23:49:44 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0E63760C05
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 06:49:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D998C385A5;
+        Wed, 18 May 2022 06:49:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652856583;
+        bh=ERk/q7yynBn3ExG67f6Nm4Kbn1V+ovT7TBB5z8v86KQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bOkyiHC7dR7rCq37jxK+k5lDCx/0i6+QtkSKi+scw9Tv8cowxH05RB8j9/Dikz8Vw
+         Iu5GklFi4ZmjwGoQtqzjiMQjHvH2bGdL+b1Gln4Yc83BE2O86GNdZ67MnSs0bHLmco
+         w/jdX1BksAHhtkxQX4atpxeVtzt5SiiYiblU+1nT331gEFepCKVSsHHWncZOwQSXBY
+         kMBvBPt5O1Mn/b82gKcpSnApMgEaZz5yiUGfv73pYjxpXkYuNcHlnf+puN0l97fJde
+         KADnTrdN4I6M/14XTP+OSMwJaNAcUR9aeEI78N0wx24/6Oz6rL9pd4mxdytFIpQVjM
+         X3ZuKXQ0l+Rtg==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next 00/16] mlx5 updates 2022-05-17
+Date:   Tue, 17 May 2022 23:49:22 -0700
+Message-Id: <20220518064938.128220-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-X-OriginatorOrg: cvk.de
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AS1PR06MB8442.eurprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 31c8bdbe-d7ec-472b-bfc7-08da3898bf53
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2022 06:36:32.2155
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0be0d70f-f404-4497-9fa7-3a7b7c98630d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Xpd/+cRRAx90u5Be0uTAOiw8QMS7unXKqarWr/Pq+mHD5CdVfqc4l9ztBUVp0cLt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0601MB2587
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-thanks for the info. I've reposted it with the appropriate mail headers you=
-'ve suggested. Although I saw my first post in
-the LKML and netdev archives. It's my first own patch posting.
+This series adds misc updates and Multi "uplink" port eswitch support
+For more information please see tag log below.
 
-Best regards,
---
-Thomas Bartschies
-CVK IT Systeme
+Please pull and let me know if there is any problem.
 
------Urspr=FCngliche Nachricht-----
-Von: Jakub Kicinski <kuba@kernel.org>=20
-Gesendet: Mittwoch, 18. Mai 2022 02:45
-An: Bartschies, Thomas <Thomas.Bartschies@cvk.de>
-Cc: netdev@vger.kernel.org
-Betreff: Re: [Patch] net: af_key: check encryption module availability cons=
-istency
+There will be a minor conflict, mostly contextual when net-next is merged with
+the current mlx5 net PR [1], I will provide resolution details if necessary. 
 
-On Mon, 16 May 2022 14:57:30 +0200 (CEST) Thomas Bartschies wrote:
-> Since the recent introduction supporting the SM3 and SM4 hash algos for I=
-Psec, the kernel=20
-> produces invalid pfkey acquire messages, when these encryption modules ar=
-e disabled. This=20
-> happens because the availability of the algos wasn't checked in all neces=
-sary functions.=20
-> This patch adds these checks.
->=20
-> Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
+[1] https://patchwork.kernel.org/project/netdevbpf/list/?series=642587
 
-This has not made it into patchwork.
+Thanks,
+Saeed.
 
-Did you put the list on BCC or something? If so how would people=20
-on the list see replies to this patch?
 
-Please repost it with appropriate To: and CC: lists.
-To: davem@davemloft.net
-CC: everyone from scripts/get_maintainer
+The following changes since commit 6e144b47f560edc25744498f360835b1042b73dd:
+
+  octeontx2-pf: Add support for adaptive interrupt coalescing (2022-05-17 18:05:28 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2022-05-17
+
+for you to fetch changes up to 94db3317781922ba52722c58061e0e8517d4d80d:
+
+  net/mlx5: Support multiport eswitch mode (2022-05-17 23:41:51 -0700)
+
+----------------------------------------------------------------
+mlx5-updates-2022-05-17
+
+MISC updates to mlx5 dirver
+
+1) Aya Levin allows relaxed ordering over VFs
+
+2) Gal Pressman Adds support XDP SQs for uplink representors in switchdev mode
+
+3) Add debugfs TC stats and command failure syndrome for debuggability
+
+4) Tariq uses variants of vzalloc where it could help
+
+5) Multiport eswitch support from Elic Cohen:
+
+Eli Cohen Says:
+===============
+
+The multiport eswitch feature allows to forward traffic from a
+representor net device to the uplink port of an associated eswitch's
+uplink port.
+
+This feature requires creating a LAG object. Since LAG can be created
+only once for a function, the feature is mutual exclusive with either
+bonding or multipath.
+
+Multipath eswitch mode is entered automatically these conditions are
+met:
+1. No other LAG related mode is active.
+2. A rule that explicitly forwards to an uplink port is inserted.
+
+The implementation maintains a reference count on such rules. When the
+reference count reaches zero, the LAG is released and other modes may be
+used.
+
+When an explicit rule that explicitly forwards to an uplink port is
+inserted while another LAG mode is active, that rule will not be
+offloaded by the hardware since the hardware cannot guarantee that the
+rule will actually be forwarded to that port.
+
+Example rules that forwards to an uplink port is:
+
+$ tc filter add dev rep0 root flower action mirred egress \
+  redirect dev uplinkrep0
+
+$ tc filter add dev rep0 root flower action mirred egress \
+  redirect dev uplinkrep1
+
+This feature is supported only if LAG_RESOURCE_ALLOCATION firmware
+configuration parameter is set to true.
+
+The series consists of three patches:
+1. Lag state machine refactor
+   This patch does not add new functionality but rather changes the way
+   the state of the LAG is maintained.
+2. Small fix to remove unused argument.
+3. The actual implementation of the feature.
+===============
+
+----------------------------------------------------------------
+Aya Levin (1):
+      net/mlx5e: Allow relaxed ordering over VFs
+
+Eli Cohen (3):
+      net/mlx5: Lag, refactor lag state machine
+      net/mlx5: Remove unused argument
+      net/mlx5: Support multiport eswitch mode
+
+Gal Pressman (3):
+      net/mlx5e: IPoIB, Improve ethtool rxnfc callback structure in IPoIB
+      net/mlx5e: Support partial GSO for tunnels over vlans
+      net/mlx5e: Add XDP SQs to uplink representors steering tables
+
+Moshe Shemesh (1):
+      net/mlx5: Add last command failure syndrome to debugfs
+
+Moshe Tal (1):
+      net/mlx5e: Correct the calculation of max channels for rep
+
+Saeed Mahameed (2):
+      net/mlx5: sparse: error: context imbalance in 'mlx5_vf_get_core_dev'
+      net/mlx5e: CT: Add ct driver counters
+
+Tariq Toukan (5):
+      net/mlx5: Inline db alloc API function
+      net/mlx5: Allocate virtually contiguous memory in vport.c
+      net/mlx5: Allocate virtually contiguous memory in pci_irq.c
+      net/mlx5e: Allocate virtually contiguous memory for VLANs list
+      net/mlx5e: Allocate virtually contiguous memory for reps structures
+
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/alloc.c    |   6 -
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |   7 +-
+ drivers/net/ethernet/mellanox/mlx5/core/debugfs.c  |   2 +
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |   1 +
+ .../net/ethernet/mellanox/mlx5/core/en/params.c    |   3 +-
+ .../ethernet/mellanox/mlx5/core/en/tc/act/mirred.c |  14 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |  52 +++++-
+ .../net/ethernet/mellanox/mlx5/core/en_common.c    |   5 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c    |   4 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  11 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_rep.c   |  35 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  28 ++-
+ drivers/net/ethernet/mellanox/mlx5/core/en_tc.h    |   7 +
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |   3 +
+ .../ethernet/mellanox/mlx5/core/ipoib/ethtool.c    |  14 +-
+ .../net/ethernet/mellanox/mlx5/core/lag/debugfs.c  |  21 +--
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c  | 192 +++++++++++++--------
+ drivers/net/ethernet/mellanox/mlx5/core/lag/lag.h  |  41 +++--
+ drivers/net/ethernet/mellanox/mlx5/core/lag/mp.c   |   4 +-
+ .../net/ethernet/mellanox/mlx5/core/lag/mpesw.c    | 101 +++++++++++
+ .../net/ethernet/mellanox/mlx5/core/lag/mpesw.h    |  26 +++
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   2 -
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  |   8 +-
+ drivers/net/ethernet/mellanox/mlx5/core/vport.c    |  52 +++---
+ include/linux/mlx5/driver.h                        |   9 +-
+ include/linux/mlx5/mlx5_ifc.h                      |   5 +-
+ 27 files changed, 489 insertions(+), 166 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lag/mpesw.h
