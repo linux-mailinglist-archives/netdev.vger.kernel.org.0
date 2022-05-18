@@ -2,70 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 922B452BE53
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 17:26:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84CDF52BE65
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 17:26:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238964AbiERO4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 10:56:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
+        id S239217AbiERPQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 11:16:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238955AbiEROz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 10:55:59 -0400
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81118A0D2C;
-        Wed, 18 May 2022 07:55:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652885748;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:References:Cc:To:From:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=hYcXcVlFfZvhuv9lwG+hye9EfZ3gHatNRoDkftDUeBA=;
-    b=Cuf9zkMbPoAgn8g3F1Ud6Dt6PDDOpeyuar18uYcRNT+y/2t4smyXEb8tqmYaw0RTeu
-    P4S15iqyyCLY9ovfvOUmWK1Tud1CXVoola59TWCzwY9F7bJ9eIxW9CGx1VUvzfGy8ooa
-    GYD+YKKT25qY4bycjMm3+SbnAbv6JCDf7nNtOT9IoP3pLKEZxA+qTzUqYbHnrMtysnKd
-    Rv08soLyo6TNB5ixmLKpL9RPDk38SjEVfyLGd+rUn9UsAs7Z9dyccOF/V1WZ9Nr6Z34l
-    mMaM7+sQVvMQaPeWwLj8G54q2pMF+112eggoTyR9BqKUa+ieYRV0bgCE0a7aongd3thB
-    5TYw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cff:5b00::b82]
-    by smtp.strato.de (RZmta 47.45.0 AUTH)
-    with ESMTPSA id R0691fy4IEtmHtG
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Wed, 18 May 2022 16:55:48 +0200 (CEST)
-Message-ID: <899706c6-0aac-b039-4b67-4e509ff0930d@hartkopp.net>
-Date:   Wed, 18 May 2022 16:55:48 +0200
+        with ESMTP id S239190AbiERPQe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 11:16:34 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CEE256A42A
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 08:16:31 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id h14so3176066wrc.6
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 08:16:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:date:in-reply-to
+         :message-id:mime-version;
+        bh=i4HUA0YJMkIO+o2Vg/Sq8Fq4maURSbUg0U3Z/Q7nYmw=;
+        b=mCKcHJYp2Bkepx7tlhuTqmlwG2RU5dk/pP+zG6cVSW1uHEbtHNJYikT7mZaVAiglMa
+         raOMDK2+n6x1tKD0JDmDETmGusgmL7dydzBYQOv8r0HKqb4dISJlFZiqSN/Ml2p8v7J9
+         VXl6YRXrCXASYkVEKjbgu6b8yOlFKEXtu07iI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
+         :in-reply-to:message-id:mime-version;
+        bh=i4HUA0YJMkIO+o2Vg/Sq8Fq4maURSbUg0U3Z/Q7nYmw=;
+        b=A31X7sn/Ia8f1za/KqGuFNw3aPnK1hqfJA7WiFbWYfuidBiZb0oZ7GF0v8LLp4NK+B
+         fQ9dHw3JwDvEdY5BE4HbiO6pjJu8VuC+TLCnzENlw7P2rtyTjOqHkQx2oysPkcKIHdc6
+         fyIPmGaXnBsQTzPX+B1rMAQSl3s4udVY4xRRgjVL1+gW7/QsYty4Nj8Yz6DnQYlo8+da
+         gpkYL+0fYA07o7tD7zulb7fCOL1vE9TB0ODtLo3670bCQWVS1cbrEJLmPcXdOMhynaUK
+         2/pQNxODQpLiviU3Mfr6W9ALYUj0TscxQHoTzoQkDH43sOZZZeJj7uAmqhZO6iA1cdS8
+         SNLg==
+X-Gm-Message-State: AOAM530umZ1QCB6yHb9lVaU8iB0x2b5twt6ubJIk77nVx/MYZQ9z4moz
+        Jtdblg3JPXIcr7gPledfjf341g==
+X-Google-Smtp-Source: ABdhPJzsslAUSZJ41bnZ5U6Qa3jOAILR0ulx7dyfyWKaMyd7dAnUunZ1WrgxrQa2qVyCYWM+1YhpiA==
+X-Received: by 2002:adf:d090:0:b0:20d:3d4:8845 with SMTP id y16-20020adfd090000000b0020d03d48845mr192537wrh.162.1652886990119;
+        Wed, 18 May 2022 08:16:30 -0700 (PDT)
+Received: from cloudflare.com ([85.88.143.70])
+        by smtp.gmail.com with ESMTPSA id v14-20020a056000144e00b0020cdf6ecafbsm3303773wrx.81.2022.05.18.08.16.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 08:16:29 -0700 (PDT)
+References: <20220429211540.715151-1-sdf@google.com>
+ <20220429211540.715151-3-sdf@google.com>
+User-agent: mu4e 1.6.10; emacs 27.2
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Subject: Re: [PATCH bpf-next v6 02/10] bpf: convert cgroup_bpf.progs to hlist
+Date:   Wed, 18 May 2022 16:16:08 +0100
+In-reply-to: <20220429211540.715151-3-sdf@google.com>
+Message-ID: <875ym2zx9v.fsf@cloudflare.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-Content-Language: en-US
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
-        Max Staudt <max@enpas.org>, linux-can@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
- <20220517141404.578d188a.max@enpas.org>
- <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
- <20220517143921.08458f2c.max@enpas.org>
- <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
- <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
- <43768ff7-71f8-a6c3-18f8-28609e49eedd@hartkopp.net>
- <20220518132811.xfmwms2cu3bfxgrp@pengutronix.de>
- <CAMZ6RqJqeNjAtoDWADHsWocgbSXqQixcebJBhiBFS8BVeKCb3g@mail.gmail.com>
- <3dbe135e-d13c-5c5d-e7e4-b9c13b820fb8@hartkopp.net>
- <20220518143613.2a7alnw6vtkw7ct2@pengutronix.de>
- <482fd87a-df5a-08f7-522b-898d68c3b04a@hartkopp.net>
-In-Reply-To: <482fd87a-df5a-08f7-522b-898d68c3b04a@hartkopp.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -73,27 +67,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Apr 29, 2022 at 02:15 PM -07, Stanislav Fomichev wrote:
+> This lets us reclaim some space to be used by new cgroup lsm slots.
+>
+> Before:
+> struct cgroup_bpf {
+> 	struct bpf_prog_array *    effective[23];        /*     0   184 */
+> 	/* --- cacheline 2 boundary (128 bytes) was 56 bytes ago --- */
+> 	struct list_head           progs[23];            /*   184   368 */
+> 	/* --- cacheline 8 boundary (512 bytes) was 40 bytes ago --- */
+> 	u32                        flags[23];            /*   552    92 */
+>
+> 	/* XXX 4 bytes hole, try to pack */
+>
+> 	/* --- cacheline 10 boundary (640 bytes) was 8 bytes ago --- */
+> 	struct list_head           storages;             /*   648    16 */
+> 	struct bpf_prog_array *    inactive;             /*   664     8 */
+> 	struct percpu_ref          refcnt;               /*   672    16 */
+> 	struct work_struct         release_work;         /*   688    32 */
+>
+> 	/* size: 720, cachelines: 12, members: 7 */
+> 	/* sum members: 716, holes: 1, sum holes: 4 */
+> 	/* last cacheline: 16 bytes */
+> };
+>
+> After:
+> struct cgroup_bpf {
+> 	struct bpf_prog_array *    effective[23];        /*     0   184 */
+> 	/* --- cacheline 2 boundary (128 bytes) was 56 bytes ago --- */
+> 	struct hlist_head          progs[23];            /*   184   184 */
+> 	/* --- cacheline 5 boundary (320 bytes) was 48 bytes ago --- */
+> 	u8                         flags[23];            /*   368    23 */
+>
+> 	/* XXX 1 byte hole, try to pack */
+>
+> 	/* --- cacheline 6 boundary (384 bytes) was 8 bytes ago --- */
+> 	struct list_head           storages;             /*   392    16 */
+> 	struct bpf_prog_array *    inactive;             /*   408     8 */
+> 	struct percpu_ref          refcnt;               /*   416    16 */
+> 	struct work_struct         release_work;         /*   432    72 */
+>
+> 	/* size: 504, cachelines: 8, members: 7 */
+> 	/* sum members: 503, holes: 1, sum holes: 1 */
+> 	/* last cacheline: 56 bytes */
+> };
+>
+> Suggested-by: Jakub Sitnicki <jakub@cloudflare.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
 
-
-On 18.05.22 16:38, Oliver Hartkopp wrote:
-> 
-> 
-> On 18.05.22 16:36, Marc Kleine-Budde wrote:
->> On 18.05.2022 16:33:58, Oliver Hartkopp wrote:
-> 
->>> I would suggest to remove the Kconfig entry but not all the code 
->>> inside the
->>> drivers, so that a volunteer can convert the LED support based on the
->>> existing trigger points in the drivers code later.
->>
->> The generic netdev LED trigger code doesn't need any support in the
->> netdev driver.
-> 
-> Oh! Yes, then it could be removed. Sorry for not looking that deep into it.
-
-I can send a patch for this removal too. That's an easy step which might 
-get into 5.19 then.
-
-Best regards,
-Oliver
-
+Reviewed-by: Jakub Sitnicki <jakub@cloudflare.com>
