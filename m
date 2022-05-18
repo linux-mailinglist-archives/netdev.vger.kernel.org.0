@@ -2,214 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 670EC52C4B6
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:53:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 279FF52C4C1
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:53:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242667AbiERUrK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 16:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54572 "EHLO
+        id S242685AbiERUue (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 16:50:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242653AbiERUrJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:47:09 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F2B6E16D116
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:47:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652906827;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=6fGaMCZY5et8TukPAizblMAmglbYj53OBTyrqhmz88w=;
-        b=J8/COrmYLsW1fayfARXmhyTqts8F3+6axF18jiPpyaJYtJn8uugjNArkWey536ZeJPMIcq
-        85ftaVr/k5guIarryblfsUuF4pEswFnNBpZkzw/6kUugQUybxCE+1YDe1z+FgWWq35lngW
-        ENPK8rM83/IWhD3vPRDRebAoacRQdQs=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-660-X9F98YLJPO2hWprImgCp_g-1; Wed, 18 May 2022 16:47:05 -0400
-X-MC-Unique: X9F98YLJPO2hWprImgCp_g-1
-Received: by mail-ed1-f70.google.com with SMTP id y1-20020a056402170100b0042aa8f679fdso2327000edu.1
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:47:05 -0700 (PDT)
+        with ESMTP id S242665AbiERUud (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:50:33 -0400
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1EAB16328A
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:50:32 -0700 (PDT)
+Received: by mail-pf1-x432.google.com with SMTP id w200so3202871pfc.10
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:50:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=W2FpeQBcw8y3RImXNc67GOhTjf3q/P5qNmbw2uYCbiA=;
+        b=OHamEYQ5Et8AFPG4kdUOMCl5LHQDBG1tGYkHK6KUQZcOJBW/eaMi8RzUVHXJKOeByg
+         RkcjyaC9OrKv1syZooUiJZ+2XYkHHCg88Z5MCaNlCS258VFR5mgIX6EO3LMhA+UdVpXk
+         hw0QMRb8HlWRDLotZZhVIiCZtgZMiZnHhbl2nBn1qlHhGt4ixg/amJi7agIZvSawVkK/
+         r+X6htdyLsLywEpZlhR9AtjSTt0cLFibTqgQwf92Em8dfzKnT2py5ZKheEkW1/7UUL2O
+         0u9SirubUM92tzQ0lWhwGUoKJggj3FrZXZCygow8D+6D+ONWuZCSEGxYskVApR3pY7MN
+         kmIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=6fGaMCZY5et8TukPAizblMAmglbYj53OBTyrqhmz88w=;
-        b=Eiwjl6O4TNW7Gvkl1gV+c7f16s0EhmdPW+PCey9vX97GzHFUW+Fe32tj5cIHBoy3w6
-         fE8F3jn3t/S7JsvQxyQQBEaNc5WknTApcXaCom8agiKOM9G4hKrnm1mBAJFsJHYbahye
-         vGEwtMItfjReqM+1dx8clVXsm3UHzFaRdk6OKiwCDtz/azV11K8GJEQ14L4j592I6kzD
-         dY3MgWV+r/uMVsisnxtUprSeO0hreh3YXPYxBmTiENDfwlCGenhGzR6ocTdc1HvlhYH3
-         AzUDHJOYDPFFEJ6ttA3VQNQsG9lETCq9bM2zBnH3REzHF5JnXwNAVBcs32SM8Ib4JQMV
-         HbPg==
-X-Gm-Message-State: AOAM530dvgbFwkLW0xt02qdu3wbR/3YtumfmTFPTnY5mniXtAaOZglco
-        CKmV5WyKYrxDJRJsdcyNv5CkbZvK1RGU8j6tAmIOsP6Df6qgWykgKnjw1YwDZXTk5YeVcJgFyI8
-        6VRoqV9xq8f1QtTpP
-X-Received: by 2002:a05:6402:42c3:b0:427:d0e6:77e4 with SMTP id i3-20020a05640242c300b00427d0e677e4mr1713691edc.49.1652906823660;
-        Wed, 18 May 2022 13:47:03 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxU+QcXpwCCUC54IoV+68Kfuh6QV3pxBg4jLbN9Abl1ZBDKxwxbxaitmQrB/0M+62Dhle2xRg==
-X-Received: by 2002:a05:6402:42c3:b0:427:d0e6:77e4 with SMTP id i3-20020a05640242c300b00427d0e677e4mr1713571edc.49.1652906822014;
-        Wed, 18 May 2022 13:47:02 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
-        by smtp.gmail.com with ESMTPSA id hf1-20020a1709072c4100b006f3ef214da0sm1287460ejc.6.2022.05.18.13.47.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 13:47:01 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 9E1D038ECC8; Wed, 18 May 2022 22:47:00 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, memxor@gmail.com
-Subject: Re: [PATCH v3 bpf-next 4/5] net: netfilter: add kfunc helper to add
- a new ct entry
-In-Reply-To: <40e7ce4b79c86c46e5fbf22e9cafb51b9172da19.1652870182.git.lorenzo@kernel.org>
-References: <cover.1652870182.git.lorenzo@kernel.org>
- <40e7ce4b79c86c46e5fbf22e9cafb51b9172da19.1652870182.git.lorenzo@kernel.org>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 18 May 2022 22:47:00 +0200
-Message-ID: <87y1yy8t6j.fsf@toke.dk>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=W2FpeQBcw8y3RImXNc67GOhTjf3q/P5qNmbw2uYCbiA=;
+        b=esEftGECceElS4JDjEfBrMUJ5hJQTilFoDbHlF3ELJE5EqK7LaBCpWZyxADHcN/lq5
+         xfavJ23KOF5SAI+xvrQqvVJxqUncQyC9I7+UznrHWoVm5RLYIza0JeVpgqKFRbc1IVBy
+         pkmpmhT0v/b/mLtfkeyrx5Td2KelWz8lZi7NtRQCitnHUDz1JhoA5D6uO2MABj4fm3am
+         CcnftYs3I4F/CqzYO6zIu7hQ8opDKYOuOIbCpjtsdH5eB+gdkQtR3nknsnNkWQt+43Qt
+         VA8tl51Lu5Ir1tTOph1aIZxYDvwZ81dis4VUEXm1DhtzJBl7L4s0KMPZk+bkkH1fcpTO
+         nuBg==
+X-Gm-Message-State: AOAM530/iVkTANGDLxnRlCBYJvCF4wb9ybzT+jUKSvf/ftprnuQXGQ6V
+        LQAgETZ6/UzyYBvjHueNS3E=
+X-Google-Smtp-Source: ABdhPJyN81t9yiY/dUyHxJNXAuB/hh2JdpdvfIv7uAz2YyAhXh0fvk6p2HhtedexwGLS7aJEAJ3yag==
+X-Received: by 2002:a63:2cc3:0:b0:3db:5e24:67fa with SMTP id s186-20020a632cc3000000b003db5e2467famr1077774pgs.46.1652907032417;
+        Wed, 18 May 2022 13:50:32 -0700 (PDT)
+Received: from [100.127.84.93] ([2620:10d:c090:400::4:4b54])
+        by smtp.gmail.com with ESMTPSA id p3-20020a170902eac300b0015e8d4eb2b9sm2150870pld.259.2022.05.18.13.50.30
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 18 May 2022 13:50:31 -0700 (PDT)
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
+        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
+        kernel-team@fb.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com, lasse@timebeat.app,
+        clk@fb.com
+Subject: Re: [PATCH net-next v4 0/2] Broadcom PTP PHY support
+Date:   Wed, 18 May 2022 13:50:29 -0700
+X-Mailer: MailMate (1.14r5852)
+Message-ID: <8C6FF7E7-83AF-403D-A79D-10F5C0E92FB8@gmail.com>
+In-Reply-To: <d58a9e3b-b492-8a56-964a-e9599cfe3009@gmail.com>
+References: <20220506224210.1425817-1-jonathan.lemon@gmail.com>
+ <d58a9e3b-b492-8a56-964a-e9599cfe3009@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lorenzo Bianconi <lorenzo@kernel.org> writes:
+On 18 May 2022, at 13:14, Florian Fainelli wrote:
 
-> Introduce bpf_xdp_ct_add and bpf_skb_ct_add kfunc helpers in order to
-> add a new entry to ct map from an ebpf program.
-> Introduce bpf_nf_ct_tuple_parse utility routine.
+> On 5/6/2022 3:42 PM, Jonathan Lemon wrote:
+>> This adds PTP support for the Broadcom PHY BCM54210E (and the
+>> specific variant BCM54213PE that the rpi-5.15 branch uses).
+>>
+>> This has only been tested on the RPI CM4, which has one port.
+>>
+>> There are other Broadcom chips which may benefit from using the
+>> same framework here, although with different register sets.
 >
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->  net/netfilter/nf_conntrack_bpf.c | 212 +++++++++++++++++++++++++++----
->  1 file changed, 189 insertions(+), 23 deletions(-)
->
-> diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
-> index a9271418db88..3d31b602fdf1 100644
-> --- a/net/netfilter/nf_conntrack_bpf.c
-> +++ b/net/netfilter/nf_conntrack_bpf.c
-> @@ -55,41 +55,114 @@ enum {
->  	NF_BPF_CT_OPTS_SZ = 12,
->  };
->  
-> -static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
-> -					  struct bpf_sock_tuple *bpf_tuple,
-> -					  u32 tuple_len, u8 protonum,
-> -					  s32 netns_id, u8 *dir)
-> +static int bpf_nf_ct_tuple_parse(struct bpf_sock_tuple *bpf_tuple,
-> +				 u32 tuple_len, u8 protonum, u8 dir,
-> +				 struct nf_conntrack_tuple *tuple)
->  {
-> -	struct nf_conntrack_tuple_hash *hash;
-> -	struct nf_conntrack_tuple tuple;
-> -	struct nf_conn *ct;
-> +	union nf_inet_addr *src = dir ? &tuple->dst.u3 : &tuple->src.u3;
-> +	union nf_inet_addr *dst = dir ? &tuple->src.u3 : &tuple->dst.u3;
-> +	union nf_conntrack_man_proto *sport = dir ? (void *)&tuple->dst.u
-> +						  : &tuple->src.u;
-> +	union nf_conntrack_man_proto *dport = dir ? &tuple->src.u
-> +						  : (void *)&tuple->dst.u;
->  
->  	if (unlikely(protonum != IPPROTO_TCP && protonum != IPPROTO_UDP))
-> -		return ERR_PTR(-EPROTO);
-> -	if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
-> -		return ERR_PTR(-EINVAL);
-> +		return -EPROTO;
-> +
-> +	memset(tuple, 0, sizeof(*tuple));
->  
-> -	memset(&tuple, 0, sizeof(tuple));
->  	switch (tuple_len) {
->  	case sizeof(bpf_tuple->ipv4):
-> -		tuple.src.l3num = AF_INET;
-> -		tuple.src.u3.ip = bpf_tuple->ipv4.saddr;
-> -		tuple.src.u.tcp.port = bpf_tuple->ipv4.sport;
-> -		tuple.dst.u3.ip = bpf_tuple->ipv4.daddr;
-> -		tuple.dst.u.tcp.port = bpf_tuple->ipv4.dport;
-> +		tuple->src.l3num = AF_INET;
-> +		src->ip = bpf_tuple->ipv4.saddr;
-> +		sport->tcp.port = bpf_tuple->ipv4.sport;
-> +		dst->ip = bpf_tuple->ipv4.daddr;
-> +		dport->tcp.port = bpf_tuple->ipv4.dport;
->  		break;
->  	case sizeof(bpf_tuple->ipv6):
-> -		tuple.src.l3num = AF_INET6;
-> -		memcpy(tuple.src.u3.ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
-> -		tuple.src.u.tcp.port = bpf_tuple->ipv6.sport;
-> -		memcpy(tuple.dst.u3.ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
-> -		tuple.dst.u.tcp.port = bpf_tuple->ipv6.dport;
-> +		tuple->src.l3num = AF_INET6;
-> +		memcpy(src->ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
-> +		sport->tcp.port = bpf_tuple->ipv6.sport;
-> +		memcpy(dst->ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
-> +		dport->tcp.port = bpf_tuple->ipv6.dport;
->  		break;
->  	default:
-> -		return ERR_PTR(-EAFNOSUPPORT);
-> +		return -EAFNOSUPPORT;
->  	}
-> +	tuple->dst.protonum = protonum;
-> +	tuple->dst.dir = dir;
-> +
-> +	return 0;
-> +}
->  
-> -	tuple.dst.protonum = protonum;
-> +struct nf_conn *
-> +__bpf_nf_ct_alloc_entry(struct net *net, struct bpf_sock_tuple *bpf_tuple,
-> +			u32 tuple_len, u8 protonum, s32 netns_id, u32 timeout)
-> +{
-> +	struct nf_conntrack_tuple otuple, rtuple;
-> +	struct nf_conn *ct;
-> +	int err;
-> +
-> +	if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
-> +				    IP_CT_DIR_ORIGINAL, &otuple);
-> +	if (err < 0)
-> +		return ERR_PTR(err);
-> +
-> +	err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
-> +				    IP_CT_DIR_REPLY, &rtuple);
-> +	if (err < 0)
-> +		return ERR_PTR(err);
-> +
-> +	if (netns_id >= 0) {
-> +		net = get_net_ns_by_id(net, netns_id);
-> +		if (unlikely(!net))
-> +			return ERR_PTR(-ENONET);
-> +	}
-> +
-> +	ct = nf_conntrack_alloc(net, &nf_ct_zone_dflt, &otuple, &rtuple,
-> +				GFP_ATOMIC);
-> +	if (IS_ERR(ct))
-> +		goto out;
-> +
-> +	ct->timeout = timeout * HZ + jiffies;
-> +	ct->status |= IPS_CONFIRMED;
-> +
-> +	memset(&ct->proto, 0, sizeof(ct->proto));
-> +	if (protonum == IPPROTO_TCP)
-> +		ct->proto.tcp.state = TCP_CONNTRACK_ESTABLISHED;
+> Jonathan, any chance you could repost this before net-next closes? Thanks
 
-Hmm, isn't it a bit limiting to hard-code this to ESTABLISHED
-connections? Presumably for TCP you'd want to use this when you see a
-SYN and then rely on conntrack to help with the subsequent state
-tracking for when the SYN-ACK comes back? What's the usecase for
-creating an entry in ESTABLISHED state, exactly?
-
-(Of course, we'd need to be able to update the state as well, then...)
-
--Toke
-
+Sure, let me rebuild today and submit.
+—
+Jonathan
