@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FC2D52C4D3
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 23:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 991E152C544
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 23:03:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242960AbiERVAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 17:00:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58884 "EHLO
+        id S243006AbiERVAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 17:00:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58620 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242896AbiERVAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 17:00:16 -0400
+        with ESMTP id S242935AbiERVAR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 17:00:17 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 49F842550AE
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:59:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A3A1425558D
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 14:00:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652907598;
+        s=mimecast20190719; t=1652907604;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=AlA+M9AznC3l4SAV4drMKMtvnKO+BZZzFpZxWrqpDx0=;
-        b=SQF60QgKRFhRaAQ7MAoOALp+1QbvCYTWzftIYYCCa5MkPAd2M1bqMYVzeQpi8mdC3Uh5vO
-        rJG3feyjkh27qdJBPrmM1SfIsNb+r8xYU0YEkMjIGMCCkSlIshSNOepqsZ1LZtPUVzAUwK
-        SH7GDg3gLhYwj6XVgV631vZgTkFmBls=
+        bh=HyLA47mfumfZ9QcCnOg90pvPRSwM7bsvvU8Qb5kpzTc=;
+        b=Flna7r+Junj0xSkklXudB873MpZVhGHVZBHMif4Jtnmqvnixgl8w7h//ESvfntYDcQIl+C
+        KbHb0eloSg5xv5M2KkvIQeg5ziVaa/7dOSCJ+D8j0aqhjYbZdZE6JNHNjCB4u2nakxYJ1/
+        KzUnzrYFp91FpXL1+4KUbhzBJygQO1s=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-191-7HM3s6NEMJ-KR3c7GhaLdA-1; Wed, 18 May 2022 16:59:54 -0400
-X-MC-Unique: 7HM3s6NEMJ-KR3c7GhaLdA-1
+ us-mta-513-FVBM64qoM32NaL_Nugt3RA-1; Wed, 18 May 2022 16:59:57 -0400
+X-MC-Unique: FVBM64qoM32NaL_Nugt3RA-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7DA2880B90A;
-        Wed, 18 May 2022 20:59:52 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6E3EA101A52C;
+        Wed, 18 May 2022 20:59:56 +0000 (UTC)
 Received: from plouf.redhat.com (unknown [10.39.192.58])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A21652166B25;
-        Wed, 18 May 2022 20:59:48 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D4E712166B25;
+        Wed, 18 May 2022 20:59:52 +0000 (UTC)
 From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
 To:     Greg KH <gregkh@linuxfoundation.org>,
         Jiri Kosina <jikos@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     Tero Kristo <tero.kristo@linux.intel.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Subject: [PATCH bpf-next v5 05/17] HID: core: store the unique system identifier in hid_device
-Date:   Wed, 18 May 2022 22:59:12 +0200
-Message-Id: <20220518205924.399291-6-benjamin.tissoires@redhat.com>
+Subject: [PATCH bpf-next v5 06/17] HID: export hid_report_type to uapi
+Date:   Wed, 18 May 2022 22:59:13 +0200
+Message-Id: <20220518205924.399291-7-benjamin.tissoires@redhat.com>
 In-Reply-To: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
 References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
@@ -72,12 +72,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This unique identifier is currently used only for ensuring uniqueness in
-sysfs. However, this could be handful for userspace to refer to a specific
-hid_device by this id.
+When we are dealing with eBPF, we need to have access to the report type.
+Currently our implementation differs from the USB standard, making it
+impossible for users to know the exact value besides hardcoding it
+themselves.
 
-2 use cases are in my mind: LEDs (and their naming convention), and
-HID-BPF.
+And instead of a blank define, convert it as an enum.
 
 Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
@@ -85,41 +85,141 @@ Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
 new in v5
 ---
- drivers/hid/hid-core.c | 4 +++-
- include/linux/hid.h    | 2 ++
- 2 files changed, 5 insertions(+), 1 deletion(-)
+ drivers/hid/hid-core.c   | 11 ++++++-----
+ include/linux/hid.h      | 22 +++++++---------------
+ include/uapi/linux/hid.h | 12 ++++++++++++
+ 3 files changed, 25 insertions(+), 20 deletions(-)
 
 diff --git a/drivers/hid/hid-core.c b/drivers/hid/hid-core.c
-index db925794fbe6..e78f35cfd2d1 100644
+index e78f35cfd2d1..36f4aa749cea 100644
 --- a/drivers/hid/hid-core.c
 +++ b/drivers/hid/hid-core.c
-@@ -2735,10 +2735,12 @@ int hid_add_device(struct hid_device *hdev)
- 			hid_warn(hdev, "bad device descriptor (%d)\n", ret);
- 	}
+@@ -55,7 +55,7 @@ MODULE_PARM_DESC(ignore_special_drivers, "Ignore any special drivers and handle
+  */
  
-+	hdev->id = atomic_inc_return(&id);
-+
- 	/* XXX hack, any other cleaner solution after the driver core
- 	 * is converted to allow more than 20 bytes as the device name? */
- 	dev_set_name(&hdev->dev, "%04X:%04X:%04X.%04X", hdev->bus,
--		     hdev->vendor, hdev->product, atomic_inc_return(&id));
-+		     hdev->vendor, hdev->product, hdev->id);
+ struct hid_report *hid_register_report(struct hid_device *device,
+-				       unsigned int type, unsigned int id,
++				       enum hid_report_type type, unsigned int id,
+ 				       unsigned int application)
+ {
+ 	struct hid_report_enum *report_enum = device->report_enum + type;
+@@ -967,7 +967,7 @@ static const char * const hid_report_names[] = {
+  * parsing.
+  */
+ struct hid_report *hid_validate_values(struct hid_device *hid,
+-				       unsigned int type, unsigned int id,
++				       enum hid_report_type type, unsigned int id,
+ 				       unsigned int field_index,
+ 				       unsigned int report_counts)
+ {
+@@ -1954,8 +1954,8 @@ int __hid_request(struct hid_device *hid, struct hid_report *report,
+ }
+ EXPORT_SYMBOL_GPL(__hid_request);
  
- 	hid_debug_register(hdev, dev_name(&hdev->dev));
- 	ret = device_add(&hdev->dev);
+-int hid_report_raw_event(struct hid_device *hid, int type, u8 *data, u32 size,
+-		int interrupt)
++int hid_report_raw_event(struct hid_device *hid, enum hid_report_type type, u8 *data, u32 size,
++			 int interrupt)
+ {
+ 	struct hid_report_enum *report_enum = hid->report_enum + type;
+ 	struct hid_report *report;
+@@ -2019,7 +2019,8 @@ EXPORT_SYMBOL_GPL(hid_report_raw_event);
+  *
+  * This is data entry for lower layers.
+  */
+-int hid_input_report(struct hid_device *hid, int type, u8 *data, u32 size, int interrupt)
++int hid_input_report(struct hid_device *hid, enum hid_report_type type, u8 *data, u32 size,
++		     int interrupt)
+ {
+ 	struct hid_report_enum *report_enum;
+ 	struct hid_driver *hdrv;
 diff --git a/include/linux/hid.h b/include/linux/hid.h
-index 4363a63b9775..a43dd17bc78f 100644
+index a43dd17bc78f..6a2a6f166bd3 100644
 --- a/include/linux/hid.h
 +++ b/include/linux/hid.h
-@@ -658,6 +658,8 @@ struct hid_device {							/* device report descriptor */
- 	struct list_head debug_list;
- 	spinlock_t  debug_list_lock;
- 	wait_queue_head_t debug_wait;
-+
-+	unsigned int id;						/* system unique id */
- };
+@@ -314,15 +314,6 @@ struct hid_item {
+ #define HID_BAT_ABSOLUTESTATEOFCHARGE	0x00850065
  
- #define to_hid_device(pdev) \
+ #define HID_VD_ASUS_CUSTOM_MEDIA_KEYS	0xff310076
+-/*
+- * HID report types --- Ouch! HID spec says 1 2 3!
+- */
+-
+-#define HID_INPUT_REPORT	0
+-#define HID_OUTPUT_REPORT	1
+-#define HID_FEATURE_REPORT	2
+-
+-#define HID_REPORT_TYPES	3
+ 
+ /*
+  * HID connect requests
+@@ -509,7 +500,7 @@ struct hid_report {
+ 	struct list_head hidinput_list;
+ 	struct list_head field_entry_list;		/* ordered list of input fields */
+ 	unsigned int id;				/* id of this report */
+-	unsigned int type;				/* report type */
++	enum hid_report_type type;			/* report type */
+ 	unsigned int application;			/* application usage for this report */
+ 	struct hid_field *field[HID_MAX_FIELDS];	/* fields of the report */
+ 	struct hid_field_entry *field_entries;		/* allocated memory of input field_entry */
+@@ -926,7 +917,8 @@ extern int hidinput_connect(struct hid_device *hid, unsigned int force);
+ extern void hidinput_disconnect(struct hid_device *);
+ 
+ int hid_set_field(struct hid_field *, unsigned, __s32);
+-int hid_input_report(struct hid_device *, int type, u8 *, u32, int);
++int hid_input_report(struct hid_device *hid, enum hid_report_type type, u8 *data, u32 size,
++		     int interrupt);
+ struct hid_field *hidinput_get_led_field(struct hid_device *hid);
+ unsigned int hidinput_count_leds(struct hid_device *hid);
+ __s32 hidinput_calc_abs_res(const struct hid_field *field, __u16 code);
+@@ -935,11 +927,11 @@ int __hid_request(struct hid_device *hid, struct hid_report *rep, int reqtype);
+ u8 *hid_alloc_report_buf(struct hid_report *report, gfp_t flags);
+ struct hid_device *hid_allocate_device(void);
+ struct hid_report *hid_register_report(struct hid_device *device,
+-				       unsigned int type, unsigned int id,
++				       enum hid_report_type type, unsigned int id,
+ 				       unsigned int application);
+ int hid_parse_report(struct hid_device *hid, __u8 *start, unsigned size);
+ struct hid_report *hid_validate_values(struct hid_device *hid,
+-				       unsigned int type, unsigned int id,
++				       enum hid_report_type type, unsigned int id,
+ 				       unsigned int field_index,
+ 				       unsigned int report_counts);
+ 
+@@ -1184,8 +1176,8 @@ static inline u32 hid_report_len(struct hid_report *report)
+ 	return DIV_ROUND_UP(report->size, 8) + (report->id > 0);
+ }
+ 
+-int hid_report_raw_event(struct hid_device *hid, int type, u8 *data, u32 size,
+-		int interrupt);
++int hid_report_raw_event(struct hid_device *hid, enum hid_report_type type, u8 *data, u32 size,
++			 int interrupt);
+ 
+ /* HID quirks API */
+ unsigned long hid_lookup_quirk(const struct hid_device *hdev);
+diff --git a/include/uapi/linux/hid.h b/include/uapi/linux/hid.h
+index b34492a87a8a..8d17371097c2 100644
+--- a/include/uapi/linux/hid.h
++++ b/include/uapi/linux/hid.h
+@@ -42,6 +42,18 @@
+ #define USB_INTERFACE_PROTOCOL_KEYBOARD	1
+ #define USB_INTERFACE_PROTOCOL_MOUSE	2
+ 
++/*
++ * HID report types --- Ouch! HID spec says 1 2 3!
++ */
++
++enum hid_report_type {
++	HID_INPUT_REPORT = 0,
++	HID_OUTPUT_REPORT = 1,
++	HID_FEATURE_REPORT = 2,
++
++	HID_REPORT_TYPES,
++};
++
+ /*
+  * HID class requests
+  */
 -- 
 2.36.1
 
