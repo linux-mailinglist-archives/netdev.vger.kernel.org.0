@@ -2,62 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D56A52C1F3
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 20:09:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B19A52C1CB
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 20:09:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241269AbiERR7S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 13:59:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37746 "EHLO
+        id S233428AbiERSFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 14:05:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241140AbiERR7N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 13:59:13 -0400
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42E238CB21;
-        Wed, 18 May 2022 10:59:11 -0700 (PDT)
-Received: by mail-ej1-x62f.google.com with SMTP id n13so3418595ejv.1;
-        Wed, 18 May 2022 10:59:11 -0700 (PDT)
+        with ESMTP id S233167AbiERSFe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 14:05:34 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B57A2218D1;
+        Wed, 18 May 2022 11:05:32 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id ds11so2855650pjb.0;
+        Wed, 18 May 2022 11:05:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=2EXLfpaR9WvqL8huPkuehcAb08K9DJWvKulz74lLwjw=;
-        b=Urdlnv8IqAORyjTFmHZLBgcOzSzrZSHWlU9e7dz7blnq9rEiu55Ve3Q0Po4tYZIx+G
-         9TIXsHkVnSuplxMVXKRM6GJVjhLGm0PUkQECW0bwkLuJPOrG/eyTyf5F25rYNCIw4aAP
-         7yV1u/4cqsRvUNUH6ndn25TFkTxg4ewWEdvAcgYZ5UwHcNSg/6xHRSkZ1kcFp1UeaNzr
-         OuVZJ6m5qgpnaZpx4mqnbi07koAg3rkKFxtmTqyusGOshud83kMwt0veApxORp+jPDxU
-         i8gAuaf4FaU6R0A4T4hxeBWrQim+obyQzf1R8wI2/XexlaI9wnaQbfEOfJ8ji0czQdq5
-         qByA==
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=u9+JPq0YWfXxjUAqZwa4MFI6EUqcPNwEYnHh7u9RESw=;
+        b=eiDox5bIriVi94aqiix+B00JOnWTV6JolirNXgznshoVG0SrhrAe3CA88vUxKVS1fe
+         WDKAvPd5qJnRY3KoAAm/9yZxu8Vh1vHXUWkNnwWNpisUjA2Wsm+XwgMnp9ejC9inCHmZ
+         /D6ozx0C7C5XyYSmY8NHrwLMq1GRelT04frhKQP0m5daa+GvyHkh9JIJuXSyMfvAPwKd
+         SzQvZxwtklsGLAPnh5yAm5uQP/sc7A7BRHhg24msdmo4h46rAy17ZAJRzjNeck5TiPoC
+         lZxNrMJ3AaOPB10gxDNLuMlX4L/Baj2Bb2sKBuHA2+m4D1Eln1dydVHi6eRYaGkaI3hw
+         P6AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=2EXLfpaR9WvqL8huPkuehcAb08K9DJWvKulz74lLwjw=;
-        b=eIr9SsgktXUpCiZaCJjIpSh+8MJiaros+5Ml8laf+Q5ixB0PPSxezJ3noeFnLpQ/+p
-         DTNN18LyF21IlpmbQe1AMqDB8t7zYqbIKRXcG0tvPmM6QRDi74E+o7h/B3+axxewO8UK
-         8+GACnILz9bQonvgFrmMPczTgjbIapXVQaTvxYf4+38zSewPOanjheGBXrICpDYdXsln
-         KS7I7WIIk3jjxKXCY/gNwCGiC7+CrQWtSDDUjtezjTJrEvQqUtgGRRdlTtPahMscfws6
-         P9XJSQ2lEcK462CTiOrK+SfinI+cTSHq3h4gqKrAU5TSHcWCvhUeMiEKCBM5QRKmNdz6
-         OLGw==
-X-Gm-Message-State: AOAM5327EG7ytIdnEp8Eig/vdGGsfaTh8s1seML8uwS+jQY5zquNw8Hl
-        Vx5D9WjPt28zaAKzDQNZsUpdT8rukhScbHnLnwQskt/p
-X-Google-Smtp-Source: ABdhPJxC/Wsua39QofOOC9FOg1Mm9DKIGDvecUCE9Bbgi51eryTiNG0+r6d/o3bmozvtPAmdT88tf4sToyBK1+jUGfw=
-X-Received: by 2002:a17:906:7e19:b0:6f4:5004:d442 with SMTP id
- e25-20020a1709067e1900b006f45004d442mr685470ejr.147.1652896749683; Wed, 18
- May 2022 10:59:09 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=u9+JPq0YWfXxjUAqZwa4MFI6EUqcPNwEYnHh7u9RESw=;
+        b=yiOS9pGXv/TX7wlQTxtIwkswB/++zpe8txaXR90QAUm8ExViz0PO7cRTwb3FAdwVsv
+         pRx+2BtmxH7BEEps/QZVCKgfQdVXlC+fAOsjKKlMH2Y90DeIgqWPKb+rzN/qZSU2YtPO
+         Hcv3lQdjqBFs8elJvanD6JVcOsRvP5cC+VvQSw9L4aVmmFzc4hgSRycaOa97wy0328EQ
+         fLqxqJoc4bOSGZ+yHkcFHmWpqmMNTRTuYfRdzPQnhk9QK+DSLAYDmKh+l0PIkqk9fP0v
+         jwrhXMbkGPSV+LQCf8Vqi3+Q80Z43mUGW5n3LDmKQNxesjpGdYssMBEzOuxjOa3Ebshj
+         cJow==
+X-Gm-Message-State: AOAM532EAEaL8Yl4PZKOeyJ42j1ATpNjccuQjyutRqZ15xswgh5mHCO8
+        +it/HH8tniELp3SRSM2veGF3VdX5l9Y=
+X-Google-Smtp-Source: ABdhPJxNu345qea6n5GM2ISwEI4F55ydVZzlwwLwOTyiy9Tbx8rm9+o0iIEF4FllypEUldztmrc19A==
+X-Received: by 2002:a17:90b:3142:b0:1df:77f2:e169 with SMTP id ip2-20020a17090b314200b001df77f2e169mr1179624pjb.245.1652897131441;
+        Wed, 18 May 2022 11:05:31 -0700 (PDT)
+Received: from localhost ([14.96.13.220])
+        by smtp.gmail.com with ESMTPSA id y20-20020a170902ed5400b0015ea8b4b8f3sm1963278plb.263.2022.05.18.11.05.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 11:05:31 -0700 (PDT)
+Date:   Wed, 18 May 2022 23:36:13 +0530
+From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
+        fw@strlen.de, netfilter-devel@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com
+Subject: Re: [PATCH v3 bpf-next 1/5] bpf: Add support for forcing kfunc args
+ to be referenced
+Message-ID: <20220518180613.su37c23ckgc5irmu@apollo.legion>
+References: <cover.1652870182.git.lorenzo@kernel.org>
+ <7addba8ead6d590c9182020c03c7696ba5512036.1652870182.git.lorenzo@kernel.org>
+ <8912c7c2-9396-f7d8-74e2-a2560fbaad56@fb.com>
 MIME-Version: 1.0
-References: <20220517194015.1081632-1-martin.blumenstingl@googlemail.com>
- <20220517194015.1081632-2-martin.blumenstingl@googlemail.com> <20220518114555.piutpdmdzvst2cvu@skbuf>
-In-Reply-To: <20220518114555.piutpdmdzvst2cvu@skbuf>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Wed, 18 May 2022 19:58:58 +0200
-Message-ID: <CAFBinCBZ6dDAgC+ZUAPOwTx5=yVfYBYvODs=v+DQzGzeEOeiDw@mail.gmail.com>
-Subject: Re: [PATCH net v1 1/2] net: dsa: lantiq_gswip: Fix start index in gswip_port_fdb()
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, Hauke Mehrtens <hauke@hauke-m.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8912c7c2-9396-f7d8-74e2-a2560fbaad56@fb.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -68,30 +76,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
+On Wed, May 18, 2022 at 11:28:12PM IST, Yonghong Song wrote:
+>
+>
+> On 5/18/22 3:43 AM, Lorenzo Bianconi wrote:
+> > From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> >
+> > Similar to how we detect mem, size pairs in kfunc, teach verifier to
+> > treat __ref suffix on argument name to imply that it must be a
+> > referenced pointer when passed to kfunc. This is required to ensure that
+> > kfunc that operate on some object only work on acquired pointers and not
+> > normal PTR_TO_BTF_ID with same type which can be obtained by pointer
+> > walking. Release functions need not specify such suffix on release
+> > arguments as they are already expected to receive one referenced
+> > argument.
+> >
+> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >   kernel/bpf/btf.c   | 40 ++++++++++++++++++++++++++++++----------
+> >   net/bpf/test_run.c |  5 +++++
+> >   2 files changed, 35 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
+> > index 2f0b0440131c..83a354732d96 100644
+> > --- a/kernel/bpf/btf.c
+> > +++ b/kernel/bpf/btf.c
+> > @@ -6021,18 +6021,13 @@ static bool __btf_type_is_scalar_struct(struct bpf_verifier_log *log,
+> >   	return true;
+> >   }
+> > -static bool is_kfunc_arg_mem_size(const struct btf *btf,
+> > -				  const struct btf_param *arg,
+> > -				  const struct bpf_reg_state *reg)
+> > +static bool btf_param_match_suffix(const struct btf *btf,
+> > +				   const struct btf_param *arg,
+> > +				   const char *suffix)
+> >   {
+> > -	int len, sfx_len = sizeof("__sz") - 1;
+> > -	const struct btf_type *t;
+> > +	int len, sfx_len = strlen(suffix);
+> >   	const char *param_name;
+> > -	t = btf_type_skip_modifiers(btf, arg->type, NULL);
+> > -	if (!btf_type_is_scalar(t) || reg->type != SCALAR_VALUE)
+> > -		return false;
+> > -
+> >   	/* In the future, this can be ported to use BTF tagging */
+> >   	param_name = btf_name_by_offset(btf, arg->name_off);
+> >   	if (str_is_empty(param_name))
+> > @@ -6041,12 +6036,31 @@ static bool is_kfunc_arg_mem_size(const struct btf *btf,
+> >   	if (len < sfx_len)
+> >   		return false;
+> >   	param_name += len - sfx_len;
+> > -	if (strncmp(param_name, "__sz", sfx_len))
+> > +	if (strncmp(param_name, suffix, sfx_len))
+> >   		return false;
+> >   	return true;
+> >   }
+> > +static bool is_kfunc_arg_ref(const struct btf *btf,
+> > +			     const struct btf_param *arg)
+> > +{
+> > +	return btf_param_match_suffix(btf, arg, "__ref");
+>
+> Do we also need to do btf_type_skip_modifiers and to ensure
+> the type after skipping modifiers are a pointer type?
+> The current implementation should work for
+> bpf_kfunc_call_test_ref(), but with additional checking
+> we may avoid some accidental mistakes.
+>
 
-On Wed, May 18, 2022 at 1:45 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-[...]
-> The patch, as well as other improvements you might want to bring to the gswip driver
-> (we have more streamlined support in DSA now for FDB isolation, see ds->fdb_isolation)
-> is appreciated.
-Thank you very much for this hint! I was not aware of the
-ds->fdb_isolation flag and additionally I have some other questions
-regarding FDB - I'll send these in a separate email though.
-Also thank you for being quick to review my patches and on top of that
-providing extra hints!
+The point where this check happens, arg[i].type is already known to be a pointer
+type, after skipping modifiers.
 
-> But I don't think that a code cleanup patch that makes no functional
-> difference, and isn't otherwise needed by other backported patches,
-> should be sent to the "net" tree, and be backported to "stable" later?
-Sure, I will actually re-send the whole series based on net-next.
-When I initially wrote this patch I thought that it would fix a more
-severe issue. Only later on I found that the bug is harmless (as
-mentioned in the patch description). When I then finally sent the
-patch I just stuck with my original plan to send it for the net.git
-tree - instead of re-thinking whether that's still needed after my
-latest findings.
+> > +}
+> > +
+> > +static bool is_kfunc_arg_mem_size(const struct btf *btf,
+> > +				  const struct btf_param *arg,
+> > +				  const struct bpf_reg_state *reg)
+> > +{
+> > +	const struct btf_type *t;
+> > +
+> > +	t = btf_type_skip_modifiers(btf, arg->type, NULL);
+> > +	if (!btf_type_is_scalar(t) || reg->type != SCALAR_VALUE)
+> > +		return false;
+> > +
+> > +	return btf_param_match_suffix(btf, arg, "__sz");
+> > +}
+> > +
+> >   static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+> >   				    const struct btf *btf, u32 func_id,
+> >   				    struct bpf_reg_state *regs,
+> > @@ -6115,6 +6129,12 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
+> >   			return -EINVAL;
+> >   		}
+> > +		/* Check if argument must be a referenced pointer */
+> > +		if (is_kfunc && is_kfunc_arg_ref(btf, args + i) && !reg->ref_obj_id) {
+> > +			bpf_log(log, "R%d must be referenced\n", regno);
+> > +			return -EINVAL;
+> > +		}
+> > +
+> >   		ref_t = btf_type_skip_modifiers(btf, t->type, &ref_id);
+> >   		ref_tname = btf_name_by_offset(btf, ref_t->name_off);
+> > diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
+> > index 4d08cca771c7..adbc7dd18511 100644
+> > --- a/net/bpf/test_run.c
+> > +++ b/net/bpf/test_run.c
+> > @@ -690,6 +690,10 @@ noinline void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
+> >   {
+> >   }
+> > +noinline void bpf_kfunc_call_test_ref(struct prog_test_ref_kfunc *p__ref)
+> > +{
+> > +}
+> > +
+> >   __diag_pop();
+> [...]
 
-
-Best regards,
-Martin
+--
+Kartikeya
