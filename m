@@ -2,153 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BB7A052C405
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:07:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0FE152C43A
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242110AbiERUE2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 16:04:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52494 "EHLO
+        id S242360AbiERUJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 16:09:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46786 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242109AbiERUE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:04:27 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E54F719C757
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:04:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652904266;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cg+jK1C7VyPf51yeEPplXxbPfgA1BVLN1iSf3puxwqE=;
-        b=NEM+hRl/sMyy13WWuCcS2jgLjDGXB1NlX99uph5347BrB09aUAy2XNjctvs+uDafHKvvzz
-        CwucL0HQcN2NS/sAVC4k+FBbGEfNMsitibkQw3B7PBz8S7TqnM8o//SF2LSjZZXaVNdKlF
-        cfWXI1kEyqPjMHkdZK2Be5anS5kCGnk=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-455-VnHplXE5Pdytuyy6-DrgUg-1; Wed, 18 May 2022 16:04:24 -0400
-X-MC-Unique: VnHplXE5Pdytuyy6-DrgUg-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 536B42800885;
-        Wed, 18 May 2022 20:04:05 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EDFB3492C14;
-        Wed, 18 May 2022 20:04:01 +0000 (UTC)
-Date:   Wed, 18 May 2022 22:03:58 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf v3 2/2] bpf_trace: bail out from
- bpf_kprobe_multi_link_attach when in compat
-Message-ID: <20220518200358.GB29226@asgard.redhat.com>
-References: <cover.1652876187.git.esyr@redhat.com>
- <47cbdb76178a112763a3766a03d8cc51842fcab0.1652876188.git.esyr@redhat.com>
- <7bbb4a95-0d12-2a8f-9503-2613d774eaaa@fb.com>
+        with ESMTP id S242355AbiERUJt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:09:49 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8FB420EE29
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:09:47 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id p5-20020a1c2905000000b003970dd5404dso1629388wmp.0
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:09:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UQvDOEplxNi18/Jxa8yZiTJ2YNZLIpsMwzvuZh33DE4=;
+        b=lb2LXhnv3KRqu2NBVbbFYLjc9vviV+NW9xcex3N3B4BXG48hS8qT6t+rByuDUgWlwm
+         Lk7CO2bbUQm7wjKqB7CRZTsZh5Mn8VkSK1JB9ctk81t1iMnHrewBL5bLjaU+NvNf3YlQ
+         SE2q8xOJXLgD488r22FnpoXL69/kvIrYLWGBtJXlHW8/Kxi7cUwZfE573ZgEAnoh42FJ
+         ST/AbhiIDDYtd/Uj2POZ79FWKKwVCIhmhytQs10O14g9ncj4zWiPpGhkKDKgabLKdAos
+         KXQNnpNCj8p/BEoQ/hvkw7prPMMwfZB5zJ/YJwDDvb2pQdHOLmLbJKmu6Y90XFAUE2jY
+         SBCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UQvDOEplxNi18/Jxa8yZiTJ2YNZLIpsMwzvuZh33DE4=;
+        b=hZE48B+86jtbTWYQWGskPjPW2hJRNHeWWWAsztS7u6W2Yn1jAFzVFazlbJFB+VPlnq
+         UK2Wyj0EUseBVBP0Hpfh+IY533mwwbLietmSyIZMgvElL11ZuwTk030/m8mkXRP0C+V3
+         e8d/D6Y0e30FW9ME2n/aVRRKnuYjJ44wxnYmeANYo1GTpcglu7npKANkurVVpQFTTn2w
+         yUEGQm+6mRRbmoeF3nGAYEtJWaTEHyT2ptnIQFwkyl5wzuKVA11GpDCrexy5uN1Eah01
+         36Eyr2ylfTWjQqzQYxNlJMxPBnbzu0prltV2MotyfWbo15p4AXRAb+zm5e4/ho2/iFYl
+         CvMA==
+X-Gm-Message-State: AOAM531IQPRTYlOsYj8LeZ8Q8WKI6/EGPkIHaAbU2uxMvLOYVdQyXQXF
+        1xXML29vtnRQxYBEPCB1QkNLSA==
+X-Google-Smtp-Source: ABdhPJxoUw2+BXaf4Y28HS5oxoosSZfU/YZu5JBdifHIEfMkQuE6hByHYsEOEqC0UqBpGNdiveL4aQ==
+X-Received: by 2002:a05:600c:1e0f:b0:394:7759:64f3 with SMTP id ay15-20020a05600c1e0f00b00394775964f3mr1388874wmb.19.1652904586352;
+        Wed, 18 May 2022 13:09:46 -0700 (PDT)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id o23-20020a05600c511700b0039456c00ba7sm6859281wms.1.2022.05.18.13.09.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 13:09:45 -0700 (PDT)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     andrew@lunn.ch, broonie@kernel.org, calvin.johnson@oss.nxp.com,
+        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
+        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
+        wens@csie.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v2 0/5] arm64: add ethernet to orange pi 3
+Date:   Wed, 18 May 2022 20:09:34 +0000
+Message-Id: <20220518200939.689308-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7bbb4a95-0d12-2a8f-9503-2613d774eaaa@fb.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 18, 2022 at 09:55:05AM -0700, Yonghong Song wrote:
-> 
-> 
-> On 5/18/22 5:22 AM, Eugene Syromiatnikov wrote:
-> >Since bpf_kprobe_multi_link_attach doesn't support 32-bit kernels
-> >for whatever reason, having it enabled for compat processes on 64-bit
-> >kernels makes even less sense due to discrepances in the type sizes
-> >that it does not handle.
-> 
-> If I understand correctly, the reason is due to
-> in libbpf we have
-> struct bpf_link_create_opts {
->         size_t sz; /* size of this struct for forward/backward compatibility
-> */
->         __u32 flags;
->         union bpf_iter_link_info *iter_info;
->         __u32 iter_info_len;
->         __u32 target_btf_id;
->         union {
->                 struct {
->                         __u64 bpf_cookie;
->                 } perf_event;
->                 struct {
->                         __u32 flags;
->                         __u32 cnt;
->                         const char **syms;
->                         const unsigned long *addrs;
->                         const __u64 *cookies;
->                 } kprobe_multi;
->         };
->         size_t :0;
-> };
-> 
-> Note that we have `const unsigned long *addrs;`
-> 
-> If we have 32-bit user space application and 64bit kernel,
-> and we will have userspace 32-bit pointers and kernel as
-> 64bit pointers and current kernel doesn't handle 32-bit
-> user pointer properly.
-> 
-> Consider this may involve libbpf uapi change, maybe
-> we should change "const unsigned long *addrs;" to
-> "const __u64 *addrs;" considering we haven't freeze
-> libbpf UAPI yet.
-> 
-> Otherwise, we stick to current code with this patch,
-> it will make it difficult to support 32-bit app with
-> 64-bit kernel for kprobe_multi in the future due to
-> uapi issues.
-> 
-> WDYT?
+Hello
 
-As 32 bit arches are "unsupported" currently, the change would be more
-a semantic one rather then practical;  I don't mind having it here (basically,
-the tools/* part of [1]), though (assuming it is still possible to get it
-in 5.18).
+2 sunxi board still does not have ethernet working, orangepi 1+ and
+orangepi 3.
+This is due to the fact thoses boards have a PHY which need 2 regulators.
 
-[1] https://lore.kernel.org/lkml/6ef675aeeea442fa8fc168cd1cb4e4e474f65a3f.1652772731.git.esyr@redhat.com/
+A first attempt was made to support them was made by adding support in
+stmmac driver:
+https://lore.kernel.org/lkml/20190820145343.29108-6-megous@megous.com/
+Proposal rejected, since regulators need to be handled by the PHY core.
 
-> >
-> >Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-> >Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
-> >---
-> >  kernel/trace/bpf_trace.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> >diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> >index 212faa4..2f83489 100644
-> >--- a/kernel/trace/bpf_trace.c
-> >+++ b/kernel/trace/bpf_trace.c
-> >@@ -2412,7 +2412,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
-> >  	int err;
-> >  	/* no support for 32bit archs yet */
-> >-	if (sizeof(u64) != sizeof(void *))
-> >+	if (sizeof(u64) != sizeof(void *) || in_compat_syscall())
-> >  		return -EOPNOTSUPP;
-> >  	if (prog->expected_attach_type != BPF_TRACE_KPROBE_MULTI)
-> 
+This serie try to handle this.
+
+This serie was tested on whole range of board and PHY architecture:
+- internal PHY
+  * sun8i-h3-orangepi-pc
+- external PHY
+  * sun50i-h6-pine-h64
+  * sun8i-r40-bananapi-m2-ultra
+  * sun8i-a83t-bananapi-m3
+  * sun50i-a64-bananapi-m64
+  * sun50i-h6-orangepi-3
+  * sun50i-h5-nanopi-neo-plus2
+
+The resume/suspend of PHY was tested.
+
+Regards
+
+changes since v1:
+- Add regulator_bulk_get_all for ease handling of PHY regulators
+- Removed all convertion patchs to keep DT compatibility.
+
+Corentin Labbe (4):
+  regulator: Add of_get_regulator_from_list
+  regulator: Add regulator_bulk_get_all
+  phy: handle optional regulator for PHY
+  dt-bindings: net: Add documentation for optional regulators
+
+Ondřej Jirman (1):
+  arm64: dts: allwinner: orange-pi-3: Enable ethernet
+
+ .../devicetree/bindings/net/ethernet-phy.yaml |  9 ++
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 38 ++++++++
+ drivers/net/mdio/Kconfig                      |  1 +
+ drivers/net/mdio/fwnode_mdio.c                | 34 ++++++-
+ drivers/net/phy/phy_device.c                  | 10 ++
+ drivers/regulator/core.c                      | 93 ++++++++++++++++++-
+ include/linux/phy.h                           |  3 +
+ include/linux/regulator/consumer.h            |  2 +
+ 8 files changed, 182 insertions(+), 8 deletions(-)
+
+-- 
+2.35.1
 
