@@ -2,107 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25D1052B952
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:13:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2294752B95A
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:13:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235893AbiERL6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 07:58:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45774 "EHLO
+        id S235997AbiERL7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 07:59:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235976AbiERL6P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 07:58:15 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCEAB3631B
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 04:58:14 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id q4so1528304plr.11
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 04:58:14 -0700 (PDT)
+        with ESMTP id S235943AbiERL7y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 07:59:54 -0400
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45C58BD14;
+        Wed, 18 May 2022 04:59:52 -0700 (PDT)
+Received: by mail-lj1-x231.google.com with SMTP id q130so2236046ljb.5;
+        Wed, 18 May 2022 04:59:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=qOGmMpU6cQSpl/71fyCpHtzhIfiFKIUXW9dc0ENItMw=;
-        b=EXHwTVvRaER1bFGh3q3sSgBQY3RY5fmlIQF+pU9wLYdD1ZsikzZ2+AH+M+XKov3R6r
-         7MQWLDqz6ZfdZS+c3GjKlnu8iuzgx22xc73wYca1ERi9rtYrLXdoD/EPREWd3HHwEbtJ
-         EWBs+vl/ToOcNzhqpbhilwC5oUOB5woAV4PDFD1/UG/kpXMRtSg3DRlEAJV+3eJOA041
-         8AteCu/6Gn7AqJviRmHrrYN7PRKW7p63NilVDqw72uot4g9dcP4Bf8mQKWat3BTxv8PG
-         daF4gWyKmRKAVVDERBKj549SitU08RPSGaH0oDOVKvziOSguF3mFrHnTdsC8zpD0KHI0
-         aPWQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8h/z95IOEEjwauf5QbXsG9VCwDDtDFcI9tc/RWrPhpc=;
+        b=R8JyENQfy4HDMNsl5wBoII7M1IFdDwgdwiLppNwyqhxuS8Q1iRyS2l4ac5LJkBsAd9
+         IN0dR1esDRlAKroABvUzt1nf0UqPoONEzm+bwGJrLs29hsJ3pMIIHNRvuJAeFSszwtkF
+         CmtYUgN84Im8C0i0Zod092pH+PMM8VgdHfLn11IpaOyjPP3r/yYIrowNihLm1V9QU415
+         UfDpEqCgWAJofBeCVS5azNomlMk7R2t95p1Yy4/4+uKtV0oZrsZM1n57qKMpX5H862eM
+         3AUiAmuXZMcmgp0H81W+b4Hz6RN9oHp3tLX/OOk29ejRvavwepbOCaAEpF2fDX3g+0Hg
+         p6vA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=qOGmMpU6cQSpl/71fyCpHtzhIfiFKIUXW9dc0ENItMw=;
-        b=l0jsa3gVVkLuj7OEJsXPjfClo9GZgWT8TZwU5HvzFobhCyhLHUC5JYBXjuGim5TP69
-         GMpgRtLnhbWc1LZ5azMOxg/IR8dVLsG9koVYUjOi6fvM46CF1Y0vehaNSgu54ow7xvob
-         bGLBKz13qgeWN+YNuc5pHfkBQXFCjrcTh1T+rD4OQSzRi0YwjkcIziacBtiI9wn2V1fk
-         jQNBaRvMQOx7nDQf4eBm3ZMsQCSk+KE18AdnJiKOIQNw6r5LtdtUN6vDqSjwkkdR5I8N
-         qTf/SczWZnzFINgU1Aabrir9vOM4OwgJclDCRmuLpbA5HjlSmjSBsVhox2jvse5jcBEy
-         zMOQ==
-X-Gm-Message-State: AOAM530eV5u7R/u9ZCIYv+LHl4+LjMT+9TIJozok7c0zYiBddBIy+aFW
-        lWvOwA1TV4+wWRsojrkd9Yw+8HBZDT0FK+QE3H4=
-X-Google-Smtp-Source: ABdhPJylMOpjMd7tZoKMGkNufpqeTsr1KOE5Ijf/BNZ9LMr3ZSmv0fLczXBUg7dQ5m5/Rl+GsQeu9utEVZb3wdVFe/o=
-X-Received: by 2002:a17:90b:4a51:b0:1df:7617:bcfb with SMTP id
- lb17-20020a17090b4a5100b001df7617bcfbmr12130022pjb.207.1652875094136; Wed, 18
- May 2022 04:58:14 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8h/z95IOEEjwauf5QbXsG9VCwDDtDFcI9tc/RWrPhpc=;
+        b=cUWrVpD75tRbFcsX6pBT2BhjWCycBO4TSc7xce2Sjswxs9099fLaKyfqsOnn4+oqN3
+         /r6MrQ3377RHTjHc2My6GdpO6wi9+Z+BObeDJ4CGyyKus10J6LJ+W0BT+CHJ++I32svY
+         d4FfG1d+tffT4JM1B2mfBebdUExigLegrX2t2v9gvcgaqERLsJWgn/9hrR/34D0RbZK/
+         dhxotawIqZzqkNVqbYc+W447q54gub1aQOrfdmDMw35T6nT3i1owbESdD8M2u78azaeW
+         xmin9oLe67rcmuFgaZadnmTMVPMjkGAuTZ/6r4BESmYT7I0WsUAYAakYY4LxljlRR4sf
+         MqZg==
+X-Gm-Message-State: AOAM533lP7u9QXHzI6qoUPyvhM5ukxwr43lx7qeIgps1G/XKXO5/Z7fT
+        t+jy4HygwpC1Nr829qFYvNf7lZwM1m8HKbmeSyUiInNzmSBDDQ==
+X-Google-Smtp-Source: ABdhPJxG5bnk99I8hvYAMvEOU3/OM47ixg0eYd+9pD+ZMCLn28/7LnVFV3JqSKu/cr5zLgef1YgbeTOwJJcFfQkpuls=
+X-Received: by 2002:a2e:b7ca:0:b0:253:a418:59af with SMTP id
+ p10-20020a2eb7ca000000b00253a41859afmr12548409ljo.397.1652875191128; Wed, 18
+ May 2022 04:59:51 -0700 (PDT)
 MIME-Version: 1.0
-Sender: munnaprajapati9898@gmail.com
-Received: by 2002:a17:90a:a087:0:0:0:0 with HTTP; Wed, 18 May 2022 04:58:13
- -0700 (PDT)
-From:   Mrs Aisha Gaddafi <mrsaishaay798@gmail.com>
-Date:   Wed, 18 May 2022 07:58:13 -0400
-X-Google-Sender-Auth: 4oBxpSR1_ajXFJRtW7osZvPFLhQ
-Message-ID: <CAHRyjXDDAEkxo3LPGrGu+1nr-BhTkyEqpHGtkXjOCVYf55gWYg@mail.gmail.com>
-Subject: Assalamu Alaikum
-To:     undisclosed-recipients:;
+References: <20220517163450.240299-1-miquel.raynal@bootlin.com>
+ <20220517163450.240299-10-miquel.raynal@bootlin.com> <CAK-6q+jQL7cFJrL6XjuaJnNDggtO1d_sB+T+GrY9yT+Y+KC0oA@mail.gmail.com>
+ <20220518104435.76f5c0d5@xps-13>
+In-Reply-To: <20220518104435.76f5c0d5@xps-13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Wed, 18 May 2022 07:59:37 -0400
+Message-ID: <CAB_54W7bLZ8i7W-ZzQ2WXgMvywcC=tEDHZqbj1yWYuKoVgm1sw@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v3 09/11] net: mac802154: Introduce a
+ synchronous API for MLME commands
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=7.0 required=5.0 tests=BAYES_60,DEAR_FRIEND,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FROM,HK_NAME_FM_MR_MRS,
-        LOTS_OF_MONEY,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNDISC_MONEY autolearn=no autolearn_force=no
-        version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:632 listed in]
-        [list.dnswl.org]
-        *  1.5 BAYES_60 BODY: Bayes spam probability is 60 to 80%
-        *      [score: 0.6241]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [munnaprajapati9898[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [munnaprajapati9898[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  2.6 DEAR_FRIEND BODY: Dear Friend? That's not very dear!
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  1.5 HK_NAME_FM_MR_MRS No description available.
-        *  0.0 LOTS_OF_MONEY Huge... sums of money
-        *  1.4 UNDISC_MONEY Undisclosed recipients + money/fraud signs
-X-Spam-Level: ******
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Friend
+Hi,
 
-I have investment fund worth $57,500 million dollars deposited in the
-bank which i want to entrust on you for investment project in your
-country or your company. as i am under political asylum protection and
-as a refugee in a foreign land together with my 3 Children i am not
-allowed to have a direct access to this investment fund to handle this
-project myself therefore I need mutual respect, trust, honesty,
-transparency, adequate support and assistance, Hope to hear from you
-for more details.
+On Wed, May 18, 2022 at 4:44 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+> Hi Alexander,
+>
+> aahringo@redhat.com wrote on Tue, 17 May 2022 20:41:41 -0400:
+>
+> > Hi,
+> >
+> > On Tue, May 17, 2022 at 12:35 PM Miquel Raynal
+> > <miquel.raynal@bootlin.com> wrote:
+> > >
+> > > This is the slow path, we need to wait for each command to be processed
+> > > before continuing so let's introduce an helper which does the
+> > > transmission and blocks until it gets notified of its asynchronous
+> > > completion. This helper is going to be used when introducing scan
+> > > support.
+> > >
+> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > ---
+> > >  net/mac802154/ieee802154_i.h |  1 +
+> > >  net/mac802154/tx.c           | 46 ++++++++++++++++++++++++++++++++++++
+> > >  2 files changed, 47 insertions(+)
+> > >
+> > > diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
+> > > index a057827fc48a..b42c6ac789f5 100644
+> > > --- a/net/mac802154/ieee802154_i.h
+> > > +++ b/net/mac802154/ieee802154_i.h
+> > > @@ -125,6 +125,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
+> > >  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
+> > >  void ieee802154_xmit_sync_worker(struct work_struct *work);
+> > >  int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
+> > > +int ieee802154_mlme_tx_one(struct ieee802154_local *local, struct sk_buff *skb);
+> > >  netdev_tx_t
+> > >  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
+> > >  netdev_tx_t
+> > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > > index 38f74b8b6740..6cc4e5c7ba94 100644
+> > > --- a/net/mac802154/tx.c
+> > > +++ b/net/mac802154/tx.c
+> > > @@ -128,6 +128,52 @@ int ieee802154_sync_and_hold_queue(struct ieee802154_local *local)
+> > >         return ieee802154_sync_queue(local);
+> > >  }
+> > >
+> > > +static int ieee802154_mlme_op_pre(struct ieee802154_local *local)
+> > > +{
+> > > +       return ieee802154_sync_and_hold_queue(local);
+> > > +}
+> > > +
+> > > +static int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb)
+> > > +{
+> > > +       int ret;
+> > > +
+> > > +       /* Avoid possible calls to ->ndo_stop() when we asynchronously perform
+> > > +        * MLME transmissions.
+> > > +        */
+> > > +       rtnl_lock();
+> > > +
+> > > +       /* Ensure the device was not stopped, otherwise error out */
+> > > +       if (!local->open_count)
+> > > +               return -EBUSY;
+> > > +
+> >
+> > No -EBUSY here, use ?-ENETDOWN?.
+>
+> Isn't it strange to return "Network is down" while we try to stop the
+> device but fail to do so because, actually, it is still being used?
+>
 
-Warmest regards
-Mrs Aisha Gaddafi
+you are right. Maybe -EPERM, in a sense of whether the netdev state
+allows it or not.
+
+- Alex
