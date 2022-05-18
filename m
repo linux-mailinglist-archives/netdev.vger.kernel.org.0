@@ -2,155 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E100552B16A
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 06:27:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 598FA52B197
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 06:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229734AbiEREXp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 00:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
+        id S229949AbiEREjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 00:39:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229677AbiEREXn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 00:23:43 -0400
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD68E2E9E0;
-        Tue, 17 May 2022 21:23:42 -0700 (PDT)
-Received: by mail-wm1-f48.google.com with SMTP id l38-20020a05600c1d2600b00395b809dfbaso360582wms.2;
-        Tue, 17 May 2022 21:23:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=76dv2VpjMRgZPVQFYZ0FWzLo+rlCzcsp4h55jthexNg=;
-        b=MZ+xMMXjoDM9tgU9uaFNDeT8Uulqcj7rQAZoQZrtUemDhZQtPB+O5NzuoQ5Ok1VxqV
-         T0nQHqAT+Vt3JWpFgGND3UjcIF4TOu7znNHIUxjPBxypjC78KTqL7YsxpRqWpWQd6rIJ
-         34W9ljB67V+l7Xj99pwnIh2UVO0aXwKPl3cTjV5bNYsg8xHBZMrmpR9BNIa0O6BNQoJ6
-         TTqiKUN4NUchdF0OJmvmSANMhbKOYzlrBkB3eAcqmzGa3bp9Kl3ERkO4+C0nE2aHJ4SQ
-         /A4HPqxIVeMrN9DR+t1pSduRI7WjPo0bMuBMPvlmwR/3Cin+OMMx4BC1vLCYr6IYX7h2
-         LIQQ==
-X-Gm-Message-State: AOAM530UwSGlk0CCJaoaSmyYXybai9kR9XtnPTiVikLUxTlLRRHQnVe/
-        0J/j0QIjkpQbtpJ99xKPcrpu7oNEYZusuUgeRDk=
-X-Google-Smtp-Source: ABdhPJzyyLEmhI/Yu+0jMqaa9YJP/smoyEgq2hb8jsNCdzNCwzf+hEXAJSpALAwsB8QS0g0ztXlsVahSfL2UrMlLhuc=
-X-Received: by 2002:a05:600c:1c84:b0:394:5de0:245e with SMTP id
- k4-20020a05600c1c8400b003945de0245emr35217055wms.32.1652847821016; Tue, 17
- May 2022 21:23:41 -0700 (PDT)
+        with ESMTP id S229904AbiEREjn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 00:39:43 -0400
+X-Greylist: delayed 152422 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 21:39:37 PDT
+Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id CF1ED3BA65;
+        Tue, 17 May 2022 21:39:37 -0700 (PDT)
+Received: by ajax-webmail-mail-app4 (Coremail) ; Wed, 18 May 2022 12:39:20
+ +0800 (GMT+08:00)
+X-Originating-IP: [124.236.130.193]
+Date:   Wed, 18 May 2022 12:39:20 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
+        alexander.deucher@amd.com, broonie@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: Re: [PATCH net v2] NFC: hci: fix sleep in atomic context bugs
+ in nfc_hci_hcp_message_tx
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <68ccef70-ef30-8f53-6ec5-17ce5815089c@linaro.org>
+References: <20220517105526.114421-1-duoming@zju.edu.cn>
+ <2ce7a871-3e55-ae50-955c-bf04a443aba3@linaro.org>
+ <71c24f38.1a1f4.180d29ff1fd.Coremail.duoming@zju.edu.cn>
+ <68ccef70-ef30-8f53-6ec5-17ce5815089c@linaro.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-References: <20220517073259.23476-1-harini.katakam@xilinx.com>
- <20220517073259.23476-2-harini.katakam@xilinx.com> <20220517194254.015e87f3@kernel.org>
-In-Reply-To: <20220517194254.015e87f3@kernel.org>
-From:   Harini Katakam <harinik@xilinx.com>
-Date:   Wed, 18 May 2022 09:53:29 +0530
-Message-ID: <CAFcVEC+qdouQ+tJdBG_Vv8QsaUX99uFtjKnB5WwQawA1fxmgEQ@mail.gmail.com>
-Subject: Re: [PATCH 1/3] net: macb: Fix PTP one step sync support
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        David Miller <davem@davemloft.net>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Message-ID: <454a29ba.1b9b1.180d576985b.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: cS_KCgC3PiF5eIRi60FkAA--.9848W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgcOAVZdtZv64AAAs1
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-On Wed, May 18, 2022 at 8:12 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Tue, 17 May 2022 13:02:57 +0530 Harini Katakam wrote:
-> > PTP one step sync packets cannot have CSUM padding and insertion in
-> > SW since time stamp is inserted on the fly by HW.
-> > In addition, ptp4l version 3.0 and above report an error when skb
-> > timestamps are reported for packets that not processed for TX TS
-> > after transmission.
-> > Add a helper to identify PTP one step sync and fix the above two
-> > errors.
-> > Also reset ptp OSS bit when one step is not selected.
-> >
-> > Fixes: ab91f0a9b5f4 ("net: macb: Add hardware PTP support")
-> > Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
->
-> Please make sure to CC authors of the patches under fixes.
-> ./scripts/get_maintainer should point them out.
-
-Thanks for the review.
-Rafal Ozieblo <rafalo@cadence.com> is the author of the first Fixes
-patch but that
-address hasn't worked in the last ~4 yrs.
-I have cced Claudiu and everyone else from the maintainers
-(Eric Dumazet <edumazet@google.com> also doesn't work)
-
-<snip>
-> > +/* IEEE1588 PTP flag field values  */
-> > +#define PTP_FLAG_TWOSTEP     0x2
->
-> Shouldn't this go into the PTP header?
-
-Let me add it to ptp_classify where the relevant helpers are present.
-
-<snip>
-> > +static inline bool ptp_oss(struct sk_buff *skb)
->
-> Please spell out then name more oss == open source software.
-
-Will change to ptp_one_step_sync
-
->
-> No inline here, please, let the compiler decide if the function is
-> small enough. One step timestamp may be a rare use case so inlining
-> this twice is not necessarily the right choice.
-
-One step is a rare case but the check happens on every PTP packet in the
-transmit data path and hence I wanted to explicitly inline it.
-
-<snip>
-> > @@ -1158,13 +1192,14 @@ static int macb_tx_complete(struct macb_queue *queue, int budget)
-> >
-> >                       /* First, update TX stats if needed */
-> >                       if (skb) {
-> > -                             if (unlikely(skb_shinfo(skb)->tx_flags &
-> > -                                          SKBTX_HW_TSTAMP) &&
-> > -                                 gem_ptp_do_txstamp(queue, skb, desc) == 0) {
-> > -                                     /* skb now belongs to timestamp buffer
-> > -                                      * and will be removed later
-> > -                                      */
-> > -                                     tx_skb->skb = NULL;
-> > +                             if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&
->
-> ptp_oss already checks if HW_TSTAMP is set.
-
-The check for SKBTX_HW_TSTAMP is required here universally and not
-just inside ptp_oss.
-I will remove the redundant check in ptp_oss instead. Please see the
-reply below.
-
->
-> > +                                 !ptp_oss(skb)) {
-> > +                                     if (gem_ptp_do_txstamp(queue, skb, desc) == 0) {
->
-> Why convert the gem_ptp_do_txstamp check from a && in the condition to
-> a separate if?
-
-The intention is that ptp_oss should only be evaluated when
-SKBTX_HW_TSTAMP is set and
-gem_ptp_do_txstamp should only be called if ptp_oss is false. Since
-compiler follows the order
-of evaluation, I'll simplify this to:
-
-if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) && !ptp_oss(skb) &&
-    gem_ptp_do_txstamp(queue, skb, desc) == 0) {
-...
-}
-
-Regards,
-Harini
+SGVsbG8sCgpPbiBUdWUsIDE3IE1heSAyMDIyIDE3OjI4OjUxICswMjAwIEtyenlzenRvZiB3cm90
+ZToKCj4gPj4+IFRoZXJlIGFyZSBzbGVlcCBpbiBhdG9taWMgY29udGV4dCBidWdzIHdoZW4gdGhl
+IHJlcXVlc3QgdG8gc2VjdXJlCj4gPj4+IGVsZW1lbnQgb2Ygc3QyMW5mY2EgaXMgdGltZW91dC4g
+VGhlIHJvb3QgY2F1c2UgaXMgdGhhdCBremFsbG9jIGFuZAo+ID4+PiBhbGxvY19za2Igd2l0aCBH
+RlBfS0VSTkVMIHBhcmFtZXRlciBhbmQgbXV0ZXhfbG9jayBhcmUgY2FsbGVkIGluCj4gPj4+IHN0
+MjFuZmNhX3NlX3d0X3RpbWVvdXQgd2hpY2ggaXMgYSB0aW1lciBoYW5kbGVyLiBUaGUgY2FsbCB0
+cmVlIHNob3dzCj4gPj4+IHRoZSBleGVjdXRpb24gcGF0aHMgdGhhdCBjb3VsZCBsZWFkIHRvIGJ1
+Z3M6Cj4gPj4+Cj4gPj4+ICAgIChJbnRlcnJ1cHQgY29udGV4dCkKPiA+Pj4gc3QyMW5mY2Ffc2Vf
+d3RfdGltZW91dAo+ID4+PiAgIG5mY19oY2lfc2VuZF9ldmVudAo+ID4+PiAgICAgbmZjX2hjaV9o
+Y3BfbWVzc2FnZV90eAo+ID4+PiAgICAgICBremFsbG9jKC4uLiwgR0ZQX0tFUk5FTCkgLy9tYXkg
+c2xlZXAKPiA+Pj4gICAgICAgYWxsb2Nfc2tiKC4uLiwgR0ZQX0tFUk5FTCkgLy9tYXkgc2xlZXAK
+PiA+Pj4gICAgICAgbXV0ZXhfbG9jaygpIC8vbWF5IHNsZWVwCj4gPj4+Cj4gPj4+IFRoaXMgcGF0
+Y2ggY2hhbmdlcyBhbGxvY2F0aW9uIG1vZGUgb2Yga3phbGxvYyBhbmQgYWxsb2Nfc2tiIGZyb20K
+PiA+Pj4gR0ZQX0tFUk5FTCB0byBHRlBfQVRPTUlDIGFuZCBjaGFuZ2VzIG11dGV4X2xvY2sgdG8g
+c3Bpbl9sb2NrIGluCj4gPj4+IG9yZGVyIHRvIHByZXZlbnQgYXRvbWljIGNvbnRleHQgZnJvbSBz
+bGVlcGluZy4KPiA+Pj4KPiA+Pj4gRml4ZXM6IDIxMzBmYjk3ZmVjZiAoIk5GQzogc3QyMW5mY2E6
+IEFkZGluZyBzdXBwb3J0IGZvciBzZWN1cmUgZWxlbWVudCIpCj4gPj4+IFNpZ25lZC1vZmYtYnk6
+IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgoKPiA+IFRoZSBuZmNfaGNpX2hjcF9t
+ZXNzYWdlX3R4KCkgaXMgY2FsbGVkIGJ5IGJvdGggcHJvY2VzcyBjb250ZXh0KGhjaV9kZXZfdXAg
+YW5kIHNvIG9uKQo+ID4gYW5kIGludGVycnVwdCBjb250ZXh0KHN0MjFuZmNhX3NlX3d0X3RpbWVv
+dXQoKSkuIFRoZSBwcm9jZXNzIGNvbnRleHQoaGNpX2Rldl91cCBhbmQgc28gb24pCj4gPiBjYWxs
+cyBkZXZpY2VfbG9jaywgYnV0IEkgdGhpbmsgY2FsbGluZyBzcGluX2xvY2soKSB3aXRoaW4gZGV2
+aWNlX2xvY2soKSBpcyBvay4gVGhlcmUgaXMKPiA+IG5vIGRldmljZV9sb2NrKCkgY2FsbGVkIHdp
+dGhpbiBzcGluX2xvY2soKS4gCj4gCj4gVGhlcmUgaXMuCj4gCj4gbmZjX2hjaV9mYWlsdXJlIC0+
+IHNwaW4gbG9jayAtPiBuZmNfZHJpdmVyX2ZhaWx1cmUgLT4gbmZjX3RhcmdldHNfZm91bmQKPiAt
+PiBkZXZpY2VfbG9jawo+IAo+IEkgZm91bmQgaXQganVzdCBieSBhIHZlcnkgcXVpY2sgbG9vaywg
+c28gSSBzdXNwZWN0IHRoZXJlIGFyZSBzZXZlcmFsCj4gb3RoZXIgcGxhY2VzLCBub3QgcmVhbGx5
+IGNoZWNrZWQuCgpJIGFncmVlIHdpdGggeW91LCB0aGUgc3Bpbl9sb2NrIGlzIG5vdCBhIGdvb2Qg
+c29sdXRpb24gdG8gdGhpcyBwcm9ibGVtLiBUaGVyZSBpcyBhbm90aGVyIHNvbHV0aW9uOgoKV2Ug
+Y291bGQgcHV0IHRoZSBuZmNfaGNpX3NlbmRfZXZlbnQoKSBvZiBzdDIxbmZjYV9zZV93dF90aW1l
+b3V0KCkgaW4gYSB3b3JrIGl0ZW0sIHRoZW4sIHVzaW5nCnNjaGVkdWxlX3dvcmsoKSBpbiBzdDIx
+bmZjYV9zZV93dF90aW1lb3V0KCkgdG8gZXhlY3V0ZSB0aGUgd29yayBpdGVtLiBUaGUgc2NoZWR1
+bGVfd29yaygpIHdpbGwKd2FrZSB1cCBhbm90aGVyIGtlcm5lbCB0aHJlYWQgd2hpY2ggaXMgaW4g
+cHJvY2VzcyBjb250ZXh0IHRvIGV4ZWN1dGUgdGhlIGJvdHRvbSBoYWxmIG9mIHRoZSBpbnRlcnJ1
+cHQsIApzbyBpdCBhbGxvd3Mgc2xlZXAuCgpUaGUgZm9sbG93aW5nIGlzIHRoZSBkZXRhaWxzLgoK
+ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmZjL3N0MjFuZmNhL3NlLmMgYi9kcml2ZXJzL25mYy9zdDIx
+bmZjYS9zZS5jCmluZGV4IGM5MjJmMTBkMGQ3Li4xZTk4NDY3ZGJmNyAxMDA2NDQKLS0tIGEvZHJp
+dmVycy9uZmMvc3QyMW5mY2Evc2UuYworKysgYi9kcml2ZXJzL25mYy9zdDIxbmZjYS9zZS5jCkBA
+IC0yNDEsNyArMjQxLDcgQEAgaW50IHN0MjFuZmNhX2hjaV9zZV9pbyhzdHJ1Y3QgbmZjX2hjaV9k
+ZXYgKmhkZXYsIHUzMiBzZV9pZHgsCiB9CiBFWFBPUlRfU1lNQk9MKHN0MjFuZmNhX2hjaV9zZV9p
+byk7Cgotc3RhdGljIHZvaWQgc3QyMW5mY2Ffc2Vfd3RfdGltZW91dChzdHJ1Y3QgdGltZXJfbGlz
+dCAqdCkKK3N0YXRpYyB2b2lkIHN0MjFuZmNhX3NlX3d0X3dvcmsoc3RydWN0IHdvcmtfc3RydWN0
+ICp3b3JrKQogewogICAgICAgIC8qIAogICAgICAgICAqIE5vIGFuc3dlciBmcm9tIHRoZSBzZWN1
+cmUgZWxlbWVudApAQCAtMjU0LDggKzI1NCw5IEBAIHN0YXRpYyB2b2lkIHN0MjFuZmNhX3NlX3d0
+X3RpbWVvdXQoc3RydWN0IHRpbWVyX2xpc3QgKnQpCiAgICAgICAgICovCiAgICAgICAgLyogaGFy
+ZHdhcmUgcmVzZXQgbWFuYWdlZCB0aHJvdWdoIFZDQ19VSUNDX09VVCBwb3dlciBzdXBwbHkgKi8K
+ICAgICAgICB1OCBwYXJhbSA9IDB4MDE7Ci0gICAgICAgc3RydWN0IHN0MjFuZmNhX2hjaV9pbmZv
+ICppbmZvID0gZnJvbV90aW1lcihpbmZvLCB0LAotICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgc2VfaW5mby5id2lfdGltZXIpOworICAgICAgIHN0cnVj
+dCBzdDIxbmZjYV9oY2lfaW5mbyAqaW5mbyA9IGNvbnRhaW5lcl9vZih3b3JrLAorICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3Qgc3QyMW5mY2FfaGNp
+X2luZm8sCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNl
+X2luZm8udGltZW91dF93b3JrKTsKCiAgICAgICAgaW5mby0+c2VfaW5mby5id2lfYWN0aXZlID0g
+ZmFsc2U7CiAKQEAgLTI3MSw2ICsyNzIsMTMgQEAgc3RhdGljIHZvaWQgc3QyMW5mY2Ffc2Vfd3Rf
+dGltZW91dChzdHJ1Y3QgdGltZXJfbGlzdCAqdCkKICAgICAgICBpbmZvLT5zZV9pbmZvLmNiKGlu
+Zm8tPnNlX2luZm8uY2JfY29udGV4dCwgTlVMTCwgMCwgLUVUSU1FKTsKIH0KCitzdGF0aWMgdm9p
+ZCBzdDIxbmZjYV9zZV93dF90aW1lb3V0KHN0cnVjdCB0aW1lcl9saXN0ICp0KQoreworICAgICAg
+IHN0cnVjdCBzdDIxbmZjYV9oY2lfaW5mbyAqaW5mbyA9IGZyb21fdGltZXIoaW5mbywgdCwgc2Vf
+aW5mby5id2lfdGltZXIpOworCisgICAgICAgc2NoZWR1bGVfd29yaygmaW5mby0+c2VfaW5mby50
+aW1lb3V0X3dvcmspOworfQorCiBzdGF0aWMgdm9pZCBzdDIxbmZjYV9zZV9hY3RpdmF0aW9uX3Rp
+bWVvdXQoc3RydWN0IHRpbWVyX2xpc3QgKnQpCiB7CiAgICAgICAgc3RydWN0IHN0MjFuZmNhX2hj
+aV9pbmZvICppbmZvID0gZnJvbV90aW1lcihpbmZvLCB0LApAQCAtMzg5LDYgKzM5Nyw3IEBAIHZv
+aWQgc3QyMW5mY2Ffc2VfaW5pdChzdHJ1Y3QgbmZjX2hjaV9kZXYgKmhkZXYpCiAgICAgICAgc3Ry
+dWN0IHN0MjFuZmNhX2hjaV9pbmZvICppbmZvID0gbmZjX2hjaV9nZXRfY2xpZW50ZGF0YShoZGV2
+KTsKCiAgICAgICAgaW5pdF9jb21wbGV0aW9uKCZpbmZvLT5zZV9pbmZvLnJlcV9jb21wbGV0aW9u
+KTsKKyAgICAgICBJTklUX1dPUksoJmluZm8tPnNlX2luZm8udGltZW91dF93b3JrLCBzdDIxbmZj
+YV9zZV93dF93b3JrKTsKICAgICAgICAvKiBpbml0aWFsaXplIHRpbWVycyAqLwogICAgICAgIHRp
+bWVyX3NldHVwKCZpbmZvLT5zZV9pbmZvLmJ3aV90aW1lciwgc3QyMW5mY2Ffc2Vfd3RfdGltZW91
+dCwgMCk7CiAgICAgICAgaW5mby0+c2VfaW5mby5id2lfYWN0aXZlID0gZmFsc2U7CkBAIC00MTYs
+NiArNDI1LDcgQEAgdm9pZCBzdDIxbmZjYV9zZV9kZWluaXQoc3RydWN0IG5mY19oY2lfZGV2ICpo
+ZGV2KQogICAgICAgIGlmIChpbmZvLT5zZV9pbmZvLnNlX2FjdGl2ZSkKICAgICAgICAgICAgICAg
+IGRlbF90aW1lcl9zeW5jKCZpbmZvLT5zZV9pbmZvLnNlX2FjdGl2ZV90aW1lcik7CgorICAgICAg
+IGNhbmNlbF93b3JrX3N5bmMoJmluZm8tPnNlX2luZm8udGltZW91dF93b3JrKTsKICAgICAgICBp
+bmZvLT5zZV9pbmZvLmJ3aV9hY3RpdmUgPSBmYWxzZTsKICAgICAgICBpbmZvLT5zZV9pbmZvLnNl
+X2FjdGl2ZSA9IGZhbHNlOwogfQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZmMvc3QyMW5mY2Evc3Qy
+MW5mY2EuaCBiL2RyaXZlcnMvbmZjL3N0MjFuZmNhL3N0MjFuZmNhLmgKaW5kZXggY2I2YWQ5MTZi
+ZTkuLmFlNjc3MWNjOTg5IDEwMDY0NAotLS0gYS9kcml2ZXJzL25mYy9zdDIxbmZjYS9zdDIxbmZj
+YS5oCisrKyBiL2RyaXZlcnMvbmZjL3N0MjFuZmNhL3N0MjFuZmNhLmgKQEAgLTE0MSw2ICsxNDEs
+NyBAQCBzdHJ1Y3Qgc3QyMW5mY2Ffc2VfaW5mbyB7CgogICAgICAgIHNlX2lvX2NiX3QgY2I7CiAg
+ICAgICAgdm9pZCAqY2JfY29udGV4dDsKKyAgICAgICBzdHJ1Y3Qgd29ya19zdHJ1Y3QgdGltZW91
+dF93b3JrOwogfTsKCiBzdHJ1Y3Qgc3QyMW5mY2FfaGNpX2luZm8gewoKRG8geW91IHRoaW5rIHRo
+aXMgc29sdXRpb24gaXMgYmV0dGVyPwoKQmVzdCByZWdhcmRzLApEdW9taW5nIFpob3UK
