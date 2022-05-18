@@ -2,130 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E6F552B0D5
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 05:36:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D930E52B0DE
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 05:38:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229619AbiERDgG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 23:36:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38468 "EHLO
+        id S229769AbiERDiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 23:38:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47218 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiERDfv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 23:35:51 -0400
-Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E98A362A2E;
-        Tue, 17 May 2022 20:35:47 -0700 (PDT)
-Received: from kwepemi500013.china.huawei.com (unknown [172.30.72.56])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L2zB823mRz1JCCQ;
-        Wed, 18 May 2022 11:34:24 +0800 (CST)
-Received: from [10.67.111.192] (10.67.111.192) by
- kwepemi500013.china.huawei.com (7.221.188.120) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 18 May 2022 11:35:44 +0800
-Message-ID: <c6dfe9bc-07ac-62a7-0a34-12fecf0dfdaa@huawei.com>
-Date:   Wed, 18 May 2022 11:35:43 +0800
+        with ESMTP id S229730AbiERDiB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 23:38:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id ADBD56540D
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 20:37:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652845078;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Rp7uqVujxqtD936CplEiX+9qE6BPd3wg3x7T97P4iFY=;
+        b=KJbf10GkKmm+8anUtpsQmT6raYjigMWBlUs8YT9ul80E6ik2Pnv8XSL44Vu2MqfLfjV5Hv
+        mi/Yuou1/X/8UKBmn5kiTzVoCHJA+x1ee+2Ns+/oUYvoKS3ID08+9+++bI3W03CZ1udGtS
+        tfR06RFDVqZt8OQoPFaHQFYjVW8ZdSI=
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com
+ [209.85.160.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-151-KtWj0_5COd2B19hgVK7weg-1; Tue, 17 May 2022 23:37:17 -0400
+X-MC-Unique: KtWj0_5COd2B19hgVK7weg-1
+Received: by mail-qt1-f200.google.com with SMTP id d13-20020ac85acd000000b002f3be21793dso791055qtd.12
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 20:37:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Rp7uqVujxqtD936CplEiX+9qE6BPd3wg3x7T97P4iFY=;
+        b=TBOc2Wp2dZWvG6kFerD4HCIIT30ljy2Z6UxPnJN1grkAHjyj8b9cvkdym/26+DTiQE
+         pZkT0ui5acO83IZNqNTMmFltfh0Uu4ibBYZMlmv3uYCfjO/BsIQcU8ixRpZWuPV4TuSC
+         GhihDtb7ch87oSFusNU8zSqjgbMMMLognYIy18k2A2IJqGMfbLV08M8s2lWU87hj1gED
+         L2EgV05zeSShwZOwVQPHz6w6gMvTx3KGd/RLYG5JBtJp81Fp9MRX4lNcIMTSVEybbYmt
+         LykS5L1JqACwdOiCjKu6g+m9v/lSERuixtdFxbHhkvxh+UJj1VKBkbI5Hiop0MvHItGk
+         +5sA==
+X-Gm-Message-State: AOAM5302AzSE2Dn+TSr1jocP8TeI5rmgklCcnhOqOmxfujpMkMmNYIQB
+        kbQkCU3fuY91LblHSvf39hZF1vljDanNLUGTvE62Oj8dzUfexG7R9oGoAe/VrPdsstUNlVJ7IDR
+        fhEbnTlQt22rOXae5
+X-Received: by 2002:a05:6214:d03:b0:45a:8f81:d880 with SMTP id 3-20020a0562140d0300b0045a8f81d880mr23214304qvh.74.1652845035583;
+        Tue, 17 May 2022 20:37:15 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx/9A7C14loah6lY2fVyMP1BmiVDodKmFI5RSGHnntjwhf+yhhK9Mx/0P9xV44qcUkmXaKrvg==
+X-Received: by 2002:a05:6214:d03:b0:45a:8f81:d880 with SMTP id 3-20020a0562140d0300b0045a8f81d880mr23214286qvh.74.1652845035252;
+        Tue, 17 May 2022 20:37:15 -0700 (PDT)
+Received: from [192.168.98.18] ([107.12.98.143])
+        by smtp.gmail.com with ESMTPSA id c23-20020a379a17000000b0069fc13ce20fsm769063qke.64.2022.05.17.20.37.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 May 2022 20:37:14 -0700 (PDT)
+Message-ID: <616dbc51-e87d-dd11-da73-e9d7229ed8ce@redhat.com>
+Date:   Tue, 17 May 2022 23:37:13 -0400
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH bpf-next v4 3/6] bpf: Move is_valid_bpf_tramp_flags() to
- the public trampoline code
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [RFC net-next] bonding: netlink error message support for options
 Content-Language: en-US
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-CC:     <bpf@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, <x86@kernel.org>,
-        <hpa@zytor.com>, Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-References: <20220517071838.3366093-1-xukuohai@huawei.com>
- <20220517071838.3366093-4-xukuohai@huawei.com>
- <20220517155349.4jk5oymnjvrasw2p@MacBook-Pro.local>
-From:   Xu Kuohai <xukuohai@huawei.com>
-In-Reply-To: <20220517155349.4jk5oymnjvrasw2p@MacBook-Pro.local>
-Content-Type: text/plain; charset="UTF-8"
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+References: <5a6ba6f14b0fad6d4ba077a5230ee71cbf970934.1652819479.git.jtoppins@redhat.com>
+ <20220517154419.44a1cb6a@hermes.local> <20220517165419.540f2dc8@kernel.org>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <20220517165419.540f2dc8@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.67.111.192]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- kwepemi500013.china.huawei.com (7.221.188.120)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/17/2022 11:53 PM, Alexei Starovoitov wrote:
-> On Tue, May 17, 2022 at 03:18:35AM -0400, Xu Kuohai wrote:
->>  
->> +static bool is_valid_bpf_tramp_flags(unsigned int flags)
->> +{
->> +	if ((flags & BPF_TRAMP_F_RESTORE_REGS) &&
->> +	    (flags & BPF_TRAMP_F_SKIP_FRAME))
->> +		return false;
->> +
->> +	/* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops,
->> +	 * and it must be used alone.
->> +	 */
->> +	if ((flags & BPF_TRAMP_F_RET_FENTRY_RET) &&
->> +	    (flags & ~BPF_TRAMP_F_RET_FENTRY_RET))
->> +		return false;
->> +
->> +	return true;
->> +}
->> +
->> +int bpf_prepare_trampoline(struct bpf_tramp_image *tr, void *image,
->> +			   void *image_end, const struct btf_func_model *m,
->> +			   u32 flags, struct bpf_tramp_links *tlinks,
->> +			   void *orig_call)
->> +{
->> +	if (!is_valid_bpf_tramp_flags(flags))
->> +		return -EINVAL;
->> +
->> +	return arch_prepare_bpf_trampoline(tr, image, image_end, m, flags,
->> +					   tlinks, orig_call);
->> +}
+On 5/17/22 19:54, Jakub Kicinski wrote:
+> On Tue, 17 May 2022 15:44:19 -0700 Stephen Hemminger wrote:
+>> On Tue, 17 May 2022 16:31:19 -0400
+>> Jonathan Toppins <jtoppins@redhat.com> wrote:
+>>
+>>>      This is an RFC because the current NL_SET_ERR_MSG() macros do not support
+>>>      printf like semantics so I rolled my own buffer setting in __bond_opt_set().
+>>>      The issue is I could not quite figure out the life-cycle of the buffer, if
+>>>      rtnl lock is held until after the text buffer is copied into the packet
+>>>      then we are ok, otherwise, some other type of buffer management scheme will
+>>>      be needed as this could result in corrupted error messages when modifying
+>>>      multiple bonds.
+>>
+>> Might be better for others in long term if NL_SET_ERR_MSG() had printf like
+>> semantics. Surely this isn't going to be first or last case.
+>>
+>> Then internally, it could print right to the netlink message.
 > 
-> It's an overkill to introduce a new helper function just to validate
-> flags that almost compile time constants.
-> The flags are not user supplied.
-> Please move /* BPF_TRAMP_F_RET_FENTRY_RET is only used by bpf_struct_ops ... */
-> comment to bpf_struct_ops.c right before it calls arch_prepare_bpf_trampoline()
-> And add a comment to trampoline.c saying that BPF_TRAMP_F_RESTORE_REGS
-> and BPF_TRAMP_F_SKIP_FRAME should not be set together.
-> We could add a warn_on there or in arch code, but feels like overkill.
-> .
+> Dunno. I think pointing at the bad attr + exposing per-attr netlink
+> parsing policy + a string for a human worked pretty well so far.
+> IMHO printf() is just a knee jerk reaction, especially when converting
+> from netdev_err().
 
-OK, will fix in next version.
+For some subsystems it is not a convert from netdev_err, it is an AND. 
+In this RFC there are instances where changing the message from 
+netdev_err() to the macro was trivial;
 
+@@ -240,12 +243,14 @@ static int bond_changelink(struct net_device 
+*bond_dev, st
+ruct nlattr *tb[],
+                 int arp_interval = 
+nla_get_u32(data[IFLA_BOND_ARP_INTERVAL]);
+
+                 if (arp_interval && miimon) {
+-                       netdev_err(bond->dev, "ARP monitoring cannot be 
+used with MII monitoring\n");
++                       NL_SET_ERR_MSG(extack,
++                                      "ARP monitoring cannot be used 
+with MII monitoring");
+                         return -EINVAL;
+                 }
+
+These are trivial because the path does not have to care about sysfs or 
+some other legacy configuration interface. These macros become rather 
+annoying to use once a system needs to support multiple configuration 
+paths and is trying to utilize as much common configuration code[0] as 
+possible so that all interfaces largely operate the same way.
+
+> 
+> Augmenting structured information is much, much better long term.
+> 
+> To me the never ending stream of efforts to improve printk() is a
+> proof that once we let people printf() at will, efforts to contain
+> it will be futile.
+> 
+At least for bonding I was trying to reuse the most amount of code which 
+needs to deal with both sysfs and netlink. And I don't think it is a 
+good idea to split the code paths, so if I am suppose to use statically 
+allocated strings to support netlink errors that basically means 
+anything that has to support multiple interfaces gets to sprinkle `if 
+(extack)` everywhere[0]. Not great. The ownership model of the error 
+buffer seems odd to me with the current macros, I am suppose to set a 
+pointer in a structure subsystem X didn't allocate and has no control 
+over its lifetime. Then netlink takes this pointer and does whatever 
+with it. And somehow subsystem X is suppose to guarantee the pointer's 
+lifetime exists forever, making a `const static char[]` buffer the only 
+option. I don't understand why netlink doesn't provide the buffer and a 
+subsystem just populates it. Using memcpy or snprintf doesn't matter, to 
+me its a lifetime issue that makes the API not great to work with when 
+you have to handle cases other than netlink.
+
+Also as Joe Perches points out in this thread[1,2] the way the macros 
+are written it is bloating the kernel because the error messages are 
+getting duplicated for subsystems that need to support multiple 
+configuration interfaces.
+
+-Jon
+
+[0] 
+https://lore.kernel.org/netdev/e6b78ce8f5904a5411a809cf4205d745f8af98cb.1628650079.git.jtoppins@redhat.com/
+[1] https://lore.kernel.org/netdev/cover.1628306392.git.jtoppins@redhat.com/
+[2] 
+https://lore.kernel.org/netdev/c8b69905c995ab887633ef11862705ee66c60aad.camel@perches.com/
 
