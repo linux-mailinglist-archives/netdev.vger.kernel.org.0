@@ -2,112 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A7A1052AF84
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 02:58:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 05F9152AF89
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:00:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233043AbiERA6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 20:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43968 "EHLO
+        id S233085AbiERBAK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 21:00:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232317AbiERA6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 20:58:53 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 617F753E27
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 17:58:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:
-        Cc:To:From:From:Sender:Reply-To:Subject:Date:Message-ID:To:Cc:MIME-Version:
-        Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
-        Content-Disposition:In-Reply-To:References;
-        bh=iKPxo6nmawUzIoV5U9tlyCQp6Vw6AUpCRQ4Ur98rVDI=; b=SwCsPL1wVop+erLd9VYQlzxibL
-        a0Z+7K0bAwgPvSdzxnQ01eIe9P+DXZpF2J5TXPYikAJUbL6Fpbc0EhUNot5Bn1S7l+pTTvYcPDCWV
-        82QeSKh4tkh+Ez/UBuaNtrJY3MnbquXZuQxuzNYKz0E49xZJZt+dmrnFQ7bRhg4YqoGY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nr81X-003Ejs-Vl; Wed, 18 May 2022 02:58:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     netdev <netdev@vger.kernel.org>
-Cc:     Nikolay Aleksandrov <razor@blackwall.org>,
-        Ido Schimmel <idosch@mellanox.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        bridge@lists.linux-foundation.org, Andrew Lunn <andrew@lunn.ch>
-Subject: [PATCH v2 net] net: bridge: Clear offload_fwd_mark when passing frame up bridge interface.
-Date:   Wed, 18 May 2022 02:58:40 +0200
-Message-Id: <20220518005840.771575-1-andrew@lunn.ch>
-X-Mailer: git-send-email 2.32.0
+        with ESMTP id S232262AbiERBAJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:00:09 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F98053E27
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 18:00:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652835607;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=TD7xyGWTuwBRGr8+dLq49qXLZB7RZzLQlThaAODywHI=;
+        b=LYhCpFI6MNyeAOI00xvW37Knoz5ub61wD5wKbnjPO/rdvp6AJQwj6pEC28WXkvk9C7qXaS
+        7873HcqksBkXt4Y7DuQqDK2VCazyfhKf3cEhC0qRXimZXWpCn5TWhexZN71G7G9HQ2ACZ0
+        JT/KS9ODQnXslwxm4I9a6mbjOlmJgpM=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-163--RnbilO7PVmwV2cPSGcyww-1; Tue, 17 May 2022 20:59:50 -0400
+X-MC-Unique: -RnbilO7PVmwV2cPSGcyww-1
+Received: by mail-qv1-f71.google.com with SMTP id a12-20020a056214062c00b0045a7b4a1a29so454332qvx.10
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 17:59:50 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TD7xyGWTuwBRGr8+dLq49qXLZB7RZzLQlThaAODywHI=;
+        b=b2tLQV5GvlU6buxf5+cIcVF9Q3fMlGD/sTKo1BhU0dc0s4jegJqZJy6nlS00iwhdy9
+         1hUd/idlriU1Erii1hm9wfragMVb5sF+bldjquq3ONPdz+XPtpujD0OsB4WLTmIEYgZt
+         KBXvPqw/piV8i5dDWMG3tgfIU0o75+RlI3jthGXEKJEJjADVY5/p8i6yGl+53C0Mwuvk
+         yMxoGgyYDKiBU4Mg6Ey4vMceJJUxpLsiVCDssmpY18aO5aTzOVrMGv17zmhQVaOrZCE3
+         0RhAQtdZHFAb2l4VsNvbAwcyp4UQ1t2JmoLqiS4X/RNnEP/ThtZ2rxM1sjEvREnSASRi
+         5e1w==
+X-Gm-Message-State: AOAM5300mLcro4P9vPitvSMhQqdSUNnKf70m3fFCL95xHDdaWzgPgJIr
+        MU0S7M5Sna85sDFM2vk/XH2hd8igUPQCs8d/7/+6wzxV+Dh9b0T1nm0PcI1uRZXVH+JtO2s1HkM
+        YhOa6R/+qSb7b4CYboXNrWjyD/l8t/mkX
+X-Received: by 2002:a37:350:0:b0:69f:8c4e:9fa5 with SMTP id 77-20020a370350000000b0069f8c4e9fa5mr18295865qkd.770.1652835590130;
+        Tue, 17 May 2022 17:59:50 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJz9DI611Whfu7K7lze9PphEAOqW0KpI/sUAabwcKdkjiNkDnXDqopFW56h064GCOtFoI0VHg2qNvTM3O9a6hwc=
+X-Received: by 2002:a37:350:0:b0:69f:8c4e:9fa5 with SMTP id
+ 77-20020a370350000000b0069f8c4e9fa5mr18295857qkd.770.1652835589895; Tue, 17
+ May 2022 17:59:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
+ <20220512143314.235604-11-miquel.raynal@bootlin.com> <CAK-6q+jYb7A2RzG3u7PJYKZU9D5A=vben-Wnu-3EsUU-rqGT2Q@mail.gmail.com>
+ <20220517153655.155ba311@xps-13> <20220517165259.52ddf6fc@xps-13>
+In-Reply-To: <20220517165259.52ddf6fc@xps-13>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Tue, 17 May 2022 20:59:39 -0400
+Message-ID: <CAK-6q+h=gNqoUHYi_2xamdGyMOYpO0GDO6--oKXSevJC9Wywag@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 10/11] net: mac802154: Add a warning in the
+ hot path
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is possible to stack bridges on top of each other. Consider the
-following which makes use of an Ethernet switch:
+Hi,
 
-       br1
-     /    \
-    /      \
-   /        \
- br0.11    wlan0
-   |
-   br0
- /  |  \
-p1  p2  p3
+On Tue, May 17, 2022 at 10:53 AM Miquel Raynal
+<miquel.raynal@bootlin.com> wrote:
+>
+>
+> miquel.raynal@bootlin.com wrote on Tue, 17 May 2022 15:36:55 +0200:
+>
+> > aahringo@redhat.com wrote on Sun, 15 May 2022 18:30:15 -0400:
+> >
+> > > Hi,
+> > >
+> > > On Thu, May 12, 2022 at 10:34 AM Miquel Raynal
+> > > <miquel.raynal@bootlin.com> wrote:
+> > > >
+> > > > We should never start a transmission after the queue has been stopped.
+> > > >
+> > > > But because it might work we don't kill the function here but rather
+> > > > warn loudly the user that something is wrong.
+> > > >
+> > > > Set an atomic when the queue will remain stopped. Reset this atomic when
+> > > > the queue actually gets restarded. Just check this atomic to know if the
+> > > > transmission is legitimate, warn if it is not.
+> > > >
+> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > > ---
+> > > >  include/net/cfg802154.h |  1 +
+> > > >  net/mac802154/tx.c      | 16 +++++++++++++++-
+> > > >  net/mac802154/util.c    |  1 +
+> > > >  3 files changed, 17 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/include/net/cfg802154.h b/include/net/cfg802154.h
+> > > > index 8b6326aa2d42..a1370e87233e 100644
+> > > > --- a/include/net/cfg802154.h
+> > > > +++ b/include/net/cfg802154.h
+> > > > @@ -218,6 +218,7 @@ struct wpan_phy {
+> > > >         struct mutex queue_lock;
+> > > >         atomic_t ongoing_txs;
+> > > >         atomic_t hold_txs;
+> > > > +       atomic_t queue_stopped;
+> > >
+> > > Maybe some test_bit()/set_bit() is better there?
+> >
+> > What do you mean? Shall I change the atomic_t type of queue_stopped?
+> > Isn't the atomic_t preferred in this situation?
+>
+> Actually I re-read the doc and that's right, a regular unsigned long
 
-br0 is offloaded to the switch. Above br0 is a vlan interface, for
-vlan 11. This vlan interface is then a slave of br1. br1 also has a
-wireless interface as a slave. This setup trunks wireless lan traffic
-over the copper network inside a VLAN.
+Which doc is that?
 
-A frame received on p1 which is passed up to the bridge has the
-skb->offload_fwd_mark flag set to true, indicating that the switch has
-dealt with forwarding the frame out ports p2 and p3 as needed. This
-flag instructs the software bridge it does not need to pass the frame
-back down again. However, the flag is not getting reset when the frame
-is passed upwards. As a result br1 sees the flag, wrongly interprets
-it, and fails to forward the frame to wlan0.
-
-When passing a frame upwards, clear the flag. This is the Rx
-equivalent of br_switchdev_frame_unmark() in br_dev_xmit().
-
-Fixes: f1c2eddf4cb6 ("bridge: switchdev: Use an helper to clear forward mark")
-Signed-off-by: Andrew Lunn <andrew@lunn.ch>
----
-
-v2:
-Extended the commit message with Ido obsersation of the equivelance of
-br_dev_xmit().
-
-Fixed up the comment.
-
-This code has passed Ido test setup.
-
-net/bridge/br_input.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 196417859c4a..68b3e850bcb9 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -39,6 +39,13 @@ static int br_pass_frame_up(struct sk_buff *skb)
- 	dev_sw_netstats_rx_add(brdev, skb->len);
- 
- 	vg = br_vlan_group_rcu(br);
-+
-+	/* Reset the offload_fwd_mark because there could be a stacked
-+	 * bridge above, and it should not think this bridge it doing
-+	 * that bridge's work forwarding out its ports.
-+	 */
-+	br_switchdev_frame_unmark(skb);
-+
- 	/* Bridge is just like any other port.  Make sure the
- 	 * packet is allowed except in promisc mode when someone
- 	 * may be running packet capture.
--- 
-2.36.0
+- Alex
 
