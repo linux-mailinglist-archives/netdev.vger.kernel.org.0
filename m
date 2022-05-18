@@ -2,177 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F2CD552C099
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 19:10:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0722952BFFF
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 19:09:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240576AbiERQ5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 12:57:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43502 "EHLO
+        id S240752AbiERRHU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 13:07:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240573AbiERQ5L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 12:57:11 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCBA1B8BE8;
-        Wed, 18 May 2022 09:57:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652893030; x=1684429030;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Z/CTK7bNBAIerAtCFC6veGQRng0kyr18RgfO+QSHa/g=;
-  b=Y9l53pMFDiTdYdDYE6FL2tJC4axgvYfJ9aQ7EcFl+q2IFybBaJAmOzZd
-   mdTg2Xrmdhp5YHZBIicidP0eUkMviPda+Y42k/5E94Dgjs+0qQNfr14fg
-   zLr9WrkqoO9W7vsxmb3oDtHG8/RL5uDRCw0Xv4XFwZejp4tMEpK1JJlE5
-   6UM2XQ1TWQ3QgthwOxsWUWv2mYU/jp99Z05znctVuP9gPyslEr9V/16/I
-   Qy5Pt+Et20WAFcdCYVIdyIcaXe2tAcQCTILmgE02YBZwNzdPm763ZML8E
-   ww4fFR9i3mkk59f2lHW1JHGgvhPGNvIcuKvGAAqzSTisQ3rhr9z66/GZs
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="271468778"
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="271468778"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 09:56:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
-   d="scan'208";a="639365223"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga004.fm.intel.com with ESMTP; 18 May 2022 09:56:41 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrMyX-0002QL-2k;
-        Wed, 18 May 2022 16:56:41 +0000
-Date:   Thu, 19 May 2022 00:55:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Sascha Hauer <s.hauer@pengutronix.de>,
-        linux-wireless@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, Neo Jou <neojou@gmail.com>,
-        Hans Ulli Kroll <linux@ulli-kroll.de>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH 07/10] rtw88: Add rtw8723du chipset support
-Message-ID: <202205190028.z15SPbJx-lkp@intel.com>
-References: <20220518082318.3898514-8-s.hauer@pengutronix.de>
+        with ESMTP id S240748AbiERRHS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 13:07:18 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19D4674DB
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 10:07:14 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id eg11so3804715edb.11
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 10:07:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hsAlikGx92mCeiFg9O3cngIJIidnkU67xQah0T79V9E=;
+        b=MzI9pw7AsqcYTpvGHOeflY5oIdkBv+CH6Eyc0pnFtfyP1rw5T50gyZDvuyv9VKNIr+
+         KjyEw4NvYjPlJT8zRy2Ik0rpVMUaojYaUkTWBA/Pjl6Nrr+3h8Z3gqzFEc/OC09Ld/Oq
+         yO7LsbnCuGYMvkkKFXlFYaDowt0GjF3MKtXttaFPcRpY595Em9Qv5i+3NBzMS9eptI5/
+         DAzLFR2LW8k1s/Jy4RvqwtN+Nz1RGZVzAD+OlCUjdjxXKlC1gKtLYJvItI5rXw5Hptsm
+         73PCxXC3TUZQAforph98tDagP/uVhyy24fhjAXGKXNhDzVmujuICP3gYNXPMQ39wZShA
+         nB8A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hsAlikGx92mCeiFg9O3cngIJIidnkU67xQah0T79V9E=;
+        b=sos1RYVa8L7x21cT7A0czsn8xufvz713OaDAlmi9/smCOza/dbQymnMrmdKO71aler
+         Px8udko1xue23kFa5Z0LeYR6sanNty5/hBfBhKO6QPhkY1naKuTm9cZWDTT7FmjNyExk
+         ibNcEekqhXxixxVRLJ7S8iv/Qfigui1Q4upi46hnzcl2BmLZ+T4NMdZuwqtFKkokAMFm
+         GcWN2CE/zIpMCFcbx4+VlcQqAJS8vCIydruc1L9uZR7BsBtlvNH7KMAIv1LL5nK/H5oA
+         9WRtnZoGpjTs6EhYDMuy/J5g3/gOKUavNDkPpXsNyMA2wY3QgiPRP6ZsCcC9NbHPA99P
+         MkPw==
+X-Gm-Message-State: AOAM530tdWl4goNY72WGONr4y6GLkg1a941pkSNVE0QKwEwcjSiPBYdI
+        pceloQI+ulEY1CF6WmuO8l3cV8/oIqYUqw6u
+X-Google-Smtp-Source: ABdhPJzL7nXnbBy5tXRogqV8XUha0BpJBoCVUyoaGBW0rwN7pvrN8az4wkleJbf5noHWvNakBljBWQ==
+X-Received: by 2002:a05:6402:358a:b0:428:136f:766a with SMTP id y10-20020a056402358a00b00428136f766amr759218edc.403.1652893633260;
+        Wed, 18 May 2022 10:07:13 -0700 (PDT)
+Received: from [192.168.1.122] (cpc159313-cmbg20-2-0-cust161.5-4.cable.virginm.net. [82.0.78.162])
+        by smtp.gmail.com with ESMTPSA id n21-20020aa7c455000000b0042ac2705444sm1546507edr.58.2022.05.18.10.07.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 10:07:12 -0700 (PDT)
+Subject: Re: [PATCHv3 net] Documentation: add description for
+ net.core.gro_normal_batch
+To:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>
+Cc:     davem@davemloft.net, kuba@kernel.org
+References: <acf8a2c03b91bcde11f67ff89b6050089c0712a3.1652888963.git.lucien.xin@gmail.com>
+From:   Edward Cree <ecree.xilinx@gmail.com>
+Message-ID: <9a16f24d-90a4-4a3e-3848-0513958631c3@gmail.com>
+Date:   Wed, 18 May 2022 18:07:11 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518082318.3898514-8-s.hauer@pengutronix.de>
-X-Spam-Status: No, score=-4.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+In-Reply-To: <acf8a2c03b91bcde11f67ff89b6050089c0712a3.1652888963.git.lucien.xin@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sascha,
+On 18/05/2022 17:09, Xin Long wrote:
+> Describe it in admin-guide/sysctl/net.rst like other Network core options.
+> Users need to know gro_normal_batch for performance tuning.
+> 
+> Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
+> Reported-by: Prijesh Patel <prpatel@redhat.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-I love your patch! Perhaps something to improve:
+Reviewed-by: Edward Cree <ecree.xilinx@gmail.com>
 
-[auto build test WARNING on wireless-next/main]
-[also build test WARNING on wireless/main v5.18-rc7 next-20220518]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+> ---
+> v1->v2:
+> - improve the description according to the suggestion from Edward
+>   and Jakub.
+> v2->v3:
+> - improve more for the description, and drop the default for
+>   gro_normal_batch, suggested by Jakub.
+> 
+>  Documentation/admin-guide/sysctl/net.rst | 9 +++++++++
+>  1 file changed, 9 insertions(+)
+> 
+> diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
+> index f86b5e1623c6..46b44fa82fa2 100644
+> --- a/Documentation/admin-guide/sysctl/net.rst
+> +++ b/Documentation/admin-guide/sysctl/net.rst
+> @@ -374,6 +374,15 @@ option is set to SOCK_TXREHASH_DEFAULT (i. e. not overridden by setsockopt).
+>  If set to 1 (default), hash rethink is performed on listening socket.
+>  If set to 0, hash rethink is not performed.
+>  
+> +gro_normal_batch
+> +----------------
+> +
+> +Maximum number of the segments to batch up on output of GRO. When a packet
+> +exits GRO, either as a coalesced superframe or as an original packet which
+> +GRO has decided not to coalesce, it is placed on a per-NAPI list. This
+> +list is then passed to the stack when the number of segments reaches the
+> +gro_normal_batch limit.
+> +
+>  2. /proc/sys/net/unix - Parameters for Unix domain sockets
+>  ----------------------------------------------------------
+>  
+> 
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Sascha-Hauer/RTW88-Add-support-for-USB-variants/20220518-162621
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/wireless/wireless-next.git main
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20220519/202205190028.z15SPbJx-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/0a06adba364ef264404e3c7ae111a71f0d74c5a9
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Sascha-Hauer/RTW88-Add-support-for-USB-variants/20220518-162621
-        git checkout 0a06adba364ef264404e3c7ae111a71f0d74c5a9
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/net/wireless/realtek/rtw88/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/net/wireless/realtek/rtw88/util.c:119:6: warning: no previous prototype for 'rtw_collect_sta_iter' [-Wmissing-prototypes]
-     119 | void rtw_collect_sta_iter(void *data, struct ieee80211_sta *sta)
-         |      ^~~~~~~~~~~~~~~~~~~~
->> drivers/net/wireless/realtek/rtw88/util.c:165:6: warning: no previous prototype for 'rtw_collect_vif_iter' [-Wmissing-prototypes]
-     165 | void rtw_collect_vif_iter(void *data, u8 *mac, struct ieee80211_vif *vif)
-         |      ^~~~~~~~~~~~~~~~~~~~
-
-
-vim +/rtw_collect_sta_iter +119 drivers/net/wireless/realtek/rtw88/util.c
-
-1c99f6652d3fbb Sascha Hauer 2022-05-18  118  
-1c99f6652d3fbb Sascha Hauer 2022-05-18 @119  void rtw_collect_sta_iter(void *data, struct ieee80211_sta *sta)
-1c99f6652d3fbb Sascha Hauer 2022-05-18  120  {
-1c99f6652d3fbb Sascha Hauer 2022-05-18  121  	struct rtw_iter_stas_data *iter_stas = data;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  122  	struct rtw_stas_entry *stas_entry;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  123  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  124  	stas_entry = kmalloc(sizeof(*stas_entry), GFP_ATOMIC);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  125  	if (!stas_entry)
-1c99f6652d3fbb Sascha Hauer 2022-05-18  126  		return;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  127  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  128  	stas_entry->sta = sta;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  129  	list_add_tail(&stas_entry->list, &iter_stas->list);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  130  }
-1c99f6652d3fbb Sascha Hauer 2022-05-18  131  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  132  void rtw_iterate_stas(struct rtw_dev *rtwdev,
-1c99f6652d3fbb Sascha Hauer 2022-05-18  133  		      void (*iterator)(void *data,
-1c99f6652d3fbb Sascha Hauer 2022-05-18  134  				       struct ieee80211_sta *sta),
-1c99f6652d3fbb Sascha Hauer 2022-05-18  135  				       void *data)
-1c99f6652d3fbb Sascha Hauer 2022-05-18  136  {
-1c99f6652d3fbb Sascha Hauer 2022-05-18  137  	struct rtw_iter_stas_data iter_data;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  138  	struct rtw_stas_entry *sta_entry, *tmp;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  139  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  140  	iter_data.rtwdev = rtwdev;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  141  	INIT_LIST_HEAD(&iter_data.list);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  142  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  143  	ieee80211_iterate_stations_atomic(rtwdev->hw, rtw_collect_sta_iter,
-1c99f6652d3fbb Sascha Hauer 2022-05-18  144  					  &iter_data);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  145  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  146  	list_for_each_entry_safe(sta_entry, tmp, &iter_data.list,
-1c99f6652d3fbb Sascha Hauer 2022-05-18  147  				 list) {
-1c99f6652d3fbb Sascha Hauer 2022-05-18  148  		list_del_init(&sta_entry->list);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  149  		iterator(data, sta_entry->sta);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  150  		kfree(sta_entry);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  151  	}
-1c99f6652d3fbb Sascha Hauer 2022-05-18  152  }
-1c99f6652d3fbb Sascha Hauer 2022-05-18  153  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  154  struct rtw_vifs_entry {
-1c99f6652d3fbb Sascha Hauer 2022-05-18  155  	struct list_head list;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  156  	struct ieee80211_vif *vif;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  157  	u8 mac[ETH_ALEN];
-1c99f6652d3fbb Sascha Hauer 2022-05-18  158  };
-1c99f6652d3fbb Sascha Hauer 2022-05-18  159  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  160  struct rtw_iter_vifs_data {
-1c99f6652d3fbb Sascha Hauer 2022-05-18  161  	struct rtw_dev *rtwdev;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  162  	struct list_head list;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  163  };
-1c99f6652d3fbb Sascha Hauer 2022-05-18  164  
-1c99f6652d3fbb Sascha Hauer 2022-05-18 @165  void rtw_collect_vif_iter(void *data, u8 *mac, struct ieee80211_vif *vif)
-1c99f6652d3fbb Sascha Hauer 2022-05-18  166  {
-1c99f6652d3fbb Sascha Hauer 2022-05-18  167  	struct rtw_iter_vifs_data *iter_stas = data;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  168  	struct rtw_vifs_entry *vifs_entry;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  169  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  170  	vifs_entry = kmalloc(sizeof(*vifs_entry), GFP_ATOMIC);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  171  	if (!vifs_entry)
-1c99f6652d3fbb Sascha Hauer 2022-05-18  172  		return;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  173  
-1c99f6652d3fbb Sascha Hauer 2022-05-18  174  	vifs_entry->vif = vif;
-1c99f6652d3fbb Sascha Hauer 2022-05-18  175  	ether_addr_copy(vifs_entry->mac, mac);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  176  	list_add_tail(&vifs_entry->list, &iter_stas->list);
-1c99f6652d3fbb Sascha Hauer 2022-05-18  177  }
-1c99f6652d3fbb Sascha Hauer 2022-05-18  178  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
