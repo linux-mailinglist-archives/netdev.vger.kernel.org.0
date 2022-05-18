@@ -2,96 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 49BB152B6C4
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 12:12:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3197652B726
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 12:13:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234302AbiERJdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 05:33:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50526 "EHLO
+        id S234475AbiERJht (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 05:37:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234344AbiERJdp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 05:33:45 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F56DAFB23
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 02:33:36 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id s28so1709301wrb.7
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 02:33:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=pSKuz9BJS/Qwel4yBJUKsJP++c1z8gtIosTtEbMtN5I=;
-        b=giem2v+IxcxTWhEwccgk3aA5guR+BTmFBP3dLJ+TN9veiWxWw9pMz7j19LVUCAjV5Z
-         e7/OjhXMnIRy8GsVERcaBuqGEJqQpQMDeg8p4gnIhWEbCQEZbYdLD4qE1O4GhRmv9suX
-         rlhk6SkzhiYb5t3O+K2yOMiYfG8/puj/wNY5e+NiL6OpazhR/Q2DdZzmS59v3ih6h8dw
-         RxAEpTv93gTy6qUV1Nj3alGAqRniK6Ue92qaBLwk1iB1qcgIKyb5qRZSlf0mW3X8Owzd
-         JQxj37GBo8RX9I55kxEnS3UhesXqMAWJaGPp9LQebXSS51YxbtxWvcZzvOQC2OjXfqDt
-         vP4A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=pSKuz9BJS/Qwel4yBJUKsJP++c1z8gtIosTtEbMtN5I=;
-        b=kXiq2W6tlA0Y7GKmyurdwaKSIcR1ERCVQxRLKLVNxEVQ97EDu5EemJ02//boWZ3I1a
-         QKi1XUoZlZrkepjV3yDfrLx7g0GBgzVlRQIarjhvVOCahXzN+jHExePerXfiaJZKnaV6
-         BV0Y0YnuFcwvTUPGFZQbmjyXhyvaHIBIu+p27OXFiHIE1t5yafwoc7bsm3z3aO8P16xq
-         pKsr4GlRNMUdCymjRmbjComCmwqQ5W/kORsDseoQ1aVj/3/mPrW3SQo6nERQ+BIutuAy
-         YtZCzkzE/Zum0T/mCWTCUEZG0Z4UBkRBHrKjJvuYperCXMPQ9aeyKPueBzVl1Trw83xV
-         tXQA==
-X-Gm-Message-State: AOAM533Aq3aq7RQmK0qNadTUJHUx820AC8cmxTw34d+kz2I72MF51rb/
-        gH052qleAMnQoJprVuDd8YZKZpjSZZfe0d7adeU=
-X-Google-Smtp-Source: ABdhPJymLkMob4U5/W1xMS8MYEv6vFtG9EOWJLAaf5BNA1K/TUI3+AFVOrFD9nietjV+iKcQNSprNiVrrVPZMigJOA8=
-X-Received: by 2002:adf:f8ce:0:b0:20e:5ecf:d1ca with SMTP id
- f14-20020adff8ce000000b0020e5ecfd1camr2805137wrq.143.1652866415232; Wed, 18
- May 2022 02:33:35 -0700 (PDT)
+        with ESMTP id S234350AbiERJhe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 05:37:34 -0400
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C999CC8BD4;
+        Wed, 18 May 2022 02:37:31 -0700 (PDT)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id EDDBFC0005;
+        Wed, 18 May 2022 09:37:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652866650;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZWvwRcNiLo+2tnHRVcavxMuPKBnYvD4fOtedtcIWA/w=;
+        b=aE7d2agwFlZZXHsCux/fP7i0fe6XwsIdxGgeMI8L3BQsWZVQFJ9msPBozCC1OY72ZKUt3m
+        budCHKF5wIFogVDlitcIMvLZbRm/z/0RCnLWjrmRxEFSvMdZUZmxWfdcrQ4/1eZ9DX+pQ7
+        WpwMAXIuH5C76jD2NPnKvHVpbGaLOBY5nUgtEzB/YPyS/ymp3n+IC8BNCCGx1gXtoMnA8k
+        +/p2MYuwfQotkv84K+Gd64dZZHHuhSqsiveThNZk+bzuJhnrISiZ3bCwdoy4nwH6tshpkL
+        wdYNLuFmQ0f3Ia2lYXPCeElGY49qx4KbNQTgJF7dD0tMJl2eJr0m5rsvwZLj8A==
+Date:   Wed, 18 May 2022 11:37:26 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Alexander Aring <aahringo@redhat.com>
+Cc:     Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>
+Subject: Re: [PATCH wpan-next v3 11/11] net: mac802154: Add a warning in the
+ slow path
+Message-ID: <20220518113726.3cfb9d99@xps-13>
+In-Reply-To: <CAK-6q+hPWRUobMATaxD6rZ1zfQUnS_6pMacr+rKVHRAWe1xzSQ@mail.gmail.com>
+References: <20220517163450.240299-1-miquel.raynal@bootlin.com>
+        <20220517163450.240299-12-miquel.raynal@bootlin.com>
+        <CAK-6q+hPWRUobMATaxD6rZ1zfQUnS_6pMacr+rKVHRAWe1xzSQ@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Received: by 2002:adf:f750:0:0:0:0:0 with HTTP; Wed, 18 May 2022 02:33:34
- -0700 (PDT)
-Reply-To: davidnelson7702626@gmail.com
-From:   brigitte Patayoti <brigittepatayoti0@gmail.com>
-Date:   Wed, 18 May 2022 10:33:34 +0100
-Message-ID: <CADhLwcRhLe4chjvWTbzifH0rY2YQdAivPubfJ0TcDE31Wd4NsQ@mail.gmail.com>
-Subject: 
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: Yes, score=5.5 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2a00:1450:4864:20:0:0:0:436 listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.4999]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [brigittepatayoti0[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [davidnelson7702626[at]gmail.com]
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [brigittepatayoti0[at]gmail.com]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.4 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello friend, I want to send money to you to enable me invest in your
-country get back to me if you are interested.
+Hi Alex,
+
+aahringo@redhat.com wrote on Tue, 17 May 2022 20:52:35 -0400:
+
+> Hi,
+>=20
+> On Tue, May 17, 2022 at 12:35 PM Miquel Raynal
+> <miquel.raynal@bootlin.com> wrote:
+> >
+> > In order to be able to detect possible conflicts between the net
+> > interface core and the ieee802154 core, let's add a warning in the slow
+> > path: we want to be sure that whenever we start an asynchronous MLME
+> > transmission (which can be fully asynchronous) the net core somehow
+> > agrees that this transmission is possible, ie. the device was not
+> > stopped. Warning in this case would allow us to track down more easily
+> > possible issues with the MLME logic if we ever get reports.
+> >
+> > Unlike in the hot path, such a situation cannot be handled.
+> >
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  net/mac802154/tx.c | 25 +++++++++++++++++++++++++
+> >  1 file changed, 25 insertions(+)
+> >
+> > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > index e36aca788ea2..53a8be822e33 100644
+> > --- a/net/mac802154/tx.c
+> > +++ b/net/mac802154/tx.c
+> > @@ -132,6 +132,25 @@ int ieee802154_sync_and_hold_queue(struct ieee8021=
+54_local *local)
+> >         return ret;
+> >  }
+> >
+> > +static bool ieee802154_netif_is_down(struct ieee802154_local *local)
+> > +{
+> > +       struct ieee802154_sub_if_data *sdata;
+> > +       bool is_down =3D true;
+> > +
+> > +       rcu_read_lock();
+> > +       list_for_each_entry_rcu(sdata, &local->interfaces, list) {
+> > +               if (!sdata->dev)
+> > +                       continue;
+> > +
+> > +               is_down =3D !(sdata->dev->flags & IFF_UP);
+> > +               if (is_down)
+> > +                       break; =20
+>=20
+> I thought that the helper would be "netif_running()". It seems there
+> are multiple ways to check if an interface is up.
+
+Looking at net/core/dev.c shows that netif_running() may indicate a
+transitory state (the interface was requested to be up or down) while
+the IFF_UP flag really tells when the operation is done and the
+interface actually is up or down.
+
+Anyway they are both updated atomically wrt the rtnl lock. The sooner
+the better, so let's check the interface state with netif_running().
+
+
+[...]
+
+> >
+> > +       /* Warn if the ieee802154 core thinks MLME frames can be sent w=
+hile the
+> > +        * net interface expects this cannot happen.
+> > +        */
+> > +       if (WARN_ON_ONCE(ieee802154_netif_is_down(local)))
+> > +               return -EHOSTDOWN; =20
+>=20
+> maybe also ENETDOWN?
+
+Sure
+
+> Also there is a missing rtnl_unlock().
+
+Duly noted.
+
+Thanks,
+Miqu=C3=A8l
