@@ -2,52 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 598FA52B197
+	by mail.lfdr.de (Postfix) with ESMTP id A58C452B198
 	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 06:41:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229949AbiEREjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 00:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44834 "EHLO
+        id S229951AbiEREj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 00:39:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229904AbiEREjn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 00:39:43 -0400
-X-Greylist: delayed 152422 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 17 May 2022 21:39:37 PDT
-Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id CF1ED3BA65;
-        Tue, 17 May 2022 21:39:37 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Wed, 18 May 2022 12:39:20
- +0800 (GMT+08:00)
-X-Originating-IP: [124.236.130.193]
-Date:   Wed, 18 May 2022 12:39:20 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Krzysztof Kozlowski" <krzysztof.kozlowski@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, gregkh@linuxfoundation.org,
-        alexander.deucher@amd.com, broonie@kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: Re: [PATCH net v2] NFC: hci: fix sleep in atomic context bugs
- in nfc_hci_hcp_message_tx
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <68ccef70-ef30-8f53-6ec5-17ce5815089c@linaro.org>
-References: <20220517105526.114421-1-duoming@zju.edu.cn>
- <2ce7a871-3e55-ae50-955c-bf04a443aba3@linaro.org>
- <71c24f38.1a1f4.180d29ff1fd.Coremail.duoming@zju.edu.cn>
- <68ccef70-ef30-8f53-6ec5-17ce5815089c@linaro.org>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S229949AbiEREj0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 00:39:26 -0400
+Received: from szxga08-in.huawei.com (szxga08-in.huawei.com [45.249.212.255])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF80739153
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 21:39:24 -0700 (PDT)
+Received: from canpemm500006.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4L30bY6M9cz1JC83;
+        Wed, 18 May 2022 12:38:01 +0800 (CST)
+Received: from [10.174.179.200] (10.174.179.200) by
+ canpemm500006.china.huawei.com (7.192.105.130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 18 May 2022 12:39:22 +0800
+Subject: Re: [PATCH net-next v2] net: wwan: t7xx: fix GFP_KERNEL usage in
+ spin_lock context
+To:     Loic Poulain <loic.poulain@linaro.org>
+CC:     <chandrashekar.devegowda@intel.com>, <linuxwwan@intel.com>,
+        <chiranjeevi.rapolu@linux.intel.com>, <haijun.liu@mediatek.com>,
+        <m.chetan.kumar@linux.intel.com>,
+        <ricardo.martinez@linux.intel.com>, <ryazanov.s.a@gmail.com>,
+        <johannes@sipsolutions.net>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>
+References: <20220517064821.3966990-1-william.xuanziyang@huawei.com>
+ <CAMZdPi-ibG9O9C2m3qVeEAbO6=TLA-8jZzX9Gbm2MQOwT_1vPg@mail.gmail.com>
+From:   "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>
+Message-ID: <ff9866ff-7149-e9d2-80e8-777482ab6711@huawei.com>
+Date:   Wed, 18 May 2022 12:39:21 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Message-ID: <454a29ba.1b9b1.180d576985b.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgC3PiF5eIRi60FkAA--.9848W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgcOAVZdtZv64AAAs1
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+In-Reply-To: <CAMZdPi-ibG9O9C2m3qVeEAbO6=TLA-8jZzX9Gbm2MQOwT_1vPg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.174.179.200]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ canpemm500006.china.huawei.com (7.192.105.130)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-6.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -55,85 +56,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBUdWUsIDE3IE1heSAyMDIyIDE3OjI4OjUxICswMjAwIEtyenlzenRvZiB3cm90
-ZToKCj4gPj4+IFRoZXJlIGFyZSBzbGVlcCBpbiBhdG9taWMgY29udGV4dCBidWdzIHdoZW4gdGhl
-IHJlcXVlc3QgdG8gc2VjdXJlCj4gPj4+IGVsZW1lbnQgb2Ygc3QyMW5mY2EgaXMgdGltZW91dC4g
-VGhlIHJvb3QgY2F1c2UgaXMgdGhhdCBremFsbG9jIGFuZAo+ID4+PiBhbGxvY19za2Igd2l0aCBH
-RlBfS0VSTkVMIHBhcmFtZXRlciBhbmQgbXV0ZXhfbG9jayBhcmUgY2FsbGVkIGluCj4gPj4+IHN0
-MjFuZmNhX3NlX3d0X3RpbWVvdXQgd2hpY2ggaXMgYSB0aW1lciBoYW5kbGVyLiBUaGUgY2FsbCB0
-cmVlIHNob3dzCj4gPj4+IHRoZSBleGVjdXRpb24gcGF0aHMgdGhhdCBjb3VsZCBsZWFkIHRvIGJ1
-Z3M6Cj4gPj4+Cj4gPj4+ICAgIChJbnRlcnJ1cHQgY29udGV4dCkKPiA+Pj4gc3QyMW5mY2Ffc2Vf
-d3RfdGltZW91dAo+ID4+PiAgIG5mY19oY2lfc2VuZF9ldmVudAo+ID4+PiAgICAgbmZjX2hjaV9o
-Y3BfbWVzc2FnZV90eAo+ID4+PiAgICAgICBremFsbG9jKC4uLiwgR0ZQX0tFUk5FTCkgLy9tYXkg
-c2xlZXAKPiA+Pj4gICAgICAgYWxsb2Nfc2tiKC4uLiwgR0ZQX0tFUk5FTCkgLy9tYXkgc2xlZXAK
-PiA+Pj4gICAgICAgbXV0ZXhfbG9jaygpIC8vbWF5IHNsZWVwCj4gPj4+Cj4gPj4+IFRoaXMgcGF0
-Y2ggY2hhbmdlcyBhbGxvY2F0aW9uIG1vZGUgb2Yga3phbGxvYyBhbmQgYWxsb2Nfc2tiIGZyb20K
-PiA+Pj4gR0ZQX0tFUk5FTCB0byBHRlBfQVRPTUlDIGFuZCBjaGFuZ2VzIG11dGV4X2xvY2sgdG8g
-c3Bpbl9sb2NrIGluCj4gPj4+IG9yZGVyIHRvIHByZXZlbnQgYXRvbWljIGNvbnRleHQgZnJvbSBz
-bGVlcGluZy4KPiA+Pj4KPiA+Pj4gRml4ZXM6IDIxMzBmYjk3ZmVjZiAoIk5GQzogc3QyMW5mY2E6
-IEFkZGluZyBzdXBwb3J0IGZvciBzZWN1cmUgZWxlbWVudCIpCj4gPj4+IFNpZ25lZC1vZmYtYnk6
-IER1b21pbmcgWmhvdSA8ZHVvbWluZ0B6anUuZWR1LmNuPgoKPiA+IFRoZSBuZmNfaGNpX2hjcF9t
-ZXNzYWdlX3R4KCkgaXMgY2FsbGVkIGJ5IGJvdGggcHJvY2VzcyBjb250ZXh0KGhjaV9kZXZfdXAg
-YW5kIHNvIG9uKQo+ID4gYW5kIGludGVycnVwdCBjb250ZXh0KHN0MjFuZmNhX3NlX3d0X3RpbWVv
-dXQoKSkuIFRoZSBwcm9jZXNzIGNvbnRleHQoaGNpX2Rldl91cCBhbmQgc28gb24pCj4gPiBjYWxs
-cyBkZXZpY2VfbG9jaywgYnV0IEkgdGhpbmsgY2FsbGluZyBzcGluX2xvY2soKSB3aXRoaW4gZGV2
-aWNlX2xvY2soKSBpcyBvay4gVGhlcmUgaXMKPiA+IG5vIGRldmljZV9sb2NrKCkgY2FsbGVkIHdp
-dGhpbiBzcGluX2xvY2soKS4gCj4gCj4gVGhlcmUgaXMuCj4gCj4gbmZjX2hjaV9mYWlsdXJlIC0+
-IHNwaW4gbG9jayAtPiBuZmNfZHJpdmVyX2ZhaWx1cmUgLT4gbmZjX3RhcmdldHNfZm91bmQKPiAt
-PiBkZXZpY2VfbG9jawo+IAo+IEkgZm91bmQgaXQganVzdCBieSBhIHZlcnkgcXVpY2sgbG9vaywg
-c28gSSBzdXNwZWN0IHRoZXJlIGFyZSBzZXZlcmFsCj4gb3RoZXIgcGxhY2VzLCBub3QgcmVhbGx5
-IGNoZWNrZWQuCgpJIGFncmVlIHdpdGggeW91LCB0aGUgc3Bpbl9sb2NrIGlzIG5vdCBhIGdvb2Qg
-c29sdXRpb24gdG8gdGhpcyBwcm9ibGVtLiBUaGVyZSBpcyBhbm90aGVyIHNvbHV0aW9uOgoKV2Ug
-Y291bGQgcHV0IHRoZSBuZmNfaGNpX3NlbmRfZXZlbnQoKSBvZiBzdDIxbmZjYV9zZV93dF90aW1l
-b3V0KCkgaW4gYSB3b3JrIGl0ZW0sIHRoZW4sIHVzaW5nCnNjaGVkdWxlX3dvcmsoKSBpbiBzdDIx
-bmZjYV9zZV93dF90aW1lb3V0KCkgdG8gZXhlY3V0ZSB0aGUgd29yayBpdGVtLiBUaGUgc2NoZWR1
-bGVfd29yaygpIHdpbGwKd2FrZSB1cCBhbm90aGVyIGtlcm5lbCB0aHJlYWQgd2hpY2ggaXMgaW4g
-cHJvY2VzcyBjb250ZXh0IHRvIGV4ZWN1dGUgdGhlIGJvdHRvbSBoYWxmIG9mIHRoZSBpbnRlcnJ1
-cHQsIApzbyBpdCBhbGxvd3Mgc2xlZXAuCgpUaGUgZm9sbG93aW5nIGlzIHRoZSBkZXRhaWxzLgoK
-ZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmZjL3N0MjFuZmNhL3NlLmMgYi9kcml2ZXJzL25mYy9zdDIx
-bmZjYS9zZS5jCmluZGV4IGM5MjJmMTBkMGQ3Li4xZTk4NDY3ZGJmNyAxMDA2NDQKLS0tIGEvZHJp
-dmVycy9uZmMvc3QyMW5mY2Evc2UuYworKysgYi9kcml2ZXJzL25mYy9zdDIxbmZjYS9zZS5jCkBA
-IC0yNDEsNyArMjQxLDcgQEAgaW50IHN0MjFuZmNhX2hjaV9zZV9pbyhzdHJ1Y3QgbmZjX2hjaV9k
-ZXYgKmhkZXYsIHUzMiBzZV9pZHgsCiB9CiBFWFBPUlRfU1lNQk9MKHN0MjFuZmNhX2hjaV9zZV9p
-byk7Cgotc3RhdGljIHZvaWQgc3QyMW5mY2Ffc2Vfd3RfdGltZW91dChzdHJ1Y3QgdGltZXJfbGlz
-dCAqdCkKK3N0YXRpYyB2b2lkIHN0MjFuZmNhX3NlX3d0X3dvcmsoc3RydWN0IHdvcmtfc3RydWN0
-ICp3b3JrKQogewogICAgICAgIC8qIAogICAgICAgICAqIE5vIGFuc3dlciBmcm9tIHRoZSBzZWN1
-cmUgZWxlbWVudApAQCAtMjU0LDggKzI1NCw5IEBAIHN0YXRpYyB2b2lkIHN0MjFuZmNhX3NlX3d0
-X3RpbWVvdXQoc3RydWN0IHRpbWVyX2xpc3QgKnQpCiAgICAgICAgICovCiAgICAgICAgLyogaGFy
-ZHdhcmUgcmVzZXQgbWFuYWdlZCB0aHJvdWdoIFZDQ19VSUNDX09VVCBwb3dlciBzdXBwbHkgKi8K
-ICAgICAgICB1OCBwYXJhbSA9IDB4MDE7Ci0gICAgICAgc3RydWN0IHN0MjFuZmNhX2hjaV9pbmZv
-ICppbmZvID0gZnJvbV90aW1lcihpbmZvLCB0LAotICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgc2VfaW5mby5id2lfdGltZXIpOworICAgICAgIHN0cnVj
-dCBzdDIxbmZjYV9oY2lfaW5mbyAqaW5mbyA9IGNvbnRhaW5lcl9vZih3b3JrLAorICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBzdHJ1Y3Qgc3QyMW5mY2FfaGNp
-X2luZm8sCisgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNl
-X2luZm8udGltZW91dF93b3JrKTsKCiAgICAgICAgaW5mby0+c2VfaW5mby5id2lfYWN0aXZlID0g
-ZmFsc2U7CiAKQEAgLTI3MSw2ICsyNzIsMTMgQEAgc3RhdGljIHZvaWQgc3QyMW5mY2Ffc2Vfd3Rf
-dGltZW91dChzdHJ1Y3QgdGltZXJfbGlzdCAqdCkKICAgICAgICBpbmZvLT5zZV9pbmZvLmNiKGlu
-Zm8tPnNlX2luZm8uY2JfY29udGV4dCwgTlVMTCwgMCwgLUVUSU1FKTsKIH0KCitzdGF0aWMgdm9p
-ZCBzdDIxbmZjYV9zZV93dF90aW1lb3V0KHN0cnVjdCB0aW1lcl9saXN0ICp0KQoreworICAgICAg
-IHN0cnVjdCBzdDIxbmZjYV9oY2lfaW5mbyAqaW5mbyA9IGZyb21fdGltZXIoaW5mbywgdCwgc2Vf
-aW5mby5id2lfdGltZXIpOworCisgICAgICAgc2NoZWR1bGVfd29yaygmaW5mby0+c2VfaW5mby50
-aW1lb3V0X3dvcmspOworfQorCiBzdGF0aWMgdm9pZCBzdDIxbmZjYV9zZV9hY3RpdmF0aW9uX3Rp
-bWVvdXQoc3RydWN0IHRpbWVyX2xpc3QgKnQpCiB7CiAgICAgICAgc3RydWN0IHN0MjFuZmNhX2hj
-aV9pbmZvICppbmZvID0gZnJvbV90aW1lcihpbmZvLCB0LApAQCAtMzg5LDYgKzM5Nyw3IEBAIHZv
-aWQgc3QyMW5mY2Ffc2VfaW5pdChzdHJ1Y3QgbmZjX2hjaV9kZXYgKmhkZXYpCiAgICAgICAgc3Ry
-dWN0IHN0MjFuZmNhX2hjaV9pbmZvICppbmZvID0gbmZjX2hjaV9nZXRfY2xpZW50ZGF0YShoZGV2
-KTsKCiAgICAgICAgaW5pdF9jb21wbGV0aW9uKCZpbmZvLT5zZV9pbmZvLnJlcV9jb21wbGV0aW9u
-KTsKKyAgICAgICBJTklUX1dPUksoJmluZm8tPnNlX2luZm8udGltZW91dF93b3JrLCBzdDIxbmZj
-YV9zZV93dF93b3JrKTsKICAgICAgICAvKiBpbml0aWFsaXplIHRpbWVycyAqLwogICAgICAgIHRp
-bWVyX3NldHVwKCZpbmZvLT5zZV9pbmZvLmJ3aV90aW1lciwgc3QyMW5mY2Ffc2Vfd3RfdGltZW91
-dCwgMCk7CiAgICAgICAgaW5mby0+c2VfaW5mby5id2lfYWN0aXZlID0gZmFsc2U7CkBAIC00MTYs
-NiArNDI1LDcgQEAgdm9pZCBzdDIxbmZjYV9zZV9kZWluaXQoc3RydWN0IG5mY19oY2lfZGV2ICpo
-ZGV2KQogICAgICAgIGlmIChpbmZvLT5zZV9pbmZvLnNlX2FjdGl2ZSkKICAgICAgICAgICAgICAg
-IGRlbF90aW1lcl9zeW5jKCZpbmZvLT5zZV9pbmZvLnNlX2FjdGl2ZV90aW1lcik7CgorICAgICAg
-IGNhbmNlbF93b3JrX3N5bmMoJmluZm8tPnNlX2luZm8udGltZW91dF93b3JrKTsKICAgICAgICBp
-bmZvLT5zZV9pbmZvLmJ3aV9hY3RpdmUgPSBmYWxzZTsKICAgICAgICBpbmZvLT5zZV9pbmZvLnNl
-X2FjdGl2ZSA9IGZhbHNlOwogfQpkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZmMvc3QyMW5mY2Evc3Qy
-MW5mY2EuaCBiL2RyaXZlcnMvbmZjL3N0MjFuZmNhL3N0MjFuZmNhLmgKaW5kZXggY2I2YWQ5MTZi
-ZTkuLmFlNjc3MWNjOTg5IDEwMDY0NAotLS0gYS9kcml2ZXJzL25mYy9zdDIxbmZjYS9zdDIxbmZj
-YS5oCisrKyBiL2RyaXZlcnMvbmZjL3N0MjFuZmNhL3N0MjFuZmNhLmgKQEAgLTE0MSw2ICsxNDEs
-NyBAQCBzdHJ1Y3Qgc3QyMW5mY2Ffc2VfaW5mbyB7CgogICAgICAgIHNlX2lvX2NiX3QgY2I7CiAg
-ICAgICAgdm9pZCAqY2JfY29udGV4dDsKKyAgICAgICBzdHJ1Y3Qgd29ya19zdHJ1Y3QgdGltZW91
-dF93b3JrOwogfTsKCiBzdHJ1Y3Qgc3QyMW5mY2FfaGNpX2luZm8gewoKRG8geW91IHRoaW5rIHRo
-aXMgc29sdXRpb24gaXMgYmV0dGVyPwoKQmVzdCByZWdhcmRzLApEdW9taW5nIFpob3UK
+> Hi Ziyang,
+> 
+> On Tue, 17 May 2022 at 08:30, Ziyang Xuan <william.xuanziyang@huawei.com> wrote:
+>>
+>> t7xx_cldma_clear_rxq() call t7xx_cldma_alloc_and_map_skb() in spin_lock
+>> context, But __dev_alloc_skb() in t7xx_cldma_alloc_and_map_skb() uses
+>> GFP_KERNEL, that will introduce scheduling factor in spin_lock context.
+>>
+>> Because t7xx_cldma_clear_rxq() is called after stopping CLDMA, so we can
+>> remove the spin_lock from t7xx_cldma_clear_rxq().
+>>
+>> Fixes: 39d439047f1d ("net: wwan: t7xx: Add control DMA interface")
+>> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+>> ---
+> 
+> You should normally indicate what changed in this v2.
+> 
+>>  drivers/net/wwan/t7xx/t7xx_hif_cldma.c | 7 ++++---
+>>  1 file changed, 4 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+>> index 46066dcd2607..7493285a9606 100644
+>> --- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+>> +++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+>> @@ -782,10 +782,12 @@ static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
+>>         struct cldma_queue *rxq = &md_ctrl->rxq[qnum];
+>>         struct cldma_request *req;
+>>         struct cldma_gpd *gpd;
+>> -       unsigned long flags;
+>>         int ret = 0;
+>>
+>> -       spin_lock_irqsave(&rxq->ring_lock, flags);
+>> +       /* CLDMA has been stopped. There is not any CLDMA IRQ, holding
+>> +        * ring_lock is not needed.
+> 
+> If it makes sense to explain why we don't need locking, the next
+> sentence is not needed:
+
+I want to remind the possible developer if he or she want to add spin_lock
+here again in future, he or she should check whether there is a scheduling
+factor or not here firstly.
+
+> 
+> 
+>>  Thus we can use functions that may
+>> +        * introduce scheduling.
+>> +        */
+>>         t7xx_cldma_q_reset(rxq);
+>>         list_for_each_entry(req, &rxq->tr_ring->gpd_ring, entry) {
+>>                 gpd = req->gpd;
+>> @@ -808,7 +810,6 @@ static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
+>>
+>>                 t7xx_cldma_gpd_set_data_ptr(req->gpd, req->mapped_buff);
+>>         }
+>> -       spin_unlock_irqrestore(&rxq->ring_lock, flags);
+>>
+>>         return ret;
+>>  }
+>> --
+>> 2.25.1
+>>
+> .
+> 
