@@ -2,91 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 68DD352C445
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:23:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A038252C461
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 22:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242383AbiERUOx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 16:14:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39268 "EHLO
+        id S242591AbiERUbr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 16:31:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54042 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242377AbiERUOv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:14:51 -0400
-Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E1235852
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:14:51 -0700 (PDT)
-Received: by mail-pl1-x62d.google.com with SMTP id q4so2803251plr.11
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 13:14:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=/Gu2oUwxEhzfvkUmWbwcxUrRaEA86FGELZr0o4UTvLE=;
-        b=EYAdFw2Z5xLwqIE59tODxm8XD++xJIw7nD8YgXEC+n7FHzh/1fVqi+IVZaoMuNl9MJ
-         0XLJYDNMs1+FINNLdmVKVuh9vwM+Gsk+cYXAVRBqbX+SYMGnHqUTW1WHgimU58yZbdXs
-         PRciX3LK547gz+Of2g634IWp5p7CW7gI0eO5oPo9/obv53fZRnUFbadq+MYMZkzsj1JS
-         wqjcG6bhWvT3EeHK9NZETpsIMExyV5we80s8hc+KhuG6TikGq0i0jsD0q3m4TlefkL37
-         3A9EvErWvH5hmrMlCsN6AQ4hbYALjlDIGnraTxckiBeYev8rnzN5jhx3GudoAxu4qHz+
-         jh6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=/Gu2oUwxEhzfvkUmWbwcxUrRaEA86FGELZr0o4UTvLE=;
-        b=usYr5ymjxOBf7+U3qlLwJaxF6CjME6R1oHq2ciMv1HSOMXmtaKbckPyEZTlbjPWdvZ
-         UWcPrr2itYewoGfskJEOUnd1Q+pnTqMaTPtCbSQ++Sbif+Bw77pSBDEmVsNqvrpmJQAv
-         wtx/JVtUIi5f9ZMBEH9v2ptJMrUA52X44zmRek95WeROPkTaOfOlPya1EZhGqEzirmEW
-         +skgHfwWx8lTAvvVWXvIVeMaGqHJuhJUBKT7ne5CUs9BSWLPeFyq0enPKsjWEEQZMYbe
-         Rhl3bax0ZA9rb6n0rog/uQyhJ6VmFqcIOcWPbL2Hd0WOZbEEv0Wr6mA7Y6LX04c/e3En
-         UMMw==
-X-Gm-Message-State: AOAM531QA+ok975/MoOJYsHCfQCVbAtIxa/4M0BR+D4JyjaZH3++Ridx
-        KnZXvCugT1SUFt+S1+AcJU8=
-X-Google-Smtp-Source: ABdhPJwq4ldgJA5CQ17KYdJGdMSi/rCbWRTmvq7//DCyWtwg3FsC+rvg8PuzRgiWjbabG90E3yS+Kg==
-X-Received: by 2002:a17:903:110c:b0:15f:f15:30ec with SMTP id n12-20020a170903110c00b0015f0f1530ecmr1266826plh.162.1652904890859;
-        Wed, 18 May 2022 13:14:50 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id a7-20020a170902900700b0015e8d4eb246sm2126818plp.144.2022.05.18.13.14.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 13:14:50 -0700 (PDT)
-Message-ID: <d58a9e3b-b492-8a56-964a-e9599cfe3009@gmail.com>
-Date:   Wed, 18 May 2022 13:14:48 -0700
+        with ESMTP id S242454AbiERUbp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 16:31:45 -0400
+Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1932EAD3F;
+        Wed, 18 May 2022 13:31:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652905904; x=1684441904;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=xBq3Cf7/l7VVICiNn+fUDIB0+RGgo7IdT8rhgcpuJqw=;
+  b=JirvlCP7ZRnWVPEMJH4djoPWcWY2M15Oo/askDPHX6p2e1s2ZqzA3vpU
+   DgaF0sO/X5Pz7FXWdO7QFAYJR8VUvZV5/2J0TGWgrunlxa77DPOWKUmM+
+   g3BhF1J3MOrag4t5b0jIHRPL+hibOBfDkHTXmL/+04amSPNkIXhd+0pdy
+   PHS8TE8nnANQp2gYPyvVPWFKxh1uRGY1xvwozEnyqmlMQA84sT+7EZlBO
+   lEfOWaJpyNJ9nwPnd7XmGEFR4jKpgK0hXuwsS4WQd7B9SUUAkbxtqsjmK
+   sWsiKFKd9OnptBF3hFV7sjpf36Jht6YdOFUKjdblBeT7O+uHyfhIf4okC
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="297179098"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="297179098"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 13:31:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="569725348"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga007.jf.intel.com with ESMTP; 18 May 2022 13:31:40 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nrQKZ-0002bd-Fi;
+        Wed, 18 May 2022 20:31:39 +0000
+Date:   Thu, 19 May 2022 04:31:31 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        johannes@sipsolutions.net, alex.aring@gmail.com,
+        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        sven@narfation.org, linux-wireless@vger.kernel.org,
+        linux-wpan@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: ifdefy the wireless pointers in struct
+ net_device
+Message-ID: <202205190456.MohbzV8M-lkp@intel.com>
+References: <20220518181807.2030747-1-kuba@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH net-next v4 0/2] Broadcom PTP PHY support
-Content-Language: en-US
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>, andrew@lunn.ch,
-        hkallweit1@gmail.com, linux@armlinux.org.uk, f.fainelli@gmail.com,
-        bcm-kernel-feedback-list@broadcom.com
-Cc:     netdev@vger.kernel.org, kernel-team@fb.com, davem@davemloft.net,
-        kuba@kernel.org, pabeni@redhat.com, edumazet@google.com,
-        lasse@timebeat.app, clk@fb.com
-References: <20220506224210.1425817-1-jonathan.lemon@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220506224210.1425817-1-jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518181807.2030747-1-kuba@kernel.org>
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Jakub,
+
+I love your patch! Yet something to improve:
+
+[auto build test ERROR on net-next/master]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Jakub-Kicinski/net-ifdefy-the-wireless-pointers-in-struct-net_device/20220519-022305
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git a3641ca416a3da7cbeae5bcf1fc26ba9797a1438
+config: um-i386_defconfig (https://download.01.org/0day-ci/archive/20220519/202205190456.MohbzV8M-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.2.0-20) 11.2.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/c6413242ee18dfc005d7ed7ccc4db9cf7883b872
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Jakub-Kicinski/net-ifdefy-the-wireless-pointers-in-struct-net_device/20220519-022305
+        git checkout c6413242ee18dfc005d7ed7ccc4db9cf7883b872
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=um SUBARCH=i386 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   net/core/net-sysfs.c: In function 'netdev_register_kobject':
+>> net/core/net-sysfs.c:2013:30: error: 'wireless_group' undeclared (first use in this function); did you mean 'wireless_dev'?
+    2013 |                 *groups++ = &wireless_group;
+         |                              ^~~~~~~~~~~~~~
+         |                              wireless_dev
+   net/core/net-sysfs.c:2013:30: note: each undeclared identifier is reported only once for each function it appears in
 
 
-On 5/6/2022 3:42 PM, Jonathan Lemon wrote:
-> This adds PTP support for the Broadcom PHY BCM54210E (and the
-> specific variant BCM54213PE that the rpi-5.15 branch uses).
-> 
-> This has only been tested on the RPI CM4, which has one port.
-> 
-> There are other Broadcom chips which may benefit from using the
-> same framework here, although with different register sets.
+vim +2013 net/core/net-sysfs.c
 
-Jonathan, any chance you could repost this before net-next closes? Thanks
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1990  
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1991  /* Create sysfs entries for network device. */
+6b53dafe23fd1f WANG Cong          2014-07-23  1992  int netdev_register_kobject(struct net_device *ndev)
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1993  {
+6648c65e7ea72c stephen hemminger  2017-08-18  1994  	struct device *dev = &ndev->dev;
+6b53dafe23fd1f WANG Cong          2014-07-23  1995  	const struct attribute_group **groups = ndev->sysfs_groups;
+0a9627f2649a02 Tom Herbert        2010-03-16  1996  	int error = 0;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  1997  
+a1b3f594dc5faa Eric W. Biederman  2010-05-04  1998  	device_initialize(dev);
+43cb76d91ee85f Greg Kroah-Hartman 2002-04-09  1999  	dev->class = &net_class;
+6b53dafe23fd1f WANG Cong          2014-07-23  2000  	dev->platform_data = ndev;
+43cb76d91ee85f Greg Kroah-Hartman 2002-04-09  2001  	dev->groups = groups;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  2002  
+6b53dafe23fd1f WANG Cong          2014-07-23  2003  	dev_set_name(dev, "%s", ndev->name);
+^1da177e4c3f41 Linus Torvalds     2005-04-16  2004  
+8b41d1887db718 Eric W. Biederman  2007-09-26  2005  #ifdef CONFIG_SYSFS
+0c509a6c9393b2 Eric W. Biederman  2009-10-29  2006  	/* Allow for a device specific group */
+0c509a6c9393b2 Eric W. Biederman  2009-10-29  2007  	if (*groups)
+0c509a6c9393b2 Eric W. Biederman  2009-10-29  2008  		groups++;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  2009  
+0c509a6c9393b2 Eric W. Biederman  2009-10-29  2010  	*groups++ = &netstat_group;
+38c1a01cf10c6e Johannes Berg      2012-11-16  2011  
+c6413242ee18df Jakub Kicinski     2022-05-18  2012  	if (wireless_group_needed(ndev))
+38c1a01cf10c6e Johannes Berg      2012-11-16 @2013  		*groups++ = &wireless_group;
+8b41d1887db718 Eric W. Biederman  2007-09-26  2014  #endif /* CONFIG_SYSFS */
+^1da177e4c3f41 Linus Torvalds     2005-04-16  2015  
+0a9627f2649a02 Tom Herbert        2010-03-16  2016  	error = device_add(dev);
+0a9627f2649a02 Tom Herbert        2010-03-16  2017  	if (error)
+8ed633b9baf9ec Wang Hai           2019-04-12  2018  		return error;
+0a9627f2649a02 Tom Herbert        2010-03-16  2019  
+6b53dafe23fd1f WANG Cong          2014-07-23  2020  	error = register_queue_kobjects(ndev);
+8ed633b9baf9ec Wang Hai           2019-04-12  2021  	if (error) {
+8ed633b9baf9ec Wang Hai           2019-04-12  2022  		device_del(dev);
+8ed633b9baf9ec Wang Hai           2019-04-12  2023  		return error;
+8ed633b9baf9ec Wang Hai           2019-04-12  2024  	}
+0a9627f2649a02 Tom Herbert        2010-03-16  2025  
+9802c8e22f6efd Ming Lei           2013-02-22  2026  	pm_runtime_set_memalloc_noio(dev, true);
+9802c8e22f6efd Ming Lei           2013-02-22  2027  
+0a9627f2649a02 Tom Herbert        2010-03-16  2028  	return error;
+^1da177e4c3f41 Linus Torvalds     2005-04-16  2029  }
+^1da177e4c3f41 Linus Torvalds     2005-04-16  2030  
+
 -- 
-Florian
+0-DAY CI Kernel Test Service
+https://01.org/lkp
