@@ -2,66 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E583A52BC80
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 16:16:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18EDB52BC49
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 16:16:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237362AbiERMr1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 08:47:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42842 "EHLO
+        id S237520AbiERMre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238264AbiERMrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:47:02 -0400
-Received: from relay10.mail.gandi.net (relay10.mail.gandi.net [217.70.178.230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FDF61BA8CC;
-        Wed, 18 May 2022 05:44:58 -0700 (PDT)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 097CD240009;
-        Wed, 18 May 2022 12:44:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652877848;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=daPN2lkdy/EMpVwqMhuN3bC0UELsSS9AVff+di60fZw=;
-        b=mtCs0eW1ZzNRLsJegrlshfkvCF8eEQzXVlpK9bumtB7oGmiwf7rncaJcU7j7kbiTPcPeXH
-        sJTgb7U0rAd0cRDv1OrxrTdyqYdTZ8c53aY7MzQkNkmru5avvrh4tN61iPX1Rb3OhxsFx1
-        tTwRqPssX9y2SBK3SqlRo3UIIfAhkh7zRkcxor+hjvllhKPr/0dyX35d1e9Y1B8YAesoNu
-        gM7P+7NyCJji2gqeIv6vW1VlD/8k68iupTl923kwN2pGHl+H8nh/+E0DdFbMCzgyVT4xK0
-        NW2ohI59NpSobiMTH4NQeV3VvcDSCwdEqFLG329dvHxt9+68I+sRY85a3wLpNA==
-Date:   Wed, 18 May 2022 14:44:05 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Alexander Aring <alex.aring@gmail.com>
-Cc:     Alexander Aring <aahringo@redhat.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>
-Subject: Re: [PATCH wpan-next v3 09/11] net: mac802154: Introduce a
- synchronous API for MLME commands
-Message-ID: <20220518144405.3ff900ea@xps-13>
-In-Reply-To: <CAB_54W7bLZ8i7W-ZzQ2WXgMvywcC=tEDHZqbj1yWYuKoVgm1sw@mail.gmail.com>
-References: <20220517163450.240299-1-miquel.raynal@bootlin.com>
-        <20220517163450.240299-10-miquel.raynal@bootlin.com>
-        <CAK-6q+jQL7cFJrL6XjuaJnNDggtO1d_sB+T+GrY9yT+Y+KC0oA@mail.gmail.com>
-        <20220518104435.76f5c0d5@xps-13>
-        <CAB_54W7bLZ8i7W-ZzQ2WXgMvywcC=tEDHZqbj1yWYuKoVgm1sw@mail.gmail.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S237401AbiERMrV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:47:21 -0400
+Received: from mo4-p00-ob.smtp.rzone.de (mo4-p00-ob.smtp.rzone.de [81.169.146.162])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C174A1BDAC4;
+        Wed, 18 May 2022 05:45:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652877930;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=DALuquiPTpvakZ1hsawCfe1qGQYKJ9d3gJZOL4yRbi8=;
+    b=I1+RBVUa8+5UKOMUJ7PRni8lMXTd8Grq9ftk0o0fZiHn90/WTNWd5Ra3/0hJYTkTdN
+    vs4ncegtSSOEjLjbXPod2389zZSu2PcokzwYA63a1OxmUjFzlUPS2Gj6pK5s3uJn1UY4
+    mXPVtZ1YEdXZ4IzE94fa1zlDxTmxFogra9qG65e8myFUPkj/uIBn0BCMRUn8dJfXMJJK
+    gPmcYFjbijLxJwf2CRZfn2/kQqa1/m3WRrHwou4Lj52fAhCdVg/ZURWLfrNurVRYMRtC
+    XycNcyX6w1YxOlLOrLG9sjD2bKvRwr5FzEnBZhCb1O1TTycIoUD5rk1nVBNZfEc4fHY/
+    Ozww==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00::b82]
+    by smtp.strato.de (RZmta 47.45.0 AUTH)
+    with ESMTPSA id R0691fy4ICjTHPh
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 18 May 2022 14:45:29 +0200 (CEST)
+Message-ID: <b76ed65a-cc3d-ae75-e764-9ce627dcb4c4@hartkopp.net>
+Date:   Wed, 18 May 2022 14:45:24 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: Device Drivers: (was: Re: [PATCH v3 3/4] can: skb:: move
+ can_dropped_invalid_skb and can_skb_headroom_valid to skb.c)
+Content-Language: en-US
+To:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Max Staudt <max@enpas.org>, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+ <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+ <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+ <20220517104545.eslountqjppvcnz2@pengutronix.de>
+ <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+ <20220517141404.578d188a.max@enpas.org>
+ <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
+ <20220517143921.08458f2c.max@enpas.org>
+ <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
+ <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
+ <20220518121226.inixzcttub6iuwll@pengutronix.de>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220518121226.inixzcttub6iuwll@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -69,94 +73,23 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-alex.aring@gmail.com wrote on Wed, 18 May 2022 07:59:37 -0400:
 
-> Hi,
->=20
-> On Wed, May 18, 2022 at 4:44 AM Miquel Raynal <miquel.raynal@bootlin.com>=
- wrote:
-> >
-> > Hi Alexander,
-> >
-> > aahringo@redhat.com wrote on Tue, 17 May 2022 20:41:41 -0400:
-> > =20
-> > > Hi,
-> > >
-> > > On Tue, May 17, 2022 at 12:35 PM Miquel Raynal
-> > > <miquel.raynal@bootlin.com> wrote: =20
-> > > >
-> > > > This is the slow path, we need to wait for each command to be proce=
-ssed
-> > > > before continuing so let's introduce an helper which does the
-> > > > transmission and blocks until it gets notified of its asynchronous
-> > > > completion. This helper is going to be used when introducing scan
-> > > > support.
-> > > >
-> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > ---
-> > > >  net/mac802154/ieee802154_i.h |  1 +
-> > > >  net/mac802154/tx.c           | 46 ++++++++++++++++++++++++++++++++=
-++++
-> > > >  2 files changed, 47 insertions(+)
-> > > >
-> > > > diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee80215=
-4_i.h
-> > > > index a057827fc48a..b42c6ac789f5 100644
-> > > > --- a/net/mac802154/ieee802154_i.h
-> > > > +++ b/net/mac802154/ieee802154_i.h
-> > > > @@ -125,6 +125,7 @@ extern struct ieee802154_mlme_ops mac802154_mlm=
-e_wpan;
-> > > >  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff =
-*skb);
-> > > >  void ieee802154_xmit_sync_worker(struct work_struct *work);
-> > > >  int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
-> > > > +int ieee802154_mlme_tx_one(struct ieee802154_local *local, struct =
-sk_buff *skb);
-> > > >  netdev_tx_t
-> > > >  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_devi=
-ce *dev);
-> > > >  netdev_tx_t
-> > > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> > > > index 38f74b8b6740..6cc4e5c7ba94 100644
-> > > > --- a/net/mac802154/tx.c
-> > > > +++ b/net/mac802154/tx.c
-> > > > @@ -128,6 +128,52 @@ int ieee802154_sync_and_hold_queue(struct ieee=
-802154_local *local)
-> > > >         return ieee802154_sync_queue(local);
-> > > >  }
-> > > >
-> > > > +static int ieee802154_mlme_op_pre(struct ieee802154_local *local)
-> > > > +{
-> > > > +       return ieee802154_sync_and_hold_queue(local);
-> > > > +}
-> > > > +
-> > > > +static int ieee802154_mlme_tx(struct ieee802154_local *local, stru=
-ct sk_buff *skb)
-> > > > +{
-> > > > +       int ret;
-> > > > +
-> > > > +       /* Avoid possible calls to ->ndo_stop() when we asynchronou=
-sly perform
-> > > > +        * MLME transmissions.
-> > > > +        */
-> > > > +       rtnl_lock();
-> > > > +
-> > > > +       /* Ensure the device was not stopped, otherwise error out */
-> > > > +       if (!local->open_count)
-> > > > +               return -EBUSY;
-> > > > + =20
-> > >
-> > > No -EBUSY here, use ?-ENETDOWN?. =20
-> >
-> > Isn't it strange to return "Network is down" while we try to stop the
-> > device but fail to do so because, actually, it is still being used?
-> > =20
->=20
-> you are right. Maybe -EPERM, in a sense of whether the netdev state
-> allows it or not.
+On 18.05.22 14:12, Marc Kleine-Budde wrote:
+> On 18.05.2022 21:03:37, Vincent MAILHOL wrote:
+>> On a different topic, why are all the CAN devices
+>> under "Networking support" and not "Device Drivers" in menuconfig
+>> like everything else? Would it make sense to move our devices
+>> under the "Device Drivers" section?
+> 
+> ACK
+> 
 
-Actually you were right in your fist review, "!open_count" means
-that the net iface is down, so returning -ENETDOWN is fine, I believe.
+Bluetooth did it that way too. But I feel the same.
+When we clean up the CAN drivers moving the CAN driver selection to 
+drivers/net/Kconfig would make sense.
 
-Thanks,
-Miqu=C3=A8l
+ACK
+
+Best regards,
+Oliver
+
