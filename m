@@ -2,209 +2,208 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D1DAE52BFA2
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 18:14:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7D3152BF45
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 18:13:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239732AbiERPvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 11:51:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45438 "EHLO
+        id S239666AbiERPyg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 11:54:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239593AbiERPvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 11:51:41 -0400
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (mail-bn8nam08on2073.outbound.protection.outlook.com [40.107.100.73])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D716D1BE11C;
-        Wed, 18 May 2022 08:51:40 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DNK4EStW9zZ4m1gYAtuHAmq4OcONA9LExasdaBNDrpr1DNa8D5ZMmnK8PXJHTl39P2cSWX9FtjvA1il3lxl5IgLCDe+ijlHL46/tbfkVagW8vqb2RFrSV2Iryl7S9LBXzRKqH+eO/FWNO0JUUB63+zWMybOWHFYgWBHcO3HV2FpEaYTKX1AMqN0DdNoMfDJ3CXwec13ROtwaz4WCuhIebSETQ1jsI3OqXRsZuXVN+UpOtGQYKxA1zwkvuGyJBfPHeCK+3kMZG5foK6tGDmYH9WG+oeGyzfPSgQaRlYXbFdd3HKpUtS8onPDuMnOZmnVXp47BM1x5bhXtd0yTwnxg8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=YMgK8aQjXqU3M4XHbxlduLXqQLhIXMpQDr/DIkwNNfU=;
- b=SFel1T1MRfJhl8PYgQINxZfwXsPjrHhpYgUIjO67ixRpH48pqAa4tAgEES4WzbmhqTW/tTPzhVnxIIUZ7+OfdeastOv/XQpH8m+zfK17mn2w4KMGn0AmJz9K/p7UbcGbxgas6HHMDLqglX1bUsiqEEJ7onkbMSEGKocOZJ8nlD2uim3WmUTcb4VYt5gqdYA9kJOtC/xl93V3Kn/JMtbPjuyNja7L29jIHdjnQVcF0A2LT/0QwXfdVl0XZGuwc60pAImctdlBAPLPRAtkMi0YDFqEgVG11/57d4ghNv6U7pCY5DXA/MaifUehBN0Gv1Tw3xVg1KAJfndLo0K9Y2LWoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
- dkim=pass header.d=xilinx.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=YMgK8aQjXqU3M4XHbxlduLXqQLhIXMpQDr/DIkwNNfU=;
- b=kz7gzG8gqfUDT+IfPbNtCB+znNuxJvduPK+K5M1Xtzlkvp8WVM/17Pa74WT5wX0NG0tfh14MO0W/Tr/FVni7uYHYGn3CRijH9GdIuEFVmBO/+4JibTKSuY9kFEhAOxGDH/4SohUghW7AnFNrKeVl9AMGt/DYWooekrsai9i2Bcs=
-Received: from SA1PR02MB8560.namprd02.prod.outlook.com (2603:10b6:806:1fb::24)
- by DM6PR02MB4219.namprd02.prod.outlook.com (2603:10b6:5:98::16) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.18; Wed, 18 May
- 2022 15:51:37 +0000
-Received: from SA1PR02MB8560.namprd02.prod.outlook.com
- ([fe80::94f0:32be:367b:1798]) by SA1PR02MB8560.namprd02.prod.outlook.com
- ([fe80::94f0:32be:367b:1798%7]) with mapi id 15.20.5273.014; Wed, 18 May 2022
- 15:51:37 +0000
-From:   Radhey Shyam Pandey <radheys@xilinx.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        Harini Katakam <harinik@xilinx.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        git <git@xilinx.com>
-Subject: RE: [RFC net-next] dt-bindings: net: xilinx: document xilinx emaclite
- driver binding
-Thread-Topic: [RFC net-next] dt-bindings: net: xilinx: document xilinx
- emaclite driver binding
-Thread-Index: AQHYZh7/W5aBkbqlHkqbu5HcsW4/mq0j0VEAgAD/x+A=
-Date:   Wed, 18 May 2022 15:51:37 +0000
-Message-ID: <SA1PR02MB85603BDDF6DD3D8182A74915C7D19@SA1PR02MB8560.namprd02.prod.outlook.com>
-References: <1652373596-5994-1-git-send-email-radhey.shyam.pandey@xilinx.com>
- <20220518003240.GA1942137-robh@kernel.org>
-In-Reply-To: <20220518003240.GA1942137-robh@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=xilinx.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5555ac54-b326-4d32-02c1-08da38e64a8b
-x-ms-traffictypediagnostic: DM6PR02MB4219:EE_
-x-ld-processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
-x-microsoft-antispam-prvs: <DM6PR02MB42193BB995F51525B2BCD363C7D19@DM6PR02MB4219.namprd02.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: yM4bKUUiYsZlixHSB7/0ID7YRnlnf5qrG6Mx1uAzk15Mwre+THW+5f3ygUMae04O0ReWnTkQ52JC2ofUlCAG8p2v/VCRn2Q79wgOc+BhvDnSjYMjtiosthtRmvpLzDqu3qQwfSxui+gMMghwNRv2cJswgIPJGdg6KjQ1gCLVHU2HVdJ+PeqJ5bSWVLVstuWNk179U+JE2i41AX29FkCQxFeuj2N3JcEeN77jQTVxlVoyIkNdQQfco7wIIMrAcBXN8z3JGtoGY4Rz25qua0B/2Wt9SuoZ5InPrBlzROTSn056YBR3/Mv7/puSxEySA9WAowHqdxMaVRbQIhTXXl0CRPzRk3UyQLC/tpJLN4gG2aNc2AmK5atjw/zOefDTQ3SmsGS3yk+1ua5exmoSo/lsy4J2OrpvgqZbfZS71iN99c+MxvML4dEgFZljTSifhJpAh9WpjXnsKIjYnAPzV+NALEgRlr3PceMFld6mohULjUtsO6GbXpAUaNg8iIYTVjsfD0HFVzsNQu8Zwfkfja7o8WwqNUDTkq5VGn1CoP7/2cL6kjjBfEPGz5AbYEal2bbzv+TNIPpPzbCFyy0K2xTI8HSsUMTSK0IAId6Sqa6kF2uXmasxM6OuFACRuPvAAy3JVS4bxvFzpqUgUjyKe/uujmRbsNtltN7bH48No2Q9RKFnybmOwm/0H/frQiMV6ophvYlX0R/vbnPhdKTWYLeMm8FhtdsF48OUbEur3J6XQKQoVleVdyHOWdMUTym3+zURHmvh5L0i4dFNTCd8PbWJQnTyVWcqnzuJZZFbfu1EkG9YVAZVR4FL/FJz0Q4mt/2jxSSae0CCpgZmkQXCWG98NA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR02MB8560.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66946007)(66476007)(5660300002)(7416002)(86362001)(9686003)(8676002)(66446008)(76116006)(4326008)(52536014)(64756008)(66556008)(122000001)(38100700002)(6916009)(54906003)(33656002)(8936002)(38070700005)(316002)(55016003)(53546011)(508600001)(6506007)(966005)(83380400001)(186003)(71200400001)(107886003)(7696005)(2906002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 2
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?153MjGMb+jXK6Xk95kPrU3gzeZMYQSG2XyJNT9QToZULkGmfLyORr+td3Lax?=
- =?us-ascii?Q?EYQY9OpiW3s648CKWjKOWQQ9s2PIJlpo/OhOV3WhtXL+R9hvZl0He4fYd7tZ?=
- =?us-ascii?Q?gY2RaxPhcv34cMubbVdlK4xSF0A4F/rWsdyZYyx2ka0JTNkcQDRXMiMtrVSX?=
- =?us-ascii?Q?TjrsenYfSyOAgFfC7J3m0ebaiDHhcrp0DYeZKf20FX16WD52Rh4kpuFOdGNw?=
- =?us-ascii?Q?ep64O7VtZ4bdLhIibKQbBZHdOVxCV6QOCpHVylUmxDVmCwrLrYldYSoMUCzh?=
- =?us-ascii?Q?GuNUs3XYN6tV71M7o8nq5ImSXJ3f71ugxJGH+a38QR5Z37Qt66x3GN53njER?=
- =?us-ascii?Q?/65h5r0FOXCVWEyzP81so1GsSC8Wcvjb20OF71j0udOVWNjr7RAmDzztXrX9?=
- =?us-ascii?Q?O0cVVW+cy45W89tmF5Fm13Jt5Dwdk7bE/MTXZj4zTpUq+F3l/eWiy+iQRsH7?=
- =?us-ascii?Q?kfA6JeFvS060YagZywUviYlUSobzrKhWGGLxgEvBpBOFzcNPbgvqsN9sq2RC?=
- =?us-ascii?Q?h817F+ShNA6bIsvqjSmwa+PILlciWmYJeRxABSf9LOoIca6924dXJ7HtkmEW?=
- =?us-ascii?Q?A+U2fWT41CxmmZa7mM1ZMBlFmuOQzDsb3J2zh6K9tLPD45zB3kG4F5GANEc/?=
- =?us-ascii?Q?Zh4DTO2F9kOveWDib4p6ZxwcBm3lbXLV6626xwYP+pXI/vH/GhhjQMx1DZ0X?=
- =?us-ascii?Q?u6SEPIhcng19pkwWBaF9mIC8P1Owim/p6sBoRHJ1T53cN5+spxqfPt6XAIw0?=
- =?us-ascii?Q?nTzIGoLoqSmOT/hAJF60bRVbxBimRiNv6ayI6bBpZka0RUuS/c42LaQZQaJO?=
- =?us-ascii?Q?z68rSYMotcjLSwfIQ3OjpgRqVB5dQTaq/lVDIBvGrB5gGO17nEgs2qMYXz3i?=
- =?us-ascii?Q?uGrlCwvFnuvWYAwi4lNqc9q07NlZa+b62XIX3TlLw6U1rMSoPRi0iWPy70Ez?=
- =?us-ascii?Q?FKNq4OgHpFKNAuQr9+XFvzCY8Nbc/JQnjp9NSF3o5h5NsGmik8kO9Z80QHl5?=
- =?us-ascii?Q?nAFntjZulHSr3w7pW3oQuZpcVumTX6wvweS8krWmYH9CRgIU3Qodg/axbuK9?=
- =?us-ascii?Q?CZgZoTi4BB7xFiuZ0Zb3njVlzbZp35mN3l1hVjf0fEC/8ML7oVM6zCA3tKDV?=
- =?us-ascii?Q?kU1505F1kM5mD8cuARP/VEKgCwF5UkitHGG2mZB0qfhX1L3T2o1spEEY7Q/Y?=
- =?us-ascii?Q?NIlPptgjinPpNPLgKeHkqD7sjW/IYt5F3RBfu9Iw/Wwj5BJC8lfme+sV6WHX?=
- =?us-ascii?Q?zGdzxrwOjZe4FW2P82RlaBdhCz6aJeXAD/8US+33aSPV5grkeHaA49tTmEKI?=
- =?us-ascii?Q?eZ1PZ3w9sCtnaGsVgv0PWs0Z3k7//nNBwAI1GjFtH7mLKnI3NDeIz5SCptyO?=
- =?us-ascii?Q?N1yo8ADWrfxxIw2HaOL7wXZX7Bo0fXPVJOGpBw757YIf+oTXuvO0BDldPlTh?=
- =?us-ascii?Q?0n6ipNzMrZ0xzJKroJqA0PiT8/gKeMIt/ShP0l3tq+uyZT1/ahzZBQRSe7bz?=
- =?us-ascii?Q?mWRW8O9IawZU6zllmlnlKBD07T5YIb9Odd/9HOsI5cy6Svk5H0Sf0d8HOgYH?=
- =?us-ascii?Q?DKPEmGkZodVJa8SEsuQ2iPy/rU4gi11iz60P8Ugv8UEHHFHMq/vBJTauVpBl?=
- =?us-ascii?Q?bhuttwpLTFsVjQ2dIFLViQxSP7DIzKPoIA6UZges8xx30AS5XVgYOrovb4Ey?=
- =?us-ascii?Q?Gxr5SYeCPlP1E2z5xijv0ookdhiK92qhRfD93u5VzS/I+yS+54AxL0PzRFXg?=
- =?us-ascii?Q?xOOz6LvQ4VCSyGkX4nPHjc+s90lt/TR8642JQ7pRq4r260PbIOywTELkI7mL?=
-x-ms-exchange-antispam-messagedata-1: 78zCmErWNsYeDQ==
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S239637AbiERPyg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 11:54:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 03AED1CC9B8
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 08:54:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652889273;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=o+41K9LoDFefNHlN38q9XLtLo2Wd5hJ3TPpp2R0V7lQ=;
+        b=E95sZn7bE4YRRLkw7PDO0EbcyUoOkHMuZo6vlOf1fDRD1Ckw9kfDM1hz5R5k4Z8JQQqJwV
+        mcC5drmeGN9ZTDc9yy2dk4eZ3i2QP7lo8nFoRsIz9k1Iu+8ZNCVoRmF8nGd5H/MEB8vOjK
+        /bEAYL92xUzrM2G3SLjYxzQDRKBC+Gg=
+Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
+ [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-231-2nADQ5tUPkei1XR17W-bpw-1; Wed, 18 May 2022 11:54:31 -0400
+X-MC-Unique: 2nADQ5tUPkei1XR17W-bpw-1
+Received: by mail-qt1-f199.google.com with SMTP id h5-20020ac81385000000b002f3f91834ffso1974271qtj.10
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 08:54:31 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=o+41K9LoDFefNHlN38q9XLtLo2Wd5hJ3TPpp2R0V7lQ=;
+        b=pHOYopA8Yyr667/X1LxRbX3vgGmF7CI3i6F3yQxV/JIbQ5nNgTakxJunpvN4lrs5re
+         DH/8jQf/ZutKeDly+Xg3O72ktLns1yJ5nhtSXduHaWFKUDmmaC3gGBlnGYPRTzG8mCyR
+         hlZyFbqBwzg6kJhdRK9wQe0qDMcpT9l0H97w0tAs3ieqSFw9GdAo682OeixhxoCjEZHd
+         K8wRsczTINzUJ9WTKdJddMDLPH0aGexMZc9FwN4qYrZf/s9V91v7z+/PqStZ4XgIZ6c9
+         7OvR8UXmJF2vDh1OKU+JepcarS6wsnsKH2iW0EpXnS0/pOjWhA3EsD/gCMcO7z7oQwvt
+         BrpA==
+X-Gm-Message-State: AOAM531gSchr2XPomDDLnrUx2IRDIUDbmQd0++akmi/9F3ZagYqHmwwH
+        oB0cCIf2EvH5m5J9acnX6R3w0RpGjI10/0gJAwhk+ddsSBKjI4W27CoPJO6+XUhpMr61MZe/lIL
+        3DDKehLeMXfk1UylV
+X-Received: by 2002:a37:d245:0:b0:69b:f153:9c38 with SMTP id f66-20020a37d245000000b0069bf1539c38mr40667qkj.692.1652889271130;
+        Wed, 18 May 2022 08:54:31 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyzJmSYB+nUCTtpA5X7u3VijTdR+HPQ+dvCcudSZ2ylQNwAuYjLtHQEOx0PAErPgsRNeXt/Mw==
+X-Received: by 2002:a37:d245:0:b0:69b:f153:9c38 with SMTP id f66-20020a37d245000000b0069bf1539c38mr40644qkj.692.1652889270798;
+        Wed, 18 May 2022 08:54:30 -0700 (PDT)
+Received: from [192.168.98.18] ([107.12.98.143])
+        by smtp.gmail.com with ESMTPSA id h4-20020a376c04000000b0069fc13ce1d4sm1722361qkc.5.2022.05.18.08.54.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 18 May 2022 08:54:30 -0700 (PDT)
+Message-ID: <55870b80-7297-f3f9-967c-d23c2b39fea4@redhat.com>
+Date:   Wed, 18 May 2022 11:54:27 -0400
 MIME-Version: 1.0
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR02MB8560.namprd02.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5555ac54-b326-4d32-02c1-08da38e64a8b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 May 2022 15:51:37.0448
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: maZ6mv4U0gVmhC5RKB3/UoF0wndwo4IWWOlST+iLEHtmJXMt8vDOIqcGYtxnFNibPGJeDJXxj57rm5/eQrul0A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB4219
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCHv2 net] bonding: fix missed rcu protection
+Content-Language: en-US
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     andy@greyhouse.net, davem@davemloft.net, dsahern@gmail.com,
+        eric.dumazet@gmail.com, j.vosburgh@gmail.com, kuba@kernel.org,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com,
+        vfalico@gmail.com, vladimir.oltean@nxp.com,
+        Eric Dumazet <edumazet@google.com>,
+        linux-kernel@vger.kernel.org
+References: <20220517082312.805824-1-liuhangbin@gmail.com>
+ <a4ed2a83d38a58b0984edb519382c867204b7ea2.1652804144.git.jtoppins@redhat.com>
+ <YoRXjeCR2bbr5qzF@Laptop-X1>
+From:   Jonathan Toppins <jtoppins@redhat.com>
+In-Reply-To: <YoRXjeCR2bbr5qzF@Laptop-X1>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Rob Herring <robh@kernel.org>
-> Sent: Wednesday, May 18, 2022 6:03 AM
-> To: Radhey Shyam Pandey <radheys@xilinx.com>
-> Cc: davem@davemloft.net; edumazet@google.com; kuba@kernel.org;
-> pabeni@redhat.com; krzysztof.kozlowski+dt@linaro.org; Harini Katakam
-> <harinik@xilinx.com>; netdev@vger.kernel.org; devicetree@vger.kernel.org;
-> linux-kernel@vger.kernel.org; git <git@xilinx.com>
-> Subject: Re: [RFC net-next] dt-bindings: net: xilinx: document xilinx ema=
-clite
-> driver binding
->=20
-> On Thu, May 12, 2022 at 10:09:56PM +0530, Radhey Shyam Pandey wrote:
-> > Add basic description for the xilinx emaclite driver DT bindings.
-> >
-> > Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> > ---
-> >  .../bindings/net/xlnx,emaclite.yaml           | 60 +++++++++++++++++++
-> >  1 file changed, 60 insertions(+)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
-> >
-> > diff --git a/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
-> > b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
-> > new file mode 100644
-> > index 000000000000..a3e2a0e89b24
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
-> > @@ -0,0 +1,60 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) %YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/net/xlnx,emaclite.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Xilinx Emaclite Ethernet controller
-> > +
-> > +maintainers:
-> > +  - Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
-> > +  - Harini Katakam <harini.katakam@xilinx.com>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - xlnx,opb-ethernetlite-1.01.a
-> > +      - xlnx,opb-ethernetlite-1.01.b
-> > +      - xlnx,xps-ethernetlite-1.00.a
-> > +      - xlnx,xps-ethernetlite-2.00.a
-> > +      - xlnx,xps-ethernetlite-2.01.a
-> > +      - xlnx,xps-ethernetlite-3.00.a
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +
-> > +  phy-handle: true
-> > +
-> > +  local-mac-address: true
-> > +
-> > +  xlnx,tx-ping-pong:
-> > +    type: boolean
-> > +    description: hardware supports tx ping pong buffer.
-> > +
-> > +  xlnx,rx-ping-pong:
-> > +    type: boolean
-> > +    description: hardware supports rx ping pong buffer.
->=20
-> Are these based on IP version or configuration of IP?
+On 5/17/22 22:18, Hangbin Liu wrote:
+> On Tue, May 17, 2022 at 01:32:58PM -0400, Jonathan Toppins wrote:
+>> Signed-off-by: Jonathan Toppins <jtoppins@redhat.com>
+>> ---
+>> RESEND, list still didn't receive my last version
+>>
+>> The diffstat is slightly larger but IMO a slightly more readable version.
+>> When I was reading v2 I found myself jumping around.
+> 
+> Hi Jon,
+> 
+> Thanks for the commit. But..
+> 
+>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>> index 38e152548126..f9d27b63c454 100644
+>> --- a/drivers/net/bonding/bond_main.c
+>> +++ b/drivers/net/bonding/bond_main.c
+>> @@ -5591,23 +5591,32 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+>>   	const struct ethtool_ops *ops;
+>>   	struct net_device *real_dev;
+>>   	struct phy_device *phydev;
+>> +	int ret = 0;
+>>   
+>> +	rcu_read_lock();
+>>   	real_dev = bond_option_active_slave_get_rcu(bond);
+>> -	if (real_dev) {
+>> -		ops = real_dev->ethtool_ops;
+>> -		phydev = real_dev->phydev;
+>> -
+>> -		if (phy_has_tsinfo(phydev)) {
+>> -			return phy_ts_info(phydev, info);
+>> -		} else if (ops->get_ts_info) {
+>> -			return ops->get_ts_info(real_dev, info);
+>> -		}
+>> -	}
+>> +	if (real_dev)
+>> +		dev_hold(real_dev);
+>> +	rcu_read_unlock();
+>> +
+>> +	if (!real_dev)
+>> +		goto software;
+>>   
+>> +	ops = real_dev->ethtool_ops;
+>> +	phydev = real_dev->phydev;
+>> +
+>> +	if (phy_has_tsinfo(phydev))
+>> +		ret = phy_ts_info(phydev, info);
+>> +	else if (ops->get_ts_info)
+>> +		ret = ops->get_ts_info(real_dev, info);
+> 	else {
+> 		dev_put(real_dev);
+> 		goto software;
+> 	}
+> 
+> Here we need another check and goto software if !phy_has_tsinfo() and
+> no ops->get_ts_info. With this change we also have 2 goto and dev_put().
 
-These properties doesn't depend on IP version and are=20
-related to IP configuration.
-=20
->=20
-> Rob
+Ah yes. I cannot think of a way to make this simpler. The patch below 
+looks good.
+
+> 
+>> +
+>> +	dev_put(real_dev);
+>> +	return ret;
+>> +
+>> +software:
+>>   	info->so_timestamping = SOF_TIMESTAMPING_RX_SOFTWARE |
+>>   				SOF_TIMESTAMPING_SOFTWARE;
+>>   	info->phc_index = -1;
+>> -
+>>   	return 0;
+>>   }
+> 
+> As Jakub remind, dev_hold() and dev_put() can take NULL now. So how about
+> this new patch:
+> 
+> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+> index 38e152548126..b5c5196e03ee 100644
+> --- a/drivers/net/bonding/bond_main.c
+> +++ b/drivers/net/bonding/bond_main.c
+> @@ -5591,16 +5591,23 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+>   	const struct ethtool_ops *ops;
+>   	struct net_device *real_dev;
+>   	struct phy_device *phydev;
+> +	int ret = 0;
+>   
+> +	rcu_read_lock();
+>   	real_dev = bond_option_active_slave_get_rcu(bond);
+> +	dev_hold(real_dev);
+> +	rcu_read_unlock();
+> +
+>   	if (real_dev) {
+>   		ops = real_dev->ethtool_ops;
+>   		phydev = real_dev->phydev;
+>   
+>   		if (phy_has_tsinfo(phydev)) {
+> -			return phy_ts_info(phydev, info);
+> +			ret = phy_ts_info(phydev, info);
+> +			goto out;
+>   		} else if (ops->get_ts_info) {
+> -			return ops->get_ts_info(real_dev, info);
+> +			ret = ops->get_ts_info(real_dev, info);
+> +			goto out;
+>   		}
+>   	}
+>   
+> @@ -5608,7 +5615,9 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+>   				SOF_TIMESTAMPING_SOFTWARE;
+>   	info->phc_index = -1;
+>   
+> -	return 0;
+> +out:
+> +	dev_put(real_dev);
+> +	return ret;
+>   }
+> 
+> Thanks
+> Hangbin
+> 
+
