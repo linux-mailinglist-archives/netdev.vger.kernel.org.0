@@ -2,101 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 233FB52B1B8
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 07:05:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 242CC52B1C6
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 07:09:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230113AbiERE6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 00:58:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
+        id S230180AbiERFGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 01:06:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58130 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbiERE6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 00:58:07 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18DC4990E
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 21:58:05 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id e3so1056498ios.6
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 21:58:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rmEVSz8Ov4VLePaxRqZlqBSc68Uu6/Lnq8r0Z264Ghc=;
-        b=RejBYio0j313jVh3W/Nq3YuXD1TuXQazMZACV5LqhPHNcgPwi3ZFH1K03KiYiGw3TA
-         WVH9aJMaoFkrIaAz107LNiB2dgwToZOtt/JN/87V8KzEScELToOctTLGYsYEz+AlRLaW
-         EBL9kbjZ/I6mMPduR/tfRGJ9lTpKIJ746vPV/UUbYFwp38TUX+oFLdOurmRQgdVvBTtQ
-         dyRqV0QKr5le6vjXHdBSHAtgi1EV4acPglMPDSttFLzQQHIojU8u2TLKUXS6vqJ6Bv6Z
-         ICuKpb6k3hrNxXoKnhR3BCl6dWVOgpn74GDVaQmVIEICw8PVE9IyrqPdYNRkIo/xlEql
-         anSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rmEVSz8Ov4VLePaxRqZlqBSc68Uu6/Lnq8r0Z264Ghc=;
-        b=VQsxCr2Fd7muPyD2JgoJEWoZgCKoyVZpmpqm8Cdeu1gJ9912RF5fLIke9WUpwWZ7Zg
-         9XHqzKS/tFBTmQAhcR1rgaF9uu1L2Ym6NWxtoABT3ThtanomOF/2G3opEIzlUBU+WDlu
-         SwNcELsQ+O9Wx7Furg2Rbs98JgMnWfQNmOwVPSRsx9Z5P3NbVqPKQPaZZ0zeyV4arAKb
-         PKVonWARra7yxPHyPE7oj7+sytO6vxIJVCvrfSeRWhFAqp2o56PEr7uOVl6IBBNK16eK
-         fdKwQf+AKuAloSCiR3Ty9QaHrQPvQ+AxS2orIZbHX6cGtP7Y3iVLmRSE6sjjasy9yWf4
-         r6IQ==
-X-Gm-Message-State: AOAM530tkCdlDlpkp3dET4mXtAMsSpRdRviAHqjDD7AOwfCVotthggjt
-        f5Uk8j3D26zl6AaOmQ3PbXxbkqp84kjXIfCtln5krOSoelo=
-X-Google-Smtp-Source: ABdhPJxaCEFKanUDhjp6nFe5x25mWTq2EI5m/39SlwK/6jlpZ0PsZUOLerEnVX+9/QRZuFi1I35l3ELVtJDjMl2y3I0=
-X-Received: by 2002:a05:6638:516:b0:32e:26e7:30b3 with SMTP id
- i22-20020a056638051600b0032e26e730b3mr8424824jar.287.1652849885225; Tue, 17
- May 2022 21:58:05 -0700 (PDT)
+        with ESMTP id S230162AbiERFGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 01:06:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01DDA6163E;
+        Tue, 17 May 2022 22:06:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 367DEB81D9D;
+        Wed, 18 May 2022 05:06:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66319C385A9;
+        Wed, 18 May 2022 05:06:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652850364;
+        bh=N4r7WJWhhRNnKb59gLRfEn6OU/D10G4MYLVP2WxWL7o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pupY0Aq6EYpZAWIpEigrfJF4MbHVFy3akCBPaxHWwS9Lc+5gHfsGTNkxnBGX31wWA
+         H4NVKPU8/fEK+QRHViiuBnZ0U938JJDNH0QLGLJOuvfcz8gDxpkrCp3gBpk/OpCvM9
+         4TbHMTSAUs8eJ3SUiUFia9YAUC56zlcc+yQc/XehB8NMjOz3N8CWNDfwrwzFlTHaeu
+         f43fjUCWi+Rr09VV3eor6ZPnGpXBcjAd1YRArI6v4H+a+ZTm5m+eeI38AfrIhRMjbu
+         Pw3mLQDycb0N8kmDrRk7KZsSb6cNyqbP0l9lwfSVSyM0RfT0OmqxCmgDCTy42qQmGA
+         +0EAY3uXYqdcg==
+Date:   Tue, 17 May 2022 22:06:03 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Harini Katakam <harinik@xilinx.com>
+Cc:     Harini Katakam <harini.katakam@xilinx.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        David Miller <davem@davemloft.net>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Subject: Re: [PATCH 1/3] net: macb: Fix PTP one step sync support
+Message-ID: <20220517220603.36eec66e@kernel.org>
+In-Reply-To: <CAFcVEC+qdouQ+tJdBG_Vv8QsaUX99uFtjKnB5WwQawA1fxmgEQ@mail.gmail.com>
+References: <20220517073259.23476-1-harini.katakam@xilinx.com>
+        <20220517073259.23476-2-harini.katakam@xilinx.com>
+        <20220517194254.015e87f3@kernel.org>
+        <CAFcVEC+qdouQ+tJdBG_Vv8QsaUX99uFtjKnB5WwQawA1fxmgEQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220512205041.1208962-1-joannelkoong@gmail.com>
- <20220512205041.1208962-2-joannelkoong@gmail.com> <CANn89iKryk30MM=XuwDmdZ7T_rDJUe+zZrZMsaPXQG2mghe6tQ@mail.gmail.com>
-In-Reply-To: <CANn89iKryk30MM=XuwDmdZ7T_rDJUe+zZrZMsaPXQG2mghe6tQ@mail.gmail.com>
-From:   Joanne Koong <joannelkoong@gmail.com>
-Date:   Tue, 17 May 2022 21:57:54 -0700
-Message-ID: <CAJnrk1Y+6zVBVNd+YW4Qwmk_KJPbSVLXX74QnWRGmtr_zy5VWg@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 1/2] net: Add a second bind table hashed by
- port and address
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 17, 2022 at 9:59 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Thu, May 12, 2022 at 1:51 PM Joanne Koong <joannelkoong@gmail.com> wrote:
+On Wed, 18 May 2022 09:53:29 +0530 Harini Katakam wrote:
+> On Wed, May 18, 2022 at 8:12 AM Jakub Kicinski <kuba@kernel.org> wrote:
 > >
-> > We currently have one tcp bind table (bhash) which hashes by port
-> > number only. In the socket bind path, we check for bind conflicts by
-> > traversing the specified port's inet_bind2_bucket while holding the
-> > bucket's spinlock (see inet_csk_get_port() and inet_csk_bind_conflict()).
+> > On Tue, 17 May 2022 13:02:57 +0530 Harini Katakam wrote:  
+> > > PTP one step sync packets cannot have CSUM padding and insertion in
+> > > SW since time stamp is inserted on the fly by HW.
+> > > In addition, ptp4l version 3.0 and above report an error when skb
+> > > timestamps are reported for packets that not processed for TX TS
+> > > after transmission.
+> > > Add a helper to identify PTP one step sync and fix the above two
+> > > errors.
+> > > Also reset ptp OSS bit when one step is not selected.
+> > >
+> > > Fixes: ab91f0a9b5f4 ("net: macb: Add hardware PTP support")
+> > > Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")  
 > >
-> > In instances where there are tons of sockets hashed to the same port
-> > at different addresses, checking for a bind conflict is time-intensive
-> > and can cause softirq cpu lockups, as well as stops new tcp connections
-> > since __inet_inherit_port() also contests for the spinlock.
-> >
-> > This patch proposes adding a second bind table, bhash2, that hashes by
-> > port and ip address. Searching the bhash2 table leads to significantly
-> > faster conflict resolution and less time holding the spinlock.
-> >
-> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
->
-> Scary patch, but I could not find obvious issues with it.
-> Let's give it a try, thanks !
->
-> Reviewed-by: Eric Dumazet <edumazet@google.com>
-Thanks for reviewing this code, Eric.
+> > Please make sure to CC authors of the patches under fixes.
+> > ./scripts/get_maintainer should point them out.  
+> 
+> Thanks for the review.
+> Rafal Ozieblo <rafalo@cadence.com> is the author of the first Fixes
+> patch but that
+> address hasn't worked in the last ~4 yrs.
+> I have cced Claudiu and everyone else from the maintainers
+> (Eric Dumazet <edumazet@google.com> also doesn't work)
 
-I will submit a v5 that tidies up some of the things flagged by
-patchworks [1] (removing the inline in the "static inline bool
-check_bind2_bucket_match(...)" function in net/ipv4/inet_hashtables.c
-and adding line breaks to keep the lengths to 80 columns)
+I see, thanks, added Rafal's email to the ignore list, 
+I'm quite sure Eric's email address works.
 
-[1] https://patchwork.kernel.org/project/netdevbpf/patch/20220512205041.1208962-2-joannelkoong@gmail.com/
+> > > @@ -1158,13 +1192,14 @@ static int macb_tx_complete(struct macb_queue *queue, int budget)
+> > >
+> > >                       /* First, update TX stats if needed */
+> > >                       if (skb) {
+> > > -                             if (unlikely(skb_shinfo(skb)->tx_flags &
+> > > -                                          SKBTX_HW_TSTAMP) &&
+> > > -                                 gem_ptp_do_txstamp(queue, skb, desc) == 0) {
+> > > -                                     /* skb now belongs to timestamp buffer
+> > > -                                      * and will be removed later
+> > > -                                      */
+> > > -                                     tx_skb->skb = NULL;
+> > > +                             if (unlikely(skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP) &&  
+> >
+> > ptp_oss already checks if HW_TSTAMP is set.  
+> 
+> The check for SKBTX_HW_TSTAMP is required here universally and not
+> just inside ptp_oss.
+> I will remove the redundant check in ptp_oss instead. Please see the
+> reply below.
+
+But then you need to add this check in the padding/fcs call site and
+the place where NOCRC is set. If you wrap the check for SKBTX_HW_TSTAMP
+in the helper with likely() and remove the inline - will the compiler
+not split the function and inline just that check? And leave the rest
+as a functionname.part... thing?
