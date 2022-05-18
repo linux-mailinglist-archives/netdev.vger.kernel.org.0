@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7025C52B1B9
+	by mail.lfdr.de (Postfix) with ESMTP id 233FB52B1B8
 	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 07:05:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230105AbiERE52 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 00:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33398 "EHLO
+        id S230113AbiERE6J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 00:58:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230073AbiERE50 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 00:57:26 -0400
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9051F48336;
-        Tue, 17 May 2022 21:57:23 -0700 (PDT)
-Received: by mail-ed1-x52b.google.com with SMTP id g12so1472109edq.4;
-        Tue, 17 May 2022 21:57:23 -0700 (PDT)
+        with ESMTP id S230073AbiERE6H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 00:58:07 -0400
+Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C18DC4990E
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 21:58:05 -0700 (PDT)
+Received: by mail-io1-xd2a.google.com with SMTP id e3so1056498ios.6
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 21:58:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=9cQjMPtzVzWMMLR3FCd8zE1RGi3Xf/RRCQhm5PRrYQo=;
-        b=GVpakVd4olDIiCKTtvjOIyP5NSLtCnq6WnexgNUcB/5H4VOHZlEnGwNfSZ6x90XNbR
-         7RXr50u8KY1YpuR9jlzQjPNVswc/rF6VywKyUkYSacNl1xBYog0TpEEXj8fKCTb2ZHWy
-         OiOp00/04notikJdEaO+2ovvLK+83EjU3Brff/pCCRJRGSkfHt9JjTG/DE8iV9Rxsem+
-         QEx/UYIfGEMCIGu7B3r3RsElIB/Eyy+J4b2CUY88/1+vZISZT0rALElUqWT402Zt8AD6
-         zV8W+L+GUT5RU+V2LGN67Et1YE+/nURSy11eU5TpvR/3TbUU4c5O6OfzvHTfx7prIiQW
-         cb8g==
+         :cc;
+        bh=rmEVSz8Ov4VLePaxRqZlqBSc68Uu6/Lnq8r0Z264Ghc=;
+        b=RejBYio0j313jVh3W/Nq3YuXD1TuXQazMZACV5LqhPHNcgPwi3ZFH1K03KiYiGw3TA
+         WVH9aJMaoFkrIaAz107LNiB2dgwToZOtt/JN/87V8KzEScELToOctTLGYsYEz+AlRLaW
+         EBL9kbjZ/I6mMPduR/tfRGJ9lTpKIJ746vPV/UUbYFwp38TUX+oFLdOurmRQgdVvBTtQ
+         dyRqV0QKr5le6vjXHdBSHAtgi1EV4acPglMPDSttFLzQQHIojU8u2TLKUXS6vqJ6Bv6Z
+         ICuKpb6k3hrNxXoKnhR3BCl6dWVOgpn74GDVaQmVIEICw8PVE9IyrqPdYNRkIo/xlEql
+         anSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=9cQjMPtzVzWMMLR3FCd8zE1RGi3Xf/RRCQhm5PRrYQo=;
-        b=7ERHP41sWUu431YB+fFPwojqYDOgK0SsnJbvVJXIF+VMhb+wmvgejuROr0NyL6goqI
-         a5xiZAKdmR4/iql1dkgMMekvD1caUzvA0O2HrRT6uFre4WobpCwOScYFGN8ThAyv4akR
-         R2nQ2Z8YKo76Z+nEdeQiqa6yCXq+zxPqlN4VpdXx7Zwmku/5qnPceKTANZfOM9AAyZTZ
-         WFZaKSPdGy5rSIuuFCRo3rmqqgVR0C84p6ZM00sP9jQIJqKTLI6mdv+udEx97V0fBU++
-         DmnL4bilAjr+3IE3P0dKAp1pL/VehWfvAYcLEBzX1SYS4yfU0Uip7XBGRLSa5VwMoGxm
-         iD0Q==
-X-Gm-Message-State: AOAM532Biof6PD+JIDflSiW0qU+xxPhfN8lygxrMt5x5khu2D05QvLny
-        e3l51/4YFq2U8IsUetCgR20e3K+bs+BZ+XbKnuE=
-X-Google-Smtp-Source: ABdhPJwli+VymbeMre2E6HJK1+EjFPm/n16fZX4UREAR0AHZazXwB0e2HdtotE34L6JLznSeSa48uGxf1kSnzT7HUNc=
-X-Received: by 2002:a05:6402:5409:b0:42a:a643:4eb8 with SMTP id
- ev9-20020a056402540900b0042aa6434eb8mr18824779edb.71.1652849842034; Tue, 17
- May 2022 21:57:22 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=rmEVSz8Ov4VLePaxRqZlqBSc68Uu6/Lnq8r0Z264Ghc=;
+        b=VQsxCr2Fd7muPyD2JgoJEWoZgCKoyVZpmpqm8Cdeu1gJ9912RF5fLIke9WUpwWZ7Zg
+         9XHqzKS/tFBTmQAhcR1rgaF9uu1L2Ym6NWxtoABT3ThtanomOF/2G3opEIzlUBU+WDlu
+         SwNcELsQ+O9Wx7Furg2Rbs98JgMnWfQNmOwVPSRsx9Z5P3NbVqPKQPaZZ0zeyV4arAKb
+         PKVonWARra7yxPHyPE7oj7+sytO6vxIJVCvrfSeRWhFAqp2o56PEr7uOVl6IBBNK16eK
+         fdKwQf+AKuAloSCiR3Ty9QaHrQPvQ+AxS2orIZbHX6cGtP7Y3iVLmRSE6sjjasy9yWf4
+         r6IQ==
+X-Gm-Message-State: AOAM530tkCdlDlpkp3dET4mXtAMsSpRdRviAHqjDD7AOwfCVotthggjt
+        f5Uk8j3D26zl6AaOmQ3PbXxbkqp84kjXIfCtln5krOSoelo=
+X-Google-Smtp-Source: ABdhPJxaCEFKanUDhjp6nFe5x25mWTq2EI5m/39SlwK/6jlpZ0PsZUOLerEnVX+9/QRZuFi1I35l3ELVtJDjMl2y3I0=
+X-Received: by 2002:a05:6638:516:b0:32e:26e7:30b3 with SMTP id
+ i22-20020a056638051600b0032e26e730b3mr8424824jar.287.1652849885225; Tue, 17
+ May 2022 21:58:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220518020812.2626293-1-yangyingliang@huawei.com>
-In-Reply-To: <20220518020812.2626293-1-yangyingliang@huawei.com>
-From:   =?UTF-8?B?5ZGC6Iqz6aiw?= <wellslutw@gmail.com>
-Date:   Wed, 18 May 2022 12:57:12 +0800
-Message-ID: <CAFnkrsmmn0ut2_9uJN3kS4uQGHuO0DONJveXvYm5oRMjKCoiZw@mail.gmail.com>
-Subject: Re: [PATCH -next v2] net: ethernet: sunplus: add missing
- of_node_put() in spl2sw_mdio_init()
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        andrew@lunn.ch, pabeni@redhat.com,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+References: <20220512205041.1208962-1-joannelkoong@gmail.com>
+ <20220512205041.1208962-2-joannelkoong@gmail.com> <CANn89iKryk30MM=XuwDmdZ7T_rDJUe+zZrZMsaPXQG2mghe6tQ@mail.gmail.com>
+In-Reply-To: <CANn89iKryk30MM=XuwDmdZ7T_rDJUe+zZrZMsaPXQG2mghe6tQ@mail.gmail.com>
+From:   Joanne Koong <joannelkoong@gmail.com>
+Date:   Tue, 17 May 2022 21:57:54 -0700
+Message-ID: <CAJnrk1Y+6zVBVNd+YW4Qwmk_KJPbSVLXX74QnWRGmtr_zy5VWg@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 1/2] net: Add a second bind table hashed by
+ port and address
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     netdev <netdev@vger.kernel.org>, Martin KaFai Lau <kafai@fb.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -69,67 +68,35 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Yingliang,
+On Tue, May 17, 2022 at 9:59 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Thu, May 12, 2022 at 1:51 PM Joanne Koong <joannelkoong@gmail.com> wrote:
+> >
+> > We currently have one tcp bind table (bhash) which hashes by port
+> > number only. In the socket bind path, we check for bind conflicts by
+> > traversing the specified port's inet_bind2_bucket while holding the
+> > bucket's spinlock (see inet_csk_get_port() and inet_csk_bind_conflict()).
+> >
+> > In instances where there are tons of sockets hashed to the same port
+> > at different addresses, checking for a bind conflict is time-intensive
+> > and can cause softirq cpu lockups, as well as stops new tcp connections
+> > since __inet_inherit_port() also contests for the spinlock.
+> >
+> > This patch proposes adding a second bind table, bhash2, that hashes by
+> > port and ip address. Searching the bhash2 table leads to significantly
+> > faster conflict resolution and less time holding the spinlock.
+> >
+> > Signed-off-by: Joanne Koong <joannelkoong@gmail.com>
+>
+> Scary patch, but I could not find obvious issues with it.
+> Let's give it a try, thanks !
+>
+> Reviewed-by: Eric Dumazet <edumazet@google.com>
+Thanks for reviewing this code, Eric.
 
-Thanks a lot for fixing the bug.
+I will submit a v5 that tidies up some of the things flagged by
+patchworks [1] (removing the inline in the "static inline bool
+check_bind2_bucket_match(...)" function in net/ipv4/inet_hashtables.c
+and adding line breaks to keep the lengths to 80 columns)
 
-Reviewed-by: Wells Lu <wellslutw@gmail.com>
-
-Best regards,
-Wells
-
-Yang Yingliang <yangyingliang@huawei.com> =E6=96=BC 2022=E5=B9=B45=E6=9C=88=
-18=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8A=E5=8D=889:56=E5=AF=AB=E9=81=93=EF=
-=BC=9A
->
-> of_get_child_by_name() returns device node pointer with refcount
-> incremented. The refcount should be decremented before returning
-> from spl2sw_mdio_init().
->
-> Fixes: fd3040b9394c ("net: ethernet: Add driver for Sunplus SP7021")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
-> v2:
->   add fix tag.
-> ---
->  drivers/net/ethernet/sunplus/spl2sw_mdio.c | 11 ++++++++---
->  1 file changed, 8 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/net/ethernet/sunplus/spl2sw_mdio.c b/drivers/net/eth=
-ernet/sunplus/spl2sw_mdio.c
-> index 139ac8f2685e..733ae1704269 100644
-> --- a/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-> +++ b/drivers/net/ethernet/sunplus/spl2sw_mdio.c
-> @@ -97,8 +97,10 @@ u32 spl2sw_mdio_init(struct spl2sw_common *comm)
->
->         /* Allocate and register mdio bus. */
->         mii_bus =3D devm_mdiobus_alloc(&comm->pdev->dev);
-> -       if (!mii_bus)
-> -               return -ENOMEM;
-> +       if (!mii_bus) {
-> +               ret =3D -ENOMEM;
-> +               goto out;
-> +       }
->
->         mii_bus->name =3D "sunplus_mii_bus";
->         mii_bus->parent =3D &comm->pdev->dev;
-> @@ -110,10 +112,13 @@ u32 spl2sw_mdio_init(struct spl2sw_common *comm)
->         ret =3D of_mdiobus_register(mii_bus, mdio_np);
->         if (ret) {
->                 dev_err(&comm->pdev->dev, "Failed to register mdiobus!\n"=
-);
-> -               return ret;
-> +               goto out;
->         }
->
->         comm->mii_bus =3D mii_bus;
-> +
-> +out:
-> +       of_node_put(mdio_np);
->         return ret;
->  }
->
-> --
-> 2.25.1
->
+[1] https://patchwork.kernel.org/project/netdevbpf/patch/20220512205041.1208962-2-joannelkoong@gmail.com/
