@@ -2,79 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A15E52AF6A
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 02:52:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDB5252AF6C
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 02:55:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232924AbiERAwz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 20:52:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55282 "EHLO
+        id S232933AbiERAz0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 20:55:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232912AbiERAwx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 20:52:53 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 688C053B58
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 17:52:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652835170;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=S9mad11/WKyJ8qtJwe6UAYP1am6w3wILeYCMPsK0T8Q=;
-        b=deAfIEe9EpSvy4my4eWMN0DHQRnCy/fNJI/Uo+1XCVdnn77QlIIt7lqxCay+sMuGQ3lHPv
-        bW8Bz6AYO+8b3eCTyP7XTXYO4CF+qv2pxoAKbxptb8iehMqXwrWXQRx+iMjAkdMAhBMJuj
-        1vNiz0Hv3AtkUxFViw4MAaA2mxIm1BA=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-141-D7DyDR2bNQ6CH6pRGFxvzQ-1; Tue, 17 May 2022 20:52:47 -0400
-X-MC-Unique: D7DyDR2bNQ6CH6pRGFxvzQ-1
-Received: by mail-qt1-f199.google.com with SMTP id d15-20020ac85d8f000000b002f3b3b7e0adso572888qtx.20
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 17:52:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=S9mad11/WKyJ8qtJwe6UAYP1am6w3wILeYCMPsK0T8Q=;
-        b=ZqqfOaWPd+nOm3zu79DhmaGL2zwlMJJXZGQsJsyhI0/ISxi3K4WmAgQ2XX1agSfVkJ
-         m+6FKUhvw8K3B9486bNn6xjMT6vq7qaCc2mEQlJXGiEmXx1kR+PtNYNLPaEEzmOtMtk3
-         Lr20DNV3kf7ISb2voOkGPfJzdUDKEkiHqKAewEtLYFFLPEFnYbDDsgdEEzSJxtwYNZN+
-         ZPFYmFu+Uk/jrLsmQ1lb6xykKhSK55Lx+aU6h9dOq5I3lvYNQHHM16h10MqHsJtn6cFp
-         DoV+lkYnDUxyTj7P9/hrpbEGpqLlrx3/rTU6Apk43MGeP4jwt6g6m3vnkFzmWOMHfrqI
-         zOFg==
-X-Gm-Message-State: AOAM531eFofgEjoq91v91uhI1Z58D9i0INpYOqFWChUl/3U/XmjN1O4H
-        P3lPWVaUiNPnNVsYvjAo10J+OFxE22Vh3g8nU0QM374piK56antsOAV+tYtdwCr2GcGADaDRjiq
-        D9PabHl+6lzWfsk6a4gRP5lPwkA+LChTG
-X-Received: by 2002:a05:620a:40c2:b0:6a0:2b1b:2b86 with SMTP id g2-20020a05620a40c200b006a02b1b2b86mr18374818qko.80.1652835166680;
-        Tue, 17 May 2022 17:52:46 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwj5CgY3t/X6jWl5mD6OgnYRUwIXUSh+pKul9iwwO4sgu7eTlEHEdWngGAKINHo2zh9bC3tDB7N/laKZy7XqGo=
-X-Received: by 2002:a05:620a:40c2:b0:6a0:2b1b:2b86 with SMTP id
- g2-20020a05620a40c200b006a02b1b2b86mr18374813qko.80.1652835166496; Tue, 17
- May 2022 17:52:46 -0700 (PDT)
+        with ESMTP id S232502AbiERAzY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 20:55:24 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA7353B58;
+        Tue, 17 May 2022 17:55:23 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF4DBB81DD8;
+        Wed, 18 May 2022 00:55:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24D4AC385B8;
+        Wed, 18 May 2022 00:55:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652835321;
+        bh=I2xjX76KsRn9y3/72Q0rtJUBVNTqbOU3T94kelSJog8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=T9UbxJ8Klh/EgCdyXMO82XiFOIvMWVeXWjNMy7JSjL1bexlNwEJIfr83hUqPzaCmv
+         E3125vx/fhxg8aia53tUAnD+jh2CFsODhr6nY5xMYlYq6hwR35em88R+xiAPdQ7m7b
+         vetrxi5KmE0dCALGplhcjSaOSE2iWzcYqYCvK29hZOIGJVLM50cWLWNyn+F/10JqKB
+         uOt7tD6zUaA9kmyfiI6o9TjUf4vRN9hQja7lqXuzBSHfUdhecq42MtHOEz5LvcqHaK
+         oyLiDS9YWHfOQUaNcNDFIFV92dKKoqWt2xf3EHK0jYoF46N/0kNrEiAqMw6tqTXsD9
+         vPxA26JWopNtA==
+Date:   Tue, 17 May 2022 17:55:19 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Peng Wu <wupeng58@huawei.com>
+Cc:     <davem@davemloft.net>, <edumazet@google.com>,
+        <hkallweit1@gmail.com>, <bhelgaas@google.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <liwei391@huawei.com>
+Subject: Re: [PATCH] sfc/siena: fix driver suspend/resume methods
+Message-ID: <20220517175519.0b04e58b@kernel.org>
+In-Reply-To: <20220517012334.122677-1-wupeng58@huawei.com>
+References: <20220517012334.122677-1-wupeng58@huawei.com>
 MIME-Version: 1.0
-References: <20220517163450.240299-1-miquel.raynal@bootlin.com> <20220517163450.240299-12-miquel.raynal@bootlin.com>
-In-Reply-To: <20220517163450.240299-12-miquel.raynal@bootlin.com>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Tue, 17 May 2022 20:52:35 -0400
-Message-ID: <CAK-6q+hPWRUobMATaxD6rZ1zfQUnS_6pMacr+rKVHRAWe1xzSQ@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v3 11/11] net: mac802154: Add a warning in the
- slow path
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -82,71 +55,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Tue, 17 May 2022 01:23:34 +0000 Peng Wu wrote:
+> Fix the missing pci_disable_device() before return
+> from efx_pm_resume() in the error handling case.
+> 
+> Meanwhile, drivers should do this:
+> .resume()
+> 	pci_enable_device()
+> .suspend()
+> 	pci_disable_device()
+> 
+> Signed-off-by: Peng Wu <wupeng58@huawei.com>
 
-On Tue, May 17, 2022 at 12:35 PM Miquel Raynal
-<miquel.raynal@bootlin.com> wrote:
->
-> In order to be able to detect possible conflicts between the net
-> interface core and the ieee802154 core, let's add a warning in the slow
-> path: we want to be sure that whenever we start an asynchronous MLME
-> transmission (which can be fully asynchronous) the net core somehow
-> agrees that this transmission is possible, ie. the device was not
-> stopped. Warning in this case would allow us to track down more easily
-> possible issues with the MLME logic if we ever get reports.
->
-> Unlike in the hot path, such a situation cannot be handled.
->
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> ---
->  net/mac802154/tx.c | 25 +++++++++++++++++++++++++
->  1 file changed, 25 insertions(+)
->
-> diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> index e36aca788ea2..53a8be822e33 100644
-> --- a/net/mac802154/tx.c
-> +++ b/net/mac802154/tx.c
-> @@ -132,6 +132,25 @@ int ieee802154_sync_and_hold_queue(struct ieee802154_local *local)
->         return ret;
->  }
->
-> +static bool ieee802154_netif_is_down(struct ieee802154_local *local)
-> +{
-> +       struct ieee802154_sub_if_data *sdata;
-> +       bool is_down = true;
-> +
-> +       rcu_read_lock();
-> +       list_for_each_entry_rcu(sdata, &local->interfaces, list) {
-> +               if (!sdata->dev)
-> +                       continue;
-> +
-> +               is_down = !(sdata->dev->flags & IFF_UP);
-> +               if (is_down)
-> +                       break;
+Won't the remove function no disable the device, anyway?
 
-I thought that the helper would be "netif_running()". It seems there
-are multiple ways to check if an interface is up.
+If the patch is indeed needed please add a Fixes tag pointing to where
+the buggy code was added and repost.
 
-> +       }
-> +       rcu_read_unlock();
-> +
-> +       return is_down;
-> +}
-> +
->  static int ieee802154_mlme_op_pre(struct ieee802154_local *local)
->  {
->         return ieee802154_sync_and_hold_queue(local);
-> @@ -150,6 +169,12 @@ static int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *sk
->         if (!local->open_count)
->                 return -EBUSY;
->
-> +       /* Warn if the ieee802154 core thinks MLME frames can be sent while the
-> +        * net interface expects this cannot happen.
-> +        */
-> +       if (WARN_ON_ONCE(ieee802154_netif_is_down(local)))
-> +               return -EHOSTDOWN;
-
-maybe also ENETDOWN? Also there is a missing rtnl_unlock().
-
-- Alex
-
+Also since this file is a copy of drivers/net/ethernet/sfc/efx.c
+I'm not sure why you're only patching this instance but not the
+original.
