@@ -2,55 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 474AD52BC74
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 16:16:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E90A52BC1F
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 16:16:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237543AbiERNK2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 09:10:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38050 "EHLO
+        id S237516AbiERNKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 09:10:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237535AbiERNKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 09:10:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D26817B851;
-        Wed, 18 May 2022 06:10:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2EE5B82032;
-        Wed, 18 May 2022 13:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 7CB1CC36AE2;
-        Wed, 18 May 2022 13:10:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652879413;
-        bh=yopJBrymAGv8hrzx/cz6109W5zx6EL0S7W74oPz0Wbo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fcSFyseC494l5VnUIljp4rWVTPPPPLOQhkBv1zOWTy60KACoKERcsKD+8fseJ1FZU
-         VVZRYnvGb8VFq8ujyE6MWZF3FhiIApfRd6vP1YACfziuf2s80i5T1JSLcCRsVPqbG2
-         F7UlIhgNfkkzHOQ9BPVwyXns5ato1EqzvfowipptGr0X7IUuqawsw4pCQs20Nh44Fn
-         l1PkKHN+Y+sekcXhnbxum8IqoE40mI8Uf5m5cvVm1CO4iLAMS5rng97kCQWZi6OHa7
-         wyM7sUXFp0X0mMJ2lX/8WdVyVdaTAjMP4TgX+KQTHgemzjhqcZpoaXNq9jU5uRGhPn
-         qhF62JcLIvMdw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5DAA8F03935;
-        Wed, 18 May 2022 13:10:13 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S237519AbiERNKt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 09:10:49 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.51])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 094C622517;
+        Wed, 18 May 2022 06:10:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652879444;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=6TMF40b1ulLF+Snq+k1FxHMJfQT/QbJmSUwGUPENt/A=;
+    b=MjS6sLULLYotqBREueexxg3tM61MnhbxRILC/AcAgTTW8LJWA5JLXqx/RXsoPYHx9Z
+    76lIH7sldeDkaBgsvkMursM8nMz0w30DcgE0p1XKajFlctskn7ydBEMavo8VK8uX5CRk
+    7NRKcY82gYCSx73FsG23C+GFFBySdKGYus7DAC/J62jIJDhwwAL5vG1FXxPR13V9IO4/
+    pST4Ocf0MbNQ68o4maftQ8CkitzeWNhwZfdwzsRatojM4xAnMyzlJevuU1d2KhtdyEud
+    QWAPfGDDlyh0E1C0WE4EHRLid9fskgjNUGSAmZuQfpugEvnTO6mp5sYG6P53vuUDfTve
+    mQWw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00::b82]
+    by smtp.strato.de (RZmta 47.45.0 AUTH)
+    with ESMTPSA id R0691fy4IDAiHUw
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 18 May 2022 15:10:44 +0200 (CEST)
+Message-ID: <43768ff7-71f8-a6c3-18f8-28609e49eedd@hartkopp.net>
+Date:   Wed, 18 May 2022 15:10:44 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH -next v2] net: ethernet: sunplus: add missing of_node_put() in
- spl2sw_mdio_init()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165287941338.26952.5380355560504992321.git-patchwork-notify@kernel.org>
-Date:   Wed, 18 May 2022 13:10:13 +0000
-References: <20220518020812.2626293-1-yangyingliang@huawei.com>
-In-Reply-To: <20220518020812.2626293-1-yangyingliang@huawei.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        wellslutw@gmail.com, andrew@lunn.ch, pabeni@redhat.com,
-        davem@davemloft.net, kuba@kernel.org
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
+ can_skb_headroom_valid to skb.c
+Content-Language: en-US
+To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Cc:     Max Staudt <max@enpas.org>, Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
+ <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr>
+ <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
+ <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net>
+ <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
+ <20220517060821.akuqbqxro34tj7x6@pengutronix.de>
+ <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
+ <20220517104545.eslountqjppvcnz2@pengutronix.de>
+ <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+ <20220517141404.578d188a.max@enpas.org>
+ <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
+ <20220517143921.08458f2c.max@enpas.org>
+ <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
+ <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,29 +75,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
 
-On Wed, 18 May 2022 10:08:12 +0800 you wrote:
-> of_get_child_by_name() returns device node pointer with refcount
-> incremented. The refcount should be decremented before returning
-> from spl2sw_mdio_init().
+On 18.05.22 14:03, Vincent MAILHOL wrote:
+> I didn't think this would trigger such a passionate discussion!
+
+:-D
+
+Maybe your change was the drop that let the bucket run over ;-)
+
+>> But e.g. the people that are running Linux instances in a cloud only
+>> using vcan and vxcan would not need to carry the entire infrastructure
+>> of CAN hardware support and rx-offload.
 > 
-> Fixes: fd3040b9394c ("net: ethernet: Add driver for Sunplus SP7021")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> Are there really some people running custom builds of the Linux kernel
+> in a cloud environment? The benefit of saving a few kilobytes by not
+> having to carry the entire CAN hardware infrastructure is blown away
+> by the cost of having to maintain a custom build.
+
+When looking to the current Kconfig and Makefile content in 
+drivers/net/can(/dev) there is also some CONFIG_CAN_LEDS which "depends 
+on BROKEN" and builds a leds.o from a non existing leds.c ?!?
+
+Oh leds.c is in drivers/net/can/leds.c but not in 
+drivers/net/can/dev/leds.c where it could build ... ?
+
+So what I would suggest is that we always build a can-dev.ko when a CAN 
+driver is needed.
+
+Then we have different options that may be built-in:
+
+1. netlink hw config interface
+2. bitrate calculation
+3. rx-offload
+4. leds
+
+E.g. having the netlink interface without bitrate calculation does not 
+make sense to me too.
+
+> I perfectly follow the idea to split rx-offload. Integrators building
+> some custom firmware for an embedded device might want to strip out
+> any unneeded piece. But I am not convinced by this same argument when
+> applied to v(x)can.
+
+It does. I've seen CAN setups (really more than one or two!) in VMs and 
+container environments that are fed by Ethernet tunnels - sometimes also 
+in embedded devices.
+
+> A two level split (with or without rx-offload) is what makes the most
+> sense to me.
 > 
-> [...]
+> Regardless, having the three level split is not harmful. And because
+> there seems to be a consensus on that, I am fine to continue in this
+> direction.
 
-Here is the summary with links:
-  - [-next,v2] net: ethernet: sunplus: add missing of_node_put() in spl2sw_mdio_init()
-    https://git.kernel.org/netdev/net-next/c/223153ea6c79
+Thanks!
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Should we remove the extra option for the bitrate calculation then?
 
+And what about the LEDS support depending on BROKEN?
+That was introduced by commit 30f3b42147ba6f ("can: mark led trigger as 
+broken") from Uwe as it seems there were some changes in 2018.
 
+Best regards,
+Oliver
