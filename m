@@ -2,46 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E70D452BAB8
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:39:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BAC8252BA1C
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236461AbiERM1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 08:27:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46442 "EHLO
+        id S236615AbiERM1k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:27:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236416AbiERM04 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:26:56 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18D2D6D4DE;
-        Wed, 18 May 2022 05:26:55 -0700 (PDT)
+        with ESMTP id S236545AbiERM10 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:27:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9503FD35E;
+        Wed, 18 May 2022 05:27:24 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8FF861290;
-        Wed, 18 May 2022 12:26:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE083C34100;
-        Wed, 18 May 2022 12:26:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 316F5615FE;
+        Wed, 18 May 2022 12:27:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FA0FC36AE3;
+        Wed, 18 May 2022 12:27:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876814;
-        bh=4dfSF32OTFY2vE6VRjsBQCAJkn1HMbzv2NuefqMHs+4=;
+        s=k20201202; t=1652876843;
+        bh=kxOZ5QqWCnpmv5KQaoJ4TOsadG16Vztf+q4rTiMkJ3E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aCPaOhj9Qli9/1Ypq6H3rmFdDkSjJjuAnpudYxlk2T5bP2Hpg6HLnkp6h5MiOutMO
-         f8O5Ij4FNj6UzjDcDr/6CyYKMZ5nESY7wKRyoyEjKxJ+TjVxerAp0Tqa5xhbJxM5Jc
-         o7cYD3EYQ3+4cQrl3NREWw1+Y2eNc69yfzsgfBb85lBPgBJh+zkcxMGW1hx/T7Q0qn
-         8kgUYP8bO+KbZ64NEivh9H8FRpMWcgDuMbILG0ADtmVol7zfLMzVaXodc1qAqT7Fph
-         ZH7ebV3Cpd0JR6L5zS72pAXvVB1atpztDkOEwgFsY5rCvlk5hC7i3lkzjp+AsjC7Z/
-         mIUNQSabaCwPA==
+        b=Umit11Mac3n7EFrWi5vz93Vy/DmAFIE5ZX28dqxdFCNvpjmxYi3gtyh6q+ZMFG3Hy
+         WHVb6G1689lubJcoCxpjyvC1YyBfvtv2doUxNJw85CgqF+06CQm/dzDzsNgzYdn9QZ
+         6DOqopQyvO0HwZAkCOUGfQ6cWa2gUQ7B/lw0BYpylWX914Iz4OVgUhthM6GdtbkWhP
+         BrvsdpTg2xO5f446fEsxAGYSyoeRaSIEq1FvsK/qBz/NtaSz2XByyW4/3ZwWZJgZ8N
+         PacclyS9foGpKN5di0JCbXuMBMhN0HvlzOXHejsqq9FrE9pipf5pZ24faJVkjBetgY
+         CaeMm1ZRSq4Rg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, pabeni@redhat.com, shuah@kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.17 06/23] selftests: add ping test with ping_group_range tuned
-Date:   Wed, 18 May 2022 08:26:19 -0400
-Message-Id: <20220518122641.342120-6-sashal@kernel.org>
+Cc:     Lina Wang <lina.wang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, matthias.bgg@gmail.com,
+        ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        ilias.apalodimas@linaro.org, vasily.averin@linux.dev,
+        luiz.von.dentz@intel.com, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 14/23] net: fix wrong network header length
+Date:   Wed, 18 May 2022 08:26:27 -0400
+Message-Id: <20220518122641.342120-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122641.342120-1-sashal@kernel.org>
 References: <20220518122641.342120-1-sashal@kernel.org>
@@ -59,65 +62,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Lina Wang <lina.wang@mediatek.com>
 
-[ Upstream commit e71b7f1f44d3d88c677769c85ef0171caf9fc89f ]
+[ Upstream commit cf3ab8d4a797960b4be20565abb3bcd227b18a68 ]
 
-The 'ping' utility is able to manage two kind of sockets (raw or icmp),
-depending on the sysctl ping_group_range. By default, ping_group_range is
-set to '1 0', which forces ping to use an ip raw socket.
+When clatd starts with ebpf offloaing, and NETIF_F_GRO_FRAGLIST is enable,
+several skbs are gathered in skb_shinfo(skb)->frag_list. The first skb's
+ipv6 header will be changed to ipv4 after bpf_skb_proto_6_to_4,
+network_header\transport_header\mac_header have been updated as ipv4 acts,
+but other skbs in frag_list didnot update anything, just ipv6 packets.
 
-Let's replay the ping tests by allowing 'ping' to use the ip icmp socket.
-After the previous patch, ipv4 tests results are the same with both kinds
-of socket. For ipv6, there are a lot a new failures (the previous patch
-fixes only two cases).
+udp_queue_rcv_skb will call skb_segment_list to traverse other skbs in
+frag_list and make sure right udp payload is delivered to user space.
+Unfortunately, other skbs in frag_list who are still ipv6 packets are
+updated like the first skb and will have wrong transport header length.
 
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+e.g.before bpf_skb_proto_6_to_4,the first skb and other skbs in frag_list
+has the same network_header(24)& transport_header(64), after
+bpf_skb_proto_6_to_4, ipv6 protocol has been changed to ipv4, the first
+skb's network_header is 44,transport_header is 64, other skbs in frag_list
+didnot change.After skb_segment_list, the other skbs in frag_list has
+different network_header(24) and transport_header(44), so there will be 20
+bytes different from original,that is difference between ipv6 header and
+ipv4 header. Just change transport_header to be the same with original.
+
+Actually, there are two solutions to fix it, one is traversing all skbs
+and changing every skb header in bpf_skb_proto_6_to_4, the other is
+modifying frag_list skb's header in skb_segment_list. Considering
+efficiency, adopt the second one--- when the first skb and other skbs in
+frag_list has different network_header length, restore them to make sure
+right udp payload is delivered to user space.
+
+Signed-off-by: Lina Wang <lina.wang@mediatek.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/net/fcnal-test.sh | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ net/core/skbuff.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index 3f4c8cfe7aca..7cd9b31d0307 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -810,10 +810,16 @@ ipv4_ping()
- 	setup
- 	set_sysctl net.ipv4.raw_l3mdev_accept=1 2>/dev/null
- 	ipv4_ping_novrf
-+	setup
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv4_ping_novrf
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 180fa6a26ad4..708cc9b1b176 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3896,7 +3896,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 	unsigned int delta_len = 0;
+ 	struct sk_buff *tail = NULL;
+ 	struct sk_buff *nskb, *tmp;
+-	int err;
++	int len_diff, err;
  
- 	log_subsection "With VRF"
- 	setup "yes"
- 	ipv4_ping_vrf
-+	setup "yes"
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv4_ping_vrf
- }
+ 	skb_push(skb, -skb_network_offset(skb) + offset);
  
- ################################################################################
-@@ -2348,10 +2354,16 @@ ipv6_ping()
- 	log_subsection "No VRF"
- 	setup
- 	ipv6_ping_novrf
-+	setup
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv6_ping_novrf
+@@ -3936,9 +3936,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ 		skb_push(nskb, -skb_network_offset(nskb) + offset);
  
- 	log_subsection "With VRF"
- 	setup "yes"
- 	ipv6_ping_vrf
-+	setup "yes"
-+	set_sysctl net.ipv4.ping_group_range='0 2147483647' 2>/dev/null
-+	ipv6_ping_vrf
- }
+ 		skb_release_head_state(nskb);
++		len_diff = skb_network_header_len(nskb) - skb_network_header_len(skb);
+ 		__copy_skb_header(nskb, skb);
  
- ################################################################################
+ 		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
++		nskb->transport_header += len_diff;
+ 		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
+ 						 nskb->data - tnl_hlen,
+ 						 offset + tnl_hlen);
 -- 
 2.35.1
 
