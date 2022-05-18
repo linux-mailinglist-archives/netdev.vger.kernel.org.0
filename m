@@ -2,109 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 660F752B447
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 10:06:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7850F52B442
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 10:06:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232965AbiERH7z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 03:59:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50776 "EHLO
+        id S232630AbiERIDF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 04:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232861AbiERH6Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 03:58:24 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EB051207E6;
-        Wed, 18 May 2022 00:58:22 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 1B35021B9A;
-        Wed, 18 May 2022 07:58:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1652860701; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=QH8rZRpDaB1rKzYBSvbHTkuJfXIZgq5PPOEyov0S61g=;
-        b=T0gGp12c0pU5b8b1i3GTuIGm3SeP3EhRpXPECQNn/enftlsKdapz4VZkfCcS2uIPqM17q+
-        /PBA3AVHUNLBKEckN04LlFAw1RfXD18Ad2wMfhhColdg9InPjS0Cl4zZnO5bfZL0Ln9Soj
-        5NqvLRJqL5BZI+4DmlPHTXzoYIVJS4o=
-Received: from suse.cz (unknown [10.100.201.202])
+        with ESMTP id S232629AbiERIDE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 04:03:04 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C63CA23BCA
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 01:02:56 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id A8E4D2075F;
+        Wed, 18 May 2022 10:02:54 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id wKMoR8Q8CBf9; Wed, 18 May 2022 10:02:54 +0200 (CEST)
+Received: from mailout2.secunet.com (mailout2.secunet.com [62.96.220.49])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 0683D2C142;
-        Wed, 18 May 2022 07:58:19 +0000 (UTC)
-Date:   Wed, 18 May 2022 09:58:18 +0200
-From:   Petr Mladek <pmladek@suse.com>
-To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-Cc:     David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>,
-        Julius Werner <jwerner@chromium.org>,
-        Scott Branden <scott.branden@broadcom.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        akpm@linux-foundation.org, bhe@redhat.com,
-        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
-        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
-        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
-        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
-        halves@canonical.com, fabiomirmar@gmail.com,
-        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
-        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
-        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
-        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
-        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
-        Andrea Parri <parri.andrea@gmail.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        "David S. Miller" <davem@davemloft.net>,
-        Dexuan Cui <decui@microsoft.com>,
-        Doug Berger <opendmb@gmail.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Hari Bathini <hbathini@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Markus Mayer <mmayer@broadcom.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mihai Carabas <mihai.carabas@oracle.com>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
-        Shile Zhang <shile.zhang@linux.alibaba.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sven Schnelle <svens@linux.ibm.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Wang ShaoBo <bobo.shaobowang@huawei.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        zhenwei pi <pizhenwei@bytedance.com>
-Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
-Message-ID: <YoSnGmBJ3kYs5WMf@alley>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-20-gpiccoli@igalia.com>
- <YoJZVZl/MH0KiE/J@alley>
- <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
- <YoOpyW1+q+Z5as78@alley>
+        by a.mx.secunet.com (Postfix) with ESMTPS id 18F8D206BF;
+        Wed, 18 May 2022 10:02:54 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout2.secunet.com (Postfix) with ESMTP id 1362880004A;
+        Wed, 18 May 2022 10:02:54 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Wed, 18 May 2022 10:02:53 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 18 May
+ 2022 10:02:53 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 4F71A3182D02; Wed, 18 May 2022 10:02:53 +0200 (CEST)
+Date:   Wed, 18 May 2022 10:02:53 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Leon Romanovsky <leon@kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        <netdev@vger.kernel.org>, Raed Salem <raeds@nvidia.com>,
+        ipsec-devel <devel@linux-ipsec.org>
+Subject: Re: [PATCH ipsec-next 5/6] xfrm: add RX datapath protection for
+ IPsec full offload mode
+Message-ID: <20220518080253.GQ680067@gauss3.secunet.de>
+References: <cover.1652176932.git.leonro@nvidia.com>
+ <ff459f4de434def4a1d7ab989a17577f19a67f45.1652176932.git.leonro@nvidia.com>
+ <20220513150254.GM680067@gauss3.secunet.de>
+ <YoHhH++2sBvyy+8d@unreal>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-In-Reply-To: <YoOpyW1+q+Z5as78@alley>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+In-Reply-To: <YoHhH++2sBvyy+8d@unreal>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -113,46 +69,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue 2022-05-17 15:57:34, Petr Mladek wrote:
-> On Mon 2022-05-16 12:06:17, Guilherme G. Piccoli wrote:
-> > >> --- a/drivers/soc/bcm/brcmstb/pm/pm-arm.c
-> > >> +++ b/drivers/soc/bcm/brcmstb/pm/pm-arm.c
-> > >> @@ -814,7 +814,7 @@ static int brcmstb_pm_probe(struct platform_device *pdev)
-> > >>  		goto out;
-> > >>  	}
-> > >>  
-> > >> -	atomic_notifier_chain_register(&panic_notifier_list,
-> > >> +	atomic_notifier_chain_register(&panic_hypervisor_list,
-> > >>  				       &brcmstb_pm_panic_nb);
+On Mon, May 16, 2022 at 08:29:03AM +0300, Leon Romanovsky wrote:
+> On Fri, May 13, 2022 at 05:02:54PM +0200, Steffen Klassert wrote:
+> > On Tue, May 10, 2022 at 01:36:56PM +0300, Leon Romanovsky wrote:
+> > > From: Leon Romanovsky <leonro@nvidia.com>
 > > > 
-> > > I am not sure about this one. It instruct some HW to preserve DRAM.
-> > > IMHO, it better fits into pre_reboot category but I do not have
-> > > strong opinion.
+> > > Traffic received by device with enabled IPsec full offload should be
+> > > forwarded to the stack only after decryption, packet headers and
+> > > trailers removed.
+> > > 
+> > > Such packets are expected to be seen as normal (non-XFRM) ones, while
+> > > not-supported packets should be dropped by the HW.
+> > > 
+> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > ---
+> > >  include/net/xfrm.h | 55 +++++++++++++++++++++++++++-------------------
+> > >  1 file changed, 32 insertions(+), 23 deletions(-)
+> > > 
+> > > diff --git a/include/net/xfrm.h b/include/net/xfrm.h
+> > > index 21be19ece4f7..9f9250fe1c4d 100644
+> > > --- a/include/net/xfrm.h
+> > > +++ b/include/net/xfrm.h
+> > > @@ -1094,6 +1094,29 @@ xfrm_state_addr_cmp(const struct xfrm_tmpl *tmpl, const struct xfrm_state *x, un
+> > >  	return !0;
+> > >  }
+> > >  
+> > > +#ifdef CONFIG_XFRM
+> > > +static inline struct xfrm_state *xfrm_input_state(struct sk_buff *skb)
+> > > +{
+> > > +	struct sec_path *sp = skb_sec_path(skb);
+> > > +
+> > > +	return sp->xvec[sp->len - 1];
+> > > +}
+> > > +#endif
+> > > +
+> > > +static inline struct xfrm_offload *xfrm_offload(struct sk_buff *skb)
+> > > +{
+> > > +#ifdef CONFIG_XFRM
+> > > +	struct sec_path *sp = skb_sec_path(skb);
+> > > +
+> > > +	if (!sp || !sp->olen || sp->len != sp->olen)
+> > > +		return NULL;
+> > > +
+> > > +	return &sp->ovec[sp->olen - 1];
+> > > +#else
+> > > +	return NULL;
+> > > +#endif
+> > > +}
+> > > +
+> > >  #ifdef CONFIG_XFRM
+> > >  int __xfrm_policy_check(struct sock *, int dir, struct sk_buff *skb,
+> > >  			unsigned short family);
+> > > @@ -1113,6 +1136,15 @@ static inline int __xfrm_policy_check2(struct sock *sk, int dir,
+> > >  {
+> > >  	struct net *net = dev_net(skb->dev);
+> > >  	int ndir = dir | (reverse ? XFRM_POLICY_MASK + 1 : 0);
+> > > +	struct xfrm_offload *xo = xfrm_offload(skb);
+> > > +	struct xfrm_state *x;
+> > > +
+> > > +	if (xo) {
+> > > +		x = xfrm_input_state(skb);
+> > > +		if (x->xso.type == XFRM_DEV_OFFLOAD_FULL)
+> > > +			return (xo->flags & CRYPTO_DONE) &&
+> > > +			       (xo->status & CRYPTO_SUCCESS);
+> > > +	}
 > > 
-> > Disagree here, I'm CCing Florian for information.
-> > 
-> > This notifier preserves RAM so it's *very interesting* if we have
-> > kmsg_dump() for example, but maybe might be also relevant in case kdump
-> > kernel is configured to store something in a persistent RAM (then,
-> > without this notifier, after kdump reboots the system data would be lost).
+> > We can not exit without doing the policy check here. The inner
+> > packet could still match a block policy in software. Maybe
+> > we can reset the secpath and do the policy check.
 > 
-> I see. It is actually similar problem as with
-> drivers/firmware/google/gsmi.c.
+> We checked that both policy and state were offloaded. In such case,
+> driver returned that everything ok and the packet is handled.
+> 
+> SW policy will be in lower priority, so we won't catch it.
 
-As discussed in the other other reply, it seems that both affected
-notifiers do not store kernel logs and should stay in the "hypervisor".
-
-> I does similar things like kmsg_dump() so it should be called in
-> the same location (after info notifier list and before kdump).
->
-> A solution might be to put it at these notifiers at the very
-> end of the "info" list or make extra "dump" notifier list.
-
-I just want to point out that the above idea has problems.
-Notifiers storing kernel log need to be treated as kmsg_dump().
-In particular, we would  need to know if there are any.
-We do not need to call "info" notifier list before kdump
-when there is no kernel log dumper registered.
-
-Best Regards,
-Petr
+Ok.
