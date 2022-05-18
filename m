@@ -2,51 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F8B352AFBA
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:15:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D446252AFC1
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:16:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233327AbiERBPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 21:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45512 "EHLO
+        id S233373AbiERBQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 21:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229736AbiERBPD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:15:03 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0A651E4C;
-        Tue, 17 May 2022 18:15:01 -0700 (PDT)
+        with ESMTP id S229943AbiERBQh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:16:37 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6865813E88
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 18:16:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8BDB4B81BE3;
-        Wed, 18 May 2022 01:15:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8505C385B8;
-        Wed, 18 May 2022 01:14:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0318A615E2
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 01:16:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EF65C385B8;
+        Wed, 18 May 2022 01:16:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652836499;
-        bh=1FAGE2F5QluYFDYsSaQPr26HXYE6L0gi0jyOY35c6uM=;
+        s=k20201202; t=1652836595;
+        bh=+t1S8IQHCcjw/ZcbWBixC910R7/eAfjNaG9qWhRpfqk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fceAip9tgfCYolvMzQ45mOd5P7VrLMRoiDAtJu51yZGz2G7GsjS46D3hHDyJbJmjb
-         TF6eGE9MbKzs3AGaUJg1ZGwUvkWL5IH2zmaXmiUvAj3F1MlUe4TCpjdCrFa+lpwu+6
-         hV4ntKOWewTW/LaM4V1pgPWEqp49UwoPDeEk28VQTAoktoHx6Jmi6onYaSD1zsMBjI
-         l6+Gy3nsL8eteN5Oczi2zM9XYLkj/S8U2l/FZytk393Qrjdx95pVyco71FiKQiNr7y
-         sNZgsqQtPZLD/7yE2d0z9An0/plmN/+ElsCwwy1i3BmcZ82xqnN8X778b7wVbN209X
-         ceqcTNH1DWP+A==
-Date:   Tue, 17 May 2022 18:14:57 -0700
+        b=DFaPA0Ugd07R0zIN8Y6pRI+AOM5Andhq/xQB2PfnPvhA3AbZEs7pVZjH6prSua/dn
+         M3i03bt0hykvvTM6jwrXZu1hDL7WutVyncxTgPjkMDeYBsBmjqTpxYWjYXrxIKu5Y5
+         uNLmdMkqpSaeMXtTjLdnLe8AhbDQTcwgMGDbLI0suPAaYbsPrP8kNUDnOFS20b6s/9
+         AbngLjhwNQI784/N6MVzYsy+asRwmgvd1k4Y/D6eD0WXUmgemNsgbq3UQagCRkfU54
+         b4TZd/aoCGeSUkGa/2bLd1jNRf8M5RMdGM9s9jphQyepedmh1f7g8UYtOQvMlNn31A
+         7NeD4BOYMvUvg==
+Date:   Tue, 17 May 2022 18:16:33 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     menglong8.dong@gmail.com
-Cc:     edumazet@google.com, rostedt@goodmis.org, mingo@redhat.com,
-        davem@davemloft.net, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
-        pabeni@redhat.com, imagedong@tencent.com, kafai@fb.com,
-        talalahmad@google.com, keescook@chromium.org,
-        dongli.zhang@oracle.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, Jiang Biao <benbjiang@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>
-Subject: Re: [PATCH net-next v2 1/9] net: skb: introduce
- __DEFINE_SKB_DROP_REASON() to simply the code
-Message-ID: <20220517181457.04c37147@kernel.org>
-In-Reply-To: <20220517081008.294325-2-imagedong@tencent.com>
-References: <20220517081008.294325-1-imagedong@tencent.com>
-        <20220517081008.294325-2-imagedong@tencent.com>
+To:     Josua Mayer <josua@solid-run.com>
+Cc:     netdev@vger.kernel.org, alvaro.karsz@solid-run.com
+Subject: Re: [PATCH v5 0/3] adin: add support for clock output
+Message-ID: <20220517181633.7498dcc7@kernel.org>
+In-Reply-To: <20220517085143.3749-1-josua@solid-run.com>
+References: <20220517085143.3749-1-josua@solid-run.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -60,37 +52,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 May 2022 16:10:00 +0800 menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
+On Tue, 17 May 2022 11:51:36 +0300 Josua Mayer wrote:
+> This patch series adds support for configuring the two clock outputs of adin
+> 1200 and 1300 PHYs. Certain network controllers require an external reference
+> clock which can be provided by the PHY.
 > 
-> It is annoying to add new skb drop reasons to 'enum skb_drop_reason'
-> and TRACE_SKB_DROP_REASON in trace/event/skb.h, and it's easy to forget
-> to add the new reasons we added to TRACE_SKB_DROP_REASON.
+> One of the replies to v1 was asking why the common clock framework isn't used.
+> Currently no PHY driver has implemented providing a clock to the network
+> controller. Instead they rely on vendor extensions to make the appropriate
+> configuration. For example ar8035 uses qca,clk-out-frequency - this patchset
+> aimed to replicate the same functionality.
 > 
-> TRACE_SKB_DROP_REASON is used to convert drop reason of type number
-> to string. For now, the string we passed to user space is exactly the
-> same as the name in 'enum skb_drop_reason' with a 'SKB_DROP_REASON_'
-> prefix. So why not make them togather by define a macro?
+> Finally the 125MHz free-running clock is enabled in the device-tree for
+> SolidRun i.MX6 SoMs, to support revisions 1.9 and later, where the original phy
+> has been replaced with an adin 1300.
+> To avoid introducing new warning messages during boot for SoMs before rev 1.9,
+> the status field of the new phy node is disabled by default, and will be
+> enabled by U-Boot on demand.
 > 
-> Therefore, introduce __DEFINE_SKB_DROP_REASON() and use it for 'enum
-> skb_drop_reason' definition and string converting.
-> 
-> Now, what should we with the document for the reasons? How about follow
-> __BPF_FUNC_MAPPER() and make these document togather?
+> Changes since v4:
+> - removed recovered clock options
 
-Hi, I know BPF does this but I really find the definition-by-macro 
-counter productive :(
+Acked-by: Jakub Kicinski <kuba@kernel.org>
 
-kdoc will no longer work right because the parser will not see 
-the real values. cscope and other code indexers will struggle 
-to find definitions.
-
-Did you investigate using auto-generation? Kernel already generates 
-a handful of headers. Maybe with a little script we could convert 
-the enum into the string thing at build time?
-
-Also let's use this opportunity to move the enum to a standalone
-header, it's getting huge.
-
-Probably worth keeping this rework separate from the TCP patches.
-Up to you which one you'd like to get done first.
+Thanks!
