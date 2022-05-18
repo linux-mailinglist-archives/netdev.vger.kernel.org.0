@@ -2,106 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A5E0652C5EB
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 00:05:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73C9D52C5F6
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 00:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229798AbiERWE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 18:04:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44028 "EHLO
+        id S229543AbiERWGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 18:06:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229992AbiERWEa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 18:04:30 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA2160DB9;
-        Wed, 18 May 2022 15:01:21 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id en5so4756776edb.1;
-        Wed, 18 May 2022 15:01:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TmqwtlizUr2sOMbeBCwgOr1QbN75jzLqPx0CYdczOAI=;
-        b=DIx6xAC8R9pmwYcP9r/UqGNcsCgx9bFGbfOXPt+A/XuOrB0c1o723rf+E//tB5fyew
-         5lYMh75OaHjK9bV5sm1TeZd7gt24kuWAmcaBGiw/Jy4Isrv6fInL6Myu1Q9KxLVwuMWV
-         Cm2IlxxWpxtVmiMbvc5+ldHc/7X2TBNYe3gmKzgUV6qB8qOe+M7i2YbJlHCuFGQOhcEp
-         uetsZmogXZaZs0WdkJNyGfvCZALPjHLLBD7xLiIt3rx14nY74K7IipqDeqCd6S/A84Gq
-         vgq20ZJ5nAfzUXP8esdhIs/Ck6gLmJbCo6+8Zqq0mJDSFV4lq05NGN6uqKZ1wMyYk0lH
-         B0CA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TmqwtlizUr2sOMbeBCwgOr1QbN75jzLqPx0CYdczOAI=;
-        b=zq1tpttaxX/pw3F1RkRcyFH+bvdB+bpy/oUGkKtjRdJ6b1OMP5MQGe//tHOkHNAJpC
-         Mt7C3m3hMOxdl6kDuuP0alOb5GCSSkqDBcDs1b73zSTlFrRqAj+XkgaSSLdae4rLB1Sj
-         DbSpwWWIm1dqqkpyvgrWp4t8OX8jObU3X3V66N6ADFVawMFiK1U4wKm6Y/CsDIARcn3m
-         7Gxo5kghDinGA0baBoyn5P2syxY9TNYkYd1L9w304qCE2ID3bXbXQW1uzCYvlYx4kb4Y
-         54gSb1DyCkjGKGpp5Nzozs7uZNkocEEptFiTE7vLo3k3Tz5qkF3lmiOgw8X+Y82vmRl9
-         S3XQ==
-X-Gm-Message-State: AOAM531bosLVMPyWxw+n1jMUno5yLreBSIvVIqCWhUgWZN+0whr7Arzt
-        X/7LfrjEAvno+l6H6zbhFhBXSaF8apg=
-X-Google-Smtp-Source: ABdhPJyYWDW/lvChgZV6/YWUcLmvFEhmTGcnIQqQbpefdlCnZ375o+H0GxUCj+SvCuh01nJA+pmKXA==
-X-Received: by 2002:aa7:dad0:0:b0:42a:b250:f078 with SMTP id x16-20020aa7dad0000000b0042ab250f078mr1994958eds.21.1652911280086;
-        Wed, 18 May 2022 15:01:20 -0700 (PDT)
-Received: from localhost.localdomain (dynamic-095-118-099-170.95.118.pool.telefonica.de. [95.118.99.170])
-        by smtp.googlemail.com with ESMTPSA id ot2-20020a170906ccc200b006f3ef214dd0sm1478885ejb.54.2022.05.18.15.01.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 15:01:19 -0700 (PDT)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+        with ESMTP id S229820AbiERWG2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 18:06:28 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C5091D865C
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 15:04:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652911495; x=1684447495;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=AaYAfdtSFmamX2nqp1xAEEDOlvserQ8afZnPYHX55DI=;
+  b=d95pthpO1kI873tQbVFxKbpSnK6l56BT+T6qSsjoSYrKmykajWkLvqG/
+   DZ16EATOujrZWubg6bBIzZiXX6YDMr8uiKC2NvDwVTI8S128ci/0n3FoG
+   tb6yqyUivS4nI3UMzlvvm/VPpCozhAUJwEVux5WLB4FJ2T0iLOr1NY9pL
+   FdposRs6RTxs2IiJ1v0RMX7brKqoW4T8AnfqFhyzkFJmDlNwQiuQ6W7qa
+   aNvL4XZvSxrVpSAoVg2xBqz5/BA30gOUQJFM6EeRboYIwfTFebLX4Krld
+   ea6hoFRjpqS3CRDmdy6RVG4FgNpP9m/fIi7ACIRPg5Ig4Lqu1pOteDGhD
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="270734204"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="270734204"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 15:04:51 -0700
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="598075431"
+Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.209.36.18])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 15:04:51 -0700
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
 To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Hauke Mehrtens <hauke@hauke-m.de>
-Subject: [PATCH net-next v2 2/2] net: dsa: lantiq_gswip: Fix typo in gswip_port_fdb_dump() error print
-Date:   Thu, 19 May 2022 00:00:51 +0200
-Message-Id: <20220518220051.1520023-3-martin.blumenstingl@googlemail.com>
+Cc:     Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        edumazet@google.com, matthieu.baerts@tessares.net,
+        mptcp@lists.linux.dev
+Subject: [PATCH net-next 0/4] mptcp: Miscellaneous fixes and a new test case
+Date:   Wed, 18 May 2022 15:04:42 -0700
+Message-Id: <20220518220446.209750-1-mathew.j.martineau@linux.intel.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220518220051.1520023-1-martin.blumenstingl@googlemail.com>
-References: <20220518220051.1520023-1-martin.blumenstingl@googlemail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-gswip_port_fdb_dump() reads the MAC bridge entries. The error message
-should say "failed to read mac bridge entry". While here, also add the
-index to the error print so humans can get to the cause of the problem
-easier.
+Patches 1 and 3 remove helpers that were iterating over the subflow
+connection list without proper locking. Iteration was not needed in
+either case.
 
-Fixes: 58c59ef9e930c4 ("net: dsa: lantiq: Add Forwarding Database access")
-Acked-by: Hauke Mehrtens <hauke@hauke-m.de>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- drivers/net/dsa/lantiq_gswip.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Patch 2 fixes handling of MP_FAIL timeout, checking for orphaned
+subflows instead of using the MPTCP socket data lock and connection
+state.
 
-diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
-index 0c313db23451..8af4def38a98 100644
---- a/drivers/net/dsa/lantiq_gswip.c
-+++ b/drivers/net/dsa/lantiq_gswip.c
-@@ -1426,8 +1426,9 @@ static int gswip_port_fdb_dump(struct dsa_switch *ds, int port,
- 
- 		err = gswip_pce_table_entry_read(priv, &mac_bridge);
- 		if (err) {
--			dev_err(priv->dev, "failed to write mac bridge: %d\n",
--				err);
-+			dev_err(priv->dev,
-+				"failed to read mac bridge entry %d: %d\n",
-+				i, err);
- 			return err;
- 		}
- 
+Patch 4 adds a test for MP_FAIL timeout using tc pedit to induce checksum
+failures.
+
+Geliang Tang (1):
+  selftests: mptcp: add MP_FAIL reset testcase
+
+Mat Martineau (2):
+  mptcp: Check for orphaned subflow before handling MP_FAIL timer
+  mptcp: Do not traverse the subflow connection list without lock
+
+Paolo Abeni (1):
+  mptcp: stop using the mptcp_has_another_subflow() helper
+
+ net/mptcp/pm.c                                  |  9 +++------
+ net/mptcp/protocol.c                            | 16 +---------------
+ net/mptcp/protocol.h                            | 14 --------------
+ net/mptcp/subflow.c                             | 15 +++++----------
+ tools/testing/selftests/net/mptcp/mptcp_join.sh | 10 ++++++++++
+ 5 files changed, 19 insertions(+), 45 deletions(-)
+
+
+base-commit: a3641ca416a3da7cbeae5bcf1fc26ba9797a1438
 -- 
 2.36.1
 
