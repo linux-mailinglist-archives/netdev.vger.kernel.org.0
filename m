@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8527752B256
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 08:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A20C552B260
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 08:37:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231492AbiERGfV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 02:35:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45638 "EHLO
+        id S231487AbiERGfT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 02:35:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231316AbiERGfH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 02:35:07 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3CFDE7322
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 23:34:49 -0700 (PDT)
+        with ESMTP id S231358AbiERGfI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 02:35:08 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91FF3712EC
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 23:34:50 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A4EA8617B8
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 06:34:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F142BC385AA;
-        Wed, 18 May 2022 06:34:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F24A6176F
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 06:34:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF635C34100;
+        Wed, 18 May 2022 06:34:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652855688;
-        bh=Yc1tOyaUiHw7YF1TQFQzeMlPGmYoUIG0SWbQza9BmBA=;
+        s=k20201202; t=1652855689;
+        bh=L4xCrQIc+vCsH7u+cuFcrThNJHghWaYzOKy+fycCSW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X7TWsS9UWDMUvW6/sJ9troJzVqUh+UXZieFzjCKCH8plWrg0uMpyhI2OfiPuvv0uO
-         K5bV4vi+0F0+LkktPmkGlFvX2bJAWqSPfLxJWQFIuHDomxfnrcJLeYDCLtOin3FD3T
-         gK1y7UkkfVE+96itcCZWCS+uDnXMQtLkWOFk2PpwyqsJxSYVNYarpH20QYmDJslTuI
-         F3Y8dBR4fD8rWm/MQRUhxDpnSgT3oA68jBs7zYRpnoEtus+uoH9zOWr/jCMAnX05uz
-         IbtnORnQPtuEqDahYtp2c5S0rw42drfZkp4fAy7mBQHhxBmm7dGd+Y4sPK2dL0NCXx
-         c3VhlChgtjE+g==
+        b=SPuhbBf5wiKwwbz+Z0RvLPiIEZvxKXGu2MMsz9Ju8/h3ptHN8whJzVymilwhMyOQg
+         lRmp0NMm483oUBcv9DCY5mTufDlaL95Zr6/RK+dgp2+1lHs0NJrdyErt63gc+5horg
+         UvgjmPnNiBwT4kCrx4GuerKPcqvQjXkcfNBCgMel8T9bmvKFnik/0B/pzQwTzDOarL
+         WU5DBBdXM3kLavXsrdan0skj56gd+UuQEeDM2+GtDmO6uoW1Rgl20BP/NQp8Q35Ltk
+         woWuVuCTgUD/dMGoeK/h9xV774Y0CV/xYPr4cbNmukIaiMxlecWo4ueX0tDEKXdZtB
+         bziseeFJWzP/g==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>
 Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
         Oz Shlomo <ozsh@nvidia.com>, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net 09/11] net/mlx5e: CT: Fix support for GRE tuples
-Date:   Tue, 17 May 2022 23:34:25 -0700
-Message-Id: <20220518063427.123758-10-saeed@kernel.org>
+Subject: [net 10/11] net/mlx5e: CT: Fix setting flow_source for smfs ct tuples
+Date:   Tue, 17 May 2022 23:34:26 -0700
+Message-Id: <20220518063427.123758-11-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220518063427.123758-1-saeed@kernel.org>
 References: <20220518063427.123758-1-saeed@kernel.org>
@@ -57,177 +57,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Paul Blakey <paulb@nvidia.com>
 
-cited commit removed support for GRE tuples when software steering was enabled.
+Cited patch sets flow_source to ANY overriding the provided spec
+flow_source, avoiding the optimization done by commit c9c079b4deaa
+("net/mlx5: CT: Set flow source hint from provided tuple device").
 
-To bring back support for GRE tuples, add GRE ipv4/ipv6 matchers.
+To fix the above, set the dr_rule flow_source from provided flow spec.
 
 Fixes: 3ee61ebb0df1 ("net/mlx5: CT: Add software steering ct flow steering provider")
 Signed-off-by: Paul Blakey <paulb@nvidia.com>
 Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../mellanox/mlx5/core/en/tc/ct_fs_smfs.c     | 56 +++++++++++--------
- 1 file changed, 32 insertions(+), 24 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c
-index 59988e24b704..271261bf1dc2 100644
+index 271261bf1dc2..bec9ed0103a9 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c
-@@ -23,7 +23,7 @@ struct mlx5_ct_fs_smfs_matcher {
- };
- 
- struct mlx5_ct_fs_smfs_matchers {
--	struct mlx5_ct_fs_smfs_matcher smfs_matchers[4];
-+	struct mlx5_ct_fs_smfs_matcher smfs_matchers[6];
- 	struct list_head used;
- };
- 
-@@ -44,7 +44,8 @@ struct mlx5_ct_fs_smfs_rule {
- };
- 
- static inline void
--mlx5_ct_fs_smfs_fill_mask(struct mlx5_ct_fs *fs, struct mlx5_flow_spec *spec, bool ipv4, bool tcp)
-+mlx5_ct_fs_smfs_fill_mask(struct mlx5_ct_fs *fs, struct mlx5_flow_spec *spec, bool ipv4, bool tcp,
-+			  bool gre)
- {
- 	void *headers_c = MLX5_ADDR_OF(fte_match_param, spec->match_criteria, outer_headers);
- 
-@@ -77,7 +78,7 @@ mlx5_ct_fs_smfs_fill_mask(struct mlx5_ct_fs *fs, struct mlx5_flow_spec *spec, bo
- 		MLX5_SET_TO_ONES(fte_match_set_lyr_2_4, headers_c, tcp_dport);
- 		MLX5_SET(fte_match_set_lyr_2_4, headers_c, tcp_flags,
- 			 ntohs(MLX5_CT_TCP_FLAGS_MASK));
--	} else {
-+	} else if (!gre) {
- 		MLX5_SET_TO_ONES(fte_match_set_lyr_2_4, headers_c, udp_sport);
- 		MLX5_SET_TO_ONES(fte_match_set_lyr_2_4, headers_c, udp_dport);
- 	}
-@@ -87,7 +88,7 @@ mlx5_ct_fs_smfs_fill_mask(struct mlx5_ct_fs *fs, struct mlx5_flow_spec *spec, bo
- 
- static struct mlx5dr_matcher *
- mlx5_ct_fs_smfs_matcher_create(struct mlx5_ct_fs *fs, struct mlx5dr_table *tbl, bool ipv4,
--			       bool tcp, u32 priority)
-+			       bool tcp, bool gre, u32 priority)
- {
- 	struct mlx5dr_matcher *dr_matcher;
- 	struct mlx5_flow_spec *spec;
-@@ -96,7 +97,7 @@ mlx5_ct_fs_smfs_matcher_create(struct mlx5_ct_fs *fs, struct mlx5dr_table *tbl,
- 	if (!spec)
- 		return ERR_PTR(-ENOMEM);
- 
--	mlx5_ct_fs_smfs_fill_mask(fs, spec, ipv4, tcp);
-+	mlx5_ct_fs_smfs_fill_mask(fs, spec, ipv4, tcp, gre);
- 	spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS_2 | MLX5_MATCH_OUTER_HEADERS;
- 
- 	dr_matcher = mlx5_smfs_matcher_create(tbl, priority, spec);
-@@ -108,7 +109,7 @@ mlx5_ct_fs_smfs_matcher_create(struct mlx5_ct_fs *fs, struct mlx5dr_table *tbl,
- }
- 
- static struct mlx5_ct_fs_smfs_matcher *
--mlx5_ct_fs_smfs_matcher_get(struct mlx5_ct_fs *fs, bool nat, bool ipv4, bool tcp)
-+mlx5_ct_fs_smfs_matcher_get(struct mlx5_ct_fs *fs, bool nat, bool ipv4, bool tcp, bool gre)
- {
- 	struct mlx5_ct_fs_smfs *fs_smfs = mlx5_ct_fs_priv(fs);
- 	struct mlx5_ct_fs_smfs_matcher *m, *smfs_matcher;
-@@ -119,7 +120,7 @@ mlx5_ct_fs_smfs_matcher_get(struct mlx5_ct_fs *fs, bool nat, bool ipv4, bool tcp
- 	int prio;
- 
- 	matchers = nat ? &fs_smfs->matchers_nat : &fs_smfs->matchers;
--	smfs_matcher = &matchers->smfs_matchers[ipv4 * 2 + tcp];
-+	smfs_matcher = &matchers->smfs_matchers[ipv4 * 3 + tcp * 2 + gre];
- 
- 	if (refcount_inc_not_zero(&smfs_matcher->ref))
- 		return smfs_matcher;
-@@ -145,11 +146,11 @@ mlx5_ct_fs_smfs_matcher_get(struct mlx5_ct_fs *fs, bool nat, bool ipv4, bool tcp
+@@ -330,7 +330,7 @@ mlx5_ct_fs_smfs_ct_rule_add(struct mlx5_ct_fs *fs, struct mlx5_flow_spec *spec,
  	}
  
- 	tbl = nat ? fs_smfs->ct_nat_tbl : fs_smfs->ct_tbl;
--	dr_matcher = mlx5_ct_fs_smfs_matcher_create(fs, tbl, ipv4, tcp, prio);
-+	dr_matcher = mlx5_ct_fs_smfs_matcher_create(fs, tbl, ipv4, tcp, gre, prio);
- 	if (IS_ERR(dr_matcher)) {
- 		netdev_warn(fs->netdev,
--			    "ct_fs_smfs: failed to create matcher (nat %d, ipv4 %d, tcp %d), err: %ld\n",
--			    nat, ipv4, tcp, PTR_ERR(dr_matcher));
-+			    "ct_fs_smfs: failed to create matcher (nat %d, ipv4 %d, tcp %d, gre %d), err: %ld\n",
-+			    nat, ipv4, tcp, gre, PTR_ERR(dr_matcher));
- 
- 		smfs_matcher = ERR_CAST(dr_matcher);
- 		goto out_unlock;
-@@ -222,16 +223,17 @@ mlx5_ct_fs_smfs_destroy(struct mlx5_ct_fs *fs)
- static inline bool
- mlx5_tc_ct_valid_used_dissector_keys(const u32 used_keys)
- {
--#define DISSECTOR_BIT(name) BIT(FLOW_DISSECTOR_KEY_ ## name)
--	const u32 basic_keys = DISSECTOR_BIT(BASIC) | DISSECTOR_BIT(CONTROL) |
--			       DISSECTOR_BIT(PORTS) | DISSECTOR_BIT(META);
--	const u32 ipv4_tcp = basic_keys | DISSECTOR_BIT(IPV4_ADDRS) | DISSECTOR_BIT(TCP);
--	const u32 ipv4_udp = basic_keys | DISSECTOR_BIT(IPV4_ADDRS);
--	const u32 ipv6_tcp = basic_keys | DISSECTOR_BIT(IPV6_ADDRS) | DISSECTOR_BIT(TCP);
--	const u32 ipv6_udp = basic_keys | DISSECTOR_BIT(IPV6_ADDRS);
-+#define DISS_BIT(name) BIT(FLOW_DISSECTOR_KEY_ ## name)
-+	const u32 basic_keys = DISS_BIT(BASIC) | DISS_BIT(CONTROL) | DISS_BIT(META);
-+	const u32 ipv4_tcp = basic_keys | DISS_BIT(IPV4_ADDRS) | DISS_BIT(PORTS) | DISS_BIT(TCP);
-+	const u32 ipv6_tcp = basic_keys | DISS_BIT(IPV6_ADDRS) | DISS_BIT(PORTS) | DISS_BIT(TCP);
-+	const u32 ipv4_udp = basic_keys | DISS_BIT(IPV4_ADDRS) | DISS_BIT(PORTS);
-+	const u32 ipv6_udp = basic_keys | DISS_BIT(IPV6_ADDRS) | DISS_BIT(PORTS);
-+	const u32 ipv4_gre = basic_keys | DISS_BIT(IPV4_ADDRS);
-+	const u32 ipv6_gre = basic_keys | DISS_BIT(IPV6_ADDRS);
- 
- 	return (used_keys == ipv4_tcp || used_keys == ipv4_udp || used_keys == ipv6_tcp ||
--		used_keys == ipv6_udp);
-+		used_keys == ipv6_udp || used_keys == ipv4_gre || used_keys == ipv6_gre);
- }
- 
- static bool
-@@ -254,20 +256,24 @@ mlx5_ct_fs_smfs_ct_validate_flow_rule(struct mlx5_ct_fs *fs, struct flow_rule *f
- 	flow_rule_match_control(flow_rule, &control);
- 	flow_rule_match_ipv4_addrs(flow_rule, &ipv4_addrs);
- 	flow_rule_match_ipv6_addrs(flow_rule, &ipv6_addrs);
--	flow_rule_match_ports(flow_rule, &ports);
--	flow_rule_match_tcp(flow_rule, &tcp);
-+	if (basic.key->ip_proto != IPPROTO_GRE)
-+		flow_rule_match_ports(flow_rule, &ports);
-+	if (basic.key->ip_proto == IPPROTO_TCP)
-+		flow_rule_match_tcp(flow_rule, &tcp);
- 
- 	if (basic.mask->n_proto != htons(0xFFFF) ||
- 	    (basic.key->n_proto != htons(ETH_P_IP) && basic.key->n_proto != htons(ETH_P_IPV6)) ||
- 	    basic.mask->ip_proto != 0xFF ||
--	    (basic.key->ip_proto != IPPROTO_UDP && basic.key->ip_proto != IPPROTO_TCP)) {
-+	    (basic.key->ip_proto != IPPROTO_UDP && basic.key->ip_proto != IPPROTO_TCP &&
-+	     basic.key->ip_proto != IPPROTO_GRE)) {
- 		ct_dbg("rule uses unexpected basic match (n_proto 0x%04x/0x%04x, ip_proto 0x%02x/0x%02x)",
- 		       ntohs(basic.key->n_proto), ntohs(basic.mask->n_proto),
- 		       basic.key->ip_proto, basic.mask->ip_proto);
- 		return false;
- 	}
- 
--	if (ports.mask->src != htons(0xFFFF) || ports.mask->dst != htons(0xFFFF)) {
-+	if (basic.key->ip_proto != IPPROTO_GRE &&
-+	    (ports.mask->src != htons(0xFFFF) || ports.mask->dst != htons(0xFFFF))) {
- 		ct_dbg("rule uses ports match (src 0x%04x, dst 0x%04x)",
- 		       ports.mask->src, ports.mask->dst);
- 		return false;
-@@ -291,7 +297,7 @@ mlx5_ct_fs_smfs_ct_rule_add(struct mlx5_ct_fs *fs, struct mlx5_flow_spec *spec,
- 	struct mlx5dr_action *actions[5];
- 	struct mlx5dr_rule *rule;
- 	int num_actions = 0, err;
--	bool nat, tcp, ipv4;
-+	bool nat, tcp, ipv4, gre;
- 
- 	if (!mlx5_ct_fs_smfs_ct_validate_flow_rule(fs, flow_rule))
- 		return ERR_PTR(-EOPNOTSUPP);
-@@ -314,8 +320,10 @@ mlx5_ct_fs_smfs_ct_rule_add(struct mlx5_ct_fs *fs, struct mlx5_flow_spec *spec,
- 	ipv4 = mlx5e_tc_get_ip_version(spec, true) == 4;
- 	tcp = MLX5_GET(fte_match_param, spec->match_value,
- 		       outer_headers.ip_protocol) == IPPROTO_TCP;
-+	gre = MLX5_GET(fte_match_param, spec->match_value,
-+		       outer_headers.ip_protocol) == IPPROTO_GRE;
- 
--	smfs_matcher = mlx5_ct_fs_smfs_matcher_get(fs, nat, ipv4, tcp);
-+	smfs_matcher = mlx5_ct_fs_smfs_matcher_get(fs, nat, ipv4, tcp, gre);
- 	if (IS_ERR(smfs_matcher)) {
- 		err = PTR_ERR(smfs_matcher);
- 		goto err_matcher;
+ 	rule = mlx5_smfs_rule_create(smfs_matcher->dr_matcher, spec, num_actions, actions,
+-				     MLX5_FLOW_CONTEXT_FLOW_SOURCE_ANY_VPORT);
++				     spec->flow_context.flow_source);
+ 	if (!rule) {
+ 		err = -EINVAL;
+ 		goto err_create;
 -- 
 2.36.1
 
