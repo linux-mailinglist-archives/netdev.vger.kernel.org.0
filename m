@@ -2,87 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F79052B971
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:14:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F18852B9AD
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:14:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236120AbiERMFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 08:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
+        id S236191AbiERMGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:06:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236119AbiERMFO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:05:14 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810549D060;
-        Wed, 18 May 2022 05:05:07 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id i27so3353956ejd.9;
-        Wed, 18 May 2022 05:05:07 -0700 (PDT)
+        with ESMTP id S236351AbiERMGN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:06:13 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F023B8;
+        Wed, 18 May 2022 05:06:12 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id u30so3217473lfm.9;
+        Wed, 18 May 2022 05:06:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=HBvttKt/+puk2DR73PUb7EYpaQbMG8BEPu8CTXCnIwM=;
-        b=Fr6vweAA0egXTuuZRjpQKI6IEn98MQsoAcswBc5h6vhOadmz7K4WLAuf0M7I5Z+GuM
-         begrmOP04Gm65RcAZPJ4jDKgPHp1oBkDE1sEYHaqihVuaBEEf/Jg0GbjioYPMLrjmcQC
-         Zkf89kyxyTNvKH+uRjCYj54wTbJwaKD19Dswlcpw0q/tfW016CXXUOgtDSpj9AsQzkqn
-         ng1gYmdYow5ZGAAH9NeIDERMBXcLUjCLp7DzDH+pcRt9HRYRwoDoqpnYNI4pZHiO+722
-         Yz2e0DMBzYtfLBfI+dBlqzrAB7F+N+YisvPd3ypTHjXRRTmsQN9dqX6Sj1HMoYlSVsue
-         VVmw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9ylo1QhxU2T8oVyW34oyE8KHWeXlZLcaPL2RcWN9uY4=;
+        b=gLxVxLa3SXkJNfSCcFq7G3SkqsEgE2QiadxDXb8qI39bLKw5/2Mh+DI9y24q8bR1NL
+         GT4WEwOSMGMBU3UmUYgyzTgyl+F+JGtRp/ehvRTC9whZkZdQjAy8Ijq/s00S7pixSbkg
+         JQBNC/cV5vz+Aby0KSY/HCw4zY0RHIgyz+jaN7dIK5CpUsubvRXUdHmYJmLoBuJgQp1n
+         rAPashabkSBNM/GqXizfs7I9uNnVW4eK7wN/4wzsuepQUCNr5XqVz7Gm5Wu7gyjpFSwJ
+         bHEquaw5SwU1CorsVpXbPzdkQRXbUKcEt+/rjOLKCwQfzOjNfgzovZZfH8oEPU039C0C
+         ZWRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=HBvttKt/+puk2DR73PUb7EYpaQbMG8BEPu8CTXCnIwM=;
-        b=kHR3W3cDCkp5q/1VECU8qZafwpvnzxp5tqaTC93q02a806Fw1DamGj3IPB/faIfvDK
-         vleYZS0vQSZ1RmDT2aGLr6dHkTmzH8d5BTCipVo+WxfDQUrbPwkfikOHs/8hRgPT31lG
-         NXnPfkm5OGuKws6Wabgjd6xf4oiJt78sZ8DyYoWOQlcUsZJMLHzeRFeUCDHwX3qa4oHG
-         rcvoXNiWBSQCysPVOww+19QvvCuQUfbZzJP4qDmAlEgpUUsKZV5zyzFww2EHF415FgB2
-         bKmCEzLRcjnWFgjFPiaxA4LDMB5WC+Uc0rszPoUuK5il262jfi8pQnvLX6oqvoX14uIS
-         L9Ww==
-X-Gm-Message-State: AOAM533a20EVq1xLADClRlwokPyDi6tTMBg8LLXKSYMzsSlYd6VU5lGn
-        4R9DFbkRzybaae7YGB5dx4Y=
-X-Google-Smtp-Source: ABdhPJyr/sVG76W5wUvAmPcZnxHV7/Na7Nm1x9m0hiioEFYlFBk5pFQNLe9QjIUWIyDhUuMvrb+J8g==
-X-Received: by 2002:a17:907:9723:b0:6f4:77c7:8fef with SMTP id jg35-20020a170907972300b006f477c78fefmr23701102ejc.680.1652875505702;
-        Wed, 18 May 2022 05:05:05 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id be18-20020a0564021a3200b0042aac7c2fa3sm1193832edb.96.2022.05.18.05.05.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 05:05:05 -0700 (PDT)
-Date:   Wed, 18 May 2022 15:05:03 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9ylo1QhxU2T8oVyW34oyE8KHWeXlZLcaPL2RcWN9uY4=;
+        b=fAHPaxcQRSIP9KimnwVEuDsvG1OklrctiX9O17uRwwoZ/OeGBdXHzgdBKJWHytWJqz
+         6+fUEp4+hlfby4QDxSQfwP5IzHXU+80nqP3dcyGAYXANLDU/8v0BNGQRVLMf96tgPgr8
+         jHY4u9/c85kiU1QKt4B3nCPdrgT2RzACyMRD/e3NDIquN8qBkxdUkCsu3tqtxICRzTq8
+         D+wBsTS6YS7f2q6+fvNfaSyuLbZBT7WOdt1oaY4dYvqTKUsyPJc0Xqpe5aDgurOUlUbz
+         AT5nIFFOK0ig4E3rZuaCRGQcfaQ0HaF22rN+4zoiOyPwM+p7n3wELNIFSVLpkq50K/Bb
+         73Cg==
+X-Gm-Message-State: AOAM53211QOl1jICANgxCdT+uoZcjDiWSLskM+rKhQzr4+eWWG4JmHE0
+        wIoPOK2UC3EFMo67zSnUE9Ht+mfiTbZwvL6DFug=
+X-Google-Smtp-Source: ABdhPJwCKEotBOk/h/BVMLEmqrN/Jcle36SoBbOF6poIosWJae9eGy/CdO0OZkITLtq26D66UVk6X5hCFrURaA+DHGY=
+X-Received: by 2002:a05:6512:3b28:b0:473:b9ec:187e with SMTP id
+ f40-20020a0565123b2800b00473b9ec187emr20091694lfv.536.1652875570826; Wed, 18
+ May 2022 05:06:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
+ <20220512143314.235604-10-miquel.raynal@bootlin.com> <CAK-6q+ipHdD=NJB2N7SHQ0TUvNpc0GQXZ7dWM9nDxqyqNgxdSA@mail.gmail.com>
+ <CAK-6q+i_T+FaK0tX6tF38VjyEfSzDi-QC85MTU2=4soepAag8g@mail.gmail.com>
+ <20220517153045.73fda4ee@xps-13> <CAK-6q+h1fmJZobmUG5bUL3uXuQLv0kvHUv=7dW+fOCcgbrdPiA@mail.gmail.com>
+ <20220518121200.2f08a6b1@xps-13>
+In-Reply-To: <20220518121200.2f08a6b1@xps-13>
+From:   Alexander Aring <alex.aring@gmail.com>
+Date:   Wed, 18 May 2022 08:05:46 -0400
+Message-ID: <CAB_54W6XN4kytUMgMveVF7n7TPh+w75-ew25rVt-eUQiCgNuGw@mail.gmail.com>
+Subject: Re: [PATCH wpan-next v2 09/11] net: mac802154: Introduce a
+ synchronous API for MLME commands
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Alexander Aring <aahringo@redhat.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v4 05/12] dt-bindings: net: dsa: add bindings
- for Renesas RZ/N1 Advanced 5 port switch
-Message-ID: <20220518120503.3m2zfw7kmhsfg336@skbuf>
-References: <20220509131900.7840-1-clement.leger@bootlin.com>
- <20220509131900.7840-6-clement.leger@bootlin.com>
- <20220511152221.GA334055-robh@kernel.org>
- <20220511153337.deqxawpbbk3actxf@skbuf>
- <20220518015924.GC2049643-robh@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220518015924.GC2049643-robh@kernel.org>
+        Network Development <netdev@vger.kernel.org>,
+        David Girault <david.girault@qorvo.com>,
+        Romuald Despres <romuald.despres@qorvo.com>,
+        Frederic Blain <frederic.blain@qorvo.com>,
+        Nicolas Schodet <nico@ni.fr.eu.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -93,26 +80,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 17, 2022 at 08:59:24PM -0500, Rob Herring wrote:
-> On Wed, May 11, 2022 at 06:33:37PM +0300, Vladimir Oltean wrote:
-> > On Wed, May 11, 2022 at 10:22:21AM -0500, Rob Herring wrote:
-> > > > +patternProperties:
-> > > > +  "^ethernet-ports$":
-> > > 
-> > > Move to 'properties', not a pattern.
-> > > 
-> > > With that,
-> > > 
-> > > Reviewed-by: Rob Herring <robh@kernel.org>
-> > 
-> > Even if it should have been "^(ethernet-)?ports$"?
-> 
-> Why? Allowing 'ports' is for existing users. New ones don't need the 
-> variability and should use just 'ethernet-ports'.
-> 
-> Rob
+Hi,
 
-Yeah, ok, somehow the memo that new DSA drivers shouldn't support "ports"
-didn't reach me. They invariably will though, since the DSA framework is
-the main parser of the property, and that is shared by both old and new
-drivers.
+On Wed, May 18, 2022 at 6:12 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>
+>
+> aahringo@redhat.com wrote on Tue, 17 May 2022 21:14:03 -0400:
+>
+> > Hi,
+> >
+> > On Tue, May 17, 2022 at 9:30 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> > >
+> > >
+> > > aahringo@redhat.com wrote on Sun, 15 May 2022 19:03:53 -0400:
+> > >
+> > > > Hi,
+> > > >
+> > > > On Sun, May 15, 2022 at 6:28 PM Alexander Aring <aahringo@redhat.com> wrote:
+> > > > >
+> > > > > Hi,
+> > > > >
+> > > > > On Thu, May 12, 2022 at 10:34 AM Miquel Raynal
+> > > > > <miquel.raynal@bootlin.com> wrote:
+> > > > > >
+> > > > > > This is the slow path, we need to wait for each command to be processed
+> > > > > > before continuing so let's introduce an helper which does the
+> > > > > > transmission and blocks until it gets notified of its asynchronous
+> > > > > > completion. This helper is going to be used when introducing scan
+> > > > > > support.
+> > > > > >
+> > > > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > > > > ---
+> > > > > >  net/mac802154/ieee802154_i.h |  1 +
+> > > > > >  net/mac802154/tx.c           | 25 +++++++++++++++++++++++++
+> > > > > >  2 files changed, 26 insertions(+)
+> > > > > >
+> > > > > > diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
+> > > > > > index a057827fc48a..f8b374810a11 100644
+> > > > > > --- a/net/mac802154/ieee802154_i.h
+> > > > > > +++ b/net/mac802154/ieee802154_i.h
+> > > > > > @@ -125,6 +125,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
+> > > > > >  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
+> > > > > >  void ieee802154_xmit_sync_worker(struct work_struct *work);
+> > > > > >  int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
+> > > > > > +int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb);
+> > > > > >  netdev_tx_t
+> > > > > >  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
+> > > > > >  netdev_tx_t
+> > > > > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
+> > > > > > index 38f74b8b6740..ec8d872143ee 100644
+> > > > > > --- a/net/mac802154/tx.c
+> > > > > > +++ b/net/mac802154/tx.c
+> > > > > > @@ -128,6 +128,31 @@ int ieee802154_sync_and_hold_queue(struct ieee802154_local *local)
+> > > > > >         return ieee802154_sync_queue(local);
+> > > > > >  }
+> > > > > >
+> > > > > > +int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb)
+> > > > > > +{
+> > > > > > +       int ret;
+> > > > > > +
+> > > > > > +       /* Avoid possible calls to ->ndo_stop() when we asynchronously perform
+> > > > > > +        * MLME transmissions.
+> > > > > > +        */
+> > > > > > +       rtnl_lock();
+> > > > >
+> > > > > I think we should make an ASSERT_RTNL() here, the lock needs to be
+> > > > > earlier than that over the whole MLME op. MLME can trigger more than
+> > > >
+> > > > not over the whole MLME_op, that's terrible to hold the rtnl lock so
+> > > > long... so I think this is fine that some netdev call will interfere
+> > > > with this transmission.
+> > > > So forget about the ASSERT_RTNL() here, it's fine (I hope).
+> > > >
+> > > > > one message, the whole sync_hold/release queue should be earlier than
+> > > > > that... in my opinion is it not right to allow other messages so far
+> > > > > an MLME op is going on? I am not sure what the standard says to this,
+> > > > > but I think it should be stopped the whole time? All those sequence
+> > > >
+> > > > Whereas the stop of the netdev queue makes sense for the whole mlme-op
+> > > > (in my opinion).
+> > >
+> > > I might still implement an MLME pre/post helper and do the queue
+> > > hold/release calls there, while only taking the rtnl from the _tx.
+> > >
+> > > And I might create an mlme_tx_one() which does the pre/post calls as
+> > > well.
+> > >
+> > > Would something like this fit?
+> >
+> > I think so, I've heard for some transceiver types a scan operation can
+> > take hours... but I guess whoever triggers that scan in such an
+> > environment knows that it has some "side-effects"...
+>
+> Yeah, a scan requires the data queue to be stopped and all incoming
+> packets to be dropped (others than beacons, ofc), so users must be
+> aware of this limitation.
+
+I think there is a real problem about how the user can synchronize the
+start of a scan and be sure that at this point everything was
+transmitted, we might need to real "flush" the queue. Your naming
+"flush" is also wrong, It will flush the framebuffer(s) of the
+transceivers but not the netdev queue... and we probably should flush
+the netdev queue before starting mlme-op... this is something to add
+in the mlme_op_pre() function.
+
+- Alex
