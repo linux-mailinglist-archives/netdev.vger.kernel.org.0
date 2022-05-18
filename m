@@ -2,193 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B19A52C1CB
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 20:09:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4193552C23C
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 20:27:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233428AbiERSFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 14:05:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36650 "EHLO
+        id S231139AbiERSKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 14:10:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233167AbiERSFe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 14:05:34 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B57A2218D1;
-        Wed, 18 May 2022 11:05:32 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id ds11so2855650pjb.0;
-        Wed, 18 May 2022 11:05:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=u9+JPq0YWfXxjUAqZwa4MFI6EUqcPNwEYnHh7u9RESw=;
-        b=eiDox5bIriVi94aqiix+B00JOnWTV6JolirNXgznshoVG0SrhrAe3CA88vUxKVS1fe
-         WDKAvPd5qJnRY3KoAAm/9yZxu8Vh1vHXUWkNnwWNpisUjA2Wsm+XwgMnp9ejC9inCHmZ
-         /D6ozx0C7C5XyYSmY8NHrwLMq1GRelT04frhKQP0m5daa+GvyHkh9JIJuXSyMfvAPwKd
-         SzQvZxwtklsGLAPnh5yAm5uQP/sc7A7BRHhg24msdmo4h46rAy17ZAJRzjNeck5TiPoC
-         lZxNrMJ3AaOPB10gxDNLuMlX4L/Baj2Bb2sKBuHA2+m4D1Eln1dydVHi6eRYaGkaI3hw
-         P6AQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=u9+JPq0YWfXxjUAqZwa4MFI6EUqcPNwEYnHh7u9RESw=;
-        b=yiOS9pGXv/TX7wlQTxtIwkswB/++zpe8txaXR90QAUm8ExViz0PO7cRTwb3FAdwVsv
-         pRx+2BtmxH7BEEps/QZVCKgfQdVXlC+fAOsjKKlMH2Y90DeIgqWPKb+rzN/qZSU2YtPO
-         Hcv3lQdjqBFs8elJvanD6JVcOsRvP5cC+VvQSw9L4aVmmFzc4hgSRycaOa97wy0328EQ
-         fLqxqJoc4bOSGZ+yHkcFHmWpqmMNTRTuYfRdzPQnhk9QK+DSLAYDmKh+l0PIkqk9fP0v
-         jwrhXMbkGPSV+LQCf8Vqi3+Q80Z43mUGW5n3LDmKQNxesjpGdYssMBEzOuxjOa3Ebshj
-         cJow==
-X-Gm-Message-State: AOAM532EAEaL8Yl4PZKOeyJ42j1ATpNjccuQjyutRqZ15xswgh5mHCO8
-        +it/HH8tniELp3SRSM2veGF3VdX5l9Y=
-X-Google-Smtp-Source: ABdhPJxNu345qea6n5GM2ISwEI4F55ydVZzlwwLwOTyiy9Tbx8rm9+o0iIEF4FllypEUldztmrc19A==
-X-Received: by 2002:a17:90b:3142:b0:1df:77f2:e169 with SMTP id ip2-20020a17090b314200b001df77f2e169mr1179624pjb.245.1652897131441;
-        Wed, 18 May 2022 11:05:31 -0700 (PDT)
-Received: from localhost ([14.96.13.220])
-        by smtp.gmail.com with ESMTPSA id y20-20020a170902ed5400b0015ea8b4b8f3sm1963278plb.263.2022.05.18.11.05.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 11:05:31 -0700 (PDT)
-Date:   Wed, 18 May 2022 23:36:13 +0530
-From:   Kumar Kartikeya Dwivedi <memxor@gmail.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        edumazet@google.com, pabeni@redhat.com, pablo@netfilter.org,
-        fw@strlen.de, netfilter-devel@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com
-Subject: Re: [PATCH v3 bpf-next 1/5] bpf: Add support for forcing kfunc args
- to be referenced
-Message-ID: <20220518180613.su37c23ckgc5irmu@apollo.legion>
-References: <cover.1652870182.git.lorenzo@kernel.org>
- <7addba8ead6d590c9182020c03c7696ba5512036.1652870182.git.lorenzo@kernel.org>
- <8912c7c2-9396-f7d8-74e2-a2560fbaad56@fb.com>
+        with ESMTP id S231801AbiERSKq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 14:10:46 -0400
+Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81509F43
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 11:10:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652897444; x=1684433444;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=8YfA4rgQsuU6hIQVlldniJoCFetnxV+mo0jXapiTlNw=;
+  b=KYM8jdrha1jaeVb8OPaZr1advGpXqBrwFuRhvDf3hGwiZJFs6+xSELzz
+   kndbpfayj63CIa7fu9wCaIsf0KoV5KUB+7KRLRHT9u7TJjxh65G6zBR3L
+   7ci8UeE5HM490pe5FYrovLgCPUlMQX8M2Kr9B573YM8tEi7H9/Hho8Hz/
+   ZxfziqgvKjB7pPM7QcKqGf2sPdeFArBZk+jbzZ965rK4zDDQxC0Syxo2G
+   DoQVKYB37Z0+8FIsV+DDqK4LMhY1ZwU9QZrOaLha7FaIsvRkaA5c5Kz5n
+   Hd8obIsCihHDm6hIz3MkRpV3wWW5p23CidzOqaoPzSzmtFC5Fz8w1y6Ur
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="271515325"
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="271515325"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:09:50 -0700
+X-IronPort-AV: E=Sophos;i="5.91,235,1647327600"; 
+   d="scan'208";a="597952373"
+Received: from rottmaie-mobl1.ger.corp.intel.com ([10.252.53.238])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 May 2022 11:09:45 -0700
+Date:   Wed, 18 May 2022 21:09:37 +0300 (EEST)
+From:   =?ISO-8859-15?Q?Ilpo_J=E4rvinen?= <ilpo.jarvinen@linux.intel.com>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>
+cc:     chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
+        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
+        m.chetan.kumar@linux.intel.com, ricardo.martinez@linux.intel.com,
+        loic.poulain@linaro.org, ryazanov.s.a@gmail.com,
+        johannes@sipsolutions.net, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        Netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2] net: wwan: t7xx: fix GFP_KERNEL usage in
+ spin_lock context
+In-Reply-To: <20220517064821.3966990-1-william.xuanziyang@huawei.com>
+Message-ID: <d04ffa5b-13f6-5f4d-98e4-1a4550d6f69@linux.intel.com>
+References: <20220517064821.3966990-1-william.xuanziyang@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <8912c7c2-9396-f7d8-74e2-a2560fbaad56@fb.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+X-Spam-Status: No, score=-4.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 18, 2022 at 11:28:12PM IST, Yonghong Song wrote:
->
->
-> On 5/18/22 3:43 AM, Lorenzo Bianconi wrote:
-> > From: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> >
-> > Similar to how we detect mem, size pairs in kfunc, teach verifier to
-> > treat __ref suffix on argument name to imply that it must be a
-> > referenced pointer when passed to kfunc. This is required to ensure that
-> > kfunc that operate on some object only work on acquired pointers and not
-> > normal PTR_TO_BTF_ID with same type which can be obtained by pointer
-> > walking. Release functions need not specify such suffix on release
-> > arguments as they are already expected to receive one referenced
-> > argument.
-> >
-> > Signed-off-by: Kumar Kartikeya Dwivedi <memxor@gmail.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >   kernel/bpf/btf.c   | 40 ++++++++++++++++++++++++++++++----------
-> >   net/bpf/test_run.c |  5 +++++
-> >   2 files changed, 35 insertions(+), 10 deletions(-)
-> >
-> > diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> > index 2f0b0440131c..83a354732d96 100644
-> > --- a/kernel/bpf/btf.c
-> > +++ b/kernel/bpf/btf.c
-> > @@ -6021,18 +6021,13 @@ static bool __btf_type_is_scalar_struct(struct bpf_verifier_log *log,
-> >   	return true;
-> >   }
-> > -static bool is_kfunc_arg_mem_size(const struct btf *btf,
-> > -				  const struct btf_param *arg,
-> > -				  const struct bpf_reg_state *reg)
-> > +static bool btf_param_match_suffix(const struct btf *btf,
-> > +				   const struct btf_param *arg,
-> > +				   const char *suffix)
-> >   {
-> > -	int len, sfx_len = sizeof("__sz") - 1;
-> > -	const struct btf_type *t;
-> > +	int len, sfx_len = strlen(suffix);
-> >   	const char *param_name;
-> > -	t = btf_type_skip_modifiers(btf, arg->type, NULL);
-> > -	if (!btf_type_is_scalar(t) || reg->type != SCALAR_VALUE)
-> > -		return false;
-> > -
-> >   	/* In the future, this can be ported to use BTF tagging */
-> >   	param_name = btf_name_by_offset(btf, arg->name_off);
-> >   	if (str_is_empty(param_name))
-> > @@ -6041,12 +6036,31 @@ static bool is_kfunc_arg_mem_size(const struct btf *btf,
-> >   	if (len < sfx_len)
-> >   		return false;
-> >   	param_name += len - sfx_len;
-> > -	if (strncmp(param_name, "__sz", sfx_len))
-> > +	if (strncmp(param_name, suffix, sfx_len))
-> >   		return false;
-> >   	return true;
-> >   }
-> > +static bool is_kfunc_arg_ref(const struct btf *btf,
-> > +			     const struct btf_param *arg)
-> > +{
-> > +	return btf_param_match_suffix(btf, arg, "__ref");
->
-> Do we also need to do btf_type_skip_modifiers and to ensure
-> the type after skipping modifiers are a pointer type?
-> The current implementation should work for
-> bpf_kfunc_call_test_ref(), but with additional checking
-> we may avoid some accidental mistakes.
->
+On Tue, 17 May 2022, Ziyang Xuan wrote:
 
-The point where this check happens, arg[i].type is already known to be a pointer
-type, after skipping modifiers.
+> t7xx_cldma_clear_rxq() call t7xx_cldma_alloc_and_map_skb() in spin_lock
+> context, But __dev_alloc_skb() in t7xx_cldma_alloc_and_map_skb() uses
+> GFP_KERNEL, that will introduce scheduling factor in spin_lock context.
+> 
+> Because t7xx_cldma_clear_rxq() is called after stopping CLDMA, so we can
+> remove the spin_lock from t7xx_cldma_clear_rxq().
+> 
 
-> > +}
-> > +
-> > +static bool is_kfunc_arg_mem_size(const struct btf *btf,
-> > +				  const struct btf_param *arg,
-> > +				  const struct bpf_reg_state *reg)
-> > +{
-> > +	const struct btf_type *t;
-> > +
-> > +	t = btf_type_skip_modifiers(btf, arg->type, NULL);
-> > +	if (!btf_type_is_scalar(t) || reg->type != SCALAR_VALUE)
-> > +		return false;
-> > +
-> > +	return btf_param_match_suffix(btf, arg, "__sz");
-> > +}
-> > +
-> >   static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> >   				    const struct btf *btf, u32 func_id,
-> >   				    struct bpf_reg_state *regs,
-> > @@ -6115,6 +6129,12 @@ static int btf_check_func_arg_match(struct bpf_verifier_env *env,
-> >   			return -EINVAL;
-> >   		}
-> > +		/* Check if argument must be a referenced pointer */
-> > +		if (is_kfunc && is_kfunc_arg_ref(btf, args + i) && !reg->ref_obj_id) {
-> > +			bpf_log(log, "R%d must be referenced\n", regno);
-> > +			return -EINVAL;
-> > +		}
-> > +
-> >   		ref_t = btf_type_skip_modifiers(btf, t->type, &ref_id);
-> >   		ref_tname = btf_name_by_offset(btf, ref_t->name_off);
-> > diff --git a/net/bpf/test_run.c b/net/bpf/test_run.c
-> > index 4d08cca771c7..adbc7dd18511 100644
-> > --- a/net/bpf/test_run.c
-> > +++ b/net/bpf/test_run.c
-> > @@ -690,6 +690,10 @@ noinline void bpf_kfunc_call_test_mem_len_fail2(u64 *mem, int len)
-> >   {
-> >   }
-> > +noinline void bpf_kfunc_call_test_ref(struct prog_test_ref_kfunc *p__ref)
-> > +{
-> > +}
-> > +
-> >   __diag_pop();
-> [...]
+Perhaps Suggested-by: ... would have been appropriate too.
 
---
-Kartikeya
+> Fixes: 39d439047f1d ("net: wwan: t7xx: Add control DMA interface")
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+
+-- 
+ i.
