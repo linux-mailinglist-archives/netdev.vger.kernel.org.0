@@ -2,138 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BE6752B954
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:13:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F79052B971
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:14:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236140AbiERMEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 08:04:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41620 "EHLO
+        id S236120AbiERMFQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236097AbiERMD5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:03:57 -0400
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B33B41A388;
-        Wed, 18 May 2022 05:03:49 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2f83983782fso21677217b3.6;
-        Wed, 18 May 2022 05:03:49 -0700 (PDT)
+        with ESMTP id S236119AbiERMFO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:05:14 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 810549D060;
+        Wed, 18 May 2022 05:05:07 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id i27so3353956ejd.9;
+        Wed, 18 May 2022 05:05:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HBvttKt/+puk2DR73PUb7EYpaQbMG8BEPu8CTXCnIwM=;
+        b=Fr6vweAA0egXTuuZRjpQKI6IEn98MQsoAcswBc5h6vhOadmz7K4WLAuf0M7I5Z+GuM
+         begrmOP04Gm65RcAZPJ4jDKgPHp1oBkDE1sEYHaqihVuaBEEf/Jg0GbjioYPMLrjmcQC
+         Zkf89kyxyTNvKH+uRjCYj54wTbJwaKD19Dswlcpw0q/tfW016CXXUOgtDSpj9AsQzkqn
+         ng1gYmdYow5ZGAAH9NeIDERMBXcLUjCLp7DzDH+pcRt9HRYRwoDoqpnYNI4pZHiO+722
+         Yz2e0DMBzYtfLBfI+dBlqzrAB7F+N+YisvPd3ypTHjXRRTmsQN9dqX6Sj1HMoYlSVsue
+         VVmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rVPPyUegoVxSn5lsEO7BZkKqB32kOawffPYWcQzsvL0=;
-        b=XaNRNOZ69M2vaLJExMWrSNe+ugNqvvdpc4XlReOVVb6n6oMWmN3QUWJQcOmsgvUuJq
-         f6A+XuhS/+28N3anL7n+FU4W3Ondx5iQPS4NqJ3WPPK9Z8XDelz6DxEu3/vQnZbJ4RiE
-         Dt+DMdYWp8sLrUOFWAUlpyyutMjMq3Vw0mBjbMyUs2a5IxRhEeFhVI3J0yo5ZZaYRTYk
-         u+ODZr8DkDEngPj9gZzbsNnBFa8Y+5I7yjomBTPiB+kUqOxLQVoDgWxZzRQri9lUXkq6
-         whblbEov4YMKG5ErhcS2jcBHwO1hQlMSggfRsgHF5v0KmS7wEetdLQ2CwiWLP87OL9LV
-         jb/Q==
-X-Gm-Message-State: AOAM530KsobcEPKoYEqKfnbrqA8chUglFx0zVhb+0WgTRE3aw350rm47
-        +oPXiSSnfcCwiAjez0EyrpwQXyXOyDkLbGF/qEeu20RvVcyhfg==
-X-Google-Smtp-Source: ABdhPJwcAzjvbo5MkFqDUW1g4+joKN2IALSfdlPaNkIMABQRvJUwQXlnD/3SF5HCILLiSo7DV1OA+ONdEfNlzZicS/0=
-X-Received: by 2002:a81:140e:0:b0:2fe:c3a3:5b19 with SMTP id
- 14-20020a81140e000000b002fec3a35b19mr25432713ywu.392.1652875428925; Wed, 18
- May 2022 05:03:48 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HBvttKt/+puk2DR73PUb7EYpaQbMG8BEPu8CTXCnIwM=;
+        b=kHR3W3cDCkp5q/1VECU8qZafwpvnzxp5tqaTC93q02a806Fw1DamGj3IPB/faIfvDK
+         vleYZS0vQSZ1RmDT2aGLr6dHkTmzH8d5BTCipVo+WxfDQUrbPwkfikOHs/8hRgPT31lG
+         NXnPfkm5OGuKws6Wabgjd6xf4oiJt78sZ8DyYoWOQlcUsZJMLHzeRFeUCDHwX3qa4oHG
+         rcvoXNiWBSQCysPVOww+19QvvCuQUfbZzJP4qDmAlEgpUUsKZV5zyzFww2EHF415FgB2
+         bKmCEzLRcjnWFgjFPiaxA4LDMB5WC+Uc0rszPoUuK5il262jfi8pQnvLX6oqvoX14uIS
+         L9Ww==
+X-Gm-Message-State: AOAM533a20EVq1xLADClRlwokPyDi6tTMBg8LLXKSYMzsSlYd6VU5lGn
+        4R9DFbkRzybaae7YGB5dx4Y=
+X-Google-Smtp-Source: ABdhPJyr/sVG76W5wUvAmPcZnxHV7/Na7Nm1x9m0hiioEFYlFBk5pFQNLe9QjIUWIyDhUuMvrb+J8g==
+X-Received: by 2002:a17:907:9723:b0:6f4:77c7:8fef with SMTP id jg35-20020a170907972300b006f477c78fefmr23701102ejc.680.1652875505702;
+        Wed, 18 May 2022 05:05:05 -0700 (PDT)
+Received: from skbuf ([188.25.255.186])
+        by smtp.gmail.com with ESMTPSA id be18-20020a0564021a3200b0042aac7c2fa3sm1193832edb.96.2022.05.18.05.05.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 05:05:05 -0700 (PDT)
+Date:   Wed, 18 May 2022 15:05:03 +0300
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v4 05/12] dt-bindings: net: dsa: add bindings
+ for Renesas RZ/N1 Advanced 5 port switch
+Message-ID: <20220518120503.3m2zfw7kmhsfg336@skbuf>
+References: <20220509131900.7840-1-clement.leger@bootlin.com>
+ <20220509131900.7840-6-clement.leger@bootlin.com>
+ <20220511152221.GA334055-robh@kernel.org>
+ <20220511153337.deqxawpbbk3actxf@skbuf>
+ <20220518015924.GC2049643-robh@kernel.org>
 MIME-Version: 1.0
-References: <20220513142355.250389-1-mailhol.vincent@wanadoo.fr>
- <20220514141650.1109542-1-mailhol.vincent@wanadoo.fr> <20220514141650.1109542-4-mailhol.vincent@wanadoo.fr>
- <7b1644ad-c117-881e-a64f-35b8d8b40ef7@hartkopp.net> <CAMZ6RqKZMHXB7rQ70GrXcVE7x7kytAAGfE+MOpSgWgWgp0gD2g@mail.gmail.com>
- <20220517060821.akuqbqxro34tj7x6@pengutronix.de> <CAMZ6RqJ3sXYUOpw7hEfDzj14H-vXK_i+eYojBk2Lq=h=7cm7Jg@mail.gmail.com>
- <20220517104545.eslountqjppvcnz2@pengutronix.de> <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
- <20220517141404.578d188a.max@enpas.org> <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
- <20220517143921.08458f2c.max@enpas.org> <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
-In-Reply-To: <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 18 May 2022 21:03:37 +0900
-Message-ID: <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
-Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
- can_skb_headroom_valid to skb.c
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Max Staudt <max@enpas.org>, Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518015924.GC2049643-robh@kernel.org>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I didn't think this would trigger such a passionate discussion!
+On Tue, May 17, 2022 at 08:59:24PM -0500, Rob Herring wrote:
+> On Wed, May 11, 2022 at 06:33:37PM +0300, Vladimir Oltean wrote:
+> > On Wed, May 11, 2022 at 10:22:21AM -0500, Rob Herring wrote:
+> > > > +patternProperties:
+> > > > +  "^ethernet-ports$":
+> > > 
+> > > Move to 'properties', not a pattern.
+> > > 
+> > > With that,
+> > > 
+> > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > 
+> > Even if it should have been "^(ethernet-)?ports$"?
+> 
+> Why? Allowing 'ports' is for existing users. New ones don't need the 
+> variability and should use just 'ethernet-ports'.
+> 
+> Rob
 
-On Tue. 17 mai 2022 at 22:35, Oliver Hartkopp <socketcan@hartkopp.net> wrote:
-> On 5/17/22 14:39, Max Staudt wrote:
-> > On Tue, 17 May 2022 14:21:53 +0200
-> > Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> >
-> >> On 17.05.2022 14:14:04, Max Staudt wrote:
-> >>>> After looking through drivers/net/can/Kconfig I would probably
-> >>>> phrase it like this:
-> >>>>
-> >>>> Select CAN devices (hw/sw) -> we compile a can_dev module. E.g.
-> >>>> to handle the skb stuff for vcan's.
-> >>>>
-> >>>> Select hardware CAN devices -> we compile the netlink stuff into
-> >>>> can_dev and offer CAN_CALC_BITTIMING and CAN_LEDS to be compiled
-> >>>> into can_dev too.
-> >>>>
-> >>>> In the latter case: The selection of flexcan, ti_hecc and
-> >>>> mcp251xfd automatically selects CAN_RX_OFFLOAD which is then also
-> >>>> compiled into can_dev.
-> >>>>
-> >>>> Would that fit in terms of complexity?
-> >>>
-> >>> IMHO these should always be compiled into can-dev. Out of tree
-> >>> drivers are fairly common here, and having to determine which kind
-> >>> of can-dev (stripped or not) the user has on their system is a
-> >>> nightmare waiting to happen.
-> >>
-> >> I personally don't care about out-of-tree drivers.
-> >
-> > I know that this is the official stance in the kernel.
-> >
-> > But out-of-tree drivers do happen on a regular basis, even when
-> > developing with the aim of upstreaming. And if a developer builds a
-> > minimal kernel to host a CAN driver, without building in-tree hardware
-> > CAN drivers, then can-dev will be there but behave differently from
-> > can-dev in a full distro. Leading to heisenbugs and wasting time. The
-> > source of heisenbugs really are the suggested *hidden* Kconfigs.
-> >
-> >
-> > On another note, is the module accounting overhead in the kernel for
-> > two new modules with relatively little code in each, code that almost
-> > always is loaded when CAN is used, really worth it?
->
-> Oh, I didn't want to introduce two new kernel modules but to have
-> can_dev in different 'feature levels'.
->
-> I would assume a distro kernel to have everything enabled with a full
-> featured can_dev - which is likely the base for out-of-tree drivers too.
->
-> But e.g. the people that are running Linux instances in a cloud only
-> using vcan and vxcan would not need to carry the entire infrastructure
-> of CAN hardware support and rx-offload.
-
-Are there really some people running custom builds of the Linux kernel
-in a cloud environment? The benefit of saving a few kilobytes by not
-having to carry the entire CAN hardware infrastructure is blown away
-by the cost of having to maintain a custom build.
-
-I perfectly follow the idea to split rx-offload. Integrators building
-some custom firmware for an embedded device might want to strip out
-any unneeded piece. But I am not convinced by this same argument when
-applied to v(x)can.
-A two level split (with or without rx-offload) is what makes the most
-sense to me.
-
-Regardless, having the three level split is not harmful. And because
-there seems to be a consensus on that, I am fine to continue in this
-direction.
-
-On a different topic, why are all the CAN devices
-under "Networking support" and not "Device Drivers" in menuconfig
-like everything else? Would it make sense to move our devices
-under the "Device Drivers" section?
+Yeah, ok, somehow the memo that new DSA drivers shouldn't support "ports"
+didn't reach me. They invariably will though, since the DSA framework is
+the main parser of the property, and that is shared by both old and new
+drivers.
