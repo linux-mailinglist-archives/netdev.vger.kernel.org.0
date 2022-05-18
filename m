@@ -2,49 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 18FF352BB15
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:40:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A841C52BA3D
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:38:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236534AbiERM1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 08:27:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49354 "EHLO
+        id S236673AbiERM1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:27:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236587AbiERM1e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:27:34 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D70BA9B5;
-        Wed, 18 May 2022 05:27:33 -0700 (PDT)
+        with ESMTP id S236605AbiERM1j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:27:39 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0F8EFD35E;
+        Wed, 18 May 2022 05:27:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A5CC06147D;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B2ABB81FB6;
+        Wed, 18 May 2022 12:27:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99FDBC34118;
         Wed, 18 May 2022 12:27:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5161AC34100;
-        Wed, 18 May 2022 12:27:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876852;
-        bh=CjDagl7s1yUewHYXWMFrzcpaB6LIIM2ZSZMxbuBP6VU=;
+        s=k20201202; t=1652876854;
+        bh=di/0u1pfyt5gJ4peynH3b3jQYS0oAszZJH+iUQ2G0Ic=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hnC4SkjNnasn60+AMYnP+GabZRdRbbhXyBiudAEKnIT3Il/cnGrVK7x76SD6EuDAb
-         kAM1/hxRcUNDEvAMNMdAb/X54hC6qgHTCEIUmfVbo8M3bJvnWeqotAk6xMB6NXDmex
-         Apu2alnli9TMqn/ZIWIrMOSc1t65XfkRT6rtZ5CpDpI444/prtbAiHMxRx329PgWZL
-         tbLqHmBOv5tTRJ8z26tYJ3ZSFPl/UFOnp3KaiihLJbexYdSvhySNcfEomnWxNEdctH
-         XXF07ivaBJ6HC/11fQ1y+gyS1g4qQAa3ubNcKAb7F1T6WO7Y+X5SOo2UhaGiQcoYjJ
-         ghaB7t7WzeJKQ==
+        b=EeFrQUwrE1o6b6Ct6oCQBiu3f39mL8RltlK/W1p/C/FneOBE5FK0+p82Bl+MS3NuR
+         w6SmMbexPVCx5uO92Lll2dNzu6F7yMWew6hSJe5OvlpUjPtqOaik/68YEMsMflNaiO
+         KpoZN/sbN+bF4FAj1G9moxdL0efVQy3fIhAAsnQsFL3faEcMTuvkuGq4dRzmZhZUuQ
+         CGqSOKhVE559L8EQ3Bb0yZVaHlzxGTuNuJgzN6/YVlNAN8hfzd5bWzkj9Vs3mCEFS1
+         FbgpDtYuri2f+bjlZQsH8t4GetHVLDzIIOGHSD94gyqP4m9spnsDbe9mISWAHSa0fy
+         z9kxZfeeZME8g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Yingliang <yangyingliang@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        mcoquelin.stm32@gmail.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.17 17/23] net: stmmac: fix missing pci_disable_device() on error in stmmac_pci_probe()
-Date:   Wed, 18 May 2022 08:26:30 -0400
-Message-Id: <20220518122641.342120-17-sashal@kernel.org>
+Cc:     Grant Grundler <grundler@chromium.org>,
+        Aashay Shringarpure <aashay@google.com>,
+        Yi Chou <yich@google.com>,
+        Shervin Oloumi <enlightened@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 18/23] net: atlantic: fix "frag[0] not initialized"
+Date:   Wed, 18 May 2022 08:26:31 -0400
+Message-Id: <20220518122641.342120-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122641.342120-1-sashal@kernel.org>
 References: <20220518122641.342120-1-sashal@kernel.org>
@@ -62,43 +61,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Grant Grundler <grundler@chromium.org>
 
-[ Upstream commit 0807ce0b010418a191e0e4009803b2d74c3245d5 ]
+[ Upstream commit 62e0ae0f4020250f961cf8d0103a4621be74e077 ]
 
-Switch to using pcim_enable_device() to avoid missing pci_disable_device().
+In aq_ring_rx_clean(), if buff->is_eop is not set AND
+buff->len < AQ_CFG_RX_HDR_SIZE, then hdr_len remains equal to
+buff->len and skb_add_rx_frag(xxx, *0*, ...) is not called.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Link: https://lore.kernel.org/r/20220510031316.1780409-1-yangyingliang@huawei.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+The loop following this code starts calling skb_add_rx_frag() starting
+with i=1 and thus frag[0] is never initialized. Since i is initialized
+to zero at the top of the primary loop, we can just reference and
+post-increment i instead of hardcoding the 0 when calling
+skb_add_rx_frag() the first time.
+
+Reported-by: Aashay Shringarpure <aashay@google.com>
+Reported-by: Yi Chou <yich@google.com>
+Reported-by: Shervin Oloumi <enlightened@google.com>
+Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-index fcf17d8a0494..644bb54f5f02 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-@@ -181,7 +181,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
- 		return -ENOMEM;
+diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+index 77e76c9efd32..440423b0e8ea 100644
+--- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
++++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
+@@ -446,7 +446,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		       ALIGN(hdr_len, sizeof(long)));
  
- 	/* Enable pci device */
--	ret = pci_enable_device(pdev);
-+	ret = pcim_enable_device(pdev);
- 	if (ret) {
- 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n",
- 			__func__);
-@@ -241,8 +241,6 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
- 		pcim_iounmap_regions(pdev, BIT(i));
- 		break;
- 	}
--
--	pci_disable_device(pdev);
- }
+ 		if (buff->len - hdr_len > 0) {
+-			skb_add_rx_frag(skb, 0, buff->rxdata.page,
++			skb_add_rx_frag(skb, i++, buff->rxdata.page,
+ 					buff->rxdata.pg_off + hdr_len,
+ 					buff->len - hdr_len,
+ 					AQ_CFG_RX_FRAME_MAX);
+@@ -455,7 +455,6 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
  
- static int __maybe_unused stmmac_pci_suspend(struct device *dev)
+ 		if (!buff->is_eop) {
+ 			buff_ = buff;
+-			i = 1U;
+ 			do {
+ 				next_ = buff_->next;
+ 				buff_ = &self->buff_ring[next_];
 -- 
 2.35.1
 
