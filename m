@@ -2,586 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EBE2F52B0A6
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 05:13:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61B5052B0CB
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 05:31:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230157AbiERDNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 23:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49808 "EHLO
+        id S229587AbiERDb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 23:31:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51760 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229752AbiERDNG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 23:13:06 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10FD75621D
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 20:13:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=TbUafIfXptqfV/Yu72Ku9MAqnJOFsX4rkpBtae2isqY=; b=VnPFPIQnW6ENVl5Osg2QW8iwfh
-        JJzya9cKfIHt+vWPclVvKZ2b0QLJo1ZCaeMHFQYXM0vFsm+wW91KYICiHC8BGy4VDDq1LNnWqO1hw
-        5b/EaWNKiRmTwwvTCuD5KhM/O3HjGtVtpJfQdj+dB7yLGoEQv6MiDp1Z+cimQ2k3iXYo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nrA7M-003FWX-8h; Wed, 18 May 2022 05:12:56 +0200
-Date:   Wed, 18 May 2022 05:12:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jiawen Wu <jiawenwu@trustnetic.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: txgbe: Add build support for txgbe
-Message-ID: <YoRkONdJlIU0ymd6@lunn.ch>
-References: <20220517092109.8161-1-jiawenwu@trustnetic.com>
+        with ESMTP id S229446AbiERDbx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 23:31:53 -0400
+Received: from mail-ej1-x641.google.com (mail-ej1-x641.google.com [IPv6:2a00:1450:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8FEB814B0;
+        Tue, 17 May 2022 20:31:50 -0700 (PDT)
+Received: by mail-ej1-x641.google.com with SMTP id y13so546402eje.2;
+        Tue, 17 May 2022 20:31:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CRUVZxUiPFa++e0erHqoMtj4bXpVQNsrlJ20yGYjhvc=;
+        b=UwonYpJJCOJV4Rl7KWzUFXn0d60C4PgqizzRx0Ah9Shb0qiH5aqP83U/u+FcVa5Wfq
+         O/hMSFCfmDK31AJ9JXapppG2PLQBbVA6nFgL0Y+z2AUvXvfw8xzLsHhVxx7sDmLfTLrx
+         FIb9S/lQLvRvSCRBJ3CSgRw56hvNYE1DYskMaNFJSgLaEQuqsP17dWNUri3tmaHzzQH5
+         sOkr1XsYK0vRGLqcoihOHwP6JVEqWhwvjgVHeV+w0BQHD3uFtrcyzdoJMq8YrRF/AMLg
+         dWj4rUi0c2iEgqxCLv6d1am3njz7IVZP7jrt+jtALdyHMcHGoHA5fp8vpUe8x7V9+6LT
+         iT7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CRUVZxUiPFa++e0erHqoMtj4bXpVQNsrlJ20yGYjhvc=;
+        b=vUl3XH4yEAAEFL0eON/Vb1oTDXF9wzPoIc3YN8SPgjcFkA7x8RjPrks0q4qMx2+UON
+         j9B5iiV/cwti9GDkT1lUNSe/+LdqFh4WkF8dR0rirG3FVyFM19ph9rV45iBq3lzAzYRM
+         IcQI/lRv659xfXl5xhQCcHtggF4PUdfyJj3B3xvx9Q3QKrUzLJhC9lMJE0/2aQtVWZnc
+         jLjQdU3Wgs+p4YPyfkVqB7YGSrIfcjsqu+KNxHkoxjWASPhVyHU/ih2XmESt1k5KViCB
+         gwKlf/9zhD1V/9P147FQTqrKqQEm8UlvvNtyUhTE0VOAYl8CCFJ3626CN5JaF+UwWsFc
+         G8EQ==
+X-Gm-Message-State: AOAM530z6yNQgPjLhnMP//29vY75DBdYtOk9Jxm8xbwGfUOULB+nAgNU
+        yqxTwsLHEW09mD7xVHcSQQEXt6toZmILPofLnW4=
+X-Google-Smtp-Source: ABdhPJzZesTdsqqQsPaLv5+45A2/zx0v+IlanzmxIY6npSHLfR6XsED9IFJz3gtqYpZ8pLNTrrgG8bmj/AiRbKAvETw=
+X-Received: by 2002:a17:907:7ea7:b0:6f4:7a72:da92 with SMTP id
+ qb39-20020a1709077ea700b006f47a72da92mr22032393ejc.348.1652844709009; Tue, 17
+ May 2022 20:31:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220517092109.8161-1-jiawenwu@trustnetic.com>
+References: <20220517034107.92194-1-imagedong@tencent.com> <CAADnVQLRmv107zFL-dgB07Mf8NmR0TCAC9eG9aZ1O4DG3=ityw@mail.gmail.com>
+In-Reply-To: <CAADnVQLRmv107zFL-dgB07Mf8NmR0TCAC9eG9aZ1O4DG3=ityw@mail.gmail.com>
+From:   Menglong Dong <menglong8.dong@gmail.com>
+Date:   Wed, 18 May 2022 11:31:37 +0800
+Message-ID: <CADxym3bLXhgCK-BO6JL3OVbVdC9Tsc0k_LqMRBbXA7eOpUtdYQ@mail.gmail.com>
+Subject: Re: [PATCH] bpf: add access control for map
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Menglong Dong <imagedong@tencent.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alan Maguire <alan.maguire@oracle.com>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +Support
-> +=======
-> +If you got any problem, contact Wangxun support team via support@trustnetic.com
-
-Since this is now a mainline driver, you should be doing support out
-in the open. So indicate your should also Cc: netdev, so other members
-of the networking community using this hardware can learn as well from
-peoples questions.
-
-> +config TXGBE
-> +	tristate "Wangxun(R) 10GbE PCI Express adapters support"
-> +	depends on PCI
-> +	depends on PTP_1588_CLOCK_OPTIONAL
-> +	select PHYLIB
-
-The current driver does not depend on PTP nor need PHYLIB. Please add
-these when they are actually needed.
-
-> +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe.h
-> @@ -0,0 +1,76 @@
-> +/* SPDX-License-Identifier: GPL-2.0 */
-> +/* Copyright (c) 2015 - 2017 Beijing WangXun Technology Co., Ltd. */
-> +
-> +#ifndef _TXGBE_H_
-> +#define _TXGBE_H_
-> +
-> +#include "txgbe_type.h"
-> +
-> +#ifndef MAX_REQUEST_SIZE
-> +#define MAX_REQUEST_SIZE 256
-> +#endif
-
-Why the #ifndef? What could be setting it?
-
-A TXGBE_ prefix would also be good.
-
-> +
-> +#define TXGBE_MAX_FDIR_INDICES          63
-> +
-> +#define MAX_TX_QUEUES   (TXGBE_MAX_FDIR_INDICES + 1)
-
-Prefix here as well.
-
-> +
-> +/* board specific private data structure */
-> +struct txgbe_adapter {
-> +	/* OS defined structs */
-> +	struct net_device *netdev;
-> +	struct pci_dev *pdev;
-> +
-> +	unsigned long state;
-> +
-> +	/* structs defined in txgbe_hw.h */
-> +	struct txgbe_hw hw;
-> +	u16 msg_enable;
-> +
-> +	u8 __iomem *io_addr;    /* Mainly for iounmap use */
-> +};
-> +
-> +enum txgbe_state_t {
-> +	__TXGBE_TESTING,
-> +	__TXGBE_RESETTING,
-> +	__TXGBE_DOWN,
-> +	__TXGBE_HANGING,
-> +	__TXGBE_DISABLED,
-> +	__TXGBE_REMOVING,
-> +	__TXGBE_SERVICE_SCHED,
-> +	__TXGBE_SERVICE_INITED,
-> +	__TXGBE_IN_SFP_INIT,
-> +	__TXGBE_PTP_RUNNING,
-> +	__TXGBE_PTP_TX_IN_PROGRESS,
-> +};
-> +
-> +#define TXGBE_NAME "txgbe"
-> +
-> +static inline struct device *pci_dev_to_dev(struct pci_dev *pdev)
-> +{
-> +	return &pdev->dev;
-> +}
-
-Does not have any value. &pdev->dev; is shorter than
-pci_dev_to_dev(pdev), there are no casts here, etc.
-
-> +#define txgbe_dev_info(format, arg...) \
-> +	dev_info(&adapter->pdev->dev, format, ## arg)
-> +#define txgbe_dev_warn(format, arg...) \
-> +	dev_warn(&adapter->pdev->dev, format, ## arg)
-> +#define txgbe_dev_err(format, arg...) \
-> +	dev_err(&adapter->pdev->dev, format, ## arg)
-> +#define txgbe_dev_notice(format, arg...) \
-> +	dev_notice(&adapter->pdev->dev, format, ## arg)
-> +#define txgbe_dbg(msglvl, format, arg...) \
-> +	netif_dbg(adapter, msglvl, adapter->netdev, format, ## arg)
-> +#define txgbe_info(msglvl, format, arg...) \
-> +	netif_info(adapter, msglvl, adapter->netdev, format, ## arg)
-> +#define txgbe_err(msglvl, format, arg...) \
-> +	netif_err(adapter, msglvl, adapter->netdev, format, ## arg)
-> +#define txgbe_warn(msglvl, format, arg...) \
-> +	netif_warn(adapter, msglvl, adapter->netdev, format, ## arg)
-> +#define txgbe_crit(msglvl, format, arg...) \
-> +	netif_crit(adapter, msglvl, adapter->netdev, format, ## arg)
-
-It is pretty unusual to use wrappers like this. It is also bad
-practice for a macro to access something which is not passed to it as
-a parameter. I suggest you remove all these.
-
-> +
-> +#define TXGBE_FAILED_READ_CFG_DWORD 0xffffffffU
-> +#define TXGBE_FAILED_READ_CFG_WORD  0xffffU
-> +#define TXGBE_FAILED_READ_CFG_BYTE  0xffU
-> +
-> +#endif /* _TXGBE_H_ */
-> diff --git a/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-> new file mode 100644
-> index 000000000000..17a30629f76a
-> --- /dev/null
-> +++ b/drivers/net/ethernet/wangxun/txgbe/txgbe_main.c
-> @@ -0,0 +1,332 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2015 - 2017 Beijing WangXun Technology Co., Ltd. */
-> +
-> +#include <linux/types.h>
-> +#include <linux/module.h>
-> +#include <linux/pci.h>
-> +#include <linux/netdevice.h>
-> +#include <linux/string.h>
-> +#include <linux/aer.h>
-> +#include <linux/etherdevice.h>
-> +
-> +#include "txgbe.h"
-> +
-> +char txgbe_driver_name[32] = TXGBE_NAME;
-> +static const char txgbe_driver_string[] =
-> +			"WangXun 10 Gigabit PCI Express Network Driver";
-> +
-> +static const char txgbe_copyright[] =
-> +	"Copyright (c) 2015 -2017 Beijing WangXun Technology Co., Ltd";
-
-Only until 2017? You don't need this anyway, you have the copyright on
-the top of each file.
-
-> +
-> +/* txgbe_pci_tbl - PCI Device ID Table
-> + *
-> + * Wildcard entries (PCI_ANY_ID) should come last
-> + * Last entry must be all 0s
-> + *
-> + * { Vendor ID, Device ID, SubVendor ID, SubDevice ID,
-> + *   Class, Class Mask, private data (not used) }
-> + */
-> +static const struct pci_device_id txgbe_pci_tbl[] = {
-> +	{ PCI_VDEVICE(TRUSTNETIC, TXGBE_DEV_ID_SP1000), 0},
-> +	{ PCI_VDEVICE(TRUSTNETIC, TXGBE_DEV_ID_WX1820), 0},
-> +	/* required last entry */
-> +	{ .device = 0 }
-> +};
-> +MODULE_DEVICE_TABLE(pci, txgbe_pci_tbl);
-> +
-> +MODULE_AUTHOR("Beijing WangXun Technology Co., Ltd, <software@trustnetic.com>");
-> +MODULE_DESCRIPTION("WangXun(R) 10 Gigabit PCI Express Network Driver");
-> +MODULE_LICENSE("GPL");
-
-Traditionally, all MODULE_* things come at the end. 
-
-> +#define DEFAULT_DEBUG_LEVEL_SHIFT 3
-> +
-> +static struct workqueue_struct *txgbe_wq;
-
-No globals. 
-
-> +
-> +static bool txgbe_check_cfg_remove(struct txgbe_hw *hw, struct pci_dev *pdev);
-
-Forwards references should only be needed if you have mutually
-recursive functions. For anything else, move the code around to avoid
-them.
-
-> +
-> +static void txgbe_remove_adapter(struct txgbe_hw *hw)
-> +{
-> +	struct txgbe_adapter *adapter = hw->back;
-> +
-> +	if (!hw->hw_addr)
-> +		return;
-> +	hw->hw_addr = NULL;
-> +	txgbe_dev_err("Adapter removed\n");
-
-It is not an error, modules can be unloaded, drivers unbound etc.
-
-> +}
-> +
-> +/**
-> + * txgbe_sw_init - Initialize general software structures (struct txgbe_adapter)
-> + * @adapter: board private structure to initialize
-> + *
-> + * txgbe_sw_init initializes the Adapter private data structure.
-> + * Fields are initialized based on PCI device information and
-> + * OS network device settings (MTU size).
-> + **/
-> +static int txgbe_sw_init(struct txgbe_adapter *adapter)
-> +{
-> +	struct txgbe_hw *hw = &adapter->hw;
-> +	struct pci_dev *pdev = adapter->pdev;
-> +	int err = 0;
-> +
-> +	/* PCI config space info */
-> +	hw->vendor_id = pdev->vendor;
-> +	hw->device_id = pdev->device;
-> +	pci_read_config_byte(pdev, PCI_REVISION_ID, &hw->revision_id);
-> +	if (hw->revision_id == TXGBE_FAILED_READ_CFG_BYTE &&
-> +	    txgbe_check_cfg_remove(hw, pdev)) {
-> +		txgbe_err(probe, "read of revision id failed\n");
-> +		err = -ENODEV;
-> +		goto out;
-
-goto out is used when you have something to cleanup on error. If there
-is no cleanup needed, just return -ENODEV.
-
-> +	}
-> +	hw->subsystem_vendor_id = pdev->subsystem_vendor;
-> +	hw->subsystem_device_id = pdev->subsystem_device;
-> +
-> +	pci_read_config_word(pdev, PCI_SUBSYSTEM_ID, &hw->subsystem_id);
-> +	if (hw->subsystem_id == TXGBE_FAILED_READ_CFG_WORD) {
-> +		txgbe_err(probe, "read of subsystem id failed\n");
-> +		err = -ENODEV;
-> +		goto out;
-
-And this goto is pointless.
-
-> +	}
-> +
-> +out:
-> +	return err;
-> +}
-> +
-> +static int __txgbe_shutdown(struct pci_dev *pdev, bool *enable_wake)
-
-Please avoid __foo, unless you already have a _foo. And if you do have
-foo, _foo and __foo, you should probably think about better names.
-
-> +{
-> +	struct txgbe_adapter *adapter = pci_get_drvdata(pdev);
-> +	struct net_device *netdev = adapter->netdev;
-> +
-> +	netif_device_detach(netdev);
-> +
-> +	if (!test_and_set_bit(__TXGBE_DISABLED, &adapter->state))
-> +		pci_disable_device(pdev);
-> +
-> +	return 0;
-
-Looks like this should be a void function.
-
-
-> +}
-> +
-> +static void txgbe_shutdown(struct pci_dev *pdev)
-> +{
-> +	bool wake;
-> +
-> +	__txgbe_shutdown(pdev, &wake);
-> +
-> +	if (system_state == SYSTEM_POWER_OFF) {
-> +		pci_wake_from_d3(pdev, wake);
-> +		pci_set_power_state(pdev, PCI_D3hot);
-> +	}
-> +}
-> +
-> +/**
-> + * txgbe_probe - Device Initialization Routine
-> + * @pdev: PCI device information struct
-> + * @ent: entry in txgbe_pci_tbl
-> + *
-> + * Returns 0 on success, negative on failure
-> + *
-> + * txgbe_probe initializes an adapter identified by a pci_dev structure.
-> + * The OS initialization, configuring of the adapter private structure,
-> + * and a hardware reset occur.
-> + **/
-> +static int txgbe_probe(struct pci_dev *pdev,
-> +		       const struct pci_device_id __always_unused *ent)
-> +{
-> +	struct net_device *netdev;
-> +	struct txgbe_adapter *adapter = NULL;
-> +	struct txgbe_hw *hw = NULL;
-> +	int err, pci_using_dac;
-> +	unsigned int indices = MAX_TX_QUEUES;
-> +	bool disable_dev = false;
-
-Reverse christmas tree. That is, sort these lines longest to shortest.
-
-> +
-> +	err = pci_enable_device_mem(pdev);
-> +	if (err)
-> +		return err;
-> +
-> +	if (!dma_set_mask(pci_dev_to_dev(pdev), DMA_BIT_MASK(64)) &&
-> +	    !dma_set_coherent_mask(pci_dev_to_dev(pdev), DMA_BIT_MASK(64))) {
-> +		pci_using_dac = 1;
-> +	} else {
-> +		err = dma_set_mask(pci_dev_to_dev(pdev), DMA_BIT_MASK(32));
-> +		if (err) {
-> +			err = dma_set_coherent_mask(pci_dev_to_dev(pdev),
-> +						    DMA_BIT_MASK(32));
-> +			if (err) {
-> +				dev_err(pci_dev_to_dev(pdev),
-> +					"No usable DMA configuration, aborting\n");
-> +				goto err_dma;
-> +			}
-> +		}
-> +		pci_using_dac = 0;
-> +	}
-> +
-> +	err = pci_request_selected_regions(pdev,
-> +					   pci_select_bars(pdev, IORESOURCE_MEM),
-> +					   txgbe_driver_name);
-> +	if (err) {
-> +		dev_err(pci_dev_to_dev(pdev),
-> +			"pci_request_selected_regions failed 0x%x\n", err);
-> +		goto err_pci_reg;
-> +	}
-> +
-> +	hw = vmalloc(sizeof(*hw));
-
-Why vmalloc? Is *hw very big? 
-
-> +	if (!hw)
-> +		return -ENOMEM;
-
-This should probably by a goto, to unwind what you have done above.
-
-> +
-> +	hw->vendor_id = pdev->vendor;
-> +	hw->device_id = pdev->device;
-> +	vfree(hw);
-
-??? You just allocated it?
-
-> +	pci_enable_pcie_error_reporting(pdev);
-> +	pci_set_master(pdev);
-> +	/* errata 16 */
-> +	if (MAX_REQUEST_SIZE == 512) {
-
-So this probably has something to do with my question above. Please
-explain.
-
-> +		pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL,
-> +						   PCI_EXP_DEVCTL_READRQ,
-> +						   0x2000);
-> +	} else {
-> +		pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL,
-> +						   PCI_EXP_DEVCTL_READRQ,
-> +						   0x1000);
-> +	}
-> +
-> +	netdev = alloc_etherdev_mq(sizeof(struct txgbe_adapter), indices);
-
-devm_alloc_etherdev_mqs(). Using devm makes your cleanup code simpler
-and so less buggy.
-
-> +	if (!netdev) {
-> +		err = -ENOMEM;
-> +		goto err_alloc_etherdev;
-> +	}
-> +
-> +	SET_NETDEV_DEV(netdev, pci_dev_to_dev(pdev));
-> +
-> +	adapter = netdev_priv(netdev);
-> +	adapter->netdev = netdev;
-> +	adapter->pdev = pdev;
-> +	hw = &adapter->hw;
-> +	hw->back = adapter;
-
-You should not need this. container_of() will get you from hw to adapter.
-
-> +	adapter->msg_enable = (1 << DEFAULT_DEBUG_LEVEL_SHIFT) - 1;
-> +
-> +	hw->hw_addr = ioremap(pci_resource_start(pdev, 0),
-> +			      pci_resource_len(pdev, 0));
-
-devm_ioremap()
-
-> +	adapter->io_addr = hw->hw_addr;
-
-Suggests you don't actually have a clean separation. So why have hw?
-
-> +	if (!hw->hw_addr) {
-> +		err = -EIO;
-> +		goto err_ioremap;
-> +	}
-> +
-> +	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
-
-The device gets a name when you register it. It is very unusual to do
-this. It needs an explanation.
-
-> +
-> +	/* setup the private structure */
-> +	err = txgbe_sw_init(adapter);
-> +	if (err)
-> +		goto err_sw_init;
-> +
-> +	if (pci_using_dac)
-> +		netdev->features |= NETIF_F_HIGHDMA;
-
-There should probably be a return 0; here, so the probe is
-successful. Without that, you cannot test the remove function.
-
-> +
-> +err_sw_init:
-> +	iounmap(adapter->io_addr);
-> +err_ioremap:
-> +	disable_dev = !test_and_set_bit(__TXGBE_DISABLED, &adapter->state);
-> +	free_netdev(netdev);
-> +err_alloc_etherdev:
-> +	pci_release_selected_regions(pdev,
-> +				     pci_select_bars(pdev, IORESOURCE_MEM));
-> +err_pci_reg:
-> +err_dma:
-> +	if (!adapter || disable_dev)
-> +		pci_disable_device(pdev);
-
-Having an if in unwind code like this is very unusual. Is it really
-needed?
-
-> +	return err;
-> +}
-> +
-> +/**
-> + * txgbe_remove - Device Removal Routine
-> + * @pdev: PCI device information struct
-> + *
-> + * txgbe_remove is called by the PCI subsystem to alert the driver
-> + * that it should release a PCI device.  The could be caused by a
-> + * Hot-Plug event, or because the driver is going to be removed from
-> + * memory.
-> + **/
-> +static void txgbe_remove(struct pci_dev *pdev)
-> +{
-> +	struct txgbe_adapter *adapter = pci_get_drvdata(pdev);
-> +	struct net_device *netdev;
-> +	bool disable_dev;
-> +
-> +	/* if !adapter then we already cleaned up in probe */
-> +	if (!adapter)
-> +		return;
-
-Remove is only called if the probe was success. So adapter is valid,
-no test needed.
-
-> +	netdev = adapter->netdev;
-> +
-> +	iounmap(adapter->io_addr);
-> +	pci_release_selected_regions(pdev,
-> +				     pci_select_bars(pdev, IORESOURCE_MEM));
-> +
-> +	disable_dev = !test_and_set_bit(__TXGBE_DISABLED, &adapter->state);
-> +	free_netdev(netdev);
-> +
-> +	pci_disable_pcie_error_reporting(pdev);
-> +
-> +	if (disable_dev)
-> +		pci_disable_device(pdev);
-
-And this test is probably not needed.
-
-> +}
-> +
-> +static bool txgbe_check_cfg_remove(struct txgbe_hw *hw, struct pci_dev *pdev)
-> +{
-> +	u16 value;
-> +
-> +	pci_read_config_word(pdev, PCI_VENDOR_ID, &value);
-> +	if (value == TXGBE_FAILED_READ_CFG_WORD) {
-> +		txgbe_remove_adapter(hw);
-> +		return true;
-> +	}
-> +	return false;
-
-This needs a comment to explain what is happening here, because it is
-not clear to me.
-
-
-> +}
-> +
-> +static struct pci_driver txgbe_driver = {
-> +	.name     = txgbe_driver_name,
-> +	.id_table = txgbe_pci_tbl,
-> +	.probe    = txgbe_probe,
-> +	.remove   = txgbe_remove,
-> +	.shutdown = txgbe_shutdown,
-> +};
-> +
-> +/**
-> + * txgbe_init_module - Driver Registration Routine
-> + *
-> + * txgbe_init_module is the first routine called when the driver is
-> + * loaded. All it does is register with the PCI subsystem.
-> + **/
-> +static int __init txgbe_init_module(void)
-> +{
-> +	int ret;
-> +
-> +	pr_info("%s\n", txgbe_driver_string);
-> +	pr_info("%s\n", txgbe_copyright);
-
-Don't spam the kernel log with useless information.
-
-> +
-> +	txgbe_wq = create_singlethread_workqueue(txgbe_driver_name);
-> +	if (!txgbe_wq) {
-> +		pr_err("%s: Failed to create workqueue\n", txgbe_driver_name);
-> +		return -ENOMEM;
-> +	}
-
-Why do you need a global work queue? I suggest you start with a plain
-PCI device, no __init and __exit functions. You can add this work
-queue along with the code which uses it. It will then be clear why it
-is needed.
-
-> +/* Little Endian defines */
-> +#ifndef __le16
-> +#define __le16  u16
-> +#endif
-> +#ifndef __le32
-> +#define __le32  u32
-> +#endif
-> +#ifndef __le64
-> +#define __le64  u64
-> +
-> +#endif
-> +#ifndef __be16
-> +/* Big Endian defines */
-> +#define __be16  u16
-> +#define __be32  u32
-> +#define __be64  u64
-
-The kernel provides these. No need for your own.
-
+On Wed, May 18, 2022 at 12:58 AM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Mon, May 16, 2022 at 8:44 PM <menglong8.dong@gmail.com> wrote:
+> >
+> > From: Menglong Dong <imagedong@tencent.com>
+> >
+> > Hello,
+> >
+> > I have a idea about the access control of eBPF map, could you help
+> > to see if it works?
+> >
+> > For now, only users with the CAP_SYS_ADMIN or CAP_BPF have the right
+> > to access the data in eBPF maps. So I'm thinking, are there any way
+> > to control the access to the maps, just like what we do to files?
+>
+> The bpf objects pinned in bpffs should always be accessible
+> as files regardless of sysctl or cap-s.
+>
+> > Therefore, we can decide who have the right to read the map and who
+> > can write.
+> >
+> > I think it is useful in some case. For example, I made a eBPF-based
+> > network statistics program, and the information is stored in an array
+> > map. And I want all users can read the information in the map, without
+> > changing the capacity of them. As the information is iunsensitive,
+> > normal users can read it. This make publish-consume mode possible,
+> > the eBPF program is publisher and the user space program is consumer.
+>
+> Right. It is a choice of the bpf prog which data expose in the map.
+>
+> > So this aim can be achieve, if we can control the access of maps as a
+> > file. There are many ways I thought, and I choosed one to implement:
+> >
+> > While pining the map, add the inode that is created to a list on the
+> > map. root can change the permission of the inode through the pin path.
+> > Therefore, we can try to find the inode corresponding to current user
+> > namespace in the list, and check whether user have permission to read
+> > or write.
+> >
+> > The steps can be:
+> >
+> > 1. create the map with BPF_F_UMODE flags, which imply that enable
+> >    access control in this map.
+> > 2. load and pin the map on /sys/fs/bpf/xxx.
+> > 3. change the umode of /sys/fs/bpf/xxx with 'chmod 744 /sys/fs/bpf/xxx',
+> >    therefor all user can read the map.
+>
+> This behavior should be available by default.
+> Only sysctl was preventing it. It's being fixed by
+> the following patch. Please take a look at:
+> https://patchwork.kernel.org/project/netdevbpf/patch/1652788780-25520-2-git-send-email-alan.maguire@oracle.com/
+>
+> Does it solve your use case?
+
+Yeah, it seems this patch gives another way: give users all access to
+bpf commands (except map_create and prog_load). Therefore, users
+that have the access to the pin path have corresponding r/w of the
+eBPF object. This patch can cover my case.
+
+However, this seems to give users too much permission (or the
+access check is not enough?) I have do a test:
+
+1. load a ebpf program of type cgroup and pin it on
+   /sys/fs/bpf/post_bind as root.
+2. give users access to read /sys/fs/bpf/post_bind
+3. Now, all users can attach or detach the eBPF program
+   to /sys/fs/cgroup/, who have only read access to the ebpf
+   and the cgroup.
+
+I think there are many such cases. Is this fine?
+
+>
+> > @@ -542,14 +557,26 @@ int bpf_obj_get_user(const char __user *pathname, int flags)
+> >         if (IS_ERR(raw))
+> >                 return PTR_ERR(raw);
+> >
+> > -       if (type == BPF_TYPE_PROG)
+> > +       if (type != BPF_TYPE_MAP && !bpf_capable())
+> > +               return -EPERM;
+>
+> obj_get already implements normal ACL style access to files.
+> Let's not fragment this security model with extra cap checks.
+>
+
+Yeah, my way is too rough.
+
+> > +
+> > +       switch (type) {
+> > +       case BPF_TYPE_PROG:
+> >                 ret = bpf_prog_new_fd(raw);
+> > -       else if (type == BPF_TYPE_MAP)
+> > +               break;
+> > +       case BPF_TYPE_MAP:
+> > +               if (bpf_map_permission(raw, f_flags)) {
+> > +                       bpf_any_put(raw, type);
+> > +                       return -EPERM;
+> > +               }
+>
+> bpf_obj_do_get() already does such check.
+>
+
+With the patch you mentioned above, now bpf_obj_do_get()
+can do this job, as normal users can also get there too.
+
+> > +int bpf_map_permission(struct bpf_map *map, int flags)
+> > +{
+> > +       struct bpf_map_inode *map_inode;
+> > +       struct user_namespace *ns;
+> > +
+> > +       if (capable(CAP_SYS_ADMIN))
+> > +               return 0;
+> > +
+> > +       if (!(map->map_flags & BPF_F_UMODE))
+> > +               return -1;
+> > +
+> > +       rcu_read_lock();
+> > +       list_for_each_entry_rcu(map_inode, &map->inode_list, list) {
+> > +               ns = map_inode->inode->i_sb->s_user_ns;
+> > +               if (ns == current_user_ns())
+> > +                       goto found;
+> > +       }
+> > +       rcu_read_unlock();
+> > +       return -1;
+> > +found:
+> > +       rcu_read_unlock();
+> > +       return inode_permission(ns, map_inode->inode, ACC_MODE(flags));
+> > +}
+>
+> See path_permission() in bpf_obj_do_get().
+>
+> >  static int bpf_map_get_fd_by_id(const union bpf_attr *attr)
+> > @@ -3720,9 +3757,6 @@ static int bpf_map_get_fd_by_id(const union bpf_attr *attr)
+> >             attr->open_flags & ~BPF_OBJ_FLAG_MASK)
+> >                 return -EINVAL;
+> >
+> > -       if (!capable(CAP_SYS_ADMIN))
+> > -               return -EPERM;
+> > -
+>
+> This part we cannot relax.
+> What you're trying to do is to bypass path checks
+> by pointing at a map with its ID only.
+> That contradicts to your official goal in the cover letter.
+>
+> bpf_map_get_fd_by_id() has to stay cap_sys_admin only.
+> Exactly for the reason that bpf subsystem has file ACL style.
+> fd_by_id is a debug interface used by tools like bpftool and
+> root admin that needs to see the system as a whole.
+> Normal tasks/processes need to use bpffs and pin files with
+> correct permissions to pass maps from one process to another.
+> Or use FD passing kernel facilities.
+
+Yeah, this part is not necessary for me either. Without this
+part, the current code already can do what I wanted.
+
+Thanks
+Menglong Dong
