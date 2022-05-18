@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C75A852B2AD
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 08:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE03C52B2A2
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 08:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231593AbiERGt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 02:49:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33554 "EHLO
+        id S231625AbiERGuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 02:50:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231576AbiERGtu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 02:49:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F24522228A
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 23:49:48 -0700 (PDT)
+        with ESMTP id S231515AbiERGuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 02:50:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E22222A6
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 23:49:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7359C60B8C
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 06:49:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9345C385A5;
-        Wed, 18 May 2022 06:49:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 09EF7B81E96
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 06:49:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD7F0C385A9;
+        Wed, 18 May 2022 06:49:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652856587;
-        bh=tapj29CQ1/xfrfaxd3hwtC1iFjuTc61DoIrWaBhaMUY=;
+        s=k20201202; t=1652856588;
+        bh=3HyCebgutehj97u9eF+nBk+cDHl9asxjvET1VGm/jRs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f5+f4Zf07Xl4ycUes0EvksKNQBLjNIk5eN268IfXnjgw3MjNuKy9CVoAH10U/I431
-         adtVgylc9zx2xO7McYNxkTfr4pm/l9QXtnbGMw5xrADpKZVeAt1jgsh5/uu6VbW55o
-         5D4mq9zvkJUTmal+UGAQvMG+bzCetmvJAYsE2rMoPIWvjzqPhIlP/lpDncaLyeE2LE
-         UsgaVTuez9dhewmLRMggRYqRs2kN9MZfVaA1S5zpy/1UswHGSKmo1St9oUdfVnLi5o
-         n3WY0kZ/iWFPl6nn/JuXjeNH/A/ZhdfrVevwykD+UGrKE9aRkUeor3mLAF1Cw2tCy6
-         46McWqVx8gfrQ==
+        b=ZLzrEF4zaBlIEFyL9mOkEbh8U64JiW2iiGID2RqhvJtQT9WckAv2NgUP3R2gXIwPf
+         Fu7FlTLwxbDDLLpS0G5p/FZ80D9bRL1gObPpzTSlHDxQ7Xa5y4jgB8qgE7yrmtNCEf
+         l7x+LE65OZARCPMbmJ/ooUqx55QrKAgWYGHp02lf/D7qunRQxRr6M1D89sOv6H8cGp
+         RejmA/bpd3aHkWL+pXpMOe3/bab5w7HEp23/vyf1YHqUUPJZB2YDt45GJW9mbuHKU2
+         zC2W8C8J/BNJEzE5rxXE/EVDk5qMYGMME+uK6eb08bMrQ9605bAGhephISvh+7/pei
+         cMAkOEAB7uWVg==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -38,9 +38,9 @@ To:     "David S. Miller" <davem@davemloft.net>,
 Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
         Moshe Shemesh <moshe@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 05/16] net/mlx5: Allocate virtually contiguous memory in pci_irq.c
-Date:   Tue, 17 May 2022 23:49:27 -0700
-Message-Id: <20220518064938.128220-6-saeed@kernel.org>
+Subject: [net-next 06/16] net/mlx5e: Allocate virtually contiguous memory for VLANs list
+Date:   Tue, 17 May 2022 23:49:28 -0700
+Message-Id: <20220518064938.128220-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220518064938.128220-1-saeed@kernel.org>
 References: <20220518064938.128220-1-saeed@kernel.org>
@@ -66,33 +66,29 @@ Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en_fs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index db77f1d2eeb4..662f1d55e30e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -94,8 +94,8 @@ int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int function_id,
- 	if (msix_vec_count > max_msix)
- 		return -EOVERFLOW;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+index aeff1d972a46..d2f0773f95c6 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+@@ -155,7 +155,7 @@ static int mlx5e_vport_context_update_vlans(struct mlx5e_priv *priv)
+ 		list_size = max_list_size;
+ 	}
  
--	query_cap = kzalloc(query_sz, GFP_KERNEL);
--	hca_cap = kzalloc(set_sz, GFP_KERNEL);
-+	query_cap = kvzalloc(query_sz, GFP_KERNEL);
-+	hca_cap = kvzalloc(set_sz, GFP_KERNEL);
- 	if (!hca_cap || !query_cap) {
- 		ret = -ENOMEM;
- 		goto out;
-@@ -118,8 +118,8 @@ int mlx5_set_msix_vec_count(struct mlx5_core_dev *dev, int function_id,
- 		 MLX5_SET_HCA_CAP_OP_MOD_GENERAL_DEVICE << 1);
- 	ret = mlx5_cmd_exec_in(dev, set_hca_cap, hca_cap);
- out:
--	kfree(hca_cap);
--	kfree(query_cap);
-+	kvfree(hca_cap);
-+	kvfree(query_cap);
- 	return ret;
+-	vlans = kcalloc(list_size, sizeof(*vlans), GFP_KERNEL);
++	vlans = kvcalloc(list_size, sizeof(*vlans), GFP_KERNEL);
+ 	if (!vlans)
+ 		return -ENOMEM;
+ 
+@@ -171,7 +171,7 @@ static int mlx5e_vport_context_update_vlans(struct mlx5e_priv *priv)
+ 		netdev_err(ndev, "Failed to modify vport vlans list err(%d)\n",
+ 			   err);
+ 
+-	kfree(vlans);
++	kvfree(vlans);
+ 	return err;
  }
  
 -- 
