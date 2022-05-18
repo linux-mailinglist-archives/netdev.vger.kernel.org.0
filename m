@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B9CBE52C7E7
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 01:48:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8291452C7EC
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 01:49:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231173AbiERXsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 19:48:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37972 "EHLO
+        id S231474AbiERXtM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 19:49:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230426AbiERXsB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 19:48:01 -0400
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1FD36C553;
-        Wed, 18 May 2022 16:47:58 -0700 (PDT)
-Received: by mail-io1-xd2b.google.com with SMTP id r27so4138905iot.1;
-        Wed, 18 May 2022 16:47:58 -0700 (PDT)
+        with ESMTP id S229806AbiERXtL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 19:49:11 -0400
+Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE642A466;
+        Wed, 18 May 2022 16:49:10 -0700 (PDT)
+Received: by mail-io1-xd32.google.com with SMTP id o190so4088309iof.10;
+        Wed, 18 May 2022 16:49:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nTdi9CbRM5VKkUgL2yj5qTwJRLvpQpGzPXBWGqbQeHo=;
-        b=FuwNhJMCX0d3vz+z2IOKHnk9+b19diFdQE3zpqB46H28eoyemCESwErfQa5bWSOjtX
-         i13iUgP+Hq+jlrt3XzovGs6FLYCs3GlkaYF94bzkRBv2jbAUo26iaQ3LU2fMCA6S1Jo1
-         ZYYpT7R+fe/GSpPBi7MH+3HkSXPdvLHEHype0PDa6S7QG0KnRw1gkO+69Gw1A8KpG9Wz
-         37vBaOtHOAe2eRftKtYcHRVUbUwC1cKCfFL74uDiwq/0/H9bXM/5JXtWu6IkLufUyOtE
-         KdNt0FxxE6+BGwMvKpgZ1Wscou57V03mqh475Xk4gc71t58uh2GwyNqHBG033M/GarCd
-         EUBA==
+        bh=Ud+QA/ARNed/7Sysp4Ba2/DDtJgmT6FrhKuZQJZLqrg=;
+        b=l29nhmTHoc9j7TYGNASTOi+cL2GLBndh8TsCxn9kX8Eyxa4sleln5MwyxEWSmFmVNr
+         vljsPinYr27p/4LcBNS1YokKyqjPDg3YjkjRAOzuu4C0rzVSpgMRfPlKpWJIz/ACva/O
+         Tn0rfYWMmZC495TdqCqmyPV2ZDxRLkUWJgC1mL/SsuoRgzYIjsSp2xk9WhxYih6QJ4HS
+         hlKZwKBe6Waksmq3BsadTaTaGWKJsilF5ElRy71Bsn8FEWDdCzANRm23T9vzmRkJJGE1
+         gncXaUmpRUB73h/3jqMZ1/5tA2IZ9Az84eCUXIsabjaAenZaOx1MJb+GOtHpr+TuiHSP
+         BU9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nTdi9CbRM5VKkUgL2yj5qTwJRLvpQpGzPXBWGqbQeHo=;
-        b=Tv9t5BPaO2CED2Y+OD3hchh1L3p7f7RipDn3dIGhdgsbGDCEUS7gSPsRFMT3rrl6In
-         hIw4fmTsPitX13it/b9XbRS4R+tZADxAw4R6NSstTEXUUSxcqwS2AmiSban8hwbvPnkC
-         2fuFAoE3HLu/v962shapQ+1iioSg9bFHeh8i4i6Mk1m6jM+org/USf0NZnoy6DnlNUZ1
-         afCejmHJiDks8FpNwBfCm5avqxqbJcNJvd2rcEHa+D3r7Fdh8lu5fOYxNclsicBFaFnC
-         IRfYMnWeOORu/f3/JHZIMOYir/YR7enV4LnJ7XlPYeyAgGlQwo3B92WevY27AQujAav1
-         D/Cg==
-X-Gm-Message-State: AOAM530NF9YeT3p01Aarxnj05E1lhN+nkmp8gNMouvEqQWm9yj8Z2RSs
-        7C8ge4qB12V5eawUxuxeSIrhaSG7SdFyfn1Gc3f81l1d
-X-Google-Smtp-Source: ABdhPJwWa3D8lmQO47Z1xkfSUrjYANuEQfbPNHcYfknpSJjYYBhu0Enflnpk3t7wyKRrdwMmQu47Tke2L3GmfpPqQhE=
-X-Received: by 2002:a05:6638:450a:b0:32e:1bd1:735f with SMTP id
- bs10-20020a056638450a00b0032e1bd1735fmr1123599jab.145.1652917678073; Wed, 18
- May 2022 16:47:58 -0700 (PDT)
+        bh=Ud+QA/ARNed/7Sysp4Ba2/DDtJgmT6FrhKuZQJZLqrg=;
+        b=fpP0uFjO6ZgjoI5zIQuOt61e/nXTqdk4MPl4gJLVLeRcoT85OW++jylpZSlIt3r2w6
+         /7pnd6cqm0ytFPk36OlAnfXJpyFx3uMrUCMAKa9+n0eF6qzzC1wQy47mMODDMOZjA6Rz
+         RZGmjXf3HRAFVZ6WLqlqsrI9v25Tp2estpgH3fVjLP9eMeVBCW5K6J+EPbm0XW2AzKUC
+         tGN1dmE98p+ID2OfTH52h6SdfCPVXyJI2lB6YHDYK5d9zipctSr0e2h2RUwffIVXxGOu
+         A7BzdqRsIgL/ZHwDpCvKfF+XYLKOS8god/nGMCG867+hdK+Xw+HfN5flJ045MEdHvzHx
+         LRsA==
+X-Gm-Message-State: AOAM531LtHrBLuqvjdmAQWGkawOQ7e33mINhy37RJiuFlig8GaV4wXj4
+        mdtF/ypx2JeVVSchMnOzNJ/Xpp92r1aPZK5d+Ac=
+X-Google-Smtp-Source: ABdhPJw5qkxuPtMpH2uETRks3QQuEQgahrcY5gcUHWem8GX3VmXTH+P0XONkKC6w7rX3lS2U51Dr8Qq3dnA0XveFol8=
+X-Received: by 2002:a05:6638:33a1:b0:32b:8e2b:f9ba with SMTP id
+ h33-20020a05663833a100b0032b8e2bf9bamr1104425jav.93.1652917750301; Wed, 18
+ May 2022 16:49:10 -0700 (PDT)
 MIME-Version: 1.0
 References: <cover.1652772731.git.esyr@redhat.com> <6ef675aeeea442fa8fc168cd1cb4e4e474f65a3f.1652772731.git.esyr@redhat.com>
  <YoNnAgDsIWef82is@krava> <20220517123050.GA25149@asgard.redhat.com>
@@ -51,8 +51,8 @@ References: <cover.1652772731.git.esyr@redhat.com> <6ef675aeeea442fa8fc168cd1cb4
  <YoTXiAk1EpZ0rLKE@krava> <20220518123022.GA5425@asgard.redhat.com>
 In-Reply-To: <20220518123022.GA5425@asgard.redhat.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 18 May 2022 16:47:47 -0700
-Message-ID: <CAEf4BzbNZEsu0PVsqUCY72ogP0EqjMwt8hnZ_YD5-WWtoTUrSQ@mail.gmail.com>
+Date:   Wed, 18 May 2022 16:48:59 -0700
+Message-ID: <CAEf4BzbRYT4ykpxzXKGQ03REoVRKm_q8=oVEVCXfE+4zVDb=8A@mail.gmail.com>
 Subject: Re: [PATCH bpf-next v3 4/4] bpf_trace: pass array of u64 values in kprobe_multi.addrs
 To:     Eugene Syromiatnikov <esyr@redhat.com>
 Cc:     Jiri Olsa <olsajiri@gmail.com>, Yonghong Song <yhs@fb.com>,
@@ -134,11 +134,6 @@ On Wed, May 18, 2022 at 5:30 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
 > pointers (so they may be 64-bit even when the application is 32-bit).
 > Nothing prevents from changing the interface so that syms is an array
 > of 64-bit values treated as user space pointers, of course.
-
-I agree. User-space pointers should stay pointers in libbpf API ,
-while kernel addresses are not really pointers for user-space app, so
-marking it as __u64 seems right.
-
 >
 > > > > > > we'll need to fix also bpf_kprobe_multi_cookie_swap because it assumes
 > > > > > > 64bit user space pointers
@@ -152,3 +147,6 @@ marking it as __u64 seems right.
 >
 > Sure, I'll try to write one.
 >
+
+Not sure how you can do that without having extra test_progs variant
+that's running in compat mode?
