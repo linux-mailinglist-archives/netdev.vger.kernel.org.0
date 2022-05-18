@@ -2,51 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8183E52AF1D
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 02:21:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8550A52AF2E
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 02:32:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232418AbiERAVq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 20:21:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38328 "EHLO
+        id S232568AbiERAcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 20:32:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229524AbiERAVp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 20:21:45 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E9F4ECEB
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 17:21:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 930A86141C
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 00:21:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D57B4C385B8;
-        Wed, 18 May 2022 00:21:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652833303;
-        bh=oEGgxzLYF6IckywGUwMoV9dF0/nlyFNFeZbGaSEKi8s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CZf/ASIlxYr3BTahMxa1NWkYRuvoTyXiQOiCPDxSWQze3jdtKU6KqSYY+Mtf+YKLx
-         ZMilNdhyuhHPjdbNiatkPqm+k0kbxSXPgoLyNTndmNHLaEekBCJM17VpUSlBoKhsdC
-         /mZZm8wwaIchXnGQIV6yK6ibS4wx1VMTMBkzOICBlpso0J27bOZ0AqRXw97MRYk3Rw
-         Drl+ErkxCXzhhFjhVJWmN9/hFf+TzCdcxOfO0WvFS9/nI0P71EAVQqg9GUhfrVX35J
-         YUddk886mrXeJ7j4tbkV8iTP7Pt64WBkeodqrz+0hwNUlxSXCoDNxI9peMlCDelpWt
-         iHbUVQsNPiIOg==
-Date:   Tue, 17 May 2022 17:21:41 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, davem@davemloft.net,
-        Edward Cree <ecree@solarflare.com>
-Subject: Re: [PATCHv2 net] Documentation: add description for
- net.core.gro_normal_batch
-Message-ID: <20220517172141.0eb57b8a@kernel.org>
-In-Reply-To: <21572bb1e0cc55596965148b8fdf31120606480f.1652454155.git.lucien.xin@gmail.com>
-References: <21572bb1e0cc55596965148b8fdf31120606480f.1652454155.git.lucien.xin@gmail.com>
+        with ESMTP id S231217AbiERAco (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 20:32:44 -0400
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20A561C906;
+        Tue, 17 May 2022 17:32:43 -0700 (PDT)
+Received: by mail-oi1-f170.google.com with SMTP id i66so852809oia.11;
+        Tue, 17 May 2022 17:32:43 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=QFA2d6A5RAAWuqracc3xgYj5/7N951deGtq1dGA/bWc=;
+        b=lnlP/DqbyNNQEKEY9T+7cfxVQxwVTPr/PpLu6T78pNnv4uegXXHhIMMnrF7nVhSROS
+         cOvQhTWdtIfymd1SDHt/jBz8In87lRqSDqflC94C7y1OglERVH0HE0zTmkFkuJEDK9pS
+         HtF+CgmsoYFOeHTV9ZCKxAEV79BCj5gmvgeGrmx2ZB886IwFCMMjt22XqJhfztjZ4RlT
+         rCUUrtpOJ1uJWmopT35LRtrG1DuB98lHlPaFNLDSanowLz6DrH8xV44sV+jOlcsmOOMr
+         y+rl84At8khAsq5e8ES55ez5TqWir8lhLikV0HiIipT052AgiJ5ZSAqdch6EOOls5qDz
+         WOGQ==
+X-Gm-Message-State: AOAM532CTcz2XW6ba6NDewaKHw05jj5ZiwoIlVgy5lvtNBTP9tS0duIX
+        ogNu/WmGZlbKOLBg3GB+Bw==
+X-Google-Smtp-Source: ABdhPJw5DZXNbuW8nDNfJiIdYvSR1Uh4wOaOI3dT2Xe9fAeFaCnt8jBFuPGMDkqG/VMIrEL+HXhMIg==
+X-Received: by 2002:a05:6808:2025:b0:326:6f73:5270 with SMTP id q37-20020a056808202500b003266f735270mr17557180oiw.241.1652833962463;
+        Tue, 17 May 2022 17:32:42 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id 49-20020a9d0134000000b0060603221271sm297499otu.65.2022.05.17.17.32.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 May 2022 17:32:41 -0700 (PDT)
+Received: (nullmailer pid 1944462 invoked by uid 1000);
+        Wed, 18 May 2022 00:32:40 -0000
+Date:   Tue, 17 May 2022 19:32:40 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, krzysztof.kozlowski+dt@linaro.org,
+        harini.katakam@xilinx.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        git@xilinx.com
+Subject: Re: [RFC net-next] dt-bindings: net: xilinx: document xilinx
+ emaclite driver binding
+Message-ID: <20220518003240.GA1942137-robh@kernel.org>
+References: <1652373596-5994-1-git-send-email-radhey.shyam.pandey@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1652373596-5994-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
+        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,53 +65,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 13 May 2022 11:02:35 -0400 Xin Long wrote:
-> Describe it in admin-guide/sysctl/net.rst like other Network core options.
-> Users need to know gro_normal_batch for performance tuning.
+On Thu, May 12, 2022 at 10:09:56PM +0530, Radhey Shyam Pandey wrote:
+> Add basic description for the xilinx emaclite driver DT bindings.
 > 
-> v1->v2:
->   - Improved the description according to the suggestion from Edward and
->     Jakub.
-> 
-> Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
-> Reported-by: Prijesh Patel <prpatel@redhat.com>
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 > ---
->  Documentation/admin-guide/sysctl/net.rst | 11 +++++++++++
->  1 file changed, 11 insertions(+)
+>  .../bindings/net/xlnx,emaclite.yaml           | 60 +++++++++++++++++++
+>  1 file changed, 60 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
 > 
-> diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
-> index f86b5e1623c6..5cb99403bf03 100644
-> --- a/Documentation/admin-guide/sysctl/net.rst
-> +++ b/Documentation/admin-guide/sysctl/net.rst
-> @@ -374,6 +374,17 @@ option is set to SOCK_TXREHASH_DEFAULT (i. e. not overridden by setsockopt).
->  If set to 1 (default), hash rethink is performed on listening socket.
->  If set to 0, hash rethink is not performed.
->  
-> +gro_normal_batch
-> +----------------
+> diff --git a/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> new file mode 100644
+> index 000000000000..a3e2a0e89b24
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+> @@ -0,0 +1,60 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/xlnx,emaclite.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +Maximum number of the segments to batch up for GRO list-RX.
-
-How about s/for GRO list-RX/on output of GRO/ ?
-
-> When a packet exits
-> +GRO, either as a coalesced superframe or as an original packet which GRO has
-> +decided not to coalesce, it is placed on a per-NAPI list. This list is then
-> +passed to the stack when the segments in this list count towards the
-> +gro_normal_batch limit.
-
-... when the number of segments reaches the gro_normal_batch limit.
-
+> +title: Xilinx Emaclite Ethernet controller
 > +
-> +Default : 8
+> +maintainers:
+> +  - Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+> +  - Harini Katakam <harini.katakam@xilinx.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - xlnx,opb-ethernetlite-1.01.a
+> +      - xlnx,opb-ethernetlite-1.01.b
+> +      - xlnx,xps-ethernetlite-1.00.a
+> +      - xlnx,xps-ethernetlite-2.00.a
+> +      - xlnx,xps-ethernetlite-2.01.a
+> +      - xlnx,xps-ethernetlite-3.00.a
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  phy-handle: true
+> +
+> +  local-mac-address: true
+> +
+> +  xlnx,tx-ping-pong:
+> +    type: boolean
+> +    description: hardware supports tx ping pong buffer.
+> +
+> +  xlnx,rx-ping-pong:
+> +    type: boolean
+> +    description: hardware supports rx ping pong buffer.
 
-Also, should we drop the default? It's easy to grep for, chances are if
-anyone updates the value they will forget to change the doc.
+Are these based on IP version or configuration of IP?
 
-Sorry for the late review, I wasn't expecting v3 will be needed.
-
->  2. /proc/sys/net/unix - Parameters for Unix domain sockets
->  ----------------------------------------------------------
->  
-
+Rob
