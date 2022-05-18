@@ -2,82 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B8DE752AFB8
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:14:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22CB452AFBE
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 03:15:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233319AbiERBOS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 17 May 2022 21:14:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45212 "EHLO
+        id S232002AbiERBPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 17 May 2022 21:15:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229645AbiERBOR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:14:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D379853708
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 18:14:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652836455;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=mV6LTTKwyqfq/7ssemAlNvDeD4O9G77Xds9teeBGd1M=;
-        b=Lvwu5OSawXtAZr6E11u7sCYNBHFGOXN/WQD/zD1B7gIxWE/RadB6DDO6tYs20DNNPxH95I
-        CUAL3BHXfVMXu8J66eezO431RSewXPsccFonje4bqGBByFBl2nOdQPHdR9ycri8Ne23CLN
-        eZrKjdJurck963nGkyFdH/SU4fYa65A=
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
- [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-259-LkKOFKbwOKmO1OcM5oSPyw-1; Tue, 17 May 2022 21:14:14 -0400
-X-MC-Unique: LkKOFKbwOKmO1OcM5oSPyw-1
-Received: by mail-qv1-f71.google.com with SMTP id q36-20020a0c9127000000b00461e3828064so471490qvq.12
-        for <netdev@vger.kernel.org>; Tue, 17 May 2022 18:14:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mV6LTTKwyqfq/7ssemAlNvDeD4O9G77Xds9teeBGd1M=;
-        b=b0Dtchrx7SULU8cJV8FlkFebDnudsaA6keap4+FF+WSoKBv86LwVQJz3Oor0XDZ/c4
-         37pDzBjQmNgug4D/rpjAAEwpvavTsNM1j1ZVIQgYl0rEIqsYUPsDKzDrFTNwrPsSaCQP
-         wgaOxkz/cY0Q7F/KlRjZsK6X/4oxgPKOpx/6YVGGi9XM1G3XPcx6sEA0ZQd4h71nWsVW
-         zNnQgT9RJ3g7txt6vHE//8w2hX9jTme3PM5Utan4jwP5TvGwP9iayPuK0qT/+RdYcpQy
-         1fsbyep58CM4JjnzbYt7EOeftmqpHLVpj01CN6ObU/kPNyD8eLki/Pqx5NtJhuuPKHJA
-         Shrg==
-X-Gm-Message-State: AOAM532+QzpZBC0D8g15RM6yPPmAGjwmaJtw5QVVAgzWV+zuyEpJJKQ6
-        3PAwZThm4+FnoEfjodxE4KonRWRckjg6AMAsvmoSBo03ztMj0RKnf3uG/NyafqXYn+HmQgkwiQ/
-        vYg4IH8JWIpENBfmuCTcW6V5x5uJ5D1Is
-X-Received: by 2002:ac8:5a8d:0:b0:2f3:e201:33ab with SMTP id c13-20020ac85a8d000000b002f3e20133abmr22039836qtc.470.1652836454210;
-        Tue, 17 May 2022 18:14:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx2Z7hqz4nu2xjcaYj7EyXEAss12lPSBXSsGnko8uptJmzaUiDC/Isw4ptT1w0Ih1zl0A6PnqmBI63IrLM8jIk=
-X-Received: by 2002:ac8:5a8d:0:b0:2f3:e201:33ab with SMTP id
- c13-20020ac85a8d000000b002f3e20133abmr22039822qtc.470.1652836453995; Tue, 17
- May 2022 18:14:13 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220512143314.235604-1-miquel.raynal@bootlin.com>
- <20220512143314.235604-10-miquel.raynal@bootlin.com> <CAK-6q+ipHdD=NJB2N7SHQ0TUvNpc0GQXZ7dWM9nDxqyqNgxdSA@mail.gmail.com>
- <CAK-6q+i_T+FaK0tX6tF38VjyEfSzDi-QC85MTU2=4soepAag8g@mail.gmail.com> <20220517153045.73fda4ee@xps-13>
-In-Reply-To: <20220517153045.73fda4ee@xps-13>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Tue, 17 May 2022 21:14:03 -0400
-Message-ID: <CAK-6q+h1fmJZobmUG5bUL3uXuQLv0kvHUv=7dW+fOCcgbrdPiA@mail.gmail.com>
-Subject: Re: [PATCH wpan-next v2 09/11] net: mac802154: Introduce a
- synchronous API for MLME commands
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        linux-wpan - ML <linux-wpan@vger.kernel.org>,
+        with ESMTP id S233380AbiERBPS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 17 May 2022 21:15:18 -0400
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6A6D54187;
+        Tue, 17 May 2022 18:15:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652836514; x=1684372514;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6tM7gH4JRFS/rWl6JwkUGKCjUG1QwGkrdJ6CLSIx99k=;
+  b=BW5DDf8NhRFcwwpKiqW9KZolGfJwVscOubYrTOKqqHebUf91oDAXlarP
+   k/aN2ccibWeqLp5xycukAmpICJ/jwTPjFvlpCpn6qwsMniJcRU/JEeKty
+   MsmFB9hJw5xYSfbhiW+0ArudxZNQAVqL9+gK9QisOYmoQIvkvM+OVRxmx
+   A/9GaW+W9Qasylu3nkPgUK1yH0xijTCFJTfBfP0pSa0pwr71/THrnCWpH
+   tGiSONpmu/w8dJeAa0mwkcNADEUfEA/PLN0AJJWMBqKgxHwt/FW4SGuy2
+   hyq8XsEHR2i2iykVT8qkfxlqHyz3V2RFT+eHrrvLkE6mUrUF5l2/KqfKq
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10350"; a="258979715"
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="258979715"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 May 2022 18:15:14 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,233,1647327600"; 
+   d="scan'208";a="597448146"
+Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
+  by orsmga008.jf.intel.com with ESMTP; 17 May 2022 18:15:10 -0700
+Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nr8HN-0001d7-Md;
+        Wed, 18 May 2022 01:15:09 +0000
+Date:   Wed, 18 May 2022 09:14:38 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     longli@linuxonhyperv.com, "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        David Girault <david.girault@qorvo.com>,
-        Romuald Despres <romuald.despres@qorvo.com>,
-        Frederic Blain <frederic.blain@qorvo.com>,
-        Nicolas Schodet <nico@ni.fr.eu.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        netdev@vger.kernel.org, linux-hyperv@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Long Li <longli@microsoft.com>
+Subject: Re: [PATCH 12/12] RDMA/mana_ib: Add a driver for Microsoft Azure
+ Network Adapter
+Message-ID: <202205180903.446J0L2Y-lkp@intel.com>
+References: <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1652778276-2986-13-git-send-email-longli@linuxonhyperv.com>
+X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -86,88 +76,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi,
 
-On Tue, May 17, 2022 at 9:30 AM Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->
->
-> aahringo@redhat.com wrote on Sun, 15 May 2022 19:03:53 -0400:
->
-> > Hi,
-> >
-> > On Sun, May 15, 2022 at 6:28 PM Alexander Aring <aahringo@redhat.com> wrote:
-> > >
-> > > Hi,
-> > >
-> > > On Thu, May 12, 2022 at 10:34 AM Miquel Raynal
-> > > <miquel.raynal@bootlin.com> wrote:
-> > > >
-> > > > This is the slow path, we need to wait for each command to be processed
-> > > > before continuing so let's introduce an helper which does the
-> > > > transmission and blocks until it gets notified of its asynchronous
-> > > > completion. This helper is going to be used when introducing scan
-> > > > support.
-> > > >
-> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > ---
-> > > >  net/mac802154/ieee802154_i.h |  1 +
-> > > >  net/mac802154/tx.c           | 25 +++++++++++++++++++++++++
-> > > >  2 files changed, 26 insertions(+)
-> > > >
-> > > > diff --git a/net/mac802154/ieee802154_i.h b/net/mac802154/ieee802154_i.h
-> > > > index a057827fc48a..f8b374810a11 100644
-> > > > --- a/net/mac802154/ieee802154_i.h
-> > > > +++ b/net/mac802154/ieee802154_i.h
-> > > > @@ -125,6 +125,7 @@ extern struct ieee802154_mlme_ops mac802154_mlme_wpan;
-> > > >  void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb);
-> > > >  void ieee802154_xmit_sync_worker(struct work_struct *work);
-> > > >  int ieee802154_sync_and_hold_queue(struct ieee802154_local *local);
-> > > > +int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb);
-> > > >  netdev_tx_t
-> > > >  ieee802154_monitor_start_xmit(struct sk_buff *skb, struct net_device *dev);
-> > > >  netdev_tx_t
-> > > > diff --git a/net/mac802154/tx.c b/net/mac802154/tx.c
-> > > > index 38f74b8b6740..ec8d872143ee 100644
-> > > > --- a/net/mac802154/tx.c
-> > > > +++ b/net/mac802154/tx.c
-> > > > @@ -128,6 +128,31 @@ int ieee802154_sync_and_hold_queue(struct ieee802154_local *local)
-> > > >         return ieee802154_sync_queue(local);
-> > > >  }
-> > > >
-> > > > +int ieee802154_mlme_tx(struct ieee802154_local *local, struct sk_buff *skb)
-> > > > +{
-> > > > +       int ret;
-> > > > +
-> > > > +       /* Avoid possible calls to ->ndo_stop() when we asynchronously perform
-> > > > +        * MLME transmissions.
-> > > > +        */
-> > > > +       rtnl_lock();
-> > >
-> > > I think we should make an ASSERT_RTNL() here, the lock needs to be
-> > > earlier than that over the whole MLME op. MLME can trigger more than
-> >
-> > not over the whole MLME_op, that's terrible to hold the rtnl lock so
-> > long... so I think this is fine that some netdev call will interfere
-> > with this transmission.
-> > So forget about the ASSERT_RTNL() here, it's fine (I hope).
-> >
-> > > one message, the whole sync_hold/release queue should be earlier than
-> > > that... in my opinion is it not right to allow other messages so far
-> > > an MLME op is going on? I am not sure what the standard says to this,
-> > > but I think it should be stopped the whole time? All those sequence
-> >
-> > Whereas the stop of the netdev queue makes sense for the whole mlme-op
-> > (in my opinion).
->
-> I might still implement an MLME pre/post helper and do the queue
-> hold/release calls there, while only taking the rtnl from the _tx.
->
-> And I might create an mlme_tx_one() which does the pre/post calls as
-> well.
->
-> Would something like this fit?
+I love your patch! Yet something to improve:
 
-I think so, I've heard for some transceiver types a scan operation can
-take hours... but I guess whoever triggers that scan in such an
-environment knows that it has some "side-effects"...
+[auto build test ERROR on linus/master]
+[also build test ERROR on v5.18-rc7 next-20220517]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-- Alex
+url:    https://github.com/intel-lab-lkp/linux/commits/longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220517-170632
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git 42226c989789d8da4af1de0c31070c96726d990c
+config: x86_64-randconfig-a002-20220516 (https://download.01.org/0day-ci/archive/20220518/202205180903.446J0L2Y-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 853fa8ee225edf2d0de94b0dcbd31bea916e825e)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/f082dc68ab65c498c978d574e62413d50286b4f9
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review longli-linuxonhyperv-com/Introduce-Microsoft-Azure-Network-Adapter-MANA-RDMA-driver/20220517-170632
+        git checkout f082dc68ab65c498c978d574e62413d50286b4f9
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from <built-in>:1:
+>> ./usr/include/rdma/mana-abi.h:12:10: fatal error: 'linux/mana/mana.h' file not found
+   #include <linux/mana/mana.h>
+            ^~~~~~~~~~~~~~~~~~~
+   1 error generated.
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
