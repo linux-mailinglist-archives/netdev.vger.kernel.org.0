@@ -2,48 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 01D1152BA6A
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:39:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5092552BAE4
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:39:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236887AbiERMag (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 08:30:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54958 "EHLO
+        id S236737AbiERMa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:30:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236946AbiERM3w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:29:52 -0400
+        with ESMTP id S236710AbiERM3z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:29:55 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8F41118014;
-        Wed, 18 May 2022 05:28:25 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A472B197F5D;
+        Wed, 18 May 2022 05:28:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 967316168A;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23240616A6;
+        Wed, 18 May 2022 12:28:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 828D9C385A5;
         Wed, 18 May 2022 12:28:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6BF5C36AE2;
-        Wed, 18 May 2022 12:28:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652876905;
-        bh=QthLUezj51OHIH/d94GCmVVj5dFJwmK1Ae4LYtY9Z2E=;
+        s=k20201202; t=1652876906;
+        bh=Z0yLV7OaN3ICxtsmf7PdR/dPOvR2eTHVeN76hlLFETA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P0plilsyT74Gx/8nWpnnRizMiye9QukeV7BEQg9OKLQDkmdWtkwrJ7U+0UjMH/p1g
-         ZrEUpXOp5+tNoCYh+9qWxW6FcrYQTBzAG/tDJ4sGmZZw9LM+XsRM+tu8dE63Gl36Hx
-         753SwF31SNLYu0cgRlTo5uytPfeWmJdx4GLDB6fB1s4cemYIVR/NYa7tQspiPWNZ3l
-         6MWVzOJku32KjqbeC8MgBs01h5rXkczd+PUJa9mLOT8h/pm25N6IzAaK1BkFQruiQ7
-         d0H5ljLlguv5OOnY4jywm9I9Y5eDTDIOtHDAT33KTt1D2W3w2DUrSl4WcCXFRJX3Iu
-         Q26wqbiqQic0g==
+        b=d4VrlgWcm6tWZWVE22sljt1Hq/nBlMKOnOSABwOwA1kQRo6mV4SOiEDdTXdhM7PWO
+         WLfbB60J7Gfgm5BCdRnT5KIzntIsPzYDPA93PezrhizLL2xbKUgOeprzuqyF4yt0SW
+         35WFvK3W7XvB0gi5uuxnM+e28p9bIDOK0e5/UXvUy0PUAPnK0t4oAU2hRta7VPFUfz
+         CuWQJJRVA+mxzOb020yzBoJyMX+ahuwYqhNMT7w66rM7P12ckHsO+RIXRPGRvpzWQ6
+         vx2+WuW1UzaTm3AnE/+Fuk1mkB0GZ3ZzwtQcqco1ZCQcVvt8YPIn1lqgnQLisNeGA7
+         hv8GF2mF5a/ZA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Grant Grundler <grundler@chromium.org>,
-        Aashay Shringarpure <aashay@google.com>,
-        Yi Chou <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
         edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 12/17] net: atlantic: fix "frag[0] not initialized"
-Date:   Wed, 18 May 2022 08:27:46 -0400
-Message-Id: <20220518122753.342758-12-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 13/17] net: atlantic: reduce scope of is_rsc_complete
+Date:   Wed, 18 May 2022 08:27:47 -0400
+Message-Id: <20220518122753.342758-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220518122753.342758-1-sashal@kernel.org>
 References: <20220518122753.342758-1-sashal@kernel.org>
@@ -63,49 +60,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Grant Grundler <grundler@chromium.org>
 
-[ Upstream commit 62e0ae0f4020250f961cf8d0103a4621be74e077 ]
+[ Upstream commit 79784d77ebbd3ec516b7a5ce555d979fb7946202 ]
 
-In aq_ring_rx_clean(), if buff->is_eop is not set AND
-buff->len < AQ_CFG_RX_HDR_SIZE, then hdr_len remains equal to
-buff->len and skb_add_rx_frag(xxx, *0*, ...) is not called.
+Don't defer handling the err case outside the loop. That's pointless.
 
-The loop following this code starts calling skb_add_rx_frag() starting
-with i=1 and thus frag[0] is never initialized. Since i is initialized
-to zero at the top of the primary loop, we can just reference and
-post-increment i instead of hardcoding the 0 when calling
-skb_add_rx_frag() the first time.
+And since is_rsc_complete is only used inside this loop, declare
+it inside the loop to reduce it's scope.
 
-Reported-by: Aashay Shringarpure <aashay@google.com>
-Reported-by: Yi Chou <yich@google.com>
-Reported-by: Shervin Oloumi <enlightened@google.com>
 Signed-off-by: Grant Grundler <grundler@chromium.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/aquantia/atlantic/aq_ring.c | 13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-index 72f8751784c3..7cf5a48e9a7d 100644
+index 7cf5a48e9a7d..339efdfb1d49 100644
 --- a/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
 +++ b/drivers/net/ethernet/aquantia/atlantic/aq_ring.c
-@@ -445,7 +445,7 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 		       ALIGN(hdr_len, sizeof(long)));
+@@ -345,7 +345,6 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 		     int budget)
+ {
+ 	struct net_device *ndev = aq_nic_get_ndev(self->aq_nic);
+-	bool is_rsc_completed = true;
+ 	int err = 0;
  
- 		if (buff->len - hdr_len > 0) {
--			skb_add_rx_frag(skb, 0, buff->rxdata.page,
-+			skb_add_rx_frag(skb, i++, buff->rxdata.page,
- 					buff->rxdata.pg_off + hdr_len,
- 					buff->len - hdr_len,
- 					AQ_CFG_RX_FRAME_MAX);
-@@ -454,7 +454,6 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
- 
+ 	for (; (self->sw_head != self->hw_head) && budget;
+@@ -365,6 +364,8 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
  		if (!buff->is_eop) {
  			buff_ = buff;
--			i = 1U;
  			do {
- 				next_ = buff_->next;
- 				buff_ = &self->buff_ring[next_];
++				bool is_rsc_completed = true;
++
+ 				if (buff_->next >= self->size) {
+ 					err = -EIO;
+ 					goto err_exit;
+@@ -376,18 +377,16 @@ int aq_ring_rx_clean(struct aq_ring_s *self,
+ 							    next_,
+ 							    self->hw_head);
+ 
+-				if (unlikely(!is_rsc_completed))
+-					break;
++				if (unlikely(!is_rsc_completed)) {
++					err = 0;
++					goto err_exit;
++				}
+ 
+ 				buff->is_error |= buff_->is_error;
+ 				buff->is_cso_err |= buff_->is_cso_err;
+ 
+ 			} while (!buff_->is_eop);
+ 
+-			if (!is_rsc_completed) {
+-				err = 0;
+-				goto err_exit;
+-			}
+ 			if (buff->is_error ||
+ 			    (buff->is_lro && buff->is_cso_err)) {
+ 				buff_ = buff;
 -- 
 2.35.1
 
