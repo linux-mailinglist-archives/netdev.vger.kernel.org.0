@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 158FF52C78B
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 01:31:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 318F652C7DD
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 01:40:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231357AbiERXb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 19:31:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58088 "EHLO
+        id S231131AbiERXkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 19:40:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230448AbiERXb0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 19:31:26 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4020D35A97;
-        Wed, 18 May 2022 16:31:25 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id 3so2589440ily.2;
-        Wed, 18 May 2022 16:31:25 -0700 (PDT)
+        with ESMTP id S231161AbiERXkQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 19:40:16 -0400
+Received: from mail-il1-x12f.google.com (mail-il1-x12f.google.com [IPv6:2607:f8b0:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC8A19F9C;
+        Wed, 18 May 2022 16:40:09 -0700 (PDT)
+Received: by mail-il1-x12f.google.com with SMTP id j4so2568924ilo.12;
+        Wed, 18 May 2022 16:40:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=lVJJebMlPVF5A5XDAVZHl3sAYnjL4i4r2zSkkM3XY8w=;
-        b=VvozH93x1DMs7MoQRYYrpmPKDJzo27XgtQpKQUaSvtapVIjZMPcc3umx50yBaGc3AI
-         2OJRktp86/F83ESrsUw73BGfgcIz8oD1qku2Klj1+ZD4g4feUO9h7XT8eO+mUTASchDT
-         u80QvVlcDUSM4elq9L8TrQXNgF4y7LEjlc+ZDHqprw2TsnJqEMyAA6/OnMWt0JPVxi2a
-         gMhy7oEp8sdBxJb1G9SGKIhIhQvi3ppo6BsBjR5Rv/4j65Q2rFDHUabpJ8dOB2UwuQun
-         dkeTru0yttbeY5hKK2/5wbE8RNt9PSoJzKN1Vps49/7OQoAyJlaJVqjnlfFMtYolw4C5
-         l97g==
+        bh=ds55Bsv2GoSLlas6Dx1JEfsoZ0HMGPTIqjaaEFNjM4s=;
+        b=MVMSLxVIfMq48TSV7NuTXRJi2JtJzM91wrtDADX9u2HqOcsQUMjXvUm4zvK4CPu36c
+         wDxujsuklyIUW0r6/LEpbQB7hK7CUJpIk/ovM3JmNfqK3wJ8QnegsLalRNx1N5FGhYTP
+         KG7GsiZnAJ4FASfvM/GjdpMZ1/lSweyRDeLkTzdgFQ9aqo5rdTOlPkgzh8445SQQ0469
+         BI64pssj+QQE53NHn/jMCxOrrc8VjOJ8kNJ7yBReJvmrra9H3kYcF20VWUwgUrnzHltL
+         yAlbgsBuJs8PkGP+MeL3bod+O/uFHTaksgZC0z6rEFF3upqPDWv4IVmoYbWm5C5NhB9h
+         odPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lVJJebMlPVF5A5XDAVZHl3sAYnjL4i4r2zSkkM3XY8w=;
-        b=yaTrvQQt80oSRqfo849G2UzqCo/Sxuq96Yk4u1NNpBLH0s9CeeD6e8OxVkI7NRNOwr
-         J74QpAUSaiJObH/rZsR04ANF5kaH54JU1Aez6AdqAda9S+VBJEPthKayriziGlk3dLMR
-         yIIVJQC+2pmQ2og7DOiH96PT0ek2kOHnwri5TQp0lkGhEpzTIUlDKYUtc8T6z3/a0Wvr
-         6YKqHJogyOIF+HX+thjMnbs4CvSJ06cyfOZIAjlP5LMwVxOLGOJ1KPjxEIee6PYTZ/FP
-         RH3tSIkmjz4NkhZ1+jsrBLwtKz4c3kSuGUK+QKxUTM+NGc1Qu0FV0V3/U11/mjvBTQF1
-         2Y4g==
-X-Gm-Message-State: AOAM532/k/lS5p2QGEj3iHwH9Z68gtpF0zSWdYYNOg/mTyZu4BBzIxe6
-        +zLf0Rq6a2W9JPv7Id9C8Mj0qYrtfSzJ5JvWBiE=
-X-Google-Smtp-Source: ABdhPJxUY57EsYv0YkxIbk9exT0rzX/VTjAxYY4RoeiARphLhvlVkfc7PeXga1KW7ZLOI0tPa/wvQwKKSQXP6itPWR8=
-X-Received: by 2002:a05:6e02:1b82:b0:2cf:199f:3b4b with SMTP id
- h2-20020a056e021b8200b002cf199f3b4bmr1133463ili.71.1652916684309; Wed, 18 May
- 2022 16:31:24 -0700 (PDT)
+        bh=ds55Bsv2GoSLlas6Dx1JEfsoZ0HMGPTIqjaaEFNjM4s=;
+        b=DPCXA1O3OJ6jhDGw/HbDuPchBAwqPHbiMCk5xvt0YwiZGzhlDUGMioGal3dWsLEOvS
+         +U7ZCfrH/+vo8vOL4F4jbwRMhqSNMhX6PE+pr3LCDR4r6fhjVAHksqnz3rmuVTtXIRJz
+         Dp3XXITXr/AmY2IgnMj2xSQ3B0ZZGHzzXrt3ZrJ4mON07MgpgEEDMWTQwc0Gg65OYsHC
+         7YknHJeYbDyWGEos3S0bUVDVauv8M9wesIKHjzLcy56puxcepWZQN8F2E+cSfEzV9flU
+         pTyT3uh4qm1npz9wbguy5DFc0vAOtsJUln0j03jZoV69NyI0TP2goT8IIPO488iJjakg
+         RN+Q==
+X-Gm-Message-State: AOAM531QDmqUKgSsw1SoC1lKtnqpfbrZv3cpdmM3NWhk1+XcUdoAmP8K
+        uAw/uvL4wfwvhHG0X9lsF04SDkyrQ4ERsQC1nqrfxurq
+X-Google-Smtp-Source: ABdhPJx71PNkY/+fugXu0eLFpyXyRIK3eZEfdpKQ/KC0+btRbofLGvd6mL81LdgeIgjGNpQxGpU+oyIwAPfF1yq1fH4=
+X-Received: by 2002:a05:6e02:1c01:b0:2d1:262e:8d5f with SMTP id
+ l1-20020a056e021c0100b002d1262e8d5fmr1115383ilh.98.1652917208798; Wed, 18 May
+ 2022 16:40:08 -0700 (PDT)
 MIME-Version: 1.0
-References: <cover.1652772731.git.esyr@redhat.com> <525b99881dc144b986e381eb23b12617a311f243.1652772731.git.esyr@redhat.com>
-In-Reply-To: <525b99881dc144b986e381eb23b12617a311f243.1652772731.git.esyr@redhat.com>
+References: <cover.1652772731.git.esyr@redhat.com> <2a56d66cf4b9430982e81233f49d6c54988df056.1652772731.git.esyr@redhat.com>
+In-Reply-To: <2a56d66cf4b9430982e81233f49d6c54988df056.1652772731.git.esyr@redhat.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 18 May 2022 16:31:13 -0700
-Message-ID: <CAEf4BzZVe2k1q-XrTwq=OMvcFRdZSfYa0bv1occxR0NX_Ax2rA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 2/4] bpf_trace: support 32-bit kernels in bpf_kprobe_multi_link_attach
+Date:   Wed, 18 May 2022 16:39:58 -0700
+Message-ID: <CAEf4BzbnWM9BfQwjQtgwjx+OXBEkejxs2czz3DQbeoCAXPj11g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3 3/4] bpf_trace: handle compat in copy_user_syms
 To:     Eugene Syromiatnikov <esyr@redhat.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
@@ -81,77 +81,56 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Tue, May 17, 2022 at 12:36 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
 >
-> It seems that there is no reason not to support 32-bit architectures;
-> doing so requires a bit of rework with respect to cookies handling,
-> however, as the current code implicitly assumes
-> that sizeof(long) == sizeof(u64).
+> For compat processes, userspace size for syms pointers is different.
+> Provide compat handling for copying array elements from the user space.
 >
+> Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
 > Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
 > ---
->  kernel/trace/bpf_trace.c | 17 ++++++++---------
->  1 file changed, 8 insertions(+), 9 deletions(-)
+>  kernel/trace/bpf_trace.c | 20 +++++++++++++++++++-
+>  1 file changed, 19 insertions(+), 1 deletion(-)
 >
 > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> index 9c041be..a93a54f 100644
+> index a93a54f..9d3028a 100644
 > --- a/kernel/trace/bpf_trace.c
 > +++ b/kernel/trace/bpf_trace.c
-> @@ -2435,16 +2435,12 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->         struct bpf_link_primer link_primer;
->         void __user *ucookies;
->         unsigned long *addrs;
-> -       u32 flags, cnt, size;
-> +       u32 flags, cnt, size, cookies_size;
->         void __user *uaddrs;
->         u64 *cookies = NULL;
->         void __user *usyms;
->         int err;
+> @@ -2253,6 +2253,24 @@ struct user_syms {
+>         char *buf;
+>  };
 >
-> -       /* no support for 32bit archs yet */
-> -       if (sizeof(u64) != sizeof(void *))
-> -               return -EOPNOTSUPP;
-> -
->         if (prog->expected_attach_type != BPF_TRACE_KPROBE_MULTI)
->                 return -EINVAL;
->
-> @@ -2454,6 +2450,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->
->         uaddrs = u64_to_user_ptr(attr->link_create.kprobe_multi.addrs);
->         usyms = u64_to_user_ptr(attr->link_create.kprobe_multi.syms);
-> +       ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
->         if (!!uaddrs == !!usyms)
->                 return -EINVAL;
->
-> @@ -2461,8 +2458,11 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->         if (!cnt)
->                 return -EINVAL;
->
-> -       if (check_mul_overflow(cnt, (u32)sizeof(*addrs), &size))
-> +       if (check_mul_overflow(cnt, (u32)sizeof(*addrs), &size) ||
-> +           (ucookies &&
-> +            check_mul_overflow(cnt, (u32)sizeof(*cookies), &cookies_size))) {
->                 return -EOVERFLOW;
+> +static inline int get_arr_ptr(unsigned long *p,
+> +                             unsigned long __user *uaddr, u32 idx)
+
+no need for inline, let compiler decide on inlining
+
+> +{
+> +       if (unlikely(in_compat_syscall())) {
+
+not sure unlikely() is justified for code...
+
+> +               compat_uptr_t __user *compat_uaddr = (compat_uptr_t __user *)uaddr;
+> +               compat_uptr_t val;
+> +               int err;
+> +
+> +               err = __get_user(val, compat_uaddr + idx);
+> +               if (!err)
+> +                       *p = val;
+> +
+> +               return err;
+> +       } else {
+> +               return __get_user(*p, uaddr + idx);
 > +       }
->         addrs = kvmalloc(size, GFP_KERNEL);
->         if (!addrs)
->                 return -ENOMEM;
-> @@ -2486,14 +2486,13 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
->                         goto error;
->         }
+> +}
+> +
+>  static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32 cnt)
+>  {
+>         unsigned long __user usymbol;
+> @@ -2270,7 +2288,7 @@ static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32
+>                 goto error;
 >
-> -       ucookies = u64_to_user_ptr(attr->link_create.kprobe_multi.cookies);
->         if (ucookies) {
-> -               cookies = kvmalloc(size, GFP_KERNEL);
-> +               cookies = kvmalloc(cookies_size, GFP_KERNEL);
-
-same question about consistent use of kvmalloc_array() and delegating
-all the overflow checks to it?
-
->                 if (!cookies) {
->                         err = -ENOMEM;
->                         goto error;
->                 }
-> -               if (copy_from_user(cookies, ucookies, size)) {
-> +               if (copy_from_user(cookies, ucookies, cookies_size)) {
+>         for (p = buf, i = 0; i < cnt; i++) {
+> -               if (__get_user(usymbol, usyms + i)) {
+> +               if (get_arr_ptr(&usymbol, usyms, i)) {
 >                         err = -EFAULT;
 >                         goto error;
 >                 }
