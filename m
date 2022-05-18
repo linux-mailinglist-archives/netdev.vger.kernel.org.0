@@ -2,165 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 93DE752B268
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 08:37:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 94DE152B281
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 08:37:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231336AbiERGdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 02:33:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34458 "EHLO
+        id S231381AbiERGer (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 02:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231352AbiERGc7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 02:32:59 -0400
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6B3DE335;
-        Tue, 17 May 2022 23:32:47 -0700 (PDT)
-Received: by mail-qv1-xf29.google.com with SMTP id n10so851259qvi.5;
-        Tue, 17 May 2022 23:32:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iNLG0SMc9nRqW0DoCoki52GgrxJLjTRCAhq9TQJlP3I=;
-        b=J57mevt0lm333o3WqDhpUZ6lu35lzwxo4U0axQIyYIu8/Ub51orLPP+oVWcZ+7yuRO
-         7TgzHWGchDJ2BfOfg2xsmx/0ebQ1NGbkQe8FjGp/g/MKi+IFcu3yF/KRfPVty1Ry2Xos
-         Azoqc/NogRtoS6SJQsW8j0ixrA+Ttqw/Bv6pfmQ+CLAa4d/ycHb3YVx/lOOvCkvz4PLU
-         /TWjhO3bn5hnPHQI95OdjDJHdxtkOrg+cg9VX7tWBXPGRqRTvbcmMOE92d+8NSfhSh4z
-         Ji7EiBr4ktQIMgbpiWksFR2fN0eGkUW5r+1n2obxF3oJYxUwOQD2huxNxwLehof3hyfF
-         dyew==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iNLG0SMc9nRqW0DoCoki52GgrxJLjTRCAhq9TQJlP3I=;
-        b=jl3nv35/vg3g7hXWPGwiffAYumLcaRnvXtixY/ooZsumB4X9O07AOP3uoA/JQjabSz
-         gKz92LTCgfhAdV5+Z0mgt1XhJmG4PXEi8aPXHpxU29Cq+Ift2dYQNTD3EzUtkldF9u77
-         VxGGMqtSRQ9+PIklcETjJYGlNbDXFm9BIr0RNO+M4ZLloKfqQ7ewLRqhXIVKCR0R/SnE
-         EH0zWIkzglPhN1QrrBmHdxqQzi+wHwj3gBzMRxZX5+TlWPFED6VQbgoAiLE41C8cs2ZP
-         FxbsYGNzngaClPee6CIalnVYrETkXLXyNOrGgu2uYHg1Fyo5QGczVy0rCjxKsg2wd5xq
-         LmBg==
-X-Gm-Message-State: AOAM531kWdSzohGGZKI/pN6Yn+q4RJ6+lwKPyq3FINWUD9+QyEtQnBMu
-        JuHUey7gQtBnYEVomV7Q+l9WcONmX7f5ap4N5+E=
-X-Google-Smtp-Source: ABdhPJxbXZu2paoKEwxHX2Ersl25ZBBKIYIkmfDysk93JrGCsEzCBur7wOwPucdBX+7P9RLfRUAPFLmShF08g1cRR4k=
-X-Received: by 2002:ad4:5c6e:0:b0:45a:aefd:f551 with SMTP id
- i14-20020ad45c6e000000b0045aaefdf551mr23591604qvh.95.1652855566388; Tue, 17
- May 2022 23:32:46 -0700 (PDT)
+        with ESMTP id S231327AbiERGeo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 02:34:44 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C5C8E2765
+        for <netdev@vger.kernel.org>; Tue, 17 May 2022 23:34:41 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D5A5617B8
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 06:34:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC7C3C34100;
+        Wed, 18 May 2022 06:34:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652855680;
+        bh=KXa3wB9l8EYSjXBHd5HLL+HUtAM86wFS3dO+9vnWIiw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EfwqAidDqG/yAhE8bl8MuqLHL6FlrN3rz6nIfr99qthQRYrnaUnS8tm2GoDze2yPR
+         OpBXibQ2NdHZ0gmFp3Fp9EaIRZDd4KwvhJ8uouDLvfUYxwBgo/XMy/8lm8GqrtIHJr
+         Znwg4L5KggySACB5a6iDEvvWZrdvsAGWrzO0te1fJEuXEOOKDdSf9z525foHrag7Bx
+         lMY2bXJPNAN68cDVy38oAR6Va16kZ+p8ip0VEx52CqrArv94SD8n3+p72OvX1RFXHE
+         38kUiD9z7R494e0Jai3wJlIgHo0xnYIO75dZ4oFG/S2Jsj9P7xMMKktc/YnuO49ST9
+         kXjMiLFqoPC/w==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net 00/11] mlx5 fixes 2022-05-17
+Date:   Tue, 17 May 2022 23:34:16 -0700
+Message-Id: <20220518063427.123758-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-References: <20220518062715.27809-1-zhoufeng.zf@bytedance.com>
-In-Reply-To: <20220518062715.27809-1-zhoufeng.zf@bytedance.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 17 May 2022 23:32:35 -0700
-Message-ID: <CAADnVQ+x-A87Z9_c+3vuRJOYm=gCOBXmyCJQ64CiCNukHS6FpA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: avoid grabbing spin_locks of all cpus when no free elems
-To:     Feng zhou <zhoufeng.zf@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Xiongchun Duan <duanxiongchun@bytedance.com>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Chengming Zhou <zhouchengming@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-7.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 17, 2022 at 11:27 PM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
->
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->
-> We encountered bad case on big system with 96 CPUs that
-> alloc_htab_elem() would last for 1ms. The reason is that after the
-> prealloc hashtab has no free elems, when trying to update, it will still
-> grab spin_locks of all cpus. If there are multiple update users, the
-> competition is very serious.
->
-> So this patch add is_empty in pcpu_freelist_head to check freelist
-> having free or not. If having, grab spin_lock, or check next cpu's
-> freelist.
->
-> Before patch: hash_map performance
-> ./map_perf_test 1
-> 0:hash_map_perf pre-alloc 975345 events per sec
-> 4:hash_map_perf pre-alloc 855367 events per sec
-> 12:hash_map_perf pre-alloc 860862 events per sec
-> 8:hash_map_perf pre-alloc 849561 events per sec
-> 3:hash_map_perf pre-alloc 849074 events per sec
-> 6:hash_map_perf pre-alloc 847120 events per sec
-> 10:hash_map_perf pre-alloc 845047 events per sec
-> 5:hash_map_perf pre-alloc 841266 events per sec
-> 14:hash_map_perf pre-alloc 849740 events per sec
-> 2:hash_map_perf pre-alloc 839598 events per sec
-> 9:hash_map_perf pre-alloc 838695 events per sec
-> 11:hash_map_perf pre-alloc 845390 events per sec
-> 7:hash_map_perf pre-alloc 834865 events per sec
-> 13:hash_map_perf pre-alloc 842619 events per sec
-> 1:hash_map_perf pre-alloc 804231 events per sec
-> 15:hash_map_perf pre-alloc 795314 events per sec
->
-> hash_map the worst: no free
-> ./map_perf_test 2048
-> 6:worse hash_map_perf pre-alloc 28628 events per sec
-> 5:worse hash_map_perf pre-alloc 28553 events per sec
-> 11:worse hash_map_perf pre-alloc 28543 events per sec
-> 3:worse hash_map_perf pre-alloc 28444 events per sec
-> 1:worse hash_map_perf pre-alloc 28418 events per sec
-> 7:worse hash_map_perf pre-alloc 28427 events per sec
-> 13:worse hash_map_perf pre-alloc 28330 events per sec
-> 14:worse hash_map_perf pre-alloc 28263 events per sec
-> 9:worse hash_map_perf pre-alloc 28211 events per sec
-> 15:worse hash_map_perf pre-alloc 28193 events per sec
-> 12:worse hash_map_perf pre-alloc 28190 events per sec
-> 10:worse hash_map_perf pre-alloc 28129 events per sec
-> 8:worse hash_map_perf pre-alloc 28116 events per sec
-> 4:worse hash_map_perf pre-alloc 27906 events per sec
-> 2:worse hash_map_perf pre-alloc 27801 events per sec
-> 0:worse hash_map_perf pre-alloc 27416 events per sec
-> 3:worse hash_map_perf pre-alloc 28188 events per sec
->
-> ftrace trace
->
-> 0)               |  htab_map_update_elem() {
-> 0)   0.198 us    |    migrate_disable();
-> 0)               |    _raw_spin_lock_irqsave() {
-> 0)   0.157 us    |      preempt_count_add();
-> 0)   0.538 us    |    }
-> 0)   0.260 us    |    lookup_elem_raw();
-> 0)               |    alloc_htab_elem() {
-> 0)               |      __pcpu_freelist_pop() {
-> 0)               |        _raw_spin_lock() {
-> 0)   0.152 us    |          preempt_count_add();
-> 0)   0.352 us    |          native_queued_spin_lock_slowpath();
-> 0)   1.065 us    |        }
->                  |        ...
-> 0)               |        _raw_spin_unlock() {
-> 0)   0.254 us    |          preempt_count_sub();
-> 0)   0.555 us    |        }
-> 0) + 25.188 us   |      }
-> 0) + 25.486 us   |    }
-> 0)               |    _raw_spin_unlock_irqrestore() {
-> 0)   0.155 us    |      preempt_count_sub();
-> 0)   0.454 us    |    }
-> 0)   0.148 us    |    migrate_enable();
-> 0) + 28.439 us   |  }
->
-> The test machine is 16C, trying to get spin_lock 17 times, in addition
-> to 16c, there is an extralist.
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Is this with small max_entries and a large number of cpus?
+This series provides bug fixes to mlx5 driver.
+Please pull and let me know if there is any problem.
 
-If so, probably better to fix would be to artificially
-bump max_entries to be 4x of num_cpus.
-Racy is_empty check still wastes the loop.
+Thanks,
+Saeed.
+
+
+The following changes since commit 23dd4581350d4ffa23d58976ec46408f8f4c1e16:
+
+  NFC: nci: fix sleep in atomic context bugs caused by nci_skb_alloc (2022-05-17 17:55:53 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-fixes-2022-05-17
+
+for you to fetch changes up to 16d42d313350946f4b9a8b74a13c99f0461a6572:
+
+  net/mlx5: Drain fw_reset when removing device (2022-05-17 23:03:57 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2022-05-17
+
+----------------------------------------------------------------
+Aya Levin (1):
+      net/mlx5e: Block rx-gro-hw feature in switchdev mode
+
+Gal Pressman (1):
+      net/mlx5e: Remove HW-GRO from reported features
+
+Maor Dickman (1):
+      net/mlx5: DR, Fix missing flow_source when creating multi-destination FW table
+
+Maxim Mikityanskiy (3):
+      net/mlx5e: Wrap mlx5e_trap_napi_poll into rcu_read_lock
+      net/mlx5e: Properly block LRO when XDP is enabled
+      net/mlx5e: Properly block HW GRO when XDP is enabled
+
+Paul Blakey (2):
+      net/mlx5e: CT: Fix support for GRE tuples
+      net/mlx5e: CT: Fix setting flow_source for smfs ct tuples
+
+Shay Drory (2):
+      net/mlx5: Initialize flow steering during driver probe
+      net/mlx5: Drain fw_reset when removing device
+
+Yevgeny Kliteynik (1):
+      net/mlx5: DR, Ignore modify TTL on RX if device doesn't support it
+
+ .../ethernet/mellanox/mlx5/core/en/tc/ct_fs_smfs.c |  58 +++++----
+ drivers/net/ethernet/mellanox/mlx5/core/en/trap.c  |  13 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  27 ++++-
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.c  | 131 ++++++++++++---------
+ drivers/net/ethernet/mellanox/mlx5/core/fs_core.h  |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.c |  25 +++-
+ drivers/net/ethernet/mellanox/mlx5/core/fw_reset.h |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  19 ++-
+ .../mellanox/mlx5/core/steering/dr_action.c        |  71 +++++++----
+ .../ethernet/mellanox/mlx5/core/steering/dr_fw.c   |   4 +-
+ .../mellanox/mlx5/core/steering/dr_ste_v0.c        |   4 +-
+ .../mellanox/mlx5/core/steering/dr_types.h         |   3 +-
+ .../ethernet/mellanox/mlx5/core/steering/fs_dr.c   |   4 +-
+ .../ethernet/mellanox/mlx5/core/steering/mlx5dr.h  |   3 +-
+ 14 files changed, 246 insertions(+), 123 deletions(-)
