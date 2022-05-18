@@ -2,55 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E5A652BACD
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:39:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C76E352BABD
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 14:39:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237327AbiERMfW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 08:35:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48022 "EHLO
+        id S237309AbiERMfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 08:35:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236967AbiERMem (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:34:42 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D8CF195900;
-        Wed, 18 May 2022 05:30:17 -0700 (PDT)
+        with ESMTP id S236982AbiERMeg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 08:34:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C27CA11E497
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 05:30:16 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DEF98616CC;
-        Wed, 18 May 2022 12:30:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8121C34100;
-        Wed, 18 May 2022 12:30:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 715DAB81F40
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 12:30:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1E651C34118;
+        Wed, 18 May 2022 12:30:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652877016;
-        bh=4otzz0Ek9YgjFM5VEIzznDR47c+nrHLEJbYejAR82I8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=keDaN/k9ON2ceY+tviXcvOkzmfZElVdZlBa32/uydt8s8cbyv76Nexi9Gjo2tV810
-         3vekS/Yj+nlyCvGtS2FWHNEwzzEG/8bymMvTlivmcmO5+dT+yRKbLHZWYBMnafbwTD
-         jdJM4DgURW3kHaT+FuhZHN93Demqgg78LwvnbYEsxhr49w4oArmEiWNoTenYyf1ClA
-         BuM58SUYsRc1xFrJhbLmXVkiMBHwMTDZFF9naL/E+AZjwoCwJaksELzh1GR8oDIK+S
-         Md/Cb/3fPNLPHvzjHJbm1iFbAp+/YCciRieKfk8Aj9v5ihivv2Qzerq1ApOjCrSJKQ
-         5aPn/O2JNg/kw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Grant Grundler <grundler@chromium.org>,
-        Aashay Shringarpure <aashay@google.com>,
-        Yi Chou <yich@google.com>,
-        Shervin Oloumi <enlightened@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, irusskikh@marvell.com,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 5/5] net: atlantic: verify hw_head_ lies within TX buffer ring
-Date:   Wed, 18 May 2022 08:30:00 -0400
-Message-Id: <20220518123000.343787-5-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220518123000.343787-1-sashal@kernel.org>
-References: <20220518123000.343787-1-sashal@kernel.org>
+        s=k20201202; t=1652877013;
+        bh=CoCtdZx3eYUWU8ZMEOtZeYRBTW0Y/OdXAeKPD1RVItU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KGABcTQb26ALPP0NP8A68CwdL4dSTnCsn7i9APC/g2sagVmQjkw0lrBrh8xGYu2oW
+         hn4vdtojQn7grFChf7J5jGToEOs8/9FlycgqEHlo3SqwHxynJVBznryNSX3u5jQtLq
+         GlfOiu/4KjtEGGDZDEjfjmMHS0ue0vVdBGPCLUPSWS4gYikFrcvyR5qP6UdIfJcF3C
+         sU4o9bs70c4z0A3Ge5djk7+VhRBNRrXMCKOq+8cymEC+NkEDBprPvtVuiBhJ9ceqXq
+         xFrcLZCSTCETvy4WNy0NvU7ehbY6Ws965bsHV+Sh4et/5j1pytclDU5x8hzXCJz5AR
+         0NZHT46yxBKfw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 02BFBF0383D;
+        Wed, 18 May 2022 12:30:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/2] mptcp: Fix checksum byte order on little-endian
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165287701300.2655.7984916105463190195.git-patchwork-notify@kernel.org>
+Date:   Wed, 18 May 2022 12:30:13 +0000
+References: <20220517180212.92597-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20220517180212.92597-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com,
+        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
 X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -61,41 +57,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Grant Grundler <grundler@chromium.org>
+Hello:
 
-[ Upstream commit 2120b7f4d128433ad8c5f503a9584deba0684901 ]
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Bounds check hw_head index provided by NIC to verify it lies
-within the TX buffer ring.
+On Tue, 17 May 2022 11:02:10 -0700 you wrote:
+> These patches address a bug in the byte ordering of MPTCP checksums on
+> little-endian architectures. The __sum16 type is always big endian, but
+> was being cast to u16 and then byte-swapped (on little-endian archs)
+> when reading/writing the checksum field in MPTCP option headers.
+> 
+> MPTCP checksums are off by default, but are enabled if one or both peers
+> request it in the SYN/SYNACK handshake.
+> 
+> [...]
 
-Reported-by: Aashay Shringarpure <aashay@google.com>
-Reported-by: Yi Chou <yich@google.com>
-Reported-by: Shervin Oloumi <enlightened@google.com>
-Signed-off-by: Grant Grundler <grundler@chromium.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Here is the summary with links:
+  - [net,1/2] mptcp: fix checksum byte order
+    https://git.kernel.org/netdev/net/c/ba2c89e0ea74
+  - [net,2/2] mptcp: Do TCP fallback on early DSS checksum failure
+    https://git.kernel.org/netdev/net/c/ae66fb2ba6c3
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-index 1c1bb074f664..066abf9dc91e 100644
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-+++ b/drivers/net/ethernet/aquantia/atlantic/hw_atl/hw_atl_b0.c
-@@ -625,6 +625,13 @@ static int hw_atl_b0_hw_ring_tx_head_update(struct aq_hw_s *self,
- 		err = -ENXIO;
- 		goto err_exit;
- 	}
-+
-+	/* Validate that the new hw_head_ is reasonable. */
-+	if (hw_head_ >= ring->size) {
-+		err = -ENXIO;
-+		goto err_exit;
-+	}
-+
- 	ring->hw_head = hw_head_;
- 	err = aq_hw_err_from_flags(self);
- 
+You are awesome, thank you!
 -- 
-2.35.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
