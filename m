@@ -2,332 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF3E352BE23
-	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 17:26:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 922B452BE53
+	for <lists+netdev@lfdr.de>; Wed, 18 May 2022 17:26:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238882AbiERO4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 10:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
+        id S238964AbiERO4P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 10:56:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238900AbiEROzg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 10:55:36 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4241E140428
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 07:55:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=0dFOb+1yYacxBaCOWRJq/2iRXbeL1umpEPxlpbQ+DQo=; b=pQd7MuKY1G9sSg7iok+1NnvzG0
-        w5ZExz6NhxPaqeWkwzyQ6R1iGt/TOkGHDsoK+XCPpPwmj31S8PP6gKwaiiRtMva2Q7h1YKk3j6yFh
-        5j/fQQ2h5bQEBm4pzEi0wTD8OgJmXOP5HFGvnjjov/0r8h6mTYVvOGjoGmZoU6LkvRfxnAwqXqtJb
-        BAw5syUgzCjGi+qAhh2hGFEKXE6dikymP1MLAYKrIw4zdyAe0gJSNjc4cZywz3WD0e5HKZQPp03Qh
-        7KjQBni+mK9S+gCI18XoKgvhj5h8s1Een1w9iYoaHPrrRTh5LjD1K+BjZ0mgag5F5S2ZirpnlZbHX
-        Q9vRNBcA==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:38634 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1nrL5E-0002H8-5w; Wed, 18 May 2022 15:55:28 +0100
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <rmk@rmk-PC.armlinux.org.uk>)
-        id 1nrL5E-00AM5k-1i; Wed, 18 May 2022 15:55:28 +0100
-In-Reply-To: <YoUIX+BN/ZbyXzTT@shell.armlinux.org.uk>
-References: <YoUIX+BN/ZbyXzTT@shell.armlinux.org.uk>
-From:   "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        Mark Lee <Mark-MC.Lee@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Eric Dumazet <edumazet@google.com>
-Subject: [PATCH net-next 12/12] net: mtk_eth_soc: partially convert to
- phylink_pcs
+        with ESMTP id S238955AbiEROz7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 10:55:59 -0400
+Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81118A0D2C;
+        Wed, 18 May 2022 07:55:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1652885748;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:References:Cc:To:From:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=hYcXcVlFfZvhuv9lwG+hye9EfZ3gHatNRoDkftDUeBA=;
+    b=Cuf9zkMbPoAgn8g3F1Ud6Dt6PDDOpeyuar18uYcRNT+y/2t4smyXEb8tqmYaw0RTeu
+    P4S15iqyyCLY9ovfvOUmWK1Tud1CXVoola59TWCzwY9F7bJ9eIxW9CGx1VUvzfGy8ooa
+    GYD+YKKT25qY4bycjMm3+SbnAbv6JCDf7nNtOT9IoP3pLKEZxA+qTzUqYbHnrMtysnKd
+    Rv08soLyo6TNB5ixmLKpL9RPDk38SjEVfyLGd+rUn9UsAs7Z9dyccOF/V1WZ9Nr6Z34l
+    mMaM7+sQVvMQaPeWwLj8G54q2pMF+112eggoTyR9BqKUa+ieYRV0bgCE0a7aongd3thB
+    5TYw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdBqPeOuh2krLEWFUg=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cff:5b00::b82]
+    by smtp.strato.de (RZmta 47.45.0 AUTH)
+    with ESMTPSA id R0691fy4IEtmHtG
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Wed, 18 May 2022 16:55:48 +0200 (CEST)
+Message-ID: <899706c6-0aac-b039-4b67-4e509ff0930d@hartkopp.net>
+Date:   Wed, 18 May 2022 16:55:48 +0200
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1nrL5E-00AM5k-1i@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Wed, 18 May 2022 15:55:28 +0100
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 3/4] can: skb:: move can_dropped_invalid_skb and
+ can_skb_headroom_valid to skb.c
+Content-Language: en-US
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        Max Staudt <max@enpas.org>, linux-can@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <e054f6d4-7ed1-98ac-8364-425f4ef0f760@hartkopp.net>
+ <20220517141404.578d188a.max@enpas.org>
+ <20220517122153.4r6n6kkbdslsa2hv@pengutronix.de>
+ <20220517143921.08458f2c.max@enpas.org>
+ <0b505b1f-1ee4-5a2c-3bbf-6e9822f78817@hartkopp.net>
+ <CAMZ6RqJ0iCsHT-D5VuYQ9fk42ZEjHStU1yW0RfX1zuJpk5rVtQ@mail.gmail.com>
+ <43768ff7-71f8-a6c3-18f8-28609e49eedd@hartkopp.net>
+ <20220518132811.xfmwms2cu3bfxgrp@pengutronix.de>
+ <CAMZ6RqJqeNjAtoDWADHsWocgbSXqQixcebJBhiBFS8BVeKCb3g@mail.gmail.com>
+ <3dbe135e-d13c-5c5d-e7e4-b9c13b820fb8@hartkopp.net>
+ <20220518143613.2a7alnw6vtkw7ct2@pengutronix.de>
+ <482fd87a-df5a-08f7-522b-898d68c3b04a@hartkopp.net>
+In-Reply-To: <482fd87a-df5a-08f7-522b-898d68c3b04a@hartkopp.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Partially convert mtk_eth_soc to phylink_pcs, moving the configuration,
-link up and AN restart over. However, it seems mac_pcs_get_state()
-doesn't actually get the state from the PCS, so we can't convert that
-over without a better understanding of the hardware.
 
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 49 ++++++++----------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  7 ++-
- drivers/net/ethernet/mediatek/mtk_sgmii.c   | 55 +++++++++++----------
- 3 files changed, 53 insertions(+), 58 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 6dca98de0067..16f131445d8b 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -263,6 +263,25 @@ static void mtk_gmac0_rgmii_adjust(struct mtk_eth *eth,
- 	mtk_w32(eth, val, TRGMII_TCK_CTRL);
- }
- 
-+static struct phylink_pcs *mtk_mac_select_pcs(struct phylink_config *config,
-+					      phy_interface_t interface)
-+{
-+	struct mtk_mac *mac = container_of(config, struct mtk_mac,
-+					   phylink_config);
-+	struct mtk_eth *eth = mac->hw;
-+	unsigned int sid;
-+
-+	if (interface == PHY_INTERFACE_MODE_SGMII ||
-+	    phy_interface_mode_is_8023z(interface)) {
-+		sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
-+		       0 : mac->id;
-+
-+		return mtk_sgmii_select_pcs(eth->sgmii, sid);
-+	}
-+
-+	return NULL;
-+}
-+
- static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
- 			   const struct phylink_link_state *state)
- {
-@@ -270,7 +289,7 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
- 					   phylink_config);
- 	struct mtk_eth *eth = mac->hw;
- 	int val, ge_mode, err = 0;
--	u32 sid, i;
-+	u32 i;
- 
- 	/* MT76x8 has no hardware settings between for the MAC */
- 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
-@@ -391,15 +410,6 @@ static void mtk_mac_config(struct phylink_config *config, unsigned int mode,
- 				   SYSCFG0_SGMII_MASK,
- 				   ~(u32)SYSCFG0_SGMII_MASK);
- 
--		/* Decide how GMAC and SGMIISYS be mapped */
--		sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
--		       0 : mac->id;
--
--		/* Setup SGMIISYS with the determined property */
--		err = mtk_sgmii_config(eth->sgmii, sid, mode, state->interface);
--		if (err)
--			goto init_err;
--
- 		/* Save the syscfg0 value for mac_finish */
- 		mac->syscfg0 = val;
- 	} else if (phylink_autoneg_inband(mode)) {
-@@ -479,14 +489,6 @@ static void mtk_mac_pcs_get_state(struct phylink_config *config,
- 		state->pause |= MLO_PAUSE_TX;
- }
- 
--static void mtk_mac_an_restart(struct phylink_config *config)
--{
--	struct mtk_mac *mac = container_of(config, struct mtk_mac,
--					   phylink_config);
--
--	mtk_sgmii_restart_an(mac->hw, mac->id);
--}
--
- static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
- 			      phy_interface_t interface)
- {
-@@ -507,15 +509,6 @@ static void mtk_mac_link_up(struct phylink_config *config,
- 					   phylink_config);
- 	u32 mcr;
- 
--	if (phy_interface_mode_is_8023z(interface)) {
--		struct mtk_eth *eth = mac->hw;
--
--		/* Decide how GMAC and SGMIISYS be mapped */
--		int sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
--			   0 : mac->id;
--		mtk_sgmii_link_up(eth->sgmii, sid, speed, duplex);
--	}
--
- 	mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
- 	mcr &= ~(MAC_MCR_SPEED_100 | MAC_MCR_SPEED_1000 |
- 		 MAC_MCR_FORCE_DPX | MAC_MCR_FORCE_TX_FC |
-@@ -548,8 +541,8 @@ static void mtk_mac_link_up(struct phylink_config *config,
- 
- static const struct phylink_mac_ops mtk_phylink_ops = {
- 	.validate = phylink_generic_validate,
-+	.mac_select_pcs = mtk_mac_select_pcs,
- 	.mac_pcs_get_state = mtk_mac_pcs_get_state,
--	.mac_an_restart = mtk_mac_an_restart,
- 	.mac_config = mtk_mac_config,
- 	.mac_finish = mtk_mac_finish,
- 	.mac_link_down = mtk_mac_link_down,
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 8bf2d53cbec8..c1d46eb281ea 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -874,10 +874,12 @@ struct mtk_soc_data {
-  * @regmap:            The register map pointing at the range used to setup
-  *                     SGMII modes
-  * @ana_rgc3:          The offset refers to register ANA_RGC3 related to regmap
-+ * @pcs:               Phylink PCS structure
-  */
- struct mtk_pcs {
- 	struct regmap	*regmap;
- 	u32             ana_rgc3;
-+	struct phylink_pcs pcs;
- };
- 
- /* struct mtk_sgmii -  This is the structure holding sgmii regmap and its
-@@ -1020,12 +1022,9 @@ void mtk_stats_update_mac(struct mtk_mac *mac);
- void mtk_w32(struct mtk_eth *eth, u32 val, unsigned reg);
- u32 mtk_r32(struct mtk_eth *eth, unsigned reg);
- 
-+struct phylink_pcs *mtk_sgmii_select_pcs(struct mtk_sgmii *ss, int id);
- int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *np,
- 		   u32 ana_rgc3);
--int mtk_sgmii_config(struct mtk_sgmii *ss, int id, unsigned int mode,
--		     phy_interface_t interface);
--void mtk_sgmii_link_up(struct mtk_sgmii *ss, int id, int speed, int duplex);
--void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id);
- 
- int mtk_gmac_sgmii_path_setup(struct mtk_eth *eth, int mac_id);
- int mtk_gmac_gephy_path_setup(struct mtk_eth *eth, int mac_id);
-diff --git a/drivers/net/ethernet/mediatek/mtk_sgmii.c b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-index 7f257f492926..736839c84130 100644
---- a/drivers/net/ethernet/mediatek/mtk_sgmii.c
-+++ b/drivers/net/ethernet/mediatek/mtk_sgmii.c
-@@ -14,14 +14,16 @@
- 
- #include "mtk_eth_soc.h"
- 
-+static struct mtk_pcs *pcs_to_mtk_pcs(struct phylink_pcs *pcs)
-+{
-+	return container_of(pcs, struct mtk_pcs, pcs);
-+}
-+
- /* For SGMII interface mode */
- static int mtk_pcs_setup_mode_an(struct mtk_pcs *mpcs)
- {
- 	unsigned int val;
- 
--	if (!mpcs->regmap)
--		return -EINVAL;
--
- 	/* Setup the link timer and QPHY power up inside SGMIISYS */
- 	regmap_write(mpcs->regmap, SGMSYS_PCS_LINK_TIMER,
- 		     SGMII_LINK_TIMER_DEFAULT);
-@@ -50,9 +52,6 @@ static int mtk_pcs_setup_mode_force(struct mtk_pcs *mpcs,
- {
- 	unsigned int val;
- 
--	if (!mpcs->regmap)
--		return -EINVAL;
--
- 	regmap_read(mpcs->regmap, mpcs->ana_rgc3, &val);
- 	val &= ~RG_PHY_SPEED_MASK;
- 	if (interface == PHY_INTERFACE_MODE_2500BASEX)
-@@ -78,10 +77,12 @@ static int mtk_pcs_setup_mode_force(struct mtk_pcs *mpcs,
- 	return 0;
- }
- 
--int mtk_sgmii_config(struct mtk_sgmii *ss, int id, unsigned int mode,
--		     phy_interface_t interface)
-+static int mtk_pcs_config(struct phylink_pcs *pcs, unsigned int mode,
-+			  phy_interface_t interface,
-+			  const unsigned long *advertising,
-+			  bool permit_pause_to_mac)
- {
--	struct mtk_pcs *mpcs = &ss->pcs[id];
-+	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
- 	int err = 0;
- 
- 	/* Setup SGMIISYS with the determined property */
-@@ -93,22 +94,25 @@ int mtk_sgmii_config(struct mtk_sgmii *ss, int id, unsigned int mode,
- 	return err;
- }
- 
--static void mtk_pcs_restart_an(struct mtk_pcs *mpcs)
-+static void mtk_pcs_restart_an(struct phylink_pcs *pcs)
- {
-+	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
- 	unsigned int val;
- 
--	if (!mpcs->regmap)
--		return;
--
- 	regmap_read(mpcs->regmap, SGMSYS_PCS_CONTROL_1, &val);
- 	val |= SGMII_AN_RESTART;
- 	regmap_write(mpcs->regmap, SGMSYS_PCS_CONTROL_1, val);
- }
- 
--static void mtk_pcs_link_up(struct mtk_pcs *mpcs, int speed, int duplex)
-+static void mtk_pcs_link_up(struct phylink_pcs *pcs, unsigned int mode,
-+			    phy_interface_t interface, int speed, int duplex)
- {
-+	struct mtk_pcs *mpcs = pcs_to_mtk_pcs(pcs);
- 	unsigned int val;
- 
-+	if (!phy_interface_mode_is_8023z(interface))
-+		return;
-+
- 	/* SGMII force duplex setting */
- 	regmap_read(mpcs->regmap, SGMSYS_SGMII_MODE, &val);
- 	val &= ~SGMII_DUPLEX_FULL;
-@@ -118,11 +122,11 @@ static void mtk_pcs_link_up(struct mtk_pcs *mpcs, int speed, int duplex)
- 	regmap_write(mpcs->regmap, SGMSYS_SGMII_MODE, val);
- }
- 
--/* For 1000BASE-X and 2500BASE-X interface modes */
--void mtk_sgmii_link_up(struct mtk_sgmii *ss, int id, int speed, int duplex)
--{
--	mtk_pcs_link_up(&ss->pcs[id], speed, duplex);
--}
-+static const struct phylink_pcs_ops mtk_pcs_ops = {
-+	.pcs_config = mtk_pcs_config,
-+	.pcs_an_restart = mtk_pcs_restart_an,
-+	.pcs_link_up = mtk_pcs_link_up,
-+};
- 
- int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
- {
-@@ -139,18 +143,17 @@ int mtk_sgmii_init(struct mtk_sgmii *ss, struct device_node *r, u32 ana_rgc3)
- 		of_node_put(np);
- 		if (IS_ERR(ss->pcs[i].regmap))
- 			return PTR_ERR(ss->pcs[i].regmap);
-+
-+		ss->pcs[i].pcs.ops = &mtk_pcs_ops;
- 	}
- 
- 	return 0;
- }
- 
--void mtk_sgmii_restart_an(struct mtk_eth *eth, int mac_id)
-+struct phylink_pcs *mtk_sgmii_select_pcs(struct mtk_sgmii *ss, int id)
- {
--	unsigned int sid;
--
--	/* Decide how GMAC and SGMIISYS be mapped */
--	sid = (MTK_HAS_CAPS(eth->soc->caps, MTK_SHARED_SGMII)) ?
--	       0 : mac_id;
-+	if (!ss->pcs[id].regmap)
-+		return NULL;
- 
--	mtk_pcs_restart_an(&eth->sgmii->pcs[sid]);
-+	return &ss->pcs[id].pcs;
- }
--- 
-2.30.2
+On 18.05.22 16:38, Oliver Hartkopp wrote:
+> 
+> 
+> On 18.05.22 16:36, Marc Kleine-Budde wrote:
+>> On 18.05.2022 16:33:58, Oliver Hartkopp wrote:
+> 
+>>> I would suggest to remove the Kconfig entry but not all the code 
+>>> inside the
+>>> drivers, so that a volunteer can convert the LED support based on the
+>>> existing trigger points in the drivers code later.
+>>
+>> The generic netdev LED trigger code doesn't need any support in the
+>> netdev driver.
+> 
+> Oh! Yes, then it could be removed. Sorry for not looking that deep into it.
+
+I can send a patch for this removal too. That's an easy step which might 
+get into 5.19 then.
+
+Best regards,
+Oliver
 
