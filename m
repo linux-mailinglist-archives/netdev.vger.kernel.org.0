@@ -2,60 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E3B52CD90
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 09:52:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81B2B52CDE6
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 10:06:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234965AbiESHvl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 03:51:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49630 "EHLO
+        id S235210AbiESIGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 04:06:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235014AbiESHvf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 03:51:35 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E84131DC6;
-        Thu, 19 May 2022 00:51:33 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CFEF616F6;
-        Thu, 19 May 2022 07:51:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 369D2C34100;
-        Thu, 19 May 2022 07:51:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652946692;
-        bh=FfHT4dH2rOQjGAgKaeBVEfcrb90XoHDYJNfYFwMsxqA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Wdv6bZZW5o0QW+rLup4siFbRoAjk45vnoN2mBGF4tNrdcd66OnuMRG65UQonX8drr
-         8lGlydQqEA1F4HaXRjzM2tLRFkz1VPSZNN7REHWsnI4pFXI6LsbLxiHzqMrXTD4Uck
-         LWfKHIP977c130bKAkPbczwSlC0tqqYAwJf61e6dWPNJupadE/Z0aG6+CZ8mAeIPF2
-         FBPYyqQIr43HrGQhWuginBW4P5SG1y7+Xxh1cS93ikwaxiRVMzhYM4yRy6YZ8YeXnN
-         FHmDu0tjisuECWEyEVCML7hB8WY3PbV/B/JOyv115n0FBHEB72P08WuToCiISPBZKJ
-         +rjLTLvUacrpw==
-Date:   Thu, 19 May 2022 09:51:28 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        Sam.Shih@mediatek.com, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, robh@kernel.org,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH v2 net-next 11/15] net: ethernet: mtk_eth_soc: introduce
- device register map
-Message-ID: <YoX3AMlBFfDcl69o@lore-desk>
-References: <cover.1652716741.git.lorenzo@kernel.org>
- <78e8c6ed230130b75aae77e6d05a9b35e298860a.1652716741.git.lorenzo@kernel.org>
- <20220517184122.522ed708@kernel.org>
- <YoTA+5gLC4zhoQ0F@lore-desk>
- <20220518084431.66aa1737@kernel.org>
+        with ESMTP id S235207AbiESIGQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 04:06:16 -0400
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21F855341
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 01:06:14 -0700 (PDT)
+Received: by mail-lf1-x135.google.com with SMTP id l13so1077380lfp.11
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 01:06:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=YQu4TSu2p0KMGwL1YiCJK+tIvwswRm4g+esi1EtLUqY=;
+        b=o1apGfVokpVYUvl11XsDGw3sWAaJlnSrEiMNO9glke1zNuuTNworCaiu1tmv55uxg/
+         4O4XmJmvlHX98cUknYG54RMHW0iYedyKoLd2nzud8R0yBBNCI4h4uQar3VFd12gH/Z7k
+         zIblUDwVHJPgcOG5BTvBf5UcwPJWwTSmf4h5ScV0X23a3QFdtbEvpde/5S8N7uow+MIs
+         L8Fi31CUT6M687O4q/Miv1SfmXLtYFj6xS1gh6PSD6aTAebK1S5jOrY3TzquWUZNtUn0
+         Xa46PSfa4877JX8WeBwhhzc3pWPFJFG6mZijTWP4xuIYXBbd+uXv1C4zefE6ZBvTHEVI
+         9AAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=YQu4TSu2p0KMGwL1YiCJK+tIvwswRm4g+esi1EtLUqY=;
+        b=vI3IkW2hcwnFu67LP7fGMcCDLrl7BNr/g1hOI+wgAIR581nfrjDdRbwlSTA1JgpAzO
+         vDjIsFohSD8+Xo7BHUm9hz2dWE8iCLaI+b/+ldapKMQzhzDLK3RgMZ0UDsvbOEjr6VST
+         mASnSWAUQlqh0FXZrdJ7tCMpDoH5M6RuI0LnjcZZLi2RqfHGpwHpC659k7YLILts5zb+
+         4uNwu6nNHROn0GTcLHniM2sQjN93dr86Jrvn+UPKtFi8KsoQoLsA8MdMVM3NMr3t/iXZ
+         4KpR7BnLMgg8e9v71jqWFO6ZXx94Dq23CakqkV7DZVsPuiNJmeQMSMDvglkZ+yGFNzj7
+         sc+A==
+X-Gm-Message-State: AOAM5317zPVwMbvw0LvmCM6iVlMsggGK2EfOHcgptJfy7m/3SF5eE118
+        tI9s9o2yAG/xGzY6T9x03IMUmw==
+X-Google-Smtp-Source: ABdhPJynRmhFrlhx3kRSatFsRgdvlOCMXWMPPfZKsFEulfDFTderFYUY4ADZeD8pVWnFHXOACwdNqg==
+X-Received: by 2002:a05:6512:2256:b0:473:a584:9905 with SMTP id i22-20020a056512225600b00473a5849905mr2437032lfu.639.1652947570707;
+        Thu, 19 May 2022 01:06:10 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id s18-20020a2e9c12000000b00253d5618718sm140705lji.34.2022.05.19.01.06.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 01:06:10 -0700 (PDT)
+Message-ID: <04837608-8c12-5bc0-9eca-fdcac83c5c4f@linaro.org>
+Date:   Thu, 19 May 2022 10:06:09 +0200
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="8OQvFQTAYPTT9lFf"
-Content-Disposition: inline
-In-Reply-To: <20220518084431.66aa1737@kernel.org>
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFC net-next] dt-bindings: net: xilinx: document xilinx emaclite
+ driver binding
+Content-Language: en-US
+To:     Radhey Shyam Pandey <radheys@xilinx.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "krzysztof.kozlowski+dt@linaro.org" 
+        <krzysztof.kozlowski+dt@linaro.org>,
+        Harini Katakam <harinik@xilinx.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        git <git@xilinx.com>
+References: <1652373596-5994-1-git-send-email-radhey.shyam.pandey@xilinx.com>
+ <8b441f8f-7aa2-0fab-9b90-6618a1e8c899@linaro.org>
+ <SA1PR02MB856027DD26AAB5C38C345BBAC7D19@SA1PR02MB8560.namprd02.prod.outlook.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <SA1PR02MB856027DD26AAB5C38C345BBAC7D19@SA1PR02MB8560.namprd02.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,56 +86,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 18/05/2022 17:47, Radhey Shyam Pandey wrote:
+>> -----Original Message-----
+>> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+>> Sent: Friday, May 13, 2022 2:23 PM
+>> To: Radhey Shyam Pandey <radheys@xilinx.com>; davem@davemloft.net;
+>> edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
+>> robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org; Harini Katakam
+>> <harinik@xilinx.com>
+>> Cc: netdev@vger.kernel.org; devicetree@vger.kernel.org; linux-
+>> kernel@vger.kernel.org; git <git@xilinx.com>
+>> Subject: Re: [RFC net-next] dt-bindings: net: xilinx: document xilinx emaclite
+>> driver binding
+>>
+>> On 12/05/2022 18:39, Radhey Shyam Pandey wrote:
+>>> Add basic description for the xilinx emaclite driver DT bindings.
+>>>
+>>> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+>>> ---
+>>>  .../bindings/net/xlnx,emaclite.yaml           | 60 +++++++++++++++++++
+>>>  1 file changed, 60 insertions(+)
+>>>  create mode 100644
+>>> Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
+>>
+>> Why is this RFC? Do you expect DT maintainers review or not? Maybe there is
+>> no point for us to review something which is not going to be applied?
+> 
+> I intentionally made it RFC so that all aspects are reviewed as this driver didn't
+> had an existing binding. I will send out next version with below comment 
+> addressed. Thanks!
 
---8OQvFQTAYPTT9lFf
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+RFC means you develop something which is not ready, not sure how to do
+it, you send an initial idea. Sending a regular bindings as RFC, without
+explaining what you expect, is a bit confusing.
 
-> On Wed, 18 May 2022 11:48:43 +0200 Lorenzo Bianconi wrote:
-> > > On Mon, 16 May 2022 18:06:38 +0200 Lorenzo Bianconi wrote: =20
-> > > >  /* PDMA RX Base Pointer Register */
-> > > > -#define MTK_PRX_BASE_PTR0	0x900
-> > > > +#define MTK_PRX_BASE_PTR0	(eth->soc->reg_map[MTK_PDMA_BASE] + 0x10=
-0)
-> > > >  #define MTK_PRX_BASE_PTR_CFG(x)	(MTK_PRX_BASE_PTR0 + (x * 0x10)) =
-=20
-> > >=20
-> > > Implicit macro arguments are really unpleasant for people doing
-> > > tree-wide changes or otherwise unfamiliar with the driver.
-> > >=20
-> > > Nothing we can do to avoid this? =20
-> >=20
-> > I used this approach in order to have just few changes in the codebase.=
- I guess the best
-> > option would be to explicitly add eth parameter to the register macros,=
- what do you think?
->=20
-> I don't think there's a best known practice, you'll have to exercise
-> your judgment. Taking a look at a random example of MTK_PDMA_INT_STATUS.
-> Looks like that one is already assigned to eth->tx_int_status_reg.
-> Maybe that can be generalized? Personally I'd forgo the macros
-> completely and just use eth->soc->register_name in the code.
-
-I personally think the code is easier to read if we use macros in this case.
-Let's consider MTK_LRO_CTRL_DW1_CFG(), it depends on the particular soc bas=
-ed
-on the register map and even on the ring index. I guess the best trade-off =
-we
-can get is to explicitly pass eth to the macros as parameter when needed.
-
-Regards,
-Lorenzo
-
---8OQvFQTAYPTT9lFf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYoX3AAAKCRA6cBh0uS2t
-rMJTAP9dIIJyzXlJOTfk8iKUs4K1OR4VWsGZQxS/9U+Knpof5QD/ared7Qln5hSb
-jxz/VwPojHBJxLWHwNrp4ROvp7awIwA=
-=/+XK
------END PGP SIGNATURE-----
-
---8OQvFQTAYPTT9lFf--
+Best regards,
+Krzysztof
