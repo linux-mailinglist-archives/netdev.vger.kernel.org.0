@@ -2,57 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 00C8252D9F1
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:13:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3044D52D9FA
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:14:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241083AbiESQMd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 12:12:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34512 "EHLO
+        id S241962AbiESQOh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 12:14:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241874AbiESQMa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:12:30 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 539A9C6E5F;
-        Thu, 19 May 2022 09:12:27 -0700 (PDT)
+        with ESMTP id S236153AbiESQOf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:14:35 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138D5C9ECD;
+        Thu, 19 May 2022 09:14:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B8C5361C50;
-        Thu, 19 May 2022 16:12:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A769C385AA;
-        Thu, 19 May 2022 16:12:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A416161BD4;
+        Thu, 19 May 2022 16:14:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0EFD8C385AA;
+        Thu, 19 May 2022 16:14:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652976746;
-        bh=PLx3iUUZ7laxx5o2O5313UEeec1L4dfiFRAgBbsJ7ig=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZP8oZmEet8O8mjGO0MyRU3bVx4+QfoncrK2vEoIRmghpw3nzt4F04TJNhsxpcjFwW
-         f0eZhvofHUTgRFCOLat9M+vlg1vjqVx1RwpZizfO0jodO7C2S0NCP4u79XNqd/CXr1
-         u70yvkF4xyQnp8lwiUXYGA+nAUtoO6xC168qme2XspynnCQ9fjiW2mY5asrSGR8czl
-         j0VfgpR3wYFfr8kldMyji0p6qQgliU+xDKy/nbYCysRgZaJGd9rU0gGSwDdosOi0Vj
-         iCx4M83llWXmeYiLcOsv417GH7nYqmlxmu9nOK+yH34VOZb3z8CY53EE2Aso7jQJoB
-         Dp6h0GRwcgBsQ==
-Date:   Thu, 19 May 2022 09:12:24 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        Sam.Shih@mediatek.com, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, robh@kernel.org,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH v2 net-next 11/15] net: ethernet: mtk_eth_soc: introduce
- device register map
-Message-ID: <20220519091224.4409b54d@kernel.org>
-In-Reply-To: <YoX3AMlBFfDcl69o@lore-desk>
-References: <cover.1652716741.git.lorenzo@kernel.org>
-        <78e8c6ed230130b75aae77e6d05a9b35e298860a.1652716741.git.lorenzo@kernel.org>
-        <20220517184122.522ed708@kernel.org>
-        <YoTA+5gLC4zhoQ0F@lore-desk>
-        <20220518084431.66aa1737@kernel.org>
-        <YoX3AMlBFfDcl69o@lore-desk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        s=k20201202; t=1652976874;
+        bh=JhRHwRHWIkm/MXWp/oSdiYsP151OsvphnoFYVsrGiDU=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=QvracSuXqPHuXj2xwPq3ytRGngA68y6UQpU1fVJt6/5ndHFKQeyZIj/QC6aOyn01m
+         hMT71Oy3EjHlRI8zKjZqBn0aEqXbY6Yy3O9lEwVUFj0ExFPLYF9SUL/kQg0b0qRNDI
+         MhLujj477zcn+GWnWSOmsi1+QCiJ31idLH0Vm3SN2xtc96DceBtOy6qF26K+tePcHU
+         c6wqNpyJJpbTMTuuhubCSy6CrcNR7QENvvNWRs0fGUlBADLA20GK/touiifr0dyPVb
+         B4cCXf19KLYKjb8IrI9MhGjzSSHZXJW+fko3VYWJ6Lr7yJ3Z8aGLiY9vHygfvsi91h
+         /iN8iXJYQjqmw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id F175DE8DBDA;
+        Thu, 19 May 2022 16:14:33 +0000 (UTC)
+Subject: Re: [GIT PULL] Networking for 5.18-rc8
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220519092532.17746-1-pabeni@redhat.com>
+References: <20220519092532.17746-1-pabeni@redhat.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220519092532.17746-1-pabeni@redhat.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc8
+X-PR-Tracked-Commit-Id: fbb3abdf2223cd0dfc07de85fe5a43ba7f435bdf
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: d904c8cc0302393640bc29ee62193f88ddc53126
+Message-Id: <165297687398.7702.17169303321043218900.pr-tracker-bot@kernel.org>
+Date:   Thu, 19 May 2022 16:14:33 +0000
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     torvalds@linux-foundation.org, kuba@kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -63,17 +61,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 May 2022 09:51:28 +0200 Lorenzo Bianconi wrote:
-> > I don't think there's a best known practice, you'll have to exercise
-> > your judgment. Taking a look at a random example of MTK_PDMA_INT_STATUS.
-> > Looks like that one is already assigned to eth->tx_int_status_reg.
-> > Maybe that can be generalized? Personally I'd forgo the macros
-> > completely and just use eth->soc->register_name in the code.  
-> 
-> I personally think the code is easier to read if we use macros in this case.
-> Let's consider MTK_LRO_CTRL_DW1_CFG(), it depends on the particular soc based
-> on the register map and even on the ring index. I guess the best trade-off we
-> can get is to explicitly pass eth to the macros as parameter when needed.
+The pull request you sent on Thu, 19 May 2022 11:25:32 +0200:
 
-Yeah, do you, I was just sharing what my knee jerk direction would be.
-You know the code better.
+> git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.18-rc8
+
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/d904c8cc0302393640bc29ee62193f88ddc53126
+
+Thank you!
+
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
