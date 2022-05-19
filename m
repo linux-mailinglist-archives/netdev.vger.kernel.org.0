@@ -2,208 +2,291 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AD75952E0A0
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 01:40:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEAE752E0BB
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 01:45:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343647AbiESXkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 19:40:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40948 "EHLO
+        id S1343724AbiESXpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 19:45:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236252AbiESXkK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 19:40:10 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5E1D108A9E
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 16:40:08 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id r30so9282344wra.13
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 16:40:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=e5mq4XhWsIxaG7OHtvD00PdpZiV8lIvRbszDExqkVEM=;
-        b=U+y9PgXhnPRZ3gAuQHcPmpMICUZtCUL1pb0vIgYnkfp3N/Pwq/ZcUvWpSo7/NB5Y3j
-         /F7+oWBF+hNTs1CN4Tx6kJ3pkkcEnJhV2HUaSPYzf/YFVj/u0VP5aXW79ptf14UXntHd
-         UmOoS5bK9gSqWz0s+XxRc5Cbes0XdqIrH49LKnOjmczBCox/g/bK9WA/jHCxDCCFXHhF
-         KW7gsUw98jLnGPKRA/Ur2MVYTr82P5J56UQ7tjG6N37tB6YEnE3wUUdBs//MEcP5+B1w
-         15A08fLqJPCaK9phNLO+XKWzbY6yxALouJthkZsQle65XUgGor2Wa++UWRtUtTIjMNHA
-         GbDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=e5mq4XhWsIxaG7OHtvD00PdpZiV8lIvRbszDExqkVEM=;
-        b=X84Qew2Rgoa44sRkWqzh7bsijizz2R0jL+JAErlcIbjk1v5NNMb091jsYGD/JAoL9o
-         nvEVeuAwbgv571TMEpAIk0Eyl6Xl5Rt4YRaP1SwF5+TBb27XyC/19IsygbmhkCRfqkKo
-         IbYZnBpG2Sc/tPPop2E7CnUXy16+/j3AS0PNZMzZqrNbT24GCgQRuHHIrVfujHm+kc9S
-         Oq1sQfcwIZa3vcDESV8zpV11gdh/dVFsgbX5Zwe+mxZDk2K9sYc/Xnw/056/meGqa7bL
-         o0zE201dsP7TzA/GFXgJLWgOodIAPyDetwrkxToGkMm7bd6Lsa7qU4r9+zw6ouuWPyPQ
-         WuQg==
-X-Gm-Message-State: AOAM531tZ/sBA+90olW1MiIHtohbUGwD9h9OgIgPpK/FopkwZ595oDJs
-        D3UD7vJc2EKjenx4ZVTcyXexs387SPTz9KlRaFYjMQ==
-X-Google-Smtp-Source: ABdhPJyDg0T1PACyWSIPcVz/BCGBIPfYawPjTX1uURMgCdq/TYdLlfaq5vE54jLk9PKvEtcHNiBq6gKl2ceyD6P8th0=
-X-Received: by 2002:adf:f803:0:b0:20d:3a1:3c31 with SMTP id
- s3-20020adff803000000b0020d03a13c31mr6017075wrp.565.1653003607207; Thu, 19
- May 2022 16:40:07 -0700 (PDT)
+        with ESMTP id S1343701AbiESXpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 19:45:13 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DB3DF119041
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 16:45:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653003911;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xcqeqNHBqLaEPFvaMSIdVsHM/2ssgjepqSc89Z+McDY=;
+        b=ZdH4nwsrnb55n6ATbu/cGio5L0TUU25mIotUvHfciY688Oma+bZewbMlSy9xearLdN29nN
+        MuOlA2j1qeOKj5BJ6Koo/eYlLLv7fPBLYT6uwJ0Kd7ZIVNU3Wuv/S6rsaCYfUCi1TXO/tv
+        KeuePE0A/24P+rm5+kkeZgWhCPvPjZA=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-618-wBpG6HUkMsOVqd9lnF2Ofg-1; Thu, 19 May 2022 19:45:08 -0400
+X-MC-Unique: wBpG6HUkMsOVqd9lnF2Ofg-1
+Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id A403D3C025CD;
+        Thu, 19 May 2022 23:45:07 +0000 (UTC)
+Received: from localhost (ovpn-12-42.pek2.redhat.com [10.72.12.42])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4ABA5492C14;
+        Thu, 19 May 2022 23:45:06 +0000 (UTC)
+Date:   Fri, 20 May 2022 07:45:02 +0800
+From:   Baoquan He <bhe@redhat.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
+        Petr Mladek <pmladek@suse.com>
+Cc:     "michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Dave Young <dyoung@redhat.com>, d.hatayama@jp.fujitsu.com,
+        akpm@linux-foundation.org, kexec@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, dave.hansen@linux.intel.com, feng.tang@intel.com,
+        gregkh@linuxfoundation.org, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org
+Subject: Re: [PATCH 24/30] panic: Refactor the panic path
+Message-ID: <20220519234502.GA194232@MiWiFi-R3L-srv>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-25-gpiccoli@igalia.com>
+ <Yn0TnsWVxCcdB2yO@alley>
+ <d313eec2-96b6-04e3-35cd-981f103d010e@igalia.com>
 MIME-Version: 1.0
-References: <20220518225531.558008-1-sdf@google.com> <3a732a8d-6e4f-0154-e317-795baa64022d@fb.com>
-In-Reply-To: <3a732a8d-6e4f-0154-e317-795baa64022d@fb.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 19 May 2022 16:39:55 -0700
-Message-ID: <CAKH8qBsaae3YGvJ34BpE=PmxeXyP_Gs31Q7ScGQT1uqpqBd4zg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 00/11] bpf: cgroup_sock lsm flavor
-To:     Yonghong Song <yhs@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        kpsingh@kernel.org, jakub@cloudflare.com
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d313eec2-96b6-04e3-35cd-981f103d010e@igalia.com>
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 19, 2022 at 4:34 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 5/18/22 3:55 PM, Stanislav Fomichev wrote:
-> > This series implements new lsm flavor for attaching per-cgroup programs to
-> > existing lsm hooks. The cgroup is taken out of 'current', unless
-> > the first argument of the hook is 'struct socket'. In this case,
-> > the cgroup association is taken out of socket. The attachment
-> > looks like a regular per-cgroup attachment: we add new BPF_LSM_CGROUP
-> > attach type which, together with attach_btf_id, signals per-cgroup lsm.
-> > Behind the scenes, we allocate trampoline shim program and
-> > attach to lsm. This program looks up cgroup from current/socket
-> > and runs cgroup's effective prog array. The rest of the per-cgroup BPF
-> > stays the same: hierarchy, local storage, retval conventions
-> > (return 1 == success).
-> >
-> > Current limitations:
-> > * haven't considered sleepable bpf; can be extended later on
-> > * not sure the verifier does the right thing with null checks;
-> >    see latest selftest for details
-> > * total of 10 (global) per-cgroup LSM attach points
-> >
-> > Cc: ast@kernel.org
-> > Cc: daniel@iogearbox.net
-> > Cc: kafai@fb.com
-> > Cc: kpsingh@kernel.org
-> > Cc: jakub@cloudflare.com
-> >
-> > v7:
-> > - there were a lot of comments last time, hope I didn't forget anything,
-> >    some of the bigger ones:
-> >    - Martin: use/extend BTF_SOCK_TYPE_SOCKET
-> >    - Martin: expose bpf_set_retval
-> >    - Martin: reject 'return 0' at the verifier for 'void' hooks
-> >    - Martin: prog_query returns all BPF_LSM_CGROUP, prog_info
-> >      returns attach_btf_func_id
-> >    - Andrii: split libbpf changes
-> >    - Andrii: add field access test to test_progs, not test_verifier (still
-> >      using asm though)
-> > - things that I haven't addressed, stating them here explicitly, let
-> >    me know if some of these are still problematic:
-> >    1. Andrii: exposing only link-based api: seems like the changes
-> >       to support non-link-based ones are minimal, couple of lines,
-> >       so seems like it worth having it?
-> >    2. Alexei: applying cgroup_atype for all cgroup hooks, not only
-> >       cgroup lsm: looks a bit harder to apply everywhere that I
-> >       originally thought; with lsm cgroup, we have a shim_prog pointer where
-> >       we store cgroup_atype; for non-lsm programs, we don't have a
-> >       trace program where to store it, so we still need some kind
-> >       of global table to map from "static" hook to "dynamic" slot.
-> >       So I'm dropping this "can be easily extended" clause from the
-> >       description for now. I have converted this whole machinery
-> >       to an RCU-managed list to remove synchronize_rcu().
-> > - also note that I had to introduce new bpf_shim_tramp_link and
-> >    moved refcnt there; we need something to manage new bpf_tramp_link
-> >
-> > v6:
-> > - remove active count & stats for shim program (Martin KaFai Lau)
-> > - remove NULL/error check for btf_vmlinux (Martin)
-> > - don't check cgroup_atype in bpf_cgroup_lsm_shim_release (Martin)
-> > - use old_prog (instead of passed one) in __cgroup_bpf_detach (Martin)
-> > - make sure attach_btf_id is the same in __cgroup_bpf_replace (Martin)
-> > - enable cgroup local storage and test it (Martin)
-> > - properly implement prog query and add bpftool & tests (Martin)
-> > - prohibit non-shared cgroup storage mode for BPF_LSM_CGROUP (Martin)
-> >
-> > v5:
-> > - __cgroup_bpf_run_lsm_socket remove NULL sock/sk checks (Martin KaFai Lau)
-> > - __cgroup_bpf_run_lsm_{socket,current} s/prog/shim_prog/ (Martin)
-> > - make sure bpf_lsm_find_cgroup_shim works for hooks without args (Martin)
-> > - __cgroup_bpf_attach make sure attach_btf_id is the same when replacing (Martin)
-> > - call bpf_cgroup_lsm_shim_release only for LSM_CGROUP (Martin)
-> > - drop BPF_LSM_CGROUP from bpf_attach_type_to_tramp (Martin)
-> > - drop jited check from cgroup_shim_find (Martin)
-> > - new patch to convert cgroup_bpf to hlist_node (Jakub Sitnicki)
-> > - new shim flavor for 'struct sock' + list of exceptions (Martin)
-> >
-> > v4:
-> > - fix build when jit is on but syscall is off
-> >
-> > v3:
-> > - add BPF_LSM_CGROUP to bpftool
-> > - use simple int instead of refcnt_t (to avoid use-after-free
-> >    false positive)
-> >
-> > v2:
-> > - addressed build bot failures
-> >
-> > Stanislav Fomichev (11):
-> >    bpf: add bpf_func_t and trampoline helpers
-> >    bpf: convert cgroup_bpf.progs to hlist
-> >    bpf: per-cgroup lsm flavor
-> >    bpf: minimize number of allocated lsm slots per program
-> >    bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
-> >    bpf: allow writing to a subset of sock fields from lsm progtype
-> >    libbpf: implement bpf_prog_query_opts
-> >    libbpf: add lsm_cgoup_sock type
-> >    bpftool: implement cgroup tree for BPF_LSM_CGROUP
-> >    selftests/bpf: lsm_cgroup functional test
-> >    selftests/bpf: verify lsm_cgroup struct sock access
-> >
-> >   arch/x86/net/bpf_jit_comp.c                   |  24 +-
-> >   include/linux/bpf-cgroup-defs.h               |  11 +-
-> >   include/linux/bpf-cgroup.h                    |   9 +-
-> >   include/linux/bpf.h                           |  36 +-
-> >   include/linux/bpf_lsm.h                       |   8 +
-> >   include/linux/btf_ids.h                       |   3 +-
-> >   include/uapi/linux/bpf.h                      |   6 +
-> >   kernel/bpf/bpf_lsm.c                          | 103 ++++
-> >   kernel/bpf/btf.c                              |  11 +
-> >   kernel/bpf/cgroup.c                           | 487 +++++++++++++++---
-> >   kernel/bpf/core.c                             |   2 +
-> >   kernel/bpf/syscall.c                          |  14 +-
-> >   kernel/bpf/trampoline.c                       | 244 ++++++++-
-> >   kernel/bpf/verifier.c                         |  31 +-
-> >   tools/bpf/bpftool/cgroup.c                    |  77 ++-
-> >   tools/bpf/bpftool/common.c                    |   1 +
-> >   tools/include/linux/btf_ids.h                 |   4 +-
-> >   tools/include/uapi/linux/bpf.h                |   6 +
-> >   tools/lib/bpf/bpf.c                           |  42 +-
-> >   tools/lib/bpf/bpf.h                           |  15 +
-> >   tools/lib/bpf/libbpf.c                        |   2 +
-> >   tools/lib/bpf/libbpf.map                      |   1 +
-> >   .../selftests/bpf/prog_tests/lsm_cgroup.c     | 346 +++++++++++++
-> >   .../testing/selftests/bpf/progs/lsm_cgroup.c  | 160 ++++++
-> >   24 files changed, 1480 insertions(+), 163 deletions(-)
-> >   create mode 100644 tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
-> >   create mode 100644 tools/testing/selftests/bpf/progs/lsm_cgroup.c
->
-> There are 4 test failures for test_progs in CI.
->
-> https://github.com/kernel-patches/bpf/runs/6511113546?check_suite_focus=true
-> All have error messages like:
->      At program exit the register R0 has value (0xffffffff; 0x0) should
-> have been in (0x0; 0x1)
->
-> Could you take a look?
+On 05/15/22 at 07:47pm, Guilherme G. Piccoli wrote:
+> On 12/05/2022 11:03, Petr Mladek wrote:
+...... 
+> > OK, the question is how to make it better. Let's start with
+> > a clear picture of the problem:
+> > 
+> > 1. panic() has basically two funtions:
+> > 
+> >       + show/store debug information (optional ways and amount)
+> >       + do something with the system (reboot, stay hanged)
+> > 
+> > 
+> > 2. There are 4 ways how to show/store the information:
+> > 
+> >       + tell hypervisor to store what it is interested about
+> >       + crash_dump
+> >       + kmsg_dump()
+> >       + consoles
+> > 
+> >   , where crash_dump and consoles are special:
+> > 
+> >      + crash_dump does not return. Instead it ends up with reboot.
+> > 
+> >      + Consoles work transparently. They just need an extra flush
+> >        before reboot or staying hanged.
+> > 
+> > 
+> > 3. The various notifiers do things like:
+> > 
+> >      + tell hypervisor about the crash
+> >      + print more information (also stop watchdogs)
+> >      + prepare system for reboot (touch some interfaces)
+> >      + prepare system for staying hanged (blinking)
+> > 
+> >    Note that it pretty nicely matches the 4 notifier lists.
+> > 
+> 
+> I really appreciate the summary skill you have, to convert complex
+> problems in very clear and concise ideas. Thanks for that, very useful!
+> I agree with what was summarized above.
 
-Ugh, definitely, thanks for the pointer!
+I want to say the similar words to Petr's reviewing comment when I went
+through the patches and traced each reviewing sub-thread to try to
+catch up. Petr has reivewed this series so carefully and given many
+comments I want to ack immediately.
+
+I agree with most of the suggestions from Petr to this patch, except of
+one tiny concern, please see below inline comment.
+
+> 
+> 
+> > Now, we need to decide about the ordering. The main area is how
+> > to store the debug information. Consoles are transparent so
+> > the quesition is about:
+> > 
+> >      + hypervisor
+> >      + crash_dump
+> >      + kmsg_dump
+> > 
+> > Some people need none and some people want all. There is a
+> > risk that system might hung at any stage. This why people want to
+> > make the order configurable.
+> > 
+> > But crash_dump() does not return when it succeeds. And kmsg_dump()
+> > users havn't complained about hypervisor problems yet. So, that
+> > two variants might be enough:
+> > 
+> >     + crash_dump (hypervisor, kmsg_dump as fallback)
+> >     + hypervisor, kmsg_dump, crash_dump
+> > 
+> > One option "panic_prefer_crash_dump" should be enough.
+> > And the code might look like:
+> > 
+> > void panic()
+> > {
+> > [...]
+> > 	dump_stack();
+> > 	kgdb_panic(buf);
+> > 
+> > 	< ---  here starts the reworked code --- >
+> > 
+> > 	/* crash dump is enough when enabled and preferred. */
+> > 	if (panic_prefer_crash_dump)
+> > 		__crash_kexec(NULL);
+
+I like the proposed skeleton of panic() and code style suggested by
+Petr very much. About panic_prefer_crash_dump which might need be added,
+I hope it has a default value true. This makes crash_dump execute at
+first by default just as before, unless people specify
+panic_prefer_crash_dump=0|n|off to disable it. Otherwise we need add
+panic_prefer_crash_dump=1 in kernel and in our distros to enable kdump,
+this is inconsistent with the old behaviour.
+
+> > 
+> > 	/* Stop other CPUs and focus on handling the panic state. */
+> > 	if (has_kexec_crash_image)
+> > 		crash_smp_send_stop();
+> > 	else
+> > 		smp_send_stop()
+> > 
+> 
+> Here we have a very important point. Why do we need 2 variants of SMP
+> CPU stopping functions? I disagree with that - my understanding of this
+> after some study in architectures is that the crash_() variant is
+> "stronger", should work in all cases and if not, we should fix that -
+> that'd be a bug.
+> 
+> Such variant either maps to smp_send_stop() (in various architectures,
+> including XEN/x86) or overrides the basic function with more proper
+> handling for panic() case...I don't see why we still need such
+> distinction, if you / others have some insight about that, I'd like to
+> hear =)
+> 
+> 
+> > 	/* Notify hypervisor about the system panic. */
+> > 	atomic_notifier_call_chain(&panic_hypervisor_list, 0, NULL);
+> > 
+> > 	/*
+> > 	 * No need to risk extra info when there is no kmsg dumper
+> > 	 * registered.
+> > 	 */
+> > 	if (!has_kmsg_dumper())
+> > 		__crash_kexec(NULL);
+> > 
+> > 	/* Add extra info from different subsystems. */
+> > 	atomic_notifier_call_chain(&panic_info_list, 0, NULL);
+> > 
+> > 	kmsg_dump(KMSG_DUMP_PANIC);
+> > 	__crash_kexec(NULL);
+> > 
+> > 	/* Flush console */
+> > 	unblank_screen();
+> > 	console_unblank();
+> > 	debug_locks_off();
+> > 	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
+> > 
+> > 	if (panic_timeout > 0) {
+> > 		delay()
+> > 	}
+> > 
+> > 	/*
+> > 	 * Prepare system for eventual reboot and allow custom
+> > 	 * reboot handling.
+> > 	 */
+> > 	atomic_notifier_call_chain(&panic_reboot_list, 0, NULL);
+> 
+> You had the order of panic_reboot_list VS. consoles flushing inverted.
+> It might make sense, although I didn't do that in V1...
+> Are you OK in having a helper for console flushing, as I did in V1? It
+> makes code of panic() a bit less polluted / more focused I feel.
+> 
+> 
+> > 
+> > 	if (panic_timeout != 0) {
+> > 		reboot();
+> > 	}
+> > 
+> > 	/*
+> > 	 * Prepare system for the infinite waiting, for example,
+> > 	 * setup blinking.
+> > 	 */
+> > 	atomic_notifier_call_chain(&panic_loop_list, 0, NULL);
+> > 
+> > 	infinite_loop();
+> > }
+> > 
+> > 
+> > __crash_kexec() is there 3 times but otherwise the code looks
+> > quite straight forward.
+> > 
+> > Note 1: I renamed the two last notifier list. The name 'post-reboot'
+> > 	did sound strange from the logical POV ;-)
+> > 
+> > Note 2: We have to avoid the possibility to call "reboot" list
+> > 	before kmsg_dump(). All callbacks providing info
+> > 	have to be in the info list. It a callback combines
+> > 	info and reboot functionality then it should be split.
+> > 
+> > 	There must be another way to calm down problematic
+> > 	info callbacks. And it has to be solved when such
+> > 	a problem is reported. Is there any known issue, please?
+> > 
+> > It is possible that I have missed something important.
+> > But I would really like to make the logic as simple as possible.
+> 
+> OK, I agree with you! It's indeed simpler and if others agree, I can
+> happily change the logic to what you proposed. Although...currently the
+> "crash_kexec_post_notifiers" allows to call _all_ panic_reboot_list
+> callbacks _before kdump_.
+> 
+> We need to mention this change in the commit messages, but I really
+> would like to hear the opinions of heavy users of notifiers (as
+> Michael/Hyper-V) and the kdump interested parties (like Baoquan / Dave
+> Young / Hayatama). If we all agree on such approach, will change that
+> for V2 =)
+> 
+> Thanks again Petr, for the time spent in such detailed review!
+> Cheers,
+> 
+> 
+> Guilherme
+> 
+
