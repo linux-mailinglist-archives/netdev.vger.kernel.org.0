@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DB6E52DFC6
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 00:02:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0690052DFCC
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 00:02:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245402AbiESWCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 18:02:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
+        id S242429AbiESWCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 18:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242204AbiESWCV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 18:02:21 -0400
+        with ESMTP id S245359AbiESWC2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 18:02:28 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC773F68BC;
-        Thu, 19 May 2022 15:02:19 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 73B30F7490;
+        Thu, 19 May 2022 15:02:24 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com
-Subject: [PATCH net-next 10/11] netfilter: cttimeout: fix slab-out-of-bounds read in cttimeout_net_exit
-Date:   Fri, 20 May 2022 00:02:05 +0200
-Message-Id: <20220519220206.722153-11-pablo@netfilter.org>
+Subject: [PATCH net-next 11/11] netfilter: nf_tables: set element extended ACK reporting support
+Date:   Fri, 20 May 2022 00:02:06 +0200
+Message-Id: <20220519220206.722153-12-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220519220206.722153-1-pablo@netfilter.org>
 References: <20220519220206.722153-1-pablo@netfilter.org>
@@ -35,46 +35,54 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+Report the element that causes problems via netlink extended ACK for set
+element commands.
 
-syzbot reports:
-BUG: KASAN: slab-out-of-bounds in __list_del_entry_valid+0xcc/0xf0 lib/list_debug.c:42
-[..]
- list_del include/linux/list.h:148 [inline]
- cttimeout_net_exit+0x211/0x540 net/netfilter/nfnetlink_cttimeout.c:617
-
-No reproducer so far. Looking at recent changes in this area
-its clear that the free_head must not be at the end of the
-structure because nf_ct_timeout structure has variable size.
-
-Reported-by: <syzbot+92968395eedbdbd3617d@syzkaller.appspotmail.com>
-Fixes: 78222bacfca9 ("netfilter: cttimeout: decouple unlink and free on netns destruction")
-Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nfnetlink_cttimeout.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ net/netfilter/nf_tables_api.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/net/netfilter/nfnetlink_cttimeout.c b/net/netfilter/nfnetlink_cttimeout.c
-index f069c24c6146..af15102bc696 100644
---- a/net/netfilter/nfnetlink_cttimeout.c
-+++ b/net/netfilter/nfnetlink_cttimeout.c
-@@ -35,12 +35,13 @@ static unsigned int nfct_timeout_id __read_mostly;
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index f3ad02a399f8..bd248a5ee68b 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -5344,8 +5344,10 @@ static int nf_tables_getsetelem(struct sk_buff *skb,
  
- struct ctnl_timeout {
- 	struct list_head	head;
-+	struct list_head	free_head;
- 	struct rcu_head		rcu_head;
- 	refcount_t		refcnt;
- 	char			name[CTNL_TIMEOUT_NAME_MAX];
--	struct nf_ct_timeout	timeout;
+ 	nla_for_each_nested(attr, nla[NFTA_SET_ELEM_LIST_ELEMENTS], rem) {
+ 		err = nft_get_set_elem(&ctx, set, attr);
+-		if (err < 0)
++		if (err < 0) {
++			NL_SET_BAD_ATTR(extack, attr);
+ 			break;
++		}
+ 	}
  
--	struct list_head	free_head;
-+	/* must be at the end */
-+	struct nf_ct_timeout	timeout;
- };
+ 	return err;
+@@ -6125,8 +6127,10 @@ static int nf_tables_newsetelem(struct sk_buff *skb,
  
- struct nfct_timeout_pernet {
+ 	nla_for_each_nested(attr, nla[NFTA_SET_ELEM_LIST_ELEMENTS], rem) {
+ 		err = nft_add_set_elem(&ctx, set, attr, info->nlh->nlmsg_flags);
+-		if (err < 0)
++		if (err < 0) {
++			NL_SET_BAD_ATTR(extack, attr);
+ 			return err;
++		}
+ 	}
+ 
+ 	if (nft_net->validate_state == NFT_VALIDATE_DO)
+@@ -6396,8 +6400,10 @@ static int nf_tables_delsetelem(struct sk_buff *skb,
+ 
+ 	nla_for_each_nested(attr, nla[NFTA_SET_ELEM_LIST_ELEMENTS], rem) {
+ 		err = nft_del_setelem(&ctx, set, attr);
+-		if (err < 0)
++		if (err < 0) {
++			NL_SET_BAD_ATTR(extack, attr);
+ 			break;
++		}
+ 	}
+ 	return err;
+ }
 -- 
 2.30.2
 
