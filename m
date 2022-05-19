@@ -2,43 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C729252CC42
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 08:53:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9140252CC62
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 09:04:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233532AbiESGxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 02:53:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41136 "EHLO
+        id S234523AbiESHEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 03:04:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbiESGxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 02:53:46 -0400
-X-Greylist: delayed 155062 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 May 2022 23:53:42 PDT
-Received: from dvalin.narfation.org (dvalin.narfation.org [213.160.73.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305D5B82FC;
-        Wed, 18 May 2022 23:53:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
-        s=20121; t=1652943219;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        with ESMTP id S229850AbiESHEB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 03:04:01 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B09CC275;
+        Thu, 19 May 2022 00:04:00 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id CF6261F9DC;
+        Thu, 19 May 2022 07:03:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1652943838; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=9I1ByNdBJU9iQW2DNhg/h5E5pbMnvG3nYpxZmRsX1DI=;
-        b=wAVbfJ9XHqBzaF1USTjDN8fFEHpmvhojnDKQrPLoaC/U7KjBFQgG48Y16OEilW9jxf4QQM
-        3m+xNw0Rv2tSye2yWiCQJhf2LBp12OR6Hd6xJgKRAbyMq5gfqSSQ6GjZgiOQqd/7bpw1bn
-        qGHYXPI902jap7A3AeQFOMAcf4zFdDg=
-From:   Sven Eckelmann <sven@narfation.org>
-To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        johannes@sipsolutions.net, alex.aring@gmail.com,
-        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
-        linux-wireless@vger.kernel.org, linux-wpan@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: ifdefy the wireless pointers in struct net_device
-Date:   Thu, 19 May 2022 08:53:37 +0200
-Message-ID: <9613306.YnBLfnAi8y@ripper>
-In-Reply-To: <20220518181807.2030747-1-kuba@kernel.org>
-References: <20220518181807.2030747-1-kuba@kernel.org>
+        bh=395st/CngVntAAOn5uSBsdHcf6UJsehUQOcbe6ab9wI=;
+        b=qJ/FgyV3p4LuXUdkZjoAbs2+ewn4o7aNZN0S67D2rC96Mde70WoKxt5D1iYy3vIxFGNywX
+        NYQFStO7xXozlUSKqQPZCblT/M2McgEFa5ttVGDSrZzFsBjH4DUBLxqHsrlOhubnXz8Ip9
+        VRfQAfc3f6HDJx77hS/XQSQpNXuMeJQ=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 813A52C141;
+        Thu, 19 May 2022 07:03:55 +0000 (UTC)
+Date:   Thu, 19 May 2022 09:03:52 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        Scott Branden <scott.branden@broadcom.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        zhenwei pi <pizhenwei@bytedance.com>
+Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
+Message-ID: <YoXr2AD+Jc/ukUhJ@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-20-gpiccoli@igalia.com>
+ <YoJZVZl/MH0KiE/J@alley>
+ <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
+ <YoOpyW1+q+Z5as78@alley>
+ <YoSnGmBJ3kYs5WMf@alley>
+ <fbbd0a8d-2ef4-4a39-4b75-354918e85778@igalia.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="nextPart4659350.0FORYR1UfH"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fbbd0a8d-2ef4-4a39-4b75-354918e85778@igalia.com>
 X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
@@ -49,60 +115,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---nextPart4659350.0FORYR1UfH
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
-From: Sven Eckelmann <sven@narfation.org>
-To: davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com, Jakub Kicinski <kuba@kernel.org>, Stefan Schmidt <stefan@datenfreihafen.org>, johannes@sipsolutions.net, alex.aring@gmail.com, mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc, linux-wireless@vger.kernel.org, linux-wpan@vger.kernel.org
-Subject: Re: [PATCH net-next v2] net: ifdefy the wireless pointers in struct net_device
-Date: Thu, 19 May 2022 08:53:37 +0200
-Message-ID: <9613306.YnBLfnAi8y@ripper>
-In-Reply-To: <20220518181807.2030747-1-kuba@kernel.org>
-References: <20220518181807.2030747-1-kuba@kernel.org>
+On Wed 2022-05-18 10:16:20, Guilherme G. Piccoli wrote:
+> On 18/05/2022 04:58, Petr Mladek wrote:
+> > [...]
+> >> I does similar things like kmsg_dump() so it should be called in
+> >> the same location (after info notifier list and before kdump).
+> >>
+> >> A solution might be to put it at these notifiers at the very
+> >> end of the "info" list or make extra "dump" notifier list.
+> > 
+> > I just want to point out that the above idea has problems.
+> > Notifiers storing kernel log need to be treated as kmsg_dump().
+> > In particular, we would  need to know if there are any.
+> > We do not need to call "info" notifier list before kdump
+> > when there is no kernel log dumper registered.
+> > 
+> 
+> Notifiers respect the priority concept, which is just a number that
+> orders the list addition (and the list is called in order).
+> 
+> I've used the last position to panic_print() [in patch 25] - one idea
+> here is to "reserve" the last position (represented by INT_MIN) for
+> notifiers that act like kmsg_dump(). I couldn't find any IIRC, but that
+> doesn't prevent us to save this position and comment about that.
 
-On Wednesday, 18 May 2022 20:18:07 CEST Jakub Kicinski wrote:
-> diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
-> index 83fb51b6e299..b8f8da7ee3de 100644
-> --- a/net/batman-adv/hard-interface.c
-> +++ b/net/batman-adv/hard-interface.c
-> @@ -307,9 +307,11 @@ static bool batadv_is_cfg80211_netdev(struct net_device *net_device)
->         if (!net_device)
->                 return false;
->  
-> +#if IS_ENABLED(CONFIG_CFG80211)
->         /* cfg80211 drivers have to set ieee80211_ptr */
->         if (net_device->ieee80211_ptr)
->                 return true;
-> +#endif
->  
->         return false;
->  }
+I would ignore it for now. If anyone would want to safe the log
+then they would need to read it. They will most likely use
+the existing kmsg_dump() infastructure. In fact, they should
+use it to avoid a code duplication.
 
-Acked-by: Sven Eckelmann <sven@narfation.org>
---nextPart4659350.0FORYR1UfH
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part.
-Content-Transfer-Encoding: 7Bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmKF6XEACgkQXYcKB8Em
-e0b7JxAAvG4arhZjsM0vWxljExgbu0ArtAZG6my2XE6gczf1v1+DLcCnyLf2U8ps
-NmpPpt5wPXmZpKJMEvr+v/mm3U3m1nDjPxV/44aEvVh9APsIuB7qAfipT2hFaJiG
-0LijjxQZAUK+2NU3j4MQbSSLe/oJ4Ia6+sU6YjAU42C2TAJIGyJwyX5GMlS4dvjc
-B6sOGjaprfERSSPiN4ztpHveRPv+3tzUfl65Pui7qrYLetthCGx7dyqgrjBaXA92
-hB2/tJeAQTOa/hhhTPbZl3hzAH9WuypZB6zne6YoaJ4QIAmQqjoZf1rU+MY+WxhY
-2KtvuRSPeRtPx6uk01vVw65+GGBKEYrGY5hfXvtV4FKYsHXMHJheaTRogcyb99/a
-2XT/azMwSducaSjZ4xjOs9frLw5zJLiVUZDfrYxEcZq4NwaGn8WM1RFMbmnfE8I9
-3pbe2V3Q7CNlLJ1C1S7n1bp2F93B/aEpPnHPt6VzgYeRNA3oztjnHnsTUSlnKo1/
-hvuT61DAhlY3Pb4ucm5/3gymx/IfdBaxKEBYQcn+GGsXAltwmR4a2g7GW9ChrHB7
-Mc3skEknhyNAgoEV5ZDcpuqoInx2E0baAxSwM8jQxCY5Xg07MvtE/DYUII1n0USM
-YtEw+QZGXYNU+aaZVj3JygdOIoPz9UUzMGrkNahxuMKGIjTgDDc=
-=DM23
------END PGP SIGNATURE-----
-
---nextPart4659350.0FORYR1UfH--
-
-
-
+Best Regards,
+Petr
