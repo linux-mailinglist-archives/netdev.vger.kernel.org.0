@@ -2,149 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 59CDF52D704
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 17:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1491852D714
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 17:12:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236747AbiESPJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 11:09:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35920 "EHLO
+        id S240406AbiESPMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 11:12:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234717AbiESPJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 11:09:25 -0400
-Received: from smtp-190d.mail.infomaniak.ch (smtp-190d.mail.infomaniak.ch [IPv6:2001:1600:3:17::190d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DBB8515A7
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 08:09:24 -0700 (PDT)
-Received: from smtp-2-0001.mail.infomaniak.ch (unknown [10.5.36.108])
-        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4L3tYZ5FTBzMqD8G;
-        Thu, 19 May 2022 17:09:22 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-2-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4L3tYZ1Sz6zljsV7;
-        Thu, 19 May 2022 17:09:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1652972962;
-        bh=3JJvG/e1mf+A4y7J66g9bLLUz5/wTD9IGOZNtpfhUnk=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=LAmLaRfvpj+TWCHOkPM8G0Adt4qdtdhScNUtmf/H2wYmRK4S5E67eswxba8cle7mO
-         jIjfsdKIGBYRBTkcsuq545fU2uV3AIyMRwiO8CLXW4MdMpyfr+4zH+gyx4v+YTUJlG
-         3JRIHviccHcaZ9IsdzJHBiR2UVv+H/KGTUifFwQA=
-Message-ID: <0556b4ff-9a02-7095-e495-c713ca641356@digikod.net>
-Date:   Thu, 19 May 2022 17:09:21 +0200
+        with ESMTP id S233194AbiESPMW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 11:12:22 -0400
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B99B5C3D04
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 08:12:21 -0700 (PDT)
+Received: by mail-io1-xd35.google.com with SMTP id e15so6104581iob.3
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 08:12:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jdEQHGju4mFfX3gcNSc2YY06HbqmiG/LBfB3okg7Tsk=;
+        b=H+M1vvEAY1HUdr4mwKwcMiZ9S4s708i3vBZhoklK8wI4WLWY6GLH5gliSHOpi8GtIm
+         QKBY2Kz7DdhAuBOPge1WiowgUkZUDguhSWtucGNZsLC7/wW4F8iixeFzeTQNrBHb8QDR
+         +6j+dhbnZViGrQDs8V8P86J4n6AMcabcxvyM4UO97+9SOf11WmwCM8igCdbrdzl6oX9/
+         PfvRMpGTvB/E4H9zUxR3qONIQT6jEpwnjugDYY9gfAuSvqZGos+TrTRSezIQrhONjb2o
+         76T47GF2ky6ivm//VKPNTw71OP3ttSwYYDkPF2f4JrIgoewx8epSxvsuhvLziiC+PTfP
+         e8Fg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jdEQHGju4mFfX3gcNSc2YY06HbqmiG/LBfB3okg7Tsk=;
+        b=17Bpr7qouiBjxFV/e/mKaP7tc9C/rNvEaQRqzX8hE59Rf6aBSBuCR/PRAx/6ZSeb5/
+         F49nFELpom11fBpWsLKyjpet47vkG7dxh7mDI1qQB0/BE31LAEuUhnaWK+W0HM0CQ/Sc
+         8Aw8uVYJv5wCRQVImUcZYMoDBaHJ7X4cAl4MPaSF0I8nIPtiJ0l8fFGdQsvjqKpUebX6
+         /prN/TRRMTd0Cwo6J3/cGd/Tn88dzzrvjEcXgew+bZtllshrFlBTT0reJ70e6L94iOw/
+         XHqDdB77ODvCTzsnxwngYq7VvkJzMc7G/kDhO640MTORXFDzwQ0pQ8iWZk2nowIycmsI
+         ifVw==
+X-Gm-Message-State: AOAM532jzoFBsv3zrSw4cOLFeMhWjUK5MJ46TC60feigFZpWen3mWKRs
+        nuxTjR17LSqqlponvLb4w8ManA==
+X-Google-Smtp-Source: ABdhPJz1AblWlFZFDd4U5+4gFWSoBUgTKLkMZvJTK94tEM0oRQkmEZCPGkhVzClVPww1qaEpg0h0Ig==
+X-Received: by 2002:a05:6638:52e:b0:32a:e022:5a9e with SMTP id j14-20020a056638052e00b0032ae0225a9emr3070588jar.60.1652973140943;
+        Thu, 19 May 2022 08:12:20 -0700 (PDT)
+Received: from presto.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id g6-20020a025b06000000b0032e271a558csm683887jab.168.2022.05.19.08.12.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 08:12:20 -0700 (PDT)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com
+Cc:     mka@chromium.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        quic_cpratapa@quicinc.com, quic_avuyyuru@quicinc.com,
+        quic_jponduru@quicinc.com, quic_subashab@quicinc.com,
+        elder@kernel.org, netdev@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 0/7] net: ipa: a mix of patches
+Date:   Thu, 19 May 2022 10:12:10 -0500
+Message-Id: <20220519151217.654890-1-elder@linaro.org>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-User-Agent: 
-Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        anton.sirazetdinov@huawei.com
-References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
- <20220516152038.39594-16-konstantin.meskhidze@huawei.com>
- <179ac2ee-37ff-92da-c381-c2c716725045@digikod.net>
- <7a5671cd-6bf3-9d17-ef17-ac9129386447@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v5 15/15] samples/landlock: adds network demo
-In-Reply-To: <7a5671cd-6bf3-9d17-ef17-ac9129386447@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series includes a mix of things things that are generally
+minor.  The first four are sort of unrelated fixes, and summarizing
+them here wouldn't be that helpful.
 
+The last three together make it so only the "configuration data" we
+need after initialization is saved for later use.  Most such data is
+used only during driver initialization.  But endpoint configuration
+is needed later, so the last patch saves a copy of that.  Eventually
+we'll want to support reconfiguring endpoints at runtime as well,
+and this will facilitate that.
 
-On 19/05/2022 15:33, Konstantin Meskhidze wrote:
-> 
-> 
-> 5/17/2022 12:19 PM, Mickaël Salaün пишет:
->>
->>
->> On 16/05/2022 17:20, Konstantin Meskhidze wrote:
->>> This commit adds network demo. It's possible to
->>> allow a sandoxer to bind/connect to a list of
->>> particular ports restricting networks actions to
->>> the rest of ports.
->>>
->>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->>> ---
->>>
->>> Changes since v4:
->>> * Adds ENV_TCP_BIND_NAME "LL_TCP_BIND" and
->>> ENV_TCP_CONNECT_NAME "LL_TCP_CONNECT" variables
->>> to insert TCP ports.
->>> * Renames populate_ruleset() to populate_ruleset_fs().
->>> * Adds populate_ruleset_net() and parse_port_num() helpers.
->>> * Refactoring main() to support network sandboxing.
->>>
->>> ---
+					-Alex
 
-[...]
+Alex Elder (7):
+  net: ipa: drop an unneeded transaction reference
+  net: ipa: rename a GSI error code
+  net: ipa: ignore endianness if there is no header
+  net: ipa: open-code ether_setup()
+  net: ipa: move endpoint configuration data definitions
+  net: ipa: rename a few endpoint config data types
+  net: ipa: save a copy of endpoint default config
 
->>>       if (ruleset_fd < 0) {
->>>           perror("Failed to create a ruleset");
->>>           return 1;
->>>       }
->>> -    if (populate_ruleset(ENV_FS_RO_NAME, ruleset_fd, access_fs_ro)) {
->>> +    if (populate_ruleset_fs(ENV_FS_RO_NAME, ruleset_fd, access_fs_ro))
->>>           goto err_close_ruleset;
->>> -    }
->>
->> Why? I know that checkpatch.pl prints a warning for that but I 
->> delibirately chooe to use curly braces even for "if" statements with 
->> one line because it is safer. This code may be copied/pasted and I'd 
->> like others to avoid introducing goto-fail-like issues.
->>
-> 
->   It was done just to reduce the number of checkpatch.pl warnings.
->   If you want it to be formated in your way I will fix it.
+ drivers/net/ipa/gsi.c          | 16 ++-----
+ drivers/net/ipa/gsi_reg.h      |  2 +-
+ drivers/net/ipa/ipa_data.h     | 70 ++-------------------------
+ drivers/net/ipa/ipa_endpoint.c | 86 +++++++++++++++++-----------------
+ drivers/net/ipa/ipa_endpoint.h | 66 +++++++++++++++++++++++++-
+ drivers/net/ipa/ipa_modem.c    | 13 +++--
+ 6 files changed, 128 insertions(+), 125 deletions(-)
 
-Yes please, checkpatch.pl helps to mantain kernel code but this is a 
-user space code and I prefer to follow safe practices for this kind of 
-checks.
+-- 
+2.32.0
 
-[...]
-
->>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
->>> index 916b30b31c06..e1ff40f238a6 100644
->>> --- a/security/landlock/ruleset.h
->>> +++ b/security/landlock/ruleset.h
->>> @@ -19,7 +19,7 @@
->>>   #include "limits.h"
->>>   #include "object.h"
->>>
->>> -typedef u16 access_mask_t;
->>> +typedef u32 access_mask_t;
->>
->> What‽
-> 
->    You are right. I will move this changes to another commit, related 
-> the kernel updates. I might have forgotten to rebase this change and 
-> left it in sandboxer patch. Thank you..
-
-Indeed. Please check that every commit build (without warning) and that 
-the related tests are OK.
-
-
->>
->>
->>>
->>>   /* Makes sure all filesystem access rights can be stored. */
->>>   static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
->>> @@ -157,7 +157,7 @@ struct landlock_ruleset {
->>>                * layers are set once and never changed for the
->>>                * lifetime of the ruleset.
->>>                */
->>> -            u32 access_masks[];
->>> +            access_mask_t access_masks[];
->>>           };
->>>       };
->>>   };
->>> -- 
->>> 2.25.1
->>>
->> .
