@@ -2,127 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B8F852D5DD
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:23:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2293D52D5FA
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:26:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238834AbiESOXQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 10:23:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51494 "EHLO
+        id S239692AbiESO0e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 10:26:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233609AbiESOXP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:23:15 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 229A96FA05;
-        Thu, 19 May 2022 07:23:15 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id gi33so1809184ejc.3;
-        Thu, 19 May 2022 07:23:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y6gDKrJBOB/JTUPKj6orU/0LVD95EntzsWkvK0NGWVQ=;
-        b=TVP3NwR0ZixyvFtor7fDuY8X/Ncd2o23Rcjla8NgbypEfmkW9n5RcM9tFLaYYi/Hx4
-         y3W5kBYd7tlbxtJ/b+r4moi/DGNdNeOqZ0kLUEK8AMA/beNdaF3uCBRaBufGGPChku29
-         DsVRAY0BCTk99FS45+o8RQn6kdHQKGeOijLI86BkXCa4p+wUDTE3cZXHYUDD17gnyyPy
-         rzwalvPRvyU6IG60BG5HfgwkCfxJGEPaFGpIAo5oPDnRSPYToBY+6rxIdqc+dNujR+Kn
-         UogjGnNRPvQvrpxf67w3xnGdn5yr7Ll0T7/IDtjtUzfV8b0szKJmN2iTiejcBVFr+NaH
-         Hkrw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y6gDKrJBOB/JTUPKj6orU/0LVD95EntzsWkvK0NGWVQ=;
-        b=2R0HBL3e7+XZjx6aQHsYPUlgU0DeS4NxTZRZwtG39nmGg1SnpEVYgA4G3v4Gt/fwuw
-         Ya5QsSYgoN8T/xXCP/RZbfALIoWMW7kTPgzR4WelOaJjR3SLr6KdKXhBYGFu0t3Jf2nc
-         A4+PeWZkRx34qz1NWjxtwNsc+WtOrfXPAh/q8siMCJ4fQojR98pbJ0Bcma0BdR1V68Ug
-         OvV0l2SN4gmFrvn7DButp0//iMnvgDpm+MsfX6CRh5Fs6xiWoOegYWrMLtmnwoIY+eiC
-         JjhB/eaYtehny2285B75aYWct8KYNC3FXRFAm0AaVjZVGg2BuvBs+k77QBWrLSK3ZKsS
-         Pw7w==
-X-Gm-Message-State: AOAM530YfUWNuxbM3ONrH/tG3jOWoJUh5S2oiE7+V3cMkL8elPNtgnS0
-        NxrnNt5eYo/XhlVyT1hfQm09nyBg0xoa3pcoaz8=
-X-Google-Smtp-Source: ABdhPJy/8sdt6yaCpNtINLDv3yNY8g6gXgZa0jnSq2AmUkRCoySh17BoWbxOGYPFiliHoAnaaCsG7TpUq+95y2IgJxM=
-X-Received: by 2002:a17:906:7313:b0:6f4:9079:2b2a with SMTP id
- di19-20020a170906731300b006f490792b2amr4539763ejc.377.1652970193597; Thu, 19
- May 2022 07:23:13 -0700 (PDT)
+        with ESMTP id S239348AbiESO0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:26:31 -0400
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1752737002;
+        Thu, 19 May 2022 07:26:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=7GgMfKIL4eOaBr7+tGiHzVQvi5p6f4TXu98a+NEhGJg=; b=igfou1cBpIpplBzY2402a/7/Xt
+        NBVixRZoc1H2RE5pJVf4KzDFqCZmF6r1nSopIp4EhEkGv6COSrRcw6V7wKGLxpjFYBpNQK6p4jkbg
+        EvueVA4ktbf5M2JjD4RYfv9LQlrnNmml+tReRL7DRy2rP8JTyFTEu3Nx5r3kMKVZ8hsitK/Ch2nnt
+        TTnW9HKKFlM6Zz3h2k5eDsu1usfTZfdc8EJUVWk8zWNNC1+dcFu5EA6+7DjcZzadioCmwfUtQ2rcj
+        mp3y8yHS1gG2Y2hGVP9r1HdwvletPAdJ+xxya+OgZZYWBxN3E0C3++rLDR3UEyjLzNs1F5Zf4I8j1
+        aJYAz0ew==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60774)
+        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1nrh6e-0003yl-Um; Thu, 19 May 2022 15:26:25 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1nrh6d-0006dU-DN; Thu, 19 May 2022 15:26:23 +0100
+Date:   Thu, 19 May 2022 15:26:23 +0100
+From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
+To:     Maxime Chevallier <maxime.chevallier@bootlin.com>
+Cc:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH net-next 3/6] net: lan966x: Add QUSGMII support for
+ lan966x
+Message-ID: <YoZTj69Une9aKd2C@shell.armlinux.org.uk>
+References: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
+ <20220519135647.465653-4-maxime.chevallier@bootlin.com>
 MIME-Version: 1.0
-References: <YoUuy4iTjFAcSn03@kili>
-In-Reply-To: <YoUuy4iTjFAcSn03@kili>
-From:   =?UTF-8?B?5ZGC6Iqz6aiw?= <wellslutw@gmail.com>
-Date:   Thu, 19 May 2022 22:23:04 +0800
-Message-ID: <CAFnkrsnR0LZRmZq0qAnhU9ysjYR2PAY15TmEHMt4EwdrD_AU-A@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: ethernet: SP7021: fix a use after free of skb->len
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Andrew Lunn <andrew@lunn.ch>,
-        netdev <netdev@vger.kernel.org>, kernel-janitors@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519135647.465653-4-maxime.chevallier@bootlin.com>
+Sender: Russell King (Oracle) <linux@armlinux.org.uk>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dan,
+Hi,
 
-> The netif_receive_skb() function frees "skb" so store skb->len before
-> it is freed.
->
-> Fixes: fd3040b9394c ("net: ethernet: Add driver for Sunplus SP7021")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> ---
->  drivers/net/ethernet/sunplus/spl2sw_int.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/sunplus/spl2sw_int.c b/drivers/net/ethernet/sunplus/spl2sw_int.c
-> index 69b1e2e0271e..a37c9a4c281f 100644
-> --- a/drivers/net/ethernet/sunplus/spl2sw_int.c
-> +++ b/drivers/net/ethernet/sunplus/spl2sw_int.c
-> @@ -29,6 +29,7 @@ int spl2sw_rx_poll(struct napi_struct *napi, int budget)
->         u32 mask;
->         int port;
->         u32 cmd;
-> +       u32 len;
->
->         /* Process high-priority queue and then low-priority queue. */
->         for (queue = 0; queue < RX_DESC_QUEUE_NUM; queue++) {
-> @@ -63,10 +64,11 @@ int spl2sw_rx_poll(struct napi_struct *napi, int budget)
->                         skb_put(skb, pkg_len - 4); /* Minus FCS */
->                         skb->ip_summed = CHECKSUM_NONE;
->                         skb->protocol = eth_type_trans(skb, comm->ndev[port]);
-> +                       len = skb->len;
->                         netif_receive_skb(skb);
->
->                         stats->rx_packets++;
-> -                       stats->rx_bytes += skb->len;
-> +                       stats->rx_bytes += len;
->
->                         /* Allocate a new skb for receiving. */
->                         new_skb = netdev_alloc_skb(NULL, comm->rx_desc_buff_size);
-> --
-> 2.35.1
->
+On Thu, May 19, 2022 at 03:56:44PM +0200, Maxime Chevallier wrote:
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> index e6642083ab9e..304c784f48f6 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_main.h
+> @@ -452,4 +452,10 @@ static inline void lan_rmw(u32 val, u32 mask, struct lan966x *lan966x,
+>  			      gcnt, gwidth, raddr, rinst, rcnt, rwidth));
+>  }
+>  
+> +static inline bool lan966x_is_qsgmii(phy_interface_t mode)
+> +{
+> +	return (mode == PHY_INTERFACE_MODE_QSGMII) ||
+> +	       (mode == PHY_INTERFACE_MODE_QUSGMII);
+> +}
 
-Thanks a lot for fixing the bug.
+Maybe linux/phy.h should provide a helper, something like:
 
-Can we just move the statement "stats->rx_bytes += skb->len;" to
-before free skb?
-For example,
+	phy_interface_serdes_lanes()
 
-skb_put(skb, pkg_len - 4); /* Minus FCS */
-skb->ip_summed = CHECKSUM_NONE;
-skb->protocol = eth_type_trans(skb, comm->ndev[port]);
-stats->rx_packets++;
-stats->rx_bytes += skb->len;
-netif_receive_skb(skb);
+that returns how many serdes lanes the interface mode uses?
 
-/* Allocate a new skb for receiving. */
-new_skb = netdev_alloc_skb(NULL, comm->rx_desc_buff_size);
+> diff --git a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+> index 38a7e95d69b4..96708352f53e 100644
+> --- a/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+> +++ b/drivers/net/ethernet/microchip/lan966x/lan966x_phylink.c
+> @@ -28,11 +28,18 @@ static int lan966x_phylink_mac_prepare(struct phylink_config *config,
+>  				       phy_interface_t iface)
+>  {
+>  	struct lan966x_port *port = netdev_priv(to_net_dev(config->dev));
+> +	phy_interface_t serdes_mode = iface;
+>  	int err;
+>  
+>  	if (port->serdes) {
+> +		/* As far as the SerDes is concerned, QUSGMII is the same as
+> +		 * QSGMII.
+> +		 */
+> +		if (lan966x_is_qsgmii(iface))
+> +			serdes_mode = PHY_INTERFACE_MODE_QSGMII;
+> +
+>  		err = phy_set_mode_ext(port->serdes, PHY_MODE_ETHERNET,
+> -				       iface);
+> +				       serdes_mode);
 
-Best regards,
-Wells
+I don't think that the ethernet MAC driver should be changing the
+interface mode before passing it down to the generic PHY layer -
+phy_set_mode_ext() is defined to take the phy interface mode, and any
+aliasing of modes should really be up to the generic PHY driver not
+the ethernet MAC driver.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
