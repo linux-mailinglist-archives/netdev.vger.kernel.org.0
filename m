@@ -2,51 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6596852D06A
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 12:27:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E33BF52D095
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 12:33:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236588AbiESK1Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 06:27:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42646 "EHLO
+        id S233077AbiESKcq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 06:32:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230084AbiESK1O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 06:27:14 -0400
+        with ESMTP id S229821AbiESKco (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 06:32:44 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED5D6A7E10;
-        Thu, 19 May 2022 03:27:13 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1FCAC41625;
+        Thu, 19 May 2022 03:32:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F13861A2A;
-        Thu, 19 May 2022 10:27:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42F1AC385AA;
-        Thu, 19 May 2022 10:27:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652956032;
-        bh=zZn8lhF17xR3SguiEoCZ4AuQDVWpkYaG3umQFppop0o=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=PQNyRfAnTpDMMXoFgeopUIj8zO3ymPXg+MHaFzMqTf4expv/QcR6NTCznGP1adlaW
-         4oU9hyOm8KYYrhcBGBo+jhPKLIOMRAapCq4XBmSN+E2FIyc5I89Y/9Pmw60pRyMQqS
-         FX05pYD53C2sSk4poB2SA1Ba72NLzEqJXag6rB2gHcXrCyjBeqHUupNi3ZO9zqHkKg
-         mDAA9jv+4SyiFHXIci/95X2kl06AYPRqPkMgM8b9rRG1Jk0Vxqh9/5RPM4ViPedWxe
-         BLXx3iqAMwABGe+Mvq9LE9nQUf/00bDbqFQuaYCJaLzwSq0aUoLK58Pbf/NSioZQnm
-         LHfeeRD6Epqyg==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-kernel@vger.kernel.org, amitkarwar@gmail.com,
-        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
-        huxinming820@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net] net: wireless: marvell: mwifiex: fix sleep in atomic context bugs
-In-Reply-To: <20220519101656.44513-1-duoming@zju.edu.cn> (Duoming Zhou's
-        message of "Thu, 19 May 2022 18:16:56 +0800")
-References: <20220519101656.44513-1-duoming@zju.edu.cn>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Thu, 19 May 2022 13:27:07 +0300
-Message-ID: <87fsl53jic.fsf@kernel.org>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A5C8661A7F;
+        Thu, 19 May 2022 10:32:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8007CC385AA;
+        Thu, 19 May 2022 10:32:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1652956362;
+        bh=IToSr7D1OsOQmEo9v4/Bd9h0QuIcI8KL8minv5TWqyM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=KANpaT1JqM5SZ7RCfAZTaT+yyqyfAw8nDaIHyC8S0tdXUADa830BTYQyEXUHm9BWS
+         a0fPMW4gSs11XQM68Z/Ch0FrVd4fxGz4hbyDR6ImAJa2nZ6QnDXUm4NxhMWpQq+1MI
+         CCGo8cGwIEUUoW/MDQ5ssIh+GO4fi5Q00Lg7zYHk=
+Date:   Thu, 19 May 2022 12:32:35 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH bpf-next v5 00/17] Introduce eBPF support for HID devices
+Message-ID: <YoYcw5a6EOvVPzay@kroah.com>
+References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
+ <YoX7iHddAd4FkQRQ@infradead.org>
+ <YoX904CAFOAfWeJN@kroah.com>
+ <YoYCIhYhzLmhIGxe@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoYCIhYhzLmhIGxe@infradead.org>
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,36 +66,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Duoming Zhou <duoming@zju.edu.cn> writes:
+On Thu, May 19, 2022 at 01:38:58AM -0700, Christoph Hellwig wrote:
+> On Thu, May 19, 2022 at 10:20:35AM +0200, Greg KH wrote:
+> > > are written using a hip new VM?
+> > 
+> > Ugh, don't mention UDI, that's a bad flashback...
+> 
+> But that is very much what we are doing here.
+> 
+> > I thought the goal here was to move a lot of the quirk handling and
+> > "fixup the broken HID decriptors in this device" out of kernel .c code
+> > and into BPF code instead, which this patchset would allow.
+> > 
+> > So that would just be exception handling.  I don't think you can write a
+> > real HID driver here at all, but I could be wrong as I have not read the
+> > new patchset (older versions of this series could not do that.)
+> 
+> And that "exception handling" is most of the driver.
 
-> There are sleep in atomic context bugs when uploading device dump
-> data on usb interface. The root cause is that the operations that
-> may sleep are called in fw_dump_timer_fn which is a timer handler.
-> The call tree shows the execution paths that could lead to bugs:
->
->    (Interrupt context)
-> fw_dump_timer_fn
->   mwifiex_upload_device_dump
->     dev_coredumpv(..., GFP_KERNEL)
->       dev_coredumpm()
->         kzalloc(sizeof(*devcd), gfp); //may sleep
->         dev_set_name
->           kobject_set_name_vargs
->             kvasprintf_const(GFP_KERNEL, ...); //may sleep
->             kstrdup(s, GFP_KERNEL); //may sleep
->
-> This patch moves the operations that may sleep into a work item.
-> The work item will run in another kernel thread which is in
-> process context to execute the bottom half of the interrupt.
-> So it could prevent atomic context from sleeping.
->
-> Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+For a number of "small" drivers, yes, that's all there is as the
+hardware is "broken" and needs to be fixed up in order to work properly
+with the hid core code.  An example of that would be hid-samsung.c which
+rewrites the descriptors to be sane and maps the mouse buttons properly.
 
-Have you tested this on real hardware? Or is this just a theoretical
-fix?
+But that's it, after initialization that driver gets out of the way and
+doesn't actually control anything.  From what I can tell, this patchset
+would allow us to write those "fixup the mappings and reports before the
+HID driver takes over" into ebpf programs.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+It would not replace "real" HID drivers like hid-rmi.c that has to
+handle the events and do other "real" work here.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+Or I could be reading this code all wrong, Benjamin?
+
+But even if it would allow us to write HID drivers as ebpf, what is
+wrong with that?  It's not a licensing issue (this api is only allowed
+for GPL ebpf programs), it should allow us to move a bunch of in-kernel
+drivers into smaller ebpf programs instead.
+
+It's not like this ebpf HID driver would actually work on any other
+operating system, right?  I guess Microsoft could create a gpl-licensed
+ebpf HID layer as well?  As Windows allows vendors to do all of this
+horrible HID fixups in userspace today anyway, I strongly doubt they
+would go through the effort to add a new api like this for no valid
+reason.
+
+thanks,
+
+greg k-h
