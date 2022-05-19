@@ -2,50 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F2E652CB57
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 06:57:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5323552CB5D
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 07:00:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233857AbiESE5a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 00:57:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52256 "EHLO
+        id S233880AbiESFAQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 01:00:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233855AbiESE53 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 00:57:29 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 452F684A2C
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 21:57:27 -0700 (PDT)
+        with ESMTP id S231742AbiESFAO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 01:00:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2990A87237;
+        Wed, 18 May 2022 22:00:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9BED1B8218E
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 04:57:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10E7EC385B8;
-        Thu, 19 May 2022 04:57:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B1063619E8;
+        Thu, 19 May 2022 05:00:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0EBC7C34100;
+        Thu, 19 May 2022 05:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652936245;
-        bh=Gz8poSexFTfxj+21bXVMQaBVdKSv2LqL8rs7znBbVaM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pYY5LQDL12mN4a5ISPZGdjEKEyCBzXjedgrhB3lyPZ2uPdUF7A1T4qEWoyA3KgCkO
-         e5C9ihJRoowD9PL3KbRq8zWgB9nA7FQqimfehPgBNIbQIpoTYIIq3DtVuI6amP318w
-         ikQMBn92PyHsTP4YqxJa3Upgmnq8M+Q7WfTxrA70irnORpByxs6KiVZay7Z0XqMHHw
-         f98jYiHwJozScaZAIA49FpfSp/ZiIptPQu/vuFZCZ69kgxJtOdDXBQVjpUaqixeur8
-         eSIoNPMlFu8l0GVrY8g5z3SqzNfi5yhprsJV5S5/pplVl5pecLN1BD3PRsOT5ASiq2
-         qEyxpYwuJIq4w==
-Date:   Wed, 18 May 2022 21:57:23 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     davem@davemloft.net, pabeni@redhat.com, edumazet@google.com,
-        Karol Kolacinski <karol.kolacinski@intel.com>,
-        netdev@vger.kernel.org, richardcochran@gmail.com,
-        Gurucharan <gurucharanx.g@intel.com>
-Subject: Re: [PATCH net-next 3/3] ice: add write functionality for GNSS TTY
-Message-ID: <20220518215723.28383e8e@kernel.org>
-In-Reply-To: <20220517211935.1949447-4-anthony.l.nguyen@intel.com>
-References: <20220517211935.1949447-1-anthony.l.nguyen@intel.com>
-        <20220517211935.1949447-4-anthony.l.nguyen@intel.com>
+        s=k20201202; t=1652936413;
+        bh=Pbtbk8f+v9AhJJnJtf9V5WCcRYrvYNN0Udab0dZoJa0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rITO9CXvulY++tqn95P0Xzft7Ew72Ptr35ByEFDqFOwesYt/gQrQvI9Jnm5/COCPc
+         JZ2gvSXr3JLaIg2xZTroVl5P1B+E/smbij4p47Es109zY1DqA7uqEzhH93EUBgbUpS
+         wPNaJU7rdzn0GrVcYiyaIXazANouxD5JXvxcu2wpVKGbN5Aqs93WWwOVe59sMrknvQ
+         X0fI81NrgQS+ZPDeKP0HpEiHi2ry5IfJOowFpPoHhOc0W2ejLlOuN37ZlaRwUIsaRB
+         IeiUvz685vQAgxHeEzUOXT24nZWvx/gg1dGUa7cGC+Quhg47vYybU1lXjL6gIypja8
+         SaYfhLAVo5Bdw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E45D9E8DBDA;
+        Thu, 19 May 2022 05:00:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] net/mlx5: fix multiple definitions of
+ mlx5_lag_mpesw_init / mlx5_lag_mpesw_cleanup
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165293641293.23747.10441028556274960802.git-patchwork-notify@kernel.org>
+Date:   Thu, 19 May 2022 05:00:12 +0000
+References: <20220518183022.2034373-1-kuba@kernel.org>
+In-Reply-To: <20220518183022.2034373-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, saeedm@nvidia.com, leon@kernel.org,
+        elic@nvidia.com, mbloch@nvidia.com, linux-rdma@vger.kernel.org
 X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -56,15 +58,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 17 May 2022 14:19:35 -0700 Tony Nguyen wrote:
-> From: Karol Kolacinski <karol.kolacinski@intel.com>
-> 
-> Add the possibility to write raw bytes to the GNSS module through the
-> first TTY device. This allows user to configure the module using the
-> publicly available u-blox UBX protocol (version 29) commands.
-> 
-> Create a second read-only TTY device.
+Hello:
 
-Can you say more about how the TTY devices are discovered, and why there
-are two of them? Would be great if that info was present under
-Documentation/
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Wed, 18 May 2022 11:30:22 -0700 you wrote:
+> static inline is needed in the header.
+> 
+> Fixes: 94db33177819 ("net/mlx5: Support multiport eswitch mode")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: saeedm@nvidia.com
+> CC: leon@kernel.org
+> CC: elic@nvidia.com
+> CC: mbloch@nvidia.com
+> CC: linux-rdma@vger.kernel.org
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] net/mlx5: fix multiple definitions of mlx5_lag_mpesw_init / mlx5_lag_mpesw_cleanup
+    https://git.kernel.org/netdev/net-next/c/d935053a62fa
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
