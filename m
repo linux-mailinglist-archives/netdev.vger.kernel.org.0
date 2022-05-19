@@ -2,67 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE7052C931
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 03:22:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77EB652C93F
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 03:35:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232391AbiESBWw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 21:22:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35064 "EHLO
+        id S232491AbiESBfh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 21:35:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232477AbiESBWu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 21:22:50 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA5BF6D1B8
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 18:22:48 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id p74so668739iod.8
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 18:22:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ieee.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=bMllE0YLxhmVO+VNKdUselPcHgXb5yforOCYNbGxW3o=;
-        b=T+ZPExuNiB56mAUW40HcVPnwFLRx9v0m6xRSwKcBxmA6hrLtz6wBrYJN7nU0enyT9K
-         2PHGa1V2xGt3JzAjc86pb4vo7EooWhjONXxkEd8UFXq7taL+2Kb8v2d+7tHFFId6+MgI
-         kErioyyCNs0XMRe/wv8zvYbN6dUjDyivY7aNQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=bMllE0YLxhmVO+VNKdUselPcHgXb5yforOCYNbGxW3o=;
-        b=TejvQmST86LGS2XPJxouwixebnKhmVqmr/mAVNela1gLpzHORbS9FPEoizQw809wMJ
-         8WBFrfVxeAWHTFHoEu2ylJ4Fvbce5SlYuQZcRlxLWpWIfoNZGjmBayQMbqCg1y8SO7Il
-         MxPzvKcpMYcJS1doPB4UWNZbIhF+xEu+11kB7O25LWYBSBdQK0lrq4/vHVppzhrxp/WO
-         AGTJgLobAG0BYUsj8EmawMocpB7Nw8pbBQyXu3TTHsdeDDeYDa90KJCsM9/3zkoGg0WQ
-         vVGuMjA+XgKwYtfLTiX/RjDjAXrOudARdxHyP8mCKs1+IkpNplQACPxq+h0mX7vrkSkS
-         dnuw==
-X-Gm-Message-State: AOAM532ATDJU/5CPaxswp0p+Q+WkikR2WDUYoKPgcho8qXcjc0xt7JIx
-        wZKfedkfP6mT+uEe2zAqjEuf9A==
-X-Google-Smtp-Source: ABdhPJwMBgl7mJ7nt1XzegWRztORPT7g4sl2tPBze8YQ8TaUqxHlul0nxffGeI3irEEMMpKUqKhFww==
-X-Received: by 2002:a05:6602:15d0:b0:65a:a94e:8814 with SMTP id f16-20020a05660215d000b0065aa94e8814mr1251741iow.11.1652923368081;
-        Wed, 18 May 2022 18:22:48 -0700 (PDT)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id r23-20020a6b5d17000000b006050cababc5sm349617iob.0.2022.05.18.18.22.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 18 May 2022 18:22:47 -0700 (PDT)
-Message-ID: <c7ad27bf-1bd7-86d5-8f22-c0cbc38ebda1@ieee.org>
-Date:   Wed, 18 May 2022 20:22:46 -0500
+        with ESMTP id S232496AbiESBfg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 21:35:36 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E63D9548D;
+        Wed, 18 May 2022 18:35:33 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L3XVW1Qk1z4xY2;
+        Thu, 19 May 2022 11:35:29 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1652924132;
+        bh=0uz7tlkkzoYhRZiRjCTzND3ILnAf9SvcH6TOA+ncRAQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=Gd02Rq+LukHlnljt6PwsWZfmdx+0ZRyoveatyPmENNcn+nLMeCQ5ClpGUg1ptbClM
+         GVbQ5aNCsdW7BKgQRdHw5amZzBenp3Ok+Lswqs570NIFZebgtc/rETUEfslrZzRv1z
+         0fE4ThXy6QjYXc5gwFKopJlMg53XpPoflyTugsXuI1aFyjnzDZQXAaXV9lPxUpblkt
+         33dVRKumCfKdoyD1yHIAqHP25lcZ+/1UdVM5/iTPQ5et52AOBffueGddEru+A3O8r3
+         MZf/KjxG4xOQ2rRsSmSPpZNguZp9eF3PoOpEdZYF96Zg7wstnM1ILOlKRWwhUiIbsT
+         UURD12DqORQpA==
+Date:   Thu, 19 May 2022 11:35:29 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>,
+        David Miller <davem@davemloft.net>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Leon Romanovsky <leon@kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Shay Drory <shayd@nvidia.com>
+Subject: linux-next: manual merge of the rdma tree with the net tree
+Message-ID: <20220519113529.226bc3e2@canb.auug.org.au>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next] net: ipa: don't proceed to out-of-bound write
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        elder@kernel.org
-References: <20220519004417.2109886-1-kuba@kernel.org>
-From:   Alex Elder <elder@ieee.org>
-In-Reply-To: <20220519004417.2109886-1-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: multipart/signed; boundary="Sig_/8A7u_k62YMCgoamBoiu3ovB";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -70,57 +56,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/18/22 7:44 PM, Jakub Kicinski wrote:
-> GCC 12 seems upset that we check ipa_irq against array bound
-> but then proceed, anyway:
-> 
-> drivers/net/ipa/ipa_interrupt.c: In function ‘ipa_interrupt_add’:
-> drivers/net/ipa/ipa_interrupt.c:196:27: warning: array subscript 30 is above array bounds of ‘void (*[30])(struct ipa *, enum ipa_irq_id)’ [-Warray-bounds]
->    196 |         interrupt->handler[ipa_irq] = handler;
->        |         ~~~~~~~~~~~~~~~~~~^~~~~~~~~
-> drivers/net/ipa/ipa_interrupt.c:42:27: note: while referencing ‘handler’
->     42 |         ipa_irq_handler_t handler[IPA_IRQ_COUNT];
->        |                           ^~~~~~~
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+--Sig_/8A7u_k62YMCgoamBoiu3ovB
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Well, that's a reasonable thing to complain about.  I think when
-I switched to using these WARN*() calls Leon said testing the
-return value was unusual in the networking code.
+Hi all,
 
-In any case, this is a good fix.  The problem won't happen
-anyway, so silencing the error this way is just fine.
+Today's linux-next merge of the rdma tree got a conflict in:
 
-Reviewed-by: Alex Elder <elder@linaro.org>
+  drivers/net/ethernet/mellanox/mlx5/core/main.c
 
-> ---
-> CC: elder@kernel.org
-> ---
->   drivers/net/ipa/ipa_interrupt.c | 6 ++++--
->   1 file changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ipa/ipa_interrupt.c b/drivers/net/ipa/ipa_interrupt.c
-> index b35170a93b0f..307bed2ee707 100644
-> --- a/drivers/net/ipa/ipa_interrupt.c
-> +++ b/drivers/net/ipa/ipa_interrupt.c
-> @@ -191,7 +191,8 @@ void ipa_interrupt_add(struct ipa_interrupt *interrupt,
->   	struct ipa *ipa = interrupt->ipa;
->   	u32 offset;
->   
-> -	WARN_ON(ipa_irq >= IPA_IRQ_COUNT);
-> +	if (WARN_ON(ipa_irq >= IPA_IRQ_COUNT))
-> +		return;
->   
->   	interrupt->handler[ipa_irq] = handler;
->   
-> @@ -208,7 +209,8 @@ ipa_interrupt_remove(struct ipa_interrupt *interrupt, enum ipa_irq_id ipa_irq)
->   	struct ipa *ipa = interrupt->ipa;
->   	u32 offset;
->   
-> -	WARN_ON(ipa_irq >= IPA_IRQ_COUNT);
-> +	if (WARN_ON(ipa_irq >= IPA_IRQ_COUNT))
-> +		return;
->   
->   	/* Update the IPA interrupt mask to disable it */
->   	interrupt->enabled &= ~BIT(ipa_irq);
+between commit:
 
+  b33886971dbc ("net/mlx5: Initialize flow steering during driver probe")
+
+from the net tree and commits:
+
+  40379a0084c2 ("net/mlx5_fpga: Drop INNOVA TLS support")
+  f2b41b32cde8 ("net/mlx5: Remove ipsec_ops function table")
+
+from the rdma tree.
+
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
+
+--=20
+Cheers,
+Stephen Rothwell
+
+diff --cc drivers/net/ethernet/mellanox/mlx5/core/main.c
+index ef196cb764e2,d504c8cb8f96..000000000000
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@@ -1192,15 -1181,7 +1190,7 @@@ static int mlx5_load(struct mlx5_core_d
+  		goto err_fpga_start;
+  	}
+ =20
+- 	mlx5_accel_ipsec_init(dev);
+-=20
+- 	err =3D mlx5_accel_tls_init(dev);
+- 	if (err) {
+- 		mlx5_core_err(dev, "TLS device start failed %d\n", err);
+- 		goto err_tls_start;
+- 	}
+-=20
+ -	err =3D mlx5_init_fs(dev);
+ +	err =3D mlx5_fs_core_init(dev);
+  	if (err) {
+  		mlx5_core_err(dev, "Failed to init flow steering\n");
+  		goto err_fs;
+@@@ -1245,11 -1226,8 +1235,8 @@@ err_ec
+  err_vhca:
+  	mlx5_vhca_event_stop(dev);
+  err_set_hca:
+ -	mlx5_cleanup_fs(dev);
+ +	mlx5_fs_core_cleanup(dev);
+  err_fs:
+- 	mlx5_accel_tls_cleanup(dev);
+- err_tls_start:
+- 	mlx5_accel_ipsec_cleanup(dev);
+  	mlx5_fpga_device_stop(dev);
+  err_fpga_start:
+  	mlx5_rsc_dump_cleanup(dev);
+@@@ -1274,9 -1252,7 +1261,7 @@@ static void mlx5_unload(struct mlx5_cor
+  	mlx5_ec_cleanup(dev);
+  	mlx5_sf_hw_table_destroy(dev);
+  	mlx5_vhca_event_stop(dev);
+ -	mlx5_cleanup_fs(dev);
+ +	mlx5_fs_core_cleanup(dev);
+- 	mlx5_accel_ipsec_cleanup(dev);
+- 	mlx5_accel_tls_cleanup(dev);
+  	mlx5_fpga_device_stop(dev);
+  	mlx5_rsc_dump_cleanup(dev);
+  	mlx5_hv_vhca_cleanup(dev->hv_vhca);
+
+--Sig_/8A7u_k62YMCgoamBoiu3ovB
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKFnuEACgkQAVBC80lX
+0Gx+awf/aSAXYuCrUQSP++SGx0XBNFOpmTg4BH7WiLzk+0Dd/M4uXfg0mfAceBOF
+ohj8aUVP37Wp4ksPmpU3wVg0YcTRmVVwGFayhkrIa9gQEEuTWW0eCq275Dnw1pZs
+PDH2LrSl9a8LlU2/qQaDvR2RSCUbyIKX8YZSg8M/fGpULlXYAVo5E9O0RjEHJZxm
+v6BxNnmi3nmhZKTdqLXNaQGjI6OrjjgK6Pqam7y8GuqzZNidMULIectm04W2LPrn
+r0+H3zQt2ccJchP1/Qx5QzFf6JWG2PYy9t4SEYKmvQUsKZNgzpWo6o04Flz/Fhft
+MiqvreMPsMpCUv2yzOsXQFqGuEn0fA==
+=WEPE
+-----END PGP SIGNATURE-----
+
+--Sig_/8A7u_k62YMCgoamBoiu3ovB--
