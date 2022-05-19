@@ -2,105 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7648E52DC9C
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 20:18:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D9652DCAB
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 20:24:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242978AbiESSSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 14:18:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33828 "EHLO
+        id S243195AbiESSY3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 14:24:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240855AbiESSSG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 14:18:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF6C88CB0E
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:18:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652984280;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CCe4jzkEM21jgBEAbYUjXJxP7mWaBW+jz2xznXdsy+I=;
-        b=RuPr1C3HHVhYWb0EvnMn3BYXswEcW3kqLR0hFm9QGuelLdUSRhygsl8YPmJT38R6W41W+p
-        o+srbXoOjf1eUmoy2o0Ny9iJrcGl5UkiidDNpZXvTs/0o608T385Z7X8FI2RbdyC7PCf3r
-        foOlpv1s+o+cAxb31hBA7hEbGq4bnGw=
-Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
- [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-299-h7jOeViUPHu3gu-YjzgWDw-1; Thu, 19 May 2022 14:17:59 -0400
-X-MC-Unique: h7jOeViUPHu3gu-YjzgWDw-1
-Received: by mail-qv1-f72.google.com with SMTP id w6-20020a05621404a600b00461c740f357so4942334qvz.6
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:17:59 -0700 (PDT)
+        with ESMTP id S242656AbiESSY2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 14:24:28 -0400
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81DDD93995
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:24:27 -0700 (PDT)
+Received: by mail-wr1-x42e.google.com with SMTP id j25so8324516wrc.9
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:24:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0zXiDiE6F3yYGhahJvZZTWKFFsEbzGr9QORv3wWtDJQ=;
+        b=V8wIWjQy0gnRJ9VHvwB+urOZ0vIubT+3rhYgmm5p2O881Y+q62VYVuLxSOO2d8HzKo
+         dgi+Z2Q+pTPSMW7/OU2S8ysoHBOfvYhpdb/8CxJs/2JEUl/QO7JY7ZYu4azf2DKFFgvP
+         9omkOKGItCBP63Bp7QYszAGr8vt/UYwlfri9o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=CCe4jzkEM21jgBEAbYUjXJxP7mWaBW+jz2xznXdsy+I=;
-        b=4MOwsyajPzPNCyHJeDMHQWiZPddQMRdU+VEmt+DdT/E129pEsMvH7G+e08Gy5ob7yf
-         kLsXavk9KArA7FQ+vfHvaVcizgRRRUQHuEaF4Vk3UmiL8rO/InghEm6JyeuuwiE3Y/J6
-         ZrJK3sYHXLEbqJUJfpR24NhJYywpy1nemhBchFBkPTUbMsy3YiDhGhyQaHhQfQvAvL6o
-         0ifv/hRLVMLnyWfQb0R7yWEwmCkF3IVEoT82lR5clVvr2VLY5ruydXLpkOn+w3GAhIUm
-         6Zpc9G0aTci/K/mVV/ahFMSyYf1Hun0VUf4+pu+ymPh5AyMRD+XOznrnyOOembffOzgM
-         yg+A==
-X-Gm-Message-State: AOAM532iKPuVBsuGjEyWFWk881qG8PLo2YezlHA50wB8Rr0z/R7d08ji
-        9HiZOAVqdgbtruJg7QFPXJqMgji4GRlk39dZJdFA9otS5JiU2vOt9ofpaoRGSnhTJjykCPKwzbJ
-        tguq7iL73FvusHp7y
-X-Received: by 2002:a05:620a:2943:b0:6a0:11b6:3a71 with SMTP id n3-20020a05620a294300b006a011b63a71mr3954549qkp.719.1652984279153;
-        Thu, 19 May 2022 11:17:59 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyTwxBQRbW5CXzavBWzZt+6Xg7JO8uFoYY0eybwSqD5ztTjROukyftoK04mSMAGDwdI3zcVSg==
-X-Received: by 2002:a05:620a:2943:b0:6a0:11b6:3a71 with SMTP id n3-20020a05620a294300b006a011b63a71mr3954535qkp.719.1652984278883;
-        Thu, 19 May 2022 11:17:58 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id v64-20020a376143000000b006a32baf67aasm1687002qkb.27.2022.05.19.11.17.56
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0zXiDiE6F3yYGhahJvZZTWKFFsEbzGr9QORv3wWtDJQ=;
+        b=PeMD8RprAsrPTt7txBn1EI3TdRXGB+UPFyya/JYOTmv8AZXR/Q/omabIOWk6HgP2C2
+         6YNv/dXT4oXC2buv2z8Vbinqb2q3SpPctZIIdNlUsPIwdW1x7oE14U+mY30+tPGtRASZ
+         JS1tlSwJ1U2DHJPn98MKDpNET2qflPzbpMFkw0kbVUqDUhrqYFG21px5cYqMP8dRC8YT
+         cpHnLS3gEU/g87E4kgck9AeWmipt6eOHf8ALQWBa2gDcubWSqEOZP85YrSsKJhxHVJG8
+         B7H9SqdCUuqyh6HI5JLvGjXlv6JPTaB7gpUlVvHYYxi49cBbJB61vM50NdXPdGiGtXmg
+         VqXQ==
+X-Gm-Message-State: AOAM530AOFK44CeW8VT+VVPNgJ4e9Z1dLd2cTg0EwKva6EM2spmjzUDS
+        +jDNCW7AGjJ9W6goim3I+C9BIG9DszbeMg==
+X-Google-Smtp-Source: ABdhPJyxkl0D4C71ONRFHsez4klPGUACYyG/JPCSQKzy7QiwGL+Wl1vK/I4QBqbK3IDiKlfzyYoMow==
+X-Received: by 2002:a5d:5888:0:b0:20d:270f:6b61 with SMTP id n8-20020a5d5888000000b0020d270f6b61mr5133314wrf.211.1652984666107;
+        Thu, 19 May 2022 11:24:26 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i.station (net-188-217-53-154.cust.vodafonedsl.it. [188.217.53.154])
+        by smtp.gmail.com with ESMTPSA id y7-20020a05600c17c700b003942a244f45sm183796wmo.30.2022.05.19.11.24.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 11:17:58 -0700 (PDT)
-Message-ID: <3ecbe9d60f555266fe09d5a8c657b87d6f7564b8.camel@redhat.com>
-Subject: Re: [PATCH net v3] net: macb: Fix PTP one step sync support
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Harini Katakam <harini.katakam@xilinx.com>,
-        nicolas.ferre@microchip.com, davem@davemloft.net,
-        richardcochran@gmail.com, claudiu.beznea@microchip.com,
-        kuba@kernel.org, edumazet@google.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
-        radhey.shyam.pandey@xilinx.com
-Date:   Thu, 19 May 2022 20:17:54 +0200
-In-Reply-To: <20220518170756.7752-1-harini.katakam@xilinx.com>
-References: <20220518170756.7752-1-harini.katakam@xilinx.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        Thu, 19 May 2022 11:24:25 -0700 (PDT)
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     tommaso.merciai@amarulasolutions.com,
+        alberto.bianchi@amarulasolutions.com, michael@amarulasolutions.com,
+        linuxfancy@googlegroups.com, linux-amarula@amarulasolutions.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: phy: DP83822: enable rgmii mode if phy_interface_is_rgmii
+Date:   Thu, 19 May 2022 20:24:23 +0200
+Message-Id: <20220519182423.1554379-1-tommaso.merciai@amarulasolutions.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2022-05-18 at 22:37 +0530, Harini Katakam wrote:
-> PTP one step sync packets cannot have CSUM padding and insertion in
-> SW since time stamp is inserted on the fly by HW.
-> In addition, ptp4l version 3.0 and above report an error when skb
-> timestamps are reported for packets that not processed for TX TS
-> after transmission.
-> Add a helper to identify PTP one step sync and fix the above two
-> errors. Add a common mask for PTP header flag field "twoStepflag".
-> Also reset ptp OSS bit when one step is not selected.
-> 
-> Fixes: ab91f0a9b5f4 ("net: macb: Add hardware PTP support")
-> Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
-> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
-> Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
+RGMII mode can be enable from dp83822 straps, and also writing bit 9
+of register 0x17 - RMII and Status Register (RCSR).
+When phy_interface_is_rgmii this mode must be enabled
 
-I'm sorry, but I cut the -net PR to Linus too early for this, so the
-fix will have to wait for a little more (no need to repost!) and even
-more pause will be required for the net-next follow-up.
+References:
+ - https://www.ti.com/lit/gpn/dp83822i p66
 
-Sorry for the inconvenince,
+Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+Suggested-by: Alberto Bianchi <alberto.bianchi@amarulasolutions.com>
+Tested-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+---
+ drivers/net/phy/dp83822.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Paolo
+diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
+index ce17b2af3218..66fa61fb86db 100644
+--- a/drivers/net/phy/dp83822.c
++++ b/drivers/net/phy/dp83822.c
+@@ -408,6 +408,10 @@ static int dp83822_config_init(struct phy_device *phydev)
+ 			if (err)
+ 				return err;
+ 		}
++
++		/* Enable RGMII Mode */
++		phy_set_bits_mmd(phydev, DP83822_DEVADDR,
++					MII_DP83822_RCSR, BIT(9));
+ 	}
+ 
+ 	if (dp83822->fx_enabled) {
+-- 
+2.25.1
 
