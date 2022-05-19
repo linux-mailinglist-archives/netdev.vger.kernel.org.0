@@ -2,182 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E399A52C87B
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 02:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E911D52C88D
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 02:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231853AbiESARx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 20:17:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56094 "EHLO
+        id S231995AbiESAUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 20:20:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231582AbiESARv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 20:17:51 -0400
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE54515A75D;
-        Wed, 18 May 2022 17:17:50 -0700 (PDT)
-Received: by mail-io1-xd2a.google.com with SMTP id o190so4156060iof.10;
-        Wed, 18 May 2022 17:17:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Rsodxv1uujAoBr5rf41kHtNtg4fZ2kPnNV1adJVqSYw=;
-        b=CET+1EbI5AcAiJaQ/OrsHIhR/yc8Y2tPT7vLYi/VH3d14Ja+x5Uafk3sjBs4VOtyKd
-         CjHAMjFUqQdBykKa157xXTvWvSOGzmZTKGAtSKzbrjj6EBDudEmVV9vFeCgYH+VX2UC/
-         ORx0SKMdFcD5Hs56pnJ6AmZZhHzlVk8oEjQ4NSAlYVGTinVcHC7qpNY3WO7D+/WGK2Cg
-         Mv9POFNOcsHiECJVGvDebe/LxtTfphAbUVcijnFrJoV6PRiW1Zspbu4nEN0qSlWDLRq8
-         B2b3tJKIBtkvtKpD7elQvYX/3u3ehMqux3cntZHi8ucs688Nkf/wyMOab9V4DE80MnOe
-         SxZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Rsodxv1uujAoBr5rf41kHtNtg4fZ2kPnNV1adJVqSYw=;
-        b=YTJLUG6hY9gUoZQETFlnCd1WyK8i3XFSLMdwQTxaBly/1fqQ4O5VRIQPbiFUk2YMzy
-         230vVRIdMJygNnkCzFp8B95Opc43DYo5q4QfkaQbkL+nnv2K7ev4FUrWHX2VSVn9JBwi
-         2IuO15s8PuegssyGDsJzp8UBaF/+4rVzPWwjIVkVSdDjSgqISZL1vn/exNNOxJO3DJSr
-         XJDc8S+vuqskfAgGhV6psUf6Kpz3FsjapcqMx8XgEMSVIV8jYfS5Somec6NvKUyp3xay
-         5GWYtAYSuT/PmPrZMt+GeT2hYfLDMpJuyauyr3zwnGjnk7p5BKpABHNEbCC4XGDXF1Xa
-         b+Lg==
-X-Gm-Message-State: AOAM533A9IMrmiKouQ862soD+cRAm1cWa//MacvyAorLsaGDoLHGBbNs
-        PruRV9X+QS5It/fmB22eyJknC1mSWhHFo5oFRE4=
-X-Google-Smtp-Source: ABdhPJyT38Rf56OZvapKSjQ6bbloRA8ZIz2svND/grgwY8nwsfLMoB6vGx85gTKcxZvN3RkryRDF1Lc4S/BHME3INSo=
-X-Received: by 2002:a05:6602:248f:b0:65a:fb17:7a6b with SMTP id
- g15-20020a056602248f00b0065afb177a6bmr1073752ioe.79.1652919470125; Wed, 18
- May 2022 17:17:50 -0700 (PDT)
+        with ESMTP id S231967AbiESAUP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 20:20:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D91578BD3B;
+        Wed, 18 May 2022 17:20:13 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D3575617A0;
+        Thu, 19 May 2022 00:20:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3490AC385A9;
+        Thu, 19 May 2022 00:20:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652919612;
+        bh=jRp6y1bDxc2yAiFV8gQbgEIBEpjOZYAWnd8HQTx1XdQ=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=rhUHTsI9ecC7aJ9b/TWprqiIHwYxusjOakrlL/NmALufD5VnJ9TxWQhw1tLMLzzzK
+         oszoassqpgEAN5avX0h2bqhNM/U8Z1/Qg0uHQkCTCdC0jNGL+z6+VaRm7JlGevGfIg
+         UEl83ABUZsC2de3SGY2BzSvzGcpvxUMBuw1XRlwnhO2kuyf4f2CDoUkdQiRJ5EXgCZ
+         +b8IVAea3wOkJCVrTzobmw8p/SkhQ8NuZc9xzKFVSkJZzikKSVkZsEUoAin6+P2i39
+         KYNbwiN7Wf1lD6ME3eDIPL+X+rUanjfQHLFrhGxrwQzA4XyaugI4nT65mWzejQMcP+
+         DskF5e3c1LOEg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 19E01F0392C;
+        Thu, 19 May 2022 00:20:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220516022453.68420-1-zhoufeng.zf@bytedance.com>
-In-Reply-To: <20220516022453.68420-1-zhoufeng.zf@bytedance.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 18 May 2022 17:17:39 -0700
-Message-ID: <CAEf4BzZ0eRh4ufQnc69B=6WQt_Oy3DNPL-TM-rsUW1KX--SBvQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] selftests/bpf: fix some bugs in
- map_lookup_percpu_elem testcase
-To:     Feng zhou <zhoufeng.zf@bytedance.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joanne Koong <joannekoong@fb.com>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        duanxiongchun@bytedance.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        zhouchengming@bytedance.com, Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCHv3 bpf-next] selftests/bpf: add missed ima_setup.sh in Makefile
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165291961210.22195.3504343038749230473.git-patchwork-notify@kernel.org>
+Date:   Thu, 19 May 2022 00:20:12 +0000
+References: <20220516040020.653291-1-liuhangbin@gmail.com>
+In-Reply-To: <20220516040020.653291-1-liuhangbin@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, bpf@vger.kernel.org, kuba@kernel.org,
+        davem@davemloft.net, m.xhonneux@gmail.com, lmb@cloudflare.com,
+        u9012063@gmail.com, toshiaki.makita1@gmail.com, brouer@redhat.com
+X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 15, 2022 at 7:25 PM Feng zhou <zhoufeng.zf@bytedance.com> wrote:
->
-> From: Feng Zhou <zhoufeng.zf@bytedance.com>
->
-> comments from Andrii Nakryiko, details in here:
-> https://lore.kernel.org/lkml/20220511093854.411-1-zhoufeng.zf@bytedance.com/T/
->
-> use /* */ instead of //
-> use libbpf_num_possible_cpus() instead of sysconf(_SC_NPROCESSORS_ONLN)
-> use 8 bytes for value size
-> fix memory leak
-> use ASSERT_EQ instead of ASSERT_OK
-> add bpf_loop to fetch values on each possible CPU
->
-> Fixes: ed7c13776e20c74486b0939a3c1de984c5efb6aa ("selftests/bpf: add test case for bpf_map_lookup_percpu_elem")
-> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
-> ---
->  .../bpf/prog_tests/map_lookup_percpu_elem.c   | 49 +++++++++------
->  .../bpf/progs/test_map_lookup_percpu_elem.c   | 61 ++++++++++++-------
->  2 files changed, 70 insertions(+), 40 deletions(-)
->
-> diff --git a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
-> index 58b24c2112b0..89ca170f1c25 100644
-> --- a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
-> +++ b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
-> @@ -1,30 +1,39 @@
-> -// SPDX-License-Identifier: GPL-2.0
-> -// Copyright (c) 2022 Bytedance
-> +/* SPDX-License-Identifier: GPL-2.0 */
+Hello:
 
-heh, so for SPDX license comment the rule is to use // in .c files :)
-so keep SPDX as // and all others as /* */
+This patch was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
 
-> +/* Copyright (c) 2022 Bytedance */
->
->  #include <test_progs.h>
->
->  #include "test_map_lookup_percpu_elem.skel.h"
->
-> -#define TEST_VALUE  1
-> -
->  void test_map_lookup_percpu_elem(void)
->  {
->         struct test_map_lookup_percpu_elem *skel;
-> -       int key = 0, ret;
-> -       int nr_cpus = sysconf(_SC_NPROCESSORS_ONLN);
-> -       int *buf;
-> +       __u64 key = 0, sum;
-> +       int ret, i;
-> +       int nr_cpus = libbpf_num_possible_cpus();
-> +       __u64 *buf;
->
-> -       buf = (int *)malloc(nr_cpus*sizeof(int));
-> +       buf = (__u64 *)malloc(nr_cpus*sizeof(__u64));
+On Mon, 16 May 2022 12:00:20 +0800 you wrote:
+> When build bpf test and install it to another folder, e.g.
+> 
+>   make -j10 install -C tools/testing/selftests/ TARGETS="bpf" \
+> 	SKIP_TARGETS="" INSTALL_PATH=/tmp/kselftests
+> 
+> The ima_setup.sh is missed in target folder, which makes test_ima failed.
+> 
+> [...]
 
-no need for casting
+Here is the summary with links:
+  - [PATCHv3,bpf-next] selftests/bpf: add missed ima_setup.sh in Makefile
+    https://git.kernel.org/bpf/bpf-next/c/70a1b25326dd
 
->         if (!ASSERT_OK_PTR(buf, "malloc"))
->                 return;
-> -       memset(buf, 0, nr_cpus*sizeof(int));
-> -       buf[0] = TEST_VALUE;
->
-> -       skel = test_map_lookup_percpu_elem__open_and_load();
-> -       if (!ASSERT_OK_PTR(skel, "test_map_lookup_percpu_elem__open_and_load"))
-> -               return;
-> +       for (i=0; i<nr_cpus; i++)
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-spaces between operators
 
-> +               buf[i] = i;
-> +       sum = (nr_cpus-1)*nr_cpus/2;
-
-same, please follow kernel code style
-
-> +
-> +       skel = test_map_lookup_percpu_elem__open();
-> +       if (!ASSERT_OK_PTR(skel, "test_map_lookup_percpu_elem__open"))
-> +               goto exit;
-> +
-
-nit: keep it simple, init skel to NULL and use single cleanup goto
-label that will destroy skel unconditionally (it deals with NULL just
-fine)
-
-> +       skel->rodata->nr_cpus = nr_cpus;
-> +
-> +       ret = test_map_lookup_percpu_elem__load(skel);
-> +       if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__load"))
-> +               goto cleanup;
-> +
->         ret = test_map_lookup_percpu_elem__attach(skel);
-> -       ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach");
-> +       if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach"))
-> +               goto cleanup;
->
->         ret = bpf_map_update_elem(bpf_map__fd(skel->maps.percpu_array_map), &key, buf, 0);
->         ASSERT_OK(ret, "percpu_array_map update");
-
-[...]
