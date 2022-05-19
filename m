@@ -2,51 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A244152D539
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 15:55:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 997D652D53D
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 15:57:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239342AbiESNzg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 09:55:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48742 "EHLO
+        id S232708AbiESN5I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 09:57:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239361AbiESNzY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 09:55:24 -0400
-Received: from azure-sdnproxy-1.icoremail.net (azure-sdnproxy.icoremail.net [52.237.72.81])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id C818FE274F;
-        Thu, 19 May 2022 06:54:08 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [124.236.130.193])
-        by mail-app4 (Coremail) with SMTP id cS_KCgDnN+DqS4ZivQ92AA--.55027S2;
-        Thu, 19 May 2022 21:53:55 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net v2] net: wireless: marvell: mwifiex: fix sleep in atomic context bugs
-Date:   Thu, 19 May 2022 21:53:45 +0800
-Message-Id: <20220519135345.109936-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cS_KCgDnN+DqS4ZivQ92AA--.55027S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAr1UWr15KrWktw1rKw43GFg_yoWrXryxpa
-        n8KF93Zw40qrs0k3yDJa1kZF98K3WrKry2kFs7Aw4F9F4fGryrZFyaqFyIgFs8XF4vqa4a
-        vrn0qw13Arn3tFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
-        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCY02Avz4vE14v_Xr4l42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
-        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
-        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
-        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
-        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
-        73UjIFyTuYvjfUnpnQUUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAggPAVZdtZx5OgAVsw
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
+        with ESMTP id S239425AbiESNz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 09:55:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E503FEC301;
+        Thu, 19 May 2022 06:54:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6C313B824E8;
+        Thu, 19 May 2022 13:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2BC78C34100;
+        Thu, 19 May 2022 13:54:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652968480;
+        bh=AEjrDOCuTo0J9ipWz2zjAYKt3v8uXedR7Qj2Z5UtzVs=;
+        h=Date:From:To:Cc:Subject:Reply-To:References:In-Reply-To:From;
+        b=XPAW3DLMEegkQsofWvlwU9+tJ7Q9gUL46IvvEviyqrHc4jIL604ojA8Fzxn2PVW/e
+         x4V2YzkGm+kZKAzzSSLk6RWhjECJ7Zu8mbHg/MAieVpiwzflgaz0RUtD8p6ay567D9
+         42lTFyoQ8lbk3MDNFsQgvYG7Tjep0XketBpekzikCeLXbN9jN4VRxvjo+5hbYpmugf
+         zCtRRouHLTyzNfaZ4BqDXw53ZQKamwCMoOnYv6EV4mwaaYEJnEWP2kSA7vuQwgazg0
+         4zerZgZRksDQr996CTSg+CeOAof/eVCkmeEA5tMpkmaFGphXX5q+zmjhZqvLc9+zLA
+         IPaJ4WXS50WSg==
+Received: by paulmck-ThinkPad-P17-Gen-1.home (Postfix, from userid 1000)
+        id C7CD25C051D; Thu, 19 May 2022 06:54:39 -0700 (PDT)
+Date:   Thu, 19 May 2022 06:54:39 -0700
+From:   "Paul E. McKenney" <paulmck@kernel.org>
+To:     Jiri Olsa <olsajiri@gmail.com>
+Cc:     Frederic Weisbecker <frederic@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [PATCH bpf-next 1/2] cpuidle/rcu: Making arch_cpu_idle and
+ rcu_idle_exit noinstr
+Message-ID: <20220519135439.GX1790663@paulmck-ThinkPad-P17-Gen-1>
+Reply-To: paulmck@kernel.org
+References: <20220515203653.4039075-1-jolsa@kernel.org>
+ <20220516042535.GV1790663@paulmck-ThinkPad-P17-Gen-1>
+ <20220516114922.GA349949@lothringen>
+ <YoN1WULUoKtMKx8v@krava>
+ <20220518162118.GA2661055@paulmck-ThinkPad-P17-Gen-1>
+ <YoYq/M6ZSQ+U2sar@krava>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YoYq/M6ZSQ+U2sar@krava>
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_HI,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -55,103 +71,186 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are sleep in atomic context bugs when uploading device dump
-data on usb interface. The root cause is that the operations that
-may sleep are called in fw_dump_timer_fn which is a timer handler.
-The call tree shows the execution paths that could lead to bugs:
+On Thu, May 19, 2022 at 01:33:16PM +0200, Jiri Olsa wrote:
+> On Wed, May 18, 2022 at 09:21:18AM -0700, Paul E. McKenney wrote:
+> > On Tue, May 17, 2022 at 12:13:45PM +0200, Jiri Olsa wrote:
+> > > On Mon, May 16, 2022 at 01:49:22PM +0200, Frederic Weisbecker wrote:
+> > > > On Sun, May 15, 2022 at 09:25:35PM -0700, Paul E. McKenney wrote:
+> > > > > On Sun, May 15, 2022 at 10:36:52PM +0200, Jiri Olsa wrote:
+> > > > > > Making arch_cpu_idle and rcu_idle_exit noinstr. Both functions run
+> > > > > > in rcu 'not watching' context and if there's tracer attached to
+> > > > > > them, which uses rcu (e.g. kprobe multi interface) it will hit RCU
+> > > > > > warning like:
+> > > > > > 
+> > > > > >   [    3.017540] WARNING: suspicious RCU usage
+> > > > > >   ...
+> > > > > >   [    3.018363]  kprobe_multi_link_handler+0x68/0x1c0
+> > > > > >   [    3.018364]  ? kprobe_multi_link_handler+0x3e/0x1c0
+> > > > > >   [    3.018366]  ? arch_cpu_idle_dead+0x10/0x10
+> > > > > >   [    3.018367]  ? arch_cpu_idle_dead+0x10/0x10
+> > > > > >   [    3.018371]  fprobe_handler.part.0+0xab/0x150
+> > > > > >   [    3.018374]  0xffffffffa00080c8
+> > > > > >   [    3.018393]  ? arch_cpu_idle+0x5/0x10
+> > > > > >   [    3.018398]  arch_cpu_idle+0x5/0x10
+> > > > > >   [    3.018399]  default_idle_call+0x59/0x90
+> > > > > >   [    3.018401]  do_idle+0x1c3/0x1d0
+> > > > > > 
+> > > > > > The call path is following:
+> > > > > > 
+> > > > > > default_idle_call
+> > > > > >   rcu_idle_enter
+> > > > > >   arch_cpu_idle
+> > > > > >   rcu_idle_exit
+> > > > > > 
+> > > > > > The arch_cpu_idle and rcu_idle_exit are the only ones from above
+> > > > > > path that are traceble and cause this problem on my setup.
+> > > > > > 
+> > > > > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > > > 
+> > > > > From an RCU viewpoint:
+> > > > > 
+> > > > > Reviewed-by: Paul E. McKenney <paulmck@kernel.org>
+> > > > > 
+> > > > > [ I considered asking for an instrumentation_on() in rcu_idle_exit(),
+> > > > > but there is no point given that local_irq_restore() isn't something
+> > > > > you instrument anyway. ]
+> > > > 
+> > > > So local_irq_save() in the beginning of rcu_idle_exit() is unsafe because
+> > > > it is instrumentable by the function (graph)  tracers and the irqsoff tracer.
+> > > > 
+> > > > Also it calls into lockdep that might make use of RCU.
+> > > > 
+> > > > That's why rcu_idle_exit() is not noinstr yet. See this patch:
+> > > > 
+> > > > https://lore.kernel.org/lkml/20220503100051.2799723-4-frederic@kernel.org/
+> > > 
+> > > I see, could we mark it at least with notrace meanwhile?
+> > 
+> > For the RCU part, how about as follows?
+> > 
+> > If this approach is reasonable, my guess would be that Frederic will pull
+> > it into his context-tracking series, perhaps using a revert of this patch
+> > to maintain sanity in the near term.
+> > 
+> > If this approach is unreasonable, well, that is Murphy for you!
+> 
+> I checked and it works in my test ;-)
 
-   (Interrupt context)
-fw_dump_timer_fn
-  mwifiex_upload_device_dump
-    dev_coredumpv(..., GFP_KERNEL)
-      dev_coredumpm()
-        kzalloc(sizeof(*devcd), gfp); //may sleep
-        dev_set_name
-          kobject_set_name_vargs
-            kvasprintf_const(GFP_KERNEL, ...); //may sleep
-            kstrdup(s, GFP_KERNEL); //may sleep
+Whew!!!  One piece of the problem might be solved, then.  ;-)
 
-This patch moves the operations that may sleep into a work item.
-The work item will run in another kernel thread which is in
-process context to execute the bottom half of the interrupt.
-So it could prevent atomic context from sleeping.
+> > For the x86 idle part, my feeling is still that the rcu_idle_enter()
+> > and rcu_idle_exit() need to be pushed deeper into the code.  Perhaps
+> > an ongoing process as the idle loop continues to be dug deeper?
+> 
+> for arch_cpu_idle with noinstr I'm getting this W=1 warning:
+> 
+> vmlinux.o: warning: objtool: arch_cpu_idle()+0xb: call to {dynamic}() leaves .noinstr.text section
+> 
+> we could have it with notrace if that's a problem
 
-Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
-Changes in v2:
-  - Fix compile problem.
+I would be happy to queue the arch_cpu_idle() portion of your patch on
+-rcu, if that would move things forward.  I suspect that additional
+x86_idle() surgery is required, but maybe I am just getting confused
+about what the x86_idle() function pointer can point to.  But it looks
+to me like these need further help:
 
- drivers/net/wireless/marvell/mwifiex/init.c      | 12 +++++++++++-
- drivers/net/wireless/marvell/mwifiex/main.h      |  1 +
- drivers/net/wireless/marvell/mwifiex/sta_event.c |  1 +
- 3 files changed, 13 insertions(+), 1 deletion(-)
+o	static void amd_e400_idle(void)
+	Plus things it calls, like tick_broadcast_enter() and
+	tick_broadcast_exit().
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/init.c b/drivers/net/wireless/marvell/mwifiex/init.c
-index 88c72d1827a..cc3f1121eb9 100644
---- a/drivers/net/wireless/marvell/mwifiex/init.c
-+++ b/drivers/net/wireless/marvell/mwifiex/init.c
-@@ -63,11 +63,19 @@ static void wakeup_timer_fn(struct timer_list *t)
- 		adapter->if_ops.card_reset(adapter);
- }
- 
-+static void fw_dump_work(struct work_struct *work)
-+{
-+	struct mwifiex_adapter *adapter =
-+		container_of(work, struct mwifiex_adapter, devdump_work);
-+
-+	mwifiex_upload_device_dump(adapter);
-+}
-+
- static void fw_dump_timer_fn(struct timer_list *t)
- {
- 	struct mwifiex_adapter *adapter = from_timer(adapter, t, devdump_timer);
- 
--	mwifiex_upload_device_dump(adapter);
-+	schedule_work(&adapter->devdump_work);
- }
- 
- /*
-@@ -321,6 +329,7 @@ static void mwifiex_init_adapter(struct mwifiex_adapter *adapter)
- 	adapter->active_scan_triggered = false;
- 	timer_setup(&adapter->wakeup_timer, wakeup_timer_fn, 0);
- 	adapter->devdump_len = 0;
-+	INIT_WORK(&adapter->devdump_work, fw_dump_work);
- 	timer_setup(&adapter->devdump_timer, fw_dump_timer_fn, 0);
- }
- 
-@@ -401,6 +410,7 @@ mwifiex_adapter_cleanup(struct mwifiex_adapter *adapter)
- {
- 	del_timer(&adapter->wakeup_timer);
- 	del_timer_sync(&adapter->devdump_timer);
-+	cancel_work_sync(&adapter->devdump_work);
- 	mwifiex_cancel_all_pending_cmd(adapter);
- 	wake_up_interruptible(&adapter->cmd_wait_q.wait);
- 	wake_up_interruptible(&adapter->hs_activate_wait_q);
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 332dd1c8db3..c8ac2f57f18 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -900,6 +900,7 @@ struct mwifiex_adapter {
- 	struct work_struct rx_work;
- 	struct workqueue_struct *dfs_workqueue;
- 	struct work_struct dfs_work;
-+	struct work_struct devdump_work;
- 	bool rx_work_enabled;
- 	bool rx_processing;
- 	bool delay_main_work;
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index 7d42c5d2dbf..8e28d0107d7 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -644,6 +644,7 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 
- upload_dump:
- 	del_timer_sync(&adapter->devdump_timer);
-+	cancel_work_sync(&adapter->devdump_work);
- 	mwifiex_upload_device_dump(adapter);
- }
- 
--- 
-2.17.1
+o	static __cpuidle void mwait_idle(void)
 
+So it might not be all that much additional work, even if I have avoided
+confusion about what the x86_idle() function pointer can point to.  But
+I do not trust my ability to test this accurately.
+
+Thoughts?
+
+							Thanx, Paul
+
+> thanks,
+> jirka
+> 
+> > 
+> > 							Thanx, Paul
+> > 
+> > ------------------------------------------------------------------------
+> > 
+> > commit cd338be719a0a692e0d50e1a8438e1f6c7165d9c
+> > Author: Paul E. McKenney <paulmck@kernel.org>
+> > Date:   Tue May 17 21:00:04 2022 -0700
+> > 
+> >     rcu: Apply noinstr to rcu_idle_enter() and rcu_idle_exit()
+> >     
+> >     This commit applies the "noinstr" tag to the rcu_idle_enter() and
+> >     rcu_idle_exit() functions, which are invoked from portions of the idle
+> >     loop that cannot be instrumented.  These tags require reworking the
+> >     rcu_eqs_enter() and rcu_eqs_exit() functions that these two functions
+> >     invoke in order to cause them to use normal assertions rather than
+> >     lockdep.  In addition, within rcu_idle_exit(), the raw versions of
+> >     local_irq_save() and local_irq_restore() are used, again to avoid issues
+> >     with lockdep in uninstrumented code.
+> >     
+> >     This patch is based in part on an earlier patch by Jiri Olsa, discussions
+> >     with Peter Zijlstra and Frederic Weisbecker, earlier changes by Thomas
+> >     Gleixner, and off-list discussions with Yonghong Song.
+> >     
+> >     Link: https://lore.kernel.org/lkml/20220515203653.4039075-1-jolsa@kernel.org/
+> >     Reported-by: Jiri Olsa <jolsa@kernel.org>
+> >     Reported-by: Alexei Starovoitov <ast@kernel.org>
+> >     Reported-by: Andrii Nakryiko <andrii@kernel.org>
+> >     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+> >     Reviewed-by: Yonghong Song <yhs@fb.com>
+> > 
+> > diff --git a/kernel/rcu/tree.c b/kernel/rcu/tree.c
+> > index 222d59299a2af..02233b17cce0e 100644
+> > --- a/kernel/rcu/tree.c
+> > +++ b/kernel/rcu/tree.c
+> > @@ -635,8 +635,8 @@ static noinstr void rcu_eqs_enter(bool user)
+> >  		return;
+> >  	}
+> >  
+> > -	lockdep_assert_irqs_disabled();
+> >  	instrumentation_begin();
+> > +	lockdep_assert_irqs_disabled();
+> >  	trace_rcu_dyntick(TPS("Start"), rdp->dynticks_nesting, 0, atomic_read(&rdp->dynticks));
+> >  	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !user && !is_idle_task(current));
+> >  	rcu_preempt_deferred_qs(current);
+> > @@ -663,9 +663,9 @@ static noinstr void rcu_eqs_enter(bool user)
+> >   * If you add or remove a call to rcu_idle_enter(), be sure to test with
+> >   * CONFIG_RCU_EQS_DEBUG=y.
+> >   */
+> > -void rcu_idle_enter(void)
+> > +void noinstr rcu_idle_enter(void)
+> >  {
+> > -	lockdep_assert_irqs_disabled();
+> > +	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !raw_irqs_disabled());
+> >  	rcu_eqs_enter(false);
+> >  }
+> >  EXPORT_SYMBOL_GPL(rcu_idle_enter);
+> > @@ -865,7 +865,7 @@ static void noinstr rcu_eqs_exit(bool user)
+> >  	struct rcu_data *rdp;
+> >  	long oldval;
+> >  
+> > -	lockdep_assert_irqs_disabled();
+> > +	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && !raw_irqs_disabled());
+> >  	rdp = this_cpu_ptr(&rcu_data);
+> >  	oldval = rdp->dynticks_nesting;
+> >  	WARN_ON_ONCE(IS_ENABLED(CONFIG_RCU_EQS_DEBUG) && oldval < 0);
+> > @@ -900,13 +900,13 @@ static void noinstr rcu_eqs_exit(bool user)
+> >   * If you add or remove a call to rcu_idle_exit(), be sure to test with
+> >   * CONFIG_RCU_EQS_DEBUG=y.
+> >   */
+> > -void rcu_idle_exit(void)
+> > +void noinstr rcu_idle_exit(void)
+> >  {
+> >  	unsigned long flags;
+> >  
+> > -	local_irq_save(flags);
+> > +	raw_local_irq_save(flags);
+> >  	rcu_eqs_exit(false);
+> > -	local_irq_restore(flags);
+> > +	raw_local_irq_restore(flags);
+> >  }
+> >  EXPORT_SYMBOL_GPL(rcu_idle_exit);
+> >  
