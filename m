@@ -2,78 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E44E52D668
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:48:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DF5B52D671
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:50:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239940AbiESOsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 10:48:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48864 "EHLO
+        id S239977AbiESOuK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 10:50:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239923AbiESOsL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:48:11 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 66B559E9F6
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652971689;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1OAuMmOz0HL+Uy2U9iB8Am39R1ctikhJNEflzxuIzxs=;
-        b=THEFu1p75ij2yqnzvzlvt9WzA+J3HLgsHf8t3oOpxLa+DijOWp/Kwr2bgC0lGx9Nku7XjA
-        Y/53xSdLNeBtiE2q2xCtUuhB9J3Py+udceoBq2WYQEEKi0Qptt1HGbNi1DbvKUpFsaWoxm
-        Ghw08vYwTGjApTRkDO9q8MnzjVI4EaU=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-646-EijL88PdOQWiU9XSFSIPjQ-1; Thu, 19 May 2022 10:48:08 -0400
-X-MC-Unique: EijL88PdOQWiU9XSFSIPjQ-1
-Received: by mail-wm1-f71.google.com with SMTP id q128-20020a1c4386000000b003942fe15835so2123579wma.6
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:48:08 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=1OAuMmOz0HL+Uy2U9iB8Am39R1ctikhJNEflzxuIzxs=;
-        b=VvSXqlDyNwzRVrPXUyQsdfEG1hozjNsFjDTU1jcnlBlX0XjeWXf2hs6lPninmupNMA
-         c3wVgl40ILY7xGy3W46BOrQR8eaUVvccykvQLCDkIBkC68W6YeDWu6ZxkAcpIRf5aqFZ
-         uXZvboLD0PSogDosmJZv9td0JqVJS5yUv0OkxNfT+JLmXkvM0HTfk1D2e6VezCFxRJUx
-         cvWWjiR3b0gqtGOQuQUAa+ETYdo7WXO9s9uZeYeEs/z96Ak5ntD8NzNrgPNpSkgzp3HP
-         aVp/oS0eGiARCNWBTx0ktsfbDnUGk8sSzDMnydWFEgt7kMjpKVVDWkbcp0bioZNJ2bfl
-         ekmQ==
-X-Gm-Message-State: AOAM530Au1QwCCDRMNJqAf2HQO7yFPbmfW+QYx6YPHTX72O0OEscaRjM
-        LslZeiNWv4iv9dt0OHJvJ6i3Lexyrx5M6kWG0cLPIr/rdXbk+djREiPD8cDdCH/POlpWCD+PvJu
-        nCpjEIX72D7jWDbmU
-X-Received: by 2002:a05:600c:198f:b0:394:952d:9a72 with SMTP id t15-20020a05600c198f00b00394952d9a72mr4627448wmq.72.1652971687156;
-        Thu, 19 May 2022 07:48:07 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwrkzJZYLrUDEogMR26ucPZYo2pitwKWmbuBkCcZMZ+f7N5rGYODtRfu066599B6CWYFRn8fg==
-X-Received: by 2002:a05:600c:198f:b0:394:952d:9a72 with SMTP id t15-20020a05600c198f00b00394952d9a72mr4627423wmq.72.1652971686920;
-        Thu, 19 May 2022 07:48:06 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
-        by smtp.gmail.com with ESMTPSA id 189-20020a1c02c6000000b00397342bcfb7sm787758wmc.46.2022.05.19.07.48.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 07:48:06 -0700 (PDT)
-Date:   Thu, 19 May 2022 16:48:01 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, linux-kernel@vger.kernel.org,
-        gdawar@xilinx.com, lingshan.zhu@intel.com, kvm@vger.kernel.org,
-        lulu@redhat.com, netdev@vger.kernel.org, lvivier@redhat.com,
-        eli@mellanox.com, virtualization@lists.linux-foundation.org,
-        parav@nvidia.com
-Subject: Re: [PATCH] vdpasim: allow to enable a vq repeatedly
-Message-ID: <20220519144801.m7ioxoa5beo5jzv7@sgarzare-redhat>
-References: <20220519143145.767845-1-eperezma@redhat.com>
+        with ESMTP id S239965AbiESOuI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:50:08 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6B798E27A3;
+        Thu, 19 May 2022 07:50:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28A8EB82332;
+        Thu, 19 May 2022 14:50:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BAD1C385AA;
+        Thu, 19 May 2022 14:50:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652971804;
+        bh=co3fUDj78RM5wW0Lh+KE75FvB8/+RLtvVClhMBRExrI=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=jor/8LF2QYz1lNosyOhrcyDZMBWYL6OfzWpgq49cXjr2b+IuabhWfp/BQZDB+Y+CW
+         a00LmmAHVaS1DXgsku78Dim9JODaC/+gqMQWg3ReHeykwYcYpSmfx3yfB5Q8GlHDxi
+         RqP15TS91rKCKB3bRjsSmnmvMV6UKnTwSj2hCsaQ1hWfUUt6Z3L2rF3SbavmcpgVzZ
+         9szNaSt9ZdD3s6RXM9qnRPxI+QQaJe249KauuijsgENEU9KaqjhUeorBzURdCVVyO5
+         QOVuA0G6pjX2ZEq+aCsOoj4PVfaJkwCmJTExyzYYxvQpQPnf4kTHje8SEXWUHzACta
+         hCu5kQGRUELew==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     duoming@zju.edu.cn
+Cc:     linux-kernel@vger.kernel.org, amitkarwar@gmail.com,
+        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] net: wireless: marvell: mwifiex: fix sleep in atomic context bugs
+References: <20220519101656.44513-1-duoming@zju.edu.cn>
+        <87fsl53jic.fsf@kernel.org>
+        <257f8e7.216cd.180dc1af4d3.Coremail.duoming@zju.edu.cn>
+Date:   Thu, 19 May 2022 17:49:58 +0300
+In-Reply-To: <257f8e7.216cd.180dc1af4d3.Coremail.duoming@zju.edu.cn>
+        (duoming's message of "Thu, 19 May 2022 19:36:35 +0800 (GMT+08:00)")
+Message-ID: <877d6h37c9.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220519143145.767845-1-eperezma@redhat.com>
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,40 +59,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 19, 2022 at 04:31:45PM +0200, Eugenio Pérez wrote:
->Code must be resilient to enable a queue many times.
->
->At the moment the queue is resetting so it's definitely not the expected
->behavior.
->
->Fixes: 2c53d0f64c06 ("vdpasim: vDPA device simulator")
->Cc: stable@vger.kernel.org
->Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
->---
-> drivers/vdpa/vdpa_sim/vdpa_sim.c | 5 +++--
-> 1 file changed, 3 insertions(+), 2 deletions(-)
->
->diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
->index ddbe142af09a..b53cd00ad161 100644
->--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
->+++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
->@@ -355,9 +355,10 @@ static void vdpasim_set_vq_ready(struct vdpa_device *vdpa, u16 idx, bool ready)
-> 	struct vdpasim_virtqueue *vq = &vdpasim->vqs[idx];
->
-> 	spin_lock(&vdpasim->lock);
->-	vq->ready = ready;
->-	if (vq->ready)
->+	if (!vq->ready) {
->+		vq->ready = ready;
-> 		vdpasim_queue_ready(vdpasim, idx);
->+	}
+duoming@zju.edu.cn writes:
 
-But this way the first time vq->ready is set to true, then it will never 
-be set back to false.
+> Hello,
+>
+> On Thu, 19 May 2022 13:27:07 +0300 Kalle Valo wrote:
+>
+>> > There are sleep in atomic context bugs when uploading device dump
+>> > data on usb interface. The root cause is that the operations that
+>> > may sleep are called in fw_dump_timer_fn which is a timer handler.
+>> > The call tree shows the execution paths that could lead to bugs:
+>> >
+>> >    (Interrupt context)
+>> > fw_dump_timer_fn
+>> >   mwifiex_upload_device_dump
+>> >     dev_coredumpv(..., GFP_KERNEL)
+>> >       dev_coredumpm()
+>> >         kzalloc(sizeof(*devcd), gfp); //may sleep
+>> >         dev_set_name
+>> >           kobject_set_name_vargs
+>> >             kvasprintf_const(GFP_KERNEL, ...); //may sleep
+>> >             kstrdup(s, GFP_KERNEL); //may sleep
+>> >
+>> > This patch moves the operations that may sleep into a work item.
+>> > The work item will run in another kernel thread which is in
+>> > process context to execute the bottom half of the interrupt.
+>> > So it could prevent atomic context from sleeping.
+>> >
+>> > Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
+>> > Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+>> 
+>> Have you tested this on real hardware? Or is this just a theoretical
+>> fix?
+>
+> This is a theoretical fix. I don't have the real hardware.
 
-Should we leave the assignment out of the block?
-Maybe after the if block to avoid the problem we are fixing.
+For such patches clearly document that in the commit log, for example
+something like "Compile tested only." or similar. But do take into
+account that I'm wary about non-trivial fixes which have not been tested
+on a real device, it's easy to do more harm than good.
 
-Thanks,
-Stefano
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
