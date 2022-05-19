@@ -2,414 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AA74C52D22B
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 14:13:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E120A52D24F
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 14:20:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237725AbiESMNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 08:13:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
+        id S237858AbiESMUm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 08:20:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237726AbiESMNB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 08:13:01 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF2BA6CABB
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 05:12:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652962378;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=CkIaNIwPhVnbadWQOPtJWP2GaYujaSS/0fz0pIg+dJk=;
-        b=URytq1HINUDPuh6d8O6NCaM1IXQcp9VwjMdRrqsUq5aJVvR/l64cHvniu94a/yLlCQIaRs
-        7Uvh0TBRinLmt8gyV0T7bw0xRSVEB0/ab6ljvygmUsZiHvYx7/NJgFNHJhFOgVlYx+kIQv
-        5U0llvdM7LtNGDeVhz0wCzt+rIw+o+I=
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
- [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-212-2DXaP0K9Op6K3qfGRe9Irw-1; Thu, 19 May 2022 08:12:56 -0400
-X-MC-Unique: 2DXaP0K9Op6K3qfGRe9Irw-1
-Received: by mail-pg1-f197.google.com with SMTP id r190-20020a632bc7000000b003c6222b2192so2606819pgr.11
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 05:12:56 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CkIaNIwPhVnbadWQOPtJWP2GaYujaSS/0fz0pIg+dJk=;
-        b=DJeK07HoV97dAx3DZtfil4NOJe2H38Gp0UDO3WTLgBwvRIkOHHD8suDHt3QDofH8a2
-         QGH6gTt6S8PF8U8ek1mRPOHpMU5JTu1VY3OK1PvqQF6CH/gU0u+LdnEB3zLq+DZg0yzU
-         AOou6zz9d7wVHnK+VAIS/q9JDWs64s/5YjiIvlw99G31MW7x+Z+fyMsnFLeBAUt0dNV4
-         RJhtMWHetvUiS8L1GrNuuRHVIeJ9K8VyBpQBZiebTn+c7b2Mdame9ewnBS+zToVn6Sbd
-         2QTbClrpQ3T4wT+DJJCJlkbb30Z3kiPotYGlhunmuqGJF3m0qTLdZ7qVJWshxunTIsHL
-         Idwg==
-X-Gm-Message-State: AOAM531kLIk1W3lJ15kB0qmegUXal+Nu51aYMIzMPuq/U5wQJohldgBU
-        6/Nn59PvfxDojx0oE3Ips6Yfx3t/o8rcL5g+tyan7/jXME/wMBcvwpVW2WPrU8lM7nLBX0BgoXs
-        hU2ukYBEYbZcZjx7dAktGRNWF2H8QnpmZ
-X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id k18-20020a170902c41200b00161af8bf478mr4582448plk.67.1652962372398;
-        Thu, 19 May 2022 05:12:52 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxPOd9kx0YNHDOk5iw+vYT6N7dJGHXUGXiMaBEYpKQ9aD4hCcMGVyr1vFP1bGh9MM/x6N5AOda0AQJSYCIA6pU=
-X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id
- k18-20020a170902c41200b00161af8bf478mr4582418plk.67.1652962371871; Thu, 19
- May 2022 05:12:51 -0700 (PDT)
+        with ESMTP id S232584AbiESMUg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 08:20:36 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B947AB041F;
+        Thu, 19 May 2022 05:20:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=e6xrJm1a3ay+4weLnrCkh2SRSEeyZycIIB/twweqf9Y=; b=BhOEtl3IEpq+ZutVgH7P2rHsfA
+        mhGkC2PSuDrVyQ8IQfXtbB2pfD2fLPqKTP1L2vPLew3hLPbkforpZGHUalxvr86M8T2G/zNh0P/pw
+        wi++cJ5XXfisCo4sQPAYOpaVMhBvNWB3svhNAgbQKxYFPy0Oeko+Z9jhUOVMogS4VQkCRHPLo2bnq
+        jjqxb69zYzPORFRcZZlayXhHSqDz7B+6f3XjEVdBQ2ftzK2PDz+TwQa11JztdT1Ouzc0j+U1m1POY
+        rbklHHuyIwI+fwGIyQbgwTEldlCv1PEui/a5Qzds7nWr2ZDdu+bcGybfUaDSvUQ/88wOr+qjGKQ2s
+        3BFZ9Urg==;
+Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nrf8d-00BEVm-Gn; Thu, 19 May 2022 14:20:19 +0200
+Message-ID: <edbaa4fa-561c-6f5e-f2ab-43ae68acaede@igalia.com>
+Date:   Thu, 19 May 2022 09:19:31 -0300
 MIME-Version: 1.0
-References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
- <20220518205924.399291-13-benjamin.tissoires@redhat.com> <20220518222055.zh7hvexbqlctvotw@apollo.legion>
-In-Reply-To: <20220518222055.zh7hvexbqlctvotw@apollo.legion>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Thu, 19 May 2022 14:12:40 +0200
-Message-ID: <CAO-hwJLxqYC9AUrfjMX1sPdSrt7EguWt9diwadJ9UZe-XGKFJw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 12/17] selftests/bpf: add tests for bpf_hid_hw_request
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
+Content-Language: en-US
+To:     Scott Branden <scott.branden@broadcom.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Desmond yan <desmond.yan@broadcom.com>
+Cc:     David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
+        akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        zhenwei pi <pizhenwei@bytedance.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
+ <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com> <YoOpyW1+q+Z5as78@alley>
+ <d72b9aab-675c-ac89-b73a-b1de4a0b722d@igalia.com>
+ <81878a67-21f1-fee8-1add-f381bc8b05df@broadcom.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <81878a67-21f1-fee8-1add-f381bc8b05df@broadcom.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 19, 2022 at 12:20 AM Kumar Kartikeya Dwivedi
-<memxor@gmail.com> wrote:
->
-> On Thu, May 19, 2022 at 02:29:19AM IST, Benjamin Tissoires wrote:
-> > Add tests for the newly implemented function.
-> > We test here only the GET_REPORT part because the other calls are pure
-> > HID protocol and won't infer the result of the test of the bpf hook.
-> >
-> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-> >
-> > ---
-> >
-> > changes in v5:
-> > - use the new hid_bpf_allocate_context() API
-> > - remove the need for ctx_in for syscall TEST_RUN
-> >
-> > changes in v3:
-> > - use the new hid_get_data API
-> > - directly use HID_FEATURE_REPORT and HID_REQ_GET_REPORT from uapi
-> >
-> > changes in v2:
-> > - split the series by bpf/libbpf/hid/selftests and samples
-> > ---
-> >  tools/testing/selftests/bpf/prog_tests/hid.c | 114 ++++++++++++++++---
-> >  tools/testing/selftests/bpf/progs/hid.c      |  59 ++++++++++
-> >  2 files changed, 155 insertions(+), 18 deletions(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
-> > index 47bc0a30c275..54c0a0fcd54d 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/hid.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/hid.c
-> > @@ -77,12 +77,23 @@ static unsigned char rdesc[] = {
-> >       0xc0,                   /* END_COLLECTION */
-> >  };
-> >
-> > +static u8 feature_data[] = { 1, 2 };
-> > +
-> >  struct attach_prog_args {
-> >       int prog_fd;
-> >       unsigned int hid;
-> >       int retval;
-> >  };
-> >
-> > +struct hid_hw_request_syscall_args {
-> > +     __u8 data[10];
-> > +     unsigned int hid;
-> > +     int retval;
-> > +     size_t size;
-> > +     enum hid_report_type type;
-> > +     __u8 request_type;
-> > +};
-> > +
-> >  static pthread_mutex_t uhid_started_mtx = PTHREAD_MUTEX_INITIALIZER;
-> >  static pthread_cond_t uhid_started = PTHREAD_COND_INITIALIZER;
-> >
-> > @@ -142,7 +153,7 @@ static void destroy(int fd)
-> >
-> >  static int uhid_event(int fd)
-> >  {
-> > -     struct uhid_event ev;
-> > +     struct uhid_event ev, answer;
-> >       ssize_t ret;
-> >
-> >       memset(&ev, 0, sizeof(ev));
-> > @@ -183,6 +194,15 @@ static int uhid_event(int fd)
-> >               break;
-> >       case UHID_GET_REPORT:
-> >               fprintf(stderr, "UHID_GET_REPORT from uhid-dev\n");
-> > +
-> > +             answer.type = UHID_GET_REPORT_REPLY;
-> > +             answer.u.get_report_reply.id = ev.u.get_report.id;
-> > +             answer.u.get_report_reply.err = ev.u.get_report.rnum == 1 ? 0 : -EIO;
-> > +             answer.u.get_report_reply.size = sizeof(feature_data);
-> > +             memcpy(answer.u.get_report_reply.data, feature_data, sizeof(feature_data));
-> > +
-> > +             uhid_write(fd, &answer);
-> > +
-> >               break;
-> >       case UHID_SET_REPORT:
-> >               fprintf(stderr, "UHID_SET_REPORT from uhid-dev\n");
-> > @@ -391,6 +411,7 @@ static int open_hidraw(int dev_id)
-> >  struct test_params {
-> >       struct hid *skel;
-> >       int hidraw_fd;
-> > +     int hid_id;
-> >  };
-> >
-> >  static int prep_test(int dev_id, const char *prog_name, struct test_params *test_data)
-> > @@ -419,27 +440,33 @@ static int prep_test(int dev_id, const char *prog_name, struct test_params *test
-> >       if (!ASSERT_OK_PTR(hid_skel, "hid_skel_open"))
-> >               goto cleanup;
-> >
-> > -     prog = bpf_object__find_program_by_name(*hid_skel->skeleton->obj, prog_name);
-> > -     if (!ASSERT_OK_PTR(prog, "find_prog_by_name"))
-> > -             goto cleanup;
-> > +     if (prog_name) {
-> > +             prog = bpf_object__find_program_by_name(*hid_skel->skeleton->obj, prog_name);
-> > +             if (!ASSERT_OK_PTR(prog, "find_prog_by_name"))
-> > +                     goto cleanup;
-> >
-> > -     bpf_program__set_autoload(prog, true);
-> > +             bpf_program__set_autoload(prog, true);
-> >
-> > -     err = hid__load(hid_skel);
-> > -     if (!ASSERT_OK(err, "hid_skel_load"))
-> > -             goto cleanup;
-> > +             err = hid__load(hid_skel);
-> > +             if (!ASSERT_OK(err, "hid_skel_load"))
-> > +                     goto cleanup;
-> >
-> > -     attach_fd = bpf_program__fd(hid_skel->progs.attach_prog);
-> > -     if (!ASSERT_GE(attach_fd, 0, "locate attach_prog")) {
-> > -             err = attach_fd;
-> > -             goto cleanup;
-> > -     }
-> > +             attach_fd = bpf_program__fd(hid_skel->progs.attach_prog);
-> > +             if (!ASSERT_GE(attach_fd, 0, "locate attach_prog")) {
-> > +                     err = attach_fd;
-> > +                     goto cleanup;
-> > +             }
-> >
-> > -     args.prog_fd = bpf_program__fd(prog);
-> > -     err = bpf_prog_test_run_opts(attach_fd, &tattr);
-> > -     snprintf(buf, sizeof(buf), "attach_hid(%s)", prog_name);
-> > -     if (!ASSERT_EQ(args.retval, 0, buf))
-> > -             goto cleanup;
-> > +             args.prog_fd = bpf_program__fd(prog);
-> > +             err = bpf_prog_test_run_opts(attach_fd, &tattr);
-> > +             snprintf(buf, sizeof(buf), "attach_hid(%s)", prog_name);
-> > +             if (!ASSERT_EQ(args.retval, 0, buf))
-> > +                     goto cleanup;
-> > +     } else {
-> > +             err = hid__load(hid_skel);
-> > +             if (!ASSERT_OK(err, "hid_skel_load"))
-> > +                     goto cleanup;
-> > +     }
-> >
-> >       hidraw_fd = open_hidraw(dev_id);
-> >       if (!ASSERT_GE(hidraw_fd, 0, "open_hidraw"))
-> > @@ -447,6 +474,7 @@ static int prep_test(int dev_id, const char *prog_name, struct test_params *test
-> >
-> >       test_data->skel = hid_skel;
-> >       test_data->hidraw_fd = hidraw_fd;
-> > +     test_data->hid_id = hid_id;
-> >
-> >       return 0;
-> >
-> > @@ -693,6 +721,54 @@ static int test_hid_change_report(int uhid_fd, int dev_id)
-> >       return ret;
-> >  }
-> >
-> > +/*
-> > + * Attach hid_user_raw_request to the given uhid device,
-> > + * call the bpf program from userspace
-> > + * check that the program is called and does the expected.
-> > + */
-> > +static int test_hid_user_raw_request_call(int uhid_fd, int dev_id)
-> > +{
-> > +     struct test_params params;
-> > +     int err, prog_fd;
-> > +     int ret = -1;
-> > +     struct hid_hw_request_syscall_args args = {
-> > +             .retval = -1,
-> > +             .type = HID_FEATURE_REPORT,
-> > +             .request_type = HID_REQ_GET_REPORT,
-> > +             .size = 10,
-> > +     };
-> > +     DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattrs,
-> > +                         .ctx_in = &args,
-> > +                         .ctx_size_in = sizeof(args),
-> > +     );
-> > +
-> > +     err = prep_test(dev_id, NULL, &params);
-> > +     if (!ASSERT_EQ(err, 0, "prep_test()"))
-> > +             goto cleanup;
-> > +
-> > +     args.hid = params.hid_id;
-> > +     args.data[0] = 1; /* report ID */
-> > +
-> > +     prog_fd = bpf_program__fd(params.skel->progs.hid_user_raw_request);
-> > +
-> > +     err = bpf_prog_test_run_opts(prog_fd, &tattrs);
-> > +     if (!ASSERT_EQ(err, 0, "bpf_prog_test_run_opts"))
-> > +             goto cleanup;
-> > +
-> > +     if (!ASSERT_EQ(args.retval, 2, "bpf_prog_test_run_opts_retval"))
-> > +             goto cleanup;
-> > +
-> > +     if (!ASSERT_EQ(args.data[1], 2, "hid_user_raw_request_check_in"))
-> > +             goto cleanup;
-> > +
-> > +     ret = 0;
-> > +
-> > +cleanup:
-> > +     cleanup_test(&params);
-> > +
-> > +     return ret;
-> > +}
-> > +
-> >  void serial_test_hid_bpf(void)
-> >  {
-> >       int err, uhid_fd;
-> > @@ -720,6 +796,8 @@ void serial_test_hid_bpf(void)
-> >       ASSERT_OK(err, "hid_attach_detach");
-> >       err = test_hid_change_report(uhid_fd, dev_id);
-> >       ASSERT_OK(err, "hid_change_report");
-> > +     err = test_hid_user_raw_request_call(uhid_fd, dev_id);
-> > +     ASSERT_OK(err, "hid_change_report");
-> >
-> >       destroy(uhid_fd);
-> >
-> > diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
-> > index ee7529c47ad8..e3444d444303 100644
-> > --- a/tools/testing/selftests/bpf/progs/hid.c
-> > +++ b/tools/testing/selftests/bpf/progs/hid.c
-> > @@ -10,6 +10,13 @@ extern __u8 *hid_bpf_get_data(struct hid_bpf_ctx *ctx,
-> >                             unsigned int offset,
-> >                             const size_t __sz) __ksym;
-> >  extern int hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, u32 flags) __ksym;
-> > +extern struct hid_bpf_ctx *hid_bpf_allocate_context(unsigned int hid_id) __ksym;
-> > +extern void hid_bpf_release_context(struct hid_bpf_ctx *ctx) __ksym;
-> > +extern int hid_bpf_hw_request(struct hid_bpf_ctx *ctx,
-> > +                           __u8 *data,
-> > +                           size_t len,
-> > +                           enum hid_report_type type,
-> > +                           int reqtype) __ksym;
-> >
-> >  struct attach_prog_args {
-> >       int prog_fd;
-> > @@ -56,3 +63,55 @@ int attach_prog(struct attach_prog_args *ctx)
-> >                                         0);
-> >       return 0;
-> >  }
-> > +
-> > +struct hid_hw_request_syscall_args {
-> > +     /* data needs to come at offset 0 so we can do a memcpy into it */
-> > +     __u8 data[10];
-> > +     unsigned int hid;
-> > +     int retval;
-> > +     size_t size;
-> > +     enum hid_report_type type;
-> > +     __u8 request_type;
-> > +};
-> > +
-> > +SEC("syscall")
-> > +int hid_user_raw_request(struct hid_hw_request_syscall_args *args)
-> > +{
-> > +     struct hid_bpf_ctx *ctx;
-> > +     int i, ret = 0;
-> > +     __u8 *data;
-> > +
-> > +     ctx = hid_bpf_allocate_context(args->hid);
-> > +     if (!ctx)
-> > +             return 0; /* EPERM check */
-> > +
-> > +     /* We can not use the context data memory directly in the hid_bpf call,
-> > +      * so we rely on the PTR_TO_MEM allocated in the hid_bpf_context
-> > +      */
-> > +     data = hid_bpf_get_data(ctx, 0 /* offset */, 10 /* size */);
-> > +     if (!data)
-> > +             goto out; /* EPERM check */
-> > +
->
-> If I'm reading this right, you need more than just returning PTR_TO_MEM. Since
-> this points into allocated ctx, nothing prevents user from accessing data after
-> we do hid_bpf_release_context.
+On 18/05/2022 19:17, Scott Branden wrote:
+> Hi Guilherme,
+> 
+> +Desmond
+> [...] 
+>>>> I'm afraid it breaks kdump if this device is not reset beforehand - it's
+>>>> a doorbell write, so not high risk I think...
+>>>>
+>>>> But in case the not-reset device can be probed normally in kdump kernel,
+>>>> then I'm fine in moving this to the reboot list! I don't have the HW to
+>>>> test myself.
+>>>
+>>> Good question. Well, it if has to be called before kdump then
+>>> even "hypervisor" list is a wrong place because is not always
+>>> called before kdump.
+>> [...]
+> We register to the panic notifier so that we can kill the VK card ASAP
+> to stop DMAing things over to the host side.  If it is not notified then
+> memory may not be frozen when kdump is occurring.
+> Notifying the card on panic is also needed to allow for any type of 
+> reset to occur.
+> 
+> So, the only thing preventing moving the notifier later is the chance
+> that memory is modified while kdump is occurring.  Or, if DMA is 
+> disabled before kdump already then this wouldn't be an issue and the 
+> notification to the card (to allow for clean resets) can be done later.
 
-oops. I missed that point.
+Hi Scott / Desmond, thanks for the detailed answer! Is this adapter
+designed to run in x86 only or you have other architectures' use cases?
 
-TBH, ideally I wanted to directly pass args->data into
-hid_bpf_hw_request(). But because args is seen as the context of the
-program, I can not pass it to the kfunc arguments.
-I would happily prevent getting a data pointer for a manually
-allocated context if I could solve that issue. This would save me from
-calling twice  __builtin_memcpy.
+I'm not expert on that, but I guess whether DMA is "kept" or not depends
+a bit if IOMMU is used. IIRC, there was a copy of the DMAR table in
+kdump (at least for Intel IOMMU). Also, devices are not properly
+quiesced on kdump IIUC, we don't call shutdown/reset handlers, they're
+skip due to the crash nature - so there is a risk of devices doing bad
+things in the new kernel.
 
-That doesn't change the fact that you are correct and the PTR_TO_MEM
-in kfunc code should be fixed.
-But right now, I am not sure what you mean below and I'll need a
-little bit more time to process it.
+With that said, and given this is a lightweight notifier that ideally
+should run ASAP, I'd keep this one in the hypervisor list. We can
+"adjust" the semantic of this list to include lightweight notifiers that
+reset adapters.
 
+With that said, Petr has a point - not always such list is going to be
+called before kdump. So, that makes me think in another idea: what if we
+have another list, but not on panic path, but instead in the custom
+crash_shutdown()? Drivers could add callbacks there that must execute
+before kexec/kdump, no matter what.
+
+Let me know your thoughts Scott / Desmond / Petr and all interested parties.
 Cheers,
-Benjamin
 
->
-> The ref_obj_id of ctx needs to be transferred to R0.ref_obj_id, and R0.id needs
-> to be assigned another id distinct from the ref_obj_id.
->
-> My idea would be to give this type of function a new set, and handle this case
-> of transferring ref_obj_id into R0. See is_ptr_cast_function in verifier.c.
-> Shouldn't be too much code. You could even use the bpf_kfunc_arg_meta to store
-> the ref_obj_id (and ensure only one referenced register exists among the 5
-> arguments).
->
-> > +     __builtin_memcpy(data, args->data, sizeof(args->data));
-> > +
-> > +     if (args->size <= sizeof(args->data)) {
-> > +             ret = hid_bpf_hw_request(ctx,
-> > +                                      data,
-> > +                                      args->size,
-> > +                                      args->type,
-> > +                                      args->request_type);
-> > +             args->retval = ret;
-> > +             if (ret < 0)
-> > +                     goto out;
-> > +     } else {
-> > +             ret = -7; /* -E2BIG */
-> > +             goto out;
-> > +     }
-> > +
-> > +     __builtin_memcpy(args->data, data, sizeof(args->data));
-> > +
-> > + out:
-> > +     hid_bpf_release_context(ctx);
-> > +
-> > +     return ret;
-> > +}
-> > --
-> > 2.36.1
-> >
->
-> --
-> Kartikeya
->
 
+Guilherme
