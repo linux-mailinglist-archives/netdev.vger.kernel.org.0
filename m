@@ -2,110 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CBE452CC15
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 08:42:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C729252CC42
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 08:53:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230010AbiESGmo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 02:42:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50312 "EHLO
+        id S233532AbiESGxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 02:53:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229715AbiESGmm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 02:42:42 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 26982E0C
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 23:42:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652942560;
+        with ESMTP id S229562AbiESGxq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 02:53:46 -0400
+X-Greylist: delayed 155062 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 May 2022 23:53:42 PDT
+Received: from dvalin.narfation.org (dvalin.narfation.org [213.160.73.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 305D5B82FC;
+        Wed, 18 May 2022 23:53:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=narfation.org;
+        s=20121; t=1652943219;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=XlTlmOwilrqD3cHVhZ9FBZQAvJeiR+NCJ9hretUDHmw=;
-        b=aZIfgbo/knncs2zhhrr9gVbAofpkoK8uGwoczDb/HempUQMv3EvsQ39Y7OpSOCnkElSoPc
-        Nt35nrcI6qPkoxtcbuSTpEWkZV9d8scFzlfXeCUwF9oi+q6t+AJvR4Edm0QGc4D2Jfs1Wn
-        4mYGsQ9mA9/moTzbfbajBI5c47n82sw=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-265-zXkUmuGIOsqo7WPQ7x8Y9w-1; Thu, 19 May 2022 02:42:36 -0400
-X-MC-Unique: zXkUmuGIOsqo7WPQ7x8Y9w-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id EAE071C05145;
-        Thu, 19 May 2022 06:42:35 +0000 (UTC)
-Received: from samus.usersys.redhat.com (unknown [10.43.17.26])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 9F462492C14;
-        Thu, 19 May 2022 06:42:34 +0000 (UTC)
-Date:   Thu, 19 May 2022 08:42:32 +0200
-From:   Artem Savkov <asavkov@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, borisp@nvidia.com, john.fastabend@gmail.com,
-        daniel@iogearbox.net
-Subject: Re: [PATCH net-next] net: tls: fix messing up lists when bpf enabled
-Message-ID: <YoXm2MIxa6XOvUZe@samus.usersys.redhat.com>
-References: <20220518205644.2059468-1-kuba@kernel.org>
+        bh=9I1ByNdBJU9iQW2DNhg/h5E5pbMnvG3nYpxZmRsX1DI=;
+        b=wAVbfJ9XHqBzaF1USTjDN8fFEHpmvhojnDKQrPLoaC/U7KjBFQgG48Y16OEilW9jxf4QQM
+        3m+xNw0Rv2tSye2yWiCQJhf2LBp12OR6Hd6xJgKRAbyMq5gfqSSQ6GjZgiOQqd/7bpw1bn
+        qGHYXPI902jap7A3AeQFOMAcf4zFdDg=
+From:   Sven Eckelmann <sven@narfation.org>
+To:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        johannes@sipsolutions.net, alex.aring@gmail.com,
+        mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc,
+        linux-wireless@vger.kernel.org, linux-wpan@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: ifdefy the wireless pointers in struct net_device
+Date:   Thu, 19 May 2022 08:53:37 +0200
+Message-ID: <9613306.YnBLfnAi8y@ripper>
+In-Reply-To: <20220518181807.2030747-1-kuba@kernel.org>
+References: <20220518181807.2030747-1-kuba@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220518205644.2059468-1-kuba@kernel.org>
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
-X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; boundary="nextPart4659350.0FORYR1UfH"; micalg="pgp-sha512"; protocol="application/pgp-signature"
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 18, 2022 at 01:56:44PM -0700, Jakub Kicinski wrote:
-> Artem points out that skb may try to take over the skb and
-                        ^^^ I think you meant "bpf"
+--nextPart4659350.0FORYR1UfH
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"; protected-headers="v1"
+From: Sven Eckelmann <sven@narfation.org>
+To: davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com, Jakub Kicinski <kuba@kernel.org>, Stefan Schmidt <stefan@datenfreihafen.org>, johannes@sipsolutions.net, alex.aring@gmail.com, mareklindner@neomailbox.ch, sw@simonwunderlich.de, a@unstable.cc, linux-wireless@vger.kernel.org, linux-wpan@vger.kernel.org
+Subject: Re: [PATCH net-next v2] net: ifdefy the wireless pointers in struct net_device
+Date: Thu, 19 May 2022 08:53:37 +0200
+Message-ID: <9613306.YnBLfnAi8y@ripper>
+In-Reply-To: <20220518181807.2030747-1-kuba@kernel.org>
+References: <20220518181807.2030747-1-kuba@kernel.org>
 
-> queue it to its own list. Unlink the skb before calling out.
-> 
-> Fixes: b1a2c1786330 ("tls: rx: clear ctx->recv_pkt earlier")
-> Reported-by: Artem Savkov <asavkov@redhat.com>
-Tested-by: Artem Savkov <asavkov@redhat.com>
-
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: borisp@nvidia.com
-> CC: john.fastabend@gmail.com
-> CC: daniel@iogearbox.net
-> ---
->  net/tls/tls_sw.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/net/tls/tls_sw.c b/net/tls/tls_sw.c
-> index 939d1673f508..0513f82b8537 100644
-> --- a/net/tls/tls_sw.c
-> +++ b/net/tls/tls_sw.c
-> @@ -1837,15 +1837,17 @@ int tls_sw_recvmsg(struct sock *sk,
->  			bool partially_consumed = chunk > len;
+On Wednesday, 18 May 2022 20:18:07 CEST Jakub Kicinski wrote:
+> diff --git a/net/batman-adv/hard-interface.c b/net/batman-adv/hard-interface.c
+> index 83fb51b6e299..b8f8da7ee3de 100644
+> --- a/net/batman-adv/hard-interface.c
+> +++ b/net/batman-adv/hard-interface.c
+> @@ -307,9 +307,11 @@ static bool batadv_is_cfg80211_netdev(struct net_device *net_device)
+>         if (!net_device)
+>                 return false;
 >  
->  			if (bpf_strp_enabled) {
-> +				/* BPF may try to queue the skb */
-> +				__skb_unlink(skb, &ctx->rx_list);
->  				err = sk_psock_tls_strp_read(psock, skb);
->  				if (err != __SK_PASS) {
->  					rxm->offset = rxm->offset + rxm->full_len;
->  					rxm->full_len = 0;
-> -					__skb_unlink(skb, &ctx->rx_list);
->  					if (err == __SK_DROP)
->  						consume_skb(skb);
->  					continue;
->  				}
-> +				__skb_queue_tail(&ctx->rx_list, skb);
->  			}
+> +#if IS_ENABLED(CONFIG_CFG80211)
+>         /* cfg80211 drivers have to set ieee80211_ptr */
+>         if (net_device->ieee80211_ptr)
+>                 return true;
+> +#endif
 >  
->  			if (partially_consumed)
-> -- 
-> 2.34.3
-> 
+>         return false;
+>  }
 
--- 
- Artem
+Acked-by: Sven Eckelmann <sven@narfation.org>
+--nextPart4659350.0FORYR1UfH
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part.
+Content-Transfer-Encoding: 7Bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEF10rh2Elc9zjMuACXYcKB8Eme0YFAmKF6XEACgkQXYcKB8Em
+e0b7JxAAvG4arhZjsM0vWxljExgbu0ArtAZG6my2XE6gczf1v1+DLcCnyLf2U8ps
+NmpPpt5wPXmZpKJMEvr+v/mm3U3m1nDjPxV/44aEvVh9APsIuB7qAfipT2hFaJiG
+0LijjxQZAUK+2NU3j4MQbSSLe/oJ4Ia6+sU6YjAU42C2TAJIGyJwyX5GMlS4dvjc
+B6sOGjaprfERSSPiN4ztpHveRPv+3tzUfl65Pui7qrYLetthCGx7dyqgrjBaXA92
+hB2/tJeAQTOa/hhhTPbZl3hzAH9WuypZB6zne6YoaJ4QIAmQqjoZf1rU+MY+WxhY
+2KtvuRSPeRtPx6uk01vVw65+GGBKEYrGY5hfXvtV4FKYsHXMHJheaTRogcyb99/a
+2XT/azMwSducaSjZ4xjOs9frLw5zJLiVUZDfrYxEcZq4NwaGn8WM1RFMbmnfE8I9
+3pbe2V3Q7CNlLJ1C1S7n1bp2F93B/aEpPnHPt6VzgYeRNA3oztjnHnsTUSlnKo1/
+hvuT61DAhlY3Pb4ucm5/3gymx/IfdBaxKEBYQcn+GGsXAltwmR4a2g7GW9ChrHB7
+Mc3skEknhyNAgoEV5ZDcpuqoInx2E0baAxSwM8jQxCY5Xg07MvtE/DYUII1n0USM
+YtEw+QZGXYNU+aaZVj3JygdOIoPz9UUzMGrkNahxuMKGIjTgDDc=
+=DM23
+-----END PGP SIGNATURE-----
+
+--nextPart4659350.0FORYR1UfH--
+
+
 
