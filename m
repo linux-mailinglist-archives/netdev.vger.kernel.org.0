@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6318852CB30
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 06:40:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5979052CB33
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 06:41:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233716AbiESEkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 00:40:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47998 "EHLO
+        id S233712AbiESElE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 00:41:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231560AbiESEkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 00:40:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4ABF5DA45;
-        Wed, 18 May 2022 21:40:15 -0700 (PDT)
+        with ESMTP id S233764AbiESElC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 00:41:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF9065C661;
+        Wed, 18 May 2022 21:41:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 684F3B8232A;
-        Thu, 19 May 2022 04:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0F71CC385B8;
-        Thu, 19 May 2022 04:40:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22BDD619B9;
+        Thu, 19 May 2022 04:41:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16E44C385B8;
+        Thu, 19 May 2022 04:41:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652935213;
-        bh=2bfPM7jf63D3vFBeStC68/NjjZm1m70e90SjaOf0eU4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Ac9cgyXWhW35D4Yq5ly6f1wKVjYYHMqnkDv5bnclgOM3ZUH5nJRAjDLGe21ow155B
-         IhsauMOeCUlorcOB+m0bfm9184I/bbUZEMrow7+1dxHxNnrOqde4ySW/QR4bY3G9O6
-         K62dtyrWm3HzkT8NZpawv+6NhxYyvs2h5NyPGhkNsI2qri75U26hzSGcMRrixomrUY
-         XTm7ClZ/2hTxFrnGukxJhMmADIWYaloi4o7Z8KPdQDZ9YKuZoA3x1+GrEp0ETizT+v
-         HYPWkFLjHur9NiMiX+6A09vtr1cXbQXanuqwKoAe+KOenCHs45jYxhycnkdq9FisZa
-         hLCV2Vc/onpeA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id EA8F4E8DBDA;
-        Thu, 19 May 2022 04:40:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1652935260;
+        bh=ydUDPQfiDFXRRUsRJHQC3B3uycrZ1kC9Z7zzJcg/1HE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Us05cmksIJ7DW7J0qyymfrkO8pUQpwexdf3W+0QjTVkBTbg+e7quQlI5eQ3/R84yl
+         xdLE++bqOJ7Bsmxifq8X6NOTcB+cG5/EGawKvvsSdHFZ32m9MzttDnQshSmVT92kP/
+         8BTM9OWJGUYtwk6ewx7tydIOTYpBW/AQJQzH3fcKgrFGgG5T1hefei6jYGo3ES4F2W
+         QOxNv+CeHpbsLlwY6Kwk1teQywwRepeIt+c7PcmZoja3lMvHvTpgRELyQINahjMCUQ
+         0R8L8OXTUbU0ZgFv4mb5Z9gOaxwmQZODjcQbOv+Adx6Cfs4ujU5GcOfQy55gQ9XMa6
+         9s/DH2hrqHaEg==
+Date:   Wed, 18 May 2022 21:40:58 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Harini Katakam <harini.katakam@xilinx.com>
+Cc:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
+        <richardcochran@gmail.com>, <claudiu.beznea@microchip.com>,
+        <edumazet@google.com>, <pabeni@redhat.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <michal.simek@xilinx.com>, <harinikatakamlinux@gmail.com>,
+        <radhey.shyam.pandey@xilinx.com>
+Subject: Re: [PATCH net v3] net: macb: Fix PTP one step sync support
+Message-ID: <20220518214058.2a964dba@kernel.org>
+In-Reply-To: <20220518170756.7752-1-harini.katakam@xilinx.com>
+References: <20220518170756.7752-1-harini.katakam@xilinx.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 1/7] netfilter: flowtable: fix excessive hw offload
- attempts after failure
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165293521295.13143.12085724006863239596.git-patchwork-notify@kernel.org>
-Date:   Thu, 19 May 2022 04:40:12 +0000
-References: <20220518213841.359653-2-pablo@netfilter.org>
-In-Reply-To: <20220518213841.359653-2-pablo@netfilter.org>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, kuba@kernel.org, pabeni@redhat.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,40 +57,19 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (master)
-by Pablo Neira Ayuso <pablo@netfilter.org>:
-
-On Wed, 18 May 2022 23:38:35 +0200 you wrote:
-> From: Felix Fietkau <nbd@nbd.name>
+On Wed, 18 May 2022 22:37:56 +0530 Harini Katakam wrote:
+> PTP one step sync packets cannot have CSUM padding and insertion in
+> SW since time stamp is inserted on the fly by HW.
+> In addition, ptp4l version 3.0 and above report an error when skb
+> timestamps are reported for packets that not processed for TX TS
+> after transmission.
+> Add a helper to identify PTP one step sync and fix the above two
+> errors. Add a common mask for PTP header flag field "twoStepflag".
+> Also reset ptp OSS bit when one step is not selected.
 > 
-> If a flow cannot be offloaded, the code currently repeatedly tries again as
-> quickly as possible, which can significantly increase system load.
-> Fix this by limiting flow timeout update and hardware offload retry to once
-> per second.
-> 
-> [...]
+> Fixes: ab91f0a9b5f4 ("net: macb: Add hardware PTP support")
+> Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
+> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+> Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 
-Here is the summary with links:
-  - [net,1/7] netfilter: flowtable: fix excessive hw offload attempts after failure
-    https://git.kernel.org/netdev/net/c/396ef64113a8
-  - [net,2/7] netfilter: nft_flow_offload: skip dst neigh lookup for ppp devices
-    https://git.kernel.org/netdev/net/c/45ca3e61999e
-  - [net,3/7] net: fix dev_fill_forward_path with pppoe + bridge
-    https://git.kernel.org/netdev/net/c/cf2df74e202d
-  - [net,4/7] netfilter: nft_flow_offload: fix offload with pppoe + vlan
-    https://git.kernel.org/netdev/net/c/245607493500
-  - [net,5/7] netfilter: flowtable: fix TCP flow teardown
-    https://git.kernel.org/netdev/net/c/e5eaac2beb54
-  - [net,6/7] netfilter: flowtable: move dst_check to packet path
-    https://git.kernel.org/netdev/net/c/2738d9d963bd
-  - [net,7/7] netfilter: nf_tables: disable expression reduction infra
-    https://git.kernel.org/netdev/net/c/9e539c5b6d9c
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Acked-by: Jakub Kicinski <kuba@kernel.org>
