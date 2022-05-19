@@ -2,49 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91A1E52C980
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 03:58:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38BC152C98B
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 04:02:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231563AbiESB6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 21:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36772 "EHLO
+        id S232635AbiESCCH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 22:02:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43510 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229702AbiESB6l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 21:58:41 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD62D413A;
-        Wed, 18 May 2022 18:58:40 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L3Y1B2zjtz4xXk;
-        Thu, 19 May 2022 11:58:37 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652925518;
-        bh=Xw76F4P8i2rMVvKg6i2Qurks8SCLOUckM1T1wqdLhDg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=J+5Vlu5KfkB5IKUYXcsTgOrHFiYSvY4IGIrT6MEcfs++zHGYkFNb74tyevuQNsu6v
-         W3v/jbl3bMixwal7FtokLT9azhuOQKPPm5CRdzZjhzubMXZG0Qyn4MlamPAYxQwe+e
-         3aIgpjT0Nr8V0y8ypl2Yxx3XeSCkOXbxOP9pV+EUHB88p2xOvZImzW7K7S0nvli28d
-         WumdzkxPdvkN0y1qGavt6R9TFDV4lFTzK+6QZaA+skDJXfPFIc3/WIW3IhsbHqaAyT
-         KZkhSgdbYqFUUdPxJRIPlmIoO6pYEANHa0ihyu9t7LYtp95hm5YLqvX4d2/8IkFZKT
-         1MYN9ih6fkfyg==
-Date:   Thu, 19 May 2022 11:58:37 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>
-Cc:     Networking <netdev@vger.kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20220519115837.380bb8d4@canb.auug.org.au>
+        with ESMTP id S229702AbiESCCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 22:02:05 -0400
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BCEB488B3
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 19:02:04 -0700 (PDT)
+Received: by mail-pf1-x431.google.com with SMTP id x143so3798855pfc.11
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 19:02:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mixIM/X9SqDqcozkIvhX3jb18PG1z7mGFG3QeoXd6QQ=;
+        b=foX4lGMsp8Qkvucb3dFYKfFKOcFlzIrj3/SUl2oUryso52aRYNIs/zFMWvCYglULem
+         MFXE2EkKQtgQ0T2L5HW9yXzRJYZIiAL6h0WAPRzCdkRPFeOLnWCesdD1ryGw8nSkauBO
+         SpTURtcGWoKiK4k4eup9fIpLHbeo5ubjvpJhZjbt8VyXkC4VyGH3urivA2gFrevJh9wu
+         L6LHp0Xo7i8F87lNh6IApmW/llZjH7GHRe6tO3kZ4W1stnp/VzUcKiypUxye+s65R2NO
+         C+nyBTxI/uxKUOAR0qRC8eXSutTh1UK4xnzTmBRd2toXCg8oDDshrqxldqpVvcOv+Q7L
+         L2GQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mixIM/X9SqDqcozkIvhX3jb18PG1z7mGFG3QeoXd6QQ=;
+        b=nOgNmiN0aJqyfLTgIyCbNokQS9FC7EUGQQBU3UMj91xaJxZNmQJmRr+9BTaCDLb5l7
+         VSHVRKdzR7q09PJG7bOm0miyHKVhDIS56grsC6wuTp91CW/xU2ibS5wzIXym13o+uX2D
+         rvVTtTcWZuSaFtwuYpc5qStnLY3RUY4jABMjmB4EW6Ex9HTFEQsRer1eelkByEo/5J2c
+         TbN89hRdsWCuax/Q1cnpWHXg5PNG/n4j2hy1e/HANoPmlzqOobNdlEamyMxqgmeWWD/Z
+         mPjvXVCtlXsq6QMAah0wUG0gKT94JvG+lb+pQWnPGHSqVg78iFASifjy6Az7DGLChAcr
+         zlwA==
+X-Gm-Message-State: AOAM5304MC0gx14tw4f7J3aCSLJjIiv4m5jf5czcWLBplf8nxH2oKW77
+        Gc3e8Af6zkoFysB0n050g2iT90cVTIBW9A==
+X-Google-Smtp-Source: ABdhPJwbJjgT+DqXnbl7MzZMkAMBDLC6j3Ji7TDO3CRx+ci7ejAIaqTF2jTMMjcSf1Obep7B5ufRDQ==
+X-Received: by 2002:a63:6846:0:b0:3c6:cb42:cdb2 with SMTP id d67-20020a636846000000b003c6cb42cdb2mr1940020pgc.511.1652925723466;
+        Wed, 18 May 2022 19:02:03 -0700 (PDT)
+Received: from Laptop-X1.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id z7-20020a655a47000000b003c67e472338sm2181215pgs.42.2022.05.18.19.01.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 19:02:02 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@gmail.com>,
+        Jonathan Toppins <jtoppins@redhat.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+Subject: [PATCHv3 net] bonding: fix missed rcu protection
+Date:   Thu, 19 May 2022 10:01:48 +0800
+Message-Id: <20220519020148.1058344-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/3Cou6DXn76CFBv1L8HsG9aa";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,130 +77,92 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/3Cou6DXn76CFBv1L8HsG9aa
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+When removing the rcu_read_lock in bond_ethtool_get_ts_info() as
+discussed [1], I didn't notice it could be called via setsockopt,
+which doesn't hold rcu lock, as syzbot pointed:
 
-Hi all,
+  stack backtrace:
+  CPU: 0 PID: 3599 Comm: syz-executor317 Not tainted 5.18.0-rc5-syzkaller-01392-g01f4685797a5 #0
+  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+  Call Trace:
+   <TASK>
+   __dump_stack lib/dump_stack.c:88 [inline]
+   dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+   bond_option_active_slave_get_rcu include/net/bonding.h:353 [inline]
+   bond_ethtool_get_ts_info+0x32c/0x3a0 drivers/net/bonding/bond_main.c:5595
+   __ethtool_get_ts_info+0x173/0x240 net/ethtool/common.c:554
+   ethtool_get_phc_vclocks+0x99/0x110 net/ethtool/common.c:568
+   sock_timestamping_bind_phc net/core/sock.c:869 [inline]
+   sock_set_timestamping+0x3a3/0x7e0 net/core/sock.c:916
+   sock_setsockopt+0x543/0x2ec0 net/core/sock.c:1221
+   __sys_setsockopt+0x55e/0x6a0 net/socket.c:2223
+   __do_sys_setsockopt net/socket.c:2238 [inline]
+   __se_sys_setsockopt net/socket.c:2235 [inline]
+   __x64_sys_setsockopt+0xba/0x150 net/socket.c:2235
+   do_syscall_x64 arch/x86/entry/common.c:50 [inline]
+   do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
+   entry_SYSCALL_64_after_hwframe+0x44/0xae
+  RIP: 0033:0x7f8902c8eb39
 
-Today's linux-next merge of the net-next tree got a conflict in:
+Fix it by adding rcu_read_lock and take a ref on the real_dev.
+Since dev_hold() and dev_put() can take NULL these days, we can
+skip checking if real_dev exist.
 
-  net/mptcp/subflow.c
+[1] https://lore.kernel.org/netdev/27565.1642742439@famine/
 
-between commit:
+Reported-by: syzbot+92beb3d46aab498710fa@syzkaller.appspotmail.com
+Fixes: aa6034678e87 ("bonding: use rcu_dereference_rtnl when get bonding active slave")
+Suggested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+v3: skip checking if real_dev exist since dev_hold/put could take NULL.
+v2: add ref on the real_dev as Jakub and Paolo suggested.
+---
+ drivers/net/bonding/bond_main.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-  ae66fb2ba6c3 ("mptcp: Do TCP fallback on early DSS checksum failure")
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 38e152548126..b5c5196e03ee 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -5591,16 +5591,23 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+ 	const struct ethtool_ops *ops;
+ 	struct net_device *real_dev;
+ 	struct phy_device *phydev;
++	int ret = 0;
+ 
++	rcu_read_lock();
+ 	real_dev = bond_option_active_slave_get_rcu(bond);
++	dev_hold(real_dev);
++	rcu_read_unlock();
++
+ 	if (real_dev) {
+ 		ops = real_dev->ethtool_ops;
+ 		phydev = real_dev->phydev;
+ 
+ 		if (phy_has_tsinfo(phydev)) {
+-			return phy_ts_info(phydev, info);
++			ret = phy_ts_info(phydev, info);
++			goto out;
+ 		} else if (ops->get_ts_info) {
+-			return ops->get_ts_info(real_dev, info);
++			ret = ops->get_ts_info(real_dev, info);
++			goto out;
+ 		}
+ 	}
+ 
+@@ -5608,7 +5615,9 @@ static int bond_ethtool_get_ts_info(struct net_device *bond_dev,
+ 				SOF_TIMESTAMPING_SOFTWARE;
+ 	info->phc_index = -1;
+ 
+-	return 0;
++out:
++	dev_put(real_dev);
++	return ret;
+ }
+ 
+ static const struct ethtool_ops bond_ethtool_ops = {
+-- 
+2.35.1
 
-from the net tree and commits:
-
-  0348c690ed37 ("mptcp: add the fallback check")
-  f8d4bcacff3b ("mptcp: infinite mapping receiving")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc net/mptcp/subflow.c
-index be76ada89d96,6d59336a8e1e..000000000000
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@@ -1218,35 -1215,45 +1230,45 @@@ no_data
-  	return false;
- =20
-  fallback:
-- 	/* RFC 8684 section 3.7. */
-- 	if (subflow->send_mp_fail) {
-- 		if (mptcp_has_another_subflow(ssk)) {
-- 			while ((skb =3D skb_peek(&ssk->sk_receive_queue)))
-- 				sk_eat_skb(ssk, skb);
-+ 	if (!__mptcp_check_fallback(msk)) {
-+ 		/* RFC 8684 section 3.7. */
-+ 		if (subflow->send_mp_fail) {
-+ 			if (mptcp_has_another_subflow(ssk) ||
-+ 			    !READ_ONCE(msk->allow_infinite_fallback)) {
-+ 				ssk->sk_err =3D EBADMSG;
-+ 				tcp_set_state(ssk, TCP_CLOSE);
-+ 				subflow->reset_transient =3D 0;
-+ 				subflow->reset_reason =3D MPTCP_RST_EMIDDLEBOX;
-+ 				tcp_send_active_reset(ssk, GFP_ATOMIC);
-+ 				while ((skb =3D skb_peek(&ssk->sk_receive_queue)))
-+ 					sk_eat_skb(ssk, skb);
-+ 			} else {
-+ 				WRITE_ONCE(subflow->mp_fail_response_expect, true);
-+ 				/* The data lock is acquired in __mptcp_move_skbs() */
-+ 				sk_reset_timer((struct sock *)msk,
-+ 					       &((struct sock *)msk)->sk_timer,
-+ 					       jiffies + TCP_RTO_MAX);
-+ 			}
-+ 			WRITE_ONCE(subflow->data_avail, MPTCP_SUBFLOW_NODATA);
-+ 			return true;
-  		}
-- 		ssk->sk_err =3D EBADMSG;
-- 		tcp_set_state(ssk, TCP_CLOSE);
-- 		subflow->reset_transient =3D 0;
-- 		subflow->reset_reason =3D MPTCP_RST_EMIDDLEBOX;
-- 		tcp_send_active_reset(ssk, GFP_ATOMIC);
-- 		WRITE_ONCE(subflow->data_avail, MPTCP_SUBFLOW_NODATA);
-- 		return true;
-- 	}
- =20
-- 	if (!subflow_can_fallback(subflow)) {
-- 		/* fatal protocol error, close the socket.
-- 		 * subflow_error_report() will introduce the appropriate barriers
-- 		 */
-- 		ssk->sk_err =3D EBADMSG;
-- 		tcp_set_state(ssk, TCP_CLOSE);
-- 		subflow->reset_transient =3D 0;
-- 		subflow->reset_reason =3D MPTCP_RST_EMPTCP;
-- 		tcp_send_active_reset(ssk, GFP_ATOMIC);
-- 		WRITE_ONCE(subflow->data_avail, MPTCP_SUBFLOW_NODATA);
-- 		return false;
- -		if ((subflow->mp_join || subflow->fully_established) && subflow->map_da=
-ta_len) {
-++		if (!subflow_can_fallback(subflow) && subflow->map_data_len) {
-+ 			/* fatal protocol error, close the socket.
-+ 			 * subflow_error_report() will introduce the appropriate barriers
-+ 			 */
-+ 			ssk->sk_err =3D EBADMSG;
-+ 			tcp_set_state(ssk, TCP_CLOSE);
-+ 			subflow->reset_transient =3D 0;
-+ 			subflow->reset_reason =3D MPTCP_RST_EMPTCP;
-+ 			tcp_send_active_reset(ssk, GFP_ATOMIC);
-+ 			WRITE_ONCE(subflow->data_avail, MPTCP_SUBFLOW_NODATA);
-+ 			return false;
-+ 		}
-+=20
-+ 		__mptcp_do_fallback(msk);
-  	}
- =20
-- 	__mptcp_do_fallback(msk);
-  	skb =3D skb_peek(&ssk->sk_receive_queue);
-  	subflow->map_valid =3D 1;
-  	subflow->map_seq =3D READ_ONCE(msk->ack_seq);
-
---Sig_/3Cou6DXn76CFBv1L8HsG9aa
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKFpE0ACgkQAVBC80lX
-0Gw1XQf+L3Oj0Wu7tN3OrMyWOXQt+Dhkm6nhxOmN6iRa2H+cfnlhFwGO3ovugDDx
-0pqTvjWv4n0GTaKaJwlzHJV3zseDGlp6O5uc07j1W8R/NwACAsdAP8v+Ps6EbByX
-9FPYCv6WzUNLfjRT+RIbZv94Ls5cqlMfgNgAHDGBLizZHQjAWahg8Yhhvs9RTIep
-uLJBJ7qw3q0y38zwKoVFq8AnO+UOsyPI3pv9j2tUpToz79JgUdH/sMUp2dGxyzLy
-vAOedHip23jbww8+uaoYtcRmWFO3CqePfCWZ9T0Awhld4t6vCdhcbLK5HNSlPiEI
-uyV5hJ2FXAygrJ+G9hFiq34h6aOUzQ==
-=igHh
------END PGP SIGNATURE-----
-
---Sig_/3Cou6DXn76CFBv1L8HsG9aa--
