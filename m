@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 236CF52C8D0
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 02:43:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7606E52C8D1
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 02:44:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232216AbiESAnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 20:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38080 "EHLO
+        id S231998AbiESAn4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 20:43:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232291AbiESAnN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 20:43:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46D80166696
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 17:43:10 -0700 (PDT)
+        with ESMTP id S232375AbiESAnt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 20:43:49 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32745188E44
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 17:43:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B68EC617C7
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 00:43:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0DEFC385A9;
-        Thu, 19 May 2022 00:43:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ECCD6B82263
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 00:43:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F000C385A5;
+        Thu, 19 May 2022 00:43:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652920989;
-        bh=BkOqniSPPohJWv1t7N4Mz2ZTMuMqUZmZsdj8DsbuXC8=;
+        s=k20201202; t=1652921025;
+        bh=1KHCze923GMPRBdWjV3/vdfqnr8thCi4gJ45x5aXIL4=;
         h=From:To:Cc:Subject:Date:From;
-        b=Eu6bsgwcmkgp/Eef1GeVHzBTScwy7QmgzvSuOXfulFffYoBcQ4SPDIjOTlr3rmRZB
-         EnAGyUSPYpoT4fNXVb236tOp8Vyvz5gkOpglXVNvWv30qdRHOStf0ycJRQrBw7vm6S
-         XNDsF0qUh2fAurAxlhv/2r1S+HoRau5s9QTYmUe0AioJJUJXQFNBAkZ+NMuleEE/E/
-         JWWgFdv82TxJzYntHu0o4klVDSeX25Svi+O2VhoCeq7ivWu4yLKcpPIeMQu4ikbgSA
-         c08zbUAlKTIkOpSAOAfnD5fpcDZPuN4J9uRx9Lxy3tIkUwmsONwA9PMaWe4KXgZqGu
-         nHS13N266YJaQ==
+        b=Le/MVIBr0eZ07qA4eujWJImDknEnGjoFQJnaTpBcgGRQcA/BptNVwi+i0ffxzjfWd
+         3DSvuFO0cMQxXlHWrXI+JDPyCvyqJl10aFWCRrxOU2QuiCcCSY3Zs/OZS9Ffcl6yW5
+         wHsq3N7ynY9VVWyOSUdAr1ganNbY8jNgJbaaAbkJLW+YjJgTK+yey7UycHfmlHX149
+         YTXs5FZt7q3g97cugXfttf5VL4LwjCQ8I/hVFPR4IxV9TK5QkgDqAsHi3FeNvAaO0s
+         CkLi+nKcguWM9h0uJTURRODy88OPBvY1oMyg6Y3lB1tVqE6dR2F+ZVSxjdYZyOsGJS
+         raPS3NEQN0R8A==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, peppe.cavallaro@st.com,
-        alexandre.torgue@foss.st.com, joabreu@synopsys.com,
-        mcoquelin.stm32@gmail.com
-Subject: [PATCH net] net: stmmac: fix out-of-bounds access in a selftest
-Date:   Wed, 18 May 2022 17:43:05 -0700
-Message-Id: <20220519004305.2109708-1-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, m.chetan.kumar@intel.com,
+        linuxwwan@intel.com, loic.poulain@linaro.org,
+        ryazanov.s.a@gmail.com, johannes@sipsolutions.net
+Subject: [PATCH net-next] net: wwan: iosm: remove pointless null check
+Date:   Wed, 18 May 2022 17:43:42 -0700
+Message-Id: <20220519004342.2109832-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.3
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -54,71 +54,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GCC 12 points out that struct tc_action is smaller than
-struct tcf_action:
+GCC 12 warns:
 
-drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c: In function ‘stmmac_test_rxp’:
-drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c:1132:21: warning: array subscript ‘struct tcf_gact[0]’ is partly outside array bounds of ‘unsigned char[272]’ [-Warray-bounds]
- 1132 |                 gact->tcf_action = TC_ACT_SHOT;
-      |                     ^~
+drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c: In function ‘ipc_protocol_dl_td_process’:
+drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c:406:13: warning: the comparison will always evaluate as ‘true’ for the address of ‘cb’ will never be NULL [-Waddress]
+  406 |         if (!IPC_CB(skb)) {
+      |             ^
 
-Fixes: ccfc639a94f2 ("net: stmmac: selftests: Add a selftest for Flexible RX Parser")
+Indeed the check seems entirely pointless. Hopefully the other
+validation checks will catch if the cb is bad, but it can't be
+NULL.
+
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: peppe.cavallaro@st.com
-CC: alexandre.torgue@foss.st.com
-CC: joabreu@synopsys.com
-CC: mcoquelin.stm32@gmail.com
+CC: m.chetan.kumar@intel.com
+CC: linuxwwan@intel.com
+CC: loic.poulain@linaro.org
+CC: ryazanov.s.a@gmail.com
+CC: johannes@sipsolutions.net
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c  | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index 9f1759593b94..2fc51dc5eb0b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -1084,8 +1084,9 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 	unsigned char addr[ETH_ALEN] = {0xde, 0xad, 0xbe, 0xef, 0x00, 0x00};
- 	struct tc_cls_u32_offload cls_u32 = { };
- 	struct stmmac_packet_attrs attr = { };
--	struct tc_action **actions, *act;
-+	struct tc_action **actions;
- 	struct tc_u32_sel *sel;
-+	struct tcf_gact *gact;
- 	struct tcf_exts *exts;
- 	int ret, i, nk = 1;
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
+index c6b032f95d2e..4627847c6daa 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
++++ b/drivers/net/wwan/iosm/iosm_ipc_protocol_ops.c
+@@ -372,8 +372,6 @@ bool ipc_protocol_dl_td_prepare(struct iosm_protocol *ipc_protocol,
+ struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
+ 					   struct ipc_pipe *pipe)
+ {
+-	u32 tail =
+-		le32_to_cpu(ipc_protocol->p_ap_shm->tail_array[pipe->pipe_nr]);
+ 	struct ipc_protocol_td *p_td;
+ 	struct sk_buff *skb;
  
-@@ -1110,8 +1111,8 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 		goto cleanup_exts;
+@@ -403,14 +401,6 @@ struct sk_buff *ipc_protocol_dl_td_process(struct iosm_protocol *ipc_protocol,
+ 		goto ret;
  	}
  
--	act = kcalloc(nk, sizeof(*act), GFP_KERNEL);
--	if (!act) {
-+	gact = kcalloc(nk, sizeof(*gact), GFP_KERNEL);
-+	if (!gact) {
- 		ret = -ENOMEM;
- 		goto cleanup_actions;
- 	}
-@@ -1126,9 +1127,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 	exts->nr_actions = nk;
- 	exts->actions = actions;
- 	for (i = 0; i < nk; i++) {
--		struct tcf_gact *gact = to_gact(&act[i]);
+-	if (!IPC_CB(skb)) {
+-		dev_err(ipc_protocol->dev, "pipe# %d, tail: %d skb_cb is NULL",
+-			pipe->pipe_nr, tail);
+-		ipc_pcie_kfree_skb(ipc_protocol->pcie, skb);
+-		skb = NULL;
+-		goto ret;
+-	}
 -
--		actions[i] = &act[i];
-+		actions[i] = (struct tc_action *)&gact[i];
- 		gact->tcf_action = TC_ACT_SHOT;
- 	}
- 
-@@ -1152,7 +1151,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
- 
- cleanup_act:
--	kfree(act);
-+	kfree(gact);
- cleanup_actions:
- 	kfree(actions);
- cleanup_exts:
+ 	if (p_td->buffer.address != IPC_CB(skb)->mapping) {
+ 		dev_err(ipc_protocol->dev, "invalid buf=%llx or skb=%p",
+ 			(unsigned long long)p_td->buffer.address, skb->data);
 -- 
 2.34.3
 
