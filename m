@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8623B52DC90
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 20:15:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E20052DC8D
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 20:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbiESSO0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 14:14:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S243771AbiESSOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 14:14:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243747AbiESSOX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 14:14:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id EDCC0EAD18
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:14:18 -0700 (PDT)
+        with ESMTP id S243761AbiESSOg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 14:14:36 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 24FE1EAD18
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:14:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652984057;
+        s=mimecast20190719; t=1652984068;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=b7ZoJXLVbGHg8g+xCYYeukaR5NIjCS5EsssDFZArxY0=;
-        b=DxBWhPIteIaVVUXngAptvBKxbuHMj9uPaC2MN24bPylmVGqTnsk6yz+B8t5olAYZux7mNV
-        b7pDAYn0Nn4UL6kKOl92CQWZYhN51bbWoXKiYjZxGz47cO0bMAkkFY96gFuQfKtZBeRbxp
-        kz0JpiAhyHSmTerR8K6VxUayHgAbhLg=
+        bh=APqUIin6Y27hz4aeXKXWWeszK1zKqlCv5JpzZj++478=;
+        b=fg8m+PaUj2REkFF9csnYwUJmAg0mCYQ5/0F42sVUv93xNhNrZY973BQPtgMsyiUVn9JyVL
+        vrVeH6QdLBXglpVfTNPUsfjar/pBKO7J87oeymm9osk/lArPdhedXXb6G+tNB6jHY5lcIB
+        PnmRmRKnTB2mV7t/CI0Ki8xk+gZ4HoU=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-241-jDsVHr4GMtOALqiTq7RY2g-1; Thu, 19 May 2022 14:14:14 -0400
-X-MC-Unique: jDsVHr4GMtOALqiTq7RY2g-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-382-He52BFksPoe7G484-ZCqbA-1; Thu, 19 May 2022 14:14:24 -0400
+X-MC-Unique: He52BFksPoe7G484-ZCqbA-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1FD943817A71;
-        Thu, 19 May 2022 18:14:13 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5A227294EDE6;
+        Thu, 19 May 2022 18:14:23 +0000 (UTC)
 Received: from asgard.redhat.com (unknown [10.36.110.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 8EA43492C14;
-        Thu, 19 May 2022 18:14:09 +0000 (UTC)
-Date:   Thu, 19 May 2022 20:14:07 +0200
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id CCB822166B25;
+        Thu, 19 May 2022 18:14:19 +0000 (UTC)
+Date:   Thu, 19 May 2022 20:14:17 +0200
 From:   Eugene Syromiatnikov <esyr@redhat.com>
 To:     Jiri Olsa <jolsa@kernel.org>,
         Masami Hiramatsu <mhiramat@kernel.org>,
@@ -51,16 +51,16 @@ Cc:     Andrii Nakryiko <andrii@kernel.org>,
         KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf v4 1/3] bpf_trace: check size for overflow in
- bpf_kprobe_multi_link_attach
-Message-ID: <399e634781822329e856103cddba975f58f0498c.1652982525.git.esyr@redhat.com>
+Subject: [PATCH bpf v4 2/3] bpf_trace: bail out from
+ bpf_kprobe_multi_link_attach when in compat
+Message-ID: <f617d4d10690af09968af6f829e923a1a61c8545.1652982525.git.esyr@redhat.com>
 References: <cover.1652982525.git.esyr@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 In-Reply-To: <cover.1652982525.git.esyr@redhat.com>
 User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
@@ -71,65 +71,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check that size would not overflow before calculation (and return
--EOVERFLOW if it will), to prevent potential out-of-bounds write
-with the following copy_from_user.  Add the same check
-to kprobe_multi_resolve_syms in case it will be called from elsewhere
-in the future.  The INT_MAX checks are performed in order to avoid
-triggering kvmalloc_node warning [1].
-
-[1] https://lore.kernel.org/lkml/cfe6abea-8d00-8f8c-f84c-e6f27753b5d1@fb.com/
+Since bpf_kprobe_multi_link_attach doesn't support 32-bit kernels
+for whatever reason, having it enabled for compat processes on 64-bit
+kernels makes even less sense due to discrepances in the type sizes
+that it does not handle.
 
 Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
 Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
 ---
- kernel/trace/bpf_trace.c | 13 ++++++++-----
- 1 file changed, 8 insertions(+), 5 deletions(-)
+ kernel/trace/bpf_trace.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-index d8553f4..26cf99c 100644
+index 26cf99c..d6db124 100644
 --- a/kernel/trace/bpf_trace.c
 +++ b/kernel/trace/bpf_trace.c
-@@ -2352,13 +2352,15 @@ static int
- kprobe_multi_resolve_syms(const void __user *usyms, u32 cnt,
- 			  unsigned long *addrs)
- {
--	unsigned long addr, size;
-+	unsigned long addr, sym_size;
-+	u32 size;
- 	const char __user **syms;
- 	int err = -ENOMEM;
- 	unsigned int i;
- 	char *func;
+@@ -2412,7 +2412,7 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
+ 	int err;
  
--	size = cnt * sizeof(*syms);
-+	if (check_mul_overflow(cnt, (u32)sizeof(*syms), &size) || size > INT_MAX)
-+		return -EOVERFLOW;
- 	syms = kvzalloc(size, GFP_KERNEL);
- 	if (!syms)
- 		return -ENOMEM;
-@@ -2382,9 +2384,9 @@ kprobe_multi_resolve_syms(const void __user *usyms, u32 cnt,
- 		addr = kallsyms_lookup_name(func);
- 		if (!addr)
- 			goto error;
--		if (!kallsyms_lookup_size_offset(addr, &size, NULL))
-+		if (!kallsyms_lookup_size_offset(addr, &sym_size, NULL))
- 			goto error;
--		addr = ftrace_location_range(addr, addr + size - 1);
-+		addr = ftrace_location_range(addr, addr + sym_size - 1);
- 		if (!addr)
- 			goto error;
- 		addrs[i] = addr;
-@@ -2429,7 +2431,8 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
- 	if (!cnt)
- 		return -EINVAL;
+ 	/* no support for 32bit archs yet */
+-	if (sizeof(u64) != sizeof(void *))
++	if (sizeof(u64) != sizeof(void *) || in_compat_syscall())
+ 		return -EOPNOTSUPP;
  
--	size = cnt * sizeof(*addrs);
-+	if (check_mul_overflow(cnt, (u32)sizeof(*addrs), &size) || size > INT_MAX)
-+		return -EOVERFLOW;
- 	addrs = kvmalloc(size, GFP_KERNEL);
- 	if (!addrs)
- 		return -ENOMEM;
+ 	if (prog->expected_attach_type != BPF_TRACE_KPROBE_MULTI)
 -- 
 2.1.4
 
