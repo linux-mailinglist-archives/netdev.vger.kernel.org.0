@@ -2,64 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 73BC752D1DA
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 13:56:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCB5552D1E5
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 13:57:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237605AbiESLzd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 07:55:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33050 "EHLO
+        id S237615AbiESL4w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 07:56:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237591AbiESLzb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 07:55:31 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 244D8B82F8;
-        Thu, 19 May 2022 04:55:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1652961330; x=1684497330;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pqpAuufNqlRu8x4BlWLqz7TA3uPL/pl4sJ3q0/pCtlc=;
-  b=XQSJHCo/VPXRRi2C1ioDZSl4CxpxCupIehBLjE6WvMbH8LRsCAJndONQ
-   NCgYEsLtUP4pR0VjyALp8Cv4IMHivIHXf4fzoPxxn1dBuDAXvoWDy9/No
-   5y8oPvNYfPYYpPDpZUbzsVDzCXjwH5GdcJEgXRZBGvOOZGuGlyBqJkroo
-   1t3CRIElumiUq/8Z3X9d2oiZqjGtqvu3p4Z0o4HN+sr2SpQ4hxXE366h+
-   2PgYR7ZVqcOQJMBK3OLCwudHbB1sxonCz7z2hFXaUXmqu62ygRsJV+XWH
-   AQoPddW15BXswkg2MG7ZE8LlNeiB9vT1vvtKgkv3BQ5tVlwzQJmBjjkLR
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10351"; a="272126429"
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="272126429"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 04:55:29 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
-   d="scan'208";a="714943653"
-Received: from lkp-server02.sh.intel.com (HELO 242b25809ac7) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 19 May 2022 04:55:26 -0700
-Received: from kbuild by 242b25809ac7 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nrekX-0003Vx-AP;
-        Thu, 19 May 2022 11:55:25 +0000
-Date:   Thu, 19 May 2022 19:55:14 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Duoming Zhou <duoming@zju.edu.cn>, linux-kernel@vger.kernel.org
-Cc:     kbuild-all@lists.01.org, amitkarwar@gmail.com,
-        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
-        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: Re: [PATCH net] net: wireless: marvell: mwifiex: fix sleep in atomic
- context bugs
-Message-ID: <202205191932.qrHJI7FT-lkp@intel.com>
-References: <20220519101656.44513-1-duoming@zju.edu.cn>
+        with ESMTP id S231253AbiESL4q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 07:56:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A087B61636
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 04:56:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652961403;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vUzlKZtKtiKnTkl0c+yvVz6DAi0GpJ/ajyiMuXYkKV0=;
+        b=IS24Wpo2LIoBzJbMU9ExPpVT++yOueSUkxkF1cySk838mntHKGwnsV0oVYJQ3rv3f3yqwb
+        deziW2nyodUuz/4eAOCcf9swowTfUNfRQDLP8oTzM1W9rhN8XiNaBtkKAvRcA+7cUiP83f
+        hWen40n8aRy3R3henjuPKY18jm8JTZo=
+Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com
+ [209.85.214.200]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-574-WxRRtTSxOLO4fz2xHOx4Xg-1; Thu, 19 May 2022 07:56:42 -0400
+X-MC-Unique: WxRRtTSxOLO4fz2xHOx4Xg-1
+Received: by mail-pl1-f200.google.com with SMTP id s2-20020a17090302c200b00158ea215fa2so2501175plk.3
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 04:56:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=vUzlKZtKtiKnTkl0c+yvVz6DAi0GpJ/ajyiMuXYkKV0=;
+        b=fOwdj59Thq1saXqRCC48lnKsyANQGi0x5bdtnA87t2vZi/26BWS1EFkJlr1jAJifxh
+         Z9b+o88hgzh4hOIxddF2FCJ8uPoxqe41YwUVZkg6/AKWeG9TJhV1lbJowqOBElOJYB9f
+         TF24GcpU9xZ48+hzk+T2wksJSU1owBBBBeA73pK+OsydPYhXWvCgHYi0rKoqtZj5CJvH
+         wXhZPfyQmBOnPXzIWeYJFGEMnhVtwSFmb/sWnLwyPdeI9SijNGDqHRFgYIFZjhEuUtCN
+         Ux6Yz0xz3/41hHgxknfbEh25u+LVut/eNrMtK0xCrr9tiPlNv89bam5Lvajf6MXKZF/X
+         gXwQ==
+X-Gm-Message-State: AOAM532AWiRXapXE1Osz8OoPd68uYFHjp2M39Hfnh09gCoxIu/VIqcBP
+        9pgf7iYy1AxAmUDmoeifNK5eA8fNM8pQfAFNks8/VMy2vqCh4TWYFldOpWw8PFJGjVt9/a+BCCb
+        tdDNkVbtmy/vyZHudsmtmRYIOISXCqq2p
+X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id k18-20020a170902c41200b00161af8bf478mr4521235plk.67.1652961401573;
+        Thu, 19 May 2022 04:56:41 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwaJcMg0BaVxCTdCDQ3mQxkDhNi5bxy54g0yctOXIo/JTNwcXdo8zjGgzXssPr6OROkM+zoGvNENhA/pSXCpxY=
+X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id
+ k18-20020a170902c41200b00161af8bf478mr4521208plk.67.1652961401301; Thu, 19
+ May 2022 04:56:41 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519101656.44513-1-duoming@zju.edu.cn>
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
+ <YoX7iHddAd4FkQRQ@infradead.org> <YoX904CAFOAfWeJN@kroah.com>
+ <YoYCIhYhzLmhIGxe@infradead.org> <CAO-hwJL4Pj4JaRquoXD1AtegcKnh22_T0Z0VY_peZ8FRko3kZw@mail.gmail.com>
+ <87ee0p951b.fsf@toke.dk>
+In-Reply-To: <87ee0p951b.fsf@toke.dk>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Thu, 19 May 2022 13:56:30 +0200
+Message-ID: <CAO-hwJKwj6H0Nc_gqsN5okT2ipLL3H6fqe23_vpO+xC3PnX5uw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 00/17] Introduce eBPF support for HID devices
+To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -68,120 +93,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Duoming,
+On Thu, May 19, 2022 at 12:43 PM Toke H=C3=B8iland-J=C3=B8rgensen <toke@red=
+hat.com> wrote:
+>
+> Benjamin Tissoires <benjamin.tissoires@redhat.com> writes:
+>
+> > On Thu, May 19, 2022 at 10:39 AM Christoph Hellwig <hch@infradead.org> =
+wrote:
+> >>
+> >> On Thu, May 19, 2022 at 10:20:35AM +0200, Greg KH wrote:
+> >> > > are written using a hip new VM?
+> >> >
+> >> > Ugh, don't mention UDI, that's a bad flashback...
+> >>
+> >> But that is very much what we are doing here.
+> >>
+> >> > I thought the goal here was to move a lot of the quirk handling and
+> >> > "fixup the broken HID decriptors in this device" out of kernel .c co=
+de
+> >> > and into BPF code instead, which this patchset would allow.
+> >
+> > Yes, quirks are a big motivation for this work. Right now half of the
+> > HID drivers are less than 100 lines of code, and are just trivial
+> > fixes (one byte in the report descriptor, one key mapping, etc...).
+> > Using eBPF for those would simplify the process from the user point of
+> > view: you drop a "firmware fix" as an eBPF program in your system and
+> > you can continue working on your existing kernel.
+>
+> How do you envision those BPF programs living, and how would they be
+> distributed? (In-tree / out of tree?)
+>
 
-Thank you for the patch! Yet something to improve:
+As Greg mentioned in his reply, report descriptors fixups don't do
+much besides changing a memory buffer at probe time. So we can either
+have udev load the program, pin it and forget about it, or we can also
+have the kernel do that for us.
 
-[auto build test ERROR on net/master]
+So I envision the distribution to be hybrid:
+- for plain fixups where no userspace is required, we should
+distribute those programs in the kernel itself, in-tree.
+This series already implements pre-loading of BPF programs for the
+core part of HID-BPF, but I plan on working on some automation of
+pre-loading of these programs from the kernel itself when we need to
+do so.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Duoming-Zhou/net-wireless-marvell-mwifiex-fix-sleep-in-atomic-context-bugs/20220519-181826
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git fbb3abdf2223cd0dfc07de85fe5a43ba7f435bdf
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220519/202205191932.qrHJI7FT-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.3.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/d11bfae513f24308f5315efe8ca56471eff8e76c
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Duoming-Zhou/net-wireless-marvell-mwifiex-fix-sleep-in-atomic-context-bugs/20220519-181826
-        git checkout d11bfae513f24308f5315efe8ca56471eff8e76c
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash
+Ideally, the process would be:
+* user reports a bug
+* developer produces an eBPF program (and maybe compile it if the user
+doesn't have LLVM)
+* user tests/validates the fix without having to recompile anything
+* developer drops the program in-tree
+* some automated magic happens (still unclear exactly how to define
+which HID device needs which eBPF program ATM)
+* when the kernel sees this exact same device (BUS/VID/PID/INTERFACE)
+it loads the fixup
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+- the other part of the hybrid solution is for when userspace is
+heavily involved (because it exports a new dbus interface for that
+particular feature on this device). We can not really automatically
+preload the BPF program because we might not have the user in front of
+it.
+So in that case, the program would be hosted alongside the
+application, out-of-the-tree, but given that to be able to call kernel
+functions you need to be GPL, some public distribution of the sources
+is required.
 
-All errors (new ones prefixed by >>):
+Cheers,
+Benjamin
 
-   In file included from include/linux/container_of.h:5,
-                    from include/linux/list.h:5,
-                    from include/linux/wait.h:7,
-                    from drivers/net/wireless/marvell/mwifiex/decl.h:26,
-                    from drivers/net/wireless/marvell/mwifiex/init.c:20:
-   drivers/net/wireless/marvell/mwifiex/init.c: In function 'fw_dump_work':
->> include/linux/container_of.h:19:54: error: invalid use of undefined type 'struct mwfiex_adapter'
-      19 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |                                                      ^~
-   include/linux/build_bug.h:78:56: note: in definition of macro '__static_assert'
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                                        ^~~~
-   include/linux/container_of.h:19:9: note: in expansion of macro 'static_assert'
-      19 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |         ^~~~~~~~~~~~~
-   include/linux/container_of.h:19:23: note: in expansion of macro '__same_type'
-      19 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |                       ^~~~~~~~~~~
-   drivers/net/wireless/marvell/mwifiex/init.c:69:17: note: in expansion of macro 'container_of'
-      69 |                 container_of(work, struct mwfiex_adapter, devdump_work);
-         |                 ^~~~~~~~~~~~
-   include/linux/compiler_types.h:293:27: error: expression in static assertion is not an integer
-     293 | #define __same_type(a, b) __builtin_types_compatible_p(typeof(a), typeof(b))
-         |                           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   include/linux/build_bug.h:78:56: note: in definition of macro '__static_assert'
-      78 | #define __static_assert(expr, msg, ...) _Static_assert(expr, msg)
-         |                                                        ^~~~
-   include/linux/container_of.h:19:9: note: in expansion of macro 'static_assert'
-      19 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |         ^~~~~~~~~~~~~
-   include/linux/container_of.h:19:23: note: in expansion of macro '__same_type'
-      19 |         static_assert(__same_type(*(ptr), ((type *)0)->member) ||       \
-         |                       ^~~~~~~~~~~
-   drivers/net/wireless/marvell/mwifiex/init.c:69:17: note: in expansion of macro 'container_of'
-      69 |                 container_of(work, struct mwfiex_adapter, devdump_work);
-         |                 ^~~~~~~~~~~~
-   In file included from include/uapi/linux/posix_types.h:5,
-                    from include/uapi/linux/types.h:14,
-                    from include/linux/types.h:6,
-                    from include/linux/kasan-checks.h:5,
-                    from include/asm-generic/rwonce.h:26,
-                    from ./arch/m68k/include/generated/asm/rwonce.h:1,
-                    from include/linux/compiler.h:248,
-                    from include/linux/build_bug.h:5,
-                    from include/linux/container_of.h:5,
-                    from include/linux/list.h:5,
-                    from include/linux/wait.h:7,
-                    from drivers/net/wireless/marvell/mwifiex/decl.h:26,
-                    from drivers/net/wireless/marvell/mwifiex/init.c:20:
->> include/linux/stddef.h:16:33: error: invalid use of undefined type 'struct mwfiex_adapter'
-      16 | #define offsetof(TYPE, MEMBER)  __builtin_offsetof(TYPE, MEMBER)
-         |                                 ^~~~~~~~~~~~~~~~~~
-   include/linux/container_of.h:22:28: note: in expansion of macro 'offsetof'
-      22 |         ((type *)(__mptr - offsetof(type, member))); })
-         |                            ^~~~~~~~
-   drivers/net/wireless/marvell/mwifiex/init.c:69:17: note: in expansion of macro 'container_of'
-      69 |                 container_of(work, struct mwfiex_adapter, devdump_work);
-         |                 ^~~~~~~~~~~~
->> drivers/net/wireless/marvell/mwifiex/init.c:71:36: error: passing argument 1 of 'mwifiex_upload_device_dump' from incompatible pointer type [-Werror=incompatible-pointer-types]
-      71 |         mwifiex_upload_device_dump(adapter);
-         |                                    ^~~~~~~
-         |                                    |
-         |                                    struct mwfiex_adapter *
-   In file included from drivers/net/wireless/marvell/mwifiex/init.c:24:
-   drivers/net/wireless/marvell/mwifiex/main.h:1688:57: note: expected 'struct mwifiex_adapter *' but argument is of type 'struct mwfiex_adapter *'
-    1688 | void mwifiex_upload_device_dump(struct mwifiex_adapter *adapter);
-         |                                 ~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~
-   cc1: some warnings being treated as errors
-
-
-vim +19 include/linux/container_of.h
-
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08   9  
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  10  /**
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  11   * container_of - cast a member of a structure out to the containing structure
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  12   * @ptr:	the pointer to the member.
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  13   * @type:	the type of the container struct this is embedded in.
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  14   * @member:	the name of the member within the struct.
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  15   *
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  16   */
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  17  #define container_of(ptr, type, member) ({				\
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  18  	void *__mptr = (void *)(ptr);					\
-e1edc277e6f6df Rasmus Villemoes 2021-11-08 @19  	static_assert(__same_type(*(ptr), ((type *)0)->member) ||	\
-e1edc277e6f6df Rasmus Villemoes 2021-11-08  20  		      __same_type(*(ptr), void),			\
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  21  		      "pointer type mismatch in container_of()");	\
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  22  	((type *)(__mptr - offsetof(type, member))); })
-d2a8ebbf8192b8 Andy Shevchenko  2021-11-08  23  
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
