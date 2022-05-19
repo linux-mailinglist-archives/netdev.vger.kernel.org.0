@@ -2,63 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1134152CD16
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 09:32:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 227A852CD13
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 09:32:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232964AbiESH3w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 03:29:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53926 "EHLO
+        id S233424AbiESHb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 03:31:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231130AbiESH3u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 03:29:50 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E6387A0C
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 00:29:49 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id oe17-20020a17090b395100b001df77d29587so8015405pjb.2
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 00:29:49 -0700 (PDT)
+        with ESMTP id S229833AbiESHb1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 03:31:27 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46FA727B13
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 00:31:26 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id d22so4028682plr.9
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 00:31:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KMBnUb1kBr5JyIyg89dR1sXybd4K5tc0en5kaQ0S1IE=;
-        b=hBcgV9D2BNRKny/Ssi4wXAPjE4Tfzhc6cNHd6JHC44SV7xR/ClZzSD+64RQiq3wmIm
-         PBBRjx3fCa2NzIfi5uJfnixDADocS73Ksp7bJGm7EAOkgKQbSaEKcgHfi4QvqCv5SCi/
-         aN+mXQNCJOLNLUqP+NvJHFKTjdW1EyulF5TIWsR2y+8WzZ1QDq+x9jNRZqgl61uXEINM
-         ejkGnzfByLli6NcqmyiizyH7AGHwgnu6RphNPmnwAPVpzwXW39ORT8jGJAQg7Xn97bL/
-         a2Omqhyku3HAhJcsFZ6+RJ1LDuSS8BQPxAL0TNRvktvf9UW72FIKVURavwjCMoToHRGR
-         /OEg==
+        bh=OwZHQWeHwkceIr3VPipXqZlSRdGU9Cp44aK09dkAXQ4=;
+        b=ZfrlKzFubXl7Ax5rrOTUWAD6WI9V00fCklFg2MD3EIMDXt/PtQjRbT26EHodNSpTNV
+         AX9Aer1pwoT0ikA70AULQvI5kKBX57JJHKPslNI3MtZ6F9ITCfsGN/mszWWDHnj+BTk/
+         98x/aMgMtQPYV9znZWBh9LexcUXhKgxxFX6RYlAIylFiw1YAj+gLFGo4x3hEGgX+nGSV
+         wIGQ9JSsXhg10zJtfZg/+pW19vg9sTFH1M4mWjxTZ4JjE6o6vhknwn4IksH8YhRmgsH6
+         kPUhd0l9TkMWys7yaR2K91dV7IqoUpGmZ5eEzt8YgNHxuGA7UmqQIjaZCPCbIRoAja/c
+         O0Wg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KMBnUb1kBr5JyIyg89dR1sXybd4K5tc0en5kaQ0S1IE=;
-        b=U36drjBl2i1rkl+fcINUWM1TMjbpsuY7iwQSA6HmQzXeSOHIF5tmnt+snQxPLbhZSe
-         xdcHVnEHMh0+b/yZl4ZFS1OcIvBUV8yjTP3vhr6JjK3bW+bymV6U5UAryxtsYParaTY7
-         PTQPVptUMwu/LA/NZptMAB1t4lowOTVanLe2cN16xAgO0ryTM8av4bRDTiDKQss4g0Nv
-         jg3WOgDPpyuvx5W02VPwhjSk05MsKSz2FX0m1o1G++Sigk3QU7NRIciZlDOE+17JGzNq
-         45aVqdTm+tthwJOKA52AZuan8Tb8Nz2yze4qOVWLs2FlZkukMe0artoOEoxJVjjM1WmX
-         GVGQ==
-X-Gm-Message-State: AOAM5336Dt8tDwr0QBxHgq3xjK/Ahqpkf05jAGDtsriGC7lenO2VhGp8
-        rzcohj+B4fqKFzvY63XRK48+9MsctKwxXo9Mc714MA==
-X-Google-Smtp-Source: ABdhPJyOu8zGQ1sj8z5GxUDBXNS9pWzxtvEh01j/oD4VhbUMv74+9EyCaC/0RB2gAKGEWCeBk3032HMmNRBpiWW5/EA=
-X-Received: by 2002:a17:902:a583:b0:15d:197b:9259 with SMTP id
- az3-20020a170902a58300b0015d197b9259mr3387274plb.51.1652945388557; Thu, 19
- May 2022 00:29:48 -0700 (PDT)
+        bh=OwZHQWeHwkceIr3VPipXqZlSRdGU9Cp44aK09dkAXQ4=;
+        b=XgmjYmO4AJ4ldz/ZWYw9CBkUEYIpwiyq4VRv9pwvUnKgVCqVP1MW8Jg4cKQCrnsw0O
+         TpN06ZcuOjK2G4QqDQZDb4attTjPa5SUJooR6BQ2WRxovUlTdOZ3ggWI76VULczow0Sp
+         pGCKh6jX4r9HA/ptfs3429B1GITyHjuD74X4z45vRtt2T2jlT4DAnDhjIOetALJOn6tm
+         GrEeCoA4F26MMXp+bxy+3qxj07q1DkuNjXoy2gUD12Vtgl6RZ+32fXUi7Fp2EE0QvWgU
+         2NHhXFlvYY4Njgaxo0yU0JSrxKR6+Zt1QaknKF3/MAoW9hB5SUc1hwfPZzbKzkHNCAZ8
+         5X6g==
+X-Gm-Message-State: AOAM532OpkrzzP4Nh45SngfnNixo57Qm7wrBezcW43V9DNNrR96U38go
+        ftPvUuqgr7cQ2EMN4qI0Ke7/LXeIadDa/V2cVP3gJQ==
+X-Google-Smtp-Source: ABdhPJx02nFN2qgr+o8vGAgbIUFFcbcCpjZpAllvzp+6oTibISA0iFbIS9uLs92u2/tRzTq/Ks6EdvlCCkk7q7e48lc=
+X-Received: by 2002:a17:90a:4209:b0:1df:b907:ed3d with SMTP id
+ o9-20020a17090a420900b001dfb907ed3dmr3808743pjg.40.1652945485756; Thu, 19 May
+ 2022 00:31:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220519074351.829774-1-william.xuanziyang@huawei.com>
-In-Reply-To: <20220519074351.829774-1-william.xuanziyang@huawei.com>
+References: <20220519032108.2996400-1-yangyingliang@huawei.com>
+In-Reply-To: <20220519032108.2996400-1-yangyingliang@huawei.com>
 From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Thu, 19 May 2022 09:29:12 +0200
-Message-ID: <CAMZdPi9z=OM0=yZbBu0eDvFd30efNpt3qmDHuCTj6LGJxdBTbw@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: wwan: t7xx: fix GFP_KERNEL usage in
- spin_lock context
-To:     Ziyang Xuan <william.xuanziyang@huawei.com>
-Cc:     chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        chiranjeevi.rapolu@linux.intel.com, haijun.liu@mediatek.com,
-        m.chetan.kumar@linux.intel.com, ricardo.martinez@linux.intel.com,
-        ryazanov.s.a@gmail.com, johannes@sipsolutions.net,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org
+Date:   Thu, 19 May 2022 09:30:49 +0200
+Message-ID: <CAMZdPi8E7pMR22SyXbtCe5Wtb-jLfF-ZD+-qEAW5KFiJ6FP6Pg@mail.gmail.com>
+Subject: Re: [PATCH -next v2] net: wwan: t7xx: use GFP_ATOMIC under spin lock
+ in t7xx_cldma_gpd_set_next_ptr()
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     linux-kernel@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        haijun.liu@mediatek.com, chandrashekar.devegowda@intel.com,
+        ricardo.martinez@linux.intel.com, davem@davemloft.net,
+        kuba@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
@@ -70,56 +69,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 May 2022 at 09:26, Ziyang Xuan <william.xuanziyang@huawei.com> wrote:
+On Thu, 19 May 2022 at 05:10, Yang Yingliang <yangyingliang@huawei.com> wrote:
 >
-> t7xx_cldma_clear_rxq() call t7xx_cldma_alloc_and_map_skb() in spin_lock
-> context, But __dev_alloc_skb() in t7xx_cldma_alloc_and_map_skb() uses
-> GFP_KERNEL, that will introduce scheduling factor in spin_lock context.
->
-> Because t7xx_cldma_clear_rxq() is called after stopping CLDMA, so we can
-> remove the spin_lock from t7xx_cldma_clear_rxq().
+> Sometimes t7xx_cldma_gpd_set_next_ptr() is called under spin lock,
+> so add 'gfp_mask' parameter in t7xx_cldma_gpd_set_next_ptr() to pass
+> the flag.
 >
 > Fixes: 39d439047f1d ("net: wwan: t7xx: Add control DMA interface")
-> Suggested-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 
 Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-
-> ---
->  drivers/net/wwan/t7xx/t7xx_hif_cldma.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> ---
-> v3:
->   - Add Suggested-by and simplify comments
-> v2:
->   - Remove spin_lock instead of using GFP_ATOMIC
->
-> diff --git a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-> index 46066dcd2607..3a46a5bea24f 100644
-> --- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-> +++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
-> @@ -782,10 +782,11 @@ static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
->         struct cldma_queue *rxq = &md_ctrl->rxq[qnum];
->         struct cldma_request *req;
->         struct cldma_gpd *gpd;
-> -       unsigned long flags;
->         int ret = 0;
->
-> -       spin_lock_irqsave(&rxq->ring_lock, flags);
-> +       /* CLDMA has been stopped. There is not any CLDMA IRQ, holding
-> +        * ring_lock is not needed.
-> +        */
->         t7xx_cldma_q_reset(rxq);
->         list_for_each_entry(req, &rxq->tr_ring->gpd_ring, entry) {
->                 gpd = req->gpd;
-> @@ -808,7 +809,6 @@ static int t7xx_cldma_clear_rxq(struct cldma_ctrl *md_ctrl, int qnum)
->
->                 t7xx_cldma_gpd_set_data_ptr(req->gpd, req->mapped_buff);
->         }
-> -       spin_unlock_irqrestore(&rxq->ring_lock, flags);
->
->         return ret;
->  }
-> --
-> 2.25.1
->
