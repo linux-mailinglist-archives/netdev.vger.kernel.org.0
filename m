@@ -2,57 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A78C52CA2B
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 05:16:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 284D452CA2C
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 05:16:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230190AbiESDQK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 23:16:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35696 "EHLO
+        id S232141AbiESDQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 23:16:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35926 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233163AbiESDQJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 23:16:09 -0400
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6740C15FFD
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 20:16:08 -0700 (PDT)
-Received: by mail-pl1-x62f.google.com with SMTP id s14so3600124plk.8
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 20:16:08 -0700 (PDT)
+        with ESMTP id S231214AbiESDQT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 23:16:19 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEB6B175B5
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 20:16:10 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id h186so3875353pgc.3
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 20:16:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=sq2MI4I/kf7cr9Yv2+xzdVyZekgO2TCEQwx1Pray2Bw=;
-        b=KbHIsDiw10HQIHEy4YskbW/ekBfbzIpDuQbPTlk12B60j4ruKlw640Sn6nLG58959K
-         KI1gKJb7B2z/bJCILIyZUF2VJYpbmYDiL2ekmAYbRQX7sKOCS3vWWDcJJU2jGYuGO+uw
-         kWzCVE7N0QACHk7ZPqt7xGefJepqmUJOJJHJHTm0BBQWyeiUZdQF4q+f2n37UHb1HyIy
-         H7EMXl3s/W423VTJETVUudE1jjjd6WKB644dSxWUxVaOQqOiZhwSyLTYTtUkn4WcLchx
-         SpOm1P23ENFPZ/uZOKBcMWem5jjxuH9NImxrBieN/m7gOSz7KImgVCLei6K38klZfXbR
-         77vQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=7cGWxABWTSRnqkdVtl2RjsmthyMxxZ7L/JYrNk80LP8=;
+        b=UYuzASZxKGeGCcE9fYC/vEyWX9E/NY4zkkS0tXi8T13+AhebTygGF7o9/RhwBdIzwW
+         iTJk+i6b22Cp77qeVsGZ2Tzix5hjebDSSCiT2rY2ErWlg4Z6HTzhrKkWe0LpCzeaCu4F
+         jR5+LjBuzTBozLA3nbJSYo/0p9v+SdT3vfnMBGu2soPyyRsDTxnhGTJ327K1k5tzlsUc
+         hDRVidYhf7HGjyvHStTguykxRvnboftohCpQkFSm0Gg1y6x0+Fc+BYX/usyDCcofI0Oe
+         YMPtfD40IxKlLjNmxIQigx3qcoFwjWe6h+DD0gH4WYNJSX7oh18lU8l0sED5/7/atOCU
+         4Iuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=sq2MI4I/kf7cr9Yv2+xzdVyZekgO2TCEQwx1Pray2Bw=;
-        b=QsKvuSgr1cnHPVey7kZvzz3LBZSjf9gsqXeFpgDiUzPGRc3dAx4hn6kj/dMLwgK2UV
-         eGbvdVspHMvQP9uroSu/bP5lCu1oNYPF456hT9WMw7xri8UFDurnnscPZ9noJXCIw4VR
-         nM+L/+eLqZxg1rsBbAhxPyDLDa9ett2vy7CTIMLm6m79A5+B2n5zk7mRFUb6KQkyBZsy
-         XeJvYhpEI9cm4cLUsQsPRyR4u26Qekerra07bJVncGGwVpbWxW/3zzjdhFydJEHn+VcA
-         P5whEYhUYCsCQ/6zEZiinq5uKMv3BtZx8/EJ1dOZUJe4tW8aaW/lT3RO9HrQVorCsfYh
-         HGIA==
-X-Gm-Message-State: AOAM532QNXgTbMTYIO0+VjM12FZNZ9xoEnD5IYnom+Uit9CGZWC62w2O
-        m0B+Abt8A8ORXYbdqpA4u74=
-X-Google-Smtp-Source: ABdhPJzOspP2h6u7TrN/PsGZQPguIjT8oYhmuSMgvuwwbOS3saaTGtZuTQjv2SzBkORJkFjBn46Y7Q==
-X-Received: by 2002:a17:90b:4b02:b0:1df:d622:dd07 with SMTP id lx2-20020a17090b4b0200b001dfd622dd07mr1307639pjb.160.1652930167866;
-        Wed, 18 May 2022 20:16:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=7cGWxABWTSRnqkdVtl2RjsmthyMxxZ7L/JYrNk80LP8=;
+        b=QBbniJ6rVphvDSqWXwIbD9oOGlwlT38x+wxfGlYtjDpYyxW7ROzacbW4QIyH7Exmt+
+         oOhmmisHEAXWM4eC3ERWM1CrVNqNhq85mTm34B699xa1Xv0KvaTO665xBxEF0oU5cLmj
+         V+Hmo/86Mbn18QTTzdadis4fi6ugmJiR4f1oXyvvq5P88bZZDYeg6nuAlFsna9JgSJ2X
+         DXkTO4Q8eZXnXH/VjFROyTrJYEgqU1eV1jE+7qXHm+NxgSeRB1DPXoHVQJ1UVVzER52d
+         m1SaQFyKWfmNkiQt/fddmVIH2ewrxbyQDtZHLTVXAXF0Ipm8X0JbL1gXj2o5G2nD6EEc
+         Hnsw==
+X-Gm-Message-State: AOAM5328QHuTSnDavINsXs1qlthO5QYqqWWbDi432KYFRxfjI9zWXrti
+        BUluf9qqxNumDi1HbOgcd/A=
+X-Google-Smtp-Source: ABdhPJw814agA3//hKtA2T6GO8o6Y3lu4bS1FABulsjhExk9ezEBpjRBMvx9Iyxqu+HXdYqQ9nTmiA==
+X-Received: by 2002:a63:111f:0:b0:3da:ed0d:7623 with SMTP id g31-20020a63111f000000b003daed0d7623mr2223445pgl.586.1652930170492;
+        Wed, 18 May 2022 20:16:10 -0700 (PDT)
 Received: from localhost.localdomain ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id f186-20020a62dbc3000000b0050dc7628133sm2833459pfg.13.2022.05.18.20.16.05
+        by smtp.gmail.com with ESMTPSA id f186-20020a62dbc3000000b0050dc7628133sm2833459pfg.13.2022.05.18.20.16.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 May 2022 20:16:07 -0700 (PDT)
+        Wed, 18 May 2022 20:16:09 -0700 (PDT)
 From:   Taehee Yoo <ap420073@gmail.com>
 To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
         edumazet@google.com, netdev@vger.kernel.org
 Cc:     ap420073@gmail.com
-Subject: [PATCH net v3 0/2] amt: fix several bugs in gateway mode
-Date:   Thu, 19 May 2022 03:15:53 +0000
-Message-Id: <20220519031555.3192-1-ap420073@gmail.com>
+Subject: [PATCH net v3 1/2] amt: fix gateway mode stuck
+Date:   Thu, 19 May 2022 03:15:54 +0000
+Message-Id: <20220519031555.3192-2-ap420073@gmail.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220519031555.3192-1-ap420073@gmail.com>
+References: <20220519031555.3192-1-ap420073@gmail.com>
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
         FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
@@ -63,32 +66,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset fixes bugs in amt module.
+If a gateway can not receive any response to requests from a relay,
+gateway resets status from SENT_REQUEST to INIT and variable about a
+relay as well. And then it should start the full establish step
+from sending a discovery message and receiving advertisement message.
+But, after failure in amt_req_work() it continues sending a request
+message step with flushed(invalid) relay information and sets SENT_REQUEST.
+So, a gateway can't be established with a relay.
+In order to avoid this situation, it stops sending the request message
+step if it fails.
 
-First patch fixes amt gateway mode's status stuck.
-amt gateway and relay established so these two mode manage status.
-But gateway stuck to change its own status if a relay doesn't send
-responses.
-
-Second patch fixes a memory leak.
-amt gateway skips some handling of advertisement message.
-So, a memory leak would occur.
+Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
+Signed-off-by: Taehee Yoo <ap420073@gmail.com>
+---
 
 v3:
- - Update git log message.
- - Do not increase rx_dropped stats twice.
+ - No changed.
 
 v2:
  - Separate patch.
- - Add patch cover-letter.
 
-Taehee Yoo (2):
-  amt: fix gateway mode stuck
-  amt: fix memory leak for advertisement message
+ drivers/net/amt.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
- drivers/net/amt.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/net/amt.c b/drivers/net/amt.c
+index 10455c9b9da0..2b4ce3869f08 100644
+--- a/drivers/net/amt.c
++++ b/drivers/net/amt.c
+@@ -943,7 +943,7 @@ static void amt_req_work(struct work_struct *work)
+ 	if (amt->status < AMT_STATUS_RECEIVED_ADVERTISEMENT)
+ 		goto out;
+ 
+-	if (amt->req_cnt++ > AMT_MAX_REQ_COUNT) {
++	if (amt->req_cnt > AMT_MAX_REQ_COUNT) {
+ 		netdev_dbg(amt->dev, "Gateway is not ready");
+ 		amt->qi = AMT_INIT_REQ_TIMEOUT;
+ 		amt->ready4 = false;
+@@ -951,13 +951,15 @@ static void amt_req_work(struct work_struct *work)
+ 		amt->remote_ip = 0;
+ 		__amt_update_gw_status(amt, AMT_STATUS_INIT, false);
+ 		amt->req_cnt = 0;
++		goto out;
+ 	}
+ 	spin_unlock_bh(&amt->lock);
+ 
+ 	amt_send_request(amt, false);
+ 	amt_send_request(amt, true);
+-	amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
+ 	spin_lock_bh(&amt->lock);
++	__amt_update_gw_status(amt, AMT_STATUS_SENT_REQUEST, true);
++	amt->req_cnt++;
+ out:
+ 	exp = min_t(u32, (1 * (1 << amt->req_cnt)), AMT_MAX_REQ_TIMEOUT);
+ 	mod_delayed_work(amt_wq, &amt->req_wq, msecs_to_jiffies(exp * 1000));
 -- 
 2.17.1
 
