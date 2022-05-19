@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 140C052D542
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 15:57:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D23552D558
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 15:58:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236310AbiESN5J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 09:57:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48850 "EHLO
+        id S239191AbiESN5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 09:57:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239471AbiESNz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 09:55:59 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77679EC331
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 06:54:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=kp0f8QHVeH2LTclla3A6yuWzABAGd//1d08OAxYxpuE=; b=QUKMwFjRHrOPUpdYPELRCG0VmU
-        YWpxwnYL9Ejv4Ut6aNKIRAZSbm3bRlXHnFjZtE7cAL8jMMrCQhgVJydPnjuOve8dWfJhTytPSGVJy
-        OKI8W27mmk4/VcWqO0IIoQMZcLvKy8a5A6kts+qHdZp9OvzckbQ9YuyhUXn+hw4FQZMQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1nrgby-003UWE-9i; Thu, 19 May 2022 15:54:42 +0200
-Date:   Thu, 19 May 2022 15:54:42 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        'Pavan Chebbi' <pavan.chebbi@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mchan@broadcom.com" <mchan@broadcom.com>,
-        David Miller <davem@davemloft.net>
-Subject: Re: tg3 dropping packets at high packet rates
-Message-ID: <YoZMInrha8Sux61Q@lunn.ch>
-References: <70a20d8f91664412ae91e401391e17cb@AcuMS.aculab.com>
- <6576c307ed554adb443e62a60f099266c95b55a7.camel@redhat.com>
- <153739175cf241a5895e6a5685a89598@AcuMS.aculab.com>
- <CACKFLinwh=YgPGPZ0M0dTJK1ar+SoPUZtYb5nBmLj6CNPdCQ2g@mail.gmail.com>
- <13d6579e9bc44dc2bfb73de8d9715b10@AcuMS.aculab.com>
- <CALs4sv1RxAbVid2f8EQF_kQkk48fd=8kcz2WbkTXRkwLbPLgwA@mail.gmail.com>
- <f3d1d5bf11144b31b1b3959e95b04490@AcuMS.aculab.com>
- <5cc5353c518e27de69fc0d832294634c83f431e5.camel@redhat.com>
+        with ESMTP id S237072AbiESN5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 09:57:08 -0400
+Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B0838AB;
+        Thu, 19 May 2022 06:56:58 -0700 (PDT)
+Received: (Authenticated sender: maxime.chevallier@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 63F63240014;
+        Thu, 19 May 2022 13:56:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1652968613;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=UIKY8sH1X5ECVbyISXl1wSkKulCZceNUKGMFNeLBB58=;
+        b=dH4zG/rLfn5lYbDoNTUtI2jjvNpKLyNMlTWaHhX8zJXuzpS057KPCaTrElRlKJqiztw1SL
+        6cDNU52AmZBbS64wCDX99mR2mee3NMLZsxFm0pTSyhrUPDM1zR69Cx4gbDX6UFV4ANUdht
+        bLkjlOEuRSSXheDO5Nie6fMJwdzagP4oDIAj0ccaT9vmSCsyT425Nk87Yjgob5MxAhEHK7
+        459gkEsdaifm2rqribGwOUl+WFphaRd87RhixGgEnBxFGQ6mkjcYxJ9t0vyL3XOT3sPy62
+        lcNEGBRZL5Acis5qxAzkxQdIPyHvI0nmQZDQHfc0QuQ9LsrcP5b2vTONY2ISZQ==
+From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
+To:     davem@davemloft.net, Rob Herring <robh+dt@kernel.org>
+Cc:     Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Horatiu.Vultur@microchip.com, Allan.Nielsen@microchip.com,
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH net-next 0/6] net: Introduce Ethernet Inband Extensions
+Date:   Thu, 19 May 2022 15:56:41 +0200
+Message-Id: <20220519135647.465653-1-maxime.chevallier@bootlin.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5cc5353c518e27de69fc0d832294634c83f431e5.camel@redhat.com>
+Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,22 +56,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> If the packet processing is 'bursty', you can have idle time and still
-> hit now and the 'rx ring is [almost] full' condition. If pause frames
-> are enabled, that will cause the peer to stop sending frames: drop can
-> happen in the switch, and the local NIC will not notice (unless there
-> are counters avaialble for pause frames sent).
+Hello everyone,
 
-You can control pause with ethtool
+This series introduces support for Ethernet in-band extensions, a
+mechanism proposed by Cisco as part of the USXGMII spec.
 
-       ethtool -a|--show-pause devname
+The idea is to leverage the 7 bytes preamble to convey meaningful data,
+in what's called an "extension".
 
-       ethtool -A|--pause devname [autoneg on|off] [rx on|off] [tx on|off]
+This series adds the QUSGMII mode, which is a quad variant of the
+USXGMII standard, and adds its support in the lan966x driver. In
+QUSGMII, extensions can be used.
 
-But it depends on the driver implementing these options. So you might
-want to try autoneg on, rx off, tx off, for testing.
+The only extension support thus far is the PCH mode, a way to convey
+part of a timestamp into the ethernet preamble. That's a pretty
+straightfoward extension, documented in the Cisco spec. Other extensions
+can exist, each being identified by a 2 bits code in the preamble,
+parsed by the hardware.
 
-ethtool should also show you want has been negotiated for pause, if
-the driver has implemented that part of the ethtool API.
+We therefore need an API to synchronise which mode is supported by a
+given PHY, then a way to enable it in the PHY, from the MAC's control.
 
-    Andrew
+This is done through a new phy_driver callback, .inband_ext_config(),
+that the MAC driver will call to ask a PHY driver to enable a given
+extension.
+
+The PCH mode that is added in this series is used to offload a bit
+the MDIO bus when doing PHY-side timestamping, by conveying the nanoseconds
+part of the timestamp into the preamble. The MAC driver then extracts
+the timestamp (using lan966x's IFH mechanism), puts the nanosecond part
+in the SKB. The RX deferred timestamping then asks the PHY for the rest
+of the timestamp.
+
+Other modes exists, such as Microchip's MCH mode, but this series only
+include PCH since it's simple enough and keeps the code reviewable.
+
+Thanks,
+
+Maxime
+
+Maxime Chevallier (6):
+  net: phy: Introduce QUSGMII PHY mode
+  dt-bindings: net: ethernet-controller: add QUSGMII mode
+  net: lan966x: Add QUSGMII support for lan966x
+  net: phy: Add support for inband extensions
+  net: lan966x: Allow using PCH extension for PTP
+  net: phy: micrel: Add QUSGMII support and PCH extension
+
+ .../bindings/net/ethernet-controller.yaml     |   1 +
+ Documentation/networking/phy.rst              |   9 ++
+ .../ethernet/microchip/lan966x/lan966x_main.c |  14 +--
+ .../ethernet/microchip/lan966x/lan966x_main.h |   6 ++
+ .../microchip/lan966x/lan966x_phylink.c       |   9 +-
+ .../ethernet/microchip/lan966x/lan966x_port.c |  33 ++++--
+ .../ethernet/microchip/lan966x/lan966x_ptp.c  |  93 +++++++++++++++-
+ .../ethernet/microchip/lan966x/lan966x_regs.h |  72 +++++++++++++
+ drivers/net/phy/micrel.c                      | 102 ++++++++++++++++--
+ drivers/net/phy/phy.c                         |  68 ++++++++++++
+ drivers/net/phy/phylink.c                     |   3 +
+ include/linux/phy.h                           |  28 ++++-
+ 12 files changed, 413 insertions(+), 25 deletions(-)
+
+-- 
+2.36.1
+
