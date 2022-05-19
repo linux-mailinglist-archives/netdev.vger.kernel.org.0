@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 656A752DFC4
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 00:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6607952DFC8
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 00:02:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244283AbiESWCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 18:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46620 "EHLO
+        id S233761AbiESWCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 18:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235378AbiESWCR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 18:02:17 -0400
+        with ESMTP id S235403AbiESWCS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 18:02:18 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AF99FE15D5;
-        Thu, 19 May 2022 15:02:16 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68027F68B6;
+        Thu, 19 May 2022 15:02:17 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com
-Subject: [PATCH net-next 04/11] netfilter: ctnetlink: fix up for "netfilter: conntrack: remove unconfirmed list"
-Date:   Fri, 20 May 2022 00:01:59 +0200
-Message-Id: <20220519220206.722153-5-pablo@netfilter.org>
+Subject: [PATCH net-next 05/11] net/sched: act_ct: set 'net' pointer when creating new nf_flow_table
+Date:   Fri, 20 May 2022 00:02:00 +0200
+Message-Id: <20220519220206.722153-6-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220519220206.722153-1-pablo@netfilter.org>
 References: <20220519220206.722153-1-pablo@netfilter.org>
@@ -35,40 +35,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stephen Rothwell <sfr@canb.auug.org.au>
+From: Vlad Buslov <vladbu@nvidia.com>
 
-After merging the net-next tree, today's linux-next build (powerpc
-ppc64_defconfig) produced this warning:
+Following patches in series use the pointer to access flow table offload
+debug variables.
 
-nf_conntrack_netlink.c:1717 warning: 'ctnetlink_dump_one_entry' defined but not used
-
-Fixes: 8a75a2c17410 ("netfilter: conntrack: remove unconfirmed list")
-Signed-off-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Vlad Buslov <vladbu@nvidia.com>
+Signed-off-by: Oz Shlomo <ozsh@nvidia.com>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_conntrack_netlink.c | 2 ++
- 1 file changed, 2 insertions(+)
+ net/sched/act_ct.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/nf_conntrack_netlink.c b/net/netfilter/nf_conntrack_netlink.c
-index e768f59741a6..722af5e309ba 100644
---- a/net/netfilter/nf_conntrack_netlink.c
-+++ b/net/netfilter/nf_conntrack_netlink.c
-@@ -1714,6 +1714,7 @@ static int ctnetlink_done_list(struct netlink_callback *cb)
- 	return 0;
- }
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index 8af9d6e5ba61..58e0dfed22c6 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -277,7 +277,7 @@ static struct nf_flowtable_type flowtable_ct = {
+ 	.owner		= THIS_MODULE,
+ };
  
-+#ifdef CONFIG_NF_CONNTRACK_EVENTS
- static int ctnetlink_dump_one_entry(struct sk_buff *skb,
- 				    struct netlink_callback *cb,
- 				    struct nf_conn *ct,
-@@ -1754,6 +1755,7 @@ static int ctnetlink_dump_one_entry(struct sk_buff *skb,
+-static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
++static int tcf_ct_flow_table_get(struct net *net, struct tcf_ct_params *params)
+ {
+ 	struct tcf_ct_flow_table *ct_ft;
+ 	int err = -ENOMEM;
+@@ -303,6 +303,7 @@ static int tcf_ct_flow_table_get(struct tcf_ct_params *params)
+ 	err = nf_flow_table_init(&ct_ft->nf_ft);
+ 	if (err)
+ 		goto err_init;
++	write_pnet(&ct_ft->nf_ft.net, net);
  
- 	return res;
- }
-+#endif
+ 	__module_get(THIS_MODULE);
+ out_unlock:
+@@ -1391,7 +1392,7 @@ static int tcf_ct_init(struct net *net, struct nlattr *nla,
+ 	if (err)
+ 		goto cleanup;
  
- static int
- ctnetlink_dump_unconfirmed(struct sk_buff *skb, struct netlink_callback *cb)
+-	err = tcf_ct_flow_table_get(params);
++	err = tcf_ct_flow_table_get(net, params);
+ 	if (err)
+ 		goto cleanup;
+ 
 -- 
 2.30.2
 
