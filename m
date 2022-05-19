@@ -2,128 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C83852CB28
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 06:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 315A152CB2B
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 06:38:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233676AbiESEhA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 00:37:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45054 "EHLO
+        id S233681AbiESEio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 00:38:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230128AbiESEg7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 00:36:59 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FCF5994E
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 21:36:57 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D20C2CE2266
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 04:36:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7552BC385B8;
-        Thu, 19 May 2022 04:36:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652935013;
-        bh=Dj9A86uYZ14IQvHA575akmc5vbc8MvSc2cvfXn55H3g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FyI9oTvuY0/CmljbceuOsCciIdWSvzIRp5I9Dk2Y63TT7pLrVcqWf/4AbNRpB17R7
-         EajQrrt94e/eSSbzkB182vFLanxGQd2IPmaafjX0pKuTxXjVVD54jFXGKyEH0Wpvfc
-         lYfMqu0TGex4gQPsVdezNH523PGoQbEi9/hNYX0DG4pkYwLTc74B/LUMYDaO+svL7F
-         DYQ0w8DUAMjyaot2TEhQ1tL17Aes/iqtgoT19sDc7aAgLMSVBP2YPDpoh2MXAshB4O
-         8QNOfLG+isW+LcX9bay6eGjnEdLoHyz/7AkL7yNLUq7+5TJ13YRVnWyVzyWmP47y5E
-         2gAzSxCuoOa6A==
-Date:   Wed, 18 May 2022 21:36:52 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeedm@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        Eli Cohen <elic@nvidia.com>, Mark Bloch <mbloch@nvidia.com>
-Subject: Re: [net-next 16/16] net/mlx5: Support multiport eswitch mode
-Message-ID: <20220518213652.312ffb2e@kernel.org>
-In-Reply-To: <20220519042628.e2yqi37ceyks6rbv@sx1>
-References: <20220518064938.128220-1-saeed@kernel.org>
-        <20220518064938.128220-17-saeed@kernel.org>
-        <20220518172141.6994e385@kernel.org>
-        <20220519042628.e2yqi37ceyks6rbv@sx1>
+        with ESMTP id S230128AbiESEil (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 00:38:41 -0400
+Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 534135BD3D;
+        Wed, 18 May 2022 21:38:40 -0700 (PDT)
+Received: by mail-io1-xd2b.google.com with SMTP id e15so4617399iob.3;
+        Wed, 18 May 2022 21:38:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=gxZjiYTaN4ezKLlxi7VUQHVQNtVzg+Slph/Lq3uj/4I=;
+        b=DEx0kfEIQ0viEYpwSgupzdmCv9f6S1pVgkUjBRB2A1z7icJARW+u/y8u01Cqu+HfBy
+         BAPVwAD/mcutOGfUJPJkYizgwR39E0iL9I9t6r9LYR8fsGpeLLA4wZLcr/TAdv0h5XFX
+         JW8xZhxsJjSAUqb/B0u36itSTNPQvlYrg0Rw752iunh9sxO2b7ljGKU/EzX05zEsIyTh
+         /hESa2z4xWeRlayS6ge/a+r+W7RJC1jtN/1ZDpMKWGgfR45VE4wJAH9vcvoajtmODchM
+         JSDhlytoTpfaJW2mtSMNQPQ2Tq318zRVapM5mq6ygVZavJ59IzSUqAHYVcCladH++wDZ
+         PvcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=gxZjiYTaN4ezKLlxi7VUQHVQNtVzg+Slph/Lq3uj/4I=;
+        b=DbS+EPetkAOfMDzBFXhiPEjCfU0sZQ5u/DUmQ69aOTn4g3FGl3Tm+Mp/Y6oCfNl1Qk
+         PfMtrdZKSARopRbVLBzkqbQHUBUi7YfrqdgY5oIj3MtFcYMGmspi44VS9MXkwQ4wMyna
+         z2dsPrOrJnVq59/DxvS1+tmUIaseo/wMISohP/wj/NdDHF3iGQxA2kA1Jj5t90kGzdft
+         F9PFdny3ZUPCjtgG/4Ld7N4PCZv+lLoXR3f49A4J6lotRkThuUXsb2PkjEzArQBecfb/
+         tVgWENmVV1NR/ZaNQ0goH1/rOFn+fGeJbehdDr1AVQ5OZAtSzrMVWyC0fc9AX+reRI0l
+         YTWQ==
+X-Gm-Message-State: AOAM530HZRoke4/ipoAhwISjtoZJL1XaK/CozK3Mh467SYlsh1rWC/dN
+        UUZi+a0XpGCXTSbZav5FFMWhzK7O7o9XLPz1lYA=
+X-Google-Smtp-Source: ABdhPJw22ffAQ9T+RrX0TY5bFNOry0J9oMO3fKkDKsDBJ988QAdDiXND6i6Nus6WHLG9t4c7c3TRmQl2lNjWPjEbKrw=
+X-Received: by 2002:a05:6602:1695:b0:65d:cbd3:eed0 with SMTP id
+ s21-20020a056602169500b0065dcbd3eed0mr1497971iow.144.1652935119729; Wed, 18
+ May 2022 21:38:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+References: <20220516022453.68420-1-zhoufeng.zf@bytedance.com>
+ <CAEf4BzZ0eRh4ufQnc69B=6WQt_Oy3DNPL-TM-rsUW1KX--SBvQ@mail.gmail.com> <196f6ae9-f899-16c8-a5d3-a1c771fa9900@bytedance.com>
+In-Reply-To: <196f6ae9-f899-16c8-a5d3-a1c771fa9900@bytedance.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 18 May 2022 21:38:28 -0700
+Message-ID: <CAEf4BzabT5xdscH8jgTbAVhj415k=1MziKmAXTi6yfeo1DTBRw@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH bpf-next] selftests/bpf: fix some bugs in
+ map_lookup_percpu_elem testcase
+To:     Feng Zhou <zhoufeng.zf@bytedance.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joanne Koong <joannekoong@fb.com>,
+        Geliang Tang <geliang.tang@suse.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        duanxiongchun@bytedance.com,
+        Muchun Song <songmuchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        zhouchengming@bytedance.com, Yosry Ahmed <yosryahmed@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 18 May 2022 21:26:28 -0700 Saeed Mahameed wrote:
-> On 18 May 17:21, Jakub Kicinski wrote:
-> >On Tue, 17 May 2022 23:49:38 -0700 Saeed Mahameed wrote: =20
-> >> From: Eli Cohen <elic@nvidia.com>
+On Wed, May 18, 2022 at 8:27 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote=
+:
+>
+> =E5=9C=A8 2022/5/19 =E4=B8=8A=E5=8D=888:17, Andrii Nakryiko =E5=86=99=E9=
+=81=93:
+> > On Sun, May 15, 2022 at 7:25 PM Feng zhou <zhoufeng.zf@bytedance.com> w=
+rote:
+> >> From: Feng Zhou <zhoufeng.zf@bytedance.com>
 > >>
-> >> Multiport eswitch mode is a LAG mode that allows to add rules that
-> >> forward traffic to a specific physical port without being affected by =
-LAG
-> >> affinity configuration.
+> >> comments from Andrii Nakryiko, details in here:
+> >> https://lore.kernel.org/lkml/20220511093854.411-1-zhoufeng.zf@bytedanc=
+e.com/T/
 > >>
-> >> This mode of operation is mutual exclusive with the other LAG modes us=
-ed
-> >> by multipath and bonding.
+> >> use /* */ instead of //
+> >> use libbpf_num_possible_cpus() instead of sysconf(_SC_NPROCESSORS_ONLN=
+)
+> >> use 8 bytes for value size
+> >> fix memory leak
+> >> use ASSERT_EQ instead of ASSERT_OK
+> >> add bpf_loop to fetch values on each possible CPU
 > >>
-> >> To make the transition between the modes, we maintain a counter on the
-> >> number of rules specifying one of the uplink representors as the target
-> >> of mirred egress redirect action.
+> >> Fixes: ed7c13776e20c74486b0939a3c1de984c5efb6aa ("selftests/bpf: add t=
+est case for bpf_map_lookup_percpu_elem")
+> >> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+> >> ---
+> >>   .../bpf/prog_tests/map_lookup_percpu_elem.c   | 49 +++++++++------
+> >>   .../bpf/progs/test_map_lookup_percpu_elem.c   | 61 ++++++++++++-----=
+--
+> >>   2 files changed, 70 insertions(+), 40 deletions(-)
 > >>
-> >> An example of such rule would be:
-> >>
-> >> $ tc filter add dev enp8s0f0_0 prot all root flower dst_mac \
-> >>   00:11:22:33:44:55 action mirred egress redirect dev enp8s0f0
-> >>
-> >> If the reference count just grows to one and LAG is not in use, we
-> >> create the LAG in multiport eswitch mode. Other mode changes are not
-> >> allowed while in this mode. When the reference count reaches zero, we
-> >> destroy the LAG and let other modes be used if needed.
-> >>
-> >> logic also changed such that if forwarding to some uplink destination
-> >> cannot be guaranteed, we fail the operation so the rule will eventually
-> >> be in software and not in hardware.
-> >>
-> >> Signed-off-by: Eli Cohen <elic@nvidia.com>
-> >> Reviewed-by: Mark Bloch <mbloch@nvidia.com>
-> >> Signed-off-by: Saeed Mahameed <saeedm@nvidia.com> =20
+> >> diff --git a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_=
+elem.c b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
+> >> index 58b24c2112b0..89ca170f1c25 100644
+> >> --- a/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
+> >> +++ b/tools/testing/selftests/bpf/prog_tests/map_lookup_percpu_elem.c
+> >> @@ -1,30 +1,39 @@
+> >> -// SPDX-License-Identifier: GPL-2.0
+> >> -// Copyright (c) 2022 Bytedance
+> >> +/* SPDX-License-Identifier: GPL-2.0 */
+> > heh, so for SPDX license comment the rule is to use // in .c files :)
+> > so keep SPDX as // and all others as /* */
+>
+> will do. Thanks.
+>
 > >
-> >GCC 12 also points out that:
+> >> +/* Copyright (c) 2022 Bytedance */
+> >>
+> >>   #include <test_progs.h>
+> >>
+> >>   #include "test_map_lookup_percpu_elem.skel.h"
+> >>
+> >> -#define TEST_VALUE  1
+> >> -
+> >>   void test_map_lookup_percpu_elem(void)
+> >>   {
+> >>          struct test_map_lookup_percpu_elem *skel;
+> >> -       int key =3D 0, ret;
+> >> -       int nr_cpus =3D sysconf(_SC_NPROCESSORS_ONLN);
+> >> -       int *buf;
+> >> +       __u64 key =3D 0, sum;
+> >> +       int ret, i;
+> >> +       int nr_cpus =3D libbpf_num_possible_cpus();
+> >> +       __u64 *buf;
+> >>
+> >> -       buf =3D (int *)malloc(nr_cpus*sizeof(int));
+> >> +       buf =3D (__u64 *)malloc(nr_cpus*sizeof(__u64));
+> > no need for casting
+>
+> casting means no '(__u64 *)'?
+> just like this:
+> 'buf =3D malloc(nr_cpus * sizeof(__u64));'
+>
+
+yes, in C you don't need to explicitly cast void * to other pointer types
+
 > >
-> >drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c: In function =E2=80=98=
-mlx5_do_bond=E2=80=99:
-> >drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:786:28: warning: =E2=
-=80=98tracker=E2=80=99 is used uninitialized [-Wuninitialized]
-> >  786 |         struct lag_tracker tracker;
-> >      |                            ^~~~~~~
-> >drivers/net/ethernet/mellanox/mlx5/core/lag/lag.c:786:28: note: =E2=80=
-=98tracker=E2=80=99 declared here
-> >  786 |         struct lag_tracker tracker;
-> >      |                            ^~~~~~~ =20
->=20
-> it's a false alarm, anyway clang and gcc12 are happy on my machine:
-
-Yeah, looks like a false alarm.
-
-> $ KCFLAGS=3D"-Wall" make W=3D1 drivers/net/ethernet/mellanox/mlx5/core/la=
-g/lag.o
-
-No extra flags, basic allmodconfig build here (well, with WERROR=3Dn).
-
-> CALL    scripts/checksyscalls.sh
-> CALL    scripts/atomic/check-atomics.sh
-> DESCEND objtool
-> CC      drivers/net/ethernet/mellanox/mlx5/core/lag/lag.o
->=20
-> $ gcc --version
-> gcc (GCC) 12.1.1 20220507 (Red Hat 12.1.1-1)
-
-Same:
-
-gcc (GCC) 12.1.1 20220507 (Red Hat 12.1.1-1)
+> >>          if (!ASSERT_OK_PTR(buf, "malloc"))
+> >>                  return;
+> >> -       memset(buf, 0, nr_cpus*sizeof(int));
+> >> -       buf[0] =3D TEST_VALUE;
+> >>
+> >> -       skel =3D test_map_lookup_percpu_elem__open_and_load();
+> >> -       if (!ASSERT_OK_PTR(skel, "test_map_lookup_percpu_elem__open_an=
+d_load"))
+> >> -               return;
+> >> +       for (i=3D0; i<nr_cpus; i++)
+> > spaces between operators
+>
+> will do. Thanks.
+>
+> >
+> >> +               buf[i] =3D i;
+> >> +       sum =3D (nr_cpus-1)*nr_cpus/2;
+> > same, please follow kernel code style
+>
+> will do. Thanks.
+>
+> >
+> >> +
+> >> +       skel =3D test_map_lookup_percpu_elem__open();
+> >> +       if (!ASSERT_OK_PTR(skel, "test_map_lookup_percpu_elem__open"))
+> >> +               goto exit;
+> >> +
+> > nit: keep it simple, init skel to NULL and use single cleanup goto
+> > label that will destroy skel unconditionally (it deals with NULL just
+> > fine)
+>
+> will do. Thanks.
+>
+> >> +       skel->rodata->nr_cpus =3D nr_cpus;
+> >> +
+> >> +       ret =3D test_map_lookup_percpu_elem__load(skel);
+> >> +       if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__load"))
+> >> +               goto cleanup;
+> >> +
+> >>          ret =3D test_map_lookup_percpu_elem__attach(skel);
+> >> -       ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach");
+> >> +       if (!ASSERT_OK(ret, "test_map_lookup_percpu_elem__attach"))
+> >> +               goto cleanup;
+> >>
+> >>          ret =3D bpf_map_update_elem(bpf_map__fd(skel->maps.percpu_arr=
+ay_map), &key, buf, 0);
+> >>          ASSERT_OK(ret, "percpu_array_map update");
+> > [...]
+>
+>
