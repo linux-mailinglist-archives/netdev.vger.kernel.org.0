@@ -2,85 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DBC8652D05A
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 12:21:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3BDF52D060
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 12:21:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236633AbiESKUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 06:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
+        id S236672AbiESKVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 06:21:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236617AbiESKUQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 06:20:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 45E52A7747
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:20:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652955614;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=uTf4UazsnqFm1w0j9PjtulisgMFh6QzykfXouIHj8FI=;
-        b=UHQEavkCYQ2B+KYfbRWaIYLMVNERwWKvnVBrkSywqBUXRYctQO84g2CjEucUEiXdYJQ6jN
-        G8VN6P7+SZMQJP0fDox14t3Vn+vaiuAjgd8gf5sUKQZQ2LAiPk2aqU3g62CtWT/10BBrjt
-        w6TRbRVVTk1y9V75aTTIWzq3wdrPyoQ=
-Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
- [209.85.210.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-650-fH-SO1a3PzqRJgI5UFlhYA-1; Thu, 19 May 2022 06:20:13 -0400
-X-MC-Unique: fH-SO1a3PzqRJgI5UFlhYA-1
-Received: by mail-pf1-f197.google.com with SMTP id i19-20020aa79093000000b0050d44b83506so2495589pfa.22
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:20:13 -0700 (PDT)
+        with ESMTP id S236741AbiESKVM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 06:21:12 -0400
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E04E5A1B0
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:21:10 -0700 (PDT)
+Received: by mail-qv1-xf2c.google.com with SMTP id n10so4261733qvi.5
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:21:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ExjCWz+7+BoRJKK4CyQ5ia+7kTKhO4BWmQIONXixiZM=;
+        b=RnDJBeEGBqYZoL33kwhYJ4f+cYjE0u6ZhyAf1APCrejBlTTRTOcMYHWXeRY77a66k4
+         PeyYvxQ1jYc0Wf/5CeXACOqyU+5xbT9mo6vxN7qGVgMH1lU/N8LYXC291rP96v4CCsgj
+         vPIZFHFiVTO4kxkIFQVpk0wFwVe4Kgm1QX4jY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uTf4UazsnqFm1w0j9PjtulisgMFh6QzykfXouIHj8FI=;
-        b=XDPtvXx96HiC+Dmdyy5lOhztdC6OVOYTQoNo4u25I4srHpbF08OctdmdcommdEDXfz
-         MiUPed6REYRsVvcK0/THWVIoV1SXWJkug5JMa5/xdlWgxPlqV9ERV0pqPqJnlo1BZA+N
-         9CogowgOI+Q+tcCkT/ZLy1PQA7jwGWhfSjqQB7XvCrq8JQfrbkQ26Ou5JnhF2lLAk6GB
-         e+6C5RkuMq02F7iQMfG2TWzbN2uOaqdhY3IXDYNeq29u8zX8nBYM/0iAP7uQLVRXcGTu
-         lqY7xBIUdZzZvnuMK3Ri0VU2NWipII2b2xA3BGdxRrUpRfroEGs4JymmPZSXAaBArl6g
-         2Xog==
-X-Gm-Message-State: AOAM530uR/wSydUfwnnDcSjeQS1pFZjgV5DLtEDrYmh9aMvek5ZgnS7k
-        xQKlXWuANkKAv0UQ8H9z/1DXS5BAOgEqP5Vs1mcseGvu/lV0+0+ozsz+A6BnXNfTKN11RkcqIl4
-        bazwOuz/2tnZrcFbCejto8qOL/dTjAkcs
-X-Received: by 2002:a17:903:22c6:b0:15f:14e1:1518 with SMTP id y6-20020a17090322c600b0015f14e11518mr4080923plg.116.1652955612083;
-        Thu, 19 May 2022 03:20:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyu2Gf5VTzOz90w3/G1De6zt6if/VLekZLdOYdtToYtFikUFmLdwo0CCwN8PGggiEKvMyPvE0o9jU6G39mZwzo=
-X-Received: by 2002:a17:903:22c6:b0:15f:14e1:1518 with SMTP id
- y6-20020a17090322c600b0015f14e11518mr4080890plg.116.1652955611775; Thu, 19
- May 2022 03:20:11 -0700 (PDT)
+        bh=ExjCWz+7+BoRJKK4CyQ5ia+7kTKhO4BWmQIONXixiZM=;
+        b=w0WoBBYCA+ErgfoJ7dAZ5Ve3iPgsrlMIBsRfzwVS7TojPjnNr4KwenUe4ATZk1KqZN
+         xTxMGF4A7i6XlIewgrFm8SIZelPoXj5l1yd7Kjz13AH9MeUM4RUDWxUAuaoZblD8O5/m
+         x9M1IUDCgxdUcu/c1b2O467kqQRkjDR3NyasoRn+f5ACZV+19Egj4FJZsyZnvHK1eWXj
+         KfvmtR4dq/zAqIyIGxm4mImqLYzYvTLKpQgAkIpq9BYFQMYIyN1IPHztoxMwvKTLKj+V
+         rjeQPakFo2ptTsIXjPJOy8nuGvp1QN2YaEhNoi3lr2guYziDhP8mBp3JBGGaoo72AVOG
+         0aqg==
+X-Gm-Message-State: AOAM533tTqfZEbSk/XvKiJd4aLdBwE/eXfhTKQN0DA8mrHLQ+8vQj27B
+        B6ha26VBJt//W5p6E24Pd12RNnISqaRFA6lX2VkATw==
+X-Google-Smtp-Source: ABdhPJw+byJNOCDwl74cxhTFxc7X9bC9Pb2gqft4/wBnBVk1nCJEyJ9wk3dqsLDfBUuN6nvVnQO4inxB5R/24ruajbY=
+X-Received: by 2002:a05:6214:2a4:b0:461:c636:f9fc with SMTP id
+ m4-20020a05621402a400b00461c636f9fcmr3004656qvv.72.1652955669980; Thu, 19 May
+ 2022 03:21:09 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
- <YoX7iHddAd4FkQRQ@infradead.org> <YoX904CAFOAfWeJN@kroah.com> <YoYCIhYhzLmhIGxe@infradead.org>
-In-Reply-To: <YoYCIhYhzLmhIGxe@infradead.org>
-From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Date:   Thu, 19 May 2022 12:20:00 +0200
-Message-ID: <CAO-hwJL4Pj4JaRquoXD1AtegcKnh22_T0Z0VY_peZ8FRko3kZw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 00/17] Introduce eBPF support for HID devices
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+References: <70a20d8f91664412ae91e401391e17cb@AcuMS.aculab.com>
+ <6576c307ed554adb443e62a60f099266c95b55a7.camel@redhat.com>
+ <153739175cf241a5895e6a5685a89598@AcuMS.aculab.com> <CACKFLinwh=YgPGPZ0M0dTJK1ar+SoPUZtYb5nBmLj6CNPdCQ2g@mail.gmail.com>
+ <13d6579e9bc44dc2bfb73de8d9715b10@AcuMS.aculab.com>
+In-Reply-To: <13d6579e9bc44dc2bfb73de8d9715b10@AcuMS.aculab.com>
+From:   Pavan Chebbi <pavan.chebbi@broadcom.com>
+Date:   Thu, 19 May 2022 15:50:58 +0530
+Message-ID: <CALs4sv1RxAbVid2f8EQF_kQkk48fd=8kcz2WbkTXRkwLbPLgwA@mail.gmail.com>
+Subject: Re: tg3 dropping packets at high packet rates
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mchan@broadcom.com" <mchan@broadcom.com>,
+        David Miller <davem@davemloft.net>
+Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
+        boundary="0000000000008dcf6905df5abb16"
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -88,95 +69,187 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 19, 2022 at 10:39 AM Christoph Hellwig <hch@infradead.org> wrote:
+--0000000000008dcf6905df5abb16
+Content-Type: text/plain; charset="UTF-8"
+
+On Thu, May 19, 2022 at 2:14 PM David Laight <David.Laight@aculab.com> wrote:
 >
-> On Thu, May 19, 2022 at 10:20:35AM +0200, Greg KH wrote:
-> > > are written using a hip new VM?
+> From: Michael Chan
+> > Sent: 19 May 2022 01:52
 > >
-> > Ugh, don't mention UDI, that's a bad flashback...
->
-> But that is very much what we are doing here.
->
-> > I thought the goal here was to move a lot of the quirk handling and
-> > "fixup the broken HID decriptors in this device" out of kernel .c code
-> > and into BPF code instead, which this patchset would allow.
-
-Yes, quirks are a big motivation for this work. Right now half of the
-HID drivers are less than 100 lines of code, and are just trivial
-fixes (one byte in the report descriptor, one key mapping, etc...).
-Using eBPF for those would simplify the process from the user point of
-view: you drop a "firmware fix" as an eBPF program in your system and
-you can continue working on your existing kernel.
-
-The other important aspect is being able to do filtering on the event
-streams themselves.
-This would mean for instance that you allow some applications to have
-access to part of the device features and you reject some of them. The
-main use case I have is to prevent applications to switch a device
-into its bootloader mode and mess up with the firmware.
-
+> > On Wed, May 18, 2022 at 2:31 PM David Laight <David.Laight@aculab.com> wrote:
+> > >
+> > > From: Paolo Abeni
+> > > > Sent: 18 May 2022 18:27
+> > > ....
+> > > > > If I read /sys/class/net/em2/statistics/rx_packets every second
+> > > > > delaying with:
+> > > > >   syscall(SYS_clock_nanosleep, CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, NULL);
+> > > > > about every 43 seconds I get a zero increment.
+> > > > > This really doesn't help!
+> > > >
+> > > > It looks like the tg3 driver fetches the H/W stats once per second. I
+> > > > guess that if you fetch them with the same period and you are unlucky
+> > > > you can read the same sample 2 consecutive time.
+> > >
+> > > Actually I think the hardware is writing them to kernel memory
+> > > every second.
 > >
-> > So that would just be exception handling.  I don't think you can write a
-> > real HID driver here at all, but I could be wrong as I have not read the
-> > new patchset (older versions of this series could not do that.)
-
-Well, to be fair, yes and no.
-HID-BPF can only talk HID, and so we only act on arrays of bytes. You
-can mess up with the report descriptor or the events themselves, but
-you don't have access to other kernel APIs.
-So no, you can not write a HID-BPF driver that would manually create
-LEDs sysfs endpoints, input endpoints and battery endpoints.
-
-However, HID is very versatile in how you can describe a device. And
-the kernel now supports a lot of those features. So if you really
-want, you can entirely change the look of the device (its report
-descriptor), and rely on hid-core to export those LEDs, inputs and
-battery endpoints.
-
-But we already have this available by making use of hidraw+uhid. This
-involves userspace and there are already projects (for handling
-Corsair keyboard for example) which are doing exactly that, with a big
-security whole in the middle because the application is reading *all*
-events as they are flowing.
-
-One of the most important things here is that this work allows for
-context driven behavior. We can now control how a device is behaving
-depending on the actual application without having to design and
-maintain forever kernel APIs.
-For example, the Surface Dial is a puck that can have some haptic
-feedback when you turn it. However, when you enable the haptic
-feedback you have to reduce the resolution to one event every 5
-degrees or the haptic feedback feels just wrong. But the device is
-capable of sub-degrees of event notifications. Which means you want
-the high resolution mode without haptic, and low res with haptic.
-
-Of course, you can use some new FF capabilities to enable/disable
-haptic, but we have nothing to change the resolution on the fly of a
-HID device, so we'll likely have to create another kernel API through
-a sysfs node or a kernel parameter. But then we need to teach
-userspace to use it and this kernel API is not standard, so it won't
-be used outside of this particular device.
-BPF in that case allows the application which needs it to do the
-changes it requires depending on the context. And when I say
-application, it is mostly either the compositor or a daemon, not gimp.
-
+> > On your BCM95720 chip, statistics are gathered by tg3_timer() once a
+> > second.  Older chips will use DMA.
 >
-> And that "exception handling" is most of the driver.
+> Ah, I wasn't sure which code was relevant.
+> FWIW the code could rotate 64bit values by 32 bits
+> to convert to/from the strange ordering the hardware uses.
+>
+> > Please show a snapshot of all the counters.  In particular,
+> > rxbds_empty, rx_discards, etc will show whether the driver is keeping
+> > up with incoming RX packets or not.
+>
+> After running the test for a short time.
+> The application stats indicate that around 40000 packets are missing.
+>
+> # ethtool -S em2 | grep -v ' 0$'; for f in /sys/class/net/em2/statistics/*; do echo $f $(cat $f); done|grep -v ' 0$'
+> NIC statistics:
+>      rx_octets: 4589028558
+>      rx_ucast_packets: 21049866
+>      rx_mcast_packets: 763
+>      rx_bcast_packets: 746
+>      tx_octets: 4344
+>      tx_ucast_packets: 6
+>      tx_mcast_packets: 40
+>      tx_bcast_packets: 3
+>      rxbds_empty: 76
+>      rx_discards: 14
+>      mbuf_lwm_thresh_hit: 14
+> /sys/class/net/em2/statistics/multicast 763
+> /sys/class/net/em2/statistics/rx_bytes 4589028558
+> /sys/class/net/em2/statistics/rx_missed_errors 14
+> /sys/class/net/em2/statistics/rx_packets 21433169
+> /sys/class/net/em2/statistics/tx_bytes 4344
+> /sys/class/net/em2/statistics/tx_packets 49
+>
+> I've replaced the rx_packets count with an atomic64 counter in tg3_rx().
+> Reading every second gives values like:
+>
+> # echo_every 1 |(c=0; n0=0; while read r; do n=$(cat /sys/class/net/em2/statistics/rx_packets); echo $c $((n - n0)); c=$((c+1)); n0=$n; done)
+> 0 397169949
+> 1 399831
+> 2 399883
+> 3 399913
+> 4 399871
+> 5 398747
+> 6 400035
+> 7 399958
+> 8 399947
+> 9 399923
+> 10 399978
+> 11 399457
+> 12 399130
+> 13 400128
+> 14 399808
+> 15 399029
 >
 
-Well, it depends. If hardware makers would not make crappy decisions
-based on the fact that it somehow works under Windows, we wouldn't
-have to do anything to support those devices.
-But for half of the drivers, we are doing dumb things to fix those
-devices in the kernel.
+I see that in a span of 15 seconds, the received packets are 4362 less
+than what you are expecting (considering 400000/s avg)
+In what time period did the application report 40000 missing packets?
+Does it map to about 150 seconds of test time?
+The error counters do not look suspicious at this point for the
+reported problem.
+Do you see this problem with any other traffic pattern?
 
-On the other hand, we do have generic protocols in HID that can not be
-replaced by BPF.
-For the exercise, I tried to think about what it would take to rewrite
-the multitouch logic in eBPF, and trust me, you don't want that. The
-code would be a lot of spaghetti and would require access to many
-kernel APIs to handle it properly.
+> They should all be 400000 with slight variances.
+> But there are clearly 100s of packets being discarded in some
+> 1 second periods.
+>
+> I don't think I can blame the network.
+> All the systems are plugged into the same ethernet switch on a test LAN.
+>
+>         David
+>
+> -
+> Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+> Registration No: 1397386 (Wales)
 
-Cheers,
-Benjamin
+--0000000000008dcf6905df5abb16
+Content-Type: application/pkcs7-signature; name="smime.p7s"
+Content-Transfer-Encoding: base64
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Description: S/MIME Cryptographic Signature
 
+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
+MjHtaKp4bqyoZGmz/QLIf3iYE8N/j4l3nASfKLlxomJthuh0xS34f5+M+q361VT2RQFR2ZNQFb7f
+u2AmJ7NZqhqVl/nlRPbwLl/nxV03XFhDLEhyLbRKuG8CAwEAAaOCAdowggHWMA4GA1UdDwEB/wQE
+AwIFoDCBowYIKwYBBQUHAQEEgZYwgZMwTgYIKwYBBQUHMAKGQmh0dHA6Ly9zZWN1cmUuZ2xvYmFs
+c2lnbi5jb20vY2FjZXJ0L2dzZ2NjcjNwZXJzb25hbHNpZ24yY2EyMDIwLmNydDBBBggrBgEFBQcw
+AYY1aHR0cDovL29jc3AuZ2xvYmFsc2lnbi5jb20vZ3NnY2NyM3BlcnNvbmFsc2lnbjJjYTIwMjAw
+TQYDVR0gBEYwRDBCBgorBgEEAaAyASgKMDQwMgYIKwYBBQUHAgEWJmh0dHBzOi8vd3d3Lmdsb2Jh
+bHNpZ24uY29tL3JlcG9zaXRvcnkvMAkGA1UdEwQCMAAwSQYDVR0fBEIwQDA+oDygOoY4aHR0cDov
+L2NybC5nbG9iYWxzaWduLmNvbS9nc2djY3IzcGVyc29uYWxzaWduMmNhMjAyMC5jcmwwJAYDVR0R
+BB0wG4EZcGF2YW4uY2hlYmJpQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcDBDAfBgNV
+HSMEGDAWgBSWM9HmWBdbNHWKgVZk1b5I3qGPzzAdBgNVHQ4EFgQUW6H0m/TK4GBYA6W3b8Soy869
+jBwwDQYJKoZIhvcNAQELBQADggEBADBUMB9YQdlXyJbj8JK/hqrxQKEs3OvpoVm65s7Ws/OD1N+T
+t34VwsCr+2FQPH693pbmtIaWRVg7JoRBb+Fn27tahgcRLQeJCU33jwM0Ng3+Jcyh/almUP+zN7a1
+K8FRTPOb1x5ZQpfNbAhen8hwr/7uf3t96jgDxt4Ov+Ix86GZ0flz094Z/zrVh73T2UCThpz1QhxI
+jy7V2rR7XHb8F3Vm33NlgRSS4+7FwV5OVWbm+PNNQDrlTBAl6PobGqt6M3TPy6f968Vr1MB2WgqW
+8MnI3cvZy6tudQ1MhGmfYpx8SlvXhhwkWwhXeW7OkX3t6QalgNkliqzXRifAVFHqVrkxggJtMIIC
+aQIBATBrMFsxCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTEwLwYDVQQD
+EyhHbG9iYWxTaWduIEdDQyBSMyBQZXJzb25hbFNpZ24gMiBDQSAyMDIwAgxHYLxThyE3XZpRkkEw
+DQYJYIZIAWUDBAIBBQCggdQwLwYJKoZIhvcNAQkEMSIEICiep8SUP5olyFw85rdsjd4amK3AJ6Ci
+1GLNS1cFtCYGMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTIyMDUx
+OTEwMjExMFowaQYJKoZIhvcNAQkPMVwwWjALBglghkgBZQMEASowCwYJYIZIAWUDBAEWMAsGCWCG
+SAFlAwQBAjAKBggqhkiG9w0DBzALBgkqhkiG9w0BAQowCwYJKoZIhvcNAQEHMAsGCWCGSAFlAwQC
+ATANBgkqhkiG9w0BAQEFAASCAQDN6NTEaTnmzu6fyeQ8SUIFL/Jc3PBCdwxSP8VhVWoYhAEQbnMk
+hAbOwf3zg/tD+qf+K5Skuu9voTdhALF1Wj5SV076SXa0fdR0yPG/mesK1RJEDrep27FWApQURnvx
+tKXNJyZaEbG/f+6A8LtU4sJYtDIWKJc1P+KXZIv6jYpdd4YIesl06Uvy6/YbvC1gEXP0nbuU9Vwj
+u+7pbtGVu0To8YrsYywHB0EXYsTudUiAmRPMjkJdHvYfjANkWxAXJq0ZZ/PhjWmy+UREA3p+SHz6
+8gisG3+6VM/5RTlBeas3iIizkFWWWrkDvkKDhsR5wl2z7E0EVF/idlxuhSEgvOWb
+--0000000000008dcf6905df5abb16--
