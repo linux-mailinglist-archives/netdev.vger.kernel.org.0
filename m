@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C77C752D69B
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:59:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FCB652D6B2
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 17:01:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240103AbiESO7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 10:59:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
+        id S240230AbiESPBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 11:01:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240081AbiESO6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:58:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDB45D6819;
-        Thu, 19 May 2022 07:58:52 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S240305AbiESPAK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 11:00:10 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2E159EBA92
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:59:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652972367;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vLDeLvmK1CDBbyiav0ZvmXrDMQAvb2K5oFXxMwO8ya4=;
+        b=QzI3Yy62MBpnKqlvrrWiF9eQUa47thUydE5x5t0JkjnBdF8+cRxvcEL1nNEuWbZC02QFvK
+        OoHBxJtRJ7upl7kLB8pmfQaDnds5vy4kXbTqZOLxPm3HGCkNpaAPBkGuAA+8Q869weqYDD
+        Kh7A5ZE4PX6wBrJCRV5Q5RXq0vVbN/Y=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-661-Q7coxSBeOFSsVPOL9aBFtQ-1; Thu, 19 May 2022 10:59:24 -0400
+X-MC-Unique: Q7coxSBeOFSsVPOL9aBFtQ-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B31561A0A;
-        Thu, 19 May 2022 14:58:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AFF1C385AA;
-        Thu, 19 May 2022 14:58:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652972331;
-        bh=1JQxQTlxaZfO+tcIR3YEL38bUDaUxamRUvfS6PQ/nSo=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=kGlGl6s/QiWP392yedpgzZjzPzba4SABKrtwz2wQTX/mc8Om88/7ZnXsBeTkN3ugi
-         x5phwovTpaGoDsD7dwNOCJAOl0fdxh3/x7aGVU4tmY6r6gZnqoRe+yUlsIOhC4XrZ6
-         wYTnoAyd0isAO48/2pi9dZdpEtDpix+N/R7Kh/OS6mhy1O12fmPFwY5LvPAkauMyig
-         1cB9wo4jp0zl5VefTUAYeXTMry8/RgVcOL7HI/geX9Y8Xo/nQeDzoMsyf//BI6fWHr
-         +8L9jH8ZXeywCT1T9jRqIArQkhEM3SlbEcP1D5I8LDXIBmXaoImmeix74N3UoIfOhD
-         JLbldzxT8387Q==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     Duoming Zhou <duoming@zju.edu.cn>
-Cc:     linux-kernel@vger.kernel.org, amitkarwar@gmail.com,
-        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
-        huxinming820@gmail.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] net: wireless: marvell: mwifiex: fix sleep in atomic context bugs
-References: <20220519135345.109936-1-duoming@zju.edu.cn>
-Date:   Thu, 19 May 2022 17:58:47 +0300
-In-Reply-To: <20220519135345.109936-1-duoming@zju.edu.cn> (Duoming Zhou's
-        message of "Thu, 19 May 2022 21:53:45 +0800")
-Message-ID: <87zgjd1sd4.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7F881294EDE4;
+        Thu, 19 May 2022 14:59:23 +0000 (UTC)
+Received: from eperezma.remote.csb (unknown [10.39.193.126])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2F566400E89E;
+        Thu, 19 May 2022 14:59:21 +0000 (UTC)
+From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
+To:     mst@redhat.com, jasowang@redhat.com
+Cc:     lvivier@redhat.com, netdev@vger.kernel.org, lulu@redhat.com,
+        eli@mellanox.com, sgarzare@redhat.com, parav@nvidia.com,
+        virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        lingshan.zhu@intel.com, linux-kernel@vger.kernel.org,
+        gdawar@xilinx.com
+Subject: [PATCH v2] vdpasim: allow to enable a vq repeatedly
+Date:   Thu, 19 May 2022 16:59:19 +0200
+Message-Id: <20220519145919.772896-1-eperezma@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,43 +60,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Duoming Zhou <duoming@zju.edu.cn> writes:
+Code must be resilient to enable a queue many times.
 
-> There are sleep in atomic context bugs when uploading device dump
-> data on usb interface. The root cause is that the operations that
-> may sleep are called in fw_dump_timer_fn which is a timer handler.
-> The call tree shows the execution paths that could lead to bugs:
->
->    (Interrupt context)
-> fw_dump_timer_fn
->   mwifiex_upload_device_dump
->     dev_coredumpv(..., GFP_KERNEL)
->       dev_coredumpm()
->         kzalloc(sizeof(*devcd), gfp); //may sleep
->         dev_set_name
->           kobject_set_name_vargs
->             kvasprintf_const(GFP_KERNEL, ...); //may sleep
->             kstrdup(s, GFP_KERNEL); //may sleep
->
-> This patch moves the operations that may sleep into a work item.
-> The work item will run in another kernel thread which is in
-> process context to execute the bottom half of the interrupt.
-> So it could prevent atomic context from sleeping.
->
-> Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
-> Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+At the moment the queue is resetting so it's definitely not the expected
+behavior.
 
-mwifiex patches go to wireless-next, not net tree.
+v2: set vq->ready = 0 at disable.
 
-> ---
-> Changes in v2:
->   - Fix compile problem.
+Fixes: 2c53d0f64c06 ("vdpasim: vDPA device simulator")
+Cc: stable@vger.kernel.org
+Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+---
+ drivers/vdpa/vdpa_sim/vdpa_sim.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-So you don't even compile test your patches? That's bad and in that case
-I'll just directly drop this. We expect that the patches are properly
-tested.
-
+diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+index ddbe142af09a..881f9864c437 100644
+--- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
++++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+@@ -353,11 +353,14 @@ static void vdpasim_set_vq_ready(struct vdpa_device *vdpa, u16 idx, bool ready)
+ {
+ 	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
+ 	struct vdpasim_virtqueue *vq = &vdpasim->vqs[idx];
++	bool old_ready;
+ 
+ 	spin_lock(&vdpasim->lock);
++	old_ready = vq->ready;
+ 	vq->ready = ready;
+-	if (vq->ready)
++	if (vq->ready && !old_ready) {
+ 		vdpasim_queue_ready(vdpasim, idx);
++	}
+ 	spin_unlock(&vdpasim->lock);
+ }
+ 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+2.27.0
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
