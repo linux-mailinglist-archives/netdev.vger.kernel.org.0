@@ -2,195 +2,573 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 98DED52D7E6
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 17:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60CFF52D93A
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 17:50:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239408AbiESPiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 11:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59490 "EHLO
+        id S229810AbiESPuv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 11:50:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241296AbiESPiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 11:38:17 -0400
-Received: from EUR05-DB8-obe.outbound.protection.outlook.com (mail-db8eur05on2071.outbound.protection.outlook.com [40.107.20.71])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3486720F76;
-        Thu, 19 May 2022 08:38:16 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D9Ey/WZoBTvV+XQjUDDV3Sya4eamt1MxdXfenuGuVRO0JIVCHHN5WnfHvRrBhbvbcoe83c8u6HG5Q82+jEcITuR6GIMA2JoBUaGxKe0t06ft6/jjfNSe0SWbN/6g8Ynh9O4o743T6sfS6wWp/giBv+uq+Ed9skI8Bj8TeoYgjDmzc0mRU+rbvTcemsyT/YQ7WFVUMHjE1V9S84WdFtc828056V1E2g+s+Jm91ZWAHfAvQ7PMJn5w7EV1BFAwx6uUZcy/GNx9d++vCs0Ft5Et46SLDLM0FGpIYCdON6/BKWez1yK4XJISOhZ8dAl6Wx0Y1pDSw52HNYwQOfRlJcYnlA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ao9tj8XLfsFsRDZB/DuGxu0ZP5GzWk3fPxZcValgCo8=;
- b=frH00klLek6+V+S1mz2VgQtpLOUY41dcLI4KYeoa9jsjDcPu4cj4yfis3elAg9hUes5oPk8NGwtJ0tqRpkQQM0f78e0Hw1QuUSySkFmeajk3RpAfWvh+ckDgHhE94Ueo8aVPzLtwdsghaRQigOLR6uo9wXJV7aeGKXJXNaiYQbPAnI0Bw5n68XgumpKxvUiHidFhirg8cqY/L3bskoyr9lQ9fDZTuAPJ+nNkfThUL4qor6lQrMYllq+CyGxhgVs46C11RGCMklD3fnCLnmhWgsX4J+BrlPuTSSZMKngtT32413I5hbPVAxYlp4svjdJheR83npradNpN9aQB6LUCqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ao9tj8XLfsFsRDZB/DuGxu0ZP5GzWk3fPxZcValgCo8=;
- b=GvS31IA5BG6HaYvlUJg+ZM4p9/LEvL28sMtY6D+M9Tu7Nj/lzC6zq873QE8jxg7oN4JnciIafcyOHi5cfxrwG5TO1ZLOUYDACS01IV0GzXzvsZ9wZYDg8F1TnF1ImVEsuakDEEqNwqkFFo0LoAzHQej02XsJQp7plBMxpxkcb38=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by AM6PR04MB5910.eurprd04.prod.outlook.com (2603:10a6:20b:af::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Thu, 19 May
- 2022 15:38:13 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::fd1f:cc16:dafe:4bf5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::fd1f:cc16:dafe:4bf5%5]) with mapi id 15.20.5250.014; Thu, 19 May 2022
- 15:38:13 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Robin Murphy <robin.murphy@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        John Stultz <jstultz@google.com>,
-        =?gb2312?B?QWx2aW4gqeCoomlwcmFnYQ==?= <alsi@bang-olufsen.dk>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [RFC PATCH net 0/2] Make phylink and DSA wait for PHY driver that
- defers probe
-Thread-Topic: [RFC PATCH net 0/2] Make phylink and DSA wait for PHY driver
- that defers probe
-Thread-Index: AQHYZyJUAF3LqZezX0WvBgnHz+VvNa0dg4GAgAjQVgCAAAk3gIAAAZIA
-Date:   Thu, 19 May 2022 15:38:13 +0000
-Message-ID: <20220519153812.egofm2c2r55bvs7c@skbuf>
-References: <20220513233640.2518337-1-vladimir.oltean@nxp.com>
- <Yn72l3O6yI7YstMf@lunn.ch> <20220519145936.3ofmmnrehydba7t6@skbuf>
- <YoZjE77QvIGifDnY@lunn.ch>
-In-Reply-To: <YoZjE77QvIGifDnY@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b7263124-3273-432c-2c56-08da39ad9611
-x-ms-traffictypediagnostic: AM6PR04MB5910:EE_
-x-microsoft-antispam-prvs: <AM6PR04MB591029CEDAB9CEFD12272881E0D09@AM6PR04MB5910.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 37mptYQdlJ907z1z13AqJKSUeYqTQMOv+eFGinWRakDc1pI9Z0eR01sg0cJ9E4G6QyrSzyTyns6A9U6MUIPwRGXpb3Yj77N/kZVNge4PohFyXPFiUzsOa5PrIkPrD7awQjZv3lEpLput02a7PGdXsmvbbPkE1Oc/n2Nx7cK4A+q7WdmCqwaUx1nEy/YtJrhu7PXwGX4Fq2pDCGl16nIHOp38zA/9faogucfMnqXs6ykY+NCZMIn5wLTImsuUi6mSaaIfbQQewR/fL25J+GgZ0mUDEHHjPXbzCKCoLxg9B8092mWXk2kGoq8FIlk60bFLg/cl5Uoi7CfE/X+liahRKk2ynqtsjMqzR5YxTYRB3fS+Og0sAKvjtlVRwa12UH3zferjQcUmM3PXBGBkVO8tWO314J4ka1TZMIUpCGNObn6l67YB5Lr1tRzTiwdgzMVInXwyZgs0a8HnXhjBX4aUPJdSflleJG5qBL2UX7+vDMndcs4Gat7Z+yeJfhfJp2NK/AyFrTMJbGuMtKDsh1Aii8Hk7rDZSxzg4NJYk255m3kx9yYDQYRy8Lgq8tifHXfUKSvAUGXGYD6fFwZB1aFGtg0xqbqDqgTYSNWjHVl9IRDl5CMiZRFtXM0UPGHPaTqx0sOqfZ9Di0sMhE6DejqkT411TB49cr2MnLDcMEw+2pWVQ7dYMseJdl/mjaBSYJgILZ3xbl71i3Qm+tbxMiAFQRyE2XFx+PF4TS6y+OETmQm5fIYTMkGkFl9foKXw+wIlxT2ScmU7Xz/UyVsdhyW4Bs3WSySRv1HKIXnhW4fesH4=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(44832011)(8936002)(38100700002)(76116006)(38070700005)(7416002)(71200400001)(4326008)(64756008)(2906002)(66446008)(5660300002)(8676002)(66476007)(66556008)(66946007)(91956017)(186003)(6506007)(26005)(33716001)(1076003)(9686003)(83380400001)(508600001)(966005)(86362001)(316002)(122000001)(6486002)(54906003)(6916009)(6512007);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?gb2312?B?aG8wYTE0ek10MXhORFB2L1NrN01OUnhVTWZjdlBEcVcxbjl1azgzY29yUC83?=
- =?gb2312?B?Z3ZPTlladURodHpWY21kZmw5Wi83WllkaU9FRHJqazZlYlA3VmJKSUpWeE5o?=
- =?gb2312?B?MGRFMkl0TXRBcFQxRVdBdzRiQ2pxOFBKM0ViVXVGdWFtOFE2Z2Z4UFJsSmUr?=
- =?gb2312?B?VTQ1OTc2cTZNeEpTYS9kUTZmZ0FjL1g4WVB4NnRuTk1Wb2RCY2ljK3lteVBp?=
- =?gb2312?B?UWtlNFdPUUdwSGFueWlGVzB2N2ZJNWZHbGFTdHR4dkpvOGhQMnZaMVhjSG91?=
- =?gb2312?B?NEZ3WDh1NmNkMUIzQkVHK3l2UzI5VGR0Wm90enJ1UnJaTHJBWHBPNHREbEVF?=
- =?gb2312?B?SlVIWXJaYktiRGRGSFp6RWlVTmdpUnpzQ21tVjdsUUM4L1BvZjlETXF4eS9p?=
- =?gb2312?B?aFQwOTFmN0xlK2ZDejltait2K25CT1ZaYmRUcjBaZ3dWbGg5K1dZK3lBZ29s?=
- =?gb2312?B?MHhHL29mYlUveTZXd0hUSVZuQ1JrRzB3OGZyb29MNUE5OXlrR2lmNGhtdUUx?=
- =?gb2312?B?blFyeXIvOU81TVVtQ2ZPUFRwSVZJOEZUM0JQUGl4eHhEMHA4NzZ6dWpmdzZo?=
- =?gb2312?B?NW9TdHRvblRiRC9GMElvemt4UmdoeFVHdmVnU1JxOTFjcjJwbmlpS1VwQ2JM?=
- =?gb2312?B?bituWVM5THE2OTV5TDhtaDRKc1B1eVc0ek5oOTR6THNvY3k0alVtMmNrdHhZ?=
- =?gb2312?B?UmRaRS9WckVhUlV0UE5jZUQzeC80RndDR29BSi9Ra3duaW0wbWd0ZythSWdD?=
- =?gb2312?B?UkxlRnJrZGRtUU9SbzFUb2VXNThMV3hoMGlFd0ROWFo4VVJ4Q1NFaHAwZ3N3?=
- =?gb2312?B?bzZCcnVUSlFmbi9JeFFtZ3FqT0tOdDN0VkFVNTdXL011NHJrT2JPS2d3MnJL?=
- =?gb2312?B?NEVCMVhNNWd0ekI0dmx0R3MwNFpDR3NIN2szRS85enZMbDJzRmh2SzVxV0w4?=
- =?gb2312?B?ZTJWeFdPUUdvUHhKRUgwNDg3bzNUZUN5bUwvN3BNRE5VakZ0cDZaRitYT0dv?=
- =?gb2312?B?d2NLOVBhUDNVUTdqYmNvM0g2VVFCcnZjczd1OXQwblUreGdvUGxPZXhhWVc1?=
- =?gb2312?B?WXZ4b0k3bUNldTI1andrcjYvd3R2K1BvSUJWK3NRS1RZY1BkM2o3V05Bb2lM?=
- =?gb2312?B?bXovMmpDMDAzTUt4RExwYlBXWEFOZlhPV3Fyb3U0dk9HK21ONDh5a29hdFlV?=
- =?gb2312?B?UHljWnRKL21xOThPY1VpSktYVmtPQUpOR2hMK0hkTGhxZWIxdmN0VkhabGhq?=
- =?gb2312?B?MFJ2azJJQWhBM2xEK1Q3MlFybjhuaUZJTWM2Qm5vOGk0R09pUGpTdm1ZbHpV?=
- =?gb2312?B?TUMzemgrRGFkZVFFTEhvbkQwYWRoUlZ5UnBram1QRGNsRk14bmF1ZGFDU0Zo?=
- =?gb2312?B?bkNla2lIVDBLdkVyNktnMktTdjdxVkVoSzdxeFJaazlMdkJsVTlzVlFreXlO?=
- =?gb2312?B?aXZvQzJPYXU4dzEra2tsdTZwNVMrMFNsZ1FyT01GbS8xU241WVk3cUxRY2tn?=
- =?gb2312?B?KzlBeEovK3QxWkYxazlMUzNrK3NjT2dTUTk0T1hVOWxWTVRJQURRMGhNcHRn?=
- =?gb2312?B?ZlBEeTM3MFpxRjV0Y0x1a0pYaE1GZnRZZ0hwVzg0V3pXS1ZkdlhxK09jT2JU?=
- =?gb2312?B?Ti9aMVhXczRtMU5qR0FtQkQ3UW03MU9pUmx6UDg4V1htOE1jZ3hiQWhwZkpL?=
- =?gb2312?B?Y0FNWGRzSVdYWFpnZ3FGcU9YWGVCQWE3YjcwdiszYjZDZmRtTjhWYUU3NGFr?=
- =?gb2312?B?SFYyMGd5N2FWb2tTaGlvaDM4R2NVN3lxbGxwSGpFODRhQXpGSkhFc2QzRE4z?=
- =?gb2312?B?QzJCVnQrVlFFT3dORm5ibWJ0dnV0aHBqbThvVDBDU1VNTHlJUzBFaXExaWl4?=
- =?gb2312?B?bXFsMFlKUUh3Q2VqYjA3MFhrS2N3V0h0MVpTaDVRY1hTdzZNSGJibWZhMVJH?=
- =?gb2312?B?RjdGbXBHYllxK2paNE9KcHU1ZE9acXN0aTZoMXVUY3pwYUtLeVhMaVd0blhB?=
- =?gb2312?B?eXMvMFJuY0svTVdjbE5wMGprL3FGTTB0WFhXVjN4aFlLT3dqM08wNmdzN1BV?=
- =?gb2312?B?RE96aXNPM0NqY2tHSXdCSWtaU2pKQVgwT2gxNWZ0WXkvK29HeUxOcEZidXVE?=
- =?gb2312?B?dnhmNzNXclF2NndGYzRocnhYeU05VmRMTE1xTUttOWVNdE5RZnRaY1FyRGxG?=
- =?gb2312?B?MmtpKysrd01WaVNsVis5NmdaZ0M0cWFHVjBnUnBTWnhLckpnY0J4MnZDdXBa?=
- =?gb2312?B?dUEyUFdObVMwOVdIVmVvNjFCa2VsNkdXcWVHYXEwTCt3Y041cERkZUQvMVNL?=
- =?gb2312?B?Q3FVYXFjQVVIcVpCUTVLMzRhMnpJek9sUmFUZU4rMXFtZTE0S3FBSy9Kc3Z0?=
- =?gb2312?Q?cXaR+xAjoEaoZKCU=3D?=
-Content-Type: text/plain; charset="gb2312"
-Content-ID: <28F2C2A6C5CCEE419D063AE45AFCF56D@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S241518AbiESPuM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 11:50:12 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 70277985A7
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 08:48:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652975283;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=PJJnss2EjmhKAZqfc8ROgpLfRq3oHX7787vufsfVPK0=;
+        b=QCCSA1LbpxfyZ/NqJNUPcZdz9R6rFUV35YWbi+Q9zZMjqcWRLbtmXzzT9KSQa6dhYlBxlh
+        8JkHSiObp0/7EtFHE4m6hIO9Z4BxulPaJ4wC+/hMmmSpvbn2OoK8FN4fC67QEYsdiQkzK8
+        ziLBLVdk5CNjkguI4zW8zS1iRJdIHso=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-663-n-DOGQZuME26e5OuKTno8A-1; Thu, 19 May 2022 11:47:58 -0400
+X-MC-Unique: n-DOGQZuME26e5OuKTno8A-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 98652802803;
+        Thu, 19 May 2022 15:47:56 +0000 (UTC)
+Received: from [10.39.193.17] (unknown [10.39.193.17])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2EC4240CF8ED;
+        Thu, 19 May 2022 15:47:53 +0000 (UTC)
+Message-ID: <9b03abc3-f6dc-209e-d31b-b171c5350359@redhat.com>
+Date:   Thu, 19 May 2022 17:47:52 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b7263124-3273-432c-2c56-08da39ad9611
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2022 15:38:13.5867
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: GSXO1kv7IsOCPGgRxWYu8lhUirSmafjPsv98GzKcpE48lqDRuD1WaBvHP6khMsJwnsiR21WIzK3Dyfi9wVpY9A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB5910
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH bpf-next v5 12/17] selftests/bpf: add tests for
+ bpf_hid_hw_request
+Content-Language: en-US
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
+ <20220518205924.399291-13-benjamin.tissoires@redhat.com>
+ <20220518222055.zh7hvexbqlctvotw@apollo.legion>
+ <CAO-hwJLxqYC9AUrfjMX1sPdSrt7EguWt9diwadJ9UZe-XGKFJw@mail.gmail.com>
+ <20220519125132.lm4ztduemzyvystf@apollo.legion>
+ <1c2eb260-1437-5aa3-95af-e336019f3c49@redhat.com>
+ <20220519134453.uxobs62inwoaucnk@apollo.legion>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+In-Reply-To: <20220519134453.uxobs62inwoaucnk@apollo.legion>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCBNYXkgMTksIDIwMjIgYXQgMDU6MzI6MzVQTSArMDIwMCwgQW5kcmV3IEx1bm4gd3Jv
-dGU6DQo+ID4gPiBUaGVyZSBpcyBhIHZlcnkgZGlmZmVyZW50IGFwcHJvYWNoLCB3aGljaCBtaWdo
-dCBiZSBzaW1wbGVyLg0KPiA+ID4gDQo+ID4gPiBXZSBrbm93IHBvbGxpbmcgd2lsbCBhbHdheXMg
-d29yay4gQW5kIGl0IHNob3VsZCBiZSBwb3NzaWJsZSB0bw0KPiA+ID4gdHJhbnNpdGlvbiBiZXR3
-ZWVuIHBvbGxpbmcgYW5kIGludGVycnVwdCBhdCBhbnkgcG9pbnQsIHNvIGxvbmcgYXMgdGhlDQo+
-ID4gPiBwaHlsb2NrIGlzIGhlbGQuIFNvIGlmIHlvdSBnZXQgLUVQUk9CRV9ERUZGRVIgZHVyaW5n
-IHByb2JlLCBtYXJrIHNvbWUNCj4gPiA+IHN0YXRlIGluIHBoeWRldiB0aGF0IHRoZXJlIHNob3Vs
-ZCBiZSBhbiBpcnEsIGJ1dCBpdCBpcyBub3QgYXJvdW5kIHlldC4NCj4gPiA+IFdoZW4gdGhlIHBo
-eSBpcyBzdGFydGVkLCBhbmQgcGh5bGliIHN0YXJ0cyBwb2xsaW5nLCBsb29rIGZvciB0aGUgc3Rh
-dGUNCj4gPiA+IGFuZCB0cnkgZ2V0dGluZyB0aGUgSVJRIGFnYWluLiBJZiBzdWNjZXNzZnVsLCBz
-d2FwIHRvIGludGVycnVwdHMsIGlmDQo+ID4gPiBub3QsIGtlZXAgcG9sbGluZy4gTWF5YmUgYWZ0
-ZXIgNjAgc2Vjb25kcyBvZiBwb2xsaW5nIGFuZCB0cnlpbmcsIGdpdmUNCj4gPiA+IHVwIHRyeWlu
-ZyB0byBmaW5kIHRoZSBpcnEgYW5kIHN0aWNrIHdpdGggcG9sbGluZy4NCj4gPiANCj4gPiBUaGF0
-IGRvZXNuJ3Qgc291bmQgbGlrZSBzb21ldGhpbmcgdGhhdCBJJ2QgYmFja3BvcnQgdG8gc3RhYmxl
-IGtlcm5lbHMuDQo+IA0KPiA+IFdoYXQgbW90aXZhdGVzIG1lIHRvIG1ha2UgdGhlc2UgY2hhbmdl
-cyBpbiB0aGUgZmlyc3QgcGxhY2UgaXMgdGhlIGlkZWENCj4gPiB0aGF0IGN1cnJlbnQga2VybmVs
-cyBzaG91bGQgd29yayB3aXRoIHVwZGF0ZWQgZGV2aWNlIHRyZWVzLg0KPiANCj4gQnkgY3VycmVu
-dCwgeW91IG1lYW4gb2xkIGtlcm5lbHMsIExUUyBldGMuIFlvdSB3YW50IGFuIExUUyBrZXJuZWwg
-dG8NCj4gd29yayB3aXRoIGEgbmV3IERUIGJsb2I/IFlvdSB3YW50IGZvcndhcmQgY29tcGF0aWJp
-bGl0eSB3aXRoIGEgRFQNCj4gYmxvYi4gRG8gdGhlIHN0YWJsZSBydWxlcyBzYXkgYW55dGhpbmcg
-YWJvdXQgdGhhdD8NCj4gDQo+ICAgICAgIEFuZHJldw0KDQpIbW0sIG5vdCBzdXJlIGFib3V0IHN0
-YWJsZSBydWxlcywgYnV0IGF0IGxlYXN0IE1hcmMgWnluZ2llciBoYXMNCnN1Z2dlc3RlZCBpbiB0
-aGUgcGFzdCB0aGF0IHRoaXMgaXMgc29tZXRoaW5nIHdoaWNoIHNob3VsZCB3b3JrOg0KaHR0cHM6
-Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtYXJtLWtlcm5lbC84N2N6bHpqeG16LndsLW1hekBrZXJu
-ZWwub3JnLw0KDQpUbyBxdW90ZToNCg0KfCA+IEFzIGZvciBjb21wYXRpYmlsaXR5IGJldHdlZW4g
-b2xkIGtlcm5lbCBhbmQgbmV3IERUOiBJIGd1ZXNzIHlvdSdsbCBoZWFyDQp8ID4gdmFyaW91cyBv
-cGluaW9ucyBvbiB0aGlzIG9uZS4NCnwgPiBodHRwczovL3d3dy5zcGluaWNzLm5ldC9saXN0cy9s
-aW51eC1taXBzL21zZzA3Nzc4Lmh0bWwNCnwgPiANCnwgPiB8ID4gQXJlIHdlIG9rYXkgd2l0aCB0
-aGUgbmV3IGRldmljZSB0cmVlIGJsb2JzIGJyZWFraW5nIHRoZSBvbGQga2VybmVsPw0KfCA+IHwN
-CnwgPiB8IEZyb20gbXkgcG9pbnQgb2YgdmlldywgbmV3ZXIgZGV2aWNlIHRyZWVzIGFyZSBub3Qg
-cmVxdWlyZWQgdG8gd29yayBvbg0KfCA+IHwgb2xkZXIga2VybmVsLCB0aGlzIHdvdWxkIGltcG9z
-ZSBhbiB1bnJlYXNvbmFibGUgbGltaXRhdGlvbiBhbmQgdGhlIHVzZQ0KfCA+IHwgY2FzZSBpcyB2
-ZXJ5IGxpbWl0ZWQuDQp8IA0KfCBNeSB2aWV3cyBhcmUgb24gdGhlIG9wcG9zaXRlIHNpZGUuIERU
-IGlzIGFuIEFCSSwgZnVsbCBzdG9wLiBJZiB5b3UNCnwgY2hhbmdlIHNvbWV0aGluZywgeW91ICpt
-dXN0KiBndWFyYW50ZWUgZm9yd2FyZCAqYW5kKiBiYWNrd2FyZA0KfCBjb21wYXRpYmlsaXR5LiBU
-aGF0J3MgYmVjYXVzZToNCnwgDQp8IC0geW91IGRvbid0IGNvbnRyb2wgaG93IHVwZGF0YWJsZSB0
-aGUgZmlybXdhcmUgaXMNCnwgDQp8IC0gcGVvcGxlIG1heSBuZWVkIHRvIHJldmVydCB0byBvdGhl
-ciB2ZXJzaW9ucyBvZiB0aGUga2VybmVsIGJlY2F1c2UNCnwgICB0aGUgbmV3IG9uZSBpcyBicm9r
-ZW4NCnwgDQp8IC0gdGhlcmUgYXJlIHBsZW50eSBvZiBEVCB1c2VycyBiZXlvbmQgTGludXgsIGFu
-ZCB3ZSBhcmUgbm90IGNyZWF0aW5nDQp8ICAgYmluZGluZ3MgZm9yIExpbnV4IG9ubHkuDQp8IA0K
-fCBZb3UgbWF5IGRpc2FncmVlIHdpdGggdGhpcywgYnV0IGZvciB0aGUgc3Vic3lzdGVtcyBJIG1h
-aW50YWluLCB0aGlzIGlzDQp8IHRoZSBydWxlIEkgaW50ZW50IHRvIHN0aWNrIHRvLg==
+On 5/19/22 15:44, Kumar Kartikeya Dwivedi wrote:
+> On Thu, May 19, 2022 at 06:43:41PM IST, Benjamin Tissoires wrote:
+>> On 5/19/22 14:51, Kumar Kartikeya Dwivedi wrote:
+>>> On Thu, May 19, 2022 at 05:42:40PM IST, Benjamin Tissoires wrote:
+>>>> On Thu, May 19, 2022 at 12:20 AM Kumar Kartikeya Dwivedi
+>>>> <memxor@gmail.com> wrote:
+>>>>>
+>>>>> On Thu, May 19, 2022 at 02:29:19AM IST, Benjamin Tissoires wrote:
+>>>>>> Add tests for the newly implemented function.
+>>>>>> We test here only the GET_REPORT part because the other calls are pure
+>>>>>> HID protocol and won't infer the result of the test of the bpf hook.
+>>>>>>
+>>>>>> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+>>>>>>
+>>>>>> ---
+>>>>>>
+>>>>>> changes in v5:
+>>>>>> - use the new hid_bpf_allocate_context() API
+>>>>>> - remove the need for ctx_in for syscall TEST_RUN
+>>>>>>
+>>>>>> changes in v3:
+>>>>>> - use the new hid_get_data API
+>>>>>> - directly use HID_FEATURE_REPORT and HID_REQ_GET_REPORT from uapi
+>>>>>>
+>>>>>> changes in v2:
+>>>>>> - split the series by bpf/libbpf/hid/selftests and samples
+>>>>>> ---
+>>>>>>    tools/testing/selftests/bpf/prog_tests/hid.c | 114 ++++++++++++++++---
+>>>>>>    tools/testing/selftests/bpf/progs/hid.c      |  59 ++++++++++
+>>>>>>    2 files changed, 155 insertions(+), 18 deletions(-)
+>>>>>>
+>>>>>> diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
+>>>>>> index 47bc0a30c275..54c0a0fcd54d 100644
+>>>>>> --- a/tools/testing/selftests/bpf/prog_tests/hid.c
+>>>>>> +++ b/tools/testing/selftests/bpf/prog_tests/hid.c
+>>>>>> @@ -77,12 +77,23 @@ static unsigned char rdesc[] = {
+>>>>>>         0xc0,                   /* END_COLLECTION */
+>>>>>>    };
+>>>>>>
+>>>>>> +static u8 feature_data[] = { 1, 2 };
+>>>>>> +
+>>>>>>    struct attach_prog_args {
+>>>>>>         int prog_fd;
+>>>>>>         unsigned int hid;
+>>>>>>         int retval;
+>>>>>>    };
+>>>>>>
+>>>>>> +struct hid_hw_request_syscall_args {
+>>>>>> +     __u8 data[10];
+>>>>>> +     unsigned int hid;
+>>>>>> +     int retval;
+>>>>>> +     size_t size;
+>>>>>> +     enum hid_report_type type;
+>>>>>> +     __u8 request_type;
+>>>>>> +};
+>>>>>> +
+>>>>>>    static pthread_mutex_t uhid_started_mtx = PTHREAD_MUTEX_INITIALIZER;
+>>>>>>    static pthread_cond_t uhid_started = PTHREAD_COND_INITIALIZER;
+>>>>>>
+>>>>>> @@ -142,7 +153,7 @@ static void destroy(int fd)
+>>>>>>
+>>>>>>    static int uhid_event(int fd)
+>>>>>>    {
+>>>>>> -     struct uhid_event ev;
+>>>>>> +     struct uhid_event ev, answer;
+>>>>>>         ssize_t ret;
+>>>>>>
+>>>>>>         memset(&ev, 0, sizeof(ev));
+>>>>>> @@ -183,6 +194,15 @@ static int uhid_event(int fd)
+>>>>>>                 break;
+>>>>>>         case UHID_GET_REPORT:
+>>>>>>                 fprintf(stderr, "UHID_GET_REPORT from uhid-dev\n");
+>>>>>> +
+>>>>>> +             answer.type = UHID_GET_REPORT_REPLY;
+>>>>>> +             answer.u.get_report_reply.id = ev.u.get_report.id;
+>>>>>> +             answer.u.get_report_reply.err = ev.u.get_report.rnum == 1 ? 0 : -EIO;
+>>>>>> +             answer.u.get_report_reply.size = sizeof(feature_data);
+>>>>>> +             memcpy(answer.u.get_report_reply.data, feature_data, sizeof(feature_data));
+>>>>>> +
+>>>>>> +             uhid_write(fd, &answer);
+>>>>>> +
+>>>>>>                 break;
+>>>>>>         case UHID_SET_REPORT:
+>>>>>>                 fprintf(stderr, "UHID_SET_REPORT from uhid-dev\n");
+>>>>>> @@ -391,6 +411,7 @@ static int open_hidraw(int dev_id)
+>>>>>>    struct test_params {
+>>>>>>         struct hid *skel;
+>>>>>>         int hidraw_fd;
+>>>>>> +     int hid_id;
+>>>>>>    };
+>>>>>>
+>>>>>>    static int prep_test(int dev_id, const char *prog_name, struct test_params *test_data)
+>>>>>> @@ -419,27 +440,33 @@ static int prep_test(int dev_id, const char *prog_name, struct test_params *test
+>>>>>>         if (!ASSERT_OK_PTR(hid_skel, "hid_skel_open"))
+>>>>>>                 goto cleanup;
+>>>>>>
+>>>>>> -     prog = bpf_object__find_program_by_name(*hid_skel->skeleton->obj, prog_name);
+>>>>>> -     if (!ASSERT_OK_PTR(prog, "find_prog_by_name"))
+>>>>>> -             goto cleanup;
+>>>>>> +     if (prog_name) {
+>>>>>> +             prog = bpf_object__find_program_by_name(*hid_skel->skeleton->obj, prog_name);
+>>>>>> +             if (!ASSERT_OK_PTR(prog, "find_prog_by_name"))
+>>>>>> +                     goto cleanup;
+>>>>>>
+>>>>>> -     bpf_program__set_autoload(prog, true);
+>>>>>> +             bpf_program__set_autoload(prog, true);
+>>>>>>
+>>>>>> -     err = hid__load(hid_skel);
+>>>>>> -     if (!ASSERT_OK(err, "hid_skel_load"))
+>>>>>> -             goto cleanup;
+>>>>>> +             err = hid__load(hid_skel);
+>>>>>> +             if (!ASSERT_OK(err, "hid_skel_load"))
+>>>>>> +                     goto cleanup;
+>>>>>>
+>>>>>> -     attach_fd = bpf_program__fd(hid_skel->progs.attach_prog);
+>>>>>> -     if (!ASSERT_GE(attach_fd, 0, "locate attach_prog")) {
+>>>>>> -             err = attach_fd;
+>>>>>> -             goto cleanup;
+>>>>>> -     }
+>>>>>> +             attach_fd = bpf_program__fd(hid_skel->progs.attach_prog);
+>>>>>> +             if (!ASSERT_GE(attach_fd, 0, "locate attach_prog")) {
+>>>>>> +                     err = attach_fd;
+>>>>>> +                     goto cleanup;
+>>>>>> +             }
+>>>>>>
+>>>>>> -     args.prog_fd = bpf_program__fd(prog);
+>>>>>> -     err = bpf_prog_test_run_opts(attach_fd, &tattr);
+>>>>>> -     snprintf(buf, sizeof(buf), "attach_hid(%s)", prog_name);
+>>>>>> -     if (!ASSERT_EQ(args.retval, 0, buf))
+>>>>>> -             goto cleanup;
+>>>>>> +             args.prog_fd = bpf_program__fd(prog);
+>>>>>> +             err = bpf_prog_test_run_opts(attach_fd, &tattr);
+>>>>>> +             snprintf(buf, sizeof(buf), "attach_hid(%s)", prog_name);
+>>>>>> +             if (!ASSERT_EQ(args.retval, 0, buf))
+>>>>>> +                     goto cleanup;
+>>>>>> +     } else {
+>>>>>> +             err = hid__load(hid_skel);
+>>>>>> +             if (!ASSERT_OK(err, "hid_skel_load"))
+>>>>>> +                     goto cleanup;
+>>>>>> +     }
+>>>>>>
+>>>>>>         hidraw_fd = open_hidraw(dev_id);
+>>>>>>         if (!ASSERT_GE(hidraw_fd, 0, "open_hidraw"))
+>>>>>> @@ -447,6 +474,7 @@ static int prep_test(int dev_id, const char *prog_name, struct test_params *test
+>>>>>>
+>>>>>>         test_data->skel = hid_skel;
+>>>>>>         test_data->hidraw_fd = hidraw_fd;
+>>>>>> +     test_data->hid_id = hid_id;
+>>>>>>
+>>>>>>         return 0;
+>>>>>>
+>>>>>> @@ -693,6 +721,54 @@ static int test_hid_change_report(int uhid_fd, int dev_id)
+>>>>>>         return ret;
+>>>>>>    }
+>>>>>>
+>>>>>> +/*
+>>>>>> + * Attach hid_user_raw_request to the given uhid device,
+>>>>>> + * call the bpf program from userspace
+>>>>>> + * check that the program is called and does the expected.
+>>>>>> + */
+>>>>>> +static int test_hid_user_raw_request_call(int uhid_fd, int dev_id)
+>>>>>> +{
+>>>>>> +     struct test_params params;
+>>>>>> +     int err, prog_fd;
+>>>>>> +     int ret = -1;
+>>>>>> +     struct hid_hw_request_syscall_args args = {
+>>>>>> +             .retval = -1,
+>>>>>> +             .type = HID_FEATURE_REPORT,
+>>>>>> +             .request_type = HID_REQ_GET_REPORT,
+>>>>>> +             .size = 10,
+>>>>>> +     };
+>>>>>> +     DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattrs,
+>>>>>> +                         .ctx_in = &args,
+>>>>>> +                         .ctx_size_in = sizeof(args),
+>>>>>> +     );
+>>>>>> +
+>>>>>> +     err = prep_test(dev_id, NULL, &params);
+>>>>>> +     if (!ASSERT_EQ(err, 0, "prep_test()"))
+>>>>>> +             goto cleanup;
+>>>>>> +
+>>>>>> +     args.hid = params.hid_id;
+>>>>>> +     args.data[0] = 1; /* report ID */
+>>>>>> +
+>>>>>> +     prog_fd = bpf_program__fd(params.skel->progs.hid_user_raw_request);
+>>>>>> +
+>>>>>> +     err = bpf_prog_test_run_opts(prog_fd, &tattrs);
+>>>>>> +     if (!ASSERT_EQ(err, 0, "bpf_prog_test_run_opts"))
+>>>>>> +             goto cleanup;
+>>>>>> +
+>>>>>> +     if (!ASSERT_EQ(args.retval, 2, "bpf_prog_test_run_opts_retval"))
+>>>>>> +             goto cleanup;
+>>>>>> +
+>>>>>> +     if (!ASSERT_EQ(args.data[1], 2, "hid_user_raw_request_check_in"))
+>>>>>> +             goto cleanup;
+>>>>>> +
+>>>>>> +     ret = 0;
+>>>>>> +
+>>>>>> +cleanup:
+>>>>>> +     cleanup_test(&params);
+>>>>>> +
+>>>>>> +     return ret;
+>>>>>> +}
+>>>>>> +
+>>>>>>    void serial_test_hid_bpf(void)
+>>>>>>    {
+>>>>>>         int err, uhid_fd;
+>>>>>> @@ -720,6 +796,8 @@ void serial_test_hid_bpf(void)
+>>>>>>         ASSERT_OK(err, "hid_attach_detach");
+>>>>>>         err = test_hid_change_report(uhid_fd, dev_id);
+>>>>>>         ASSERT_OK(err, "hid_change_report");
+>>>>>> +     err = test_hid_user_raw_request_call(uhid_fd, dev_id);
+>>>>>> +     ASSERT_OK(err, "hid_change_report");
+>>>>>>
+>>>>>>         destroy(uhid_fd);
+>>>>>>
+>>>>>> diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
+>>>>>> index ee7529c47ad8..e3444d444303 100644
+>>>>>> --- a/tools/testing/selftests/bpf/progs/hid.c
+>>>>>> +++ b/tools/testing/selftests/bpf/progs/hid.c
+>>>>>> @@ -10,6 +10,13 @@ extern __u8 *hid_bpf_get_data(struct hid_bpf_ctx *ctx,
+>>>>>>                               unsigned int offset,
+>>>>>>                               const size_t __sz) __ksym;
+>>>>>>    extern int hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, u32 flags) __ksym;
+>>>>>> +extern struct hid_bpf_ctx *hid_bpf_allocate_context(unsigned int hid_id) __ksym;
+>>>>>> +extern void hid_bpf_release_context(struct hid_bpf_ctx *ctx) __ksym;
+>>>>>> +extern int hid_bpf_hw_request(struct hid_bpf_ctx *ctx,
+>>>>>> +                           __u8 *data,
+>>>>>> +                           size_t len,
+>>>>>> +                           enum hid_report_type type,
+>>>>>> +                           int reqtype) __ksym;
+>>>>>>
+>>>>>>    struct attach_prog_args {
+>>>>>>         int prog_fd;
+>>>>>> @@ -56,3 +63,55 @@ int attach_prog(struct attach_prog_args *ctx)
+>>>>>>                                           0);
+>>>>>>         return 0;
+>>>>>>    }
+>>>>>> +
+>>>>>> +struct hid_hw_request_syscall_args {
+>>>>>> +     /* data needs to come at offset 0 so we can do a memcpy into it */
+>>>>>> +     __u8 data[10];
+>>>>>> +     unsigned int hid;
+>>>>>> +     int retval;
+>>>>>> +     size_t size;
+>>>>>> +     enum hid_report_type type;
+>>>>>> +     __u8 request_type;
+>>>>>> +};
+>>>>>> +
+>>>>>> +SEC("syscall")
+>>>>>> +int hid_user_raw_request(struct hid_hw_request_syscall_args *args)
+>>>>>> +{
+>>>>>> +     struct hid_bpf_ctx *ctx;
+>>>>>> +     int i, ret = 0;
+>>>>>> +     __u8 *data;
+>>>>>> +
+>>>>>> +     ctx = hid_bpf_allocate_context(args->hid);
+>>>>>> +     if (!ctx)
+>>>>>> +             return 0; /* EPERM check */
+>>>>>> +
+>>>>>> +     /* We can not use the context data memory directly in the hid_bpf call,
+>>>>>> +      * so we rely on the PTR_TO_MEM allocated in the hid_bpf_context
+>>>>>> +      */
+>>>>>> +     data = hid_bpf_get_data(ctx, 0 /* offset */, 10 /* size */);
+>>>>>> +     if (!data)
+>>>>>> +             goto out; /* EPERM check */
+>>>>>> +
+>>>>>
+>>>>> If I'm reading this right, you need more than just returning PTR_TO_MEM. Since
+>>>>> this points into allocated ctx, nothing prevents user from accessing data after
+>>>>> we do hid_bpf_release_context.
+>>>>
+>>>> oops. I missed that point.
+>>>>
+>>>> TBH, ideally I wanted to directly pass args->data into
+>>>> hid_bpf_hw_request(). But because args is seen as the context of the
+>>>> program, I can not pass it to the kfunc arguments.
+>>>> I would happily prevent getting a data pointer for a manually
+>>>> allocated context if I could solve that issue. This would save me from
+>>>> calling twice  __builtin_memcpy.
+>>>
+>>> Oh, is that why you need to do this? So if you were able to pass args->data, you
+>>> wouldn't need this hid_bpf_get_data? kfunc does support taking PTR_TO_CTX (i.e.
+>>> args in your case), I am not sure why you're not passing it in directly then.
+>>> Did you encounter any errors when trying to do so? The only requirement is that
+>>> args offset must be 0 (i.e. passed as is without increment).
+>>
+>> With the following patch applied, the tests are failing:
+>> ---
+>> diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
+>> index 43724fd26fb9..976fc8b83934 100644
+>> --- a/tools/testing/selftests/bpf/progs/hid.c
+>> +++ b/tools/testing/selftests/bpf/progs/hid.c
+>> @@ -80,24 +80,14 @@ int hid_user_raw_request(struct hid_hw_request_syscall_args *args)
+>>   {
+>>          struct hid_bpf_ctx *ctx;
+>>          int i, ret = 0;
+>> -       __u8 *data;
+>>          ctx = hid_bpf_allocate_context(args->hid);
+>>          if (!ctx)
+>>                  return 0; /* EPERM check */
+>> -       /* We can not use the context data memory directly in the hid_bpf call,
+>> -        * so we rely on the PTR_TO_MEM allocated in the hid_bpf_context
+>> -        */
+>> -       data = hid_bpf_get_data(ctx, 0 /* offset */, 10 /* size */);
+>> -       if (!data)
+>> -               goto out; /* EPERM check */
+>> -
+>> -       __builtin_memcpy(data, args->data, sizeof(args->data));
+>> -
+>>          if (args->size <= sizeof(args->data)) {
+>>                  ret = hid_bpf_hw_request(ctx,
+>> -                                        data,
+>> +                                        args->data,
+>>                                           args->size,
+>>                                           args->type,
+>>                                           args->request_type);
+>> @@ -109,8 +99,6 @@ int hid_user_raw_request(struct hid_hw_request_syscall_args *args)
+>>                  goto out;
+>>          }
+>> -       __builtin_memcpy(args->data, data, sizeof(args->data));
+>> -
+>>    out:
+>>          hid_bpf_release_context(ctx);
+>> ---
+>>
+>> Output of the verifier:
+>>
+>> libbpf: prog 'hid_user_raw_request': BPF program load failed: Invalid argument
+>> libbpf: prog 'hid_user_raw_request': -- BEGIN PROG LOAD LOG --
+>> R1 type=ctx expected=fp
+>> 0: R1=ctx(off=0,imm=0) R10=fp0
+>> ; int hid_user_raw_request(struct hid_hw_request_syscall_args *args)
+>> 0: (bf) r7 = r1                       ; R1=ctx(off=0,imm=0) R7_w=ctx(off=0,imm=0)
+>> ; ctx = hid_bpf_allocate_context(args->hid);
+>> 1: (61) r1 = *(u32 *)(r7 +12)         ; R1_w=scalar(umax=4294967295,var_off=(0x0; 0xffffffff)) R7_w=ctx(off=0,imm=0)
+>> ; ctx = hid_bpf_allocate_context(args->hid);
+>> 2: (85) call hid_bpf_allocate_context#66484
+>> 3: (bf) r6 = r0                       ; R0_w=ptr_or_null_hid_bpf_ctx(id=2,ref_obj_id=2,off=0,imm=0) R6_w=ptr_or_null_hid_bpf_ctx(id=2,ref_obj_id=2,off=0,imm=0) refs=2
+>> 4: (b4) w8 = 0                        ; R8_w=0 refs=2
+>> ; if (!ctx)
+>> 5: (15) if r6 == 0x0 goto pc+12       ; R6_w=ptr_hid_bpf_ctx(ref_obj_id=2,off=0,imm=0) refs=2
+>> 6: (b4) w8 = -7                       ; R8_w=4294967289 refs=2
+>> ; if (args->size <= sizeof(args->data)) {
+>> 7: (79) r3 = *(u64 *)(r7 +24)         ; R3=scalar() R7=ctx(off=0,imm=0) refs=2
+>> ; if (args->size <= sizeof(args->data)) {
+>> 8: (25) if r3 > 0xa goto pc+7         ; R3=scalar(umax=10,var_off=(0x0; 0xf)) refs=2
+>> ; args->request_type);
+>> 9: (71) r5 = *(u8 *)(r7 +36)          ; R5_w=scalar(umax=255,var_off=(0x0; 0xff)) R7=ctx(off=0,imm=0) refs=2
+>> ; args->type,
+>> 10: (61) r4 = *(u32 *)(r7 +32)        ; R4_w=scalar(umax=4294967295,var_off=(0x0; 0xffffffff)) R7=ctx(off=0,imm=0) refs=2
+>> ; ret = hid_bpf_hw_request(ctx,
+>> 11: (bf) r1 = r6                      ; R1_w=ptr_hid_bpf_ctx(ref_obj_id=2,off=0,imm=0) R6=ptr_hid_bpf_ctx(ref_obj_id=2,off=0,imm=0) refs=2
+>> 12: (bf) r2 = r7                      ; R2_w=ctx(off=0,imm=0) R7=ctx(off=0,imm=0) refs=2
+>> 13: (85) call hid_bpf_hw_request#66480
+>> R2 type=ctx expected=fp
+>> processed 14 insns (limit 1000000) max_states_per_insn 0 total_states 1 peak_states 1 mark_read 1
+>> -- END PROG LOAD LOG --
+>>
+>> Maybe I am wrongly declaring hid_bpf_hw_request()?
+>>
+> 
+> Ah, I see. This is because current code does not handle syscall prog. We need to
+> teach bpf_get_prog_ctx_type to handle this case for BPF_PROG_TYPE_SYSCALL. We
+> can use the ctx size at verification time, we will have to ensure the size is
+> greater than or equal to the size of struct expected by hid_bpf_hw_request for
+> that arg. Currently the type of ctx is void * for syscall progs, which obviously
+> is indicating lack of known size of ctx at compile time.
+> 
+> In your case, you have a pair of args that pass a certain size while expecting
+> ctx as data of some len. For these variable sized ctx, we should probably just
+> make kfunc define void *, len__ctx_sz (__ctx_sz suffix) pair of args. If it sees
+> void * as arg type and as ctx as pointer type, it tries to check if arguments
+> are set up like this. Probably only makes sense doing for syscall progs since
+> ctx is user supplied. You can look at existing handling for __sz suffix for
+> inspiration.
+> 
+
+OK, so I think I understand now why it fails. Thanks.
+
+However, I'd like to not restrict the void * argument to a context, as
+users might want to simply statically allocate a buffer and use that.
+
+What if I do the following? (by changing return 0 to something
+meaningfull):
+
+---
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 084319073064..8d5b47af0da5 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -5020,6 +5020,7 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+                                    struct bpf_call_arg_meta *meta)
+  {
+         struct bpf_reg_state *regs = cur_regs(env), *reg = &regs[regno];
++       enum bpf_prog_type prog_type = resolve_prog_type(env->prog);
+         u32 *max_access;
+  
+         switch (base_type(reg->type)) {
+@@ -5073,6 +5074,14 @@ static int check_helper_mem_access(struct bpf_verifier_env *env, int regno,
+                                 env,
+                                 regno, reg->off, access_size,
+                                 zero_size_allowed, ACCESS_HELPER, meta);
++       case PTR_TO_CTX:
++               /* in case of type SYSCALL, the context is user supplied so
++                * not computed statically.
++                * Dynamically check it now
++                */
++               if (prog_type == BPF_PROG_TYPE_SYSCALL)
++                       return 0 /* some magic call to compare the access_size against the ctx size */;
++               fallthrough;
+         default: /* scalar_value or invalid ptr */
+                 /* Allow zero-byte read from NULL, regardless of pointer type */
+                 if (zero_size_allowed && access_size == 0 &&
+---
+
+Would I be able to get access to the real CTX size there, and would that be acceptable?
+
+Cheers,
+Benjamin
+
+PS: I'll be out tomorrow and it's the end of the work day here, so I might not answer before next Monday
+
+>> Cheers,
+>> Benjamin
+>>
+>>>
+>>>>
+>>>> That doesn't change the fact that you are correct and the PTR_TO_MEM
+>>>> in kfunc code should be fixed.
+>>>> But right now, I am not sure what you mean below and I'll need a
+>>>> little bit more time to process it.
+>>>>
+>>>> Cheers,
+>>>> Benjamin
+>>>>
+>>>>>
+>>>>> The ref_obj_id of ctx needs to be transferred to R0.ref_obj_id, and R0.id needs
+>>>>> to be assigned another id distinct from the ref_obj_id.
+>>>>>
+>>>>> My idea would be to give this type of function a new set, and handle this case
+>>>>> of transferring ref_obj_id into R0. See is_ptr_cast_function in verifier.c.
+>>>>> Shouldn't be too much code. You could even use the bpf_kfunc_arg_meta to store
+>>>>> the ref_obj_id (and ensure only one referenced register exists among the 5
+>>>>> arguments).
+>>>>>
+>>>>>> +     __builtin_memcpy(data, args->data, sizeof(args->data));
+>>>>>> +
+>>>>>> +     if (args->size <= sizeof(args->data)) {
+>>>>>> +             ret = hid_bpf_hw_request(ctx,
+>>>>>> +                                      data,
+>>>>>> +                                      args->size,
+>>>>>> +                                      args->type,
+>>>>>> +                                      args->request_type);
+>>>>>> +             args->retval = ret;
+>>>>>> +             if (ret < 0)
+>>>>>> +                     goto out;
+>>>>>> +     } else {
+>>>>>> +             ret = -7; /* -E2BIG */
+>>>>>> +             goto out;
+>>>>>> +     }
+>>>>>> +
+>>>>>> +     __builtin_memcpy(args->data, data, sizeof(args->data));
+>>>>>> +
+>>>>>> + out:
+>>>>>> +     hid_bpf_release_context(ctx);
+>>>>>> +
+>>>>>> +     return ret;
+>>>>>> +}
+>>>>>> --
+>>>>>> 2.36.1
+>>>>>>
+>>>>>
+>>>>> --
+>>>>> Kartikeya
+>>>>>
+>>>>
+>>>
+>>> --
+>>> Kartikeya
+>>>
+>>
+> 
+> --
+> Kartikeya
+> 
+
