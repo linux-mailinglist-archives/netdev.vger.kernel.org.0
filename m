@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF8D952D7CA
+	by mail.lfdr.de (Postfix) with ESMTP id 74B2352D7C9
 	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 17:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241187AbiESPeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 11:34:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57332 "EHLO
+        id S241180AbiESPeF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 11:34:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241098AbiESPdK (ORCPT
+        with ESMTP id S241095AbiESPdK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 11:33:10 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD31166218;
-        Thu, 19 May 2022 08:32:55 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9547468F8D;
+        Thu, 19 May 2022 08:32:57 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6A53CFF814;
-        Thu, 19 May 2022 15:32:52 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 80657FF80D;
+        Thu, 19 May 2022 15:32:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652974374;
+        t=1652974376;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=/P/ReBBIgyh9pI/ThfXb1GIV2LYUYTD5dUEkj7TmnMY=;
-        b=UkwV6ADjeQNrbmgwPKQmxzcK0A9hrM0ByT/ncvvel0fMIO0V9zouisr3mtL5P0LHoCzy0i
-        Gx57AbSEBU8XfC9ib8RVzNloxRFdV/9F9hBnKXJsf4WgqT5rB9wSdHzOM8HnOPeYBJmQL4
-        bmKiE7L7Lx6Phard4gUlJaTVMc7RruChLomeDdJJno/5BMoLDBTrg86eoSuRSskdDKa0/W
-        XyaWtQEU07DMZahYZ6zyeDzJ++jlpX2lBqVH4eAPEUVqXiRYcLoCrjOuNYsMUAkP3JeDJ4
-        uUHkE+yqQopEStoEZeGu8Z0EgCPjIZSwcWC5iiL+7DAzIq3kEZf4h99LQZc+Vw==
+        bh=/fIGrcnIvU2eoUZlNIwNXwiFJaIlSeK7ovZP14UQ2B8=;
+        b=aVLMqJ9joW0J6qOa14K9CBC7FOLZi3WrLt7lZdhqc7Ot0LPwOc6cpfNSJw/66fL7iDGr1W
+        SaR/N6qcb0D5v82pS7ksPwUYTQZGbpuPXrI5aoVV1SKwxjfwLYKOryUpG/8zCN+/WVsS8G
+        NDZhgg5iQg/fDDpl00aH12OxgjeQg3AIQ3HZVtrgutYNfbVtxKwGBscXfu6WSC3yGho2fl
+        Mae2FrOhb1bWxagfqCfOZ+o9HUvTXqspTyB1BNcaA8aZtnjKLaDdR7NrI1HvqPo6ZZj3jf
+        k2V69PochkTFeXOYgwzE2z8xVFT0VEvPaZq/vcIyheLIf1rGLdlwJi2QZqOZDg==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -53,9 +53,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v5 12/13] ARM: dts: r9a06g032: describe switch
-Date:   Thu, 19 May 2022 17:31:06 +0200
-Message-Id: <20220519153107.696864-13-clement.leger@bootlin.com>
+Subject: [PATCH net-next v5 13/13] MAINTAINERS: add Renesas RZ/N1 switch related driver entry
+Date:   Thu, 19 May 2022 17:31:07 +0200
+Message-Id: <20220519153107.696864-14-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220519153107.696864-1-clement.leger@bootlin.com>
 References: <20220519153107.696864-1-clement.leger@bootlin.com>
@@ -72,33 +72,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add description of the switch that is present on the RZ/N1 SoC.
+After contributing the drivers, volunteer for maintenance and add
+myself as the maintainer for Renesas RZ/N1 switch related drivers.
 
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- arch/arm/boot/dts/r9a06g032.dtsi | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ MAINTAINERS | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-index 31c4b2e2950a..20d3dce632ce 100644
---- a/arch/arm/boot/dts/r9a06g032.dtsi
-+++ b/arch/arm/boot/dts/r9a06g032.dtsi
-@@ -255,6 +255,15 @@ mii_conv5: mii-conv@5 {
- 			};
- 		};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 69b597aa4bc7..9f03e4fba1a7 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -16889,6 +16889,17 @@ S:	Supported
+ F:	Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
+ F:	drivers/iio/adc/rzg2l_adc.c
  
-+		switch: switch@44050000 {
-+			compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
-+			reg = <0x44050000 0x10000>;
-+			clocks = <&sysctrl R9A06G032_HCLK_SWITCH>,
-+				 <&sysctrl R9A06G032_CLK_SWITCH>;
-+			clock-names = "hclk", "clk";
-+			status = "disabled";
-+		};
++RENESAS RZ/N1 A5PSW SWITCH DRIVER
++M:	Clément Léger <clement.leger@bootlin.com>
++S:	Maintained
++F:	Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
++F:	Documentation/devicetree/bindings/net/pcs/renesas,rzn1-miic.yaml
++F:	drivers/net/dsa/rzn1_a5psw*
++F:	drivers/net/pcs/pcs-rzn1-miic.c
++F:	include/dt-bindings/net/pcs-rzn1-miic.h
++F:	include/linux/pcs-rzn1-miic.h
++F:	net/dsa/tag_rzn1_a5psw.c
 +
- 		gic: interrupt-controller@44101000 {
- 			compatible = "arm,gic-400", "arm,cortex-a7-gic";
- 			interrupt-controller;
+ RENESAS R-CAR GEN3 & RZ/N1 NAND CONTROLLER DRIVER
+ M:	Miquel Raynal <miquel.raynal@bootlin.com>
+ L:	linux-mtd@lists.infradead.org
 -- 
 2.36.0
 
