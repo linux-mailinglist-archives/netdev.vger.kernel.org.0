@@ -2,159 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 884B652D651
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:42:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F50652D653
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:43:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231920AbiESOmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 10:42:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36068 "EHLO
+        id S232904AbiESOm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 10:42:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231368AbiESOmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:42:11 -0400
-Received: from smtp-bc0c.mail.infomaniak.ch (smtp-bc0c.mail.infomaniak.ch [45.157.188.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DABD0295
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:42:10 -0700 (PDT)
-Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
-        by smtp-3-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4L3sy83sd2zMprpm;
-        Thu, 19 May 2022 16:42:08 +0200 (CEST)
-Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
-        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4L3sy76ds4zlhRV4;
-        Thu, 19 May 2022 16:42:07 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
-        s=20191114; t=1652971328;
-        bh=FN4HUykMYqUvIzTAL3TDQuNZ0PsPOKD5ezN1b94768c=;
-        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
-        b=L6dSOC9G7rxq1YYbjiIu6nmarQWfhA3HQ1/fQwp7Zfe7SiJkq/Vadf3uQcDUg3wGf
-         TDp8b8rpPZn9lwCocoFlm5J+kMp8q8QxT+IKrFP40SzKQRc3Aq+oA8StLrG7ukkzvg
-         MdDK0I8eOeSmylQsb2g+CmplktShwrac5RfeVjKE=
-Message-ID: <2cdd23ed-6184-3264-cf1d-98930f59539d@digikod.net>
-Date:   Thu, 19 May 2022 16:42:07 +0200
+        with ESMTP id S231368AbiESOm4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:42:56 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 367A1D0295
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:42:54 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-87-jlddlslvMPOIKlKrcaDheg-1; Thu, 19 May 2022 15:42:51 +0100
+X-MC-Unique: jlddlslvMPOIKlKrcaDheg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Thu, 19 May 2022 15:42:51 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Thu, 19 May 2022 15:42:51 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Pavan Chebbi' <pavan.chebbi@broadcom.com>
+CC:     Paolo Abeni <pabeni@redhat.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mchan@broadcom.com" <mchan@broadcom.com>,
+        David Miller <davem@davemloft.net>
+Subject: RE: tg3 dropping packets at high packet rates
+Thread-Topic: tg3 dropping packets at high packet rates
+Thread-Index: AdhqyKyabzDEQq15SKKGm31SHwTbKwAC24IAAAoYsMAABXOQgAASBiKAAAHW4wAABHST0AACH9sAAAKZZrD///3FgP//7fNg
+Date:   Thu, 19 May 2022 14:42:51 +0000
+Message-ID: <1bc5053ef6f349989b42117eda7d2515@AcuMS.aculab.com>
+References: <70a20d8f91664412ae91e401391e17cb@AcuMS.aculab.com>
+ <6576c307ed554adb443e62a60f099266c95b55a7.camel@redhat.com>
+ <153739175cf241a5895e6a5685a89598@AcuMS.aculab.com>
+ <CACKFLinwh=YgPGPZ0M0dTJK1ar+SoPUZtYb5nBmLj6CNPdCQ2g@mail.gmail.com>
+ <13d6579e9bc44dc2bfb73de8d9715b10@AcuMS.aculab.com>
+ <CALs4sv1RxAbVid2f8EQF_kQkk48fd=8kcz2WbkTXRkwLbPLgwA@mail.gmail.com>
+ <f3d1d5bf11144b31b1b3959e95b04490@AcuMS.aculab.com>
+ <5cc5353c518e27de69fc0d832294634c83f431e5.camel@redhat.com>
+ <f8ff0598961146f28e2d186882928390@AcuMS.aculab.com>
+ <CALs4sv2M+9N1joECMQrOGKHQ_YjMqzeF1gPD_OBQ2_r+SJwOwQ@mail.gmail.com>
+In-Reply-To: <CALs4sv2M+9N1joECMQrOGKHQ_YjMqzeF1gPD_OBQ2_r+SJwOwQ@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: 
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-Cc:     willemdebruijn.kernel@gmail.com,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
-        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
-        anton.sirazetdinov@huawei.com
-References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
- <20220516152038.39594-8-konstantin.meskhidze@huawei.com>
- <544f0edb-0b5a-17c3-57a1-a373723ef37f@digikod.net>
- <061bc23b-ecb2-1809-98a0-11f8195b3b5d@huawei.com>
-From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-Subject: Re: [PATCH v5 07/15] landlock: add support network rules
-In-Reply-To: <061bc23b-ecb2-1809-98a0-11f8195b3b5d@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+RnJvbTogUGF2YW4gQ2hlYmJpDQo+IFNlbnQ6IDE5IE1heSAyMDIyIDE1OjM2DQouLi4NCj4gV2hl
+biB0aGlzIGhhcHBlbnMsIGNhbiB5b3UgcHJvdmlkZSB0aGUgcmVnaXN0ZXIgZHVtcCB0aGF0IHlv
+dSBjYW4NCj4gb2J0YWluIHVzaW5nIGV0aHRvb2wgLWQgPw0KDQpUd28gZHVtcHMgYSBmZXcgc2Vj
+b25kcyBhcGFydDoNCg0KIyAoZWNobyB4IHggeCB4OyBldGh0b29sIC1kIGVtMil8eGFyZ3MgLW44
+DQp4IHggeCB4IE9mZnNldCBWYWx1ZSAtLS0tLS0gLS0tLS0tLS0tLQ0KMHgwMDAwIDB4MTY1ZjE0
+ZTQgMHgwMDA0IDB4MDAxMDA0MDYgMHgwMDA4IDB4MDIwMDAwMDAgMHgwMDBjIDB4MDA4MDAwMDAN
+CjB4MDAxMCAweDkxYTAwMDBjIDB4MDAxOCAweDkxYTEwMDBjIDB4MDAyMCAweDkxYTIwMDBjIDB4
+MDAyYyAweDA2MzkxMDI4DQoweDAwMzAgMHhmZmZjMDAwMCAweDAwMzQgMHgwMDAwMDA0OCAweDAw
+M2MgMHgwMDAwMDIwNiAweDAwNDQgMHg4ZjAwMDAwMA0KMHgwMDQ4IDB4YzgwMzUwMDEgMHgwMDRj
+IDB4NjQwMDIwMDggMHgwMDUwIDB4ODE4YzU4MDMgMHgwMDU0IDB4NzgwMDAwMDANCjB4MDA1OCAw
+eDAwODZhMDA1IDB4MDA2OCAweGYwMDAwMjk4IDB4MDA2YyAweDAwMzgwMDgxIDB4MDA3MCAweDAw
+MDcxMGIwDQoweDAwNzQgMHhmZDgwNDRmZiAweDAwODAgMHgxNjVmMTRlNCAweDAwODQgMHgwMDAw
+MDAxMiAweDAwOGMgMHgwMDAwMDQ4NA0KMHgwMDljIDB4MDAwMDAwNzEgMHgwMGEwIDB4ODAxMGFj
+MTEgMHgwMGE0IDB4MDAwMDAwMDQgMHgwMGE4IDB4MDAwMDEwMDQNCjB4MDBhYyAweDAwMDIwMDEw
+IDB4MDIwNCAweDhmMDAwMDAwIDB4MDIwYyAweDI4MDAwMDAwIDB4MDIxNCAweDAxMDAwMDAwDQow
+eDAyMWMgMHgwMTAwMDAwMCAweDAyMjQgMHgwMTAwMDAwMCAweDAyNmMgMHgwMDAwMDA4YSAweDAy
+ODQgMHgwMDAwMDRhNw0KMHgwMzA0IDB4MDAwMDAwOWQgMHgwNDAwIDB4MThlMDQ4MDggMHgwNDA0
+IDB4MDA0MDAwMDAgMHgwNDA4IDB4MDAwMDEwMDANCjB4MDQwYyAweDAwMDAwYzgwIDB4MDQxMCAw
+eDAwMDAxODY2IDB4MDQxNCAweGRhYTNiZDc0IDB4MDQxOCAweDAwMDAxODY2DQoweDA0MWMgMHhk
+YWEzYmQ3NCAweDA0MjAgMHgwMDAwMTg2NiAweDA0MjQgMHhkYWEzYmQ3NCAweDA0MjggMHgwMDAw
+MTg2Ng0KMHgwNDJjIDB4ZGFhM2JkNzQgMHgwNDMwIDB4MDAwMDA0MDAgMHgwNDM4IDB4MDAwMDAw
+MjcgMHgwNDNjIDB4MDAwMDA1ZjINCjB4MDQ0YyAweDA4NGEzODAwIDB4MDQ1MCAweDAwMDAwMDAx
+IDB4MDQ1NCAweDAwMDA4MDAwIDB4MDQ1YyAweDAwMDAwMTAyDQoweDA0NjAgMHgwMDAwMDAwOCAw
+eDA0NjQgMHgwMDAwMjYyMCAweDA0NjggMHgwMWZmMDAwMiAweDA0NzAgMHg4MDAyMDAwMA0KMHgw
+NDdjIDB4NDAwMDAwMDAgMHgwNDgwIDB4NDIwMDAwMDAgMHgwNDg0IDB4N2ZmZmZmZmYgMHgwNDg4
+IDB4MDYwMDAwMDQNCjB4MDQ4YyAweDdmZmZmZmZmIDB4MDUwMCAweDAwMDAwMDA4IDB4MDUwNCAw
+eDAwMDAwMDAyIDB4MDU5MCAweDAwZTAwMDAwDQoweDA1YjQgMHgwMDAwMDAwOCAweDA1YzAgMHg4
+YmQwMGM5OCAweDA1YzQgMHhhZjFmZDIwMyAweDA2MDAgMHhmZmZmZmZmZg0KMHgwNjA0IDB4MDBm
+ODAwMTEgMHgwNjBjIDB4MDAwMDFmMDQgMHgwNjEwIDB4ZmQ5NmZjMWQgMHgwNjE0IDB4MDM4MDA0
+MDANCjB4MDYxOCAweDA3YzAxMTkxIDB4MDYyMCAweDAwMDAxODQwIDB4MDY3MCAweGZiZThlMWJl
+IDB4MDY3NCAweDBiMTliNjQyDQoweDA2NzggMHg5OTI1MzA5NCAweDA2N2MgMHg4Y2QzMjMxNSAw
+eDA2ODAgMHhmZGYyZGI0NiAweDA2ODQgMHgxZTA0N2I3OA0KMHgwNjg4IDB4YjY3MjAzMzEgMHgw
+NjhjIDB4Y2YzMWZlNmUgMHgwNjkwIDB4NmQzZWMxMTAgMHgwNjk0IDB4ZmQ2YzA1YjMNCjB4MDZj
+OCAweDA0MDAwMDAwIDB4MDgwNCAweGZmZmZmZmZmIDB4MDgxNCAweGZmZmZmZmZmIDB4MDgyOCAw
+eGZmZmZmZmZmDQoweDA4MzQgMHhmZmZmZmZmZiAweDA4MzggMHhmZmZmZmZmZiAweDA4M2MgMHhm
+ZmZmZmZmZiAweDA4NDAgMHhmZmZmZmZmZg0KMHgwODQ0IDB4ZmZmZmZmZmYgMHgwODQ4IDB4ZmZm
+ZmZmZmYgMHgwODRjIDB4ZmZmZmZmZmYgMHgwODUwIDB4ZmZmZmZmZmYNCjB4MDg1NCAweGZmZmZm
+ZmZmIDB4MDg1OCAweGZmZmZmZmZmIDB4MDg1YyAweGZmZmZmZmZmIDB4MDg2MCAweGZmZmZmZmZm
+DQoweDA4NjQgMHhmZmZmZmZmZiAweDA4NjggMHhmZmZmZmZmZiAweDA4ODAgMHgwMDA5N2Q4MiAw
+eDA4ODQgMHgwMDAwMDBmYw0KMHgwODhjIDB4MDAwMDBiMjcgMHgwYzAwIDB4MDAwMDAwMGEgMHgw
+YzA4IDB4MDAwMDAwMDMgMHgwYzBjIDB4MDAwMDAwMDENCjB4MGMxYyAweDAwMmEwMDAwIDB4MGM4
+MCAweDAwMDAwMDAxIDB4MTAwMCAweDAwMDAwMDAyIDB4MTQwMCAweDAwMDAwMDA2DQoweDE0NDAg
+MHgwMDAwMDA5ZCAweDE0NDQgMHgwMDAwMDA5ZCAweDE0NDggMHgwMDAwMDA5ZCAweDE0NGMgMHgw
+MDAwMDA5ZA0KMHgxNDUwIDB4MDAwMDAwOWQgMHgxNDU0IDB4MDAwMDAwOWQgMHgxNDU4IDB4MDAw
+MDAwOWQgMHgxNDVjIDB4MDAwMDAwOWQNCjB4MTQ2MCAweDAwMDAwMDlkIDB4MTQ2NCAweDAwMDAw
+MDlkIDB4MTQ2OCAweDAwMDAwMDlkIDB4MTQ2YyAweDAwMDAwMDlkDQoweDE0NzAgMHgwMDAwMDA5
+ZCAweDE0NzQgMHgwMDAwMDA5ZCAweDE0NzggMHgwMDAwMDA5ZCAweDE0N2MgMHgwMDAwMDA5ZA0K
+MHgxODAwIDB4MDAwMDAwMTYgMHgxODA4IDB4MDAwMDAwOWQgMHgxODNjIDB4MDU4YzgwMDAgMHgx
+ODQwIDB4MDU4YzgwMDANCjB4MTg0NCAweDAwMDAwMDAxIDB4MWMwMCAweDAwMDAwMDAyIDB4MjAw
+MCAweDAwMDAwMDAyIDB4MjAwNCAweDAwMDAwMDEwDQoweDIwMTAgMHgwMDAwMDE4MSAweDIwMTQg
+MHgwMDAwMDAwMSAweDIwMTggMHgwMDc4MDAwMyAweDIxMDAgMHgwMDBjMTgwZQ0KMHgyMTA0IDB4
+MDAwYzFlMTEgMHgyMTEwIDB4MDAwYzMwMWEgMHgyMTE0IDB4MDAwYzMwMWEgMHgyMTIwIDB4MDAw
+YzQyMjMNCjB4MjEyNCAweDAwMGM0ODI2IDB4MjEzMCAweDAwMGM1NDJjIDB4MjEzNCAweDAwMGM1
+YTJmIDB4MjE0MCAweDAwMGM2YzM4DQoweDIxNDQgMHgwMDBjNmMzOCAweDIxNTAgMHgwMDBjN2U0
+MSAweDIxNTQgMHgwMDBjODQ0NCAweDIxNjAgMHgwMDBjOTY0ZA0KMHgyMTY0IDB4MDAwYzljNTAg
+MHgyMTcwIDB4MDAwY2E4NTYgMHgyMTc0IDB4MDAwY2FlNTkgMHgyMTgwIDB4MDAwY2JhNWYNCjB4
+MjE4NCAweDAwMGNjMDYyIDB4MjE5MCAweDAwMGNkMjZiIDB4MjE5NCAweDAwMGNkODZlIDB4MjFh
+MCAweDAwMGNlNDc0DQoweDIxYTQgMHgwMDBjZWE3NyAweDIxYjAgMHgwMDBjZjY3ZCAweDIxYjQg
+MHgwMDBjZmM4MCAweDIxYzAgMHgwMDBkMDg4Ng0KMHgyMWM0IDB4MDAwZDBlODkgMHgyMWQwIDB4
+MDAwZDIwOTIgMHgyMWQ0IDB4MDAwZDI2OTUgMHgyMWUwIDB4MDAwZDMyOWINCjB4MjFlNCAweDAw
+MGQzODllIDB4MjFmMCAweDAwMGQ0NGE0IDB4MjFmNCAweDAwMGQ0YWE3IDB4MjIwMCAweDAwMjM0
+ZDM5DQoweDIyNTAgMHgwMDAwNTVlOCAweDI0MDAgMHgwMDAxMDAxMiAweDI0MDggMHgwMDIwMDAw
+MSAweDI0NDggMHgwMDAwMDAwMg0KMHgyNDRjIDB4MDAwNDQ0MDAgMHgyNDUwIDB4MDAwMDAwMDEg
+MHgyNDU0IDB4MDY5NzAwMDAgMHgyNDU4IDB4MDgwMDE4MDANCjB4MjQ1YyAweDAwMDQwMDAwIDB4
+MjQ3NCAweDAwMDAwNmJiIDB4MjgwMCAweDAwMDAwMDA2IDB4MmMwMCAweDAwMDAwMDA2DQoweDJj
+MGMgMHgwMDAwMDc0ZCAweDJjMTggMHgwMDAwMDA0MCAweDJjMWMgMHgwMDAwMDAwYyAweDMwMDAg
+MHgwMDAwMDAwNg0KMHgzMDBjIDB4MDAwMDA3NTIgMHgzODAwIDB4MDAwMDAwMDEgMHgzYzAwIDB4
+MDAwMDAzMDYgMHgzYzBjIDB4MDAwMDAwNDgNCjB4M2MxNCAweDAwMDAwMDM1IDB4M2MyNCAweDAw
+MDAwMDA1IDB4M2MzOCAweDAwMDAwMDAxIDB4M2MzYyAweDA5YTE0MDAwDQoweDNjNDQgMHgwMDAw
+MGIwMCAweDNjNTQgMHgwMDAwMDZlYiAweDNjODAgMHgwMDAwMDZmNCAweDNjYzAgMHgwMDAwMDA5
+ZA0KMHgzY2Q0IDB4MDAwMDAwMGYgMHgzZDgwIDB4MDAwMDAwMTQgMHgzZDg4IDB4MDAwMDAwMDUg
+MHgzZDkwIDB4MDAwMDAwMDUNCjB4M2Q5OCAweDAwMDAwMDE0IDB4M2RhMCAweDAwMDAwMDA1IDB4
+M2RhOCAweDAwMDAwMDA1IDB4M2RiMCAweDAwMDAwMDE0DQoweDNkYjggMHgwMDAwMDAwNSAweDNk
+YzAgMHgwMDAwMDAwNSAweDNkYzggMHgwMDAwMDAxNCAweDNkZDAgMHgwMDAwMDAwNQ0KMHgzZGQ4
+IDB4MDAwMDAwMDUgMHg0MDAwIDB4MDAwMDAwMDIgMHg0MDA4IDB4MDAxNDFkMDMgMHg0MDBjIDB4
+MDAxMTQ2NTMNCjB4NDQwMCAweDAwMDAwMDE2IDB4NDQwOCAweDAwMDEwMDAwIDB4NDQwYyAweDAw
+MDBhMDAwIDB4NDQxNCAweDAwMDAwMDJhDQoweDQ0MTggMHgwMDAwMDBhMCAweDQ0MjAgMHgwMDAw
+MDAzZCAweDQ0NGMgMHgwNDMxMGM0NSAweDQ0NTAgMHgwMDBlMDMzOQ0KMHg0NDU0IDB4MDBjODAw
+Y2YgMHg0ODAwIDB4MzgwMzAzZmUgMHg0YzAwIDB4MjAwMDAzZmUgMHg1MDAwIDB4MDAwMDk4MDAN
+CjB4NTAwNCAweDgwMDA0MDAwIDB4NTAxYyAweDA4MDAxZjg4IDB4NTAzNCAweDAwMDAwMDFkIDB4
+NTgwMCAweDhmMDAwMDAwDQoweDU4MDQgMHg4ZjAwMDAwMCAweDU4MDggMHgzNzAwMDAwMCAweDU4
+MTAgMHgwMTAwMDAwMCAweDU4MTggMHgwMTAwMDAwMA0KMHg1ODIwIDB4MDEwMDAwMDAgMHg1ODY4
+IDB4MDAwMDAwYzEgMHg1ODZjIDB4MDAwMDAwYzEgMHg1ODgwIDB4MDAwMDA0ZDkNCjB4NTg4NCAw
+eDAwMDAwNGQ5IDB4NTkwMCAweDAwMDAwMDlkIDB4NTkwNCAweDAwMDAwMDlkIDB4NjAwMCAweDAw
+MDEwMDgyDQoweDY4MDAgMHgxNDFiMDAzNCAweDY4MDQgMHgyMDA5OTA4MiAweDY4MDggMHgwMTA2
+OTIwOCAweDY4MGMgMHg1NDIxY2MzZQ0KMHg2ODEwIDB4MjEwMjAwMDAgMHg2ODE0IDB4ZmZmZmZm
+ZmYgMHg2ODMwIDB4ZmZmZmZmZmYgMHg2ODM0IDB4ZmZmZmZmZmYNCjB4Njg0NCAweDAwMDAwMDAx
+IDB4NzAwMCAweDAwMDAwMDA4IDB4NzAwYyAweDAwMDA0YTRjIDB4NzAxMCAweGY4YmE4NzY0DQow
+eDcwMTQgMHgwMWMwODBmMyAweDcwMTggMHgwMGQ3MDA4MSAweDcwMWMgMHgwMzAwODIwMA0KDQoj
+IChlY2hvIHggeCB4IHg7IGV0aHRvb2wgLWQgZW0yKXx4YXJncyAtbjgNCnggeCB4IHggT2Zmc2V0
+IFZhbHVlIC0tLS0tLSAtLS0tLS0tLS0tDQoweDAwMDAgMHgxNjVmMTRlNCAweDAwMDQgMHgwMDEw
+MDQwNiAweDAwMDggMHgwMjAwMDAwMCAweDAwMGMgMHgwMDgwMDAwMA0KMHgwMDEwIDB4OTFhMDAw
+MGMgMHgwMDE4IDB4OTFhMTAwMGMgMHgwMDIwIDB4OTFhMjAwMGMgMHgwMDJjIDB4MDYzOTEwMjgN
+CjB4MDAzMCAweGZmZmMwMDAwIDB4MDAzNCAweDAwMDAwMDQ4IDB4MDAzYyAweDAwMDAwMjA2IDB4
+MDA0NCAweDU5MDAwMDAwDQoweDAwNDggMHhjODAzNTAwMSAweDAwNGMgMHg2NDAwMjAwOCAweDAw
+NTAgMHg4MThjNTgwMyAweDAwNTQgMHg3ODAwMDAwMA0KMHgwMDU4IDB4MDA4NmEwMDUgMHgwMDY4
+IDB4ZjAwMDAyOTggMHgwMDZjIDB4MDAzODAwODEgMHgwMDcwIDB4MDAwNzEwYjANCjB4MDA3NCAw
+eGZkODA0NGZmIDB4MDA4MCAweDE2NWYxNGU0IDB4MDA4NCAweDAwMDAwMDEyIDB4MDA4YyAweDAw
+MDAwNWYwDQoweDAwOWMgMHgwMDAwMDFkOCAweDAwYTAgMHg4MDEwYWMxMSAweDAwYTQgMHgwMDAw
+MDAwNCAweDAwYTggMHgwMDAwMTAwNA0KMHgwMGFjIDB4MDAwMjAwMTAgMHgwMjA0IDB4NTkwMDAw
+MDAgMHgwMjBjIDB4MzMwMDAwMDAgMHgwMjE0IDB4MDEwMDAwMDANCjB4MDIxYyAweDAxMDAwMDAw
+IDB4MDIyNCAweDAxMDAwMDAwIDB4MDI2YyAweDAwMDAwMWQ4IDB4MDI4NCAweDAwMDAwNWYwDQow
+eDAzMDQgMHgwMDAwMDA5ZiAweDA0MDAgMHgxOGUwNDgwOCAweDA0MDQgMHgwMDQwMDAwMCAweDA0
+MDggMHgwMDAwMTAwMA0KMHgwNDBjIDB4MDAwMDA4ODAgMHgwNDEwIDB4MDAwMDE4NjYgMHgwNDE0
+IDB4ZGFhM2JkNzQgMHgwNDE4IDB4MDAwMDE4NjYNCjB4MDQxYyAweGRhYTNiZDc0IDB4MDQyMCAw
+eDAwMDAxODY2IDB4MDQyNCAweGRhYTNiZDc0IDB4MDQyOCAweDAwMDAxODY2DQoweDA0MmMgMHhk
+YWEzYmQ3NCAweDA0MzAgMHgwMDAwMDQwMCAweDA0MzggMHgwMDAwMDA2ZCAweDA0M2MgMHgwMDAw
+MDVmMg0KMHgwNDRjIDB4MDg0YTM4MDAgMHgwNDUwIDB4MDAwMDAwMDEgMHgwNDU0IDB4MDAwMDgw
+MDAgMHgwNDVjIDB4MDAwMDAxMDINCjB4MDQ2MCAweDAwMDAwMDA4IDB4MDQ2NCAweDAwMDAyNjIw
+IDB4MDQ2OCAweDAxZmYwMDAyIDB4MDQ3MCAweDgwMDIwMDAwDQoweDA0N2MgMHg0MDAwMDAwMCAw
+eDA0ODAgMHg0MjAwMDAwMCAweDA0ODQgMHg3ZmZmZmZmZiAweDA0ODggMHgwNjAwMDAwNA0KMHgw
+NDhjIDB4N2ZmZmZmZmYgMHgwNTAwIDB4MDAwMDAwMDggMHgwNTA0IDB4MDAwMDAwMDIgMHgwNTkw
+IDB4MDBlMDAwMDANCjB4MDViNCAweDAwMDAwMDA4IDB4MDVjMCAweDhiZDAwYzk4IDB4MDVjNCAw
+eGFmMWZkMjAzIDB4MDYwMCAweGZmZmZmZmZmDQoweDA2MDQgMHgwMGY4MDAxMSAweDA2MGMgMHgw
+MDAwMWYwNCAweDA2MTAgMHgwMTMwYTI2NCAweDA2MTQgMHgxMDAwMzYwMA0KMHgwNjE4IDB4MDdj
+MDJmMTEgMHgwNjIwIDB4MDAwMDE4NDAgMHgwNjcwIDB4ZmJlOGUxYmUgMHgwNjc0IDB4MGIxOWI2
+NDINCjB4MDY3OCAweDk5MjUzMDk0IDB4MDY3YyAweDhjZDMyMzE1IDB4MDY4MCAweGZkZjJkYjQ2
+IDB4MDY4NCAweDFlMDQ3Yjc4DQoweDA2ODggMHhiNjcyMDMzMSAweDA2OGMgMHhjZjMxZmU2ZSAw
+eDA2OTAgMHg2ZDNlYzExMCAweDA2OTQgMHhmZDZjMDViMw0KMHgwNmM4IDB4MDQwMDAwMDAgMHgw
+ODA0IDB4ZmZmZmZmZmYgMHgwODE0IDB4ZmZmZmZmZmYgMHgwODI4IDB4ZmZmZmZmZmYNCjB4MDgz
+NCAweGZmZmZmZmZmIDB4MDgzOCAweGZmZmZmZmZmIDB4MDgzYyAweGZmZmZmZmZmIDB4MDg0MCAw
+eGZmZmZmZmZmDQoweDA4NDQgMHhmZmZmZmZmZiAweDA4NDggMHhmZmZmZmZmZiAweDA4NGMgMHhm
+ZmZmZmZmZiAweDA4NTAgMHhmZmZmZmZmZg0KMHgwODU0IDB4ZmZmZmZmZmYgMHgwODU4IDB4ZmZm
+ZmZmZmYgMHgwODVjIDB4ZmZmZmZmZmYgMHgwODYwIDB4ZmZmZmZmZmYNCjB4MDg2NCAweGZmZmZm
+ZmZmIDB4MDg2OCAweGZmZmZmZmZmIDB4MDg4MCAweDAzYjNiZGJhIDB4MDg4NCAweDAwMDAwM2Yw
+DQoweDA4OGMgMHgwMDA0NThmMyAweDA4OTAgMHgwMDAwMDAwMSAweDA4OTQgMHgwMDAwMDAwMSAw
+eDBjMDAgMHgwMDAwMDAwYQ0KMHgwYzA4IDB4MDAwMDAwMDMgMHgwYzBjIDB4MDAwMDAwMDEgMHgw
+YzFjIDB4MDAyYTAwMDAgMHgwYzgwIDB4MDAwMDAwMDINCjB4MTAwMCAweDAwMDAwMDAyIDB4MTQw
+MCAweDAwMDAwMDA2IDB4MTQ0MCAweDAwMDAwMDlmIDB4MTQ0NCAweDAwMDAwMDlmDQoweDE0NDgg
+MHgwMDAwMDA5ZiAweDE0NGMgMHgwMDAwMDA5ZiAweDE0NTAgMHgwMDAwMDA5ZiAweDE0NTQgMHgw
+MDAwMDA5Zg0KMHgxNDU4IDB4MDAwMDAwOWYgMHgxNDVjIDB4MDAwMDAwOWYgMHgxNDYwIDB4MDAw
+MDAwOWYgMHgxNDY0IDB4MDAwMDAwOWYNCjB4MTQ2OCAweDAwMDAwMDlmIDB4MTQ2YyAweDAwMDAw
+MDlmIDB4MTQ3MCAweDAwMDAwMDlmIDB4MTQ3NCAweDAwMDAwMDlmDQoweDE0NzggMHgwMDAwMDA5
+ZiAweDE0N2MgMHgwMDAwMDA5ZiAweDE4MDAgMHgwMDAwMDAxNiAweDE4MDggMHgwMDAwMDA5Zg0K
+MHgxODNjIDB4MDU4YzgwMDAgMHgxODQwIDB4MDU4YzgwMDAgMHgxODQ0IDB4MDAwMDAwMDEgMHgx
+YzAwIDB4MDAwMDAwMDINCjB4MjAwMCAweDAwMDAwMDAyIDB4MjAwNCAweDAwMDAwMDEwIDB4MjAx
+MCAweDAwMDAwMTgxIDB4MjAxNCAweDAwMDAwMDAxDQoweDIwMTggMHgwMDc4MDAwMyAweDIxMDAg
+MHgwMDBjNmEzNyAweDIxMDQgMHgwMDBjNzAzYSAweDIxMTAgMHgwMDBjODI0Mw0KMHgyMTE0IDB4
+MDAwYzgyNDMgMHgyMTIwIDB4MDAwYzgyNDMgMHgyMTI0IDB4MDAwYzg4NDYgMHgyMTMwIDB4MDAw
+Yzk0NGMNCjB4MjEzNCAweDAwMGM5YTRmIDB4MjE0MCAweDAwMGNhMDUyIDB4MjE0NCAweDAwMGNh
+NjU1IDB4MjE1MCAweDAwMGNiMjViDQoweDIxNTQgMHgwMDBjYjI1YiAweDIxNjAgMHgwMDBjYmU2
+MSAweDIxNjQgMHgwMDBjYzQ2NCAweDIxNzAgMHgwMDBjZDA2YQ0KMHgyMTc0IDB4MDAwY2Q2NmQg
+MHgyMTgwIDB4MDAwY2UyNzMgMHgyMTg0IDB4MDAwY2UyNzMgMHgyMTkwIDB4MDAwY2Y0N2MNCjB4
+MjE5NCAweDAwMGNmNDdjIDB4MjFhMCAweDAwMGQwNjg1IDB4MjFhNCAweDAwMGQwYzg4IDB4MjFi
+MCAweDAwMGQxMjhiDQoweDIxYjQgMHgwMDBkMTI4YiAweDIxYzAgMHgwMDBkMWU5MSAweDIxYzQg
+MHgwMDBkMjQ5NCAweDIxZDAgMHgwMDBkMmE5Nw0KMHgyMWQ0IDB4MDAwZDJhOTcgMHgyMWUwIDB4
+MDAwZDNjYTAgMHgyMWU0IDB4MDAwZDQyYTMgMHgyMWYwIDB4MDAwZDRlYTkNCjB4MjFmNCAweDAw
+MGQ1NGFjIDB4MjIwMCAweDAwYTUxMTMyIDB4MjI0YyAweDAwMDAwMDRhIDB4MjI1MCAweDAwMDA4
+N2Y2DQoweDI0MDAgMHgwMDAxMDAxMiAweDI0MDggMHgwMDIwMDAwMSAweDI0NDggMHgwMDAwMDAw
+MiAweDI0NGMgMHgwMDA0NDQwMA0KMHgyNDUwIDB4MDAwMDAwMDEgMHgyNDU0IDB4MDY5NzAwMDAg
+MHgyNDU4IDB4MDgwMDE4MDAgMHgyNDVjIDB4MDAwNDAwMDANCjB4MjQ3NCAweDAwMDAwN2JlIDB4
+MjgwMCAweDAwMDAwMDA2IDB4MmMwMCAweDAwMDAwMDA2IDB4MmMwYyAweDAwMDAwMDQ4DQoweDJj
+MTggMHgwMDAwMDA0MCAweDJjMWMgMHgwMDAwMDAwYyAweDMwMDAgMHgwMDAwMDAwNiAweDMwMGMg
+MHgwMDAwMDA0Yg0KMHgzODAwIDB4MDAwMDAwMDEgMHgzYzAwIDB4MDAwMDAzMDYgMHgzYzBjIDB4
+MDAwMDAwNDggMHgzYzE0IDB4MDAwMDAwMzUNCjB4M2MyNCAweDAwMDAwMDA1IDB4M2MzOCAweDAw
+MDAwMDAxIDB4M2MzYyAweDA5YTE0MDAwIDB4M2M0NCAweDAwMDAwYjAwDQoweDNjNDggMHgwMDAw
+MDA0MCAweDNjNTQgMHgwMDAwMDdlMyAweDNjODAgMHgwMDAwMDdlOSAweDNjYzAgMHgwMDAwMDA5
+Zg0KMHgzY2Q0IDB4MDAwMDAwMGYgMHgzZDgwIDB4MDAwMDAwMTQgMHgzZDg4IDB4MDAwMDAwMDUg
+MHgzZDkwIDB4MDAwMDAwMDUNCjB4M2Q5OCAweDAwMDAwMDE0IDB4M2RhMCAweDAwMDAwMDA1IDB4
+M2RhOCAweDAwMDAwMDA1IDB4M2RiMCAweDAwMDAwMDE0DQoweDNkYjggMHgwMDAwMDAwNSAweDNk
+YzAgMHgwMDAwMDAwNSAweDNkYzggMHgwMDAwMDAxNCAweDNkZDAgMHgwMDAwMDAwNQ0KMHgzZGQ4
+IDB4MDAwMDAwMDUgMHg0MDAwIDB4MDAwMDAwMDIgMHg0MDA4IDB4MDAxNDFkMDMgMHg0MDBjIDB4
+MDAxMTQ2NTMNCjB4NDQwMCAweDAwMDAwMDE2IDB4NDQwOCAweDAwMDEwMDAwIDB4NDQwYyAweDAw
+MDBhMDAwIDB4NDQxNCAweDAwMDAwMDJhDQoweDQ0MTggMHgwMDAwMDBhMCAweDQ0MjAgMHgwMDAw
+MDAzZCAweDQ0NGMgMHgwNDUxMTQ0NyAweDQ0NTAgMHgwMDA4MDMzYw0KMHg0NDU0IDB4MDAzMTAw
+MzUgMHg0ODAwIDB4MzgwMzAzZmUgMHg0YzAwIDB4MjAwMDAzZmUgMHg1MDAwIDB4MDAwMDk4MDAN
+CjB4NTAwNCAweDgwMDA0MDAwIDB4NTAxYyAweDA4MDAxZjg4IDB4NTAzNCAweDAwMDAwMDFkIDB4
+NTgwMCAweDU5MDAwMDAwDQoweDU4MDQgMHg1OTAwMDAwMCAweDU4MDggMHgzMzAwMDAwMCAweDU4
+MTAgMHgwMTAwMDAwMCAweDU4MTggMHgwMTAwMDAwMA0KMHg1ODIwIDB4MDEwMDAwMDAgMHg1ODY4
+IDB4MDAwMDAxZDggMHg1ODZjIDB4MDAwMDAxZDggMHg1ODgwIDB4MDAwMDA1ZjANCjB4NTg4NCAw
+eDAwMDAwNWYwIDB4NTkwMCAweDAwMDAwMDlmIDB4NTkwNCAweDAwMDAwMDlmIDB4NjAwMCAweDAw
+MDEwMDgyDQoweDY4MDAgMHgxNDFiMDAzNCAweDY4MDQgMHgyMDA5OTA4MiAweDY4MDggMHgwMTA2
+OTIwOCAweDY4MGMgMHg1NjAxNGRjNQ0KMHg2ODEwIDB4MjkwMjAwMDAgMHg2ODE0IDB4ZmZmZmZm
+ZmYgMHg2ODMwIDB4ZmZmZmZmZmYgMHg2ODM0IDB4ZmZmZmZmZmYNCjB4Njg0NCAweDAwMDAwMDAx
+IDB4NzAwMCAweDAwMDAwMDA4IDB4NzAwYyAweDAwMDA0YTRjIDB4NzAxMCAweGY4YmE4NzY0DQow
+eDcwMTQgMHgwMWMwODBmMyAweDcwMTggMHgwMGQ3MDA4MSAweDcwMWMgMHgwMzAwODIwMA0KDQoJ
+RGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1v
+dW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3RyYXRpb24gTm86IDEz
+OTczODYgKFdhbGVzKQ0K
 
-On 19/05/2022 11:27, Konstantin Meskhidze wrote:
-> 
-> 
-> 5/17/2022 11:27 AM, Mickaël Salaün пишет:
-
-[...]
-
-
->>>
->>> @@ -275,21 +281,17 @@ static int get_path_from_fd(const s32 fd, 
->>> struct path *const path)
->>>       return err;
->>>   }
->>>
->>> -static int add_rule_path_beneath(const int ruleset_fd, const void 
->>> *const rule_attr)
->>> +static int add_rule_path_beneath(struct landlock_ruleset *const 
->>> ruleset,
->>> +                 const void *const rule_attr)
->>>   {
->>>       struct landlock_path_beneath_attr path_beneath_attr;
->>>       struct path path;
->>> -    struct landlock_ruleset *ruleset;
->>>       int res, err;
->>> -
->>> -    /* Gets and checks the ruleset. */
->>> -    ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
->>> -    if (IS_ERR(ruleset))
->>> -        return PTR_ERR(ruleset);
->>> +    u32 mask;
->>>
->>>       /* Copies raw user space buffer, only one type for now. */
->>>       res = copy_from_user(&path_beneath_attr, rule_attr,
->>> -                sizeof(path_beneath_attr));
->>> +            sizeof(path_beneath_attr));
->>>       if (res)
->>>           return -EFAULT;
->>>
->>> @@ -298,32 +300,26 @@ static int add_rule_path_beneath(const int 
->>> ruleset_fd, const void *const rule_at
->>>        * are ignored in path walks.
->>>        */
->>>       if (!path_beneath_attr.allowed_access) {
->>> -        err = -ENOMSG;
->>> -        goto out_put_ruleset;
->>> +        return -ENOMSG;
->>>       }
->>>       /*
->>>        * Checks that allowed_access matches the @ruleset constraints
->>>        * (ruleset->access_masks[0] is automatically upgraded to 
->>> 64-bits).
->>>        */
->>> -    if ((path_beneath_attr.allowed_access |
->>> -        landlock_get_fs_access_mask(ruleset, 0)) !=
->>> -                landlock_get_fs_access_mask(ruleset, 0)) {
->>> -        err = -EINVAL;
->>> -        goto out_put_ruleset;
->>> -    }
->>> +    mask = landlock_get_fs_access_mask(ruleset, 0);
->>> +    if ((path_beneath_attr.allowed_access | mask) != mask)
->>> +        return -EINVAL;
->>>
->>>       /* Gets and checks the new rule. */
->>>       err = get_path_from_fd(path_beneath_attr.parent_fd, &path);
->>>       if (err)
->>> -        goto out_put_ruleset;
->>> +        return err;
->>>
->>>       /* Imports the new rule. */
->>>       err = landlock_append_fs_rule(ruleset, &path,
->>>                         path_beneath_attr.allowed_access);
->>>       path_put(&path);
->>>
->>> -out_put_ruleset:
->>> -    landlock_put_ruleset(ruleset);
->>>       return err;
->>>   }
->>>
->>> @@ -360,6 +356,7 @@ SYSCALL_DEFINE4(landlock_add_rule,
->>>           const int, ruleset_fd, const enum landlock_rule_type, 
->>> rule_type,
->>>           const void __user *const, rule_attr, const __u32, flags)
->>>   {
->>> +    struct landlock_ruleset *ruleset;
->>>       int err;
->>>
->>>       if (!landlock_initialized)
->>> @@ -369,14 +366,20 @@ SYSCALL_DEFINE4(landlock_add_rule,
->>>       if (flags)
->>>           return -EINVAL;
->>>
->>> +    /* Gets and checks the ruleset. */
->>> +    ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
->>> +    if (IS_ERR(ruleset))
->>> +        return PTR_ERR(ruleset);
->>
->> This shouldn't be part of this patch.
->>
->    I agree. I will move it into another patch.
-
-To be clear, it is kind of a partial revert of patch 5/15.
