@@ -2,542 +2,414 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F22252D223
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 14:11:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA74C52D22B
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 14:13:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232762AbiESMKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 08:10:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57452 "EHLO
+        id S237725AbiESMNF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 08:13:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237708AbiESMKj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 08:10:39 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74866BA541;
-        Thu, 19 May 2022 05:10:37 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L3pb30NHZz6FBYc;
-        Thu, 19 May 2022 20:10:23 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Thu, 19 May 2022 14:10:34 +0200
-Message-ID: <5124df18-ebc0-7b9b-84d5-89e1c458bc09@huawei.com>
-Date:   Thu, 19 May 2022 15:10:32 +0300
+        with ESMTP id S237726AbiESMNB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 08:13:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DF2BA6CABB
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 05:12:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652962378;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CkIaNIwPhVnbadWQOPtJWP2GaYujaSS/0fz0pIg+dJk=;
+        b=URytq1HINUDPuh6d8O6NCaM1IXQcp9VwjMdRrqsUq5aJVvR/l64cHvniu94a/yLlCQIaRs
+        7Uvh0TBRinLmt8gyV0T7bw0xRSVEB0/ab6ljvygmUsZiHvYx7/NJgFNHJhFOgVlYx+kIQv
+        5U0llvdM7LtNGDeVhz0wCzt+rIw+o+I=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-212-2DXaP0K9Op6K3qfGRe9Irw-1; Thu, 19 May 2022 08:12:56 -0400
+X-MC-Unique: 2DXaP0K9Op6K3qfGRe9Irw-1
+Received: by mail-pg1-f197.google.com with SMTP id r190-20020a632bc7000000b003c6222b2192so2606819pgr.11
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 05:12:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CkIaNIwPhVnbadWQOPtJWP2GaYujaSS/0fz0pIg+dJk=;
+        b=DJeK07HoV97dAx3DZtfil4NOJe2H38Gp0UDO3WTLgBwvRIkOHHD8suDHt3QDofH8a2
+         QGH6gTt6S8PF8U8ek1mRPOHpMU5JTu1VY3OK1PvqQF6CH/gU0u+LdnEB3zLq+DZg0yzU
+         AOou6zz9d7wVHnK+VAIS/q9JDWs64s/5YjiIvlw99G31MW7x+Z+fyMsnFLeBAUt0dNV4
+         RJhtMWHetvUiS8L1GrNuuRHVIeJ9K8VyBpQBZiebTn+c7b2Mdame9ewnBS+zToVn6Sbd
+         2QTbClrpQ3T4wT+DJJCJlkbb30Z3kiPotYGlhunmuqGJF3m0qTLdZ7qVJWshxunTIsHL
+         Idwg==
+X-Gm-Message-State: AOAM531kLIk1W3lJ15kB0qmegUXal+Nu51aYMIzMPuq/U5wQJohldgBU
+        6/Nn59PvfxDojx0oE3Ips6Yfx3t/o8rcL5g+tyan7/jXME/wMBcvwpVW2WPrU8lM7nLBX0BgoXs
+        hU2ukYBEYbZcZjx7dAktGRNWF2H8QnpmZ
+X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id k18-20020a170902c41200b00161af8bf478mr4582448plk.67.1652962372398;
+        Thu, 19 May 2022 05:12:52 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxPOd9kx0YNHDOk5iw+vYT6N7dJGHXUGXiMaBEYpKQ9aD4hCcMGVyr1vFP1bGh9MM/x6N5AOda0AQJSYCIA6pU=
+X-Received: by 2002:a17:902:c412:b0:161:af8b:f478 with SMTP id
+ k18-20020a170902c41200b00161af8bf478mr4582418plk.67.1652962371871; Thu, 19
+ May 2022 05:12:51 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v5 09/15] seltests/landlock: add tests for bind() hooks
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <anton.sirazetdinov@huawei.com>
-References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
- <20220516152038.39594-10-konstantin.meskhidze@huawei.com>
- <eaa4cc8f-4c4a-350d-6b96-551f32156e3d@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <eaa4cc8f-4c4a-350d-6b96-551f32156e3d@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
+ <20220518205924.399291-13-benjamin.tissoires@redhat.com> <20220518222055.zh7hvexbqlctvotw@apollo.legion>
+In-Reply-To: <20220518222055.zh7hvexbqlctvotw@apollo.legion>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Thu, 19 May 2022 14:12:40 +0200
+Message-ID: <CAO-hwJLxqYC9AUrfjMX1sPdSrt7EguWt9diwadJ9UZe-XGKFJw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 12/17] selftests/bpf: add tests for bpf_hid_hw_request
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 19, 2022 at 12:20 AM Kumar Kartikeya Dwivedi
+<memxor@gmail.com> wrote:
+>
+> On Thu, May 19, 2022 at 02:29:19AM IST, Benjamin Tissoires wrote:
+> > Add tests for the newly implemented function.
+> > We test here only the GET_REPORT part because the other calls are pure
+> > HID protocol and won't infer the result of the test of the bpf hook.
+> >
+> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> >
+> > ---
+> >
+> > changes in v5:
+> > - use the new hid_bpf_allocate_context() API
+> > - remove the need for ctx_in for syscall TEST_RUN
+> >
+> > changes in v3:
+> > - use the new hid_get_data API
+> > - directly use HID_FEATURE_REPORT and HID_REQ_GET_REPORT from uapi
+> >
+> > changes in v2:
+> > - split the series by bpf/libbpf/hid/selftests and samples
+> > ---
+> >  tools/testing/selftests/bpf/prog_tests/hid.c | 114 ++++++++++++++++---
+> >  tools/testing/selftests/bpf/progs/hid.c      |  59 ++++++++++
+> >  2 files changed, 155 insertions(+), 18 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/hid.c b/tools/testing/selftests/bpf/prog_tests/hid.c
+> > index 47bc0a30c275..54c0a0fcd54d 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/hid.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/hid.c
+> > @@ -77,12 +77,23 @@ static unsigned char rdesc[] = {
+> >       0xc0,                   /* END_COLLECTION */
+> >  };
+> >
+> > +static u8 feature_data[] = { 1, 2 };
+> > +
+> >  struct attach_prog_args {
+> >       int prog_fd;
+> >       unsigned int hid;
+> >       int retval;
+> >  };
+> >
+> > +struct hid_hw_request_syscall_args {
+> > +     __u8 data[10];
+> > +     unsigned int hid;
+> > +     int retval;
+> > +     size_t size;
+> > +     enum hid_report_type type;
+> > +     __u8 request_type;
+> > +};
+> > +
+> >  static pthread_mutex_t uhid_started_mtx = PTHREAD_MUTEX_INITIALIZER;
+> >  static pthread_cond_t uhid_started = PTHREAD_COND_INITIALIZER;
+> >
+> > @@ -142,7 +153,7 @@ static void destroy(int fd)
+> >
+> >  static int uhid_event(int fd)
+> >  {
+> > -     struct uhid_event ev;
+> > +     struct uhid_event ev, answer;
+> >       ssize_t ret;
+> >
+> >       memset(&ev, 0, sizeof(ev));
+> > @@ -183,6 +194,15 @@ static int uhid_event(int fd)
+> >               break;
+> >       case UHID_GET_REPORT:
+> >               fprintf(stderr, "UHID_GET_REPORT from uhid-dev\n");
+> > +
+> > +             answer.type = UHID_GET_REPORT_REPLY;
+> > +             answer.u.get_report_reply.id = ev.u.get_report.id;
+> > +             answer.u.get_report_reply.err = ev.u.get_report.rnum == 1 ? 0 : -EIO;
+> > +             answer.u.get_report_reply.size = sizeof(feature_data);
+> > +             memcpy(answer.u.get_report_reply.data, feature_data, sizeof(feature_data));
+> > +
+> > +             uhid_write(fd, &answer);
+> > +
+> >               break;
+> >       case UHID_SET_REPORT:
+> >               fprintf(stderr, "UHID_SET_REPORT from uhid-dev\n");
+> > @@ -391,6 +411,7 @@ static int open_hidraw(int dev_id)
+> >  struct test_params {
+> >       struct hid *skel;
+> >       int hidraw_fd;
+> > +     int hid_id;
+> >  };
+> >
+> >  static int prep_test(int dev_id, const char *prog_name, struct test_params *test_data)
+> > @@ -419,27 +440,33 @@ static int prep_test(int dev_id, const char *prog_name, struct test_params *test
+> >       if (!ASSERT_OK_PTR(hid_skel, "hid_skel_open"))
+> >               goto cleanup;
+> >
+> > -     prog = bpf_object__find_program_by_name(*hid_skel->skeleton->obj, prog_name);
+> > -     if (!ASSERT_OK_PTR(prog, "find_prog_by_name"))
+> > -             goto cleanup;
+> > +     if (prog_name) {
+> > +             prog = bpf_object__find_program_by_name(*hid_skel->skeleton->obj, prog_name);
+> > +             if (!ASSERT_OK_PTR(prog, "find_prog_by_name"))
+> > +                     goto cleanup;
+> >
+> > -     bpf_program__set_autoload(prog, true);
+> > +             bpf_program__set_autoload(prog, true);
+> >
+> > -     err = hid__load(hid_skel);
+> > -     if (!ASSERT_OK(err, "hid_skel_load"))
+> > -             goto cleanup;
+> > +             err = hid__load(hid_skel);
+> > +             if (!ASSERT_OK(err, "hid_skel_load"))
+> > +                     goto cleanup;
+> >
+> > -     attach_fd = bpf_program__fd(hid_skel->progs.attach_prog);
+> > -     if (!ASSERT_GE(attach_fd, 0, "locate attach_prog")) {
+> > -             err = attach_fd;
+> > -             goto cleanup;
+> > -     }
+> > +             attach_fd = bpf_program__fd(hid_skel->progs.attach_prog);
+> > +             if (!ASSERT_GE(attach_fd, 0, "locate attach_prog")) {
+> > +                     err = attach_fd;
+> > +                     goto cleanup;
+> > +             }
+> >
+> > -     args.prog_fd = bpf_program__fd(prog);
+> > -     err = bpf_prog_test_run_opts(attach_fd, &tattr);
+> > -     snprintf(buf, sizeof(buf), "attach_hid(%s)", prog_name);
+> > -     if (!ASSERT_EQ(args.retval, 0, buf))
+> > -             goto cleanup;
+> > +             args.prog_fd = bpf_program__fd(prog);
+> > +             err = bpf_prog_test_run_opts(attach_fd, &tattr);
+> > +             snprintf(buf, sizeof(buf), "attach_hid(%s)", prog_name);
+> > +             if (!ASSERT_EQ(args.retval, 0, buf))
+> > +                     goto cleanup;
+> > +     } else {
+> > +             err = hid__load(hid_skel);
+> > +             if (!ASSERT_OK(err, "hid_skel_load"))
+> > +                     goto cleanup;
+> > +     }
+> >
+> >       hidraw_fd = open_hidraw(dev_id);
+> >       if (!ASSERT_GE(hidraw_fd, 0, "open_hidraw"))
+> > @@ -447,6 +474,7 @@ static int prep_test(int dev_id, const char *prog_name, struct test_params *test
+> >
+> >       test_data->skel = hid_skel;
+> >       test_data->hidraw_fd = hidraw_fd;
+> > +     test_data->hid_id = hid_id;
+> >
+> >       return 0;
+> >
+> > @@ -693,6 +721,54 @@ static int test_hid_change_report(int uhid_fd, int dev_id)
+> >       return ret;
+> >  }
+> >
+> > +/*
+> > + * Attach hid_user_raw_request to the given uhid device,
+> > + * call the bpf program from userspace
+> > + * check that the program is called and does the expected.
+> > + */
+> > +static int test_hid_user_raw_request_call(int uhid_fd, int dev_id)
+> > +{
+> > +     struct test_params params;
+> > +     int err, prog_fd;
+> > +     int ret = -1;
+> > +     struct hid_hw_request_syscall_args args = {
+> > +             .retval = -1,
+> > +             .type = HID_FEATURE_REPORT,
+> > +             .request_type = HID_REQ_GET_REPORT,
+> > +             .size = 10,
+> > +     };
+> > +     DECLARE_LIBBPF_OPTS(bpf_test_run_opts, tattrs,
+> > +                         .ctx_in = &args,
+> > +                         .ctx_size_in = sizeof(args),
+> > +     );
+> > +
+> > +     err = prep_test(dev_id, NULL, &params);
+> > +     if (!ASSERT_EQ(err, 0, "prep_test()"))
+> > +             goto cleanup;
+> > +
+> > +     args.hid = params.hid_id;
+> > +     args.data[0] = 1; /* report ID */
+> > +
+> > +     prog_fd = bpf_program__fd(params.skel->progs.hid_user_raw_request);
+> > +
+> > +     err = bpf_prog_test_run_opts(prog_fd, &tattrs);
+> > +     if (!ASSERT_EQ(err, 0, "bpf_prog_test_run_opts"))
+> > +             goto cleanup;
+> > +
+> > +     if (!ASSERT_EQ(args.retval, 2, "bpf_prog_test_run_opts_retval"))
+> > +             goto cleanup;
+> > +
+> > +     if (!ASSERT_EQ(args.data[1], 2, "hid_user_raw_request_check_in"))
+> > +             goto cleanup;
+> > +
+> > +     ret = 0;
+> > +
+> > +cleanup:
+> > +     cleanup_test(&params);
+> > +
+> > +     return ret;
+> > +}
+> > +
+> >  void serial_test_hid_bpf(void)
+> >  {
+> >       int err, uhid_fd;
+> > @@ -720,6 +796,8 @@ void serial_test_hid_bpf(void)
+> >       ASSERT_OK(err, "hid_attach_detach");
+> >       err = test_hid_change_report(uhid_fd, dev_id);
+> >       ASSERT_OK(err, "hid_change_report");
+> > +     err = test_hid_user_raw_request_call(uhid_fd, dev_id);
+> > +     ASSERT_OK(err, "hid_change_report");
+> >
+> >       destroy(uhid_fd);
+> >
+> > diff --git a/tools/testing/selftests/bpf/progs/hid.c b/tools/testing/selftests/bpf/progs/hid.c
+> > index ee7529c47ad8..e3444d444303 100644
+> > --- a/tools/testing/selftests/bpf/progs/hid.c
+> > +++ b/tools/testing/selftests/bpf/progs/hid.c
+> > @@ -10,6 +10,13 @@ extern __u8 *hid_bpf_get_data(struct hid_bpf_ctx *ctx,
+> >                             unsigned int offset,
+> >                             const size_t __sz) __ksym;
+> >  extern int hid_bpf_attach_prog(unsigned int hid_id, int prog_fd, u32 flags) __ksym;
+> > +extern struct hid_bpf_ctx *hid_bpf_allocate_context(unsigned int hid_id) __ksym;
+> > +extern void hid_bpf_release_context(struct hid_bpf_ctx *ctx) __ksym;
+> > +extern int hid_bpf_hw_request(struct hid_bpf_ctx *ctx,
+> > +                           __u8 *data,
+> > +                           size_t len,
+> > +                           enum hid_report_type type,
+> > +                           int reqtype) __ksym;
+> >
+> >  struct attach_prog_args {
+> >       int prog_fd;
+> > @@ -56,3 +63,55 @@ int attach_prog(struct attach_prog_args *ctx)
+> >                                         0);
+> >       return 0;
+> >  }
+> > +
+> > +struct hid_hw_request_syscall_args {
+> > +     /* data needs to come at offset 0 so we can do a memcpy into it */
+> > +     __u8 data[10];
+> > +     unsigned int hid;
+> > +     int retval;
+> > +     size_t size;
+> > +     enum hid_report_type type;
+> > +     __u8 request_type;
+> > +};
+> > +
+> > +SEC("syscall")
+> > +int hid_user_raw_request(struct hid_hw_request_syscall_args *args)
+> > +{
+> > +     struct hid_bpf_ctx *ctx;
+> > +     int i, ret = 0;
+> > +     __u8 *data;
+> > +
+> > +     ctx = hid_bpf_allocate_context(args->hid);
+> > +     if (!ctx)
+> > +             return 0; /* EPERM check */
+> > +
+> > +     /* We can not use the context data memory directly in the hid_bpf call,
+> > +      * so we rely on the PTR_TO_MEM allocated in the hid_bpf_context
+> > +      */
+> > +     data = hid_bpf_get_data(ctx, 0 /* offset */, 10 /* size */);
+> > +     if (!data)
+> > +             goto out; /* EPERM check */
+> > +
+>
+> If I'm reading this right, you need more than just returning PTR_TO_MEM. Since
+> this points into allocated ctx, nothing prevents user from accessing data after
+> we do hid_bpf_release_context.
 
+oops. I missed that point.
 
-5/17/2022 12:11 AM, Mickaël Salaün пишет:
-> 
-> On 16/05/2022 17:20, Konstantin Meskhidze wrote:
->> Adds selftests for bind socket action.
->> The first is with no landlock restrictions:
->>      - bind_no_restrictions_ip4;
->>      - bind_no_restrictions_ip6;
->> The second ones is with mixed landlock rules:
->>      - bind_with_restrictions_ip4;
->>      - bind_with_restrictions_ip6;
->>
->> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
->> ---
->>
->> Changes since v3:
->> * Split commit.
->> * Add helper create_socket.
->> * Add FIXTURE_SETUP.
->>
->> Changes since v4:
->> * Adds port[MAX_SOCKET_NUM], struct sockaddr_in addr4
->> and struct sockaddr_in addr6 in FIXTURE.
->> * Refactoring FIXTURE_SETUP:
->>      - initializing self->port, self->addr4 and self->addr6.
->>      - adding network namespace.
->> * Refactoring code with self->port, self->addr4 and
->> self->addr6 variables.
->> * Adds selftests for IP6 family:
->>      - bind_no_restrictions_ip6.
->>      - bind_with_restrictions_ip6.
->> * Refactoring selftests/landlock/config
->> * Moves enforce_ruleset() into common.h
->>
->> ---
->>   tools/testing/selftests/landlock/common.h   |   9 +
->>   tools/testing/selftests/landlock/config     |   5 +-
->>   tools/testing/selftests/landlock/fs_test.c  |  10 -
->>   tools/testing/selftests/landlock/net_test.c | 237 ++++++++++++++++++++
->>   4 files changed, 250 insertions(+), 11 deletions(-)
->>   create mode 100644 tools/testing/selftests/landlock/net_test.c
->>
->> diff --git a/tools/testing/selftests/landlock/common.h 
->> b/tools/testing/selftests/landlock/common.h
->> index 7ba18eb23783..c5381e641dfd 100644
->> --- a/tools/testing/selftests/landlock/common.h
->> +++ b/tools/testing/selftests/landlock/common.h
->> @@ -102,6 +102,15 @@ static inline int landlock_restrict_self(const 
->> int ruleset_fd,
->>   }
->>   #endif
->>
->> +static void enforce_ruleset(struct __test_metadata *const _metadata,
->> +        const int ruleset_fd)
->> +{
->> +    ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
->> +    ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0)) {
->> +        TH_LOG("Failed to enforce ruleset: %s", strerror(errno));
->> +    }
->> +}
->> +
-> 
-> Please create a commit which moves all the needed code for all network 
-> tests. I think there is only this helper though.
+TBH, ideally I wanted to directly pass args->data into
+hid_bpf_hw_request(). But because args is seen as the context of the
+program, I can not pass it to the kfunc arguments.
+I would happily prevent getting a data pointer for a manually
+allocated context if I could solve that issue. This would save me from
+calling twice  __builtin_memcpy.
 
-   Ok. I will create one additional commit for moving this helper.
-   But after I have moved the helper to common.h, I got warnings while 
-compiling seltests where I don't use the one (base_test and ptrace_test)
+That doesn't change the fact that you are correct and the PTR_TO_MEM
+in kfunc code should be fixed.
+But right now, I am not sure what you mean below and I'll need a
+little bit more time to process it.
 
-> 
-> 
->>   static void _init_caps(struct __test_metadata *const _metadata, bool 
->> drop_all)
->>   {
->>       cap_t cap_p;
->> diff --git a/tools/testing/selftests/landlock/config 
->> b/tools/testing/selftests/landlock/config
->> index 0f0a65287bac..b56f3274d3f5 100644
->> --- a/tools/testing/selftests/landlock/config
->> +++ b/tools/testing/selftests/landlock/config
->> @@ -1,7 +1,10 @@
->> +CONFIG_INET=y
->> +CONFIG_IPV6=y
->> +CONFIG_NET=y
->>   CONFIG_OVERLAY_FS=y
->>   CONFIG_SECURITY_LANDLOCK=y
->>   CONFIG_SECURITY_PATH=y
->>   CONFIG_SECURITY=y
->>   CONFIG_SHMEM=y
->>   CONFIG_TMPFS_XATTR=y
->> -CONFIG_TMPFS=y
->> +CONFIG_TMPFS=y
->> \ No newline at end of file
-> 
-> You add whitespace changes.
-> 
-   OK. I will fix it. Thank you.
-> 
->> diff --git a/tools/testing/selftests/landlock/fs_test.c 
->> b/tools/testing/selftests/landlock/fs_test.c
->> index 21a2ce8fa739..036dd6f8f9ea 100644
->> --- a/tools/testing/selftests/landlock/fs_test.c
->> +++ b/tools/testing/selftests/landlock/fs_test.c
->> @@ -551,16 +551,6 @@ static int create_ruleset(struct __test_metadata 
->> *const _metadata,
->>       return ruleset_fd;
->>   }
->>
->> -static void enforce_ruleset(struct __test_metadata *const _metadata,
->> -                const int ruleset_fd)
->> -{
->> -    ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
->> -    ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0))
->> -    {
->> -        TH_LOG("Failed to enforce ruleset: %s", strerror(errno));
->> -    }
->> -}
->> -
->>   TEST_F_FORK(layout1, proc_nsfs)
->>   {
->>       const struct rule rules[] = {
->> diff --git a/tools/testing/selftests/landlock/net_test.c 
->> b/tools/testing/selftests/landlock/net_test.c
->> new file mode 100644
->> index 000000000000..478ef2eff559
->> --- /dev/null
->> +++ b/tools/testing/selftests/landlock/net_test.c
->> @@ -0,0 +1,237 @@
->> +// SPDX-License-Identifier: GPL-2.0-only
->> +/*
->> + * Landlock tests - Network
->> + *
->> + * Copyright (C) 2022 Huawei Tech. Co., Ltd.
->> + */
->> +
->> +#define _GNU_SOURCE
->> +#include <arpa/inet.h>
->> +#include <errno.h>
->> +#include <fcntl.h>
->> +#include <linux/landlock.h>
->> +#include <netinet/in.h>
->> +#include <sched.h>
->> +#include <string.h>
->> +#include <sys/prctl.h>
->> +#include <sys/socket.h>
->> +#include <sys/types.h>
->> +
->> +#include "common.h"
->> +
->> +#define MAX_SOCKET_NUM 10
->> +
->> +#define SOCK_PORT_START 3470
->> +#define SOCK_PORT_ADD 10
->> +
->> +#define IP_ADDRESS "127.0.0.1"
->> +
->> +/* Number pending connections queue to be hold */
->> +#define BACKLOG 10
-> 
-> "Number of pending connection queues to be hold." maybe? This is not use 
-> in this patch so it shouldn't be added by this patch.
-> 
-   You are right. I will move it in the patch where listen() function 
-appear. Thank you for noticing.
-> 
->> +
->> +static int create_socket(struct __test_metadata *const _metadata,
->> +            bool ip6, bool reuse_addr)
-> 
-> This helper is good and I think you can improve it by leveraging test 
-> variants. You could even factor out all the ipv4/ipv6 tests thanks to 
-> new helpers such as bind_variant() and connect_variant(). No need to add 
-> _metadata to those though. This would avoid duplicating all ipv4/ipv6 
-> tests and even simplifying bind() and connect() calls. Something like this:
-> 
-> // rename "socket_test" to "socket" (no need to duplicate "test")
-> FIXTURE_VARIANT(socket)
-> {
->      const bool is_ipv4;
-> };
-> 
-> /* clang-format off */
-> FIXTURE_VARIANT_ADD(socket, ipv4) {
->      /* clang-format on */
->      .is_ipv4 = true,
-> };
-> 
-> /* clang-format off */
-> FIXTURE_VARIANT_ADD(socket, ipv6) {
->      /* clang-format on */
->      .is_ipv4 = false,
-> };
-> 
-> static int socket_variant(const FIXTURE_VARIANT(socket) *const variant, 
-> const int type)
-> {
->      if (variant->is_ipv4)
->          return socket(AF_INET, type | SOCK_CLOEXEC, 0);
->      else
->          return socket(AF_INET6, type | SOCK_CLOEXEC, 0);
-> }
-> 
-> socket_variant(variant, SOCK_STREAM);
-> // this could be used to create UDP sockets too
-> 
-> 
-> static int bind_variant(const FIXTURE_VARIANT(socket) *const variant, 
-> const int sockfd, const FIXTURE_DATA(socket) *const self, const size_t 
-> index)
-> {
->      if (variant->is_ipv4)
->          return bind(sockfd, &self->addr4[index], 
-> sizeof(self->addr4[index]));
->      else
->          return bind(sockfd, &self->addr6[index], 
-> sizeof(self->addr6[index]));
-> }
-> 
-> bind_variant(variant, sockfd, self, 0);
-> 
-  Ok. Thank you for this suggestion.
-> 
->> +{
->> +        int sockfd;
->> +        int one = 1;
->> +
->> +        if (ip6)
->> +            sockfd = socket(AF_INET6, SOCK_STREAM | SOCK_CLOEXEC, 0);
->> +        else
->> +            sockfd = socket(AF_INET, SOCK_STREAM | SOCK_CLOEXEC, 0);
->> +
->> +        ASSERT_LE(0, sockfd);
->> +        /* Allows to reuse of local address */
->> +        if (reuse_addr)
->> +            ASSERT_EQ(0, setsockopt(sockfd, SOL_SOCKET,
->> +                    SO_REUSEADDR, &one, sizeof(one)));
-> 
-> This reuse_addr part is not used in this patch and I think it would 
-> simplify this helper to not add reuse_addr but to explicitely call 
-> setsockopt() when required. This also enables to get rid of _metadata in 
-> this helper.
-> 
-   Yep. You are right. I will fix it.
-> 
->> +        return sockfd;
->> +}
->> +
->> +FIXTURE(socket_test) {
->> +    uint port[MAX_SOCKET_NUM];
->> +    struct sockaddr_in addr4[MAX_SOCKET_NUM];
->> +    struct sockaddr_in6 addr6[MAX_SOCKET_NUM];
->> +};
->> +
->> +FIXTURE_SETUP(socket_test)
->> +{
->> +    int i;
->> +    /* Creates IP4 socket addresses */
->> +    for (i = 0; i < MAX_SOCKET_NUM; i++) {
-> 
-> Nice!
-> 
->> +        self->port[i] = SOCK_PORT_START + SOCK_PORT_ADD*i;
->> +        self->addr4[i].sin_family = AF_INET;
->> +        self->addr4[i].sin_port = htons(self->port[i]);
->> +        self->addr4[i].sin_addr.s_addr = htonl(INADDR_ANY);
-> 
-> Could you use the local addr (127.0.0.1) instead?
+Cheers,
+Benjamin
 
-   Why cant I use INADDR_ANY here?
-> 
->> +        memset(&(self->addr4[i].sin_zero), '\0', 8);
->> +    }
->> +
->> +    /* Creates IP6 socket addresses */
->> +    for (i = 0; i < MAX_SOCKET_NUM; i++) {
->> +        self->port[i] = SOCK_PORT_START + SOCK_PORT_ADD*i;
->> +        self->addr6[i].sin6_family = AF_INET6;
->> +        self->addr6[i].sin6_port = htons(self->port[i]);
->> +        self->addr6[i].sin6_addr = in6addr_any;
-> 
-> ditto
+>
+> The ref_obj_id of ctx needs to be transferred to R0.ref_obj_id, and R0.id needs
+> to be assigned another id distinct from the ref_obj_id.
+>
+> My idea would be to give this type of function a new set, and handle this case
+> of transferring ref_obj_id into R0. See is_ptr_cast_function in verifier.c.
+> Shouldn't be too much code. You could even use the bpf_kfunc_arg_meta to store
+> the ref_obj_id (and ensure only one referenced register exists among the 5
+> arguments).
+>
+> > +     __builtin_memcpy(data, args->data, sizeof(args->data));
+> > +
+> > +     if (args->size <= sizeof(args->data)) {
+> > +             ret = hid_bpf_hw_request(ctx,
+> > +                                      data,
+> > +                                      args->size,
+> > +                                      args->type,
+> > +                                      args->request_type);
+> > +             args->retval = ret;
+> > +             if (ret < 0)
+> > +                     goto out;
+> > +     } else {
+> > +             ret = -7; /* -E2BIG */
+> > +             goto out;
+> > +     }
+> > +
+> > +     __builtin_memcpy(args->data, data, sizeof(args->data));
+> > +
+> > + out:
+> > +     hid_bpf_release_context(ctx);
+> > +
+> > +     return ret;
+> > +}
+> > --
+> > 2.36.1
+> >
+>
+> --
+> Kartikeya
+>
 
-   Why cant I use in6addr_any here?
-
-> 
->> +    }
->> +
->> +    set_cap(_metadata, CAP_SYS_ADMIN);
->> +    ASSERT_EQ(0, unshare(CLONE_NEWNET));
->> +    ASSERT_EQ(0, system("ip link set dev lo up"));
-> 
-> If this is really required, could you avoid calling system() but set up 
-> the network in C? You can strace it to see what is going on underneath.
-> 
-  I did check. It's a lot of code to be run under the hood (more than 
-one line) and it will just will complicate the test so I suggest to 
-leave just ONE line of code here.
-> 
->> +    clear_cap(_metadata, CAP_SYS_ADMIN);
->> +}
->> +
->> +FIXTURE_TEARDOWN(socket_test)
->> +{ }
->> +
->> +TEST_F_FORK(socket_test, bind_no_restrictions_ip4) {
->> +
->> +    int sockfd;
->> +
->> +    sockfd = create_socket(_metadata, false, false);
->> +    ASSERT_LE(0, sockfd);
->> +
->> +    /* Binds a socket to port[0] */
-> 
-> This comment is not very useful in this context considering the below 
-> line. It will be even more clear with the bind_variant() call.
-> 
-  Ok. I will fix it.
-> 
->> +    ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr4[0], 
->> sizeof(self->addr4[0])));
->> +
->> +    ASSERT_EQ(0, close(sockfd));
->> +}
->> +
->> +TEST_F_FORK(socket_test, bind_no_restrictions_ip6) {
->> +
->> +    int sockfd;
->> +
->> +    sockfd = create_socket(_metadata, true, false);
->> +    ASSERT_LE(0, sockfd);
->> +
->> +    /* Binds a socket to port[0] */
->> +    ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr6[0], 
->> sizeof(self->addr6[0])));
->> +
->> +    ASSERT_EQ(0, close(sockfd));
->> +}
->> +
->> +TEST_F_FORK(socket_test, bind_with_restrictions_ip4) {
->> +
->> +    int sockfd;
->> +
->> +    struct landlock_ruleset_attr ruleset_attr = {
->> +        .handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
->> +                      LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +    };
->> +    struct landlock_net_service_attr net_service_1 = {
->> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
->> +                  LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +        .port = self->port[0],
->> +    };
->> +    struct landlock_net_service_attr net_service_2 = {
->> +        .allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +        .port = self->port[1],
->> +    };
->> +    struct landlock_net_service_attr net_service_3 = {
->> +        .allowed_access = 0,
->> +        .port = self->port[2],
->> +    };
->> +
->> +    const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
->> +            sizeof(ruleset_attr), 0);
->> +    ASSERT_LE(0, ruleset_fd);
->> +
->> +    /* Allows connect and bind operations to the port[0] socket. */
-> 
-> This comment is useful though because the below call is more complex.
-> 
-   So I can leave it as it's, cant I?
-> 
->> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_1, 0));
->> +    /* Allows connect and deny bind operations to the port[1] socket. */
->> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_2, 0));
->> +    /* Empty allowed_access (i.e. deny rules) are ignored in network 
->> actions
->> +     * for port[2] socket.
->> +     */
->> +    ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_3, 0));
->> +    ASSERT_EQ(ENOMSG, errno);
->> +
->> +    /* Enforces the ruleset. */
->> +    enforce_ruleset(_metadata, ruleset_fd);
->> +
->> +    sockfd = create_socket(_metadata, false, false);
->> +    ASSERT_LE(0, sockfd);
->> +    /* Binds a socket to port[0] */
->> +    ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr4[0], 
->> sizeof(self->addr4[0])));
->> +
->> +    /* Close bounded socket*/
->> +    ASSERT_EQ(0, close(sockfd));
->> +
->> +    sockfd = create_socket(_metadata, false, false);
->> +    ASSERT_LE(0, sockfd);
->> +    /* Binds a socket to port[1] */
->> +    ASSERT_EQ(-1, bind(sockfd, (struct sockaddr *)&self->addr4[1], 
->> sizeof(self->addr4[1])));
->> +    ASSERT_EQ(EACCES, errno);
->> +
->> +    sockfd = create_socket(_metadata, false, false);
->> +    ASSERT_LE(0, sockfd);
->> +    /* Binds a socket to port[2] */
->> +    ASSERT_EQ(-1, bind(sockfd, (struct sockaddr *)&self->addr4[2], 
->> sizeof(self->addr4[2])));
->> +    ASSERT_EQ(EACCES, errno);
->> +}
->> +
->> +TEST_F_FORK(socket_test, bind_with_restrictions_ip6) {
->> +
->> +    int sockfd;
->> +
->> +    struct landlock_ruleset_attr ruleset_attr = {
->> +        .handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
->> +                      LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +    };
->> +    struct landlock_net_service_attr net_service_1 = {
->> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
->> +                  LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +        .port = self->port[0],
->> +    };
->> +    struct landlock_net_service_attr net_service_2 = {
->> +        .allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
->> +        .port = self->port[1],
->> +    };
->> +    struct landlock_net_service_attr net_service_3 = {
->> +        .allowed_access = 0,
->> +        .port = self->port[2],
->> +    };
->> +
->> +    const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
->> +            sizeof(ruleset_attr), 0);
->> +    ASSERT_LE(0, ruleset_fd);
->> +
->> +    /* Allows connect and bind operations to the port[0] socket. */
->> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_1, 0));
->> +    /* Allows connect and deny bind operations to the port[1] socket. */
->> +    ASSERT_EQ(0, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_2, 0));
->> +    /* Empty allowed_access (i.e. deny rules) are ignored in network 
->> actions
->> +     * for port[2] socket.
->> +     */
->> +    ASSERT_EQ(-1, landlock_add_rule(ruleset_fd, 
->> LANDLOCK_RULE_NET_SERVICE,
->> +                &net_service_3, 0));
->> +    ASSERT_EQ(ENOMSG, errno);
->> +
->> +    /* Enforces the ruleset. */
->> +    enforce_ruleset(_metadata, ruleset_fd);
->> +
->> +    sockfd = create_socket(_metadata, true, false);
->> +    ASSERT_LE(0, sockfd);
->> +    /* Binds a socket to port[0] */
->> +    ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr6[0], 
->> sizeof(self->addr6[0])));
->> +
->> +    /* Close bounded socket*/
->> +    ASSERT_EQ(0, close(sockfd));
->> +
->> +    sockfd = create_socket(_metadata, false, false);
->> +    ASSERT_LE(0, sockfd);
->> +    /* Binds a socket to port[1] */
->> +    ASSERT_EQ(-1, bind(sockfd, (struct sockaddr *)&self->addr6[1], 
->> sizeof(self->addr6[1])));
->> +    ASSERT_EQ(EACCES, errno);
->> +
->> +    sockfd = create_socket(_metadata, false, false);
->> +    ASSERT_LE(0, sockfd);
->> +    /* Binds a socket to port[2] */
->> +    ASSERT_EQ(-1, bind(sockfd, (struct sockaddr *)&self->addr6[2], 
->> sizeof(self->addr6[2])));
->> +    ASSERT_EQ(EACCES, errno);
->> +}
->> +TEST_HARNESS_MAIN
->> -- 
->> 2.25.1
->>
-> .
