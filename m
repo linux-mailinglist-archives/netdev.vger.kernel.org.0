@@ -2,153 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 195C152D041
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 12:17:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBC8652D05A
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 12:21:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236549AbiESKR0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 06:17:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52950 "EHLO
+        id S236633AbiESKUS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 06:20:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229541AbiESKRZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 06:17:25 -0400
-Received: from zg8tmja5ljk3lje4ms43mwaa.icoremail.net (zg8tmja5ljk3lje4ms43mwaa.icoremail.net [209.97.181.73])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id EAAC237003;
-        Thu, 19 May 2022 03:17:21 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [124.236.130.193])
-        by mail-app3 (Coremail) with SMTP id cC_KCgB3HdgZGYZimG+EAA--.40215S2;
-        Thu, 19 May 2022 18:17:09 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-kernel@vger.kernel.org
-Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH net] net: wireless: marvell: mwifiex: fix sleep in atomic context bugs
-Date:   Thu, 19 May 2022 18:16:56 +0800
-Message-Id: <20220519101656.44513-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgB3HdgZGYZimG+EAA--.40215S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAr1UWr15KrWktw1rKw43GFg_yoWrGw45pa
-        n8KF93Zw40qrs0k3ykJa1kZF98K3WrKry2kFs7Aw4F9F4fGryrZFyaqFyIgFs8XF4vqa4a
-        vr1qqw13Arn3tFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvC14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6r4DMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2Kf
-        nxnUUI43ZEXa7VUbGQ6JUUUUU==
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgAPAVZdtZxiqAAXsz
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S236617AbiESKUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 06:20:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 45E52A7747
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:20:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652955614;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=uTf4UazsnqFm1w0j9PjtulisgMFh6QzykfXouIHj8FI=;
+        b=UHQEavkCYQ2B+KYfbRWaIYLMVNERwWKvnVBrkSywqBUXRYctQO84g2CjEucUEiXdYJQ6jN
+        G8VN6P7+SZMQJP0fDox14t3Vn+vaiuAjgd8gf5sUKQZQ2LAiPk2aqU3g62CtWT/10BBrjt
+        w6TRbRVVTk1y9V75aTTIWzq3wdrPyoQ=
+Received: from mail-pf1-f197.google.com (mail-pf1-f197.google.com
+ [209.85.210.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-650-fH-SO1a3PzqRJgI5UFlhYA-1; Thu, 19 May 2022 06:20:13 -0400
+X-MC-Unique: fH-SO1a3PzqRJgI5UFlhYA-1
+Received: by mail-pf1-f197.google.com with SMTP id i19-20020aa79093000000b0050d44b83506so2495589pfa.22
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:20:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=uTf4UazsnqFm1w0j9PjtulisgMFh6QzykfXouIHj8FI=;
+        b=XDPtvXx96HiC+Dmdyy5lOhztdC6OVOYTQoNo4u25I4srHpbF08OctdmdcommdEDXfz
+         MiUPed6REYRsVvcK0/THWVIoV1SXWJkug5JMa5/xdlWgxPlqV9ERV0pqPqJnlo1BZA+N
+         9CogowgOI+Q+tcCkT/ZLy1PQA7jwGWhfSjqQB7XvCrq8JQfrbkQ26Ou5JnhF2lLAk6GB
+         e+6C5RkuMq02F7iQMfG2TWzbN2uOaqdhY3IXDYNeq29u8zX8nBYM/0iAP7uQLVRXcGTu
+         lqY7xBIUdZzZvnuMK3Ri0VU2NWipII2b2xA3BGdxRrUpRfroEGs4JymmPZSXAaBArl6g
+         2Xog==
+X-Gm-Message-State: AOAM530uR/wSydUfwnnDcSjeQS1pFZjgV5DLtEDrYmh9aMvek5ZgnS7k
+        xQKlXWuANkKAv0UQ8H9z/1DXS5BAOgEqP5Vs1mcseGvu/lV0+0+ozsz+A6BnXNfTKN11RkcqIl4
+        bazwOuz/2tnZrcFbCejto8qOL/dTjAkcs
+X-Received: by 2002:a17:903:22c6:b0:15f:14e1:1518 with SMTP id y6-20020a17090322c600b0015f14e11518mr4080923plg.116.1652955612083;
+        Thu, 19 May 2022 03:20:12 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyu2Gf5VTzOz90w3/G1De6zt6if/VLekZLdOYdtToYtFikUFmLdwo0CCwN8PGggiEKvMyPvE0o9jU6G39mZwzo=
+X-Received: by 2002:a17:903:22c6:b0:15f:14e1:1518 with SMTP id
+ y6-20020a17090322c600b0015f14e11518mr4080890plg.116.1652955611775; Thu, 19
+ May 2022 03:20:11 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
+ <YoX7iHddAd4FkQRQ@infradead.org> <YoX904CAFOAfWeJN@kroah.com> <YoYCIhYhzLmhIGxe@infradead.org>
+In-Reply-To: <YoYCIhYhzLmhIGxe@infradead.org>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Thu, 19 May 2022 12:20:00 +0200
+Message-ID: <CAO-hwJL4Pj4JaRquoXD1AtegcKnh22_T0Z0VY_peZ8FRko3kZw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 00/17] Introduce eBPF support for HID devices
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are sleep in atomic context bugs when uploading device dump
-data on usb interface. The root cause is that the operations that
-may sleep are called in fw_dump_timer_fn which is a timer handler.
-The call tree shows the execution paths that could lead to bugs:
+On Thu, May 19, 2022 at 10:39 AM Christoph Hellwig <hch@infradead.org> wrote:
+>
+> On Thu, May 19, 2022 at 10:20:35AM +0200, Greg KH wrote:
+> > > are written using a hip new VM?
+> >
+> > Ugh, don't mention UDI, that's a bad flashback...
+>
+> But that is very much what we are doing here.
+>
+> > I thought the goal here was to move a lot of the quirk handling and
+> > "fixup the broken HID decriptors in this device" out of kernel .c code
+> > and into BPF code instead, which this patchset would allow.
 
-   (Interrupt context)
-fw_dump_timer_fn
-  mwifiex_upload_device_dump
-    dev_coredumpv(..., GFP_KERNEL)
-      dev_coredumpm()
-        kzalloc(sizeof(*devcd), gfp); //may sleep
-        dev_set_name
-          kobject_set_name_vargs
-            kvasprintf_const(GFP_KERNEL, ...); //may sleep
-            kstrdup(s, GFP_KERNEL); //may sleep
+Yes, quirks are a big motivation for this work. Right now half of the
+HID drivers are less than 100 lines of code, and are just trivial
+fixes (one byte in the report descriptor, one key mapping, etc...).
+Using eBPF for those would simplify the process from the user point of
+view: you drop a "firmware fix" as an eBPF program in your system and
+you can continue working on your existing kernel.
 
-This patch moves the operations that may sleep into a work item.
-The work item will run in another kernel thread which is in
-process context to execute the bottom half of the interrupt.
-So it could prevent atomic context from sleeping.
+The other important aspect is being able to do filtering on the event
+streams themselves.
+This would mean for instance that you allow some applications to have
+access to part of the device features and you reject some of them. The
+main use case I have is to prevent applications to switch a device
+into its bootloader mode and mess up with the firmware.
 
-Fixes: f5ecd02a8b20 ("mwifiex: device dump support for usb interface")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
----
- drivers/net/wireless/marvell/mwifiex/init.c      | 12 +++++++++++-
- drivers/net/wireless/marvell/mwifiex/main.h      |  1 +
- drivers/net/wireless/marvell/mwifiex/sta_event.c |  1 +
- 3 files changed, 13 insertions(+), 1 deletion(-)
+> >
+> > So that would just be exception handling.  I don't think you can write a
+> > real HID driver here at all, but I could be wrong as I have not read the
+> > new patchset (older versions of this series could not do that.)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/init.c b/drivers/net/wireless/marvell/mwifiex/init.c
-index 88c72d1827a..727963d0c82 100644
---- a/drivers/net/wireless/marvell/mwifiex/init.c
-+++ b/drivers/net/wireless/marvell/mwifiex/init.c
-@@ -63,11 +63,19 @@ static void wakeup_timer_fn(struct timer_list *t)
- 		adapter->if_ops.card_reset(adapter);
- }
- 
-+static void fw_dump_work(struct work_struct *work)
-+{
-+	struct mwfiex_adapter *adapter =
-+		container_of(work, struct mwfiex_adapter, devdump_work);
-+
-+	mwifiex_upload_device_dump(adapter);
-+}
-+
- static void fw_dump_timer_fn(struct timer_list *t)
- {
- 	struct mwifiex_adapter *adapter = from_timer(adapter, t, devdump_timer);
- 
--	mwifiex_upload_device_dump(adapter);
-+	schedule_work(&adapter->devdump_work);
- }
- 
- /*
-@@ -321,6 +329,7 @@ static void mwifiex_init_adapter(struct mwifiex_adapter *adapter)
- 	adapter->active_scan_triggered = false;
- 	timer_setup(&adapter->wakeup_timer, wakeup_timer_fn, 0);
- 	adapter->devdump_len = 0;
-+	INIT_WORK(&adapter->devdump_work, fw_dump_work);
- 	timer_setup(&adapter->devdump_timer, fw_dump_timer_fn, 0);
- }
- 
-@@ -401,6 +410,7 @@ mwifiex_adapter_cleanup(struct mwifiex_adapter *adapter)
- {
- 	del_timer(&adapter->wakeup_timer);
- 	del_timer_sync(&adapter->devdump_timer);
-+	cancel_work_sync(&adapter->devdump_work);
- 	mwifiex_cancel_all_pending_cmd(adapter);
- 	wake_up_interruptible(&adapter->cmd_wait_q.wait);
- 	wake_up_interruptible(&adapter->hs_activate_wait_q);
-diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
-index 332dd1c8db3..c8ac2f57f18 100644
---- a/drivers/net/wireless/marvell/mwifiex/main.h
-+++ b/drivers/net/wireless/marvell/mwifiex/main.h
-@@ -900,6 +900,7 @@ struct mwifiex_adapter {
- 	struct work_struct rx_work;
- 	struct workqueue_struct *dfs_workqueue;
- 	struct work_struct dfs_work;
-+	struct work_struct devdump_work;
- 	bool rx_work_enabled;
- 	bool rx_processing;
- 	bool delay_main_work;
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index 7d42c5d2dbf..8e28d0107d7 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -644,6 +644,7 @@ mwifiex_fw_dump_info_event(struct mwifiex_private *priv,
- 
- upload_dump:
- 	del_timer_sync(&adapter->devdump_timer);
-+	cancel_work_sync(&adapter->devdump_work);
- 	mwifiex_upload_device_dump(adapter);
- }
- 
--- 
-2.17.1
+Well, to be fair, yes and no.
+HID-BPF can only talk HID, and so we only act on arrays of bytes. You
+can mess up with the report descriptor or the events themselves, but
+you don't have access to other kernel APIs.
+So no, you can not write a HID-BPF driver that would manually create
+LEDs sysfs endpoints, input endpoints and battery endpoints.
+
+However, HID is very versatile in how you can describe a device. And
+the kernel now supports a lot of those features. So if you really
+want, you can entirely change the look of the device (its report
+descriptor), and rely on hid-core to export those LEDs, inputs and
+battery endpoints.
+
+But we already have this available by making use of hidraw+uhid. This
+involves userspace and there are already projects (for handling
+Corsair keyboard for example) which are doing exactly that, with a big
+security whole in the middle because the application is reading *all*
+events as they are flowing.
+
+One of the most important things here is that this work allows for
+context driven behavior. We can now control how a device is behaving
+depending on the actual application without having to design and
+maintain forever kernel APIs.
+For example, the Surface Dial is a puck that can have some haptic
+feedback when you turn it. However, when you enable the haptic
+feedback you have to reduce the resolution to one event every 5
+degrees or the haptic feedback feels just wrong. But the device is
+capable of sub-degrees of event notifications. Which means you want
+the high resolution mode without haptic, and low res with haptic.
+
+Of course, you can use some new FF capabilities to enable/disable
+haptic, but we have nothing to change the resolution on the fly of a
+HID device, so we'll likely have to create another kernel API through
+a sysfs node or a kernel parameter. But then we need to teach
+userspace to use it and this kernel API is not standard, so it won't
+be used outside of this particular device.
+BPF in that case allows the application which needs it to do the
+changes it requires depending on the context. And when I say
+application, it is mostly either the compositor or a daemon, not gimp.
+
+>
+> And that "exception handling" is most of the driver.
+>
+
+Well, it depends. If hardware makers would not make crappy decisions
+based on the fact that it somehow works under Windows, we wouldn't
+have to do anything to support those devices.
+But for half of the drivers, we are doing dumb things to fix those
+devices in the kernel.
+
+On the other hand, we do have generic protocols in HID that can not be
+replaced by BPF.
+For the exercise, I tried to think about what it would take to rewrite
+the multitouch logic in eBPF, and trust me, you don't want that. The
+code would be a lot of spaghetti and would require access to many
+kernel APIs to handle it properly.
+
+Cheers,
+Benjamin
 
