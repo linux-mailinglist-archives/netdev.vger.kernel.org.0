@@ -2,74 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ADEF52D63B
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:37:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8493452D640
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:37:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239870AbiESOhQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 10:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52714 "EHLO
+        id S239894AbiESOhj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 10:37:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53456 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239803AbiESOhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:37:15 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2EAB79808C
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652971033;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=nuigQAW97z185pYVkfJOlg+wlqI3p7gPUl8yWY860tc=;
-        b=FWeWC6dXfoAM0Kb1zQf2ifuNz3IstonhRSVQlf+HM5MRmu+3/vuVCEN14Efsun7U/OkDLa
-        jFcuFeCE1CO3ETUAmJCfEBew/S71T5n7bwvVt1GluIu/MnRIyMiwAwE48eoOlRz9kSqvAG
-        oXs/jCO60eWBZ5HFluAKNItojjn9XrI=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-629-aO_ejIWoMNWNrp0QQQ9UdQ-1; Thu, 19 May 2022 10:37:10 -0400
-X-MC-Unique: aO_ejIWoMNWNrp0QQQ9UdQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 1E8D53833295;
-        Thu, 19 May 2022 14:37:09 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 337F67774;
-        Thu, 19 May 2022 14:37:05 +0000 (UTC)
-Date:   Thu, 19 May 2022 16:37:02 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v3 1/4] bpf_trace: check size for overflow in
- bpf_kprobe_multi_link_attach
-Message-ID: <20220519143702.GA22773@asgard.redhat.com>
-References: <cover.1652772731.git.esyr@redhat.com>
- <9e4171972a3d75e656073e0c25cd4071a6f652e4.1652772731.git.esyr@redhat.com>
- <CAEf4BzYpNZSY+D6_QP4NE2dN25g4wD43UmJyzmqXCL=HOE9HFA@mail.gmail.com>
+        with ESMTP id S239880AbiESOhV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:37:21 -0400
+Received: from smtp-190b.mail.infomaniak.ch (smtp-190b.mail.infomaniak.ch [IPv6:2001:1600:3:17::190b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 543FD9B18A
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:37:20 -0700 (PDT)
+Received: from smtp-3-0000.mail.infomaniak.ch (unknown [10.4.36.107])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4L3srb0k5dzMrB6s;
+        Thu, 19 May 2022 16:37:19 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0000.mail.infomaniak.ch (Postfix) with ESMTPA id 4L3srZ48DrzlhRVH;
+        Thu, 19 May 2022 16:37:18 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1652971039;
+        bh=i8dfsC9vYadjnpOI+wE6Qwms1Yeulf9OeJQBKI2qsco=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=kuYOZqdhAAAVZzSSIFfz8WIDv9jY5hcaXXQDpf5gToKoOBw0pw0x33Gfm/fHmGjG1
+         Yx4CezO2ed8SPwmr+ibrBA23JCIcPyDvTKXG59vQaGGwSkALr1QLhaOp9Ly0+gDGEi
+         OkKCbHRfm+sxtwGQun25wcPQLMPajZSe14fmqgDk=
+Message-ID: <8683502f-113d-fafd-be85-30cf829fb018@digikod.net>
+Date:   Thu, 19 May 2022 16:37:17 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYpNZSY+D6_QP4NE2dN25g4wD43UmJyzmqXCL=HOE9HFA@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        anton.sirazetdinov@huawei.com
+References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
+ <20220516152038.39594-6-konstantin.meskhidze@huawei.com>
+ <9456ccf3-e2b3-bb65-f24f-e6d2761120e5@digikod.net>
+ <6edfec5b-1b56-17cc-7c0c-76fda1391d45@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v5 05/15] landlock: landlock_add_rule syscall refactoring
+In-Reply-To: <6edfec5b-1b56-17cc-7c0c-76fda1391d45@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,65 +56,266 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 18, 2022 at 04:30:14PM -0700, Andrii Nakryiko wrote:
-> On Tue, May 17, 2022 at 12:36 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
-> >
-> > Check that size would not overflow before calculation (and return
-> > -EOVERFLOW if it will), to prevent potential out-of-bounds write
-> > with the following copy_from_user.  Use kvmalloc_array
-> > in copy_user_syms to prevent out-of-bounds write into syms
-> > (and especially buf) as well.
-> >
-> > Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-> > Cc: <stable@vger.kernel.org> # 5.18
-> > Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
-> > ---
-> >  kernel/trace/bpf_trace.c | 7 ++++---
-> >  1 file changed, 4 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
-> > index 7141ca8..9c041be 100644
-> > --- a/kernel/trace/bpf_trace.c
-> > +++ b/kernel/trace/bpf_trace.c
-> > @@ -2261,11 +2261,11 @@ static int copy_user_syms(struct user_syms *us, unsigned long __user *usyms, u32
-> >         int err = -ENOMEM;
-> >         unsigned int i;
-> >
-> > -       syms = kvmalloc(cnt * sizeof(*syms), GFP_KERNEL);
-> > +       syms = kvmalloc_array(cnt, sizeof(*syms), GFP_KERNEL);
-> >         if (!syms)
-> >                 goto error;
-> >
-> > -       buf = kvmalloc(cnt * KSYM_NAME_LEN, GFP_KERNEL);
-> > +       buf = kvmalloc_array(cnt, KSYM_NAME_LEN, GFP_KERNEL);
-> >         if (!buf)
-> >                 goto error;
-> >
-> > @@ -2461,7 +2461,8 @@ int bpf_kprobe_multi_link_attach(const union bpf_attr *attr, struct bpf_prog *pr
-> >         if (!cnt)
-> >                 return -EINVAL;
-> >
-> > -       size = cnt * sizeof(*addrs);
-> > +       if (check_mul_overflow(cnt, (u32)sizeof(*addrs), &size))
-> > +               return -EOVERFLOW;
-> >         addrs = kvmalloc(size, GFP_KERNEL);
+
+
+On 19/05/2022 11:23, Konstantin Meskhidze wrote:
 > 
-> any good reason not to use kvmalloc_array() here as well and delegate
-> overflow to it. And then use long size (as expected by copy_from_user
-> anyway) everywhere?
-
-Just to avoid double calculation of size, otherwise I don't have
-any significant prefernce, other than -EOVERFLOW would not be reported
-separately (not sure if this a good or a bad thing), and that
-it would be a bit more cumbersome to incorporate the Yonghong's
-suggestion[1] about the INT_MAX check.
-
-[1] https://lore.kernel.org/lkml/412bf136-6a5b-f442-1e84-778697e2b694@fb.com/
-
-> >         if (!addrs)
-> >                 return -ENOMEM;
-> > --
-> > 2.1.4
-> >
 > 
+> 5/17/2022 11:04 AM, Mickaël Salaün пишет:
+>> You can rename the subject to "landlock: Refactor landlock_add_rule()"
+>>
+>>
+>> On 16/05/2022 17:20, Konstantin Meskhidze wrote:
+>>> Landlock_add_rule syscall was refactored to support new
+>>> rule types in future Landlock versions. Add_rule_path_beneath()
+>>
+>> nit: add_rule_path_beneath(), not Add_rule_path_beneath()
+>>
+>    Ok. Thanks. Will be renamed.
+> 
+>>> helper was added to support current filesystem rules. It is called
+>>> by the switch case.
+>>
+>> You can rephrase (all commit messages) in the present form:
+>>
+>> Refactor the landlock_add_rule() syscall with add_rule_path_beneath() 
+>> to support new…
+>>
+>> Refactor the landlock_add_rule() syscall to easily support for a new 
+>> rule type in a following commit. The new add_rule_path_beneath() 
+>> helper supports current filesystem rules.
+>>
+>    Ok. I will fix it.
+>>
+>>>
+>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>> ---
+>>>
+>>> Changes since v3:
+>>> * Split commit.
+>>> * Refactoring landlock_add_rule syscall.
+>>>
+>>> Changes since v4:
+>>> * Refactoring add_rule_path_beneath() and landlock_add_rule() functions
+>>> to optimize code usage.
+>>> * Refactoring base_test.c seltest: adds LANDLOCK_RULE_PATH_BENEATH
+>>> rule type in landlock_add_rule() call.
+>>>
+>>> ---
+>>>   security/landlock/syscalls.c                 | 105 ++++++++++---------
+>>>   tools/testing/selftests/landlock/base_test.c |   4 +-
+>>>   2 files changed, 59 insertions(+), 50 deletions(-)
+>>>
+>>> diff --git a/security/landlock/syscalls.c b/security/landlock/syscalls.c
+>>> index 1db799d1a50b..412ced6c512f 100644
+>>> --- a/security/landlock/syscalls.c
+>>> +++ b/security/landlock/syscalls.c
+>>> @@ -274,67 +274,23 @@ static int get_path_from_fd(const s32 fd, 
+>>> struct path *const path)
+>>>       return err;
+>>>   }
+>>>
+>>> -/**
+>>> - * sys_landlock_add_rule - Add a new rule to a ruleset
+>>> - *
+>>> - * @ruleset_fd: File descriptor tied to the ruleset that should be 
+>>> extended
+>>> - *        with the new rule.
+>>> - * @rule_type: Identify the structure type pointed to by @rule_attr 
+>>> (only
+>>> - *             LANDLOCK_RULE_PATH_BENEATH for now).
+>>> - * @rule_attr: Pointer to a rule (only of type &struct
+>>> - *             landlock_path_beneath_attr for now).
+>>> - * @flags: Must be 0.
+>>> - *
+>>> - * This system call enables to define a new rule and add it to an 
+>>> existing
+>>> - * ruleset.
+>>> - *
+>>> - * Possible returned errors are:
+>>> - *
+>>> - * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at 
+>>> boot time;
+>>> - * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
+>>> - *   &landlock_path_beneath_attr.allowed_access is not a subset of the
+>>> - *   ruleset handled accesses);
+>>> - * - ENOMSG: Empty accesses (e.g. 
+>>> &landlock_path_beneath_attr.allowed_access);
+>>> - * - EBADF: @ruleset_fd is not a file descriptor for the current 
+>>> thread, or a
+>>> - *   member of @rule_attr is not a file descriptor as expected;
+>>> - * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a 
+>>> member of
+>>> - *   @rule_attr is not the expected file descriptor type;
+>>> - * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
+>>> - * - EFAULT: @rule_attr inconsistency.
+>>> - */
+>>> -SYSCALL_DEFINE4(landlock_add_rule, const int, ruleset_fd,
+>>> -        const enum landlock_rule_type, rule_type,
+>>> -        const void __user *const, rule_attr, const __u32, flags)
+>>> +static int add_rule_path_beneath(const int ruleset_fd, const void 
+>>> *const rule_attr)
+>>>   {
+>>>       struct landlock_path_beneath_attr path_beneath_attr;
+>>>       struct path path;
+>>>       struct landlock_ruleset *ruleset;
+>>>       int res, err;
+>>>
+>>> -    if (!landlock_initialized)
+>>> -        return -EOPNOTSUPP;
+>>> -
+>>> -    /* No flag for now. */
+>>> -    if (flags)
+>>> -        return -EINVAL;
+>>> -
+>>>       /* Gets and checks the ruleset. */
+>>
+>> Like I already said, this needs to stay in landlock_add_rule(). I 
+>> think there is some inconsistencies with other patches that rechange 
+>> this part. Please review your patches and make clean patches that 
+>> don't partially revert the previous ones.
+>>
+>    Do you mean to leave this code as it its till adding network part
+> in commit landlock: TCP network hooks implementation?
+>   In this case this patch can be dropped.
 
+The syscall argument check ordering needs to stay in the same order as 
+you can see in the add_rule_checks_ordering test. Other than that, this 
+commit looks good, it just splits the syscall in two functions, which is 
+useful.
+
+
+>>
+>>>       ruleset = get_ruleset_from_fd(ruleset_fd, FMODE_CAN_WRITE);
+>>>       if (IS_ERR(ruleset))
+>>>           return PTR_ERR(ruleset);
+>>>
+>>> -    if (rule_type != LANDLOCK_RULE_PATH_BENEATH) {
+>>> -        err = -EINVAL;
+>>> -        goto out_put_ruleset;
+>>> -    }
+>>> -
+>>>       /* Copies raw user space buffer, only one type for now. */
+>>>       res = copy_from_user(&path_beneath_attr, rule_attr,
+>>> -                 sizeof(path_beneath_attr));
+>>> -    if (res) {
+>>> -        err = -EFAULT;
+>>> -        goto out_put_ruleset;
+>>> -    }
+>>> +                sizeof(path_beneath_attr));
+>>> +    if (res)
+>>> +        return -EFAULT;
+>>>
+>>>       /*
+>>>        * Informs about useless rule: empty allowed_access (i.e. deny 
+>>> rules)
+>>> @@ -370,6 +326,59 @@ SYSCALL_DEFINE4(landlock_add_rule, const int, 
+>>> ruleset_fd,
+>>>       return err;
+>>>   }
+>>>
+>>> +/**
+>>> + * sys_landlock_add_rule - Add a new rule to a ruleset
+>>> + *
+>>> + * @ruleset_fd: File descriptor tied to the ruleset that should be 
+>>> extended
+>>> + *        with the new rule.
+>>> + * @rule_type: Identify the structure type pointed to by @rule_attr 
+>>> (only
+>>> + *             LANDLOCK_RULE_PATH_BENEATH for now).
+>>> + * @rule_attr: Pointer to a rule (only of type &struct
+>>> + *             landlock_path_beneath_attr for now).
+>>> + * @flags: Must be 0.
+>>> + *
+>>> + * This system call enables to define a new rule and add it to an 
+>>> existing
+>>> + * ruleset.
+>>> + *
+>>> + * Possible returned errors are:
+>>> + *
+>>> + * - EOPNOTSUPP: Landlock is supported by the kernel but disabled at 
+>>> boot time;
+>>> + * - EINVAL: @flags is not 0, or inconsistent access in the rule (i.e.
+>>> + *   &landlock_path_beneath_attr.allowed_access is not a subset of 
+>>> the rule's
+>>> + *   accesses);
+>>> + * - ENOMSG: Empty accesses (e.g. 
+>>> &landlock_path_beneath_attr.allowed_access);
+>>> + * - EBADF: @ruleset_fd is not a file descriptor for the current 
+>>> thread, or a
+>>> + *   member of @rule_attr is not a file descriptor as expected;
+>>> + * - EBADFD: @ruleset_fd is not a ruleset file descriptor, or a 
+>>> member of
+>>> + *   @rule_attr is not the expected file descriptor type (e.g. file 
+>>> open
+>>> + *   without O_PATH);
+>>> + * - EPERM: @ruleset_fd has no write access to the underlying ruleset;
+>>> + * - EFAULT: @rule_attr inconsistency.
+>>> + */
+>>> +SYSCALL_DEFINE4(landlock_add_rule,
+>>> +        const int, ruleset_fd, const enum landlock_rule_type, 
+>>> rule_type,
+>>> +        const void __user *const, rule_attr, const __u32, flags)
+>>> +{
+>>> +    int err;
+>>> +
+>>> +    if (!landlock_initialized)
+>>> +        return -EOPNOTSUPP;
+>>> +
+>>> +    /* No flag for now. */
+>>> +    if (flags)
+>>> +        return -EINVAL;
+>>> +
+>>> +    switch (rule_type) {
+>>> +    case LANDLOCK_RULE_PATH_BENEATH:
+>>> +        err = add_rule_path_beneath(ruleset_fd, rule_attr);
+>>> +        break;
+>>> +    default:
+>>> +        err = -EINVAL;
+>>> +        break;
+>>> +    }
+>>> +    return err;
+>>> +}
+>>> +
+>>>   /* Enforcement */
+>>>
+>>>   /**
+>>> diff --git a/tools/testing/selftests/landlock/base_test.c 
+>>> b/tools/testing/selftests/landlock/base_test.c
+>>> index da9290817866..0c4c3a538d54 100644
+>>> --- a/tools/testing/selftests/landlock/base_test.c
+>>> +++ b/tools/testing/selftests/landlock/base_test.c
+>>> @@ -156,11 +156,11 @@ TEST(add_rule_checks_ordering)
+>>>       ASSERT_LE(0, ruleset_fd);
+>>>
+>>>       /* Checks invalid flags. */
+>>> -    ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 1));
+>>> +    ASSERT_EQ(-1, landlock_add_rule(-1, LANDLOCK_RULE_PATH_BENEATH, 
+>>> NULL, 1));
+>>
+>> This must not be changed! I specifically added these tests to make 
+>> sure no one change the argument ordering checks…
+> 
+>    I updated this code cause I got error in base_test.
+>    Ok. But in future commints I will order funtions calls in
+>    landlock_add_rule() so that base_test runs smoothly (ordering checks).
+
+Right, these tests are correct and they can help you.
+
+
+> 
+>>
+>>
+>>>       ASSERT_EQ(EINVAL, errno);
+>>>
+>>>       /* Checks invalid ruleset FD. */
+>>> -    ASSERT_EQ(-1, landlock_add_rule(-1, 0, NULL, 0));
+>>> +    ASSERT_EQ(-1, landlock_add_rule(-1, LANDLOCK_RULE_PATH_BENEATH, 
+>>> NULL, 0));
+>>>       ASSERT_EQ(EBADF, errno);
+>>>
+>>>       /* Checks invalid rule type. */
+>>> -- 
+>>> 2.25.1
+>>>
+>> .
