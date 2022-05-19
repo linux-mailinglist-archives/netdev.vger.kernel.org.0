@@ -2,56 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 35A5B52D9B6
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:03:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DE3552D9C1
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:05:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241585AbiESQDN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 12:03:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43614 "EHLO
+        id S241681AbiESQEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 12:04:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236199AbiESQDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:03:13 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F3A33FBE2
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 09:03:12 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3159BB82552
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 16:03:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABA22C385AA;
-        Thu, 19 May 2022 16:03:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652976189;
-        bh=JmWLNtXD4YSmMOEEfLM3maiZaMWQT6fNiCZllw+odiI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FoKUI9eT6DcGOLXtdPwlrpJ6mznCRXHmvfNgWC+fFjSlH/dcTI38WaVoYJHusAVks
-         I5su5kJtW5TsITEoPMXP5mWM5RBVbha/ZBpEqMT9714GzaRW95vXTfIcU+638B3Ved
-         nLwbqwfV3kbg4YAeoc0bUrHxh4CqF7c8wRnV7BkHZoIpgXALTzaI2CxE6hSGx/2HVt
-         oOhjSF24yhg8rU50gFKDgmSQ4gaPY4ZwYf1uoWi8P+ucU1wwm2JmAT3VEEpWJgB9+k
-         6TQjSyg5J1NNWLf6tnj4TwFqrUK0AsV8RGl7w1Y6/tbHbTORJXSahX0hkUsXHkTfxs
-         glbnqQhLVCT5g==
-Date:   Thu, 19 May 2022 09:03:08 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [regression] dpaa2: TSO offload on lx2160a causes fatal
- exception in interrupt
-Message-ID: <20220519090308.77e37ffb@kernel.org>
-In-Reply-To: <763a84db-d544-6468-cbaa-5c88f9bb3512@leemhuis.info>
-References: <7ca81e6b-85fd-beff-1c2b-62c86c9352e9@leemhuis.info>
-        <20220504080646.ypkpj7xc3rcgoocu@skbuf>
-        <20220512094323.3a89915f@kernel.org>
-        <20220518221226.3712626c@kernel.org>
-        <763a84db-d544-6468-cbaa-5c88f9bb3512@leemhuis.info>
+        with ESMTP id S241676AbiESQEr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:04:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E00FF6A423
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 09:04:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1652976285;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=cn9DGsidYHLKIgSfwQZyuGk5MNvO4cusQzW9CGpB6cM=;
+        b=dyeMJgEwOyCU4MNNIjDl+z645gaw1HLQh5kMHqbA+wJ8/XGGwBaY4vtgC4VrlNSOrqneKR
+        96MSl3RR6y9arqNCRN2WYOq+UD+eqgqufEOLLNgCX3TKNV1fHPqhTPgWwn8OFgwzhP0nJg
+        s6OvFhHfWZintg2rG/V5lyXseL2Yi8Q=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-586-Z3CI-xY3Or-hJRwOgzNf9A-1; Thu, 19 May 2022 12:04:42 -0400
+X-MC-Unique: Z3CI-xY3Or-hJRwOgzNf9A-1
+Received: by mail-qt1-f198.google.com with SMTP id l7-20020a05622a174700b002f3c49f49ffso4593868qtk.15
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 09:04:42 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cn9DGsidYHLKIgSfwQZyuGk5MNvO4cusQzW9CGpB6cM=;
+        b=DguXGZtMo5ZZ1q+ftgQudYWjOVEFVLOCezB7SeyFNbdEeLrFpWuOeQmrbGnU+b51zL
+         lNgrgwcDszvq4FhTktVhqp0sY7mo30rSqg5Tdjq3kJanY1BH9BV5MvauQ5OGQGHn2cOe
+         RPAsv3Pv4PnsgAfM+a9FqvKVVz9bStunTEJ3v+diHnl1A9Qn15IkoLIEVK7PZSfQYItN
+         hHoK8SLSfyAc9BgPbUgnqfiISfNrFbZWGNpiIQKiYoH8T5rFy6vDmOVPXs+nJGU1NI2D
+         Pl3Z0RO9gGz9zSqua2MDX8cyNQltZvj2QdmC88zJuFKyPnlDWt3dS7CgUW7j3Jm2pTrI
+         OfFg==
+X-Gm-Message-State: AOAM530AZlY+GMlfoJwI+ucXVF6mLxuvDtWdS5O4jO0ylMkYOktXcMnQ
+        w203YqYOD2usVDB747rfcY+L6ppG1FJJP+sMOzScL+io836EVQC9BL2pa5iSKci+WxCknfXz60T
+        fNlJQSrPqmVsABD66
+X-Received: by 2002:a05:620a:29c2:b0:6a0:5fac:2f45 with SMTP id s2-20020a05620a29c200b006a05fac2f45mr3340492qkp.529.1652976282228;
+        Thu, 19 May 2022 09:04:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx2Oj1i3ECAaRC8bD7Zm1tmm+5AblYIrHtBAeojqUV3W8R84H9LagTNe0ivlgrCeQ6ZxU1Wmw==
+X-Received: by 2002:a05:620a:29c2:b0:6a0:5fac:2f45 with SMTP id s2-20020a05620a29c200b006a05fac2f45mr3340446qkp.529.1652976281677;
+        Thu, 19 May 2022 09:04:41 -0700 (PDT)
+Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
+        by smtp.gmail.com with ESMTPSA id z10-20020ac87f8a000000b002f39b99f6a3sm1590625qtj.61.2022.05.19.09.04.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 09:04:41 -0700 (PDT)
+Date:   Thu, 19 May 2022 18:04:34 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>
+Cc:     mst@redhat.com, jasowang@redhat.com, lvivier@redhat.com,
+        netdev@vger.kernel.org, lulu@redhat.com, eli@mellanox.com,
+        parav@nvidia.com, virtualization@lists.linux-foundation.org,
+        kvm@vger.kernel.org, lingshan.zhu@intel.com,
+        linux-kernel@vger.kernel.org, gdawar@xilinx.com
+Subject: Re: [PATCH v2] vdpasim: allow to enable a vq repeatedly
+Message-ID: <20220519160434.5s5jzwdmajewpqvg@sgarzare-redhat>
+References: <20220519145919.772896-1-eperezma@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220519145919.772896-1-eperezma@redhat.com>
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,14 +81,20 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 May 2022 08:07:15 +0200 Thorsten Leemhuis wrote:
-> ICYMI
+On Thu, May 19, 2022 at 04:59:19PM +0200, Eugenio Pérez wrote:
+>Code must be resilient to enable a queue many times.
+>
+>At the moment the queue is resetting so it's definitely not the expected
+>behavior.
+>
+>v2: set vq->ready = 0 at disable.
+>
+>Fixes: 2c53d0f64c06 ("vdpasim: vDPA device simulator")
+>Cc: stable@vger.kernel.org
+>Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+>---
+> drivers/vdpa/vdpa_sim/vdpa_sim.c | 5 ++++-
+> 1 file changed, 4 insertions(+), 1 deletion(-)
 
-Oh, I forsurely missed it, don't look at the bz.
+Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
 
-> There was some activity in bugzilla nearly ten days ago and Ioana
-> provided a patch, but seems that didn't help. I asked for a status
-> update yesterday, but no reply yet:
-> https://bugzilla.kernel.org/show_bug.cgi?id=215886
-
-Well, GTK, thanks.
