@@ -2,115 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 981E952DA24
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:25:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C58852DA60
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:38:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241470AbiESQZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 12:25:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54260 "EHLO
+        id S242086AbiESQgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 12:36:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233614AbiESQZ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:25:27 -0400
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B91EC1EE2;
-        Thu, 19 May 2022 09:25:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=CQwUBWNsvvBzsepcIInv96GZu+Y9Fs9IrqHVo2LozcE=; b=RcW2hhpjCtUnjbATXRZWe4Y0iY
-        zARJGjGheRQAFvQECwXaNd9qLFbA+J4TWfPaC7vrpOINDjYwCSljBvnL8BM7v0uSWHfPC1W9Xcsk/
-        55rUl/iYy3kHnvLiJqeqBXP0tMb1e+clQhz0CxNNpjzb6BeD0R8ZpooJzgPoJ+bfxceLc/x3BPc1j
-        toMV7QWUr2h619mN24cQks+fY39q3hmP0SrN5HQEOZTiSx8tBXV/GXx2NLZ1rVm16E3y24HwXCxu1
-        ouvkRN1O2OXMvU9zsgPS0B/VEyrxvODHka8iUPHMxkCCBmU+Nr+Me+gleKv1jha807NwnYLUy6Akn
-        0Cr+j6Vg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:60778)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nrixc-0004FA-F2; Thu, 19 May 2022 17:25:12 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nrixa-0006hk-Ks; Thu, 19 May 2022 17:25:10 +0100
-Date:   Thu, 19 May 2022 17:25:10 +0100
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Cl=E9ment_L=E9ger?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?iso-8859-1?Q?Miqu=E8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v5 05/13] net: pcs: add Renesas MII converter
- driver
-Message-ID: <YoZvZj9sQL2GZAI3@shell.armlinux.org.uk>
-References: <20220519153107.696864-1-clement.leger@bootlin.com>
- <20220519153107.696864-6-clement.leger@bootlin.com>
+        with ESMTP id S241643AbiESQgA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:36:00 -0400
+Received: from azure-sdnproxy-2.icoremail.net (azure-sdnproxy.icoremail.net [52.175.55.52])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id C9FF5126;
+        Thu, 19 May 2022 09:35:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pku.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
+        In-Reply-To:References:Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID; bh=fF518Hc8uEuEf9r8ke5GEOjm5Z2WXlFO1tYv
+        q8jSjcQ=; b=PFvkBAqPoDxwCJmm6z1Khpz/B48C4ZkPVwCay8bZY1DVKyOxzMf0
+        UcZ9z7NYGvgVFQ28k4u2iIeQLOd6y84/G0ZzybxzcUPyCJPgdezQ3kirvK7Sm4DS
+        p9a5eKaFhWxY6CvEONL5sSVGzH0cf2lCvsfUJEpXQtRYIUtkca6jS6M=
+Received: by ajax-webmail-front02 (Coremail) ; Fri, 20 May 2022 00:35:35
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.129.37.75]
+Date:   Fri, 20 May 2022 00:35:35 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?5YiY5rC45b+X?= <lyz_cs@pku.edu.cn>
+To:     "kalle valo" <kvalo@kernel.org>
+Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, arend.vanspriel@broadcom.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: vadc: Fix potential dereference of NULL pointer
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-1ea67e80-64e4-49d5-bd9f-3beeae24b9f2-pku.edu.cn
+In-Reply-To: <87v8u11qvo.fsf@kernel.org>
+References: <1652957674-127802-1-git-send-email-lyz_cs@pku.edu.cn>
+ <87v8u11qvo.fsf@kernel.org>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220519153107.696864-6-clement.leger@bootlin.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Message-ID: <7e12c127.2a22e.180dd2cb2a3.Coremail.lyz_cs@pku.edu.cn>
+X-Coremail-Locale: en_US
+X-CM-TRANSID: 54FpogBXJOTXcYZifHmeBg--.18762W
+X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwELBlPy7vKMbgAAsQ
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-0.4 required=5.0 tests=BAYES_00,DKIM_INVALID,
+        DKIM_SIGNED,RCVD_IN_VALIDITY_RPBL,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Thu, May 19, 2022 at 05:30:59PM +0200, Clément Léger wrote:
-> Add a PCS driver for the MII converter that is present on the Renesas
-> RZ/N1 SoC. This MII converter is reponsible for converting MII to
-> RMII/RGMII or act as a MII pass-trough. Exposing it as a PCS allows to
-> reuse it in both the switch driver and the stmmac driver. Currently,
-> this driver only allows the PCS to be used by the dual Cortex-A7
-> subsystem since the register locking system is not used.
-> 
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-
-Looks much better now, thanks. Only one thing I've spotted is:
-
-> +static int miic_validate(struct phylink_pcs *pcs, unsigned long *supported,
-> +			 const struct phylink_link_state *state)
-> +{
-> +	if (state->interface == PHY_INTERFACE_MODE_RGMII ||
-> +	    state->interface == PHY_INTERFACE_MODE_RGMII_ID ||
-> +	    state->interface == PHY_INTERFACE_MODE_RGMII_TXID ||
-> +	    state->interface == PHY_INTERFACE_MODE_RGMII_RXID ||
-
-The above could use:
-
-	if (phy_interface_mode_is_rgmii(state->interface) ||
-
-Also, as a request to unbind this driver would be disasterous to users,
-I think you should set ".suppress_bind_attrs = true" to prevent the
-sysfs bind/unbind facility being available. This doesn't completely
-solve the problem.
-
-Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+CgoKPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2VzLS0tLS0KPiBGcm9tOiAiS2FsbGUgVmFsbyIgPGt2
+YWxvQGtlcm5lbC5vcmc+Cj4gU2VudCBUaW1lOiAyMDIyLTA1LTE5IDIzOjMwOjUxIChUaHVyc2Rh
+eSkKPiBUbzogIllvbmd6aGkgTGl1IiA8bHl6X2NzQHBrdS5lZHUuY24+Cj4gQ2M6IGFtaXRrYXJ3
+YXJAZ21haWwuY29tLCBnYW5hcGF0aGkwMTdAZ21haWwuY29tLCBzaGFydmFyaS5oYXJpc2FuZ2Ft
+QG54cC5jb20sIGh1eGlubWluZzgyMEBnbWFpbC5jb20sIGRhdmVtQGRhdmVtbG9mdC5uZXQsIGVk
+dW1hemV0QGdvb2dsZS5jb20sIGt1YmFAa2VybmVsLm9yZywgcGFiZW5pQHJlZGhhdC5jb20sIGFy
+ZW5kLnZhbnNwcmllbEBicm9hZGNvbS5jb20sIGxpbnV4LXdpcmVsZXNzQHZnZXIua2VybmVsLm9y
+ZywgbmV0ZGV2QHZnZXIua2VybmVsLm9yZywgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZywg
+ZnV5cUBzdHUucGt1LmVkdS5jbgo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggdjJdIGlpbzogdmFkYzog
+Rml4IHBvdGVudGlhbCBkZXJlZmVyZW5jZSBvZiBOVUxMIHBvaW50ZXIKPiAKPiBZb25nemhpIExp
+dSA8bHl6X2NzQHBrdS5lZHUuY24+IHdyaXRlczoKPiAKPiA+IFRoZSByZXR1cm4gdmFsdWUgb2Yg
+dmFkY19nZXRfY2hhbm5lbCgpIG5lZWRzIHRvIGJlIGNoZWNrZWQKPiA+IHRvIGF2b2lkIHVzZSBv
+ZiBOVUxMIHBvaW50ZXIuIEZpeCB0aGlzIGJ5IGFkZGluZyB0aGUgbnVsbAo+ID4gcG9pbnRlciBj
+aGVjayBvbiBwcm9wLgo+ID4KPiA+IEZpeGVzOiAwOTE3ZGU5NGMgKCJpaW86IHZhZGM6IFF1YWxj
+b21tIFNQTUkgUE1JQyB2b2x0YWdlIEFEQyBkcml2ZXIiKQo+ID4KPiA+IFNpZ25lZC1vZmYtYnk6
+IFlvbmd6aGkgTGl1IDxseXpfY3NAcGt1LmVkdS5jbj4KPiA+IC0tLQo+ID4gIGRyaXZlcnMvaWlv
+L2FkYy9xY29tLXNwbWktdmFkYy5jIHwgMjMgKysrKysrKysrKysrKysrKysrKysrKy0KPiA+ICAx
+IGZpbGUgY2hhbmdlZCwgMjIgaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQo+IAoKSSdtIHNv
+cnJ5IHRvIHNlbmQgdGhpcyB0byBsaW51eC13aXJlbGVzcyBieSBtaXN0YWtlLiBJIHdpbGwgY2F1
+dGlvdXNseSBzdWJtaXQgcGF0Y2hlcyBsYXRlci4KCj4gRGlkIHlvdSBzZW50IHRoaXMgdG8gbGlu
+dXgtd2lyZWxlc3MgYnkgbWlzdGFrZT8KPiAKPiAtLSAKPiBodHRwczovL3BhdGNod29yay5rZXJu
+ZWwub3JnL3Byb2plY3QvbGludXgtd2lyZWxlc3MvbGlzdC8KPiAKPiBodHRwczovL3dpcmVsZXNz
+Lndpa2kua2VybmVsLm9yZy9lbi9kZXZlbG9wZXJzL2RvY3VtZW50YXRpb24vc3VibWl0dGluZ3Bh
+dGNoZXMK
