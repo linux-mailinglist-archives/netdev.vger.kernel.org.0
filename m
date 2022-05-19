@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AEFF652DFCB
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 00:02:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DB6E52DFC6
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 00:02:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245361AbiESWCg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 18:02:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46684 "EHLO
+        id S245402AbiESWCe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 18:02:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239337AbiESWCU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 18:02:20 -0400
+        with ESMTP id S242204AbiESWCV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 18:02:21 -0400
 Received: from mail.netfilter.org (mail.netfilter.org [217.70.188.207])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5AD4FF68BA;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CC773F68BC;
         Thu, 19 May 2022 15:02:19 -0700 (PDT)
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
         pabeni@redhat.com
-Subject: [PATCH net-next 09/11] netfilter: conntrack: re-fetch conntrack after insertion
-Date:   Fri, 20 May 2022 00:02:04 +0200
-Message-Id: <20220519220206.722153-10-pablo@netfilter.org>
+Subject: [PATCH net-next 10/11] netfilter: cttimeout: fix slab-out-of-bounds read in cttimeout_net_exit
+Date:   Fri, 20 May 2022 00:02:05 +0200
+Message-Id: <20220519220206.722153-11-pablo@netfilter.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220519220206.722153-1-pablo@netfilter.org>
 References: <20220519220206.722153-1-pablo@netfilter.org>
@@ -37,41 +37,44 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Florian Westphal <fw@strlen.de>
 
-In case the conntrack is clashing, insertion can free skb->_nfct and
-set skb->_nfct to the already-confirmed entry.
+syzbot reports:
+BUG: KASAN: slab-out-of-bounds in __list_del_entry_valid+0xcc/0xf0 lib/list_debug.c:42
+[..]
+ list_del include/linux/list.h:148 [inline]
+ cttimeout_net_exit+0x211/0x540 net/netfilter/nfnetlink_cttimeout.c:617
 
-This wasn't found before because the conntrack entry and the extension
-space used to free'd after an rcu grace period, plus the race needs
-events enabled to trigger.
+No reproducer so far. Looking at recent changes in this area
+its clear that the free_head must not be at the end of the
+structure because nf_ct_timeout structure has variable size.
 
-Reported-by: <syzbot+793a590957d9c1b96620@syzkaller.appspotmail.com>
-Fixes: 71d8c47fc653 ("netfilter: conntrack: introduce clash resolution on insertion race")
-Fixes: 2ad9d7747c10 ("netfilter: conntrack: free extension area immediately")
+Reported-by: <syzbot+92968395eedbdbd3617d@syzkaller.appspotmail.com>
+Fixes: 78222bacfca9 ("netfilter: cttimeout: decouple unlink and free on netns destruction")
 Signed-off-by: Florian Westphal <fw@strlen.de>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- include/net/netfilter/nf_conntrack_core.h | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ net/netfilter/nfnetlink_cttimeout.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/net/netfilter/nf_conntrack_core.h b/include/net/netfilter/nf_conntrack_core.h
-index 6406cfee34c2..37866c8386e2 100644
---- a/include/net/netfilter/nf_conntrack_core.h
-+++ b/include/net/netfilter/nf_conntrack_core.h
-@@ -58,8 +58,13 @@ static inline int nf_conntrack_confirm(struct sk_buff *skb)
- 	int ret = NF_ACCEPT;
+diff --git a/net/netfilter/nfnetlink_cttimeout.c b/net/netfilter/nfnetlink_cttimeout.c
+index f069c24c6146..af15102bc696 100644
+--- a/net/netfilter/nfnetlink_cttimeout.c
++++ b/net/netfilter/nfnetlink_cttimeout.c
+@@ -35,12 +35,13 @@ static unsigned int nfct_timeout_id __read_mostly;
  
- 	if (ct) {
--		if (!nf_ct_is_confirmed(ct))
-+		if (!nf_ct_is_confirmed(ct)) {
- 			ret = __nf_conntrack_confirm(skb);
-+
-+			if (ret == NF_ACCEPT)
-+				ct = (struct nf_conn *)skb_nfct(skb);
-+		}
-+
- 		if (ret == NF_ACCEPT && nf_ct_ecache_exist(ct))
- 			nf_ct_deliver_cached_events(ct);
- 	}
+ struct ctnl_timeout {
+ 	struct list_head	head;
++	struct list_head	free_head;
+ 	struct rcu_head		rcu_head;
+ 	refcount_t		refcnt;
+ 	char			name[CTNL_TIMEOUT_NAME_MAX];
+-	struct nf_ct_timeout	timeout;
+ 
+-	struct list_head	free_head;
++	/* must be at the end */
++	struct nf_ct_timeout	timeout;
+ };
+ 
+ struct nfct_timeout_pernet {
 -- 
 2.30.2
 
