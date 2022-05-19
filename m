@@ -2,123 +2,202 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BAC352D656
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:43:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6B5552D65E
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:44:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239904AbiESOnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 10:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39734 "EHLO
+        id S233484AbiESOor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 10:44:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40582 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239911AbiESOnX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:43:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A4914D02A7
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:43:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652971401;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=50jb+lr+8bzs9LBIgH+1tS3BRiRPfRl1oUUzkOAyhsQ=;
-        b=ilLrZyFcENY94kKatLHTylWzhq1ERH8vBVCSI9moECYpE/lJsq9E30gnOq9L2OXNeK5QE8
-        mdkNYpR4CuWFIiBWO9NHjgPVY5+yj7Iud5W12Rg60yR4Tm/8stIbsSgt3sbp20chKRsCqE
-        E68yr7Gaix/cpOS/ywuh0lsvizfT/T8=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-445-R9QJfxKaOXWEcSiAtGftmA-1; Thu, 19 May 2022 10:43:17 -0400
-X-MC-Unique: R9QJfxKaOXWEcSiAtGftmA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.rdu2.redhat.com [10.11.54.6])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4C3F080A0AD;
-        Thu, 19 May 2022 14:43:16 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 437942166B25;
-        Thu, 19 May 2022 14:43:12 +0000 (UTC)
-Date:   Thu, 19 May 2022 16:43:09 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v3 4/4] bpf_trace: pass array of u64 values in
- kprobe_multi.addrs
-Message-ID: <20220519144309.GB22773@asgard.redhat.com>
-References: <cover.1652772731.git.esyr@redhat.com>
- <6ef675aeeea442fa8fc168cd1cb4e4e474f65a3f.1652772731.git.esyr@redhat.com>
- <CAEf4BzYNa0F21ydMLvmeGZWzvO_o5Fh0Af0zwWGNxMh6emQTSg@mail.gmail.com>
+        with ESMTP id S230056AbiESOop (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:44:45 -0400
+Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140048.outbound.protection.outlook.com [40.107.14.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9C35D0295;
+        Thu, 19 May 2022 07:44:44 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hYc7thVRmr+me3RkLmE8SHLOrl5/0uMhrcGRr5tMj9lJt1RtvgqAGWGPEEqZZNrD8jDVNiSq2EqKJ3xfUjdYA1y2rsaQkdubTszYpwkxxY3Kh3GnsOKkG1VQCCuZ9ZiLp9uM7GbifWhCHEDSbCLMMVOMep+cOphlie8RO6EZnk4Qd7nQp/bVxNtvEwCRruXTdIXbMX5SwDK/HnTm2tHhZlYz73gRFeOfVeXcJI0ABzfmWAEY1/XGHG+e7AeWn1LNEY7DOc7tJs/zob0x90uFEj1rmrXEWYPGVoWrKLIpxFd78Jg2UDQTTEVvJ+XbIlKLvELb8Q4FBx3wkkvjPAz+5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=3WYWoMfe97xeO0NXR+M5FsutwqpyloMd0DHgVIIAo9w=;
+ b=gzrmpsDw84dQ69PncQctU8p8q+Da+yNe0OSgg8ED3fonYEEuilLycXWM72LsXFplmp6QXB0mwxDebYr7gahKz+R+Q1R7OYnAl0IvVhkNmVzSiM0zGdy4NyQcIw+aS7lwPs8xEM2tMJWtjQ3KG4LlBsZbrnwXLPMvyPoJQJE+FrNNJuhFTVqdHel1N3dGkp/SdKN4BnTOPXCklljx7/0iOizTSdj3edZp0vxFoKtBKvEuqWwmfPTQhwQ2lLsDw7D8+2PEpDFzXrQG0IaTjEWnImK8vCUk1toUPc20q603Pb0OplSSt6c6PgVNilZ+QgJXV7B17jtv5B65hmlKEoiEbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3WYWoMfe97xeO0NXR+M5FsutwqpyloMd0DHgVIIAo9w=;
+ b=DdXiY2hUX3DkDMMXnSDK+xYDt/poCXXKW4pkafuAtYX2+r/C/cGBj3yWkpu12OxVFz1ulK98OaRwIAKnZCAk2SNBqLb6p7aL53Xd7zJTAMO54JV54SYmNTp9yIIMQko2V6zC8djL1nahKTllCkuSV4nR54A7U2a6+qbvtYAARWk=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM0PR04MB6034.eurprd04.prod.outlook.com (2603:10a6:208:143::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Thu, 19 May
+ 2022 14:44:42 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::fd1f:cc16:dafe:4bf5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::fd1f:cc16:dafe:4bf5%5]) with mapi id 15.20.5250.014; Thu, 19 May 2022
+ 14:44:42 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: Re: [RFC v8 net-next 00/16] add support for VSC7512 control over SPI
+Thread-Topic: [RFC v8 net-next 00/16] add support for VSC7512 control over SPI
+Thread-Index: AQHYYwzpO7u0NDHwdU2qDb+lARh+Pa0WyfwAgAgr3wCAB2H8gA==
+Date:   Thu, 19 May 2022 14:44:41 +0000
+Message-ID: <20220519144441.tqhihlaq6vbmpmvd@skbuf>
+References: <20220508185313.2222956-1-colin.foster@in-advantage.com>
+ <20220509171304.hfh5rbynt4qtr6m4@skbuf> <20220514220010.GB3629122@euler>
+In-Reply-To: <20220514220010.GB3629122@euler>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 12507f4c-ad86-40fd-717b-08da39a61bcb
+x-ms-traffictypediagnostic: AM0PR04MB6034:EE_
+x-microsoft-antispam-prvs: <AM0PR04MB603453DE93816937EAB58F85E0D09@AM0PR04MB6034.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 3yBBEViEndQfGImISI9lXunb2RhluLrHVeR2VpZIZK+HEUQkCqETjVKzEBQZtcuG7AZs/l22p9MY7cZ1/Vy9bL7rxSr3yr5aZBk3SbFgBMlYkkdmZdaDQcoESVKi6y/uPvy6e/pVutyETWCIztY0iUPYXnBGvxAyuH+/hTP4OCy+tZ3z1xzyBuLT0a5M1Yy1DH/5ZrBvogdWcnYRy1ghetnG4Ys3qUoIaHyLwH/3InjJUvIxEBdV8JwlvsqXX/dW1UUNmc7eKJh8ePj+k8X7k7/YiKitIdRi/kyHBCGZSPhsSH9PknBxhPjfb4KcA2JJ3NeevXvOdu4mxxvZbto3aGVWhgiicslqImIIQgJ6gSjNUhauRBKYSygWzp0tktUMPujAsTFoeFffPpx4DTNpienL236dx6eO6pn0FF9p6lvkQ88L6YqUnrJ1AHOGfaF/THrlerMw2FrkK8W/nQ5mR0YV46fVYre2954uiVXwodV36rAxifCxjgfXjHdsKMLqqUqXqr4+itox7pS9SLQimc8tIYweax1N7UcEg17oc50mqoQz2OLwxtVLuFChnIWXjxVaeR7Kz8WLTHijBj8c615ABhjON00V77qzORuVgHdkbX+njajtemD2JCpxoWFypEuFcHcXt6i7Wi+O3amQ2syztM8oX/AmFAhsI5d4lasJNrqph+EcQMrR+DzlHm4rOMpoTccsSkCiZ782eTcWDA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(33716001)(8936002)(66946007)(6916009)(76116006)(54906003)(6486002)(6512007)(26005)(9686003)(5660300002)(44832011)(316002)(6506007)(71200400001)(7416002)(2906002)(508600001)(186003)(1076003)(38100700002)(38070700005)(8676002)(4326008)(66556008)(66476007)(66446008)(64756008)(122000001)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?h+2VP3v8TbhHWLJBgXv/1NqzuOxOgvOfOMSLF2CXbDOtZbvnVIquwv9etbGN?=
+ =?us-ascii?Q?2TSmuUbMsIoYUmuKcb/RxAf1RLf+e6vf94KUmLc9foWm6f/i9fLHCKJ6de8m?=
+ =?us-ascii?Q?9snh+rWxZEFfafXlnCYvnwE27Y3qZRzBZY2XUTdBhq7tZNdXpr9GIOS54TKW?=
+ =?us-ascii?Q?DQAy/GLDjk454AAB3HiWNZR3fCPmzly1yh+fMpWBv2nMuhuyLRSkIjsjIFVB?=
+ =?us-ascii?Q?Cf6RvUpPlj5yG5P+/9XS5RQ62+1xLY02Hk+EnhySpFoxfJm2NAaJXz+bD8Om?=
+ =?us-ascii?Q?d+gcn0Vtv/8MXDliIoOd6qEBumQrZCABzXwLpU13i8pxpkxqT+pNw9PHchkO?=
+ =?us-ascii?Q?pObjcuH9sqoP5qiouLWtJUNjX/dMS+LBYeGyj9F5jwhOEcS6R6b+lkJRFtY4?=
+ =?us-ascii?Q?SIWrO57T+ooNHVGEugRCZmYTfmewlx3DRKgqaCdjEsob7CFoFNfbXmuCiirJ?=
+ =?us-ascii?Q?66ay3tKKHSxO3H+MdNWoOpJgYpAl6T5PxNXX/jEerd2nEW/bkiA/QZMkUfko?=
+ =?us-ascii?Q?Xx/Nt6GOvb2oBv7TOFA3BQzX8EL+W1BnNilj+44/KV7F7IMYE0BMFX7yisWS?=
+ =?us-ascii?Q?kPCnJ7OZHHJUvRzWGchyytH07YywhUyq7zB0aopFh3PlCQSpzf2mofAibmSz?=
+ =?us-ascii?Q?Oel80dH+3Rj4qeVG70JsVdsw4a57Yc9GEQxGoC69hfIyWZwt/pqSHkte5hSS?=
+ =?us-ascii?Q?TTtPMOxT9AZxqOcUXBrXaABIiDdZ8fZdXBcmstKOJdSZja+bJDC5r+C4VeFu?=
+ =?us-ascii?Q?oyO6vlbalV8BJvslP1u8Gu+NCOjr0acz5OIiAdpyy87kyds8jY5uaMqH6FU7?=
+ =?us-ascii?Q?6ZOHB2jWEiVTZomTNmJ1yWPgv5ATjgryHhWkZXU+wq2txIoHQvhh1029S5QB?=
+ =?us-ascii?Q?uMr9bO1rsb82AJ2peP5x7wn31MPXrANKzGpCj4pfJoJ/Xv2MBOcPjQbautJ2?=
+ =?us-ascii?Q?gMfbMAxq/+QsEgmfq5pYKL99T8auMphr/Blu32a8HB/hUTS1+YniNb+vC5T0?=
+ =?us-ascii?Q?GaxapvWDy6FazjT5yl/sny79l1VDwJbLRmb6Li9ANYU5CV1giQNSK2TUJm2E?=
+ =?us-ascii?Q?fWXJv9etqSh9QFNyar9MpzOvroffHLFVx1SBzwRZrZXrpfNDnM/rjBSYZWe5?=
+ =?us-ascii?Q?o/SLUlSsma6Zf2sF4WwlzkP8IZTOw/bizWBS9M66uPGzz393KiyqbKnsw7aS?=
+ =?us-ascii?Q?z2U9iJSmUOHEQnGsOBbr7csaX3ZnvvxVGX4fW8N1YTDSHtJKKvNeNugJhTAS?=
+ =?us-ascii?Q?R1EQT1nFU/+WLM41oN4isJ/na0NUJudp70fxRnV+3BKDtWltJVhSS7wXO2Aj?=
+ =?us-ascii?Q?xC2m9a+s9DoCf0jG6QzlizZkPtyFVYytjk5cKr+oXouVP5NXE38WMm4ZPeJN?=
+ =?us-ascii?Q?RhGsBdGMJEw+cQ/LxqrnqeYl8Fnw3hAB9WcZwrhiKdCo68mAxb7+EUlYn+vc?=
+ =?us-ascii?Q?8+5LiqdeuFEQr0q5VlwhEp/c5VwcjK5yRTpq03HrsldYjsA5t7sKX7q4SG2T?=
+ =?us-ascii?Q?CVlwrwUHP+uvKCZ4OwFif8UPcGiQbAI0O/s1DzGpcav9u81rqz1/V1sxfxK+?=
+ =?us-ascii?Q?Cn3Ocldt9dROio6w/r8GHm5qiQfMFsLI47T/9RqB0+tAOpe6hjzM3jydEW8G?=
+ =?us-ascii?Q?QWECN2WYoq7/Ni/hGtFjBqZqi/nv3psvABkPyXUFXS0I6MQG8Z3psdx0KVs5?=
+ =?us-ascii?Q?jSI24tw2TlXa8vo8jAvk/213Dl7fuXMkESzVh5CheHcvYDRYoFNmk/VQ4lUo?=
+ =?us-ascii?Q?PVhOrSp+8Np+U1Ne1Hf2t5EUlYjWpJE=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <C5AB5B0067387D48B2BE5ECFC5EF3257@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzYNa0F21ydMLvmeGZWzvO_o5Fh0Af0zwWGNxMh6emQTSg@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.6
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 12507f4c-ad86-40fd-717b-08da39a61bcb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2022 14:44:41.9393
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ldxs32fcOtbZyC/wI7OmaqOHCeS4qdae6cbPCYvpxDoEg000XYrrh4agjzRmdFntTBopIgaPLjXJcGw6odszKA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6034
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 18, 2022 at 04:50:58PM -0700, Andrii Nakryiko wrote:
-> On Tue, May 17, 2022 at 12:37 AM Eugene Syromiatnikov <esyr@redhat.com> wrote:
-> >
-> > With the interface as defined, it is impossible to pass 64-bit kernel
-> > addresses from a 32-bit userspace process in BPF_LINK_TYPE_KPROBE_MULTI,
-> > which severly limits the useability of the interface, change the ABI
-> > to accept an array of u64 values instead of (kernel? user?) longs.
-> > Interestingly, the rest of the libbpf infrastructure uses 64-bit values
-> > for kallsyms addresses already, so this patch also eliminates
-> > the sym_addr cast in tools/lib/bpf/libbpf.c:resolve_kprobe_multi_cb().
-> >
-> > Fixes: 0dcac272540613d4 ("bpf: Add multi kprobe link")
-> > Fixes: 5117c26e877352bc ("libbpf: Add bpf_link_create support for multi kprobes")
-> > Fixes: ddc6b04989eb0993 ("libbpf: Add bpf_program__attach_kprobe_multi_opts function")
-> > Fixes: f7a11eeccb111854 ("selftests/bpf: Add kprobe_multi attach test")
-> > Fixes: 9271a0c7ae7a9147 ("selftests/bpf: Add attach test for bpf_program__attach_kprobe_multi_opts")
-> > Fixes: 2c6401c966ae1fbe ("selftests/bpf: Add kprobe_multi bpf_cookie test")
-> > Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
-> > ---
-> >  kernel/trace/bpf_trace.c                           | 25 ++++++++++++++++++----
-> 
-> kernel changes should go into a separate patch
+Hi Colin,
 
-Sure, they can be split, the only reason they are this way is to keep
-API/ABI in sync between the kernel code and the user space one.
+On Sat, May 14, 2022 at 03:00:10PM -0700, Colin Foster wrote:
+> On Mon, May 09, 2022 at 05:13:05PM +0000, Vladimir Oltean wrote:
+> > Hi Colin,
+> >=20
+> > On Sun, May 08, 2022 at 11:52:57AM -0700, Colin Foster wrote:
+> > >=20
+> > > 		mdio0: mdio0@0 {
+> >=20
+> > This is going to be interesting. Some drivers with multiple MDIO buses
+> > create an "mdios" container with #address-cells =3D <1> and put the MDI=
+O
+> > bus nodes under that. Others create an "mdio" node and an "mdio0" node
+> > (and no address for either of them).
+> >=20
+> > The problem with the latter approach is that
+> > Documentation/devicetree/bindings/net/mdio.yaml does not accept the
+> > "mdio0"/"mdio1" node name for an MDIO bus.
+>=20
+> I'm starting this implementation. Yep - it is interesting.
+>=20
+> A quick grep for "mdios" only shows one hit:
+> arch/arm64/boot/dts/freescale/fsl-lx2160a-bluebox3.dts
+>=20
+> While that has an mdios field (two, actually), each only has one mdio
+> bus, and they all seem to get parsed / registered through
+> sja1105_mdiobus_.*_register.
+>=20
+>=20
+> Is this change correct (I have a feeling it isn't):
+>=20
+> ocelot-chip@0 {
+>     #address-cells =3D <1>;
+>     #size-cells =3D <0>;
+>=20
+>     ...
+>=20
+>     mdio0: mdio@0 {
+>         reg=3D<0>;
+>         ...
+>     };
+>=20
+>     mdio1: mdio@1 {
+>         reg =3D <1>;
+>         ...
+>     };
+>     ...
+> };
+>=20
+> When I run this with MFD's (use,)of_reg, things work as I'd expect. But
+> I don't directly have the option to use an "mdios" container here
+> because MFD runs "for_each_child_of_node" doesn't dig into
+> mdios->mdio0...
 
-> (and seems like they
-> logically fit together with patch #3, no?)
-
-Patch #3 doesn't change the API/ABI, it only fixes the implementation
-in terms of compat handling (and it is more straightforward),
-that is why I decided to have it separately. The compat handling
-of addrs, on the other hand, can't be fixed without the ABI change.
-
-> >  tools/lib/bpf/bpf.h                                |  2 +-
-> >  tools/lib/bpf/libbpf.c                             |  8 +++----
-> >  tools/lib/bpf/libbpf.h                             |  2 +-
-> >  .../testing/selftests/bpf/prog_tests/bpf_cookie.c  |  2 +-
-> >  .../selftests/bpf/prog_tests/kprobe_multi_test.c   |  8 +++----
-> >  6 files changed, 32 insertions(+), 15 deletions(-)
-> >
-> 
-> [...]
-> 
-
+Sorry for the delayed response. I think you can avoid creating an
+"mdios" container node, but you need to provide some "reg" values based
+on which the MDIO controllers can be distinguished. What is your convention
+for "reg" values of MFD cells? Maybe pass the base address/size of this
+device's regmap as the "reg", even if the driver itself won't use it?=
