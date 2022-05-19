@@ -2,150 +2,374 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C51F52DCAD
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 20:24:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5045752DCBA
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 20:27:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243856AbiESSYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 14:24:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44210 "EHLO
+        id S241957AbiESS1u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 14:27:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243851AbiESSYj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 14:24:39 -0400
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EF7DEAD3D;
-        Thu, 19 May 2022 11:24:38 -0700 (PDT)
-Received: by mail-ed1-x535.google.com with SMTP id c12so7977302eds.10;
-        Thu, 19 May 2022 11:24:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=FWPD97cb8S73dntadkkurTxu7r8LXYywfF/bwbTXOx0=;
-        b=aJ7gnWzJsrDBi/w2joafUjA7zOHjzUeqgdE2uEjE8QuVpqMbPMvHh/tpz8akuiXbKE
-         cKW0BpY2qfrd0pTczmdcvMOeE7UU/7R7uQw1c+JiSDMJ66wD6/qmV4QAVg5bs7Qs8PUi
-         trNL82H224lOgZ1Of8LZhiWNW3/DpgLOAvrskY3hNOZGRJvuzl0mXQJT2q6KryzveOVs
-         9W0Owse0kbAZ4DGNVswUsBWN2+e20FNXXbB4VKw5Fp3EeylYhA8fCTQRa95doBf9o85O
-         VofRU9azL4rl8Lbj8uJ6RduSwrdXW4oyeT4kBVVbx+In3ll7YHyNXjPudIVZqMWfcxRf
-         4EXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=FWPD97cb8S73dntadkkurTxu7r8LXYywfF/bwbTXOx0=;
-        b=wWlaf36qMWhJBETMeVXj0EjKnxV6XVNjuEM4XtDA0ZaHgPjaXB7NEvpoSEmd0mhljX
-         kYd+qaJteODEtt8oKJtjFEGja8GU8wkS3w9p5MIVHPr6iek+R3YTKiY6rYVHCGnLacJn
-         Dx0ppUChnq4V4E4+sZC0d4mGp1POqr1qBDBUX/dAXS4fIyrgKpy487NOTfqUJhiij7C3
-         WDsq2JfBwtWsKSe0EkWWKjBoHxfcPbaevKJW/5qsQRHiHpnUE76rs5nzLZqQEdaipfK5
-         TRU+G0i9dGI+jq5rehVsASP0ocl2vaN0vTqz6CnZJAF13yLkN3yTRgkCCCfcQSuy5ZhB
-         GEPw==
-X-Gm-Message-State: AOAM5334nHDhvuHgVLAJHOt4hqVIU54k1cgPOjWwSIHZgh5MhpyA0h7y
-        /1Frp16CmUD/fUA4US0WMOA=
-X-Google-Smtp-Source: ABdhPJxHy8T7Shze22UGB/kayCDpRB32BDswmmz82apYxAY9sJl2ae5VWNQEW/AxETs6nkM3jo44MQ==
-X-Received: by 2002:a05:6402:50d1:b0:42b:c3e:d71e with SMTP id h17-20020a05640250d100b0042b0c3ed71emr2343989edb.144.1652984677093;
-        Thu, 19 May 2022 11:24:37 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id h13-20020aa7c60d000000b0042ab649183asm3128709edq.35.2022.05.19.11.24.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 11:24:36 -0700 (PDT)
-Date:   Thu, 19 May 2022 21:24:34 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     =?utf-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?utf-8?Q?Miqu=C3=A8l?= Raynal <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v5 08/13] net: dsa: rzn1-a5psw: add statistics
- support
-Message-ID: <20220519182434.ncjyoelgndvoev33@skbuf>
-References: <20220519153107.696864-1-clement.leger@bootlin.com>
- <20220519153107.696864-9-clement.leger@bootlin.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220519153107.696864-9-clement.leger@bootlin.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232608AbiESS1t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 14:27:49 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D7C80208
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:27:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1652984868; x=1684520868;
+  h=from:to:cc:subject:date:message-id;
+  bh=379FjDavZt4p+BMB0lgWHi0FOlVYjby9E4D7/8NEA6A=;
+  b=CDj34yblvVfWE6WTRJiYKcZHYXHD4pI/r0F8OWsvWNiYp/nyYh+mkG5p
+   eXuD9va0FazQQpKhlI4+G0nHHe/XHdInOzpSV4Z7nP3U4Y2tgDTpremP0
+   s02arWurqMVCPHEiHmaqXCQOP5k3OMDpFEQjpGHlPqZQkyRwqOWCpd0UI
+   QbS2lb+txAHaauIxN0lEHz91Ml4xG2DBCApm0ujjO8a0I8FEzZcXPil2m
+   P4RiOXgpq2sOpOwSKbqZk289q5eALCO8XfK1MAQCOu3zaGUGD1MPr6lgw
+   7EbAZpeUYU7CC9JDX8V/jixOmIWtDnPb0V6MFXJpjDS9GzC5zMUvaFZbG
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="271142340"
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="271142340"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 11:27:24 -0700
+X-IronPort-AV: E=Sophos;i="5.91,237,1647327600"; 
+   d="scan'208";a="557044847"
+Received: from dbustama-mobl.amr.corp.intel.com (HELO mveleta-desk1.hsd1.or.comcast.net) ([10.209.5.54])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 11:27:23 -0700
+From:   Moises Veleta <moises.veleta@linux.intel.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, davem@davemloft.net, johannes@sipsolutions.net,
+        ryazanov.s.a@gmail.com, loic.poulain@linaro.org,
+        m.chetan.kumar@intel.com, chandrashekar.devegowda@intel.com,
+        linuxwwan@intel.com, haijun.liu@mediatek.com,
+        andriy.shevchenko@linux.intel.com, ilpo.jarvinen@linux.intel.com,
+        ricardo.martinez@linux.intel.com, sreehari.kancharla@intel.com,
+        dinesh.sharma@intel.com,
+        Moises Veleta <moises.veleta@linux.intel.com>
+Subject: [PATCH net-next 1/1] net: wwan: t7xx: Add port for modem logging
+Date:   Thu, 19 May 2022 11:27:03 -0700
+Message-Id: <20220519182703.27056-1-moises.veleta@linux.intel.com>
+X-Mailer: git-send-email 2.17.1
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 19, 2022 at 05:31:02PM +0200, Clément Léger wrote:
-> diff --git a/drivers/net/dsa/rzn1_a5psw.h b/drivers/net/dsa/rzn1_a5psw.h
-> index 306cab55db24..649165d37fde 100644
-> --- a/drivers/net/dsa/rzn1_a5psw.h
-> +++ b/drivers/net/dsa/rzn1_a5psw.h
-> @@ -146,7 +146,50 @@
->  
->  #define A5PSW_STATS_HIWORD		0x900
->  
-> -#define A5PSW_DUMMY_WORKAROUND		0x5000
-> +/* Stats */
-> +#define A5PSW_aFramesTransmittedOK		0x868
-> +#define A5PSW_aFramesReceivedOK			0x86C
-> +#define A5PSW_aFrameCheckSequenceErrors		0x870
-> +#define A5PSW_aAlignmentErrors			0x874
-> +#define A5PSW_aOctetsTransmittedOK		0x878
-> +#define A5PSW_aOctetsReceivedOK			0x87C
-> +#define A5PSW_aTxPAUSEMACCtrlFrames		0x880
-> +#define A5PSW_aRxPAUSEMACCtrlFrames		0x884
-> +	/* If */
+The Modem Logging (MDL) port provides an interface to collect modem
+logs for debugging purposes. MDL is supported by debugfs, the relay
+interface, and the mtk_t7xx port infrastructure. MDL allows user-space
+applications to control logging via debugfs and to collect logs via
+the relay interface, while port infrastructure facilitates
+communication between the driver and the modem.
 
-It would probably be good to keep the same alignment for all comments here.
+Signed-off-by: Moises Veleta <moises.veleta@linux.intel.com>
+Acked-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+---
+ drivers/net/wwan/Kconfig                |   1 +
+ drivers/net/wwan/t7xx/Makefile          |   3 +
+ drivers/net/wwan/t7xx/t7xx_hif_cldma.c  |   2 +
+ drivers/net/wwan/t7xx/t7xx_port.h       |   5 +
+ drivers/net/wwan/t7xx/t7xx_port_proxy.c |  22 +++
+ drivers/net/wwan/t7xx/t7xx_port_proxy.h |   4 +
+ drivers/net/wwan/t7xx/t7xx_port_trace.c | 174 ++++++++++++++++++++++++
+ 7 files changed, 211 insertions(+)
+ create mode 100644 drivers/net/wwan/t7xx/t7xx_port_trace.c
 
-> +#define A5PSW_ifInErrors			0x888
-> +#define A5PSW_ifOutErrors			0x88C
-> +#define A5PSW_ifInUcastPkts			0x890
-> +#define A5PSW_ifInMulticastPkts			0x894
-> +#define A5PSW_ifInBroadcastPkts			0x898
-> +#define A5PSW_ifOutDiscards			0x89C
-> +#define A5PSW_ifOutUcastPkts			0x8A0
-> +#define A5PSW_ifOutMulticastPkts		0x8A4
-> +#define A5PSW_ifOutBroadcastPkts		0x8A8
-> +	/* Ether */
-> +#define A5PSW_etherStatsDropEvents		0x8AC
-> +#define A5PSW_etherStatsOctets			0x8B0
-> +#define A5PSW_etherStatsPkts			0x8B4
-> +#define A5PSW_etherStatsUndersizePkts		0x8B8
-> +#define A5PSW_etherStatsOversizePkts		0x8BC
-> +#define A5PSW_etherStatsPkts64Octets		0x8C0
-> +#define A5PSW_etherStatsPkts65to127Octets	0x8C4
-> +#define A5PSW_etherStatsPkts128to255Octets	0x8C8
-> +#define A5PSW_etherStatsPkts256to511Octets	0x8CC
-> +#define A5PSW_etherStatsPkts512to1023Octets	0x8D0
-> +#define A5PSW_etherStatsPkts1024to1518Octets	0x8D4
-> +#define A5PSW_etherStatsPkts1519toXOctets	0x8D8
-> +#define A5PSW_etherStatsJabbers			0x8DC
-> +#define A5PSW_etherStatsFragments		0x8E0
-> +
-> +#define A5PSW_VLANReceived			0x8E8
-> +#define A5PSW_VLANTransmitted			0x8EC
-> +
-> +#define A5PSW_aDeferred				0x910
-> +#define A5PSW_aMultipleCollisions		0x914
-> +#define A5PSW_aSingleCollisions			0x918
-> +#define A5PSW_aLateCollisions			0x91C
-> +#define A5PSW_aExcessiveCollisions		0x920
-> +#define A5PSW_aCarrierSenseErrors		0x924
+diff --git a/drivers/net/wwan/Kconfig b/drivers/net/wwan/Kconfig
+index 3486ffe94ac4..32149029c891 100644
+--- a/drivers/net/wwan/Kconfig
++++ b/drivers/net/wwan/Kconfig
+@@ -108,6 +108,7 @@ config IOSM
+ config MTK_T7XX
+ 	tristate "MediaTek PCIe 5G WWAN modem T7xx device"
+ 	depends on PCI
++	select RELAY if WWAN_DEBUGFS
+ 	help
+ 	  Enables MediaTek PCIe based 5G WWAN modem (T7xx series) device.
+ 	  Adapts WWAN framework and provides network interface like wwan0
+diff --git a/drivers/net/wwan/t7xx/Makefile b/drivers/net/wwan/t7xx/Makefile
+index dc6a7d682c15..268ff9e87e5b 100644
+--- a/drivers/net/wwan/t7xx/Makefile
++++ b/drivers/net/wwan/t7xx/Makefile
+@@ -18,3 +18,6 @@ mtk_t7xx-y:=	t7xx_pci.o \
+ 		t7xx_hif_dpmaif_rx.o  \
+ 		t7xx_dpmaif.o \
+ 		t7xx_netdev.o
++
++mtk_t7xx-$(CONFIG_WWAN_DEBUGFS) += \
++		t7xx_port_trace.o \
+diff --git a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+index 0c52801ed0de..dcd480720edf 100644
+--- a/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
++++ b/drivers/net/wwan/t7xx/t7xx_hif_cldma.c
+@@ -1018,6 +1018,8 @@ static int t7xx_cldma_late_init(struct cldma_ctrl *md_ctrl)
+ 			dev_err(md_ctrl->dev, "control TX ring init fail\n");
+ 			goto err_free_tx_ring;
+ 		}
++
++		md_ctrl->tx_ring[i].pkt_size = CLDMA_MTU;
+ 	}
+ 
+ 	for (j = 0; j < CLDMA_RXQ_NUM; j++) {
+diff --git a/drivers/net/wwan/t7xx/t7xx_port.h b/drivers/net/wwan/t7xx/t7xx_port.h
+index dc4133eb433a..e35efb18ea09 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port.h
++++ b/drivers/net/wwan/t7xx/t7xx_port.h
+@@ -122,10 +122,15 @@ struct t7xx_port {
+ 	int				rx_length_th;
+ 	bool				chan_enable;
+ 	struct task_struct		*thread;
++#ifdef CONFIG_WWAN_DEBUGFS
++	struct t7xx_trace		*trace;
++	struct dentry			*debugfs_dir;
++#endif
+ };
+ 
+ struct sk_buff *t7xx_port_alloc_skb(int payload);
+ struct sk_buff *t7xx_ctrl_alloc_skb(int payload);
++int t7xx_port_mtu(struct t7xx_port *port);
+ int t7xx_port_enqueue_skb(struct t7xx_port *port, struct sk_buff *skb);
+ int t7xx_port_send_skb(struct t7xx_port *port, struct sk_buff *skb, unsigned int pkt_header,
+ 		       unsigned int ex_msg);
+diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.c b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
+index 7d2c0e81e33d..fb9d057d6a84 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port_proxy.c
++++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.c
+@@ -70,6 +70,18 @@ static const struct t7xx_port_conf t7xx_md_port_conf[] = {
+ 		.name = "MBIM",
+ 		.port_type = WWAN_PORT_MBIM,
+ 	}, {
++#ifdef CONFIG_WWAN_DEBUGFS
++		.tx_ch = PORT_CH_MD_LOG_TX,
++		.rx_ch = PORT_CH_MD_LOG_RX,
++		.txq_index = 7,
++		.rxq_index = 7,
++		.txq_exp_index = 7,
++		.rxq_exp_index = 7,
++		.path_id = CLDMA_ID_MD,
++		.ops = &t7xx_trace_port_ops,
++		.name = "mdlog",
++	}, {
++#endif
+ 		.tx_ch = PORT_CH_CONTROL_TX,
+ 		.rx_ch = PORT_CH_CONTROL_RX,
+ 		.txq_index = Q_IDX_CTRL,
+@@ -194,6 +206,16 @@ int t7xx_port_enqueue_skb(struct t7xx_port *port, struct sk_buff *skb)
+ 	return 0;
+ }
+ 
++int t7xx_port_mtu(struct t7xx_port *port)
++{
++	enum cldma_id path_id = port->port_conf->path_id;
++	int tx_qno = t7xx_port_get_queue_no(port);
++	struct cldma_ctrl *md_ctrl;
++
++	md_ctrl = port->t7xx_dev->md->md_ctrl[path_id];
++	return md_ctrl->tx_ring[tx_qno].pkt_size;
++}
++
+ static int t7xx_port_send_raw_skb(struct t7xx_port *port, struct sk_buff *skb)
+ {
+ 	enum cldma_id path_id = port->port_conf->path_id;
+diff --git a/drivers/net/wwan/t7xx/t7xx_port_proxy.h b/drivers/net/wwan/t7xx/t7xx_port_proxy.h
+index bc1ff5c6c700..81d059fbc0fb 100644
+--- a/drivers/net/wwan/t7xx/t7xx_port_proxy.h
++++ b/drivers/net/wwan/t7xx/t7xx_port_proxy.h
+@@ -87,6 +87,10 @@ struct ctrl_msg_header {
+ extern struct port_ops wwan_sub_port_ops;
+ extern struct port_ops ctl_port_ops;
+ 
++#ifdef CONFIG_WWAN_DEBUGFS
++extern struct port_ops t7xx_trace_port_ops;
++#endif
++
+ void t7xx_port_proxy_reset(struct port_proxy *port_prox);
+ void t7xx_port_proxy_uninit(struct port_proxy *port_prox);
+ int t7xx_port_proxy_init(struct t7xx_modem *md);
+diff --git a/drivers/net/wwan/t7xx/t7xx_port_trace.c b/drivers/net/wwan/t7xx/t7xx_port_trace.c
+new file mode 100644
+index 000000000000..87529316b183
+--- /dev/null
++++ b/drivers/net/wwan/t7xx/t7xx_port_trace.c
+@@ -0,0 +1,174 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * Copyright (C) 2022 Intel Corporation.
++ */
++
++#include <linux/bitfield.h>
++#include <linux/debugfs.h>
++#include <linux/relay.h>
++#include <linux/skbuff.h>
++#include <linux/wwan.h>
++
++#include "t7xx_port.h"
++#include "t7xx_port_proxy.h"
++#include "t7xx_state_monitor.h"
++
++#define T7XX_TRC_SUB_BUFF_SIZE		131072
++#define T7XX_TRC_N_SUB_BUFF		32
++#define T7XX_TRC_FILE_PERM		0600
++
++struct t7xx_trace {
++	struct rchan			*t7xx_rchan;
++	struct dentry			*ctrl_file;
++};
++
++static struct dentry *t7xx_trace_create_buf_file_handler(const char *filename,
++							 struct dentry *parent,
++							 umode_t mode,
++							 struct rchan_buf *buf,
++							 int *is_global)
++{
++	*is_global = 1;
++	return debugfs_create_file(filename, mode, parent, buf,
++				   &relay_file_operations);
++}
++
++static int t7xx_trace_remove_buf_file_handler(struct dentry *dentry)
++{
++	debugfs_remove(dentry);
++	return 0;
++}
++
++static int t7xx_trace_subbuf_start_handler(struct rchan_buf *buf, void *subbuf,
++					   void *prev_subbuf,
++					   size_t prev_padding)
++{
++	if (relay_buf_full(buf)) {
++		pr_err_ratelimited("Relay_buf full dropping traces");
++		return 0;
++	}
++
++	return 1;
++}
++
++static struct rchan_callbacks relay_callbacks = {
++	.subbuf_start = t7xx_trace_subbuf_start_handler,
++	.create_buf_file = t7xx_trace_create_buf_file_handler,
++	.remove_buf_file = t7xx_trace_remove_buf_file_handler,
++};
++
++static ssize_t t7xx_port_trace_write(struct file *file, const char __user *buf,
++				     size_t len, loff_t *ppos)
++{
++	struct t7xx_port *port = file->private_data;
++	size_t actual_len, alloc_size, txq_mtu;
++	const struct t7xx_port_conf *port_conf;
++	enum md_state md_state;
++	struct sk_buff *skb;
++	int ret;
++
++	port_conf = port->port_conf;
++	md_state = t7xx_fsm_get_md_state(port->t7xx_dev->md->fsm_ctl);
++	if (md_state == MD_STATE_WAITING_FOR_HS1 || md_state == MD_STATE_WAITING_FOR_HS2) {
++		dev_warn(port->dev, "port: %s ch: %d, write fail when md_state: %d\n",
++			 port_conf->name, port_conf->tx_ch, md_state);
++		return -ENODEV;
++	}
++
++	txq_mtu = t7xx_port_mtu(port);
++	alloc_size = min_t(size_t, txq_mtu, len + sizeof(struct ccci_header));
++	actual_len = alloc_size - sizeof(struct ccci_header);
++	skb = t7xx_port_alloc_skb(alloc_size);
++	if (!skb) {
++		ret = -ENOMEM;
++		goto err_out;
++	}
++
++	ret = copy_from_user(skb_put(skb, actual_len), buf, actual_len);
++	if (ret) {
++		ret = -EFAULT;
++		goto err_out;
++	}
++
++	ret = t7xx_port_send_skb(port, skb, 0, 0);
++	if (ret)
++		goto err_out;
++
++	return actual_len;
++
++err_out:
++	dev_err(port->dev, "write error done on %s, size: %zu, ret: %d\n",
++		port_conf->name, actual_len, ret);
++	dev_kfree_skb(skb);
++	return ret;
++}
++
++static const struct file_operations t7xx_trace_fops = {
++	.owner = THIS_MODULE,
++	.open = simple_open,
++	.write = t7xx_port_trace_write,
++};
++
++static int t7xx_trace_port_init(struct t7xx_port *port)
++{
++	struct dentry *debugfs_pdev = wwan_get_debugfs_dir(port->dev);
++
++	if (IS_ERR(debugfs_pdev))
++		debugfs_pdev = NULL;
++
++	port->debugfs_dir = debugfs_create_dir(KBUILD_MODNAME, debugfs_pdev);
++	if (IS_ERR_OR_NULL(port->debugfs_dir))
++		return -ENOMEM;
++
++	port->trace = devm_kzalloc(port->dev, sizeof(*port->trace), GFP_KERNEL);
++	if (!port->trace)
++		goto err_debugfs_dir;
++
++	port->trace->ctrl_file = debugfs_create_file("mdlog_ctrl",
++						     T7XX_TRC_FILE_PERM,
++						     port->debugfs_dir,
++						     port,
++						     &t7xx_trace_fops);
++	if (!port->trace->ctrl_file)
++		goto err_debugfs_dir;
++
++	port->trace->t7xx_rchan = relay_open("relay_ch",
++					     port->debugfs_dir,
++					     T7XX_TRC_SUB_BUFF_SIZE,
++					     T7XX_TRC_N_SUB_BUFF,
++					     &relay_callbacks, NULL);
++	if (!port->trace->t7xx_rchan)
++		goto err_debugfs_dir;
++
++	return 0;
++
++err_debugfs_dir:
++	debugfs_remove_recursive(port->debugfs_dir);
++	return -ENOMEM;
++}
++
++static void t7xx_trace_port_uninit(struct t7xx_port *port)
++{
++	struct t7xx_trace *trace = port->trace;
++
++	relay_close(trace->t7xx_rchan);
++	debugfs_remove_recursive(port->debugfs_dir);
++}
++
++static int t7xx_trace_port_recv_skb(struct t7xx_port *port, struct sk_buff *skb)
++{
++	struct t7xx_trace *t7xx_trace = port->trace;
++
++	if (!t7xx_trace->t7xx_rchan)
++		return -EINVAL;
++
++	relay_write(t7xx_trace->t7xx_rchan, skb->data, skb->len);
++	dev_kfree_skb(skb);
++	return 0;
++}
++
++struct port_ops t7xx_trace_port_ops = {
++	.init =	t7xx_trace_port_init,
++	.recv_skb = t7xx_trace_port_recv_skb,
++	.uninit = t7xx_trace_port_uninit,
++};
+-- 
+2.17.1
+
