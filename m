@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F373D52DF1E
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 23:22:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F5C452DF1F
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 23:22:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244111AbiESVV7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 17:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54618 "EHLO
+        id S245124AbiESVWA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 17:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241208AbiESVV6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 17:21:58 -0400
-Received: from smtp3.emailarray.com (smtp3.emailarray.com [65.39.216.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2FAFED787
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 14:21:56 -0700 (PDT)
-Received: (qmail 76743 invoked by uid 89); 19 May 2022 21:21:55 -0000
+        with ESMTP id S245098AbiESVV7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 17:21:59 -0400
+Received: from smtp5.emailarray.com (smtp5.emailarray.com [65.39.216.39])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39975ED726
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 14:21:58 -0700 (PDT)
+Received: (qmail 4290 invoked by uid 89); 19 May 2022 21:21:57 -0000
 Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
-  by smtp3.emailarray.com with SMTP; 19 May 2022 21:21:55 -0000
+  by smtp5.emailarray.com with SMTP; 19 May 2022 21:21:57 -0000
 From:   Jonathan Lemon <jonathan.lemon@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     richardcochran@gmail.com, kernel-team@fb.com, davem@davemloft.net,
         kuba@kernel.org, pabeni@redhat.com, edumazet@google.com
-Subject: [PATCH net-next v4 01/10] ptp: ocp: 32-bit fixups for pci start address
-Date:   Thu, 19 May 2022 14:21:44 -0700
-Message-Id: <20220519212153.450437-2-jonathan.lemon@gmail.com>
+Subject: [PATCH net-next v4 02/10] ptp: ocp: Remove #ifdefs around PCI IDs
+Date:   Thu, 19 May 2022 14:21:45 -0700
+Message-Id: <20220519212153.450437-3-jonathan.lemon@gmail.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20220519212153.450437-1-jonathan.lemon@gmail.com>
 References: <20220519212153.450437-1-jonathan.lemon@gmail.com>
@@ -40,63 +40,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use 'resource_size_t' instead of 'unsigned long' when computing the
-pci start address, for the benefit of 32-bit platforms.
+These #ifdefs are not required, so remove them.
 
+Suggested-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 ---
- drivers/ptp/ptp_ocp.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/ptp/ptp_ocp.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/ptp/ptp_ocp.c b/drivers/ptp/ptp_ocp.c
-index 860672d6a03c..957c0522a02f 100644
+index 957c0522a02f..d2cdb2a05c36 100644
 --- a/drivers/ptp/ptp_ocp.c
 +++ b/drivers/ptp/ptp_ocp.c
-@@ -1403,7 +1403,7 @@ static const struct devlink_ops ptp_ocp_devlink_ops = {
- };
+@@ -20,13 +20,8 @@
+ #include <linux/mtd/mtd.h>
+ #include <linux/nvmem-consumer.h>
  
- static void __iomem *
--__ptp_ocp_get_mem(struct ptp_ocp *bp, unsigned long start, int size)
-+__ptp_ocp_get_mem(struct ptp_ocp *bp, resource_size_t start, int size)
- {
- 	struct resource res = DEFINE_RES_MEM_NAMED(start, size, "ptp_ocp");
+-#ifndef PCI_VENDOR_ID_FACEBOOK
+-#define PCI_VENDOR_ID_FACEBOOK 0x1d9b
+-#endif
+-
+-#ifndef PCI_DEVICE_ID_FACEBOOK_TIMECARD
+-#define PCI_DEVICE_ID_FACEBOOK_TIMECARD 0x0400
+-#endif
++#define PCI_VENDOR_ID_FACEBOOK			0x1d9b
++#define PCI_DEVICE_ID_FACEBOOK_TIMECARD		0x0400
  
-@@ -1413,7 +1413,7 @@ __ptp_ocp_get_mem(struct ptp_ocp *bp, unsigned long start, int size)
- static void __iomem *
- ptp_ocp_get_mem(struct ptp_ocp *bp, struct ocp_resource *r)
- {
--	unsigned long start;
-+	resource_size_t start;
- 
- 	start = pci_resource_start(bp->pdev, 0) + r->offset;
- 	return __ptp_ocp_get_mem(bp, start, r->size);
-@@ -1427,7 +1427,7 @@ ptp_ocp_set_irq_resource(struct resource *res, int irq)
- }
- 
- static void
--ptp_ocp_set_mem_resource(struct resource *res, unsigned long start, int size)
-+ptp_ocp_set_mem_resource(struct resource *res, resource_size_t start, int size)
- {
- 	struct resource r = DEFINE_RES_MEM(start, size);
- 	*res = r;
-@@ -1440,7 +1440,7 @@ ptp_ocp_register_spi(struct ptp_ocp *bp, struct ocp_resource *r)
- 	struct pci_dev *pdev = bp->pdev;
- 	struct platform_device *p;
- 	struct resource res[2];
--	unsigned long start;
-+	resource_size_t start;
- 	int id;
- 
- 	start = pci_resource_start(pdev, 0) + r->offset;
-@@ -1467,7 +1467,7 @@ ptp_ocp_i2c_bus(struct pci_dev *pdev, struct ocp_resource *r, int id)
- {
- 	struct ptp_ocp_i2c_info *info;
- 	struct resource res[2];
--	unsigned long start;
-+	resource_size_t start;
- 
- 	info = r->extra;
- 	start = pci_resource_start(pdev, 0) + r->offset;
+ static struct class timecard_class = {
+ 	.owner		= THIS_MODULE,
 -- 
 2.31.1
 
