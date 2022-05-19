@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5278B52D7B3
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 17:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF8D952D7CA
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 17:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237051AbiESPdO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 11:33:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57694 "EHLO
+        id S241187AbiESPeG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 11:34:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241075AbiESPdA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 11:33:00 -0400
+        with ESMTP id S241098AbiESPdK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 11:33:10 -0400
 Received: from relay9-d.mail.gandi.net (relay9-d.mail.gandi.net [217.70.183.199])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3B162BE2;
-        Thu, 19 May 2022 08:32:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD31166218;
+        Thu, 19 May 2022 08:32:55 -0700 (PDT)
 Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 8D105FF806;
-        Thu, 19 May 2022 15:32:50 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6A53CFF814;
+        Thu, 19 May 2022 15:32:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1652974372;
+        t=1652974374;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=oL5qawJmkUzS7o+kdJIgpH3uP+moAKieArFVw9WPNlU=;
-        b=oG2qRw0GXw72svAMipta0NXey9MEtERPCAQUV8k3ByocdfoZ7zpog7XkkTKemEXNWXQxf6
-        gZsndjgm8BKJ1yiKotVn63+ZnaKZylctmMZPNU/XzVAaUtOWjdPhXafruy9AbCY/khtVs6
-        lWBzEfS3H5ZdTpZ1I1P2hwcrgrKV3KpOlvR9IdsO2QGQ4aZHU6Nc/geXGUM9ybqcAYWVUR
-        YcVeJUdWT+leHKqffuiaHaGvKuqvrqxsmLN2RmV/+582M5QcIinwn2T6F8N/BWqRp7cyKF
-        ECy4ZxP9Su+UgterehPbcIt2roS0aLeF/Ch1154XEfkYi+iAKD3XTD7UFmivmg==
+        bh=/P/ReBBIgyh9pI/ThfXb1GIV2LYUYTD5dUEkj7TmnMY=;
+        b=UkwV6ADjeQNrbmgwPKQmxzcK0A9hrM0ByT/ncvvel0fMIO0V9zouisr3mtL5P0LHoCzy0i
+        Gx57AbSEBU8XfC9ib8RVzNloxRFdV/9F9hBnKXJsf4WgqT5rB9wSdHzOM8HnOPeYBJmQL4
+        bmKiE7L7Lx6Phard4gUlJaTVMc7RruChLomeDdJJno/5BMoLDBTrg86eoSuRSskdDKa0/W
+        XyaWtQEU07DMZahYZ6zyeDzJ++jlpX2lBqVH4eAPEUVqXiRYcLoCrjOuNYsMUAkP3JeDJ4
+        uUHkE+yqQopEStoEZeGu8Z0EgCPjIZSwcWC5iiL+7DAzIq3kEZf4h99LQZc+Vw==
 From:   =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -53,9 +53,9 @@ Cc:     =?UTF-8?q?Cl=C3=A9ment=20L=C3=A9ger?= <clement.leger@bootlin.com>,
         Pascal Eberhard <pascal.eberhard@se.com>,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v5 11/13] ARM: dts: r9a06g032: describe GMAC2
-Date:   Thu, 19 May 2022 17:31:05 +0200
-Message-Id: <20220519153107.696864-12-clement.leger@bootlin.com>
+Subject: [PATCH net-next v5 12/13] ARM: dts: r9a06g032: describe switch
+Date:   Thu, 19 May 2022 17:31:06 +0200
+Message-Id: <20220519153107.696864-13-clement.leger@bootlin.com>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220519153107.696864-1-clement.leger@bootlin.com>
 References: <20220519153107.696864-1-clement.leger@bootlin.com>
@@ -72,46 +72,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RZ/N1 SoC includes two MAC named GMACx that are compatible with the
-"snps,dwmac" driver. GMAC1 is connected directly to the MII converter
-port 1. GMAC2 however can be used as the MAC for the switch CPU
-management port or can be muxed to be connected directly to the MII
-converter port 2. This commit add description for the GMAC2 which will
-be used by the switch description.
+Add description of the switch that is present on the RZ/N1 SoC.
 
 Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 ---
- arch/arm/boot/dts/r9a06g032.dtsi | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ arch/arm/boot/dts/r9a06g032.dtsi | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
 diff --git a/arch/arm/boot/dts/r9a06g032.dtsi b/arch/arm/boot/dts/r9a06g032.dtsi
-index 0051fe9f44fd..31c4b2e2950a 100644
+index 31c4b2e2950a..20d3dce632ce 100644
 --- a/arch/arm/boot/dts/r9a06g032.dtsi
 +++ b/arch/arm/boot/dts/r9a06g032.dtsi
-@@ -200,6 +200,23 @@ nand_controller: nand-controller@40102000 {
- 			status = "disabled";
+@@ -255,6 +255,15 @@ mii_conv5: mii-conv@5 {
+ 			};
  		};
  
-+		gmac2: ethernet@44002000 {
-+			compatible = "snps,dwmac";
-+			reg = <0x44002000 0x2000>;
-+			interrupt-parent = <&gic>;
-+			interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
-+				     <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
-+			interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
-+			clock-names = "stmmaceth";
-+			clocks = <&sysctrl R9A06G032_HCLK_GMAC1>;
-+			snps,multicast-filter-bins = <256>;
-+			snps,perfect-filter-entries = <128>;
-+			tx-fifo-depth = <2048>;
-+			rx-fifo-depth = <4096>;
++		switch: switch@44050000 {
++			compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
++			reg = <0x44050000 0x10000>;
++			clocks = <&sysctrl R9A06G032_HCLK_SWITCH>,
++				 <&sysctrl R9A06G032_CLK_SWITCH>;
++			clock-names = "hclk", "clk";
 +			status = "disabled";
 +		};
 +
- 		eth_miic: eth-miic@44030000 {
- 			compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
- 			#address-cells = <1>;
+ 		gic: interrupt-controller@44101000 {
+ 			compatible = "arm,gic-400", "arm,cortex-a7-gic";
+ 			interrupt-controller;
 -- 
 2.36.0
 
