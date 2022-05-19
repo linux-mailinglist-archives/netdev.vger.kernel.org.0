@@ -2,94 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3500D52D0C0
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 12:43:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 311F852D0C9
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 12:46:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236177AbiESKnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 06:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45634 "EHLO
+        id S236965AbiESKqO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 06:46:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236939AbiESKnX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 06:43:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9B6EAAEE1F
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:43:17 -0700 (PDT)
+        with ESMTP id S236971AbiESKp7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 06:45:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 135D71EEF3
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:45:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652956996;
+        s=mimecast20190719; t=1652957156;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=TH+ICKBkv+npEh8DphvHokm9BJGopIGyRclr3HlZVLs=;
-        b=T3/WxuLkJCrVB9de5Uj6J5y573YR5VZ0mutWbBv5/HurfaesQMqhD4aBP0sB35v/Qinnwu
-        13CTVjllWhAmqtHQAJiYX2XFy2iwk+okvytRdnDtWRCw4QS3L8pwDIP/Ij4NIRMEoRIPYX
-        uzftSNWjwub08gr8u6odOcyMq0yPRQ4=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=8rut9GNc4WtSroF96b47WlHm5eXtcsOWXAAJ8NlKUQQ=;
+        b=XqZ4f9atbHnM0QxEajBz3Z89SLEJ5Xj9IimL8L7a/KghTWZ3dUXzm3UwKtWb256zD7ojaG
+        N1wzn7vBc+Y42J7XJsJv5ANUK++lSbtSqUuza8zCRk1d9Nr7pIb3O10k0YwzqD4t0J+H10
+        8TUuGrciVKVdPC0H/vi/chBc+aDuiVw=
+Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
+ [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-635-3ozBdx3tOCe-cdsMAPFdig-1; Thu, 19 May 2022 06:43:15 -0400
-X-MC-Unique: 3ozBdx3tOCe-cdsMAPFdig-1
-Received: by mail-ed1-f70.google.com with SMTP id l18-20020aa7d952000000b0042ab7be9adaso3348574eds.21
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:43:15 -0700 (PDT)
+ us-mta-154-a_xxKRvIOTCj7nAMblTu8A-1; Thu, 19 May 2022 06:45:55 -0400
+X-MC-Unique: a_xxKRvIOTCj7nAMblTu8A-1
+Received: by mail-ej1-f69.google.com with SMTP id qb36-20020a1709077ea400b006f45e182187so2310619ejc.14
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 03:45:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
          :message-id:mime-version;
-        bh=TH+ICKBkv+npEh8DphvHokm9BJGopIGyRclr3HlZVLs=;
-        b=N5D+3cNzs/vMuS6F3X6SnYHQO8hKz+3udGrjZ2QabCFgzL0G0/nODXcAxbwTed3FEr
-         zqwV69prsfLpskc7uliBSBdhzW/D5+NkIKvYtLY6vxUxwnKwkZczZHR4ilrRQhi5AFg8
-         UaazOOYP2htOud+wqBgyqiaED/yn+8YHwcbpN5hV9sAL40mQZbv2mfAl/qzSysYd28V1
-         yz5KtuE7J0DnM/pstaX4KiUkmRgxQr/k/UMPf96BdIvFcYHrGMlH51LEeiMqJtlVxlUY
-         x37Fs6waeKqMB/yHN5Vx7sxLCJuORpVgG1WE5jNqFyIYkMEoFsGQdbWd181+u++IWoyo
-         tUug==
-X-Gm-Message-State: AOAM530oPbHzhE/KjjTqZDSbWXx164wMXK3pHU2YBtRvnyaivU/kVrT7
-        vtdYe4YQGMAlnbS9XdlgWOj7JiWBOCMX4k/KWL1mqPgQzk9Mifvv8DRixjyd1fF/cy5P9ufvZt2
-        hGifMBEahS+gV9DTA
-X-Received: by 2002:a17:907:7248:b0:6fe:a121:d060 with SMTP id ds8-20020a170907724800b006fea121d060mr219603ejc.9.1652956994174;
-        Thu, 19 May 2022 03:43:14 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzHHvHWCE8grFkse1E+0Et3IrynHZBLQEcX4mCaSY2qLTTCfOjmb3O4tDa7n/CbxO+w2AwAfQ==
-X-Received: by 2002:a17:907:7248:b0:6fe:a121:d060 with SMTP id ds8-20020a170907724800b006fea121d060mr219560ejc.9.1652956993791;
-        Thu, 19 May 2022 03:43:13 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id d12-20020a056402000c00b0042617ba637bsm2571532edu.5.2022.05.19.03.43.13
+        bh=8rut9GNc4WtSroF96b47WlHm5eXtcsOWXAAJ8NlKUQQ=;
+        b=IOJYaK3ACeF0XMvZQY+178Tl9CmAcWzFPoob6XngDBJYKD78jkXSgW7K7rBHWxe+El
+         6ZHngCmw9BqEzmFZ5mbQHmzrDT0L8q+JwBZf2T/mPmtDdpiRhCqPssidw3vpJ9mCZD26
+         /JAbi/WaTz4s4i/9GzKylzC9OhkDxsu7i38Gxyy9uSru+4P5gJC5i9TySoXEXU8IRILM
+         ojo/0JAEia9joE0PVy/N9dR2iFGamHEqVLl8xSzXUHCtBwSZFa2CO9hl6plj/A1tGQK0
+         Kh9uAbAJzRT1lxepTHe859w8UnKRjQyoFuQ2ANc2c6HSqIZd9qPgEMZ3UQS5CsMZFsPp
+         TXMw==
+X-Gm-Message-State: AOAM530/hOMG/EsIGyy51EQta+us1P58pcr0qQbC6JU5PIVslHCj9eK5
+        0IpG4yBBCUC/yqqjYmkpoCyW2iRMxdoOqft06Fha2XN6ckC7xZwaV6oYEKd5Y3RtHqPvDixWuzo
+        VuZVVa1Qtddm1R8DH
+X-Received: by 2002:a17:907:961e:b0:6f4:b201:6629 with SMTP id gb30-20020a170907961e00b006f4b2016629mr3745632ejc.152.1652957153394;
+        Thu, 19 May 2022 03:45:53 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJx52dO1ml/cCp+uLuLPFVwIUuT7zd2gIPRWnBOP1j1BK0pQWadGJYAMHEh2QAWSCJvZgUTRrA==
+X-Received: by 2002:a17:907:961e:b0:6f4:b201:6629 with SMTP id gb30-20020a170907961e00b006f4b2016629mr3745561ejc.152.1652957152469;
+        Thu, 19 May 2022 03:45:52 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id j22-20020aa7ca56000000b0042acc78178bsm2623753edt.93.2022.05.19.03.45.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 03:43:13 -0700 (PDT)
+        Thu, 19 May 2022 03:45:51 -0700 (PDT)
 Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id A871E38EE12; Thu, 19 May 2022 12:43:12 +0200 (CEST)
+        id 47CED38EE17; Thu, 19 May 2022 12:45:51 +0200 (CEST)
 From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Christoph Hellwig <hch@infradead.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        Jiri Kosina <jikos@kernel.org>,
+To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
-        Tero Kristo <tero.kristo@linux.intel.com>,
-        lkml <linux-kernel@vger.kernel.org>,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v5 00/17] Introduce eBPF support for HID devices
-In-Reply-To: <CAO-hwJL4Pj4JaRquoXD1AtegcKnh22_T0Z0VY_peZ8FRko3kZw@mail.gmail.com>
-References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
- <YoX7iHddAd4FkQRQ@infradead.org> <YoX904CAFOAfWeJN@kroah.com>
- <YoYCIhYhzLmhIGxe@infradead.org>
- <CAO-hwJL4Pj4JaRquoXD1AtegcKnh22_T0Z0VY_peZ8FRko3kZw@mail.gmail.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        Jesper Dangaard Brouer <brouer@redhat.com>
+Subject: Re: [PATCH v3 bpf-next 4/5] net: netfilter: add kfunc helper to add
+ a new ct entry
+In-Reply-To: <20220518224330.omsokbbhqoe5mc3v@apollo.legion>
+References: <cover.1652870182.git.lorenzo@kernel.org>
+ <40e7ce4b79c86c46e5fbf22e9cafb51b9172da19.1652870182.git.lorenzo@kernel.org>
+ <87y1yy8t6j.fsf@toke.dk> <YoVgZ8OHlF/OpgHq@lore-desk>
+ <CAADnVQ+6-cywf0StZ_K0nKSSdXJsZ4S_ZBhGZPHDmKtaL3k9-g@mail.gmail.com>
+ <20220518224330.omsokbbhqoe5mc3v@apollo.legion>
 X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 19 May 2022 12:43:12 +0200
-Message-ID: <87ee0p951b.fsf@toke.dk>
+Date:   Thu, 19 May 2022 12:45:51 +0200
+Message-ID: <87czg994ww.fsf@toke.dk>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -97,30 +96,170 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Benjamin Tissoires <benjamin.tissoires@redhat.com> writes:
+Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
 
-> On Thu, May 19, 2022 at 10:39 AM Christoph Hellwig <hch@infradead.org> wrote:
->>
->> On Thu, May 19, 2022 at 10:20:35AM +0200, Greg KH wrote:
->> > > are written using a hip new VM?
+> On Thu, May 19, 2022 at 03:44:58AM IST, Alexei Starovoitov wrote:
+>> On Wed, May 18, 2022 at 2:09 PM Lorenzo Bianconi
+>> <lorenzo.bianconi@redhat.com> wrote:
 >> >
->> > Ugh, don't mention UDI, that's a bad flashback...
+>> > > Lorenzo Bianconi <lorenzo@kernel.org> writes:
+>> > >
+>> > > > Introduce bpf_xdp_ct_add and bpf_skb_ct_add kfunc helpers in order to
+>> > > > add a new entry to ct map from an ebpf program.
+>> > > > Introduce bpf_nf_ct_tuple_parse utility routine.
+>> > > >
+>> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+>> > > > ---
+>> > > >  net/netfilter/nf_conntrack_bpf.c | 212 +++++++++++++++++++++++++++----
+>> > > >  1 file changed, 189 insertions(+), 23 deletions(-)
+>> > > >
+>> > > > diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
+>> > > > index a9271418db88..3d31b602fdf1 100644
+>> > > > --- a/net/netfilter/nf_conntrack_bpf.c
+>> > > > +++ b/net/netfilter/nf_conntrack_bpf.c
+>> > > > @@ -55,41 +55,114 @@ enum {
+>> > > >     NF_BPF_CT_OPTS_SZ = 12,
+>> > > >  };
+>> > > >
+>> > > > -static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
+>> > > > -                                     struct bpf_sock_tuple *bpf_tuple,
+>> > > > -                                     u32 tuple_len, u8 protonum,
+>> > > > -                                     s32 netns_id, u8 *dir)
+>> > > > +static int bpf_nf_ct_tuple_parse(struct bpf_sock_tuple *bpf_tuple,
+>> > > > +                            u32 tuple_len, u8 protonum, u8 dir,
+>> > > > +                            struct nf_conntrack_tuple *tuple)
+>> > > >  {
+>> > > > -   struct nf_conntrack_tuple_hash *hash;
+>> > > > -   struct nf_conntrack_tuple tuple;
+>> > > > -   struct nf_conn *ct;
+>> > > > +   union nf_inet_addr *src = dir ? &tuple->dst.u3 : &tuple->src.u3;
+>> > > > +   union nf_inet_addr *dst = dir ? &tuple->src.u3 : &tuple->dst.u3;
+>> > > > +   union nf_conntrack_man_proto *sport = dir ? (void *)&tuple->dst.u
+>> > > > +                                             : &tuple->src.u;
+>> > > > +   union nf_conntrack_man_proto *dport = dir ? &tuple->src.u
+>> > > > +                                             : (void *)&tuple->dst.u;
+>> > > >
+>> > > >     if (unlikely(protonum != IPPROTO_TCP && protonum != IPPROTO_UDP))
+>> > > > -           return ERR_PTR(-EPROTO);
+>> > > > -   if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
+>> > > > -           return ERR_PTR(-EINVAL);
+>> > > > +           return -EPROTO;
+>> > > > +
+>> > > > +   memset(tuple, 0, sizeof(*tuple));
+>> > > >
+>> > > > -   memset(&tuple, 0, sizeof(tuple));
+>> > > >     switch (tuple_len) {
+>> > > >     case sizeof(bpf_tuple->ipv4):
+>> > > > -           tuple.src.l3num = AF_INET;
+>> > > > -           tuple.src.u3.ip = bpf_tuple->ipv4.saddr;
+>> > > > -           tuple.src.u.tcp.port = bpf_tuple->ipv4.sport;
+>> > > > -           tuple.dst.u3.ip = bpf_tuple->ipv4.daddr;
+>> > > > -           tuple.dst.u.tcp.port = bpf_tuple->ipv4.dport;
+>> > > > +           tuple->src.l3num = AF_INET;
+>> > > > +           src->ip = bpf_tuple->ipv4.saddr;
+>> > > > +           sport->tcp.port = bpf_tuple->ipv4.sport;
+>> > > > +           dst->ip = bpf_tuple->ipv4.daddr;
+>> > > > +           dport->tcp.port = bpf_tuple->ipv4.dport;
+>> > > >             break;
+>> > > >     case sizeof(bpf_tuple->ipv6):
+>> > > > -           tuple.src.l3num = AF_INET6;
+>> > > > -           memcpy(tuple.src.u3.ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
+>> > > > -           tuple.src.u.tcp.port = bpf_tuple->ipv6.sport;
+>> > > > -           memcpy(tuple.dst.u3.ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
+>> > > > -           tuple.dst.u.tcp.port = bpf_tuple->ipv6.dport;
+>> > > > +           tuple->src.l3num = AF_INET6;
+>> > > > +           memcpy(src->ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
+>> > > > +           sport->tcp.port = bpf_tuple->ipv6.sport;
+>> > > > +           memcpy(dst->ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
+>> > > > +           dport->tcp.port = bpf_tuple->ipv6.dport;
+>> > > >             break;
+>> > > >     default:
+>> > > > -           return ERR_PTR(-EAFNOSUPPORT);
+>> > > > +           return -EAFNOSUPPORT;
+>> > > >     }
+>> > > > +   tuple->dst.protonum = protonum;
+>> > > > +   tuple->dst.dir = dir;
+>> > > > +
+>> > > > +   return 0;
+>> > > > +}
+>> > > >
+>> > > > -   tuple.dst.protonum = protonum;
+>> > > > +struct nf_conn *
+>> > > > +__bpf_nf_ct_alloc_entry(struct net *net, struct bpf_sock_tuple *bpf_tuple,
+>> > > > +                   u32 tuple_len, u8 protonum, s32 netns_id, u32 timeout)
+>> > > > +{
+>> > > > +   struct nf_conntrack_tuple otuple, rtuple;
+>> > > > +   struct nf_conn *ct;
+>> > > > +   int err;
+>> > > > +
+>> > > > +   if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
+>> > > > +           return ERR_PTR(-EINVAL);
+>> > > > +
+>> > > > +   err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
+>> > > > +                               IP_CT_DIR_ORIGINAL, &otuple);
+>> > > > +   if (err < 0)
+>> > > > +           return ERR_PTR(err);
+>> > > > +
+>> > > > +   err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
+>> > > > +                               IP_CT_DIR_REPLY, &rtuple);
+>> > > > +   if (err < 0)
+>> > > > +           return ERR_PTR(err);
+>> > > > +
+>> > > > +   if (netns_id >= 0) {
+>> > > > +           net = get_net_ns_by_id(net, netns_id);
+>> > > > +           if (unlikely(!net))
+>> > > > +                   return ERR_PTR(-ENONET);
+>> > > > +   }
+>> > > > +
+>> > > > +   ct = nf_conntrack_alloc(net, &nf_ct_zone_dflt, &otuple, &rtuple,
+>> > > > +                           GFP_ATOMIC);
+>> > > > +   if (IS_ERR(ct))
+>> > > > +           goto out;
+>> > > > +
+>> > > > +   ct->timeout = timeout * HZ + jiffies;
+>> > > > +   ct->status |= IPS_CONFIRMED;
+>> > > > +
+>> > > > +   memset(&ct->proto, 0, sizeof(ct->proto));
+>> > > > +   if (protonum == IPPROTO_TCP)
+>> > > > +           ct->proto.tcp.state = TCP_CONNTRACK_ESTABLISHED;
+>> > >
+>> > > Hmm, isn't it a bit limiting to hard-code this to ESTABLISHED
+>> > > connections? Presumably for TCP you'd want to use this when you see a
+>> > > SYN and then rely on conntrack to help with the subsequent state
+>> > > tracking for when the SYN-ACK comes back? What's the usecase for
+>> > > creating an entry in ESTABLISHED state, exactly?
+>> >
+>> > I guess we can even add a parameter and pass the state from the caller.
+>> > I was not sure if it is mandatory.
 >>
->> But that is very much what we are doing here.
->>
->> > I thought the goal here was to move a lot of the quirk handling and
->> > "fixup the broken HID decriptors in this device" out of kernel .c code
->> > and into BPF code instead, which this patchset would allow.
+>> It's probably cleaner and more flexible to split
+>> _alloc and _insert into two kfuncs and let bpf
+>> prog populate ct directly.
 >
-> Yes, quirks are a big motivation for this work. Right now half of the
-> HID drivers are less than 100 lines of code, and are just trivial
-> fixes (one byte in the report descriptor, one key mapping, etc...).
-> Using eBPF for those would simplify the process from the user point of
-> view: you drop a "firmware fix" as an eBPF program in your system and
-> you can continue working on your existing kernel.
+> Right, so we can just whitelist a few fields and allow assignments into those.
+> One small problem is that we should probably only permit this for nf_conn
+> PTR_TO_BTF_ID obtained from _alloc, and make it rdonly on _insert.
+>
+> We can do the rw->ro conversion by taking in ref from alloc, and releasing on
+> _insert, then returning ref from _insert.
 
-How do you envision those BPF programs living, and how would they be
-distributed? (In-tree / out of tree?)
+Sounds reasonable enough; I guess _insert would also need to
+sanity-check some of the values to prevent injecting invalid state into
+the conntrack table.
+
+> For the other part, either return a different shadow PTR_TO_BTF_ID
+> with only the fields that can be set, convert insns for it, and then
+> on insert return the rdonly PTR_TO_BTF_ID of struct nf_conn, or
+> otherwise store the source func in the per-register state and use that
+> to deny BPF_WRITE for normal nf_conn. Thoughts?
+
+Hmm, if they're different BTF IDs wouldn't the BPF program have to be
+aware of this and use two different structs for the pointer storage?
+That seems a bit awkward from an API PoV?
+
+Also, what about updating? For this to be useful with TCP, you'd really
+want to be able to update the CT state as the connection is going
+through the handshake state transitions...
 
 -Toke
 
