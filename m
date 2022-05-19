@@ -2,375 +2,281 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3503952DAC6
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 19:01:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 328E052DAE1
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 19:11:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242322AbiESRBc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 13:01:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38478 "EHLO
+        id S237258AbiESRJl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 13:09:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242325AbiESRB3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 13:01:29 -0400
-Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA71443E9;
-        Thu, 19 May 2022 10:01:27 -0700 (PDT)
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24JFGHtp010066;
-        Thu, 19 May 2022 10:00:50 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=NdXMX1tNWTtQzfNtGxvIHyN1F8ME45W7cFbWZnc6U7Q=;
- b=RTlLiHT0+LDyZLMV50UNTHO4A60B2J0NcHpmHa8/3pX3pewp9Pp6DjcMhAz13s6KpAIb
- fPZFt9QvnN9k5ulEaWhmttKpRr9x1ejXtHu2x2dVG0GUT9Iz1T2oHexju4zZ1X6eiiqx
- I8OXFPgpT0urqF/Eq25/82Xz1z22TYfeaOM= 
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2173.outbound.protection.outlook.com [104.47.57.173])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3g4ey1r2m2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 May 2022 10:00:50 -0700
+        with ESMTP id S232746AbiESRJj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 13:09:39 -0400
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30048.outbound.protection.outlook.com [40.107.3.48])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE59E9C2CD;
+        Thu, 19 May 2022 10:09:37 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i8peIrSdy8ovWr3be3L51ha1FKQwzGbGQqX8KZpawvZ8Mjh5pnfViIDbZ/2bGEImh2c6dRwO3oVusJ5ULV0OytwCYafeSEv8Fcjv17W6XHclvzBCS8yuAI2Iu4Ge5VhFJmBw4cIefMCYgdzhMedSRTZk3WPJ/M5j6trSNOIGu7SWqjfYhXyN4M5sGxeR8/xkZ7+z3gNFfs6TAyPpsBTR0a207vbUW9dQJ7y1rwASyCWIkNR1Im+Qx8u9T6XTvb1K347AB6kxQ27XVENC8TdraVBRRXp+1FF6Lo0BsV6ORLBujiPOfLqonOHMYkBkpkWRW+IV7h1NTX7Ut4nEXSYI2A==
+ b=j2ayU21rt9Wi3BkfuyMYlHTQbIT4fHUFuhB3oNBf2AHTAHfTNZC3QhJbhmf6wO9DtGDei/Ln8kXluZSm3SsvKRI3aTLob8sCFB4G9pLprh6ve5A2KG1CSjgiKjpIsWTQ0ZwMqZOz579KXZLuXZiuofS9pK3XpnWoUP1yZuBwAVbqeOc57z/nzGE6NaUxsqrpEW/ekrL9ul4/43eZfGfTM5SM6Zwxkl4zOCqwP90DfEmy6f0iQTRaR0zkleKGTtqtoU8Y5WBuaOkLNchIPQeVIYzu+RV3ysHnu705OErCCuxH8w7eWwH57jXqrcU85dbHAgs7cDFzonJjzYdi2GlbZA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=NdXMX1tNWTtQzfNtGxvIHyN1F8ME45W7cFbWZnc6U7Q=;
- b=ja4zCzJUYFqminlZr089yPOveQwelLdAfDpqdUrxhV5ahDPZejnApBk6ZOeQ/yeS4wb+6DiB4GgzbyPKU4HiNNCfzIlnjvxV45XtEwuNal6lOYP9t2qrpfrPYaXpQiUOrCMrcXjeNNOm/mGrWjl+OmmF6kbi619sbRbomh0hwAczJSuwsJU9cnhiKn8FIA63e0s0x7T1OePhF8b4LjwVUTfwp3hXAtFHz4NcCUnacMqYLB6C391CK87xt/q7gYa5r0g6+m2/UePYskYei0v2VBrXvmybZLRkGGAUQieNDM536xNHSKrztJX4ilcfrjof9XvoR5onC5UaB9U7G6GAMQ==
+ bh=eXpbLzb7ES0RFsJz5h5AceM3J/5ytbaw20Bkh1/rttc=;
+ b=leimF9P5uBmrImTiaXP/m3nKHVzWvssVH1TbQp8lFzVn6iA2I2IuwgkpJqpGESkrG/pzVgOTT8GhoDlJfs2VfoFagKQ7dtLCQMflebnfsfx+kZGgJSFkIK1Y5qwjBA+LXyTZ+OpGV67yp8+pUtO4GiwkPbTbh8xesljctK/kYv0k1ySs7AwoIoBX0CbCPuSanymhvR0DCPwLCRiXuifyvjK4HoWjrnOKb1fm2Y4avGTxYm8PjoHL+PoxESAcf+4jG+kHMSM99KOxbdYMJIfx6H9tRZNPTESHoC8Ffi5VBWQn233/Axmxbf9brJN/DOAZnLoIQ75m6SSJY/e5nuiz9w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by BYAPR15MB2325.namprd15.prod.outlook.com (2603:10b6:a02:85::27) with
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eXpbLzb7ES0RFsJz5h5AceM3J/5ytbaw20Bkh1/rttc=;
+ b=o2wYDDfwZd/FGc6PGRKzdocHUT3mIkyzA8I0nBgm76Sx833gNK/Hp1a1zMYZDo73dRSqwNcYV+kCm5xItPTMB+ftWGsTgZrLp5csuDvnnUf3XXNb4Ra6qJF2EtjbSr4ak3/BBMq3zQf6s01WIviTDOnW80xD9G29p6Cc4/GsNok=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by AM6PR04MB4423.eurprd04.prod.outlook.com (2603:10a6:20b:20::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.16; Thu, 19 May
- 2022 17:00:47 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::5811:4996:bbfd:3c53]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::5811:4996:bbfd:3c53%7]) with mapi id 15.20.5273.015; Thu, 19 May 2022
- 17:00:47 +0000
-Message-ID: <ae883471-7177-d7a8-b556-82054e10acb2@fb.com>
-Date:   Thu, 19 May 2022 10:00:45 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH v3 bpf-next 4/5] net: netfilter: add kfunc helper to add a
- new ct entry
-Content-Language: en-US
-To:     Kumar Kartikeya Dwivedi <memxor@gmail.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.13; Thu, 19 May
+ 2022 17:09:29 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::fd1f:cc16:dafe:4bf5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::fd1f:cc16:dafe:4bf5%5]) with mapi id 15.20.5250.014; Thu, 19 May 2022
+ 17:09:29 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Colin Foster <colin.foster@in-advantage.com>
+CC:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Terry Bowman <terry.bowman@amd.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Steen Hegelund <Steen.Hegelund@microchip.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel <netfilter-devel@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>
-References: <cover.1652870182.git.lorenzo@kernel.org>
- <40e7ce4b79c86c46e5fbf22e9cafb51b9172da19.1652870182.git.lorenzo@kernel.org>
- <87y1yy8t6j.fsf@toke.dk> <YoVgZ8OHlF/OpgHq@lore-desk>
- <CAADnVQ+6-cywf0StZ_K0nKSSdXJsZ4S_ZBhGZPHDmKtaL3k9-g@mail.gmail.com>
- <20220518224330.omsokbbhqoe5mc3v@apollo.legion> <87czg994ww.fsf@toke.dk>
- <20220519112342.awe2ttwtnqsz42fw@apollo.legion>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <20220519112342.awe2ttwtnqsz42fw@apollo.legion>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SJ0PR03CA0191.namprd03.prod.outlook.com
- (2603:10b6:a03:2ef::16) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+        "David S. Miller" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: Re: [RFC v8 net-next 00/16] add support for VSC7512 control over SPI
+Thread-Topic: [RFC v8 net-next 00/16] add support for VSC7512 control over SPI
+Thread-Index: AQHYYwzpO7u0NDHwdU2qDb+lARh+Pa0WyfwAgAgr3wCAB2H8gIAAGTwAgAAPOAA=
+Date:   Thu, 19 May 2022 17:09:29 +0000
+Message-ID: <20220519170928.qv6mn6arjgzq7doh@skbuf>
+References: <20220508185313.2222956-1-colin.foster@in-advantage.com>
+ <20220509171304.hfh5rbynt4qtr6m4@skbuf> <20220514220010.GB3629122@euler>
+ <20220519144441.tqhihlaq6vbmpmvd@skbuf>
+ <20220519161500.GA51431@colin-ia-desktop>
+In-Reply-To: <20220519161500.GA51431@colin-ia-desktop>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=nxp.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2f379401-646d-4502-cf9f-08da39ba55e5
+x-ms-traffictypediagnostic: AM6PR04MB4423:EE_
+x-microsoft-antispam-prvs: <AM6PR04MB442336009C34E741F8DDA02DE0D09@AM6PR04MB4423.eurprd04.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Y1Y4i9rfchvru5KhgsBOtPPR6dXxtZVvheCnNh+na3TcANaqvLkPI8LeeJvc+RaCs4Fo5WdgUls0CojdVxV82jHhonNds1nVJ/zfvCq1p4k7WNQDINETzChagYY+UoscNV2Mx4sMeVidstkjXx574XhxFY3Sh1QxHiTIQf83q3m35evav+0geXKBfD2jppUZr5uPjO7zwgQBlE4wCnJuRYC/Nqn36LV0G8xD2w2T8SAvm2FCWXTSE7KqUhN69Aj77U5ixYq31s0kKJQHw2GY4ZEWGZvXZhOhnC6QijAhMT1xQvVzINalLInM2+eDnDnbafDuy7yRf+a0LOrDTTnYFVux2YKocRqxxffDOOhq5GZCTarGIVTLiZmNb7zarRWvRg02k1s5f2Da9sywv25ycA6mV7DFBJ1XypK8+Y7uEos+PqXsgIuU0XIuYWXFAhYuTdl/MFOwMnwyiKUMurzYvET4tIg+PL1qQ9z4XV/oFKzH7DXMtYioYOYYwuE+TqbRbovLgpBjGAud1snCqIeygTphhczkPt82PEKpeel9I9tbjG4yiO83cvWA85fjZigvIoVoTjBs3/RS9vdUzH/Aqn2nQ0tz8+9rWvNTyJ9GbmVQRxKwSAG30xbB9uXWGmhJ4hqDM7EQftwa3WHGrqp/zBHTeDS2Mrpyt7t9kZENxhjFkOQxlDNTtCYgFB9CdtyZsC4KvaUCsFS2UFMQ16FqZQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(6512007)(91956017)(8936002)(76116006)(66946007)(316002)(9686003)(508600001)(64756008)(66446008)(66476007)(66556008)(8676002)(4326008)(7416002)(33716001)(6916009)(44832011)(38100700002)(2906002)(54906003)(71200400001)(6486002)(26005)(6506007)(83380400001)(38070700005)(122000001)(186003)(1076003)(86362001)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?JVU9C3k3PhqmrmVOaFcIVcOPtWM+I8Th7aa389xeJHFpREXqAV1bHV2hQWPq?=
+ =?us-ascii?Q?HCZt7vDezdJ3v4DzReqOG3xTzRM/dYnLgU9NyVmqRvx/oBF9+wxpWHvQp5Mn?=
+ =?us-ascii?Q?EVgNuH4bEsSuvjQDtBRqviyhSkDWW1Xfd9jvw8aru7PcHW1g3oBrquwTsCex?=
+ =?us-ascii?Q?HPqRsT+H2kbHw5QZb+CXwcz+8CGN0+5j1PPnurVln9e0W3UG+QnQ5eT+YiA4?=
+ =?us-ascii?Q?28z/lo83om62KEAzBnIOHjViq/XeTjqKVHd9Aq98GOaThJzgyJ6pWqcyPCxo?=
+ =?us-ascii?Q?l5Bv2rTtEV9dHcwKQhC/yaNS4nnEWs3Ol0bYdqzEpMVpxpzd8JT/aekMQzlH?=
+ =?us-ascii?Q?Ao/KIqQlGP1yQ6innf/Xg0w3dw8PtRXUINRi0s84iTSV8vkkhPzVoWuDOu3F?=
+ =?us-ascii?Q?bGepvQgDUAzT12C7SaLkpN0RkPKEbU8uOo0G7q3twiSH8RsrgRmMDqjXGCrF?=
+ =?us-ascii?Q?G8qYSYXSIY+se34pbYUu24WNOfcUpQfvaKWGFo/MCklTg7PyOtosyh/e5M2h?=
+ =?us-ascii?Q?7O5pg3E226H+oQMtOkjDvuO6AHLlf0dnSogS2HUf9YjEsW+t+PRkSbdJVjz/?=
+ =?us-ascii?Q?b+uT4CN821G0H05myAqwPcXqJ2jdit+ZDG3yYR3eDCNVH9E2EdCZPtMI2w4C?=
+ =?us-ascii?Q?TemQucVozTWqlBdwickK/Nh0Ojbs3AJC7hzpBVik0TQXO+YeW9C+HjRCzotC?=
+ =?us-ascii?Q?YYTz3qXg9laoTMdWjuYACKf9UoZT+OQJhMn7BZ6wprFuzfLlqIIHueGSd2i2?=
+ =?us-ascii?Q?T1zYrrJGKcmcvc2semV2jsyckOA8gdKGN4FgCeDgmZMplvr8ES2dHgbQ9I8o?=
+ =?us-ascii?Q?kIasoJzcXHwf+XwFt63gLdizXwiMmwRM4Z8frFWa7xH3owiwz3n8gBdwQj+p?=
+ =?us-ascii?Q?IdOgNTzo81qiWf5lpeSbdaX0H5Y6PB+iPrR0uwL9pUHkypgppniUrlEPrpEK?=
+ =?us-ascii?Q?OlLdPgktb1cFqHLFLPr0vwlzFAxhRmZQ8/tihqfbP3veLMHpwXIB+OA48SfB?=
+ =?us-ascii?Q?cUQgd8uKaiQxPSIus6+UBU7Hk3PcyRVJ8ZXYo4yc8f+c3xWXMoghfUne1o39?=
+ =?us-ascii?Q?H3e8DjGNIHV1w1NdQ8jBD6BzLSd4/JCrQvWItWY6YRi2u81cIaKwIuhKqn75?=
+ =?us-ascii?Q?qqksG9vSl/hlx5WW5wTUj3as7eYHvksVpnimlOyJoTTYaCohaI0qWNtN3Gxj?=
+ =?us-ascii?Q?N4srMLh91wSAs8a0ZIS8PDOueIZevOB4mM1jpzS2CxUqM7baRHsc1zmL8UiV?=
+ =?us-ascii?Q?5/GnYQ4CiLLmSUYQ40UbGKH6FhqFyl04u7XCamGF9Lb58tmewiJmLNaNFLAh?=
+ =?us-ascii?Q?3zAMhL0gH8QDoOqy/ReWVF+Iyqyrq0RXuPWiVx8+6yMV++6YPr3CzuZ01OHh?=
+ =?us-ascii?Q?kH+nPrgs1wgDcIY+s3Tt9uamcecR2eezxxzL8UvoTLKuN4V/G1YBPVrQYmmf?=
+ =?us-ascii?Q?AtmdLFv1sETTsYTtgX1l1EEyMjCyNLIJLA1T80ZD8qR7eOFa1/Da3Xl0SQ9T?=
+ =?us-ascii?Q?B7ssCt+0g1rLjIbL5zuAbuP++fAoJnMCEUEUCQ3bNw1uRW/dkiesX8kvcmAo?=
+ =?us-ascii?Q?eXVXWsqitVHi269ghcRuqVXNesWDZWjpvFPnSzPRzIoO47k/f3iyvia8y5Pj?=
+ =?us-ascii?Q?Bv0gU5C/Gt/+YxJ59WwppUNCzoUo9Z2+xJlZzxJ8ebMGYFqY2Q3T3NYfj4tu?=
+ =?us-ascii?Q?wkg0FRC/OcG0UnzgWRML56acNhAZDrzCjNZ+bsMNombaOxiFpBVovG3Z3n6n?=
+ =?us-ascii?Q?s2RrcCtrNE2SlxTRmCrEvGcPJl/ikao=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <A9304FE69D7328439E7A383A6FB68C29@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1365c3ba-43bd-4541-112d-08da39b91ee3
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2325:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR15MB23251FCCF4BD83BF44D5DB4CD3D09@BYAPR15MB2325.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: g/o1FfVAPVQDCzqkEfMTL86k9kDrgYgNIyLYPd/WKDtz1nWBt4yC8pWFxTyhVsm18GxFZcZKxkxjsCqTQRNpKYkJVHNI4746MUC3CwKqh1t/zMigwbttGOzmrul4fkB2Zl1bnkSqN+DnqmKknk29Ejv/ngumSae3ga/3mpKebszdLgJTu9H0zANk0Qp9yJfyWDz6aMA+x/XxZp4dopz82vNFb6iIjjrziz0Tyz3NkTpqc9tK3exAx0eeaRknLna8E1JHBK6hdtfaKIPP86+AP1XyeLWGP2qnhSdTFt1B6d1E2708l82oSsbHoTQkYxMMYM4ovN+FFNvvl+NwuCUysXxi1pfrViUNtjxUfjVNX/8dZFT9ecq6I8EfDkyF80nxa8R6B/UHmgOMCXZaoKo2iCsAeKL6faNPv/Ok7n2ry5uphKW3RwUQHAevyhrRL3F4MlpPUT2fkSZmYL5X98x6U77hlOnpH/iC3om9yw5WrRDE7TfzaceNFAnYH9hbSjndDFqW28QirdBzs4kv+5atjfETarkHsx/cOOMalxZ1u7oYUWL5nTWLVjVOxCgpSLNGQxgtQBtUBp7YzmfXPVQWd76OqTfCleHWffywtKuYdJvXiylRZtOO3SqpjktAjGLf24aCSpXFjOw7hJAU6Qxv9re4A3t3qTWmpRWB9exwlwsToJnnzftE2dPEm2tTLVoABlsdq4pnSUIPbJRUyJry2ibgjQdXtOmqnI1iu4UdCJo=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(186003)(7416002)(83380400001)(6506007)(53546011)(6486002)(5660300002)(6512007)(66574015)(2906002)(36756003)(31686004)(508600001)(52116002)(2616005)(31696002)(86362001)(8676002)(66476007)(66556008)(54906003)(66946007)(4326008)(316002)(110136005)(8936002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UUtUcWVvNEE3bHF0Mms5U3IrNXdRV3hWS2krZkFBTi9DVTRzOFRvL1NmL3dH?=
- =?utf-8?B?ZlYrUEtWQi9XUjJSQlhvUlZMQkxsTm1wdGpxSXhNZUw2VTVJTlVHNWdJdXNK?=
- =?utf-8?B?aHloZFlNZXhDbHh5YVpnSHp5T284b1VLSmFVWWd1Q2htRlFoSzMyWXZCS1kv?=
- =?utf-8?B?VFRFR3Y4MVlPYlBoeHB0RkRhcVRtc2tzSFRQeTZqSytQMkEvZUtFMUV5aU5Q?=
- =?utf-8?B?di9obGE5MnZSN0hUNWc2VnJZUURwb09lajEzbzdxVFlTQU81dEtibEZQSXJ1?=
- =?utf-8?B?VVBFWjZWWStxOTVyR2RDUGVoWHZKWVFhUWFvaFZ1RllwVVgzT1IxZGs3MTB5?=
- =?utf-8?B?MW5adllWSEtrcmZRcGVmL3YvQUhYd20vbGt6ZlZnOElvOEErK3hUblRXZU5M?=
- =?utf-8?B?eWNscG9kcEFtK3VRN2NmbmRRc1Ixc0xXS1pacTVNNkxXdFdsaXNRMitrZk05?=
- =?utf-8?B?aDFWZUxKeDJsSG9jdmtoTGIvVmFMbDVHOTY3V2FGQnlJN3Q4N2tKbkJUNlpl?=
- =?utf-8?B?cGdPYUdBb3dsRUtrR0dpOTRjWnliUXU1cEZLK3k5NW5RRWVadnNXbkRPaE5R?=
- =?utf-8?B?RkhVNkhwWWpodmRyMmEzamZ6cmJ3dTBaQ2RYaU1uSlpCSjR4dSt2QVFubmEz?=
- =?utf-8?B?TXM5NE9VMXhpNHpLdHZ4MENTTnFWZTdHakMxdkllN1ZMWlBuYXhla200by94?=
- =?utf-8?B?ZC9NeEExd3FJNWorQm5mVmcrRXNpZmljTHY0cFpCZnV2cDJ2VXA3V0dLMDRI?=
- =?utf-8?B?cThtSkw4clhoQnRmWER3a0paTGdYZXlKSW1sV2VnY0d0UDlWYm5ZM1FpZm9W?=
- =?utf-8?B?RGNSdmc3Ukw0UU5wYzZSbDJKRDUvWGl1U0ZSdEdsWVZzZjZYWFVja3hjaHA0?=
- =?utf-8?B?Qm5oeG5KRWYvdzFPbVdMaWcwY3lxcFVHa24rdzZTVnpna0JvcDB5Q2daVVZV?=
- =?utf-8?B?VHduTHVBZGhIUFppRlU1SngxQmtZMUVLTHJkenJiNHhiZlljcUhRbFlYNE5J?=
- =?utf-8?B?ejhWSE9aYWRoakh1L3NoNS9DSUxEa3l1MnNWc0hMNloxMndaUG5KQ3NvTzVI?=
- =?utf-8?B?SUdQZ2hldXpLRUtOREpPMm9UOVA2V0k5L0JENC96OUE3UTZ4WFVVTnBNOXRm?=
- =?utf-8?B?SnBSUzg3b1NmN2VuNHNncndNK1E3cGx0RzEwNWhFaVJMbkhJcmNxN3NFZTcw?=
- =?utf-8?B?TmdxN2JZdlY3NTVrQ0JpYlBWUXhjdVVTbVpaazdmVi9UTTRRRzdsTWFNS201?=
- =?utf-8?B?bTRibUtzMVc2c0V2T2NoVC95bllkU3BPUjlrcktUWkE2YVhMZ1NtNEFKU3My?=
- =?utf-8?B?WWtNclVBRmVDeVUyZzUydTY2VFM5RmtpMjdmaGhQM0Z6Z0d3RnpEZEZ0V09C?=
- =?utf-8?B?VmdITnhNbnRUTXVleGVCaWlVVUZRSUlVVkVuck1WNkoyei9FejljQnhWY0Vp?=
- =?utf-8?B?WnhvTnhINmUwL0p1VnYrSkNEUCtERXVPbExEVlBFUVhyU2FWdytvamRUMG5O?=
- =?utf-8?B?YkludUYrdDg3bEZGRXprTW4vcGpndmg2a2lFVzFxbDM4R1NlNEgraVp3K2NM?=
- =?utf-8?B?c0JCSUY0bCs0ZXRseElSM2d5b3lqMlUwbFFTVHdEU054bjdPYVVibUdvb1pl?=
- =?utf-8?B?dGltK2lTaks4b2FIenpsWmhvUlpJdUc1RXFCVENRUFg2TnFyQm14alNKSGRw?=
- =?utf-8?B?TlNOeXljZTBON3NRSXBzNkZJNEVtR3FyOUx1djdJdXlzN2U0ajUzZXZRWmxY?=
- =?utf-8?B?akdJWXdHd08zbjNQZTljL0J1cEtieWduWWl6LzdjK2QrNFVGSjNoUzhlZTJ1?=
- =?utf-8?B?SFdvUVBGWlhFMUMzbDd2RDJaWXo5dHVIOEIxQ1RiREM1YTdUbEpjTnNkUXl4?=
- =?utf-8?B?eHZwVVM2NUFaNE9icE5sOEhKRnBFOW1uWFA2MVlxTVIzR2pQVVRPbE1KTFA4?=
- =?utf-8?B?VlpsTnlPck00VWZXMER6NVZCM2hGeUxPcUtnbnhNVW5PV0d3SHZINk5JS2FT?=
- =?utf-8?B?ekl4TmlaSlBQUjhzNEhRS01HMjRWYVhvTGFQSGpINkxLd1doNFR1UGM0Nno1?=
- =?utf-8?B?bktzZmFKcmh2aC9PeVdKM2ExOFN2dC9WQjZTTWRzUFpyNkM5ekN3SXRRNjR0?=
- =?utf-8?B?THV2T2tCbVM0djRQenlUby84UzEwVFo5dDUwWllrRlMwVEtpMXp0TUgxRlF6?=
- =?utf-8?B?YTRnUG9NazcveGdCMlJvbG5TT1dra3owS3dldmFjZHdVazdVaFczYUpMNjJu?=
- =?utf-8?B?RXZGai9DYnhYTW12Mkl5YlQzVytidDFPZkdKV0NxZHF5VlVza3NNWlBUdmpF?=
- =?utf-8?B?b0NGNjQxQ2FZL01OWnhzUEhRUy8rWmRTWHZDUWJGeTVKaEZsMks1V3lXSkRB?=
- =?utf-8?Q?Q7SggGWGyMfVa1o4=3D?=
-X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1365c3ba-43bd-4541-112d-08da39b91ee3
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 May 2022 17:00:47.7839
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f379401-646d-4502-cf9f-08da39ba55e5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2022 17:09:29.4014
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HC5KnJzINACHdvFvGWES0CBEk5LBjCOB1PYmP073T1iVmcgnKpxnZTA4j6QVctxd
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2325
-X-Proofpoint-ORIG-GUID: s1zXKZE5rDSwrj1gxWAOx-qZbTwip2kc
-X-Proofpoint-GUID: s1zXKZE5rDSwrj1gxWAOx-qZbTwip2kc
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-19_05,2022-05-19_03,2022-02-23_01
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: bh9wvc1DAhsYmpwx9OsRpjLU75zhB7xif7g0g2lE0DPOIOlICyyOgG+KHXHgPwwRabxz9TUXV9HPL8CEA8CnDA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4423
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, May 19, 2022 at 09:15:00AM -0700, Colin Foster wrote:
+> Hi Vladimir,
+>=20
+> On Thu, May 19, 2022 at 02:44:41PM +0000, Vladimir Oltean wrote:
+> > Hi Colin,
+> >=20
+> > On Sat, May 14, 2022 at 03:00:10PM -0700, Colin Foster wrote:
+> > > On Mon, May 09, 2022 at 05:13:05PM +0000, Vladimir Oltean wrote:
+> > > > Hi Colin,
+> > > >=20
+> > > > On Sun, May 08, 2022 at 11:52:57AM -0700, Colin Foster wrote:
+> > > > >=20
+> > > > > 		mdio0: mdio0@0 {
+> > > >=20
+> > > > This is going to be interesting. Some drivers with multiple MDIO bu=
+ses
+> > > > create an "mdios" container with #address-cells =3D <1> and put the=
+ MDIO
+> > > > bus nodes under that. Others create an "mdio" node and an "mdio0" n=
+ode
+> > > > (and no address for either of them).
+> > > >=20
+> > > > The problem with the latter approach is that
+> > > > Documentation/devicetree/bindings/net/mdio.yaml does not accept the
+> > > > "mdio0"/"mdio1" node name for an MDIO bus.
+> > >=20
+> > > I'm starting this implementation. Yep - it is interesting.
+> > >=20
+> > > A quick grep for "mdios" only shows one hit:
+> > > arch/arm64/boot/dts/freescale/fsl-lx2160a-bluebox3.dts
+> > >=20
+> > > While that has an mdios field (two, actually), each only has one mdio
+> > > bus, and they all seem to get parsed / registered through
+> > > sja1105_mdiobus_.*_register.
+> > >=20
+> > >=20
+> > > Is this change correct (I have a feeling it isn't):
+> > >=20
+> > > ocelot-chip@0 {
+> > >     #address-cells =3D <1>;
+> > >     #size-cells =3D <0>;
+> > >=20
+> > >     ...
+> > >=20
+> > >     mdio0: mdio@0 {
+> > >         reg=3D<0>;
+> > >         ...
+> > >     };
+> > >=20
+> > >     mdio1: mdio@1 {
+> > >         reg =3D <1>;
+> > >         ...
+> > >     };
+> > >     ...
+> > > };
+> > >=20
+> > > When I run this with MFD's (use,)of_reg, things work as I'd expect. B=
+ut
+> > > I don't directly have the option to use an "mdios" container here
+> > > because MFD runs "for_each_child_of_node" doesn't dig into
+> > > mdios->mdio0...
+> >=20
+> > Sorry for the delayed response. I think you can avoid creating an
+> > "mdios" container node, but you need to provide some "reg" values based
+> > on which the MDIO controllers can be distinguished. What is your conven=
+tion
+> > for "reg" values of MFD cells? Maybe pass the base address/size of this
+> > device's regmap as the "reg", even if the driver itself won't use it?
+>=20
+> No worries. Everyone is busy.
+>=20
+> Right now it looks like this:
+>=20
+> }, {
+>     .name =3D "ocelot-miim0",
+>     .of_compatible =3D "mscc,ocelot-miim",
+>     .of_reg =3D 0,
+>     .use_of_reg =3D true,
+>     .num_resources =3D ARRAY_SIZE(vsc7512_miim0_resources),
+>     .resources =3D vsc7512_miim0_resources,
+> }, {
+>     .name =3D "ocelot-miim1",
+>     .of_compatible =3D "mscc,ocelot-miim",
+>     .num_resources =3D ARRAY_SIZE(vsc7512_miim1_resources),
+>     .of_reg =3D 1,
+>     .use_of_reg =3D true,
+>     .resources =3D vsc7512_miim1_resources,
+> }, {
+>=20
+> "0" and "1" being somewhat arbitrary... although they are named as such
+> in the datasheet.
+>=20
+>=20
+> So you're thinking it might look more like:
+>=20
+> .of_reg =3D vsc7512_miim0_resources[0].start,
+>=20
+> and the device tree would be:
+>=20
+> mdio0: mdio@0x7107009c {
+>     reg =3D <0x7107009c>;
+> };
 
+Yeah, this is what I was thinking.
 
-On 5/19/22 4:23 AM, Kumar Kartikeya Dwivedi wrote:
-> On Thu, May 19, 2022 at 04:15:51PM IST, Toke Høiland-Jørgensen wrote:
->> Kumar Kartikeya Dwivedi <memxor@gmail.com> writes:
->>
->>> On Thu, May 19, 2022 at 03:44:58AM IST, Alexei Starovoitov wrote:
->>>> On Wed, May 18, 2022 at 2:09 PM Lorenzo Bianconi
->>>> <lorenzo.bianconi@redhat.com> wrote:
->>>>>
->>>>>> Lorenzo Bianconi <lorenzo@kernel.org> writes:
->>>>>>
->>>>>>> Introduce bpf_xdp_ct_add and bpf_skb_ct_add kfunc helpers in order to
->>>>>>> add a new entry to ct map from an ebpf program.
->>>>>>> Introduce bpf_nf_ct_tuple_parse utility routine.
->>>>>>>
->>>>>>> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
->>>>>>> ---
->>>>>>>   net/netfilter/nf_conntrack_bpf.c | 212 +++++++++++++++++++++++++++----
->>>>>>>   1 file changed, 189 insertions(+), 23 deletions(-)
->>>>>>>
->>>>>>> diff --git a/net/netfilter/nf_conntrack_bpf.c b/net/netfilter/nf_conntrack_bpf.c
->>>>>>> index a9271418db88..3d31b602fdf1 100644
->>>>>>> --- a/net/netfilter/nf_conntrack_bpf.c
->>>>>>> +++ b/net/netfilter/nf_conntrack_bpf.c
->>>>>>> @@ -55,41 +55,114 @@ enum {
->>>>>>>      NF_BPF_CT_OPTS_SZ = 12,
->>>>>>>   };
->>>>>>>
->>>>>>> -static struct nf_conn *__bpf_nf_ct_lookup(struct net *net,
->>>>>>> -                                     struct bpf_sock_tuple *bpf_tuple,
->>>>>>> -                                     u32 tuple_len, u8 protonum,
->>>>>>> -                                     s32 netns_id, u8 *dir)
->>>>>>> +static int bpf_nf_ct_tuple_parse(struct bpf_sock_tuple *bpf_tuple,
->>>>>>> +                            u32 tuple_len, u8 protonum, u8 dir,
->>>>>>> +                            struct nf_conntrack_tuple *tuple)
->>>>>>>   {
->>>>>>> -   struct nf_conntrack_tuple_hash *hash;
->>>>>>> -   struct nf_conntrack_tuple tuple;
->>>>>>> -   struct nf_conn *ct;
->>>>>>> +   union nf_inet_addr *src = dir ? &tuple->dst.u3 : &tuple->src.u3;
->>>>>>> +   union nf_inet_addr *dst = dir ? &tuple->src.u3 : &tuple->dst.u3;
->>>>>>> +   union nf_conntrack_man_proto *sport = dir ? (void *)&tuple->dst.u
->>>>>>> +                                             : &tuple->src.u;
->>>>>>> +   union nf_conntrack_man_proto *dport = dir ? &tuple->src.u
->>>>>>> +                                             : (void *)&tuple->dst.u;
->>>>>>>
->>>>>>>      if (unlikely(protonum != IPPROTO_TCP && protonum != IPPROTO_UDP))
->>>>>>> -           return ERR_PTR(-EPROTO);
->>>>>>> -   if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
->>>>>>> -           return ERR_PTR(-EINVAL);
->>>>>>> +           return -EPROTO;
->>>>>>> +
->>>>>>> +   memset(tuple, 0, sizeof(*tuple));
->>>>>>>
->>>>>>> -   memset(&tuple, 0, sizeof(tuple));
->>>>>>>      switch (tuple_len) {
->>>>>>>      case sizeof(bpf_tuple->ipv4):
->>>>>>> -           tuple.src.l3num = AF_INET;
->>>>>>> -           tuple.src.u3.ip = bpf_tuple->ipv4.saddr;
->>>>>>> -           tuple.src.u.tcp.port = bpf_tuple->ipv4.sport;
->>>>>>> -           tuple.dst.u3.ip = bpf_tuple->ipv4.daddr;
->>>>>>> -           tuple.dst.u.tcp.port = bpf_tuple->ipv4.dport;
->>>>>>> +           tuple->src.l3num = AF_INET;
->>>>>>> +           src->ip = bpf_tuple->ipv4.saddr;
->>>>>>> +           sport->tcp.port = bpf_tuple->ipv4.sport;
->>>>>>> +           dst->ip = bpf_tuple->ipv4.daddr;
->>>>>>> +           dport->tcp.port = bpf_tuple->ipv4.dport;
->>>>>>>              break;
->>>>>>>      case sizeof(bpf_tuple->ipv6):
->>>>>>> -           tuple.src.l3num = AF_INET6;
->>>>>>> -           memcpy(tuple.src.u3.ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
->>>>>>> -           tuple.src.u.tcp.port = bpf_tuple->ipv6.sport;
->>>>>>> -           memcpy(tuple.dst.u3.ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
->>>>>>> -           tuple.dst.u.tcp.port = bpf_tuple->ipv6.dport;
->>>>>>> +           tuple->src.l3num = AF_INET6;
->>>>>>> +           memcpy(src->ip6, bpf_tuple->ipv6.saddr, sizeof(bpf_tuple->ipv6.saddr));
->>>>>>> +           sport->tcp.port = bpf_tuple->ipv6.sport;
->>>>>>> +           memcpy(dst->ip6, bpf_tuple->ipv6.daddr, sizeof(bpf_tuple->ipv6.daddr));
->>>>>>> +           dport->tcp.port = bpf_tuple->ipv6.dport;
->>>>>>>              break;
->>>>>>>      default:
->>>>>>> -           return ERR_PTR(-EAFNOSUPPORT);
->>>>>>> +           return -EAFNOSUPPORT;
->>>>>>>      }
->>>>>>> +   tuple->dst.protonum = protonum;
->>>>>>> +   tuple->dst.dir = dir;
->>>>>>> +
->>>>>>> +   return 0;
->>>>>>> +}
->>>>>>>
->>>>>>> -   tuple.dst.protonum = protonum;
->>>>>>> +struct nf_conn *
->>>>>>> +__bpf_nf_ct_alloc_entry(struct net *net, struct bpf_sock_tuple *bpf_tuple,
->>>>>>> +                   u32 tuple_len, u8 protonum, s32 netns_id, u32 timeout)
->>>>>>> +{
->>>>>>> +   struct nf_conntrack_tuple otuple, rtuple;
->>>>>>> +   struct nf_conn *ct;
->>>>>>> +   int err;
->>>>>>> +
->>>>>>> +   if (unlikely(netns_id < BPF_F_CURRENT_NETNS))
->>>>>>> +           return ERR_PTR(-EINVAL);
->>>>>>> +
->>>>>>> +   err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
->>>>>>> +                               IP_CT_DIR_ORIGINAL, &otuple);
->>>>>>> +   if (err < 0)
->>>>>>> +           return ERR_PTR(err);
->>>>>>> +
->>>>>>> +   err = bpf_nf_ct_tuple_parse(bpf_tuple, tuple_len, protonum,
->>>>>>> +                               IP_CT_DIR_REPLY, &rtuple);
->>>>>>> +   if (err < 0)
->>>>>>> +           return ERR_PTR(err);
->>>>>>> +
->>>>>>> +   if (netns_id >= 0) {
->>>>>>> +           net = get_net_ns_by_id(net, netns_id);
->>>>>>> +           if (unlikely(!net))
->>>>>>> +                   return ERR_PTR(-ENONET);
->>>>>>> +   }
->>>>>>> +
->>>>>>> +   ct = nf_conntrack_alloc(net, &nf_ct_zone_dflt, &otuple, &rtuple,
->>>>>>> +                           GFP_ATOMIC);
->>>>>>> +   if (IS_ERR(ct))
->>>>>>> +           goto out;
->>>>>>> +
->>>>>>> +   ct->timeout = timeout * HZ + jiffies;
->>>>>>> +   ct->status |= IPS_CONFIRMED;
->>>>>>> +
->>>>>>> +   memset(&ct->proto, 0, sizeof(ct->proto));
->>>>>>> +   if (protonum == IPPROTO_TCP)
->>>>>>> +           ct->proto.tcp.state = TCP_CONNTRACK_ESTABLISHED;
->>>>>>
->>>>>> Hmm, isn't it a bit limiting to hard-code this to ESTABLISHED
->>>>>> connections? Presumably for TCP you'd want to use this when you see a
->>>>>> SYN and then rely on conntrack to help with the subsequent state
->>>>>> tracking for when the SYN-ACK comes back? What's the usecase for
->>>>>> creating an entry in ESTABLISHED state, exactly?
->>>>>
->>>>> I guess we can even add a parameter and pass the state from the caller.
->>>>> I was not sure if it is mandatory.
->>>>
->>>> It's probably cleaner and more flexible to split
->>>> _alloc and _insert into two kfuncs and let bpf
->>>> prog populate ct directly.
->>>
->>> Right, so we can just whitelist a few fields and allow assignments into those.
->>> One small problem is that we should probably only permit this for nf_conn
->>> PTR_TO_BTF_ID obtained from _alloc, and make it rdonly on _insert.
->>>
->>> We can do the rw->ro conversion by taking in ref from alloc, and releasing on
->>> _insert, then returning ref from _insert.
->>
->> Sounds reasonable enough; I guess _insert would also need to
->> sanity-check some of the values to prevent injecting invalid state into
->> the conntrack table.
->>
->>> For the other part, either return a different shadow PTR_TO_BTF_ID
->>> with only the fields that can be set, convert insns for it, and then
->>> on insert return the rdonly PTR_TO_BTF_ID of struct nf_conn, or
->>> otherwise store the source func in the per-register state and use that
->>> to deny BPF_WRITE for normal nf_conn. Thoughts?
->>
->> Hmm, if they're different BTF IDs wouldn't the BPF program have to be
->> aware of this and use two different structs for the pointer storage?
->> That seems a bit awkward from an API PoV?
->>
-> 
-> You only need to use a different pointer after _alloc and pass it into _insert.
-> 
-> Like:
-> 	struct nf_conn_alloc *nfa = nf_alloc(...);
-> 	if (!nfa) { ... }
-> 	nfa->status = ...; // gets converted to nf_conn access
-> 	nfa->tcp_status = ...; // ditto
-> 	struct nf_conn *nf = nf_insert(nfa, ...); // nfa released, nf acquired
-> 
-> The problem is that if I whitelist it for nf_conn as a whole so that we can
-> assign after _alloc, there is no way to prevent BPF_WRITE for nf_conn obtained
-> from other functions. We can fix it though by remembering which function a
-> pointer came from, then you wouldn't need a different struct. I was just
-> soliciting opinions for different options. I am leaning towards not having to
-> use a separate struct as well.
+> I could see that making sense. The main thing I don't like is applying
+> the address-cells to every peripheral in the switch. It seems incorrect
+> to have:
+>=20
+> switch {
+>     address-cells =3D <1>;
+>     mdio0: mdio@7107009c {
+>         reg =3D <0x7107009c>;
+>     };
+>     gpio: pinctrl {
+>         /* No reg parameter */
+>     };
+> };
+>=20
+> That's what I currently have. To my surprise it actually doesn't throw
+> any warnings, which I would've expected.
 
-Is it possible that we define the signature of nf_insert() as
-   const struct nf_conn *nf_insert(...)
-so for
-   const struct nf_conn *nf = nf_insert(nfa, ...);
+I tried mangling some device trees and indeed it looks like dtc won't
+warn, but I still think it's invalid to mix node address conventions
+with the same #address-cells. Maybe if that wasn't the case things would
+be easier.
 
-if there are any nf->status = ..., the compiler will emit a warning.
+> I could see either 0/1 or the actual base addresses making sense.
+> Whichever you'd suggest.
 
-Also verifier can know the return value of nf_insert() is read-only
-and can prevent value overwrite.
+The idea with putting the actual base addresses was that you could then
+do that for all cells, like the pinctrl node, too, and they'd have a
+coherent meaning.
 
-Maybe I missed some context, but the above is based on what
-I understood so far.
-
-> 
->> Also, what about updating? For this to be useful with TCP, you'd really
->> want to be able to update the CT state as the connection is going
->> through the handshake state transitions...
->>
-> 
-> I think updates should be done using dedicated functions, like the timeout
-> helper. Whatever synchronization is needed to update the CT can go into that
-> function, instead of allowing direct writes after _insert.
-> 
->> -Toke
->>
-> 
-> --
-> Kartikeya
+> I've got another day or two to button things up, so it looks like I
+> missed the boat for this release. This should be ready to go on day 1
+> after the window.=
