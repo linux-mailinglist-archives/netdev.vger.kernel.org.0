@@ -2,68 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B75852DC95
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 20:15:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7648E52DC9C
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 20:18:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243801AbiESSOq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 14:14:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53080 "EHLO
+        id S242978AbiESSSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 14:18:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243797AbiESSOk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 14:14:40 -0400
+        with ESMTP id S240855AbiESSSG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 14:18:06 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 85BEFEBA80
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:14:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id CF6C88CB0E
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:18:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652984078;
+        s=mimecast20190719; t=1652984280;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=t16CR3RST/Ttm5em4stGqyXfCEBYjLXIn09fz9ExDas=;
-        b=NAHZyTkd/MzSympXHYNUNqhlnBJgreqxgxbNjz982Jisn81R1037hNq676hlado9YcWBFy
-        TmSHQxd6SAtnZD9XEAzH9P4G1WAcRs4sF3feigh6b4lqO1mZsec5SCUnVcGcovbtoFtO6m
-        xpd8uh0tH9SH4I0+2DpTI2tS7wdSxf4=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=CCe4jzkEM21jgBEAbYUjXJxP7mWaBW+jz2xznXdsy+I=;
+        b=RuPr1C3HHVhYWb0EvnMn3BYXswEcW3kqLR0hFm9QGuelLdUSRhygsl8YPmJT38R6W41W+p
+        o+srbXoOjf1eUmoy2o0Ny9iJrcGl5UkiidDNpZXvTs/0o608T385Z7X8FI2RbdyC7PCf3r
+        foOlpv1s+o+cAxb31hBA7hEbGq4bnGw=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-631-d5Us7xPXOTCTvyu__BfIZg-1; Thu, 19 May 2022 14:14:34 -0400
-X-MC-Unique: d5Us7xPXOTCTvyu__BfIZg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 862481C05193;
-        Thu, 19 May 2022 18:14:33 +0000 (UTC)
-Received: from asgard.redhat.com (unknown [10.36.110.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id C570AC15E71;
-        Thu, 19 May 2022 18:14:29 +0000 (UTC)
-Date:   Thu, 19 May 2022 20:14:27 +0200
-From:   Eugene Syromiatnikov <esyr@redhat.com>
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Shuah Khan <shuah@kernel.org>, linux-kselftest@vger.kernel.org
-Subject: [PATCH bpf v4 3/3] libbpf, selftests/bpf: pass array of u64 values
- in kprobe_multi.addrs
-Message-ID: <0f500d9a17dcc1270c581f0b722be8f9d7ce781d.1652982525.git.esyr@redhat.com>
-References: <cover.1652982525.git.esyr@redhat.com>
+ us-mta-299-h7jOeViUPHu3gu-YjzgWDw-1; Thu, 19 May 2022 14:17:59 -0400
+X-MC-Unique: h7jOeViUPHu3gu-YjzgWDw-1
+Received: by mail-qv1-f72.google.com with SMTP id w6-20020a05621404a600b00461c740f357so4942334qvz.6
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 11:17:59 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=CCe4jzkEM21jgBEAbYUjXJxP7mWaBW+jz2xznXdsy+I=;
+        b=4MOwsyajPzPNCyHJeDMHQWiZPddQMRdU+VEmt+DdT/E129pEsMvH7G+e08Gy5ob7yf
+         kLsXavk9KArA7FQ+vfHvaVcizgRRRUQHuEaF4Vk3UmiL8rO/InghEm6JyeuuwiE3Y/J6
+         ZrJK3sYHXLEbqJUJfpR24NhJYywpy1nemhBchFBkPTUbMsy3YiDhGhyQaHhQfQvAvL6o
+         0ifv/hRLVMLnyWfQb0R7yWEwmCkF3IVEoT82lR5clVvr2VLY5ruydXLpkOn+w3GAhIUm
+         6Zpc9G0aTci/K/mVV/ahFMSyYf1Hun0VUf4+pu+ymPh5AyMRD+XOznrnyOOembffOzgM
+         yg+A==
+X-Gm-Message-State: AOAM532iKPuVBsuGjEyWFWk881qG8PLo2YezlHA50wB8Rr0z/R7d08ji
+        9HiZOAVqdgbtruJg7QFPXJqMgji4GRlk39dZJdFA9otS5JiU2vOt9ofpaoRGSnhTJjykCPKwzbJ
+        tguq7iL73FvusHp7y
+X-Received: by 2002:a05:620a:2943:b0:6a0:11b6:3a71 with SMTP id n3-20020a05620a294300b006a011b63a71mr3954549qkp.719.1652984279153;
+        Thu, 19 May 2022 11:17:59 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyTwxBQRbW5CXzavBWzZt+6Xg7JO8uFoYY0eybwSqD5ztTjROukyftoK04mSMAGDwdI3zcVSg==
+X-Received: by 2002:a05:620a:2943:b0:6a0:11b6:3a71 with SMTP id n3-20020a05620a294300b006a011b63a71mr3954535qkp.719.1652984278883;
+        Thu, 19 May 2022 11:17:58 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
+        by smtp.gmail.com with ESMTPSA id v64-20020a376143000000b006a32baf67aasm1687002qkb.27.2022.05.19.11.17.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 11:17:58 -0700 (PDT)
+Message-ID: <3ecbe9d60f555266fe09d5a8c657b87d6f7564b8.camel@redhat.com>
+Subject: Re: [PATCH net v3] net: macb: Fix PTP one step sync support
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Harini Katakam <harini.katakam@xilinx.com>,
+        nicolas.ferre@microchip.com, davem@davemloft.net,
+        richardcochran@gmail.com, claudiu.beznea@microchip.com,
+        kuba@kernel.org, edumazet@google.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        michal.simek@xilinx.com, harinikatakamlinux@gmail.com,
+        radhey.shyam.pandey@xilinx.com
+Date:   Thu, 19 May 2022 20:17:54 +0200
+In-Reply-To: <20220518170756.7752-1-harini.katakam@xilinx.com>
+References: <20220518170756.7752-1-harini.katakam@xilinx.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1652982525.git.esyr@redhat.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,145 +81,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the interface as defined, it is impossible to pass 64-bit kernel
-addresses from a 32-bit userspace process in BPF_LINK_TYPE_KPROBE_MULTI,
-which severly limits the useability of the interface, change the API
-to accept an array of u64 values instead of (kernel? user?) longs.
-This patch implements the user space part of the change (without
-the relevant kernel changes, since, as of now, an attempt to add
-kprobe_multi link will fail with -EOPNOTSUPP), to avoid changing
-the interface after a release.
+On Wed, 2022-05-18 at 22:37 +0530, Harini Katakam wrote:
+> PTP one step sync packets cannot have CSUM padding and insertion in
+> SW since time stamp is inserted on the fly by HW.
+> In addition, ptp4l version 3.0 and above report an error when skb
+> timestamps are reported for packets that not processed for TX TS
+> after transmission.
+> Add a helper to identify PTP one step sync and fix the above two
+> errors. Add a common mask for PTP header flag field "twoStepflag".
+> Also reset ptp OSS bit when one step is not selected.
+> 
+> Fixes: ab91f0a9b5f4 ("net: macb: Add hardware PTP support")
+> Fixes: 653e92a9175e ("net: macb: add support for padding and fcs computation")
+> Signed-off-by: Harini Katakam <harini.katakam@xilinx.com>
+> Reviewed-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
 
-Fixes: 5117c26e877352bc ("libbpf: Add bpf_link_create support for multi kprobes")
-Fixes: ddc6b04989eb0993 ("libbpf: Add bpf_program__attach_kprobe_multi_opts function")
-Fixes: f7a11eeccb111854 ("selftests/bpf: Add kprobe_multi attach test")
-Fixes: 9271a0c7ae7a9147 ("selftests/bpf: Add attach test for bpf_program__attach_kprobe_multi_opts")
-Fixes: 2c6401c966ae1fbe ("selftests/bpf: Add kprobe_multi bpf_cookie test")
-Signed-off-by: Eugene Syromiatnikov <esyr@redhat.com>
----
- tools/lib/bpf/bpf.h                                        | 2 +-
- tools/lib/bpf/libbpf.c                                     | 8 ++++----
- tools/lib/bpf/libbpf.h                                     | 2 +-
- tools/testing/selftests/bpf/prog_tests/bpf_cookie.c        | 2 +-
- tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c | 8 ++++----
- 5 files changed, 11 insertions(+), 11 deletions(-)
+I'm sorry, but I cut the -net PR to Linus too early for this, so the
+fix will have to wait for a little more (no need to repost!) and even
+more pause will be required for the net-next follow-up.
 
-diff --git a/tools/lib/bpf/bpf.h b/tools/lib/bpf/bpf.h
-index f4b4afb..f677602 100644
---- a/tools/lib/bpf/bpf.h
-+++ b/tools/lib/bpf/bpf.h
-@@ -417,7 +417,7 @@ struct bpf_link_create_opts {
- 			__u32 flags;
- 			__u32 cnt;
- 			const char **syms;
--			const unsigned long *addrs;
-+			const __u64 *addrs;
- 			const __u64 *cookies;
- 		} kprobe_multi;
- 	};
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 809fe20..03a14a6 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -10279,7 +10279,7 @@ static bool glob_match(const char *str, const char *pat)
- 
- struct kprobe_multi_resolve {
- 	const char *pattern;
--	unsigned long *addrs;
-+	__u64 *addrs;
- 	size_t cap;
- 	size_t cnt;
- };
-@@ -10294,12 +10294,12 @@ resolve_kprobe_multi_cb(unsigned long long sym_addr, char sym_type,
- 	if (!glob_match(sym_name, res->pattern))
- 		return 0;
- 
--	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(unsigned long),
-+	err = libbpf_ensure_mem((void **) &res->addrs, &res->cap, sizeof(__u64),
- 				res->cnt + 1);
- 	if (err)
- 		return err;
- 
--	res->addrs[res->cnt++] = (unsigned long) sym_addr;
-+	res->addrs[res->cnt++] = sym_addr;
- 	return 0;
- }
- 
-@@ -10314,7 +10314,7 @@ bpf_program__attach_kprobe_multi_opts(const struct bpf_program *prog,
- 	};
- 	struct bpf_link *link = NULL;
- 	char errmsg[STRERR_BUFSIZE];
--	const unsigned long *addrs;
-+	const __u64 *addrs;
- 	int err, link_fd, prog_fd;
- 	const __u64 *cookies;
- 	const char **syms;
-diff --git a/tools/lib/bpf/libbpf.h b/tools/lib/bpf/libbpf.h
-index 05dde85..ec1cb61 100644
---- a/tools/lib/bpf/libbpf.h
-+++ b/tools/lib/bpf/libbpf.h
-@@ -431,7 +431,7 @@ struct bpf_kprobe_multi_opts {
- 	/* array of function symbols to attach */
- 	const char **syms;
- 	/* array of function addresses to attach */
--	const unsigned long *addrs;
-+	const __u64 *addrs;
- 	/* array of user-provided values fetchable through bpf_get_attach_cookie */
- 	const __u64 *cookies;
- 	/* number of elements in syms/addrs/cookies arrays */
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-index 923a613..5aa482a 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_cookie.c
-@@ -137,7 +137,7 @@ static void kprobe_multi_link_api_subtest(void)
- 	cookies[6] = 7;
- 	cookies[7] = 8;
- 
--	opts.kprobe_multi.addrs = (const unsigned long *) &addrs;
-+	opts.kprobe_multi.addrs = (const __u64 *) &addrs;
- 	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
- 	opts.kprobe_multi.cookies = (const __u64 *) &cookies;
- 	prog_fd = bpf_program__fd(skel->progs.test_kprobe);
-diff --git a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-index b9876b5..fbf4cf2 100644
---- a/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-+++ b/tools/testing/selftests/bpf/prog_tests/kprobe_multi_test.c
-@@ -105,7 +105,7 @@ static void test_link_api_addrs(void)
- 	GET_ADDR("bpf_fentry_test7", addrs[6]);
- 	GET_ADDR("bpf_fentry_test8", addrs[7]);
- 
--	opts.kprobe_multi.addrs = (const unsigned long*) addrs;
-+	opts.kprobe_multi.addrs = (const __u64 *) addrs;
- 	opts.kprobe_multi.cnt = ARRAY_SIZE(addrs);
- 	test_link_api(&opts);
- }
-@@ -183,7 +183,7 @@ static void test_attach_api_addrs(void)
- 	GET_ADDR("bpf_fentry_test7", addrs[6]);
- 	GET_ADDR("bpf_fentry_test8", addrs[7]);
- 
--	opts.addrs = (const unsigned long *) addrs;
-+	opts.addrs = (const __u64 *) addrs;
- 	opts.cnt = ARRAY_SIZE(addrs);
- 	test_attach_api(NULL, &opts);
- }
-@@ -241,7 +241,7 @@ static void test_attach_api_fails(void)
- 		goto cleanup;
- 
- 	/* fail_2 - both addrs and syms set */
--	opts.addrs = (const unsigned long *) addrs;
-+	opts.addrs = (const __u64 *) addrs;
- 	opts.syms = syms;
- 	opts.cnt = ARRAY_SIZE(syms);
- 	opts.cookies = NULL;
-@@ -255,7 +255,7 @@ static void test_attach_api_fails(void)
- 		goto cleanup;
- 
- 	/* fail_3 - pattern and addrs set */
--	opts.addrs = (const unsigned long *) addrs;
-+	opts.addrs = (const __u64 *) addrs;
- 	opts.syms = NULL;
- 	opts.cnt = ARRAY_SIZE(syms);
- 	opts.cookies = NULL;
--- 
-2.1.4
+Sorry for the inconvenince,
+
+Paolo
 
