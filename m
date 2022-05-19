@@ -2,83 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5291652D9D9
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:09:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 807D652D9EE
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:12:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241776AbiESQIp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 12:08:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55236 "EHLO
+        id S241859AbiESQMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 12:12:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241821AbiESQIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:08:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F319AA2062;
-        Thu, 19 May 2022 09:08:21 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B63EDB82520;
-        Thu, 19 May 2022 16:08:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23B91C385AA;
-        Thu, 19 May 2022 16:08:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652976499;
-        bh=NfrUNwkZUllU2Xeg370eRsoQxuMGxFVq8oahzo9zirk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KbrPy3ZjLMeW2ubPfPmPc8etb2Jc/YjQ2IMNGmWcESVRDT6QNhkB+Z/oNYxS07ary
-         HnAMPWj+/9KX4/3eLOqPAzeayunUzyo6VfVDl9IbOsEzEa5sqmxm6fZVU2EOuqAmTO
-         AXxDNLTquX96n6MowEGjdzP4lsbdfAIuq1HNSd3EiX8juIsOz5PdQGA7rtJR+j944J
-         Xtaq9XJcIfansxkF2ocQGizRURUpxSkCUqEM6Cntk6Pm1Cv+zs5e7FNy+eCrbcJFtr
-         NqCKxMZevjv8tWLr9OSTBCpYEOdruSQV2UdjhIMeTSruy+V7vQocVhhg9DAKndqnm6
-         ytG7fSpKz/ERQ==
-Date:   Thu, 19 May 2022 09:08:17 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Rolf Eike Beer <eike-kernel@sf-tec.de>
-Cc:     patchwork-bot+netdevbpf@kernel.org, linux-kernel@vger.kernel.org,
-        linux-parisc@vger.kernel.org, netdev@vger.kernel.org,
-        yangyingliang@huawei.com, davem@davemloft.net, edumazet@google.com
-Subject: Re: [PATCH v3] tulip: convert to devres
-Message-ID: <20220519090817.3187b659@kernel.org>
-In-Reply-To: <4749559.31r3eYUQgx@eto.sf-tec.de>
-References: <2630407.mvXUDI8C0e@eto.sf-tec.de>
-        <165269761404.8728.16015739218131453967.git-patchwork-notify@kernel.org>
-        <4749559.31r3eYUQgx@eto.sf-tec.de>
+        with ESMTP id S241083AbiESQMU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:12:20 -0400
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32BD0B0408;
+        Thu, 19 May 2022 09:12:16 -0700 (PDT)
+Received: by mail-qv1-xf32.google.com with SMTP id n10so4925313qvi.5;
+        Thu, 19 May 2022 09:12:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=hoTmvPXtyx3H4u3Zg8utb7mfNRoYWy4jUno7/0YMY70=;
+        b=QU4vYRdK5dCC+NlAE17xdmGaZa42VlKqy2ixfrb5jDTwuCDibubZHwAPDoIPkvWGil
+         u/Lxxxe+D91uiWhBcGR6QVGWw7+NrYV7/Su9HOeN/jjIZAyRRvVHOnJZuij1vI8XNVrd
+         PHRdTSOC5udVoJcdKHAsFPrwrTUIZTiap7yyzgKOziw5W1b8sxdRzSfq6hSwytewfEuM
+         8LXFYtBr01Uz+h8OYq6GfoORMk7ZqJ3TKNseqyTj1avAY1WvfiZxUd7dFqYILiwLu/M8
+         jjmwczJ0XieJetUpg03LOZqbpL1z1sweWcbo7D0pJPu3GiFJk0nSHI9CT0AIwuGn1GWf
+         2i1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=hoTmvPXtyx3H4u3Zg8utb7mfNRoYWy4jUno7/0YMY70=;
+        b=0ZNtcrUJaOnuVxKvSBxJ/kbNk/pviI6KRwndaVX0vcwW65SDmvu8/0otHEUen/VEx0
+         KvylYiFrlWRis0zurguz7ZtVdzm8Z79vvS8SxJcAoQYpfAniA4++fsJE6yhcOAkpUJjD
+         HPZwtQKUAn5xVTwq7JmlK+QSmkrHPZrAypJcIuLRl4z7ZJfTJiXZ8NRrPjpBDnA3HRb/
+         eB85J7IPlmhGwO11Tic/ObLtZULJsALDGPLGBOWbqWzXVef4nyKbMCVNdcNDvBPE9j/+
+         KZAFu8IflCCsKWDn4rA8kzMUWuubImX2SZMc2NgtzSnjER/+Ik9PBotHLG6kSfTq38qw
+         qhMg==
+X-Gm-Message-State: AOAM531NefhuHmVSjIqfWXKP2X0fL8BO8omxFj0HSsqX+dgiRM6KnCKv
+        MCizIg+hrmoNY7OSP0M2sp1DbI4NE2qOtPAjr8w=
+X-Google-Smtp-Source: ABdhPJwSCu8SNKkW70TBPOYRAfUUgpVrzcUatZdXXFWzgqGKW36FPuMXIjJh5ltu9RJ6UyHdfErpYyEVta9wAVmUqt8=
+X-Received: by 2002:a05:6214:2245:b0:461:bc38:1f7d with SMTP id
+ c5-20020a056214224500b00461bc381f7dmr4629705qvc.63.1652976735222; Thu, 19 May
+ 2022 09:12:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220518062715.27809-1-zhoufeng.zf@bytedance.com>
+ <CAADnVQ+x-A87Z9_c+3vuRJOYm=gCOBXmyCJQ64CiCNukHS6FpA@mail.gmail.com>
+ <6ae715b3-96b1-2b42-4d1a-5267444d586b@bytedance.com> <9c0c3e0b-33bc-51a7-7916-7278f14f308e@fb.com>
+ <380fa11e-f15d-da1a-51f7-70e14ed58ffc@bytedance.com>
+In-Reply-To: <380fa11e-f15d-da1a-51f7-70e14ed58ffc@bytedance.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 19 May 2022 09:12:04 -0700
+Message-ID: <CAADnVQL9naBBKzQdAOWu2ZH=i7HA1VDi7uNzsDQ1TM9Jr+c0Ww@mail.gmail.com>
+Subject: Re: [External] Re: [PATCH] bpf: avoid grabbing spin_locks of all cpus
+ when no free elems
+To:     Feng Zhou <zhoufeng.zf@bytedance.com>
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Chengming Zhou <zhouchengming@bytedance.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 19 May 2022 15:40:44 +0200 Rolf Eike Beer wrote:
-> Works fine on my HP C3600:
-> 
-> [  274.452394] tulip0: no phy info, aborting mtable build
-> [  274.499041] tulip0:  MII transceiver #1 config 1000 status 782d advertising 01e1
-> [  274.750691] net eth0: Digital DS21142/43 Tulip rev 65 at MMIO 0xf4008000, 00:30:6e:08:7d:21, IRQ 17
-> [  283.104520] net eth0: Setting full-duplex based on MII#1 link partner capability of c1e1
-> 
-> Signed-off-by: Rolf Eike Beer <eike-kernel@sf-tec.de>
-> ---
->  drivers/net/ethernet/dec/tulip/eeprom.c     |  7 ++-
->  drivers/net/ethernet/dec/tulip/tulip_core.c | 64 ++++++---------------
->  2 files changed, 20 insertions(+), 51 deletions(-)
-> 
-> v2: rebased
-> 
-> v3: fixed typo in variable for CONFIG_GSC code
+On Wed, May 18, 2022 at 8:12 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote=
+:
+>
+> =E5=9C=A8 2022/5/19 =E4=B8=8A=E5=8D=884:39, Yonghong Song =E5=86=99=E9=81=
+=93:
+> >
+> >
+> > On 5/17/22 11:57 PM, Feng Zhou wrote:
+> >> =E5=9C=A8 2022/5/18 =E4=B8=8B=E5=8D=882:32, Alexei Starovoitov =E5=86=
+=99=E9=81=93:
+> >>> On Tue, May 17, 2022 at 11:27 PM Feng zhou
+> >>> <zhoufeng.zf@bytedance.com> wrote:
+> >>>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+> >>>>
+> >>>> We encountered bad case on big system with 96 CPUs that
+> >>>> alloc_htab_elem() would last for 1ms. The reason is that after the
+> >>>> prealloc hashtab has no free elems, when trying to update, it will
+> >>>> still
+> >>>> grab spin_locks of all cpus. If there are multiple update users, the
+> >>>> competition is very serious.
+> >>>>
+> >>>> So this patch add is_empty in pcpu_freelist_head to check freelist
+> >>>> having free or not. If having, grab spin_lock, or check next cpu's
+> >>>> freelist.
+> >>>>
+> >>>> Before patch: hash_map performance
+> >>>> ./map_perf_test 1
+> >
+> > could you explain what parameter '1' means here?
+>
+> This code is here:
+> samples/bpf/map_perf_test_user.c
+> samples/bpf/map_perf_test_kern.c
+> parameter '1' means testcase flag, test hash_map's performance
+> parameter '2048' means test hash_map's performance when free=3D0.
+> testcase flag '2048' is added by myself to reproduce the problem phenomen=
+on.
 
-Thanks for following up. Unfortunately net-next is "stable" in terms of
-commits it contains, we can swap the old patch for the new one. You
-need to send an incremental change.
+Please convert it to selftests/bpf/bench,
+so that everyone can reproduce the issue you're seeing
+and can assess whether it's a real issue or a corner case.
 
-Please provide a Fixes tag, and if you prefer to reply to something
-with the patch please reply to the report of breakage, that's better
-context for this work. Or just post independently (which is generally
-recommended) 
+Also please avoid adding indent in the patch.
+Instead of
+ if (!s->extralist.is_empty) {
+  .. churn
+
+do
+
+ if (s->extralist.is_empty)
