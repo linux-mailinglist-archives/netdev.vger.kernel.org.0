@@ -2,49 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E03DA52C959
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 03:41:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ABF4752C96A
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 03:47:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232628AbiESBlj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 21:41:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46100 "EHLO
+        id S232276AbiESBrV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 21:47:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230383AbiESBlW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 21:41:22 -0400
-Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C8F98A33C;
-        Wed, 18 May 2022 18:41:21 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L3XdD1CJQz4xVP;
-        Thu, 19 May 2022 11:41:20 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1652924480;
-        bh=oBrS4JumN9FhVfGy2QDvl7E14DwpvKRpnN1W6VFJsdg=;
-        h=Date:From:To:Cc:Subject:From;
-        b=QOz5Qp+cPdzA5ZG0oGRzgraCP7/0ALARIVDmDmvR2WNMVAJ+1bVeOP/kPIkHQC6kj
-         zJsVP/xJj6J8+WOSZ24X8uQHKsX0+6t1i3wUe1/bLIXNYIuRLcvcuell7f4E6kkteK
-         bWf5fErN9S/KM2A//2ABIpI2PhdLE0fHf0TTZ4fEN63aUcfuHnPiH7XAODMgJ6vsJr
-         F9c4gh4GUeZjkLH0d3ajFO2lUim6ffhPMLXTJbvSXnHRohVLtk6NfyDfXqNyq64L7S
-         w1sCOWNtycVuKgFNWGBYEayRp4bpv5Z5OevlPrtON9o2vpfC631VQmERn2vSpWM9Pm
-         aTlrpuUC2ALGQ==
-Date:   Thu, 19 May 2022 11:41:19 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>
-Cc:     Networking <netdev@vger.kernel.org>, Gavin Li <gavinl@nvidia.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Shay Drory <shayd@nvidia.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20220519114119.060ce014@canb.auug.org.au>
+        with ESMTP id S232556AbiESBrT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 21:47:19 -0400
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B297FC039C
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 18:47:18 -0700 (PDT)
+Received: by mail-pg1-x530.google.com with SMTP id c22so3742443pgu.2
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 18:47:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=GPC5OPy5Dowf9yMYqglcevGDq02xGifndXCnLcOOAQs=;
+        b=LL6ZQ1k9dbxeYAgSV2xnXitK10yBUJzUXmL8pck+UpxonU1fr1F/5rq0KzVWpHOWJe
+         Lbln8eQwx4QKIZ+HmFsMueJK6bFbKjWuPzJhGVfluvFENv2SkwP2LXxMTJK5Zmv6usqn
+         l/4X18mB0FRYciYlohMQkqAICvFfJhNSlSuUpWuM9RPLh1vgB8FLiR2K/tJqaPUs8y1D
+         l6TAcXAjlZumMkERsI+k3VICwVEM/v1o7aHZn9U2hNfaervnMXjmmmqrTPEsMab9ckFm
+         arieFuUWg3AOLvBhE4sP3rZGZIHPaHGCdfeMSX6iznSGTg2RHy7Hsrw8DnzP3vzDQJ4y
+         zZEg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=GPC5OPy5Dowf9yMYqglcevGDq02xGifndXCnLcOOAQs=;
+        b=AypuhISpvtdx5fBammW0PM85YRUW7+/efUdZcHRUUe1pvnJ1awjQQ7kyNCAQF2gzN1
+         +fWxuljL/yNfPIRJEqAj75x50pUdymM6eJMw75SXZerIVlG2gCcD9b6Ef0STu0XntYVM
+         ZqN2xR3g4+mKXkWJnuG9F8Yuxs6c2k+Hkms8eHRH6rhdJBN19fHc5f7tuH6WLSjyA/Zv
+         Tai77J/UNqFch+kxc5boOKJloVauK5B8EatCC8hbt/5yS2ZXJEh2DUP3NthRYgnuk9xv
+         hqpdGT96Z0i3PwyxadI9ocwMB08VRt6S8Fa8DezY+0tKF9S0c/FSK+CkcDzyZuUVkQ9V
+         cIgw==
+X-Gm-Message-State: AOAM531mldGwzM42JgrOn8/Xo2I2WaFCl5h6t5eiqsLdOE3+3BDgyPio
+        zARtJ1SXa01k2/ELwYfxn7w=
+X-Google-Smtp-Source: ABdhPJy1o83eiCQvXEGIE8+PChiIgJLvrEESjFsZJGsycjgw1d9BHPmgG/HZHJyK2HQgLhSXQfCcmw==
+X-Received: by 2002:a63:ec54:0:b0:3c6:aa29:15fe with SMTP id r20-20020a63ec54000000b003c6aa2915femr1913096pgj.552.1652924838200;
+        Wed, 18 May 2022 18:47:18 -0700 (PDT)
+Received: from Laptop-X1 ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 190-20020a6206c7000000b0050dc7628188sm2599002pfg.98.2022.05.18.18.47.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 May 2022 18:47:17 -0700 (PDT)
+Date:   Thu, 19 May 2022 09:47:12 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Joachim Wiberg <troglobit@gmail.com>
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH net-next 1/1] selftests: forwarding: fix missing backslash
+Message-ID: <YoWhoNd+Mgi4BITq@Laptop-X1>
+References: <20220518151630.2747773-1-troglobit@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/BzpcCTeh0s6zX2CdjfO/a6f";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518151630.2747773-1-troglobit@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,68 +68,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/BzpcCTeh0s6zX2CdjfO/a6f
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Wed, May 18, 2022 at 05:16:30PM +0200, Joachim Wiberg wrote:
+> Fix missing backslash, introduced in f62c5acc800ee.  Causes all tests to
+> not be installed.
+> 
+> Signed-off-by: Joachim Wiberg <troglobit@gmail.com>
+> ---
+>  tools/testing/selftests/net/forwarding/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/net/forwarding/Makefile b/tools/testing/selftests/net/forwarding/Makefile
+> index b5181b5a8e29..8f481218a492 100644
+> --- a/tools/testing/selftests/net/forwarding/Makefile
+> +++ b/tools/testing/selftests/net/forwarding/Makefile
+> @@ -88,7 +88,7 @@ TEST_PROGS = bridge_igmp.sh \
+>  	vxlan_bridge_1d_port_8472.sh \
+>  	vxlan_bridge_1d.sh \
+>  	vxlan_bridge_1q_ipv6.sh \
+> -	vxlan_bridge_1q_port_8472_ipv6.sh
+> +	vxlan_bridge_1q_port_8472_ipv6.sh \
+>  	vxlan_bridge_1q_port_8472.sh \
+>  	vxlan_bridge_1q.sh \
+>  	vxlan_symmetric_ipv6.sh \
+> -- 
+> 2.25.1
+> 
 
-Hi all,
+Opps, sorry for the mistake and thanks for your fix.
 
-Today's linux-next merge of the net-next tree got a conflict in:
-
-  drivers/net/ethernet/mellanox/mlx5/core/main.c
-
-between commit:
-
-  16d42d313350 ("net/mlx5: Drain fw_reset when removing device")
-
-from the net tree and commit:
-
-  8324a02c342a ("net/mlx5: Add exit route when waiting for FW")
-
-from the net-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc drivers/net/ethernet/mellanox/mlx5/core/main.c
-index e5871fdd5c08,87f1552b5d73..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@@ -1612,10 -1608,7 +1617,11 @@@ static void remove_one(struct pci_dev *
-  	struct mlx5_core_dev *dev  =3D pci_get_drvdata(pdev);
-  	struct devlink *devlink =3D priv_to_devlink(dev);
- =20
- +	/* mlx5_drain_fw_reset() is using devlink APIs. Hence, we must drain
- +	 * fw_reset before unregistering the devlink.
- +	 */
- +	mlx5_drain_fw_reset(dev);
-+ 	set_bit(MLX5_BREAK_FW_WAIT, &dev->intf_state);
-  	devlink_unregister(devlink);
-  	mlx5_sriov_disable(pdev);
-  	mlx5_crdump_disable(dev);
-
---Sig_/BzpcCTeh0s6zX2CdjfO/a6f
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKFoD8ACgkQAVBC80lX
-0GxjQQf+MnQ7AH0Y7b2uO7WMX6X0dT2KUYAdpsp2erfazaaYIxxEhk8i43ENfLfC
-cOFsvyNdMZ8Db512f69gtjVGB17fQKjU8Uqw0IjVxgg+WEnyVjqLH0fA8b83WGBV
-oN1dcqQkenoU3wfigd1K24NgOkWeELGN/kAjO51Hx2hAgAa43Tg1cbiyOWsTmYc+
-cLnoEqXh0z0UntlMnTTGh2rltfNz4pviO8tv//DvBd0k6bKRVKHIZFHYZPZ0LBRM
-bjsWt1yTRTWH9Ad0WANa6mxEH+h+wZgl8Au8G4tQa7Ws3i/FA9KQze4wduAxlYp3
-hIDe2E4VhNTvi+YAeJMZU/XhrhHvBw==
-=31xX
------END PGP SIGNATURE-----
-
---Sig_/BzpcCTeh0s6zX2CdjfO/a6f--
+Acked-by: Hangbin Liu <liuhangbin@gmail.com>
