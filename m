@@ -2,131 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 771CC52D607
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:29:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1B5B52D613
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 16:30:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239718AbiESO3A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 10:29:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60456 "EHLO
+        id S239750AbiESO36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 10:29:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239593AbiESO2v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:28:51 -0400
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (mail-co1nam11on2095.outbound.protection.outlook.com [40.107.220.95])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68EAEBDA1E
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:28:50 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=S18qj60AtKqgZ/a8O1n1Iq1MqG88cIIpYDrPpjqGB4w+Kt/zHoULTOor7+eckGzkMd+0U+1RcCAVs83wrihz4uLyTzznK4hR8CFItpsBFhOgaIPXTr4pV9qUOVIfFxIalm3/vlufvTlSie41YCNTQGYWUJRObybWpKeaO8NqQ5KRRTAPORddGVV/G7ptZXlKoUzgqE9Vp57H9PCxs5mYfqfDa+bAr3SGqKKnVnZNIDBUkPob2+etE3Lk6AHRYxVCnhkkV3+tSbspnMVdRZ5/LxMIxO7is+QtBnPxLsORt5QeqGoN8RRdoMZ4uGQK+qO4qEJSe/kfbKrPTGpRNL1rNA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=I1LeNEN4B3dpWVZcp8788Kd7KFP7fZ3rxmDPgqwb/Gc=;
- b=Doqpc7T0nSsxormucXRhtID6CxM46re+bRTp5HZmjpL64E6WIi1IGobdqHoe8RhWRDBTYHxntIHlLmD/gbApW30ley3L007EigZACFxrINE26BvTyq6QIsIJ6XP1NRMp3zBZHZakPHh6mS0V2SIPkueh/Hx76KMx/uIkZYczYuQ+N2U1ASsoohYETtMArPHDN5w5suQ8F4276ogONdQVzMarUpQDWsqMogKaCXTBqUFKNVmuGN1Jv85rDI+OUqhq4233NKF/Gm+wUt/N616LESg+hR4hmnH2h75kST0kOZEM5rT4A3VQhWgEvpyNfB2GP8gduNx+zNlnkuJsgBqw+Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nokia.com; dmarc=pass action=none header.from=nokia.com;
- dkim=pass header.d=nokia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nokia.onmicrosoft.com;
- s=selector1-nokia-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=I1LeNEN4B3dpWVZcp8788Kd7KFP7fZ3rxmDPgqwb/Gc=;
- b=xR8Ah41jrcyL7pmcPX/iQxpfNdanzlhGJHpqcoH3rcdJ+iU8Z9tZg/REtmlkFivYcoX8F/mil4KjDCk2N3umxA3FPa7PL4b9p3oeBYO9sCxr4UxHp2Mb51AKMuxz8WCqxEPDsyrzt1iEe2nEQgtaarYoekrjiWQTlVQ3RS3HgeY=
-Received: from BN0PR08MB6951.namprd08.prod.outlook.com (2603:10b6:408:128::14)
- by BN7PR08MB5172.namprd08.prod.outlook.com (2603:10b6:408:2d::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Thu, 19 May
- 2022 14:28:43 +0000
-Received: from BN0PR08MB6951.namprd08.prod.outlook.com
- ([fe80::a405:a624:766d:ac03]) by BN0PR08MB6951.namprd08.prod.outlook.com
- ([fe80::a405:a624:766d:ac03%9]) with mapi id 15.20.5273.017; Thu, 19 May 2022
- 14:28:43 +0000
-From:   "Pighin, Anthony (Nokia - CA/Ottawa)" <anthony.pighin@nokia.com>
-To:     "Pighin, Anthony (Nokia - CA/Ottawa)" <anthony.pighin@nokia.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.lendacky@amd.com" <thomas.lendacky@amd.com>
-Subject: Re: PROBLEM: XGBE unable to autoneg when advertising only 1GbE KX
- mode
-Thread-Topic: Re: PROBLEM: XGBE unable to autoneg when advertising only 1GbE
- KX mode
-Thread-Index: AdhrjAazHSLwEJcoR7O1fBWd4mB1pQ==
-Date:   Thu, 19 May 2022 14:28:42 +0000
-Message-ID: <BN0PR08MB6951AF51D58150007BA7C46C83D09@BN0PR08MB6951.namprd08.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nokia.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 45ab9a0b-fc94-4300-b98f-08da39a3e035
-x-ms-traffictypediagnostic: BN7PR08MB5172:EE_
-x-microsoft-antispam-prvs: <BN7PR08MB5172F770EDBD7802BD839AAD83D09@BN7PR08MB5172.namprd08.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MmXkLMslUuw202LQkrxEXPM9loF873J3ptg7bwSCQoPBDm/p9tF94YgNX7ESl9Q0f5UbijR8GsFTH9VwRPoyoh7wzKuBI86hgl64EZuTA2AJVP42VfA8UMn7a5e94KyF1ihV7NHaBfGe0WjAllTCuLYO9I80Q9Xhmoi46jB4QMZnmuVEN1t/cgCGPhxL48XYKEQuh5Ru8Rmw1545BiUq+6jCCQKOZ6buCSnMBJvC8EbpxjSLdpwrOc7zrQ41UmyNEq8cDRBUy/fdrs2r0A55/jjF18Xh/Gu0nuHHZGVOJzDCf2rYknYFABcoI3I9mJ6io4XeZiQFMW+17MxHsPHe4lWHJusKXJNNdmMIx02xerJU39LI5NMFwxyBgz1XJSot5KE7me7cpE03Yf2iUo9BOcZowRDdwXS2Cc8g6karWbDi9fK3GlKCiy+3yRgnPBltqIxZhq32BYT5eeHFbuIeZsBoyBY6H5F9s5T8NkjFG7iuu7bQeTqOD4TpzygAURR/4Syv4s+R2L9DLeZ223RH6bKU+l/JIlBgUxfefwNfVmmA/nnw7WreWCN7lekt//5O0UA3ZmQnS8L8t4bQKTr8prwLwWHr2IKCCd0XuGBxsBle8dOH0lgGSd2dPt4NSZ3Yf/H6/vH+qVf0FJoVRGXAzzWpY0IuuFW9n4WcjnKrDxs0hzvhhzwNISBXdFUznVSaBzL7Ma62Qi5dVTG/wCXHWA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR08MB6951.namprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6200100001)(66946007)(66556008)(5660300002)(4744005)(64756008)(66476007)(66446008)(8676002)(6862004)(4326008)(71200400001)(55016003)(6506007)(2906002)(76116006)(8936002)(186003)(86362001)(38100700002)(26005)(508600001)(38070700005)(52536014)(316002)(54906003)(122000001)(82960400001)(9686003)(7696005)(33656002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?n9gZ/07AFhnb5LtmRXUXeBMJpwvjf8Rf7UBV8dNNrzrLVpV7M1u/Q94ZMuMi?=
- =?us-ascii?Q?J3wLNP1gU1AJCqJlyyAr4kxvLM1Y+JYGVRqVsG6KzDzrs/6ePAlGwV2dzqmi?=
- =?us-ascii?Q?ol3M4dllotFKk99USv8AZkNAf3MK6yAA/B9uvnxwxQE4+pvOAHp2QJyaWfpb?=
- =?us-ascii?Q?OtZvOn3rojmUiDvrDnuq10ehJJ6t3HB9g6NHVd6I4QVTey8D/I20Fx3wP1bM?=
- =?us-ascii?Q?wgzxxqJl9ZBmSoVfEZRDHHTsr5eN+OL57CExiYLKyiMICfhusNLSHCO4rAEr?=
- =?us-ascii?Q?K2fz5bDF1h4xAP9lK1KbHwmm3W3JgIWTX+/QhHYILSTlU0Qroiay/KzAUux1?=
- =?us-ascii?Q?jOeXfalfkoZGGYcK+ieyLjWq0JFV4iN+TbP5mRhjDcW7IBxYQLdtl2cR6AoA?=
- =?us-ascii?Q?ad6exNURXrca5+pvCn/0g4dBKt0fgryz5x1G37OT8aawwjwDWz63hebGp3zM?=
- =?us-ascii?Q?TwVL4WVYxhJ2nGZjBifpFVSAU8EpudzTdw0maN0B3Vs7TPZmhzTic7Z3UyAL?=
- =?us-ascii?Q?7xteYoBb8ec2H1L0TXGCxGJKQXGtADxn0OlOokAo/VUvQ+nXGzX+pejwL8mY?=
- =?us-ascii?Q?k6PghWq9gTB2tKxhkWJY1/kTNxndFNR6FTslgDm75cHT+9xyNHklSmQ9LtVX?=
- =?us-ascii?Q?bjKJNFsJ+liuG80yNsxW/wkGlMEzQ5qZdkj1ARUiOWrTUUpH/EhJ2Fxpu4yn?=
- =?us-ascii?Q?JkcjwACVqCFRPU08K/R6o0WQyoGBfH+rInLaqSMRXaSkdoAs/JzhUFz7DcW+?=
- =?us-ascii?Q?YKtuf8DRqYLW8o5wPkfwJW9VZsqEkmxGr2Ngw5qZgLBzxdcO3J8WYjenm8F/?=
- =?us-ascii?Q?CZ/gFDf9H9eeegSYDM61xhhCsezxXKSGS/HveAM7yLyDJIGIU/2PYEUwgC/C?=
- =?us-ascii?Q?BK0eAiRhjrYSoaD4PBM2rU7YjvGVWXBa8PSikvJCzB4onc2PL6tAIgQmOUHK?=
- =?us-ascii?Q?UeLsNTH/F3CwogvpYQehIbMpimpVixf10c3rcMsH00SCfwV9I+7x6XEV5TP8?=
- =?us-ascii?Q?Zsrg3Wd4EsQwdPS7urodw2h4//AlWTKKDAUKhR0WKKo1Tp9DkBRL0F0muDNH?=
- =?us-ascii?Q?qzkjswezRjWakbeMZHbuyPalAyNKIo6XCODFvnfukWt0bb8TIKohMgstPuug?=
- =?us-ascii?Q?qHPCjCLPDiAiiy3rjNlGENpNTUpZ/Ka9jgTr++u5JXL65WlbvcskYrDUtekx?=
- =?us-ascii?Q?iwMA42X9IHd6Fqs7enHYfviEq5ROIRdqIsFfD+NwDyUfiQ78nwmMSvRWoDwd?=
- =?us-ascii?Q?jTdQkxQrRwhslsIq2uG6WJSOWgHTEcRIgU3ZS4DuhqTGU5NaeTN56KkJK+X5?=
- =?us-ascii?Q?wyzEA1CJ4m4kkzBDw+7aMmvAAFbQkWjRtjuDS+jXCqUrPpX4iglBpmdlPmKc?=
- =?us-ascii?Q?j5yv/9kPzhb1Kjq/1lX2GXgYmRyRZHep1BzFNNcKHPuNo2kDZpu6SfsJiq7n?=
- =?us-ascii?Q?4abCarDNlrckM9EpNSIBCLYxoN77NiajdQ2oj9j4wG+8G4f0PST6Rchu0w3R?=
- =?us-ascii?Q?5GR47qH94UZgXYcn67pHoXybCIwfbJzdDb3wbPiJHOyRBoHaNVhT1tP4ahvf?=
- =?us-ascii?Q?i/wUpwghpq8kqG+3zO8PvKL7QBe4C7SsnINy3JM8BMtsDVPnkcSPOHnsvEJc?=
- =?us-ascii?Q?FaIJ2e9t7ft1c52pn/EK0k0p3M0q7LahDTcEjDpwhOa642UesatfNflAhVKa?=
- =?us-ascii?Q?xRMHsoisPvJhsnnD4H1t0fUTNSZACFOoA5gPaqu/7GeNDzWJGUKoD0o8QyZy?=
- =?us-ascii?Q?9ixZwpehssGOzj5Meb7fCLMf3wXl5kU=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S239753AbiESO3z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 10:29:55 -0400
+Received: from smtp-190b.mail.infomaniak.ch (smtp-190b.mail.infomaniak.ch [IPv6:2001:1600:3:17::190b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4136A8CCE1
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 07:29:52 -0700 (PDT)
+Received: from smtp-3-0001.mail.infomaniak.ch (unknown [10.4.36.108])
+        by smtp-2-3000.mail.infomaniak.ch (Postfix) with ESMTPS id 4L3sgy3WL4zMqwSk;
+        Thu, 19 May 2022 16:29:50 +0200 (CEST)
+Received: from ns3096276.ip-94-23-54.eu (unknown [23.97.221.149])
+        by smtp-3-0001.mail.infomaniak.ch (Postfix) with ESMTPA id 4L3sgy0BTwzlhZwX;
+        Thu, 19 May 2022 16:29:49 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=digikod.net;
+        s=20191114; t=1652970590;
+        bh=PrL+sFyxtDDv5pPp5JYDv7WES+E0Ra3QU510nOg0BZs=;
+        h=Date:To:Cc:References:From:Subject:In-Reply-To:From;
+        b=psLnvf1wMaBQC1OS9cCmgLGfqD+UOdpDFf3JL+eW1O8U+56Dj7skR7rmBIpkhONmg
+         M/78RFvn81hRrXkB6gJ1VHc7I1Thwn8Tl/NZzlplLKmd9/R04H6pg5U7gF3w/ptCS8
+         s+mQKy3Mp6qNb2Fbw0dZWLXfekGWBdkrVpaxJH6E=
+Message-ID: <fd996135-1ad5-dd3c-4b42-23013cad208d@digikod.net>
+Date:   Thu, 19 May 2022 16:29:49 +0200
 MIME-Version: 1.0
-X-OriginatorOrg: nokia.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR08MB6951.namprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 45ab9a0b-fc94-4300-b98f-08da39a3e035
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 May 2022 14:28:42.9947
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 5d471751-9675-428d-917b-70f44f9630b0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dXog0+mDSO2HurQmnV1nJ1b7tubmL5+mxnP4J4X6KWLxpR6j4jwokitNSm4VS7Y19b+vPhBOvCYeir0vsazCinNF/ijoKHKQjcO3uTQcubo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR08MB5172
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,FORGED_SPF_HELO,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+User-Agent: 
+Content-Language: en-US
+To:     Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+Cc:     willemdebruijn.kernel@gmail.com,
+        linux-security-module@vger.kernel.org, netdev@vger.kernel.org,
+        netfilter-devel@vger.kernel.org, yusongping@huawei.com,
+        anton.sirazetdinov@huawei.com
+References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
+ <20220516152038.39594-10-konstantin.meskhidze@huawei.com>
+ <eaa4cc8f-4c4a-350d-6b96-551f32156e3d@digikod.net>
+ <5124df18-ebc0-7b9b-84d5-89e1c458bc09@huawei.com>
+From:   =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+Subject: Re: [PATCH v5 09/15] seltests/landlock: add tests for bind() hooks
+In-Reply-To: <5124df18-ebc0-7b9b-84d5-89e1c458bc09@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Additional information:
 
-I performed an asymmetric test. One side has 'ethtool -s bp3 advertise 0x20=
-000' and the other side of the link has 'ethtool -s bp3 advertise 0xa0000' =
-(ie. one side is advertising 1G only, the other is advertising 1G+10G). If =
-I bring up the 1G-only side first, followed by the 1G+10G side, then the li=
-nk properly comes up at 1G. However, if I do the reverse, and bring up the =
-1G+10G side first, followed by the 1G-only side, there is no link up. I nee=
-d to bounce the 1G+10G side again (ip set link bp3 down/up) to get the link=
- to come up.
+On 19/05/2022 14:10, Konstantin Meskhidze wrote:
+> 
+> 
+> 5/17/2022 12:11 AM, Mickaël Salaün пишет:
+>>
+>> On 16/05/2022 17:20, Konstantin Meskhidze wrote:
+>>> Adds selftests for bind socket action.
+>>> The first is with no landlock restrictions:
+>>>      - bind_no_restrictions_ip4;
+>>>      - bind_no_restrictions_ip6;
+>>> The second ones is with mixed landlock rules:
+>>>      - bind_with_restrictions_ip4;
+>>>      - bind_with_restrictions_ip6;
+>>>
+>>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>>> ---
+>>>
+>>> Changes since v3:
+>>> * Split commit.
+>>> * Add helper create_socket.
+>>> * Add FIXTURE_SETUP.
+>>>
+>>> Changes since v4:
+>>> * Adds port[MAX_SOCKET_NUM], struct sockaddr_in addr4
+>>> and struct sockaddr_in addr6 in FIXTURE.
+>>> * Refactoring FIXTURE_SETUP:
+>>>      - initializing self->port, self->addr4 and self->addr6.
+>>>      - adding network namespace.
+>>> * Refactoring code with self->port, self->addr4 and
+>>> self->addr6 variables.
+>>> * Adds selftests for IP6 family:
+>>>      - bind_no_restrictions_ip6.
+>>>      - bind_with_restrictions_ip6.
+>>> * Refactoring selftests/landlock/config
+>>> * Moves enforce_ruleset() into common.h
+>>>
+>>> ---
+>>>   tools/testing/selftests/landlock/common.h   |   9 +
+>>>   tools/testing/selftests/landlock/config     |   5 +-
+>>>   tools/testing/selftests/landlock/fs_test.c  |  10 -
+>>>   tools/testing/selftests/landlock/net_test.c | 237 ++++++++++++++++++++
+>>>   4 files changed, 250 insertions(+), 11 deletions(-)
+>>>   create mode 100644 tools/testing/selftests/landlock/net_test.c
+>>>
+>>> diff --git a/tools/testing/selftests/landlock/common.h 
+>>> b/tools/testing/selftests/landlock/common.h
+>>> index 7ba18eb23783..c5381e641dfd 100644
+>>> --- a/tools/testing/selftests/landlock/common.h
+>>> +++ b/tools/testing/selftests/landlock/common.h
+>>> @@ -102,6 +102,15 @@ static inline int landlock_restrict_self(const 
+>>> int ruleset_fd,
+>>>   }
+>>>   #endif
+>>>
+>>> +static void enforce_ruleset(struct __test_metadata *const _metadata,
+>>> +        const int ruleset_fd)
+>>> +{
+>>> +    ASSERT_EQ(0, prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0));
+>>> +    ASSERT_EQ(0, landlock_restrict_self(ruleset_fd, 0)) {
+>>> +        TH_LOG("Failed to enforce ruleset: %s", strerror(errno));
+>>> +    }
+>>> +}
+>>> +
+>>
+>> Please create a commit which moves all the needed code for all network 
+>> tests. I think there is only this helper though.
+> 
+>    Ok. I will create one additional commit for moving this helper.
+>    But after I have moved the helper to common.h, I got warnings while 
+> compiling seltests where I don't use the one (base_test and ptrace_test)
 
+Move it after clear_cap() and use the same attributes.
+
+[...]
+
+ >>> diff --git a/tools/testing/selftests/landlock/config
+ >>> b/tools/testing/selftests/landlock/config
+ >>> index 0f0a65287bac..b56f3274d3f5 100644
+ >>> --- a/tools/testing/selftests/landlock/config
+ >>> +++ b/tools/testing/selftests/landlock/config
+ >>> @@ -1,7 +1,10 @@
+ >>> +CONFIG_INET=y
+ >>> +CONFIG_IPV6=y
+ >>> +CONFIG_NET=y
+ >>>   CONFIG_OVERLAY_FS=y
+ >>>   CONFIG_SECURITY_LANDLOCK=y
+ >>>   CONFIG_SECURITY_PATH=y
+ >>>   CONFIG_SECURITY=y
+ >>>   CONFIG_SHMEM=y
+ >>>   CONFIG_TMPFS_XATTR=y
+ >>> -CONFIG_TMPFS=y
+ >>> +CONFIG_TMPFS=y
+ >>> \ No newline at end of file
+
+You also need to add CONFIG_NET_NS.
+
+[...]
+
+>>
+>>> +        self->port[i] = SOCK_PORT_START + SOCK_PORT_ADD*i;
+>>> +        self->addr4[i].sin_family = AF_INET;
+>>> +        self->addr4[i].sin_port = htons(self->port[i]);
+>>> +        self->addr4[i].sin_addr.s_addr = htonl(INADDR_ANY);
+>>
+>> Could you use the local addr (127.0.0.1) instead?
+> 
+>    Why cant I use INADDR_ANY here?
+
+You can, but it is cleaner to bind to a specified address (i.e. you 
+control where a connection come from), and I guess this variable/address 
+could be used to establish connections as well.
+
+>>
+>>> +        memset(&(self->addr4[i].sin_zero), '\0', 8);
+>>> +    }
+>>> +
+>>> +    /* Creates IP6 socket addresses */
+>>> +    for (i = 0; i < MAX_SOCKET_NUM; i++) {
+>>> +        self->port[i] = SOCK_PORT_START + SOCK_PORT_ADD*i;
+>>> +        self->addr6[i].sin6_family = AF_INET6;
+>>> +        self->addr6[i].sin6_port = htons(self->port[i]);
+>>> +        self->addr6[i].sin6_addr = in6addr_any;
+>>
+>> ditto
+> 
+>    Why cant I use in6addr_any here?
+
+Same as for IPV4.
+
+> 
+>>
+>>> +    }
+>>> +
+>>> +    set_cap(_metadata, CAP_SYS_ADMIN);
+>>> +    ASSERT_EQ(0, unshare(CLONE_NEWNET));
+>>> +    ASSERT_EQ(0, system("ip link set dev lo up"));
+>>
+>> If this is really required, could you avoid calling system() but set 
+>> up the network in C? You can strace it to see what is going on 
+>> underneath.
+>>
+>   I did check. It's a lot of code to be run under the hood (more than 
+> one line) and it will just will complicate the test so I suggest to 
+> leave just ONE line of code here.
+
+OK
+
+
+>>
+>>> +    clear_cap(_metadata, CAP_SYS_ADMIN);
+>>> +}
+>>> +
+>>> +FIXTURE_TEARDOWN(socket_test)
+>>> +{ }
+>>> +
+>>> +TEST_F_FORK(socket_test, bind_no_restrictions_ip4) {
+>>> +
+>>> +    int sockfd;
+>>> +
+>>> +    sockfd = create_socket(_metadata, false, false);
+>>> +    ASSERT_LE(0, sockfd);
+>>> +
+>>> +    /* Binds a socket to port[0] */
+>>
+>> This comment is not very useful in this context considering the below 
+>> line. It will be even more clear with the bind_variant() call.
+>>
+>   Ok. I will fix it.
+>>
+>>> +    ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr4[0], 
+>>> sizeof(self->addr4[0])));
+>>> +
+>>> +    ASSERT_EQ(0, close(sockfd));
+>>> +}
+>>> +
+>>> +TEST_F_FORK(socket_test, bind_no_restrictions_ip6) {
+>>> +
+>>> +    int sockfd;
+>>> +
+>>> +    sockfd = create_socket(_metadata, true, false);
+>>> +    ASSERT_LE(0, sockfd);
+>>> +
+>>> +    /* Binds a socket to port[0] */
+>>> +    ASSERT_EQ(0, bind(sockfd, (struct sockaddr *)&self->addr6[0], 
+>>> sizeof(self->addr6[0])));
+>>> +
+>>> +    ASSERT_EQ(0, close(sockfd));
+>>> +}
+>>> +
+>>> +TEST_F_FORK(socket_test, bind_with_restrictions_ip4) {
+>>> +
+>>> +    int sockfd;
+>>> +
+>>> +    struct landlock_ruleset_attr ruleset_attr = {
+>>> +        .handled_access_net = LANDLOCK_ACCESS_NET_BIND_TCP |
+>>> +                      LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +    };
+>>> +    struct landlock_net_service_attr net_service_1 = {
+>>> +        .allowed_access = LANDLOCK_ACCESS_NET_BIND_TCP |
+>>> +                  LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +        .port = self->port[0],
+>>> +    };
+>>> +    struct landlock_net_service_attr net_service_2 = {
+>>> +        .allowed_access = LANDLOCK_ACCESS_NET_CONNECT_TCP,
+>>> +        .port = self->port[1],
+>>> +    };
+>>> +    struct landlock_net_service_attr net_service_3 = {
+>>> +        .allowed_access = 0,
+>>> +        .port = self->port[2],
+>>> +    };
+>>> +
+>>> +    const int ruleset_fd = landlock_create_ruleset(&ruleset_attr,
+>>> +            sizeof(ruleset_attr), 0);
+>>> +    ASSERT_LE(0, ruleset_fd);
+>>> +
+>>> +    /* Allows connect and bind operations to the port[0] socket. */
+>>
+>> This comment is useful though because the below call is more complex.
+>>
+>    So I can leave it as it's, cant I?
+
+Yes, keep it, I'd just like a fair amount of useful comments. ;)
