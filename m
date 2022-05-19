@@ -2,123 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 81B2B52CDE6
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 10:06:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0973952CDF6
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 10:11:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235210AbiESIGU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 04:06:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50090 "EHLO
+        id S235238AbiESILJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 04:11:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235207AbiESIGQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 04:06:16 -0400
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D21F855341
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 01:06:14 -0700 (PDT)
-Received: by mail-lf1-x135.google.com with SMTP id l13so1077380lfp.11
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 01:06:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=YQu4TSu2p0KMGwL1YiCJK+tIvwswRm4g+esi1EtLUqY=;
-        b=o1apGfVokpVYUvl11XsDGw3sWAaJlnSrEiMNO9glke1zNuuTNworCaiu1tmv55uxg/
-         4O4XmJmvlHX98cUknYG54RMHW0iYedyKoLd2nzud8R0yBBNCI4h4uQar3VFd12gH/Z7k
-         zIblUDwVHJPgcOG5BTvBf5UcwPJWwTSmf4h5ScV0X23a3QFdtbEvpde/5S8N7uow+MIs
-         L8Fi31CUT6M687O4q/Miv1SfmXLtYFj6xS1gh6PSD6aTAebK1S5jOrY3TzquWUZNtUn0
-         Xa46PSfa4877JX8WeBwhhzc3pWPFJFG6mZijTWP4xuIYXBbd+uXv1C4zefE6ZBvTHEVI
-         9AAw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=YQu4TSu2p0KMGwL1YiCJK+tIvwswRm4g+esi1EtLUqY=;
-        b=vI3IkW2hcwnFu67LP7fGMcCDLrl7BNr/g1hOI+wgAIR581nfrjDdRbwlSTA1JgpAzO
-         vDjIsFohSD8+Xo7BHUm9hz2dWE8iCLaI+b/+ldapKMQzhzDLK3RgMZ0UDsvbOEjr6VST
-         mASnSWAUQlqh0FXZrdJ7tCMpDoH5M6RuI0LnjcZZLi2RqfHGpwHpC659k7YLILts5zb+
-         4uNwu6nNHROn0GTcLHniM2sQjN93dr86Jrvn+UPKtFi8KsoQoLsA8MdMVM3NMr3t/iXZ
-         4KpR7BnLMgg8e9v71jqWFO6ZXx94Dq23CakqkV7DZVsPuiNJmeQMSMDvglkZ+yGFNzj7
-         sc+A==
-X-Gm-Message-State: AOAM5317zPVwMbvw0LvmCM6iVlMsggGK2EfOHcgptJfy7m/3SF5eE118
-        tI9s9o2yAG/xGzY6T9x03IMUmw==
-X-Google-Smtp-Source: ABdhPJynRmhFrlhx3kRSatFsRgdvlOCMXWMPPfZKsFEulfDFTderFYUY4ADZeD8pVWnFHXOACwdNqg==
-X-Received: by 2002:a05:6512:2256:b0:473:a584:9905 with SMTP id i22-20020a056512225600b00473a5849905mr2437032lfu.639.1652947570707;
-        Thu, 19 May 2022 01:06:10 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id s18-20020a2e9c12000000b00253d5618718sm140705lji.34.2022.05.19.01.06.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 May 2022 01:06:10 -0700 (PDT)
-Message-ID: <04837608-8c12-5bc0-9eca-fdcac83c5c4f@linaro.org>
-Date:   Thu, 19 May 2022 10:06:09 +0200
+        with ESMTP id S235207AbiESILF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 04:11:05 -0400
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F2FA32ED4;
+        Thu, 19 May 2022 01:11:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=P7hBfgfR5V/lg9pLTdIBC/hWy6eM9dq7h/FVFtkFAq8=; b=rdosXHdo2i8UPLrk/NfgCsQQXa
+        NceHcHgDpc15rlXcvlJlOrvKZ07wttU2W4xYEEJ6/rwixNTeoFQGrtYIfP88p3Ebs08aAqDTCIgNz
+        pLdQx96nbRVquBG/2pxsNXQCMYj08yyvHjs1NkoW9tWhq0aCFNmUPZVm0RT+FxOycqrOLtkimO1gU
+        qVdbj5lP7g6hJLzWrzaga1BFb3fwvsbBm6/6U5xAB3UEw/VdGyTJZ6qYAs7dAErfDL0kHi1ZTR5jm
+        OpDM/iSINt2WRl+K0pmS1DIg6BnDkcGe3O+dUNeHJrXrDUtyifs6d74AsrJbhyhbCDXwNL+hCKQCR
+        CXtb89mQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nrbFA-005iMY-O2; Thu, 19 May 2022 08:10:48 +0000
+Date:   Thu, 19 May 2022 01:10:48 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jiri Kosina <jikos@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joe Stringer <joe@cilium.io>, Jonathan Corbet <corbet@lwn.net>,
+        Tero Kristo <tero.kristo@linux.intel.com>,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH bpf-next v5 00/17] Introduce eBPF support for HID devices
+Message-ID: <YoX7iHddAd4FkQRQ@infradead.org>
+References: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC net-next] dt-bindings: net: xilinx: document xilinx emaclite
- driver binding
-Content-Language: en-US
-To:     Radhey Shyam Pandey <radheys@xilinx.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "krzysztof.kozlowski+dt@linaro.org" 
-        <krzysztof.kozlowski+dt@linaro.org>,
-        Harini Katakam <harinik@xilinx.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        git <git@xilinx.com>
-References: <1652373596-5994-1-git-send-email-radhey.shyam.pandey@xilinx.com>
- <8b441f8f-7aa2-0fab-9b90-6618a1e8c899@linaro.org>
- <SA1PR02MB856027DD26AAB5C38C345BBAC7D19@SA1PR02MB8560.namprd02.prod.outlook.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <SA1PR02MB856027DD26AAB5C38C345BBAC7D19@SA1PR02MB8560.namprd02.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518205924.399291-1-benjamin.tissoires@redhat.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 18/05/2022 17:47, Radhey Shyam Pandey wrote:
->> -----Original Message-----
->> From: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
->> Sent: Friday, May 13, 2022 2:23 PM
->> To: Radhey Shyam Pandey <radheys@xilinx.com>; davem@davemloft.net;
->> edumazet@google.com; kuba@kernel.org; pabeni@redhat.com;
->> robh+dt@kernel.org; krzysztof.kozlowski+dt@linaro.org; Harini Katakam
->> <harinik@xilinx.com>
->> Cc: netdev@vger.kernel.org; devicetree@vger.kernel.org; linux-
->> kernel@vger.kernel.org; git <git@xilinx.com>
->> Subject: Re: [RFC net-next] dt-bindings: net: xilinx: document xilinx emaclite
->> driver binding
->>
->> On 12/05/2022 18:39, Radhey Shyam Pandey wrote:
->>> Add basic description for the xilinx emaclite driver DT bindings.
->>>
->>> Signed-off-by: Radhey Shyam Pandey <radhey.shyam.pandey@xilinx.com>
->>> ---
->>>  .../bindings/net/xlnx,emaclite.yaml           | 60 +++++++++++++++++++
->>>  1 file changed, 60 insertions(+)
->>>  create mode 100644
->>> Documentation/devicetree/bindings/net/xlnx,emaclite.yaml
->>
->> Why is this RFC? Do you expect DT maintainers review or not? Maybe there is
->> no point for us to review something which is not going to be applied?
-> 
-> I intentionally made it RFC so that all aspects are reviewed as this driver didn't
-> had an existing binding. I will send out next version with below comment 
-> addressed. Thanks!
+> The logic is the following (see also the last patch for some more
+> documentation):
+> - hid-bpf first preloads a BPF program in the kernel that does a few
+>   things:
+>    * find out which attach_btf_id are associated with our trace points
+>    * adds a bpf_tail_call() BPF program that I can use to "call" any
+>      other BPF program stored into a jump table
+>    * monitors the releases of struct bpf_prog, and when there are no
+>      other users than us, detach the bpf progs from the HID devices
+> - users then declare their tracepoints and then call
+>   hid_bpf_attach_prog() in a SEC("syscall") program
+> - hid-bpf then calls multiple time the bpf_tail_call() program with a
+>   different index in the jump table whenever there is an event coming
+>   from a matching HID device
 
-RFC means you develop something which is not ready, not sure how to do
-it, you send an initial idea. Sending a regular bindings as RFC, without
-explaining what you expect, is a bit confusing.
+So driver abstractions like UDI are now perfectly fine as long as they
+are written using a hip new VM?
 
-Best regards,
-Krzysztof
+This whole idea seems like a bad idea, against the Linux spirit and
+now actually useful - it is totally trivial to write a new HID
+driver alreay, and if it isn't in some cases we need to fix that.
+
+So a big fat NAK to the idea of using eBPF for actual driver logic.
