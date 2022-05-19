@@ -2,49 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89A1B52C8DB
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 02:45:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8CFFC52C8F4
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 02:52:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230282AbiESAoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 18 May 2022 20:44:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39458 "EHLO
+        id S232183AbiESAwd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 18 May 2022 20:52:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231633AbiESAoZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 20:44:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 467A660AB1
-        for <netdev@vger.kernel.org>; Wed, 18 May 2022 17:44:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C703661760
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 00:44:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2DA1C385A5;
-        Thu, 19 May 2022 00:44:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652921063;
-        bh=Jh4eDlYKr4vxSbm/Qwtm/XL3RGowImkXoGQbfJe/bi4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=OdeTJlSkSSfG7pwaJTdVp8lySzTT6xVK5/gsZ/tdkUMz8hV485CihS0Of2qj6EAjK
-         i7SHQU146qnKnbc7tQVub0cf7kO3hcsg54rMv9yYdM9fQwa/tsHZKa6L+9RE+/TMr6
-         ZZwV83KV2NjIp+x/tfREA61VSNN8oTBwC2Mz94nn8IpwyIIe7AP2FQoa5BDQBTdMN+
-         Zgf5ud+RV+od4fHe69u/MlSOG5HUIzZQerpTGCdFxm9HNGYfdlEVoVG573i7vWGwgU
-         yyD8iGkQhjh4e2xOzg7yYxjf0nUnTBX1hYuBudecCO6U8O9jYZGmoVny3tZ5qtGIvl
-         23G2ui0YTieiA==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        Jakub Kicinski <kuba@kernel.org>, elder@kernel.org
-Subject: [PATCH net-next] net: ipa: don't proceed to out-of-bound write
-Date:   Wed, 18 May 2022 17:44:17 -0700
-Message-Id: <20220519004417.2109886-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.34.3
+        with ESMTP id S232496AbiESAw0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 18 May 2022 20:52:26 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B3121144D
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 17:52:24 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id k2so3874264qtp.1
+        for <netdev@vger.kernel.org>; Wed, 18 May 2022 17:52:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S0+jmwEOWiKOTo/k5OEQthbmqv/hkgrZFNjiclaFXi0=;
+        b=eiRPbDJCWqtOno4GgFN1JeVpxSXvX1Qts3tC+TSSXFfcJ+EFDxHrQUzh3iEvbL8dlX
+         ZMmPFoHbU5T8JQbL8EnpGUG7SRlwV7qPIFG/aPTmA/7giQ4LYrjgIqusAVYxM5kGI6mt
+         A1UMOOaw1B3HQPmTRaFvjl2A+EwOkMf5UelU4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S0+jmwEOWiKOTo/k5OEQthbmqv/hkgrZFNjiclaFXi0=;
+        b=5GA9s+fRhqsFUM9EnLzIp1rID4FKBP94KfW4OrbuP2+tanSyw0n/AhLCbbWk88riT9
+         4AuweXU0qFo+R6PEPtEGqpzbl/e7nmKnU30YKLH4mgWDT+XJhXqa0F5T/WqDSmKEuKP4
+         /M3mpr10horrVUiC0m50p2q362zfC50K1i8tWf4KVbn15Anz4MW3YdOtmVgO479a3Fr2
+         Bdz8uQsxgJLZNQjOGFqxs5/xkRHbR/DoabbpNvLOPwSSuLvAyqYVUm+cR4SA/P8qx6pg
+         8+57aHWN2epnjSu3g5rtZojG6dlXvAPRAEERAv5LBSDb6vIA6Pj9cSKHNU0E2Tk3FucU
+         AfiA==
+X-Gm-Message-State: AOAM530EF4li/PzTpjdMfXC2ZY3wPcbDGKoNqCwIUYsxQUYdJfMAhwH5
+        NJZAlqegAUWqnoMsp8asQDHllbzPEICxSxaHZcRMwQ==
+X-Google-Smtp-Source: ABdhPJxBpTGudz6PD0R70aPCdSct7ZP9XfQyxTj+HKqfZOZiVu6UvtZoRhU1BLFiZKVzOr62JVTHx7Krkzo+VH4ZN6U=
+X-Received: by 2002:a05:622a:1012:b0:2f3:ce26:9f93 with SMTP id
+ d18-20020a05622a101200b002f3ce269f93mr2131597qte.175.1652921543953; Wed, 18
+ May 2022 17:52:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <70a20d8f91664412ae91e401391e17cb@AcuMS.aculab.com>
+ <6576c307ed554adb443e62a60f099266c95b55a7.camel@redhat.com> <153739175cf241a5895e6a5685a89598@AcuMS.aculab.com>
+In-Reply-To: <153739175cf241a5895e6a5685a89598@AcuMS.aculab.com>
+From:   Michael Chan <michael.chan@broadcom.com>
+Date:   Wed, 18 May 2022 17:52:13 -0700
+Message-ID: <CACKFLinwh=YgPGPZ0M0dTJK1ar+SoPUZtYb5nBmLj6CNPdCQ2g@mail.gmail.com>
+Subject: Re: tg3 dropping packets at high packet rates
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mchan@broadcom.com" <mchan@broadcom.com>,
+        David Miller <davem@davemloft.net>,
+        Pavan Chebbi <pavan.chebbi@broadcom.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -52,48 +66,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GCC 12 seems upset that we check ipa_irq against array bound
-but then proceed, anyway:
+On Wed, May 18, 2022 at 2:31 PM David Laight <David.Laight@aculab.com> wrote:
+>
+> From: Paolo Abeni
+> > Sent: 18 May 2022 18:27
+> ....
+> > > If I read /sys/class/net/em2/statistics/rx_packets every second
+> > > delaying with:
+> > >   syscall(SYS_clock_nanosleep, CLOCK_MONOTONIC, TIMER_ABSTIME, &ts, NULL);
+> > > about every 43 seconds I get a zero increment.
+> > > This really doesn't help!
+> >
+> > It looks like the tg3 driver fetches the H/W stats once per second. I
+> > guess that if you fetch them with the same period and you are unlucky
+> > you can read the same sample 2 consecutive time.
+>
+> Actually I think the hardware is writing them to kernel memory
+> every second.
 
-drivers/net/ipa/ipa_interrupt.c: In function ‘ipa_interrupt_add’:
-drivers/net/ipa/ipa_interrupt.c:196:27: warning: array subscript 30 is above array bounds of ‘void (*[30])(struct ipa *, enum ipa_irq_id)’ [-Warray-bounds]
-  196 |         interrupt->handler[ipa_irq] = handler;
-      |         ~~~~~~~~~~~~~~~~~~^~~~~~~~~
-drivers/net/ipa/ipa_interrupt.c:42:27: note: while referencing ‘handler’
-   42 |         ipa_irq_handler_t handler[IPA_IRQ_COUNT];
-      |                           ^~~~~~~
+On your BCM95720 chip, statistics are gathered by tg3_timer() once a
+second.  Older chips will use DMA.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
-CC: elder@kernel.org
----
- drivers/net/ipa/ipa_interrupt.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa_interrupt.c b/drivers/net/ipa/ipa_interrupt.c
-index b35170a93b0f..307bed2ee707 100644
---- a/drivers/net/ipa/ipa_interrupt.c
-+++ b/drivers/net/ipa/ipa_interrupt.c
-@@ -191,7 +191,8 @@ void ipa_interrupt_add(struct ipa_interrupt *interrupt,
- 	struct ipa *ipa = interrupt->ipa;
- 	u32 offset;
- 
--	WARN_ON(ipa_irq >= IPA_IRQ_COUNT);
-+	if (WARN_ON(ipa_irq >= IPA_IRQ_COUNT))
-+		return;
- 
- 	interrupt->handler[ipa_irq] = handler;
- 
-@@ -208,7 +209,8 @@ ipa_interrupt_remove(struct ipa_interrupt *interrupt, enum ipa_irq_id ipa_irq)
- 	struct ipa *ipa = interrupt->ipa;
- 	u32 offset;
- 
--	WARN_ON(ipa_irq >= IPA_IRQ_COUNT);
-+	if (WARN_ON(ipa_irq >= IPA_IRQ_COUNT))
-+		return;
- 
- 	/* Update the IPA interrupt mask to disable it */
- 	interrupt->enabled &= ~BIT(ipa_irq);
--- 
-2.34.3
-
+Please show a snapshot of all the counters.  In particular,
+rxbds_empty, rx_discards, etc will show whether the driver is keeping
+up with incoming RX packets or not.
