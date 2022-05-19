@@ -2,168 +2,353 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DD23252D3F6
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 15:29:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9432852D41F
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 15:33:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238784AbiESN3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 09:29:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48272 "EHLO
+        id S231224AbiESNdb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 09:33:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235342AbiESN3g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 09:29:36 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BC035C6E5F
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 06:29:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652966974;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=6gbnfiZlD4IhECy7QC1q49z85Ex/XZdiWKLQdiTpbDY=;
-        b=dAOBgcGC6LeuRNbLNaosE5Y8ZlWLyKO9Eyn4XrBG2wEb/dpzyMn3XMBB+bnVvQX3E/0pYs
-        A1txqFnKpbg1hWrHUVzPCpbLNF8N0fgX8cnkWCNG9g9LcA9A6wJoBQpTDHdR55OlqC6jjg
-        3l9RWAxXDAQCXyvQWnSvd7aXcdE3Tng=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-eZinnm4LOHOf6WPP1nqo_Q-1; Thu, 19 May 2022 09:29:25 -0400
-X-MC-Unique: eZinnm4LOHOf6WPP1nqo_Q-1
-Received: by mail-wr1-f70.google.com with SMTP id x4-20020a5d4444000000b0020d130e8a36so1562800wrr.9
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 06:29:25 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=6gbnfiZlD4IhECy7QC1q49z85Ex/XZdiWKLQdiTpbDY=;
-        b=B4kmt/bbEEzCWzdDnL9VvvcvWrJlCvcdXHI9I6zziuZmf0pt9YmKdfVhuSvXOPTddh
-         AkFvmZt7TAlnzkpYRNzH6XVlztyuDYbyGSdNBG5OwjO4FL5Tjel1blqAeFbE+ZQioMha
-         EynAw+fkL0HH6xNLaet7gSKCQdb9isF5Exkf3yRBhyjdfcFTWUevAyxRy4mrIKVnYKy7
-         u6+qrCBQKZQTKcJY4IKWJNsbhpbr0Qdq9CfekHRnONPn6tO3LZ79ti9svNf3HFMf4zY/
-         1sq6P0oDK3gscwrPit0B3/pJ6t7/MgTeX58PjEcbGyKkhTKkaf+qLKvcihqOjT86A9iw
-         5DVw==
-X-Gm-Message-State: AOAM533PqrDpkeBTVbqMhe6RCb6ww/LNEgHHbWIGpx8fSmfgdj91IuAf
-        S8GfydQbHkneNrTrhVC8OL3BFIUCN3fKOdpTrQ0gWocNfy8vke9lUHIC0X9snlVkrYVb5f4oY1H
-        UNS1zEcXWelJlxLrk
-X-Received: by 2002:a05:6000:1ac7:b0:20c:6c81:175d with SMTP id i7-20020a0560001ac700b0020c6c81175dmr4049109wry.262.1652966964128;
-        Thu, 19 May 2022 06:29:24 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyT0336c2lcoFTbZ+pQ4BRQZNzK2Xnnj2zCImCdzHhENYsIgyVb1CQb1dXzozaJh6bRujuCzA==
-X-Received: by 2002:a05:6000:1ac7:b0:20c:6c81:175d with SMTP id i7-20020a0560001ac700b0020c6c81175dmr4049096wry.262.1652966963892;
-        Thu, 19 May 2022 06:29:23 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id k186-20020a1ca1c3000000b0039732f1b4a3sm1333247wme.14.2022.05.19.06.29.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 06:29:23 -0700 (PDT)
-Message-ID: <5cc5353c518e27de69fc0d832294634c83f431e5.camel@redhat.com>
-Subject: Re: tg3 dropping packets at high packet rates
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        'Pavan Chebbi' <pavan.chebbi@broadcom.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mchan@broadcom.com" <mchan@broadcom.com>,
-        David Miller <davem@davemloft.net>
-Date:   Thu, 19 May 2022 15:29:22 +0200
-In-Reply-To: <f3d1d5bf11144b31b1b3959e95b04490@AcuMS.aculab.com>
-References: <70a20d8f91664412ae91e401391e17cb@AcuMS.aculab.com>
-         <6576c307ed554adb443e62a60f099266c95b55a7.camel@redhat.com>
-         <153739175cf241a5895e6a5685a89598@AcuMS.aculab.com>
-         <CACKFLinwh=YgPGPZ0M0dTJK1ar+SoPUZtYb5nBmLj6CNPdCQ2g@mail.gmail.com>
-         <13d6579e9bc44dc2bfb73de8d9715b10@AcuMS.aculab.com>
-         <CALs4sv1RxAbVid2f8EQF_kQkk48fd=8kcz2WbkTXRkwLbPLgwA@mail.gmail.com>
-         <f3d1d5bf11144b31b1b3959e95b04490@AcuMS.aculab.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S229498AbiESNd3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 09:33:29 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 167061180C;
+        Thu, 19 May 2022 06:33:25 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L3rMH2N9yz67Ncp;
+        Thu, 19 May 2022 21:30:19 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Thu, 19 May 2022 15:33:22 +0200
+Message-ID: <7a5671cd-6bf3-9d17-ef17-ac9129386447@huawei.com>
+Date:   Thu, 19 May 2022 16:33:20 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v5 15/15] samples/landlock: adds network demo
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <anton.sirazetdinov@huawei.com>
+References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
+ <20220516152038.39594-16-konstantin.meskhidze@huawei.com>
+ <179ac2ee-37ff-92da-c381-c2c716725045@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <179ac2ee-37ff-92da-c381-c2c716725045@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml754-chm.china.huawei.com (10.201.108.204) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2022-05-19 at 13:14 +0000, David Laight wrote:
-> From: Pavan Chebbi
-> > Sent: 19 May 2022 11:21
-> ...
-> > > 
-> > > > Please show a snapshot of all the counters.  In particular,
-> > > > rxbds_empty, rx_discards, etc will show whether the driver is keeping
-> > > > up with incoming RX packets or not.
-> > > 
-> > > After running the test for a short time.
-> > > The application stats indicate that around 40000 packets are missing.
-> > > 
-> ...
-> 
-> Some numbers taken at the same time:
-> 
-> Application trace - each 'gap' is one or more lost packets.
-> T+000004:  all gaps so far 1104
-> T+000005:  all gaps so far 21664
-> T+000006:  all gaps so far 54644
-> T+000007:  all gaps so far 84641
-> T+000008:  all gaps so far 110232
-> T+000009:  all gaps so far 131191
-> T+000010:  all gaps so far 150286
-> T+000011:  all gaps so far 171588
-> T+000012:  all gaps so far 190777
-> T+000013:  all gaps so far 210771
-> 
-> rx_packets counted by tg3_rx() and read every second.
-> 63 344426
-> 64 341734
-> 65 338740
-> 66 337995
-> 67 339770
-> 68 336314
-> 69 340087
-> 70 345084
-> 
-> Cumulative error counts since the driver was last loaded.
->      rxbds_empty: 30983
->      rx_discards: 3123
->      mbuf_lwm_thresh_hit: 3123
-> 
-> The number of interrupt is high - about 40000/sec.
-> (I've not deltad these, just removed all the zeros and prefixed the
-> cpu number before each non-zero value.)
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:234754517
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:234767945
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:234802555
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:234843542
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:234887963
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:234928204
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:234966428
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:235009505
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:235052740
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:235093254
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:235133299
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:235173151
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:235212387
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:235252403
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:235317928
-> 86: IR-PCI-MSI 1050625-edge em2-rx-1 8:13 14:235371301
-> 
-> RSS is enabled, but I've used ethtool -X equal 1 to
-> put everything through ring 0.
-> Cpu 14 is still 25% idle - that is the busiest cpu.
 
-If the packet processing is 'bursty', you can have idle time and still
-hit now and the 'rx ring is [almost] full' condition. If pause frames
-are enabled, that will cause the peer to stop sending frames: drop can
-happen in the switch, and the local NIC will not notice (unless there
-are counters avaialble for pause frames sent).
 
-AFAICS the packet processing is bursty, because enqueuing packets to a
-remote CPU in considerably faster then full network stack processing.
+5/17/2022 12:19 PM, Mickaël Salaün пишет:
+> 
+> 
+> On 16/05/2022 17:20, Konstantin Meskhidze wrote:
+>> This commit adds network demo. It's possible to
+>> allow a sandoxer to bind/connect to a list of
+>> particular ports restricting networks actions to
+>> the rest of ports.
+>>
+>> Signed-off-by: Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+>> ---
+>>
+>> Changes since v4:
+>> * Adds ENV_TCP_BIND_NAME "LL_TCP_BIND" and
+>> ENV_TCP_CONNECT_NAME "LL_TCP_CONNECT" variables
+>> to insert TCP ports.
+>> * Renames populate_ruleset() to populate_ruleset_fs().
+>> * Adds populate_ruleset_net() and parse_port_num() helpers.
+>> * Refactoring main() to support network sandboxing.
+>>
+>> ---
+>>   samples/landlock/sandboxer.c | 105 +++++++++++++++++++++++++++++++----
+>>   security/landlock/ruleset.h  |   4 +-
+>>   2 files changed, 95 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/samples/landlock/sandboxer.c b/samples/landlock/sandboxer.c
+>> index 3e404e51ec64..4006c42eec1c 100644
+>> --- a/samples/landlock/sandboxer.c
+>> +++ b/samples/landlock/sandboxer.c
+>> @@ -51,6 +51,8 @@ static inline int landlock_restrict_self(const int 
+>> ruleset_fd,
+>>
+>>   #define ENV_FS_RO_NAME "LL_FS_RO"
+>>   #define ENV_FS_RW_NAME "LL_FS_RW"
+>> +#define ENV_TCP_BIND_NAME "LL_TCP_BIND"
+>> +#define ENV_TCP_CONNECT_NAME "LL_TCP_CONNECT"
+>>   #define ENV_PATH_TOKEN ":"
+>>
+>>   static int parse_path(char *env_path, const char ***const path_list)
+>> @@ -71,6 +73,20 @@ static int parse_path(char *env_path, const char 
+>> ***const path_list)
+>>       return num_paths;
+>>   }
+>>
+>> +static int parse_port_num(char *env_port)
+>> +{
+>> +    int i, num_ports = 0;
+>> +
+>> +    if (env_port) {
+>> +        num_ports++;
+>> +        for (i = 0; env_port[i]; i++) {
+>> +            if (env_port[i] == ENV_PATH_TOKEN[0])
+>> +                num_ports++;
+>> +        }
+>> +    }
+>> +    return num_ports;
+>> +}
+>> +
+>>   /* clang-format off */
+>>
+>>   #define ACCESS_FILE ( \
+>> @@ -80,7 +96,7 @@ static int parse_path(char *env_path, const char 
+>> ***const path_list)
+>>
+>>   /* clang-format on */
+>>
+>> -static int populate_ruleset(const char *const env_var, const int 
+>> ruleset_fd,
+>> +static int populate_ruleset_fs(const char *const env_var, const int 
+>> ruleset_fd,
+>>                   const __u64 allowed_access)
+>>   {
+>>       int num_paths, i, ret = 1;
+>> @@ -142,6 +158,49 @@ static int populate_ruleset(const char *const 
+>> env_var, const int ruleset_fd,
+>>       return ret;
+>>   }
+>>
+>> +static int populate_ruleset_net(const char *const env_var,
+>> +                const int ruleset_fd,
+>> +                const __u64 allowed_access)
+>> +{
+>> +    int num_ports, i, ret = 1;
+>> +    char *env_port_name;
+>> +    struct landlock_net_service_attr net_service = {
+>> +        .allowed_access = 0,
+>> +        .port = 0,
+>> +    };
+>> +
+>> +    env_port_name = getenv(env_var);
+>> +    if (!env_port_name) {
+>> +        /* Prevents users to forget a setting. */
+>> +        fprintf(stderr, "Missing environment variable %s\n", env_var);
+>> +        return 1;
+> 
+> I think network ports should be optional to be able to test without that 
+> (and not break compatibility). You can pass &ruleset_attr as argument to 
+> update it accordingly:
+> - without environment variable: no network restriction;
+> - with empty environment variable: all connect (or bind) denied;
+> - otherwise: only allow the listed ports.
+> 
+   Great. That makes sense. Cause anyway fs restrictions are major ones.
+> 
+>> +    }
+>> +    env_port_name = strdup(env_port_name);
+>> +    unsetenv(env_var);
+>> +    num_ports = parse_port_num(env_port_name);
+>> +
+>> +    if (num_ports == 1 && (strtok(env_port_name, ENV_PATH_TOKEN) == 
+>> NULL)) {
+>> +        ret = 0;
+>> +        goto out_free_name;
+>> +    }
+>> +
+>> +    for (i = 0; i < num_ports; i++) {
+>> +        net_service.allowed_access = allowed_access;
+>> +        net_service.port = atoi(strsep(&env_port_name, ENV_PATH_TOKEN));
+>> +        if (landlock_add_rule(ruleset_fd, LANDLOCK_RULE_NET_SERVICE,
+>> +                    &net_service, 0)) {
+>> +            fprintf(stderr, "Failed to update the ruleset with port 
+>> \"%d\": %s\n",
+>> +                    net_service.port, strerror(errno));
+>> +            goto out_free_name;
+>> +        }
+>> +    }
+>> +    ret = 0;
+>> +
+>> +out_free_name:
+>> +    free(env_port_name);
+>> +    return ret;
+>> +}
+>> +
+>>   /* clang-format off */
+>>
+>>   #define ACCESS_FS_ROUGHLY_READ ( \
+>> @@ -173,19 +232,24 @@ int main(const int argc, char *const argv[], 
+>> char *const *const envp)
+>>       char *const *cmd_argv;
+>>       int ruleset_fd, abi;
+>>       __u64 access_fs_ro = ACCESS_FS_ROUGHLY_READ,
+>> -          access_fs_rw = ACCESS_FS_ROUGHLY_READ | 
+>> ACCESS_FS_ROUGHLY_WRITE;
+>> +          access_fs_rw = ACCESS_FS_ROUGHLY_READ | 
+>> ACCESS_FS_ROUGHLY_WRITE,
+>> +          access_net_tcp = LANDLOCK_ACCESS_NET_BIND_TCP |
+>> +                    LANDLOCK_ACCESS_NET_CONNECT_TCP;
+>>       struct landlock_ruleset_attr ruleset_attr = {
+>>           .handled_access_fs = access_fs_rw,
+>> +        .handled_access_net = access_net_tcp,
+>>       };
+>>
+>>       if (argc < 2) {
+>>           fprintf(stderr,
+>> -            "usage: %s=\"...\" %s=\"...\" %s <cmd> [args]...\n\n",
+>> -            ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
+>> +            "usage: %s=\"...\" %s=\"...\" %s=\"...\" %s=\"...\"%s "
+>> +            "<cmd> [args]...\n\n", ENV_FS_RO_NAME, ENV_FS_RW_NAME,
+>> +            ENV_TCP_BIND_NAME, ENV_TCP_CONNECT_NAME, argv[0]);
+>>           fprintf(stderr,
+>>               "Launch a command in a restricted environment.\n\n");
+>> -        fprintf(stderr, "Environment variables containing paths, "
+>> -                "each separated by a colon:\n");
+>> +        fprintf(stderr,
+>> +            "Environment variables containing paths and ports "
+>> +            "each separated by a colon:\n");
+>>           fprintf(stderr,
+>>               "* %s: list of paths allowed to be used in a read-only 
+>> way.\n",
+>>               ENV_FS_RO_NAME);
+>> @@ -193,11 +257,19 @@ int main(const int argc, char *const argv[], 
+>> char *const *const envp)
+>>               "* %s: list of paths allowed to be used in a read-write 
+>> way.\n",
+>>               ENV_FS_RW_NAME);
+>>           fprintf(stderr,
+>> -            "\nexample:\n"
+>> +            "* %s: list of ports allowed to bind (server).\n",
+>> +            ENV_TCP_BIND_NAME);
+>> +        fprintf(stderr,
+>> +            "* %s: list of ports allowed to connect (client).\n",
+>> +            ENV_TCP_CONNECT_NAME);
+> 
+> This is good and will be better with clang-format. ;)
 
-Side note: on a not-to-obsolete H/W the kernel should be able to
-process >1mpps per cpu.
+   Yep. I will fix it. Thanks.
+> 
+>> +        fprintf(stderr, "\nexample:\n"
+>>               "%s=\"/bin:/lib:/usr:/proc:/etc:/dev/urandom\" "
+>>               "%s=\"/dev/null:/dev/full:/dev/zero:/dev/pts:/tmp\" "
+>> +            "%s=\"15000:16000\" "
+> 
+> Bind ports example should reference unprivileged ports such as "9418" 
+> (git, not well-known but OK).
+> 
+  Ok. I will change it
+> 
+>> +            "%s=\"10000:12000\" "
+> 
+> Connect ports example should reference well-known ports such as "80:443".
+> 
+   Ditto.
+>>               "%s bash -i\n",
+>> -            ENV_FS_RO_NAME, ENV_FS_RW_NAME, argv[0]);
+>> +            ENV_FS_RO_NAME, ENV_FS_RW_NAME, ENV_TCP_BIND_NAME,
+>> +            ENV_TCP_CONNECT_NAME, argv[0]);
+>>           return 1;
+>>       }
+>>
+>> @@ -234,16 +306,25 @@ int main(const int argc, char *const argv[], 
+>> char *const *const envp)
+>>
+>>       ruleset_fd =
+>>           landlock_create_ruleset(&ruleset_attr, sizeof(ruleset_attr), 
+>> 0);
+>> +
+> 
+> Why?
 
-Paolo
+   Oh. Sorry. My mistake. I will fix it as it was.
+> 
+> 
+>>       if (ruleset_fd < 0) {
+>>           perror("Failed to create a ruleset");
+>>           return 1;
+>>       }
+>> -    if (populate_ruleset(ENV_FS_RO_NAME, ruleset_fd, access_fs_ro)) {
+>> +    if (populate_ruleset_fs(ENV_FS_RO_NAME, ruleset_fd, access_fs_ro))
+>>           goto err_close_ruleset;
+>> -    }
+> 
+> Why? I know that checkpatch.pl prints a warning for that but I 
+> delibirately chooe to use curly braces even for "if" statements with one 
+> line because it is safer. This code may be copied/pasted and I'd like 
+> others to avoid introducing goto-fail-like issues.
+> 
 
+  It was done just to reduce the number of checkpatch.pl warnings.
+  If you want it to be formated in your way I will fix it.
+> 
+> 
+>> -    if (populate_ruleset(ENV_FS_RW_NAME, ruleset_fd, access_fs_rw)) {
+>> +
+>> +    if (populate_ruleset_fs(ENV_FS_RW_NAME, ruleset_fd, access_fs_rw))
+>>           goto err_close_ruleset;
+>> -    }
+>> +
+>> +    if (populate_ruleset_net(ENV_TCP_BIND_NAME, ruleset_fd,
+>> +                 LANDLOCK_ACCESS_NET_BIND_TCP))
+> 
+> So please use curly braces here too.
+
+   Ok. No problems.
+> 
+>> +        goto err_close_ruleset;
+>> +
+>> +    if (populate_ruleset_net(ENV_TCP_CONNECT_NAME, ruleset_fd,
+>> +                 LANDLOCK_ACCESS_NET_CONNECT_TCP))
+>> +        goto err_close_ruleset;
+>> +
+>>       if (prctl(PR_SET_NO_NEW_PRIVS, 1, 0, 0, 0)) {
+>>           perror("Failed to restrict privileges");
+>>           goto err_close_ruleset;
+>> diff --git a/security/landlock/ruleset.h b/security/landlock/ruleset.h
+>> index 916b30b31c06..e1ff40f238a6 100644
+>> --- a/security/landlock/ruleset.h
+>> +++ b/security/landlock/ruleset.h
+>> @@ -19,7 +19,7 @@
+>>   #include "limits.h"
+>>   #include "object.h"
+>>
+>> -typedef u16 access_mask_t;
+>> +typedef u32 access_mask_t;
+> 
+> What‽
+
+   You are right. I will move this changes to another commit, related 
+the kernel updates. I might have forgotten to rebase this change and 
+left it in sandboxer patch. Thank you..
+> 
+> 
+>>
+>>   /* Makes sure all filesystem access rights can be stored. */
+>>   static_assert(BITS_PER_TYPE(access_mask_t) >= LANDLOCK_NUM_ACCESS_FS);
+>> @@ -157,7 +157,7 @@ struct landlock_ruleset {
+>>                * layers are set once and never changed for the
+>>                * lifetime of the ruleset.
+>>                */
+>> -            u32 access_masks[];
+>> +            access_mask_t access_masks[];
+>>           };
+>>       };
+>>   };
+>> -- 
+>> 2.25.1
+>>
+> .
