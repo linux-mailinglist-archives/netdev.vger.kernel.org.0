@@ -2,78 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DE3552D9C1
-	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:05:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 925DB52D9C0
+	for <lists+netdev@lfdr.de>; Thu, 19 May 2022 18:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241681AbiESQEu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 12:04:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
+        id S241699AbiESQEx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 12:04:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241676AbiESQEr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:04:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E00FF6A423
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 09:04:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1652976285;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=cn9DGsidYHLKIgSfwQZyuGk5MNvO4cusQzW9CGpB6cM=;
-        b=dyeMJgEwOyCU4MNNIjDl+z645gaw1HLQh5kMHqbA+wJ8/XGGwBaY4vtgC4VrlNSOrqneKR
-        96MSl3RR6y9arqNCRN2WYOq+UD+eqgqufEOLLNgCX3TKNV1fHPqhTPgWwn8OFgwzhP0nJg
-        s6OvFhHfWZintg2rG/V5lyXseL2Yi8Q=
-Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
- [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-586-Z3CI-xY3Or-hJRwOgzNf9A-1; Thu, 19 May 2022 12:04:42 -0400
-X-MC-Unique: Z3CI-xY3Or-hJRwOgzNf9A-1
-Received: by mail-qt1-f198.google.com with SMTP id l7-20020a05622a174700b002f3c49f49ffso4593868qtk.15
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 09:04:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=cn9DGsidYHLKIgSfwQZyuGk5MNvO4cusQzW9CGpB6cM=;
-        b=DguXGZtMo5ZZ1q+ftgQudYWjOVEFVLOCezB7SeyFNbdEeLrFpWuOeQmrbGnU+b51zL
-         lNgrgwcDszvq4FhTktVhqp0sY7mo30rSqg5Tdjq3kJanY1BH9BV5MvauQ5OGQGHn2cOe
-         RPAsv3Pv4PnsgAfM+a9FqvKVVz9bStunTEJ3v+diHnl1A9Qn15IkoLIEVK7PZSfQYItN
-         hHoK8SLSfyAc9BgPbUgnqfiISfNrFbZWGNpiIQKiYoH8T5rFy6vDmOVPXs+nJGU1NI2D
-         Pl3Z0RO9gGz9zSqua2MDX8cyNQltZvj2QdmC88zJuFKyPnlDWt3dS7CgUW7j3Jm2pTrI
-         OfFg==
-X-Gm-Message-State: AOAM530AZlY+GMlfoJwI+ucXVF6mLxuvDtWdS5O4jO0ylMkYOktXcMnQ
-        w203YqYOD2usVDB747rfcY+L6ppG1FJJP+sMOzScL+io836EVQC9BL2pa5iSKci+WxCknfXz60T
-        fNlJQSrPqmVsABD66
-X-Received: by 2002:a05:620a:29c2:b0:6a0:5fac:2f45 with SMTP id s2-20020a05620a29c200b006a05fac2f45mr3340492qkp.529.1652976282228;
-        Thu, 19 May 2022 09:04:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJx2Oj1i3ECAaRC8bD7Zm1tmm+5AblYIrHtBAeojqUV3W8R84H9LagTNe0ivlgrCeQ6ZxU1Wmw==
-X-Received: by 2002:a05:620a:29c2:b0:6a0:5fac:2f45 with SMTP id s2-20020a05620a29c200b006a05fac2f45mr3340446qkp.529.1652976281677;
-        Thu, 19 May 2022 09:04:41 -0700 (PDT)
-Received: from sgarzare-redhat (host-87-12-25-16.business.telecomitalia.it. [87.12.25.16])
-        by smtp.gmail.com with ESMTPSA id z10-20020ac87f8a000000b002f39b99f6a3sm1590625qtj.61.2022.05.19.09.04.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 May 2022 09:04:41 -0700 (PDT)
-Date:   Thu, 19 May 2022 18:04:34 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Eugenio =?utf-8?B?UMOpcmV6?= <eperezma@redhat.com>
-Cc:     mst@redhat.com, jasowang@redhat.com, lvivier@redhat.com,
-        netdev@vger.kernel.org, lulu@redhat.com, eli@mellanox.com,
-        parav@nvidia.com, virtualization@lists.linux-foundation.org,
-        kvm@vger.kernel.org, lingshan.zhu@intel.com,
-        linux-kernel@vger.kernel.org, gdawar@xilinx.com
-Subject: Re: [PATCH v2] vdpasim: allow to enable a vq repeatedly
-Message-ID: <20220519160434.5s5jzwdmajewpqvg@sgarzare-redhat>
-References: <20220519145919.772896-1-eperezma@redhat.com>
+        with ESMTP id S241696AbiESQEu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 12:04:50 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5534B57141;
+        Thu, 19 May 2022 09:04:49 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CAFACB82565;
+        Thu, 19 May 2022 16:04:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54514C385AA;
+        Thu, 19 May 2022 16:04:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652976286;
+        bh=iPDR8ilYnB0nQ/+DloDpPTckk5aU+JgBRjXXuvvCOU0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ioKmLWqYWb5T4vQheOFYhBXmeEfT+D6wbQq3/nX/En3LMbTIWAosJc85cz9G4GQvS
+         xQmGyO989l0y4aikRzsSXtDeTRL7rggut2MgygnQwZ4xhvzzKihn9xU5AoQEcOmf7D
+         /qEz3nXbTylufHiDgmxOlFEDDHS/Y0sROWTwyMgyLc6lNTG5zhkf6WLbZH/RJon5ou
+         nknb+Kx4JA4RQhwqTVHomgPKE3gqOkWdc4Gmoslr9umlzb0OUXsoTvUcyOF+re0yqM
+         anz/v92KdCmrKZ1cYwwUFL5AJv7ydS9PVW862h86Qi59Bml5BUEnATwJXRYBZQ1l3o
+         oEQXxdARH5dSg==
+Date:   Thu, 19 May 2022 09:04:44 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Carlos Fernandez <carlos.fernandez@technica-engineering.de>
+Cc:     Carlos Fernandez <carlos.escuin@gmail.com>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2] Retrieve MACSec-XPN attributes before offloading
+Message-ID: <20220519090444.3cd14244@kernel.org>
+In-Reply-To: <AM9PR08MB678803198E0EA09F9AD1AA7DDBD09@AM9PR08MB6788.eurprd08.prod.outlook.com>
+References: <20220518085745.7022-1-carlos.fernandez@technica-engineering.de>
+        <20220518090151.7601-1-carlos.fernandez@technica-engineering.de>
+        <20220518092326.52183e77@kernel.org>
+        <AM9PR08MB678803198E0EA09F9AD1AA7DDBD09@AM9PR08MB6788.eurprd08.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220519145919.772896-1-eperezma@redhat.com>
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,20 +60,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 19, 2022 at 04:59:19PM +0200, Eugenio Pérez wrote:
->Code must be resilient to enable a queue many times.
->
->At the moment the queue is resetting so it's definitely not the expected
->behavior.
->
->v2: set vq->ready = 0 at disable.
->
->Fixes: 2c53d0f64c06 ("vdpasim: vDPA device simulator")
->Cc: stable@vger.kernel.org
->Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
->---
-> drivers/vdpa/vdpa_sim/vdpa_sim.c | 5 ++++-
-> 1 file changed, 4 insertions(+), 1 deletion(-)
+On Thu, 19 May 2022 07:43:43 +0000 Carlos Fernandez wrote:
+> Where should I rebase it? Thanks.
 
-Reviewed-by: Stefano Garzarella <sgarzare@redhat.com>
+Oh, not where - on what. Check out the master branch of this tree:
 
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/
+
+git cherry-pick the patch on top of it, resolve the conflicts if any,
+make sure it still works, git format-patch, git send-email..
