@@ -2,45 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C5DB52F453
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 22:20:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B515852F46F
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 22:31:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353432AbiETUUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 16:20:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37768 "EHLO
+        id S1353476AbiETUbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 16:31:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352457AbiETUUV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 16:20:21 -0400
+        with ESMTP id S1353470AbiETUbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 16:31:10 -0400
 Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E859187DBD
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 13:20:20 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356CC340CD;
+        Fri, 20 May 2022 13:31:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
         References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
         Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
         Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=NhkdzEAIcWq207vFnD0dd4g9837Pmprp8EVeDf6N94s=; b=TC6FC4l0BstLe2pusfWmavAE5b
-        KXHWxIjkTUDWSY6z8GbXHZAA9DM9TTDPpXvUC8O6QEm9fcPO7Gx9arPHSx+cc5rnqd96in10z9Lg0
-        KC2rZURc1N/En0D613V7fjYaj1bXzH0dHibpauM+zlX91Hp9KRTnX/JNj9hPOCom/vDw=;
+        bh=DLULO/rszAHKPxdjbAsajMe5tA7+SsUhYH9DkHT1ik8=; b=jPEWsltQc/BpiOuVhDPI+/0J2H
+        jjRgljUV+DoWu40evBQluhrq2ch+ONssPw3TgtxkPJQ1b+FUYo153A8F5sHXvc311y8k67nHHRhkV
+        q8boZAgnJaT+zB7SJRmc9xfCwLUAW/5+OBShp6dOFphjY0Fw7wzQ5OvrNKooQ55ukFkg=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
         (envelope-from <andrew@lunn.ch>)
-        id 1ns96c-003gas-11; Fri, 20 May 2022 22:20:14 +0200
-Date:   Fri, 20 May 2022 22:20:14 +0200
+        id 1ns9H4-003geZ-E3; Fri, 20 May 2022 22:31:02 +0200
+Date:   Fri, 20 May 2022 22:31:02 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
-Subject: Re: [PATCH net-next RESEND] net: fec: Do proper error checking for
- enet_out clk
-Message-ID: <Yof3/o46wXWXMsKo@lunn.ch>
-References: <20220520062650.712561-1-u.kleine-koenig@pengutronix.de>
+To:     Kent Overstreet <kent.overstreet@gmail.com>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-block@vger.kernel.org, netdev@vger.kernel.org,
+        mcgrof@kernel.org, tytso@mit.edu
+Subject: Re: RFC: Ioctl v2
+Message-ID: <Yof6hsC1hLiYITdh@lunn.ch>
+References: <20220520161652.rmhqlvwvfrvskg4w@moria.home.lan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220520062650.712561-1-u.kleine-koenig@pengutronix.de>
+In-Reply-To: <20220520161652.rmhqlvwvfrvskg4w@moria.home.lan>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
@@ -50,36 +47,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index 11227f51404c..2512b68d8545 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -3866,9 +3866,11 @@ fec_probe(struct platform_device *pdev)
->  	fep->itr_clk_rate = clk_get_rate(fep->clk_ahb);
->  
->  	/* enet_out is optional, depends on board */
-> -	fep->clk_enet_out = devm_clk_get(&pdev->dev, "enet_out");
-> -	if (IS_ERR(fep->clk_enet_out))
-> -		fep->clk_enet_out = NULL;
-> +	fep->clk_enet_out = devm_clk_get_optional(&pdev->dev, "enet_out");
-> +	if (IS_ERR(fep->clk_enet_out)) {
-> +		ret = PTR_ERR(fep->clk_enet_out);
-> +		goto failed_clk;
-> +	}
->  
->  	fep->ptp_clk_on = false;
->  	mutex_init(&fep->ptp_clk_mutex);
+> I want to circulate this and get some comments and feedback, and if
+> no one raises any serious objections - I'd love to get collaborators
+> to work on this with me. Flame away!
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Hi Kent
 
-This is O.K, as far as it goes. But directly after this we have:
+I doubt you will get much interest from netdev. netdev already
+considers ioctl as legacy, and mostly uses netlink and a message
+passing structure, which is easy to extend in a backwards compatible
+manor.
 
-	/* clk_ref is optional, depends on board */
-	fep->clk_ref = devm_clk_get(&pdev->dev, "enet_clk_ref");
-	if (IS_ERR(fep->clk_ref))
-		fep->clk_ref = NULL;
-	fep->clk_ref_rate = clk_get_rate(fep->clk_ref);
+https://man7.org/linux/man-pages/man7/netlink.7.html
 
-It would be good to do the same to this clock as well.
-
-    Andrew
+	Andrew
