@@ -2,83 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0063252E9C5
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 12:19:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50A9252EA0E
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 12:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348095AbiETKTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 06:19:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35770 "EHLO
+        id S1348221AbiETKkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 06:40:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241099AbiETKTQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 06:19:16 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A489410657E
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 03:19:15 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id a23so9118238ljd.9
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 03:19:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=qC4Olf3TBGA3MotPYbQLIM34p+fB/nDlozQzZDrBQBk=;
-        b=TRs4rMcCAVRW9/+gyu2GMjvXZyCPcqFpOTYZ7FzW5y6x5LKb+wP8FpcAt0/ZMVUCih
-         ZDif5/ECPUi9qdeS5wmkjHR/hxJFlOmRzDvyttaeChD2/TElvKqvRxVUNACRbBWvFunr
-         OxKMY2BJapKXlCAozP+UhfirIr8tSfSSttaBF5fyhZRyyktW0bhAiepbW0x8SIH7ZDuU
-         tJp8EyFs8cupA5bFJdcRDF88ZqyT44XkPaqapkL7hkQ+SghTNeb4OxK7K4gWohd47fuA
-         4uELozEYuW7ssvi338yBHgQIiM/JY/2btQfzXBM1tLWOH8C0UjWxlZDV4eXFQH84smeH
-         d31w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qC4Olf3TBGA3MotPYbQLIM34p+fB/nDlozQzZDrBQBk=;
-        b=QUxuQ5AqTsN0+ZMFv2s2AQ6Iv+YCuYEQLF7lpyqlze570RmOY87cvdJBnrdnv6t1Qm
-         Pr2rvEzu4GOi+R7Ovlcg5pZEEKr2qjHwmHUIo1gSqPEjUIfeaekKRVC3mhQf/0O9EVBK
-         mE0BusdRuUh9jk/NtLj/V1j993pvBbqCDt1PovW8Iv85F9bUnLfjvWQKizraPzvMfASN
-         BTj2s44OjMGBOvfZkwKMjJXaAZ5IiWYIN6biKSlXyEHZhgPTz0zIfFTGUd77+U5ie4UG
-         k9kYiMmLqkkomcJ0yKIUZ96J8ZMIJwQQtiYGsrOOCTZj0nBnRrKxUNYg0Iv6A29pduLH
-         Q0wQ==
-X-Gm-Message-State: AOAM530Z8GkO66AzUaPDkqeoAXhL8DQhRFEcnfiRqNPyyfrmmge6CZg/
-        P6Apa2Gj+akR5TZNMfUaEvCllw==
-X-Google-Smtp-Source: ABdhPJz5R0gOM+LR5VrdWtX2EWAzFoI4W3cbw6McoMSSQnAw/WK6yf40qF0stxViEQS8Atvn2d+6/A==
-X-Received: by 2002:a2e:884b:0:b0:253:d431:45f0 with SMTP id z11-20020a2e884b000000b00253d43145f0mr4587867ljj.70.1653041954080;
-        Fri, 20 May 2022 03:19:14 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id b4-20020a056512024400b00477a6c86f17sm610621lfo.8.2022.05.20.03.19.11
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 03:19:13 -0700 (PDT)
-Message-ID: <56a6dc27-35ef-68a9-e990-7d989450ba89@linaro.org>
-Date:   Fri, 20 May 2022 12:19:11 +0200
+        with ESMTP id S239447AbiETKkO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 06:40:14 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D22A14D25;
+        Fri, 20 May 2022 03:40:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9348161D5C;
+        Fri, 20 May 2022 10:40:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D76DBC385AA;
+        Fri, 20 May 2022 10:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653043212;
+        bh=g6zNZqVbanCPTDs5cIvElaN3qts4ZfAe5SNVVWewXK4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=dg42xwN8jDWAMZnCUdafc3zcBW0p9yYWKnPHScJJVU139Q2lwrMnVqviZChl22jDT
+         YjGIPE6vqoPb090mlc1fYgYxv6wM4FSvBXjSMzk706TkHhzk/GIdLkWm7Z+stxP3x8
+         7Mdxx9/U/ZJhOw0l4hdSD5tT0H1bXCwATTxXxPANGEPHxocG9n9839xHvH5aC21urs
+         tFOEpwvmpzdKanG7FXnknNMPfDav+XO66GqY2SxHf7m6HxOXUKn7nN2j1Gxk/tCCIQ
+         /FZxDiMn3YKbzpnVrMVZYroNUYEASB5Lu7KQGAG0OYC36iJ38EsW9HzSKxSsiWDpQu
+         fNuOh4uGs+cvg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B8C94F03935;
+        Fri, 20 May 2022 10:40:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 4/5] dt-bindings: net: Add documentation for optional
- regulators
-Content-Language: en-US
-To:     LABBE Corentin <clabbe@baylibre.com>
-Cc:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        calvin.johnson@oss.nxp.com, davem@davemloft.net,
-        edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
-        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
-References: <20220518200939.689308-1-clabbe@baylibre.com>
- <20220518200939.689308-5-clabbe@baylibre.com>
- <95f3f0a4-17e6-ec5f-6f2f-23a5a4993a44@linaro.org>
- <YoYqmAB3P7fNOSVG@sirena.org.uk>
- <c74b0524-60c6-c3af-e35f-13521ba2b02e@linaro.org> <YoYw2lKbgCiDXP0A@lunn.ch>
- <YoZm9eabWy/FNKu1@sirena.org.uk>
- <0518eef1-75a6-fbfe-96d8-bb1fc4e5178a@linaro.org> <YodOO6PfsjelCa1x@Red>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YodOO6PfsjelCa1x@Red>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next 0/7] net: ipa: a mix of patches
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165304321275.19589.18261388904544139086.git-patchwork-notify@kernel.org>
+Date:   Fri, 20 May 2022 10:40:12 +0000
+References: <20220519151217.654890-1-elder@linaro.org>
+In-Reply-To: <20220519151217.654890-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
+        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
+        quic_subashab@quicinc.com, elder@kernel.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -87,14 +61,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/05/2022 10:15, LABBE Corentin wrote:
+Hello:
+
+This series was applied to netdev/net-next.git (master)
+by David S. Miller <davem@davemloft.net>:
+
+On Thu, 19 May 2022 10:12:10 -0500 you wrote:
+> This series includes a mix of things things that are generally
+> minor.  The first four are sort of unrelated fixes, and summarizing
+> them here wouldn't be that helpful.
 > 
-> I agree that supplies and supply-names are better.
-> But in another answer Rob is against it, so if I understand well, we are stuck to use individual xxx-supply.
-> I will try to create a new regulator_get_bulk_all() which scan all properties matching xxx-supply
+> The last three together make it so only the "configuration data" we
+> need after initialization is saved for later use.  Most such data is
+> used only during driver initialization.  But endpoint configuration
+> is needed later, so the last patch saves a copy of that.  Eventually
+> we'll want to support reconfiguring endpoints at runtime as well,
+> and this will facilitate that.
+> 
+> [...]
 
-Yep.
+Here is the summary with links:
+  - [net-next,1/7] net: ipa: drop an unneeded transaction reference
+    https://git.kernel.org/netdev/net-next/c/c15f950d1495
+  - [net-next,2/7] net: ipa: rename a GSI error code
+    https://git.kernel.org/netdev/net-next/c/c9d92cf28c0c
+  - [net-next,3/7] net: ipa: ignore endianness if there is no header
+    (no matching commit)
+  - [net-next,4/7] net: ipa: open-code ether_setup()
+    https://git.kernel.org/netdev/net-next/c/75944b040bbc
+  - [net-next,5/7] net: ipa: move endpoint configuration data definitions
+    https://git.kernel.org/netdev/net-next/c/f0488c540e8a
+  - [net-next,6/7] net: ipa: rename a few endpoint config data types
+    https://git.kernel.org/netdev/net-next/c/cf4e73a1667e
+  - [net-next,7/7] net: ipa: save a copy of endpoint default config
+    https://git.kernel.org/netdev/net-next/c/660e52d651ab
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
-Best regards,
-Krzysztof
