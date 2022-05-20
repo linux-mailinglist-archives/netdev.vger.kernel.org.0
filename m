@@ -2,89 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A77F252F558
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 23:53:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0066C52F56D
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:00:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353759AbiETVxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 17:53:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51042 "EHLO
+        id S232789AbiETWA3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 18:00:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236955AbiETVxx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 17:53:53 -0400
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C333B193212
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 14:53:52 -0700 (PDT)
-Received: by mail-yb1-xb32.google.com with SMTP id d137so16208683ybc.13
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 14:53:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u+vxzOC+e+K4YlTbhvwasA4pWfk68i0BGc1264DuI50=;
-        b=s9MDIDi3WtqND7yM9Rdjo2fcYZ4ODNGaOQk8NCmX5vYHsQ8YrjQbSh9zBAZHZ2F+pp
-         nUpnWK1+TBRcfn+ptLmcmXc9ELq25zU30xF537AY0iY90JMcgdxxG3jYCKX5JDLSb+PS
-         ElYCaftSwKPnQk1RH+6zeYZldDHTnzGrgOvv6M36JAqRqqPKXn5pqZ+GMUQtDdyug/VB
-         8nXtB0WpHEhor9Qq8XbOh/FWYN5QU/qXql1kRiygg0nW08AdDbVMR8ygDvkwVy2vjLTf
-         YgAjgfeZ86V/gpLjqBWkQdGxB6QlKh/qd6Qwi2lT82YFCMwyiVtCISVK6lLtUkfPg2vl
-         L44A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u+vxzOC+e+K4YlTbhvwasA4pWfk68i0BGc1264DuI50=;
-        b=IG10+T2rR3IBAjJht/vCPddU4ZQUjeBsfhqlUqoSvRt1cJiuR0GpeI6hAz8oirGfm/
-         ZV/YI95aQ8gOXogovRDCseMEVYLjcOzZj7sjRhKZMGWznWOJ/LWSYDXjHgHGmm531v2e
-         D54gNkEyUIjCb6txKeBNkd5dZiipUwOULY4uySZrtEvATwbAsE9Cgz379FWg8OwmexUg
-         gyzC09upCAwOZFaoHsIu9+ja0roERMkYNyUc1VfJT9W+Y90SHiQaCvTv8SaL9ReQe1HJ
-         1PpzEeAFvmiwnqTfsmaHMJPoB1UJZUqu4LoW8DjfYpd+ituM927YvHsKRFEx4ny6FKbd
-         Wb9w==
-X-Gm-Message-State: AOAM531c2tK3JgHORtaJzG/NBZG05QqdInV+i6rat2iwDakX2MpSW0fX
-        yzSSGsgQI7z0x4xgPsL5z5QERVk7+nJ68n4+sXCo4A==
-X-Google-Smtp-Source: ABdhPJz0oeLWlsoWR6ZLCr2hEL3m1WSrRN88nO60jLlMmteRPZeK1tA414up8t2Q84SE0o1SEZtoXlhgyd96rwiDxHw=
-X-Received: by 2002:a05:6902:13c4:b0:64d:5e80:142 with SMTP id
- y4-20020a05690213c400b0064d5e800142mr11134044ybu.55.1653083631765; Fri, 20
- May 2022 14:53:51 -0700 (PDT)
+        with ESMTP id S231713AbiETWA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:00:28 -0400
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC30018C059
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 15:00:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653084027; x=1684620027;
+  h=message-id:date:mime-version:subject:to:references:from:
+   cc:in-reply-to:content-transfer-encoding;
+  bh=B7fQyzDp3iLa1Qiz9wr2JduewOqs8PyLWCZGPv1Z9rI=;
+  b=j40UdKErf8NN6ssmj1uzNd7EITq+lZdhc6y7zwPpG3qY+SK2bcWSgT/c
+   lV+vM31mWKtIczTO34y9mTXV/8iziPny6UuSS8RdEspHHlc3e/Fuj/Vvz
+   rjyGIwX1WeJyUcGCAAOyGYyqbN/7pvPh0j+SH6hBbOiLGuud2OPTkJxoY
+   Wf7jWpT3TD4kxuKXxYYvh+TUE4lZMAJWJKNTuhrLhLATxzx09eYxflVEh
+   Ogy0VQGLo0AEhHjLRDqMHrhNrUpoU/+kdsw+AEZyDyNphBONKZvH15SRj
+   GsX/X+3Np1V3cLZUbKSuTsSotLHsK1dl58RAhoyRfKyQn79TP+4j1Gvyf
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="359156152"
+X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
+   d="scan'208";a="359156152"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 15:00:27 -0700
+X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
+   d="scan'208";a="576394865"
+Received: from vckummar-mobl.amr.corp.intel.com (HELO [10.209.85.227]) ([10.209.85.227])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 15:00:26 -0700
+Message-ID: <96352703-17b1-bc0b-2a54-e9651bf21b55@linux.intel.com>
+Date:   Fri, 20 May 2022 15:00:26 -0700
 MIME-Version: 1.0
-References: <20220518185522.2038683-1-kuba@kernel.org>
-In-Reply-To: <20220518185522.2038683-1-kuba@kernel.org>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 20 May 2022 14:53:40 -0700
-Message-ID: <CANn89iK918nE4vCS2WUC2qFoH8YkCPXThytgKszSi3Edr0S8jQ@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: avoid strange behavior with skb_defer_max
- == 1
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH net-next 1/1] net: wwan: t7xx: Add port for modem logging
+Content-Language: en-US
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>, Paolo Abeni <pabeni@redhat.com>,
-        David Miller <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220519182703.27056-1-moises.veleta@linux.intel.com>
+ <20220520103711.5f7f5b45@kernel.org>
+ <34c7de82-e680-1c61-3696-eb7929626b51@linux.intel.com>
+ <20220520104814.091709cd@kernel.org>
+ <09ce56a3-3624-13f9-6065-1367db5b8a6a@linux.intel.com>
+ <20220520111541.30c96965@kernel.org>
+ <dc07d0a9-793b-5b76-cf10-d8fad77c04ea@linux.intel.com>
+ <20220520144630.56841d21@kernel.org>
+From:   "moises.veleta" <moises.veleta@linux.intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
+        loic.poulain@linaro.org, m.chetan.kumar@intel.com,
+        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
+        haijun.liu@mediatek.com, andriy.shevchenko@linux.intel.com,
+        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
+        sreehari.kancharla@intel.com, dinesh.sharma@intel.com
+In-Reply-To: <20220520144630.56841d21@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 18, 2022 at 11:55 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> When user sets skb_defer_max to 1 the kick threshold is 0
-> (half of 1). If we increment queue length before the check
-> the kick will never happen, and the skb may get stranded.
-> This is likely harmless but can be avoided by moving the
-> increment after the check. This way skb_defer_max == 1
-> will always kick. Still a silly config to have, but
-> somehow that feels more correct.
->
-> While at it drop a comment which seems to be outdated
-> or confusing, and wrap the defer_count write with
-> a WRITE_ONCE() since it's read on the fast path
-> that avoids taking the lock.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
 
-SGTM thanks.
+On 5/20/22 14:46, Jakub Kicinski wrote:
+> On Fri, 20 May 2022 12:16:19 -0700 moises.veleta wrote:
+>> On 5/20/22 11:15, Jakub Kicinski wrote:
+>>> On Fri, 20 May 2022 11:01:31 -0700 moises.veleta wrote:
+>>>> On 5/20/22 10:48, Jakub Kicinski wrote:
+>>>>> On Fri, 20 May 2022 10:42:56 -0700 moises.veleta wrote:
+>>>>>> Can we use debugfs to send an "on" or "off" commands, wherein the driver
+>>>>>> then sends special command sequences to the the firmware triggering the
+>>>>>> modem logging on and off?
+>>>>> On/off for all logging or for particular types of messages?
+>>>>> If it's for all logging can't the act of opening the debugfs
+>>>>> file be used as on "on" signal and closing as "off"?
+>>>>>
+>>>>> Where do the logging messages go?
+>>>> It would be "on/off" for all logging.
+>>>> Yes, opening the debugfs file can be used for "on" and closing for "off"
+>>>> without needing to use copy_from_user.
+>>> Sounds good. Can we also divert the actual logs so that they can be
+>>> read out of that debugfs file? That'd feel most natural to me..
+>>>
+>>>> Logging messages would go to the relay interface file for consumption by
+>>>> a user application.
+>>> What's the relay interface? a special netdev? chardev? tty?
+>>>
+>> The relay interface is a 'relay channel' where a userspace applications
+>> can read from and retrieve data as it becomes available. The driver
+>> would relay modem logs to this created channel file.
+>>
+>> https://www.kernel.org/doc/html/latest/filesystems/relay.html
+> The API for this thing seems confusing, does it not give the kernel
+> side any signal that user space has attached / shown interest in the
+> data?
+>
+> If not a simple debugfs file which only accepts on/off or 0/1 SGTM.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+For modem logging, the driver is relaying the logs (a large amount 
+varying on modem traffic) to the relay interface file that will be 
+overwritten if not consumed. It does not care if the user application is 
+reading them or not. That is up to the user application to read and process.
+
+The IOSM driver in WWAN uses this relay interface & debugfs combination, 
+in a similar fashion, please see "iosm_ipc_trace.c" for their 
+implementation. Should have mentioned that earlier, pardon the terseness.
+
