@@ -2,60 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F412C52F0C0
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:33:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A34CE52F0C2
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:34:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351678AbiETQdx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 12:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57882 "EHLO
+        id S1351697AbiETQeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 12:34:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351685AbiETQdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:33:51 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 564E61796FA
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:33:48 -0700 (PDT)
+        with ESMTP id S1351679AbiETQd7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:33:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D06BC17DDDE
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:33:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653064427;
+        s=mimecast20190719; t=1653064437;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VF6ktk7dGOZrKXjAVeRJJ2W4CUc9s4i/ZO9KLyZ4mDY=;
-        b=GeV8J/U+6wAukYvadlXOPYM3LH7ayDgKcYrZS1u4Law3uvwOvnV8L9KaBkVhc5XmomL1F2
-        4YZ9BxaLn9V+cWBeiMC/lkyoeU47XusD/LXDQVV+1fYKJPRLFp3dPFYUJmmTuQKWCvPuQz
-        XHzmfhMDZvt0LoNgRu+G6wrj5yljQv0=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Xh8dSPuYVd16pGU1eOSrw4RK/14MRTLIpBGTzg2s4yA=;
+        b=C8hneLfVjPQsqMpazwWy0fFyi333INe70Bcd64z38WvFLGBGvpkpUAF5/KdXIVJUKjN7iU
+        xjfpuPJF89p6CZ8oHRsmCRkI8S4pH8gzx9ShGZrFECLI9RWGLhbEyqAWqPspyLD07fOzOJ
+        4XDHOwm0HUgly2LeZ0n3ALowyitwjjg=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-274-b5RPEo5fMzGqvw03SLOR3A-1; Fri, 20 May 2022 12:33:44 -0400
-X-MC-Unique: b5RPEo5fMzGqvw03SLOR3A-1
-Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
+ us-mta-277-fVkM-cp3MCaa2tfU-oRKuw-1; Fri, 20 May 2022 12:33:51 -0400
+X-MC-Unique: fVkM-cp3MCaa2tfU-oRKuw-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 96B71101AA44;
-        Fri, 20 May 2022 16:33:43 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 7CFF4101A52C;
+        Fri, 20 May 2022 16:33:50 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6AAC9492CA2;
-        Fri, 20 May 2022 16:33:41 +0000 (UTC)
-Subject: [PATCH net 0/6] rxrpc: Leak fixes
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 730AC1410DD5;
+        Fri, 20 May 2022 16:33:49 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net 1/6] rxrpc: Enable IPv6 checksums on transport socket
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
-Cc:     Jeffrey Altman <jaltman@auristor.com>,
-        linux-afs@lists.infradead.org,
+Cc:     Marc Dionne <marc.dionne@auristor.com>,
+        Xin Long <lucien.xin@gmail.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
         Vadim Fedorenko <vfedorenko@novek.ru>,
         "David S. Miller" <davem@davemloft.net>,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Xin Long <lucien.xin@gmail.com>, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Fri, 20 May 2022 17:33:41 +0100
-Message-ID: <165306442115.34086.1818959430525328753.stgit@warthog.procyon.org.uk>
+Date:   Fri, 20 May 2022 17:33:48 +0100
+Message-ID: <165306442878.34086.2437731947506679099.stgit@warthog.procyon.org.uk>
+In-Reply-To: <165306442115.34086.1818959430525328753.stgit@warthog.procyon.org.uk>
+References: <165306442115.34086.1818959430525328753.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -63,59 +70,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+AF_RXRPC doesn't currently enable IPv6 UDP Tx checksums on the transport
+socket it opens and the checksums in the packets it generates end up 0.
 
-Here are some fixes for AF_RXRPC:
+It probably should also enable IPv6 UDP Rx checksums and IPv4 UDP
+checksums.  The latter only seem to be applied if the socket family is
+AF_INET and don't seem to apply if it's AF_INET6.  IPv4 packets from an
+IPv6 socket seem to have checksums anyway.
 
- (1) Reenable IPv6 checksums on the UDP transport socket after the
-     conversion to the UDP tunnel API disabled it.
+What seems to have happened is that the inet_inv_convert_csum() call didn't
+get converted to the appropriate udp_port_cfg parameters - and
+udp_sock_create() disables checksums unless explicitly told not too.
 
- (2) Fix listen() allowing preallocation to overrun the prealloc buffer.
+Fix this by enabling the three udp_port_cfg checksum options.
 
- (3) Prevent resending the request if we've seen the reply starting to
-     arrive.
-
- (4) Fix accidental sharing of ACK state between transmission and
-     reception.
-
- (5) Ignore ACKs in which ack.previousPacket regresses.  This indicates the
-     highest DATA number so far seen, so should not be seen to go
-     backwards.
-
- (6) Fix the determination of when to generate an IDLE-type ACK,
-     simplifying it so that we generate one if we have more than two DATA
-     packets that aren't hard-acked (consumed) or soft-acked (in the rx
-     buffer, but could be discarded and re-requested).
-
-The patches are tagged here:
-
-	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
-	rxrpc-fixes-20220520
-
-and can also be found on the following branch:
-
-	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-fixes
-
-Tested-by: kafs-testing+fedora34_64checkkafs-build-495@auristor.com
-
-David
+Fixes: 1a9b86c9fd95 ("rxrpc: use udp tunnel APIs instead of open code in rxrpc_open_socket")
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Xin Long <lucien.xin@gmail.com>
+Reviewed-by: Marc Dionne <marc.dionne@auristor.com>
+cc: Vadim Fedorenko <vfedorenko@novek.ru>
+cc: David S. Miller <davem@davemloft.net>
+cc: linux-afs@lists.infradead.org
 ---
-David Howells (6):
-      rxrpc: Enable IPv6 checksums on transport socket
-      rxrpc: Fix listen() setting the bar too high for the prealloc rings
-      rxrpc: Don't try to resend the request if we're receiving the reply
-      rxrpc: Fix overlapping ACK accounting
-      rxrpc: Don't let ack.previousPacket regress
-      rxrpc: Fix decision on when to generate an IDLE ACK
 
+ net/rxrpc/local_object.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
- include/trace/events/rxrpc.h |  2 +-
- net/rxrpc/ar-internal.h      | 13 +++++++------
- net/rxrpc/call_event.c       |  3 ++-
- net/rxrpc/input.c            | 31 ++++++++++++++++++++-----------
- net/rxrpc/local_object.c     |  3 +++
- net/rxrpc/output.c           | 20 ++++++++++++--------
- net/rxrpc/recvmsg.c          |  8 +++-----
- net/rxrpc/sysctl.c           |  4 ++--
- 8 files changed, 50 insertions(+), 34 deletions(-)
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index a4111408ffd0..6a1611b0e303 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -117,6 +117,7 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
+ 	       local, srx->transport_type, srx->transport.family);
+ 
+ 	udp_conf.family = srx->transport.family;
++	udp_conf.use_udp_checksums = true;
+ 	if (udp_conf.family == AF_INET) {
+ 		udp_conf.local_ip = srx->transport.sin.sin_addr;
+ 		udp_conf.local_udp_port = srx->transport.sin.sin_port;
+@@ -124,6 +125,8 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
+ 	} else {
+ 		udp_conf.local_ip6 = srx->transport.sin6.sin6_addr;
+ 		udp_conf.local_udp_port = srx->transport.sin6.sin6_port;
++		udp_conf.use_udp6_tx_checksums = true;
++		udp_conf.use_udp6_rx_checksums = true;
+ #endif
+ 	}
+ 	ret = udp_sock_create(net, &udp_conf, &local->socket);
 
 
