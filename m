@@ -2,78 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B1CD552E6AA
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 09:57:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69D2852E6AF
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 09:57:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346698AbiETH53 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 03:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
+        id S1346705AbiETH5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 03:57:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235780AbiETH51 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:57:27 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7735B14AF70;
-        Fri, 20 May 2022 00:57:23 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24K7upUfB003021, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24K7upUfB003021
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 20 May 2022 15:56:51 +0800
-Received: from RTEXMBS01.realtek.com.tw (172.21.6.94) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 20 May 2022 15:56:51 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 20 May 2022 15:56:51 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
- RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
- 15.01.2308.021; Fri, 20 May 2022 15:56:50 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "neojou@gmail.com" <neojou@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 08/10] rtw88: Add rtw8821cu chipset support
-Thread-Topic: [PATCH 08/10] rtw88: Add rtw8821cu chipset support
-Thread-Index: AQHYapDbtAOsOzqJ2UWnXTIaannuw60m4wsA
-Date:   Fri, 20 May 2022 07:56:50 +0000
-Message-ID: <3adb9f734408967f49245fb45ea4ca5fb6d71593.camel@realtek.com>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
-         <20220518082318.3898514-9-s.hauer@pengutronix.de>
-In-Reply-To: <20220518082318.3898514-9-s.hauer@pengutronix.de>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1-2 
-x-originating-ip: [172.16.17.21]
-x-kse-serverinfo: RTEXMBS01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMjAg5LiK5Y2IIDA2OjAwOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2279B04E8F827446A61419D402B6BEE7@realtek.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S1346713AbiETH5d (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:57:33 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E4C14B676
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:57:30 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id p22so12937826lfo.10
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:57:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=LDOJGy883Whj2KPtZJS2ToqHv52wGZqpYAqQT+XUcgE=;
+        b=isUGeH7YJ9hSFqU+LajDXfZhlKfVb7CX45XzIRyUTr6nxi+RtAGNgqGbnlsEQhvwYj
+         DtZarkhGFwdzhP4U7a50sc89MgvxBhO8zNUt5YEZLuwaQ0rbV7tuhw9C3OHVafO+ZDPE
+         ibZL6Q24dpZhKvcW2XmyFRDEbJHcahhp/Xga8jIN54sHD4+Vk7luFlD2au3HrMJQz8Z2
+         7s5UjC357gY4A1NloCW8kQDC3228Q254aC/poWeNagQEYcyaCCOIcDzHwut3LSow/2Cc
+         AEp2zS8qrGbxkv0vEqfQriAoUknEGaCL+Xvtqsje2IVe+y2wtuZ4TmLz4ETDf4swtJ5j
+         o0xA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=LDOJGy883Whj2KPtZJS2ToqHv52wGZqpYAqQT+XUcgE=;
+        b=Qp6HGDK23SUOKv46KtEw4yjXuXPKXdYy14AuR60PFQO21xYexQmVaMZ/kKewfIhwjY
+         Jn9SKL7f7Aue7FHMRZnlwdEc7VXBvJfVRqKf5G1d1NnKgaQWF489OZEP8kR4nek251H2
+         /mLdHaokUXv6BGH5cWFK2q7w8ga1edBZ/qLS6CFVkMWCOrV7uTAJDx5ppf4HgSc2GRSo
+         UVbKC0AKVdhT/Jg218COG1t0pgxEy7IxBUsHvivx1h2UcK9pO/kgfm0NbMNySQQY7oJM
+         goaeXSMDDzvSlfR5v8790g9AUvf20NWj5ipqyT3VEJs5tmY8hN6gIjaF4MYEi/hLcmil
+         iFJw==
+X-Gm-Message-State: AOAM533xMfVbvheYZDoKUYNYR9JYR5Kji5XysEN2RHt8d0I1Q9ONOoK8
+        S7+128usRjuAl+yVutFuMv4Glg==
+X-Google-Smtp-Source: ABdhPJxwdWspWTlCev1Y+CnP3ttUl/Y734MOSgWU+vOZrJzIFaH1ePOp5e8j6NN5qbVKN4ceOqCbGQ==
+X-Received: by 2002:a05:6512:1319:b0:44a:c200:61e5 with SMTP id x25-20020a056512131900b0044ac20061e5mr6159427lfu.550.1653033448712;
+        Fri, 20 May 2022 00:57:28 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.gmail.com with ESMTPSA id j5-20020ac25505000000b004778c285166sm559287lfk.216.2022.05.20.00.57.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 00:57:28 -0700 (PDT)
+Message-ID: <0518eef1-75a6-fbfe-96d8-bb1fc4e5178a@linaro.org>
+Date:   Fri, 20 May 2022 09:57:26 +0200
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,T_SPF_HELO_TEMPERROR autolearn=ham
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [PATCH v2 4/5] dt-bindings: net: Add documentation for optional
+ regulators
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Cc:     Corentin Labbe <clabbe@baylibre.com>, calvin.johnson@oss.nxp.com,
+        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
+        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
+        wens@csie.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
+References: <20220518200939.689308-1-clabbe@baylibre.com>
+ <20220518200939.689308-5-clabbe@baylibre.com>
+ <95f3f0a4-17e6-ec5f-6f2f-23a5a4993a44@linaro.org>
+ <YoYqmAB3P7fNOSVG@sirena.org.uk>
+ <c74b0524-60c6-c3af-e35f-13521ba2b02e@linaro.org> <YoYw2lKbgCiDXP0A@lunn.ch>
+ <YoZm9eabWy/FNKu1@sirena.org.uk>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <YoZm9eabWy/FNKu1@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -81,75 +85,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIyLTA1LTE4IGF0IDEwOjIzICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
-IEFkZCBzdXBwb3J0IGZvciB0aGUgcnR3ODgyMWN1IGNoaXBzZXQgYmFzZWQgb24NCj4gaHR0cHM6
-Ly9naXRodWIuY29tL3VsbGkta3JvbGwvcnR3ODgtdXNiLmdpdA0KPiANCj4gU2lnbmVkLW9mZi1i
-eTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiAtLS0NCj4gIGRyaXZl
-cnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvS2NvbmZpZyAgICB8IDExICsrKw0KPiAgZHJp
-dmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9NYWtlZmlsZSAgIHwgIDMgKw0KPiAgZHJp
-dmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIxYy5jIHwgMjMgKysrKysrKw0K
-PiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIxYy5oIHwgMjEgKysr
-KysrDQo+ICAuLi4vbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMWN1LmMgICAgfCA2
-OSArKysrKysrKysrKysrKysrKysrDQo+ICAuLi4vbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgv
-cnR3ODgyMWN1LmggICAgfCAxNSArKysrDQo+ICA2IGZpbGVzIGNoYW5nZWQsIDE0MiBpbnNlcnRp
-b25zKCspDQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRl
-ay9ydHc4OC9ydHc4ODIxY3UuYw0KPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbmV0L3dp
-cmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMWN1LmgNCj4gDQoNClsuLi5dDQoNCj4gZGlmZiAt
-LWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMWN1LmMNCj4g
-Yi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjFjdS5jDQo+IG5ldyBm
-aWxlIG1vZGUgMTAwNjQ0DQo+IGluZGV4IDAwMDAwMDAwMDAwMDAuLmU2NzEwYzVlYmRmYzgNCj4g
-LS0tIC9kZXYvbnVsbA0KPiArKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4
-L3J0dzg4MjFjdS5jDQo+IEBAIC0wLDAgKzEsNjkgQEANCj4gKy8vIFNQRFgtTGljZW5zZS1JZGVu
-dGlmaWVyOiBHUEwtMi4wIE9SIEJTRC0zLUNsYXVzZQ0KPiArLyogQ29weXJpZ2h0KGMpIDIwMTgt
-MjAxOSAgUmVhbHRlayBDb3Jwb3JhdGlvbg0KPiArICovDQo+ICsNCj4gKyNpbmNsdWRlIDxsaW51
-eC9tb2R1bGUuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC91c2IuaD4NCj4gKyNpbmNsdWRlICJtYWlu
-LmgiDQo+ICsjaW5jbHVkZSAicnR3ODgyMWN1LmgiDQo+ICsjaW5jbHVkZSAidXNiLmgiDQo+ICsN
-Cj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgdXNiX2RldmljZV9pZCBydHdfODgyMWN1X2lkX3RhYmxl
-W10gPSB7DQo+ICsJeyBVU0JfREVWSUNFX0FORF9JTlRFUkZBQ0VfSU5GTyhSVFdfVVNCX1ZFTkRP
-Ul9JRF9SRUFMVEVLLA0KPiArCQkJCQkweGI4MmIsDQo+ICsJCQkJCTB4ZmYsIDB4ZmYsIDB4ZmYp
-LA0KPiArCSAgLmRyaXZlcl9pbmZvID0gKGtlcm5lbF91bG9uZ190KSYocnR3ODgyMWNfaHdfc3Bl
-YykgfSwgLyogODgyMUNVICovDQo+ICsJeyBVU0JfREVWSUNFX0FORF9JTlRFUkZBQ0VfSU5GTyhS
-VFdfVVNCX1ZFTkRPUl9JRF9SRUFMVEVLLA0KPiArCQkJCQkweGI4MjAsDQo+ICsJCQkJCTB4ZmYs
-IDB4ZmYsIDB4ZmYpLA0KPiArCSAuZHJpdmVyX2luZm8gPSAoa2VybmVsX3Vsb25nX3QpJihydHc4
-ODIxY19od19zcGVjKSB9LCAvKiA4ODIxQ1UgKi8NCj4gKwl7IFVTQl9ERVZJQ0VfQU5EX0lOVEVS
-RkFDRV9JTkZPKFJUV19VU0JfVkVORE9SX0lEX1JFQUxURUssDQo+ICsJCQkJCTB4QzgyMSwNCj4g
-KwkJCQkJMHhmZiwgMHhmZiwgMHhmZiksDQo+ICsJIC5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxv
-bmdfdCkmKHJ0dzg4MjFjX2h3X3NwZWMpIH0sIC8qIDg4MjFDVSAqLw0KPiArCXsgVVNCX0RFVklD
-RV9BTkRfSU5URVJGQUNFX0lORk8oUlRXX1VTQl9WRU5ET1JfSURfUkVBTFRFSywNCj4gKwkJCQkJ
-MHhDODIwLA0KPiArCQkJCQkweGZmLCAweGZmLCAweGZmKSwNCj4gKwkgLmRyaXZlcl9pbmZvID0g
-KGtlcm5lbF91bG9uZ190KSYocnR3ODgyMWNfaHdfc3BlYykgfSwgLyogODgyMUNVICovDQo+ICsJ
-eyBVU0JfREVWSUNFX0FORF9JTlRFUkZBQ0VfSU5GTyhSVFdfVVNCX1ZFTkRPUl9JRF9SRUFMVEVL
-LA0KPiArCQkJCQkweEM4MkEsDQo+ICsJCQkJCTB4ZmYsIDB4ZmYsIDB4ZmYpLA0KPiArCSAuZHJp
-dmVyX2luZm8gPSAoa2VybmVsX3Vsb25nX3QpJihydHc4ODIxY19od19zcGVjKSB9LCAvKiA4ODIx
-Q1UgKi8NCj4gKwl7IFVTQl9ERVZJQ0VfQU5EX0lOVEVSRkFDRV9JTkZPKFJUV19VU0JfVkVORE9S
-X0lEX1JFQUxURUssDQo+ICsJCQkJCTB4QzgyQiwNCj4gKwkJCQkJMHhmZiwgMHhmZiwgMHhmZiks
-DQo+ICsJICAuZHJpdmVyX2luZm8gPSAoa2VybmVsX3Vsb25nX3QpJihydHc4ODIxY19od19zcGVj
-KSB9LCAvKiA4ODIxQ1UgKi8NCj4gKwl7IFVTQl9ERVZJQ0VfQU5EX0lOVEVSRkFDRV9JTkZPKFJU
-V19VU0JfVkVORE9SX0lEX1JFQUxURUssDQo+ICsJCQkJCTB4QzgxMSwNCj4gKwkJCQkJMHhmZiwg
-MHhmZiwgMHhmZiksDQo+ICsJIC5kcml2ZXJfaW5mbyA9IChrZXJuZWxfdWxvbmdfdCkmKHJ0dzg4
-MjFjX2h3X3NwZWMpIH0sIC8qIDg4MTFDVSAqLw0KPiArCXsgVVNCX0RFVklDRV9BTkRfSU5URVJG
-QUNFX0lORk8oUlRXX1VTQl9WRU5ET1JfSURfUkVBTFRFSywNCj4gKwkJCQkJMHg4ODExLA0KPiAr
-CQkJCQkweGZmLCAweGZmLCAweGZmKSwNCj4gKwkuZHJpdmVyX2luZm8gPSAoa2VybmVsX3Vsb25n
-X3QpJihydHc4ODIxY19od19zcGVjKSB9LCAvKiA4ODExQ1UgKi8NCj4gKwkvKj09PSBDdXN0b21l
-ciBJRCA9PT0qLw0KPiArCXsgVVNCX0RFVklDRSgweDBiZGEsIDB4MjAwNiksDQoNClVTQl9ERVZJ
-Q0UoUlRXX1VTQl9WRU5ET1JfSURfUkVBTFRFSywgMHgyMDA2KSwNCg0KPiArCSAgLmRyaXZlcl9p
-bmZvID0gKGtlcm5lbF91bG9uZ190KSYocnR3ODgyMWNfaHdfc3BlYykgfSwgLyogVG90b2xpbmsg
-Ki8NCj4gKwl7IFVTQl9ERVZJQ0UoMHgwYmRhLCAweGM4MTEpLA0KDQpVU0JfREVWSUNFKFJUV19V
-U0JfVkVORE9SX0lEX1JFQUxURUssIDB4YzgxMSksDQoNCg0KPiArCSAgLmRyaXZlcl9pbmZvID0g
-KGtlcm5lbF91bG9uZ190KSYocnR3ODgyMWNfaHdfc3BlYykgfSwgLyogU2ltcGxlY29tIE5XNjAy
-ICovDQo+ICsJe30sDQo+ICt9Ow0KPiArTU9EVUxFX0RFVklDRV9UQUJMRSh1c2IsIHJ0d184ODIx
-Y3VfaWRfdGFibGUpOw0KPiArDQo+IA0KDQpbLi4uXQ0KDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJz
-L25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjFjdS5oDQo+IGIvZHJpdmVycy9uZXQv
-d2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIxY3UuaA0KPiBuZXcgZmlsZSBtb2RlIDEwMDY0
-NA0KPiBpbmRleCAwMDAwMDAwMDAwMDAwLi5iZGRiZDk2YWE0NWZhDQo+IC0tLSAvZGV2L251bGwN
-Cj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIxY3UuaA0K
-PiBAQCAtMCwwICsxLDE1IEBADQo+ICsvKiBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIu
-MCBPUiBCU0QtMy1DbGF1c2UgKi8NCj4gKy8qIENvcHlyaWdodChjKSAyMDE4LTIwMTkgIFJlYWx0
-ZWsgQ29ycG9yYXRpb24NCj4gKyAqLw0KPiArDQo+ICsjaWZuZGVmIF9fUlRXXzg4MjFDVV9IXw0K
-PiArI2RlZmluZSBfX1JUV184ODIxQ1VfSF8NCj4gKw0KPiArLyogVVNCIFZlbmRvci9Qcm9kdWN0
-IElEcyAqLw0KPiArI2RlZmluZSBSVFdfVVNCX1ZFTkRPUl9JRF9SRUFMVEVLCQkweDBCREENCg0K
-bW92ZSB0byB1c2IuaA0KDQo+ICsjZGVmaW5lIFJUV19VU0JfUFJPRFVDVF9JRF9SRUFMVEVLXzg4
-MTFDCTB4QzgxMQ0KPiArI2RlZmluZSBSVFdfVVNCX1BST0RVQ1RfSURfUkVBTFRFS184ODIxQwkw
-eEM4MUMNCg0KVGhlc2UgdHdvIGFyZSBub3QgdXNlZC4NCg0KPiArDQo+ICtleHRlcm4gc3RydWN0
-IHJ0d19jaGlwX2luZm8gcnR3ODgyMWNfaHdfc3BlYzsNCj4gKw0KPiArI2VuZGlmDQoNCg0KLS0N
-ClBpbmctS2UNCg0K
+On 19/05/2022 17:49, Mark Brown wrote:
+> On Thu, May 19, 2022 at 01:58:18PM +0200, Andrew Lunn wrote:
+>> On Thu, May 19, 2022 at 01:33:21PM +0200, Krzysztof Kozlowski wrote:
+>>> On 19/05/2022 13:31, Mark Brown wrote:
+>>>> On Thu, May 19, 2022 at 11:55:28AM +0200, Krzysztof Kozlowski wrote:
+>>>>> On 18/05/2022 22:09, Corentin Labbe wrote:
+> 
+>>>>>> +  regulators:
+>>>>>> +    description:
+>>>>>> +       List of phandle to regulators needed for the PHY
+> 
+>>>>> I don't understand that... is your PHY defining the regulators or using
+>>>>> supplies? If it needs a regulator (as a supply), you need to document
+>>>>> supplies, using existing bindings.
+> 
+>>>> They're trying to have a generic driver which works with any random PHY
+>>>> so the binding has no idea what supplies it might need.
+> 
+>>> OK, that makes sense, but then question is why not using existing
+>>> naming, so "supplies" and "supply-names"?
+> 
+>> I'm not saying it is not possible, but in general, the names are not
+>> interesting. All that is needed is that they are all on, or
+>> potentially all off to save power on shutdown. We don't care how many
+>> there are, or what order they are enabled.
+> 
+> I think Krzysztof is referring to the name of the property rather than
+> the contents of the -names property there.
+
+Yes, exactly. Existing pattern for single regulator supply is
+"xxx-supply", so why this uses a bit different pattern instead of
+something more consistent ("supplies" and "supply-names")?
+
+Best regards,
+Krzysztof
