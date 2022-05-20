@@ -2,105 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F7CA52F1CE
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:44:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2445652F1D9
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:46:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352325AbiETRnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 13:43:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
+        id S1352315AbiETRqg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 13:46:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352316AbiETRnw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:43:52 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C94712B032;
-        Fri, 20 May 2022 10:43:51 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB79BB82A71;
-        Fri, 20 May 2022 17:43:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CF91C385A9;
-        Fri, 20 May 2022 17:43:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653068628;
-        bh=rPqzA293aWRPWC7lXotl+If9E12i2+bUeADIQeb5a2g=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sUUH8mllbuZL6HHd3vA70wS9VSj62/sIUB0SI8G/+Xtv5tyLYhdMqLJ0UgypHAi0J
-         Na0HX1HL8ghPo2sQRbI0e4cAAIFr6xsvJJFFwQZ5Pdsmwbo8wdj2ktCzSdgJDfejk3
-         yAcv9JnQwuv6YjCrGgDfdAl4H4hsQzjJrczsdZ9Ung4m9eH/Ih//TMXcI7+W3K6gra
-         qaCcnsioUOM2vzfuG9E+A8oINvDsyQYQdXa+Y5HLlBtgelx+0NAqg9QqVUKDWK3Q1D
-         ERb8k/034Jh9cdVGKrLe4ip2u01/HAe2sbSYO6PUkW4aXDiox4+Tq8QLkEAqCTh39U
-         bSm1rsW8i2nag==
-Date:   Fri, 20 May 2022 10:43:47 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vitaly Bordug <vbordug@ru.mvista.com>,
-        Dan Malek <dan@embeddededge.com>,
-        Joakim Tjernlund <joakim.tjernlund@lumentis.se>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: fs_enet: sync rx dma buffer before reading
-Message-ID: <20220520104347.2b1b658a@kernel.org>
-In-Reply-To: <b11dcb32-5915-c1c8-9f0e-3cfc57b55792@csgroup.eu>
-References: <20220519192443.28681-1-mans@mansr.com>
-        <03f24864-9d4d-b4f9-354a-f3b271c0ae66@csgroup.eu>
-        <yw1xmtfc9yaj.fsf@mansr.com>
-        <b11dcb32-5915-c1c8-9f0e-3cfc57b55792@csgroup.eu>
+        with ESMTP id S1352316AbiETRqd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:46:33 -0400
+Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6552A18E36;
+        Fri, 20 May 2022 10:46:30 -0700 (PDT)
+Received: by mail-qk1-x72b.google.com with SMTP id bs17so7481362qkb.0;
+        Fri, 20 May 2022 10:46:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YS7mJc+0lx4oMjUF8V0bsQzPXX8feJl8CjlW/gU7/wk=;
+        b=LLmh+gPdgbm/ixkTWSXXg5pzeZeDOTlVk7PSDUMlFWExW16bIgCKipVrkktm/DRSSZ
+         QyIulw+vhAP2/7Qun6PGixcVPBBV4dfBKd7ghtz6irpZcTwpn0iVkb7IWOi1bWjUGE/8
+         CJruqeotJJRD1OuNsGh21eM1kQPJCYEQ3EytcGnUZ6xQJH5f7zxIPaqzXJcKj5irVusa
+         3dSesxIYFNYka33e3wNUruQnXuqalHsgeMqPKF4hHMOxpet1pQ9OiS/EzXe4Y5M7ys6t
+         NCWSaK9EA8HemjO+KFcbmk9XQukwp0V5fFs7xPW10vYlg8ej8hlzIvcBNMcnNmV5KyjG
+         mp7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=YS7mJc+0lx4oMjUF8V0bsQzPXX8feJl8CjlW/gU7/wk=;
+        b=c2OfhFkp65vcCvO2cLrtQxTO1XctKSWPHy8IGsEqcf5r2wLN+ZoiQ64NAgOLS5LSlI
+         16CIh1FmNHwZIHH/t1/q4p/NdpZJTxQUvRyR9MVMLeK9/XpvFaezjiezEJcsAo5OA3qx
+         qGSa6vUhbITRh3c8yJc3lDy9usyYPGn4RzH4wXeXRfIQm2dBuk+XLmLtuTJRO84TwoG+
+         Ge6YwOvyCmMtd8hKy4h+3eKvTaRRlM5GUYYgd9Ii/uoFuKAI0EBwLUEYvYYEPjac0Ca6
+         5mEtCOB9PR99g7pf1WDEaTiWdxWFZ9RbV5Orpe2wODK17Ebkkt1J8u652wjdvIPZOfiQ
+         auPA==
+X-Gm-Message-State: AOAM530CdPH7tlaWJUILFV88u6Itv0QuNfRrsytUjrRbLlHmYfwL/qd6
+        iytiMWVGiHnmlHohWDuKsq4CemCAJ4U=
+X-Google-Smtp-Source: ABdhPJwdMpa/QAeA3J9GO6sT08QIvS2XtajSo9Ouk7LgYTvGYxeFqUcRm+0lMTVIEeNg5z2PjAn2OQ==
+X-Received: by 2002:a05:620a:a55:b0:6a3:5fcd:3821 with SMTP id j21-20020a05620a0a5500b006a35fcd3821mr1007349qka.539.1653068789154;
+        Fri, 20 May 2022 10:46:29 -0700 (PDT)
+Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:2d11:2a88:f2b2:bee0])
+        by smtp.gmail.com with ESMTPSA id cn4-20020a05622a248400b002f91849bf20sm62747qtb.36.2022.05.20.10.46.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 10:46:28 -0700 (PDT)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, jiri@resnulli.us, toke@redhat.com,
+        bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>
+Subject: [RFC Patch v4 0/2] net_sched: introduce eBPF based Qdisc
+Date:   Fri, 20 May 2022 10:46:14 -0700
+Message-Id: <20220520174616.74684-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 May 2022 12:54:56 +0000 Christophe Leroy wrote:
-> Le 20/05/2022 =C3=A0 14:35, M=C3=A5ns Rullg=C3=A5rd a =C3=A9crit=C2=A0:
-> > Christophe Leroy <christophe.leroy@csgroup.eu> writes:
-> >> See original commit 070e1f01827c. It explicitely says that the cache
-> >> must be invalidate _AFTER_ the copy.
-> >>
-> >> The cache is initialy invalidated by dma_map_single(), so before the
-> >> copy the cache is already clean.
-> >>
-> >> After the copy, data is in the cache. In order to allow re-use of the
-> >> skb, it must be put back in the same condition as before, in extenso t=
-he
-> >> cache must be invalidated in order to be in the same situation as after
-> >> dma_map_single().
-> >>
-> >> So I think your change is wrong. =20
-> >=20
-> > OK, looking at it more closely, the change is at least unnecessary since
-> > there will be a cache invalidation between each use of the buffer either
-> > way.  Please disregard the patch.  Sorry for the noise.
-> >  =20
->=20
-> I also looked deeper.
->=20
-> Indeed it was implemented in kernel 4.9 or 4.8. At that time=20
-> dma_unmap_single() was a no-op, it was not doing any sync/invalidation=20
-> at all, invalidation was done only at mapping, so when we were reusing=20
-> the skb it was necessary to clean the cache _AFTER_ the copy as if it=20
-> was a new mapping.
->=20
-> Today a sync is done at both map and unmap, so it doesn't really matter=20
-> whether we do the invalidation before or after the copy when we re-use=20
-> the skb.
+From: Cong Wang <cong.wang@bytedance.com>
 
-Hm, I think the patch is necessary, sorry if you're also saying that
-and I'm misinterpreting.=20
+This *incomplete* patch introduces a programmable Qdisc with eBPF. 
 
-Without the dma_sync_single_for_cpu() if swiotlb is used the data
-will not be copied back into the original buffer if there is no sync.
+There are a few use cases:
+
+1. Allow customizing Qdisc's in an easier way. So that people don't
+   have to write a complete Qdisc kernel module just to experiment
+   some new queuing theory.
+
+2. Solve EDT's problem. EDT calcuates the "tokens" in clsact which
+   is before enqueue, it is impossible to adjust those "tokens" after
+   packets get dropped in enqueue. With eBPF Qdisc, it is easy to
+   be solved with a shared map between clsact and sch_bpf.
+
+3. Potentially pave a way for ingress to queue packets, although
+   current implementation is still only for egress.
+
+4. Potentially pave a way for handling TCP protocol in TC, as
+   rbtree itself is already used by TCP to handle TCP retransmission.
+
+The goal is to make this Qdisc as programmable as possible,
+that is, to replace as many existing Qdisc's as we can, no matter
+in tree or out of tree. This is why I give up on PIFO which has
+serious limitations on the programmablity.
+
+Here is a summary of design decisions I made:
+
+1. Avoid eBPF struct_ops, as it would be really hard to program
+   a Qdisc with this approach, literally all the struct Qdisc_ops
+   and struct Qdisc_class_ops are needed to implement. This is almost
+   as hard as programming a Qdisc kernel module.
+
+2. Introduce skb map, which will allow other eBPF programs to store skb's
+   too.
+
+   a) As eBPF maps are not directly visible to the kernel, we have to
+   dump the stats via eBPF map API's instead of netlink.
+
+   b) The user-space is not allowed to read the entire packets, only __sk_buff
+   itself is readable, because we don't have such a use case yet and it would
+   require a different API to read the data, as map values have fixed length.
+
+   c) Two eBPF helpers are introduced for skb map operations:
+   bpf_skb_map_push() and bpf_skb_map_pop(). Normal map update is
+   not allowed.
+
+   d) Multi-queue support should be done via map-in-map. This is TBD.
+
+   e) Use the netdevice notifier to reset the packets inside skb map upon
+   NETDEV_DOWN event.
+
+3. Integrate with existing TC infra. For example, if the user doesn't want
+   to implement her own filters (e.g. a flow dissector), she should be able
+   to re-use the existing TC filters. Another helper bpf_skb_classify() is
+   introduced for this purpose.
+
+Any high-level feedback is welcome. Please kindly do not review any coding
+details until RFC tag is removed.
+
+TODO:
+1. actually test it
+2. write a document for this Qdisc
+3. add test cases and sample code
+
+Cc: Toke Høiland-Jørgensen <toke@redhat.com>
+Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+---
+v4: get rid of PIFO, use rbtree directly
+
+v3: move priority queue from sch_bpf to skb map
+    introduce skb map and its helpers
+    introduce bpf_skb_classify()
+    use netdevice notifier to reset skb's
+    Rebase on latest bpf-next
+
+v2: Rebase on latest net-next
+    Make the code more complete (but still incomplete)
+
+Cong Wang (2):
+  bpf: introduce skb map
+  net_sched: introduce eBPF based Qdisc
+
+ include/linux/bpf_types.h      |   2 +
+ include/linux/skbuff.h         |   4 +-
+ include/uapi/linux/bpf.h       |  15 +
+ include/uapi/linux/pkt_sched.h |  17 ++
+ kernel/bpf/Makefile            |   2 +-
+ kernel/bpf/skb_map.c           | 337 +++++++++++++++++++++
+ net/sched/Kconfig              |  15 +
+ net/sched/Makefile             |   1 +
+ net/sched/sch_bpf.c            | 520 +++++++++++++++++++++++++++++++++
+ 9 files changed, 911 insertions(+), 2 deletions(-)
+ create mode 100644 kernel/bpf/skb_map.c
+ create mode 100644 net/sched/sch_bpf.c
+
+-- 
+2.34.1
+
