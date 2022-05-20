@@ -2,88 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CF66A52E6DC
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 10:01:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5DAF052E6E5
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 10:04:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346789AbiETIBu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 20 May 2022 04:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
+        id S238488AbiETIEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 04:04:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346790AbiETIBs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 04:01:48 -0400
-Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972DC37A12;
-        Fri, 20 May 2022 01:01:47 -0700 (PDT)
-Received: by mail-qt1-f178.google.com with SMTP id b9so224922qtx.11;
-        Fri, 20 May 2022 01:01:47 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=H1iVOpRla5rs6rYvY27pFyr760HB96cTo8Ladb3Lo6o=;
-        b=lBHH6y7xt5cg2Cl1+lNnZHtczZi0hkIEMCWn8a8E/7YotQCqL++AP8Y8px5K654cTK
-         QDYIaD9ISI6QOLNcRDFSBVdG1QDF1QeshhWLaV3kupIxKvzRMDBf/sZNM4ctO1w1T5Xc
-         5x9PYZfOhvDsaN67cMUsXfcFlne3Q6JOFXOxMvFb1/oXAbu4MBnzUQFbLUnrPlgvj3pr
-         rAWmYZBu5o/Tx9WBBcYY7uukrph7O9PIWzO1YAKbnwrFbC2cRzltFiLCc6wgrFSx/cs9
-         cMi7JaWvMUqgPaipMrcouwcwwFSz9XnVfVlpIrwoHz26C1FUlae8AFxJ3XvhrnkNUhrr
-         BoWQ==
-X-Gm-Message-State: AOAM533R3xdVpGNwZdVRc58DBxRIPrHhkA0NAQ1RmdbQqn7WG/VD7Ri2
-        CDPCjMqfTal7FujeemX7FEQdJJSaFMhqzw==
-X-Google-Smtp-Source: ABdhPJy9rlq6FYckE6dvWhZXO5Xifn+8i7hpHnmg+AMuwMrCVUiVYubqnyrVW+beXfgSifPp3eGymg==
-X-Received: by 2002:ac8:5c56:0:b0:2f3:bdd1:4f1e with SMTP id j22-20020ac85c56000000b002f3bdd14f1emr6801141qtj.545.1653033706208;
-        Fri, 20 May 2022 01:01:46 -0700 (PDT)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id f9-20020a05622a104900b002f39b99f69fsm3200042qte.57.2022.05.20.01.01.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 01:01:45 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2ec42eae76bso79086497b3.10;
-        Fri, 20 May 2022 01:01:45 -0700 (PDT)
-X-Received: by 2002:a81:9b0c:0:b0:2f4:c522:7d3c with SMTP id
- s12-20020a819b0c000000b002f4c5227d3cmr8843852ywg.316.1653033705399; Fri, 20
- May 2022 01:01:45 -0700 (PDT)
+        with ESMTP id S229564AbiETIEH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 04:04:07 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9F8B149D8E;
+        Fri, 20 May 2022 01:04:05 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24K83V7e8005202, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24K83V7e8005202
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 20 May 2022 16:03:31 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 20 May 2022 16:03:30 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 20 May 2022 16:03:30 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Fri, 20 May 2022 16:03:30 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 10/10] rtw88: Add rtw8822cu chipset support
+Thread-Topic: [PATCH 10/10] rtw88: Add rtw8822cu chipset support
+Thread-Index: AQHYapDZWf6gD+YASkKjG/mcB1uml60m5OcA
+Date:   Fri, 20 May 2022 08:03:30 +0000
+Message-ID: <b19fcc328a8e436d27579bbf9e217a2be71b57b5.camel@realtek.com>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+         <20220518082318.3898514-11-s.hauer@pengutronix.de>
+In-Reply-To: <20220518082318.3898514-11-s.hauer@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [172.16.17.21]
+x-kse-serverinfo: RTEXMBS04.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMjAg5LiK5Y2IIDA2OjM0OjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5A7F4BDA5022A641A7589E45466CD6E0@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220519153107.696864-1-clement.leger@bootlin.com>
- <20220519153107.696864-7-clement.leger@bootlin.com> <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
- <20220520095730.512bbb8d@fixe.home>
-In-Reply-To: <20220520095730.512bbb8d@fixe.home>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 20 May 2022 10:01:32 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdWOMYE7b=auNeVAMDgArso+8vUzkxAwnFxFYtKPxOnjxw@mail.gmail.com>
-Message-ID: <CAMuHMdWOMYE7b=auNeVAMDgArso+8vUzkxAwnFxFYtKPxOnjxw@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 06/13] dt-bindings: net: dsa: add bindings for
- Renesas RZ/N1 Advanced 5 port switch
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,37 +81,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Clément,
-
-On Fri, May 20, 2022 at 9:58 AM Clément Léger <clement.leger@bootlin.com> wrote:
-> Le Fri, 20 May 2022 09:13:23 +0200,
-> Geert Uytterhoeven <geert@linux-m68k.org> a écrit :
-> > On Thu, May 19, 2022 at 5:32 PM Clément Léger <clement.leger@bootlin.com> wrote:
-> > > Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
-> > > present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
-> > > This company does not exists anymore and has been bought by Synopsys.
-> > > Since this IP can't be find anymore in the Synospsy portfolio, lets use
-> > > Renesas as the vendor compatible for this IP.
-> > >
-> > > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-> > > --- /dev/null
-> > > +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-
-> > Missing "power-domains" property.
->
-> I do not use pm_runtime* in the switch driver. I should probably do that
-> right ?
-
-For now you don't have to.  But I think it is a good idea, and it helps if the
-IP block is ever reused in an SoC with real power areas.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+T24gV2VkLCAyMDIyLTA1LTE4IGF0IDEwOjIzICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
+IEFkZCBzdXBwb3J0IGZvciB0aGUgcnR3ODgyMmN1IGNoaXBzZXQgYmFzZWQgb24NCj4gaHR0cHM6
+Ly9naXRodWIuY29tL3VsbGkta3JvbGwvcnR3ODgtdXNiLmdpdA0KPiANCj4gU2lnbmVkLW9mZi1i
+eTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiAtLS0NCj4gIGRyaXZl
+cnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvS2NvbmZpZyAgICB8IDExICsrKysrDQo+ICBk
+cml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L01ha2VmaWxlICAgfCAgMyArKw0KPiAg
+ZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYy5jIHwgMjQgKysrKysr
+KysrKysNCj4gIC4uLi9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyY3UuYyAgICB8
+IDQwICsrKysrKysrKysrKysrKysrKysNCj4gIC4uLi9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4
+OC9ydHc4ODIyY3UuaCAgICB8IDE1ICsrKysrKysNCj4gIDUgZmlsZXMgY2hhbmdlZCwgOTMgaW5z
+ZXJ0aW9ucygrKQ0KPiAgY3JlYXRlIG1vZGUgMTAwNjQ0IGRyaXZlcnMvbmV0L3dpcmVsZXNzL3Jl
+YWx0ZWsvcnR3ODgvcnR3ODgyMmN1LmMNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL25l
+dC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJjdS5oDQo+IA0KPiANCg0KWy4uLl0NCg0K
+PiArTU9EVUxFX0FVVEhPUigiUmVhbHRlayBDb3Jwb3JhdGlvbiIpOw0KDQpPdXQgb2YgY3VyaW9z
+aXR5LCB0aGVyZSBhcmUgbWFueSBhdXRob3JzIGluIHlvdXIgcGF0Y2hzZXQuDQpEbyB5b3UgY29s
+bGVjdCB0aGVzZSBkcml2ZXIgZnJvbSB2YXJpb3VzIHBsYWNlcz8NCg0KcnR3ODcyM2R1LmM6TU9E
+VUxFX0FVVEhPUigiSGFucyBVbGxpIEtyb2xsIDxsaW51eEB1bGxpLWtyb2xsLmRlPiIpOw0KcnR3
+ODgyMWN1LmM6TU9EVUxFX0FVVEhPUigiSGFucyBVbGxpIEtyb2xsIDxsaW51eEB1bGxpLWtyb2xs
+LmRlPiIpOw0KcnR3ODgyMmJ1LmM6TU9EVUxFX0FVVEhPUigiUmVhbHRlayBDb3Jwb3JhdGlvbiIp
+Ow0KcnR3ODgyMmN1LmM6TU9EVUxFX0FVVEhPUigiUmVhbHRlayBDb3Jwb3JhdGlvbiIpOw0KdXNi
+LmM6TU9EVUxFX0FVVEhPUigiUmVhbHRlayBDb3Jwb3JhdGlvbiIpOw0KDQoNCj4gK01PRFVMRV9E
+RVNDUklQVElPTigiUmVhbHRlayA4MDIuMTFhYyB3aXJlbGVzcyA4ODIyY3UgZHJpdmVyIik7DQo+
+ICtNT0RVTEVfTElDRU5TRSgiRHVhbCBCU0QvR1BMIik7DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJz
+L25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJjdS5oDQo+IGIvZHJpdmVycy9uZXQv
+d2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyY3UuaA0KPiBuZXcgZmlsZSBtb2RlIDEwMDY0
+NA0KPiBpbmRleCAwMDAwMDAwMDAwMDAwLi4xNmFmZTIyYTgyMTZjDQo+IC0tLSAvZGV2L251bGwN
+Cj4gKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyY3UuaA0K
+PiBAQCAtMCwwICsxLDE1IEBADQo+ICsvKiBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIu
+MCBPUiBCU0QtMy1DbGF1c2UgKi8NCj4gKy8qIENvcHlyaWdodChjKSAyMDE4LTIwMTkgIFJlYWx0
+ZWsgQ29ycG9yYXRpb24NCj4gKyAqLw0KPiArDQo+ICsjaWZuZGVmIF9fUlRXXzg4MjJDVV9IXw0K
+PiArI2RlZmluZSBfX1JUV184ODIyQ1VfSF8NCj4gKw0KPiArLyogVVNCIFZlbmRvci9Qcm9kdWN0
+IElEcyAqLw0KPiArI2RlZmluZSBSVFdfVVNCX1ZFTkRPUl9JRF9SRUFMVEVLCQkweDBCREENCg0K
+TGlrZSBvdGhlcnMsIG1vdmUgdGhpcyB0byB1c2IuaA0KDQo+ICsjZGVmaW5lIFJUV19VU0JfUFJP
+RFVDVF9JRF9SRUFMVEVLXzg4MTJDCTB4QzgxMg0KPiArI2RlZmluZSBSVFdfVVNCX1BST0RVQ1Rf
+SURfUkVBTFRFS184ODIyQwkweEM4MkMNCj4gKw0KPiArZXh0ZXJuIHN0cnVjdCBydHdfY2hpcF9p
+bmZvIHJ0dzg4MjJjX2h3X3NwZWM7DQo+ICsNCj4gKyNlbmRpZg0KDQoNCi0tDQpQaW5nLUtlDQoN
+Cg0K
