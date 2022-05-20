@@ -2,158 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C1D052E354
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 05:46:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D4952E35E
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 05:50:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345188AbiETDqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 23:46:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
+        id S1345225AbiETDtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 23:49:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240860AbiETDqw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 23:46:52 -0400
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB84A30542;
-        Thu, 19 May 2022 20:46:49 -0700 (PDT)
-Received: by mail-pg1-x52d.google.com with SMTP id x12so6695529pgj.7;
-        Thu, 19 May 2022 20:46:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/VikhDlDIJyIH73NRxQkB3ZE1WQu0G4Ns/0LJwqLnks=;
-        b=mZEYcXVLOBS1Ve29MU+uG2hu32buxfY0bsbb8XSiCFttMoX5hRMSUN+zChGwJkKG8v
-         W5h6OJCR+h49kSaPilh0L5wTK7Lh8oP6MIdudzZMWeXj5/i1kaaT6tlg2mVQHaOD6IfB
-         W44WfRnmmgUhk7TNQ+xNPjxlWCK0Pkmu6US3Pxg74jc5UzdVNbNHB9HtUhSeXJqLm/1V
-         viddMSamrI9MnAa4tuW7RJqGsJWriqSbiq2rS+AONczyMSot8p3uCpPrfALXfYVPdI4c
-         Ks1QOgKEnsZyBCzNqMEkTac3JSziGE0qU8hPYrbDoiNU3gy/efRQay/AzskhyrPOKry3
-         C90A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/VikhDlDIJyIH73NRxQkB3ZE1WQu0G4Ns/0LJwqLnks=;
-        b=qbpE6SmKn6VehAPG0/S6hYej7CEII8knVPiSAUX9WfWAMTiR31qQiNglL1q452inF4
-         WGkEyGl0IMtmoJCaCc/dTkKYqyxwEgMnocuMjYiKuAa82TdhpIEF+/QJii4DKfQMoT3I
-         XQjlI/9JMH2lMZ/un29t2ePQR27nrTcm2f949pOn4Q/yQR0K3Sm/Yf3O79FqhwpXhltL
-         ENCoyihIaFnhFrcJaiLeMwoovJzr2Sf+2fjK0pdL97CxbHwl2REaDcAdHMCzwO2hm442
-         Nm+Ssb4Pkj4zRHy2fZqIoJPvLLYe3JCgKAC1JROnjZr27a7jAop8mzFx8d/cnnOg2888
-         Pa3g==
-X-Gm-Message-State: AOAM532i10VfESj7Ps/oYLFIodvImXaMMk+GmmB98Z/9d8JCCMvoKKmu
-        AhJTpk6gihdNKIVmyxtcMDGwcybjJc8m1DMjIw==
-X-Google-Smtp-Source: ABdhPJzrQ6ntAU/WFr+YDc3l0WoI1X1KLri6KUai1jfgGpDhODlE7mGaZ7jWf6iVZaGLz1316hhvwsUeoN2TmNgStx0=
-X-Received: by 2002:a63:d3:0:b0:3f6:139:d62 with SMTP id 202-20020a6300d3000000b003f601390d62mr6646266pga.113.1653018409307;
- Thu, 19 May 2022 20:46:49 -0700 (PDT)
+        with ESMTP id S239371AbiETDtv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 23:49:51 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F3EC5A081;
+        Thu, 19 May 2022 20:49:50 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24K3n7v95032211, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24K3n7v95032211
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 20 May 2022 11:49:07 +0800
+Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 20 May 2022 11:49:07 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Fri, 20 May 2022 11:49:06 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Fri, 20 May 2022 11:49:06 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 02/10] rtw88: Drop rf_lock
+Thread-Topic: [PATCH 02/10] rtw88: Drop rf_lock
+Thread-Index: AQHYapDlgq6QOJi2/ECBVrobkErMtK0mndSA
+Date:   Fri, 20 May 2022 03:49:06 +0000
+Message-ID: <af80039404cb3eb9dd036ab5734ddea95d31cf49.camel@realtek.com>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+         <20220518082318.3898514-3-s.hauer@pengutronix.de>
+In-Reply-To: <20220518082318.3898514-3-s.hauer@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [172.16.17.21]
+x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMTkg5LiL5Y2IIDEwOjI2OjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <9FF09FC40C091947BB12E5E2F37A7C6C@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20220409062449.3752252-1-zheyuma97@gmail.com> <CA++WF2Np7Bk_qT68Uc3mrC38mN5p3fm9eVT7VA8NoX6=es2r2w@mail.gmail.com>
- <CAMhUBjkWcg4+YYynsd90jX1A+zp95tUUcLgYrTPAqSmbxM7TJA@mail.gmail.com> <CA++WF2MFwtKs8-uy+e_77P0ySsN8y6W_8+Z8AdxBKsutcYK-ig@mail.gmail.com>
-In-Reply-To: <CA++WF2MFwtKs8-uy+e_77P0ySsN8y6W_8+Z8AdxBKsutcYK-ig@mail.gmail.com>
-From:   Zheyu Ma <zheyuma97@gmail.com>
-Date:   Fri, 20 May 2022 11:46:38 +0800
-Message-ID: <CAMhUBjmbfYCiNvgVkC7x0QQLCxsttEX9CpHOK=N+Gt4YxUCu2Q@mail.gmail.com>
-Subject: Re: [PATCH] wireless: ipw2x00: Refine the error handling of ipw2100_pci_init_one()
-To:     Stanislav Yakovlev <stas.yakovlev@gmail.com>
-Cc:     kvalo@kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
-        wireless <linux-wireless@vger.kernel.org>,
-        netdev@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Apr 23, 2022 at 3:25 AM Stanislav Yakovlev
-<stas.yakovlev@gmail.com> wrote:
->
-> Hi Zheyu,
->
-> On 18/04/2022, Zheyu Ma <zheyuma97@gmail.com> wrote:
-> > On Thu, Apr 14, 2022 at 2:40 AM Stanislav Yakovlev
-> > <stas.yakovlev@gmail.com> wrote:
-> >>
-> >> On Sat, 9 Apr 2022 at 02:25, Zheyu Ma <zheyuma97@gmail.com> wrote:
-> >> >
-> >> > The driver should release resources in reverse order, i.e., the
-> >> > resources requested first should be released last, and the driver
-> >> > should adjust the order of error handling code by this rule.
-> >> >
-> >> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> >> > ---
-> >> >  drivers/net/wireless/intel/ipw2x00/ipw2100.c | 34 +++++++++-----------
-> >> >  1 file changed, 16 insertions(+), 18 deletions(-)
-> >> >
-> >> [Skipped]
-> >>
-> >> > @@ -6306,9 +6303,13 @@ static int ipw2100_pci_init_one(struct pci_dev
-> >> > *pci_dev,
-> >> >  out:
-> >> >         return err;
-> >> >
-> >> > -      fail_unlock:
-> >> > +fail_unlock:
-> >> >         mutex_unlock(&priv->action_mutex);
-> >> > -      fail:
-> >> > +fail:
-> >> > +       pci_release_regions(pci_dev);
-> >> > +fail_disable:
-> >> > +       pci_disable_device(pci_dev);
-> >> We can't move these functions before the following block.
-> >>
-> >> > +fail_dev:
-> >> >         if (dev) {
-> >> >                 if (registered >= 2)
-> >> >                         unregister_netdev(dev);
-> >> This block continues with a function call to ipw2100_hw_stop_adapter
-> >> which assumes that device is still accessible via pci bus.
-> >
-> > Thanks for your reminder, but the existing error handling does need to
-> > be revised, I got the following warning when the probing fails at
-> > pci_resource_flags():
-> >
-> > [   20.712160] WARNING: CPU: 1 PID: 462 at lib/iomap.c:44
-> > pci_iounmap+0x40/0x50
-> > [   20.716583] RIP: 0010:pci_iounmap+0x40/0x50
-> > [   20.726342]  <TASK>
-> > [   20.726550]  ipw2100_pci_init_one+0x101/0x1ee0 [ipw2100]
-> >
-> > Since I am not familiar with the ipw2100, could someone give me some
-> > advice to fix this.
->
-> Could you please rebuild the kernel with IPW2100_DEBUG config option
-> enabled, rerun the test and post your results here? Also, please post
-> the output of "lspci -v" here.
-
-Sorry for the late response.
-I have rebuilt the kernel with IPW2100_DEBUG, and got the following result:
-
-[   29.469624] libipw: 802.11 data/management/control stack, git-1.1.13
-[   29.470034] libipw: Copyright (C) 2004-2005 Intel Corporation
-<jketreno@linux.intel.com>
-[   29.477455] ipw2100: Intel(R) PRO/Wireless 2100 Network Driver, git-1.2.2
-[   29.477833] ipw2100: Copyright(c) 2003-2006 Intel Corporation
-[   29.478197] ipw2100Error calling ioremap.
-[   29.478398] ------------[ cut here ]------------
-[   29.478630] Bad IO access at port 0x0 ()
-[   29.478834] WARNING: CPU: 0 PID: 304 at lib/iomap.c:44 pci_iounmap+0x40/0x50
-[   29.481116] RIP: 0010:pci_iounmap+0x40/0x50
-[   29.485282] Call Trace:
-[   29.485407]  <TASK>
-[   29.485514]  ipw2100_pci_init_one+0x192/0x20c0 [ipw2100]
-[   29.487496]  local_pci_probe+0x13f/0x200
-
-Actually, I made a special virtual device to test this driver, not
-real hardware, so the "lspci" results are irrelevant here.
-I injected a software fault in the pci_iomap() function to force the
-driver to fail here, and then the driver goto "fail" tag, and under
-the "fail" tag the pci_iounmap() is called, resulting in a crash.
-In fact such error handling is incorrect and we should not release
-resources that have not been requested yet.
-
-Thanks,
-Zheyu Ma
+T24gV2VkLCAyMDIyLTA1LTE4IGF0IDEwOjIzICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
+IFRoZSBydHdkZXYtPnJmX2xvY2sgc3BpbmxvY2sgcHJvdGVjdHMgdGhlIHJmIHJlZ2lzdGVyIGFj
+Y2Vzc2VzIGluDQo+IHJ0d19yZWFkX3JmKCkgYW5kIHJ0d193cml0ZV9yZigpLiBNb3N0IGNhbGxl
+cnMgb2YgdGhlc2UgZnVuY3Rpb25zIGhvbGQNCj4gcnR3ZGV2LT5tdXRleCBhbHJlYWR5IHdpdGgg
+dGhlIGV4Y2VwdGlvbiBvZiB0aGUgY2FsbHNpdGVzIGluIHRoZSBkZWJ1Z2ZzDQo+IGNvZGUuIFRo
+ZSBkZWJ1Z2ZzIGNvZGUgZG9lc24ndCBqdXN0aWZ5IGFuIGV4dHJhIGxvY2ssIHNvIGFjcXVpcmUg
+dGhlIG11dGV4DQo+IHRoZXJlIGFzIHdlbGwgYmVmb3JlIGNhbGxpbmcgcmYgcmVnaXN0ZXIgYWNj
+ZXNzb3JzIGFuZCBkcm9wIHRoZSBub3cNCj4gdW5uZWNlc3Nhcnkgc3BpbmxvY2suDQo+IA0KPiBT
+aWduZWQtb2ZmLWJ5OiBTYXNjaGEgSGF1ZXIgPHMuaGF1ZXJAcGVuZ3V0cm9uaXguZGU+DQo+IC0t
+LQ0KPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9kZWJ1Zy5jIHwgMTEgKysr
+KysrKysrKysNCj4gIGRyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvaGNpLmggICB8
+ICA5ICsrKy0tLS0tLQ0KPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9tYWlu
+LmMgIHwgIDEgLQ0KPiAgZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9tYWluLmgg
+IHwgIDMgLS0tDQo+ICA0IGZpbGVzIGNoYW5nZWQsIDE0IGluc2VydGlvbnMoKyksIDEwIGRlbGV0
+aW9ucygtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsv
+cnR3ODgvZGVidWcuYw0KPiBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvZGVi
+dWcuYw0KPiBpbmRleCAxYTUyZmY1ODVmYmM3Li5iYTViYTg1MmVmYjhjIDEwMDY0NA0KPiAtLS0g
+YS9kcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L2RlYnVnLmMNCj4gKysrIGIvZHJp
+dmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9kZWJ1Zy5jDQo+IA0KDQpbLi4uXQ0KDQo+
+IEBAIC01MjMsNiArNTI3LDggQEAgc3RhdGljIGludCBydHdfZGVidWdfZ2V0X3JmX2R1bXAoc3Ry
+dWN0IHNlcV9maWxlICptLCB2b2lkICp2KQ0KPiAgCXUzMiBhZGRyLCBvZmZzZXQsIGRhdGE7DQo+
+ICAJdTggcGF0aDsNCj4gIA0KPiArCW11dGV4X2xvY2soJnJ0d2Rldi0+bXV0ZXgpOw0KPiArDQo+
+ICAJZm9yIChwYXRoID0gMDsgcGF0aCA8IHJ0d2Rldi0+aGFsLnJmX3BhdGhfbnVtOyBwYXRoKysp
+IHsNCj4gIAkJc2VxX3ByaW50ZihtLCAiUkYgcGF0aDolZFxuIiwgcGF0aCk7DQo+ICAJCWZvciAo
+YWRkciA9IDA7IGFkZHIgPCAweDEwMDsgYWRkciArPSA0KSB7DQo+IEBAIC01MzcsNiArNTQzLDgg
+QEAgc3RhdGljIGludCBydHdfZGVidWdfZ2V0X3JmX2R1bXAoc3RydWN0IHNlcV9maWxlICptLCB2
+b2lkICp2KQ0KPiAgCQlzZXFfcHV0cyhtLCAiXG4iKTsNCj4gIAl9DQo+ICANCj4gKwltdXRleF91
+bmxvY2soJnJ0d2Rldi0+bXV0ZXgpOw0KPiArDQo+ICAJcmV0dXJuIDA7DQo+ICB9DQo+IA0KDQpU
+aGlzIHdpbGwgdGFrZSB0aW1lIHRvIGR1bXAgYWxsIFJGIHJlZ2lzdGVycyBmb3IgZGVidWdnaW5n
+DQpwdXJwb3NlLiBGb3IgUENJIGludGVyZmFjZSwgSSB0aGluayB0aGlzIHdvdWxkIGJlIG9rYXku
+DQpDb3VsZCB5b3UgdHJ5IHRvIGR1bXAgcmVnaXN0ZXJzIHZpYSBkZWJ1ZnMgd2hpbGUgeW91IGFy
+ZQ0KdXNpbmcgYSBVU0IgV2lGaSBkZXZpY2UsIHN1Y2ggYXMgcGxheSBZb3V0dWJlIG9yIGRvd25s
+b2FkIGZpbGVzLi4uDQoNCklmIGl0IGRvZXNuJ3Qgd29yayB2ZXJ5IHdlbGwsIEkgc3VnZ2VzdCB0
+byB1c2UgcmZfbXV0ZXggdG8NCnJlcGxhY2UgcmZfbG9jayBpbnBsYWNlLCBidXQgbm90IGp1c3Qg
+cmVtb3ZlIHJmX2xvY2suDQoNCi0tDQpQaW5nLUtlDQoNCg0K
