@@ -2,38 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A88B52E1C5
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 03:16:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E1C652E1C3
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 03:16:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344359AbiETBQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 21:16:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44158 "EHLO
+        id S1344366AbiETBQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 21:16:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344349AbiETBQD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 21:16:03 -0400
+        with ESMTP id S1344359AbiETBQF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 21:16:05 -0400
 Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB84538BE1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0460D38BF2
         for <netdev@vger.kernel.org>; Thu, 19 May 2022 18:16:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653009361; x=1684545361;
+  t=1653009362; x=1684545362;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Tmqxue1ASQ0cKbhMMIIzHOOF63jPC6+gmcF6k9KJ8PE=;
-  b=VLjJzvm6WasyQBpdFTDpw+B4cdGdWTX3R+y3AbgJZ/re2RfVE22EN4Sx
-   W1qT0exnUWHbuhQJz5SImqqujKxriKIWMwwuOTyvYt96mQ1K/d7uTxY0m
-   cp93KZH6cROhh86jxQJ0BGNSCwahFgaG+rEFwab8TM93M8i0turloq8Wj
-   NrKpgBv8TH8gIDek3ndJP/cd4bb3LC08d1dVAAbzGbGGb/fSyyMLJf4h0
-   H3Ul27bqVFAyFhB9oQvo5wgNj4CbEHV61RpuPmIU0x5pWxdl3OXgspWBG
-   ffBoClZPMT7/7syiKNoGC5T6caIreRmnWPnfdd2m4gD4Co3OWM0pawHBS
+  bh=Y5alR8X1iiRzv2aqzNRWNZvPhKBChN/toGkywq+hTEA=;
+  b=gsU7rC+RapGiNY9QiqRC+jCvvcCV/aES2idUKC/RI0SXw0Y3iLZN89J9
+   /u9xtICqh/0taIUZwp/b4QXsvISqdm2gJktmUUn447HeHl3clmiW0XHGt
+   xmMYNod1uTmepzok0kNQcaFw+U0PVaDPu4XWPI7UZfm/BOxpKJlwlFDh2
+   D7+osHEyGobnBdpyMoM8eA81elR0TWwNIwsktiF11j1d/AjgB2u2cVrYH
+   k6uZWFU9iBSH8R67tqvZJetOefhh/SWBDtvVbSbm6X+DjXNv2NoKV/9sf
+   SFBScSnnIZ1YiG7IZp9VBxcekTrG/OihbMsS/WBQY/RUAndtvYRnWvORd
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="333064166"
+X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="333064168"
 X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="333064166"
+   d="scan'208";a="333064168"
 Received: from orsmga007.jf.intel.com ([10.7.209.58])
   by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 18:15:54 -0700
 X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="570534562"
+   d="scan'208";a="570534566"
 Received: from vcostago-mobl3.jf.intel.com ([10.24.14.84])
   by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 18:15:54 -0700
 From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
@@ -42,9 +42,9 @@ Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
         vladimir.oltean@nxp.com, po.liu@nxp.com, boon.leong.ong@intel.com,
         intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next v5 09/11] igc: Add support for Frame Preemption verification
-Date:   Thu, 19 May 2022 18:15:36 -0700
-Message-Id: <20220520011538.1098888-10-vinicius.gomes@intel.com>
+Subject: [PATCH net-next v5 10/11] igc: Check incompatible configs for Frame Preemption
+Date:   Thu, 19 May 2022 18:15:37 -0700
+Message-Id: <20220520011538.1098888-11-vinicius.gomes@intel.com>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220520011538.1098888-1-vinicius.gomes@intel.com>
 References: <20220520011538.1098888-1-vinicius.gomes@intel.com>
@@ -60,474 +60,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for sending/receiving Frame Preemption verification
-frames.
-
-The i225 hardware doesn't implement the process of verification
-internally, this is left to the driver.
-
-Add a simple implementation of the state machine defined in IEEE
-802.3-2018, Section 99.4.7.
-
-For now, the state machine is started manually by the user, when
-enabling verification. Example:
-
-$ ethtool --set-frame-preemption IFACE disable-verify off
-
-The "verified" condition is set to true when the SMD-V frame is sent,
-and the SMD-R frame is received. So, it only tracks the transmission
-side. This seems to be what's expected from IEEE 802.3-2018.
+Frame Preemption and LaunchTime cannot be enabled on the same queue.
+If that situation happens, emit an error to the user, and log the
+error.
 
 Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 ---
- drivers/net/ethernet/intel/igc/igc.h         |  16 ++
- drivers/net/ethernet/intel/igc/igc_defines.h |  13 +
- drivers/net/ethernet/intel/igc/igc_ethtool.c |  37 ++-
- drivers/net/ethernet/intel/igc/igc_main.c    | 243 +++++++++++++++++++
- 4 files changed, 307 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/igc/igc_main.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
-index 11da66bd9c2c..be4a8362d6d7 100644
---- a/drivers/net/ethernet/intel/igc/igc.h
-+++ b/drivers/net/ethernet/intel/igc/igc.h
-@@ -131,6 +131,13 @@ struct igc_ring {
- 	struct xsk_buff_pool *xsk_pool;
- } ____cacheline_internodealigned_in_smp;
- 
-+enum frame_preemption_state {
-+	FRAME_PREEMPTION_STATE_FAILED,
-+	FRAME_PREEMPTION_STATE_DONE,
-+	FRAME_PREEMPTION_STATE_START,
-+	FRAME_PREEMPTION_STATE_SENT,
-+};
-+
- /* Board specific private data structure */
- struct igc_adapter {
- 	struct net_device *netdev;
-@@ -184,6 +191,7 @@ struct igc_adapter {
- 	ktime_t base_time;
- 	ktime_t cycle_time;
- 	bool frame_preemption_active;
-+	bool frame_preemption_requested;
- 	u32 add_frag_size;
- 
- 	/* OS defined structs */
-@@ -250,6 +258,14 @@ struct igc_adapter {
- 		struct timespec64 start;
- 		struct timespec64 period;
- 	} perout[IGC_N_PEROUT];
-+
-+	struct delayed_work fp_verification_work;
-+	unsigned long fp_start;
-+	bool fp_received_smd_v;
-+	bool fp_received_smd_r;
-+	unsigned int fp_verify_cnt;
-+	enum frame_preemption_state fp_tx_state;
-+	bool fp_disable_verify;
- };
- 
- void igc_up(struct igc_adapter *adapter);
-diff --git a/drivers/net/ethernet/intel/igc/igc_defines.h b/drivers/net/ethernet/intel/igc/igc_defines.h
-index 68faca584e34..63fc76a0b72a 100644
---- a/drivers/net/ethernet/intel/igc/igc_defines.h
-+++ b/drivers/net/ethernet/intel/igc/igc_defines.h
-@@ -307,6 +307,8 @@
- #define IGC_TXD_DTYP_C		0x00000000 /* Context Descriptor */
- #define IGC_TXD_POPTS_IXSM	0x01       /* Insert IP checksum */
- #define IGC_TXD_POPTS_TXSM	0x02       /* Insert TCP/UDP checksum */
-+#define IGC_TXD_POPTS_SMD_V	0x10       /* Transmitted packet is a SMD-Verify */
-+#define IGC_TXD_POPTS_SMD_R	0x20       /* Transmitted packet is a SMD-Response */
- #define IGC_TXD_CMD_EOP		0x01000000 /* End of Packet */
- #define IGC_TXD_CMD_IC		0x04000000 /* Insert Checksum */
- #define IGC_TXD_CMD_DEXT	0x20000000 /* Desc extension (0 = legacy) */
-@@ -366,9 +368,20 @@
- 
- #define IGC_RXDEXT_STATERR_LB	0x00040000
- 
-+#define IGC_RXD_STAT_SMD_V	0x2000  /* Received packet is SMD-Verify packet */
-+#define IGC_RXD_STAT_SMD_R	0x4000  /* Received packet is SMD-Response packet */
-+
- /* Advanced Receive Descriptor bit definitions */
- #define IGC_RXDADV_STAT_TSIP	0x08000 /* timestamp in packet */
- 
-+#define IGC_RXDADV_STAT_SMD_TYPE_MASK	0x06000
-+#define IGC_RXDADV_STAT_SMD_TYPE_SHIFT	13
-+
-+#define IGC_SMD_TYPE_SFD		0x0
-+#define IGC_SMD_TYPE_SMD_V		0x1
-+#define IGC_SMD_TYPE_SMD_R		0x2
-+#define IGC_SMD_TYPE_COMPLETE		0x3
-+
- #define IGC_RXDEXT_STATERR_L4E		0x20000000
- #define IGC_RXDEXT_STATERR_IPE		0x40000000
- #define IGC_RXDEXT_STATERR_RXE		0x80000000
-diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-index 401d2cdb3e81..9a80e2569dc3 100644
---- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-@@ -1680,6 +1680,8 @@ static int igc_ethtool_get_preempt(struct net_device *netdev,
- 
- 	fpcmd->enabled = adapter->frame_preemption_active;
- 	fpcmd->add_frag_size = adapter->add_frag_size;
-+	fpcmd->verified = adapter->fp_tx_state == FRAME_PREEMPTION_STATE_DONE;
-+	fpcmd->disable_verify = adapter->fp_disable_verify;
- 
- 	for (i = 0; i < adapter->num_tx_queues; i++) {
- 		struct igc_ring *ring = adapter->tx_ring[i];
-@@ -1698,6 +1700,7 @@ static int igc_ethtool_set_preempt(struct net_device *netdev,
- 				   struct netlink_ext_ack *extack)
- {
- 	struct igc_adapter *adapter = netdev_priv(netdev);
-+	bool verified = false, mask_changed = false;
- 	u32 mask;
- 	int i;
- 
-@@ -1706,17 +1709,47 @@ static int igc_ethtool_set_preempt(struct net_device *netdev,
- 		return -EINVAL;
- 	}
- 
--	adapter->frame_preemption_active = fpcmd->enabled;
-+	adapter->frame_preemption_requested = fpcmd->enabled;
- 	adapter->add_frag_size = fpcmd->add_frag_size;
- 	mask = fpcmd->preemptible_mask;
- 
- 	for (i = 0; i < adapter->num_tx_queues; i++) {
- 		struct igc_ring *ring = adapter->tx_ring[i];
-+		bool preemptible = mask & BIT(i);
-+
-+		if (ring->preemptible != preemptible)
-+			mask_changed = true;
- 
- 		ring->preemptible = (mask & BIT(i));
- 	}
- 
--	return igc_tsn_offload_apply(adapter);
-+	if (!fpcmd->disable_verify && adapter->fp_disable_verify) {
-+		adapter->fp_tx_state = FRAME_PREEMPTION_STATE_START;
-+		schedule_delayed_work(&adapter->fp_verification_work,
-+				      msecs_to_jiffies(10));
-+	}
-+
-+	adapter->fp_disable_verify = fpcmd->disable_verify;
-+
-+	verified = adapter->fp_tx_state == FRAME_PREEMPTION_STATE_DONE;
-+
-+	/* If the verification was not done, we want to enable frame
-+	 * preemption and we have not finished it, wait for it to
-+	 * finish.
-+	 */
-+	if (!verified && !adapter->fp_disable_verify && adapter->frame_preemption_requested)
-+		return 0;
-+
-+	if (adapter->frame_preemption_active != adapter->frame_preemption_requested ||
-+	    adapter->add_frag_size != fpcmd->add_frag_size ||
-+	    mask_changed) {
-+		adapter->frame_preemption_active = adapter->frame_preemption_requested;
-+		adapter->add_frag_size = fpcmd->add_frag_size;
-+
-+		return igc_tsn_offload_apply(adapter);
-+	}
-+
-+	return 0;
- }
- 
- static int igc_ethtool_begin(struct net_device *netdev)
 diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 5dd7140bac82..69e96e9a3ec8 100644
+index 69e96e9a3ec8..96ad00e33f4b 100644
 --- a/drivers/net/ethernet/intel/igc/igc_main.c
 +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -30,6 +30,11 @@
- #define IGC_XDP_TX		BIT(1)
- #define IGC_XDP_REDIRECT	BIT(2)
+@@ -5916,6 +5916,11 @@ static int igc_save_launchtime_params(struct igc_adapter *adapter, int queue,
+ 	if (queue < 0 || queue >= adapter->num_tx_queues)
+ 		return -EINVAL;
  
-+#define IGC_FP_TIMEOUT msecs_to_jiffies(100)
-+#define IGC_MAX_VERIFY_CNT 3
-+
-+#define IGC_FP_SMD_FRAME_SIZE 60
-+
- static int debug = -1;
- 
- MODULE_AUTHOR("Intel Corporation, <linux.nics@intel.com>");
-@@ -2190,6 +2195,79 @@ static int igc_xdp_init_tx_descriptor(struct igc_ring *ring,
- 	return 0;
- }
- 
-+static int igc_fp_init_smd_frame(struct igc_ring *ring, struct igc_tx_buffer *buffer,
-+				 struct sk_buff *skb)
-+{
-+	dma_addr_t dma;
-+	unsigned int size;
-+
-+	size = skb_headlen(skb);
-+
-+	dma = dma_map_single(ring->dev, skb->data, size, DMA_TO_DEVICE);
-+	if (dma_mapping_error(ring->dev, dma)) {
-+		netdev_err_once(ring->netdev, "Failed to map DMA for TX\n");
-+		return -ENOMEM;
-+	}
-+
-+	buffer->skb = skb;
-+	buffer->protocol = 0;
-+	buffer->bytecount = skb->len;
-+	buffer->gso_segs = 1;
-+	buffer->time_stamp = jiffies;
-+	dma_unmap_len_set(buffer, len, skb->len);
-+	dma_unmap_addr_set(buffer, dma, dma);
-+
-+	return 0;
-+}
-+
-+static int igc_fp_init_tx_descriptor(struct igc_ring *ring,
-+				     struct sk_buff *skb, int type)
-+{
-+	struct igc_tx_buffer *buffer;
-+	union igc_adv_tx_desc *desc;
-+	u32 cmd_type, olinfo_status;
-+	int err;
-+
-+	if (!igc_desc_unused(ring))
-+		return -EBUSY;
-+
-+	buffer = &ring->tx_buffer_info[ring->next_to_use];
-+	err = igc_fp_init_smd_frame(ring, buffer, skb);
-+	if (err)
-+		return err;
-+
-+	cmd_type = IGC_ADVTXD_DTYP_DATA | IGC_ADVTXD_DCMD_DEXT |
-+		   IGC_ADVTXD_DCMD_IFCS | IGC_TXD_DCMD |
-+		   buffer->bytecount;
-+	olinfo_status = buffer->bytecount << IGC_ADVTXD_PAYLEN_SHIFT;
-+
-+	switch (type) {
-+	case IGC_SMD_TYPE_SMD_V:
-+		olinfo_status |= (IGC_TXD_POPTS_SMD_V << 8);
-+		break;
-+	case IGC_SMD_TYPE_SMD_R:
-+		olinfo_status |= (IGC_TXD_POPTS_SMD_R << 8);
-+		break;
-+	default:
++	if (ring->preemptible) {
++		netdev_err(adapter->netdev, "Cannot enable LaunchTime on a preemptible queue\n");
 +		return -EINVAL;
 +	}
 +
-+	desc = IGC_TX_DESC(ring, ring->next_to_use);
-+	desc->read.cmd_type_len = cpu_to_le32(cmd_type);
-+	desc->read.olinfo_status = cpu_to_le32(olinfo_status);
-+	desc->read.buffer_addr = cpu_to_le64(dma_unmap_addr(buffer, dma));
-+
-+	netdev_tx_sent_queue(txring_txq(ring), skb->len);
-+
-+	buffer->next_to_watch = desc;
-+
-+	ring->next_to_use++;
-+	if (ring->next_to_use == ring->count)
-+		ring->next_to_use = 0;
-+
-+	return 0;
-+}
-+
- static struct igc_ring *igc_xdp_get_tx_ring(struct igc_adapter *adapter,
- 					    int cpu)
- {
-@@ -2317,6 +2395,43 @@ static void igc_update_rx_stats(struct igc_q_vector *q_vector,
- 	q_vector->rx.total_bytes += bytes;
- }
+ 	ring = adapter->tx_ring[queue];
+ 	ring->launchtime_enable = enable;
  
-+static int igc_rx_desc_smd_type(union igc_adv_rx_desc *rx_desc)
-+{
-+	u32 status = le32_to_cpu(rx_desc->wb.upper.status_error);
-+
-+	return (status & IGC_RXDADV_STAT_SMD_TYPE_MASK)
-+		>> IGC_RXDADV_STAT_SMD_TYPE_SHIFT;
-+}
-+
-+static bool igc_check_smd_frame(void *pktbuf, unsigned int size)
-+{
-+#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS)
-+	const u32 *b;
-+#else
-+	const u16 *b;
-+#endif
-+	int i;
-+
-+	if (size != 60)
-+		return false;
-+
-+	/* The SMD frames (V and R) have the preamble, the SMD tag, 60
-+	 * octects of zeroes and the mCRC. At this point the hardware
-+	 * already discarded most of that, so we only need to check
-+	 * the "contents" of the frame.
-+	 */
-+	b = pktbuf;
-+	for (i = 16 / sizeof(*b); i < size / sizeof(*b); i++)
-+		/* FIXME: i226 seems to insert some garbage
-+		 * (timestamps?) in SMD frames, ignore the first 16
-+		 * bytes (4 words). Investigate better.
-+		 */
-+		if (b[i] != 0)
-+			return false;
-+
-+	return true;
-+}
-+
- static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
- {
- 	unsigned int total_bytes = 0, total_packets = 0;
-@@ -2333,6 +2448,7 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
- 		ktime_t timestamp = 0;
- 		struct xdp_buff xdp;
- 		int pkt_offset = 0;
-+		int smd_type;
- 		void *pktbuf;
- 
- 		/* return some buffers to hardware, one at a time is too slow */
-@@ -2364,6 +2480,22 @@ static int igc_clean_rx_irq(struct igc_q_vector *q_vector, const int budget)
- 			size -= IGC_TS_HDR_LEN;
- 		}
- 
-+		smd_type = igc_rx_desc_smd_type(rx_desc);
-+
-+		if (unlikely(smd_type == IGC_SMD_TYPE_SMD_V || smd_type == IGC_SMD_TYPE_SMD_R)) {
-+			if (igc_check_smd_frame(pktbuf, size)) {
-+				adapter->fp_received_smd_v = smd_type == IGC_SMD_TYPE_SMD_V;
-+				adapter->fp_received_smd_r = smd_type == IGC_SMD_TYPE_SMD_R;
-+				schedule_delayed_work(&adapter->fp_verification_work, 0);
-+			}
-+
-+			/* Advance the ring next-to-clean */
-+			igc_is_non_eop(rx_ring, rx_desc);
-+
-+			cleaned_count++;
-+			continue;
-+		}
-+
- 		if (!skb) {
- 			xdp_init_buff(&xdp, truesize, &rx_ring->xdp_rxq);
- 			xdp_prepare_buff(&xdp, pktbuf - igc_rx_offset(rx_ring),
-@@ -6003,6 +6135,116 @@ static int igc_tsn_enable_cbs(struct igc_adapter *adapter,
- 	return igc_tsn_offload_apply(adapter);
- }
- 
-+/* I225 doesn't send the SMD frames automatically, we need to handle
-+ * them ourselves.
-+ */
-+static int igc_xmit_smd_frame(struct igc_adapter *adapter, int type)
-+{
-+	int cpu = smp_processor_id();
-+	struct netdev_queue *nq;
-+	struct igc_ring *ring;
-+	struct sk_buff *skb;
-+	void *data;
-+	int err;
-+
-+	if (!netif_running(adapter->netdev))
-+		return -ENOTCONN;
-+
-+	/* FIXME: rename this function to something less specific, as
-+	 * it can be used outside XDP.
-+	 */
-+	ring = igc_xdp_get_tx_ring(adapter, cpu);
-+	nq = txring_txq(ring);
-+
-+	skb = alloc_skb(IGC_FP_SMD_FRAME_SIZE, GFP_KERNEL);
-+	if (!skb)
-+		return -ENOMEM;
-+
-+	data = skb_put(skb, IGC_FP_SMD_FRAME_SIZE);
-+	memset(data, 0, IGC_FP_SMD_FRAME_SIZE);
-+
-+	__netif_tx_lock_bh(nq);
-+
-+	err = igc_fp_init_tx_descriptor(ring, skb, type);
-+
-+	igc_flush_tx_descriptors(ring);
-+
-+	__netif_tx_unlock_bh(nq);
-+
-+	return err;
-+}
-+
-+static void igc_fp_verification_work(struct work_struct *work)
-+{
-+	struct delayed_work *dwork = to_delayed_work(work);
-+	struct igc_adapter *adapter;
-+	int err;
-+
-+	adapter = container_of(dwork, struct igc_adapter, fp_verification_work);
-+
-+	if (adapter->fp_disable_verify)
-+		goto done;
-+
-+	switch (adapter->fp_tx_state) {
-+	case FRAME_PREEMPTION_STATE_START:
-+		adapter->fp_received_smd_r = false;
-+		err = igc_xmit_smd_frame(adapter, IGC_SMD_TYPE_SMD_V);
-+		if (err < 0)
-+			netdev_err(adapter->netdev, "Error sending SMD-V frame\n");
-+
-+		adapter->fp_tx_state = FRAME_PREEMPTION_STATE_SENT;
-+		adapter->fp_start = jiffies;
-+		schedule_delayed_work(&adapter->fp_verification_work, IGC_FP_TIMEOUT);
-+		break;
-+
-+	case FRAME_PREEMPTION_STATE_SENT:
-+		if (adapter->fp_received_smd_r) {
-+			/* Verifcation has finished successfully, we
-+			 * can enable frame preemption in the hw now
-+			 */
-+			adapter->fp_tx_state = FRAME_PREEMPTION_STATE_DONE;
-+			adapter->fp_received_smd_r = false;
-+
-+			if (adapter->frame_preemption_requested) {
-+				adapter->frame_preemption_active = true;
-+				igc_tsn_offload_apply(adapter);
-+			}
-+
-+			break;
-+		}
-+
-+		if (time_is_before_jiffies(adapter->fp_start + IGC_FP_TIMEOUT)) {
-+			adapter->fp_verify_cnt++;
-+			netdev_warn(adapter->netdev, "Timeout waiting for SMD-R frame\n");
-+
-+			if (adapter->fp_verify_cnt > IGC_MAX_VERIFY_CNT) {
-+				adapter->fp_verify_cnt = 0;
-+				adapter->fp_tx_state = FRAME_PREEMPTION_STATE_FAILED;
-+				netdev_err(adapter->netdev,
-+					   "Exceeded number of attempts for frame preemption verification\n");
-+			} else {
-+				adapter->fp_tx_state = FRAME_PREEMPTION_STATE_START;
-+			}
-+			schedule_delayed_work(&adapter->fp_verification_work, IGC_FP_TIMEOUT);
-+		}
-+
-+		break;
-+
-+	case FRAME_PREEMPTION_STATE_FAILED:
-+	case FRAME_PREEMPTION_STATE_DONE:
-+		break;
-+	}
-+
-+done:
-+	if (adapter->fp_received_smd_v) {
-+		err = igc_xmit_smd_frame(adapter, IGC_SMD_TYPE_SMD_R);
-+		if (err < 0)
-+			netdev_err(adapter->netdev, "Error sending SMD-R frame\n");
-+
-+		adapter->fp_received_smd_v = false;
-+	}
-+}
-+
- static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			void *type_data)
- {
-@@ -6369,6 +6611,7 @@ static int igc_probe(struct pci_dev *pdev,
- 
- 	INIT_WORK(&adapter->reset_task, igc_reset_task);
- 	INIT_WORK(&adapter->watchdog_task, igc_watchdog_task);
-+	INIT_DELAYED_WORK(&adapter->fp_verification_work, igc_fp_verification_work);
- 
- 	/* Initialize link properties that are user-changeable */
- 	adapter->fc_autoneg = true;
 -- 
 2.35.3
 
