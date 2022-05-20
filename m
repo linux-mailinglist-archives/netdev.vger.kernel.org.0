@@ -2,127 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DFE452E6D1
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 10:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF66A52E6DC
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 10:01:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346201AbiETH7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 03:59:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
+        id S1346789AbiETIBu convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 20 May 2022 04:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346760AbiETH7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:59:31 -0400
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC1815AB30
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:59:30 -0700 (PDT)
-Received: by mail-wm1-x329.google.com with SMTP id 67-20020a1c1946000000b00397382b44f4so707490wmz.2
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:59:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ea7uCWmZvVi7x8pZXNpq32JNdBnZG/d3z6FlMpmBFbQ=;
-        b=aEdYT6oI+uAOu9UjBKXVmQR4Vqb7G4k23KZ5L2K3v79YnkqWwIWGGGpsdip/no9LKF
-         OX6p+BYYQM+OElnkM9nMH0jOpS1lznXRg3lJ6uwuxhXtFofh4fsrAfY8PoByvVgIOv14
-         TnBJGNIAxOy63rP8B+4+4uWMpcRLRAsdAJDUbp+llYUTUriz6jRPAyL4AWOccmuIKhOI
-         69qZZCmel4W+VjPG+18N18R/0StDr7wRnLfT06tb+/NpzgX2jn1EsTpE4Ls55bXco/k/
-         wIf7IpYqEmW72htmBiltvUNLA/eOWjZyVZAxP36v1WUwj5Mh1B+IcLpkSxewV90tvTLs
-         HEGg==
+        with ESMTP id S1346790AbiETIBs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 04:01:48 -0400
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 972DC37A12;
+        Fri, 20 May 2022 01:01:47 -0700 (PDT)
+Received: by mail-qt1-f178.google.com with SMTP id b9so224922qtx.11;
+        Fri, 20 May 2022 01:01:47 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ea7uCWmZvVi7x8pZXNpq32JNdBnZG/d3z6FlMpmBFbQ=;
-        b=uJFRh0sa7xvg7Fs+wRbQG+r+BYZwvl2NAIOka3zML+cyPHYls7tOkzYO15LcjVNLO0
-         6tp5auIjsaNCccvtnqXF3cvDGhwhx2IZzDKtORQwtpF2em+UD3AxowtseEqugD9QBrfT
-         qL1AZXgmkzDobEVAeFzTFPJ+jd2UFYNqKv+zXJOTQAlNrE/L9wyrtKpYLcedWnhrOGbi
-         k8OYV5/kgYB0Qb9HmWiAikSo9V1+nzhOmosjdivjrE05oMdk7UfCYiE1IVhaCuTJdZ3s
-         YzI/Y8keL6NC8g59RNuanrwLj9IM2Zmja5HmISMpJL/Te84YIPQBFLTr2VqQ/zxigWgA
-         NbXA==
-X-Gm-Message-State: AOAM530n5hEuqHMy/SvSA9sDSZAds85UlGPoipReX+skr+LiUetKKrh1
-        pFYrTouGJXm/nz/MIeKoX7exjugv/3ymqEOLR+SixQ==
-X-Google-Smtp-Source: ABdhPJzkbcWaIOOyEvvxjJVCin6gWKz/UgskGdAE5PNQ9w+UErfnjSVu3h7gWMQNdUWckLnyYGW2D4/mAvuI+pGBiow=
-X-Received: by 2002:a05:600c:1908:b0:394:867d:66c4 with SMTP id
- j8-20020a05600c190800b00394867d66c4mr7447568wmq.152.1653033568515; Fri, 20
- May 2022 00:59:28 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=H1iVOpRla5rs6rYvY27pFyr760HB96cTo8Ladb3Lo6o=;
+        b=lBHH6y7xt5cg2Cl1+lNnZHtczZi0hkIEMCWn8a8E/7YotQCqL++AP8Y8px5K654cTK
+         QDYIaD9ISI6QOLNcRDFSBVdG1QDF1QeshhWLaV3kupIxKvzRMDBf/sZNM4ctO1w1T5Xc
+         5x9PYZfOhvDsaN67cMUsXfcFlne3Q6JOFXOxMvFb1/oXAbu4MBnzUQFbLUnrPlgvj3pr
+         rAWmYZBu5o/Tx9WBBcYY7uukrph7O9PIWzO1YAKbnwrFbC2cRzltFiLCc6wgrFSx/cs9
+         cMi7JaWvMUqgPaipMrcouwcwwFSz9XnVfVlpIrwoHz26C1FUlae8AFxJ3XvhrnkNUhrr
+         BoWQ==
+X-Gm-Message-State: AOAM533R3xdVpGNwZdVRc58DBxRIPrHhkA0NAQ1RmdbQqn7WG/VD7Ri2
+        CDPCjMqfTal7FujeemX7FEQdJJSaFMhqzw==
+X-Google-Smtp-Source: ABdhPJy9rlq6FYckE6dvWhZXO5Xifn+8i7hpHnmg+AMuwMrCVUiVYubqnyrVW+beXfgSifPp3eGymg==
+X-Received: by 2002:ac8:5c56:0:b0:2f3:bdd1:4f1e with SMTP id j22-20020ac85c56000000b002f3bdd14f1emr6801141qtj.545.1653033706208;
+        Fri, 20 May 2022 01:01:46 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id f9-20020a05622a104900b002f39b99f69fsm3200042qte.57.2022.05.20.01.01.45
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 01:01:45 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2ec42eae76bso79086497b3.10;
+        Fri, 20 May 2022 01:01:45 -0700 (PDT)
+X-Received: by 2002:a81:9b0c:0:b0:2f4:c522:7d3c with SMTP id
+ s12-20020a819b0c000000b002f4c5227d3cmr8843852ywg.316.1653033705399; Fri, 20
+ May 2022 01:01:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220520012133.1217211-4-yosryahmed@google.com> <YodGI73xq8aIBrNM@slm.duckdns.org>
-In-Reply-To: <YodGI73xq8aIBrNM@slm.duckdns.org>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Fri, 20 May 2022 00:58:52 -0700
-Message-ID: <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
+References: <20220519153107.696864-1-clement.leger@bootlin.com>
+ <20220519153107.696864-7-clement.leger@bootlin.com> <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
+ <20220520095730.512bbb8d@fixe.home>
+In-Reply-To: <20220520095730.512bbb8d@fixe.home>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 20 May 2022 10:01:32 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWOMYE7b=auNeVAMDgArso+8vUzkxAwnFxFYtKPxOnjxw@mail.gmail.com>
+Message-ID: <CAMuHMdWOMYE7b=auNeVAMDgArso+8vUzkxAwnFxFYtKPxOnjxw@mail.gmail.com>
+Subject: Re: [PATCH net-next v5 06/13] dt-bindings: net: dsa: add bindings for
+ Renesas RZ/N1 Advanced 5 port switch
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 20, 2022 at 12:41 AM Tejun Heo <tj@kernel.org> wrote:
->
-> On Fri, May 20, 2022 at 01:21:31AM +0000, Yosry Ahmed wrote:
-> > From: Hao Luo <haoluo@google.com>
-> >
-> > Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
-> > iter doesn't iterate a set of kernel objects. Instead, it is supposed to
-> > be parameterized by a cgroup id and prints only that cgroup. So one
-> > needs to specify a target cgroup id when attaching this iter. The target
-> > cgroup's state can be read out via a link of this iter.
-> >
-> > Signed-off-by: Hao Luo <haoluo@google.com>
-> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
->
-> This could be me not understanding why it's structured this way but it keeps
-> bothering me that this is adding a cgroup iterator which doesn't iterate
-> cgroups. If all that's needed is extracting information from a specific
-> cgroup, why does this need to be an iterator? e.g. why can't I use
-> BPF_PROG_TEST_RUN which looks up the cgroup with the provided ID, flushes
-> rstat, retrieves whatever information necessary and returns that as the
-> result?
+Hi Clément,
 
-I will let Hao and Yonghong reply here as they have a lot more
-context, and they had previous discussions about cgroup_iter. I just
-want to say that exposing the stats in a file is extremely convenient
-for userspace apps. It becomes very similar to reading stats from
-cgroupfs. It also makes migrating cgroup stats that we have
-implemented in the kernel to BPF a lot easier.
+On Fri, May 20, 2022 at 9:58 AM Clément Léger <clement.leger@bootlin.com> wrote:
+> Le Fri, 20 May 2022 09:13:23 +0200,
+> Geert Uytterhoeven <geert@linux-m68k.org> a écrit :
+> > On Thu, May 19, 2022 at 5:32 PM Clément Léger <clement.leger@bootlin.com> wrote:
+> > > Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
+> > > present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
+> > > This company does not exists anymore and has been bought by Synopsys.
+> > > Since this IP can't be find anymore in the Synospsy portfolio, lets use
+> > > Renesas as the vendor compatible for this IP.
+> > >
+> > > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
 
-AFAIK there are also discussions about using overlayfs to have links
-to the bpffs files in cgroupfs, which makes it even better. So I would
-really prefer keeping the approach we have here of reading stats
-through a file from userspace. As for how we go about this (and why a
-cgroup iterator doesn't iterate cgroups) I will leave this for Hao and
-Yonghong to explain the rationale behind it. Ideally we can keep the
-same functionality under a more descriptive name/type.
+> > Missing "power-domains" property.
+>
+> I do not use pm_runtime* in the switch driver. I should probably do that
+> right ?
 
->
-> Thanks.
->
-> --
-> tejun
+For now you don't have to.  But I think it is a good idea, and it helps if the
+IP block is ever reused in an SoC with real power areas.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
