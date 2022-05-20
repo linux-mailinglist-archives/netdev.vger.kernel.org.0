@@ -2,40 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DEC4D52F19C
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:26:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E8FB52F193
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:26:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352167AbiETRXk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 13:23:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34310 "EHLO
+        id S1352174AbiETRXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 13:23:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352159AbiETRXi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:23:38 -0400
+        with ESMTP id S1352181AbiETRXr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:23:47 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C339A187067
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:23:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68249187D9C
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:23:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653067416;
+        s=mimecast20190719; t=1653067424;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=+mUQhLcxz6TZwVt0puoA8uLFKO7ahYDhUTcQY+6+1vw=;
-        b=Y8EZwzfXUB/PJI43lkPcoBzr2z9YcjcdFbw2Ru0gzg1DzSxS6LZRjx0yuW9mWH6izAEkEZ
-        DYpnfUx2WPb4Ods79nSzdUXfp3crcZFrv2S/DRmwAMBKYG34ouqRhA3dQlG+u12URKCXlk
-        XZg4A6C4HfleMXzVkafIXQuWO5RDIo0=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ese622/PjwlbZK8BGVrfy4abZ5tLs60liyPxNETnN7U=;
+        b=WIeS4sEwIKwOzL41yUc2mcQWh6JPcKWUEHtJbMXfybYOkqwVO/CBCmVRsdouX/r5BJNdii
+        zEZazsYfwy+yl8uOxxve5QI/7EhXYuxibmgN5IC7usl7nbHltkwBexCSaaDQgSx1x7dYrE
+        3UIMejl1IdWlPDjxw1eLxWmPo6DLkvU=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-400-66oEZV14PGix7OSjvRA3fQ-1; Fri, 20 May 2022 13:23:33 -0400
-X-MC-Unique: 66oEZV14PGix7OSjvRA3fQ-1
+ us-mta-252-7345v9CAPv2lK4D147Vy5g-1; Fri, 20 May 2022 13:23:38 -0400
+X-MC-Unique: 7345v9CAPv2lK4D147Vy5g-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id B40E138041D6;
-        Fri, 20 May 2022 17:23:32 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 84B0685A5B5;
+        Fri, 20 May 2022 17:23:37 +0000 (UTC)
 Received: from eperezma.remote.csb (unknown [10.39.192.124])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 189E1492C14;
-        Fri, 20 May 2022 17:23:27 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 019E6492C14;
+        Fri, 20 May 2022 17:23:32 +0000 (UTC)
 From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
 To:     virtualization@lists.linux-foundation.org,
         Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
@@ -55,16 +56,18 @@ Cc:     Stefano Garzarella <sgarzare@redhat.com>,
         Parav Pandit <parav@nvidia.com>,
         Dan Carpenter <dan.carpenter@oracle.com>,
         Zhang Min <zhang.min9@zte.com.cn>
-Subject: [PATCH 0/4] Implement vdpasim stop operation
-Date:   Fri, 20 May 2022 19:23:21 +0200
-Message-Id: <20220520172325.980884-1-eperezma@redhat.com>
+Subject: [PATCH 1/4] vdpa: Add stop operation
+Date:   Fri, 20 May 2022 19:23:22 +0200
+Message-Id: <20220520172325.980884-2-eperezma@redhat.com>
+In-Reply-To: <20220520172325.980884-1-eperezma@redhat.com>
+References: <20220520172325.980884-1-eperezma@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -72,33 +75,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement stop operation for vdpa_sim devices, so vhost-vdpa will offer=0D
-that backend feature and userspace can effectively stop the device.=0D
-=0D
-This is a must before get virtqueue indexes (base) for live migration,=0D
-since the device could modify them after userland gets them. There are=0D
-individual ways to perform that action for some devices=0D
-(VHOST_NET_SET_BACKEND, VHOST_VSOCK_SET_RUNNING, ...) but there was no=0D
-way to perform it for any vhost device (and, in particular, vhost-vdpa).=0D
-=0D
-Comments are welcome.=0D
-=0D
-Eugenio P=C3=A9rez (4):=0D
-  vdpa: Add stop operation=0D
-  vhost-vdpa: introduce STOP backend feature bit=0D
-  vhost-vdpa: uAPI to stop the device=0D
-  vdpa_sim: Implement stop vdpa op=0D
-=0D
- drivers/vdpa/vdpa_sim/vdpa_sim.c     | 21 +++++++++++++++++++=0D
- drivers/vdpa/vdpa_sim/vdpa_sim.h     |  1 +=0D
- drivers/vdpa/vdpa_sim/vdpa_sim_net.c |  3 +++=0D
- drivers/vhost/vdpa.c                 | 31 ++++++++++++++++++++++++++++=0D
- include/linux/vdpa.h                 |  6 ++++++=0D
- include/uapi/linux/vhost.h           |  3 +++=0D
- include/uapi/linux/vhost_types.h     |  2 ++=0D
- 7 files changed, 67 insertions(+)=0D
-=0D
--- =0D
-2.27.0=0D
-=0D
+This operation is optional: It it's not implemented, backend feature bit
+will not be exposed.
+
+Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
+---
+ include/linux/vdpa.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+index 15af802d41c4..ddfebc4e1e01 100644
+--- a/include/linux/vdpa.h
++++ b/include/linux/vdpa.h
+@@ -215,6 +215,11 @@ struct vdpa_map_file {
+  * @reset:			Reset device
+  *				@vdev: vdpa device
+  *				Returns integer: success (0) or error (< 0)
++ * @stop:			Stop or resume the device (optional, but it must
++ *				be implemented if require device stop)
++ *				@vdev: vdpa device
++ *				@stop: stop (true), not stop (false)
++ *				Returns integer: success (0) or error (< 0)
+  * @get_config_size:		Get the size of the configuration space includes
+  *				fields that are conditional on feature bits.
+  *				@vdev: vdpa device
+@@ -316,6 +321,7 @@ struct vdpa_config_ops {
+ 	u8 (*get_status)(struct vdpa_device *vdev);
+ 	void (*set_status)(struct vdpa_device *vdev, u8 status);
+ 	int (*reset)(struct vdpa_device *vdev);
++	int (*stop)(struct vdpa_device *vdev, bool stop);
+ 	size_t (*get_config_size)(struct vdpa_device *vdev);
+ 	void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
+ 			   void *buf, unsigned int len);
+-- 
+2.27.0
 
