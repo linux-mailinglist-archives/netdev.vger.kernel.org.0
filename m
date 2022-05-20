@@ -2,84 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A73752F5D7
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:46:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D9D9F52F5E1
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:50:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348835AbiETWq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 18:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58468 "EHLO
+        id S1353966AbiETWuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 18:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231520AbiETWq5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:46:57 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2A8AFAE0;
-        Fri, 20 May 2022 15:46:55 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id gi33so9566628ejc.3;
-        Fri, 20 May 2022 15:46:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7VSmTsrf2yRmDPUJj7O4mhbeh8I71iXxthfFzi3aXkY=;
-        b=IDKxeJ8SiDdIfH863/nqT0j9/oK9RffxHSoBU/YfUbDXzroET4eYNRV1zNCUxEaWnG
-         Pkot+DctHiLZHSYTz17WCwyNwWLNSzhphRyOXbp7mEMH/Oc3vAfXrQ7e9HjTaV7CeG68
-         SHLv0AIKUUdwf0seJRCjZgNvM1AHSlgRsgPwxlwX3l88C+2TFL4lU1u5IpyhxM57s0hb
-         03acGg740tRQaowRW+Qs5heTK3Es+GTTDJwJ5faZBiF9W2eDzTMOQUCymSVSElXBl31R
-         jUbpANF3T8Nh0O1Hn1TbalyTbIiNMo0UengQkfo8Nc1gsWFK5p3LNP53QTP5oOKsFJ/k
-         XMNQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7VSmTsrf2yRmDPUJj7O4mhbeh8I71iXxthfFzi3aXkY=;
-        b=LU3yUXwmc/+eNNtxI9XRQfwdD41o6Vd9RE4k8pX2gNN57d4Sezz+l/naTpP1qVlMzE
-         ZQE+63rW+mDR3AY/6S+tqsn3dvyT5LfaySIrfoUPXQU2kK3SNDpSE5wX+ZtcZL9ZyzFM
-         yD0VOxwkE8WfMRIEwjubzuBPS0bgvuddaxqVGC0fjtV6QFsYu8vBGMDMpqjOC2eJlaw5
-         UStAG1GxX3YYdep+Dui6C+i4IlLCUZtrLOpQ/yea9XGDLpv71ujDx37UvEjiE2LN3AgJ
-         Gr4cjEl4Qs6T7Iy07mTkI88pbtL4kesch8MxnCTn9M2HCsUZlLeO57RD2rRwRp404OjU
-         mWFw==
-X-Gm-Message-State: AOAM532g+01YLCZr/zZd31jrTDghvLKDg2QjsaLW3b4LnYgvmTpIyZYG
-        z4UGWMXOSviUUAhehnvmNUVymkDKUclXkJZaGCI=
-X-Google-Smtp-Source: ABdhPJzv2U16Vzaku4966umMnfoPWOcUFGVy3bm7ySb9ND5HlqxVQMQuqiT4pmFn9OVXCr91+j9mXw9nQIm8v9wjJe8=
-X-Received: by 2002:a17:906:9753:b0:6fe:aafb:31a6 with SMTP id
- o19-20020a170906975300b006feaafb31a6mr4663290ejy.502.1653086814409; Fri, 20
- May 2022 15:46:54 -0700 (PDT)
+        with ESMTP id S230504AbiETWuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:50:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC07179C1A;
+        Fri, 20 May 2022 15:50:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3843D61E0C;
+        Fri, 20 May 2022 22:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9309CC385A9;
+        Fri, 20 May 2022 22:50:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653087013;
+        bh=A8RWvekcx4RmGO2brYMW6iEm9xD2F42vcItroHyoy5I=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=LG+rMkIsglJjeCus4oOvXhkO7SJKINzjglzEBzSR6yW6QgZ5uIyNRPRXe8owjV0lu
+         +Jrdb57AWq32/VzEGDQXGuavZyJh05mBubXBK+eJW39yWvEUUgsvFe37M3Oe61vbWE
+         baWkmb/f+xL0wHE9i9UksxHQibztKUAOUeZNq51ZOelhlSJ6xKUWUvs+sF+wzs4ZAX
+         LZEFpqL5TwoLkcxUyMXOGUzFOZvQA1auGOK2UCWAD52Y/hG5McDHzYs2K6OFGg2Iag
+         Q4OYgbwjktJL/NK6FLTbDYcMTblYi2iXFpijtY5xcP5r40JktQrLm5oQ3V140SXYSD
+         L8t5ED9iqLtzA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 7A9EEF0389D;
+        Fri, 20 May 2022 22:50:13 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20220520113728.12708-1-shung-hsi.yu@suse.com> <20220520113728.12708-4-shung-hsi.yu@suse.com>
-In-Reply-To: <20220520113728.12708-4-shung-hsi.yu@suse.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Fri, 20 May 2022 15:46:40 -0700
-Message-ID: <CAADnVQK8JcV8n4J-FgryKxgLBnNHLMWftjSiEZ3zPuCnFgkKrw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 3/4] bpf: verifier: remove redundant opcode checks
-To:     Shung-Hsi Yu <shung-hsi.yu@suse.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v5 0/7] bpf: mptcp: Support for mptcp_sock
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165308701349.8703.10845303624586414440.git-patchwork-notify@kernel.org>
+Date:   Fri, 20 May 2022 22:50:13 +0000
+References: <20220519233016.105670-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20220519233016.105670-1-mathew.j.martineau@linux.intel.com>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, geliang.tang@suse.com,
+        mptcp@lists.linux.dev
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 20, 2022 at 4:38 AM Shung-Hsi Yu <shung-hsi.yu@suse.com> wrote:
->
-> The introduction of opcode validation with bpf_opcode_in_insntable() in
-> commit 5e581dad4fec ("bpf: make unknown opcode handling more robust")
-> has made opcode checks done in do_check_common() and its callees
-> redundant, so either remove them entirely, or turn them into comments in
-> places where the redundancy may not be clear.
+Hello:
 
-I prefer to keep the existing checks.
-They help readability on what is actually expected at this point.
-These checks cost close to nothing in run-time.
+This series was applied to bpf/bpf-next.git (master)
+by Andrii Nakryiko <andrii@kernel.org>:
+
+On Thu, 19 May 2022 16:30:09 -0700 you wrote:
+> This patch set adds BPF access to mptcp_sock structures, along with
+> associated self tests. You may recognize some of the code from earlier
+> (https://lore.kernel.org/bpf/20200918121046.190240-6-nicolas.rybowski@tessares.net/)
+> but it has been reworked quite a bit.
+> 
+> 
+> v1 -> v2: Emit BTF type, add func_id checks in verifier.c and bpf_trace.c,
+> remove build check for CONFIG_BPF_JIT, add selftest check for CONFIG_MPTCP,
+> and add a patch to include CONFIG_IKCONFIG/CONFIG_IKCONFIG_PROC for the
+> BPF self tests.
+> 
+> [...]
+
+Here is the summary with links:
+  - [bpf-next,v5,1/7] bpf: add bpf_skc_to_mptcp_sock_proto
+    https://git.kernel.org/bpf/bpf-next/c/3bc253c2e652
+  - [bpf-next,v5,2/7] selftests/bpf: Enable CONFIG_IKCONFIG_PROC in config
+    https://git.kernel.org/bpf/bpf-next/c/d3294cb1e06d
+  - [bpf-next,v5,3/7] selftests/bpf: add MPTCP test base
+    https://git.kernel.org/bpf/bpf-next/c/8039d353217c
+  - [bpf-next,v5,4/7] selftests/bpf: test bpf_skc_to_mptcp_sock
+    https://git.kernel.org/bpf/bpf-next/c/3bc48b56e345
+  - [bpf-next,v5,5/7] selftests/bpf: verify token of struct mptcp_sock
+    https://git.kernel.org/bpf/bpf-next/c/026622346772
+  - [bpf-next,v5,6/7] selftests/bpf: verify ca_name of struct mptcp_sock
+    https://git.kernel.org/bpf/bpf-next/c/ccc090f46900
+  - [bpf-next,v5,7/7] selftests/bpf: verify first of struct mptcp_sock
+    https://git.kernel.org/bpf/bpf-next/c/4f90d034bba9
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
