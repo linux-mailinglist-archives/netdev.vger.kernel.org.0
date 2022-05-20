@@ -2,61 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6DDA52F5D5
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:46:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A73752F5D7
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:46:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240760AbiETWqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 18:46:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
+        id S1348835AbiETWq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 18:46:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229477AbiETWqe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:46:34 -0400
-Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D5DAF303;
-        Fri, 20 May 2022 15:46:33 -0700 (PDT)
-Received: by mail-vs1-xe33.google.com with SMTP id 68so2149500vse.11;
-        Fri, 20 May 2022 15:46:33 -0700 (PDT)
+        with ESMTP id S231520AbiETWq5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:46:57 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE2A8AFAE0;
+        Fri, 20 May 2022 15:46:55 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id gi33so9566628ejc.3;
+        Fri, 20 May 2022 15:46:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=5pQeUb7i2aQrMCTFP4sfEtDtoSYxOjDxSh8e8T9nS1E=;
-        b=L3x6/NW1KmjyeV38jecoTyoSPtHQaXXxld5nI5ziNWGeMDmOuzG8gyeiR5OidJyR3r
-         8HpYxb/QGZAC6BHmf8HtkBI3YA6VWOoxBvg0LzNDtqgxaSCQ63mlnoJSMXlhVCP/O30k
-         1xyQ4xMW74V2jTNALUiqUtfcsAeE6tjaFnDgsiw1JkLLA7t6+00Hg4RDEkfmHsKGC2/V
-         q7MZTNjmnGdc7t+qtUdI04hJ5JIOCqBhrORl5bOMJ5OzUwlaL0K0Wcp9vtYav4hhLnms
-         xHnHZ/v6pFwI+bI0gRcpPniT2l9Ixnfiji1lstMTybByURvjkhasLrUpuoLM0DW02sBg
-         +1Bw==
+        bh=7VSmTsrf2yRmDPUJj7O4mhbeh8I71iXxthfFzi3aXkY=;
+        b=IDKxeJ8SiDdIfH863/nqT0j9/oK9RffxHSoBU/YfUbDXzroET4eYNRV1zNCUxEaWnG
+         Pkot+DctHiLZHSYTz17WCwyNwWLNSzhphRyOXbp7mEMH/Oc3vAfXrQ7e9HjTaV7CeG68
+         SHLv0AIKUUdwf0seJRCjZgNvM1AHSlgRsgPwxlwX3l88C+2TFL4lU1u5IpyhxM57s0hb
+         03acGg740tRQaowRW+Qs5heTK3Es+GTTDJwJ5faZBiF9W2eDzTMOQUCymSVSElXBl31R
+         jUbpANF3T8Nh0O1Hn1TbalyTbIiNMo0UengQkfo8Nc1gsWFK5p3LNP53QTP5oOKsFJ/k
+         XMNQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=5pQeUb7i2aQrMCTFP4sfEtDtoSYxOjDxSh8e8T9nS1E=;
-        b=L8MsLzypo1vH1Z0b8IlbsoOTQyAvD/EVzLrndUmvYWidAbhflFwIxyf7fu0FUT0LwK
-         atHLjSVH8LYu+ZVPnQc2WiPdjE31dPl2Vs1qo8IoWh6zX7qLsf0WZXGVf7RWotwJPRbH
-         jk0waaH+biXqXZp0YUZKG6qkX7YAQrbR7N2BaFvxBueQP2UEvD3hue/9J0eg7rA0Vaht
-         IWzLtccrWKyzpjRDhj4krEx1HHzR1Ah/u+S97KSUVbL1GI5lA9NRvBx51K5aOKQre4qh
-         01DlomBZTAXqIo5F3KnGZ+2i+MqYrANVhesEUBIaEpingRQ+S0xjpAP3Hqg4dPBb/Gj0
-         JMSQ==
-X-Gm-Message-State: AOAM5337WpJwCZ+H1X6xGtt9lslF7Zq5KRwNUDw/RplwUC4hY8Ee0n1b
-        ciRUZfLCyVwHjuAWsCZqTVz7bGdkaR8v3q6x2uk=
-X-Google-Smtp-Source: ABdhPJyiaAtAdaUBzDp9yFdA6kuTy81xzJn/Z4v7Wfuy50rIkY0QXBW8+d0+xYs7kmFR1Mu1NCsSmgdujwsvLus5sTo=
-X-Received: by 2002:a05:6102:370a:b0:333:c0e7:77e8 with SMTP id
- s10-20020a056102370a00b00333c0e777e8mr5497192vst.54.1653086792033; Fri, 20
- May 2022 15:46:32 -0700 (PDT)
+        bh=7VSmTsrf2yRmDPUJj7O4mhbeh8I71iXxthfFzi3aXkY=;
+        b=LU3yUXwmc/+eNNtxI9XRQfwdD41o6Vd9RE4k8pX2gNN57d4Sezz+l/naTpP1qVlMzE
+         ZQE+63rW+mDR3AY/6S+tqsn3dvyT5LfaySIrfoUPXQU2kK3SNDpSE5wX+ZtcZL9ZyzFM
+         yD0VOxwkE8WfMRIEwjubzuBPS0bgvuddaxqVGC0fjtV6QFsYu8vBGMDMpqjOC2eJlaw5
+         UStAG1GxX3YYdep+Dui6C+i4IlLCUZtrLOpQ/yea9XGDLpv71ujDx37UvEjiE2LN3AgJ
+         Gr4cjEl4Qs6T7Iy07mTkI88pbtL4kesch8MxnCTn9M2HCsUZlLeO57RD2rRwRp404OjU
+         mWFw==
+X-Gm-Message-State: AOAM532g+01YLCZr/zZd31jrTDghvLKDg2QjsaLW3b4LnYgvmTpIyZYG
+        z4UGWMXOSviUUAhehnvmNUVymkDKUclXkJZaGCI=
+X-Google-Smtp-Source: ABdhPJzv2U16Vzaku4966umMnfoPWOcUFGVy3bm7ySb9ND5HlqxVQMQuqiT4pmFn9OVXCr91+j9mXw9nQIm8v9wjJe8=
+X-Received: by 2002:a17:906:9753:b0:6fe:aafb:31a6 with SMTP id
+ o19-20020a170906975300b006feaafb31a6mr4663290ejy.502.1653086814409; Fri, 20
+ May 2022 15:46:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220519233016.105670-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20220519233016.105670-1-mathew.j.martineau@linux.intel.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 20 May 2022 15:46:21 -0700
-Message-ID: <CAEf4BzaZ07_VRN_z6xPogcx-YQuPQR8FCkC=K621r5oo1vBViQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v5 0/7] bpf: mptcp: Support for mptcp_sock
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+References: <20220520113728.12708-1-shung-hsi.yu@suse.com> <20220520113728.12708-4-shung-hsi.yu@suse.com>
+In-Reply-To: <20220520113728.12708-4-shung-hsi.yu@suse.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 20 May 2022 15:46:40 -0700
+Message-ID: <CAADnVQK8JcV8n4J-FgryKxgLBnNHLMWftjSiEZ3zPuCnFgkKrw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 3/4] bpf: verifier: remove redundant opcode checks
+To:     Shung-Hsi Yu <shung-hsi.yu@suse.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Geliang Tang <geliang.tang@suse.com>, mptcp@lists.linux.dev
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -68,71 +72,14 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 19, 2022 at 4:30 PM Mat Martineau
-<mathew.j.martineau@linux.intel.com> wrote:
+On Fri, May 20, 2022 at 4:38 AM Shung-Hsi Yu <shung-hsi.yu@suse.com> wrote:
 >
-> This patch set adds BPF access to mptcp_sock structures, along with
-> associated self tests. You may recognize some of the code from earlier
-> (https://lore.kernel.org/bpf/20200918121046.190240-6-nicolas.rybowski@tessares.net/)
-> but it has been reworked quite a bit.
->
->
-> v1 -> v2: Emit BTF type, add func_id checks in verifier.c and bpf_trace.c,
-> remove build check for CONFIG_BPF_JIT, add selftest check for CONFIG_MPTCP,
-> and add a patch to include CONFIG_IKCONFIG/CONFIG_IKCONFIG_PROC for the
-> BPF self tests.
->
-> v2 -> v3: Access sysctl through the filesystem to work around CI use of
-> the more limited busybox sysctl command.
->
-> v3 -> v4: Dropped special case kernel code for tcp_sock is_mptcp, use
-> existing bpf_tcp_helpers.h, and add check for 'ip mptcp monitor' support.
->
-> v4 -> v5: Use BPF test skeleton, more consistent use of ASSERT macros,
-> drop some unnecessary parameters / checks, and use tracing to acquire
-> MPTCP token.
->
-> Geliang Tang (6):
->   bpf: add bpf_skc_to_mptcp_sock_proto
->   selftests/bpf: Enable CONFIG_IKCONFIG_PROC in config
->   selftests/bpf: test bpf_skc_to_mptcp_sock
->   selftests/bpf: verify token of struct mptcp_sock
->   selftests/bpf: verify ca_name of struct mptcp_sock
->   selftests/bpf: verify first of struct mptcp_sock
->
-> Nicolas Rybowski (1):
->   selftests/bpf: add MPTCP test base
->
->  MAINTAINERS                                   |   1 +
->  include/linux/bpf.h                           |   1 +
->  include/linux/btf_ids.h                       |   3 +-
->  include/net/mptcp.h                           |   6 +
->  include/uapi/linux/bpf.h                      |   7 +
->  kernel/bpf/verifier.c                         |   1 +
->  kernel/trace/bpf_trace.c                      |   2 +
->  net/core/filter.c                             |  18 ++
->  net/mptcp/Makefile                            |   2 +
->  net/mptcp/bpf.c                               |  21 +++
->  scripts/bpf_doc.py                            |   2 +
->  tools/include/uapi/linux/bpf.h                |   7 +
->  tools/testing/selftests/bpf/bpf_tcp_helpers.h |  13 ++
->  tools/testing/selftests/bpf/config            |   3 +
->  tools/testing/selftests/bpf/network_helpers.c |  40 +++-
->  tools/testing/selftests/bpf/network_helpers.h |   2 +
->  .../testing/selftests/bpf/prog_tests/mptcp.c  | 174 ++++++++++++++++++
->  .../testing/selftests/bpf/progs/mptcp_sock.c  |  89 +++++++++
->  18 files changed, 382 insertions(+), 10 deletions(-)
->  create mode 100644 net/mptcp/bpf.c
->  create mode 100644 tools/testing/selftests/bpf/prog_tests/mptcp.c
->  create mode 100644 tools/testing/selftests/bpf/progs/mptcp_sock.c
->
->
-> base-commit: 834650b50ed283d9d34a32b425d668256bf2e487
-> --
-> 2.36.1
->
+> The introduction of opcode validation with bpf_opcode_in_insntable() in
+> commit 5e581dad4fec ("bpf: make unknown opcode handling more robust")
+> has made opcode checks done in do_check_common() and its callees
+> redundant, so either remove them entirely, or turn them into comments in
+> places where the redundancy may not be clear.
 
-I've added missing static for test_base and some other helper and
-replaced bzero and memcpy in BPF-side code with __builtin_memset and
-__builtin_memcpy (and dropped string.h include, it's not supposed to
-be used from BPF-side code). Applied to bpf-next, thanks.
+I prefer to keep the existing checks.
+They help readability on what is actually expected at this point.
+These checks cost close to nothing in run-time.
