@@ -2,90 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8910152E2E0
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 05:10:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C1D052E354
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 05:46:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239516AbiETDKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 23:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40078 "EHLO
+        id S1345188AbiETDqx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 23:46:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234406AbiETDKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 23:10:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D7683B3C9
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 20:10:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4987AB829EE
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 03:10:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 096CDC34100;
-        Fri, 20 May 2022 03:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653016212;
-        bh=ZzbDwSGbSnuYA+KFiZEaZo3aeo9+qFntGh19X3UYdjI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aFnxFzlPSQxinqeqJyxTDMdTK3fPf70ZEKr5cFzlulI63TbTc/dazuqYF1oNb/f2U
-         nNusFbXI1wohutl7+tCWvm+jtV0SlcMLCQRM0I4Z5DzD4Nx1r+dBIOs5swAr91T8DK
-         XEFvp1a/E/e3iLXVG/dB3gKxEzuIZdrokjyOGs6ySI9Ykq1Zw2gKeKPgUqGVAzISoC
-         2/DR6qgYCbANd+znXqDeGZayqXtu463T+MPwrziSoBmB0og3qgY21wPz+N6af7f8X7
-         rMbPo7qOONT/m8nTh7R4ohTeS8czoy+jqqwGdfC2eNy3ZQ/rc7602lG+ISJ9uSMCAr
-         RZOoxTCuUFpKA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DF842F0389D;
-        Fri, 20 May 2022 03:10:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S240860AbiETDqw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 23:46:52 -0400
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB84A30542;
+        Thu, 19 May 2022 20:46:49 -0700 (PDT)
+Received: by mail-pg1-x52d.google.com with SMTP id x12so6695529pgj.7;
+        Thu, 19 May 2022 20:46:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/VikhDlDIJyIH73NRxQkB3ZE1WQu0G4Ns/0LJwqLnks=;
+        b=mZEYcXVLOBS1Ve29MU+uG2hu32buxfY0bsbb8XSiCFttMoX5hRMSUN+zChGwJkKG8v
+         W5h6OJCR+h49kSaPilh0L5wTK7Lh8oP6MIdudzZMWeXj5/i1kaaT6tlg2mVQHaOD6IfB
+         W44WfRnmmgUhk7TNQ+xNPjxlWCK0Pkmu6US3Pxg74jc5UzdVNbNHB9HtUhSeXJqLm/1V
+         viddMSamrI9MnAa4tuW7RJqGsJWriqSbiq2rS+AONczyMSot8p3uCpPrfALXfYVPdI4c
+         Ks1QOgKEnsZyBCzNqMEkTac3JSziGE0qU8hPYrbDoiNU3gy/efRQay/AzskhyrPOKry3
+         C90A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/VikhDlDIJyIH73NRxQkB3ZE1WQu0G4Ns/0LJwqLnks=;
+        b=qbpE6SmKn6VehAPG0/S6hYej7CEII8knVPiSAUX9WfWAMTiR31qQiNglL1q452inF4
+         WGkEyGl0IMtmoJCaCc/dTkKYqyxwEgMnocuMjYiKuAa82TdhpIEF+/QJii4DKfQMoT3I
+         XQjlI/9JMH2lMZ/un29t2ePQR27nrTcm2f949pOn4Q/yQR0K3Sm/Yf3O79FqhwpXhltL
+         ENCoyihIaFnhFrcJaiLeMwoovJzr2Sf+2fjK0pdL97CxbHwl2REaDcAdHMCzwO2hm442
+         Nm+Ssb4Pkj4zRHy2fZqIoJPvLLYe3JCgKAC1JROnjZr27a7jAop8mzFx8d/cnnOg2888
+         Pa3g==
+X-Gm-Message-State: AOAM532i10VfESj7Ps/oYLFIodvImXaMMk+GmmB98Z/9d8JCCMvoKKmu
+        AhJTpk6gihdNKIVmyxtcMDGwcybjJc8m1DMjIw==
+X-Google-Smtp-Source: ABdhPJzrQ6ntAU/WFr+YDc3l0WoI1X1KLri6KUai1jfgGpDhODlE7mGaZ7jWf6iVZaGLz1316hhvwsUeoN2TmNgStx0=
+X-Received: by 2002:a63:d3:0:b0:3f6:139:d62 with SMTP id 202-20020a6300d3000000b003f601390d62mr6646266pga.113.1653018409307;
+ Thu, 19 May 2022 20:46:49 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/4] mptcp: Miscellaneous fixes and a new test case
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165301621191.9219.12868236037552729726.git-patchwork-notify@kernel.org>
-Date:   Fri, 20 May 2022 03:10:11 +0000
-References: <20220518220446.209750-1-mathew.j.martineau@linux.intel.com>
-In-Reply-To: <20220518220446.209750-1-mathew.j.martineau@linux.intel.com>
-To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com,
-        matthieu.baerts@tessares.net, mptcp@lists.linux.dev
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220409062449.3752252-1-zheyuma97@gmail.com> <CA++WF2Np7Bk_qT68Uc3mrC38mN5p3fm9eVT7VA8NoX6=es2r2w@mail.gmail.com>
+ <CAMhUBjkWcg4+YYynsd90jX1A+zp95tUUcLgYrTPAqSmbxM7TJA@mail.gmail.com> <CA++WF2MFwtKs8-uy+e_77P0ySsN8y6W_8+Z8AdxBKsutcYK-ig@mail.gmail.com>
+In-Reply-To: <CA++WF2MFwtKs8-uy+e_77P0ySsN8y6W_8+Z8AdxBKsutcYK-ig@mail.gmail.com>
+From:   Zheyu Ma <zheyuma97@gmail.com>
+Date:   Fri, 20 May 2022 11:46:38 +0800
+Message-ID: <CAMhUBjmbfYCiNvgVkC7x0QQLCxsttEX9CpHOK=N+Gt4YxUCu2Q@mail.gmail.com>
+Subject: Re: [PATCH] wireless: ipw2x00: Refine the error handling of ipw2100_pci_init_one()
+To:     Stanislav Yakovlev <stas.yakovlev@gmail.com>
+Cc:     kvalo@kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, pabeni@redhat.com,
+        wireless <linux-wireless@vger.kernel.org>,
+        netdev@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Sat, Apr 23, 2022 at 3:25 AM Stanislav Yakovlev
+<stas.yakovlev@gmail.com> wrote:
+>
+> Hi Zheyu,
+>
+> On 18/04/2022, Zheyu Ma <zheyuma97@gmail.com> wrote:
+> > On Thu, Apr 14, 2022 at 2:40 AM Stanislav Yakovlev
+> > <stas.yakovlev@gmail.com> wrote:
+> >>
+> >> On Sat, 9 Apr 2022 at 02:25, Zheyu Ma <zheyuma97@gmail.com> wrote:
+> >> >
+> >> > The driver should release resources in reverse order, i.e., the
+> >> > resources requested first should be released last, and the driver
+> >> > should adjust the order of error handling code by this rule.
+> >> >
+> >> > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+> >> > ---
+> >> >  drivers/net/wireless/intel/ipw2x00/ipw2100.c | 34 +++++++++-----------
+> >> >  1 file changed, 16 insertions(+), 18 deletions(-)
+> >> >
+> >> [Skipped]
+> >>
+> >> > @@ -6306,9 +6303,13 @@ static int ipw2100_pci_init_one(struct pci_dev
+> >> > *pci_dev,
+> >> >  out:
+> >> >         return err;
+> >> >
+> >> > -      fail_unlock:
+> >> > +fail_unlock:
+> >> >         mutex_unlock(&priv->action_mutex);
+> >> > -      fail:
+> >> > +fail:
+> >> > +       pci_release_regions(pci_dev);
+> >> > +fail_disable:
+> >> > +       pci_disable_device(pci_dev);
+> >> We can't move these functions before the following block.
+> >>
+> >> > +fail_dev:
+> >> >         if (dev) {
+> >> >                 if (registered >= 2)
+> >> >                         unregister_netdev(dev);
+> >> This block continues with a function call to ipw2100_hw_stop_adapter
+> >> which assumes that device is still accessible via pci bus.
+> >
+> > Thanks for your reminder, but the existing error handling does need to
+> > be revised, I got the following warning when the probing fails at
+> > pci_resource_flags():
+> >
+> > [   20.712160] WARNING: CPU: 1 PID: 462 at lib/iomap.c:44
+> > pci_iounmap+0x40/0x50
+> > [   20.716583] RIP: 0010:pci_iounmap+0x40/0x50
+> > [   20.726342]  <TASK>
+> > [   20.726550]  ipw2100_pci_init_one+0x101/0x1ee0 [ipw2100]
+> >
+> > Since I am not familiar with the ipw2100, could someone give me some
+> > advice to fix this.
+>
+> Could you please rebuild the kernel with IPW2100_DEBUG config option
+> enabled, rerun the test and post your results here? Also, please post
+> the output of "lspci -v" here.
 
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
+Sorry for the late response.
+I have rebuilt the kernel with IPW2100_DEBUG, and got the following result:
 
-On Wed, 18 May 2022 15:04:42 -0700 you wrote:
-> Patches 1 and 3 remove helpers that were iterating over the subflow
-> connection list without proper locking. Iteration was not needed in
-> either case.
-> 
-> Patch 2 fixes handling of MP_FAIL timeout, checking for orphaned
-> subflows instead of using the MPTCP socket data lock and connection
-> state.
-> 
-> [...]
+[   29.469624] libipw: 802.11 data/management/control stack, git-1.1.13
+[   29.470034] libipw: Copyright (C) 2004-2005 Intel Corporation
+<jketreno@linux.intel.com>
+[   29.477455] ipw2100: Intel(R) PRO/Wireless 2100 Network Driver, git-1.2.2
+[   29.477833] ipw2100: Copyright(c) 2003-2006 Intel Corporation
+[   29.478197] ipw2100Error calling ioremap.
+[   29.478398] ------------[ cut here ]------------
+[   29.478630] Bad IO access at port 0x0 ()
+[   29.478834] WARNING: CPU: 0 PID: 304 at lib/iomap.c:44 pci_iounmap+0x40/0x50
+[   29.481116] RIP: 0010:pci_iounmap+0x40/0x50
+[   29.485282] Call Trace:
+[   29.485407]  <TASK>
+[   29.485514]  ipw2100_pci_init_one+0x192/0x20c0 [ipw2100]
+[   29.487496]  local_pci_probe+0x13f/0x200
 
-Here is the summary with links:
-  - [net-next,1/4] mptcp: stop using the mptcp_has_another_subflow() helper
-    https://git.kernel.org/netdev/net-next/c/7b16871f9932
-  - [net-next,2/4] mptcp: Check for orphaned subflow before handling MP_FAIL timer
-    https://git.kernel.org/netdev/net-next/c/d42f9e4e2384
-  - [net-next,3/4] mptcp: Do not traverse the subflow connection list without lock
-    https://git.kernel.org/netdev/net-next/c/d9fb797046c5
-  - [net-next,4/4] selftests: mptcp: add MP_FAIL reset testcase
-    https://git.kernel.org/netdev/net-next/c/2ba18161d407
+Actually, I made a special virtual device to test this driver, not
+real hardware, so the "lspci" results are irrelevant here.
+I injected a software fault in the pci_iomap() function to force the
+driver to fail here, and then the driver goto "fail" tag, and under
+the "fail" tag the pci_iounmap() is called, resulting in a crash.
+In fact such error handling is incorrect and we should not release
+resources that have not been requested yet.
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks,
+Zheyu Ma
