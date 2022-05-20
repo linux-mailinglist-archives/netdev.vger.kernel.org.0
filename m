@@ -2,147 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AAF252F0F0
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:45:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 670CF52F0F9
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:46:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351783AbiETQpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 12:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49626 "EHLO
+        id S1351800AbiETQqG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 12:46:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229452AbiETQpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:45:13 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D5D178567;
-        Fri, 20 May 2022 09:45:12 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id d22so7803215plr.9;
-        Fri, 20 May 2022 09:45:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=u22Vdb8ad4QsGUpvqDD4jw8opLANlipXffF4J28OkDw=;
-        b=alC71XCAjWLZ2L+MKQYDKx3KTDbWUY+ds3nxi6wLqgO7s9wjvHmeS0X4mp5EnSoUUl
-         5azRlTmtfw/UqAiUwhI5sZANOPrUEC/QVcgidBJjdj4vzvuMoqNBW3nF9tMw2moyZlgN
-         8wyQDt0+i8Ada0za5PsJuWKfV+qMDHHHk2GretQeRaKoVLkVf0wFl6lveJrSxek6tugV
-         CGXMeMWuv7bzSJ5ekUqL6IxWkCb1TWH3HxYnZOseiU6svnyorwth8UX8rb5PIV8m9KMA
-         KOP4TMl/Nnd2YqrNvrxDocxEl3yX1fsJgCEhZhQWU9/MAB/jhNnUTNVoxy08eGE2Tu0V
-         r/5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=u22Vdb8ad4QsGUpvqDD4jw8opLANlipXffF4J28OkDw=;
-        b=IOtTvcJiQ8WXVNaJploMVtDsmP/0ioJ8LIo6qbOKA8PBVzkaqhbGsSnzlqr3PPAmx1
-         HTZdskCfxZ6kobIxp/pLmmnUAQLTocSwwSVTPRT+mUnskJLEQSZW/5/F2AILMVbVo+Bn
-         abQ4kEBLSnYUf8IeeQEorU6IyQ427T1twq7712qCViQXHEb280Epndgd77zPb/QPavRa
-         PG8Z2+8cD0nG59V3KA6mRVXUsEUtIW162uujDcNf8rx4rwDKRqtgl2+o5RqJwjPGvOng
-         DMNEAft2AsCC4I3D+eRE7UuxFGp4FmBPLJvRMZIgmiQ9j9naXZPe3PfQQ7b2fxlAYO7R
-         mdBQ==
-X-Gm-Message-State: AOAM533unz4xbJLttFEap9bNm7IAS1QM4dwHhSsG7XxbrVHYAv7LqyLv
-        ZeL2It1tQCf5NmXZwXJCsLg=
-X-Google-Smtp-Source: ABdhPJyP4R45XL7Ygkc11JWnS15dH4cQ+zV/iI/2vxrlGm1gisg0ogaD4Bj036lBydbUC7eRTm8umQ==
-X-Received: by 2002:a17:90a:cc02:b0:1df:257a:5396 with SMTP id b2-20020a17090acc0200b001df257a5396mr12031837pju.190.1653065111792;
-        Fri, 20 May 2022 09:45:11 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::4:1761])
-        by smtp.gmail.com with ESMTPSA id j7-20020a170902690700b001616b71e5e6sm5917456plk.175.2022.05.20.09.45.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 09:45:11 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 20 May 2022 06:45:10 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
-Message-ID: <YofFli6UCX4J5YnU@slm.duckdns.org>
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220520012133.1217211-4-yosryahmed@google.com>
- <YodGI73xq8aIBrNM@slm.duckdns.org>
- <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
- <YodNLpxut+Zddnre@slm.duckdns.org>
- <73fd9853-5dab-8b59-24a0-74c0a6cae88e@fb.com>
+        with ESMTP id S1351829AbiETQqB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:46:01 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 339FA25598
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:45:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653065157;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=37YTECylfYJKjIR6L09Y/2cjGQ9dGSPVwV6PJ3XmXKE=;
+        b=Ailikk4GhhE/QuwsZKa3CHIGoIhauCejPV9aHaPEoYVxWQxDkUg8dZk29qnsABQIm2Y6Ll
+        q0M1m08tnGyRpHkYPUFaFevQAnRzLKfJMOfwEwvy8FIv0IUBxlsr9LpA3iWQhtzhaSBj0a
+        mD5vteKHgvcsSqD1Vv1EHNK7ze/5Dgw=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-673-CJ-uakelPyGYdQRg34zvCA-1; Fri, 20 May 2022 12:45:55 -0400
+X-MC-Unique: CJ-uakelPyGYdQRg34zvCA-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6DA9285A5AA;
+        Fri, 20 May 2022 16:45:55 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D272EC53360;
+        Fri, 20 May 2022 16:45:54 +0000 (UTC)
+Subject: [PATCH net-next 0/7] rxrpc: Miscellaneous changes
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 20 May 2022 17:45:54 +0100
+Message-ID: <165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <73fd9853-5dab-8b59-24a0-74c0a6cae88e@fb.com>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello, Yonghong.
 
-On Fri, May 20, 2022 at 09:29:43AM -0700, Yonghong Song wrote:
-> Maybe you can have a bpf program signature like below:
-> 
-> int BPF_PROG(dump_vmscan, struct bpf_iter_meta *meta, struct cgroup *cgrp,
-> struct cgroup *parent_cgrp)
-> 
-> parent_cgrp is NULL when cgrp is the root cgroup.
-> 
-> I would like the bpf program should send the following information to
-> user space:
->    <parent cgroup dir name> <current cgroup dir name>
+Here are some miscellaneous changes for AF_RXRPC:
 
-I don't think parent cgroup dir name would be sufficient to reconstruct the
-path given that multiple cgroups in different subtrees can have the same
-name. For live cgroups, userspace can find the path from id (or ino) without
-traversing anything by constructing the fhandle, open it open_by_handle_at()
-and then reading /proc/self/fd/$FD symlink -
-https://lkml.org/lkml/2020/12/2/1126. This isn't available for dead cgroups
-but I'm not sure how much that'd matter given that they aren't visible from
-userspace anyway.
+ (1) Allow the list of local endpoints to be viewed through /proc.
 
->    <various stats interested by the user>
-> 
-> This way, user space can easily construct the cgroup hierarchy stat like
->                            cpu   mem   cpu pressure   mem pressure ...
->    cgroup1                 ...
->       child1               ...
->         grandchild1        ...
->       child2               ...
->    cgroup 2                ...
->       child 3              ...
->         ...                ...
-> 
-> the bpf iterator can have additional parameter like
-> cgroup_id = ... to only call bpf program once with that
-> cgroup_id if specified.
-> 
-> The kernel part of cgroup_iter can call cgroup_rstat_flush()
-> before calling cgroup_iter bpf program.
-> 
-> WDYT?
+ (2) Switch to using refcount_t for refcounting.
 
-Would it work to just pass in @cgrp and provide a group of helpers so that
-the program can do whatever it wanna do including looking up the full path
-and passing that to userspace?
+ (3) Fix a locking issue found by lockdep.
 
-Thanks.
+ (4) Autogenerate tracing symbol enums from symbol->string maps to make it
+     easier to keep them in sync.
 
--- 
-tejun
+ (5) Return an error to sendmsg() if a call it tried to set up failed.
+     Because it failed at this point, no notification will be generated for
+     recvmsg to pick up - but userspace still needs to know about the
+     failure.
+
+ (6) Fix the selection of abort codes generated by internal events.  In
+     particular, rxrpc and kafs shouldn't be generating RX_USER_ABORT
+     unless it's because userspace did something to cancel a call.
+
+ (7) Adjust the interpretation and handling of certain ACK types to try and
+     detect NAT changes causing a call to seem to start mid-flow from a
+     different peer.
+
+The patches are tagged here:
+
+	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+	rxrpc-next-20220520
+
+and can also be found on the following branch:
+
+	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-next
+
+Tested-by: kafs-testing+fedora34_64checkkafs-build-493@auristor.com
+
+David
+---
+David Howells (7):
+      rxrpc: Allow list of in-use local UDP endpoints to be viewed in /proc
+      rxrpc: Use refcount_t rather than atomic_t
+      rxrpc: Fix locking issue
+      rxrpc: Automatically generate trace tag enums
+      rxrpc: Return an error to sendmsg if call failed
+      rxrpc, afs: Fix selection of abort codes
+      afs: Adjust ACK interpretation to try and cope with NAT
+
+
+ fs/afs/misc.c                |   5 +-
+ fs/afs/rotate.c              |   4 +
+ fs/afs/rxrpc.c               |   8 +-
+ fs/afs/write.c               |   1 +
+ fs/seq_file.c                |  32 +++++
+ include/linux/list.h         |  10 ++
+ include/linux/seq_file.h     |   4 +
+ include/trace/events/rxrpc.h | 263 ++++++-----------------------------
+ net/rxrpc/af_rxrpc.c         |   2 +-
+ net/rxrpc/ar-internal.h      |  25 ++--
+ net/rxrpc/call_accept.c      |  10 +-
+ net/rxrpc/call_event.c       |   4 +-
+ net/rxrpc/call_object.c      |  62 +++++----
+ net/rxrpc/conn_client.c      |  30 ++--
+ net/rxrpc/conn_object.c      |  51 +++----
+ net/rxrpc/conn_service.c     |   8 +-
+ net/rxrpc/input.c            |  31 ++++-
+ net/rxrpc/local_object.c     |  68 ++++-----
+ net/rxrpc/net_ns.c           |   7 +-
+ net/rxrpc/peer_object.c      |  40 +++---
+ net/rxrpc/proc.c             |  85 +++++++++--
+ net/rxrpc/sendmsg.c          |   6 +
+ net/rxrpc/skbuff.c           |   1 -
+ 23 files changed, 366 insertions(+), 391 deletions(-)
+
+
