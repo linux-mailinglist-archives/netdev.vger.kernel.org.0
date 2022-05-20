@@ -2,91 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9C6FD52E133
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 02:30:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 87A3B52E13A
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 02:36:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344011AbiETAaU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 20:30:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45694 "EHLO
+        id S1344031AbiETAgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 20:36:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232460AbiETAaT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 20:30:19 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B3B5CEBBF;
-        Thu, 19 May 2022 17:30:16 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 87421CE28C5;
-        Fri, 20 May 2022 00:30:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DE0B0C385B8;
-        Fri, 20 May 2022 00:30:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653006612;
-        bh=zrBLfoi6ZefDnvO/uCOFCwqiPT1EkKDL+CQeAwqyjZw=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dwlfzx29f+vGz60f6WMdXVgL3BW1CWdo5Ai24Bv0GW6ju7N5ZLS4ffiXAgWQpp68s
-         Vsc+hjMlWoEzCD5KJoUjAgaXze+s+wDbbNHPb4isvzMQESJahbGKGbxQo2mjMei1Kk
-         QYn+qBz++iMr3R27zdHSQ1fVBxPqNjmlCMF6YkqWeOPzw7fRNzAaYJC/V7C+VrlHzw
-         ARKLNkW/hcOiTJh8dulT6FTDtGb75ProBDTt/eYA7nPx7U89pr3axKPxlq5I0Rdj6i
-         H6FdXDSXkk2Ms9dK6RWjuGbkGQ4Zznu8ZXvmVJ3S/9dh/IPpV5rQYCF0HKk8Ww/Qze
-         VsOa+u6EFBM3Q==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A551AF0389D;
-        Fri, 20 May 2022 00:30:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S232460AbiETAg3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 20:36:29 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356065DA12;
+        Thu, 19 May 2022 17:36:28 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id u3so9432399wrg.3;
+        Thu, 19 May 2022 17:36:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=20g10QH4u/3O0tBO6ofFWhrt9ZuFgao8sbSN8hXJynU=;
+        b=Xs2tZvkUhGUidDE1n3SJS4u3GAqDBT0pD0YTr8+WjofwhZJ4LAUgEKbSeM9DjnkZyW
+         aw6Pxr9T2SQ/qrxMF1Vb/iamHZ2FC8ppfRw9z85una19facSffA3O0KjsNZQFxS9vkJU
+         Y4iNUbpxojolrC3BN+9xXZ2bDr1ul1hEKKydP42C/AR7NZsdpl3nauU+Z2tUqWYmLKg0
+         SLzR0Xfb7YvfAaTyirgmoCuz4i7arJnv5Gt/bUayLfCpPSd9I5hw5/SHls6cPE5GR1qd
+         Y9Rmy1tIzqb8EOlOmhM9LPIPfsBuJSUsqWM3PnwinzYV5jKLm8xy7PKY3LYoOMCFFc7G
+         0ROA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=20g10QH4u/3O0tBO6ofFWhrt9ZuFgao8sbSN8hXJynU=;
+        b=xQymGrSLhfJTTSy8g7cyPbWZL9300HdBCSR3Bukkr8GcF1vsNe7dv+w8RoIjPg9lci
+         JqPWUPtIRriPYVryQpHKx43M+asS9JvmMXWfXxzrxr2I/4Dh2wawXq9zdrYuj+SYKCWm
+         M825wM+c90onste/SLM+pIjGLIGRHsq5RAsLw9CTJDS7kzikAjpAxhSjU0bMc4xtC/XC
+         zNH5JHTmHZxdROlqoY69WX7YeSpsxgLWd/YWErMwIbHNet95pPDOb2Eqy4ulyZjNdl5m
+         gt38lgIaSxhX985OT3uq/KHlDxwl9ijW3qSB6e20wcydiaWr0CQrWnoI7H6M7we3lyx9
+         k50g==
+X-Gm-Message-State: AOAM533vxD05mHALrS9qhg0Sq9OE3fl2CubmyS0VA0ld8JONkE/r0Mxo
+        Dsc6DiuYqrTDdVbBm2zU5ptN2yZbgvc=
+X-Google-Smtp-Source: ABdhPJwKTnUkWXcKClggkLAd997j0lZE2h8MSJkc5Y+J0faRwVERo3wUnSrffxMBZ4Al4GCagUN1KQ==
+X-Received: by 2002:a05:6000:1acd:b0:20c:7201:9267 with SMTP id i13-20020a0560001acd00b0020c72019267mr6073089wry.41.1653006986589;
+        Thu, 19 May 2022 17:36:26 -0700 (PDT)
+Received: from localhost.localdomain ([41.232.195.220])
+        by smtp.gmail.com with ESMTPSA id bh9-20020a05600c3d0900b0039444973258sm951063wmb.0.2022.05.19.17.36.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 17:36:26 -0700 (PDT)
+From:   Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     outreachy@lists.linux.dev, roopa@nvidia.com, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+        linux-kernel@vger.kernel.org, eng.alaamohamedsoliman.am@gmail.com
+Subject: [PATCH net-next v2] net: vxlan: Fix kernel coding style
+Date:   Fri, 20 May 2022 02:36:14 +0200
+Message-Id: <20220520003614.6073-1-eng.alaamohamedsoliman.am@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/4] can: isotp: isotp_bind(): do not validate unused
- address information
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165300661267.32488.11022480105388538234.git-patchwork-notify@kernel.org>
-Date:   Fri, 20 May 2022 00:30:12 +0000
-References: <20220519202308.1435903-2-mkl@pengutronix.de>
-In-Reply-To: <20220519202308.1435903-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        socketcan@hartkopp.net
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+The continuation line does not align with the opening bracket
+and this patch fix it.
 
-This series was applied to netdev/net-next.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
+Signed-off-by: Alaa Mohamed <eng.alaamohamedsoliman.am@gmail.com>
+---
+changes in v2:
+	fix the alignment of the "DST, VNI, ifindex and port are mutually exclusive with NH_ID"
+  string to the open parenthesis of the NL_SET_ERR_MSG macro in vxlan_fdb_parse().
+---
+ drivers/net/vxlan/vxlan_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-On Thu, 19 May 2022 22:23:05 +0200 you wrote:
-> From: Oliver Hartkopp <socketcan@hartkopp.net>
-> 
-> With commit 2aa39889c463 ("can: isotp: isotp_bind(): return -EINVAL on
-> incorrect CAN ID formatting") the bind() syscall returns -EINVAL when
-> the given CAN ID needed to be sanitized. But in the case of an unconfirmed
-> broadcast mode the rx CAN ID is not needed and may be uninitialized from
-> the caller - which is ok.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/4] can: isotp: isotp_bind(): do not validate unused address information
-    https://git.kernel.org/netdev/net-next/c/b76b163f46b6
-  - [net-next,2/4] can: can-dev: move to netif_napi_add_weight()
-    https://git.kernel.org/netdev/net-next/c/caf6b7f81e05
-  - [net-next,3/4] can: can-dev: remove obsolete CAN LED support
-    https://git.kernel.org/netdev/net-next/c/6c1e423a3c84
-  - [net-next,4/4] can: mcp251xfd: silence clang's -Wunaligned-access warning
-    https://git.kernel.org/netdev/net-next/c/1a6dd9996699
-
-You are awesome, thank you!
+diff --git a/drivers/net/vxlan/vxlan_core.c b/drivers/net/vxlan/vxlan_core.c
+index 293082c32a78..29db08f15e38 100644
+--- a/drivers/net/vxlan/vxlan_core.c
++++ b/drivers/net/vxlan/vxlan_core.c
+@@ -1138,7 +1138,7 @@ static int vxlan_fdb_parse(struct nlattr *tb[], struct vxlan_dev *vxlan,
+ 	if (tb[NDA_NH_ID] && (tb[NDA_DST] || tb[NDA_VNI] || tb[NDA_IFINDEX] ||
+ 	    tb[NDA_PORT])) {
+ 			NL_SET_ERR_MSG(extack,
+-						  "DST, VNI, ifindex and port are mutually exclusive with NH_ID");
++					"DST, VNI, ifindex and port are mutually exclusive with NH_ID");
+ 			return -EINVAL;
+ 		}
+ 
+@@ -1297,7 +1297,7 @@ int __vxlan_fdb_delete(struct vxlan_dev *vxlan,
+ static int vxlan_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
+ 			    struct net_device *dev,
+ 			    const unsigned char *addr, u16 vid,
+-				struct netlink_ext_ack *extack)
++			    struct netlink_ext_ack *extack)
+ {
+ 	struct vxlan_dev *vxlan = netdev_priv(dev);
+ 	union vxlan_addr ip;
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+2.25.1
 
