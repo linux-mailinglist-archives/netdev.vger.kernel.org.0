@@ -2,96 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FBF352F41A
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 21:58:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C5DB52F453
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 22:20:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353379AbiETT6O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 15:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33242 "EHLO
+        id S1353432AbiETUUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 16:20:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37768 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353361AbiETT6N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 15:58:13 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6720519CB79;
-        Fri, 20 May 2022 12:58:12 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id n23so12138427edy.0;
-        Fri, 20 May 2022 12:58:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=xeCIxo4cGxF1ZHyWTaeeDO/o7Iv21Bmj6wRizfGpT5c=;
-        b=Bv0EbFJ2N8Gflsjg7tvAWXYqfRnzZb8Mi96BnJE8mYn/57Ss3lHeOWylvswjRZRgjS
-         s1MJRzmQPQfLHkCvthEybX04JZOLJdpAkweZTfnLDGvyoE30UOtk7viRFx8K67Cd6xus
-         eA13fOH1q/jdDqy1NyXDOf9f+oOojQNUYzhNb56EU2UPSYHZEWsrs2m56uVGilgO9yC4
-         L6FJxWTtRqbmkBqUUOnXm0vOZz4uEWWys9yIRl30YXigCK6e/bePQZUe9As/OTiOkhdx
-         okarLzoJtpOascuV6dwz2eAYh+DEMUwpR4V9DHGvRSTvnL8nV9m/DM9erl1akTcnblsx
-         3U3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xeCIxo4cGxF1ZHyWTaeeDO/o7Iv21Bmj6wRizfGpT5c=;
-        b=54cAreCEIK7jH0PluUI/IXyurb8OgsiCjUlgRCC+Mc9FjULO3C5J5iFwuf5tP/B6MM
-         GOnI2YgfaD9AzdDsq/dQ/RAyKTOclHeuBlBM5lxGD9xfy3JhQvOEKCeLr74ih5akRHx8
-         j0IwdPqKRR2kC/KjH3dcVuNG9jxs7Eewqo1rQAJJ5/MQoeANJE/nabFg1zQH4iQzEey2
-         nZAO/t6zEtOFNg4NQvZVb7HuYnM58a1O3bTz1YWJcCNJYyOkt43hLh0lZaChnFNHNgkD
-         FXtzxC3+QwAzn87t2iBcusqIeu972VHGfz5xi5zznWpiX0t7CT2l0kBb4VMTXJm8b3hd
-         gKSA==
-X-Gm-Message-State: AOAM531K8mnBYaZCUb5AKW22FCQSI7nWlEW5Yfuii1o2s3B0MDKXcjWz
-        WiU2tGT23TzF5349MuS7hbY=
-X-Google-Smtp-Source: ABdhPJyR38gzaVmfiI7HLFzG4H3JRx2WR6IhFlqJFAwdrMrF/sfzBJBdg4MMZUKvRWcmoa2kfgMwMA==
-X-Received: by 2002:a05:6402:1393:b0:42a:c36d:67a6 with SMTP id b19-20020a056402139300b0042ac36d67a6mr12902730edv.158.1653076690836;
-        Fri, 20 May 2022 12:58:10 -0700 (PDT)
-Received: from debian64.daheim (pd9e296b5.dip0.t-ipconnect.de. [217.226.150.181])
-        by smtp.gmail.com with ESMTPSA id 9-20020a17090601c900b006f3ef214db7sm3505103ejj.29.2022.05.20.12.58.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 12:58:10 -0700 (PDT)
-Received: from localhost.daheim ([127.0.0.1])
-        by debian64.daheim with esmtp (Exim 4.95)
-        (envelope-from <chunkeey@gmail.com>)
-        id 1ns8ki-000CS6-SK;
-        Fri, 20 May 2022 21:58:10 +0200
-Message-ID: <c3f856a5-730c-0488-70c0-f11713cb71f3@gmail.com>
-Date:   Fri, 20 May 2022 21:58:09 +0200
+        with ESMTP id S1352457AbiETUUV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 16:20:21 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E859187DBD
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 13:20:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=NhkdzEAIcWq207vFnD0dd4g9837Pmprp8EVeDf6N94s=; b=TC6FC4l0BstLe2pusfWmavAE5b
+        KXHWxIjkTUDWSY6z8GbXHZAA9DM9TTDPpXvUC8O6QEm9fcPO7Gx9arPHSx+cc5rnqd96in10z9Lg0
+        KC2rZURc1N/En0D613V7fjYaj1bXzH0dHibpauM+zlX91Hp9KRTnX/JNj9hPOCom/vDw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ns96c-003gas-11; Fri, 20 May 2022 22:20:14 +0200
+Date:   Fri, 20 May 2022 22:20:14 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        NXP Linux Team <linux-imx@nxp.com>, kernel@pengutronix.de
+Subject: Re: [PATCH net-next RESEND] net: fec: Do proper error checking for
+ enet_out clk
+Message-ID: <Yof3/o46wXWXMsKo@lunn.ch>
+References: <20220520062650.712561-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH net-next 8/8] wifi: carl9170: silence a GCC 12
- -Warray-bounds warning
-Content-Language: de-DE
-To:     Jakub Kicinski <kuba@kernel.org>, kvalo@kernel.org,
-        johannes@sipsolutions.net
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-References: <20220520194320.2356236-1-kuba@kernel.org>
- <20220520194320.2356236-9-kuba@kernel.org>
-From:   Christian Lamparter <chunkeey@gmail.com>
-In-Reply-To: <20220520194320.2356236-9-kuba@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220520062650.712561-1-u.kleine-koenig@pengutronix.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/05/2022 21:43, Jakub Kicinski wrote:
-> carl9170 has a big union (struct carl9170_cmd) with all the command
-> types in it. But it allocates buffers only large enough for a given
-> command. This upsets GCC 12:
-> 
-> drivers/net/wireless/ath/carl9170/cmd.c:125:30: warning: array subscript ‘struct carl9170_cmd[0]’ is partly outside array bounds of ‘unsigned char[8]’ [-Warray-bounds]
->    125 |                 tmp->hdr.cmd = cmd;
->        |                 ~~~~~~~~~~~~~^~~~~
-> 
-> Punt the warning to W=1 for now. Hopefully GCC will learn to
-> recognize which fields are in-bounds.
-> 
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Acked-by: Christian Lamparter <chunkeey@gmail.com>
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index 11227f51404c..2512b68d8545 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -3866,9 +3866,11 @@ fec_probe(struct platform_device *pdev)
+>  	fep->itr_clk_rate = clk_get_rate(fep->clk_ahb);
+>  
+>  	/* enet_out is optional, depends on board */
+> -	fep->clk_enet_out = devm_clk_get(&pdev->dev, "enet_out");
+> -	if (IS_ERR(fep->clk_enet_out))
+> -		fep->clk_enet_out = NULL;
+> +	fep->clk_enet_out = devm_clk_get_optional(&pdev->dev, "enet_out");
+> +	if (IS_ERR(fep->clk_enet_out)) {
+> +		ret = PTR_ERR(fep->clk_enet_out);
+> +		goto failed_clk;
+> +	}
+>  
+>  	fep->ptp_clk_on = false;
+>  	mutex_init(&fep->ptp_clk_mutex);
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+This is O.K, as far as it goes. But directly after this we have:
+
+	/* clk_ref is optional, depends on board */
+	fep->clk_ref = devm_clk_get(&pdev->dev, "enet_clk_ref");
+	if (IS_ERR(fep->clk_ref))
+		fep->clk_ref = NULL;
+	fep->clk_ref_rate = clk_get_rate(fep->clk_ref);
+
+It would be good to do the same to this clock as well.
+
+    Andrew
