@@ -2,121 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D2852E6AF
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 09:57:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 418B652E6BA
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 09:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346705AbiETH5g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 03:57:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56978 "EHLO
+        id S1346728AbiETH6t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 03:58:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346713AbiETH5d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:57:33 -0400
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66E4C14B676
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:57:30 -0700 (PDT)
-Received: by mail-lf1-x12c.google.com with SMTP id p22so12937826lfo.10
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:57:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=LDOJGy883Whj2KPtZJS2ToqHv52wGZqpYAqQT+XUcgE=;
-        b=isUGeH7YJ9hSFqU+LajDXfZhlKfVb7CX45XzIRyUTr6nxi+RtAGNgqGbnlsEQhvwYj
-         DtZarkhGFwdzhP4U7a50sc89MgvxBhO8zNUt5YEZLuwaQ0rbV7tuhw9C3OHVafO+ZDPE
-         ibZL6Q24dpZhKvcW2XmyFRDEbJHcahhp/Xga8jIN54sHD4+Vk7luFlD2au3HrMJQz8Z2
-         7s5UjC357gY4A1NloCW8kQDC3228Q254aC/poWeNagQEYcyaCCOIcDzHwut3LSow/2Cc
-         AEp2zS8qrGbxkv0vEqfQriAoUknEGaCL+Xvtqsje2IVe+y2wtuZ4TmLz4ETDf4swtJ5j
-         o0xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=LDOJGy883Whj2KPtZJS2ToqHv52wGZqpYAqQT+XUcgE=;
-        b=Qp6HGDK23SUOKv46KtEw4yjXuXPKXdYy14AuR60PFQO21xYexQmVaMZ/kKewfIhwjY
-         Jn9SKL7f7Aue7FHMRZnlwdEc7VXBvJfVRqKf5G1d1NnKgaQWF489OZEP8kR4nek251H2
-         /mLdHaokUXv6BGH5cWFK2q7w8ga1edBZ/qLS6CFVkMWCOrV7uTAJDx5ppf4HgSc2GRSo
-         UVbKC0AKVdhT/Jg218COG1t0pgxEy7IxBUsHvivx1h2UcK9pO/kgfm0NbMNySQQY7oJM
-         goaeXSMDDzvSlfR5v8790g9AUvf20NWj5ipqyT3VEJs5tmY8hN6gIjaF4MYEi/hLcmil
-         iFJw==
-X-Gm-Message-State: AOAM533xMfVbvheYZDoKUYNYR9JYR5Kji5XysEN2RHt8d0I1Q9ONOoK8
-        S7+128usRjuAl+yVutFuMv4Glg==
-X-Google-Smtp-Source: ABdhPJxwdWspWTlCev1Y+CnP3ttUl/Y734MOSgWU+vOZrJzIFaH1ePOp5e8j6NN5qbVKN4ceOqCbGQ==
-X-Received: by 2002:a05:6512:1319:b0:44a:c200:61e5 with SMTP id x25-20020a056512131900b0044ac20061e5mr6159427lfu.550.1653033448712;
-        Fri, 20 May 2022 00:57:28 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.gmail.com with ESMTPSA id j5-20020ac25505000000b004778c285166sm559287lfk.216.2022.05.20.00.57.27
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 00:57:28 -0700 (PDT)
-Message-ID: <0518eef1-75a6-fbfe-96d8-bb1fc4e5178a@linaro.org>
-Date:   Fri, 20 May 2022 09:57:26 +0200
+        with ESMTP id S235137AbiETH6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:58:47 -0400
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [217.70.183.195])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEFB714CDC7;
+        Fri, 20 May 2022 00:58:44 -0700 (PDT)
+Received: (Authenticated sender: clement.leger@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id 539C16000D;
+        Fri, 20 May 2022 07:58:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1653033523;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gmGaXG6vGzUCTmc3IUGjVh5xf9GDtvuGXKgKOkXHkDg=;
+        b=FCXHREZ1qt+UdZYwm20wexqRvwxbDqkkHAKfHFOA3VGw4YAyYfARjkff3ES9CaI7GIKYMQ
+        m2vAYWqzYrk78/jCKZgcarpYAOHKcwxQjjPfsX9Ck7M+f6agVTNIa1TDrQQRQ/UQafHIqV
+        +7UqI8G9t+7sb3NTo7+rSFBhV4T964t1J54uqCAQO8zod+VWHVeJu4Q1pURLcGg4Sj2wpL
+        US/Cz2g2coP+0mGvpNLYQHuflJuF8xMi2tDGwRl/6GEGvJgGD72ccpA36fQTjfRoAtNxQ3
+        UXzClgUeebv7zaDPgbotVtR0hksllHZ+7SIqiw6KIseZwQiS+0OXfnA7VaIlAA==
+Date:   Fri, 20 May 2022 09:57:30 +0200
+From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?B?TWlxdcOobA==?= Raynal <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v5 06/13] dt-bindings: net: dsa: add bindings
+ for Renesas RZ/N1 Advanced 5 port switch
+Message-ID: <20220520095730.512bbb8d@fixe.home>
+In-Reply-To: <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
+References: <20220519153107.696864-1-clement.leger@bootlin.com>
+        <20220519153107.696864-7-clement.leger@bootlin.com>
+        <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v2 4/5] dt-bindings: net: Add documentation for optional
- regulators
-Content-Language: en-US
-To:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Corentin Labbe <clabbe@baylibre.com>, calvin.johnson@oss.nxp.com,
-        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
-        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@lists.linux.dev, netdev@vger.kernel.org
-References: <20220518200939.689308-1-clabbe@baylibre.com>
- <20220518200939.689308-5-clabbe@baylibre.com>
- <95f3f0a4-17e6-ec5f-6f2f-23a5a4993a44@linaro.org>
- <YoYqmAB3P7fNOSVG@sirena.org.uk>
- <c74b0524-60c6-c3af-e35f-13521ba2b02e@linaro.org> <YoYw2lKbgCiDXP0A@lunn.ch>
- <YoZm9eabWy/FNKu1@sirena.org.uk>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <YoZm9eabWy/FNKu1@sirena.org.uk>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 19/05/2022 17:49, Mark Brown wrote:
-> On Thu, May 19, 2022 at 01:58:18PM +0200, Andrew Lunn wrote:
->> On Thu, May 19, 2022 at 01:33:21PM +0200, Krzysztof Kozlowski wrote:
->>> On 19/05/2022 13:31, Mark Brown wrote:
->>>> On Thu, May 19, 2022 at 11:55:28AM +0200, Krzysztof Kozlowski wrote:
->>>>> On 18/05/2022 22:09, Corentin Labbe wrote:
-> 
->>>>>> +  regulators:
->>>>>> +    description:
->>>>>> +       List of phandle to regulators needed for the PHY
-> 
->>>>> I don't understand that... is your PHY defining the regulators or using
->>>>> supplies? If it needs a regulator (as a supply), you need to document
->>>>> supplies, using existing bindings.
-> 
->>>> They're trying to have a generic driver which works with any random PHY
->>>> so the binding has no idea what supplies it might need.
-> 
->>> OK, that makes sense, but then question is why not using existing
->>> naming, so "supplies" and "supply-names"?
-> 
->> I'm not saying it is not possible, but in general, the names are not
->> interesting. All that is needed is that they are all on, or
->> potentially all off to save power on shutdown. We don't care how many
->> there are, or what order they are enabled.
-> 
-> I think Krzysztof is referring to the name of the property rather than
-> the contents of the -names property there.
+Le Fri, 20 May 2022 09:13:23 +0200,
+Geert Uytterhoeven <geert@linux-m68k.org> a =C3=A9crit :
 
-Yes, exactly. Existing pattern for single regulator supply is
-"xxx-supply", so why this uses a bit different pattern instead of
-something more consistent ("supplies" and "supply-names")?
+> Hi Cl=C3=A9ment,
+>=20
+> On Thu, May 19, 2022 at 5:32 PM Cl=C3=A9ment L=C3=A9ger <clement.leger@bo=
+otlin.com> wrote:
+> > Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
+> > present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
+> > This company does not exists anymore and has been bought by Synopsys.
+> > Since this IP can't be find anymore in the Synospsy portfolio, lets use
+> > Renesas as the vendor compatible for this IP.
+> >
+> > Signed-off-by: Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com> =20
+>=20
+> Thanks for your patch!
+>=20
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
+> > @@ -0,0 +1,131 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/net/dsa/renesas,rzn1-a5psw.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Renesas RZ/N1 Advanced 5 ports ethernet switch
+> > +
+> > +maintainers:
+> > +  - Cl=C3=A9ment L=C3=A9ger <clement.leger@bootlin.com>
+> > +
+> > +description: |
+> > +  The advanced 5 ports switch is present on the Renesas RZ/N1 SoC fami=
+ly and
+> > +  handles 4 ports + 1 CPU management port.
+> > +
+> > +allOf:
+> > +  - $ref: dsa.yaml#
+> > +
+> > +properties:
+> > +  compatible:
+> > +    items:
+> > +      - enum:
+> > +          - renesas,r9a06g032-a5psw
+> > +      - const: renesas,rzn1-a5psw
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  mdio:
+> > +    $ref: /schemas/net/mdio.yaml#
+> > +    unevaluatedProperties: false
+> > +
+> > +  clocks:
+> > +    items:
+> > +      - description: AHB clock used for the switch register interface
+> > +      - description: Switch system clock
+> > +
+> > +  clock-names:
+> > +    items:
+> > +      - const: hclk
+> > +      - const: clk =20
+>=20
+> (Good, "clock-names" is present ;-)
+>=20
+> Missing "power-domains" property.
+>=20
 
-Best regards,
-Krzysztof
+I do not use pm_runtime* in the switch driver. I should probably do that
+right ?
+
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/gpio/gpio.h>
+> > +    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
+> > +
+> > +    switch@44050000 {
+> > +        compatible =3D "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
+> > +        reg =3D <0x44050000 0x10000>;
+> > +        clocks =3D <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G0=
+32_CLK_SWITCH>;
+> > +        clock-names =3D "hclk", "clk";
+> > +        pinctrl-names =3D "default";
+> > +        pinctrl-0 =3D <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>; =20
+>=20
+> Usually we don't list pinctrl-* properties in examples.
+>=20
+
+Acked, I'll remove that.
+
+> The rest LGTM (from an SoC integration PoV), so with the above fixed
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>=20
+> Gr{oetje,eeting}s,
+>=20
+>                         Geert
+>=20
+> --
+> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m6=
+8k.org
+>=20
+> In personal conversations with technical people, I call myself a hacker. =
+But
+> when I'm talking to journalists I just say "programmer" or something like=
+ that.
+>                                 -- Linus Torvalds
+
+
+
+--=20
+Cl=C3=A9ment L=C3=A9ger,
+Embedded Linux and Kernel engineer at Bootlin
+https://bootlin.com
