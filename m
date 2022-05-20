@@ -2,63 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BABB552F0C6
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B21F652F0C9
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:34:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351685AbiETQeM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 12:34:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58058 "EHLO
+        id S1351723AbiETQeW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 12:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351707AbiETQeK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:34:10 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id F385B17EC35
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:34:07 -0700 (PDT)
+        with ESMTP id S1351720AbiETQeS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:34:18 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D76CC17EC05
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:34:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653064447;
+        s=mimecast20190719; t=1653064454;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=+YugoE/XifAY9LywAxdwUauX52febWQalhatuAT7rC8=;
-        b=HN8FP2SlEpxK8eBwkyZmXLVGNbmZwAuCdr7nTUqX6a/t0T4EewdKkEL88UZUkIYMOc3aIo
-        cnm8DBXAF0TjulhfvTWcsmMXctEZIGEJc9YAqGAmX/6RRxVfDiLy5VgLr8jntl/+Imt1NX
-        hu9O5cwqq/gfdQs9v+Q1p+nlZCv5WvU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=fz2yZoEhAeDfNrafuC7o56zJz6bJnZ9vRSn2WPxBxjU=;
+        b=Of5dYRyQDGYgYjFVKyUuI0MhpESZt1Ayy+p89mN+/2XkqDftCX+L7jXMqxdMrrOJ3yHpvz
+        h6IH4R4iEU3dxJelk3+8l/RhoOFRuJ5ib1EBRtgjFzDy6k9w/1PdIbY9b4ebgMJQib57PI
+        juXsclu2Zcsnb6HgNch633lAl450ziY=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-454-QB17ZsknMwW_Llzy2AIrcw-1; Fri, 20 May 2022 12:34:03 -0400
-X-MC-Unique: QB17ZsknMwW_Llzy2AIrcw-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.rdu2.redhat.com [10.11.54.4])
+ us-mta-461-D2r6vvzDOg-3SbZrky5Ibg-1; Fri, 20 May 2022 12:34:10 -0400
+X-MC-Unique: D2r6vvzDOg-3SbZrky5Ibg-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 6275D1C04B58;
-        Fri, 20 May 2022 16:34:03 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 2DBC980A0B9;
+        Fri, 20 May 2022 16:34:10 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C742D2026D6A;
-        Fri, 20 May 2022 16:34:02 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4042D1121314;
+        Fri, 20 May 2022 16:34:09 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net 3/6] rxrpc: Don't try to resend the request if we're
- receiving the reply
+Subject: [PATCH net 4/6] rxrpc: Fix overlapping ACK accounting
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
-Cc:     linux-afs@lists.infradead.org, dhowells@redhat.com,
+Cc:     Jeffrey Altman <jaltman@auristor.com>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        linux-afs@lists.infradead.org, dhowells@redhat.com,
         linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Fri, 20 May 2022 17:34:02 +0100
-Message-ID: <165306444224.34086.1366952047332682873.stgit@warthog.procyon.org.uk>
+Date:   Fri, 20 May 2022 17:34:08 +0100
+Message-ID: <165306444856.34086.5231621618046196490.stgit@warthog.procyon.org.uk>
 In-Reply-To: <165306442115.34086.1818959430525328753.stgit@warthog.procyon.org.uk>
 References: <165306442115.34086.1818959430525328753.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.4
+X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,37 +67,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rxrpc has a timer to trigger resending of unacked data packets in a call.
-This is not cancelled when a client call switches to the receive phase on
-the basis that most calls don't last long enough for it to ever expire.
-However, if it *does* expire after we've started to receive the reply, we
-shouldn't then go into trying to retransmit or pinging the server to find
-out if an ack got lost.
+Fix accidental overlapping of Rx-phase ACK accounting with Tx-phase ACK
+accounting through variables shared between the two.  call->acks_* members
+refer to ACKs received in the Tx phase and call->ackr_* members to ACKs
+sent/to be sent during the Rx phase.
 
-Fix this by skipping the resend code if we're into receiving the reply to a
-client call.
-
-Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
+Fixes: 1a2391c30c0b ("rxrpc: Fix detection of out of order acks")
 Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Jeffrey Altman <jaltman@auristor.com>
+cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- net/rxrpc/call_event.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/rxrpc/ar-internal.h |    7 ++++---
+ net/rxrpc/input.c       |   16 ++++++++--------
+ 2 files changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
-index 22e05de5d1ca..31761084a76f 100644
---- a/net/rxrpc/call_event.c
-+++ b/net/rxrpc/call_event.c
-@@ -406,7 +406,8 @@ void rxrpc_process_call(struct work_struct *work)
- 		goto recheck_state;
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 969e532f77a9..9a9688c41d4d 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -676,10 +676,9 @@ struct rxrpc_call {
+ 
+ 	spinlock_t		input_lock;	/* Lock for packet input to this call */
+ 
+-	/* receive-phase ACK management */
++	/* Receive-phase ACK management (ACKs we send). */
+ 	u8			ackr_reason;	/* reason to ACK */
+ 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
+-	rxrpc_serial_t		ackr_first_seq;	/* first sequence number received */
+ 	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
+ 	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
+ 	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
+@@ -692,8 +691,10 @@ struct rxrpc_call {
+ #define RXRPC_CALL_RTT_AVAIL_MASK	0xf
+ #define RXRPC_CALL_RTT_PEND_SHIFT	8
+ 
+-	/* transmission-phase ACK management */
++	/* Transmission-phase ACK management (ACKs we've received). */
+ 	ktime_t			acks_latest_ts;	/* Timestamp of latest ACK received */
++	rxrpc_seq_t		acks_first_seq;	/* first sequence number received */
++	rxrpc_seq_t		acks_prev_seq;	/* previous sequence number received */
+ 	rxrpc_seq_t		acks_lowest_nak; /* Lowest NACK in the buffer (or ==tx_hard_ack) */
+ 	rxrpc_seq_t		acks_lost_top;	/* tx_top at the time lost-ack ping sent */
+ 	rxrpc_serial_t		acks_lost_ping;	/* Serial number of probe ACK */
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index dc201363f2c4..f11673cda217 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -812,7 +812,7 @@ static void rxrpc_input_soft_acks(struct rxrpc_call *call, u8 *acks,
+ static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
+ 			       rxrpc_seq_t first_pkt, rxrpc_seq_t prev_pkt)
+ {
+-	rxrpc_seq_t base = READ_ONCE(call->ackr_first_seq);
++	rxrpc_seq_t base = READ_ONCE(call->acks_first_seq);
+ 
+ 	if (after(first_pkt, base))
+ 		return true; /* The window advanced */
+@@ -820,7 +820,7 @@ static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
+ 	if (before(first_pkt, base))
+ 		return false; /* firstPacket regressed */
+ 
+-	if (after_eq(prev_pkt, call->ackr_prev_seq))
++	if (after_eq(prev_pkt, call->acks_prev_seq))
+ 		return true; /* previousPacket hasn't regressed. */
+ 
+ 	/* Some rx implementations put a serial number in previousPacket. */
+@@ -906,8 +906,8 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
+ 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
+ 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
+-					   first_soft_ack, call->ackr_first_seq,
+-					   prev_pkt, call->ackr_prev_seq);
++					   first_soft_ack, call->acks_first_seq,
++					   prev_pkt, call->acks_prev_seq);
+ 		return;
  	}
  
--	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events)) {
-+	if (test_and_clear_bit(RXRPC_CALL_EV_RESEND, &call->events) &&
-+	    call->state != RXRPC_CALL_CLIENT_RECV_REPLY) {
- 		rxrpc_resend(call, now);
- 		goto recheck_state;
+@@ -922,14 +922,14 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ 	/* Discard any out-of-order or duplicate ACKs (inside lock). */
+ 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
+ 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
+-					   first_soft_ack, call->ackr_first_seq,
+-					   prev_pkt, call->ackr_prev_seq);
++					   first_soft_ack, call->acks_first_seq,
++					   prev_pkt, call->acks_prev_seq);
+ 		goto out;
  	}
+ 	call->acks_latest_ts = skb->tstamp;
+ 
+-	call->ackr_first_seq = first_soft_ack;
+-	call->ackr_prev_seq = prev_pkt;
++	call->acks_first_seq = first_soft_ack;
++	call->acks_prev_seq = prev_pkt;
+ 
+ 	/* Parse rwind and mtu sizes if provided. */
+ 	if (buf.info.rxMTU)
 
 
