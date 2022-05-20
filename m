@@ -2,170 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B3FD52F1A8
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:31:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4226F52F1B3
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:34:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352149AbiETRat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 13:30:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
+        id S1352272AbiETRdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 13:33:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244696AbiETRar (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:30:47 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BFA17D383
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:30:43 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id t2so3178003qkb.12
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:30:43 -0700 (PDT)
+        with ESMTP id S1352276AbiETRdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:33:02 -0400
+Received: from mail-oa1-x2b.google.com (mail-oa1-x2b.google.com [IPv6:2001:4860:4864:20::2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12D12188E44;
+        Fri, 20 May 2022 10:33:01 -0700 (PDT)
+Received: by mail-oa1-x2b.google.com with SMTP id 586e51a60fabf-e656032735so11138784fac.0;
+        Fri, 20 May 2022 10:33:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CPavKVkR8bELd7v5gex0nX0RA6A8QGn+WltRM5Og+4g=;
-        b=MSLFYCHCp/SZxn9cm5CoWu+3FpwqYMeTrBILRT4T9npnAg/BaxF/9YpOt/8BpfCeIi
-         QNFKHiQ8wH5t6TjjD362O2oxnfrihMLlQiPFrrUH+NDukCfPWUuGOvL3+zuu3fi7AGdj
-         qgdT4/2uMNS7DYiZi6YKk9IXmhduvHlRP/0woJyAJMNWtD0YS0jrjWL0wPpxdQM3uspA
-         vJgbRI25KoLUFPhjSaZoBEnuSQDq+i0ze73pH1kri1TDLTflSDd6UyZwXBxmu5eVfBh6
-         UxiMZ9l7YRjsNMFPzIyBLQzKMTq6kkJMswyxyU98m9mX63TaYJcYhQG5GnSYZ1S/bTgH
-         STSA==
+        d=gmail.com; s=20210112;
+        h=sender:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nAroVrprxPAiSacmU0iQvRbZSqh545c+ucLFUrq47yQ=;
+        b=Kgk5ilOpL68lRSqNvTkTo2Y62AAxjJGXA56jd9LIh3gtL4RVF6uIuMcg+IzyScA5h7
+         TZ8WLoZHdIkwSYxURy3V/cWLG50OQpD3343DaZWiux9aCMiZrgy+0/ZTmNOHGwd7LK0v
+         2jodiIlnQbpy/UlJ7LfR7ebcNHn1xWursmVXQU91u9YyvDD/kCpHc4rlIi5Vyev2XcTD
+         F1ZXVVQv2K+ZW5xfpPWtxN7GfUcvz6AjSuNHGlE/OvMFSt/Cm9nv+bgxxdCpcWgQ3nuX
+         5psF7c7ZXyRsVzJ2wsNgts6fMUD604qA2ts4BJbbZAfn3kH/EXKmIo2lkHCFgNirDGuV
+         PCrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CPavKVkR8bELd7v5gex0nX0RA6A8QGn+WltRM5Og+4g=;
-        b=Y9/ePyDFiE4/8wGpr3zPi6e/R3vizDHLTeN+kdKQjTHwCOn8COr/xbONfogsx5nG2X
-         odaadl84fVMMAHPQr5K3isnGGIb/6t9Uxmyio6PncrsnwsgadBGGA+VKVEtLE7mgZSH5
-         PMOz5UmmgVjWo4X2PPgYMAD07GZRWtFsF0NMI4Fd60J2ufUQjN5BQIOk6V/CKq6VPQEc
-         ELd5QceZMtvBJHR8pt4B8+Fat1tZmbih1Yx5LdtjgR5V84QvBrDbXNJ/UU9e80mOsALV
-         MnjxstrJXIpwkiVrzMtvSN5H9pSTq5XZ3+QN6tCseROIv8C8gZhWduJZsgdwbKfCmxEN
-         lg4Q==
-X-Gm-Message-State: AOAM533tiMFdOUWSlv236uB87ZGFClVYja0fsuIo6PNU0QiIgjWU5Lr6
-        P5/K7+rR4OG1ABqad3FWhlhSqajkwGjBMWAI7Spq0w==
-X-Google-Smtp-Source: ABdhPJz5Mikyb2ZCSmg67TYUBBxgrBCM373X9eLBJ7/2D7arGeeYjmMXzqAYDcgIFIxH6qSqWi8VtqwbhGeWuNrgTig=
-X-Received: by 2002:a05:620a:2849:b0:687:651:54ee with SMTP id
- h9-20020a05620a284900b00687065154eemr7084966qkp.446.1653067842202; Fri, 20
- May 2022 10:30:42 -0700 (PDT)
+        h=x-gm-message-state:sender:message-id:date:mime-version:user-agent
+         :subject:content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=nAroVrprxPAiSacmU0iQvRbZSqh545c+ucLFUrq47yQ=;
+        b=mU/YvZz0dHw2TZOhSu8Aj0SDfZq5RCDjsZBTx+McwiFuQvd2HsFL/a13xZaTl3e3Gu
+         ihuVncjlrp9011H+u9ht/enOW8RGjKmBG1bSPGdhtRrmBTtxP+rcVKn9D5VHjqMVojhL
+         haYGuFp9tMKz/emjK9CA9cCygcnnkshpMsB+xyMiOKPoT/AMrTFLSY4LjcXGAVTPXqil
+         1TuImB67CZJIIU7UUe90ET8LHdXFTVKl4L47LEfTexzgeqpj4NEPv2ZnTqRYwoOGjag9
+         PuuKq2Vc08egKIn3UiouwJBwKmLz32MMGhRGPJN0Wk2H8sVrQ/q17HBBd5lUpTpav1Mu
+         8Z6w==
+X-Gm-Message-State: AOAM531V3liWMnYBreRKO17/T6xd/aCZn63B7dAHTDSXroIwHz0RKKBf
+        UfsIB+EamMlWFm1x58w/I4k=
+X-Google-Smtp-Source: ABdhPJwBbVfuXwWV2LrtgSFuQI0FmmCV9V2OLGg2gMfoiPen8O9zrqtLUR4FCCTu230A2zv/zpt+zA==
+X-Received: by 2002:a05:6870:40c4:b0:f1:a0cb:a46f with SMTP id l4-20020a05687040c400b000f1a0cba46fmr6105711oal.288.1653067980456;
+        Fri, 20 May 2022 10:33:00 -0700 (PDT)
+Received: from ?IPV6:2603:8090:2005:39b3::100e? (2603-8090-2005-39b3-0000-0000-0000-100e.res6.spectrum.com. [2603:8090:2005:39b3::100e])
+        by smtp.gmail.com with ESMTPSA id ds6-20020a0568705b0600b000f1bad20cc9sm1168406oab.0.2022.05.20.10.32.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 10:32:59 -0700 (PDT)
+Sender: Larry Finger <larry.finger@gmail.com>
+Message-ID: <f14f19de-d272-b95b-21f3-35bfd23a29d3@lwfinger.net>
+Date:   Fri, 20 May 2022 12:32:57 -0500
 MIME-Version: 1.0
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220520012133.1217211-4-yosryahmed@google.com> <YodGI73xq8aIBrNM@slm.duckdns.org>
- <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com> <YodNLpxut+Zddnre@slm.duckdns.org>
-In-Reply-To: <YodNLpxut+Zddnre@slm.duckdns.org>
-From:   Hao Luo <haoluo@google.com>
-Date:   Fri, 20 May 2022 10:30:30 -0700
-Message-ID: <CA+khW7iN_=9yg6r9wSX5T3biWgUyAZ6quUUjsVp=hXBY9meJ9Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 05/10] rtw88: Do not access registers while atomic
+Content-Language: en-US
+To:     Sascha Hauer <s.hauer@pengutronix.de>,
+        linux-wireless@vger.kernel.org
+Cc:     Neo Jou <neojou@gmail.com>, Hans Ulli Kroll <linux@ulli-kroll.de>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
+        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+ <20220518082318.3898514-6-s.hauer@pengutronix.de>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+In-Reply-To: <20220518082318.3898514-6-s.hauer@pengutronix.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+        HEADER_FROM_DIFFERENT_DOMAINS,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tejun,
+On 5/18/22 03:23, Sascha Hauer wrote:
+> The driver uses ieee80211_iterate_active_interfaces_atomic()
+> and ieee80211_iterate_stations_atomic() in several places and does
+> register accesses in the iterators. This doesn't cope with upcoming
+> USB support as registers can only be accessed non-atomically.
+> 
+> Split these into a two stage process: First use the atomic iterator
+> functions to collect all active interfaces or stations on a list, then
+> iterate over the list non-atomically and call the iterator on each
+> entry.
+> 
+> Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Suggested-by: Pkshih <pkshih@realtek.com>
+> ---
+>   drivers/net/wireless/realtek/rtw88/phy.c  |  6 +-
+>   drivers/net/wireless/realtek/rtw88/ps.c   |  2 +-
+>   drivers/net/wireless/realtek/rtw88/util.c | 92 +++++++++++++++++++++++
+>   drivers/net/wireless/realtek/rtw88/util.h | 12 ++-
+>   4 files changed, 105 insertions(+), 7 deletions(-)
+> 
 
-On Fri, May 20, 2022 at 1:11 AM Tejun Heo <tj@kernel.org> wrote:
->
-> Hello,
->
-> On Fri, May 20, 2022 at 12:58:52AM -0700, Yosry Ahmed wrote:
-> > On Fri, May 20, 2022 at 12:41 AM Tejun Heo <tj@kernel.org> wrote:
-> > >
-> > > On Fri, May 20, 2022 at 01:21:31AM +0000, Yosry Ahmed wrote:
-> > > > From: Hao Luo <haoluo@google.com>
-> > > >
-> > > > Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
-> > > > iter doesn't iterate a set of kernel objects. Instead, it is supposed to
-> > > > be parameterized by a cgroup id and prints only that cgroup. So one
-> > > > needs to specify a target cgroup id when attaching this iter. The target
-> > > > cgroup's state can be read out via a link of this iter.
-> > > >
-> > > > Signed-off-by: Hao Luo <haoluo@google.com>
-> > > > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
-> > >
-> > > This could be me not understanding why it's structured this way but it keeps
-> > > bothering me that this is adding a cgroup iterator which doesn't iterate
-> > > cgroups. If all that's needed is extracting information from a specific
-> > > cgroup, why does this need to be an iterator? e.g. why can't I use
-> > > BPF_PROG_TEST_RUN which looks up the cgroup with the provided ID, flushes
-> > > rstat, retrieves whatever information necessary and returns that as the
-> > > result?
-> >
-> > I will let Hao and Yonghong reply here as they have a lot more
-> > context, and they had previous discussions about cgroup_iter. I just
-> > want to say that exposing the stats in a file is extremely convenient
-> > for userspace apps. It becomes very similar to reading stats from
-> > cgroupfs. It also makes migrating cgroup stats that we have
-> > implemented in the kernel to BPF a lot easier.
->
-> So, if it were upto me, I'd rather direct energy towards making retrieving
-> information through TEST_RUN_PROG easier rather than clinging to making
-> kernel output text. I get that text interface is familiar but it kinda
-> sucks in many ways.
->
+...
 
-Tejun, could you explain more about the downside of text interfaces
-and why TEST_RUN_PROG would address the problems in text output? From
-the discussion we had last time, I understand that your concern was
-the unstable interface if we introduce bpf files in cgroupfs, so we
-are moving toward replicating the directory structure in bpffs. But I
-am not sure about the issue of text format output
+> diff --git a/drivers/net/wireless/realtek/rtw88/util.c b/drivers/net/wireless/realtek/rtw88/util.c
+> index 2c515af214e76..db55dbd5c533e 100644
+> --- a/drivers/net/wireless/realtek/rtw88/util.c
+> +++ b/drivers/net/wireless/realtek/rtw88/util.c
+> @@ -105,3 +105,95 @@ void rtw_desc_to_mcsrate(u16 rate, u8 *mcs, u8 *nss)
+>   		*mcs = rate - DESC_RATEMCS0;
+>   	}
+>   }
+> +
+> +struct rtw_stas_entry {
+> +	struct list_head list;
+> +	struct ieee80211_sta *sta;
+> +};
+> +
+> +struct rtw_iter_stas_data {
+> +	struct rtw_dev *rtwdev;
+> +	struct list_head list;
+> +};
+> +
+> +void rtw_collect_sta_iter(void *data, struct ieee80211_sta *sta)
+> +{
+> +	struct rtw_iter_stas_data *iter_stas = data;
+> +	struct rtw_stas_entry *stas_entry;
+> +
+> +	stas_entry = kmalloc(sizeof(*stas_entry), GFP_ATOMIC);
+> +	if (!stas_entry)
+> +		return;
+> +
+> +	stas_entry->sta = sta;
+> +	list_add_tail(&stas_entry->list, &iter_stas->list);
+> +}
+> +
+> +void rtw_iterate_stas(struct rtw_dev *rtwdev,
+> +		      void (*iterator)(void *data,
+> +				       struct ieee80211_sta *sta),
+> +				       void *data)
+> +{
+> +	struct rtw_iter_stas_data iter_data;
+> +	struct rtw_stas_entry *sta_entry, *tmp;
+> +
+> +	iter_data.rtwdev = rtwdev;
+> +	INIT_LIST_HEAD(&iter_data.list);
+> +
+> +	ieee80211_iterate_stations_atomic(rtwdev->hw, rtw_collect_sta_iter,
+> +					  &iter_data);
+> +
+> +	list_for_each_entry_safe(sta_entry, tmp, &iter_data.list,
+> +				 list) {
+> +		list_del_init(&sta_entry->list);
+> +		iterator(data, sta_entry->sta);
+> +		kfree(sta_entry);
+> +	}
+> +}
+> +
+> +struct rtw_vifs_entry {
+> +	struct list_head list;
+> +	struct ieee80211_vif *vif;
+> +	u8 mac[ETH_ALEN];
+> +};
+> +
+> +struct rtw_iter_vifs_data {
+> +	struct rtw_dev *rtwdev;
+> +	struct list_head list;
+> +};
+> +
+> +void rtw_collect_vif_iter(void *data, u8 *mac, struct ieee80211_vif *vif)
+> +{
+> +	struct rtw_iter_vifs_data *iter_stas = data;
+> +	struct rtw_vifs_entry *vifs_entry;
+> +
+> +	vifs_entry = kmalloc(sizeof(*vifs_entry), GFP_ATOMIC);
+> +	if (!vifs_entry)
+> +		return;
+> +
+> +	vifs_entry->vif = vif;
+> +	ether_addr_copy(vifs_entry->mac, mac);
+> +	list_add_tail(&vifs_entry->list, &iter_stas->list);
+> +}
+> +
+> +void rtw_iterate_vifs(struct rtw_dev *rtwdev,
+> +		      void (*iterator)(void *data, u8 *mac,
+> +				       struct ieee80211_vif *vif),
+> +		      void *data)
+> +{
+> +	struct rtw_iter_vifs_data iter_data;
+> +	struct rtw_vifs_entry *vif_entry, *tmp;
+> +
+> +	iter_data.rtwdev = rtwdev;
+> +	INIT_LIST_HEAD(&iter_data.list);
+> +
+> +	ieee80211_iterate_active_interfaces_atomic(rtwdev->hw,
+> +			IEEE80211_IFACE_ITER_NORMAL, rtw_collect_vif_iter, &iter_data);
+> +
+> +	list_for_each_entry_safe(vif_entry, tmp, &iter_data.list,
+> +				 list) {
+> +		list_del_init(&vif_entry->list);
+> +		iterator(data, vif_entry->mac, vif_entry->vif);
+> +		kfree(vif_entry);
+> +	}
+> +}
 
-> > AFAIK there are also discussions about using overlayfs to have links
-> > to the bpffs files in cgroupfs, which makes it even better. So I would
-> > really prefer keeping the approach we have here of reading stats
-> > through a file from userspace. As for how we go about this (and why a
-> > cgroup iterator doesn't iterate cgroups) I will leave this for Hao and
-> > Yonghong to explain the rationale behind it. Ideally we can keep the
-> > same functionality under a more descriptive name/type.
->
-> My answer would be the same here. You guys seem dead set on making the
-> kernel emulate cgroup1. I'm not gonna explicitly block that but would
-> strongly suggest having a longer term view.
->
+Sasha,
 
-The reason why Yosry and I are still pushing toward this direction is
-that our user space applications rely heavily on extracting
-information from text output for cgroups. Please understand that
-migrating them from the traditional model to a new model is a bigger
-pain. But I agree that if we have a better, concrete solution (for
-example, maybe TEST_RUN_PROG) to convince them and help them migrate,
-I really would love to contribute and work on it.
+Sparse shows the following warnings:
 
-> If you *must* do the iterator, can you at least make it a proper iterator
-> which supports seeking? AFAICS there's nothing fundamentally preventing bpf
-> iterators from supporting seeking. Or is it that you need something which is
-> pinned to a cgroup so that you can emulate the directory structure?
->
+   CHECK   /home/finger/iwireless-next/drivers/net/wireless/realtek/rtw88/util.c
+/home/finger/wireless-next/drivers/net/wireless/realtek/rtw88/util.c:119:6: 
+warning: symbol 'rtw_collect_sta_iter' was not declared. Should it be static?
+/home/finger/wireless-next/drivers/net/wireless/realtek/rtw88/util.c:165:6: 
+warning: symbol 'rtw_collect_vif_iter' was not declared. Should it be static?
 
-Yonghong may comment on adding seek for bpf_iter. I would love to
-contribute if we are in need of that. Right now, we don't have a use
-case that needs seek for bpf_iter, I think. My thought: for cgroups,
-we can seek using cgroup id. Maybe, not all kernel objects are
-indexable, so seeking doesn't apply there?
-
-Hao
+Larry
