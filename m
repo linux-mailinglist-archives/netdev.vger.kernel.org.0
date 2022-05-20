@@ -2,113 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F07952F570
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BF0C752F575
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:03:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353821AbiETWBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 18:01:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59810 "EHLO
+        id S1353801AbiETWDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 18:03:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233685AbiETWA7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:00:59 -0400
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DF03D116;
-        Fri, 20 May 2022 15:00:57 -0700 (PDT)
-Received: by mail-il1-x130.google.com with SMTP id s12so6357454iln.11;
-        Fri, 20 May 2022 15:00:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=b5LP2LIe+3dg0Ns3WLvfbA/mpjcRdxbZZTeIf8hpFzg=;
-        b=mWbQqr3Eo/woi67Rkec0dQ5oP4bMID1ncR7y8jmdgFNYY2O6M5gj8coWMLX3OwBsyK
-         q1cOSxtRo8VSS2jktb9nHi2ZrTbUs9Wyc3ZXFTeFcDGMG+tBdyqasMBOF+a4KNpYb6FH
-         d7lgzmn1EATifjMZwFckFsvHocP5/Jb4+cAUNalZ9Fvrbh/AmLk3suZrlX1UdrfzbGpx
-         u2jiB3Hsrv4h0k+gAJkk7EnA+bQF5H29KeSly50OEiwBvgyI9IJNjSPrEuD+ybEo7HW5
-         +S3xhzHcL87JpOm/3DfE3DODprQZ0ct1o1pMMlv2zFRHScESS/sKnb61csRKua8jS3j3
-         h0Vg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=b5LP2LIe+3dg0Ns3WLvfbA/mpjcRdxbZZTeIf8hpFzg=;
-        b=FflSkezWMJGCXDK3gRjS1TfZ48X0dZsvQ+22ui5DVBrl7g96A6lEIsgroY12mVBIVT
-         EU9ZVzZG8Y+gjLCXFKkHjquJ5g7vaODf/Hx51w+oEY+qVtvpkaTHmxec4V1gRCrQvxHx
-         1Rf6E+CXy9GIL9bQu3Dg62W6GrmK+ZNZ6yRD0HXaN2KGIX+nWm2yNpcJQXQIdlMYGjoZ
-         rOx0ZZHI3M7akrMUMJVtO6Wza+iPsh7Fdd+YojfYdrtPh7diQA7YjwwJ75KQqYzMjIRc
-         lRjh+iqPzCieurZKMzhRe8v+ZFA8QXkk/pWrQPX1n21kYkGZfAytn7gatV0tjsGu1R1v
-         peoQ==
-X-Gm-Message-State: AOAM532MqjMjt4eEFq+ksmXacAQkPbUWeprb4cM4Lkvb3RLySHhhtsm9
-        zLbHB+bMvc+qvzOep5nMqfm5uGx7/KKqI27v0cA=
-X-Google-Smtp-Source: ABdhPJyJb0eVNhgKBfC77kDmoao+VgMr3e9kEx3X2a00wVO7CgIbfAgL7/YAUXBddLKw+ZIPQcW30W2lm27Ua6wsjjs=
-X-Received: by 2002:a05:6e02:1a6e:b0:2d1:68e9:e8da with SMTP id
- w14-20020a056e021a6e00b002d168e9e8damr4910952ilv.252.1653084056901; Fri, 20
- May 2022 15:00:56 -0700 (PDT)
+        with ESMTP id S1351380AbiETWDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:03:02 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FAD013F90
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 15:02:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8713161DBF
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 22:02:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B20EBC385A9;
+        Fri, 20 May 2022 22:02:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653084178;
+        bh=4CEXSiGkFy32Jura7dcpCDyeTlEBHqr93qsQDKMeGmw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hCdSWaiPsSdkDW5AYaNppAVYnZlBVHRJom7jupbyKRXrv56QsVXNlO9P+eELcRkCw
+         75gHXq94Xb3aYvBad0HNRWjjzSpKz3TDxlGbbnwHzy45G63/qGnArDywEpLCIGgNqZ
+         /LaX2MAfGUW6Q/3Ag1SP8HOkYZ/FOmM+9Ja7JoRghavhnVDsSVxGJFHu40UGjtJj+/
+         F09/e884Uq9rjmH8l4VDnBlYvOwU/R+fkRQwSwRkCN0SBYwPAW4Ib0AvLTgg4NNP9g
+         Vz8TSF23x61Na6/Hhz8WJQGlHCBur0umzzizrC5quVh3wOs29HXaTgW1NC+ucJ93kb
+         7dKdz2xXBRm2w==
+Date:   Fri, 20 May 2022 15:02:56 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk, olteanv@gmail.com,
+        hkallweit1@gmail.com, f.fainelli@gmail.com, saeedm@nvidia.com,
+        michael.chan@broadcom.com
+Subject: Re: [RFC net-next] net: track locally triggered link loss
+Message-ID: <20220520150256.5d9aed65@kernel.org>
+In-Reply-To: <YofidJtb+kVtFr6L@lunn.ch>
+References: <20220520004500.2250674-1-kuba@kernel.org>
+        <YoeIj2Ew5MPvPcvA@lunn.ch>
+        <20220520111407.2bce7cb3@kernel.org>
+        <YofidJtb+kVtFr6L@lunn.ch>
 MIME-Version: 1.0
-References: <20220518025053.20492-1-zhoufeng.zf@bytedance.com> <cd5bb286-506b-5cdb-f721-0464a58659db@fb.com>
-In-Reply-To: <cd5bb286-506b-5cdb-f721-0464a58659db@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 20 May 2022 15:00:45 -0700
-Message-ID: <CAEf4BzaE_WJBQ6xxMy8VmJy3OsPyCCjyRKi_F-CdPLwVVp+7Ng@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] selftests/bpf: fix some bugs in
- map_lookup_percpu_elem testcase
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Feng zhou <zhoufeng.zf@bytedance.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
-        Dave Marchevsky <davemarchevsky@fb.com>,
-        Joanne Koong <joannekoong@fb.com>,
-        Geliang Tang <geliang.tang@suse.com>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        duanxiongchun@bytedance.com,
-        Muchun Song <songmuchun@bytedance.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        zhouchengming@bytedance.com, Yosry Ahmed <yosryahmed@google.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 18, 2022 at 8:44 AM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 5/17/22 7:50 PM, Feng zhou wrote:
-> > From: Feng Zhou <zhoufeng.zf@bytedance.com>
-> >
-> > comments from Andrii Nakryiko, details in here:
-> > https://lore.kernel.org/lkml/20220511093854.411-1-zhoufeng.zf@bytedance.com/T/
-> >
-> > use /* */ instead of //
-> > use libbpf_num_possible_cpus() instead of sysconf(_SC_NPROCESSORS_ONLN)
-> > use 8 bytes for value size
-> > fix memory leak
-> > use ASSERT_EQ instead of ASSERT_OK
-> > add bpf_loop to fetch values on each possible CPU
-> >
-> > Fixes: ed7c13776e20c74486b0939a3c1de984c5efb6aa ("selftests/bpf: add test case for bpf_map_lookup_percpu_elem")
-> > Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
->
-> Acked-by: Yonghong Song <yhs@fb.com>
+On Fri, 20 May 2022 20:48:20 +0200 Andrew Lunn wrote:
+> > I was looking at bnxt because it's relatively standard for DC NICs and
+> > doesn't have 10M lines of code.. then again I could be misinterpreting
+> > the code, I haven't tested this theory:
+> > 
+> > In bnxt_set_pauseparam() for example the driver will send a request to
+> > the FW which will result in the link coming down and back up with
+> > different settings (e.g. when pause autoneg was changed). Since the
+> > driver doesn't call netif_carrier_off() explicitly as part of sending
+> > the FW message but the link down gets reported thru the usual interrupt
+> > (as if someone yanked the cable out) - we need to wrap the FW call with
+> > the __LINK_STATE_NOCARRIER_LOCAL  
+> 
+> I'm not sure this is a good example. If the PHY is doing an autoneg,
+> the link really is down for around a second. The link peer will also
+> so the link go down and come back up. So this seems like a legitimate
+> time to set the carrier off and then back on again.
 
+In the commit message I differentiated between link flaps type (1), 
+(2), (3a) and (3b). What we're talking about here is (1) vs (2), and
+from the POV of the remote end (3a) vs (3b).
 
-I've fixed remaining formatting issues and added my_pid check to avoid
-accidental interference with other tests/processes. Applied to
-bpf-next, thanks.
+For a system which wants to monitor link quality on the local end =>
+i.e. whether physical hardware has to be replaced - differentiating
+between (1) and (2) doesn't really matter, they are both non-events.
+
+I admitted somewhere in the commit message that with just the "locally
+triggered" vs "non-locally triggered" we still can't tell (1) from (2)
+and therefore won't be able to count true "link went down because of
+signal integrity" events. Telling (1) from (2) should be easier with
+phylib than with FW-managed PHYs. I left it for future work because:
+
+ - in DC environments PHYs are never managed by Linux AFAIK, sadly,
+   and unless I convince vendors to do the conversions I'm likely going
+   to get the counting between (1) and (2) wrong, not having access to
+   FW or any docs;
+
+ - switches don't flap links much, while NIC reconfig can easily produce
+   spikes of 5+ carrier changes in close succession so even without
+   telling (1) from (2) we can increase the signal of the monitoring
+   significantly
+
+I'm happy to add the (1) vs (2) API tho if it's useful, what I'm
+explaining is more why I don't feel its useful for my case.
+
+> > > The driver has a few netif_carrier_off() calls changed to
+> > > netif_carrier_admin_off(). It is then unclear looking at the code
+> > > which of the calls to netif_carrier_on() match the off.  
+> > 
+> > Right, for bnxt again the carrier_off in bnxt_tx_disable() would become
+> > an admin_carrier_off, since it's basically part of closing the netdev.  
+> 
+> > > Maybe include a driver which makes use of phylib, which should be
+> > > doing control of the carrier based on the actual link status.  
+> > 
+> > For phylib I was thinking of modifying phy_stop()... but I can't
+> > grep out where carrier_off gets called. I'll take a closer look.  
+> 
+> If the driver is calling phy_stop() the link will go down. So again, i
+> would say setting the carrier off is correct. If the driver calls
+> phy_start() an auto neg is likely to happen and 1 second later the
+> link will come up.
+> 
+> Maybe i'm not understanding what you are trying to count here. If the
+> MAC driver needs to stop the MAC in order to reallocate buffers with
+> different MTU, or more rings etc, then i can understand not wanting to
+> count that as a carrier off, because the carrier does not actually go
+> off. But if it is in fact marking the carrier off, it sounds like a
+> MAC driver bug, or a firmware bug.
+
+Well, either way the carrier is set to off because of all the calls to
+netif_carrier_ok() calls throughout the stack. I'm afraid to change the
+semantics of that.
+
+What I want to count is _in_addition_ to whether the link went down or
+not - whether the link down was due to local administrative action.
+
+Then user space can do:
+
+	remote_flaps = carrier_down - carrier_down_local
