@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5466552E499
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 07:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D1EE52E49B
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 08:00:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245523AbiETF7t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 01:59:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42754 "EHLO
+        id S1345689AbiETGAW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 02:00:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244615AbiETF7s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 01:59:48 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6CE714AA74
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 22:59:47 -0700 (PDT)
+        with ESMTP id S1345429AbiETGAU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 02:00:20 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C57C14B66A
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 23:00:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D739461D6D
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 05:59:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9D24C385A9;
-        Fri, 20 May 2022 05:59:45 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 54DC2CE282C
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 06:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39A3EC385A9;
+        Fri, 20 May 2022 06:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653026386;
-        bh=CF1gyXPHx4nunW7HIQ4oaZKriA3jpyZPgRsquQHSi7A=;
+        s=k20201202; t=1653026416;
+        bh=6dwQ/h0+lGjJjXFdH29fMIB3ebOxNVqFeYcD8Z8RTt4=;
         h=From:To:Cc:Subject:Date:From;
-        b=DqodoMfb2t+N1xHJQWJ01onog58hrU72CEGT9rJR68Z8W8Xcg/qxe1CzV/NhQbO+H
-         9xq63bWbiw/HuPbsbLmghVn7TKI+chsdT1MX0bovZmhx7pV4tawK+3QPZH9DOOTDDE
-         cXkZsfW/+NxkZT8zo7PziIOK/xd/ACSrONyp4KYqKTaHw/TszqKoBYCgk5wwhptB4g
-         Vcv6p+WPdhy3lG/XuHjB16DnzUK96uDoVGlmn1sixiF/JY+Ue16oNWG4Wx0IPsX+2j
-         V5nL3vCQAHHa36WU0r4BbFakjFDpmZ0IXnlCz69WoUD42nxW0Qy62J8G2lrbz9Jbm0
-         xsriuKMuzE23w==
+        b=Dv6S4/KABYl8C6UCDy5cFhahc4DRugENTXJXAty71/GUmw2dpvOOnaSF6OHInQ1fc
+         rQej9YjEWtwptEctNbqtEWc3tjCJcnE/Kr3X+HESnV5VeCML8QPsQT/gSUA7txfTvq
+         8ZaYLuLKsPMXwyH4WJf1fIBArf4XBDfiSbpX4lv+Ce9Uc8gcmr4qhVLM0pXL8souX4
+         Pfru5WtaV9v0g5unV/u52vI7u6X8BWmmis2jqzyUjHMHMoEL8j8PHRNlyh3+VcJgvj
+         OomjxF99iBcZ3Zf1tQxkOwS6BQlAVLW++/rdIDt1jhQ5becD+FVHvp6dc1yBJnhyg8
+         J52ed7YEAESOg==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
-        keescook@chromium.org, Jakub Kicinski <kuba@kernel.org>,
-        nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
-        Mark-MC.Lee@mediatek.com, matthias.bgg@gmail.com
-Subject: [PATCH net-next] eth: mtk_eth_soc: silence the GCC 12 array-bounds warning
-Date:   Thu, 19 May 2022 22:59:40 -0700
-Message-Id: <20220520055940.2309280-1-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, m.chetan.kumar@intel.com,
+        linuxwwan@intel.com, loic.poulain@linaro.org,
+        ryazanov.s.a@gmail.com, johannes@sipsolutions.net
+Subject: [PATCH net-next] wwan: iosm: use a flexible array rather than allocate short objects
+Date:   Thu, 19 May 2022 23:00:13 -0700
+Message-Id: <20220520060013.2309497-1-kuba@kernel.org>
 X-Mailer: git-send-email 2.34.3
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -53,37 +53,46 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-GCC 12 gets upset because in mtk_foe_entry_commit_subflow()
-this driver allocates a partial structure. The writes are
-within bounds.
+GCC array-bounds warns that ipc_coredump_get_list() under-allocates
+the size of struct iosm_cd_table *cd_table.
 
-Silence these warnings for now, our build bot runs GCC 12
-so we won't allow any new instances.
+This is avoidable - we just need a flexible array. Nothing calls
+sizeof() on struct iosm_cd_list or anything that contains it.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: nbd@nbd.name
-CC: john@phrozen.org
-CC: sean.wang@mediatek.com
-CC: Mark-MC.Lee@mediatek.com
-CC: matthias.bgg@gmail.com
+CC: m.chetan.kumar@intel.com
+CC: linuxwwan@intel.com
+CC: loic.poulain@linaro.org
+CC: ryazanov.s.a@gmail.com
+CC: johannes@sipsolutions.net
 ---
- drivers/net/ethernet/mediatek/Makefile | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wwan/iosm/iosm_ipc_coredump.h | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mediatek/Makefile b/drivers/net/ethernet/mediatek/Makefile
-index 45ba0970504a..611f7b4d4eb8 100644
---- a/drivers/net/ethernet/mediatek/Makefile
-+++ b/drivers/net/ethernet/mediatek/Makefile
-@@ -11,3 +11,8 @@ mtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed_debugfs.o
- endif
- obj-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed_ops.o
- obj-$(CONFIG_NET_MEDIATEK_STAR_EMAC) += mtk_star_emac.o
-+
-+# FIXME: temporarily silence -Warray-bounds on non W=1 builds
-+ifndef KBUILD_EXTRA_WARN
-+CFLAGS_mtk_ppe.o += $(call cc-disable-warning, array-bounds)
-+endif
+diff --git a/drivers/net/wwan/iosm/iosm_ipc_coredump.h b/drivers/net/wwan/iosm/iosm_ipc_coredump.h
+index 0809ba664276..3da5ec75e0f0 100644
+--- a/drivers/net/wwan/iosm/iosm_ipc_coredump.h
++++ b/drivers/net/wwan/iosm/iosm_ipc_coredump.h
+@@ -14,9 +14,6 @@
+ /* Max buffer allocated to receive coredump data */
+ #define MAX_DATA_SIZE 0x00010000
+ 
+-/* Max number of file entries */
+-#define MAX_NOF_ENTRY 256
+-
+ /* Max length */
+ #define MAX_SIZE_LEN 32
+ 
+@@ -38,7 +35,7 @@ struct iosm_cd_list_entry {
+  */
+ struct iosm_cd_list {
+ 	__le32 num_entries;
+-	struct iosm_cd_list_entry entry[MAX_NOF_ENTRY];
++	struct iosm_cd_list_entry entry[];
+ } __packed;
+ 
+ /**
 -- 
 2.34.3
 
