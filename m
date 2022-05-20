@@ -2,183 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4EF52E46D
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 07:40:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3C1A52E487
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 07:52:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344156AbiETFjo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 01:39:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60140 "EHLO
+        id S1345641AbiETFwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 01:52:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232685AbiETFjm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 01:39:42 -0400
-Received: from FRA01-PR2-obe.outbound.protection.outlook.com (mail-eopbgr120084.outbound.protection.outlook.com [40.107.12.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5400B14B643;
-        Thu, 19 May 2022 22:39:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=AMJAXRt0v62Prt1uUAj4iZ7ENucBmDlecWp4USxYcso0/wrzyEqNAOt0vkmcaALYsPR7noBg63d+RyDBnrccRegiprYZJEV3z0LR1KLvrt2p6QiApY6ZIialxYAqEGjL2EXNowe+9WjSbOxS0G063GA66g0u1sBv4R/XmgIAag90/RgW2GCLkQI3AJ9x3XURUgv6f+p6cqy7fZA4nmUSelPKU28Pc1B6/VF/r2ePWFHAk72YnSv+5yfNW/LUNY4hLpiZqwFaRmvvEtfsxZy0eX7nyzptJryyxHI9+dAJn9DQ9wK97EMWJeutpvxWH2p9YrOYz8thiPblMC+CQeO5og==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Ff4GXXNze4sBRIIwID4MqDOzQgyjDaMmmvCR5VJVKC8=;
- b=R4KvY2btL5vP5CihQg4CZ5DC6IaScS7bjUx044TUNIUuf+sEz7m18DOXQ5yKF/NUyMBR4cghj8/M0wWOXxG/inq4SdNdv1AfqpRco9RTac0EecOxg/fq9YZsVC9JGqMndr6V9BEVVil+FBIX2KYZP0vzXA60B9PS/R+z5Iu8Q1BDQz1o64DE47t9EDTVYJSqTefA1mebFCd9+M28C3Mw/BL8M13j7awHtZez4+CtkO2C4uom/fUQR7Lc4Jvuu2X/A8cKtd6XbP+IbA2LZMLxxkJEXLWb6Do0yjUNcP8CvPJoKG8o+58auKOgDR7uKWauw5ru14UOCZdJJs7oZ8xUgw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=csgroup.eu; dmarc=pass action=none header.from=csgroup.eu;
- dkim=pass header.d=csgroup.eu; arc=none
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by MR1P264MB2303.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:13::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Fri, 20 May
- 2022 05:39:38 +0000
-Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::ad4e:c157:e9ac:385d]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
- ([fe80::ad4e:c157:e9ac:385d%8]) with mapi id 15.20.5273.016; Fri, 20 May 2022
- 05:39:38 +0000
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-To:     Mans Rullgard <mans@mansr.com>,
-        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vitaly Bordug <vbordug@ru.mvista.com>,
-        Dan Malek <dan@embeddededge.com>,
-        Joakim Tjernlund <joakim.tjernlund@lumentis.se>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: fs_enet: sync rx dma buffer before reading
-Thread-Topic: [PATCH] net: fs_enet: sync rx dma buffer before reading
-Thread-Index: AQHYa7YuVEP9k/Dzd0ymrSBr6A4wj60nQJAA
-Date:   Fri, 20 May 2022 05:39:38 +0000
-Message-ID: <03f24864-9d4d-b4f9-354a-f3b271c0ae66@csgroup.eu>
-References: <20220519192443.28681-1-mans@mansr.com>
-In-Reply-To: <20220519192443.28681-1-mans@mansr.com>
-Accept-Language: fr-FR, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=csgroup.eu;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a577e529-ee20-4ff9-3a4e-08da3a232174
-x-ms-traffictypediagnostic: MR1P264MB2303:EE_
-x-microsoft-antispam-prvs: <MR1P264MB23038CC35309121B05586DFEEDD39@MR1P264MB2303.FRAP264.PROD.OUTLOOK.COM>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: H/ypzgxUWbdYiEFU8mh4mqsO3KWvTKWBYP3jQfjjysbzPNtQlb8fQnBFHF6mkKDA3g6GttoN3Lq0RpdXs9jkPGEHbeXcb50NHVfubdqjoyAGwUyPcof6hGwJKJ5K/lz56F8Ku8Aknb8V8xRef092p/jxoGgQRJZCuhF2MW8W/Lpt7QyhOC3Huwh164CBEY2jmy/5SIBNQYIUG3tZeSoQxQ7n9n6s0iAk11l5IxBRydpy2yH7/s8DpBqeSBnxG8fncVbbzU9alzx1m/hWHIHZcRb+ell1Qvs+3mqEl9XiMHhNBGL9VChR2l1Lfs/LMoPwcs/hBvrC4oM5oZ5mfLdKS727X9QhQh+qnyQhshNxBOZrotSFl0v8SZd+l55iewWpALYtRJegoQ1HcGiM0jpLenEQbyEUGnFE9IobCP4kJOoN3cytht81CgxgrwfRL1jZoDwDUyQFHSfNH/yRjTcwtMKggysSuLuPpN812eKXUcBJDiWl1tMKNh+chto0ww9w7OSwNvqUI5Dq2gqyJa58g+QcXqpROrq9M0sGAN+f7geQKExTmPzFgzbqfxhry2OuXhYlN+0vAcyXkMx3IXhsadh3/A2OAnhjr8wk/0v9NIb3jIp+dallIMUgyamkjg86gycQmxkJeQ468x6tASG8eOXppyj56bGjPMQL6ocTK9AMwwfvzz2JKbsoKzOQYBHYjylKGEqxFhTLtmk/xzom8MN+cZ090sQWxPfAF66DgA6b3KbcRa7BCmpr/CYQMmZQ/LqbyBBMZGrKcB1qwWdfM6AJLn49DUxe0MBlxWZnD7o=
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(2616005)(66574015)(186003)(6512007)(122000001)(26005)(31686004)(921005)(38070700005)(5660300002)(6506007)(38100700002)(66476007)(316002)(71200400001)(508600001)(110136005)(6486002)(2906002)(7416002)(8676002)(83380400001)(76116006)(36756003)(8936002)(86362001)(31696002)(64756008)(66946007)(66556008)(66446008)(44832011)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?utf-8?B?UUwrUVRHbnJOUDBlU3pjVU9VOGRiOWxBakZUNmV6RVRQZnNsRmRTRUUrSHNu?=
- =?utf-8?B?MkRTR3E4N0hLVHRDa1ZDVDFvUzB6VVhvUHNSTDRFRDhKNnYwNWZyT0tWVk4w?=
- =?utf-8?B?ZmtOWW1UdURpSjhhcjl5SnhLTWlVdTZMWjBqL3VBR2VLRlJKVnE4WjIvZlpC?=
- =?utf-8?B?VDFjRDkzMUpVeWV0ZytiejlrQzRlUS8rT0dKUklVWDlKNm4wM3dXYmNBNUk3?=
- =?utf-8?B?TER1azFNTldCOHdVcUJ1a0UzSm9UR1dnOFVWK0xGN3VHQmxpMW5HS1NKQnli?=
- =?utf-8?B?b2p1cWFkVkd5dS96V0RoQkxTZERyLzg2Y2hla3hqM3lOZVVnUXVHTktQZHUz?=
- =?utf-8?B?NkF4S05UQlBHNyt6NFJobHBFbTdTdDRVNGJ1aWZKWU5CN01DU1l1ZVVES3Vu?=
- =?utf-8?B?Z1VCZ1dtbEVsTFp5SG1veHJwb001TW1PSXl6NXc5ME11TDdWSUJOUTVBR1da?=
- =?utf-8?B?T243Q2o3U3ZJSlBzaG1kOEdUTUN0WFlaK09jeTdnOWlIRHhUMTJxN1ZCOUxY?=
- =?utf-8?B?RTdwaVJ6UFE1eEZSTklSV2JyZ1VkZ2c0Q21zbUJiV1RwN1JaM0FGSDU1cmFv?=
- =?utf-8?B?cXFGd0gveWZ3RWZJeFZaSGxVK01kU3lBcUgwMmRXNzRoZnhwYm9Tdjk0Vlg1?=
- =?utf-8?B?c2FvSEc0NkNGRVFzYk1nczloNEFQd0w2SGJORjRUVmJvNGdYeGVMNzlSbzVa?=
- =?utf-8?B?VlJJVGhCdTJ1NmhiTDFiKzdGV0hMUEF6c0U1RHB6SWc3aUNaeFYyT3NiVm01?=
- =?utf-8?B?Q0dvLzRsU1ZnMWZFWUtIbU1IV00rV2VhdGRLZDhRK0FwR2RnaW8xWC9yOURy?=
- =?utf-8?B?VXpjTzBKOVVuU0lNMmlWMWdsNy9tbGFtN2VNSGhhZVJjWVRpcWw1WlRsQi9U?=
- =?utf-8?B?OTlOSUlVbUIva2VIcWNhOXRIVm96TmJKODE1Y2dpUnR2RUl2TzYzMnJwMHJl?=
- =?utf-8?B?cy9RbmwyWkltMlFUR091a1dHZmZ2djlSS0ZycjQrcmpadVYydGphTGlYTzhY?=
- =?utf-8?B?TjVXTCt0Sm1vZjZYRGtIOEpEczR5c1Z6MTFnTm9LMWlOdW1yaGc0SkM5aUpn?=
- =?utf-8?B?aXY1YXBYOVhaTTR4YVZiUi9ReWd6LzJiRjFmT1RPRjRSWGhkNjlNak11dzhh?=
- =?utf-8?B?UjR6UFdPZS9yNUtZNEJQdGQ5akhtQk5TSERXU2g0azd0ZVB2THhZVkxOYlVF?=
- =?utf-8?B?QURXMkZLUmhuVFg2aFRaTkhaUVVRRGU0VUE2ZGlIbk1kLzdpMDlUT2x3STFX?=
- =?utf-8?B?SzRzUThvZE5HR0NDNWRnVVBDUERlNmJyeVV2cmk2MW9OYVdZUXVxTSs0bE8w?=
- =?utf-8?B?Q3JocFEwS21QV29wRTVSc1hJVnphU3o2QjgrdDdOZlp0U0M3UFZ3eTM5bGFT?=
- =?utf-8?B?dHdHLzNTS1lJM1NEZUFkUXpWakp3SVpoRUpqVExwWnk4a3hXQnNjU2lUOWN1?=
- =?utf-8?B?aDFIZ3RnbHo4Wm1EL0d3YzdRZndpa2tRNjlxUjM3WVJvOEU4R04zSEFnbkZM?=
- =?utf-8?B?MDNoR3RzVVA5RDlnb0tUWHVKV095VDlmaGRpNjFuU1pUY01rQmdLczlqQ0pE?=
- =?utf-8?B?UEdhbUdZRjBob00rSzI0Tm11STIrNWxwQlZKaUZKR3E3ajBoMWlKUm9EV1F2?=
- =?utf-8?B?Y01LM3MyeWgrUFgxeUlGTmdkSlAxL1FwTlRyclU1aFFvanljZVJVM1hFVWNJ?=
- =?utf-8?B?a3BuYUYzSUd2VUNtSTZhSEFxalByQ29zN1FtUExtRDE5ZkwxSzNDemprT3Aw?=
- =?utf-8?B?WjR0R003elhGY1pUVjBJQVJMWUFudVJKMkZBc1NyeXJWcWVUck9NQkpoUVhQ?=
- =?utf-8?B?Zmo3SmNqZUNDY3l0dXpqZFl2RllnRDRRTDczL1Jmby9nOHhGUk8ySVgrZVIx?=
- =?utf-8?B?R0FndlJEVkcwcm4zemc1WFVISTIrMkRhUE01TnRtZzgrYWQ2RWh4L3lRNVND?=
- =?utf-8?B?MFl0MEI2SGZETlFjWE1pSDNCRTJ5YlpXSzJlb1didHJaa0szVXI3bEV0dEdo?=
- =?utf-8?B?VXM2ZE5aaDkyckJ5OVVJUmk0S1l6bGhZMHZmRHJKRUJkYWJJNS9XR1g4bGNW?=
- =?utf-8?B?ODJSU2tuQ29QNzBUUjh0RFNDUWpXVGJYUkpQd1dKcThwWXRmeTE5M1FjNXgr?=
- =?utf-8?B?VWxFdFh6UEtPOU8vRnRwMTZLcE90Y0J2eVRtNTlFMmQ1NnNFTzd5YkRYdC95?=
- =?utf-8?B?aVhJQ2ptQ0xjaElrbG9lSVM0N0VXVGtaUXdReUxkcWtndVpTWHUzQklmTzMr?=
- =?utf-8?B?bEkvR3lDY293SkJjREg3dDVHRWFrai9wTmJtQms2MUg1bjZ4USs5WUhOS1Za?=
- =?utf-8?B?MEJJMGxBYnEvZm9PNCtlMjlNdEVsZlpEcXpMNyt5VHRtQ1duUlZvSGNKVG1D?=
- =?utf-8?Q?JTRjWSMvYpV3osAAWFRFzVzLoRTWDIU45qoiI?=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <417B0EE9D156C24EB9427A8DDB2F0A40@FRAP264.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: base64
+        with ESMTP id S1345655AbiETFv4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 01:51:56 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3B8662128
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 22:51:54 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id l14so7139229pjk.2
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 22:51:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=10odKy7auSrsqxSQi0CY7mnEtuGmUZB9UZHxxs/RHzo=;
+        b=CHHnKvjJy1/UenAXvOKw/Jf76a/RZ14DJj1ULa74xDVUDeXstnWp3x/98Wo63zG468
+         QvcjZRNcXOd/Hhuhgjhmt/H2iuUqzpjcM7DLW0zRS/Nt5ux7RgqB7vLzO8xKIccf/P35
+         b+47n2UYN09+0hWAf+0joGSQ4QevqPSAgJZaC6YeZSsGGy0A+icSxslVw6JdAnYNrUDA
+         ZLEThpyQqWbrlBTnUC/RMMXFz0QMjl5AdI4esh+JficyC6s4gYCU7UQkvHRQ/T7px5Ng
+         BuX5EjBOrOOuKtFvgFs+eFf0p0VbZSDCBzUBIhrQSfCnV+vRtowOdaEfbemLmITCy4Er
+         mK0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=10odKy7auSrsqxSQi0CY7mnEtuGmUZB9UZHxxs/RHzo=;
+        b=tlsQB3DiWLfKafCH8q8sjeYuLu1Cj44GEWB5ZeOfWNwqfb5rqczR6kvj345mKNX26h
+         jrAdKqPIUT/Ip5NF5TrXBRiJVKvY5W8nxUF87KaQpAbGKvDLvMaoEyt9aHSsjeT8oI1r
+         djOOnnDJHpvhD1xfMU9oKThgR0YdqeoyQ9NIbATCXI1m5nJFvIgyj4f7IaIzYqnvEBwg
+         ToCtUS/gFDp2llnH4SEZ6qNDUG/3OveTTS79rcnQ672SWwIgbY3osbDEVQBsIGgW4071
+         TvOq9r5KkszpLeriSINm1HmK+WdA6vJ88MMlNkWxh7hSPg0qcw0DEwoNhbAq8FI8tUC+
+         L7yA==
+X-Gm-Message-State: AOAM532tEz37gN9sXOJUrg5yYHwvuNLFTK+Aa+qLele467BScTeNaWBo
+        5oJzIwvSx24WGAbfZfAmTFn7tcHi/JOuwlqee7s=
+X-Google-Smtp-Source: ABdhPJwgNYjCDTFGAY3fqKzelO+ZXDDgaFLyu5O/GV4msYNmpMAvUu+DxvSrCRtJywiLZIAXqeqZEw==
+X-Received: by 2002:a17:90b:4c07:b0:1df:f11a:7d4a with SMTP id na7-20020a17090b4c0700b001dff11a7d4amr3292421pjb.214.1653025914016;
+        Thu, 19 May 2022 22:51:54 -0700 (PDT)
+Received: from nvm-geerzzfj.. ([212.107.31.242])
+        by smtp.gmail.com with ESMTPSA id b6-20020a62a106000000b0050dc76281a0sm753416pff.122.2022.05.19.22.51.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 May 2022 22:51:53 -0700 (PDT)
+From:   Yuwei Wang <wangyuweihx@gmail.com>
+To:     davem@davemloft.net, kuba@kernel.org, edumazet@google.com
+Cc:     daniel@iogearbox.net, roopa@nvidia.com, dsahern@kernel.org,
+        qindi@staff.weibo.com, netdev@vger.kernel.org,
+        Yuwei Wang <wangyuweihx@gmail.com>
+Subject: [PATCH] net, neigh: introduce interval_probe_time for periodic probe
+Date:   Fri, 20 May 2022 05:51:04 +0000
+Message-Id: <20220520055104.1528845-1-wangyuweihx@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-X-OriginatorOrg: csgroup.eu
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: a577e529-ee20-4ff9-3a4e-08da3a232174
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 May 2022 05:39:38.5721
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: l2V/qncBEKGz7CP0Md9Te2dmVfecUgXNANZknOUdM4/YVg83+gpXPVLqaTZsfFmz9BsPOBBoOAj78rAcWhAPCLpC+bFFp28z0U5Rwfir3B8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR1P264MB2303
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TGUgMTkvMDUvMjAyMiDDoCAyMToyNCwgTWFucyBSdWxsZ2FyZCBhIMOpY3JpdMKgOg0KPiBUaGUg
-ZG1hX3N5bmNfc2luZ2xlX2Zvcl9jcHUoKSBjYWxsIG11c3QgcHJlY2VkZSByZWFkaW5nIHRoZSBy
-ZWNlaXZlZA0KPiBkYXRhLiBGaXggdGhpcy4NCg0KU2VlIG9yaWdpbmFsIGNvbW1pdCAwNzBlMWYw
-MTgyN2MuIEl0IGV4cGxpY2l0ZWx5IHNheXMgdGhhdCB0aGUgY2FjaGUgDQptdXN0IGJlIGludmFs
-aWRhdGUgX0FGVEVSXyB0aGUgY29weS4NCg0KVGhlIGNhY2hlIGlzIGluaXRpYWx5IGludmFsaWRh
-dGVkIGJ5IGRtYV9tYXBfc2luZ2xlKCksIHNvIGJlZm9yZSB0aGUgDQpjb3B5IHRoZSBjYWNoZSBp
-cyBhbHJlYWR5IGNsZWFuLg0KDQpBZnRlciB0aGUgY29weSwgZGF0YSBpcyBpbiB0aGUgY2FjaGUu
-IEluIG9yZGVyIHRvIGFsbG93IHJlLXVzZSBvZiB0aGUgDQpza2IsIGl0IG11c3QgYmUgcHV0IGJh
-Y2sgaW4gdGhlIHNhbWUgY29uZGl0aW9uIGFzIGJlZm9yZSwgaW4gZXh0ZW5zbyB0aGUgDQpjYWNo
-ZSBtdXN0IGJlIGludmFsaWRhdGVkIGluIG9yZGVyIHRvIGJlIGluIHRoZSBzYW1lIHNpdHVhdGlv
-biBhcyBhZnRlciANCmRtYV9tYXBfc2luZ2xlKCkuDQoNClNvIEkgdGhpbmsgeW91ciBjaGFuZ2Ug
-aXMgd3JvbmcuDQoNCg0KPiANCj4gRml4ZXM6IDA3MGUxZjAxODI3YyAoIm5ldDogZnNfZW5ldDog
-ZG9uJ3QgdW5tYXAgRE1BIHdoZW4gcGFja2V0IGxlbiBpcyBiZWxvdyBjb3B5YnJlYWsiKQ0KPiBT
-aWduZWQtb2ZmLWJ5OiBNYW5zIFJ1bGxnYXJkIDxtYW5zQG1hbnNyLmNvbT4NCj4gLS0tDQo+ICAg
-ZHJpdmVycy9uZXQvZXRoZXJuZXQvZnJlZXNjYWxlL2ZzX2VuZXQvZnNfZW5ldC1tYWluLmMgfCA4
-ICsrKystLS0tDQo+ICAgMSBmaWxlIGNoYW5nZWQsIDQgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlv
-bnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUv
-ZnNfZW5ldC9mc19lbmV0LW1haW4uYyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9m
-c19lbmV0L2ZzX2VuZXQtbWFpbi5jDQo+IGluZGV4IGIzZGFlMTdlMDY3ZS4uNDMyY2UxMGNiZmQw
-IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZnNfZW5ldC9m
-c19lbmV0LW1haW4uYw0KPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9mcmVlc2NhbGUvZnNf
-ZW5ldC9mc19lbmV0LW1haW4uYw0KPiBAQCAtMjQwLDE0ICsyNDAsMTQgQEAgc3RhdGljIGludCBm
-c19lbmV0X25hcGkoc3RydWN0IG5hcGlfc3RydWN0ICpuYXBpLCBpbnQgYnVkZ2V0KQ0KPiAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAvKiArMiB0byBtYWtlIElQIGhlYWRlciBMMSBj
-YWNoZSBhbGlnbmVkICovDQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNrYm4g
-PSBuZXRkZXZfYWxsb2Nfc2tiKGRldiwgcGt0X2xlbiArIDIpOw0KPiAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICBpZiAoc2tibiAhPSBOVUxMKSB7DQo+ICsgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICBkbWFfc3luY19zaW5nbGVfZm9yX2NwdShmZXAtPmRldiwN
-Cj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQ0JEUl9C
-VUZBRERSKGJkcCksDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIEwxX0NBQ0hFX0FMSUdOKHBrdF9sZW4pLA0KPiArICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICBETUFfRlJPTV9ERVZJQ0UpOw0KPiAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNrYl9yZXNlcnZlKHNrYm4sIDIpOyAgIC8q
-IGFsaWduIElQIGhlYWRlciAqLw0KPiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgIHNrYl9jb3B5X2Zyb21fbGluZWFyX2RhdGEoc2tiLA0KPiAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc2tibi0+ZGF0YSwgcGt0X2xl
-bik7DQo+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgc3dhcChza2Is
-IHNrYm4pOw0KPiAtICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgZG1hX3N5
-bmNfc2luZ2xlX2Zvcl9jcHUoZmVwLT5kZXYsDQo+IC0gICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgIENCRFJfQlVGQUREUihiZHApLA0KPiAtICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICBMMV9DQUNIRV9BTElHTihwa3RfbGVu
-KSwNCj4gLSAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgRE1B
-X0ZST01fREVWSUNFKTsNCj4gICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgfQ0KPiAg
-ICAgICAgICAgICAgICAgICAgICAgICAgfSBlbHNlIHsNCj4gICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgc2tibiA9IG5ldGRldl9hbGxvY19za2IoZGV2LCBFTkVUX1JYX0ZSU0laRSk7
-DQo+IC0tDQo+IDIuMzUuMQ0KPiA=
+commit 7482e3841d52 ("net, neigh: Add NTF_MANAGED flag for managed neighbor entries")
+neighbor entries which with NTF_EXT_MANAGED flags will periodically call neigh_event_send()
+for performing the resolution. and the interval was set to DELAY_PROBE_TIME
+
+DELAY_PROBE_TIME was configured as the first probe time delay, and it makes sense to set it to `0`.
+
+when DELAY_PROBE_TIME is `0`, the resolution of neighbor entries with NTF_EXT_MANAGED will
+trap in an infinity recursion.
+
+as commit messages mentioned in the above commit, we should introduce a new option which means resolution interval.
+
+Signed-off-by: Yuwei Wang <wangyuweihx@gmail.com>
+---
+meanwhile, we should replace `DELAY_PROBE_TIME` with `INTERVAL_PROBE_TIME` 
+in `drivers/net/ethernet/mellanox` after this patch was merged
+
+and should we remove `include/uapi/linux/sysctl.h` seems it is no
+longer unused.
+
+ include/net/neighbour.h        |  3 ++-
+ include/net/netevent.h         |  1 +
+ include/uapi/linux/neighbour.h |  1 +
+ include/uapi/linux/sysctl.h    | 37 +++++++++++++++++-----------------
+ net/core/neighbour.c           | 14 +++++++++++--
+ net/decnet/dn_neigh.c          |  1 +
+ net/ipv4/arp.c                 |  1 +
+ net/ipv6/ndisc.c               |  1 +
+ 8 files changed, 38 insertions(+), 21 deletions(-)
+
+diff --git a/include/net/neighbour.h b/include/net/neighbour.h
+index 87419f7f5421..75786903f1d4 100644
+--- a/include/net/neighbour.h
++++ b/include/net/neighbour.h
+@@ -48,6 +48,7 @@ enum {
+ 	NEIGH_VAR_RETRANS_TIME,
+ 	NEIGH_VAR_BASE_REACHABLE_TIME,
+ 	NEIGH_VAR_DELAY_PROBE_TIME,
++	NEIGH_VAR_INTERVAL_PROBE_TIME,
+ 	NEIGH_VAR_GC_STALETIME,
+ 	NEIGH_VAR_QUEUE_LEN_BYTES,
+ 	NEIGH_VAR_PROXY_QLEN,
+@@ -64,7 +65,7 @@ enum {
+ 	NEIGH_VAR_GC_THRESH1,
+ 	NEIGH_VAR_GC_THRESH2,
+ 	NEIGH_VAR_GC_THRESH3,
+-	NEIGH_VAR_MAX
++	NEIGH_VAR_MAX,
+ };
+ 
+ struct neigh_parms {
+diff --git a/include/net/netevent.h b/include/net/netevent.h
+index 4107016c3bb4..121df77d653e 100644
+--- a/include/net/netevent.h
++++ b/include/net/netevent.h
+@@ -26,6 +26,7 @@ enum netevent_notif_type {
+ 	NETEVENT_NEIGH_UPDATE = 1, /* arg is struct neighbour ptr */
+ 	NETEVENT_REDIRECT,	   /* arg is struct netevent_redirect ptr */
+ 	NETEVENT_DELAY_PROBE_TIME_UPDATE, /* arg is struct neigh_parms ptr */
++	NETEVENT_INTERVAL_PROBE_TIME_UPDATE, /* arg is struct neigh_parms ptr */
+ 	NETEVENT_IPV4_MPATH_HASH_UPDATE, /* arg is struct net ptr */
+ 	NETEVENT_IPV6_MPATH_HASH_UPDATE, /* arg is struct net ptr */
+ 	NETEVENT_IPV4_FWD_UPDATE_PRIORITY_UPDATE, /* arg is struct net ptr */
+diff --git a/include/uapi/linux/neighbour.h b/include/uapi/linux/neighbour.h
+index 39c565e460c7..5ae538be64b9 100644
+--- a/include/uapi/linux/neighbour.h
++++ b/include/uapi/linux/neighbour.h
+@@ -143,6 +143,7 @@ enum {
+ 	NDTPA_RETRANS_TIME,		/* u64, msecs */
+ 	NDTPA_GC_STALETIME,		/* u64, msecs */
+ 	NDTPA_DELAY_PROBE_TIME,		/* u64, msecs */
++	NDTPA_INTERVAL_PROBE_TIME,	/* u64, msecs */
+ 	NDTPA_QUEUE_LEN,		/* u32 */
+ 	NDTPA_APP_PROBES,		/* u32 */
+ 	NDTPA_UCAST_PROBES,		/* u32 */
+diff --git a/include/uapi/linux/sysctl.h b/include/uapi/linux/sysctl.h
+index 6a3b194c50fe..53f06bfd2a37 100644
+--- a/include/uapi/linux/sysctl.h
++++ b/include/uapi/linux/sysctl.h
+@@ -584,24 +584,25 @@ enum {
+ 
+ /* /proc/sys/net/<protocol>/neigh/<dev> */
+ enum {
+-	NET_NEIGH_MCAST_SOLICIT=1,
+-	NET_NEIGH_UCAST_SOLICIT=2,
+-	NET_NEIGH_APP_SOLICIT=3,
+-	NET_NEIGH_RETRANS_TIME=4,
+-	NET_NEIGH_REACHABLE_TIME=5,
+-	NET_NEIGH_DELAY_PROBE_TIME=6,
+-	NET_NEIGH_GC_STALE_TIME=7,
+-	NET_NEIGH_UNRES_QLEN=8,
+-	NET_NEIGH_PROXY_QLEN=9,
+-	NET_NEIGH_ANYCAST_DELAY=10,
+-	NET_NEIGH_PROXY_DELAY=11,
+-	NET_NEIGH_LOCKTIME=12,
+-	NET_NEIGH_GC_INTERVAL=13,
+-	NET_NEIGH_GC_THRESH1=14,
+-	NET_NEIGH_GC_THRESH2=15,
+-	NET_NEIGH_GC_THRESH3=16,
+-	NET_NEIGH_RETRANS_TIME_MS=17,
+-	NET_NEIGH_REACHABLE_TIME_MS=18,
++	NET_NEIGH_MCAST_SOLICIT = 1,
++	NET_NEIGH_UCAST_SOLICIT = 2,
++	NET_NEIGH_APP_SOLICIT = 3,
++	NET_NEIGH_RETRANS_TIME = 4,
++	NET_NEIGH_REACHABLE_TIME = 5,
++	NET_NEIGH_DELAY_PROBE_TIME = 6,
++	NET_NEIGH_GC_STALE_TIME = 7,
++	NET_NEIGH_UNRES_QLEN = 8,
++	NET_NEIGH_PROXY_QLEN = 9,
++	NET_NEIGH_ANYCAST_DELAY = 10,
++	NET_NEIGH_PROXY_DELAY = 11,
++	NET_NEIGH_LOCKTIME = 12,
++	NET_NEIGH_GC_INTERVAL = 13,
++	NET_NEIGH_GC_THRESH1 = 14,
++	NET_NEIGH_GC_THRESH2 = 15,
++	NET_NEIGH_GC_THRESH3 = 16,
++	NET_NEIGH_RETRANS_TIME_MS = 17,
++	NET_NEIGH_REACHABLE_TIME_MS = 18,
++	NET_NEIGH_INTERVAL_PROBE_TIME = 19,
+ };
+ 
+ /* /proc/sys/net/dccp */
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 47b6c1f0fdbb..f07cac60c834 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -1579,7 +1579,7 @@ static void neigh_managed_work(struct work_struct *work)
+ 	list_for_each_entry(neigh, &tbl->managed_list, managed_list)
+ 		neigh_event_send_probe(neigh, NULL, false);
+ 	queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
+-			   NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
++			   NEIGH_VAR(&tbl->parms, INTERVAL_PROBE_TIME));
+ 	write_unlock_bh(&tbl->lock);
+ }
+ 
+@@ -2100,7 +2100,9 @@ static int neightbl_fill_parms(struct sk_buff *skb, struct neigh_parms *parms)
+ 	    nla_put_msecs(skb, NDTPA_PROXY_DELAY,
+ 			  NEIGH_VAR(parms, PROXY_DELAY), NDTPA_PAD) ||
+ 	    nla_put_msecs(skb, NDTPA_LOCKTIME,
+-			  NEIGH_VAR(parms, LOCKTIME), NDTPA_PAD))
++			  NEIGH_VAR(parms, LOCKTIME), NDTPA_PAD) ||
++	    nla_put_msecs(skb, NDTPA_INTERVAL_PROBE_TIME,
++			  NEIGH_VAR(parms, INTERVAL_PROBE_TIME), NDTPA_PAD))
+ 		goto nla_put_failure;
+ 	return nla_nest_end(skb, nest);
+ 
+@@ -2373,6 +2375,11 @@ static int neightbl_set(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 					      nla_get_msecs(tbp[i]));
+ 				call_netevent_notifiers(NETEVENT_DELAY_PROBE_TIME_UPDATE, p);
+ 				break;
++			case NDTPA_INTERVAL_PROBE_TIME:
++				NEIGH_VAR_SET(p, INTERVAL_PROBE_TIME,
++					      nla_get_msecs(tbp[i]));
++				call_netevent_notifiers(NETEVENT_INTERVAL_PROBE_TIME_UPDATE, p);
++				break;
+ 			case NDTPA_RETRANS_TIME:
+ 				NEIGH_VAR_SET(p, RETRANS_TIME,
+ 					      nla_get_msecs(tbp[i]));
+@@ -3543,6 +3550,8 @@ static void neigh_proc_update(struct ctl_table *ctl, int write)
+ 	set_bit(index, p->data_state);
+ 	if (index == NEIGH_VAR_DELAY_PROBE_TIME)
+ 		call_netevent_notifiers(NETEVENT_DELAY_PROBE_TIME_UPDATE, p);
++	if (index == NEIGH_VAR_INTERVAL_PROBE_TIME)
++		call_netevent_notifiers(NETEVENT_INTERVAL_PROBE_TIME_UPDATE, p);
+ 	if (!dev) /* NULL dev means this is default value */
+ 		neigh_copy_dflt_parms(net, p, index);
+ }
+@@ -3676,6 +3685,7 @@ static struct neigh_sysctl_table {
+ 		NEIGH_SYSCTL_USERHZ_JIFFIES_ENTRY(RETRANS_TIME, "retrans_time"),
+ 		NEIGH_SYSCTL_JIFFIES_ENTRY(BASE_REACHABLE_TIME, "base_reachable_time"),
+ 		NEIGH_SYSCTL_JIFFIES_ENTRY(DELAY_PROBE_TIME, "delay_first_probe_time"),
++		NEIGH_SYSCTL_JIFFIES_ENTRY(INTERVAL_PROBE_TIME, "interval_probe_time"),
+ 		NEIGH_SYSCTL_JIFFIES_ENTRY(GC_STALETIME, "gc_stale_time"),
+ 		NEIGH_SYSCTL_ZERO_INTMAX_ENTRY(QUEUE_LEN_BYTES, "unres_qlen_bytes"),
+ 		NEIGH_SYSCTL_ZERO_INTMAX_ENTRY(PROXY_QLEN, "proxy_qlen"),
+diff --git a/net/decnet/dn_neigh.c b/net/decnet/dn_neigh.c
+index fbd98ac853ea..995b22841ebf 100644
+--- a/net/decnet/dn_neigh.c
++++ b/net/decnet/dn_neigh.c
+@@ -94,6 +94,7 @@ struct neigh_table dn_neigh_table = {
+ 			[NEIGH_VAR_RETRANS_TIME] = 1 * HZ,
+ 			[NEIGH_VAR_BASE_REACHABLE_TIME] = 30 * HZ,
+ 			[NEIGH_VAR_DELAY_PROBE_TIME] = 5 * HZ,
++			[NEIGH_VAR_INTERVAL_PROBE_TIME] = 5 * HZ,
+ 			[NEIGH_VAR_GC_STALETIME] = 60 * HZ,
+ 			[NEIGH_VAR_QUEUE_LEN_BYTES] = SK_WMEM_MAX,
+ 			[NEIGH_VAR_PROXY_QLEN] = 0,
+diff --git a/net/ipv4/arp.c b/net/ipv4/arp.c
+index ab4a5601c82a..dbea1f7a7e2b 100644
+--- a/net/ipv4/arp.c
++++ b/net/ipv4/arp.c
+@@ -168,6 +168,7 @@ struct neigh_table arp_tbl = {
+ 			[NEIGH_VAR_RETRANS_TIME] = 1 * HZ,
+ 			[NEIGH_VAR_BASE_REACHABLE_TIME] = 30 * HZ,
+ 			[NEIGH_VAR_DELAY_PROBE_TIME] = 5 * HZ,
++			[NEIGH_VAR_INTERVAL_PROBE_TIME] = 5 * HZ,
+ 			[NEIGH_VAR_GC_STALETIME] = 60 * HZ,
+ 			[NEIGH_VAR_QUEUE_LEN_BYTES] = SK_WMEM_MAX,
+ 			[NEIGH_VAR_PROXY_QLEN] = 64,
+diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
+index 254addad0dd3..283b0a188c0e 100644
+--- a/net/ipv6/ndisc.c
++++ b/net/ipv6/ndisc.c
+@@ -128,6 +128,7 @@ struct neigh_table nd_tbl = {
+ 			[NEIGH_VAR_RETRANS_TIME] = ND_RETRANS_TIMER,
+ 			[NEIGH_VAR_BASE_REACHABLE_TIME] = ND_REACHABLE_TIME,
+ 			[NEIGH_VAR_DELAY_PROBE_TIME] = 5 * HZ,
++			[NEIGH_VAR_INTERVAL_PROBE_TIME] = 5 * HZ,
+ 			[NEIGH_VAR_GC_STALETIME] = 60 * HZ,
+ 			[NEIGH_VAR_QUEUE_LEN_BYTES] = SK_WMEM_MAX,
+ 			[NEIGH_VAR_PROXY_QLEN] = 64,
+
+base-commit: 0784c25d21cfe14c128ea5ed3c9ab843fdfac737
+-- 
+2.34.1
+
