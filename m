@@ -2,113 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 91E5252EC6F
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 14:43:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7880452EC5F
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 14:41:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349623AbiETMmu convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 20 May 2022 08:42:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41096 "EHLO
+        id S1349355AbiETMld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 08:41:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349498AbiETMmh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 08:42:37 -0400
-X-Greylist: delayed 390 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Fri, 20 May 2022 05:42:21 PDT
-Received: from unicorn.mansr.com (unicorn.mansr.com [81.2.72.234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 402B61901A;
-        Fri, 20 May 2022 05:42:20 -0700 (PDT)
-Received: from raven.mansr.com (raven.mansr.com [IPv6:2001:8b0:ca0d:1::3])
-        by unicorn.mansr.com (Postfix) with ESMTPS id 6406615361;
-        Fri, 20 May 2022 13:35:48 +0100 (BST)
-Received: by raven.mansr.com (Postfix, from userid 51770)
-        id 4D31721A3D6; Fri, 20 May 2022 13:35:48 +0100 (BST)
-From:   =?iso-8859-1?Q?M=E5ns_Rullg=E5rd?= <mans@mansr.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>
-Cc:     Pantelis Antoniou <pantelis.antoniou@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Vitaly Bordug <vbordug@ru.mvista.com>,
-        Dan Malek <dan@embeddededge.com>,
-        Joakim Tjernlund <joakim.tjernlund@lumentis.se>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: fs_enet: sync rx dma buffer before reading
-References: <20220519192443.28681-1-mans@mansr.com>
-        <03f24864-9d4d-b4f9-354a-f3b271c0ae66@csgroup.eu>
-Date:   Fri, 20 May 2022 13:35:48 +0100
-In-Reply-To: <03f24864-9d4d-b4f9-354a-f3b271c0ae66@csgroup.eu> (Christophe
-        Leroy's message of "Fri, 20 May 2022 05:39:38 +0000")
-Message-ID: <yw1xmtfc9yaj.fsf@mansr.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.2 (gnu/linux)
+        with ESMTP id S1349541AbiETMlU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 08:41:20 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363AE12D09;
+        Fri, 20 May 2022 05:41:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=y5yue5StjMLDz9Stw8tyOk8WJH/+6r8jlx/4Qmd/Q5c=; b=40SWpeZS1e9hHYXISSNDgAETMz
+        fg0iOwPHdtVGaZDTPcOxP774uLKK3RHuX5jcE4qrYsikW4cnM776o07+TQqgZwxtsW+m6DT0zRKt3
+        1rFIDgLmHCxmY7Ydx0WhKf5o7ze+Udsh5JY7kAzAE1F8e79/jwIS+BL3YzMg56Q/cf3o=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ns1wB-003co2-Au; Fri, 20 May 2022 14:40:59 +0200
+Date:   Fri, 20 May 2022 14:40:59 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+Cc:     vladimir.oltean@nxp.com, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
+        dan.carpenter@oracle.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: ocelot: fix wront time_after usage
+Message-ID: <YoeMW+/KGk8VpbED@lunn.ch>
+References: <20220519204017.15586-1-paskripkin@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_PASS,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519204017.15586-1-paskripkin@gmail.com>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Christophe Leroy <christophe.leroy@csgroup.eu> writes:
+On Thu, May 19, 2022 at 11:40:17PM +0300, Pavel Skripkin wrote:
+> Accidentally noticed, that this driver is the only user of
+> while (timer_after(jiffies...)).
+> 
+> It looks like typo, because likely this while loop will finish after 1st
+> iteration, because time_after() returns true when 1st argument _is after_
+> 2nd one.
+> 
+> Fix it by negating time_after return value inside while loops statement
 
-> Le 19/05/2022 à 21:24, Mans Rullgard a écrit :
->> The dma_sync_single_for_cpu() call must precede reading the received
->> data. Fix this.
->
-> See original commit 070e1f01827c. It explicitely says that the cache 
-> must be invalidate _AFTER_ the copy.
->
-> The cache is initialy invalidated by dma_map_single(), so before the 
-> copy the cache is already clean.
->
-> After the copy, data is in the cache. In order to allow re-use of the 
-> skb, it must be put back in the same condition as before, in extenso the 
-> cache must be invalidated in order to be in the same situation as after 
-> dma_map_single().
->
-> So I think your change is wrong.
+A better fix would be to use one of the helpers in linux/iopoll.h.
 
-OK, looking at it more closely, the change is at least unnecessary since
-there will be a cache invalidation between each use of the buffer either
-way.  Please disregard the patch.  Sorry for the noise.
+There is a second bug in the current code:
 
->> 
->> Fixes: 070e1f01827c ("net: fs_enet: don't unmap DMA when packet len is below copybreak")
->> Signed-off-by: Mans Rullgard <mans@mansr.com>
->> ---
->>   drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c | 8 ++++----
->>   1 file changed, 4 insertions(+), 4 deletions(-)
->> 
->> diff --git a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
->> index b3dae17e067e..432ce10cbfd0 100644
->> --- a/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
->> +++ b/drivers/net/ethernet/freescale/fs_enet/fs_enet-main.c
->> @@ -240,14 +240,14 @@ static int fs_enet_napi(struct napi_struct *napi, int budget)
->>                                  /* +2 to make IP header L1 cache aligned */
->>                                  skbn = netdev_alloc_skb(dev, pkt_len + 2);
->>                                  if (skbn != NULL) {
->> +                                       dma_sync_single_for_cpu(fep->dev,
->> +                                               CBDR_BUFADDR(bdp),
->> +                                               L1_CACHE_ALIGN(pkt_len),
->> +                                               DMA_FROM_DEVICE);
->>                                          skb_reserve(skbn, 2);   /* align IP header */
->>                                          skb_copy_from_linear_data(skb,
->>                                                        skbn->data, pkt_len);
->>                                          swap(skb, skbn);
->> -                                       dma_sync_single_for_cpu(fep->dev,
->> -                                               CBDR_BUFADDR(bdp),
->> -                                               L1_CACHE_ALIGN(pkt_len),
->> -                                               DMA_FROM_DEVICE);
->>                                  }
->>                          } else {
->>                                  skbn = netdev_alloc_skb(dev, ENET_RX_FRSIZE);
->> --
->> 2.35.1
->> 
+static int ocelot_fdma_wait_chan_safe(struct ocelot *ocelot, int chan)
+{
+	unsigned long timeout;
+	u32 safe;
 
--- 
-Måns Rullgård
+	timeout = jiffies + usecs_to_jiffies(OCELOT_FDMA_CH_SAFE_TIMEOUT_US);
+	do {
+		safe = ocelot_fdma_readl(ocelot, MSCC_FDMA_CH_SAFE);
+		if (safe & BIT(chan))
+			return 0;
+	} while (time_after(jiffies, timeout));
+
+	return -ETIMEDOUT;
+}
+
+The scheduler could put the thread to sleep, and it does not get woken
+up for OCELOT_FDMA_CH_SAFE_TIMEOUT_US. During that time, the hardware
+has done its thing, but you exit the while loop and return -ETIMEDOUT.
+
+linux/iopoll.h handles this correctly by testing the state one more
+time after the timeout has expired.
+
+  Andrew
