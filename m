@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B623452F1CB
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:43:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F7CA52F1CE
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:44:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352308AbiETRnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 13:43:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46092 "EHLO
+        id S1352325AbiETRnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 13:43:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237892AbiETRnJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:43:09 -0400
-Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62CEE108AA1
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:43:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653068588; x=1684604588;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=wVM63kQ5b3T7v0Zr10tKjC6/g9v8GcXrc9O2OZ5YjF4=;
-  b=m0RTsHNS8VvpZ3D8tk/h6PDaz3h7Z2gEYoL/gLl7R712P1OnJYkeCX9Z
-   LnqIVdrlGUXDH3XvwVu4xcaz2qNFJs7oDlnsr8cOO9F64UOeBM8TrVdUO
-   YYXzrkEuk7bpAL8FaKL/+3cU1IXZU9WOiOwQMRwF4LO9qX8F6WquDFBLD
-   JamB9u1SLQzQYv1j5TbKtskP8ReQtavakrTLk0N0skGwJ658NIYnYQ+Ez
-   +/qRKcJBqxfrzWwzSS6Y5C/6zIa0knz+nNezNHbesFCjm00MHPXeFd/xX
-   9sNQm7MowsAswr0U4CalDAelYxG323eDYd2bHwO6oPXN/jCwbbtaHn1tA
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="335737940"
-X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
-   d="scan'208";a="335737940"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 10:43:08 -0700
-X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
-   d="scan'208";a="743601180"
-Received: from vckummar-mobl.amr.corp.intel.com (HELO [10.209.85.227]) ([10.209.85.227])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 10:43:07 -0700
-Message-ID: <34c7de82-e680-1c61-3696-eb7929626b51@linux.intel.com>
-Date:   Fri, 20 May 2022 10:42:56 -0700
+        with ESMTP id S1352316AbiETRnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:43:52 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C94712B032;
+        Fri, 20 May 2022 10:43:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DB79BB82A71;
+        Fri, 20 May 2022 17:43:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CF91C385A9;
+        Fri, 20 May 2022 17:43:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653068628;
+        bh=rPqzA293aWRPWC7lXotl+If9E12i2+bUeADIQeb5a2g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sUUH8mllbuZL6HHd3vA70wS9VSj62/sIUB0SI8G/+Xtv5tyLYhdMqLJ0UgypHAi0J
+         Na0HX1HL8ghPo2sQRbI0e4cAAIFr6xsvJJFFwQZ5Pdsmwbo8wdj2ktCzSdgJDfejk3
+         yAcv9JnQwuv6YjCrGgDfdAl4H4hsQzjJrczsdZ9Ung4m9eH/Ih//TMXcI7+W3K6gra
+         qaCcnsioUOM2vzfuG9E+A8oINvDsyQYQdXa+Y5HLlBtgelx+0NAqg9QqVUKDWK3Q1D
+         ERb8k/034Jh9cdVGKrLe4ip2u01/HAe2sbSYO6PUkW4aXDiox4+Tq8QLkEAqCTh39U
+         bSm1rsW8i2nag==
+Date:   Fri, 20 May 2022 10:43:47 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     =?UTF-8?B?TcOlbnMgUnVsbGfDpXJk?= <mans@mansr.com>,
+        Pantelis Antoniou <pantelis.antoniou@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Vitaly Bordug <vbordug@ru.mvista.com>,
+        Dan Malek <dan@embeddededge.com>,
+        Joakim Tjernlund <joakim.tjernlund@lumentis.se>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: fs_enet: sync rx dma buffer before reading
+Message-ID: <20220520104347.2b1b658a@kernel.org>
+In-Reply-To: <b11dcb32-5915-c1c8-9f0e-3cfc57b55792@csgroup.eu>
+References: <20220519192443.28681-1-mans@mansr.com>
+        <03f24864-9d4d-b4f9-354a-f3b271c0ae66@csgroup.eu>
+        <yw1xmtfc9yaj.fsf@mansr.com>
+        <b11dcb32-5915-c1c8-9f0e-3cfc57b55792@csgroup.eu>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH net-next 1/1] net: wwan: t7xx: Add port for modem logging
-Content-Language: en-US
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        johannes@sipsolutions.net, ryazanov.s.a@gmail.com,
-        loic.poulain@linaro.org, m.chetan.kumar@intel.com,
-        chandrashekar.devegowda@intel.com, linuxwwan@intel.com,
-        haijun.liu@mediatek.com, andriy.shevchenko@linux.intel.com,
-        ilpo.jarvinen@linux.intel.com, ricardo.martinez@linux.intel.com,
-        sreehari.kancharla@intel.com, dinesh.sharma@intel.com
-References: <20220519182703.27056-1-moises.veleta@linux.intel.com>
- <20220520103711.5f7f5b45@kernel.org>
-From:   "moises.veleta" <moises.veleta@linux.intel.com>
-In-Reply-To: <20220520103711.5f7f5b45@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -67,23 +65,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, 20 May 2022 12:54:56 +0000 Christophe Leroy wrote:
+> Le 20/05/2022 =C3=A0 14:35, M=C3=A5ns Rullg=C3=A5rd a =C3=A9crit=C2=A0:
+> > Christophe Leroy <christophe.leroy@csgroup.eu> writes:
+> >> See original commit 070e1f01827c. It explicitely says that the cache
+> >> must be invalidate _AFTER_ the copy.
+> >>
+> >> The cache is initialy invalidated by dma_map_single(), so before the
+> >> copy the cache is already clean.
+> >>
+> >> After the copy, data is in the cache. In order to allow re-use of the
+> >> skb, it must be put back in the same condition as before, in extenso t=
+he
+> >> cache must be invalidated in order to be in the same situation as after
+> >> dma_map_single().
+> >>
+> >> So I think your change is wrong. =20
+> >=20
+> > OK, looking at it more closely, the change is at least unnecessary since
+> > there will be a cache invalidation between each use of the buffer either
+> > way.  Please disregard the patch.  Sorry for the noise.
+> >  =20
+>=20
+> I also looked deeper.
+>=20
+> Indeed it was implemented in kernel 4.9 or 4.8. At that time=20
+> dma_unmap_single() was a no-op, it was not doing any sync/invalidation=20
+> at all, invalidation was done only at mapping, so when we were reusing=20
+> the skb it was necessary to clean the cache _AFTER_ the copy as if it=20
+> was a new mapping.
+>=20
+> Today a sync is done at both map and unmap, so it doesn't really matter=20
+> whether we do the invalidation before or after the copy when we re-use=20
+> the skb.
 
-On 5/20/22 10:37, Jakub Kicinski wrote:
-> On Thu, 19 May 2022 11:27:03 -0700 Moises Veleta wrote:
->> +	ret = copy_from_user(skb_put(skb, actual_len), buf, actual_len);
->> +	if (ret) {
->> +		ret = -EFAULT;
->> +		goto err_out;
->> +	}
->> +
->> +	ret = t7xx_port_send_skb(port, skb, 0, 0);
->> +	if (ret)
->> +		goto err_out;
-> We don't allow using debugfs to pass random data from user space
-> to firmware in networking. You need to find another way.
+Hm, I think the patch is necessary, sorry if you're also saying that
+and I'm misinterpreting.=20
 
-
-Can we use debugfs to send an "on" or "off" commands, wherein the driver 
-then sends special command sequences to the the firmware triggering the 
-modem logging on and off?
-
+Without the dma_sync_single_for_cpu() if swiotlb is used the data
+will not be copied back into the original buffer if there is no sync.
