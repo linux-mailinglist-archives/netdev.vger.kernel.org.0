@@ -2,281 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F06C52E7E8
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 10:42:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0016B52E7FF
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 10:48:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241454AbiETIko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 04:40:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60734 "EHLO
+        id S1347307AbiETIsX convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 20 May 2022 04:48:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244558AbiETIkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 04:40:33 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EA059D4F3
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 01:40:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653036031; x=1684572031;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=lalRxZn8yU9NsEB9QGMI/xVt/SbTAjPPWuzDHmsG7A4=;
-  b=eOiuu5Wernmap4Dedyv2j4W57IvTSkSMMwPuaXG+FNqAe4p2rIjYjrEv
-   61t4CeSzcQoNwKl+5nfaLze/8Xk0bQkVziGF9rsZbR/ZVevPacjciTHA6
-   BEPbz3+nUVVJNBlqJoQWBmkBuldQAIT9bgqTGcXf6tW1C1vozeMJluxTI
-   n8+OGDx7zggpsJ/pMy40740pOKbnzfiqjomxBj2xz+Ug/LP9mlnN9EsdU
-   TKobORvUjlfQhS/k0w7YeSA0RVkvbvM+FXqX4Q0EhcHCfKOIW8wdv4KgE
-   ZRsJIk6Du+4SBcURPXqAv08LnMtYQrmANrFDCwahcZ5+rzwhFESTWq+Ub
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="253057759"
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="253057759"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 01:40:30 -0700
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="570706394"
-Received: from rongch2-mobl.ccr.corp.intel.com (HELO [10.255.28.242]) ([10.255.28.242])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 01:40:28 -0700
-Subject: Re: [PATCH net-next 10/10] inet: add READ_ONCE(sk->sk_bound_dev_if)
- in INET_MATCH()
-To:     Eric Dumazet <edumazet@google.com>,
-        kernel test robot <lkp@intel.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, llvm@lists.linux.dev,
-        kbuild-all@lists.01.org, netdev <netdev@vger.kernel.org>
-References: <20220511233757.2001218-11-eric.dumazet@gmail.com>
- <202205122132.HUrst9JA-lkp@intel.com>
- <CANn89i+kG-2uW+7iqqVjJN8Q+bZF82f+4qONsmg+4zuW+qj0Ug@mail.gmail.com>
-From:   "Chen, Rong A" <rong.a.chen@intel.com>
-Message-ID: <7bc3a332-10f7-4a31-33ce-7507a2791bf3@intel.com>
-Date:   Fri, 20 May 2022 16:40:26 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.12.0
+        with ESMTP id S245470AbiETIsV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 04:48:21 -0400
+Received: from mail-qk1-f169.google.com (mail-qk1-f169.google.com [209.85.222.169])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A593BBC6FD;
+        Fri, 20 May 2022 01:48:20 -0700 (PDT)
+Received: by mail-qk1-f169.google.com with SMTP id m1so6452848qkn.10;
+        Fri, 20 May 2022 01:48:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=JWWW8GaGp7Bfgc3aX0E1QG9mqMLN8epseaMJO1I0gvs=;
+        b=Wt2+mMTjs0ln7OwJIsUFv2f6CKK6e8JKuj1hb7PM8Aa/2JzgsjoioMxKAivYhEwanN
+         tgmziw6asF7tre5vzVNcEFXJ0QTIoVuEezgKRj7glP1ssfVXZDO/n1akBKtuEafGXmsu
+         9HBsUVi++waSVGnjIenfcGEpBbSCVKFaRCSGACJoIPie5fx7+qmmck3CRZkFC7Uk4y/0
+         K+BmoZG6PhM4Lfbsqgxw7XdmhRqVk6RHNjU/VSc7XBnOxORdrekvnp+1pR3eiebjGyf7
+         H1ayOFEI+EuhJv8nOEV38ECxny1JAKaX5ufnCRzaX9I5P26K+OCqoREU9y5YCf0M+PQd
+         zhPQ==
+X-Gm-Message-State: AOAM530B7xoeoEITdf+Oi3d2IUZmTywjgVY/+uoZre0HWFKMqyV3oU/M
+        U2bWw6tle8lfJ0vlZejNzGMVVgl21n+oNw==
+X-Google-Smtp-Source: ABdhPJzCZYpkvWsWVhCZcDC/KQ3OosVm4vkjIkhnnYhqQg31JSpJTE2v030b7145puFRr8QP7FBgoQ==
+X-Received: by 2002:a05:620a:2e2:b0:6a3:5662:e499 with SMTP id a2-20020a05620a02e200b006a35662e499mr60398qko.361.1653036499462;
+        Fri, 20 May 2022 01:48:19 -0700 (PDT)
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com. [209.85.128.173])
+        by smtp.gmail.com with ESMTPSA id d200-20020a3768d1000000b006a351e0eacdsm254588qkc.95.2022.05.20.01.48.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 20 May 2022 01:48:18 -0700 (PDT)
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-2fed823dd32so79944057b3.12;
+        Fri, 20 May 2022 01:48:18 -0700 (PDT)
+X-Received: by 2002:a0d:f002:0:b0:2fe:cfba:d597 with SMTP id
+ z2-20020a0df002000000b002fecfbad597mr8716166ywe.502.1653036498056; Fri, 20
+ May 2022 01:48:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <CANn89i+kG-2uW+7iqqVjJN8Q+bZF82f+4qONsmg+4zuW+qj0Ug@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220519153107.696864-1-clement.leger@bootlin.com>
+ <20220519153107.696864-12-clement.leger@bootlin.com> <CAMuHMdUJpNSyX0qK64+W1G6P1S-78mb_+D0-w3kHOFY3VVkANQ@mail.gmail.com>
+ <20220520101332.0905739f@fixe.home> <CAMuHMdXTrZnGVt44hg5QUvuS5cZABmRncgNYtatkmk8VcH7gew@mail.gmail.com>
+ <20220520103152.48f7b178@fixe.home>
+In-Reply-To: <20220520103152.48f7b178@fixe.home>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Fri, 20 May 2022 10:48:05 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUXasnd+RQUvN09ZUEEPLJzLcpgPrXuqadfsfsY+RsZPg@mail.gmail.com>
+Message-ID: <CAMuHMdUXasnd+RQUvN09ZUEEPLJzLcpgPrXuqadfsfsY+RsZPg@mail.gmail.com>
+Subject: Re: [PATCH net-next v5 11/13] ARM: dts: r9a06g032: describe GMAC2
+To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Herve Codina <herve.codina@bootlin.com>,
+        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
+        Milan Stevanovic <milan.stevanovic@se.com>,
+        Jimmy Lalande <jimmy.lalande@se.com>,
+        Pascal Eberhard <pascal.eberhard@se.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
+        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Clément,
 
+On Fri, May 20, 2022 at 10:33 AM Clément Léger
+<clement.leger@bootlin.com> wrote:
+> Le Fri, 20 May 2022 10:25:37 +0200,
+> Geert Uytterhoeven <geert@linux-m68k.org> a écrit :
+> > On Fri, May 20, 2022 at 10:14 AM Clément Léger
+> > <clement.leger@bootlin.com> wrote:
+> > > Le Fri, 20 May 2022 09:18:58 +0200,
+> > > Geert Uytterhoeven <geert@linux-m68k.org> a écrit :
+> > > > On Thu, May 19, 2022 at 5:32 PM Clément Léger <clement.leger@bootlin.com> wrote:
+> > > > > RZ/N1 SoC includes two MAC named GMACx that are compatible with the
+> > > > > "snps,dwmac" driver. GMAC1 is connected directly to the MII converter
+> > > > > port 1. GMAC2 however can be used as the MAC for the switch CPU
+> > > > > management port or can be muxed to be connected directly to the MII
+> > > > > converter port 2. This commit add description for the GMAC2 which will
+> > > > > be used by the switch description.
+> > > > >
+> > > > > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
+> >
+> > > > > --- a/arch/arm/boot/dts/r9a06g032.dtsi
+> > > > > +++ b/arch/arm/boot/dts/r9a06g032.dtsi
+> > > > > @@ -200,6 +200,23 @@ nand_controller: nand-controller@40102000 {
+> > > > >                         status = "disabled";
+> > > > >                 };
+> > > > >
+> > > > > +               gmac2: ethernet@44002000 {
+> > > > > +                       compatible = "snps,dwmac";
+> > > >
+> > > > Does this need an SoC-specific compatible value?
+> > >
+> > > Indeed, it might be useful to introduce a specific SoC compatible since
+> > > in a near future, there might be some specific support for that gmac.
+> > > Here is an overview of the gmac connection on the SoC:
+> > >
+> > >                                           ┌─────────┐   ┌──────────┐
+> > >                                           │         │   │          │
+> > >                                           │  GMAC2  │   │  GMAC1   │
+> > >                                           │         │   │          │
+> > >                                           └───┬─────┘   └─────┬────┘
+> > >                                               │               │
+> > >                                               │               │
+> > >                                               │               │
+> > >                                          ┌────▼──────┐        │
+> > >                                          │           │        │
+> > >             ┌────────────────────────────┤  SWITCH   │        │
+> > >             │                            │           │        │
+> > >             │          ┌─────────────────┴─┬────┬────┘        │
+> > >             │          │            ┌──────┘    │             │
+> > >             │          │            │           │             │
+> > >        ┌────▼──────────▼────────────▼───────────▼─────────────▼────┐
+> > >        │                      MII Converter                        │
+> > >        │                                                           │
+> > >        │                                                           │
+> > >        │ port 1      port 2       port 3      port 4       port 5  │
+> > >        └───────────────────────────────────────────────────────────┘
+> > >
+> > > As you can see, the GMAC1 is directly connected to MIIC converter and
+> > > thus will need a "pcs-handle" property to point on the MII converter
+> > > port whereas the GMAC2 is directly connected to the switch in GMII.
+> > >
+> > > Is "renesas,r9a06g032-gmac2", "renesas,rzn1-switch-gmac2" looks ok
+> > > for you for this one ?
+> >
+> > Why "switch" in the family-specific value, but not in the SoC-specific
+> > value?
+>
+> That's a typo, switch should be removed.
 
-On 5/13/2022 12:13 AM, Eric Dumazet wrote:
-> On Thu, May 12, 2022 at 6:16 AM kernel test robot <lkp@intel.com> wrote:
->>
->> Hi Eric,
->>
->> I love your patch! Perhaps something to improve:
->>
->> [auto build test WARNING on net-next/master]
->>
->> url:    https://github.com/intel-lab-lkp/linux/commits/Eric-Dumazet/net-add-annotations-for-sk-sk_bound_dev_if/20220512-073914
->> base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git b57c7e8b76c646cf77ce4353a779a8b781592209
->> config: hexagon-randconfig-r035-20220512 (https://download.01.org/0day-ci/archive/20220512/202205122132.HUrst9JA-lkp@intel.com/config)
->> compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 18dd123c56754edf62c7042dcf23185c3727610f)
->> reproduce (this is a W=1 build):
->>          wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->>          chmod +x ~/bin/make.cross
->>          # https://github.com/intel-lab-lkp/linux/commit/c92cfd9f3ecb483ff055edb02f7498494b96ba68
->>          git remote add linux-review https://github.com/intel-lab-lkp/linux
->>          git fetch --no-tags linux-review Eric-Dumazet/net-add-annotations-for-sk-sk_bound_dev_if/20220512-073914
->>          git checkout c92cfd9f3ecb483ff055edb02f7498494b96ba68
->>          # save the config file
->>          mkdir build_dir && cp config build_dir/.config
->>          COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash net/ipv4/
-> 
-> Thank you for the instructions.
-> Unfortunately this is failing for me.
+OK.
 
-Hi Eric,
+> > Are GMAC1 and GMAC2 really different, or are they identical, and is
+> > the only difference in the wiring, which can be detected at run-time
+> > using this "pcs-handle" property? If they're identical, they should
+> > use the same compatible value.
+>
+> They are actually identical except the requirement for a "pcs-handle"
+> for gmac1. I thought about using different compatible to enforce this by
+> making it "required" with the "renesas,r9a06g032-gmac1" compatible but
+> not the "renesas,r9a06g032-gmac2" one. If it's ok for you to let it
+> optional and use a single compatible, I'm ok with that !
 
-Can you share the problem you met？
+OK to make it optional. Thanks!
 
-Best Regards,
-Rong Chen
+Gr{oetje,eeting}s,
 
-> 
-> I have tested ARCH=i386 before sending the series, I am not sure what
-> the issue is for ARCH=hexagon and the cross compiler.
-> 
-> Maybe __always_unused is not yet understood for this combination.
-> 
-> It might be the time to just use __addrpair even on 32bit arches...
-> 
-> Then we can remove saddr,daddr args from INET_MATCH()
-> 
-> diff --git a/include/net/inet_hashtables.h b/include/net/inet_hashtables.h
-> index 5d3fa071d754601149c9ad0dd559f074ac58deaa..34ddb54506dd02e702dd20cbe8b7dba006130c5a
-> 100644
-> --- a/include/net/inet_hashtables.h
-> +++ b/include/net/inet_hashtables.h
-> @@ -295,7 +295,6 @@ static inline struct sock
-> *inet_lookup_listener(struct net *net,
->          ((__force __portpair)(((__u32)(__dport) << 16) | (__force
-> __u32)(__be16)(__sport)))
->   #endif
-> 
-> -#if (BITS_PER_LONG == 64)
->   #ifdef __BIG_ENDIAN
->   #define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
->          const __addrpair __name = (__force __addrpair) ( \
-> @@ -325,30 +324,6 @@ static inline bool INET_MATCH(const struct sock
-> *sk, struct net *net,
->          bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
->          return bound_dev_if == dif || bound_dev_if == sdif;
->   }
-> -#else /* 32-bit arch */
-> -#define INET_ADDR_COOKIE(__name, __saddr, __daddr) \
-> -       const int __name __deprecated __always_unused
-> -
-> -static inline bool INET_MATCH(const struct sock *sk, struct net *net,
-> -                             const __addrpair __always_unused cookie,
-> -                             const __be32 saddr,
-> -                             const __be32 daddr,
-> -                             const __portpair ports,
-> -                             const int dif,
-> -                             const int sdif)
-> -{
-> -       int bound_dev_if;
-> -
-> -       if (!net_eq(sock_net(sk), net) ||
-> -           sk->sk_portpair != ports ||
-> -           sk->sk_daddr != saddr ||
-> -           sk->sk_rcv_saddr != daddr)
-> -               return false;
-> -
-> -       bound_dev_if = READ_ONCE(sk->sk_bound_dev_if);
-> -       return bound_dev_if == dif || bound_dev_if == sdif;
-> -}
-> -#endif /* 64-bit arch */
-> 
-> 
-> I will cook a small patch to simplify INET_MATCH(), then if/when
-> merged, I will resend the pach series about sk_bound_dev_if.
-> 
-> Thanks.
-> 
-> 
-> 
-> 
->>
->> If you fix the issue, kindly add following tag as appropriate
->> Reported-by: kernel test robot <lkp@intel.com>
->>
->> All warnings (new ones prefixed by >>):
->>
->>>> net/ipv4/inet_hashtables.c:413:34: warning: variable 'acookie' is uninitialized when used here [-Wuninitialized]
->>                     if (likely(INET_MATCH(sk, net, acookie,
->>                                                    ^~~~~~~
->>     include/linux/compiler.h:77:40: note: expanded from macro 'likely'
->>     # define likely(x)      __builtin_expect(!!(x), 1)
->>                                                 ^
->>     net/ipv4/inet_hashtables.c:398:2: note: variable 'acookie' is declared here
->>             INET_ADDR_COOKIE(acookie, saddr, daddr);
->>             ^
->>     include/net/inet_hashtables.h:330:2: note: expanded from macro 'INET_ADDR_COOKIE'
->>             const int __name __deprecated __always_unused
->>             ^
->>     net/ipv4/inet_hashtables.c:468:35: warning: variable 'acookie' is uninitialized when used here [-Wuninitialized]
->>                     if (likely(INET_MATCH(sk2, net, acookie,
->>                                                     ^~~~~~~
->>     include/linux/compiler.h:77:40: note: expanded from macro 'likely'
->>     # define likely(x)      __builtin_expect(!!(x), 1)
->>                                                 ^
->>     net/ipv4/inet_hashtables.c:452:2: note: variable 'acookie' is declared here
->>             INET_ADDR_COOKIE(acookie, saddr, daddr);
->>             ^
->>     include/net/inet_hashtables.h:330:2: note: expanded from macro 'INET_ADDR_COOKIE'
->>             const int __name __deprecated __always_unused
->>             ^
->>     net/ipv4/inet_hashtables.c:535:38: warning: variable 'acookie' is uninitialized when used here [-Wuninitialized]
->>                             if (unlikely(INET_MATCH(esk, net, acookie,
->>                                                               ^~~~~~~
->>     include/linux/compiler.h:78:42: note: expanded from macro 'unlikely'
->>     # define unlikely(x)    __builtin_expect(!!(x), 0)
->>                                                 ^
->>     net/ipv4/inet_hashtables.c:529:2: note: variable 'acookie' is declared here
->>             INET_ADDR_COOKIE(acookie, sk->sk_daddr, sk->sk_rcv_saddr);
->>             ^
->>     include/net/inet_hashtables.h:330:2: note: expanded from macro 'INET_ADDR_COOKIE'
->>             const int __name __deprecated __always_unused
->>             ^
->>     3 warnings generated.
->> --
->>>> net/ipv4/udp.c:2566:27: warning: variable 'acookie' is uninitialized when used here [-Wuninitialized]
->>                     if (INET_MATCH(sk, net, acookie, rmt_addr,
->>                                             ^~~~~~~
->>     net/ipv4/udp.c:2561:2: note: variable 'acookie' is declared here
->>             INET_ADDR_COOKIE(acookie, rmt_addr, loc_addr);
->>             ^
->>     include/net/inet_hashtables.h:330:2: note: expanded from macro 'INET_ADDR_COOKIE'
->>             const int __name __deprecated __always_unused
->>             ^
->>     1 warning generated.
->>
->>
->> vim +/acookie +413 net/ipv4/inet_hashtables.c
->>
->> 2c13270b441054 Eric Dumazet     2015-03-15  391
->> c67499c0e77206 Pavel Emelyanov  2008-01-31  392  struct sock *__inet_lookup_established(struct net *net,
->> c67499c0e77206 Pavel Emelyanov  2008-01-31  393                                   struct inet_hashinfo *hashinfo,
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  394                                   const __be32 saddr, const __be16 sport,
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  395                                   const __be32 daddr, const u16 hnum,
->> 3fa6f616a7a4d0 David Ahern      2017-08-07  396                                   const int dif, const int sdif)
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  397  {
->> c7228317441f4d Joe Perches      2014-05-13  398         INET_ADDR_COOKIE(acookie, saddr, daddr);
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  399         const __portpair ports = INET_COMBINED_PORTS(sport, hnum);
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  400         struct sock *sk;
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  401         const struct hlist_nulls_node *node;
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  402         /* Optimize here for direct hit, only listening connections can
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  403          * have wildcards anyways.
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  404          */
->> 9f26b3add3783c Pavel Emelyanov  2008-06-16  405         unsigned int hash = inet_ehashfn(net, daddr, hnum, saddr, sport);
->> f373b53b5fe67a Eric Dumazet     2009-10-09  406         unsigned int slot = hash & hashinfo->ehash_mask;
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  407         struct inet_ehash_bucket *head = &hashinfo->ehash[slot];
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  408
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  409  begin:
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  410         sk_nulls_for_each_rcu(sk, node, &head->chain) {
->> ce43b03e888947 Eric Dumazet     2012-11-30  411                 if (sk->sk_hash != hash)
->> ce43b03e888947 Eric Dumazet     2012-11-30  412                         continue;
->> ce43b03e888947 Eric Dumazet     2012-11-30 @413                 if (likely(INET_MATCH(sk, net, acookie,
->> 3fa6f616a7a4d0 David Ahern      2017-08-07  414                                       saddr, daddr, ports, dif, sdif))) {
->> 41c6d650f6537e Reshetova, Elena 2017-06-30  415                         if (unlikely(!refcount_inc_not_zero(&sk->sk_refcnt)))
->> 05dbc7b59481ca Eric Dumazet     2013-10-03  416                                 goto out;
->> ce43b03e888947 Eric Dumazet     2012-11-30  417                         if (unlikely(!INET_MATCH(sk, net, acookie,
->> 3fa6f616a7a4d0 David Ahern      2017-08-07  418                                                  saddr, daddr, ports,
->> 3fa6f616a7a4d0 David Ahern      2017-08-07  419                                                  dif, sdif))) {
->> 05dbc7b59481ca Eric Dumazet     2013-10-03  420                                 sock_gen_put(sk);
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  421                                 goto begin;
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  422                         }
->> 05dbc7b59481ca Eric Dumazet     2013-10-03  423                         goto found;
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  424                 }
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  425         }
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  426         /*
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  427          * if the nulls value we got at the end of this lookup is
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  428          * not the expected one, we must restart lookup.
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  429          * We probably met an item that was moved to another chain.
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  430          */
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  431         if (get_nulls_value(node) != slot)
->> 3ab5aee7fe840b Eric Dumazet     2008-11-16  432                 goto begin;
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  433  out:
->> 05dbc7b59481ca Eric Dumazet     2013-10-03  434         sk = NULL;
->> 05dbc7b59481ca Eric Dumazet     2013-10-03  435  found:
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  436         return sk;
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  437  }
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  438  EXPORT_SYMBOL_GPL(__inet_lookup_established);
->> 77a5ba55dab7b4 Pavel Emelyanov  2007-12-20  439
->>
->> --
->> 0-DAY CI Kernel Test Service
->> https://01.org/lkp
-> 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
