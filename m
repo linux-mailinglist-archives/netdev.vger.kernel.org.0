@@ -2,197 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C020152E299
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 04:46:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D16852E2CE
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 05:03:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344800AbiETCqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 22:46:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52978 "EHLO
+        id S1344971AbiETDCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 23:02:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344787AbiETCpw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 22:45:52 -0400
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA05A1E3F4
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 19:45:49 -0700 (PDT)
-Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com [209.85.160.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 0DB863F1B6
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 02:45:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1653014747;
-        bh=GaatjPyXHl4SmKXxygcZKmkO/KC5Kz97rzqAvXN3cKo=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=CZQ/l3xpbHNcIdCBx9ZPSPz2Z1DVuu8hU7hRdDnfR2wFHv0IAqYTpSWC4/wOLAefh
-         Chx4mQtpBov3S6CA2taxGlBPFIxYd6UD8X/JxZi6G/P2HDLBSoDn86kYzEtr44BXtH
-         mW05IrEzgWlER729s63a5Dl70ONxZ6zMDmOYMSpdXj/KSe+3HH0AHfNs5eE+fGzXH0
-         FkFjFWevQd/oPpvG60sGqHAt3CdHKZ8BxuEjNeDgV+BkgrC8RXN2v3CKCvVsxyAQVB
-         fI2fu79T86C3eaQlWRL+bvoM6wQcP65CI1SwkH6SrMrYttxcv0kpQDqLvCjjFzrVYL
-         H8RdmRxHIJINQ==
-Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-f18a9e2278so3763999fac.11
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 19:45:46 -0700 (PDT)
+        with ESMTP id S1344976AbiETDCh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 23:02:37 -0400
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2130B8BE1
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 20:02:34 -0700 (PDT)
+Received: by mail-pl1-x62d.google.com with SMTP id i1so6311418plg.7
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 20:02:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=T49autrwazSVPbqM6JLQ0qnBuicehxkova35EuZCJaU=;
+        b=YAQzupJhJUp7xZHECAP6liV1GLyneKC7ORPbdztHF98+Q7076sqC9DSsyMYsCmP6cA
+         oWwweI2rAbNR1XW76OAHHX4lpS3lIfOkzqlEwwScfdtl/YFj4oxt/7O2AA+TtnDWZAu3
+         0/8tnXWRPpE/h6SoJ+lwC43FRUQPlDADpf0y0r99L9hq/jeXx3sg1Lw9uJenlEYTz3ce
+         X0kJzXObUKCU7TOOJ30K4XEuS8xNv1TIaxRHNg9Qf0/aDLsQIdKLa/l0wrOuRfha3dgu
+         2/KpF94tfXYOkEX/1t6Lf1IuRtSmd9XMFw8WvsUvYNNQY2Aq791p0vpJ09dUsT0RNHIi
+         hgEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GaatjPyXHl4SmKXxygcZKmkO/KC5Kz97rzqAvXN3cKo=;
-        b=nhaAi8JCRqyxgs/bnidJTOSyiWP0ix1hFhvtX2hHo0xpJLNFf06NZ0ela6pHOHTQ+4
-         RiarVF6Cem1MwfTNl6GPRfkXiK5QMbCI5mbpcwMIjLnivMtd9l8kQGfH8Mkw2oTQUoJ8
-         Kws/bHkj7ZKK1ZkpjvlyWYqE4bqwMuW/ViBVris6iLo1Me8C4w50VxG9i/FhTPHaUO4t
-         zVzxHTlkDxzMYEcRR30i9HWAXj6uxK2R3mz1vb6xSxea3YLLkMdrkVuO4MDO0wSvUj4Y
-         JsU6OomwABo5+PND4wtuaf84GQz4hlBfJLp1KmmVl073UFIr2taFt8PT8hJVEaQqLv0z
-         tLwA==
-X-Gm-Message-State: AOAM532qDzi7SVvRUyAB3dvdRVmQCJivLeJmi06UkqwzSWgdnLwoEjw3
-        NFQgnKZwL5ynF6T3+S1vCESbb00hgVrQM+4fZ+ZEEU/Xh+BnaoCkQzlXgzR7m+uDq9WmPMpsEQD
-        IVrqoa1ki1319lfAwKNDxSrM0DpBzmPmNeY7jcvCd62hrsXUiLA==
-X-Received: by 2002:a05:6870:2111:b0:e6:8026:8651 with SMTP id f17-20020a056870211100b000e680268651mr4440524oae.42.1653014745868;
-        Thu, 19 May 2022 19:45:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwUd8npgDZFVCRK+/H03mTTbAYJXBPp30NE0Tzuyut6qHq5m/2a0jX6vwPXLG6EttAHcJwZSaW+auW+bAcL76c=
-X-Received: by 2002:a05:6870:2111:b0:e6:8026:8651 with SMTP id
- f17-20020a056870211100b000e680268651mr4440502oae.42.1653014745511; Thu, 19
- May 2022 19:45:45 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=T49autrwazSVPbqM6JLQ0qnBuicehxkova35EuZCJaU=;
+        b=Vlg0SUN1j6LC7+at2nGhAIvzV2tXGg/fwuOdlpwQptrSvjXAQPx7fwlatPxh3AsE/o
+         B3t8XcFByJT1ccyaoCVUGRdQuuGn/RlOahjq6SJmXieuFr34woH8k1mraBP2EZEtCyxi
+         1pFBHIFXUF1nvEv2R0jfl6EUG0/t2Udvs2PNX+MR4tvCEn59mvYr09okcPTClxTdYsyD
+         mWuZVg9HDLWq8NI74q6igzouF3+3jK5gb1mkRp9ejLn8G+2IAORa/7pNYlVgErAQ4/X6
+         cwtcpGAR/F2ex8DXmoBKBgpWx/mF+wp75NXaXNsRXjptDLI3UElQ/zfo0RL1DR6b2+mU
+         kevQ==
+X-Gm-Message-State: AOAM531KqZy/VPZzC9+azr9yHhOjS++2M7N8MjBRtsl6lMlQbZVQI1gS
+        mXboqnfhLNnFxau6/ac2o4GU7Q==
+X-Google-Smtp-Source: ABdhPJwOjHkRwZ7scwMzECt6n/SIMuW/O/aZf3GaVbzT7jr3FkELxpScQ0hys0wR4wtFxD+F+4Ucpg==
+X-Received: by 2002:a17:903:1c7:b0:161:9d6f:376a with SMTP id e7-20020a17090301c700b001619d6f376amr7770822plh.147.1653015754279;
+        Thu, 19 May 2022 20:02:34 -0700 (PDT)
+Received: from [10.71.57.194] ([139.177.225.225])
+        by smtp.gmail.com with ESMTPSA id n1-20020a170902e54100b0015e8d4eb219sm4574667plf.99.2022.05.19.20.02.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 May 2022 20:02:33 -0700 (PDT)
+Message-ID: <344e2064-62f8-845e-7d1d-2afcaeb0e524@bytedance.com>
+Date:   Fri, 20 May 2022 11:02:24 +0800
 MIME-Version: 1.0
-References: <20220511122806.2146847-1-kai.heng.feng@canonical.com>
- <20220511122806.2146847-2-kai.heng.feng@canonical.com> <6246d753-00cb-b5dc-f5fc-d041a8e78718@molgen.mpg.de>
- <CAAd53p52gkv-PLRvEM3GunTwU1J=c+n0J6uD03AQJ4EnL2y4Kg@mail.gmail.com>
-In-Reply-To: <CAAd53p52gkv-PLRvEM3GunTwU1J=c+n0J6uD03AQJ4EnL2y4Kg@mail.gmail.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 20 May 2022 10:45:33 +0800
-Message-ID: <CAAd53p4h1-SJROvUghPYbBnh2Z9nRtgfNEagE4X6XtBwNg8JOg@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH 2/2] igb: Make DMA faster when CPU is
- active on the PCIe link
-To:     Paul Menzel <pmenzel@molgen.mpg.de>
-Cc:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Eric Dumazet <edumazet@google.com>,
-        intel-wired-lan@lists.osuosl.org, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [External] Re: [PATCH] bpf: avoid grabbing spin_locks of all cpus
+ when no free elems
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        Xiongchun Duan <duanxiongchun@bytedance.com>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Chengming Zhou <zhouchengming@bytedance.com>
+References: <20220518062715.27809-1-zhoufeng.zf@bytedance.com>
+ <CAADnVQ+x-A87Z9_c+3vuRJOYm=gCOBXmyCJQ64CiCNukHS6FpA@mail.gmail.com>
+ <6ae715b3-96b1-2b42-4d1a-5267444d586b@bytedance.com>
+ <9c0c3e0b-33bc-51a7-7916-7278f14f308e@fb.com>
+ <380fa11e-f15d-da1a-51f7-70e14ed58ffc@bytedance.com>
+ <CAADnVQL9naBBKzQdAOWu2ZH=i7HA1VDi7uNzsDQ1TM9Jr+c0Ww@mail.gmail.com>
+From:   Feng Zhou <zhoufeng.zf@bytedance.com>
+In-Reply-To: <CAADnVQL9naBBKzQdAOWu2ZH=i7HA1VDi7uNzsDQ1TM9Jr+c0Ww@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 12, 2022 at 10:55 AM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
+在 2022/5/20 上午12:12, Alexei Starovoitov 写道:
+> On Wed, May 18, 2022 at 8:12 PM Feng Zhou <zhoufeng.zf@bytedance.com> wrote:
+>> 在 2022/5/19 上午4:39, Yonghong Song 写道:
+>>>
+>>> On 5/17/22 11:57 PM, Feng Zhou wrote:
+>>>> 在 2022/5/18 下午2:32, Alexei Starovoitov 写道:
+>>>>> On Tue, May 17, 2022 at 11:27 PM Feng zhou
+>>>>> <zhoufeng.zf@bytedance.com> wrote:
+>>>>>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+>>>>>>
+>>>>>> We encountered bad case on big system with 96 CPUs that
+>>>>>> alloc_htab_elem() would last for 1ms. The reason is that after the
+>>>>>> prealloc hashtab has no free elems, when trying to update, it will
+>>>>>> still
+>>>>>> grab spin_locks of all cpus. If there are multiple update users, the
+>>>>>> competition is very serious.
+>>>>>>
+>>>>>> So this patch add is_empty in pcpu_freelist_head to check freelist
+>>>>>> having free or not. If having, grab spin_lock, or check next cpu's
+>>>>>> freelist.
+>>>>>>
+>>>>>> Before patch: hash_map performance
+>>>>>> ./map_perf_test 1
+>>> could you explain what parameter '1' means here?
+>> This code is here:
+>> samples/bpf/map_perf_test_user.c
+>> samples/bpf/map_perf_test_kern.c
+>> parameter '1' means testcase flag, test hash_map's performance
+>> parameter '2048' means test hash_map's performance when free=0.
+>> testcase flag '2048' is added by myself to reproduce the problem phenomenon.
+> Please convert it to selftests/bpf/bench,
+> so that everyone can reproduce the issue you're seeing
+> and can assess whether it's a real issue or a corner case.
 >
-> Hi Paul,
+> Also please avoid adding indent in the patch.
+> Instead of
+>   if (!s->extralist.is_empty) {
+>    .. churn
 >
-> On Wed, May 11, 2022 at 8:49 PM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
-> >
-> > Dear Kai-Hang,
-> >
-> >
-> > Thank you for the patch.
-> >
-> >
-> > Am 11.05.22 um 14:28 schrieb Kai-Heng Feng:
-> > > We found Intel I210 can only achieve ~750Mbps Tx speed on some
-> > > platforms. The RR2DCDELAY shows around 0x2xxx DMA delay, which will be
-> >
-> > Please give an example platform, where it works and where it does not.
+> do
 >
-> The platform is about but not yet hit the market yet, so I can't disclose it.
-> They are Intel Alder Lake based.
->
-> >
-> > How did you test transfer speed?
->
-> Iperf.
->
-> >
-> > > significantly lower when 1) ASPM is disabled or 2) SoC package c-state
-> > > stays above PC3. When the RR2DCDELAY is around 0x1xxx the Tx speed can
-> > > reach to ~950Mbps.
-> > >
-> > > According to the I210 datasheet "8.26.1 PCIe Misc. Register - PCIEMISC",
-> > > "DMA Idle Indication" doesn't seem to tie to DMA coalesce anymore, so
-> > > set it to 1b for "DMA is considered idle when there is no Rx or Tx AND
-> > > when there are no TLPs indicating that CPU is active detected on the
-> > > PCIe link (such as the host executes CSR or Configuration register read
-> > > or write operation)" and performing Tx should also fall under "active
-> > > CPU on PCIe link" case.
-> > >
-> > > In addition to that, commit b6e0c419f040 ("igb: Move DMA Coalescing init
-> > > code to separate function.") seems to wrongly changed from enabling
-> > > E1000_PCIEMISC_LX_DECISION to disabling it, also fix that.
-> >
-> > Please split this into a separate commit with Fixes tag, and maybe the
-> > commit author in Cc.
->
-> I don't see the need to split to separate commit as both require the
-> same change.
->
-> I will add the "Fixes" tag once the igb maintainers reviewed the patch.
+>   if (s->extralist.is_empty)
 
-A gentle ping...
+Ok, will do. Thanks.
 
-Please let me know if this is a proper fix so I can send v2.
-
-Kai-Heng
-
->
-> Kai-Heng
->
-> >
-> >
-> > Kind regards,
-> >
-> > Paul
-> >
-> >
-> > > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> > > ---
-> > >   drivers/net/ethernet/intel/igb/igb_main.c | 12 +++++-------
-> > >   1 file changed, 5 insertions(+), 7 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> > > index 34b33b21e0dcd..eca797dded429 100644
-> > > --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> > > +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> > > @@ -9897,11 +9897,10 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
-> > >       struct e1000_hw *hw = &adapter->hw;
-> > >       u32 dmac_thr;
-> > >       u16 hwm;
-> > > +     u32 reg;
-> > >
-> > >       if (hw->mac.type > e1000_82580) {
-> > >               if (adapter->flags & IGB_FLAG_DMAC) {
-> > > -                     u32 reg;
-> > > -
-> > >                       /* force threshold to 0. */
-> > >                       wr32(E1000_DMCTXTH, 0);
-> > >
-> > > @@ -9934,7 +9933,6 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
-> > >                       /* Disable BMC-to-OS Watchdog Enable */
-> > >                       if (hw->mac.type != e1000_i354)
-> > >                               reg &= ~E1000_DMACR_DC_BMC2OSW_EN;
-> > > -
-> > >                       wr32(E1000_DMACR, reg);
-> > >
-> > >                       /* no lower threshold to disable
-> > > @@ -9951,12 +9949,12 @@ static void igb_init_dmac(struct igb_adapter *adapter, u32 pba)
-> > >                        */
-> > >                       wr32(E1000_DMCTXTH, (IGB_MIN_TXPBSIZE -
-> > >                            (IGB_TX_BUF_4096 + adapter->max_frame_size)) >> 6);
-> > > +             }
-> > >
-> > > -                     /* make low power state decision controlled
-> > > -                      * by DMA coal
-> > > -                      */
-> > > +             if (hw->mac.type >= e1000_i210 ||
-> > > +                 (adapter->flags & IGB_FLAG_DMAC)) {
-> > >                       reg = rd32(E1000_PCIEMISC);
-> > > -                     reg &= ~E1000_PCIEMISC_LX_DECISION;
-> > > +                     reg |= E1000_PCIEMISC_LX_DECISION;
-> > >                       wr32(E1000_PCIEMISC, reg);
-> > >               } /* endif adapter->dmac is not disabled */
-> > >       } else if (hw->mac.type == e1000_82580) {
