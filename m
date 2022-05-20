@@ -2,103 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 50A9252EA0E
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 12:40:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5918552EA14
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 12:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348221AbiETKkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 06:40:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48106 "EHLO
+        id S1348237AbiETKk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 06:40:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239447AbiETKkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 06:40:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D22A14D25;
-        Fri, 20 May 2022 03:40:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S239447AbiETKk4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 06:40:56 -0400
+Received: from gandalf.ozlabs.org (mail.ozlabs.org [IPv6:2404:9400:2221:ea00::3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A386DE94;
+        Fri, 20 May 2022 03:40:53 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9348161D5C;
-        Fri, 20 May 2022 10:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D76DBC385AA;
-        Fri, 20 May 2022 10:40:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653043212;
-        bh=g6zNZqVbanCPTDs5cIvElaN3qts4ZfAe5SNVVWewXK4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=dg42xwN8jDWAMZnCUdafc3zcBW0p9yYWKnPHScJJVU139Q2lwrMnVqviZChl22jDT
-         YjGIPE6vqoPb090mlc1fYgYxv6wM4FSvBXjSMzk706TkHhzk/GIdLkWm7Z+stxP3x8
-         7Mdxx9/U/ZJhOw0l4hdSD5tT0H1bXCwATTxXxPANGEPHxocG9n9839xHvH5aC21urs
-         tFOEpwvmpzdKanG7FXnknNMPfDav+XO66GqY2SxHf7m6HxOXUKn7nN2j1Gxk/tCCIQ
-         /FZxDiMn3YKbzpnVrMVZYroNUYEASB5Lu7KQGAG0OYC36iJ38EsW9HzSKxSsiWDpQu
-         fNuOh4uGs+cvg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B8C94F03935;
-        Fri, 20 May 2022 10:40:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L4NYD43MVz4xXj;
+        Fri, 20 May 2022 20:40:48 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1653043251;
+        bh=kLvXGUJ3/ReQbtc7FZG4S2UHVHzM/605lq9b6IyiY5M=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=pMWZBKi2JiSg+r6at1yci6wwlaKqROcHmumy1qm2oKAprlF7OjcdtRnL4YzJI0ww7
+         sD2U1Ve/WujuCckOohm/ghb7M2rTLRAwbRVbneALWNRVCOFweOj4Zqw+AiW9Qd6YZ5
+         W8BcHWFaEuMsjmgGl/FVfHm//aeurxvN5nPWIZtI1sM70KGr6t0eNoNv7Jklm+Psb0
+         uWvsjppTeHZvH5lbRxbKW7wZyqx2ocpwCpyz87TjsFA6JEPD90EbiYrFICy2ODn2bl
+         Dty+eeRKILrhrPZyMVQ2MjxpU8FQLn9KXVqel0TNRihZ+MlyNDRF0C2Afqo96JN5nC
+         hHtsMOodRK9Mg==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, pabeni@redhat.com,
+        Jakub Kicinski <kuba@kernel.org>, corbet@lwn.net,
+        tsbogend@alpha.franken.de, benh@kernel.crashing.org,
+        paulus@samba.org, sburla@marvell.com, vburru@marvell.com,
+        aayarekar@marvell.com, arnd@arndb.de, zhangyue1@kylinos.cn,
+        linux-doc@vger.kernel.org, linux-mips@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-parisc@vger.kernel.org
+Subject: Re: [PATCH net-next] eth: de4x5: remove support for Generic DECchip
+ & DIGITAL EtherWORKS PCI/EISA
+In-Reply-To: <20220519031345.2134401-1-kuba@kernel.org>
+References: <20220519031345.2134401-1-kuba@kernel.org>
+Date:   Fri, 20 May 2022 20:40:48 +1000
+Message-ID: <87o7zsmqq7.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/7] net: ipa: a mix of patches
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165304321275.19589.18261388904544139086.git-patchwork-notify@kernel.org>
-Date:   Fri, 20 May 2022 10:40:12 +0000
-References: <20220519151217.654890-1-elder@linaro.org>
-In-Reply-To: <20220519151217.654890-1-elder@linaro.org>
-To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, mka@chromium.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, quic_cpratapa@quicinc.com,
-        quic_avuyyuru@quicinc.com, quic_jponduru@quicinc.com,
-        quic_subashab@quicinc.com, elder@kernel.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Jakub Kicinski <kuba@kernel.org> writes:
+> Looks like almost all changes to this driver had been tree-wide
+> refactoring since git era begun. There is one commit from Al
+> 15 years ago which could potentially be fixing a real bug.
+>
+> The driver is using virt_to_bus() and is a real magnet for pointless
+> cleanups. It seems unlikely to have real users. Let's try to shed
+> this maintenance burden.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: corbet@lwn.net
+> CC: tsbogend@alpha.franken.de
+> CC: mpe@ellerman.id.au
+> CC: benh@kernel.crashing.org
+> CC: paulus@samba.org
+> CC: sburla@marvell.com
+> CC: vburru@marvell.com
+> CC: aayarekar@marvell.com
+> CC: arnd@arndb.de
+> CC: zhangyue1@kylinos.cn
+> CC: linux-doc@vger.kernel.org
+> CC: linux-mips@vger.kernel.org
+> CC: linuxppc-dev@lists.ozlabs.org
+> CC: linux-parisc@vger.kernel.org
+> ---
+>  .../device_drivers/ethernet/dec/de4x5.rst     |  189 -
+>  .../device_drivers/ethernet/index.rst         |    1 -
+>  arch/mips/configs/mtx1_defconfig              |    1 -
+>  arch/powerpc/configs/chrp32_defconfig         |    1 -
+>  arch/powerpc/configs/ppc6xx_defconfig         |    1 -
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+Acked-by: Michael Ellerman <mpe@ellerman.id.au> (powerpc)
 
-On Thu, 19 May 2022 10:12:10 -0500 you wrote:
-> This series includes a mix of things things that are generally
-> minor.  The first four are sort of unrelated fixes, and summarizing
-> them here wouldn't be that helpful.
-> 
-> The last three together make it so only the "configuration data" we
-> need after initialization is saved for later use.  Most such data is
-> used only during driver initialization.  But endpoint configuration
-> is needed later, so the last patch saves a copy of that.  Eventually
-> we'll want to support reconfiguring endpoints at runtime as well,
-> and this will facilitate that.
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/7] net: ipa: drop an unneeded transaction reference
-    https://git.kernel.org/netdev/net-next/c/c15f950d1495
-  - [net-next,2/7] net: ipa: rename a GSI error code
-    https://git.kernel.org/netdev/net-next/c/c9d92cf28c0c
-  - [net-next,3/7] net: ipa: ignore endianness if there is no header
-    (no matching commit)
-  - [net-next,4/7] net: ipa: open-code ether_setup()
-    https://git.kernel.org/netdev/net-next/c/75944b040bbc
-  - [net-next,5/7] net: ipa: move endpoint configuration data definitions
-    https://git.kernel.org/netdev/net-next/c/f0488c540e8a
-  - [net-next,6/7] net: ipa: rename a few endpoint config data types
-    https://git.kernel.org/netdev/net-next/c/cf4e73a1667e
-  - [net-next,7/7] net: ipa: save a copy of endpoint default config
-    https://git.kernel.org/netdev/net-next/c/660e52d651ab
-
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+cheers
