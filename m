@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0293852F239
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 20:13:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B06552F241
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 20:13:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352458AbiETSNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 14:13:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36524 "EHLO
+        id S1352474AbiETSNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 14:13:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352463AbiETSNE (ORCPT
+        with ESMTP id S1352470AbiETSNE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 14:13:04 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D8318DAF2;
-        Fri, 20 May 2022 11:12:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC7AE18FF01;
+        Fri, 20 May 2022 11:12:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 29B05B82D90;
-        Fri, 20 May 2022 18:12:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 150D3C3411A;
-        Fri, 20 May 2022 18:12:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 788AEB82D93;
+        Fri, 20 May 2022 18:12:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60E3CC34117;
+        Fri, 20 May 2022 18:12:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653070370;
-        bh=K+DrRmpRVXepET5twu9KU4kHTQjdvJrEkgES8lPb8SM=;
+        s=k20201202; t=1653070374;
+        bh=jFr/C+je3NokkqyXC7uJY0JiG6vYtPSvT2wCEXT3pnc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=di7nb890nAdVs661MY3ArhaorebCvREmDch9fcVeCypR5Y79eINRqbbEkmyLdySv8
-         s1TkRpOL8iZV2jYbUEPl2SEJH0w+TYSPb3wY6WrMayh0D+keTVkiX4t2ojd5nKUYGh
-         tIE9AYATvi1vkjxAbcmXDTvDtQvFZfmQWhnro7y1x4YK0AgNaIbAq7ta5Ic7MMegLQ
-         yhos6Lg1FPKn/rNn+9bvuDbVbzGvDTsWSayu5fYK6uEqTrDrHYsG7x3jbs+5y9vW7L
-         80poTZrfVeodcasojYGiPoG3PHvsVQ/cpqn8bRL/hWguotzMTgCt1MTIDII7WqV8+W
-         lvtXgF8eU9xMA==
+        b=RMp3FfJHzDDvYejKvhgrI5W11mOFuK37cKFiNHYES5trjqGFFkXFqUwJZ+9kl/eZn
+         zsSxvN+UPifjI5zJmjufHgN/Cqq3y70m44zR9p/NVc6sy9746qELUEYO7EfkZNjNLG
+         PiiUASaaC0ngZPH6UxKqVyTjnqtZLKZm+pjDa1V9oo6ZY3B7u8GeQSgpHSDKeDR6jB
+         1ph+9HHGko7znyTsu2bStguFFY1goK+fn0BRej2OqD3Wme81FSFlYF/5WCRRGcq24L
+         4lrbCNe6igSTNSLkZzpcdVsoB/qfq5opoZGbn51tSZLXXax3oIAGFvqM4gkruMtwW3
+         5OKKSOiZpiQWA==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
@@ -38,9 +38,9 @@ Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
         kuba@kernel.org, pabeni@redhat.com, Sam.Shih@mediatek.com,
         linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         robh@kernel.org, lorenzo.bianconi@redhat.com
-Subject: [PATCH v3 net-next 10/16] net: ethernet: mtk_eth_soc: rely on txd_size field in mtk_poll_tx/mtk_poll_rx
-Date:   Fri, 20 May 2022 20:11:33 +0200
-Message-Id: <6b20d0ac8cde94c6f5057004a60bde2b3ae37702.1653069056.git.lorenzo@kernel.org>
+Subject: [PATCH v3 net-next 11/16] net: ethernet: mtk_eth_soc: rely on rxd_size field in mtk_rx_alloc/mtk_rx_clean
+Date:   Fri, 20 May 2022 20:11:34 +0200
+Message-Id: <1be6a4f04eca440c610a9f22808cfd4062d1c096.1653069056.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <cover.1653069056.git.lorenzo@kernel.org>
 References: <cover.1653069056.git.lorenzo@kernel.org>
@@ -56,50 +56,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a preliminary to ad mt7986 ethernet support.
+Remove mtk_rx_dma structure layout dependency in mtk_rx_alloc/mtk_rx_clean.
+Initialize to 0 rxd3 and rxd4 in mtk_rx_alloc.
+This is a preliminary patch to add mt7986 ethernet support.
 
 Tested-by: Sam Shih <sam.shih@mediatek.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 26 ++++++++++++++-------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 7c4e63cc7c2a..c7820dbc75f1 100644
+index c7820dbc75f1..4706e3708bbc 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1235,9 +1235,12 @@ static struct mtk_rx_ring *mtk_get_rx_ring(struct mtk_eth *eth)
- 		return &eth->rx_ring[0];
+@@ -1749,18 +1749,25 @@ static int mtk_rx_alloc(struct mtk_eth *eth, int ring_no, int rx_flag)
+ 		return -ENOMEM;
  
- 	for (i = 0; i < MTK_MAX_RX_RING_NUM; i++) {
+ 	for (i = 0; i < rx_dma_size; i++) {
 +		struct mtk_rx_dma *rxd;
 +
- 		ring = &eth->rx_ring[i];
- 		idx = NEXT_DESP_IDX(ring->calc_idx, ring->dma_size);
--		if (ring->dma[idx].rxd2 & RX_DMA_DONE) {
-+		rxd = (void *)ring->dma + idx * eth->soc->txrx.rxd_size;
-+		if (rxd->rxd2 & RX_DMA_DONE) {
- 			ring->calc_idx_update = true;
- 			return ring;
+ 		dma_addr_t dma_addr = dma_map_single(eth->dma_dev,
+ 				ring->data[i] + NET_SKB_PAD + eth->ip_align,
+ 				ring->buf_size,
+ 				DMA_FROM_DEVICE);
+ 		if (unlikely(dma_mapping_error(eth->dma_dev, dma_addr)))
+ 			return -ENOMEM;
+-		ring->dma[i].rxd1 = (unsigned int)dma_addr;
++
++		rxd = (void *)ring->dma + i * eth->soc->txrx.rxd_size;
++		rxd->rxd1 = (unsigned int)dma_addr;
+ 
+ 		if (MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628))
+-			ring->dma[i].rxd2 = RX_DMA_LSO;
++			rxd->rxd2 = RX_DMA_LSO;
+ 		else
+-			ring->dma[i].rxd2 = RX_DMA_PLEN0(ring->buf_size);
++			rxd->rxd2 = RX_DMA_PLEN0(ring->buf_size);
++
++		rxd->rxd3 = 0;
++		rxd->rxd4 = 0;
+ 	}
+ 	ring->dma_size = rx_dma_size;
+ 	ring->calc_idx_update = false;
+@@ -1785,14 +1792,17 @@ static void mtk_rx_clean(struct mtk_eth *eth, struct mtk_rx_ring *ring)
+ 
+ 	if (ring->data && ring->dma) {
+ 		for (i = 0; i < ring->dma_size; i++) {
++			struct mtk_rx_dma *rxd;
++
+ 			if (!ring->data[i])
+ 				continue;
+-			if (!ring->dma[i].rxd1)
++
++			rxd = (void *)ring->dma + i * eth->soc->txrx.rxd_size;
++			if (!rxd->rxd1)
+ 				continue;
+-			dma_unmap_single(eth->dma_dev,
+-					 ring->dma[i].rxd1,
+-					 ring->buf_size,
+-					 DMA_FROM_DEVICE);
++
++			dma_unmap_single(eth->dma_dev, rxd->rxd1,
++					 ring->buf_size, DMA_FROM_DEVICE);
+ 			skb_free_frag(ring->data[i]);
  		}
-@@ -1288,7 +1291,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
- 			goto rx_done;
- 
- 		idx = NEXT_DESP_IDX(ring->calc_idx, ring->dma_size);
--		rxd = &ring->dma[idx];
-+		rxd = (void *)ring->dma + idx * eth->soc->txrx.rxd_size;
- 		data = ring->data[idx];
- 
- 		if (!mtk_rx_get_desc(&trxd, rxd))
-@@ -1477,7 +1480,7 @@ static int mtk_poll_tx_pdma(struct mtk_eth *eth, int budget,
- 
- 		mtk_tx_unmap(eth, tx_buf, true);
- 
--		desc = &ring->dma[cpu];
-+		desc = (void *)ring->dma + cpu * eth->soc->txrx.txd_size;
- 		ring->last_free = desc;
- 		atomic_inc(&ring->free_count);
- 
+ 		kfree(ring->data);
 -- 
 2.35.3
 
