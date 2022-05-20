@@ -2,54 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25E9E52E5FF
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 09:14:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5985852E610
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 09:19:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343625AbiETHNk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 20 May 2022 03:13:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38264 "EHLO
+        id S1346257AbiETHTT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 20 May 2022 03:19:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234866AbiETHNj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:13:39 -0400
-Received: from mail-qk1-f176.google.com (mail-qk1-f176.google.com [209.85.222.176])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38E73140841;
-        Fri, 20 May 2022 00:13:38 -0700 (PDT)
-Received: by mail-qk1-f176.google.com with SMTP id x65so2087009qke.2;
-        Fri, 20 May 2022 00:13:38 -0700 (PDT)
+        with ESMTP id S231572AbiETHTN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:19:13 -0400
+Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA8F30557;
+        Fri, 20 May 2022 00:19:13 -0700 (PDT)
+Received: by mail-qk1-f174.google.com with SMTP id m1so6353681qkn.10;
+        Fri, 20 May 2022 00:19:13 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=GCrhi2K2Dty2bgxNnj28EIUE9cUht+MAZzziai/dEyk=;
-        b=ZXP1Dbf/xZQBx0+NmsxKiqAq5+cqZZ3RToePL3kTDKdvUGojxgZy4YxLo80C3CcqDv
-         msbYn3C1qhPH7R4msYs8TMyGfPP1xO13nYJ2Qvj313xzZBuRleRp/eaVz2tOR+hhVZz/
-         Ps63lt3TWn5Z7NP1Atc7e7e/ifVPFFB5ZfXjr9oj9e+KgXJZFBUFyUNgMKEk0QhUHz/c
-         89Vu7f9kURWbXQ/RTtp7/7E9i7pTn1hKBOjAQ42QEuUmgih5wQ0ZqKd6qyG0KSJxen1L
-         JfjJPejHNnrsMVYMyQZvrLCb7vnVGmKwuks9u8/eCgGnX2rj+g1Vtmsof94TdY4a8W7j
-         nsQw==
-X-Gm-Message-State: AOAM533ZMtcbDAF1zvP+End5p000CaaQykCBRDOIAYNQIapn4zEcpgme
-        sqlvsxkWsH3Z/KqNvlaXBQrka8s7QVjoUg==
-X-Google-Smtp-Source: ABdhPJxTQ4fBg9pwRl76dbxTgY0mvGa/fcf3vJH/1xsBLce6fchFkLftXf0Y+YKSTdGQR8qI2RS7FA==
-X-Received: by 2002:a05:620a:1456:b0:6a3:35dc:2307 with SMTP id i22-20020a05620a145600b006a335dc2307mr3905933qkl.456.1653030817056;
-        Fri, 20 May 2022 00:13:37 -0700 (PDT)
-Received: from mail-yb1-f171.google.com (mail-yb1-f171.google.com. [209.85.219.171])
-        by smtp.gmail.com with ESMTPSA id s65-20020ae9de44000000b006a2f129425asm2412878qkf.130.2022.05.20.00.13.35
+        bh=+GCCZN6JxXJvyJ+kgBCmMkSmKyGomtPqZqdNh5AEW+Q=;
+        b=bqiRjY8ozS6DBYmjXxJS6IG8/lrTGIdAdgQAiGlNYDsUmWt+EhBizLy40kgQ3pWMAl
+         l30iZjljYonB0fkx3o9mHue2QsoslTVH+fzjuReNV+GlM4/p0bz0SpmC/OL4GguojygD
+         yYgdcoa0fsX9VG/at20rodMydPkYUJ6VyxmSShEoaeFeyvQq3iaf3DjTRLSrPksM5jiJ
+         rmC5fs4fubRyASxQ24yeJx/DFhDRUlswgUNx2jLz3RqY9rydNr6JKzRZghigknBakR/C
+         gY/LuuM69DjXQ14pnmhxRmXnapGEIqdMY75tdEF9n56K1dTARwRLvp1yj1cevPxiPPgl
+         5RBA==
+X-Gm-Message-State: AOAM531srQmIXcE0vDxFzkurnFcr7St18RJDFReJfdCdhc4hyfZS/dao
+        o8Oena7D+vCYX+w8suvbujdfxEhoysbYew==
+X-Google-Smtp-Source: ABdhPJxQrN8lVMavG9vVJqyhHxsyo7gbqot5mVnp0NvQoH5PEJTl73qCfD9vzebM4b261GGYm1Xfbw==
+X-Received: by 2002:a37:6902:0:b0:680:da57:1483 with SMTP id e2-20020a376902000000b00680da571483mr5299053qkc.269.1653031151797;
+        Fri, 20 May 2022 00:19:11 -0700 (PDT)
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
+        by smtp.gmail.com with ESMTPSA id z20-20020ac875d4000000b002f39b99f678sm2514221qtq.18.2022.05.20.00.19.10
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 00:13:36 -0700 (PDT)
-Received: by mail-yb1-f171.google.com with SMTP id x2so12448552ybi.8;
-        Fri, 20 May 2022 00:13:35 -0700 (PDT)
-X-Received: by 2002:a25:e04d:0:b0:64d:6f23:b906 with SMTP id
- x74-20020a25e04d000000b0064d6f23b906mr8138784ybg.380.1653030815564; Fri, 20
- May 2022 00:13:35 -0700 (PDT)
+        Fri, 20 May 2022 00:19:11 -0700 (PDT)
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2fed823dd32so78102537b3.12;
+        Fri, 20 May 2022 00:19:10 -0700 (PDT)
+X-Received: by 2002:a0d:f745:0:b0:2fe:e903:b0f8 with SMTP id
+ h66-20020a0df745000000b002fee903b0f8mr8901378ywf.383.1653031150703; Fri, 20
+ May 2022 00:19:10 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220519153107.696864-1-clement.leger@bootlin.com> <20220519153107.696864-7-clement.leger@bootlin.com>
-In-Reply-To: <20220519153107.696864-7-clement.leger@bootlin.com>
+References: <20220519153107.696864-1-clement.leger@bootlin.com> <20220519153107.696864-12-clement.leger@bootlin.com>
+In-Reply-To: <20220519153107.696864-12-clement.leger@bootlin.com>
 From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 20 May 2022 09:13:23 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
-Message-ID: <CAMuHMdXRCggkTSxfnSHvz3N2Oekuw7y5Sy2AKkqZpZzK_Eg_ng@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 06/13] dt-bindings: net: dsa: add bindings for
- Renesas RZ/N1 Advanced 5 port switch
+Date:   Fri, 20 May 2022 09:18:58 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdUJpNSyX0qK64+W1G6P1S-78mb_+D0-w3kHOFY3VVkANQ@mail.gmail.com>
+Message-ID: <CAMuHMdUJpNSyX0qK64+W1G6P1S-78mb_+D0-w3kHOFY3VVkANQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v5 11/13] ARM: dts: r9a06g032: describe GMAC2
 To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -88,85 +87,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Clément,
+Hi Clément
 
 On Thu, May 19, 2022 at 5:32 PM Clément Léger <clement.leger@bootlin.com> wrote:
-> Add bindings for Renesas RZ/N1 Advanced 5 port switch. This switch is
-> present on Renesas RZ/N1 SoC and was probably provided by MoreThanIP.
-> This company does not exists anymore and has been bought by Synopsys.
-> Since this IP can't be find anymore in the Synospsy portfolio, lets use
-> Renesas as the vendor compatible for this IP.
+> RZ/N1 SoC includes two MAC named GMACx that are compatible with the
+> "snps,dwmac" driver. GMAC1 is connected directly to the MII converter
+> port 1. GMAC2 however can be used as the MAC for the switch CPU
+> management port or can be muxed to be connected directly to the MII
+> converter port 2. This commit add description for the GMAC2 which will
+> be used by the switch description.
 >
 > Signed-off-by: Clément Léger <clement.leger@bootlin.com>
 
 Thanks for your patch!
 
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/net/dsa/renesas,rzn1-a5psw.yaml
-> @@ -0,0 +1,131 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/net/dsa/renesas,rzn1-a5psw.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Renesas RZ/N1 Advanced 5 ports ethernet switch
-> +
-> +maintainers:
-> +  - Clément Léger <clement.leger@bootlin.com>
-> +
-> +description: |
-> +  The advanced 5 ports switch is present on the Renesas RZ/N1 SoC family and
-> +  handles 4 ports + 1 CPU management port.
-> +
-> +allOf:
-> +  - $ref: dsa.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    items:
-> +      - enum:
-> +          - renesas,r9a06g032-a5psw
-> +      - const: renesas,rzn1-a5psw
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  mdio:
-> +    $ref: /schemas/net/mdio.yaml#
-> +    unevaluatedProperties: false
-> +
-> +  clocks:
-> +    items:
-> +      - description: AHB clock used for the switch register interface
-> +      - description: Switch system clock
-> +
-> +  clock-names:
-> +    items:
-> +      - const: hclk
-> +      - const: clk
+> --- a/arch/arm/boot/dts/r9a06g032.dtsi
+> +++ b/arch/arm/boot/dts/r9a06g032.dtsi
+> @@ -200,6 +200,23 @@ nand_controller: nand-controller@40102000 {
+>                         status = "disabled";
+>                 };
+>
+> +               gmac2: ethernet@44002000 {
+> +                       compatible = "snps,dwmac";
 
-(Good, "clock-names" is present ;-)
+Does this need an SoC-specific compatible value?
 
-Missing "power-domains" property.
+> +                       reg = <0x44002000 0x2000>;
+> +                       interrupt-parent = <&gic>;
+> +                       interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
+> +                                    <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
+> +                       interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
+> +                       clock-names = "stmmaceth";
+> +                       clocks = <&sysctrl R9A06G032_HCLK_GMAC1>;
 
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    #include <dt-bindings/clock/r9a06g032-sysctrl.h>
+Missing "power-domains", also in the DT bindings.
+The driver already uses Runtime PM.
+
+> +                       snps,multicast-filter-bins = <256>;
+> +                       snps,perfect-filter-entries = <128>;
+> +                       tx-fifo-depth = <2048>;
+> +                       rx-fifo-depth = <4096>;
+> +                       status = "disabled";
+> +               };
 > +
-> +    switch@44050000 {
-> +        compatible = "renesas,r9a06g032-a5psw", "renesas,rzn1-a5psw";
-> +        reg = <0x44050000 0x10000>;
-> +        clocks = <&sysctrl R9A06G032_HCLK_SWITCH>, <&sysctrl R9A06G032_CLK_SWITCH>;
-> +        clock-names = "hclk", "clk";
-> +        pinctrl-names = "default";
-> +        pinctrl-0 = <&pins_mdio1>, <&pins_eth3>, <&pins_eth4>;
-
-Usually we don't list pinctrl-* properties in examples.
-
-The rest LGTM (from an SoC integration PoV), so with the above fixed
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+>                 eth_miic: eth-miic@44030000 {
+>                         compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
+>                         #address-cells = <1>;
 
 Gr{oetje,eeting}s,
 
