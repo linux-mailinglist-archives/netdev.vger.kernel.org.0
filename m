@@ -2,138 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BF0C752F575
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:03:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 066BB52F57B
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:05:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353801AbiETWDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 18:03:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39838 "EHLO
+        id S1353820AbiETWFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 18:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351380AbiETWDC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:03:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FAD013F90
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 15:02:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8713161DBF
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 22:02:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B20EBC385A9;
-        Fri, 20 May 2022 22:02:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653084178;
-        bh=4CEXSiGkFy32Jura7dcpCDyeTlEBHqr93qsQDKMeGmw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hCdSWaiPsSdkDW5AYaNppAVYnZlBVHRJom7jupbyKRXrv56QsVXNlO9P+eELcRkCw
-         75gHXq94Xb3aYvBad0HNRWjjzSpKz3TDxlGbbnwHzy45G63/qGnArDywEpLCIGgNqZ
-         /LaX2MAfGUW6Q/3Ag1SP8HOkYZ/FOmM+9Ja7JoRghavhnVDsSVxGJFHu40UGjtJj+/
-         F09/e884Uq9rjmH8l4VDnBlYvOwU/R+fkRQwSwRkCN0SBYwPAW4Ib0AvLTgg4NNP9g
-         Vz8TSF23x61Na6/Hhz8WJQGlHCBur0umzzizrC5quVh3wOs29HXaTgW1NC+ucJ93kb
-         7dKdz2xXBRm2w==
-Date:   Fri, 20 May 2022 15:02:56 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk, olteanv@gmail.com,
-        hkallweit1@gmail.com, f.fainelli@gmail.com, saeedm@nvidia.com,
-        michael.chan@broadcom.com
-Subject: Re: [RFC net-next] net: track locally triggered link loss
-Message-ID: <20220520150256.5d9aed65@kernel.org>
-In-Reply-To: <YofidJtb+kVtFr6L@lunn.ch>
-References: <20220520004500.2250674-1-kuba@kernel.org>
-        <YoeIj2Ew5MPvPcvA@lunn.ch>
-        <20220520111407.2bce7cb3@kernel.org>
-        <YofidJtb+kVtFr6L@lunn.ch>
+        with ESMTP id S243602AbiETWFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:05:03 -0400
+Received: from mail-vs1-xe30.google.com (mail-vs1-xe30.google.com [IPv6:2607:f8b0:4864:20::e30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAE7A13F90;
+        Fri, 20 May 2022 15:05:02 -0700 (PDT)
+Received: by mail-vs1-xe30.google.com with SMTP id m2so9618787vsr.8;
+        Fri, 20 May 2022 15:05:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vEa8wOAy1yjkPGX5niq7cKlzEqEbn5vgGX01uFZeyx0=;
+        b=pf70By7pF1e4r2VxjsJ+FR0Y8tv1NHuzHngxTbWZ4GdEEmJFJRgFbpOAbwK+6OMDmo
+         HOvHve0yGJJSxZqdrIQ2BZry2tZa3COk6oPdZ+A++RYVd+PQVLNsNFMfPlz+YsdaWQV8
+         3mHnHJbDXP8vf77dloAQ6q43VBjMCXepxMrst0GTmUtgics4M3b4YsJNeycrrJZUM5Qz
+         mAdTnX/o+Duku4LqfFR34vbyjHYPjxIpW7sBGc1Eet99H6RajPD4lMbQfruCKJOBXN5G
+         sB2UFGzQugUs5xojtTwkqJF+3sjfGMiHR69OxghqKVkML9qWYKJZDe3EkZM3xLsSIcI4
+         NXUw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vEa8wOAy1yjkPGX5niq7cKlzEqEbn5vgGX01uFZeyx0=;
+        b=5vFid8GigkJ5F+XG39D1PWKyZdOeKs78ACXpkaWv2OEHuvS0YU7JwdvxqehWdbHAMC
+         R0Smk5W75cHLEOEQYZcQ2c8pIMQedNxlXYlJhCLkzC6H8Z07nrvEdKusFymDs0B+2WvO
+         Rh8AdNimQFGUCFs0WwBKL0CxZuUqAjuxYuN6JrHAAPy8Dx6c7UrqttciKTro2cP6Io6K
+         t2mSHu2SOlvymVRm+iTq9lAVDuBkni5JMUcZhYTwtepPeFUmWJd3dEwzU0OINUhCFDFJ
+         wRukI8zwkIqDQrBqWADpYzTuycM3wua2HOw0sOkJS84pF2QzwDIoFB1HqMAWwK9Yn9Ud
+         krMQ==
+X-Gm-Message-State: AOAM531xtyZ/JLOJDSWAYi6SuHlWxaSFMqDy4qfdpqsZ3wbpS2jS2Zog
+        ajKhBW0SvHR2QSHhU9wSqJxHJWg0IK/bWQ98B35sMho9
+X-Google-Smtp-Source: ABdhPJylF+Cpre/GiNn3g19TPGrcInAvsIOw3/g+SromJnXzeeMISXrmlBvn+4RN1atdrpxe1dwbke3HGSoWnNXtBmc=
+X-Received: by 2002:a67:f745:0:b0:335:e652:c692 with SMTP id
+ w5-20020a67f745000000b00335e652c692mr4980498vso.52.1653084301990; Fri, 20 May
+ 2022 15:05:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <cover.1652870182.git.lorenzo@kernel.org> <e95abdd9c6fa1fa97f3ca60e8eb06799784e671a.1652870182.git.lorenzo@kernel.org>
+In-Reply-To: <e95abdd9c6fa1fa97f3ca60e8eb06799784e671a.1652870182.git.lorenzo@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 20 May 2022 15:04:47 -0700
+Message-ID: <CAEf4BzZuKOR2y1LOzZLWm1sMFw3psPuzFcoYJ-yj0+PgzB2C1g@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 5/5] selftests/bpf: add selftest for
+ bpf_xdp_ct_add and bpf_ct_refresh_timeout kfunc
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>, pabeni@redhat.com,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel@vger.kernel.org,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 May 2022 20:48:20 +0200 Andrew Lunn wrote:
-> > I was looking at bnxt because it's relatively standard for DC NICs and
-> > doesn't have 10M lines of code.. then again I could be misinterpreting
-> > the code, I haven't tested this theory:
-> > 
-> > In bnxt_set_pauseparam() for example the driver will send a request to
-> > the FW which will result in the link coming down and back up with
-> > different settings (e.g. when pause autoneg was changed). Since the
-> > driver doesn't call netif_carrier_off() explicitly as part of sending
-> > the FW message but the link down gets reported thru the usual interrupt
-> > (as if someone yanked the cable out) - we need to wrap the FW call with
-> > the __LINK_STATE_NOCARRIER_LOCAL  
-> 
-> I'm not sure this is a good example. If the PHY is doing an autoneg,
-> the link really is down for around a second. The link peer will also
-> so the link go down and come back up. So this seems like a legitimate
-> time to set the carrier off and then back on again.
+On Wed, May 18, 2022 at 3:44 AM Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>
+> Introduce selftests for the following kfunc helpers:
+> - bpf_xdp_ct_add
+> - bpf_skb_ct_add
+> - bpf_ct_refresh_timeout
+>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+>  .../testing/selftests/bpf/prog_tests/bpf_nf.c |  4 ++
+>  .../testing/selftests/bpf/progs/test_bpf_nf.c | 72 +++++++++++++++----
+>  2 files changed, 64 insertions(+), 12 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> index dd30b1e3a67c..be6c5650892f 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/bpf_nf.c
+> @@ -39,6 +39,10 @@ void test_bpf_nf_ct(int mode)
+>         ASSERT_EQ(skel->bss->test_enonet_netns_id, -ENONET, "Test ENONET for bad but valid netns_id");
+>         ASSERT_EQ(skel->bss->test_enoent_lookup, -ENOENT, "Test ENOENT for failed lookup");
+>         ASSERT_EQ(skel->bss->test_eafnosupport, -EAFNOSUPPORT, "Test EAFNOSUPPORT for invalid len__tuple");
+> +       ASSERT_EQ(skel->bss->test_add_entry, 0, "Test for adding new entry");
+> +       ASSERT_EQ(skel->bss->test_succ_lookup, 0, "Test for successful lookup");
+> +       ASSERT_TRUE(skel->bss->test_delta_timeout > 9 && skel->bss->test_delta_timeout <= 10,
+> +                   "Test for ct timeout update");
 
-In the commit message I differentiated between link flaps type (1), 
-(2), (3a) and (3b). What we're talking about here is (1) vs (2), and
-from the POV of the remote end (3a) vs (3b).
+if/when this fails we'll have "true != false" message not knowing what
+was the actual value of skel->bss->test_delta_timeout.
 
-For a system which wants to monitor link quality on the local end =>
-i.e. whether physical hardware has to be replaced - differentiating
-between (1) and (2) doesn't really matter, they are both non-events.
+This is equivalent to a much better:
 
-I admitted somewhere in the commit message that with just the "locally
-triggered" vs "non-locally triggered" we still can't tell (1) from (2)
-and therefore won't be able to count true "link went down because of
-signal integrity" events. Telling (1) from (2) should be easier with
-phylib than with FW-managed PHYs. I left it for future work because:
+ASSERT_GT(skel->bss->test_delta_timeout, 9, "ct_timeout1");
+ASSERT_LE(skel->bss->test_delta_timeout, 10, "ct_timeout2");
 
- - in DC environments PHYs are never managed by Linux AFAIK, sadly,
-   and unless I convince vendors to do the conversions I'm likely going
-   to get the counting between (1) and (2) wrong, not having access to
-   FW or any docs;
+>  end:
+>         test_bpf_nf__destroy(skel);
+>  }
 
- - switches don't flap links much, while NIC reconfig can easily produce
-   spikes of 5+ carrier changes in close succession so even without
-   telling (1) from (2) we can increase the signal of the monitoring
-   significantly
 
-I'm happy to add the (1) vs (2) API tho if it's useful, what I'm
-explaining is more why I don't feel its useful for my case.
-
-> > > The driver has a few netif_carrier_off() calls changed to
-> > > netif_carrier_admin_off(). It is then unclear looking at the code
-> > > which of the calls to netif_carrier_on() match the off.  
-> > 
-> > Right, for bnxt again the carrier_off in bnxt_tx_disable() would become
-> > an admin_carrier_off, since it's basically part of closing the netdev.  
-> 
-> > > Maybe include a driver which makes use of phylib, which should be
-> > > doing control of the carrier based on the actual link status.  
-> > 
-> > For phylib I was thinking of modifying phy_stop()... but I can't
-> > grep out where carrier_off gets called. I'll take a closer look.  
-> 
-> If the driver is calling phy_stop() the link will go down. So again, i
-> would say setting the carrier off is correct. If the driver calls
-> phy_start() an auto neg is likely to happen and 1 second later the
-> link will come up.
-> 
-> Maybe i'm not understanding what you are trying to count here. If the
-> MAC driver needs to stop the MAC in order to reallocate buffers with
-> different MTU, or more rings etc, then i can understand not wanting to
-> count that as a carrier off, because the carrier does not actually go
-> off. But if it is in fact marking the carrier off, it sounds like a
-> MAC driver bug, or a firmware bug.
-
-Well, either way the carrier is set to off because of all the calls to
-netif_carrier_ok() calls throughout the stack. I'm afraid to change the
-semantics of that.
-
-What I want to count is _in_addition_ to whether the link went down or
-not - whether the link down was due to local administrative action.
-
-Then user space can do:
-
-	remote_flaps = carrier_down - carrier_down_local
+[...]
