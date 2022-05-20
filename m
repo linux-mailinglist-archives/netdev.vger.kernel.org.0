@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76E5F52E1BE
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 03:16:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C0A0652E1CC
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 03:20:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344370AbiETBQ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 19 May 2022 21:16:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44074 "EHLO
+        id S1344378AbiETBUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 19 May 2022 21:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344363AbiETBQF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 21:16:05 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8612F2EA26
-        for <netdev@vger.kernel.org>; Thu, 19 May 2022 18:16:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653009363; x=1684545363;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=4CHRXJYeqyil7rTJdqBcblLodLd4q0xWMAdYGKzG05Y=;
-  b=I6cYS79mzS7cJS+hJXWiqz5PawvodyzzqJYDbGuIj0j/bH+N7kMQ2vi5
-   s9AcGUNrR9Gt+JS5Scz0kAi8ZkFA2X7WOPsB2xhhh7A62qAAVxmidvr1f
-   aGcwMN0jTgVcVVYIY52FdPSUTcyB+Dc62i5dWSM2Njwvw+J6PPqzW/kLF
-   egMocBOHhJc+QMu63va8mt6uMmMyYoGCPkA836yoHGEdep8e7Ds8s50U0
-   VxxjlfHQ4afaRukB2x5Db6TNYfHBUTQ/srcTxw7degznppPHcgZ0VvyU5
-   XF3BxjpEXL+gLniaA4bcaPWFVtv8hC6uyR9VCVHQQtkacrmxMpPC66nCO
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10352"; a="333064170"
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="333064170"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 18:15:54 -0700
-X-IronPort-AV: E=Sophos;i="5.91,238,1647327600"; 
-   d="scan'208";a="570534569"
-Received: from vcostago-mobl3.jf.intel.com ([10.24.14.84])
-  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2022 18:15:54 -0700
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        vladimir.oltean@nxp.com, po.liu@nxp.com, boon.leong.ong@intel.com,
-        intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next v5 11/11] igc: Add support for exposing frame preemption stats registers
-Date:   Thu, 19 May 2022 18:15:38 -0700
-Message-Id: <20220520011538.1098888-12-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220520011538.1098888-1-vinicius.gomes@intel.com>
-References: <20220520011538.1098888-1-vinicius.gomes@intel.com>
+        with ESMTP id S239345AbiETBUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 19 May 2022 21:20:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B00837002
+        for <netdev@vger.kernel.org>; Thu, 19 May 2022 18:20:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D162961B5F
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 01:20:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2E394C34114;
+        Fri, 20 May 2022 01:20:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653009614;
+        bh=6L9CqSKX6VWY4LurBhFqahVRnv4+eVItjVSEjLf4Jhw=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=txMQLsn1wTkzsH5xvl4Xh4UVJrgXNrBpu5AvchCo/6wDAMtNIto6H/weAiyZVNjHq
+         Y5+56GS/TWFHwjiiEaDiVaTEZ7aOaB+AgsvgE7zO69nQEAX/UlgGfJobc2PHy9gIlE
+         pEb7rzlMiEfPYI/3zK+UatJJkPE7BeCueEHHUdrmPvK74nDPudjwe2KNyzNZIHDicE
+         /QoLOGwJ77ILZ6IDokzdFO8frwrMA3gkPEi1IL8rTMaG1XptfvDItczf0Z2YHGmavu
+         TqQUGZKZvHKozYm97tykWrU0pgKNTaI0OkkW9VVF/MzijcXN7DlBrJBykeRFMkavWq
+         TJshXph0o6JbA==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 1360AF03935;
+        Fri, 20 May 2022 01:20:14 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-4.9 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Subject: Re: [PATCH net-next 00/12] mtk_eth_soc phylink updates
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165300961407.24775.3678775138075397311.git-patchwork-notify@kernel.org>
+Date:   Fri, 20 May 2022 01:20:14 +0000
+References: <YoUIX+BN/ZbyXzTT@shell.armlinux.org.uk>
+In-Reply-To: <YoUIX+BN/ZbyXzTT@shell.armlinux.org.uk>
+To:     Russell King (Oracle) <linux@armlinux.org.uk>
+Cc:     davem@davemloft.net, kuba@kernel.org, kabel@kernel.org,
+        nbd@nbd.name, john@phrozen.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, Mark-MC.Lee@mediatek.com,
+        matthias.bgg@gmail.com, netdev@vger.kernel.org, pabeni@redhat.com,
+        sean.wang@mediatek.com
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -60,58 +60,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Expose the Frame Preemption counters, so the number of
-express/preemptible packets can be monitored by userspace.
+Hello:
 
-These registers are cleared when read, so the value shown is the
-number of events that happened since the last read.
+This series was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- drivers/net/ethernet/intel/igc/igc_ethtool.c |  8 ++++++++
- drivers/net/ethernet/intel/igc/igc_regs.h    | 10 ++++++++++
- 2 files changed, 18 insertions(+)
+On Wed, 18 May 2022 15:53:19 +0100 you wrote:
+> Hi,
+> 
+> This series ultimately updates mtk_eth_soc to use phylink_pcs, with some
+> fixes along the way.
+> 
+> Previous attempts to update this driver (which is now marked as legacy)
+> have failed due to lack of testing. I am hoping that this time will be
+> different; Marek can test RGMII modes, but not SGMII. So all that we
+> know is that this patch series probably doesn't break RGMII.
+> 
+> [...]
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_ethtool.c b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-index 9a80e2569dc3..0a84fbdd494b 100644
---- a/drivers/net/ethernet/intel/igc/igc_ethtool.c
-+++ b/drivers/net/ethernet/intel/igc/igc_ethtool.c
-@@ -344,6 +344,14 @@ static void igc_ethtool_get_regs(struct net_device *netdev,
- 
- 	regs_buff[213] = adapter->stats.tlpic;
- 	regs_buff[214] = adapter->stats.rlpic;
-+	regs_buff[215] = rd32(IGC_PRMPTDTCNT);
-+	regs_buff[216] = rd32(IGC_PRMEVNTTCNT);
-+	regs_buff[217] = rd32(IGC_PRMPTDRCNT);
-+	regs_buff[218] = rd32(IGC_PRMEVNTRCNT);
-+	regs_buff[219] = rd32(IGC_PRMPBLTCNT);
-+	regs_buff[220] = rd32(IGC_PRMPBLRCNT);
-+	regs_buff[221] = rd32(IGC_PRMEXPTCNT);
-+	regs_buff[222] = rd32(IGC_PRMEXPRCNT);
- }
- 
- static void igc_ethtool_get_wol(struct net_device *netdev,
-diff --git a/drivers/net/ethernet/intel/igc/igc_regs.h b/drivers/net/ethernet/intel/igc/igc_regs.h
-index e197a33d93a0..2b5ef1e80f5f 100644
---- a/drivers/net/ethernet/intel/igc/igc_regs.h
-+++ b/drivers/net/ethernet/intel/igc/igc_regs.h
-@@ -224,6 +224,16 @@
- 
- #define IGC_FTQF(_n)	(0x059E0 + (4 * (_n)))  /* 5-tuple Queue Fltr */
- 
-+/* Time sync registers - preemption statistics */
-+#define IGC_PRMPTDTCNT	0x04280  /* Good TX Preempted Packets */
-+#define IGC_PRMEVNTTCNT	0x04298  /* TX Preemption event counter */
-+#define IGC_PRMPTDRCNT	0x04284  /* Good RX Preempted Packets */
-+#define IGC_PRMEVNTRCNT	0x0429C  /* RX Preemption event counter */
-+#define IGC_PRMPBLTCNT	0x04288  /* Good TX Preemptable Packets */
-+#define IGC_PRMPBLRCNT	0x0428C  /* Good RX Preemptable Packets */
-+#define IGC_PRMEXPTCNT	0x04290  /* Good TX Express Packets */
-+#define IGC_PRMEXPRCNT	0x042A0  /* Preemption Exception Counter */
-+
- /* Transmit Scheduling Registers */
- #define IGC_TQAVCTRL		0x3570
- #define IGC_TXQCTL(_n)		(0x3344 + 0x4 * (_n))
+Here is the summary with links:
+  - [net-next,01/12] net: mtk_eth_soc: remove unused mac->mode
+    https://git.kernel.org/netdev/net-next/c/0600bdde1fae
+  - [net-next,02/12] net: mtk_eth_soc: remove unused sgmii flags
+    https://git.kernel.org/netdev/net-next/c/5a7a2f4b29d7
+  - [net-next,03/12] net: mtk_eth_soc: add mask and update PCS speed definitions
+    https://git.kernel.org/netdev/net-next/c/bc5e93e0cd22
+  - [net-next,04/12] net: mtk_eth_soc: correct 802.3z speed setting
+    https://git.kernel.org/netdev/net-next/c/7da3f901f8ec
+  - [net-next,05/12] net: mtk_eth_soc: correct 802.3z duplex setting
+    https://git.kernel.org/netdev/net-next/c/a459187390bb
+  - [net-next,06/12] net: mtk_eth_soc: stop passing phylink state to sgmii setup
+    https://git.kernel.org/netdev/net-next/c/4ce5a0bd3958
+  - [net-next,07/12] net: mtk_eth_soc: provide mtk_sgmii_config()
+    https://git.kernel.org/netdev/net-next/c/1ec619ee4a05
+  - [net-next,08/12] net: mtk_eth_soc: add fixme comment for state->speed use
+    https://git.kernel.org/netdev/net-next/c/650a49bc65df
+  - [net-next,09/12] net: mtk_eth_soc: move MAC_MCR setting to mac_finish()
+    https://git.kernel.org/netdev/net-next/c/0e37ad71b2ff
+  - [net-next,10/12] net: mtk_eth_soc: move restoration of SYSCFG0 to mac_finish()
+    https://git.kernel.org/netdev/net-next/c/21089867278d
+  - [net-next,11/12] net: mtk_eth_soc: convert code structure to suit split PCS support
+    https://git.kernel.org/netdev/net-next/c/901f3fbe13c3
+  - [net-next,12/12] net: mtk_eth_soc: partially convert to phylink_pcs
+    https://git.kernel.org/netdev/net-next/c/14a44ab0330d
+
+You are awesome, thank you!
 -- 
-2.35.3
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
