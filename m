@@ -2,106 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C0EB52E6BE
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 09:59:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DFE452E6D1
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 10:00:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346754AbiETH7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 03:59:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58602 "EHLO
+        id S1346201AbiETH7e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 03:59:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59190 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346737AbiETH7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:59:01 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9376415AB30;
-        Fri, 20 May 2022 00:59:00 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24K7wZEs9003479, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24K7wZEs9003479
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 20 May 2022 15:58:35 +0800
-Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Fri, 20 May 2022 15:58:35 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Fri, 20 May 2022 15:58:35 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
- RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
- 15.01.2308.021; Fri, 20 May 2022 15:58:35 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "neojou@gmail.com" <neojou@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "linux@ulli-kroll.de" <linux@ulli-kroll.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 09/10] rtw88: Add rtw8822bu chipset support
-Thread-Topic: [PATCH 09/10] rtw88: Add rtw8822bu chipset support
-Thread-Index: AQHYapDkSUSPgT6yp0uu/6R2ZMJcV60m44iA
-Date:   Fri, 20 May 2022 07:58:35 +0000
-Message-ID: <69be9d5fd2c173ee45d011f40a07fe31c53d0928.camel@realtek.com>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
-         <20220518082318.3898514-10-s.hauer@pengutronix.de>
-In-Reply-To: <20220518082318.3898514-10-s.hauer@pengutronix.de>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1-2 
-x-originating-ip: [172.16.17.21]
-x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMjAg5LiK5Y2IIDA2OjAwOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <B72DB886C9375545B07F6DC8941B7B57@realtek.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S1346760AbiETH7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:59:31 -0400
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC1815AB30
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:59:30 -0700 (PDT)
+Received: by mail-wm1-x329.google.com with SMTP id 67-20020a1c1946000000b00397382b44f4so707490wmz.2
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:59:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ea7uCWmZvVi7x8pZXNpq32JNdBnZG/d3z6FlMpmBFbQ=;
+        b=aEdYT6oI+uAOu9UjBKXVmQR4Vqb7G4k23KZ5L2K3v79YnkqWwIWGGGpsdip/no9LKF
+         OX6p+BYYQM+OElnkM9nMH0jOpS1lznXRg3lJ6uwuxhXtFofh4fsrAfY8PoByvVgIOv14
+         TnBJGNIAxOy63rP8B+4+4uWMpcRLRAsdAJDUbp+llYUTUriz6jRPAyL4AWOccmuIKhOI
+         69qZZCmel4W+VjPG+18N18R/0StDr7wRnLfT06tb+/NpzgX2jn1EsTpE4Ls55bXco/k/
+         wIf7IpYqEmW72htmBiltvUNLA/eOWjZyVZAxP36v1WUwj5Mh1B+IcLpkSxewV90tvTLs
+         HEGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ea7uCWmZvVi7x8pZXNpq32JNdBnZG/d3z6FlMpmBFbQ=;
+        b=uJFRh0sa7xvg7Fs+wRbQG+r+BYZwvl2NAIOka3zML+cyPHYls7tOkzYO15LcjVNLO0
+         6tp5auIjsaNCccvtnqXF3cvDGhwhx2IZzDKtORQwtpF2em+UD3AxowtseEqugD9QBrfT
+         qL1AZXgmkzDobEVAeFzTFPJ+jd2UFYNqKv+zXJOTQAlNrE/L9wyrtKpYLcedWnhrOGbi
+         k8OYV5/kgYB0Qb9HmWiAikSo9V1+nzhOmosjdivjrE05oMdk7UfCYiE1IVhaCuTJdZ3s
+         YzI/Y8keL6NC8g59RNuanrwLj9IM2Zmja5HmISMpJL/Te84YIPQBFLTr2VqQ/zxigWgA
+         NbXA==
+X-Gm-Message-State: AOAM530n5hEuqHMy/SvSA9sDSZAds85UlGPoipReX+skr+LiUetKKrh1
+        pFYrTouGJXm/nz/MIeKoX7exjugv/3ymqEOLR+SixQ==
+X-Google-Smtp-Source: ABdhPJzkbcWaIOOyEvvxjJVCin6gWKz/UgskGdAE5PNQ9w+UErfnjSVu3h7gWMQNdUWckLnyYGW2D4/mAvuI+pGBiow=
+X-Received: by 2002:a05:600c:1908:b0:394:867d:66c4 with SMTP id
+ j8-20020a05600c190800b00394867d66c4mr7447568wmq.152.1653033568515; Fri, 20
+ May 2022 00:59:28 -0700 (PDT)
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220520012133.1217211-1-yosryahmed@google.com>
+ <20220520012133.1217211-4-yosryahmed@google.com> <YodGI73xq8aIBrNM@slm.duckdns.org>
+In-Reply-To: <YodGI73xq8aIBrNM@slm.duckdns.org>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Fri, 20 May 2022 00:58:52 -0700
+Message-ID: <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDIyLTA1LTE4IGF0IDEwOjIzICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
-IEFkZCBzdXBwb3J0IGZvciB0aGUgcnR3ODgyMmJ1IGNoaXBzZXQgYmFzZWQgb24NCj4gaHR0cHM6
-Ly9naXRodWIuY29tL3VsbGkta3JvbGwvcnR3ODgtdXNiLmdpdA0KPiANCj4gU2lnbmVkLW9mZi1i
-eTogU2FzY2hhIEhhdWVyIDxzLmhhdWVyQHBlbmd1dHJvbml4LmRlPg0KPiAtLS0NCj4gIGRyaXZl
-cnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvS2NvbmZpZyAgICB8IDExICsrKysNCj4gIGRy
-aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvTWFrZWZpbGUgICB8ICAzICsNCj4gIGRy
-aXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmIuYyB8IDE5ICsrKysrKw0K
-PiAgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4MjJidS5jICAgIHwgNjIgKysr
-KysrKysrKysrKysrKysrKw0KPiAgLi4uL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0dzg4L3J0dzg4
-MjJidS5oICAgIHwgMTUgKysrKysNCj4gIDUgZmlsZXMgY2hhbmdlZCwgMTEwIGluc2VydGlvbnMo
-KykNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0
-dzg4L3J0dzg4MjJidS5jDQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9uZXQvd2lyZWxl
-c3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYnUuaA0KPiANCj4gDQoNClsuLl0NCg0KPiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvcmVhbHRlay9ydHc4OC9ydHc4ODIyYnUuaA0KPiBi
-L2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgvcnR3ODgyMmJ1LmgNCj4gbmV3IGZp
-bGUgbW9kZSAxMDA2NDQNCj4gaW5kZXggMDAwMDAwMDAwMDAwMC4uMjBmMDFlY2Q3NDQxNQ0KPiAt
-LS0gL2Rldi9udWxsDQo+ICsrKyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL3JlYWx0ZWsvcnR3ODgv
-cnR3ODgyMmJ1LmgNCj4gQEAgLTAsMCArMSwxNSBAQA0KPiArLyogU1BEWC1MaWNlbnNlLUlkZW50
-aWZpZXI6IEdQTC0yLjAgT1IgQlNELTMtQ2xhdXNlICovDQo+ICsvKiBDb3B5cmlnaHQoYykgMjAx
-OC0yMDE5ICBSZWFsdGVrIENvcnBvcmF0aW9uDQo+ICsgKi8NCj4gKw0KPiArI2lmbmRlZiBfX1JU
-V184ODIyQlVfSF8NCj4gKyNkZWZpbmUgX19SVFdfODgyMkJVX0hfDQo+ICsNCj4gKy8qIFVTQiBW
-ZW5kb3IvUHJvZHVjdCBJRHMgKi8NCj4gKyNkZWZpbmUgUlRXX1VTQl9WRU5ET1JfSURfUkVBTFRF
-SwkJMHgwQkRBDQoNCmxpa2Ugb3RoZXJzLCBtb3ZlIHRoaXMgdG8gdXNiLmgNCg0KDQotLQ0KUGlu
-Zy1LZQ0KDQoNCg==
+On Fri, May 20, 2022 at 12:41 AM Tejun Heo <tj@kernel.org> wrote:
+>
+> On Fri, May 20, 2022 at 01:21:31AM +0000, Yosry Ahmed wrote:
+> > From: Hao Luo <haoluo@google.com>
+> >
+> > Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
+> > iter doesn't iterate a set of kernel objects. Instead, it is supposed to
+> > be parameterized by a cgroup id and prints only that cgroup. So one
+> > needs to specify a target cgroup id when attaching this iter. The target
+> > cgroup's state can be read out via a link of this iter.
+> >
+> > Signed-off-by: Hao Luo <haoluo@google.com>
+> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+>
+> This could be me not understanding why it's structured this way but it keeps
+> bothering me that this is adding a cgroup iterator which doesn't iterate
+> cgroups. If all that's needed is extracting information from a specific
+> cgroup, why does this need to be an iterator? e.g. why can't I use
+> BPF_PROG_TEST_RUN which looks up the cgroup with the provided ID, flushes
+> rstat, retrieves whatever information necessary and returns that as the
+> result?
+
+I will let Hao and Yonghong reply here as they have a lot more
+context, and they had previous discussions about cgroup_iter. I just
+want to say that exposing the stats in a file is extremely convenient
+for userspace apps. It becomes very similar to reading stats from
+cgroupfs. It also makes migrating cgroup stats that we have
+implemented in the kernel to BPF a lot easier.
+
+AFAIK there are also discussions about using overlayfs to have links
+to the bpffs files in cgroupfs, which makes it even better. So I would
+really prefer keeping the approach we have here of reading stats
+through a file from userspace. As for how we go about this (and why a
+cgroup iterator doesn't iterate cgroups) I will leave this for Hao and
+Yonghong to explain the rationale behind it. Ideally we can keep the
+same functionality under a more descriptive name/type.
+
+>
+> Thanks.
+>
+> --
+> tejun
