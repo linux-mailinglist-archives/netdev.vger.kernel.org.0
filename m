@@ -2,90 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D61B52EC0A
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 14:25:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C8B552EC14
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 14:31:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348114AbiETMYz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 08:24:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37496 "EHLO
+        id S1349236AbiETMbS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 08:31:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344126AbiETMYx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 08:24:53 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E34BE62100
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 05:24:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=PVkmyJT3vYf7t94vlejM0rMSGP8EOH5hz1RRkDCoLmI=; b=j0g25qMXEbW6HcYCLF6gZPkNSR
-        oXr+jQ8aX+SucuHMLkLlDMgF4+GaCIqECGpKTvh41OQp9HE121r09jj2CWvKRDl2tzxrSQWGDphJQ
-        p00i+YlaptB94oxwLvLKm7YRna4gI19jbu7IBsqyC70egonzp5xY6RLWXeErrpSjZDPw=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ns1gV-003chV-W6; Fri, 20 May 2022 14:24:47 +0200
-Date:   Fri, 20 May 2022 14:24:47 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk, olteanv@gmail.com,
-        hkallweit1@gmail.com, f.fainelli@gmail.com, saeedm@nvidia.com,
-        michael.chan@broadcom.com
-Subject: Re: [RFC net-next] net: track locally triggered link loss
-Message-ID: <YoeIj2Ew5MPvPcvA@lunn.ch>
-References: <20220520004500.2250674-1-kuba@kernel.org>
+        with ESMTP id S241416AbiETMbR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 08:31:17 -0400
+Received: from mout.kundenserver.de (mout.kundenserver.de [212.227.17.13])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6146447568;
+        Fri, 20 May 2022 05:31:13 -0700 (PDT)
+Received: from mail-yb1-f172.google.com ([209.85.219.172]) by
+ mrelayeu.kundenserver.de (mreue107 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1N3KDM-1nidun1Y1a-010L21; Fri, 20 May 2022 14:31:11 +0200
+Received: by mail-yb1-f172.google.com with SMTP id r1so13919589ybo.7;
+        Fri, 20 May 2022 05:31:10 -0700 (PDT)
+X-Gm-Message-State: AOAM533XICYSchr83/2dnnvlXYJ4p8DurUidGgS1IQc22J1Xjhw4Rq8S
+        ggohQQS/MAC5kuY3vi/H1bpfmpgzzMs77SmJ3i4=
+X-Google-Smtp-Source: ABdhPJzM0/g+q1PRwguziGorhB8SDUsN9iEFZbR/3vnqE9X6zeZuqHYx8uEJ7JXjS9vB4zG423aFir2s+dxjeU1ONqo=
+X-Received: by 2002:a25:31c2:0:b0:641:660f:230f with SMTP id
+ x185-20020a2531c2000000b00641660f230fmr9208955ybx.472.1653049869839; Fri, 20
+ May 2022 05:31:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220520004500.2250674-1-kuba@kernel.org>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+References: <20220519031345.2134401-1-kuba@kernel.org>
+In-Reply-To: <20220519031345.2134401-1-kuba@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 20 May 2022 13:30:50 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3_4fNQV51V0-QUnuTr4dK0-S_ffeFzfA8vG1uGh8vyhg@mail.gmail.com>
+Message-ID: <CAK8P3a3_4fNQV51V0-QUnuTr4dK0-S_ffeFzfA8vG1uGh8vyhg@mail.gmail.com>
+Subject: Re: [PATCH net-next] eth: de4x5: remove support for Generic DECchip &
+ DIGITAL EtherWORKS PCI/EISA
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, corbet@lwn.net, tsbogend@alpha.franken.de,
+        mpe@ellerman.id.au, benh@kernel.crashing.org, paulus@samba.org,
+        sburla@marvell.com, vburru@marvell.com, aayarekar@marvell.com,
+        arnd@arndb.de, zhangyue1@kylinos.cn, linux-doc@vger.kernel.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-parisc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:RxidTNlQXTP5LyaUmtNAetv6uI1NVNaDYJwJVsMWQ7BOLaI5KHE
+ BtANPl6/Mpb7IMmupUSDX+IsM35n8hWFOMNOYw+0YgSgKQA2FDDwU3YK4lDZQcZZlJmaAvo
+ SZV9v5sCdIrOTEIPAKcGMViiGmdUCw1NuunYTM5JMQxgHn6zNKtV7QRkg8i+MLpW5EhFOmi
+ b6RNeMTv+G71tkjVyMk8A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:e/tDl3btj98=:gvOYMsp+h25Jgb6dzhVdva
+ 0DyHnXDqjhtjeu4Pk1OZ7FZJJ0bWPdC7LgJPFm2pUoYTY1F0VUqKRRLkBeGRiXqHGPanmkBd+
+ aBFbqZ1AH/5ZyPSmzjB4Hda9TFjuZ9/G4+47e4Ia4AYmjPQt1jzcvc4NmsqYvL6oCYvwdHnY6
+ kDxgSXfGtcSRfBhgFpnzK59seeAPmZZ21ChXfu7UN5MxNYv1Oabmsaxc9HbvSARXxsZEGkET4
+ JPlTMGSQfO8EQ7JwPs8E/EqpcxgY6LhsO5bQj7su6dveLB2o0P9NoEUxs+tSxloGZf0dBZm0V
+ w6zMWKM2cbpW4nMJvsFnCyYOUzDIQCHcnjiqmffej7ibOqrcOmphjBGin276Nqs3gIvv+b48r
+ 5wQwolelaftPAGlEgFefW4ygh72SVpzU8pllcGBxxUqgtJ0Wl/0VdpAnIIaH+bWzbLF/K6VGA
+ aO9SMtfT8BK4nploXjRUy2cAOYCVd/f8nfJRn2B3smFoS/5bxcR2dgS3nywOTAqVE8+FhoqvL
+ doSY0NqYBY+V6MYhXUNYUHOOw2FW1SQnTwGBRh9NP6L3nvkrq5FIMm3ZHFYJ0pSM/AZRzeI58
+ 9XpJMw4OKijWCak2SAMy8yI5K1eHIx3dOkt9fLY8w1ClnwAOsXDpujOVyX+MHeN62xpsgX/s8
+ WNtT3MNIhnjSQp1mwux3EHkbsArd/vYRfGujMyo48otmyeNLK7DdNRLAxWCwJ1U5ziJ+DQ1Tl
+ aRQKRUuEWzdY+gEyN2VlWys8iHRjxTpid1Joig==
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> +/**
-> + * netif_carrier_local_changes_start() - enter local link reconfiguration
-> + * @dev: network device
-> + *
-> + * Mark link as unstable due to local administrative actions. This will
-> + * cause netif_carrier_off() to behave like netif_carrier_admin_off() until
-> + * netif_carrier_local_changes_end() is called.
-> + */
-> +static inline void netif_carrier_local_changes_start(struct net_device *dev)
-> +{
-> +	set_bit(__LINK_STATE_NOCARRIER_LOCAL, &dev->state);
-> +}
-> +
-> +static inline void netif_carrier_local_changes_end(struct net_device *dev)
-> +{
-> +	clear_bit(__LINK_STATE_NOCARRIER_LOCAL, &dev->state);
-> +}
-> +
+On Thu, May 19, 2022 at 4:13 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> Looks like almost all changes to this driver had been tree-wide
+> refactoring since git era begun. There is one commit from Al
+> 15 years ago which could potentially be fixing a real bug.
+>
+> The driver is using virt_to_bus() and is a real magnet for pointless
+> cleanups. It seems unlikely to have real users. Let's try to shed
+> this maintenance burden.
+>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> ---
+> CC: corbet@lwn.net
+> CC: tsbogend@alpha.franken.de
+> CC: mpe@ellerman.id.au
+> CC: benh@kernel.crashing.org
+> CC: paulus@samba.org
+> CC: sburla@marvell.com
+> CC: vburru@marvell.com
+> CC: aayarekar@marvell.com
+> CC: arnd@arndb.de
 
-Since these don't perform reference counting, maybe a WARN_ON() if the
-bit is already set/not set.
+Acked-by: Arnd Bergmann <arnd@arndb.de>
 
->  void netif_carrier_on(struct net_device *dev);
->  void netif_carrier_off(struct net_device *dev);
-> +void netif_carrier_admin_off(struct net_device *dev);
->  void netif_carrier_event(struct net_device *dev);
+> ---
+>  .../device_drivers/ethernet/dec/de4x5.rst     |  189 -
+>  .../device_drivers/ethernet/index.rst         |    1 -
+>  arch/mips/configs/mtx1_defconfig              |    1 -
+>  arch/powerpc/configs/chrp32_defconfig         |    1 -
+>  arch/powerpc/configs/ppc6xx_defconfig         |    1 -
+>  drivers/net/ethernet/dec/tulip/Kconfig        |   15 -
+>  drivers/net/ethernet/dec/tulip/Makefile       |    1 -
+>  drivers/net/ethernet/dec/tulip/de4x5.c        | 5591 -----------------
+>  drivers/net/ethernet/dec/tulip/de4x5.h        | 1017 ---
 
-I need some examples of how you see this used. I can see two ways:
 
-At the start of a reconfigure, the driver calls
-netif_carrier_local_changes_start() and once it is all over and ready
-to do work again, it calls netif_carrier_local_changes_end().
+I checked the defconfig files to make sure we are not removing the
+last ethernet driver from
+one of them. mtx1 has built-in networking and no PCI slot, so this is
+definitely fine.
+the ppc32 configs are for machines with PCI slots and also enable
+multiple drivers but I saw
+nothing specifically needing this card.
 
-The driver has a few netif_carrier_off() calls changed to
-netif_carrier_admin_off(). It is then unclear looking at the code
-which of the calls to netif_carrier_on() match the off.
-
-Please could you pick a few drivers, and convert them? Maybe include a
-driver which makes use of phylib, which should be doing control of the
-carrier based on the actual link status.
-
-	Andrew
+       Arnd
