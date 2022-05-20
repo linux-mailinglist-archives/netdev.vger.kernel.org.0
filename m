@@ -2,116 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8552A52F19E
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:26:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B3FD52F1A8
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:31:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352205AbiETRYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 13:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34540 "EHLO
+        id S1352149AbiETRat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 13:30:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352226AbiETRY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:24:29 -0400
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA6F3187DB4
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:24:27 -0700 (PDT)
-Received: by mail-pl1-x633.google.com with SMTP id q4so7888909plr.11
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:24:27 -0700 (PDT)
+        with ESMTP id S244696AbiETRar (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:30:47 -0400
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73BFA17D383
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:30:43 -0700 (PDT)
+Received: by mail-qk1-x72a.google.com with SMTP id t2so3178003qkb.12
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:30:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=j9OnJD8AgznJr7ZxIelXFq08wCQe8qejX8gaUgGwwlg=;
-        b=LiPd39P/GVTopnDDCisgTCTDoPB0ZdttUAUMYjx+qMQAzR9rbNoAGNEcaTzW1w6UN0
-         /sHn3noK3alOxmSrx2ne5ovfvUYrn7BbGo359XH04Bc9duhucU+7U9wRghX3x7eCHf8j
-         y8lFmvRiPvsTn79WeFbPUiIEEA8n2uFujbKgl+y1TjGPXW9ZPwwbCdUuaZvdqFrUeeHC
-         mBtGp4naZtHAAAzIzUXz8FjFaYG0USol5PY27Mn9CIn2dFVyzRHa6yGeCcD9hiuJR24d
-         +0buOyBxQHWYZwMOdkH04y/3za/a36aDFczcxPM4cg0hSz3xDXJPTrx6EssjgFrSL0fz
-         eBdg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CPavKVkR8bELd7v5gex0nX0RA6A8QGn+WltRM5Og+4g=;
+        b=MSLFYCHCp/SZxn9cm5CoWu+3FpwqYMeTrBILRT4T9npnAg/BaxF/9YpOt/8BpfCeIi
+         QNFKHiQ8wH5t6TjjD362O2oxnfrihMLlQiPFrrUH+NDukCfPWUuGOvL3+zuu3fi7AGdj
+         qgdT4/2uMNS7DYiZi6YKk9IXmhduvHlRP/0woJyAJMNWtD0YS0jrjWL0wPpxdQM3uspA
+         vJgbRI25KoLUFPhjSaZoBEnuSQDq+i0ze73pH1kri1TDLTflSDd6UyZwXBxmu5eVfBh6
+         UxiMZ9l7YRjsNMFPzIyBLQzKMTq6kkJMswyxyU98m9mX63TaYJcYhQG5GnSYZ1S/bTgH
+         STSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=j9OnJD8AgznJr7ZxIelXFq08wCQe8qejX8gaUgGwwlg=;
-        b=AfKH4X1NypEmexZwTwk0o5/aRViVQ/vtU8dWj7aYagzuuEtxv5jDDx7hrGIz9hrc97
-         j+KRlQZL16Q69kFAIWjsO4BG7BTZdxvaSfNYQNrhf9IFHbyYxGGZ0CaFPKiCJy8f3bpI
-         WbgKZ52QM0H6S2PAI0cASb2aPhZvZr1OW3lEDakp0t1AnDpNayDEIN/V6JU0Fnd/8Syd
-         XsllEngDVEL6uTy+I6znhFCkfqcsgbs8n5KgV3Q0zWlEwIvOavaShFg6dLktygHbDSpS
-         /wgJVri6ZSAa9oJiiP+iarkuUKRf4KEx0YgUbKZeBfX1k92x1QuEDO/NBAQuC3SY4goG
-         9LCQ==
-X-Gm-Message-State: AOAM533/ULddzcO0fbg8fLHvkOrmtCECfHysa9ZXUwTGEiVWur1ygP2T
-        hLZpqsEddlECwLSn1FATz5k=
-X-Google-Smtp-Source: ABdhPJyQIZA6RsoJyiLpc7L5p3ECy9f9TGXP1hW59A7kFhd4kumsuTK1bk3aFIWKq9ULYHh2qQ94JQ==
-X-Received: by 2002:a17:902:e5c2:b0:161:fb68:cd28 with SMTP id u2-20020a170902e5c200b00161fb68cd28mr1924186plf.133.1653067467026;
-        Fri, 20 May 2022 10:24:27 -0700 (PDT)
-Received: from [192.168.1.3] (ip72-194-116-95.oc.oc.cox.net. [72.194.116.95])
-        by smtp.gmail.com with ESMTPSA id s1-20020a170902ea0100b0015e8d4eb1c1sm29874plg.11.2022.05.20.10.24.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 10:24:26 -0700 (PDT)
-Message-ID: <f5963ddb-01bb-6935-ecdd-0f9e7c0afda0@gmail.com>
-Date:   Fri, 20 May 2022 10:24:25 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CPavKVkR8bELd7v5gex0nX0RA6A8QGn+WltRM5Og+4g=;
+        b=Y9/ePyDFiE4/8wGpr3zPi6e/R3vizDHLTeN+kdKQjTHwCOn8COr/xbONfogsx5nG2X
+         odaadl84fVMMAHPQr5K3isnGGIb/6t9Uxmyio6PncrsnwsgadBGGA+VKVEtLE7mgZSH5
+         PMOz5UmmgVjWo4X2PPgYMAD07GZRWtFsF0NMI4Fd60J2ufUQjN5BQIOk6V/CKq6VPQEc
+         ELd5QceZMtvBJHR8pt4B8+Fat1tZmbih1Yx5LdtjgR5V84QvBrDbXNJ/UU9e80mOsALV
+         MnjxstrJXIpwkiVrzMtvSN5H9pSTq5XZ3+QN6tCseROIv8C8gZhWduJZsgdwbKfCmxEN
+         lg4Q==
+X-Gm-Message-State: AOAM533tiMFdOUWSlv236uB87ZGFClVYja0fsuIo6PNU0QiIgjWU5Lr6
+        P5/K7+rR4OG1ABqad3FWhlhSqajkwGjBMWAI7Spq0w==
+X-Google-Smtp-Source: ABdhPJz5Mikyb2ZCSmg67TYUBBxgrBCM373X9eLBJ7/2D7arGeeYjmMXzqAYDcgIFIxH6qSqWi8VtqwbhGeWuNrgTig=
+X-Received: by 2002:a05:620a:2849:b0:687:651:54ee with SMTP id
+ h9-20020a05620a284900b00687065154eemr7084966qkp.446.1653067842202; Fri, 20
+ May 2022 10:30:42 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH net-next v5 2/2] net: phy: broadcom: Add PTP support for
- some Broadcom PHYs.
-Content-Language: en-US
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>, netdev@vger.kernel.org
-Cc:     f.fainelli@gmail.com, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, bcm-kernel-feedback-list@broadcom.com,
-        kernel-team@fb.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-References: <20220518223935.2312426-1-jonathan.lemon@gmail.com>
- <20220518223935.2312426-3-jonathan.lemon@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220518223935.2312426-3-jonathan.lemon@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+References: <20220520012133.1217211-1-yosryahmed@google.com>
+ <20220520012133.1217211-4-yosryahmed@google.com> <YodGI73xq8aIBrNM@slm.duckdns.org>
+ <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com> <YodNLpxut+Zddnre@slm.duckdns.org>
+In-Reply-To: <YodNLpxut+Zddnre@slm.duckdns.org>
+From:   Hao Luo <haoluo@google.com>
+Date:   Fri, 20 May 2022 10:30:30 -0700
+Message-ID: <CA+khW7iN_=9yg6r9wSX5T3biWgUyAZ6quUUjsVp=hXBY9meJ9Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Yosry Ahmed <yosryahmed@google.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Tejun,
 
+On Fri, May 20, 2022 at 1:11 AM Tejun Heo <tj@kernel.org> wrote:
+>
+> Hello,
+>
+> On Fri, May 20, 2022 at 12:58:52AM -0700, Yosry Ahmed wrote:
+> > On Fri, May 20, 2022 at 12:41 AM Tejun Heo <tj@kernel.org> wrote:
+> > >
+> > > On Fri, May 20, 2022 at 01:21:31AM +0000, Yosry Ahmed wrote:
+> > > > From: Hao Luo <haoluo@google.com>
+> > > >
+> > > > Introduce a new type of iter prog: cgroup. Unlike other bpf_iter, this
+> > > > iter doesn't iterate a set of kernel objects. Instead, it is supposed to
+> > > > be parameterized by a cgroup id and prints only that cgroup. So one
+> > > > needs to specify a target cgroup id when attaching this iter. The target
+> > > > cgroup's state can be read out via a link of this iter.
+> > > >
+> > > > Signed-off-by: Hao Luo <haoluo@google.com>
+> > > > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> > >
+> > > This could be me not understanding why it's structured this way but it keeps
+> > > bothering me that this is adding a cgroup iterator which doesn't iterate
+> > > cgroups. If all that's needed is extracting information from a specific
+> > > cgroup, why does this need to be an iterator? e.g. why can't I use
+> > > BPF_PROG_TEST_RUN which looks up the cgroup with the provided ID, flushes
+> > > rstat, retrieves whatever information necessary and returns that as the
+> > > result?
+> >
+> > I will let Hao and Yonghong reply here as they have a lot more
+> > context, and they had previous discussions about cgroup_iter. I just
+> > want to say that exposing the stats in a file is extremely convenient
+> > for userspace apps. It becomes very similar to reading stats from
+> > cgroupfs. It also makes migrating cgroup stats that we have
+> > implemented in the kernel to BPF a lot easier.
+>
+> So, if it were upto me, I'd rather direct energy towards making retrieving
+> information through TEST_RUN_PROG easier rather than clinging to making
+> kernel output text. I get that text interface is familiar but it kinda
+> sucks in many ways.
+>
 
-On 5/18/2022 3:39 PM, Jonathan Lemon wrote:
-> This adds PTP support for BCM54210E Broadcom PHYs, in particular,
-> the BCM54213PE, as used in the Rasperry PI CM4.  It has only been
-> tested on that hardware.
-> 
-> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-> ---
-[snip]
+Tejun, could you explain more about the downside of text interfaces
+and why TEST_RUN_PROG would address the problems in text output? From
+the discussion we had last time, I understand that your concern was
+the unstable interface if we introduce bpf files in cgroupfs, so we
+are moving toward replicating the directory structure in bpffs. But I
+am not sure about the issue of text format output
 
-Looks good to me, just one question below:
+> > AFAIK there are also discussions about using overlayfs to have links
+> > to the bpffs files in cgroupfs, which makes it even better. So I would
+> > really prefer keeping the approach we have here of reading stats
+> > through a file from userspace. As for how we go about this (and why a
+> > cgroup iterator doesn't iterate cgroups) I will leave this for Hao and
+> > Yonghong to explain the rationale behind it. Ideally we can keep the
+> > same functionality under a more descriptive name/type.
+>
+> My answer would be the same here. You guys seem dead set on making the
+> kernel emulate cgroup1. I'm not gonna explicitly block that but would
+> strongly suggest having a longer term view.
+>
 
-> +static void bcm_ptp_init(struct bcm_ptp_private *priv)
-> +{
-> +	priv->nse_ctrl = NSE_GMODE_EN;
-> +
-> +	mutex_init(&priv->mutex);
-> +	skb_queue_head_init(&priv->tx_queue);
-> +
-> +	priv->mii_ts.rxtstamp = bcm_ptp_rxtstamp;
-> +	priv->mii_ts.txtstamp = bcm_ptp_txtstamp;
-> +	priv->mii_ts.hwtstamp = bcm_ptp_hwtstamp;
-> +	priv->mii_ts.ts_info = bcm_ptp_ts_info;
-> +
-> +	priv->phydev->mii_ts = &priv->mii_ts;
-> +
-> +	INIT_DELAYED_WORK(&priv->out_work, bcm_ptp_fsync_work);
+The reason why Yosry and I are still pushing toward this direction is
+that our user space applications rely heavily on extracting
+information from text output for cgroups. Please understand that
+migrating them from the traditional model to a new model is a bigger
+pain. But I agree that if we have a better, concrete solution (for
+example, maybe TEST_RUN_PROG) to convince them and help them migrate,
+I really would love to contribute and work on it.
 
-Do we need to make sure that we cancel the workqueue in an 
-bcm_ptp_exit() function?
+> If you *must* do the iterator, can you at least make it a proper iterator
+> which supports seeking? AFAICS there's nothing fundamentally preventing bpf
+> iterators from supporting seeking. Or is it that you need something which is
+> pinned to a cgroup so that you can emulate the directory structure?
+>
 
-I would imagine that the Ethernet MAC attached to that PHY device having 
-stopped its receiver and transmitter should ensure no more packets 
-coming in or out, however since this is a delayed/asynchronous work, do 
-not we need to protect against use after free?
--- 
-Florian
+Yonghong may comment on adding seek for bpf_iter. I would love to
+contribute if we are in need of that. Right now, we don't have a use
+case that needs seek for bpf_iter, I think. My thought: for cgroups,
+we can seek using cgroup id. Maybe, not all kernel objects are
+indexable, so seeking doesn't apply there?
+
+Hao
