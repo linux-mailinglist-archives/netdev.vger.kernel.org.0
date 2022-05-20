@@ -2,122 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ADB352F5E7
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0C8F52F5EC
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:58:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353979AbiETW5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 18:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44978 "EHLO
+        id S1349547AbiETW6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 18:58:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230504AbiETW5Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:57:24 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC6417B866;
-        Fri, 20 May 2022 15:57:23 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id ev18so9201696pjb.4;
-        Fri, 20 May 2022 15:57:23 -0700 (PDT)
+        with ESMTP id S230504AbiETW6n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:58:43 -0400
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5043F17B866;
+        Fri, 20 May 2022 15:58:42 -0700 (PDT)
+Received: by mail-il1-x134.google.com with SMTP id s6so6415280ilp.9;
+        Fri, 20 May 2022 15:58:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=r7Opvf9nRKqDGanqTkuAv5bdGKe48qHrMle6WOzLLy4=;
-        b=iXgcDMaOaeCEyfvPGiDLf+JCC1kzNqqtGmkx+d+d6UQJ076JtKpP6CF7i2x5rzP5Aw
-         UIPYy2I3NpQN5LvyUZB7XvDI65W0Fu29aXupm9j0Zk1h2ZjmGr6WCXjlfh9PTPNzzalM
-         gOt+D5nzzQci6Xgm5jUaL0idRC96bgpY9f4aO4wWr4MHP9eX6ozcVTwTQDkSMhTHcFfE
-         I6Bfxg6//tmrDvAGeYgnbQtmjvdGldw9LgjSE1kuwJOwm5KQN2YaH7qKNueHRPBUGHz4
-         ZE1otEiFCGKKdXivVJI0fWpjry+B1CzGY3DLdHD5+YWNf1DE+Z3JCtVunAuebaZGUfvF
-         smHQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=N9x2LwBX85E2Mjpj18Dh8hf8npwVGxRZAuphkaR2cSE=;
+        b=U47NEPX2VLDvmpZAMOpXpJr0p/5f/Bi/DtVRnvnfglz7Mh58/MckX2fEoYWw8h1w6z
+         7pYYIWs9XeRxvONk32x7nAjR5YRIZWK7qWlUYRCfepSxkh5K2d2OrWoXYmSkuPzq9P1x
+         lKbC0YFuJ7zTzUotxzAHVaNpuV6/SmZVDg1bTU/N8BGGXTfj8jt4cdMO+u2pMAdhPBBH
+         7fColvu4JMSFldqU05glIvfJnRdEOizSCu/9nQV8zuY+hN6mO8KQZxVRYnZVgq0CzrKJ
+         zRNeZntDKVA2EK6PEZ1eaanpmkE8E/OXIwQxY7nvxByIMQEuZh+OkNDUeOOWbvWqK0gd
+         /5Ng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=r7Opvf9nRKqDGanqTkuAv5bdGKe48qHrMle6WOzLLy4=;
-        b=cqyEcO9l//WULdNsE9Ue835i30DnWoS2jHAJ3crPs2mPKA/U9htvh1rXiqoP/W8M0X
-         w0xq/KsAzxNVBp0+O0lPfr5iARxl+ZJGmKN5b+6n6z6whliQrvRbCkelnXaSEliMKgQc
-         o4kVj96dQeUxIsl7Pas31MDICRmIxCOWTKHyg/Ma9AazhzZowsbbsRpGL/Ru8QxhtFy2
-         RjZNfLrHraQCQNciBsQDwwmuCVZ2dqYoN+fks4rUKJuNZfRVMGG6nozzOrQ9pK2mv0pT
-         V2w03pGt8nvtJJyAE8MPFBKmxhRekf9Xqq8y8s9x+4mCl5bl8wk4cZDNZLsoPZlHaZ4E
-         zDiA==
-X-Gm-Message-State: AOAM530nS37JSXhSnqEhqvJnlsco4IbEudGET4CDTeGYSvGj7JNiIOY4
-        bCenPQO+Rfue1FCfBrAcPe8=
-X-Google-Smtp-Source: ABdhPJyxyz9DwdYuaHUdtJYa+cVoL1WkA8BxzWBc2azrmHsKkdlng+6yVdYqfaZOig0tzug0Q6+YYA==
-X-Received: by 2002:a17:90b:1808:b0:1dc:8904:76a1 with SMTP id lw8-20020a17090b180800b001dc890476a1mr13466621pjb.202.1653087442583;
-        Fri, 20 May 2022 15:57:22 -0700 (PDT)
-Received: from localhost ([2620:10d:c090:400::4:1761])
-        by smtp.gmail.com with ESMTPSA id h11-20020a170902f2cb00b0015f33717794sm264975plc.42.2022.05.20.15.57.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 15:57:21 -0700 (PDT)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Fri, 20 May 2022 12:57:20 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Yosry Ahmed <yosryahmed@google.com>, Hao Luo <haoluo@google.com>,
-        Yonghong Song <yhs@fb.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=N9x2LwBX85E2Mjpj18Dh8hf8npwVGxRZAuphkaR2cSE=;
+        b=viamoROg3+55hFY+JGkBHnv1xbJlSKE0s9jZON/tH6oc2MRnc9c/JPd8pYJBUXZBVn
+         SlzE3Tg311Q1Leg23BdnhpdG/MMMS8WLbsDHYTkhjQduwHL8r60TcRgQAKtdgSg/vLo0
+         UZD33DSk2PwCkkH5/m4vSwlcIPOb1QHPuesGdGabSMqo3I2+GmTJGX6m8pFmrrIXgVHw
+         XKaYLM+rBgXVKr16wGvDNBXP4WQJrfl8Zn46ZaQI2zljrKgQ2lYc0IVcVxjwqz8Hp7sN
+         ElNW8/QaiDCKJk2hbtKoc0XcrU8sqveWL/CqSl6VJl/kMFTbd2ETWmVZruJZDS7rl1ue
+         oRzg==
+X-Gm-Message-State: AOAM532NM2p4+NTmJZSlX52S3SPnJKWFuWSAX6EVC4w3G01Q8AOSQsUu
+        P6Tx5R6Hce63o6t3/WD5ABatFgmC9W94cyFObvs=
+X-Google-Smtp-Source: ABdhPJxIZChVpxkuARh4JKec0MCR962E5mu51190buASmq4sF8bLN+etBh+INT3oHCQ3PGcUdFr8nwConqeXD4UrRdY=
+X-Received: by 2002:a05:6e02:1c01:b0:2d1:262e:8d5f with SMTP id
+ l1-20020a056e021c0100b002d1262e8d5fmr6347615ilh.98.1653087521686; Fri, 20 May
+ 2022 15:58:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220512071819.199873-1-liuhangbin@gmail.com> <20220512071819.199873-2-liuhangbin@gmail.com>
+ <CAEf4BzZuj90MFaXci3av2BF+=m-P26Y3Zer8TogBiZ8fYsYP=g@mail.gmail.com>
+ <YoHKw/at89Wp19F/@Laptop-X1> <CAEf4BzZhKpikBQFCEyRMmUHdTEt6xi+0ntfPswHA5WWK39cFjQ@mail.gmail.com>
+ <YoWvFz16SsSG7bH9@Laptop-X1>
+In-Reply-To: <YoWvFz16SsSG7bH9@Laptop-X1>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 20 May 2022 15:58:30 -0700
+Message-ID: <CAEf4BzZd_BwPr3UYrF_sXT28oKHfKP-=Ws2KSHDKtSc2AK9dNw@mail.gmail.com>
+Subject: Re: [PATCH net 1/2] selftests/bpf: Fix build error with ima_setup.sh
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
-Message-ID: <Yogc0Kb5ZVDaQ0oU@slm.duckdns.org>
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220520012133.1217211-4-yosryahmed@google.com>
- <YodGI73xq8aIBrNM@slm.duckdns.org>
- <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
- <YodNLpxut+Zddnre@slm.duckdns.org>
- <73fd9853-5dab-8b59-24a0-74c0a6cae88e@fb.com>
- <YofFli6UCX4J5YnU@slm.duckdns.org>
- <CA+khW7gjWVKrwCgDD-4ZdCf5CMcA4-YL0bLm6aWM74+qNQ4c0A@mail.gmail.com>
- <CAJD7tkaJQjfSy+YARFRkqQ8m7OGJHO9v91mSk-cFeo9Z5UVJKg@mail.gmail.com>
- <20220520221919.jnqgv52k4ajlgzcl@MBP-98dd607d3435.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220520221919.jnqgv52k4ajlgzcl@MBP-98dd607d3435.dhcp.thefacebook.com>
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Wed, May 18, 2022 at 7:44 PM Hangbin Liu <liuhangbin@gmail.com> wrote:
+>
+> On Wed, May 18, 2022 at 03:36:53PM -0700, Andrii Nakryiko wrote:
+> > > On Fri, May 13, 2022 at 02:58:05PM -0700, Andrii Nakryiko wrote:
+> > > > > -TRUNNER_EXTRA_FILES :=3D $(OUTPUT)/urandom_read $(OUTPUT)/bpf_te=
+stmod.ko \
+> > > > > -                      ima_setup.sh                              =
+       \
+> > > > > +TRUNNER_EXTRA_BUILD :=3D $(OUTPUT)/urandom_read $(OUTPUT)/bpf_te=
+stmod.ko \
+> > > > >                        $(wildcard progs/btf_dump_test_case_*.c)
+> > > >
+> > > >
+> > > > note that progs/btf_dump_test_case_*.c are not built, they are just
+> > > > copied over (C source files), so I don't think this fix is necessar=
+y.
+> > > >
+> > > > btw, I tried running `OUTPUT=3D"/tmp/bpf" make test_progs` and it d=
+idn't
+> > > > error out. But tbh, I'd recommend building everything instead of
+> > > > building individual targets.
+> > >
+> > > After update the code to latest bpf-next. It works this time, the ima=
+_setup.sh
+> > > was copied to target folder correctly.
+> > >
+> > >   EXT-COPY [test_progs] urandom_read bpf_testmod.ko liburandom_read.s=
+o ima_setup.sh btf_dump_test_case_bitfields.c btf_dump_test_case_multidim.c=
+ btf_dump_test_case_namespacing.c btf_dump_test_case_ordering.c btf_dump_te=
+st_case_packing.c btf_dump_test_case_padding.c btf_dump_test_case_syntax.c
+> > >   BINARY   test_progs
+> > >
+> > > Not sure why the previous kernel doesn't work. But anyway I will drop=
+ this patch.
+> > >
+> > > On the other hand, when I build with latest bpf-next. I got error lik=
+e:
+> > >
+> > > """
+> > > # OUTPUT=3D"/tmp/bpf" make test_progs
+> > >   BINARY   urandom_read                                              =
+                                                                           =
+                              gcc -g -O0 -rdynamic -Wall -Werror -DHAVE_GEN=
+HDR  -I/home/net/tools/testing/selftests/bpf -I/tmp/bpf/tools/include -I/ho=
+me/net/include/generated -I/home/net/tools/lib -I/home/net/tools/include -I=
+/home/net/tools/include/uapi -I/tmp/bpf  urandom_read.c urandom_read_aux.c =
+ \
+> > >           liburandom_read.so -lelf -lz -lrt -lpthread   \
+> > >           -Wl,-rpath=3D. -Wl,--build-id=3Dsha1 -o /tmp/bpf/urandom_re=
+ad
+> >
+> > we assume liburandom_read.so is going to be under selftests/bpf here,
+> > but it's actually under $(OUTPUT)/
+> >
+> > Can you try $(OUTPUT)/liburandom_read.so? I suspect this might break
+> > -rpath=3D., though, but let's try this first?
+>
+> Sigh.. After rebase to latest bpf-next, to make clean and re-do
+> `OUTPUT=3D"/tmp/bpf" make test_progs`, There is no liburandom_read.so bui=
+ld
+> issue but the ima_setup.sh error come up again...
+>
+>   LINK     resolve_btfids
+>   LIB      liburandom_read.so
+>   BINARY   urandom_read
+>   MOD      bpf_testmod.ko
+>   CC [M]  /home/net/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.o
+>   MODPOST /home/net/tools/testing/selftests/bpf/bpf_testmod/Module.symver=
+s
+>   CC [M]  /home/net/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.m=
+od.o
+>   LD [M]  /home/net/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.k=
+o
+>   BTF [M] /home/net/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.k=
+o
+> make: *** No rule to make target '/tmp/bpf/ima_setup.sh', needed by 'ima_=
+setup.sh'.  Stop.
+>
+> Not sure if it's a build environment setup issue or others.
 
-On Fri, May 20, 2022 at 03:19:19PM -0700, Alexei Starovoitov wrote:
-> We have bpf_map iterator that walks all bpf maps.
-> When map iterator is parametrized with map_fd the iterator walks
-> all elements of that map.
-> cgroup iterator should have similar semantics.
-> When non-parameterized it will walk all cgroups and their descendent
-> depth first way. I believe that's what Yonghong is proposing.
-> When parametrized it will start from that particular cgroup and
-> walk all descendant of that cgroup only.
-> The bpf prog can stop the iteration right away with ret 1.
-> Maybe we can add two parameters. One -> cgroup_fd to use and another ->
-> the order of iteration css_for_each_descendant_pre vs _post.
-> wdyt?
+I don't use OUTPUT when building selftests and see no issues, so this
+must be related. If you care about OUTPUT working please try to debug
+and figure this out.
 
-Sounds perfectly reasonable to me.
-
-Thanks.
-
--- 
-tejun
+>
+> Hangbin
