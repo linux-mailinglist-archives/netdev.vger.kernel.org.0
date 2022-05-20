@@ -2,320 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D52B52F015
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:08:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 606D752F01A
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:09:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351365AbiETQIW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 12:08:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59300 "EHLO
+        id S1351393AbiETQJR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 12:09:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351379AbiETQIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:08:20 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 32DFE17D387
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:08:13 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-123-8F5iDCLUPumFGZwuN9IUJw-1; Fri, 20 May 2022 17:08:11 +0100
-X-MC-Unique: 8F5iDCLUPumFGZwuN9IUJw-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Fri, 20 May 2022 17:08:10 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Fri, 20 May 2022 17:08:10 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     David Laight <David.Laight@ACULAB.COM>,
-        'Pavan Chebbi' <pavan.chebbi@broadcom.com>
-CC:     Paolo Abeni <pabeni@redhat.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mchan@broadcom.com" <mchan@broadcom.com>,
-        David Miller <davem@davemloft.net>
-Subject: RE: tg3 dropping packets at high packet rates
-Thread-Topic: tg3 dropping packets at high packet rates
-Thread-Index: AdhqyKyabzDEQq15SKKGm31SHwTbKwAC24IAAAoYsMAABXOQgAASBiKAAAHW4wAABHST0AACH9sAAAKZZrD///3FgP//7fNg//44TdA=
-Date:   Fri, 20 May 2022 16:08:10 +0000
-Message-ID: <ae631eefb45947ac84cfe0468d0b7508@AcuMS.aculab.com>
-References: <70a20d8f91664412ae91e401391e17cb@AcuMS.aculab.com>
- <6576c307ed554adb443e62a60f099266c95b55a7.camel@redhat.com>
- <153739175cf241a5895e6a5685a89598@AcuMS.aculab.com>
- <CACKFLinwh=YgPGPZ0M0dTJK1ar+SoPUZtYb5nBmLj6CNPdCQ2g@mail.gmail.com>
- <13d6579e9bc44dc2bfb73de8d9715b10@AcuMS.aculab.com>
- <CALs4sv1RxAbVid2f8EQF_kQkk48fd=8kcz2WbkTXRkwLbPLgwA@mail.gmail.com>
- <f3d1d5bf11144b31b1b3959e95b04490@AcuMS.aculab.com>
- <5cc5353c518e27de69fc0d832294634c83f431e5.camel@redhat.com>
- <f8ff0598961146f28e2d186882928390@AcuMS.aculab.com>
- <CALs4sv2M+9N1joECMQrOGKHQ_YjMqzeF1gPD_OBQ2_r+SJwOwQ@mail.gmail.com>
- <1bc5053ef6f349989b42117eda7d2515@AcuMS.aculab.com>
-In-Reply-To: <1bc5053ef6f349989b42117eda7d2515@AcuMS.aculab.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        with ESMTP id S1351383AbiETQJQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:09:16 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1DD217CE63
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:09:13 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id r23so12145009wrr.2
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:09:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=owOEosLojpO/D+MbDs1w2txq2unXf52lgcJaM7HE4DE=;
+        b=EEFIHz2FlFU7lsrFCGyJKhaA0AOmpAqaUvkwEHbAEnLn+Cg5XlnfcmlggdBI6HsVAO
+         R5wEj0YC1TWTFA8JNycuLVEidFMsd3Rv1EUZ9/cex33OgIElag3c6E2sBEbV2RfitEvB
+         4fqxupSr2ksoCRo9uddCBs3yOvnd2ZDGkVLlPg5EcpaXuJRU44jmPNOYiBFc+ymg74DA
+         Rq2cmeM/6sv6CbEL8alyEPmUQXstYr7dbmiAgKGI7jRAh0+VQSmuz9a07gD6tRyf1jj8
+         O9nCkVUQbWQBwGNIBr12qoJhaeC847QWhVn2ebeDfdQBP69aM6lCWdr5bbYF0tGIKNG4
+         dCzQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=owOEosLojpO/D+MbDs1w2txq2unXf52lgcJaM7HE4DE=;
+        b=jhL6gjt0N3MRXXAJ76wsGtt4QssY/0hR08Nef+96A1wv6mIBNdRAcaFZNYoMHaoO2r
+         4tvl9UsMM/QgmvhmV/u6cjlf3TbR/RaG37NU1RcvroqMIafD7BMvToy1zMS/lFwRUwUB
+         DL1NIqaJ9THQA50Tt/SAJ1q5ZGn0EeGAzCUJR9dkpzto6ggXQsMdaNiCHgJqtkSTJdNK
+         ogGn4fJ5VDdD/yxfJT2zVY8HFvHZE4GhAb1C05WtlThrMg+1Uilb0Aq9Hf+h4TsfcmCP
+         0fPYLzaKfKpjV2yCbCG/TH8SzSXvtgKdiyK/AEK5CdJiojvyVD4EtHrQWQnWQlPQ+NJl
+         d/zg==
+X-Gm-Message-State: AOAM533odZKnjVNm9LVn1//JSrhFrs2TwrmKe8QR1Nc0vPfYcc1EuLWL
+        3s6ol1bFN/Ytxona2U76Z3AU6iiYsdbgLX85DwrEKw==
+X-Google-Smtp-Source: ABdhPJxCtgPEK8T/hQFW9cJtb5+O8tj3iA+V7lZSLIg2RxmXtW8ox8iXYyffpJ5sIxZyMYIoqjmzx1MucheHoM2Sg0w=
+X-Received: by 2002:a05:6000:1548:b0:20f:c4bb:defd with SMTP id
+ 8-20020a056000154800b0020fc4bbdefdmr149496wry.210.1653062951812; Fri, 20 May
+ 2022 09:09:11 -0700 (PDT)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220520012133.1217211-1-yosryahmed@google.com>
+ <20220520012133.1217211-3-yosryahmed@google.com> <fa3b35a6-5c3c-42a1-23f0-a8143b4eaa57@fb.com>
+In-Reply-To: <fa3b35a6-5c3c-42a1-23f0-a8143b4eaa57@fb.com>
+From:   Yosry Ahmed <yosryahmed@google.com>
+Date:   Fri, 20 May 2022 09:08:35 -0700
+Message-ID: <CAJD7tkanipJ7-9H_L6KMUjpD2qS29-YCrnMXw+8BAKfbOk5P9Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v1 2/5] cgroup: bpf: add cgroup_rstat_updated()
+ and cgroup_rstat_flush() kfuncs
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
+        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Roman Gushchin <roman.gushchin@linux.dev>,
+        Michal Hocko <mhocko@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Shakeel Butt <shakeelb@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Cgroups <cgroups@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SSd2ZSBoaWphY2tlZCAnZXRodG9vbCAtZCcgdG8gb3V0cHV0IHNvbWUgaW5zdHJ1bWVudGF0aW9u
-Lg0KDQpCYXNpY2FsbHkgZG9pbmc6DQogICAgICAgIHRwLT5yeF9hdmFpbFsoaHdfaWR4IC0gc3df
-aWR4KSAmIHRwLT5yeF9yZXRfcmluZ19tYXNrXSsrOw0KaW4gYm90aCB0aGUgaGFyZHdhcmUgaW50
-ZXJydXB0IGFuZCBuYXBpIGNhbGxiYWNrLg0KKFRvIGRpZmZlcmVudCBhcnJheXMuKQ0KDQpUaGVz
-ZSB0ZXN0cyB3ZXJlIGRvbmUgYWZ0ZXIgc2V0dGluZzoNCmV0aHRvb2wgLUcgZW0yIHJ4IDIwNDcN
-CmV0aHRvb2wgLUMgZW0yIHJ4LXVzZWNzIDENCmV0aHRvb2wgLUMgZW0yIHJ4LWZyYW1lcyAxDQpl
-dGh0b29sIC1DIGVtMiByeC1mcmFtZXMtaXJxIDENCndoaWxlIHRoZSBzeXN0ZW0gd2FzIGlkbGUu
-DQoNCkFmdGVyIHJ1bm5pbmcgb3IgYSBmZXcgc2Vjb25kcyB0aGUgbnVtYmVyIG9mIHBlbmRpbmcg
-cGFja2V0cw0KaW4gdGhlIGhhcmR3YXJlIGludGVycnVwdCBpc24ndCB0b28gYmFkOg0KIyBldGh0
-b29sIC1kIGVtMnxncmVwICdeMC5bNC03XSd8eGFyZ3MgLW44DQoweDQwMDAgMHgwMDBlNjAwNCAw
-eDQwMDQgMHgwMDljNzk0ZiAweDQwMDggMHgwMDI0Y2NmMCAweDQwMGMgMHgwMDAzN2ZiMQ0KMHg0
-MDEwIDB4MDAwMDRkZGQgMHg0MDE0IDB4MDAwMDFhMDUgMHg0MDE4IDB4MDAwMDBkOTIgMHg0MDFj
-IDB4MDAwMDA2MDMNCjB4NDAyMCAweDAwMDAwMmE0IDB4NDAyNCAweDAwMDAwMGYwIDB4NDAyOCAw
-eDAwMDAwMDYxIDB4NDAyYyAweDAwMDAwMDQ0DQoweDQwMzAgMHgwMDAwMDAxYyAweDQwMzQgMHgw
-MDAwMDAxNCAweDQwMzggMHgwMDAwMDAwYyAweDQwM2MgMHgwMDAwMDAwYg0KMHg0MDQwIDB4MDAw
-MDAwMDUgMHg0MDQ0IDB4MDAwMDAwMDEgMHg0MDQ4IDB4MDAwMDAwMDEgMHg0MDRjIDB4MDAwMDAw
-MDQNCjB4NDA1NCAweDAwMDAwMDAxIDB4NDA5MCAweDAwMDAwMDAxIDB4NDA5NCAweDAwMDAwMDAx
-IDB4NDBhOCAweDAwMDAwMDAxDQoweDQwYzQgMHgwMDAwMDAwMSAweDQxMzggMHgwMDAwMDAwMSAw
-eDQxNDggMHgwMDAwMDAwMSAweDQxNTQgMHgwMDAwMDAwMQ0KMHg0MTYwIDB4MDAwMDAwMDIgMHg0
-MTc4IDB4MDAwMDAwMDEgMHg0MTk4IDB4MDAwMDAwMDEgMHg0MWE0IDB4MDAwMDAwMDENCjB4NDFj
-OCAweDAwMDAwMDAxIDB4NDFjYyAweDAwMDAwMDAxIDB4NDFkMCAweDAwMDAwMDAxIDB4NDFkOCAw
-eDAwMDAwMDAxDQoweDQxZTggMHgwMDAwMDAwMSAweDQxZjQgMHgwMDAwMDAwMSAweDQyMDAgMHgw
-MDAwMDAwMSAweDQyMDQgMHgwMDAwMDAwMQ0KMHg0MjBjIDB4MDAwMDAwMDEgMHg0MjEwIDB4MDAw
-MDAwMDEgMHg0MjE4IDB4MDAwMDAwMDEgMHg0MjIwIDB4MDAwMDAwMDINCjB4NDIyNCAweDAwMDAw
-MDA0IDB4NDIyOCAweDAwMDAwMDAzIDB4NDIyYyAweDAwMDAwMDAyIDB4NDIzMCAweDAwMDAwMDAx
-DQoweDQyMzQgMHgwMDAwMDAwMSAweDQyMzggMHgwMDAwMDAwMiAweDQyM2MgMHgwMDAwMDAwMiAw
-eDQyNDAgMHgwMDAwMDAwMw0KMHg0MjQ0IDB4MDAwMDAwMDQgMHg0MjQ4IDB4MDAwMDAwMDggMHg0
-MjRjIDB4MDAwMDAwMDggMHg0MjUwIDB4MDAwMDAwMDINCjB4NDI1NCAweDAwMDAwMDA4IDB4NDI1
-OCAweDAwMDAwMDAzIDB4NDI1YyAweDAwMDAwMDA0IDB4NDI2MCAweDAwMDAwMDAzDQoweDQyNjQg
-MHgwMDAwMDAwYiAweDQyNjggMHgwMDAwMDAwNiAweDQyNmMgMHgwMDAwMDAwNCAweDQyNzAgMHgw
-MDAwMDAwNA0KMHg0Mjc0IDB4MDAwMDAwMDQgMHg0Mjc4IDB4MDAwMDAwMDMgMHg0MjdjIDB4MDAw
-MDAwMDUgMHg0MjgwIDB4MDAwMDAwMDMNCjB4NDI4NCAweDAwMDAwMDA0IDB4NDI4OCAweDAwMDAw
-MDA1IDB4NDI4YyAweDAwMDAwMDA0IDB4NDI5MCAweDAwMDAwMDAzDQoweDQyOTQgMHgwMDAwMDAw
-MiAweDQyOTggMHgwMDAwMDAwMyAweDQyOWMgMHgwMDAwMDAwMyAweDQyYTAgMHgwMDAwMDAwMQ0K
-MHg0MmE0IDB4MDAwMDAwMDEgMHg0MmE4IDB4MDAwMDAwMDEgMHg0MmFjIDB4MDAwMDAwMDQgMHg0
-MmIwIDB4MDAwMDAwMDENCjB4NDJiOCAweDAwMDAwMDAxIDB4NDJjMCAweDAwMDAwMDAxIDB4NDJj
-OCAweDAwMDAwMDAyIDB4NDJkMCAweDAwMDAwMDAxDQoweDQyZDQgMHgwMDAwMDAwMSAweDQyZTAg
-MHgwMDAwMDAwMSAweDQzMDQgMHgwMDAwMDAwMSAweDQzMTQgMHgwMDAwMDAwMQ0KMHg0MzQwIDB4
-MDAwMDAwMDEgMHg0MzljIDB4MDAwMDAwMDEgMHg0M2IwIDB4MDAwMDAwMDEgMHg0M2RjIDB4MDAw
-MDAwMDENCjB4NDQxMCAweDAwMDAwMDAxIDB4NDRhMCAweDAwMDAwMDAxDQoNCkluIHRoZSBuYXBp
-IGNhbGxiYWNrICh0ZzNfcngoKSkgaXQgaXMgYSBkaWZmZXJlbnQgc3Rvcnk6DQojIGV0aHRvb2wg
-LWQgZW0yfGdyZXAgJ14wLlswLTNdJ3x4YXJncyAtbjgNCjB4MDAwMCAweDAxMDc3OGRhIDB4MDAw
-NCAweDAxMTUzN2E4IDB4MDAwOCAweDAwNDIyOWYyIDB4MDAwYyAweDAwMGE1ODNkDQoweDAwMTAg
-MHgwMDAxZGQ5ZiAweDAwMTQgMHgwMDAwYWZhNiAweDAwMTggMHgwMDAwNjA2ZCAweDAwMWMgMHgw
-MDAwM2I4MA0KMHgwMDIwIDB4MDAwMDI3M2YgMHgwMDI0IDB4MDAwMDFiNzIgMHgwMDI4IDB4MDAw
-MDEzZjkgMHgwMDJjIDB4MDAwMDBmMTUNCjB4MDAzMCAweDAwMDAwY2U2IDB4MDAzNCAweDAwMDAw
-YTRlIDB4MDAzOCAweDAwMDAwOGFjIDB4MDAzYyAweDAwMDAwN2M1DQoweDAwNDAgMHgwMDAwMDY0
-NyAweDAwNDQgMHgwMDAwMDU5ZiAweDAwNDggMHgwMDAwMDUzZiAweDAwNGMgMHgwMDAwMDQ4Ng0K
-MHgwMDUwIDB4MDAwMDA0M2EgMHgwMDU0IDB4MDAwMDAzYWQgMHgwMDU4IDB4MDAwMDAzNjQgMHgw
-MDVjIDB4MDAwMDAzNGQNCjB4MDA2MCAweDAwMDAwMzA1IDB4MDA2NCAweDAwMDAwMzAxIDB4MDA2
-OCAweDAwMDAwMmNmIDB4MDA2YyAweDAwMDAwMjk3DQoweDAwNzAgMHgwMDAwMDJhMyAweDAwNzQg
-MHgwMDAwMDI5NSAweDAwNzggMHgwMDAwMDI3ZiAweDAwN2MgMHgwMDAwMDI4Zg0KMHgwMDgwIDB4
-MDAwMDAyNzggMHgwMDg0IDB4MDAwMDAyNjAgMHgwMDg4IDB4MDAwMDAyNTEgMHgwMDhjIDB4MDAw
-MDAyNTMNCjB4MDA5MCAweDAwMDAwMjRkIDB4MDA5NCAweDAwMDAwMjNhIDB4MDA5OCAweDAwMDAw
-MjQ1IDB4MDA5YyAweDAwMDAwMjMzDQoweDAwYTAgMHgwMDAwMDIzZiAweDAwYTQgMHgwMDAwMDIw
-NyAweDAwYTggMHgwMDAwMDIyZSAweDAwYWMgMHgwMDAwMDIwMw0KMHgwMGIwIDB4MDAwMDAyMmUg
-MHgwMGI0IDB4MDAwMDAyMTIgMHgwMGI4IDB4MDAwMDAyMDMgMHgwMGJjIDB4MDAwMDAyMGINCi4u
-Lg0KbG90cyBvZiBudW1iZXJzIHRoYXQgZ28gZG93biBzbG93bHkNCi4uLg0KMHgwZDAwIDB4MDAw
-MDAxMmUgMHgwZDA0IDB4MDAwMDAxMjcgMHgwZDA4IDB4MDAwMDAxMzggMHgwZDBjIDB4MDAwMDAx
-MjUNCjB4MGQxMCAweDAwMDAwMTE2IDB4MGQxNCAweDAwMDAwMTE3IDB4MGQxOCAweDAwMDAwMTIw
-IDB4MGQxYyAweDAwMDAwMTFmDQoweDBkMjAgMHgwMDAwMDEzNSAweDBkMjQgMHgwMDAwMDEyMCAw
-eDBkMjggMHgwMDAwMDExMSAweDBkMmMgMHgwMDAwMDEzMQ0KMHgwZDMwIDB4MDAwMDAxMzEgMHgw
-ZDM0IDB4MDAwMDAxMGUgMHgwZDM4IDB4MDAwMDAxMTAgMHgwZDNjIDB4MDAwMDAxMTQNCjB4MGQ0
-MCAweDAwMDAwMTAwIDB4MGQ0NCAweDAwMDAwMTFiIDB4MGQ0OCAweDAwMDAwMTEzIDB4MGQ0YyAw
-eDAwMDAwMTA4DQoweDBkNTAgMHgwMDAwMDBmZSAweDBkNTQgMHgwMDAwMDEwMyAweDBkNTggMHgw
-MDAwMDBmMiAweDBkNWMgMHgwMDAwMDEyNA0KMHgwZDYwIDB4MDAwMDAwZmIgMHgwZDY0IDB4MDAw
-MDAwZmUgMHgwZDY4IDB4MDAwMDAwZjUgMHgwZDZjIDB4MDAwMDAxMTQNCjB4MGQ3MCAweDAwMDAw
-MGY1IDB4MGQ3NCAweDAwMDAwMGRhIDB4MGQ3OCAweDAwMDAwMGQ4IDB4MGQ3YyAweDAwMDAwMGY4
-DQoweDBkODAgMHgwMDAwMDBkYiAweDBkODQgMHgwMDAwMDBlNiAweDBkODggMHgwMDAwMDEwMCAw
-eDBkOGMgMHgwMDAwMDBkNw0KMHgwZDkwIDB4MDAwMDAwZTMgMHgwZDk0IDB4MDAwMDAwZDYgMHgw
-ZDk4IDB4MDAwMDAwY2YgMHgwZDljIDB4MDAwMDAwY2YNCjB4MGRhMCAweDAwMDAwMGQwIDB4MGRh
-NCAweDAwMDAwMGRmIDB4MGRhOCAweDAwMDAwMGNmIDB4MGRhYyAweDAwMDAwMGJiDQoweDBkYjAg
-MHgwMDAwMDBkMSAweDBkYjQgMHgwMDAwMDBiYSAweDBkYjggMHgwMDAwMDBjYyAweDBkYmMgMHgw
-MDAwMDBiYw0KMHgwZGMwIDB4MDAwMDAwYjUgMHgwZGM0IDB4MDAwMDAwYzUgMHgwZGM4IDB4MDAw
-MDAwYzMgMHgwZGNjIDB4MDAwMDAwYjcNCjB4MGRkMCAweDAwMDAwMGJkIDB4MGRkNCAweDAwMDAw
-MGExIDB4MGRkOCAweDAwMDAwMDljIDB4MGRkYyAweDAwMDAwMGJjDQoweDBkZTAgMHgwMDAwMDBi
-YSAweDBkZTQgMHgwMDAwMDBjNSAweDBkZTggMHgwMDAwMDA5ZCAweDBkZWMgMHgwMDAwMDBhMA0K
-MHgwZGYwIDB4MDAwMDAwOWYgMHgwZGY0IDB4MDAwMDAwOTIgMHgwZGY4IDB4MDAwMDAwYmUgMHgw
-ZGZjIDB4MDAwMDAwODkNCjB4MGUwMCAweDAwMDAwMDdjIDB4MGUwNCAweDAwMDAwMDg5IDB4MGUw
-OCAweDAwMDAwMDkwIDB4MGUwYyAweDAwMDAwMDhhDQoweDBlMTAgMHgwMDAwMDA4MSAweDBlMTQg
-MHgwMDAwMDA3ZCAweDBlMTggMHgwMDAwMDA4NSAweDBlMWMgMHgwMDAwMDA5MQ0KMHgwZTIwIDB4
-MDAwMDAwNzcgMHgwZTI0IDB4MDAwMDAwN2UgMHgwZTI4IDB4MDAwMDAwNzYgMHgwZTJjIDB4MDAw
-MDAwNzENCjB4MGUzMCAweDAwMDAwMDY3IDB4MGUzNCAweDAwMDAwMDYzIDB4MGUzOCAweDAwMDAw
-MDVkIDB4MGUzYyAweDAwMDAwMDY3DQoweDBlNDAgMHgwMDAwMDA3MCAweDBlNDQgMHgwMDAwMDA2
-OCAweDBlNDggMHgwMDAwMDA2MCAweDBlNGMgMHgwMDAwMDA3MQ0KMHgwZTUwIDB4MDAwMDAwNWIg
-MHgwZTU0IDB4MDAwMDAwNTUgMHgwZTU4IDB4MDAwMDAwNjggMHgwZTVjIDB4MDAwMDAwNGINCjB4
-MGU2MCAweDAwMDAwMDRmIDB4MGU2NCAweDAwMDAwMDUyIDB4MGU2OCAweDAwMDAwMDUzIDB4MGU2
-YyAweDAwMDAwMDQxDQoweDBlNzAgMHgwMDAwMDA0OSAweDBlNzQgMHgwMDAwMDA1NSAweDBlNzgg
-MHgwMDAwMDA1YSAweDBlN2MgMHgwMDAwMDA1MA0KMHgwZTgwIDB4MDAwMDAwM2YgMHgwZTg0IDB4
-MDAwMDAwM2MgMHgwZTg4IDB4MDAwMDAwNGQgMHgwZThjIDB4MDAwMDAwM2QNCjB4MGU5MCAweDAw
-MDAwMDNkIDB4MGU5NCAweDAwMDAwMDM1IDB4MGU5OCAweDAwMDAwMDNhIDB4MGU5YyAweDAwMDAw
-MDM0DQoweDBlYTAgMHgwMDAwMDAzNiAweDBlYTQgMHgwMDAwMDAzZiAweDBlYTggMHgwMDAwMDAz
-NSAweDBlYWMgMHgwMDAwMDAzZA0KMHgwZWIwIDB4MDAwMDAwMzMgMHgwZWI0IDB4MDAwMDAwM2Ig
-MHgwZWI4IDB4MDAwMDAwMzIgMHgwZWJjIDB4MDAwMDAwMzINCjB4MGVjMCAweDAwMDAwMDI3IDB4
-MGVjNCAweDAwMDAwMDJjIDB4MGVjOCAweDAwMDAwMDMwIDB4MGVjYyAweDAwMDAwMDM4DQoweDBl
-ZDAgMHgwMDAwMDAyZSAweDBlZDQgMHgwMDAwMDAyNyAweDBlZDggMHgwMDAwMDAyOSAweDBlZGMg
-MHgwMDAwMDAyMQ0KMHgwZWUwIDB4MDAwMDAwMjYgMHgwZWU0IDB4MDAwMDAwMmEgMHgwZWU4IDB4
-MDAwMDAwMmIgMHgwZWVjIDB4MDAwMDAwMjANCjB4MGVmMCAweDAwMDAwMDFkIDB4MGVmNCAweDAw
-MDAwMDFiIDB4MGVmOCAweDAwMDAwMDI4IDB4MGVmYyAweDAwMDAwMDI4DQoweDBmMDAgMHgwMDAw
-MDAxZCAweDBmMDQgMHgwMDAwMDAxOCAweDBmMDggMHgwMDAwMDAyNSAweDBmMGMgMHgwMDAwMDAy
-Mg0KMHgwZjEwIDB4MDAwMDAwMTggMHgwZjE0IDB4MDAwMDAwMjEgMHgwZjE4IDB4MDAwMDAwMWQg
-MHgwZjFjIDB4MDAwMDAwMTcNCjB4MGYyMCAweDAwMDAwMDE5IDB4MGYyNCAweDAwMDAwMDFkIDB4
-MGYyOCAweDAwMDAwMDFkIDB4MGYyYyAweDAwMDAwMDIxDQoweDBmMzAgMHgwMDAwMDAxYyAweDBm
-MzQgMHgwMDAwMDAxMyAweDBmMzggMHgwMDAwMDAxMCAweDBmM2MgMHgwMDAwMDAyNQ0KMHgwZjQw
-IDB4MDAwMDAwMTYgMHgwZjQ0IDB4MDAwMDAwMWMgMHgwZjQ4IDB4MDAwMDAwMTUgMHgwZjRjIDB4
-MDAwMDAwMTQNCjB4MGY1MCAweDAwMDAwMDFjIDB4MGY1NCAweDAwMDAwMDEwIDB4MGY1OCAweDAw
-MDAwMDFhIDB4MGY1YyAweDAwMDAwMDEyDQoweDBmNjAgMHgwMDAwMDAxMyAweDBmNjQgMHgwMDAw
-MDAxNiAweDBmNjggMHgwMDAwMDAxOCAweDBmNmMgMHgwMDAwMDAwZQ0KMHgwZjcwIDB4MDAwMDAw
-MGEgMHgwZjc0IDB4MDAwMDAwMTMgMHgwZjc4IDB4MDAwMDAwMTAgMHgwZjdjIDB4MDAwMDAwMTkN
-CjB4MGY4MCAweDAwMDAwMDE5IDB4MGY4NCAweDAwMDAwMDE0IDB4MGY4OCAweDAwMDAwMDE1IDB4
-MGY4YyAweDAwMDAwMDEyDQoweDBmOTAgMHgwMDAwMDAxNyAweDBmOTQgMHgwMDAwMDAxMiAweDBm
-OTggMHgwMDAwMDAxMSAweDBmOWMgMHgwMDAwMDAxNQ0KMHgwZmEwIDB4MDAwMDAwMTAgMHgwZmE0
-IDB4MDAwMDAwMTkgMHgwZmE4IDB4MDAwMDAwMTMgMHgwZmFjIDB4MDAwMDAwMTMNCjB4MGZiMCAw
-eDAwMDAwMDE1IDB4MGZiNCAweDAwMDAwMDBlIDB4MGZiOCAweDAwMDAwMDBkIDB4MGZiYyAweDAw
-MDAwMDBlDQoweDBmYzAgMHgwMDAwMDAxMiAweDBmYzQgMHgwMDAwMDAxMSAweDBmYzggMHgwMDAw
-MDAxNCAweDBmY2MgMHgwMDAwMDAxMQ0KMHgwZmQwIDB4MDAwMDAwMTMgMHgwZmQ0IDB4MDAwMDAw
-MGYgMHgwZmQ4IDB4MDAwMDAwMGUgMHgwZmRjIDB4MDAwMDAwMGENCjB4MGZlMCAweDAwMDAwMDBj
-IDB4MGZlNCAweDAwMDAwMDBmIDB4MGZlOCAweDAwMDAwMDBhIDB4MGZlYyAweDAwMDAwMDA4DQow
-eDBmZjAgMHgwMDAwMDAwYiAweDBmZjQgMHgwMDAwMDAxMSAweDBmZjggMHgwMDAwMDAxMCAweDBm
-ZmMgMHgwMDAwMDAwYg0KMHgxMDAwIDB4MDAwMDAwMGUgMHgxMDA0IDB4MDAwMDAwMGMgMHgxMDA4
-IDB4MDAwMDAwMGQgMHgxMDBjIDB4MDAwMDAwMGUNCjB4MTAxMCAweDAwMDAwMDA3IDB4MTAxNCAw
-eDAwMDAwMDBhIDB4MTAxOCAweDAwMDAwMDEzIDB4MTAxYyAweDAwMDAwMDEzDQoweDEwMjAgMHgw
-MDAwMDAwNSAweDEwMjQgMHgwMDAwMDAwNyAweDEwMjggMHgwMDAwMDAxMSAweDEwMmMgMHgwMDAw
-MDAxNw0KMHgxMDMwIDB4MDAwMDAwMTAgMHgxMDM0IDB4MDAwMDAwMDkgMHgxMDM4IDB4MDAwMDAw
-MGIgMHgxMDNjIDB4MDAwMDAwMGYNCjB4MTA0MCAweDAwMDAwMDA5IDB4MTA0NCAweDAwMDAwMDBm
-IDB4MTA0OCAweDAwMDAwMDBhIDB4MTA0YyAweDAwMDAwMDA5DQoweDEwNTAgMHgwMDAwMDAwYyAw
-eDEwNTQgMHgwMDAwMDAwYiAweDEwNTggMHgwMDAwMDAwOSAweDEwNWMgMHgwMDAwMDAwNw0KMHgx
-MDYwIDB4MDAwMDAwMGIgMHgxMDY0IDB4MDAwMDAwMGIgMHgxMDY4IDB4MDAwMDAwMDggMHgxMDZj
-IDB4MDAwMDAwMDYNCjB4MTA3MCAweDAwMDAwMDA2IDB4MTA3NCAweDAwMDAwMDEwIDB4MTA3OCAw
-eDAwMDAwMDA5IDB4MTA3YyAweDAwMDAwMDA2DQoweDEwODAgMHgwMDAwMDAwOSAweDEwODQgMHgw
-MDAwMDAwMiAweDEwODggMHgwMDAwMDAwYiAweDEwOGMgMHgwMDAwMDAwNg0KMHgxMDkwIDB4MDAw
-MDAwMGIgMHgxMDk0IDB4MDAwMDAwMDkgMHgxMDk4IDB4MDAwMDAwMGIgMHgxMDljIDB4MDAwMDAw
-MDYNCjB4MTBhMCAweDAwMDAwMDA4IDB4MTBhNCAweDAwMDAwMDA3IDB4MTBhOCAweDAwMDAwMDA5
-IDB4MTBhYyAweDAwMDAwMDA4DQoweDEwYjAgMHgwMDAwMDAwOCAweDEwYjQgMHgwMDAwMDAxMCAw
-eDEwYjggMHgwMDAwMDAwNyAweDEwYmMgMHgwMDAwMDAwNg0KMHgxMGMwIDB4MDAwMDAwMDUgMHgx
-MGM0IDB4MDAwMDAwMDggMHgxMGM4IDB4MDAwMDAwMDMgMHgxMGNjIDB4MDAwMDAwMDQNCjB4MTBk
-MCAweDAwMDAwMDA2IDB4MTBkNCAweDAwMDAwMDA5IDB4MTBkOCAweDAwMDAwMDA3IDB4MTBkYyAw
-eDAwMDAwMDA1DQoweDEwZTAgMHgwMDAwMDAwNyAweDEwZTQgMHgwMDAwMDAwNiAweDEwZTggMHgw
-MDAwMDAwNyAweDEwZWMgMHgwMDAwMDAwOA0KMHgxMGYwIDB4MDAwMDAwMDcgMHgxMGY0IDB4MDAw
-MDAwMGMgMHgxMGY4IDB4MDAwMDAwMDYgMHgxMGZjIDB4MDAwMDAwMDgNCjB4MTEwMCAweDAwMDAw
-MDA0IDB4MTEwNCAweDAwMDAwMDBkIDB4MTEwOCAweDAwMDAwMDA4IDB4MTEwYyAweDAwMDAwMDA1
-DQoweDExMTAgMHgwMDAwMDAwOCAweDExMTQgMHgwMDAwMDAwMiAweDExMTggMHgwMDAwMDAwNyAw
-eDExMWMgMHgwMDAwMDAwMg0KMHgxMTIwIDB4MDAwMDAwMGEgMHgxMTI0IDB4MDAwMDAwMDcgMHgx
-MTI4IDB4MDAwMDAwMDEgMHgxMTJjIDB4MDAwMDAwMDYNCjB4MTEzMCAweDAwMDAwMDAzIDB4MTEz
-NCAweDAwMDAwMDAyIDB4MTEzOCAweDAwMDAwMDA0IDB4MTEzYyAweDAwMDAwMDA1DQoweDExNDAg
-MHgwMDAwMDAwNyAweDExNDQgMHgwMDAwMDAwMyAweDExNDggMHgwMDAwMDAwMyAweDExNGMgMHgw
-MDAwMDAwMg0KMHgxMTUwIDB4MDAwMDAwMDQgMHgxMTU0IDB4MDAwMDAwMDYgMHgxMTU4IDB4MDAw
-MDAwMDUgMHgxMTVjIDB4MDAwMDAwMDQNCjB4MTE2MCAweDAwMDAwMDA2IDB4MTE2NCAweDAwMDAw
-MDAzIDB4MTE2OCAweDAwMDAwMDA3IDB4MTE2YyAweDAwMDAwMDA1DQoweDExNzAgMHgwMDAwMDAw
-NiAweDExNzQgMHgwMDAwMDAwOCAweDExNzggMHgwMDAwMDAwNCAweDExN2MgMHgwMDAwMDAwNQ0K
-MHgxMTgwIDB4MDAwMDAwMDQgMHgxMTg0IDB4MDAwMDAwMDYgMHgxMTg4IDB4MDAwMDAwMDMgMHgx
-MThjIDB4MDAwMDAwMDgNCjB4MTE5MCAweDAwMDAwMDA1IDB4MTE5NCAweDAwMDAwMDA0IDB4MTE5
-OCAweDAwMDAwMDAzIDB4MTE5YyAweDAwMDAwMDA0DQoweDExYTAgMHgwMDAwMDAwMiAweDExYTQg
-MHgwMDAwMDAwMyAweDExYTggMHgwMDAwMDAwMyAweDExYWMgMHgwMDAwMDAwNQ0KMHgxMWIwIDB4
-MDAwMDAwMDYgMHgxMWI0IDB4MDAwMDAwMDcgMHgxMWI4IDB4MDAwMDAwMDIgMHgxMWJjIDB4MDAw
-MDAwMDMNCjB4MTFjMCAweDAwMDAwMDA1IDB4MTFjNCAweDAwMDAwMDAzIDB4MTFjOCAweDAwMDAw
-MDA0IDB4MTFjYyAweDAwMDAwMDAxDQoweDExZDAgMHgwMDAwMDAwMiAweDExZDQgMHgwMDAwMDAw
-MiAweDExZDggMHgwMDAwMDAwNCAweDExZGMgMHgwMDAwMDAwMQ0KMHgxMWUwIDB4MDAwMDAwMDMg
-MHgxMWU0IDB4MDAwMDAwMDEgMHgxMWU4IDB4MDAwMDAwMDggMHgxMWVjIDB4MDAwMDAwMDQNCjB4
-MTFmMCAweDAwMDAwMDAyIDB4MTFmNCAweDAwMDAwMDAyIDB4MTFmOCAweDAwMDAwMDAzIDB4MTFm
-YyAweDAwMDAwMDAzDQoweDEyMDAgMHgwMDAwMDAwMSAweDEyMDQgMHgwMDAwMDAwOCAweDEyMDgg
-MHgwMDAwMDAwNSAweDEyMGMgMHgwMDAwMDAwMw0KMHgxMjEwIDB4MDAwMDAwMDIgMHgxMjE0IDB4
-MDAwMDAwMDIgMHgxMjE4IDB4MDAwMDAwMDIgMHgxMjFjIDB4MDAwMDAwMDQNCjB4MTIyMCAweDAw
-MDAwMDAyIDB4MTIyNCAweDAwMDAwMDAyIDB4MTIyOCAweDAwMDAwMDA0IDB4MTIyYyAweDAwMDAw
-MDAzDQoweDEyMzAgMHgwMDAwMDAwMyAweDEyMzQgMHgwMDAwMDAwMSAweDEyMzggMHgwMDAwMDAw
-NSAweDEyM2MgMHgwMDAwMDAwNA0KMHgxMjQwIDB4MDAwMDAwMDUgMHgxMjQ0IDB4MDAwMDAwMDIg
-MHgxMjQ4IDB4MDAwMDAwMDEgMHgxMjRjIDB4MDAwMDAwMDQNCjB4MTI1MCAweDAwMDAwMDAzIDB4
-MTI1NCAweDAwMDAwMDAzIDB4MTI1OCAweDAwMDAwMDAxIDB4MTI1YyAweDAwMDAwMDA0DQoweDEy
-NjAgMHgwMDAwMDAwMyAweDEyNjQgMHgwMDAwMDAwMSAweDEyNjggMHgwMDAwMDAwNCAweDEyNmMg
-MHgwMDAwMDAwMg0KMHgxMjcwIDB4MDAwMDAwMDcgMHgxMjc0IDB4MDAwMDAwMDMgMHgxMjc4IDB4
-MDAwMDAwMDEgMHgxMjdjIDB4MDAwMDAwMDENCjB4MTI4MCAweDAwMDAwMDAyIDB4MTI4NCAweDAw
-MDAwMDA0IDB4MTI4OCAweDAwMDAwMDAzIDB4MTI4YyAweDAwMDAwMDAyDQoweDEyOTAgMHgwMDAw
-MDAwMyAweDEyOTQgMHgwMDAwMDAwNCAweDEyOTggMHgwMDAwMDAwNCAweDEyYTAgMHgwMDAwMDAw
-Mg0KMHgxMmE0IDB4MDAwMDAwMDIgMHgxMmE4IDB4MDAwMDAwMDIgMHgxMmFjIDB4MDAwMDAwMDUg
-MHgxMmI0IDB4MDAwMDAwMDINCjB4MTJiOCAweDAwMDAwMDA0IDB4MTJiYyAweDAwMDAwMDAxIDB4
-MTJjMCAweDAwMDAwMDAzIDB4MTJjNCAweDAwMDAwMDAxDQoweDEyY2MgMHgwMDAwMDAwMSAweDEy
-ZDAgMHgwMDAwMDAwMSAweDEyZDggMHgwMDAwMDAwMSAweDEyZGMgMHgwMDAwMDAwNA0KMHgxMmUw
-IDB4MDAwMDAwMDUgMHgxMmU0IDB4MDAwMDAwMDEgMHgxMmU4IDB4MDAwMDAwMDMgMHgxMmVjIDB4
-MDAwMDAwMDENCjB4MTJmMCAweDAwMDAwMDAxIDB4MTJmNCAweDAwMDAwMDA2IDB4MTJmOCAweDAw
-MDAwMDAyIDB4MTJmYyAweDAwMDAwMDAyDQoweDEzMDAgMHgwMDAwMDAwNCAweDEzMDQgMHgwMDAw
-MDAwMSAweDEzMDggMHgwMDAwMDAwMSAweDEzMGMgMHgwMDAwMDAwMQ0KMHgxMzEwIDB4MDAwMDAw
-MDEgMHgxMzE0IDB4MDAwMDAwMDQgMHgxMzE4IDB4MDAwMDAwMDIgMHgxMzIwIDB4MDAwMDAwMDMN
-CjB4MTMyNCAweDAwMDAwMDAyIDB4MTMyYyAweDAwMDAwMDAxIDB4MTMzMCAweDAwMDAwMDAyIDB4
-MTMzNCAweDAwMDAwMDAzDQoweDEzMzggMHgwMDAwMDAwMyAweDEzNDAgMHgwMDAwMDAwMiAweDEz
-NDQgMHgwMDAwMDAwMiAweDEzNTAgMHgwMDAwMDAwMQ0KMHgxMzU0IDB4MDAwMDAwMDIgMHgxMzU4
-IDB4MDAwMDAwMDIgMHgxMzYwIDB4MDAwMDAwMDMgMHgxMzY0IDB4MDAwMDAwMDINCjB4MTM2OCAw
-eDAwMDAwMDAyIDB4MTM2YyAweDAwMDAwMDAyIDB4MTM3MCAweDAwMDAwMDAzIDB4MTM3NCAweDAw
-MDAwMDAxDQoweDEzN2MgMHgwMDAwMDAwMiAweDEzODAgMHgwMDAwMDAwMSAweDEzODQgMHgwMDAw
-MDAwMiAweDEzODggMHgwMDAwMDAwMw0KMHgxMzhjIDB4MDAwMDAwMDEgMHgxMzkwIDB4MDAwMDAw
-MDEgMHgxMzk0IDB4MDAwMDAwMDEgMHgxM2EwIDB4MDAwMDAwMDINCjB4MTNhNCAweDAwMDAwMDAx
-IDB4MTNhOCAweDAwMDAwMDAyIDB4MTNhYyAweDAwMDAwMDAxIDB4MTNiOCAweDAwMDAwMDAyDQow
-eDEzYmMgMHgwMDAwMDAwMSAweDEzYzQgMHgwMDAwMDAwNCAweDEzYzggMHgwMDAwMDAwNSAweDEz
-Y2MgMHgwMDAwMDAwMQ0KMHgxM2Q0IDB4MDAwMDAwMDIgMHgxM2Q4IDB4MDAwMDAwMDEgMHgxM2Uw
-IDB4MDAwMDAwMDQgMHgxM2U4IDB4MDAwMDAwMDINCjB4MTNmMCAweDAwMDAwMDAxIDB4MTNmNCAw
-eDAwMDAwMDAxIDB4MTNmOCAweDAwMDAwMDAyIDB4MTNmYyAweDAwMDAwMDAxDQoweDE0MDAgMHgw
-MDAwMDAwMiAweDE0MDggMHgwMDAwMDAwMSAweDE0MTAgMHgwMDAwMDAwMyAweDE0MTggMHgwMDAw
-MDAwMQ0KMHgxNDIwIDB4MDAwMDAwMDEgMHgxNDI0IDB4MDAwMDAwMDIgMHgxNDI4IDB4MDAwMDAw
-MDEgMHgxNDM0IDB4MDAwMDAwMDENCjB4MTQzYyAweDAwMDAwMDAxIDB4MTQ0MCAweDAwMDAwMDAz
-IDB4MTQ0NCAweDAwMDAwMDAxIDB4MTQ0OCAweDAwMDAwMDAxDQoweDE0NTAgMHgwMDAwMDAwMSAw
-eDE0NTggMHgwMDAwMDAwMSAweDE0NjQgMHgwMDAwMDAwMiAweDE0NjggMHgwMDAwMDAwMQ0KMHgx
-NDZjIDB4MDAwMDAwMDQgMHgxNDc0IDB4MDAwMDAwMDEgMHgxNDc4IDB4MDAwMDAwMDMgMHgxNDdj
-IDB4MDAwMDAwMDINCjB4MTQ4YyAweDAwMDAwMDAxIDB4MTQ5MCAweDAwMDAwMDAxIDB4MTQ5NCAw
-eDAwMDAwMDAxIDB4MTQ5OCAweDAwMDAwMDAxDQoweDE0YTAgMHgwMDAwMDAwMSAweDE0YTQgMHgw
-MDAwMDAwMiAweDE0YWMgMHgwMDAwMDAwMiAweDE0YmMgMHgwMDAwMDAwMw0KMHgxNGM0IDB4MDAw
-MDAwMDEgMHgxNGNjIDB4MDAwMDAwMDEgMHgxNGQwIDB4MDAwMDAwMDIgMHgxNGQ0IDB4MDAwMDAw
-MDENCjB4MTRkOCAweDAwMDAwMDAxIDB4MTRkYyAweDAwMDAwMDAxIDB4MTRlOCAweDAwMDAwMDAy
-IDB4MTRmMCAweDAwMDAwMDAyDQoweDE1MDAgMHgwMDAwMDAwMSAweDE1MGMgMHgwMDAwMDAwMSAw
-eDE1MTAgMHgwMDAwMDAwMSAweDE1MTQgMHgwMDAwMDAwMg0KMHgxNTFjIDB4MDAwMDAwMDEgMHgx
-NTIwIDB4MDAwMDAwMDEgMHgxNTI0IDB4MDAwMDAwMDEgMHgxNTI4IDB4MDAwMDAwMDENCjB4MTUy
-YyAweDAwMDAwMDAxIDB4MTUzMCAweDAwMDAwMDAxIDB4MTUzYyAweDAwMDAwMDAxIDB4MTU0YyAw
-eDAwMDAwMDAxDQoweDE1NWMgMHgwMDAwMDAwMSAweDE1NjAgMHgwMDAwMDAwMyAweDE1NjggMHgw
-MDAwMDAwMSAweDE1NmMgMHgwMDAwMDAwMQ0KMHgxNTc4IDB4MDAwMDAwMDEgMHgxNTgwIDB4MDAw
-MDAwMDEgMHgxNTk0IDB4MDAwMDAwMDEgMHgxNTljIDB4MDAwMDAwMDENCjB4MTVhMCAweDAwMDAw
-MDAxIDB4MTVhNCAweDAwMDAwMDAxIDB4MTVhOCAweDAwMDAwMDAxIDB4MTViNCAweDAwMDAwMDAy
-DQoweDE1YjggMHgwMDAwMDAwMSAweDE1YzAgMHgwMDAwMDAwMiAweDE1ZDAgMHgwMDAwMDAwMSAw
-eDE1ZTAgMHgwMDAwMDAwMg0KMHgxNWVjIDB4MDAwMDAwMDEgMHgxNjBjIDB4MDAwMDAwMDEgMHgx
-NjEwIDB4MDAwMDAwMDEgMHgxNjE0IDB4MDAwMDAwMDENCjB4MTYxYyAweDAwMDAwMDAxIDB4MTYz
-OCAweDAwMDAwMDAxIDB4MTYzYyAweDAwMDAwMDAxIDB4MTY1NCAweDAwMDAwMDAxDQoweDE2NTgg
-MHgwMDAwMDAwMSAweDE2NjggMHgwMDAwMDAwMSAweDE2NzAgMHgwMDAwMDAwMSAweDE2NzggMHgw
-MDAwMDAwMg0KMHgxNjhjIDB4MDAwMDAwMDIgMHgxNjkwIDB4MDAwMDAwMDEgMHgxNmEwIDB4MDAw
-MDAwMDEgMHgxNmIwIDB4MDAwMDAwMDENCjB4MTZjMCAweDAwMDAwMDAxIDB4MTZlOCAweDAwMDAw
-MDAxIDB4MTZlYyAweDAwMDAwMDAyIDB4MTZmNCAweDAwMDAwMDAxDQoweDE3MTAgMHgwMDAwMDAw
-MSAweDE3MTggMHgwMDAwMDAwMSAweDE3MzAgMHgwMDAwMDAwMSAweDE3NDAgMHgwMDAwMDAwMg0K
-MHgxNzQ4IDB4MDAwMDAwMDEgMHgxNzVjIDB4MDAwMDAwMDEgMHgxNzYwIDB4MDAwMDAwMDIgMHgx
-NzhjIDB4MDAwMDAwMDENCjB4MTdhYyAweDAwMDAwMDAxIDB4MTdkMCAweDAwMDAwMDAxIDB4MTdk
-OCAweDAwMDAwMDAxIDB4MTdlMCAweDAwMDAwMDAxDQoweDE4MTAgMHgwMDAwMDAwMSAweDE4MjAg
-MHgwMDAwMDAwMSAweDE4MjQgMHgwMDAwMDAwMSAweDE4MzggMHgwMDAwMDAwMQ0KMHgxODUwIDB4
-MDAwMDAwMDEgMHgxODU0IDB4MDAwMDAwMDEgMHgxODU4IDB4MDAwMDAwMDEgMHgxODY4IDB4MDAw
-MDAwMDENCjB4MTg4YyAweDAwMDAwMDAxIDB4MTg5NCAweDAwMDAwMDAxIDB4MThjYyAweDAwMDAw
-MDAxIDB4MThkOCAweDAwMDAwMDAxDQoweDE4ZjggMHgwMDAwMDAwMSAweDE4ZmMgMHgwMDAwMDAw
-MSAweDE5MDAgMHgwMDAwMDAwMSAweDE5NTQgMHgwMDAwMDAwMw0KMHgxOTZjIDB4MDAwMDAwMDEg
-MHgxOWQ4IDB4MDAwMDAwMDEgMHgxOWU0IDB4MDAwMDAwMDMgMHgxYTUwIDB4MDAwMDAwMDENCjB4
-MWE2NCAweDAwMDAwMDAxIDB4MWFiMCAweDAwMDAwMDAxIDB4MWFjOCAweDAwMDAwMDAxIDB4MWFl
-NCAweDAwMDAwMDAxDQoweDFiMjAgMHgwMDAwMDAwMSAweDFiNjAgMHgwMDAwMDAwMSAweDFiNjQg
-MHgwMDAwMDAwMSAweDFiZTQgMHgwMDAwMDAwMQ0KMHgxYzVjIDB4MDAwMDAwMDEgMHgxY2UwIDB4
-MDAwMDAwMDENCg0KVGhlIGxhc3QgZW50cnkgaXMgZm9yIDE4NDggcGVuZGluZyBwYWNrZXRzLg0K
-DQpJJ3ZlIGRvbmUgc29tZSBvdGhlciBtZWFzdXJlbWVudHM6DQoNCnRnM19yeF9wcm9kcmluZ194
-ZmVyKCkgdmVyeSByYXJlbHkgY29waWVkIG1vcmUgdGhhbiA2NCBpdGVtcyBvcg0KZmluZHMgYSAn
-YnVzeScgc2xvdCAoaWUgZXJyIHNldCkuDQoNClByb2Nlc3NpbmcgNCByeCBwYWNrZXRzIGZvciBl
-dmVyeSBuYXBpIGJ1ZGdldCBkb2Vzbid0IG1ha2UgYW55DQpkaWZmZXJlbmNlLg0KDQpJdCBzZWVt
-cyBsaWtlIHRoZXJlIGNhbiBiZSBhIHNpZ25pZmljYW50IGRlbGF5IGJldHdlZW4gdGhlIGhhcmR3
-YXJlDQppbnRlcnJ1cHQgYW5kIHRoZSBuYXBpL3NvZnRpbnQuDQoNCkknbSBub3Qgc3VyZSBvZiBo
-b3cgdG8gaW5zdHJ1bWVudCB0aGF0IHRob3VnaC4NCkJ1dCBpdCBpcyBsaWtlbHkgdG8gYWZmZWN0
-IG90aGVyIGV0aGVybmV0IGRyaXZlcnMuDQoNCglEYXZpZA0KDQotDQpSZWdpc3RlcmVkIEFkZHJl
-c3MgTGFrZXNpZGUsIEJyYW1sZXkgUm9hZCwgTW91bnQgRmFybSwgTWlsdG9uIEtleW5lcywgTUsx
-IDFQVCwgVUsNClJlZ2lzdHJhdGlvbiBObzogMTM5NzM4NiAoV2FsZXMpDQo=
+On Fri, May 20, 2022 at 8:15 AM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 5/19/22 6:21 PM, Yosry Ahmed wrote:
+> > Add cgroup_rstat_updated() and cgroup_rstat_flush() kfuncs to bpf
+> > tracing programs. bpf programs that make use of rstat can use these
+> > functions to inform rstat when they update stats for a cgroup, and when
+> > they need to flush the stats.
+> >
+> > Signed-off-by: Yosry Ahmed <yosryahmed@google.com>
+> > ---
+> >   kernel/cgroup/rstat.c | 35 ++++++++++++++++++++++++++++++++++-
+> >   1 file changed, 34 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/cgroup/rstat.c b/kernel/cgroup/rstat.c
+> > index e7a88d2600bd..a16a851bc0a1 100644
+> > --- a/kernel/cgroup/rstat.c
+> > +++ b/kernel/cgroup/rstat.c
+> > @@ -3,6 +3,11 @@
+> >
+> >   #include <linux/sched/cputime.h>
+> >
+> > +#include <linux/bpf.h>
+> > +#include <linux/btf.h>
+> > +#include <linux/btf_ids.h>
+> > +
+> > +
+> >   static DEFINE_SPINLOCK(cgroup_rstat_lock);
+> >   static DEFINE_PER_CPU(raw_spinlock_t, cgroup_rstat_cpu_lock);
+> >
+> > @@ -141,7 +146,12 @@ static struct cgroup *cgroup_rstat_cpu_pop_updated=
+(struct cgroup *pos,
+> >       return pos;
+> >   }
+> >
+> > -/* A hook for bpf stat collectors to attach to and flush their stats *=
+/
+> > +/*
+> > + * A hook for bpf stat collectors to attach to and flush their stats.
+> > + * Together with providing bpf kfuncs for cgroup_rstat_updated() and
+> > + * cgroup_rstat_flush(), this enables a complete workflow where bpf pr=
+ogs that
+> > + * collect cgroup stats can integrate with rstat for efficient flushin=
+g.
+> > + */
+> >   __weak noinline void bpf_rstat_flush(struct cgroup *cgrp,
+> >                                    struct cgroup *parent, int cpu)
+> >   {
+> > @@ -476,3 +486,26 @@ void cgroup_base_stat_cputime_show(struct seq_file=
+ *seq)
+> >                  "system_usec %llu\n",
+> >                  usage, utime, stime);
+> >   }
+> > +
+> > +/* Add bpf kfuncs for cgroup_rstat_updated() and cgroup_rstat_flush() =
+*/
+> > +BTF_SET_START(bpf_rstat_check_kfunc_ids)
+> > +BTF_ID(func, cgroup_rstat_updated)
+> > +BTF_ID(func, cgroup_rstat_flush)
+> > +BTF_SET_END(bpf_rstat_check_kfunc_ids)
+> > +
+> > +BTF_SET_START(bpf_rstat_sleepable_kfunc_ids)
+> > +BTF_ID(func, cgroup_rstat_flush)
+> > +BTF_SET_END(bpf_rstat_sleepable_kfunc_ids)
+> > +
+> > +static const struct btf_kfunc_id_set bpf_rstat_kfunc_set =3D {
+> > +     .owner          =3D THIS_MODULE,
+> > +     .check_set      =3D &bpf_rstat_check_kfunc_ids,
+> > +     .sleepable_set  =3D &bpf_rstat_sleepable_kfunc_ids,
+>
+> There is a compilation error here:
+>
+> kernel/cgroup/rstat.c:503:3: error: =E2=80=98const struct btf_kfunc_id_se=
+t=E2=80=99 has
+> no member named =E2=80=98sleepable_set=E2=80=99; did you mean =E2=80=98re=
+lease_set=E2=80=99?
+>      503 |  .sleepable_set =3D &bpf_rstat_sleepable_kfunc_ids,
+>          |   ^~~~~~~~~~~~~
+>          |   release_set
+>    kernel/cgroup/rstat.c:503:19: warning: excess elements in struct
+> initializer
+>      503 |  .sleepable_set =3D &bpf_rstat_sleepable_kfunc_ids,
+>          |                   ^
+>    kernel/cgroup/rstat.c:503:19: note: (near initialization for
+> =E2=80=98bpf_rstat_kfunc_set=E2=80=99)
+>    make[3]: *** [scripts/Makefile.build:288: kernel/cgroup/rstat.o] Error=
+ 1
+>
+> Please fix.
 
+This patch series is rebased on top of 2 patches in the mailing list:
+- bpf/btf: also allow kfunc in tracing and syscall programs
+- btf: Add a new kfunc set which allows to mark a function to be
+  sleepable
+
+I specified this in the cover letter, do I need to do something else
+in this situation? Re-send the patches as part of my series?
+
+
+
+>
+> > +};
+> > +
+> > +static int __init bpf_rstat_kfunc_init(void)
+> > +{
+> > +     return register_btf_kfunc_id_set(BPF_PROG_TYPE_TRACING,
+> > +                                      &bpf_rstat_kfunc_set);
+> > +}
+> > +late_initcall(bpf_rstat_kfunc_init);
