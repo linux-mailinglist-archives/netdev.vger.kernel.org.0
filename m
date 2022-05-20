@@ -2,87 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A807552F5C0
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6DDA52F5D5
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 00:46:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353931AbiETWh0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 18:37:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44456 "EHLO
+        id S240760AbiETWqf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 18:46:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234482AbiETWhZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:37:25 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F34B18542F
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 15:37:24 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id f2so13262739wrc.0
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 15:37:24 -0700 (PDT)
+        with ESMTP id S229477AbiETWqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 18:46:34 -0400
+Received: from mail-vs1-xe33.google.com (mail-vs1-xe33.google.com [IPv6:2607:f8b0:4864:20::e33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19D5DAF303;
+        Fri, 20 May 2022 15:46:33 -0700 (PDT)
+Received: by mail-vs1-xe33.google.com with SMTP id 68so2149500vse.11;
+        Fri, 20 May 2022 15:46:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=rjHRlb1I3VbpwM5vlx4HP72yEGIAgQZNiDcXaK4IrWE=;
-        b=CqWaIRBYO4RMPakxBtGQr0gF0h+doHGHgL6p8/uY/2bT1FSn5s8z8EPF3lDt9rHVYn
-         5itjBBvHeFp2Vo1o45+HjsRWft6V3cBTf5aRQI4gxDIoCJ+CfcA90Ir0c7oNRAloniK1
-         1YxLAnp74KeRbPRxZxm8rr9oSTbEUR5wTuxgh1Kc4peUuKD2q70w//S4s5rdx9mdkq8z
-         lEHEdSjqR540R7Ak9Rtm+TwYGHdLqdEiAK1p52r+Zl82Ri960sciviRPXFw93JTz39Dp
-         zZpJ44VH6SOPhSaFZAGCztGyQ/4jt7oyJpC4KD463XIDqi89CL5o476rYfInHk4PdGNz
-         MWRQ==
+        bh=5pQeUb7i2aQrMCTFP4sfEtDtoSYxOjDxSh8e8T9nS1E=;
+        b=L3x6/NW1KmjyeV38jecoTyoSPtHQaXXxld5nI5ziNWGeMDmOuzG8gyeiR5OidJyR3r
+         8HpYxb/QGZAC6BHmf8HtkBI3YA6VWOoxBvg0LzNDtqgxaSCQ63mlnoJSMXlhVCP/O30k
+         1xyQ4xMW74V2jTNALUiqUtfcsAeE6tjaFnDgsiw1JkLLA7t6+00Hg4RDEkfmHsKGC2/V
+         q7MZTNjmnGdc7t+qtUdI04hJ5JIOCqBhrORl5bOMJ5OzUwlaL0K0Wcp9vtYav4hhLnms
+         xHnHZ/v6pFwI+bI0gRcpPniT2l9Ixnfiji1lstMTybByURvjkhasLrUpuoLM0DW02sBg
+         +1Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=rjHRlb1I3VbpwM5vlx4HP72yEGIAgQZNiDcXaK4IrWE=;
-        b=rozlgMLKKsXEnGQ6CbxRkSk3z1VbrZwpIxqW9fO8QCULg/eYr2iH4M11YkhtaNIeY3
-         n50QhWwlGZOTG+sJRVo3wtJ6MgV5ZHg59aJTj+WpD5P1xC4LOyALktCOYVeAybAdXwfI
-         W5K0Lhk8NvDLJAIg31MaFpebQ2h6JEdl1yFfT2UUK8Nw5mjAXKtpuVovKEXdvYOyKIr0
-         +CuUqHBF7q1MjSO8nGZdi1n1XsQ1dvbiWgAnJGMjjndxxf/SqX00ZKcU1C/Ww8Wdq6dm
-         EkE2e4mfOi2REP+mXBFe9TVC/BL4MRHIVJoJ0yUsa87dIRQasmRHcvhB2GoMPy74bDxK
-         Q8xA==
-X-Gm-Message-State: AOAM531uddBg6oQdPMtGXTcyt/0h8qgUL73G6BmE2YdIg39uAd1qsJuT
-        L5oI+m3BHMAOlIkNUHKBPLyFSUirtPKBHTJaA1l9tg==
-X-Google-Smtp-Source: ABdhPJypRPOYtIiBfhWElJxzVoZrGRTDuStikkjFn5DjehwLSBWHm7H0Z8zWY4JT6S0WJ5gnLML2CYTyrTe1nVMkUmQ=
-X-Received: by 2002:a05:6000:154a:b0:20c:7e65:c79e with SMTP id
- 10-20020a056000154a00b0020c7e65c79emr10148218wry.582.1653086242817; Fri, 20
- May 2022 15:37:22 -0700 (PDT)
+        bh=5pQeUb7i2aQrMCTFP4sfEtDtoSYxOjDxSh8e8T9nS1E=;
+        b=L8MsLzypo1vH1Z0b8IlbsoOTQyAvD/EVzLrndUmvYWidAbhflFwIxyf7fu0FUT0LwK
+         atHLjSVH8LYu+ZVPnQc2WiPdjE31dPl2Vs1qo8IoWh6zX7qLsf0WZXGVf7RWotwJPRbH
+         jk0waaH+biXqXZp0YUZKG6qkX7YAQrbR7N2BaFvxBueQP2UEvD3hue/9J0eg7rA0Vaht
+         IWzLtccrWKyzpjRDhj4krEx1HHzR1Ah/u+S97KSUVbL1GI5lA9NRvBx51K5aOKQre4qh
+         01DlomBZTAXqIo5F3KnGZ+2i+MqYrANVhesEUBIaEpingRQ+S0xjpAP3Hqg4dPBb/Gj0
+         JMSQ==
+X-Gm-Message-State: AOAM5337WpJwCZ+H1X6xGtt9lslF7Zq5KRwNUDw/RplwUC4hY8Ee0n1b
+        ciRUZfLCyVwHjuAWsCZqTVz7bGdkaR8v3q6x2uk=
+X-Google-Smtp-Source: ABdhPJyiaAtAdaUBzDp9yFdA6kuTy81xzJn/Z4v7Wfuy50rIkY0QXBW8+d0+xYs7kmFR1Mu1NCsSmgdujwsvLus5sTo=
+X-Received: by 2002:a05:6102:370a:b0:333:c0e7:77e8 with SMTP id
+ s10-20020a056102370a00b00333c0e777e8mr5497192vst.54.1653086792033; Fri, 20
+ May 2022 15:46:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220520012133.1217211-4-yosryahmed@google.com> <YodGI73xq8aIBrNM@slm.duckdns.org>
- <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
- <YodNLpxut+Zddnre@slm.duckdns.org> <73fd9853-5dab-8b59-24a0-74c0a6cae88e@fb.com>
- <YofFli6UCX4J5YnU@slm.duckdns.org> <CA+khW7gjWVKrwCgDD-4ZdCf5CMcA4-YL0bLm6aWM74+qNQ4c0A@mail.gmail.com>
- <CAJD7tkaJQjfSy+YARFRkqQ8m7OGJHO9v91mSk-cFeo9Z5UVJKg@mail.gmail.com> <20220520221919.jnqgv52k4ajlgzcl@MBP-98dd607d3435.dhcp.thefacebook.com>
-In-Reply-To: <20220520221919.jnqgv52k4ajlgzcl@MBP-98dd607d3435.dhcp.thefacebook.com>
-From:   Yosry Ahmed <yosryahmed@google.com>
-Date:   Fri, 20 May 2022 15:36:46 -0700
-Message-ID: <CAJD7tkaa946SOBDksCzPto+7SzF+fDM=KMMOUMj2Ru+MBq5TEA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Hao Luo <haoluo@google.com>, Tejun Heo <tj@kernel.org>,
-        Yonghong Song <yhs@fb.com>,
+References: <20220519233016.105670-1-mathew.j.martineau@linux.intel.com>
+In-Reply-To: <20220519233016.105670-1-mathew.j.martineau@linux.intel.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 20 May 2022 15:46:21 -0700
+Message-ID: <CAEf4BzaZ07_VRN_z6xPogcx-YQuPQR8FCkC=K621r5oo1vBViQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 0/7] bpf: mptcp: Support for mptcp_sock
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
+        Geliang Tang <geliang.tang@suse.com>, mptcp@lists.linux.dev
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -90,46 +68,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 20, 2022 at 3:19 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Thu, May 19, 2022 at 4:30 PM Mat Martineau
+<mathew.j.martineau@linux.intel.com> wrote:
 >
-> On Fri, May 20, 2022 at 02:18:42PM -0700, Yosry Ahmed wrote:
-> > >
-> > > The userspace needs to specify the identity of the cgroup, when
-> > > creating bpf_iter. This identity could be cgroup id or fd. This
-> > > identity needs to be converted to cgroup object somewhere before
-> > > passing into bpf program to use.
-> >
-> >
-> > Let's sum up the discussion here, I feel like we are losing track of
-> > the main problem. IIUC the main concern is that cgroup_iter is not
-> > effectively an iterator, it rather dumps information for one cgroup. I
-> > like the suggestion to make it iterate cgroups by default, and an
-> > optional cgroup_id parameter to make it only "iterate" this one
-> > cgroup.
+> This patch set adds BPF access to mptcp_sock structures, along with
+> associated self tests. You may recognize some of the code from earlier
+> (https://lore.kernel.org/bpf/20200918121046.190240-6-nicolas.rybowski@tessares.net/)
+> but it has been reworked quite a bit.
 >
-> We have bpf_map iterator that walks all bpf maps.
-> When map iterator is parametrized with map_fd the iterator walks
-> all elements of that map.
-> cgroup iterator should have similar semantics.
-> When non-parameterized it will walk all cgroups and their descendent
-> depth first way. I believe that's what Yonghong is proposing.
-> When parametrized it will start from that particular cgroup and
-> walk all descendant of that cgroup only.
-> The bpf prog can stop the iteration right away with ret 1.
-> Maybe we can add two parameters. One -> cgroup_fd to use and another ->
-> the order of iteration css_for_each_descendant_pre vs _post.
-> wdyt?
+>
+> v1 -> v2: Emit BTF type, add func_id checks in verifier.c and bpf_trace.c,
+> remove build check for CONFIG_BPF_JIT, add selftest check for CONFIG_MPTCP,
+> and add a patch to include CONFIG_IKCONFIG/CONFIG_IKCONFIG_PROC for the
+> BPF self tests.
+>
+> v2 -> v3: Access sysctl through the filesystem to work around CI use of
+> the more limited busybox sysctl command.
+>
+> v3 -> v4: Dropped special case kernel code for tcp_sock is_mptcp, use
+> existing bpf_tcp_helpers.h, and add check for 'ip mptcp monitor' support.
+>
+> v4 -> v5: Use BPF test skeleton, more consistent use of ASSERT macros,
+> drop some unnecessary parameters / checks, and use tracing to acquire
+> MPTCP token.
+>
+> Geliang Tang (6):
+>   bpf: add bpf_skc_to_mptcp_sock_proto
+>   selftests/bpf: Enable CONFIG_IKCONFIG_PROC in config
+>   selftests/bpf: test bpf_skc_to_mptcp_sock
+>   selftests/bpf: verify token of struct mptcp_sock
+>   selftests/bpf: verify ca_name of struct mptcp_sock
+>   selftests/bpf: verify first of struct mptcp_sock
+>
+> Nicolas Rybowski (1):
+>   selftests/bpf: add MPTCP test base
+>
+>  MAINTAINERS                                   |   1 +
+>  include/linux/bpf.h                           |   1 +
+>  include/linux/btf_ids.h                       |   3 +-
+>  include/net/mptcp.h                           |   6 +
+>  include/uapi/linux/bpf.h                      |   7 +
+>  kernel/bpf/verifier.c                         |   1 +
+>  kernel/trace/bpf_trace.c                      |   2 +
+>  net/core/filter.c                             |  18 ++
+>  net/mptcp/Makefile                            |   2 +
+>  net/mptcp/bpf.c                               |  21 +++
+>  scripts/bpf_doc.py                            |   2 +
+>  tools/include/uapi/linux/bpf.h                |   7 +
+>  tools/testing/selftests/bpf/bpf_tcp_helpers.h |  13 ++
+>  tools/testing/selftests/bpf/config            |   3 +
+>  tools/testing/selftests/bpf/network_helpers.c |  40 +++-
+>  tools/testing/selftests/bpf/network_helpers.h |   2 +
+>  .../testing/selftests/bpf/prog_tests/mptcp.c  | 174 ++++++++++++++++++
+>  .../testing/selftests/bpf/progs/mptcp_sock.c  |  89 +++++++++
+>  18 files changed, 382 insertions(+), 10 deletions(-)
+>  create mode 100644 net/mptcp/bpf.c
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/mptcp.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/mptcp_sock.c
+>
+>
+> base-commit: 834650b50ed283d9d34a32b425d668256bf2e487
+> --
+> 2.36.1
+>
 
-So basically extend the current patch so that cgroup_id (or cgroup_fd)
-is optional, and it specifies where the iteration starts. If not
-provided, then we start at root. For our use case where we want the
-iterator to only be invoked for one cgroup we make it return 1 to stop
-after the first iteration.
-
-I assume an order parameter is also needed to specify "pre" for our
-use case to make sure we are starting iteration at the top cgroup (the
-one whose cgroup_id is the parameter of the iterator).
-
-Is my understanding correct? If yes, then this sounds very good. It is
-generic enough, actually iterates cgroups, and works for our use case.
+I've added missing static for test_base and some other helper and
+replaced bzero and memcpy in BPF-side code with __builtin_memset and
+__builtin_memcpy (and dropped string.h include, it's not supposed to
+be used from BPF-side code). Applied to bpf-next, thanks.
