@@ -2,72 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BB7252E37A
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 06:08:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9806752E422
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 06:55:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230108AbiETEHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 00:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
+        id S1345470AbiETEze (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 00:55:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229537AbiETEHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 00:07:00 -0400
-Received: from out30-132.freemail.mail.aliyun.com (out30-132.freemail.mail.aliyun.com [115.124.30.132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 067E962A0A;
-        Thu, 19 May 2022 21:06:56 -0700 (PDT)
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0VDowqRk_1653019609;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0VDowqRk_1653019609)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 20 May 2022 12:06:54 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     davem@davemloft.net
-Cc:     yoshfuji@linux-ipv6.org, dsahern@kernel.org, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] usb: gadget: u_audio: clean up some inconsistent indenting
-Date:   Fri, 20 May 2022 12:06:48 +0800
-Message-Id: <20220520040648.75468-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
+        with ESMTP id S1345472AbiETEzc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 00:55:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 574E814ACB1;
+        Thu, 19 May 2022 21:55:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 970AF61D34;
+        Fri, 20 May 2022 04:55:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF8F0C385A9;
+        Fri, 20 May 2022 04:55:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653022530;
+        bh=CLCqcVk8oQ5AHlPKjIgApjPYQLlW/8o8kBv2dtOfex4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=g38HcaJp5SXG3RVQf7m/sdIL8Z9iFIfBC2ziJfOL3Fnb47BnjLJXj0znD6sEhnQxj
+         PhWeZkEU37nUsnCy/fVSY2go9fVrc0PXD8m1Wjl4ZkvPNZYxBeD0tuVt7UrlN1EhPK
+         iRDyOz19G2GegFyO5E+pwjfXvooM7ZfS3upaaDGhYT97zQz3dnd78W/xLrrfHxpQRs
+         vUEf4tNKKomThOyeUzk9eBc3plmhVABSUBI6maHA16fjXNjv5to9CCKTuQ69qDQXt8
+         S73rJNMCpjCMLbCnuRKFmL3ARpQuDUETzcxAj9Zyn10IzaUumzed87vBKuuPYcJbPG
+         74yCVj0sWgvEQ==
+Date:   Thu, 19 May 2022 21:55:28 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, pabeni@redhat.com,
+        Felix Fietkau <nbd@nbd.name>
+Subject: Re: [PATCH net-next 06/11] netfilter: nf_flow_table: count and
+ limit hw offloaded entries
+Message-ID: <20220519215528.34949f73@kernel.org>
+In-Reply-To: <20220519161136.32fdba19@kernel.org>
+References: <20220519220206.722153-1-pablo@netfilter.org>
+        <20220519220206.722153-7-pablo@netfilter.org>
+        <20220519161136.32fdba19@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Eliminate the follow smatch warning:
+On Thu, 19 May 2022 16:11:36 -0700 Jakub Kicinski wrote:
+> On Fri, 20 May 2022 00:02:01 +0200 Pablo Neira Ayuso wrote:
+> > To improve hardware offload debuggability and scalability introduce
+> > 'nf_flowtable_count_hw' and 'nf_flowtable_max_hw' sysctl entries in new
+> > dedicated 'net/netfilter/ft' namespace. Add new pernet struct nf_ft_net in
+> > order to store the counter and sysctl header of new sysctl table.
+> > 
+> > Count the offloaded flows in workqueue add task handler. Verify that
+> > offloaded flow total is lower than allowed maximum before calling the
+> > driver callbacks. To prevent spamming the 'add' workqueue with tasks when
+> > flows can't be offloaded anymore also check that count is below limit
+> > before queuing offload work. This doesn't prevent all redundant workqueue
+> > task since counter can be taken by concurrent work handler after the check
+> > had been performed but before the offload job is executed but it still
+> > greatly reduces such occurrences. Note that flows that were not offloaded
+> > due to counter being larger than the cap can still be offloaded via refresh
+> > function.
+> > 
+> > Ensure that flows are accounted correctly by verifying IPS_HW_OFFLOAD_BIT
+> > value before counting them. This ensures that add/refresh code path
+> > increments the counter exactly once per flow when setting the bit and
+> > decrements it only for accounted flows when deleting the flow with the bit
+> > set.  
+> 
+> Why a sysctl and not a netlink attr per table or per device?
 
-drivers/usb/gadget/function/u_audio.c:1005 g_audio_setup() warn:
-inconsistent indenting.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/usb/gadget/function/u_audio.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/usb/gadget/function/u_audio.c b/drivers/usb/gadget/function/u_audio.c
-index 4561d7a183ff..a84f051cfbf5 100644
---- a/drivers/usb/gadget/function/u_audio.c
-+++ b/drivers/usb/gadget/function/u_audio.c
-@@ -1001,9 +1001,8 @@ int g_audio_setup(struct g_audio *g_audio, const char *pcm_name,
- 
- 	if (c_chmask) {
- 		struct uac_rtd_params *prm = &uac->c_prm;
--
--    spin_lock_init(&prm->lock);
--    uac->c_prm.uac = uac;
-+		spin_lock_init(&prm->lock);
-+		uac->c_prm.uac = uac;
- 		prm->max_psize = g_audio->out_ep_maxpsize;
- 
- 		prm->reqs = kcalloc(params->req_number,
--- 
-2.20.1.7.g153144c
-
+Let me do something unorthodox and pull just the first 4 patches 
+for now so the warning goes away...
