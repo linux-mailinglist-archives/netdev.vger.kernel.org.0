@@ -2,41 +2,41 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E8FB52F193
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:26:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7981352F187
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:26:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352174AbiETRXu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 13:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34542 "EHLO
+        id S1352187AbiETRYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 13:24:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352181AbiETRXr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:23:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 68249187D9C
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:23:45 -0700 (PDT)
+        with ESMTP id S1352176AbiETRYA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:24:00 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8BA17187DB6
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 10:23:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653067424;
+        s=mimecast20190719; t=1653067428;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ese622/PjwlbZK8BGVrfy4abZ5tLs60liyPxNETnN7U=;
-        b=WIeS4sEwIKwOzL41yUc2mcQWh6JPcKWUEHtJbMXfybYOkqwVO/CBCmVRsdouX/r5BJNdii
-        zEZazsYfwy+yl8uOxxve5QI/7EhXYuxibmgN5IC7usl7nbHltkwBexCSaaDQgSx1x7dYrE
-        3UIMejl1IdWlPDjxw1eLxWmPo6DLkvU=
+        bh=RwJhQswXs8DRWPiKRZyfAdOUa8pNFYiVHsGQwvzSwJs=;
+        b=WKUFLcroXLT23vgoFE1btWfOH7dB8fPCjfTio/oZOpCvABM2zQpu1wvReHIG/OUJfygvEg
+        5Yn5Qh+YL+jjTJpz3RsPHtglAT2m7Qjq8x3Ag6Y4RPku++FssT1/RWzru4A0WQ2kSCcQWh
+        8s2gHcRffs14ICzU8Abmo+7kx/Joa0o=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-252-7345v9CAPv2lK4D147Vy5g-1; Fri, 20 May 2022 13:23:38 -0400
-X-MC-Unique: 7345v9CAPv2lK4D147Vy5g-1
+ us-mta-595-hTE2Afj0PlaaSHtniuPgdA-1; Fri, 20 May 2022 13:23:44 -0400
+X-MC-Unique: hTE2Afj0PlaaSHtniuPgdA-1
 Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 84B0685A5B5;
-        Fri, 20 May 2022 17:23:37 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 83F088015BA;
+        Fri, 20 May 2022 17:23:42 +0000 (UTC)
 Received: from eperezma.remote.csb (unknown [10.39.192.124])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 019E6492C14;
-        Fri, 20 May 2022 17:23:32 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CB6AF492C14;
+        Fri, 20 May 2022 17:23:37 +0000 (UTC)
 From:   =?UTF-8?q?Eugenio=20P=C3=A9rez?= <eperezma@redhat.com>
 To:     virtualization@lists.linux-foundation.org,
         Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
@@ -56,9 +56,9 @@ Cc:     Stefano Garzarella <sgarzare@redhat.com>,
         Parav Pandit <parav@nvidia.com>,
         Dan Carpenter <dan.carpenter@oracle.com>,
         Zhang Min <zhang.min9@zte.com.cn>
-Subject: [PATCH 1/4] vdpa: Add stop operation
-Date:   Fri, 20 May 2022 19:23:22 +0200
-Message-Id: <20220520172325.980884-2-eperezma@redhat.com>
+Subject: [PATCH 2/4] vhost-vdpa: introduce STOP backend feature bit
+Date:   Fri, 20 May 2022 19:23:23 +0200
+Message-Id: <20220520172325.980884-3-eperezma@redhat.com>
 In-Reply-To: <20220520172325.980884-1-eperezma@redhat.com>
 References: <20220520172325.980884-1-eperezma@redhat.com>
 MIME-Version: 1.0
@@ -75,38 +75,69 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This operation is optional: It it's not implemented, backend feature bit
-will not be exposed.
+Userland knows if it can stop the device or not by checking this feature
+bit.
+
+It's only offered if the vdpa driver backend implements the stop()
+operation callback, and try to set it if the backend does not offer that
+callback is an error.
 
 Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
 ---
- include/linux/vdpa.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/vhost/vdpa.c             | 13 +++++++++++++
+ include/uapi/linux/vhost_types.h |  2 ++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-index 15af802d41c4..ddfebc4e1e01 100644
---- a/include/linux/vdpa.h
-+++ b/include/linux/vdpa.h
-@@ -215,6 +215,11 @@ struct vdpa_map_file {
-  * @reset:			Reset device
-  *				@vdev: vdpa device
-  *				Returns integer: success (0) or error (< 0)
-+ * @stop:			Stop or resume the device (optional, but it must
-+ *				be implemented if require device stop)
-+ *				@vdev: vdpa device
-+ *				@stop: stop (true), not stop (false)
-+ *				Returns integer: success (0) or error (< 0)
-  * @get_config_size:		Get the size of the configuration space includes
-  *				fields that are conditional on feature bits.
-  *				@vdev: vdpa device
-@@ -316,6 +321,7 @@ struct vdpa_config_ops {
- 	u8 (*get_status)(struct vdpa_device *vdev);
- 	void (*set_status)(struct vdpa_device *vdev, u8 status);
- 	int (*reset)(struct vdpa_device *vdev);
-+	int (*stop)(struct vdpa_device *vdev, bool stop);
- 	size_t (*get_config_size)(struct vdpa_device *vdev);
- 	void (*get_config)(struct vdpa_device *vdev, unsigned int offset,
- 			   void *buf, unsigned int len);
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index 1f1d1c425573..a325bc259afb 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdpa *v,
+ 	return 0;
+ }
+ 
++static bool vhost_vdpa_can_stop(const struct vhost_vdpa *v)
++{
++	struct vdpa_device *vdpa = v->vdpa;
++	const struct vdpa_config_ops *ops = vdpa->config;
++
++	return ops->stop;
++}
++
+ static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user *featurep)
+ {
+ 	struct vdpa_device *vdpa = v->vdpa;
+@@ -577,6 +585,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+ 			return -EFAULT;
+ 		if (features & ~VHOST_VDPA_BACKEND_FEATURES)
+ 			return -EOPNOTSUPP;
++		if ((features & VHOST_BACKEND_F_STOP) &&
++		     !vhost_vdpa_can_stop(v))
++			return -EOPNOTSUPP;
+ 		vhost_set_backend_features(&v->vdev, features);
+ 		return 0;
+ 	}
+@@ -624,6 +635,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+ 		break;
+ 	case VHOST_GET_BACKEND_FEATURES:
+ 		features = VHOST_VDPA_BACKEND_FEATURES;
++		if (vhost_vdpa_can_stop(v))
++			features |= VHOST_BACKEND_F_STOP;
+ 		if (copy_to_user(featurep, &features, sizeof(features)))
+ 			r = -EFAULT;
+ 		break;
+diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhost_types.h
+index 634cee485abb..2758e665791b 100644
+--- a/include/uapi/linux/vhost_types.h
++++ b/include/uapi/linux/vhost_types.h
+@@ -161,5 +161,7 @@ struct vhost_vdpa_iova_range {
+  * message
+  */
+ #define VHOST_BACKEND_F_IOTLB_ASID  0x3
++/* Stop device from processing virtqueue buffers */
++#define VHOST_BACKEND_F_STOP  0x4
+ 
+ #endif
 -- 
 2.27.0
 
