@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A902652F113
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:50:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FECA52F114
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:50:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347235AbiETQuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 12:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60756 "EHLO
+        id S1347840AbiETQuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 12:50:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239565AbiETQuN (ORCPT
+        with ESMTP id S232758AbiETQuN (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:50:13 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440AD36313
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 435C2340D1
         for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:50:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C42E261E76
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C64F561E77
         for <netdev@vger.kernel.org>; Fri, 20 May 2022 16:50:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D66F5C385A9;
-        Fri, 20 May 2022 16:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 21908C34116;
+        Fri, 20 May 2022 16:50:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1653065412;
-        bh=qWLxXVYRQ/qtEpXVWNFXSRg534yfFjTKs7wBQsMpy3A=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ACC3/88Hp0JJ5Pj08fFGNyw/Y13U7J5fxDyccN72gg3ZoI3QJ8d9JGbaCWGShxANY
-         I1syGlCRfUW6nW2IykGtyEzB92S5s7dh7n02vD2yMCk/a/0ALbF+78lXQ9XjVY673d
-         Z2mTogUDD09oN/Z2Xs7E2QtbTSg6I7DS5N8NUywuHuspGKjZllDPkKLIjYA7FhnlTN
-         Rh415EBZoA7ze99wE7MryVj3671OEqjZIIb5qaxfvTnCKFPb8avqHtevdOxuZsPIBn
-         FmcDVNT+atmmPFPxyvB9hRIjCFYr0vzg5iJwGSah9uvKmLUhzWXbmm1n2oP/V1B61n
-         wvp9s9owW19eg==
-Date:   Fri, 20 May 2022 09:50:10 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Laight <David.Laight@ACULAB.COM>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "edumazet@google.com" <edumazet@google.com>,
-        "pabeni@redhat.com" <pabeni@redhat.com>,
-        "jesse.brandeburg@intel.com" <jesse.brandeburg@intel.com>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>
-Subject: Re: [PATCH net-next] eth: ice: silence the GCC 12 array-bounds
- warning
-Message-ID: <20220520095010.0f85db7f@kernel.org>
-In-Reply-To: <fbde22661c6b4d5f82ca47d5703ab7a8@AcuMS.aculab.com>
-References: <20220520060906.2311308-1-kuba@kernel.org>
-        <fbde22661c6b4d5f82ca47d5703ab7a8@AcuMS.aculab.com>
+        bh=sd5e97BxUEp5Y75gaChUeOdcrrFRH18yLOpxbCVaxpA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=A1Kdx33P85OYdkHPvxsypXp0HBKHerE2ase4DXQBDdNQ/azi/m4LtNfIGjsWBMLYf
+         C7B7o6TdNq/LPgU1kResSpTrx4w7UmKkpCp/jwGJxbq+lpEMknSeSAx4Uh1GGsNtNx
+         o7dA1odZkh/AqSY67SCyrX6/e3D3CHcfQbGdxVBqaf1LpJH8V7sXNNANvRdCND9yH5
+         LpXAFY/YIzXtehhCdC43d7Z5fj8sCHI+m7YRz29mLhkQnl6CR4sWEQJ2b+NpFj2bFJ
+         hArQlGOR76TOsteGtlaUEtAeM/4bTF/acbckfR8zGLgH0fzp1r1NjptGoWh0DMGko6
+         2beUMZrAtK3Rg==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 01FDFF0389D;
+        Fri, 20 May 2022 16:50:12 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] tcp_ipv6: set the drop_reason in the right place
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <165306541200.23981.12296293606236163499.git-patchwork-notify@kernel.org>
+Date:   Fri, 20 May 2022 16:50:12 +0000
+References: <20220520021347.2270207-1-kuba@kernel.org>
+In-Reply-To: <20220520021347.2270207-1-kuba@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
+        pabeni@redhat.com, yoshfuji@linux-ipv6.org, dsahern@kernel.org,
+        flyingpeng@tencent.com, imagedong@tencent.com,
+        benbjiang@tencent.com
 X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -59,23 +58,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 May 2022 12:58:35 +0000 David Laight wrote:
-> > +# FIXME: temporarily silence -Warray-bounds on non W=1 builds
-> > +ifndef KBUILD_EXTRA_WARN
-> > +CFLAGS_ice_switch.o += $(call cc-disable-warning, array-bounds)
-> > +endif
-> > --
-> > 2.34.3  
-> 
-> Is it possible to just add:
-> 
-> CFLAGS_ice_switch.o += $(disable-Warray-bounds)
-> 
-> and then ensure that disable-Warray-bounds is defined
-> (and expanded) by the time it is actually expanded?
-> This might be before or after the makefile is expanded.
-> But it would mean that the work is only done once.
-> I've an idea that 'call cc-disable-warning' is non-trivial.
+Hello:
 
-Happy to do whatever's recommended but the $(disable-Warray-bounds)
-does not work, I still see the warning.
+This patch was applied to netdev/net-next.git (master)
+by Jakub Kicinski <kuba@kernel.org>:
+
+On Thu, 19 May 2022 19:13:47 -0700 you wrote:
+> Looks like the IPv6 version of the patch under Fixes was
+> a copy/paste of the IPv4 but hit the wrong spot.
+> It is tcp_v6_rcv() which uses drop_reason as a boolean, and
+> needs to be protected against reason == 0 before calling free.
+> tcp_v6_do_rcv() has a pretty straightforward flow.
+> 
+> Fixes: f8319dfd1b3b ("net: tcp: reset 'drop_reason' to NOT_SPCIFIED in tcp_v{4,6}_rcv()")
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] tcp_ipv6: set the drop_reason in the right place
+    https://git.kernel.org/netdev/net-next/c/dc7769244e03
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
