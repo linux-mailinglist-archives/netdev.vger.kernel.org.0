@@ -2,62 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E37F52F106
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:48:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70DFA52F104
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 18:48:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344626AbiETQq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 12:46:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
+        id S1351928AbiETQrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 12:47:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54706 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351893AbiETQqj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:46:39 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA612F02E
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:46:38 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id b5so782218plx.10
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:46:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=kJ+UShlBvuewG0eI4K9vA+11tXumL5qkN39P3NCFnwA=;
-        b=dQ6DUOylIAZfzjz9gVbUdwr/W+D6oKkdrN/mXqvMBZC87ty9/hKNCOOj3bh7QvhbgX
-         diGZ7PFGOBvUoxfB5a9WmZQG0isTXGFCVCgxIsAcsqbgA19wwTk+UtlZALSCBCBdTdiU
-         NRiNME1lhO2c+k/r503yZYf+o+polBdrfRFWI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kJ+UShlBvuewG0eI4K9vA+11tXumL5qkN39P3NCFnwA=;
-        b=Ku5GAvQLb95wFXtawWreBoa4mlK2td3qTpKQaH+2RUA3ERbhcPEfGGLZmcmFWF/J+y
-         OQUj7NcvqFoCel1D8dSPnjzn9tGcSzNioyQ4h9PgUsfT/4oNtnylCcLe+R2Z/35RS6eC
-         XCXmup3VGiz6N1278niSSmATUpi6mp+W++cjhLrv694yJ5bFM99EQSw9tIequ+uXvM6C
-         Z9MJtJSE2HsU++SjWvD7ktzetcuRC791wroWWK1E3BDxiHCaJInRgUGkh9oGC/+g/t9N
-         02q6GMaqYJZnc0DqjV9x4qjFZC/IQFLkhvFaq0sJ3CH7adh7jAwuAkMl2ey8HKgV5gLe
-         KKxA==
-X-Gm-Message-State: AOAM531PZ0WR8BoPo0KkGJ56eAu7rvviIs2+HGkVr0ZOTQRjy+ziLNwK
-        3KB86Q/Ytb7QT1H1qHJitcEUvnM4takB+Q==
-X-Google-Smtp-Source: ABdhPJwBfT2lFs+gFRXdcNanOlE7mOBfL+202Ba/vdgIyTzpVky8H7DgKyUmd3askWyHWxvBpB78Fg==
-X-Received: by 2002:a17:902:d550:b0:161:fdb8:3d9d with SMTP id z16-20020a170902d55000b00161fdb83d9dmr1400322plf.42.1653065197620;
-        Fri, 20 May 2022 09:46:37 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id kx14-20020a17090b228e00b001dedb8bbe66sm2049763pjb.33.2022.05.20.09.46.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 09:46:36 -0700 (PDT)
-Date:   Fri, 20 May 2022 09:46:36 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: GCC 12 warnings
-Message-ID: <202205200938.1EE1FD1@keescook>
-References: <20220519193618.6539f9d9@kernel.org>
+        with ESMTP id S1351864AbiETQqr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 12:46:47 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A0E2E3587E
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 09:46:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653065204;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=zbihMZvF6i49xmhwwGzV9aEpJE5fX8yajKPGjYCvsNU=;
+        b=HEW7HQQ/ap9pJfFXQRfKDWFJXMdBLSKEHFA7ydgfuEzI9B4B3uhRlYEU1i9bDqLOwrDzM0
+        NziQROkTguHAev9vPLTOuF7ugtl+emr78Qv8TL1ykAZ/sWzRe8bqnlqnp7ET7+J9ncgFxk
+        fhwt4gdptX5M/LVi+CyMEy1HnTBP5pk=
+Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
+ [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-117-04SFnWmsNUWtXiW8B-kA6g-1; Fri, 20 May 2022 12:46:41 -0400
+X-MC-Unique: 04SFnWmsNUWtXiW8B-kA6g-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.rdu2.redhat.com [10.11.54.7])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 62D641C04B59;
+        Fri, 20 May 2022 16:46:41 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id AC9E01410DD5;
+        Fri, 20 May 2022 16:46:40 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net-next 7/7] afs: Adjust ACK interpretation to try and cope
+ with NAT
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 20 May 2022 17:46:40 +0100
+Message-ID: <165306520004.34989.10316164008430043085.stgit@warthog.procyon.org.uk>
+In-Reply-To: <165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk>
+References: <165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220519193618.6539f9d9@kernel.org>
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.7
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -65,63 +66,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 19, 2022 at 07:36:18PM -0700, Jakub Kicinski wrote:
-> I'm sure you're involved in a number of glorious GCC 12 conversations..
+If a client's address changes, say if it is NAT'd, this can disrupt an in
+progress operation.  For most operations, this is not much of a problem,
+but StoreData can be different as some servers modify the target file as
+the data comes in, so if a store request is disrupted, the file can get
+corrupted on the server.
 
-Yeah, and I think I've even found a gcc bug. :|
+The problem is that the server doesn't recognise packets that come after
+the change of address as belonging to the original client and will bounce
+them, either by sending an OUT_OF_SEQUENCE ACK to the apparent new call if
+the packet number falls within the initial sequence number window of a call
+or by sending an EXCEEDS_WINDOW ACK if it falls outside and then aborting
+it.  In both cases, firstPacket will be 1 and previousPacket will be 0 in
+the ACK information.
 
-> We have a handful of drivers in networking which get hit by
-> -Warray-bounds because they allocate partial structures (I presume 
-> to save memory, misguided but more than 15min of work to refactor).
+Fix this by the following means:
 
-Yeah, this idiom is pretty common I've noticed -- I fixed a few of these
-in the initial work for -Warray-bounds on GCC 11 and earlier, but wow
-did GCC 12 do something extra internally.
+ (1) If a client call receives an EXCEEDS_WINDOW ACK with firstPacket as 1
+     and previousPacket as 0, assume this indicates that the server saw the
+     incoming packets from a different peer and thus as a different call.
+     Fail the call with error -ENETRESET.
 
-> Since -Warray-bounds is included by default now this is making our
-> lives a little hard [1]. Is there a wider effort to address this?
-> If not do you have a recommendation on how to deal with it?
+ (2) Also fail the call if a similar OUT_OF_SEQUENCE ACK occurs if the
+     first packet has been hard-ACK'd.  If it hasn't been hard-ACK'd, the
+     ACK packet will cause it to get retransmitted, so the call will just
+     be repeated.
 
-Looks like the issue was this?
-https://lore.kernel.org/all/20220520145957.1ec50e44@canb.auug.org.au/
+ (3) Make afs_select_fileserver() treat -ENETRESET as a straight fail of
+     the operation.
 
-Ah, from cf2df74e202d ("net: fix dev_fill_forward_path with pppoe + bridge")
+ (4) Prioritise the error code over things like -ECONNRESET as the server
+     did actually respond.
 
-You mean you missed this particular warning because of the other GCC
-12 warnings?
+ (5) Make writeback treat -ENETRESET as a retryable error and make it
+     redirty all the pages involved in a write so that the VM will retry.
 
-> My best idea is to try to isolate the bad files and punt -Warray-bounds
-> to W=1 for those, so we can prevent more of them getting in but not
-> break WERROR builds on GCC 12. That said, I'm not sure how to achieve
-> that.. This for example did not work:
-> 
-> --- a/drivers/net/ethernet/mediatek/Makefile
-> +++ b/drivers/net/ethernet/mediatek/Makefile
-> @@ -9,5 +9,9 @@ mtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed.o
->  ifdef CONFIG_DEBUG_FS
->  mtk_eth-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed_debugfs.o
->  endif
->  obj-$(CONFIG_NET_MEDIATEK_SOC_WED) += mtk_wed_ops.o
->  obj-$(CONFIG_NET_MEDIATEK_STAR_EMAC) += mtk_star_emac.o
-> +
-> +ifneq ($(findstring 1, $(KBUILD_EXTRA_WARN)),)
-> +CFLAGS_mtk_ppe.o += -Wno-array-bounds
-> +endif
+Note that there is still a circumstance that I can't easily deal with: if
+the operation is fully received and processed by the server, but the reply
+is lost due to address change.  There's no way to know if the op happened.
+We can examine the server, but a conflicting change could have been made by
+a third party - and we can't tell the difference.  In such a case, a
+message like:
 
-This worked for me:
+    kAFS: vnode modified {100058:146266} b7->b8 YFS.StoreData64 (op=2646a)
 
-diff --git a/drivers/net/can/usb/kvaser_usb/Makefile b/drivers/net/can/usb/kvaser_usb/Makefile
-index cf260044f0b9..43eb921f9102 100644
---- a/drivers/net/can/usb/kvaser_usb/Makefile
-+++ b/drivers/net/can/usb/kvaser_usb/Makefile
-@@ -1,3 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- obj-$(CONFIG_CAN_KVASER_USB) += kvaser_usb.o
- kvaser_usb-y = kvaser_usb_core.o kvaser_usb_leaf.o kvaser_usb_hydra.o
+will be logged to dmesg on the next op to touch the file and the client
+will reset the inode state, including invalidating clean parts of the
+pagecache.
+
+Reported-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: linux-afs@lists.infradead.org
+Link: http://lists.infradead.org/pipermail/linux-afs/2021-December/004811.html # v1
+---
+
+ fs/afs/misc.c     |    5 ++++-
+ fs/afs/rotate.c   |    4 ++++
+ fs/afs/write.c    |    1 +
+ net/rxrpc/input.c |   27 +++++++++++++++++++++++++++
+ 4 files changed, 36 insertions(+), 1 deletion(-)
+
+diff --git a/fs/afs/misc.c b/fs/afs/misc.c
+index 1d1a8debe472..933e67fcdab1 100644
+--- a/fs/afs/misc.c
++++ b/fs/afs/misc.c
+@@ -163,8 +163,11 @@ void afs_prioritise_error(struct afs_error *e, int error, u32 abort_code)
+ 		return;
+ 
+ 	case -ECONNABORTED:
++		error = afs_abort_to_error(abort_code);
++		fallthrough;
++	case -ENETRESET: /* Responded, but we seem to have changed address */
+ 		e->responded = true;
+-		e->error = afs_abort_to_error(abort_code);
++		e->error = error;
+ 		return;
+ 	}
+ }
+diff --git a/fs/afs/rotate.c b/fs/afs/rotate.c
+index 79e1a5f6701b..a840c3588ebb 100644
+--- a/fs/afs/rotate.c
++++ b/fs/afs/rotate.c
+@@ -292,6 +292,10 @@ bool afs_select_fileserver(struct afs_operation *op)
+ 		op->error = error;
+ 		goto iterate_address;
+ 
++	case -ENETRESET:
++		pr_warn("kAFS: Peer reset %s (op=%x)\n",
++			op->type ? op->type->name : "???", op->debug_id);
++		fallthrough;
+ 	case -ECONNRESET:
+ 		_debug("call reset");
+ 		op->error = error;
+diff --git a/fs/afs/write.c b/fs/afs/write.c
+index 4763132ca57e..c1bc52ac7de1 100644
+--- a/fs/afs/write.c
++++ b/fs/afs/write.c
+@@ -636,6 +636,7 @@ static ssize_t afs_write_back_from_locked_folio(struct address_space *mapping,
+ 	case -EKEYEXPIRED:
+ 	case -EKEYREJECTED:
+ 	case -EKEYREVOKED:
++	case -ENETRESET:
+ 		afs_redirty_pages(wbc, mapping, start, len);
+ 		mapping_set_error(mapping, ret);
+ 		break;
+diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
+index 853b869b026a..16c0af41c202 100644
+--- a/net/rxrpc/input.c
++++ b/net/rxrpc/input.c
+@@ -903,6 +903,33 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ 				  rxrpc_propose_ack_respond_to_ack);
+ 	}
+ 
++	/* If we get an EXCEEDS_WINDOW ACK from the server, it probably
++	 * indicates that the client address changed due to NAT.  The server
++	 * lost the call because it switched to a different peer.
++	 */
++	if (unlikely(buf.ack.reason == RXRPC_ACK_EXCEEDS_WINDOW) &&
++	    first_soft_ack == 1 &&
++	    prev_pkt == 0 &&
++	    rxrpc_is_client_call(call)) {
++		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
++					  0, -ENETRESET);
++		return;
++	}
 +
-+ifeq ($(KBUILD_EXTRA_WARN),)
-+CFLAGS_kvaser_usb_hydra.o += -Wno-array-bounds
-+endif
++	/* If we get an OUT_OF_SEQUENCE ACK from the server, that can also
++	 * indicate a change of address.  However, we can retransmit the call
++	 * if we still have it buffered to the beginning.
++	 */
++	if (unlikely(buf.ack.reason == RXRPC_ACK_OUT_OF_SEQUENCE) &&
++	    first_soft_ack == 1 &&
++	    prev_pkt == 0 &&
++	    call->tx_hard_ack == 0 &&
++	    rxrpc_is_client_call(call)) {
++		rxrpc_set_call_completion(call, RXRPC_CALL_REMOTELY_ABORTED,
++					  0, -ENETRESET);
++		return;
++	}
++
+ 	/* Discard any out-of-order or duplicate ACKs (outside lock). */
+ 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
+ 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
 
--- 
-Kees Cook
+
