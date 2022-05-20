@@ -2,146 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5985852E610
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 09:19:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E20752E614
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 09:20:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346257AbiETHTT convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 20 May 2022 03:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48402 "EHLO
+        id S1346307AbiETHUK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 03:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231572AbiETHTN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:19:13 -0400
-Received: from mail-qk1-f174.google.com (mail-qk1-f174.google.com [209.85.222.174])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA8F30557;
-        Fri, 20 May 2022 00:19:13 -0700 (PDT)
-Received: by mail-qk1-f174.google.com with SMTP id m1so6353681qkn.10;
-        Fri, 20 May 2022 00:19:13 -0700 (PDT)
+        with ESMTP id S1346269AbiETHUI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 03:20:08 -0400
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C21814641C
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:20:06 -0700 (PDT)
+Received: by mail-pl1-x62c.google.com with SMTP id q4so6673471plr.11
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 00:20:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=arista.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hsjxg2lV0kHqZ2OGp1MCfh1/3ZpmNndhrm6POUvbWnI=;
+        b=AKX0ckYf8ZI5edSV7TwmJosTcQGnse4e+Vfl3LK2R7eqMpRtDtl8Na08m5VXAih5aK
+         dseNsN0Djff0CXnEculuh4Eot/g2q6qhnfP31n5M4x3ArLW8/LXF3jeBV35v8NvNigks
+         F5mHYmZwECadQRhawkRNff09rvzeXeyaEQmusx2Jz/ptC9J7Q8Vb/sOzWHyhyBN58jZe
+         N7gK9xtyZwOxUMjjpbng0EQssqvWXGfQ0N7MKFAYyRxDieRtLGxk86LMtFc7izsXbRTw
+         npZn7rovM35L5l0Cncar9XdfVs1KDKBWUKdxkrkie181C43sm500hGDexJt8Y65SJNQk
+         t5GQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=+GCCZN6JxXJvyJ+kgBCmMkSmKyGomtPqZqdNh5AEW+Q=;
-        b=bqiRjY8ozS6DBYmjXxJS6IG8/lrTGIdAdgQAiGlNYDsUmWt+EhBizLy40kgQ3pWMAl
-         l30iZjljYonB0fkx3o9mHue2QsoslTVH+fzjuReNV+GlM4/p0bz0SpmC/OL4GguojygD
-         yYgdcoa0fsX9VG/at20rodMydPkYUJ6VyxmSShEoaeFeyvQq3iaf3DjTRLSrPksM5jiJ
-         rmC5fs4fubRyASxQ24yeJx/DFhDRUlswgUNx2jLz3RqY9rydNr6JKzRZghigknBakR/C
-         gY/LuuM69DjXQ14pnmhxRmXnapGEIqdMY75tdEF9n56K1dTARwRLvp1yj1cevPxiPPgl
-         5RBA==
-X-Gm-Message-State: AOAM531srQmIXcE0vDxFzkurnFcr7St18RJDFReJfdCdhc4hyfZS/dao
-        o8Oena7D+vCYX+w8suvbujdfxEhoysbYew==
-X-Google-Smtp-Source: ABdhPJxQrN8lVMavG9vVJqyhHxsyo7gbqot5mVnp0NvQoH5PEJTl73qCfD9vzebM4b261GGYm1Xfbw==
-X-Received: by 2002:a37:6902:0:b0:680:da57:1483 with SMTP id e2-20020a376902000000b00680da571483mr5299053qkc.269.1653031151797;
-        Fri, 20 May 2022 00:19:11 -0700 (PDT)
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com. [209.85.128.176])
-        by smtp.gmail.com with ESMTPSA id z20-20020ac875d4000000b002f39b99f678sm2514221qtq.18.2022.05.20.00.19.10
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 May 2022 00:19:11 -0700 (PDT)
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-2fed823dd32so78102537b3.12;
-        Fri, 20 May 2022 00:19:10 -0700 (PDT)
-X-Received: by 2002:a0d:f745:0:b0:2fe:e903:b0f8 with SMTP id
- h66-20020a0df745000000b002fee903b0f8mr8901378ywf.383.1653031150703; Fri, 20
- May 2022 00:19:10 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=hsjxg2lV0kHqZ2OGp1MCfh1/3ZpmNndhrm6POUvbWnI=;
+        b=7InQQEUEl6n4NA/ZuyPb9DX2MSu52AEvx7llu24D5OvfCOCt3/X+FUiNkIWm0W8MFC
+         4yU8/Oj32YirakzjpcgmR2lgr+TJ5/mZqgPSaHsU9Dw0DLryhFGH4Cfj1cxN7XnGE/oi
+         UpE9pH1iBcsgEXsDOz+2mlL03ddGIxbO9/HiycIU4ulYslDEOjcpcaFkSynHdiVmelPp
+         52mtdDGR+neJzyaq4Okhro7fd0dO9VMDij4rQgV+IcwNCeBDWIcZMib+9Q7T1z1O9iZB
+         kbMbr6CY/CpKy8+BRkJYnjwqb514A/nNr5nryptGrZkXem9RwteQA1HIGSK32Yg0FcJM
+         cjcQ==
+X-Gm-Message-State: AOAM530NGW9RXg9GZPrb5ZYI0N7hXRk/GQqmkHszDj6DdwGR79Y6ohR+
+        ZpxGYgcJgx0AoqK7klpcXkNeXZB/0fk9ZOamQxbrf87orRTLxQ==
+X-Google-Smtp-Source: ABdhPJy0P1kA+Qi9bbiBnljc+PhkQb8M4k3s68fhoc6cGxqUck1kCUXPWO9AJTe2PlCORCf0F51fQhfrkGhq7qT/CU4=
+X-Received: by 2002:a17:902:d043:b0:161:e9f7:2afe with SMTP id
+ l3-20020a170902d04300b00161e9f72afemr4025914pll.29.1653031205457; Fri, 20 May
+ 2022 00:20:05 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220519153107.696864-1-clement.leger@bootlin.com> <20220519153107.696864-12-clement.leger@bootlin.com>
-In-Reply-To: <20220519153107.696864-12-clement.leger@bootlin.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 20 May 2022 09:18:58 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUJpNSyX0qK64+W1G6P1S-78mb_+D0-w3kHOFY3VVkANQ@mail.gmail.com>
-Message-ID: <CAMuHMdUJpNSyX0qK64+W1G6P1S-78mb_+D0-w3kHOFY3VVkANQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v5 11/13] ARM: dts: r9a06g032: describe GMAC2
-To:     =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Herve Codina <herve.codina@bootlin.com>,
-        =?UTF-8?Q?Miqu=C3=A8l_Raynal?= <miquel.raynal@bootlin.com>,
-        Milan Stevanovic <milan.stevanovic@se.com>,
-        Jimmy Lalande <jimmy.lalande@se.com>,
-        Pascal Eberhard <pascal.eberhard@se.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
+References: <20220413143434.527-1-aajith@arista.com> <350f6a02-2975-ac1b-1c9d-ab738722a9fe@kernel.org>
+In-Reply-To: <350f6a02-2975-ac1b-1c9d-ab738722a9fe@kernel.org>
+From:   Arun Ajith S <aajith@arista.com>
+Date:   Fri, 20 May 2022 12:49:53 +0530
+Message-ID: <CAOvjArTAce_68CkoUff_=Hi+mr731dsWcQdEbaev4xaMDFZNug@mail.gmail.com>
+Subject: Re: [PATCH net-next v3] net/ipv6: Introduce accept_unsolicited_na
+ knob to implement router-side changes for RFC9131
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
+        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
+        noureddine@arista.com, gk@arista.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-1.4 required=5.0 tests=BAYES_00,
-        FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-        RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Clément
-
-On Thu, May 19, 2022 at 5:32 PM Clément Léger <clement.leger@bootlin.com> wrote:
-> RZ/N1 SoC includes two MAC named GMACx that are compatible with the
-> "snps,dwmac" driver. GMAC1 is connected directly to the MII converter
-> port 1. GMAC2 however can be used as the MAC for the switch CPU
-> management port or can be muxed to be connected directly to the MII
-> converter port 2. This commit add description for the GMAC2 which will
-> be used by the switch description.
+On Thu, Apr 14, 2022 at 3:37 AM David Ahern <dsahern@kernel.org> wrote:
 >
-> Signed-off-by: Clément Léger <clement.leger@bootlin.com>
-
-Thanks for your patch!
-
-> --- a/arch/arm/boot/dts/r9a06g032.dtsi
-> +++ b/arch/arm/boot/dts/r9a06g032.dtsi
-> @@ -200,6 +200,23 @@ nand_controller: nand-controller@40102000 {
->                         status = "disabled";
->                 };
+> On 4/13/22 8:34 AM, Arun Ajith S wrote:
+> > diff --git a/tools/testing/selftests/net/ndisc_unsolicited_na_test.py b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
+> > new file mode 100755
+> > index 000000000000..f508657ee126
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
+> > @@ -0,0 +1,255 @@
+> > +#!/bin/bash
 >
-> +               gmac2: ethernet@44002000 {
-> +                       compatible = "snps,dwmac";
+> that file name suffix should be .sh since it is a bash script; not .py
+>
+> other than that looks good to me.
+>
+> Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Does this need an SoC-specific compatible value?
+Hi David,
 
-> +                       reg = <0x44002000 0x2000>;
-> +                       interrupt-parent = <&gic>;
-> +                       interrupts = <GIC_SPI 37 IRQ_TYPE_LEVEL_HIGH>,
-> +                                    <GIC_SPI 39 IRQ_TYPE_LEVEL_HIGH>,
-> +                                    <GIC_SPI 38 IRQ_TYPE_LEVEL_HIGH>;
-> +                       interrupt-names = "macirq", "eth_wake_irq", "eth_lpi";
-> +                       clock-names = "stmmaceth";
-> +                       clocks = <&sysctrl R9A06G032_HCLK_GMAC1>;
+It has been pointed out to me that I might have read RFC9131 in a
+narrower sense than what was intended.
+The behavior of adding a new entry in the neighbour cache on receiving
+a NA if none exists presently
+shouldn't be limited to unsolicited NAs like in my original patch,
+rather it should extend to all NAs.
 
-Missing "power-domains", also in the DT bindings.
-The driver already uses Runtime PM.
+I am quoting from the RFC below
 
-> +                       snps,multicast-filter-bins = <256>;
-> +                       snps,perfect-filter-entries = <128>;
-> +                       tx-fifo-depth = <2048>;
-> +                       rx-fifo-depth = <4096>;
-> +                       status = "disabled";
-> +               };
-> +
->                 eth_miic: eth-miic@44030000 {
->                         compatible = "renesas,r9a06g032-miic", "renesas,rzn1-miic";
->                         #address-cells = <1>;
+   |  When a valid Neighbor Advertisement is received (either solicited
+   |  or unsolicited), the Neighbor Cache is searched for the target's
+   |  entry.  If no entry exists:
+   |
+   |  *  Hosts SHOULD silently discard the advertisement.  There is no
+   |     need to create an entry if none exists, since the recipient has
+   |     apparently not initiated any communication with the target.
+   |
+   |  *  Routers SHOULD create a new entry for the target address with
+   |     the link-layer address set to the Target Link-Layer Address
+   |     Option (if supplied).  The entry's reachability state MUST be
+   |     set to STALE.  If the received Neighbor Advertisement does not
+   |     contain the Target Link-Layer Address Option, the advertisement
+   |     SHOULD be silently discarded.
 
-Gr{oetje,eeting}s,
+I want to fix this, but this would mean the sysctl name
+accept_unsolicited_na is no longer appropriate
+I see that the net-next window for 5.19 is still open and changing the
+sysctl name
+wouldn't mean changing an existing interface.
+I was thinking of renaming the sysctl to accept_untracked_na to
+highlight that we are accepting NAs even if there is
+no corresponding entry tracked in the neighbor cache.
 
-                        Geert
+Also, there's an error in my comment, where I say "pass up the stack"
+as we don't pass NAs up the stack.
+The comment can be updated as:
+        /* RFC 9131 updates original Neighbour Discovery RFC 4861.
+         * NAs with Target LL Address option without a corresponding
+         * entry in the neighbour cache can now create a STALE neighbour
+         * cache entry on routers.
+         *
+         *   entry accept  fwding  solicited        behaviour
+         * ------- ------  ------  ---------    ----------------------
+         * present      X       X         0     Set state to STALE
+         * present      X       X         1     Set state to REACHABLE
+         *  absent      0       X         X     Do nothing
+         *  absent      1       0         X     Do nothing
+         *  absent      1       1         X     Add a new STALE entry
+         */
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+In summary
+1. accept=0 keeps original(5.18) behavior for all cases.
+2. accept=1 changes original behavior for entry=asbent, fwding=1 case
+provided the NA had specified target link-layer address.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Please let me know what you think.
+
+Thanks,
+Arun
