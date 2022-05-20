@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E28D952F1DB
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:46:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4868B52F1DC
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 19:46:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352313AbiETRqi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 13:46:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49804 "EHLO
+        id S1352333AbiETRqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 13:46:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49858 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352333AbiETRqd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:46:33 -0400
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3C8A2558B;
-        Fri, 20 May 2022 10:46:31 -0700 (PDT)
-Received: by mail-qk1-x734.google.com with SMTP id c1so7417074qkf.13;
-        Fri, 20 May 2022 10:46:31 -0700 (PDT)
+        with ESMTP id S1346185AbiETRqe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 13:46:34 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132192657B;
+        Fri, 20 May 2022 10:46:33 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id i68so6184564qke.11;
+        Fri, 20 May 2022 10:46:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TXuLbv6Ud795AX77Sr1OVy5bwjzT4t+80fcrTgW6BKU=;
-        b=pd/S3rnTcdn5yJXkHH9w/8Q+C6c/rL2UBqTStS/toUsV3jQnsPuv6Pqap0/FEtNamf
-         wnb19eJpa3NI8HT7zPrgMS9oiJImgxyLv/n0gN3PkzS7OX2HYNW2rmpufHfclKjHyWGL
-         K+Y7TwkvV8NLddTxLmxyweKtp2yo4CIUbP9+3R9HPzbgtW+eeQk03AS5X1V5dooM82DM
-         6C3pcFllrUz2zzomyhZ3kwcUqUNgPs7cLI6iQVFAZ5sP0xOnb0juqn11e9Ga/uVu0CxT
-         I/j38F4hvVcjpLWSdJ7PkRywE0OVYtAh4RbF4oHtPf5ctg2YAcK1Ajs/xcKI/diYn9gM
-         4VMw==
+        bh=e37NWnhTKEfHSG/WLy792tnaNL+iXXSI92MlBkiyUAE=;
+        b=Q/7p5dvTq3wYPfbqcVvO40F3/uNJkGXezBkRiBfpwKMLkUNrvIqywpJjKHqhgtC3nA
+         Tsx6ZNckC2a6ETSNM5rK7FK8yCMxUCryP8BHMNZadbzMsLRjxedevI7hDvA9wqNqJ88L
+         42EVCztzgtRD3xDBlUUEXKasonbZZ8i1OYO0nOV+vGvz7+fUnODsqKuGbkcnt0Xe540C
+         umQPw43nT/dOaXUo9mPO85rY95StQZzUHVzGcM8D4rnilk9UJuYDIweCi3YDYzYIttDE
+         DBYKOgPTG3BSy5b1qqe8fW4XfUDfTe26NnYIfcDflKkPIR10zMPZxOm0Oj8I+pPIMVJq
+         bhcw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TXuLbv6Ud795AX77Sr1OVy5bwjzT4t+80fcrTgW6BKU=;
-        b=aHKrwQcKDvPKrt3YLcfF/3JYkGSl1kLjDDM7Osj54aS2X60UDw+/nM0DEDHXNGcJaS
-         SeG7XmIJNxZsT8SK3gv2RGRM//LYe3LCWkvEQbmymOyCsJ6Mu9NaqI2bU3techx2QRu6
-         pxFbF2GHiJtXgyQVHxdws1YreeX3BQXbvGgHIF7CzlKhKYWXwN3cLQZ0Kx1SajWgiWFh
-         z5ZdSRRDQzvHIFiQ568lhx7TAcarav6YRkwp17xgFWctyIJboSJhECMolAPXJqHqNT7y
-         6t8UDnSq6CK9y96lGFjE+hVloNiOQ4WC8X5NamJPgnXhlKDCwrISW642La4niAk/R7fA
-         jAFA==
-X-Gm-Message-State: AOAM531KfK3w/cbT0r3mOttw0kx/PvE+4mKGO2QYy4Il0mz1S9xmIDVs
-        3jp3Jtu9x9cZXMqDgmaJQAVhvhWMjWs=
-X-Google-Smtp-Source: ABdhPJzqDoMfU3MeEMpIL2slD8UlropeGsUMbeexsnlo6hNhzeZUaX65uKSSp4OQadB7NBuko3kvQA==
-X-Received: by 2002:a37:aacf:0:b0:6a3:3c4b:45b6 with SMTP id t198-20020a37aacf000000b006a33c4b45b6mr5255795qke.354.1653068790661;
-        Fri, 20 May 2022 10:46:30 -0700 (PDT)
+        bh=e37NWnhTKEfHSG/WLy792tnaNL+iXXSI92MlBkiyUAE=;
+        b=jW9+tIAhrj+CVtT3R/xuEma7BM4jb2nTVh9KQZDPzGMLsDz14odE/TtH3cpV1jRQOW
+         xNKgM2ljUhhn3H7w4nmnNxq/Y+/xLCyw/ZrLHcFxeX9WGrYcerLFlWB6BSE3R5z3jsQF
+         Moc1nuZ05B3AE5T20G5Rw0Y5n2WmVlDjT1p4M74bmfC9uNI6qrQolHW+BTmuMqe+G3tu
+         Ff3mDlGY87fEbTKhNy4mB0y3D7o8kqIq8GVOtFf6vSGPM7EyCqUF2xbVX/tB78D7Ux5/
+         nj1iUttfuq5I4AD2prsdI6lTYUqFnOgKqpMe3ORnIBa3u0OYBJoE+UBoLC2s/0Noi63a
+         xwpA==
+X-Gm-Message-State: AOAM531ysOZtl4jXbAS7LvDRH3kykwSBX7I9fBV4e7h/a95tsTOXgCwK
+        KoagLKmx4iFvZvCzguCtS8gXD7d63xw=
+X-Google-Smtp-Source: ABdhPJwGO/5dgswrybByaJLRWArYDFYa6d/GBSJMbFEL/JEHnCxhkWUS9wDP8N9gZOVUOhyYfs510w==
+X-Received: by 2002:a05:620a:4451:b0:6a0:add:274b with SMTP id w17-20020a05620a445100b006a00add274bmr7043593qkp.196.1653068791880;
+        Fri, 20 May 2022 10:46:31 -0700 (PDT)
 Received: from pop-os.attlocal.net ([2600:1700:65a0:ab60:2d11:2a88:f2b2:bee0])
-        by smtp.gmail.com with ESMTPSA id cn4-20020a05622a248400b002f91849bf20sm62747qtb.36.2022.05.20.10.46.29
+        by smtp.gmail.com with ESMTPSA id cn4-20020a05622a248400b002f91849bf20sm62747qtb.36.2022.05.20.10.46.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 10:46:30 -0700 (PDT)
+        Fri, 20 May 2022 10:46:31 -0700 (PDT)
 From:   Cong Wang <xiyou.wangcong@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     jhs@mojatatu.com, jiri@resnulli.us, toke@redhat.com,
         bpf@vger.kernel.org, Cong Wang <xiyou.wangcong@gmail.com>,
         Cong Wang <cong.wang@bytedance.com>
-Subject: [RFC Patch v4 1/2] bpf: introduce skb map
-Date:   Fri, 20 May 2022 10:46:15 -0700
-Message-Id: <20220520174616.74684-2-xiyou.wangcong@gmail.com>
+Subject: [RFC Patch v4 2/2] net_sched: introduce eBPF based Qdisc
+Date:   Fri, 20 May 2022 10:46:16 -0700
+Message-Id: <20220520174616.74684-3-xiyou.wangcong@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220520174616.74684-1-xiyou.wangcong@gmail.com>
 References: <20220520174616.74684-1-xiyou.wangcong@gmail.com>
@@ -72,383 +72,649 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Signed-off-by: Cong Wang <cong.wang@bytedance.com>
 ---
- include/linux/skbuff.h |   4 +-
- kernel/bpf/Makefile    |   2 +-
- kernel/bpf/skb_map.c   | 337 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 341 insertions(+), 2 deletions(-)
- create mode 100644 kernel/bpf/skb_map.c
+ include/linux/bpf_types.h      |   2 +
+ include/uapi/linux/bpf.h       |  15 +
+ include/uapi/linux/pkt_sched.h |  17 ++
+ net/sched/Kconfig              |  15 +
+ net/sched/Makefile             |   1 +
+ net/sched/sch_bpf.c            | 520 +++++++++++++++++++++++++++++++++
+ 6 files changed, 570 insertions(+)
+ create mode 100644 net/sched/sch_bpf.c
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index dc4b3e1cf21b..7fa893008a64 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -931,7 +931,9 @@ struct sk_buff {
- 				unsigned long		dev_scratch;
- 			};
- 		};
--		struct rb_node		rbnode; /* used in netem, ip4 defrag, and tcp stack */
-+		struct rb_node		rbnode; /* used in eBPF skb map, netem, ip4 defrag, and tcp
-+						 * stack
-+						 */
- 		struct list_head	list;
- 		struct llist_node	ll_node;
- 	};
-diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-index 057ba8e01e70..37183df5b3ba 100644
---- a/kernel/bpf/Makefile
-+++ b/kernel/bpf/Makefile
-@@ -8,7 +8,7 @@ CFLAGS_core.o += $(call cc-disable-warning, override-init) $(cflags-nogcse-yy)
+diff --git a/include/linux/bpf_types.h b/include/linux/bpf_types.h
+index 2b9112b80171..c3dac1c6b00e 100644
+--- a/include/linux/bpf_types.h
++++ b/include/linux/bpf_types.h
+@@ -8,6 +8,8 @@ BPF_PROG_TYPE(BPF_PROG_TYPE_SCHED_CLS, tc_cls_act,
+ 	      struct __sk_buff, struct sk_buff)
+ BPF_PROG_TYPE(BPF_PROG_TYPE_SCHED_ACT, tc_cls_act,
+ 	      struct __sk_buff, struct sk_buff)
++//BPF_PROG_TYPE(BPF_PROG_TYPE_SCHED_QDISC, tc_cls_act,
++//	      struct __sk_buff, struct sk_buff)
+ BPF_PROG_TYPE(BPF_PROG_TYPE_XDP, xdp,
+ 	      struct xdp_md, struct xdp_buff)
+ #ifdef CONFIG_CGROUP_BPF
+diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+index 0210f85131b3..130933bf5034 100644
+--- a/include/uapi/linux/bpf.h
++++ b/include/uapi/linux/bpf.h
+@@ -952,6 +952,7 @@ enum bpf_prog_type {
+ 	BPF_PROG_TYPE_LSM,
+ 	BPF_PROG_TYPE_SK_LOOKUP,
+ 	BPF_PROG_TYPE_SYSCALL, /* a program that can execute syscalls */
++	BPF_PROG_TYPE_SCHED_QDISC,
+ };
  
- obj-$(CONFIG_BPF_SYSCALL) += syscall.o verifier.o inode.o helpers.o tnum.o bpf_iter.o map_iter.o task_iter.o prog_iter.o link_iter.o
- obj-$(CONFIG_BPF_SYSCALL) += hashtab.o arraymap.o percpu_freelist.o bpf_lru_list.o lpm_trie.o map_in_map.o bloom_filter.o
--obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o
-+obj-$(CONFIG_BPF_SYSCALL) += local_storage.o queue_stack_maps.o ringbuf.o skb_map.o
- obj-$(CONFIG_BPF_SYSCALL) += bpf_local_storage.o bpf_task_storage.o
- obj-${CONFIG_BPF_LSM}	  += bpf_inode_storage.o
- obj-$(CONFIG_BPF_SYSCALL) += disasm.o
-diff --git a/kernel/bpf/skb_map.c b/kernel/bpf/skb_map.c
+ enum bpf_attach_type {
+@@ -6669,4 +6670,18 @@ struct bpf_core_relo {
+ 	enum bpf_core_relo_kind kind;
+ };
+ 
++struct sch_bpf_ctx {
++	struct __sk_buff *skb;
++	__u32 classid;
++	__u64 delay;
++};
++
++enum {
++	SCH_BPF_OK,
++	SCH_BPF_QUEUED,
++	SCH_BPF_DROP,
++	SCH_BPF_THROTTLE,
++	SCH_BPF_CONTINUE,
++};
++
+ #endif /* _UAPI__LINUX_BPF_H__ */
+diff --git a/include/uapi/linux/pkt_sched.h b/include/uapi/linux/pkt_sched.h
+index f292b467b27f..b51eb712517a 100644
+--- a/include/uapi/linux/pkt_sched.h
++++ b/include/uapi/linux/pkt_sched.h
+@@ -1267,4 +1267,21 @@ enum {
+ 
+ #define TCA_ETS_MAX (__TCA_ETS_MAX - 1)
+ 
++#define TCA_SCH_BPF_FLAG_DIRECT _BITUL(0)
++enum {
++	TCA_SCH_BPF_UNSPEC,
++	TCA_SCH_BPF_FLAGS,		/* u32 */
++	TCA_SCH_BPF_ENQUEUE_PROG_NAME,	/* string */
++	TCA_SCH_BPF_ENQUEUE_PROG_FD,	/* u32 */
++	TCA_SCH_BPF_ENQUEUE_PROG_ID,	/* u32 */
++	TCA_SCH_BPF_ENQUEUE_PROG_TAG,	/* data */
++	TCA_SCH_BPF_DEQUEUE_PROG_NAME,	/* string */
++	TCA_SCH_BPF_DEQUEUE_PROG_FD,	/* u32 */
++	TCA_SCH_BPF_DEQUEUE_PROG_ID,	/* u32 */
++	TCA_SCH_BPF_DEQUEUE_PROG_TAG,	/* data */
++	__TCA_SCH_BPF_MAX,
++};
++
++#define TCA_SCH_BPF_MAX (__TCA_SCH_BPF_MAX - 1)
++
+ #endif
+diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+index 1e8ab4749c6c..19f68aac79b1 100644
+--- a/net/sched/Kconfig
++++ b/net/sched/Kconfig
+@@ -439,6 +439,21 @@ config NET_SCH_ETS
+ 
+ 	  If unsure, say N.
+ 
++config NET_SCH_BPF
++	tristate "eBPF based programmable queue discipline"
++	help
++	  This eBPF based queue discipline offers a way to program your
++	  own packet scheduling algorithm. This is a classful qdisc which
++	  also allows you to decide the hierarchy.
++
++	  Say Y here if you want to use the eBPF based programmable queue
++	  discipline.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called sch_bpf.
++
++	  If unsure, say N.
++
+ menuconfig NET_SCH_DEFAULT
+ 	bool "Allow override default queue discipline"
+ 	help
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index dd14ef413fda..9ef0d579f5ff 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -65,6 +65,7 @@ obj-$(CONFIG_NET_SCH_FQ_PIE)	+= sch_fq_pie.o
+ obj-$(CONFIG_NET_SCH_CBS)	+= sch_cbs.o
+ obj-$(CONFIG_NET_SCH_ETF)	+= sch_etf.o
+ obj-$(CONFIG_NET_SCH_TAPRIO)	+= sch_taprio.o
++obj-$(CONFIG_NET_SCH_BPF)	+= sch_bpf.o
+ 
+ obj-$(CONFIG_NET_CLS_U32)	+= cls_u32.o
+ obj-$(CONFIG_NET_CLS_ROUTE4)	+= cls_route.o
+diff --git a/net/sched/sch_bpf.c b/net/sched/sch_bpf.c
 new file mode 100644
-index 000000000000..76be35ebc463
+index 000000000000..b54365a6cb2f
 --- /dev/null
-+++ b/kernel/bpf/skb_map.c
-@@ -0,0 +1,337 @@
-+// SPDX-License-Identifier: GPL-2.0
++++ b/net/sched/sch_bpf.c
+@@ -0,0 +1,520 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * skb_map.c: BPF skb queue map
++ * Programmable Qdisc with eBPF
 + *
 + * Copyright (C) 2022, Bytedance, Cong Wang <cong.wang@bytedance.com>
 + */
-+#include <linux/bpf.h>
-+#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/types.h>
++#include <linux/kernel.h>
++#include <linux/jiffies.h>
++#include <linux/string.h>
++#include <linux/errno.h>
++#include <linux/init.h>
 +#include <linux/skbuff.h>
-+#include <linux/netdevice.h>
-+#include <linux/capability.h>
-+#include <linux/rbtree.h>
-+#include <linux/btf_ids.h>
++#include <linux/slab.h>
 +#include <linux/filter.h>
-+#include <net/sch_generic.h>
++#include <linux/bpf.h>
++#include <net/netlink.h>
++#include <net/pkt_sched.h>
++#include <net/pkt_cls.h>
 +
-+#define SKB_MAP_CREATE_FLAG_MASK \
-+	(BPF_F_NUMA_NODE | BPF_F_ACCESS_MASK)
++#define ACT_BPF_NAME_LEN	256
 +
-+struct bpf_skb_map {
-+	struct bpf_map map;
-+	struct rb_root root;
-+	raw_spinlock_t lock;
-+	struct list_head list;
-+	atomic_t count;
++struct sch_bpf_prog {
++	struct bpf_prog *prog;
++	const char *name;
 +};
 +
-+struct skb_map_cb {
-+	struct qdisc_skb_cb qdisc_cb;
-+	u64 rank;
++struct sch_bpf_class {
++	struct Qdisc_class_common common;
++	struct Qdisc *qdisc;
++
++	unsigned int drops;
++	unsigned int overlimits;
++	struct gnet_stats_basic_sync bstats;
 +};
 +
-+static struct skb_map_cb *skb_map_cb(const struct sk_buff *skb)
-+{
-+        struct skb_map_cb *cb = (struct skb_map_cb *)skb->cb;
++struct sch_bpf_qdisc {
++	struct tcf_proto __rcu *filter_list; /* optional external classifier */
++	struct tcf_block *block;
++	struct Qdisc_class_hash clhash;
++	struct sch_bpf_prog enqueue_prog;
++	struct sch_bpf_prog dequeue_prog;
 +
-+        BUILD_BUG_ON(sizeof(*cb) > sizeof_field(struct sk_buff, cb));
-+        return cb;
++	struct qdisc_watchdog watchdog;
++};
++
++static int sch_bpf_dump_prog(const struct sch_bpf_prog *prog, struct sk_buff *skb,
++			     int name, int id, int tag)
++{
++	struct nlattr *nla;
++
++	if (prog->name &&
++	    nla_put_string(skb, name, prog->name))
++		return -EMSGSIZE;
++
++	if (nla_put_u32(skb, id, prog->prog->aux->id))
++		return -EMSGSIZE;
++
++	nla = nla_reserve(skb, tag, sizeof(prog->prog->tag));
++	if (!nla)
++		return -EMSGSIZE;
++
++	memcpy(nla_data(nla), prog->prog->tag, nla_len(nla));
++	return 0;
 +}
 +
-+static DEFINE_SPINLOCK(skb_map_lock);
-+static LIST_HEAD(skb_map_list);
-+
-+static struct bpf_skb_map *bpf_skb_map(struct bpf_map *map)
++static int sch_bpf_dump(struct Qdisc *sch, struct sk_buff *skb)
 +{
-+	return container_of(map, struct bpf_skb_map, map);
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++	struct nlattr *opts;
++	u32 bpf_flags = 0;
++
++	opts = nla_nest_start_noflag(skb, TCA_OPTIONS);
++	if (!opts)
++		goto nla_put_failure;
++
++	if (bpf_flags && nla_put_u32(skb, TCA_SCH_BPF_FLAGS, bpf_flags))
++		goto nla_put_failure;
++
++	if (sch_bpf_dump_prog(&q->enqueue_prog, skb, TCA_SCH_BPF_ENQUEUE_PROG_NAME,
++			      TCA_SCH_BPF_ENQUEUE_PROG_ID, TCA_SCH_BPF_ENQUEUE_PROG_TAG))
++		goto nla_put_failure;
++	if (sch_bpf_dump_prog(&q->dequeue_prog, skb, TCA_SCH_BPF_DEQUEUE_PROG_NAME,
++			      TCA_SCH_BPF_DEQUEUE_PROG_ID, TCA_SCH_BPF_DEQUEUE_PROG_TAG))
++		goto nla_put_failure;
++
++	return nla_nest_end(skb, opts);
++
++nla_put_failure:
++	return -1;
 +}
 +
-+#define SKB_MAP_MAX_SZ 2048
-+
-+/* Called from syscall */
-+static int skb_map_alloc_check(union bpf_attr *attr)
++static int sch_bpf_dump_stats(struct Qdisc *sch, struct gnet_dump *d)
 +{
-+	if (!bpf_capable())
-+		return -EPERM;
++	return 0;
++}
 +
-+	/* check sanity of attributes */
-+	if (attr->max_entries == 0 || attr->key_size != 8 ||
-+	    attr->value_size != 0 ||
-+	    attr->map_flags & ~SKB_MAP_CREATE_FLAG_MASK ||
-+	    !bpf_map_flags_access_ok(attr->map_flags))
++static struct sch_bpf_class *sch_bpf_find(struct Qdisc *sch, u32 classid)
++{
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++	struct Qdisc_class_common *clc;
++
++	clc = qdisc_class_find(&q->clhash, classid);
++	if (!clc)
++		return NULL;
++	return container_of(clc, struct sch_bpf_class, common);
++}
++
++static int sch_bpf_enqueue(struct sk_buff *skb, struct Qdisc *sch,
++			   struct sk_buff **to_free)
++{
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++	unsigned int len = qdisc_pkt_len(skb);
++	struct sch_bpf_ctx ctx = {};
++	struct sch_bpf_class *cl;
++	int res = NET_XMIT_SUCCESS;
++	struct bpf_prog *enqueue;
++
++	enqueue = rcu_dereference(q->enqueue_prog.prog);
++	bpf_compute_data_pointers(skb);
++	ctx.skb = (struct __sk_buff *)skb;
++	ctx.classid = sch->handle;
++	res = bpf_prog_run(enqueue, &ctx);
++	switch (res) {
++	case SCH_BPF_DROP:
++		__qdisc_drop(skb, to_free);
++		return NET_XMIT_DROP;
++	case SCH_BPF_QUEUED:
++		return NET_XMIT_SUCCESS;
++	}
++
++	cl = sch_bpf_find(sch, ctx.classid);
++	if (!cl || !cl->qdisc) {
++		if (res & __NET_XMIT_BYPASS)
++			qdisc_qstats_drop(sch);
++		__qdisc_drop(skb, to_free);
++		return res;
++	}
++
++	res = qdisc_enqueue(skb, cl->qdisc, to_free);
++	if (res != NET_XMIT_SUCCESS) {
++		if (net_xmit_drop_count(res)) {
++			qdisc_qstats_drop(sch);
++			cl->drops++;
++		}
++		return res;
++	}
++
++	sch->qstats.backlog += len;
++	sch->q.qlen++;
++	return res;
++}
++
++static struct sk_buff *sch_bpf_dequeue(struct Qdisc *sch)
++{
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++	struct sk_buff *ret = NULL;
++	struct sch_bpf_ctx ctx = {};
++	struct bpf_prog *dequeue;
++	struct sch_bpf_class *cl;
++	s64 now;
++	int res;
++
++again:
++	dequeue = rcu_dereference(q->dequeue_prog.prog);
++	ctx.classid = sch->handle;
++	res = bpf_prog_run(dequeue, &ctx);
++	switch (res) {
++	case SCH_BPF_OK:
++		ret = (struct sk_buff *)ctx.skb;
++		break;
++	case SCH_BPF_THROTTLE:
++		now = ktime_get_ns();
++		qdisc_watchdog_schedule_ns(&q->watchdog, now + ctx.delay);
++		qdisc_qstats_overlimit(sch);
++		cl->overlimits++;
++		return NULL;
++	case SCH_BPF_CONTINUE:
++		goto again;
++	default:
++		kfree_skb((struct sk_buff *)ctx.skb);
++		ret = NULL;
++	}
++
++	return ret;
++}
++
++static struct Qdisc *sch_bpf_leaf(struct Qdisc *sch, unsigned long arg)
++{
++	struct sch_bpf_class *cl = (struct sch_bpf_class *)arg;
++
++	return cl->qdisc;
++}
++
++static int sch_bpf_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
++			 struct Qdisc **old, struct netlink_ext_ack *extack)
++{
++	struct sch_bpf_class *cl = (struct sch_bpf_class *)arg;
++
++	if (new)
++		*old = qdisc_replace(sch, new, &cl->qdisc);
++	return 0;
++}
++
++static unsigned long sch_bpf_bind(struct Qdisc *sch, unsigned long parent,
++				  u32 classid)
++{
++	return 0;
++}
++
++static void sch_bpf_unbind(struct Qdisc *q, unsigned long cl)
++{
++}
++
++static unsigned long sch_bpf_search(struct Qdisc *sch, u32 handle)
++{
++	return (unsigned long)sch_bpf_find(sch, handle);
++}
++
++static struct tcf_block *sch_bpf_tcf_block(struct Qdisc *sch, unsigned long cl,
++					   struct netlink_ext_ack *extack)
++{
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++
++	if (cl)
++		return NULL;
++	return q->block;
++}
++
++static const struct nla_policy sch_bpf_policy[TCA_SCH_BPF_MAX + 1] = {
++	[TCA_SCH_BPF_FLAGS]		= { .type = NLA_U32 },
++	[TCA_SCH_BPF_ENQUEUE_PROG_FD]	= { .type = NLA_U32 },
++	[TCA_SCH_BPF_ENQUEUE_PROG_NAME]	= { .type = NLA_NUL_STRING,
++					    .len = ACT_BPF_NAME_LEN },
++	[TCA_SCH_BPF_DEQUEUE_PROG_FD]	= { .type = NLA_U32 },
++	[TCA_SCH_BPF_DEQUEUE_PROG_NAME]	= { .type = NLA_NUL_STRING,
++					    .len = ACT_BPF_NAME_LEN },
++};
++
++static int bpf_init_prog(struct nlattr *fd, struct nlattr *name, struct sch_bpf_prog *prog)
++{
++	char *prog_name = NULL;
++	struct bpf_prog *fp;
++	u32 bpf_fd;
++
++	if (!fd)
++		return -EINVAL;
++	bpf_fd = nla_get_u32(fd);
++
++	fp = bpf_prog_get_type(bpf_fd, BPF_PROG_TYPE_SCHED_QDISC);
++	if (IS_ERR(fp))
++		return PTR_ERR(fp);
++
++	if (name) {
++		prog_name = nla_memdup(name, GFP_KERNEL);
++		if (!prog_name) {
++			bpf_prog_put(fp);
++			return -ENOMEM;
++		}
++	}
++
++	prog->name = prog_name;
++	prog->prog = fp;
++	return 0;
++}
++
++static void bpf_cleanup_prog(struct sch_bpf_prog *prog)
++{
++	if (prog->prog)
++		bpf_prog_put(prog->prog);
++	kfree(prog->name);
++}
++
++static int sch_bpf_change(struct Qdisc *sch, struct nlattr *opt,
++			  struct netlink_ext_ack *extack)
++{
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++	struct nlattr *tb[TCA_SCH_BPF_MAX + 1];
++	int err;
++
++	if (!opt)
 +		return -EINVAL;
 +
-+	if (attr->value_size > KMALLOC_MAX_SIZE)
-+		/* if value_size is bigger, the user space won't be able to
-+		 * access the elements.
-+		 */
-+		return -E2BIG;
++	err = nla_parse_nested_deprecated(tb, TCA_SCH_BPF_MAX, opt,
++					  sch_bpf_policy, NULL);
++	if (err < 0)
++		return err;
 +
-+	if (attr->max_entries > SKB_MAP_MAX_SZ)
-+		return -E2BIG;
++	if (tb[TCA_SCH_BPF_FLAGS]) {
++		u32 bpf_flags = nla_get_u32(tb[TCA_SCH_BPF_FLAGS]);
 +
++		if (bpf_flags & ~TCA_SCH_BPF_FLAG_DIRECT)
++			return -EINVAL;
++	}
++
++	err = bpf_init_prog(tb[TCA_SCH_BPF_ENQUEUE_PROG_FD],
++			    tb[TCA_SCH_BPF_ENQUEUE_PROG_NAME], &q->enqueue_prog);
++	if (err)
++		return err;
++	err = bpf_init_prog(tb[TCA_SCH_BPF_DEQUEUE_PROG_FD],
++			    tb[TCA_SCH_BPF_DEQUEUE_PROG_NAME], &q->dequeue_prog);
++	return err;
++}
++
++static int sch_bpf_init(struct Qdisc *sch, struct nlattr *opt,
++			struct netlink_ext_ack *extack)
++{
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++	int err;
++
++	qdisc_watchdog_init(&q->watchdog, sch);
++	if (opt) {
++		err = sch_bpf_change(sch, opt, extack);
++		if (err)
++			return err;
++	}
++
++	err = tcf_block_get(&q->block, &q->filter_list, sch, extack);
++	if (err)
++		return err;
++
++	return qdisc_class_hash_init(&q->clhash);
++}
++
++static void sch_bpf_reset(struct Qdisc *sch)
++{
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++
++	qdisc_watchdog_cancel(&q->watchdog);
++}
++
++static void sch_bpf_destroy(struct Qdisc *sch)
++{
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++
++	qdisc_watchdog_cancel(&q->watchdog);
++	tcf_block_put(q->block);
++	qdisc_class_hash_destroy(&q->clhash);
++	bpf_cleanup_prog(&q->enqueue_prog);
++	bpf_cleanup_prog(&q->dequeue_prog);
++}
++
++static int sch_bpf_change_class(struct Qdisc *sch, u32 classid,
++				u32 parentid, struct nlattr **tca,
++				unsigned long *arg,
++				struct netlink_ext_ack *extack)
++{
++	struct sch_bpf_class *cl = (struct sch_bpf_class *)*arg;
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++
++	if (!cl) {
++		cl = kzalloc(sizeof(*cl), GFP_KERNEL);
++		if (!cl)
++			return -ENOBUFS;
++		qdisc_class_hash_insert(&q->clhash, &cl->common);
++	}
++
++	qdisc_class_hash_grow(sch, &q->clhash);
++	*arg = (unsigned long)cl;
 +	return 0;
 +}
 +
-+static struct bpf_map *skb_map_alloc(union bpf_attr *attr)
++static int sch_bpf_delete(struct Qdisc *sch, unsigned long arg,
++			  struct netlink_ext_ack *extack)
 +{
-+	int numa_node = bpf_map_attr_numa_node(attr);
-+	struct bpf_skb_map *rb;
++	struct sch_bpf_class *cl = (struct sch_bpf_class *)arg;
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
 +
-+	rb = bpf_map_area_alloc(sizeof(*rb), numa_node);
-+	if (!rb)
-+		return ERR_PTR(-ENOMEM);
-+
-+	memset(rb, 0, sizeof(*rb));
-+	bpf_map_init_from_attr(&rb->map, attr);
-+	raw_spin_lock_init(&rb->lock);
-+	rb->root = RB_ROOT;
-+	atomic_set(&rb->count, 0);
-+	spin_lock(&skb_map_lock);
-+	list_add_tail_rcu(&rb->list, &skb_map_list);
-+	spin_unlock(&skb_map_lock);
-+	return &rb->map;
-+}
-+
-+static void skb_map_free(struct bpf_map *map)
-+{
-+	struct bpf_skb_map *rb = bpf_skb_map(map);
-+
-+	spin_lock(&skb_map_lock);
-+	list_del_rcu(&rb->list);
-+	spin_unlock(&skb_map_lock);
-+	skb_rbtree_purge(&rb->root);
-+	bpf_map_area_free(rb);
-+}
-+
-+static struct sk_buff *skb_rb_find(struct rb_root *root, u64 rank)
-+{
-+	struct rb_node **p = &root->rb_node;
-+	struct rb_node *parent = NULL;
-+	struct sk_buff *skb1;
-+
-+	while (*p) {
-+		parent = *p;
-+		skb1 = rb_to_skb(parent);
-+		if (rank < skb_map_cb(skb1)->rank)
-+			p = &parent->rb_left;
-+		else if (rank > skb_map_cb(skb1)->rank)
-+			p = &parent->rb_right;
-+		else
-+			return skb1;
-+	}
-+	return NULL;
-+}
-+
-+/* Called from syscall */
-+static void *skb_map_lookup_elem_sys(struct bpf_map *map, void *key)
-+{
-+	return ERR_PTR(-ENOTSUPP);
-+}
-+
-+/* Called from eBPF program */
-+static void *skb_map_lookup_elem(struct bpf_map *map, void *key)
-+{
-+	struct bpf_skb_map *rb = bpf_skb_map(map);
-+	u64 rank = *(u64 *) key;
-+
-+	return skb_rb_find(&rb->root, rank);
-+}
-+
-+/* Called from syscall or from eBPF program */
-+static int skb_map_update_elem(struct bpf_map *map, void *key, void *value,
-+			       u64 flags)
-+{
-+	return -ENOTSUPP;
-+}
-+
-+/* Called from syscall or from eBPF program */
-+static int skb_map_delete_elem(struct bpf_map *map, void *key)
-+{
-+	struct bpf_skb_map *rb = bpf_skb_map(map);
-+	u64 rank = *(u64 *) key;
-+	struct sk_buff *skb;
-+
-+	skb = skb_rb_find(&rb->root, rank);
-+	if (!skb)
-+		return -ENOENT;
-+	rb_erase(&skb->rbnode, &rb->root);
-+	consume_skb(skb);
++	qdisc_class_hash_remove(&q->clhash, &cl->common);
++	if (cl->qdisc)
++		qdisc_put(cl->qdisc);
 +	return 0;
 +}
 +
-+/* Called from syscall */
-+static int skb_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
++static int sch_bpf_dump_class(struct Qdisc *sch, unsigned long arg,
++			      struct sk_buff *skb, struct tcmsg *tcm)
 +{
-+	struct bpf_skb_map *rb = bpf_skb_map(map);
-+	struct sk_buff *skb;
-+	u64 rank;
-+
-+	if (!key) {
-+		skb = skb_rb_first(&rb->root);
-+		if (!skb)
-+			return -ENOENT;
-+	}
-+	rank = *(u64 *) key;
-+	skb = skb_rb_find(&rb->root, rank);
-+	if (!skb)
-+		return -ENOENT;
-+	skb = skb_rb_next(skb);
-+	if (!skb)
-+		return 0;
-+	*(u64 *) next_key = skb_map_cb(skb)->rank;
 +	return 0;
 +}
 +
-+static int bpf_for_each_skb_map(struct bpf_map *map, bpf_callback_t callback_fn,
-+				void *callback_ctx, u64 flags)
++static int
++sch_bpf_dump_class_stats(struct Qdisc *sch, unsigned long arg, struct gnet_dump *d)
 +{
-+	struct bpf_skb_map *rb = bpf_skb_map(map);
-+	struct sk_buff *skb;
-+	u32 num_elems = 0;
-+	u64 ret = 0;
-+	u64 key;
++	struct sch_bpf_class *cl = (struct sch_bpf_class *)arg;
++	struct gnet_stats_queue qs = {
++		.drops = cl->drops,
++		.overlimits = cl->overlimits,
++	};
++	__u32 qlen = 0;
 +
-+	if (flags != 0)
-+		return -EINVAL;
++	if (cl->qdisc)
++		qdisc_qstats_qlen_backlog(cl->qdisc, &qlen, &qs.backlog);
++	else
++		qlen = 0;
 +
-+	skb_rbtree_walk(skb, &rb->root) {
-+		num_elems++;
-+		key = skb_map_cb(skb)->rank;
-+		ret = callback_fn((u64)(long)map, (u64)(long)&key,
-+				  (u64)(long)skb, (u64)(long)callback_ctx, 0);
-+		/* return value: 0 - continue, 1 - stop and return */
-+		if (ret)
-+			break;
-+	}
-+
-+	return num_elems;
-+}
-+
-+BTF_ID_LIST_SINGLE(skb_map_btf_ids, struct, bpf_skb_map)
-+const struct bpf_map_ops skb_map_ops = {
-+	.map_meta_equal = bpf_map_meta_equal,
-+	.map_alloc_check = skb_map_alloc_check,
-+	.map_alloc = skb_map_alloc,
-+	.map_free = skb_map_free,
-+	.map_lookup_elem_sys_only = skb_map_lookup_elem_sys,
-+	.map_lookup_elem = skb_map_lookup_elem,
-+	.map_update_elem = skb_map_update_elem,
-+	.map_delete_elem = skb_map_delete_elem,
-+	.map_get_next_key = skb_map_get_next_key,
-+	.map_set_for_each_callback_args = map_set_for_each_callback_args,
-+	.map_for_each_callback = bpf_for_each_skb_map,
-+	.map_btf_id = &skb_map_btf_ids[0],
-+};
-+
-+static void skb_rb_push(struct rb_root *root, struct sk_buff *skb)
-+{
-+	struct rb_node **p = &root->rb_node;
-+	struct rb_node *parent = NULL;
-+	struct sk_buff *skb1;
-+
-+	while (*p) {
-+		parent = *p;
-+		skb1 = rb_to_skb(parent);
-+		if (skb_map_cb(skb)->rank < skb_map_cb(skb1)->rank)
-+			p = &parent->rb_left;
-+		else
-+			p = &parent->rb_right;
-+	}
-+	rb_link_node(&skb->rbnode, parent, p);
-+	rb_insert_color(&skb->rbnode, root);
-+}
-+
-+BPF_CALL_2(bpf_skb_map_pop, struct bpf_map *, map, u64, key)
-+{
-+	struct bpf_skb_map *rb = bpf_skb_map(map);
-+	struct sk_buff *skb;
-+	unsigned long flags;
-+
-+	raw_spin_lock_irqsave(&rb->lock, flags);
-+	skb = skb_map_lookup_elem(map, &key);
-+	if (!skb) {
-+		raw_spin_unlock_irqrestore(&rb->lock, flags);
-+		return (unsigned long)NULL;
-+	}
-+	rb_erase(&skb->rbnode, &rb->root);
-+	raw_spin_unlock_irqrestore(&rb->lock, flags);
-+	consume_skb(skb);
-+	atomic_dec(&rb->count);
-+	return (unsigned long)skb;
-+}
-+
-+static const struct bpf_func_proto bpf_skb_map_pop_proto = {
-+	.func		= bpf_skb_map_pop,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_CONST_MAP_PTR,
-+	.arg2_type	= ARG_ANYTHING,
-+};
-+
-+BPF_CALL_3(bpf_skb_map_push, struct bpf_map *, map, struct sk_buff *, skb, u64, key)
-+{
-+	struct bpf_skb_map *rb = bpf_skb_map(map);
-+	unsigned long flags;
-+
-+	if (atomic_inc_return(&rb->count) > rb->map.max_entries)
-+		return -ENOBUFS;
-+	skb = skb_get(skb);
-+	skb_map_cb(skb)->rank = key;
-+	raw_spin_lock_irqsave(&rb->lock, flags);
-+	skb_rb_push(&rb->root, skb);
-+	raw_spin_unlock_irqrestore(&rb->lock, flags);
++	if (gnet_stats_copy_basic(d, NULL, &cl->bstats, true) < 0 ||
++	    gnet_stats_copy_queue(d, NULL, &qs, qlen) < 0)
++		return -1;
 +	return 0;
 +}
 +
-+static const struct bpf_func_proto bpf_skb_map_push_proto = {
-+	.func		= bpf_skb_map_push,
-+	.gpl_only	= false,
-+	.ret_type	= RET_INTEGER,
-+	.arg1_type	= ARG_CONST_MAP_PTR,
-+	.arg2_type	= ARG_PTR_TO_CTX,
-+	.arg3_type	= ARG_ANYTHING,
-+};
-+
-+static void skb_map_flush(struct bpf_skb_map *rb, struct net_device *dev)
++static void sch_bpf_walk(struct Qdisc *sch, struct qdisc_walker *arg)
 +{
-+	struct rb_node *p = rb_first(&rb->root);
++	struct sch_bpf_qdisc *q = qdisc_priv(sch);
++	struct sch_bpf_class *cl;
++	unsigned int i;
 +
-+	while (p) {
-+		struct sk_buff *skb = rb_entry(p, struct sk_buff, rbnode);
++	if (arg->stop)
++		return;
 +
-+		p = rb_next(p);
-+		if (skb->dev == dev) {
-+			rb_erase(&skb->rbnode, &rb->root);
-+			kfree_skb(skb);
++	for (i = 0; i < q->clhash.hashsize; i++) {
++		hlist_for_each_entry(cl, &q->clhash.hash[i], common.hnode) {
++			if (arg->count < arg->skip) {
++				arg->count++;
++				continue;
++			}
++			if (arg->fn(sch, (unsigned long)cl, arg) < 0) {
++				arg->stop = 1;
++				return;
++			}
++			arg->count++;
 +		}
 +	}
 +}
 +
-+static int skb_map_notification(struct notifier_block *notifier,
-+				ulong event, void *ptr)
-+{
-+	struct net_device *netdev = netdev_notifier_info_to_dev(ptr);
-+	struct bpf_skb_map *rb;
-+
-+        switch (event) {
-+        case NETDEV_DOWN:
-+		rcu_read_lock();
-+		list_for_each_entry_rcu(rb, &skb_map_list, list)
-+			skb_map_flush(rb, netdev);
-+		rcu_read_unlock();
-+		break;
-+	}
-+	return NOTIFY_OK;
-+}
-+
-+static struct notifier_block skb_map_notifier = {
-+	.notifier_call = skb_map_notification,
++static const struct Qdisc_class_ops sch_bpf_class_ops = {
++	.graft		=	sch_bpf_graft,
++	.leaf		=	sch_bpf_leaf,
++	.find		=	sch_bpf_search,
++	.change		=	sch_bpf_change_class,
++	.delete		=	sch_bpf_delete,
++	.tcf_block	=	sch_bpf_tcf_block,
++	.bind_tcf	=	sch_bpf_bind,
++	.unbind_tcf	=	sch_bpf_unbind,
++	.dump		=	sch_bpf_dump_class,
++	.dump_stats	=	sch_bpf_dump_class_stats,
++	.walk		=	sch_bpf_walk,
 +};
 +
-+static int __init skb_map_init(void)
++static struct Qdisc_ops sch_bpf_qdisc_ops __read_mostly = {
++	.cl_ops		=	&sch_bpf_class_ops,
++	.id		=	"bpf",
++	.priv_size	=	sizeof(struct sch_bpf_qdisc),
++	.enqueue	=	sch_bpf_enqueue,
++	.dequeue	=	sch_bpf_dequeue,
++	.peek		=	qdisc_peek_dequeued,
++	.init		=	sch_bpf_init,
++	.reset		=	sch_bpf_reset,
++	.destroy	=	sch_bpf_destroy,
++	.change		=	sch_bpf_change,
++	.dump		=	sch_bpf_dump,
++	.dump_stats	=	sch_bpf_dump_stats,
++	.owner		=	THIS_MODULE,
++};
++
++u32 bpf_skb_classify(struct sk_buff *skb, int ifindex, u32 handle)
 +{
-+	return register_netdevice_notifier(&skb_map_notifier);
++	struct net *net = dev_net(skb->dev);
++	struct tcf_result res = {};
++	struct sch_bpf_qdisc *q;
++	struct net_device *dev;
++	struct tcf_proto *tcf;
++	struct Qdisc *sch;
++	int result;
++
++	rcu_read_lock();
++	dev = dev_get_by_index_rcu(net, ifindex);
++	if (!dev) {
++		rcu_read_unlock();
++		return 0;
++	}
++	sch = qdisc_lookup_rcu(dev, handle);
++	if (!sch) {
++		rcu_read_unlock();
++		return 0;
++	}
++	if (sch->ops != &sch_bpf_qdisc_ops) {
++		rcu_read_unlock();
++		return 0;
++	}
++	q = qdisc_priv(sch);
++	tcf = rcu_dereference_bh(q->filter_list);
++	if (!tcf) {
++		rcu_read_unlock();
++		return 0;
++	}
++	result = tcf_classify(skb, NULL, tcf, &res, false);
++	if (result  >= 0) {
++#ifdef CONFIG_NET_CLS_ACT
++		switch (result) {
++		case TC_ACT_QUEUED:
++		case TC_ACT_STOLEN:
++		case TC_ACT_TRAP:
++			fallthrough;
++		case TC_ACT_SHOT:
++			rcu_read_unlock();
++			return 0;
++		}
++#endif
++	}
++	rcu_read_unlock();
++	return res.class;
 +}
 +
-+subsys_initcall(skb_map_init);
++static int __init sch_bpf_mod_init(void)
++{
++	return register_qdisc(&sch_bpf_qdisc_ops);
++}
++
++static void __exit sch_bpf_mod_exit(void)
++{
++	unregister_qdisc(&sch_bpf_qdisc_ops);
++}
++
++module_init(sch_bpf_mod_init)
++module_exit(sch_bpf_mod_exit)
++MODULE_AUTHOR("Cong Wang");
++MODULE_LICENSE("GPL");
++MODULE_DESCRIPTION("eBPF queue discipline");
 -- 
 2.34.1
 
