@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F0EE52F22D
-	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 20:12:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8561152F22F
+	for <lists+netdev@lfdr.de>; Fri, 20 May 2022 20:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352444AbiETSMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 14:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36150 "EHLO
+        id S1352439AbiETSMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 14:12:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352442AbiETSMg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 14:12:36 -0400
+        with ESMTP id S1352445AbiETSMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 14:12:40 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65071E52AC;
-        Fri, 20 May 2022 11:12:35 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC77518C07D;
+        Fri, 20 May 2022 11:12:38 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3C206179F;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F376617A3;
+        Fri, 20 May 2022 18:12:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9B98C34116;
         Fri, 20 May 2022 18:12:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90C79C34118;
-        Fri, 20 May 2022 18:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653070354;
-        bh=6Sz9o3s/BSWowOrmzmVWTU+Ma7E8U9l+fMH1xcnlAoo=;
+        s=k20201202; t=1653070357;
+        bh=TS0a0jAfKnRA6PI/nGBv67O8H4VESfPde3pAGx7v5zk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H1pTcxtY8GcZ99/KPyxnGLlJFl69k24SWSDHSYpgamvs0Ha4AdWzyfntV14qBaT6j
-         boMyYzc3KtAvBX3NgJL11o61GaZp4GF/H4w439gKAZ53a6cBTLGht5wejTGvWU9A5O
-         5xr/FSdHaKo35CHezH7bh5akdB7BvxYph6OzsEP5W6lQxFgwDGvTirWFuqI6NZwORT
-         0nssdDr8VKMzl9MPHSpLzNxMXxfW+Ye83bnRTHTFJT6LwI7+bkFZIFbpbWh+hVpBwZ
-         +8oqxHFtGD7v6faMYfoPbSjI5N+oivXmMK9HFrm37ZeJCqaJt/MDLCNUbcVZeIxXSE
-         ajzRrznQ+pL0A==
+        b=BHHDlfau4T2x+jgnBX4Gd8w6TWLWSi/AtYcF4ERKSG0ge92eIyGbTbk5UozajXfCR
+         IRNIY7Wd8jqSmtCbXGTUsf6K+YOMfv4YLHkrrUmUTmYXL0cIbW6ygtv+Su5c2HpFAB
+         q0vfl20aUf181iAJdhoJwfL5Tl9efvGMi50MWckohE1Rtaj83djOFv0mDIkSwTBhc2
+         M5eTBanK7qVA81+KNR+8kqaMu3PlIo7OAdfanOJ/8lP/ElgGQfnlReYl6I1adCIEmE
+         qeQ5oXJTT2zDsBojdVPqUrAvndTRwKERFn0smql5jjKt5hvcPebWaYKLoEEbYr/Xx9
+         pBLUfoO0k3C+Q==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
@@ -38,9 +38,9 @@ Cc:     nbd@nbd.name, john@phrozen.org, sean.wang@mediatek.com,
         kuba@kernel.org, pabeni@redhat.com, Sam.Shih@mediatek.com,
         linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
         robh@kernel.org, lorenzo.bianconi@redhat.com
-Subject: [PATCH v3 net-next 05/16] net: ethernet: mtk_eth_soc: add txd_size to mtk_soc_data
-Date:   Fri, 20 May 2022 20:11:28 +0200
-Message-Id: <c5081ac366bed62cf4dc953138db5ceffe77849d.1653069056.git.lorenzo@kernel.org>
+Subject: [PATCH v3 net-next 06/16] net: ethernet: mtk_eth_soc: rely on txd_size in mtk_tx_alloc/mtk_tx_clean
+Date:   Fri, 20 May 2022 20:11:29 +0200
+Message-Id: <bb7bb641bd844c1892421eee68893b3a22e8f674.1653069056.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <cover.1653069056.git.lorenzo@kernel.org>
 References: <cover.1653069056.git.lorenzo@kernel.org>
@@ -56,175 +56,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to remove mtk_tx_dma size dependency, introduce txd_size in
-mtk_soc_data data structure. Rely on txd_size in mtk_init_fq_dma() and
-mtk_dma_free() routines.
 This is a preliminary patch to add mt7986 ethernet support.
 
 Tested-by: Sam Shih <sam.shih@mediatek.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 47 +++++++++++++++------
- drivers/net/ethernet/mediatek/mtk_eth_soc.h |  4 ++
- 2 files changed, 38 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 23 ++++++++++++---------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index 6e713f68273f..e00c83982aa9 100644
+index e00c83982aa9..331814f4801f 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -808,20 +808,20 @@ static inline bool mtk_rx_get_desc(struct mtk_rx_dma *rxd,
- /* the qdma core needs scratch memory to be setup */
- static int mtk_init_fq_dma(struct mtk_eth *eth)
+@@ -1592,8 +1592,10 @@ static int mtk_napi_rx(struct napi_struct *napi, int budget)
+ 
+ static int mtk_tx_alloc(struct mtk_eth *eth)
  {
 +	const struct mtk_soc_data *soc = eth->soc;
- 	dma_addr_t phy_ring_tail;
- 	int cnt = MTK_DMA_SIZE;
- 	dma_addr_t dma_addr;
- 	int i;
+ 	struct mtk_tx_ring *ring = &eth->tx_ring;
+-	int i, sz = sizeof(*ring->dma);
++	int i, sz = soc->txrx.txd_size;
++	struct mtk_tx_dma *txd;
  
- 	eth->scratch_ring = dma_alloc_coherent(eth->dma_dev,
--					       cnt * sizeof(struct mtk_tx_dma),
-+					       cnt * soc->txrx.txd_size,
- 					       &eth->phy_scratch_ring,
- 					       GFP_KERNEL);
- 	if (unlikely(!eth->scratch_ring))
- 		return -ENOMEM;
+ 	ring->buf = kcalloc(MTK_DMA_SIZE, sizeof(*ring->buf),
+ 			       GFP_KERNEL);
+@@ -1609,8 +1611,10 @@ static int mtk_tx_alloc(struct mtk_eth *eth)
+ 		int next = (i + 1) % MTK_DMA_SIZE;
+ 		u32 next_ptr = ring->phys + next * sz;
  
--	eth->scratch_head = kcalloc(cnt, MTK_QDMA_PAGE_SIZE,
--				    GFP_KERNEL);
-+	eth->scratch_head = kcalloc(cnt, MTK_QDMA_PAGE_SIZE, GFP_KERNEL);
- 	if (unlikely(!eth->scratch_head))
- 		return -ENOMEM;
- 
-@@ -831,16 +831,19 @@ static int mtk_init_fq_dma(struct mtk_eth *eth)
- 	if (unlikely(dma_mapping_error(eth->dma_dev, dma_addr)))
- 		return -ENOMEM;
- 
--	phy_ring_tail = eth->phy_scratch_ring +
--			(sizeof(struct mtk_tx_dma) * (cnt - 1));
-+	phy_ring_tail = eth->phy_scratch_ring + soc->txrx.txd_size * (cnt - 1);
- 
- 	for (i = 0; i < cnt; i++) {
--		eth->scratch_ring[i].txd1 =
--					(dma_addr + (i * MTK_QDMA_PAGE_SIZE));
-+		struct mtk_tx_dma *txd;
-+
-+		txd = (void *)eth->scratch_ring + i * soc->txrx.txd_size;
-+		txd->txd1 = dma_addr + i * MTK_QDMA_PAGE_SIZE;
- 		if (i < cnt - 1)
--			eth->scratch_ring[i].txd2 = (eth->phy_scratch_ring +
--				((i + 1) * sizeof(struct mtk_tx_dma)));
--		eth->scratch_ring[i].txd3 = TX_DMA_SDL(MTK_QDMA_PAGE_SIZE);
-+			txd->txd2 = eth->phy_scratch_ring +
-+				    (i + 1) * soc->txrx.txd_size;
-+
-+		txd->txd3 = TX_DMA_PLEN0(MTK_QDMA_PAGE_SIZE);
+-		ring->dma[i].txd2 = next_ptr;
+-		ring->dma[i].txd3 = TX_DMA_LS0 | TX_DMA_OWNER_CPU;
++		txd = (void *)ring->dma + i * sz;
++		txd->txd2 = next_ptr;
++		txd->txd3 = TX_DMA_LS0 | TX_DMA_OWNER_CPU;
 +		txd->txd4 = 0;
  	}
  
- 	mtk_w32(eth, eth->phy_scratch_ring, MTK_QDMA_FQ_HEAD);
-@@ -2131,6 +2134,7 @@ static int mtk_dma_init(struct mtk_eth *eth)
+ 	/* On MT7688 (PDMA only) this driver uses the ring->dma structs
+@@ -1632,7 +1636,7 @@ static int mtk_tx_alloc(struct mtk_eth *eth)
+ 	ring->dma_size = MTK_DMA_SIZE;
+ 	atomic_set(&ring->free_count, MTK_DMA_SIZE - 2);
+ 	ring->next_free = &ring->dma[0];
+-	ring->last_free = &ring->dma[MTK_DMA_SIZE - 1];
++	ring->last_free = (void *)txd;
+ 	ring->last_free_ptr = (u32)(ring->phys + ((MTK_DMA_SIZE - 1) * sz));
+ 	ring->thresh = MAX_SKB_FRAGS;
  
- static void mtk_dma_free(struct mtk_eth *eth)
+@@ -1665,6 +1669,7 @@ static int mtk_tx_alloc(struct mtk_eth *eth)
+ 
+ static void mtk_tx_clean(struct mtk_eth *eth)
  {
 +	const struct mtk_soc_data *soc = eth->soc;
+ 	struct mtk_tx_ring *ring = &eth->tx_ring;
  	int i;
  
- 	for (i = 0; i < MTK_MAC_COUNT; i++)
-@@ -2138,9 +2142,8 @@ static void mtk_dma_free(struct mtk_eth *eth)
- 			netdev_reset_queue(eth->netdev[i]);
- 	if (eth->scratch_ring) {
+@@ -1677,17 +1682,15 @@ static void mtk_tx_clean(struct mtk_eth *eth)
+ 
+ 	if (ring->dma) {
  		dma_free_coherent(eth->dma_dev,
--				  MTK_DMA_SIZE * sizeof(struct mtk_tx_dma),
--				  eth->scratch_ring,
--				  eth->phy_scratch_ring);
+-				  MTK_DMA_SIZE * sizeof(*ring->dma),
+-				  ring->dma,
+-				  ring->phys);
 +				  MTK_DMA_SIZE * soc->txrx.txd_size,
-+				  eth->scratch_ring, eth->phy_scratch_ring);
- 		eth->scratch_ring = NULL;
- 		eth->phy_scratch_ring = 0;
++				  ring->dma, ring->phys);
+ 		ring->dma = NULL;
  	}
-@@ -3373,6 +3376,9 @@ static const struct mtk_soc_data mt2701_data = {
- 	.hw_features = MTK_HW_FEATURES,
- 	.required_clks = MT7623_CLKS_BITMAP,
- 	.required_pctl = true,
-+	.txrx = {
-+		.txd_size = sizeof(struct mtk_tx_dma),
-+	},
- };
  
- static const struct mtk_soc_data mt7621_data = {
-@@ -3381,6 +3387,9 @@ static const struct mtk_soc_data mt7621_data = {
- 	.required_clks = MT7621_CLKS_BITMAP,
- 	.required_pctl = false,
- 	.offload_version = 2,
-+	.txrx = {
-+		.txd_size = sizeof(struct mtk_tx_dma),
-+	},
- };
- 
- static const struct mtk_soc_data mt7622_data = {
-@@ -3390,6 +3399,9 @@ static const struct mtk_soc_data mt7622_data = {
- 	.required_clks = MT7622_CLKS_BITMAP,
- 	.required_pctl = false,
- 	.offload_version = 2,
-+	.txrx = {
-+		.txd_size = sizeof(struct mtk_tx_dma),
-+	},
- };
- 
- static const struct mtk_soc_data mt7623_data = {
-@@ -3398,6 +3410,9 @@ static const struct mtk_soc_data mt7623_data = {
- 	.required_clks = MT7623_CLKS_BITMAP,
- 	.required_pctl = true,
- 	.offload_version = 2,
-+	.txrx = {
-+		.txd_size = sizeof(struct mtk_tx_dma),
-+	},
- };
- 
- static const struct mtk_soc_data mt7629_data = {
-@@ -3406,6 +3421,9 @@ static const struct mtk_soc_data mt7629_data = {
- 	.hw_features = MTK_HW_FEATURES,
- 	.required_clks = MT7629_CLKS_BITMAP,
- 	.required_pctl = false,
-+	.txrx = {
-+		.txd_size = sizeof(struct mtk_tx_dma),
-+	},
- };
- 
- static const struct mtk_soc_data rt5350_data = {
-@@ -3413,6 +3431,9 @@ static const struct mtk_soc_data rt5350_data = {
- 	.hw_features = MTK_HW_FEATURES_MT7628,
- 	.required_clks = MT7628_CLKS_BITMAP,
- 	.required_pctl = false,
-+	.txrx = {
-+		.txd_size = sizeof(struct mtk_tx_dma),
-+	},
- };
- 
- const struct of_device_id of_mtk_match[] = {
-diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index 7e0f2964ac23..7a5ad14b8be6 100644
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -867,6 +867,7 @@ struct mtk_tx_dma_desc_info {
-  *				the target SoC
-  * @required_pctl		A bool value to show whether the SoC requires
-  *				the extra setup for those pins used by GMAC.
-+ * @txd_size			Tx DMA descriptor size.
-  */
- struct mtk_soc_data {
- 	u32             ana_rgc3;
-@@ -875,6 +876,9 @@ struct mtk_soc_data {
- 	bool		required_pctl;
- 	u8		offload_version;
- 	netdev_features_t hw_features;
-+	struct {
-+		u32	txd_size;
-+	} txrx;
- };
- 
- /* currently no SoC has more than 2 macs */
+ 	if (ring->dma_pdma) {
+ 		dma_free_coherent(eth->dma_dev,
+-				  MTK_DMA_SIZE * sizeof(*ring->dma_pdma),
+-				  ring->dma_pdma,
+-				  ring->phys_pdma);
++				  MTK_DMA_SIZE * soc->txrx.txd_size,
++				  ring->dma_pdma, ring->phys_pdma);
+ 		ring->dma_pdma = NULL;
+ 	}
+ }
 -- 
 2.35.3
 
