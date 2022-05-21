@@ -2,129 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FD9052F66E
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 01:59:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D329A52F67A
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 02:02:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354153AbiETX6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 19:58:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33636 "EHLO
+        id S1354166AbiEUACC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 20:02:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351624AbiETX6x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 19:58:53 -0400
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF99B1A0AE2
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 16:58:51 -0700 (PDT)
-Received: by mail-wm1-x32e.google.com with SMTP id bg25so5279496wmb.4
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 16:58:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amarulasolutions.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CZudmt8QjK7Ob0wwst9Iisd3ub5uSgdUrqhdvCAPlJY=;
-        b=n8YxOwsVsDs+d/Xov7EF5yekr3+BjzL7dG3FuFiONfF/sfoECLWTB3fLCdqaQTT5Bc
-         KCx4DZrjRGSNXTM14Rem+/1taT7VIFFAclXaS9I/+TrXfOlxiQJBpxtkVZF2h6HyfFkR
-         G0vtzP5zKGwENv+H7JPdHm4S6+BLi+JIfWofs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CZudmt8QjK7Ob0wwst9Iisd3ub5uSgdUrqhdvCAPlJY=;
-        b=zPDG2Aud2sd4RWRH5MNQUD7uQ780QqnRZzi5U2S8dENUQnGmw3yNmietgocytdkwCb
-         MhEE66zUK++p0Z9l58RupFbZU5DP5mcCjQCjItAxO81G6wXPfpl9uQnxE3XTCo5tEqoP
-         SrtuiyUWUXnBHmFKb8uWKektaqJEIiTNTzyAMZHYjRkuBiwGdj9LGZTWt+3zzpN5pKmp
-         B2XsQWnj0ab58tDlUfAIWLL7HZokTWjFmYlh+3eorESdEjf16wpANHh2anGhtEcO7d+a
-         HXDDIirLd3JBDebZ0V4rJZqGkpGHXkxrdJavGXYF9YXcu1+6YZxsntlbDnLbFv8VPmXu
-         9hpQ==
-X-Gm-Message-State: AOAM531GwNErLAP1MJUseX7ah1TRH8fw8YxZmkNp1tDeZdthRe3V38oy
-        nw6jciTz1RZ14KqOmiBdSoDlSQ==
-X-Google-Smtp-Source: ABdhPJyDdA9UiEi//2k2WCzJgQm8Dc/PW76V4KuUHKDVaRIJJzXRJoXMEnvbcpjfiuMh8OSv8ZtKIA==
-X-Received: by 2002:a05:600c:3c8b:b0:397:2db3:97a8 with SMTP id bg11-20020a05600c3c8b00b003972db397a8mr9203193wmb.132.1653091130092;
-        Fri, 20 May 2022 16:58:50 -0700 (PDT)
-Received: from tom-ThinkPad-T14s-Gen-2i.station (net-188-217-53-154.cust.vodafonedsl.it. [188.217.53.154])
-        by smtp.gmail.com with ESMTPSA id l41-20020a05600c1d2900b003973343c014sm3216306wms.33.2022.05.20.16.58.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 May 2022 16:58:49 -0700 (PDT)
-From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Cc:     tommaso.merciai@amarulasolutions.com, michael@amarulasolutions.com,
-        alberto.bianchi@amarulasolutions.com,
-        linux-amarula@amarulasolutions.com, linuxfancy@googlegroups.com,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3] net: phy: DP83822: enable rgmii mode if phy_interface_is_rgmii
-Date:   Sat, 21 May 2022 01:58:46 +0200
-Message-Id: <20220520235846.1919954-1-tommaso.merciai@amarulasolutions.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1345609AbiEUACB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 20:02:01 -0400
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7FB55DE49;
+        Fri, 20 May 2022 17:02:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653091320; x=1684627320;
+  h=date:from:to:cc:subject:in-reply-to:message-id:
+   references:mime-version;
+  bh=AWk5EzpwQakMCN7K4ikJj1LOGHAGUToZe4PbLyD2PRk=;
+  b=bXc++wjzFb72gG0CPsprV/4WzqOKl9dPflakFJbabcHeZ8M24G4wVvZs
+   MZVaKgFiuwpzUJIBOd/nLi8vETw4l86+acwJE58g+/vucQIKZKVIahuBE
+   4f2qjrodNC2AmkMP5qHtTAu7wb06aTc+9T6EPC9/dEVNdA5IaMdCoaWU8
+   wyQdvwTJcgeoWEaTB96AfyjmyUg+2HS02guybrqxDB1GYF8IGeZyJ2MTe
+   u1iDit9Gl211pDT+oITdiZRrh3E/XzLaeFMwCrCLDuZjRbqDbUxVhPxL9
+   sis1t/c7pVUEbqBX8JpEcTs07fV708UBTqK4EyoAwmiSfAFbYBIR+b5oK
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10353"; a="272749357"
+X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
+   d="scan'208";a="272749357"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 17:02:00 -0700
+X-IronPort-AV: E=Sophos;i="5.91,240,1647327600"; 
+   d="scan'208";a="524882953"
+Received: from ofirfata-mobl1.amr.corp.intel.com ([10.209.118.159])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 May 2022 17:02:00 -0700
+Date:   Fri, 20 May 2022 17:01:53 -0700 (PDT)
+From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Geliang Tang <geliang.tang@suse.com>, mptcp@lists.linux.dev
+Subject: Re: [PATCH bpf-next v5 0/7] bpf: mptcp: Support for mptcp_sock
+In-Reply-To: <CAEf4BzaZ07_VRN_z6xPogcx-YQuPQR8FCkC=K621r5oo1vBViQ@mail.gmail.com>
+Message-ID: <1043967d-395f-aa6-680-9ab7eec780d3@linux.intel.com>
+References: <20220519233016.105670-1-mathew.j.martineau@linux.intel.com> <CAEf4BzaZ07_VRN_z6xPogcx-YQuPQR8FCkC=K621r5oo1vBViQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII; format=flowed
+X-Spam-Status: No, score=-4.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RGMII mode can be enable from dp83822 straps, and also writing bit 9
-of register 0x17 - RMII and Status Register (RCSR).
-When phy_interface_is_rgmii rgmii mode must be enabled, same for
-contrary, this prevents malconfigurations of hw straps
+On Fri, 20 May 2022, Andrii Nakryiko wrote:
 
-References:
- - https://www.ti.com/lit/gpn/dp83822i p66
+> On Thu, May 19, 2022 at 4:30 PM Mat Martineau
+> <mathew.j.martineau@linux.intel.com> wrote:
+>>
+>> This patch set adds BPF access to mptcp_sock structures, along with
+>> associated self tests. You may recognize some of the code from earlier
+>> (https://lore.kernel.org/bpf/20200918121046.190240-6-nicolas.rybowski@tessares.net/)
+>> but it has been reworked quite a bit.
+>>
+>>
+>> v1 -> v2: Emit BTF type, add func_id checks in verifier.c and bpf_trace.c,
+>> remove build check for CONFIG_BPF_JIT, add selftest check for CONFIG_MPTCP,
+>> and add a patch to include CONFIG_IKCONFIG/CONFIG_IKCONFIG_PROC for the
+>> BPF self tests.
+>>
+>> v2 -> v3: Access sysctl through the filesystem to work around CI use of
+>> the more limited busybox sysctl command.
+>>
+>> v3 -> v4: Dropped special case kernel code for tcp_sock is_mptcp, use
+>> existing bpf_tcp_helpers.h, and add check for 'ip mptcp monitor' support.
+>>
+>> v4 -> v5: Use BPF test skeleton, more consistent use of ASSERT macros,
+>> drop some unnecessary parameters / checks, and use tracing to acquire
+>> MPTCP token.
+>>
+>> Geliang Tang (6):
+>>   bpf: add bpf_skc_to_mptcp_sock_proto
+>>   selftests/bpf: Enable CONFIG_IKCONFIG_PROC in config
+>>   selftests/bpf: test bpf_skc_to_mptcp_sock
+>>   selftests/bpf: verify token of struct mptcp_sock
+>>   selftests/bpf: verify ca_name of struct mptcp_sock
+>>   selftests/bpf: verify first of struct mptcp_sock
+>>
+>> Nicolas Rybowski (1):
+>>   selftests/bpf: add MPTCP test base
+>>
+>>  MAINTAINERS                                   |   1 +
+>>  include/linux/bpf.h                           |   1 +
+>>  include/linux/btf_ids.h                       |   3 +-
+>>  include/net/mptcp.h                           |   6 +
+>>  include/uapi/linux/bpf.h                      |   7 +
+>>  kernel/bpf/verifier.c                         |   1 +
+>>  kernel/trace/bpf_trace.c                      |   2 +
+>>  net/core/filter.c                             |  18 ++
+>>  net/mptcp/Makefile                            |   2 +
+>>  net/mptcp/bpf.c                               |  21 +++
+>>  scripts/bpf_doc.py                            |   2 +
+>>  tools/include/uapi/linux/bpf.h                |   7 +
+>>  tools/testing/selftests/bpf/bpf_tcp_helpers.h |  13 ++
+>>  tools/testing/selftests/bpf/config            |   3 +
+>>  tools/testing/selftests/bpf/network_helpers.c |  40 +++-
+>>  tools/testing/selftests/bpf/network_helpers.h |   2 +
+>>  .../testing/selftests/bpf/prog_tests/mptcp.c  | 174 ++++++++++++++++++
+>>  .../testing/selftests/bpf/progs/mptcp_sock.c  |  89 +++++++++
+>>  18 files changed, 382 insertions(+), 10 deletions(-)
+>>  create mode 100644 net/mptcp/bpf.c
+>>  create mode 100644 tools/testing/selftests/bpf/prog_tests/mptcp.c
+>>  create mode 100644 tools/testing/selftests/bpf/progs/mptcp_sock.c
+>>
+>>
+>> base-commit: 834650b50ed283d9d34a32b425d668256bf2e487
+>> --
+>> 2.36.1
+>>
+>
+> I've added missing static for test_base and some other helper and
+> replaced bzero and memcpy in BPF-side code with __builtin_memset and
+> __builtin_memcpy (and dropped string.h include, it's not supposed to
+> be used from BPF-side code). Applied to bpf-next, thanks.
+>
 
-Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
-Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-Suggested-by: Alberto Bianchi <alberto.bianchi@amarulasolutions.com>
-Tested-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
----
-Changes since v2:
- - Fix comment of register name RSCR -> RCSR
- - Fix define DP83822_RGMII_MODE_EN location
+Thanks for the fixups.
 
-Changes since v1:
- - Improve commit msg
- - Add definition of bit 9 reg rcsr (rgmii mode en)
- - Handle case: phy_interface_is_rgmii is false
-
- drivers/net/phy/dp83822.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/phy/dp83822.c b/drivers/net/phy/dp83822.c
-index ce17b2af3218..e6ad3a494d32 100644
---- a/drivers/net/phy/dp83822.c
-+++ b/drivers/net/phy/dp83822.c
-@@ -94,7 +94,8 @@
- #define DP83822_WOL_INDICATION_SEL BIT(8)
- #define DP83822_WOL_CLR_INDICATION BIT(11)
- 
--/* RSCR bits */
-+/* RCSR bits */
-+#define DP83822_RGMII_MODE_EN	BIT(9)
- #define DP83822_RX_CLK_SHIFT	BIT(12)
- #define DP83822_TX_CLK_SHIFT	BIT(11)
- 
-@@ -408,6 +409,12 @@ static int dp83822_config_init(struct phy_device *phydev)
- 			if (err)
- 				return err;
- 		}
-+
-+		phy_set_bits_mmd(phydev, DP83822_DEVADDR,
-+					MII_DP83822_RCSR, DP83822_RGMII_MODE_EN);
-+	} else {
-+		phy_clear_bits_mmd(phydev, DP83822_DEVADDR,
-+					MII_DP83822_RCSR, DP83822_RGMII_MODE_EN);
- 	}
- 
- 	if (dp83822->fx_enabled) {
--- 
-2.25.1
-
+--
+Mat Martineau
+Intel
