@@ -2,44 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BF5D52FB50
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 13:14:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1627A52FB15
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 13:13:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354981AbiEULN4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 May 2022 07:13:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
+        id S1354911AbiEULM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 07:12:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242689AbiEULMG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 07:12:06 -0400
+        with ESMTP id S1354423AbiEULMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 07:12:39 -0400
 Received: from mail3-relais-sop.national.inria.fr (mail3-relais-sop.national.inria.fr [192.134.164.104])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3730F2980B;
-        Sat, 21 May 2022 04:12:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BCA36162;
+        Sat, 21 May 2022 04:12:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=inria.fr; s=dc;
   h=from:to:cc:subject:date:message-id:mime-version:
    content-transfer-encoding;
-  bh=ysSCHxYUYI2fnvbvjl19r0L14v2vd2rA12vVrwVzVi0=;
-  b=UqK5kh2EBbAGZipXfNg9E2KfKuDxjrFxb0oz0Ho0tGLgmOEKYhG4lkwD
-   3M3Zc7SdrIYY8eKOLYmjLyUQp1i6YDnmV8YgSIZfqGlCdSIYPZAlxuq2k
-   6Kun0ZXJw0CRqeGDpOM8Qhe3U+AsddizZOk4z1RJIQQfo4i2UoVO6GwGj
-   4=;
+  bh=QPe3ISczFAZ0adoqqo0AJShVG8SLHWNRbndX3z8Gar0=;
+  b=AokhO/x5DIoEIEyYm2gzM5fRtI2t65E1IYgOXBDboAEiA1Tdf9FQ5ZhX
+   WYJX3h5/HO7gYYed+4JaugSIeLWw0JPZGF+gnSLFkb010j53edy5lelMu
+   0h9CK41J4JA7XAqsxoiW1QWb/sQIwV34wJbWj4Jm+sXmwvfSmI3Hz0aA6
+   c=;
 Authentication-Results: mail3-relais-sop.national.inria.fr; dkim=none (message not signed) header.i=none; spf=SoftFail smtp.mailfrom=Julia.Lawall@inria.fr; dmarc=fail (p=none dis=none) d=inria.fr
 X-IronPort-AV: E=Sophos;i="5.91,242,1647298800"; 
-   d="scan'208";a="14727919"
+   d="scan'208";a="14727940"
 Received: from i80.paris.inria.fr (HELO i80.paris.inria.fr.) ([128.93.90.48])
-  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:56 +0200
+  by mail3-relais-sop.national.inria.fr with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 May 2022 13:11:59 +0200
 From:   Julia Lawall <Julia.Lawall@inria.fr>
-To:     Wolfgang Grandegger <wg@grandegger.com>
+To:     Ariel Elior <aelior@marvell.com>
 Cc:     kernel-janitors@vger.kernel.org,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] can: peak_usb: fix typo in comment
-Date:   Sat, 21 May 2022 13:10:34 +0200
-Message-Id: <20220521111145.81697-24-Julia.Lawall@inria.fr>
+        Manish Chopra <manishc@marvell.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] net: qed: fix typos in comments
+Date:   Sat, 21 May 2022 13:10:53 +0200
+Message-Id: <20220521111145.81697-43-Julia.Lawall@inria.fr>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -53,26 +49,72 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Spelling mistake (triple letters) in comment.
+Spelling mistakes (triple letters) in comments.
 Detected with the help of Coccinelle.
 
 Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
 
 ---
- drivers/net/can/usb/peak_usb/pcan_usb.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/qed/qed_fcoe_if.h    |    4 ++--
+ include/linux/qed/qed_iscsi_if.h   |    4 ++--
+ include/linux/qed/qed_nvmetcp_if.h |    2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb.c b/drivers/net/can/usb/peak_usb/pcan_usb.c
-index 17dc178f555b..091c631ebe23 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb.c
-@@ -533,7 +533,7 @@ static int pcan_usb_handle_bus_evt(struct pcan_usb_msg_context *mc, u8 ir)
- {
- 	struct pcan_usb *pdev = mc->pdev;
- 
--	/* acccording to the content of the packet */
-+	/* according to the content of the packet */
- 	switch (ir) {
- 	case PCAN_USB_ERR_CNT_DEC:
- 	case PCAN_USB_ERR_CNT_INC:
+diff --git a/include/linux/qed/qed_fcoe_if.h b/include/linux/qed/qed_fcoe_if.h
+index 16752eca5cbd..90e3045b2dcb 100644
+--- a/include/linux/qed/qed_fcoe_if.h
++++ b/include/linux/qed/qed_fcoe_if.h
+@@ -76,7 +76,7 @@ void qed_fcoe_set_pf_params(struct qed_dev *cdev,
+  * @fill_dev_info:	fills FCoE specific information
+  *			@param cdev
+  *			@param info
+- *			@return 0 on sucesss, otherwise error value.
++ *			@return 0 on success, otherwise error value.
+  * @register_ops:	register FCoE operations
+  *			@param cdev
+  *			@param ops - specified using qed_iscsi_cb_ops
+@@ -96,7 +96,7 @@ void qed_fcoe_set_pf_params(struct qed_dev *cdev,
+  *				connection.
+  *			@param p_doorbell - qed will fill the address of the
+  *				doorbell.
+- *			return 0 on sucesss, otherwise error value.
++ *			return 0 on success, otherwise error value.
+  * @release_conn:	release a previously acquired fcoe connection
+  *			@param cdev
+  *			@param handle - the connection handle.
+diff --git a/include/linux/qed/qed_iscsi_if.h b/include/linux/qed/qed_iscsi_if.h
+index 494cdc3cd840..fbf7973ae9ba 100644
+--- a/include/linux/qed/qed_iscsi_if.h
++++ b/include/linux/qed/qed_iscsi_if.h
+@@ -133,7 +133,7 @@ struct qed_iscsi_cb_ops {
+  * @fill_dev_info:	fills iSCSI specific information
+  *			@param cdev
+  *			@param info
+- *			@return 0 on sucesss, otherwise error value.
++ *			@return 0 on success, otherwise error value.
+  * @register_ops:	register iscsi operations
+  *			@param cdev
+  *			@param ops - specified using qed_iscsi_cb_ops
+@@ -152,7 +152,7 @@ struct qed_iscsi_cb_ops {
+  *				connection.
+  *			@param p_doorbell - qed will fill the address of the
+  *				doorbell.
+- *			@return 0 on sucesss, otherwise error value.
++ *			@return 0 on success, otherwise error value.
+  * @release_conn:	release a previously acquired iscsi connection
+  *			@param cdev
+  *			@param handle - the connection handle.
+diff --git a/include/linux/qed/qed_nvmetcp_if.h b/include/linux/qed/qed_nvmetcp_if.h
+index 1d51df347560..bbfbfba51f37 100644
+--- a/include/linux/qed/qed_nvmetcp_if.h
++++ b/include/linux/qed/qed_nvmetcp_if.h
+@@ -132,7 +132,7 @@ struct nvmetcp_task_params {
+  *				connection.
+  *			@param p_doorbell - qed will fill the address of the
+  *				doorbell.
+- *			@return 0 on sucesss, otherwise error value.
++ *			@return 0 on success, otherwise error value.
+  * @release_conn:	release a previously acquired nvmetcp connection
+  *			@param cdev
+  *			@param handle - the connection handle.
 
