@@ -2,55 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 74F1352F971
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 08:58:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 530ED52F9B0
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 09:27:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240407AbiEUG6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 May 2022 02:58:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43978 "EHLO
+        id S240936AbiEUH1H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 03:27:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232686AbiEUG6j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 02:58:39 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F158AE25A;
-        Fri, 20 May 2022 23:58:37 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        with ESMTP id S239723AbiEUH07 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 03:26:59 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BA08C59BB1
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 00:26:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653118016;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=hSV8xdTtoZicP5dxKU003xS7Nq8DX7sZpRoZ3HyTw7k=;
+        b=NV2eJ2xftOXReIHerGd+SQ9AsTbAQ6dHGRjLqhyGAo8Gv7PQgQCIQTxA0XmKVsP2lpV6JE
+        cEAFZgOz/CtyhW9bXUpf0qr4c0p3PO5mS6JNaChm/xVk2fyGKSvoAfA9B0LxjRbxcwX/GU
+        Hj9q8zU8wNjyALE1z0vNB7OiNig8VeA=
+Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
+ [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-589-WWf0tMTvMImep9URp11lRg-1; Sat, 21 May 2022 03:26:52 -0400
+X-MC-Unique: WWf0tMTvMImep9URp11lRg-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.rdu2.redhat.com [10.11.54.5])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42BD2B82DC0;
-        Sat, 21 May 2022 06:58:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 20A6BC385A5;
-        Sat, 21 May 2022 06:58:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653116314;
-        bh=n7ISQ52fmTirYXGkOGDSWt2dlrzq64OUgt9spbHNesA=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=PoMz3/MOpSTcS3dE1bNNKjir9/ZAwj+MXXp4WIVjPgAB4jOKPV4KEXhcHq0jNdf19
-         V95kZ7vQLrcxWlAddOByv4PQheumGOmSTPTk4WRvxU2MZFgJ1N3Jox1jG6LBZpyn3V
-         NFPvE+CqKud8G3KTkdIzHoGcrygGq3wZS5IVEA4tIXZd6dc24cHpkXEU8ko+LTnJx9
-         WI6n/tgNMDL+0BKCeNwbfDeh0yVlUuwRnxUn2k2nxAdeMk7TJLFHP/JQAu7jmYkkZx
-         PC0eqPPbTqECYObQ02Qj3/R/0oTdLqzpZ/My9wpPRpWKsxXP077IX8T9qJjDiTxqbX
-         iGFVQekEX+YAQ==
-From:   Kalle Valo <kvalo@kernel.org>
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id E91B1811E75;
+        Sat, 21 May 2022 07:26:51 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 3CDBE7ADD;
+        Sat, 21 May 2022 07:26:51 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20220520181118.47ca2bdc@kernel.org>
+References: <20220520181118.47ca2bdc@kernel.org> <165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk> <165306517397.34989.14593967592142268589.stgit@warthog.procyon.org.uk>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     johannes@sipsolutions.net, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, toke@toke.dk,
-        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH net-next 2/8] wifi: ath9k: silence array-bounds warning on GCC 12
-References: <20220520194320.2356236-1-kuba@kernel.org>
-        <20220520194320.2356236-3-kuba@kernel.org>
-Date:   Sat, 21 May 2022 09:58:28 +0300
-In-Reply-To: <20220520194320.2356236-3-kuba@kernel.org> (Jakub Kicinski's
-        message of "Fri, 20 May 2022 12:43:14 -0700")
-Message-ID: <87h75j1iej.fsf@kernel.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/7] rxrpc: Fix locking issue
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <207585.1653118010.1@warthog.procyon.org.uk>
+Date:   Sat, 21 May 2022 08:26:50 +0100
+Message-ID: <207586.1653118010@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.11.54.5
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -58,52 +63,13 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ arnd, kees, lkml
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-Jakub Kicinski <kuba@kernel.org> writes:
+> > +	lh = rcu_dereference(((struct list_head *)v)->next);
+> 
+> Can we use list_next_rcu() here maybe ? to avoid the sparse warning?
 
-> GCC 12 says:
->
-> drivers/net/wireless/ath/ath9k/mac.c: In function =E2=80=98ath9k_hw_reset=
-txqueue=E2=80=99:
-> drivers/net/wireless/ath/ath9k/mac.c:373:22: warning: array subscript
-> 32 is above array bounds of =E2=80=98struct ath9k_tx_queue_info[10]=E2=80=
-=99
-> [-Warray-bounds]
->   373 |         qi =3D &ah->txq[q];
->       |               ~~~~~~~^~~
->
-> I don't know where it got the 32 from, relegate the warning to W=3D1+.
->
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> CC: toke@toke.dk
-> CC: kvalo@kernel.org
-> CC: linux-wireless@vger.kernel.org
-> ---
->  drivers/net/wireless/ath/ath9k/Makefile | 5 +++++
->  1 file changed, 5 insertions(+)
->
-> diff --git a/drivers/net/wireless/ath/ath9k/Makefile b/drivers/net/wirele=
-ss/ath/ath9k/Makefile
-> index eff94bcd1f0a..9bdfcee2f448 100644
-> --- a/drivers/net/wireless/ath/ath9k/Makefile
-> +++ b/drivers/net/wireless/ath/ath9k/Makefile
-> @@ -45,6 +45,11 @@ ath9k_hw-y:=3D	\
->  		ar9003_eeprom.o \
->  		ar9003_paprd.o
->=20=20
-> +# FIXME: temporarily silence -Warray-bounds on non W=3D1+ builds
-> +ifndef KBUILD_EXTRA_WARN
-> +CFLAGS_mac.o +=3D -Wno-array-bounds
-> +endif
+Sure.
 
-There are now four wireless drivers which need this hack. Wouldn't it be
-easier to add -Wno-array-bounds for GCC 12 globally instead of adding
-the same hack to multiple drivers?
+David
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
