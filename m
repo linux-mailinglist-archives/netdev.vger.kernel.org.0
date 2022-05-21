@@ -2,77 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4718C52F755
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 03:26:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 976F952F778
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 04:00:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348476AbiEUBZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 21:25:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57670 "EHLO
+        id S1354333AbiEUCAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 22:00:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235400AbiEUBZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 21:25:51 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1AB823152;
-        Fri, 20 May 2022 18:25:49 -0700 (PDT)
+        with ESMTP id S232860AbiEUCAb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 22:00:31 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6121915F6C6;
+        Fri, 20 May 2022 19:00:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E3F1D61EA2;
-        Sat, 21 May 2022 01:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D933DC385A9;
-        Sat, 21 May 2022 01:25:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3E6C61ECF;
+        Sat, 21 May 2022 02:00:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B859C385A9;
+        Sat, 21 May 2022 02:00:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653096346;
-        bh=yMocOcmC33NsOkfqFgLCpjgPvld2Y6qIGt0yG2xZxT8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ld2JXAiNS2E9dtYRfU0l1Jf9/Ef0Kp18tzj0enX1dCPEJhIbYGbAedQ758PqZsmP7
-         WuCtRsaoo6c3iAMf+27A7DmVq86QfZ3WPFS8dzssv4e6OIryYZOsSxJBBb+M3f/4Eo
-         SZJPmFsVdPTSksz/sSNVb641Kq6tCy0Hkz87rgdp3iE+rBWiSoBmiJ2LSXWFIv7Mor
-         YrBHLQZIw99Xx/jcl17pcqLFMb4zyr9S3734AZwvKHrzM5nRvYD+Cn5CFEUSBLGrgd
-         DJPAMaPVNYuBHmjZoAAynhaY+03mr+SomSslpxKRSR0fUF47y7LynTpcHac7Vn+QHs
-         K4wZ3KhQfBpsQ==
-Date:   Fri, 20 May 2022 18:25:44 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     netdev@vger.kernel.org, nbd@nbd.name, john@phrozen.org,
-        sean.wang@mediatek.com, Mark-MC.Lee@mediatek.com,
-        davem@davemloft.net, edumazet@google.com, pabeni@redhat.com,
-        Sam.Shih@mediatek.com, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, robh@kernel.org,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH v3 net-next 00/16] introduce mt7986 ethernet support
-Message-ID: <20220520182544.1af8f5bf@kernel.org>
-In-Reply-To: <cover.1653069056.git.lorenzo@kernel.org>
-References: <cover.1653069056.git.lorenzo@kernel.org>
+        s=k20201202; t=1653098429;
+        bh=lASD+l4g0VxygFaghqtOSOuG8Fp0yTmMNSbT1Tkf6/0=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=sR/BLWRhIvrFAhzfhttDCos3C6XDIzfGPvr7vybnNmFAO05kG806HMuKcVIOEZsEn
+         tqyf1gOgE3XQVJobDDKX3Oa+uw+OqaUHpcU0X6j19fkr0BsL9ZFhFb8zRe5c1n/a2o
+         HrOnSUqYpcp7Hai+wDUsBeu8bE6AzlHsR9m9shGEt8A7EvpMzsdWn+dRnK2siVMVwM
+         HCMLDHcdfsJ7EYuiuV/iA28FAPf6beehB6XeU7kLQbtZQrJh51zBNRK8RGOOouo87F
+         3ms4/1v7KOglIdmVcrBK7BjXeB5UROKsmXPOBkowt188hfPPY6VkCVgB+JbpguXY2d
+         wigWzNwBOw8qA==
+Message-ID: <5f189615-8701-e2ca-d9a6-d6037f8799aa@kernel.org>
+Date:   Fri, 20 May 2022 20:00:23 -0600
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH net-next v3] net/ipv6: Introduce accept_unsolicited_na
+ knob to implement router-side changes for RFC9131
+Content-Language: en-US
+To:     Arun Ajith S <aajith@arista.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
+        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
+        noureddine@arista.com, gk@arista.com
+References: <20220413143434.527-1-aajith@arista.com>
+ <350f6a02-2975-ac1b-1c9d-ab738722a9fe@kernel.org>
+ <CAOvjArTAce_68CkoUff_=Hi+mr731dsWcQdEbaev4xaMDFZNug@mail.gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <CAOvjArTAce_68CkoUff_=Hi+mr731dsWcQdEbaev4xaMDFZNug@mail.gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-7.6 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 20 May 2022 20:11:23 +0200 Lorenzo Bianconi wrote:
-> Add support for mt7986-eth driver available on mt7986 soc.
->=20
-> Changes since v2:
-> - rely on GFP_KERNEL whenever possible
-> - define mtk_reg_map struct to introduce soc register map and avoid macros
-> - improve comments
->=20
-> Changes since v1:
-> - drop SRAM option
-> - convert ring->dma to void
-> - convert scratch_ring to void
-> - enable port4
-> - fix irq dts bindings
-> - drop gmac1 support from mt7986a-rfb dts for the moment
+On 5/20/22 1:19 AM, Arun Ajith S wrote:
+> On Thu, Apr 14, 2022 at 3:37 AM David Ahern <dsahern@kernel.org> wrote:
+>>
+>> On 4/13/22 8:34 AM, Arun Ajith S wrote:
+>>> diff --git a/tools/testing/selftests/net/ndisc_unsolicited_na_test.py b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
+>>> new file mode 100755
+>>> index 000000000000..f508657ee126
+>>> --- /dev/null
+>>> +++ b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
+>>> @@ -0,0 +1,255 @@
+>>> +#!/bin/bash
+>>
+>> that file name suffix should be .sh since it is a bash script; not .py
+>>
+>> other than that looks good to me.
+>>
+>> Reviewed-by: David Ahern <dsahern@kernel.org>
+> 
+> Hi David,
+> 
+> It has been pointed out to me that I might have read RFC9131 in a
+> narrower sense than what was intended.
+> The behavior of adding a new entry in the neighbour cache on receiving
+> a NA if none exists presently
+> shouldn't be limited to unsolicited NAs like in my original patch,
+> rather it should extend to all NAs.
+> 
+> I am quoting from the RFC below
+> 
+>    |  When a valid Neighbor Advertisement is received (either solicited
+>    |  or unsolicited), the Neighbor Cache is searched for the target's
+>    |  entry.  If no entry exists:
+>    |
+>    |  *  Hosts SHOULD silently discard the advertisement.  There is no
+>    |     need to create an entry if none exists, since the recipient has
+>    |     apparently not initiated any communication with the target.
+>    |
+>    |  *  Routers SHOULD create a new entry for the target address with
+>    |     the link-layer address set to the Target Link-Layer Address
+>    |     Option (if supplied).  The entry's reachability state MUST be
+>    |     set to STALE.  If the received Neighbor Advertisement does not
+>    |     contain the Target Link-Layer Address Option, the advertisement
+>    |     SHOULD be silently discarded.
+> 
+> I want to fix this, but this would mean the sysctl name
+> accept_unsolicited_na is no longer appropriate
+> I see that the net-next window for 5.19 is still open and changing the
+> sysctl name
+> wouldn't mean changing an existing interface.
+> I was thinking of renaming the sysctl to accept_untracked_na to
+> highlight that we are accepting NAs even if there is
+> no corresponding entry tracked in the neighbor cache.
+> 
+> Also, there's an error in my comment, where I say "pass up the stack"
+> as we don't pass NAs up the stack.
+> The comment can be updated as:
+>         /* RFC 9131 updates original Neighbour Discovery RFC 4861.
+>          * NAs with Target LL Address option without a corresponding
+>          * entry in the neighbour cache can now create a STALE neighbour
+>          * cache entry on routers.
+>          *
+>          *   entry accept  fwding  solicited        behaviour
+>          * ------- ------  ------  ---------    ----------------------
+>          * present      X       X         0     Set state to STALE
+>          * present      X       X         1     Set state to REACHABLE
+>          *  absent      0       X         X     Do nothing
+>          *  absent      1       0         X     Do nothing
+>          *  absent      1       1         X     Add a new STALE entry
+>          */
+> 
+> In summary
+> 1. accept=0 keeps original(5.18) behavior for all cases.
+> 2. accept=1 changes original behavior for entry=asbent, fwding=1 case
+> provided the NA had specified target link-layer address.
+> 
+> Please let me know what you think.
+> 
 
-=F0=9F=91=8D
-
-Acked-by: Jakub Kicinski <kuba@kernel.org>
+Changes can be made until it is in a released kernel to users. This
+feature has many weeks before it hits that level.
