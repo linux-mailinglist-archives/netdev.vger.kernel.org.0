@@ -2,95 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BDEC552FE3E
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 18:46:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D62F552FE8F
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 19:28:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343694AbiEUQp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 May 2022 12:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39694 "EHLO
+        id S1344169AbiEUR1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 13:27:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230294AbiEUQpw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 12:45:52 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54170FF3;
-        Sat, 21 May 2022 09:45:50 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id g3so9986222qtb.7;
-        Sat, 21 May 2022 09:45:50 -0700 (PDT)
+        with ESMTP id S1344163AbiEUR1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 13:27:11 -0400
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9713CA49
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 10:27:10 -0700 (PDT)
+Received: by mail-pg1-x531.google.com with SMTP id g184so10272175pgc.1
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 10:27:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=hIMTrtnjZ9gqkDWInY5qR+iQZXXgSvv+Fs8Mw2FuFq0=;
-        b=fBn1s4wNEYbraZzXmKP2EyONUlmW8I8BgBrKTm5RQON25DyvbzWLg+/vl/bwdVHJKP
-         QLioOfyR5jbf6Mt2MzSfCjKCAdkuQc5TfsUvQ57u7K8AbEDJfIL87aaSCPXeCWwKkV3f
-         dMJqant5hrCiOAypmsMB/vmwysoDXDMAMLzq1gr4/q8Q2ESVzZBC9HKmlrD7Ah0d6xMj
-         ZkX9koF2urPM0YdiGb5YmK471qrZNZ8UtkIOgNpV2POVXJlc/AWy7TKU7Q48INKmVJVS
-         5s0b6e5rN7dcLAhe0mi7xDXh/BScbmWMvrX9cqvnKm8ONl3Vrfa/m8+TiYmJI+0Kymvn
-         17hA==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=p4WDxDiVWNzE6Ed2dTUVBgIIJHIgebfp/UAmQKOT05M=;
+        b=fPEyMLlxWQWAP61tegfSgblAyQRGWS1gLk+IYo8FzrHb137M1pKE57MzOeT6CgkF0w
+         KL47Lp1v4aywQVaRRlRdjf1takPPiEduvQT1831MzX4SI0nP15DQUnPdzwmj7E6fbPyq
+         S/Mk615aGcTCzUfkg638OhEyqEQefR73dhf29jdYiDGVvnriwdMUua0tTVyCEHG0Yplv
+         vKrTnQo5y90cGdxZ7pnoSdIxfF/ps1UYJf2o+xlRXoj4kCiSO/0hIWkqzuAedC61CGaG
+         zW+7ElQsGWG3LeWg1wCVsH52TSY7f3Uw1Hz0P7biiIjgmbRsuTHh2NsE8LW7eyqwh11A
+         vGFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=hIMTrtnjZ9gqkDWInY5qR+iQZXXgSvv+Fs8Mw2FuFq0=;
-        b=rCulwQbc9YqiyOegLpjU1sWESCq2Df+PXRc6JdQ9Ib42hoCh+dYQJz/hbAH+qYVEix
-         ZwcS1AAb8wthz5sYuZlNtAbrIpRUmXjmZECxZTfjmAQdJEolaX+CMbAidg2E6Zqh6uTm
-         /h5q3Rw8dUKBriTmdQQVJOmlEXK9MudVa+YL1wy1QJ9923rHshZYPbF/0cb7ryIWzExL
-         kehHkWx1vURyUrh9K6DBJVKbayiH2o3dvbNcKjI1q0INUtJ9PfH5sZnQM6wkcgsyZBnz
-         I/fY9qPQqt4FaJ3X9xnRkegVUe7MJbiqfcvn7Z3vaqGo0m84QrZoPNd07Ie4513YnbaT
-         +wFg==
-X-Gm-Message-State: AOAM5324Xt2f2qOof7EG4eUI58MRjWS2WAKnqWBUi0XgGOm5IHqZAeSn
-        UVl6bKDhvQrtJmQwwedZYA==
-X-Google-Smtp-Source: ABdhPJyek8YSkEb5b3A0KQzbpWST89kREvGQc6v6hOXCeHBh9vLoseUyMrXzt0U1xN0KuHBx4A9llQ==
-X-Received: by 2002:a05:622a:41:b0:2f3:c678:34df with SMTP id y1-20020a05622a004100b002f3c67834dfmr11396132qtw.67.1653151549474;
-        Sat, 21 May 2022 09:45:49 -0700 (PDT)
-Received: from moria.home.lan (c-73-219-103-14.hsd1.vt.comcast.net. [73.219.103.14])
-        by smtp.gmail.com with ESMTPSA id y76-20020a37644f000000b0069ffe63228fsm1690243qkb.121.2022.05.21.09.45.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 09:45:48 -0700 (PDT)
-Date:   Sat, 21 May 2022 12:45:46 -0400
-From:   Kent Overstreet <kent.overstreet@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-block@vger.kernel.org, netdev@vger.kernel.org,
-        mcgrof@kernel.org, tytso@mit.edu
-Subject: Re: RFC: Ioctl v2
-Message-ID: <20220521164546.h7huckdwvguvmmyy@moria.home.lan>
-References: <20220520161652.rmhqlvwvfrvskg4w@moria.home.lan>
- <Yof6hsC1hLiYITdh@lunn.ch>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=p4WDxDiVWNzE6Ed2dTUVBgIIJHIgebfp/UAmQKOT05M=;
+        b=06F0z7DOCro1OzB+B//QANeRWaiiU0wcYzN8lpTRDYjd36juakg4IXxI8We3uoH9G1
+         DWeVPBOs1/Z5DpVB+fsoPg+df5WD9PVInqGEByMFbSlttnu8qc2ztx6ENvIvnGmioglZ
+         iiya2DOhXLPa/DVFuEO2pu7IF7ZQPc+rA0KWyedwTZhn/npdmeRitPVcq3/NTUPGwtoI
+         PsRO65Kv/mBhYclqjcsiRwfjVOjoLAp1yCe0nAvKtbLab9M48YSTSLg2L12hdnWow1G7
+         bKL7NqMU0xNn867K2M0L1HXo6/46Xjd64WQ+OVg3Jlyz/TPgCCjkuLJFjOY1JUqb7C+S
+         AnNQ==
+X-Gm-Message-State: AOAM533gXIo2PJP8KrGPH3Xqymxx3XPc9qmaoVWbmHAxdiO454+jU4ok
+        FK2McbdcJJaSYEur0VedWOVzvDwCLwAffYP+4a7k5w==
+X-Google-Smtp-Source: ABdhPJylwWu979YYJ1WKcQb/5oA+gVrS/LbsKuwQwjq0aRbd2SzVL5AVfi8W1hSLM0CvVCSx8ehGnX8hgBnqpDHgv2g=
+X-Received: by 2002:a63:31d3:0:b0:3f5:d1f4:5f95 with SMTP id
+ x202-20020a6331d3000000b003f5d1f45f95mr13297421pgx.178.1653154030048; Sat, 21
+ May 2022 10:27:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yof6hsC1hLiYITdh@lunn.ch>
+References: <20220519074351.829774-1-william.xuanziyang@huawei.com>
+ <CAMZdPi9z=OM0=yZbBu0eDvFd30efNpt3qmDHuCTj6LGJxdBTbw@mail.gmail.com>
+ <20220520172556.1d62b899@kernel.org> <20220520180111.7e9b2b84@kernel.org>
+In-Reply-To: <20220520180111.7e9b2b84@kernel.org>
+From:   Loic Poulain <loic.poulain@linaro.org>
+Date:   Sat, 21 May 2022 19:26:34 +0200
+Message-ID: <CAMZdPi85RJUXWkaJV8EZO00eM_RaGj=3ix0L-H3ynDpRxKBWFw@mail.gmail.com>
+Subject: Re: [PATCH net-next v3] net: wwan: t7xx: fix GFP_KERNEL usage in
+ spin_lock context
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ziyang Xuan <william.xuanziyang@huawei.com>,
+        chandrashekar.devegowda@intel.com,
+        chiranjeevi.rapolu@linux.intel.com, davem@davemloft.net,
+        edumazet@google.com, haijun.liu@mediatek.com,
+        johannes@sipsolutions.net, linuxwwan@intel.com,
+        m.chetan.kumar@linux.intel.com, netdev@vger.kernel.org,
+        pabeni@redhat.com, ricardo.martinez@linux.intel.com,
+        ryazanov.s.a@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 20, 2022 at 10:31:02PM +0200, Andrew Lunn wrote:
-> > I want to circulate this and get some comments and feedback, and if
-> > no one raises any serious objections - I'd love to get collaborators
-> > to work on this with me. Flame away!
-> 
-> Hi Kent
-> 
-> I doubt you will get much interest from netdev. netdev already
-> considers ioctl as legacy, and mostly uses netlink and a message
-> passing structure, which is easy to extend in a backwards compatible
-> manor.
+Le sam. 21 mai 2022 =C3=A0 03:01, Jakub Kicinski <kuba@kernel.org> a =C3=A9=
+crit :
+>
+> On Fri, 20 May 2022 17:25:56 -0700 Jakub Kicinski wrote:
+> > On Thu, 19 May 2022 09:29:12 +0200 Loic Poulain wrote:
+> > > On Thu, 19 May 2022 at 09:26, Ziyang Xuan <william.xuanziyang@huawei.=
+com> wrote:
+> > > >
+> > > > t7xx_cldma_clear_rxq() call t7xx_cldma_alloc_and_map_skb() in spin_=
+lock
+> > > > context, But __dev_alloc_skb() in t7xx_cldma_alloc_and_map_skb() us=
+es
+> > > > GFP_KERNEL, that will introduce scheduling factor in spin_lock cont=
+ext.
+> > > >
+> > > > Because t7xx_cldma_clear_rxq() is called after stopping CLDMA, so w=
+e can
+> > > > remove the spin_lock from t7xx_cldma_clear_rxq().
+> > > >
+> > > > Fixes: 39d439047f1d ("net: wwan: t7xx: Add control DMA interface")
+> > > > Suggested-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
+> > > > Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> > >
+> > > Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
+> >
+> > Wait, you reviewed two different fixes for the same issue?
+> > Please say something when that happens I thought both are needed :/
 
-The more I look at netlink the more I wonder what on earth it's targeted at or
-was trying to solve. It must exist for a reason, but I've written a few ioctls
-myself and I can't fathom a situation where I'd actually want any of the stuff
-netlink provides.
 
-Why bother with getting a special socket type? Why asynchronous messages with
-all the marshalling/unmarshalling that entails?
+Right, I've actually overlooked that the other patch has only one
+atomic user, which becomes useless with this change.
 
-From what I've seen all we really want is driver private syscalls, and the
-things about ioctls that suck are where it's _not_ like syscalls. Let's just
-make it work more like normal function calls.
+>
+>
+> FWIW I pushed out the other one before I realized (they both apply
+> without conflicts so I thought they fixed different issues)
+> If this one is preferred please respin and squash a revert of
+>
+>
+> 9ee152ee3ee3 into it.
+
+Yes this one is preferred, I'll respin it. Sorry for this.
+
+Thanks,
+Loic
