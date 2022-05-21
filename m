@@ -2,232 +2,335 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 85D8352F706
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 02:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85FAF52F70B
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 02:53:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350741AbiEUAw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 20:52:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39854 "EHLO
+        id S1353950AbiEUAxh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 20:53:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235683AbiEUAw5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 20:52:57 -0400
+        with ESMTP id S1348108AbiEUAxe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 20:53:34 -0400
 Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D47821AD5AD;
-        Fri, 20 May 2022 17:52:56 -0700 (PDT)
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24KMsHvw029503;
-        Fri, 20 May 2022 17:52:30 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=RTeQWk2uEdnNz7G7Y/KJAeI2aPGMBpJrhLcIXKIx3Ls=;
- b=eUH/+QawHUtXDPUm8GIZeDcQUDGSa1FnL1qbfWGD+Xx/ssVlT3rklTD2uCY4rYiaCczh
- GMXcuTQ1Ad0I7Wf5ryWMLBUoO0tgUdxXZzxEK+xjDXnOp1VBe+rz4tE7wCuzygsRbTJe
- ObiUjybOiXXi/EurPhtFDVEVnTyh+cl3bps= 
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2177.outbound.protection.outlook.com [104.47.57.177])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3g5xexfwyb-1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA6C31AD5AD;
+        Fri, 20 May 2022 17:53:33 -0700 (PDT)
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24KMsDHs016756;
+        Fri, 20 May 2022 17:53:18 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=dReKlJAoh9cTQjhadVlaBca/ZLFhYcp+JdvzdGLURlg=;
+ b=FWQt0c27MbC59JMv+w1aibSJ+P+R4YlDYnXYf2hKCJaVOsMb3hTpEtBoFQMZcL6rMGtW
+ zBOwiGUkBUtTXY1TlC2JEg4JoeIegIfCU9ql8VtdzmbB80h+7ABss8c8A4QI1Mr9lQI6
+ VZCMSPIAnqhIpFE39jEbw37LvYJ9y2mf1k4= 
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2173.outbound.protection.outlook.com [104.47.57.173])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3g5pj53ufc-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 20 May 2022 17:52:30 -0700
+        Fri, 20 May 2022 17:53:18 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HZZ+HNlod5LBgk1D2bnPnWKsEINgIRHHk9QR+NrSEzPJ74RwmAX+fdKCwM+sMcl0bcJwDkZ9vEZgCJ/rmDYAyKIKj4Oq7Ngppad1dTHiLnxGjVhvwfVOQzFtPGRWV7TNpdsMw5Vyxw0AAbeXMbmbZEbkwtDmglIIJEprtDC+PIIcP6t7CyXYWR+9k8EpqJLCoOYo+QAXzwluAV3+l7hSTBp/RHKI3P0FopKAcjiB2O5Z9Fp57XkXCIFHR/h/S43KfuvBNODpK4Gn9Uth+/MsRQoaXCrRNHJw6lW/r+5ruh8v2n4Fsk0SWuoqPfs/347df1ngp0+JcCXvAewFxSLmDw==
+ b=oc8w4O7Nzv0ZjmsWlsKI3tkyKNx3XZR6vURlkzaXcg8XKJ4f6+6nJFiGBhLH7KYTNfxDlO/aL1pkT+yx69Fsm7AJoSAGWJ+7W5/ZOYdxUffiVru1Ok62gbjyT1orNNcLgGEhC/J0BUoxEVLpr6W9pGOLWWERmRP3/MH5Gz6wHcBBPc+7o5oF3Aq/QNKGY9xUxRH7NhmIoPl8vBYjE0O/RUKNtKPOgyS6sFmLzCN+SpLeUdzJJ8svHTCxkhaX+Q2/E5LUBSl0UVpnuegF0X/LXvpal9WjLvsefMEVkk0LLCW3/nfPBUviKdoYvnmKhSGi//kF/ii6s9kwak0QNglpvg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=RTeQWk2uEdnNz7G7Y/KJAeI2aPGMBpJrhLcIXKIx3Ls=;
- b=I3YKdgWgmO4nn1rj44C9D9c0FFxzxaypxAmu8CJ63RfcZ+/mnP4917QUl3YjCmolqbNDVOHwmpjvEZdSIDjWONHXhltNnMFLF1PgUkKAwOZZpXoH7vxWnbhYWaXrxpwR2baTOoz3IZh2329IZR4+SdJF2V/ANbgtIEBUM4PyP3CiqFOu1fF9CTn2If0oi0/VGrZN2sWPC/CYk2wjJjkG0PsjeK6IpWJr8Aib3QJuPsBLqeCLbi0K5Hppyn6rCi9dzp/BWQ530+eTMg1OWWsKmZLprcPyJdRQyI1JwsyriIk/8WpxJqlheAojCRbF5lx+/hsWTgTbmdWS/XuFF1ZwKA==
+ bh=dReKlJAoh9cTQjhadVlaBca/ZLFhYcp+JdvzdGLURlg=;
+ b=UPR1lGyPP+Yn+sbghzMgvN3hLoQD6Ewlobd9z8FIv8M18CSi4M+xpnx0dka/RrlJQzQAYP/C+fIqNjgo1V4bIolhCyyDo0Y9NtwrZhsRiFBKMCzF2Y8ayAEAPhyJbvfDh0/zv0fC3lM6SUUjzJT6shG8PzqHWGNnDJ6oOmtubqDcMWNC+bDSDHsV+jSdXV8ZLSfIARiUWEr4ViKzXm/A8smRg4etnPdts8O/GLPrmprcb5yS7RF7XNe2b7Lsks9IpZBXZCnc93i1SyKv2cXeb0mwvXgqFXmY7rDncoO4znsZ5dgMVYX5y42uqbzHEQOcUCTZ0jgj3JB93QSMQYGJvw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com (2603:10b6:805:d::27)
- by SJ0PR15MB4233.namprd15.prod.outlook.com (2603:10b6:a03:2ec::15) with
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SJ0PR15MB4156.namprd15.prod.outlook.com (2603:10b6:a03:2e3::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.19; Sat, 21 May
- 2022 00:52:27 +0000
-Received: from SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::5811:4996:bbfd:3c53]) by SN6PR1501MB2064.namprd15.prod.outlook.com
- ([fe80::5811:4996:bbfd:3c53%7]) with mapi id 15.20.5273.017; Sat, 21 May 2022
- 00:52:27 +0000
-Message-ID: <b181f363-f66b-d74f-2251-c49877ac4b18@fb.com>
-Date:   Fri, 20 May 2022 17:52:24 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH bpf-next v1 3/5] bpf: Introduce cgroup iter
-Content-Language: en-US
-To:     Tejun Heo <tj@kernel.org>
-Cc:     Yosry Ahmed <yosryahmed@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, Hao Luo <haoluo@google.com>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Roman Gushchin <roman.gushchin@linux.dev>,
-        Michal Hocko <mhocko@kernel.org>,
-        Stanislav Fomichev <sdf@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Greg Thelen <gthelen@google.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Cgroups <cgroups@vger.kernel.org>
-References: <20220520012133.1217211-1-yosryahmed@google.com>
- <20220520012133.1217211-4-yosryahmed@google.com>
- <YodGI73xq8aIBrNM@slm.duckdns.org>
- <CAJD7tkbvMcMWESMcWi6TtdCKLr6keBNGgZTnqcHZvBrPa1qWPw@mail.gmail.com>
- <YodNLpxut+Zddnre@slm.duckdns.org>
- <73fd9853-5dab-8b59-24a0-74c0a6cae88e@fb.com>
- <YofFli6UCX4J5YnU@slm.duckdns.org>
-From:   Yonghong Song <yhs@fb.com>
-In-Reply-To: <YofFli6UCX4J5YnU@slm.duckdns.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-X-ClientProxiedBy: SJ0PR03CA0041.namprd03.prod.outlook.com
- (2603:10b6:a03:33e::16) To SN6PR1501MB2064.namprd15.prod.outlook.com
- (2603:10b6:805:d::27)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.18; Sat, 21 May
+ 2022 00:53:16 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::f172:8f37:fe43:19a3]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::f172:8f37:fe43:19a3%6]) with mapi id 15.20.5273.019; Sat, 21 May 2022
+ 00:53:16 +0000
+Date:   Fri, 20 May 2022 17:53:13 -0700
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Subject: Re: [PATCH bpf-next v7 03/11] bpf: per-cgroup lsm flavor
+Message-ID: <20220521005313.3q3w2ventgwrccrd@kafai-mbp>
+References: <20220518225531.558008-1-sdf@google.com>
+ <20220518225531.558008-4-sdf@google.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518225531.558008-4-sdf@google.com>
+X-ClientProxiedBy: BY5PR17CA0015.namprd17.prod.outlook.com
+ (2603:10b6:a03:1b8::28) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
+MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 944b0a0e-9b86-4984-8896-08da3ac42cf9
-X-MS-TrafficTypeDiagnostic: SJ0PR15MB4233:EE_
-X-Microsoft-Antispam-PRVS: <SJ0PR15MB4233E64821060AD468DA82C2D3D29@SJ0PR15MB4233.namprd15.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: c5a5e18d-504a-468b-8d4d-08da3ac44a26
+X-MS-TrafficTypeDiagnostic: SJ0PR15MB4156:EE_
+X-Microsoft-Antispam-PRVS: <SJ0PR15MB41561B83CA5B386645CC1B0DD5D29@SJ0PR15MB4156.namprd15.prod.outlook.com>
 X-FB-Source: Internal
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: wtrqhtOjr5Qc/DDn46pqUqIQ+9Vk0lVrPl23ytpEdD7Zzwbhj7LB035wS2B3BWxwMO2lVPJ7tE2aADJjcYLdt5A+Wx9Zf7k8dXi9jeR9q6G7Z5G/YWH/E/b1wJMRZY4Zal6G/Vk8AcudPpLtZdxryvvc1A8InWZJVr3XYs33Y+qCim44gDAG8aK4MI5xTaDYRXVuTmiF1xUEqMvwOKj0xKD2Lr+J+fCZ3Z3j8TTz7NBKYDehRN+S0brupAVv+GPgr3icqGz67ybcHu19wLeaIKw9qyFrry3YKJMPISClcyu/JYi9h7eyMidxnHgbdNi8Lo7K9qpmTm9GP+qylFoMn94ppSw5U8W54EUHStAD2by4MqPq+3PptxGeJhnSZ6AjCkQQhOioPj095CwqZzDH50xtFocwdK54JJyTloZtmBBmXaPdL6KYeRz7t2PT+xS47yGGK4a2pxGzsMytC2KcvnwQ2pKefICX4zvucU2qaUriG2SOg642itpKyJrm5wbBvwTSxEAqTPcuxh7HE3uQFNieVEWv/aHvvPTatuE5OyvMuAxluxBJm1+8dXFR7cQrvgn0uabbmhQsVgvNUvUhFUjHnrPDAFz2+y2/x/WvpPZeniz8Cc95yl3Pd3EbiC1AjyHMmd8efJGf97QXq7A6L0cgU04oaptSB8vZFHfk3VcSdx+tAojwwYbhnPwDbCUbVkOdme9OgzKxsPJX39VtAjtffuz2RZCEtgjePcLIH9gKRLrggxfnaTt5iiDyipCchq0xsEDF8oylnCnuebKNic61GExVrxuRpjpoMHT++GJirBAOKaSJsi/5OhrsyB/tnQ2vIHLrZCZnelrEfmpCHA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR1501MB2064.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(6486002)(966005)(186003)(2616005)(8936002)(36756003)(2906002)(5660300002)(7416002)(31686004)(508600001)(316002)(54906003)(6916009)(38100700002)(8676002)(31696002)(86362001)(66476007)(66556008)(66946007)(4326008)(6666004)(6512007)(6506007)(52116002)(53546011)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: dnjLQrXRg6ybnjKR8LWCNHgX4fsnjcyzEg9D57kB2ASzhi3ohvUqaLtOv5kX5X1R1NO5DKAC0rgzZSaCXu02NSueHMQXxnp96JpwyaZtuihEp0p03goxRr7yePwYbiW82VzmJUdbcv8UcBxun73sEkXHGaDmyQO3KAlLL0v0V7VhxTug4dyY2rDBUV9nv0KtXR59F4qpx7QZdRaJwShV+ftSVflbmQ3zKYf6gZEtF7tB5/8Dpgv5q6sld0qu9oaQtwMLvvMnMHu3H5YBiIx/XXvSxsbHrl8RrNzfjfyILzYOiCGBdlZcostwGh9EnIg5O851dZI2/RwHKSJesIbES9cVhgwjGVCzZmbJlLy32/ObJOtza4tE88+jfApsTYz/0/16oOVRoE7U2uiBugS5wToiheVu/skUBc4x5qy3FSbDzBQrBK0haRTQDOxySok0tYo7I1kvkrPlIfJNs7DCZTlm+zsjX5cToEax04B9s3Qbmr4jJkH7gkRoRH5hhVAwWg0Qr9Kr8m1q2t3X5BuArgEQwTfz+E843+ZiNAL8u6JUXSUky2pRGzExeF7vFuwWQPcXPuXQ6/P9XGEB/YUsq2Emf/WQQucSoe7pSlb3HV4qo402YLsecw/P5RK/1xrnFn1mOVtxmpX9Xaa8eTmdug==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(9686003)(6512007)(6506007)(186003)(316002)(6916009)(52116002)(66946007)(1076003)(8676002)(86362001)(83380400001)(4326008)(33716001)(8936002)(5660300002)(66476007)(2906002)(6666004)(6486002)(66556008)(38100700002)(508600001);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?TnkrVDBCOW9SdXFpblA0RE41WTNXUHdoQUd3OFllSHdrMmN0NHBjV0V3N0pX?=
- =?utf-8?B?bVo2RlRpM29UZTNiYXlucHc1L3pqclZicVA3RFd6NE5FY2VibGpRV2hqVU9a?=
- =?utf-8?B?UW43RG1qdVlSa2pRTmo5R1dBM2tLMXFHVTl4bXlnVjRuZU9ScFVVQ2dITDRs?=
- =?utf-8?B?dWhtVkNuUGZxdEVtaWliSHNSV2dDRTBybDIrTUE3WWNPbXZaVjlUUkZrMnBN?=
- =?utf-8?B?ZDBmd2RVbXJLankwTGM3d0VqSVFZWnVBUGdVbWdaWDVMbUpsZUdlRVRBQzU2?=
- =?utf-8?B?UXRFNjkrU2pUaWxRTXVWSlV0VmRMaDJKYkJ1TzBVazBlbFhFS2s4MHJmM3hi?=
- =?utf-8?B?N0F0R0dtcFJTdjZsSVZzS3dGQnZVekx1UCtwVmxWWUlqangvZENnMi9mUnVP?=
- =?utf-8?B?WldQZ3VVR3dRYWV0ZERxTTgwdE1hNG1vZGRJb21SVndUYjh5MmJ5dGhwVXBz?=
- =?utf-8?B?OU1VdFowV1ovZGp6OG9PRWdISnhvSHp5M3I1YmdmL0M0NTFEOUtZeXZ4NGxl?=
- =?utf-8?B?TnVOUlNuQXJRcDR1TXFqVElhUWt6SHNSRTFWUHBhVzIzTTJCWjEzSEIrV2pY?=
- =?utf-8?B?N2txWWwwK041QmZkby9ya25IeTQ2S3M4T2YzcVdINUZVbzZ2L2U5azk2OFZy?=
- =?utf-8?B?UEpCcVhMeTUrNUpKQXlWcHVPUzN6VzdvcjgxcjRmem9qb3dXOU0vdkRCWlJS?=
- =?utf-8?B?dmJudXBGdmIxTU1ZMWdLMEtObm1BMmRPRlE2dkl3UDNqNG8xQldsWmp1bDlo?=
- =?utf-8?B?ZWNJYW14dHhCQWx1aHd0OFdna3dXMytYd3Z3MDlwby8vazg0enNWSkRvM084?=
- =?utf-8?B?TmRwL3JCb1oxbDdOY05DMkRVT0FFc2IwWVRXU3VlMmtVTkZzNTFwNVo4eWtG?=
- =?utf-8?B?bTZ2bzl4elhDU1FPVU1RVGw4c0syMXhWUEdNZjV1OG1TVjd3bFVKcXo3cTEz?=
- =?utf-8?B?ekQwSDdGMVdnUU5LUXVFRmdBZURucW9sWXN1cmVVS2V1UlY0cVVPUTlxWFM0?=
- =?utf-8?B?MmRDVzNYVEF1d044S00vOTJSV2NqcENicnFtREdJdktBOW1TQi9BaUV0emdp?=
- =?utf-8?B?SVIrVjNKVDg2YUJxWUc4cTBDbzJEcGpZSmNxR0Q3a04xU0Yxc2hBSTNCdE5p?=
- =?utf-8?B?RmpDdVY3Vy9SR1dEeHNCS3QxMGVNcEROcHN4L083cGM0OFp0R204QTJtOWVD?=
- =?utf-8?B?NjhuNkhvMURENnIwei95RC9PTTRBUjVUUTk3cEdqV0JqQURBUXcwSDRsTVhV?=
- =?utf-8?B?aWVublRZcDRTcFZKcXlRUXRmQng1V0F2ZGtOSW9UZm9ScDRuRFRuL1ZvUDNV?=
- =?utf-8?B?NWlHdXlvVDE5cTBTL0U0aVRIRFpLNFQ0aTFFZ0lYRGVzOS9rdzJ4T3VXQzZ1?=
- =?utf-8?B?VXJXSWpZNzBMVEZWQlNlRTJRSVJtdVhWVXQ3blIxeFJEZi9XeDM5TWx3U0lu?=
- =?utf-8?B?QklLSk02SUk5WGFObVBmZmdPbEY3V2lkN0djLzh5ZTR6UFBlR0dlaERxcHhG?=
- =?utf-8?B?dDBud3lEekg2cDNKRjdBNnRleVRTQlNseU1JZzh3bkxvb1FFOVBhbk5pNVEv?=
- =?utf-8?B?b29ROWl1blVQWlIvMWpYTkdGLzNlWEYzYTNYRkFzalMvRllzd2F5U2xtMlNa?=
- =?utf-8?B?Z2RBZUV2TVVCUTFYOHYvZEFFRVljem80UFBWd0wyMTBkQ2RmM1BEaGh0VkUv?=
- =?utf-8?B?VnJsajMyMHFPT3g0NjZWRTQ5L2thS2ZFaGVvZGhHTzlaR2RoTDFBMzY2aTk4?=
- =?utf-8?B?eUlhdmk4MWxxTG44UEMyRlgvdnFSekNOQjdJRHdpK25icldxSVcvWUlCT0xH?=
- =?utf-8?B?NUZJdXg2QmJFTU1yTU1wMFdRMzA3WjZOOUZaQjZzbExDVXFQV0QwaFMwbGJh?=
- =?utf-8?B?UjhJY2MvaVVQdHNLYnVLUk0yNnNNeW0yeDg5dVZYcVkrcjJYMkNEQzdZUXo3?=
- =?utf-8?B?U2ZtQUg2YlpZOFlBcjlPUE41ejFUQTRpdk9aSUJhS3E4WDUxTVB2M3FPS3N1?=
- =?utf-8?B?Wnl2ZGZSQ3JqRVd2Vk05Mm9VbWdXcWdMVUxGVHlTYUQyY1c0cWs4V1Y0ZGhl?=
- =?utf-8?B?cllXU1RNVE9Fb0pMOWxCOWQrT0ZNRStBNmk5MEV0alZjQzM3RFYrOVNodDhw?=
- =?utf-8?B?UHZncmdTWXhlQTRsNmxMcmozZjJBb25PMmhxaE9qbHNvYW80RmhLeThsV3FH?=
- =?utf-8?B?S3FlcEF1ZVg5Uk5Tdlo2YnlaNGFtL1JMdVZLdFRnb25ldFYxdHphM0FVaStz?=
- =?utf-8?B?c09aSFJtS1dZM25YMWFscEJSckttY3lFeFRzUzNvaGJ3aVE3WVo2bFh4UHNw?=
- =?utf-8?B?cFZiWXBQQzFqNHVuRTIvam1xeGZMOWlqcS9hbm5pQ0EzZ1Q3SDZzb3dVYStK?=
- =?utf-8?Q?7BUjSXyck6axOyh0=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?LQzjBLhRYmCdY1QPFAbmqQ8f9JwoxtoNK5yBhgokUVZM0u6zkoMMxIEJQ5E4?=
+ =?us-ascii?Q?bbj/tERhmeiCyDqfGM3esPNrkpzHo8VrFg7cfRcZC6MoUC5bD4G985I00L7/?=
+ =?us-ascii?Q?/UMUsB97mnySIwP/SFEIOYTOEpbmLJWnvjuRPg9sTFNx7CI6tCVscvDQaFoM?=
+ =?us-ascii?Q?b7f79HMTG32SNTN+4hAesuv8lZN08CH4rkpDZgWrs48l5s2K96Z+T4bn00Ps?=
+ =?us-ascii?Q?fTS7IO6f5C7XqebP62qRihEAbaRX1ISP+p93jvs31vI0lLEXkPFOd8oN7B0T?=
+ =?us-ascii?Q?m3/ox9Gfg7F3q22T02thVhFew0fPEvuNQA8KPEKkByRe7c1rTOUG0CgQQ+EE?=
+ =?us-ascii?Q?metpAqWhlnUgk4zthSmhxYOhF/Zx8Dk7Q0p1XEmmW+XJWUdiZlpoLy1WvkAP?=
+ =?us-ascii?Q?Uj9N1ouleBTQZXaJOTR/hxk8wiP3266W6BDcucUAOQAjQdZd4alRATJFS3Or?=
+ =?us-ascii?Q?JonCa+SqxuJRmnPuCvPUCRNWModtcCaQxBbOJWL4uZAZQ7wrMJk5iK4W9ePO?=
+ =?us-ascii?Q?7s1GVg2cLrgN+OKUBC4clnxspu+bL6o4xRFDM+nLOVlgk/D/hEHKwq15qV99?=
+ =?us-ascii?Q?x9OlEPPiZ2V/liy57/IGE/PirmSp2yEzNoBdKgBINQ2wRlrfts+t5HWJdeKP?=
+ =?us-ascii?Q?giVQIpzN+RXWdx/lF8kZz1tyAoHjlaXoR1+q//LWHGVew2k80LqFY1G2nb/G?=
+ =?us-ascii?Q?FN40tL0Qmk8lEwAjj27o0i3wfI6lXia3DCefJvKaeo3Y9ONk1X0X5N/qyei5?=
+ =?us-ascii?Q?sRUYPpeWZpPykIW1klT/S483vBfeyNaLhkjWW2DzlwW8w60lfMBJP+8vGrWM?=
+ =?us-ascii?Q?OXr7X82CqnCzq2TcvOsMUfu7FMnTaVFfjkewTQYaSbOkHiT8sQn2XUBrXXGK?=
+ =?us-ascii?Q?M99H/AZhGB7Do3jbDc1XPwGCGxfJ+BjI3Y8rwK0SMjrkWZxxRqrfcSm7BA3D?=
+ =?us-ascii?Q?yiR41u6NNXdDZ2GypoukcPxN75qnYGmoC9aNkipojULxIODlnjcb+xf+QgkM?=
+ =?us-ascii?Q?b5ysRqVToqgikBx5YMFn3r3GA9tW0XxybRXjz1t1yuBEY5dul9zdwe2d9Rmx?=
+ =?us-ascii?Q?TxqAhzE8Q869P3lLvtl0lXSPxfAI8+5mQTQGnAwpcvrtoSmpgu7+z9UrB98M?=
+ =?us-ascii?Q?P/a4/cNoSqI6CDwusKWMFUcQ/61Uv+j7TI6bUwHVpYZrQycd9V/6Wq4tJNfv?=
+ =?us-ascii?Q?M/LiN/lzwieTXgWzFFkFFyV6/+VvHpp35lqqjUIgfb5JIiR09htzF5AHT5j9?=
+ =?us-ascii?Q?M5nJf6rUj8pwJyKGqDxjKItnms/BUV0dMLFZxYCN95eHIRPOEkltQSoQ7ber?=
+ =?us-ascii?Q?m9sMWy3bPnKCen5xrq9nLEeDPFWQm/yUFh1lZFsDc9wzbJnbTRzSoWyovM79?=
+ =?us-ascii?Q?rCMfONdtUL41Xy/s5KymUiAXAhga48rFjhHmTqKxn3JjK4VHfLAKy4ITZbLU?=
+ =?us-ascii?Q?w+T46oxFYynEJykmiGYYv9W5O0nsUa3meVD/VBiPyDu+DYE8Q7MMNbIk5ln+?=
+ =?us-ascii?Q?D3Qx6yIEWb6E6eXMTtHStwtoQ6g/Fvnb7fV45a5IdlcrhK6ZrjHQasZNLmm4?=
+ =?us-ascii?Q?SNjhkG95wb3UB9vEBmI8zIOKk+BXh8fp9/xQo6r3BjAbi06cEw2SwBr7qK0Y?=
+ =?us-ascii?Q?/kiKG7e53euHVvY50QUleAXwLjbC2/OLMoskfuqjHYESHEVsrwTDhw1ax/Rf?=
+ =?us-ascii?Q?ecGjnOrL9BGfDKCUmeWkdcI8ASCEdB4Ct2JXKPADsdaWhgq60KbZt+0IfS1z?=
+ =?us-ascii?Q?UUEExWgaNRJefmaUuhwvWUQJysfsdm4=3D?=
 X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 944b0a0e-9b86-4984-8896-08da3ac42cf9
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR1501MB2064.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c5a5e18d-504a-468b-8d4d-08da3ac44a26
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2022 00:52:27.1242
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 May 2022 00:53:16.0887
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: KkWX0VmugxnmTVC8Qz3QW783nuxnzPLIk3/nctAt02e0aXOSS4YEHlP4klPpXiIi
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4233
-X-Proofpoint-ORIG-GUID: 0lAbtFEuTWje_bcVe2bV5roQtrNtKQtC
-X-Proofpoint-GUID: 0lAbtFEuTWje_bcVe2bV5roQtrNtKQtC
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
-MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-UserPrincipalName: VmK3/YGmWzCZZHjqi3ICIEzOEsqbjWCUdk/JhrllFnmT4oBYSbHDnMHDy0stm9Ii
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4156
+X-Proofpoint-GUID: cpryEoATiGtH3AP-xtaVPU4YL0LM23ys
+X-Proofpoint-ORIG-GUID: cpryEoATiGtH3AP-xtaVPU4YL0LM23ys
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-05-20_08,2022-05-20_02,2022-02-23_01
-X-Spam-Status: No, score=-4.0 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_NONE,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, May 18, 2022 at 03:55:23PM -0700, Stanislav Fomichev wrote:
 
+[ ... ]
 
-On 5/20/22 9:45 AM, Tejun Heo wrote:
-> Hello, Yonghong.
-> 
-> On Fri, May 20, 2022 at 09:29:43AM -0700, Yonghong Song wrote:
->> Maybe you can have a bpf program signature like below:
->>
->> int BPF_PROG(dump_vmscan, struct bpf_iter_meta *meta, struct cgroup *cgrp,
->> struct cgroup *parent_cgrp)
->>
->> parent_cgrp is NULL when cgrp is the root cgroup.
->>
->> I would like the bpf program should send the following information to
->> user space:
->>     <parent cgroup dir name> <current cgroup dir name>
-> 
-> I don't think parent cgroup dir name would be sufficient to reconstruct the
-> path given that multiple cgroups in different subtrees can have the same
-> name. For live cgroups, userspace can find the path from id (or ino) without
-> traversing anything by constructing the fhandle, open it open_by_handle_at()
-> and then reading /proc/self/fd/$FD symlink -
-> https://lkml.org/lkml/2020/12/2/1126. This isn't available for dead cgroups
-> but I'm not sure how much that'd matter given that they aren't visible from
-> userspace anyway.
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index ea3674a415f9..70cf1dad91df 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -768,6 +768,10 @@ void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start, struct bpf_tramp_
+>  u64 notrace __bpf_prog_enter_sleepable(struct bpf_prog *prog, struct bpf_tramp_run_ctx *run_ctx);
+>  void notrace __bpf_prog_exit_sleepable(struct bpf_prog *prog, u64 start,
+>  				       struct bpf_tramp_run_ctx *run_ctx);
+> +u64 notrace __bpf_prog_enter_lsm_cgroup(struct bpf_prog *prog,
+> +					struct bpf_tramp_run_ctx *run_ctx);
+> +void notrace __bpf_prog_exit_lsm_cgroup(struct bpf_prog *prog, u64 start,
+> +					struct bpf_tramp_run_ctx *run_ctx);
+>  void notrace __bpf_tramp_enter(struct bpf_tramp_image *tr);
+>  void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
+>  
+> @@ -1035,6 +1039,7 @@ struct bpf_prog_aux {
+>  	u64 load_time; /* ns since boottime */
+>  	u32 verified_insns;
+>  	struct bpf_map *cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE];
+> +	int cgroup_atype; /* enum cgroup_bpf_attach_type */
+>  	char name[BPF_OBJ_NAME_LEN];
+>  #ifdef CONFIG_SECURITY
+>  	void *security;
+> @@ -1107,6 +1112,12 @@ struct bpf_tramp_link {
+>  	u64 cookie;
+>  };
+>  
+> +struct bpf_shim_tramp_link {
+> +	struct bpf_tramp_link tramp_link;
+> +	struct bpf_trampoline *tr;
+> +	atomic64_t refcnt;
+There is already a refcnt in 'struct bpf_link'.
+Reuse that one if possible.
 
-passing id/ino to user space and then get directory name in userspace
-should work just fine.
+[ ... ]
 
-> 
->>     <various stats interested by the user>
->>
->> This way, user space can easily construct the cgroup hierarchy stat like
->>                             cpu   mem   cpu pressure   mem pressure ...
->>     cgroup1                 ...
->>        child1               ...
->>          grandchild1        ...
->>        child2               ...
->>     cgroup 2                ...
->>        child 3              ...
->>          ...                ...
->>
->> the bpf iterator can have additional parameter like
->> cgroup_id = ... to only call bpf program once with that
->> cgroup_id if specified.
->>
->> The kernel part of cgroup_iter can call cgroup_rstat_flush()
->> before calling cgroup_iter bpf program.
->>
->> WDYT?
-> 
-> Would it work to just pass in @cgrp and provide a group of helpers so that
-> the program can do whatever it wanna do including looking up the full path
-> and passing that to userspace?
+> diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+> index 01ce78c1df80..c424056f0b35 100644
+> --- a/kernel/bpf/trampoline.c
+> +++ b/kernel/bpf/trampoline.c
+> @@ -11,6 +11,8 @@
+>  #include <linux/rcupdate_wait.h>
+>  #include <linux/module.h>
+>  #include <linux/static_call.h>
+> +#include <linux/bpf_verifier.h>
+> +#include <linux/bpf_lsm.h>
+>  
+>  /* dummy _ops. The verifier will operate on target program's ops. */
+>  const struct bpf_verifier_ops bpf_extension_verifier_ops = {
+> @@ -497,6 +499,163 @@ int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampolin
+>  	return err;
+>  }
+>  
+> +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_BPF_SYSCALL)
+> +static struct bpf_shim_tramp_link *cgroup_shim_alloc(const struct bpf_prog *prog,
+> +						     bpf_func_t bpf_func)
+> +{
+> +	struct bpf_shim_tramp_link *shim_link = NULL;
+> +	struct bpf_prog *p;
+> +
+> +	shim_link = kzalloc(sizeof(*shim_link), GFP_USER);
+> +	if (!shim_link)
+> +		return NULL;
+> +
+> +	p = bpf_prog_alloc(1, 0);
+> +	if (!p) {
+> +		kfree(shim_link);
+> +		return NULL;
+> +	}
+> +
+> +	p->jited = false;
+> +	p->bpf_func = bpf_func;
+> +
+> +	p->aux->cgroup_atype = prog->aux->cgroup_atype;
+> +	p->aux->attach_func_proto = prog->aux->attach_func_proto;
+> +	p->aux->attach_btf_id = prog->aux->attach_btf_id;
+> +	p->aux->attach_btf = prog->aux->attach_btf;
+> +	btf_get(p->aux->attach_btf);
+> +	p->type = BPF_PROG_TYPE_LSM;
+> +	p->expected_attach_type = BPF_LSM_MAC;
+> +	bpf_prog_inc(p);
+> +	bpf_link_init(&shim_link->tramp_link.link, BPF_LINK_TYPE_TRACING, NULL, p);
+> +	atomic64_set(&shim_link->refcnt, 1);
+> +
+> +	return shim_link;
+> +}
+> +
+> +static struct bpf_shim_tramp_link *cgroup_shim_find(struct bpf_trampoline *tr,
+> +						    bpf_func_t bpf_func)
+> +{
+> +	struct bpf_tramp_link *link;
+> +	int kind;
+> +
+> +	for (kind = 0; kind < BPF_TRAMP_MAX; kind++) {
+> +		hlist_for_each_entry(link, &tr->progs_hlist[kind], tramp_hlist) {
+> +			struct bpf_prog *p = link->link.prog;
+> +
+> +			if (p->bpf_func == bpf_func)
+> +				return container_of(link, struct bpf_shim_tramp_link, tramp_link);
+> +		}
+> +	}
+> +
+> +	return NULL;
+> +}
+> +
+> +static void cgroup_shim_put(struct bpf_shim_tramp_link *shim_link)
+> +{
+> +	if (shim_link->tr)
+I have been spinning back and forth with this "shim_link->tr" test and
+the "!shim_link->tr" test below with an atomic64_dec_and_test() test
+in between  :)
 
-I am not super familiar with cgroup internals, I guess with cgroup + 
-helpers to retrieve stats, or directly expose stats data structure
-to bpf program. Either one is okay to me as long as we can get
-desired results.
+> +		bpf_trampoline_put(shim_link->tr);
+Why put(tr) here? 
 
-> 
-> Thanks.
-> 
+Intuitive thinking is that should be done after __bpf_trampoline_unlink_prog(.., tr)
+which is still using the tr.
+or I missed something inside __bpf_trampoline_unlink_prog(..., tr) ?
+
+> +
+> +	if (!atomic64_dec_and_test(&shim_link->refcnt))
+> +		return;
+> +
+> +	if (!shim_link->tr)
+And this is only for the error case in bpf_trampoline_link_cgroup_shim()?
+Can it be handled locally in bpf_trampoline_link_cgroup_shim()
+where it could actually happen ?
+
+> +		return;
+> +
+> +	WARN_ON_ONCE(__bpf_trampoline_unlink_prog(&shim_link->tramp_link, shim_link->tr));
+> +	kfree(shim_link);
+How about shim_link->tramp_link.link.prog, is the prog freed ?
+
+Considering the bpf_link_put() does bpf_prog_put(link->prog).
+Is there a reason the bpf_link_put() not used and needs to
+manage its own shim_link->refcnt here ?
+
+> +}
+> +
+> +int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
+> +				    struct bpf_attach_target_info *tgt_info)
+> +{
+> +	struct bpf_shim_tramp_link *shim_link = NULL;
+> +	struct bpf_trampoline *tr;
+> +	bpf_func_t bpf_func;
+> +	u64 key;
+> +	int err;
+> +
+> +	key = bpf_trampoline_compute_key(NULL, prog->aux->attach_btf,
+> +					 prog->aux->attach_btf_id);
+> +
+> +	err = bpf_lsm_find_cgroup_shim(prog, &bpf_func);
+> +	if (err)
+> +		return err;
+> +
+> +	tr = bpf_trampoline_get(key, tgt_info);
+> +	if (!tr)
+> +		return  -ENOMEM;
+> +
+> +	mutex_lock(&tr->mutex);
+> +
+> +	shim_link = cgroup_shim_find(tr, bpf_func);
+> +	if (shim_link) {
+> +		/* Reusing existing shim attached by the other program. */
+> +		atomic64_inc(&shim_link->refcnt);
+> +		/* note, we're still holding tr refcnt from above */
+hmm... why it still needs to hold the tr refcnt ?
+
+> +
+> +		mutex_unlock(&tr->mutex);
+> +		return 0;
+> +	}
+> +
+> +	/* Allocate and install new shim. */
+> +
+> +	shim_link = cgroup_shim_alloc(prog, bpf_func);
+> +	if (!shim_link) {
+> +		bpf_trampoline_put(tr);
+> +		err = -ENOMEM;
+> +		goto out;
+> +	}
+> +
+> +	err = __bpf_trampoline_link_prog(&shim_link->tramp_link, tr);
+> +	if (err)
+> +		goto out;
+> +
+> +	shim_link->tr = tr;
+> +
+> +	mutex_unlock(&tr->mutex);
+> +
+> +	return 0;
+> +out:
+> +	mutex_unlock(&tr->mutex);
+> +
+> +	if (shim_link)
+> +		cgroup_shim_put(shim_link);
+> +
+> +	return err;
+> +}
+> +
