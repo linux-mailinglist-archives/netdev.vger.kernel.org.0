@@ -2,175 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 89CCF52F7F6
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 05:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED76F52F8B7
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 06:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352435AbiEUDVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 23:21:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41572 "EHLO
+        id S1344941AbiEUEet (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 00:34:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiEUDVg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 23:21:36 -0400
-Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 0BA0D5A586;
-        Fri, 20 May 2022 20:21:31 -0700 (PDT)
-Received: by ajax-webmail-mail-app4 (Coremail) ; Sat, 21 May 2022 11:21:10
- +0800 (GMT+08:00)
-X-Originating-IP: [124.236.130.193]
-Date:   Sat, 21 May 2022 11:21:10 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   duoming@zju.edu.cn
-To:     "Jeff Johnson" <quic_jjohnson@quicinc.com>
-Cc:     "Kalle Valo" <kvalo@kernel.org>, linux-kernel@vger.kernel.org,
-        amitkarwar@gmail.com, ganapathi017@gmail.com,
-        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] net: wireless: marvell: mwifiex: fix sleep in
- atomic context bugs
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
-In-Reply-To: <ec16c0b5-b8c7-3bd1-e733-f054ec3c2cd1@quicinc.com>
-References: <20220519135345.109936-1-duoming@zju.edu.cn>
- <87zgjd1sd4.fsf@kernel.org>
- <699e56d5.22006.180dce26e02.Coremail.duoming@zju.edu.cn>
- <18852332-ee42-ef7e-67a3-bbd91a6694ba@quicinc.com>
- <4e778cb1.22654.180decbcb8e.Coremail.duoming@zju.edu.cn>
- <ec16c0b5-b8c7-3bd1-e733-f054ec3c2cd1@quicinc.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        with ESMTP id S240372AbiEUEeq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 00:34:46 -0400
+Received: from szxga03-in.huawei.com (szxga03-in.huawei.com [45.249.212.189])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0FD4195929;
+        Fri, 20 May 2022 21:34:45 -0700 (PDT)
+Received: from dggpeml500026.china.huawei.com (unknown [172.30.72.54])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4L4rGd2svhzCsYl;
+        Sat, 21 May 2022 12:29:45 +0800 (CST)
+Received: from huawei.com (10.175.101.6) by dggpeml500026.china.huawei.com
+ (7.185.36.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Sat, 21 May
+ 2022 12:34:42 +0800
+From:   Zhengchao Shao <shaozhengchao@huawei.com>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <davem@davemloft.net>, <kuba@kernel.org>,
+        <hawk@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
+        <kpsingh@kernel.org>
+CC:     <weiyongjun1@huawei.com>, <shaozhengchao@huawei.com>,
+        <yuehaibing@huawei.com>
+Subject: [PATCH v3,bpf-next] samples/bpf: check detach prog exist or not in xdp_fwd
+Date:   Sat, 21 May 2022 12:35:09 +0800
+Message-ID: <20220521043509.389007-1-shaozhengchao@huawei.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Message-ID: <ed03525.253c1.180e4a21950.Coremail.duoming@zju.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: cS_KCgDXQCCmWohioIyGAA--.13549W
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgERAVZdtZzd4QABsM
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.6]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ dggpeml500026.china.huawei.com (7.185.36.106)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGVsbG8sCgpPbiBGcmksIDIwIE1heSAyMDIyIDA5OjA4OjUyIC0wNzAwIEplZmYgSm9obnNvbiB3
-cm90ZToKCj4gPj4+Pj4gVGhlcmUgYXJlIHNsZWVwIGluIGF0b21pYyBjb250ZXh0IGJ1Z3Mgd2hl
-biB1cGxvYWRpbmcgZGV2aWNlIGR1bXAKPiA+Pj4+PiBkYXRhIG9uIHVzYiBpbnRlcmZhY2UuIFRo
-ZSByb290IGNhdXNlIGlzIHRoYXQgdGhlIG9wZXJhdGlvbnMgdGhhdAo+ID4+Pj4+IG1heSBzbGVl
-cCBhcmUgY2FsbGVkIGluIGZ3X2R1bXBfdGltZXJfZm4gd2hpY2ggaXMgYSB0aW1lciBoYW5kbGVy
-Lgo+ID4+Pj4+IFRoZSBjYWxsIHRyZWUgc2hvd3MgdGhlIGV4ZWN1dGlvbiBwYXRocyB0aGF0IGNv
-dWxkIGxlYWQgdG8gYnVnczoKPiA+Pj4+Pgo+ID4+Pj4+ICAgICAgKEludGVycnVwdCBjb250ZXh0
-KQo+ID4+Pj4+IGZ3X2R1bXBfdGltZXJfZm4KPiA+Pj4+PiAgICAgbXdpZmlleF91cGxvYWRfZGV2
-aWNlX2R1bXAKPiA+Pj4+PiAgICAgICBkZXZfY29yZWR1bXB2KC4uLiwgR0ZQX0tFUk5FTCkKPiA+
-Pgo+ID4+IGp1c3QgbG9va2luZyBhdCB0aGlzIGRlc2NyaXB0aW9uLCB3aHkgaXNuJ3QgdGhlIHNp
-bXBsZSBmaXgganVzdCB0bwo+ID4+IGNoYW5nZSB0aGlzIGNhbGwgdG8gdXNlIEdGUF9BVE9NSUM/
-Cj4gPiAKPiA+IEJlY2F1c2UgY2hhbmdlIHRoZSBwYXJhbWV0ZXIgb2YgZGV2X2NvcmVkdW1wdigp
-IHRvIEdGUF9BVE9NSUMgY291bGQgb25seSBzb2x2ZQo+ID4gcGFydGlhbCBwcm9ibGVtLiBUaGUg
-Zm9sbG93aW5nIEdGUF9LRVJORUwgcGFyYW1ldGVycyBhcmUgaW4gL2xpYi9rb2JqZWN0LmMKPiA+
-IHdoaWNoIGlzIG5vdCBpbmZsdWVuY2VkIGJ5IGRldl9jb3JlZHVtcHYoKS4KPiA+IAo+ID4gICBr
-b2JqZWN0X3NldF9uYW1lX3ZhcmdzCj4gPiAgICAga3Zhc3ByaW50Zl9jb25zdChHRlBfS0VSTkVM
-LCAuLi4pOyAvL21heSBzbGVlcAo+ID4gICAgIGtzdHJkdXAocywgR0ZQX0tFUk5FTCk7IC8vbWF5
-IHNsZWVwCj4gCj4gVGhlbiBpdCBzZWVtcyB0aGVyZSBpcyBhIHByb2JsZW0gd2l0aCBkZXZfY29y
-ZWR1bXBtKCkuCj4gCj4gZGV2X2NvcmVkdW1wbSgpIHRha2VzIGEgZ2ZwIHBhcmFtIHdoaWNoIG1l
-YW5zIGl0IGV4cGVjdHMgdG8gYmUgY2FsbGVkIGluIAo+IGFueSBjb250ZXh0LCBidXQgaXQgdGhl
-biBjYWxscyBkZXZfc2V0X25hbWUoKSB3aGljaCwgYXMgeW91IHBvaW50IG91dCwgCj4gY2Fubm90
-IGJlIGNhbGxlZCBmcm9tIGFuIGF0b21pYyBjb250ZXh0Lgo+IAo+IFNvIGlmIHdlIGNhbm5vdCBj
-aGFuZ2UgdGhlIGZhY3QgdGhhdCBkZXZfc2V0X25hbWUoKSBjYW5ub3QgYmUgY2FsbGVkIAo+IGZy
-b20gYW4gYXRvbWljIGNvbnRleHQsIHRoZW4gaXQgd291bGQgc2VlbSB0byBmb2xsb3cgdGhhdCAK
-PiBkZXZfY29yZWR1bXB2IGFsc28gY2Fubm90IGJlIGNhbGxlZCBmcm9tIGFuIGF0b21pYyAKPiBj
-b250ZXh0IGFuZCBoZW5jZSB0aGVpciBnZnAgcGFyYW0gaXMgcG9pbnRsZXNzIGFuZCBzaG91bGQg
-cHJlc3VtYWJseSBiZSAKPiByZW1vdmVkLgoKVGhhbmtzIGZvciB5b3VyIHRpbWUgYW5kIHN1Z2dl
-c3Rpb25zISBJIHRoaW5rIHRoZSBnZnBfdCBwYXJhbWV0ZXIgb2YgZGV2X2NvcmVkdW1wdiBhbmQK
-ZGV2X2NvcmVkdW1wbSBtYXkgbm90IGJlIHJlbW92ZWQsIGJlY2F1c2UgaXQgY291bGQgYmUgdXNl
-ZCB0byBwYXNzIHZhbHVlIHRvIGdmcF90CnBhcmFtZXRlciBvZiBremFsbG9jIGluIGRldl9jb3Jl
-ZHVtcG0uIFdoYXQncyBtb3JlLCB0aGVyZSBhcmUgYWxzbyBtYW55IG90aGVyIHBsYWNlcwp1c2Ug
-ZGV2X2NvcmVkdW1wdiBhbmQgZGV2X2NvcmVkdW1wbSwgaWYgd2UgcmVtb3ZlIHRoZSBnZnBfdCBw
-YXJhbWV0ZXIsIHRoZXJlIGFyZSB0b28gbWFueQpwbGFjZXMgdGhhdCBuZWVkIHRvIG1vZGlmeSBh
-bmQgdGhlc2UgcGxhY2VzIGFyZSBub3QgaW4gaW50ZXJydXB0IGNvbnRleHQuIAoKVGhlcmUgYXJl
-IHR3byBzb2x1dGlvbnMgbm93OiBvbmUgaXMgdG8gbW92ZXMgdGhlIG9wZXJhdGlvbnMgdGhhdCBt
-YXkgc2xlZXAgaW50byBhIHdvcmsgaXRlbS4KQW5vdGhlciBpcyB0byBjaGFuZ2UgdGhlIGdmcF90
-IHBhcmFtZXRlciBvZiBkZXZfY29yZWR1bXB2IGZyb20gR0ZQX0tFUk5FTCB0byBHRlBfQVRPTUlD
-LCBhbmQKY2hhbmdlIHRoZSBnZnBfdCBwYXJhbWV0ZXIgb2Yga3Zhc3ByaW50Zl9jb25zdCBhbmQg
-a3N0cmR1cCBmcm9tIEdGUF9LRVJORUwgdG8gCiJpbl9pbnRlcnJ1cHQoKSA/IEdGUF9BVE9NSUMg
-OiBHRlBfS0VSTkVMIi4KClRoZSBkZXRhaWwgb2YgdGhlIGZpcnN0IHNvbHV0aW9uIGlzIHNob3du
-IGJlbG93OgoKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21hcnZlbGwvbXdpZmll
-eC9pbml0LmMgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9tYXJ2ZWxsL213aWZpZXgvaW5pdC5jCmlu
-ZGV4IDg4YzcyZDE4MjdhLi5jYzNmMTEyMWViOSAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvd2ly
-ZWxlc3MvbWFydmVsbC9td2lmaWV4L2luaXQuYworKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9t
-YXJ2ZWxsL213aWZpZXgvaW5pdC5jCkBAIC02MywxMSArNjMsMTkgQEAgc3RhdGljIHZvaWQgd2Fr
-ZXVwX3RpbWVyX2ZuKHN0cnVjdCB0aW1lcl9saXN0ICp0KQogICAgICAgICAgICAgICAgYWRhcHRl
-ci0+aWZfb3BzLmNhcmRfcmVzZXQoYWRhcHRlcik7CiB9Cgorc3RhdGljIHZvaWQgZndfZHVtcF93
-b3JrKHN0cnVjdCB3b3JrX3N0cnVjdCAqd29yaykKK3sKKyAgICAgICBzdHJ1Y3QgbXdpZmlleF9h
-ZGFwdGVyICphZGFwdGVyID0KKyAgICAgICAgICAgICAgIGNvbnRhaW5lcl9vZih3b3JrLCBzdHJ1
-Y3QgbXdpZmlleF9hZGFwdGVyLCBkZXZkdW1wX3dvcmspOworCisgICAgICAgbXdpZmlleF91cGxv
-YWRfZGV2aWNlX2R1bXAoYWRhcHRlcik7Cit9CisKIHN0YXRpYyB2b2lkIGZ3X2R1bXBfdGltZXJf
-Zm4oc3RydWN0IHRpbWVyX2xpc3QgKnQpCiB7CiAgICAgICAgc3RydWN0IG13aWZpZXhfYWRhcHRl
-ciAqYWRhcHRlciA9IGZyb21fdGltZXIoYWRhcHRlciwgdCwgZGV2ZHVtcF90aW1lcik7CgotICAg
-ICAgIG13aWZpZXhfdXBsb2FkX2RldmljZV9kdW1wKGFkYXB0ZXIpOworICAgICAgIHNjaGVkdWxl
-X3dvcmsoJmFkYXB0ZXItPmRldmR1bXBfd29yayk7CiB9CgogLyoKQEAgLTMyMSw2ICszMjksNyBA
-QCBzdGF0aWMgdm9pZCBtd2lmaWV4X2luaXRfYWRhcHRlcihzdHJ1Y3QgbXdpZmlleF9hZGFwdGVy
-ICphZGFwdGVyKQogICAgICAgIGFkYXB0ZXItPmFjdGl2ZV9zY2FuX3RyaWdnZXJlZCA9IGZhbHNl
-OwogICAgICAgIHRpbWVyX3NldHVwKCZhZGFwdGVyLT53YWtldXBfdGltZXIsIHdha2V1cF90aW1l
-cl9mbiwgMCk7CiAgICAgICAgYWRhcHRlci0+ZGV2ZHVtcF9sZW4gPSAwOworICAgICAgIElOSVRf
-V09SSygmYWRhcHRlci0+ZGV2ZHVtcF93b3JrLCBmd19kdW1wX3dvcmspOwogICAgICAgIHRpbWVy
-X3NldHVwKCZhZGFwdGVyLT5kZXZkdW1wX3RpbWVyLCBmd19kdW1wX3RpbWVyX2ZuLCAwKTsKIH0K
-CkBAIC00MDEsNiArNDEwLDcgQEAgbXdpZmlleF9hZGFwdGVyX2NsZWFudXAoc3RydWN0IG13aWZp
-ZXhfYWRhcHRlciAqYWRhcHRlcikKIHsKICAgICAgICBkZWxfdGltZXIoJmFkYXB0ZXItPndha2V1
-cF90aW1lcik7CiAgICAgICAgZGVsX3RpbWVyX3N5bmMoJmFkYXB0ZXItPmRldmR1bXBfdGltZXIp
-OworICAgICAgIGNhbmNlbF93b3JrX3N5bmMoJmFkYXB0ZXItPmRldmR1bXBfd29yayk7CiAgICAg
-ICAgbXdpZmlleF9jYW5jZWxfYWxsX3BlbmRpbmdfY21kKGFkYXB0ZXIpOwogICAgICAgIHdha2Vf
-dXBfaW50ZXJydXB0aWJsZSgmYWRhcHRlci0+Y21kX3dhaXRfcS53YWl0KTsKICAgICAgICB3YWtl
-X3VwX2ludGVycnVwdGlibGUoJmFkYXB0ZXItPmhzX2FjdGl2YXRlX3dhaXRfcSk7CmRpZmYgLS1n
-aXQgYS9kcml2ZXJzL25ldC93aXJlbGVzcy9tYXJ2ZWxsL213aWZpZXgvbWFpbi5oIGIvZHJpdmVy
-cy9uZXQvd2lyZWxlc3MvbWFydmVsbC9td2lmaWV4L21haW4uaAppbmRleCAzMzJkZDFjOGRiMy4u
-YzhhYzJmNTdmMTggMTAwNjQ0Ci0tLSBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21hcnZlbGwvbXdp
-ZmlleC9tYWluLmgKKysrIGIvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWFydmVsbC9td2lmaWV4L21h
-aW4uaApAQCAtOTAwLDYgKzkwMCw3IEBAIHN0cnVjdCBtd2lmaWV4X2FkYXB0ZXIgewogICAgICAg
-IHN0cnVjdCB3b3JrX3N0cnVjdCByeF93b3JrOwogICAgICAgIHN0cnVjdCB3b3JrcXVldWVfc3Ry
-dWN0ICpkZnNfd29ya3F1ZXVlOwogICAgICAgIHN0cnVjdCB3b3JrX3N0cnVjdCBkZnNfd29yazsK
-KyAgICAgICBzdHJ1Y3Qgd29ya19zdHJ1Y3QgZGV2ZHVtcF93b3JrOwogICAgICAgIGJvb2wgcnhf
-d29ya19lbmFibGVkOwogICAgICAgIGJvb2wgcnhfcHJvY2Vzc2luZzsKICAgICAgICBib29sIGRl
-bGF5X21haW5fd29yazsKZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21hcnZlbGwv
-bXdpZmlleC9zdGFfZXZlbnQuYyBiL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21hcnZlbGwvbXdpZmll
-eC9zdGFfZXZlbnQuYwppbmRleCA3ZDQyYzVkMmRiZi4uOGUyOGQwMTA3ZDcgMTAwNjQ0Ci0tLSBh
-L2RyaXZlcnMvbmV0L3dpcmVsZXNzL21hcnZlbGwvbXdpZmlleC9zdGFfZXZlbnQuYworKysgYi9k
-cml2ZXJzL25ldC93aXJlbGVzcy9tYXJ2ZWxsL213aWZpZXgvc3RhX2V2ZW50LmMKQEAgLTY0NCw2
-ICs2NDQsNyBAQCBtd2lmaWV4X2Z3X2R1bXBfaW5mb19ldmVudChzdHJ1Y3QgbXdpZmlleF9wcml2
-YXRlICpwcml2LAoKIHVwbG9hZF9kdW1wOgogICAgICAgIGRlbF90aW1lcl9zeW5jKCZhZGFwdGVy
-LT5kZXZkdW1wX3RpbWVyKTsKKyAgICAgICBjYW5jZWxfd29ya19zeW5jKCZhZGFwdGVyLT5kZXZk
-dW1wX3dvcmspOwogICAgICAgIG13aWZpZXhfdXBsb2FkX2RldmljZV9kdW1wKGFkYXB0ZXIpOwog
-fQoKVGhlIGRldGFpbCBvZiB0aGUgc2Vjb25kIHNvbHV0aW9uIGlzIHNob3duIGJlbG93OgoKZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvbmV0L3dpcmVsZXNzL21hcnZlbGwvbXdpZmlleC9tYWluLmMgYi9k
-cml2ZXJzL25ldC93aXJlbGVzcy9tYXJ2ZWxsL213aWZpZXgvbWFpbi5jCmluZGV4IGFjZTczNzFj
-NDc3Li4yNTg5MDY5MjBhMiAxMDA2NDQKLS0tIGEvZHJpdmVycy9uZXQvd2lyZWxlc3MvbWFydmVs
-bC9td2lmaWV4L21haW4uYworKysgYi9kcml2ZXJzL25ldC93aXJlbGVzcy9tYXJ2ZWxsL213aWZp
-ZXgvbWFpbi5jCkBAIC0xMTE2LDcgKzExMTYsNyBAQCB2b2lkIG13aWZpZXhfdXBsb2FkX2Rldmlj
-ZV9kdW1wKHN0cnVjdCBtd2lmaWV4X2FkYXB0ZXIgKmFkYXB0ZXIpCiAgICAgICAgbXdpZmlleF9k
-YmcoYWRhcHRlciwgTVNHLAogICAgICAgICAgICAgICAgICAgICI9PSBtd2lmaWV4IGR1bXAgaW5m
-b3JtYXRpb24gdG8gL3N5cy9jbGFzcy9kZXZjb3JlZHVtcCBzdGFydFxuIik7CiAgICAgICAgZGV2
-X2NvcmVkdW1wdihhZGFwdGVyLT5kZXYsIGFkYXB0ZXItPmRldmR1bXBfZGF0YSwgYWRhcHRlci0+
-ZGV2ZHVtcF9sZW4sCi0gICAgICAgICAgICAgICAgICAgICBHRlBfS0VSTkVMKTsKKyAgICAgICAg
-ICAgICAgICAgICAgIEdGUF9BVE9NSUMpOwogICAgICAgIG13aWZpZXhfZGJnKGFkYXB0ZXIsIE1T
-RywKICAgICAgICAgICAgICAgICAgICAiPT0gbXdpZmlleCBkdW1wIGluZm9ybWF0aW9uIHRvIC9z
-eXMvY2xhc3MvZGV2Y29yZWR1bXAgZW5kXG4iKTsKCmRpZmYgLS1naXQgYS9saWIva29iamVjdC5j
-IGIvbGliL2tvYmplY3QuYwppbmRleCA1ZjBlNzFhYjI5Mi4uZGJiMmU1N2VmNzggMTAwNjQ0Ci0t
-LSBhL2xpYi9rb2JqZWN0LmMKKysrIGIvbGliL2tvYmplY3QuYwpAQCAtMjU0LDcgKzI1NCw3IEBA
-IGludCBrb2JqZWN0X3NldF9uYW1lX3ZhcmdzKHN0cnVjdCBrb2JqZWN0ICprb2JqLCBjb25zdCBj
-aGFyICpmbXQsCiAgICAgICAgaWYgKGtvYmotPm5hbWUgJiYgIWZtdCkKICAgICAgICAgICAgICAg
-IHJldHVybiAwOwoKLSAgICAgICBzID0ga3Zhc3ByaW50Zl9jb25zdChHRlBfS0VSTkVMLCBmbXQs
-IHZhcmdzKTsKKyAgICAgICBzID0ga3Zhc3ByaW50Zl9jb25zdChpbl9pbnRlcnJ1cHQoKSA/IEdG
-UF9BVE9NSUMgOiBHRlBfS0VSTkVMLCBmbXQsIHZhcmdzKTsKICAgICAgICBpZiAoIXMpCiAgICAg
-ICAgICAgICAgICByZXR1cm4gLUVOT01FTTsKCkBAIC0yNjcsNyArMjY3LDcgQEAgaW50IGtvYmpl
-Y3Rfc2V0X25hbWVfdmFyZ3Moc3RydWN0IGtvYmplY3QgKmtvYmosIGNvbnN0IGNoYXIgKmZtdCwK
-ICAgICAgICBpZiAoc3RyY2hyKHMsICcvJykpIHsKICAgICAgICAgICAgICAgIGNoYXIgKnQ7Cgot
-ICAgICAgICAgICAgICAgdCA9IGtzdHJkdXAocywgR0ZQX0tFUk5FTCk7CisgICAgICAgICAgICAg
-ICB0ID0ga3N0cmR1cChzLCBpbl9pbnRlcnJ1cHQoKSA/IEdGUF9BVE9NSUMgOiBHRlBfS0VSTkVM
-KTsKICAgICAgICAgICAgICAgIGtmcmVlX2NvbnN0KHMpOwogICAgICAgICAgICAgICAgaWYgKCF0
-KQogICAgICAgICAgICAgICAgICAgICAgICByZXR1cm4gLUVOT01FTTsKCldoaWNoIG9uZSBkbyB5
-b3UgdGhpbmsgaXMgYmV0dGVyPyBJIHdpbGwgY2hvb3NlIHRoZSBiZXR0ZXIgb25lIHRvIHRlc3Qu
-CgpCZXN0IHJlZ2FyZHMsCkR1b21pbmcgWmhvdQ==
+Before detach the prog, we should check detach prog exist or not.
+
+Signed-off-by: Zhengchao Shao <shaozhengchao@huawei.com>
+---
+ samples/bpf/xdp_fwd_user.c | 59 ++++++++++++++++++++++++++++++++------
+ 1 file changed, 50 insertions(+), 9 deletions(-)
+
+diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+index 1828487bae9a..03a50f64e99a 100644
+--- a/samples/bpf/xdp_fwd_user.c
++++ b/samples/bpf/xdp_fwd_user.c
+@@ -47,17 +47,58 @@ static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
+ 	return err;
+ }
+ 
+-static int do_detach(int idx, const char *name)
++static int do_detach(int ifindex, const char *ifname, const char *app_name)
+ {
+-	int err;
++	LIBBPF_OPTS(bpf_xdp_attach_opts, opts);
++	struct bpf_prog_info prog_info = {};
++	char prog_name[BPF_OBJ_NAME_LEN];
++	__u32 info_len, curr_prog_id;
++	int prog_fd;
++	int err = 1;
++
++	if (bpf_xdp_query_id(ifindex, xdp_flags, &curr_prog_id)) {
++		printf("ERROR: bpf_xdp_query_id failed (%s)\n",
++		       strerror(errno));
++		return err;
++	}
++
++	if (!curr_prog_id) {
++		printf("ERROR: flags(0x%x) xdp prog is not attached to %s\n",
++		       xdp_flags, ifname);
++		return err;
++	}
+ 
+-	err = bpf_xdp_detach(idx, xdp_flags, NULL);
+-	if (err < 0)
+-		printf("ERROR: failed to detach program from %s\n", name);
++	info_len = sizeof(prog_info);
++	prog_fd = bpf_prog_get_fd_by_id(curr_prog_id);
++	if (prog_fd < 0) {
++		printf("ERROR: bpf_prog_get_fd_by_id failed (%s)\n",
++		       strerror(errno));
++		return err;
++	}
++
++	err = bpf_obj_get_info_by_fd(prog_fd, &prog_info, &info_len);
++	if (err) {
++		printf("ERROR: bpf_obj_get_info_by_fd failed (%s)\n",
++		       strerror(errno));
++		return err;
++	}
++	snprintf(prog_name, sizeof(prog_name), "%s_prog", app_name);
++	prog_name[BPF_OBJ_NAME_LEN - 1] = '\0';
++
++	if (strcmp(prog_info.name, prog_name)) {
++		printf("ERROR: %s isn't attached to %s\n", app_name, ifname);
++		err = 1;
++	} else {
++		opts.old_prog_fd = prog_fd;
++		err = bpf_xdp_detach(ifindex, xdp_flags, &opts);
++		if (err < 0)
++			printf("ERROR: failed to detach program from %s (%s)\n",
++			       ifname, strerror(errno));
++		/* TODO: Remember to cleanup map, when adding use of shared map
++		 *  bpf_map_delete_elem((map_fd, &idx);
++		 */
++	}
+ 
+-	/* TODO: Remember to cleanup map, when adding use of shared map
+-	 *  bpf_map_delete_elem((map_fd, &idx);
+-	 */
+ 	return err;
+ }
+ 
+@@ -169,7 +210,7 @@ int main(int argc, char **argv)
+ 			return 1;
+ 		}
+ 		if (!attach) {
+-			err = do_detach(idx, argv[i]);
++			err = do_detach(idx, argv[i], prog_name);
+ 			if (err)
+ 				ret = err;
+ 		} else {
+-- 
+2.17.1
+
