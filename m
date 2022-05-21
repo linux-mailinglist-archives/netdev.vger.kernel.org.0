@@ -2,71 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D62F552FE8F
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 19:28:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6DD2D52FE9C
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 19:44:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344169AbiEUR1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 May 2022 13:27:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54982 "EHLO
+        id S245228AbiEURoN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 13:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344163AbiEUR1L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 13:27:11 -0400
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E9713CA49
-        for <netdev@vger.kernel.org>; Sat, 21 May 2022 10:27:10 -0700 (PDT)
-Received: by mail-pg1-x531.google.com with SMTP id g184so10272175pgc.1
-        for <netdev@vger.kernel.org>; Sat, 21 May 2022 10:27:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=p4WDxDiVWNzE6Ed2dTUVBgIIJHIgebfp/UAmQKOT05M=;
-        b=fPEyMLlxWQWAP61tegfSgblAyQRGWS1gLk+IYo8FzrHb137M1pKE57MzOeT6CgkF0w
-         KL47Lp1v4aywQVaRRlRdjf1takPPiEduvQT1831MzX4SI0nP15DQUnPdzwmj7E6fbPyq
-         S/Mk615aGcTCzUfkg638OhEyqEQefR73dhf29jdYiDGVvnriwdMUua0tTVyCEHG0Yplv
-         vKrTnQo5y90cGdxZ7pnoSdIxfF/ps1UYJf2o+xlRXoj4kCiSO/0hIWkqzuAedC61CGaG
-         zW+7ElQsGWG3LeWg1wCVsH52TSY7f3Uw1Hz0P7biiIjgmbRsuTHh2NsE8LW7eyqwh11A
-         vGFg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=p4WDxDiVWNzE6Ed2dTUVBgIIJHIgebfp/UAmQKOT05M=;
-        b=06F0z7DOCro1OzB+B//QANeRWaiiU0wcYzN8lpTRDYjd36juakg4IXxI8We3uoH9G1
-         DWeVPBOs1/Z5DpVB+fsoPg+df5WD9PVInqGEByMFbSlttnu8qc2ztx6ENvIvnGmioglZ
-         iiya2DOhXLPa/DVFuEO2pu7IF7ZQPc+rA0KWyedwTZhn/npdmeRitPVcq3/NTUPGwtoI
-         PsRO65Kv/mBhYclqjcsiRwfjVOjoLAp1yCe0nAvKtbLab9M48YSTSLg2L12hdnWow1G7
-         bKL7NqMU0xNn867K2M0L1HXo6/46Xjd64WQ+OVg3Jlyz/TPgCCjkuLJFjOY1JUqb7C+S
-         AnNQ==
-X-Gm-Message-State: AOAM533gXIo2PJP8KrGPH3Xqymxx3XPc9qmaoVWbmHAxdiO454+jU4ok
-        FK2McbdcJJaSYEur0VedWOVzvDwCLwAffYP+4a7k5w==
-X-Google-Smtp-Source: ABdhPJylwWu979YYJ1WKcQb/5oA+gVrS/LbsKuwQwjq0aRbd2SzVL5AVfi8W1hSLM0CvVCSx8ehGnX8hgBnqpDHgv2g=
-X-Received: by 2002:a63:31d3:0:b0:3f5:d1f4:5f95 with SMTP id
- x202-20020a6331d3000000b003f5d1f45f95mr13297421pgx.178.1653154030048; Sat, 21
- May 2022 10:27:10 -0700 (PDT)
+        with ESMTP id S229897AbiEURoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 13:44:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B47385D5F3;
+        Sat, 21 May 2022 10:44:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB4A160C85;
+        Sat, 21 May 2022 17:44:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EBBFC385AA;
+        Sat, 21 May 2022 17:44:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653155049;
+        bh=Np0xS6FQYFY106jdncJgwjACC/cSt92txCtwznhMn00=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=n6J8kNBiF4RRCyXrOBgwU42drXWpKiOzpqbTKVmUPeLHtBWbHCougGGiKmSXoI+zm
+         azchHrxBcse+n5YRzEaDdhGOMlnLzCTwhIPHW5KqSZ2ouqw7AGkZYqQCaDFsApE8/6
+         +MnlJw2EkD7XC/U54QJRs5tIRPNXIbrSlIl+Fn4ZBMnKNvoJci1qFfAySACHlEPFoE
+         R5ckzFTEJ6zoWRGvDd3syWa1O+bWt3g/sH1aXS2Lw9CsEb32Fw2me7XNUXUYdKf9nX
+         KnoFa3x5BEe2iaowQETRQBQ3tsAkc0g2tOX+fDOYe4Jt7ysyVJj09IW+y6UUQOm5lL
+         crwhutdNC5Vgw==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 4FD6C400B1; Sat, 21 May 2022 14:44:05 -0300 (-03)
+Date:   Sat, 21 May 2022 14:44:05 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <olsajiri@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Subject: Re: [PATCHv2 0/3] perf tools: Fix prologue generation
+Message-ID: <Yokk5XRxBd72fqoW@kernel.org>
+References: <20220510074659.2557731-1-jolsa@kernel.org>
+ <CAEf4BzbK9zgetgE1yKkCANTZqizUrXgamJa2X0f0XmzQUdFrCQ@mail.gmail.com>
+ <YntnRixbfQ1HCm9T@krava>
+ <Ynv+7iaaAbyM38B6@kernel.org>
+ <CAEf4BzaQsF31f3WuU32wDCzo6bw7eY8E9zF6Lo218jfw-VQmcA@mail.gmail.com>
+ <YoTAhC+6j4JshqN8@krava>
+ <YoYj6cb0aPNN/olH@krava>
+ <CAEf4Bzaa60kZJbWT0xAqcDMyXBzbg98ShuizJAv7x+8_3X0ZBg@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220519074351.829774-1-william.xuanziyang@huawei.com>
- <CAMZdPi9z=OM0=yZbBu0eDvFd30efNpt3qmDHuCTj6LGJxdBTbw@mail.gmail.com>
- <20220520172556.1d62b899@kernel.org> <20220520180111.7e9b2b84@kernel.org>
-In-Reply-To: <20220520180111.7e9b2b84@kernel.org>
-From:   Loic Poulain <loic.poulain@linaro.org>
-Date:   Sat, 21 May 2022 19:26:34 +0200
-Message-ID: <CAMZdPi85RJUXWkaJV8EZO00eM_RaGj=3ix0L-H3ynDpRxKBWFw@mail.gmail.com>
-Subject: Re: [PATCH net-next v3] net: wwan: t7xx: fix GFP_KERNEL usage in
- spin_lock context
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ziyang Xuan <william.xuanziyang@huawei.com>,
-        chandrashekar.devegowda@intel.com,
-        chiranjeevi.rapolu@linux.intel.com, davem@davemloft.net,
-        edumazet@google.com, haijun.liu@mediatek.com,
-        johannes@sipsolutions.net, linuxwwan@intel.com,
-        m.chetan.kumar@linux.intel.com, netdev@vger.kernel.org,
-        pabeni@redhat.com, ricardo.martinez@linux.intel.com,
-        ryazanov.s.a@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4Bzaa60kZJbWT0xAqcDMyXBzbg98ShuizJAv7x+8_3X0ZBg@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
+X-Spam-Status: No, score=-7.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -75,48 +75,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le sam. 21 mai 2022 =C3=A0 03:01, Jakub Kicinski <kuba@kernel.org> a =C3=A9=
-crit :
->
-> On Fri, 20 May 2022 17:25:56 -0700 Jakub Kicinski wrote:
-> > On Thu, 19 May 2022 09:29:12 +0200 Loic Poulain wrote:
-> > > On Thu, 19 May 2022 at 09:26, Ziyang Xuan <william.xuanziyang@huawei.=
-com> wrote:
-> > > >
-> > > > t7xx_cldma_clear_rxq() call t7xx_cldma_alloc_and_map_skb() in spin_=
-lock
-> > > > context, But __dev_alloc_skb() in t7xx_cldma_alloc_and_map_skb() us=
-es
-> > > > GFP_KERNEL, that will introduce scheduling factor in spin_lock cont=
-ext.
-> > > >
-> > > > Because t7xx_cldma_clear_rxq() is called after stopping CLDMA, so w=
-e can
-> > > > remove the spin_lock from t7xx_cldma_clear_rxq().
-> > > >
-> > > > Fixes: 39d439047f1d ("net: wwan: t7xx: Add control DMA interface")
-> > > > Suggested-by: Ricardo Martinez <ricardo.martinez@linux.intel.com>
-> > > > Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
-> > >
-> > > Reviewed-by: Loic Poulain <loic.poulain@linaro.org>
-> >
-> > Wait, you reviewed two different fixes for the same issue?
-> > Please say something when that happens I thought both are needed :/
+Em Fri, May 20, 2022 at 02:46:49PM -0700, Andrii Nakryiko escreveu:
+> On Thu, May 19, 2022 at 4:03 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+> > On Wed, May 18, 2022 at 11:46:44AM +0200, Jiri Olsa wrote:
+> > > On Tue, May 17, 2022 at 03:02:53PM -0700, Andrii Nakryiko wrote:
+> > > > Jiri, libbpf v0.8 is out, can you please re-send your perf patches?
 
+> > > yep, just made new fedora package.. will resend the perf changes soon
 
-Right, I've actually overlooked that the other patch has only one
-atomic user, which becomes useless with this change.
+> > fedora package is on the way, but I'll need perf/core to merge
+> > the bpf_program__set_insns change.. Arnaldo, any idea when this
+> > could happen?
 
->
->
-> FWIW I pushed out the other one before I realized (they both apply
-> without conflicts so I thought they fixed different issues)
-> If this one is preferred please respin and squash a revert of
->
->
-> 9ee152ee3ee3 into it.
+> Can we land these patches through bpf-next to avoid such complicated
+> cross-tree dependencies? As I started removing libbpf APIs I also
+> noticed that perf is still using few other deprecated APIs:
+>   - bpf_map__next;
+>   - bpf_program__next;
+>   - bpf_load_program;
+>   - btf__get_from_id;
+ 
+> It's trivial to fix up, but doing it across few trees will delay
+> libbpf work as well.
+ 
+> So let's land this through bpf-next, if Arnaldo doesn't mind?
 
-Yes this one is preferred, I'll respin it. Sorry for this.
+Yeah, that should be ok, the only consideration is that I'm submitting
+this today to Linus:
 
-Thanks,
-Loic
+https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/commit/?h=tmp.perf/urgent&id=0ae065a5d265bc5ada13e350015458e0c5e5c351
+
+To address this:
+
+https://lore.kernel.org/linux-perf-users/f0add43b-3de5-20c5-22c4-70aff4af959f@scylladb.com/
+
+- Arnaldo
