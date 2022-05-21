@@ -2,73 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 87EDA52FF73
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 22:38:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9424D52FF7F
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 22:47:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345874AbiEUUiD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 May 2022 16:38:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40204 "EHLO
+        id S1344206AbiEUUre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 16:47:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53974 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345750AbiEUUiB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 16:38:01 -0400
+        with ESMTP id S239520AbiEUUrc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 16:47:32 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 0C8343A5F2
-        for <netdev@vger.kernel.org>; Sat, 21 May 2022 13:37:59 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3AB9041302
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 13:47:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653165479;
+        s=mimecast20190719; t=1653166051;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding;
-        bh=lV7BrdQ4ujV3JaRxGlibSyfD3tp6S+keiDHJLEnX4rI=;
-        b=ZgBLJ6yFs9385bEnCgm6Y6p46EDOJ5pMsuRbEc8lHQ3ZQ+Eg0Mhu6gPiIz/Wphnh3hKBcK
-        FZ8dh1a+IksQDWrI4u6FOHfrx2cIWcEHxT+RA2jslIMkiTy09L+Qsk43KDfY2joq6P43F8
-        uZ/KroF0IXMwQFKSU00ySTXx8jcPK9A=
-Received: from mail-oo1-f69.google.com (mail-oo1-f69.google.com
- [209.85.161.69]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Q7KKV9nEc1O8xO71RHJAseDwiXENbXZxnjAzbqBmERg=;
+        b=CfDl3F5+X8uxUS6h6/i8oHDDJAEfZrUUTZIqq6jqMjW/ikVt8WUTXYJLl+uTE26ivszCvF
+        MliR3+tK7oFb8TpYt23anAs8h1jvZuvFmMFnuWhJtHY3D0pRW7PmGDxatZgGkNNhCgu9U9
+        Uzu6mb1sLO77eb7eu3q2Y2MLSgqGQwc=
+Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com
+ [209.85.161.71]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-479-lnYMEkRTP8yEWommN32mZw-1; Sat, 21 May 2022 16:37:57 -0400
-X-MC-Unique: lnYMEkRTP8yEWommN32mZw-1
-Received: by mail-oo1-f69.google.com with SMTP id x21-20020a4ac595000000b0035e6f78ae62so5421259oop.5
-        for <netdev@vger.kernel.org>; Sat, 21 May 2022 13:37:56 -0700 (PDT)
+ us-mta-75-HMQSlLUcNmSfOJuR3qtNWw-1; Sat, 21 May 2022 16:47:30 -0400
+X-MC-Unique: HMQSlLUcNmSfOJuR3qtNWw-1
+Received: by mail-oo1-f71.google.com with SMTP id j15-20020a4a888f000000b00321764d8f14so5415485ooa.14
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 13:47:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=lV7BrdQ4ujV3JaRxGlibSyfD3tp6S+keiDHJLEnX4rI=;
-        b=Lecux0DK0P3mr1GgF+z08Hjp2rsxbfNjhQkk46uKaDHDhzA9YLwWzo+V0RBMm+ljGf
-         aHCycHzdHeLtJWKKJNmV79DUqZxpfFDrBkggzO5LyBSqQ/3NkDYizP3dNsSl5v0wWwJ4
-         wv8gScIT+MPfoYcNbVVeOtefrcsdCN6hDad9vmqgG/VxNwwbzhdkfOGYZ93TLxJF16YR
-         kQGLvcEcZANAFl9V5UikRKaJqrn/dXXVXYO2vDYGk5iQ6vosLv5k/GzqMcJCQ1JTfS+b
-         +9ZZvj2eSHYhSZPSUje2yMIe4g79Eebwh/9gMv4LGytXGVACPUaSZPyWX2g4YpeiQGCQ
-         ly6g==
-X-Gm-Message-State: AOAM533K063wBQiheSrAaY69/3VXE1byUgIKkGz7XAtnBdAUMMgVGsNZ
-        28bIeQDmd9FPmF+itWGIncnU4sTdFnrkZDZVkj9Vrqv0514B7PL16ImM+pSD+3nNAF97ihFVkce
-        lBeHChyALHz1QSi+0
-X-Received: by 2002:a05:6808:1814:b0:32b:851:35d5 with SMTP id bh20-20020a056808181400b0032b085135d5mr4002294oib.206.1653165474494;
-        Sat, 21 May 2022 13:37:54 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxIxKBUfhEWEra9+wIF21FKv7KmWa9pxAfcrwEuD/KklNUJaePTR27sfK5MfHrHG2DsQpmg6g==
-X-Received: by 2002:a05:6808:1814:b0:32b:851:35d5 with SMTP id bh20-20020a056808181400b0032b085135d5mr4002282oib.206.1653165474325;
-        Sat, 21 May 2022 13:37:54 -0700 (PDT)
+        bh=Q7KKV9nEc1O8xO71RHJAseDwiXENbXZxnjAzbqBmERg=;
+        b=0iwhBxfRRNGhRfK9/K6FrJdJIcqdoHHjaN+oin8c6qNjKIDTLkzQOIQ2jNs71wTJdd
+         aSGl92z2YesdPtxpn7lZ9yXXBL+CZ2AN7dXpMQ7uTwq7X7hPZLA0LJVY01ki2zvzTNRl
+         +2FOqhSa5HIEjHPnozzZq3AefNVcgDZPZhn7hAbWbpYD58VIvvvYj2g3uwdq5R59sMr9
+         uUIb/RWmENcNIvlH7JKT1L9ulYb/eT94Jy7V8H69ZVMp6LrVqqrONp61xuxtXnA83v3N
+         K4+R0ffEjA7qMwvsy2JRhqjHy/X83TvWMSJAV7yTpIvjhEBkwZiEnpWFGFwesF5M5XJi
+         GdzQ==
+X-Gm-Message-State: AOAM531G+ZgFOLjsDG96ypvJVd2PUzngyDSmUg8sMD6QbzjheCSxE95p
+        eu0DvaLlgXfGghjoy8XB+Gg2oANEVd+Ssu8K0G4VmN9vLdYS4kiiorDd0GX3t8D0d4ewmSDweWe
+        xEQ2M+P5HZ9FajLCJ
+X-Received: by 2002:a05:6870:5694:b0:f2:2ad8:a0ae with SMTP id p20-20020a056870569400b000f22ad8a0aemr2596741oao.71.1653166049069;
+        Sat, 21 May 2022 13:47:29 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxXZGmjsHsgboy8HLVJI93WiKGJ0RPTYTp8bJj+9c19UnhE7jTtNQ/lroFEhDPgmTztujXLFg==
+X-Received: by 2002:a05:6870:5694:b0:f2:2ad8:a0ae with SMTP id p20-20020a056870569400b000f22ad8a0aemr2596738oao.71.1653166048917;
+        Sat, 21 May 2022 13:47:28 -0700 (PDT)
 Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
-        by smtp.gmail.com with ESMTPSA id s11-20020a9d58cb000000b006060322127bsm2388730oth.75.2022.05.21.13.37.52
+        by smtp.gmail.com with ESMTPSA id d44-20020a056870d2ac00b000f218150563sm1751520oae.10.2022.05.21.13.47.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 21 May 2022 13:37:53 -0700 (PDT)
+        Sat, 21 May 2022 13:47:28 -0700 (PDT)
 From:   Tom Rix <trix@redhat.com>
-To:     gregory.greenman@intel.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        luciano.coelho@intel.com, miriam.rachel.korenblit@intel.com,
-        johannes.berg@intel.com, quic_srirrama@quicinc.com
+To:     toke@toke.dk, kvalo@kernel.org, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
 Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
-Subject: [PATCH] iwlwifi: mvm: remove setting of 'sta' parameter
-Date:   Sat, 21 May 2022 16:37:46 -0400
-Message-Id: <20220521203746.442924-1-trix@redhat.com>
+Subject: [PATCH] ath9k: remove setting of 'is_ext' parameter
+Date:   Sat, 21 May 2022 16:47:25 -0400
+Message-Id: <20220521204725.2539952-1-trix@redhat.com>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -77,29 +75,29 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 cppcheck reports
-[drivers/net/wireless/intel/iwlwifi/mvm/rs.c:2686]: (warning) Assignment of function parameter has no effect outside the function. Did you forget dereferencing it?
+[drivers/net/wireless/ath/ath9k/dfs.c:93]: (style) Assignment of function parameter has no effect outside the function.
 
-The setting of the 'sta' parameter is not needed.  In the if-check that sets it
-to NULL, mvm_sta is also set to NULL.  Then the next statement checks if
-mvm_sta is NULL and does an early return. So remove setting sta.
+Both the is_ctl and the is_ext parameters are set in the if-else statement.
+But only is_ctl is used later, so setting is_ext is not needed and can be removed.
 
 Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/rs.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/net/wireless/ath/ath9k/dfs.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rs.c b/drivers/net/wireless/intel/iwlwifi/mvm/rs.c
-index 974eeecc9153..d75e3024ae3d 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rs.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rs.c
-@@ -2683,7 +2683,6 @@ static void rs_drv_get_rate(void *mvm_r, struct ieee80211_sta *sta,
- 		/* if vif isn't initialized mvm doesn't know about
- 		 * this station, so don't do anything with the it
- 		 */
--		sta = NULL;
- 		mvm_sta = NULL;
+diff --git a/drivers/net/wireless/ath/ath9k/dfs.c b/drivers/net/wireless/ath/ath9k/dfs.c
+index acb9602aa464..47cdfb584eb0 100644
+--- a/drivers/net/wireless/ath/ath9k/dfs.c
++++ b/drivers/net/wireless/ath/ath9k/dfs.c
+@@ -89,8 +89,6 @@ static int ath9k_get_max_index_ht40(struct ath9k_dfs_fft_40 *fft,
+ 			int mag_upper = fft_max_magnitude(fft->upper_bins);
+ 			if (mag_upper > mag_lower)
+ 				is_ctl = false;
+-			else
+-				is_ext = false;
+ 		}
  	}
- 
+ 	if (is_ctl)
 -- 
 2.27.0
 
