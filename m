@@ -2,61 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 450C652F9B2
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 09:27:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5071452F9CE
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 09:45:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241056AbiEUH1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 May 2022 03:27:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60810 "EHLO
+        id S240158AbiEUHpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 03:45:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354726AbiEUH1R (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 03:27:17 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 008425BD03
-        for <netdev@vger.kernel.org>; Sat, 21 May 2022 00:27:13 -0700 (PDT)
+        with ESMTP id S1351618AbiEUHpQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 03:45:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6084F7C164
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 00:45:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653118032;
+        s=mimecast20190719; t=1653119114;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=wWP7xEjpOwg8ids+6r+D9zTeelTaC/A9uLuPxebtVZE=;
-        b=i4MIclDtFueHsjvjpv1O+SUoTC1JmeDoclLDak6rqLs81zg2lJp3NaYAOtGDPFWnpILP4x
-        Dg8hKltgU8G3fS7BszSic7oXTpb+xt2w1RzT8fMu+oF5ylS5NwWTMV9+gTblKMfbsCM+e4
-        Wlgtb2pTfKgzwHp7UVHcnB4M+uaSb9w=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=O6fozRi1mUW+QNrhhiINZafrGClbm8pF3nfSfc4kXBw=;
+        b=OKB2m66ySKX+jD/VN0FTF/4V8Yii6FWnV6M6x0mhfwB8aDaCHtkmZaQZnUG32djg6yAfLE
+        FYoe35M3x+CMf59be3AsCH6IggKMcd3R4oKij+jN2Qjx1XPP+Ep0i0SGE3lGqTgl4V/Z8L
+        oO3EpXf2BMofjidRTogMT6Ro6c7ipn8=
 Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
  [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-111-jzMYw0VQO_-eQAt-_J5Nyw-1; Sat, 21 May 2022 03:27:09 -0400
-X-MC-Unique: jzMYw0VQO_-eQAt-_J5Nyw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.rdu2.redhat.com [10.11.54.2])
+ us-mta-462-4OmVYJaCPcuttGdGOL7IpQ-1; Sat, 21 May 2022 03:45:10 -0400
+X-MC-Unique: 4OmVYJaCPcuttGdGOL7IpQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.rdu2.redhat.com [10.11.54.8])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 88E8480013E;
-        Sat, 21 May 2022 07:27:08 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 5078585A5AA;
+        Sat, 21 May 2022 07:45:10 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 005E540D2820;
-        Sat, 21 May 2022 07:27:06 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ACB7CC44AE1;
+        Sat, 21 May 2022 07:45:09 +0000 (UTC)
+Subject: [PATCH net-next 0/7] rxrpc: Miscellaneous changes
 From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <20220520181522.42630ce9@kernel.org>
-References: <20220520181522.42630ce9@kernel.org> <165306442115.34086.1818959430525328753.stgit@warthog.procyon.org.uk> <165306442878.34086.2437731947506679099.stgit@warthog.procyon.org.uk>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
-        Marc Dionne <marc.dionne@auristor.com>,
-        Xin Long <lucien.xin@gmail.com>,
-        Vadim Fedorenko <vfedorenko@novek.ru>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net 1/6] rxrpc: Enable IPv6 checksums on transport socket
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Sat, 21 May 2022 08:45:08 +0100
+Message-ID: <165311910893.245906.4115532916417333325.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/1.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <209507.1653118025.1@warthog.procyon.org.uk>
-Date:   Sat, 21 May 2022 08:27:05 +0100
-Message-ID: <209513.1653118025@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.2
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.8
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
@@ -67,13 +58,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski <kuba@kernel.org> wrote:
 
-> This is already in net..
-> pw build got gave up on this series.
-> Could you resend just the other 5 patches?
+Here are some miscellaneous changes for AF_RXRPC:
 
-Will do.
+ (1) Allow the list of local endpoints to be viewed through /proc.
+
+ (2) Switch to using refcount_t for refcounting.
+
+ (3) Fix a locking issue found by lockdep.
+
+ (4) Autogenerate tracing symbol enums from symbol->string maps to make it
+     easier to keep them in sync.
+
+ (5) Return an error to sendmsg() if a call it tried to set up failed.
+     Because it failed at this point, no notification will be generated for
+     recvmsg to pick up - but userspace still needs to know about the
+     failure.
+
+ (6) Fix the selection of abort codes generated by internal events.  In
+     particular, rxrpc and kafs shouldn't be generating RX_USER_ABORT
+     unless it's because userspace did something to cancel a call.
+
+ (7) Adjust the interpretation and handling of certain ACK types to try and
+     detect NAT changes causing a call to seem to start mid-flow from a
+     different peer.
+
+The patches are tagged here:
+
+	git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git
+	rxrpc-next-20220521
+
+and can also be found on the following branch:
+
+	http://git.kernel.org/cgit/linux/kernel/git/dhowells/linux-fs.git/log/?h=rxrpc-next
+
+Tested-by: kafs-testing+fedora34_64checkkafs-build-493@auristor.com
+
+Changes
+=======
+ver #2)
+ - Changed an rcu_dereference(->next) to list_head_next().
 
 David
+
+Link: https://lore.kernel.org/r/165306515409.34989.4713077338482294594.stgit@warthog.procyon.org.uk/ # v1
+---
+David Howells (7):
+      rxrpc: Allow list of in-use local UDP endpoints to be viewed in /proc
+      rxrpc: Use refcount_t rather than atomic_t
+      rxrpc: Fix locking issue
+      rxrpc: Automatically generate trace tag enums
+      rxrpc: Return an error to sendmsg if call failed
+      rxrpc, afs: Fix selection of abort codes
+      afs: Adjust ACK interpretation to try and cope with NAT
+
+
+ fs/afs/misc.c                |   5 +-
+ fs/afs/rotate.c              |   4 +
+ fs/afs/rxrpc.c               |   8 +-
+ fs/afs/write.c               |   1 +
+ fs/seq_file.c                |  32 +++++
+ include/linux/list.h         |  10 ++
+ include/linux/seq_file.h     |   4 +
+ include/trace/events/rxrpc.h | 263 ++++++-----------------------------
+ net/rxrpc/af_rxrpc.c         |   2 +-
+ net/rxrpc/ar-internal.h      |  25 ++--
+ net/rxrpc/call_accept.c      |  10 +-
+ net/rxrpc/call_event.c       |   4 +-
+ net/rxrpc/call_object.c      |  62 +++++----
+ net/rxrpc/conn_client.c      |  30 ++--
+ net/rxrpc/conn_object.c      |  51 +++----
+ net/rxrpc/conn_service.c     |   8 +-
+ net/rxrpc/input.c            |  31 ++++-
+ net/rxrpc/local_object.c     |  68 ++++-----
+ net/rxrpc/net_ns.c           |   7 +-
+ net/rxrpc/peer_object.c      |  40 +++---
+ net/rxrpc/proc.c             |  85 +++++++++--
+ net/rxrpc/sendmsg.c          |   6 +
+ net/rxrpc/skbuff.c           |   1 -
+ 23 files changed, 366 insertions(+), 391 deletions(-)
+
 
