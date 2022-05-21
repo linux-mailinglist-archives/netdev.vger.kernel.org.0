@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D7E0252FECC
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 20:27:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 33D3A52FED3
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 20:39:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238798AbiEUS04 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 May 2022 14:26:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60622 "EHLO
+        id S1344524AbiEUSjE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 14:39:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238619AbiEUS0u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 14:26:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57AEF4B1F6
-        for <netdev@vger.kernel.org>; Sat, 21 May 2022 11:26:49 -0700 (PDT)
+        with ESMTP id S235790AbiEUSjD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 14:39:03 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E44D3CA43
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 11:39:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E730260A71
-        for <netdev@vger.kernel.org>; Sat, 21 May 2022 18:26:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBCEBC385A5;
-        Sat, 21 May 2022 18:26:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3AD4BB80A07
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 18:39:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95C7FC385A5;
+        Sat, 21 May 2022 18:38:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653157608;
-        bh=lEgXnZmux6SCA2eMoF/98MW49CT/I0Q/mMDMkeyqLoQ=;
+        s=k20201202; t=1653158339;
+        bh=0+98ExCR6jEO0EgneTa7JIVpYO0UmnBiFS1XUEF4NT0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ir9IwIJADSE6odJTVqh0TV+CRlnIdcSyCmJYcGqBnU6aEKPefTMC84eE/VlmioyQ3
-         NYZv258LjbMQH50r4Qo9RtjcYdDvE9obX4MMTsjVBMaubkizkRcwCeo77QJuO7nrS/
-         BaWqJuBTioAgZy03tJ8LkzquGmHfLVbNHosv0Ezmeq3WPND/HbecYrsYK8I8ojl9sI
-         AgEdViNUs4il3MT/Xa8vOjSZX6L0qo/dnPcJfsnHofOaWFibXi3+UtrfrWbGPHgnVA
-         wS0dei9JXX9QcZEdoZPsjhKp/ciHKdAeuUE+wCHKYejok3v4QhOI3zxCsRXmOrmNGP
-         GHTe3TOsS5l0Q==
-Date:   Sat, 21 May 2022 11:26:46 -0700
+        b=pyx5MVhRkX43uaH/oA4TBKqIF45BMKLB9rcmktSaccNgjXiKChSUWW+jVtN33kkHo
+         k4bHs0Fo4xP8Fx5+zUii/paRZ/6kJNqe2JgiIZ6n5lBoyvr638rOxeagDvDzBFeHiQ
+         O6n20vEHMAPUpbZ+vVJdTCsjWTYs+nPsbIN3GA/MJ2I0cXSzU+2Hcx3uIoY4yKq4JN
+         xdwAp6b8/VQGTNzF5cLORTBaj3CWyBFF2jDfT4KnBYCe4XP/NpiTUNHEM+7IaqLlWa
+         Nrnag0vAu2YBx9zy42xpdzWlUhn43kf0qId4IPbxG43kXzPDb6HvEddh2Hw1gzFXZ2
+         enLFZaD9wJhhw==
+Date:   Sat, 21 May 2022 11:38:57 -0700
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, linux@armlinux.org.uk, olteanv@gmail.com,
-        hkallweit1@gmail.com, f.fainelli@gmail.com, saeedm@nvidia.com,
-        michael.chan@broadcom.com
+To:     Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        linux@armlinux.org.uk, olteanv@gmail.com, hkallweit1@gmail.com,
+        f.fainelli@gmail.com, michael.chan@broadcom.com
 Subject: Re: [RFC net-next] net: track locally triggered link loss
-Message-ID: <20220521112646.0d3c0a8a@kernel.org>
-In-Reply-To: <Yoj11Kv55HX3k/Ou@lunn.ch>
+Message-ID: <20220521113857.48aeffbb@kernel.org>
+In-Reply-To: <20220521050834.legbzeumzgqwldqp@sx1>
 References: <20220520004500.2250674-1-kuba@kernel.org>
         <YoeIj2Ew5MPvPcvA@lunn.ch>
         <20220520111407.2bce7cb3@kernel.org>
         <YofidJtb+kVtFr6L@lunn.ch>
-        <20220520150256.5d9aed65@kernel.org>
-        <Yoj11Kv55HX3k/Ou@lunn.ch>
+        <20220520220832.kh4lndzy7hvyus6f@sx1>
+        <20220520160319.15ed87b9@kernel.org>
+        <20220521050834.legbzeumzgqwldqp@sx1>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -59,59 +60,82 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 21 May 2022 16:23:16 +0200 Andrew Lunn wrote:
-> > For a system which wants to monitor link quality on the local end =>
-> > i.e. whether physical hardware has to be replaced - differentiating
-> > between (1) and (2) doesn't really matter, they are both non-events.  
+On Fri, 20 May 2022 22:08:34 -0700 Saeed Mahameed wrote:
+> >> It's impossible from the driver level to know if a FW link event is
+> >> due to configuration causes or external forces !  
+> >
+> >You mean because FW or another entity (other than local host) asked for
+> >the link to be reset? How is that different from switch taking it down?
+> >Either way the host has lost link due to a non-local event. (3a) or (3b)
+> >  
 > 
-> Maybe data centres should learn something from the automotive world.
-> It seems like most T1 PHYs have a signal quality value, which is
-> exposed via netlink in the link info message. And it is none invasive.
-
-There were attempts at this (also on the PCIe side of the NIC)
-but AFAIU there is no general standard of the measurement or the
-quality metric so it's hard to generalize.
-
-> Many PHYs also have counters of receive errors, framing errors
-> etc. These can be reported via ethtool --phy-stats.
-
-Ack, they are, I've added the APIs already and we use those.
-Symbol errors during carrier and FEC corrected/uncorrected blocks.
-Basic FCS errors, too.
-
-IDK what the relative false-positive rate of different sources of
-information are to be honest. The monitoring team asked me about
-the link flaps and the situation in Linux is indeed less than ideal.
-
-> SFPs expose SNR ratios in their module data, transmit and receive
-> powers etc, via ethtool -m and hwmon.
+> I was talking about (1) vs (2), how do you know when the IRQ/FW event
+> arrives what caused it ?  Maybe I just don't understand how you plan to use the
+> new API when re-config brings link down. 
 > 
-> There is also ethtool --cable-test. It is invasive, in that it
-> requires the link to go down, but it should tell you about broken
-> pairs. However, you probably know that already, a monitoring system
-> which has not noticed the link dropping to 100Mbps so it only uses two
-> pairs is not worth the money you paired for it.
+> for example: 
+> driver_reconfig() {
+>     maybe_close_rings();
+>     exec_fw_command(); //link will flap, events are triggered asynchronously.
+>     maybe_open_rings();
+> }
+> 
+> how do you wrap this with netif_carrier_change_start/end() when the link
+> events are async ? 
 
-Last hop in DC is all copper DACs. Not sure there's a standard
---cable-test for DACs :S
+Yeah :/ I was worried that we may need to do some queue flushing or
+waiting in the _end() to make sure the event has arrived. Remains to 
+be seen.
 
-> Now, it seems like very few, if any, firmware driven Ethernet card
-> actually make use of these features. You need cards which Linux is
-> actually driving the hardware. But these APIs are available for
-> anybody to use. Don't data centre users have enough purchasing power
-> they can influence firmware/driver writers to actually use these APIs?
-> And i think the results would be better than trying to count link
-> up/down.
+> >> We should keep current carrier logic as is and add new state/counter
+> >> to count real phy link state.
+> >>
+> >> netif_phy_link_down(netdev) {
+> >>     set_bit(__LINK_STATE_NOPHYLINK, &dev->state);
+> >>     atomic_inc(netdev->phy_link_down);
+> >>     netif_carrier_off(ndetdev);
+> >> }
+> >>
+> >> netif_phy_link_up(netdev) {...}
+> >>
+> >> such API should be maintained by real HW device drivers.  
+> >
+> >"phy_link_down" has a ring of "API v2 this time we'll get it right".
+> >  
+> 
+> c'mon .. same goes for netif_carrier_local_changes_start/end and
+> netif_carrier_admin_off().
 
-Let's separate new and old devices.
+Not exactly - admin_off() is different because it tells you local 
+vs non-local. That information is not provided by current APIs.
 
-For new products customer can stipulate requirements and they usually
-get implemented. I'd love to add more requirements for signal quality 
-and error reporting. It'd need to be based on standards because each
-vendor cooking their own units does not scale. Please send pointers 
-my way!
+> >Does this differentiate between locally vs non-locally generated events?
+> 
+> no
+> 
+> >PTAL at the categorization in the commit message. There are three
+> >classes of events, we need three counters. local vs non-local and
+> >link went down vs flow was paused by SW are independent and overlapping.
+> >Doesn't matter what the counters are called, translating between them
+> >is basic math.  
+> 
+> Ok if you want to go with this I am fine, just let's not add more peppered
+> confusing single purpose API calls into drivers to get some counters right,
+> let's implement one multi-purpose infrastructure and use it where it's needed.
+> It appears that all you need is for the driver to notify the stack when it's
+> going down for a re-config and when it comes back up, thus put all the
+> interesting heavy lifting logic in the stack, e.g link event classification,
+> freezing/flushing TX queues, flushing offloaded resources (VXALN, TLS, IPSec),
+> etc .. 
+> currently all of the above are and will be duplicated in every driver, when
+> all you need is a generic hint from the driver.
 
-Old products are a different ball game, and that's where we care about
-basic info like link flaps. Vendors EOL a product and you're lucky to
-get bug fixes. Servers live longer and longer and obviously age
-correlates with failure rates so we need to monitor those devices.
+How would the core know which resources need to be re-programmed?
+This seems hard, we can't get caps properly expressed in most places,
+let alone pulling up orchestration into the stack.
+
+Maybe I'm unfair but I can't think of many examples of reworks trying
+to pull out management logic out of NIC drivers. All I can think of was
+my VXLAN rework. I'm happy to start nacking all the shim APIs which do
+little to nothing in the core and just punt all requests to the drivers
+or FW :/ I think we veered off course tho...
