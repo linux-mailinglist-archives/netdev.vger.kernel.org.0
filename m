@@ -2,63 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 76B0252F9F4
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 10:04:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAB3852FA07
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 10:35:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354798AbiEUIEF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 May 2022 04:04:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38942 "EHLO
+        id S238929AbiEUIek (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 04:34:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354829AbiEUIDu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 04:03:50 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6266F15F6F6
-        for <netdev@vger.kernel.org>; Sat, 21 May 2022 01:03:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653120216;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=DK0SAajG/TJcxOWS+cQ31l+UPExFSP3wmD0TKCGxiF0=;
-        b=BsouvqIPkHkCZj29EUPouXgz0aXWOcrKxW9cQzaEMcYY6ytPtTuN3lv2Ykuo1tlPys2KGD
-        xq50noDlQsHinYVEOK3VvjJJZBSmf9zzQ1ehdp9V4RgMroETlRn0E5amUFfsqKnm2KvsdA
-        EQ0PjIRCBxG4rFO+M8jGF1Cy5SXK8HU=
-Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
- [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-404-jZVjQp2TPJKmwaU8J5fBRQ-1; Sat, 21 May 2022 04:03:33 -0400
-X-MC-Unique: jZVjQp2TPJKmwaU8J5fBRQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.rdu2.redhat.com [10.11.54.3])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 02BB81C06904;
-        Sat, 21 May 2022 08:03:33 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 30D39112131B;
-        Sat, 21 May 2022 08:03:32 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net 5/5] rxrpc: Fix decision on when to generate an IDLE ACK
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Marc Dionne <marc.dionne@auristor.com>,
-        linux-afs@lists.infradead.org, dhowells@redhat.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Sat, 21 May 2022 09:03:31 +0100
-Message-ID: <165312021145.246773.9017083815980096337.stgit@warthog.procyon.org.uk>
-In-Reply-To: <165312017819.246773.14440495192028707532.stgit@warthog.procyon.org.uk>
-References: <165312017819.246773.14440495192028707532.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/1.4
+        with ESMTP id S231968AbiEUIek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 04:34:40 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE9AEE7313
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 01:34:38 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nsKZE-0007In-RP; Sat, 21 May 2022 10:34:32 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nsKZD-003dzU-Rq; Sat, 21 May 2022 10:34:30 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nsKZB-00B8r7-Ua; Sat, 21 May 2022 10:34:29 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, NXP Linux Team <linux-imx@nxp.com>,
+        kernel@pengutronix.de, Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH v2] net: fec: Do proper error checking for optional clks
+Date:   Sat, 21 May 2022 10:34:25 +0200
+Message-Id: <20220521083425.787204-1-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <Yof3/o46wXWXMsKo@lunn.ch>
+References: <Yof3/o46wXWXMsKo@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.78 on 10.11.54.3
-X-Spam-Status: No, score=-3.2 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1839; h=from:subject; bh=de8uCmAX3YcCsFx2zZZQCNIvX+BJmChdU2EXMhmt1Ro=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBiiKQNZZFg0f5HIQRVpPMJiiARQmZgG4F7Bkbk5Ee4 UbtEg0aJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYoikDQAKCRDB/BR4rcrsCR4SB/ 9DXgsTTD7dC3RKVzovceN82abyV0gA6ujjfqQHBRcVJGlGs8XHnzmcVF7Q4qI9r0k7pZLNOEqV5J5o jZIQpjD4HUrzczG5KYH54rzR2N4xf3i2QGNujsreoXQdKxKclWg3D0rV0oSmDNtA9VgPtTMj5Fb/43 Ny/qco6UJ+i39k4SUJ4IWdhxWtDvKpMdz7wuslfwlEntT/JRtHOqtFBV0Zq2raQhVyTjOBRB1PrIev zDzpOamTSf3010b9ORp5U6/e/eXfQDWSpsaebXw4presMBwZu9oA2j5y80/+Dtr/MdDtADaCEOcwi1 btHbK7KIEchxbt3P+7YI1tfsSAIXGk
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -66,162 +57,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the decision on when to generate an IDLE ACK by keeping a count of the
-number of packets we've received, but not yet soft-ACK'd, and the number of
-packets we've processed, but not yet hard-ACK'd, rather than trying to keep
-track of which DATA sequence numbers correspond to those points.
+An error code returned by devm_clk_get() might have other meanings than
+"This clock doesn't exist". So use devm_clk_get_optional() and handle
+all remaining errors as fatal.
 
-We then generate an ACK when either counter exceeds 2.  The counters are
-both cleared when we transcribe the information into any sort of ACK packet
-for transmission.  IDLE and DELAY ACKs are skipped if both counters are 0
-(ie. no change).
-
-Fixes: 805b21b929e2 ("rxrpc: Send an ACK after every few DATA packets we receive")
-Signed-off-by: David Howells <dhowells@redhat.com>
-cc: Marc Dionne <marc.dionne@auristor.com>
-cc: linux-afs@lists.infradead.org
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
+Hello,
 
- include/trace/events/rxrpc.h |    2 +-
- net/rxrpc/ar-internal.h      |    4 ++--
- net/rxrpc/input.c            |   11 +++++++++--
- net/rxrpc/output.c           |   18 +++++++++++-------
- net/rxrpc/recvmsg.c          |    8 +++-----
- 5 files changed, 26 insertions(+), 17 deletions(-)
+as Andrew pointed out, there are two clocks that can benefit from better
+error handling during probe. So compared to (implicit) v1 this also
+cares for "enet_clk_ref".
 
-diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index 4a3ab0ed6e06..1c714336b863 100644
---- a/include/trace/events/rxrpc.h
-+++ b/include/trace/events/rxrpc.h
-@@ -1509,7 +1509,7 @@ TRACE_EVENT(rxrpc_call_reset,
- 		    __entry->call_serial = call->rx_serial;
- 		    __entry->conn_serial = call->conn->hi_serial;
- 		    __entry->tx_seq = call->tx_hard_ack;
--		    __entry->rx_seq = call->ackr_seen;
-+		    __entry->rx_seq = call->rx_hard_ack;
- 			   ),
+Best regards
+Uwe
+
+ drivers/net/ethernet/freescale/fec_main.c | 16 ++++++++++------
+ 1 file changed, 10 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index 11227f51404c..907b379d2c83 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -3866,17 +3866,21 @@ fec_probe(struct platform_device *pdev)
+ 	fep->itr_clk_rate = clk_get_rate(fep->clk_ahb);
  
- 	    TP_printk("c=%08x %08x:%08x r=%08x/%08x tx=%08x rx=%08x",
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 8465985a4cb6..dce056adb78c 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -680,8 +680,8 @@ struct rxrpc_call {
- 	u8			ackr_reason;	/* reason to ACK */
- 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
- 	rxrpc_seq_t		ackr_highest_seq; /* Higest sequence number received */
--	rxrpc_seq_t		ackr_consumed;	/* Highest packet shown consumed */
--	rxrpc_seq_t		ackr_seen;	/* Highest packet shown seen */
-+	atomic_t		ackr_nr_unacked; /* Number of unacked packets */
-+	atomic_t		ackr_nr_consumed; /* Number of packets needing hard ACK */
- 
- 	/* RTT management */
- 	rxrpc_serial_t		rtt_serial[4];	/* Serial number of DATA or PING sent */
-diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 2e61545ad8ca..1145cb14d86f 100644
---- a/net/rxrpc/input.c
-+++ b/net/rxrpc/input.c
-@@ -412,8 +412,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- {
- 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
- 	enum rxrpc_call_state state;
--	unsigned int j, nr_subpackets;
--	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = 0;
-+	unsigned int j, nr_subpackets, nr_unacked = 0;
-+	rxrpc_serial_t serial = sp->hdr.serial, ack_serial = serial;
- 	rxrpc_seq_t seq0 = sp->hdr.seq, hard_ack;
- 	bool immediate_ack = false, jumbo_bad = false;
- 	u8 ack = 0;
-@@ -569,6 +569,8 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- 			sp = NULL;
- 		}
- 
-+		nr_unacked++;
-+
- 		if (last) {
- 			set_bit(RXRPC_CALL_RX_LAST, &call->flags);
- 			if (!ack) {
-@@ -588,9 +590,14 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
- 			}
- 			call->rx_expect_next = seq + 1;
- 		}
-+		if (!ack)
-+			ack_serial = serial;
- 	}
- 
- ack:
-+	if (atomic_add_return(nr_unacked, &call->ackr_nr_unacked) > 2 && !ack)
-+		ack = RXRPC_ACK_IDLE;
-+
- 	if (ack)
- 		rxrpc_propose_ACK(call, ack, ack_serial,
- 				  immediate_ack, true,
-diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
-index 46aae9b7006f..9683617db704 100644
---- a/net/rxrpc/output.c
-+++ b/net/rxrpc/output.c
-@@ -74,11 +74,18 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
- 				 u8 reason)
- {
- 	rxrpc_serial_t serial;
-+	unsigned int tmp;
- 	rxrpc_seq_t hard_ack, top, seq;
- 	int ix;
- 	u32 mtu, jmax;
- 	u8 *ackp = pkt->acks;
- 
-+	tmp = atomic_xchg(&call->ackr_nr_unacked, 0);
-+	tmp |= atomic_xchg(&call->ackr_nr_consumed, 0);
-+	if (!tmp && (reason == RXRPC_ACK_DELAY ||
-+		     reason == RXRPC_ACK_IDLE))
-+		return 0;
-+
- 	/* Barrier against rxrpc_input_data(). */
- 	serial = call->ackr_serial;
- 	hard_ack = READ_ONCE(call->rx_hard_ack);
-@@ -223,6 +230,10 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
- 	n = rxrpc_fill_out_ack(conn, call, pkt, &hard_ack, &top, reason);
- 
- 	spin_unlock_bh(&call->lock);
-+	if (n == 0) {
-+		kfree(pkt);
-+		return 0;
+ 	/* enet_out is optional, depends on board */
+-	fep->clk_enet_out = devm_clk_get(&pdev->dev, "enet_out");
+-	if (IS_ERR(fep->clk_enet_out))
+-		fep->clk_enet_out = NULL;
++	fep->clk_enet_out = devm_clk_get_optional(&pdev->dev, "enet_out");
++	if (IS_ERR(fep->clk_enet_out)) {
++		ret = PTR_ERR(fep->clk_enet_out);
++		goto failed_clk;
 +	}
  
- 	iov[0].iov_base	= pkt;
- 	iov[0].iov_len	= sizeof(pkt->whdr) + sizeof(pkt->ack) + n;
-@@ -259,13 +270,6 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
- 					  ntohl(pkt->ack.serial),
- 					  false, true,
- 					  rxrpc_propose_ack_retry_tx);
--		} else {
--			spin_lock_bh(&call->lock);
--			if (after(hard_ack, call->ackr_consumed))
--				call->ackr_consumed = hard_ack;
--			if (after(top, call->ackr_seen))
--				call->ackr_seen = top;
--			spin_unlock_bh(&call->lock);
- 		}
+ 	fep->ptp_clk_on = false;
+ 	mutex_init(&fep->ptp_clk_mutex);
  
- 		rxrpc_set_keepalive(call);
-diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
-index eca6dda26c77..250f23bc1c07 100644
---- a/net/rxrpc/recvmsg.c
-+++ b/net/rxrpc/recvmsg.c
-@@ -260,11 +260,9 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
- 		rxrpc_end_rx_phase(call, serial);
- 	} else {
- 		/* Check to see if there's an ACK that needs sending. */
--		if (after_eq(hard_ack, call->ackr_consumed + 2) ||
--		    after_eq(top, call->ackr_seen + 2) ||
--		    (hard_ack == top && after(hard_ack, call->ackr_consumed)))
--			rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, serial,
--					  true, true,
-+		if (atomic_inc_return(&call->ackr_nr_consumed) > 2)
-+			rxrpc_propose_ACK(call, RXRPC_ACK_IDLE, serial,
-+					  true, false,
- 					  rxrpc_propose_ack_rotate_rx);
- 		if (call->ackr_reason && call->ackr_reason != RXRPC_ACK_DELAY)
- 			rxrpc_send_ack_packet(call, false, NULL);
+ 	/* clk_ref is optional, depends on board */
+-	fep->clk_ref = devm_clk_get(&pdev->dev, "enet_clk_ref");
+-	if (IS_ERR(fep->clk_ref))
+-		fep->clk_ref = NULL;
++	fep->clk_ref = devm_clk_get_optional(&pdev->dev, "enet_clk_ref");
++	if (IS_ERR(fep->clk_ref)) {
++		ret = PTR_ERR(fep->clk_ref);
++		goto failed_clk;
++	}
+ 	fep->clk_ref_rate = clk_get_rate(fep->clk_ref);
+ 
+ 	/* clk_2x_txclk is optional, depends on board */
 
+base-commit: 3123109284176b1532874591f7c81f3837bbdc17
+-- 
+2.35.1
 
