@@ -2,143 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 976F952F778
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 04:00:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B0352F77C
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 04:05:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354333AbiEUCAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 22:00:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58378 "EHLO
+        id S232860AbiEUCFF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 22:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232860AbiEUCAb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 22:00:31 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6121915F6C6;
-        Fri, 20 May 2022 19:00:30 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F3E6C61ECF;
-        Sat, 21 May 2022 02:00:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B859C385A9;
-        Sat, 21 May 2022 02:00:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653098429;
-        bh=lASD+l4g0VxygFaghqtOSOuG8Fp0yTmMNSbT1Tkf6/0=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=sR/BLWRhIvrFAhzfhttDCos3C6XDIzfGPvr7vybnNmFAO05kG806HMuKcVIOEZsEn
-         tqyf1gOgE3XQVJobDDKX3Oa+uw+OqaUHpcU0X6j19fkr0BsL9ZFhFb8zRe5c1n/a2o
-         HrOnSUqYpcp7Hai+wDUsBeu8bE6AzlHsR9m9shGEt8A7EvpMzsdWn+dRnK2siVMVwM
-         HCMLDHcdfsJ7EYuiuV/iA28FAPf6beehB6XeU7kLQbtZQrJh51zBNRK8RGOOouo87F
-         3ms4/1v7KOglIdmVcrBK7BjXeB5UROKsmXPOBkowt188hfPPY6VkCVgB+JbpguXY2d
-         wigWzNwBOw8qA==
-Message-ID: <5f189615-8701-e2ca-d9a6-d6037f8799aa@kernel.org>
-Date:   Fri, 20 May 2022 20:00:23 -0600
+        with ESMTP id S229829AbiEUCFD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 22:05:03 -0400
+Received: from smtp4.emailarray.com (smtp4.emailarray.com [65.39.216.22])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F8171611D3
+        for <netdev@vger.kernel.org>; Fri, 20 May 2022 19:05:01 -0700 (PDT)
+Received: (qmail 75051 invoked by uid 89); 21 May 2022 02:04:59 -0000
+Received: from unknown (HELO localhost) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTc0LjIxLjE0NC4yOQ==) (POLARISLOCAL)  
+  by smtp4.emailarray.com with SMTP; 21 May 2022 02:04:59 -0000
+Date:   Fri, 20 May 2022 19:04:56 -0700
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
+        linux@armlinux.org.uk, bcm-kernel-feedback-list@broadcom.com,
+        kernel-team@fb.com, davem@davemloft.net, kuba@kernel.org,
+        pabeni@redhat.com, edumazet@google.com
+Subject: Re: [PATCH net-next v5 2/2] net: phy: broadcom: Add PTP support for
+ some Broadcom PHYs.
+Message-ID: <20220521020456.fkgx7s5ymtxd5y2q@bsd-mbp.local>
+References: <20220518223935.2312426-1-jonathan.lemon@gmail.com>
+ <20220518223935.2312426-3-jonathan.lemon@gmail.com>
+ <f5963ddb-01bb-6935-ecdd-0f9e7c0afda0@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH net-next v3] net/ipv6: Introduce accept_unsolicited_na
- knob to implement router-side changes for RFC9131
-Content-Language: en-US
-To:     Arun Ajith S <aajith@arista.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, pabeni@redhat.com,
-        corbet@lwn.net, prestwoj@gmail.com, gilligan@arista.com,
-        noureddine@arista.com, gk@arista.com
-References: <20220413143434.527-1-aajith@arista.com>
- <350f6a02-2975-ac1b-1c9d-ab738722a9fe@kernel.org>
- <CAOvjArTAce_68CkoUff_=Hi+mr731dsWcQdEbaev4xaMDFZNug@mail.gmail.com>
-From:   David Ahern <dsahern@kernel.org>
-In-Reply-To: <CAOvjArTAce_68CkoUff_=Hi+mr731dsWcQdEbaev4xaMDFZNug@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-8.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f5963ddb-01bb-6935-ecdd-0f9e7c0afda0@gmail.com>
+X-Spam-Status: No, score=0.7 required=5.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+        FORGED_GMAIL_RCVD,FREEMAIL_FROM,NML_ADSP_CUSTOM_MED,RCVD_IN_MSPIKE_H2,
+        SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY
+        autolearn=no autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/20/22 1:19 AM, Arun Ajith S wrote:
-> On Thu, Apr 14, 2022 at 3:37 AM David Ahern <dsahern@kernel.org> wrote:
->>
->> On 4/13/22 8:34 AM, Arun Ajith S wrote:
->>> diff --git a/tools/testing/selftests/net/ndisc_unsolicited_na_test.py b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
->>> new file mode 100755
->>> index 000000000000..f508657ee126
->>> --- /dev/null
->>> +++ b/tools/testing/selftests/net/ndisc_unsolicited_na_test.py
->>> @@ -0,0 +1,255 @@
->>> +#!/bin/bash
->>
->> that file name suffix should be .sh since it is a bash script; not .py
->>
->> other than that looks good to me.
->>
->> Reviewed-by: David Ahern <dsahern@kernel.org>
+On Fri, May 20, 2022 at 10:24:25AM -0700, Florian Fainelli wrote:
 > 
-> Hi David,
 > 
-> It has been pointed out to me that I might have read RFC9131 in a
-> narrower sense than what was intended.
-> The behavior of adding a new entry in the neighbour cache on receiving
-> a NA if none exists presently
-> shouldn't be limited to unsolicited NAs like in my original patch,
-> rather it should extend to all NAs.
+> On 5/18/2022 3:39 PM, Jonathan Lemon wrote:
+> > This adds PTP support for BCM54210E Broadcom PHYs, in particular,
+> > the BCM54213PE, as used in the Rasperry PI CM4.  It has only been
+> > tested on that hardware.
+> > 
+> > Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> > ---
+> [snip]
 > 
-> I am quoting from the RFC below
+> Looks good to me, just one question below:
 > 
->    |  When a valid Neighbor Advertisement is received (either solicited
->    |  or unsolicited), the Neighbor Cache is searched for the target's
->    |  entry.  If no entry exists:
->    |
->    |  *  Hosts SHOULD silently discard the advertisement.  There is no
->    |     need to create an entry if none exists, since the recipient has
->    |     apparently not initiated any communication with the target.
->    |
->    |  *  Routers SHOULD create a new entry for the target address with
->    |     the link-layer address set to the Target Link-Layer Address
->    |     Option (if supplied).  The entry's reachability state MUST be
->    |     set to STALE.  If the received Neighbor Advertisement does not
->    |     contain the Target Link-Layer Address Option, the advertisement
->    |     SHOULD be silently discarded.
+> > +static void bcm_ptp_init(struct bcm_ptp_private *priv)
+> > +{
+> > +	priv->nse_ctrl = NSE_GMODE_EN;
+> > +
+> > +	mutex_init(&priv->mutex);
+> > +	skb_queue_head_init(&priv->tx_queue);
+> > +
+> > +	priv->mii_ts.rxtstamp = bcm_ptp_rxtstamp;
+> > +	priv->mii_ts.txtstamp = bcm_ptp_txtstamp;
+> > +	priv->mii_ts.hwtstamp = bcm_ptp_hwtstamp;
+> > +	priv->mii_ts.ts_info = bcm_ptp_ts_info;
+> > +
+> > +	priv->phydev->mii_ts = &priv->mii_ts;
+> > +
+> > +	INIT_DELAYED_WORK(&priv->out_work, bcm_ptp_fsync_work);
 > 
-> I want to fix this, but this would mean the sysctl name
-> accept_unsolicited_na is no longer appropriate
-> I see that the net-next window for 5.19 is still open and changing the
-> sysctl name
-> wouldn't mean changing an existing interface.
-> I was thinking of renaming the sysctl to accept_untracked_na to
-> highlight that we are accepting NAs even if there is
-> no corresponding entry tracked in the neighbor cache.
+> Do we need to make sure that we cancel the workqueue in an bcm_ptp_exit()
+> function?
 > 
-> Also, there's an error in my comment, where I say "pass up the stack"
-> as we don't pass NAs up the stack.
-> The comment can be updated as:
->         /* RFC 9131 updates original Neighbour Discovery RFC 4861.
->          * NAs with Target LL Address option without a corresponding
->          * entry in the neighbour cache can now create a STALE neighbour
->          * cache entry on routers.
->          *
->          *   entry accept  fwding  solicited        behaviour
->          * ------- ------  ------  ---------    ----------------------
->          * present      X       X         0     Set state to STALE
->          * present      X       X         1     Set state to REACHABLE
->          *  absent      0       X         X     Do nothing
->          *  absent      1       0         X     Do nothing
->          *  absent      1       1         X     Add a new STALE entry
->          */
-> 
-> In summary
-> 1. accept=0 keeps original(5.18) behavior for all cases.
-> 2. accept=1 changes original behavior for entry=asbent, fwding=1 case
-> provided the NA had specified target link-layer address.
-> 
-> Please let me know what you think.
-> 
+> I would imagine that the Ethernet MAC attached to that PHY device having
+> stopped its receiver and transmitter should ensure no more packets coming in
+> or out, however since this is a delayed/asynchronous work, do not we need to
+> protect against use after free?
 
-Changes can be made until it is in a released kernel to users. This
-feature has many weeks before it hits that level.
+The workqueue is just mamually creatimg a 1PPS pulse on the SYNC_OUT
+pin, no packet activity.  Arguably, the .suspend hook could stop all work,
+but that seems out of scope here? (and this phy does not suspend/resume)
+-- 
+Jonathan   (one handed typist for a few weeks)
