@@ -2,136 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 136B552F681
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 02:03:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64DDA52F694
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 02:09:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354176AbiEUADk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 20 May 2022 20:03:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41092 "EHLO
+        id S1354184AbiEUAJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 20 May 2022 20:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349504AbiEUADi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 20:03:38 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAF231A813A
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 17:03:37 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id e2so1743955wrc.1
-        for <netdev@vger.kernel.org>; Fri, 20 May 2022 17:03:37 -0700 (PDT)
+        with ESMTP id S232019AbiEUAJq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 20 May 2022 20:09:46 -0400
+Received: from mail-pl1-x643.google.com (mail-pl1-x643.google.com [IPv6:2607:f8b0:4864:20::643])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43087185CBA;
+        Fri, 20 May 2022 17:09:45 -0700 (PDT)
+Received: by mail-pl1-x643.google.com with SMTP id b5so1528178plx.10;
+        Fri, 20 May 2022 17:09:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ao66QeFbzosK7IX954n0lcqOo4BUr8kGzcQrW92Wd4M=;
-        b=fRy7I7LFIlmaulsFg99KHwNg/D5q8O0y9bt5e+iqOlsnOFvjbg42KwjU4Ipir8rsgt
-         5isGjdWT9K3QQSpRv39248sxV99V26sbXrBNgrj+N7GNGxyfLFgeYvnLDDfyjM6f2e+r
-         1GKRFk5eb6r+8e4yEGVNSbggZPzTzsV5/+EjLsxktYrCYQ0fMDuuOy8872Slv56qPBxi
-         nM/ykxpKA08x8zH9z0QQUuIZXfyRVdxhQ7901yaiY22iN4o12RlvP9hCXYo20EGXShBa
-         miQY60KtiyhUxAOYI/YYrp0fpoAUnZBOnpL131U9bADXkPhlc+K88jdxvKx0jLBUhVmL
-         5Z5Q==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=151EddftrZhDh/91EEBfNEmgh9HiWO/wmSjB/1IWmjE=;
+        b=ig3G1TzM6niiGVY07X0kHudPr79o1wawS3OA/WLkBYr0EsIn/SDBQXrJ7/JpLiq5FR
+         8USOXfzloV+gyi18NFVqxGo881D6v4hgPiF9PMK2/PR3uAu1iFlvoD4qhgxRkILWkyTO
+         hzi2JqSWgJZAULroVYLlhtjVrWA9skKuY5lCK7e5t0YtjBDKoX91Aq4NPNRccJPGVTMm
+         ia4IX0cmw82iHhKxuIoSm0KzqCahYhL2Aate0Ur6TXdfyYy+d7jyI1fZzuU/lRx5l/72
+         i57snCE9AcY4zI8hvQC92lbOM9HjCDJxVT0lFxnC75W95e/Q/PzbFXjHN15WT/E0MLBv
+         U1eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ao66QeFbzosK7IX954n0lcqOo4BUr8kGzcQrW92Wd4M=;
-        b=CwlKokII6/SFSkV3cTVMLvkehZKX+yM0436ldvomr5GeTb8LTg17pwE2S4Oj2OUkB+
-         x7ccYAFKkCG9vjBbssNCfM0miuyVU9QmYOwI8O+4idpa47VPyXfOJPHyqF0MwSlqeJW+
-         6BPaFkzcUtxDG0LG7FWCdzAb7YScEP61ISG6f/vjkCsD/0bsumd4vXqIHKNwu/5nMdOZ
-         8H2RdMalhI1YjB/gqi5ecEQMhfywWxy0NyCvs7oPEKhL26/u8Y07WJKTFFfwJmv2ObdG
-         Q48Dj2pJNjHKvC7SgUnETfS+0AA04ooZRhl/R8nh/aA61I2warlj6ruHJ3ExyLBYlZwg
-         nE/A==
-X-Gm-Message-State: AOAM530z02mfo2zZzDLXokQT0woaY8MGU3ya88Ofc6mFijVifh2xsG/V
-        g7mzeZRKOfMYI40dILDXV2LP3EIReiZ0lUr7wE4PUQ==
-X-Google-Smtp-Source: ABdhPJy5bAvS4+nFOnV2YmgK6Rdf8aRqh3QnQzHZLlvdC2dMqfYA8ZeIzkUpjL6t5a4FcFRz91r0B3jyAcoa5idEocc=
-X-Received: by 2002:adf:f803:0:b0:20d:3a1:3c31 with SMTP id
- s3-20020adff803000000b0020d03a13c31mr10257981wrp.565.1653091416208; Fri, 20
- May 2022 17:03:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=151EddftrZhDh/91EEBfNEmgh9HiWO/wmSjB/1IWmjE=;
+        b=sZrQqMckMNgTa1eXP6KXVhsRXypgmoblEQ1jol/3U1oaX1IPTCSLS1f0giyfv+lGGT
+         dlcF1jx/NU8bUPzDGuL+X0P3tKPJmA6jTIZiR/Jr00/vEaumNT++09MGZuvD/kqX8/le
+         pKLY42xAPJEltWPLKhRRazKDRcGEOr8/sYXNquveJNh1wbW4sGDqyOS1pn4ma1n5noFW
+         btuL+GkYpZcIS/C0J/fX5kpymbAtTK0bNVyCjR1UkRx07r362fmg6SwMVeE4yWsQdQ54
+         mNkIL3uUrFJiHM9OWtyhW4Eq9rTMyOq9kASyINsTTaF8tPNUtQzQqJUm3mbsm8L7tTMW
+         Sqyg==
+X-Gm-Message-State: AOAM531EiGCjMCMN5XAX2Hq9N499BQ+gdr5HiwZqOT1ytXOAdqSe58st
+        exWZ9VA0UNG0D9YuRMPyB/Q=
+X-Google-Smtp-Source: ABdhPJzZJ3PXUYOpDYTH6V6GmF0cwwSxNlLIOFvnW/QjRfyKPcOXubaaKYKiFlU1lyQwakZgPiZgag==
+X-Received: by 2002:a17:90b:4c0f:b0:1e0:237:d3f6 with SMTP id na15-20020a17090b4c0f00b001e00237d3f6mr4308905pjb.166.1653091784723;
+        Fri, 20 May 2022 17:09:44 -0700 (PDT)
+Received: from ubuntu.localdomain ([116.21.69.15])
+        by smtp.gmail.com with ESMTPSA id nm11-20020a17090b19cb00b001df40d766e9sm2475956pjb.21.2022.05.20.17.09.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 May 2022 17:09:44 -0700 (PDT)
+From:   Ruijian Li <ruijian63@gmail.com>
+To:     ast@kernel.org
+Cc:     daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, 798073189@qq.com,
+        Ruijian Li <ruijian63@gmail.com>
+Subject: [PATCH] samples: fix compile failure error
+Date:   Sat, 21 May 2022 08:09:21 +0800
+Message-Id: <20220521000921.8337-1-ruijian63@gmail.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220518225531.558008-1-sdf@google.com> <20220518225531.558008-2-sdf@google.com>
- <787b0ed8-00f7-3a94-85a8-0cc301b11470@fb.com>
-In-Reply-To: <787b0ed8-00f7-3a94-85a8-0cc301b11470@fb.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 20 May 2022 17:03:25 -0700
-Message-ID: <CAKH8qBsntN_T1DFsCzg6ZRaae-AwTxgvUW5diY-cwZ4qGNcWCw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 01/11] bpf: add bpf_func_t and trampoline helpers
-To:     Yonghong Song <yhs@fb.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, andrii@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=unavailable autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 19, 2022 at 5:45 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 5/18/22 3:55 PM, Stanislav Fomichev wrote:
-> > I'll be adding lsm cgroup specific helpers that grab
-> > trampoline mutex.
-> >
-> > No functional changes.
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >   include/linux/bpf.h     | 11 ++++----
-> >   kernel/bpf/trampoline.c | 62 ++++++++++++++++++++++-------------------
-> >   2 files changed, 38 insertions(+), 35 deletions(-)
-> >
-> [...]
-> > +
-> > +int bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
-> > +{
-> > +     int err;
-> > +
-> > +     mutex_lock(&tr->mutex);
-> > +     err = __bpf_trampoline_link_prog(link, tr);
-> >       mutex_unlock(&tr->mutex);
-> >       return err;
-> >   }
-> >
-> >   /* bpf_trampoline_unlink_prog() should never fail. */
->
-> The comment here can be removed.
+Because compile samples/bpf/test_lru_dist failure, I remove the
+declaration of the struct list_head.
 
-Will do, thank you!
+Signed-off-by: Ruijian Li <ruijian63@gmail.com>
+---
+ samples/bpf/test_lru_dist.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
+diff --git a/samples/bpf/test_lru_dist.c b/samples/bpf/test_lru_dist.c
+index 75e877853596..dd7eb470653b 100644
+--- a/samples/bpf/test_lru_dist.c
++++ b/samples/bpf/test_lru_dist.c
+@@ -33,10 +33,6 @@ static int nr_cpus;
+ static unsigned long long *dist_keys;
+ static unsigned int dist_key_counts;
+ 
+-struct list_head {
+-	struct list_head *next, *prev;
+-};
+-
+ static inline void INIT_LIST_HEAD(struct list_head *list)
+ {
+ 	list->next = list;
+-- 
+2.32.0
 
-> > -int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
-> > +static int __bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
-> >   {
-> >       enum bpf_tramp_prog_type kind;
-> >       int err;
-> >
-> >       kind = bpf_attach_type_to_tramp(link->link.prog);
-> > -     mutex_lock(&tr->mutex);
-> >       if (kind == BPF_TRAMP_REPLACE) {
-> >               WARN_ON_ONCE(!tr->extension_prog);
-> >               err = bpf_arch_text_poke(tr->func.addr, BPF_MOD_JUMP,
-> >                                        tr->extension_prog->bpf_func, NULL);
-> >               tr->extension_prog = NULL;
-> > -             goto out;
-> > +             return err;
-> >       }
-> >       hlist_del_init(&link->tramp_hlist);
-> >       tr->progs_cnt[kind]--;
-> > -     err = bpf_trampoline_update(tr);
-> > -out:
-> > +     return bpf_trampoline_update(tr);
-> > +}
-> > +
-> > +/* bpf_trampoline_unlink_prog() should never fail. */
-> > +int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
-> > +{
-> > +     int err;
-> > +
-> > +     mutex_lock(&tr->mutex);
-> > +     err = __bpf_trampoline_unlink_prog(link, tr);
-> >       mutex_unlock(&tr->mutex);
-> >       return err;
-> >   }
