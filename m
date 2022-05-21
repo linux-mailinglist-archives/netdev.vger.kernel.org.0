@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AB06B52F9D2
-	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 09:46:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0374452F9D3
+	for <lists+netdev@lfdr.de>; Sat, 21 May 2022 09:46:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354777AbiEUHpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 21 May 2022 03:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36318 "EHLO
+        id S1354762AbiEUHqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 21 May 2022 03:46:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36432 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354778AbiEUHpk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 03:45:40 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B6E57185431
-        for <netdev@vger.kernel.org>; Sat, 21 May 2022 00:45:36 -0700 (PDT)
+        with ESMTP id S1354756AbiEUHpo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 21 May 2022 03:45:44 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C91E4939BD
+        for <netdev@vger.kernel.org>; Sat, 21 May 2022 00:45:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653119135;
+        s=mimecast20190719; t=1653119140;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=v9/cPJX43GileJuor9/D/okxrgKUclDLl9Ubycp4TMs=;
-        b=H1BPa2TW4lO+4SSskWQYjSNZUpOHE9ur+ZFbdecGX1oFyZwWc1cwVcY1pKRFifzxslHZt/
-        mWOp6OmPAbG4fZ9LJN4YBCkbBYLioMYQA45OxqVHH0dR4v1gIgT9H4MdSq3vtrMknBvdSk
-        jn3xO+wFoIgZYwCwrf++NB+GlMQg9wc=
+        bh=JFGupm1C+ZWOkUQAo24Pibe+Ygnjs7S0HztvSqUR5qM=;
+        b=Y9Py+Ts3VHvsceFLTavW9h+HKy16d1eTScZIhKzzDyIUMleOYjh85bK8cpiYfDX9ieTaU3
+        NKrfwUmiUfDB8qC6W2Gt5+FzlCAN+osHnzIYURGOpezJVqeigVyATqfgjWp6MEM/Wzi+SY
+        xAW3SK9jJ7WYCiO9/RTuolk6QgXQMiw=
 Received: from mimecast-mx02.redhat.com (mx3-rdu2.redhat.com
  [66.187.233.73]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-55-MmwmN6LfPmqOn6aPSuxepQ-1; Sat, 21 May 2022 03:45:30 -0400
-X-MC-Unique: MmwmN6LfPmqOn6aPSuxepQ-1
-Received: from smtp.corp.redhat.com (int-mx10.intmail.prod.int.rdu2.redhat.com [10.11.54.10])
+ us-mta-612-cV1q0UUyP_iZcx66a_SiXw-1; Sat, 21 May 2022 03:45:37 -0400
+X-MC-Unique: cV1q0UUyP_iZcx66a_SiXw-1
+Received: from smtp.corp.redhat.com (int-mx09.intmail.prod.int.rdu2.redhat.com [10.11.54.9])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 4217138035A0;
-        Sat, 21 May 2022 07:45:30 +0000 (UTC)
+        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id C3D233C00089;
+        Sat, 21 May 2022 07:45:36 +0000 (UTC)
 Received: from warthog.procyon.org.uk (unknown [10.33.36.8])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 891C6492C14;
-        Sat, 21 May 2022 07:45:29 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 18D6A492C3B;
+        Sat, 21 May 2022 07:45:35 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
         Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
         Kingdom.
         Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net-next 3/7] rxrpc: Fix locking issue
+Subject: [PATCH net-next 4/7] rxrpc: Automatically generate trace tag enums
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Sat, 21 May 2022 08:45:28 +0100
-Message-ID: <165311912886.245906.15826699370961509183.stgit@warthog.procyon.org.uk>
+Date:   Sat, 21 May 2022 08:45:35 +0100
+Message-ID: <165311913543.245906.16036545813903070859.stgit@warthog.procyon.org.uk>
 In-Reply-To: <165311910893.245906.4115532916417333325.stgit@warthog.procyon.org.uk>
 References: <165311910893.245906.4115532916417333325.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/1.4
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.85 on 10.11.54.10
+X-Scanned-By: MIMEDefang 2.85 on 10.11.54.9
 X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
@@ -65,270 +65,315 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's a locking issue with the per-netns list of calls in rxrpc.  The
-pieces of code that add and remove a call from the list use write_lock()
-and the calls procfile uses read_lock() to access it.  However, the timer
-callback function may trigger a removal by trying to queue a call for
-processing and finding that it's already queued - at which point it has a
-spare refcount that it has to do something with.  Unfortunately, if it puts
-the call and this reduces the refcount to 0, the call will be removed from
-the list.  Unfortunately, since the _bh variants of the locking functions
-aren't used, this can deadlock.
+Automatically generate trace tag enums from the symbol -> string mapping
+tables rather than having the enums as well, thereby reducing duplicated
+data.
 
-================================
-WARNING: inconsistent lock state
-5.18.0-rc3-build4+ #10 Not tainted
---------------------------------
-inconsistent {SOFTIRQ-ON-W} -> {IN-SOFTIRQ-W} usage.
-ksoftirqd/2/25 [HC0[0]:SC1[1]:HE1:SE0] takes:
-ffff888107ac4038 (&rxnet->call_lock){+.?.}-{2:2}, at: rxrpc_put_call+0x103/0x14b
-{SOFTIRQ-ON-W} state was registered at:
-...
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&rxnet->call_lock);
-  <Interrupt>
-    lock(&rxnet->call_lock);
-
- *** DEADLOCK ***
-
-1 lock held by ksoftirqd/2/25:
- #0: ffff8881008ffdb0 ((&call->timer)){+.-.}-{0:0}, at: call_timer_fn+0x5/0x23d
-
-Changes
-=======
-ver #2)
- - Changed to using list_next_rcu() rather than rcu_dereference() directly.
-
-Fixes: 17926a79320a ("[AF_RXRPC]: Provide secure RxRPC sockets for use by userspace and kernel both")
 Signed-off-by: David Howells <dhowells@redhat.com>
 cc: Marc Dionne <marc.dionne@auristor.com>
 cc: linux-afs@lists.infradead.org
 ---
 
- fs/seq_file.c            |   32 ++++++++++++++++++++++++++++++++
- include/linux/list.h     |   10 ++++++++++
- include/linux/seq_file.h |    4 ++++
- net/rxrpc/ar-internal.h  |    2 +-
- net/rxrpc/call_accept.c  |    6 +++---
- net/rxrpc/call_object.c  |   18 +++++++++---------
- net/rxrpc/net_ns.c       |    2 +-
- net/rxrpc/proc.c         |   10 ++--------
- 8 files changed, 62 insertions(+), 22 deletions(-)
+ include/trace/events/rxrpc.h |  261 +++++++-----------------------------------
+ 1 file changed, 42 insertions(+), 219 deletions(-)
 
-diff --git a/fs/seq_file.c b/fs/seq_file.c
-index 7ab8a58c29b6..9456a2032224 100644
---- a/fs/seq_file.c
-+++ b/fs/seq_file.c
-@@ -931,6 +931,38 @@ struct list_head *seq_list_next(void *v, struct list_head *head, loff_t *ppos)
- }
- EXPORT_SYMBOL(seq_list_next);
+diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
+index cdb28976641b..66915b872a44 100644
+--- a/include/trace/events/rxrpc.h
++++ b/include/trace/events/rxrpc.h
+@@ -13,215 +13,6 @@
+ #include <linux/tracepoint.h>
+ #include <linux/errqueue.h>
  
-+struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos)
-+{
-+	struct list_head *lh;
-+
-+	list_for_each_rcu(lh, head)
-+		if (pos-- == 0)
-+			return lh;
-+
-+	return NULL;
-+}
-+EXPORT_SYMBOL(seq_list_start_rcu);
-+
-+struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos)
-+{
-+	if (!pos)
-+		return head;
-+
-+	return seq_list_start_rcu(head, pos - 1);
-+}
-+EXPORT_SYMBOL(seq_list_start_head_rcu);
-+
-+struct list_head *seq_list_next_rcu(void *v, struct list_head *head,
-+				    loff_t *ppos)
-+{
-+	struct list_head *lh;
-+
-+	lh = list_next_rcu((struct list_head *)v);
-+	++*ppos;
-+	return lh == head ? NULL : lh;
-+}
-+EXPORT_SYMBOL(seq_list_next_rcu);
-+
- /**
-  * seq_hlist_start - start an iteration of a hlist
-  * @head: the head of the hlist
-diff --git a/include/linux/list.h b/include/linux/list.h
-index c147eeb2d39d..57e8b559cdf6 100644
---- a/include/linux/list.h
-+++ b/include/linux/list.h
-@@ -605,6 +605,16 @@ static inline void list_splice_tail_init(struct list_head *list,
- #define list_for_each(pos, head) \
- 	for (pos = (head)->next; !list_is_head(pos, (head)); pos = pos->next)
+-/*
+- * Define enums for tracing information.
+- *
+- * These should all be kept sorted, making it easier to match the string
+- * mapping tables further on.
+- */
+-#ifndef __RXRPC_DECLARE_TRACE_ENUMS_ONCE_ONLY
+-#define __RXRPC_DECLARE_TRACE_ENUMS_ONCE_ONLY
+-
+-enum rxrpc_skb_trace {
+-	rxrpc_skb_cleaned,
+-	rxrpc_skb_freed,
+-	rxrpc_skb_got,
+-	rxrpc_skb_lost,
+-	rxrpc_skb_new,
+-	rxrpc_skb_purged,
+-	rxrpc_skb_received,
+-	rxrpc_skb_rotated,
+-	rxrpc_skb_seen,
+-	rxrpc_skb_unshared,
+-	rxrpc_skb_unshared_nomem,
+-};
+-
+-enum rxrpc_local_trace {
+-	rxrpc_local_got,
+-	rxrpc_local_new,
+-	rxrpc_local_processing,
+-	rxrpc_local_put,
+-	rxrpc_local_queued,
+-};
+-
+-enum rxrpc_peer_trace {
+-	rxrpc_peer_got,
+-	rxrpc_peer_new,
+-	rxrpc_peer_processing,
+-	rxrpc_peer_put,
+-};
+-
+-enum rxrpc_conn_trace {
+-	rxrpc_conn_got,
+-	rxrpc_conn_new_client,
+-	rxrpc_conn_new_service,
+-	rxrpc_conn_put_client,
+-	rxrpc_conn_put_service,
+-	rxrpc_conn_queued,
+-	rxrpc_conn_reap_service,
+-	rxrpc_conn_seen,
+-};
+-
+-enum rxrpc_client_trace {
+-	rxrpc_client_activate_chans,
+-	rxrpc_client_alloc,
+-	rxrpc_client_chan_activate,
+-	rxrpc_client_chan_disconnect,
+-	rxrpc_client_chan_pass,
+-	rxrpc_client_chan_wait_failed,
+-	rxrpc_client_cleanup,
+-	rxrpc_client_discard,
+-	rxrpc_client_duplicate,
+-	rxrpc_client_exposed,
+-	rxrpc_client_replace,
+-	rxrpc_client_to_active,
+-	rxrpc_client_to_idle,
+-};
+-
+-enum rxrpc_call_trace {
+-	rxrpc_call_connected,
+-	rxrpc_call_error,
+-	rxrpc_call_got,
+-	rxrpc_call_got_kernel,
+-	rxrpc_call_got_timer,
+-	rxrpc_call_got_userid,
+-	rxrpc_call_new_client,
+-	rxrpc_call_new_service,
+-	rxrpc_call_put,
+-	rxrpc_call_put_kernel,
+-	rxrpc_call_put_noqueue,
+-	rxrpc_call_put_notimer,
+-	rxrpc_call_put_timer,
+-	rxrpc_call_put_userid,
+-	rxrpc_call_queued,
+-	rxrpc_call_queued_ref,
+-	rxrpc_call_release,
+-	rxrpc_call_seen,
+-};
+-
+-enum rxrpc_transmit_trace {
+-	rxrpc_transmit_await_reply,
+-	rxrpc_transmit_end,
+-	rxrpc_transmit_queue,
+-	rxrpc_transmit_queue_last,
+-	rxrpc_transmit_rotate,
+-	rxrpc_transmit_rotate_last,
+-	rxrpc_transmit_wait,
+-};
+-
+-enum rxrpc_receive_trace {
+-	rxrpc_receive_end,
+-	rxrpc_receive_front,
+-	rxrpc_receive_incoming,
+-	rxrpc_receive_queue,
+-	rxrpc_receive_queue_last,
+-	rxrpc_receive_rotate,
+-};
+-
+-enum rxrpc_recvmsg_trace {
+-	rxrpc_recvmsg_cont,
+-	rxrpc_recvmsg_data_return,
+-	rxrpc_recvmsg_dequeue,
+-	rxrpc_recvmsg_enter,
+-	rxrpc_recvmsg_full,
+-	rxrpc_recvmsg_hole,
+-	rxrpc_recvmsg_next,
+-	rxrpc_recvmsg_requeue,
+-	rxrpc_recvmsg_return,
+-	rxrpc_recvmsg_terminal,
+-	rxrpc_recvmsg_to_be_accepted,
+-	rxrpc_recvmsg_wait,
+-};
+-
+-enum rxrpc_rtt_tx_trace {
+-	rxrpc_rtt_tx_cancel,
+-	rxrpc_rtt_tx_data,
+-	rxrpc_rtt_tx_no_slot,
+-	rxrpc_rtt_tx_ping,
+-};
+-
+-enum rxrpc_rtt_rx_trace {
+-	rxrpc_rtt_rx_cancel,
+-	rxrpc_rtt_rx_lost,
+-	rxrpc_rtt_rx_obsolete,
+-	rxrpc_rtt_rx_ping_response,
+-	rxrpc_rtt_rx_requested_ack,
+-};
+-
+-enum rxrpc_timer_trace {
+-	rxrpc_timer_begin,
+-	rxrpc_timer_exp_ack,
+-	rxrpc_timer_exp_hard,
+-	rxrpc_timer_exp_idle,
+-	rxrpc_timer_exp_keepalive,
+-	rxrpc_timer_exp_lost_ack,
+-	rxrpc_timer_exp_normal,
+-	rxrpc_timer_exp_ping,
+-	rxrpc_timer_exp_resend,
+-	rxrpc_timer_expired,
+-	rxrpc_timer_init_for_reply,
+-	rxrpc_timer_init_for_send_reply,
+-	rxrpc_timer_restart,
+-	rxrpc_timer_set_for_ack,
+-	rxrpc_timer_set_for_hard,
+-	rxrpc_timer_set_for_idle,
+-	rxrpc_timer_set_for_keepalive,
+-	rxrpc_timer_set_for_lost_ack,
+-	rxrpc_timer_set_for_normal,
+-	rxrpc_timer_set_for_ping,
+-	rxrpc_timer_set_for_resend,
+-	rxrpc_timer_set_for_send,
+-};
+-
+-enum rxrpc_propose_ack_trace {
+-	rxrpc_propose_ack_client_tx_end,
+-	rxrpc_propose_ack_input_data,
+-	rxrpc_propose_ack_ping_for_check_life,
+-	rxrpc_propose_ack_ping_for_keepalive,
+-	rxrpc_propose_ack_ping_for_lost_ack,
+-	rxrpc_propose_ack_ping_for_lost_reply,
+-	rxrpc_propose_ack_ping_for_params,
+-	rxrpc_propose_ack_processing_op,
+-	rxrpc_propose_ack_respond_to_ack,
+-	rxrpc_propose_ack_respond_to_ping,
+-	rxrpc_propose_ack_retry_tx,
+-	rxrpc_propose_ack_rotate_rx,
+-	rxrpc_propose_ack_terminal_ack,
+-};
+-
+-enum rxrpc_propose_ack_outcome {
+-	rxrpc_propose_ack_subsume,
+-	rxrpc_propose_ack_update,
+-	rxrpc_propose_ack_use,
+-};
+-
+-enum rxrpc_congest_change {
+-	rxrpc_cong_begin_retransmission,
+-	rxrpc_cong_cleared_nacks,
+-	rxrpc_cong_new_low_nack,
+-	rxrpc_cong_no_change,
+-	rxrpc_cong_progress,
+-	rxrpc_cong_retransmit_again,
+-	rxrpc_cong_rtt_window_end,
+-	rxrpc_cong_saw_nack,
+-};
+-
+-enum rxrpc_tx_point {
+-	rxrpc_tx_point_call_abort,
+-	rxrpc_tx_point_call_ack,
+-	rxrpc_tx_point_call_data_frag,
+-	rxrpc_tx_point_call_data_nofrag,
+-	rxrpc_tx_point_call_final_resend,
+-	rxrpc_tx_point_conn_abort,
+-	rxrpc_tx_point_rxkad_challenge,
+-	rxrpc_tx_point_rxkad_response,
+-	rxrpc_tx_point_reject,
+-	rxrpc_tx_point_version_keepalive,
+-	rxrpc_tx_point_version_reply,
+-};
+-
+-#endif /* end __RXRPC_DECLARE_TRACE_ENUMS_ONCE_ONLY */
+-
+ /*
+  * Declare tracing information enums and their string mappings for display.
+  */
+@@ -451,6 +242,36 @@ enum rxrpc_tx_point {
+ 	EM(rxrpc_tx_point_version_keepalive,	"VerKeepalive") \
+ 	E_(rxrpc_tx_point_version_reply,	"VerReply")
  
-+/**
-+ * list_for_each_rcu - Iterate over a list in an RCU-safe fashion
-+ * @pos:	the &struct list_head to use as a loop cursor.
-+ * @head:	the head for your list.
++/*
++ * Generate enums for tracing information.
 + */
-+#define list_for_each_rcu(pos, head)		  \
-+	for (pos = rcu_dereference((head)->next); \
-+	     !list_is_head(pos, (head)); \
-+	     pos = rcu_dereference(pos->next))
++#ifndef __NETFS_DECLARE_TRACE_ENUMS_ONCE_ONLY
++#define __NETFS_DECLARE_TRACE_ENUMS_ONCE_ONLY
 +
- /**
-  * list_for_each_continue - continue iteration over a list
-  * @pos:	the &struct list_head to use as a loop cursor.
-diff --git a/include/linux/seq_file.h b/include/linux/seq_file.h
-index 60820ab511d2..bd023dd38ae6 100644
---- a/include/linux/seq_file.h
-+++ b/include/linux/seq_file.h
-@@ -277,6 +277,10 @@ extern struct list_head *seq_list_start_head(struct list_head *head,
- extern struct list_head *seq_list_next(void *v, struct list_head *head,
- 		loff_t *ppos);
- 
-+extern struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos);
-+extern struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos);
-+extern struct list_head *seq_list_next_rcu(void *v, struct list_head *head, loff_t *ppos);
++#undef EM
++#undef E_
++#define EM(a, b) a,
++#define E_(a, b) a
++
++enum rxrpc_call_trace		{ rxrpc_call_traces } __mode(byte);
++enum rxrpc_client_trace		{ rxrpc_client_traces } __mode(byte);
++enum rxrpc_congest_change	{ rxrpc_congest_changes } __mode(byte);
++enum rxrpc_conn_trace		{ rxrpc_conn_traces } __mode(byte);
++enum rxrpc_local_trace		{ rxrpc_local_traces } __mode(byte);
++enum rxrpc_peer_trace		{ rxrpc_peer_traces } __mode(byte);
++enum rxrpc_propose_ack_outcome	{ rxrpc_propose_ack_outcomes } __mode(byte);
++enum rxrpc_propose_ack_trace	{ rxrpc_propose_ack_traces } __mode(byte);
++enum rxrpc_receive_trace	{ rxrpc_receive_traces } __mode(byte);
++enum rxrpc_recvmsg_trace	{ rxrpc_recvmsg_traces } __mode(byte);
++enum rxrpc_rtt_rx_trace		{ rxrpc_rtt_rx_traces } __mode(byte);
++enum rxrpc_rtt_tx_trace		{ rxrpc_rtt_tx_traces } __mode(byte);
++enum rxrpc_skb_trace		{ rxrpc_skb_traces } __mode(byte);
++enum rxrpc_timer_trace		{ rxrpc_timer_traces } __mode(byte);
++enum rxrpc_transmit_trace	{ rxrpc_transmit_traces } __mode(byte);
++enum rxrpc_tx_point		{ rxrpc_tx_points } __mode(byte);
++
++#endif /* end __RXRPC_DECLARE_TRACE_ENUMS_ONCE_ONLY */
 +
  /*
-  * Helpers for iteration over hlist_head-s in seq_files
+  * Export enum symbols via userspace.
   */
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 52a23d03d694..dcc0ec0bf3de 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -60,7 +60,7 @@ struct rxrpc_net {
- 	struct proc_dir_entry	*proc_net;	/* Subdir in /proc/net */
- 	u32			epoch;		/* Local epoch for detecting local-end reset */
- 	struct list_head	calls;		/* List of calls active in this namespace */
--	rwlock_t		call_lock;	/* Lock for ->calls */
-+	spinlock_t		call_lock;	/* Lock for ->calls */
- 	atomic_t		nr_calls;	/* Count of allocated calls */
+@@ -459,21 +280,21 @@ enum rxrpc_tx_point {
+ #define EM(a, b) TRACE_DEFINE_ENUM(a);
+ #define E_(a, b) TRACE_DEFINE_ENUM(a);
  
- 	atomic_t		nr_conns;
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index 8ae59edc2551..99e10eea3732 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -140,9 +140,9 @@ static int rxrpc_service_prealloc_one(struct rxrpc_sock *rx,
- 	write_unlock(&rx->call_lock);
+-rxrpc_skb_traces;
+-rxrpc_local_traces;
+-rxrpc_conn_traces;
+-rxrpc_client_traces;
+ rxrpc_call_traces;
+-rxrpc_transmit_traces;
++rxrpc_client_traces;
++rxrpc_congest_changes;
++rxrpc_congest_modes;
++rxrpc_conn_traces;
++rxrpc_local_traces;
++rxrpc_propose_ack_outcomes;
++rxrpc_propose_ack_traces;
+ rxrpc_receive_traces;
+ rxrpc_recvmsg_traces;
+-rxrpc_rtt_tx_traces;
+ rxrpc_rtt_rx_traces;
++rxrpc_rtt_tx_traces;
++rxrpc_skb_traces;
+ rxrpc_timer_traces;
+-rxrpc_propose_ack_traces;
+-rxrpc_propose_ack_outcomes;
+-rxrpc_congest_modes;
+-rxrpc_congest_changes;
++rxrpc_transmit_traces;
+ rxrpc_tx_points;
  
- 	rxnet = call->rxnet;
--	write_lock(&rxnet->call_lock);
--	list_add_tail(&call->link, &rxnet->calls);
--	write_unlock(&rxnet->call_lock);
-+	spin_lock_bh(&rxnet->call_lock);
-+	list_add_tail_rcu(&call->link, &rxnet->calls);
-+	spin_unlock_bh(&rxnet->call_lock);
+ /*
+@@ -1574,6 +1395,8 @@ TRACE_EVENT(rxrpc_rx_discard_ack,
+ 		      __entry->call_ackr_prev)
+ 	    );
  
- 	b->call_backlog[call_head] = call;
- 	smp_store_release(&b->call_backlog_head, (call_head + 1) & (size - 1));
-diff --git a/net/rxrpc/call_object.c b/net/rxrpc/call_object.c
-index 8764a4f19c03..84d0a4109645 100644
---- a/net/rxrpc/call_object.c
-+++ b/net/rxrpc/call_object.c
-@@ -337,9 +337,9 @@ struct rxrpc_call *rxrpc_new_client_call(struct rxrpc_sock *rx,
- 	write_unlock(&rx->call_lock);
++#undef EM
++#undef E_
+ #endif /* _TRACE_RXRPC_H */
  
- 	rxnet = call->rxnet;
--	write_lock(&rxnet->call_lock);
--	list_add_tail(&call->link, &rxnet->calls);
--	write_unlock(&rxnet->call_lock);
-+	spin_lock_bh(&rxnet->call_lock);
-+	list_add_tail_rcu(&call->link, &rxnet->calls);
-+	spin_unlock_bh(&rxnet->call_lock);
- 
- 	/* From this point on, the call is protected by its own lock. */
- 	release_sock(&rx->sk);
-@@ -633,9 +633,9 @@ void rxrpc_put_call(struct rxrpc_call *call, enum rxrpc_call_trace op)
- 		ASSERTCMP(call->state, ==, RXRPC_CALL_COMPLETE);
- 
- 		if (!list_empty(&call->link)) {
--			write_lock(&rxnet->call_lock);
-+			spin_lock_bh(&rxnet->call_lock);
- 			list_del_init(&call->link);
--			write_unlock(&rxnet->call_lock);
-+			spin_unlock_bh(&rxnet->call_lock);
- 		}
- 
- 		rxrpc_cleanup_call(call);
-@@ -707,7 +707,7 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
- 	_enter("");
- 
- 	if (!list_empty(&rxnet->calls)) {
--		write_lock(&rxnet->call_lock);
-+		spin_lock_bh(&rxnet->call_lock);
- 
- 		while (!list_empty(&rxnet->calls)) {
- 			call = list_entry(rxnet->calls.next,
-@@ -722,12 +722,12 @@ void rxrpc_destroy_all_calls(struct rxrpc_net *rxnet)
- 			       rxrpc_call_states[call->state],
- 			       call->flags, call->events);
- 
--			write_unlock(&rxnet->call_lock);
-+			spin_unlock_bh(&rxnet->call_lock);
- 			cond_resched();
--			write_lock(&rxnet->call_lock);
-+			spin_lock_bh(&rxnet->call_lock);
- 		}
- 
--		write_unlock(&rxnet->call_lock);
-+		spin_unlock_bh(&rxnet->call_lock);
- 	}
- 
- 	atomic_dec(&rxnet->nr_calls);
-diff --git a/net/rxrpc/net_ns.c b/net/rxrpc/net_ns.c
-index 34f389975a7d..bb4c25d6df64 100644
---- a/net/rxrpc/net_ns.c
-+++ b/net/rxrpc/net_ns.c
-@@ -50,7 +50,7 @@ static __net_init int rxrpc_init_net(struct net *net)
- 	rxnet->epoch |= RXRPC_RANDOM_EPOCH;
- 
- 	INIT_LIST_HEAD(&rxnet->calls);
--	rwlock_init(&rxnet->call_lock);
-+	spin_lock_init(&rxnet->call_lock);
- 	atomic_set(&rxnet->nr_calls, 1);
- 
- 	atomic_set(&rxnet->nr_conns, 1);
-diff --git a/net/rxrpc/proc.c b/net/rxrpc/proc.c
-index 8967201fd8e5..245418943e01 100644
---- a/net/rxrpc/proc.c
-+++ b/net/rxrpc/proc.c
-@@ -26,29 +26,23 @@ static const char *const rxrpc_conn_states[RXRPC_CONN__NR_STATES] = {
-  */
- static void *rxrpc_call_seq_start(struct seq_file *seq, loff_t *_pos)
- 	__acquires(rcu)
--	__acquires(rxnet->call_lock)
- {
- 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
- 
- 	rcu_read_lock();
--	read_lock(&rxnet->call_lock);
--	return seq_list_start_head(&rxnet->calls, *_pos);
-+	return seq_list_start_head_rcu(&rxnet->calls, *_pos);
- }
- 
- static void *rxrpc_call_seq_next(struct seq_file *seq, void *v, loff_t *pos)
- {
- 	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
- 
--	return seq_list_next(v, &rxnet->calls, pos);
-+	return seq_list_next_rcu(v, &rxnet->calls, pos);
- }
- 
- static void rxrpc_call_seq_stop(struct seq_file *seq, void *v)
--	__releases(rxnet->call_lock)
- 	__releases(rcu)
- {
--	struct rxrpc_net *rxnet = rxrpc_net(seq_file_net(seq));
--
--	read_unlock(&rxnet->call_lock);
- 	rcu_read_unlock();
- }
- 
+ /* This part must be outside protection */
 
 
