@@ -2,113 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B70453068A
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 00:29:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FF76530698
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 00:51:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230247AbiEVW3p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 May 2022 18:29:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55130 "EHLO
+        id S231150AbiEVWvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 May 2022 18:51:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230170AbiEVW3o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 18:29:44 -0400
-Received: from vulcan.natalenko.name (vulcan.natalenko.name [IPv6:2001:19f0:6c00:8846:5400:ff:fe0c:dfa0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 607BA35DFE;
-        Sun, 22 May 2022 15:29:42 -0700 (PDT)
-Received: from spock.localnet (unknown [83.148.33.151])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 0F3EDEFB219;
-        Mon, 23 May 2022 00:29:39 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1653258579;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=5RsrrUIcLxd7wE1ZN1EHer8TNCgmy1gA2oqSx8f1A4U=;
-        b=CAZ76pAxkI/iO9yjqzNcud839rZ1d8coHmFN2PAERvzQf9j7kYZlZwl5cLM4fm/mLKnhBe
-        fVjHf6M6jcbMDLSGiwh3OIx+frgWItdBn3EtDvj+h/kPmYXC4QH5wiBNGe2hr/Q5T4LlyF
-        x5KrUorPIJPSk/xombCixocebHreoDk=
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Neal Cardwell <ncardwell@google.com>
-Cc:     Yuchung Cheng <ycheng@google.com>,
-        Yousuk Seung <ysseung@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Adithya Abraham Philip <abrahamphilip@google.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Konstantin Demin <rockdrilla@gmail.com>
-Subject: [RFC] tcp_bbr2: use correct 64-bit division
-Date:   Mon, 23 May 2022 00:29:37 +0200
-Message-ID: <4740526.31r3eYUQgx@natalenko.name>
+        with ESMTP id S229732AbiEVWvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 18:51:47 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 400541DA4A
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 15:51:44 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id c10so17041240edr.2
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 15:51:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=wX4BMjOypo5d/OsLI8Sw4NpZ7scgBV3K3bt0u2CQOQc=;
+        b=JMXh9egJxmEpFG86HcEicdEz8xF5MJsfsIXU0ulMIDhLGkp6lwlH2aDf8E6i7gzyLq
+         rRbXZsN8e58Iei6l/jJkT6FIuT1qEhkapKkR7vocGm9JL4zkhu6jjcRoMQKv9vITZUFD
+         SRdCMB9iS8LSG8h9NggbCcOQxRYXjGxt8s9c7ee7JOhF9+UmQsi7q/4a32pqBrO2k2Y0
+         +wITQ3AVm5o/eWQktnVM5VmkFqnHlNZlEeKHGft3FwOrdajURk9hJ/v4YLNc53+9hOv1
+         DsjpXzd77/oTIVfId3valpG46+UgOExDtU7qBEe0whEMeFtbQZ6MOfeLJPVPAxsmu4Ih
+         8lVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=wX4BMjOypo5d/OsLI8Sw4NpZ7scgBV3K3bt0u2CQOQc=;
+        b=LQ3YnHpWYkKXXdSLj/vyriECtcVxmF8Zncn7uApoaPRFPgqbKOVLsLDcC8ESATQQlx
+         Qb4edoy0nxLjBhqrTuXvh9CNLIZxPE8UGVXogSQA9Ll3Y8CiONqtQWTsdQKw23p4AgYE
+         jzfA2qoP8bCzXJV9CsFPOCOgC3iZU/lylC0nBttiCgFvWydcQVrWWb4r9ZYKv5OQAt4V
+         z12tMDVRaOFEtx8X/Q6g+1QETE9pOKmxPcK2NfflyoA4fIgXMv8PAOyx1c64sFP4tDsl
+         OlzpCLMwYEt1AtGNDgxlbjQB1+u7ckOuEVihiM2nmQT4UXDKYXzotsXb2i8mkJIt8B5b
+         AlDA==
+X-Gm-Message-State: AOAM532/dpjyhfnhO5Tn5pwHlJZ1q89hx/aBcOcS5Cp5uNib+kNSNQ7t
+        zmk+AAd7syV/yfadvxfJRFfFzbj3LH4sjlAiehY=
+X-Google-Smtp-Source: ABdhPJysamPqqujJ8MKrJku8gw6hFQF8/0t4/Kg3VNeORk/NNlY778QhyINMjx/0qdvgN5agqR5t5RETGV1NHC8yDTw=
+X-Received: by 2002:aa7:cc01:0:b0:42a:402b:b983 with SMTP id
+ q1-20020aa7cc01000000b0042a402bb983mr21255713edt.257.1653259902876; Sun, 22
+ May 2022 15:51:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Received: by 2002:a05:6f02:858e:b0:1c:7fb4:f4ae with HTTP; Sun, 22 May 2022
+ 15:51:42 -0700 (PDT)
+From:   uagokabouago kabo <uagokabouago@gmail.com>
+Date:   Sun, 22 May 2022 22:51:42 +0000
+Message-ID: <CAKSh1tA9V_qGQLqii46kctuDgrG9Fu5DzFC5B9fB1RwQitsKGw@mail.gmail.com>
+Subject: GOOD MORNING !
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: Yes, score=6.7 required=5.0 tests=ADVANCE_FEE_2_NEW_MONEY,
+        BAYES_50,DEAR_FRIEND,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,
+        DKIM_VALID_EF,FREEMAIL_FROM,LOTS_OF_MONEY,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,SUBJ_ALL_CAPS,T_SCC_BODY_TEXT_LINE,UNDISC_MONEY
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Report: *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
+        *      [score: 0.5050]
+        * -0.0 SPF_PASS SPF: sender matches SPF record
+        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
+        *      provider
+        *      [uagokabouago[at]gmail.com]
+        * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
+        *      https://www.dnswl.org/, no trust
+        *      [2a00:1450:4864:20:0:0:0:52d listed in]
+        [list.dnswl.org]
+        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
+        *  0.5 SUBJ_ALL_CAPS Subject is all capitals
+        *  2.6 DEAR_FRIEND BODY: Dear Friend? That's not very dear!
+        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
+        *      envelope-from domain
+        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
+        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
+        *       valid
+        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
+        *      author's domain
+        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
+        *  0.0 LOTS_OF_MONEY Huge... sums of money
+        *  1.1 UNDISC_MONEY Undisclosed recipients + money/fraud signs
+        *  2.0 ADVANCE_FEE_2_NEW_MONEY Advance Fee fraud and lots of money
+X-Spam-Level: ******
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Neal.
+Dear Friend,
+My name is Mr.Kabo Uago, I have an inheritance fund of $13.5 Million
+Dollars for you, contact me  for more details.
 
-It was reported to me [1] by Konstantin (in Cc) that BBRv2 code suffers from integer division issue on 32 bit systems.
-
-Konstantin suggested a solution available in the same linked merge request and copy-pasted by me below for your convenience:
-
-```
-diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
-index 664c9e119787..fd3f89e3a8a6 100644
---- a/net/ipv4/tcp_bbr.c
-+++ b/net/ipv4/tcp_bbr.c
-@@ -312,7 +312,7 @@ static u32 bbr_tso_segs_generic(struct sock *sk, unsigned int mss_now,
- 	bytes = sk->sk_pacing_rate >> sk->sk_pacing_shift;
- 
- 	bytes = min_t(u32, bytes, gso_max_size - 1 - MAX_TCP_HEADER);
--	segs = max_t(u32, bytes / mss_now, bbr_min_tso_segs(sk));
-+	segs = max_t(u32, div_u64(bytes, mss_now), bbr_min_tso_segs(sk));
- 	return segs;
- }
- 
-diff --git a/net/ipv4/tcp_bbr2.c b/net/ipv4/tcp_bbr2.c
-index fa49e17c47ca..488429f0f3d0 100644
---- a/net/ipv4/tcp_bbr2.c
-+++ b/net/ipv4/tcp_bbr2.c
-@@ -588,7 +588,7 @@ static void bbr_debug(struct sock *sk, u32 acked,
- 		 bbr_rate_kbps(sk, bbr_max_bw(sk)), /* bw: max bw */
- 		 0ULL,				    /* lb: [obsolete] */
- 		 0ULL,				    /* ib: [obsolete] */
--		 (u64)sk->sk_pacing_rate * 8 / 1000,
-+		 div_u64((u64)sk->sk_pacing_rate * 8, 1000),
- 		 acked,
- 		 tcp_packets_in_flight(tp),
- 		 rs->is_ack_delayed ? 'd' : '.',
-@@ -698,7 +698,7 @@ static u32 bbr_tso_segs_generic(struct sock *sk, unsigned int mss_now,
- 	}
- 
- 	bytes = min_t(u32, bytes, gso_max_size - 1 - MAX_TCP_HEADER);
--	segs = max_t(u32, bytes / mss_now, bbr_min_tso_segs(sk));
-+	segs = max_t(u32, div_u64(bytes, mss_now), bbr_min_tso_segs(sk));
- 	return segs;
- }
-```
-
-Could you please evaluate this report and check whether it is correct, and also check whether the suggested patch is acceptable?
-
-Thanks.
-
-[1] https://gitlab.com/post-factum/pf-kernel/-/merge_requests/6
-
--- 
-Oleksandr Natalenko (post-factum)
-
-
+Regards,
+Mr.Kabo Uago
