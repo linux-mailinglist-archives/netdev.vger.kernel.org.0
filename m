@@ -2,95 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FD16530359
-	for <lists+netdev@lfdr.de>; Sun, 22 May 2022 15:31:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A6CE53035D
+	for <lists+netdev@lfdr.de>; Sun, 22 May 2022 15:36:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345868AbiEVNbX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 May 2022 09:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40084 "EHLO
+        id S1346092AbiEVNgr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 May 2022 09:36:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234645AbiEVNbW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 09:31:22 -0400
-Received: from azure-sdnproxy-2.icoremail.net (azure-sdnproxy.icoremail.net [52.175.55.52])
-        by lindbergh.monkeyblade.net (Postfix) with SMTP id 99BF465E6;
-        Sun, 22 May 2022 06:31:16 -0700 (PDT)
-Received: from ubuntu.localdomain (unknown [124.236.130.193])
-        by mail-app3 (Coremail) with SMTP id cC_KCgDnXk4QO4pixPeoAA--.22593S2;
-        Sun, 22 May 2022 21:31:04 +0800 (CST)
-From:   Duoming Zhou <duoming@zju.edu.cn>
-To:     linux-wireless@vger.kernel.org
-Cc:     pontus.fuchs@gmail.com, kvalo@kernel.org, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Duoming Zhou <duoming@zju.edu.cn>
-Subject: [PATCH wireless] ar5523: Fix deadlock bugs caused by cancel_work_sync in ar5523_stop
-Date:   Sun, 22 May 2022 21:30:55 +0800
-Message-Id: <20220522133055.96405-1-duoming@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgDnXk4QO4pixPeoAA--.22593S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Cr1DWry8WFyrAr13WrWDCFg_yoW8Xr1xpF
-        4F9rW7WFW8AFWjq3yDXF4fZ3WrG3ZrKF12kr13Wws5uFZ3J3WaqF1jkFyIgr1vvrW7Xaya
-        vF47ZrWfZ3WY9r7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
-        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
-        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
-        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r1j6r4UMcvjeVCFs4IE7xkEbVWUJV
-        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
-        Y2ka0xkIwI1lc2xSY4AK67AK6ry8MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
-        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa
-        73UjIFyTuYvjfUnpnQUUUUU
-X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgQSAVZdtZ0PcQAIsA
-X-Spam-Status: No, score=-0.6 required=5.0 tests=BAYES_00,
-        RCVD_IN_VALIDITY_RPBL,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+        with ESMTP id S1346063AbiEVNgq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 09:36:46 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id BDEB43B55E
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 06:36:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653226603;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=sRfgkbZUw9keTkZ0zkljUOBSogAEUpAMFk3Mu9RLlPk=;
+        b=N15uq7vbW7Y1bPSQl1dLck96G9FMlBmmagj6lwLlUx4KBCEe4wwVh6Bztwc4JqkwOPGDMJ
+        cp7ylRx+u0bDor/eYD+Tr+7YhKqy4YNJdU0Je+NU36eiTGAUn1GvzRcjnjJWCOK0y6FZG0
+        8MgNgRWzle77B1W4UYn7zxa0ddcIeys=
+Received: from mail-oa1-f71.google.com (mail-oa1-f71.google.com
+ [209.85.160.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-371-VCNsHjHNPZmQiPlvkBz59Q-1; Sun, 22 May 2022 09:36:35 -0400
+X-MC-Unique: VCNsHjHNPZmQiPlvkBz59Q-1
+Received: by mail-oa1-f71.google.com with SMTP id 586e51a60fabf-f18dac8df5so6016017fac.1
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 06:36:35 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sRfgkbZUw9keTkZ0zkljUOBSogAEUpAMFk3Mu9RLlPk=;
+        b=M/+mT6FWlA6mKuyfTobHR3xXK0sEOTdZ1YBfQQI6NBValShTnNHHWocs5FJYuF1sfn
+         P/HIxygRxF7BxfmgttWZUq7fvsmooaUAGHDKyk08OkFxOwG3+onRtQZjy3vlH8qGFMtl
+         d8yBLE4Uk5JFC2KCw/tSxA/VGMIVXBKTi8/28zDpX4S85v8zaijTBAV47nKDwGYh47nH
+         a6jjbFPyLn/WhkLBY1bmwuprgxsf3r21Fj9uJETHdzm4K8T6aZOZxuiBHOAp+JNNGMdX
+         idxj7gvSOLB67wWy4Qq8pgE0MRCC425V/ZLvYIFMVJs2sqc6C1wzcEWr9TULS4LGOYtF
+         3uag==
+X-Gm-Message-State: AOAM532tV57zOOfh3AXTMDTWdiWDHnum0CWbt+PzzK59jPhG015ibS3W
+        9PZVzkCS9SnG+HpB+0eBTCOhBObdScjT3/x2JG5vGPAZ1qsFHNSBF2+8v4vqUVRcwBA4uM02Sjl
+        8YmFUPi4LtgILkFEJ
+X-Received: by 2002:a05:6808:23cb:b0:32a:dafa:8b67 with SMTP id bq11-20020a05680823cb00b0032adafa8b67mr10113589oib.260.1653226594506;
+        Sun, 22 May 2022 06:36:34 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJya0gvC0UkPlQHu026fa55oVG25Q0cqbir/dnmDBnKSfLmsJhfUA5Dcf+neKjS4jMZ2L5bEtw==
+X-Received: by 2002:a05:6808:23cb:b0:32a:dafa:8b67 with SMTP id bq11-20020a05680823cb00b0032adafa8b67mr10113580oib.260.1653226594340;
+        Sun, 22 May 2022 06:36:34 -0700 (PDT)
+Received: from dell-per740-01.7a2m.lab.eng.bos.redhat.com (nat-pool-bos-t.redhat.com. [66.187.233.206])
+        by smtp.gmail.com with ESMTPSA id i45-20020a9d172d000000b00606ae457129sm3071219ota.26.2022.05.22.06.36.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 May 2022 06:36:33 -0700 (PDT)
+From:   Tom Rix <trix@redhat.com>
+To:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, hanyihao@vivo.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: fddi: skfp: smt: Remove extra parameters to vararg macro
+Date:   Sun, 22 May 2022 09:36:27 -0400
+Message-Id: <20220522133627.4085200-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the work item is running, the cancel_work_sync in ar5523_stop will
-not return until work item is finished. If we hold mutex_lock and use
-cancel_work_sync to wait the work item to finish, the work item such as
-ar5523_tx_wd_work and ar5523_tx_work also require mutex_lock. As a result,
-the ar5523_stop will be blocked forever. One of the race conditions is
-shown below:
+cppcheck reports
+[drivers/net/fddi/skfp/smt.c:750]: (warning) printf format string requires 0 parameters but 2 are given.
 
-    (Thread 1)             |   (Thread 2)
-ar5523_stop                |
-  mutex_lock(&ar->mutex)   | ar5523_tx_wd_work
-                           |   mutex_lock(&ar->mutex)
-  cancel_work_sync         |   ...
+DB_SBAN is a vararg macro, like DB_ESSN.  Remove the extra args and the nl.
 
-This patch moves cancel_work_sync out of mutex_lock in order to mitigate
-deadlock bugs.
-
-Fixes: b7d572e1871d ("ar5523: Add new driver")
-Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/fddi/skfp/smt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 9cabd342d15..99d6b13ffcf 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -1071,8 +1071,10 @@ static void ar5523_stop(struct ieee80211_hw *hw)
- 	ar5523_cmd_write(ar, WDCMSG_TARGET_STOP, NULL, 0, 0);
+diff --git a/drivers/net/fddi/skfp/smt.c b/drivers/net/fddi/skfp/smt.c
+index 72c31f0013ad..dd15af4e98c2 100644
+--- a/drivers/net/fddi/skfp/smt.c
++++ b/drivers/net/fddi/skfp/smt.c
+@@ -747,7 +747,7 @@ void smt_received_pack(struct s_smc *smc, SMbuf *mb, int fs)
+ #endif
  
- 	del_timer_sync(&ar->tx_wd_timer);
-+	mutex_unlock(&ar->mutex);
- 	cancel_work_sync(&ar->tx_wd_work);
- 	cancel_work_sync(&ar->rx_refill_work);
-+	mutex_lock(&ar->mutex);
- 	ar5523_cancel_rx_bufs(ar);
- 	mutex_unlock(&ar->mutex);
- }
+ #ifdef	SBA
+-		DB_SBAN(2,"SBA: RAF frame received\n",0,0) ;
++		DB_SBAN(2, "SBA: RAF frame received") ;
+ 		sba_raf_received_pack(smc,sm,fs) ;
+ #endif
+ 		break ;
 -- 
-2.17.1
+2.27.0
 
