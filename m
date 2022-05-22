@@ -2,50 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C77725302E4
-	for <lists+netdev@lfdr.de>; Sun, 22 May 2022 14:07:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 958BE5302FB
+	for <lists+netdev@lfdr.de>; Sun, 22 May 2022 14:20:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238067AbiEVMG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 May 2022 08:06:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53640 "EHLO
+        id S231902AbiEVMTr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 May 2022 08:19:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230254AbiEVMGy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 08:06:54 -0400
+        with ESMTP id S229928AbiEVMTp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 08:19:45 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 379D833A15;
-        Sun, 22 May 2022 05:06:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 861DE3B563;
+        Sun, 22 May 2022 05:19:43 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DB66CB80ABE;
-        Sun, 22 May 2022 12:06:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AFD86C385AA;
-        Sun, 22 May 2022 12:06:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 27F00B80B34;
+        Sun, 22 May 2022 12:19:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2D87C385AA;
+        Sun, 22 May 2022 12:19:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653221210;
-        bh=Bv4fPAC02UiEzOpCW/6I2VdtMA0+IkET8ctddcaHySw=;
-        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
-        b=s7mxyYOGYPOEYXDnU5scfo/z7dUPNJnM0qoSoDeJGbwXGuhILMm4gjujLc6uy6CFh
-         1ROnra4bCAyeOMVYlCKijZmR9JF3uBFyO39NF+CkGoeO+fSiVuQXvAcOjwhReaIsvi
-         Wn846qegZsELrlhVg71ccCfaBsq8LOxRuL++x0HuzwX3EA+CsfNtXFFeDFQu3nm1m8
-         HAJRCMcfFq4WPMSvrCtJkLsKfr99ICpOrbm016rls+RsXmVGZfoNbMi8Fmw4y5ILhO
-         NMbPmjEKEEcDlSzMgsaMtiPmWLydjC6+DA+6gThNSGUrKeD0rkVnPnHCK7KyPNf04l
-         8lPVEqQL5+nfg==
+        s=k20201202; t=1653221980;
+        bh=hKXMh49m3HC2NYt53grruX9YhqeFdPa9MPwInMtUqm8=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=AslbbcAipElReokwmHE4K4OPSF3z+L9uD4NijXgoQZlPm9b2wsnw2pdZ7OgzrzJFx
+         p/a9s6dC+C6H0xGrHbPi4XtvYRcNLg7pmbD9rt2NCRt6iB0Jmdxxgz4eZ1b7wHAbYD
+         4XSfJXfkXTr2RI8c/iUQzkvDYow3/mtUeU09EzbvLKIGokgldgxr1UxcJF3J/fRcvH
+         NoFZauUH7OuUlFeUMfeUKFlpWP+MkFK2HcZzbPnh7KYeur4BeiiMa/DZwbInsRIGur
+         NNGRVQYHjH/e0E4muOdm4PC1xv4UkXZpWuIF1koaB5cpalFHzZyKqVMPsKAGRb6e68
+         DjrY2NwRbjPqw==
 From:   Kalle Valo <kvalo@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     johannes@sipsolutions.net, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, toke@toke.dk,
-        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Kees Cook <keescook@chromium.org>
-Subject: Re: [PATCH net-next 2/8] wifi: ath9k: silence array-bounds warning on GCC 12
-In-Reply-To: <20220521105347.39cac555@kernel.org> (Jakub Kicinski's message of
-        "Sat, 21 May 2022 10:53:47 -0700")
+        linux-wireless@vger.kernel.org
+Subject: Re: [PATCH net-next 0/8] Fix/silence GCC 12 warnings in drivers/net/wireless/
 References: <20220520194320.2356236-1-kuba@kernel.org>
-        <20220520194320.2356236-3-kuba@kernel.org> <87h75j1iej.fsf@kernel.org>
-        <20220521105347.39cac555@kernel.org>
+Date:   Sun, 22 May 2022 15:19:36 +0300
+In-Reply-To: <20220520194320.2356236-1-kuba@kernel.org> (Jakub Kicinski's
+        message of "Fri, 20 May 2022 12:43:12 -0700")
+Message-ID: <8735h12207.fsf@kernel.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
-Date:   Sun, 22 May 2022 15:06:43 +0300
-Message-ID: <87bkvp22lo.fsf@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Spam-Status: No, score=-7.7 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
@@ -60,34 +56,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Jakub Kicinski <kuba@kernel.org> writes:
 
-> On Sat, 21 May 2022 09:58:28 +0300 Kalle Valo wrote:
->> > +# FIXME: temporarily silence -Warray-bounds on non W=1+ builds
->> > +ifndef KBUILD_EXTRA_WARN
->> > +CFLAGS_mac.o += -Wno-array-bounds
->> > +endif  
->> 
->> There are now four wireless drivers which need this hack. Wouldn't it be
->> easier to add -Wno-array-bounds for GCC 12 globally instead of adding
->> the same hack to multiple drivers?
+> Hi Kalle & Johannes,
 >
-> I mean.. it's definitely a hack, I'm surprised more people aren't
-> complaining. Kees was against disabling it everywhere, AFAIU:
+> as mentioned off list we'd like to get GCC 12 warnings quashed.
+> This set takes care of the warnings we have in drivers/net/wireless/
+> mostly by relegating them to W=1/W=2 builds.
 >
-> https://lore.kernel.org/all/202204201117.F44DCF9@keescook/
+> Is it okay for us to take this directly to net-next?
+> Or perhaps via wireless-next with a quick PR by Monday?
 
-Wasn't Kees objecting of disabling array-bounds for all GCC versions?
-That I understand, but I'm merely suggesting to disable the warning only
-on GCC 12 until the compiler is fixed or the drivers are fixed.
+We are not planning to submit any new pull requests so please take it
+directly net-next.
 
-> WiFi is a bit unfortunate but we only have 3 cases in the rest of
-> networking so it's not _terribly_ common.
->
-> IDK, I'd love to not see all the warnings every time someone touches
-> netdevice.h :( I made a note to remove the workaround once GCC 12 gets
-> its act together, that's the best I could come up with.
+> Jakub Kicinski (8):
+>   wifi: plfxlc: remove redundant NULL-check for GCC 12
+>   wifi: ath9k: silence array-bounds warning on GCC 12
+>   wifi: rtlwifi: remove always-true condition pointed out by GCC 12
+>   wifi: ath6k: silence false positive -Wno-dangling-pointer warning on
+>     GCC 12
+>   wifi: iwlwifi: use unsigned to silence a GCC 12 warning
+>   wifi: brcmfmac: work around a GCC 12 -Warray-bounds warning
+>   wifi: libertas: silence a GCC 12 -Warray-bounds warning
+>   wifi: carl9170: silence a GCC 12 -Warray-bounds warning
 
-Ok, fair enough. I'm just worried these will be left lingering for a
-long time and do more harm than good :)
+Like I mentioned in the other email I don't really like these but I
+understood they are urgent so:
+
+Acked-by: Kalle Valo <kvalo@kernel.org>
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
