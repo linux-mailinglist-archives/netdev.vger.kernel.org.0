@@ -2,115 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B29835310B4
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:20:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02886530EEA
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:17:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235572AbiEWMgg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 08:36:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42982 "EHLO
+        id S235486AbiEWMfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 08:35:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235650AbiEWMeO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 08:34:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C667542A39;
-        Mon, 23 May 2022 05:34:13 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7D134B80FF4;
-        Mon, 23 May 2022 12:34:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0082C385AA;
-        Mon, 23 May 2022 12:34:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653309251;
-        bh=IqR90Auy8+tT5aBpfUUHrQsHhH/KbDi15pMJuDCIMFc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=imDXnGyIkgwwzqBvghc35XlYOcVmZcIlk/acnHhC5QP+tPXLaT8oHoiSYIRyVJiOp
-         MjSi1ss6NJPbXhE9hGfUWHWL1MOfG4qc5LxnLDw0w4tcnmiiRYIm0IxnHgGXg+mllw
-         he3OmR83kipEPT9BP9NqKRyXpeYO7O4IKFJr2Lh/I51p9s0ra41n1V8FoBJbsIQxpG
-         GIOECSmMZgDGeYPkDIMXu4g7nEypp+EsvLa9+J+Ni3aqsNqq6S/LBuZGhecVcuPOW3
-         StAfBCcMyRNiC7BDd+arC80MCOsv832gnMGvOgz8sTqTF+rHuoqTWoAKFlyfOX7Aab
-         TrjYb0mcY4Izg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 02E33400B1; Mon, 23 May 2022 09:34:07 -0300 (-03)
-Date:   Mon, 23 May 2022 09:34:07 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Ian Rogers <irogers@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH] perf build: Error for BPF skeletons without LIBBPF
-Message-ID: <Yot/P/QO0sAK2iwg@kernel.org>
-References: <20220520211826.1828180-1-irogers@google.com>
- <YotP8BrIK/dwLJLL@krava>
+        with ESMTP id S235464AbiEWMfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 08:35:40 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC5E74A3FF;
+        Mon, 23 May 2022 05:35:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=HFRXkAfAkeNHzojaiwx1HIgyydx/mKu2GUIJbJkteCg=; b=PHcz0LG058nJsHHT0YNh3u51JI
+        BQ22T9empnCea/7Yx7vI+ButTmgElMc1CJvJwefci9iDEnWOgCQmjM9nDY7FK9MqwlrsZ3Q1Kit1/
+        4KjwGWkESsJ1353yKNBoT5kUWeZFInKC3oAUrYcPs3YZW525gi+JdySzdAMinR/F+QCc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nt7Gr-003ysh-JL; Mon, 23 May 2022 14:34:49 +0200
+Date:   Mon, 23 May 2022 14:34:49 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY interrupts
+ to PHY driver to avoid polling
+Message-ID: <Yot/ad/Ch7iGYnGB@lunn.ch>
+References: <cover.1652343655.git.lukas@wunner.de>
+ <748ac44eeb97b209f66182f3788d2a49d7bc28fe.1652343655.git.lukas@wunner.de>
+ <CGME20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99@eucas1p2.samsung.com>
+ <a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com>
+ <20220519190841.GA30869@wunner.de>
+ <31baa38c-b2c7-10cd-e9cd-eee140f01788@samsung.com>
+ <20220523094343.GA7237@wunner.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YotP8BrIK/dwLJLL@krava>
-X-Url:  http://acmel.wordpress.com
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220523094343.GA7237@wunner.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Mon, May 23, 2022 at 11:12:16AM +0200, Jiri Olsa escreveu:
-> On Fri, May 20, 2022 at 02:18:26PM -0700, Ian Rogers wrote:
-> > LIBBPF requires LIBELF so doing "make BUILD_BPF_SKEL=1 NO_LIBELF=1"
-> > fails with compiler errors about missing declarations. Similar could
-> > happen if libbpf feature detection fails. Prefer to error when
-> > BUILD_BPF_SKEL is enabled but LIBBPF isn't.
-> > 
-> > Signed-off-by: Ian Rogers <irogers@google.com>
-> 
-> Acked-by: Jiri Olsa <jolsa@kernel.org>
+> --- a/drivers/net/phy/phy_device.c
+> +++ b/drivers/net/phy/phy_device.c
+> @@ -283,8 +283,11 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
+>  	 * may call phy routines that try to grab the same lock, and that may
+>  	 * lead to a deadlock.
+>  	 */
+> -	if (phydev->attached_dev && phydev->adjust_link)
+> +	if (phydev->attached_dev && phydev->adjust_link) {
+> +		if (phy_interrupt_is_valid(phydev))
+> +			synchronize_irq(phydev->irq);
+>  		phy_stop_machine(phydev);
+> +	}
 
-Thanks, applied.
+What is this hunk trying to achieve? As far as i know, interrupts have
+not been disabled. So as soon as the call to synchronize_irq()
+finishes, could well be another interrupt happens.
 
-- Arnaldo
-
- 
-> thanks,
-> jirka
-> 
-> > ---
-> >  tools/perf/Makefile.config | 3 +++
-> >  1 file changed, 3 insertions(+)
-> > 
-> > diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
-> > index d9b699ad402c..bedb734bd6f2 100644
-> > --- a/tools/perf/Makefile.config
-> > +++ b/tools/perf/Makefile.config
-> > @@ -664,6 +664,9 @@ ifdef BUILD_BPF_SKEL
-> >    ifeq ($(feature-clang-bpf-co-re), 0)
-> >      dummy := $(error Error: clang too old/not installed. Please install recent clang to build with BUILD_BPF_SKEL)
-> >    endif
-> > +  ifeq ($(filter -DHAVE_LIBBPF_SUPPORT, $(CFLAGS)),)
-> > +    dummy := $(error Error: BPF skeleton support requires libbpf)
-> > +  endif
-> >    $(call detected,CONFIG_PERF_BPF_SKEL)
-> >    CFLAGS += -DHAVE_BPF_SKEL
-> >  endif
-> > -- 
-> > 2.36.1.124.g0e6072fb45-goog
-> > 
-
--- 
-
-- Arnaldo
+	  Andrew
