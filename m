@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B88FD530FE2
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:19:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C7A5310CF
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:20:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234209AbiEWKnc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 06:43:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53312 "EHLO
+        id S234217AbiEWKne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 06:43:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234206AbiEWKnY (ORCPT
+        with ESMTP id S234225AbiEWKnY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 06:43:24 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBC31245A7
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:12 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id m20so27841795ejj.10
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:12 -0700 (PDT)
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1CCFC7
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:14 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id rs12so16136186ejb.13
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=icSnCHuOPlD4V5+tswNuOL7gl86u5U7QFKaufHVUslg=;
-        b=QgAO1M+XVOzLeIe9o1Qi0pLPfPLV+5+7mgrIp8C3XgFXRjmXU3lLaRgNyS9pZorrFo
-         HmWrRP9AIVRW8/WKbU5kgE/z2U/1LylgMzR+uMruUPaMSZExsmsw7IR9Bbe97tE5Y5bk
-         yjsAuTBBx/QCFzPg4WmOZX7VVh0fUY5agQFfUbfeCL7fn7qsTQpNUdv4VGlSjCcR1M6K
-         xeNbPFoaUyT85h6kDCB6zubq7ZDp0B89iBfDpPaAHG/euId9L1gJKsZJ2WtcAr1w5ODS
-         WZdPuNKI2BCX9CjDD6ZhMNYuj5Vv0FtKaeXWBDj4esVWY6pOVJh/ZD06V35kdgW1s0Hu
-         CWMw==
+        bh=9b8E4PRx8BrnW1sgEjVk4LHh4D9piAhyes9wV5gbLT4=;
+        b=ITmwBszaldoMBsXIkHaKjCYbI4aP3VzacNm61DWwP+w+VkM3fMDGk9tgFPe7zfj4/M
+         dMrXza430//ZsnWf4/jgUL7DNMSQ7hnkMUtRpltgaA3j216Pw76L3VYxQPCRTdMRPn8E
+         L96rKV4aN4r+lA5TWTqRgPQvAg9Rpl+hotLbbK8dD+wVDrmTKmPRjgA/GUgKMMmwg+jg
+         ZzOAx47rd4B77Y5h906GKtaGyb+HAMztWjrn/lP5ri/Z5v/wbtO9q7fJXEWHT6uXRTgJ
+         lYda7E1uoGRTVpjvOZIEWFkHW2+u5vWrWnE36J14GbAZDnso8BwgntybDJvA3GrcI4nK
+         iXmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=icSnCHuOPlD4V5+tswNuOL7gl86u5U7QFKaufHVUslg=;
-        b=1T+4ZEJ+waOxYtJ3VDIaJzmIpJlTSXFoj7UCoJfcFYvhcErhqIe1b+zf+LdhwqUGDW
-         yoe+Nf/FnWyZQ+i/lsJYbq3d3m0lIy2sJKs4WFbzR6PHUdf+mCt/QIghhzkHifapnm/0
-         2aR94vlkbygTj8BtVf1SipSxTlM9zwgI6WNtHQSGvzoGzK4ezcgoN5S6CYpOAHXPD/St
-         YyW/fPb07W6m0xxNedyJkvnan8jvngBes2UWu2S3/zYU8XlRez2c23Y1829CCBE8cMsr
-         dVXgzIIwsklkHVmtQwYxzoLZvWpC6vaZgyv7L0te0NuBkL7aBWjmLC0/htJ8EIrvlsbu
-         HdLw==
-X-Gm-Message-State: AOAM530oD2hVL+Udy6NwDN7lSY4trEkXGgGqk68VK+xL5wfTs3ctu3ff
-        EeDRbHQG0eUYLPKnWKv2hptOeaI9e5w=
-X-Google-Smtp-Source: ABdhPJyf9EqB4KV/W3UYWxqrgeamy1EqOk1XUWRra2baxk8eTR2h6Dy69M2dpTTLD7tdm20rqjkRFg==
-X-Received: by 2002:a17:907:9490:b0:6fe:a4bc:b71e with SMTP id dm16-20020a170907949000b006fea4bcb71emr14120492ejc.39.1653302590862;
-        Mon, 23 May 2022 03:43:10 -0700 (PDT)
+        bh=9b8E4PRx8BrnW1sgEjVk4LHh4D9piAhyes9wV5gbLT4=;
+        b=dUnKDsHVL8e9xJYEOWfZL8WWvSPxVjFk+ZwS0MxXUOeUngEZ4fsGXrFHRHiLxcHP2c
+         k9wg2VyjBi+dpkOk739BxbZo5bzruWMFQTRBXWXkiQORSYLK5FcLrcMUy17F/C2qJ2FB
+         +nQFNCPQvb7gzce7QGj2CZSu/mDKQMl0hcjCindZiUmKNP/IEaJwibTWvjDu0lMkpphn
+         cw4lUi4ArJeEXOE20Zzq5Iq5/8hynUX7ZDMTwPqOd1MnZI+K/pw4LoWfSUPN2/WKbvZZ
+         Ejfcsu7+p1jz3F8rFjwi4OYC8IQLq9QwAsoqHWf4REcseL8dpu8CHo3aMBC83shWv960
+         xZ9Q==
+X-Gm-Message-State: AOAM532PgUrj/zp+qWjDTgfRIFZbaLQjLNGsHZWMGk+MdlhgqjUktkY3
+        8lZVTpKrZaOqERLVIgA3BQDkxcF3Amg=
+X-Google-Smtp-Source: ABdhPJyorbpDeYvxLfO1inJDQwxtC9mUgtncwQMjN6MSnX3rv9pgZ9zytBwDTyE6JMJQNTQvwvBtyA==
+X-Received: by 2002:a17:906:4b55:b0:6fe:c52c:68c9 with SMTP id j21-20020a1709064b5500b006fec52c68c9mr7274113ejv.491.1653302592700;
+        Mon, 23 May 2022 03:43:12 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id j18-20020a1709066dd200b006feb875503fsm2584822ejt.78.2022.05.23.03.43.09
+        by smtp.gmail.com with ESMTPSA id j18-20020a1709066dd200b006feb875503fsm2584822ejt.78.2022.05.23.03.43.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 03:43:10 -0700 (PDT)
+        Mon, 23 May 2022 03:43:12 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -69,9 +69,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Frank Wunderlich <frank-w@public-files.de>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH net-next 05/12] net: dsa: existing DSA masters cannot join upper interfaces
-Date:   Mon, 23 May 2022 13:42:49 +0300
-Message-Id: <20220523104256.3556016-6-olteanv@gmail.com>
+Subject: [RFC PATCH net-next 06/12] net: dsa: only bring down user ports assigned to a given DSA master
+Date:   Mon, 23 May 2022 13:42:50 +0300
+Message-Id: <20220523104256.3556016-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220523104256.3556016-1-olteanv@gmail.com>
 References: <20220523104256.3556016-1-olteanv@gmail.com>
@@ -89,77 +89,30 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-All the traffic to/from a DSA master is supposed to be distributed among
-its DSA switch upper interfaces, so we should not allow other upper
-device kinds.
-
-An exception to this is DSA_TAG_PROTO_NONE (switches with no DSA tags),
-and in that case it is actually expected to create e.g. VLAN interfaces
-on the master. But for those, netdev_uses_dsa(master) returns false, so
-the restriction doesn't apply.
-
-The motivation for this change is to allow LAG interfaces of DSA masters
-to be DSA masters themselves. We want to restrict the user's degrees of
-freedom by 1: the LAG should already have all DSA masters as lowers, and
-while lower ports of the LAG can be removed, none can be added after the
-fact.
+This is an adaptation of commit c0a8a9c27493 ("net: dsa: automatically
+bring user ports down when master goes down") for multiple DSA masters.
+When a DSA master goes down, only the user ports under its control
+should go down too, the others can still send/receive traffic.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/slave.c | 33 +++++++++++++++++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ net/dsa/slave.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 309d8dde0179..0455fb3cf03d 100644
+index 0455fb3cf03d..c0be747c66ac 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -2674,6 +2674,35 @@ dsa_slave_prechangeupper_sanity_check(struct net_device *dev,
- 	return NOTIFY_DONE;
- }
+@@ -2848,6 +2848,9 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ 			if (!dsa_port_is_user(dp))
+ 				continue;
  
-+static int
-+dsa_master_prechangeupper_sanity_check(struct net_device *master,
-+				       struct netdev_notifier_changeupper_info *info)
-+{
-+	struct netlink_ext_ack *extack;
++			if (dp->cpu_dp != cpu_dp)
++				continue;
 +
-+	if (!netdev_uses_dsa(master))
-+		return NOTIFY_DONE;
-+
-+	if (!info->linking)
-+		return NOTIFY_DONE;
-+
-+	/* Allow DSA switch uppers */
-+	if (dsa_slave_dev_check(info->upper_dev))
-+		return NOTIFY_DONE;
-+
-+	/* Allow bridge uppers of DSA masters, subject to further
-+	 * restrictions in dsa_bridge_prechangelower_sanity_check()
-+	 */
-+	if (netif_is_bridge_master(info->upper_dev))
-+		return NOTIFY_DONE;
-+
-+	extack = netdev_notifier_info_to_extack(&info->info);
-+
-+	NL_SET_ERR_MSG_MOD(extack,
-+			   "DSA master cannot join unknown upper interfaces");
-+	return notifier_from_errno(-EBUSY);
-+}
-+
- /* Don't allow bridging of DSA masters, since the bridge layer rx_handler
-  * prevents the DSA fake ethertype handler to be invoked, so we don't get the
-  * chance to strip off and parse the DSA switch tag protocol header (the bridge
-@@ -2728,6 +2757,10 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
- 		if (notifier_to_errno(err))
- 			return err;
+ 			list_add(&dp->slave->close_list, &close_list);
+ 		}
  
-+		err = dsa_master_prechangeupper_sanity_check(dev, info);
-+		if (notifier_to_errno(err))
-+			return err;
-+
- 		err = dsa_bridge_prechangelower_sanity_check(dev, info);
- 		if (notifier_to_errno(err))
- 			return err;
 -- 
 2.25.1
 
