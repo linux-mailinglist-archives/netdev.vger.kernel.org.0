@@ -2,123 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id ED64F5308A4
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 07:24:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 258295308B8
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 07:30:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344808AbiEWFYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 01:24:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
+        id S1354691AbiEWF2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 01:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230049AbiEWFYn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 01:24:43 -0400
-Received: from mx1.molgen.mpg.de (mx3.molgen.mpg.de [141.14.17.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3865215800;
-        Sun, 22 May 2022 22:24:40 -0700 (PDT)
-Received: from [192.168.0.6] (ip5f5aedde.dynamic.kabel-deutschland.de [95.90.237.222])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 4D2C061EA1928;
-        Mon, 23 May 2022 07:24:37 +0200 (CEST)
-Message-ID: <71292e14-fe6c-f475-009d-1ea8cde0ea46@molgen.mpg.de>
-Date:   Mon, 23 May 2022 07:24:36 +0200
+        with ESMTP id S232014AbiEWF2S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 01:28:18 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D377165BC
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:16 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id t6so19639793wra.4
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9uMuLZ+WHHh5WrmFB7JGvdrkZLB4YOBUOPeV4QL7yzg=;
+        b=Y7kqAoylA+C6m4MPwSA1YrcUGwM5+kRVXDhOpG5OUxWIJDFnBKuVppwLcraDZBlmau
+         LjKXI0nLbe+RKNA6nAJhuLYnXMdAUKpGtIdVzyeDMvWhkYW27wCNe/Us8RWXHLHT4eFH
+         M9So1Iom6hJn88cvubjLP9h1BZHr/wC5YhtxB69uMa3sl7yewtvD584E7joMhnPQJZwe
+         mhH+j7YGGYZYGJtI9SYQoZxp30voOt8m6e3cXBydM/B54I9+bkzkHXmefoySwmYiFb4O
+         UM8f1/QWB8VRoNLefi0UUGG2cdezs+gIpD/jgnWVy6RceLWCpffPXSl93rCbm+tjDWrq
+         LeZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=9uMuLZ+WHHh5WrmFB7JGvdrkZLB4YOBUOPeV4QL7yzg=;
+        b=0vcH90nAdrHZFpJISBuGYhARKTvfFi891teNsVNZgAb5CS8wkDZ5Ef9JyljoMNsX+H
+         F8+tx8zU5XWsR2VPblE/H4j3NQYvvrg7kg47WslBlg5gii3dw2aYEPk+LOB9hkvI1G9O
+         pZ4yksJrZ7QHh5N2o93Qe9av5S6S1Qwc3GwU7lKSWQZ8hKkbA9v554M8tGLWWgf0Yb+o
+         GOXBSb0YZFB0obygYUdAKc2INCNOO+Z3KMG/0lbeW3PfrrGna7eLvVjhu0F1WnnCaP0y
+         rad4Q5bWgHmcowm9q3PBxUE6Vm+VBdWq/RS+z3ovsleIgw3jaw5k2+H5BokXwVgAJmYM
+         u2/A==
+X-Gm-Message-State: AOAM532SIm61930tYKci8LppcBoaeIdNWkOfvZb2RNxxXwhXvFMHlTN0
+        P7CX3u96TNe8Ny+7pTSfqe/VCg==
+X-Google-Smtp-Source: ABdhPJwqOjOWSF8b13h1bIXClf8iN5Rml8F4bhr0+MrnoZAuILGzkXIwWfoK9xvvCG7fE0z6uPVXbw==
+X-Received: by 2002:adf:dd8a:0:b0:20d:ff7:ce01 with SMTP id x10-20020adfdd8a000000b0020d0ff7ce01mr17371264wrl.242.1653283694762;
+        Sun, 22 May 2022 22:28:14 -0700 (PDT)
+Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.googlemail.com with ESMTPSA id h2-20020a1ccc02000000b0039466988f6csm7802414wmb.31.2022.05.22.22.28.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 May 2022 22:28:14 -0700 (PDT)
+From:   Corentin Labbe <clabbe@baylibre.com>
+To:     andrew@lunn.ch, broonie@kernel.org, calvin.johnson@oss.nxp.com,
+        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
+        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
+        wens@csie.org
+Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v3 0/3] arm64: add ethernet to orange pi 3
+Date:   Mon, 23 May 2022 05:28:04 +0000
+Message-Id: <20220523052807.4044800-1-clabbe@baylibre.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [Intel-wired-lan] [PATCH] drivers/net/ethernet/intel: fix typos
- in comments
-Content-Language: en-US
-To:     Julia Lawall <Julia.Lawall@inria.fr>
-Cc:     Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        intel-wired-lan@lists.osuosl.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220521111145.81697-50-Julia.Lawall@inria.fr>
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-In-Reply-To: <20220521111145.81697-50-Julia.Lawall@inria.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear Julia,
+Hello
 
+2 sunxi board still does not have ethernet working, orangepi 1+ and
+orangepi 3.
+This is due to the fact thoses boards have a PHY which need 2 regulators.
 
-Thank you for your patch.
+A first attempt by Ondřej Jirman was made to support them was made by adding support in
+stmmac driver:
+https://lore.kernel.org/lkml/20190820145343.29108-6-megous@megous.com/
+Proposal rejected, since regulators need to be handled by the PHY core.
 
-I noticed, that the maintainer Tony wasn’t in the Cc: list.
+My first tentative was to just add handling of phy and phy-io in
+phy-core:
+https://lore.kernel.org/netdev/20220509074857.195302-7-clabbe@baylibre.com/T/
+But having hard-coded phy names was rejected.
 
-Am 21.05.22 um 13:11 schrieb Julia Lawall:
-> Spelling mistakes (triple letters) in comments.
-> Detected with the help of Coccinelle.
+Second tentative tryed the same path than clocks and clock-names for
+regulators.
+https://lore.kernel.org/netdev/0518eef1-75a6-fbfe-96d8-bb1fc4e5178a@linaro.org/t/
+But using this was rejected by DT maintainers.
 
-I’d be interested in the script you used.
+So v3 use a new regulator_bulk_get_all() which grab all supplies
+properties in a DT node.
+But this way could have some problem, a netdev driver could handle
+already its PHY (like dwmac-sun8i already do) and so both phy-core and
+the netdev will use both.
+It is why phy-supply was renamed in ephy-supply in patch #3.
 
-> 
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-> 
+This serie was tested on whole range of board and PHY architecture:
+- internal PHY
+  * sun8i-h3-orangepi-pc
+- external PHY
+  * sun50i-h6-pine-h64
+  * sun8i-r40-bananapi-m2-ultra
+  * sun8i-a83t-bananapi-m3
+  * sun50i-a64-bananapi-m64
+  * sun50i-h6-orangepi-3
+  * sun50i-h5-nanopi-neo-plus2
 
-Nit: One unneeded blank line.
+The resume/suspend of PHY was tested.
 
-> ---
->   drivers/net/ethernet/intel/fm10k/fm10k_mbx.c   |    2 +-
->   drivers/net/ethernet/intel/ice/ice_lib.c       |    2 +-
->   drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c |    2 +-
->   3 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c b/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
-> index 30ca9ee1900b..f2fba6e1d0f7 100644
-> --- a/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
-> +++ b/drivers/net/ethernet/intel/fm10k/fm10k_mbx.c
-> @@ -1825,7 +1825,7 @@ static void fm10k_sm_mbx_process_error(struct fm10k_mbx_info *mbx)
->   		fm10k_sm_mbx_connect_reset(mbx);
->   		break;
->   	case FM10K_STATE_CONNECT:
-> -		/* try connnecting at lower version */
-> +		/* try connecting at lower version */
->   		if (mbx->remote) {
->   			while (mbx->local > 1)
->   				mbx->local--;
-> diff --git a/drivers/net/ethernet/intel/ice/ice_lib.c b/drivers/net/ethernet/intel/ice/ice_lib.c
-> index 454e01ae09b9..70961c0343e7 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_lib.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_lib.c
-> @@ -2403,7 +2403,7 @@ static void ice_set_agg_vsi(struct ice_vsi *vsi)
->   				agg_id);
->   			return;
->   		}
-> -		/* aggregator node is created, store the neeeded info */
-> +		/* aggregator node is created, store the needed info */
->   		agg_node->valid = true;
->   		agg_node->agg_id = agg_id;
->   	}
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-> index 3e74ab82868b..3f5ef5269bb2 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_sriov.c
-> @@ -77,7 +77,7 @@ static int __ixgbe_enable_sriov(struct ixgbe_adapter *adapter,
->   	IXGBE_WRITE_REG(hw, IXGBE_PFDTXGSWC, IXGBE_PFDTXGSWC_VT_LBEN);
->   	adapter->bridge_mode = BRIDGE_MODE_VEB;
->   
-> -	/* limit trafffic classes based on VFs enabled */
-> +	/* limit traffic classes based on VFs enabled */
->   	if ((adapter->hw.mac.type == ixgbe_mac_82599EB) && (num_vfs < 16)) {
->   		adapter->dcb_cfg.num_tcs.pg_tcs = MAX_TRAFFIC_CLASS;
->   		adapter->dcb_cfg.num_tcs.pfc_tcs = MAX_TRAFFIC_CLASS;
+Regards
 
-Reviewed-by: Paul Menzel <pmenzel@molgen.mpg.de>
+changes since v1:
+- Add regulator_bulk_get_all for ease handling of PHY regulators
+- Removed all convertion patchs to keep DT compatibility.
 
+Changes since v2:
+- removed use of regulator-names and regulators list.
 
-Kind regards,
+Corentin Labbe (2):
+  regulator: Add regulator_bulk_get_all
+  phy: handle optional regulator for PHY
 
-Paul
+Ondřej Jirman (1):
+  arm64: dts: allwinner: orange-pi-3: Enable ethernet
+
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 38 ++++++++
+ drivers/net/mdio/Kconfig                      |  1 +
+ drivers/net/mdio/fwnode_mdio.c                | 36 +++++++-
+ drivers/net/phy/phy_device.c                  | 10 ++
+ drivers/regulator/core.c                      | 92 +++++++++++++++++++
+ include/linux/phy.h                           |  3 +
+ include/linux/regulator/consumer.h            |  2 +
+ 7 files changed, 178 insertions(+), 4 deletions(-)
+
+-- 
+2.35.1
+
