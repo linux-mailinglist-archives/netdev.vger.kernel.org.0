@@ -2,98 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC30530C39
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 11:04:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C1CF1530B46
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 11:02:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231910AbiEWIdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 04:33:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60606 "EHLO
+        id S231958AbiEWIdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 04:33:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231931AbiEWIdQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 04:33:16 -0400
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B20CA366A8;
-        Mon, 23 May 2022 01:33:15 -0700 (PDT)
-Received: by mail-wm1-x32a.google.com with SMTP id c190-20020a1c35c7000000b0038e37907b5bso10848274wma.0;
-        Mon, 23 May 2022 01:33:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y53gTB9Ed9lmSuse1A51VBwBweSy6RiYxJkCMwT6bzM=;
-        b=pWRTwq5PSMtvmVF9xxB+MblhF0Pci5LwzczcBOSQjbL7J8Wm8jnLEaWQlKwAy179jp
-         HCDJPq6N9C8COE+8eIOcZSSKenW1ciZXXZB4Rlawg7wP3Ka7F0qhB+z0EGtR21eNnaGZ
-         L7XqIUHFQbZL/ycxEQH7oVNGd+DMv7NVqJt0iI1dGmoL75P1utniXatpgSwsFvs6YQoH
-         W0dUnPKuLTQGLQ5mxcaRR6ZXqPUZYNuxCm4terkob1Jul/UG5iHpyinOWGkqgOk80nAp
-         zCznzflRizDYO2Fni8cpfEgFROz/YQrGITel6OJZICBVjdU5pjxSX7DIDZOXFnqs43m9
-         NS7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Y53gTB9Ed9lmSuse1A51VBwBweSy6RiYxJkCMwT6bzM=;
-        b=Sj486PYj2nWpj1DEcOeZi8GX6P2wsyWDkZED4le2JSOtoAipsbaERChXfrZ/QHwfNi
-         /pijMhCHgLUrsYV7e6hocTgYOqpa31dZ9Iv10wN5gPmT/FsJuNMwvXgkWZumK1aPfoj0
-         OyNmDb4YZzjrHhekrqWywXXg0GJGjB/FGNkYCQ1ZmbmDJ4NhWqFTQWRAOjv0kBnRREGu
-         vi9Z1cJ6kRYeTZ4x8r86yMlttQa0cmu+hTfjCVbaIMXmU36sZHi171msOQUmlKijyXnu
-         mb6aIin6ewpHDX1w6f3eq0tWaxs3RdCLu/e0g6eBxw6ZZiDC4h1wmZkR62YWrWNN2eWP
-         +Gvg==
-X-Gm-Message-State: AOAM533vcfs7D3xGRcW1TcuGVlz2NqpX8vvLG6KSpC7D8xnwzYzpYEzV
-        iqhc+PvVODwN8gg9iUVZ8aI=
-X-Google-Smtp-Source: ABdhPJwHregZiVBs17mRLTlyejK0HS23a2uyieFfVAKFrbmn1Vz93CuEs/C2yRGoXLm0+AGBGS+0Zg==
-X-Received: by 2002:a7b:c410:0:b0:397:40e9:bc82 with SMTP id k16-20020a7bc410000000b0039740e9bc82mr9290579wmi.42.1653294794126;
-        Mon, 23 May 2022 01:33:14 -0700 (PDT)
-Received: from localhost.localdomain (h-46-59-47-246.A165.priv.bahnhof.se. [46.59.47.246])
-        by smtp.gmail.com with ESMTPSA id ay28-20020a05600c1e1c00b003973c4bb19bsm7251985wmb.16.2022.05.23.01.33.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 23 May 2022 01:33:13 -0700 (PDT)
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-To:     magnus.karlsson@intel.com, bjorn@kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org,
-        jonathan.lemon@gmail.com, bpf@vger.kernel.org,
-        maciej.fijalkowski@intel.com, davem@davemloft.net, kuba@kernel.org,
-        kpsingh@kernel.org, john.fastabend@gmail.com, yhs@fb.com,
-        andrii@kernel.org, songliubraving@fb.com, kafai@fb.com
-Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Subject: [PATCH bpf-next] MAINTAINERS: add maintainer to AF_XDP
-Date:   Mon, 23 May 2022 10:32:54 +0200
-Message-Id: <20220523083254.32285-1-magnus.karlsson@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S231942AbiEWIdx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 04:33:53 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D82937025;
+        Mon, 23 May 2022 01:33:51 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 67EE91F383;
+        Mon, 23 May 2022 08:33:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653294830; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HGRKxMXzRmZxPbqeCp3nH/JisTTafTR7VNUx1nyPrA0=;
+        b=Fw4PPATbwIAM/+syB+5pNwbui6zzq48ItTTCRJoCdZxsq1oeLi5HUjJKkrHQrYOXiy6R17
+        +bqvRSVTHw/Y39VQRaeeBUmpmR9qt0hE+UyJ/+X1a4TgPBvLPcIIB0sxPok9Tx4Bv0fXn6
+        kTeFy5M9c1ROaqtzP+uCIdCFqncmFrs=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653294830;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=HGRKxMXzRmZxPbqeCp3nH/JisTTafTR7VNUx1nyPrA0=;
+        b=w1UJ/lv2rM4pTCF88m3xyXaSpKqwbsTOVq4QJVvJSftW4VhvLptpMJJebYswy7a/fb5RBS
+        BC3ow6030YTwz3Dw==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 4FA872C141;
+        Mon, 23 May 2022 08:33:50 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id E652760294; Mon, 23 May 2022 10:33:49 +0200 (CEST)
+Date:   Mon, 23 May 2022 10:33:49 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: REGRESSION (?) (Re: [PATCH] net: af_key: add check for
+ pfkey_broadcast in function pfkey_process)
+Message-ID: <20220523083349.zzgdmoq2bzstxla6@lion.mk-sys.cz>
+References: <20220517094231.414168-1-jiasheng@iscas.ac.cn>
+ <20220523022438.ofhehjievu2alj3h@lion.mk-sys.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="r6vmbsg4u3vtaqzd"
+Content-Disposition: inline
+In-Reply-To: <20220523022438.ofhehjievu2alj3h@lion.mk-sys.cz>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Maciej Fijalkowski has gracefully accepted to become the third
-maintainer for the AF_XDP code. Thank you Maciej!
 
-Signed-off-by: Magnus Karlsson <magnus.karlsson@gmail.com>
----
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
+--r6vmbsg4u3vtaqzd
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 359afc617b92..adc63e18e601 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -21507,6 +21507,7 @@ K:	(?:\b|_)xdp(?:\b|_)
- XDP SOCKETS (AF_XDP)
- M:	Björn Töpel <bjorn@kernel.org>
- M:	Magnus Karlsson <magnus.karlsson@intel.com>
-+M:	Maciej Fijalkowski <maciej.fijalkowski@intel.com>
- R:	Jonathan Lemon <jonathan.lemon@gmail.com>
- L:	netdev@vger.kernel.org
- L:	bpf@vger.kernel.org
+On Mon, May 23, 2022 at 04:24:38AM +0200, Michal Kubecek wrote:
+> After upgrading from 5.18-rc7 to 5.18 final, my racoon daemon refuses to
+> start because it cannot find some algorithms (it says "aes"). I have not
+> finished the debugging completely but this patch, mainline commit
+> 4dc2a5a8f675 ("net: af_key: add check for pfkey_broadcast in function
+> pfkey_process"), seems to be the most promising candidate.
 
-base-commit: c272e259116973b4c2d5c5ae7b6a4181aeeb38c7
--- 
-2.34.1
+Tested now, reverting commit 4dc2a5a8f675 ("net: af_key: add check for
+pfkey_broadcast in function pfkey_process") seems to fix the issue,
+after rebuilding the af_key module with this commit reverted and
+reloading it, racoon daemon starts and works and /proc/crypto shows
+algrorithms it did not without the revert.
 
+We might get away with changing the test to
+
+	if (err && err != -ESRCH)
+		return err;
+
+but I'm not sure if bailing up on failed notification broadcast is
+really what we want. Also, most other calling sites of pfkey_broadcast()
+do not check the return value either so if we want to add the check, it
+should probably be done more consistently. So for now, a revert is IMHO
+more appropriate.
+
+Michal
+
+--r6vmbsg4u3vtaqzd
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmKLRuIACgkQ538sG/LR
+dpWMpwgA0INRLLZ4ZINyjhZoeu1j1yh4Mwtsb/aGEW3OB2E+pZHsWwqDwoq++1vH
+um5qLGrN6mrKIi9X3LhVKuXry2RGNW8rbTUaXihcg0JFl72XAXySQUwEh13Rn7D9
+MgvSq4MznjNLuvfFBEWvkNaYbZ6NTVtlG2thTKi4GfftwsYsDWVQisCI4z2ZZ0Pn
+Pd1j8thJreCJSNxoK8ylNyNkCAzLksItEivKz/UM+Y7HMpkI3nYZJLVAUVYZQKO6
+97qCnqcMriy3XpDz6IVn6nVUHfGay8bmlfet67IOCrxYghyR47Wy147LP8+tVzrb
+O46GqysFnczjK0px39AqsMrgUkp9sQ==
+=ZgNq
+-----END PGP SIGNATURE-----
+
+--r6vmbsg4u3vtaqzd--
