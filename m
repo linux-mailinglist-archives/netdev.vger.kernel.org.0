@@ -2,73 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B7742531EB5
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:43:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB8F1531ECB
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:47:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229887AbiEWWnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 18:43:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45700 "EHLO
+        id S231671AbiEWWrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 18:47:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229379AbiEWWnX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:43:23 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 164F9ABF48;
-        Mon, 23 May 2022 15:43:22 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id 3so10798244ily.2;
-        Mon, 23 May 2022 15:43:22 -0700 (PDT)
+        with ESMTP id S229783AbiEWWrr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:47:47 -0400
+Received: from mail-vs1-xe35.google.com (mail-vs1-xe35.google.com [IPv6:2607:f8b0:4864:20::e35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C7252B0B;
+        Mon, 23 May 2022 15:47:45 -0700 (PDT)
+Received: by mail-vs1-xe35.google.com with SMTP id w10so14065594vsa.4;
+        Mon, 23 May 2022 15:47:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=4z/iwgVrp0ukuHP0yEWJrSr5H7DsDenyaC4SaaPjbgw=;
-        b=PO8qB/TmPhfrifhrSpsXzaKD1Uncs+AiuBTMfZaMbASr/c0rQun3FOK97jQXz4cffX
-         z8vzjGtq+EmTfbIMzcSZKPhllCUQFK0zr35zQIB7tA4pahXRGN0EVZX7qEKnltG2zzPK
-         bjEWXmpiHdRyMwqmorBusWx5/MYbiV11tvShlfOp/ck+LP/LUju77awDz+m73Kg2hWrN
-         0rrOOyEduQYVQ70lJdPaoWo3JHTQVK47Hz9LtskheDxWfBMsysdrn1Gp7ktGo8aZowNr
-         ls+38XPbISiVXcd7JB6y7ZdnOOXYEiWAQZM0FHnnNiL+Jv9g2i0JbGtboAwNoXkPpSk9
-         vb/Q==
+        bh=A2BhwQefVVP8UoX6IY08n5jPD6eRGj93qA/P48KIUR8=;
+        b=OeLi52mYlhDM7AWo5ZVAQ8hpvWwlr6xVjp8d7eeH2PkBr5a0xRtWUmCK3DQBIVO+H0
+         jx9GukC2S6IrEQeXklmBdUBvU2jL78tx+7eDfxwn83b7GhaE0ISMCEtQTssUmk6GjRbj
+         dzj1vwYfEWhxpEVK3PZ5svnt7BIC75htD8ZQyCfznBbjasCwhMVkXLLDr6VqaXLKp6rU
+         NV/MGPkpMK/XxKDluaEeDKkF6rqVHu/zWzmZeVorC4R29d0DAXx7EvbEeK02BX0QK7J5
+         MRTTExC0W3o2QrIYcP3npROMtbYn7PAp4nZ9sS6/qr2HzrBiqzlEZwouYunjKpqQuImW
+         dcWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=4z/iwgVrp0ukuHP0yEWJrSr5H7DsDenyaC4SaaPjbgw=;
-        b=TKOMTvk/EfrghW5sHnRP2uuZwNukXAbj98jeaIifTrOE2CrbE2SQMVNh7yUgHpihaN
-         oe+focAUl0mWsbzFmf/Rwz8mgrnR0wskTOeFMyiJLdmdRG41DYqH7KfSIYg9ZLmuU8a6
-         5bPWkrmrcvVdXFGTqrJme8u0ltl+SWJ6m/0FGDPN/Ri3k/CfvPuGWKlnUVICe6BjVXDU
-         Rco/FRB1j+dwgUTV9dt6xgkLbCHf9HmYsU/uQU7DrRIrI8kdzc2HToysRfsbvVUGtUIw
-         ZIf5+N50qT8OHiLpSLfrz+09wrlVR4K1b4uG9kNCAXBWxd0qyF5LlLBawCKPoBdZriPy
-         foXQ==
-X-Gm-Message-State: AOAM530CvYOMqAvyRFgsTGcbfHeLFWN9ilyihJPIx7ktw0KESTTn2ODR
-        H1Rg/hYn7MYsOyQJCse+VzMeqtPlncmAjNwxCbc=
-X-Google-Smtp-Source: ABdhPJzJJVJD/PLQLgGbm7LIqKqw3cIejTXmDdnef3swmIMtAay3abe77le37tDVs+dST38MrDX9hIWp0TThoVKIvdw=
-X-Received: by 2002:a05:6e02:1352:b0:2d1:6424:60b8 with SMTP id
- k18-20020a056e02135200b002d1642460b8mr11798302ilr.305.1653345801408; Mon, 23
- May 2022 15:43:21 -0700 (PDT)
+        bh=A2BhwQefVVP8UoX6IY08n5jPD6eRGj93qA/P48KIUR8=;
+        b=0jO9MM6qcvG0sOrs0YMLeysSsy8FDeG36OYFrEOHOAxwXT1vR5xh325Q8ll9ouO6Rz
+         qfxlfh05yQtjk6wVc9XRxNoCtxfgRFSEYT8Ydu7wgYaA0yjB+doFcmUt1QqJQNvYELe7
+         X5XXHRs/5KMIPOyprgXkLQM1MKb61hiNb7fmtAYp5MnmPbzUi+HJwrSayBgVMcou8Cnu
+         xSFrtNg99lGnWmhPSVz/zCC4u35+6+bi3U8MGp75CoP3z9c1B0K1Sg9W2kbXG2HYF8Zr
+         Eas8U+x+MHH3OorOG2oIX+LmQzEA3XPPNsLWK+l6FWJPoLSnwXRbvUTkFh/T/u56i1KE
+         GOXQ==
+X-Gm-Message-State: AOAM530uZZuFY3pKSLKt+yuEwbwdIluXrOTwgDbAkXwjrtSxesa8CMOT
+        c0mROPSeD3q0lyz4uVObUJX2Mb0bVuzgVG7zPOU=
+X-Google-Smtp-Source: ABdhPJx6CUm21SYtYvx/Sh+APMqkvXeGo/uWx/pnl6NczuPOL78svXkBoKhfZyHIj9EyWs6Oi1rC2pkdtAT6LcVG97o=
+X-Received: by 2002:a67:e0d5:0:b0:337:b2f4:afe0 with SMTP id
+ m21-20020a67e0d5000000b00337b2f4afe0mr3007679vsl.11.1653346064205; Mon, 23
+ May 2022 15:47:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220510074659.2557731-1-jolsa@kernel.org> <CAEf4BzbK9zgetgE1yKkCANTZqizUrXgamJa2X0f0XmzQUdFrCQ@mail.gmail.com>
- <YntnRixbfQ1HCm9T@krava> <Ynv+7iaaAbyM38B6@kernel.org> <CAEf4BzaQsF31f3WuU32wDCzo6bw7eY8E9zF6Lo218jfw-VQmcA@mail.gmail.com>
- <YoTAhC+6j4JshqN8@krava> <YoYj6cb0aPNN/olH@krava> <CAEf4Bzaa60kZJbWT0xAqcDMyXBzbg98ShuizJAv7x+8_3X0ZBg@mail.gmail.com>
- <Yokk5XRxBd72fqoW@kernel.org> <Yos8hq3NmBwemoJw@krava>
-In-Reply-To: <Yos8hq3NmBwemoJw@krava>
+References: <CAEf4BzY-p13huoqo6N7LJRVVj8rcjPeP3Cp=KDX4N2x9BkC9Zw@mail.gmail.com>
+ <20220517180420.87954-1-tadeusz.struk@linaro.org> <7949d722-86e8-8122-e607-4b09944b76ae@linaro.org>
+In-Reply-To: <7949d722-86e8-8122-e607-4b09944b76ae@linaro.org>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 23 May 2022 15:43:10 -0700
-Message-ID: <CAEf4BzYRJj8sXjYs2ioz6Qq7L2UshZDi4Kt0XLsLtwQSGCpAzg@mail.gmail.com>
-Subject: Re: [PATCHv2 0/3] perf tools: Fix prologue generation
-To:     Jiri Olsa <olsajiri@gmail.com>
-Cc:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Mon, 23 May 2022 15:47:32 -0700
+Message-ID: <CAEf4BzaD1Z6uOZwbquPYWB0_Z0+CkEKiXQ6zS2imiSHpTgX3pg@mail.gmail.com>
+Subject: Re: [PATCH v4] bpf: Fix KASAN use-after-free Read in compute_effective_progs
+To:     Tadeusz Struk <tadeusz.struk@linaro.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
-        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <a.p.zijlstra@chello.nl>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Ian Rogers <irogers@google.com>
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        linux- stable <stable@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -80,150 +75,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 23, 2022 at 12:49 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+On Mon, May 23, 2022 at 2:36 PM Tadeusz Struk <tadeusz.struk@linaro.org> wrote:
 >
-> On Sat, May 21, 2022 at 02:44:05PM -0300, Arnaldo Carvalho de Melo wrote:
-> > Em Fri, May 20, 2022 at 02:46:49PM -0700, Andrii Nakryiko escreveu:
-> > > On Thu, May 19, 2022 at 4:03 AM Jiri Olsa <olsajiri@gmail.com> wrote:
-> > > > On Wed, May 18, 2022 at 11:46:44AM +0200, Jiri Olsa wrote:
-> > > > > On Tue, May 17, 2022 at 03:02:53PM -0700, Andrii Nakryiko wrote:
-> > > > > > Jiri, libbpf v0.8 is out, can you please re-send your perf patches?
+> On 5/17/22 11:04, Tadeusz Struk wrote:
+> > Syzbot found a Use After Free bug in compute_effective_progs().
+> > The reproducer creates a number of BPF links, and causes a fault
+> > injected alloc to fail, while calling bpf_link_detach on them.
+> > Link detach triggers the link to be freed by bpf_link_free(),
+> > which calls __cgroup_bpf_detach() and update_effective_progs().
+> > If the memory allocation in this function fails, the function restores
+> > the pointer to the bpf_cgroup_link on the cgroup list, but the memory
+> > gets freed just after it returns. After this, every subsequent call to
+> > update_effective_progs() causes this already deallocated pointer to be
+> > dereferenced in prog_list_length(), and triggers KASAN UAF error.
 > >
-> > > > > yep, just made new fedora package.. will resend the perf changes soon
+> > To fix this issue don't preserve the pointer to the prog or link in the
+> > list, but remove it and replace it with a dummy prog without shrinking
+> > the table. The subsequent call to __cgroup_bpf_detach() or
+> > __cgroup_bpf_detach() will correct it.
 > >
-> > > > fedora package is on the way, but I'll need perf/core to merge
-> > > > the bpf_program__set_insns change.. Arnaldo, any idea when this
-> > > > could happen?
+> > Cc: "Alexei Starovoitov" <ast@kernel.org>
+> > Cc: "Daniel Borkmann" <daniel@iogearbox.net>
+> > Cc: "Andrii Nakryiko" <andrii@kernel.org>
+> > Cc: "Martin KaFai Lau" <kafai@fb.com>
+> > Cc: "Song Liu" <songliubraving@fb.com>
+> > Cc: "Yonghong Song" <yhs@fb.com>
+> > Cc: "John Fastabend" <john.fastabend@gmail.com>
+> > Cc: "KP Singh" <kpsingh@kernel.org>
+> > Cc: <netdev@vger.kernel.org>
+> > Cc: <bpf@vger.kernel.org>
+> > Cc: <stable@vger.kernel.org>
+> > Cc: <linux-kernel@vger.kernel.org>
 > >
-> > > Can we land these patches through bpf-next to avoid such complicated
-> > > cross-tree dependencies? As I started removing libbpf APIs I also
-> > > noticed that perf is still using few other deprecated APIs:
-> > >   - bpf_map__next;
-> > >   - bpf_program__next;
-> > >   - bpf_load_program;
-> > >   - btf__get_from_id;
+> > Link: https://syzkaller.appspot.com/bug?id=8ebf179a95c2a2670f7cf1ba62429ec044369db4
+> > Fixes: af6eea57437a ("bpf: Implement bpf_link-based cgroup BPF program attachment")
+> > Reported-by: <syzbot+f264bffdfbd5614f3bb2@syzkaller.appspotmail.com>
+> > Signed-off-by: Tadeusz Struk <tadeusz.struk@linaro.org>
+> > ---
+> > v2: Add a fall back path that removes a prog from the effective progs
+> >      table in case detach fails to allocate memory in compute_effective_progs().
+> >
+> > v3: Implement the fallback in a separate function purge_effective_progs
+> >
+> > v4: Changed purge_effective_progs() to manipulate the array in a similar way
+> >      how replace_effective_prog() does it.
+> > ---
+> >   kernel/bpf/cgroup.c | 68 +++++++++++++++++++++++++++++++++++++++------
+> >   1 file changed, 60 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> > index 128028efda64..6f1a6160c99e 100644
+> > --- a/kernel/bpf/cgroup.c
+> > +++ b/kernel/bpf/cgroup.c
+> > @@ -681,6 +681,60 @@ static struct bpf_prog_list *find_detach_entry(struct list_head *progs,
+> >       return ERR_PTR(-ENOENT);
+> >   }
+> >
+> > +/**
+> > + * purge_effective_progs() - After compute_effective_progs fails to alloc new
+> > + *                           cgrp->bpf.inactive table we can recover by
+> > + *                           recomputing the array in place.
+> > + *
+> > + * @cgrp: The cgroup which descendants to travers
+> > + * @prog: A program to detach or NULL
+> > + * @link: A link to detach or NULL
+> > + * @atype: Type of detach operation
+> > + */
+> > +static void purge_effective_progs(struct cgroup *cgrp, struct bpf_prog *prog,
+> > +                               struct bpf_cgroup_link *link,
+> > +                               enum cgroup_bpf_attach_type atype)
+> > +{
+> > +     struct cgroup_subsys_state *css;
+> > +     struct bpf_prog_array *progs;
+> > +     struct bpf_prog_list *pl;
+> > +     struct list_head *head;
+> > +     struct cgroup *cg;
+> > +     int pos;
+> > +
+> > +     /* recompute effective prog array in place */
+> > +     css_for_each_descendant_pre(css, &cgrp->self) {
+> > +             struct cgroup *desc = container_of(css, struct cgroup, self);
+> > +
+> > +             if (percpu_ref_is_zero(&desc->bpf.refcnt))
+> > +                     continue;
+> > +
+> > +             /* find position of link or prog in effective progs array */
+> > +             for (pos = 0, cg = desc; cg; cg = cgroup_parent(cg)) {
+> > +                     if (pos && !(cg->bpf.flags[atype] & BPF_F_ALLOW_MULTI))
+> > +                             continue;
+> > +
+> > +                     head = &cg->bpf.progs[atype];
+> > +                     list_for_each_entry(pl, head, node) {
+> > +                             if (!prog_list_prog(pl))
+> > +                                     continue;
+> > +                             if (pl->prog == prog && pl->link == link)
+> > +                                     goto found;
+> > +                             pos++;
+> > +                     }
+> > +             }
+> > +found:
+> > +             BUG_ON(!cg);
+> > +             progs = rcu_dereference_protected(
+> > +                             desc->bpf.effective[atype],
+> > +                             lockdep_is_held(&cgroup_mutex));
+> > +
+> > +             /* Remove the program from the array */
+> > +             WARN_ONCE(bpf_prog_array_delete_safe_at(progs, pos),
+> > +                       "Failed to purge a prog from array at index %d", pos);
+> > +     }
+> > +}
+> > +
+> >   /**
+> >    * __cgroup_bpf_detach() - Detach the program or link from a cgroup, and
+> >    *                         propagate the change to descendants
+> > @@ -723,8 +777,12 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+> >       pl->link = NULL;
+> >
+> >       err = update_effective_progs(cgrp, atype);
+> > -     if (err)
+> > -             goto cleanup;
+> > +     if (err) {
+> > +             /* If update affective array failed replace the prog with a dummy prog*/
+> > +             pl->prog = old_prog;
+> > +             pl->link = link;
+> > +             purge_effective_progs(cgrp, old_prog, link, atype);
+> > +     }
+> >
+> >       /* now can actually delete it from this cgroup list */
+> >       list_del(&pl->node);
+> > @@ -736,12 +794,6 @@ static int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+> >               bpf_prog_put(old_prog);
+> >       static_branch_dec(&cgroup_bpf_enabled_key[atype]);
+> >       return 0;
+> > -
+> > -cleanup:
+> > -     /* restore back prog or link */
+> > -     pl->prog = old_prog;
+> > -     pl->link = link;
+> > -     return err;
+> >   }
+> >
+> >   static int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
 >
-> these were added just to bypass the time window when they were not
-> available in the package, so can be removed now (in the patch below)
->
-> >
-> > > It's trivial to fix up, but doing it across few trees will delay
-> > > libbpf work as well.
-> >
-> > > So let's land this through bpf-next, if Arnaldo doesn't mind?
-> >
-> > Yeah, that should be ok, the only consideration is that I'm submitting
-> > this today to Linus:
-> >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/commit/?h=tmp.perf/urgent&id=0ae065a5d265bc5ada13e350015458e0c5e5c351
-> >
-> > To address this:
-> >
-> > https://lore.kernel.org/linux-perf-users/f0add43b-3de5-20c5-22c4-70aff4af959f@scylladb.com/
->
-> ok, we can do that via bpf-next, but of course there's a problem ;-)
->
-> perf/core already has dependency commit [1]
->
-> so either we wait for perf/core and bpf-next/master to sync or:
->
->   - perf/core reverts [1] and
->   - bpf-next/master takes [1] and the rest
->
-> I have the changes ready if you guys are ok with that
+> Hi Andrii,
+> Do you have any more feedback? Does it look better to you now?
 
-So, if I understand correctly, with merge window open bpf-next/master
-will get code from perf/core soon when we merge tip back in. So we can
-wait for that to happen and not revert anything.
+Hi, this is on my TODO list, but I need a bit more focused time to
+think all this through and I haven't managed to get it in last week.
+I'm worried about the percpu_ref_is_zero(&desc->bpf.refcnt) portion
+and whether it can cause some skew in the calculated array index, I
+need to look at this a bit more in depth. Sorry for the delay.
 
-So please add the below patch to your series and resend once tip is
-merged into bpf-next? Thanks!
-
->
-> thanks,
-> jirka
->
->
-> [1] https://lore.kernel.org/bpf/20220422100025.1469207-4-jolsa@kernel.org/
->
-> ---
-> Subject: [PATCH bpf-next] perf tools: Remove the weak libbpf functions
->
-> We added weak functions for some new libbpf functions because
-> they were not packaged at that time [1].
->
-> These functions are now available in package, so we can remove
-> their weak perf variants.
->
-> [1] https://lore.kernel.org/linux-perf-users/20211109140707.1689940-2-jolsa@kernel.org/
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  tools/perf/util/bpf-event.c | 51 -------------------------------------
->  1 file changed, 51 deletions(-)
->
-> diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
-> index 94624733af7e..025f331b3867 100644
-> --- a/tools/perf/util/bpf-event.c
-> +++ b/tools/perf/util/bpf-event.c
-> @@ -22,57 +22,6 @@
->  #include "record.h"
->  #include "util/synthetic-events.h"
->
-> -struct btf * __weak btf__load_from_kernel_by_id(__u32 id)
-> -{
-> -       struct btf *btf;
-> -#pragma GCC diagnostic push
-> -#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-> -       int err = btf__get_from_id(id, &btf);
-> -#pragma GCC diagnostic pop
-> -
-> -       return err ? ERR_PTR(err) : btf;
-> -}
-> -
-> -int __weak bpf_prog_load(enum bpf_prog_type prog_type,
-> -                        const char *prog_name __maybe_unused,
-> -                        const char *license,
-> -                        const struct bpf_insn *insns, size_t insn_cnt,
-> -                        const struct bpf_prog_load_opts *opts)
-> -{
-> -#pragma GCC diagnostic push
-> -#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-> -       return bpf_load_program(prog_type, insns, insn_cnt, license,
-> -                               opts->kern_version, opts->log_buf, opts->log_size);
-> -#pragma GCC diagnostic pop
-> -}
-> -
-> -struct bpf_program * __weak
-> -bpf_object__next_program(const struct bpf_object *obj, struct bpf_program *prev)
-> -{
-> -#pragma GCC diagnostic push
-> -#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-> -       return bpf_program__next(prev, obj);
-> -#pragma GCC diagnostic pop
-> -}
-> -
-> -struct bpf_map * __weak
-> -bpf_object__next_map(const struct bpf_object *obj, const struct bpf_map *prev)
-> -{
-> -#pragma GCC diagnostic push
-> -#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-> -       return bpf_map__next(prev, obj);
-> -#pragma GCC diagnostic pop
-> -}
-> -
-> -const void * __weak
-> -btf__raw_data(const struct btf *btf_ro, __u32 *size)
-> -{
-> -#pragma GCC diagnostic push
-> -#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-> -       return btf__get_raw_data(btf_ro, size);
-> -#pragma GCC diagnostic pop
-> -}
-> -
->  static int snprintf_hex(char *buf, size_t size, unsigned char *data, size_t len)
->  {
->         int ret = 0;
 > --
-> 2.35.3
->
+> Thanks,
+> Tadeusz
