@@ -2,94 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BCF8C5312B3
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 18:22:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 37DD9531669
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:50:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238714AbiEWQRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 12:17:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35396 "EHLO
+        id S238923AbiEWQ1S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 12:27:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238811AbiEWQRb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 12:17:31 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FDAA544CC
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 09:17:26 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id a9so12074268pgv.12
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 09:17:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=23CBLMwb3guE5iJvJwXPI+qbRLvKp4RVuSYLI9nOoJw=;
-        b=BuuSoLFK4Vp/mmoV6ukmUMED2WupMs+dhkwNuuf+MLSu6tNlyF5yHTxVa8qs75Jb1t
-         wK5f1mFjStAf+YDHP0f/KOB0UKlDAx0Lt3KHkbG9H2/cLw62x6meZMBaxUtkQRafzNTu
-         l+XMwi75wkkVXpUXDad27poMBy7Yo+oDUcnEbPk3lzWYovd1e9OyBNABR5egkn8UABf3
-         em+8gqZd0UXUFHdkPnxRr4+tOhO/ymasVsxlummMZMiROglon619RUaT2AocZ6PggluD
-         kNUxMP8Jm1vu4CK5iGqOokUZpdGRcDJQ/Chn1u/vX6ZFHua2b82vuZa6lDD5lLIelq62
-         Hu+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=23CBLMwb3guE5iJvJwXPI+qbRLvKp4RVuSYLI9nOoJw=;
-        b=IhWtmIfd3G+a6uJYd8LS5wSsK3DnFqIgHBGxiXdawX1JiMUBOtLSWdhYapgqpD53ZP
-         OBm/cay740Q+NUcaCdZly4lBdFAjaYfoiNqY8zEDsaBjIcdQFFv+IL4wbuKr4RSB0us6
-         MppHH1kVui6i3UZbqRPBozRGXqKkzAxYOn9XxlrJAJt2IS6qESrBa/9P2TaHRGVWwpA6
-         VADBycRV9di3h26e8ie/xRrz1UN6joEkOJXpaq6ALYrOKrLOT29uTxV6+EtxRvvnVT67
-         xMojN3PdpWZ7MPPG6EJl8j9VTv4BBfHDVVu4MT2cvQdpDxTOEf8KVNDJi0hHgsa9f5Ug
-         nSBA==
-X-Gm-Message-State: AOAM532YUWpimUW+Llw+7N8Ra7rNFPzBqw4wc0MGzhDCHYfeLGZTqaB3
-        b/doj+Whp1Ci9jXXjDwIEiA=
-X-Google-Smtp-Source: ABdhPJzz+KnYrmdnbmtN5FbdS54UppsKGY/Ep49TOjEo65o9Y15AwQbufyDL3uVE4Lv7BULtKaqtgg==
-X-Received: by 2002:a05:6a00:1305:b0:512:ebab:3b20 with SMTP id j5-20020a056a00130500b00512ebab3b20mr24450505pfu.82.1653322645817;
-        Mon, 23 May 2022 09:17:25 -0700 (PDT)
-Received: from localhost.localdomain ([182.213.254.91])
-        by smtp.gmail.com with ESMTPSA id c8-20020a170902c2c800b0015e8d4eb2ccsm5252127pla.278.2022.05.23.09.17.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 09:17:25 -0700 (PDT)
-From:   Taehee Yoo <ap420073@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org, pabeni@redhat.com,
-        edumazet@google.com, netdev@vger.kernel.org
-Cc:     ap420073@gmail.com
-Subject: [PATCH net 3/3] amt: fix possible memory leak in amt_rcv()
-Date:   Mon, 23 May 2022 16:17:08 +0000
-Message-Id: <20220523161708.29518-4-ap420073@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220523161708.29518-1-ap420073@gmail.com>
-References: <20220523161708.29518-1-ap420073@gmail.com>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S238871AbiEWQ1J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 12:27:09 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23AC661606;
+        Mon, 23 May 2022 09:27:08 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C01366141C;
+        Mon, 23 May 2022 16:27:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8A0FC385A9;
+        Mon, 23 May 2022 16:27:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653323227;
+        bh=AceUDYcGZJujlBPQTsaPOLIBVpDb2ttCqdo8Gc2wbpg=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=OczRcIlhRq9MmST6+7Ld/zRiClrljK/6d7LVqUyi7elESniY7wnINSDQxxJDUqv+8
+         0GEXPQrLif397SY1Q7O4DqeHpb5WNxF7iZrDDVUch6WJplTp68xAUqFcMVnFRCaaRg
+         MgiX4ilOq7Zgl0+eveavVHwD7hcpPgO0U1tmv3o/SvcvDFFGsW3cGR/VIZAK77CFlb
+         msy9drIlWm9gBmIdxOqnk2HOJHQnv9xY9yhLotFStB7wxUUrcW87TOtFxf+CxKq3mJ
+         xfc99CQPy3PsUA1RPxAs2IZK+5XB9FOGBd3nSDQ8AZGm6rn9JKtK7i2H/4XvKwDdyF
+         xTH7+Bi8Hg2+Q==
+From:   Kalle Valo <kvalo@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     duoming@zju.edu.cn, linux-wireless@vger.kernel.org,
+        amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, rafael@kernel.org,
+        Johannes Berg <johannes@sipsolutions.net>
+Subject: Re: [PATCH v3] mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
+References: <20220523052810.24767-1-duoming@zju.edu.cn>
+        <YosqUjCYioGh3kBW@kroah.com>
+        <41a266af.2abb6.180efa8594d.Coremail.duoming@zju.edu.cn>
+        <87r14kzdqz.fsf@kernel.org> <YouPEdlNbU2ea1Cx@kroah.com>
+Date:   Mon, 23 May 2022 19:27:00 +0300
+In-Reply-To: <YouPEdlNbU2ea1Cx@kroah.com> (Greg KH's message of "Mon, 23 May
+        2022 15:41:37 +0200")
+Message-ID: <87ilpwz02z.fsf@kernel.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If an amt receives packets and it finds socket.
-If it can't find a socket, it should free a received skb.
-But it doesn't.
-So, a memory leak would possibly occur.
+Greg KH <gregkh@linuxfoundation.org> writes:
 
-Fixes: cbc21dc1cfe9 ("amt: add data plane of amt interface")
-Signed-off-by: Taehee Yoo <ap420073@gmail.com>
----
- drivers/net/amt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Mon, May 23, 2022 at 02:31:48PM +0300, Kalle Valo wrote:
+>> (adding Johannes)
+>> 
+>> duoming@zju.edu.cn writes:
+>> 
+>> >> > --- a/lib/kobject.c
+>> >> > +++ b/lib/kobject.c
+>> >> > @@ -254,7 +254,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
+>> >> >  	if (kobj->name && !fmt)
+>> >> >  		return 0;
+>> >> >  
+>> >> > -	s = kvasprintf_const(GFP_KERNEL, fmt, vargs);
+>> >> > +	s = kvasprintf_const(GFP_ATOMIC, fmt, vargs);
+>> >> >  	if (!s)
+>> >> >  		return -ENOMEM;
+>> >> >  
+>> >> > @@ -267,7 +267,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
+>> >> >  	if (strchr(s, '/')) {
+>> >> >  		char *t;
+>> >> >  
+>> >> > -		t = kstrdup(s, GFP_KERNEL);
+>> >> > +		t = kstrdup(s, GFP_ATOMIC);
+>> >> >  		kfree_const(s);
+>> >> >  		if (!t)
+>> >> >  			return -ENOMEM;
+>> >> 
+>> >> Please no, you are hurting the whole kernel because of one odd user.
+>> >> Please do not make these calls under atomic context.
+>> >
+>> > Thanks for your time and suggestions. I will remove the gfp_t
+>> > parameter of dev_coredumpv in order to show it could not be used in
+>> > atomic context.
+>> 
+>> In a way it would be nice to be able to call dev_coredump from atomic
+>> contexts, though I don't know how practical it actually is.
+>
+> Dumping core information from atomic context feels very very wrong to
+> me.
+>
+> Why not just not do that?
 
-diff --git a/drivers/net/amt.c b/drivers/net/amt.c
-index 635de07b2e40..ebee5f07a208 100644
---- a/drivers/net/amt.c
-+++ b/drivers/net/amt.c
-@@ -2679,7 +2679,7 @@ static int amt_rcv(struct sock *sk, struct sk_buff *skb)
- 	amt = rcu_dereference_sk_user_data(sk);
- 	if (!amt) {
- 		err = true;
--		goto out;
-+		goto drop;
- 	}
- 
- 	skb->dev = amt->dev;
+I was wondering why dev_coredumpm() has the gfp parameter in the first
+place. But yeah, removing gfp from devcoredump API altogether sounds
+like the best thing to do.
+
 -- 
-2.17.1
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
