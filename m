@@ -2,92 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DF585313D6
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 18:24:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0290F53127D
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 18:22:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237278AbiEWOpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 10:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38038 "EHLO
+        id S237340AbiEWOrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 10:47:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237143AbiEWOpO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 10:45:14 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1704E2981A;
-        Mon, 23 May 2022 07:45:12 -0700 (PDT)
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NEh7Zu007499;
-        Mon, 23 May 2022 14:45:04 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=6cGHlwlrnJy/ZsxuQfgFcfPK1pFXQCxiI7jNqHSM/2o=;
- b=p6ubl54P8qTCYr39of8lRGkgqnt/vOwtr524RUaCvRubz4/m4vtONmTiI1BSqahxqyqk
- MDIbxnkcK+17cTgSNcWAuj0ifjCXhBsn8cjZDFEYAXs5JrDCggOo5cFu5qLtmuO/PpCD
- hCejjWqBjbinfn7hOLuEqdb+hX3I19CdUva+ETsHAuLaSoOQdZVuWFmKBQAFc9nHJOw1
- 7izectOvyxL9dgNtPQ+QAajWdggTJtX5yCuNipmD7W5I70xSEEadUexesTt3Y88R7fIg
- IM57Hr5+OstJo3tUgUS3wfLNn7xcW6y94yWGHrbU8DG0NyiwPLxbLw2fYUpV4S2sGRPb Xg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8c9cg113-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 14:45:03 +0000
-Received: from m0098419.ppops.net (m0098419.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24NEiGTo011957;
-        Mon, 23 May 2022 14:45:02 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g8c9cg0yw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 14:45:02 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24NEd64i004356;
-        Mon, 23 May 2022 14:45:00 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3g6qq8ub1k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 14:45:00 +0000
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24NEiwNd38470142
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 23 May 2022 14:44:58 GMT
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 185FFA4060;
-        Mon, 23 May 2022 14:44:58 +0000 (GMT)
-Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C1CB4A405C;
-        Mon, 23 May 2022 14:44:57 +0000 (GMT)
-Received: from [9.152.222.246] (unknown [9.152.222.246])
-        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Mon, 23 May 2022 14:44:57 +0000 (GMT)
-Message-ID: <e0b64b80-90e1-5aed-1ca4-f6d20ebac6b7@linux.ibm.com>
-Date:   Mon, 23 May 2022 16:44:57 +0200
+        with ESMTP id S237298AbiEWOrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 10:47:06 -0400
+Received: from a.mx.secunet.com (a.mx.secunet.com [62.96.220.36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE16F3DA45
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 07:47:05 -0700 (PDT)
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 8B5AB20299;
+        Mon, 23 May 2022 16:47:03 +0200 (CEST)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id xUpcKLc9-tBi; Mon, 23 May 2022 16:47:03 +0200 (CEST)
+Received: from mailout1.secunet.com (mailout1.secunet.com [62.96.220.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 0F246201E2;
+        Mon, 23 May 2022 16:47:03 +0200 (CEST)
+Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
+        by mailout1.secunet.com (Postfix) with ESMTP id 09E7080004A;
+        Mon, 23 May 2022 16:47:03 +0200 (CEST)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Mon, 23 May 2022 16:47:00 +0200
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Mon, 23 May
+ 2022 16:47:02 +0200
+Received: by gauss2.secunet.de (Postfix, from userid 1000)
+        id 40C973182B34; Mon, 23 May 2022 16:47:02 +0200 (CEST)
+Date:   Mon, 23 May 2022 16:47:02 +0200
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <zenczykowski@gmail.com>
+CC:     Maciej =?utf-8?Q?=C5=BBenczykowski?= <maze@google.com>,
+        "Linux Network Development Mailing List" <netdev@vger.kernel.org>,
+        Lorenzo Colitti <lorenzo@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Lina Wang <lina.wang@mediatek.com>
+Subject: Re: [PATCH] xfrm: do not set IPv4 DF flag when encapsulating IPv6
+ frames <= 1280 bytes.
+Message-ID: <20220523144702.GY680067@gauss3.secunet.de>
+References: <20220518210548.2296546-1-zenczykowski@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH v2 net] net/smc: postpone sk_refcnt increment in connect()
-Content-Language: en-US
-To:     liuyacan@corp.netease.com
-Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
-        netdev@vger.kernel.org, pabeni@redhat.com, ubraun@linux.ibm.com
-References: <5ce801b7-d446-ee28-86ec-968b7c172a80@linux.ibm.com>
- <20220523141905.2791310-1-liuyacan@corp.netease.com>
-From:   Karsten Graul <kgraul@linux.ibm.com>
-Organization: IBM Deutschland Research & Development GmbH
-In-Reply-To: <20220523141905.2791310-1-liuyacan@corp.netease.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: jmcfSzowpcL_SaOEd9NjJpJxo70dlrIL
-X-Proofpoint-ORIG-GUID: qpf_3J9lSgJDrxhBB6hmz2bMj0ObisEk
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_06,2022-05-23_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
- malwarescore=0 adultscore=0 phishscore=0 spamscore=0 priorityscore=1501
- lowpriorityscore=0 impostorscore=0 clxscore=1015 mlxscore=0
- mlxlogscore=651 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205230081
-X-Spam-Status: No, score=-5.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220518210548.2296546-1-zenczykowski@gmail.com>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -96,18 +68,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/05/2022 16:19, liuyacan@corp.netease.com wrote:
->> This is a rather unusual problem that can come up when fallback=true BEFORE smc_connect()
->> is called. But nevertheless, it is a problem.
->>
->> Right now I am not sure if it is okay when we NOT hold a ref to smc->sk during all fallback
->> processing. This change also conflicts with a patch that is already on net-next (3aba1030).
+On Wed, May 18, 2022 at 02:05:48PM -0700, Maciej Żenczykowski wrote:
+> From: Maciej Żenczykowski <maze@google.com>
 > 
-> Do you mean put the ref to smc->sk during all fallback processing unconditionally and remove 
-> the fallback branch sock_put() in __smc_release()?
+> One may want to have DF set on large packets to support discovering
+> path mtu and limiting the size of generated packets (hence not
+> setting the XFRM_STATE_NOPMTUDISC tunnel flag), while still
+> supporting networks that are incapable of carrying even minimal
+> sized IPv6 frames (post encapsulation).
+> 
+> Having IPv4 Don't Frag bit set on encapsulated IPv6 frames that
+> are not larger than the minimum IPv6 mtu of 1280 isn't useful,
+> because the resulting ICMP Fragmentation Required error isn't
+> actionable (even assuming you receive it) because IPv6 will not
+> drop it's path mtu below 1280 anyway.  While the IPv4 stack
+> could prefrag the packets post encap, this requires the ICMP
+> error to be successfully delivered and causes a loss of the
+> original IPv6 frame (thus requiring a retransmit and latency
+> hit).  Luckily with IPv4 if we simply don't set the DF flag,
+> we'll just make further fragmenting the packets some other
+> router's problems.
+> 
+> We'll still learn the correct IPv4 path mtu through encapsulation
+> of larger IPv6 frames.
+> 
+> I'm still not convinced this patch is entirely sufficient to make
+> everything happy... but I don't see how it could possibly
+> make things worse.
+> 
+> See also recent:
+>   4ff2980b6bd2 'xfrm: fix tunnel model fragmentation behavior'
+> and friends
+> 
+> Bug: 203183943
 
-What I had in mind was to eventually call sock_put() in __smc_release() even if sk->sk_state == SMC_INIT
-(currently the extra check in the if() for sk->sk_state != SMC_INIT prevents the sock_put()), but only
-when it is sure that we actually reached the sock_hold() in smc_connect() before.
+To what does this bug number refer to? Bugzilla? Please make that clear
+if you want to have this number in the commit message.
 
-But maybe we find out that the sock_hold() is not needed for fallback sockets, I don't know...
+Thanks!
+
