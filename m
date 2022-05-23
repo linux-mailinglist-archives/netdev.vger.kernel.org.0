@@ -2,54 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 83C09531015
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:19:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23AAC531032
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:19:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235693AbiEWMiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 08:38:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
+        id S235626AbiEWMm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 08:42:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33186 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235677AbiEWMiu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 08:38:50 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBC374ECD1
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 05:38:48 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nt7KY-0005ze-8S; Mon, 23 May 2022 14:38:38 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 65D7A844E9;
-        Mon, 23 May 2022 12:38:36 +0000 (UTC)
-Date:   Mon, 23 May 2022 14:38:35 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Julia Lawall <Julia.Lawall@inria.fr>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        kernel-janitors@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S235586AbiEWMm5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 08:42:57 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB82E20F70;
+        Mon, 23 May 2022 05:42:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653309776; x=1684845776;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=CYBlt4HV9JNO/N88R6DDSsOe+zvHqFJW0VyNiGAZBvU=;
+  b=iD3CNxtMPuSS7sTCf9qEh54+j5w7vU8kNEfOiM9uji6u/kew/HsdJ5lf
+   vKX7hohv1CACvWwwVTlD7yic204nO5IlYAcj1MMESlOWinbaApdiKd/RM
+   o0NOgsd6IofN/XaVKnJmyZ/+57xHng8IKq1B5auuqu3alnJDFjcz1jUfN
+   NEognW8BeVMn8rdwWAaNgjCpp/AlXTqStgeWurrv2NPn1EhOgpfESMY+C
+   izHvSWbVvTop4x8IXJsOkhdtAVaf6egWqudFRLaMdEcKBRRCuAobHay5i
+   iEJ4oBBtYL3TE7MbPWQqsYZmnkF0p39+ysk235cF6dFgwCXLWsqTBCAsW
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="336268135"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="336268135"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 05:42:56 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="572081945"
+Received: from boxer.igk.intel.com (HELO boxer) ([10.102.20.173])
+  by orsmga007.jf.intel.com with ESMTP; 23 May 2022 05:42:52 -0700
+Date:   Mon, 23 May 2022 14:42:51 +0200
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Cc:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] can: peak_usb: fix typo in comment
-Message-ID: <20220523123835.66rliknnve2fcvxf@pengutronix.de>
-References: <20220521111145.81697-24-Julia.Lawall@inria.fr>
+        KP Singh <kpsingh@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next] MAINTAINERS: add maintainer to AF_XDP
+Message-ID: <YouBSxZWZEsCLfIl@boxer>
+References: <20220523083254.32285-1-magnus.karlsson@gmail.com>
+ <CAJ+HfNghrcajNC=m_hJAtKSRX906NARB4f6LWeginirZhuyg+Q@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="6tfwm2abi6tnm2pi"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20220521111145.81697-24-Julia.Lawall@inria.fr>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJ+HfNghrcajNC=m_hJAtKSRX906NARB4f6LWeginirZhuyg+Q@mail.gmail.com>
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -57,42 +73,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, May 23, 2022 at 12:25:47PM +0200, Björn Töpel wrote:
+> On Mon, 23 May 2022 at 10:33, Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
+> >
+> > Maciej Fijalkowski has gracefully accepted to become the third
+> > maintainer for the AF_XDP code. Thank you Maciej!
+> >
+> 
+> Awesome, and thanks for helping out, Maciej!
 
---6tfwm2abi6tnm2pi
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+It is my pleasure, thanks!
 
-On 21.05.2022 13:10:34, Julia Lawall wrote:
-> Spelling mistake (triple letters) in comment.
-> Detected with the help of Coccinelle.
->=20
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 
-Applied to linux-can-next/testing.
-
-Thanks,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---6tfwm2abi6tnm2pi
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKLgEkACgkQrX5LkNig
-012IxQf/aRf4MSg/hFbjtTdruurxnVyu2AwYiFKbZd+ePVLX5kS6TmNhHyYgbcwX
-uT0EviEdh/i0isJGE9/avs+e57qdZQfSVDRmr4wKCW4TzfJ4aGLBmZAQ75ieQPLa
-hUneN+BHSuD6WZ9I2AzNLJQjmZ/CokegYRC73TPRZhhAHhO+k9qtiZ5r7xD8RTap
-CrX1uylgNtBH3neHr4d2B4Pjgy52DhdBGE3HlhBr8TruqhqLS+H6DbbpM+TRFAKG
-QyEmi+cCtzj1vdqr0F3AEyTdAe78stfaFKllc4Vbey/T0Tp4BpUuEqaCP3LAI3Gi
-u9A6EGzJZyqji3nki1ld0JGAs3G5ZA==
-=KXF5
------END PGP SIGNATURE-----
-
---6tfwm2abi6tnm2pi--
+> 
+> Acked-by: Björn Töpel <bjorn@kernel.org>
+> 
+> > Signed-off-by: Magnus Karlsson <magnus.karlsson@gmail.com>
+> > ---
+> >  MAINTAINERS | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 359afc617b92..adc63e18e601 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -21507,6 +21507,7 @@ K:      (?:\b|_)xdp(?:\b|_)
+> >  XDP SOCKETS (AF_XDP)
+> >  M:     Björn Töpel <bjorn@kernel.org>
+> >  M:     Magnus Karlsson <magnus.karlsson@intel.com>
+> > +M:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+> >  R:     Jonathan Lemon <jonathan.lemon@gmail.com>
+> >  L:     netdev@vger.kernel.org
+> >  L:     bpf@vger.kernel.org
+> >
+> > base-commit: c272e259116973b4c2d5c5ae7b6a4181aeeb38c7
+> > --
+> > 2.34.1
+> >
