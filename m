@@ -2,132 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 56ACB5307CA
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 04:49:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 39748530803
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 05:24:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345519AbiEWCtY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 May 2022 22:49:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34514 "EHLO
+        id S244494AbiEWDY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 May 2022 23:24:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34952 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234211AbiEWCtX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 22:49:23 -0400
-Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C1C836E1D
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 19:49:22 -0700 (PDT)
-Received: by mail-pj1-x102d.google.com with SMTP id ev18so12774063pjb.4
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 19:49:22 -0700 (PDT)
+        with ESMTP id S236096AbiEWDYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 23:24:55 -0400
+Received: from corp-front10-corp.i.nease.net (corp-front11-corp.i.nease.net [42.186.62.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7CEC2A72F;
+        Sun, 22 May 2022 20:24:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=JUb2RTlT+IZglRnDyHTq14AHdKEeDChqzxcTkCPvkpY=;
-        b=nonjOb4hotiLX5UUe8J/gf1SECe6Z8aH143j9DwllQutSIG2gHWEMn5pD6oLPSbH7s
-         2ghhmyX9B1jvBmflAzVzo7kxM1KuOiyhB2tdWk7ODaF4S5NI25jRDrNhRSwyhHmAZtHl
-         TJHm0gtYlPOOTGqXGR/P6xBleAoIucnsF+8ZuYascm645+s5RrGCn+b6gzeWd3KhVOe+
-         4+xyRyBWpTHI7wK4dXNtwXsFIrWhMW6UZvvjSF7FfA3HG05HsX46Fvbgjjxfafer/P87
-         0eB+1zf5A1y7gZ/rYfwt5DvX97nDd3yoPQWrfLsNWBZSvDbMCgeb1lATBXDrh2FilVsr
-         RENg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=JUb2RTlT+IZglRnDyHTq14AHdKEeDChqzxcTkCPvkpY=;
-        b=p/44qWnABaSLVz9GbsAhgwfXf7WLxODc3sefxW7r88NzuI6yqaub5MfIVM8/vmgHiO
-         MZCDKhCmHOHFXrV9vrBhUUgMDN1a0a5Gb2GXjB+gE1l8kSsrvRLp8N5ZhNQPo7sBb1i7
-         kAdZzfwSp1SzmboXTavSVY3yXDJ7J9drI2qCrcqj84fmywgeId7KwV30w5kdhwxF8woF
-         A2/ibwWkqxskMREErGSe5q+WWfL4Qk2ORL9HEHg5utiqX7tpp2ASk867/R4FOceGQQaj
-         WRRFnp5M4SoWppAmm2nWp/BY9wYyfDlndfcWWX6wLWQlwUN7xwEN8hHf5rqtmZD5wBih
-         tyVw==
-X-Gm-Message-State: AOAM532P2Ph7Ez+6qaCcWryr4i5FGSIC/irmZJOVGkhsQ2ai5ORdvfar
-        Qlb8HfWUClMk0/lpKQuoVME=
-X-Google-Smtp-Source: ABdhPJyLQbOuFH7gl2zEod9sFLqO0z9R7iTGrMGce+Yk9+XcGDmNFCmazh115lXzkNkB8POkyE4R2Q==
-X-Received: by 2002:a17:902:a58b:b0:161:67a0:d2b2 with SMTP id az11-20020a170902a58b00b0016167a0d2b2mr20721686plb.131.1653274161831;
-        Sun, 22 May 2022 19:49:21 -0700 (PDT)
-Received: from ?IPV6:2600:8802:b00:4a48:7d80:5130:9847:28b6? ([2600:8802:b00:4a48:7d80:5130:9847:28b6])
-        by smtp.gmail.com with ESMTPSA id jb4-20020a170903258400b0015e8d4eb1fcsm3803604plb.70.2022.05.22.19.49.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 May 2022 19:49:21 -0700 (PDT)
-Message-ID: <dd55b6ce-204e-557b-ef70-1c91f80e5f8d@gmail.com>
-Date:   Sun, 22 May 2022 19:49:20 -0700
+        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
+        Date:Message-Id:MIME-Version:Content-Transfer-Encoding; bh=F2Ijg
+        PZqOOdRp/fL0Q+UbB5zcPYlxJ9x/Q7Ip6MURLg=; b=cJFolywZ7E1/hbc7Fr5Wz
+        yjE7nZkrlmkDStwm6u8IP5VI9avoizk64tbWkFnn/A6K2QPNWuGEjoSXn01zFEgn
+        PmztcA5APuE1e0SADPNID6Lnl2+mxnpM+CmEV8IeI3FYdmpto7fsNxjO6L1CLsPh
+        SAxvbXT59zSYqHYdd9206s=
+Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
+        by corp-front11-corp.i.nease.net (Coremail) with SMTP id aYG_CgAnP2F3_opiFfsfAA--.3654S2;
+        Mon, 23 May 2022 11:24:39 +0800 (HKT)
+From:   liuyacan@corp.netease.com
+To:     kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ubraun@linux.ibm.com,
+        liuyacan <liuyacan@corp.netease.com>
+Subject: [PATCH net] net/smc: postpone sk_refcnt increment in connect()
+Date:   Mon, 23 May 2022 11:24:37 +0800
+Message-Id: <20220523032437.1059718-1-liuyacan@corp.netease.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [PATCH net-next v5 2/2] net: phy: broadcom: Add PTP support for
- some Broadcom PHYs.
-Content-Language: en-US
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, andrew@lunn.ch, hkallweit1@gmail.com,
-        linux@armlinux.org.uk, bcm-kernel-feedback-list@broadcom.com,
-        kernel-team@fb.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
-References: <20220518223935.2312426-1-jonathan.lemon@gmail.com>
- <20220518223935.2312426-3-jonathan.lemon@gmail.com>
- <f5963ddb-01bb-6935-ecdd-0f9e7c0afda0@gmail.com>
- <20220521020456.fkgx7s5ymtxd5y2q@bsd-mbp.local>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220521020456.fkgx7s5ymtxd5y2q@bsd-mbp.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.3 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: aYG_CgAnP2F3_opiFfsfAA--.3654S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7XrWxtFWUZw18uF4rWrWruFg_yoWkWrcE9r
+        Z3WFWDCr4jyF4rJ3yxA3yrAa97tw4rGr48Aws8ArWIq3W8WryDurs8Crsxur1Duw45Cr13
+        Wr4FgFWrC34IyjkaLaAFLSUrUUUU8b8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbMkYjxAI6xCIbckI1I0E57IF64kEYxAxM7AC8VAFwI0_Gr0_Xr1l
+        1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0I
+        I2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0
+        Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7
+        xvwVC2z280aVCY1x0267AKxVW0oVCq3wAaw2AFwI0_Jrv_JF1ln4vE1TuYJxujqTIEc-sF
+        P3VYkVW5Jr1DJw4UKVWUGwAawVCFI7vE04vSzxk24VAqrcv_Gr1UXr18M2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l57IF6s8CjcxG0xyl5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xII
+        jxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr
+        1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E8cxa
+        n2IY04v7M4kE6xkIj40Ew7xC0wCjxxvEw4Wlc2IjII80xcxEwVAKI48JMxAIw28IcxkI7V
+        AKI48JMxCjnVAK0II2c7xJMxC20s026xCaFVCjc4AY6r1j6r4UMxCIbVAxMI8I3I0E5I8C
+        rVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8Zw
+        CIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x02
+        67AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr
+        0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7sRi1v
+        VJUUUUU==
+X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQAMCVt76zN6BgAYsc
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: liuyacan <liuyacan@corp.netease.com>
 
+Same trigger condition as commit 86434744. When setsockopt runs
+in parallel to a connect(), and switch the socket into fallback
+mode. Then the sk_refcnt is incremented in smc_connect(), but
+its state stay in SMC_INIT (NOT SMC_ACTIVE). This cause the
+corresponding sk_refcnt decrement in __smc_release() will not be
+performed.
 
-On 5/20/2022 7:04 PM, Jonathan Lemon wrote:
-> On Fri, May 20, 2022 at 10:24:25AM -0700, Florian Fainelli wrote:
->>
->>
->> On 5/18/2022 3:39 PM, Jonathan Lemon wrote:
->>> This adds PTP support for BCM54210E Broadcom PHYs, in particular,
->>> the BCM54213PE, as used in the Rasperry PI CM4.  It has only been
->>> tested on that hardware.
->>>
->>> Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
->>> ---
->> [snip]
->>
->> Looks good to me, just one question below:
->>
->>> +static void bcm_ptp_init(struct bcm_ptp_private *priv)
->>> +{
->>> +	priv->nse_ctrl = NSE_GMODE_EN;
->>> +
->>> +	mutex_init(&priv->mutex);
->>> +	skb_queue_head_init(&priv->tx_queue);
->>> +
->>> +	priv->mii_ts.rxtstamp = bcm_ptp_rxtstamp;
->>> +	priv->mii_ts.txtstamp = bcm_ptp_txtstamp;
->>> +	priv->mii_ts.hwtstamp = bcm_ptp_hwtstamp;
->>> +	priv->mii_ts.ts_info = bcm_ptp_ts_info;
->>> +
->>> +	priv->phydev->mii_ts = &priv->mii_ts;
->>> +
->>> +	INIT_DELAYED_WORK(&priv->out_work, bcm_ptp_fsync_work);
->>
->> Do we need to make sure that we cancel the workqueue in an bcm_ptp_exit()
->> function?
->>
->> I would imagine that the Ethernet MAC attached to that PHY device having
->> stopped its receiver and transmitter should ensure no more packets coming in
->> or out, however since this is a delayed/asynchronous work, do not we need to
->> protect against use after free?
-> 
-> The workqueue is just mamually creatimg a 1PPS pulse on the SYNC_OUT
-> pin, no packet activity.  Arguably, the .suspend hook could stop all work,
-> but that seems out of scope here? (and this phy does not suspend/resume)
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+Fixes: 86434744 ("net/smc: add fallback check to connect()")
+---
+ net/smc/af_smc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The BCM54210E entry does have a suspend/resume entry so it seems to me 
-that we do need to cancel the workqueue as the PHY library will not do 
-that on our behalf. What I imagine could happen is that this workqueue 
-generates spurious MDIO accesses *after* both the PHY and the bus have 
-been suspended (and their driver's clock possibly gated already).
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index fce16b9d6..45a24d242 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1564,9 +1564,9 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
+ 	if (rc && rc != -EINPROGRESS)
+ 		goto out;
+ 
+-	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (smc->use_fallback)
+ 		goto out;
++	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (flags & O_NONBLOCK) {
+ 		if (queue_work(smc_hs_wq, &smc->connect_work))
+ 			smc->connect_nonblock = 1;
 -- 
-Florian
+2.20.1
+
