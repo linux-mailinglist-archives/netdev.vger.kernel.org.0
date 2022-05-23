@@ -2,106 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A2C2F531C17
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:57:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7747E5319BD
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:55:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239799AbiEWS2D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 14:28:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
+        id S240597AbiEWS3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 14:29:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245457AbiEWS1I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 14:27:08 -0400
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01552A33B4
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 11:02:34 -0700 (PDT)
-Received: by mail-pj1-x102c.google.com with SMTP id t11-20020a17090a6a0b00b001df6f318a8bso18161288pjj.4
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 11:02:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=aPCmu/nmh4/34jQRsqZ/S+UicCj4+xChwquCkhBAM0s=;
-        b=YvAER/qB3McKn3aWkwxve0Qk0/7gWBqJLBL6MbTVmyJ2g1IwXDT7KWLODgaLQ/utBr
-         bt0Z0iGHsFNGoiLYpDZ8yRUNQTObrDpH9l4631FKUuLPg74VEtRnC47S6JoUJRJEzp68
-         cFQ8DpGKM6K+oGirFtbI/hINbzrJNxUxW3hLXaHqSStFjLyw2vj51jCUKue1eQm9bXG5
-         afiQQjPKKR6vxFVaQj4n6a1i+jOjsszyTwh6gCgsc6F5+1vecFYUlWjRmDDGqKKEe5hG
-         +mZeyRdyFo4F9RKoI2LaNXoyZ1Luydgh5Q6YFitgCqMYJVCoEln//T4/kg33O3jxA+ya
-         Dqmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=aPCmu/nmh4/34jQRsqZ/S+UicCj4+xChwquCkhBAM0s=;
-        b=RAQQuzsaWkEh2C5PQmQfmDNZvUaAgmN5J2OikLG5r19hz+15syN+9ihnq6TOse9fOR
-         5zGDFBJhGZ8PLnR/7IILU+YzfqL3J230YDLpIeTSaERO4gzdRR5j3/Juf5HhtiTZeR7X
-         I4kVq2RIZi2mYVtftWRxE/OqcJmH/p1/b2vp5FJVMF+C5DiCgLfVMwdAc8eWD/Dr1DMo
-         cLoKZFMOtMhyYUq2chE+BaRMTi5sWKyrvxY+1I4uVw4/awauAijY9kC8QadSsfp9n8QB
-         ifrVRWnlpINsyLppXMn1qvEiOtuqB4wl78ovm4wOleMNrI4a0dQR3vYdaAa7FNXkdLJO
-         0IAA==
-X-Gm-Message-State: AOAM533wMAbcr7Ah7fT86++Pd/4gFRO1GTekPBbhHaNi2ATO2nL33Pra
-        4xf6YwyPDtWXv5LmV8H4WBU=
-X-Google-Smtp-Source: ABdhPJw17q91Rq1LJrIAc5j8+gvqEgfupBSLkM7giOUg6WXUI2I+iIZ5i5ilV7rTrXxMnoOh/0LycQ==
-X-Received: by 2002:a17:90b:1c8e:b0:1bf:364c:dd7a with SMTP id oo14-20020a17090b1c8e00b001bf364cdd7amr192510pjb.103.1653328910226;
-        Mon, 23 May 2022 11:01:50 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m26-20020a63711a000000b003c6a80e54cfsm5089335pgc.75.2022.05.23.11.01.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 11:01:48 -0700 (PDT)
-Message-ID: <fb014933-75a3-4d52-114a-daa3748f4a4b@gmail.com>
-Date:   Mon, 23 May 2022 11:01:45 -0700
+        with ESMTP id S244223AbiEWS17 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 14:27:59 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3C2213C1D1
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 11:03:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7CB88B81219
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 18:03:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1835C385AA;
+        Mon, 23 May 2022 18:03:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653328997;
+        bh=uwUXmHOdUN258e/8u67bhWO6RMsD3iUhmw3VpFqzp78=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Hktbq3dzl8zZxgOfp07IazYvPCBRBw93F5Dm0hejQD2IWwZXqXiq7ixiqmgCTqn1+
+         dPpLBlUBiA7Y1Mh+VjnTRR9oKx+9mqMxmlEvG8dpFemUkqJcz7yxTTzu2hqVKunFIk
+         IQMmAik0itb9VdAfVBV/TSLfWi9iFQ7NBGLGZDOOEX5FZYDuUxLx/12NIudehfWuqc
+         Aij2ZUk6dxZbqOicKYd+zFXh23rGnZH7bxUUmT7LqlgQN1L5lFW8DdqIbbUwoQ9G78
+         bwVOIMgzbmdKS4g8MH3gGRU5aiTfsqQBnjirjkSkH0XRnEyDf0Yv3i9nRc5SK/44K5
+         ByDdryr2qKIpg==
+Date:   Mon, 23 May 2022 11:03:15 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Subject: Re: [PATCH net-next 03/19] net: add dev_hold_track() and
+ dev_put_track() helpers
+Message-ID: <20220523110315.6f0637ed@kernel.org>
+In-Reply-To: <20211202032139.3156411-4-eric.dumazet@gmail.com>
+References: <20211202032139.3156411-1-eric.dumazet@gmail.com>
+        <20211202032139.3156411-4-eric.dumazet@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC PATCH net-next 08/12] net: dsa: use
- dsa_tree_for_each_cpu_port in dsa_tree_{setup,teardown}_master
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20220523104256.3556016-1-olteanv@gmail.com>
- <20220523104256.3556016-9-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220523104256.3556016-9-olteanv@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/23/22 03:42, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> More logic will be added to dsa_tree_setup_master() and
-> dsa_tree_teardown_master() in upcoming changes.
-> 
-> Reduce the indentation by one level in these functions by introducing
-> and using a dedicated iterator for CPU ports of a tree.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed,  1 Dec 2021 19:21:23 -0800 Eric Dumazet wrote:
+> +static inline void dev_hold_track(struct net_device *dev,
+> +				  netdevice_tracker *tracker, gfp_t gfp)
+> +{
+> +	if (dev) {
+> +		dev_hold(dev);
+> +#ifdef CONFIG_NET_DEV_REFCNT_TRACKER
+> +		ref_tracker_alloc(&dev->refcnt_tracker, tracker, gfp);
+> +#endif
+> +	}
+> +}
+> +
+> +static inline void dev_put_track(struct net_device *dev,
+> +				 netdevice_tracker *tracker)
+> +{
+> +	if (dev) {
+> +#ifdef CONFIG_NET_DEV_REFCNT_TRACKER
+> +		ref_tracker_free(&dev->refcnt_tracker, tracker);
+> +#endif
+> +		dev_put(dev);
+> +	}
+> +}
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+Hi Eric, how bad would it be if we renamed dev_hold/put_track() to
+netdev_hold/put()? IIUC we use the dev_ prefix for "historic reasons"
+could this be an opportunity to stop doing that?
+
