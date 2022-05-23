@@ -2,58 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 892765309C4
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 09:05:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFCE5309EA
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 09:20:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229732AbiEWHEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 03:04:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60004 "EHLO
+        id S229616AbiEWHUl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 03:20:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229574AbiEWHEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 03:04:02 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6475523677C
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 23:56:39 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nt1wt-0007Lr-4Z; Mon, 23 May 2022 08:53:51 +0200
-Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <sha@pengutronix.de>)
-        id 1nt1wq-0001DV-Gs; Mon, 23 May 2022 08:53:48 +0200
-Date:   Mon, 23 May 2022 08:53:48 +0200
-From:   Sascha Hauer <s.hauer@pengutronix.de>
-To:     Hans Ulli Kroll <linux@ulli-kroll.de>
-Cc:     linux-wireless@vger.kernel.org, Neo Jou <neojou@gmail.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Yan-Hsuan Chuang <tony0620emma@gmail.com>,
-        Kalle Valo <kvalo@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        kernel@pengutronix.de, Johannes Berg <johannes@sipsolutions.net>
-Subject: Re: [PATCH 00/10] RTW88: Add support for USB variants
-Message-ID: <20220523065348.GK25578@pengutronix.de>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
- <55f569899e4e894970b826548cd5439f5def2183.camel@ulli-kroll.de>
+        with ESMTP id S229776AbiEWHUY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 03:20:24 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EF7511814
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 00:11:54 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id t25so23973195lfg.7
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 00:11:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=fAuZ4KWtArpOp/u3Q10ahbTyWqMsYIHTeZ+AhWJCC4s=;
+        b=PBjGsAL7D/rHVMJ2GU9NO4tWWynQwJbPfMF50qZ0Db3cPVndJEEOoCr48lA6LecE36
+         ASwQHTeB++MaNemZdWuIgkNmpEG2QvIH8U62eocdoEqYvwChgqqr0KUYgX/s4XYMF+hD
+         WKP/0kyNYwENTH/gl8YbyV1jMcxJW4ie2V0FE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=fAuZ4KWtArpOp/u3Q10ahbTyWqMsYIHTeZ+AhWJCC4s=;
+        b=J3Q2u4yHR7Mvgs0IC3yIVcpvrY0kQ/zmfW3OdmmzwLa5a5TgJoqNECs7FIhXt0/h45
+         2t2T+VYUY7iLjZiwo2uZI1D1aVmVz7a6WxqmHD1KjA+Czs3d1CVDdhtKuYOWu7zxPd3q
+         rS+wALFPqlpD77dlefK//V0psk/h/sA8IlhVntPpI55l5qbJswIkcswT6D2KHkWV/bc8
+         mxRE9KM21RwusVvo5YoKYvNdRDH+671ljoNMfw6f+sopMUmYQ2qXb/d911oKEXc6v36f
+         gn2Zcqpr4Am/Rzd1BK6U2kZiGEwkG0E+YLQ8aHuMuXs1cZeDpv6Qo4TeB5nDojbcSBbv
+         z9QA==
+X-Gm-Message-State: AOAM533rx5yuvvIidL8b2dVipnPJTgFeVLyKHMWk8p5MbcTInLJZBcc2
+        ZeJSBm7Z/LrlAo2Bcyjc+WvQL05Xljgw7Q==
+X-Google-Smtp-Source: ABdhPJzibI07tOlMfXLYH6ysXjFHXEiH4tfkSQDT7MMA4tQ1XaDhwxfksJeLIeSCM7aqNhJgSivFpg==
+X-Received: by 2002:adf:f102:0:b0:20d:8d:870e with SMTP id r2-20020adff102000000b0020d008d870emr18178986wro.292.1653289076862;
+        Sun, 22 May 2022 23:57:56 -0700 (PDT)
+Received: from tom-ThinkPad-T14s-Gen-2i (net-188-217-53-154.cust.vodafonedsl.it. [188.217.53.154])
+        by smtp.gmail.com with ESMTPSA id g24-20020adfa498000000b0020c5253d90csm9159068wrb.88.2022.05.22.23.57.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 May 2022 23:57:56 -0700 (PDT)
+Date:   Mon, 23 May 2022 08:57:54 +0200
+From:   Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     michael@amarulasolutions.com, alberto.bianchi@amarulasolutions.com,
+        linux-amarula@amarulasolutions.com, linuxfancy@googlegroups.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] net: phy: DP83822: enable rgmii mode if
+ phy_interface_is_rgmii
+Message-ID: <20220523065754.GJ1589864@tom-ThinkPad-T14s-Gen-2i>
+References: <20220520235846.1919954-1-tommaso.merciai@amarulasolutions.com>
+ <YokxxlyFTJZ8c+5y@lunn.ch>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <55f569899e4e894970b826548cd5439f5def2183.camel@ulli-kroll.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:45:07 up 53 days, 19:14, 61 users,  load average: 0.03, 0.24,
- 0.25
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: sha@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+In-Reply-To: <YokxxlyFTJZ8c+5y@lunn.ch>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -61,62 +75,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Hans Ulli,
-
-On Mon, May 23, 2022 at 06:07:16AM +0200, Hans Ulli Kroll wrote:
-> On Wed, 2022-05-18 at 10:23 +0200, Sascha Hauer wrote:
-> > This series adds support for the USB chip variants to the RTW88 driver.
+On Sat, May 21, 2022 at 08:39:02PM +0200, Andrew Lunn wrote:
+> On Sat, May 21, 2022 at 01:58:46AM +0200, Tommaso Merciai wrote:
+> > RGMII mode can be enable from dp83822 straps, and also writing bit 9
+> > of register 0x17 - RMII and Status Register (RCSR).
+> > When phy_interface_is_rgmii rgmii mode must be enabled, same for
+> > contrary, this prevents malconfigurations of hw straps
 > > 
+> > References:
+> >  - https://www.ti.com/lit/gpn/dp83822i p66
+> > 
+> > Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> > Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+> > Suggested-by: Alberto Bianchi <alberto.bianchi@amarulasolutions.com>
+> > Tested-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
 > 
-> Hi Sascha
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 > 
-> glad you found some *working* devices for rtw88 !
+> If you want to, you could go further. If bit 9 is clear, bit 5 defines
+> the mode, either RMII or MII. There are interface modes defined for
+> these, so you could get bit 5 as well.
 
-Well, not fully. I had to add [3] = RTW_DEF_RFE(8822c, 0, 0), to the
-rtw8822c_rfe_defs array.
+Hi Andrew,
+Thanks for the review and for your time.
+I'll try to go further, like you suggest :)
 
-> 
-> I spend some of the weekend testing your driver submission.
-> 
-> for rtl8821cu devices I get following output
-> 
-> some Logilink device
-> 
-> [ 1686.605567] usb 1-5.1.2: New USB device found, idVendor=0bda, idProduct=c811, bcdDevice=
-> 2.00
-> [ 1686.614186] usb 1-5.1.2: New USB device strings: Mfr=1, Product=2, SerialNumber=3
-> [ 1686.621721] usb 1-5.1.2: Product: 802.11ac NIC
-> [ 1686.626227] usb 1-5.1.2: Manufacturer: Realtek
-> [ 1686.630695] usb 1-5.1.2: SerialNumber: 123456
-> [ 1686.640480] rtw_8821cu 1-5.1.2:1.0: Firmware version 24.5.0, H2C version 12
-> [ 1686.932828] rtw_8821cu 1-5.1.2:1.0: failed to download firmware
-> [ 1686.945206] rtw_8821cu 1-5.1.2:1.0: failed to setup chip efuse info
-> [ 1686.951538] rtw_8821cu 1-5.1.2:1.0: failed to setup chip information
-> [ 1686.958402] rtw_8821cu: probe of 1-5.1.2:1.0 failed with error -22
-> 
-> above is same with some from Comfast
-> 
-> The worst in the list is one from EDUP
-> 
-> [ 1817.855704] rtw_8821cu 1-5.1.2:1.2: Firmware version 24.5.0, H2C version 12
-> [ 1818.153918] rtw_8821cu 1-5.1.2:1.2: rfe 255 isn't supported
-> [ 1818.165176] rtw_8821cu 1-5.1.2:1.2: failed to setup chip efuse info
-> [ 1818.171505] rtw_8821cu 1-5.1.2:1.2: failed to setup chip information
-
-Do these chips work with your out of tree variant of this driver?
-
-Is the efuse info completely 0xff or only the field indicating the rfe
-option?
+Regards,
+Tommaso
 
 > 
-> rtl8822bu devices are working fine ...
-
-Nice. Did you test a rtw8723du device as well?
-
-Sascha
+>     Andrew
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Tommaso Merciai
+Embedded Linux Engineer
+tommaso.merciai@amarulasolutions.com
+__________________________________
+
+Amarula Solutions SRL
+Via Le Canevare 30, 31100 Treviso, Veneto, IT
+T. +39 042 243 5310
+info@amarulasolutions.com
+www.amarulasolutions.com
