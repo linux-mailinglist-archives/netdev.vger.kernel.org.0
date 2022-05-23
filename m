@@ -2,67 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C3CF530A08
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 10:00:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EBAA530AB2
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 10:01:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230237AbiEWHjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 03:39:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
+        id S231199AbiEWHt5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 03:49:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229952AbiEWHjH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 03:39:07 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D818F13DF9;
-        Mon, 23 May 2022 00:39:04 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id w200so12924942pfc.10;
-        Mon, 23 May 2022 00:39:04 -0700 (PDT)
+        with ESMTP id S231193AbiEWHto (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 03:49:44 -0400
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA5B13F2A;
+        Mon, 23 May 2022 00:49:32 -0700 (PDT)
+Received: by mail-wm1-x331.google.com with SMTP id c9-20020a7bc009000000b0039750ec5774so508066wmb.5;
+        Mon, 23 May 2022 00:49:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FDKEez4LL/T5vz5sGrr37Im2D5hBP4Hr0638TS/hH4w=;
-        b=qWlHQua1NGt2HLFYqYJKMsocOeNT5XL7JjMoe7VhhejqbWyffuDbiIez8cPfKAxmM9
-         zDzEZFcT2zR4bCq+EWZsWu1QtweEij42nIPNEFCbFcGVcQWCXteZnFWG395yQ+qTUkW7
-         fyPoux3wi9J8M0JJ5ASaZx/VXgyGTNvg6xcuVt59pyFzXc0O5pXG0PlSEONemYH2Q8zI
-         fHZk8/2mkBkogsgh1+hEcGkBr8jlGLOOsNSkS/YQicDZEEkucvUvaO0qY1ckiB4qUmF+
-         p+MyyiacObjIhVqW82sEBPtfXxNe7XF3RPLShb3OKc/hzDIrX/oHw/nzHDqYnWxOHtSN
-         ARZw==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=zu70cwOOuZ1oF/eU6+5XWmRQ1JftQs7psdHlaNbUxCs=;
+        b=eYLyyMRCEU6pafvm0GgqZPVNZdkQLXjzxY3aWYPbhoRG8DqKnlCLE4CDl8IXlZ9nUD
+         7zYPue6NprgtvMZzVJjhHBagIf84+hKdiDcGhOuyarLkrtDQw4ERDPbuakZBEWoPGo5V
+         m8H1eDBwuK726CFpKgPJ3/KmKMkgM5x8rVsKGmrUNfWGcWw2gmSZrRZ9vfh/qQFzDNTH
+         pU1nWntTTLAdN16MGRLks8PsoIr7lc9QqRKhqP+2+yw6ge2p2tRAs4bpVTpEq7hG+tLl
+         tL0qHMLpuDVvKGClO9CUERnyMRMsgA9XTw0YOpIvnbuKq8Asfdzma7TlFSFPOPCrURf4
+         9tOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FDKEez4LL/T5vz5sGrr37Im2D5hBP4Hr0638TS/hH4w=;
-        b=jAq0E6xaiOxYu+DrCX6bwVPp03TEfMWW47RToubd/jJBJGx5BXGhsqO5gH1dV1Em3Q
-         YQacqGneqVE8a3meBbQUzdKzHywA/RR87nz89TbSZBxfAECBIgoxLLfZJrMadlUFIVZq
-         KdqhcKUNzmBPAGeDLIFXJ4hPeMGYTdKBJEZUEGx/uMRqhznUMUtWRKqpv+6k6j0qT49d
-         C0fxMshEoYO2ZE/OWeM8yb2vyp71oyIb3uOf9p5V57nMZ0fh4e1bMWn8FQtGD+HuU/i4
-         oNWasB9vNRQSFlWy9jqWHChKGKwbnz3yYrSj7eVTTBhRELOj4VfhBY1LXHeZGkyhHX0S
-         wRnw==
-X-Gm-Message-State: AOAM5333lIvDZZ+1nwZVS7WRUjdVh10mbRaXk6ODaSkqnozKEPgSQzAG
-        +MqKjtKv59XjNKkioDjlM/o=
-X-Google-Smtp-Source: ABdhPJxFCqI8Rwlcssa1BNjfxrK8HpuSbbIopph7tby9Jp/NcYLy0dbo9U6k2v/Tq/lyxQUdkq/4xA==
-X-Received: by 2002:a63:e017:0:b0:3f2:543b:8402 with SMTP id e23-20020a63e017000000b003f2543b8402mr19085100pgh.209.1653291544335;
-        Mon, 23 May 2022 00:39:04 -0700 (PDT)
-Received: from localhost.localdomain ([203.205.141.21])
-        by smtp.gmail.com with ESMTPSA id d13-20020a170902e14d00b0015e8d4eb204sm4360048pla.78.2022.05.23.00.39.00
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zu70cwOOuZ1oF/eU6+5XWmRQ1JftQs7psdHlaNbUxCs=;
+        b=LX6+kKlrhBXGeEnAtwSsG0dnJyc3rDYe041Oh096rp73hSS9hHjjQK69qO+Ih348Hx
+         /UyDc6lbuLr6M7K61o7ISOl/ApQzY6TzMwT4/Cf4MhAavz/3swkjDHHHZH3BPZfiqbJm
+         mqonVE5q7fjCRZV2EQwh9YLhLMdxd9VXkIsOcC/6lSuMb9vwzJppk+4p9HbjHjyqCSXe
+         hFsKvOf9gW42L3EFxAg7nI6qwqMMakraUVCONhz2fG19QwS1C56cDg4nS5S8ZaIj6hx4
+         uTUkEa1mN//iT0kiV1DPpd0/71J63TMGkfBgSWhkgV329JMTv/lKpoUrIW216HVU1GuB
+         vlbw==
+X-Gm-Message-State: AOAM5324mo/UkuY7IZYgreEl+p9Fsa507ljwDfJRZ/GPnt4QbMstwgk4
+        vgEu3kLYTOqkN4/aVPzcEdg=
+X-Google-Smtp-Source: ABdhPJzekajdFiZkeUg1N0gFXdEg5RpwBc5H3Epe0q9/kG/H7JBi4zMYk07xnnw96paRYgsoTf+K0g==
+X-Received: by 2002:a05:600c:3c8b:b0:397:2db3:97a8 with SMTP id bg11-20020a05600c3c8b00b003972db397a8mr17725654wmb.132.1653292171090;
+        Mon, 23 May 2022 00:49:31 -0700 (PDT)
+Received: from krava (net-93-65-240-241.cust.vodafonedsl.it. [93.65.240.241])
+        by smtp.gmail.com with ESMTPSA id k16-20020a05600c0b5000b00395f15d993fsm9062164wmr.5.2022.05.23.00.49.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 00:39:03 -0700 (PDT)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: imagedong@tencent.com
-To:     ast@kernel.org
-Cc:     daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Menglong Dong <imagedong@tencent.com>,
-        Jiang Biao <benbjiang@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>
-Subject: [PATCH] bpf: fix probe read error in ___bpf_prog_run()
-Date:   Mon, 23 May 2022 15:37:32 +0800
-Message-Id: <20220523073732.296247-1-imagedong@tencent.com>
-X-Mailer: git-send-email 2.36.1
+        Mon, 23 May 2022 00:49:30 -0700 (PDT)
+From:   Jiri Olsa <olsajiri@gmail.com>
+X-Google-Original-From: Jiri Olsa <jolsa@kernel.org>
+Date:   Mon, 23 May 2022 09:49:26 +0200
+To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <olsajiri@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "linux-perf-use." <linux-perf-users@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <a.p.zijlstra@chello.nl>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ian Rogers <irogers@google.com>
+Subject: Re: [PATCHv2 0/3] perf tools: Fix prologue generation
+Message-ID: <Yos8hq3NmBwemoJw@krava>
+References: <20220510074659.2557731-1-jolsa@kernel.org>
+ <CAEf4BzbK9zgetgE1yKkCANTZqizUrXgamJa2X0f0XmzQUdFrCQ@mail.gmail.com>
+ <YntnRixbfQ1HCm9T@krava>
+ <Ynv+7iaaAbyM38B6@kernel.org>
+ <CAEf4BzaQsF31f3WuU32wDCzo6bw7eY8E9zF6Lo218jfw-VQmcA@mail.gmail.com>
+ <YoTAhC+6j4JshqN8@krava>
+ <YoYj6cb0aPNN/olH@krava>
+ <CAEf4Bzaa60kZJbWT0xAqcDMyXBzbg98ShuizJAv7x+8_3X0ZBg@mail.gmail.com>
+ <Yokk5XRxBd72fqoW@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yokk5XRxBd72fqoW@kernel.org>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -73,79 +91,140 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <imagedong@tencent.com>
+On Sat, May 21, 2022 at 02:44:05PM -0300, Arnaldo Carvalho de Melo wrote:
+> Em Fri, May 20, 2022 at 02:46:49PM -0700, Andrii Nakryiko escreveu:
+> > On Thu, May 19, 2022 at 4:03 AM Jiri Olsa <olsajiri@gmail.com> wrote:
+> > > On Wed, May 18, 2022 at 11:46:44AM +0200, Jiri Olsa wrote:
+> > > > On Tue, May 17, 2022 at 03:02:53PM -0700, Andrii Nakryiko wrote:
+> > > > > Jiri, libbpf v0.8 is out, can you please re-send your perf patches?
+> 
+> > > > yep, just made new fedora package.. will resend the perf changes soon
+> 
+> > > fedora package is on the way, but I'll need perf/core to merge
+> > > the bpf_program__set_insns change.. Arnaldo, any idea when this
+> > > could happen?
+> 
+> > Can we land these patches through bpf-next to avoid such complicated
+> > cross-tree dependencies? As I started removing libbpf APIs I also
+> > noticed that perf is still using few other deprecated APIs:
+> >   - bpf_map__next;
+> >   - bpf_program__next;
+> >   - bpf_load_program;
+> >   - btf__get_from_id;
 
-I think there is something wrong with BPF_PROBE_MEM in ___bpf_prog_run()
-in big-endian machine. Let's make a test and see what will happen if we
-want to load a 'u16' with BPF_PROBE_MEM.
+these were added just to bypass the time window when they were not
+available in the package, so can be removed now (in the patch below)
 
-Let's make the src value '0x0001', the value of dest register will become
-0x0001000000000000, as the value will be loaded to the first 2 byte of
-DST with following code:
+>  
+> > It's trivial to fix up, but doing it across few trees will delay
+> > libbpf work as well.
+>  
+> > So let's land this through bpf-next, if Arnaldo doesn't mind?
+> 
+> Yeah, that should be ok, the only consideration is that I'm submitting
+> this today to Linus:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/commit/?h=tmp.perf/urgent&id=0ae065a5d265bc5ada13e350015458e0c5e5c351
+> 
+> To address this:
+> 
+> https://lore.kernel.org/linux-perf-users/f0add43b-3de5-20c5-22c4-70aff4af959f@scylladb.com/
 
-  bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));
+ok, we can do that via bpf-next, but of course there's a problem ;-)
 
-Obviously, the value in DST is not correct. In fact, we can compare
-BPF_PROBE_MEM with LDX_MEM_H:
+perf/core already has dependency commit [1]
 
-  DST = *(SIZE *)(unsigned long) (SRC + insn->off);
+so either we wait for perf/core and bpf-next/master to sync or:
 
-If the memory load is done by LDX_MEM_H, the value in DST will be 0x1 now.
+  - perf/core reverts [1] and
+  - bpf-next/master takes [1] and the rest
 
-And I think this error results in the test case 'test_bpf_sk_storage_map'
-failing:
+I have the changes ready if you guys are ok with that
 
-  test_bpf_sk_storage_map:PASS:bpf_iter_bpf_sk_storage_map__open_and_load 0 nsec
-  test_bpf_sk_storage_map:PASS:socket 0 nsec
-  test_bpf_sk_storage_map:PASS:map_update 0 nsec
-  test_bpf_sk_storage_map:PASS:socket 0 nsec
-  test_bpf_sk_storage_map:PASS:map_update 0 nsec
-  test_bpf_sk_storage_map:PASS:socket 0 nsec
-  test_bpf_sk_storage_map:PASS:map_update 0 nsec
-  test_bpf_sk_storage_map:PASS:attach_iter 0 nsec
-  test_bpf_sk_storage_map:PASS:create_iter 0 nsec
-  test_bpf_sk_storage_map:PASS:read 0 nsec
-  test_bpf_sk_storage_map:FAIL:ipv6_sk_count got 0 expected 3
-  $10/26 bpf_iter/bpf_sk_storage_map:FAIL
-
-The code of the test case is simply, it will load sk->sk_family to the
-register with BPF_PROBE_MEM and check if it is AF_INET6. With this patch,
-now the test case 'bpf_iter' can pass:
-
-  $10  bpf_iter:OK
-
-Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-Signed-off-by: Menglong Dong <imagedong@tencent.com>
----
- kernel/bpf/core.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
-
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 13e9dbeeedf3..09e3f374739a 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1945,14 +1945,15 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
- 	LDST(W,  u32)
- 	LDST(DW, u64)
- #undef LDST
--#define LDX_PROBE(SIZEOP, SIZE)							\
-+#define LDX_PROBE(SIZEOP, SIZE, TYPE)						\
- 	LDX_PROBE_MEM_##SIZEOP:							\
- 		bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));	\
-+		DST = *((TYPE *)&DST);						\
- 		CONT;
--	LDX_PROBE(B,  1)
--	LDX_PROBE(H,  2)
--	LDX_PROBE(W,  4)
--	LDX_PROBE(DW, 8)
-+	LDX_PROBE(B,  1, u8)
-+	LDX_PROBE(H,  2, u16)
-+	LDX_PROBE(W,  4, u32)
-+	LDX_PROBE(DW, 8, u64)
- #undef LDX_PROBE
+thanks,
+jirka
  
- #define ATOMIC_ALU_OP(BOP, KOP)						\
+
+[1] https://lore.kernel.org/bpf/20220422100025.1469207-4-jolsa@kernel.org/
+
+---
+Subject: [PATCH bpf-next] perf tools: Remove the weak libbpf functions
+
+We added weak functions for some new libbpf functions because
+they were not packaged at that time [1].
+
+These functions are now available in package, so we can remove
+their weak perf variants.
+
+[1] https://lore.kernel.org/linux-perf-users/20211109140707.1689940-2-jolsa@kernel.org/
+
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+---
+ tools/perf/util/bpf-event.c | 51 -------------------------------------
+ 1 file changed, 51 deletions(-)
+
+diff --git a/tools/perf/util/bpf-event.c b/tools/perf/util/bpf-event.c
+index 94624733af7e..025f331b3867 100644
+--- a/tools/perf/util/bpf-event.c
++++ b/tools/perf/util/bpf-event.c
+@@ -22,57 +22,6 @@
+ #include "record.h"
+ #include "util/synthetic-events.h"
+ 
+-struct btf * __weak btf__load_from_kernel_by_id(__u32 id)
+-{
+-       struct btf *btf;
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-       int err = btf__get_from_id(id, &btf);
+-#pragma GCC diagnostic pop
+-
+-       return err ? ERR_PTR(err) : btf;
+-}
+-
+-int __weak bpf_prog_load(enum bpf_prog_type prog_type,
+-			 const char *prog_name __maybe_unused,
+-			 const char *license,
+-			 const struct bpf_insn *insns, size_t insn_cnt,
+-			 const struct bpf_prog_load_opts *opts)
+-{
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-	return bpf_load_program(prog_type, insns, insn_cnt, license,
+-				opts->kern_version, opts->log_buf, opts->log_size);
+-#pragma GCC diagnostic pop
+-}
+-
+-struct bpf_program * __weak
+-bpf_object__next_program(const struct bpf_object *obj, struct bpf_program *prev)
+-{
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-	return bpf_program__next(prev, obj);
+-#pragma GCC diagnostic pop
+-}
+-
+-struct bpf_map * __weak
+-bpf_object__next_map(const struct bpf_object *obj, const struct bpf_map *prev)
+-{
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-	return bpf_map__next(prev, obj);
+-#pragma GCC diagnostic pop
+-}
+-
+-const void * __weak
+-btf__raw_data(const struct btf *btf_ro, __u32 *size)
+-{
+-#pragma GCC diagnostic push
+-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+-	return btf__get_raw_data(btf_ro, size);
+-#pragma GCC diagnostic pop
+-}
+-
+ static int snprintf_hex(char *buf, size_t size, unsigned char *data, size_t len)
+ {
+ 	int ret = 0;
 -- 
-2.36.1
+2.35.3
 
