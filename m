@@ -2,191 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E975A531E91
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:26:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D39DB531EAA
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:38:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229805AbiEWW0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 18:26:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42680 "EHLO
+        id S231611AbiEWWiW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 18:38:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231560AbiEWW0K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:26:10 -0400
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2C566212E
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 15:26:06 -0700 (PDT)
-Received: by mail-wr1-x429.google.com with SMTP id e28so22631020wra.10
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 15:26:06 -0700 (PDT)
+        with ESMTP id S229666AbiEWWiQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:38:16 -0400
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3951C9CF7D;
+        Mon, 23 May 2022 15:38:15 -0700 (PDT)
+Received: by mail-io1-xd2e.google.com with SMTP id 2so6945363iou.5;
+        Mon, 23 May 2022 15:38:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=jms.id.au; s=google;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ueCq5+dTj6j2yPNYsasO+cBMPLIwNOMj1I6QU8gFRMg=;
-        b=Z7yEJy/N2gTlEQbAr5k2NwteV8l9KIjimZtAhoasUEzB9ppgypbhMkY0jGSmdKBT3I
-         z2Vlj49NHB7YcTKJmv1M0xCsZoMxHbKqZu4cjWF+24ZoXoRjTb8+j6RiD39XEegUfGA8
-         9cY3W9Tdyv3UUwjkXeMpl1eCndMk/AKSldBsE=
+        bh=WgfA+bj8h/yfvLtv8TQjcWpJiGYbRoi7JEJT7KRe+10=;
+        b=gacDjAeQh6oI7YHuiwPSGFwsV3CF57PtZWR9POoh7jzgX+t+opWpA1dnvhnh8pNHt2
+         irTzfrFP+T58xwnWZzI7TMGr6ltUwxZ9thY7wOyeuOcTOQpzRMq3MTANn75hiEDLvimx
+         2LkqFw4ADDzhUsVpIZyDjKYyZSPZSIqMkri+sbt1OKBNBeAdinFdn7AY9pdDMZSD8sHi
+         G5JatAMH8vpk/KZeY5Qwgf8r56MtS1EVs0BZNwGWWwY4hLtQIXoTXUoIaJ5qJWBZyI1B
+         iNk4ijFLQOKSQaFKKvC/oprDbb35shx17I8AfsGhLdhterZbPeqERz2MGVRwn/McDNYK
+         mGxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ueCq5+dTj6j2yPNYsasO+cBMPLIwNOMj1I6QU8gFRMg=;
-        b=I5fOH7QBQzGVn4XD19xpbBeusZjTWTyDaR9FUmWh0300AcBvwFzq//kVzxJjRrrGt6
-         n95adnJcG4pahcq6i34xFTU4DRBI1lRd3SYVXc/8W2qTkSTOcgPk4M3L4sx6KyDosvyf
-         HqYixUfoUamGI7jzJKXjZWsu7a2wF4gQr0PnhultW7GUDtQWSjNEqw9pQMoyphJiudqT
-         wpp8h+xYf+414Dj+7lU7vFxdFrvdYAlt28B1D9d7ThMvk8Yn5/12cjequgTXonIStKHM
-         o8uSQBEgV1YeMEaja1mUPRI685y/imKeMjo7Nj5FesFAqcVVFC9mCAMQkR6AhVM6Od94
-         5oWw==
-X-Gm-Message-State: AOAM532qadzPhWyWq56e7YWY/JqUj6jOwX9ARv2pGrApFLukicTNg5N0
-        OIWfIo98OKQT6+ZB4qAh1o19KHY5Bu2tg+OkZLN7LZht
-X-Google-Smtp-Source: ABdhPJzXPWHSihtrD6rjhJLffk6Kg48cDC7kXb+c+GvCBO+Gaz2Ij5Q+JUiK+Kcp4D36G0x093aCzEiTrPrYohUjiM8=
-X-Received: by 2002:adf:e18f:0:b0:20e:6352:211d with SMTP id
- az15-20020adfe18f000000b0020e6352211dmr20641190wrb.606.1653344765206; Mon, 23
- May 2022 15:26:05 -0700 (PDT)
+        bh=WgfA+bj8h/yfvLtv8TQjcWpJiGYbRoi7JEJT7KRe+10=;
+        b=CnA2r/a6PWiLvBQJKY6D/tc41jMpkT1+gwFbFn+m2urwO7wgw88b2F15PZkTTJ4q6K
+         95OYVmHygvIheS9fwLHx6i+yXPL7W98b9qOmPgHZmypvDPrDY3kCi+EXgMqSg/8L874l
+         5JjrTxxy33vF5g0fqjpSkS/89OWBfR4QJ4nEwDsSYhJGF8tA/dQRaD2/gWng78qfZr8R
+         Os+i1ktplZE8AfGQjsz+o7k8k52cLxy/kM+lANswkhd9svqeAjiwpfNfuzitq68NJHf6
+         VchyG1MNSjliHZtTpwhpXR6rlZBI6tDio/paI48RZbYC3o6N9dZdkr4QcleKBuk4LBfQ
+         RuoQ==
+X-Gm-Message-State: AOAM533ykuOzL5zEqTdwML1A5nYtoU2a+au5jYq1NqfObu4fKJC0bt62
+        JsxMVeSTN/2A41vGjzhPFvmK/4NHMCueopXR41M=
+X-Google-Smtp-Source: ABdhPJx2nthqnJeOlu1EYtk5o5ecqX4NSf9T3KbKuJc6gbO4QF8jsAS27U+zJi6Zr28zSJZfr+Bsf/BbmatEKeYwHfY=
+X-Received: by 2002:a02:9f87:0:b0:32e:69ae:23df with SMTP id
+ a7-20020a029f87000000b0032e69ae23dfmr12443446jam.237.1653345494552; Mon, 23
+ May 2022 15:38:14 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220517092217.323060-1-joel@jms.id.au> <5630dd68ca5f31dafce3f92489761294ea589b16.camel@kernel.crashing.org>
-In-Reply-To: <5630dd68ca5f31dafce3f92489761294ea589b16.camel@kernel.crashing.org>
-From:   Joel Stanley <joel@jms.id.au>
-Date:   Mon, 23 May 2022 22:25:52 +0000
-Message-ID: <CACPK8Xd5BLiz1ePwzirtxLvSL8V8EGmJuxB0GmxyyqBRK9mSdQ@mail.gmail.com>
-Subject: Re: [PATCH net v3] net: ftgmac100: Disable hardware checksum on AST2600
-To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Networking <netdev@vger.kernel.org>,
-        David Wilder <wilder@us.ibm.com>,
-        linux-aspeed <linux-aspeed@lists.ozlabs.org>
+References: <20220523202649.6iiz4h2wf5ryx3w2@jup> <CAEf4BzaecP2XkzftmH7GeeTfj1E+pv=20=L4ztrxe4-JU7MuUw@mail.gmail.com>
+ <20220523221954.dsqvy55ron4cfdqq@jup>
+In-Reply-To: <20220523221954.dsqvy55ron4cfdqq@jup>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 23 May 2022 15:38:03 -0700
+Message-ID: <CAEf4BzY-K8UoT1HhXf=fwdWtY2fdprttUF27Zm6WwSUSRq8ycA@mail.gmail.com>
+Subject: Re: [PATCH] bpftool: mmaped fields missing map structure in generated skeletons
+To:     Michael Mullin <masmullin@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.5 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 21 May 2022 at 02:53, Benjamin Herrenschmidt
-<benh@kernel.crashing.org> wrote:
+On Mon, May 23, 2022 at 3:19 PM Michael Mullin <masmullin@gmail.com> wrote:
 >
-> On Tue, 2022-05-17 at 18:52 +0930, Joel Stanley wrote:
-> > The AST2600 when using the i210 NIC over NC-SI has been observed to
-> > produce incorrect checksum results with specific MTU values. This was
-> > first observed when sending data across a long distance set of
-> > networks.
+> On Mon, May 23, 2022 at 03:02:31PM -0700, Andrii Nakryiko wrote:
+> > On Mon, May 23, 2022 at 1:26 PM Michael Mullin <masmullin@gmail.com> wrote:
+> > >
+> > > When generating a skeleton which has an mmaped map field, bpftool's
+> > > output is missing the map structure.  This causes a compile break when
+> > > the generated skeleton is compiled as the field belongs to the internal
+> > > struct maps, not directly to the obj.
+> > >
+> > > Signed-off-by: Michael Mullin <masmullin@gmail.com>
+> > > ---
+> > >  tools/bpf/bpftool/gen.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+> > > index f158dc1c2149..b49293795ba0 100644
+> > > --- a/tools/bpf/bpftool/gen.c
+> > > +++ b/tools/bpf/bpftool/gen.c
+> > > @@ -853,7 +853,7 @@ codegen_maps_skeleton(struct bpf_object *obj, size_t map_cnt, bool mmaped)
+> > >                         i, bpf_map__name(map), i, ident);
+> > >                 /* memory-mapped internal maps */
+> > >                 if (mmaped && is_internal_mmapable_map(map, ident, sizeof(ident))) {
+> > > -                       printf("\ts->maps[%zu].mmaped = (void **)&obj->%s;\n",
+> > > +                       printf("\ts->maps[%zu].mmaped = (void **)&obj->maps.%s;\n",
 > >
-> > On a local network, the following test was performed using a 1MB file
-> > of random data.
+> > That's not right. maps.my_map is struct bpf_map *, but mmaped is
+> > supposed to be a blob of memory that is memory-mapped into map.
+> >
+> > Can you elaborate on how you trigger that compilation error with a
+> > small example?
 >
-> Can you double check with Aspeed what's going on there and whether
-> there's a way to instead, identify the bad case in the TX path and do
-> on-demand SW checksuming only in those cases ?
+> I have an a very small example on github. I have added some sed fixes to
+> my Makefile make my sample program compile.
+> https://github.com/masmullin2000/libbpf-sample/tree/main/c/simple
+>
+> https://github.com/masmullin2000/libbpf-sample/tree/02c7f945bf9027daedec04f485a320ba2df28204/c/simple
+> contains broken code.
 
-Keep in mind this is only for the NC-SI case, where the link is
-limited to 100Mbit anyway.
-
-I did some tests with the openbmc kernel; a v5.15 tree with whatever
-options we have enabled there.
-
-Averaging a few iperf3 runs I see about 92Mbit/s with hardware
-checksumming enabled, and 90Mbit/s with it disabled. So we can see the
-difference, and it would be good if Aspeed could find the root cause
-so this only needs to be disabled when hitting the problematic path as
-you say.
-
-> Because disabling HW checksum will kill performances afaik... (doesn't
-> it also end up disabling zero-copy and SG ?)
-
-Not sure?
+You are missing -g when calling clang to generate debug info (DWARF
+and subsequently BTF). When BPF object file doesn't have BTF, we don't
+generate those bss/data/rodata/etc sections of the skeleton. You
+should be good just by adding -g.
 
 >
-> Cheers,
-> Ben.
+> I apologize if this is an incorrect way to share external code.  I
+> haven't found the proper way to share example code from
+> kernelnewbies.org
 >
-> > On the receiver run this script:
 > >
-> >  #!/bin/bash
-> >  while [ 1 ]; do
-> >         # Zero the stats
-> >         nstat -r  > /dev/null
-> >         nc -l 9899 > test-file
-> >         # Check for checksum errors
-> >         TcpInCsumErrors=$(nstat | grep TcpInCsumErrors)
-> >         if [ -z "$TcpInCsumErrors" ]; then
-> >                 echo No TcpInCsumErrors
-> >         else
-> >                 echo TcpInCsumErrors = $TcpInCsumErrors
-> >         fi
-> >  done
-> >
-> > On an AST2600 system:
-> >
-> >  # nc <IP of  receiver host> 9899 < test-file
-> >
-> > The test was repeated with various MTU values:
-> >
-> >  # ip link set mtu 1410 dev eth0
-> >
-> > The observed results:
-> >
-> >  1500 - good
-> >  1434 - bad
-> >  1400 - good
-> >  1410 - bad
-> >  1420 - good
-> >
-> > The test was repeated after disabling tx checksumming:
-> >
-> >  # ethtool -K eth0 tx-checksumming off
-> >
-> > And all MTU values tested resulted in transfers without error.
-> >
-> > An issue with the driver cannot be ruled out, however there has been
-> > no
-> > bug discovered so far.
-> >
-> > David has done the work to take the original bug report of slow data
-> > transfer between long distance connections and triaged it down to
-> > this
-> > test case.
-> >
-> > The vendor suspects this this is a hardware issue when using NC-SI.
-> > The
-> > fixes line refers to the patch that introduced AST2600 support.
-> >
-> > Reported-by: David Wilder <wilder@us.ibm.com>
-> > Reviewed-by: Dylan Hung <dylan_hung@aspeedtech.com>
-> > Signed-off-by: Joel Stanley <joel@jms.id.au>
-> > ---
-> > v3 modifies the wrapping of the commit message.
-> >
-> > v2 updates the commit message with confirmation from the vendor that
-> > this is a hardware issue, and clarifies why the commit used in the
-> > fixes
-> >
-> >  drivers/net/ethernet/faraday/ftgmac100.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/faraday/ftgmac100.c
-> > b/drivers/net/ethernet/faraday/ftgmac100.c
-> > index caf48023f8ea..5231818943c6 100644
-> > --- a/drivers/net/ethernet/faraday/ftgmac100.c
-> > +++ b/drivers/net/ethernet/faraday/ftgmac100.c
-> > @@ -1928,6 +1928,11 @@ static int ftgmac100_probe(struct
-> > platform_device *pdev)
-> >       /* AST2400  doesn't have working HW checksum generation */
-> >       if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
-> >               netdev->hw_features &= ~NETIF_F_HW_CSUM;
-> > +
-> > +     /* AST2600 tx checksum with NCSI is broken */
-> > +     if (priv->use_ncsi && of_device_is_compatible(np,
-> > "aspeed,ast2600-mac"))
-> > +             netdev->hw_features &= ~NETIF_F_HW_CSUM;
-> > +
-> >       if (np && of_get_property(np, "no-hw-checksum", NULL))
-> >               netdev->hw_features &= ~(NETIF_F_HW_CSUM |
-> > NETIF_F_RXCSUM);
-> >       netdev->features |= netdev->hw_features;
->
+> > >                                 i, ident);
+> > >                 }
+> > >                 i++;
+> > > --
+> > > 2.36.1
+> > >
