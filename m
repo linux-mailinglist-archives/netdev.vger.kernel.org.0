@@ -2,78 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 726A45310DF
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:20:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DC4A531059
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:20:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235006AbiEWLkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 07:40:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
+        id S235133AbiEWLyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 07:54:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234991AbiEWLk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 07:40:29 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2265045F;
-        Mon, 23 May 2022 04:40:26 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24NBdo8uB012846, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24NBdo8uB012846
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 23 May 2022 19:39:50 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.28; Mon, 23 May 2022 19:39:50 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Mon, 23 May 2022 19:39:50 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
- RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
- 15.01.2308.021; Mon, 23 May 2022 19:39:49 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
-        "linux@ulli-kroll.de" <linux@ulli-kroll.de>
-CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "kernel@pengutronix.de" <kernel@pengutronix.de>,
-        "neojou@gmail.com" <neojou@gmail.com>,
-        "kvalo@kernel.org" <kvalo@kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "martin.blumenstingl@googlemail.com" 
-        <martin.blumenstingl@googlemail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 00/10] RTW88: Add support for USB variants
-Thread-Topic: [PATCH 00/10] RTW88: Add support for USB variants
-Thread-Index: AQHYapDZwMHGDOiyz0ihhLmh/UE9+a0rWe8AgAAuhwCAAE/oAA==
-Date:   Mon, 23 May 2022 11:39:49 +0000
-Message-ID: <68a979f3fe3c80a460528605f03d85c2a265ff50.camel@realtek.com>
-References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
-         <55f569899e4e894970b826548cd5439f5def2183.camel@ulli-kroll.de>
-         <20220523065348.GK25578@pengutronix.de>
-In-Reply-To: <20220523065348.GK25578@pengutronix.de>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.36.1-2 
-x-originating-ip: [114.26.229.84]
-x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMjMg5LiK5Y2IIDA5OjIyOjAw?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <DA3557C8A58552428DEEED4E61485A01@realtek.com>
-Content-Transfer-Encoding: base64
+        with ESMTP id S235122AbiEWLye (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 07:54:34 -0400
+Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A3A51587
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 04:54:33 -0700 (PDT)
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NAHeDt032108;
+        Mon, 23 May 2022 04:54:19 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=vwngwSV6lSgS1BvTSWjYPcvN1QPmGDybMx907eKx40o=;
+ b=hyLw0eXR7E82qJc3KPHxJNqsFajXhfJFPYSoT9SMte5cjIkl+wYgwweLHlBufySxVe4j
+ MjlsiuzRVu77BeF2X9vBwIDcBglo8Q97IOrxXws+QjWJ6Qo/GN7PtVSDLquGTl2qnffS
+ 8sjNt+wQJ0ds+0A5jwsH+jmNbc3dGxmbguE20Tl65PiHMVEi7Tf/a/l+Gsrl/dpJUHqw
+ ya8FmeS4UTFM6hfBbUgsWlhvzyTbSrvDTIXPwawBRxF2u7xHCrUX6VNsGiRseS3FbVTz
+ IaMN7Ybi26Sj+QAFxRCaHlgPiCGxFxZhgxAj0zw7r5RtCj7caqAbOFh7ag1oY+VP0muD yA== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3g6ykkwmht-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 23 May 2022 04:54:19 -0700
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 May
+ 2022 04:54:17 -0700
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
+ Transport; Mon, 23 May 2022 04:54:17 -0700
+Received: from localhost.localdomain (unknown [10.28.48.95])
+        by maili.marvell.com (Postfix) with ESMTP id F32323F7085;
+        Mon, 23 May 2022 04:54:12 -0700 (PDT)
+From:   Suman Ghosh <sumang@marvell.com>
+To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
+        <pabeni@redhat.com>, <sgoutham@marvell.com>, <sbhatta@marvell.com>,
+        <gakula@marvell.com>, <Sunil.Goutham@cavium.com>,
+        <hkelam@marvell.com>, <colin.king@intel.com>,
+        <netdev@vger.kernel.org>
+CC:     Suman Ghosh <sumang@marvell.com>
+Subject: [net-next PATCH] octeontx2-vf: Add support for adaptive interrupt coalescing
+Date:   Mon, 23 May 2022 17:24:10 +0530
+Message-ID: <20220523115410.1307944-1-sumang@marvell.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: fr7m4Pg6IJhf_WqsEXTlAvyOLCh-18SN
+X-Proofpoint-ORIG-GUID: fr7m4Pg6IJhf_WqsEXTlAvyOLCh-18SN
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-23_04,2022-05-23_01,2022-02-23_01
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -82,49 +67,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDIyLTA1LTIzIGF0IDA4OjUzICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
-IEhpIEhhbnMgVWxsaSwNCj4gDQo+IE9uIE1vbiwgTWF5IDIzLCAyMDIyIGF0IDA2OjA3OjE2QU0g
-KzAyMDAsIEhhbnMgVWxsaSBLcm9sbCB3cm90ZToNCj4gPiBPbiBXZWQsIDIwMjItMDUtMTggYXQg
-MTA6MjMgKzAyMDAsIFNhc2NoYSBIYXVlciB3cm90ZToNCj4gPiA+IFRoaXMgc2VyaWVzIGFkZHMg
-c3VwcG9ydCBmb3IgdGhlIFVTQiBjaGlwIHZhcmlhbnRzIHRvIHRoZSBSVFc4OCBkcml2ZXIuDQo+
-ID4gPiANCj4gPiANCj4gPiBIaSBTYXNjaGENCj4gPiANCj4gPiBnbGFkIHlvdSBmb3VuZCBzb21l
-ICp3b3JraW5nKiBkZXZpY2VzIGZvciBydHc4OCAhDQo+IA0KPiBXZWxsLCBub3QgZnVsbHkuIEkg
-aGFkIHRvIGFkZCBbM10gPSBSVFdfREVGX1JGRSg4ODIyYywgMCwgMCksIHRvIHRoZQ0KPiBydHc4
-ODIyY19yZmVfZGVmcyBhcnJheS4NCj4gDQo+ID4gSSBzcGVuZCBzb21lIG9mIHRoZSB3ZWVrZW5k
-IHRlc3RpbmcgeW91ciBkcml2ZXIgc3VibWlzc2lvbi4NCj4gPiANCj4gPiBmb3IgcnRsODgyMWN1
-IGRldmljZXMgSSBnZXQgZm9sbG93aW5nIG91dHB1dA0KPiA+IA0KPiA+IHNvbWUgTG9naWxpbmsg
-ZGV2aWNlDQo+ID4gDQo+ID4gWyAxNjg2LjYwNTU2N10gdXNiIDEtNS4xLjI6IE5ldyBVU0IgZGV2
-aWNlIGZvdW5kLCBpZFZlbmRvcj0wYmRhLCBpZFByb2R1Y3Q9YzgxMSwgYmNkRGV2aWNlPQ0KPiA+
-IDIuMDANCj4gPiBbIDE2ODYuNjE0MTg2XSB1c2IgMS01LjEuMjogTmV3IFVTQiBkZXZpY2Ugc3Ry
-aW5nczogTWZyPTEsIFByb2R1Y3Q9MiwgU2VyaWFsTnVtYmVyPTMNCj4gPiBbIDE2ODYuNjIxNzIx
-XSB1c2IgMS01LjEuMjogUHJvZHVjdDogODAyLjExYWMgTklDDQo+ID4gWyAxNjg2LjYyNjIyN10g
-dXNiIDEtNS4xLjI6IE1hbnVmYWN0dXJlcjogUmVhbHRlaw0KPiA+IFsgMTY4Ni42MzA2OTVdIHVz
-YiAxLTUuMS4yOiBTZXJpYWxOdW1iZXI6IDEyMzQ1Ng0KPiA+IFsgMTY4Ni42NDA0ODBdIHJ0d184
-ODIxY3UgMS01LjEuMjoxLjA6IEZpcm13YXJlIHZlcnNpb24gMjQuNS4wLCBIMkMgdmVyc2lvbiAx
-Mg0KPiA+IFsgMTY4Ni45MzI4MjhdIHJ0d184ODIxY3UgMS01LjEuMjoxLjA6IGZhaWxlZCB0byBk
-b3dubG9hZCBmaXJtd2FyZQ0KPiA+IFsgMTY4Ni45NDUyMDZdIHJ0d184ODIxY3UgMS01LjEuMjox
-LjA6IGZhaWxlZCB0byBzZXR1cCBjaGlwIGVmdXNlIGluZm8NCj4gPiBbIDE2ODYuOTUxNTM4XSBy
-dHdfODgyMWN1IDEtNS4xLjI6MS4wOiBmYWlsZWQgdG8gc2V0dXAgY2hpcCBpbmZvcm1hdGlvbg0K
-PiA+IFsgMTY4Ni45NTg0MDJdIHJ0d184ODIxY3U6IHByb2JlIG9mIDEtNS4xLjI6MS4wIGZhaWxl
-ZCB3aXRoIGVycm9yIC0yMg0KPiA+IA0KPiA+IGFib3ZlIGlzIHNhbWUgd2l0aCBzb21lIGZyb20g
-Q29tZmFzdA0KPiA+IA0KPiA+IFRoZSB3b3JzdCBpbiB0aGUgbGlzdCBpcyBvbmUgZnJvbSBFRFVQ
-DQo+ID4gDQo+ID4gWyAxODE3Ljg1NTcwNF0gcnR3Xzg4MjFjdSAxLTUuMS4yOjEuMjogRmlybXdh
-cmUgdmVyc2lvbiAyNC41LjAsIEgyQyB2ZXJzaW9uIDEyDQo+ID4gWyAxODE4LjE1MzkxOF0gcnR3
-Xzg4MjFjdSAxLTUuMS4yOjEuMjogcmZlIDI1NSBpc24ndCBzdXBwb3J0ZWQNCj4gPiBbIDE4MTgu
-MTY1MTc2XSBydHdfODgyMWN1IDEtNS4xLjI6MS4yOiBmYWlsZWQgdG8gc2V0dXAgY2hpcCBlZnVz
-ZSBpbmZvDQo+ID4gWyAxODE4LjE3MTUwNV0gcnR3Xzg4MjFjdSAxLTUuMS4yOjEuMjogZmFpbGVk
-IHRvIHNldHVwIGNoaXAgaW5mb3JtYXRpb24NCj4gDQo+IERvIHRoZXNlIGNoaXBzIHdvcmsgd2l0
-aCB5b3VyIG91dCBvZiB0cmVlIHZhcmlhbnQgb2YgdGhpcyBkcml2ZXI/DQo+IA0KPiBJcyB0aGUg
-ZWZ1c2UgaW5mbyBjb21wbGV0ZWx5IDB4ZmYgb3Igb25seSB0aGUgZmllbGQgaW5kaWNhdGluZyB0
-aGUgcmZlDQo+IG9wdGlvbj8NCg0KSSBjaGVjayBSRkUgYWxsb2NhdGlvbiBvZiA4ODIxYy4gMjU1
-IGlzbid0IGRlZmluZWQuDQpJZiBlZnVzZSBpbmZvIGlzbid0IGNvbXBsZXRlIDB4ZmYsIHRyeSB0
-byBmb3JjZSBSRkUgMCB0byBzZWUgaWYgaXQgd29ya3MuDQoNCj4gDQo+ID4gcnRsODgyMmJ1IGRl
-dmljZXMgYXJlIHdvcmtpbmcgZmluZSAuLi4NCj4gDQo+IE5pY2UuIERpZCB5b3UgdGVzdCBhIHJ0
-dzg3MjNkdSBkZXZpY2UgYXMgd2VsbD8NCj4gDQoNCkkgaGF2ZSBhIDg3MjNEVSBtb2R1bGUuDQoN
-CldpdGggdGhpcyBwYXRjaHNldCwgaXQgY2FuIGZpbmQgQVAsIGJ1dCBjYW4ndCBlc3RpYWJsaXNo
-IGNvbm5lY3Rpb24uDQpJIGNoZWNrIGFpciBjYXB0dXJlLCBidXQgbm8gVFggcGFja2V0cyBmb3Vu
-ZC4NClRoYXQgc2F5cyBSWCB3b3JrcywgYnV0IFRYIGRvZXNuJ3QuDQoNCldpdGggbWFzdGVyIGJy
-YW5jaCBvZiBIYW5zIFVsbGkgR2l0SHViLCBpdCBzaG93cyBtYW55ICJhdG9taWMgc2NoZWR1bGlu
-ZyINCndhcm5pbmdzIHdoZW4gSSBpbnNlcnQgdGhlIFVTQiBkb25nbGUuDQpXaGVuIEkgZG8gJ2l3
-IHNjYW4nLCBpdCBpcyBnb2luZyB0byBnZXQgc3R1Y2ssIGFuZCBJIGNhbiBvbmx5IHB1c2gNCnBv
-d2VyIGJ1dHRvbiB0byB0dXJuIG9mZiBteSBsYXB0b3AuDQoNClBpbmctS2UNCg0KDQo=
+Add ethtool supported_feature flag to support adaptive interrupt
+coalescing for vf(s).
+
+Signed-off-by: Suman Ghosh <sumang@marvell.com>
+---
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+index bc614a4def9e..3f60a80e34c8 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+@@ -1390,7 +1390,8 @@ static int otx2vf_get_link_ksettings(struct net_device *netdev,
+ 
+ static const struct ethtool_ops otx2vf_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+-				     ETHTOOL_COALESCE_MAX_FRAMES,
++				     ETHTOOL_COALESCE_MAX_FRAMES |
++				     ETHTOOL_COALESCE_USE_ADAPTIVE,
+ 	.supported_ring_params  = ETHTOOL_RING_USE_RX_BUF_LEN |
+ 				  ETHTOOL_RING_USE_CQE_SIZE,
+ 	.get_link		= otx2_get_link,
+-- 
+2.25.1
+
