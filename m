@@ -2,51 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A333531A20
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:55:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E72265316F1
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:52:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232932AbiEWUZp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 16:25:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49972 "EHLO
+        id S233005AbiEWU0r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 16:26:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232921AbiEWUZo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 16:25:44 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1282CC5DB9;
-        Mon, 23 May 2022 13:25:43 -0700 (PDT)
-Received: from sslproxy04.your-server.de ([78.46.152.42])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ntEcR-0000zc-VY; Mon, 23 May 2022 22:25:36 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy04.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ntEcR-000GNc-AC; Mon, 23 May 2022 22:25:35 +0200
-Subject: Re: [PATCH] bpf: fix probe read error in ___bpf_prog_run()
-To:     menglong8.dong@gmail.com, ast@kernel.org
-Cc:     andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Menglong Dong <imagedong@tencent.com>,
-        Jiang Biao <benbjiang@tencent.com>,
-        Hao Peng <flyingpeng@tencent.com>
-References: <20220523073732.296247-1-imagedong@tencent.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <abb90d45-e39e-4fdc-9930-17e3f6f87c06@iogearbox.net>
-Date:   Mon, 23 May 2022 22:25:33 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S232740AbiEWU0p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 16:26:45 -0400
+Received: from mail-oa1-x2f.google.com (mail-oa1-x2f.google.com [IPv6:2001:4860:4864:20::2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD53527FD5
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 13:26:43 -0700 (PDT)
+Received: by mail-oa1-x2f.google.com with SMTP id 586e51a60fabf-e5e433d66dso19875450fac.5
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 13:26:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0Kt/8YJitmDk6YBuDtBcLJKiJJas6OLt15vc5dWS92g=;
+        b=h444qM3jeeBbpSXp+IkBiX69tRlZw+bD4fFlf/n5SCQArcfqdEQJMX9ij7216h+r5l
+         TWWPO6hqCQESI2UASdck9QXjCBRbOJBJxJM7ocWUfKsDhDjZQGXKinjn722iQFAVPECp
+         pOwQz0MG1gHiau5ooQ+yU1uAuFGNbwY313RucEmJVcIMLRSx9Af/DW56rmKoFTnbkmuO
+         xYy9kmOMjTi8ZaZ59FzrJSBPhgG9YE5qksz5FYWrKsF8oakmgazfv+A/0EBpoxoeSMNo
+         rzsBvb3NC7NPkEDQZgOrmBxRsZg/t7veUcRen0+hvAFClSOjiORJUZ9yG1IeG3M45+DZ
+         Jo2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=0Kt/8YJitmDk6YBuDtBcLJKiJJas6OLt15vc5dWS92g=;
+        b=tOL80D64uDbzQAZ3/iHHCcVuPNc6uN5AbSTXWu+EX9b4kByAs9iGA9reGAqWaNajda
+         wjLKsLh/mYrUlCzmEhdFyr5DdA5mzCuPsDTR3GA8CrSgRbOEp22UQtrefiCEnjVjNj9H
+         xq476tKJCqz3ooTA8Tg2LRVpYaCKVlCC89vATBiatJTLwA9MaOXjl3TO67PJG7skQ468
+         o06iXAgg8K8gpwP0G4vL4rL5ffa7AqP8kQcYMdI5jaLtfCgrgBs9loeJ5bTr8w8VVbur
+         okp9dhc1MX8OBFbPseH05qAzLnrbovgIuWQbys1N/Gwy3YtR2h00wd3Z3+/94oWQ+HDd
+         j6PQ==
+X-Gm-Message-State: AOAM531Kky+it7S0FJIcrckS4Ig2UgcfUlhmE2+BWgRmlVCaTMvey2TC
+        FuRyxgZSWbTr1XB+O1cZZOw=
+X-Google-Smtp-Source: ABdhPJwcVkHcAYIw1EGheCTvt1svvuf+xUpRsNDQzXwTz8bvuwaDGCe7Ivg10D/1GhVIdjiGi41nNA==
+X-Received: by 2002:a05:6871:29a:b0:f1:b960:bdfb with SMTP id i26-20020a056871029a00b000f1b960bdfbmr490145oae.262.1653337602777;
+        Mon, 23 May 2022 13:26:42 -0700 (PDT)
+Received: from celestia.nettie.lan ([2001:470:42c4:101:179e:9065:1c55:ba5e])
+        by smtp.gmail.com with ESMTPSA id 61-20020a9d0c43000000b0060603221245sm4353733otr.21.2022.05.23.13.26.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 13:26:42 -0700 (PDT)
+From:   Sam Edwards <cfsworks@gmail.com>
+X-Google-Original-From: Sam Edwards <CFSworks@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>
+Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>,
+        Sam Edwards <CFSworks@gmail.com>
+Subject: [PATCH] ipv6/addrconf: fix timing bug in tempaddr regen
+Date:   Mon, 23 May 2022 14:25:43 -0600
+Message-Id: <20220523202543.9019-1-CFSworks@gmail.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-In-Reply-To: <20220523073732.296247-1-imagedong@tencent.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26550/Mon May 23 10:05:39 2022)
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -55,109 +70,108 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/23/22 9:37 AM, menglong8.dong@gmail.com wrote:
-> From: Menglong Dong <imagedong@tencent.com>
-> 
-> I think there is something wrong with BPF_PROBE_MEM in ___bpf_prog_run()
-> in big-endian machine. Let's make a test and see what will happen if we
-> want to load a 'u16' with BPF_PROBE_MEM.
-> 
-> Let's make the src value '0x0001', the value of dest register will become
-> 0x0001000000000000, as the value will be loaded to the first 2 byte of
-> DST with following code:
-> 
->    bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));
-> 
-> Obviously, the value in DST is not correct. In fact, we can compare
-> BPF_PROBE_MEM with LDX_MEM_H:
-> 
->    DST = *(SIZE *)(unsigned long) (SRC + insn->off);
-> 
-> If the memory load is done by LDX_MEM_H, the value in DST will be 0x1 now.
-> 
-> And I think this error results in the test case 'test_bpf_sk_storage_map'
-> failing:
-> 
->    test_bpf_sk_storage_map:PASS:bpf_iter_bpf_sk_storage_map__open_and_load 0 nsec
->    test_bpf_sk_storage_map:PASS:socket 0 nsec
->    test_bpf_sk_storage_map:PASS:map_update 0 nsec
->    test_bpf_sk_storage_map:PASS:socket 0 nsec
->    test_bpf_sk_storage_map:PASS:map_update 0 nsec
->    test_bpf_sk_storage_map:PASS:socket 0 nsec
->    test_bpf_sk_storage_map:PASS:map_update 0 nsec
->    test_bpf_sk_storage_map:PASS:attach_iter 0 nsec
->    test_bpf_sk_storage_map:PASS:create_iter 0 nsec
->    test_bpf_sk_storage_map:PASS:read 0 nsec
->    test_bpf_sk_storage_map:FAIL:ipv6_sk_count got 0 expected 3
->    $10/26 bpf_iter/bpf_sk_storage_map:FAIL
-> 
-> The code of the test case is simply, it will load sk->sk_family to the
-> register with BPF_PROBE_MEM and check if it is AF_INET6. With this patch,
-> now the test case 'bpf_iter' can pass:
-> 
->    $10  bpf_iter:OK
-> 
-> Reviewed-by: Jiang Biao <benbjiang@tencent.com>
-> Reviewed-by: Hao Peng <flyingpeng@tencent.com>
-> Signed-off-by: Menglong Dong <imagedong@tencent.com>
-> ---
->   kernel/bpf/core.c | 11 ++++++-----
->   1 file changed, 6 insertions(+), 5 deletions(-)
-> 
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 13e9dbeeedf3..09e3f374739a 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -1945,14 +1945,15 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
->   	LDST(W,  u32)
->   	LDST(DW, u64)
->   #undef LDST
-> -#define LDX_PROBE(SIZEOP, SIZE)							\
-> +#define LDX_PROBE(SIZEOP, SIZE, TYPE)						\
->   	LDX_PROBE_MEM_##SIZEOP:							\
->   		bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));	\
-> +		DST = *((TYPE *)&DST);						\
->   		CONT;
-> -	LDX_PROBE(B,  1)
-> -	LDX_PROBE(H,  2)
-> -	LDX_PROBE(W,  4)
-> -	LDX_PROBE(DW, 8)
-> +	LDX_PROBE(B,  1, u8)
-> +	LDX_PROBE(H,  2, u16)
-> +	LDX_PROBE(W,  4, u32)
-> +	LDX_PROBE(DW, 8, u64)
+The addrconf_verify_rtnl() function uses a big if/elseif/elseif/... block
+to categorize each address by what type of attention it needs.  An
+about-to-expire (RFC 4941) temporary address is one such category, but the
+previous elseif case catches addresses that have already run out their
+prefered_lft.  This means that if addrconf_verify_rtnl() fails to run in
+the necessary time window (i.e. REGEN_ADVANCE time units before the end of
+the prefered_lft), the temporary address will never be regenerated, and no
+temporary addresses will be available until each one's valid_lft runs out
+and manage_tempaddrs() begins anew.
 
-Completely uncompiled, but maybe just fold it into LDST instead:
+Fix this by moving the entire temporary address regeneration case higher
+up so that a temporary address cannot be deprecated until it has had an
+opportunity to begin regeneration.  Note that this does not fix the
+problem of addrconf_verify_rtnl() sometimes not running in time resulting
+in the race condition described in RFC 4941 section 3.4 - it only ensures
+that the address is regenerated.
 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 9cc91f0f3115..fc5c29243739 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -1948,6 +1948,11 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
-                 CONT;                                                   \
-         LDX_MEM_##SIZEOP:                                               \
-                 DST = *(SIZE *)(unsigned long) (SRC + insn->off);       \
-+               CONT;                                                   \
-+       LDX_PROBE_MEM_##SIZEOP:                                         \
-+               bpf_probe_read_kernel(&DST, sizeof(SIZE),               \
-+                                     (const void *)(long)(SRC + insn->off)); \
-+               DST = *((SIZE *)&DST);                                  \
-                 CONT;
+Fixing the latter problem may require either using jiffies instead of
+seconds for all time arithmetic here, or always rounding up when
+regen_advance is converted to seconds.
 
-         LDST(B,   u8)
-@@ -1955,15 +1960,6 @@ static u64 ___bpf_prog_run(u64 *regs, const struct bpf_insn *insn)
-         LDST(W,  u32)
-         LDST(DW, u64)
-  #undef LDST
--#define LDX_PROBE(SIZEOP, SIZE)                                                        \
--       LDX_PROBE_MEM_##SIZEOP:                                                 \
--               bpf_probe_read_kernel(&DST, SIZE, (const void *)(long) (SRC + insn->off));      \
--               CONT;
--       LDX_PROBE(B,  1)
--       LDX_PROBE(H,  2)
--       LDX_PROBE(W,  4)
--       LDX_PROBE(DW, 8)
--#undef LDX_PROBE
+Signed-off-by: Sam Edwards <CFSworks@gmail.com>
+---
+ net/ipv6/addrconf.c | 58 ++++++++++++++++++++++-----------------------
+ 1 file changed, 29 insertions(+), 29 deletions(-)
 
-Thanks,
-Daniel
+diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
+index b22504176588..5d02e4f0298b 100644
+--- a/net/ipv6/addrconf.c
++++ b/net/ipv6/addrconf.c
+@@ -4518,6 +4518,35 @@ static void addrconf_verify_rtnl(struct net *net)
+ 			} else if (ifp->prefered_lft == INFINITY_LIFE_TIME) {
+ 				spin_unlock(&ifp->lock);
+ 				continue;
++			} else if ((ifp->flags&IFA_F_TEMPORARY) &&
++				   !(ifp->flags&IFA_F_TENTATIVE) &&
++				   !ifp->regen_count && ifp->ifpub) {
++				unsigned long regen_advance = ifp->idev->cnf.regen_max_retry *
++					ifp->idev->cnf.dad_transmits *
++					max(NEIGH_VAR(ifp->idev->nd_parms, RETRANS_TIME), HZ/100) / HZ;
++
++				if (age >= ifp->prefered_lft - regen_advance) {
++					struct inet6_ifaddr *ifpub = ifp->ifpub;
++					if (time_before(ifp->tstamp + ifp->prefered_lft * HZ, next))
++						next = ifp->tstamp + ifp->prefered_lft * HZ;
++
++					ifp->regen_count++;
++					in6_ifa_hold(ifp);
++					in6_ifa_hold(ifpub);
++					spin_unlock(&ifp->lock);
++
++					spin_lock(&ifpub->lock);
++					ifpub->regen_count = 0;
++					spin_unlock(&ifpub->lock);
++					rcu_read_unlock_bh();
++					ipv6_create_tempaddr(ifpub, true);
++					in6_ifa_put(ifpub);
++					in6_ifa_put(ifp);
++					rcu_read_lock_bh();
++					goto restart;
++				} else if (time_before(ifp->tstamp + ifp->prefered_lft * HZ - regen_advance * HZ, next))
++					next = ifp->tstamp + ifp->prefered_lft * HZ - regen_advance * HZ;
++				spin_unlock(&ifp->lock);
+ 			} else if (age >= ifp->prefered_lft) {
+ 				/* jiffies - ifp->tstamp > age >= ifp->prefered_lft */
+ 				int deprecate = 0;
+@@ -4540,35 +4569,6 @@ static void addrconf_verify_rtnl(struct net *net)
+ 					in6_ifa_put(ifp);
+ 					goto restart;
+ 				}
+-			} else if ((ifp->flags&IFA_F_TEMPORARY) &&
+-				   !(ifp->flags&IFA_F_TENTATIVE)) {
+-				unsigned long regen_advance = ifp->idev->cnf.regen_max_retry *
+-					ifp->idev->cnf.dad_transmits *
+-					max(NEIGH_VAR(ifp->idev->nd_parms, RETRANS_TIME), HZ/100) / HZ;
+-
+-				if (age >= ifp->prefered_lft - regen_advance) {
+-					struct inet6_ifaddr *ifpub = ifp->ifpub;
+-					if (time_before(ifp->tstamp + ifp->prefered_lft * HZ, next))
+-						next = ifp->tstamp + ifp->prefered_lft * HZ;
+-					if (!ifp->regen_count && ifpub) {
+-						ifp->regen_count++;
+-						in6_ifa_hold(ifp);
+-						in6_ifa_hold(ifpub);
+-						spin_unlock(&ifp->lock);
+-
+-						spin_lock(&ifpub->lock);
+-						ifpub->regen_count = 0;
+-						spin_unlock(&ifpub->lock);
+-						rcu_read_unlock_bh();
+-						ipv6_create_tempaddr(ifpub, true);
+-						in6_ifa_put(ifpub);
+-						in6_ifa_put(ifp);
+-						rcu_read_lock_bh();
+-						goto restart;
+-					}
+-				} else if (time_before(ifp->tstamp + ifp->prefered_lft * HZ - regen_advance * HZ, next))
+-					next = ifp->tstamp + ifp->prefered_lft * HZ - regen_advance * HZ;
+-				spin_unlock(&ifp->lock);
+ 			} else {
+ 				/* ifp->prefered_lft <= ifp->valid_lft */
+ 				if (time_before(ifp->tstamp + ifp->prefered_lft * HZ, next))
+-- 
+2.35.1
+
