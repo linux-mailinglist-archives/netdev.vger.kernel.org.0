@@ -2,138 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A67530FD9
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:19:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 726A45310DF
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:20:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234911AbiEWLiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 07:38:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
+        id S235006AbiEWLkd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 07:40:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234885AbiEWLiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 07:38:07 -0400
-Received: from mailout1.w1.samsung.com (mailout1.w1.samsung.com [210.118.77.11])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DF743AC2
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 04:38:06 -0700 (PDT)
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20220523113804euoutp012914f25d2f80d60079be0cedd2c7dbf2~xuPFSry_20621606216euoutp01Y
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 11:38:04 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20220523113804euoutp012914f25d2f80d60079be0cedd2c7dbf2~xuPFSry_20621606216euoutp01Y
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1653305884;
-        bh=ztC9+74A/VOT6Iots1KmQwx7+4e/XR+aAflW71XWvrA=;
-        h=Date:Subject:To:Cc:From:In-Reply-To:References:From;
-        b=Th9a8eHg25iY8jkRMrTT7iOpe0UlpcxrnlOCKOy7FzqkwlH67bpcldFwvtKfMv/YO
-         bTmX+R/AO331yd4+HBupUizf3adggM7JdyVVkQixquu59+IGFUlHqUAZjBY8c9eb89
-         IIGpXcXEbj5AxpGvClJa59zrTdTM/a1XKiNUv1wQ=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20220523113804eucas1p2c964132fa3bbb6f2d43b06ca6686ac41~xuPEkjwZe0567905679eucas1p25;
-        Mon, 23 May 2022 11:38:04 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 8B.17.09887.B127B826; Mon, 23
-        May 2022 12:38:03 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220523113803eucas1p2ca6d500fef769c98a60938f00413aedb~xuPD5-zYI3165831658eucas1p2n;
-        Mon, 23 May 2022 11:38:03 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20220523113803eusmtrp2bff93cb125138bdd2fa08ce94b30544a~xuPD2jHhp3201432014eusmtrp2N;
-        Mon, 23 May 2022 11:38:03 +0000 (GMT)
-X-AuditID: cbfec7f4-45bff7000000269f-c1-628b721bef90
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id CA.5C.09404.B127B826; Mon, 23
-        May 2022 12:38:03 +0100 (BST)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220523113801eusmtip27a8f2fbd782dde5ce6df003a7fdf255b~xuPCkIwTT2483224832eusmtip2c;
-        Mon, 23 May 2022 11:38:01 +0000 (GMT)
-Message-ID: <e0f4b751-bd94-194f-b6b8-972ae02298f7@samsung.com>
-Date:   Mon, 23 May 2022 13:38:01 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0)
-        Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY
- interrupts to PHY driver to avoid polling
-Content-Language: en-US
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Russell King <linux@armlinux.org.uk>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-In-Reply-To: <20220523094343.GA7237@wunner.de>
-Content-Transfer-Encoding: 7bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02SbUxTZxTH8/Te3tt2KV4q0GdAwHXOTbdRcIt5khEyHSQ3Cx+IH5bNIO4i
-        N0CAAq1gt/GhowpYpjDUwRqQSvCldSCpDIoBZRVpJokX6oorASZvc7a8VTqn+NJZLm58+53/
-        Oef5n3PyiDCZiYgU5aoOsWoVk68gJHjX4JPb70epqzPj+9sSUWOFm0TchB1Df7rHCNTIHcHR
-        3OA0iR6fuUEgrr4cQy1LDULEcR0kGu46IUSzl84LUAN3TYBazh/FkP10H0ADfguO/rofhe6N
-        GHA0aIpAhhkzgUxH53D0aGgeIP1DjwA9/X6E+FhO3xkdwWjbRCugO81uAd1jnCDpZV8GbbKW
-        0HO1J0naajlG0APuKUD32FYE9Pjjc4BeuuYiaPeiB6MD+js4fbnThdMr1pg02T5JYhabn1vK
-        qpVJX0py9D4zWaQL15Z/10rowDRlAGIRpD6E7SsPhQYgEcmoiwDe4zrXAz+A884WjA9WABzz
-        dAhetfTebcT5xAUAawzd64EPwJbOprUqKZUEq58HyCDj1FvwQd8y4PVQ+OuPs3iQw6lMOD/v
-        woK8mVJBr9siDDJGyeHYbPPaO2GUApafWhQEDTDqDwL6rtxaSxBUAjQsGIggi6k4+Nv1fpxv
-        joXdC41rc0PqnAR67q8Q/NzJ0OuqXd9hM/Q4Okmeo2GgJ+gmesmF8HnDB7yshaPenzCeP4Lj
-        t1eJYAlGbYeXryp5eTf09U9ifGcI/H0hlJ8gBNZ11a/LUlhVIeOrt0Gjo/0/z1+GnVgtUBg3
-        HMW4YXnjhl2M//uaAG4BcrZEU5DNanaq2MNxGqZAU6LKjjtYWGAFLz/x0AuH3wYueHxxdiAQ
-        ATuAIkwRJu1mqjJl0izmq69ZdeEBdUk+q7GDKBGukEsP5nYwMiqbOcTmsWwRq36VFYjEkTpB
-        nldrm3pvKsG7Lefz18nC6G+O1GaddD4zY8dHm2pCDjzbmjKc/vfhmflV17vCogevjWx646Zu
-        7wldfINyS4q88mZd1q0JYXxHIK44Jao3EPEpU7o0lTE+ILYMgGPW9u1XRovrS/+ZPlXzc1Vb
-        MkwU+yu4mSrtVZGxL31nbF1qxw0ue+9+c2XMm8a01N7T18Wbsorg0/2Mc6Bpz3J4YLb57epG
-        hvxsTni35du2H7jJHcd9VLNjtcuZ/mSLzmjjIvQpyj2hCSbyLCNT7dLvwyLFaUOOlJhVTZX1
-        UezFs5VpydGTZcnad+aUeYutGZ8MhxXTqUkhu3a/SPBLyoq8ZV8oFbgmh0nYgak1zL+IgVup
-        MwQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCKsWRmVeSWpSXmKPExsVy+t/xe7rSRd1JBquaeS3mtN1ktzh/9xCz
-        xbObt9gs5pxvYbF4euwRu8WPeYfZLM5Pb2K2WPR+BqvF+fMb2C0ubOtjtXiyehmTxYzz+5gs
-        Fi1rZbY4NHUvo8WRL6tYLF48l7Z4cLGLxeLYAjGLrscr2SwWtD5lsfh2+g2jRfOnV0wWvyde
-        ZHMQ97h87SKzx467Sxg9tqy8yeSxc9Zddo8PH+M8Fmwq9Xg6YTK7x6ZVnWweR24+ZPTYueMz
-        k8edH0sZPd7vu8rmcfPdK2aP/82XWTzWb7nK4vF5k1yAUJSeTVF+aUmqQkZ+cYmtUrShhZGe
-        oaWFnpGJpZ6hsXmslZGpkr6dTUpqTmZZapG+XYJeRvPHlewFDaIVTT1L2BoYHwl0MXJySAiY
-        SOy5Poeli5GLQ0hgKaNE7/z/LBAJGYmT0xpYIWxhiT/Xutggit4zSky/eocdJMErYCfR/fc/
-        mM0ioCrxcu8HRoi4oMTJmU+ABnFwiAokSRw5zA8SFhbIkzjd/AZsJrOAuMStJ/OZQGwRASWJ
-        pinvmEDmMws8ZpOY8HUmO8SyVmaJ7U3HwTrYBAwlut6CXMHJwSmgJ3Fl/wEWiElmEl1buxgh
-        bHmJ7W/nME9gFJqF5I5ZSBbOQtIyC0nLAkaWVYwiqaXFuem5xUZ6xYm5xaV56XrJ+bmbGIHJ
-        Z9uxn1t2MK589VHvECMTB+MhRgkOZiUR3u2JHUlCvCmJlVWpRfnxRaU5qcWHGE2BgTGRWUo0
-        OR+Y/vJK4g3NDEwNTcwsDUwtzYyVxHk9CzoShQTSE0tSs1NTC1KLYPqYODilGpicfl4/zFj2
-        xWvG6mCxk22PheZsPWQsO5Wp8p9mf5H5s+0PDBfeltU3cU3MnbwhxEPmvqhZ3qkE4WSNxyuO
-        6x5MnuOR+srr2auHT7Y4vO7cnft145lT+1xXurd6XVy4cV/DD2u9qzeqLRxvxRcF1bulTs1U
-        PFJXcMJiSc5lNtWne5ckLpA3FLnNVdLskDljj+b3O81Hw+R7AjWOX0zz9b0t9f3Ux7dpL62u
-        Sfe6nTTSj9onWnzQ/ljvp3cLiyW3eZhMWXnyWu78oG8iyhPepGsuaJQ/cz3IM6e1027Tp8vl
-        LzUyjVVKWLyvhfCWczdMEtui/Zd54WO39+4KIRHbbq2ZVrjFh5XzfpC89vfZDVuVWIozEg21
-        mIuKEwFKPJSqxwMAAA==
-X-CMS-MailID: 20220523113803eucas1p2ca6d500fef769c98a60938f00413aedb
-X-Msg-Generator: CA
+        with ESMTP id S234991AbiEWLk3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 07:40:29 -0400
+Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2265045F;
+        Mon, 23 May 2022 04:40:26 -0700 (PDT)
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24NBdo8uB012846, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24NBdo8uB012846
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 23 May 2022 19:39:50 +0800
+Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
+ RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.28; Mon, 23 May 2022 19:39:50 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 23 May 2022 19:39:50 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
+ RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
+ 15.01.2308.021; Mon, 23 May 2022 19:39:49 +0800
+From:   Ping-Ke Shih <pkshih@realtek.com>
+To:     "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "linux@ulli-kroll.de" <linux@ulli-kroll.de>
+CC:     "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "neojou@gmail.com" <neojou@gmail.com>,
+        "kvalo@kernel.org" <kvalo@kernel.org>,
+        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "martin.blumenstingl@googlemail.com" 
+        <martin.blumenstingl@googlemail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 00/10] RTW88: Add support for USB variants
+Thread-Topic: [PATCH 00/10] RTW88: Add support for USB variants
+Thread-Index: AQHYapDZwMHGDOiyz0ihhLmh/UE9+a0rWe8AgAAuhwCAAE/oAA==
+Date:   Mon, 23 May 2022 11:39:49 +0000
+Message-ID: <68a979f3fe3c80a460528605f03d85c2a265ff50.camel@realtek.com>
+References: <20220518082318.3898514-1-s.hauer@pengutronix.de>
+         <55f569899e4e894970b826548cd5439f5def2183.camel@ulli-kroll.de>
+         <20220523065348.GK25578@pengutronix.de>
+In-Reply-To: <20220523065348.GK25578@pengutronix.de>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.36.1-2 
+x-originating-ip: [114.26.229.84]
+x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?utf-8?B?Q2xlYW4sIGJhc2VzOiAyMDIyLzUvMjMg5LiK5Y2IIDA5OjIyOjAw?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99
-References: <cover.1652343655.git.lukas@wunner.de>
-        <748ac44eeb97b209f66182f3788d2a49d7bc28fe.1652343655.git.lukas@wunner.de>
-        <CGME20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99@eucas1p2.samsung.com>
-        <a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com>
-        <20220519190841.GA30869@wunner.de>
-        <31baa38c-b2c7-10cd-e9cd-eee140f01788@samsung.com>
-        <20220523094343.GA7237@wunner.de>
-X-Spam-Status: No, score=-11.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_HI,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,SPF_HELO_PASS,
+Content-ID: <DA3557C8A58552428DEEED4E61485A01@realtek.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
         SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
         version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -142,62 +82,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Lukas,
-
-On 23.05.2022 11:43, Lukas Wunner wrote:
-> On Thu, May 19, 2022 at 11:22:36PM +0200, Marek Szyprowski wrote:
->> On 19.05.2022 21:08, Lukas Wunner wrote:
->>> Taking a step back though, I'm wondering if there's a bigger problem here:
->>> This is a USB device, so we stop receiving interrupts once the Interrupt
->>> Endpoint is no longer polled.  But what if a PHY's interrupt is attached
->>> to a GPIO of the SoC and that interrupt is raised while the system is
->>> suspending?  The interrupt handler may likewise try to reach an
->>> inaccessible (suspended) device.
->>>
->>> The right thing to do would probably be to signal wakeup.  But the
->>> PHY drivers' irq handlers instead schedule the phy_state_machine().
->>> Perhaps we need something like the following at the top of
->>> phy_state_machine():
->>>
->>> 	if (phydev->suspended) {
->>> 		pm_wakeup_dev_event(&phydev->mdio.dev, 0, true);
->>> 		return;
->>> 	}
->>>
->>> However, phydev->suspended is set at the *bottom* of phy_suspend(),
->>> it would have to be set at the *top* of mdio_bus_phy_suspend()
->>> for the above to be correct.  Hmmm...
->> Well, your concern sounds valid, but I don't have a board with such hw
->> configuration, so I cannot really test.
-> I'm torn whether I should submit the quick fix in my last e-mail
-> or attempt to address the deeper issue.  The quick fix would ensure
-> v5.19-rc1 isn't broken, but if possible I'd rather address the deeper
-> issue...
->
-> Below is another patch.  Would you mind testing if it fixes the problem
-> for you?  It's a replacement for the patch in my last e-mail and seeks
-> to fix the problem for all drivers, not just smsc95xx.  If you don't
-> have time to test it, let me know and I'll just submit the quick fix
-> in my previous e-mail.
-
-I've just tested it on top of next-20220519 and I was not able to 
-reproduce the issue, so it looks it also fixes the issue. :)
-
-Tested-by: Marek Szyprowski <m.szyprowski@samsung.com>
-
-> BTW, getting a PHY interrupt on suspend seems like a corner case to me,
-> so I'm amazed you found this and seem to be able to reproduce it 100%.
-> Out of curiosity, is this a CI test you're performing?
-
-I've have some semi-automated (based on simple bash scripts) tests 
-utilizing remote test boards (with remote power on/off control, serial 
-console, tftp booting). This issue was quite easy to reproduce, even 
-manually. Maybe it is somehow specific to the Odroid-XU3/XU3-lite boards 
-and the way the smsc95xx USB ethernet chip is connected there, but it 
-happens there usually in 2 of 3 suspend/resume tests.
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
-
+T24gTW9uLCAyMDIyLTA1LTIzIGF0IDA4OjUzICswMjAwLCBTYXNjaGEgSGF1ZXIgd3JvdGU6DQo+
+IEhpIEhhbnMgVWxsaSwNCj4gDQo+IE9uIE1vbiwgTWF5IDIzLCAyMDIyIGF0IDA2OjA3OjE2QU0g
+KzAyMDAsIEhhbnMgVWxsaSBLcm9sbCB3cm90ZToNCj4gPiBPbiBXZWQsIDIwMjItMDUtMTggYXQg
+MTA6MjMgKzAyMDAsIFNhc2NoYSBIYXVlciB3cm90ZToNCj4gPiA+IFRoaXMgc2VyaWVzIGFkZHMg
+c3VwcG9ydCBmb3IgdGhlIFVTQiBjaGlwIHZhcmlhbnRzIHRvIHRoZSBSVFc4OCBkcml2ZXIuDQo+
+ID4gPiANCj4gPiANCj4gPiBIaSBTYXNjaGENCj4gPiANCj4gPiBnbGFkIHlvdSBmb3VuZCBzb21l
+ICp3b3JraW5nKiBkZXZpY2VzIGZvciBydHc4OCAhDQo+IA0KPiBXZWxsLCBub3QgZnVsbHkuIEkg
+aGFkIHRvIGFkZCBbM10gPSBSVFdfREVGX1JGRSg4ODIyYywgMCwgMCksIHRvIHRoZQ0KPiBydHc4
+ODIyY19yZmVfZGVmcyBhcnJheS4NCj4gDQo+ID4gSSBzcGVuZCBzb21lIG9mIHRoZSB3ZWVrZW5k
+IHRlc3RpbmcgeW91ciBkcml2ZXIgc3VibWlzc2lvbi4NCj4gPiANCj4gPiBmb3IgcnRsODgyMWN1
+IGRldmljZXMgSSBnZXQgZm9sbG93aW5nIG91dHB1dA0KPiA+IA0KPiA+IHNvbWUgTG9naWxpbmsg
+ZGV2aWNlDQo+ID4gDQo+ID4gWyAxNjg2LjYwNTU2N10gdXNiIDEtNS4xLjI6IE5ldyBVU0IgZGV2
+aWNlIGZvdW5kLCBpZFZlbmRvcj0wYmRhLCBpZFByb2R1Y3Q9YzgxMSwgYmNkRGV2aWNlPQ0KPiA+
+IDIuMDANCj4gPiBbIDE2ODYuNjE0MTg2XSB1c2IgMS01LjEuMjogTmV3IFVTQiBkZXZpY2Ugc3Ry
+aW5nczogTWZyPTEsIFByb2R1Y3Q9MiwgU2VyaWFsTnVtYmVyPTMNCj4gPiBbIDE2ODYuNjIxNzIx
+XSB1c2IgMS01LjEuMjogUHJvZHVjdDogODAyLjExYWMgTklDDQo+ID4gWyAxNjg2LjYyNjIyN10g
+dXNiIDEtNS4xLjI6IE1hbnVmYWN0dXJlcjogUmVhbHRlaw0KPiA+IFsgMTY4Ni42MzA2OTVdIHVz
+YiAxLTUuMS4yOiBTZXJpYWxOdW1iZXI6IDEyMzQ1Ng0KPiA+IFsgMTY4Ni42NDA0ODBdIHJ0d184
+ODIxY3UgMS01LjEuMjoxLjA6IEZpcm13YXJlIHZlcnNpb24gMjQuNS4wLCBIMkMgdmVyc2lvbiAx
+Mg0KPiA+IFsgMTY4Ni45MzI4MjhdIHJ0d184ODIxY3UgMS01LjEuMjoxLjA6IGZhaWxlZCB0byBk
+b3dubG9hZCBmaXJtd2FyZQ0KPiA+IFsgMTY4Ni45NDUyMDZdIHJ0d184ODIxY3UgMS01LjEuMjox
+LjA6IGZhaWxlZCB0byBzZXR1cCBjaGlwIGVmdXNlIGluZm8NCj4gPiBbIDE2ODYuOTUxNTM4XSBy
+dHdfODgyMWN1IDEtNS4xLjI6MS4wOiBmYWlsZWQgdG8gc2V0dXAgY2hpcCBpbmZvcm1hdGlvbg0K
+PiA+IFsgMTY4Ni45NTg0MDJdIHJ0d184ODIxY3U6IHByb2JlIG9mIDEtNS4xLjI6MS4wIGZhaWxl
+ZCB3aXRoIGVycm9yIC0yMg0KPiA+IA0KPiA+IGFib3ZlIGlzIHNhbWUgd2l0aCBzb21lIGZyb20g
+Q29tZmFzdA0KPiA+IA0KPiA+IFRoZSB3b3JzdCBpbiB0aGUgbGlzdCBpcyBvbmUgZnJvbSBFRFVQ
+DQo+ID4gDQo+ID4gWyAxODE3Ljg1NTcwNF0gcnR3Xzg4MjFjdSAxLTUuMS4yOjEuMjogRmlybXdh
+cmUgdmVyc2lvbiAyNC41LjAsIEgyQyB2ZXJzaW9uIDEyDQo+ID4gWyAxODE4LjE1MzkxOF0gcnR3
+Xzg4MjFjdSAxLTUuMS4yOjEuMjogcmZlIDI1NSBpc24ndCBzdXBwb3J0ZWQNCj4gPiBbIDE4MTgu
+MTY1MTc2XSBydHdfODgyMWN1IDEtNS4xLjI6MS4yOiBmYWlsZWQgdG8gc2V0dXAgY2hpcCBlZnVz
+ZSBpbmZvDQo+ID4gWyAxODE4LjE3MTUwNV0gcnR3Xzg4MjFjdSAxLTUuMS4yOjEuMjogZmFpbGVk
+IHRvIHNldHVwIGNoaXAgaW5mb3JtYXRpb24NCj4gDQo+IERvIHRoZXNlIGNoaXBzIHdvcmsgd2l0
+aCB5b3VyIG91dCBvZiB0cmVlIHZhcmlhbnQgb2YgdGhpcyBkcml2ZXI/DQo+IA0KPiBJcyB0aGUg
+ZWZ1c2UgaW5mbyBjb21wbGV0ZWx5IDB4ZmYgb3Igb25seSB0aGUgZmllbGQgaW5kaWNhdGluZyB0
+aGUgcmZlDQo+IG9wdGlvbj8NCg0KSSBjaGVjayBSRkUgYWxsb2NhdGlvbiBvZiA4ODIxYy4gMjU1
+IGlzbid0IGRlZmluZWQuDQpJZiBlZnVzZSBpbmZvIGlzbid0IGNvbXBsZXRlIDB4ZmYsIHRyeSB0
+byBmb3JjZSBSRkUgMCB0byBzZWUgaWYgaXQgd29ya3MuDQoNCj4gDQo+ID4gcnRsODgyMmJ1IGRl
+dmljZXMgYXJlIHdvcmtpbmcgZmluZSAuLi4NCj4gDQo+IE5pY2UuIERpZCB5b3UgdGVzdCBhIHJ0
+dzg3MjNkdSBkZXZpY2UgYXMgd2VsbD8NCj4gDQoNCkkgaGF2ZSBhIDg3MjNEVSBtb2R1bGUuDQoN
+CldpdGggdGhpcyBwYXRjaHNldCwgaXQgY2FuIGZpbmQgQVAsIGJ1dCBjYW4ndCBlc3RpYWJsaXNo
+IGNvbm5lY3Rpb24uDQpJIGNoZWNrIGFpciBjYXB0dXJlLCBidXQgbm8gVFggcGFja2V0cyBmb3Vu
+ZC4NClRoYXQgc2F5cyBSWCB3b3JrcywgYnV0IFRYIGRvZXNuJ3QuDQoNCldpdGggbWFzdGVyIGJy
+YW5jaCBvZiBIYW5zIFVsbGkgR2l0SHViLCBpdCBzaG93cyBtYW55ICJhdG9taWMgc2NoZWR1bGlu
+ZyINCndhcm5pbmdzIHdoZW4gSSBpbnNlcnQgdGhlIFVTQiBkb25nbGUuDQpXaGVuIEkgZG8gJ2l3
+IHNjYW4nLCBpdCBpcyBnb2luZyB0byBnZXQgc3R1Y2ssIGFuZCBJIGNhbiBvbmx5IHB1c2gNCnBv
+d2VyIGJ1dHRvbiB0byB0dXJuIG9mZiBteSBsYXB0b3AuDQoNClBpbmctS2UNCg0KDQo=
