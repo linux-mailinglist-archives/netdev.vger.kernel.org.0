@@ -2,88 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1584D530F12
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1548530FC5
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:19:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235767AbiEWMyU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 08:54:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53404 "EHLO
+        id S235740AbiEWMzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 08:55:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235752AbiEWMyS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 08:54:18 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 05B774D269
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 05:54:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653310455;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=POK+VClUkGIpFVtebvY1AJ0GHRBBNCyyP6V/9eIz3lw=;
-        b=M67lY1xvYP+otQyYICoIw0g0o243NT4lcE7PR3t0f/ad1lEE+jm3Yo1O+Jks8hmJgkB8xC
-        a/mmv43IRbUzymPBjBVjb1iQ6AqBs3JdapwcHTKpLO48pR8hhiSnGynmzJfdejd7thidEZ
-        lKtg5uaWrk3b8NQpBkZLe6KiM9N6X1E=
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com
- [209.85.218.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-208-1cuvy06aORGb3KnQhq0lNQ-1; Mon, 23 May 2022 08:54:14 -0400
-X-MC-Unique: 1cuvy06aORGb3KnQhq0lNQ-1
-Received: by mail-ej1-f69.google.com with SMTP id gf24-20020a170906e21800b006fe8e7f8783so5602832ejb.2
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 05:54:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=POK+VClUkGIpFVtebvY1AJ0GHRBBNCyyP6V/9eIz3lw=;
-        b=0B6ZRhaQkWtpe6M+8OeUv6lzL6Gbh41kcLUEhxdAhMr5Xw9WvXPWvfKnjS5DiU2tmY
-         FbAiovWS1t20c9ZF8dFO0/0jlGcfa3YwY0PNB3Iv81It95tDdhyDkZO6caGtSAMccg1C
-         2GIfvvT5s3dwzeSUUj3lXqEpW436RxLnOtpdqNyl0frV2LKl06NAZxfGK4IZBm+Q+IkW
-         b4wrQfjgaZ0RCe3Z7y1+m28Poe8Rzr/kmInChFjiDuTfpfrMS9+aMsSa060l+zks47T3
-         0oV6LOJqbbccWsB8Y8aGqM2ZryG+bQ3G3XONsELtWWhzvfz7YBVOBBGtsgqMrWEMNabF
-         daWw==
-X-Gm-Message-State: AOAM531tLzI6oC57HF/jkU0ZhvTrI6dDC8xiNzywwGvTZCKYnDuBM1RO
-        rpd9u6AU9jDzFwEhzSL+C/2Bd2RPmygTLCnTTZGkKdWAUurHtrcgPIwloW3Lg7PNyjCiwCz9RBu
-        vYw5GcW+9q//LMReQ
-X-Received: by 2002:a17:907:2d26:b0:6fe:deb2:6de with SMTP id gs38-20020a1709072d2600b006fedeb206demr4935093ejc.108.1653310453495;
-        Mon, 23 May 2022 05:54:13 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzdXO0MmncCTtuv2WEIoCzW0TsJeQs6uavBZFtN5Y8kf1AVuCk1/BrVRMSkDIyHPCwiUX4d3Q==
-X-Received: by 2002:a17:907:2d26:b0:6fe:deb2:6de with SMTP id gs38-20020a1709072d2600b006fedeb206demr4935064ejc.108.1653310453217;
-        Mon, 23 May 2022 05:54:13 -0700 (PDT)
-Received: from [192.168.242.1] (5920ab7b.static.cust.trined.nl. [89.32.171.123])
-        by smtp.gmail.com with ESMTPSA id k16-20020a1709067ad000b006fed8dfcf78sm1422446ejo.225.2022.05.23.05.54.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 23 May 2022 05:54:12 -0700 (PDT)
-From:   Eelco Chaudron <echaudro@redhat.com>
-To:     Vlad Buslov <vladbu@nvidia.com>,
-        Toms Atteka <cpp.code.lv@gmail.com>
-Cc:     Roi Dayan <roid@nvidia.com>, Ilya Maximets <i.maximets@ovn.org>,
-        Aaron Conole <aconole@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Pravin B Shelar <pshelar@ovn.org>, netdev@vger.kernel.org,
-        dev@openvswitch.org, linux-kernel@vger.kernel.org,
-        Johannes Berg <johannes@sipsolutions.net>,
-        Maor Dickman <maord@nvidia.com>
-Subject: Re: [PATCH net-next v2] net: openvswitch: fix uAPI incompatibility
- with existing user space
-Date:   Mon, 23 May 2022 14:54:09 +0200
-X-Mailer: MailMate (1.14r5895)
-Message-ID: <CD6F1EAA-7A32-46D2-9806-98CDB98DC537@redhat.com>
-In-Reply-To: <FFBEB52B-FA8C-4989-BDC1-1F3908F024B8@redhat.com>
-References: <20220309222033.3018976-1-i.maximets@ovn.org>
- <f7ty21hir5v.fsf@redhat.com>
- <44eeb550-3310-d579-91cc-ec18b59966d2@nvidia.com>
- <1a185332-3693-2750-fef2-f6938bbc8500@ovn.org> <87k0c171ml.fsf@nvidia.com>
- <9cc34fbc-3fd6-b529-7a05-554224510452@ovn.org>
- <4778B505-DBF5-4F57-90AF-87F12C1E0311@redhat.com> <87lev783k8.fsf@nvidia.com>
- <FFBEB52B-FA8C-4989-BDC1-1F3908F024B8@redhat.com>
+        with ESMTP id S235777AbiEWMzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 08:55:04 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E1B152E7E;
+        Mon, 23 May 2022 05:55:02 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 109B2B810AC;
+        Mon, 23 May 2022 12:55:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 912AFC385A9;
+        Mon, 23 May 2022 12:54:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653310499;
+        bh=VL29GRANyhn2Yf22h7xWxr8NCXCPQBgciy3yLY8dyEc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gwou/P4SObZx4pE88EhIO5qDrF33vuU9h8oEaYoy1v1ypY3KKQsuPfCxmZR2LozP6
+         zp1T7rXjl8BVJX7MlMhJbd7P8MSN7O6QlIQs9Ph4fTWlkLApN/sARmBjqDc+JJbJLw
+         a6P3ZkGIbAX7S5JzX8N23PEaYoaphq0KS92U4EhyzwrdZhxFdDYdwYeZgjycMx5tKG
+         PjH9V+cpX93p6BhPwLLE0C+DP62k4+q6EToukbzs9KchPGqynaI9NmPjcdr/HftN5a
+         eQI/rqDnr2pltEfmjMt+gHtV7tNJJVaRlC72fYpA+4p2hrTcmuepey7JTx5da/Sg58
+         pGv7t5MWhFjog==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 1250C400B1; Mon, 23 May 2022 09:54:57 -0300 (-03)
+Date:   Mon, 23 May 2022 09:54:57 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Ian Rogers <irogers@google.com>
+Cc:     Michael Petlan <mpetlan@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        James Clark <james.clark@arm.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Zhengjun Xing <zhengjun.xing@linux.intel.com>,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, linux-perf-users@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Stephane Eranian <eranian@google.com>
+Subject: Re: [PATCH 0/5] perf_counts clean up and perf stat report bug fix
+Message-ID: <YouEIfLIaQjKK08q@kernel.org>
+References: <20220519032005.1273691-1-irogers@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220519032005.1273691-1-irogers@google.com>
+X-Url:  http://acmel.wordpress.com
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -91,181 +76,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Em Wed, May 18, 2022 at 08:20:00PM -0700, Ian Rogers escreveu:
+> perf_counts takes a CPU map index as an argument, however, there were
+> a few places where this hadn't been cleaned up and the index was
+> called cpu. In part this led to the bug discovered by Michael Petlan in:
+> https://lore.kernel.org/linux-perf-users/CAP-5=fWQR=sCuiSMktvUtcbOLidEpUJLCybVF6=BRvORcDOq+g@mail.gmail.com/
+> 
+> Fix the bug, tidy up more of the arguments passed to perf_counts, add
+> a test to ensure the bug isn't reintroduced and add a helper macro to
+> iterate over just CPU map indices.
+
+Applied 2-5 to perf/core. The first is already in 5.18
 
 
-On 17 May 2022, at 13:10, Eelco Chaudron wrote:
+Thanks,
 
-> On 12 May 2022, at 12:08, Vlad Buslov wrote:
->
->> On Thu 12 May 2022 at 12:19, Eelco Chaudron <echaudro@redhat.com> wrot=
-e:
->>> On 7 Apr 2022, at 12:22, Ilya Maximets wrote:
->>>
->>>> On 4/7/22 10:02, Vlad Buslov wrote:
->>>>> On Mon 14 Mar 2022 at 20:40, Ilya Maximets <i.maximets@ovn.org> wro=
-te:
->>>>>> On 3/14/22 19:33, Roi Dayan wrote:
->>>>>>>
->>>>>>>
->>>>>>> On 2022-03-10 8:44 PM, Aaron Conole wrote:
->>>>>>>> Ilya Maximets <i.maximets@ovn.org> writes:
->>>>>>>>
->>>>>>>>> Few years ago OVS user space made a strange choice in the commi=
-t [1]
->>>>>>>>> to define types only valid for the user space inside the copy o=
-f a
->>>>>>>>> kernel uAPI header.=C2=A0 '#ifndef __KERNEL__' and another attr=
-ibute was
->>>>>>>>> added later.
->>>>>>>>>
->>>>>>>>> This leads to the inevitable clash between user space and kerne=
-l types
->>>>>>>>> when the kernel uAPI is extended.=C2=A0 The issue was unveiled =
-with the
->>>>>>>>> addition of a new type for IPv6 extension header in kernel uAPI=
-=2E
->>>>>>>>>
->>>>>>>>> When kernel provides the OVS_KEY_ATTR_IPV6_EXTHDRS attribute to=
- the
->>>>>>>>> older user space application, application tries to parse it as
->>>>>>>>> OVS_KEY_ATTR_PACKET_TYPE and discards the whole netlink message=
- as
->>>>>>>>> malformed.=C2=A0 Since OVS_KEY_ATTR_IPV6_EXTHDRS is supplied al=
-ong with
->>>>>>>>> every IPv6 packet that goes to the user space, IPv6 support is =
-fully
->>>>>>>>> broken.
->>>>>>>>>
->>>>>>>>> Fixing that by bringing these user space attributes to the kern=
-el
->>>>>>>>> uAPI to avoid the clash.=C2=A0 Strictly speaking this is not th=
-e problem
->>>>>>>>> of the kernel uAPI, but changing it is the only way to avoid br=
-eakage
->>>>>>>>> of the older user space applications at this point.
->>>>>>>>>
->>>>>>>>> These 2 types are explicitly rejected now since they should not=
- be
->>>>>>>>> passed to the kernel.=C2=A0 Additionally, OVS_KEY_ATTR_TUNNEL_I=
-NFO moved
->>>>>>>>> out from the '#ifdef __KERNEL__' as there is no good reason to =
-hide
->>>>>>>>> it from the userspace.=C2=A0 And it's also explicitly rejected =
-now, because
->>>>>>>>> it's for in-kernel use only.
->>>>>>>>>
->>>>>>>>> Comments with warnings were added to avoid the problem coming b=
-ack.
->>>>>>>>>
->>>>>>>>> (1 << type) converted to (1ULL << type) to avoid integer overfl=
-ow on
->>>>>>>>> OVS_KEY_ATTR_IPV6_EXTHDRS, since it equals 32 now.
->>>>>>>>>
->>>>>>>>> =C2=A0 [1] beb75a40fdc2 ("userspace: Switching of L3 packets in=
- L2 pipeline")
->>>>>>>>>
->>>>>>>>> Fixes: 28a3f0601727 ("net: openvswitch: IPv6: Add IPv6 extensio=
-n header support")
->>>>>>>>> Link: https://lore.kernel.org/netdev/3adf00c7-fe65-3ef4-b6d7-6d=
-8a0cad8a5f@nvidia.com
->>>>>>>>> Link: https://github.com/openvswitch/ovs/commit/beb75a40fdc295b=
-fd6521b0068b4cd12f6de507c
->>>>>>>>> Reported-by: Roi Dayan <roid@nvidia.com>
->>>>>>>>> Signed-off-by: Ilya Maximets <i.maximets@ovn.org>
->>>>>>>>> ---
->>>>>>>>
->>>>>>>> Acked-by: Aaron Conole <aconole@redhat.com>
->>>>>>>>
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> I got to check traffic with the fix and I do get some traffic
->>>>>>> but something is broken. I didn't investigate much but the quick
->>>>>>> test shows me rules are not offloaded and dumping ovs rules gives=
+- Arnaldo
+ 
+> Ian Rogers (5):
+>   perf stat: Fix and validate inputs in stat events
+>   perf stat: Add stat record+report test
+>   perf cpumap: Add perf_cpu_map__for_each_idx
+>   perf bpf_counter: Tidy use of CPU map index
+>   perf stat: Make use of index clearer with perf_counts
+> 
+>  tools/lib/perf/include/perf/cpumap.h |  3 ++
+>  tools/perf/tests/shell/stat.sh       | 13 ++++++
+>  tools/perf/util/bpf_counter.c        | 61 ++++++++++++++++------------
+>  tools/perf/util/stat-display.c       | 22 +++++-----
+>  tools/perf/util/stat.c               | 27 ++++++++----
+>  5 files changed, 81 insertions(+), 45 deletions(-)
+> 
+> -- 
+> 2.36.1.124.g0e6072fb45-goog
 
->>>>>>> error like this
->>>>>>>
->>>>>>> recirc_id(0),in_port(enp8s0f0_1),ct_state(-trk),eth(),eth_type(0x=
-86dd),ipv6(frag=3Dno)(bad
->>>>>>> key length 2, expected -1)(00 00/(bad mask length 2, expected -1)=
-(00 00),
->>>>>>> packets:2453, bytes:211594, used:0.004s, flags:S., actions:ct,rec=
-irc(0x2)
->>>>>>
->>>>>> Such a dump is expected, because kernel parses fields that current=
+-- 
 
->>>>>> userspace doesn't understand, and at the same time OVS by design i=
-s
->>>>>> using kernel provided key/mask while installing datapath rules, II=
-RC.
->>>>>> It should be possible to make these dumps a bit more friendly thou=
-gh.
->>>>>>
->>>>>> For the offloading not working, see my comment in the v2 patch ema=
-il
->>>>>> I sent (top email of this thread).  In short, it's a problem in us=
-er
->>>>>> space and it can not be fixed from the kernel side, unless we reve=
-rt
->>>>>> IPv6 extension header support and never add any new types, which i=
-s
->>>>>> unreasonable.  I didn't test any actual offloading, but I had a
->>>>>> successful run of 'make check-offloads' with my quick'n'dirty fix =
-from
->>>>>> the top email.
->>>>>
->>>>> Hi Ilya,
->>>>>
->>>>> I can confirm that with latest OvS master IPv6 rules offload still =
-fails
->>>>> without your pastebin code applied.
->>>>>
->>>>>>
->>>>>> Since we're here:
->>>>>>
->>>>>> Toms, do you plan to submit user space patches for this feature?
->>>>>
->>>>> I see there is a patch from you that is supposed to fix compatibili=
-ty
->>>>> issues caused by this change in OvS d96d14b14733 ("openvswitch.h: A=
-lign
->>>>> uAPI definition with the kernel."), but it doesn't fix offload for =
-me
->>>>> without pastebin patch.
->>>>
->>>> Yes.  OVS commit d96d14b14733 is intended to only fix the uAPI.
->>>> Issue with offload is an OVS bug that should be fixed separately.
->>>> The fix will also need to be backported to OVS stable branches.
->>>>
->>>>> Do you plan to merge that code into OvS or you
->>>>> require some help from our side?
->>>>
->>>> I could do that, but I don't really have enough time.  So, if you
->>>> can work on that fix, it would be great.  Note that comments inside
->>>> the OVS's lib/odp-util.c:parse_key_and_mask_to_match() was blindly
->>>> copied from the userspace datapath and are incorrect for the general=
-
->>>> case, so has to be fixed alongside the logic of that function.
->>>
->>> Tom or Vlad, are you working on this? Asking, as the release of a ker=
-nel with
->>> Tom=E2=80=99s =E2=80=9Cnet: openvswitch: IPv6: Add IPv6 extension hea=
-der support=E2=80=9D patch will
->>> break OVS.
->>>
->>> //Eelco
->>
->> Hi Eelco,
->>
->> My simple fix for OvS was rejected and I don't have time to rework it =
-at
->> the moment.
->
-> That=E2=80=99s a pity, Tom do you maybe have time as your patch left OV=
-S in this error state?
-
-Looks like everybody is busy, and as the patched kernel is now available,=
- let me try to fix this on the OVS side.
-
-//Eelco
-
+- Arnaldo
