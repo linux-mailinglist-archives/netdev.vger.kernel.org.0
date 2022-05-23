@@ -2,91 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FB755317BB
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:53:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C4085318E3
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:54:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232067AbiEWUDx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 16:03:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
+        id S232137AbiEWUFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 16:05:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232060AbiEWUDw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 16:03:52 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D58596FD05;
-        Mon, 23 May 2022 13:03:51 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id gg20so14983987pjb.1;
-        Mon, 23 May 2022 13:03:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bgGL9vPmn7It6mSSxr4xGr9tZVsKClEQVSniSkYH9fU=;
-        b=GE86hsPlFU9fmFoSIlqWDWgt2YfjoQRW+B5ylZy5SX1PT1Vy/rvDKs37FuWU6c74it
-         jMIpVcCh6G0kB3SSJH9F+NMRpdSsJt4uCe/TLFwrq28xBfejN4Wo+mMiJf+CNpveUWTz
-         M43C3XJeYVMGmb3+zQzN8hvT7NZMFQgFp+KFHENUofAelFMr5GQLTQNZAEFxEWOaqsAl
-         dsTBFchscGvi6lGY9NKISv2AmVTRgTplD95uqQHQhdNqlogxfn/nc6Bhnl0L7bjEL5tB
-         xnTv8dsE9m1rZHybus+M55rlspWZ0tJ38xpqWB+Dj1cw6v2EPpgTNx+Yq7R6s9r4Lq/7
-         Zh9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bgGL9vPmn7It6mSSxr4xGr9tZVsKClEQVSniSkYH9fU=;
-        b=HRa7jONrdOY0iuX+GHwO/GOzotezl5TxC8OLuJxzMbyQfJ2/EAqfjmAlavuGhACFlu
-         09XHDwRYzkbBNqx0iYJE2AtbpgQg1FeJzOGahyf/ASkeZUopxYTF+Jo5X04ePZavzqsE
-         aver1poMEEOby8adj6acaJTXZx5Ba0fesg5OmeIM79BC/exLM9SlYXv+QbhceG56DCAi
-         4GRlRb9nN/5Sjvl3SVzZ3y4B80R8OL3XvND1uHRKJTd1XOEKW3hj4QH34Ji1RSlPhupM
-         fOqhdTeimcqkqqtrWbUEVlQTrr6AA6HM0TPO86NhP2wkr0gfZ7JFE0RUcR9FmszZquWs
-         qZaQ==
-X-Gm-Message-State: AOAM532vhQR6OOE3VhknERHm6T1VSC8ZQ5fj1eT7xCz0csLeEJTipj88
-        +PYkQtsFrbqVNldOYvEEGUc=
-X-Google-Smtp-Source: ABdhPJxcIHbC9EvTvMnGhbgmpbygP3NhEXAyMP5iKCGiKLYCCVb0xq8q1edxgLSOQP93nvBri5lkBw==
-X-Received: by 2002:a17:902:ef45:b0:155:cede:5a9d with SMTP id e5-20020a170902ef4500b00155cede5a9dmr24005769plx.93.1653336231305;
-        Mon, 23 May 2022 13:03:51 -0700 (PDT)
-Received: from lvondent-mobl4.. (c-71-56-157-77.hsd1.or.comcast.net. [71.56.157.77])
-        by smtp.gmail.com with ESMTPSA id l17-20020a629111000000b0050dc76281ccsm7507465pfe.166.2022.05.23.13.03.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 13:03:50 -0700 (PDT)
-From:   Luiz Augusto von Dentz <luiz.dentz@gmail.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: pull request: bluetooth 2022-05-23
-Date:   Mon, 23 May 2022 13:03:49 -0700
-Message-Id: <20220523200349.3322806-1-luiz.dentz@gmail.com>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S232101AbiEWUFb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 16:05:31 -0400
+Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F76F13;
+        Mon, 23 May 2022 13:05:28 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 8621721A26;
+        Mon, 23 May 2022 20:05:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1653336327; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc;
+        bh=ewuco7qpnjFa6pnlO7wOxhm6l4KQ3priZ8aA9J5KoQw=;
+        b=mXdA2guetB0n/GK7JrXpr9jH8L3UJoxfN5AQ5q2wLFW+G5KEwNUV1QQ0XaieOWDlEHCXpl
+        jpGzc/BwLBrNjOsm+WNrgR84uPdy1Ln+K+4VVHw5Eku8r8AIXXwrOODA4vnSimAPjHkqwS
+        Ne3Me8sHbB7qXd9FppAJyK4IUhUmDK8=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1653336327;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc;
+        bh=ewuco7qpnjFa6pnlO7wOxhm6l4KQ3priZ8aA9J5KoQw=;
+        b=jx8UP0H0LMalaH9zzsP1IcPrpx0ava6S8R0GaZ/un6LBIRJP+DChvmDnXVv3Qp3beF2hjf
+        5OGzD7eEyADJzoAQ==
+Received: from lion.mk-sys.cz (unknown [10.100.200.14])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 6B3892C141;
+        Mon, 23 May 2022 20:05:27 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 8B7AE60299; Mon, 23 May 2022 22:05:24 +0200 (CEST)
+Message-Id: <30ec3274c323de7c3a9b013b9bfb6c3418465d30.1653336079.git.mkubecek@suse.cz>
+From:   Michal Kubecek <mkubecek@suse.cz>
+Subject: [PATCH ipsec v2] Revert "net: af_key: add check for pfkey_broadcast
+ in function pfkey_process"
+To:     Steffen Klassert <steffen.klassert@secunet.com>,
+        netdev@vger.kernel.org
+Cc:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Date:   Mon, 23 May 2022 22:05:24 +0200 (CEST)
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The following changes since commit 8c3b8dc5cc9bf6d273ebe18b16e2d6882bcfb36d:
+This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
 
-  net/smc: fix listen processing for SMC-Rv2 (2022-05-23 10:08:33 +0100)
+A non-zero return value from pfkey_broadcast() does not necessarily mean
+an error occurred as this function returns -ESRCH when no registered
+listener received the message. In particular, a call with
+BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
+zero so that this commit in fact prevents processing any PF_KEY message.
+One visible effect is that racoon daemon fails to find encryption
+algorithms like aes and refuses to start.
 
-are available in the Git repository at:
+Excluding -ESRCH return value would fix this but it's not obvious that
+we really want to bail out here and most other callers of
+pfkey_broadcast() also ignore the return value. Also, as pointed out by
+Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
+should use netlink instead so that we should only disturb the code for
+really important fixes.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-05-23
+v2: add a comment explaining why is the return value ignored
 
-for you to fetch changes up to c9f73a2178c12fb24d2807634209559d6a836e08:
+Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+---
+ net/key/af_key.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-  Bluetooth: hci_conn: Fix hci_connect_le_sync (2022-05-23 12:52:06 -0700)
+diff --git a/net/key/af_key.c b/net/key/af_key.c
+index 339d95df19d3..d93bde657359 100644
+--- a/net/key/af_key.c
++++ b/net/key/af_key.c
+@@ -2826,10 +2826,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
+ 	void *ext_hdrs[SADB_EXT_MAX];
+ 	int err;
+ 
+-	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
+-			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+-	if (err)
+-		return err;
++	/* Non-zero return value of pfkey_broadcast() does not always signal
++	 * an error and even on an actual error we may still want to process
++	 * the message so rather ignore the return value.
++	 */
++	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
++			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
+ 
+ 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
+ 	err = parse_exthdrs(skb, hdr, ext_hdrs);
+-- 
+2.36.1
 
-----------------------------------------------------------------
-bluetooth pull request for net:
-
- - Fix crash when an LE Connection fails to be established.
-
-----------------------------------------------------------------
-Luiz Augusto von Dentz (1):
-      Bluetooth: hci_conn: Fix hci_connect_le_sync
-
- net/bluetooth/hci_conn.c  | 5 +++--
- net/bluetooth/hci_event.c | 8 +++++---
- 2 files changed, 8 insertions(+), 5 deletions(-)
