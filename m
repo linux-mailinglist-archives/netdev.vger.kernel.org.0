@@ -2,120 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id A6944531D3C
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 23:03:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4F78531DA2
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 23:23:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229737AbiEWVAk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 17:00:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54066 "EHLO
+        id S230211AbiEWVXR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 17:23:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiEWVAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 17:00:34 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53BF39156;
-        Mon, 23 May 2022 14:00:31 -0700 (PDT)
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ntFAD-00045c-Px; Mon, 23 May 2022 23:00:29 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ntFAD-000BZ8-9q; Mon, 23 May 2022 23:00:29 +0200
-Subject: Re: [PATCH v2] libbpf: Fix determine_ptr_size() guessing
-To:     Douglas RAILLARD <douglas.raillard@arm.com>, bpf@vger.kernel.org
-Cc:     beata.michalska@arm.com, Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-References: <20220523102955.43844-1-douglas.raillard@arm.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <4268b7c5-458e-32cc-36c4-79058be0480e@iogearbox.net>
-Date:   Mon, 23 May 2022 23:00:27 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S231295AbiEWVXQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 17:23:16 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 8F0E86FD26
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 14:23:14 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-47-OiVoB4M7PmGU961ThxdVqw-1; Mon, 23 May 2022 22:23:11 +0100
+X-MC-Unique: OiVoB4M7PmGU961ThxdVqw-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Mon, 23 May 2022 22:23:10 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Mon, 23 May 2022 22:23:10 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Pavan Chebbi' <pavan.chebbi@broadcom.com>
+CC:     Paolo Abeni <pabeni@redhat.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "mchan@broadcom.com" <mchan@broadcom.com>,
+        David Miller <davem@davemloft.net>
+Subject: RE: tg3 dropping packets at high packet rates
+Thread-Topic: tg3 dropping packets at high packet rates
+Thread-Index: AdhqyKyabzDEQq15SKKGm31SHwTbKwAC24IAAAoYsMAABXOQgAASBiKAAAHW4wAABHST0AACH9sAAAKZZrD///3FgP//7fNg//44TdD/98XoIAIPG/gA//+b67A=
+Date:   Mon, 23 May 2022 21:23:10 +0000
+Message-ID: <71de7bfbb0854449bce509d67e9cf58c@AcuMS.aculab.com>
+References: <70a20d8f91664412ae91e401391e17cb@AcuMS.aculab.com>
+ <6576c307ed554adb443e62a60f099266c95b55a7.camel@redhat.com>
+ <153739175cf241a5895e6a5685a89598@AcuMS.aculab.com>
+ <CACKFLinwh=YgPGPZ0M0dTJK1ar+SoPUZtYb5nBmLj6CNPdCQ2g@mail.gmail.com>
+ <13d6579e9bc44dc2bfb73de8d9715b10@AcuMS.aculab.com>
+ <CALs4sv1RxAbVid2f8EQF_kQkk48fd=8kcz2WbkTXRkwLbPLgwA@mail.gmail.com>
+ <f3d1d5bf11144b31b1b3959e95b04490@AcuMS.aculab.com>
+ <5cc5353c518e27de69fc0d832294634c83f431e5.camel@redhat.com>
+ <f8ff0598961146f28e2d186882928390@AcuMS.aculab.com>
+ <CALs4sv2M+9N1joECMQrOGKHQ_YjMqzeF1gPD_OBQ2_r+SJwOwQ@mail.gmail.com>
+ <1bc5053ef6f349989b42117eda7d2515@AcuMS.aculab.com>
+ <ae631eefb45947ac84cfe0468d0b7508@AcuMS.aculab.com>
+ <9119f62fadaa4342a34882cac835c8b0@AcuMS.aculab.com>
+ <CALs4sv13Y7CoMvrYm2c58vP6FKyK+_qrSp2UBCv0MURTAkv8hg@mail.gmail.com>
+In-Reply-To: <CALs4sv13Y7CoMvrYm2c58vP6FKyK+_qrSp2UBCv0MURTAkv8hg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <20220523102955.43844-1-douglas.raillard@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26550/Mon May 23 10:05:39 2022)
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/23/22 12:29 PM, Douglas RAILLARD wrote:
-> From: Douglas Raillard <douglas.raillard@arm.com>
-> 
-> One strategy employed by libbpf to guess the pointer size is by finding
-> the size of "unsigned long" type. This is achieved by looking for a type
-> of with the expected name and checking its size.
-> 
-> Unfortunately, the C syntax is friendlier to humans than to computers
-> as there is some variety in how such a type can be named. Specifically,
-> gcc and clang do not use the same name in debug info.
+RnJvbTogUGF2YW4gQ2hlYmJpDQo+IFNlbnQ6IDIzIE1heSAyMDIyIDE3OjE1DQo+IA0KPiBGcm9t
+IHRoZSByZWdpc3RlciBkdW1wIHdlIGNhbiBzZWUgdGhhdCB5b3VyIGRldmljZSBpcyA1NzIwLUEw
+Lg0KPiBUaGVyZSBpcyBhIHBhdGNoIHRoYXQgd2FzIGFwcGxpZWQgbG9uZyB0aW1lIGFnbzoNCj4g
+NGQ5NTg0NzM4MTIyODYzOTg0NGM3MTk3ZGViOGIyMjExMjc0ZWYyMi0gdGczOiBXb3JrYXJvdW5k
+IHJ4X2Rpc2NhcmRzIHN0YXQgYnVnDQo+IA0KPiBUaGlzIHBhdGNoIGNvdWxkIGJlIG1ha2luZyB0
+aGUgcnhfZGlzY2FyZHMgY291bnQgbm90IHJlcG9ydCB0aGUgYWN0dWFsIGRpc2NhcmRzLg0KPiBZ
+b3UgY2FuIHNlZSB0aGUgYWN0dWFsIGRpc2NhcmRzIGlmIHlvdSBtb25pdG9yIHRoZSByZWdpc3Rl
+ciBhdCAweDIyNTAsDQo+IHdoaWNoIEkgdGhpbmsgbWF0Y2hlcyB3aXRoDQo+IHlvdXIgYXBwbGlj
+YXRpb24gcmVwb3J0LiBDYW4geW91IHRlc3QgdGhpcyBhbmQgY29uZmlybT8NCg0KSSdsbCByZXZl
+cnQgdGhhdCBwYXRjaCBhbmQgc2VlIGlmIHRoZSBlcnJvciBjb3VudHMgdGhlbiBtYWtlIHNlbnNl
+Lg0KDQo+IFdlIGNhbiBhbHNvIHNlZSBmcm9tIHlvdXIgcmVnaXN0ZXIgZHVtcCBzaGFyZWQgZWFy
+bGllciB0aGF0IHRoZSBGbG93DQo+IEF0dGVudGlvbiBSZWdpc3RlciBhdCAweDNDNDggaXMgaW5k
+aWNhdGluZw0KPiBiaXQgNiBzZXQuIFRoYXQgbWVhbnMgdGhlIE1CVUYgYWxsb2NhdGlvbiBzdGF0
+ZSBtYWNoaW5lIGhhcyByZWFjaGVkDQo+IG1idWYgbG93IHdhdGVyIHRocmVzaG9sZC4NCj4gSW4g
+c3VtbWFyeSBhdCB0aGlzIHBvaW50IGl0IGFwcGVhcnMgbGlrZSB0aGUgaG9zdCBjYW5ub3Qga2Vl
+cCB1cCB3aXRoDQo+IGluY29taW5nIHRyYWZmaWMuDQoNCkFzIHRoZSB0cmFjZSBiZWxvdyBzaG93
+cyBJIHRoaW5rIHRoZSB1bmRlcmx5aW5nIHByb2JsZW0NCmlzIHRoYXQgdGhlIG5hcGkgY2FsbGJh
+Y2tzIGFyZW4ndCBiZWluZyBtYWRlIGluIGEgdGltZWx5IG1hbm5lci4NCg0KT3ZlcmFsbCB0aGVy
+ZSBpcyBwbGVudHkgb2YgaWRsZSBjcHUgdGltZSBhbmQgdGhlIGFwcGxpY2F0aW9uIHdvcmtsb2Fk
+DQpzaG91bGRuJ3QgcmVhbGx5IGNhdXNlIGFueSBpc3N1ZXMgdG8gdGhlIGtlcm5lbC4NCk15IGZ0
+cmFjZSBjb250YWlucyBhbGwgdGhlIHN5c2NhbGwgZW50cnkgYW5kIGV4aXQuDQpUaGUgb25seSBv
+bmVzIGFyZSBmdXRleCBzbGVlcC93YWtldXAsIGVwb2xsX3dhaXQgYW5kIHJlY3Ztc2cuDQoNCkZy
+b20gd2hhdCBJJ3ZlIHNlZW4gYmVmb3JlLCB0aGUgc29mdGludCBhbmQgbmFwaSBjYWxsYmFjayB1
+c3VhbGx5DQpoYXBwZW4gd2hlbiB0aGUgaGFyZGludCByZXR1cm5zLg0KSW4gdGhpcyBjYXNlIEkg
+dGhpbmsgdGhhdCBoYXBwZW5zLCBidXQgd2hlbiB0aGUgbmFwaSBjYWxsYmFjayBmb3INCnJpbmcg
+MiB0cmllcyB0byBzY2hlZHVsZSB0aGUgY2FsbGJhY2sgZm9yIHJpbmcgMCAodG8gbW92ZSB0aGUN
+CmZyZWUgYnVmZmVycykgc29tZXRoaW5nIGJsb2NrcyBhbGwgdGhlIG5hcGkgY2FsbGJhY2tzIChw
+cm9iYWJseQ0KYWxsIHNvZnRpbnRzKSBvbiB0aGF0IGNwdSBmb3Igc2V2ZXJhbCBtaWxsaXNlY29u
+ZHMuDQoNClRoaXMgYWN0dWFsbHkgbG9va3MgbGlrZSBhIGdlbmVyaWMgcHJvYmxlbSwgbm90IGEg
+dGczIG9uZS4NCg0KCURhdmlkDQoNCj4gDQo+IA0KPiBPbiBNb24sIE1heSAyMywgMjAyMiBhdCA5
+OjMxIFBNIERhdmlkIExhaWdodCA8RGF2aWQuTGFpZ2h0QGFjdWxhYi5jb20+IHdyb3RlOg0KPiA+
+DQo+ID4gT2sgdG9kYXlzIHRlc3QgaXMgY2FsbGluZyB0cmFjaW5nX29mZigpIHdoZW4gdGhlIG5h
+cGkgY2FsbGJhY2sNCj4gPiBoYXMgbW9yZSB0aGFuIDEwMDAgcGFja2V0cyBxdWV1ZWQuDQo+ID4N
+Cj4gPiBUaGlzIGlzIHJhdGhlciBpbmZvcm1hdGl2ZS4NCj4gPiBKdXN0IHRha2luZyB0aGUgdHJh
+Y2UgZm9yIGNwdSAzMiBhbmQgc2hvcnRlbmluZyB0aGUgbGluZXMgc29tZXdoYXQNCj4gPiBnaXZl
+cyB0aGUgZm9sbG93aW5nLg0KPiA+DQo+ID4gPGlkbGU+LTAgIDYuNTk0Njk1OiBpcnFfaGFuZGxl
+cl9lbnRyeTogaXJxPTg3IG5hbWU9ZW0yLXJ4LTINCj4gPiA8aWRsZT4tMCAgNi41OTQ2OTU6IG5h
+cGlfc2NoZWR1bGVfcHJlcCA8LXRnM19tc2lfMXNob3QNCj4gPiA8aWRsZT4tMCAgNi41OTQ2OTU6
+IF9fbmFwaV9zY2hlZHVsZSA8LXRnM19tc2lfMXNob3QNCj4gPiA8aWRsZT4tMCAgNi41OTQ2OTU6
+IGlycV9oYW5kbGVyX2V4aXQ6IGlycT04NyByZXQ9aGFuZGxlZA0KPiA+IDxpZGxlPi0wICA2LjU5
+NDY5NTogc29mdGlycV9lbnRyeTogdmVjPTMgW2FjdGlvbj1ORVRfUlhdDQo+ID4gPGlkbGU+LTAg
+IDYuNTk0Njk2OiBuYXBpX3NjaGVkdWxlX3ByZXAgPC10ZzNfcngNCj4gPiA8aWRsZT4tMCAgNi41
+OTQ2OTY6IF9fbmFwaV9zY2hlZHVsZSA8LXRnM19yeA0KPiA+IDxpZGxlPi0wICA2LjU5NDY5Nzog
+bmFwaV9wb2xsOiBuYXBpIHBvbGwgb24gbmFwaSBzdHJ1Y3QgMDZlNDRlZGEgZm9yIGRldmljZSBl
+bTIgd29yayAxIGJ1ZGdldCA2NA0KPiA+IDxpZGxlPi0wICA2LjU5NDY5Nzogc29mdGlycV9leGl0
+OiB2ZWM9MyBbYWN0aW9uPU5FVF9SWF0NCj4gPiA8aWRsZT4tMCAgNi41OTQ2OTc6IHNvZnRpcnFf
+ZW50cnk6IHZlYz0zIFthY3Rpb249TkVUX1JYXQ0KPiA+IDxpZGxlPi0wICA2LjU5NDY5ODogbmFw
+aV9wb2xsOiBuYXBpIHBvbGwgb24gbmFwaSBzdHJ1Y3QgOTA5ZGVmMDMgZm9yIGRldmljZSBlbTIg
+d29yayAwIGJ1ZGdldCA2NA0KPiA+IDxpZGxlPi0wICA2LjU5NDY5ODogc29mdGlycV9leGl0OiB2
+ZWM9MyBbYWN0aW9uPU5FVF9SWF0NCj4gPiA8aWRsZT4tMCAgNi41OTQ3MDA6IGlycV9oYW5kbGVy
+X2VudHJ5OiBpcnE9ODcgbmFtZT1lbTItcngtMg0KPiA+IDxpZGxlPi0wICA2LjU5NDcwMTogbmFw
+aV9zY2hlZHVsZV9wcmVwIDwtdGczX21zaV8xc2hvdA0KPiA+IDxpZGxlPi0wICA2LjU5NDcwMTog
+X19uYXBpX3NjaGVkdWxlIDwtdGczX21zaV8xc2hvdA0KPiA+IDxpZGxlPi0wICA2LjU5NDcwMTog
+aXJxX2hhbmRsZXJfZXhpdDogaXJxPTg3IHJldD1oYW5kbGVkDQo+ID4gPGlkbGU+LTAgIDYuNTk0
+NzAxOiBzb2Z0aXJxX2VudHJ5OiB2ZWM9MyBbYWN0aW9uPU5FVF9SWF0NCj4gPiA8aWRsZT4tMCAg
+Ni41OTQ3MDQ6IG5hcGlfc2NoZWR1bGVfcHJlcCA8LXRnM19yeA0KPiA+IDxpZGxlPi0wICA2LjU5
+NDcwNDogX19uYXBpX3NjaGVkdWxlIDwtdGczX3J4DQo+ID4gPGlkbGU+LTAgIDYuNTk0NzA1OiBu
+YXBpX3BvbGw6IG5hcGkgcG9sbCBvbiBuYXBpIHN0cnVjdCAwNmU0NGVkYSBmb3IgZGV2aWNlIGVt
+MiB3b3JrIDMgYnVkZ2V0IDY0DQo+ID4gPGlkbGU+LTAgIDYuNTk0NzA2OiBzb2Z0aXJxX2V4aXQ6
+IHZlYz0zIFthY3Rpb249TkVUX1JYXQ0KPiA+IDxpZGxlPi0wICA2LjU5NDcxMDogaXJxX2hhbmRs
+ZXJfZW50cnk6IGlycT04NyBuYW1lPWVtMi1yeC0yDQo+ID4gPGlkbGU+LTAgIDYuNTk0NzEwOiBu
+YXBpX3NjaGVkdWxlX3ByZXAgPC10ZzNfbXNpXzFzaG90DQo+ID4gPGlkbGU+LTAgIDYuNTk0NzEw
+OiBfX25hcGlfc2NoZWR1bGUgPC10ZzNfbXNpXzFzaG90DQo+ID4gPGlkbGU+LTAgIDYuNTk0NzEw
+OiBpcnFfaGFuZGxlcl9leGl0OiBpcnE9ODcgcmV0PWhhbmRsZWQNCj4gPiA8aWRsZT4tMCAgNi41
+OTQ3MTI6IHNjaGVkX3N3aXRjaDogcHJldl9waWQ9MCBwcmV2X3ByaW89MTIwIHByZXZfc3RhdGU9
+UiA9PT4gbmV4dF9waWQ9MjI3NQ0KPiBuZXh0X3ByaW89NDkNCj4gPiBwaWQtMjI3NSAgNi41OTQ3
+MjA6IHN5c19mdXRleCh1YWRkcjogN2ZiZDJiZmUzYTg4LCBvcDogODEsIHZhbDogMSwgdXRpbWU6
+IDEwNjQ3MjAsIHVhZGRyMjogMCwgdmFsMzoNCj4gMjdiZWEpDQo+ID4gcGlkLTIyNzUgIDYuNTk0
+NzIxOiBzeXNfZnV0ZXggLT4gMHgwDQo+ID4gcGlkLTIyNzUgIDYuNTk4MDY3OiBzeXNfZXBvbGxf
+d2FpdChlcGZkOiA2MSwgZXZlbnRzOiA3ZmJkMmJmZTMzMDAsIG1heGV2ZW50czogODAsIHRpbWVv
+dXQ6IDApDQo+ID4gcGlkLTIyNzUgIDYuNTk4NzQ3OiBzY2hlZF9zd2l0Y2g6IHByZXZfcGlkPTIy
+NzUgcHJldl9wcmlvPTQ5IHByZXZfc3RhdGU9UyA9PT4gbmV4dF9waWQ9MTc1DQo+IG5leHRfcHJp
+bz0xMjANCj4gPiBwaWQtMTc1ICAgNi41OTg3NTk6IHNjaGVkX3N3aXRjaDogcHJldl9waWQ9MTc1
+IHByZXZfcHJpbz0xMjAgcHJldl9zdGF0ZT1SID09PiBuZXh0X3BpZD04MTkNCj4gbmV4dF9wcmlv
+PTEyMA0KPiA+IHBpZC04MTkgICA2LjU5ODc2Mzogc2NoZWRfc3dpdGNoOiBwcmV2X3BpZD04MTkg
+cHJldl9wcmlvPTEyMCBwcmV2X3N0YXRlPUkgPT0+IG5leHRfcGlkPTE3NQ0KPiBuZXh0X3ByaW89
+MTIwDQo+ID4gcGlkLTE3NSAgIDYuNTk4NzY1OiBzb2Z0aXJxX2VudHJ5OiB2ZWM9MyBbYWN0aW9u
+PU5FVF9SWF0NCj4gPiBwaWQtMTc1ICAgNi41OTg3NzA6IF9fbmFwaV9zY2hlZHVsZSA8LW5hcGlf
+Y29tcGxldGVfZG9uZQ0KPiA+IHBpZC0xNzUgICA2LjU5ODc3MTogbmFwaV9wb2xsOiBuYXBpIHBv
+bGwgb24gbmFwaSBzdHJ1Y3QgOTA5ZGVmMDMgZm9yIGRldmljZSBlbTIgd29yayAwIGJ1ZGdldCA2
+NA0KPiA+DQo+ID4gVGhlIGZpcnN0IGZldyBpbnRlcnJ1cHRzIGxvb2sgZmluZS4NCj4gPiBUaGVu
+IHRoZXJlIGlzIGEgNG1zIGRlbGF5IGJldHdlZW4gdGhlIGlycV9oYW5kbGVyIGNhbGluZyBuYXBp
+X3NjaGVkdWxlKCkNCj4gPiBhbmQgdGhlIE5FVF9SWCBmdW5jdGlvbiBhY3R1YWxseSBiZWluZyBj
+YWxsZWQuDQo+ID4NCj4gPiBFeGNlcHQgdGhhdCBpc24ndCB0aGUgYWN0dWFsIGRlbGF5Lg0KPiA+
+IFRoZXJlIGFyZSAzIHJlbGV2YW50IG5hcGkgc3RydWN0dXJlcy4NCj4gPiAwNmU0NGVkYSAoaG9y
+cmlkIGhhc2ggY29uZnVzaW5nIHRoaW5ncykgZm9yIHRoZSByeCByaW5nIG9mIGlycT04Ny4NCj4g
+PiB4eHh4eHh4eCAobm90IGluIHRoZSBhYm92ZSB0cmFjZSkgZm9yIHRoZSBvdGhlciBhY3RpdmUg
+cnggcmluZy4NCj4gPiA5MDlkZWYwMyBmb3IgZW0yLXJ4LTEgdGhhdCBpcyBhbHNvIHVzZWQgdG8g
+Y29weSB1c2VkIHJ4IGRlc2NyaXB0b3JzDQo+ID4gYmFjayB0byB0aGUgJ2ZyZWUgYnVmZmVyJyBy
+aW5nLg0KPiA+DQo+ID4gU28gdGhlIG5vcm1hbCBzZXF1ZW5jZSBpcyB0aGUgaGFyZF9pcnEgc2No
+ZWR1bGVzIHRoZSAnbmFwaScgZm9yIHRoYXQgcmluZy4NCj4gPiBNYXggNjQgcGFja2V0cyBhcmUg
+cHJvY2Vzc2VkIChSUFMgY3Jvc3Mgc2NoZWR1bGVzIHRoZW0pLg0KPiA+IFRoZW4gdGhlICduYXBp
+JyBmb3IgcmluZyBlbTItcngtMCBpcyBzY2hlZHVsZWQuDQo+ID4gSXQgaXMgdGhpcyBuYXBpIHRo
+YXQgaXMgYmVpbmcgcmVwb3J0ZWQgY29tcGxldGUuDQo+ID4gVGhlbiB0aGUgZW0yLXJ4LTIgbmFw
+aSBpcyBjYWxsZWQgYW5kIGZpbmRzIDEwMDArIGl0ZW1zIG9uIHRoZSBzdGF0dXMgcmluZy4NCj4g
+Pg0KPiA+IER1cmluZyB0aGUgNG1zIGdhcCBlbTItcngtNCBpcyBiZWluZyBpbnRlcnJ1cHRlZCBh
+bmQgdGhlIG5hcGkgaXMNCj4gPiBwcm9jZXNzaW5nIHJlY2VpdmUgcGFja2V0cyAtIGJ1dCB0aGUg
+c2hhcmVkIG5hcGkgKDkwOWRlZjAzKSBpc24ndCBydW4uDQo+ID4gKEVhcmxpZXIgaW4gdGhlIHRy
+YWNlIGl0IGdldHMgc2NoZWR1bGVkIGJ5IGJvdGggSVNSLikNCj4gPg0KPiA+IHBpZCAxNzUgaXMg
+a3NvZnRpcnFkLzMyIGFuZCA4MTkga3dvcmtlci8zMjoyLg0KPiA+IHBpZCAyMjc1IGlzIHBhcnQg
+b2Ygb3VyIGFwcGxpY2F0aW9uLg0KPiA+IEl0IGlzIHBvc3NpYmxlIHRoYXQgaXQgbG9vcGVkIGlu
+IHVzZXJzcGFjZSBmb3IgYSBmZXcgbXMuDQo+ID4NCj4gPiBCdXQgdGhlIG5hcGlfc2NoZWR1bGUo
+KSBhdCA2LjU5NDcwNCBzaG91bGQgaGF2ZSBjYWxsZWQgYmFjayBhcw0KPiA+IDkwOWRlZjAzIGlt
+bWVkaWF0ZWx5Lg0KPiA+DQo+ID4gSSd2ZSBnb3QgYSBsb3QgbW9yZSBmdHJhY2UgLSBidXQgaXQg
+aXMgbGFyZ2UgYW5kIG1vc3RseSBib3JpbmcuDQo+ID4NCj4gPiAgICAgICAgIERhdmlkDQo+ID4N
+Cj4gPiAtDQo+ID4gUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFtbGV5IFJvYWQsIE1v
+dW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQo+ID4gUmVnaXN0cmF0aW9uIE5v
+OiAxMzk3Mzg2IChXYWxlcykNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFt
+bGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3Ry
+YXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
-Could you elaborate for the commit msg what both emit differently?
-
-> Lookup all the names for such a type so that libbpf can hope to find the
-> information it wants.
-> 
-> Signed-off-by: Douglas Raillard <douglas.raillard@arm.com>
-> ---
->   tools/lib/bpf/btf.c | 15 +++++++++++++--
->   1 file changed, 13 insertions(+), 2 deletions(-)
-> 
->   CHANGELOG
-> 	v2:
-> 		* Added missing case for "long"
-> 
-> diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> index 1383e26c5d1f..ab92b3bc2724 100644
-> --- a/tools/lib/bpf/btf.c
-> +++ b/tools/lib/bpf/btf.c
-> @@ -489,8 +489,19 @@ static int determine_ptr_size(const struct btf *btf)
->   		if (!name)
->   			continue;
->   
-> -		if (strcmp(name, "long int") == 0 ||
-> -		    strcmp(name, "long unsigned int") == 0) {
-> +		if (
-> +			strcmp(name, "long") == 0 ||
-> +			strcmp(name, "long int") == 0 ||
-> +			strcmp(name, "int long") == 0 ||
-> +			strcmp(name, "unsigned long") == 0 ||
-> +			strcmp(name, "long unsigned") == 0 ||
-> +			strcmp(name, "unsigned long int") == 0 ||
-> +			strcmp(name, "unsigned int long") == 0 ||
-> +			strcmp(name, "long unsigned int") == 0 ||
-> +			strcmp(name, "long int unsigned") == 0 ||
-> +			strcmp(name, "int unsigned long") == 0 ||
-> +			strcmp(name, "int long unsigned") == 0
-> +		) {
-
-I was wondering whether strstr(3) or regexec(3) would be better, but then it's
-probably not worth it and having the different combinations spelled out is
-probably still better. Pls make sure though to stick to kernel coding convention
-(similar alignment around strcmp() as the lines you remove).
-
->   			if (t->size != 4 && t->size != 8)
->   				continue;
->   			return t->size;
-> 
-
-Thanks,
-Daniel
