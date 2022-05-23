@@ -2,93 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DC4A531059
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:20:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 182BD530ECF
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:17:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235133AbiEWLyf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 07:54:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53906 "EHLO
+        id S235203AbiEWL42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 07:56:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235122AbiEWLye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 07:54:34 -0400
-Received: from mx0b-0016f401.pphosted.com (mx0b-0016f401.pphosted.com [67.231.156.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75A3A51587
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 04:54:33 -0700 (PDT)
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NAHeDt032108;
-        Mon, 23 May 2022 04:54:19 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=vwngwSV6lSgS1BvTSWjYPcvN1QPmGDybMx907eKx40o=;
- b=hyLw0eXR7E82qJc3KPHxJNqsFajXhfJFPYSoT9SMte5cjIkl+wYgwweLHlBufySxVe4j
- MjlsiuzRVu77BeF2X9vBwIDcBglo8Q97IOrxXws+QjWJ6Qo/GN7PtVSDLquGTl2qnffS
- 8sjNt+wQJ0ds+0A5jwsH+jmNbc3dGxmbguE20Tl65PiHMVEi7Tf/a/l+Gsrl/dpJUHqw
- ya8FmeS4UTFM6hfBbUgsWlhvzyTbSrvDTIXPwawBRxF2u7xHCrUX6VNsGiRseS3FbVTz
- IaMN7Ybi26Sj+QAFxRCaHlgPiCGxFxZhgxAj0zw7r5RtCj7caqAbOFh7ag1oY+VP0muD yA== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3g6ykkwmht-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 04:54:19 -0700
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 May
- 2022 04:54:17 -0700
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Mon, 23 May 2022 04:54:17 -0700
-Received: from localhost.localdomain (unknown [10.28.48.95])
-        by maili.marvell.com (Postfix) with ESMTP id F32323F7085;
-        Mon, 23 May 2022 04:54:12 -0700 (PDT)
-From:   Suman Ghosh <sumang@marvell.com>
-To:     <davem@davemloft.net>, <edumazet@google.com>, <kuba@kernel.org>,
-        <pabeni@redhat.com>, <sgoutham@marvell.com>, <sbhatta@marvell.com>,
-        <gakula@marvell.com>, <Sunil.Goutham@cavium.com>,
-        <hkelam@marvell.com>, <colin.king@intel.com>,
-        <netdev@vger.kernel.org>
-CC:     Suman Ghosh <sumang@marvell.com>
-Subject: [net-next PATCH] octeontx2-vf: Add support for adaptive interrupt coalescing
-Date:   Mon, 23 May 2022 17:24:10 +0530
-Message-ID: <20220523115410.1307944-1-sumang@marvell.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S235368AbiEWL4O (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 07:56:14 -0400
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 559FA517FD;
+        Mon, 23 May 2022 04:56:07 -0700 (PDT)
+Received: by mail-wm1-x335.google.com with SMTP id z17so1742366wmf.1;
+        Mon, 23 May 2022 04:56:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xxq/dtScJVM5dKv6qygc3KWh1gjFjuflRzvNDTnM53w=;
+        b=pLmmGrFWpXbszthY96rthCc9b4MM/ZEGzTH8IMpe2fliWdFOTZBnGJ/wqMMXmLUsHk
+         Vsr5KhbVSa5mtuS33e0dr7Cub55i1F4rCOrGOM5nF1m1xbqOIBT/2E6KXZwpBxfSQM93
+         letAfrSKHd7d9GBG4QYSZORwxCEOVYcsyllH3Q0vP/rygjI0BorNdDKb5e4tl1f64frA
+         vfrSXDjEeDaW+Xoo0CeF4+HIqyIAD7ocXnthZIV1OfpS9oRWE4d6mgoz/vt3nrGUyo7U
+         bqTkBmoVLF1hGRxThHmQxCAjhjO6snZHfKTC94jVJuFXV2TWAJaLyt1zGmmuKPdrxUII
+         lZAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xxq/dtScJVM5dKv6qygc3KWh1gjFjuflRzvNDTnM53w=;
+        b=67t/C0gA4LHRtkg5EqD5tS5VkTUeZXDY/9IlndiJQs3eGGi9L5JdkcWX0WQLtQqQsh
+         ZmawmiY39SmsAEXWtiAKh8akkz/+aVhX2BxQY/7NXsMEx+K6HEz55BV2YarbKag/rR83
+         CdO8MjwuHV1yeuNz4AAW8luSLJUcDzulo8XuG3Rwj/eUYi7h/fzGhll0umMc8GVMbx75
+         nnhjuZOURdbZHmJJJwZUxaavA9ATfh8juPgjxkd/ZKlo6b9F7o4opluM+xxfY0hhh9vK
+         MNYkMkSkUIivIafaghwsZOq6c8zHjAOXU4OmqG91msxqdDCENncqSM0pcROg6wzzibZU
+         X3tA==
+X-Gm-Message-State: AOAM533wKwxIirLe8SJdAaivMt9LcZwukStL8obGeKY6FHFJ8uYHyrhd
+        3kTKUAqBa5A+upfj3yFl5Lo=
+X-Google-Smtp-Source: ABdhPJyIvRwYjDWyS5V+7WUUgXAgLnV4DhDTkH4YwdP+WN1QjtWs7C496pfQlB+56nIqjk00XzgJOg==
+X-Received: by 2002:a1c:6a01:0:b0:37f:1b18:6b17 with SMTP id f1-20020a1c6a01000000b0037f1b186b17mr20118573wmc.146.1653306965646;
+        Mon, 23 May 2022 04:56:05 -0700 (PDT)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id p6-20020a05600c358600b0039726cd3ae5sm10991929wmq.3.2022.05.23.04.56.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 04:56:05 -0700 (PDT)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] selftests/bpf: Fix spelling mistake: "unpriviliged" -> "unprivileged"
+Date:   Mon, 23 May 2022 12:56:04 +0100
+Message-Id: <20220523115604.49942-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: fr7m4Pg6IJhf_WqsEXTlAvyOLCh-18SN
-X-Proofpoint-ORIG-GUID: fr7m4Pg6IJhf_WqsEXTlAvyOLCh-18SN
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-23_04,2022-05-23_01,2022-02-23_01
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add ethtool supported_feature flag to support adaptive interrupt
-coalescing for vf(s).
+There are spelling mistakes in ASSERT messages. Fix these.
 
-Signed-off-by: Suman Ghosh <sumang@marvell.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/prog_tests/unpriv_bpf_disabled.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index bc614a4def9e..3f60a80e34c8 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -1390,7 +1390,8 @@ static int otx2vf_get_link_ksettings(struct net_device *netdev,
+diff --git a/tools/testing/selftests/bpf/prog_tests/unpriv_bpf_disabled.c b/tools/testing/selftests/bpf/prog_tests/unpriv_bpf_disabled.c
+index 2800185179cf..1ed3cc2092db 100644
+--- a/tools/testing/selftests/bpf/prog_tests/unpriv_bpf_disabled.c
++++ b/tools/testing/selftests/bpf/prog_tests/unpriv_bpf_disabled.c
+@@ -261,10 +261,10 @@ void test_unpriv_bpf_disabled(void)
+ 	if (ret == -EPERM) {
+ 		/* if unprivileged_bpf_disabled=1, we get -EPERM back; that's okay. */
+ 		if (!ASSERT_OK(strcmp(unprivileged_bpf_disabled_orig, "1"),
+-			       "unpriviliged_bpf_disabled_on"))
++			       "unprivileged_bpf_disabled_on"))
+ 			goto cleanup;
+ 	} else {
+-		if (!ASSERT_OK(ret, "set unpriviliged_bpf_disabled"))
++		if (!ASSERT_OK(ret, "set unprivileged_bpf_disabled"))
+ 			goto cleanup;
+ 	}
  
- static const struct ethtool_ops otx2vf_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
--				     ETHTOOL_COALESCE_MAX_FRAMES,
-+				     ETHTOOL_COALESCE_MAX_FRAMES |
-+				     ETHTOOL_COALESCE_USE_ADAPTIVE,
- 	.supported_ring_params  = ETHTOOL_RING_USE_RX_BUF_LEN |
- 				  ETHTOOL_RING_USE_CQE_SIZE,
- 	.get_link		= otx2_get_link,
 -- 
-2.25.1
+2.35.3
 
