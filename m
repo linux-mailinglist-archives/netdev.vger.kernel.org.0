@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DBD65308C2
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 07:30:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 741345308BC
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 07:30:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355618AbiEWF21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 01:28:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
+        id S1355634AbiEWF2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 01:28:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354196AbiEWF2V (ORCPT
+        with ESMTP id S1351157AbiEWF2V (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 01:28:21 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603D81FA47
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:18 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id t6so19639874wra.4
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:18 -0700 (PDT)
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9DB13DEE
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:19 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id p10so1009261wrg.12
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hMbtP4l5NIdbJN9Ls/o3wbRNRvLgMN2alg0s8sMcV/I=;
-        b=Rrc+F4WHPKFtZbfdPZhfGR1Bun8uOgA4F0ZgY8Iow4MAXe84LfyEgUj1wulOfOuBbT
-         A6gowSS2SmqRoLu8mvZJFB+CSST0OEgqe1V1axQ+fvtefIxmzDb8yS3XVUZl2VuZW2np
-         oQDnOgAuWRxjf9LkJ/qreSL/CeHxKmuBmu4Fg+wfAY5DNwP4fhM1YH2Hm6s0bwjc4Tyr
-         EBwAlDZI3LICLlQHL3cLv4tF8uFcsWKDOZJdW2hU50jlqPL6VsY2dDIsGRUHIAn9oFFX
-         bagJQ3t+GR6tjlYCXXQOECYOxhjUvUmVORQMCihCbgUULVOqx/vAkA/YJYPH/Xnnn/r1
-         94bQ==
+        bh=kwRG8kJghq1J9woEQ8/8+NXh3AtgpEI2TuVWVjMfZMk=;
+        b=0HpAzyrF8+FK9s9Lv6r8HnmS4n2VHb3e9NI+PYcrMI8MijK0B5XoHtXRkv0pI5tmky
+         DTvP09m+Llj+BF8ipr7By+iseFMo7gGLtq7vYu96ZGeSz8zR0CmdFjxa2rF61Q3PyTwY
+         5fEIB+1cjJNCHPS/dqw3StWXVMUIT3lUwunNjpKiEUWCJwQHOQjt+RFSK+miW6Z4zbXs
+         MWvJvH5fNK1m37DX7lV/wbjEtMDmkUVmoLJADDbcCKXYidinq0Ke37o8BrAO6EZyFLdC
+         sFfsslVnXtIGNMmhcoHGHRzHo5UgF4kTZ2ol6Bar+kuhYmFZ4qSF3OhS2bQXw91eRaVo
+         C3Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hMbtP4l5NIdbJN9Ls/o3wbRNRvLgMN2alg0s8sMcV/I=;
-        b=L9ojYXlbFhHG9jU8rHkvxvqImTxD64aJJUpWK+JSSPtUXn1D4XGGEcgCpdTgTifsYV
-         w1fLtxR3aWqPbeSESRGbL2E7CYdL7byfrw6qHSEZHGwdrOSmGQL5tcBlIhQ9mnXQl8kH
-         86kgc/Bt/zUbZUkStEzFVj1XQnF8FeJ55SJ/iSsV6zgHayFibamflcf2dudFKD+0bmRf
-         KoHTP3IWiI+hgVPi/ZwhJ+UlfFs0nMoT9xLqGEKGZuOo0RsrWRGTtaU4C56FkgtQr9xz
-         QtsMUbHKVKg4XT7oWlUdkoh4JWHRzeNHcCneUv8ERqDxjeLzmAt9Bej9twKijRtTuhrW
-         p1Xw==
-X-Gm-Message-State: AOAM532azmoqQHPyWtWh99C1Pglw+nfNlxM03/nVaI1lAtvIk2zAXIsb
-        Fr+r4Y2Ab7AHb6bGdjZEw5vvmg==
-X-Google-Smtp-Source: ABdhPJwPH32818/ysyCFl3DUF5kdKny0XUvYHvdybODc/cafFr8AsehjAS9sZfOvGlftg89tpe6jgg==
-X-Received: by 2002:a05:6000:178d:b0:20f:e960:2f2 with SMTP id e13-20020a056000178d00b0020fe96002f2mr250812wrg.569.1653283696986;
-        Sun, 22 May 2022 22:28:16 -0700 (PDT)
+        bh=kwRG8kJghq1J9woEQ8/8+NXh3AtgpEI2TuVWVjMfZMk=;
+        b=rAv23qHzFLNPbGXWYX5SxxhvybrpCVDRzZ7qrxjdyUrGuZznEveDOHp6zoUy80tA/T
+         ea20w76JPlPfHXXTyquNJhFz5NSIJX3b2oqjv246eVCZZOKpSiJKsFJ/2rI5uAIIefGD
+         krqR2pvZT3uGL3hfaF9tSeKZcv5nYbxeSNmQtwrnHet3hDUF7Lz85D+uY5aHbLyoRKkB
+         ViY94XNyMsXzIDUdFP3C0MRMYhtBdokUeN/q4ZRMb41Uu5/bBKuSBr0vKRDt92KMlwhe
+         RQDXgM3Bo5lvofzmy2yRFrFKVCK2z/a/3Uad0Dc6sGEB7HK4YN/ZgELffuaasMaTBHzt
+         F/tA==
+X-Gm-Message-State: AOAM533o0KozZOy9DTz1dSVi83/p/93c+VDmHysG8Cg4iXz4SNOYdOL7
+        +FqYDKSD6KF/7cavJugdErQEQQ==
+X-Google-Smtp-Source: ABdhPJy4dOiHRi8RxJS1vDYeuYztM8ZLIeJ4Hy3+HL2NtCowcnxhvWlaJf6kQexvMGXqL2AAqtP4hw==
+X-Received: by 2002:a5d:4bd2:0:b0:20f:cb39:c035 with SMTP id l18-20020a5d4bd2000000b0020fcb39c035mr6890506wrt.709.1653283698116;
+        Sun, 22 May 2022 22:28:18 -0700 (PDT)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id h2-20020a1ccc02000000b0039466988f6csm7802414wmb.31.2022.05.22.22.28.15
+        by smtp.googlemail.com with ESMTPSA id h2-20020a1ccc02000000b0039466988f6csm7802414wmb.31.2022.05.22.22.28.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 22:28:16 -0700 (PDT)
+        Sun, 22 May 2022 22:28:17 -0700 (PDT)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     andrew@lunn.ch, broonie@kernel.org, calvin.johnson@oss.nxp.com,
         davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
@@ -56,187 +56,118 @@ To:     andrew@lunn.ch, broonie@kernel.org, calvin.johnson@oss.nxp.com,
         wens@csie.org
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
-        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v3 2/3] phy: handle optional regulator for PHY
-Date:   Mon, 23 May 2022 05:28:06 +0000
-Message-Id: <20220523052807.4044800-3-clabbe@baylibre.com>
+        netdev@vger.kernel.org,
+        =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>,
+        Corentin Labbe <clabbe@baylibre.com>
+Subject: [PATCH v3 3/3] arm64: dts: allwinner: orange-pi-3: Enable ethernet
+Date:   Mon, 23 May 2022 05:28:07 +0000
+Message-Id: <20220523052807.4044800-4-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220523052807.4044800-1-clabbe@baylibre.com>
 References: <20220523052807.4044800-1-clabbe@baylibre.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add handling of optional regulators for PHY.
-Regulators need to be enabled before PHY scanning, so MDIO bus
-initiate this task.
+From: Ondřej Jirman <megi@xff.cz>
 
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Orange Pi 3 has two regulators that power the Realtek RTL8211E
+PHY. According to the datasheet, both regulators need to be enabled
+at the same time, or that "phy-io" should be enabled slightly earlier
+than "phy" regulator.
+
+RTL8211E/RTL8211EG datasheet says:
+
+  Note 4: 2.5V (or 1.8/1.5V) RGMII power should be risen simultaneously
+  or slightly earlier than 3.3V power. Rising 2.5V (or 1.8/1.5V) power
+  later than 3.3V power may lead to errors.
+
+The timing is set in DT via startup-delay-us.
+
+Signed-off-by: Ondrej Jirman <megi@xff.cz>
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- drivers/net/mdio/Kconfig       |  1 +
- drivers/net/mdio/fwnode_mdio.c | 36 ++++++++++++++++++++++++++++++----
- drivers/net/phy/phy_device.c   | 10 ++++++++++
- include/linux/phy.h            |  3 +++
- 4 files changed, 46 insertions(+), 4 deletions(-)
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
 
-diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
-index bfa16826a6e1..3f8098fac74b 100644
---- a/drivers/net/mdio/Kconfig
-+++ b/drivers/net/mdio/Kconfig
-@@ -22,6 +22,7 @@ config MDIO_BUS
- config FWNODE_MDIO
- 	def_tristate PHYLIB
- 	depends on (ACPI || OF) || COMPILE_TEST
-+	depends on REGULATOR
- 	select FIXED_PHY
- 	help
- 	  FWNODE MDIO bus (Ethernet PHY) accessors
-diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
-index 1c1584fca632..7f0d3bc81c52 100644
---- a/drivers/net/mdio/fwnode_mdio.c
-+++ b/drivers/net/mdio/fwnode_mdio.c
-@@ -10,6 +10,7 @@
- #include <linux/fwnode_mdio.h>
- #include <linux/of.h>
- #include <linux/phy.h>
-+#include <linux/regulator/consumer.h>
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+index c45d7b7fb39a..2760a0bf76d5 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -13,6 +13,7 @@ / {
+ 	compatible = "xunlong,orangepi-3", "allwinner,sun50i-h6";
  
- MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
- MODULE_LICENSE("GPL");
-@@ -94,7 +95,10 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 	struct phy_device *phy;
- 	bool is_c45 = false;
- 	u32 phy_id;
--	int rc;
-+	int rc, reg_cnt = 0;
-+	struct regulator_bulk_data *consumers;
-+	struct device_node *nchild = NULL;
-+	u32 reg;
+ 	aliases {
++		ethernet0 = &emac;
+ 		serial0 = &uart0;
+ 		serial1 = &uart1;
+ 	};
+@@ -55,6 +56,15 @@ led-1 {
+ 		};
+ 	};
  
- 	mii_ts = fwnode_find_mii_timestamper(child);
- 	if (IS_ERR(mii_ts))
-@@ -105,15 +109,35 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 	if (rc >= 0)
- 		is_c45 = true;
- 
-+	for_each_child_of_node(bus->dev.of_node, nchild) {
-+		of_property_read_u32(nchild, "reg", &reg);
-+		if (reg != addr)
-+			continue;
-+		reg_cnt = regulator_bulk_get_all(&bus->dev, nchild, &consumers);
-+		if (reg_cnt > 0) {
-+			rc = regulator_bulk_enable(reg_cnt, consumers);
-+			if (rc)
-+				return rc;
-+		}
-+		if (reg_cnt < 0) {
-+			dev_err(&bus->dev, "Fail to regulator_bulk_get_all err=%d\n", reg_cnt);
-+			return reg_cnt;
-+		}
-+	}
++	reg_gmac_2v5: gmac-2v5 {
++		compatible = "regulator-fixed";
++		regulator-name = "gmac-2v5";
++		regulator-min-microvolt = <2500000>;
++		regulator-max-microvolt = <2500000>;
++		enable-active-high;
++		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
++	};
 +
- 	if (is_c45 || fwnode_get_phy_id(child, &phy_id))
- 		phy = get_phy_device(bus, addr, is_c45);
- 	else
- 		phy = phy_device_create(bus, addr, phy_id, 0, NULL);
- 	if (IS_ERR(phy)) {
- 		unregister_mii_timestamper(mii_ts);
--		return PTR_ERR(phy);
-+		rc = PTR_ERR(phy);
-+		goto error;
- 	}
+ 	reg_vcc5v: vcc5v {
+ 		/* board wide 5V supply directly from the DC jack */
+ 		compatible = "regulator-fixed";
+@@ -113,6 +123,33 @@ &ehci3 {
+ 	status = "okay";
+ };
  
-+	phy->regulator_cnt = reg_cnt;
-+	phy->consumers = consumers;
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&ext_rgmii_pins>;
++	phy-mode = "rgmii-id";
++	phy-handle = <&ext_rgmii_phy>;
++	status = "okay";
++};
 +
- 	if (is_acpi_node(child)) {
- 		phy->irq = bus->irq[addr];
- 
-@@ -127,14 +151,14 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 		if (rc) {
- 			phy_device_free(phy);
- 			fwnode_handle_put(phy->mdio.dev.fwnode);
--			return rc;
-+			goto error;
- 		}
- 	} else if (is_of_node(child)) {
- 		rc = fwnode_mdiobus_phy_device_register(bus, phy, child, addr);
- 		if (rc) {
- 			unregister_mii_timestamper(mii_ts);
- 			phy_device_free(phy);
--			return rc;
-+			goto error;
- 		}
- 	}
- 
-@@ -145,5 +169,9 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
- 	if (mii_ts)
- 		phy->mii_ts = mii_ts;
- 	return 0;
-+error:
-+	if (reg_cnt > 0)
-+		regulator_bulk_disable(reg_cnt, consumers);
-+	return rc;
- }
- EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 431a8719c635..711919e40ef7 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -27,6 +27,7 @@
- #include <linux/phy.h>
- #include <linux/phy_led_triggers.h>
- #include <linux/property.h>
-+#include <linux/regulator/consumer.h>
- #include <linux/sfp.h>
- #include <linux/skbuff.h>
- #include <linux/slab.h>
-@@ -1785,6 +1786,9 @@ int phy_suspend(struct phy_device *phydev)
- 	if (!ret)
- 		phydev->suspended = true;
- 
-+	if (phydev->regulator_cnt > 0)
-+		regulator_bulk_disable(phydev->regulator_cnt, phydev->consumers);
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <1>;
++		/*
++		 * The board uses 2.5V RGMII signalling. Power sequence to enable
++		 * the phy is to enable GMAC-2V5 and GMAC-3V (aldo2) power rails
++		 * at the same time and to wait 100ms. The driver enables phy-io
++		 * first. Delay is achieved with enable-ramp-delay on reg_aldo2.
++		 */
++		phy-io-supply = <&reg_gmac_2v5>;
++		ephy-supply = <&reg_aldo2>;
 +
- 	return ret;
- }
- EXPORT_SYMBOL(phy_suspend);
-@@ -1811,6 +1815,12 @@ int phy_resume(struct phy_device *phydev)
- {
- 	int ret;
- 
-+	if (phydev->regulator_cnt > 0) {
-+		ret = regulator_bulk_enable(phydev->regulator_cnt, phydev->consumers);
-+		if (ret)
-+			return ret;
-+	}
++		reset-gpios = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
++		reset-assert-us = <15000>;
++		reset-deassert-us = <40000>;
++	};
++};
 +
- 	mutex_lock(&phydev->lock);
- 	ret = __phy_resume(phydev);
- 	mutex_unlock(&phydev->lock);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 508f1149665b..ef4e0ce67194 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -704,6 +704,9 @@ struct phy_device {
- 	void (*phy_link_change)(struct phy_device *phydev, bool up);
- 	void (*adjust_link)(struct net_device *dev);
+ &gpu {
+ 	mali-supply = <&reg_dcdcc>;
+ 	status = "okay";
+@@ -211,6 +248,7 @@ reg_aldo2: aldo2 {
+ 				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-name = "vcc33-audio-tv-ephy-mac";
++				regulator-enable-ramp-delay = <100000>;
+ 			};
  
-+	int regulator_cnt;
-+	struct regulator_bulk_data *consumers;
-+
- #if IS_ENABLED(CONFIG_MACSEC)
- 	/* MACsec management functions */
- 	const struct macsec_ops *macsec_ops;
+ 			/* ALDO3 is shorted to CLDO1 */
 -- 
 2.35.1
 
