@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E4C7A5310CF
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:20:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B24B530F38
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:18:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234217AbiEWKne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 06:43:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53356 "EHLO
+        id S234187AbiEWKno (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 06:43:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234225AbiEWKnY (ORCPT
+        with ESMTP id S234240AbiEWKnY (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 06:43:24 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA1CCFC7
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:14 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id rs12so16136186ejb.13
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:14 -0700 (PDT)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BB0749F11
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:15 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id f9so27956400ejc.0
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=9b8E4PRx8BrnW1sgEjVk4LHh4D9piAhyes9wV5gbLT4=;
-        b=ITmwBszaldoMBsXIkHaKjCYbI4aP3VzacNm61DWwP+w+VkM3fMDGk9tgFPe7zfj4/M
-         dMrXza430//ZsnWf4/jgUL7DNMSQ7hnkMUtRpltgaA3j216Pw76L3VYxQPCRTdMRPn8E
-         L96rKV4aN4r+lA5TWTqRgPQvAg9Rpl+hotLbbK8dD+wVDrmTKmPRjgA/GUgKMMmwg+jg
-         ZzOAx47rd4B77Y5h906GKtaGyb+HAMztWjrn/lP5ri/Z5v/wbtO9q7fJXEWHT6uXRTgJ
-         lYda7E1uoGRTVpjvOZIEWFkHW2+u5vWrWnE36J14GbAZDnso8BwgntybDJvA3GrcI4nK
-         iXmQ==
+        bh=50niX/FM4H+njvGscV8qhuvnFKUkuRbOE6cNDO+7lms=;
+        b=Y+dk4ydtwlOWmKVU9EFl01/ndztmUGbKsYKIWX5bHhvWYgUvPjDcAdN5S+1/Z4nobv
+         3YSz5OVyS/IDuIWc6bvKC7ay/3xwJB1futK5ID7XICecNhKi16011evZ7eAtNfDjrdrg
+         lwbaUwVzqgXtJZgEf3ia1iqBSGyxx80DKRd+iZnzRLyb7W/ye7/rEdcok3a6LtppvxVR
+         6gaDL/jIiOMvK0V2EI4v69ZeL5BtsORAU3OE6tFDLrZeJbouDjVotuKE3H+0832NnnqV
+         2whxzoU/t/G0IY8ueWV/I2gncrg4SIgxrdlmzyEOPvBiJtHrKnSltEQjBd/YrxAWqVHv
+         JBYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=9b8E4PRx8BrnW1sgEjVk4LHh4D9piAhyes9wV5gbLT4=;
-        b=dUnKDsHVL8e9xJYEOWfZL8WWvSPxVjFk+ZwS0MxXUOeUngEZ4fsGXrFHRHiLxcHP2c
-         k9wg2VyjBi+dpkOk739BxbZo5bzruWMFQTRBXWXkiQORSYLK5FcLrcMUy17F/C2qJ2FB
-         +nQFNCPQvb7gzce7QGj2CZSu/mDKQMl0hcjCindZiUmKNP/IEaJwibTWvjDu0lMkpphn
-         cw4lUi4ArJeEXOE20Zzq5Iq5/8hynUX7ZDMTwPqOd1MnZI+K/pw4LoWfSUPN2/WKbvZZ
-         Ejfcsu7+p1jz3F8rFjwi4OYC8IQLq9QwAsoqHWf4REcseL8dpu8CHo3aMBC83shWv960
-         xZ9Q==
-X-Gm-Message-State: AOAM532PgUrj/zp+qWjDTgfRIFZbaLQjLNGsHZWMGk+MdlhgqjUktkY3
-        8lZVTpKrZaOqERLVIgA3BQDkxcF3Amg=
-X-Google-Smtp-Source: ABdhPJyorbpDeYvxLfO1inJDQwxtC9mUgtncwQMjN6MSnX3rv9pgZ9zytBwDTyE6JMJQNTQvwvBtyA==
-X-Received: by 2002:a17:906:4b55:b0:6fe:c52c:68c9 with SMTP id j21-20020a1709064b5500b006fec52c68c9mr7274113ejv.491.1653302592700;
-        Mon, 23 May 2022 03:43:12 -0700 (PDT)
+        bh=50niX/FM4H+njvGscV8qhuvnFKUkuRbOE6cNDO+7lms=;
+        b=ZbI4s8VkNE+LMT5hosA3ituBGmwWMrje5b688mWfKDzAheklZWNn+elhAiO3pNfvEW
+         4Si5yoOR6mT+hMNMcxn0FbSih97GLpLUibqJhJUAXj53IwvzZxWvk+U+dgjxr3i15co1
+         opfbgOkxDxH45g6RW9KbWKC6SZSNI92b0wEmD9e7EC14cKS4RBOUN92ZWnokY3MpMXGs
+         ZRqdn5FlGKHlRwrevL7qjPVvkCvW/50vBDXPPYgL003XJo3XDCfYsTtb0k+fEAh7wxCV
+         vSacGfQMoNyxCnqVgQmpyBAFUZnuEYxQDs8paKJqNRbmLs9EBrO2nJZsk53NVZ+2j8HO
+         xUGg==
+X-Gm-Message-State: AOAM532ifjocRypSi4Q7+Xz+ZS38Uo26ICzRtn8OKxV5/rSgtyDSeXEK
+        08k9YIFq12G8P4BcUmS8Ircg68aKIUk=
+X-Google-Smtp-Source: ABdhPJzDGCsHfdOeTPzHSzrdo1GJt2lJYWBK6tpAWa8XhIdQHgAWgHEq8dvTswB3CZENEqEAKF4d8w==
+X-Received: by 2002:a17:906:f24f:b0:6fe:9b70:6d63 with SMTP id gy15-20020a170906f24f00b006fe9b706d63mr17634645ejb.255.1653302594684;
+        Mon, 23 May 2022 03:43:14 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id j18-20020a1709066dd200b006feb875503fsm2584822ejt.78.2022.05.23.03.43.10
+        by smtp.gmail.com with ESMTPSA id j18-20020a1709066dd200b006feb875503fsm2584822ejt.78.2022.05.23.03.43.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 03:43:12 -0700 (PDT)
+        Mon, 23 May 2022 03:43:13 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -69,9 +69,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Frank Wunderlich <frank-w@public-files.de>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH net-next 06/12] net: dsa: only bring down user ports assigned to a given DSA master
-Date:   Mon, 23 May 2022 13:42:50 +0300
-Message-Id: <20220523104256.3556016-7-olteanv@gmail.com>
+Subject: [RFC PATCH net-next 07/12] net: dsa: all DSA masters must be down when changing the tagging protocol
+Date:   Mon, 23 May 2022 13:42:51 +0300
+Message-Id: <20220523104256.3556016-8-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220523104256.3556016-1-olteanv@gmail.com>
 References: <20220523104256.3556016-1-olteanv@gmail.com>
@@ -89,30 +89,85 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-This is an adaptation of commit c0a8a9c27493 ("net: dsa: automatically
-bring user ports down when master goes down") for multiple DSA masters.
-When a DSA master goes down, only the user ports under its control
-should go down too, the others can still send/receive traffic.
+The fact that the tagging protocol is set and queried from the
+/sys/class/net/<dsa-master>/dsa/tagging file is a bit of a quirk from
+the single CPU port days which isn't aging very well now that DSA can
+have more than a single CPU port. This is because the tagging protocol
+is a switch property, yet in the presence of multiple CPU ports it can
+be queried and set from multiple sysfs files, all of which are handled
+by the same implementation.
+
+The current logic ensures that the net device whose sysfs file we're
+changing the tagging protocol through must be down. That net device is
+the DSA master, and this is fine for single DSA master / CPU port setups.
+
+But exactly because the tagging protocol is per switch [ tree, in fact ]
+and not per DSA master, this isn't fine any longer with multiple CPU
+ports, and we must iterate through the tree and find all DSA masters,
+and make sure that all of them are down.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- net/dsa/slave.c | 3 +++
- 1 file changed, 3 insertions(+)
+ net/dsa/dsa2.c     | 10 +++-------
+ net/dsa/dsa_priv.h |  1 -
+ net/dsa/master.c   |  2 +-
+ 3 files changed, 4 insertions(+), 9 deletions(-)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 0455fb3cf03d..c0be747c66ac 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -2848,6 +2848,9 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
- 			if (!dsa_port_is_user(dp))
- 				continue;
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index ec0df4e498d6..4f0042339d4f 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -1235,7 +1235,6 @@ static int dsa_tree_bind_tag_proto(struct dsa_switch_tree *dst,
+  * they would have formed disjoint trees (different "dsa,member" values).
+  */
+ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+-			      struct net_device *master,
+ 			      const struct dsa_device_ops *tag_ops,
+ 			      const struct dsa_device_ops *old_tag_ops)
+ {
+@@ -1251,14 +1250,11 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+ 	 * attempts to change the tagging protocol. If we ever lift the IFF_UP
+ 	 * restriction, there needs to be another mutex which serializes this.
+ 	 */
+-	if (master->flags & IFF_UP)
+-		goto out_unlock;
+-
+ 	list_for_each_entry(dp, &dst->ports, list) {
+-		if (!dsa_port_is_user(dp))
+-			continue;
++		if (dsa_port_is_cpu(dp) && (dp->master->flags & IFF_UP))
++			goto out_unlock;
  
-+			if (dp->cpu_dp != cpu_dp)
-+				continue;
-+
- 			list_add(&dp->slave->close_list, &close_list);
- 		}
+-		if (dp->slave->flags & IFF_UP)
++		if (dsa_port_is_user(dp) && (dp->slave->flags & IFF_UP))
+ 			goto out_unlock;
+ 	}
  
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index d9722e49864b..cc1cc866dc42 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -545,7 +545,6 @@ struct dsa_lag *dsa_tree_lag_find(struct dsa_switch_tree *dst,
+ int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
+ int dsa_broadcast(unsigned long e, void *v);
+ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+-			      struct net_device *master,
+ 			      const struct dsa_device_ops *tag_ops,
+ 			      const struct dsa_device_ops *old_tag_ops);
+ void dsa_tree_master_admin_state_change(struct dsa_switch_tree *dst,
+diff --git a/net/dsa/master.c b/net/dsa/master.c
+index 2851e44c4cf0..32c0a00a8b92 100644
+--- a/net/dsa/master.c
++++ b/net/dsa/master.c
+@@ -307,7 +307,7 @@ static ssize_t tagging_store(struct device *d, struct device_attribute *attr,
+ 		 */
+ 		goto out;
+ 
+-	err = dsa_tree_change_tag_proto(cpu_dp->ds->dst, dev, new_tag_ops,
++	err = dsa_tree_change_tag_proto(cpu_dp->ds->dst, new_tag_ops,
+ 					old_tag_ops);
+ 	if (err) {
+ 		/* On failure the old tagger is restored, so we don't need the
 -- 
 2.25.1
 
