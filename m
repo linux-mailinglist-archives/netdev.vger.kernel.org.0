@@ -2,106 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id F1611530FF9
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:19:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FCC7530ED0
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:17:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235266AbiEWMOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 08:14:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53042 "EHLO
+        id S235368AbiEWMRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 08:17:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59924 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235281AbiEWMOj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 08:14:39 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2767011C1C
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 05:14:38 -0700 (PDT)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nt6xB-0002hh-0Z; Mon, 23 May 2022 14:14:29 +0200
-Received: from pengutronix.de (unknown [IPv6:2a01:4f8:1c1c:29e9:22:41ff:fe00:1400])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 6A03884497;
-        Mon, 23 May 2022 12:14:26 +0000 (UTC)
-Date:   Mon, 23 May 2022 14:14:25 +0200
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, edumazet@google.com,
-        pabeni@redhat.com, wg@grandegger.com, linux-can@vger.kernel.org
-Subject: Re: [PATCH net-next] can: kvaser_usb: silence a GCC 12
- -Warray-bounds warning
-Message-ID: <20220523121425.y5ca3ok5r2hxgh7j@pengutronix.de>
-References: <20220520194659.2356903-1-kuba@kernel.org>
+        with ESMTP id S235357AbiEWMRQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 08:17:16 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5456125C7B;
+        Mon, 23 May 2022 05:17:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=Qg7esZWEzWeo1cy06uHXjtqSIw4RkI4Og9wGS2CQMWs=; b=rO3ujDMNxUI/nT/C1PVeHBQKde
+        NESBTlwYICi529yJ7nT5Qntrfb0yDUwS8vYUhyHb8eOYkmbyKMtM/HjGATDHkNeWQxMMGjCisNw32
+        ZihIOTX4lHfaZgAEf+Gyjbn4aXEaNb7QgqRAG5rJ2T4iq7bN+3j5e6V89qDXoxUrWnQE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nt6zY-003yho-He; Mon, 23 May 2022 14:16:56 +0200
+Date:   Mon, 23 May 2022 14:16:56 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+Cc:     michael@amarulasolutions.com, alberto.bianchi@amarulasolutions.com,
+        linux-amarula@amarulasolutions.com, linuxfancy@googlegroups.com,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] net: phy: DP83822: enable rgmii mode if
+ phy_interface_is_rgmii
+Message-ID: <Yot7OD8MAQPttmyV@lunn.ch>
+References: <20220520235846.1919954-1-tommaso.merciai@amarulasolutions.com>
+ <YokxxlyFTJZ8c+5y@lunn.ch>
+ <20220523065754.GJ1589864@tom-ThinkPad-T14s-Gen-2i>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="kmgd733igwkgx65w"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220520194659.2356903-1-kuba@kernel.org>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+In-Reply-To: <20220523065754.GJ1589864@tom-ThinkPad-T14s-Gen-2i>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, May 23, 2022 at 08:57:54AM +0200, Tommaso Merciai wrote:
+> On Sat, May 21, 2022 at 08:39:02PM +0200, Andrew Lunn wrote:
+> > On Sat, May 21, 2022 at 01:58:46AM +0200, Tommaso Merciai wrote:
+> > > RGMII mode can be enable from dp83822 straps, and also writing bit 9
+> > > of register 0x17 - RMII and Status Register (RCSR).
+> > > When phy_interface_is_rgmii rgmii mode must be enabled, same for
+> > > contrary, this prevents malconfigurations of hw straps
+> > > 
+> > > References:
+> > >  - https://www.ti.com/lit/gpn/dp83822i p66
+> > > 
+> > > Signed-off-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> > > Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+> > > Suggested-by: Alberto Bianchi <alberto.bianchi@amarulasolutions.com>
+> > > Tested-by: Tommaso Merciai <tommaso.merciai@amarulasolutions.com>
+> > 
+> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> > 
+> > If you want to, you could go further. If bit 9 is clear, bit 5 defines
+> > the mode, either RMII or MII. There are interface modes defined for
+> > these, so you could get bit 5 as well.
+> 
+> Hi Andrew,
+> Thanks for the review and for your time.
+> I'll try to go further, like you suggest :)
 
---kmgd733igwkgx65w
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Tomaso
 
-On 20.05.2022 12:46:59, Jakub Kicinski wrote:
-> This driver does a lot of casting of smaller buffers to
-> struct kvaser_cmd_ext, GCC 12 does not like that:
->=20
-> drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c:489:65: warning: array =
-subscript =E2=80=98struct kvaser_cmd_ext[0]=E2=80=99 is partly outside arra=
-y bounds of =E2=80=98unsigned char[32]=E2=80=99 [-Warray-bounds]
-> drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c:489:23: note: in expans=
-ion of macro =E2=80=98le16_to_cpu=E2=80=99
->   489 |                 ret =3D le16_to_cpu(((struct kvaser_cmd_ext *)cmd=
-)->len);
->       |                       ^~~~~~~~~~~
->=20
-> Temporarily silence this warning (move it to W=3D1 builds).
->=20
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> ---
-> Hi Marc, are you planning another -next PR? Can we take this
-> directly?
+This patch has been accepted, so you will need to submit an
+incremental patch. I also expect net-next to close soon for the merge
+window, so you might want to wait two weeks before submitting.
 
-Thanks, applied and I'll send a -next PR soonish.
-
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
---kmgd733igwkgx65w
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEBsvAIBsPu6mG7thcrX5LkNig010FAmKLep8ACgkQrX5LkNig
-011Wlgf/Wx1cUM/b0Wp3/0QhMHtmJFlh33azNUappyjm7omoKcc83zMJzqajYs7g
-O11kguUOvQUyGKNyPEyPto86uTKzQm2sxSJzp3SKyZhzmWHEzGAZhM+PlWrER7ul
-iDT6ihVruNJEl0Wuo1D+WmdHr9wp58lzLYQYY+2PkJvKGPAdhH2+abz5sNsolneq
-ocfeQETd8hZODrREaBI2embC3YM96gy4lDgIMMAaX4uLn2guXZjHiizNvC9xBoD1
-wOTj4KmlTz1v0dJhkvgJ+bX4bqhkeE18hakhL65zh6OG+lPLCodtdt87vhQGdhT6
-XcO4jz1DalWKVKSixrRcIGiO6oKgWg==
-=ni//
------END PGP SIGNATURE-----
-
---kmgd733igwkgx65w--
+	Andrew
