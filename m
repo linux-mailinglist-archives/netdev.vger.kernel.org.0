@@ -2,272 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E86F531CD6
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:57:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5BDE531BB7
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:56:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239293AbiEWQ4Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 12:56:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46794 "EHLO
+        id S238989AbiEWQ5L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 12:57:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239229AbiEWQ4O (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 12:56:14 -0400
-Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40F4E40;
-        Mon, 23 May 2022 09:56:12 -0700 (PDT)
-Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-edeb6c3642so19212178fac.3;
-        Mon, 23 May 2022 09:56:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FfAOhZNasQcy6TRDHmB8U+mc653MKDmGV3a61UnarkE=;
-        b=4KkfVM5goTSkVfLLz4yJUTYK9jwLwzP8f/PpRo8aB8IkJKQi4ENdB4cz/bZLj0eHjb
-         YEXOmwJPZz219J0oESUvV2cbqkJIpqB2mqP/ypOKRIxZB5Q9ecba77zNia8ciYFPTPbk
-         vrPNx2dzj7Nu7sb5kIUa1SknUEJwHpW4RVMX3HI+Rcflbis/zJ+RO3KVWPHkHoMAjboW
-         RPDv58ohM5ox6JZFx3SnjCEC6tUT4eWwAHijPFqTXLOB6kbQmb/HSuAr60U1UXZA/cFV
-         IF9PfZ6TLKCtKhg8wZAkXPMRJlyHYLB34KalgVgU4A29QzcRkpiOUSSNuUBlkObVOCfG
-         wCkw==
-X-Gm-Message-State: AOAM533vkLoWrjdNEctnWHVHHnoq5MUMqieCqa4zrXOERLLWtvOXgsOu
-        fOCXzySz8awOAEzcFjzLRA==
-X-Google-Smtp-Source: ABdhPJzG3ZFQrmj1v1yitS4jTC5DzQZmWnfRLp9MNvhBwUQ6yufF6JdEMRoPfxaQK0q/QMOIiKOBDg==
-X-Received: by 2002:a05:6870:5823:b0:f2:2dfd:8df0 with SMTP id r35-20020a056870582300b000f22dfd8df0mr6004573oap.157.1653324972043;
-        Mon, 23 May 2022 09:56:12 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id eb38-20020a056870a8a600b000edf5a12baasm3976216oab.46.2022.05.23.09.56.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 09:56:11 -0700 (PDT)
-Received: (nullmailer pid 1750116 invoked by uid 1000);
-        Mon, 23 May 2022 16:56:09 -0000
-Date:   Mon, 23 May 2022 11:56:09 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Cc:     devicetree@vger.kernel.org,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Peter Rosin <peda@axentia.se>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Kalle Valo <kvalo@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Ripard <mripard@kernel.org>,
-        dri-devel@lists.freedesktop.org, linux-gpio@vger.kernel.org,
-        linux-input@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-media@vger.kernel.org, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-serial@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-usb@vger.kernel.org
-Subject: Re: [PATCH] dt-bindings: Fix properties without any type
-Message-ID: <20220523165609.GA1743214-robh@kernel.org>
-References: <20220519211411.2200720-1-robh@kernel.org>
- <6ae55a29-0b29-f53c-c9bd-fae929f3caf7@linaro.org>
+        with ESMTP id S238975AbiEWQ5I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 12:57:08 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 908B1B1E9
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 09:57:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653325022; x=1684861022;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=ITTPOEQ30rIEYuWVpoV0ngcxUk4qTNuHzQbxeHKiE+E=;
+  b=iWdps99wGjJd+6qj5G2Hl5KloMVTaCkVPrgJaggK4pkPZCj11xx74+bk
+   ETYaL2p6y63+hduFIRpCFu3SQASxXNgN5TT01zkMzlOSTrTdPwqBWINMp
+   B7iau/TISCGQ1dubT7E8P+oZfG3Fa0q5MoMXRnIchom8HTzl6or8c6k0T
+   00L9c5yZfKKUMUE0HgpbOig94QdYsUR7OkqmfGiI2kE3opWvoP7quNJsH
+   nkavCt5HXxGsQ+mPuMWFU3uJ0tEiHHXK+owh05v/B2StHxzFtfevSM7f8
+   Rw1C2CJZuH0YxUYhg22hoJb6PhzI7RvkxuXO2N8JN6k82ZNlEZa8an5eE
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10356"; a="255351348"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="255351348"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 09:56:47 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="558750264"
+Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
+  by orsmga002.jf.intel.com with ESMTP; 23 May 2022 09:56:47 -0700
+Received: from fmsmsx609.amr.corp.intel.com (10.18.126.89) by
+ fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 23 May 2022 09:56:47 -0700
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx609.amr.corp.intel.com (10.18.126.89) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27; Mon, 23 May 2022 09:56:46 -0700
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.27 via Frontend Transport; Mon, 23 May 2022 09:56:46 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.100)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.27; Mon, 23 May 2022 09:56:46 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DmSoyePFj7t9tqoVlsYTCOgnCj6gwH/FaYNxRMIqBrp+hKk3ZGDVY4atZZ7ST1GsuFiMSPtUmd62Y3SFWif8V98cdsL3eD4HsNTDNO+GtBH0Y3vCcoUQx3mvo1x+zuAPc7tTA8R/eAuvycieBksCI2W4ufNiHArLVyb4F2xFcEpomt+2I12MznLyUPXjSieDvl6MC2JVp76PRN93iguQoYx44NrNCrS6xaA+F7+I17IwHOEvsXbrYxWWms29jv7L0rXUCcUozcIEx6CmMnUk8YED9aCoLiRqe/GGex9rgqGPxCM2k99RqBZMGY9EPScQp+R0+1Ud7dsA7H75E0ynHg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ITTPOEQ30rIEYuWVpoV0ngcxUk4qTNuHzQbxeHKiE+E=;
+ b=fMvztErOgnBje6XaeheLuVOeB0/t6FYXf4L1iE1VP4ErIhmGKNNmjCToAlYDJR0k5+iWXCVOjDxuJq53mgjHmjR5tx+qhqHIaTqT33fcCyH6sWThlTp9Qxjzb7RYqJgzYue0b74z1dCO/TwYyJYDsJKGVmvjaQm9oBOKWnoMfGGO26d9r5wD2Z5zU+s80cQ2HKkaipMv9GfFdeDFxFAEAs36WATslaWrSYS98Uy9h0Nz1IEca+TOdo7X8eq2XuRdJqI0A2sXN4ggEOMfClf3RWg4JoQzwrlb3OqnLTlkK7Gl+QTYFm2J+VQDZIiyJcK6lgiuGF+wgsdAOET+8+0gCw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+Received: from MW4PR11MB5800.namprd11.prod.outlook.com (2603:10b6:303:186::21)
+ by BN7PR11MB2691.namprd11.prod.outlook.com (2603:10b6:406:b3::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.14; Mon, 23 May
+ 2022 16:56:44 +0000
+Received: from MW4PR11MB5800.namprd11.prod.outlook.com
+ ([fe80::798f:5a98:e47f:3798]) by MW4PR11MB5800.namprd11.prod.outlook.com
+ ([fe80::798f:5a98:e47f:3798%8]) with mapi id 15.20.5273.022; Mon, 23 May 2022
+ 16:56:44 +0000
+From:   "Kolacinski, Karol" <karol.kolacinski@intel.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "pabeni@redhat.com" <pabeni@redhat.com>,
+        "edumazet@google.com" <edumazet@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "richardcochran@gmail.com" <richardcochran@gmail.com>,
+        "G, GurucharanX" <gurucharanx.g@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+Subject: Re: [PATCH net-next 3/3] ice: add write functionality for GNSS TTY
+Thread-Topic: [PATCH net-next 3/3] ice: add write functionality for GNSS TTY
+Thread-Index: AQHYajQ/+5Nk/nCT4Euu3FZzl2q0S60lpXKAgAcRTA0=
+Date:   Mon, 23 May 2022 16:56:44 +0000
+Message-ID: <MW4PR11MB58005F4C9EFF1DF1541A421C86D49@MW4PR11MB5800.namprd11.prod.outlook.com>
+References: <20220517211935.1949447-1-anthony.l.nguyen@intel.com>
+        <20220517211935.1949447-4-anthony.l.nguyen@intel.com>
+ <20220518215723.28383e8e@kernel.org>
+In-Reply-To: <20220518215723.28383e8e@kernel.org>
+Accept-Language: pl-PL, en-US
+Content-Language: pl-PL
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+suggested_attachment_session_id: 9caaf5ab-1751-c169-02eb-4fb205c0e295
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 41fd578d-f3e1-4401-02f7-08da3cdd376b
+x-ms-traffictypediagnostic: BN7PR11MB2691:EE_
+x-microsoft-antispam-prvs: <BN7PR11MB269182648E14EDC6DEA445DE86D49@BN7PR11MB2691.namprd11.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: janxzq1Wd5eHFC9FxsEuEWKVqYaM3XS4GKNy7lqlzl5rWSWRM/VjqVNyZJedZtFgxqUSx5scJei+UVkri9wdVTuogZnHDhpoaiZr4nbaNPMShp2e5M0ROVtthSu+gdRXnXNSZXJUB8T5RniAFpBxrURcgMJTWaD/PDI3ThuBt/dArHTDr4mmlHqAPvol79A49vQTvRPggn4SSoCWLS7S5sNqF2wBTmTMzVZpnUgMUePcoeRoYuO7VDBwboLBBWnZxcjMPUt+LG7SXrCjRKQOWIINnVdjuN5KKJlD84606W++vu8JLR/XKEKS1+sV0cSl6qHecsvS3i/UuCKd8buvbHrQBmGtSNFe6dJVMsXsoCWiitCe9jk6QEKYtlOSb2RNWF4tPqsd26CIxEA27JjG0JVK9k/DvnpGOI2uN9P1fw+TythckeaRtusznkavwcbmTd2hIlUEKZFP4uy0AiOv4hHMmPThzHcv7WocImhvymCZ3oJSX4N0foyxFwk31Lk1XE1pkGUvW4zc8IwUZJH2eh+V8qnLngwXdtZFkNcxt2eufPi+NrJa+lNIfLjObcvIWlYKWdF2XGv5iEb2r/nix8mM3eE+pErdVsiMvpCR4A8P91Usm7W3e0qtOMIOebeiBo/qVYKzjARZCw6kYpN5634TN7NwkmpXtBhm8lx9tp+bxZzI8bIw6HMzlL0lK93Y4rMqg8lQ9ne5lVxR/YbHPw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR11MB5800.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(26005)(9686003)(71200400001)(55016003)(508600001)(52536014)(5660300002)(4744005)(2906002)(6506007)(7696005)(8936002)(33656002)(8676002)(4326008)(38070700005)(38100700002)(83380400001)(54906003)(6916009)(316002)(122000001)(82960400001)(186003)(76116006)(66946007)(66556008)(66476007)(86362001)(107886003)(66446008)(64756008)(91956017);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-2?Q?DJ4r9mNOVEsii8X4yaCsABsVY9tHFodbIo5yIPkVK6ZdX/44/Ye3xPj5EA?=
+ =?iso-8859-2?Q?NOpL1bZki53r8xpc9n0lwy/v+/iLdfphU2JvADwwcrNCCNe5bV62EjzvaG?=
+ =?iso-8859-2?Q?HiR77B4yvq8+kBRt0d6iDf+MUnxJFVUbhlszaS/1T6A74VuBvOQTlqmzRa?=
+ =?iso-8859-2?Q?G+fjaCMR0o2o4tOUJ+01XTjS1Z0oTRC6bMBnpYGUvQwVl6nrOoPSpg/KVe?=
+ =?iso-8859-2?Q?bfOgSMsbdW4iYmTrphuteFAiqHZVnTJIpcxoxu3KUFIZp4wG15X9Sbhwr4?=
+ =?iso-8859-2?Q?LptFGHSifhwERFOf1Vj/30S25vbj1ua/jC58hGBWbAaQ1UBhJj18e62lat?=
+ =?iso-8859-2?Q?88yXKFWYEAFTfwrwR6TM2aDiE0ndII2/KAaauAbQHD+BuUn/7V1DeSiW3a?=
+ =?iso-8859-2?Q?1pi2H6Oz/yT5J9AN8HYH2CYdi8GhUhs0neAOfnOUGMs72lgd69nM+BJQlP?=
+ =?iso-8859-2?Q?2C+xp8BIIVtBxXc7fXkEuUVD3F6j40i6HM71cxq19DBD0U9cAmWX1xGMb+?=
+ =?iso-8859-2?Q?7Bo12QX7g9gbnckbNgNSi8CBj1Gy7M9C+Q2SfFNZdqGAUy+ae7S7O+5aLJ?=
+ =?iso-8859-2?Q?t3uAry22RJ0B2PImBdFYfwt8GGqxN0R5IMnrH6vqLQ/a9AYl/RR4CeDFnW?=
+ =?iso-8859-2?Q?jq+vm2yQAs7on0t4LFCvR/24b5Dv/e+O1QVSdlR+Ri3w2blhxaj8pBkhgM?=
+ =?iso-8859-2?Q?+aF0y+SaTdqmyYJ4XQ+4oAcztJqjoJ0ODRavFe0xc6l49eu6DvRnzUX09c?=
+ =?iso-8859-2?Q?g6TzkAMPDau8sbqx+ahYoFRQN22TJ8h9SVqwXDYH3Kj7FO1S62HeUuD+a/?=
+ =?iso-8859-2?Q?C2LV8DyRUO/7KnYrTFugLJa5qpAwtBhntdE0aZonpPVJPu44AhNwdFZeBw?=
+ =?iso-8859-2?Q?Qy7I96hHtoYANJwtLLKFwQmOJe1BpsoGFHqU47xL7p/PE5bJ+AJmBnZE1y?=
+ =?iso-8859-2?Q?nRnbwjdacmqKNEdy94uITRtYGu2EWRD2qq7kZ8vnnqusGLK5ZGWD1TmJhw?=
+ =?iso-8859-2?Q?xj8YPPlytTB1IKi8nCl3whMtUOil+/WywyHWqYHstF1j6Ks+u8BTZ2i6iK?=
+ =?iso-8859-2?Q?itab/4Oe/yR4pZP23WLeRvk0f67KvVrmEyDDPSrvbqEsHr/P+9cuxP+oul?=
+ =?iso-8859-2?Q?8iS5QF4sriTlQtZf0U5VpmIAo31rPxp7QhYnBCpK9NP3/nRLSztYLmDn+n?=
+ =?iso-8859-2?Q?/UOItz3bKDqX4g5wWBFPJDvcUX43hFS7s5YEyK1xMfaoMnAFtYEnlVMRzz?=
+ =?iso-8859-2?Q?SRKzVspvmLXMxXSeCG310HrMkxbJkl+x6l4gBp/jMlyTTgDgn8co2xHyC7?=
+ =?iso-8859-2?Q?Msel5myxfvr9q9Fz02KWDKsKYDrJiVs1EMB2/BE/WaBROmwsJrwB4DTaUA?=
+ =?iso-8859-2?Q?uYNlrxuZuaTI28Ft74hw5B7Wa6kukJdu8P7lGEZ+Fs/JYREB9/theHyaE7?=
+ =?iso-8859-2?Q?WHZoM7Nn+YhuSCJWQBqn2Smgbn9KF7+BA9GyaX/Pu6rMurNnkZuOoechUq?=
+ =?iso-8859-2?Q?3mcnq9XkYtrh9v6QoYkULfw4iK/zvD3EjaYJBfprXgMjmfvSFqDxgwccMd?=
+ =?iso-8859-2?Q?bLqsUiRk9fAKQFnv7jLbmMBMFvLYSXpeDpGhbyMMUVlFlV4x9KJci/NYwN?=
+ =?iso-8859-2?Q?w3PqESUjU8VEEgz9STOt0PGzMkVrXACdph6CuEIUZ0Ap/A/ocwDWLViHru?=
+ =?iso-8859-2?Q?jToMzQV0A+CMWwdOHcC08Q36P2Uv0GrzFK+W/mJfTGArqy2fEW6G84GwkM?=
+ =?iso-8859-2?Q?bkT1LhN52EtY8nZAYKLJp2OxLlVAtmKEGYZs8Uf3ih2JMinIQWVlzh+7a7?=
+ =?iso-8859-2?Q?9wtaPQNEldp6t2HPxTYKJ7lavLQIRag=3D?=
+Content-Type: text/plain; charset="iso-8859-2"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6ae55a29-0b29-f53c-c9bd-fae929f3caf7@linaro.org>
-X-Spam-Status: No, score=-1.2 required=5.0 tests=BAYES_00,
-        FREEMAIL_ENVFROM_END_DIGIT,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,
-        RCVD_IN_MSPIKE_WL,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=no autolearn_force=no version=3.4.6
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MW4PR11MB5800.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 41fd578d-f3e1-4401-02f7-08da3cdd376b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2022 16:56:44.1233
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: YJcMm2Hd14e3qfVv3Zij41hcW/NVXRooG8MTfV5Bm2WiVutnwNnmJx0++wFu1VDzkY8JrlrDF7UgkzKAczXmrZe0DVJJjiDMuz6/MPXE98U=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR11MB2691
+X-OriginatorOrg: intel.com
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 21, 2022 at 05:03:41PM +0200, Krzysztof Kozlowski wrote:
-> On 19/05/2022 23:14, Rob Herring wrote:
-> > Now that the schema tools can extract type information for all
-> > properties (in order to decode dtb files), finding properties missing
-> > any type definition is fairly trivial though not yet automated.
-> > 
-> > Fix the various property schemas which are missing a type. Most of these
-> > tend to be device specific properties which don't have a vendor prefix.
-> > A vendor prefix is how we normally ensure a type is defined.
-> > 
-> > Signed-off-by: Rob Herring <robh@kernel.org>
-> > ---
-> >  .../arm/hisilicon/controller/hip04-bootwrapper.yaml       | 5 +++--
-> >  .../bindings/display/bridge/toshiba,tc358768.yaml         | 1 +
-> >  .../devicetree/bindings/display/panel/panel-timing.yaml   | 5 +++++
-> >  .../bindings/display/panel/raydium,rm67191.yaml           | 1 +
-> >  .../bindings/display/panel/samsung,s6e8aa0.yaml           | 1 +
-> >  .../devicetree/bindings/gpio/fairchild,74hc595.yaml       | 1 +
-> >  .../devicetree/bindings/input/google,cros-ec-keyb.yaml    | 1 +
-> >  .../devicetree/bindings/input/matrix-keymap.yaml          | 4 ++++
-> >  Documentation/devicetree/bindings/media/i2c/adv7604.yaml  | 3 ++-
-> >  Documentation/devicetree/bindings/mux/reg-mux.yaml        | 8 ++++++--
-> >  Documentation/devicetree/bindings/net/cdns,macb.yaml      | 1 +
-> >  Documentation/devicetree/bindings/net/ingenic,mac.yaml    | 1 +
-> >  .../devicetree/bindings/net/ti,davinci-mdio.yaml          | 1 +
-> >  .../devicetree/bindings/net/wireless/ti,wlcore.yaml       | 2 ++
-> >  .../devicetree/bindings/pci/snps,dw-pcie-ep.yaml          | 6 ++++--
-> >  Documentation/devicetree/bindings/pci/snps,dw-pcie.yaml   | 2 ++
-> >  .../devicetree/bindings/pinctrl/canaan,k210-fpioa.yaml    | 2 ++
-> >  Documentation/devicetree/bindings/power/avs/qcom,cpr.yaml | 1 +
-> >  .../devicetree/bindings/power/supply/battery.yaml         | 7 ++++++-
-> >  .../devicetree/bindings/power/supply/charger-manager.yaml | 1 +
-> >  Documentation/devicetree/bindings/rng/st,stm32-rng.yaml   | 1 +
-> >  Documentation/devicetree/bindings/serial/8250.yaml        | 1 +
-> >  .../devicetree/bindings/sound/audio-graph-card2.yaml      | 3 +++
-> >  .../devicetree/bindings/sound/imx-audio-hdmi.yaml         | 3 +++
-> >  Documentation/devicetree/bindings/usb/smsc,usb3503.yaml   | 1 +
-> >  25 files changed, 55 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml b/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
-> > index 7378159e61df..483caf0ce25b 100644
-> > --- a/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
-> > +++ b/Documentation/devicetree/bindings/arm/hisilicon/controller/hip04-bootwrapper.yaml
-> > @@ -17,14 +17,15 @@ properties:
-> >        - const: hisilicon,hip04-bootwrapper
-> >  
-> >    boot-method:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> >      description: |
-> >        Address and size of boot method.
-> >        [0]: bootwrapper physical address
-> >        [1]: bootwrapper size
-> >        [2]: relocation physical address
-> >        [3]: relocation size
-> > -    minItems: 1
-> > -    maxItems: 2
-> > +    minItems: 2
-> > +    maxItems: 4
-> >  
-> >  required:
-> >    - compatible
-> > diff --git a/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
-> > index 3bd670b8e5cd..0b6f5bef120f 100644
-> > --- a/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
-> > +++ b/Documentation/devicetree/bindings/display/bridge/toshiba,tc358768.yaml
-> > @@ -58,6 +58,7 @@ properties:
-> >  
-> >              properties:
-> >                data-lines:
-> > +                $ref: /schemas/types.yaml#/definitions/uint32
-> >                  enum: [ 16, 18, 24 ]
-> >  
-> >        port@1:
-> > diff --git a/Documentation/devicetree/bindings/display/panel/panel-timing.yaml b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
-> > index 7749de95ee40..229e3b36ee29 100644
-> > --- a/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
-> > +++ b/Documentation/devicetree/bindings/display/panel/panel-timing.yaml
-> > @@ -146,6 +146,7 @@ properties:
-> >        Horizontal sync pulse.
-> >        0 selects active low, 1 selects active high.
-> >        If omitted then it is not used by the hardware
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    vsync-active:
-> > @@ -153,6 +154,7 @@ properties:
-> >        Vertical sync pulse.
-> >        0 selects active low, 1 selects active high.
-> >        If omitted then it is not used by the hardware
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    de-active:
-> > @@ -160,6 +162,7 @@ properties:
-> >        Data enable.
-> >        0 selects active low, 1 selects active high.
-> >        If omitted then it is not used by the hardware
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    pixelclk-active:
-> > @@ -169,6 +172,7 @@ properties:
-> >        sample data on rising edge.
-> >        Use 1 to drive pixel data on rising edge and
-> >        sample data on falling edge
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    syncclk-active:
-> > @@ -179,6 +183,7 @@ properties:
-> >        sample sync on rising edge of pixel clock.
-> >        Use 1 to drive sync on rising edge and
-> >        sample sync on falling edge of pixel clock
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [0, 1]
-> >  
-> >    interlaced:
-> > diff --git a/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
-> > index 745dd247c409..617aa8c8c03a 100644
-> > --- a/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
-> > +++ b/Documentation/devicetree/bindings/display/panel/raydium,rm67191.yaml
-> > @@ -24,6 +24,7 @@ properties:
-> >  
-> >    dsi-lanes:
-> >      description: Number of DSI lanes to be used must be <3> or <4>
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      enum: [3, 4]
-> >  
-> >    v3p3-supply:
-> > diff --git a/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
-> > index ca959451557e..1cdc91b3439f 100644
-> > --- a/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
-> > +++ b/Documentation/devicetree/bindings/display/panel/samsung,s6e8aa0.yaml
-> > @@ -36,6 +36,7 @@ properties:
-> >  
-> >    init-delay:
-> >      description: delay after initialization sequence [ms]
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >  
-> >    panel-width-mm:
-> >      description: physical panel width [mm]
-> > diff --git a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> > index 5fe19fa5f67c..a99e7842ca17 100644
-> > --- a/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> > +++ b/Documentation/devicetree/bindings/gpio/fairchild,74hc595.yaml
-> > @@ -26,6 +26,7 @@ properties:
-> >      const: 2
-> >  
-> >    registers-number:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> >      description: Number of daisy-chained shift registers
-> >  
-> >    enable-gpios:
-> > diff --git a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> > index e8f137abb03c..aa61fe64be63 100644
-> > --- a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> > +++ b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> > @@ -31,6 +31,7 @@ properties:
-> >      type: boolean
-> >  
-> >    function-row-physmap:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> >      minItems: 1
-> >      maxItems: 15
-> >      description: |
-> > diff --git a/Documentation/devicetree/bindings/input/matrix-keymap.yaml b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
-> > index 6699d5e32dca..9f703bb51e12 100644
-> > --- a/Documentation/devicetree/bindings/input/matrix-keymap.yaml
-> > +++ b/Documentation/devicetree/bindings/input/matrix-keymap.yaml
-> > @@ -27,6 +27,10 @@ properties:
-> >        column and linux key-code. The 32-bit big endian cell is packed as:
-> >            row << 24 | column << 16 | key-code
-> >  
-> > +  linux,no-autorepeat:
-> > +    type: boolean
-> > +    description: Disable keyrepeat
-> 
-> This should be rather a separate patch - it's documenting a missing
-> property, not only a type.
-
-Yes, I've dropped this hunk while applying.
-
-Rob
+On Thu, 19 May 2022 06:57 +0200 Jakub Kicinski wrote:=0A=
+> > Create a second read-only TTY device.=0A=
+> =0A=
+> Can you say more about how the TTY devices are discovered, and why there=
+=0A=
+> are two of them? Would be great if that info was present under=0A=
+> Documentation/=0A=
+=0A=
+Both TTY devices are used for the same GNSS module. First one is=0A=
+read/write and the second one is read only. They are discovered by=0A=
+checking ICE_E810T_P0_GNSS_PRSNT_N bit in ICE_PCA9575_P0_IN register.=0A=
+This means that the GNSS module is physically present on the PCB.=0A=
+The design with one RW and one RO TTY device was requested by=0A=
+customers.=0A=
+=0A=
+Thanks!=0A=
+Karol=
