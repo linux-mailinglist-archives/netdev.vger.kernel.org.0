@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE785308C6
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 07:30:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DBD65308C2
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 07:30:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245719AbiEWF2Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 01:28:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51676 "EHLO
+        id S1355618AbiEWF21 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 01:28:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240579AbiEWF2T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 01:28:19 -0400
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF161EEF8
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:17 -0700 (PDT)
-Received: by mail-wm1-x336.google.com with SMTP id n124-20020a1c2782000000b003972dfca96cso6013124wmn.4
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:17 -0700 (PDT)
+        with ESMTP id S1354196AbiEWF2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 01:28:21 -0400
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 603D81FA47
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:18 -0700 (PDT)
+Received: by mail-wr1-x42c.google.com with SMTP id t6so19639874wra.4
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=am8B+AfzENDAWt/qUpAzFaFRwymNfGJXzUuOXFbCk5M=;
-        b=epimhOkcWXRnlpp8as0ZW+FCbrusHfj/ITRwlU6Vhp/3I6NG2pkCv6U0JAXbECrxAi
-         5JgX4XrBwfOygUCyihy2r2LJEbBes9nonYi7JaEe6elkb5RyKPBNoj6DDWiL3rX/GLl1
-         xyLLbKsrVDmAJYjht4vIWAonOCNupzue4YniEXzr4VTxfQwYF5kqaSTlLp8sPhRngcLu
-         dOYDtisMlBvTmVCC60hthfCVO5+6Au+C6JDq1HGzNPZwzZ5oP42aotzyjgnXulr9QUV5
-         abEN04R+Umu8SsgDhPFY2wzEbh+hTg683evjd6Oy4unU/bhxeSf3igPWv144MTNMYyj5
-         7oOQ==
+        bh=hMbtP4l5NIdbJN9Ls/o3wbRNRvLgMN2alg0s8sMcV/I=;
+        b=Rrc+F4WHPKFtZbfdPZhfGR1Bun8uOgA4F0ZgY8Iow4MAXe84LfyEgUj1wulOfOuBbT
+         A6gowSS2SmqRoLu8mvZJFB+CSST0OEgqe1V1axQ+fvtefIxmzDb8yS3XVUZl2VuZW2np
+         oQDnOgAuWRxjf9LkJ/qreSL/CeHxKmuBmu4Fg+wfAY5DNwP4fhM1YH2Hm6s0bwjc4Tyr
+         EBwAlDZI3LICLlQHL3cLv4tF8uFcsWKDOZJdW2hU50jlqPL6VsY2dDIsGRUHIAn9oFFX
+         bagJQ3t+GR6tjlYCXXQOECYOxhjUvUmVORQMCihCbgUULVOqx/vAkA/YJYPH/Xnnn/r1
+         94bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=am8B+AfzENDAWt/qUpAzFaFRwymNfGJXzUuOXFbCk5M=;
-        b=mdTDhsdb8GCSE0fXg8ArojRAcZ7XoguCVZhDXSoyxlDfgSPDumF7c+kpGwgNfsyhMj
-         TRQNXRbtsVDIcii5Q3GdiNn6p55wGvSrFI3DRUWOF5Epxx3KahfVkn7W44XkUOS0Bp9B
-         WcDeo1eiv73nBhZ8TETR9j79vXu8JObtEEHvp49DOdUEc6iVkY4NjFKRmt2m3M86Hwu6
-         bDxTHdzINsH9jbscZnSUsgbn2HxxORMAK2kT1bBWtj+c1/+kIkrRgRHdM0xkXnHfUWuQ
-         YKTNNjtZ/EjanXObAiQf4pHI5fu9DyUB/u+LzMKxQ/YwHhACMkpmgEudkAaBLPozrdAg
-         qGUA==
-X-Gm-Message-State: AOAM533y4BNzcicrZhLyf/aTdFJcIOn1bdAiH4RjCjscPjL1t4dt9p3+
-        tD5sNdzjVX1GmmvJuLJ/tchlZg==
-X-Google-Smtp-Source: ABdhPJzm/entZ+SLPL0EhI0XgtI+1xyVC6MTxHThdpeAizznoJknLGj7DCHKY7ficjfSib+0ndrkiA==
-X-Received: by 2002:a05:600c:348e:b0:397:3f81:2168 with SMTP id a14-20020a05600c348e00b003973f812168mr2752873wmq.168.1653283695871;
-        Sun, 22 May 2022 22:28:15 -0700 (PDT)
+        bh=hMbtP4l5NIdbJN9Ls/o3wbRNRvLgMN2alg0s8sMcV/I=;
+        b=L9ojYXlbFhHG9jU8rHkvxvqImTxD64aJJUpWK+JSSPtUXn1D4XGGEcgCpdTgTifsYV
+         w1fLtxR3aWqPbeSESRGbL2E7CYdL7byfrw6qHSEZHGwdrOSmGQL5tcBlIhQ9mnXQl8kH
+         86kgc/Bt/zUbZUkStEzFVj1XQnF8FeJ55SJ/iSsV6zgHayFibamflcf2dudFKD+0bmRf
+         KoHTP3IWiI+hgVPi/ZwhJ+UlfFs0nMoT9xLqGEKGZuOo0RsrWRGTtaU4C56FkgtQr9xz
+         QtsMUbHKVKg4XT7oWlUdkoh4JWHRzeNHcCneUv8ERqDxjeLzmAt9Bej9twKijRtTuhrW
+         p1Xw==
+X-Gm-Message-State: AOAM532azmoqQHPyWtWh99C1Pglw+nfNlxM03/nVaI1lAtvIk2zAXIsb
+        Fr+r4Y2Ab7AHb6bGdjZEw5vvmg==
+X-Google-Smtp-Source: ABdhPJwPH32818/ysyCFl3DUF5kdKny0XUvYHvdybODc/cafFr8AsehjAS9sZfOvGlftg89tpe6jgg==
+X-Received: by 2002:a05:6000:178d:b0:20f:e960:2f2 with SMTP id e13-20020a056000178d00b0020fe96002f2mr250812wrg.569.1653283696986;
+        Sun, 22 May 2022 22:28:16 -0700 (PDT)
 Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id h2-20020a1ccc02000000b0039466988f6csm7802414wmb.31.2022.05.22.22.28.14
+        by smtp.googlemail.com with ESMTPSA id h2-20020a1ccc02000000b0039466988f6csm7802414wmb.31.2022.05.22.22.28.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 22:28:15 -0700 (PDT)
+        Sun, 22 May 2022 22:28:16 -0700 (PDT)
 From:   Corentin Labbe <clabbe@baylibre.com>
 To:     andrew@lunn.ch, broonie@kernel.org, calvin.johnson@oss.nxp.com,
         davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
@@ -57,9 +57,9 @@ To:     andrew@lunn.ch, broonie@kernel.org, calvin.johnson@oss.nxp.com,
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
         netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v3 1/3] regulator: Add regulator_bulk_get_all
-Date:   Mon, 23 May 2022 05:28:05 +0000
-Message-Id: <20220523052807.4044800-2-clabbe@baylibre.com>
+Subject: [PATCH v3 2/3] phy: handle optional regulator for PHY
+Date:   Mon, 23 May 2022 05:28:06 +0000
+Message-Id: <20220523052807.4044800-3-clabbe@baylibre.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220523052807.4044800-1-clabbe@baylibre.com>
 References: <20220523052807.4044800-1-clabbe@baylibre.com>
@@ -75,132 +75,168 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It work exactly like regulator_bulk_get() but instead of working on a
-provided list of names, it seek all consumers properties matching
-xxx-supply.
+Add handling of optional regulators for PHY.
+Regulators need to be enabled before PHY scanning, so MDIO bus
+initiate this task.
 
 Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
 ---
- drivers/regulator/core.c           | 92 ++++++++++++++++++++++++++++++
- include/linux/regulator/consumer.h |  2 +
- 2 files changed, 94 insertions(+)
+ drivers/net/mdio/Kconfig       |  1 +
+ drivers/net/mdio/fwnode_mdio.c | 36 ++++++++++++++++++++++++++++++----
+ drivers/net/phy/phy_device.c   | 10 ++++++++++
+ include/linux/phy.h            |  3 +++
+ 4 files changed, 46 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/regulator/core.c b/drivers/regulator/core.c
-index 1e54a833f2cf..7286bcf3821a 100644
---- a/drivers/regulator/core.c
-+++ b/drivers/regulator/core.c
-@@ -4813,6 +4813,98 @@ static void regulator_bulk_enable_async(void *data, async_cookie_t cookie)
- 	bulk->ret = regulator_enable(bulk->consumer);
- }
+diff --git a/drivers/net/mdio/Kconfig b/drivers/net/mdio/Kconfig
+index bfa16826a6e1..3f8098fac74b 100644
+--- a/drivers/net/mdio/Kconfig
++++ b/drivers/net/mdio/Kconfig
+@@ -22,6 +22,7 @@ config MDIO_BUS
+ config FWNODE_MDIO
+ 	def_tristate PHYLIB
+ 	depends on (ACPI || OF) || COMPILE_TEST
++	depends on REGULATOR
+ 	select FIXED_PHY
+ 	help
+ 	  FWNODE MDIO bus (Ethernet PHY) accessors
+diff --git a/drivers/net/mdio/fwnode_mdio.c b/drivers/net/mdio/fwnode_mdio.c
+index 1c1584fca632..7f0d3bc81c52 100644
+--- a/drivers/net/mdio/fwnode_mdio.c
++++ b/drivers/net/mdio/fwnode_mdio.c
+@@ -10,6 +10,7 @@
+ #include <linux/fwnode_mdio.h>
+ #include <linux/of.h>
+ #include <linux/phy.h>
++#include <linux/regulator/consumer.h>
  
-+/*
-+ * Check if name is a supply name according to the '*-supply' pattern
-+ * return 0 if false
-+ * return length of supply name without the -supply
-+ */
-+static int is_supply_name(const char *name)
-+{
-+	int strs, i;
-+
-+	strs = strlen(name);
-+	/* string need to be at minimum len(x-supply) */
-+	if (strs < 8)
-+		return 0;
-+	for (i = strs - 6; i > 0; i--) {
-+		/* find first '-' and check if right part is supply */
-+		if (name[i] != '-')
+ MODULE_AUTHOR("Calvin Johnson <calvin.johnson@oss.nxp.com>");
+ MODULE_LICENSE("GPL");
+@@ -94,7 +95,10 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 	struct phy_device *phy;
+ 	bool is_c45 = false;
+ 	u32 phy_id;
+-	int rc;
++	int rc, reg_cnt = 0;
++	struct regulator_bulk_data *consumers;
++	struct device_node *nchild = NULL;
++	u32 reg;
+ 
+ 	mii_ts = fwnode_find_mii_timestamper(child);
+ 	if (IS_ERR(mii_ts))
+@@ -105,15 +109,35 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 	if (rc >= 0)
+ 		is_c45 = true;
+ 
++	for_each_child_of_node(bus->dev.of_node, nchild) {
++		of_property_read_u32(nchild, "reg", &reg);
++		if (reg != addr)
 +			continue;
-+		if (strcmp(name + i + 1, "supply") != 0)
-+			return 0;
-+		return i;
-+	}
-+	return 0;
-+}
-+
-+/*
-+ * regulator_bulk_get_all - get multiple regulator consumers
-+ *
-+ * @dev:	Device to supply
-+ * @np:		device node to search for consumers
-+ * @consumers:  Configuration of consumers; clients are stored here.
-+ *
-+ * @return number of regulators on success, an errno on failure.
-+ *
-+ * This helper function allows drivers to get several regulator
-+ * consumers in one operation.  If any of the regulators cannot be
-+ * acquired then any regulators that were allocated will be freed
-+ * before returning to the caller.
-+ */
-+int regulator_bulk_get_all(struct device *dev, struct device_node *np,
-+			   struct regulator_bulk_data **consumers)
-+{
-+	int num_consumers = 0;
-+	struct regulator *tmp;
-+	struct property *prop;
-+	int i, n = 0, ret;
-+	char name[64];
-+
-+	*consumers = NULL;
-+
-+/*
-+ * first pass: get numbers of xxx-supply
-+ * second pass: fill consumers
-+ * */
-+restart:
-+	for_each_property_of_node(np, prop) {
-+		i = is_supply_name(prop->name);
-+		if (i == 0)
-+			continue;
-+		if (!*consumers) {
-+			num_consumers++;
-+			continue;
-+		} else {
-+			memcpy(name, prop->name, i);
-+			name[i] = '\0';
-+			tmp = regulator_get(dev, name);
-+			if (!tmp) {
-+				ret = -EINVAL;
-+				goto error;
-+			}
-+			(*consumers)[n].consumer = tmp;
-+			n++;
-+			continue;
++		reg_cnt = regulator_bulk_get_all(&bus->dev, nchild, &consumers);
++		if (reg_cnt > 0) {
++			rc = regulator_bulk_enable(reg_cnt, consumers);
++			if (rc)
++				return rc;
++		}
++		if (reg_cnt < 0) {
++			dev_err(&bus->dev, "Fail to regulator_bulk_get_all err=%d\n", reg_cnt);
++			return reg_cnt;
 +		}
 +	}
-+	if (*consumers)
-+		return num_consumers;
-+	if (num_consumers == 0)
-+		return 0;
-+	*consumers = kmalloc_array(num_consumers,
-+				   sizeof(struct regulator_bulk_data),
-+				   GFP_KERNEL);
-+	if (!*consumers)
-+		return -ENOMEM;
-+	goto restart;
 +
-+error:
-+	while (--n >= 0)
-+		regulator_put(consumers[n]->consumer);
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(regulator_bulk_get_all);
-+
- /**
-  * regulator_bulk_enable - enable multiple regulator consumers
-  *
-diff --git a/include/linux/regulator/consumer.h b/include/linux/regulator/consumer.h
-index bbf6590a6dec..b9b1d1cbdd07 100644
---- a/include/linux/regulator/consumer.h
-+++ b/include/linux/regulator/consumer.h
-@@ -238,6 +238,8 @@ int regulator_disable_deferred(struct regulator *regulator, int ms);
+ 	if (is_c45 || fwnode_get_phy_id(child, &phy_id))
+ 		phy = get_phy_device(bus, addr, is_c45);
+ 	else
+ 		phy = phy_device_create(bus, addr, phy_id, 0, NULL);
+ 	if (IS_ERR(phy)) {
+ 		unregister_mii_timestamper(mii_ts);
+-		return PTR_ERR(phy);
++		rc = PTR_ERR(phy);
++		goto error;
+ 	}
  
- int __must_check regulator_bulk_get(struct device *dev, int num_consumers,
- 				    struct regulator_bulk_data *consumers);
-+int __must_check regulator_bulk_get_all(struct device *dev, struct device_node *np,
-+					struct regulator_bulk_data **consumers);
- int __must_check devm_regulator_bulk_get(struct device *dev, int num_consumers,
- 					 struct regulator_bulk_data *consumers);
- int __must_check regulator_bulk_enable(int num_consumers,
++	phy->regulator_cnt = reg_cnt;
++	phy->consumers = consumers;
++
+ 	if (is_acpi_node(child)) {
+ 		phy->irq = bus->irq[addr];
+ 
+@@ -127,14 +151,14 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 		if (rc) {
+ 			phy_device_free(phy);
+ 			fwnode_handle_put(phy->mdio.dev.fwnode);
+-			return rc;
++			goto error;
+ 		}
+ 	} else if (is_of_node(child)) {
+ 		rc = fwnode_mdiobus_phy_device_register(bus, phy, child, addr);
+ 		if (rc) {
+ 			unregister_mii_timestamper(mii_ts);
+ 			phy_device_free(phy);
+-			return rc;
++			goto error;
+ 		}
+ 	}
+ 
+@@ -145,5 +169,9 @@ int fwnode_mdiobus_register_phy(struct mii_bus *bus,
+ 	if (mii_ts)
+ 		phy->mii_ts = mii_ts;
+ 	return 0;
++error:
++	if (reg_cnt > 0)
++		regulator_bulk_disable(reg_cnt, consumers);
++	return rc;
+ }
+ EXPORT_SYMBOL(fwnode_mdiobus_register_phy);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 431a8719c635..711919e40ef7 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -27,6 +27,7 @@
+ #include <linux/phy.h>
+ #include <linux/phy_led_triggers.h>
+ #include <linux/property.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/sfp.h>
+ #include <linux/skbuff.h>
+ #include <linux/slab.h>
+@@ -1785,6 +1786,9 @@ int phy_suspend(struct phy_device *phydev)
+ 	if (!ret)
+ 		phydev->suspended = true;
+ 
++	if (phydev->regulator_cnt > 0)
++		regulator_bulk_disable(phydev->regulator_cnt, phydev->consumers);
++
+ 	return ret;
+ }
+ EXPORT_SYMBOL(phy_suspend);
+@@ -1811,6 +1815,12 @@ int phy_resume(struct phy_device *phydev)
+ {
+ 	int ret;
+ 
++	if (phydev->regulator_cnt > 0) {
++		ret = regulator_bulk_enable(phydev->regulator_cnt, phydev->consumers);
++		if (ret)
++			return ret;
++	}
++
+ 	mutex_lock(&phydev->lock);
+ 	ret = __phy_resume(phydev);
+ 	mutex_unlock(&phydev->lock);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 508f1149665b..ef4e0ce67194 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -704,6 +704,9 @@ struct phy_device {
+ 	void (*phy_link_change)(struct phy_device *phydev, bool up);
+ 	void (*adjust_link)(struct net_device *dev);
+ 
++	int regulator_cnt;
++	struct regulator_bulk_data *consumers;
++
+ #if IS_ENABLED(CONFIG_MACSEC)
+ 	/* MACsec management functions */
+ 	const struct macsec_ops *macsec_ops;
 -- 
 2.35.1
 
