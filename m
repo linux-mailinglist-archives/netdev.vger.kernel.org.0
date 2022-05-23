@@ -2,115 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C1CF1530B46
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 11:02:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF5F2530BAA
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 11:03:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231958AbiEWIdz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 04:33:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34308 "EHLO
+        id S231991AbiEWIjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 04:39:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231942AbiEWIdx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 04:33:53 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D82937025;
-        Mon, 23 May 2022 01:33:51 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 67EE91F383;
-        Mon, 23 May 2022 08:33:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653294830; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HGRKxMXzRmZxPbqeCp3nH/JisTTafTR7VNUx1nyPrA0=;
-        b=Fw4PPATbwIAM/+syB+5pNwbui6zzq48ItTTCRJoCdZxsq1oeLi5HUjJKkrHQrYOXiy6R17
-        +bqvRSVTHw/Y39VQRaeeBUmpmR9qt0hE+UyJ/+X1a4TgPBvLPcIIB0sxPok9Tx4Bv0fXn6
-        kTeFy5M9c1ROaqtzP+uCIdCFqncmFrs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653294830;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HGRKxMXzRmZxPbqeCp3nH/JisTTafTR7VNUx1nyPrA0=;
-        b=w1UJ/lv2rM4pTCF88m3xyXaSpKqwbsTOVq4QJVvJSftW4VhvLptpMJJebYswy7a/fb5RBS
-        BC3ow6030YTwz3Dw==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 4FA872C141;
-        Mon, 23 May 2022 08:33:50 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id E652760294; Mon, 23 May 2022 10:33:49 +0200 (CEST)
-Date:   Mon, 23 May 2022 10:33:49 +0200
-From:   Michal Kubecek <mkubecek@suse.cz>
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     steffen.klassert@secunet.com, herbert@gondor.apana.org.au,
-        davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
-        pabeni@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: REGRESSION (?) (Re: [PATCH] net: af_key: add check for
- pfkey_broadcast in function pfkey_process)
-Message-ID: <20220523083349.zzgdmoq2bzstxla6@lion.mk-sys.cz>
-References: <20220517094231.414168-1-jiasheng@iscas.ac.cn>
- <20220523022438.ofhehjievu2alj3h@lion.mk-sys.cz>
+        with ESMTP id S231859AbiEWIjM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 04:39:12 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DCA33CFFB
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 01:39:08 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2ff7b90e635so73859697b3.5
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 01:39:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9ms1xiGnp9VFH8Q9WvnNJjHzsFoHcObvaufuDxPzB8s=;
+        b=Uet4r7oIXi/ElVe63yV1mWhDRZ+fGIgc5OZMp+pGq/pwPrZ33OPF1HDuE/BKkaKPXK
+         jQDEkdFsjwaDOM0WHhuA6doA6kC9TMW7VHOC3aArWFo8rD/XFve21eGHC2NVQEFM2Fsa
+         2BBCBMxfigeAO9ep6xDQ7mXqxxb34jwF1pEXTfDTPfYT9Kc/Ugs23KFhBZSXh10RM9Zx
+         AIEUjNNEc3uDMKeQMajmp/JwzZqX9O+cG6X1BA+62WhYx8hK945ueObKZ6qjPB/0xKbQ
+         2KETO5q4v/umXdZUIidDW+RgYqN91R5iY8+h+dRBlHq3TGczK5IM4T4WU7a8EIkNSg9q
+         r69Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9ms1xiGnp9VFH8Q9WvnNJjHzsFoHcObvaufuDxPzB8s=;
+        b=hAKVc1aSvpM9xZPzjpgiHSJnMHA2F2JVY6NmBzE9TUA/PDqUwSkF89D60v1yggvhQw
+         HY3Si/bMnslKRdEtc+U9zFmpP+d28XUe56JILN/QP9CngdurPYkxFAzTMFjtr9iz9tj1
+         L4RuZ8/nD78Tan0M1tQ6aUnqLt4BtXtQ2jqj+Mve/Fci1L94YAIihhSC9HxlKIsF4WjT
+         4nWqUqXxDx9i/Ckl/nhB9aaToC9HKYqj9c2ZIj4ruf2K/BZD5J54ds226NpWHexrecNb
+         08g2phO1VnQr1lcjqUI1KvF/lSCp9B99bw7yd0LwV4BWsmaLznuGm8cTDwlDgF6Zb17R
+         H7Iw==
+X-Gm-Message-State: AOAM530dAPwXhxYjQ1H+v7kao2VO5dcjC75HslCWSnumj7Eab/IxtM1J
+        ZYYl9IbOlpE4js+B3/llOo0u/FLeZG9Qe7Sh5nkXgg==
+X-Google-Smtp-Source: ABdhPJzVCJisNVWwF/tRYhS+3OQBbnOrRKNdHmqe9UxkbvUyiNZVzi+GLJWTPkxmpI2apsjpExrpugAd+DKqFmDQJAE=
+X-Received: by 2002:a81:a107:0:b0:2ff:e11d:3ad8 with SMTP id
+ y7-20020a81a107000000b002ffe11d3ad8mr5164601ywg.448.1653295147509; Mon, 23
+ May 2022 01:39:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="r6vmbsg4u3vtaqzd"
-Content-Disposition: inline
-In-Reply-To: <20220523022438.ofhehjievu2alj3h@lion.mk-sys.cz>
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+References: <20220521200734.421223-1-a.fatoum@pengutronix.de>
+ <CACRpkdbKUHu-T2whY4wgk5xnR7X-hptEg+Jm5Hudq8ieQi3VwA@mail.gmail.com> <80306a31-462c-4ce3-5c54-c0f74ad828f8@pengutronix.de>
+In-Reply-To: <80306a31-462c-4ce3-5c54-c0f74ad828f8@pengutronix.de>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 23 May 2022 10:38:56 +0200
+Message-ID: <CACRpkdbR_pbQ7L4m8oYt3PN4QT0oXx2-ESHWNTt=QRcpH_gOrg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: bluetooth: broadcom: Add BCM4349B1 DT binding
+To:     Ahmad Fatoum <a.fatoum@pengutronix.de>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-bluetooth@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, May 23, 2022 at 12:16 AM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
+> On 22.05.22 23:03, Linus Walleij wrote:
+> > On Sat, May 21, 2022 at 10:07 PM Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
+> >
+> >> The BCM4349B1 chip is a single-chip Bluetooth 5.0 controller and
+> >> Transceiver. It is contained in the CYW/BCM89359 WiFi+BT package.
+> >
+> > So the BT and the package have two different names.
+>
+> The package also goes by the name BCM4349B1 apparently.
+> Cypress support had later confirmed BCM4349B1 and BCM89359 to
+> be the same chipset. I should probably rephrase the commit message.
+>
+>
+> >> +      - brcm,bcm4349-bt
+> >
+> > Then why do you have to tag on "-bt" on this compatible?
+> >
+> > That is typically used when the wifi and bt has the *same* name, so
+> > the only way to distinguish between them is a suffix.
 
---r6vmbsg4u3vtaqzd
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+> I think that's the case here too.
 
-On Mon, May 23, 2022 at 04:24:38AM +0200, Michal Kubecek wrote:
-> After upgrading from 5.18-rc7 to 5.18 final, my racoon daemon refuses to
-> start because it cannot find some algorithms (it says "aes"). I have not
-> finished the debugging completely but this patch, mainline commit
-> 4dc2a5a8f675 ("net: af_key: add check for pfkey_broadcast in function
-> pfkey_process"), seems to be the most promising candidate.
+OK then!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Tested now, reverting commit 4dc2a5a8f675 ("net: af_key: add check for
-pfkey_broadcast in function pfkey_process") seems to fix the issue,
-after rebuilding the af_key module with this commit reverted and
-reloading it, racoon daemon starts and works and /proc/crypto shows
-algrorithms it did not without the revert.
-
-We might get away with changing the test to
-
-	if (err && err != -ESRCH)
-		return err;
-
-but I'm not sure if bailing up on failed notification broadcast is
-really what we want. Also, most other calling sites of pfkey_broadcast()
-do not check the return value either so if we want to add the check, it
-should probably be done more consistently. So for now, a revert is IMHO
-more appropriate.
-
-Michal
-
---r6vmbsg4u3vtaqzd
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCAAdFiEEWN3j3bieVmp26mKO538sG/LRdpUFAmKLRuIACgkQ538sG/LR
-dpWMpwgA0INRLLZ4ZINyjhZoeu1j1yh4Mwtsb/aGEW3OB2E+pZHsWwqDwoq++1vH
-um5qLGrN6mrKIi9X3LhVKuXry2RGNW8rbTUaXihcg0JFl72XAXySQUwEh13Rn7D9
-MgvSq4MznjNLuvfFBEWvkNaYbZ6NTVtlG2thTKi4GfftwsYsDWVQisCI4z2ZZ0Pn
-Pd1j8thJreCJSNxoK8ylNyNkCAzLksItEivKz/UM+Y7HMpkI3nYZJLVAUVYZQKO6
-97qCnqcMriy3XpDz6IVn6nVUHfGay8bmlfet67IOCrxYghyR47Wy147LP8+tVzrb
-O46GqysFnczjK0px39AqsMrgUkp9sQ==
-=ZgNq
------END PGP SIGNATURE-----
-
---r6vmbsg4u3vtaqzd--
+Yours,
+Linus Walleij
