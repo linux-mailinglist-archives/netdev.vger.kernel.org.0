@@ -2,56 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AAE0530DB8
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 12:42:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE2D530E1B
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 12:43:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233519AbiEWJuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 05:50:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51374 "EHLO
+        id S233614AbiEWJzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 05:55:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233576AbiEWJuO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 05:50:14 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2090738DB8
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 02:50:14 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AC7BD61191
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 09:50:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 11678C34116;
-        Mon, 23 May 2022 09:50:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653299413;
-        bh=3FuKiRwf0WM931+Y5XGTR3+nTmNs74plZGxF6IOQ21s=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=aUDcqrE/KZAymhlVsnE93ZTR6k+0HfPRMJnGs94IPIz/PYuVx9c877BMvOZIcbXeu
-         iQLAmbt1sZ4t1oBKfAExJglJCOfvjpWm9BuDgnOy9eJXEN5UNNWG8MSAoOB2SbR8DL
-         SGSGhfkwm+WuiYs3ipQIXIkLXy4pA4qjEo6dyIloT6L3MatdltHZLs04022Dx4f3QE
-         gzBvkJF8/b3RPpXvuoTzMvvq1BQ+JoIbkdkY1lCT4AL4wA621qUsRhaFV+te8x4ReZ
-         bTTJTt0Fq8ygLLrogU923gM4hmWqXa33smgTk3BfVz6t5HXY3fu2GZAorxsbkDlDTz
-         8FpoSmOUPt3zw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id E8B17F03938;
-        Mon, 23 May 2022 09:50:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S233565AbiEWJzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 05:55:18 -0400
+Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570F21A3A5;
+        Mon, 23 May 2022 02:55:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653299717; x=1684835717;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=eqM+jPOTUeunb8PUCCDFxOTPR27hmR70Sc5kkvXLcJ0=;
+  b=ddtIb2IBr49mgoQc0pV+QWuSM3yE3dBuI7Y+aJTWYU/QYMEYYCEKkKfO
+   ZuVHYs27aWylfX5rQa4UqJYmTQm6zWTGe3FRVwCnCcR5UFk7bCK7hcfsA
+   h3Ge3Q8SICAP8nu6pulazfINS49761Ej6dVBvzR7wPzvxhKOu/TB5yGxn
+   626TZeYeFuZ1N5mBTvJgOg8/+NnW8wfAp4c5ldYBLuWIgMAR0o7/mJipt
+   N6fyDgopt1sbz6xJmdXncKyjBGRhXYVFlUoMIvIO9NvpZeSz2d2qaFBJM
+   DRNqM/0StIe58Q3xeyOfxXOgovKYEfSlq+C09uq9QDWeLFqT2pVS/24yt
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="273288353"
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="273288353"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 02:55:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
+   d="scan'208";a="629291059"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 23 May 2022 02:54:53 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nt4m4-00013A-G3;
+        Mon, 23 May 2022 09:54:52 +0000
+Date:   Mon, 23 May 2022 17:54:25 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Corentin Labbe <clabbe@baylibre.com>, andrew@lunn.ch,
+        broonie@kernel.org, calvin.johnson@oss.nxp.com,
+        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
+        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
+        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
+        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
+        wens@csie.org
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
+        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
+Subject: Re: [PATCH v3 1/3] regulator: Add regulator_bulk_get_all
+Message-ID: <202205231748.IZoXf2Sf-lkp@intel.com>
+References: <20220523052807.4044800-2-clabbe@baylibre.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/6] DSA changes for multiple CPU ports (part 2)
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165329941294.6525.5572743475291541417.git-patchwork-notify@kernel.org>
-Date:   Mon, 23 May 2022 09:50:12 +0000
-References: <20220521213743.2735445-1-vladimir.oltean@nxp.com>
-In-Reply-To: <20220521213743.2735445-1-vladimir.oltean@nxp.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, davem@davemloft.net,
-        pabeni@redhat.com, edumazet@google.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, olteanv@gmail.com,
-        claudiu.manoil@nxp.com, alexandre.belloni@bootlin.com,
-        UNGLinuxDriver@microchip.com, colin.foster@in-advantage.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523052807.4044800-2-clabbe@baylibre.com>
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -59,42 +71,127 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Hi Corentin,
 
-This series was applied to netdev/net-next.git (master)
-by David S. Miller <davem@davemloft.net>:
+I love your patch! Yet something to improve:
 
-On Sun, 22 May 2022 00:37:37 +0300 you wrote:
-> As explained in part 1:
-> https://patchwork.kernel.org/project/netdevbpf/cover/20220511095020.562461-1-vladimir.oltean@nxp.com/
-> I am trying to enable the second internal port pair from the NXP LS1028A
-> Felix switch for DSA-tagged traffic via "ocelot-8021q". This series
-> represents part 2 (of an unknown number) of that effort.
-> 
-> This series deals only with a minor bug fix (first patch) and with code
-> reorganization in the Felix DSA driver and in the Ocelot switch library.
-> Hopefully this will lay the ground for a clean introduction of new UAPI
-> for changing the DSA master of a user port in part 3.
-> 
-> [...]
+[auto build test ERROR on broonie-regulator/for-next]
+[also build test ERROR on sunxi/sunxi/for-next linus/master v5.18 next-20220520]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-Here is the summary with links:
-  - [net-next,1/6] net: dsa: fix missing adjustment of host broadcast flooding
-    https://git.kernel.org/netdev/net-next/c/129b7532a0ed
-  - [net-next,2/6] net: dsa: felix: move the updating of PGID_CPU to the ocelot lib
-    https://git.kernel.org/netdev/net-next/c/61be79ba2d90
-  - [net-next,3/6] net: dsa: felix: update bridge fwd mask from ocelot lib when changing tag_8021q CPU
-    https://git.kernel.org/netdev/net-next/c/a72e23dd679c
-  - [net-next,4/6] net: dsa: felix: directly call ocelot_port_{set,unset}_dsa_8021q_cpu
-    https://git.kernel.org/netdev/net-next/c/8c166acb60f8
-  - [net-next,5/6] net: mscc: ocelot: switch from {,un}set to {,un}assign for tag_8021q CPU ports
-    https://git.kernel.org/netdev/net-next/c/c295f9831f1d
-  - [net-next,6/6] net: dsa: felix: tag_8021q preparation for multiple CPU ports
-    https://git.kernel.org/netdev/net-next/c/a4e044dc4c5b
+url:    https://github.com/intel-lab-lkp/linux/commits/Corentin-Labbe/arm64-add-ethernet-to-orange-pi-3/20220523-133344
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
+config: i386-randconfig-a012-20220523 (https://download.01.org/0day-ci/archive/20220523/202205231748.IZoXf2Sf-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 768a1ca5eccb678947f4155e38a5f5744dcefb56)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/179be86f748a2cce87423bb16f4f967c97bf5d9b
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Corentin-Labbe/arm64-add-ethernet-to-orange-pi-3/20220523-133344
+        git checkout 179be86f748a2cce87423bb16f4f967c97bf5d9b
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-You are awesome, thank you!
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+>> drivers/regulator/core.c:4870:2: error: call to undeclared function 'for_each_property_of_node'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+           for_each_property_of_node(np, prop) {
+           ^
+>> drivers/regulator/core.c:4870:37: error: expected ';' after expression
+           for_each_property_of_node(np, prop) {
+                                              ^
+                                              ;
+>> drivers/regulator/core.c:4873:4: error: 'continue' statement not in loop statement
+                           continue;
+                           ^
+   drivers/regulator/core.c:4876:4: error: 'continue' statement not in loop statement
+                           continue;
+                           ^
+   drivers/regulator/core.c:4887:4: error: 'continue' statement not in loop statement
+                           continue;
+                           ^
+   5 errors generated.
+
+
+vim +/for_each_property_of_node +4870 drivers/regulator/core.c
+
+  4839	
+  4840	/*
+  4841	 * regulator_bulk_get_all - get multiple regulator consumers
+  4842	 *
+  4843	 * @dev:	Device to supply
+  4844	 * @np:		device node to search for consumers
+  4845	 * @consumers:  Configuration of consumers; clients are stored here.
+  4846	 *
+  4847	 * @return number of regulators on success, an errno on failure.
+  4848	 *
+  4849	 * This helper function allows drivers to get several regulator
+  4850	 * consumers in one operation.  If any of the regulators cannot be
+  4851	 * acquired then any regulators that were allocated will be freed
+  4852	 * before returning to the caller.
+  4853	 */
+  4854	int regulator_bulk_get_all(struct device *dev, struct device_node *np,
+  4855				   struct regulator_bulk_data **consumers)
+  4856	{
+  4857		int num_consumers = 0;
+  4858		struct regulator *tmp;
+  4859		struct property *prop;
+  4860		int i, n = 0, ret;
+  4861		char name[64];
+  4862	
+  4863		*consumers = NULL;
+  4864	
+  4865	/*
+  4866	 * first pass: get numbers of xxx-supply
+  4867	 * second pass: fill consumers
+  4868	 * */
+  4869	restart:
+> 4870		for_each_property_of_node(np, prop) {
+  4871			i = is_supply_name(prop->name);
+  4872			if (i == 0)
+> 4873				continue;
+  4874			if (!*consumers) {
+  4875				num_consumers++;
+  4876				continue;
+  4877			} else {
+  4878				memcpy(name, prop->name, i);
+  4879				name[i] = '\0';
+  4880				tmp = regulator_get(dev, name);
+  4881				if (!tmp) {
+  4882					ret = -EINVAL;
+  4883					goto error;
+  4884				}
+  4885				(*consumers)[n].consumer = tmp;
+  4886				n++;
+  4887				continue;
+  4888			}
+  4889		}
+  4890		if (*consumers)
+  4891			return num_consumers;
+  4892		if (num_consumers == 0)
+  4893			return 0;
+  4894		*consumers = kmalloc_array(num_consumers,
+  4895					   sizeof(struct regulator_bulk_data),
+  4896					   GFP_KERNEL);
+  4897		if (!*consumers)
+  4898			return -ENOMEM;
+  4899		goto restart;
+  4900	
+  4901	error:
+  4902		while (--n >= 0)
+  4903			regulator_put(consumers[n]->consumer);
+  4904		return ret;
+  4905	}
+  4906	EXPORT_SYMBOL_GPL(regulator_bulk_get_all);
+  4907	
+
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
