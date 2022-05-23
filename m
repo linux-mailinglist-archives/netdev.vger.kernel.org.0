@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AAF22531E16
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 23:40:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF728531E34
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 23:50:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230186AbiEWVka (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 17:40:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48206 "EHLO
+        id S230318AbiEWVuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 17:50:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230499AbiEWVkU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 17:40:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26C515DD32;
-        Mon, 23 May 2022 14:40:16 -0700 (PDT)
+        with ESMTP id S230154AbiEWVuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 17:50:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A21179FCC;
+        Mon, 23 May 2022 14:50:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D7437B8169E;
-        Mon, 23 May 2022 21:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 79D72C3411A;
-        Mon, 23 May 2022 21:40:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3F18161523;
+        Mon, 23 May 2022 21:50:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 9105AC34115;
+        Mon, 23 May 2022 21:50:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653342013;
-        bh=g7vbqwPB9Sr+7PEF+y9piN4eQKpUYLA914+AgtfLkKI=;
+        s=k20201202; t=1653342613;
+        bh=B7PqofgKRAmGuJm4x1MAU+rWOBg5MMmRoo8+jyNcSZo=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=e2EKnBvACplQ4TDCPRN8pFT6kIZCkNCiLzn6F2JhPAz0IoIEYwufUeqSY7yXTrFuU
-         mC3J33O1OBkUDAO4sQEq3ycucPaA5bDvxBrXKjHdUrT+LubnuLf26FWKejNdHFA/pa
-         AKVsiLsJig6hHXeX9D4/dS5l83lMoRe8MfuZd6z2Ul3hzMsPcC/bVZjHE/TFDj1Sdm
-         jfXz5PV5BI9jF3TixM2KXsdzPdqE8aLAZWW0cgzNvflWTs8V6BzvqvQZiPokLoj93e
-         2CxiVG9I6r93HwBKj0q5YgdLkkD97aFyOnrKtQc2IbQuH9ohIzkyfdwwT+FtpFfg9o
-         GVyZCjBUisdeQ==
+        b=MH7aEKXPlXIXVPkIgxZ3N0DF9EtdI2CZYul+GvJIJDO9fjGR1xMLC6dwHDX72EkMm
+         CkbsohcWst+eS2vrfAhfCFkiyCgc/VSAE3GNVbGIIZp1NaaubEbpLpUhFtkszbJHzV
+         bZtk6qQRkbvzsAZ3NhDqphT0tdwpzfVEkbQGEDHWJ0ZFXLnErtwpjn+cOQe/MPs6ES
+         j7VGy+CY1Edg+VCEtP5Kl00qaPivmmwHGG3q3G15gKSqaSu2UhcqSybxxXf1SZrmuT
+         5eDWUGSG31CJAHOqAZoWsRIFYDgxlun+N6Nhss/edTwREJxdRw+7JiMSmMrNNSz9R4
+         44bJwtE17CEaQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 63CA3F03938;
-        Mon, 23 May 2022 21:40:13 +0000 (UTC)
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 73A54EAC081;
+        Mon, 23 May 2022 21:50:13 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: pull request: bluetooth 2022-05-23
+Subject: Re: pull request: bluetooth-next 2022-05-23
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165334201340.19887.13283028863120702469.git-patchwork-notify@kernel.org>
-Date:   Mon, 23 May 2022 21:40:13 +0000
-References: <20220523200349.3322806-1-luiz.dentz@gmail.com>
-In-Reply-To: <20220523200349.3322806-1-luiz.dentz@gmail.com>
+Message-Id: <165334261346.27567.16619263163153903951.git-patchwork-notify@kernel.org>
+Date:   Mon, 23 May 2022 21:50:13 +0000
+References: <20220523204151.3327345-1-luiz.dentz@gmail.com>
+In-Reply-To: <20220523204151.3327345-1-luiz.dentz@gmail.com>
 To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
 Cc:     davem@davemloft.net, kuba@kernel.org,
         linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
@@ -58,23 +58,23 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This pull request was applied to netdev/net.git (master)
+This pull request was applied to netdev/net-next.git (master)
 by Jakub Kicinski <kuba@kernel.org>:
 
-On Mon, 23 May 2022 13:03:49 -0700 you wrote:
-> The following changes since commit 8c3b8dc5cc9bf6d273ebe18b16e2d6882bcfb36d:
+On Mon, 23 May 2022 13:41:51 -0700 you wrote:
+> The following changes since commit 49bb39bddad214304bb523258f02f57cd25ed88b:
 > 
->   net/smc: fix listen processing for SMC-Rv2 (2022-05-23 10:08:33 +0100)
+>   selftests: fib_nexthops: Make the test more robust (2022-05-13 11:59:32 +0100)
 > 
 > are available in the Git repository at:
 > 
->   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth.git tags/for-net-2022-05-23
+>   git://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git tags/for-net-next-2022-05-23
 > 
 > [...]
 
 Here is the summary with links:
-  - pull request: bluetooth 2022-05-23
-    https://git.kernel.org/netdev/net/c/7fb0269720d7
+  - pull request: bluetooth-next 2022-05-23
+    https://git.kernel.org/netdev/net-next/c/b1e6738a2185
 
 You are awesome, thank you!
 -- 
