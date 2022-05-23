@@ -2,127 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 554F5531F3D
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 01:33:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7463531F40
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 01:34:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbiEWXdn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 19:33:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42930 "EHLO
+        id S230084AbiEWXeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 19:34:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiEWXdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 19:33:42 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60047.outbound.protection.outlook.com [40.107.6.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 640F677F23
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 16:33:41 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GcA6PcuglGIZ+MzYPUGBT8lzOLPsXAXk7WAkoG2qpA+hOiLeXvdgp7fA7ZmR5iI67Lyu7mr+dPdQe46Pasd9A8qowIZ3yILle/ol6DE0qODrPLlWyC5IhPKuwIkAN9D47Troe/XjTIkcjetpkFyb8MNIcm0HcF6IRNXGDiCELeLThn5j9KdUjn2PRglsktbjN1p6t/1Zckyf1jC7UvpmTeEaT92D5oblK5Lhu1bc0g8Guh/5A7juA+3AwZL2zRScdDACWrbk6wP9FoKEWj4+Idn4tT1W6U2QydXgSOjuADuQS/QYQaYnOdy6O1JmpSvoHplB/4nFXBKhysM4SivZLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DZEbY4oa9mlHvaaq/DFVLMwb/QD3Nda/CZbYMRgd3ZM=;
- b=TbYZHJmnf0GO4bb1LhuC/5q4VByoKxyzL0wS6xP1Tk0QR+CJzPjemV/q44v9SQQ8+iEezntq/f8vL06ZsWOdXJMNia60sscO8dd3B3MskcjBG83G0Ofc15/T+k8VAXg+g0mQojNAgeO3UFG15tnRryntxMlNUWQWPfCKoOk+30BLDXhjnO5hEi74RmhMHCUtmImp3N9fRX8HE+/TwpdF/sutU7RReAbiJElO6NUi4JIyVZPVVfjlJi9qUJl3UES93MfmF6C8Cgj0Pj2ysSq793dwJmV2SF1HhWiK8QtIRIIydlMiX0R/p/nvD9/hVdPQgFlW5KSI86G0YGjDzbQnaQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DZEbY4oa9mlHvaaq/DFVLMwb/QD3Nda/CZbYMRgd3ZM=;
- b=UOGnKSf+F1AFhV1OkgtARczzmmIKPLsl5mIezFUnGQ9Qt6qXCenfyjU1+t7Iq5cEtNGGSeBn6H0Q4ydda2KudNaHdtvwRGcErV79tLmyFGCFxQLNxDE8PJfRsEDt2TO4AJjr8D4qoALPFyuYC/vM/aNA4+uPKdnMbEi0yYWYAVo=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by DB9PR04MB9647.eurprd04.prod.outlook.com (2603:10a6:10:30b::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.22; Mon, 23 May
- 2022 23:33:39 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::fd1f:cc16:dafe:4bf5]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::fd1f:cc16:dafe:4bf5%5]) with mapi id 15.20.5273.022; Mon, 23 May 2022
- 23:33:39 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Po Liu <po.liu@nxp.com>,
-        "boon.leong.ong@intel.com" <boon.leong.ong@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: Re: [PATCH net-next v5 00/11] ethtool: Add support for frame
- preemption
-Thread-Topic: [PATCH net-next v5 00/11] ethtool: Add support for frame
- preemption
-Thread-Index: AQHYa+cqehaWXK64WUeB49V4C8aceq0oW6eAgAEUSACAA3WRAIAAPb8A
-Date:   Mon, 23 May 2022 23:33:39 +0000
-Message-ID: <20220523233338.tmwykgwutoigurnu@skbuf>
-References: <20220520011538.1098888-1-vinicius.gomes@intel.com>
- <20220520153413.16c6830b@kernel.org> <20220521150304.3lhpraxpssjxfhai@skbuf>
- <20220523125238.6f73b9f5@kernel.org>
-In-Reply-To: <20220523125238.6f73b9f5@kernel.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 23e42ccb-9c81-43a3-d7e1-08da3d14aa33
-x-ms-traffictypediagnostic: DB9PR04MB9647:EE_
-x-microsoft-antispam-prvs: <DB9PR04MB9647AF8BF205CBEC890341D9E0D49@DB9PR04MB9647.eurprd04.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: A8YNY9Dxkm/i6FHSS6QsY9In8YbAP4KhSGRDtjTgGBH3yoQTp211TIdmraXCxT1Ms/1avzK4Stl8uOdN58TPgeHNrxqgnxyu2At7v9LCGKobbHD7aQr1XNmQBq2MNPvCAsmrs5BET1PwzAm3jSgmvDvjr4/K2UTd5PBEk++PKt+aqhWWhsReqgJC+/Sgmu9hs9pKFZafe2TRUFMfHRHTI7Wz6PtKW9e25WT7Mxl+Lak30mti7/wrKaA5IGOHQtFn6HXUqf2w9ePJCtIe0LNrrxjd8ExKaAVAntvFDGQAQ0WBh6BF/sTtC/PcvJmEvJ5Qp1nLhcABgtHTj9AmOd38+bPsnGVYcDh13RxUJycp2B3kQg/afcdFyGYRLJOoYh3X2eycpt81soHadJHYH7mqVL7LxDq/WryMKSCRdCytJzLi8RflsCN869QPIH+37B2Fs7i5wBs7X42tURuxvo38zqCfR7IKCxyDyBACyxfRzm+VKcIyQ/7GbwRgxTDz2rmp2u+B/4A2ljyUE1xFclbHVmw5407J6XLem0FS10sdy0l9mCM+A8h5m4auvq3UD74bn3I+cfeF9OYez+raRbfN1kYzuoVR7EoXttJv275IgmIlonpcQEFxFPPDD792EV0oOKcm2PRHCjStjNYIFMpVAuZ2zA6UvqlmDqtJC8HGqnABevELBx8GyjCFdB1pO5ffti0MDbiOtGjfGMf3uJI8jQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(71200400001)(38070700005)(508600001)(66476007)(66556008)(64756008)(66446008)(54906003)(2906002)(9686003)(26005)(6512007)(316002)(4744005)(44832011)(33716001)(3716004)(8676002)(66946007)(76116006)(186003)(1076003)(6486002)(122000001)(5660300002)(6506007)(8936002)(6916009)(86362001)(38100700002)(4326008)(91956017);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?0mtJUOuglK9S91EYcJrgMoEOa86dcdeQjtvQ0K896eL0rJbVk2ANdGmHQnzC?=
- =?us-ascii?Q?q+Km4gMNN3XQRHU6DC6yQRLmQbMki6eC6BQl/2otUPWyK7EoLNYdsZiHBxlV?=
- =?us-ascii?Q?9bQ0hFDhtG6Ebfbng88VbC1WV1pv4vyB/by1AuGMZIBgKQ4GykMNY5KDSzHG?=
- =?us-ascii?Q?CF5JX2TA3DvWfMrUzS8ueNkcX13zGtjNkG8yH6LzxeYTcC3vDefizLp6at81?=
- =?us-ascii?Q?U5AZ3T4JKeqClDKTsg7nQWr3RiyRyT86GROqDbHP4fDx6Jm4qZL3zCt/gS1b?=
- =?us-ascii?Q?j0d3daF1UOncWKi6gJffh+FcYpK9yqlo3pqGbSBOH/BmTDuS3B/yjjVvHQHo?=
- =?us-ascii?Q?mC3Ili/dIsmbB7QNj4C8Knd4MSUsoWAdsxEwB0ud01Ag8TRytav3ieB+ep8v?=
- =?us-ascii?Q?f+5rEPL8oQEtxj+jWbp7BvD7l9LMZNI1w1RNx+89QJJnrc7Av/tdoI0TEAeN?=
- =?us-ascii?Q?jbbOMEMX2kF3gLcup1CSYrA4H8y0b7QIW0YWiUn0kasItcqdIlz/RUVTrydr?=
- =?us-ascii?Q?R9H7G4YRMN9WoIwQ4jRJDDAoO6ECtG9BCIvmGmZkulElAFFWWB/+sg16tg9J?=
- =?us-ascii?Q?icmEHS53eT0SJTAbPRVeO8Rza2FkPyBOQCIRvccY5cJtqH3U1SewiVtheGqz?=
- =?us-ascii?Q?P+xbrFBi3LamAYqbwS6Utf2PudWk5ZsrOp5UYORrzrFxSjKID/08/ejTT51N?=
- =?us-ascii?Q?ftjGLOtfcPKBfh0FXkVgy0/3IllZrPxCbFvx+Mfk/fjm3rDAbPg5Cv/oQLt1?=
- =?us-ascii?Q?G925VQ3PiFNVr6x226BmFZjLRt96nTydxt89l+/EsjP9XnZRDiHbcSP9DdW/?=
- =?us-ascii?Q?uwMH0sDYNXA4pcMZOEjxQWIMgV/BrAnSEw4sWKePkXgQM8t4olrxC+KO4PYq?=
- =?us-ascii?Q?F7vxUq0nT6ZIXFA5OdRZP0FJkfwwDpOOedyQeDqZA2IOVqmCEWfptDF4T968?=
- =?us-ascii?Q?prO0XA+5WHaYL/0AOzzaXb5GgkWgTXDW/1/MJjth9P5UbUMF8qxqra3UyoEB?=
- =?us-ascii?Q?lgIdZO5yODHNeqOvcN4JhmaitKYjXx+SUzqTunIDRaKqXFMCux1RZBAtszcZ?=
- =?us-ascii?Q?KVqaZFNvlgRCT7SeQ0NEnWjj87ijyOgqPbGqhGP4ErM1qto5iyMaZmzFKIHB?=
- =?us-ascii?Q?wORZn062k3WNhws9TzpD343T71NhaPxei2xAEcwpGMKYzCNLpOAAEJmfCOHH?=
- =?us-ascii?Q?L6CgEntZbiqnEdgmCVwlkDGMSCn5DOunvaisG60pAGtw7WuggQpQ5uRdocYa?=
- =?us-ascii?Q?ZOpeyEzI6jP+R/O9yW9cdPyI5PrYejrzSAqt6OvoGPlPMgbsA4klKvKuTaSl?=
- =?us-ascii?Q?1yzXdkG4UsDo0lsxJeaAfwGlfkfeAY38W3cwuLvX+EcT3QtkGkkPLFVteOY4?=
- =?us-ascii?Q?5QFeOnac1759hvnLZa5QPscjmKSjklWs226zicDzoX8Y7or7hC/cIyfFIgq9?=
- =?us-ascii?Q?O2DCTYlKTYdoo0VZ5FO2jXpmxbdBfCOXbPmJGhB5hHhYraL8Uusm0v+6skW6?=
- =?us-ascii?Q?FIpZ9QrRwPnXd1H4g2XXYABFumi6dxblRMotEeVIIpGNt/JpG567EnomwwT5?=
- =?us-ascii?Q?8yCjGZbNL/oQguysicmKMnzl2FSRUyjni6fcBGd5F6D1GVubqZmVNd74oMPR?=
- =?us-ascii?Q?XN4ZkjygmoGYoLx47c4Y1G6f+UxQU1EqKVJA7p1JcByzAlJk6y+id7+RSQoe?=
- =?us-ascii?Q?NAkzLRNUR56vjrcYkDPZd/iARr5LWCQT22jLOavuZZjOXy1CsCZ5TwNO7hZp?=
- =?us-ascii?Q?BLacOc0xDm2rEmb0bkAIpgEHpXzPDmM=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <A41A6F5753E81A4C9FC38CA60F7DAA5D@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S229462AbiEWXeA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 19:34:00 -0400
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69E1F77F24;
+        Mon, 23 May 2022 16:33:59 -0700 (PDT)
+Received: by mail-il1-x129.google.com with SMTP id o16so10852410ilq.8;
+        Mon, 23 May 2022 16:33:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=476l4F/D25kQOCryGZZoOaZyzK6uQ7tT24Y3edD6ytI=;
+        b=QYNFBhlOZzxOA0oFygMpe3R/z8AYqTAZ1vkPJN8POkpHrqk0VkRxICzbXRXp4sjpUi
+         mcPLquXexRiaYq8Te00XrSiVXVZ/I/D1H9kOLmfxbUv+NEABVExd+RK+JfnvboKRNbdI
+         WiH2c6SzLGFJGQPA2cQrkYGnLqzp7oft7jO67w8hKxX81IdC5uBBtZpUZq78oxjD/StS
+         807YuSIOt6u87B3SgLOBvHlgcFse9c+3DLz6Tb/AGaSJ4u/o179Qz3cH0IYAn2U41aSJ
+         g9IGo0JPdWJ8vUtT7V1OiRlRS0jDBGTPAZhArLywOj1LkJb/KSNVR0hjsb7oDzG7/NFG
+         swqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=476l4F/D25kQOCryGZZoOaZyzK6uQ7tT24Y3edD6ytI=;
+        b=YiWDgu/9ou/WMu1qe/2uo/OtYUpQW/FNoPICm/DAOLQHKM2roe+yVoSDuUwc9TE5zz
+         A2bchyEWVhL2LIgtMjLQ0jQALtLttKcxFIHf7uxwOyyuTjLXtnjYgVFUUBGZGQOpLI+9
+         2hyxt3c3SaAbR2El6RPqMEza+0PfX541bz3vMRF+a4YEwyC8Tf3y+addN2yxC3+VL5of
+         HYU8bHl3W8BuFdxV9wnU38tR2pkEj0K+dXe0RgWY4GluUemKazNhlFRaTTfuob39I2qm
+         /5z1JFoMUuIL0i7fyQGYRhUoDzg1V4WML79Q8NSUsrblESZGIM2x53EHKpH+ABGSX6jD
+         9deQ==
+X-Gm-Message-State: AOAM53346kA6OahvETIR/y4hQ3LsRhAywKH9ASDwqVNqHFzMUTohjugK
+        UO4Ih8CiSSIaQ2XuR4R3TI8bv3lAMtpUJCdRX58=
+X-Google-Smtp-Source: ABdhPJywvhrHXotPmsWNBsR0ADXyhG7BWADyrBZFQCJTCydL6Msq2a+bhDph78pmFIkUeqVtrAh35dnQf/zVTAin0i0=
+X-Received: by 2002:a05:6e02:1352:b0:2d1:6424:60b8 with SMTP id
+ k18-20020a056e02135200b002d1642460b8mr11873417ilr.305.1653348838757; Mon, 23
+ May 2022 16:33:58 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 23e42ccb-9c81-43a3-d7e1-08da3d14aa33
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 May 2022 23:33:39.0354
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 5jB2HfuOnFshwsHuoLz63E2TKHkHrQW9HUtltjFgMxh7R6ezRS6BB+hUTgvuSFpOJRTIdOxHfQaTG+xsDwIFUQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR04MB9647
+References: <20220518225531.558008-1-sdf@google.com> <20220518225531.558008-12-sdf@google.com>
+In-Reply-To: <20220518225531.558008-12-sdf@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 23 May 2022 16:33:47 -0700
+Message-ID: <CAEf4BzaG2bOcyVfGZxcNU1p8i0Xipez7v-789bq8qYDE1Ce-sQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 11/11] selftests/bpf: verify lsm_cgroup struct
+ sock access
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
-        RCVD_IN_MSPIKE_H2,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -130,14 +68,133 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 23, 2022 at 12:52:38PM -0700, Jakub Kicinski wrote:
-> My understanding is that DCBNL is not in ethtool is that it was built
-> primarily for converged Ethernet. ethtool being a netdev thing it's
-> largely confined to coarse interface configuration in such
-> environments, they certainly don't use TC to control RDMA queues.
->=20
-> To put it differently DCBNL separates RoCE and storage queues from
-> netdev queues (latter being lossy). It's Conway's law at work.
+On Wed, May 18, 2022 at 3:56 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> sk_priority & sk_mark are writable, the rest is readonly.
+>
+> One interesting thing here is that the verifier doesn't
+> really force me to add NULL checks anywhere :-/
+>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  .../selftests/bpf/prog_tests/lsm_cgroup.c     | 69 +++++++++++++++++++
+>  1 file changed, 69 insertions(+)
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c b/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
+> index 29292ec40343..64b6830e03f5 100644
+> --- a/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
+> +++ b/tools/testing/selftests/bpf/prog_tests/lsm_cgroup.c
+> @@ -270,8 +270,77 @@ static void test_lsm_cgroup_functional(void)
+>         lsm_cgroup__destroy(skel);
+>  }
+>
+> +static int field_offset(const char *type, const char *field)
+> +{
+> +       const struct btf_member *memb;
+> +       const struct btf_type *tp;
+> +       const char *name;
+> +       struct btf *btf;
+> +       int btf_id;
+> +       int i;
+> +
+> +       btf = btf__load_vmlinux_btf();
+> +       if (!btf)
+> +               return -1;
+> +
+> +       btf_id = btf__find_by_name_kind(btf, type, BTF_KIND_STRUCT);
+> +       if (btf_id < 0)
+> +               return -1;
+> +
+> +       tp = btf__type_by_id(btf, btf_id);
+> +       memb = btf_members(tp);
+> +
+> +       for (i = 0; i < btf_vlen(tp); i++) {
+> +               name = btf__name_by_offset(btf,
+> +                                          memb->name_off);
+> +               if (strcmp(field, name) == 0)
+> +                       return memb->offset / 8;
+> +               memb++;
+> +       }
+> +
+> +       return -1;
+> +}
+> +
+> +static bool sk_writable_field(const char *type, const char *field, int size)
+> +{
+> +       LIBBPF_OPTS(bpf_prog_load_opts, opts,
+> +                   .expected_attach_type = BPF_LSM_CGROUP);
+> +       struct bpf_insn insns[] = {
+> +               /* r1 = *(u64 *)(r1 + 0) */
+> +               BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, 0),
+> +               /* r1 = *(u64 *)(r1 + offsetof(struct socket, sk)) */
+> +               BPF_LDX_MEM(BPF_DW, BPF_REG_1, BPF_REG_1, field_offset("socket", "sk")),
+> +               /* r2 = *(u64 *)(r1 + offsetof(struct sock, <field>)) */
+> +               BPF_LDX_MEM(size, BPF_REG_2, BPF_REG_1, field_offset(type, field)),
+> +               /* *(u64 *)(r1 + offsetof(struct sock, <field>)) = r2 */
+> +               BPF_STX_MEM(size, BPF_REG_1, BPF_REG_2, field_offset(type, field)),
+> +               BPF_MOV64_IMM(BPF_REG_0, 1),
+> +               BPF_EXIT_INSN(),
+> +       };
+> +       int fd;
 
-I had to look up Conway's law, now I get it. Beautiful euphemism, thank you=
-.=
+This is really not much better than test_verifier assembly. What I had
+in mind when I was suggesting to use test_progs was that you'd have a
+normal C source code for BPF part, something like this:
+
+__u64 tmp;
+
+SEC("?lsm_cgroup/socket_bind")
+int BPF_PROG(access1_bad, struct socket *sock, struct sockaddr
+*address, int addrlen)
+{
+    *(volatile u16 *)(sock->sk.skc_family) = *(volatile u16
+*)sock->sk.skc_family;
+    return 0;
+}
+
+
+SEC("?lsm_cgroup/socket_bind")
+int BPF_PROG(access2_bad, struct socket *sock, struct sockaddr
+*address, int addrlen)
+{
+    *(volatile u64 *)(sock->sk.sk_sndtimeo) = *(volatile u64
+*)sock->sk.sk_sndtimeo;
+    return 0;
+}
+
+and so on. From user-space you'd be loading just one of those
+accessX_bad programs at a time (note SEC("?"))
+
+
+But having said that, what you did is pretty self-contained, so not
+too bad. It's just not what I was suggesting :)
+
+> +
+> +       opts.attach_btf_id = libbpf_find_vmlinux_btf_id("socket_post_create",
+> +                                                       opts.expected_attach_type);
+> +
+> +       fd = bpf_prog_load(BPF_PROG_TYPE_LSM, NULL, "GPL", insns, ARRAY_SIZE(insns), &opts);
+> +       if (fd >= 0)
+> +               close(fd);
+> +       return fd >= 0;
+> +}
+> +
+> +static void test_lsm_cgroup_access(void)
+> +{
+> +       ASSERT_FALSE(sk_writable_field("sock_common", "skc_family", BPF_H), "skc_family");
+> +       ASSERT_FALSE(sk_writable_field("sock", "sk_sndtimeo", BPF_DW), "sk_sndtimeo");
+> +       ASSERT_TRUE(sk_writable_field("sock", "sk_priority", BPF_W), "sk_priority");
+> +       ASSERT_TRUE(sk_writable_field("sock", "sk_mark", BPF_W), "sk_mark");
+> +       ASSERT_FALSE(sk_writable_field("sock", "sk_pacing_rate", BPF_DW), "sk_pacing_rate");
+> +}
+> +
+>  void test_lsm_cgroup(void)
+>  {
+>         if (test__start_subtest("functional"))
+>                 test_lsm_cgroup_functional();
+> +       if (test__start_subtest("access"))
+> +               test_lsm_cgroup_access();
+>  }
+> --
+> 2.36.1.124.g0e6072fb45-goog
+>
