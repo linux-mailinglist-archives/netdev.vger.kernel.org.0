@@ -2,75 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 08B3B53130A
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 18:23:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D38D5312B8
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 18:23:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238555AbiEWQJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 12:09:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44440 "EHLO
+        id S238602AbiEWQKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 12:10:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238408AbiEWQJv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 12:09:51 -0400
-Received: from foss.arm.com (foss.arm.com [217.140.110.172])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7F0D06470D;
-        Mon, 23 May 2022 09:09:50 -0700 (PDT)
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 28883139F;
-        Mon, 23 May 2022 09:09:50 -0700 (PDT)
-Received: from FVFF77S0Q05N (unknown [10.57.9.63])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 055253F73D;
-        Mon, 23 May 2022 09:09:43 -0700 (PDT)
-Date:   Mon, 23 May 2022 17:09:39 +0100
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Xu Kuohai <xukuohai@huawei.com>, bpf <bpf@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Zi Shen Lim <zlim.lnx@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        X86 ML <x86@kernel.org>, "H. Peter Anvin" <hpa@zytor.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Pasha Tatashin <pasha.tatashin@soleen.com>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Daniel Kiss <daniel.kiss@arm.com>,
-        Steven Price <steven.price@arm.com>,
-        Sudeep Holla <sudeep.holla@arm.com>,
-        Marc Zyngier <maz@kernel.org>,
-        Peter Collingbourne <pcc@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Delyan Kratunov <delyank@fb.com>,
-        Kumar Kartikeya Dwivedi <memxor@gmail.com>
-Subject: Re: [PATCH bpf-next v5 5/6] bpf, arm64: bpf trampoline for arm64
-Message-ID: <YouxwxJddrz95289@FVFF77S0Q05N>
-References: <20220518131638.3401509-1-xukuohai@huawei.com>
- <20220518131638.3401509-6-xukuohai@huawei.com>
- <CAADnVQJr8Sc5d+XUAY2UnNbZ2TP5OCAQNm3eyTponbMfcpXbkQ@mail.gmail.com>
+        with ESMTP id S238567AbiEWQKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 12:10:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3AA164738
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 09:10:15 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D73D613FB
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 16:10:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9FF18C34118
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 16:10:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653322214;
+        bh=2dMqjQuf3oXtvpzb3jWcvSkqpMuObKljdZomI7sfWFQ=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=kBkoKOlO5/4W3Pd2Ey5b16dgJQARhKs8D1Mhy1/nLaZY3rQMnI6LJU8ojJci5kiP+
+         n/RSUyeqKuEoAgTwveW1GFbX3xZXJwfwff3ACa9BAZkzvfIm/WSs+Zc34TPqo2rp//
+         GjwaGYJXzjE1tehNOtAzC624MgBatiWxTP38+B50g9SouM20aaUxhEv1Ey9LvQi5Cp
+         R5hI7R1Im7tJgnoMcT0ULAFLXpePclKnbgDSvdxH/mYHP4Dn8x+UFjALlYgTE1cAjh
+         Vb9TA1F+s3NwCjlY5KHaThLOjAtHdhvlk+IZFuukQRhuylAhU7SCzltDob7InMYdGT
+         pdLzHgtP1aVNw==
+Received: by mail-ej1-f50.google.com with SMTP id rs12so18106725ejb.13
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 09:10:14 -0700 (PDT)
+X-Gm-Message-State: AOAM530Us80fB6z2goleZwFQzYxHTJeZuYTAUPErXkqU/hvy8R1i+I7M
+        U72WTYhdTEq9NxkEUVAFzP2c2Uraug5gjSwJJQ==
+X-Google-Smtp-Source: ABdhPJyw0mq5i9FMhPavQtPw9K4grelB3s3BIYxdh1aM4yiSA8h2F1aGlGZRwROXkO5K74rclRC9abyhTmunmcKM+IU=
+X-Received: by 2002:a17:907:3e8f:b0:6fe:d023:e147 with SMTP id
+ hs15-20020a1709073e8f00b006fed023e147mr6534613ejc.270.1653322212855; Mon, 23
+ May 2022 09:10:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAADnVQJr8Sc5d+XUAY2UnNbZ2TP5OCAQNm3eyTponbMfcpXbkQ@mail.gmail.com>
-X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+References: <20220517085143.3749-1-josua@solid-run.com> <20220517085431.3895-1-josua@solid-run.com>
+In-Reply-To: <20220517085431.3895-1-josua@solid-run.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 23 May 2022 11:10:00 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+3seAzJzZZw3AACoWb4dQhB6G1Jtm0ADfCJWtiUWB_5Q@mail.gmail.com>
+Message-ID: <CAL_Jsq+3seAzJzZZw3AACoWb4dQhB6G1Jtm0ADfCJWtiUWB_5Q@mail.gmail.com>
+Subject: Re: [PATCH v5 1/3] dt-bindings: net: adin: document phy clock output properties
+To:     Josua Mayer <josua@solid-run.com>
+Cc:     netdev <netdev@vger.kernel.org>, alvaro.karsz@solid-run.com,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -79,78 +67,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, May 20, 2022 at 02:18:20PM -0700, Alexei Starovoitov wrote:
-> On Wed, May 18, 2022 at 6:54 AM Xu Kuohai <xukuohai@huawei.com> wrote:
-> >
-> > Add bpf trampoline support for arm64. Most of the logic is the same as
-> > x86.
-> >
-> > Tested on raspberry pi 4b and qemu with KASLR disabled (avoid long jump),
-> > result:
-> >  #9  /1     bpf_cookie/kprobe:OK
-> >  #9  /2     bpf_cookie/multi_kprobe_link_api:FAIL
-> >  #9  /3     bpf_cookie/multi_kprobe_attach_api:FAIL
-> >  #9  /4     bpf_cookie/uprobe:OK
-> >  #9  /5     bpf_cookie/tracepoint:OK
-> >  #9  /6     bpf_cookie/perf_event:OK
-> >  #9  /7     bpf_cookie/trampoline:OK
-> >  #9  /8     bpf_cookie/lsm:OK
-> >  #9         bpf_cookie:FAIL
-> >  #18 /1     bpf_tcp_ca/dctcp:OK
-> >  #18 /2     bpf_tcp_ca/cubic:OK
-> >  #18 /3     bpf_tcp_ca/invalid_license:OK
-> >  #18 /4     bpf_tcp_ca/dctcp_fallback:OK
-> >  #18 /5     bpf_tcp_ca/rel_setsockopt:OK
-> >  #18        bpf_tcp_ca:OK
-> >  #51 /1     dummy_st_ops/dummy_st_ops_attach:OK
-> >  #51 /2     dummy_st_ops/dummy_init_ret_value:OK
-> >  #51 /3     dummy_st_ops/dummy_init_ptr_arg:OK
-> >  #51 /4     dummy_st_ops/dummy_multiple_args:OK
-> >  #51        dummy_st_ops:OK
-> >  #55        fentry_fexit:OK
-> >  #56        fentry_test:OK
-> >  #57 /1     fexit_bpf2bpf/target_no_callees:OK
-> >  #57 /2     fexit_bpf2bpf/target_yes_callees:OK
-> >  #57 /3     fexit_bpf2bpf/func_replace:OK
-> >  #57 /4     fexit_bpf2bpf/func_replace_verify:OK
-> >  #57 /5     fexit_bpf2bpf/func_sockmap_update:OK
-> >  #57 /6     fexit_bpf2bpf/func_replace_return_code:OK
-> >  #57 /7     fexit_bpf2bpf/func_map_prog_compatibility:OK
-> >  #57 /8     fexit_bpf2bpf/func_replace_multi:OK
-> >  #57 /9     fexit_bpf2bpf/fmod_ret_freplace:OK
-> >  #57        fexit_bpf2bpf:OK
-> >  #58        fexit_sleep:OK
-> >  #59        fexit_stress:OK
-> >  #60        fexit_test:OK
-> >  #67        get_func_args_test:OK
-> >  #68        get_func_ip_test:OK
-> >  #104       modify_return:OK
-> >  #237       xdp_bpf2bpf:OK
-> >
-> > bpf_cookie/multi_kprobe_link_api and bpf_cookie/multi_kprobe_attach_api
-> > failed due to lack of multi_kprobe on arm64.
-> >
-> > Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
-> > Acked-by: Song Liu <songliubraving@fb.com>
-> 
-> Catalin, Will, Mark,
-> 
-> could you please ack this patch that you don't mind us
-> taking this set through bpf-next ?
+On Tue, May 17, 2022 at 3:54 AM Josua Mayer <josua@solid-run.com> wrote:
+>
+> The ADIN1300 supports generating certain clocks on its GP_CLK pin, as
+> well as providing the reference clock on CLK25_REF.
+>
+> Add DT properties to configure both pins.
+>
+> Technically the phy also supports a recovered 125MHz clock for
+> synchronous ethernet. However SyncE should be configured dynamically at
+> runtime, so it is explicitly omitted in this binding.
+>
+> Signed-off-by: Josua Mayer <josua@solid-run.com>
+> ---
+> V4 -> V5: removed recovered clock options
+> V3 -> V4: changed type of adi,phy-output-reference-clock to boolean
+> V1 -> V2: changed clkout property to enum
+> V1 -> V2: added property for CLK25_REF pin
+>
+>  .../devicetree/bindings/net/adi,adin.yaml         | 15 +++++++++++++++
+>  1 file changed, 15 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
+> index 1129f2b58e98..77750df0c2c4 100644
+> --- a/Documentation/devicetree/bindings/net/adi,adin.yaml
+> +++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
+> @@ -36,6 +36,21 @@ properties:
+>      enum: [ 4, 8, 12, 16, 20, 24 ]
+>      default: 8
+>
+> +  adi,phy-output-clock:
+> +    description: Select clock output on GP_CLK pin. Two clocks are available:
 
-This is on my queue of things to review alongside some other ftrace and kprobes
-patches; I'll try to get that out of the way this week.
+Not valid yaml and now failing in linux-next:
 
-From a quick glance I'm not too keen on the change to the ftrace trampoline, as
-to get rid of some existing unsoundness I'd really wanted to move that entirely
-away from using regs (and had a sketch for how to handle different op
-handlers). I'd discussed that with Steven and Masami in another thread:
+make[1]: *** Deleting file
+'Documentation/devicetree/bindings/net/adi,adin.example.dts'
+Traceback (most recent call last):
+  File "/usr/local/bin/dt-extract-example", line 52, in <module>
+    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
+  File "/usr/local/lib/python3.10/dist-packages/ruamel/yaml/main.py",
+line 434, in load
+    return constructor.get_single_data()
+  File "/usr/local/lib/python3.10/dist-packages/ruamel/yaml/constructor.py",
+line 119, in get_single_data
+    node = self.composer.get_single_node()
+  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
+  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in
+_ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in
+_ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 891, in
+_ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
+ruamel.yaml.scanner.ScannerError: mapping values are not allowed in this context
+  in "<unicode string>", line 40, column 77
+make[1]: *** [Documentation/devicetree/bindings/Makefile:26:
+Documentation/devicetree/bindings/net/adi,adin.example.dts] Error 1
+./Documentation/devicetree/bindings/net/adi,adin.yaml:40:77: [error]
+syntax error: mapping values are not allowed here (syntax)
+./Documentation/devicetree/bindings/net/adi,adin.yaml:  mapping values
+are not allowed in this context
+  in "<unicode string>", line 40, column 77
 
-  https://lore.kernel.org/linux-arm-kernel/YnJUTuOIX9YoJq23@FVFF77S0Q05N/
 
-I'll see if it's possible to make this all work together. It's not entirely
-clear to me how the FTRACE_DIRECT its are supposed to play with dynamically
-allocated trampolines, and we might need to take a step back and reconsider.
+You need a '|' for a literal block if you use a colon in the description.
 
-Thanks,
-Mark.
+Rob
