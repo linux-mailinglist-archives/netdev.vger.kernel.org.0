@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B264D531F31
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 01:24:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1FB1531F36
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 01:26:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230149AbiEWXYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 19:24:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56516 "EHLO
+        id S230197AbiEWX0a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 19:26:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229481AbiEWXYL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 19:24:11 -0400
-Received: from mail-ua1-x936.google.com (mail-ua1-x936.google.com [IPv6:2607:f8b0:4864:20::936])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDAFE6C56A;
-        Mon, 23 May 2022 16:24:10 -0700 (PDT)
-Received: by mail-ua1-x936.google.com with SMTP id n24so5721058uap.13;
-        Mon, 23 May 2022 16:24:10 -0700 (PDT)
+        with ESMTP id S230084AbiEWX02 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 19:26:28 -0400
+Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8968166F96;
+        Mon, 23 May 2022 16:26:26 -0700 (PDT)
+Received: by mail-vs1-xe2a.google.com with SMTP id 68so9050890vse.11;
+        Mon, 23 May 2022 16:26:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=yT1hxcWi1Sr+ZWPJBD/mIwsWhjK/m0OllQ7OYXnw3JU=;
-        b=oAsNnTC+djdceYMmFJp2wJ3kwIXusR1avJuMq4TPgjaRHhWTTmJm39ePhJsyuOLDZr
-         Q/Pg8l3aho+grpHygCDUf4nnUxqWHtPGYGyM41N4cRAXeoHoZ2K1NUUIA/+63xRfjDVm
-         iEFUo1a2QH3Y7LrABjjQzItIj0EwJpApVCurFgJiU8DFLbcg3bo0SFm0L3D+b3TbspZL
-         C2f8/yJHvgpjnv6awk0f6CD1ffqKixAcTtO9YaXpA/UWJNlXf/S4jhT8EcGr2m9s9iTa
-         /kgOHIKYoW6c+meFnEP1ounklySVfsRq4fKPm4ijZr4l8ZAv8CQHKog5A0Wb4j6u041i
-         EE2A==
+        bh=CZ7Bvz2UGyVwQOZNoDQxqJB4ctZcA6AKZ3k/mtWMH4g=;
+        b=cKx/6qQgWDg31wde1pTQ6o5boMSF069ng8I6CLRVybr1xA/Fw02UBhJbDhDtjaeIKW
+         rQFAIBZukrQcNcYYWRmJ0u//9UqY3hj2olDKzXqMY2KeUCU/bIKJ8eVpidMKwVo2flqV
+         l5JLbo1VxoLM4dv8AR+PFaRbKULipBCo1CJ9fWstgxRgjANERjqAQJOE9DApHw+kHKxs
+         FBwDeN6P0+vaI6kTcgzRCFkvdifaOXXHrlue+r8cct9Hvu85wzBOLUtj7BanQJRYtR7C
+         mgF07SJwNN6uj6WFLOO2VQekDtRwvVjqtbBsLAdlNeaHH1Rc64gBI9lXg0rYoGLb/feV
+         Qtvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=yT1hxcWi1Sr+ZWPJBD/mIwsWhjK/m0OllQ7OYXnw3JU=;
-        b=2yNds9HepoyhILDwddpjxhhx7xKtUH/+aTX/PeFjbZ0jIDscwcl/5rayzNyQaOvyuY
-         za1SWTbdoL2qwSnWG48YRCqFY2h6zk4P2L4XABRTOkzlCz7nl0o1D6dzxnoheOZtO+TS
-         ctHPgt7jXQJI1LoBp/XKOE1uEcZsy5gSKw0W7MFjIzHaoH2uFPQO6b/bbzermMtI48ZD
-         1/z+GSdrdsanLJ8f1o9HrRQAwF2rYKKvOLNx4bpa+m5s8KkGbxyYXb9/rp7ot7lD1SzX
-         +HrXHugTvdFR67St+w2ayKJMoosagxjZiD7HMYsBXvN7KkoM2UJ1s80R5RB1xydJO+qi
-         1yyw==
-X-Gm-Message-State: AOAM530hGezY1C6tXjR2bLHkSdqgtVWUO7X/VTviHP9ttpCN1k+KSs+q
-        qYl0/kRc+a3H1biSTPhs8BdmVdUdSXccJuAAI8SQjpndkfg=
-X-Google-Smtp-Source: ABdhPJyBzCisZTLabB3yMVKVX/FrORrDMO8o3zoiRNeXbk/5qwb/bwhyamkLxSkmKmX8ngQmnV1tfAzayj4a7LXiEE0=
-X-Received: by 2002:ab0:1343:0:b0:362:9e6c:74f5 with SMTP id
- h3-20020ab01343000000b003629e6c74f5mr7945768uae.15.1653348249855; Mon, 23 May
- 2022 16:24:09 -0700 (PDT)
+        bh=CZ7Bvz2UGyVwQOZNoDQxqJB4ctZcA6AKZ3k/mtWMH4g=;
+        b=Gmsms3LT+Nc0dWmr30A7fy2pYxbdhypC/kHi8qWxWK2bNPHuw7cozZhmiZk/+eHCfi
+         sME7K+WDz5CMjg13L4uq4ttwIVEA4jZjUvHjJOvVHwPb0safc5vdWaiBGMDacQ5vsML+
+         pNE65raWATUd2Vt2uAldaX0+pJ5lMv7tVaxvQY/VsNFdQL5wYRGs+pP6hybmCYx3bflJ
+         McLML09TW89YvaYFWWYxsMFFNPFf4xMhR3m0r3kX074Kqr3wbBbB7wvKdKWuWbdiXhIo
+         9N9PxnCEAcjDmMgRWM+9qGblHMWfo4JRu0NuBcxrvDn9bya/9wF5YLU6h6/gwgDtovGh
+         AtdQ==
+X-Gm-Message-State: AOAM533C7MQ4mX8jK7HQ/YmPtbYjfobeQ45ubhS/d3WMqkhA2vBXa9Mv
+        LY/6FF9QLHPVVWGUoCjx3d4MKVIFcDpt1mbLVCs=
+X-Google-Smtp-Source: ABdhPJxhY2Ye4o10ntHAGeMcm6K0eSKQPCWmJLCBj3BlcJ5QuakLDbLcAFgU4YFXZ24FpKZ5nQdt7iejyO3H166REUk=
+X-Received: by 2002:a05:6102:370a:b0:333:c0e7:77e8 with SMTP id
+ s10-20020a056102370a00b00333c0e777e8mr10000706vst.54.1653348385289; Mon, 23
+ May 2022 16:26:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220518225531.558008-1-sdf@google.com> <20220518225531.558008-6-sdf@google.com>
-In-Reply-To: <20220518225531.558008-6-sdf@google.com>
+References: <20220518225531.558008-1-sdf@google.com> <20220518225531.558008-9-sdf@google.com>
+In-Reply-To: <20220518225531.558008-9-sdf@google.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 23 May 2022 16:23:59 -0700
-Message-ID: <CAEf4BzYxHsB3D-HT7H1zZsSDEjz_cU7FpfgFnVVzbe5qA4=dYg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v7 05/11] bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
+Date:   Mon, 23 May 2022 16:26:14 -0700
+Message-ID: <CAEf4BzZEHfBbski189Qt2Lp4XOOxveRA07yjjPwVbpnQ-ggOew@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 08/11] libbpf: add lsm_cgoup_sock type
 To:     Stanislav Fomichev <sdf@google.com>
 Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -69,49 +69,40 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, May 18, 2022 at 3:55 PM Stanislav Fomichev <sdf@google.com> wrote:
 >
-> We have two options:
-> 1. Treat all BPF_LSM_CGROUP the same, regardless of attach_btf_id
-> 2. Treat BPF_LSM_CGROUP+attach_btf_id as a separate hook point
->
-> I was doing (2) in the original patch, but switching to (1) here:
->
-> * bpf_prog_query returns all attached BPF_LSM_CGROUP programs
-> regardless of attach_btf_id
-> * attach_btf_id is exported via bpf_prog_info
+> lsm_cgroup/ is the prefix for BPF_LSM_CGROUP.
 >
 > Signed-off-by: Stanislav Fomichev <sdf@google.com>
 > ---
->  include/uapi/linux/bpf.h |   5 ++
->  kernel/bpf/cgroup.c      | 103 +++++++++++++++++++++++++++------------
->  kernel/bpf/syscall.c     |   4 +-
->  3 files changed, 81 insertions(+), 31 deletions(-)
+>  tools/lib/bpf/libbpf.c | 2 ++
+>  1 file changed, 2 insertions(+)
 >
-> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> index b9d2d6de63a7..432fc5f49567 100644
-> --- a/include/uapi/linux/bpf.h
-> +++ b/include/uapi/linux/bpf.h
-> @@ -1432,6 +1432,7 @@ union bpf_attr {
->                 __u32           attach_flags;
->                 __aligned_u64   prog_ids;
->                 __u32           prog_cnt;
-> +               __aligned_u64   prog_attach_flags; /* output: per-program attach_flags */
->         } query;
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index ef7f302e542f..854449dcd072 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -9027,6 +9027,7 @@ static const struct bpf_sec_def section_defs[] = {
+>         SEC_DEF("fmod_ret.s+",          TRACING, BPF_MODIFY_RETURN, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_trace),
+>         SEC_DEF("fexit.s+",             TRACING, BPF_TRACE_FEXIT, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_trace),
+>         SEC_DEF("freplace+",            EXT, 0, SEC_ATTACH_BTF, attach_trace),
+> +       SEC_DEF("lsm_cgroup+",          LSM, BPF_LSM_CGROUP, SEC_ATTACH_BTF),
+
+we don't do simplistic prefix match anymore, so this doesn't have to
+go before lsm+ (we do prefix match only for legacy SEC_SLOPPY cases).
+So total nit (but wanted to dispel preconception that we need to avoid
+subprefix matches), I'd put this after lsm+
+
+
+>         SEC_DEF("lsm+",                 LSM, BPF_LSM_MAC, SEC_ATTACH_BTF, attach_lsm),
+>         SEC_DEF("lsm.s+",               LSM, BPF_LSM_MAC, SEC_ATTACH_BTF | SEC_SLEEPABLE, attach_lsm),
+>         SEC_DEF("iter+",                TRACING, BPF_TRACE_ITER, SEC_ATTACH_BTF, attach_iter),
+> @@ -9450,6 +9451,7 @@ void btf_get_kernel_prefix_kind(enum bpf_attach_type attach_type,
+>                 *kind = BTF_KIND_TYPEDEF;
+>                 break;
+>         case BPF_LSM_MAC:
+> +       case BPF_LSM_CGROUP:
+>                 *prefix = BTF_LSM_PREFIX;
+>                 *kind = BTF_KIND_FUNC;
+>                 break;
+> --
+> 2.36.1.124.g0e6072fb45-goog
 >
->         struct { /* anonymous struct used by BPF_RAW_TRACEPOINT_OPEN command */
-> @@ -5911,6 +5912,10 @@ struct bpf_prog_info {
->         __u64 run_cnt;
->         __u64 recursion_misses;
->         __u32 verified_insns;
-> +       /* BTF ID of the function to attach to within BTF object identified
-> +        * by btf_id.
-> +        */
-> +       __u32 attach_btf_func_id;
-
-it's called attach_btf_id for PROG_LOAD command, keep it consistently
-named (and a bit more generic)?
-
->  } __attribute__((aligned(8)));
->
->  struct bpf_map_info {
-
-[...]
