@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 2478F53107D
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C03FB531040
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 15:19:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234189AbiEWKnr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 06:43:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53412 "EHLO
+        id S234211AbiEWKnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 06:43:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234256AbiEWKnZ (ORCPT
+        with ESMTP id S234154AbiEWKnZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 06:43:25 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 621BE3150D
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:21 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id wh22so27739825ejb.7
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:21 -0700 (PDT)
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78F0A101CD
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:23 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id h11so17391829eda.8
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 03:43:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=T12dTiKTwaKzbwS7CxIAt6TR3zoC9o8zO5xudjwnx/g=;
-        b=XVAqnC8jAKHOoTvoaehLaHSNt8+dAyKUY1o1BVux/9NyZzdvh2k+FXkpU5oFzFcrUy
-         JMQr8dgBvBpvJY1x4RR3gncoGKOBdIGI2QPPCNQ9Kj+LxhlqIR0ktQbcTL4X67jieIXu
-         NkzHSA/Ienwzfy4C1xTia+zs3WvP8e5HV5KMN+izyD0e+sVwKBZqGRc/rQxX1ZRp/avk
-         d02/NQ1XA0AOnc68tHsCsrFQqN/knfjXhf2mXv3IxD/rlzkW1uTBjSZ6WtbxIIjKdIwV
-         WAGaFjC+IEtSMICL1mHkECb3Zj2PtOHs60nG1liHuJ1LsepHMEkMsUg+2BMovhvG27xL
-         DauA==
+        bh=1f4qwhCWad2RUVSkCmBNNn90N38xaiuIXetdHY6xBWs=;
+        b=NqCu0zYA6D31IXeEsV3Rey/23Gnc0ApE59WJKR+VUByC7W1fwbuLDRc+PK/uJBCQEQ
+         RO/vhDhZxCIGX+5/JshDqmK5VDvbEYyJk3dP9j+eHtTKyJa3AyBR+5wkHBlxQ/Qg/RA9
+         be3yu2/kvYH6YVvAKDhyttHRXXD3CcBIumlmbK5DFRagHhJSIxH1Ows1RAL44KjWJmCB
+         GFVw5NWNxvozBvSsSiDNcpTlVj6/MtgHUaYSnghM5n1BHgHh9jYUD6e1lxUbLmuG+5R0
+         6AaRNXAw50P2/1kG/OfuFug4Op8V2EGg35l3NEi1fuepPh9nwhAxwZq9fwfd4bbsFvqC
+         mnAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=T12dTiKTwaKzbwS7CxIAt6TR3zoC9o8zO5xudjwnx/g=;
-        b=46pZ2r8agTfdZeYt/9eqBKiFWwwc9dznlXig3sOxMQ3DXQkMfAqs0+EgLepkDOV5oP
-         TRJqcvYFBagTuWNXKlPK+opg80cY3MtUfzBD6b4usQHxTgANN5JjkTclFdAFFWQA3Bo8
-         t9O1xFyHjFqxfielkqQIhAUyVKTnDni1k8w/3enl6d8v/xasKY4iXbejP700DPrzvqXM
-         ghHYs+Sjcryq2fHA+cVO0xL4P7QpcOkFBDjGu00Cm2DiiLjgT7YiM8ob1WoDl6lTiq38
-         YIdo4SGuxSpNvBgNh2L8pI42XP1mCJz26/McjuS0KkcTo4niNETR0WkTX19Cts16IyGE
-         tpVA==
-X-Gm-Message-State: AOAM532XQoY+eM1v8XPAQFj7p6FfFcA1ABQkyzPBe6SD54LWCmkG/XTo
-        7PDEEuXqQwRtD7QYOw3zbtZEHgK8XWk=
-X-Google-Smtp-Source: ABdhPJwz3dTBRCDXz+ybBlW+dhvJDL1K1b2moGZzs3BT6/GODw5MtO7qmw2kNpgefeVlLmht3NBH/A==
-X-Received: by 2002:a17:907:1b25:b0:6da:8206:fc56 with SMTP id mp37-20020a1709071b2500b006da8206fc56mr18424228ejc.81.1653302599341;
-        Mon, 23 May 2022 03:43:19 -0700 (PDT)
+        bh=1f4qwhCWad2RUVSkCmBNNn90N38xaiuIXetdHY6xBWs=;
+        b=vShQeO5Invr//nkOHpprUAXJRXx4+TjjPWnFwlKvoVbGQ9MbcQj5PT9KRoS/YMjl7K
+         xc+vNMIkloeMXKbpjlWLoKH4Hspuyxz6Imi05pHjknvGNp1u+OlPtGXjf7eC51ORVe45
+         NtWdsQB6IeHVChueJnY6K2vHzttP+F8yRxPZuZweEzekq94u2gqZdAUzhf0xhRrz5q5W
+         3cwp/0cC9DHlcKr3gzafqJuC6j7DECCPnwCtcoF1eegwQeFmkPQDeTUVYuD3hQdSxZVD
+         3/24D1o1AVwx/wDb2+1ghUebZSbTh9Fkl+sADrP1nFMYUsdPjmXLkpiH0nqtavaaz60K
+         bRdA==
+X-Gm-Message-State: AOAM530ytirU0P9so53qKDXhB1dSUX5GfLI3MI2rrahacN2eQScaHNBZ
+        t64gO3RGRa7l2B5Iz5PNxO3/8yGX8O4=
+X-Google-Smtp-Source: ABdhPJzVFEyh4oPX/mXm9+acpyP6gOdAQ6uK1JbuzJjXm10ISbixB7pfqYOTat4q/ci+vOUDZzrU4Q==
+X-Received: by 2002:a05:6402:293:b0:42a:aece:5c5c with SMTP id l19-20020a056402029300b0042aaece5c5cmr23136984edv.108.1653302601425;
+        Mon, 23 May 2022 03:43:21 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id j18-20020a1709066dd200b006feb875503fsm2584822ejt.78.2022.05.23.03.43.17
+        by smtp.gmail.com with ESMTPSA id j18-20020a1709066dd200b006feb875503fsm2584822ejt.78.2022.05.23.03.43.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 03:43:18 -0700 (PDT)
+        Mon, 23 May 2022 03:43:20 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -69,9 +69,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Nikolay Aleksandrov <razor@blackwall.org>,
         Frank Wunderlich <frank-w@public-files.de>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
-Subject: [RFC PATCH net-next 09/12] net: dsa: introduce dsa_port_get_master()
-Date:   Mon, 23 May 2022 13:42:53 +0300
-Message-Id: <20220523104256.3556016-10-olteanv@gmail.com>
+Subject: [RFC PATCH net-next 10/12] net: dsa: allow the DSA master to be seen and changed through rtnetlink
+Date:   Mon, 23 May 2022 13:42:54 +0300
+Message-Id: <20220523104256.3556016-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220523104256.3556016-1-olteanv@gmail.com>
 References: <20220523104256.3556016-1-olteanv@gmail.com>
@@ -89,362 +89,573 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-There is a desire to support for DSA masters in a LAG.
+Some DSA switches have multiple CPU ports, which can be used to improve
+CPU termination throughput, but DSA, through dsa_tree_setup_cpu_ports(),
+sets up only the first one, leading to suboptimal use of hardware.
 
-That configuration is intended to work by simply enslaving the master to
-a bonding/team device. But the physical DSA master (the LAG slave) still
-has a dev->dsa_ptr, and that cpu_dp still corresponds to the physical
-CPU port.
+The desire is to not change the default configuration but to permit the
+user to create a dynamic mapping between individual user ports and the
+CPU port that they are served by, configurable through rtnetlink. It is
+also intended to permit load balancing between CPU ports, and in that
+case, the foreseen model is for the DSA master to be a bonding interface
+whose lowers are the physical DSA masters.
 
-However, we would like to be able to retrieve the LAG that's the upper
-of the physical DSA master. In preparation for that, introduce a helper
-called dsa_port_get_master() that replaces all occurrences of the
-dp->cpu_dp->master pattern. The distinction between LAG and non-LAG will
-be made later within the helper itself.
+To that end, we create a struct rtnl_link_ops for DSA user ports with
+the "dsa" kind. We expose the IFLA_DSA_MASTER link attribute that
+contains the ifindex of the newly desired DSA master.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- drivers/net/dsa/bcm_sf2.c                     |  4 +--
- drivers/net/dsa/bcm_sf2_cfp.c                 |  4 +--
- drivers/net/dsa/lan9303-core.c                |  4 +--
- .../net/ethernet/mediatek/mtk_ppe_offload.c   |  2 +-
- include/net/dsa.h                             |  5 ++++
- net/dsa/dsa2.c                                |  8 +++---
- net/dsa/dsa_priv.h                            |  2 +-
- net/dsa/port.c                                | 28 +++++++++----------
- net/dsa/slave.c                               | 11 ++++----
- net/dsa/tag_8021q.c                           |  4 +--
- 10 files changed, 38 insertions(+), 34 deletions(-)
+ include/net/dsa.h            |   8 +++
+ include/uapi/linux/if_link.h |  10 +++
+ net/dsa/Makefile             |  10 ++-
+ net/dsa/dsa.c                |   9 +++
+ net/dsa/dsa2.c               |  14 ++++
+ net/dsa/dsa_priv.h           |  10 +++
+ net/dsa/master.c             |   1 +
+ net/dsa/netlink.c            |  62 ++++++++++++++++
+ net/dsa/port.c               | 133 +++++++++++++++++++++++++++++++++++
+ net/dsa/slave.c              | 117 ++++++++++++++++++++++++++++++
+ 10 files changed, 373 insertions(+), 1 deletion(-)
+ create mode 100644 net/dsa/netlink.c
 
-diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-index 87e81c636339..4551528d822c 100644
---- a/drivers/net/dsa/bcm_sf2.c
-+++ b/drivers/net/dsa/bcm_sf2.c
-@@ -982,7 +982,7 @@ static int bcm_sf2_sw_resume(struct dsa_switch *ds)
- static void bcm_sf2_sw_get_wol(struct dsa_switch *ds, int port,
- 			       struct ethtool_wolinfo *wol)
- {
--	struct net_device *p = dsa_to_port(ds, port)->cpu_dp->master;
-+	struct net_device *p = dsa_port_to_master(dsa_to_port(ds, port));
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	struct ethtool_wolinfo pwol = { };
- 
-@@ -1006,7 +1006,7 @@ static void bcm_sf2_sw_get_wol(struct dsa_switch *ds, int port,
- static int bcm_sf2_sw_set_wol(struct dsa_switch *ds, int port,
- 			      struct ethtool_wolinfo *wol)
- {
--	struct net_device *p = dsa_to_port(ds, port)->cpu_dp->master;
-+	struct net_device *p = dsa_port_to_master(dsa_to_port(ds, port));
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	s8 cpu_port = dsa_to_port(ds, port)->cpu_dp->index;
- 	struct ethtool_wolinfo pwol =  { };
-diff --git a/drivers/net/dsa/bcm_sf2_cfp.c b/drivers/net/dsa/bcm_sf2_cfp.c
-index edbe5e7f1cb6..90636ae3db98 100644
---- a/drivers/net/dsa/bcm_sf2_cfp.c
-+++ b/drivers/net/dsa/bcm_sf2_cfp.c
-@@ -1102,7 +1102,7 @@ static int bcm_sf2_cfp_rule_get_all(struct bcm_sf2_priv *priv,
- int bcm_sf2_get_rxnfc(struct dsa_switch *ds, int port,
- 		      struct ethtool_rxnfc *nfc, u32 *rule_locs)
- {
--	struct net_device *p = dsa_to_port(ds, port)->cpu_dp->master;
-+	struct net_device *p = dsa_port_to_master(dsa_to_port(ds, port));
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	int ret = 0;
- 
-@@ -1145,7 +1145,7 @@ int bcm_sf2_get_rxnfc(struct dsa_switch *ds, int port,
- int bcm_sf2_set_rxnfc(struct dsa_switch *ds, int port,
- 		      struct ethtool_rxnfc *nfc)
- {
--	struct net_device *p = dsa_to_port(ds, port)->cpu_dp->master;
-+	struct net_device *p = dsa_port_to_master(dsa_to_port(ds, port));
- 	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
- 	int ret = 0;
- 
-diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
-index e03ff1f267bb..181e082b0919 100644
---- a/drivers/net/dsa/lan9303-core.c
-+++ b/drivers/net/dsa/lan9303-core.c
-@@ -1090,7 +1090,7 @@ static int lan9303_port_enable(struct dsa_switch *ds, int port,
- 	if (!dsa_port_is_user(dp))
- 		return 0;
- 
--	vlan_vid_add(dp->cpu_dp->master, htons(ETH_P_8021Q), port);
-+	vlan_vid_add(dsa_port_to_master(dp), htons(ETH_P_8021Q), port);
- 
- 	return lan9303_enable_processing_port(chip, port);
- }
-@@ -1103,7 +1103,7 @@ static void lan9303_port_disable(struct dsa_switch *ds, int port)
- 	if (!dsa_port_is_user(dp))
- 		return;
- 
--	vlan_vid_del(dp->cpu_dp->master, htons(ETH_P_8021Q), port);
-+	vlan_vid_del(dsa_port_to_master(dp), htons(ETH_P_8021Q), port);
- 
- 	lan9303_disable_processing_port(chip, port);
- 	lan9303_phy_write(ds, chip->phy_addr_base + port, MII_BMCR, BMCR_PDOWN);
-diff --git a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-index c9353071f96a..632af8c97043 100644
---- a/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-+++ b/drivers/net/ethernet/mediatek/mtk_ppe_offload.c
-@@ -174,7 +174,7 @@ mtk_flow_get_dsa_port(struct net_device **dev)
- 	if (dp->cpu_dp->tag_ops->proto != DSA_TAG_PROTO_MTK)
- 		return -ENODEV;
- 
--	*dev = dp->cpu_dp->master;
-+	*dev = dsa_port_to_master(dp);
- 
- 	return dp->index;
- #else
 diff --git a/include/net/dsa.h b/include/net/dsa.h
-index ad345fa17297..7f6ca944c092 100644
+index 7f6ca944c092..0958ad3289c9 100644
 --- a/include/net/dsa.h
 +++ b/include/net/dsa.h
-@@ -714,6 +714,11 @@ static inline bool dsa_port_offloads_lag(struct dsa_port *dp,
- 	return dsa_port_lag_dev_get(dp) == lag->dev;
- }
+@@ -555,6 +555,10 @@ static inline bool dsa_is_user_port(struct dsa_switch *ds, int p)
+ 	list_for_each_entry((_dp), &(_dst)->ports, list) \
+ 		if (dsa_port_is_user((_dp)))
  
-+static inline struct net_device *dsa_port_to_master(const struct dsa_port *dp)
-+{
-+	return dp->cpu_dp->master;
-+}
++#define dsa_tree_for_each_user_port_continue_reverse(_dp, _dst) \
++	list_for_each_entry_continue_reverse((_dp), &(_dst)->ports, list) \
++		if (dsa_port_is_user((_dp)))
 +
- static inline
- struct net_device *dsa_port_to_bridge_port(const struct dsa_port *dp)
+ #define dsa_tree_for_each_cpu_port(_dp, _dst) \
+ 	list_for_each_entry((_dp), &(_dst)->ports, list) \
+ 		if (dsa_port_is_cpu((_dp)))
+@@ -826,6 +830,10 @@ struct dsa_switch_ops {
+ 	int	(*connect_tag_protocol)(struct dsa_switch *ds,
+ 					enum dsa_tag_protocol proto);
+ 
++	int	(*port_change_master)(struct dsa_switch *ds, int port,
++				      struct net_device *master,
++				      struct netlink_ext_ack *extack);
++
+ 	/* Optional switch-wide initialization and destruction methods */
+ 	int	(*setup)(struct dsa_switch *ds);
+ 	void	(*teardown)(struct dsa_switch *ds);
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 5f58dcfe2787..f0a7797924ea 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -1373,4 +1373,14 @@ enum {
+ 
+ #define IFLA_MCTP_MAX (__IFLA_MCTP_MAX - 1)
+ 
++/* DSA section */
++
++enum {
++	IFLA_DSA_UNSPEC,
++	IFLA_DSA_MASTER,
++	__IFLA_DSA_MAX,
++};
++
++#define IFLA_DSA_MAX	(__IFLA_DSA_MAX - 1)
++
+ #endif /* _UAPI_LINUX_IF_LINK_H */
+diff --git a/net/dsa/Makefile b/net/dsa/Makefile
+index 9f75820e7c98..d0ed170bb7aa 100644
+--- a/net/dsa/Makefile
++++ b/net/dsa/Makefile
+@@ -1,7 +1,15 @@
+ # SPDX-License-Identifier: GPL-2.0
+ # the core
+ obj-$(CONFIG_NET_DSA) += dsa_core.o
+-dsa_core-y += dsa.o dsa2.o master.o port.o slave.o switch.o tag_8021q.o
++dsa_core-y += \
++	dsa.o \
++	dsa2.o \
++	master.o \
++	netlink.o \
++	port.o \
++	slave.o \
++	switch.o \
++	tag_8021q.o
+ 
+ # tagging formats
+ obj-$(CONFIG_NET_DSA_TAG_AR9331) += tag_ar9331.o
+diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
+index be7b320cda76..64b14f655b23 100644
+--- a/net/dsa/dsa.c
++++ b/net/dsa/dsa.c
+@@ -536,8 +536,16 @@ static int __init dsa_init_module(void)
+ 	dsa_tag_driver_register(&DSA_TAG_DRIVER_NAME(none_ops),
+ 				THIS_MODULE);
+ 
++	rc = rtnl_link_register(&dsa_link_ops);
++	if (rc)
++		goto netlink_register_fail;
++
+ 	return 0;
+ 
++netlink_register_fail:
++	dsa_tag_driver_unregister(&DSA_TAG_DRIVER_NAME(none_ops));
++	dsa_slave_unregister_notifier();
++	dev_remove_pack(&dsa_pack_type);
+ register_notifier_fail:
+ 	destroy_workqueue(dsa_owq);
+ 
+@@ -547,6 +555,7 @@ module_init(dsa_init_module);
+ 
+ static void __exit dsa_cleanup_module(void)
  {
++	rtnl_link_unregister(&dsa_link_ops);
+ 	dsa_tag_driver_unregister(&DSA_TAG_DRIVER_NAME(none_ops));
+ 
+ 	dsa_slave_unregister_notifier();
 diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 74167bf0fbe5..8ff5467ac3e2 100644
+index 8ff5467ac3e2..32d5a5413bb9 100644
 --- a/net/dsa/dsa2.c
 +++ b/net/dsa/dsa2.c
-@@ -1246,11 +1246,11 @@ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
- 	 * attempts to change the tagging protocol. If we ever lift the IFF_UP
- 	 * restriction, there needs to be another mutex which serializes this.
- 	 */
--	list_for_each_entry(dp, &dst->ports, list) {
--		if (dsa_port_is_cpu(dp) && (dp->master->flags & IFF_UP))
-+	dsa_tree_for_each_user_port(dp, dst) {
-+		if (dsa_port_to_master(dp)->flags & IFF_UP)
- 			goto out_unlock;
+@@ -386,6 +386,20 @@ static struct dsa_port *dsa_tree_find_first_cpu(struct dsa_switch_tree *dst)
+ 	return NULL;
+ }
  
--		if (dsa_port_is_user(dp) && (dp->slave->flags & IFF_UP))
-+		if (dp->slave->flags & IFF_UP)
- 			goto out_unlock;
- 	}
- 
-@@ -1780,7 +1780,7 @@ void dsa_switch_shutdown(struct dsa_switch *ds)
- 	rtnl_lock();
- 
- 	dsa_switch_for_each_user_port(dp, ds) {
--		master = dp->cpu_dp->master;
-+		master = dsa_port_to_master(dp);
- 		slave_dev = dp->slave;
- 
- 		netdev_upper_dev_unlink(master, slave_dev);
++struct net_device *dsa_tree_find_first_master(struct dsa_switch_tree *dst)
++{
++	struct device_node *ethernet;
++	struct net_device *master;
++	struct dsa_port *cpu_dp;
++
++	cpu_dp = dsa_tree_find_first_cpu(dst);
++	ethernet = of_parse_phandle(cpu_dp->dn, "ethernet", 0);
++	master = of_find_net_device_by_node(ethernet);
++	of_node_put(ethernet);
++
++	return master;
++}
++
+ /* Assign the default CPU port (the first one in the tree) to all ports of the
+  * fabric which don't already have one as part of their own switch.
+  */
 diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index cc1cc866dc42..f3562cef32ad 100644
+index f3562cef32ad..1ce0e48d5a92 100644
 --- a/net/dsa/dsa_priv.h
 +++ b/net/dsa/dsa_priv.h
-@@ -322,7 +322,7 @@ dsa_slave_to_master(const struct net_device *dev)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 
--	return dp->cpu_dp->master;
-+	return dsa_port_to_master(dp);
+@@ -200,6 +200,9 @@ static inline struct net_device *dsa_master_find_slave(struct net_device *dev,
+ 	return NULL;
  }
  
- /* If under a bridge with vlan_filtering=0, make sure to send pvid-tagged
++/* netlink.c */
++extern struct rtnl_link_ops dsa_link_ops __read_mostly;
++
+ /* port.c */
+ void dsa_port_set_tag_protocol(struct dsa_port *cpu_dp,
+ 			       const struct dsa_device_ops *tag_ops);
+@@ -292,6 +295,8 @@ void dsa_port_hsr_leave(struct dsa_port *dp, struct net_device *hsr);
+ int dsa_port_tag_8021q_vlan_add(struct dsa_port *dp, u16 vid, bool broadcast);
+ void dsa_port_tag_8021q_vlan_del(struct dsa_port *dp, u16 vid, bool broadcast);
+ void dsa_port_set_host_flood(struct dsa_port *dp, bool uc, bool mc);
++int dsa_port_change_master(struct dsa_port *dp, struct net_device *master,
++			   struct netlink_ext_ack *extack);
+ 
+ /* slave.c */
+ extern const struct dsa_device_ops notag_netdev_ops;
+@@ -305,8 +310,12 @@ int dsa_slave_suspend(struct net_device *slave_dev);
+ int dsa_slave_resume(struct net_device *slave_dev);
+ int dsa_slave_register_notifier(void);
+ void dsa_slave_unregister_notifier(void);
++void dsa_slave_sync_ha(struct net_device *dev);
++void dsa_slave_unsync_ha(struct net_device *dev);
+ void dsa_slave_setup_tagger(struct net_device *slave);
+ int dsa_slave_change_mtu(struct net_device *dev, int new_mtu);
++int dsa_slave_change_master(struct net_device *dev, struct net_device *master,
++			    struct netlink_ext_ack *extack);
+ int dsa_slave_manage_vlan_filtering(struct net_device *dev,
+ 				    bool vlan_filtering);
+ 
+@@ -542,6 +551,7 @@ void dsa_lag_map(struct dsa_switch_tree *dst, struct dsa_lag *lag);
+ void dsa_lag_unmap(struct dsa_switch_tree *dst, struct dsa_lag *lag);
+ struct dsa_lag *dsa_tree_lag_find(struct dsa_switch_tree *dst,
+ 				  const struct net_device *lag_dev);
++struct net_device *dsa_tree_find_first_master(struct dsa_switch_tree *dst);
+ int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
+ int dsa_broadcast(unsigned long e, void *v);
+ int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+diff --git a/net/dsa/master.c b/net/dsa/master.c
+index 32c0a00a8b92..a7420bad0a0a 100644
+--- a/net/dsa/master.c
++++ b/net/dsa/master.c
+@@ -6,6 +6,7 @@
+  *	Vivien Didelot <vivien.didelot@savoirfairelinux.com>
+  */
+ 
++#include <linux/of_net.h>
+ #include "dsa_priv.h"
+ 
+ static int dsa_master_get_regs_len(struct net_device *dev)
+diff --git a/net/dsa/netlink.c b/net/dsa/netlink.c
+new file mode 100644
+index 000000000000..0f43bbb94769
+--- /dev/null
++++ b/net/dsa/netlink.c
+@@ -0,0 +1,62 @@
++// SPDX-License-Identifier: GPL-2.0
++/* Copyright 2022 NXP
++ */
++#include <linux/netdevice.h>
++#include <net/rtnetlink.h>
++
++#include "dsa_priv.h"
++
++static const struct nla_policy dsa_policy[IFLA_DSA_MAX + 1] = {
++	[IFLA_DSA_MASTER]	= { .type = NLA_U32 },
++};
++
++static int dsa_changelink(struct net_device *dev, struct nlattr *tb[],
++			  struct nlattr *data[],
++			  struct netlink_ext_ack *extack)
++{
++	int err;
++
++	if (!data)
++		return 0;
++
++	if (data[IFLA_DSA_MASTER]) {
++		u32 ifindex = nla_get_u32(data[IFLA_DSA_MASTER]);
++		struct net_device *master;
++
++		master = __dev_get_by_index(dev_net(dev), ifindex);
++		if (!master)
++			return -EINVAL;
++
++		err = dsa_slave_change_master(dev, master, extack);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
++static size_t dsa_get_size(const struct net_device *dev)
++{
++	return nla_total_size(sizeof(u32)) +	/* IFLA_DSA_MASTER  */
++	       0;
++}
++
++static int dsa_fill_info(struct sk_buff *skb, const struct net_device *dev)
++{
++	struct net_device *master = dsa_slave_to_master(dev);
++
++	if (nla_put_u32(skb, IFLA_DSA_MASTER, master->ifindex))
++		return -EMSGSIZE;
++
++	return 0;
++}
++
++struct rtnl_link_ops dsa_link_ops __read_mostly = {
++	.kind			= "dsa",
++	.priv_size		= sizeof(struct dsa_port),
++	.maxtype		= IFLA_DSA_MAX,
++	.policy			= dsa_policy,
++	.changelink		= dsa_changelink,
++	.get_size		= dsa_get_size,
++	.fill_info		= dsa_fill_info,
++};
 diff --git a/net/dsa/port.c b/net/dsa/port.c
-index 85cac22cb056..8557217ed5de 100644
+index 8557217ed5de..ced7f8d8ec62 100644
 --- a/net/dsa/port.c
 +++ b/net/dsa/port.c
-@@ -1022,7 +1022,7 @@ int dsa_port_standalone_host_fdb_add(struct dsa_port *dp,
- int dsa_port_bridge_host_fdb_add(struct dsa_port *dp,
- 				 const unsigned char *addr, u16 vid)
- {
--	struct dsa_port *cpu_dp = dp->cpu_dp;
-+	struct net_device *master = dsa_port_to_master(dp);
- 	struct dsa_db db = {
- 		.type = DSA_DB_BRIDGE,
- 		.bridge = *dp->bridge,
-@@ -1033,8 +1033,8 @@ int dsa_port_bridge_host_fdb_add(struct dsa_port *dp,
- 	 * requires rtnl_lock(), since we can't guarantee that is held here,
- 	 * and we can't take it either.
- 	 */
--	if (cpu_dp->master->priv_flags & IFF_UNICAST_FLT) {
--		err = dev_uc_add(cpu_dp->master, addr);
-+	if (master->priv_flags & IFF_UNICAST_FLT) {
-+		err = dev_uc_add(master, addr);
- 		if (err)
- 			return err;
- 	}
-@@ -1073,15 +1073,15 @@ int dsa_port_standalone_host_fdb_del(struct dsa_port *dp,
- int dsa_port_bridge_host_fdb_del(struct dsa_port *dp,
- 				 const unsigned char *addr, u16 vid)
- {
--	struct dsa_port *cpu_dp = dp->cpu_dp;
-+	struct net_device *master = dsa_port_to_master(dp);
- 	struct dsa_db db = {
- 		.type = DSA_DB_BRIDGE,
- 		.bridge = *dp->bridge,
- 	};
- 	int err;
+@@ -7,6 +7,7 @@
+  */
  
--	if (cpu_dp->master->priv_flags & IFF_UNICAST_FLT) {
--		err = dev_uc_del(cpu_dp->master, addr);
-+	if (master->priv_flags & IFF_UNICAST_FLT) {
-+		err = dev_uc_del(master, addr);
- 		if (err)
- 			return err;
- 	}
-@@ -1204,14 +1204,14 @@ int dsa_port_standalone_host_mdb_add(const struct dsa_port *dp,
- int dsa_port_bridge_host_mdb_add(const struct dsa_port *dp,
- 				 const struct switchdev_obj_port_mdb *mdb)
- {
--	struct dsa_port *cpu_dp = dp->cpu_dp;
-+	struct net_device *master = dsa_port_to_master(dp);
- 	struct dsa_db db = {
- 		.type = DSA_DB_BRIDGE,
- 		.bridge = *dp->bridge,
- 	};
- 	int err;
- 
--	err = dev_mc_add(cpu_dp->master, mdb->addr);
-+	err = dev_mc_add(master, mdb->addr);
- 	if (err)
- 		return err;
- 
-@@ -1248,14 +1248,14 @@ int dsa_port_standalone_host_mdb_del(const struct dsa_port *dp,
- int dsa_port_bridge_host_mdb_del(const struct dsa_port *dp,
- 				 const struct switchdev_obj_port_mdb *mdb)
- {
--	struct dsa_port *cpu_dp = dp->cpu_dp;
-+	struct net_device *master = dsa_port_to_master(dp);
- 	struct dsa_db db = {
- 		.type = DSA_DB_BRIDGE,
- 		.bridge = *dp->bridge,
- 	};
- 	int err;
- 
--	err = dev_mc_del(cpu_dp->master, mdb->addr);
-+	err = dev_mc_del(master, mdb->addr);
- 	if (err)
- 		return err;
- 
-@@ -1290,19 +1290,19 @@ int dsa_port_host_vlan_add(struct dsa_port *dp,
- 			   const struct switchdev_obj_port_vlan *vlan,
- 			   struct netlink_ext_ack *extack)
- {
-+	struct net_device *master = dsa_port_to_master(dp);
- 	struct dsa_notifier_vlan_info info = {
- 		.dp = dp,
- 		.vlan = vlan,
- 		.extack = extack,
- 	};
--	struct dsa_port *cpu_dp = dp->cpu_dp;
- 	int err;
- 
- 	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_VLAN_ADD, &info);
- 	if (err && err != -EOPNOTSUPP)
- 		return err;
- 
--	vlan_vid_add(cpu_dp->master, htons(ETH_P_8021Q), vlan->vid);
-+	vlan_vid_add(master, htons(ETH_P_8021Q), vlan->vid);
- 
- 	return err;
+ #include <linux/if_bridge.h>
++#include <linux/netdevice.h>
+ #include <linux/notifier.h>
+ #include <linux/of_mdio.h>
+ #include <linux/of_net.h>
+@@ -1370,6 +1371,138 @@ int dsa_port_mrp_del_ring_role(const struct dsa_port *dp,
+ 	return ds->ops->port_mrp_del_ring_role(ds, dp->index, mrp);
  }
-@@ -1310,18 +1310,18 @@ int dsa_port_host_vlan_add(struct dsa_port *dp,
- int dsa_port_host_vlan_del(struct dsa_port *dp,
- 			   const struct switchdev_obj_port_vlan *vlan)
+ 
++static int dsa_port_assign_master(struct dsa_port *dp,
++				  struct net_device *master,
++				  struct netlink_ext_ack *extack,
++				  bool fail_on_err)
++{
++	struct dsa_switch *ds = dp->ds;
++	int port = dp->index, err;
++
++	err = ds->ops->port_change_master(ds, port, master, extack);
++	if (err && !fail_on_err)
++		dev_err(ds->dev, "port %d failed to assign master %s: %pe\n",
++			port, master->name, ERR_PTR(err));
++
++	if (err && fail_on_err)
++		return err;
++
++	dp->cpu_dp = master->dsa_ptr;
++
++	return 0;
++}
++
++/* Change the dp->cpu_dp affinity for a user port. Note that both cross-chip
++ * notifiers and drivers have implicit assumptions about user-to-CPU-port
++ * mappings, so we unfortunately cannot delay the deletion of the objects
++ * (switchdev, standalone addresses, standalone VLANs) on the old CPU port
++ * until the new CPU port has been set up. So we need to completely tear down
++ * the old CPU port before changing it, and restore it on errors during the
++ * bringup of the new one.
++ */
++int dsa_port_change_master(struct dsa_port *dp, struct net_device *master,
++			   struct netlink_ext_ack *extack)
++{
++	struct net_device *bridge_dev = dsa_port_bridge_dev_get(dp);
++	struct net_device *old_master = dsa_port_to_master(dp);
++	struct net_device *dev = dp->slave;
++	struct dsa_switch *ds = dp->ds;
++	int port = dp->index;
++	bool vlan_filtering;
++	int err, tmp;
++
++	/* Bridges may hold host FDB, MDB and VLAN objects. These need to be
++	 * migrated, so dynamically unoffload and later reoffload the bridge
++	 * port.
++	 */
++	if (bridge_dev) {
++		dsa_port_pre_bridge_leave(dp, bridge_dev);
++		dsa_port_bridge_leave(dp, bridge_dev);
++	}
++
++	/* The port might still be VLAN filtering even if it's no longer
++	 * under a bridge, either due to ds->vlan_filtering_is_global or
++	 * ds->needs_standalone_vlan_filtering. In turn this means VLANs
++	 * on the CPU port.
++	 */
++	vlan_filtering = dsa_port_is_vlan_filtering(dp);
++	if (vlan_filtering) {
++		err = dsa_slave_manage_vlan_filtering(dev, false);
++		if (err) {
++			dev_err(ds->dev,
++				"port %d failed to remove standalone VLANs: %pe\n",
++				port, ERR_PTR(err));
++			goto rewind_old_bridge;
++		}
++	}
++
++	/* Standalone addresses, and addresses of upper interfaces like
++	 * VLAN, LAG, HSR need to be migrated.
++	 */
++	dsa_slave_unsync_ha(dev);
++
++	err = dsa_port_assign_master(dp, master, extack, true);
++	if (err)
++		goto rewind_old_addrs;
++
++	dsa_slave_sync_ha(dev);
++
++	if (vlan_filtering) {
++		err = dsa_slave_manage_vlan_filtering(dev, true);
++		if (err) {
++			dev_err(ds->dev,
++				"port %d failed to restore standalone VLANs: %pe\n",
++				port, ERR_PTR(err));
++			goto rewind_new_addrs;
++		}
++	}
++
++	if (bridge_dev) {
++		err = dsa_port_bridge_join(dp, bridge_dev, extack);
++		if (err && err == -EOPNOTSUPP) {
++			dev_err(ds->dev,
++				"port %d failed to reoffload bridge %s: %pe\n",
++				port, bridge_dev->name, ERR_PTR(err));
++			goto rewind_new_vlan;
++		}
++	}
++
++	return 0;
++
++rewind_new_vlan:
++	if (vlan_filtering)
++		dsa_slave_manage_vlan_filtering(dev, false);
++
++rewind_new_addrs:
++	dsa_slave_unsync_ha(dev);
++
++	dsa_port_assign_master(dp, old_master, NULL, false);
++
++/* Restore the objects on the old CPU port */
++rewind_old_addrs:
++	dsa_slave_sync_ha(dev);
++
++	if (vlan_filtering) {
++		tmp = dsa_slave_manage_vlan_filtering(dev, true);
++		if (tmp) {
++			dev_err(ds->dev, "port %d failed to restore standalone VLANs: %pe\n",
++				dp->index, ERR_PTR(tmp));
++		}
++	}
++
++rewind_old_bridge:
++	if (bridge_dev) {
++		tmp = dsa_port_bridge_join(dp, bridge_dev, extack);
++		if (tmp) {
++			dev_err(ds->dev,
++				"port %d failed to rejoin bridge %s: %pe\n",
++				dp->index, bridge_dev->name, ERR_PTR(tmp));
++		}
++	}
++
++	return err;
++}
++
+ void dsa_port_set_tag_protocol(struct dsa_port *cpu_dp,
+ 			       const struct dsa_device_ops *tag_ops)
  {
-+	struct net_device *master = dsa_port_to_master(dp);
- 	struct dsa_notifier_vlan_info info = {
- 		.dp = dp,
- 		.vlan = vlan,
- 	};
--	struct dsa_port *cpu_dp = dp->cpu_dp;
- 	int err;
- 
- 	err = dsa_port_notify(dp, DSA_NOTIFIER_HOST_VLAN_DEL, &info);
- 	if (err && err != -EOPNOTSUPP)
- 		return err;
- 
--	vlan_vid_del(cpu_dp->master, htons(ETH_P_8021Q), vlan->vid);
-+	vlan_vid_del(master, htons(ETH_P_8021Q), vlan->vid);
- 
- 	return err;
- }
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index c0be747c66ac..0d0deca99eba 100644
+index 0d0deca99eba..95bfce49d57d 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -1481,8 +1481,7 @@ static int dsa_slave_setup_tc_block(struct net_device *dev,
- static int dsa_slave_setup_ft_block(struct dsa_switch *ds, int port,
- 				    void *type_data)
- {
--	struct dsa_port *cpu_dp = dsa_to_port(ds, port)->cpu_dp;
--	struct net_device *master = cpu_dp->master;
-+	struct net_device *master = dsa_port_to_master(dsa_to_port(ds, port));
- 
- 	if (!master->netdev_ops->ndo_setup_tc)
- 		return -EOPNOTSUPP;
-@@ -2123,13 +2122,14 @@ static int dsa_slave_fill_forward_path(struct net_device_path_ctx *ctx,
- 				       struct net_device_path *path)
- {
- 	struct dsa_port *dp = dsa_slave_to_port(ctx->dev);
-+	struct net_device *master = dsa_port_to_master(dp);
- 	struct dsa_port *cpu_dp = dp->cpu_dp;
- 
- 	path->dev = ctx->dev;
- 	path->type = DEV_PATH_DSA;
- 	path->dsa.proto = cpu_dp->tag_ops->proto;
- 	path->dsa.port = dp->index;
--	ctx->dev = cpu_dp->master;
-+	ctx->dev = master;
- 
- 	return 0;
+@@ -164,6 +164,48 @@ static int dsa_slave_unsync_mc(struct net_device *dev,
+ 	return dsa_slave_schedule_standalone_work(dev, DSA_MC_DEL, addr, 0);
  }
-@@ -2247,9 +2247,9 @@ static int dsa_slave_phy_setup(struct net_device *slave_dev)
- void dsa_slave_setup_tagger(struct net_device *slave)
+ 
++void dsa_slave_sync_ha(struct net_device *dev)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++	struct netdev_hw_addr *ha;
++
++	netif_addr_lock_bh(dev);
++
++	netdev_for_each_synced_mc_addr(ha, dev)
++		dsa_slave_sync_mc(dev, ha->addr);
++
++	netdev_for_each_synced_uc_addr(ha, dev)
++		dsa_slave_sync_uc(dev, ha->addr);
++
++	netif_addr_unlock_bh(dev);
++
++	if (dsa_switch_supports_uc_filtering(ds) ||
++	    dsa_switch_supports_mc_filtering(ds))
++		dsa_flush_workqueue();
++}
++
++void dsa_slave_unsync_ha(struct net_device *dev)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++	struct netdev_hw_addr *ha;
++
++	netif_addr_lock_bh(dev);
++
++	netdev_for_each_synced_uc_addr(ha, dev)
++		dsa_slave_unsync_uc(dev, ha->addr);
++
++	netdev_for_each_synced_mc_addr(ha, dev)
++		dsa_slave_unsync_mc(dev, ha->addr);
++
++	netif_addr_unlock_bh(dev);
++
++	if (dsa_switch_supports_uc_filtering(ds) ||
++	    dsa_switch_supports_mc_filtering(ds))
++		dsa_flush_workqueue();
++}
++
+ /* slave mii_bus handling ***************************************************/
+ static int dsa_slave_phy_read(struct mii_bus *bus, int addr, int reg)
  {
- 	struct dsa_port *dp = dsa_slave_to_port(slave);
-+	struct net_device *master = dsa_port_to_master(dp);
- 	struct dsa_slave_priv *p = netdev_priv(slave);
- 	const struct dsa_port *cpu_dp = dp->cpu_dp;
--	struct net_device *master = cpu_dp->master;
- 	const struct dsa_switch *ds = dp->ds;
+@@ -2322,6 +2364,7 @@ int dsa_slave_create(struct dsa_port *port)
+ 	if (slave_dev == NULL)
+ 		return -ENOMEM;
  
- 	slave->needed_headroom = cpu_dp->tag_ops->needed_headroom;
-@@ -2306,8 +2306,7 @@ int dsa_slave_resume(struct net_device *slave_dev)
++	slave_dev->rtnl_link_ops = &dsa_link_ops;
+ 	slave_dev->ethtool_ops = &dsa_slave_ethtool_ops;
+ #if IS_ENABLED(CONFIG_DCB)
+ 	slave_dev->dcbnl_ops = &dsa_slave_dcbnl_ops;
+@@ -2438,6 +2481,80 @@ void dsa_slave_destroy(struct net_device *slave_dev)
+ 	free_netdev(slave_dev);
+ }
  
- int dsa_slave_create(struct dsa_port *port)
++int dsa_slave_change_master(struct net_device *dev, struct net_device *master,
++			    struct netlink_ext_ack *extack)
++{
++	struct net_device *old_master = dsa_slave_to_master(dev);
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_switch *ds = dp->ds;
++	struct net_device *upper;
++	struct list_head *iter;
++	int err;
++
++	if (master == old_master)
++		return 0;
++
++	if (!ds->ops->port_change_master)
++		return -EOPNOTSUPP;
++
++	if (!netdev_uses_dsa(master)) {
++		NL_SET_ERR_MSG_MOD(extack,
++				   "Interface not eligible as DSA master");
++		return -EOPNOTSUPP;
++	}
++
++	netdev_for_each_upper_dev_rcu(master, upper, iter) {
++		if (dsa_slave_dev_check(upper))
++			continue;
++		if (netif_is_bridge_master(upper))
++			continue;
++		NL_SET_ERR_MSG_MOD(extack, "Cannot join master with unknown uppers");
++		return -EOPNOTSUPP;
++	}
++
++	/* Since we allow live-changing the DSA master, plus we auto-open the
++	 * DSA master when the user port opens => we need to ensure that the
++	 * new DSA master is open too.
++	 */
++	if (dev->flags & IFF_UP) {
++		err = dev_open(master, extack);
++		if (err)
++			return err;
++	}
++
++	netdev_upper_dev_unlink(old_master, dev);
++
++	err = netdev_upper_dev_link(master, dev, extack);
++	if (err)
++		goto out_revert_old_master_unlink;
++
++	err = dsa_port_change_master(dp, master, extack);
++	if (err)
++		goto out_revert_master_link;
++
++	/* Update the MTU of the new CPU port through cross-chip notifiers */
++	err = dsa_slave_change_mtu(dev, dev->mtu);
++	if (err && err != -EOPNOTSUPP) {
++		netdev_warn(dev,
++			    "nonfatal error updating MTU with new master: %pe\n",
++			    ERR_PTR(err));
++	}
++
++	/* If the port doesn't have its own MAC address and relies on the DSA
++	 * master's one, inherit it again from the new DSA master.
++	 */
++	if (is_zero_ether_addr(dp->mac))
++		eth_hw_addr_inherit(dev, master);
++
++	return 0;
++
++out_revert_master_link:
++	netdev_upper_dev_unlink(master, dev);
++out_revert_old_master_unlink:
++	netdev_upper_dev_link(old_master, dev, NULL);
++	return err;
++}
++
+ bool dsa_slave_dev_check(const struct net_device *dev)
  {
--	const struct dsa_port *cpu_dp = port->cpu_dp;
--	struct net_device *master = cpu_dp->master;
-+	struct net_device *master = dsa_port_to_master(port);
- 	struct dsa_switch *ds = port->ds;
- 	const char *name = port->name;
- 	struct net_device *slave_dev;
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index 01a427800797..b91c2894b6fd 100644
---- a/net/dsa/tag_8021q.c
-+++ b/net/dsa/tag_8021q.c
-@@ -332,7 +332,7 @@ static int dsa_tag_8021q_port_setup(struct dsa_switch *ds, int port)
- 	if (!dsa_port_is_user(dp))
- 		return 0;
- 
--	master = dp->cpu_dp->master;
-+	master = dsa_port_to_master(dp);
- 
- 	err = dsa_port_tag_8021q_vlan_add(dp, vid, false);
- 	if (err) {
-@@ -361,7 +361,7 @@ static void dsa_tag_8021q_port_teardown(struct dsa_switch *ds, int port)
- 	if (!dsa_port_is_user(dp))
- 		return;
- 
--	master = dp->cpu_dp->master;
-+	master = dsa_port_to_master(dp);
- 
- 	dsa_port_tag_8021q_vlan_del(dp, vid, false);
- 
+ 	return dev->netdev_ops == &dsa_slave_netdev_ops;
 -- 
 2.25.1
 
