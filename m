@@ -2,89 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 43E01531F23
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 01:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD92F531F2D
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 01:22:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229571AbiEWXKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 19:10:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
+        id S229987AbiEWXWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 19:22:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229441AbiEWXKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 19:10:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F14370901;
-        Mon, 23 May 2022 16:10:15 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 39A63B81696;
-        Mon, 23 May 2022 23:10:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CCC7BC34100;
-        Mon, 23 May 2022 23:10:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653347412;
-        bh=r8xL3eb2Iu7WpxuLDd0t8cmqbsoeobvUBpNroD7v/z4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=C3+WteiVvgoUNpGLVjT6qMaxNVct9vMUD869wiAAJfK+qBLP7xvNzLO4E/N8dDwXO
-         WlLnZeVg/KUNhEXab7X7Gq5kaYJ8HceiZ3UsbLXNS5Qjg/wEMONrhSM0OSk/1lxrMV
-         57SdxTbhTaWfj1bx4jwEQbaSUngMQ3uYKdVn9RLCBohz0231AMYIcr+vi33dclHt5U
-         8fxU7PVhXDn7ilUDaIhjtxsg/5rRVoez1FsxKPu6KSi7rQJyoV00ePeuUZF3jgior8
-         81t12q6f5EbjSZslNEnX4Oq0QRm30kw/dnRlDY0cyK7eHMgMBHRiYrLzYXyLbxvFLR
-         tloN9pMMseYjg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A9B7FEAC081;
-        Mon, 23 May 2022 23:10:12 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        with ESMTP id S229481AbiEWXWu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 19:22:50 -0400
+Received: from mail-vs1-xe2f.google.com (mail-vs1-xe2f.google.com [IPv6:2607:f8b0:4864:20::e2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 969046C56A;
+        Mon, 23 May 2022 16:22:49 -0700 (PDT)
+Received: by mail-vs1-xe2f.google.com with SMTP id j7so4541476vsp.12;
+        Mon, 23 May 2022 16:22:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=T74LvEQCUkDpmgdMl6Xd1TSwKVQRkgh3mHfZgMoviWQ=;
+        b=oTtJaPCIyDyNjcXChkbnkL2NgutUs1GnqLnWuVTfx5wvuGcpCE5uulh8amtlL02Lru
+         x0oPP3csGrdAiWMg1V6EZs+7RE0GQAhQ+AqwohszvXdk5qh9uydLhMNaAASarcvhngcv
+         lgh/e83uHg51RQNHuJoBBNF2acUQ3JAVe7psZwZoG7Cex9GM9gW57H1Cy3NFCdPySOly
+         mwwsOEVvOK7ZgTqsWnvHnmjucOODjHRMyKFdTZyNJIhhx0GgNxOXvnLKMDsrBh9mf5VB
+         w1LE39ri9KFv+dGFamBe/sfJrlv97ISBW33nBRzvygdmHHHLgapEvVXyMN4Jx+XgsKxS
+         tEPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=T74LvEQCUkDpmgdMl6Xd1TSwKVQRkgh3mHfZgMoviWQ=;
+        b=trwe4pBr0op86eZ9vBWLzVeX9+3k7W7syVVN2IgL1lAHeJZA60rbtplwMAFtd+HDpU
+         OS7J+8VwHgSL958ybouuc/BCZIYP9K4NDG3qnd3NdpyxGfs/4uvTJ74SjJxxiP7OkPEW
+         +qkS789CELsvRjst1xhPOTiGfDB109PcYzZqdlzyTvY3TFEMVl71YxkZVq76nEKI1fu9
+         MRZ0E9qEz6Dqv8pW8C3gXr0FugKG8n5BGgINKCnsxqSdn3TPZT40jxDDXBbzouPt6+72
+         ql/HwTtcERruwu0tUM9kk4RsmX95f/U7RTAcScVZqpnqqa+SyyB1oyGQIbjaKQr5HGcj
+         UGyw==
+X-Gm-Message-State: AOAM532CoqJrMeuNUig8of6jJW4Q5XCQiC5zGGgGzWECpT9rrGv2+XQt
+        hjP6FYPhceazL8oJN10X6Msedin3qgjryUdwahn4eYHP
+X-Google-Smtp-Source: ABdhPJwRtmzoXx62/vMWqMo463GFm4hrLIl8+Xw4QnfkFNZeXiX+JCh/5BnrWBL9PmXNq4acrG5pR/zBYUMcTX/OKd8=
+X-Received: by 2002:a67:e0d5:0:b0:337:b2f4:afe0 with SMTP id
+ m21-20020a67e0d5000000b00337b2f4afe0mr3042998vsl.11.1653348168754; Mon, 23
+ May 2022 16:22:48 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 1/3] can: peak_usb: fix typo in comment
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165334741269.398.15174446878045253185.git-patchwork-notify@kernel.org>
-Date:   Mon, 23 May 2022 23:10:12 +0000
-References: <20220523201045.1708855-2-mkl@pengutronix.de>
-In-Reply-To: <20220523201045.1708855-2-mkl@pengutronix.de>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-can@vger.kernel.org, kernel@pengutronix.de,
-        Julia.Lawall@inria.fr
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220518225531.558008-1-sdf@google.com> <20220518225531.558008-8-sdf@google.com>
+In-Reply-To: <20220518225531.558008-8-sdf@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 23 May 2022 16:22:37 -0700
+Message-ID: <CAEf4BzaYx9EdabuxjLsN4HKTcq+EfwRzpAYdY-D+74YOTpr4Yg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 07/11] libbpf: implement bpf_prog_query_opts
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, May 18, 2022 at 3:55 PM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> Implement bpf_prog_query_opts as a more expendable version of
+> bpf_prog_query. Expose new prog_attach_flags and attach_btf_func_id as
+> well:
+>
+> * prog_attach_flags is a per-program attach_type; relevant only for
+>   lsm cgroup program which might have different attach_flags
+>   per attach_btf_id
+> * attach_btf_func_id is a new field expose for prog_query which
+>   specifies real btf function id for lsm cgroup attachments
+>
 
-This series was applied to netdev/net-next.git (master)
-by Marc Kleine-Budde <mkl@pengutronix.de>:
+just thoughts aloud... Shouldn't bpf_prog_query() also return link_id
+if the attachment was done with LINK_CREATE? And then attach flags
+could actually be fetched through corresponding struct bpf_link_info.
+That is, bpf_prog_query() returns a list of link_ids, and whatever
+link-specific information can be fetched by querying individual links.
+Seems more logical (and useful overall) to extend struct bpf_link_info
+(you can get it more generically from bpftool, by querying fdinfo,
+etc).
 
-On Mon, 23 May 2022 22:10:43 +0200 you wrote:
-> From: Julia Lawall <Julia.Lawall@inria.fr>
-> 
-> Spelling mistake (triple letters) in comment.
-> Detected with the help of Coccinelle.
-> 
-> Link: https://lore.kernel.org/all/20220521111145.81697-24-Julia.Lawall@inria.fr
-> Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
-> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> 
-> [...]
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  tools/include/uapi/linux/bpf.h |  5 ++++
+>  tools/lib/bpf/bpf.c            | 42 +++++++++++++++++++++++++++-------
+>  tools/lib/bpf/bpf.h            | 15 ++++++++++++
+>  tools/lib/bpf/libbpf.map       |  1 +
+>  4 files changed, 55 insertions(+), 8 deletions(-)
+>
 
-Here is the summary with links:
-  - [net-next,1/3] can: peak_usb: fix typo in comment
-    https://git.kernel.org/netdev/net-next/c/a682d1843300
-  - [net-next,2/3] can: kvaser_usb: silence a GCC 12 -Warray-bounds warning
-    https://git.kernel.org/netdev/net-next/c/3e88445a3a5a
-  - [net-next,3/3] can: ctucanfd: platform: add missing dependency to HAS_IOMEM
-    https://git.kernel.org/netdev/net-next/c/8f445a3ec3fd
+[...]
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+>         ret = sys_bpf(BPF_PROG_QUERY, &attr, sizeof(attr));
+>
+> -       if (attach_flags)
+> -               *attach_flags = attr.query.attach_flags;
+> -       *prog_cnt = attr.query.prog_cnt;
+> +       if (OPTS_HAS(opts, prog_cnt))
+> +               opts->prog_cnt = attr.query.prog_cnt;
+
+just use OPTS_SET() instead of OPTS_HAS check
+
+> +       if (OPTS_HAS(opts, attach_flags))
+> +               opts->attach_flags = attr.query.attach_flags;
+>
+>         return libbpf_err_errno(ret);
+>  }
+>
+
+[...]
+
+> diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
+> index 6b36f46ab5d8..24f7a5147bf2 100644
+> --- a/tools/lib/bpf/libbpf.map
+> +++ b/tools/lib/bpf/libbpf.map
+> @@ -452,6 +452,7 @@ LIBBPF_0.8.0 {
+>                 bpf_map_delete_elem_flags;
+>                 bpf_object__destroy_subskeleton;
+>                 bpf_object__open_subskeleton;
+> +               bpf_prog_query_opts;
+
+please put it into LIBBPF_1.0.0 section, 0.8 is closed now
 
 
+>                 bpf_program__attach_kprobe_multi_opts;
+>                 bpf_program__attach_trace_opts;
+>                 bpf_program__attach_usdt;
+> --
+> 2.36.1.124.g0e6072fb45-goog
+>
