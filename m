@@ -2,68 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE2D530E1B
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 12:43:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF4EE530E02
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 12:42:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233614AbiEWJzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 05:55:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42534 "EHLO
+        id S233766AbiEWJ5x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 05:57:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233565AbiEWJzS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 05:55:18 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 570F21A3A5;
-        Mon, 23 May 2022 02:55:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653299717; x=1684835717;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=eqM+jPOTUeunb8PUCCDFxOTPR27hmR70Sc5kkvXLcJ0=;
-  b=ddtIb2IBr49mgoQc0pV+QWuSM3yE3dBuI7Y+aJTWYU/QYMEYYCEKkKfO
-   ZuVHYs27aWylfX5rQa4UqJYmTQm6zWTGe3FRVwCnCcR5UFk7bCK7hcfsA
-   h3Ge3Q8SICAP8nu6pulazfINS49761Ej6dVBvzR7wPzvxhKOu/TB5yGxn
-   626TZeYeFuZ1N5mBTvJgOg8/+NnW8wfAp4c5ldYBLuWIgMAR0o7/mJipt
-   N6fyDgopt1sbz6xJmdXncKyjBGRhXYVFlUoMIvIO9NvpZeSz2d2qaFBJM
-   DRNqM/0StIe58Q3xeyOfxXOgovKYEfSlq+C09uq9QDWeLFqT2pVS/24yt
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10355"; a="273288353"
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="273288353"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 May 2022 02:55:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,246,1647327600"; 
-   d="scan'208";a="629291059"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 23 May 2022 02:54:53 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nt4m4-00013A-G3;
-        Mon, 23 May 2022 09:54:52 +0000
-Date:   Mon, 23 May 2022 17:54:25 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Corentin Labbe <clabbe@baylibre.com>, andrew@lunn.ch,
-        broonie@kernel.org, calvin.johnson@oss.nxp.com,
-        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
-        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
-        netdev@vger.kernel.org, Corentin Labbe <clabbe@baylibre.com>
-Subject: Re: [PATCH v3 1/3] regulator: Add regulator_bulk_get_all
-Message-ID: <202205231748.IZoXf2Sf-lkp@intel.com>
-References: <20220523052807.4044800-2-clabbe@baylibre.com>
+        with ESMTP id S233711AbiEWJ5v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 05:57:51 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 44B72193FC
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 02:57:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653299865;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=j7po0GtrBtc9y8cOPJ/0GbOoVIs2F1iXmywPEu00Vik=;
+        b=J6zxkoz0H9vVogJE1vypwCVe96UJgkDINcVSZfKvvBxl/jEgO3DFS6ZO5fN5HGka4AVU36
+        sroiGsSoss1FEKmfYeb40LlpwuWIgoieNOjW8QJs6kWVuoWQ/akO05J8Y1IrDVBHObxAYI
+        FAfC9ZLnWeRO0WM8dTT9LGoxCn339hk=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-263-hio2DSgpOCKEsu8T0S3Z4w-1; Mon, 23 May 2022 05:57:44 -0400
+X-MC-Unique: hio2DSgpOCKEsu8T0S3Z4w-1
+Received: by mail-qv1-f71.google.com with SMTP id x11-20020a056214052b00b00461f2984c36so9423434qvw.20
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 02:57:44 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=j7po0GtrBtc9y8cOPJ/0GbOoVIs2F1iXmywPEu00Vik=;
+        b=dF+HTcGHe05YtPqpRpklbg6LDo5cy8V0xMNpnIoQreZGPDe93iA30yoXsbt03LJ+UP
+         3YVLRpkkp1iiZHB5GHJPlo8StKDE1bJ7nFuBFoJe9OcpH7Ksb6U0XpRyN6fc+4Kfqmsf
+         gs3f0/ZgvKpa7B7UBhd8VotP4omZ+vXoxzXOpkS8+bAAG/hrlMhozIur9oueHDn+9Pnc
+         p2EoxR7ZmaBMluBdti1dW2ZoyFUGBozmOil6k+k8BjZ4GmxX0cEXa3fVRcxJzOrk3KzI
+         Efz94ow3JaRIzunO39XsrmXXTluJLQyyoOchr8TAc/T2Y/r83elaJVukkkToNDeJx8hv
+         PUtg==
+X-Gm-Message-State: AOAM531mc8B78wnLp2603ro7UjBMneBnemFMd6SNJJdFnEycCGsNEkwc
+        2jJJ/bxSJzLzvjsF4648CAbvDKlhVKqaD6ZBhZBBl+m4C2Ca4UpGe/47A0yCqJ870ShiYvz7zBl
+        vtuo0Hr5uEbKMTg81Xmdc6S/y1UfN8FvO
+X-Received: by 2002:ac8:4e81:0:b0:2f9:34e4:8955 with SMTP id 1-20020ac84e81000000b002f934e48955mr3214655qtp.459.1653299863497;
+        Mon, 23 May 2022 02:57:43 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxvbFG1aDvatEqz9FXE4l2jp7/tHOGW5uKpg80Hd8pzafG0zBsY8brrzQMiJMaoyoUAVsq3ctLvZhaXY1yEfaE=
+X-Received: by 2002:ac8:4e81:0:b0:2f9:34e4:8955 with SMTP id
+ 1-20020ac84e81000000b002f934e48955mr3214627qtp.459.1653299863283; Mon, 23 May
+ 2022 02:57:43 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220523052807.4044800-2-clabbe@baylibre.com>
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+References: <20220520172325.980884-1-eperezma@redhat.com> <20220520172325.980884-3-eperezma@redhat.com>
+ <c1a31c3f-46c0-f0a2-eb43-757914d46ac3@oracle.com>
+In-Reply-To: <c1a31c3f-46c0-f0a2-eb43-757914d46ac3@oracle.com>
+From:   Eugenio Perez Martin <eperezma@redhat.com>
+Date:   Mon, 23 May 2022 11:57:07 +0200
+Message-ID: <CAJaqyWdg0tuBcDeaB9Q-XkEoPRSqQ=ruFh1eqT40uOeknRwdkw@mail.gmail.com>
+Subject: Re: [PATCH 2/4] vhost-vdpa: introduce STOP backend feature bit
+To:     Si-Wei Liu <si-wei.liu@oracle.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        Jason Wang <jasowang@redhat.com>,
+        kvm list <kvm@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Longpeng <longpeng2@huawei.com>,
+        Zhu Lingshan <lingshan.zhu@intel.com>,
+        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
+        Harpreet Singh Anand <hanand@xilinx.com>, dinang@xilinx.com,
+        Eli Cohen <elic@nvidia.com>,
+        Laurent Vivier <lvivier@redhat.com>, pabloc@xilinx.com,
+        "Dawar, Gautam" <gautam.dawar@amd.com>,
+        Xie Yongji <xieyongji@bytedance.com>, habetsm.xilinx@gmail.com,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        tanuj.kamde@amd.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
+        martinpo@xilinx.com, Cindy Lu <lulu@redhat.com>,
+        ecree.xilinx@gmail.com, Parav Pandit <parav@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Zhang Min <zhang.min9@zte.com.cn>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -71,127 +92,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Corentin,
+On Sat, May 21, 2022 at 12:25 PM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
+>
+>
+>
+> On 5/20/2022 10:23 AM, Eugenio P=C3=A9rez wrote:
+> > Userland knows if it can stop the device or not by checking this featur=
+e
+> > bit.
+> >
+> > It's only offered if the vdpa driver backend implements the stop()
+> > operation callback, and try to set it if the backend does not offer tha=
+t
+> > callback is an error.
+> >
+> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> > ---
+> >   drivers/vhost/vdpa.c             | 13 +++++++++++++
+> >   include/uapi/linux/vhost_types.h |  2 ++
+> >   2 files changed, 15 insertions(+)
+> >
+> > diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> > index 1f1d1c425573..a325bc259afb 100644
+> > --- a/drivers/vhost/vdpa.c
+> > +++ b/drivers/vhost/vdpa.c
+> > @@ -347,6 +347,14 @@ static long vhost_vdpa_set_config(struct vhost_vdp=
+a *v,
+> >       return 0;
+> >   }
+> >
+> > +static bool vhost_vdpa_can_stop(const struct vhost_vdpa *v)
+> > +{
+> > +     struct vdpa_device *vdpa =3D v->vdpa;
+> > +     const struct vdpa_config_ops *ops =3D vdpa->config;
+> > +
+> > +     return ops->stop;
+> > +}
+> > +
+> >   static long vhost_vdpa_get_features(struct vhost_vdpa *v, u64 __user =
+*featurep)
+> >   {
+> >       struct vdpa_device *vdpa =3D v->vdpa;
+> > @@ -577,6 +585,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *=
+filep,
+> >                       return -EFAULT;
+> >               if (features & ~VHOST_VDPA_BACKEND_FEATURES)
+> >                       return -EOPNOTSUPP;
+> > +             if ((features & VHOST_BACKEND_F_STOP) &&
+> VHOST_BACKEND_F_STOP is not part of VHOST_VDPA_BACKEND_FEATURES. There's
+> no chance for VHOST_BACKEND_F_STOP to get here.
+>
 
-I love your patch! Yet something to improve:
+That's right. I think I missed to backport your patches about set
+backend_features only once in my testing.
 
-[auto build test ERROR on broonie-regulator/for-next]
-[also build test ERROR on sunxi/sunxi/for-next linus/master v5.18 next-20220520]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+I will re-test with the latest qemu master, thanks!
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Corentin-Labbe/arm64-add-ethernet-to-orange-pi-3/20220523-133344
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regulator.git for-next
-config: i386-randconfig-a012-20220523 (https://download.01.org/0day-ci/archive/20220523/202205231748.IZoXf2Sf-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 768a1ca5eccb678947f4155e38a5f5744dcefb56)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/179be86f748a2cce87423bb16f4f967c97bf5d9b
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Corentin-Labbe/arm64-add-ethernet-to-orange-pi-3/20220523-133344
-        git checkout 179be86f748a2cce87423bb16f4f967c97bf5d9b
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
+> -Siwei
+> > +                  !vhost_vdpa_can_stop(v))
+> > +                     return -EOPNOTSUPP;
+> >               vhost_set_backend_features(&v->vdev, features);
+> >               return 0;
+> >       }
+> > @@ -624,6 +635,8 @@ static long vhost_vdpa_unlocked_ioctl(struct file *=
+filep,
+> >               break;
+> >       case VHOST_GET_BACKEND_FEATURES:
+> >               features =3D VHOST_VDPA_BACKEND_FEATURES;
+> > +             if (vhost_vdpa_can_stop(v))
+> > +                     features |=3D VHOST_BACKEND_F_STOP;
+> >               if (copy_to_user(featurep, &features, sizeof(features)))
+> >                       r =3D -EFAULT;
+> >               break;
+> > diff --git a/include/uapi/linux/vhost_types.h b/include/uapi/linux/vhos=
+t_types.h
+> > index 634cee485abb..2758e665791b 100644
+> > --- a/include/uapi/linux/vhost_types.h
+> > +++ b/include/uapi/linux/vhost_types.h
+> > @@ -161,5 +161,7 @@ struct vhost_vdpa_iova_range {
+> >    * message
+> >    */
+> >   #define VHOST_BACKEND_F_IOTLB_ASID  0x3
+> > +/* Stop device from processing virtqueue buffers */
+> > +#define VHOST_BACKEND_F_STOP  0x4
+> >
+> >   #endif
+>
 
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/regulator/core.c:4870:2: error: call to undeclared function 'for_each_property_of_node'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-           for_each_property_of_node(np, prop) {
-           ^
->> drivers/regulator/core.c:4870:37: error: expected ';' after expression
-           for_each_property_of_node(np, prop) {
-                                              ^
-                                              ;
->> drivers/regulator/core.c:4873:4: error: 'continue' statement not in loop statement
-                           continue;
-                           ^
-   drivers/regulator/core.c:4876:4: error: 'continue' statement not in loop statement
-                           continue;
-                           ^
-   drivers/regulator/core.c:4887:4: error: 'continue' statement not in loop statement
-                           continue;
-                           ^
-   5 errors generated.
-
-
-vim +/for_each_property_of_node +4870 drivers/regulator/core.c
-
-  4839	
-  4840	/*
-  4841	 * regulator_bulk_get_all - get multiple regulator consumers
-  4842	 *
-  4843	 * @dev:	Device to supply
-  4844	 * @np:		device node to search for consumers
-  4845	 * @consumers:  Configuration of consumers; clients are stored here.
-  4846	 *
-  4847	 * @return number of regulators on success, an errno on failure.
-  4848	 *
-  4849	 * This helper function allows drivers to get several regulator
-  4850	 * consumers in one operation.  If any of the regulators cannot be
-  4851	 * acquired then any regulators that were allocated will be freed
-  4852	 * before returning to the caller.
-  4853	 */
-  4854	int regulator_bulk_get_all(struct device *dev, struct device_node *np,
-  4855				   struct regulator_bulk_data **consumers)
-  4856	{
-  4857		int num_consumers = 0;
-  4858		struct regulator *tmp;
-  4859		struct property *prop;
-  4860		int i, n = 0, ret;
-  4861		char name[64];
-  4862	
-  4863		*consumers = NULL;
-  4864	
-  4865	/*
-  4866	 * first pass: get numbers of xxx-supply
-  4867	 * second pass: fill consumers
-  4868	 * */
-  4869	restart:
-> 4870		for_each_property_of_node(np, prop) {
-  4871			i = is_supply_name(prop->name);
-  4872			if (i == 0)
-> 4873				continue;
-  4874			if (!*consumers) {
-  4875				num_consumers++;
-  4876				continue;
-  4877			} else {
-  4878				memcpy(name, prop->name, i);
-  4879				name[i] = '\0';
-  4880				tmp = regulator_get(dev, name);
-  4881				if (!tmp) {
-  4882					ret = -EINVAL;
-  4883					goto error;
-  4884				}
-  4885				(*consumers)[n].consumer = tmp;
-  4886				n++;
-  4887				continue;
-  4888			}
-  4889		}
-  4890		if (*consumers)
-  4891			return num_consumers;
-  4892		if (num_consumers == 0)
-  4893			return 0;
-  4894		*consumers = kmalloc_array(num_consumers,
-  4895					   sizeof(struct regulator_bulk_data),
-  4896					   GFP_KERNEL);
-  4897		if (!*consumers)
-  4898			return -ENOMEM;
-  4899		goto restart;
-  4900	
-  4901	error:
-  4902		while (--n >= 0)
-  4903			regulator_put(consumers[n]->consumer);
-  4904		return ret;
-  4905	}
-  4906	EXPORT_SYMBOL_GPL(regulator_bulk_get_all);
-  4907	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
