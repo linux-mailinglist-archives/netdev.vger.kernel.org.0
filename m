@@ -2,172 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 741345308BC
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 07:30:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D51F5308BF
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 07:30:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355634AbiEWF2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 01:28:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51704 "EHLO
+        id S240056AbiEWF33 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 01:29:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351157AbiEWF2V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 01:28:21 -0400
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C9DB13DEE
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:19 -0700 (PDT)
-Received: by mail-wr1-x42a.google.com with SMTP id p10so1009261wrg.12
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 22:28:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kwRG8kJghq1J9woEQ8/8+NXh3AtgpEI2TuVWVjMfZMk=;
-        b=0HpAzyrF8+FK9s9Lv6r8HnmS4n2VHb3e9NI+PYcrMI8MijK0B5XoHtXRkv0pI5tmky
-         DTvP09m+Llj+BF8ipr7By+iseFMo7gGLtq7vYu96ZGeSz8zR0CmdFjxa2rF61Q3PyTwY
-         5fEIB+1cjJNCHPS/dqw3StWXVMUIT3lUwunNjpKiEUWCJwQHOQjt+RFSK+miW6Z4zbXs
-         MWvJvH5fNK1m37DX7lV/wbjEtMDmkUVmoLJADDbcCKXYidinq0Ke37o8BrAO6EZyFLdC
-         sFfsslVnXtIGNMmhcoHGHRzHo5UgF4kTZ2ol6Bar+kuhYmFZ4qSF3OhS2bQXw91eRaVo
-         C3Og==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kwRG8kJghq1J9woEQ8/8+NXh3AtgpEI2TuVWVjMfZMk=;
-        b=rAv23qHzFLNPbGXWYX5SxxhvybrpCVDRzZ7qrxjdyUrGuZznEveDOHp6zoUy80tA/T
-         ea20w76JPlPfHXXTyquNJhFz5NSIJX3b2oqjv246eVCZZOKpSiJKsFJ/2rI5uAIIefGD
-         krqR2pvZT3uGL3hfaF9tSeKZcv5nYbxeSNmQtwrnHet3hDUF7Lz85D+uY5aHbLyoRKkB
-         ViY94XNyMsXzIDUdFP3C0MRMYhtBdokUeN/q4ZRMb41Uu5/bBKuSBr0vKRDt92KMlwhe
-         RQDXgM3Bo5lvofzmy2yRFrFKVCK2z/a/3Uad0Dc6sGEB7HK4YN/ZgELffuaasMaTBHzt
-         F/tA==
-X-Gm-Message-State: AOAM533o0KozZOy9DTz1dSVi83/p/93c+VDmHysG8Cg4iXz4SNOYdOL7
-        +FqYDKSD6KF/7cavJugdErQEQQ==
-X-Google-Smtp-Source: ABdhPJy4dOiHRi8RxJS1vDYeuYztM8ZLIeJ4Hy3+HL2NtCowcnxhvWlaJf6kQexvMGXqL2AAqtP4hw==
-X-Received: by 2002:a5d:4bd2:0:b0:20f:cb39:c035 with SMTP id l18-20020a5d4bd2000000b0020fcb39c035mr6890506wrt.709.1653283698116;
-        Sun, 22 May 2022 22:28:18 -0700 (PDT)
-Received: from localhost.localdomain (laubervilliers-658-1-213-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.googlemail.com with ESMTPSA id h2-20020a1ccc02000000b0039466988f6csm7802414wmb.31.2022.05.22.22.28.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 May 2022 22:28:17 -0700 (PDT)
-From:   Corentin Labbe <clabbe@baylibre.com>
-To:     andrew@lunn.ch, broonie@kernel.org, calvin.johnson@oss.nxp.com,
-        davem@davemloft.net, edumazet@google.com, hkallweit1@gmail.com,
-        jernej.skrabec@gmail.com, krzysztof.kozlowski+dt@linaro.org,
-        kuba@kernel.org, lgirdwood@gmail.com, linux@armlinux.org.uk,
-        pabeni@redhat.com, robh+dt@kernel.org, samuel@sholland.org,
-        wens@csie.org
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-sunxi@lists.linux.dev,
-        netdev@vger.kernel.org,
-        =?UTF-8?q?Ond=C5=99ej=20Jirman?= <megi@xff.cz>,
-        Corentin Labbe <clabbe@baylibre.com>
-Subject: [PATCH v3 3/3] arm64: dts: allwinner: orange-pi-3: Enable ethernet
-Date:   Mon, 23 May 2022 05:28:07 +0000
-Message-Id: <20220523052807.4044800-4-clabbe@baylibre.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220523052807.4044800-1-clabbe@baylibre.com>
-References: <20220523052807.4044800-1-clabbe@baylibre.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S1355608AbiEWF3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 01:29:09 -0400
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 566302127D;
+        Sun, 22 May 2022 22:28:39 -0700 (PDT)
+Received: from ubuntu.localdomain (unknown [124.236.130.193])
+        by mail-app2 (Coremail) with SMTP id by_KCgDHeAhqG4tiw6+eAA--.65502S2;
+        Mon, 23 May 2022 13:28:19 +0800 (CST)
+From:   Duoming Zhou <duoming@zju.edu.cn>
+To:     linux-wireless@vger.kernel.org
+Cc:     amitkarwar@gmail.com, ganapathi017@gmail.com,
+        sharvari.harisangam@nxp.com, huxinming820@gmail.com,
+        kvalo@kernel.org, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
+        rafael@kernel.org, Duoming Zhou <duoming@zju.edu.cn>
+Subject: [PATCH v3] mwifiex: fix sleep in atomic context bugs caused by dev_coredumpv
+Date:   Mon, 23 May 2022 13:28:10 +0800
+Message-Id: <20220523052810.24767-1-duoming@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgDHeAhqG4tiw6+eAA--.65502S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxZw4rJrW3Kr4xZFyrJFWDArb_yoW5Gr4xpw
+        s8KF92vFW8Krs5ZayDJa1vg3W5K3W8Ary7CFsF9w1rGas3J3yfZrWYkFyS9rs5X3s2yFW2
+        qF45Zw13CF9rtFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvG14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4U
+        JVW0owA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
+        n2kIc2xKxwCY02Avz4vE14v_GrWl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr
+        0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY
+        17CE14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcV
+        C0I7IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWUJVWUCwCI42IY
+        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
+        73UjIFyTuYvjfUOb18DUUUU
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgISAVZdtZ0biwAysS
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ondřej Jirman <megi@xff.cz>
+There are sleep in atomic context bugs when uploading device dump
+data in mwifiex. The root cause is that dev_coredumpv could not
+be used in atomic contexts, because it calls dev_set_name which
+include operations that may sleep. The call tree shows execution
+paths that could lead to bugs:
 
-Orange Pi 3 has two regulators that power the Realtek RTL8211E
-PHY. According to the datasheet, both regulators need to be enabled
-at the same time, or that "phy-io" should be enabled slightly earlier
-than "phy" regulator.
+   (Interrupt context)
+fw_dump_timer_fn
+  mwifiex_upload_device_dump
+    dev_coredumpv(..., GFP_KERNEL)
+      dev_coredumpm()
+        kzalloc(sizeof(*devcd), gfp); //may sleep
+        dev_set_name
+          kobject_set_name_vargs
+            kvasprintf_const(GFP_KERNEL, ...); //may sleep
+            kstrdup(s, GFP_KERNEL); //may sleep
 
-RTL8211E/RTL8211EG datasheet says:
+In order to let dev_coredumpv support atomic contexts, this patch
+changes the gfp_t parameter of kvasprintf_const and kstrdup in
+kobject_set_name_vargs from GFP_KERNEL to GFP_ATOMIC. What's more,
+In order to mitigate bug, this patch changes the gfp_t parameter
+of dev_coredumpv from GFP_KERNEL to GFP_ATOMIC.
 
-  Note 4: 2.5V (or 1.8/1.5V) RGMII power should be risen simultaneously
-  or slightly earlier than 3.3V power. Rising 2.5V (or 1.8/1.5V) power
-  later than 3.3V power may lead to errors.
-
-The timing is set in DT via startup-delay-us.
-
-Signed-off-by: Ondrej Jirman <megi@xff.cz>
-Signed-off-by: Corentin Labbe <clabbe@baylibre.com>
+Fixes: 57670ee882d4 ("mwifiex: device dump support via devcoredump framework")
+Signed-off-by: Duoming Zhou <duoming@zju.edu.cn>
 ---
- .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 38 +++++++++++++++++++
- 1 file changed, 38 insertions(+)
+Changes in v3:
+  - Let dev_coredumpv support atomic contexts.
 
-diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-index c45d7b7fb39a..2760a0bf76d5 100644
---- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-+++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
-@@ -13,6 +13,7 @@ / {
- 	compatible = "xunlong,orangepi-3", "allwinner,sun50i-h6";
+ drivers/net/wireless/marvell/mwifiex/main.c | 2 +-
+ lib/kobject.c                               | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
+index ace7371c477..258906920a2 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.c
++++ b/drivers/net/wireless/marvell/mwifiex/main.c
+@@ -1116,7 +1116,7 @@ void mwifiex_upload_device_dump(struct mwifiex_adapter *adapter)
+ 	mwifiex_dbg(adapter, MSG,
+ 		    "== mwifiex dump information to /sys/class/devcoredump start\n");
+ 	dev_coredumpv(adapter->dev, adapter->devdump_data, adapter->devdump_len,
+-		      GFP_KERNEL);
++		      GFP_ATOMIC);
+ 	mwifiex_dbg(adapter, MSG,
+ 		    "== mwifiex dump information to /sys/class/devcoredump end\n");
  
- 	aliases {
-+		ethernet0 = &emac;
- 		serial0 = &uart0;
- 		serial1 = &uart1;
- 	};
-@@ -55,6 +56,15 @@ led-1 {
- 		};
- 	};
+diff --git a/lib/kobject.c b/lib/kobject.c
+index 5f0e71ab292..7672c54944c 100644
+--- a/lib/kobject.c
++++ b/lib/kobject.c
+@@ -254,7 +254,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
+ 	if (kobj->name && !fmt)
+ 		return 0;
  
-+	reg_gmac_2v5: gmac-2v5 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "gmac-2v5";
-+		regulator-min-microvolt = <2500000>;
-+		regulator-max-microvolt = <2500000>;
-+		enable-active-high;
-+		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
-+	};
-+
- 	reg_vcc5v: vcc5v {
- 		/* board wide 5V supply directly from the DC jack */
- 		compatible = "regulator-fixed";
-@@ -113,6 +123,33 @@ &ehci3 {
- 	status = "okay";
- };
+-	s = kvasprintf_const(GFP_KERNEL, fmt, vargs);
++	s = kvasprintf_const(GFP_ATOMIC, fmt, vargs);
+ 	if (!s)
+ 		return -ENOMEM;
  
-+&emac {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&ext_rgmii_pins>;
-+	phy-mode = "rgmii-id";
-+	phy-handle = <&ext_rgmii_phy>;
-+	status = "okay";
-+};
-+
-+&mdio {
-+	ext_rgmii_phy: ethernet-phy@1 {
-+		compatible = "ethernet-phy-ieee802.3-c22";
-+		reg = <1>;
-+		/*
-+		 * The board uses 2.5V RGMII signalling. Power sequence to enable
-+		 * the phy is to enable GMAC-2V5 and GMAC-3V (aldo2) power rails
-+		 * at the same time and to wait 100ms. The driver enables phy-io
-+		 * first. Delay is achieved with enable-ramp-delay on reg_aldo2.
-+		 */
-+		phy-io-supply = <&reg_gmac_2v5>;
-+		ephy-supply = <&reg_aldo2>;
-+
-+		reset-gpios = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
-+		reset-assert-us = <15000>;
-+		reset-deassert-us = <40000>;
-+	};
-+};
-+
- &gpu {
- 	mali-supply = <&reg_dcdcc>;
- 	status = "okay";
-@@ -211,6 +248,7 @@ reg_aldo2: aldo2 {
- 				regulator-min-microvolt = <3300000>;
- 				regulator-max-microvolt = <3300000>;
- 				regulator-name = "vcc33-audio-tv-ephy-mac";
-+				regulator-enable-ramp-delay = <100000>;
- 			};
+@@ -267,7 +267,7 @@ int kobject_set_name_vargs(struct kobject *kobj, const char *fmt,
+ 	if (strchr(s, '/')) {
+ 		char *t;
  
- 			/* ALDO3 is shorted to CLDO1 */
+-		t = kstrdup(s, GFP_KERNEL);
++		t = kstrdup(s, GFP_ATOMIC);
+ 		kfree_const(s);
+ 		if (!t)
+ 			return -ENOMEM;
 -- 
-2.35.1
+2.17.1
 
