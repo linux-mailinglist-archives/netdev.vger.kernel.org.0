@@ -2,92 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 34B87531840
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:53:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1B5E531A7D
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:55:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240522AbiEWS2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 14:28:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
+        id S242677AbiEWSYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 14:24:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245430AbiEWS1F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 14:27:05 -0400
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29929E9F8
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 11:02:34 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id EA084CE1724
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 17:56:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C102EC385A9;
-        Mon, 23 May 2022 17:56:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653328602;
-        bh=PTRJE+tiw0z5DzecGRSn+uvQjoPL914rmiQd6Sds9ns=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ukwa8WVDlH7mvQZmphhM3f/juP+ivsRVi9nAynxOu4KKUPvXfUrkvcq/pPMOoEp3X
-         RGBcnQuRIONxdtgSnIX6tMsNUXJmNItH4xcuTo2k4uSy9C+Tp3/YGnoQQwvH9Up9N6
-         8ZIIlMU6RjBw3ZkfXOVOPE+EHVCT67gr783iFOT3AXrvNJAsNVP0Dn79wyFPLmx6Sp
-         BMM9YUSIGsB4ivb7jUYOVEWxoHIMwDDZbKjN3zLvZP0oAl0XT6O1DVA3dXl8lz+RR1
-         I01WHBi4NLdkLO/THbc9NO9TQ+Hm3ahwcGMbdrqiiHHq0yaS2KjdzKXHhtV7AwidEa
-         0HevmfzmnhMoA==
-Date:   Mon, 23 May 2022 10:56:40 -0700
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <20220523105640.36d1e4b3@kernel.org>
-In-Reply-To: <YotW74GJWt0glDnE@nanopsycho>
-References: <Ymf66h5dMNOLun8k@nanopsycho>
-        <20220426075133.53562a2e@kernel.org>
-        <YmjyRgYYRU/ZaF9X@nanopsycho>
-        <20220427071447.69ec3e6f@kernel.org>
-        <YmvRRSFeRqufKbO/@nanopsycho>
-        <20220429114535.64794e94@kernel.org>
-        <Ymw8jBoK3Vx8A/uq@nanopsycho>
-        <20220429153845.5d833979@kernel.org>
-        <YmzW12YL15hAFZRV@nanopsycho>
-        <20220502073933.5699595c@kernel.org>
-        <YotW74GJWt0glDnE@nanopsycho>
+        with ESMTP id S244802AbiEWSWT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 14:22:19 -0400
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2CE3B3EE
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 10:57:52 -0700 (PDT)
+Received: by mail-pf1-x42c.google.com with SMTP id c14so14381364pfn.2
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 10:57:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=j+7dhXfVvjhX8uGEoOhhhickUwEypMlAs/PweuGboy8=;
+        b=jIYLN5rTKBzojVvK92O0WiIT5gttMHCULZeydTf1gRNO1R0juDaXLx4Cs5B7SX4+/g
+         BbU7KOa5QY8rkJ58gFwfgzJiGzSV9ocx9ocIIMz0PgXPhZB4UVhRAYdus63tDi4nwGNO
+         8T0RO2+5smo4hyaHnR38Dw9OPDSz/WyUNL4uRDY38nsq0j2qJ6g7ZdFqi3WDJt8G3Weu
+         juJYgLk/GWx66WQvgxrwNlWRQ01As/CdXvk1RoLn7XQPFsk9I6a8SjvmkeqT5KVS9yhR
+         Gtf0nzD7O5c5TyKMy53VVsw5F8DYXzxJlKcaysMVP+aqgyfjaEfyFB6Q7PoQi+2pKIaJ
+         7gHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=j+7dhXfVvjhX8uGEoOhhhickUwEypMlAs/PweuGboy8=;
+        b=yRbf+VwQVH0+nric36CsNilgDs4n8rtXGTiVL1DP+aOjGOPYdZjoNlw/8ElouSg5Ve
+         MgNiKl/lCmDMjyDKvUSPH6MB5IoFTSrkJlw/I1iHMQYYCK7eQGY8Z5XHFKN4Y77AbwGp
+         r33SrVmGxd/SwwXl9UgTeyHVmMJbeKd7pbjW6rpchaoLzHVtro5fiy3oj3O++NQVp7R+
+         Fs+9kJBPm8PU+B+yHmNhBXJcLopTziZ+9MqPqw4kH8uLMlkvcUHOB34DAtOK7BVeR2ka
+         WGjJAuAfersjQWYOf4DGvI+GXi4EhXF6SB4Iqbl5ZmIs++q96bfvD16z+IygbVUI8xSQ
+         +vaw==
+X-Gm-Message-State: AOAM531cfUln6FoFlIOA3jNEppT0BHoSwoYwOK1MUziIrk4QARaPtJii
+        uCrHIws7M9AnR5K4YtffaHo=
+X-Google-Smtp-Source: ABdhPJx/vfKrzFtbmI6EOf7fSVsCmxJROLz2A5/nnIyT6JF9Pyb3THTabAah3NPvJiMPDDjTZ25a4g==
+X-Received: by 2002:a62:6410:0:b0:4f3:9654:266d with SMTP id y16-20020a626410000000b004f39654266dmr24386387pfb.59.1653328670923;
+        Mon, 23 May 2022 10:57:50 -0700 (PDT)
+Received: from [10.67.48.245] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id o13-20020a17090a4b4d00b001df264610c4sm336314pjl.0.2022.05.23.10.57.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 May 2022 10:57:50 -0700 (PDT)
+Message-ID: <8dde51cd-d59a-b55e-2cc1-53aafb1f399a@gmail.com>
+Date:   Mon, 23 May 2022 10:57:46 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.1
+Subject: Re: [RFC PATCH net-next 04/12] net: bridge: move DSA master bridging
+ restriction to DSA
+Content-Language: en-US
+To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+        Ansuel Smith <ansuelsmth@gmail.com>,
+        DENG Qingfang <dqfext@gmail.com>,
+        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        Colin Foster <colin.foster@in-advantage.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <razor@blackwall.org>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>
+References: <20220523104256.3556016-1-olteanv@gmail.com>
+ <20220523104256.3556016-5-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20220523104256.3556016-5-olteanv@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 23 May 2022 11:42:07 +0200 Jiri Pirko wrote:
-> Mon, May 02, 2022 at 04:39:33PM CEST, kuba@kernel.org wrote:
-> >On Sat, 30 Apr 2022 08:27:35 +0200 Jiri Pirko wrote:  
-> >> Now I just want to use this component name to target individual line
-> >> cards. I see it is a nice fit. Don't you think?  
-> >
-> >Still on the fence.  
+On 5/23/22 03:42, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Why?
-
-IIRC my concern was mixing objects. We have component name coming from
-lc info, but then use it in dev flash.
-
-> >> I see that the manpage is mentioning "the component names from devlink dev info"
-> >> which is not actually implemented, but exactly what I proposed.  
-> >
-> >How do you tie the line card to the component name? lc8_dev0 from 
-> >the flashing example is not present in the lc info output.  
+> When DSA gains support for multiple CPU ports in a LAG, it will become
+> mandatory to monitor the changeupper events for the DSA master.
 > 
-> Okay, I will move it there. Makes sense.
+> In fact, there are already some restrictions to be imposed in that area,
+> namely that a DSA master cannot be a bridge port except in some special
+> circumstances.
+> 
+> Centralize the restrictions at the level of the DSA layer as a
+> preliminary step.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-FWIW I think I meant my comment as a way to underline that what you
-argue for is not what's implemented (assuming your "not actually
-implemented" referred to the flashing). I was trying to send you back 
-to the drawing board rather than break open a box of band-aides.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
