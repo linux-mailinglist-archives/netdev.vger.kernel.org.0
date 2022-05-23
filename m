@@ -2,113 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 154E9531944
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:54:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 34B87531840
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:53:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244072AbiEWSS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 14:18:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
+        id S240522AbiEWS2H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 14:28:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244664AbiEWSSf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 14:18:35 -0400
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B581A7E31
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 10:57:18 -0700 (PDT)
-Received: by mail-pl1-x635.google.com with SMTP id w3so7153336plp.13
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 10:57:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=M80R9ahYmPBb+o2ZImyyHU08I938Wyk5hTSEiNoCO5I=;
-        b=XJyvVhle+dUHqr0/7xjkkK/v8Hvp6aoXxPUzy5uVVh6GIbi4M4C/69jhYMSdBB0P1k
-         bL44tSfWeOT7zLn1VMLc2t5MO3JBKk4vueMNJiyqsmcggX/TTX/2pUuA/J/uSPIBqyHp
-         12jUzzpLaBrbbRIlt4Uils9JY4W0Uqh/QnQ1GxEmRDXfe1vgmexAj/hp8jTQJLoTXmEC
-         ZYc7uLznmEXBFTM7svcTFV9R9JwvpbeeJyAvXCi3WmY+uoEYRLmsbQvgtqLCJAZCSpQd
-         ZW2tLL36AXFb79J9iRPu6QgTRphGTeoTnMOZvxiUzdFyVgg2KAo6eYd2UQJdNWJvKto2
-         S/sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=M80R9ahYmPBb+o2ZImyyHU08I938Wyk5hTSEiNoCO5I=;
-        b=CldGXTIqyToKaY/oEND0W/9t/Uy5wHJ/UwaxDmnwCEVKG7PyJtOdmZllUNOfr9xHeH
-         9TcLwVMOnTGS05Zd4kF+QQ2h+Sj6N/m37lPAgD+s+5g14DgxIy9lP2jieaMHzo5b0Xcc
-         xYMCZRq6av8LujMl9kqWsVOhzI4u1V+dhCu/Frgg7xaBBDLGSynXJy6/eAV57PgifCBn
-         jEkVISRoGlmftGvfmmAWVOTEnS5twQfq/SqvMNQA8aufA+oYJ21VuHnn4UXOS+pQdpQf
-         gzHqqT1jf986CjSfRO1YCm8iRRQTDlm4CGpe82Brqk/TDvEF79qtfAx8HX0aXRYxJCI5
-         3rKg==
-X-Gm-Message-State: AOAM531dykdESO6rDUN95I+M30HKOkhizBV17g4zK2TSW6jyQxoBuuwc
-        yxb8Y+mLyIhn/LvHIpbYb08=
-X-Google-Smtp-Source: ABdhPJyxRpJCqEngtVoDlff13ZG7SF1sPPIqs7sklxaoo88OJrXoEnxrBypY3hUmejDE6nom15PVlw==
-X-Received: by 2002:a17:902:ea0a:b0:161:fb2f:ef9b with SMTP id s10-20020a170902ea0a00b00161fb2fef9bmr14827650plg.22.1653328593245;
-        Mon, 23 May 2022 10:56:33 -0700 (PDT)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id y12-20020a62ce0c000000b0050dc762812esm7580615pfg.8.2022.05.23.10.56.31
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 10:56:32 -0700 (PDT)
-Message-ID: <9b493b79-9a48-e6c3-5b96-4ca83bea4466@gmail.com>
-Date:   Mon, 23 May 2022 10:56:30 -0700
+        with ESMTP id S245430AbiEWS1F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 14:27:05 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D29929E9F8
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 11:02:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id EA084CE1724
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 17:56:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C102EC385A9;
+        Mon, 23 May 2022 17:56:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653328602;
+        bh=PTRJE+tiw0z5DzecGRSn+uvQjoPL914rmiQd6Sds9ns=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ukwa8WVDlH7mvQZmphhM3f/juP+ivsRVi9nAynxOu4KKUPvXfUrkvcq/pPMOoEp3X
+         RGBcnQuRIONxdtgSnIX6tMsNUXJmNItH4xcuTo2k4uSy9C+Tp3/YGnoQQwvH9Up9N6
+         8ZIIlMU6RjBw3ZkfXOVOPE+EHVCT67gr783iFOT3AXrvNJAsNVP0Dn79wyFPLmx6Sp
+         BMM9YUSIGsB4ivb7jUYOVEWxoHIMwDDZbKjN3zLvZP0oAl0XT6O1DVA3dXl8lz+RR1
+         I01WHBi4NLdkLO/THbc9NO9TQ+Hm3ahwcGMbdrqiiHHq0yaS2KjdzKXHhtV7AwidEa
+         0HevmfzmnhMoA==
+Date:   Mon, 23 May 2022 10:56:40 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <20220523105640.36d1e4b3@kernel.org>
+In-Reply-To: <YotW74GJWt0glDnE@nanopsycho>
+References: <Ymf66h5dMNOLun8k@nanopsycho>
+        <20220426075133.53562a2e@kernel.org>
+        <YmjyRgYYRU/ZaF9X@nanopsycho>
+        <20220427071447.69ec3e6f@kernel.org>
+        <YmvRRSFeRqufKbO/@nanopsycho>
+        <20220429114535.64794e94@kernel.org>
+        <Ymw8jBoK3Vx8A/uq@nanopsycho>
+        <20220429153845.5d833979@kernel.org>
+        <YmzW12YL15hAFZRV@nanopsycho>
+        <20220502073933.5699595c@kernel.org>
+        <YotW74GJWt0glDnE@nanopsycho>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [RFC PATCH net-next 03/12] net: dsa: don't stop at NOTIFY_OK when
- calling ds->ops->port_prechangeupper
-Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Ansuel Smith <ansuelsmth@gmail.com>,
-        DENG Qingfang <dqfext@gmail.com>,
-        =?UTF-8?Q?Alvin_=c5=a0ipraga?= <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>
-References: <20220523104256.3556016-1-olteanv@gmail.com>
- <20220523104256.3556016-4-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220523104256.3556016-4-olteanv@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/23/22 03:42, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, 23 May 2022 11:42:07 +0200 Jiri Pirko wrote:
+> Mon, May 02, 2022 at 04:39:33PM CEST, kuba@kernel.org wrote:
+> >On Sat, 30 Apr 2022 08:27:35 +0200 Jiri Pirko wrote:  
+> >> Now I just want to use this component name to target individual line
+> >> cards. I see it is a nice fit. Don't you think?  
+> >
+> >Still on the fence.  
 > 
-> dsa_slave_prechangeupper_sanity_check() is supposed to enforce some
-> adjacency restrictions, and calls ds->ops->port_prechangeupper if the
-> driver implements it.
-> 
-> We convert the error code from the port_prechangeupper() call to a
-> notifier code, and 0 is converted to NOTIFY_OK, but the caller of
-> dsa_slave_prechangeupper_sanity_check() stops at any notifier code
-> different from NOTIFY_DONE.
-> 
-> Avoid this by converting back the notifier code to an error code, so
-> that both NOTIFY_OK and NOTIFY_DONE will be seen as 0. This allows more
-> parallel sanity check functions to be added.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Why?
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+IIRC my concern was mixing objects. We have component name coming from
+lc info, but then use it in dev flash.
+
+> >> I see that the manpage is mentioning "the component names from devlink dev info"
+> >> which is not actually implemented, but exactly what I proposed.  
+> >
+> >How do you tie the line card to the component name? lc8_dev0 from 
+> >the flashing example is not present in the lc info output.  
+> 
+> Okay, I will move it there. Makes sense.
+
+FWIW I think I meant my comment as a way to underline that what you
+argue for is not what's implemented (assuming your "not actually
+implemented" referred to the flashing). I was trying to send you back 
+to the drawing board rather than break open a box of band-aides.
