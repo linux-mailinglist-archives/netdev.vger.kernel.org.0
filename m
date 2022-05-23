@@ -2,75 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F14531E87
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:20:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0B52531E8B
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231182AbiEWWUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 18:20:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60382 "EHLO
+        id S231217AbiEWWXH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 18:23:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230003AbiEWWT7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:19:59 -0400
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D9C8AE6E;
-        Mon, 23 May 2022 15:19:58 -0700 (PDT)
-Received: by mail-qt1-x82a.google.com with SMTP id v6so10573543qtx.12;
-        Mon, 23 May 2022 15:19:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=gJZ2EuLHOSL7PCIwr5z5Y+h7/+WPPg4E4J2oaC866W0=;
-        b=YOhTG9Ri+JSXgF8K3bxkJJMTZoQjAypQHSslGCYguNA6W8rpjSOwWWVHglqoOLfziX
-         OuLbVtzWsjllk5FikzcX2UBujPLKCT5mRUBdbFg8cLydNboLaQV2DoPWN46Usx3FIAr/
-         rDS7PSBsOUGSbWVRg+niu8IHtlsriMje8IAn1U03HOvcozseYUBlpWNqQMewEqkJ26F2
-         0hZchk06w+preD1pH0L50nHWB1MpFLj6ggYVd2p3Ck8Pu+AM9D6kfCVfJdLPKQ3z+w5J
-         hHKf8yfNx8UJlZ5q/yFd2IfnhPVznGO3MEWWEHx2KwsvHTk9KG5zdW7Gz/+L9pjmlCiI
-         NzsQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gJZ2EuLHOSL7PCIwr5z5Y+h7/+WPPg4E4J2oaC866W0=;
-        b=l+08hfH2Dfk4ioRz07Mzd/ZmE8O9t2hqiTwR5pQ3jc8NNPYBqWIZqMkyti7aaRExyK
-         qu96DecPDKYFDJY6eOdJPVVvUzJIVmy56wfC/oQhrr5oh5ulJpjB7uSp5OSxVyJxZCSN
-         c4/3tiqg+9JGfvVj077HClGLfQc0402BbPQjcw9HxUT1JanYMTEp/ouLccBAHqE2LMR/
-         iKWBh8ANfI1n35h5Q+db5vyshauTNsdWgzsLwXwib3hZIPoOIhCAd7u+7GUMi+1aLoeF
-         ku/y2siDcvYWCn2M9ItMeBh2ExdYo1pwBDEHoXHqsfJrqnlTTd8DX+nBajKzE8OrvleG
-         IGLg==
-X-Gm-Message-State: AOAM531TZRPBfTL/dix0J5RL+r0lqjJgq2zHAKNdK0IDwlxZJRW3EucI
-        tf8gVDC/fFRfxuPs6G8LOc4H3ffMG3DjYg==
-X-Google-Smtp-Source: ABdhPJz1VHWenGd2tI7aaPHAkuYo+GbZjISx0sNKVm0XqQY2LBg7NKQIeqn7HLtSUZeJLVvzaiUFBg==
-X-Received: by 2002:a05:622a:4ce:b0:2f9:3e6e:475 with SMTP id q14-20020a05622a04ce00b002f93e6e0475mr2344654qtx.469.1653344397807;
-        Mon, 23 May 2022 15:19:57 -0700 (PDT)
-Received: from jup ([2607:fea8:e2e4:d600::6ece])
-        by smtp.gmail.com with ESMTPSA id e18-20020ac84e52000000b002f936bae288sm3106792qtw.87.2022.05.23.15.19.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 15:19:57 -0700 (PDT)
-Date:   Mon, 23 May 2022 18:19:54 -0400
-From:   Michael Mullin <masmullin@gmail.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] bpftool: mmaped fields missing map structure in
- generated skeletons
-Message-ID: <20220523221954.dsqvy55ron4cfdqq@jup>
-References: <20220523202649.6iiz4h2wf5ryx3w2@jup>
- <CAEf4BzaecP2XkzftmH7GeeTfj1E+pv=20=L4ztrxe4-JU7MuUw@mail.gmail.com>
+        with ESMTP id S229777AbiEWWXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:23:06 -0400
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62BE07C17D;
+        Mon, 23 May 2022 15:23:03 -0700 (PDT)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L6X014vHXz4xXj;
+        Tue, 24 May 2022 08:22:57 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1653344578;
+        bh=fiBBP1CwLxOOiEJzduELiG5+UCGaqySIgp41nnB4s84=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=fV92vlENlHuJ/QYqjGAOoE54AhITOz1ZMBUtx7JwoPdqvG5cSXnR10GKPe0T7icwE
+         BIBcAqNb2K/bPAJPyLCtgqo8ZkD4vXnt1LqH0pPspg5pP0lb9367N54IyIMUyWenWc
+         4NC/fyPqa89L6D43W4Ac7Oz38Okct59hpRoh5ux1IlqukIdSwGGlBvWDUs3M9Y5b5a
+         PKq+t7zutTPM+2+MZXiRKKLihlnk1o8/nTaQHcixYGKJ5ZmeYvhSqweXrIlwmuh5CB
+         2vQ1YN35aTEs1nLq6BboqAdKIhSQcsc1goBO0/cCZeJ8AHJbwEHimyjZ54/3G3Vc5X
+         CbRMj8nWyTK/A==
+Date:   Tue, 24 May 2022 08:22:56 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Yury Norov <yury.norov@gmail.com>
+Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Subject: Re: linux-next: build warning after merge of the bluetooth tree
+Message-ID: <20220524082256.3b8033a9@canb.auug.org.au>
+In-Reply-To: <20220516175757.6d9f47b3@canb.auug.org.au>
+References: <20220516175757.6d9f47b3@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzaecP2XkzftmH7GeeTfj1E+pv=20=L4ztrxe4-JU7MuUw@mail.gmail.com>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Content-Type: multipart/signed; boundary="Sig_/zscRXC6yYxWnLTKDmeusqjf";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -78,51 +56,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 23, 2022 at 03:02:31PM -0700, Andrii Nakryiko wrote:
-> On Mon, May 23, 2022 at 1:26 PM Michael Mullin <masmullin@gmail.com> wrote:
-> >
-> > When generating a skeleton which has an mmaped map field, bpftool's
-> > output is missing the map structure.  This causes a compile break when
-> > the generated skeleton is compiled as the field belongs to the internal
-> > struct maps, not directly to the obj.
-> >
-> > Signed-off-by: Michael Mullin <masmullin@gmail.com>
-> > ---
-> >  tools/bpf/bpftool/gen.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >
-> > diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
-> > index f158dc1c2149..b49293795ba0 100644
-> > --- a/tools/bpf/bpftool/gen.c
-> > +++ b/tools/bpf/bpftool/gen.c
-> > @@ -853,7 +853,7 @@ codegen_maps_skeleton(struct bpf_object *obj, size_t map_cnt, bool mmaped)
-> >                         i, bpf_map__name(map), i, ident);
-> >                 /* memory-mapped internal maps */
-> >                 if (mmaped && is_internal_mmapable_map(map, ident, sizeof(ident))) {
-> > -                       printf("\ts->maps[%zu].mmaped = (void **)&obj->%s;\n",
-> > +                       printf("\ts->maps[%zu].mmaped = (void **)&obj->maps.%s;\n",
-> 
-> That's not right. maps.my_map is struct bpf_map *, but mmaped is
-> supposed to be a blob of memory that is memory-mapped into map.
-> 
-> Can you elaborate on how you trigger that compilation error with a
-> small example?
+--Sig_/zscRXC6yYxWnLTKDmeusqjf
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-I have an a very small example on github. I have added some sed fixes to
-my Makefile make my sample program compile.
-https://github.com/masmullin2000/libbpf-sample/tree/main/c/simple
+Hi all,
 
-https://github.com/masmullin2000/libbpf-sample/tree/02c7f945bf9027daedec04f485a320ba2df28204/c/simple
-contains broken code.
+On Mon, 16 May 2022 17:57:57 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>=20
+> After merging the bluetooth tree, today's linux-next build (arm
+> multi_v7_defconfig) produced this warning:
+>=20
+> In file included from include/linux/cpumask.h:12,
+>                  from include/linux/mm_types_task.h:14,
+>                  from include/linux/mm_types.h:5,
+>                  from include/linux/buildid.h:5,
+>                  from include/linux/module.h:14,
+>                  from net/bluetooth/mgmt.c:27:
+> In function 'bitmap_copy',
+>     inlined from 'bitmap_copy_clear_tail' at include/linux/bitmap.h:270:2,
+>     inlined from 'bitmap_from_u64' at include/linux/bitmap.h:622:2,
+>     inlined from 'set_device_flags' at net/bluetooth/mgmt.c:4534:4:
+> include/linux/bitmap.h:261:9: warning: 'memcpy' forming offset [4, 7] is =
+out of the bounds [0, 4] of object 'flags' with type 'long unsigned int[1]'=
+ [-Warray-bounds]
+>   261 |         memcpy(dst, src, len);
+>       |         ^~~~~~~~~~~~~~~~~~~~~
+> In file included from include/linux/kasan-checks.h:5,
+>                  from include/asm-generic/rwonce.h:26,
+>                  from ./arch/arm/include/generated/asm/rwonce.h:1,
+>                  from include/linux/compiler.h:248,
+>                  from include/linux/build_bug.h:5,
+>                  from include/linux/container_of.h:5,
+>                  from include/linux/list.h:5,
+>                  from include/linux/module.h:12,
+>                  from net/bluetooth/mgmt.c:27:
+> net/bluetooth/mgmt.c: In function 'set_device_flags':
+> net/bluetooth/mgmt.c:4532:40: note: 'flags' declared here
+>  4532 |                         DECLARE_BITMAP(flags, __HCI_CONN_NUM_FLAG=
+S);
+>       |                                        ^~~~~
+> include/linux/types.h:11:23: note: in definition of macro 'DECLARE_BITMAP'
+>    11 |         unsigned long name[BITS_TO_LONGS(bits)]
+>       |                       ^~~~
+>=20
+> Introduced by commit
+>=20
+>   a9a347655d22 ("Bluetooth: MGMT: Add conditions for setting HCI_CONN_FLA=
+G_REMOTE_WAKEUP")
+>=20
+> Bitmaps consist of unsigned longs (in this case 32 bits) ...
+>=20
+> (This warning only happens due to chnges in the bitmap tree.)
 
-I apologize if this is an incorrect way to share external code.  I
-haven't found the proper way to share example code from
-kernelnewbies.org
+I still got this warning yesterday ...
 
-> 
-> >                                 i, ident);
-> >                 }
-> >                 i++;
-> > --
-> > 2.36.1
-> >
+--=20
+Cheers,
+Stephen Rothwell
+
+--Sig_/zscRXC6yYxWnLTKDmeusqjf
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKMCUAACgkQAVBC80lX
+0Gzm/Af/c9T/h9Tg15i2XoL+FySraisx0potlPbWJtmaPxVay9I4VcEwikcJyyIr
+b19gSux7jkvkPvhKEe0HY5qPZucDZi5mYutpphPx/wMkgCDfmamX4He/di2zlZtQ
+OV0tJN0eiUTT9XQGmImzLywV8feb2Pe+rjuvXn9P2Y6MmI17axPvHXM9MOC7ViLr
+7d8YXqyb2KLfmrSqwqeO8w918wom5Eb0HNYG1zWZHwgq/b/twN4fsQvAy6zJYweK
+tXNFt2JLunfLsHqxqQiC0E5uPLbmd79ZOv6BZPAG+mqlE7W7T+A7xaHUhCWL4pbo
+XVQiDcuwuxbRJwjPKVpg+ZrleAxjeQ==
+=lsMX
+-----END PGP SIGNATURE-----
+
+--Sig_/zscRXC6yYxWnLTKDmeusqjf--
