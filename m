@@ -2,68 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F881531E58
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:07:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AADF5531E7F
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:19:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbiEWWHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 18:07:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39516 "EHLO
+        id S231348AbiEWWTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 18:19:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229491AbiEWWHW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:07:22 -0400
-Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB77B38BF2;
-        Mon, 23 May 2022 15:07:20 -0700 (PDT)
-Received: by mail-vs1-xe32.google.com with SMTP id b7so16483939vsq.1;
-        Mon, 23 May 2022 15:07:20 -0700 (PDT)
+        with ESMTP id S230476AbiEWWTD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:19:03 -0400
+Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B66082146;
+        Mon, 23 May 2022 15:19:02 -0700 (PDT)
+Received: by mail-vk1-xa36.google.com with SMTP id x11so7232590vkn.11;
+        Mon, 23 May 2022 15:19:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=XSlHjnTpNeJkBXf9g/KNtqsnSqM2X0+xdvEyIgTr6JQ=;
-        b=EWwnTLM16H2GID9+UMX+0nE+pP3lqI2zGGAdpDUwji1ya5dw7SMD1eY9VBTTyzZ97p
-         pnByUqrOiDK2UWSurC7DobSo4CmD+ZAvHtc04GRJIsGw0fSO+eLor7K60PCvjH5JEVyS
-         e/eH4dT5yygEZpGlkm6i0xZPBRNG+Bw7w0NVBq8AcoYzA9Xhu2CCIxlyaXrckX+jhUE2
-         zy0bMaodYI5pg8r4ys5ei2CpT7VSiYqgQjcmbmH/Tje8evG8fCsaD2DZ1WPXq+5aGyjR
-         8BpBP/zt3jvcyEp80mLe/oV8xS1aBQ8q6qqiPSdBWfwlFIc7IpG714GItGipaHKVGzvo
-         4cEg==
+        bh=o0jmOLbIBLC81iyA5yzsszbXfVOeW4ty6u6e0iBG1ak=;
+        b=Q6spda00D8K2i1naxwniSrw8jg1W3WVi94CaLo8Km049sMI9f8AA1eDBhxZtAdkn9J
+         yU8aY1JPVSAYtW+gahpiFeo1pZRnoWQF0jZmvQR8N/MDp8BjCQCE2Ve5i4T2eqdGdEfA
+         /DciG7Z78vUq2S9CIFDLeu/5+ZD9h7/wedib4aBvbRbIIqVH+LMmQ7ICqgGO4muXiq1r
+         H1PzwYkmdSEcg9ncZQpIpZlfGAxdm5kFRG/Sa7WNAkE5LuXalwXPMSEje5dnGxNyTIf7
+         gp5ErRSaxDha4ypyd8aV6uMGmVt0D6MpyGm5PYUMr4qBFwEwxdahxUqsrBFIOB/u7uHr
+         Ek+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=XSlHjnTpNeJkBXf9g/KNtqsnSqM2X0+xdvEyIgTr6JQ=;
-        b=YFFE/PyYILo4LQ9lw4dENDg8wPPNEAe+rXSPb6ldXkj9EutMboYNoDxm1oCaV+tYLU
-         UdYa0oqe8djUlXv0B/8Pq9FG4EV32y5Jx5c5jM8DFNvff6YqoAmP2HdpnjhzXFlgBUbY
-         5kvq6xPoJ20EY/igavjubXYHZRF0ucDwkj9IpOk08sOQmAradClDUA1h5yOysDX/kldB
-         /28hjqMJhn8Nt1PF20iAQ68wtIFL6SImQg5h3r9C9O8uVBI+ganf1gI1MJTBpYdpvGFB
-         Dj7ETNfbc+LUJmXnLdhDoL0xVDnJGhQJLLM4UKNYVMZvDiZ5um+PO+LgPhfQgQ6TOZCt
-         if0w==
-X-Gm-Message-State: AOAM533flFvpBr8awJ0XlfVmmdtY9uN0WfE8JihmYsUgOlbKX81MVjTq
-        3K40+9EOJSa9RrpUpWWv94ADRnYyKBGtOa8qk5k=
-X-Google-Smtp-Source: ABdhPJz1O2EWuAnkK+LM9P6gjKOn5UxPsEEewag3V5kdOD0oCJLqAcLdS5U+rPZbYmR16eX6VvASq4sH/ezCoCC8KQo=
-X-Received: by 2002:a05:6102:370a:b0:333:c0e7:77e8 with SMTP id
- s10-20020a056102370a00b00333c0e777e8mr9914433vst.54.1653343639818; Mon, 23
- May 2022 15:07:19 -0700 (PDT)
+        bh=o0jmOLbIBLC81iyA5yzsszbXfVOeW4ty6u6e0iBG1ak=;
+        b=6vlPgrjfJPmihx6+sGFlfY9k8BexaLcIA47q7r/YkHTepSbbSFAdQPQP6tJwypAXhs
+         hzkmpDUitbWoGTt/OL8+biiiLI37ktKheuXGJG0pFqFSb/dOXXDzzkGYFYgclMD8+SFl
+         VTdTHf1HyD8UIzRVtI5wtDovmgNclEX6b6fYrarA9yTOKa7hHFgnEaxu0Hph6FQsF+JC
+         k15wMgJtiHQ3yWbhJuE5SbRx3qI4g7aqoeOTDz7CO1NEjf1/VRfvdVJsLtmjTu0Yy03C
+         QE6MUPFUVcQ9/Ua+HxmHNoFej5a+xerMEqXaww8v734aSGUdAXgaOQmhULE/w7IdVE+O
+         DdJA==
+X-Gm-Message-State: AOAM531fOx2U5sWQg7jtef8NdxTqHXhDK3jWheFYC4MAtWjxj/ZSixYA
+        rXBMdKCFlI0Cwe0IwtwwzKvHX8YN3yq6aTuMlBU=
+X-Google-Smtp-Source: ABdhPJwXGAJoIRCLkBVb6nbGLCaOQQ+/QyZqFuWiushHlGc6SCs3JQg4uMgLxbApU6UQAi4K8yn72yjFMuKXWksRjGQ=
+X-Received: by 2002:a1f:ac14:0:b0:34e:c5cc:f97f with SMTP id
+ v20-20020a1fac14000000b0034ec5ccf97fmr8856454vke.9.1653344341474; Mon, 23 May
+ 2022 15:19:01 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220523102955.43844-1-douglas.raillard@arm.com> <4268b7c5-458e-32cc-36c4-79058be0480e@iogearbox.net>
-In-Reply-To: <4268b7c5-458e-32cc-36c4-79058be0480e@iogearbox.net>
+References: <20220523212808.603526-1-connoro@google.com>
+In-Reply-To: <20220523212808.603526-1-connoro@google.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 23 May 2022 15:07:08 -0700
-Message-ID: <CAEf4BzZH-vV8iVqcDr_izTm+VqnqQ4QCzCgPA0pVX3iuVm9iHg@mail.gmail.com>
-Subject: Re: [PATCH v2] libbpf: Fix determine_ptr_size() guessing
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Douglas RAILLARD <douglas.raillard@arm.com>,
-        bpf <bpf@vger.kernel.org>, beata.michalska@arm.com,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Mon, 23 May 2022 15:18:50 -0700
+Message-ID: <CAEf4Bzb7RLdNjx8kiHUmv05vB+nF-4PH-FcYynWoKHLUsHR2+Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2] libbpf: also check /sys/kernel/tracing for
+ tracefs files
+To:     "Connor O'Brien" <connoro@google.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Tom Rix <trix@redhat.com>, Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, llvm@lists.linux.dev
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
@@ -75,84 +73,143 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 23, 2022 at 2:00 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Mon, May 23, 2022 at 2:28 PM Connor O'Brien <connoro@google.com> wrote:
 >
-> On 5/23/22 12:29 PM, Douglas RAILLARD wrote:
-> > From: Douglas Raillard <douglas.raillard@arm.com>
-> >
-> > One strategy employed by libbpf to guess the pointer size is by finding
-> > the size of "unsigned long" type. This is achieved by looking for a type
-> > of with the expected name and checking its size.
-> >
-> > Unfortunately, the C syntax is friendlier to humans than to computers
-> > as there is some variety in how such a type can be named. Specifically,
-> > gcc and clang do not use the same name in debug info.
+> libbpf looks for tracefs files only under debugfs, but tracefs may be
+> mounted even if debugfs is not. When /sys/kernel/debug/tracing is
+> absent, try looking under /sys/kernel/tracing instead.
 >
-> Could you elaborate for the commit msg what both emit differently?
+> Signed-off-by: Connor O'Brien <connoro@google.com>
+> ---
+> v1->v2: cache result of debugfs check.
 >
-> > Lookup all the names for such a type so that libbpf can hope to find the
-> > information it wants.
-> >
-> > Signed-off-by: Douglas Raillard <douglas.raillard@arm.com>
-> > ---
-> >   tools/lib/bpf/btf.c | 15 +++++++++++++--
-> >   1 file changed, 13 insertions(+), 2 deletions(-)
-> >
-> >   CHANGELOG
-> >       v2:
-> >               * Added missing case for "long"
-> >
-> > diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> > index 1383e26c5d1f..ab92b3bc2724 100644
-> > --- a/tools/lib/bpf/btf.c
-> > +++ b/tools/lib/bpf/btf.c
-> > @@ -489,8 +489,19 @@ static int determine_ptr_size(const struct btf *btf)
-> >               if (!name)
-> >                       continue;
-> >
-> > -             if (strcmp(name, "long int") == 0 ||
-> > -                 strcmp(name, "long unsigned int") == 0) {
-> > +             if (
-> > +                     strcmp(name, "long") == 0 ||
-> > +                     strcmp(name, "long int") == 0 ||
-> > +                     strcmp(name, "int long") == 0 ||
-> > +                     strcmp(name, "unsigned long") == 0 ||
-> > +                     strcmp(name, "long unsigned") == 0 ||
-> > +                     strcmp(name, "unsigned long int") == 0 ||
-> > +                     strcmp(name, "unsigned int long") == 0 ||
-> > +                     strcmp(name, "long unsigned int") == 0 ||
-> > +                     strcmp(name, "long int unsigned") == 0 ||
-> > +                     strcmp(name, "int unsigned long") == 0 ||
-> > +                     strcmp(name, "int long unsigned") == 0
-> > +             ) {
+>  src/libbpf.c | 32 +++++++++++++++++++++++++-------
+>  1 file changed, 25 insertions(+), 7 deletions(-)
 >
-> I was wondering whether strstr(3) or regexec(3) would be better, but then it's
-
-regexec() seems like an overkill, but strstr() won't work because
-we'll mistakingly find "long long". Splitting by space and sorting
-also feels like going a bit too far. So I guess let's stick to this
-exhaustive comparison approach.
-
-But Douglas, can you please a table instead of writing out all those strcmp():
-
-const char *long_aliases[] = {
-    "long",
-    "long int",
-    ...
-}
-
-for (i = 0; i < ARRAY_SIZE(long_aliases); i++) { ... }
-
-?
-
-> probably not worth it and having the different combinations spelled out is
-> probably still better. Pls make sure though to stick to kernel coding convention
-> (similar alignment around strcmp() as the lines you remove).
+> diff --git a/src/libbpf.c b/src/libbpf.c
+> index 2262bcd..cc47c52 100644
+> --- a/src/libbpf.c
+> +++ b/src/libbpf.c
+> @@ -9945,10 +9945,22 @@ static void gen_kprobe_legacy_event_name(char *buf, size_t buf_sz,
+>                  __sync_fetch_and_add(&index, 1));
+>  }
 >
-> >                       if (t->size != 4 && t->size != 8)
-> >                               continue;
-> >                       return t->size;
-> >
+> +static bool debugfs_available(void)
+> +{
+> +       static bool initialized = false, available;
+> +
+> +       if (!initialized) {
+> +               available = !access("/sys/kernel/debug/tracing", F_OK);
+> +               initialized = true;
+> +       }
+> +       return available;
+> +}
+
+so thinking about this caching a bit, I'm not so sure we want to cache
+this decision. Mounting and unmounting of tracefs can happen after BPF
+application starts, so this debugfs_available flag can actually change
+while program is running. On the other hand, we don't do this check
+all that frequently, only during attach/detach, so it might be ok not
+to cache this result at all? WDYT?
+
+> +
+>  static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
+>                                    const char *kfunc_name, size_t offset)
+>  {
+> -       const char *file = "/sys/kernel/debug/tracing/kprobe_events";
+> +       const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/kprobe_events" :
+> +               "/sys/kernel/tracing/kprobe_events";
+
+reading through this patch, it's now quite hard to see what differs,
+to be honest. While I do like full file path spelled out, now that we
+have two different prefixes it seems better to have prefixes separate.
+How about we do
+
+#define TRACEFS_PFX "/sys/kernel/tracing"
+#define DEBUGFS_PFX "/sys/kernel/debug/tracing"
+
+and then use that to construct strings. Like in the above example
+
+
+const char *file = has_debugfs() ? DEBUGFS_PFX "/kprobe_events" :
+TRACEFS_PFX "/kprobe_events";
+
+and similarly below. That way at least we see clearly the part that's
+not dependent on debugfs/tracefs differences.
+
 >
-> Thanks,
-> Daniel
+>         return append_to_file(file, "%c:%s/%s %s+0x%zx",
+>                               retprobe ? 'r' : 'p',
+> @@ -9958,7 +9970,8 @@ static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
+>
+>  static int remove_kprobe_event_legacy(const char *probe_name, bool retprobe)
+>  {
+> -       const char *file = "/sys/kernel/debug/tracing/kprobe_events";
+> +       const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/kprobe_events" :
+> +               "/sys/kernel/tracing/kprobe_events";
+>
+>         return append_to_file(file, "-:%s/%s", retprobe ? "kretprobes" : "kprobes", probe_name);
+>  }
+> @@ -9968,7 +9981,8 @@ static int determine_kprobe_perf_type_legacy(const char *probe_name, bool retpro
+>         char file[256];
+>
+>         snprintf(file, sizeof(file),
+> -                "/sys/kernel/debug/tracing/events/%s/%s/id",
+> +                debugfs_available() ? "/sys/kernel/debug/tracing/events/%s/%s/id" :
+> +                "/sys/kernel/tracing/events/%s/%s/id",
+>                  retprobe ? "kretprobes" : "kprobes", probe_name);
+>
+>         return parse_uint_from_file(file, "%d\n");
+> @@ -10144,7 +10158,8 @@ static void gen_uprobe_legacy_event_name(char *buf, size_t buf_sz,
+>  static inline int add_uprobe_event_legacy(const char *probe_name, bool retprobe,
+>                                           const char *binary_path, size_t offset)
+>  {
+> -       const char *file = "/sys/kernel/debug/tracing/uprobe_events";
+> +       const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/uprobe_events" :
+> +               "/sys/kernel/tracing/uprobe_events";
+>
+>         return append_to_file(file, "%c:%s/%s %s:0x%zx",
+>                               retprobe ? 'r' : 'p',
+> @@ -10154,7 +10169,8 @@ static inline int add_uprobe_event_legacy(const char *probe_name, bool retprobe,
+>
+>  static inline int remove_uprobe_event_legacy(const char *probe_name, bool retprobe)
+>  {
+> -       const char *file = "/sys/kernel/debug/tracing/uprobe_events";
+> +       const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/uprobe_events" :
+> +               "/sys/kernel/tracing/uprobe_events";
+>
+>         return append_to_file(file, "-:%s/%s", retprobe ? "uretprobes" : "uprobes", probe_name);
+>  }
+> @@ -10164,7 +10180,8 @@ static int determine_uprobe_perf_type_legacy(const char *probe_name, bool retpro
+>         char file[512];
+>
+>         snprintf(file, sizeof(file),
+> -                "/sys/kernel/debug/tracing/events/%s/%s/id",
+> +                debugfs_available() ? "/sys/kernel/debug/tracing/events/%s/%s/id" :
+> +                "/sys/kernel/tracing/events/%s/%s/id",
+
+like here, "events/%s/%s/id" is important to separate, so
+
+snprintf(file, sizeof(file), "%s/events/%s/%s/id",
+         has_debugfs() ? DEBUGFS_PFX : TRACEFS_PFX,
+         retprobe ? "uretprobes" : "uprobes", probe_name);
+
+seems easier to follow?
+
+
+>                  retprobe ? "uretprobes" : "uprobes", probe_name);
+>
+>         return parse_uint_from_file(file, "%d\n");
+> @@ -10295,7 +10312,8 @@ static int determine_tracepoint_id(const char *tp_category,
+>         int ret;
+>
+>         ret = snprintf(file, sizeof(file),
+> -                      "/sys/kernel/debug/tracing/events/%s/%s/id",
+> +                      debugfs_available() ? "/sys/kernel/debug/tracing/events/%s/%s/id" :
+> +                      "/sys/kernel/tracing/events/%s/%s/id",
+>                        tp_category, tp_name);
+>         if (ret < 0)
+>                 return -errno;
+> --
+> 2.36.1.124.g0e6072fb45-goog
+>
