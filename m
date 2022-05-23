@@ -2,144 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4909653130E
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 18:23:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8AC08531358
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 18:23:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237370AbiEWOtL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 10:49:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47186 "EHLO
+        id S237548AbiEWPAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 11:00:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37492 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237358AbiEWOtI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 10:49:08 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE6725535C
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 07:49:07 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id c22so13901895pgu.2
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 07:49:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=GxyBsIEl95H/eEhTmGG6uJoxmDHlvYVn1lk90Snrq84=;
-        b=FElMAhjAXKaXrfvjO7I0yZwDtwlmfNmnsmiEKFjCtj81agTLdnkPIeXHR5tT1zD56R
-         +MJCQ9bbwYwNyTU3PsUtu1txJifw7coqUzns/2JDNORiXQWNxTiV+tZwh4epIkdr902L
-         6TSxWhg0te/02sc9GXSeygkmAAAly8J6D9N6mCyr1HU8YlJ6H9ADACI4UGOunWPZxyUz
-         +QPBxVpPo5415kvDooTYyG1T1sXT5eAd3gKufxcnl/qWI1aMTRI6TbU3zF5SeVVBKh3b
-         R9RCvHPyhW7MikJUCccKr1yEBwRIqqTZh1DSEmJkdchSwHp0f/akAznJDXeqyXuO1BM6
-         V1Gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=GxyBsIEl95H/eEhTmGG6uJoxmDHlvYVn1lk90Snrq84=;
-        b=OLCDprEQJcFKPukskRJJb9HOHWpigc/U/n7BXE8+rHGrnFkLc/j0V4PkShgsV0gOVy
-         Dq6+r7ZnZ63st5L4hhzN2eq2wcDVdb1m4IC7ZQDIyqdx5lfxpMfHVZki+pxbHYTlkMUw
-         a3Et6A+f3sOg00HKgy21TBDnxEDDzbUjZk27FSk0cwtB3GDxUAWWSUxlxm+l5LMJixIs
-         9rdFBA9k9IH3yWqigmLRGjarc3NNe041y5pglWnJHo564nSt0i/iZHQg8Jlc+gb6P6gT
-         s2k0+K2ggyLJXv2DxfLqXRRphHw9aXDLRVR9Lfh5jFyArJR4DN5P2oHKpa41j42+hO6I
-         RWCQ==
-X-Gm-Message-State: AOAM532AxDYn/bvu673KnOiW/EjyRVOSF+QI7uNGyW7zFlIyCEK1d5F0
-        c+AYHQ1FLoIqNqncw+KokyURYS5iCmDptQJoPUY=
-X-Google-Smtp-Source: ABdhPJwsSF88d6lHvp3dYcIcBweO/XvV0adtsZ+0PuaRRBlYYe6FOLurPdZ5A6qZXMxmZg+KFcdTj6sM5+DHjLOIjTk=
-X-Received: by 2002:a05:6a00:1807:b0:518:ad18:e514 with SMTP id
- y7-20020a056a00180700b00518ad18e514mr3550064pfa.70.1653317347285; Mon, 23 May
- 2022 07:49:07 -0700 (PDT)
+        with ESMTP id S237427AbiEWPAk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 11:00:40 -0400
+Received: from fanzine2.igalia.com (fanzine.igalia.com [178.60.130.6])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EEB5B8B8;
+        Mon, 23 May 2022 08:00:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=keKJrvyQ/+r75XOnYYRl19FO+VGyiPJcwICfZxDBkqs=; b=O+C3jDB0Vwu4Y/gkTmW/RCmTwy
+        kNqD2emzzlOs/8A7J1xO/TSH5qapt6sCckUwfqeKLJwoCrpUi4pUQfOKCsbI70QtSFMdfNTmFr+H0
+        NXT6Oh9iPuG4hVKz84ZvxHpmEirVLNSMQMza54o3VmB+D23FpdTtf7JnpYZ61zk10z8NLp053Dtmb
+        5G5TvLT8W+VF+imYpIQccZx+LAQHhkmqjWgwAULVFomENEWSpKhN5UeAVPt+Y1vZC04/4FyRoMtUE
+        OHqcld4S4ftUjXzRb6CJS95k+7T+FIlHKMRNj13Qcs75Xk/j3Ix2WaTpEwsP72+2bzr+hEFsSu6v0
+        WUJ5ifAA==;
+Received: from 200-161-159-120.dsl.telesp.net.br ([200.161.159.120] helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1nt9XQ-00GTti-N1; Mon, 23 May 2022 17:00:05 +0200
+Message-ID: <0fac8c71-6f18-d15c-23f5-075dbc45f3f9@igalia.com>
+Date:   Mon, 23 May 2022 11:56:12 -0300
 MIME-Version: 1.0
-Received: by 2002:a05:6a10:3b6:0:0:0:0 with HTTP; Mon, 23 May 2022 07:49:06
- -0700 (PDT)
-Reply-To: abrahammorrison443@gmail.com
-From:   Abraham Morrison <scowil283@gmail.com>
-Date:   Mon, 23 May 2022 07:49:06 -0700
-Message-ID: <CABYci46huk5+5_XxKQrZUHD0nhpfaghG-6kuiMoTgTpyUSLa-A@mail.gmail.com>
-Subject: Good day!
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: Yes, score=5.4 required=5.0 tests=BAYES_50,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO,FREEMAIL_REPLYTO_END_DIGIT,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE,
-        UNDISC_FREEM autolearn=no autolearn_force=no version=3.4.6
-X-Spam-Report: * -0.0 RCVD_IN_DNSWL_NONE RBL: Sender listed at
-        *      https://www.dnswl.org/, no trust
-        *      [2607:f8b0:4864:20:0:0:0:52a listed in]
-        [list.dnswl.org]
-        *  0.8 BAYES_50 BODY: Bayes spam probability is 40 to 60%
-        *      [score: 0.5000]
-        *  0.0 SPF_HELO_NONE SPF: HELO does not publish an SPF Record
-        *  0.2 FREEMAIL_REPLYTO_END_DIGIT Reply-To freemail username ends in
-        *      digit
-        *      [abrahammorrison443[at]gmail.com]
-        *  0.0 FREEMAIL_FROM Sender email is commonly abused enduser mail
-        *      provider
-        *      [scowil283[at]gmail.com]
-        * -0.0 SPF_PASS SPF: sender matches SPF record
-        *  0.2 FREEMAIL_ENVFROM_END_DIGIT Envelope-from freemail username ends
-        *       in digit
-        *      [scowil283[at]gmail.com]
-        * -0.1 DKIM_VALID_EF Message has a valid DKIM or DK signature from
-        *      envelope-from domain
-        * -0.1 DKIM_VALID_AU Message has a valid DKIM or DK signature from
-        *      author's domain
-        * -0.1 DKIM_VALID Message has at least one valid DKIM or DK signature
-        *  0.1 DKIM_SIGNED Message has a DKIM or DK signature, not necessarily
-        *       valid
-        * -0.0 T_SCC_BODY_TEXT_LINE No description available.
-        *  3.3 UNDISC_FREEM Undisclosed recipients + freemail reply-to
-        *  1.0 FREEMAIL_REPLYTO Reply-To/From or Reply-To/body contain
-        *      different freemails
-X-Spam-Level: *****
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
+Content-Language: en-US
+To:     Scott Branden <scott.branden@broadcom.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Desmond yan <desmond.yan@broadcom.com>
+Cc:     David Gow <davidgow@google.com>, Evan Green <evgreen@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
+        akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S. Miller" <davem@davemloft.net>,
+        Dexuan Cui <decui@microsoft.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        zhenwei pi <pizhenwei@bytedance.com>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-20-gpiccoli@igalia.com> <YoJZVZl/MH0KiE/J@alley>
+ <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com> <YoOpyW1+q+Z5as78@alley>
+ <d72b9aab-675c-ac89-b73a-b1de4a0b722d@igalia.com>
+ <81878a67-21f1-fee8-1add-f381bc8b05df@broadcom.com>
+ <edbaa4fa-561c-6f5e-f2ab-43ae68acaede@igalia.com>
+ <d1cc0bee-2a98-0c2e-8796-6fb7fae6b803@broadcom.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <d1cc0bee-2a98-0c2e-8796-6fb7fae6b803@broadcom.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Aufmerksamkeit bitte,
+On 19/05/2022 16:20, Scott Branden wrote:
+> [...] 
+>> Hi Scott / Desmond, thanks for the detailed answer! Is this adapter
+>> designed to run in x86 only or you have other architectures' use cases?
+> The adapter may be used in any PCIe design that supports DMA.
+> So it may be possible to run in arm64 servers.
+>>
+>> [...]
+>> With that said, and given this is a lightweight notifier that ideally
+>> should run ASAP, I'd keep this one in the hypervisor list. We can
+>> "adjust" the semantic of this list to include lightweight notifiers that
+>> reset adapters.
+> Sounds the best to keep system operating as tested today.
+>>
+>> With that said, Petr has a point - not always such list is going to be
+>> called before kdump. So, that makes me think in another idea: what if we
+>> have another list, but not on panic path, but instead in the custom
+>> crash_shutdown()? Drivers could add callbacks there that must execute
+>> before kexec/kdump, no matter what.
+> It may be beneficial for some other drivers but for our use we would 
+> then need to register for the panic path and the crash_shutdown path. 
+> We notify the VK card for 2 purposes: one to stop DMA so memory stop 
+> changing during a kdump.  And also to get the card into a good state so 
+> resets happen cleanly.
 
-Ich bin Mr. Abraham Morrison, wie geht es Ihnen, ich hoffe, Sie sind
-wohlauf und gesund? Hiermit m=C3=B6chte ich Sie dar=C3=BCber informieren, d=
-ass
-ich die Transaktion mit Hilfe eines neuen Partners aus Indien
-erfolgreich abgeschlossen habe und nun der Fonds nach Indien auf das
-Bankkonto des neuen Partners =C3=BCberwiesen wurde.
+Thanks Scott! With that, I guess it's really better to keep this
+notifier in this hypervisor/early list - I'm planning to do that for V2.
+Unless Petr or somebody has strong feelings against that, of course.
 
-Inzwischen habe ich mich entschieden, Sie mit der Summe von 500.000,00
-=E2=82=AC (nur f=C3=BCnfhunderttausend Euro) f=C3=BCr Ihre bisherigen Bem=
-=C3=BChungen zu
-entsch=C3=A4digen, obwohl Sie mich auf der ganzen Linie entt=C3=A4uscht hab=
-en.
-Aber trotzdem freue ich mich sehr =C3=BCber den reibungslosen und
-erfolgreichen Abschluss der Transaktion und habe mich daher
-entschieden, Sie mit der Summe von 500.000,00 =E2=82=AC zu entsch=C3=A4dige=
-n, damit
-Sie die Freude mit mir teilen.
-
-Ich rate Ihnen, sich an meine Sekret=C3=A4rin zu wenden, um eine
-Bankomatkarte =C3=BCber 500.000,00 =E2=82=AC zu erhalten, die ich f=C3=BCr =
-Sie
-aufbewahrt habe. Kontaktieren Sie sie jetzt ohne Verz=C3=B6gerung.
-
-Name: Linda Kofi
-E-Mail: koffilinda785@gmail.com
+Cheers,
 
 
-Bitte best=C3=A4tigen Sie ihr die folgenden Informationen:
-
-Ihren vollst=C3=A4ndigen Namen:........
-Deine Adresse:..........
-Dein Land:..........
-Ihr Alter: .........
-Ihr Beruf:..........
-Ihre Handynummer: ...........
-Ihr Reisepass oder F=C3=BChrerschein:.........
-
-Beachten Sie, dass, wenn Sie ihr die oben genannten Informationen
-nicht vollst=C3=A4ndig gesendet haben, sie die Bankomatkarte nicht an Sie
-herausgeben wird, da sie sicher sein muss, dass Sie es sind. Bitten
-Sie sie, Ihnen den Gesamtbetrag von (=E2=82=AC 500.000,00) Bankomatkarte zu
-schicken, die ich f=C3=BCr Sie aufbewahrt habe.
-
-Mit freundlichen Gr=C3=BC=C3=9Fen,
-
-Herr Abraham Morrison
+Guilherme
