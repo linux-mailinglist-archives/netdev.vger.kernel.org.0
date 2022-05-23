@@ -2,126 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C21A7531381
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 18:24:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA34653134E
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 18:23:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236761AbiEWOB2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 10:01:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33058 "EHLO
+        id S237070AbiEWOTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 10:19:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236960AbiEWOBR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 10:01:17 -0400
-Received: from relay12.mail.gandi.net (relay12.mail.gandi.net [217.70.178.232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 905902FFD0;
-        Mon, 23 May 2022 07:01:15 -0700 (PDT)
-Received: (Authenticated sender: clement.leger@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 05F02200013;
-        Mon, 23 May 2022 14:01:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1653314474;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=W1NPvyjhdf9eXZ6AbxiRj9NJrA2YlhQRfNigWpsbM1Q=;
-        b=WKpZpo3Pd2Q2yr+469kQijTpFQwiCoiAhEaoRgJsKXVppSlsKqwNBX1iwpb5iqCq1bLVKJ
-        73tb2iYkXMsTkr/zxbZX9YmNhx5AmU2UfNu3DJ9qivA1jqpOa++4uG7evU5L4FMnZVoswM
-        5KOo7FZtm6b7Jc1BLYvr/vzTbgDcqvm7oqtGpkL7rfOk4riRD3cvgZrRclkY6eHTA3hr0b
-        wRBahEnAJbUYagavquNFEmVmEkdJaGTMrtyLgCQl6JcoMAESTwrsabTBA4ZrEsFVT0O6sH
-        Vtfviho/NTi1qheOibxNIkgdGH+e5sJ+Q2mUVcVemOVwhUAj+Z3iyjhZwQ8G5g==
-Date:   Mon, 23 May 2022 16:00:04 +0200
-From:   =?UTF-8?B?Q2zDqW1lbnQgTMOpZ2Vy?= <clement.leger@bootlin.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] net: ocelot: fix wrong time_after usage
-Message-ID: <20220523160004.6d285609@fixe.home>
-In-Reply-To: <20220521162108.bact3sn4z2yuysdt@skbuf>
-References: <YoeMW+/KGk8VpbED@lunn.ch>
-        <20220520213115.7832-1-paskripkin@gmail.com>
-        <YojvUsJ090H/wfEk@lunn.ch>
-        <20220521162108.bact3sn4z2yuysdt@skbuf>
-Organization: Bootlin
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S237067AbiEWOTT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 10:19:19 -0400
+Received: from corp-front10-corp.i.nease.net (corp-front11-corp.i.nease.net [42.186.62.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09C6B5A088;
+        Mon, 23 May 2022 07:19:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
+        Date:Message-Id:In-Reply-To:References:MIME-Version:
+        Content-Transfer-Encoding; bh=OdNib6xHnYB5XJQ8EWNTDexkpSG6zLdl/z
+        7jRrlRWQA=; b=ihna4uwGp6mc8Z+kPc29T2XEumkxn/QCTfzeP7ozw/AecMdCZa
+        lGe1VR3USjBUNaxRiedVrrtSvFdM7h/X7KASHmrIhhBxwJRVOROU19DgYWJASy/2
+        sh3SFLUlzoVAffzlbx25lAIoNVBvGdVw7C98fP0VEPBwDhgECbpgXxopY=
+Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
+        by corp-front11-corp.i.nease.net (Coremail) with SMTP id aYG_CgCXrV_Zl4tiHYEgAA--.5304S2;
+        Mon, 23 May 2022 22:19:05 +0800 (HKT)
+From:   liuyacan@corp.netease.com
+To:     kgraul@linux.ibm.com
+Cc:     davem@davemloft.net, edumazet@google.com, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        liuyacan@corp.netease.com, netdev@vger.kernel.org,
+        pabeni@redhat.com, ubraun@linux.ibm.com
+Subject: Re: [PATCH v2 net] net/smc: postpone sk_refcnt increment in connect()
+Date:   Mon, 23 May 2022 22:19:05 +0800
+Message-Id: <20220523141905.2791310-1-liuyacan@corp.netease.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <5ce801b7-d446-ee28-86ec-968b7c172a80@linux.ibm.com>
+References: <5ce801b7-d446-ee28-86ec-968b7c172a80@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: aYG_CgCXrV_Zl4tiHYEgAA--.5304S2
+X-Coremail-Antispam: 1UD129KBjvdXoWrKry3tFWUtFyDCw1kJw13urg_yoW3twbEqr
+        sIkaykGr1rWrZ8W3WrGr4rGwsrK3yY9r97XF4kJw17JryrX398WrZ0gwnYqw1fJrWfCr4U
+        CrWxt3W0y34SkjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbEAYjxAI6xCIbckI1I0E57IF64kEYxAxM7AC8VAFwI0_Gr0_Xr1l
+        1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0I
+        I2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0
+        Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84
+        ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2kK67ZEXf0FJ3sC6x9vy-n0Xa0_Xr1Utr1k
+        JwI_Jr4ln4vE4IxY62xKV4CY8xCE548m6r4UJryUGwAa7VCY0VAaVVAqrcv_Jw1UWr13M2
+        AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6s8CjcxG0xyl5I8CrVACY4xI64kE6c02F40E
+        x7xfMcIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x
+        0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v
+        6xkF7I0E8cxan2IY04v7M4kE6xkIj40Ew7xC0wCjxxvEw4Wlc2IjII80xcxEwVAKI48JMx
+        AIw28IcxkI7VAKI48JMxCjnVAK0II2c7xJMxC20s026xCaFVCjc4AY6r1j6r4UMxCIbVAx
+        MI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67
+        AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0
+        cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z2
+        80aVAFwI0_Gr0_Cr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI
+        43ZEXa7sRiE_M7UUUUU==
+X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQAPCVt760qFUgAZsM
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le Sat, 21 May 2022 16:21:09 +0000,
-Vladimir Oltean <vladimir.oltean@nxp.com> a =C3=A9crit :
+> This is a rather unusual problem that can come up when fallback=true BEFORE smc_connect()
+> is called. But nevertheless, it is a problem.
+> 
+> Right now I am not sure if it is okay when we NOT hold a ref to smc->sk during all fallback
+> processing. This change also conflicts with a patch that is already on net-next (3aba1030).
 
-> On Sat, May 21, 2022 at 03:55:30PM +0200, Andrew Lunn wrote:
-> > On Sat, May 21, 2022 at 12:31:15AM +0300, Pavel Skripkin wrote: =20
-> > > Accidentally noticed, that this driver is the only user of
-> > > while (time_after(jiffies...)).
-> > >=20
-> > > It looks like typo, because likely this while loop will finish after =
-1st
-> > > iteration, because time_after() returns true when 1st argument _is af=
-ter_
-> > > 2nd one.
-> > >=20
-> > > There is one possible problem with this poll loop: the scheduler coul=
-d put
-> > > the thread to sleep, and it does not get woken up for
-> > > OCELOT_FDMA_CH_SAFE_TIMEOUT_US. During that time, the hardware has do=
-ne
-> > > its thing, but you exit the while loop and return -ETIMEDOUT.
-> > >=20
-> > > Fix it by using sane poll API that avoids all problems described above
-> > >=20
-> > > Fixes: 753a026cfec1 ("net: ocelot: add FDMA support")
-> > > Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> > > Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> > > ---
-> > >=20
-> > > I can't say if 0 is a good choise for 5th readx_poll_timeout() argume=
-nt,
-> > > so this patch is build-tested only. =20
-> >  =20
-> > > Testing and suggestions are welcomed! =20
-> >=20
-> > If you had the hardware, i would suggest you profile how often it does
-> > complete on the first iteration. And when it does not complete on the
-> > first iteration, how many more iterations it needs.
-> >=20
-> > Tobias made an interesting observation with the mv88e6xxx switch. He
-> > found that two tight polls was enough 99% of the time. Putting a sleep
-> > in there doubles the time it took to setup the switch. So he ended up
-> > with a hybrid of open coded polling twice, followed by iopoll with a
-> > timer value set.
-> >=20
-> > That was with a heavily used poll function. How often is this function
-> > used? No point in overly optimising this if it is not used much. =20
->=20
-> If you're looking at me, I don't have the hardware to test, sorry.
-> Frame DMA is one of the components NXP removed when building their DSA
-> variants of these switches. But the function is called once or twice per
-> NAPI poll cycle, so it's worth optimizing as much as possible.
->=20
-> Clement, could you please do some testing? The patch that Andrew is
-> talking about is 35da1dfd9484 ("net: dsa: mv88e6xxx: Improve performance
-> of busy bit polling").
+Do you mean put the ref to smc->sk during all fallback processing unconditionally and remove 
+the fallback branch sock_put() in __smc_release()?
 
-Ok, I'll have to wake up that ocelot board but I'll try to do
-that.
+> With the new patch on net-next it would also be possible to detect in __smc_release() that
+> the socket is in state sk->sk_state == SMC_INIT but the sock->state is SS_CONNECTING or 
+> SS_CONNECTED and call sock_put() in this case.
+> What do you think?
 
---=20
-Cl=C3=A9ment L=C3=A9ger,
-Embedded Linux and Kernel engineer at Bootlin
-https://bootlin.com
+Oh, I didn't notice this patch on net-next. Emm, I think I need to do some testing with this 
+patch.
+
+Thank you.
+
