@@ -2,109 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C4085318E3
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:54:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54C695317EF
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:53:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232137AbiEWUFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 16:05:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60474 "EHLO
+        id S232252AbiEWUIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 16:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232101AbiEWUFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 16:05:31 -0400
-Received: from smtp-out1.suse.de (smtp-out1.suse.de [195.135.220.28])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F76F13;
-        Mon, 23 May 2022 13:05:28 -0700 (PDT)
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 8621721A26;
-        Mon, 23 May 2022 20:05:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1653336327; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc;
-        bh=ewuco7qpnjFa6pnlO7wOxhm6l4KQ3priZ8aA9J5KoQw=;
-        b=mXdA2guetB0n/GK7JrXpr9jH8L3UJoxfN5AQ5q2wLFW+G5KEwNUV1QQ0XaieOWDlEHCXpl
-        jpGzc/BwLBrNjOsm+WNrgR84uPdy1Ln+K+4VVHw5Eku8r8AIXXwrOODA4vnSimAPjHkqwS
-        Ne3Me8sHbB7qXd9FppAJyK4IUhUmDK8=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1653336327;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc;
-        bh=ewuco7qpnjFa6pnlO7wOxhm6l4KQ3priZ8aA9J5KoQw=;
-        b=jx8UP0H0LMalaH9zzsP1IcPrpx0ava6S8R0GaZ/un6LBIRJP+DChvmDnXVv3Qp3beF2hjf
-        5OGzD7eEyADJzoAQ==
-Received: from lion.mk-sys.cz (unknown [10.100.200.14])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 6B3892C141;
-        Mon, 23 May 2022 20:05:27 +0000 (UTC)
-Received: by lion.mk-sys.cz (Postfix, from userid 1000)
-        id 8B7AE60299; Mon, 23 May 2022 22:05:24 +0200 (CEST)
-Message-Id: <30ec3274c323de7c3a9b013b9bfb6c3418465d30.1653336079.git.mkubecek@suse.cz>
-From:   Michal Kubecek <mkubecek@suse.cz>
-Subject: [PATCH ipsec v2] Revert "net: af_key: add check for pfkey_broadcast
- in function pfkey_process"
-To:     Steffen Klassert <steffen.klassert@secunet.com>,
-        netdev@vger.kernel.org
-Cc:     Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
-Date:   Mon, 23 May 2022 22:05:24 +0200 (CEST)
-X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+        with ESMTP id S232227AbiEWUIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 16:08:17 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91C3295DFE
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 13:08:15 -0700 (PDT)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1ntELd-0002e9-Rd
+        for netdev@vger.kernel.org; Mon, 23 May 2022 22:08:13 +0200
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 585BA84899
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 20:08:13 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id E7EF984893;
+        Mon, 23 May 2022 20:08:12 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 96f58adf;
+        Mon, 23 May 2022 20:08:12 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: [PATCH net-next 0/n] pull-request: can-next 2022-05-23
+Date:   Mon, 23 May 2022 22:08:06 +0200
+Message-Id: <20220523200809.1708614-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This reverts commit 4dc2a5a8f6754492180741facf2a8787f2c415d7.
+Hello Jakub, hello David,
 
-A non-zero return value from pfkey_broadcast() does not necessarily mean
-an error occurred as this function returns -ESRCH when no registered
-listener received the message. In particular, a call with
-BROADCAST_PROMISC_ONLY flag and null one_sk argument can never return
-zero so that this commit in fact prevents processing any PF_KEY message.
-One visible effect is that racoon daemon fails to find encryption
-algorithms like aes and refuses to start.
+this is a pull request of 3 patches for net-next/master.
 
-Excluding -ESRCH return value would fix this but it's not obvious that
-we really want to bail out here and most other callers of
-pfkey_broadcast() also ignore the return value. Also, as pointed out by
-Steffen Klassert, PF_KEY is kind of deprecated and newer userspace code
-should use netlink instead so that we should only disturb the code for
-really important fixes.
+The first patch is by Julia Lawall and fixes a typo in the peak_usb
+driver.
 
-v2: add a comment explaining why is the return value ignored
+Jakub Kicinski contributes a patch for the kvaser_usb driver to
+silence a GCC 12 -Warray-bounds warning.
 
-Signed-off-by: Michal Kubecek <mkubecek@suse.cz>
+The last patch is by me, target the ctucanfd platform driver and adds
+a missing dependency to HAS_IOMEM.
+
+regards,
+Marc
+
 ---
- net/key/af_key.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 339d95df19d3..d93bde657359 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2826,10 +2826,12 @@ static int pfkey_process(struct sock *sk, struct sk_buff *skb, const struct sadb
- 	void *ext_hdrs[SADB_EXT_MAX];
- 	int err;
- 
--	err = pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
--			      BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
--	if (err)
--		return err;
-+	/* Non-zero return value of pfkey_broadcast() does not always signal
-+	 * an error and even on an actual error we may still want to process
-+	 * the message so rather ignore the return value.
-+	 */
-+	pfkey_broadcast(skb_clone(skb, GFP_KERNEL), GFP_KERNEL,
-+			BROADCAST_PROMISC_ONLY, NULL, sock_net(sk));
- 
- 	memset(ext_hdrs, 0, sizeof(ext_hdrs));
- 	err = parse_exthdrs(skb, hdr, ext_hdrs);
--- 
-2.36.1
+The following changes since commit fe7324b932222574a0721b80e72c6c5fe57960d1:
+
+  net: dsa: OF-ware slave_mii_bus (2022-05-23 12:27:53 +0100)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.19-20220523
+
+for you to fetch changes up to 8f445a3ec3fd36feb90c5b2ef8d21e2492819cdc:
+
+  can: ctucanfd: platform: add missing dependency to HAS_IOMEM (2022-05-23 22:00:06 +0200)
+
+----------------------------------------------------------------
+linux-can-next-for-5.19-20220523
+
+----------------------------------------------------------------
+Jakub Kicinski (1):
+      can: kvaser_usb: silence a GCC 12 -Warray-bounds warning
+
+Julia Lawall (1):
+      can: peak_usb: fix typo in comment
+
+Marc Kleine-Budde (1):
+      can: ctucanfd: platform: add missing dependency to HAS_IOMEM
+
+ drivers/net/can/ctucanfd/Kconfig        | 2 +-
+ drivers/net/can/usb/kvaser_usb/Makefile | 5 +++++
+ drivers/net/can/usb/peak_usb/pcan_usb.c | 2 +-
+ 3 files changed, 7 insertions(+), 2 deletions(-)
+
 
