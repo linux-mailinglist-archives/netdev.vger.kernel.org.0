@@ -2,85 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5042253073D
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 03:45:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 645C2530797
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 04:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235475AbiEWBpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 22 May 2022 21:45:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37936 "EHLO
+        id S1349522AbiEWCVl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 22 May 2022 22:21:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232626AbiEWBpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 21:45:03 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD5D22E087
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 18:45:01 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id w200so12365587pfc.10
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 18:45:01 -0700 (PDT)
+        with ESMTP id S1344273AbiEWCVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 22 May 2022 22:21:39 -0400
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C882B7EB
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 19:21:37 -0700 (PDT)
+Received: by mail-pg1-x536.google.com with SMTP id a38so9602100pgl.9
+        for <netdev@vger.kernel.org>; Sun, 22 May 2022 19:21:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zSm+7Gmlrv50V+RVhmOaUs+k3dWY5NfmKugFSck278k=;
-        b=oLzbvEJaIRINzQ7vGPY8dMAa9TLXtBnZe8vAVBWtQsCljcy01w0xke52zx643EFbCH
-         zMGo52QWyOT6FS7shoVnkGkUKPNomy9/YzhRY+pcvY1bp9m8oHb7KCBjaQidqjlLTPSb
-         JOLCM1BZD6X7ayf7GHtCFxQN7FizN9ZPMYFmH0bvUexef9pSCdkcS9aQ+H8+oFRYpQpf
-         TCb60dbVDqOdjkgMTxctJMO/O8k+ezG/179V5y5nDO/NxiWmeH5tusd5H3OZwpGO4FRo
-         nq2og8RNtT/rGoeM3AdRhwG57mXeurSHymD9L3wT9VSXVwTrugs6X/wFTP2qsCWb8/39
-         xV1w==
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:to:cc:references
+         :from:in-reply-to:content-transfer-encoding;
+        bh=ftAlGkfVN9yFSMHjqy7cpbDkYMyhHDjfXWpCptFDTFo=;
+        b=5ZfHbADabs94TwJ/7qwTLt2CQFczUjYovL6BMHmANuny7SYgbvOIrrYRILUThJn9sq
+         e5qfNR/l4K6h8svb+auQZgVyvlGygBilUm09/AZMOyp1neoo8ub+9uWPBnDrkD9oLrmn
+         yS3LSDeZZ7st/cOadWljRiZF2y/DrWsTb208bbRC2AnJy2IrM9owWxGPLKv4nbZAZHV0
+         621c5uRoXUUXfg2ALD7+dYqA7R+RLO8yb4dDZCkxDHPNmEvMzlmY8k/V6xyFDqtSl2YD
+         V8396IHfHEulh4iSKKZ+mG9pifb9qGwd49VlcB+22DNVNWqYsJ/litMpU1fxM0PC7RZL
+         BaEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zSm+7Gmlrv50V+RVhmOaUs+k3dWY5NfmKugFSck278k=;
-        b=5aL35zOaWf+IMGoigSaMT2I1kY3LO8kOUmhMVDeCU11qEJAUyYJwCF2aAGnLlxZIzn
-         3JdPV0ZnihEBXuljehGGzELkLoK0Aixz8MnYHqExqDqwbsUAHtwv4wSQME5HrBAdCN8R
-         Fgw3mjUVv+6oaV0f56qtFin1cWxAHMp2kWxu7YfGoXLmi9QZoojXBsp4CKs6DDIN6HJH
-         C6iEDVIB61Crq7WXJ7VQHq4PkGnawFkfShZTSdLpQ/+W4Zm4ohC4LB7AQXxQbdcAzH8q
-         uAAlNv+ew+SIlY0koqigXDsofL46SQgEbphej/a3jLYqeZiGEbhbEaynURPa76K9BoPy
-         ES/Q==
-X-Gm-Message-State: AOAM533UkNtRvLDiyvJB/VX8/Ejh48YhI2n2nqPqUWE30SkRnk2tGv8R
-        tCCfhgp0C2Q6bMkfyIOMQ6InbVJxRAC9R0xV4M4IMSQw
-X-Google-Smtp-Source: ABdhPJzCFwic6JtM/NHqB5PDA+rxiHHD0RDzKgtuO7SZTWmG1A/FvIpC0nux7Dk2woALUzF3OolhmJQ5gJyrvwAa6CE=
-X-Received: by 2002:aa7:9109:0:b0:50a:78c8:8603 with SMTP id
- 9-20020aa79109000000b0050a78c88603mr21676541pfh.77.1653270301132; Sun, 22 May
- 2022 18:45:01 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :to:cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=ftAlGkfVN9yFSMHjqy7cpbDkYMyhHDjfXWpCptFDTFo=;
+        b=jEndcFYq6d7CUQXWXDoPM/AHpEd3JZmlVIbEFTwKzLF0rrBiZQ8692vAlTmWBLZ0yH
+         /wzS2WguRpkt5a3J0demzCQ+Gw4li3vM2/GOhlx7RWObZPabXwNNo4kTjQZ2pfNrCUt8
+         eC84eXM6/CVTmd5Xxf9B/RZtgzed0JHvS+ii12d/oZR9RLsrJkaZY9FJ1532Z5WmSMTI
+         gudnqzy9qnz7bo58cP52nwJgjawcS42VfEyRuhIKGZjxv7DY6FB2+2UuoKjfYqYaSaCA
+         7KbkUWISXBonXHAjtR+l4rl0RC6cNMBUeZIQ9f2+DTv/9V+ql3W7/rcXHqHUEewinpyj
+         7wXg==
+X-Gm-Message-State: AOAM5338RjrrTD3ZK7164+RxIoPfP2g9I6a4+t9TzZKPBmhjbwCjCl4S
+        T/HRLfgck1yK88MmONX+PKNO1Q==
+X-Google-Smtp-Source: ABdhPJxRaFpMXHUmAwAQvJOURtMeJdgu+9o6mOi0Xa1VO1LPiywHr+NUZm86xDqsmpq+lh4gOGMk3A==
+X-Received: by 2002:a63:553:0:b0:3f5:f32a:7c54 with SMTP id 80-20020a630553000000b003f5f32a7c54mr17959211pgf.138.1653272497211;
+        Sun, 22 May 2022 19:21:37 -0700 (PDT)
+Received: from [10.71.57.194] ([139.177.225.241])
+        by smtp.gmail.com with ESMTPSA id y12-20020aa7854c000000b0050dc7628195sm5846585pfn.111.2022.05.22.19.21.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 22 May 2022 19:21:36 -0700 (PDT)
+Message-ID: <ed3b33cb-7ff5-4f20-4657-4c8c7a9ba45f@bytedance.com>
+Date:   Mon, 23 May 2022 10:21:26 +0800
 MIME-Version: 1.0
-References: <20220523013233.20045-1-luizluca@gmail.com>
-In-Reply-To: <20220523013233.20045-1-luizluca@gmail.com>
-From:   Luiz Angelo Daros de Luca <luizluca@gmail.com>
-Date:   Sun, 22 May 2022 22:44:50 -0300
-Message-ID: <CAJq09z4PAOen079zE68SMDWDXjJxCDMHYsAtFoUiktA-K1P8Yg@mail.gmail.com>
-Subject: Re: [PATCH net-next RESEND] net: dsa: OF-ware slave_mii_bus
-To:     "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, Rob Herring <robh@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [External] Re: [PATCH bpf-next v2] selftests/bpf: fix some bugs
+ in map_lookup_percpu_elem testcase
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Yonghong Song <yhs@fb.com>
+Cc:     Shuah Khan <shuah@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Jiri Olsa <jolsa@kernel.org>,
+        Dave Marchevsky <davemarchevsky@fb.com>,
+        Joanne Koong <joannekoong@fb.com>,
+        Geliang Tang <geliang.tang@suse.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        duanxiongchun@bytedance.com,
+        Muchun Song <songmuchun@bytedance.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        zhouchengming@bytedance.com, Yosry Ahmed <yosryahmed@google.com>
+References: <20220518025053.20492-1-zhoufeng.zf@bytedance.com>
+ <cd5bb286-506b-5cdb-f721-0464a58659db@fb.com>
+ <CAEf4BzaE_WJBQ6xxMy8VmJy3OsPyCCjyRKi_F-CdPLwVVp+7Ng@mail.gmail.com>
+From:   Feng Zhou <zhoufeng.zf@bytedance.com>
+In-Reply-To: <CAEf4BzaE_WJBQ6xxMy8VmJy3OsPyCCjyRKi_F-CdPLwVVp+7Ng@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the last attempt, this patch was part of a doc+net series. However,
-Rob Herring NAKed the binding patch as we cannot define a "mdio" node
-in dsa.yaml without breaking anyone who references dsa.yaml to need to
-redefine/specialize that same node.
+在 2022/5/21 上午6:00, Andrii Nakryiko 写道:
+> On Wed, May 18, 2022 at 8:44 AM Yonghong Song <yhs@fb.com> wrote:
+>>
+>>
+>> On 5/17/22 7:50 PM, Feng zhou wrote:
+>>> From: Feng Zhou <zhoufeng.zf@bytedance.com>
+>>>
+>>> comments from Andrii Nakryiko, details in here:
+>>> https://lore.kernel.org/lkml/20220511093854.411-1-zhoufeng.zf@bytedance.com/T/
+>>>
+>>> use /* */ instead of //
+>>> use libbpf_num_possible_cpus() instead of sysconf(_SC_NPROCESSORS_ONLN)
+>>> use 8 bytes for value size
+>>> fix memory leak
+>>> use ASSERT_EQ instead of ASSERT_OK
+>>> add bpf_loop to fetch values on each possible CPU
+>>>
+>>> Fixes: ed7c13776e20c74486b0939a3c1de984c5efb6aa ("selftests/bpf: add test case for bpf_map_lookup_percpu_elem")
+>>> Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+>> Acked-by: Yonghong Song <yhs@fb.com>
+>
+> I've fixed remaining formatting issues and added my_pid check to avoid
+> accidental interference with other tests/processes. Applied to
+> bpf-next, thanks.
 
-https://lore.kernel.org/lkml/Yhfmi2Mn6e0NMXh3@robh.at.kernel.org/
+Ok, Thanks.
 
-So, the generic slave "mdio" node must be declared on each device that
-might use it in the future.
-
-Regards,
-
-Luiz
