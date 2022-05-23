@@ -2,66 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D9A531A08
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:55:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F4060531AE5
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:56:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231245AbiEWTk1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 15:40:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59706 "EHLO
+        id S231617AbiEWTnY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 15:43:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232222AbiEWTkG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 15:40:06 -0400
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F289D134E0A;
-        Mon, 23 May 2022 12:32:35 -0700 (PDT)
-Received: by mail-ej1-x636.google.com with SMTP id f9so31006925ejc.0;
-        Mon, 23 May 2022 12:32:35 -0700 (PDT)
+        with ESMTP id S234307AbiEWTm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 15:42:29 -0400
+Received: from mail-vs1-xe2a.google.com (mail-vs1-xe2a.google.com [IPv6:2607:f8b0:4864:20::e2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9A682FFFC;
+        Mon, 23 May 2022 12:39:52 -0700 (PDT)
+Received: by mail-vs1-xe2a.google.com with SMTP id h5so8134989vsq.5;
+        Mon, 23 May 2022 12:39:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=QcfD7S9L5CIBMVb1EXolT17SGjXBlADQiPbIJB52IyA=;
-        b=IwZ9LYtC/kjVD1M6tbz12irq8Bjctuz41W9HahQfPjerRw/YW3YxnYkgh9UWZ4Quen
-         2yCj0v2J2VF1uay2M9DISR7FsEEe43CYFE3HuLSXeSIGCbEtOeq6/l3IuzmNXYjF+wu3
-         5Dg6gdg82OWGoIL7OpG7167WELitd6HW6crfAFMQa3hnDybjdRzq4v8LGAOEblHD4DY1
-         oi+DvdvcEHVTXsD46i6ySsJX7R4CpWE5AFAVhWhM64moe4CYrP4jBIZixN2KrdwW/w7q
-         qi3l1J2QYt0w9IFJQzFk5PWq3VBvwb8AQ6RU3s5jj1vZGCgcS7qmmj9uYDCE+yJSuUc7
-         CGcw==
+         :cc;
+        bh=rdaOtEJzlEI4rkC5/eExmfsw3plPJUfdC5HwNnDdrl8=;
+        b=ls+NfBeWK6+RxG8ca3EQRNTT3yplKi3fChJbujgJK3CbJJDIoJPHk4Ev2xPWMfQ3UQ
+         4/3OhdIsuwT2+wTRoCDZIVGul70Iv2hTQHHRBNW0qqWIQrvdJf0OeDCH/xOr2DmGz9I/
+         ZG7oDy5uZpNdDM6p3D/WL/jWOfRF21NDIHlg3rzRJxZjHPkrdmZbMWT8FYMoGzGnkdsd
+         hYQr3w1DJETirktof+iE4+F2Y82LwoRI+4bQ2v7TEnfnimu3lE0kVJRQbtDAEfx4vp/8
+         PKZuuJV5Jvdsl0iiULvkfE6cB8RkoVrr3nlFVPiEjpiXwKrXrzeMvGTTULrXKheM4PXY
+         eIJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QcfD7S9L5CIBMVb1EXolT17SGjXBlADQiPbIJB52IyA=;
-        b=XLl2y+s0IG4GqiUF2lQf7/ThQYTGqRDA3AzcQ1WPBw2ppPr5nXYLOsW3kWZ6NelNwk
-         QpexuGEHVPi4aIcgVZbvPGXsrrvqaszhc3/GT7IoahegZKpWBuk98OKBQnmN3eQS81Ns
-         qv93BTUQEMckRle+UC9tBs1/2ARwM/BIo6AMkoga+B5sLN2RCuNVXVBSkYA63vUsA96k
-         sGVHgAvHR4jliYnz13iBlsGnPuFqPon4jUU8a87K0lh7aftvChqILi/IqEjFA3F9Oi/U
-         DCSnMoTj6syeTdnqgrnQo/uID6tDAHX87b0KXopzhgaJsdxWjU8TWk+5KM1/pUjoePZs
-         vrHQ==
-X-Gm-Message-State: AOAM531WXhu/5qiNhqMj0dfGhwoCFHrD9/ER13F3atizs5ug0iqiR/aN
-        fzmgrNPyeC47uGILoV65ZxBLbDWdwBjH7mbwoBQtAYJ0
-X-Google-Smtp-Source: ABdhPJxw9pwIsMqu/OAc7dTwPG7AWqN/ejln4mauKeqThFydT2EbigOI3GDPgwg+CT5OJiUmtTZOWBBeFZJ/4rvgLMA=
-X-Received: by 2002:a17:907:a427:b0:6fe:c73e:591c with SMTP id
- sg39-20020a170907a42700b006fec73e591cmr8651452ejc.676.1653334354327; Mon, 23
- May 2022 12:32:34 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=rdaOtEJzlEI4rkC5/eExmfsw3plPJUfdC5HwNnDdrl8=;
+        b=g1HbdD7jjK35ESo6RkbLQUVaZ+ZHOqqp6nOMPlWNjk7rZ/lciEXNHmkd2vgoyY6H92
+         bQvMsmGmudN+fMUg/tzOXzPBx50Z1KJHGAZEqOJuGjWPXPwU4Pk38gGeWIxzHp7YOJva
+         Ug8YMf3FDrtbaaRtk6936Uc1zMa3n1OilgPLersXU2bRqYlaVYTiAJrt25QWSnLXgqgh
+         nUgSOGCdyGU3ejQTo8G0EnLXJJ2Lj/fphvHTHhJdV8F9QDuCtmNpXqHR31TriEy/3xin
+         bb2LXXxP+fW1hKorYZNt1dJwX2pH2C6+g6dojc1VjBMyZewGAeduGvO/VWF2cedueTqA
+         fBNg==
+X-Gm-Message-State: AOAM531xFPzzj/tGuTPC/co5hljve2bQ3bZoT963T0FplTUmSVmTdmdm
+        940B+pWgtpftNBYhCOrkKWaXcV27zpKgq8gIF13iA8i45N4=
+X-Google-Smtp-Source: ABdhPJxiCGD1HM0L3J2KBiNOFPU+Aw2Qa2Kb9zDMgIIPHpmwII13aUMzattuzW3qu8Mz1+vUUf7DJTgQD/WZUF0qyOk=
+X-Received: by 2002:a05:6102:4b6:b0:335:f244:2286 with SMTP id
+ r22-20020a05610204b600b00335f2442286mr7503887vsa.54.1653334792037; Mon, 23
+ May 2022 12:39:52 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220521075736.1225397-1-zenczykowski@gmail.com>
-In-Reply-To: <20220521075736.1225397-1-zenczykowski@gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Mon, 23 May 2022 12:32:22 -0700
-Message-ID: <CAADnVQJcDvyeQ3y=uVDj-7JfqtxE+nJk+d5oVQrBhhQpicYk6A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: print a little more info about maps via cat /sys/fs/bpf/pinned_name
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <20220521000921.8337-1-ruijian63@gmail.com>
+In-Reply-To: <20220521000921.8337-1-ruijian63@gmail.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 23 May 2022 12:39:41 -0700
+Message-ID: <CAEf4BzZkfc4ivfewD4Bo8ngfcg-evOjYPwyyL1zcc3oH7rUDyQ@mail.gmail.com>
+Subject: Re: [PATCH] samples: fix compile failure error
+To:     Ruijian Li <ruijian63@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, 798073189@qq.com
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -72,39 +71,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, May 21, 2022 at 12:57 AM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
+On Fri, May 20, 2022 at 5:09 PM Ruijian Li <ruijian63@gmail.com> wrote:
 >
-> From: Maciej =C5=BBenczykowski <maze@google.com>
+> Because compile samples/bpf/test_lru_dist failure, I remove the
+> declaration of the struct list_head.
 >
-> While this information can be fetched via bpftool,
-> the cli tool itself isn't always available on more limited systems.
->
-> From the information printed particularly the 'id' is useful since
-> when combined with /proc/pid/fd/X and /proc/pid/fdinfo/X it allows
-> tracking down which bpf maps a process has open (which can be
-> useful for tracking down fd leaks).
->
-> Signed-off-by: Maciej =C5=BBenczykowski <maze@google.com>
+> Signed-off-by: Ruijian Li <ruijian63@gmail.com>
 > ---
->  kernel/bpf/inode.c | 3 +++
->  1 file changed, 3 insertions(+)
+>  samples/bpf/test_lru_dist.c | 4 ----
+>  1 file changed, 4 deletions(-)
 >
-> diff --git a/kernel/bpf/inode.c b/kernel/bpf/inode.c
-> index 4f841e16779e..784266e258fe 100644
-> --- a/kernel/bpf/inode.c
-> +++ b/kernel/bpf/inode.c
-> @@ -257,6 +257,9 @@ static int map_seq_show(struct seq_file *m, void *v)
->         if (unlikely(v =3D=3D SEQ_START_TOKEN)) {
->                 seq_puts(m, "# WARNING!! The output is for debug purpose =
-only\n");
->                 seq_puts(m, "# WARNING!! The output format will change\n"=
-);
-> +               seq_printf(m, "# type: %d, key_size: %d, value_size: %d, =
-max_entries: %d, id: %d\n",
-> +                          map->map_type, map->key_size, map->value_size,=
- map->max_entries,
-> +                          map->id);
+> diff --git a/samples/bpf/test_lru_dist.c b/samples/bpf/test_lru_dist.c
+> index 75e877853596..dd7eb470653b 100644
+> --- a/samples/bpf/test_lru_dist.c
+> +++ b/samples/bpf/test_lru_dist.c
+> @@ -33,10 +33,6 @@ static int nr_cpus;
+>  static unsigned long long *dist_keys;
+>  static unsigned int dist_key_counts;
+>
+> -struct list_head {
+> -       struct list_head *next, *prev;
+> -};
+> -
 
-Maybe use cat /sys/fs/bpf/maps.debug instead?
-It prints map id.
+this struct is used right there one line below, how removing it fixes
+compilation issues? What was the error in the first place? Did you run
+`make headers_install` before building samples/bpf? Please provide a
+bit more information.
+
+>  static inline void INIT_LIST_HEAD(struct list_head *list)
+>  {
+>         list->next = list;
+> --
+> 2.32.0
+>
