@@ -2,77 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id B42A6530DDD
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 12:42:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2B4D530D33
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 12:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233517AbiEWJma (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 05:42:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47328 "EHLO
+        id S233557AbiEWJoV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 05:44:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234302AbiEWJmQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 05:42:16 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 884241F7
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 02:42:12 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id gi33so19049650ejc.3
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 02:42:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=2MNafim5ABTdfer9R8+JPg1rO772hdiwdkbi2TqKAww=;
-        b=mFgbLVNUwQuAkVFMqVlroE29SRdBHHaoHorx0sZ8+fSC+ogdnyvNmdJFiLOVO1Crk5
-         HdWPyq5lq8EolnVmIRhDMDUIx3DfbRZUMoHc7RqYK0aGYi+MNO6xowGUBTGaQ+fgKYUa
-         59MPcz9iSBM21y1iEs6Ls84E5B0pvosJmDWoY6o6s6CaHGzsEvnyjgCQrT5V9hTTYSLj
-         FYTCfbyZ1SisBGH/dDgojGuqZLje063csPiJDHWifQQCZ7W7b+nLzu+uB8stae8PikRY
-         2pxs9MYvW5AFStCTlAOllsplIdpjglqGywVPq4nVFSrXcEbdnoahI4Z5lZBJT8JRTINj
-         hQmw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=2MNafim5ABTdfer9R8+JPg1rO772hdiwdkbi2TqKAww=;
-        b=yB+y15wMjh2KhmWV9x7SJ3cpCcRNIgQXYCjXEe7+tqixuTRU6+AKvQFHwReA6cbZOl
-         XXexozC8VKfbnMdQ0jgSTrxk4zS2rHz6kCEqw8ubZB0M0ApPMVGOZ1mPXCvxvvXaAkvO
-         V7nOoS+574xkY2ZQzPfK/IFuyye3HiQWWJs1tXt3CjNdZ9hkXLwQWcsIz7erRyYM0dLK
-         kYIMiNvqmKMS8TAsL6Jjt93h8Mygom8aF6XGa8yZ5AhJ3OIwIDhBgW51L6GHl2afgxjO
-         Qxl5W78p3rZuXMvSIAPbF92r4K4wftIKgxG3aqcI1VcDxqi09ScLbRZZ4eo1UVxyQtVl
-         Ljjg==
-X-Gm-Message-State: AOAM531mSxWu9qFGTkdk1Mc88j5ufqTcNNQgkQF4atp3yk/TkP0RTQSF
-        cCAmwS+K3nDziGKzfu7b2wwdJw==
-X-Google-Smtp-Source: ABdhPJxm/KS+6NxHokadv+4HJ1Gu4UUjgk7fH9CCQho/QG3pwkp1lg8OsScYjV8pF6ZIAB+BJYWnVg==
-X-Received: by 2002:a17:907:6d08:b0:6f4:45ca:c410 with SMTP id sa8-20020a1709076d0800b006f445cac410mr19121086ejc.679.1653298931003;
-        Mon, 23 May 2022 02:42:11 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id e10-20020a170906748a00b006fe98c7c7a9sm4576543ejl.85.2022.05.23.02.42.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 02:42:09 -0700 (PDT)
-Date:   Mon, 23 May 2022 11:42:07 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <YotW74GJWt0glDnE@nanopsycho>
-References: <Ymf66h5dMNOLun8k@nanopsycho>
- <20220426075133.53562a2e@kernel.org>
- <YmjyRgYYRU/ZaF9X@nanopsycho>
- <20220427071447.69ec3e6f@kernel.org>
- <YmvRRSFeRqufKbO/@nanopsycho>
- <20220429114535.64794e94@kernel.org>
- <Ymw8jBoK3Vx8A/uq@nanopsycho>
- <20220429153845.5d833979@kernel.org>
- <YmzW12YL15hAFZRV@nanopsycho>
- <20220502073933.5699595c@kernel.org>
+        with ESMTP id S233892AbiEWJoC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 05:44:02 -0400
+Received: from bmailout3.hostsharing.net (bmailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f23e:0])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EDFE18352;
+        Mon, 23 May 2022 02:43:46 -0700 (PDT)
+Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
+        by bmailout3.hostsharing.net (Postfix) with ESMTPS id EC68010045C16;
+        Mon, 23 May 2022 11:43:43 +0200 (CEST)
+Received: by h08.hostsharing.net (Postfix, from userid 100393)
+        id CC43171D1E; Mon, 23 May 2022 11:43:43 +0200 (CEST)
+Date:   Mon, 23 May 2022 11:43:43 +0200
+From:   Lukas Wunner <lukas@wunner.de>
+To:     Marek Szyprowski <m.szyprowski@samsung.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY interrupts
+ to PHY driver to avoid polling
+Message-ID: <20220523094343.GA7237@wunner.de>
+References: <cover.1652343655.git.lukas@wunner.de>
+ <748ac44eeb97b209f66182f3788d2a49d7bc28fe.1652343655.git.lukas@wunner.de>
+ <CGME20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99@eucas1p2.samsung.com>
+ <a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com>
+ <20220519190841.GA30869@wunner.de>
+ <31baa38c-b2c7-10cd-e9cd-eee140f01788@samsung.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220502073933.5699595c@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
+In-Reply-To: <31baa38c-b2c7-10cd-e9cd-eee140f01788@samsung.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
         T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -80,32 +69,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-First of all, sorry for delay :/
+On Thu, May 19, 2022 at 11:22:36PM +0200, Marek Szyprowski wrote:
+> On 19.05.2022 21:08, Lukas Wunner wrote:
+> > Taking a step back though, I'm wondering if there's a bigger problem here:
+> > This is a USB device, so we stop receiving interrupts once the Interrupt
+> > Endpoint is no longer polled.  But what if a PHY's interrupt is attached
+> > to a GPIO of the SoC and that interrupt is raised while the system is
+> > suspending?  The interrupt handler may likewise try to reach an
+> > inaccessible (suspended) device.
+> >
+> > The right thing to do would probably be to signal wakeup.  But the
+> > PHY drivers' irq handlers instead schedule the phy_state_machine().
+> > Perhaps we need something like the following at the top of
+> > phy_state_machine():
+> >
+> > 	if (phydev->suspended) {
+> > 		pm_wakeup_dev_event(&phydev->mdio.dev, 0, true);
+> > 		return;
+> > 	}
+> >
+> > However, phydev->suspended is set at the *bottom* of phy_suspend(),
+> > it would have to be set at the *top* of mdio_bus_phy_suspend()
+> > for the above to be correct.  Hmmm...
+> 
+> Well, your concern sounds valid, but I don't have a board with such hw 
+> configuration, so I cannot really test.
 
+I'm torn whether I should submit the quick fix in my last e-mail
+or attempt to address the deeper issue.  The quick fix would ensure
+v5.19-rc1 isn't broken, but if possible I'd rather address the deeper
+issue...
 
-Mon, May 02, 2022 at 04:39:33PM CEST, kuba@kernel.org wrote:
->On Sat, 30 Apr 2022 08:27:35 +0200 Jiri Pirko wrote:
->> Now I just want to use this component name to target individual line
->> cards. I see it is a nice fit. Don't you think?
->
->Still on the fence.
+Below is another patch.  Would you mind testing if it fixes the problem
+for you?  It's a replacement for the patch in my last e-mail and seeks
+to fix the problem for all drivers, not just smsc95xx.  If you don't
+have time to test it, let me know and I'll just submit the quick fix
+in my previous e-mail.
 
-Why?
+BTW, getting a PHY interrupt on suspend seems like a corner case to me,
+so I'm amazed you found this and seem to be able to reproduce it 100%.
+Out of curiosity, is this a CI test you're performing?
 
->
->> I see that the manpage is mentioning "the component names from devlink dev info"
->> which is not actually implemented, but exactly what I proposed.
->
->How do you tie the line card to the component name? lc8_dev0 from 
->the flashing example is not present in the lc info output.
+Thanks,
 
-Okay, I will move it there. Makes sense.
+Lukas
 
+-- >8 --
 
->
->> >Please answer questions. I already complained about this once in 
->> >this thread.  
->> 
->> Sorry, I missed this one. The file IS a FW just for a SINGLE gearbox.
->
->I see.
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index ef62f357b76d..c2442c38d312 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -31,6 +31,7 @@
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
+ #include <linux/atomic.h>
++#include <linux/suspend.h>
+ #include <net/netlink.h>
+ #include <net/genetlink.h>
+ #include <net/sock.h>
+@@ -976,6 +977,25 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
+ 	struct phy_driver *drv = phydev->drv;
+ 	irqreturn_t ret;
+ 
++	if (IS_ENABLED(CONFIG_PM_SLEEP) &&
++	    (phydev->mdio.dev.power.is_prepared ||
++	     phydev->mdio.dev.power.is_suspended)) {
++		struct net_device *netdev = phydev->attached_dev;
++
++		if (netdev) {
++			struct device *parent = netdev->dev.parent;
++
++			if (netdev->wol_enabled)
++				pm_system_wakeup();
++			else if (device_may_wakeup(&netdev->dev))
++				pm_wakeup_dev_event(&netdev->dev, 0, true);
++			else if (parent && device_may_wakeup(parent))
++				pm_wakeup_dev_event(parent, 0, true);
++		}
++
++		return IRQ_HANDLED;
++	}
++
+ 	mutex_lock(&phydev->lock);
+ 	ret = drv->handle_interrupt(phydev);
+ 	mutex_unlock(&phydev->lock);
+diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+index 431a8719c635..da6d70ddf167 100644
+--- a/drivers/net/phy/phy_device.c
++++ b/drivers/net/phy/phy_device.c
+@@ -283,8 +283,11 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
+ 	 * may call phy routines that try to grab the same lock, and that may
+ 	 * lead to a deadlock.
+ 	 */
+-	if (phydev->attached_dev && phydev->adjust_link)
++	if (phydev->attached_dev && phydev->adjust_link) {
++		if (phy_interrupt_is_valid(phydev))
++			synchronize_irq(phydev->irq);
+ 		phy_stop_machine(phydev);
++	}
+ 
+ 	if (!mdio_bus_phy_may_suspend(phydev))
+ 		return 0;
