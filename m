@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E1B5E531A7D
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:55:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1691B531CB2
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 22:57:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242677AbiEWSYC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 14:24:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46850 "EHLO
+        id S240432AbiEWS25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 14:28:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244802AbiEWSWT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 14:22:19 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB2CE3B3EE
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 10:57:52 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id c14so14381364pfn.2
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 10:57:52 -0700 (PDT)
+        with ESMTP id S244433AbiEWSZp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 14:25:45 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831A412719C
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 10:58:53 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id l20-20020a17090a409400b001dd2a9d555bso8840pjg.0
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 10:58:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=message-id:date:mime-version:user-agent:subject:content-language:to
          :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=j+7dhXfVvjhX8uGEoOhhhickUwEypMlAs/PweuGboy8=;
-        b=jIYLN5rTKBzojVvK92O0WiIT5gttMHCULZeydTf1gRNO1R0juDaXLx4Cs5B7SX4+/g
-         BbU7KOa5QY8rkJ58gFwfgzJiGzSV9ocx9ocIIMz0PgXPhZB4UVhRAYdus63tDi4nwGNO
-         8T0RO2+5smo4hyaHnR38Dw9OPDSz/WyUNL4uRDY38nsq0j2qJ6g7ZdFqi3WDJt8G3Weu
-         juJYgLk/GWx66WQvgxrwNlWRQ01As/CdXvk1RoLn7XQPFsk9I6a8SjvmkeqT5KVS9yhR
-         Gtf0nzD7O5c5TyKMy53VVsw5F8DYXzxJlKcaysMVP+aqgyfjaEfyFB6Q7PoQi+2pKIaJ
-         7gHA==
+        bh=nQ2XjBmqagrH02gXtcNOLLn+oI0x38qbgguqkJjLCio=;
+        b=gk46313qvyhaBwr0/EKnHEHDbJQmbrLfUCSeysmrP4afGmfQWdRTKWPko0QnFASy49
+         SKilJToSlnC4u5GN9arzCWc2UuGE+CQUDfCHBht4+eIF8eNy22U9h5Exo7hnGuIGR7v8
+         3a0lnrG2nyM8NOb+EspHWzo/gB9/Rcz3tjD+1KEVhsmzbg6VJuorD4mlHv231aMiXMAU
+         rmBT2G/tHLGihBGwh3u0ZZKbnqb1T1RWneT4TI551tGfLDP4VYmDlTphNxr5umxgr6U7
+         TdnIsiJAofCFDW5kXeOnQppbSceJlJ55n5nVpn4ODKfdh+TGUsOdqpkir0YFSBwzbbdE
+         wbOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=j+7dhXfVvjhX8uGEoOhhhickUwEypMlAs/PweuGboy8=;
-        b=yRbf+VwQVH0+nric36CsNilgDs4n8rtXGTiVL1DP+aOjGOPYdZjoNlw/8ElouSg5Ve
-         MgNiKl/lCmDMjyDKvUSPH6MB5IoFTSrkJlw/I1iHMQYYCK7eQGY8Z5XHFKN4Y77AbwGp
-         r33SrVmGxd/SwwXl9UgTeyHVmMJbeKd7pbjW6rpchaoLzHVtro5fiy3oj3O++NQVp7R+
-         Fs+9kJBPm8PU+B+yHmNhBXJcLopTziZ+9MqPqw4kH8uLMlkvcUHOB34DAtOK7BVeR2ka
-         WGjJAuAfersjQWYOf4DGvI+GXi4EhXF6SB4Iqbl5ZmIs++q96bfvD16z+IygbVUI8xSQ
-         +vaw==
-X-Gm-Message-State: AOAM531cfUln6FoFlIOA3jNEppT0BHoSwoYwOK1MUziIrk4QARaPtJii
-        uCrHIws7M9AnR5K4YtffaHo=
-X-Google-Smtp-Source: ABdhPJx/vfKrzFtbmI6EOf7fSVsCmxJROLz2A5/nnIyT6JF9Pyb3THTabAah3NPvJiMPDDjTZ25a4g==
-X-Received: by 2002:a62:6410:0:b0:4f3:9654:266d with SMTP id y16-20020a626410000000b004f39654266dmr24386387pfb.59.1653328670923;
-        Mon, 23 May 2022 10:57:50 -0700 (PDT)
+        bh=nQ2XjBmqagrH02gXtcNOLLn+oI0x38qbgguqkJjLCio=;
+        b=3BAaqOr7ykAxuvj9St1dZAW8IYfd7WC07AnIZ1vlSAB3kITBjL0kQ5JZKk9vh7r0ic
+         hY4Y+mGxuqJxMgazmg7RgOlHqhHs1mZGcYQiM5jtSIcfpXQyLugqWG9LsfrOaCmuuu7I
+         ph/7aSh9x5CZqQ5lYsTFt6Xd3dT0knxOqbj1AmPxL8MtlLN8NQsZrDORgQfqmL/dX3z9
+         VKCyD4gJ8MLNMGa0XWdbd+tF/Bc4sJHMIFqYO9gf38eZc6JIvyDk+vS92ll0fM8JKENV
+         /oVZ3xxP/AoMK4FsZUBm75pwtFZtcq9C1TpM0jZCqBY9EkUG0RtQL/62FGqziXV0GtqM
+         3qPQ==
+X-Gm-Message-State: AOAM5318GTOH0s9hw4KEADlrL54a0a4zLc1moldhPALSQpo7TjUiw4Tt
+        yxluqepcgcHK7la5V4aig6o=
+X-Google-Smtp-Source: ABdhPJxOJiRbk76PgKmbWVGp+hk+OJ889KtnVFVCazek/tjlnznTd4pYSVAyTPlZiYCdqX9QGxxPqA==
+X-Received: by 2002:a17:902:ccd0:b0:156:7ac2:5600 with SMTP id z16-20020a170902ccd000b001567ac25600mr23663571ple.156.1653328727772;
+        Mon, 23 May 2022 10:58:47 -0700 (PDT)
 Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id o13-20020a17090a4b4d00b001df264610c4sm336314pjl.0.2022.05.23.10.57.48
+        by smtp.googlemail.com with ESMTPSA id e18-20020a170902f11200b00162017529easm5392739plb.167.2022.05.23.10.58.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 10:57:50 -0700 (PDT)
-Message-ID: <8dde51cd-d59a-b55e-2cc1-53aafb1f399a@gmail.com>
-Date:   Mon, 23 May 2022 10:57:46 -0700
+        Mon, 23 May 2022 10:58:47 -0700 (PDT)
+Message-ID: <fe46fd14-0635-a68d-ad5e-e9be06aa2a82@gmail.com>
+Date:   Mon, 23 May 2022 10:58:45 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.8.1
-Subject: Re: [RFC PATCH net-next 04/12] net: bridge: move DSA master bridging
- restriction to DSA
+Subject: Re: [RFC PATCH net-next 05/12] net: dsa: existing DSA masters cannot
+ join upper interfaces
 Content-Language: en-US
 To:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
@@ -76,9 +76,9 @@ Cc:     Jakub Kicinski <kuba@kernel.org>,
         Frank Wunderlich <frank-w@public-files.de>,
         Vladimir Oltean <vladimir.oltean@nxp.com>
 References: <20220523104256.3556016-1-olteanv@gmail.com>
- <20220523104256.3556016-5-olteanv@gmail.com>
+ <20220523104256.3556016-6-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-In-Reply-To: <20220523104256.3556016-5-olteanv@gmail.com>
+In-Reply-To: <20220523104256.3556016-6-olteanv@gmail.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
@@ -94,15 +94,20 @@ X-Mailing-List: netdev@vger.kernel.org
 On 5/23/22 03:42, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> When DSA gains support for multiple CPU ports in a LAG, it will become
-> mandatory to monitor the changeupper events for the DSA master.
+> All the traffic to/from a DSA master is supposed to be distributed among
+> its DSA switch upper interfaces, so we should not allow other upper
+> device kinds.
 > 
-> In fact, there are already some restrictions to be imposed in that area,
-> namely that a DSA master cannot be a bridge port except in some special
-> circumstances.
+> An exception to this is DSA_TAG_PROTO_NONE (switches with no DSA tags),
+> and in that case it is actually expected to create e.g. VLAN interfaces
+> on the master. But for those, netdev_uses_dsa(master) returns false, so
+> the restriction doesn't apply.
 > 
-> Centralize the restrictions at the level of the DSA layer as a
-> preliminary step.
+> The motivation for this change is to allow LAG interfaces of DSA masters
+> to be DSA masters themselves. We want to restrict the user's degrees of
+> freedom by 1: the LAG should already have all DSA masters as lowers, and
+> while lower ports of the LAG can be removed, none can be added after the
+> fact.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
