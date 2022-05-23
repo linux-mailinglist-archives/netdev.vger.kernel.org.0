@@ -2,139 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DC1E1530879
-	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 06:41:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2440530889
+	for <lists+netdev@lfdr.de>; Mon, 23 May 2022 06:59:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234269AbiEWElZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 00:41:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42772 "EHLO
+        id S1349650AbiEWE70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 00:59:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229872AbiEWElX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 00:41:23 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C54B16460
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 21:41:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653280880;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=08y9EJtcz+7a/JcW5CAQJh1vaSn+lYtCa1y1S5/rUOM=;
-        b=hKyZcv9l33feO9KpTDAXshgmIBowobQL+SYCaQsaTgt+qrkhyqp3QG982V7r6p6HbjfU6k
-        V5bmUOZYUpJLKWPZkPzvCfZY0myysqoxXN2xnvDJ+0zLU+GPuHsQ2rgu3psMaw8kpgQCL+
-        ssGq7AqtAsaoljvtf8dJ42rn8XO8l2c=
-Received: from mail-lj1-f200.google.com (mail-lj1-f200.google.com
- [209.85.208.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-389-XoyhTTXUOridIi87ftv8YQ-1; Mon, 23 May 2022 00:41:18 -0400
-X-MC-Unique: XoyhTTXUOridIi87ftv8YQ-1
-Received: by mail-lj1-f200.google.com with SMTP id m30-20020a2e581e000000b00253cb23fbeeso2509671ljb.11
-        for <netdev@vger.kernel.org>; Sun, 22 May 2022 21:41:18 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=08y9EJtcz+7a/JcW5CAQJh1vaSn+lYtCa1y1S5/rUOM=;
-        b=D9eLWjBQz6F1/ETli1HDraer3VdPRjsQi43GrJygMANTzOoL+YQOKG78JCQXZ3S6qC
-         6zUIMkvqJsMfoA+WrfCfksN3cxgsGTBpR/wLRBRtlU9jLHx9m2nvjxRMEkz1pzY+DXNE
-         P6oBcxJT9/+c1midDOExpIUSdmPFpVIM01se7F0niZJjhbs6xBb9LQCF92YUHG/dchHm
-         ny+ozdtaiLwFeuCAn/n6WskmFJFXY2wXkK7fY84WDzCRCLTz/DTPWf0GfzJCOlZcEkJ0
-         46LqT+ZTNEnnyhrcOHb02QC3TqyA5889DKdwwgR2PMSGEs2sjBel8fcycQSh7C2ypWE/
-         Anig==
-X-Gm-Message-State: AOAM533zyfNwrB7varD26bqj445RGFiIdXIvbb80cBS6KdTbDLCFa32s
-        NjFzE0N3KBrpaTTF+AGSHY7ttrjZueOzlitIR/Llpdny4UOgrYLo6uXMQSyIQSZ2rtmiaMVYz1v
-        vqn5+y7fJrXzA7qrLm2uUdRZGtzEsLzX2
-X-Received: by 2002:a05:6512:1588:b0:477:a556:4ab2 with SMTP id bp8-20020a056512158800b00477a5564ab2mr15008564lfb.376.1653280875765;
-        Sun, 22 May 2022 21:41:15 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJxqRetp33JcfidVaUk+iFKExKrB3v7QK7jBSPRLyLJwJHS8cGFd1P5dpWd3xCNGBT0hiuY9YQ5gpi2GOTwnZdI=
-X-Received: by 2002:a05:6512:1588:b0:477:a556:4ab2 with SMTP id
- bp8-20020a056512158800b00477a5564ab2mr15008553lfb.376.1653280875600; Sun, 22
- May 2022 21:41:15 -0700 (PDT)
+        with ESMTP id S229784AbiEWE7X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 00:59:23 -0400
+Received: from corp-front08-corp.i.nease.net (corp-front08-corp.i.nease.net [59.111.134.158])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0797A10AB;
+        Sun, 22 May 2022 21:59:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
+        Date:Message-Id:In-Reply-To:References:MIME-Version:
+        Content-Transfer-Encoding; bh=PML+RtRHT09240DsDerNVlNwToxhZ9P/5T
+        XgZocq7xA=; b=TjAfYTJ6kFt+5pjpxGgvWAl/8FQnDDURdteRclMsvefRQkdJH6
+        kdZHxpeQhOUN1jXhgKIRWA6oMdVEhWtVJ5gU5uKsZo07olHKNoIVk2El6mbwD0sp
+        aPA9Y2Eyi/sJCMa+hh5TColcT7AlSkMgOMvjYbiKzaaMS6b+Yl3xpETJE=
+Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
+        by corp-front08-corp.i.nease.net (Coremail) with SMTP id nhDICgCHGASaFItigE1hAA--.64988S2;
+        Mon, 23 May 2022 12:59:06 +0800 (HKT)
+From:   liuyacan@corp.netease.com
+To:     kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com
+Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, ubraun@linux.ibm.com,
+        liuyacan <liuyacan@corp.netease.com>
+Subject: [PATCH v2 net] net/smc: postpone sk_refcnt increment in connect()
+Date:   Mon, 23 May 2022 12:57:07 +0800
+Message-Id: <20220523045707.1704761-1-liuyacan@corp.netease.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20220523032437.1059718-1-liuyacan@corp.netease.com>
+References: <20220523032437.1059718-1-liuyacan@corp.netease.com>
 MIME-Version: 1.0
-References: <89ef0ae4c26ac3cfa440c71e97e392dcb328ac1b.1653227924.git.christophe.jaillet@wanadoo.fr>
-In-Reply-To: <89ef0ae4c26ac3cfa440c71e97e392dcb328ac1b.1653227924.git.christophe.jaillet@wanadoo.fr>
-From:   Jason Wang <jasowang@redhat.com>
-Date:   Mon, 23 May 2022 12:41:03 +0800
-Message-ID: <CACGkMEtvgL+MxBmhWZ-Hn-QjfS-MBm7gvLoQHhazOiwrLxxUJA@mail.gmail.com>
-Subject: Re: [PATCH] vhost-vdpa: Fix some error handling path in vhost_vdpa_process_iotlb_msg()
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Gautam Dawar <gautam.dawar@xilinx.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org, kvm <kvm@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-3.4 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: nhDICgCHGASaFItigE1hAA--.64988S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7XrWxtFWUZw18uF4rWrWruFg_yoWkWFcEkr
+        s3WFWDCr4jyF4rJw47A3yrAa97tw1rGr48Jws8ArWIq3W8WryDurs8Crsxur1Duw45Cr13
+        Wr4FgFWrC34IyjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbtAYjxAI6xCIbckI1I0E57IF64kEYxAxM7AC8VAFwI0_Gr0_Xr1l
+        1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0I
+        I2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0
+        Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84
+        ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2kK67ZEXf0FJ3sC6x9vy-n0Xa0_Xr1Utr1k
+        JwI_Jr4ln4vE4IxY62xKV4CY8xCE548m6r4UJryUGwAS0I0E0xvYzxvE52x082IY62kv04
+        87Mc804VCqF7xvr2I5Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWU
+        JVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7V
+        AKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628vn2kIc2xKxwAKzVCY
+        07xG64k0F24l7I0Y64k_MxkI7II2jI8vz4vEwIxGrwCF04k20xvY0x0EwIxGrwCF72vEw2
+        IIxxk0rwCFx2IqxVCFs4IE7xkEbVWUJVW8JwCFI7vE0wC20s026c02F40E14v26r1j6r18
+        MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr4
+        1lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1l
+        IxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4
+        A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0pRp6wAUUUUU=
+X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQAPCVt760Y6zQABs4
+X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, May 22, 2022 at 9:59 PM Christophe JAILLET
-<christophe.jaillet@wanadoo.fr> wrote:
->
-> In the error paths introduced by the commit in the Fixes tag, a mutex may
-> be left locked.
-> Add the correct goto instead of a direct return.
->
-> Fixes: a1468175bb17 ("vhost-vdpa: support ASID based IOTLB API")
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> WARNING: This patch only fixes the goto vs return mix-up in this function.
-> However, the 2nd hunk looks really spurious to me. I think that the:
-> -               return -EINVAL;
-> +               r = -EINVAL;
-> +               goto unlock;
-> should be done only in the 'if (!iotlb)' block.
+From: liuyacan <liuyacan@corp.netease.com>
 
-It should be fine, the error happen if
+Same trigger condition as commit 86434744. When setsockopt runs
+in parallel to a connect(), and switch the socket into fallback
+mode. Then the sk_refcnt is incremented in smc_connect(), but
+its state stay in SMC_INIT (NOT SMC_ACTIVE). This cause the
+corresponding sk_refcnt decrement in __smc_release() will not be
+performed.
 
-1) the batched ASID based request is not equal (the first if)
-2) there's no IOTLB for this ASID (the second if)
+Fixes: 86434744fedf ("net/smc: add fallback check to connect()")
+Signed-off-by: liuyacan <liuyacan@corp.netease.com>
+---
+ net/smc/af_smc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But I agree the code could be tweaked to use two different if instead
-of using a or condition here.
-
-Acked-by: Jason Wang <jasowang@redhat.com>
-
->
-> As I don't know this code, I just leave it as-is but draw your attention
-> in case this is another bug lurking.
-> ---
->  drivers/vhost/vdpa.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 1f1d1c425573..3e86080041fc 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -1000,7 +1000,8 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev, u32 asid,
->                 if (!as) {
->                         dev_err(&v->dev, "can't find and alloc asid %d\n",
->                                 asid);
-> -                       return -EINVAL;
-> +                       r = -EINVAL;
-> +                       goto unlock;
->                 }
->                 iotlb = &as->iotlb;
->         } else
-> @@ -1013,7 +1014,8 @@ static int vhost_vdpa_process_iotlb_msg(struct vhost_dev *dev, u32 asid,
->                 }
->                 if (!iotlb)
->                         dev_err(&v->dev, "no iotlb for asid %d\n", asid);
-> -               return -EINVAL;
-> +               r = -EINVAL;
-> +               goto unlock;
->         }
->
->         switch (msg->type) {
-> --
-> 2.34.1
->
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index fce16b9d6..45a24d242 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -1564,9 +1564,9 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
+ 	if (rc && rc != -EINPROGRESS)
+ 		goto out;
+ 
+-	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (smc->use_fallback)
+ 		goto out;
++	sock_hold(&smc->sk); /* sock put in passive closing */
+ 	if (flags & O_NONBLOCK) {
+ 		if (queue_work(smc_hs_wq, &smc->connect_work))
+ 			smc->connect_nonblock = 1;
+-- 
+2.20.1
 
