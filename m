@@ -2,57 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id AADF5531E7F
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:19:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1F14531E87
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 00:20:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231348AbiEWWTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 18:19:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59424 "EHLO
+        id S231182AbiEWWUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 18:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230476AbiEWWTD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:19:03 -0400
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B66082146;
-        Mon, 23 May 2022 15:19:02 -0700 (PDT)
-Received: by mail-vk1-xa36.google.com with SMTP id x11so7232590vkn.11;
-        Mon, 23 May 2022 15:19:02 -0700 (PDT)
+        with ESMTP id S230003AbiEWWT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 18:19:59 -0400
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7D9C8AE6E;
+        Mon, 23 May 2022 15:19:58 -0700 (PDT)
+Received: by mail-qt1-x82a.google.com with SMTP id v6so10573543qtx.12;
+        Mon, 23 May 2022 15:19:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=o0jmOLbIBLC81iyA5yzsszbXfVOeW4ty6u6e0iBG1ak=;
-        b=Q6spda00D8K2i1naxwniSrw8jg1W3WVi94CaLo8Km049sMI9f8AA1eDBhxZtAdkn9J
-         yU8aY1JPVSAYtW+gahpiFeo1pZRnoWQF0jZmvQR8N/MDp8BjCQCE2Ve5i4T2eqdGdEfA
-         /DciG7Z78vUq2S9CIFDLeu/5+ZD9h7/wedib4aBvbRbIIqVH+LMmQ7ICqgGO4muXiq1r
-         H1PzwYkmdSEcg9ncZQpIpZlfGAxdm5kFRG/Sa7WNAkE5LuXalwXPMSEje5dnGxNyTIf7
-         gp5ErRSaxDha4ypyd8aV6uMGmVt0D6MpyGm5PYUMr4qBFwEwxdahxUqsrBFIOB/u7uHr
-         Ek+Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=gJZ2EuLHOSL7PCIwr5z5Y+h7/+WPPg4E4J2oaC866W0=;
+        b=YOhTG9Ri+JSXgF8K3bxkJJMTZoQjAypQHSslGCYguNA6W8rpjSOwWWVHglqoOLfziX
+         OuLbVtzWsjllk5FikzcX2UBujPLKCT5mRUBdbFg8cLydNboLaQV2DoPWN46Usx3FIAr/
+         rDS7PSBsOUGSbWVRg+niu8IHtlsriMje8IAn1U03HOvcozseYUBlpWNqQMewEqkJ26F2
+         0hZchk06w+preD1pH0L50nHWB1MpFLj6ggYVd2p3Ck8Pu+AM9D6kfCVfJdLPKQ3z+w5J
+         hHKf8yfNx8UJlZ5q/yFd2IfnhPVznGO3MEWWEHx2KwsvHTk9KG5zdW7Gz/+L9pjmlCiI
+         NzsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o0jmOLbIBLC81iyA5yzsszbXfVOeW4ty6u6e0iBG1ak=;
-        b=6vlPgrjfJPmihx6+sGFlfY9k8BexaLcIA47q7r/YkHTepSbbSFAdQPQP6tJwypAXhs
-         hzkmpDUitbWoGTt/OL8+biiiLI37ktKheuXGJG0pFqFSb/dOXXDzzkGYFYgclMD8+SFl
-         VTdTHf1HyD8UIzRVtI5wtDovmgNclEX6b6fYrarA9yTOKa7hHFgnEaxu0Hph6FQsF+JC
-         k15wMgJtiHQ3yWbhJuE5SbRx3qI4g7aqoeOTDz7CO1NEjf1/VRfvdVJsLtmjTu0Yy03C
-         QE6MUPFUVcQ9/Ua+HxmHNoFej5a+xerMEqXaww8v734aSGUdAXgaOQmhULE/w7IdVE+O
-         DdJA==
-X-Gm-Message-State: AOAM531fOx2U5sWQg7jtef8NdxTqHXhDK3jWheFYC4MAtWjxj/ZSixYA
-        rXBMdKCFlI0Cwe0IwtwwzKvHX8YN3yq6aTuMlBU=
-X-Google-Smtp-Source: ABdhPJwXGAJoIRCLkBVb6nbGLCaOQQ+/QyZqFuWiushHlGc6SCs3JQg4uMgLxbApU6UQAi4K8yn72yjFMuKXWksRjGQ=
-X-Received: by 2002:a1f:ac14:0:b0:34e:c5cc:f97f with SMTP id
- v20-20020a1fac14000000b0034ec5ccf97fmr8856454vke.9.1653344341474; Mon, 23 May
- 2022 15:19:01 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220523212808.603526-1-connoro@google.com>
-In-Reply-To: <20220523212808.603526-1-connoro@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 23 May 2022 15:18:50 -0700
-Message-ID: <CAEf4Bzb7RLdNjx8kiHUmv05vB+nF-4PH-FcYynWoKHLUsHR2+Q@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] libbpf: also check /sys/kernel/tracing for
- tracefs files
-To:     "Connor O'Brien" <connoro@google.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=gJZ2EuLHOSL7PCIwr5z5Y+h7/+WPPg4E4J2oaC866W0=;
+        b=l+08hfH2Dfk4ioRz07Mzd/ZmE8O9t2hqiTwR5pQ3jc8NNPYBqWIZqMkyti7aaRExyK
+         qu96DecPDKYFDJY6eOdJPVVvUzJIVmy56wfC/oQhrr5oh5ulJpjB7uSp5OSxVyJxZCSN
+         c4/3tiqg+9JGfvVj077HClGLfQc0402BbPQjcw9HxUT1JanYMTEp/ouLccBAHqE2LMR/
+         iKWBh8ANfI1n35h5Q+db5vyshauTNsdWgzsLwXwib3hZIPoOIhCAd7u+7GUMi+1aLoeF
+         ku/y2siDcvYWCn2M9ItMeBh2ExdYo1pwBDEHoXHqsfJrqnlTTd8DX+nBajKzE8OrvleG
+         IGLg==
+X-Gm-Message-State: AOAM531TZRPBfTL/dix0J5RL+r0lqjJgq2zHAKNdK0IDwlxZJRW3EucI
+        tf8gVDC/fFRfxuPs6G8LOc4H3ffMG3DjYg==
+X-Google-Smtp-Source: ABdhPJz1VHWenGd2tI7aaPHAkuYo+GbZjISx0sNKVm0XqQY2LBg7NKQIeqn7HLtSUZeJLVvzaiUFBg==
+X-Received: by 2002:a05:622a:4ce:b0:2f9:3e6e:475 with SMTP id q14-20020a05622a04ce00b002f93e6e0475mr2344654qtx.469.1653344397807;
+        Mon, 23 May 2022 15:19:57 -0700 (PDT)
+Received: from jup ([2607:fea8:e2e4:d600::6ece])
+        by smtp.gmail.com with ESMTPSA id e18-20020ac84e52000000b002f936bae288sm3106792qtw.87.2022.05.23.15.19.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 May 2022 15:19:57 -0700 (PDT)
+Date:   Mon, 23 May 2022 18:19:54 -0400
+From:   Michael Mullin <masmullin@gmail.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
@@ -62,7 +59,15 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         KP Singh <kpsingh@kernel.org>,
         Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH] bpftool: mmaped fields missing map structure in
+ generated skeletons
+Message-ID: <20220523221954.dsqvy55ron4cfdqq@jup>
+References: <20220523202649.6iiz4h2wf5ryx3w2@jup>
+ <CAEf4BzaecP2XkzftmH7GeeTfj1E+pv=20=L4ztrxe4-JU7MuUw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzaecP2XkzftmH7GeeTfj1E+pv=20=L4ztrxe4-JU7MuUw@mail.gmail.com>
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
@@ -73,143 +78,51 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 23, 2022 at 2:28 PM Connor O'Brien <connoro@google.com> wrote:
->
-> libbpf looks for tracefs files only under debugfs, but tracefs may be
-> mounted even if debugfs is not. When /sys/kernel/debug/tracing is
-> absent, try looking under /sys/kernel/tracing instead.
->
-> Signed-off-by: Connor O'Brien <connoro@google.com>
-> ---
-> v1->v2: cache result of debugfs check.
->
->  src/libbpf.c | 32 +++++++++++++++++++++++++-------
->  1 file changed, 25 insertions(+), 7 deletions(-)
->
-> diff --git a/src/libbpf.c b/src/libbpf.c
-> index 2262bcd..cc47c52 100644
-> --- a/src/libbpf.c
-> +++ b/src/libbpf.c
-> @@ -9945,10 +9945,22 @@ static void gen_kprobe_legacy_event_name(char *buf, size_t buf_sz,
->                  __sync_fetch_and_add(&index, 1));
->  }
->
-> +static bool debugfs_available(void)
-> +{
-> +       static bool initialized = false, available;
-> +
-> +       if (!initialized) {
-> +               available = !access("/sys/kernel/debug/tracing", F_OK);
-> +               initialized = true;
-> +       }
-> +       return available;
-> +}
+On Mon, May 23, 2022 at 03:02:31PM -0700, Andrii Nakryiko wrote:
+> On Mon, May 23, 2022 at 1:26 PM Michael Mullin <masmullin@gmail.com> wrote:
+> >
+> > When generating a skeleton which has an mmaped map field, bpftool's
+> > output is missing the map structure.  This causes a compile break when
+> > the generated skeleton is compiled as the field belongs to the internal
+> > struct maps, not directly to the obj.
+> >
+> > Signed-off-by: Michael Mullin <masmullin@gmail.com>
+> > ---
+> >  tools/bpf/bpftool/gen.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/tools/bpf/bpftool/gen.c b/tools/bpf/bpftool/gen.c
+> > index f158dc1c2149..b49293795ba0 100644
+> > --- a/tools/bpf/bpftool/gen.c
+> > +++ b/tools/bpf/bpftool/gen.c
+> > @@ -853,7 +853,7 @@ codegen_maps_skeleton(struct bpf_object *obj, size_t map_cnt, bool mmaped)
+> >                         i, bpf_map__name(map), i, ident);
+> >                 /* memory-mapped internal maps */
+> >                 if (mmaped && is_internal_mmapable_map(map, ident, sizeof(ident))) {
+> > -                       printf("\ts->maps[%zu].mmaped = (void **)&obj->%s;\n",
+> > +                       printf("\ts->maps[%zu].mmaped = (void **)&obj->maps.%s;\n",
+> 
+> That's not right. maps.my_map is struct bpf_map *, but mmaped is
+> supposed to be a blob of memory that is memory-mapped into map.
+> 
+> Can you elaborate on how you trigger that compilation error with a
+> small example?
 
-so thinking about this caching a bit, I'm not so sure we want to cache
-this decision. Mounting and unmounting of tracefs can happen after BPF
-application starts, so this debugfs_available flag can actually change
-while program is running. On the other hand, we don't do this check
-all that frequently, only during attach/detach, so it might be ok not
-to cache this result at all? WDYT?
+I have an a very small example on github. I have added some sed fixes to
+my Makefile make my sample program compile.
+https://github.com/masmullin2000/libbpf-sample/tree/main/c/simple
 
-> +
->  static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
->                                    const char *kfunc_name, size_t offset)
->  {
-> -       const char *file = "/sys/kernel/debug/tracing/kprobe_events";
-> +       const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/kprobe_events" :
-> +               "/sys/kernel/tracing/kprobe_events";
+https://github.com/masmullin2000/libbpf-sample/tree/02c7f945bf9027daedec04f485a320ba2df28204/c/simple
+contains broken code.
 
-reading through this patch, it's now quite hard to see what differs,
-to be honest. While I do like full file path spelled out, now that we
-have two different prefixes it seems better to have prefixes separate.
-How about we do
+I apologize if this is an incorrect way to share external code.  I
+haven't found the proper way to share example code from
+kernelnewbies.org
 
-#define TRACEFS_PFX "/sys/kernel/tracing"
-#define DEBUGFS_PFX "/sys/kernel/debug/tracing"
-
-and then use that to construct strings. Like in the above example
-
-
-const char *file = has_debugfs() ? DEBUGFS_PFX "/kprobe_events" :
-TRACEFS_PFX "/kprobe_events";
-
-and similarly below. That way at least we see clearly the part that's
-not dependent on debugfs/tracefs differences.
-
->
->         return append_to_file(file, "%c:%s/%s %s+0x%zx",
->                               retprobe ? 'r' : 'p',
-> @@ -9958,7 +9970,8 @@ static int add_kprobe_event_legacy(const char *probe_name, bool retprobe,
->
->  static int remove_kprobe_event_legacy(const char *probe_name, bool retprobe)
->  {
-> -       const char *file = "/sys/kernel/debug/tracing/kprobe_events";
-> +       const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/kprobe_events" :
-> +               "/sys/kernel/tracing/kprobe_events";
->
->         return append_to_file(file, "-:%s/%s", retprobe ? "kretprobes" : "kprobes", probe_name);
->  }
-> @@ -9968,7 +9981,8 @@ static int determine_kprobe_perf_type_legacy(const char *probe_name, bool retpro
->         char file[256];
->
->         snprintf(file, sizeof(file),
-> -                "/sys/kernel/debug/tracing/events/%s/%s/id",
-> +                debugfs_available() ? "/sys/kernel/debug/tracing/events/%s/%s/id" :
-> +                "/sys/kernel/tracing/events/%s/%s/id",
->                  retprobe ? "kretprobes" : "kprobes", probe_name);
->
->         return parse_uint_from_file(file, "%d\n");
-> @@ -10144,7 +10158,8 @@ static void gen_uprobe_legacy_event_name(char *buf, size_t buf_sz,
->  static inline int add_uprobe_event_legacy(const char *probe_name, bool retprobe,
->                                           const char *binary_path, size_t offset)
->  {
-> -       const char *file = "/sys/kernel/debug/tracing/uprobe_events";
-> +       const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/uprobe_events" :
-> +               "/sys/kernel/tracing/uprobe_events";
->
->         return append_to_file(file, "%c:%s/%s %s:0x%zx",
->                               retprobe ? 'r' : 'p',
-> @@ -10154,7 +10169,8 @@ static inline int add_uprobe_event_legacy(const char *probe_name, bool retprobe,
->
->  static inline int remove_uprobe_event_legacy(const char *probe_name, bool retprobe)
->  {
-> -       const char *file = "/sys/kernel/debug/tracing/uprobe_events";
-> +       const char *file = debugfs_available() ? "/sys/kernel/debug/tracing/uprobe_events" :
-> +               "/sys/kernel/tracing/uprobe_events";
->
->         return append_to_file(file, "-:%s/%s", retprobe ? "uretprobes" : "uprobes", probe_name);
->  }
-> @@ -10164,7 +10180,8 @@ static int determine_uprobe_perf_type_legacy(const char *probe_name, bool retpro
->         char file[512];
->
->         snprintf(file, sizeof(file),
-> -                "/sys/kernel/debug/tracing/events/%s/%s/id",
-> +                debugfs_available() ? "/sys/kernel/debug/tracing/events/%s/%s/id" :
-> +                "/sys/kernel/tracing/events/%s/%s/id",
-
-like here, "events/%s/%s/id" is important to separate, so
-
-snprintf(file, sizeof(file), "%s/events/%s/%s/id",
-         has_debugfs() ? DEBUGFS_PFX : TRACEFS_PFX,
-         retprobe ? "uretprobes" : "uprobes", probe_name);
-
-seems easier to follow?
-
-
->                  retprobe ? "uretprobes" : "uprobes", probe_name);
->
->         return parse_uint_from_file(file, "%d\n");
-> @@ -10295,7 +10312,8 @@ static int determine_tracepoint_id(const char *tp_category,
->         int ret;
->
->         ret = snprintf(file, sizeof(file),
-> -                      "/sys/kernel/debug/tracing/events/%s/%s/id",
-> +                      debugfs_available() ? "/sys/kernel/debug/tracing/events/%s/%s/id" :
-> +                      "/sys/kernel/tracing/events/%s/%s/id",
->                        tp_category, tp_name);
->         if (ret < 0)
->                 return -errno;
-> --
-> 2.36.1.124.g0e6072fb45-goog
->
+> 
+> >                                 i, ident);
+> >                 }
+> >                 i++;
+> > --
+> > 2.36.1
+> >
