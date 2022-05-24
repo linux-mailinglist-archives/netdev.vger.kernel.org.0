@@ -2,83 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C18E5325B0
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 10:56:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19EAD5325C2
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 10:56:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233561AbiEXIzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 04:55:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
+        id S234047AbiEXI4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 04:56:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59312 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230286AbiEXIzs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 04:55:48 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6826FD2C;
-        Tue, 24 May 2022 01:55:47 -0700 (PDT)
-Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L6nyT6WKJz67bZ1;
-        Tue, 24 May 2022 16:52:33 +0800 (CST)
-Received: from [10.122.132.241] (10.122.132.241) by
- fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2375.24; Tue, 24 May 2022 10:55:43 +0200
-Message-ID: <e83d9e6f-738f-a4b0-f556-8b162c5bd65d@huawei.com>
-Date:   Tue, 24 May 2022 11:55:41 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH v5 12/15] seltests/landlock: rules overlapping test
-Content-Language: ru
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
-CC:     <willemdebruijn.kernel@gmail.com>,
-        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
-        <anton.sirazetdinov@huawei.com>
-References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
- <20220516152038.39594-13-konstantin.meskhidze@huawei.com>
- <4806f5ed-41c0-f9f2-d7a1-2173c8494399@digikod.net>
- <09ab37e1-eba5-80be-8fb3-df2bde698fc6@huawei.com>
- <0958567e-cc91-f63f-402a-a6324a576da2@digikod.net>
-From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
-In-Reply-To: <0958567e-cc91-f63f-402a-a6324a576da2@digikod.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.122.132.241]
-X-ClientProxiedBy: lhreml752-chm.china.huawei.com (10.201.108.202) To
- fraeml704-chm.china.huawei.com (10.206.15.53)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S230086AbiEXI4T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 04:56:19 -0400
+Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 4A3652A71F;
+        Tue, 24 May 2022 01:56:17 -0700 (PDT)
+Received: by linux.microsoft.com (Postfix, from userid 1004)
+        id 0CE5C20B71D5; Tue, 24 May 2022 01:56:17 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 0CE5C20B71D5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
+        s=default; t=1653382577;
+        bh=q6+10vIn7gksEq8uQbjXxOjVwfFIGP+vMhljlQ+vW7c=;
+        h=From:To:Cc:Subject:Date:Reply-To:From;
+        b=dmgXmJnklCANUE4vQgU1kjm3WH/UOKVEoEoionCCBOLFFNFZh2LCilHxrxA9aEGDX
+         c7PeD4Uyb/69AMK1uSDlR1slho0JQy4h8ygz4TlmLwdgMHNTZ3BG2yUvwS5HXHfXms
+         xY/69ZWKiE3lPhw7fBMxrj2sj//0JLLhZWn1T6yw=
+From:   longli@linuxonhyperv.com
+To:     "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>, Dexuan Cui <decui@microsoft.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Leon Romanovsky <leon@kernel.org>,
+        Ajay Sharma <sharmaajay@microsoft.com>
+Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Long Li <longli@microsoft.com>
+Subject: [Patch v2 00/12] Introduce Microsoft Azure Network Adapter (MANA) RDMA driver
+Date:   Tue, 24 May 2022 01:56:00 -0700
+Message-Id: <1653382572-14788-1-git-send-email-longli@linuxonhyperv.com>
+X-Mailer: git-send-email 1.8.3.1
+Reply-To: longli@microsoft.com
+X-Spam-Status: No, score=-11.6 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+        RCVD_IN_DNSWL_MED,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE,
+        USER_IN_DEF_SPF_WL autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Long Li <longli@microsoft.com>
+
+This patchset implements a RDMA driver for Microsoft Azure Network
+Adapter (MANA). In MANA, the RDMA device is modeled as an auxiliary device
+to the Ethernet device.
+
+The first 11 patches modify the MANA Ethernet driver to support RDMA driver.
+The last patch implementes the RDMA driver.
+
+The user-mode of the driver is being reviewed at:
+https://github.com/linux-rdma/rdma-core/pull/1177
 
 
-5/19/2022 6:04 PM, Mickaël Salaün пишет:
-> 
-> 
-> On 19/05/2022 14:24, Konstantin Meskhidze wrote:
->>
->>
->> 5/16/2022 8:41 PM, Mickaël Salaün пишет:
-> 
-> [...]
-> 
->>>> +
->>>> +    /* Makes connection to socket with port[0] */
->>>> +    ASSERT_EQ(0, connect(sockfd, (struct sockaddr *)&self->addr4[0],
->>>
->>> Can you please get rid of this (struct sockaddr *) type casting 
->>> please (without compiler warning)?
->>>
->>    Do you have a warning here? Cause I don't.
-> 
-> There is no warning but this kind of cast is useless.
+Ajay Sharma (3):
+  net: mana: Set the DMA device max segment size
+  net: mana: Define data structures for protection domain and memory
+    registration
+  net: mana: Define and process GDMA response code
+    GDMA_STATUS_MORE_ENTRIES
 
-   But addr4 is struct sockaddr_in type and connect/bind use struct 
-sockaddr type. That's why casting is needed here.
+Long Li (9):
+  net: mana: Add support for auxiliary device
+  net: mana: Record the physical address for doorbell page region
+  net: mana: Handle vport sharing between devices
+  net: mana: Add functions for allocating doorbell page from GDMA
+  net: mana: Export Work Queue functions for use by RDMA driver
+  net: mana: Record port number in netdev
+  net: mana: Move header files to a common location
+  net: mana: Define max values for SGL entries
+  RDMA/mana_ib: Add a driver for Microsoft Azure Network Adapter
 
-> .
+ MAINTAINERS                                   |   4 +
+ drivers/infiniband/Kconfig                    |   1 +
+ drivers/infiniband/hw/Makefile                |   1 +
+ drivers/infiniband/hw/mana/Kconfig            |   7 +
+ drivers/infiniband/hw/mana/Makefile           |   4 +
+ drivers/infiniband/hw/mana/cq.c               |  79 +++
+ drivers/infiniband/hw/mana/main.c             | 648 ++++++++++++++++++
+ drivers/infiniband/hw/mana/mana_ib.h          | 144 ++++
+ drivers/infiniband/hw/mana/mr.c               | 134 ++++
+ drivers/infiniband/hw/mana/qp.c               | 494 +++++++++++++
+ drivers/infiniband/hw/mana/wq.c               | 115 ++++
+ .../net/ethernet/microsoft/mana/gdma_main.c   |  93 ++-
+ .../net/ethernet/microsoft/mana/hw_channel.c  |   6 +-
+ .../net/ethernet/microsoft/mana/mana_bpf.c    |   2 +-
+ drivers/net/ethernet/microsoft/mana/mana_en.c | 140 +++-
+ .../ethernet/microsoft/mana/mana_ethtool.c    |   2 +-
+ .../net/ethernet/microsoft/mana/shm_channel.c |   2 +-
+ .../microsoft => include/net}/mana/gdma.h     | 191 +++++-
+ .../net}/mana/hw_channel.h                    |   0
+ .../microsoft => include/net}/mana/mana.h     |  26 +-
+ .../net}/mana/shm_channel.h                   |   0
+ include/uapi/rdma/ib_user_ioctl_verbs.h       |   1 +
+ include/uapi/rdma/mana-abi.h                  |  68 ++
+ 23 files changed, 2117 insertions(+), 45 deletions(-)
+ create mode 100644 drivers/infiniband/hw/mana/Kconfig
+ create mode 100644 drivers/infiniband/hw/mana/Makefile
+ create mode 100644 drivers/infiniband/hw/mana/cq.c
+ create mode 100644 drivers/infiniband/hw/mana/main.c
+ create mode 100644 drivers/infiniband/hw/mana/mana_ib.h
+ create mode 100644 drivers/infiniband/hw/mana/mr.c
+ create mode 100644 drivers/infiniband/hw/mana/qp.c
+ create mode 100644 drivers/infiniband/hw/mana/wq.c
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/gdma.h (77%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/hw_channel.h (100%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/mana.h (94%)
+ rename {drivers/net/ethernet/microsoft => include/net}/mana/shm_channel.h (100%)
+ create mode 100644 include/uapi/rdma/mana-abi.h
+
+-- 
+2.17.1
+
