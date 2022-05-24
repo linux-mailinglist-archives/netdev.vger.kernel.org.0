@@ -2,51 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id DE709532AC1
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 15:01:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFC35532AC5
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 15:03:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237518AbiEXNB0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 09:01:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43190 "EHLO
+        id S237526AbiEXNDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 09:03:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231294AbiEXNBZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 09:01:25 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5D10201AE;
-        Tue, 24 May 2022 06:01:24 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3BFC4615A8;
-        Tue, 24 May 2022 13:01:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16DE4C385AA;
-        Tue, 24 May 2022 13:01:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653397283;
-        bh=M3xKtMokiDFWNFEIuw3ktU5nFeVmN1Ch2a5N7SDKPQ0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UtXPQJk5kVUxEIwRRXOV5SPNh7uEBaEFqDsW0ZEiy2BK/j6KTpd/BuagpG8tX4Xh/
-         Pn7KYhluP6a63vPyUbaeZlqJHKL9u9jDVM+VCPhWo3Yp0mJPywmakxybXY98kItdGO
-         LkBNkjXfRycWjiX548uh2LbyGilBKqSdiW9LjHLXlx3q6ZiDv77Z4oMH5mZkttdhuk
-         5z5vu/f6DKDgkaDMB3Wh6ZESB/Gw7WFcQP+CjUNhVq2dR/gNL3RkQdogUB6TYbO0uY
-         PLUEfeEGIYGIsbTtxvj7EQqER+7leutA+zdQmeHLlb0Kn1Cm8REy0jUS/jd0HceFlj
-         5EldiMmh6r6ZQ==
-Date:   Tue, 24 May 2022 16:01:19 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     maorg@nvidia.com, linux-rdma@vger.kernel.org,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Subject: Re: [bug report] net/mlx5: Add direct rule fs_cmd implementation
-Message-ID: <YozXHxO85GpT+5GK@unreal>
-References: <YnvAxF0JO7E0fZvO@kili>
+        with ESMTP id S237521AbiEXNDQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 09:03:16 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6E6BC6338A
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 06:03:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1653397391;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VuA+hQIP5NuMWzKci8Ce7ATCFxGvl8XcBeLDZ4SQZrw=;
+        b=Xb+D9eUA/cAvD2E4+VfGAFE004kxNmi85GWwlATNQZmtCYYwOPXk8a4/bUwftWi4sneb9B
+        cnDALIKT9LGSoLXv7hHgolR3Fn3bv7jJG+nYCBrL+BO/SztBRQR6eulXA4OLic9DNQXDjR
+        kTcDwRgzryvhIFgW3d20KKcKKTFkwjE=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-207-dP4kBThZNhiDq9LPLOVzwQ-1; Tue, 24 May 2022 09:03:10 -0400
+X-MC-Unique: dP4kBThZNhiDq9LPLOVzwQ-1
+Received: by mail-wm1-f70.google.com with SMTP id m9-20020a05600c4f4900b0039746692dc2so3015074wmq.6
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 06:03:09 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=VuA+hQIP5NuMWzKci8Ce7ATCFxGvl8XcBeLDZ4SQZrw=;
+        b=nLfRwcVneepysARSor4AAHzB6cP7KC4MP1BVX+xeRDfdEYUl7dNowZKUaKvrROOUoj
+         rN1TnIx1h//K3QVL79CJCHwuIjPehc1YIJXGRraMJxZESrDrijcJ1dB/l+VVsD3Iydld
+         NIN3OrLmBElASQeEHsfZrmXSwOLGx6VETf/AbXWi6u4Iemzv6RGJCAKR/Hmw5EaIc11w
+         ewgZ61gPcWSTZTyYGwxJ2ksBFjsRxJiGOjxncvCyGNfhVtVXB2fDrqwDsu0KDpw/2a2K
+         AOjTwkwX9lCvf6H2rIvJFX2y2UWKa4LofgZa2Ni96wfhHDZD+ZpW8zua9TjVF48F+c9B
+         M9WA==
+X-Gm-Message-State: AOAM532Ssou3L+6+Hi5wF03HOjyxUqsIbb6ZYKT1HgSRoEFXVnOe9h+2
+        B1bF/W7pE91Y2hhjNUcrDLmsjR25wfQFfxOjEqFeFfbQMxFh2U3mfM7bCJQdNN+vJnVfeP1b0vL
+        QdipJd+gyjvF52YPY
+X-Received: by 2002:a05:6000:184d:b0:20f:e9a0:dad6 with SMTP id c13-20020a056000184d00b0020fe9a0dad6mr5473138wri.317.1653397388921;
+        Tue, 24 May 2022 06:03:08 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJy6FGiz36BIprlRrTIAV1mNT8gxPmWO8Z7EZuutiOcqaDrFguXdDtGyDfOJNR44VniSl70yKQ==
+X-Received: by 2002:a05:6000:184d:b0:20f:e9a0:dad6 with SMTP id c13-20020a056000184d00b0020fe9a0dad6mr5473116wri.317.1653397388723;
+        Tue, 24 May 2022 06:03:08 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
+        by smtp.gmail.com with ESMTPSA id g17-20020adfbc91000000b0020e6c51f070sm12972975wrh.112.2022.05.24.06.03.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 May 2022 06:03:08 -0700 (PDT)
+Message-ID: <6dc4367dc75d3f7baf9f61e2691045066b3716e1.camel@redhat.com>
+Subject: Re: [PATCH] r8152: Return true/false (not 1/0) from bool functions
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        davem@davemloft.net
+Cc:     edumazet@google.com, kuba@kernel.org, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Date:   Tue, 24 May 2022 15:03:07 +0200
+In-Reply-To: <20220524093733.9537-1-jiapeng.chong@linux.alibaba.com>
+References: <20220524093733.9537-1-jiapeng.chong@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YnvAxF0JO7E0fZvO@kili>
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -54,65 +79,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 11, 2022 at 04:57:24PM +0300, Dan Carpenter wrote:
-> [ I was reviewing old use after free warnings and stumbled across this
->   one which still needs fixing - dan ]
+On Tue, 2022-05-24 at 17:37 +0800, Jiapeng Chong wrote:
+> Return statements in functions returning bool should use true/false
+> instead of 1/0.
 > 
-> Hello Maor Gottlieb,
+> Clean the following coccicheck warning:
 > 
-> The patch 6a48faeeca10: "net/mlx5: Add direct rule fs_cmd
-> implementation" from Aug 20, 2019, leads to the following Smatch
-> static checker warning:
+> ./drivers/net/usb/r8152.c:9579:10-11: WARNING: return of 0/1 in function
+> 'rtl8152_supports_lenovo_macpassthru' with return type bool.
 > 
-> 	drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c:53 set_miss_action()
-> 	warn: 'action' was already freed.
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+> ---
+>  drivers/net/usb/r8152.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> drivers/net/ethernet/mellanox/mlx5/core/steering/fs_dr.c
->     28 static int set_miss_action(struct mlx5_flow_root_namespace *ns,
->     29                            struct mlx5_flow_table *ft,
->     30                            struct mlx5_flow_table *next_ft)
->     31 {
->     32         struct mlx5dr_action *old_miss_action;
->     33         struct mlx5dr_action *action = NULL;
->     34         struct mlx5dr_table *next_tbl;
->     35         int err;
->     36 
->     37         next_tbl = next_ft ? next_ft->fs_dr_table.dr_table : NULL;
->     38         if (next_tbl) {
->     39                 action = mlx5dr_action_create_dest_table(next_tbl);
->     40                 if (!action)
->     41                         return -EINVAL;
->     42         }
->     43         old_miss_action = ft->fs_dr_table.miss_action;
->     44         err = mlx5dr_table_set_miss_action(ft->fs_dr_table.dr_table, action);
->     45         if (err && action) {
->     46                 err = mlx5dr_action_destroy(action);
->     47                 if (err) {
->     48                         action = NULL;
->     49                         mlx5_core_err(ns->dev, "Failed to destroy action (%d)\n",
->     50                                       err);
->     51                 }
-> 
-> If "err" is zero then "action" is freed.
-> 
->     52         }
-> --> 53         ft->fs_dr_table.miss_action = action;
->                                              ^^^^^^
-> Use after free.
+> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+> index 7389d6ef8569..7b7704b4b500 100644
+> --- a/drivers/net/usb/r8152.c
+> +++ b/drivers/net/usb/r8152.c
+> @@ -9576,15 +9576,15 @@ static bool rtl8152_supports_lenovo_macpassthru(struct usb_device *udev)
+>  		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN2:
+>  		case DEVICE_ID_THINKPAD_USB_C_DOCK_GEN3:
+>  		case DEVICE_ID_THINKPAD_USB_C_DONGLE:
+> -			return 1;
+> +			return true;
+>  		}
+>  	} else if (vendor_id == VENDOR_ID_REALTEK && parent_vendor_id == VENDOR_ID_LENOVO) {
+>  		switch (product_id) {
+>  		case 0x8153:
+> -			return 1;
+> +			return true;
+>  		}
+>  	}
+> -	return 0;
+> +	return false;
+>  }
+>  
+>  static int rtl8152_probe(struct usb_interface *intf,
 
-Thanks for the report.
-https://lore.kernel.org/netdev/7fe70bbb120422cc71e6b018531954d58ea2e61e.1653397057.git.leonro@nvidia.com/T/#u
+This looks like net-next material, and net-next is currently closed,
+please resubmit in ~2weeks specifying the target tree in the subj.
 
-> 
->     54         if (old_miss_action) {
->     55                 err = mlx5dr_action_destroy(old_miss_action);
->     56                 if (err)
->     57                         mlx5_core_err(ns->dev, "Failed to destroy action (%d)\n",
->     58                                       err);
->     59         }
->     60 
->     61         return err;
->     62 }
-> 
-> regards,
-> dan carpenter
+Thanks
+
+Paolo
+
