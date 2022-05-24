@@ -2,104 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8783C531FEE
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 02:41:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B88E531FFE
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 02:53:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231737AbiEXAll convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 23 May 2022 20:41:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
+        id S232484AbiEXAxL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 20:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230125AbiEXAlj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 20:41:39 -0400
-Received: from rtits2.realtek.com.tw (rtits2.realtek.com [211.75.126.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 17D813EA88;
-        Mon, 23 May 2022 17:41:37 -0700 (PDT)
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 24O0fDkxD006008, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 24O0fDkxD006008
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 24 May 2022 08:41:13 +0800
-Received: from RTEXDAG02.realtek.com.tw (172.21.6.101) by
- RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 24 May 2022 08:41:13 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG02.realtek.com.tw (172.21.6.101) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 24 May 2022 08:41:13 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6]) by
- RTEXMBS04.realtek.com.tw ([fe80::34e7:ab63:3da4:27c6%5]) with mapi id
- 15.01.2308.021; Tue, 24 May 2022 08:41:13 +0800
-From:   Ping-Ke Shih <pkshih@realtek.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     "kvalo@kernel.org" <kvalo@kernel.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "keescook@chromium.org" <keescook@chromium.org>,
-        "colin.king@intel.com" <colin.king@intel.com>
-Subject: RE: [PATCH net-next 3/8] wifi: rtlwifi: remove always-true condition pointed out by GCC 12
-Thread-Topic: [PATCH net-next 3/8] wifi: rtlwifi: remove always-true condition
- pointed out by GCC 12
-Thread-Index: AQHYbIHjnrV5IT1AtUasPUOuHqV18a0rwWxwgABa7oCAARgbsA==
-Date:   Tue, 24 May 2022 00:41:12 +0000
-Message-ID: <d9690c0a1e444dcdbab8a9c1eb0f98df@realtek.com>
-References: <20220520194320.2356236-1-kuba@kernel.org>
-        <20220520194320.2356236-4-kuba@kernel.org>
-        <8fb9d491692a4a2dabe783ffefc76ded@realtek.com>
- <20220523085701.3d7550ff@kernel.org>
-In-Reply-To: <20220523085701.3d7550ff@kernel.org>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXDAG02.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/5/23_=3F=3F_10:00:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        with ESMTP id S230228AbiEXAxJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 20:53:09 -0400
+Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B181882156;
+        Mon, 23 May 2022 17:53:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=lZ5EB2bvg1+qSag5cF3uw80Y30W33/ioePb5gnIQQv4=; b=VGr09Bretx0GoW/CvPz/eutj8f
+        12lsP2UG8J7l0VvVcpkS6We5OzMkHNLlinFLEqjG2uUscL6hZ7t7RUWlKxmOqNlc5odtOgk0wRTF6
+        9Nea9G56U3cgMQrXSk/559NCTH8RSCHwyt9Se1fSM5jlsbER39rVg/RrD7FBk5aYDr6U=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1ntImu-0042ew-IF; Tue, 24 May 2022 02:52:40 +0200
+Date:   Tue, 24 May 2022 02:52:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
+        linux-usb@vger.kernel.org,
+        Steve Glendinning <steve.glendinning@shawell.net>,
+        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
+        Andre Edich <andre.edich@microchip.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Martyn Welch <martyn.welch@collabora.com>,
+        Gabriel Hojda <ghojda@yo2urs.ro>,
+        Christoph Fritz <chf.fritz@googlemail.com>,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        Philipp Rosenberger <p.rosenberger@kunbus.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ferry Toth <fntoth@gmail.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
+Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY interrupts
+ to PHY driver to avoid polling
+Message-ID: <YowsWE9Lxy3y4COr@lunn.ch>
+References: <cover.1652343655.git.lukas@wunner.de>
+ <748ac44eeb97b209f66182f3788d2a49d7bc28fe.1652343655.git.lukas@wunner.de>
+ <CGME20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99@eucas1p2.samsung.com>
+ <a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com>
+ <20220519190841.GA30869@wunner.de>
+ <31baa38c-b2c7-10cd-e9cd-eee140f01788@samsung.com>
+ <20220523094343.GA7237@wunner.de>
+ <Yot/ad/Ch7iGYnGB@lunn.ch>
+ <20220523134709.GA25989@wunner.de>
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220523134709.GA25989@wunner.de>
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> -----Original Message-----
-> From: Jakub Kicinski <kuba@kernel.org>
-> Sent: Monday, May 23, 2022 11:57 PM
-> To: Ping-Ke Shih <pkshih@realtek.com>
-> Cc: kvalo@kernel.org; johannes@sipsolutions.net; netdev@vger.kernel.org; linux-wireless@vger.kernel.org;
-> keescook@chromium.org; colin.king@intel.com
-> Subject: Re: [PATCH net-next 3/8] wifi: rtlwifi: remove always-true condition pointed out by GCC 12
+On Mon, May 23, 2022 at 03:47:09PM +0200, Lukas Wunner wrote:
+> On Mon, May 23, 2022 at 02:34:49PM +0200, Andrew Lunn wrote:
+> > > --- a/drivers/net/phy/phy_device.c
+> > > +++ b/drivers/net/phy/phy_device.c
+> > > @@ -283,8 +283,11 @@ static __maybe_unused int mdio_bus_phy_suspend(struct device *dev)
+> > >  	 * may call phy routines that try to grab the same lock, and that may
+> > >  	 * lead to a deadlock.
+> > >  	 */
+> > > -	if (phydev->attached_dev && phydev->adjust_link)
+> > > +	if (phydev->attached_dev && phydev->adjust_link) {
+> > > +		if (phy_interrupt_is_valid(phydev))
+> > > +			synchronize_irq(phydev->irq);
+> > >  		phy_stop_machine(phydev);
+> > > +	}
+> > 
+> > What is this hunk trying to achieve? As far as i know, interrupts have
+> > not been disabled. So as soon as the call to synchronize_irq()
+> > finishes, could well be another interrupt happens.
 > 
-> On Mon, 23 May 2022 02:35:32 +0000 Ping-Ke Shih wrote:
-> > This is a typo since initial commit. Correct it by
-> > -			     value[0] != NULL)
-> > +			     value[0][0] != 0)
-> >
-> > So, NACK this patch.
+> That other interrupt would bail out of phy_interrupt() because
+> the is_prepared flag is set on the PHY's struct device, see
+> first hunk of the patch.
 > 
-> Too, late, the patches were already applied, sorry. Please post a fixup.
+> The problem is that an interrupt may occur before the system
+> sleep transition commences.  phy_interrupt() will notice that
+> is_prepared is not (yet) set, hence invokes drv->handle_interrupt().
+> Let's say the IRQ thread is preempted at that point, the system
+> sleep transition is started and mdio_bus_phy_suspend() is run.
+> It calls phy_stop_machine(), so the state machine is now stopped.
+> Now phy_interrupt() continues, and the PHY driver's ->handle_interrupt()
+> callback starts the state machine.  Boom, that's not what we want.
+> 
+> So the synchronize_irq() ensures that any already running
+> phy_interrupt() runs to completion before phy_stop_machine()
+> is called.  It doesn't matter if another interrupt occurs
+> because then is_prepared will have been set and therefore
+> phy_interrupt() won't call drv->handle_interrupt().
+> 
+> Let me know if I haven't explained it in sufficient clarity,
+> I'll be happy to try again. :)
 
-I have sent a patch to correct it: 
-https://lore.kernel.org/linux-wireless/20220524003750.3989-1-pkshih@realtek.com/T/#u
+I think some comments are needed. If i don't understand what is going
+on, i'm sure others don't as well.
 
-Please take it into net-next tree.
-
-Thank you
-Ping-Ke
-
+    Andrew
