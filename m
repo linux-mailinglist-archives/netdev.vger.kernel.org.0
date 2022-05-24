@@ -2,122 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BBFB53228E
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 07:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E68AB5322A7
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 07:54:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233725AbiEXFkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 01:40:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52560 "EHLO
+        id S234601AbiEXFyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 01:54:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232788AbiEXFka (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 01:40:30 -0400
-Received: from mx0a-00082601.pphosted.com (mx0b-00082601.pphosted.com [67.231.153.30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAC3690CC9;
-        Mon, 23 May 2022 22:40:27 -0700 (PDT)
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.17.1.5/8.17.1.5) with ESMTP id 24NKGrEF015570;
-        Mon, 23 May 2022 22:40:12 -0700
+        with ESMTP id S234600AbiEXFyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 01:54:05 -0400
+Received: from mx0a-00082601.pphosted.com (mx0a-00082601.pphosted.com [67.231.145.42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3776A87A06;
+        Mon, 23 May 2022 22:54:04 -0700 (PDT)
+Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24NKGu4N004133;
+        Mon, 23 May 2022 22:53:48 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
  subject : message-id : references : content-type : in-reply-to :
- mime-version; s=facebook; bh=ttcvTwQzCgu33LSgm0nsN+Y91oGeQ0LyRqMPA+hvmnc=;
- b=q9qiXBcVJeh9tMgajmxQxjkOpmSzJ8xJQ26gFP2G+sNeZwos0/4gAqMj688afEiIeTli
- wxfKOs0DBiC5AqAtr/HtauN9DpT4b7ceIFxjvL+IrUw4637JBeIQSYVU0AybpQojF8eL
- jxT8+BclluME9axBRhi/+pBQACWL7GNpO0A= 
-Received: from nam04-dm6-obe.outbound.protection.outlook.com (mail-dm6nam08lp2047.outbound.protection.outlook.com [104.47.73.47])
-        by m0001303.ppops.net (PPS) with ESMTPS id 3g6urvxd6p-1
+ mime-version; s=facebook; bh=kzIFgOtLchUZQWDeNZohB/l9dsGGPc0rx+7KHqYBhZM=;
+ b=eP17WdLk+gt/+jyWlmL9gQ4ao7CF5nLuE9QHLHHuRab7n+pkEQVWPMp+7gsAYodfFhJV
+ QA4zva00RfcGDi5OVTqKj4N81I0Eo6uWZbp42eJ7y7N01StRaNlhM21irwiIFsSWepR6
+ 7NMvSXMJPRLqDiO1GerOJnuHeWizoiUSdOU= 
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2170.outbound.protection.outlook.com [104.47.57.170])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3g6v4k6d43-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 23 May 2022 22:40:11 -0700
+        Mon, 23 May 2022 22:53:47 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=b3+pi/tjIitIpAYV+T5cSmJTDTzfcj2z2VD/pbu25uQP9o2jec54Il5g57R3SitMyDhf6KM7WyzgbBPjqBIeHBIkR1oGff4NZbLec4/88HdVJgBX/XRC+Js0v8AakHTDfs31MBMvHYnkx3zgThGph67AupTAVWic2cEJ5tbQVAOFeH5bsK+kbsoFYHTeUio+sYZTwJ3yZUVkfdwL2D7roaWpYPvrO1t+n1jcsC6zaJCcaOytFpzTmhHJxYGZLGIZ3JaktGngbLPlepmLk7kz2Fy79BFRAxvu8+jw6oI/uD+yMbn8JRaI3Qg0iCz1X3Vk2SDoGT7/h9Ga45w/WmLBTQ==
+ b=HnSGWTh67O1mNlVRJ1K6tv6Hd+/SOhoTHjqZRxYai+u9YHq+mIYDoWQ+PcbSr2tSwD4p6VQ0d8akq7ZuwagHmO1A3CrpCuxtUEvstBPZuq4Z2pFONaAazSvz1sQez0DCZz2oO/EFXZQ+YsFQC3Xjx6Rug4wdQBQ+EWyk7KS8RKjTL1JYClPTxQSmgvity0UplyMRdaUxrhR0Wr9HPuHbnv4q6yqMolWqVnrY3Nw8hiPnOQwoeiAvlTfUu3j9zXGTEVx/Vs6cw+o7+6mIAldBWrhN9/+YvNzGI7PkukHGnaICLR4IM4pLeZn+GGQZOgqSp9mkKnK/+5G18EQhmZjQmA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ttcvTwQzCgu33LSgm0nsN+Y91oGeQ0LyRqMPA+hvmnc=;
- b=Q59cmqG3ll3FRiuZZqJpf7q5cEBUrZM2LHxU4zKtA16/5Fhg3/9zaqtBgP8MAxxUh0AchFWw38QZNxkXiVRmAtrS1l+vdM5XbjGrqQ2/rwSn7EC9w7hyYss1Z0sY9bBHMDcKI+AE1DdBZXGauDwU18tppgQD0TqZUhD5ywmAEH60UkOJ65w++yH7EKSUlQOKjlGsrAQ5R7hBpLJzcAuNmXE2EeECl5Ui88CY4MGTdf1i7kIbfNsG3zKlTh0HprW3pBgQnclGsLLrqCEJJCtNWWoUxYoffSEuzzciROjWGm8Sn6hcVKRR44LR05YcK4VeD5Idneuw3kd7bLz2sQmXxg==
+ bh=kzIFgOtLchUZQWDeNZohB/l9dsGGPc0rx+7KHqYBhZM=;
+ b=FlkZEyHQ/hUc7mFYSyGscbGg4uFqyGrCX6cy2eVwk2SDShTtCNwf90LSFZ6wlHHSXh27QOxh2tsdactSHuft9wkLr6m4wZCFviAkixPgvIH2zKNRhZTu6Za/8dQ+HBfX0U87JxYCOvSHhMmmkVlBttALME9+KhZDfkDYiG8Ur7JGnUoiDtSzNPgNyRH/jo8k3RPbuikM5gHXZ9WMm6zDtQMYNA+DeIUYNHTp40Y0XSw0INnDPjgLHlwS9eN9YfQ/q1/FiJeNThkWLCVxl10MPP8VmjqDlJdbMkaKB1XK8/SyANZIRBPc6FfSb/dfBVzKXpHlM3Zv3QSyc6UhuYsxpg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
-Received: from CO1PR15MB5017.namprd15.prod.outlook.com (2603:10b6:303:e8::19)
- by BN8PR15MB2881.namprd15.prod.outlook.com (2603:10b6:408:87::20) with
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com (2603:10b6:806:1db::19)
+ by SA1PR15MB5297.namprd15.prod.outlook.com (2603:10b6:806:235::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.23; Tue, 24 May
- 2022 05:40:09 +0000
-Received: from CO1PR15MB5017.namprd15.prod.outlook.com
- ([fe80::31b7:473f:3995:c117]) by CO1PR15MB5017.namprd15.prod.outlook.com
- ([fe80::31b7:473f:3995:c117%6]) with mapi id 15.20.5273.023; Tue, 24 May 2022
- 05:40:09 +0000
-Date:   Mon, 23 May 2022 22:40:07 -0700
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.22; Tue, 24 May
+ 2022 05:53:45 +0000
+Received: from SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::44a1:2ac9:9ebd:a419]) by SA1PR15MB5016.namprd15.prod.outlook.com
+ ([fe80::44a1:2ac9:9ebd:a419%6]) with mapi id 15.20.5293.013; Tue, 24 May 2022
+ 05:53:45 +0000
+Date:   Mon, 23 May 2022 22:53:41 -0700
 From:   Martin KaFai Lau <kafai@fb.com>
 To:     Stanislav Fomichev <sdf@google.com>
 Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
         daniel@iogearbox.net, andrii@kernel.org
-Subject: Re: [PATCH bpf-next v7 03/11] bpf: per-cgroup lsm flavor
-Message-ID: <20220524054007.nskzzkghazi73xr4@kafai-mbp>
+Subject: Re: [PATCH bpf-next v7 04/11] bpf: minimize number of allocated lsm
+ slots per program
+Message-ID: <20220524055341.eg2nsmgtyflwa3lj@kafai-mbp>
 References: <20220518225531.558008-1-sdf@google.com>
- <20220518225531.558008-4-sdf@google.com>
- <20220521005313.3q3w2ventgwrccrd@kafai-mbp>
- <CAKH8qBuUW8vSgTaF-K_kOPoX3kXBy5Z=ufcMx8mwTwkxs2wQ6g@mail.gmail.com>
+ <20220518225531.558008-5-sdf@google.com>
+ <20220521065614.w7jqj4xg2skfg73u@kafai-mbp>
+ <CAKH8qBvzBNQVm3S7DQMZAoOvG7WxGdQPMZFRyAUquO3ZfiNtsw@mail.gmail.com>
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKH8qBuUW8vSgTaF-K_kOPoX3kXBy5Z=ufcMx8mwTwkxs2wQ6g@mail.gmail.com>
-X-ClientProxiedBy: BY5PR04CA0030.namprd04.prod.outlook.com
- (2603:10b6:a03:1d0::40) To CO1PR15MB5017.namprd15.prod.outlook.com
- (2603:10b6:303:e8::19)
+In-Reply-To: <CAKH8qBvzBNQVm3S7DQMZAoOvG7WxGdQPMZFRyAUquO3ZfiNtsw@mail.gmail.com>
+X-ClientProxiedBy: BY3PR05CA0016.namprd05.prod.outlook.com
+ (2603:10b6:a03:254::21) To SA1PR15MB5016.namprd15.prod.outlook.com
+ (2603:10b6:806:1db::19)
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7ae1c95b-7199-496b-d9a6-08da3d47dd1c
-X-MS-TrafficTypeDiagnostic: BN8PR15MB2881:EE_
-X-Microsoft-Antispam-PRVS: <BN8PR15MB2881BEB35188EAF39825A1D9D5D79@BN8PR15MB2881.namprd15.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 3a6c18ed-c7f0-4b93-7fe2-08da3d49c35f
+X-MS-TrafficTypeDiagnostic: SA1PR15MB5297:EE_
+X-Microsoft-Antispam-PRVS: <SA1PR15MB52974B148CAC59ED7FEBDF77D5D79@SA1PR15MB5297.namprd15.prod.outlook.com>
 X-FB-Source: Internal
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 9SGpN/il2yP8UieSaf70ed73ylgttKbnAny0G786WLajNcpMxxQuYUKkiOmSWzg8Aj1Hqo/Ri+VCtzcTZKMj+gqaWjRT1hPREZzTkQ7rZIBw3kcRdpwttjsNR3x+V5Gzl0qi9h0kRIiMj2a4HxnLnuY+5ZnecuNZZ6q0+Oyjf51cI4JeuthcGjDEnNbHmGHMjDqkkynChQ6VS/A8PiZeH+DiJC+f2Uz6gBC4wQO+VX0MaSc0xzIO5nIx1w7wo/xF/XoSFs3FTs1UswcXIBYafwoC8Gkrjd41HKHjBXoVmV4r6DsaZ70d7kjrs75TMveT8cfAi+0s5zfxQyPQI7dv4A41xZtJ1jWME8nZpqJT4lejEh5PBXVs7Wk1jf1Kk6+RwS2QCJVPqUlxJMPJwyd5Rfgo+Da85CtSYei0SWfztlnQDSZpSl0e9ko9f7jUmkml9j9yqWovKB3DUHi6Us89h6xnplCoIaOZctX1ZSidqpcpq6GPKB48Jj3+MpHpORlA9xT4Tt6qRCncIpwittSRS4Ez8Zle8AgnyApD39WI3emhnBtqAMjc+pmFC94EsffZKUpNCrfCZJ+bIS8MYMAkGAV+XoFx5r0I6cFY5008yFb8Ee/EerUV9OfWYP7LeqSBwXD7elUGjrM4oTPd2Sk5qw==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR15MB5017.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(7916004)(4636009)(366004)(6512007)(9686003)(52116002)(6486002)(508600001)(5660300002)(2906002)(33716001)(6506007)(53546011)(8936002)(4326008)(38100700002)(8676002)(316002)(6916009)(83380400001)(66476007)(66946007)(66556008)(186003)(86362001)(1076003);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: 0tlytJpAGlOLkSHODDgrtH0gRmqHHGWrAlQ0qXIUb3Zx1EER7fn9JtKMrEAB/GsrMPf2lAXqR+IsGZsMp2vQ30/I8WI1R+0wt6UpXJhRMGqcbnuWAq1pmGT0xOnce68fbjBwnlF9Z8Gt3BH3frMMdGyYNFVr6ezqzrTpb2gKsGp0tXJHA9O2mRrWVyiV9jojh08xFWZZfnN1OrMPfWAgwnUuvO5cRcxGShyrZQ817BHwxFMnF1J3G+dPaQhASLwYYb3jAyzBZF8a+VDFle7+ckwzZ7VQWtjshhpfWJ5OlEZ/hTZ6B6bLDX2IQ3HEUL7CqOJW/zQJAP+QnPMCtRoCCWJbTwSCJ9A8wAsPAAW8qpKXKtA8lsmNmUi0/4keGvPVZOKho3CvXrezQzSHLYywUGfihYtqg+EBvO+m1UVitGW91KkxkEDySGuVrgC1a36YBJlb931RTI7n1+TlHvZH/dBT/8j1EkEkslo+ege88WckQHawzQQPC5boWUQ+ytmBfRQhI/f09RYNBhcaM8kOrElooOetTo7PjXeXflHP+JpqDcmJD1UusmdmzJA0k2IuHyICsISKEUeo4zqtJIysBuCP75R0A52h8gRV4RQbOodVvjFryL6sYiNykpUgbezIFIxd/wntrDRgCV8fKiYl4CHh7VvuAOJ2LaRxfkFJ7GjVlXdHHKimL/OiCl7poqQV/2Y7n/VN+Wd+wQPHZ/2DTA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR15MB5016.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(7916004)(366004)(8936002)(4326008)(5660300002)(66946007)(6916009)(83380400001)(316002)(66556008)(8676002)(33716001)(66476007)(86362001)(2906002)(53546011)(52116002)(6512007)(6486002)(6666004)(38100700002)(6506007)(186003)(1076003)(508600001)(9686003)(21314003);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?thHsHz6UVR/BLoWmxp9dtsuMsk2RWaoITRftm4Xk7WUmnzdad94G7pO9K1Gg?=
- =?us-ascii?Q?GUlqm0Q2h4EXSgi2TIBTNl8zpEvh3vt5RuhiuE9yeJKs6Ay3AjRsTL4fB1EI?=
- =?us-ascii?Q?Y63tz78+PDE0VfdsDPjlz0jd5XVWgKNmhlBPrME4i+CVDfyuxhb3bvSLF5KT?=
- =?us-ascii?Q?zyjHBCLHPEiMjAA8PZHP9rXKAJC3xkBf8KiF4VwPCBzmH9k4QN/ihkg3r8+4?=
- =?us-ascii?Q?ZpFLpJLFKdx3/SusCNeO00sK0/o206412AtCUZ6aw/5k0sp6DLpl/PdVMsIy?=
- =?us-ascii?Q?BXAWUzBwS5l/5BwJhiJoD3jDA9YXLnPrmVmz0O2yVhlE8CrsuYAYy2auLOyS?=
- =?us-ascii?Q?+FILuD6A7N7hxXvf5QuK9tU/FrLlaIH1rCMIWzLvb1lqN7naJNTOo5d2F4vy?=
- =?us-ascii?Q?CTQQUtujUDlZiSMEbQWbP7LvmVU2ep88/wlGmIeEO1/fdZ+FN2gyTwnzdZ+g?=
- =?us-ascii?Q?QrXRmQUYdUysxApzN8tOSapfw7QupfwKe3VRzTbH31nWPks5B6gwUYPtmBMK?=
- =?us-ascii?Q?ywrItPcyrdwAxVPvBFINBRCM59U9BKS3ufw6nbFrYlVmbY6OOPokahuZM7zi?=
- =?us-ascii?Q?5zA6So3IpmnVh0HmCRSBeHtnPQ87Lore6IEkczLExPkPwygatq+CAvjfstOR?=
- =?us-ascii?Q?mCNbOOmCXhkVUtThN6tLeJ0vXt5sP7384Rm4uxzytW0gnGx10pirXt0ZIfEq?=
- =?us-ascii?Q?xRFXEbavXBv938qBfg0+oOisVz+kKIRfnPMs8rR7dIzWZlk+JxbNywVq5cFO?=
- =?us-ascii?Q?t3JkHtsFEhM/HTg6JujFTVqcDqxms1wDzRfE2ai2q0+8rW8GHtUBIii9gNyJ?=
- =?us-ascii?Q?uTjt/wqE87xsBj0uRMtZJVzy0eSvprtS8En0sy8qUQgP8lICPPgHIImFYM/q?=
- =?us-ascii?Q?bhXQz9+PK/9qXv3lyqlzOXhqG9mblN5mUqnJc0Bw6D16KyUbOlmrIKk/LF6o?=
- =?us-ascii?Q?mrK7OdhZCeFPkEb3fjMR08z268smI2VodTZ4eCX41OFSYWBp0v+SVzp7Rs/a?=
- =?us-ascii?Q?aso7XZ7+VWCAbC0xHofE7B5iJ34am+fInM5pg2RED0BnWiHUojClItyYouBi?=
- =?us-ascii?Q?Vgm26Qv5X0ZZjPRTY8oTKnQFAAiOcqDsLrQBsn+ZHPPGPnvK4oceylwW+g2Z?=
- =?us-ascii?Q?KXUvTRyQrSxJLKozth0jmAhWpUYf7gl2HPsCM/d6+lb3aeNwIAa1n1hW50wI?=
- =?us-ascii?Q?TTa66ilagepyqQXdHlloj8OhPMhjYxubJ8xcNj2hPH4AbDrsAVxBzOOjBzBF?=
- =?us-ascii?Q?E95wVxI2m0zfpswiU2UNVwy9cCZUc5NP5/R6wX+AkYVVApXnM74x4s8bTIpZ?=
- =?us-ascii?Q?o3AjgkRQ+jl7uC8JaiEjOnc+sSBvbAgatQsG7/WJRJotack7wVo2w97idt0U?=
- =?us-ascii?Q?cW8bTwLiKo5UFFMlfvA5JPvn2Yr8OSLK0mCTVMs2BqQZHJNe7R3xtQghoOz9?=
- =?us-ascii?Q?foTKAxIB2h1RApV4nZs2lp9JhOOmYYo5e7qA1gQzZlDy17JD0sNo6vQ+iDSD?=
- =?us-ascii?Q?Fulok/I16zZquPzk5J1P8sy3v/A+yUDEVMQJN4zXxKEbqAopHem43RXHU+T0?=
- =?us-ascii?Q?3qdeS3oqIyqXo/ZSilE6KtuRzsJFGsWwTtQcQ8sd0HEe4TigR9/Tayd5Dv32?=
- =?us-ascii?Q?6D8qWqNy0bo5NNQdi/q+xeHv6739xHmaGN1okM4u6mA79wqfIgwAfkHUNOTI?=
- =?us-ascii?Q?FIfqEp9Z1DfV748NAuBcpZX3AVV+Ehr6dIgKXenBOeUbUmLLOkA4S+/m2WPy?=
- =?us-ascii?Q?FvlIur63NLYtzroM0QLBjmn3D6hA2JY=3D?=
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?RbE+q8wFk4ed58B+sXKuDw9bF9JFNxy6+EYqLNEyloViVnoUSXk3IAn+YTRk?=
+ =?us-ascii?Q?6TTQ7SaQrt/+cDp+la9aD53OVwNr8W+AWkxRy5Q7WqNhWbGhHX9zTTXyAeQr?=
+ =?us-ascii?Q?yDDu3HDYQtsYQCRBm6Degjyhs0UdlYez8K/ig8nqeSQ8rdidGuIVg06zoDJ5?=
+ =?us-ascii?Q?mFMc/c4bf7EZbeFe0NwcjOlMreABkvC9ZmQ4kZxoe+gZPmwfUXfwnBQUj1TP?=
+ =?us-ascii?Q?edAfxPYEl2PRIIpmbtAkoYDVXQecYAMulM0z3nFM2k4kCq53MUNh/n1HmLBP?=
+ =?us-ascii?Q?psTCO6yJG3DNSEpgrtv1tP419GWDofEvVLg4ZoPS9nqeMDuDZNmbbMhvqTj2?=
+ =?us-ascii?Q?yiJ2FAh9RLLUkWfyAeGP4/k5cueYR36mZQGT9Yei7hx4Xt62+pFEeSBwz6Cs?=
+ =?us-ascii?Q?VB/+UHx+wntbfQyOhYAUlWKxecynqAZg8mWSDgTdr0GqvFiDT2W0WMmxeoEf?=
+ =?us-ascii?Q?hdqRZrpmUD5VRxFNi/KdqD2c7Y429mqq+F9PIDCN5ie3onEKY0+084/qXsAE?=
+ =?us-ascii?Q?OlNvfw/haORXijgSFJBqb+jwMbRFlCmQdzX/qtDUI+FYpuOJYe3aFHSvj8rc?=
+ =?us-ascii?Q?q5kzCDu8bO4n6qtDojV7GtZec3nVKx7Ihl/Mwi/gE3qGEYk81D8Nym1OaR29?=
+ =?us-ascii?Q?a/Jo7TR37Z3odjPYRJCTDx6pvHfmkQ3Yiu8V9tEOOPHCR7UWkszXnqyfrcWK?=
+ =?us-ascii?Q?xU2xWW81lLc6CiKqyi80SKgh/C878fBZ4t/2dHDDpUk5LlLQ171kxyifNc3D?=
+ =?us-ascii?Q?IJWOyhtjJQN3La2aIO3RUaOvjhTugMVbXi04Pb3ypR0/+ViC+smzdg5SdHbe?=
+ =?us-ascii?Q?khsBDNWCL4aweAilh+iyznfdFd/qMxVEDoZGf3VCbM9fbfVi/4CdeWyeTD3k?=
+ =?us-ascii?Q?WtfYP4KhW/SK2rwD7idQf9FOjnTet0y3wMHJdB2FvhwSw511tF7wCx9gskUe?=
+ =?us-ascii?Q?mXS2WVCHvLn2NhapUX3pZrCWg4xSWu/PP/iy2ddW+ZWz3lzxGNbn4cT8gri6?=
+ =?us-ascii?Q?HzXlIbO+v0Tz8PnWRLw0pm+uoi19II6W5uxxGHmI9EMkwayeSjNH+dtjSU/I?=
+ =?us-ascii?Q?z4BkIa/287QdSPxToKhf3Tsrm3fbJ8zCwTpQ9VHDneAxTnxScZghoX6Zq66C?=
+ =?us-ascii?Q?xneykyjs8UYnf/eKmuQdeWPRiFhBBrdlCkMPPXAUWdG2FjXMc06q71IT3GC1?=
+ =?us-ascii?Q?dsKVmXDddQzU8zQGScZBWiaMvQHU12s4dBppOr9vG0qzXDZdm5u9IcUoVGg4?=
+ =?us-ascii?Q?7TT6qddTXCvgqQ3S2Hgwcj1OmrpKXbbzmg/+FgD3AvUMOObaBU3DXPtifwGd?=
+ =?us-ascii?Q?wdtvpHzdewCFHIVqqlGKpbYzO4A6ndUczYb3fel70z5lB3agYS7NjTzDBkjj?=
+ =?us-ascii?Q?DcEyi2ewLzedse+SsnEWog9BjVL8/V9LgBzsADUX68ebrW73SxiQj5obLxJF?=
+ =?us-ascii?Q?jwX9h98I8olhv9LSF9GkWI3upqqISbk9Ov5CZopzrqFD8o1FbRwTGUVOHPiB?=
+ =?us-ascii?Q?map7TXazz8V+LQTRYhkmabi8YgbaJmS4cC8C5ssOiArn6syLbS7Xt2TOtVOt?=
+ =?us-ascii?Q?Ihdt+dg0eh5Of72PC2HBXz5P9B/nYFO3PkDgb2IZPtHoMhwzf2udwfWzvbU+?=
+ =?us-ascii?Q?uRlfvpAOiB6zOHT31Bfe3rngGagzkhsl62f1n2pWWitCx/T7DolZvbooFUaO?=
+ =?us-ascii?Q?w6HATxWqNC6g8Nh4TKpO6zwpPI6gs/T7oWOQqDn4FD0W2188dXuY59zOeg6W?=
+ =?us-ascii?Q?CILMZryYZoLnGOUYeDfLHHFLb2ehyQ0=3D?=
 X-OriginatorOrg: fb.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7ae1c95b-7199-496b-d9a6-08da3d47dd1c
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR15MB5017.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3a6c18ed-c7f0-4b93-7fe2-08da3d49c35f
+X-MS-Exchange-CrossTenant-AuthSource: SA1PR15MB5016.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2022 05:40:09.0473
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 May 2022 05:53:45.2799
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jXUghE+usLPEs7pDf22zIJz34Xcm4qwVYk7KEHglmZGvWkVfSfcxcwodpn2k6Uyx
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR15MB2881
-X-Proofpoint-GUID: iusm6VrnqmQUzobnrVywKVR86_657C-S
-X-Proofpoint-ORIG-GUID: iusm6VrnqmQUzobnrVywKVR86_657C-S
+X-MS-Exchange-CrossTenant-UserPrincipalName: sJXZ95dD+IGQpYQEgZILzwYPqB/qmb2MiOhgqub4wBXdn2I8gG0CuvpEQwr5ETHL
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR15MB5297
+X-Proofpoint-ORIG-GUID: -7Jfjvb9afMCCIieB7YNHlvEQE8JpTjk
+X-Proofpoint-GUID: -7Jfjvb9afMCCIieB7YNHlvEQE8JpTjk
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
  definitions=2022-05-24_01,2022-05-23_01,2022-02-23_01
@@ -131,213 +132,256 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, May 23, 2022 at 07:15:03PM -0700, Stanislav Fomichev wrote:
-> ,
-> 
-> On Fri, May 20, 2022 at 5:53 PM Martin KaFai Lau <kafai@fb.com> wrote:
+On Mon, May 23, 2022 at 07:14:42PM -0700, Stanislav Fomichev wrote:
+> On Fri, May 20, 2022 at 11:56 PM Martin KaFai Lau <kafai@fb.com> wrote:
 > >
-> > On Wed, May 18, 2022 at 03:55:23PM -0700, Stanislav Fomichev wrote:
-> >
-> > [ ... ]
-> >
-> > > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-> > > index ea3674a415f9..70cf1dad91df 100644
-> > > --- a/include/linux/bpf.h
-> > > +++ b/include/linux/bpf.h
-> > > @@ -768,6 +768,10 @@ void notrace __bpf_prog_exit(struct bpf_prog *prog, u64 start, struct bpf_tramp_
-> > >  u64 notrace __bpf_prog_enter_sleepable(struct bpf_prog *prog, struct bpf_tramp_run_ctx *run_ctx);
-> > >  void notrace __bpf_prog_exit_sleepable(struct bpf_prog *prog, u64 start,
-> > >                                      struct bpf_tramp_run_ctx *run_ctx);
-> > > +u64 notrace __bpf_prog_enter_lsm_cgroup(struct bpf_prog *prog,
-> > > +                                     struct bpf_tramp_run_ctx *run_ctx);
-> > > +void notrace __bpf_prog_exit_lsm_cgroup(struct bpf_prog *prog, u64 start,
-> > > +                                     struct bpf_tramp_run_ctx *run_ctx);
-> > >  void notrace __bpf_tramp_enter(struct bpf_tramp_image *tr);
-> > >  void notrace __bpf_tramp_exit(struct bpf_tramp_image *tr);
+> > On Wed, May 18, 2022 at 03:55:24PM -0700, Stanislav Fomichev wrote:
+> > > Previous patch adds 1:1 mapping between all 211 LSM hooks
+> > > and bpf_cgroup program array. Instead of reserving a slot per
+> > > possible hook, reserve 10 slots per cgroup for lsm programs.
+> > > Those slots are dynamically allocated on demand and reclaimed.
 > > >
-> > > @@ -1035,6 +1039,7 @@ struct bpf_prog_aux {
-> > >       u64 load_time; /* ns since boottime */
-> > >       u32 verified_insns;
-> > >       struct bpf_map *cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE];
-> > > +     int cgroup_atype; /* enum cgroup_bpf_attach_type */
-> > >       char name[BPF_OBJ_NAME_LEN];
-> > >  #ifdef CONFIG_SECURITY
-> > >       void *security;
-> > > @@ -1107,6 +1112,12 @@ struct bpf_tramp_link {
-> > >       u64 cookie;
-> > >  };
+> > > struct cgroup_bpf {
+> > >       struct bpf_prog_array *    effective[33];        /*     0   264 */
+> > >       /* --- cacheline 4 boundary (256 bytes) was 8 bytes ago --- */
+> > >       struct hlist_head          progs[33];            /*   264   264 */
+> > >       /* --- cacheline 8 boundary (512 bytes) was 16 bytes ago --- */
+> > >       u8                         flags[33];            /*   528    33 */
 > > >
-> > > +struct bpf_shim_tramp_link {
-> > > +     struct bpf_tramp_link tramp_link;
-> > > +     struct bpf_trampoline *tr;
-> > > +     atomic64_t refcnt;
-> > There is already a refcnt in 'struct bpf_link'.
-> > Reuse that one if possible.
-> 
-> I was assuming that having a per-bpf_shim_tramp_link recfnt might be
-> more readable. I'll switch to the one from bpf_link per comments
-> below.
-> 
-> > [ ... ]
-> >
-> > > diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
-> > > index 01ce78c1df80..c424056f0b35 100644
-> > > --- a/kernel/bpf/trampoline.c
-> > > +++ b/kernel/bpf/trampoline.c
-> > > @@ -11,6 +11,8 @@
-> > >  #include <linux/rcupdate_wait.h>
-> > >  #include <linux/module.h>
-> > >  #include <linux/static_call.h>
-> > > +#include <linux/bpf_verifier.h>
-> > > +#include <linux/bpf_lsm.h>
+> > >       /* XXX 7 bytes hole, try to pack */
 > > >
-> > >  /* dummy _ops. The verifier will operate on target program's ops. */
-> > >  const struct bpf_verifier_ops bpf_extension_verifier_ops = {
-> > > @@ -497,6 +499,163 @@ int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampolin
-> > >       return err;
+> > >       struct list_head           storages;             /*   568    16 */
+> > >       /* --- cacheline 9 boundary (576 bytes) was 8 bytes ago --- */
+> > >       struct bpf_prog_array *    inactive;             /*   584     8 */
+> > >       struct percpu_ref          refcnt;               /*   592    16 */
+> > >       struct work_struct         release_work;         /*   608    72 */
+> > >
+> > >       /* size: 680, cachelines: 11, members: 7 */
+> > >       /* sum members: 673, holes: 1, sum holes: 7 */
+> > >       /* last cacheline: 40 bytes */
+> > > };
+> > >
+> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > ---
+> > >  include/linux/bpf-cgroup-defs.h |   3 +-
+> > >  include/linux/bpf_lsm.h         |   6 --
+> > >  kernel/bpf/bpf_lsm.c            |   5 --
+> > >  kernel/bpf/cgroup.c             | 135 +++++++++++++++++++++++++++++---
+> > >  4 files changed, 125 insertions(+), 24 deletions(-)
+> > >
+> > > diff --git a/include/linux/bpf-cgroup-defs.h b/include/linux/bpf-cgroup-defs.h
+> > > index d5a70a35dace..359d3f16abea 100644
+> > > --- a/include/linux/bpf-cgroup-defs.h
+> > > +++ b/include/linux/bpf-cgroup-defs.h
+> > > @@ -10,7 +10,8 @@
+> > >
+> > >  struct bpf_prog_array;
+> > >
+> > > -#define CGROUP_LSM_NUM 211 /* will be addressed in the next patch */
+> > > +/* Maximum number of concurrently attachable per-cgroup LSM hooks. */
+> > > +#define CGROUP_LSM_NUM 10
+> > >
+> > >  enum cgroup_bpf_attach_type {
+> > >       CGROUP_BPF_ATTACH_TYPE_INVALID = -1,
+> > > diff --git a/include/linux/bpf_lsm.h b/include/linux/bpf_lsm.h
+> > > index 7f0e59f5f9be..613de44aa429 100644
+> > > --- a/include/linux/bpf_lsm.h
+> > > +++ b/include/linux/bpf_lsm.h
+> > > @@ -43,7 +43,6 @@ extern const struct bpf_func_proto bpf_inode_storage_delete_proto;
+> > >  void bpf_inode_storage_free(struct inode *inode);
+> > >
+> > >  int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog, bpf_func_t *bpf_func);
+> > > -int bpf_lsm_hook_idx(u32 btf_id);
+> > >
+> > >  #else /* !CONFIG_BPF_LSM */
+> > >
+> > > @@ -74,11 +73,6 @@ static inline int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
+> > >       return -ENOENT;
 > > >  }
 > > >
-> > > +#if defined(CONFIG_BPF_JIT) && defined(CONFIG_BPF_SYSCALL)
-> > > +static struct bpf_shim_tramp_link *cgroup_shim_alloc(const struct bpf_prog *prog,
-> > > +                                                  bpf_func_t bpf_func)
+> > > -static inline int bpf_lsm_hook_idx(u32 btf_id)
+> > > -{
+> > > -     return -EINVAL;
+> > > -}
+> > > -
+> > >  #endif /* CONFIG_BPF_LSM */
+> > >
+> > >  #endif /* _LINUX_BPF_LSM_H */
+> > > diff --git a/kernel/bpf/bpf_lsm.c b/kernel/bpf/bpf_lsm.c
+> > > index 654c23577ad3..96503c3e7a71 100644
+> > > --- a/kernel/bpf/bpf_lsm.c
+> > > +++ b/kernel/bpf/bpf_lsm.c
+> > > @@ -71,11 +71,6 @@ int bpf_lsm_find_cgroup_shim(const struct bpf_prog *prog,
+> > >       return 0;
+> > >  }
+> > >
+> > > -int bpf_lsm_hook_idx(u32 btf_id)
+> > > -{
+> > > -     return btf_id_set_index(&bpf_lsm_hooks, btf_id);
+> > > -}
+> > > -
+> > >  int bpf_lsm_verify_prog(struct bpf_verifier_log *vlog,
+> > >                       const struct bpf_prog *prog)
+> > >  {
+> > > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> > > index 2c356a38f4cf..a959cdd22870 100644
+> > > --- a/kernel/bpf/cgroup.c
+> > > +++ b/kernel/bpf/cgroup.c
+> > > @@ -132,15 +132,110 @@ unsigned int __cgroup_bpf_run_lsm_current(const void *ctx,
+> > >  }
+> > >
+> > >  #ifdef CONFIG_BPF_LSM
+> > > +struct list_head unused_bpf_lsm_atypes;
+> > > +struct list_head used_bpf_lsm_atypes;
+> > > +
+> > > +struct bpf_lsm_attach_type {
+> > > +     int index;
+> > > +     u32 btf_id;
+> > > +     int usecnt;
+> > > +     struct list_head atypes;
+> > > +     struct rcu_head rcu_head;
+> > > +};
+> > > +
+> > > +static int __init bpf_lsm_attach_type_init(void)
 > > > +{
-> > > +     struct bpf_shim_tramp_link *shim_link = NULL;
-> > > +     struct bpf_prog *p;
+> > > +     struct bpf_lsm_attach_type *atype;
+> > > +     int i;
 > > > +
-> > > +     shim_link = kzalloc(sizeof(*shim_link), GFP_USER);
-> > > +     if (!shim_link)
-> > > +             return NULL;
+> > > +     INIT_LIST_HEAD_RCU(&unused_bpf_lsm_atypes);
+> > > +     INIT_LIST_HEAD_RCU(&used_bpf_lsm_atypes);
 > > > +
-> > > +     p = bpf_prog_alloc(1, 0);
-> > > +     if (!p) {
-> > > +             kfree(shim_link);
-> > > +             return NULL;
+> > > +     for (i = 0; i < CGROUP_LSM_NUM; i++) {
+> > > +             atype = kzalloc(sizeof(*atype), GFP_KERNEL);
+> > > +             if (!atype)
+> > > +                     continue;
+> > > +
+> > > +             atype->index = i;
+> > > +             list_add_tail_rcu(&atype->atypes, &unused_bpf_lsm_atypes);
 > > > +     }
 > > > +
-> > > +     p->jited = false;
-> > > +     p->bpf_func = bpf_func;
-> > > +
-> > > +     p->aux->cgroup_atype = prog->aux->cgroup_atype;
-> > > +     p->aux->attach_func_proto = prog->aux->attach_func_proto;
-> > > +     p->aux->attach_btf_id = prog->aux->attach_btf_id;
-> > > +     p->aux->attach_btf = prog->aux->attach_btf;
-> > > +     btf_get(p->aux->attach_btf);
-> > > +     p->type = BPF_PROG_TYPE_LSM;
-> > > +     p->expected_attach_type = BPF_LSM_MAC;
-> > > +     bpf_prog_inc(p);
-> > > +     bpf_link_init(&shim_link->tramp_link.link, BPF_LINK_TYPE_TRACING, NULL, p);
-> > > +     atomic64_set(&shim_link->refcnt, 1);
-> > > +
-> > > +     return shim_link;
+> > > +     return 0;
 > > > +}
+> > > +late_initcall(bpf_lsm_attach_type_init);
 > > > +
-> > > +static struct bpf_shim_tramp_link *cgroup_shim_find(struct bpf_trampoline *tr,
-> > > +                                                 bpf_func_t bpf_func)
-> > > +{
-> > > +     struct bpf_tramp_link *link;
-> > > +     int kind;
+> > >  static enum cgroup_bpf_attach_type bpf_lsm_attach_type_get(u32 attach_btf_id)
+> > >  {
+> > > -     return CGROUP_LSM_START + bpf_lsm_hook_idx(attach_btf_id);
+> > > +     struct bpf_lsm_attach_type *atype;
 > > > +
-> > > +     for (kind = 0; kind < BPF_TRAMP_MAX; kind++) {
-> > > +             hlist_for_each_entry(link, &tr->progs_hlist[kind], tramp_hlist) {
-> > > +                     struct bpf_prog *p = link->link.prog;
+> > > +     lockdep_assert_held(&cgroup_mutex);
 > > > +
-> > > +                     if (p->bpf_func == bpf_func)
-> > > +                             return container_of(link, struct bpf_shim_tramp_link, tramp_link);
-> > > +             }
+> > > +     list_for_each_entry_rcu(atype, &used_bpf_lsm_atypes, atypes) {
+> > > +             if (atype->btf_id != attach_btf_id)
+> > > +                     continue;
+> > > +
+> > > +             atype->usecnt++;
+> > > +             return CGROUP_LSM_START + atype->index;
 > > > +     }
 > > > +
-> > > +     return NULL;
+> > > +     atype = list_first_or_null_rcu(&unused_bpf_lsm_atypes, struct bpf_lsm_attach_type, atypes);
+> > > +     if (!atype)
+> > > +             return -E2BIG;
+> > > +
+> > > +     list_del_rcu(&atype->atypes);
+> > > +     atype->btf_id = attach_btf_id;
+> > > +     atype->usecnt = 1;
+> > > +     list_add_tail_rcu(&atype->atypes, &used_bpf_lsm_atypes);
+> > > +
+> > > +     return CGROUP_LSM_START + atype->index;
 > > > +}
 > > > +
-> > > +static void cgroup_shim_put(struct bpf_shim_tramp_link *shim_link)
+> > > +static void bpf_lsm_attach_type_reclaim(struct rcu_head *head)
 > > > +{
-> > > +     if (shim_link->tr)
-> > I have been spinning back and forth with this "shim_link->tr" test and
-> > the "!shim_link->tr" test below with an atomic64_dec_and_test() test
-> > in between  :)
-> 
-> I did this dance so I can call cgroup_shim_put from
-> bpf_trampoline_link_cgroup_shim, I guess that's confusing.
-> bpf_trampoline_link_cgroup_shim can call cgroup_shim_put when
-> __bpf_trampoline_link_prog fails (shim_prog->tr==NULL);
-> cgroup_shim_put can be also called to unlink the prog from the
-> trampoline (shim_prog->tr!=NULL).
-> 
-> > > +             bpf_trampoline_put(shim_link->tr);
-> > Why put(tr) here?
-> >
-> > Intuitive thinking is that should be done after __bpf_trampoline_unlink_prog(.., tr)
-> > which is still using the tr.
-> > or I missed something inside __bpf_trampoline_unlink_prog(..., tr) ?
-> >
+> > > +     struct bpf_lsm_attach_type *atype =
+> > > +             container_of(head, struct bpf_lsm_attach_type, rcu_head);
 > > > +
-> > > +     if (!atomic64_dec_and_test(&shim_link->refcnt))
-> > > +             return;
-> > > +
-> > > +     if (!shim_link->tr)
-> > And this is only for the error case in bpf_trampoline_link_cgroup_shim()?
-> > Can it be handled locally in bpf_trampoline_link_cgroup_shim()
-> > where it could actually happen ?
+> > > +     atype->btf_id = 0;
+> > > +     atype->usecnt = 0;
+> > > +     list_add_tail_rcu(&atype->atypes, &unused_bpf_lsm_atypes);
+> > hmm...... no need to hold the cgroup_mutex when changing
+> > the unused_bpf_lsm_atypes list ?
+> > but it is a rcu callback, so spinlock is needed.
 > 
-> Yeah, agreed, I'll move the cleanup path to
-> bpf_trampoline_link_cgroup_shim to make it less confusing here.
-> 
-> > > +             return;
-> > > +
-> > > +     WARN_ON_ONCE(__bpf_trampoline_unlink_prog(&shim_link->tramp_link, shim_link->tr));
-> > > +     kfree(shim_link);
-> > How about shim_link->tramp_link.link.prog, is the prog freed ?
-> >
-> > Considering the bpf_link_put() does bpf_prog_put(link->prog).
-> > Is there a reason the bpf_link_put() not used and needs to
-> > manage its own shim_link->refcnt here ?
-> 
-> Good catch, I've missed the bpf_prog_put(link->prog) part. Let me see
-> if I can use the link's refcnt, it seems like I can define my own
-> link->ops->dealloc to call __bpf_trampoline_unlink_prog and the rest
-> will be taken care of.
+> Oh, good point.
 > 
 > > > +}
 > > > +
-> > > +int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
-> > > +                                 struct bpf_attach_target_info *tgt_info)
+> > > +static void bpf_lsm_attach_type_put(u32 attach_btf_id)
 > > > +{
-> > > +     struct bpf_shim_tramp_link *shim_link = NULL;
-> > > +     struct bpf_trampoline *tr;
-> > > +     bpf_func_t bpf_func;
-> > > +     u64 key;
-> > > +     int err;
+> > > +     struct bpf_lsm_attach_type *atype;
 > > > +
-> > > +     key = bpf_trampoline_compute_key(NULL, prog->aux->attach_btf,
-> > > +                                      prog->aux->attach_btf_id);
+> > > +     lockdep_assert_held(&cgroup_mutex);
 > > > +
-> > > +     err = bpf_lsm_find_cgroup_shim(prog, &bpf_func);
-> > > +     if (err)
-> > > +             return err;
+> > > +     list_for_each_entry_rcu(atype, &used_bpf_lsm_atypes, atypes) {
+> > > +             if (atype->btf_id != attach_btf_id)
+> > > +                     continue;
 > > > +
-> > > +     tr = bpf_trampoline_get(key, tgt_info);
-> > > +     if (!tr)
-> > > +             return  -ENOMEM;
+> > > +             if (--atype->usecnt <= 0) {
+> > > +                     list_del_rcu(&atype->atypes);
+> > > +                     WARN_ON_ONCE(atype->usecnt < 0);
 > > > +
-> > > +     mutex_lock(&tr->mutex);
-> > > +
-> > > +     shim_link = cgroup_shim_find(tr, bpf_func);
-> > > +     if (shim_link) {
-> > > +             /* Reusing existing shim attached by the other program. */
-> > > +             atomic64_inc(&shim_link->refcnt);
-> > > +             /* note, we're still holding tr refcnt from above */
-> > hmm... why it still needs to hold the tr refcnt ?
+> > > +                     /* call_rcu here prevents atype reuse within
+> > > +                      * the same rcu grace period.
+> > > +                      * shim programs use __bpf_prog_enter_lsm_cgroup
+> > > +                      * which starts RCU read section.
+> > It is a bit unclear for me to think through why
+> > there is no need to assign 'shim_prog->aux->cgroup_atype = CGROUP_BPF_ATTACH_TYPE_INVALID'
+> > here before reclaim and the shim_prog->bpf_func does not need to check
+> > shim_prog->aux->cgroup_atype before using it.
+> >
+> > It will be very useful to have a few word comments here to explain this.
 > 
-> I'm assuming we need to hold the trampoline for as long as shim_prog
-> is attached to it, right? Otherwise it gets kfreed.
-Each 'attached' cgroup-lsm prog holds the shim_link's refcnt.
-shim_link holds both the trampoline's and the shim_prog's refcnt.
+> My thinking is:
+> - shim program starts rcu read section (via __bpf_prog_enter_lsm_cgroup)
+> - on release (bpf_lsm_attach_type_put) we do
+> list_del_rcu(&atype->atypes) to make sure that particular atype is
+> "reserved" until grace period and not being reused
+> - we won't reuse that particular atype for new attachments until grace period
+> - existing shim programs will still use this atype until grace period,
+> but we rely on cgroup effective array be empty by that point
+> - after grace period, we reclaim that atype
+> 
+> Does it clarify your concern? Am I missing something? Not sure how to
+> put it into a small/concise comment :-)
+Make sense.  Thanks for the explanation.
 
-As long as there is attached cgroup-lsm prog(s).  shim_link's refcnt
-should not be zero.  The shim_link will stay and so does the
-shim_link's trampoline and shim_prog.
+> 
+> (maybe moot after your next comment)
+> 
+> > > +                      */
+> > > +                     call_rcu(&atype->rcu_head, bpf_lsm_attach_type_reclaim);
+> > How about doing this bpf_lsm_attach_type_put() in bpf_prog_free_deferred().
+> > And only do it for the shim_prog but not the cgroup-lsm prog.
+> > The shim_prog is the only one needing cgroup_atype.  Then the cgroup_atype
+> > naturally can be reused when the shim_prog is being destroyed.
+> >
+> > bpf_prog_free_deferred has already gone through a rcu grace
+> > period (__bpf_prog_put_rcu) and it can block, so cgroup_mutex
+> > can be used.
+> >
+> > The need for the rcu_head here should go away also.  The v6 array approach
+> > could be reconsidered.
+> >
+> > The cgroup-lsm prog does not necessarily need to hold a usecnt to the cgroup_atype.
+> > Their aux->cgroup_atype can be CGROUP_BPF_ATTACH_TYPE_INVALID.
+> > My understanding is the replace_prog->aux->cgroup_atype during attach
+> > is an optimization, it can always search again.
+> 
+> I've considered using bpf_prog_free (I think Alexei also suggested
+> it?), but not ended up using it because of the situation where the
+> program can be attached, then detached but not actually freed (there
+> is a link or an fd holding it); in this case we'll be blocking that
+> atype reuse. But not sure if it's a real problem?
+For cgroup-lsm prog loaded but not attached, it should not block the
+atype to be reused.  It probably will not as long as the cgroup-lsm
+prog is not the one holding the atype's refcnt.
 
-When the last cgroup-lsm prog is detached, bpf_link_put() should
-unlink itself (and its shim_prog) from the trampoline first and
-then do a bpf_trampoline_put(tr) and bpf_prog_put(shim_prog).
-I think bpf_tracing_link_release() is doing something similar also.
+For shim_prog, it only does bpf_prog_free_deferred() when there is
+no cgroup-lsm prog attached to it.  That will happen after a rcu
+grace period which should be fine.
+
+> Let me try to see if it works again, your suggestions make sense.
+> (especially the part about cgroup_atype for shim only, I don't like
+> all these replace_prog->aux->cgroup_atype = atype in weird places)
+Yep.  Sounds good.  It would be nice if some of the special handling for
+BPF_LSM_CGROUP in cgroup.c can be simplified because of this.
