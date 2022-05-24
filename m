@@ -2,208 +2,279 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D060A532DDD
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 17:53:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 682E4532DE6
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 17:55:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239096AbiEXPx3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 11:53:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39468 "EHLO
+        id S239125AbiEXPzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 11:55:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234881AbiEXPx2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 11:53:28 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3389154B;
-        Tue, 24 May 2022 08:53:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653407607; x=1684943607;
-  h=from:to:cc:subject:date:message-id:references:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=/42zUjivvevhfGh3FtAc66obsjhN78DzWMNBHK9JT3o=;
-  b=MOlhH0+nhiiHh/77yXU3s1jKGev4Bgj4353wqcQ9a929sFoO4AFPicrF
-   Asv00WRLZ7cbSo8xeiHpeF4rc7feMKqyf0TOkJbm4c8DxIeeI7Eb+FDL2
-   no6GlTyZO/5Frh319OvoonxRpWVymUvVtkAuLbieB/8zzT3HlRkXfaJ6+
-   5ThzVZEraLNNJiWb/V7InkpTlA7Hiy3y5KQJvLQ0hD7KY6E6SRspTGu8q
-   X4n8q1viiPkQRSIdR4U8zYnAkeTdi2orCuG4aF8tWdZoi0Iz7rPOtNKKF
-   1a5TABnx8ntHglYbZlR4fNDoYQbjzUejBAjQ9lLT70RrGPX+MmmElSHkB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10357"; a="334213952"
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="334213952"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 May 2022 08:52:31 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
-   d="scan'208";a="629938819"
-Received: from orsmsx606.amr.corp.intel.com ([10.22.229.19])
-  by fmsmga008.fm.intel.com with ESMTP; 24 May 2022 08:52:31 -0700
-Received: from orsmsx609.amr.corp.intel.com (10.22.229.22) by
- ORSMSX606.amr.corp.intel.com (10.22.229.19) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27; Tue, 24 May 2022 08:52:30 -0700
-Received: from ORSEDG601.ED.cps.intel.com (10.7.248.6) by
- orsmsx609.amr.corp.intel.com (10.22.229.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.27 via Frontend Transport; Tue, 24 May 2022 08:52:30 -0700
-Received: from NAM10-MW2-obe.outbound.protection.outlook.com (104.47.55.101)
- by edgegateway.intel.com (134.134.137.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.27; Tue, 24 May 2022 08:52:30 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GWfbeyp6GIOysiARhv34nvCbvHwNftNUvzOEqD+mCxwSeZQXCtJ78k3FtPWNHIbrf5i8LE9Qfoq51IdKDNjASxi2eijfZfAtSAmcmWDSD4uKtGumWojL7/xl0jRCt2z88HyLA+lTM/Vc55R1+K2/84uuliSC8k7dcXzWEejthY2/uvlC95iKT8Tt1W33s1Ee9xWJtiJYUqm6gai9sofw9z5YnPizqwN/fXENcJaNf1l38LNVFyFbCKYJ5UdhMmsm5J89lVKEZ9Hc4KM02+GZKKCWIg0/ii6Gc8VwElyZ8yl09Mv8OT0LvmB46VwoGKEhm4Mm/6XJhMevXBLlduHTUw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=ho5+/djL3WjiA+mGBlJiFHpWwvCXk4BW6pxH+uFeJaY=;
- b=VsFvPm/UN0VycXMyRoCqlUqYo0aFptVhz75RwcX/MsqMB0+9rKef9jLytlcB0IzLOrMNxIAVpPm+s2BRUPoDhYvQ12GIItKh+GG7S4QOQE92zlUPK6EakpCiZdelI5hY1X5x0LO9H27u9fgxJRfYwaeO3o8E64XbsrJxgt0YMN5+fJyaY2FZhVPO3M0+TIhLtr6SRUjMg0IlzwW342LUCuzeWQ7inMwSWZRTJaxu7klXDuNrKJK5hTMev+sd7u2hZuUydsaN+FNHjpMvJAyIYv0RlMI/OIFXgvMKUyl/rgq8RjvHo/A+rQl2TxhQMkejcxDesEUT0xZ0PS7e6buQog==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Received: from DM8PR11MB5621.namprd11.prod.outlook.com (2603:10b6:8:38::14) by
- DM6PR11MB4201.namprd11.prod.outlook.com (2603:10b6:5:200::33) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5273.17; Tue, 24 May 2022 15:52:27 +0000
-Received: from DM8PR11MB5621.namprd11.prod.outlook.com
- ([fe80::5110:69c8:5d4f:e769]) by DM8PR11MB5621.namprd11.prod.outlook.com
- ([fe80::5110:69c8:5d4f:e769%3]) with mapi id 15.20.5273.023; Tue, 24 May 2022
- 15:52:27 +0000
-From:   "Jankowski, Konrad0" <konrad0.jankowski@intel.com>
-To:     Maximilian Heyne <mheyne@amazon.de>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Eric Dumazet" <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next v3] drivers, ixgbe: export vf statistics
-Thread-Topic: [PATCH net-next v3] drivers, ixgbe: export vf statistics
-Thread-Index: AQHYb4ZEbUc0OtsnIEGBv94lwfGtoQ==
-Date:   Tue, 24 May 2022 15:52:26 +0000
-Message-ID: <DM8PR11MB562165BE16503138D1100255ABD79@DM8PR11MB5621.namprd11.prod.outlook.com>
-References: <20220509110340.100814-1-mheyne@amazon.de>
-In-Reply-To: <20220509110340.100814-1-mheyne@amazon.de>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.6.500.17
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b61e79ea-a8bf-4853-6817-08da3d9d66cc
-x-ms-traffictypediagnostic: DM6PR11MB4201:EE_
-x-microsoft-antispam-prvs: <DM6PR11MB4201C39CB8A34EE4CD0AA7AFABD79@DM6PR11MB4201.namprd11.prod.outlook.com>
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: D0K20M0sTNHwl4Wu9yAV1Z+KH73KS0D01imZxbN0VyAU7vAdYTHhSR3BL1WRnbIx4oMQE/ty3yeBepGxRIPEoo1ahkYt9hVHQU2CFBPDzzQyFIcm04XfH8Ao8L39YyVvsLk7UmkXDwAeh2L1s5kLbhNuEAj60l68DbFzOuDsRgrcPIkf1qVovXvpgA9UlcYRIxer3op5oIrvk7IIQ4wi8xRk/5SLT/vYYqzXOYsUX9A44/1HYSZCzokUdZTzFB4FPIhVWZzzDmbZ3zYtl9I3/g91ornJz+Xc4SXnhBI71oAdXyguZBiDi4IMyF1h4vV7QRyhjDR3t0aNJu2PZHW7/+B3WKSiK38Ug/0/l3VUwo88YszQlDN1kASr3rSFuGWG8jplezHQt+r7oloWVp1vIWiK07sCtUi074wuFiWQ/w5YIX2cwlOGlRkbZltRmk9ydYQTuF3Fb07/fs2Mr6M7K2x6Ok4rCMsdXDOezxlrR5luZEt22mJ7Vs08s3F/bAxbqdpueBMStfpBWtmT/sGV0LaVey0XYLOU1BT41PTCb/5T73Bj8bsxH69Cuk/XVY+lV9UMcwVH/ue/4Iaot13aLp/sPshVUAQDTeaJc9Ry7XCYmKWc0nY6EYWWatkjjCOAx05uTMf+UIarkBP5dEPrd4MBwzpUdtVKl++dyV7749RQOThErdJAXpic1jJTXG3rbvdmrp1I/kAQlIr5bvrhnA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR11MB5621.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(366004)(8936002)(316002)(66556008)(86362001)(66446008)(4326008)(8676002)(64756008)(66476007)(76116006)(186003)(83380400001)(66946007)(7696005)(508600001)(55016003)(26005)(9686003)(122000001)(38070700005)(6506007)(82960400001)(38100700002)(110136005)(33656002)(54906003)(71200400001)(5660300002)(52536014)(2906002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?8CkmFX7vHNU0LElQE09jHLRH/le/JoUYiCrmP2OlZqghUWImugqtFiyKBcDJ?=
- =?us-ascii?Q?G98+XRTIZJHJ72JKivfNxGvZKXH/5YmZ8Z8hqA0Jw35IQqwi5w0E0ZTryceb?=
- =?us-ascii?Q?qBZbs3pjfBqbDtnyhejnLLCHIN+iAMhhHCG8fRIjwt1MaMCbSt0MGNbE3tlc?=
- =?us-ascii?Q?5yvDuwqcb2P1iHinIEAPZ/eNKlS0WT8icwrJDytfgeB+wym7aotV8RL2cROZ?=
- =?us-ascii?Q?UC7+wslUc1x+wpJ2sdKUFp/mvLzUXva0cnTS9ENrfFZ0dyTkNCIhRfucVwwj?=
- =?us-ascii?Q?qCNkwb7acc7PSaHw7frPWE9dhEGHpcs1dUhpJ6F/l0+1tqBTYwe/LwRTELdH?=
- =?us-ascii?Q?+3LWXyb+N69teE7TpIysZ+hcE5yIR+JDUbyWJsdxSWmBeI/xWEq2WNnGHLeZ?=
- =?us-ascii?Q?3OELse72mTKMJ/Ah0fZiTXiU5g/CsYKRXZnnn1rAurOnL2OhfdLuQjHEvO6Q?=
- =?us-ascii?Q?cGlm/NxdasPi3BXDKgA34PR9XIqwhWq6FQrrSH9B260M231NHnpIr8KuY6mx?=
- =?us-ascii?Q?sekt66GL/3iMWv2oujdvfsdTDRudnYoihLp788hKN5xp6asq7GcHORdHFYvb?=
- =?us-ascii?Q?Nd/ETl4PY90Xqjyr2jPLHdOCiNmEZfqELChzbiS9+oWq6Zh3sHOBbIRLakhj?=
- =?us-ascii?Q?LPNegJwi77IMOGebPXH7/ubjAGRuIhEA2wq7LLqRJMJit4heSloH5RavH3r1?=
- =?us-ascii?Q?uRuBR4Yhj13nAUpioiNQln8AoFdxPQsHNcxfgOgYq+d8cloZoFvRTTvSlwP/?=
- =?us-ascii?Q?t5pxlqdnIyFh+CKl21zkR/6wilH456G2gPzV49MMnuj5Yg4R8hYOtz4iPFOD?=
- =?us-ascii?Q?RrlflZYG78pfcDyjdjt8yXdOd2JF2YTA6zLm1AAe6ZKE7/qSF0PpMN7PK+8D?=
- =?us-ascii?Q?2nL0esOM3h8xzDisaPauVoVZ7xTWN+3LN+LDNZFEV6dJuOqfLLP7EoIZ6Ymt?=
- =?us-ascii?Q?zzu9lHO0OsoGukOR4MFst6Ahapf8vCTWL1w7DItR+7kJdS6ddswK5s2tzMCz?=
- =?us-ascii?Q?eG25ZyUKAQ23yksTTwbP+CKpubUzjFKDdDF4I3ov8jFDHEw5DazAYbaovF5s?=
- =?us-ascii?Q?nv0xVV1LdJmlMP/9+1Rsntlub5rY9NwrGBsTOUeUdCJ7cCyMDToh+YFgP4WK?=
- =?us-ascii?Q?0EMeAo7N8YEFvkHJG012MLfqLE1eeYIn4WDhF+JfIAvCAGCX8yGvYjrnHTBq?=
- =?us-ascii?Q?JBOQZGgNrECu8MUoJbLRrvGriCsFifhuSiRmOUhKRDm0rTmLCoNRxnsQukXz?=
- =?us-ascii?Q?X3u30qa9vtQxVmA7piwiOS9ck0BUZXeQq+izXNLV1oLQgJv9rysHxjTWRrFb?=
- =?us-ascii?Q?/RwgE1V1virZcR9rMfjgddfzPUSqMZoDkKN6owxc4zkFD6MTPWCxe6avP1NX?=
- =?us-ascii?Q?SBGp7am5ZGXB3griP6MzHeCI4bb34H/KTdEpKIWzxVL+jUcNnJkMJoLXRkct?=
- =?us-ascii?Q?e7+qfgP6Zp0ru+VsUBxaEVPOF08h29SPE2YIKKm+z+8LTpMJ92qJWRECnS+h?=
- =?us-ascii?Q?i2lni+gm7w9QhJMQQZaS0DMeCGJ9iIKAMlh4PW4yGDZ/bDzdHnNCtw2zWLEq?=
- =?us-ascii?Q?lFYA3n+zLIFkVRNqrhPAFOIlUcAS3ZeUiAqb0DohtIVSsEQMlGQFXUIEX5TX?=
- =?us-ascii?Q?nUjPjb3VLa0gqHg6Wgvw5waiVTI5JyBr3nHzXw5gtbVHo6PtEDPL8KQkZZsF?=
- =?us-ascii?Q?x9VPicdDygz6yz3QWX9n4X+nsvIzK6nOi6Z/6nnz4MW5pnpSB4cCfjJWhljz?=
- =?us-ascii?Q?ntFySfBdkfmF3Y4BzvkrlPvmHz6xsIo=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S239114AbiEXPzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 11:55:19 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11069728B
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 08:55:17 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id x12so2084784wrg.2
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 08:55:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PRjMEPpJhhvNzJfYuyFcpUO/ZYV0Mptzs7O7U43AFao=;
+        b=YU4ymip4VgpuHKC1Plgw9bCu2Vou5zASXvaxwPMzAuHYh6vot1oedEgJKi483OOgyr
+         Qo958CQyNJoqusHva9hZVWgYfpFIjzGnxuvBWVpt0q/umYVKQrSEQMRID86edrm1SG6d
+         RPPUW/gWFTkiEjlHDuolfxpf2keLNfsU2dREORGFAasIhFVDF3QwGXKYJ3TUodk6+Rk/
+         3OzOron4VDTeUad0BrKdH523qovgEtLfpIOUdkjNEfIV7R2UfDZrBIVqvqEY3NNn/1oM
+         OKGgjYhlcO8KJSMan8h0XZDnGUE0l9ra+ik4jsI8UyAijU/8XlrfRfvHDLxrZc35Dq3S
+         /ltA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PRjMEPpJhhvNzJfYuyFcpUO/ZYV0Mptzs7O7U43AFao=;
+        b=iQ4ENCdBEKq8mOR4VJ4JupUMNt/UzzDNxVCvVT5/tXRcHNaNzIP06NQBlhh5IFNh3i
+         aY/6kwZwgthDJr9nRZxARjajVna8cldoenw9XpSuTzJLAeFAV6K79zGr2kFwGQCK3rTE
+         6E4zpt/2KtzETycKUAFm+5DQvwaUkbMNPKR7nsdfOVn2NNAtV/K8WYmpDSaiYSbX1SEP
+         WvXlRl7MSx0qFFdkxpTURDgC97FiKnum/QTPnhHD6YQapg4g6c4uDezV8jwv/gxndKTf
+         NOY0XeylYb1tdyl5ZknQnbC5caRQ99Xf9mOXDEa9XEot6pQ09WPeeOCrJJuLr46mkSrf
+         hEcQ==
+X-Gm-Message-State: AOAM533q/WgoInbasSCLtNp1bjMNOrT0Mx5EFoVnwuOBNBLhbeerATzf
+        8o6Nv6wpS6BfATz6mGizmSuxrXouGCvGvegSmsnDZQ==
+X-Google-Smtp-Source: ABdhPJyUDMAvKVuAcuDBaufoBbVCEZnPdvxhjNOY7R1wk0PEda2kq3i22SmGXXB/RxGnHqNsmUl7FcZnlbM/mmpGVAA=
+X-Received: by 2002:a5d:4a43:0:b0:20f:c53d:6796 with SMTP id
+ v3-20020a5d4a43000000b0020fc53d6796mr9078837wrs.15.1653407716152; Tue, 24 May
+ 2022 08:55:16 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM8PR11MB5621.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b61e79ea-a8bf-4853-6817-08da3d9d66cc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 May 2022 15:52:27.0021
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: p0WH/UqjwRuGzAyletcU5KmQo4qwoIB8JklhJooOJtkkbottcOR1jQfXfE2Jd5ChkFZFuChvy6eiZrTQQJopKwQWr5Vop8hl9VYMCeo1lkw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR11MB4201
-X-OriginatorOrg: intel.com
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+References: <20220518225531.558008-1-sdf@google.com> <20220518225531.558008-6-sdf@google.com>
+ <20220524034857.jwbjciq3rfb3l5kx@kafai-mbp>
+In-Reply-To: <20220524034857.jwbjciq3rfb3l5kx@kafai-mbp>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Tue, 24 May 2022 08:55:04 -0700
+Message-ID: <CAKH8qBuCZVNPZaCRWrTiv7deDCyOkofT_ypvAiuE=OMz=TUuJw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v7 05/11] bpf: implement BPF_PROG_QUERY for BPF_LSM_CGROUP
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, May 23, 2022 at 8:49 PM Martin KaFai Lau <kafai@fb.com> wrote:
+>
+> On Wed, May 18, 2022 at 03:55:25PM -0700, Stanislav Fomichev wrote:
+> > We have two options:
+> > 1. Treat all BPF_LSM_CGROUP the same, regardless of attach_btf_id
+> > 2. Treat BPF_LSM_CGROUP+attach_btf_id as a separate hook point
+> >
+> > I was doing (2) in the original patch, but switching to (1) here:
+> >
+> > * bpf_prog_query returns all attached BPF_LSM_CGROUP programs
+> > regardless of attach_btf_id
+> > * attach_btf_id is exported via bpf_prog_info
+> >
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  include/uapi/linux/bpf.h |   5 ++
+> >  kernel/bpf/cgroup.c      | 103 +++++++++++++++++++++++++++------------
+> >  kernel/bpf/syscall.c     |   4 +-
+> >  3 files changed, 81 insertions(+), 31 deletions(-)
+> >
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index b9d2d6de63a7..432fc5f49567 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -1432,6 +1432,7 @@ union bpf_attr {
+> >               __u32           attach_flags;
+> >               __aligned_u64   prog_ids;
+> >               __u32           prog_cnt;
+> > +             __aligned_u64   prog_attach_flags; /* output: per-program attach_flags */
+> >       } query;
+> >
+> >       struct { /* anonymous struct used by BPF_RAW_TRACEPOINT_OPEN command */
+> > @@ -5911,6 +5912,10 @@ struct bpf_prog_info {
+> >       __u64 run_cnt;
+> >       __u64 recursion_misses;
+> >       __u32 verified_insns;
+> > +     /* BTF ID of the function to attach to within BTF object identified
+> > +      * by btf_id.
+> > +      */
+> > +     __u32 attach_btf_func_id;
+> >  } __attribute__((aligned(8)));
+> >
+> >  struct bpf_map_info {
+> > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> > index a959cdd22870..08a1015ee09e 100644
+> > --- a/kernel/bpf/cgroup.c
+> > +++ b/kernel/bpf/cgroup.c
+> > @@ -1074,6 +1074,7 @@ static int cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
+> >  static int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
+> >                             union bpf_attr __user *uattr)
+> >  {
+> > +     __u32 __user *prog_attach_flags = u64_to_user_ptr(attr->query.prog_attach_flags);
+> >       __u32 __user *prog_ids = u64_to_user_ptr(attr->query.prog_ids);
+> >       enum bpf_attach_type type = attr->query.attach_type;
+> >       enum cgroup_bpf_attach_type atype;
+> > @@ -1081,50 +1082,92 @@ static int __cgroup_bpf_query(struct cgroup *cgrp, const union bpf_attr *attr,
+> >       struct hlist_head *progs;
+> >       struct bpf_prog *prog;
+> >       int cnt, ret = 0, i;
+> > +     int total_cnt = 0;
+> >       u32 flags;
+> >
+> > -     atype = to_cgroup_bpf_attach_type(type);
+> > -     if (atype < 0)
+> > -             return -EINVAL;
+> > +     enum cgroup_bpf_attach_type from_atype, to_atype;
+> >
+> > -     progs = &cgrp->bpf.progs[atype];
+> > -     flags = cgrp->bpf.flags[atype];
+> > +     if (type == BPF_LSM_CGROUP) {
+> > +             from_atype = CGROUP_LSM_START;
+> > +             to_atype = CGROUP_LSM_END;
+> > +     } else {
+> > +             from_atype = to_cgroup_bpf_attach_type(type);
+> > +             if (from_atype < 0)
+> > +                     return -EINVAL;
+> > +             to_atype = from_atype;
+> > +     }
+> >
+> > -     effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
+> > -                                           lockdep_is_held(&cgroup_mutex));
+> > +     for (atype = from_atype; atype <= to_atype; atype++) {
+> > +             progs = &cgrp->bpf.progs[atype];
+> > +             flags = cgrp->bpf.flags[atype];
+> >
+> > -     if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
+> > -             cnt = bpf_prog_array_length(effective);
+> > -     else
+> > -             cnt = prog_list_length(progs);
+> > +             effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
+> > +                                                   lockdep_is_held(&cgroup_mutex));
+> >
+> > -     if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
+> > -             return -EFAULT;
+> > -     if (copy_to_user(&uattr->query.prog_cnt, &cnt, sizeof(cnt)))
+> > +             if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
+> > +                     total_cnt += bpf_prog_array_length(effective);
+> > +             else
+> > +                     total_cnt += prog_list_length(progs);
+> > +     }
+> > +
+> > +     if (type != BPF_LSM_CGROUP)
+> > +             if (copy_to_user(&uattr->query.attach_flags, &flags, sizeof(flags)))
+> > +                     return -EFAULT;
+> > +     if (copy_to_user(&uattr->query.prog_cnt, &total_cnt, sizeof(total_cnt)))
+> >               return -EFAULT;
+> > -     if (attr->query.prog_cnt == 0 || !prog_ids || !cnt)
+> > +     if (attr->query.prog_cnt == 0 || !prog_ids || !total_cnt)
+> >               /* return early if user requested only program count + flags */
+> >               return 0;
+> > -     if (attr->query.prog_cnt < cnt) {
+> > -             cnt = attr->query.prog_cnt;
+> > +
+> > +     if (attr->query.prog_cnt < total_cnt) {
+> > +             total_cnt = attr->query.prog_cnt;
+> >               ret = -ENOSPC;
+> >       }
+> >
+> > -     if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE) {
+> > -             return bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
+> > -     } else {
+> > -             struct bpf_prog_list *pl;
+> > -             u32 id;
+> > +     for (atype = from_atype; atype <= to_atype; atype++) {
+> > +             if (total_cnt <= 0)
+> > +                     break;
+> >
+> > -             i = 0;
+> > -             hlist_for_each_entry(pl, progs, node) {
+> > -                     prog = prog_list_prog(pl);
+> > -                     id = prog->aux->id;
+> > -                     if (copy_to_user(prog_ids + i, &id, sizeof(id)))
+> > -                             return -EFAULT;
+> > -                     if (++i == cnt)
+> > -                             break;
+> > +             progs = &cgrp->bpf.progs[atype];
+> > +             flags = cgrp->bpf.flags[atype];
+> > +
+> > +             effective = rcu_dereference_protected(cgrp->bpf.effective[atype],
+> > +                                                   lockdep_is_held(&cgroup_mutex));
+> > +
+> > +             if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE)
+> > +                     cnt = bpf_prog_array_length(effective);
+> > +             else
+> > +                     cnt = prog_list_length(progs);
+> > +
+> > +             if (cnt >= total_cnt)
+> > +                     cnt = total_cnt;
+> > +
+> > +             if (attr->query.query_flags & BPF_F_QUERY_EFFECTIVE) {
+> > +                     ret = bpf_prog_array_copy_to_user(effective, prog_ids, cnt);
+> > +             } else {
+> > +                     struct bpf_prog_list *pl;
+> > +                     u32 id;
+> > +
+> > +                     i = 0;
+> > +                     hlist_for_each_entry(pl, progs, node) {
+> > +                             prog = prog_list_prog(pl);
+> > +                             id = prog->aux->id;
+> > +                             if (copy_to_user(prog_ids + i, &id, sizeof(id)))
+> > +                                     return -EFAULT;
+> > +                             if (++i == cnt)
+> > +                                     break;
+> > +                     }
+> >               }
+> > +
+> > +             if (prog_attach_flags)
+> > +                     for (i = 0; i < cnt; i++)
+> > +                             if (copy_to_user(prog_attach_flags + i, &flags, sizeof(flags)))
+> > +                                     return -EFAULT;
+> > +
+> > +             prog_ids += cnt;
+> > +             total_cnt -= cnt;
+> > +             if (prog_attach_flags)
+> > +                     prog_attach_flags += cnt;
+> >       }
+> >       return ret;
+> >  }
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index 5ed2093e51cc..4137583c04a2 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -3520,7 +3520,7 @@ static int bpf_prog_detach(const union bpf_attr *attr)
+> >       }
+> >  }
+> >
+> > -#define BPF_PROG_QUERY_LAST_FIELD query.prog_cnt
+> > +#define BPF_PROG_QUERY_LAST_FIELD query.prog_attach_flags
+> >
+> >  static int bpf_prog_query(const union bpf_attr *attr,
+> >                         union bpf_attr __user *uattr)
+> > @@ -3556,6 +3556,7 @@ static int bpf_prog_query(const union bpf_attr *attr,
+> >       case BPF_CGROUP_SYSCTL:
+> >       case BPF_CGROUP_GETSOCKOPT:
+> >       case BPF_CGROUP_SETSOCKOPT:
+> > +     case BPF_LSM_CGROUP:
+> >               return cgroup_bpf_prog_query(attr, uattr);
+> >       case BPF_LIRC_MODE2:
+> >               return lirc_prog_query(attr, uattr);
+> > @@ -4066,6 +4067,7 @@ static int bpf_prog_get_info_by_fd(struct file *file,
+> >
+> >       if (prog->aux->btf)
+> >               info.btf_id = btf_obj_id(prog->aux->btf);
+> > +     info.attach_btf_func_id = prog->aux->attach_btf_id;
+> Note that exposing prog->aux->attach_btf_id only may not be enough
+> unless it can assume info.attach_btf_id is always referring to btf_vmlinux
+> for all bpf prog types.
 
-
-> -----Original Message-----
-> From: Maximilian Heyne <mheyne@amazon.de>
-> Sent: Monday, May 9, 2022 1:04 PM
-> Cc: Maximilian Heyne <mheyne@amazon.de>; Brandeburg, Jesse
-> <jesse.brandeburg@intel.com>; Nguyen, Anthony L
-> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>; Eric
-> Dumazet <edumazet@google.com>; Jakub Kicinski <kuba@kernel.org>; Paolo
-> Abeni <pabeni@redhat.com>; intel-wired-lan@lists.osuosl.org;
-> netdev@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: [PATCH net-next v3] drivers, ixgbe: export vf statistics
->=20
-> This change retrieves network metrics for virtual functions from the devi=
-ce
-> and exports them via the iproute2 interface.
->=20
-> The code for retrieving the statistics from the device is taken from the =
-out-of-
-> tree driver.  The feature was introduced with version 2.0.75.7, so the di=
-ff
-> between this version and the previous version 2.0.72.4 was used to identi=
-fy
-> required changes. The export via ethtool is omitted in favor of using the
-> standard ndo_get_vf_stats interface.
->=20
-> Per-VF statistics can now be printed, for instance, via
->=20
->   ip --statistics link show dev eth0
->=20
-> Signed-off-by: Maximilian Heyne <mheyne@amazon.de>
-> ---
-> v2: implemented the ndo_get_vf_stats callback
-> v3: as per discussion, removed the ethtool changes
->=20
->  drivers/net/ethernet/intel/ixgbe/ixgbe.h      | 34 ++++++++
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 86 +++++++++++++++++++
-> drivers/net/ethernet/intel/ixgbe/ixgbe_type.h |  7 ++
->  3 files changed, 127 insertions(+)
->=20
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> index 921a4d977d65..48444ab9e0b1 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe.h
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe.h
->=20
-
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+We also export btf_id two lines above, right? Btw, I left a comment in
+the bpftool about those btf_ids, I'm not sure how resolve them and
+always assume vmlinux for now.
