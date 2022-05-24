@@ -2,51 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D35B45330AD
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 20:50:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F1CB533132
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 21:03:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240420AbiEXSuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 14:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
+        id S240902AbiEXTDT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 15:03:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55462 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234576AbiEXSuT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 14:50:19 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DA93167C3
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 11:50:18 -0700 (PDT)
+        with ESMTP id S240814AbiEXTDM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 15:03:12 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99D8B9E9F3;
+        Tue, 24 May 2022 12:01:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5B1C4B81B0D
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 18:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EA042C34115;
-        Tue, 24 May 2022 18:50:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F1F3461668;
+        Tue, 24 May 2022 19:01:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E931CC34100;
+        Tue, 24 May 2022 19:01:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653418216;
-        bh=5EIEMjDzYlFXhbx8koo0lcyZnfjjno77U3weL9Eiev8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=nSNjJWCAvVyFbHEiJvIL+c5EMO6el2fXK4+DASWDAzcoJ2K6SWIPkFZBv4kzZBJJd
-         KP2KP2v1ngBiBudhYaX+zv0hKIqoEZLgHAcQY2a0CefkrYKeJFAZuk9ElME0RwTvja
-         TGmaS25f2yngrvkLu2Ai1Hfs9xKR/KNc6s/fsBIi8CAR189Qocb629eKwxOmt91Y21
-         P9Oncfvy0pcK1Lam7+2aeo1IDF05B1lIXg5g0F6heRl0OryO2ZpaQ7CDGeywBJ13bM
-         F8PFtB6BnJXJ6/V1+3tOKH5Iu6mw60f/h49fkXwOyTK/PhZ6l5uK8UUPiyTw4Ojjqw
-         BOKrw03Hcz4nA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D2487E8DD61;
-        Tue, 24 May 2022 18:50:15 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1653418896;
+        bh=KSZsbhwiRi3M8nxpOedIKbFYyLcvnJ63M8XoVXAIzeU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=BOFqdBMgOE0t35cDDks6OE8Twthx5wZ9OuWLqN4oNuXkjA0Pb8Z9VbTh69HeCJ/FR
+         l57QTmEidl5VAJd6e7Vh6L+mR2QPo3h9NqADkIAtTdcofr2TUuPj69OyMYh4hvAlye
+         TQDeR9aKkiVrcEmatu3vIBk3fyYAsj/jlY8O1nUZZhkrCutKeF4IwVDe88vyods8cm
+         t5xgla4YRyo0yIOvq5u8SKI5g0Ma+J1GaZ/o8rqZPCnYl2NowzaoNMO4VHYmHVXWyg
+         Mhl7uZK9xwW7RMLC0BwDLqcR38YHvimkH67Z29wnM6Ez4DywCNF6YAbKpJEGTbgBZH
+         qb1dtcUpEGx0g==
+Date:   Tue, 24 May 2022 12:01:34 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Sasha Levin <sashal@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "# 3.4.x" <stable@vger.kernel.org>, Joel Stanley <joel@jms.id.au>,
+        David Wilder <wilder@us.ibm.com>,
+        Dylan Hung <dylan_hung@aspeedtech.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, guoheyi@linux.alibaba.com,
+        chenhao288@hisilicon.com, Networking <netdev@vger.kernel.org>
+Subject: Re: [PATCH AUTOSEL 5.17 10/12] net: ftgmac100: Disable hardware
+ checksum on AST2600
+Message-ID: <20220524120134.2c466107@kernel.org>
+In-Reply-To: <CAK8P3a2EZKnLB5c9YuKbaug16tG7juidmQ+g-wLNHx_-zxTD5A@mail.gmail.com>
+References: <20220524155929.826793-1-sashal@kernel.org>
+        <20220524155929.826793-10-sashal@kernel.org>
+        <CAK8P3a3J6gh-0Z8JKEBDva7ox39ps5CCxJ4K7T1LyWMbTHna8Q@mail.gmail.com>
+        <CAK8P3a2EZKnLB5c9YuKbaug16tG7juidmQ+g-wLNHx_-zxTD5A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v4 00/10] ptp: ocp: various updates
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <165341821585.16038.869813459483414820.git-patchwork-notify@kernel.org>
-Date:   Tue, 24 May 2022 18:50:15 +0000
-References: <20220519212153.450437-1-jonathan.lemon@gmail.com>
-In-Reply-To: <20220519212153.450437-1-jonathan.lemon@gmail.com>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     netdev@vger.kernel.org, richardcochran@gmail.com,
-        kernel-team@fb.com, davem@davemloft.net, kuba@kernel.org,
-        pabeni@redhat.com, edumazet@google.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
@@ -57,49 +64,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (master)
-by Jakub Kicinski <kuba@kernel.org>:
-
-On Thu, 19 May 2022 14:21:43 -0700 you wrote:
-> Collection of cleanups and updates to the timecard.
+On Tue, 24 May 2022 20:47:51 +0200 Arnd Bergmann wrote:
+> On Tue, May 24, 2022 at 8:47 PM Arnd Bergmann <arnd@arndb.de> wrote:
+> >
+> > On Tue, May 24, 2022 at 5:59 PM Sasha Levin <sashal@kernel.org> wrote:  
+> > >
+> > >  # ip link set mtu 1410 dev eth0
+> > >
+> > > The observed results:
+> > >
+> > >  1500 - good
+> > >  1434 - bad
+> > >  1400 - good
+> > >  1410 - bad
+> > >  1420 - good  
+> >
+> > Does it require multiples of four? Maybe it just skips the last bytes?  
 > 
-> v3->v4
->  Remove #ifdefs around PCI IDS
->  Clarify wording in debugfs patch
-> 
-> v2->v3
->  Remove inline keyword from function wrappers
->  checkpatch style changes
-> 
-> [...]
+> Nevermind, I missed that this was a backport of a merged patch, rather
+> than a new one.
 
-Here is the summary with links:
-  - [net-next,v4,01/10] ptp: ocp: 32-bit fixups for pci start address
-    https://git.kernel.org/netdev/net-next/c/8119c9ee7854
-  - [net-next,v4,02/10] ptp: ocp: Remove #ifdefs around PCI IDs
-    https://git.kernel.org/netdev/net-next/c/3a35e53a11bc
-  - [net-next,v4,03/10] ptp: ocp: add Celestica timecard PCI ids
-    https://git.kernel.org/netdev/net-next/c/81fa652e1685
-  - [net-next,v4,04/10] ptp: ocp: revise firmware display
-    https://git.kernel.org/netdev/net-next/c/5a728ac578c0
-  - [net-next,v4,05/10] ptp: ocp: parameterize input/output sma selectors
-    https://git.kernel.org/netdev/net-next/c/aa56a7ffc0fb
-  - [net-next,v4,06/10] ptp: ocp: constify selectors
-    https://git.kernel.org/netdev/net-next/c/3f3fe41c0bdf
-  - [net-next,v4,07/10] ptp: ocp: vectorize the sma accessor functions
-    https://git.kernel.org/netdev/net-next/c/caab82cdbfe4
-  - [net-next,v4,08/10] ptp: ocp: add .init function for sma_op vector
-    https://git.kernel.org/netdev/net-next/c/ee4cd7250c8f
-  - [net-next,v4,09/10] ptp: ocp: fix PPS source selector debugfs reporting
-    https://git.kernel.org/netdev/net-next/c/b88fdbba931e
-  - [net-next,v4,10/10] ptp: ocp: Add firmware header checks
-    https://git.kernel.org/netdev/net-next/c/3c3673bde50c
+Great minds think alike, tho ;)
 
-You are awesome, thank you!
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+https://lore.kernel.org/all/YowcZUX3lwAA6c5k@lunn.ch/
