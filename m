@@ -2,37 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29AFD5333B7
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 00:56:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 843115333D8
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 01:21:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242504AbiEXW4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 18:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36902 "EHLO
+        id S242553AbiEXXVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 19:21:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47356 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238612AbiEXW4g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 18:56:36 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08652694B0
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 15:56:34 -0700 (PDT)
-Received: from 226.206.1.85.dynamic.wline.res.cust.swisscom.ch ([85.1.206.226] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ntdS3-000G5w-Gd; Wed, 25 May 2022 00:56:31 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     kuba@kernel.org
-Cc:     wangyuweihx@gmail.com, pabeni@redhat.com, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Nikolay Aleksandrov <razor@blackwall.org>
-Subject: [PATCH net] net, neigh: Set lower cap for neigh_managed_work rearming
-Date:   Wed, 25 May 2022 00:56:18 +0200
-Message-Id: <3b8c5aa906c52c3a8c995d1b2e8ccf650ea7c716.1653432794.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        with ESMTP id S242546AbiEXXVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 19:21:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEE0B2B1B0;
+        Tue, 24 May 2022 16:21:51 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A92D617F1;
+        Tue, 24 May 2022 23:21:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 842DAC34100;
+        Tue, 24 May 2022 23:21:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653434510;
+        bh=jJRdmY226rcXG6WyLUQy/E35Pt/+iqJ5g9CtUu6UmQ8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hd85dbavWBp+HBnV6V2bwpgrTg29e9JJCGJORcsMsqGHyM0h240qGrIqe55GLMUkx
+         DmjUJV2lFBrSJQEuJHAuCo0Wrkqj6qBv3cwK9k70y8Jcu4A8dveuvu+8B7zRya+lE5
+         Jtr35rJ1fAIG7IY9Ky13wk6IB8NMjTWZUXDgZhILxLa0t1nhY6Fit0UD/WlAx9Gm8i
+         q7K2JKgg9shZMxGmYBDLSrJDPs/2Jo3Kj6vQN9ARneg6GQmiGKPog+UYrgOcR42njv
+         A07+322mb6s8JpCj1rH8KEFYsq2F6lHriHMQvOmMOo7NGHtKtoT/PFQ1Zr8LskkN3H
+         RiPSbvHe4bDOg==
+Date:   Tue, 24 May 2022 16:21:49 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Marco Bonelli <marco@mebeim.net>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] ethtool: Fix and optimize
+ ethtool_convert_link_mode_to_legacy_u32()
+Message-ID: <20220524162149.7789df7f@kernel.org>
+In-Reply-To: <20220524223818.259303-1-marco@mebeim.net>
+References: <20220524223818.259303-1-marco@mebeim.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26551/Tue May 24 10:06:48 2022)
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_NONE,
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
         SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
@@ -41,34 +55,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yuwei reported that plain reuse of DELAY_PROBE_TIME to rearm work queue
-in neigh_managed_work is problematic if user explicitly configures the
-DELAY_PROBE_TIME to 0 for a neighbor table. Such misconfig can then hog
-CPU to 100% processing the system work queue. Instead, set lower interval
-bound to HZ which is totally sufficient. Yuwei is additionally looking
-into making the interval separately configurable from DELAY_PROBE_TIME.
+On Wed, 25 May 2022 00:38:19 +0200 Marco Bonelli wrote:
+> Fix the implementation of ethtool_convert_link_mode_to_legacy_u32(), which
+> is supposed to return false if src has bits higher than 31 set. The current
+> implementation uses the complement of bitmap_fill(ext, 32) to test high
+> bits of src, which is wrong as bitmap_fill() fills _with long granularity_,
+> and sizeof(long) can be > 4. No users of this function currently check the
+> return value, so the bug was dormant.
+> 
+> Also remove the check for __ETHTOOL_LINK_MODE_MASK_NBITS > 32, as the enum
+> ethtool_link_mode_bit_indices contains far beyond 32 values. Using
+> find_next_bit() to test the src bitmask works regardless of this anyway.
+> 
+> Signed-off-by: Marco Bonelli <marco@mebeim.net>
 
-Reported-by: Yuwei Wang <wangyuweihx@gmail.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Nikolay Aleksandrov <razor@blackwall.org>
-Link: https://lore.kernel.org/netdev/797c3c53-ce1b-9f60-e253-cda615788f4a@iogearbox.net
----
- net/core/neighbour.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+# Form letter - net-next is closed
 
-diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-index f64ebd050f6..fd69133dc7c 100644
---- a/net/core/neighbour.c
-+++ b/net/core/neighbour.c
-@@ -1579,7 +1579,7 @@ static void neigh_managed_work(struct work_struct *work)
- 	list_for_each_entry(neigh, &tbl->managed_list, managed_list)
- 		neigh_event_send_probe(neigh, NULL, false);
- 	queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
--			   NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
-+			   max(NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME), HZ));
- 	write_unlock_bh(&tbl->lock);
- }
- 
--- 
-2.21.0
+We have already sent the networking pull request for 5.19
+and therefore net-next is closed for new drivers, features,
+code refactoring and optimizations. We are currently accepting
+bug fixes only.
 
+Please repost when net-next reopens after 5.19-rc1 is cut.
+
+RFC patches sent for review only are obviously welcome at any time.
