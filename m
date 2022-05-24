@@ -2,144 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F0B0533359
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 00:13:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5702253339C
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 00:42:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242052AbiEXWNo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 18:13:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52602 "EHLO
+        id S242453AbiEXWmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 18:42:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44354 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238914AbiEXWNn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 18:13:43 -0400
-Received: from mail-yw1-x1130.google.com (mail-yw1-x1130.google.com [IPv6:2607:f8b0:4864:20::1130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD3C5DD3F
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 15:13:42 -0700 (PDT)
-Received: by mail-yw1-x1130.google.com with SMTP id 00721157ae682-2ec42eae76bso196636277b3.10
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 15:13:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KHIJKfxgTwjjvyeenG8PqcpEQiKi1RaY8gq052ZcCvA=;
-        b=T6hMuCVEX+qbOyFR89d+IsjkmG2gLaJBxFErHe2gyjpChqhEV06irPnesumPglEbfQ
-         9RzraS+IIv/IhS0qu2Eb0eQBfqdVIF0RlpIoeWoDmLfii1Sv2YC4SF3LbnRSukQZ9qzz
-         pJeqxph4Qi7c2sNv99au5tIQWl0ozkKlnmd0V0WGFX7sQ3dOwTkeZMU1khTXPmPQHJUl
-         tZRACg67zb7w/EkNZGLYl1lNsBDGe92KUIKcc3T5erYvU9J/dpKPz0/i2XHRBRlFK4A3
-         /sJCr+ROTjxFyDkrFfp0KBpEqKnWDuU4RBCUt/jU889SHRV3NrZrFAXMFOer49lqOH/N
-         eGBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KHIJKfxgTwjjvyeenG8PqcpEQiKi1RaY8gq052ZcCvA=;
-        b=LHpdeBrloXi0ONSjxgeIu3GkCAlJ1QHw4M6ui7dAUA2W9wiJEjABTcFvf0jJ9bQUuc
-         L7dMp/VnGetJIHdPHpidrg2HzP47URXhErXoujqcxLLBZ24yfP1mZpp3lh8RtMWssSAO
-         gPGpOKpT/ZrW63lojCQ/aHoZrC+d/rPpD2IGPeNkRzof8EhqNyrxLq9mxCDCGPBXKbks
-         Xm+2vm27hsVCMjm614aZD+Cepb7fGCmezmU+JK0A43UikeEBdVSLoRBb7E1t11GQDLMU
-         kuazY/2jbizY6n5ZbAYtp66p7EOH6kvCicAFuXIgJGDzgVxWheVHF6u5Ir0KfxPKqbGl
-         iB2g==
-X-Gm-Message-State: AOAM530Ehw1oLrBLa35teilg/JORh1iL5bZmeTXgbRkoYKXRUyrkHXIP
-        lmxOeR34TlYzVrnOwcf5D0swzbmEh6lV1KsIV2r7Mw==
-X-Google-Smtp-Source: ABdhPJyPc88P2qZG0MlVyVyfq8FoXxqbvtwhO8/rX8P/8ABbhE+AGmGT7ZRg5cLCPMPFGBCy5w823/y9Oc1NWeiO0uU=
-X-Received: by 2002:a81:b401:0:b0:300:2e86:e7e5 with SMTP id
- h1-20020a81b401000000b003002e86e7e5mr4631478ywi.467.1653430421051; Tue, 24
- May 2022 15:13:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <5099dc39-c6d9-115a-855b-6aa98d17eb4b@collabora.com>
-In-Reply-To: <5099dc39-c6d9-115a-855b-6aa98d17eb4b@collabora.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 24 May 2022 15:13:29 -0700
-Message-ID: <CANn89i+R9RgmD=AQ4vX1Vb_SQAj4c3fi7-ZtQz-inYY4Sq4CMQ@mail.gmail.com>
-Subject: Re: [RFC] EADDRINUSE from bind() on application restart after killing
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
+        with ESMTP id S239127AbiEXWml (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 18:42:41 -0400
+X-Greylist: delayed 203 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 24 May 2022 15:42:38 PDT
+Received: from h3.fbrelay.privateemail.com (h3.fbrelay.privateemail.com [131.153.2.44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25B97546AE;
+        Tue, 24 May 2022 15:42:38 -0700 (PDT)
+Received: from MTA-15-4.privateemail.com (MTA-15-1.privateemail.com [198.54.118.208])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits))
+        (No client certificate requested)
+        by h3.fbrelay.privateemail.com (Postfix) with ESMTPS id 72E0318007EA;
+        Tue, 24 May 2022 18:39:14 -0400 (EDT)
+Received: from mta-15.privateemail.com (localhost [127.0.0.1])
+        by mta-15.privateemail.com (Postfix) with ESMTP id 336CB18001A5;
+        Tue, 24 May 2022 18:39:13 -0400 (EDT)
+Received: from warhead.local (unknown [10.20.151.140])
+        by mta-15.privateemail.com (Postfix) with ESMTPA id 3763F1800182;
+        Tue, 24 May 2022 18:39:04 -0400 (EDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=mebeim.net; s=default;
+        t=1653431953; bh=TnKjhqksMncdEY2RXthuQsk5fek7maCh5+VoEJsnvcw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=YtCpZeQuQNis7kL6O4IrA5AbMMpTqbBrPNgw5Wqq+c144yGtVQJ3tR8CTdy1Mq6/J
+         9hXuIEGDuv5hQizNGDsLqu+FtBUoc1sMtz5VG1+HgahgjEJ0399B3BaH+36Y/nuTzq
+         VGeQqlbjikU9G1WLtXN39e+fEuaFL7Qowm3ZHXT7WTdimBPM3ytJ7eEFdTxkALkqT8
+         FCA9yoUApBm3nA7560/tDilmx1QGFPGqi7bRnse2gRmBA/90ziwazJduLQZcypOzRV
+         oK8pkj/LybWdY4L1ZWWwqBJHdcfBcdWG02XVjzmqsxLmU/zNexvpQWT4titTE5WvTd
+         /7Mcf3y38MfbQ==
+From:   Marco Bonelli <marco@mebeim.net>
+To:     netdev@vger.kernel.org
+Cc:     Marco Bonelli <marco@mebeim.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        "open list:NETWORKING [TCP]" <netdev@vger.kernel.org>,
-        Gabriel Krisman Bertazi <krisman@collabora.com>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
-        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
-        autolearn=ham autolearn_force=no version=3.4.6
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org
+Subject: [PATCH] ethtool: Fix and optimize ethtool_convert_link_mode_to_legacy_u32()
+Date:   Wed, 25 May 2022 00:38:19 +0200
+Message-Id: <20220524223818.259303-1-marco@mebeim.net>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 24, 2022 at 1:19 AM Muhammad Usama Anjum
-<usama.anjum@collabora.com> wrote:
->
-> Hello,
->
-> We have a set of processes which talk with each other through a local
-> TCP socket. If the process(es) are killed (through SIGKILL) and
-> restarted at once, the bind() fails with EADDRINUSE error. This error
-> only appears if application is restarted at once without waiting for 60
-> seconds or more. It seems that there is some timeout of 60 seconds for
-> which the previous TCP connection remains alive waiting to get closed
-> completely. In that duration if we try to connect again, we get the error.
->
-> We are able to avoid this error by adding SO_REUSEADDR attribute to the
-> socket in a hack. But this hack cannot be added to the application
-> process as we don't own it.
->
-> I've looked at the TCP connection states after killing processes in
-> different ways. The TCP connection ends up in 2 different states with
-> timeouts:
->
-> (1) Timeout associated with FIN_WAIT_1 state which is set through
-> `tcp_fin_timeout` in procfs (60 seconds by default)
->
-> (2) Timeout associated with TIME_WAIT state which cannot be changed. It
-> seems like this timeout has come from RFC 1337.
->
-> The timeout in (1) can be changed. Timeout in (2) cannot be changed. It
-> also doesn't seem feasible to change the timeout of TIME_WAIT state as
-> the RFC mentions several hazards. But we are talking about a local TCP
-> connection where maybe those hazards aren't applicable directly? Is it
-> possible to change timeout for TIME_WAIT state for only local
-> connections without any hazards?
->
-> We have tested a hack where we replace timeout of TIME_WAIT state from a
-> value in procfs for local connections. This solves our problem and
-> application starts to work without any modifications to it.
->
-> The question is that what can be the best possible solution here? Any
-> thoughts will be very helpful.
->
+Fix the implementation of ethtool_convert_link_mode_to_legacy_u32(), which
+is supposed to return false if src has bits higher than 31 set. The current
+implementation uses the complement of bitmap_fill(ext, 32) to test high
+bits of src, which is wrong as bitmap_fill() fills _with long granularity_,
+and sizeof(long) can be > 4. No users of this function currently check the
+return value, so the bug was dormant.
 
-One solution would be to extend TCP diag to support killing TIME_WAIT sockets.
-(This has been raised recently anyway)
+Also remove the check for __ETHTOOL_LINK_MODE_MASK_NBITS > 32, as the enum
+ethtool_link_mode_bit_indices contains far beyond 32 values. Using
+find_next_bit() to test the src bitmask works regardless of this anyway.
 
-Then you could zap all sockets, before re-starting your program.
+Signed-off-by: Marco Bonelli <marco@mebeim.net>
+---
+ net/ethtool/ioctl.c | 17 ++---------------
+ 1 file changed, 2 insertions(+), 15 deletions(-)
 
-ss -K -ta src :listen_port
+diff --git a/net/ethtool/ioctl.c b/net/ethtool/ioctl.c
+index 326e14ee05db..7fb3f3fd6f3c 100644
+--- a/net/ethtool/ioctl.c
++++ b/net/ethtool/ioctl.c
+@@ -369,22 +369,9 @@ EXPORT_SYMBOL(ethtool_convert_legacy_u32_to_link_mode);
+ bool ethtool_convert_link_mode_to_legacy_u32(u32 *legacy_u32,
+ 					     const unsigned long *src)
+ {
+-	bool retval = true;
+-
+-	/* TODO: following test will soon always be true */
+-	if (__ETHTOOL_LINK_MODE_MASK_NBITS > 32) {
+-		__ETHTOOL_DECLARE_LINK_MODE_MASK(ext);
+-
+-		linkmode_zero(ext);
+-		bitmap_fill(ext, 32);
+-		bitmap_complement(ext, ext, __ETHTOOL_LINK_MODE_MASK_NBITS);
+-		if (linkmode_intersects(ext, src)) {
+-			/* src mask goes beyond bit 31 */
+-			retval = false;
+-		}
+-	}
+ 	*legacy_u32 = src[0];
+-	return retval;
++	return find_next_bit(src, __ETHTOOL_LINK_MODE_MASK_NBITS, 32) ==
++		__ETHTOOL_LINK_MODE_MASK_NBITS;
+ }
+ EXPORT_SYMBOL(ethtool_convert_link_mode_to_legacy_u32);
+ 
+-- 
+2.30.2
 
-Untested patch:
-
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 9984d23a7f3e1353d2e1fc9053d98c77268c577e..1b7bde889096aa800b2994c64a3a68edf3b62434
-100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -4519,6 +4519,15 @@ int tcp_abort(struct sock *sk, int err)
-                        local_bh_enable();
-                        return 0;
-                }
-+               if (sk->sk_state == TCP_TIME_WAIT) {
-+                       struct inet_timewait_sock *tw = inet_twsk(sk);
-+
-+                       refcount_inc(&tw->tw_refcnt);
-+                       local_bh_disable();
-+                       inet_twsk_deschedule_put(tw);
-+                       local_bh_enable();
-+                       return 0;
-+               }
-                return -EOPNOTSUPP;
-        }
