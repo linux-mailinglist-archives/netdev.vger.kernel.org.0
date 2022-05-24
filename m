@@ -2,126 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 60963532A24
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 14:15:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 112AA532A4A
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 14:22:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237248AbiEXMNr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 08:13:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50270 "EHLO
+        id S237282AbiEXMSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 08:18:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230394AbiEXMNq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 08:13:46 -0400
-Received: from bmailout1.hostsharing.net (bmailout1.hostsharing.net [IPv6:2a01:37:1000::53df:5f64:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31FCA6F493;
-        Tue, 24 May 2022 05:13:45 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout1.hostsharing.net (Postfix) with ESMTPS id 8603D3000CAF5;
-        Tue, 24 May 2022 14:13:41 +0200 (CEST)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 798FC232106; Tue, 24 May 2022 14:13:41 +0200 (CEST)
-Date:   Tue, 24 May 2022 14:13:41 +0200
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        Steve Glendinning <steve.glendinning@shawell.net>,
-        UNGLinuxDriver@microchip.com, Oliver Neukum <oneukum@suse.com>,
-        Andre Edich <andre.edich@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Martyn Welch <martyn.welch@collabora.com>,
-        Gabriel Hojda <ghojda@yo2urs.ro>,
-        Christoph Fritz <chf.fritz@googlemail.com>,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>,
-        Philipp Rosenberger <p.rosenberger@kunbus.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ferry Toth <fntoth@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        'Linux Samsung SOC' <linux-samsung-soc@vger.kernel.org>
-Subject: Re: [PATCH net-next v3 5/7] usbnet: smsc95xx: Forward PHY interrupts
- to PHY driver to avoid polling
-Message-ID: <20220524121341.GA10702@wunner.de>
-References: <cover.1652343655.git.lukas@wunner.de>
- <748ac44eeb97b209f66182f3788d2a49d7bc28fe.1652343655.git.lukas@wunner.de>
- <CGME20220517101846eucas1p2c132f7e7032ed00996e222e9cc6cdf99@eucas1p2.samsung.com>
- <a5315a8a-32c2-962f-f696-de9a26d30091@samsung.com>
- <20220519190841.GA30869@wunner.de>
- <31baa38c-b2c7-10cd-e9cd-eee140f01788@samsung.com>
- <20220523094343.GA7237@wunner.de>
- <Yowv95s7g7Ou5U8J@lunn.ch>
+        with ESMTP id S234334AbiEXMSv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 08:18:51 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81AA09347F;
+        Tue, 24 May 2022 05:18:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1653394730; x=1684930730;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=nPz0elsgpG0Rgm6MSWEv4NaWObr+3SGeXQnA+z0CNRk=;
+  b=PPdftN4IsdVF+rKvI1OjlYp9Py686gtgd98YkqaPhyKUGvMBzmu7G6QN
+   r7zqmEsZemKNxPO8NnDPxJttfL8HPcjV4MsbhnFV4BweEwEX9uoROYsbT
+   yvgal1ec4j20+nI9DGk5ioDM7yNAXbdGxZTjmg5VewCVGWHqgHc/M11rZ
+   oU9kcS2MCOFXyvWsCw7jRatzmEqmQBPCbAtw0BKRubWjV9CicWfNq37q+
+   XtYZdLVJ1hh4s4fkIhjmbDMA/SAjPmmGTkr3nuFTR/AJcX/j5JuC6tXeM
+   5w+P43xmCk0pRKPij7yKQuPjP5FqjhapEFc7U3cFDp0p5RXT/Uda7gQn+
+   Q==;
+X-IronPort-AV: E=Sophos;i="5.91,248,1647327600"; 
+   d="scan'208";a="165083481"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 24 May 2022 05:18:49 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 24 May 2022 05:18:48 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 24 May 2022 05:18:45 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <nicolas.ferre@microchip.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <pabeni@redhat.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH net-next] net: macb: change return type for gem_ptp_set_one_step_sync()
+Date:   Tue, 24 May 2022 15:19:51 +0300
+Message-ID: <20220524121951.1036697-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yowv95s7g7Ou5U8J@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Status: No, score=-2.4 required=5.0 tests=BAYES_00,
-        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 24, 2022 at 03:08:07AM +0200, Andrew Lunn wrote:
-> > @@ -976,6 +977,25 @@ static irqreturn_t phy_interrupt(int irq, void *phy_dat)
-> >  	struct phy_driver *drv = phydev->drv;
-> >  	irqreturn_t ret;
-> >  
-> > +	if (IS_ENABLED(CONFIG_PM_SLEEP) &&
-> > +	    (phydev->mdio.dev.power.is_prepared ||
-> > +	     phydev->mdio.dev.power.is_suspended)) {
-> > +		struct net_device *netdev = phydev->attached_dev;
-> > +
-> > +		if (netdev) {
-> > +			struct device *parent = netdev->dev.parent;
-> > +
-> > +			if (netdev->wol_enabled)
-> > +				pm_system_wakeup();
-> > +			else if (device_may_wakeup(&netdev->dev))
-> > +				pm_wakeup_dev_event(&netdev->dev, 0, true);
-> > +			else if (parent && device_may_wakeup(parent))
-> > +				pm_wakeup_dev_event(parent, 0, true);
-> > +		}
-> > +
-> > +		return IRQ_HANDLED;
-> 
-> I'm not sure you can just throw the interrupt away. There have been
-> issues with WoL, where the WoL signal has been applied to a PMC, not
-> an actual interrupt. Yet the PHY driver assumes it is an
-> interrupt. And in order for WoL to work correctly, it needs the
-> interrupt handler to be called. We said the hardware is broken, WoL
-> cannot work for that setup.
-> 
-> Here you have correct hardware, but you are throwing the interrupt
-> away, which will have the same result. So i think you need to abort
-> the suspend, get the bus working again, and call the interrupt
-> handler. If this is a WoL interrupt you are supposed to be waking up
-> anyway.
+gem_ptp_set_one_step_sync() always returns zero thus change its return
+type to void.
 
-mdio_bus_phy_resume() does trigger the state machine via
-phy_start_machine(), so link state changes *are* detected after wakeup.
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+---
+ drivers/net/ethernet/cadence/macb_ptp.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-But you're saying that's not sufficient and you really want the
-PHY driver's IRQ handler to be called, do I understand that correctly?
+diff --git a/drivers/net/ethernet/cadence/macb_ptp.c b/drivers/net/ethernet/cadence/macb_ptp.c
+index 9559c16078f9..e6cb20aaa76a 100644
+--- a/drivers/net/ethernet/cadence/macb_ptp.c
++++ b/drivers/net/ethernet/cadence/macb_ptp.c
+@@ -434,7 +434,7 @@ int gem_get_hwtst(struct net_device *dev, struct ifreq *rq)
+ 		return 0;
+ }
+ 
+-static int gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
++static void gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
+ {
+ 	u32 reg_val;
+ 
+@@ -444,8 +444,6 @@ static int gem_ptp_set_one_step_sync(struct macb *bp, u8 enable)
+ 		macb_writel(bp, NCR, reg_val | MACB_BIT(OSSMODE));
+ 	else
+ 		macb_writel(bp, NCR, reg_val & ~MACB_BIT(OSSMODE));
+-
+-	return 0;
+ }
+ 
+ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
+@@ -468,8 +466,7 @@ int gem_set_hwtst(struct net_device *dev, struct ifreq *ifr, int cmd)
+ 	case HWTSTAMP_TX_OFF:
+ 		break;
+ 	case HWTSTAMP_TX_ONESTEP_SYNC:
+-		if (gem_ptp_set_one_step_sync(bp, 1) != 0)
+-			return -ERANGE;
++		gem_ptp_set_one_step_sync(bp, 1);
+ 		tx_bd_control = TSTAMP_ALL_FRAMES;
+ 		break;
+ 	case HWTSTAMP_TX_ON:
+-- 
+2.34.1
 
-That could be achieved with a flag indicating that the IRQ handler
-needs to be rerun after resume.  A simple invocation of irq_wake_thread()
-will then achieve that.
-
-It has also occurred to me that not clearing the IRQ may lead to
-an interrupt storm if it's level-triggered.  So I need to disable
-the IRQ and re-enable it after the PHY has been resumed.
-Back to the drawing board...
-
-Thanks,
-
-Lukas
