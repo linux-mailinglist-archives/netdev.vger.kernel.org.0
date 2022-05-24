@@ -2,269 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CE2053247A
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 09:53:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6443153242A
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 09:35:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235491AbiEXHxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 03:53:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58760 "EHLO
+        id S235301AbiEXHfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 03:35:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235441AbiEXHxc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 03:53:32 -0400
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BB098722C
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 00:53:31 -0700 (PDT)
-Received: by mail-pf1-x42a.google.com with SMTP id bo5so15779919pfb.4
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 00:53:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wV0DpKXatddjDbJCjTJofvulVU/99t8+gdCbNaoZbpM=;
-        b=KA1pZeloa4+9p56nYDJMi/agE/umtXJKAy7AbfgNIM0jOuC5MFFdUc3MGY1OD7YwVX
-         EL6/PSLALvaRWZeO0+V+2+gf4CS7DtkspoPvrmlC3tByyaZlbilbP3+DrOZW+XLk4b3c
-         F/495q2T9EV7hGQNvVpfNMYLYeeg7XtGDCxmK3WQzRkZ/r1ejx0LUmNw+iTCXk/JMXvo
-         7zN2FoQYP9NXh2LCAI0HiCSXwxsVyEomVVv7k1VZ/BXs8Thsv0KWTU2rCfZyGALbl81B
-         HP1jA2bTwTg1MoooDPess+wnu6N8qp1+hItLooVZkrNVoXQ75+fcLXcdoNIy9wy3425Y
-         aJuA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wV0DpKXatddjDbJCjTJofvulVU/99t8+gdCbNaoZbpM=;
-        b=AEBzWhb6FyfWklBdzFQU4QYHbXS27gFQdq1THzPJcAsK6UFLddtlyvfYkYo58/5t5q
-         mMgX06f0U/enWSfEAxOwXEXcriFH3cAeXPANeBPaTgCAK4lr4v+DkiMpvoUBAcAjB3Cs
-         lfOYZouSm3UG85ZUedSGfpb6EgIhazLOO0Au6J0gkDoXwMiGt8Y5rZX9yK9CWxCwCZsi
-         NTNtSkooRbxcBXqOXOVp0wWLHbt8PPiEa4TY47OVCLZtamsSLVUQ2hGIy0xipNpZb4Kq
-         N0xH5RjNT1UsKxyY4DiUdUeh6AskbFO1xudaakkdzboZomhZET0G7asztERHaSxdaFNd
-         /AXQ==
-X-Gm-Message-State: AOAM531IY929iKuR1zubVAUPdsFiZIWZNtviPSnI99oa0Emyuv2Gy+lZ
-        8gb+TPaTMdrcHhS4+4G2HOT3Cg==
-X-Google-Smtp-Source: ABdhPJw1lV/AnIKXMFK++/pxRxsIkuT1tsDXuJeG2hGTxeRGAav7QzcnjK9gJbM7LScExUgEBgqQyQ==
-X-Received: by 2002:a63:df0f:0:b0:3db:2d4:ded9 with SMTP id u15-20020a63df0f000000b003db02d4ded9mr23094534pgg.267.1653378810601;
-        Tue, 24 May 2022 00:53:30 -0700 (PDT)
-Received: from C02F52LSML85.bytedance.net ([139.177.225.241])
-        by smtp.gmail.com with ESMTPSA id m3-20020a62a203000000b00518327b7d23sm8682136pff.46.2022.05.24.00.53.24
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 24 May 2022 00:53:30 -0700 (PDT)
-From:   Feng zhou <zhoufeng.zf@bytedance.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, duanxiongchun@bytedance.com,
-        songmuchun@bytedance.com, wangdongdong.6@bytedance.com,
-        cong.wang@bytedance.com, zhouchengming@bytedance.com,
-        zhoufeng.zf@bytedance.com
-Subject: [PATCH v2 2/2] selftest/bpf/benchs: Add bpf_map benchmark
-Date:   Tue, 24 May 2022 15:53:06 +0800
-Message-Id: <20220524075306.32306-3-zhoufeng.zf@bytedance.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20220524075306.32306-1-zhoufeng.zf@bytedance.com>
-References: <20220524075306.32306-1-zhoufeng.zf@bytedance.com>
+        with ESMTP id S235300AbiEXHfl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 03:35:41 -0400
+Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B727A6AA65;
+        Tue, 24 May 2022 00:35:39 -0700 (PDT)
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L6mDv52lwzhYnG;
+        Tue, 24 May 2022 15:34:55 +0800 (CST)
+Received: from container.huawei.com (10.175.104.82) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Tue, 24 May 2022 15:35:36 +0800
+From:   Wang Yufen <wangyufen@huawei.com>
+To:     <ast@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
+        <daniel@iogearbox.net>, <jakub@cloudflare.com>,
+        <lmb@cloudflare.com>, <davem@davemloft.net>, <kafai@fb.com>,
+        <dsahern@kernel.org>, <kuba@kernel.org>, <songliubraving@fb.com>,
+        <yhs@fb.com>, <kpsingh@kernel.org>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        Wang Yufen <wangyufen@huawei.com>
+Subject: [PATCH bpf-next] bpf,sockmap: fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues
+Date:   Tue, 24 May 2022 15:53:11 +0800
+Message-ID: <20220524075311.649153-1-wangyufen@huawei.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.104.82]
+X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Feng Zhou <zhoufeng.zf@bytedance.com>
+During TCP sockmap redirect pressure test, the following warning is triggered:
+WARNING: CPU: 3 PID: 2145 at net/core/stream.c:205 sk_stream_kill_queues+0xbc/0xd0
+CPU: 3 PID: 2145 Comm: iperf Kdump: loaded Tainted: G        W         5.10.0+ #9
+Call Trace:
+ inet_csk_destroy_sock+0x55/0x110
+ inet_csk_listen_stop+0xbb/0x380
+ tcp_close+0x41b/0x480
+ inet_release+0x42/0x80
+ __sock_release+0x3d/0xa0
+ sock_close+0x11/0x20
+ __fput+0x9d/0x240
+ task_work_run+0x62/0x90
+ exit_to_user_mode_prepare+0x110/0x120
+ syscall_exit_to_user_mode+0x27/0x190
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-Add benchmark for hash_map to reproduce the worst case
-that non-stop update when map's free is zero.
+The reason we observed is that:
+When the listener is closing, a connection may have completed the three-way
+handshake but not accepted, and the client has sent some packets. The child
+sks in accept queue release by inet_child_forget()->inet_csk_destroy_sock(),
+but psocks of child sks have not released.
 
-Signed-off-by: Feng Zhou <zhoufeng.zf@bytedance.com>
+To fix, add sock_map_destroy to release psocks.
+
+Signed-off-by: Wang Yufen <wangyufen@huawei.com>
 ---
- tools/testing/selftests/bpf/Makefile          |  4 +-
- tools/testing/selftests/bpf/bench.c           |  2 +
- .../selftests/bpf/benchs/bench_bpf_map.c      | 78 +++++++++++++++++++
- .../selftests/bpf/benchs/run_bench_bpf_map.sh | 10 +++
- .../selftests/bpf/progs/bpf_map_bench.c       | 27 +++++++
- 5 files changed, 120 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/bpf/benchs/bench_bpf_map.c
- create mode 100755 tools/testing/selftests/bpf/benchs/run_bench_bpf_map.sh
- create mode 100644 tools/testing/selftests/bpf/progs/bpf_map_bench.c
+ include/linux/bpf.h   |  1 +
+ include/linux/skmsg.h |  1 +
+ net/core/skmsg.c      |  1 +
+ net/core/sock_map.c   | 23 +++++++++++++++++++++++
+ net/ipv4/tcp_bpf.c    |  1 +
+ 5 files changed, 27 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 3820608faf57..cd2fada21ed7 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -549,6 +549,7 @@ $(OUTPUT)/bench_ringbufs.o: $(OUTPUT)/ringbuf_bench.skel.h \
- $(OUTPUT)/bench_bloom_filter_map.o: $(OUTPUT)/bloom_filter_bench.skel.h
- $(OUTPUT)/bench_bpf_loop.o: $(OUTPUT)/bpf_loop_bench.skel.h
- $(OUTPUT)/bench_strncmp.o: $(OUTPUT)/strncmp_bench.skel.h
-+$(OUTPUT)/bench_bpf_map.o: $(OUTPUT)/bpf_map_bench.skel.h
- $(OUTPUT)/bench.o: bench.h testing_helpers.h $(BPFOBJ)
- $(OUTPUT)/bench: LDLIBS += -lm
- $(OUTPUT)/bench: $(OUTPUT)/bench.o \
-@@ -560,7 +561,8 @@ $(OUTPUT)/bench: $(OUTPUT)/bench.o \
- 		 $(OUTPUT)/bench_ringbufs.o \
- 		 $(OUTPUT)/bench_bloom_filter_map.o \
- 		 $(OUTPUT)/bench_bpf_loop.o \
--		 $(OUTPUT)/bench_strncmp.o
-+		 $(OUTPUT)/bench_strncmp.o \
-+		 $(OUTPUT)/bench_bpf_map.o
- 	$(call msg,BINARY,,$@)
- 	$(Q)$(CC) $(CFLAGS) $(LDFLAGS) $(filter %.a %.o,$^) $(LDLIBS) -o $@
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index cc4d5e394031..c4de82d5e72c 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -2092,6 +2092,7 @@ int sock_map_bpf_prog_query(const union bpf_attr *attr,
+ 			    union bpf_attr __user *uattr);
  
-diff --git a/tools/testing/selftests/bpf/bench.c b/tools/testing/selftests/bpf/bench.c
-index f973320e6dbf..32644c4adc84 100644
---- a/tools/testing/selftests/bpf/bench.c
-+++ b/tools/testing/selftests/bpf/bench.c
-@@ -397,6 +397,7 @@ extern const struct bench bench_hashmap_with_bloom;
- extern const struct bench bench_bpf_loop;
- extern const struct bench bench_strncmp_no_helper;
- extern const struct bench bench_strncmp_helper;
-+extern const struct bench bench_bpf_map;
+ void sock_map_unhash(struct sock *sk);
++void sock_map_destroy(struct sock *sk);
+ void sock_map_close(struct sock *sk, long timeout);
+ #else
+ static inline int bpf_prog_offload_init(struct bpf_prog *prog,
+diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
+index c5a2d6f50f25..153b6dec9b6a 100644
+--- a/include/linux/skmsg.h
++++ b/include/linux/skmsg.h
+@@ -95,6 +95,7 @@ struct sk_psock {
+ 	spinlock_t			link_lock;
+ 	refcount_t			refcnt;
+ 	void (*saved_unhash)(struct sock *sk);
++	void (*saved_destroy)(struct sock *sk);
+ 	void (*saved_close)(struct sock *sk, long timeout);
+ 	void (*saved_write_space)(struct sock *sk);
+ 	void (*saved_data_ready)(struct sock *sk);
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 22b983ade0e7..7e03f96e441b 100644
+--- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -715,6 +715,7 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
+ 	psock->eval = __SK_NONE;
+ 	psock->sk_proto = prot;
+ 	psock->saved_unhash = prot->unhash;
++	psock->saved_destroy = prot->destroy;
+ 	psock->saved_close = prot->close;
+ 	psock->saved_write_space = sk->sk_write_space;
  
- static const struct bench *benchs[] = {
- 	&bench_count_global,
-@@ -431,6 +432,7 @@ static const struct bench *benchs[] = {
- 	&bench_bpf_loop,
- 	&bench_strncmp_no_helper,
- 	&bench_strncmp_helper,
-+	&bench_bpf_map,
- };
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index 81d4b4756a02..9f08ccfaf6da 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -1561,6 +1561,29 @@ void sock_map_unhash(struct sock *sk)
+ }
+ EXPORT_SYMBOL_GPL(sock_map_unhash);
  
- static void setup_benchmark()
-diff --git a/tools/testing/selftests/bpf/benchs/bench_bpf_map.c b/tools/testing/selftests/bpf/benchs/bench_bpf_map.c
-new file mode 100644
-index 000000000000..4db08ed23f1f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/benchs/bench_bpf_map.c
-@@ -0,0 +1,78 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Bytedadnce */
-+
-+#include <argp.h>
-+#include "bench.h"
-+#include "bpf_map_bench.skel.h"
-+
-+/* BPF triggering benchmarks */
-+static struct ctx {
-+	struct bpf_map_bench *skel;
-+	struct counter hits;
-+} ctx;
-+
-+static void validate(void)
++void sock_map_destroy(struct sock *sk)
 +{
-+	if (env.consumer_cnt != 1) {
-+		fprintf(stderr, "benchmark doesn't support multi-consumer!\n");
-+		exit(1);
-+	}
-+}
++	void (*saved_destroy)(struct sock *sk);
++	struct sk_psock *psock;
 +
-+static void *producer(void *input)
-+{
-+	while (true) {
-+		/* trigger the bpf program */
-+		syscall(__NR_getpgid);
-+		atomic_inc(&ctx.hits.value);
++	rcu_read_lock();
++	psock = sk_psock_get(sk);
++	if (unlikely(!psock)) {
++		rcu_read_unlock();
++		if (sk->sk_prot->destroy)
++			sk->sk_prot->destroy(sk);
++		return;
 +	}
 +
-+	return NULL;
++	saved_destroy = psock->saved_destroy;
++	sock_map_remove_links(sk, psock);
++	rcu_read_unlock();
++	sk_psock_stop(psock, true);
++	sk_psock_put(sk, psock);
++	saved_destroy(sk);
 +}
++EXPORT_SYMBOL_GPL(sock_map_destroy);
 +
-+static void *consumer(void *input)
-+{
-+	return NULL;
-+}
-+
-+static void measure(struct bench_res *res)
-+{
-+	res->hits = atomic_swap(&ctx.hits.value, 0);
-+}
-+
-+static void setup(void)
-+{
-+	struct bpf_link *link;
-+	int map_fd, i, max_entries;
-+
-+	setup_libbpf();
-+
-+	ctx.skel = bpf_map_bench__open_and_load();
-+	if (!ctx.skel) {
-+		fprintf(stderr, "failed to open skeleton\n");
-+		exit(1);
-+	}
-+
-+	link = bpf_program__attach(ctx.skel->progs.benchmark);
-+	if (!link) {
-+		fprintf(stderr, "failed to attach program!\n");
-+		exit(1);
-+	}
-+
-+	//fill hash_map
-+	map_fd = bpf_map__fd(ctx.skel->maps.hash_map_bench);
-+	max_entries = bpf_map__max_entries(ctx.skel->maps.hash_map_bench);
-+	for (i = 0; i < max_entries; i++)
-+		bpf_map_update_elem(map_fd, &i, &i, BPF_ANY);
-+}
-+
-+const struct bench bench_bpf_map = {
-+	.name = "bpf-map",
-+	.validate = validate,
-+	.setup = setup,
-+	.producer_thread = producer,
-+	.consumer_thread = consumer,
-+	.measure = measure,
-+	.report_progress = ops_report_progress,
-+	.report_final = ops_report_final,
-+};
-diff --git a/tools/testing/selftests/bpf/benchs/run_bench_bpf_map.sh b/tools/testing/selftests/bpf/benchs/run_bench_bpf_map.sh
-new file mode 100755
-index 000000000000..d7cc969e4f85
---- /dev/null
-+++ b/tools/testing/selftests/bpf/benchs/run_bench_bpf_map.sh
-@@ -0,0 +1,10 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+
-+source ./benchs/run_common.sh
-+
-+set -eufo pipefail
-+
-+nr_threads=`expr $(cat /proc/cpuinfo | grep "processor"| wc -l) - 1`
-+summary=$($RUN_BENCH -p $nr_threads bpf-map)
-+printf "$summary"
-diff --git a/tools/testing/selftests/bpf/progs/bpf_map_bench.c b/tools/testing/selftests/bpf/progs/bpf_map_bench.c
-new file mode 100644
-index 000000000000..655366e6e0f4
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/bpf_map_bench.c
-@@ -0,0 +1,27 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright (c) 2022 Bytedance */
-+
-+#include "vmlinux.h"
-+#include <bpf/bpf_helpers.h>
-+#include "bpf_misc.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+#define MAX_ENTRIES 1000
-+
-+struct {
-+	__uint(type, BPF_MAP_TYPE_HASH);
-+	__type(key, u32);
-+	__type(value, u64);
-+	__uint(max_entries, MAX_ENTRIES);
-+} hash_map_bench SEC(".maps");
-+
-+SEC("fentry/" SYS_PREFIX "sys_getpgid")
-+int benchmark(void *ctx)
-+{
-+	u32 key = bpf_get_prandom_u32();
-+	u64 init_val = 1;
-+
-+	bpf_map_update_elem(&hash_map_bench, &key, &init_val, BPF_ANY);
-+	return 0;
-+}
+ void sock_map_close(struct sock *sk, long timeout)
+ {
+ 	void (*saved_close)(struct sock *sk, long timeout);
+diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
+index be3947e70fec..38550bb1b90b 100644
+--- a/net/ipv4/tcp_bpf.c
++++ b/net/ipv4/tcp_bpf.c
+@@ -540,6 +540,7 @@ static void tcp_bpf_rebuild_protos(struct proto prot[TCP_BPF_NUM_CFGS],
+ 				   struct proto *base)
+ {
+ 	prot[TCP_BPF_BASE]			= *base;
++	prot[TCP_BPF_BASE].destroy		= sock_map_destroy;
+ 	prot[TCP_BPF_BASE].close		= sock_map_close;
+ 	prot[TCP_BPF_BASE].recvmsg		= tcp_bpf_recvmsg;
+ 	prot[TCP_BPF_BASE].sock_is_readable	= sk_msg_is_readable;
 -- 
-2.20.1
+2.25.1
 
