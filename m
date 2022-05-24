@@ -2,84 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D5C053275A
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 12:20:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8502053278F
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 12:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235901AbiEXKTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 06:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39134 "EHLO
+        id S236125AbiEXK2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 06:28:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235884AbiEXKTJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 06:19:09 -0400
+        with ESMTP id S236099AbiEXK2E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 06:28:04 -0400
 Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id A94C88A331
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 03:19:04 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3018A51E6E
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 03:28:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653387543;
+        s=mimecast20190719; t=1653388082;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=5hjdGDxm/5eb7UZfehykEkfZZM041fRa5GaKQ9lwQHI=;
-        b=dFZou+p8vkJiHBbQ9iYfjSO1qVTRU/ayTzCYF3x3n0eWy5u8Pc+xvjFgqjKUbIqJmwDCru
-        dwfhYFx7I81jY1vqRLm34aYZodbB0KFU2v8mMvu5OAAojeX3V6+qucoa8bIE8JZO/gfKlV
-        cIUO82fHB3JU8cQFz9tZ3H+Yf9WTanc=
-Received: from mimecast-mx02.redhat.com (mimecast-mx02.redhat.com
- [66.187.233.88]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Ra5cwPB2RKeJFrF9zZyO4Umr/f1WXajqESiGHwwfSas=;
+        b=E+hp6TnJjhUaQ6gELDISYMDlKL9Wj+spdVpYTri/cErtVrw7N7ZKhzTRYRbuuvsMDCb7tN
+        6MKfWd5f6tegduUFlU536xHuJJdyKveMqgAZdtuFvUKUduRmSOE5G/ldukpxCHmGpUXaK9
+        tPqKsMpUu3BNbnpSvIryuXjoQbImmpE=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-577-ntR76qRiOoW46ArNNEAfwQ-1; Tue, 24 May 2022 06:19:00 -0400
-X-MC-Unique: ntR76qRiOoW46ArNNEAfwQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.rdu2.redhat.com [10.11.54.1])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx02.redhat.com (Postfix) with ESMTPS id 78A678015BA;
-        Tue, 24 May 2022 10:19:00 +0000 (UTC)
-Received: from localhost (ovpn-13-156.pek2.redhat.com [10.72.13.156])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 2727240E7F0C;
-        Tue, 24 May 2022 10:18:59 +0000 (UTC)
-Date:   Tue, 24 May 2022 18:18:55 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>,
-        "michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Dave Young <dyoung@redhat.com>, d.hatayama@jp.fujitsu.com,
-        akpm@linux-foundation.org, kexec@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
-        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
-        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
-        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
-        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
-        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
-        xen-devel@lists.xenproject.org, x86@kernel.org,
-        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
-        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
-        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
-        corbet@lwn.net, dave.hansen@linux.intel.com, feng.tang@intel.com,
-        gregkh@linuxfoundation.org, hidehiro.kawai.ez@hitachi.com,
-        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
-        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
-        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
-        senozhatsky@chromium.org, stern@rowland.harvard.edu,
-        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
-        will@kernel.org
-Subject: Re: [PATCH 24/30] panic: Refactor the panic path
-Message-ID: <YoyxD3WApHpa/N1n@MiWiFi-R3L-srv>
-References: <20220427224924.592546-1-gpiccoli@igalia.com>
- <20220427224924.592546-25-gpiccoli@igalia.com>
- <Yn0TnsWVxCcdB2yO@alley>
- <d313eec2-96b6-04e3-35cd-981f103d010e@igalia.com>
- <20220519234502.GA194232@MiWiFi-R3L-srv>
- <ded31ec0-076b-2c5b-0fe6-0c274954821f@igalia.com>
- <YoyQyHHfhIIXSX0U@alley>
+ us-mta-41-P6UD_XgGM1uSL-gBaIWQAQ-1; Tue, 24 May 2022 06:28:01 -0400
+X-MC-Unique: P6UD_XgGM1uSL-gBaIWQAQ-1
+Received: by mail-qk1-f197.google.com with SMTP id f20-20020a05620a12f400b006a36317a58aso6414745qkl.6
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 03:28:00 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=Ra5cwPB2RKeJFrF9zZyO4Umr/f1WXajqESiGHwwfSas=;
+        b=GKkCzuP6+n32jueA+36j0HP4vfhg+sYoban2OjVnIk6jGc24h8L5ZrZHrvef8/vhNM
+         o43WkvY4SzHi8FpO5XkGsfsdpxMFs+YVSEqyvKccfdt4lZRTGDs7uhYBO/TF0mu/GPj1
+         NjPta736rKKec+HkOdtPIqrWtUSccqEI76th/Y+oxepnbxT7tVXOJ9V9Fl3fqsU7S5+L
+         h3pTNDzLW0eI74OWrDpACaErj5AfWx+hbc8L5hO+s9YmZ5ImPQBtletU0ulBPY/iuZPc
+         0Kdte6q/mOrBipOfYnKdkNemH8rZVmxxh7HiAoPI/c5WnItfXM1RiJ9Y4L6joDE1Ci9K
+         3jeQ==
+X-Gm-Message-State: AOAM532HQIF+J3xnn3NHacrVFRyBM493ujm5roumzoYD8u3RatnIx2IY
+        Fh4JiXcQ769aPi0PGQFW/aF8YH2I3A43YnT/A1c1EYCHs4uJzpeloyNnNVcL9RaEVBW1WbQ3X+D
+        qYbi/lmG1mhDm1OfF
+X-Received: by 2002:ac8:5e0c:0:b0:2f9:145a:ddd with SMTP id h12-20020ac85e0c000000b002f9145a0dddmr17667854qtx.34.1653388075097;
+        Tue, 24 May 2022 03:27:55 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwjCuHGv/yfJfLImRBpikrRRa2fkL3tHIrfeeClYVW+ZxWFqFtc4R5CmB+NvdYjpsvQcds5BA==
+X-Received: by 2002:ac8:5e0c:0:b0:2f9:145a:ddd with SMTP id h12-20020ac85e0c000000b002f9145a0dddmr17667843qtx.34.1653388074886;
+        Tue, 24 May 2022 03:27:54 -0700 (PDT)
+Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
+        by smtp.gmail.com with ESMTPSA id l26-20020ac848da000000b002f39b99f66fsm5983450qtr.9.2022.05.24.03.27.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 May 2022 03:27:54 -0700 (PDT)
+Message-ID: <195ae1109ca06c690f3fba7475e789180a328654.camel@redhat.com>
+Subject: Re: [PATCH V3] octeon_ep: Remove unnecessary cast
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Haowen Bai <baihaowen@meizu.com>,
+        Veerasenareddy Burru <vburru@marvell.com>,
+        Abhijit Ayarekar <aayarekar@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 24 May 2022 12:27:51 +0200
+In-Reply-To: <1653374469-30555-1-git-send-email-baihaowen@meizu.com>
+References: <1653374469-30555-1-git-send-email-baihaowen@meizu.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YoyQyHHfhIIXSX0U@alley>
-X-Scanned-By: MIMEDefang 2.84 on 10.11.54.1
+Content-Transfer-Encoding: 7bit
 X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
         DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
         SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
@@ -90,117 +81,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05/24/22 at 10:01am, Petr Mladek wrote:
-> On Fri 2022-05-20 08:23:33, Guilherme G. Piccoli wrote:
-> > On 19/05/2022 20:45, Baoquan He wrote:
-> > > [...]
-> > >> I really appreciate the summary skill you have, to convert complex
-> > >> problems in very clear and concise ideas. Thanks for that, very useful!
-> > >> I agree with what was summarized above.
-> > > 
-> > > I want to say the similar words to Petr's reviewing comment when I went
-> > > through the patches and traced each reviewing sub-thread to try to
-> > > catch up. Petr has reivewed this series so carefully and given many
-> > > comments I want to ack immediately.
-> > > 
-> > > I agree with most of the suggestions from Petr to this patch, except of
-> > > one tiny concern, please see below inline comment.
-> > 
-> > Hi Baoquan, thanks! I'm glad you're also reviewing that =)
-> > 
-> > 
-> > > [...]
-> > > 
-> > > I like the proposed skeleton of panic() and code style suggested by
-> > > Petr very much. About panic_prefer_crash_dump which might need be added,
-> > > I hope it has a default value true. This makes crash_dump execute at
-> > > first by default just as before, unless people specify
-> > > panic_prefer_crash_dump=0|n|off to disable it. Otherwise we need add
-> > > panic_prefer_crash_dump=1 in kernel and in our distros to enable kdump,
-> > > this is inconsistent with the old behaviour.
-> > 
-> > I'd like to understand better why the crash_kexec() must always be the
-> > first thing in your use case. If we keep that behavior, we'll see all
-> > sorts of workarounds - see the last patches of this series, Hyper-V and
-> > PowerPC folks hardcoded "crash_kexec_post_notifiers" in order to force
-> > execution of their relevant notifiers (like the vmbus disconnect,
-> > specially in arm64 that has no custom machine_crash_shutdown, or the
-> > fadump case in ppc). This led to more risk in kdump.
-> > 
-> > The thing is: with the notifiers' split, we tried to keep only the most
-> > relevant/necessary stuff in this first list, things that ultimately
-> > should improve kdump reliability or if not, at least not break it. My
-> > feeling is that, with this series, we should change the idea/concept
-> > that kdump must run first nevertheless, not matter what. We're here
-> > trying to accommodate the antagonistic goals of hypervisors that need
-> > some clean-up (even for kdump to work) VS. kdump users, that wish a
-> > "pristine" system reboot ASAP after the crash.
+Hello,
+
+On Tue, 2022-05-24 at 14:41 +0800, Haowen Bai wrote:
+> ./drivers/net/ethernet/marvell/octeon_ep/octep_rx.c:161:18-40: WARNING:
+> casting value returned by memory allocation function to (struct
+> octep_rx_buffer *) is useless.
 > 
-> Good question. I wonder if Baoquan knows about problems caused by the
-> particular notifiers that will end up in the hypervisor list. Note
-> that there will be some shuffles and the list will be slightly
-> different in V2.
-
-Yes, I knew some of them. Please check my response to Guilherme.
-
-We have bug to track the issue on Hyper-V in which failure happened
-during panic notifiers running, haven't come to kdump. Seems both of
-us sent mail replying to Guilherme at the same time. 
-
+> and we do more optimization:
+> 1. remove casting value
+> 2. use obvious size
+> 3. use kvcalloc instead of vzalloc
 > 
-> Anyway, I see four possible solutions:
-> 
->   1. The most conservative approach is to keep the current behavior
->      and call kdump first by default.
-> 
->   2. A medium conservative approach to change the default default
->      behavior and call hypervisor and eventually the info notifiers
->      before kdump. There still would be the possibility to call kdump
->      first by the command line parameter.
-> 
->   3. Remove the possibility to call kdump first completely. It would
->      assume that all the notifiers in the info list are super safe
->      or that they make kdump actually more safe.
-> 
->   4. Create one more notifier list for operations that always should
->      be called before crash_dump.
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 
-I would vote for 1 or 4 without any hesitation, and prefer 4. I ever
-suggest the variant of solution 4 in v1 reviewing. That's taking those
-notifiers out of list and enforcing to execute them before kdump. E.g
-the one on HyperV to terminate VMbus connection. Maybe solution 4 is
-better to provide a determinate way for people to add necessary code
-at the earliest part.
+This looks like net-next material and net-next is closed for the next 2
+weeks:
 
-> 
-> Regarding the extra notifier list (4th solution). It is not clear to
-> me whether it would be always called even before hypervisor list or
-> when kdump is not enabled. We must not over-engineer it.
+http://vger.kernel.org/~davem/net-next.html
 
-One thing I would like to notice is, no matter how perfect we split the
-lists this time, we can't gurantee people will add notifiers reasonablly
-in the future. And people from different sub-component may not do
-sufficient investigation and add them to fulfil their local purpose.
+Please repost when it re-opens.
 
-The current panic notifers list is the best example. Hyper-V actually
-wants to run some necessary code before kdump, but not all of them, they
-just add it, ignoring the original purpose of
-crash_kexec_post_notifiers. I guess they do like this just because it's
-easy to do, no need to bother changing code in generic place.
+Thanks,
 
-Solution 4 can make this no doubt, that's why I like it better.
-
-> 
-> 2nd proposal looks like a good compromise. But maybe we could do
-> this change few releases later. The notifiers split is a big
-> change on its own.
-
-As I replied to Guilherme, solution 2 will cause regression if not
-calling kdump firstly. Solution 3 leaves people space to make mistake,
-they could add nontifier into wrong list.
-
-I would like to note again that the panic notifiers are optional to run,
-while kdump is expectd once loaded, from the original purpose. I guess
-people I know will still have this thought, e.g Hatayama, Masa, they are
-truly often use panic notifiers like this on their company's system.
+Paolo
 
