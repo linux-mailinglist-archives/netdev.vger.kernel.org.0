@@ -2,181 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 166F4532B33
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 15:25:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9F07532B5F
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 15:34:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237765AbiEXNYn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 09:24:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
+        id S237876AbiEXNd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 09:33:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235573AbiEXNYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 09:24:41 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 208281E3D9
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 06:24:40 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id f9so35407069ejc.0
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 06:24:40 -0700 (PDT)
+        with ESMTP id S237872AbiEXNdz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 09:33:55 -0400
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3EC53939B5
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 06:33:54 -0700 (PDT)
+Received: by mail-qk1-x731.google.com with SMTP id b200so6037507qkc.7
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 06:33:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=sqduQAfA787X6rig9SqlmkHyKjTWXRmJeOc/9yUWmmQ=;
-        b=P43biSn1PTFuNq2+e9eJQ+Pe6clET2SEKKLSii1uor8YhCbWfsF8XpoJkyUr1paPfT
-         gfWiet+O0CPT1MOJDDSwaqdBeRMEgNhDSFSG9icGX/D7qA7V2Dv05G1GrF+AezcIf8QI
-         kUsu8job/gMgJHWkaBUe5HuDk1O5dnr0jXcnaVEPiP20kUdfoPrXVmM5HJpJO1zEklMW
-         XIFSxHJ4rnSbwLi4fiKlkvuBklTwEX3X2Wkz7Y/sjURnCSfRto7+f0pqe33v4lgIKr2u
-         IoRLGH0h9OI9F7UFCJVGHfP/2NNAbkhm1/ceC6CT5oPpGZsRIqjzt5LwGDUU5tP1FCQ+
-         RwXQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=7p2U0ToaQGK8ydTaA8am+2nfDgACRmmoUvxmzOpA12U=;
+        b=oLZdKW61LnQtETJC2I7xGHN7izyYt40WB0UUMDSq57yoHw9xsPhU3LqMld8FjqxuyJ
+         ah7VSZH9XHPdSWTJ3SuynV+h95M3rlw7P4TviVUS4xxhSz7t40bX/5ohYsXP9NI4eMr4
+         eihJIdjwSOyDL2p42O8bD1S0BZnxelmy3RGNuUPL+7fPixrJqXCsUnDWfWDA40H5M7rc
+         lT/kXfKoZbidj/h+bUyyKaaO89xche6e34cEJ8ZKj2vhjkz37edFeRiJsmXTC6IPhaNL
+         qubsfy7QbIJeDFoOhOkPppAoYSOUAKUHxlusenSYJjVlIjOqMtgJ+LPQ4neFg1l2zNzJ
+         T4rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=sqduQAfA787X6rig9SqlmkHyKjTWXRmJeOc/9yUWmmQ=;
-        b=UsaW+kW2R75eg1uWK9FMddKq1o2m30ZvfHdAmQStBvEjMPh3Hx9r5ggK5PBch3z3yz
-         SrM6iTtawWTDTL13KbpqyNycoYH0AfeI7X4iXbqu6Ri3SEzMjysNg4FZUsmufPIgoK1Z
-         43r+45fxYFIOs8YeBlDlV8Twt4A1GMYaWrQfSdP6sIr4FtRIQmnXk98dJv2PUZZNtLVc
-         PTtkXM/gFUWniKdYvwWNS911kJ3DIPW176wDF1O40YmZOaELx4JwNp5L5vhPc4izeKAQ
-         Xq8v4fnueVCteGPp0I7WYp0UDuhthYcOP2g7eXLxBeRJVO849BznS2sEvv7eJnxGVzfH
-         hdtA==
-X-Gm-Message-State: AOAM532S9dh7JY+3UFdDJWShPqtNMxPO725TG5CMyVH1ANYrht889946
-        3LSfdo0OEuJkCoh8Jq/EL7s=
-X-Google-Smtp-Source: ABdhPJywHsivIMbFUan/Ocblu3tfcGnGzenGl9bLLakvzp1Vfd8kmuCwmtuj58cXICeG2XmORouycw==
-X-Received: by 2002:a17:907:2cc5:b0:6f9:1fc:ebef with SMTP id hg5-20020a1709072cc500b006f901fcebefmr23743001ejc.121.1653398678450;
-        Tue, 24 May 2022 06:24:38 -0700 (PDT)
-Received: from skbuf ([188.25.255.186])
-        by smtp.gmail.com with ESMTPSA id l8-20020a1709060e0800b006f3ef214e62sm1934276eji.200.2022.05.24.06.24.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 06:24:37 -0700 (PDT)
-Date:   Tue, 24 May 2022 16:24:35 +0300
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [RFC PATCH net-next 00/12] DSA changes for multiple CPU ports
- (part 3)
-Message-ID: <20220524132435.vj35shnzbrtw3ikz@skbuf>
-References: <20220523104256.3556016-1-olteanv@gmail.com>
- <628cc94d.1c69fb81.15b0d.422d@mx.google.com>
- <20220524122905.4y5kbpdjwvb6ee4p@skbuf>
- <628cd1e0.1c69fb81.d28b0.df81@mx.google.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=7p2U0ToaQGK8ydTaA8am+2nfDgACRmmoUvxmzOpA12U=;
+        b=A/McsDe4jB1dcJ/adSZHFCFc5ruwP7SQU78kmRhInLH1aQk9Ri/plnv3YvDPM5917L
+         FrL4SAm2CO/rLwN+g4NJpPzuCtB1MlE6WLvB12aZMszP6r6Nnbasb6O3VjisZi4KOHKs
+         PJdG+cIWmepfk/zY+hkK9dr4lKnFRYo93Jnt7KJbj9fq7MqRtPTKJ4t3+HNuNK1hVZxr
+         R0MZ50zF8KdoZ/hGLO2C3/UDGO1oZNf8xoJsQ21G3D83YUeD2yO86EnGQRcmDc6NG/Am
+         cRmjhy13ZVR7qVzPidQGZ6Mtd2B5GTtnRR/bsAIzCG9I8Pmmf5/QNfOTab5TDPVfOCHw
+         6LLw==
+X-Gm-Message-State: AOAM533vYTtvyn0m82SKUC5ou3EdSRFjF31aVCQMPi5E2cZtzsI7Ejpz
+        cy4yww0wON+Lps+ncoH3qbfuqWwj88Q=
+X-Google-Smtp-Source: ABdhPJyY1zTfE5lroqSChxStE8CjvEWTvJRG6/AfluLs3EIYBKJ95bLnvxCh69w0tHpUY7U5GbsZWw==
+X-Received: by 2002:a37:d243:0:b0:6a3:2a87:e2e5 with SMTP id f64-20020a37d243000000b006a32a87e2e5mr17385778qkj.97.1653399233306;
+        Tue, 24 May 2022 06:33:53 -0700 (PDT)
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com. [209.85.128.182])
+        by smtp.gmail.com with ESMTPSA id o18-20020ae9f512000000b006a38debe62csm3508383qkg.89.2022.05.24.06.33.51
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 May 2022 06:33:52 -0700 (PDT)
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-30007f11f88so50181437b3.7
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 06:33:51 -0700 (PDT)
+X-Received: by 2002:a81:134f:0:b0:2ff:59d9:aa98 with SMTP id
+ 76-20020a81134f000000b002ff59d9aa98mr27987057ywt.348.1653399231392; Tue, 24
+ May 2022 06:33:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <628cd1e0.1c69fb81.d28b0.df81@mx.google.com>
+References: <20220520063835.866445-1-luyun_611@163.com> <CA+FuTSdoZeAncRVAYrb66Kp6bEueWrgyy7A8qP0kmr9pxfHMoA@mail.gmail.com>
+ <3f494c7a-6648-a696-b215-f597e680c5d9@163.com> <CA+FuTSdHCszjFtkZj37KE-1rfSfzYEd5oXLyKS6Kz9pdi05ReA@mail.gmail.com>
+ <754c0cd5-2289-3887-e7d2-71ff87e59afd@163.com>
+In-Reply-To: <754c0cd5-2289-3887-e7d2-71ff87e59afd@163.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 24 May 2022 09:33:15 -0400
+X-Gmail-Original-Message-ID: <CA+FuTScW3TekvnLnm=R9JvibOfPXRBP0O_3AuCmo4z=d3fP3fA@mail.gmail.com>
+Message-ID: <CA+FuTScW3TekvnLnm=R9JvibOfPXRBP0O_3AuCmo4z=d3fP3fA@mail.gmail.com>
+Subject: Re: [PATCH] selftests/net: enable lo.accept_local in psock_snd test
+To:     Yun Lu <luyun_611@163.com>
+Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        davem@davemloft.net, edumazet@google.com, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
         DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
         RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 24, 2022 at 02:38:53PM +0200, Ansuel Smith wrote:
-> On Tue, May 24, 2022 at 12:29:06PM +0000, Vladimir Oltean wrote:
-> > On Tue, May 24, 2022 at 02:02:19PM +0200, Ansuel Smith wrote:
-> > > Probably offtopic but I wonder if the use of a LAG as master can
-> > > cause some problem with configuration where the switch use a mgmt port
-> > > to send settings. Wonder if with this change we will have to introduce
-> > > an additional value to declare a management port that will be used since
-> > > master can now be set to various values. Or just the driver will have to
-> > > handle this with its priv struct (think this is the correct solution)
-> > > 
-> > > I still have to find time to test this with qca8k.
-> > 
-> > Not offtopic, this is a good point. dsa_tree_master_admin_state_change()
-> > and dsa_tree_master_oper_state_change() set various flags in cpu_dp =
-> > master->dsa_ptr. It's unclear if the cpu_dp we assign to a LAG should
-> > track the admin/oper state of the LAG itself or of the physical port.
-> > Especially since the lag->dsa_ptr is the same as one of the master->dsa_ptr.
-> > It's clear that the same structure can't track both states. I'm thinking
-> > we should suppress the NETDEV_CHANGE and NETDEV_UP monitoring from slave.c
-> > on LAG DSA masters, and track only the physical ones. In any case,
-> > management traffic does not really benefit from being sent/received over
-> > a LAG, and I'm thinking we should just use the physical port.
-> > Your qca8k_master_change() function explicitly only checks for CPU port
-> > 0, which in retrospect was a very wise decision in terms of forward
-> > compatibility with device trees with multiple CPU ports.
-> 
-> Switch can also have some hw limitation where mgmt packet are accepted
-> only by one specific port and I assume using a LAG with load balance can
-> cause some problem (packet not ack).
-> 
-> Yes I think the oper_state_change would be problematic with a LAG
-> configuration since the driver should use the pysical port anyway (to
-> prevent any hw limitation/issue) and track only that.
-> 
-> But I think we can put that on hold and think of a correct solution when
-> we have a solid base with all of this implemented. Considering qca8k
-> is the only user of that feature and things will have to change anyway
-> when qca8k will get support for multiple cpu port, we can address that
-> later. (in theory everything should work correctly if qca8k doesn't
-> declare multiple cpu port or a LAG is not confugred) 
+On Tue, May 24, 2022 at 6:04 AM Yun Lu <luyun_611@163.com> wrote:
+>
+> On 2022/5/23 =E4=B8=8B=E5=8D=889:32, Willem de Bruijn wrote:
+>
+> > On Mon, May 23, 2022 at 5:25 AM Yun Lu <luyun_611@163.com> wrote:
+> >> On 2022/5/20 =E4=B8=8B=E5=8D=889:52, Willem de Bruijn wrote:
+> >>
+> >>> On Fri, May 20, 2022 at 2:40 AM Yun Lu <luyun_611@163.com> wrote:
+> >>>> From: luyun <luyun@kylinos.cn>
+> >>>>
+> >>>> The psock_snd test sends and recievs packets over loopback, but the
+> >>>> parameter lo.accept_local is disabled by default, this test will
+> >>>> fail with Resource temporarily unavailable:
+> >>>> sudo ./psock_snd.sh
+> >>>> dgram
+> >>>> tx: 128
+> >>>> rx: 142
+> >>>> ./psock_snd: recv: Resource temporarily unavailable
+> >>> I cannot reproduce this failure.
+> >>>
+> >>> Passes on a machine with accept_local 0.
+> >>>
+> >>> accept_local is defined as
+> >>>
+> >>> "
+> >>> accept_local - BOOLEAN
+> >>>       Accept packets with local source addresses. In combination
+> >>>       with suitable routing, this can be used to direct packets
+> >>>       between two local interfaces over the wire and have them
+> >>>       accepted properly.
+> >>> "
+> >> I did this test on my system(Centos 8.3 X86_64):
+> >>
+> >> [root@localhost net]# sysctl net.ipv4.conf.lo.accept_local
+> >> net.ipv4.conf.lo.accept_local =3D 0
+> >> [root@localhost net]# ./psock_snd -d
+> >> tx: 128
+> >> rx: 142
+> >> ./psock_snd: recv: Resource temporarily unavailable
+> >> [root@localhost net]# sysctl -w net.ipv4.conf.lo.accept_local=3D1
+> >> net.ipv4.conf.lo.accept_local =3D 1
+> >> [root@localhost net]# ./psock_snd -d
+> >> tx: 128
+> >> rx: 142
+> >> rx: 100
+> >> OK
+> >>
+> >> This failure does seem to be related to accept_local.
+> >>
+> >> Also, it's reported on Ubuntu:
+> >> https://bugs.launchpad.net/ubuntu-kernel-tests/+bug/1812618
+> > That is an old kernel, 4.18 derived.
+> >
+> > I simply am unable to reproduce this on an upstream v4.18 or v5.18.
+> > Likely something with either the distro kernel release, or another
+> > distro feature that interacts with this. Can you try v5.18 or another
+> > clean upstream kernel?
+> >
+> > Else it requires instrumenting IN_DEV_ACCEPT_LOCAL tests to understand
+> > where this sysctl makes a meaningful change for you when running this
+> > test.
+>
+> I found another parameter rp_filter which interacts with this test:
+>
+> Set rp_filter =3D 0, the psock_snd test OK.
+>
+> Or set rp_filter =3D 1 and accept_local=3D1, the psock_snd test OK.
+>
+> I get the same test results on kernel v5.10 or v5.15.  Analysis from
+> source code,  this two parameters
+>
+> will change the result of fib_validate_source when running this test.
+> For most distro kernel releases,
+>
+> rp_filter is enabled by default, so this test will fail when
+> accept_local is kept to be zero.
 
-Consider this - the way in which DSA tracks the state of DSA masters
-already "supports multiple [ physical ] CPU ports". It's just a matter
-of driver writers acknowledging this and doing the right thing in the
-ds->ops->master_state_change() callback. DSA tells us when any physical
-master goes up or down, and it does this regardless of whether that
-master's dsa_ptr is the dp->cpu_dp of any user port. Otherwise said,
-given this device tree snippet:
+That explains.
 
-eth0: ethernet@0 {
-	...
-};
+Since this test runs inside a netns, changing a sysctl is fine.
 
-eth1: ethernet@1 {
-	...
-};
-
-ethernet-switch@0 {
-	ethernet-ports {
-		ethernet-port@0 {
-			label = "swp0";
-		};
-
-		ethernet-port@1 {
-			label = "swp1";
-		};
-
-		ethernet-port@2 {
-			ethernet = <&eth0>;
-		};
-
-		ethernet-port@3 {
-			ethernet = <&eth1>;
-		};
-	};
-};
-
-Current mainline DSA will create swp0@eth0 and swp1@eth0, but it will
-call dsa_master_setup(eth0) and dsa_master_setup(eth1). Then it will
-monitor the state of both eth0 and eth1, and pass updates to both
-masters' states down to the driver.
-
-It is therefore the responsibility of the driver to ensure forward
-compatibility with multiple CPU ports (otherwise said, if one master
-goes down, don't hurry to say "I don't have any management interface to
-use for register access" - maybe the other one is still ok).
-Consequently, you can use a DSA master for register access even if no
-dp->cpu_dp points to it. This patch set is just about changing the
-dp->cpu_dp mapping that is used for netdevice traffic, which is quite
-orthogonal to the concern you describe.
+Can you resubmit with a more detailed description now that the exact
+check is more clear, as well as interplay with rp_filter, and the
+default config of these two parameters configured by distros? Thanks.
+Please double check typos (s/recievs/receives).
