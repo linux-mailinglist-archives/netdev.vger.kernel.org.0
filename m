@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 632575325BB
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 10:56:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D298153260E
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 11:05:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233868AbiEXI4h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 04:56:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60052 "EHLO
+        id S233782AbiEXI6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 04:58:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234063AbiEXI4c (ORCPT
+        with ESMTP id S234078AbiEXI4c (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 04:56:32 -0400
 Received: from linux.microsoft.com (linux.microsoft.com [13.77.154.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9A5BA67D1B;
-        Tue, 24 May 2022 01:56:30 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3A4776C57F;
+        Tue, 24 May 2022 01:56:31 -0700 (PDT)
 Received: by linux.microsoft.com (Postfix, from userid 1004)
-        id 7462C20B8952; Tue, 24 May 2022 01:56:30 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 7462C20B8952
+        id 13CEA20B8955; Tue, 24 May 2022 01:56:31 -0700 (PDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 13CEA20B8955
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linuxonhyperv.com;
-        s=default; t=1653382590;
-        bh=hEF94zBhhFc6cjWkWz8qz+16QCWVZ8PWfrlcF7EcnHA=;
+        s=default; t=1653382591;
+        bh=LmeUd3HzlFEV9uqUAPx3qEVgppMIqrk1rWw5FyI79rk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:Reply-To:From;
-        b=nBp+9qav+fEX6h6x04/Rpxvx6bIKGdw6JvtHzh4QNMfh0WM5Mm6cOpxO6WXmgJW7F
-         CGRZYE6MLbrP5lBRYzEe+zSw/jiBDk0fwYlRj4xo1Npmtl/20Dn9YTjzqc+jCDfU/d
-         GKZBy441fboodxWn2WxVRtE/gyH6TlGKX5FDsXx4=
+        b=IepS4nFHRmtOLM3Wd4t64JpVOcKEeXVR0Hjz1+q/qlgqokz6V+T3ZKKjjKhRPrya9
+         TflWVk6VszgDkgh7AoKPmXi5P55UQ0UJe7xEEpHEMtndM9Hg7/nNNiiKuQRMRY5dof
+         Z8FxFcwzBYr+KSCMxjRANdoaf4US1eFnYbQPAki0=
 From:   longli@linuxonhyperv.com
 To:     "K. Y. Srinivasan" <kys@microsoft.com>,
         Haiyang Zhang <haiyangz@microsoft.com>,
@@ -38,9 +38,9 @@ To:     "K. Y. Srinivasan" <kys@microsoft.com>,
 Cc:     linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
         Long Li <longli@microsoft.com>
-Subject: [Patch v2 04/12] net: mana: Add functions for allocating doorbell page from GDMA
-Date:   Tue, 24 May 2022 01:56:04 -0700
-Message-Id: <1653382572-14788-5-git-send-email-longli@linuxonhyperv.com>
+Subject: [Patch v2 05/12] net: mana: Set the DMA device max segment size
+Date:   Tue, 24 May 2022 01:56:05 -0700
+Message-Id: <1653382572-14788-6-git-send-email-longli@linuxonhyperv.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1653382572-14788-1-git-send-email-longli@linuxonhyperv.com>
 References: <1653382572-14788-1-git-send-email-longli@linuxonhyperv.com>
@@ -55,139 +55,37 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Long Li <longli@microsoft.com>
+From: Ajay Sharma <sharmaajay@microsoft.com>
 
-The RDMA device needs to allocate doorbell pages for each user context.
-Implement those functions and expose them for use by the RDMA driver.
+MANA hardware doesn't have any restrictions on the DMA segment size, set it
+to the max allowed value.
 
+Signed-off-by: Ajay Sharma <sharmaajay@microsoft.com>
 Signed-off-by: Long Li <longli@microsoft.com>
 ---
- drivers/net/ethernet/microsoft/mana/gdma.h    | 29 ++++++++++
- .../net/ethernet/microsoft/mana/gdma_main.c   | 54 +++++++++++++++++++
- 2 files changed, 83 insertions(+)
+Change log:
+v2: Use the max allowed value as the hardware doesn't have any limit
 
-diff --git a/drivers/net/ethernet/microsoft/mana/gdma.h b/drivers/net/ethernet/microsoft/mana/gdma.h
-index c724ca410fcb..f945755760dc 100644
---- a/drivers/net/ethernet/microsoft/mana/gdma.h
-+++ b/drivers/net/ethernet/microsoft/mana/gdma.h
-@@ -22,11 +22,15 @@ enum gdma_request_type {
- 	GDMA_GENERATE_TEST_EQE		= 10,
- 	GDMA_CREATE_QUEUE		= 12,
- 	GDMA_DISABLE_QUEUE		= 13,
-+	GDMA_ALLOCATE_RESOURCE_RANGE	= 22,
-+	GDMA_DESTROY_RESOURCE_RANGE	= 24,
- 	GDMA_CREATE_DMA_REGION		= 25,
- 	GDMA_DMA_REGION_ADD_PAGES	= 26,
- 	GDMA_DESTROY_DMA_REGION		= 27,
- };
- 
-+#define GDMA_RESOURCE_DOORBELL_PAGE	27
-+
- enum gdma_queue_type {
- 	GDMA_INVALID_QUEUE,
- 	GDMA_SQ,
-@@ -568,6 +572,26 @@ struct gdma_register_device_resp {
- 	u32 db_id;
- }; /* HW DATA */
- 
-+struct gdma_allocate_resource_range_req {
-+	struct gdma_req_hdr hdr;
-+	u32 resource_type;
-+	u32 num_resources;
-+	u32 alignment;
-+	u32 allocated_resources;
-+};
-+
-+struct gdma_allocate_resource_range_resp {
-+	struct gdma_resp_hdr hdr;
-+	u32 allocated_resources;
-+};
-+
-+struct gdma_destroy_resource_range_req {
-+	struct gdma_req_hdr hdr;
-+	u32 resource_type;
-+	u32 num_resources;
-+	u32 allocated_resources;
-+};
-+
- /* GDMA_CREATE_QUEUE */
- struct gdma_create_queue_req {
- 	struct gdma_req_hdr hdr;
-@@ -676,4 +700,9 @@ void mana_gd_free_memory(struct gdma_mem_info *gmi);
- 
- int mana_gd_send_request(struct gdma_context *gc, u32 req_len, const void *req,
- 			 u32 resp_len, void *resp);
-+
-+int mana_gd_allocate_doorbell_page(struct gdma_context *gc, int *doorbell_page);
-+
-+int mana_gd_destroy_doorbell_page(struct gdma_context *gc, int doorbell_page);
-+
- #endif /* _GDMA_H */
+ drivers/net/ethernet/microsoft/mana/gdma_main.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
 diff --git a/drivers/net/ethernet/microsoft/mana/gdma_main.c b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-index 9fafaa0c8e76..86ffe0e39df0 100644
+index 86ffe0e39df0..3cf69874ef18 100644
 --- a/drivers/net/ethernet/microsoft/mana/gdma_main.c
 +++ b/drivers/net/ethernet/microsoft/mana/gdma_main.c
-@@ -153,6 +153,60 @@ void mana_gd_free_memory(struct gdma_mem_info *gmi)
- 			  gmi->dma_handle);
- }
+@@ -1385,6 +1385,12 @@ static int mana_gd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (err)
+ 		goto release_region;
  
-+int mana_gd_destroy_doorbell_page(struct gdma_context *gc, int doorbell_page)
-+{
-+	struct gdma_destroy_resource_range_req req = {};
-+	struct gdma_resp_hdr resp = {};
-+	int err;
-+
-+	mana_gd_init_req_hdr(&req.hdr, GDMA_DESTROY_RESOURCE_RANGE,
-+			     sizeof(req), sizeof(resp));
-+
-+	req.resource_type = GDMA_RESOURCE_DOORBELL_PAGE;
-+	req.num_resources = 1;
-+	req.allocated_resources = doorbell_page;
-+
-+	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
-+	if (err || resp.status) {
-+		dev_err(gc->dev,
-+			"Failed to destroy doorbell page: ret %d, 0x%x\n",
-+			err, resp.status);
-+		return err ? err : -EPROTO;
++	err = dma_set_max_seg_size(&pdev->dev, UINT_MAX);
++	if (err) {
++		dev_err(&pdev->dev, "Failed to set dma device segment size\n");
++		goto release_region;
 +	}
 +
-+	return 0;
-+}
-+EXPORT_SYMBOL(mana_gd_destroy_doorbell_page);
-+
-+int mana_gd_allocate_doorbell_page(struct gdma_context *gc,
-+				   int *doorbell_page)
-+{
-+	struct gdma_allocate_resource_range_req req = {};
-+	struct gdma_allocate_resource_range_resp resp = {};
-+	int err;
-+
-+	mana_gd_init_req_hdr(&req.hdr, GDMA_ALLOCATE_RESOURCE_RANGE,
-+			     sizeof(req), sizeof(resp));
-+
-+	req.resource_type = GDMA_RESOURCE_DOORBELL_PAGE;
-+	req.num_resources = 1;
-+	req.alignment = 0;
-+	req.allocated_resources = 0; // have GDMA start searching from 0
-+
-+	err = mana_gd_send_request(gc, sizeof(req), &req, sizeof(resp), &resp);
-+	if (err || resp.hdr.status) { // resp.hdr.status should be >=0
-+		dev_err(gc->dev,
-+			"Failed to allocate doorbell page: ret %d, 0x%x\n",
-+			err, resp.hdr.status);
-+		return err ? err : -EPROTO;
-+	}
-+
-+	*doorbell_page = resp.allocated_resources;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(mana_gd_allocate_doorbell_page);
-+
- static int mana_gd_create_hw_eq(struct gdma_context *gc,
- 				struct gdma_queue *queue)
- {
+ 	err = -ENOMEM;
+ 	gc = vzalloc(sizeof(*gc));
+ 	if (!gc)
 -- 
 2.17.1
 
