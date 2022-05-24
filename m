@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 29707532E2F
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 18:02:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6E118532E34
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 18:02:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239396AbiEXQCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 12:02:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
+        id S239414AbiEXQCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 12:02:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239376AbiEXQBj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 12:01:39 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D089CF29;
-        Tue, 24 May 2022 09:00:51 -0700 (PDT)
+        with ESMTP id S239420AbiEXQBk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 12:01:40 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B2EDA0D0A;
+        Tue, 24 May 2022 09:00:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C8A0B6176C;
-        Tue, 24 May 2022 16:00:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D24C34115;
-        Tue, 24 May 2022 16:00:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EBA36615B2;
+        Tue, 24 May 2022 16:00:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B68FCC34113;
+        Tue, 24 May 2022 16:00:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653408050;
-        bh=pQoT+kDWEMU+OriFqW5qRi/QG2woaSt+7HNGfacypW4=;
+        s=k20201202; t=1653408054;
+        bh=zzK0D5fYTBTycaZxn6iEpDan7mnQBFt5zYd/KNuOLdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=geBeMmIcMo7BQRETg7xN6V6hSa+Dnh0VcWY0URfh78rEPhwklzydAV1uKmdwIJijz
-         A9woJH0fjINhQXwsgQ6h2ZxCjCKDj1Bmtp6f+5KJmKb8kDIpbvNc+mvUmvD7t44J3L
-         BFr/bGeiP3Xj3SHUnjRjXEjWVhr4XD9/1fsYuMetMxu/0SWU4A+eCabpn7mdI1HWzo
-         abFKM5x15kPwMFax98k8tsH0bjORbbj+5a0xjM7C3lkTR5jiAtq1sl143icU+BT44b
-         Wx58uiOzJ9MWAA8m0w96orIqQsbZrXF29u5yD7dKbOIB6WRaj0cUmarvI/DW4sb+bu
-         BbDWQsT1P+OFQ==
+        b=szQ0+rqjRUynlBXMCMYt1vCV1Sny9vWre5D8eI+gws3PMqN8DLK0XncfwETaFhOuZ
+         sDR+ONacErQdTn4UyTdUkp+fDmsPT7ihobDm23cUwjc43yJWUvG5MQ2ZkNpDLQC1wg
+         B+BhVtHqgz6RWypx30IPgIvSUZ9dBOqMDpqlYkkmjm/uQGWzOAkMHvq/Yax1pNQqYk
+         BOGzavHj08DUdFOAhUIyIBLAG457/phiUPiEbqIGz7qd7R0xA2txx+BihG5TRh6uVB
+         bUdJtfvGzFGHBOIQI/+lGnyWKJhGXilLAmMpZLnDUz8kyQDqqAGM16xPhD6piwWkHG
+         VTgzvJC1KK8cA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lin Ma <linma@zju.edu.cn>,
+Cc:     Joel Stanley <joel@jms.id.au>, David Wilder <wilder@us.ibm.com>,
+        Dylan Hung <dylan_hung@aspeedtech.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>,
-        krzysztof.kozlowski@linaro.org, rikard.falkeborn@gmail.com,
-        cyeaa@connect.ust.hk, dan.carpenter@oracle.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 5/8] nfc: pn533: Fix buggy cleanup order
-Date:   Tue, 24 May 2022 12:00:32 -0400
-Message-Id: <20220524160035.827109-5-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, guoheyi@linux.alibaba.com,
+        arnd@arndb.de, chenhao288@hisilicon.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 6/8] net: ftgmac100: Disable hardware checksum on AST2600
+Date:   Tue, 24 May 2022 12:00:33 -0400
+Message-Id: <20220524160035.827109-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220524160035.827109-1-sashal@kernel.org>
 References: <20220524160035.827109-1-sashal@kernel.org>
@@ -59,64 +59,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Lin Ma <linma@zju.edu.cn>
+From: Joel Stanley <joel@jms.id.au>
 
-[ Upstream commit b8cedb7093b2d1394cae9b86494cba4b62d3a30a ]
+[ Upstream commit 6fd45e79e8b93b8d22fb8fe22c32fbad7e9190bd ]
 
-When removing the pn533 device (i2c or USB), there is a logic error. The
-original code first cancels the worker (flush_delayed_work) and then
-destroys the workqueue (destroy_workqueue), leaving the timer the last
-one to be deleted (del_timer). This result in a possible race condition
-in a multi-core preempt-able kernel. That is, if the cleanup
-(pn53x_common_clean) is concurrently run with the timer handler
-(pn533_listen_mode_timer), the timer can queue the poll_work to the
-already destroyed workqueue, causing use-after-free.
+The AST2600 when using the i210 NIC over NC-SI has been observed to
+produce incorrect checksum results with specific MTU values. This was
+first observed when sending data across a long distance set of networks.
 
-This patch reorder the cleanup: it uses the del_timer_sync to make sure
-the handler is finished before the routine will destroy the workqueue.
-Note that the timer cannot be activated by the worker again.
+On a local network, the following test was performed using a 1MB file of
+random data.
 
-static void pn533_wq_poll(struct work_struct *work)
-...
- rc = pn533_send_poll_frame(dev);
- if (rc)
-   return;
+On the receiver run this script:
 
- if (cur_mod->len == 0 && dev->poll_mod_count > 1)
-   mod_timer(&dev->listen_timer, ...);
+ #!/bin/bash
+ while [ 1 ]; do
+        # Zero the stats
+        nstat -r  > /dev/null
+        nc -l 9899 > test-file
+        # Check for checksum errors
+        TcpInCsumErrors=$(nstat | grep TcpInCsumErrors)
+        if [ -z "$TcpInCsumErrors" ]; then
+                echo No TcpInCsumErrors
+        else
+                echo TcpInCsumErrors = $TcpInCsumErrors
+        fi
+ done
 
-That is, the mod_timer can be called only when pn533_send_poll_frame()
-returns no error, which is impossible because the device is detaching
-and the lower driver should return ENODEV code.
+On an AST2600 system:
 
-Signed-off-by: Lin Ma <linma@zju.edu.cn>
+ # nc <IP of  receiver host> 9899 < test-file
+
+The test was repeated with various MTU values:
+
+ # ip link set mtu 1410 dev eth0
+
+The observed results:
+
+ 1500 - good
+ 1434 - bad
+ 1400 - good
+ 1410 - bad
+ 1420 - good
+
+The test was repeated after disabling tx checksumming:
+
+ # ethtool -K eth0 tx-checksumming off
+
+And all MTU values tested resulted in transfers without error.
+
+An issue with the driver cannot be ruled out, however there has been no
+bug discovered so far.
+
+David has done the work to take the original bug report of slow data
+transfer between long distance connections and triaged it down to this
+test case.
+
+The vendor suspects this this is a hardware issue when using NC-SI. The
+fixes line refers to the patch that introduced AST2600 support.
+
+Reported-by: David Wilder <wilder@us.ibm.com>
+Reviewed-by: Dylan Hung <dylan_hung@aspeedtech.com>
+Signed-off-by: Joel Stanley <joel@jms.id.au>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nfc/pn533/pn533.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/faraday/ftgmac100.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
-index d2c011615775..8d7e29d953b7 100644
---- a/drivers/nfc/pn533/pn533.c
-+++ b/drivers/nfc/pn533/pn533.c
-@@ -2844,13 +2844,14 @@ void pn53x_common_clean(struct pn533 *priv)
- {
- 	struct pn533_cmd *cmd, *n;
- 
-+	/* delete the timer before cleanup the worker */
-+	del_timer_sync(&priv->listen_timer);
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index 5bc11d1bb9df..eea4bd3116e8 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1893,6 +1893,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 	/* AST2400  doesn't have working HW checksum generation */
+ 	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
+ 		netdev->hw_features &= ~NETIF_F_HW_CSUM;
 +
- 	flush_delayed_work(&priv->poll_work);
- 	destroy_workqueue(priv->wq);
- 
- 	skb_queue_purge(&priv->resp_q);
- 
--	del_timer(&priv->listen_timer);
--
- 	list_for_each_entry_safe(cmd, n, &priv->cmd_queue, queue) {
- 		list_del(&cmd->queue);
- 		kfree(cmd);
++	/* AST2600 tx checksum with NCSI is broken */
++	if (priv->use_ncsi && of_device_is_compatible(np, "aspeed,ast2600-mac"))
++		netdev->hw_features &= ~NETIF_F_HW_CSUM;
++
+ 	if (np && of_get_property(np, "no-hw-checksum", NULL))
+ 		netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
+ 	netdev->features |= netdev->hw_features;
 -- 
 2.35.1
 
