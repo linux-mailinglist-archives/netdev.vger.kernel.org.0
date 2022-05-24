@@ -2,99 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id BEEE153259E
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 10:50:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C18E5325B0
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 10:56:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233260AbiEXIuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 04:50:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48472 "EHLO
+        id S233561AbiEXIzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 04:55:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233247AbiEXIuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 04:50:13 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 109C071D88
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 01:50:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653382209;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=gdVfgoy4DMKIRrDCFm+NlF67nCZ7pRbEEsQazS020wI=;
-        b=iJGpYN/hHHkyGZRbGjHCB5V2rwQvsk59YYlcAYPZTzhA7s4zel80Qw2Sc5/gEUOM1NCtFw
-        s/2P6qqMVCeB51zU/erPylspVkd97kN0gQaoaYhtf93BOl24R1Q54MR7ZIh+33Qy/wngHf
-        DfkmE3T+VdKkdW9uISI4sVNcd1f00cY=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-kDqDj3MUNluDZIEMfXoJKA-1; Tue, 24 May 2022 04:50:07 -0400
-X-MC-Unique: kDqDj3MUNluDZIEMfXoJKA-1
-Received: by mail-wm1-f69.google.com with SMTP id n30-20020a05600c3b9e00b00397335edc7dso224359wms.7
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 01:50:07 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=gdVfgoy4DMKIRrDCFm+NlF67nCZ7pRbEEsQazS020wI=;
-        b=HkY2RabyarBIE2dPpaRszlSzTQAmI6MB6r82GITUQBtaJ9LMIRdxBaVDguung/+Soe
-         WPFMIhc4myObdgxWEpXZd/T7hkPrNF1NBLSvy8qrd2leXOGb1K0KG2p9w1i53oBnRbuk
-         DT3bTjdwoVrkJ6arvtox85p/g5+fK/yuFQ7OKAM99JeVTipvp56DmSrflK2XyPcVi3ps
-         M5oCxNn7YAJboAhoP/gblKfKKLHXaMSlMTtFSKJ4Htl0ODOvsOEXT2ZVEiQ6SwnHebPs
-         cTFdx4Xd42OEl1KcF4+zWSJLBRyaWGu2myxlYUu9pP5JF+Av93WVsE9Pj1KBMF9JlddA
-         B6Fw==
-X-Gm-Message-State: AOAM532cnubvSTA6clhDbWtYp4juf4FH/g+qjie8p2BentsD/7VUEpLO
-        8RmBWXPLPRsLAZsZ+hX+w7N3wpWlqA8wNAKTxoa6poDEVLI6gaim6WjZLMm1sDJ7N9jTigsbhta
-        Lkd411yB2QcYhnrIf
-X-Received: by 2002:a05:600c:4313:b0:397:26c9:dda1 with SMTP id p19-20020a05600c431300b0039726c9dda1mr2713409wme.184.1653382206480;
-        Tue, 24 May 2022 01:50:06 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwnlvbuROa+P4IBGkdAWKlHrWe7jd9IcsCGsLZeLRwKLCHZzMgVtKGw3WEXv9+5c7I00mtdCg==
-X-Received: by 2002:a05:600c:4313:b0:397:26c9:dda1 with SMTP id p19-20020a05600c431300b0039726c9dda1mr2713392wme.184.1653382206260;
-        Tue, 24 May 2022 01:50:06 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id u25-20020adfae59000000b0020d106c0386sm12277805wrd.89.2022.05.24.01.50.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 01:50:05 -0700 (PDT)
-Message-ID: <3090d3059e3493af2b0d69961eaa8584834f7a1a.camel@redhat.com>
-Subject: Re: [PATCH v2 net] Revert "net/smc: fix listen processing for
- SMC-Rv2"
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     liuyacan@corp.netease.com
-Cc:     davem@davemloft.net, edumazet@google.com, kgraul@linux.ibm.com,
-        kuba@kernel.org, linux-kernel@vger.kernel.org,
-        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        ubraun@linux.ibm.com
-Date:   Tue, 24 May 2022 10:50:04 +0200
-In-Reply-To: <20220523153110.474996-1-liuyacan@corp.netease.com>
-References: <20220523150709.306731-1-liuyacan@corp.netease.com>
-         <20220523153110.474996-1-liuyacan@corp.netease.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S230286AbiEXIzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 04:55:48 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F6826FD2C;
+        Tue, 24 May 2022 01:55:47 -0700 (PDT)
+Received: from fraeml704-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L6nyT6WKJz67bZ1;
+        Tue, 24 May 2022 16:52:33 +0800 (CST)
+Received: from [10.122.132.241] (10.122.132.241) by
+ fraeml704-chm.china.huawei.com (10.206.15.53) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Tue, 24 May 2022 10:55:43 +0200
+Message-ID: <e83d9e6f-738f-a4b0-f556-8b162c5bd65d@huawei.com>
+Date:   Tue, 24 May 2022 11:55:41 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=unavailable
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v5 12/15] seltests/landlock: rules overlapping test
+Content-Language: ru
+To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>
+CC:     <willemdebruijn.kernel@gmail.com>,
+        <linux-security-module@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <netfilter-devel@vger.kernel.org>, <yusongping@huawei.com>,
+        <anton.sirazetdinov@huawei.com>
+References: <20220516152038.39594-1-konstantin.meskhidze@huawei.com>
+ <20220516152038.39594-13-konstantin.meskhidze@huawei.com>
+ <4806f5ed-41c0-f9f2-d7a1-2173c8494399@digikod.net>
+ <09ab37e1-eba5-80be-8fb3-df2bde698fc6@huawei.com>
+ <0958567e-cc91-f63f-402a-a6324a576da2@digikod.net>
+From:   Konstantin Meskhidze <konstantin.meskhidze@huawei.com>
+In-Reply-To: <0958567e-cc91-f63f-402a-a6324a576da2@digikod.net>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.122.132.241]
+X-ClientProxiedBy: lhreml752-chm.china.huawei.com (10.201.108.202) To
+ fraeml704-chm.china.huawei.com (10.206.15.53)
+X-CFilter-Loop: Reflected
+X-Spam-Status: No, score=-5.9 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2022-05-23 at 23:31 +0800, liuyacan@corp.netease.com wrote:
-> From: liuyacan <liuyacan@corp.netease.com>
+
+
+5/19/2022 6:04 PM, Mickaël Salaün пишет:
 > 
-> This reverts commit 5ec8b414b4381e8714731415fc221ef50a4e7b14.
-
-It looks like the correct hash is
-8c3b8dc5cc9bf6d273ebe18b16e2d6882bcfb36d
-
 > 
-> Some rollback issue will be fixed in other patches in the future.
+> On 19/05/2022 14:24, Konstantin Meskhidze wrote:
+>>
+>>
+>> 5/16/2022 8:41 PM, Mickaël Salaün пишет:
+> 
+> [...]
+> 
+>>>> +
+>>>> +    /* Makes connection to socket with port[0] */
+>>>> +    ASSERT_EQ(0, connect(sockfd, (struct sockaddr *)&self->addr4[0],
+>>>
+>>> Can you please get rid of this (struct sockaddr *) type casting 
+>>> please (without compiler warning)?
+>>>
+>>    Do you have a warning here? Cause I don't.
+> 
+> There is no warning but this kind of cast is useless.
 
+   But addr4 is struct sockaddr_in type and connect/bind use struct 
+sockaddr type. That's why casting is needed here.
 
-Additionally please add an explicit Fixes tag, it will make stable team
-life easier, thanks!
-
-Paolo
-
+> .
