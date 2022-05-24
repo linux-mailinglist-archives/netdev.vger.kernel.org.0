@@ -2,95 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id E38B15326C8
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 11:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F1C353270A
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 12:05:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235864AbiEXJrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 05:47:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42148 "EHLO
+        id S235971AbiEXKD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 06:03:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41840 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230467AbiEXJrs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 05:47:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5F92B6D1AA
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 02:47:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653385666;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kJizB8cilvx7WM1xbQjrHpiaKzIJr9by3JAA2+yq6ms=;
-        b=YpJz0Qz6+EGo0+hsIwUJNJw2lqtimPAI+QOrCbhBonfhUuzk9AalDanDNP2duvuMmDouBb
-        bF7Z8GKSXlThUchFOprRWYDGIu7m+jRxTpFSDNvhvxPiuOgt+P9I5QwfuxiGqUuV1UMQ18
-        R+GF/xvMHmmT5IMK7ZNsUeAuFoj0gaE=
-Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
- [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-621-WEPGnh_7OKyPvdyLkuI3Ww-1; Tue, 24 May 2022 05:47:45 -0400
-X-MC-Unique: WEPGnh_7OKyPvdyLkuI3Ww-1
-Received: by mail-qv1-f69.google.com with SMTP id ck16-20020a05621404d000b00461bcafbbe9so12884093qvb.23
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 02:47:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=kJizB8cilvx7WM1xbQjrHpiaKzIJr9by3JAA2+yq6ms=;
-        b=nMIlEBbXRpvu8TNF3E4dkDA7ey1hWPRTKmXWHO3WfNTo3wODRsdfpra4DYq5z+R/Xj
-         gjPelBQScc2RKYs9ZcZcZwblhywrFLlXEouqLxlfekEbHVEyFMzr2RTejt8vdgt0Hyfl
-         2U/Iso1Lc0wVY+swh1W0OetGwCqxww9OZlr3VJU6KyYF2UcyOtKgu85LzZq7sSXFln1m
-         E9Qcw+S1EuMVAwS2l9dcNioGwR1jZ3CUv7fcj/aeavOgk21JaEz7iYX8RFFdWyflqQCF
-         mqlohVI0O8HFPB0JC7ivvgMTSVR7VGbN6eS3rdw8xH9JMNMDfY+cTekPJ/kO07Kfdfbl
-         ucuA==
-X-Gm-Message-State: AOAM531pdUlyymNhlnQp5JVN+Xm2fXed+dDlxE4p9859YnVHmtDZVHwB
-        huc8VbunQvHiNYuX2+b9uh2MZpnRUorve3jjB+/3YRExbPg9XKwfI5ee3kK5HgAzsHCu68SwFHb
-        lQq+ctI0qHuRLGbGJ
-X-Received: by 2002:a05:620a:2a11:b0:6a0:4ae4:fee6 with SMTP id o17-20020a05620a2a1100b006a04ae4fee6mr16921308qkp.30.1653385662471;
-        Tue, 24 May 2022 02:47:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJytLcgsxRyWXWH81uLhpAyCSzF7sa+wf8chx/CfSbmKiy2lXfUV8W54LeOhvuzxrNdA9/jszQ==
-X-Received: by 2002:a05:620a:2a11:b0:6a0:4ae4:fee6 with SMTP id o17-20020a05620a2a1100b006a04ae4fee6mr16921297qkp.30.1653385662198;
-        Tue, 24 May 2022 02:47:42 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id q10-20020ac8450a000000b002f3ca56e6edsm5812190qtn.8.2022.05.24.02.47.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 02:47:41 -0700 (PDT)
-Message-ID: <ffef5b7a784abd8c9f46930f7479149f348aec73.camel@redhat.com>
-Subject: Re: [net-next PATCH] octeontx2-vf: Add support for adaptive
- interrupt coalescing
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Suman Ghosh <sumang@marvell.com>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, sgoutham@marvell.com,
-        sbhatta@marvell.com, gakula@marvell.com, Sunil.Goutham@cavium.com,
-        hkelam@marvell.com, colin.king@intel.com, netdev@vger.kernel.org
-Date:   Tue, 24 May 2022 11:47:38 +0200
-In-Reply-To: <20220523115410.1307944-1-sumang@marvell.com>
-References: <20220523115410.1307944-1-sumang@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S235997AbiEXKDy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 06:03:54 -0400
+Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C685B793A6;
+        Tue, 24 May 2022 03:03:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Subject:From:Message-ID:Date:MIME-Version; bh=Dk7Gm
+        fvT3AqfomHwgr/tdhRny1W9IvrJG0afEovalW4=; b=Ua6Zk41Bz9pjD7Cc7WAJr
+        /0thv7vEIfvI76vlTdRrrGgKPKh04Poxcl7Ww72lcW1ndO05Hvc5952fnV11JEGn
+        O3Nn5jP/VXvT/Za6EfZHBqG7japajYkU0RocvNJqFcdQAnptXmIJwFGiegy11eU6
+        4y8vTgUdmo7Tu2fTWZv6wQ=
+Received: from [172.20.109.18] (unknown [116.128.244.169])
+        by smtp5 (Coremail) with SMTP id HdxpCgAnp_54rYxiqUT3Dw--.11933S2;
+        Tue, 24 May 2022 18:03:37 +0800 (CST)
+Subject: Re: [PATCH] selftests/net: enable lo.accept_local in psock_snd test
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     davem@davemloft.net, edumazet@google.com, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+References: <20220520063835.866445-1-luyun_611@163.com>
+ <CA+FuTSdoZeAncRVAYrb66Kp6bEueWrgyy7A8qP0kmr9pxfHMoA@mail.gmail.com>
+ <3f494c7a-6648-a696-b215-f597e680c5d9@163.com>
+ <CA+FuTSdHCszjFtkZj37KE-1rfSfzYEd5oXLyKS6Kz9pdi05ReA@mail.gmail.com>
+From:   Yun Lu <luyun_611@163.com>
+Message-ID: <754c0cd5-2289-3887-e7d2-71ff87e59afd@163.com>
+Date:   Tue, 24 May 2022 18:03:36 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+In-Reply-To: <CA+FuTSdHCszjFtkZj37KE-1rfSfzYEd5oXLyKS6Kz9pdi05ReA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-CM-TRANSID: HdxpCgAnp_54rYxiqUT3Dw--.11933S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxJF4xWF1ruFWfGr1kAw1DZFb_yoW5GrW3pr
+        W7Xas0yF1kJa4jvwsIv3W8ury0qw4UCr4Fqw1Iywn2yFs8uFy3Cr4I9a909a1qqr1xW3y2
+        vFWkZa47W34DZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zETmh-UUUUU=
+X-Originating-IP: [116.128.244.169]
+X-CM-SenderInfo: pox130jbwriqqrwthudrp/1tbiQxwLzlc7ZnWomQAAsU
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 2022/5/23 下午9:32, Willem de Bruijn wrote:
 
-On Mon, 2022-05-23 at 17:24 +0530, Suman Ghosh wrote:
-> Add ethtool supported_feature flag to support adaptive interrupt
-> coalescing for vf(s).
-> 
-> Signed-off-by: Suman Ghosh <sumang@marvell.com>
+> On Mon, May 23, 2022 at 5:25 AM Yun Lu <luyun_611@163.com> wrote:
+>> On 2022/5/20 下午9:52, Willem de Bruijn wrote:
+>>
+>>> On Fri, May 20, 2022 at 2:40 AM Yun Lu <luyun_611@163.com> wrote:
+>>>> From: luyun <luyun@kylinos.cn>
+>>>>
+>>>> The psock_snd test sends and recievs packets over loopback, but the
+>>>> parameter lo.accept_local is disabled by default, this test will
+>>>> fail with Resource temporarily unavailable:
+>>>> sudo ./psock_snd.sh
+>>>> dgram
+>>>> tx: 128
+>>>> rx: 142
+>>>> ./psock_snd: recv: Resource temporarily unavailable
+>>> I cannot reproduce this failure.
+>>>
+>>> Passes on a machine with accept_local 0.
+>>>
+>>> accept_local is defined as
+>>>
+>>> "
+>>> accept_local - BOOLEAN
+>>>       Accept packets with local source addresses. In combination
+>>>       with suitable routing, this can be used to direct packets
+>>>       between two local interfaces over the wire and have them
+>>>       accepted properly.
+>>> "
+>> I did this test on my system(Centos 8.3 X86_64):
+>>
+>> [root@localhost net]# sysctl net.ipv4.conf.lo.accept_local
+>> net.ipv4.conf.lo.accept_local = 0
+>> [root@localhost net]# ./psock_snd -d
+>> tx: 128
+>> rx: 142
+>> ./psock_snd: recv: Resource temporarily unavailable
+>> [root@localhost net]# sysctl -w net.ipv4.conf.lo.accept_local=1
+>> net.ipv4.conf.lo.accept_local = 1
+>> [root@localhost net]# ./psock_snd -d
+>> tx: 128
+>> rx: 142
+>> rx: 100
+>> OK
+>>
+>> This failure does seem to be related to accept_local.
+>>
+>> Also, it's reported on Ubuntu:
+>> https://bugs.launchpad.net/ubuntu-kernel-tests/+bug/1812618
+> That is an old kernel, 4.18 derived.
+>
+> I simply am unable to reproduce this on an upstream v4.18 or v5.18.
+> Likely something with either the distro kernel release, or another
+> distro feature that interacts with this. Can you try v5.18 or another
+> clean upstream kernel?
+>
+> Else it requires instrumenting IN_DEV_ACCEPT_LOCAL tests to understand
+> where this sysctl makes a meaningful change for you when running this
+> test.
 
-I'm sorry, but net-next is now closed. You have to wait untill it
-reopens and the re-post.
+I found another parameter rp_filter which interacts with this test:
 
-Thanks,
+Set rp_filter = 0, the psock_snd test OK.
 
-Paolo
+Or set rp_filter = 1 and accept_local=1, the psock_snd test OK.
+
+I get the same test results on kernel v5.10 or v5.15.  Analysis from 
+source code,  this two parameters
+
+will change the result of fib_validate_source when running this test. 
+For most distro kernel releases,
+
+rp_filter is enabled by default, so this test will fail when 
+accept_local is kept to be zero.
+
+
+I am looking forward to your better advice on this problem.
 
