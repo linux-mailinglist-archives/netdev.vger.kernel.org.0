@@ -2,144 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 625FA5324BC
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 10:01:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5C535324DE
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 10:05:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234294AbiEXIBk convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 24 May 2022 04:01:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48168 "EHLO
+        id S231133AbiEXIFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 04:05:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235750AbiEXIB1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 04:01:27 -0400
-Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.86.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AC146205E3
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 01:01:22 -0700 (PDT)
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-35-ppu1gej3NzGDz7Rk5zJVNA-1; Tue, 24 May 2022 09:01:19 +0100
-X-MC-Unique: ppu1gej3NzGDz7Rk5zJVNA-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.36; Tue, 24 May 2022 09:01:18 +0100
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.036; Tue, 24 May 2022 09:01:18 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Oleksandr Natalenko' <oleksandr@natalenko.name>,
-        Neal Cardwell <ncardwell@google.com>
-CC:     Yuchung Cheng <ycheng@google.com>,
-        Yousuk Seung <ysseung@google.com>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Adithya Abraham Philip <abrahamphilip@google.com>,
-        Eric Dumazet <edumazet@google.com>,
+        with ESMTP id S230180AbiEXIE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 04:04:58 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D849A982;
+        Tue, 24 May 2022 01:04:54 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id C6A001F8B8;
+        Tue, 24 May 2022 08:04:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1653379492; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+HrTVIvXJDgrzNQFl8Mhx0wGW/HWHO1IHY/NT0Ch0wc=;
+        b=cmANZ9kaIvAGzRMHaeCxB0LLBkrlXozlKGlr2MQNHSGuBkVg9GZ4ULppK80AYEMbn3sHQ3
+        SRCkpAxtJlotC4dIBTUf4LWabWRfn+CV2iXTLVzyyBDKp8B9onijAa8QBBUxy4R2DAxIkT
+        C3aqZP5pWFL7HdTOLlEm50sKDepVyxc=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id A47272C141;
+        Tue, 24 May 2022 08:04:51 +0000 (UTC)
+Date:   Tue, 24 May 2022 10:04:51 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Scott Branden <scott.branden@broadcom.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Desmond yan <desmond.yan@broadcom.com>,
+        David Gow <davidgow@google.com>,
+        Evan Green <evgreen@chromium.org>,
+        Julius Werner <jwerner@chromium.org>,
+        bcm-kernel-feedback-list@broadcom.com, linux-pm@vger.kernel.org,
+        akpm@linux-foundation.org, bhe@redhat.com,
+        kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-um@lists.infradead.org,
+        linux-xtensa@linux-xtensa.org, netdev@vger.kernel.org,
+        openipmi-developer@lists.sourceforge.net, rcu@vger.kernel.org,
+        sparclinux@vger.kernel.org, xen-devel@lists.xenproject.org,
+        x86@kernel.org, kernel-dev@igalia.com, kernel@gpiccoli.net,
+        halves@canonical.com, fabiomirmar@gmail.com,
+        alejandro.j.jimenez@oracle.com, andriy.shevchenko@linux.intel.com,
+        arnd@arndb.de, bp@alien8.de, corbet@lwn.net,
+        d.hatayama@jp.fujitsu.com, dave.hansen@linux.intel.com,
+        dyoung@redhat.com, feng.tang@intel.com, gregkh@linuxfoundation.org,
+        mikelley@microsoft.com, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org, Alexander Gordeev <agordeev@linux.ibm.com>,
+        Andrea Parri <parri.andrea@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Brian Norris <computersforpeace@gmail.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         "David S. Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Konstantin Demin" <rockdrilla@gmail.com>
-Subject: RE: [RFC] tcp_bbr2: use correct 64-bit division
-Thread-Topic: [RFC] tcp_bbr2: use correct 64-bit division
-Thread-Index: AQHYbityIzPXZ3B6u0uaGlDnmUxgKq0tq8zw
-Date:   Tue, 24 May 2022 08:01:18 +0000
-Message-ID: <4bd84c983e77486fbc94dfa2a167afaa@AcuMS.aculab.com>
-References: <4740526.31r3eYUQgx@natalenko.name>
-In-Reply-To: <4740526.31r3eYUQgx@natalenko.name>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Dexuan Cui <decui@microsoft.com>,
+        Doug Berger <opendmb@gmail.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Markus Mayer <mmayer@broadcom.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mihai Carabas <mihai.carabas@oracle.com>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Paul Mackerras <paulus@samba.org>, Pavel Machek <pavel@ucw.cz>,
+        Shile Zhang <shile.zhang@linux.alibaba.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Wang ShaoBo <bobo.shaobowang@huawei.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        zhenwei pi <pizhenwei@bytedance.com>
+Subject: Re: [PATCH 19/30] panic: Add the panic hypervisor notifier list
+Message-ID: <YoyRo6gJrr4lsFpD@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-20-gpiccoli@igalia.com>
+ <YoJZVZl/MH0KiE/J@alley>
+ <ad082ce7-db50-13bb-3dbb-9b595dfa78be@igalia.com>
+ <YoOpyW1+q+Z5as78@alley>
+ <d72b9aab-675c-ac89-b73a-b1de4a0b722d@igalia.com>
+ <81878a67-21f1-fee8-1add-f381bc8b05df@broadcom.com>
+ <edbaa4fa-561c-6f5e-f2ab-43ae68acaede@igalia.com>
+ <d1cc0bee-2a98-0c2e-8796-6fb7fae6b803@broadcom.com>
+ <0fac8c71-6f18-d15c-23f5-075dbc45f3f9@igalia.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <0fac8c71-6f18-d15c-23f5-075dbc45f3f9@igalia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oleksandr Natalenko
-> Sent: 22 May 2022 23:30
-> To: Neal Cardwell <ncardwell@google.com>
+On Mon 2022-05-23 11:56:12, Guilherme G. Piccoli wrote:
+> On 19/05/2022 16:20, Scott Branden wrote:
+> > [...] 
+> >> Hi Scott / Desmond, thanks for the detailed answer! Is this adapter
+> >> designed to run in x86 only or you have other architectures' use cases?
+> > The adapter may be used in any PCIe design that supports DMA.
+> > So it may be possible to run in arm64 servers.
+> >>
+> >> [...]
+> >> With that said, and given this is a lightweight notifier that ideally
+> >> should run ASAP, I'd keep this one in the hypervisor list. We can
+> >> "adjust" the semantic of this list to include lightweight notifiers that
+> >> reset adapters.
+> > Sounds the best to keep system operating as tested today.
+> >>
+> >> With that said, Petr has a point - not always such list is going to be
+> >> called before kdump. So, that makes me think in another idea: what if we
+> >> have another list, but not on panic path, but instead in the custom
+> >> crash_shutdown()? Drivers could add callbacks there that must execute
+> >> before kexec/kdump, no matter what.
+> > It may be beneficial for some other drivers but for our use we would 
+> > then need to register for the panic path and the crash_shutdown path. 
+> > We notify the VK card for 2 purposes: one to stop DMA so memory stop 
+> > changing during a kdump.  And also to get the card into a good state so 
+> > resets happen cleanly.
 > 
-> Hello Neal.
-> 
-> It was reported to me [1] by Konstantin (in Cc) that BBRv2 code suffers from integer division issue on
-> 32 bit systems.
+> Thanks Scott! With that, I guess it's really better to keep this
+> notifier in this hypervisor/early list - I'm planning to do that for V2.
+> Unless Petr or somebody has strong feelings against that, of course.
 
-Do any of these divisions ever actually have 64bit operands?
-Even on x86-64 64bit divide is significantly slower than 32bit divide.
+I am fine with it because we do not have a better solution at the
+moment.
 
-It is quite clear that x * 8 / 1000 is the same as x / (1000 / 8).
-So promoting to 64bit cannot be needed.
+It might be a good candidate for the 5th notifier list mentioned
+in the thread https://lore.kernel.org/r/YoyQyHHfhIIXSX0U@alley .
+But I am not sure if the 5th list is worth the complexity.
 
-	David
-
-> 
-> Konstantin suggested a solution available in the same linked merge request and copy-pasted by me below
-> for your convenience:
-> 
-> ```
-> diff --git a/net/ipv4/tcp_bbr.c b/net/ipv4/tcp_bbr.c
-> index 664c9e119787..fd3f89e3a8a6 100644
-> --- a/net/ipv4/tcp_bbr.c
-> +++ b/net/ipv4/tcp_bbr.c
-> @@ -312,7 +312,7 @@ static u32 bbr_tso_segs_generic(struct sock *sk, unsigned int mss_now,
->  	bytes = sk->sk_pacing_rate >> sk->sk_pacing_shift;
-> 
->  	bytes = min_t(u32, bytes, gso_max_size - 1 - MAX_TCP_HEADER);
-> -	segs = max_t(u32, bytes / mss_now, bbr_min_tso_segs(sk));
-> +	segs = max_t(u32, div_u64(bytes, mss_now), bbr_min_tso_segs(sk));
->  	return segs;
->  }
-> 
-> diff --git a/net/ipv4/tcp_bbr2.c b/net/ipv4/tcp_bbr2.c
-> index fa49e17c47ca..488429f0f3d0 100644
-> --- a/net/ipv4/tcp_bbr2.c
-> +++ b/net/ipv4/tcp_bbr2.c
-> @@ -588,7 +588,7 @@ static void bbr_debug(struct sock *sk, u32 acked,
->  		 bbr_rate_kbps(sk, bbr_max_bw(sk)), /* bw: max bw */
->  		 0ULL,				    /* lb: [obsolete] */
->  		 0ULL,				    /* ib: [obsolete] */
-> -		 (u64)sk->sk_pacing_rate * 8 / 1000,
-> +		 div_u64((u64)sk->sk_pacing_rate * 8, 1000),
->  		 acked,
->  		 tcp_packets_in_flight(tp),
->  		 rs->is_ack_delayed ? 'd' : '.',
-> @@ -698,7 +698,7 @@ static u32 bbr_tso_segs_generic(struct sock *sk, unsigned int mss_now,
->  	}
-> 
->  	bytes = min_t(u32, bytes, gso_max_size - 1 - MAX_TCP_HEADER);
-> -	segs = max_t(u32, bytes / mss_now, bbr_min_tso_segs(sk));
-> +	segs = max_t(u32, div_u64(bytes, mss_now), bbr_min_tso_segs(sk));
->  	return segs;
->  }
-> ```
-> 
-> Could you please evaluate this report and check whether it is correct, and also check whether the
-> suggested patch is acceptable?
-> 
-> Thanks.
-> 
-> [1] https://gitlab.com/post-factum/pf-kernel/-/merge_requests/6
-> 
-> --
-> Oleksandr Natalenko (post-factum)
-> 
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
-
+Best Regards,
+Petr
