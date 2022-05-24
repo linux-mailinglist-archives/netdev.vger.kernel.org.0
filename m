@@ -2,111 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D2225331A0
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 21:13:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FD86533228
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 22:06:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240542AbiEXTNx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 15:13:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59668 "EHLO
+        id S241402AbiEXUGR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 16:06:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235174AbiEXTNw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 15:13:52 -0400
-Received: from mail-vk1-xa2c.google.com (mail-vk1-xa2c.google.com [IPv6:2607:f8b0:4864:20::a2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3EC5E755
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 12:13:50 -0700 (PDT)
-Received: by mail-vk1-xa2c.google.com with SMTP id n135so8918203vkn.7
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 12:13:50 -0700 (PDT)
+        with ESMTP id S241336AbiEXUGP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 16:06:15 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F18D11C33
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 13:06:12 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id v11so15923150qkf.1
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 13:06:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=google.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=arw0P8k+NP+OLvn8slPhK0vapAkPJiFCnnKrTlVQ2dQ=;
-        b=fxvtpZoMh3OxVUEMAN40o3IvR5U82FZpExl+aNvCRdeXPMP55fmp0E9E2vBJzMqCTV
-         jBP5m31O17jQ5xU7MQa5MlO5guYLQ3qWxiuIC3cBvWvYBTZG6UDjYgUB/nyctTfx1aoN
-         f9Eif2wr7/H9cioRTrphJi95DNyoCafZsHzOz8Q47SkqcCODUTfeEeYuR63lgbT7cZtK
-         rkMkPoITnwhkw8WRsAgT2VEygjoTGop6Yc5Kko7RdsnfS7K8h9FmzkCt44b71NsINXfN
-         wmHOhnaGa4mPDsK0Lpzzo5xsjgB67mPrbv17LZNQos8baQI7xGrHw9L92dV650bV6eqq
-         1dxw==
+        bh=Ym/o0L3Nl69cG1A2Xo5lifLxAYgZkmivMwTbScZGC3I=;
+        b=RnI7UYRMhN/m1uMDa0epxjtwUkq/d8vFEjV1+V/JI8i7DG80dyyRWMqMt1anU+rFFL
+         42ppoiixx9cPtJEtCRkWdFWPA39J92U89m0UemSsAWVNCOUlQMfYKACbHotgndUOd5rR
+         cNt5VB64ib3tGjHELvxQCr9StabUmLCE1xklVQS2Dv6yVyvhK+Po1d6WFJkAQm93Q5D6
+         0R4iB9cPAuw1Ui2d8/UOn3xkVfH+PVJYNbkAvz51vsVh4I5hKTJ6P5NCcJTTLdRxA6D7
+         Th2l4X73mYo139zkEV3Bn7ckNU7zfwaCzsEPmO7yWXQxWjEp0ELAuIxhy2o8x06GgmR4
+         nbuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=arw0P8k+NP+OLvn8slPhK0vapAkPJiFCnnKrTlVQ2dQ=;
-        b=x8tyxH7r1VdCOWU43nKaM7Q+PIlCFbHVaThICfXUGBx9Y76A5wT3gJ+QPQHlQZlmcQ
-         MstFIFE1ju3nLy1jRm+I4CeVSBejKhKP2BphTvf9Of4lHxgWvSxA0kmU4EwyJry4byV1
-         FSvixCGSubVitDsnl9svVvMG1EbXASVm/KZJMhzabY7ZD7sqj3EcMjfQcmrwJvI1PxXI
-         4roeKZj1Figtp4Ry0hxKsKwl6lR+PQTUln4fZDWXVtF0PUE98a6bcZ5nWbF9lo6vJ34n
-         aDfLOurCiT8IptLGWnHBGTPpX3f452aQp9627/js+NY8w/5BDmbFmomTClnZsSlKLwPP
-         PYow==
-X-Gm-Message-State: AOAM531NTnmEnzP/LeVxGInk9k5/jkJ4opKYwyT7aiKd66i8Rq3m9pYG
-        Hzn13bhG/XLD/uLhyyL9tt4DuH4DCES+lwwahaxDgpqU3W4FnOzZSgbcXRkP
-X-Google-Smtp-Source: ABdhPJzbe8mU6UivvBusoIgMkyxDmasRo/Ssvre4GWIZJFJyJ7SbePKAsUS72W2ZVofxJ5/fCgW2awFKpTCyABE3a8E=
-X-Received: by 2002:a05:6122:8d5:b0:356:deb3:3c50 with SMTP id
- 21-20020a05612208d500b00356deb33c50mr10429991vkg.28.1653419629512; Tue, 24
- May 2022 12:13:49 -0700 (PDT)
+        bh=Ym/o0L3Nl69cG1A2Xo5lifLxAYgZkmivMwTbScZGC3I=;
+        b=dRc3H7CEeybYVmvq5PjIo+oZx81Uf7/vslgBS1AYnWCvlZkdo1U9zgW5EgDU2Ouo9J
+         dR2OibZnOP+9gjnlbRyVr2HcMQcVP+HtuvtohD2O7uzJBSVSfelJahq/JmXYTQB5/FWG
+         yEXf8ITIRYHSmDyTdSMKijukmF6+y/k4YilyTtCX4H4DUmBkiIhFexo9zfw9f6TTBaup
+         OkK3tACWwYqy7XAfjdlxgQ3qtGPSAYJuLiVwkOKhAucg78nXkInlOGr4MycS6EIKsfDz
+         Ub6KE9HALwzUNMQWpM8g2dQcHMxodibNTYIrVAZX0zzsLtgdWY9LAjhSO/jWbFRZIXN3
+         m8sw==
+X-Gm-Message-State: AOAM533fnI+RJ/s3kNVPIeys7rl1fHJ2ymXDbVH9nOev5wrmsImrMdwV
+        VTTU9Iy8SwJCd+HRsmfaAGBy5vCFRVsi8dEDdDdVnQ==
+X-Google-Smtp-Source: ABdhPJwN41Y+zVNVnpjyUNnSPEoavriwkRYaeVbyo0ommHqIHzogpFycXag+3ugbHPvs5jk6of2GUQZ3GP8Rcus0tw0=
+X-Received: by 2002:a05:620a:1aa1:b0:6a3:8dd8:7173 with SMTP id
+ bl33-20020a05620a1aa100b006a38dd87173mr7921272qkb.434.1653422771014; Tue, 24
+ May 2022 13:06:11 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220522031739.87399-1-wangyuweihx@gmail.com> <b5cf7fac361752d925f663d9a9b0b8415084f7d3.camel@redhat.com>
- <CANmJ_FP0CxSVksjvNsNjpQO8w+S3_10byQSCpt1ifQ6HeURUmA@mail.gmail.com>
- <cf3188eba7e529e4f112f6a752158f38e22f4851.camel@redhat.com>
- <797c3c53-ce1b-9f60-e253-cda615788f4a@iogearbox.net> <20220524110749.6c29464b@kernel.org>
-In-Reply-To: <20220524110749.6c29464b@kernel.org>
-From:   Yuwei Wang <wangyuweihx@gmail.com>
-Date:   Wed, 25 May 2022 03:13:38 +0800
-Message-ID: <CANmJ_FN6_79nRmmzKzoExzD+KJ5Uzehj8Rw_GQhV0SiBpF3rPg@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net, neigh: introduce interval_probe_time for
- periodic probe
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
-        roopa@nvidia.com, dsahern@kernel.org,
-        =?UTF-8?B?56em6L+q?= <qindi@staff.weibo.com>,
-        netdev@vger.kernel.org, yuwei wang <wangyuweihx@hotmail.com>
+References: <4740526.31r3eYUQgx@natalenko.name> <4bd84c983e77486fbc94dfa2a167afaa@AcuMS.aculab.com>
+In-Reply-To: <4bd84c983e77486fbc94dfa2a167afaa@AcuMS.aculab.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Tue, 24 May 2022 16:05:55 -0400
+Message-ID: <CADVnQykt1Lz0m1gfEckHhDLy66xhJvO0F2Z1-yQ=Mgi7gBY5RQ@mail.gmail.com>
+Subject: Re: [RFC] tcp_bbr2: use correct 64-bit division
+To:     David Laight <David.Laight@aculab.com>
+Cc:     Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Yuchung Cheng <ycheng@google.com>,
+        Yousuk Seung <ysseung@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Adithya Abraham Philip <abrahamphilip@google.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Konstantin Demin <rockdrilla@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
+        autolearn=unavailable autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 25 May 2022 at 02:07, Jakub Kicinski <kuba@kernel.org> wrote:
+On Tue, May 24, 2022 at 4:01 AM David Laight <David.Laight@aculab.com> wrote:
 >
-> On Tue, 24 May 2022 17:32:57 +0200 Daniel Borkmann wrote:
-> > Right, maybe we could just split this into two: 1) prevent misconfig (see
-> > below), and 2) make the timeout configurable as what Yuwei has. Wdyt?
+> From: Oleksandr Natalenko
+> > Sent: 22 May 2022 23:30
+> > To: Neal Cardwell <ncardwell@google.com>
 > >
-> > diff --git a/net/core/neighbour.c b/net/core/neighbour.c
-> > index 47b6c1f0fdbb..54625287ee5b 100644
-> > --- a/net/core/neighbour.c
-> > +++ b/net/core/neighbour.c
-> > @@ -1579,7 +1579,7 @@ static void neigh_managed_work(struct work_struct *work)
-> >          list_for_each_entry(neigh, &tbl->managed_list, managed_list)
-> >                  neigh_event_send_probe(neigh, NULL, false);
-> >          queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
-> > -                          NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
-> > +                          max(NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME), HZ));
-> >          write_unlock_bh(&tbl->lock);
-> >   }
+> > Hello Neal.
+> >
+> > It was reported to me [1] by Konstantin (in Cc) that BBRv2 code suffers from integer division issue on
+> > 32 bit systems.
 >
-> FWIW that was my reaction as well. Let's do that unless someone
-> disagrees.
+> Do any of these divisions ever actually have 64bit operands?
+> Even on x86-64 64bit divide is significantly slower than 32bit divide.
+>
+> It is quite clear that x * 8 / 1000 is the same as x / (1000 / 8).
+> So promoting to 64bit cannot be needed.
+>
+>         David
 
-I agree too, so there will be as following parts:
-1) prevent misconfig by offering a minimum value
-2) separate the params `INTERVAL_PROBE_TIME` as the probe interval for
-`MANAGED` neigh
-3) notify the change of `INTERVAL_PROBE_TIME` and set the driver poll interval
-according to `INTERVAL_PROBE_TIME` instead of `DELAY_PROBE_TIME`
+The sk->sk_pacing_rate can definitely be bigger than 32 bits if the
+network path can support more than 34 Gbit/sec  (a pacing rate of 2^32
+bytes per sec is roughly 34 Gibt/sec). This definitely happens.
 
-I still have doubt about whether we need part 3, or if exist this scenario:
-- the NIC offloading the data plane.
-- the driver needs periodically poll the device for neighbours activity
+So  this one seems reasonable to me (and is only in debug code, so the
+performance is probably fine):
+-                (u64)sk->sk_pacing_rate * 8 / 1000,
++                div_u64((u64)sk->sk_pacing_rate * 8, 1000),
 
-May I ask for further explanation?
+For the other two I agree we should rework them to avoid the 64-bit
+divide, since we don't need it.
 
-Thanks,
-Yuwei Wang
+There is similar logic in mainline Linux in tcp_tso_autosize(), which
+is currently using "unsigned long" for bytes.
+
+Eric, what do you advise?
+
+thanks,
+neal
