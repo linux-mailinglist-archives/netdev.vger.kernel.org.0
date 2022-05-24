@@ -2,82 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 37E8C533250
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 22:17:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EDBD533260
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 22:23:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241491AbiEXURR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 16:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54298 "EHLO
+        id S241235AbiEXUXE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 16:23:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235880AbiEXURP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 16:17:15 -0400
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3B10240B8
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 13:17:14 -0700 (PDT)
-Received: by mail-pf1-x429.google.com with SMTP id f21so5040545pfa.3
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 13:17:14 -0700 (PDT)
+        with ESMTP id S241065AbiEXUXD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 16:23:03 -0400
+Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E51565D5E0
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 13:23:01 -0700 (PDT)
+Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2ec42eae76bso194060947b3.10
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 13:23:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=I1gLUpNfAZVqDJkxJdo6bQcstkb9pwLPF9N3LzjD3jw=;
-        b=Ljvgqa7Mh1mhDMI+bLmreFRb8KyHC03iOmO3zc8FcJJYMUw5ZOkaFmnIOqU3RzgtOO
-         r032TLpJuYwhDaw3L8pKqTQAc8jYKJlLwQ1se6hAJhzbIVCEgsalp1DXscRGH7z8aa+m
-         EZW7vNJsPMwvqGGRIcYeNbQQnAPikOxJHrQ/s+pmY44/wDBIvwYBKX2gatAb9jUAGZgO
-         OTYO8WzFctJFaFTQkS0rPSF5Y9XmKfOs2xVEzpq7vowE9cHgzw8yMax9PriBN1CLKQps
-         0mA8KpVfAq+uoEfW5EMfefACv2ql1mrK0DJwKGtWj+n/kv3KNk/AIeYbFySopgwxKaja
-         4AQg==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Jkbsj8ZwrUi7OObfgCh/4Ar2JNwqZvHZHWjqqEl/+jU=;
+        b=DcF4IOeyC1v9Z+v2nErxKz1G/LVvOm7gwchisLgHi3xQICx+mu9q8u8QSxLDgwtJL7
+         OASbpLKso3Ab2vBCILTtKzTqwplcynpS/nLv+j0EXAJg+k273y2lNWN6MgWpwZ332kia
+         F6krBjU4uSNwOq/li1dfZwgb3BT/NJtcAV6p818t1T1R3QLXyQ+vECn3AUXir0V0tr98
+         nINilkpN2pFDLxd8/0NwlHmAzpA/xM2X532i3r7+gAyzrDoXYSALN0p0Yq8IBDWZFNWz
+         YSKW79yB9lklVhZ27eh3a8dhXhyCyJ9vS5G6xa56h5Qht+nUE1h/9n3qQ2RJ4z0Po9MI
+         RnZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=I1gLUpNfAZVqDJkxJdo6bQcstkb9pwLPF9N3LzjD3jw=;
-        b=GWDvyRY1SAgjdfMCtSCpRCh49iJskn8veyyyCvIN83vkOJqf9x0an0sN5N1O5mc/Tz
-         k/q3B7s5cQ78JoxID1q5YgpoJXJOwDbf5ScsrpxBF34oX6hgpMOyXK1PCgW4Hl6e8kXu
-         CxS05CTG5htVj4FyziYs/8y8FMnuWMl0VAAkH+Dsiew5VU/7BkiVOznqDtaUo8pYm9rC
-         8DyUMVdrqypApkRCCz3T85Cu8jmfO4YDcjYk9799fb/gkBolU8dmyz6CDfrwL29Cxv1W
-         Qh0s7kpgPRw4bGTR3HQU/5mqf3bRdFccy5cvb0w5OljOAhY0kRTVLxQJb5gQlM0OLnlb
-         wciQ==
-X-Gm-Message-State: AOAM530nLZnJoTGaw3ZTPdf1m9IjJ+j8XHMMERLy9dqAs3etNnTPP4KD
-        p6GI41MYa/54ZGEuBZHCm5w=
-X-Google-Smtp-Source: ABdhPJw4rv2RVv6rEZnGVkQDeqzcTzqnAk/WnsBuoaPDw0y+mYuJIQtU/gZfjCu1ewbF+ByoHYs/AQ==
-X-Received: by 2002:a63:4e25:0:b0:3f6:8:8c04 with SMTP id c37-20020a634e25000000b003f600088c04mr25309258pgb.458.1653423434199;
-        Tue, 24 May 2022 13:17:14 -0700 (PDT)
-Received: from ?IPV6:2620:15c:2c1:200:be57:a1f8:e69e:e0? ([2620:15c:2c1:200:be57:a1f8:e69e:e0])
-        by smtp.gmail.com with ESMTPSA id jf4-20020a170903268400b0015e8d4eb1d5sm7714280plb.31.2022.05.24.13.17.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 May 2022 13:17:13 -0700 (PDT)
-Message-ID: <317a3e67-0956-e9c2-0406-9349844ca612@gmail.com>
-Date:   Tue, 24 May 2022 13:17:10 -0700
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Jkbsj8ZwrUi7OObfgCh/4Ar2JNwqZvHZHWjqqEl/+jU=;
+        b=kTnRr6qPENoiyPsNULbzkrmU2RIEkKV1SUy2G/p4ewvtH5ZscU9fBd6z/IpM/Fib5n
+         LiYvAw+u3xvtCc+CiNU5SXGPttTz0WIdhnxWNF4ePUc/kZ1llnopV0SiHRRuNeN/ox+1
+         rtLb8ZXpFoI1nLS2jwWgHcjgLtwXXWhnx8pBhnZIqPUMfu68gv6k27NRWuogw5wyU00z
+         zBpy35/PaxKD1SjkE1dYukAR9ZpMBmwfRAIuCQlhQOmTAtobTEjmsDO/S/Fzuv6OM7E3
+         a3M9kYMeZFRRpTZVyEEAoyxmJ6AQdiGFqTQGKyEZOjskJN7Nlz1qZssHZHeySdGx8zDl
+         db+Q==
+X-Gm-Message-State: AOAM530pe7ZaTcjS4ORZ55YPM37E7hFseXxm9NpEIeUW9MGtA9UC9Uoy
+        dslLygMdtRfgghxVMUquMf+/bgaNTC7MnKdsr7sVkA==
+X-Google-Smtp-Source: ABdhPJxI0LRDxxcWqCGKYs6WhpYtvmy2F8jbSAxNaFVcE1AEGhn5zSjLp5nioTc3NHXvpgAlkAFCwNktgzjS4b6u/ak=
+X-Received: by 2002:a81:b401:0:b0:300:2e86:e7e5 with SMTP id
+ h1-20020a81b401000000b003002e86e7e5mr4238965ywi.467.1653423780877; Tue, 24
+ May 2022 13:23:00 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: packet stuck in qdisc : patch proposal
-Content-Language: en-US
-To:     Vincent Ray <vray@kalrayinc.com>,
-        linyunsheng <linyunsheng@huawei.com>
-Cc:     davem <davem@davemloft.net>,
-        =?UTF-8?B?5pa55Zu954Ks?= <guoju.fgj@alibaba-inc.com>,
-        kuba <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Samuel Jones <sjones@kalrayinc.com>,
-        vladimir oltean <vladimir.oltean@nxp.com>,
-        Guoju Fang <gjfang@linux.alibaba.com>,
-        Remy Gauguey <rgauguey@kalrayinc.com>, will <will@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <1359936158.10849094.1649854873275.JavaMail.zimbra@kalray.eu>
- <2b827f3b-a9db-e1a7-0dc9-65446e07bc63@linux.alibaba.com>
- <1684598287.15044793.1653314052575.JavaMail.zimbra@kalray.eu>
- <d374b806-1816-574e-ba8b-a750a848a6b3@huawei.com>
- <1758521608.15136543.1653380033771.JavaMail.zimbra@kalray.eu>
- <1675198168.15239468.1653411635290.JavaMail.zimbra@kalray.eu>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-In-Reply-To: <1675198168.15239468.1653411635290.JavaMail.zimbra@kalray.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+References: <4740526.31r3eYUQgx@natalenko.name> <4bd84c983e77486fbc94dfa2a167afaa@AcuMS.aculab.com>
+ <CADVnQykt1Lz0m1gfEckHhDLy66xhJvO0F2Z1-yQ=Mgi7gBY5RQ@mail.gmail.com>
+In-Reply-To: <CADVnQykt1Lz0m1gfEckHhDLy66xhJvO0F2Z1-yQ=Mgi7gBY5RQ@mail.gmail.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 24 May 2022 13:22:49 -0700
+Message-ID: <CANn89iKsJ53GKJyKGLLvn_NhY_oe5TzHLGRtRttZpHaUOVmiBw@mail.gmail.com>
+Subject: Re: [RFC] tcp_bbr2: use correct 64-bit division
+To:     Neal Cardwell <ncardwell@google.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        Oleksandr Natalenko <oleksandr@natalenko.name>,
+        Yuchung Cheng <ycheng@google.com>,
+        Yousuk Seung <ysseung@google.com>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Adithya Abraham Philip <abrahamphilip@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Konstantin Demin <rockdrilla@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -85,49 +79,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 5/24/22 10:00, Vincent Ray wrote:
-> All,
+On Tue, May 24, 2022 at 1:06 PM Neal Cardwell <ncardwell@google.com> wrote:
 >
-> I confirm Eric's patch works well too, and it's better and clearer than mine.
-> So I think we should go for it, and the one from Guoju in addition.
+> On Tue, May 24, 2022 at 4:01 AM David Laight <David.Laight@aculab.com> wrote:
+> >
+> > From: Oleksandr Natalenko
+> > > Sent: 22 May 2022 23:30
+> > > To: Neal Cardwell <ncardwell@google.com>
+> > >
+> > > Hello Neal.
+> > >
+> > > It was reported to me [1] by Konstantin (in Cc) that BBRv2 code suffers from integer division issue on
+> > > 32 bit systems.
+> >
+> > Do any of these divisions ever actually have 64bit operands?
+> > Even on x86-64 64bit divide is significantly slower than 32bit divide.
+> >
+> > It is quite clear that x * 8 / 1000 is the same as x / (1000 / 8).
+> > So promoting to 64bit cannot be needed.
+> >
+> >         David
 >
-> @Eric : I see you are one of the networking maintainers, so I have a few questions for you :
+> The sk->sk_pacing_rate can definitely be bigger than 32 bits if the
+> network path can support more than 34 Gbit/sec  (a pacing rate of 2^32
+> bytes per sec is roughly 34 Gibt/sec). This definitely happens.
 >
-> a) are you going to take care of these patches directly yourself, or is there something Guoju or I should do to promote them ?
-
-I think this is totally fine you take ownership of the patch, please 
-send a formal V2.
-
-Please double check what patchwork had to say about your V1 :
-
-
-https://patchwork.kernel.org/project/netdevbpf/patch/1684598287.15044793.1653314052575.JavaMail.zimbra@kalray.eu/
-
-
-And make sure to address the relevant points
-
-The most important one is the lack of 'Signed-off-by:' tag, of course.
-
-
-> b) Can we expect to see them land in the mainline soon ?
-
-If your v2 submission is correct, it can be merged this week ;)
-
-
+> So  this one seems reasonable to me (and is only in debug code, so the
+> performance is probably fine):
+> -                (u64)sk->sk_pacing_rate * 8 / 1000,
+> +                div_u64((u64)sk->sk_pacing_rate * 8, 1000),
 >
-> c) Will they be backported to previous versions of the kernel ? Which ones ?
-
-You simply can include a proper Fixes: tag, so that stable teams can 
-backport
-
-the patch to all affected kernel versions.
-
-
-
+> For the other two I agree we should rework them to avoid the 64-bit
+> divide, since we don't need it.
 >
-> Thanks a lot, best,
+> There is similar logic in mainline Linux in tcp_tso_autosize(), which
+> is currently using "unsigned long" for bytes.
+>
 
-Thanks a lot for working on this long standing issue.
+Not sure I follow.
+
+sk_pacing_rate is also 'unsigned long'
+
+So tcp_tso_autosize() is correct on 32bit and 64bit arches.
+There is no forced 64bit operation there.
 
 
+> Eric, what do you advise?
+>
+> thanks,
+> neal
