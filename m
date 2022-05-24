@@ -2,130 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C126532882
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 13:08:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FB88532907
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 13:31:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234648AbiEXLHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 07:07:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39468 "EHLO
+        id S236643AbiEXLa1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 07:30:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51460 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234063AbiEXLHA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 07:07:00 -0400
-Received: from mail-oa1-x29.google.com (mail-oa1-x29.google.com [IPv6:2001:4860:4864:20::29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D0186D849
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 04:06:59 -0700 (PDT)
-Received: by mail-oa1-x29.google.com with SMTP id 586e51a60fabf-edeb6c3642so21794135fac.3
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 04:06:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VKKe+6qBQIm12lCUpH0Sxp4+NXI90A0uXZAqIc10ncY=;
-        b=HwVDCzwjATjlGAIJ3+JeU4cM+iRQQ0fGccnqZgJ7Dwvs7Q6IFYDh0GJqXRziKDGGJ+
-         H9tvhZs5mxuIKSyQC8CFDXsKX9ogyBkEB/C1aD8YRjrHCStbKZ1iVsKD1nOiQ0QWAPWV
-         JqX6sDB6TFi1tf4w85qQNxyJD6rUNFrzCCJoivsunDquhDIaodahgeZJjaW3QwR6inhe
-         ISTLZAj0L19EcmGbVQEmwkVQGCiok/ehKp4L+eIeGMrwa6PmU+sPKAop8VeTZlsy26CB
-         4Cjd11YnAUYOcDGo8S0E56AxsYEHrAr1H/kAB3H8yRT9WAX0cj6wDvMJ38vJpf/aqHA1
-         K9iQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VKKe+6qBQIm12lCUpH0Sxp4+NXI90A0uXZAqIc10ncY=;
-        b=VwwfaXm+XxSsubDWCJUU3a9JuH4LF2IYOSZhwiDK/Sw66XfB+ezDvSbHEyfkB7ar47
-         RGCLOKJIl2gB3XUCzsyc0OUEl9eOjjduHC9mWkdfmloHyyNkNTEvksv9zAVTemcI659B
-         fgIThE3j67HtXBpiCoZldr13yH/3UcAsKGsGBs4ELr3dJf221p3ILWUwdbERcnEH3ZEi
-         /rubFAQItHvubZLFStPcNKUEt3qDFqiVkqCgfDSBHyv+PTPiy2Ox5fITRUAVs81T5c9k
-         BtTysUR/oF+o/VtV54qX2FfFA/nsVwbZTwViPJ4ajik3RJRHidafQ80LPrZXnxVgZNtS
-         G0dw==
-X-Gm-Message-State: AOAM5311blnowCJUf13wZ9BU/7eJY+rQq0stsl5YtyQqsZsutzfoirMs
-        LguDRHnp9fX9d/iUd6wKJqll8j22wfJJTyEsfecpaQ==
-X-Google-Smtp-Source: ABdhPJzhl26EPYePCoZDxKKBpid3sxP95MD1D8lQQk/DlugmdrO4YT7uA/zZbc8AT4HaqELuAJenHw20CnIPSKMbeCQ=
-X-Received: by 2002:a05:6870:4184:b0:f1:97d2:6696 with SMTP id
- y4-20020a056870418400b000f197d26696mr2104578oac.148.1653390417932; Tue, 24
- May 2022 04:06:57 -0700 (PDT)
+        with ESMTP id S231184AbiEXLaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 07:30:25 -0400
+Received: from kylie.crudebyte.com (kylie.crudebyte.com [5.189.157.229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCF6487A33
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 04:30:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=crudebyte.com; s=kylie; h=Content-Type:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-ID:Date:Subject:Cc:To:From:
+        Content-ID:Content-Description;
+        bh=d993qO1M6uJRVL7vFommU2cm1CrcueVdWyz7bnjmjWQ=; b=ZWOhwa8dIWaLynxqpKMd9oYmxi
+        2jUo9cDHxRlrLja8c52bchWZrBfxNFTdhzuP0bfE9NuuS5HMke69wr63zyHuHAv65BHYQZDCHh1a7
+        mU0SAhzkRS9+GoUURFV1S9VWSfJb/A9OoZ21lawBhLza0rTh+OgL+Ztcth0J1CzoXuUgMmHB56j8J
+        SYp6X1/TbZDp+WtMBT0HFRE7TKcJXBxfdaxi3mGd84PKyYpig7eb5YtSLzIQKwqLylLNZMZP21aHu
+        GkxapMb7JrnZrIdH8gC8HmvufHtIbDpt+6jzwqdhjGWKpzullwRzOGpmv2MAXJdK6UGTRTbotnh6F
+        4C/oi6LuGn1Yukt70ZZT0iMhnkM94+Y5Bj8L6XcUO3Jg/GNPiqgF4F4JjLsUioYVhPacDFYCApIt8
+        V6AVAl5FgX4Zduu4sy57baB/730X55lNgCsK3Js4ii4wfccjGiJ+TtzAvbdH4V+aD2DM7wDq/1v6B
+        q6Cgz8wVHv7jtOtgxfW959SsSoffALZu7h6eK1X0IiTqAR4Ulmfo+SNxIIZv2VjsVAk7UkYFrZiUY
+        bdID9VhoQBMeYfniLtIHahsT7jVRoDwf2ld9S2uJ0HBuCptc4SCSFjv83k5GL+ozRC8nUEP+kwi7F
+        tvNG3hahP/KRMOkd0cv9mMyG1msj80ppyQO3mBBK0=;
+From:   Christian Schoenebeck <linux_oss@crudebyte.com>
+To:     Dominique Martinet <asmadeus@codewreck.org>,
+        Nikolay Kichukov <nikolay@oldum.net>
+Cc:     v9fs-developer@lists.sourceforge.net, netdev@vger.kernel.org,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Greg Kurz <groug@kaod.org>, Vivek Goyal <vgoyal@redhat.com>
+Subject: Re: [PATCH v4 00/12] remove msize limit in virtio transport
+Date:   Tue, 24 May 2022 13:29:18 +0200
+Message-ID: <2799122.FyIdJ7nTd3@silver>
+In-Reply-To: <2380b79f721caf9e6b99aa680b9b29c76fd4e2f4.camel@oldum.net>
+References: <cover.1640870037.git.linux_oss@crudebyte.com>
+ <Ye6IaIqQcwAKv0vb@codewreck.org>
+ <2380b79f721caf9e6b99aa680b9b29c76fd4e2f4.camel@oldum.net>
 MIME-Version: 1.0
-References: <20220512112347.18717-1-andrew@daynix.com> <CACGkMEvH1yE0CZYdstAK32DkEucejNO+V7PEAZD_641+rp2aKA@mail.gmail.com>
-In-Reply-To: <CACGkMEvH1yE0CZYdstAK32DkEucejNO+V7PEAZD_641+rp2aKA@mail.gmail.com>
-From:   Andrew Melnichenko <andrew@daynix.com>
-Date:   Tue, 24 May 2022 14:06:46 +0300
-Message-ID: <CABcq3pFJcsoj+dDf6tirT_hfTB6rj9+f6KNFafwg+usqYwTdDA@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 0/5] TUN/VirtioNet USO features support.
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     davem <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>, mst <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        virtualization <virtualization@lists.linux-foundation.org>,
-        Yan Vugenfirer <yan@daynix.com>,
-        Yuri Benditovich <yuri.benditovich@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=unavailable autolearn_force=no
-        version=3.4.6
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+On Dienstag, 24. Mai 2022 10:10:31 CEST Nikolay Kichukov wrote:
+> Hello Dominique,
+> 
+> On Mon, 2022-01-24 at 20:07 +0900, Dominique Martinet wrote:
+> > Nikolay Kichukov wrote on Mon, Jan 24, 2022 at 11:21:08AM +0100:
+> > > It works, sorry for overlooking the 'known limitations' in the first
+> > > place. When do we expect these patches to be merged upstream?
+> > 
+> > We're just starting a new development cycle for 5.18 while 5.17 is
+> > stabilizing, so this mostly depends on the ability to check if a msize
+> > given in parameter is valid as described in the first "STILL TO DO"
+> > point listed in the cover letter.
+> > 
+> > I personally would be happy considering this series for this cycle
+> > with
+> > just a max msize of 4MB-8k and leave that further bump for later if
+> > we're sure qemu will handle it.
+> > We're still seeing a boost for that and the smaller buffers for small
+> > messages will benefit all transport types, so that would get in in
+> > roughly two months for 5.18-rc1, then another two months for 5.18 to
+> > actually be released and start hitting production code.
+> > 
+> > 
+> > I'm not sure when exactly but I'll run some tests with it as well and
+> > redo a proper code review within the next few weeks, so we can get
+> > this
+> > in -next for a little while before the merge window.
+> 
+> Did you make it into 5.18? I see it just got released...
 
-The issue is that host segments packets between guests on the same host.
-Tests show that it happens because SKB_GSO_DODGY skb offload in
-virtio_net_hdr_from_skb().
-To do segmentation you need to remove SKB_GSO_DODGY or add SKB_GSO_PARTIAL
-The solution with DODGY/PARTIAL offload looks like a dirty hack, so
-for now, I've lived it as it is for further investigation.
+No, not yet. I can send a v5 as outlined above, including opt-out for the RDMA 
+transport as Dominique noted, that wouldn't be much work for me.
+
+However ATM I fear it would probably not help anybody, as we currently have 
+two far more serious issues [1] regarding 9p's cache support introduced by the 
+netfs changes: 
+
+1. 9p cache enabled performs now worse than without any cache.
+
+2. There are misbehaviours once in a while, as 9p cache opens FIDs in read-
+only mode and once in a while then tries to write with those read-only FIDs 
+which causes EBADF errors.
+
+[1] https://lore.kernel.org/lkml/9591612.lsmsJCMaJN@silver/
+
+Issue (2.) can probably be fixed by just opening the FIDs in RW mode, as 
+suggested by Dominique. But for performance issue (1.) nobody had an idea yet.
+
+Best regards,
+Christian Schoenebeck
 
 
-On Tue, May 17, 2022 at 9:32 AM Jason Wang <jasowang@redhat.com> wrote:
->
-> On Thu, May 12, 2022 at 7:33 PM Andrew Melnychenko <andrew@daynix.com> wrote:
-> >
-> > Added new offloads for TUN devices TUN_F_USO4 and TUN_F_USO6.
-> > Technically they enable NETIF_F_GSO_UDP_L4
-> > (and only if USO4 & USO6 are set simultaneously).
-> > It allows to transmission of large UDP packets.
-> >
-> > Different features USO4 and USO6 are required for qemu where Windows guests can
-> > enable disable USO receives for IPv4 and IPv6 separately.
-> > On the other side, Linux can't really differentiate USO4 and USO6, for now.
-> > For now, to enable USO for TUN it requires enabling USO4 and USO6 together.
-> > In the future, there would be a mechanism to control UDP_L4 GSO separately.
-> >
-> > Test it WIP Qemu https://github.com/daynix/qemu/tree/Dev_USOv2
-> >
-> > New types for VirtioNet already on mailing:
-> > https://lists.oasis-open.org/archives/virtio-comment/202110/msg00010.html
-> >
-> > Also, there is a known issue with transmitting packages between two guests.
->
-> Could you explain this more? It looks like a bug. (Or any pointer to
-> the discussion)
->
-> Thanks
->
-> > Without hacks with skb's GSO - packages are still segmented on the host's postrouting.
-> >
-> > Andrew (5):
-> >   uapi/linux/if_tun.h: Added new offload types for USO4/6.
-> >   driver/net/tun: Added features for USO.
-> >   uapi/linux/virtio_net.h: Added USO types.
-> >   linux/virtio_net.h: Support USO offload in vnet header.
-> >   drivers/net/virtio_net.c: Added USO support.
-> >
-> >  drivers/net/tap.c               | 10 ++++++++--
-> >  drivers/net/tun.c               |  8 +++++++-
-> >  drivers/net/virtio_net.c        | 19 +++++++++++++++----
-> >  include/linux/virtio_net.h      |  9 +++++++++
-> >  include/uapi/linux/if_tun.h     |  2 ++
-> >  include/uapi/linux/virtio_net.h |  4 ++++
-> >  6 files changed, 45 insertions(+), 7 deletions(-)
-> >
-> > --
-> > 2.35.1
-> >
->
