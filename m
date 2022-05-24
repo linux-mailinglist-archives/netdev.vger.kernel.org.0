@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3AA34532E5C
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 18:03:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 97B9D532E5A
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 18:03:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239565AbiEXQCn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 12:02:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46514 "EHLO
+        id S239507AbiEXQD2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 12:03:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239353AbiEXQCJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 12:02:09 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C24364E2;
-        Tue, 24 May 2022 09:01:07 -0700 (PDT)
+        with ESMTP id S239413AbiEXQCW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 12:02:22 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A592A13FBB;
+        Tue, 24 May 2022 09:01:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1687B61763;
-        Tue, 24 May 2022 16:01:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78FBBC34113;
-        Tue, 24 May 2022 16:01:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C4F29B81A4F;
+        Tue, 24 May 2022 16:01:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2EC17C34116;
+        Tue, 24 May 2022 16:01:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653408066;
-        bh=lFktN1E1t+rxFQGdQ28nXe9HkrtZhQdy6eSxkYzOlmM=;
+        s=k20201202; t=1653408070;
+        bh=yq3kpL5uLmlVYSLy8oKazIs+8ak4Uz688yskPdhZX6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NFKBYnYaJc2l3yrrdaw8y9n1ko51sL5t+BNDJddvMP/CS9x4Jobl/LssFcwTHhdQO
-         0oZgQ/mBvKX255oFtFkS/iDuw/UhKGa1dnNVVsXTShYqvJau/a9DUqUzJncDUnDvrM
-         w68lsps6UTrfRyXmwhaf33/lgxp11lGVKSuNrF6iDXgzSZMTQENbu0T18OMiUu+Wr8
-         +YB3VO7s/DNdCgXmtf/kpqXAZkzxl1zfLRCOHU4G6HVLuLkwgZjwgyinplfOspUY7H
-         oIV9cEXEPr3nSs46oMLhHy0cKZQh4YaZSCvMN6RFDRc4ZVTVsbyD+Vz+6h+INtDbI9
-         kle/ub8pnW2/g==
+        b=Lucz7zYmQfE7E2CgWc9cAI2VGWhn9xIbesoDnfhnSb1Rw0BK+8/5SwsoNsuVkIIJS
+         OGmYHOJrw7RDzBcFrwdaXYKkgI8pPsbRo8WJ2LddfCtm2amjA7vAVMzUFViF/3plS0
+         nQG5t0UeBtENULOoh4Ch309VzinqTEFjyvRScPP8myKhQtI23P0nIbsor5ZPpj9WiA
+         TyfOO2YQGihhG7VwuBMxGfZPoWBVSf0jfXk7FwSd4L8irA3bWzmg/9N9eCBosZX0L0
+         pqOsBj4wdlqS2mJrBXieMCilTI9Ms2Mv/aryxKZ6B1VgjrA4+BZ9mqJsYDaJomTQFV
+         S+IQT/+kTzKCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Bartschies <thomas.bartschies@cvk.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 2/5] net: af_key: check encryption module availability consistency
-Date:   Tue, 24 May 2022 12:00:58 -0400
-Message-Id: <20220524160102.827227-2-sashal@kernel.org>
+Cc:     Joel Stanley <joel@jms.id.au>, David Wilder <wilder@us.ibm.com>,
+        Dylan Hung <dylan_hung@aspeedtech.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, edumazet@google.com,
+        kuba@kernel.org, pabeni@redhat.com, guoheyi@linux.alibaba.com,
+        arnd@arndb.de, chenhao288@hisilicon.com, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 3/5] net: ftgmac100: Disable hardware checksum on AST2600
+Date:   Tue, 24 May 2022 12:00:59 -0400
+Message-Id: <20220524160102.827227-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220524160102.827227-1-sashal@kernel.org>
 References: <20220524160102.827227-1-sashal@kernel.org>
@@ -58,53 +59,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Bartschies <thomas.bartschies@cvk.de>
+From: Joel Stanley <joel@jms.id.au>
 
-[ Upstream commit 015c44d7bff3f44d569716117becd570c179ca32 ]
+[ Upstream commit 6fd45e79e8b93b8d22fb8fe22c32fbad7e9190bd ]
 
-Since the recent introduction supporting the SM3 and SM4 hash algos for IPsec, the kernel
-produces invalid pfkey acquire messages, when these encryption modules are disabled. This
-happens because the availability of the algos wasn't checked in all necessary functions.
-This patch adds these checks.
+The AST2600 when using the i210 NIC over NC-SI has been observed to
+produce incorrect checksum results with specific MTU values. This was
+first observed when sending data across a long distance set of networks.
 
-Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+On a local network, the following test was performed using a 1MB file of
+random data.
+
+On the receiver run this script:
+
+ #!/bin/bash
+ while [ 1 ]; do
+        # Zero the stats
+        nstat -r  > /dev/null
+        nc -l 9899 > test-file
+        # Check for checksum errors
+        TcpInCsumErrors=$(nstat | grep TcpInCsumErrors)
+        if [ -z "$TcpInCsumErrors" ]; then
+                echo No TcpInCsumErrors
+        else
+                echo TcpInCsumErrors = $TcpInCsumErrors
+        fi
+ done
+
+On an AST2600 system:
+
+ # nc <IP of  receiver host> 9899 < test-file
+
+The test was repeated with various MTU values:
+
+ # ip link set mtu 1410 dev eth0
+
+The observed results:
+
+ 1500 - good
+ 1434 - bad
+ 1400 - good
+ 1410 - bad
+ 1420 - good
+
+The test was repeated after disabling tx checksumming:
+
+ # ethtool -K eth0 tx-checksumming off
+
+And all MTU values tested resulted in transfers without error.
+
+An issue with the driver cannot be ruled out, however there has been no
+bug discovered so far.
+
+David has done the work to take the original bug report of slow data
+transfer between long distance connections and triaged it down to this
+test case.
+
+The vendor suspects this this is a hardware issue when using NC-SI. The
+fixes line refers to the patch that introduced AST2600 support.
+
+Reported-by: David Wilder <wilder@us.ibm.com>
+Reviewed-by: Dylan Hung <dylan_hung@aspeedtech.com>
+Signed-off-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/faraday/ftgmac100.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index 2ac9560020f9..d8bceb8cf756 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2902,7 +2902,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
- 			break;
- 		if (!aalg->pfkey_supported)
- 			continue;
--		if (aalg_tmpl_set(t, aalg))
-+		if (aalg_tmpl_set(t, aalg) && aalg->available)
- 			sz += sizeof(struct sadb_comb);
- 	}
- 	return sz + sizeof(struct sadb_prop);
-@@ -2920,7 +2920,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 		if (!ealg->pfkey_supported)
- 			continue;
- 
--		if (!(ealg_tmpl_set(t, ealg)))
-+		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
- 			continue;
- 
- 		for (k = 1; ; k++) {
-@@ -2931,7 +2931,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 			if (!aalg->pfkey_supported)
- 				continue;
- 
--			if (aalg_tmpl_set(t, aalg))
-+			if (aalg_tmpl_set(t, aalg) && aalg->available)
- 				sz += sizeof(struct sadb_comb);
- 		}
- 	}
+diff --git a/drivers/net/ethernet/faraday/ftgmac100.c b/drivers/net/ethernet/faraday/ftgmac100.c
+index 2c06cdcd3e75..d7478d332820 100644
+--- a/drivers/net/ethernet/faraday/ftgmac100.c
++++ b/drivers/net/ethernet/faraday/ftgmac100.c
+@@ -1880,6 +1880,11 @@ static int ftgmac100_probe(struct platform_device *pdev)
+ 	/* AST2400  doesn't have working HW checksum generation */
+ 	if (np && (of_device_is_compatible(np, "aspeed,ast2400-mac")))
+ 		netdev->hw_features &= ~NETIF_F_HW_CSUM;
++
++	/* AST2600 tx checksum with NCSI is broken */
++	if (priv->use_ncsi && of_device_is_compatible(np, "aspeed,ast2600-mac"))
++		netdev->hw_features &= ~NETIF_F_HW_CSUM;
++
+ 	if (np && of_get_property(np, "no-hw-checksum", NULL))
+ 		netdev->hw_features &= ~(NETIF_F_HW_CSUM | NETIF_F_RXCSUM);
+ 	netdev->features |= netdev->hw_features;
 -- 
 2.35.1
 
