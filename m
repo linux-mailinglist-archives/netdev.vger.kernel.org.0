@@ -2,123 +2,433 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D996F532375
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 08:46:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16F5C532380
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 08:52:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233079AbiEXGqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 02:46:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51216 "EHLO
+        id S234273AbiEXGwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 02:52:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34544 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229945AbiEXGqp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 02:46:45 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95E3367D1E
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 23:46:43 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id er5so21741471edb.12
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 23:46:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=aD2QKzn0n3/fi3HIeHhS7MyP9Kj1F8v+jusSQ5f3BvA=;
-        b=xd3SOib+CoeepZ/WXUkyVcCMGJ0yzyF9jCySLQHuCmVIfK6RQmTVqx6A3v/76cvLWP
-         rYYrIWQ1s/K8ehavQ0tHWCewTU/CokOt8PNTp3GAUJFEd8QVOCTdw0uKwQ9L2W+YEls4
-         9o/UxEqnidaxc1ct4t2PyHWxPnNsCC49w6MQdQIsdSAjkG1aUWCuYZaMz9Z67jOkdX4O
-         YNqGxQy0Y983035MsAxMKYtAUc2Hl5Xlfu25ZptEtKxUwMCcctaqEcs0r/GnRJDWlvXj
-         197ZPimxkStpt7x1R0+szJjMgkPggocrRC++/caHCK385+1qqFY7B0TX/bFSrHbNuuw7
-         4Llw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=aD2QKzn0n3/fi3HIeHhS7MyP9Kj1F8v+jusSQ5f3BvA=;
-        b=1+2VGzPw6kq7FceS/YsPwxOgq1nPUYbz2J0ZnfinpT67ZNMsl6rskbq1j7Jm0hCIj0
-         7OPHWghesNiCTNqXpxPbD5b0+MrLz2b+V5zD6Y1QIWYYDN7F4/6XEVTXFWyjB587FhR+
-         dvlBCJnJDLcaTNl+DzW3j4sfIRqPSjSvoxYPUUbydLMIGezCUKNf8OpQ5oONH6+HeQg1
-         RsedTn+xY3apYfRhGCobJi66FSJX6VN2pvYY4qCWcWLMq4X4x564HPzjYFQkPhHEOmnD
-         b6iOxbo2PHw57XbB0LmxOG3dMD5qM3kh/aYL+QGyYXr/Bb4WUyoKRs5zNykgVzLlZtAl
-         dkRw==
-X-Gm-Message-State: AOAM531yH0YNjVvoYJpUlz+iIjCxISzUhJ3W/+hMXlYedhRpE4GAadod
-        50eABPoFdegze3QUYjkHIjitqw==
-X-Google-Smtp-Source: ABdhPJwjJePRQ9qgj2Je/H8GQ4670aJwGx2U53EfyYBm+qEOHwZ318295bbmzR/9Ta/g7fbLmhp36Q==
-X-Received: by 2002:aa7:d94b:0:b0:42a:b93b:c54f with SMTP id l11-20020aa7d94b000000b0042ab93bc54fmr27289748eds.246.1653374801635;
-        Mon, 23 May 2022 23:46:41 -0700 (PDT)
-Received: from localhost (host-213-179-129-39.customer.m-online.net. [213.179.129.39])
-        by smtp.gmail.com with ESMTPSA id st5-20020a170907c08500b006fedeb8b838sm2042221ejc.153.2022.05.23.23.46.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 May 2022 23:46:39 -0700 (PDT)
-Date:   Tue, 24 May 2022 08:46:38 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
-        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
-        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
-        andrew@lunn.ch, mlxsw@nvidia.com
-Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
- and info
-Message-ID: <Yox/TkxkTUtd0RMM@nanopsycho>
-References: <YmjyRgYYRU/ZaF9X@nanopsycho>
- <20220427071447.69ec3e6f@kernel.org>
- <YmvRRSFeRqufKbO/@nanopsycho>
- <20220429114535.64794e94@kernel.org>
- <Ymw8jBoK3Vx8A/uq@nanopsycho>
- <20220429153845.5d833979@kernel.org>
- <YmzW12YL15hAFZRV@nanopsycho>
- <20220502073933.5699595c@kernel.org>
- <YotW74GJWt0glDnE@nanopsycho>
- <20220523105640.36d1e4b3@kernel.org>
+        with ESMTP id S229945AbiEXGwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 02:52:13 -0400
+Received: from out30-133.freemail.mail.aliyun.com (out30-133.freemail.mail.aliyun.com [115.124.30.133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0561D84A08;
+        Mon, 23 May 2022 23:52:10 -0700 (PDT)
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R181e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=alibuda@linux.alibaba.com;NM=1;PH=DS;RN=6;SR=0;TI=SMTPD_---0VEGefYZ_1653375127;
+Received: from localhost(mailfrom:alibuda@linux.alibaba.com fp:SMTPD_---0VEGefYZ_1653375127)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 24 May 2022 14:52:08 +0800
+From:   "D. Wythe" <alibuda@linux.alibaba.com>
+To:     kgraul@linux.ibm.com
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: [RFC net-next] net/smc:introduce 1RTT to SMC
+Date:   Tue, 24 May 2022 14:52:07 +0800
+Message-Id: <1653375127-130233-1-git-send-email-alibuda@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220523105640.36d1e4b3@kernel.org>
-X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_NONE,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-9.9 required=5.0 tests=BAYES_00,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,UNPARSEABLE_RELAY,USER_IN_DEF_SPF_WL
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, May 23, 2022 at 07:56:40PM CEST, kuba@kernel.org wrote:
->On Mon, 23 May 2022 11:42:07 +0200 Jiri Pirko wrote:
->> Mon, May 02, 2022 at 04:39:33PM CEST, kuba@kernel.org wrote:
->> >On Sat, 30 Apr 2022 08:27:35 +0200 Jiri Pirko wrote:  
->> >> Now I just want to use this component name to target individual line
->> >> cards. I see it is a nice fit. Don't you think?  
->> >
->> >Still on the fence.  
->> 
->> Why?
->
->IIRC my concern was mixing objects. We have component name coming from
->lc info, but then use it in dev flash.
+From: "D. Wythe" <alibuda@linux.alibaba.com>
 
-Sure. I considered that. The thing is, even if you put the lc component
-names to output of "devlink dev info", you would need to provide lc
-objects as well (somehow) - to contain the versions.
+Hi Karsten,
 
-But the component name is related to lc object listed in "devlink lc",
-so "devlink lc info" sounds line the correct place to put it.
+We are promoting SMC-R to the field of cloud computing, dues to the
+particularity of business on the cloud, the scale and the types of
+customer applications are unpredictable. As a participant of SMC-R, we
+also hope that SMC-R can cover more application scenarios. Therefore,
+many connection problems are exposed during this time. There are two
+main issue, one is that the establishment of a single connection takes
+longer than that of the TCP, another is that the degree of concurrency
+is low under multi-connection processing. This patch set is mainly
+optimized for the first issue, and the follow-up of the second issue
+will be synchronized in the future.
 
-If you are concern about "devlink dev flash" using component name from
-"devlink lc info", I would rather introduce "devlink lc flash" so you
-have a match. But from what I see, I don't really see the necessity for
-this match. Do you?
+In terms of communication process, under current implement, a TCP
+three-way handshake only needs 1-RTT time, while SMC-R currently
+requires 4-RTT times, including 2-RTT over IP(TCP handshake, SMC
+proposal & accept ) and 2-RTT over IB ( two times RKEY exchange), which
+is most influential factor affecting connection established time at the
+moment.
 
+We have noticed that single network interface card is mainstream on the
+cloud, dues to the advantages of cloud deployment costs and the cloud's
+own disaster recovery support. On the other hand, the emergence of RoCE
+LAG technology makes us no longer need to deal with multiple RDMA
+network interface cards by ourselves,  just like NIC bonding does. In
+Alibaba, Roce LAG is widely used for RDMA.
 
->
->> >> I see that the manpage is mentioning "the component names from devlink dev info"
->> >> which is not actually implemented, but exactly what I proposed.  
->> >
->> >How do you tie the line card to the component name? lc8_dev0 from 
->> >the flashing example is not present in the lc info output.  
->> 
->> Okay, I will move it there. Makes sense.
->
->FWIW I think I meant my comment as a way to underline that what you
->argue for is not what's implemented (assuming your "not actually
->implemented" referred to the flashing). I was trying to send you back 
->to the drawing board rather than break open a box of band-aides.
+In that case, SMC-R have only one single link, if so, the RKEY LLC
+messages that to perform information exchange in all links are no longer
+needed, the SMC Proposal & accept has already complete the exchange of
+all information needed. So we think that we can remove the RKEY exchange
+in that case, which will save us 2-RTT over IB. We call it as SMC-R 2-RTT.
 
-Sure, lets do this right, I don't want to band-aide anything...
+On the other hand, we can use TCP fast open, carry the SMC proposal data
+by TCP SYN message, reduce the time that the SMC waits for the TCP
+connection to be established. This will save us another 1-RTT over IP.
+
+Based on the above two viewpoints, in this scenario, we can compress the
+communication process of SMC-R into 1-RTT over IP, so that we can
+theoretically obtain a time close to that of TCP connection
+establishment. We call it as SMC-R 1-RTT. Of course, the specific results
+will also be affected by the implementation.
+
+In our test environment, we host two VMs on the same host for wrk/nginx
+tests, used a script similar to the following to performing test:
+
+Client.sh
+
+conn=$1
+thread=$2
+
+wrk -H ‘Connection: Close’ -c ${conn} -t ${thread} -d 10
+
+Server.sh
+
+sysctl -w net.ipv4.tcp_fastopen=3
+smc_run nginx
+
+Statistic shows that:
+
++-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
+|type|args  |   -c1 -t1     |   -c2 -t1     |   -c5 -t1      |  -c10 -t1    |   -c200 -t1    |  -c200 -t4    |  -c2000 -t8   |
++-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
+|next-next  |   4188.5qps   |   5942.04qps  |   7621.81qps   |  7678.62qps  |   8204.94qps   |  8457.57qps   |  5687.60qps   |
++-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
+|SMC-2RTT   |   4730.17qps  |   7394.85qps  |   11532.78qps  |  12016.22qps |   11520.81qps  |  11391.36qps  |  10364.41qps  |
++-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
+|SMC-1RTT   |   5702.77qps  |   9645.18qps  |   11899.20qps  |  12005.16qps |   11536.67qps  |  11420.87qps  |  10392.4qps   |
++-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+-
+|TCP        |   6415.74qps  |   11034.10qps |   16716.21qps  |  22217.06qps |   35926.74qps  |  117460.qps   |  120291.16qps |
++-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
+
+It can clearly be seen that:
+
+1. In step by step short-link scenarios ( -c1 -t1 ), SMC-R after
+optimization can reach 88% of TCP. There are still many implementation
+details that can be optimized, we hope to optimize the performance of
+SMC in this scenario to 90% of TCP.
+
+2. The problem is very serious in the scenario of multi-threading and
+multi-connection, the worst case is only 10% of TCP. Even though the
+SMC-1RTT has certain optimizations for this scenario, it is clear that
+the bottleneck is not here. We are doing some prototyping to solve this,
+we hope to reach 60% of TCP in multi-threading and multi-connection
+scenarios, and SMC-1RTT is the important prerequisite for upper limit of
+subsequent optimization.
+
+In this patch set, we had only completed a simple prototype, only make
+sure SMC-1RTT can works.
+
+Sincerely, we are looking forward for you comments, please
+let us know if you have any suggestions.
+
+Thanks.
+
+Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
+---
+ net/smc/af_smc.c   | 72 ++++++++++++++++++++++++++++++++++++++++++------------
+ net/smc/smc.h      |  8 ++++++
+ net/smc/smc_clc.c  | 32 ++++++++++++++++++++----
+ net/smc/smc_core.c |  2 ++
+ net/smc/smc_pnet.c |  4 +--
+ net/smc/smc_pnet.h |  3 +++
+ 6 files changed, 98 insertions(+), 23 deletions(-)
+
+diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
+index 1a556f4..bf646d1 100644
+--- a/net/smc/af_smc.c
++++ b/net/smc/af_smc.c
+@@ -492,7 +492,7 @@ static int smcr_lgr_reg_rmbs(struct smc_link *link,
+ 			     struct smc_buf_desc *rmb_desc)
+ {
+ 	struct smc_link_group *lgr = link->lgr;
+-	int i, rc = 0;
++	int i, lnk = 0, rc = 0;
+ 
+ 	rc = smc_llc_flow_initiate(lgr, SMC_LLC_FLOW_RKEY);
+ 	if (rc)
+@@ -507,14 +507,20 @@ static int smcr_lgr_reg_rmbs(struct smc_link *link,
+ 		rc = smcr_link_reg_rmb(&lgr->lnk[i], rmb_desc);
+ 		if (rc)
+ 			goto out;
++		/* available link count inc */
++		lnk++;
+ 	}
+ 
+-	/* exchange confirm_rkey msg with peer */
+-	rc = smc_llc_do_confirm_rkey(link, rmb_desc);
+-	if (rc) {
+-		rc = -EFAULT;
+-		goto out;
++	/* do not exchange confirm_rkey msg since there are only one link */
++	if (lnk > 1) {
++		/* exchange confirm_rkey msg with peer */
++		rc = smc_llc_do_confirm_rkey(link, rmb_desc);
++		if (rc) {
++			rc = -EFAULT;
++			goto out;
++		}
+ 	}
++
+ 	rmb_desc->is_conf_rkey = true;
+ out:
+ 	mutex_unlock(&lgr->llc_conf_mutex);
+@@ -932,6 +938,31 @@ static int smc_find_rdma_device(struct smc_sock *smc, struct smc_init_info *ini)
+ 	return 0;
+ }
+ 
++/* just prototype code
++ * since tcp connect has not happen, using route to perform smc_pnet_find_roce_by_pnetid
++ */
++static int smc_find_rdma_device_with_dst(struct smc_sock *smc, struct smc_init_info *ini)
++{
++	struct sock *tsk = smc->clcsock->sk;
++	struct rtable *rt;
++
++	rt = ip_route_output(sock_net(tsk), smc->remote_address.v4.sin_addr.s_addr,
++			     0, 0, 0);
++
++	if (IS_ERR(rt))
++		return -ECONNRESET;
++
++	smc_pnet_find_roce_by_pnetid(rt->dst.dev, ini);
++	__builtin_prefetch(&ini->ib_dev->mac[ini->ib_port - 1]);
++
++	if (!ini->check_smcrv2 && !ini->ib_dev)
++		return SMC_CLC_DECL_NOSMCRDEV;
++	if (ini->check_smcrv2 && !ini->smcrv2.ib_dev_v2)
++		return SMC_CLC_DECL_NOSMCRDEV;
++
++	return 0;
++}
++
+ /* check if there is an ISM device available for this connection. */
+ /* called for connect and listen */
+ static int smc_find_ism_device(struct smc_sock *smc, struct smc_init_info *ini)
+@@ -1019,13 +1050,17 @@ static int smc_find_proposal_devices(struct smc_sock *smc,
+ 
+ 	/* check if there is an rdma device available */
+ 	if (!(ini->smcr_version & SMC_V1) ||
+-	    smc_find_rdma_device(smc, ini))
++	    smc_find_rdma_device_with_dst(smc, ini))
+ 		ini->smcr_version &= ~SMC_V1;
+ 	/* else RDMA is supported for this connection */
+ 
+ 	ini->smc_type_v1 = smc_indicated_type(ini->smcd_version & SMC_V1,
+ 					      ini->smcr_version & SMC_V1);
+ 
++	/* just prototype, do this for simple */
++	ini->smc_type_v2 = SMC_TYPE_N;
++	return rc;
++
+ 	/* check if there is an ism v2 device available */
+ 	if (!(ini->smcd_version & SMC_V2) ||
+ 	    !smc_ism_is_v2_capable() ||
+@@ -1492,11 +1527,7 @@ static void smc_connect_work(struct work_struct *work)
+ 		smc->sk.sk_err = smc->clcsock->sk->sk_err;
+ 	} else if ((1 << smc->clcsock->sk->sk_state) &
+ 					(TCPF_SYN_SENT | TCPF_SYN_RECV)) {
+-		rc = sk_stream_wait_connect(smc->clcsock->sk, &timeo);
+-		if ((rc == -EPIPE) &&
+-		    ((1 << smc->clcsock->sk->sk_state) &
+-					(TCPF_ESTABLISHED | TCPF_CLOSE_WAIT)))
+-			rc = 0;
++		rc = 0;
+ 	}
+ 	release_sock(smc->clcsock->sk);
+ 	lock_sock(&smc->sk);
+@@ -1580,9 +1611,10 @@ static int smc_connect(struct socket *sock, struct sockaddr *addr,
+ 		rc = -EALREADY;
+ 		goto out;
+ 	}
+-	rc = kernel_connect(smc->clcsock, addr, alen, flags);
+-	if (rc && rc != -EINPROGRESS)
+-		goto out;
++
++	/* copy remote address backup */
++	memcpy(&smc->remote_address.ss, addr, alen);
++	rc = -EINPROGRESS;
+ 
+ 	if (smc->use_fallback) {
+ 		sock->state = rc ? SS_CONNECTING : SS_CONNECTED;
+@@ -2452,9 +2484,17 @@ static int smc_listen(struct socket *sock, int backlog)
+ {
+ 	struct sock *sk = sock->sk;
+ 	struct smc_sock *smc;
+-	int rc;
++	int rc, val;
+ 
+ 	smc = smc_sk(sk);
++
++	/* enable server clcsock tcp fastopen.
++	 * just a proto type code, magic number 5 for no reason
++	 */
++	val = 5;
++	smc->clcsock->ops->setsockopt(smc->clcsock, SOL_TCP,
++				      TCP_FASTOPEN, KERNEL_SOCKPTR(&val), sizeof(val));
++
+ 	lock_sock(sk);
+ 
+ 	rc = -EINVAL;
+diff --git a/net/smc/smc.h b/net/smc/smc.h
+index 5ed765e..ef18894 100644
+--- a/net/smc/smc.h
++++ b/net/smc/smc.h
+@@ -261,6 +261,14 @@ struct smc_sock {				/* smc sock container */
+ 	int			fallback_rsn;	/* reason for fallback */
+ 	u32			peer_diagnosis; /* decline reason from peer */
+ 	atomic_t                queued_smc_hs;  /* queued smc handshakes */
++
++	union {
++		struct sockaddr		addr;
++		struct sockaddr_in	v4;
++		struct sockaddr_in6	v6;
++		struct sockaddr_storage ss;
++	} remote_address;
++
+ 	struct inet_connection_sock_af_ops		af_ops;
+ 	const struct inet_connection_sock_af_ops	*ori_af_ops;
+ 						/* original af ops */
+diff --git a/net/smc/smc_clc.c b/net/smc/smc_clc.c
+index f9f3f59..f944c67 100644
+--- a/net/smc/smc_clc.c
++++ b/net/smc/smc_clc.c
+@@ -20,6 +20,7 @@
+ #include <net/addrconf.h>
+ #include <net/sock.h>
+ #include <net/tcp.h>
++#include <net/route.h>
+ 
+ #include "smc.h"
+ #include "smc_core.h"
+@@ -486,8 +487,7 @@ static int smc_clc_prfx_set4_rcu(struct dst_entry *dst, __be32 ipv4,
+ 		return -ENODEV;
+ 
+ 	in_dev_for_each_ifa_rcu(ifa, in_dev) {
+-		if (!inet_ifa_match(ipv4, ifa))
+-			continue;
++		/* delete this for simple, just prototype code*/
+ 		prop->prefix_len = inet_mask_len(ifa->ifa_mask);
+ 		prop->outgoing_subnet = ifa->ifa_address & ifa->ifa_mask;
+ 		/* prop->ipv6_prefixes_cnt = 0; already done by memset before */
+@@ -528,10 +528,10 @@ static int smc_clc_prfx_set6_rcu(struct dst_entry *dst,
+ 
+ /* retrieve and set prefixes in CLC proposal msg */
+ static int smc_clc_prfx_set(struct socket *clcsock,
++			    struct dst_entry *dst,
+ 			    struct smc_clc_msg_proposal_prefix *prop,
+ 			    struct smc_clc_ipv6_prefix *ipv6_prfx)
+ {
+-	struct dst_entry *dst = sk_dst_get(clcsock->sk);
+ 	struct sockaddr_storage addrs;
+ 	struct sockaddr_in6 *addr6;
+ 	struct sockaddr_in *addr;
+@@ -802,7 +802,8 @@ int smc_clc_send_decline(struct smc_sock *smc, u32 peer_diag_info, u8 version)
+ }
+ 
+ /* send CLC PROPOSAL message across internal TCP socket */
+-int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini)
++int smc_clc_send_proposal_with_nexthop(struct smc_sock *smc,
++				       struct dst_entry *dst, struct smc_init_info *ini)
+ {
+ 	struct smc_clc_smcd_v2_extension *smcd_v2_ext;
+ 	struct smc_clc_msg_proposal_prefix *pclc_prfx;
+@@ -838,7 +839,7 @@ int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini)
+ 
+ 	/* retrieve ip prefixes for CLC proposal msg */
+ 	if (ini->smc_type_v1 != SMC_TYPE_N) {
+-		rc = smc_clc_prfx_set(smc->clcsock, pclc_prfx, ipv6_prfx);
++		rc = smc_clc_prfx_set(smc->clcsock, dst, pclc_prfx, ipv6_prfx);
+ 		if (rc) {
+ 			if (ini->smc_type_v2 == SMC_TYPE_N) {
+ 				kfree(pclc);
+@@ -961,6 +962,11 @@ int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini)
+ 	}
+ 	vec[i].iov_base = trl;
+ 	vec[i++].iov_len = sizeof(*trl);
++
++	msg.msg_flags	|= MSG_FASTOPEN;
++	msg.msg_name	= &smc->remote_address.addr;
++	msg.msg_namelen = sizeof(struct sockaddr_in);
++
+ 	/* due to the few bytes needed for clc-handshake this cannot block */
+ 	len = kernel_sendmsg(smc->clcsock, &msg, vec, i, plen);
+ 	if (len < 0) {
+@@ -975,6 +981,22 @@ int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini)
+ 	return reason_code;
+ }
+ 
++int smc_clc_send_proposal(struct smc_sock *smc, struct smc_init_info *ini)
++{
++	struct sock *tsk = smc->clcsock->sk;
++	struct rtable *rt;
++	int rc;
++
++	rt = ip_route_output(sock_net(tsk), smc->remote_address.v4.sin_addr.s_addr,
++			     0, 0, 0);
++
++	if (IS_ERR(rt))
++		return -ECONNRESET;
++
++	rc = smc_clc_send_proposal_with_nexthop(smc, &rt->dst, ini);
++	return rc;
++}
++
+ /* build and send CLC CONFIRM / ACCEPT message */
+ static int smc_clc_send_confirm_accept(struct smc_sock *smc,
+ 				       struct smc_clc_msg_accept_confirm_v2 *clc_v2,
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index f40f6ed..ef5e5411 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -1765,6 +1765,8 @@ int smc_vlan_by_tcpsk(struct socket *clcsock, struct smc_init_info *ini)
+ 	int rc = 0;
+ 
+ 	ini->vlan_id = 0;
++	/* just for simple , prototype code */
++	return 0;
+ 	if (!dst) {
+ 		rc = -ENOTCONN;
+ 		goto out;
+diff --git a/net/smc/smc_pnet.c b/net/smc/smc_pnet.c
+index 7055ed1..6aa3304 100644
+--- a/net/smc/smc_pnet.c
++++ b/net/smc/smc_pnet.c
+@@ -1064,8 +1064,8 @@ static void smc_pnet_find_rdma_dev(struct net_device *netdev,
+  * If nothing found, check pnetid table.
+  * If nothing found, try to use handshake device
+  */
+-static void smc_pnet_find_roce_by_pnetid(struct net_device *ndev,
+-					 struct smc_init_info *ini)
++void smc_pnet_find_roce_by_pnetid(struct net_device *ndev,
++				  struct smc_init_info *ini)
+ {
+ 	u8 ndev_pnetid[SMC_MAX_PNETID_LEN];
+ 	struct net *net;
+diff --git a/net/smc/smc_pnet.h b/net/smc/smc_pnet.h
+index 80a88ee..2ffaf22 100644
+--- a/net/smc/smc_pnet.h
++++ b/net/smc/smc_pnet.h
+@@ -67,4 +67,7 @@ void smc_pnet_find_alt_roce(struct smc_link_group *lgr,
+ 			    struct smc_ib_device *known_dev);
+ bool smc_pnet_is_ndev_pnetid(struct net *net, u8 *pnetid);
+ bool smc_pnet_is_pnetid_set(u8 *pnetid);
++
++void smc_pnet_find_roce_by_pnetid(struct net_device *ndev,
++				  struct smc_init_info *ini);
+ #endif
+-- 
+1.8.3.1
+
