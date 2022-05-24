@@ -2,168 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6443153242A
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 09:35:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 64F115324C1
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 10:02:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235301AbiEXHfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 03:35:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54486 "EHLO
+        id S235566AbiEXIBn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 04:01:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235300AbiEXHfl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 03:35:41 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B727A6AA65;
-        Tue, 24 May 2022 00:35:39 -0700 (PDT)
-Received: from canpemm500010.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L6mDv52lwzhYnG;
-        Tue, 24 May 2022 15:34:55 +0800 (CST)
-Received: from container.huawei.com (10.175.104.82) by
- canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 24 May 2022 15:35:36 +0800
-From:   Wang Yufen <wangyufen@huawei.com>
-To:     <ast@kernel.org>, <john.fastabend@gmail.com>, <andrii@kernel.org>,
-        <daniel@iogearbox.net>, <jakub@cloudflare.com>,
-        <lmb@cloudflare.com>, <davem@davemloft.net>, <kafai@fb.com>,
-        <dsahern@kernel.org>, <kuba@kernel.org>, <songliubraving@fb.com>,
-        <yhs@fb.com>, <kpsingh@kernel.org>
-CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
-        Wang Yufen <wangyufen@huawei.com>
-Subject: [PATCH bpf-next] bpf,sockmap: fix sk->sk_forward_alloc warn_on in sk_stream_kill_queues
-Date:   Tue, 24 May 2022 15:53:11 +0800
-Message-ID: <20220524075311.649153-1-wangyufen@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S235701AbiEXIBS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 04:01:18 -0400
+Received: from smtp-out2.suse.de (smtp-out2.suse.de [195.135.220.29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DE5FDEA0;
+        Tue, 24 May 2022 01:01:15 -0700 (PDT)
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 15E5D1F8A8;
+        Tue, 24 May 2022 08:01:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1653379274; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=YfQDkbqSOT+1qjQjuAj/jCMAhUotd54M/3ml94s/xOo=;
+        b=PgXddxLSPksORjL/S6Twz65MXnqRLkhNWsZMkeMCJl5txCWJEZdmdegZfTAX/9coTEEbNM
+        8MuciDtA/meSONuDDeUgJuaMT6sJm3SP6OoP4PPs2H8u+yjTfPOAegS/VmQ3g6ca5OFCQB
+        kRtlLyoJ6CAvfuEa9KvE4DbHA1Jh8JI=
+Received: from suse.cz (unknown [10.100.201.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 8ADCF2C141;
+        Tue, 24 May 2022 08:01:12 +0000 (UTC)
+Date:   Tue, 24 May 2022 10:01:12 +0200
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Baoquan He <bhe@redhat.com>,
+        "michael Kelley (LINUX)" <mikelley@microsoft.com>,
+        Dave Young <dyoung@redhat.com>, d.hatayama@jp.fujitsu.com,
+        akpm@linux-foundation.org, kexec@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        linuxppc-dev@lists.ozlabs.org, linux-alpha@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, linux-leds@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-parisc@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-remoteproc@vger.kernel.org,
+        linux-s390@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-um@lists.infradead.org, linux-xtensa@linux-xtensa.org,
+        netdev@vger.kernel.org, openipmi-developer@lists.sourceforge.net,
+        rcu@vger.kernel.org, sparclinux@vger.kernel.org,
+        xen-devel@lists.xenproject.org, x86@kernel.org,
+        kernel-dev@igalia.com, kernel@gpiccoli.net, halves@canonical.com,
+        fabiomirmar@gmail.com, alejandro.j.jimenez@oracle.com,
+        andriy.shevchenko@linux.intel.com, arnd@arndb.de, bp@alien8.de,
+        corbet@lwn.net, dave.hansen@linux.intel.com, feng.tang@intel.com,
+        gregkh@linuxfoundation.org, hidehiro.kawai.ez@hitachi.com,
+        jgross@suse.com, john.ogness@linutronix.de, keescook@chromium.org,
+        luto@kernel.org, mhiramat@kernel.org, mingo@redhat.com,
+        paulmck@kernel.org, peterz@infradead.org, rostedt@goodmis.org,
+        senozhatsky@chromium.org, stern@rowland.harvard.edu,
+        tglx@linutronix.de, vgoyal@redhat.com, vkuznets@redhat.com,
+        will@kernel.org
+Subject: Re: [PATCH 24/30] panic: Refactor the panic path
+Message-ID: <YoyQyHHfhIIXSX0U@alley>
+References: <20220427224924.592546-1-gpiccoli@igalia.com>
+ <20220427224924.592546-25-gpiccoli@igalia.com>
+ <Yn0TnsWVxCcdB2yO@alley>
+ <d313eec2-96b6-04e3-35cd-981f103d010e@igalia.com>
+ <20220519234502.GA194232@MiWiFi-R3L-srv>
+ <ded31ec0-076b-2c5b-0fe6-0c274954821f@igalia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.104.82]
-X-ClientProxiedBy: dggems703-chm.china.huawei.com (10.3.19.180) To
- canpemm500010.china.huawei.com (7.192.105.118)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.2 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_MED,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ded31ec0-076b-2c5b-0fe6-0c274954821f@igalia.com>
+X-Spam-Status: No, score=-4.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-During TCP sockmap redirect pressure test, the following warning is triggered:
-WARNING: CPU: 3 PID: 2145 at net/core/stream.c:205 sk_stream_kill_queues+0xbc/0xd0
-CPU: 3 PID: 2145 Comm: iperf Kdump: loaded Tainted: G        W         5.10.0+ #9
-Call Trace:
- inet_csk_destroy_sock+0x55/0x110
- inet_csk_listen_stop+0xbb/0x380
- tcp_close+0x41b/0x480
- inet_release+0x42/0x80
- __sock_release+0x3d/0xa0
- sock_close+0x11/0x20
- __fput+0x9d/0x240
- task_work_run+0x62/0x90
- exit_to_user_mode_prepare+0x110/0x120
- syscall_exit_to_user_mode+0x27/0x190
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+On Fri 2022-05-20 08:23:33, Guilherme G. Piccoli wrote:
+> On 19/05/2022 20:45, Baoquan He wrote:
+> > [...]
+> >> I really appreciate the summary skill you have, to convert complex
+> >> problems in very clear and concise ideas. Thanks for that, very useful!
+> >> I agree with what was summarized above.
+> > 
+> > I want to say the similar words to Petr's reviewing comment when I went
+> > through the patches and traced each reviewing sub-thread to try to
+> > catch up. Petr has reivewed this series so carefully and given many
+> > comments I want to ack immediately.
+> > 
+> > I agree with most of the suggestions from Petr to this patch, except of
+> > one tiny concern, please see below inline comment.
+> 
+> Hi Baoquan, thanks! I'm glad you're also reviewing that =)
+> 
+> 
+> > [...]
+> > 
+> > I like the proposed skeleton of panic() and code style suggested by
+> > Petr very much. About panic_prefer_crash_dump which might need be added,
+> > I hope it has a default value true. This makes crash_dump execute at
+> > first by default just as before, unless people specify
+> > panic_prefer_crash_dump=0|n|off to disable it. Otherwise we need add
+> > panic_prefer_crash_dump=1 in kernel and in our distros to enable kdump,
+> > this is inconsistent with the old behaviour.
+> 
+> I'd like to understand better why the crash_kexec() must always be the
+> first thing in your use case. If we keep that behavior, we'll see all
+> sorts of workarounds - see the last patches of this series, Hyper-V and
+> PowerPC folks hardcoded "crash_kexec_post_notifiers" in order to force
+> execution of their relevant notifiers (like the vmbus disconnect,
+> specially in arm64 that has no custom machine_crash_shutdown, or the
+> fadump case in ppc). This led to more risk in kdump.
+> 
+> The thing is: with the notifiers' split, we tried to keep only the most
+> relevant/necessary stuff in this first list, things that ultimately
+> should improve kdump reliability or if not, at least not break it. My
+> feeling is that, with this series, we should change the idea/concept
+> that kdump must run first nevertheless, not matter what. We're here
+> trying to accommodate the antagonistic goals of hypervisors that need
+> some clean-up (even for kdump to work) VS. kdump users, that wish a
+> "pristine" system reboot ASAP after the crash.
 
-The reason we observed is that:
-When the listener is closing, a connection may have completed the three-way
-handshake but not accepted, and the client has sent some packets. The child
-sks in accept queue release by inet_child_forget()->inet_csk_destroy_sock(),
-but psocks of child sks have not released.
+Good question. I wonder if Baoquan knows about problems caused by the
+particular notifiers that will end up in the hypervisor list. Note
+that there will be some shuffles and the list will be slightly
+different in V2.
 
-To fix, add sock_map_destroy to release psocks.
+Anyway, I see four possible solutions:
 
-Signed-off-by: Wang Yufen <wangyufen@huawei.com>
----
- include/linux/bpf.h   |  1 +
- include/linux/skmsg.h |  1 +
- net/core/skmsg.c      |  1 +
- net/core/sock_map.c   | 23 +++++++++++++++++++++++
- net/ipv4/tcp_bpf.c    |  1 +
- 5 files changed, 27 insertions(+)
+  1. The most conservative approach is to keep the current behavior
+     and call kdump first by default.
 
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index cc4d5e394031..c4de82d5e72c 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -2092,6 +2092,7 @@ int sock_map_bpf_prog_query(const union bpf_attr *attr,
- 			    union bpf_attr __user *uattr);
- 
- void sock_map_unhash(struct sock *sk);
-+void sock_map_destroy(struct sock *sk);
- void sock_map_close(struct sock *sk, long timeout);
- #else
- static inline int bpf_prog_offload_init(struct bpf_prog *prog,
-diff --git a/include/linux/skmsg.h b/include/linux/skmsg.h
-index c5a2d6f50f25..153b6dec9b6a 100644
---- a/include/linux/skmsg.h
-+++ b/include/linux/skmsg.h
-@@ -95,6 +95,7 @@ struct sk_psock {
- 	spinlock_t			link_lock;
- 	refcount_t			refcnt;
- 	void (*saved_unhash)(struct sock *sk);
-+	void (*saved_destroy)(struct sock *sk);
- 	void (*saved_close)(struct sock *sk, long timeout);
- 	void (*saved_write_space)(struct sock *sk);
- 	void (*saved_data_ready)(struct sock *sk);
-diff --git a/net/core/skmsg.c b/net/core/skmsg.c
-index 22b983ade0e7..7e03f96e441b 100644
---- a/net/core/skmsg.c
-+++ b/net/core/skmsg.c
-@@ -715,6 +715,7 @@ struct sk_psock *sk_psock_init(struct sock *sk, int node)
- 	psock->eval = __SK_NONE;
- 	psock->sk_proto = prot;
- 	psock->saved_unhash = prot->unhash;
-+	psock->saved_destroy = prot->destroy;
- 	psock->saved_close = prot->close;
- 	psock->saved_write_space = sk->sk_write_space;
- 
-diff --git a/net/core/sock_map.c b/net/core/sock_map.c
-index 81d4b4756a02..9f08ccfaf6da 100644
---- a/net/core/sock_map.c
-+++ b/net/core/sock_map.c
-@@ -1561,6 +1561,29 @@ void sock_map_unhash(struct sock *sk)
- }
- EXPORT_SYMBOL_GPL(sock_map_unhash);
- 
-+void sock_map_destroy(struct sock *sk)
-+{
-+	void (*saved_destroy)(struct sock *sk);
-+	struct sk_psock *psock;
-+
-+	rcu_read_lock();
-+	psock = sk_psock_get(sk);
-+	if (unlikely(!psock)) {
-+		rcu_read_unlock();
-+		if (sk->sk_prot->destroy)
-+			sk->sk_prot->destroy(sk);
-+		return;
-+	}
-+
-+	saved_destroy = psock->saved_destroy;
-+	sock_map_remove_links(sk, psock);
-+	rcu_read_unlock();
-+	sk_psock_stop(psock, true);
-+	sk_psock_put(sk, psock);
-+	saved_destroy(sk);
-+}
-+EXPORT_SYMBOL_GPL(sock_map_destroy);
-+
- void sock_map_close(struct sock *sk, long timeout)
- {
- 	void (*saved_close)(struct sock *sk, long timeout);
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index be3947e70fec..38550bb1b90b 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -540,6 +540,7 @@ static void tcp_bpf_rebuild_protos(struct proto prot[TCP_BPF_NUM_CFGS],
- 				   struct proto *base)
- {
- 	prot[TCP_BPF_BASE]			= *base;
-+	prot[TCP_BPF_BASE].destroy		= sock_map_destroy;
- 	prot[TCP_BPF_BASE].close		= sock_map_close;
- 	prot[TCP_BPF_BASE].recvmsg		= tcp_bpf_recvmsg;
- 	prot[TCP_BPF_BASE].sock_is_readable	= sk_msg_is_readable;
--- 
-2.25.1
+  2. A medium conservative approach to change the default default
+     behavior and call hypervisor and eventually the info notifiers
+     before kdump. There still would be the possibility to call kdump
+     first by the command line parameter.
 
+  3. Remove the possibility to call kdump first completely. It would
+     assume that all the notifiers in the info list are super safe
+     or that they make kdump actually more safe.
+
+  4. Create one more notifier list for operations that always should
+     be called before crash_dump.
+
+Regarding the extra notifier list (4th solution). It is not clear to
+me whether it would be always called even before hypervisor list or
+when kdump is not enabled. We must not over-engineer it.
+
+2nd proposal looks like a good compromise. But maybe we could do
+this change few releases later. The notifiers split is a big
+change on its own.
+
+Best Regards,
+Petr
