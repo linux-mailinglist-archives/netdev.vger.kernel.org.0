@@ -2,77 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EB5F053264E
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 11:25:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A9992533D6B
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 15:13:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235481AbiEXJZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 05:25:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
+        id S239012AbiEYNLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 09:11:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235525AbiEXJZD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 05:25:03 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id DAC627522C
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 02:25:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653384301;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AKye4Y3eUY4jNM8Su0ObfpqLlZ+PYQe1qEjXF7f5pBM=;
-        b=BpDhs8oms5gytc1cQZEu/BF12KSq8ZDBS3lCFn55GrihBTsSTzJ8eiZak6sEbl6tb+HXG/
-        rVKO5uEO6TurYYLyADsewUs1/EcIM16mYTva7x734S/RYqRLlEUkcBVHIsaDmDTwopC2M5
-        YT1z+XJKJaBc8sAIagyDeaEckyDlkMg=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-519-XfR0KO5MM5uNvDXgq4fyFA-1; Tue, 24 May 2022 05:24:52 -0400
-X-MC-Unique: XfR0KO5MM5uNvDXgq4fyFA-1
-Received: by mail-qk1-f199.google.com with SMTP id z13-20020a05620a100d00b006a3870a404bso3924398qkj.17
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 02:24:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=AKye4Y3eUY4jNM8Su0ObfpqLlZ+PYQe1qEjXF7f5pBM=;
-        b=46Zs7cxaiZFA9fx3Ff2B7kiRixLw6P3hZkwvBvvGyx9kvOaT52hxMU49OHcBS5tj/l
-         2F6LeEWibwqA/GODKD71OF7rYGLXYlP+zOf/Wux8H2vFVfKSSc4HslxLmL0BL31q5Eiw
-         lQklAERG9CxeOZoJ1V8eskVmsEeVQxMndQLFdLYEKB2NUf6Vnd9oOqXGlIAzGgw0iABY
-         /D6qR1M6qDl4tNAFmjP8Vc733YZl4HTR30kl8GdFpbSQu6qqOTe3sFrWyA14dDbGGoBA
-         YB1+8tedrLRrjCKM6AZKhA0MIeiWrS75hC5beSu1S5wb12SzpJCWGHiizOcVC3KaBRkY
-         ch3Q==
-X-Gm-Message-State: AOAM533S0I2ocrNc+lUbkqyunk+b2LY7wWC2GxhDvO6s8AXeU7QBph0e
-        p3Z4K2QLGFg5Ao79+2od/g8SsOlLsz9CppxZLPFvC4JfEXQuK44VnOOeTqts7FcOgCz/ggceGvW
-        I9SaDPcyRdIaKH2Ar
-X-Received: by 2002:ad4:5e89:0:b0:45a:d9c8:e04b with SMTP id jl9-20020ad45e89000000b0045ad9c8e04bmr20036152qvb.112.1653384291584;
-        Tue, 24 May 2022 02:24:51 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwnanVKHk5zhD3YbdX8xIfj66Ig1QSy92dtdIX9SQi2i5J+TiVoHndxkSaYz0ODCPVMPQ/zeA==
-X-Received: by 2002:ad4:5e89:0:b0:45a:d9c8:e04b with SMTP id jl9-20020ad45e89000000b0045ad9c8e04bmr20036140qvb.112.1653384291358;
-        Tue, 24 May 2022 02:24:51 -0700 (PDT)
-Received: from gerbillo.redhat.com (146-241-112-184.dyn.eolo.it. [146.241.112.184])
-        by smtp.gmail.com with ESMTPSA id l127-20020a37a285000000b0069fc13ce1f3sm5837253qke.36.2022.05.24.02.24.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 02:24:50 -0700 (PDT)
-Message-ID: <76f1d70068523c173670819fc9a688a1368bfa12.camel@redhat.com>
-Subject: Re: [PATCH] ipv6/addrconf: fix timing bug in tempaddr regen
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     Sam Edwards <cfsworks@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>
-Cc:     Linux Network Development Mailing List <netdev@vger.kernel.org>
-Date:   Tue, 24 May 2022 11:24:45 +0200
-In-Reply-To: <20220523202543.9019-1-CFSworks@gmail.com>
-References: <20220523202543.9019-1-CFSworks@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-2.fc35) 
+        with ESMTP id S231523AbiEYNK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 09:10:59 -0400
+X-Greylist: delayed 99011 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 06:10:49 PDT
+Received: from box.indicandustries.com (hwsrv-970840.hostwindsdns.com [IPv6:2607:5501:3000:21a5::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46EA9A0051
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 06:10:49 -0700 (PDT)
+Received: from authenticated-user (box.indicandustries.com [104.168.149.109])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by box.indicandustries.com (Postfix) with ESMTPSA id 78F23108701
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 03:25:24 -0600 (MDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+        d=box.indicandustries.com; s=mail; t=1653384324;
+        bh=V6VCn7WEbqHjVVQ20/+SYu6rwS1WmTHcxX88g+j430s=;
+        h=Reply-To:From:To:Subject:Date:From;
+        b=etU+5+FzZCIphUYYeJAIbovbNq9Gix6mmgUWfDmrga7HACNWiQZPx6X/dhnuRBVSO
+         q9beRipiZDy6XzuyK/F9holfoAebOL7t+emN+2Mi2z3O2IcGFgi48U410xPCe1/T2X
+         d+yahSXT2M4b2ca3HtFkL6K0Hk/Fmjb2+RloLUMMtaqEM+oKuT+k1/iZMNGOr/CWeh
+         Z8cAK5HYeEyUYIYBwqXVsknZAqeX2Ut71LJ6SWj9yfZm75fQJsWBy+2jnjEcOdGso8
+         t3byY+DfiGYWXIyGlPux98aHNMyI14vBe+dY/hNsAlCkR0Oxikp5ICI4TPsQg7Djdr
+         gjBKC0GYDUd1Q==
+Reply-To: amjalia90@gmail.com
+From:   amjad.ali@box.indicandustries.com
+To:     netdev@vger.kernel.org
+Subject: Hello Sir, I seek your urgent consideration.
+Date:   24 May 2022 11:25:24 +0200
+Message-ID: <20220524112524.7BFF315CC914E046@box.indicandustries.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-3.5 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain;
+        charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=4.4 required=5.0 tests=BAYES_50,DATE_IN_PAST_24_48,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_REPLYTO,
+        FREEMAIL_REPLYTO_END_DIGIT,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=no autolearn_force=no version=3.4.6
+X-Spam-Level: ****
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
@@ -81,29 +53,17 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hello,
 
-On Mon, 2022-05-23 at 14:25 -0600, Sam Edwards wrote:
-> The addrconf_verify_rtnl() function uses a big if/elseif/elseif/... block
-> to categorize each address by what type of attention it needs.  An
-> about-to-expire (RFC 4941) temporary address is one such category, but the
-> previous elseif case catches addresses that have already run out their
-> prefered_lft.  This means that if addrconf_verify_rtnl() fails to run in
-> the necessary time window (i.e. REGEN_ADVANCE time units before the end of
-> the prefered_lft), the temporary address will never be regenerated, and no
-> temporary addresses will be available until each one's valid_lft runs out
-> and manage_tempaddrs() begins anew.
-> 
-> Fix this by moving the entire temporary address regeneration case higher
-> up so that a temporary address cannot be deprecated until it has had an
-> opportunity to begin regeneration.  Note that this does not fix the
-> problem of addrconf_verify_rtnl() sometimes not running in time resulting
-> in the race condition described in RFC 4941 section 3.4 - it only ensures
-> that the address is regenerated.
+Greetings? I am Amjad. I work with a leading Bio Firm.  Due to=20
+the setbacks of the pandemic, my company has opened a bid in=20
+search of new suppliers for basic raw materials needed in=20
+production.
 
-I looks like with this change the tmp addresses will never hit the
-DEPRECATED branch ?!?
+I am seeking a representative=C2=A0as I am a staff, I can not be=20
+involved directly. It may not be your area of work but the=20
+profits are great and I will guide you through. I have already=20
+sourced a local supplier for this. I only need a reliable=20
+representative.
 
+Please get back to me so I can explain this in full.
 
-Thanks!
-
-Paolo
-
+Amjad
