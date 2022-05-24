@@ -2,72 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 3742453243A
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 09:39:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28001532452
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 09:42:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235351AbiEXHiu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 03:38:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34282 "EHLO
+        id S232565AbiEXHmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 03:42:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233934AbiEXHit (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 03:38:49 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3C1A86FD26
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 00:38:48 -0700 (PDT)
+        with ESMTP id S229703AbiEXHmt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 03:42:49 -0400
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6C05F6EC58
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 00:42:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653377927;
+        s=mimecast20190719; t=1653378165;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=QCtPBPIHWWlpZdcdcmo4GB76JsscfPLgLkNx5XoQuuw=;
-        b=LBQb0TPEoda+nwdbxeXe1xRpXu4WMM4IbEpoVeHP2cvulleveJE08KvTQQefngOUaQR895
-        UtGOjZgq7RquDA7f0ImjruUk24Z6rtLLi+r6NHXMJMqLdA5JYigfSZ8GOd0EDAUfQEnkew
-        MfOSeHW5IXC0GShFz1RnmDlttqfRs+c=
-Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
- [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+        bh=Xr0lHvjXTVWXEeMcpfBHikGqMQxP8Brjy+Y5r5qUUtk=;
+        b=ZVLaeawmXC3KZGRg2OWYidAXhTcuuo9CeMvFvsgXf6SiJx6G9EWYUtLCZ7BXd4G9npZ1b0
+        1l6NYdJjv6O+V8LnnzOrSK7z0TNZ6bXf/Ou64cJfemmxMK7b0QLPf35I3LubdWmvLMgCGS
+        WpshDWj/mRt+TQ93TrAUsRKWM1I3z3w=
+Received: from mail-qt1-f198.google.com (mail-qt1-f198.google.com
+ [209.85.160.198]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-523-s-KGBVYuP7-aAJUl6oS24w-1; Tue, 24 May 2022 03:38:46 -0400
-X-MC-Unique: s-KGBVYuP7-aAJUl6oS24w-1
-Received: by mail-qt1-f197.google.com with SMTP id o5-20020ac84285000000b002f942e1ab04so608379qtl.7
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 00:38:45 -0700 (PDT)
+ us-mta-136-0hp_AvYSNNmr_9fZlcDR-Q-1; Tue, 24 May 2022 03:42:43 -0400
+X-MC-Unique: 0hp_AvYSNNmr_9fZlcDR-Q-1
+Received: by mail-qt1-f198.google.com with SMTP id l20-20020ac81494000000b002f91203eeacso10452077qtj.10
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 00:42:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=QCtPBPIHWWlpZdcdcmo4GB76JsscfPLgLkNx5XoQuuw=;
-        b=6t2UibtRPpcDcCyOFdT3lLOv227iqX62kcMNSA1Y0NFCPEqVcVYGoSMbtuvgnazgGc
-         BFn/c/x/exd6MEnGOeyyQy2HfTVjnAaqUXhuWNPKbqD+pnljktjxI8kB3+6bDxr5kU0s
-         vKLnzymMD6ko+AxWrlGVyCzd/FangDJs6Wr+ms8f/dI5vaiEh3tIvBIuPBA5TVNjCAth
-         qsMZgT9uv9yvOnFGavdk9dRdEN4q8dV9oLWOmPvoTFsh6gdsD8ljenHzOYGBZypU5tCO
-         lbc9ez8vmMZWNt06GNu3Qcpk3y3a8V9SdfI2shbvtEglx4NF+3xltl8RNHylBSkJ2xaJ
-         JDEg==
-X-Gm-Message-State: AOAM533EoCwc/8wTL3lZWvTXf6rTtmnJWdRq3dz2jm65/Ca/ohv9p4lI
-        7iQVva7GW6RUWt8XnGDjG2PUfq1Py5iQbNN6ysxF7xXXR6q1kvZrCyX6D83vcL7IKlfJgVOmjcV
-        0fLgj5R0OgEwlr0lArw5L0aWmi4UJz/zE
-X-Received: by 2002:a37:9e0f:0:b0:6a3:4918:d394 with SMTP id h15-20020a379e0f000000b006a34918d394mr12573670qke.764.1653377925445;
-        Tue, 24 May 2022 00:38:45 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyvLEC8WBeNxcj+5w81KoZxubVUBIj37yxEkBbiqOwDtiJ3FFUSRbB81+1KXQwyuvsiABHVbamICnl8FbeYvDM=
-X-Received: by 2002:a37:9e0f:0:b0:6a3:4918:d394 with SMTP id
- h15-20020a379e0f000000b006a34918d394mr12573649qke.764.1653377925205; Tue, 24
- May 2022 00:38:45 -0700 (PDT)
+        bh=Xr0lHvjXTVWXEeMcpfBHikGqMQxP8Brjy+Y5r5qUUtk=;
+        b=eXJ2a5OvR2n+ocGKfyMXmjmRubpgs5YRdtaakAfmDYAZagdbk2vOgtd++XsDhmqKXi
+         8Amm8B/IkxqoS9hZQf4ZUV0izuJvEjtAELMsfAGinKwj/18cPkiSWSvWAKvl8qldUEOU
+         24Kr9yYPV6d20w94oOEYC/Vam4lcfkyIzvoPJ9Cn9EYvMN6FxvQhnI11Aqmsz3IWpvDt
+         uNsBdGaEYxvH8ZJyWqDC/Q7ck9DvoaQie419xrv6nGX9uU9KmSwGG28SZ5WJ3lg42N8y
+         pshTrp7EiDjMZTWrzmECfgXfTaD5PMubyodPkFQamGfjfuxEYj09cz1PIMpLuPIiyuS3
+         JE1A==
+X-Gm-Message-State: AOAM530Ws4btU2lM3mq9i7pMAPmdRBo5/p459jVk+APQFYW8Ae99kPZC
+        iBAFNFxFsXYxC0bDkE+oauA8sGVumprZRco91zVgeWQVCZ/NQ3Izs/xTOvW9ayrZ3zS+QXfX0dz
+        8hYd6hKjv/AjYNgzi9Zr5ZPHBfuSMTRfg
+X-Received: by 2002:a05:622a:110c:b0:2f3:d347:6f8d with SMTP id e12-20020a05622a110c00b002f3d3476f8dmr19024566qty.403.1653378162795;
+        Tue, 24 May 2022 00:42:42 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJxZwara4ZmEInMFe1WFL9gKd2OmNz8F+sra8z+TxWhKQWbJJN2UQupe5aSNcHPJXZgH8axKvjIUqARkW1ymK/g=
+X-Received: by 2002:a05:622a:110c:b0:2f3:d347:6f8d with SMTP id
+ e12-20020a05622a110c00b002f3d3476f8dmr19024558qty.403.1653378162580; Tue, 24
+ May 2022 00:42:42 -0700 (PDT)
 MIME-Version: 1.0
 References: <20220520172325.980884-1-eperezma@redhat.com> <20220520172325.980884-2-eperezma@redhat.com>
  <79089dc4-07c4-369b-826c-1c6e12edcaff@oracle.com> <CAJaqyWd3BqZfmJv+eBYOGRwNz3OhNKjvHPiFOafSjzAnRMA_tQ@mail.gmail.com>
- <4de97962-cf7e-c334-5874-ba739270c705@oracle.com> <9f68802c-2692-7321-f916-670ee0abfc40@oracle.com>
-In-Reply-To: <9f68802c-2692-7321-f916-670ee0abfc40@oracle.com>
+ <20220524070900.ak7a5frwtezjhhrq@sgarzare-redhat>
+In-Reply-To: <20220524070900.ak7a5frwtezjhhrq@sgarzare-redhat>
 From:   Eugenio Perez Martin <eperezma@redhat.com>
-Date:   Tue, 24 May 2022 09:38:09 +0200
-Message-ID: <CAJaqyWfoBXfr1Njb4=ZyrKtR1PAzUS+kzs55CzHff9C1jGDk2w@mail.gmail.com>
+Date:   Tue, 24 May 2022 09:42:06 +0200
+Message-ID: <CAJaqyWeiNWnWUzEUEo8HeuuF8XMPtKw9SapxLxLJECWJ0zNTUA@mail.gmail.com>
 Subject: Re: [PATCH 1/4] vdpa: Add stop operation
-To:     Si-Wei Liu <si-wei.liu@oracle.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     Si-Wei Liu <si-wei.liu@oracle.com>,
+        virtualization <virtualization@lists.linux-foundation.org>,
         Jason Wang <jasowang@redhat.com>,
         kvm list <kvm@vger.kernel.org>,
         "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
+        linux-kernel@vger.kernel.org, Longpeng <longpeng2@huawei.com>,
         Zhu Lingshan <lingshan.zhu@intel.com>,
         Martin Petrus Hubertus Habets <martinh@xilinx.com>,
         Harpreet Singh Anand <hanand@xilinx.com>, dinang@xilinx.com,
@@ -93,164 +92,102 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 24, 2022 at 2:01 AM Si-Wei Liu <si-wei.liu@oracle.com> wrote:
+On Tue, May 24, 2022 at 9:09 AM Stefano Garzarella <sgarzare@redhat.com> wr=
+ote:
 >
->
->
-> On 5/23/2022 4:54 PM, Si-Wei Liu wrote:
-> >
-> >
-> > On 5/23/2022 12:20 PM, Eugenio Perez Martin wrote:
-> >> On Sat, May 21, 2022 at 12:13 PM Si-Wei Liu <si-wei.liu@oracle.com>
-> >> wrote:
-> >>>
-> >>>
-> >>> On 5/20/2022 10:23 AM, Eugenio P=C3=A9rez wrote:
-> >>>> This operation is optional: It it's not implemented, backend
-> >>>> feature bit
-> >>>> will not be exposed.
-> >>>>
-> >>>> Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
-> >>>> ---
-> >>>>    include/linux/vdpa.h | 6 ++++++
-> >>>>    1 file changed, 6 insertions(+)
-> >>>>
-> >>>> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> >>>> index 15af802d41c4..ddfebc4e1e01 100644
-> >>>> --- a/include/linux/vdpa.h
-> >>>> +++ b/include/linux/vdpa.h
-> >>>> @@ -215,6 +215,11 @@ struct vdpa_map_file {
-> >>>>     * @reset:                  Reset device
-> >>>>     *                          @vdev: vdpa device
-> >>>>     *                          Returns integer: success (0) or
-> >>>> error (< 0)
-> >>>> + * @stop:                    Stop or resume the device (optional,
-> >>>> but it must
-> >>>> + *                           be implemented if require device stop)
-> >>>> + *                           @vdev: vdpa device
-> >>>> + *                           @stop: stop (true), not stop (false)
-> >>>> + *                           Returns integer: success (0) or error
-> >>>> (< 0)
-> >>> Is this uAPI meant to address all use cases described in the full blo=
-wn
-> >>> _F_STOP virtio spec proposal, such as:
-> >>>
-> >>> --------------%<--------------
-> >>>
-> >>> ...... the device MUST finish any in flight
-> >>> operations after the driver writes STOP.  Depending on the device, it
-> >>> can do it
-> >>> in many ways as long as the driver can recover its normal operation
-> >>> if it
-> >>> resumes the device without the need of resetting it:
-> >>>
-> >>> - Drain and wait for the completion of all pending requests until a
-> >>>     convenient avail descriptor. Ignore any other posterior descripto=
-r.
-> >>> - Return a device-specific failure for these descriptors, so the driv=
-er
-> >>>     can choose to retry or to cancel them.
-> >>> - Mark them as done even if they are not, if the kind of device can
-> >>>     assume to lose them.
-> >>> --------------%<--------------
-> >>>
-> >> Right, this is totally underspecified in this series.
+> On Mon, May 23, 2022 at 09:20:14PM +0200, Eugenio Perez Martin wrote:
+> >On Sat, May 21, 2022 at 12:13 PM Si-Wei Liu <si-wei.liu@oracle.com> wrot=
+e:
 > >>
-> >> I'll expand on it in the next version, but that text proposed to
-> >> virtio-comment was complicated and misleading. I find better to get
-> >> the previous version description. Would the next description work?
 > >>
-> >> ```
-> >> After the return of ioctl, the device MUST finish any pending
-> >> operations like
-> >> in flight requests. It must also preserve all the necessary state (the
-> >> virtqueue vring base plus the possible device specific states)
-> > Hmmm, "possible device specific states" is a bit vague. Does it
-> > require the device to save any device internal state that is not
-> > defined in the virtio spec - such as any failed in-flight requests to
-> > resubmit upon resume?
-
-I'd let that be device-specific. For example, the net simulator
-doesn't need to store them, since it cannot stop while processing
-buffers. Other net devices can also decide to simply drop or re-submit
-tx frames.
-
-I can check for the block simulator if that's possible too. For
-hardware vdpa block devices, this should be combined with the future
-"get inflight buffers" call for sure.
-
-> > Or you would lean on SVQ to intercept it in
-> > depth and save it with some other means? I think network device also
-> > has internal state such as flow steering state that needs bookkeeping
-> > as well.
-
-Yes, for state set by the control vq a permanent SVQ is used only for
-the cvq. For other things like config space vdpa already presents an
-emulated one to the guest, so we're safe in that regard.
-
-> Noted that I understand you may introduce additional feature call
-> similar to VHOST_USER_GET_INFLIGHT_FD for (failed) in-flight request,
-> but since that's is a get interface, I assume the actual state
-> preserving should still take place in this STOP call.
+> >>
+> >> On 5/20/2022 10:23 AM, Eugenio P=C3=A9rez wrote:
+> >> > This operation is optional: It it's not implemented, backend feature=
+ bit
+> >> > will not be exposed.
+> >> >
+> >> > Signed-off-by: Eugenio P=C3=A9rez <eperezma@redhat.com>
+> >> > ---
+> >> >   include/linux/vdpa.h | 6 ++++++
+> >> >   1 file changed, 6 insertions(+)
+> >> >
+> >> > diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> >> > index 15af802d41c4..ddfebc4e1e01 100644
+> >> > --- a/include/linux/vdpa.h
+> >> > +++ b/include/linux/vdpa.h
+> >> > @@ -215,6 +215,11 @@ struct vdpa_map_file {
+> >> >    * @reset:                  Reset device
+> >> >    *                          @vdev: vdpa device
+> >> >    *                          Returns integer: success (0) or error =
+(< 0)
+> >> > + * @stop:                    Stop or resume the device (optional, b=
+ut it must
+> >> > + *                           be implemented if require device stop)
+> >> > + *                           @vdev: vdpa device
+> >> > + *                           @stop: stop (true), not stop (false)
+> >> > + *                           Returns integer: success (0) or error =
+(< 0)
+> >> Is this uAPI meant to address all use cases described in the full blow=
+n
+> >> _F_STOP virtio spec proposal, such as:
+> >>
+> >> --------------%<--------------
+> >>
+> >> ...... the device MUST finish any in flight
+> >> operations after the driver writes STOP.  Depending on the device, it
+> >> can do it
+> >> in many ways as long as the driver can recover its normal operation
+> >> if it
+> >> resumes the device without the need of resetting it:
+> >>
+> >> - Drain and wait for the completion of all pending requests until a
+> >>    convenient avail descriptor. Ignore any other posterior descriptor.
+> >> - Return a device-specific failure for these descriptors, so the drive=
+r
+> >>    can choose to retry or to cancel them.
+> >> - Mark them as done even if they are not, if the kind of device can
+> >>    assume to lose them.
+> >> --------------%<--------------
+> >>
+> >
+> >Right, this is totally underspecified in this series.
+> >
+> >I'll expand on it in the next version, but that text proposed to
+> >virtio-comment was complicated and misleading. I find better to get
+> >the previous version description. Would the next description work?
+> >
+> >```
+> >After the return of ioctl, the device MUST finish any pending operations=
+ like
+> >in flight requests. It must also preserve all the necessary state (the
+> >virtqueue vring base plus the possible device specific states) that is r=
+equired
+> >for restoring in the future.
+>
+> For block devices wait for all in-flight requests could take several
+> time.
+>
+> Could this be a problem if the caller gets stuck on this ioctl?
+>
+> If it could be a problem, maybe we should use an eventfd to signal that
+> the device is successfully stopped.
 >
 
-Right. I'll add all of this to the proposal.
+For that particular problem I'd very much prefer to add directly an
+ioctl to get the inflight descriptors. We know for sure we will need
+them, and it will be cleaner in the long run.
+
+As I understand the vdpa block simulator, there is no need to return
+the inflight descriptors since all of the requests are processed in a
+synchronous way. So, for this iteration, we could offer the stop
+feature to qemu.
+
+Other non-simulated devices would need it. Could it be delayed to
+future development?
 
 Thanks!
 
-> -Siwei
->
-> >
-> > A follow-up question is what is the use of the `stop` argument of
-> > false, does it require the device to support resume? I seem to recall
-> > this is something to abandon in favor of device reset plus setting
-> > queue base/addr after. Or it's just a optional feature that may be
-> > device specific (if one can do so in simple way).
-> >
-> > -Siwei
-> >
-> >>   that is required
-> >> for restoring in the future.
-> >>
-> >> In the future, we will provide features similar to
-> >> VHOST_USER_GET_INFLIGHT_FD
-> >> so the device can save pending operations.
-> >> ```
-> >>
-> >> Thanks for pointing it out!
-> >>
-> >>
-> >>
-> >>
-> >>
-> >>> E.g. do I assume correctly all in flight requests are flushed after
-> >>> return from this uAPI call? Or some of pending requests may be subjec=
-t
-> >>> to loss or failure? How does the caller/user specify these various
-> >>> options (if there are) for device stop?
-> >>>
-> >>> BTW, it would be nice to add the corresponding support to vdpa_sim_bl=
-k
-> >>> as well to demo the stop handling. To just show it on vdpa-sim-net IM=
-HO
-> >>> is perhaps not so convincing.
-> >>>
-> >>> -Siwei
-> >>>
-> >>>>     * @get_config_size: Get the size of the configuration space
-> >>>> includes
-> >>>>     *                          fields that are conditional on
-> >>>> feature bits.
-> >>>>     *                          @vdev: vdpa device
-> >>>> @@ -316,6 +321,7 @@ struct vdpa_config_ops {
-> >>>>        u8 (*get_status)(struct vdpa_device *vdev);
-> >>>>        void (*set_status)(struct vdpa_device *vdev, u8 status);
-> >>>>        int (*reset)(struct vdpa_device *vdev);
-> >>>> +     int (*stop)(struct vdpa_device *vdev, bool stop);
-> >>>>        size_t (*get_config_size)(struct vdpa_device *vdev);
-> >>>>        void (*get_config)(struct vdpa_device *vdev, unsigned int
-> >>>> offset,
-> >>>>                           void *buf, unsigned int len);
-> >
+> Thanks,
+> Stefano
 >
 
