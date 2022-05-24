@@ -2,137 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F1C353270A
+	by mail.lfdr.de (Postfix) with ESMTP id E4BDF53270B
 	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 12:05:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235971AbiEXKD5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 06:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41840 "EHLO
+        id S236008AbiEXKFM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 06:05:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235997AbiEXKDy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 06:03:54 -0400
-Received: from mail-m975.mail.163.com (mail-m975.mail.163.com [123.126.97.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C685B793A6;
-        Tue, 24 May 2022 03:03:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=Subject:From:Message-ID:Date:MIME-Version; bh=Dk7Gm
-        fvT3AqfomHwgr/tdhRny1W9IvrJG0afEovalW4=; b=Ua6Zk41Bz9pjD7Cc7WAJr
-        /0thv7vEIfvI76vlTdRrrGgKPKh04Poxcl7Ww72lcW1ndO05Hvc5952fnV11JEGn
-        O3Nn5jP/VXvT/Za6EfZHBqG7japajYkU0RocvNJqFcdQAnptXmIJwFGiegy11eU6
-        4y8vTgUdmo7Tu2fTWZv6wQ=
-Received: from [172.20.109.18] (unknown [116.128.244.169])
-        by smtp5 (Coremail) with SMTP id HdxpCgAnp_54rYxiqUT3Dw--.11933S2;
-        Tue, 24 May 2022 18:03:37 +0800 (CST)
-Subject: Re: [PATCH] selftests/net: enable lo.accept_local in psock_snd test
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     davem@davemloft.net, edumazet@google.com, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-References: <20220520063835.866445-1-luyun_611@163.com>
- <CA+FuTSdoZeAncRVAYrb66Kp6bEueWrgyy7A8qP0kmr9pxfHMoA@mail.gmail.com>
- <3f494c7a-6648-a696-b215-f597e680c5d9@163.com>
- <CA+FuTSdHCszjFtkZj37KE-1rfSfzYEd5oXLyKS6Kz9pdi05ReA@mail.gmail.com>
-From:   Yun Lu <luyun_611@163.com>
-Message-ID: <754c0cd5-2289-3887-e7d2-71ff87e59afd@163.com>
-Date:   Tue, 24 May 2022 18:03:36 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.8.1
+        with ESMTP id S231631AbiEXKFL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 06:05:11 -0400
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4675C7220D;
+        Tue, 24 May 2022 03:05:08 -0700 (PDT)
+Received: (Authenticated sender: i.maximets@ovn.org)
+        by mail.gandi.net (Postfix) with ESMTPSA id 83B6D100011;
+        Tue, 24 May 2022 10:05:02 +0000 (UTC)
+Message-ID: <457ccb80-d41d-ff95-1edc-751741465416@ovn.org>
+Date:   Tue, 24 May 2022 12:05:01 +0200
 MIME-Version: 1.0
-In-Reply-To: <CA+FuTSdHCszjFtkZj37KE-1rfSfzYEd5oXLyKS6Kz9pdi05ReA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Cc:     dev@openvswitch.org, linux-cifs@vger.kernel.org,
+        linux-nfs@vger.kernel.org, Sagi Grimberg <sagi@grimberg.me>,
+        borisp@nvidia.com, netdev@vger.kernel.org,
+        linux-nvme@lists.infradead.org,
+        Chuck Lever <chuck.lever@oracle.com>,
+        Hannes Reinecke <hare@suse.de>, simo@redhat.com,
+        linux-fsdevel@vger.kernel.org, ak@tempesta-tech.com,
+        i.maximets@ovn.org
 Content-Language: en-US
-X-CM-TRANSID: HdxpCgAnp_54rYxiqUT3Dw--.11933S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxJF4xWF1ruFWfGr1kAw1DZFb_yoW5GrW3pr
-        W7Xas0yF1kJa4jvwsIv3W8ury0qw4UCr4Fqw1Iywn2yFs8uFy3Cr4I9a909a1qqr1xW3y2
-        vFWkZa47W34DZaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0zETmh-UUUUU=
-X-Originating-IP: [116.128.244.169]
-X-CM-SenderInfo: pox130jbwriqqrwthudrp/1tbiQxwLzlc7ZnWomQAAsU
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Benjamin Coddington <bcodding@redhat.com>
+References: <165030051838.5073.8699008789153780301.stgit@oracle-102.nfsv4.dev>
+ <165030059051.5073.16723746870370826608.stgit@oracle-102.nfsv4.dev>
+ <20220425101459.15484d17@kernel.org>
+ <66077b73-c1a4-d2ae-c8e4-3e19e9053171@suse.de>
+ <1fca2eda-83e4-fe39-13c8-0e5e7553689b@grimberg.me>
+ <20220426080247.19bbb64e@kernel.org>
+ <40bc060f-f359-081d-9ba7-fae531cf2cd6@suse.de>
+ <20220426170334.3781cd0e@kernel.org>
+ <23f497ab-08e3-3a25-26d9-56d94ee92cde@suse.de>
+ <20220428063009.0a63a7f9@kernel.org>
+ <be7e3c4b-8bb5-e818-1402-ac24cbbcb38c@suse.de>
+ <E2BF9CFF-9361-400B-BDEE-CF5E0AFDCA63@redhat.com>
+ <20220428140856.61e53533@kernel.org>
+From:   Ilya Maximets <i.maximets@ovn.org>
+Subject: Re: [ovs-dev] [PATCH RFC 4/5] net/tls: Add support for PF_TLSH (a TLS
+ handshake listener)
+In-Reply-To: <20220428140856.61e53533@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
+        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NEUTRAL,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/5/23 下午9:32, Willem de Bruijn wrote:
-
-> On Mon, May 23, 2022 at 5:25 AM Yun Lu <luyun_611@163.com> wrote:
->> On 2022/5/20 下午9:52, Willem de Bruijn wrote:
->>
->>> On Fri, May 20, 2022 at 2:40 AM Yun Lu <luyun_611@163.com> wrote:
->>>> From: luyun <luyun@kylinos.cn>
->>>>
->>>> The psock_snd test sends and recievs packets over loopback, but the
->>>> parameter lo.accept_local is disabled by default, this test will
->>>> fail with Resource temporarily unavailable:
->>>> sudo ./psock_snd.sh
->>>> dgram
->>>> tx: 128
->>>> rx: 142
->>>> ./psock_snd: recv: Resource temporarily unavailable
->>> I cannot reproduce this failure.
+On 4/28/22 23:08, Jakub Kicinski wrote:
+> On Thu, 28 Apr 2022 10:09:17 -0400 Benjamin Coddington wrote:
+>>> Noob reply: wish I knew.  (I somewhat hoped _you_ would've been able to
+>>> tell me.)
 >>>
->>> Passes on a machine with accept_local 0.
+>>> Thing is, the only method I could think of for fd passing is the POSIX fd
+>>> passing via unix_attach_fds()/unix_detach_fds().  But that's AF_UNIX,
+>>> which really is designed for process-to-process communication, not
+>>> process-to-kernel.  So you probably have to move a similar logic over to
+>>> AF_NETLINK. And design a new interface on how fds should be passed over
+>>> AF_NETLINK.
 >>>
->>> accept_local is defined as
+>>> But then you have to face the issue that AF_NELINK is essentially UDP, and
+>>> you have _no_ idea if and how many processes do listen on the other end.
+>>> Thing is, you (as the sender) have to copy the fd over to the receiving
+>>> process, so you'd better _hope_ there is a receiving process.  Not to
+>>> mention that there might be several processes listening in...
+> 
+> Sort of. I double checked the netlink upcall implementations we have,
+> they work by user space entity "registering" their netlink address
+> (portid) at startup. Kernel then directs the upcalls to that address.
+> But AFAICT there's currently no way for the netlink "server" to see
+> when a "client" goes away, which makes me slightly uneasy about using
+> such schemes for security related stuff. The user agent may crash and
+> something else could grab the same address, I think.
+> 
+> Let me CC OvS who uses it the most, perhaps I'm missing a trick.
+
+I don't think there are any tricks.  From what I see OVS creates
+several netlink sockets, connects them to the kernel (nl_pid = 0)
+and obtains their nl_pid's from the kernel.
+These pids are either just a task_tgid_vnr() or a random negative
+value from the [S32_MIN, -4096] range.  After that OVS "registers"
+those pids in the openvswitch kernel module.  That just means sending
+an array of integers to the kernel.  Kernel will later use these
+integer pids to find the socket and send data to the userspace.
+
+openvswitch module inside the kernel has no way to detect that
+socket with a certain pid no longer exists.  So, it will continue
+to try to find the socket and send, even if the user-space process
+is dead.
+
+So, if you can find a way to reliably create a process with the
+same task_tgid or trick the randomizer inside the netlink_autobind(),
+you can start receiving upcalls from the kernel in a new process,
+IIUC.  Also, netlink_bind() allows to just specify the nl_pid
+for listening sockets.  That might be another way.
+
+> 
+> My thinking was to use the netlink attribute format (just to reuse the
+> helpers and parsing, but we can invent a new TLV format if needed) but
+> create a new socket type specifically for upcalls.
+> 
+>>> And that's something I _definitely_ don't feel comfortable with without
+>>> guidance from the networking folks, so I didn't pursue it further and we
+>>> went with the 'accept()' mechanism Chuck implemented.
 >>>
->>> "
->>> accept_local - BOOLEAN
->>>       Accept packets with local source addresses. In combination
->>>       with suitable routing, this can be used to direct packets
->>>       between two local interfaces over the wire and have them
->>>       accepted properly.
->>> "
->> I did this test on my system(Centos 8.3 X86_64):
+>>> I'm open to suggestions, though.  
 >>
->> [root@localhost net]# sysctl net.ipv4.conf.lo.accept_local
->> net.ipv4.conf.lo.accept_local = 0
->> [root@localhost net]# ./psock_snd -d
->> tx: 128
->> rx: 142
->> ./psock_snd: recv: Resource temporarily unavailable
->> [root@localhost net]# sysctl -w net.ipv4.conf.lo.accept_local=1
->> net.ipv4.conf.lo.accept_local = 1
->> [root@localhost net]# ./psock_snd -d
->> tx: 128
->> rx: 142
->> rx: 100
->> OK
+>> EXPORT_SYMBOL(receive_fd) would allow interesting implementations.
 >>
->> This failure does seem to be related to accept_local.
+>> The kernel keyring facilities have a good API for creating various key_types
+>> which are able to perform work such as this from userspace contexts.
 >>
->> Also, it's reported on Ubuntu:
->> https://bugs.launchpad.net/ubuntu-kernel-tests/+bug/1812618
-> That is an old kernel, 4.18 derived.
->
-> I simply am unable to reproduce this on an upstream v4.18 or v5.18.
-> Likely something with either the distro kernel release, or another
-> distro feature that interacts with this. Can you try v5.18 or another
-> clean upstream kernel?
->
-> Else it requires instrumenting IN_DEV_ACCEPT_LOCAL tests to understand
-> where this sysctl makes a meaningful change for you when running this
-> test.
-
-I found another parameter rp_filter which interacts with this test:
-
-Set rp_filter = 0, the psock_snd test OK.
-
-Or set rp_filter = 1 and accept_local=1, the psock_snd test OK.
-
-I get the same test results on kernel v5.10 or v5.15.  Analysis from 
-source code,  this two parameters
-
-will change the result of fib_validate_source when running this test. 
-For most distro kernel releases,
-
-rp_filter is enabled by default, so this test will fail when 
-accept_local is kept to be zero.
-
-
-I am looking forward to your better advice on this problem.
+>> I have a working prototype for a keyring key instantiation which allows a
+>> userspace process to install a kernel fd on its file table.  The problem
+>> here is how to match/route such fd passing to appropriate processes in
+>> appropriate namespaces.  I think this problem is shared by all
+>> kernel-to-userspace upcalls, which I hope we can discuss at LSF/MM.
+> 
+> Almost made me wish I was coming to LFS/MM :)
+> 
+>> I don't think kernel fds are very special as compared to userspace fds.
+> _______________________________________________
+> dev mailing list
+> dev@openvswitch.org
+> https://mail.openvswitch.org/mailman/listinfo/ovs-dev
+> 
 
