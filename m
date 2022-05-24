@@ -2,45 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CFE08532E42
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 18:02:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29707532E2F
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 18:02:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239310AbiEXQCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 12:02:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47020 "EHLO
+        id S239396AbiEXQCS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 12:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239348AbiEXQBh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 12:01:37 -0400
+        with ESMTP id S239376AbiEXQBj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 12:01:39 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8737A7750;
-        Tue, 24 May 2022 09:00:46 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37D089CF29;
+        Tue, 24 May 2022 09:00:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B98A6175C;
-        Tue, 24 May 2022 16:00:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DE3DC3411A;
-        Tue, 24 May 2022 16:00:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C8A0B6176C;
+        Tue, 24 May 2022 16:00:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05D24C34115;
+        Tue, 24 May 2022 16:00:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653408045;
-        bh=wWxUCVgmoyE9TpGdM86AqF4tu7PdSDYQTSN2Ki2Rw60=;
+        s=k20201202; t=1653408050;
+        bh=pQoT+kDWEMU+OriFqW5qRi/QG2woaSt+7HNGfacypW4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OYZSXiQbBl1CkHDYrbOlJcr/96cYJpz8Xx7xSniihXkH5kFCM2nCnRVRJzACTPzzI
-         HtwixR4NBVQkki8QGlpIl51zq83c5T2GG9oFR3uHTQNiZs8xOgGWb1M+5y1Stj6Fuh
-         TYIWvgobb0rMougN/7QGQKcxaPpLypiOpTbbHCAe1eMXBxoPvOfHIHSBK5S9TyGGFe
-         CJ5/3FIeir4bkr9vTNEM+aOU3ZXwYVKyY8B8I5hdhJUshBmchxfR7821YmH+1Ap8/M
-         21D1IydLVb7iDPCltavug+tDA4OuX93UCxniyaxR26UHqRA6Xo9EwLItPViB9sO3n4
-         M+4pg9JMUtedQ==
+        b=geBeMmIcMo7BQRETg7xN6V6hSa+Dnh0VcWY0URfh78rEPhwklzydAV1uKmdwIJijz
+         A9woJH0fjINhQXwsgQ6h2ZxCjCKDj1Bmtp6f+5KJmKb8kDIpbvNc+mvUmvD7t44J3L
+         BFr/bGeiP3Xj3SHUnjRjXEjWVhr4XD9/1fsYuMetMxu/0SWU4A+eCabpn7mdI1HWzo
+         abFKM5x15kPwMFax98k8tsH0bjORbbj+5a0xjM7C3lkTR5jiAtq1sl143icU+BT44b
+         Wx58uiOzJ9MWAA8m0w96orIqQsbZrXF29u5yD7dKbOIB6WRaj0cUmarvI/DW4sb+bu
+         BbDWQsT1P+OFQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Bartschies <thomas.bartschies@cvk.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
+Cc:     Lin Ma <linma@zju.edu.cn>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>,
+        krzysztof.kozlowski@linaro.org, rikard.falkeborn@gmail.com,
+        cyeaa@connect.ust.hk, dan.carpenter@oracle.com,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 4/8] net: af_key: check encryption module availability consistency
-Date:   Tue, 24 May 2022 12:00:31 -0400
-Message-Id: <20220524160035.827109-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 5/8] nfc: pn533: Fix buggy cleanup order
+Date:   Tue, 24 May 2022 12:00:32 -0400
+Message-Id: <20220524160035.827109-5-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220524160035.827109-1-sashal@kernel.org>
 References: <20220524160035.827109-1-sashal@kernel.org>
@@ -58,53 +59,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Bartschies <thomas.bartschies@cvk.de>
+From: Lin Ma <linma@zju.edu.cn>
 
-[ Upstream commit 015c44d7bff3f44d569716117becd570c179ca32 ]
+[ Upstream commit b8cedb7093b2d1394cae9b86494cba4b62d3a30a ]
 
-Since the recent introduction supporting the SM3 and SM4 hash algos for IPsec, the kernel
-produces invalid pfkey acquire messages, when these encryption modules are disabled. This
-happens because the availability of the algos wasn't checked in all necessary functions.
-This patch adds these checks.
+When removing the pn533 device (i2c or USB), there is a logic error. The
+original code first cancels the worker (flush_delayed_work) and then
+destroys the workqueue (destroy_workqueue), leaving the timer the last
+one to be deleted (del_timer). This result in a possible race condition
+in a multi-core preempt-able kernel. That is, if the cleanup
+(pn53x_common_clean) is concurrently run with the timer handler
+(pn533_listen_mode_timer), the timer can queue the poll_work to the
+already destroyed workqueue, causing use-after-free.
 
-Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+This patch reorder the cleanup: it uses the del_timer_sync to make sure
+the handler is finished before the routine will destroy the workqueue.
+Note that the timer cannot be activated by the worker again.
+
+static void pn533_wq_poll(struct work_struct *work)
+...
+ rc = pn533_send_poll_frame(dev);
+ if (rc)
+   return;
+
+ if (cur_mod->len == 0 && dev->poll_mod_count > 1)
+   mod_timer(&dev->listen_timer, ...);
+
+That is, the mod_timer can be called only when pn533_send_poll_frame()
+returns no error, which is impossible because the device is detaching
+and the lower driver should return ENODEV code.
+
+Signed-off-by: Lin Ma <linma@zju.edu.cn>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/key/af_key.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/nfc/pn533/pn533.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index bd9b5c573b5a..ae466256ab8c 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2902,7 +2902,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
- 			break;
- 		if (!aalg->pfkey_supported)
- 			continue;
--		if (aalg_tmpl_set(t, aalg))
-+		if (aalg_tmpl_set(t, aalg) && aalg->available)
- 			sz += sizeof(struct sadb_comb);
- 	}
- 	return sz + sizeof(struct sadb_prop);
-@@ -2920,7 +2920,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 		if (!ealg->pfkey_supported)
- 			continue;
+diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
+index d2c011615775..8d7e29d953b7 100644
+--- a/drivers/nfc/pn533/pn533.c
++++ b/drivers/nfc/pn533/pn533.c
+@@ -2844,13 +2844,14 @@ void pn53x_common_clean(struct pn533 *priv)
+ {
+ 	struct pn533_cmd *cmd, *n;
  
--		if (!(ealg_tmpl_set(t, ealg)))
-+		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
- 			continue;
++	/* delete the timer before cleanup the worker */
++	del_timer_sync(&priv->listen_timer);
++
+ 	flush_delayed_work(&priv->poll_work);
+ 	destroy_workqueue(priv->wq);
  
- 		for (k = 1; ; k++) {
-@@ -2931,7 +2931,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 			if (!aalg->pfkey_supported)
- 				continue;
+ 	skb_queue_purge(&priv->resp_q);
  
--			if (aalg_tmpl_set(t, aalg))
-+			if (aalg_tmpl_set(t, aalg) && aalg->available)
- 				sz += sizeof(struct sadb_comb);
- 		}
- 	}
+-	del_timer(&priv->listen_timer);
+-
+ 	list_for_each_entry_safe(cmd, n, &priv->cmd_queue, queue) {
+ 		list_del(&cmd->queue);
+ 		kfree(cmd);
 -- 
 2.35.1
 
