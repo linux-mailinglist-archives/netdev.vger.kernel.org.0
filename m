@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id EC3E153205B
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 03:48:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44CF553206D
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 03:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232756AbiEXBsE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 21:48:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40864 "EHLO
+        id S232197AbiEXByw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 21:54:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50628 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229783AbiEXBsD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 21:48:03 -0400
-Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [150.107.74.76])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C04177093F;
-        Mon, 23 May 2022 18:48:01 -0700 (PDT)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4L6cXY58Kpz4xXg;
-        Tue, 24 May 2022 11:47:57 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
-        s=201702; t=1653356880;
-        bh=K1+revtH/yv0Qrw2WEGJdkSco7dLfoks/ykFPLpkllA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VdzKFCZzKZYHAMW/GlIgod3jp04n1EdFzULjxFha9Yr3cCMoPn8uE6POS/ZhIw12L
-         Iu8moSpWKqx3uTjGIc+QtwJfA9dzcdNKLNm6R+OeWuaq+ze+DCYcHkokMUI2JqTKyg
-         vfz7WsfEHvEKJXPEs1TqnonZmiTx2dxHCvfOIoiL6Z7xK/0umxkxzQAmJJ6HHoVjbH
-         ddw9Plx2Hza9grT+R9FvnKY3f4t1rHrTIsFKexngOoGuus3mscu19GieaEb+/NIn7k
-         OJEyK+L3en2dC++/SOcG3+YkKnwwXOMMhTWn3LXv8N5RMG+h2p8a6qt3UjM7gKIrW5
-         3lQOxWYhze5+Q==
-Date:   Tue, 24 May 2022 11:47:56 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Luis Chamberlain <mcgrof@kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Yan Zhu <zhuyan34@huawei.com>,
-        tangmeng <tangmeng@uniontech.com>
-Subject: Re: linux-next: manual merge of the tip tree with the bpf-next,
- sysctl trees
-Message-ID: <20220524114756.7cf12f51@canb.auug.org.au>
-In-Reply-To: <20220414112812.652190b5@canb.auug.org.au>
-References: <20220414112812.652190b5@canb.auug.org.au>
+        with ESMTP id S229854AbiEXByv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 21:54:51 -0400
+Received: from zg8tmtyylji0my4xnjqumte4.icoremail.net (zg8tmtyylji0my4xnjqumte4.icoremail.net [162.243.164.118])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 08AF37B9F5;
+        Mon, 23 May 2022 18:54:47 -0700 (PDT)
+Received: by ajax-webmail-mail-app2 (Coremail) ; Tue, 24 May 2022 09:54:29
+ +0800 (GMT+08:00)
+X-Originating-IP: [124.236.130.193]
+Date:   Tue, 24 May 2022 09:54:29 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   duoming@zju.edu.cn
+To:     "Brian Norris" <briannorris@chromium.org>
+Cc:     "Eric W. Biederman" <ebiederm@xmission.com>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "amit karwar" <amitkarwar@gmail.com>,
+        "Ganapathi Bhat" <ganapathi017@gmail.com>,
+        "Sharvari Harisangam" <sharvari.harisangam@nxp.com>,
+        "Xinming Hu" <huxinming820@gmail.com>, kvalo@kernel.org,
+        "David S. Miller" <davem@davemloft.net>, edumazet@google.com,
+        "Jakub Kicinski" <kuba@kernel.org>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        "Linux Kernel" <linux-kernel@vger.kernel.org>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        "Johannes Berg" <johannes@sipsolutions.net>
+Subject: Re: [PATCH v3] mwifiex: fix sleep in atomic context bugs caused by
+ dev_coredumpv
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn zju.edu.cn
+In-Reply-To: <CA+ASDXNBeN6k6y+eY06FkheNTNWN02P2uT9bB09KtBok0LVFfQ@mail.gmail.com>
+References: <20220523052810.24767-1-duoming@zju.edu.cn>
+ <87o7zoxrdf.fsf@email.froward.int.ebiederm.org>
+ <6a270950.2c659.180f1a46e8c.Coremail.duoming@zju.edu.cn>
+ <CA+ASDXNBeN6k6y+eY06FkheNTNWN02P2uT9bB09KtBok0LVFfQ@mail.gmail.com>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/.jZxa_kqH6=AjqA_rdVtqsZ";
- protocol="application/pgp-signature"; micalg=pgp-sha256
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,SPF_HELO_PASS,SPF_PASS,T_SCC_BODY_TEXT_LINE
+Message-ID: <4fe65d9a.2cf82.180f3c5d1d6.Coremail.duoming@zju.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: by_KCgBXX4vVOoxi5OanAA--.8720W
+X-CM-SenderInfo: qssqjiasttq6lmxovvfxof0/1tbiAgsAAVZdtZ1uzAABsI
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -62,94 +64,17 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/.jZxa_kqH6=AjqA_rdVtqsZ
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
-
-Hi all,
-
-On Thu, 14 Apr 2022 11:29:05 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
-wrote:
->
-> Today's linux-next merge of the tip tree got a conflict in:
->=20
->   kernel/sysctl.c
->=20
-> between commit:
->=20
->   2900005ea287 ("bpf: Move BPF sysctls from kernel/sysctl.c to BPF core")
->=20
-> from the bpf-next, sysctl trees and commit:
->=20
->   efaa0227f6c6 ("timers: Move timer sysctl into the timer code")
->=20
-> from the tip tree.
->=20
-> I fixed it up (see below) and can carry the fix as necessary. This
-> is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->=20
-> diff --cc kernel/sysctl.c
-> index 47139877f62d,5b7b1a82ae6a..000000000000
-> --- a/kernel/sysctl.c
-> +++ b/kernel/sysctl.c
-> @@@ -2227,17 -2288,24 +2227,6 @@@ static struct ctl_table kern_table[] =
-=3D=20
->   		.extra1		=3D SYSCTL_ZERO,
->   		.extra2		=3D SYSCTL_ONE,
->   	},
-> - #if defined(CONFIG_SMP) && defined(CONFIG_NO_HZ_COMMON)
->  -#ifdef CONFIG_BPF_SYSCALL
-> --	{
-> - 		.procname	=3D "timer_migration",
-> - 		.data		=3D &sysctl_timer_migration,
-> - 		.maxlen		=3D sizeof(unsigned int),
->  -		.procname	=3D "unprivileged_bpf_disabled",
->  -		.data		=3D &sysctl_unprivileged_bpf_disabled,
->  -		.maxlen		=3D sizeof(sysctl_unprivileged_bpf_disabled),
-> --		.mode		=3D 0644,
-> - 		.proc_handler	=3D timer_migration_handler,
->  -		.proc_handler	=3D bpf_unpriv_handler,
-> --		.extra1		=3D SYSCTL_ZERO,
-> - 		.extra2		=3D SYSCTL_ONE,
->  -		.extra2		=3D SYSCTL_TWO,
->  -	},
->  -	{
->  -		.procname	=3D "bpf_stats_enabled",
->  -		.data		=3D &bpf_stats_enabled_key.key,
->  -		.maxlen		=3D sizeof(bpf_stats_enabled_key),
->  -		.mode		=3D 0644,
->  -		.proc_handler	=3D bpf_stats_handler,
-> --	},
-> --#endif
->   #if defined(CONFIG_TREE_RCU)
->   	{
->   		.procname	=3D "panic_on_rcu_stall",
-
-This is now a conflict between the tip tree and the net-next and sysctl tre=
-es.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/.jZxa_kqH6=AjqA_rdVtqsZ
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmKMOUwACgkQAVBC80lX
-0GxKdAf/VCapTkpdl2TaeRrxWy6kUnx1mUsopvgKxcTGlBtnTkjj4IjJxpxpzV2K
-06qL9ivblASgnykiDHGdf3viUrVdkqVIxQahO2PO6BW9ZFAcWo4y7odNTPDViQUM
-wqbGX3JtiJ98CAcMzZHbTYu29MFjMVmBOe1fpC4zsC/iDZoVCn3rNnxSf+lppsvo
-n9zdrCafsonn2Q1NC3GfpikS3YvZESgeOteHtP/9MMLHw+o6cDVlgqMD7SNvZQrM
-sFpiZO2TQ1PQunZ6W1ikN8DQPHlckXT4xRkv6BDgHKqW/FNf0rsLvZGouM7QpjVJ
-nMqaakNeTv15xhlxO/SXx1SM32YUgw==
-=+mp5
------END PGP SIGNATURE-----
-
---Sig_/.jZxa_kqH6=AjqA_rdVtqsZ--
+SGVsbG8sCgpPbiBNb24sIDIzIE1heSAyMDIyIDEyOjQyOjQ0IC0wNzAwIEJyaWFuIHdyb3RlOgoK
+PiAoSSB0aGluayBwZW9wbGUgZ2VuZXJhbGx5IGFncmVlZCBvbiB0aGlzIGFwcHJvYWNoLCBidXQg
+cGxlYXNlIHN1Ym1pdCBhCj4gbmV3IHNlcmllcywgd2l0aCBzZXBhcmF0ZSBwYXRjaGVzKQo+IAo+
+IE9uIE1vbiwgTWF5IDIzLCAyMDIyIGF0IDEyOjI3IFBNIDxkdW9taW5nQHpqdS5lZHUuY24+IHdy
+b3RlOgo+ID4gV2hhdCdzIG1vcmUsIEkgbW92ZSB0aGUgb3BlcmF0aW9ucyB0aGF0IG1heSBzbGVl
+cCBpbnRvIGEgd29yayBpdGVtIGFuZCB1c2UKPiA+IHNjaGVkdWxlX3dvcmsoKSB0byBjYWxsIGEg
+a2VybmVsIHRocmVhZCB0byBkbyB0aGUgb3BlcmF0aW9ucyB0aGF0IG1heSBzbGVlcC4KPiAKPiBZ
+b3UgZW5kIHVwIHdpdGggYSB0aW1lciB0aGF0IGp1c3QgZXhpc3RzIHRvIGtpY2sgYSB3b3JrIGl0
+ZW0uIEVyaWMKPiBzdWdnZXN0ZWQgeW91IGp1c3QgdXNlIGEgZGVsYXllZF93b3JrLCBhbmQgdGhl
+biB5b3UgZG9uJ3QgbmVlZCBib3RoIGEKPiB0aW1lciBhbmQgYSB3b3JrIHN0cnVjdC4KCkkgd2ls
+bCBzdWJtaXQgYSBuZXcgc2VyaWVzLCBvbmUgaXMgcmVtb3ZpbmcgdGhlIGdmcF90IHBhcmFtZXRl
+ciBvZiBkZXZfY29yZWR1bXB2LAphbm90aGVyIGlzIHVzaW5nIGl0IHByb3Blcmx5IGluIG13aWZp
+ZXgocHV0IHRoZSBkZXZfY29yZWR1bXB2IGluIHRoZSBkZWxheWVkX3dvcmspLgpUaGFuayB5b3Ug
+Zm9yIHlvdXIgc3VnZ2VzdGlvbnMhCgpCZXN0IHJlZ2FyZHMsCkR1b21pbmcgWmhvdQ==
