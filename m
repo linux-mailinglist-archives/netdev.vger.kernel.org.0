@@ -2,107 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4720A532E85
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 18:05:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 231B3532E9D
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 18:08:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239597AbiEXQE4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 12:04:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47030 "EHLO
+        id S239575AbiEXQIZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 12:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239607AbiEXQEO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 12:04:14 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4843D77F1A;
-        Tue, 24 May 2022 09:01:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ADC15B81A3A;
-        Tue, 24 May 2022 16:01:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4213BC34115;
-        Tue, 24 May 2022 16:01:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653408107;
-        bh=XlJudae/Rd1WLA5BHjtLGkYAM0ugWuB95uLJVf7nEp4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Q9XiEWuoGcQKLseZ2DaicMw5n0RQPGFB5Qa2IXQl5pib+cCvxrgwhSB5luQ2O4ySy
-         ONKS0r8w4rlnY/TKI6PcUyejsUZM3A8FDbH4s6A25Z+zSXP2B5BNSi80IhdxylyX43
-         kP2UoZZjYe0QNSa6GIaUDBKnJrfxbALu3PCvCpVlsDR2GW/osuZrwgF1sjB2N4Z9N3
-         TqcvZ7JqhgGkIaprcxUAXkMVOgJgflWq5mIZYGVKlYr7rXg7g7kBI1RGhPzs2XlWJ0
-         ixiChC/InlShMw0wwbgFCzL3UaPJqqNeZ3VWztTo0pOX73o2RXINrV2ylT3ogR7OYU
-         rV3fIuRPmvucQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thomas Bartschies <thomas.bartschies@cvk.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 1/2] net: af_key: check encryption module availability consistency
-Date:   Tue, 24 May 2022 12:01:43 -0400
-Message-Id: <20220524160144.827435-1-sashal@kernel.org>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S239666AbiEXQIU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 12:08:20 -0400
+Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB6CBD6;
+        Tue, 24 May 2022 09:08:12 -0700 (PDT)
+Received: by mail-lj1-x232.google.com with SMTP id m11so10003501ljc.1;
+        Tue, 24 May 2022 09:08:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=FYyqUIqX7o7uukxhOxpvy5c6jwFhAW9JG5e+iqj0ZAA=;
+        b=c40RMye4tt3qCM6W7eagyel05d9f+ezi9QjwhaQUCVPrgeXySiIl9CgyIOCULFxZRD
+         R6hBjevW71JnRlce8PS7Z25IqHWEruI0bmo1pEwvrEZrFMyulwV9euVsIFwx1faYR3pt
+         IZOpC8zioCI8T2SnZoD3ZoSTFvlbhGEjtZ8ulllzeUUNb91lhIKU8erEgOQ+3jnIWFjx
+         fiv+sihOx6bLRkA5OmLH/IMQpg6fnANudZqfBYeJtNmLbZiq+VIKRXePkKm+JBYSWSOK
+         2et3ghTg4DPaTlWwem54LXEFrT27VZvUKSFjYc7yQesvH60Ljkbai0rT9V3qfElTv5FM
+         XxeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=FYyqUIqX7o7uukxhOxpvy5c6jwFhAW9JG5e+iqj0ZAA=;
+        b=fFGpvSob2xcXVnLC9jvqexFMthek74/3VmPF/AXq42UaRhTwelMCDUMT3eIDohSXe/
+         vZy/2nTnS+Mdu4AUzuCRTPHDjB3TuQw9qmEWd+8odbb46+OQVRetuukrEBXE4TExq7o5
+         S7GK8qYZbCvcfrClB0EjfxNaQHDlJ1ubMLtc53XGNWwreNiMvnS2wbG96FjF5tdJRlae
+         To5s6VhNrWPEBqLaYwR/2E53czKdOtUm7OfN98ez5CA67gT/y4W7/FHGIA/FZPYGcZX+
+         n0ptf5XhRdyOBHw1Dm4wd93tkIbIKSvKDtwoqx9JbAzkaSwprsKUPM9P/D2g4tQfuKCM
+         1FAA==
+X-Gm-Message-State: AOAM531cIENo4uEnzBK0CUrV0mIBqsUhqv6IzMclKj0RarjuiUHpNfPX
+        xRnGBQV9hqrnbSiTBcPRM2dwYVKM8SndtA==
+X-Google-Smtp-Source: ABdhPJxuLzq1hI6bqY13WMLFP01JX+UfPxh11e02lJOpXFmfpfy/IHhgLs7X1xQVsl3eRy/uyOdaIA==
+X-Received: by 2002:a05:651c:1a14:b0:253:ed7b:c22 with SMTP id by20-20020a05651c1a1400b00253ed7b0c22mr5665926ljb.84.1653408490226;
+        Tue, 24 May 2022 09:08:10 -0700 (PDT)
+Received: from wse-c0127 (2-104-116-184-cable.dk.customer.tdc.net. [2.104.116.184])
+        by smtp.gmail.com with ESMTPSA id u26-20020ac248ba000000b0047255d21188sm2597000lfg.183.2022.05.24.09.08.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 May 2022 09:08:09 -0700 (PDT)
+From:   Hans Schultz <schultz.hans@gmail.com>
+X-Google-Original-From: Hans Schultz <schultz.hans+netdev@gmail.com>
+To:     Nikolay Aleksandrov <razor@blackwall.org>,
+        Hans Schultz <schultz.hans@gmail.com>, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, Jiri Pirko <jiri@resnulli.us>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Roopa Prabhu <roopa@nvidia.com>, Shuah Khan <shuah@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Ido Schimmel <idosch@nvidia.com>, linux-kernel@vger.kernel.org,
+        bridge@lists.linux-foundation.org, linux-kselftest@vger.kernel.org
+Subject: Re: [PATCH V3 net-next 1/4] net: bridge: add fdb flag to extent
+ locked port feature
+In-Reply-To: <01e6e35c-f5c9-9776-1263-058f84014ed9@blackwall.org>
+References: <20220524152144.40527-1-schultz.hans+netdev@gmail.com>
+ <20220524152144.40527-2-schultz.hans+netdev@gmail.com>
+ <01e6e35c-f5c9-9776-1263-058f84014ed9@blackwall.org>
+Date:   Tue, 24 May 2022 18:08:08 +0200
+Message-ID: <8635gyvrpz.fsf@gmail.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+Content-Type: text/plain
+X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Bartschies <thomas.bartschies@cvk.de>
+>
+> Hi Hans,
+> So this approach has a fundamental problem, f->dst is changed without any synchronization
+> you cannot rely on it and thus you cannot account for these entries properly. We must be very
+> careful if we try to add any new synchronization not to affect performance as well.
+> More below...
+>
+>> @@ -319,6 +326,9 @@ static void fdb_delete(struct net_bridge *br, struct net_bridge_fdb_entry *f,
+>>  	if (test_bit(BR_FDB_STATIC, &f->flags))
+>>  		fdb_del_hw_addr(br, f->key.addr.addr);
+>>  
+>> +	if (test_bit(BR_FDB_ENTRY_LOCKED, &f->flags) && !test_bit(BR_FDB_OFFLOADED, &f->flags))
+>> +		atomic_dec(&f->dst->locked_entry_cnt);
+>
+> Sorry but you cannot do this for multiple reasons:
+>  - f->dst can be NULL
+>  - f->dst changes without any synchronization
+>  - there is no synchronization between fdb's flags and its ->dst
+>
+> Cheers,
+>  Nik
 
-[ Upstream commit 015c44d7bff3f44d569716117becd570c179ca32 ]
+Hi Nik,
 
-Since the recent introduction supporting the SM3 and SM4 hash algos for IPsec, the kernel
-produces invalid pfkey acquire messages, when these encryption modules are disabled. This
-happens because the availability of the algos wasn't checked in all necessary functions.
-This patch adds these checks.
+I could check if f->dst is NULL, but in general this should be able to
+work on a per port basis, so do you have an idea of how to keep a per
+port counter of added locked fdb entries?
 
-Signed-off-by: Thomas Bartschies <thomas.bartschies@cvk.de>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- net/key/af_key.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/net/key/af_key.c b/net/key/af_key.c
-index c9cc9f75b099..60136e8fc180 100644
---- a/net/key/af_key.c
-+++ b/net/key/af_key.c
-@@ -2933,7 +2933,7 @@ static int count_ah_combs(const struct xfrm_tmpl *t)
- 			break;
- 		if (!aalg->pfkey_supported)
- 			continue;
--		if (aalg_tmpl_set(t, aalg))
-+		if (aalg_tmpl_set(t, aalg) && aalg->available)
- 			sz += sizeof(struct sadb_comb);
- 	}
- 	return sz + sizeof(struct sadb_prop);
-@@ -2951,7 +2951,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 		if (!ealg->pfkey_supported)
- 			continue;
- 
--		if (!(ealg_tmpl_set(t, ealg)))
-+		if (!(ealg_tmpl_set(t, ealg) && ealg->available))
- 			continue;
- 
- 		for (k = 1; ; k++) {
-@@ -2962,7 +2962,7 @@ static int count_esp_combs(const struct xfrm_tmpl *t)
- 			if (!aalg->pfkey_supported)
- 				continue;
- 
--			if (aalg_tmpl_set(t, aalg))
-+			if (aalg_tmpl_set(t, aalg) && aalg->available)
- 				sz += sizeof(struct sadb_comb);
- 		}
- 	}
--- 
-2.35.1
-
+Best,
+Hans
