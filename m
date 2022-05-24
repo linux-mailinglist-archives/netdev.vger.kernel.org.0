@@ -2,108 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CF085332AA
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 22:54:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 039EC53330A
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 23:38:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240047AbiEXUyC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 16:54:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60748 "EHLO
+        id S241950AbiEXVi1 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 24 May 2022 17:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241678AbiEXUyB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 16:54:01 -0400
-Received: from www62.your-server.de (www62.your-server.de [213.133.104.62])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF84E880D2
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 13:53:59 -0700 (PDT)
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ntbXF-00035A-8k; Tue, 24 May 2022 22:53:45 +0200
-Received: from [85.1.206.226] (helo=linux.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1ntbXE-000FwZ-U2; Tue, 24 May 2022 22:53:44 +0200
-Subject: Re: [PATCH net-next v2] net, neigh: introduce interval_probe_time for
- periodic probe
-To:     Yuwei Wang <wangyuweihx@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>
-Cc:     davem@davemloft.net, Eric Dumazet <edumazet@google.com>,
-        roopa@nvidia.com, dsahern@kernel.org,
-        =?UTF-8?B?56em6L+q?= <qindi@staff.weibo.com>,
-        netdev@vger.kernel.org, yuwei wang <wangyuweihx@hotmail.com>,
-        razor@blackwall.org
-References: <20220522031739.87399-1-wangyuweihx@gmail.com>
- <b5cf7fac361752d925f663d9a9b0b8415084f7d3.camel@redhat.com>
- <CANmJ_FP0CxSVksjvNsNjpQO8w+S3_10byQSCpt1ifQ6HeURUmA@mail.gmail.com>
- <cf3188eba7e529e4f112f6a752158f38e22f4851.camel@redhat.com>
- <797c3c53-ce1b-9f60-e253-cda615788f4a@iogearbox.net>
- <20220524110749.6c29464b@kernel.org>
- <CANmJ_FN6_79nRmmzKzoExzD+KJ5Uzehj8Rw_GQhV0SiBpF3rPg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3fc6aba3-fc63-5722-7a6a-48b7472deffd@iogearbox.net>
-Date:   Tue, 24 May 2022 22:53:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S234650AbiEXVi0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 17:38:26 -0400
+X-Greylist: delayed 920 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 24 May 2022 14:38:25 PDT
+Received: from sender11-of-o53.zoho.eu (sender11-of-o53.zoho.eu [31.186.226.239])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F23E7C178
+        for <netdev@vger.kernel.org>; Tue, 24 May 2022 14:38:25 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1653427341; cv=none; 
+        d=zohomail.eu; s=zohoarc; 
+        b=RDDY9bThuyuptIf+ctqCWHQ+TX2DXrCRDM475nm00NC9aIXdMxh8kCFdzYARvieGZjc1UbwDkHu8DK8hmH4cwhfBTIek/TxRuOHHOJCXECu2EaaFSpYA1bFEfZ8j+FnXWcD2lQOQlydnRAH90Mu0PmiEvPF6nqYA5DnAaB0BGks=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.eu; s=zohoarc; 
+        t=1653427341; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=eUsYtGvjMVMeiJbcfkFwYYtNYc+bXWXsUkZz7xnU2AE=; 
+        b=bx7m7ovII/BQ4+3ZQfx9WOO/sNeWbeEGaMPNItlzzN5+mm1hf5CxuMtuPyNSRGxnvF3tq/aoGLlFkIBdmXjNg5GQgvOEHs+lG86eyJK6XMQ76o7wSZAwKF6VoxioQRzAyRs3io4aMKhMY//taRESiiOf0UmifqLiwaQDkRe5cn8=
+ARC-Authentication-Results: i=1; mx.zohomail.eu;
+        spf=pass  smtp.mailfrom=hostmaster@neglo.de;
+        dmarc=pass header.from=<bage@debian.org>
+Received: from localhost.localdomain (port-92-194-239-176.dynamic.as20676.net [92.194.239.176]) by mx.zoho.eu
+        with SMTPS id 165342733992663.21335406305718; Tue, 24 May 2022 23:22:19 +0200 (CEST)
+From:   Bastian Germann <bage@debian.org>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kubakici@wp.pl>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Cc:     Bastian Germann <bage@debian.org>,
+        Vasily Khoruzhick <anarsoul@gmail.com>
+Message-ID: <20220524212155.16944-1-bage@debian.org>
+Subject: [PATCH v2 0/3] arm64: allwinner: a64: add bluetooth support for Pinebook
+Date:   Tue, 24 May 2022 23:21:51 +0200
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-In-Reply-To: <CANmJ_FN6_79nRmmzKzoExzD+KJ5Uzehj8Rw_GQhV0SiBpF3rPg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26551/Tue May 24 10:06:48 2022)
-X-Spam-Status: No, score=-5.2 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=utf8
+X-Spam-Status: No, score=-1.7 required=5.0 tests=BAYES_00,
+        HEADER_FROM_DIFFERENT_DOMAINS,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
+        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=no autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 5/24/22 9:13 PM, Yuwei Wang wrote:
-> On Wed, 25 May 2022 at 02:07, Jakub Kicinski <kuba@kernel.org> wrote:
->> On Tue, 24 May 2022 17:32:57 +0200 Daniel Borkmann wrote:
->>> Right, maybe we could just split this into two: 1) prevent misconfig (see
->>> below), and 2) make the timeout configurable as what Yuwei has. Wdyt?
->>>
->>> diff --git a/net/core/neighbour.c b/net/core/neighbour.c
->>> index 47b6c1f0fdbb..54625287ee5b 100644
->>> --- a/net/core/neighbour.c
->>> +++ b/net/core/neighbour.c
->>> @@ -1579,7 +1579,7 @@ static void neigh_managed_work(struct work_struct *work)
->>>           list_for_each_entry(neigh, &tbl->managed_list, managed_list)
->>>                   neigh_event_send_probe(neigh, NULL, false);
->>>           queue_delayed_work(system_power_efficient_wq, &tbl->managed_work,
->>> -                          NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME));
->>> +                          max(NEIGH_VAR(&tbl->parms, DELAY_PROBE_TIME), HZ));
->>>           write_unlock_bh(&tbl->lock);
->>>    }
->>
->> FWIW that was my reaction as well. Let's do that unless someone
->> disagrees.
-> 
-> I agree too, so there will be as following parts:
-> 1) prevent misconfig by offering a minimum value
-> 2) separate the params `INTERVAL_PROBE_TIME` as the probe interval for
-> `MANAGED` neigh
+Pinebook uses RTL8723CS for WiFi and bluetooth. Unfortunately RTL8723CS
+has broken BT-4.1 support, so it requires a quirk.
 
-Ok.
+Add a quirk, wire up 8723CS support in btrtl and enable bluetooth
+in Pinebook dts.
 
-> 3) notify the change of `INTERVAL_PROBE_TIME` and set the driver poll interval
-> according to `INTERVAL_PROBE_TIME` instead of `DELAY_PROBE_TIME`
-> 
-> I still have doubt about whether we need part 3, or if exist this scenario:
-> - the NIC offloading the data plane.
-> - the driver needs periodically poll the device for neighbours activity
-> 
-> May I ask for further explanation?
+This series was sent in July 2020 by Vasily Khoruzhick.
+This is a rebase on the current tree.
+I have tested it to work on the Pinebook.
 
-Well, but for that case we would need some in-tree driver users of managed neigh
-first, and they can probably drive it according to their needs if they require a
-notifier message. Are you saying you are panning to convert the mlx one over to
-use managed neigh?
+Changelog:
+v2:
+   * Rebase
+   * Add uart-has-rtscts to device tree as requested by reviewer
 
-Thanks,
-Daniel
+Vasily Khoruzhick (3):
+  Bluetooth: Add new quirk for broken local ext features max_page
+  Bluetooth: btrtl: add support for the RTL8723CS
+  arm64: allwinner: a64: enable Bluetooth On Pinebook
+
+ .../dts/allwinner/sun50i-a64-pinebook.dts     |  13 ++
+ drivers/bluetooth/btrtl.c                     | 120 +++++++++++++++++-
+ drivers/bluetooth/btrtl.h                     |   5 +
+ drivers/bluetooth/hci_h5.c                    |   4 +
+ include/net/bluetooth/hci.h                   |   7 +
+ net/bluetooth/hci_event.c                     |   4 +-
+ 6 files changed, 148 insertions(+), 5 deletions(-)
+
+-- 
+2.36.1
+
+
