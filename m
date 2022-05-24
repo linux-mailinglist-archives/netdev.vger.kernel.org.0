@@ -2,47 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D13A5321BE
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 05:51:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 528DD5321C7
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 05:55:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233000AbiEXDvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 23:51:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52464 "EHLO
+        id S233711AbiEXDzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 23:55:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232910AbiEXDvm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 23:51:42 -0400
-Received: from mail.meizu.com (unknown [14.29.68.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD6114089;
-        Mon, 23 May 2022 20:51:38 -0700 (PDT)
-Received: from IT-EXMB-1-125.meizu.com (172.16.1.125) by mz-mail04.meizu.com
- (172.16.1.16) with Microsoft SMTP Server (TLS) id 14.3.487.0; Tue, 24 May
- 2022 11:51:37 +0800
-Received: from [172.16.137.70] (172.16.137.70) by IT-EXMB-1-125.meizu.com
- (172.16.1.125) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.14; Tue, 24 May
- 2022 11:51:36 +0800
-Message-ID: <43b269f3-2970-e75d-34d0-d738a8c1fb81@meizu.com>
-Date:   Tue, 24 May 2022 11:51:35 +0800
+        with ESMTP id S233416AbiEXDzE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 23:55:04 -0400
+Received: from mail-yw1-x1135.google.com (mail-yw1-x1135.google.com [IPv6:2607:f8b0:4864:20::1135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A197F19C39
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 20:54:59 -0700 (PDT)
+Received: by mail-yw1-x1135.google.com with SMTP id 00721157ae682-300312ba5e2so2848307b3.0
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 20:54:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=02PRBMhXiS9MzzAmTxIommRPUw0PsVFtBIV5R9sSMDk=;
+        b=XZ1upDXpQgYfRQxYPPF2gE6L9ciCtAQhjsIC9OlmBNdoToZyT3/s20+nl1cDBM8L39
+         LEdynr/SdPltOn+gppCX+YniidUAE4zthzV4aI39Ow0MJVKoQh6P4P6tbaXDo8HTXipa
+         KSq69Z2+TJvkFPIl9MsWZxVorWu1qOWDd9/H1FiG0d/ELqlPdnj1zZSGdQ5ZaXvHL0Uk
+         0YkmmzXnOZLUTissCnxXRs/oS5XkwpwF658oIk3ABUbMc+a1NolDq/Ly7X4uC7q4frfJ
+         IpjymSPLrYOJryyyFUI4YAOGFFPENdmr0aLoxvGiJUsBrsFJX1oIWricQHb+X8SromL6
+         0xWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=02PRBMhXiS9MzzAmTxIommRPUw0PsVFtBIV5R9sSMDk=;
+        b=6x4P1110xkdGIRbY591UD+VP2n89RvZw5rkunH7Ey0lPJPbtTPy8MMb0EktsGXKwDU
+         pJR1040GDyeBAlzOnivpRy4AasApyd/69kq9TiogBNYBQbs7AGUbAil1cLQx386cj/B0
+         XruW2VR2nPiLcugvSxUTFMwQB1D/1nRJ8s2GMeBFXQ9lpi0VTc2nYR2gifWcMMsOxmj3
+         C+heb9CE1lRpWuAF53CH4hiXALHmCgecJfqwFwTAAdvrnFCaTmy3I0IvcV+qIKtwBNyB
+         Jf+JMVRxYTsS2Cr8XNgkvR0ozl+79HsU8lkryqJ7tO2L1lc3v7+zYTtGyjkaUrzfGNQ0
+         qNkA==
+X-Gm-Message-State: AOAM533ZUe08CbvCAhHQwp9caUZN/KSelObVzZdYC50PR5WYAhKhT0z1
+        E1mo4mC79V7SjRtM6B+JMHYq7eUZGZLxU9qlVIUV5g==
+X-Google-Smtp-Source: ABdhPJyKe2ct0Exan/BNSwYxnwykqLkDjScTQxoA6AyDL5vw70Cpvt4jkceJEc9oueLbQYsbkb24LLAPRlEVshDRa+Q=
+X-Received: by 2002:a81:1d4e:0:b0:2f7:be8b:502e with SMTP id
+ d75-20020a811d4e000000b002f7be8b502emr26659521ywd.278.1653364498584; Mon, 23
+ May 2022 20:54:58 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: [PATCH V2] octeon_ep: Remove unnecessary cast
-To:     Joe Perches <joe@perches.com>
-CC:     <aayarekar@marvell.com>, <davem@davemloft.net>, <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <pabeni@redhat.com>, <vburru@marvell.com>
-References: <53b4a92efb83d893230f47ae9988282f3875b355.camel@perches.com>
- <1653362915-22831-1-git-send-email-baihaowen@meizu.com>
- <059725f837c8a869cc2358d2850f6776b05a9fe2.camel@perches.com>
-From:   baihaowen <baihaowen@meizu.com>
-In-Reply-To: <059725f837c8a869cc2358d2850f6776b05a9fe2.camel@perches.com>
+References: <20220524034629.395939-1-wangyufen@huawei.com>
+In-Reply-To: <20220524034629.395939-1-wangyufen@huawei.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 23 May 2022 20:54:47 -0700
+Message-ID: <CANn89iK25tMWxyLYhFK8oMx9zJeQAntbiK1J=8hpeMg51GSKhA@mail.gmail.com>
+Subject: Re: [PATCH net-next] ipv6: Fix signed integer overflow in __ip6_append_data
+To:     Wang Yufen <wangyufen@huawei.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [172.16.137.70]
-X-ClientProxiedBy: IT-EXMB-1-126.meizu.com (172.16.1.126) To
- IT-EXMB-1-125.meizu.com (172.16.1.125)
-X-Spam-Status: No, score=-3.6 required=5.0 tests=BAYES_00,MAY_BE_FORGED,
-        NICE_REPLY_A,SPF_HELO_NONE,SPF_SOFTFAIL,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-17.6 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,
+        ENV_AND_HDR_SPF_MATCH,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
+        T_SCC_BODY_TEXT_LINE,USER_IN_DEF_DKIM_WL,USER_IN_DEF_SPF_WL
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -50,88 +77,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-在 2022/5/24 上午11:48, Joe Perches 写道:
-> On Tue, 2022-05-24 at 11:28 +0800, Haowen Bai wrote:
->> ./drivers/net/ethernet/marvell/octeon_ep/octep_rx.c:161:18-40: WARNING:
->> casting value returned by memory allocation function to (struct
->> octep_rx_buffer *) is useless.
-> []
->> diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c b/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
-> []
->> @@ -158,8 +158,7 @@ static int octep_setup_oq(struct octep_device *oct, int q_no)
->>  		goto desc_dma_alloc_err;
->>  	}
->>  
->> -	oq->buff_info = (struct octep_rx_buffer *)
->> -			vzalloc(oq->max_count * OCTEP_OQ_RECVBUF_SIZE);
->> +	oq->buff_info = vcalloc(oq->max_count, OCTEP_OQ_RECVBUF_SIZE);
-> trivia:
+On Mon, May 23, 2022 at 8:29 PM Wang Yufen <wangyufen@huawei.com> wrote:
 >
-> Perhaps better to remove the used once #define OCTEP_OQ_RECVBUF_SIZE
-> and use the more obvious
+> Resurrect ubsan overflow checks and ubsan report this warning,
+> fix it by change len check from INT_MAX to IPV6_MAXPLEN.
 >
-> 	oq->buff_info = vcalloc(oq->max_count, sizeof(struct octep_rx_buffer));
->
-> though I believe the vcalloc may be better as kvcalloc as max_count isn't
-> particularly high and struct octep_rx_buffer is small.
->
-> Maybe:
-> ---
->  drivers/net/ethernet/marvell/octeon_ep/octep_rx.c | 8 ++++----
->  drivers/net/ethernet/marvell/octeon_ep/octep_rx.h | 2 --
->  2 files changed, 4 insertions(+), 6 deletions(-)
->
-> diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c b/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
-> index d9ae0937d17a8..d6a0da61db449 100644
-> --- a/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
-> +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_rx.c
-> @@ -158,8 +158,8 @@ static int octep_setup_oq(struct octep_device *oct, int q_no)
->  		goto desc_dma_alloc_err;
->  	}
->  
-> -	oq->buff_info = (struct octep_rx_buffer *)
-> -			vzalloc(oq->max_count * OCTEP_OQ_RECVBUF_SIZE);
-> +	oq->buff_info = kvcalloc(oq->max_count, sizeof(struct octep_rx_buffer),
-> +				 GFP_KERNEL);
->  	if (unlikely(!oq->buff_info)) {
->  		dev_err(&oct->pdev->dev,
->  			"Failed to allocate buffer info for OQ-%d\n", q_no);
-> @@ -176,7 +176,7 @@ static int octep_setup_oq(struct octep_device *oct, int q_no)
->  	return 0;
->  
->  oq_fill_buff_err:
-> -	vfree(oq->buff_info);
-> +	kvfree(oq->buff_info);
->  	oq->buff_info = NULL;
->  buf_list_err:
->  	dma_free_coherent(oq->dev, desc_ring_size,
-> @@ -230,7 +230,7 @@ static int octep_free_oq(struct octep_oq *oq)
->  
->  	octep_oq_free_ring_buffers(oq);
->  
-> -	vfree(oq->buff_info);
-> +	kvfree(oq->buff_info);
->  
->  	if (oq->desc_ring)
->  		dma_free_coherent(oq->dev,
-> diff --git a/drivers/net/ethernet/marvell/octeon_ep/octep_rx.h b/drivers/net/ethernet/marvell/octeon_ep/octep_rx.h
-> index 782a24f27f3e0..34a32d95cd4b3 100644
-> --- a/drivers/net/ethernet/marvell/octeon_ep/octep_rx.h
-> +++ b/drivers/net/ethernet/marvell/octeon_ep/octep_rx.h
-> @@ -67,8 +67,6 @@ struct octep_rx_buffer {
->  	u64 len;
->  };
->  
-> -#define OCTEP_OQ_RECVBUF_SIZE    (sizeof(struct octep_rx_buffer))
-> -
->  /* Output Queue statistics. Each output queue has four stats fields. */
->  struct octep_oq_stats {
->  	/* Number of packets received from the Device. */
->
->
-Good work, thanks for suggestion.
+> UBSAN: signed-integer-overflow in net/ipv6/ip6_output.c:1489:19
+> 2147479552 + 8567 cannot be represented in type 'int'
 
--- 
-Haowen Bai
+OK, so why not fix this point, instead of UDP, which is only one of
+the possible callers ?
 
-suggestionSynonymsBetasuggestion (noun)idea(generic)thought(generic)suggestion (noun)propositionprofferproposal(generic)suggestion (noun)tracehintsmall indefinite quantity(generic)small indefinite amount(generic)Source: WordNetLanguageToolbasic
+It seems the check in __ip6_append_data() should be unsigned.
