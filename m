@@ -2,100 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id CB22653213E
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 04:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 050C3532163
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 05:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233426AbiEXCqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 23 May 2022 22:46:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53610 "EHLO
+        id S229989AbiEXCzn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 23 May 2022 22:55:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229684AbiEXCqV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 22:46:21 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 9C53911175
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 19:46:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1653360374;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BYJFy+Y4pkEYziHYoAeekoD+3Bc8Qu3A80VyOZfUR80=;
-        b=aTVL06TeGTbwRnkWpt/s3Xfh6fNe5Jiiisi3yF2OydlK1hzagVVgW7t8QfJyIQpVT62L+B
-        BVWE72ObN5KoufZsC0oRAj08RX2LNSnFkwGIg7073mhOwO8pbPPBpcQmvytl7kZe6RPa2S
-        B1qL03s+uPiOjSp4bbSGqpQGlQzIudA=
-Received: from mail-pl1-f199.google.com (mail-pl1-f199.google.com
- [209.85.214.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-159-FHJ3wVe5NP2Onr-_QZnyzg-1; Mon, 23 May 2022 22:46:13 -0400
-X-MC-Unique: FHJ3wVe5NP2Onr-_QZnyzg-1
-Received: by mail-pl1-f199.google.com with SMTP id p16-20020a170902e75000b00161d96620c4so7658107plf.14
-        for <netdev@vger.kernel.org>; Mon, 23 May 2022 19:46:13 -0700 (PDT)
+        with ESMTP id S229907AbiEXCzn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 23 May 2022 22:55:43 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9192B9154F
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 19:55:41 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id a13so4190071plh.6
+        for <netdev@vger.kernel.org>; Mon, 23 May 2022 19:55:41 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=J/50AJ+NI1zkbT6APU/2qPIMTTrEA99XU7T3yxnY62c=;
+        b=aOVkZJKkSAgfD5oNFcEnzXGX1rmfvMHJGmJ7+xiSeEQJFUfZq7FmHKnaeNnnOj+TM/
+         LV5hzgkPywS1pKlyXQSeLS6Wmbg5C61WJfY6R5LdzIC2QIEfp7mjOjuR7pCIha7SBCyv
+         CoMak2TLLzAGSYYA9xkDjQGj8okKZoLqlf8apxgtJztDhtGzSpEQiM5yzhapuJKBxzT6
+         Z58+ukLQztQF8qTUVGKTMv8ZkStHaWIJQI+KpA2ewcHv87V33Ulv8hww5j2Icy+sI+P3
+         2qgCzNrbWoEpCegFVe96fwbgb6w63m4R8RkY7Qfj+LfLZ1w7P0Io7U940jTTWOQxSpPi
+         C/EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=BYJFy+Y4pkEYziHYoAeekoD+3Bc8Qu3A80VyOZfUR80=;
-        b=aYBe0fiSfEpKA4dRIQk11l4dKWazBeTfhT2zEfXu5zMjlze4Q6w2TX6IJygEeUzim6
-         PWNGe2hoTjZFG6Oq2UpKdEcYTZXFI3H2t1odgg7Xf/sy+x27scSqju4n0tqIgw3eJi46
-         VvrljgGYW54hWRo59Vrac9VR1DYupMHQ4tlJwOUIry4A38qSotX+gZ/wVQSn1hEX/AHL
-         +gGScjcSox+dOZYdwuyAHYAMLEQRyjTguL5NdoAo155SogD5jbbvX2CmOx4En67ING5V
-         DtPPENNXWEc6ENymWLA4U+1x1RGA1ICu22AYoLMblXjTNo/pJ53hVuyrOC7b6ilApz64
-         3d5Q==
-X-Gm-Message-State: AOAM530HTkLoM4EYiPegttnJ8iOVRPvaQPH0zTSYwrKmyxC/EVwQa3TB
-        uL+zgjSdOWz07b3HKEck9+IIoUaM0Wi9uEeH8dGTEAd2RU3fO2k0mlPyu3oddjZ/sDm29qhwjIm
-        p4KbB3aG7Hg67jNYX
-X-Received: by 2002:a17:903:246:b0:153:87f0:a93e with SMTP id j6-20020a170903024600b0015387f0a93emr25486842plh.171.1653360372500;
-        Mon, 23 May 2022 19:46:12 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwuBiLXA4Wufa9VWmoox3iYH6eOe66WEUcrf0/HzhdQBGhqcNjN4ti96gSnG5cETtgP3NLFXw==
-X-Received: by 2002:a17:903:246:b0:153:87f0:a93e with SMTP id j6-20020a170903024600b0015387f0a93emr25486789plh.171.1653360372044;
-        Mon, 23 May 2022 19:46:12 -0700 (PDT)
-Received: from [10.72.12.128] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l9-20020a17090aaa8900b001cd4989fec6sm417537pjq.18.2022.05.23.19.45.56
+        bh=J/50AJ+NI1zkbT6APU/2qPIMTTrEA99XU7T3yxnY62c=;
+        b=NWiN8c6wUfFhATiQj9bZBfj0T8EVRJpNyd9AVzsBFO/Jhe3OIMqnTxKRsYfzMJ0kSJ
+         1LErT4eqANr6R5HYI2KUROKmKAuRdJ6u2RW3C9vxrxD4MU6wbF6bMwDgFDuhTGbnjGQV
+         kgmA10lHkwTgicNppH6+xuoqo2CGE3u0g//GgS8SfuFGtQUjDWqOGx8yqGRoxJOjhmXU
+         CgtBZ79NHgpBbj45OGSrlJv2Ha45poir4lj2yPxWCWXbRmVRfBbT8yFwlM/N+4QTjPN1
+         M6t9WALmj9A61dKdo9Q4gT1utA284FM/5cRnseX10Qv0iEsV7crhExnJ77hltetdUkEC
+         trtg==
+X-Gm-Message-State: AOAM533gNSINmySc5p+ZnDxv3m5RNPL3UuEroGFkDuhZPTsd5OdqfJNz
+        hOF/+lP+B+eTRis1BU4HsFk=
+X-Google-Smtp-Source: ABdhPJxzBn3yzrJzGFBu3AVpHUwCxLPt+vmYIU+yIrCn8WND9O0O4j1uUDxUDnrGDrHD+Uu7hv1BGA==
+X-Received: by 2002:a17:902:f54b:b0:162:44c4:6190 with SMTP id h11-20020a170902f54b00b0016244c46190mr549569plf.119.1653360940980;
+        Mon, 23 May 2022 19:55:40 -0700 (PDT)
+Received: from [192.168.86.235] (c-73-241-150-58.hsd1.ca.comcast.net. [73.241.150.58])
+        by smtp.gmail.com with ESMTPSA id c23-20020a170902c2d700b00162037fbb68sm5771387pla.215.2022.05.23.19.55.39
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 May 2022 19:46:08 -0700 (PDT)
-Message-ID: <333e957d-af84-24fb-6636-843a9dcfc1e2@redhat.com>
-Date:   Tue, 24 May 2022 10:45:54 +0800
+        Mon, 23 May 2022 19:55:40 -0700 (PDT)
+Message-ID: <b35b766c-a25a-fcf7-d329-31948e219f5d@gmail.com>
+Date:   Mon, 23 May 2022 19:55:38 -0700
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.0
-Subject: Re: [PATCH 1/4] vdpa: Add stop operation
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: packet stuck in qdisc : patch proposal
 Content-Language: en-US
-To:     Si-Wei Liu <si-wei.liu@oracle.com>,
-        Eugenio Perez Martin <eperezma@redhat.com>
-Cc:     virtualization <virtualization@lists.linux-foundation.org>,
-        kvm list <kvm@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        Longpeng <longpeng2@huawei.com>,
-        Zhu Lingshan <lingshan.zhu@intel.com>,
-        Martin Petrus Hubertus Habets <martinh@xilinx.com>,
-        Harpreet Singh Anand <hanand@xilinx.com>, dinang@xilinx.com,
-        Eli Cohen <elic@nvidia.com>,
-        Laurent Vivier <lvivier@redhat.com>, pabloc@xilinx.com,
-        "Dawar, Gautam" <gautam.dawar@amd.com>,
-        Xie Yongji <xieyongji@bytedance.com>, habetsm.xilinx@gmail.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        tanuj.kamde@amd.com, Wu Zongyong <wuzongyong@linux.alibaba.com>,
-        martinpo@xilinx.com, Cindy Lu <lulu@redhat.com>,
-        ecree.xilinx@gmail.com, Parav Pandit <parav@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Zhang Min <zhang.min9@zte.com.cn>
-References: <20220520172325.980884-1-eperezma@redhat.com>
- <20220520172325.980884-2-eperezma@redhat.com>
- <79089dc4-07c4-369b-826c-1c6e12edcaff@oracle.com>
- <CAJaqyWd3BqZfmJv+eBYOGRwNz3OhNKjvHPiFOafSjzAnRMA_tQ@mail.gmail.com>
- <4de97962-cf7e-c334-5874-ba739270c705@oracle.com>
- <9f68802c-2692-7321-f916-670ee0abfc40@oracle.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <9f68802c-2692-7321-f916-670ee0abfc40@oracle.com>
+To:     Vincent Ray <vray@kalrayinc.com>,
+        linyunsheng <linyunsheng@huawei.com>
+Cc:     davem <davem@davemloft.net>,
+        =?UTF-8?B?5pa55Zu954Ks?= <guoju.fgj@alibaba-inc.com>,
+        kuba <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
+        Samuel Jones <sjones@kalrayinc.com>,
+        vladimir oltean <vladimir.oltean@nxp.com>,
+        Guoju Fang <gjfang@linux.alibaba.com>,
+        Remy Gauguey <rgauguey@kalrayinc.com>,
+        Eric Dumazet <edumazet@google.com>
+References: <1359936158.10849094.1649854873275.JavaMail.zimbra@kalray.eu>
+ <2b827f3b-a9db-e1a7-0dc9-65446e07bc63@linux.alibaba.com>
+ <1684598287.15044793.1653314052575.JavaMail.zimbra@kalray.eu>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+In-Reply-To: <1684598287.15044793.1653314052575.JavaMail.zimbra@kalray.eu>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-6.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
-        RCVD_IN_DNSWL_LOW,SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE
+X-Spam-Status: No, score=-5.4 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,NICE_REPLY_A,
+        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
         autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
@@ -104,159 +83,120 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-在 2022/5/24 08:01, Si-Wei Liu 写道:
+On 5/23/22 06:54, Vincent Ray wrote:
+> Hi Yunsheng, all,
 >
+> I finally spotted the bug that caused (nvme-)tcp packets to remain stuck in the qdisc once in a while.
+> It's in qdisc_run_begin within sch_generic.h :
 >
-> On 5/23/2022 4:54 PM, Si-Wei Liu wrote:
->>
->>
->> On 5/23/2022 12:20 PM, Eugenio Perez Martin wrote:
->>> On Sat, May 21, 2022 at 12:13 PM Si-Wei Liu <si-wei.liu@oracle.com> 
->>> wrote:
->>>>
->>>>
->>>> On 5/20/2022 10:23 AM, Eugenio Pérez wrote:
->>>>> This operation is optional: It it's not implemented, backend 
->>>>> feature bit
->>>>> will not be exposed.
->>>>>
->>>>> Signed-off-by: Eugenio Pérez <eperezma@redhat.com>
->>>>> ---
->>>>>    include/linux/vdpa.h | 6 ++++++
->>>>>    1 file changed, 6 insertions(+)
->>>>>
->>>>> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
->>>>> index 15af802d41c4..ddfebc4e1e01 100644
->>>>> --- a/include/linux/vdpa.h
->>>>> +++ b/include/linux/vdpa.h
->>>>> @@ -215,6 +215,11 @@ struct vdpa_map_file {
->>>>>     * @reset:                  Reset device
->>>>>     *                          @vdev: vdpa device
->>>>>     *                          Returns integer: success (0) or 
->>>>> error (< 0)
->>>>> + * @stop:                    Stop or resume the device (optional, 
->>>>> but it must
->>>>> + *                           be implemented if require device stop)
->>>>> + *                           @vdev: vdpa device
->>>>> + *                           @stop: stop (true), not stop (false)
->>>>> + *                           Returns integer: success (0) or 
->>>>> error (< 0)
->>>> Is this uAPI meant to address all use cases described in the full 
->>>> blown
->>>> _F_STOP virtio spec proposal, such as:
->>>>
->>>> --------------%<--------------
->>>>
->>>> ...... the device MUST finish any in flight
->>>> operations after the driver writes STOP.  Depending on the device, it
->>>> can do it
->>>> in many ways as long as the driver can recover its normal operation 
->>>> if it
->>>> resumes the device without the need of resetting it:
->>>>
->>>> - Drain and wait for the completion of all pending requests until a
->>>>     convenient avail descriptor. Ignore any other posterior 
->>>> descriptor.
->>>> - Return a device-specific failure for these descriptors, so the 
->>>> driver
->>>>     can choose to retry or to cancel them.
->>>> - Mark them as done even if they are not, if the kind of device can
->>>>     assume to lose them.
->>>> --------------%<--------------
->>>>
->>> Right, this is totally underspecified in this series.
->>>
->>> I'll expand on it in the next version, but that text proposed to
->>> virtio-comment was complicated and misleading. I find better to get
->>> the previous version description. Would the next description work?
->>>
->>> ```
->>> After the return of ioctl, the device MUST finish any pending 
->>> operations like
->>> in flight requests. It must also preserve all the necessary state (the
->>> virtqueue vring base plus the possible device specific states)
->> Hmmm, "possible device specific states" is a bit vague. Does it 
->> require the device to save any device internal state that is not 
->> defined in the virtio spec - such as any failed in-flight requests to 
->> resubmit upon resume? Or you would lean on SVQ to intercept it in 
->> depth and save it with some other means? I think network device also 
->> has internal state such as flow steering state that needs bookkeeping 
->> as well.
-> Noted that I understand you may introduce additional feature call 
-> similar to VHOST_USER_GET_INFLIGHT_FD for (failed) in-flight request, 
-> but since that's is a get interface, I assume the actual state 
-> preserving should still take place in this STOP call.
+> smp_mb__before_atomic();
+>   
+> // [comments]
 >
-
-Yes, I think so.
-
-
-> -Siwei
+> if (test_bit(__QDISC_STATE_MISSED, &qdisc->state))
+> 	return false;
 >
->>
->> A follow-up question is what is the use of the `stop` argument of 
->> false, does it require the device to support resume? 
-
-
-Yes, this is required by the hypervisor e.g for Qemu it supports vm 
-stop/resume.
-
-
->> I seem to recall this is something to abandon in favor of device 
->> reset plus setting queue base/addr after. Or it's just a optional 
->> feature that may be device specific (if one can do so in simple way).
-
-
-Rest is more like a workarond consider we don't have a stop API. 
-Consider we don't add stop at the beginning, it can only be an optional 
-feature.
-
-Thanks
-
-
->>
->> -Siwei
->>
->>>   that is required
->>> for restoring in the future.
->>>
->>> In the future, we will provide features similar to 
->>> VHOST_USER_GET_INFLIGHT_FD
->>> so the device can save pending operations.
->>> ```
->>>
->>> Thanks for pointing it out!
->>>
->>>
->>>
->>>
->>>
->>>> E.g. do I assume correctly all in flight requests are flushed after
->>>> return from this uAPI call? Or some of pending requests may be subject
->>>> to loss or failure? How does the caller/user specify these various
->>>> options (if there are) for device stop?
->>>>
->>>> BTW, it would be nice to add the corresponding support to vdpa_sim_blk
->>>> as well to demo the stop handling. To just show it on vdpa-sim-net 
->>>> IMHO
->>>> is perhaps not so convincing.
->>>>
->>>> -Siwei
->>>>
->>>>>     * @get_config_size: Get the size of the configuration space 
->>>>> includes
->>>>>     *                          fields that are conditional on 
->>>>> feature bits.
->>>>>     *                          @vdev: vdpa device
->>>>> @@ -316,6 +321,7 @@ struct vdpa_config_ops {
->>>>>        u8 (*get_status)(struct vdpa_device *vdev);
->>>>>        void (*set_status)(struct vdpa_device *vdev, u8 status);
->>>>>        int (*reset)(struct vdpa_device *vdev);
->>>>> +     int (*stop)(struct vdpa_device *vdev, bool stop);
->>>>>        size_t (*get_config_size)(struct vdpa_device *vdev);
->>>>>        void (*get_config)(struct vdpa_device *vdev, unsigned int 
->>>>> offset,
->>>>>                           void *buf, unsigned int len);
->>
+> should be
 >
+> smp_mb();
+>
+> // [comments]
+>
+> if (test_bit(__QDISC_STATE_MISSED, &qdisc->state))
+> 	return false;
+>
+> I have written a more detailed explanation in the attached patch, including a race example, but in short that's because test_bit() is not an atomic operation.
+> Therefore it does not give you any ordering guarantee on any architecture.
+> And neither does spin_trylock() called at the beginning of qdisc_run_begin() when it does not grab the lock...
+> So test_bit() may be reordered whith a preceding enqueue(), leading to a possible race in the dialog with pfifo_fast_dequeue().
+> We may then end up with a skbuff pushed "silently" to the qdisc (MISSED cleared, nobody aware that there is something in the backlog).
+> Then the cores pushing new skbuffs to the qdisc may all bypass it for an arbitrary amount of time, leaving the enqueued skbuff stuck in the backlog.
+>
+> I believe the reason for which you could not reproduce the issue on ARM64 is that, on that architecture, smp_mb__before_atomic() will translate to a memory barrier.
+> It does not on x86 (turned into a NOP) because you're supposed to use this function just before an atomic operation, and atomic operations themselves provide full ordering effects on x86.
+>
+> I think the code has been flawed for some time but the introduction of a (true) bypass policy in 5.14 made it more visible, because without this, the "victim" skbuff does not stay very long in the backlog : it is bound to pe popped by the next core executing __qdic_run().
+>
+> In my setup, with our use case (16 (virtual) cpus in a VM shooting 4KB buffers with fio through a -i4 nvme-tcp connection to a target), I did not notice any performance degradation using smp_mb() in place of smp_mb__before_atomic(), but of course that does not mean it cannot happen in other configs.
+>
+> I think Guoju's patch is also correct and necessary so that both patches, his and mine, should be applied "asap" to the kernel.
+> A difference between Guoju's race and "mine" is that, in his case, the MISSED bit will be set : though no one will take care of the skbuff immediately, the next cpu pushing to the qdisc (if ever ...) will notice and dequeue it (so Guoju's race probably happens in my use case too but is not noticeable).
+>
+> Finally, given the necessity of these two new full barriers in the code, I wonder if the whole lockless (+ bypass) thing should be reconsidered.
+> At least, I think general performance tests should be run to check that lockless qdics still outperform locked qdiscs, in both bypassable and not-bypassable modes.
+>      
+> More generally, I found this piece of code quite tricky and error-prone, as evidenced by the numerous fixes it went through in the recent history.
+> I believe most of this complexity comes from the lockless qdisc handling in itself, but of course the addition of the bypass support does not really help ;-)
+> I'm a linux kernel beginner however, so I'll let more experienced programmers decide about that :-)
+>
+> I've made sure that, with this patch, no stuck packets happened any more on both v5.15 and v5.18-rc2 (whereas without the patch, numerous occurrences of stuck packets are visible).
+> I'm quite confident it will apply to any concerned version, that is from 5.14 (or before) to mainline.
+>
+> Can you please tell me :
+>
+> 1) if you agree with this ?
+>
+> 2) how to proceed to push this patch (and Guoju's) for quick integration into the mainline ?
+>
+> NB : an alternative fix (which I've tested OK too) would be to simply remove the
+>
+> if (test_bit(__QDISC_STATE_MISSED, &qdisc->state))
+> 	return false;
+>
+> code path, but I have no clue if this would be better or worse than the present patch in terms of performance.
+>      
+> Thank you, best regards,
+>
+> V
+
+
+We keep adding code and comments, this is quite silly.
+
+test_and_set_bit() is exactly what we need.
+
+
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 
+9bab396c1f3ba3d143de4d63f4142cff3c9b9f3e..9d1b448c0dfc3925967635f3390b884a4ef7c55a 
+100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -187,35 +187,9 @@ static inline bool qdisc_run_begin(struct Qdisc *qdisc)
+                 if (spin_trylock(&qdisc->seqlock))
+                         return true;
+
+-               /* Paired with smp_mb__after_atomic() to make sure
+-                * STATE_MISSED checking is synchronized with clearing
+-                * in pfifo_fast_dequeue().
+-                */
+-               smp_mb__before_atomic();
+-
+-               /* If the MISSED flag is set, it means other thread has
+-                * set the MISSED flag before second spin_trylock(), so
+-                * we can return false here to avoid multi cpus doing
+-                * the set_bit() and second spin_trylock() concurrently.
+-                */
+-               if (test_bit(__QDISC_STATE_MISSED, &qdisc->state))
++               if (test_and_set_bit(__QDISC_STATE_MISSED, &qdisc->state))
+                         return false;
+
+-               /* Set the MISSED flag before the second spin_trylock(),
+-                * if the second spin_trylock() return false, it means
+-                * other cpu holding the lock will do dequeuing for us
+-                * or it will see the MISSED flag set after releasing
+-                * lock and reschedule the net_tx_action() to do the
+-                * dequeuing.
+-                */
+-               set_bit(__QDISC_STATE_MISSED, &qdisc->state);
+-
+-               /* spin_trylock() only has load-acquire semantic, so use
+-                * smp_mb__after_atomic() to ensure STATE_MISSED is set
+-                * before doing the second spin_trylock().
+-                */
+-               smp_mb__after_atomic();
+-
+                 /* Retry again in case other CPU may not see the new flag
+                  * after it releases the lock at the end of 
+qdisc_run_end().
+                  */
 
