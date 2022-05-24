@@ -2,133 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 25FEE532A85
-	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 14:40:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 688D8532A83
+	for <lists+netdev@lfdr.de>; Tue, 24 May 2022 14:40:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237433AbiEXMjB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 24 May 2022 08:39:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        id S237150AbiEXMkB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 24 May 2022 08:40:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232221AbiEXMjB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 08:39:01 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FE0F87A29
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 05:38:59 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id f9so35140161ejc.0
-        for <netdev@vger.kernel.org>; Tue, 24 May 2022 05:38:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:from:to:cc:subject:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=g0lJM0akLYueQjfQYKkkke7gVw71AuMiuKOW5FVjrWE=;
-        b=CLbw/mJ69J5UKovEPKuV9Rrf7BYXvzY8/QrIMPTPEwKmPdDg31ALcqMjCL97v4sfid
-         aoM5QHhdE575CjKWtqDuIixLPZqbuWwetGPQeyc/f/cy0extRAys0oA8X8r8rvfW9WVP
-         1kshkh7g6m0DDJoL6la99tBShQ7WKUdzI6I70i0zwR+3jpY7BJDereRC3FuIS5OvMewp
-         IuBArHKIw5Npm0LHTkt5DjNXlp+SdjU7k5PaFZNsbg9HtySuViioTDbbSoRm9qK1swRE
-         HP20XM+G4cVBZ9JpcfR9gElCiXgB9Gdv1gbUrI+nvnRKOYl6mAzo9yLgvYbKzwK1ScYn
-         NBiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g0lJM0akLYueQjfQYKkkke7gVw71AuMiuKOW5FVjrWE=;
-        b=gb95rHBEWbBU+7vRovW8LMqH7H4/WC40Eq3LYRdFEoQRqmGHuZ2S2THbAIHOUCgN5t
-         dBKqnvqiGHyAdCsc3A4tMi+KzDYXZjwdbr3wY95mGp2+V2L1bUZxZoGrvHqISScCnKSF
-         kLR9kZI7n3FYKSHB1COI9j46L5kd1hOK/u2cF/BS2cROZuyKm9k2/Nr78ApitCjTwybO
-         /lkGRd/e9XBFwnuqKbp0TG/3M15jfUNHDd7EG6dExoaHAa5gW+1xsCSKTgavrnKyH4u/
-         O/UtnaWg7psEjPsAegu6rGPsyiFYt+Upb5b7pWf6ErC+Rd/yRh+m4K3h1IRHdUtMFh9S
-         VD3A==
-X-Gm-Message-State: AOAM530JTpgiNkF9zPFrOs8y1Q2KRPmB4x4mJXt4WK0Ag2++TOYdoFVa
-        7N4pWTkCaLKpgWtZihzkYD4=
-X-Google-Smtp-Source: ABdhPJyzvWha3VSDv0H3KSxQsNff4pLPg9fEaM4aadQHp9pHW25vj47b6/GRbmXIIU74HK3vaDuM7A==
-X-Received: by 2002:a17:906:5783:b0:6fe:a263:f648 with SMTP id k3-20020a170906578300b006fea263f648mr19702617ejq.493.1653395937766;
-        Tue, 24 May 2022 05:38:57 -0700 (PDT)
-Received: from Ansuel-xps. (93-42-70-190.ip85.fastwebnet.it. [93.42.70.190])
-        by smtp.gmail.com with ESMTPSA id am5-20020a170906568500b006fee16142b9sm2240830ejc.110.2022.05.24.05.38.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 May 2022 05:38:56 -0700 (PDT)
-Message-ID: <628cd1e0.1c69fb81.d28b0.df81@mx.google.com>
-X-Google-Original-Message-ID: <YozR3U4ZWiT46W+j@Ansuel-xps.>
-Date:   Tue, 24 May 2022 14:38:53 +0200
-From:   Ansuel Smith <ansuelsmth@gmail.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Vladimir Oltean <olteanv@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        DENG Qingfang <dqfext@gmail.com>,
-        Alvin =?utf-8?Q?=C5=A0ipraga?= <alsi@bang-olufsen.dk>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        Colin Foster <colin.foster@in-advantage.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Luiz Angelo Daros de Luca <luizluca@gmail.com>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <razor@blackwall.org>,
-        Frank Wunderlich <frank-w@public-files.de>
-Subject: Re: [RFC PATCH net-next 00/12] DSA changes for multiple CPU ports
- (part 3)
-References: <20220523104256.3556016-1-olteanv@gmail.com>
- <628cc94d.1c69fb81.15b0d.422d@mx.google.com>
- <20220524122905.4y5kbpdjwvb6ee4p@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220524122905.4y5kbpdjwvb6ee4p@skbuf>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+        with ESMTP id S235062AbiEXMj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 24 May 2022 08:39:57 -0400
+Received: from m12-16.163.com (m12-16.163.com [220.181.12.16])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id E8BF19729F;
+        Tue, 24 May 2022 05:39:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=7IU+mYBZQwqAyHoS6Z
+        dS30E7fZJHgeS8fPKH5ZR8Ums=; b=UAPmF5RJ/P+oVyqJLjAl/l3INFGHfV2r7R
+        h6zibPMOCqjdA1u6ONtCJjTyfzynt8GgbvNamerIbAy0O2eDNmZLhOK4Zl9X/XeE
+        RkWNVVxXyF6qPuNQbzMWcT9jgRNGX/xDfEKoKZ+8NA6F90x5ooc+LDEMe4v5l7sm
+        xZQWc6k00=
+Received: from localhost.localdomain (unknown [112.21.23.253])
+        by smtp12 (Coremail) with SMTP id EMCowAB3v6P30YxilgQWBQ--.22936S4;
+        Tue, 24 May 2022 20:39:21 +0800 (CST)
+From:   Qiang Yang <line_walker2016@163.com>
+To:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Qiang Yang <line_walker2016@163.com>,
+        Weiqiang Su <David.suwq@outlook.com>
+Subject: [PATCH] net: stmicro: implement basic Wake-On-LAN support
+Date:   Tue, 24 May 2022 20:39:03 +0800
+Message-Id: <20220524123903.13210-1-line_walker2016@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: EMCowAB3v6P30YxilgQWBQ--.22936S4
+X-Coremail-Antispam: 1Uf129KBjvJXoWxAw4rGF43tr4xJw13ur47twb_yoWrWw1rpw
+        43Aa4F9rZ7XF1fJa1DAw18ZFy5G3y0yFyUWr4xA3yfuay2kr90q3sIqFW5Jw1UGrZ8ZFW3
+        tF4UCw17C3WDCw7anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x0pEnNVrUUUUU=
+X-Originating-IP: [112.21.23.253]
+X-CM-SenderInfo: 5olqvs5zdoyvjusqili6rwjhhfrp/1tbiMhkLXVWBzkmHdwAAse
+X-Spam-Status: No, score=-1.9 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
+        FREEMAIL_FROM,RCVD_IN_DNSWL_NONE,RCVD_IN_MSPIKE_H3,RCVD_IN_MSPIKE_WL,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, May 24, 2022 at 12:29:06PM +0000, Vladimir Oltean wrote:
-> On Tue, May 24, 2022 at 02:02:19PM +0200, Ansuel Smith wrote:
-> > Probably offtopic but I wonder if the use of a LAG as master can
-> > cause some problem with configuration where the switch use a mgmt port
-> > to send settings. Wonder if with this change we will have to introduce
-> > an additional value to declare a management port that will be used since
-> > master can now be set to various values. Or just the driver will have to
-> > handle this with its priv struct (think this is the correct solution)
-> > 
-> > I still have to find time to test this with qca8k.
-> 
-> Not offtopic, this is a good point. dsa_tree_master_admin_state_change()
-> and dsa_tree_master_oper_state_change() set various flags in cpu_dp =
-> master->dsa_ptr. It's unclear if the cpu_dp we assign to a LAG should
-> track the admin/oper state of the LAG itself or of the physical port.
-> Especially since the lag->dsa_ptr is the same as one of the master->dsa_ptr.
-> It's clear that the same structure can't track both states. I'm thinking
-> we should suppress the NETDEV_CHANGE and NETDEV_UP monitoring from slave.c
-> on LAG DSA masters, and track only the physical ones. In any case,
-> management traffic does not really benefit from being sent/received over
-> a LAG, and I'm thinking we should just use the physical port.
-> Your qca8k_master_change() function explicitly only checks for CPU port
-> 0, which in retrospect was a very wise decision in terms of forward
-> compatibility with device trees with multiple CPU ports.
+This patch implements basic Wake-On-LAN support in stmicro driver,
+including adding wakeup filter configuration and implementation of
+stmmac suspend/resume/wakeup callbacks. Currently only magic packet can
+trigger the Wake-On-LAN function.
 
-Switch can also have some hw limitation where mgmt packet are accepted
-only by one specific port and I assume using a LAG with load balance can
-cause some problem (packet not ack).
+Signed-off-by: Qiang Yang <line_walker2016@163.com>
+Signed-off-by: Weiqiang Su <David.suwq@outlook.com>
+---
+ .../net/ethernet/stmicro/stmmac/dwmac1000.h   | 26 +++++++++++++++++++
+ .../ethernet/stmicro/stmmac/dwmac1000_core.c  |  9 ++++++-
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  2 ++
+ .../net/ethernet/stmicro/stmmac/stmmac_pci.c  |  1 +
+ 4 files changed, 37 insertions(+), 1 deletion(-)
 
-Yes I think the oper_state_change would be problematic with a LAG
-configuration since the driver should use the pysical port anyway (to
-prevent any hw limitation/issue) and track only that.
-
-But I think we can put that on hold and think of a correct solution when
-we have a solid base with all of this implemented. Considering qca8k
-is the only user of that feature and things will have to change anyway
-when qca8k will get support for multiple cpu port, we can address that
-later. (in theory everything should work correctly if qca8k doesn't
-declare multiple cpu port or a LAG is not confugred) 
-
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h b/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
+index 1a84cf459e40..b84765831715 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000.h
+@@ -66,6 +66,32 @@ enum power_event {
+ 	power_down = 0x00000001,
+ };
+ 
++#define WAKEUP_REG_LENGTH 8
++static u32 stmmac_wakeup_filter_config[] = {
++	/* For Filter0 CRC is not computed may be it is 0x0000 */
++	0x00000000,
++	/* For Filter1 CRC is computed on 0,1,2,3,4,5,6,7 bytes from offset */
++	0x000000FF,
++	/* For Filter2 CRC is not computed may be it is 0x0000 */
++	0x00000000,
++	/* For Filter3 CRC is not computed may be it is 0x0000 */
++	0x00000000,
++	/**
++	 * Filter 0,2,3 are disabled, Filter 1 is enabled and
++	 * filtering applies to only unicast packets
++	 */
++	0x00000100,
++	/**
++	 * Filter 0,2,3 (no significance), filter 1 offset is
++	 * 50 bytes from start of Destination MAC address
++	 */
++	0x00003200,
++	/* No significance of CRC for Filter0, Filter1 CRC is 0x7EED */
++	0x7eED0000,
++	/* No significance of CRC for Filter2 and Filter3 */
++	0x00000000,
++};
++
+ /* Energy Efficient Ethernet (EEE)
+  *
+  * LPI status, timer and control register offset
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+index 4d617ba11ecb..adea2346102e 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac1000_core.c
+@@ -267,7 +267,14 @@ static void dwmac1000_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
+ static void dwmac1000_pmt(struct mac_device_info *hw, unsigned long mode)
+ {
+ 	void __iomem *ioaddr = hw->pcsr;
+-	unsigned int pmt = 0;
++	unsigned int pmt = 0, i = 0;
++
++	writel(pointer_reset, ioaddr + GMAC_PMT);
++	mdelay(100);
++
++	for (i = 0; i < WAKEUP_REG_LENGTH; i++)
++		writel(*(stmmac_wakeup_filter_config + i),
++		       ioaddr + GMAC_WAKEUP_FILTER);
+ 
+ 	if (mode & WAKE_MAGIC) {
+ 		pr_debug("GMAC: WOL Magic frame\n");
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 0a4d093adfc9..7866f3ec5ef6 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4513,6 +4513,7 @@ int stmmac_suspend(struct device *dev)
+ 
+ 	/* Enable Power down mode by programming the PMT regs */
+ 	if (device_may_wakeup(priv->device)) {
++		priv->wolopts |= WAKE_MAGIC;
+ 		stmmac_pmt(priv, priv->hw, priv->wolopts);
+ 		priv->irq_wake = 1;
+ 	} else {
+@@ -4598,6 +4599,7 @@ int stmmac_resume(struct device *dev)
+ 			stmmac_mdio_reset(priv->mii);
+ 	}
+ 
++	device_set_wakeup_enable(dev, 0);
+ 	netif_device_attach(ndev);
+ 
+ 	mutex_lock(&priv->lock);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+index cc1e887e47b5..ec69521f061c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+@@ -322,6 +322,7 @@ static int __maybe_unused stmmac_pci_suspend(struct device *dev)
+ 	struct pci_dev *pdev = to_pci_dev(dev);
+ 	int ret;
+ 
++	device_set_wakeup_enable(dev, 1);
+ 	ret = stmmac_suspend(dev);
+ 	if (ret)
+ 		return ret;
 -- 
-	Ansuel
+2.17.1
+
