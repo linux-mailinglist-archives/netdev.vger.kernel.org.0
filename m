@@ -2,155 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 814A1533FDA
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 17:03:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D55C6534044
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 17:19:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244955AbiEYPCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 11:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39864 "EHLO
+        id S241850AbiEYPTj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 11:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245003AbiEYPBc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 11:01:32 -0400
-X-Greylist: delayed 60 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 25 May 2022 08:01:30 PDT
-Received: from smtpcmd0872.aruba.it (smtpcmd0872.aruba.it [62.149.156.72])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 08493AF1F3
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 08:01:29 -0700 (PDT)
-Received: from [192.168.1.56] ([79.0.204.227])
-        by Aruba Outgoing Smtp  with ESMTPSA
-        id tsUqnOLqzY1m9tsUqnPJWz; Wed, 25 May 2022 17:00:26 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=aruba.it; s=a1;
-        t=1653490826; bh=YBsuP3ws32I9GclgsdibFLP8cViqNi669R6J0DcwC3k=;
-        h=Date:MIME-Version:Subject:To:From:Content-Type;
-        b=Sk6x8zELriD9lcbQXuFvT8D4wM2pab3FeJ/EtjQ5b5A8db6RGohh5NAPNlktwOFXu
-         T4BA29DtY0ykbZQg2Ho6oQq0QoUwhzP+nW/RRBdNyG0jGXS9AHPm9wEu0BiGfsplRh
-         hNYN7VqK3BGfaeE/OeE/A2waIdR7lDBfMGNtSdRe3xO/Qovuek/Ne6UJ7GCznfdQ5W
-         JyJOHuFBw1Roo42sqbiEXgwN0w9zGfdWV1jf15/S/WPLzT/5DHgq+LoV6jGNJgbcS2
-         ladlz/uHZzvP74zXf75I3rhliDVpHmqF3MKDFVBEc0qcTjsOukbPmSpqKCvev1EX14
-         6Gl2q8axjwoIg==
-Message-ID: <8b90db13-03ca-3798-2810-516df79d3986@enneenne.com>
-Date:   Wed, 25 May 2022 17:00:24 +0200
+        with ESMTP id S236085AbiEYPTi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 11:19:38 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 440881403E
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 08:19:37 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CE4A0B81DDA
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 15:19:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A67CC385B8;
+        Wed, 25 May 2022 15:19:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653491974;
+        bh=I0GBiumw6VdUPgUOGLUA+7POQ46FYz4nedxE8B5qmhQ=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=lqoOLivuf+0elic3aynjRTGxhOoE1V9PZUI6SSYFMMQVpavWvUD+6r7tBRmYHi0gf
+         b/k5sECKgxuDsMlZMIO580M8k28iuo6rAtMIt2m03j1m9hg8/wVenqx3yTy9NGS2GI
+         gSSJr08ALFqWDYabJE0dupwKq5O8YmidgP8lU/W7jFM/W/nhpTBmdc6KZHcM26jybl
+         rHS5wZkii3Cn3SrFhSHVipk2txXvGY6GAADvBvQqcL5W8gfKPkYIyNK0DMUzwjkR/r
+         9O11YN+fZgmTQ6qATCSl9eaTzxqHDCE5MWQUD5F2ntgeBIiKiLXfiTuyeQ/lZsRVOJ
+         KleK5dTyc+ewA==
+Message-ID: <d8a28a59-79ca-e1fc-7768-a91f8033ce0e@kernel.org>
+Date:   Wed, 25 May 2022 09:19:33 -0600
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.1
-Subject: Re: [DSA] fallback PTP to master port when switch does not support it
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH v2 net-next] net: neigh: add netlink filtering based on
+ LLADDR for dump
 Content-Language: en-US
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Matej Zachar <zachar.matej@gmail.com>, netdev@vger.kernel.org
-References: <25688175-1039-44C7-A57E-EB93527B1615@gmail.com>
- <YktrbtbSr77bDckl@lunn.ch> <20220405124851.38fb977d@kernel.org>
- <20220407094439.ubf66iei3wgimx7d@skbuf>
-From:   Rodolfo Giometti <giometti@enneenne.com>
-In-Reply-To: <20220407094439.ubf66iei3wgimx7d@skbuf>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+To:     Florent Fourcot <florent.fourcot@wifirst.fr>,
+        netdev@vger.kernel.org
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+References: <20220509205646.20814-1-florent.fourcot@wifirst.fr>
+ <b84e51fa-f410-956e-7304-7a49d297f254@kernel.org>
+ <8653ac99-4c5a-b596-7109-7622c125088a@wifirst.fr>
+ <af7b9565-ca70-0c36-4695-a0705825468d@wifirst.fr>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <af7b9565-ca70-0c36-4695-a0705825468d@wifirst.fr>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-CMAE-Envelope: MS4xfNSeE5CvX4Rju0sz7dM6Q96isE+38xvxEstF5+2k3L0RYa/QMaSAWLEuWYM3STybAO/FeBHwnzxVfy4XfN5rMOWVul6yA8Wi0f/Hf4TvnkydZbKoaKnc
- 2LvHIvTpAUX2bbPs4GDXXZY0Fdkf+c8ug8XzK4CGY4rM6OVG0UpEn2tBl+SrGLAtS+6QXHyvAeEsaPynGZg/EKbFMxcGVRsQyBzsXuF0r22D5aXtxqfBRGNJ
- DAwopzvX5xAH1TjDclibN4LOB97dHEgT8q8mDFLax06awEuztFNBnhKefd/HA+GrC2tAbwocQ0Polhbltc0SeA==
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIMWL_WL_MED,
-        DKIM_SIGNED,DKIM_VALID,NICE_REPLY_A,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,
-        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 07/04/22 11:44, Vladimir Oltean wrote:
-> On Tue, Apr 05, 2022 at 12:48:51PM -0700, Jakub Kicinski wrote:
->> On Tue, 5 Apr 2022 00:04:30 +0200 Andrew Lunn wrote:
->>> What i don't like about your proposed fallback is that it gives the
->>> impression the slave ports actually support PTP, when they do not.
->>
->> +1, running PTP on the master means there is a non-PTP-aware switch
->> in the path, which should not be taken lightly.
+On 5/24/22 2:49 PM, Florent Fourcot wrote:
+> Hello David,
 > 
-> +2, the change could probably be technically done, and there are aspects
-> worth discussing, but the goal presented here is questionable and it's
-> best to not fool ourselves into thinking that the variable queuing delays
-> of the switch are taken into account when reporting the timestamps,
-> which they aren't.
+> This patch has been marked as rejected after your comment.
+> Could you perhaps have a second look on it? And on my response above? I
+> still think that my patch is relevant and add a currently not available
+> feature.
 > 
-> I think that by the time you realize that you need PTP hardware
-> timestamping on switch ports but you have a PTP-unaware switch
-> integrated *into* your system, you need to go back to the drawing board.
+> I can work on alternative approach if necessary. Since neighbour tables
+> are sometimes huge, performance overhead of userspace filtering for a
+> simple MAC address lookup is currently high. And GET does not provide
+> same feature.
+> 
 
-IMHO this patch is a great hack but what you say sounds good to me.
-
-However we can modify the patch in order to leave the default behavior as-is but 
-adding the ability to enable this hack via DTS flag as follow:
-
-                 ports {
-                         #address-cells = <1>;
-                         #size-cells = <0>;
-
-                         port@0 {
-                                 reg = <0>;
-                                 label = "lan1";
-                                 allow-ptp-fallback;
-                         };
-
-                         port@1 {
-                                 reg = <1>;
-                                 label = "lan2";
-                         };
-
-                         ...
-
-                         port@5 {
-                                 reg = <5>;
-                                 label = "cpu";
-                                 ethernet = <&fec>;
-
-                                 fixed-link {
-                                         speed = <1000>;
-                                         full-duplex;
-                                 };
-                         };
-                 };
-
-Then the code can do as follow:
-
-static int dsa_slave_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-{
-         struct dsa_slave_priv *p = netdev_priv(dev);
-         struct dsa_switch *ds = p->dp->ds;
-         int port = p->dp->index;
-         struct net_device *master = dsa_slave_to_master(dev);
-
-         /* Pass through to switch driver if it supports timestamping */
-         switch (cmd) {
-         case SIOCGHWTSTAMP:
-                 if (ds->ops->port_hwtstamp_get)
-                         return ds->ops->port_hwtstamp_get(ds, port, ifr);
-                 if (p->dp->allow_ptp_fallback && master->netdev_ops->ndo_do_ioctl)
-                         return master->netdev_ops->ndo_do_ioctl(master, ifr, cmd);
-                 break;
-         case SIOCSHWTSTAMP:
-                 if (ds->ops->port_hwtstamp_set)
-                         return ds->ops->port_hwtstamp_set(ds, port, ifr);
-                 if (p->dp->allow_ptp_fallback && master->netdev_ops->ndo_do_ioctl)
-                         return master->netdev_ops->ndo_do_ioctl(master, ifr, cmd);
-                 break;
-         }
-
-         return phylink_mii_ioctl(p->dp->pl, ifr, cmd);
-}
-
-In this manner the default behavior is to return error if the switch doesn't 
-support the PTP functions, but developers can intentionally enable the PTP 
-fallback on specific ports only in order to be able to use PTP on buggy hardware.
-
-Can this solution be acceptable?
-
-Ciao,
-
-Rodolfo
-
--- 
-GNU/Linux Solutions                  e-mail: giometti@enneenne.com
-Linux Device Driver                          giometti@linux.it
-Embedded Systems                     phone:  +39 349 2432127
-UNIX programming                     skype:  rodolfo.giometti
+Kernel side filtering has always been kept to simple, coarse grained
+checks - like a device index or upper device index. It's a fine line
+managing kernel cycles holding the rtnl vs cycles shipping the data to
+userspace. e.g., a memcmp has a higher cost than a dev->index
+comparison. I see the point about GET only - potential for many matches
+and a lookup of the ll address is basically a filtered dump. Mixed
+thoughts on whether this should be merged.
