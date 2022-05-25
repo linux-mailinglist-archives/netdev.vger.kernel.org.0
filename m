@@ -2,83 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 80E3253418F
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 18:33:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A43D35341BA
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 18:52:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245473AbiEYQc6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 12:32:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45222 "EHLO
+        id S245492AbiEYQwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 12:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48208 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230014AbiEYQc5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 12:32:57 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 150D38A325;
-        Wed, 25 May 2022 09:32:55 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id i27so42728991ejd.9;
-        Wed, 25 May 2022 09:32:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ryx2Ks43HYE8Q7pTv7hpRWZjiZujiJ46sfljr3BjzG0=;
-        b=NPpZSzFaSgHWvSmFoeDIZPsjbed2Di9EuAvKcW/sormA8Ztyk8REmORY9/D0R0M2zw
-         6D2PXv/vXzz7DnmMullebBfyvr1LZFTt5I4QsgQF1/E0PVWF8baCO5iWsVBhYalJuhfl
-         sUGQbqk+i12Kt959pBkWlhQBgGu7n9Hn1aJ1V2V64/fc+dmUvqFPY+9/b7/gzWkFs3VK
-         cZwcovOI0Wu0uw2O+TFZ++4cPASampHPCvuX1fpieI3PVxqNG3LEN+5Ts9GTiv8TdkAS
-         bYwG9IkVeg35G2yTurTi9U+4KxOiju45nY/LCv80tKYC/no7AxdUS8YhJvTgK2N2KXkn
-         kxvQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ryx2Ks43HYE8Q7pTv7hpRWZjiZujiJ46sfljr3BjzG0=;
-        b=13LgsFFVEnCoWYDEkOnlOkELKfQlXlkIQQmLBfRLft/FpFEBQiKbkYIji2k/ESFTLt
-         NGQwlv5RCR6qnj1pjxXe7ITMHJVUHqXEWglSIQtxtouDZ+RUKGD8pUgGPC1a4vM9IMno
-         m1nV4N2yZx4Zc9MSB8d0s0PbpCpeqkx+jLJxh1OuFqW2ZlTZob13HhSaBc08Lft7oTNh
-         v9MObJUZhDEm+eA8L6KidG39nRE9XSAok7GQqrL+CGrQ8YzqJNk4FdYDt9mQCvvXYQUp
-         inKxtidNuHwWCAijvhAgAzdZsRxq4hdhiGsLmu2kdyvJaoA17m7RTLIFIrS+rB+43oRd
-         YL2Q==
-X-Gm-Message-State: AOAM530Bq59cCNKzZbkhmnHBqLIAvDcp8eWkQNdcyKStdceZW32TkXJ3
-        2YStPIU8yZ9bEwbUuXtAyldh0eK4R4j3XXTOA9wFgRxMVIs=
-X-Google-Smtp-Source: ABdhPJxUPXCl6qymWwFnPLD1jls52MPyuKxxnBcdzmyhzzkfM57UgruD6kYw9UPb5p38pPas+gd78OSeedEYvX9VJBk=
-X-Received: by 2002:a17:906:9b86:b0:6fe:d37f:b29d with SMTP id
- dd6-20020a1709069b8600b006fed37fb29dmr16148707ejc.327.1653496374359; Wed, 25
- May 2022 09:32:54 -0700 (PDT)
+        with ESMTP id S238797AbiEYQwI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 12:52:08 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EBF933349;
+        Wed, 25 May 2022 09:52:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653497527; x=1685033527;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=m352ENUFZqE2xOC6YCGx5rdnXcIf8B+FsHq1FS7a9n4=;
+  b=AlR8AeCx7MJd2tej0iO8awLGjA2hz2+nU2TmER/ibgpmzzJn3bdo1x+V
+   7hxfyXoemCZuMOXD/kiFtxdPmH4m3GInUu+dI+Iacv34OJwtjRiOEBEbt
+   XWgpEuGhNqPtThVAZI95vtfU+/NLCb9hQCri3szbfhNTmDzAJo2wIVD9x
+   KeMVM32MU7BG2Umspxk3wo1zcCZM8HJETA4ZFowYeskRqrygh1uiCRzC9
+   6xAdjwE1cuEIlnC6zomXmQGI88NDMMHAdyr+0+be5lFSeMxamPysR+pJ1
+   rsPempsjRRTJq/K7apaLkhmQ8d0nyH+LE1n5m4jTPgPhoulFyZnVEOJGi
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="255929672"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="255929672"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 09:52:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="559767274"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 25 May 2022 09:52:01 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntuEr-00039o-1Z;
+        Wed, 25 May 2022 16:52:01 +0000
+Date:   Thu, 26 May 2022 00:51:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Roberto Sassu <roberto.sassu@huawei.com>, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kpsingh@kernel.org
+Cc:     kbuild-all@lists.01.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Roberto Sassu <roberto.sassu@huawei.com>
+Subject: Re: [PATCH 1/3] bpf: Add BPF_F_VERIFY_ELEM to require signature
+ verification on map values
+Message-ID: <202205260057.t4Lmg5Gb-lkp@intel.com>
+References: <20220525132115.896698-2-roberto.sassu@huawei.com>
 MIME-Version: 1.0
-References: <20220521075736.1225397-1-zenczykowski@gmail.com>
- <CAADnVQJcDvyeQ3y=uVDj-7JfqtxE+nJk+d5oVQrBhhQpicYk6A@mail.gmail.com>
- <CANP3RGcn6ta7uZH7onuRwOzx_2UmizEtgOTMKvbMOL8FER0MXQ@mail.gmail.com>
- <CAADnVQKWxzwAbZFAfOB2hxwOVP1mCfwpx30rcdRkCO-4DMxsZw@mail.gmail.com> <CAHo-Oow9u0QGwGuB4u4Uusv_2N70HbWZT6-cM_av8pqwychT9g@mail.gmail.com>
-In-Reply-To: <CAHo-Oow9u0QGwGuB4u4Uusv_2N70HbWZT6-cM_av8pqwychT9g@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 25 May 2022 09:32:42 -0700
-Message-ID: <CAADnVQJ=wQd7YgZTtTQNv+3z4AwxYS0cWBu_WoJ17vJkjVf65g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: print a little more info about maps via cat /sys/fs/bpf/pinned_name
-To:     =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <zenczykowski@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        BPF Mailing List <bpf@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525132115.896698-2-roberto.sassu@huawei.com>
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 25, 2022 at 9:14 AM Maciej =C5=BBenczykowski
-<zenczykowski@gmail.com> wrote:
->
-> When it works it's really nice...
+Hi Roberto,
 
-Load your own bpf map iterator program and pin anywhere
-in bpffs under name of choice and your own access permissions.
-See selftests/bpf/progs/bpf_iter_bpf_map.c
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on bpf-next/master]
+[also build test ERROR on bpf/master horms-ipvs/master net/master net-next/master v5.18 next-20220525]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Roberto-Sassu/bpf-Add-support-for-maps-with-authenticated-values/20220525-212552
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git master
+config: x86_64-kexec (https://download.01.org/0day-ci/archive/20220526/202205260057.t4Lmg5Gb-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/intel-lab-lkp/linux/commit/196e68e5ddfa50f40efaf20c8df37f3420e38b72
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Roberto-Sassu/bpf-Add-support-for-maps-with-authenticated-values/20220525-212552
+        git checkout 196e68e5ddfa50f40efaf20c8df37f3420e38b72
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   ld: kernel/bpf/syscall.o: in function `bpf_map_verify_value_sig':
+>> syscall.c:(.text+0x4ff): undefined reference to `mod_check_sig'
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
