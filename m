@@ -2,69 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id C6BC753459C
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 23:05:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82ECF5345AB
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 23:13:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345341AbiEYVF3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 17:05:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52062 "EHLO
+        id S1344376AbiEYVNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 17:13:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345390AbiEYVFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 17:05:18 -0400
-Received: from vps0.lunn.ch (vps0.lunn.ch [185.16.172.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10311BC6CF
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 14:05:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-        bh=KdkJkkty+ZJtUHqU5wmE4yStu+TBtkMaP4SFknjFq5c=; b=Gt6nizw06Iooi+/JIpjHBD7Vx6
-        a4i4aaoOFgPsAQ2jpe7x15v0AJfTemzLm9AR0qGyBB6pWeyz0waGmUYKGhi0Xt4apUD8Scu2w4zCZ
-        MKTLx/+cQTlh2DTCFs/fRiLjltUok4INY+RLzIRwVcqF/nfzrskulLfRLHo91zhDfpOc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-        (envelope-from <andrew@lunn.ch>)
-        id 1ntyBu-004HQk-61; Wed, 25 May 2022 23:05:14 +0200
-Date:   Wed, 25 May 2022 23:05:14 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Markus Klotzbuecher <mk@mkio.de>
-Cc:     netdev@vger.kernel.org
-Subject: Re: cpsw_switch: unable to selectively forward multicast
-Message-ID: <Yo6aCiAOwZT6IiPR@lunn.ch>
-References: <Yo33QJ1FXGBv2gHZ@e495>
+        with ESMTP id S232167AbiEYVNC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 17:13:02 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8B635AA3
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 14:12:59 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 365CECE204C
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 21:12:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11F78C385B8;
+        Wed, 25 May 2022 21:12:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653513176;
+        bh=r9fGapBd4Ok/ReqbY3MWa/fV+Pv4Ckd2gUm6qDYlaaE=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=dBMNCC1e767ul+6l7BEiWbflnZV3aW1iwLyDUi50WJQCfacBAsas0B1ySqJKmVJ1W
+         oXmq5MRq6ZXtfJsiDrhy6Tx0dEiNnpMI/r/t55cEcwSmF1o93q3k10Aej1DylkoPus
+         MuLUkmmuvYJtWfwEwlTSpyiUFXJUdzmiJSgXHhhNg+bnh1lHe7tOZHZ6qZLVc1yAsH
+         HUqJ4Zc2TG6qKwf1CMV7XBmkgD7lbD4EKIdEgcR3zATw8MCCI+56fQ9ZsBLXZb5wVH
+         eqGWCX3/7evqzwNiZBgy1IHf5KhTk406QwSxCf1C7S2otuJUnt+yRgoNJMoTMVuvkI
+         kaRu1dL+2ltvg==
+Message-ID: <df95ef08-4b8f-1b23-9a8e-ae9ad0538a9d@kernel.org>
+Date:   Wed, 25 May 2022 15:12:55 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <Yo33QJ1FXGBv2gHZ@e495>
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,SPF_HELO_PASS,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [PATCH net] vrf: fix vrf driver unloading
+Content-Language: en-US
+To:     Eyal Birger <eyal.birger@gmail.com>, davem@davemloft.net,
+        edumazet@google.com, kuba@kernel.org, pabeni@redhat.com
+Cc:     netdev@vger.kernel.org
+References: <20220525204628.297931-1-eyal.birger@gmail.com>
+From:   David Ahern <dsahern@kernel.org>
+In-Reply-To: <20220525204628.297931-1-eyal.birger@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,
+        RCVD_IN_DNSWL_HI,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
+        autolearn=ham autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, May 25, 2022 at 11:30:40AM +0200, Markus Klotzbuecher wrote:
-> Hi All,
+On 5/25/22 2:46 PM, Eyal Birger wrote:
+> The commit referenced in the "Fixes" tag has removed the vrf driver
+> cleanup function leading to a "Device or resource busy" error when
+> trying to rmmod vrf.
 > 
-> I'm using multiple am335x based devices connected in a daisy chain
-> using cpsw_new in switch mode:
+> Fix by re-introducing the cleanup function with the relevant changes.
 > 
->              /-br0-\          /-br0-\         /-br0-\
->             |       |        |       |       |       |
->         ---swp0    swp1-----swp0    swp1----swp0    swp1
->             |       |        |       |       |       |
->              \-----/          \-----/         \-----/
->                #1               #2              #3
+> Fixes: 9ab179d83b4e ("net: vrf: Fix dst reference counting")
+> Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 > 
-> The bridge is configured as described in cpsw_switchdev.rst
-> [1]. Regular unicast traffic works fine, however I am unable to get
-> traffic to multicast groups to be forwarded in both directions via the
-> switches.
+> ----
+> 
+> Note: the commit message in 9ab179d83b4e did not document it
+> and it is not apparent to me why the ability to rmmod the driver is
+> linked to that change, but maybe there's some hidden reason.
 
-Do you have listens reporting they are interested in the traffic via
-IGMP? Do you have an IGMP quirer in your network? Without these, IGMP
-snooping will not work.
+dst output handler references VRF functions. You can not remove the
+module until all dst references have been dropped. Since there is no way
+to know and the rmmod command can not just hang waiting for dst entries
+to be dropped the module can not be unloaded. The same is true for IPv6
+as module; it can not be removed and I believe for the same reason.
 
-	 Andrew
