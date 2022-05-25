@@ -2,218 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AB26534280
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 19:53:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A53CD534288
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 19:54:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343586AbiEYRxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 13:53:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35542 "EHLO
+        id S240780AbiEYRyd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 13:54:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343572AbiEYRx1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 13:53:27 -0400
-Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EAAFBF78;
-        Wed, 25 May 2022 10:53:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653501204; x=1685037204;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=OBl8VqVg26hgXRW1FrdHxYUiLB4y0jncmZM7TnohZuE=;
-  b=FuNYdouKTfFyKuue9M+iMFEORnfXOZb47tW80Eb7P6gjVWQYTzdkkbJB
-   cJkmQG5RXtsnX4++Om8SoPeFdn0/W4qiLcZKUuluAAp1iAB+TlnDf18sW
-   8/rRhmZKJ0ENlIuT6IevSos7bL0cXryzbSLFYjNOwcojrj1KbgxtNOSwj
-   xKxGo5mq5DWr4Nn+Myolf9uDPjPBaDgzz+AsMtwL5Nzd04/AHo30Cf839
-   1+xd8CpC0SjRQpIfHEOpKCambpXh3GppAcAitYKgseGrGfugFh39me6tt
-   272q8ubjV9FS01iTgo3VcDfE5PTQtpq/6nkYPWfzexcCczZURduuTCmlz
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="253763447"
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="253763447"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 10:53:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
-   d="scan'208";a="664528898"
-Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 25 May 2022 10:53:04 -0700
-Received: from kbuild by db63a1be7222 with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1ntvBv-0003DC-DD;
-        Wed, 25 May 2022 17:53:03 +0000
-Date:   Thu, 26 May 2022 01:52:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Eugenio =?iso-8859-1?Q?P=E9rez?= <eperezma@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        Jason Wang <jasowang@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Zhu Lingshan <lingshan.zhu@intel.com>, martinh@xilinx.com,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        ecree.xilinx@gmail.com, Eli Cohen <elic@nvidia.com>,
-        Dan Carpenter <error27@gmail.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Wu Zongyong <wuzongyong@linux.alibaba.com>, dinang@xilinx.com,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Xie Yongji <xieyongji@bytedance.com>, gautam.dawar@amd.com,
-        lulu@redhat.com, martinpo@xilinx.com, pabloc@xilinx.com,
-        Longpeng <longpeng2@huawei.com>, Piotr.Uminski@intel.com,
-        tanuj.kamde@amd.com, Si-Wei Liu <si-wei.liu@oracle.com>,
-        habetsm.xilinx@gmail.com, lvivier@redhat.com,
-        Zhang Min <zhang.min9@zte.com.cn>, hanand@xilinx.com
-Subject: Re: [PATCH v3 3/4] vhost-vdpa: uAPI to stop the device
-Message-ID: <202205260121.6V500tTl-lkp@intel.com>
-References: <20220525105922.2413991-4-eperezma@redhat.com>
+        with ESMTP id S232408AbiEYRyb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 13:54:31 -0400
+Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A862DE91;
+        Wed, 25 May 2022 10:54:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
+         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=BEtX22N4nmBUvhPs2dpMmIQif4Ym/qoHwx4bgdAzRGE=; b=nuxS1TC0TNX+Ii9C8/PoUC6ICY
+        Ojvw8ZoRBI+SVXviS1qtEMR8w/BEntIGqZe8vM9vjSfuIvUqMHO+9UZUkdnwdywPDjbI2Ab1Mg1aX
+        zFp5EEHQlZlO8kP2Ozyo84g7wBSzep6nmqc2hcwEi9I6IgS3eO3L4jImBme7RmukxE8U=;
+Received: from p200300daa70ef2005cc39ce6374ff633.dip0.t-ipconnect.de ([2003:da:a70e:f200:5cc3:9ce6:374f:f633] helo=nf.local)
+        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.89)
+        (envelope-from <nbd@nbd.name>)
+        id 1ntvDC-0002o2-DA; Wed, 25 May 2022 19:54:22 +0200
+Message-ID: <592e2b28-2463-dece-8315-180089aadfee@nbd.name>
+Date:   Wed, 25 May 2022 19:54:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220525105922.2413991-4-eperezma@redhat.com>
-X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
-        SPF_HELO_PASS,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
-        autolearn_force=no version=3.4.6
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.9.0
+Subject: Re: [RFC PATCH 1/1] mac80211: use AQL airtime for expected
+ throughput.
+Content-Language: en-US
+To:     Baligh GASMI <gasmibal@gmail.com>
+Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "open list:MAC80211" <linux-wireless@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20220525103512.3666956-1-gasmibal@gmail.com>
+ <87r14hoox8.fsf@toke.dk>
+ <CALxDnQa8d8CGXz2Mxvsz5csLj3KuTDW=z65DSzHk5x1Vg+y-rw@mail.gmail.com>
+ <92ca6224-9232-2648-0123-7096aafa17fb@nbd.name>
+ <CALxDnQYHoZuv7hxLfagJRGRxw=UOFNmuBVHS8YghDwtfkLPAvg@mail.gmail.com>
+From:   Felix Fietkau <nbd@nbd.name>
+In-Reply-To: <CALxDnQYHoZuv7hxLfagJRGRxw=UOFNmuBVHS8YghDwtfkLPAvg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-2.2 required=5.0 tests=BAYES_00,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,NICE_REPLY_A,SPF_HELO_NONE,
+        SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
+        version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi "Eugenio,
 
-Thank you for the patch! Yet something to improve:
+On 25.05.22 15:37, Baligh GASMI wrote:
+> Indeed it's less expensive.
+> 
+> I'll try to make something in this direction to see what it looks like.
+Thanks. Please also make sure that all of this extra work is not 
+performed for drivers that don't need it, because they either implement 
+.get_expected_throughput, or use minstrel, which also implements it in a 
+better way.
 
-[auto build test ERROR on mst-vhost/linux-next]
-[also build test ERROR on next-20220525]
-[cannot apply to horms-ipvs/master linux/master linus/master v5.18]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Eugenio-P-rez/Implement-vdpasim-stop-operation/20220525-190143
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mst/vhost.git linux-next
-config: x86_64-randconfig-a005 (https://download.01.org/0day-ci/archive/20220526/202205260121.6V500tTl-lkp@intel.com/config)
-compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project d52a6e75b0c402c7f3b42a2b1b2873f151220947)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/intel-lab-lkp/linux/commit/515f6b6d2a0164df801ddbe61e1cb1ae4e763873
-        git remote add linux-review https://github.com/intel-lab-lkp/linux
-        git fetch --no-tags linux-review Eugenio-P-rez/Implement-vdpasim-stop-operation/20220525-190143
-        git checkout 515f6b6d2a0164df801ddbe61e1cb1ae4e763873
-        # save the config file
-        mkdir build_dir && cp config build_dir/.config
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/vhost/
-
-If you fix the issue, kindly add following tag where applicable
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
->> drivers/vhost/vdpa.c:668:7: error: use of undeclared identifier 'VHOST_STOP'
-           case VHOST_STOP:
-                ^
-   1 error generated.
-
-
-vim +/VHOST_STOP +668 drivers/vhost/vdpa.c
-
-   587	
-   588	static long vhost_vdpa_unlocked_ioctl(struct file *filep,
-   589					      unsigned int cmd, unsigned long arg)
-   590	{
-   591		struct vhost_vdpa *v = filep->private_data;
-   592		struct vhost_dev *d = &v->vdev;
-   593		void __user *argp = (void __user *)arg;
-   594		u64 __user *featurep = argp;
-   595		u64 features;
-   596		long r = 0;
-   597	
-   598		if (cmd == VHOST_SET_BACKEND_FEATURES) {
-   599			if (copy_from_user(&features, featurep, sizeof(features)))
-   600				return -EFAULT;
-   601			if (features & ~(VHOST_VDPA_BACKEND_FEATURES |
-   602					 BIT_ULL(VHOST_BACKEND_F_STOP)))
-   603				return -EOPNOTSUPP;
-   604			if ((features & BIT_ULL(VHOST_BACKEND_F_STOP)) &&
-   605			     !vhost_vdpa_can_stop(v))
-   606				return -EOPNOTSUPP;
-   607			vhost_set_backend_features(&v->vdev, features);
-   608			return 0;
-   609		}
-   610	
-   611		mutex_lock(&d->mutex);
-   612	
-   613		switch (cmd) {
-   614		case VHOST_VDPA_GET_DEVICE_ID:
-   615			r = vhost_vdpa_get_device_id(v, argp);
-   616			break;
-   617		case VHOST_VDPA_GET_STATUS:
-   618			r = vhost_vdpa_get_status(v, argp);
-   619			break;
-   620		case VHOST_VDPA_SET_STATUS:
-   621			r = vhost_vdpa_set_status(v, argp);
-   622			break;
-   623		case VHOST_VDPA_GET_CONFIG:
-   624			r = vhost_vdpa_get_config(v, argp);
-   625			break;
-   626		case VHOST_VDPA_SET_CONFIG:
-   627			r = vhost_vdpa_set_config(v, argp);
-   628			break;
-   629		case VHOST_GET_FEATURES:
-   630			r = vhost_vdpa_get_features(v, argp);
-   631			break;
-   632		case VHOST_SET_FEATURES:
-   633			r = vhost_vdpa_set_features(v, argp);
-   634			break;
-   635		case VHOST_VDPA_GET_VRING_NUM:
-   636			r = vhost_vdpa_get_vring_num(v, argp);
-   637			break;
-   638		case VHOST_VDPA_GET_GROUP_NUM:
-   639			r = copy_to_user(argp, &v->vdpa->ngroups,
-   640					 sizeof(v->vdpa->ngroups));
-   641			break;
-   642		case VHOST_VDPA_GET_AS_NUM:
-   643			r = copy_to_user(argp, &v->vdpa->nas, sizeof(v->vdpa->nas));
-   644			break;
-   645		case VHOST_SET_LOG_BASE:
-   646		case VHOST_SET_LOG_FD:
-   647			r = -ENOIOCTLCMD;
-   648			break;
-   649		case VHOST_VDPA_SET_CONFIG_CALL:
-   650			r = vhost_vdpa_set_config_call(v, argp);
-   651			break;
-   652		case VHOST_GET_BACKEND_FEATURES:
-   653			features = VHOST_VDPA_BACKEND_FEATURES;
-   654			if (vhost_vdpa_can_stop(v))
-   655				features |= BIT_ULL(VHOST_BACKEND_F_STOP);
-   656			if (copy_to_user(featurep, &features, sizeof(features)))
-   657				r = -EFAULT;
-   658			break;
-   659		case VHOST_VDPA_GET_IOVA_RANGE:
-   660			r = vhost_vdpa_get_iova_range(v, argp);
-   661			break;
-   662		case VHOST_VDPA_GET_CONFIG_SIZE:
-   663			r = vhost_vdpa_get_config_size(v, argp);
-   664			break;
-   665		case VHOST_VDPA_GET_VQS_COUNT:
-   666			r = vhost_vdpa_get_vqs_count(v, argp);
-   667			break;
- > 668		case VHOST_STOP:
-   669			r = vhost_vdpa_stop(v, argp);
-   670			break;
-   671		default:
-   672			r = vhost_dev_ioctl(&v->vdev, cmd, argp);
-   673			if (r == -ENOIOCTLCMD)
-   674				r = vhost_vdpa_vring_ioctl(v, cmd, argp);
-   675			break;
-   676		}
-   677	
-   678		mutex_unlock(&d->mutex);
-   679		return r;
-   680	}
-   681	
-
--- 
-0-DAY CI Kernel Test Service
-https://01.org/lkp
+- Felix
