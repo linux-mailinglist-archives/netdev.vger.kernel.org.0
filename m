@@ -2,252 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EE0D533E16
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 15:42:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15D40533E23
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 15:44:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244481AbiEYNmw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 09:42:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
+        id S240693AbiEYNoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 09:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244480AbiEYNmu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 09:42:50 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBC360D86;
-        Wed, 25 May 2022 06:42:47 -0700 (PDT)
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24PC27jb024305;
-        Wed, 25 May 2022 13:42:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pp1;
- bh=ESDy53ENcNiKqV4jgxQ7XXslgw9ISbYsnAu0XUwNlDo=;
- b=hLLXHFHRGCSwy051J964BK+xKBg+oM6LSjPngIZmBGnzD3lV/I/wrvbHh0xUISXYxLGU
- sgZcuIbDrYkRC/ORpnHOuj2EBpFlSwJktDby3SwtHMAteu5f7yBUjXJ4G5FejdgRMt+G
- AV3ztOikekvtAJQWAzyjMNTgBwgHCplvbh7kYkNkJhavy8APCXv7Giskze3K9IJIBoLd
- T7K52GXxwTI73qFnz/DFAKOE/cv5O9DmEPJbeH8eeUtujukP4e4gMG34gf7Z3p9DBvdY
- 5E1C4IyHa6yS9Vj7WSpfcxED0EjN20wjeW6QfwGXRitasNAWta+UDlAwdGpXi7ZFXhqH DA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g9h91db1r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 13:42:35 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 24PDHa5e024998;
-        Wed, 25 May 2022 13:42:35 GMT
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g9h91db0k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 13:42:35 +0000
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24PDLWZ4020077;
-        Wed, 25 May 2022 13:42:31 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma04fra.de.ibm.com with ESMTP id 3g94g38xy1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 25 May 2022 13:42:31 +0000
-Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24PDgTuG44433700
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 25 May 2022 13:42:29 GMT
-Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EAD0352051;
-        Wed, 25 May 2022 13:42:28 +0000 (GMT)
-Received: from [9.152.224.55] (unknown [9.152.224.55])
-        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id ACAFF5204F;
-        Wed, 25 May 2022 13:42:28 +0000 (GMT)
-Message-ID: <64439f1c-9817-befd-c11b-fa64d22620a9@linux.ibm.com>
-Date:   Wed, 25 May 2022 15:42:28 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.9.1
-Subject: Re: [RFC net-next] net/smc:introduce 1RTT to SMC
-Content-Language: en-US
-To:     Tony Lu <tonylu@linux.alibaba.com>,
-        "D. Wythe" <alibuda@linux.alibaba.com>
-Cc:     kgraul@linux.ibm.com, kuba@kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-s390@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-References: <1653375127-130233-1-git-send-email-alibuda@linux.alibaba.com>
- <YoyOGlG2kVe4VA4m@TonyMac-Alibaba>
-From:   Alexandra Winter <wintera@linux.ibm.com>
-In-Reply-To: <YoyOGlG2kVe4VA4m@TonyMac-Alibaba>
-Content-Type: text/plain; charset=UTF-8
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: 7YNK1IdvSF3-GJLmR3Q-L4t9SKNugYbN
-X-Proofpoint-GUID: S-1NqOqGvBi3L5z_NUFEEj4iwZiOmrP3
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+        with ESMTP id S232005AbiEYNoM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 09:44:12 -0400
+Received: from foss.arm.com (foss.arm.com [217.140.110.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AB8A160D86;
+        Wed, 25 May 2022 06:44:11 -0700 (PDT)
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 51AD723A;
+        Wed, 25 May 2022 06:44:11 -0700 (PDT)
+Received: from FVFF77S0Q05N (unknown [10.57.0.228])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 77FAD3F66F;
+        Wed, 25 May 2022 06:44:03 -0700 (PDT)
+Date:   Wed, 25 May 2022 14:43:55 +0100
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Xu Kuohai <xukuohai@huawei.com>
+Cc:     bpf@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Zi Shen Lim <zlim.lnx@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        David Ahern <dsahern@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Shuah Khan <shuah@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Daniel Kiss <daniel.kiss@arm.com>,
+        Steven Price <steven.price@arm.com>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Peter Collingbourne <pcc@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Delyan Kratunov <delyank@fb.com>,
+        Kumar Kartikeya Dwivedi <memxor@gmail.com>
+Subject: Re: [PATCH bpf-next v5 2/6] ftrace: Fix deadloop caused by direct
+ call in ftrace selftest
+Message-ID: <Yo4ymwu92gM75/Z5@FVFF77S0Q05N>
+References: <20220518131638.3401509-1-xukuohai@huawei.com>
+ <20220518131638.3401509-3-xukuohai@huawei.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-25_03,2022-05-25_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- lowpriorityscore=0 adultscore=0 spamscore=0 suspectscore=0 malwarescore=0
- mlxscore=0 bulkscore=0 mlxlogscore=999 priorityscore=1501 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2205250069
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_EF,NICE_REPLY_A,RCVD_IN_MSPIKE_H2,SPF_HELO_NONE,
-        SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no
-        version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220518131638.3401509-3-xukuohai@huawei.com>
+X-Spam-Status: No, score=-6.9 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, May 18, 2022 at 09:16:34AM -0400, Xu Kuohai wrote:
+> After direct call is enabled for arm64, ftrace selftest enters a
+> dead loop:
 
+IIUC this means that patch 1 alone is broken, and presumably this patch should
+have been part of it?
 
-On 24.05.22 09:49, Tony Lu wrote:
-> On Tue, May 24, 2022 at 02:52:07PM +0800, D. Wythe wrote:
->> From: "D. Wythe" <alibuda@linux.alibaba.com>
->>
->> Hi Karsten,
->>
->> We are promoting SMC-R to the field of cloud computing, dues to the
->> particularity of business on the cloud, the scale and the types of
->> customer applications are unpredictable. As a participant of SMC-R, we
->> also hope that SMC-R can cover more application scenarios. Therefore,
->> many connection problems are exposed during this time. There are two
->> main issue, one is that the establishment of a single connection takes
->> longer than that of the TCP, another is that the degree of concurrency
->> is low under multi-connection processing. This patch set is mainly
->> optimized for the first issue, and the follow-up of the second issue
->> will be synchronized in the future.
->>
->> In terms of communication process, under current implement, a TCP
->> three-way handshake only needs 1-RTT time, while SMC-R currently
->> requires 4-RTT times, including 2-RTT over IP(TCP handshake, SMC
->> proposal & accept ) and 2-RTT over IB ( two times RKEY exchange), which
->> is most influential factor affecting connection established time at the
->> moment.
->>
->> We have noticed that single network interface card is mainstream on the
->> cloud, dues to the advantages of cloud deployment costs and the cloud's
->> own disaster recovery support. On the other hand, the emergence of RoCE
->> LAG technology makes us no longer need to deal with multiple RDMA
->> network interface cards by ourselves,  just like NIC bonding does. In
->> Alibaba, Roce LAG is widely used for RDMA.
+> <trace_selftest_dynamic_test_func>:
+> 00  bti     c
+> 01  mov     x9, x30                            <trace_direct_tramp>:
+> 02  bl      <trace_direct_tramp>    ---------->     ret
+>                                                      |
+>                                          lr/x30 is 03, return to 03
+>                                                      |
+> 03  mov     w0, #0x0   <-----------------------------|
+>      |                                               |
+>      |                   dead loop!                  |
+>      |                                               |
+> 04  ret   ---- lr/x30 is still 03, go back to 03 ----|
 > 
-> I think this is an interesting topic whether we need SMC-level link
-> redundancy. I agreed with that RoCE LAG and RDMA in cloud vendors handle
-> redundancy and failover in the lower layer, and do it transparently for
-> SMC.
+> The reason is that when the direct caller trace_direct_tramp() returns
+> to the patched function trace_selftest_dynamic_test_func(), lr is still
+> the address after the instrumented instruction in the patched function,
+> so when the patched function exits, it returns to itself!
 > 
-> So let's move on, if a RDMA device has redundancy ability, we could make
-> SMC simpler by give an option for user-space or based on the device
-> capability (if we have this flag). This allows under layer to ensure the
-> reliability of link group.
+> To fix this issue, we need to restore lr before trace_direct_tramp()
+> exits, so rewrite a dedicated trace_direct_tramp() for arm64.
+
+As mentioned on patch 1 I'd prefer we solved this through indirection, which
+would avoid the need for this and would make things more robust generally by
+keeping the unusual calling convention private to the patch-site and regular
+trampoline.
+
+Thanks,
+Mark.
+
+> Reported-by: Li Huafei <lihuafei1@huawei.com>
+> Signed-off-by: Xu Kuohai <xukuohai@huawei.com>
+> ---
+>  arch/arm64/include/asm/ftrace.h  | 10 ++++++++++
+>  arch/arm64/kernel/entry-ftrace.S | 10 ++++++++++
+>  kernel/trace/trace_selftest.c    |  2 ++
+>  3 files changed, 22 insertions(+)
 > 
-> As RFC 7609 mentioned, we should do some extra work for reliability to
-> add link. It should be an optional work if the device have capability
-> for redundancy, and make link group simpler and faster (for the
-> so-called SMC-2RTT in this RFC).
-> 
-> I also notice that RFC 7609 is released on August 2015, which is earlier
-> than RoCE LAG. RoCE LAG is provided after ConnectX-3/ConnectX-3 Pro in
-> kernel 4.0, and is available in 2017. And cloud vendors' RDMA adapters,
-> such as Alibaba Elastic RDMA adapter in [1].
-> 
-> Given that, I propose whether the second link can be used as an option
-> in newly created link group. Also, if it is possible, RFC 7609 can be
-> updated or extend it for this nowadays case.
-> 
-> Looking forward for your message, Karsten, D. Wythe and folks.
-> 
-> [1] https://lore.kernel.org/linux-rdma/20220523075528.35017-1-chengyou@linux.alibaba.com/
-> 
-> Thanks,
-> Tony Lu
+> diff --git a/arch/arm64/include/asm/ftrace.h b/arch/arm64/include/asm/ftrace.h
+> index 14a35a5df0a1..6f6b184e72fb 100644
+> --- a/arch/arm64/include/asm/ftrace.h
+> +++ b/arch/arm64/include/asm/ftrace.h
+> @@ -126,6 +126,16 @@ static inline bool arch_syscall_match_sym_name(const char *sym,
+>  	 */
+>  	return !strcmp(sym + 8, name);
+>  }
+> +
+> +#ifdef CONFIG_FTRACE_SELFTEST
+> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+> +
+> +#define trace_direct_tramp trace_direct_tramp
+> +extern void trace_direct_tramp(void);
+> +
+> +#endif /* CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS */
+> +#endif /* CONFIG_FTRACE_SELFTEST */
+> +
+>  #endif /* ifndef __ASSEMBLY__ */
 >  
-Thank you D. Wythe for your proposals, the prototype and measurements.
-They sound quite promising to us.
-
-We need to carefully evaluate them and make sure everything is compatible
-with the existing implementations of SMC-D and SMC-R v1 and v2. In the
-typical s390 environment ROCE LAG is propably not good enough, as the card
-is still a single point of failure. So your ideas need to be compatible
-with link redundancy. We also need to consider that the extension of the
-protocol does not block other desirable extensions.
-
-Your prototype is very helpful for the understanding. Before submitting any
-code patches to net-next, we should agree on the details of the protocol
-extension. Maybe you could formulate your proposal in plain text, so we can
-discuss it here? 
-
-We also need to inform you that several public holidays are upcoming in the
-next weeks and several of our team will be out for summer vacation, so please
-allow for longer response times.
-
-Kind regards
-Alexandra Winter
-
->> In that case, SMC-R have only one single link, if so, the RKEY LLC
->> messages that to perform information exchange in all links are no longer
->> needed, the SMC Proposal & accept has already complete the exchange of
->> all information needed. So we think that we can remove the RKEY exchange
->> in that case, which will save us 2-RTT over IB. We call it as SMC-R 2-RTT.
->>
->> On the other hand, we can use TCP fast open, carry the SMC proposal data
->> by TCP SYN message, reduce the time that the SMC waits for the TCP
->> connection to be established. This will save us another 1-RTT over IP.
->>
->> Based on the above two viewpoints, in this scenario, we can compress the
->> communication process of SMC-R into 1-RTT over IP, so that we can
->> theoretically obtain a time close to that of TCP connection
->> establishment. We call it as SMC-R 1-RTT. Of course, the specific results
->> will also be affected by the implementation.
->>
->> In our test environment, we host two VMs on the same host for wrk/nginx
->> tests, used a script similar to the following to performing test:
->>
->> Client.sh
->>
->> conn=$1
->> thread=$2
->>
->> wrk -H ‘Connection: Close’ -c ${conn} -t ${thread} -d 10
->>
->> Server.sh
->>
->> sysctl -w net.ipv4.tcp_fastopen=3
->> smc_run nginx
->>
->> Statistic shows that:
->>
->> +-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
->> |type|args  |   -c1 -t1     |   -c2 -t1     |   -c5 -t1      |  -c10 -t1    |   -c200 -t1    |  -c200 -t4    |  -c2000 -t8   |
->> +-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
->> |next-next  |   4188.5qps   |   5942.04qps  |   7621.81qps   |  7678.62qps  |   8204.94qps   |  8457.57qps   |  5687.60qps   |
->> +-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
->> |SMC-2RTT   |   4730.17qps  |   7394.85qps  |   11532.78qps  |  12016.22qps |   11520.81qps  |  11391.36qps  |  10364.41qps  |
->> +-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
->> |SMC-1RTT   |   5702.77qps  |   9645.18qps  |   11899.20qps  |  12005.16qps |   11536.67qps  |  11420.87qps  |  10392.4qps   |
->> +-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+-
->> |TCP        |   6415.74qps  |   11034.10qps |   16716.21qps  |  22217.06qps |   35926.74qps  |  117460.qps   |  120291.16qps |
->> +-----------+---------------+---------------+----------------+--------------+----------------+---------------+---------------+
->>
->> It can clearly be seen that:
->>
->> 1. In step by step short-link scenarios ( -c1 -t1 ), SMC-R after
->> optimization can reach 88% of TCP. There are still many implementation
->> details that can be optimized, we hope to optimize the performance of
->> SMC in this scenario to 90% of TCP.
->>
->> 2. The problem is very serious in the scenario of multi-threading and
->> multi-connection, the worst case is only 10% of TCP. Even though the
->> SMC-1RTT has certain optimizations for this scenario, it is clear that
->> the bottleneck is not here. We are doing some prototyping to solve this,
->> we hope to reach 60% of TCP in multi-threading and multi-connection
->> scenarios, and SMC-1RTT is the important prerequisite for upper limit of
->> subsequent optimization.
->>
->> In this patch set, we had only completed a simple prototype, only make
->> sure SMC-1RTT can works.
->>
->> Sincerely, we are looking forward for you comments, please
->> let us know if you have any suggestions.
->>
->> Thanks.
->>
->> Signed-off-by: D. Wythe <alibuda@linux.alibaba.com>
->> ---
---------8<  snip  >8-------- 
+>  #endif /* __ASM_FTRACE_H */
+> diff --git a/arch/arm64/kernel/entry-ftrace.S b/arch/arm64/kernel/entry-ftrace.S
+> index dfe62c55e3a2..a47e87d4d3dd 100644
+> --- a/arch/arm64/kernel/entry-ftrace.S
+> +++ b/arch/arm64/kernel/entry-ftrace.S
+> @@ -357,3 +357,13 @@ SYM_CODE_START(return_to_handler)
+>  	ret
+>  SYM_CODE_END(return_to_handler)
+>  #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
+> +
+> +#ifdef CONFIG_FTRACE_SELFTEST
+> +#ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+> +SYM_FUNC_START(trace_direct_tramp)
+> +	mov x10, x30
+> +	mov x30, x9
+> +	ret x10
+> +SYM_FUNC_END(trace_direct_tramp)
+> +#endif /* CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS */
+> +#endif /* CONFIG_FTRACE_SELFTEST */
+> diff --git a/kernel/trace/trace_selftest.c b/kernel/trace/trace_selftest.c
+> index abcadbe933bb..e7ccd0d10c39 100644
+> --- a/kernel/trace/trace_selftest.c
+> +++ b/kernel/trace/trace_selftest.c
+> @@ -785,8 +785,10 @@ static struct fgraph_ops fgraph_ops __initdata  = {
+>  };
+>  
+>  #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
+> +#ifndef trace_direct_tramp
+>  noinline __noclone static void trace_direct_tramp(void) { }
+>  #endif
+> +#endif
+>  
+>  /*
+>   * Pretty much the same than for the function tracer from which the selftest
+> -- 
+> 2.30.2
+> 
