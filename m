@@ -2,94 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AA625338D9
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 10:54:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 552B75339C9
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 11:18:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234617AbiEYIy5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 04:54:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41220 "EHLO
+        id S231530AbiEYJRe convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 25 May 2022 05:17:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229546AbiEYIy4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 04:54:56 -0400
-Received: from corp-front10-corp.i.nease.net (corp-front11-corp.i.nease.net [42.186.62.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 328489FCC;
-        Wed, 25 May 2022 01:54:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=corp.netease.com; s=s210401; h=Received:From:To:Cc:Subject:
-        Date:Message-Id:MIME-Version:Content-Transfer-Encoding; bh=QMdg5
-        WKCqTooQfblhmchfJKA7vl3F5cI8zeOAbsLxwo=; b=i7vYabMvkZspa7Hlmnl97
-        MDoOYTncpRQGINjBEpCbTBT5bjrUbFlqy4pUyuuozY/bC1TekUAo4Q0uNSSwo/g+
-        I8fmBIAE6ywkgdoBlb4re/7SYtjUX3eBH1NJvuQ6XMaX91ui5dJ9nyrx4CgEC2GW
-        1DXJP+VrGxHxUaZkTy1kkY=
-Received: from pubt1-k8s74.yq.163.org (unknown [115.238.122.38])
-        by corp-front11-corp.i.nease.net (Coremail) with SMTP id aYG_CgCXrV_P7o1imDAiAA--.8981S2;
-        Wed, 25 May 2022 16:54:39 +0800 (HKT)
-From:   liuyacan@corp.netease.com
-To:     kgraul@linux.ibm.com, davem@davemloft.net, edumazet@google.com,
-        kuba@kernel.org, pabeni@redhat.com
-Cc:     linux-s390@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ubraun@linux.ibm.com,
-        liuyacan <liuyacan@corp.netease.com>
-Subject: [PATCH net] net/smc: set ini->smcrv2.ib_dev_v2 to NULL if SMC-Rv2 is unavailable
-Date:   Wed, 25 May 2022 16:54:08 +0800
-Message-Id: <20220525085408.812273-1-liuyacan@corp.netease.com>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S230061AbiEYJR3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 05:17:29 -0400
+Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 921DE3F333
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 02:17:27 -0700 (PDT)
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-260-qG22p8eSN1uGexvu39ZvQQ-1; Wed, 25 May 2022 10:02:59 +0100
+X-MC-Unique: qG22p8eSN1uGexvu39ZvQQ-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.36; Wed, 25 May 2022 10:01:54 +0100
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.036; Wed, 25 May 2022 10:01:54 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "'greearb@candelatech.com'" <greearb@candelatech.com>,
+        "'tglx@linutronix.de'" <tglx@linutronix.de>
+CC:     "'tj@kernel.org'" <tj@kernel.org>,
+        "'priikone@iki.fi'" <priikone@iki.fi>,
+        "'peterz@infradead.org'" <peterz@infradead.org>
+Subject: Softirq latencies causing lost ethernet packets
+Thread-Topic: Softirq latencies causing lost ethernet packets
+Thread-Index: AdhwC4bqst8LExmEQFywizODbQDT1g==
+Date:   Wed, 25 May 2022 09:01:54 +0000
+Message-ID: <50c8042451454d8e907dd026ed5a3d53@AcuMS.aculab.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: aYG_CgCXrV_P7o1imDAiAA--.8981S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrZr48WFWkKr1kKw4UXr1xAFb_yoW3KrbEkr
-        yxGryxu3yFyF42k3yxA3y3urZayw1kWr4xX3WDCrW0q3WDXr1UWa98Crnxu347CrWavFy3
-        Gr45KFy3ta47tjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbGkYjxAI6xCIbckI1I0E57IF64kEYxAxM7AC8VAFwI0_Gr0_Xr1l
-        1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0I
-        I2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4x0
-        Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7
-        xvwVC2z280aVCY1x0267AKxVW0oVCq3wAawVAFpfBj4fn0lVCYm3Zqqf926ryUJw1UKr1v
-        6r18M2AIxVAIcxkEcVAq07x20xvEncxIr21l57IF6s8CjcxG0xyl5I8CrVACY4xI64kE6c
-        02F40Ex7xfMcIj6xIIjxv20xvE14v26r106r15McIj6I8E87Iv67AKxVWUJVW8JwAm72CE
-        4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4
-        IIrI8v6xkF7I0E8cxan2IY04v7M4kE6xkIj40Ew7xC0wCjxxvEw4Wlc2IjII80xcxEwVAK
-        I48JMxAIw28IcxkI7VAKI48JMxCjnVAK0II2c7xJMxC20s026xCaFVCjc4AY6r1j6r4UMx
-        CIbVAxMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
-        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
-        vE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAI
-        cVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa
-        73UjIFyTuYvjfUn_M-DUUUU
-X-CM-SenderInfo: 5olx5txfdqquhrush05hwht23hof0z/1tbiBQARCVt762GPdAAHsL
-X-Spam-Status: No, score=-2.0 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,
-        T_SCC_BODY_TEXT_LINE autolearn=ham autolearn_force=no version=3.4.6
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: liuyacan <liuyacan@corp.netease.com>
+I've finally discovered why I'm getting a lot of lost ethernet
+packets in one of my high packet rate tests (400k/sec short UDP).
 
-In the process of checking whether RDMAv2 is available, the current
-implementation first sets ini->smcrv2.ib_dev_v2, and then allocates
-smc buf desc and register rmb, but the latter may fail. In this case,
-the pointer should be reset.
+The underlying problem is that the napi callbacks need to loop
+in the softirq code.
+For my test I need the cpu to be running at well over 50% 'softint'.
+(And that is just for the ethernet receive, RPS is moving the IP/UDP
+processing elsewhere.)
 
-Fixes: e49300a6bf62 ("net/smc: add listen processing for SMC-Rv2")
-Signed-off-by: liuyacan <liuyacan@corp.netease.com>
----
- net/smc/af_smc.c | 1 +
- 1 file changed, 1 insertion(+)
+The problems are caused by this bit of code in __do_softirq():
 
-diff --git a/net/smc/af_smc.c b/net/smc/af_smc.c
-index 45a24d242..540b32d86 100644
---- a/net/smc/af_smc.c
-+++ b/net/smc/af_smc.c
-@@ -2136,6 +2136,7 @@ static void smc_find_rdma_v2_device_serv(struct smc_sock *new_smc,
- 
- not_found:
- 	ini->smcr_version &= ~SMC_V2;
-+	ini->smcrv2.ib_dev_v2 = NULL;
- 	ini->check_smcrv2 = false;
- }
- 
--- 
-2.20.1
+        pending = local_softirq_pending();
+        if (pending) {
+                if (time_before(jiffies, end) && !need_resched() &&
+                    --max_restart)
+                        goto restart;
+
+                wakeup_softirqd();
+        }
+
+Eric's c10d73671 changed it from:
+        if (pending) {
+                if (--max_restart)
+                        goto restart;
+
+                wakeup_softirqd();
+        }
+
+to
+        if (pending) {
+                if (time_before(jiffies, end) && !need_resched())
+                        goto restart;
+
+                wakeup_softirqd();
+        }
+
+Because just running 10 copies caused excessive latencies.
+
+The good work was then undone by 34376a50f that added the
+'max_restart' check back (with its limit of 10) to avoid
+an issue with stop_machine getting stuck (jiffies doesn't
+increment).
+
+This can (probably) be fixed by setting the limit to 1000.
+
+However there is a separate issue with the need_resched() check.
+In my tests this is stopping the softint/napi callbacks for
+anything up to 9 milliseconds - more than enough to drop packets.
+
+The problem here is that the softirqd are low priority processes.
+The application processes the receive the UDP all run under the
+realtime scheduler (priority -51).
+If the softint interrupts my RT process it is fine.
+But the following sequence isn't:
+ - softint runs on idle process.
+ - RT process scheduled on the same cpu
+ - __do_softirq() detects need_resched() calls wakeup_softirqd()
+ - scheduler switches from the idle to my RT process.
+ - RT process runs for several milliseconds.
+ - finally softirqd is scheduled
+
+The softint is usually higher priority than any RT thread
+(because it just steals the context).
+But in the more unusual case of an RT process being scheduled
+while the softint is active it suddenly becomes lower priority
+than the RT process.
+
+I'm sure what the intended purpose of the need_resched() is?
+I think it was eric's first thought for a limit, but he had to
+add the jiffies test as well to avoid RCU stalls.
+
+The jiffies test itself might be problematic.
+It is fixed at 2 jiffies - 1ms to 2ms at 1000Hz.
+I'm expecting the softint code to be running at (maybe) 80% cpu.
+So that limit would need increasing.
+There is a similar limit in the napi code - but that is configurable
+(and, I think, just causes the softing code to loop).
+
+But if RCU stalls are a problem maybe the rcu read lock ought to
+disable softints?
+So the softint is run when the rcu lock is released.
+
+I did try setting the softirqd processes to a much higher priority
+but that didn't seem to help - I didn't look exactly why.
+
+While I could use processor affinities to stop the application's
+RT threads running on the softint-heavy cpu that is all hard
+and difficult to arrange.
+In any case the application can make use of the non-softint time
+on those cpu.
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
 
