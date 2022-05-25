@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 552B75339C9
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 11:18:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84B9F5339BD
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 11:16:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231530AbiEYJRe convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 25 May 2022 05:17:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37062 "EHLO
+        id S233681AbiEYJQK convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 25 May 2022 05:16:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230061AbiEYJR3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 05:17:29 -0400
+        with ESMTP id S240505AbiEYJOz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 05:14:55 -0400
 Received: from eu-smtp-delivery-151.mimecast.com (eu-smtp-delivery-151.mimecast.com [185.58.85.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 921DE3F333
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 02:17:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 2152698086
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 02:13:03 -0700 (PDT)
 Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
  relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-260-qG22p8eSN1uGexvu39ZvQQ-1; Wed, 25 May 2022 10:02:59 +0100
-X-MC-Unique: qG22p8eSN1uGexvu39ZvQQ-1
+ uk-mta-286-FrwQxWopO92KId7QoSTyrw-1; Wed, 25 May 2022 10:13:01 +0100
+X-MC-Unique: FrwQxWopO92KId7QoSTyrw-1
 Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
  AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
  Server (TLS) id 15.0.1497.36; Wed, 25 May 2022 10:01:54 +0100
@@ -52,7 +52,7 @@ Content-Language: en-US
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
 X-Spam-Status: No, score=-2.6 required=5.0 tests=BAYES_00,RCVD_IN_DNSWL_LOW,
-        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=unavailable
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
         autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
