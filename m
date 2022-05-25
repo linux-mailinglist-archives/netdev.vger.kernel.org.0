@@ -2,80 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 84E5A5344B2
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 22:07:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D06EE5344C2
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 22:17:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241693AbiEYUHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 16:07:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
+        id S237360AbiEYURH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 16:17:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236566AbiEYUHa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 16:07:30 -0400
-Received: from mail-yw1-x112d.google.com (mail-yw1-x112d.google.com [IPv6:2607:f8b0:4864:20::112d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 351245FC9
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 13:07:29 -0700 (PDT)
-Received: by mail-yw1-x112d.google.com with SMTP id 00721157ae682-2ff7b90e635so160533187b3.5
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 13:07:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=i2SdZwRnO7AZeugCPG1VVs3s8P5NGEW9+pFGDARsxpU=;
-        b=h5fj5qLGE4k1qCVrSTbtszUHXCn3jSMKMKuaHOlxoXJADhs5My1nKEbuGa4vOr0Ggm
-         T+T6dnHlF5iDUb83OFV9QHeWYOrrhcs/8pmfJmlRHlwnRUv5JTXBfk7ZSAcAkb1OlfOb
-         cW4ozXVrpKkB/W625cYCXzbpXuXVtHosU9YcYz5+0P2ZMy/zYSu/oRy5UkQ7VrvHWmvZ
-         mXb8qge3S+tZ3iuiXYIJ146rAicw5QvrES5KVxoHdSvihUStTt51vwwZ9ck9m49jkTs2
-         p3wr86PsE4atqmB+oTt0LmqDstDAjGkBPBuQ73tjV0GulqagOS1iqn6x3YJfpK9zcx1l
-         /LwQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=i2SdZwRnO7AZeugCPG1VVs3s8P5NGEW9+pFGDARsxpU=;
-        b=ehpr7slnfHLm79SIZb/PQsSad3I5edWNJ1CUlzXUAET7DVD6LSAOAB0/+RhMENwsvm
-         A8x240KSlIzy3JcPK9leXYtt580pTHDouaMwsM8MZQKYDLv41jaMQXPn7gz0PhWAeK1O
-         x+nLePVDdTUdzHymifCVTNJHq0nzvqD1z916u+9rXTNnoY88egFNpjoSo6GM41KOZlhw
-         yM7zrRvC6Nm77C7Xu0OTIo31oQaYQrZzeCtImmGo/agIX+Idjl+5+DKKD2OLwSOas9dS
-         2uPd6uW7fYNVmD5puW96OBL++cq4RwJFQY67hGmsoh8KpuZ4XoXEsdOpsWJ8iqsaRFMt
-         MLow==
-X-Gm-Message-State: AOAM530NtGdELmgWoatq+Gu1rVFKPSm3IzmL9ZwegdlhWavC0+AHq1WS
-        QwfwRDEozZCqH0UMZlfdhkDN1ZWh8dc0b7IR1hs=
-X-Google-Smtp-Source: ABdhPJy2NNtEvH9EAfZFrsKrQoYpy8pq4lMrG05GVvub+S+QnDi4xQMcq+uRTLiaLmOBjfomi5E/CvcoMA6mjgRipjM=
-X-Received: by 2002:a0d:d741:0:b0:300:62eb:2362 with SMTP id
- z62-20020a0dd741000000b0030062eb2362mr2881133ywd.477.1653509248490; Wed, 25
- May 2022 13:07:28 -0700 (PDT)
+        with ESMTP id S1345789AbiEYUQo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 16:16:44 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2423E11471;
+        Wed, 25 May 2022 13:16:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1653509802; x=1685045802;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8CVZfyXJ3BRW6i3sTZdPRtzPtYDa1DUQhBc/dqRqS4Q=;
+  b=M4FnzGmMzYSebCSfQ83FNCGqudMEY+t24/Gde9CQTTUtWIfzs+5wDWXK
+   e2Iwy4sBSmGLwHoJseojjszuOaJ6/vWjRk4lPkdCjlLc9v567RUrJK2v4
+   h5UjnJiBtJEVg1CgZPQh5j0SnfG7Rk8wyrv+K4tiQ2aU6K2xLmNdWsZ1Y
+   fccVaJi5k5TOwnjdCZYUVquVNSv9HSuCN7e3rSXKrddwuQlBzyIQoV/Yk
+   BiryJeo9fWNYMIj3/Ya6puQyGXrnRMwBYqx98VUPuz/BS2Ur08F9w+AlT
+   Dv7mnFggNkQJe11g2EXIwEdOFVeGYz5/QFcefyi7LT8zkjE9p2ghVA1Ji
+   g==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10358"; a="334572332"
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="334572332"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 May 2022 13:16:19 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,250,1647327600"; 
+   d="scan'208";a="630512697"
+Received: from lkp-server01.sh.intel.com (HELO db63a1be7222) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 25 May 2022 13:16:15 -0700
+Received: from kbuild by db63a1be7222 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1ntxQV-0003I8-2f;
+        Wed, 25 May 2022 20:16:15 +0000
+Date:   Thu, 26 May 2022 04:15:43 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Joseph Hwang <josephsih@chromium.org>,
+        linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
+        luiz.dentz@gmail.com, pali@kernel.org
+Cc:     kbuild-all@lists.01.org, josephsih@google.com,
+        chromeos-bluetooth-upstreaming@chromium.org,
+        Joseph Hwang <josephsih@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v5 2/5] Bluetooth: aosp: surface AOSP quality report
+ through mgmt
+Message-ID: <202205260445.F8Xkowrk-lkp@intel.com>
+References: <20220525184510.v5.2.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
 MIME-Version: 1.0
-References: <20220523202543.9019-1-CFSworks@gmail.com> <76f1d70068523c173670819fc9a688a1368bfa12.camel@redhat.com>
-In-Reply-To: <76f1d70068523c173670819fc9a688a1368bfa12.camel@redhat.com>
-From:   Sam Edwards <cfsworks@gmail.com>
-Date:   Wed, 25 May 2022 14:07:17 -0600
-Message-ID: <CAH5Ym4gm49mkMUKzyPqKT8vt3M67NZB-zoep3bu+VB3FbuVzCQ@mail.gmail.com>
-Subject: Re: [PATCH] ipv6/addrconf: fix timing bug in tempaddr regen
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Linux Network Development Mailing List 
-        <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220525184510.v5.2.I2015b42d2d0a502334c9c3a2983438b89716d4f0@changeid>
+X-Spam-Status: No, score=-5.1 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_MED,
+        SPF_HELO_NONE,SPF_NONE,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bah, I've had to resend this since it went out as HTML yesterday.
-Sorry about the double mailing everyone!
+Hi Joseph,
 
-On Tue, May 24, 2022 at 3:24 AM Paolo Abeni <pabeni@redhat.com> wrote:
-> I looks like with this change the tmp addresses will never hit the
-> DEPRECATED branch ?!?
+Thank you for the patch! Perhaps something to improve:
 
-The DEPRECATED branch becomes reachable again once this line is hit:
-ifp->regen_count++;
-...because it causes this condition in the elseif to evaluate false:
-!ifp->regen_count
+[auto build test WARNING on bluetooth-next/master]
+[also build test WARNING on net-next/master net/master v5.18 next-20220525]
+[cannot apply to bluetooth/master]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Joseph-Hwang/Bluetooth-mgmt-add-MGMT_OP_SET_QUALITY_REPORT-for-quality-report/20220525-184722
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/bluetooth/bluetooth-next.git master
+config: i386-randconfig-s002 (https://download.01.org/0day-ci/archive/20220526/202205260445.F8Xkowrk-lkp@intel.com/config)
+compiler: gcc-11 (Debian 11.3.0-1) 11.3.0
+reproduce:
+        # apt-get install sparse
+        # sparse version: v0.6.4-14-g5a0004b5-dirty
+        # https://github.com/intel-lab-lkp/linux/commit/0121eca73c0352b9ac4bc289609b218c0d0fb69e
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Joseph-Hwang/Bluetooth-mgmt-add-MGMT_OP_SET_QUALITY_REPORT-for-quality-report/20220525-184722
+        git checkout 0121eca73c0352b9ac4bc289609b218c0d0fb69e
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=i386 SHELL=/bin/bash net/bluetooth/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+   net/bluetooth/hci_event.c:338:15: sparse: sparse: restricted __le16 degrades to integer
+>> net/bluetooth/hci_event.c:4275:3: sparse: sparse: symbol 'evt_prefixes' was not declared. Should it be static?
+   net/bluetooth/hci_event.c: note: in included file (through include/net/bluetooth/hci_core.h):
+   include/net/bluetooth/hci.h:2494:47: sparse: sparse: array of flexible structures
+   include/net/bluetooth/hci.h:2580:43: sparse: sparse: array of flexible structures
+
+vim +/evt_prefixes +4275 net/bluetooth/hci_event.c
+
+  4262	
+  4263	/* Every distinct vendor specification must have a well-defined vendor
+  4264	 * event prefix to determine if a vendor event meets the specification.
+  4265	 * Some vendor prefixes are fixed values while some other vendor prefixes
+  4266	 * are only available at run time.
+  4267	 */
+  4268	struct ext_vendor_event_prefix {
+  4269		/* Some vendor prefixes are variable length. For convenience,
+  4270		 * the prefix in struct ext_vendor_prefix is in little endian.
+  4271		 */
+  4272		struct ext_vendor_prefix *
+  4273			(*get_ext_vendor_prefix)(struct hci_dev *hdev);
+  4274		void (*vendor_func)(struct hci_dev *hdev, struct sk_buff *skb);
+> 4275	} evt_prefixes[] = {
+  4276		{ aosp_get_ext_prefix, aosp_vendor_evt },
+  4277		{ msft_get_ext_prefix, msft_vendor_evt },
+  4278	
+  4279		/* end with a null entry */
+  4280		{},
+  4281	};
+  4282	
+
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
