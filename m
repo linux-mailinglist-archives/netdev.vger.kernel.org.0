@@ -2,176 +2,359 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id D2872533ACE
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 12:45:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FFA3533AD1
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 12:46:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237994AbiEYKpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 06:45:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51834 "EHLO
+        id S240283AbiEYKp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 06:45:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiEYKpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 06:45:13 -0400
-Received: from szxga02-in.huawei.com (szxga02-in.huawei.com [45.249.212.188])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1C6F994CE
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 03:45:11 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4L7SLT3w3JzQk6q;
-        Wed, 25 May 2022 18:42:09 +0800 (CST)
-Received: from dggpemm500005.china.huawei.com (7.185.36.74) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 25 May 2022 18:45:09 +0800
-Received: from [10.69.30.204] (10.69.30.204) by dggpemm500005.china.huawei.com
- (7.185.36.74) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 25 May
- 2022 18:45:09 +0800
-Subject: Re: packet stuck in qdisc : patch proposal
-To:     Vincent Ray <vray@kalrayinc.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-CC:     davem <davem@davemloft.net>,
-        =?UTF-8?B?5pa55Zu954Ks?= <guoju.fgj@alibaba-inc.com>,
-        kuba <kuba@kernel.org>, netdev <netdev@vger.kernel.org>,
-        Samuel Jones <sjones@kalrayinc.com>,
-        "vladimir oltean" <vladimir.oltean@nxp.com>,
-        Guoju Fang <gjfang@linux.alibaba.com>,
-        "Remy Gauguey" <rgauguey@kalrayinc.com>, will <will@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-References: <1359936158.10849094.1649854873275.JavaMail.zimbra@kalray.eu>
- <2b827f3b-a9db-e1a7-0dc9-65446e07bc63@linux.alibaba.com>
- <1684598287.15044793.1653314052575.JavaMail.zimbra@kalray.eu>
- <d374b806-1816-574e-ba8b-a750a848a6b3@huawei.com>
- <1758521608.15136543.1653380033771.JavaMail.zimbra@kalray.eu>
- <1675198168.15239468.1653411635290.JavaMail.zimbra@kalray.eu>
- <317a3e67-0956-e9c2-0406-9349844ca612@gmail.com>
- <1140270297.15304639.1653471897630.JavaMail.zimbra@kalray.eu>
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-Message-ID: <60d1e5b8-dae0-38ef-4b9d-f6419861fdab@huawei.com>
-Date:   Wed, 25 May 2022 18:45:08 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
- Thunderbird/52.2.0
+        with ESMTP id S234162AbiEYKp4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 06:45:56 -0400
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51AC399683
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 03:45:54 -0700 (PDT)
+Received: by mail-pf1-x429.google.com with SMTP id z25so6181045pfr.1
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 03:45:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eZHHJ8xZ0WLnM7kImTEfhllSgT1hYk7RJ6GDlALdclU=;
+        b=kIwQ0plu4qoXAnCshP2TSrFMPv3H7erjIb4M8UZRo0gPSgdP4mlHQ4ZSXgCGx1b7Yt
+         CfApB0TbHw5L4fq+ZFp0SLG3YuxVMbpDyKUPru2o76+7mB+KvWU8Ngf1kQyAgN0gTBP5
+         VRqqfQfBduqFCgV+eSEGwbTGTEK4dePoYvk+U=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=eZHHJ8xZ0WLnM7kImTEfhllSgT1hYk7RJ6GDlALdclU=;
+        b=I4+Ttb64di+GR9mHI2x7vmy2/VZLrFH6P2rfnU4laWKxBz3wL7khSzMY+2urThK1fO
+         ha2iubBUE0Kq5k36bU7gXs9nhojeZTZrEiWKqzmoTyEwb0HcG0yqyDOaXvSgM5qCFU/T
+         AoDTATPVgUsc+TRMMMRn3tsSLyCfr4gCp2ELXVg6JqQZdeOCo55K4F8lo5+ioylrf5Ys
+         heuWEwi59TqHoYObtV8vTYJjce7bGjAY+AmwcXN2R3eId9ub+8Kfc990v2k7bh4hcrCY
+         DDhxgZor+TiD2IZkZD9mHJVsfkQ+leyoxIxesT/aDGuvNfSYoy5A7nSk0hoGRn/Sjl0W
+         iv6A==
+X-Gm-Message-State: AOAM533rfOmKYmmYj35hnN7yeTVKVrkrNAHQ40a5hrQYLaAvnFT3l5QS
+        VaaHnB8bQuSLbL5bvGtYMZpoLQ==
+X-Google-Smtp-Source: ABdhPJzJj4xTqY5JKJDxbBncKjKBUh4qwknmOLSqdd/djycNTbStDWrdY3V22flQf8h+rzraqTWtXg==
+X-Received: by 2002:a63:535c:0:b0:3db:69da:1ef7 with SMTP id t28-20020a63535c000000b003db69da1ef7mr28668131pgl.239.1653475553811;
+        Wed, 25 May 2022 03:45:53 -0700 (PDT)
+Received: from localhost (174.71.80.34.bc.googleusercontent.com. [34.80.71.174])
+        by smtp.gmail.com with UTF8SMTPSA id f7-20020a6547c7000000b003db8691008esm8006519pgs.12.2022.05.25.03.45.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 May 2022 03:45:53 -0700 (PDT)
+From:   Joseph Hwang <josephsih@chromium.org>
+To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
+        luiz.dentz@gmail.com, pali@kernel.org
+Cc:     josephsih@google.com, chromeos-bluetooth-upstreaming@chromium.org,
+        Joseph Hwang <josephsih@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Paolo Abeni <pabeni@redhat.com>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v5 1/5] Bluetooth: mgmt: add MGMT_OP_SET_QUALITY_REPORT for quality report
+Date:   Wed, 25 May 2022 18:45:41 +0800
+Message-Id: <20220525104545.2314653-1-josephsih@chromium.org>
+X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
 MIME-Version: 1.0
-In-Reply-To: <1140270297.15304639.1653471897630.JavaMail.zimbra@kalray.eu>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.69.30.204]
-X-ClientProxiedBy: dggems705-chm.china.huawei.com (10.3.19.182) To
- dggpemm500005.china.huawei.com (7.185.36.74)
-X-CFilter-Loop: Reflected
-X-Spam-Status: No, score=-4.3 required=5.0 tests=BAYES_00,NICE_REPLY_A,
-        RCVD_IN_DNSWL_MED,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-2.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_NONE,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2022/5/25 17:44, Vincent Ray wrote:
-> ----- On May 24, 2022, at 10:17 PM, Eric Dumazet eric.dumazet@gmail.com wrote:
-> 
->> On 5/24/22 10:00, Vincent Ray wrote:
->>> All,
->>>
->>> I confirm Eric's patch works well too, and it's better and clearer than mine.
->>> So I think we should go for it, and the one from Guoju in addition.
->>>
->>> @Eric : I see you are one of the networking maintainers, so I have a few
->>> questions for you :
->>>
->>> a) are you going to take care of these patches directly yourself, or is there
->>> something Guoju or I should do to promote them ?
->>
->> I think this is totally fine you take ownership of the patch, please
->> send a formal V2.
->>
->> Please double check what patchwork had to say about your V1 :
->>
->>
->> https://patchwork.kernel.org/project/netdevbpf/patch/1684598287.15044793.1653314052575.JavaMail.zimbra@kalray.eu/
->>
->>
->> And make sure to address the relevant points
-> 
-> OK I will.
-> If you agree, I will take your version of the fix (test_and_set_bit()), keeping the commit message
-> similar to my original one.
-> 
-> What about Guoju's patch ? 
+This patch adds a new set_quality_report mgmt handler to set
+the quality report feature. The feature is removed from the
+experimental features at the same time.
 
-@Guoju, please speak up if you want to handle the patch yourself.
+Signed-off-by: Joseph Hwang <josephsih@chromium.org>
+---
 
-> (adding a smp_mb() between the spin_unlock() and test_bit() in qdisc_run_end()). 
-> I think it is also necessary though potentially less critical.
-> Do we embed it in the same patch ? or patch series ?
+Changes in v5:
+- This patch becomes the first patch.
+- Remove useless hdev check in get_supported_settings().
+- An additional patch will make quality report survive power off/on
+  cycles.
 
-Guoju's patch fixes the commit a90c57f2cedd, so "patch series"
-seems better if Guoju is not speaking up to handle the patch himself.
+Changes in v4:
+- return current settings for set_quality_report.
 
+Changes in v3:
+- This is a new patch to enable the quality report feature.
+  The reading and setting of the quality report feature are
+  removed from the experimental features.
 
-> 
-> @Guoju : have you submitted it for integration ?
-> 
-> 
->> The most important one is the lack of 'Signed-off-by:' tag, of course.
->>
->>
->>> b) Can we expect to see them land in the mainline soon ?
->>
->> If your v2 submission is correct, it can be merged this week ;)
->>
->>
->>>
->>> c) Will they be backported to previous versions of the kernel ? Which ones ?
->>
->> You simply can include a proper Fixes: tag, so that stable teams can
->> backport
->>
->> the patch to all affected kernel versions.
->>
-> 
-> Here things get a little complicated in my head ;-)
-> As explained, I think this mechanism has been bugged, in a way or an other, for some time, perhaps since the introduction
-> of lockless qdiscs (4.16) or somewhere between 4.16 and 5.14.
-> It's hard to tell at a glance since the code looks quite different back then.
-> Because of these changes, a unique patch will also only apply up to a certain point in the past.
-> 
-> However, I think the bug became really critical only with the introduction of "true bypass" behavior 
-> in lockless qdiscs by YunSheng in 5.14, though there may be scenarios where it is a big deal 
-> even in no-bypass mode.
+ include/net/bluetooth/mgmt.h |   7 ++
+ net/bluetooth/mgmt.c         | 167 +++++++++++++++--------------------
+ 2 files changed, 80 insertions(+), 94 deletions(-)
 
+diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
+index 7c1ad0f6fcec..c1c2fd72d9e3 100644
+--- a/include/net/bluetooth/mgmt.h
++++ b/include/net/bluetooth/mgmt.h
+@@ -109,6 +109,7 @@ struct mgmt_rp_read_index_list {
+ #define MGMT_SETTING_STATIC_ADDRESS	0x00008000
+ #define MGMT_SETTING_PHY_CONFIGURATION	0x00010000
+ #define MGMT_SETTING_WIDEBAND_SPEECH	0x00020000
++#define MGMT_SETTING_QUALITY_REPORT	0x00040000
+ 
+ #define MGMT_OP_READ_INFO		0x0004
+ #define MGMT_READ_INFO_SIZE		0
+@@ -838,6 +839,12 @@ struct mgmt_cp_add_adv_patterns_monitor_rssi {
+ } __packed;
+ #define MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE	8
+ 
++#define MGMT_OP_SET_QUALITY_REPORT		0x0057
++struct mgmt_cp_set_quality_report {
++	__u8	action;
++} __packed;
++#define MGMT_SET_QUALITY_REPORT_SIZE		1
++
+ #define MGMT_EV_CMD_COMPLETE		0x0001
+ struct mgmt_ev_cmd_complete {
+ 	__le16	opcode;
+diff --git a/net/bluetooth/mgmt.c b/net/bluetooth/mgmt.c
+index d2d390534e54..1ad84f34097f 100644
+--- a/net/bluetooth/mgmt.c
++++ b/net/bluetooth/mgmt.c
+@@ -857,6 +857,9 @@ static u32 get_supported_settings(struct hci_dev *hdev)
+ 
+ 	settings |= MGMT_SETTING_PHY_CONFIGURATION;
+ 
++	if (aosp_has_quality_report(hdev) || hdev->set_quality_report)
++		settings |= MGMT_SETTING_QUALITY_REPORT;
++
+ 	return settings;
+ }
+ 
+@@ -928,6 +931,9 @@ static u32 get_current_settings(struct hci_dev *hdev)
+ 	if (hci_dev_test_flag(hdev, HCI_WIDEBAND_SPEECH_ENABLED))
+ 		settings |= MGMT_SETTING_WIDEBAND_SPEECH;
+ 
++	if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
++		settings |= MGMT_SETTING_QUALITY_REPORT;
++
+ 	return settings;
+ }
+ 
+@@ -3901,12 +3907,6 @@ static const u8 debug_uuid[16] = {
+ };
+ #endif
+ 
+-/* 330859bc-7506-492d-9370-9a6f0614037f */
+-static const u8 quality_report_uuid[16] = {
+-	0x7f, 0x03, 0x14, 0x06, 0x6f, 0x9a, 0x70, 0x93,
+-	0x2d, 0x49, 0x06, 0x75, 0xbc, 0x59, 0x08, 0x33,
+-};
+-
+ /* a6695ace-ee7f-4fb9-881a-5fac66c629af */
+ static const u8 offload_codecs_uuid[16] = {
+ 	0xaf, 0x29, 0xc6, 0x66, 0xac, 0x5f, 0x1a, 0x88,
+@@ -3928,7 +3928,7 @@ static const u8 rpa_resolution_uuid[16] = {
+ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
+ 				  void *data, u16 data_len)
+ {
+-	char buf[102];   /* Enough space for 5 features: 2 + 20 * 5 */
++	char buf[82];   /* Enough space for 4 features: 2 + 20 * 4 */
+ 	struct mgmt_rp_read_exp_features_info *rp = (void *)buf;
+ 	u16 idx = 0;
+ 	u32 flags;
+@@ -3969,18 +3969,6 @@ static int read_exp_features_info(struct sock *sk, struct hci_dev *hdev,
+ 		idx++;
+ 	}
+ 
+-	if (hdev && (aosp_has_quality_report(hdev) ||
+-		     hdev->set_quality_report)) {
+-		if (hci_dev_test_flag(hdev, HCI_QUALITY_REPORT))
+-			flags = BIT(0);
+-		else
+-			flags = 0;
+-
+-		memcpy(rp->features[idx].uuid, quality_report_uuid, 16);
+-		rp->features[idx].flags = cpu_to_le32(flags);
+-		idx++;
+-	}
+-
+ 	if (hdev && hdev->get_data_path_id) {
+ 		if (hci_dev_test_flag(hdev, HCI_OFFLOAD_CODECS_ENABLED))
+ 			flags = BIT(0);
+@@ -4193,80 +4181,6 @@ static int set_rpa_resolution_func(struct sock *sk, struct hci_dev *hdev,
+ 	return err;
+ }
+ 
+-static int set_quality_report_func(struct sock *sk, struct hci_dev *hdev,
+-				   struct mgmt_cp_set_exp_feature *cp,
+-				   u16 data_len)
+-{
+-	struct mgmt_rp_set_exp_feature rp;
+-	bool val, changed;
+-	int err;
+-
+-	/* Command requires to use a valid controller index */
+-	if (!hdev)
+-		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
+-				       MGMT_OP_SET_EXP_FEATURE,
+-				       MGMT_STATUS_INVALID_INDEX);
+-
+-	/* Parameters are limited to a single octet */
+-	if (data_len != MGMT_SET_EXP_FEATURE_SIZE + 1)
+-		return mgmt_cmd_status(sk, hdev->id,
+-				       MGMT_OP_SET_EXP_FEATURE,
+-				       MGMT_STATUS_INVALID_PARAMS);
+-
+-	/* Only boolean on/off is supported */
+-	if (cp->param[0] != 0x00 && cp->param[0] != 0x01)
+-		return mgmt_cmd_status(sk, hdev->id,
+-				       MGMT_OP_SET_EXP_FEATURE,
+-				       MGMT_STATUS_INVALID_PARAMS);
+-
+-	hci_req_sync_lock(hdev);
+-
+-	val = !!cp->param[0];
+-	changed = (val != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
+-
+-	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
+-		err = mgmt_cmd_status(sk, hdev->id,
+-				      MGMT_OP_SET_EXP_FEATURE,
+-				      MGMT_STATUS_NOT_SUPPORTED);
+-		goto unlock_quality_report;
+-	}
+-
+-	if (changed) {
+-		if (hdev->set_quality_report)
+-			err = hdev->set_quality_report(hdev, val);
+-		else
+-			err = aosp_set_quality_report(hdev, val);
+-
+-		if (err) {
+-			err = mgmt_cmd_status(sk, hdev->id,
+-					      MGMT_OP_SET_EXP_FEATURE,
+-					      MGMT_STATUS_FAILED);
+-			goto unlock_quality_report;
+-		}
+-
+-		if (val)
+-			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
+-		else
+-			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
+-	}
+-
+-	bt_dev_dbg(hdev, "quality report enable %d changed %d", val, changed);
+-
+-	memcpy(rp.uuid, quality_report_uuid, 16);
+-	rp.flags = cpu_to_le32(val ? BIT(0) : 0);
+-	hci_sock_set_flag(sk, HCI_MGMT_EXP_FEATURE_EVENTS);
+-
+-	err = mgmt_cmd_complete(sk, hdev->id, MGMT_OP_SET_EXP_FEATURE, 0,
+-				&rp, sizeof(rp));
+-
+-	if (changed)
+-		exp_feature_changed(hdev, quality_report_uuid, val, sk);
+-
+-unlock_quality_report:
+-	hci_req_sync_unlock(hdev);
+-	return err;
+-}
+-
+ static int set_offload_codec_func(struct sock *sk, struct hci_dev *hdev,
+ 				  struct mgmt_cp_set_exp_feature *cp,
+ 				  u16 data_len)
+@@ -4393,7 +4307,6 @@ static const struct mgmt_exp_feature {
+ 	EXP_FEAT(debug_uuid, set_debug_func),
+ #endif
+ 	EXP_FEAT(rpa_resolution_uuid, set_rpa_resolution_func),
+-	EXP_FEAT(quality_report_uuid, set_quality_report_func),
+ 	EXP_FEAT(offload_codecs_uuid, set_offload_codec_func),
+ 	EXP_FEAT(le_simultaneous_roles_uuid, set_le_simultaneous_roles_func),
+ 
+@@ -8664,6 +8577,71 @@ static int get_adv_size_info(struct sock *sk, struct hci_dev *hdev,
+ 				 MGMT_STATUS_SUCCESS, &rp, sizeof(rp));
+ }
+ 
++static int set_quality_report(struct sock *sk, struct hci_dev *hdev,
++			      void *data, u16 data_len)
++{
++	struct mgmt_cp_set_quality_report *cp = data;
++	bool enable, changed;
++	int err;
++
++	/* Command requires to use a valid controller index */
++	if (!hdev)
++		return mgmt_cmd_status(sk, MGMT_INDEX_NONE,
++				       MGMT_OP_SET_QUALITY_REPORT,
++				       MGMT_STATUS_INVALID_INDEX);
++
++	/* Only 0 (off) and 1 (on) is supported */
++	if (cp->action != 0x00 && cp->action != 0x01)
++		return mgmt_cmd_status(sk, hdev->id,
++				       MGMT_OP_SET_QUALITY_REPORT,
++				       MGMT_STATUS_INVALID_PARAMS);
++
++	hci_req_sync_lock(hdev);
++
++	enable = !!cp->action;
++	changed = (enable != hci_dev_test_flag(hdev, HCI_QUALITY_REPORT));
++
++	if (!aosp_has_quality_report(hdev) && !hdev->set_quality_report) {
++		err = mgmt_cmd_status(sk, hdev->id,
++				      MGMT_OP_SET_QUALITY_REPORT,
++				      MGMT_STATUS_NOT_SUPPORTED);
++		goto unlock_quality_report;
++	}
++
++	if (changed) {
++		if (hdev->set_quality_report)
++			err = hdev->set_quality_report(hdev, enable);
++		else
++			err = aosp_set_quality_report(hdev, enable);
++
++		if (err) {
++			err = mgmt_cmd_status(sk, hdev->id,
++					      MGMT_OP_SET_QUALITY_REPORT,
++					      MGMT_STATUS_FAILED);
++			goto unlock_quality_report;
++		}
++
++		if (enable)
++			hci_dev_set_flag(hdev, HCI_QUALITY_REPORT);
++		else
++			hci_dev_clear_flag(hdev, HCI_QUALITY_REPORT);
++	}
++
++	bt_dev_dbg(hdev, "quality report enable %d changed %d",
++		   enable, changed);
++
++	err = send_settings_rsp(sk, MGMT_OP_SET_QUALITY_REPORT, hdev);
++	if (err < 0)
++		goto unlock_quality_report;
++
++	if (changed)
++		err = new_settings(hdev, sk);
++
++unlock_quality_report:
++	hci_req_sync_unlock(hdev);
++	return err;
++}
++
+ static const struct hci_mgmt_handler mgmt_handlers[] = {
+ 	{ NULL }, /* 0x0000 (no command) */
+ 	{ read_version,            MGMT_READ_VERSION_SIZE,
+@@ -8790,6 +8768,7 @@ static const struct hci_mgmt_handler mgmt_handlers[] = {
+ 	{ add_adv_patterns_monitor_rssi,
+ 				   MGMT_ADD_ADV_PATTERNS_MONITOR_RSSI_SIZE,
+ 						HCI_MGMT_VAR_LEN },
++	{ set_quality_report,      MGMT_SET_QUALITY_REPORT_SIZE },
+ };
+ 
+ void mgmt_index_added(struct hci_dev *hdev)
+-- 
+2.36.1.124.g0e6072fb45-goog
 
-commit 89837eb4b246 tried to fix that, but it did not fix it completely, and that commit should has
-been back-ported to the affected kernel versions as much as possible, so I think the Fixes tag
-should be:
-
-Fixes: 89837eb4b246 ("net: sched: add barrier to ensure correct ordering for lockless qdisc")
-
-> 
-> => I suggest we only tag it for backward fix up to the 5.14, where it should apply smoothly,
->  and we live with the bug for versions before that.
-> This would mean that 5.15 LT can be patched but no earlier LT
->  
-> What do you think ?
-> 
-> BTW : forgive my ignorance, but are there any kind of "Errata Sheet" or similar for known bugs that 
-> won't be fixed in a given kernel ?
-> 
->>
->>
->>>
->>> Thanks a lot, best,
->>
->> Thanks a lot for working on this long standing issue.
->>
->>
->>
->>
->> To declare a filtering error, please use the following link :
->> https://www.security-mail.net/reporter.php?mid=7009.628d3d4c.37c04.0&r=vray%40kalrayinc.com&s=eric.dumazet%40gmail.com&o=Re%3A+packet+stuck+in+qdisc+%3A+patch+proposal&verdict=C&c=0ca08e7b7e420d1ab014cda67db48db71df41f5f
-> 
-> 
-> 
-> 
-> .
-> 
