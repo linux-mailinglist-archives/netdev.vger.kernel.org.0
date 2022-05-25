@@ -2,118 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from out1.vger.email (out1.vger.email [IPv6:2620:137:e000::1:20])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DA3B534074
-	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 17:36:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F985340BF
+	for <lists+netdev@lfdr.de>; Wed, 25 May 2022 17:51:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233775AbiEYPgf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 25 May 2022 11:36:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46822 "EHLO
+        id S245326AbiEYPvg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 25 May 2022 11:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230468AbiEYPgd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 11:36:33 -0400
-Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DDE96554
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 08:36:28 -0700 (PDT)
-Received: by mail-pj1-x1029.google.com with SMTP id pq9-20020a17090b3d8900b001df622bf81dso5447131pjb.3
-        for <netdev@vger.kernel.org>; Wed, 25 May 2022 08:36:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bu2VrtRiv5YPL5qJIl0dQ33o31yOnff58weGXh8Er4s=;
-        b=AchVLP8usDKQbbsoTYXGPbBjerao5KY/8lau9DZmXV3e1dIV15KloUQWwlcQMu50/l
-         nu4MDhoezVe0HHXIfBV3NBLYmUtKEyZUNTN5ljPim4q1U6CkdLvuLffCajWjjZIFdm88
-         iZI+uhINlw2SVfWP7b75vHiweuF88pbPnuIC9WWQjgRRCpY+aNqJKAR36yCK4glmEgnj
-         qSxhlDy4pSN232BwP+oRCV55ig9QcY7awsugBedPx7MuQuC22pZwpvONc36WD1PzD28H
-         E82kRCDhmVIwvGK4fo7FOjyiHlyOyWZ3F8lBJ2hxpcKGiE+p943PNr46s4m4vXHlbIRD
-         hv9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bu2VrtRiv5YPL5qJIl0dQ33o31yOnff58weGXh8Er4s=;
-        b=Nh+iLQkDG+E6lCkqe+49sJhVdrdleIGo8Hp5aqDEeT0PIFm2K30hd3apL2vqsmN4Ic
-         rBmu9pzZGbkS82YfVHKtzKYraMklqY3UngjmCACUbT0l1Ba3Iv2Un85nNh0KGAfhrpy3
-         mRYBITtz+EnyJ3FHhMEA4TaFNEoQp68MFZey0eyx0oTAuZx7oy/o1f6BT7ggUNlLW57F
-         2+4Dq5GHhN11tSsd5Y55H/mmokEWeTLzcEy6Hd6ShjO6CRjuax1I/z8+4BEIW4rXzu1M
-         av0IX11DdqyK3mfoO9dn4F5043JmXWdqvUeY/8jsR6P/2tNbOcLTF5qK0h4x0zbBwtHm
-         fNew==
-X-Gm-Message-State: AOAM530LiGQLHkrpgBB9zEqSkn6MIhIlXQ7iz6qdeJH8qklenC13RksL
-        TfhUAMCQLJLFUsLGl5IFE7E=
-X-Google-Smtp-Source: ABdhPJzb24HS7Bfskp75YcBABsWPtZxSSoZ6TkFRQp5lc/tA76RxUG9OBzuz8/XSuUudHQ8G6kMsbw==
-X-Received: by 2002:a17:90a:940d:b0:1df:359b:2f9e with SMTP id r13-20020a17090a940d00b001df359b2f9emr10797221pjo.235.1653492987637;
-        Wed, 25 May 2022 08:36:27 -0700 (PDT)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:d156:3c09:f297:61a8])
-        by smtp.gmail.com with ESMTPSA id a15-20020a170902eccf00b0016170bb6528sm9661579plh.113.2022.05.25.08.36.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 May 2022 08:36:27 -0700 (PDT)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     David Ahern <dsahern@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Subject: [PATCH iproute2] iplink: report tso_max_size and tso_max_segs
-Date:   Wed, 25 May 2022 08:36:24 -0700
-Message-Id: <20220525153624.1943884-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.36.1.124.g0e6072fb45-goog
+        with ESMTP id S245369AbiEYPvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 25 May 2022 11:51:11 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B39AF315
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 08:50:58 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EA0A5B81E01
+        for <netdev@vger.kernel.org>; Wed, 25 May 2022 15:50:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4318CC385B8;
+        Wed, 25 May 2022 15:50:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653493855;
+        bh=sM2prxCJyfHnv0JqWJO/b1Dyf0IzHcmxkDXplFr31vE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Vmbkcfv61BL6jebgtdQHMGJZawIsTnVbXBj2g6j9xdSAijoK2hs/p9dhtsPzabyI1
+         0vBPeDu2G6LiK1o7O8R5Y2tVSL8tutHNjjNr75cgUwWPy5LtdcqUjQ2Nw0VSCjQdPn
+         dDkbxUvbgGK2kl4dfDRg8h6EH8yn2k9nro1V2EgBhINAi4lG75Do0BBOG49t2n4m7q
+         yS+7jthaKcqL3paeMTkybIgiImOeJhyDCNoXfv2g4naUx/dWt0g3n5xij/FkpLkRhs
+         qHed9FiOHPa6iNhbyadtZsICUBGvX+Fagr9w/IS6CB2hoaWPksVuHNT25Fmf6upCYb
+         jDT9SYqr188XQ==
+Date:   Wed, 25 May 2022 08:50:54 -0700
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, davem@davemloft.net, pabeni@redhat.com,
+        jiri@nvidia.com, petrm@nvidia.com, dsahern@gmail.com,
+        andrew@lunn.ch, mlxsw@nvidia.com
+Subject: Re: [PATCH net-next 00/11] mlxsw: extend line card model by devices
+ and info
+Message-ID: <20220525085054.70f297ac@kernel.org>
+In-Reply-To: <Yo3KvfgTVTFM/JHL@nanopsycho>
+References: <20220429114535.64794e94@kernel.org>
+        <Ymw8jBoK3Vx8A/uq@nanopsycho>
+        <20220429153845.5d833979@kernel.org>
+        <YmzW12YL15hAFZRV@nanopsycho>
+        <20220502073933.5699595c@kernel.org>
+        <YotW74GJWt0glDnE@nanopsycho>
+        <20220523105640.36d1e4b3@kernel.org>
+        <Yox/TkxkTUtd0RMM@nanopsycho>
+        <YozsUWj8TQPi7OkM@nanopsycho>
+        <20220524110057.38f3ca0d@kernel.org>
+        <Yo3KvfgTVTFM/JHL@nanopsycho>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Status: No, score=-2.1 required=5.0 tests=BAYES_00,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_FROM,
-        RCVD_IN_DNSWL_NONE,SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE
-        autolearn=ham autolearn_force=no version=3.4.6
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-7.8 required=5.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,RCVD_IN_DNSWL_HI,
+        SPF_HELO_NONE,SPF_PASS,T_SCC_BODY_TEXT_LINE autolearn=ham
+        autolearn_force=no version=3.4.6
 X-Spam-Checker-Version: SpamAssassin 3.4.6 (2021-04-09) on
         lindbergh.monkeyblade.net
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Wed, 25 May 2022 08:20:45 +0200 Jiri Pirko wrote:
+> >We talked about this earlier in the thread, I think. If you need both
+> >info and flash per LC just make them a separate devlink instance and
+> >let them have all the objects they need. Then just put the instance
+> >name under lc info.  
+> 
+> I don't follow :/ What do you mean be "separate devlink instance" here?
+> Could you draw me an example?
 
-New netlink attributes IFLA_TSO_MAX_SIZE and IFLA_TSO_MAX_SEGS
-are used to report device TSO limits to user-space.
+Separate instance:
 
-ip -d link sh dev eth0
-...
-   tso_max_size 65536 tso_max_segs 65535
+	for (i = 0; i < sw->num_lcs; i++) {
+		devlink_register(&sw->lc_dl[i]);
+		devlink_line_card_link(&sw->lc[i], &sw->lc_dl[i]);
+	}
 
-ip -d link sh dev lo
-...
-   tso_max_size 524280 tso_max_segs 65535
+then report that under the linecard
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
----
+	nla_nest_start(msg, DEVLINK_SUBORDINATE_INSTANCE);
+	devlink_nl_put_handle(msg, lc->devlink);
+	nla_nest_end(msg...)
 
-This compiles once include/uapi/linux/if_link.h has been synced.
-It seems iproute2 maintainers prefer to sync the headers in separate patches.
-
- ip/ipaddress.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
-
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index a80996efdc28753da3cc80e7a90e39941a67b926..a1ade37ca2777a121f835abcdc3beeda3eb8f3a5 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -1219,6 +1219,18 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
- 				   "gso_max_segs %u ",
- 				   rta_getattr_u32(tb[IFLA_GSO_MAX_SEGS]));
- 
-+		if (tb[IFLA_TSO_MAX_SIZE])
-+				   print_uint(PRINT_ANY,
-+				   "tso_max_size",
-+				   "tso_max_size %u ",
-+				   rta_getattr_u32(tb[IFLA_TSO_MAX_SIZE]));
-+
-+		if (tb[IFLA_TSO_MAX_SEGS])
-+				   print_uint(PRINT_ANY,
-+				   "tso_max_segs",
-+				   "tso_max_segs %u ",
-+				   rta_getattr_u32(tb[IFLA_TSO_MAX_SEGS]));
-+
- 		if (tb[IFLA_GRO_MAX_SIZE])
- 			print_uint(PRINT_ANY,
- 				   "gro_max_size",
--- 
-2.36.1.124.g0e6072fb45-goog
-
+then user can update the linecard like any devlink instance, switch,
+NIC etc. It's better code reuse and I don't see any downside, TBH.
